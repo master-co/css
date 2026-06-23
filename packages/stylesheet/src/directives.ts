@@ -9,7 +9,7 @@ import {
     removeStandaloneCSSDirectives,
     type StandaloneCSSDirectiveStatement
 } from '@master/css-compiler'
-import type { CSSDirectiveExtractionPolicy } from 'shared/css-directives'
+import type { CSSDirectiveExtractionPolicy } from '@master/css-schema/css-directives'
 
 export type StylesheetDirectives = CSSDirectiveExtractionPolicy
 

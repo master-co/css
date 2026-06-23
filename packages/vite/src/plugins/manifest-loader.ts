@@ -1,8 +1,8 @@
 import type { ModuleNode, Plugin, ViteDevServer } from 'vite'
 import type { PluginContext } from '../core'
 import { toResolvedMasterCSSManifestId } from '@master/css-integration/node'
-import { loadManifestJSON } from '@master/css-manifest/load'
-import { isCSSManifestRequest } from '@master/css-manifest/css'
+import { loadManifestJSON } from '@master/css-project/manifest'
+import { isCSSManifestRequest } from '@master/css-project/entries'
 import { createMasterCSSManifestLoaderPlugin } from '@master/css-integration/manifest-loader-plugin'
 import {
     MANIFEST_ASSET_FILE,

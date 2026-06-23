@@ -3,7 +3,7 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
 import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
-import type { MasterCSSManifest } from 'shared/master-css-manifest'
+import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import { compileCSSManifest } from '@master/css-compiler'
 import CSSExtractor from '@master/css-extractor'
 import {

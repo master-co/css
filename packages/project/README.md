@@ -20,11 +20,11 @@
             <img alt="NPM Version" src="https://img.shields.io/github/v/release/master-co/css?include_prereleases&color=f6f7f8&label=&style=for-the-badge&logo=github">
         </picture>
     </a>
-    <a aria-label="NPM Package" href="https://www.npmjs.com/package/@master/css-manifest">
+    <a aria-label="NPM Package" href="https://www.npmjs.com/package/@master/css-project">
         <picture>
-            <source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/npm/dm/@master/css-manifest?color=212022&label=%20&logo=npm&style=for-the-badge">
-            <source media="(prefers-color-scheme: light)" srcset="https://img.shields.io/npm/dm/@master/css-manifest?color=f6f7f8&label=%20&logo=npm&style=for-the-badge">
-            <img alt="NPM package ( download / month )" src="https://img.shields.io/npm/dm/@master/css-manifest?color=f6f7f8&label=%20&logo=npm&style=for-the-badge">
+            <source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/npm/dm/@master/css-project?color=212022&label=%20&logo=npm&style=for-the-badge">
+            <source media="(prefers-color-scheme: light)" srcset="https://img.shields.io/npm/dm/@master/css-project?color=f6f7f8&label=%20&logo=npm&style=for-the-badge">
+            <img alt="NPM package ( download / month )" src="https://img.shields.io/npm/dm/@master/css-project?color=f6f7f8&label=%20&logo=npm&style=for-the-badge">
         </picture>
     </a>
     <a aria-label="Discord Community" href="https://discord.gg/sZNKpAAAw6">
@@ -55,10 +55,10 @@
 ## Installation
 
 ```bash
-npm install @master/css-manifest
+npm install @master/css-project
 ```
 
-`@master/css-manifest` is the shared project manifest boundary for CLI commands, ESLint, language tooling, and build integrations such as Vite, Next.js, Webpack, and Nuxt.
+`@master/css-project` is the shared project manifest boundary for CLI commands, ESLint, language tooling, and build integrations such as Vite, Next.js, Webpack, and Nuxt.
 
 It discovers project CSS entries and Master CSS workspace roots, then delegates CSS parsing, import graph resolution, and manifest compilation to `@master/css-compiler`. JavaScript and TypeScript config files are intentionally unsupported.
 
@@ -69,7 +69,7 @@ Project entry discovery only treats CSS files with top-level `@master;` or `@imp
 Use `loadProjectManifest()` when a tool should load the canonical project-level manifest for a directory.
 
 ```ts
-import { loadProjectManifest, loadProjectManifestJSON } from '@master/css-manifest/load'
+import { loadProjectManifest, loadProjectManifestJSON } from '@master/css-project/manifest'
 
 const result = await loadProjectManifest('/project')
 const jsonResult = await loadProjectManifestJSON('/project')
@@ -78,7 +78,7 @@ const jsonResult = await loadProjectManifestJSON('/project')
 `loadProjectManifest()` discovers project CSS entries unless explicit `entries` are passed. It returns the compiled manifest and dependency list. `loadProjectManifestJSON()` returns JSON source for virtual JSON modules and loader output.
 
 ```ts
-import { loadProjectManifestSync, loadProjectManifestJSONSync } from '@master/css-manifest/load-sync'
+import { loadProjectManifestSync, loadProjectManifestJSONSync } from '@master/css-project/manifest-sync'
 
 const result = loadProjectManifestSync('/project')
 const jsonResult = loadProjectManifestJSONSync('/project')
@@ -89,7 +89,7 @@ const jsonResult = loadProjectManifestJSONSync('/project')
 Use `loadManifest()` when the CSS resource path is already known and should be compiled directly.
 
 ```ts
-import { loadManifest, loadManifestJSON } from '@master/css-manifest/load'
+import { loadManifest, loadManifestJSON } from '@master/css-project/manifest'
 
 const result = await loadManifest('/project/src/index.css')
 const jsonResult = await loadManifestJSON('/project/src/index.css')
@@ -98,7 +98,7 @@ const jsonResult = await loadManifestJSON('/project/src/index.css')
 `loadManifest()` and `loadManifestJSON()` only accept CSS resources. They do not search the workspace and do not load JavaScript or TypeScript config files.
 
 ```ts
-import { loadManifestSync, loadManifestJSONSync } from '@master/css-manifest/load-sync'
+import { loadManifestSync, loadManifestJSONSync } from '@master/css-project/manifest-sync'
 
 const result = loadManifestSync('/project/src/index.css')
 const jsonResult = loadManifestJSONSync('/project/src/index.css')
@@ -106,21 +106,21 @@ const jsonResult = loadManifestJSONSync('/project/src/index.css')
 
 ## Discover entries and workspaces
 
-Use `@master/css-manifest/css` when tooling needs the same project entry and workspace discovery rules without loading a manifest.
+Use `@master/css-project/entries` when tooling needs the same project entry and workspace discovery rules without loading a manifest.
 
 ```ts
 import {
     findCSSManifestEntryFiles,
     findMasterCSSWorkspaceDirectories,
     hasMasterCSSManifestEntrypoint,
-} from '@master/css-manifest/css'
+} from '@master/css-project/entries'
 ```
 
 `findCSSManifestEntryFiles(projectDir)` searches CSS files for entry markers. `findMasterCSSWorkspaceDirectories(rootDir)` creates workspace roots from discovered CSS entries and `package.json` files that declare Master CSS package dependencies.
 
 ## Manifest modules
 
-The module utilities define the manifest import contract used by official integrations. They live in `@master/css-integration`; `@master/css-manifest` owns loading and discovery.
+The module utilities define the manifest import contract used by official integrations. They live in `@master/css-integration`; `@master/css-project` owns loading and discovery.
 
 | API | Purpose |
 | --- | --- |

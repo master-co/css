@@ -1,5 +1,5 @@
 import { MASTER_CSS_VALUE_UNIT_PATTERN, MASTER_CSS_VALUE_UNITS } from '@master/css-lexer'
-import type { MasterCSSManifestAtIdentifier } from 'shared/master-css-manifest'
+import type { MasterCSSManifestAtIdentifier } from '@master/css-schema/manifest'
 
 export const VALUE_DELIMITERS = {
     '(': ')',

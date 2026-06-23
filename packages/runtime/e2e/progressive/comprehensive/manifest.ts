@@ -1,4 +1,4 @@
-import UtilityType from 'shared/utility-type'
+import UtilityType from '@master/css-schema/utility-type'
 
 export default {
     variables: [

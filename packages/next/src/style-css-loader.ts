@@ -8,7 +8,7 @@ import {
     resolveMasterStyleSource,
     transformLocalStyleCSS
 } from '@master/css-stylesheet'
-import { loadProjectManifest } from '@master/css-manifest/load'
+import { loadProjectManifest } from '@master/css-project/manifest'
 
 interface LoaderContext {
     resourcePath: string

@@ -4,7 +4,7 @@ import type {
     MasterCSSManifestModeTrigger,
     MasterCSSManifestUtilityLayerName,
     MasterCSSManifestVariant
-} from './master-css-manifest.js'
+} from './manifest.js'
 
 export type CSSDirectiveVariableValue = number | string | false | (number | string)[]
 

@@ -1,8 +1,8 @@
 import { describe, expect, it, vi } from 'vitest'
 import { createMasterCSSMiddleware, renderResponse } from '../src/server'
 import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
-import { MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID } from 'shared/master-css-hydration-manifest'
-import type { MasterCSSManifest } from 'shared/master-css-manifest'
+import { MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID } from '@master/css-schema/hydration-manifest'
+import type { MasterCSSManifest } from '@master/css-schema/manifest'
 
 const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
 

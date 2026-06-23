@@ -26,10 +26,10 @@ export type {
     MasterCSSBuiltinNativeValueNamespace,
     MasterCSSBuiltinNativeValueNamespaces
 } from './native-value-namespaces'
-export * from 'shared/master-css-manifest'
+export * from '@master/css-schema/manifest'
 export type * from './emitted-globals'
 export type { Utility as GeneratedRule } from './utility'
 export type {
     MasterCSSGeneratedRuleIR,
     MasterCSSHydrationManifest
-} from 'shared/master-css-hydration-manifest'
+} from '@master/css-schema/hydration-manifest'

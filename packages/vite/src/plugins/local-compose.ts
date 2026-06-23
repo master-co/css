@@ -1,5 +1,5 @@
 import type { ModuleNode, Plugin, ViteDevServer } from 'vite'
-import { loadProjectManifest } from '@master/css-manifest/load'
+import { loadProjectManifest } from '@master/css-project/manifest'
 import {
     hasLocalStyleDirectives,
     isStyleCSSRequest,

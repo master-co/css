@@ -7,8 +7,8 @@ import {
     createMasterCSSHydrationManifestScript,
     MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID,
     serializeMasterCSSHydrationManifest
-} from 'shared/master-css-hydration-manifest'
-import { MASTER_CSS_RUNTIME_STYLE_ID } from 'shared/master-css-runtime-style'
+} from '@master/css-schema/hydration-manifest'
+import { MASTER_CSS_RUNTIME_STYLE_ID } from '@master/css-schema/runtime-style'
 import escapeRegExp from 'shared/utils/escape-reg-exp'
 import type { Handle } from '@sveltejs/kit'
 import { toHashedManifestAssetFileName } from '@master/css-integration/node'

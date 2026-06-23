@@ -8,7 +8,7 @@ import {
     type CSSDirectiveUtilityDefinition,
     type CSSDirectiveUtilityRuleDefinition,
     type CSSDirectiveVariableDefinition
-} from 'shared/css-directives'
+} from '@master/css-schema/css-directives'
 import type { PropertiesHyphen } from 'csstype'
 import {
     compareRulePriority,
@@ -20,7 +20,7 @@ import {
     type GeneratedRule,
     type MasterCSS
 } from '@master/css-engine/compiler'
-import type { MasterCSSManifest, MasterCSSManifestUtilityLayerName } from 'shared/master-css-manifest'
+import type { MasterCSSManifest, MasterCSSManifestUtilityLayerName } from '@master/css-schema/manifest'
 import { createMasterCSSManifest, createVariableNameResolver, type CSSDirectiveVariableNameResolver } from './master-css-manifest'
 import { combineStyleSelectors } from './utils/selectors'
 import wrapAtRules from './utils/wrap-at-rules'

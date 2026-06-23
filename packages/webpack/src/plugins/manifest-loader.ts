@@ -7,10 +7,10 @@ import {
     toHashedManifestAssetFileName,
     toVirtualCSSManifestModulePath
 } from '@master/css-integration/node'
-import { loadManifestJSON } from '@master/css-manifest/load'
+import { loadManifestJSON } from '@master/css-project/manifest'
 import type { Compiler } from 'webpack'
 import type { MasterCSSWebpackContext, WebpackSubPlugin } from '../plugin'
-import { isCSSManifestRequest } from '@master/css-manifest/css'
+import { isCSSManifestRequest } from '@master/css-project/entries'
 
 export default function ManifestLoaderPlugin(context: MasterCSSWebpackContext): WebpackSubPlugin {
     return {

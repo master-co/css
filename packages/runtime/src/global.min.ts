@@ -1,5 +1,5 @@
 import CSSRuntime from './core'
-import type { MasterCSSManifest } from 'shared/master-css-manifest'
+import type { MasterCSSManifest } from '@master/css-schema/manifest'
 
 function resolveDefaultManifestURL(scriptURL: string) {
     const defaultManifestURL = new URL(scriptURL)

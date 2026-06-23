@@ -1,4 +1,4 @@
-import type { MasterCSSManifestUtility, MasterCSSManifestUtilityLayerName, MasterCSSManifestVariableNumericValue } from './master-css-manifest.js'
+import type { MasterCSSManifestUtility, MasterCSSManifestUtilityLayerName, MasterCSSManifestVariableNumericValue } from './manifest.js'
 
 export type ValueComponent = StringValueComponent | NumberValueComponent | FunctionValueComponent | VariableValueComponent | SeparatorValueComponent
 

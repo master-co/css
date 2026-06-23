@@ -1,6 +1,6 @@
 import type { ModuleNode, Plugin, ViteDevServer } from 'vite'
 import { PluginContext } from '../core'
-import { loadProjectManifest } from '@master/css-manifest/load'
+import { loadProjectManifest } from '@master/css-project/manifest'
 import { toManifestJSON } from '@master/css-integration/manifest-module'
 import {
     MANIFEST_ASSET_FILE,

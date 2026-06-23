@@ -65,7 +65,8 @@
         "provenance": true
     },
     "dependencies": {
-        "@master/css-engine": "workspace:^"
+        "@master/css-engine": "workspace:^",
+        "@master/css-schema": "workspace:^"
     },
     "devDependencies": {
         "@master/css-compiler": "workspace:^",

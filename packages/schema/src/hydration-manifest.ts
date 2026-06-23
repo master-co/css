@@ -1,4 +1,4 @@
-import type { MasterCSSManifestUtilityLayerName } from './master-css-manifest.js'
+import type { MasterCSSManifestUtilityLayerName } from './manifest.js'
 import type { UtilityType } from './utility-type.js'
 
 export const MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID = 'master-css-hydration-manifest'

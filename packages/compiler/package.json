@@ -58,7 +58,8 @@
         "css-tree": "^3.2.1",
         "csstype": "^3.2.3",
         "lightningcss": "^1.32.0",
-        "lightningcss-wasm": "^1.32.0"
+        "lightningcss-wasm": "^1.32.0",
+        "@master/css-schema": "workspace:^"
     },
     "devDependencies": {
         "@master/css-preset": "workspace:^",

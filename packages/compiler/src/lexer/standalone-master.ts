@@ -1,4 +1,4 @@
-import type { CSSDirectiveExtractionPolicy } from 'shared/css-directives'
+import type { CSSDirectiveExtractionPolicy } from '@master/css-schema/css-directives'
 import escapeRegExp from 'shared/utils/escape-reg-exp'
 import { findAtRuleStatementEnd, removeSourceRanges } from './source'
 

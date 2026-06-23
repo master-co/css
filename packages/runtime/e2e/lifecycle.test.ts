@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test'
 import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
-import type { MasterCSSManifest } from 'shared/master-css-manifest'
-import UtilityType from 'shared/utility-type'
+import type { MasterCSSManifest } from '@master/css-schema/manifest'
+import UtilityType from '@master/css-schema/utility-type'
 import { CSSRuntime } from '../src'
 import init from './init'
 

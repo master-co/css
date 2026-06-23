@@ -5,13 +5,13 @@ import parseSelector from './utils/parse-selector'
 import generateSelector from './utils/generate-selector'
 import compareRulePriority from './utils/compare-rule-priority'
 import type { Utility } from './utility'
-import type { MasterCSSManifest } from 'shared/master-css-manifest'
+import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import type { MasterCSSEmittedGlobals } from './emitted-globals'
 import type { MasterCSSOptions } from './core'
 
 export { MasterCSS, compareRulePriority, generateAt, generateSelector, parseAt, parseSelector }
 export type { Utility as GeneratedRule }
-export type * from 'shared/master-css-manifest'
+export type * from '@master/css-schema/manifest'
 
 export function createCompilerCSS(manifest: MasterCSSManifest, emittedGlobals?: MasterCSSEmittedGlobals, options?: MasterCSSOptions) {
     return MasterCSS.create({

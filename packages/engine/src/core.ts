@@ -7,13 +7,13 @@ import UtilityLayer from './utility-layer'
 import NonLayer from './non-layer'
 import VariableRule from './variable-rule'
 import AnimationRule from './animation-rule'
-import type { Variable } from 'shared/css-syntax'
-import UtilityType from 'shared/utility-type'
+import type { Variable } from '@master/css-schema/css-syntax'
+import UtilityType from '@master/css-schema/utility-type'
 import type { AtRule } from './utils/parse-at'
 import parseValue from './utils/parse-value'
 import type { SelectorNode } from './utils/parse-selector'
 import type { MasterCSSEmittedGlobals } from './emitted-globals'
-import { isNativeCSSShorthandProperty } from 'shared/native-css-shorthand'
+import { isNativeCSSShorthandProperty } from '@master/css-schema/native-css-shorthand'
 import type {
     MasterCSSManifest,
     MasterCSSManifestAnimations,
@@ -21,7 +21,7 @@ import type {
     MasterCSSManifestUtilityMatcher,
     MasterCSSManifestVariantBranch,
     MasterCSSManifestVariantToken
-} from 'shared/master-css-manifest'
+} from '@master/css-schema/manifest'
 import {
     cloneCompiledSettings,
     getCompiledManifest,

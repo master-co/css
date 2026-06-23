@@ -3,7 +3,7 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { describe, expect, test } from 'vitest'
 import { compileCSSManifestFile, compileProjectManifest } from '../src'
-import { flattenMasterCSSManifestVariables } from 'shared/master-css-manifest'
+import { flattenMasterCSSManifestVariables } from '@master/css-schema/manifest'
 
 function createFixture() {
     const root = mkdtempSync(join(tmpdir(), 'master-css-reference-'))

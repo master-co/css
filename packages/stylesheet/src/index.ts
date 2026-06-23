@@ -11,7 +11,7 @@ import {
 import { AnimationRule, VariableRule, type MasterCSSEmittedGlobals } from '@master/css'
 import { collectAnimationNamesFromDeclaration } from '@master/css-engine'
 import { createCSSWithNativeDeclarations } from '@master/css-validator'
-import type { MasterCSSManifest } from 'shared/master-css-manifest'
+import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import {
     findCSSImportStatements,
     collectCSSDirectiveRanges,

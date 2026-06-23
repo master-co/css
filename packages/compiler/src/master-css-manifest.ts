@@ -1,4 +1,4 @@
-import UtilityType from 'shared/utility-type'
+import UtilityType from '@master/css-schema/utility-type'
 import type {
     CSSDirectiveManifestInput as SharedCSSDirectiveManifestInput,
     CSSDirectiveUtilityDefinition,
@@ -6,7 +6,7 @@ import type {
     CSSDirectiveUtilityPatternDefinition,
     CSSDirectiveUtilityRuleDefinition,
     CSSDirectiveVariableDefinition
-} from 'shared/css-directives'
+} from '@master/css-schema/css-directives'
 import type {
     MasterCSSManifest,
     MasterCSSManifestAnimations,
@@ -26,15 +26,15 @@ import type {
     MasterCSSManifestVariant,
     MasterCSSManifestVariantBranch,
     MasterCSSManifestVariants
-} from 'shared/master-css-manifest'
-import { flattenMasterCSSManifestVariables, groupMasterCSSManifestVariables } from 'shared/master-css-manifest'
+} from '@master/css-schema/manifest'
+import { flattenMasterCSSManifestVariables, groupMasterCSSManifestVariables } from '@master/css-schema/manifest'
 import {
     createCompilerCSS,
     parseAt,
     parseSelector
 } from '@master/css-engine/compiler'
 import { builtinNamespaces } from '@master/css-engine'
-import { isNativeCSSShorthandProperty } from 'shared/native-css-shorthand'
+import { isNativeCSSShorthandProperty } from '@master/css-schema/native-css-shorthand'
 
 export type CSSDirectiveManifestInput = SharedCSSDirectiveManifestInput
 

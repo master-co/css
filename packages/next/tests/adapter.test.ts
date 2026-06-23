@@ -7,7 +7,7 @@ import type { NextAdapter } from 'next'
 import {
     MASTER_CSS_HYDRATION_MANIFEST_ATTR,
     MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID
-} from 'shared/master-css-hydration-manifest'
+} from '@master/css-schema/hydration-manifest'
 
 type BuildCompleteContext = Parameters<NonNullable<NextAdapter['onBuildComplete']>>[0]
 

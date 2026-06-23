@@ -1,6 +1,6 @@
 import type { MasterCSSManifest } from '@master/css'
 import { Page } from '@playwright/test'
-import { MASTER_CSS_RUNTIME_STYLE_ID } from 'shared/master-css-runtime-style'
+import { MASTER_CSS_RUNTIME_STYLE_ID } from '@master/css-schema/runtime-style'
 import { dirname, resolve } from 'path'
 import { fileURLToPath } from 'url'
 

@@ -10,7 +10,7 @@ import {
     EMPTY_EMITTED_GLOBALS_MODULE,
     VIRTUAL_EMITTED_GLOBALS_FILE
 } from './emitted-globals-module'
-import { MASTER_CSS_HYDRATION_MANIFEST_FILE_BASENAME } from 'shared/master-css-hydration-manifest'
+import { MASTER_CSS_HYDRATION_MANIFEST_FILE_BASENAME } from '@master/css-schema/hydration-manifest'
 
 export const RESOLVED_MASTER_CSS_MANIFEST_QUERY_PREFIX = '\0master-css-manifest:'
 export const VIRTUAL_MODULE_DIR = 'node_modules/.master-css'

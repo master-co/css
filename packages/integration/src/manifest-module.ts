@@ -1,5 +1,5 @@
-import type { MasterCSSManifest } from 'shared/master-css-manifest'
-import { stringifyMasterCSSManifestJSON } from 'shared/master-css-manifest-json'
+import type { MasterCSSManifest } from '@master/css-schema/manifest'
+import { stringifyMasterCSSManifestJSON } from '@master/css-schema/manifest-json'
 import { MANIFEST_ASSET_FILE, MANIFEST_MODULE_FILE } from './manifest-facade'
 
 export type { MasterCSSManifest }

@@ -25,7 +25,8 @@
         "oxc-parser": "^0.137.0",
         "shared": "workspace:^",
         "vscode-languageserver-protocol": "^3.18.0",
-        "vscode-languageserver-textdocument": "^1.0.12"
+        "vscode-languageserver-textdocument": "^1.0.12",
+        "@master/css-schema": "workspace:^"
     },
     "devDependencies": {
         "@types/lodash.escaperegexp": "^4.1.9",

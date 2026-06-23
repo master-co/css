@@ -1,6 +1,6 @@
 import { DomHandler, Parser } from 'htmlparser2'
 import type { ChildNode, Element } from 'domhandler'
-import { MASTER_CSS_RUNTIME_STYLE_ID } from 'shared/master-css-runtime-style'
+import { MASTER_CSS_RUNTIME_STYLE_ID } from '@master/css-schema/runtime-style'
 import decodeHTML from './decode-html'
 
 /**

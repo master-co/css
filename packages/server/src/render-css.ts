@@ -1,6 +1,6 @@
 import parseHTML from './parse-html'
 import { MasterCSS } from '@master/css'
-import type { MasterCSSManifest } from 'shared/master-css-manifest'
+import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import getDefaultManifest from './default-manifest'
 import createServerCSS from './create-server-css'
 

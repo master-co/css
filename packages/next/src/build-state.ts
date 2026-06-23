@@ -1,6 +1,6 @@
 import CSSExtractor from '@master/css-extractor'
-import { loadProjectManifest } from '@master/css-manifest/load'
-import { findCSSManifestEntryFiles } from '@master/css-manifest/css'
+import { loadProjectManifest } from '@master/css-project/manifest'
+import { findCSSManifestEntryFiles } from '@master/css-project/entries'
 import {
     createExtractedCSS,
     registerStyleCSSSource,

@@ -1,8 +1,8 @@
 import { MasterCSS, type CompiledUtility } from '@master/css'
 import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
-import UtilityType from 'shared/utility-type'
-import type { ValueComponent, Variable } from 'shared/css-syntax'
-import type { MasterCSSManifest, MasterCSSManifestAtRuleNode } from 'shared/master-css-manifest'
+import UtilityType from '@master/css-schema/utility-type'
+import type { ValueComponent, Variable } from '@master/css-schema/css-syntax'
+import type { MasterCSSManifest, MasterCSSManifestAtRuleNode } from '@master/css-schema/manifest'
 import { getMdnPropertySyntax } from './utils/mdn-css-data'
 
 export type { CompiledUtility, ValueComponent, Variable }

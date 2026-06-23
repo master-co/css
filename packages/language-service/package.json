@@ -29,7 +29,8 @@
     },
     "devDependencies": {
         "@types/vscode": "^1.125.0",
-        "vscode-languageserver": "^10.0.0"
+        "vscode-languageserver": "^10.0.0",
+        "@master/css-schema": "workspace:^"
     },
     "sideEffects": false,
     "main": "./dist/index.mjs",

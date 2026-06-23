@@ -5,6 +5,7 @@
 ```txt
 shared / external data
   ↓
+@master/css-schema
 @master/css-lexer
   ↓
 @master/css-source
@@ -14,7 +15,7 @@ shared / external data
 @master/css-integration
   ↓
 @master/css-compiler
-@master/css-manifest
+@master/css-project
   ↓
 @master/css-validator
 @master/css-server
@@ -40,11 +41,11 @@ examples
 site
 ```
 
-The engine package must remain independent from integrations and tooling packages. `@master/css-integration` may depend on shared manifest helpers and type surfaces from engine, but engine must not depend on it. The compiler is the CSS front-end for manifests: it parses Master CSS stylesheets, resolves CSS import graphs, and lowers CSS-first authoring into `MasterCSSManifest` values and native CSS results.
+The engine package must remain independent from integrations and tooling packages. `@master/css-integration` may depend on `@master/css-schema` contracts and type surfaces from engine, but engine must not depend on it. The compiler is the CSS front-end for manifests: it parses Master CSS stylesheets, resolves CSS import graphs, and lowers CSS-first authoring into `MasterCSSManifest` values and native CSS results.
 
 When a feature creates a package cycle or self-build cycle, extract dependency-free contracts, IR, or lexical source scanners into the lowest owning package first. Use `shared` for type/data contracts, `@master/css-lexer` for raw source/range/token scanning, and `@master/css-source` for source-level class candidate extraction. Keep engine independent; packages above engine may depend on engine for manifest-driven semantic interpretation.
 
-`shared` owns MasterCSSManifest contracts, manifest JSON normalization helpers, and CSS directive result contracts. `@master/css-lexer` owns dependency-free source scanners: generic ranges, CSS directive ranges, Master CSS manifest entrypoint statements, Master class lexical display tokens, and CSS unit constants. `@master/css-source` owns source-level class candidate extraction and source-format-aware adapters such as HTML and OXC-based JavaScript/TypeScript scanning, and depends on `@master/css-lexer` for lexical constants rather than duplicating low-level data. `@master/css-integration` owns adapter-neutral integration contracts such as `?master-css-manifest`, `virtual:master-css-manifest`, `virtual:master-css-emitted-globals`, `virtual:master-utilities.css`, generated JSON/emittedGlobals source helpers, runtime injection source, and dependency-light loader/plugin contracts. `@master/css-stylesheet` composes compiler, integration protocol, validator/native CSS helpers, and structural extraction state for stylesheet entry output. None of these lower packages should own framework lifecycle behavior.
+`@master/css-schema` owns public dependency-light contracts such as MasterCSSManifest, manifest JSON normalization helpers, hydration manifest contracts, CSS directive result contracts, CSS syntax value types, utility type constants, and runtime style constants. `shared` is private and should only hold repo-internal utilities and test helpers. `@master/css-lexer` owns dependency-free source scanners: generic ranges, CSS directive ranges, Master CSS manifest entrypoint statements, Master class lexical display tokens, and CSS unit constants. `@master/css-source` owns source-level class candidate extraction and source-format-aware adapters such as HTML and OXC-based JavaScript/TypeScript scanning, and depends on `@master/css-lexer` for lexical constants rather than duplicating low-level data. `@master/css-integration` owns adapter-neutral integration contracts such as `?master-css-manifest`, `virtual:master-css-manifest`, `virtual:master-css-emitted-globals`, `virtual:master-utilities.css`, generated JSON/emittedGlobals source helpers, runtime injection source, and dependency-light loader/plugin contracts. `@master/css-stylesheet` composes compiler, integration protocol, validator/native CSS helpers, and structural extraction state for stylesheet entry output. None of these lower packages should own framework lifecycle behavior.
 
 ## Engine, Preset, And Facade Packages
 
@@ -83,11 +84,11 @@ Important files:
 
 `packages/compiler` is the canonical CSS source compiler. It parses CSS-authored Master manifest directives and native CSS, resolves CSS import graphs, detects project CSS entry markers (`@master;` and `@import "@master/css"`), parses standalone extraction directives, and lowers directive results into `MasterCSSManifest` values. `@master;` and `@import "@master/css"` are user project entry markers; package CSS files such as `@master/css/index.css` must not contain `@master;`.
 
-`packages/manifest` resolves Master CSS project manifest entries, workspace roots, explicit CSS manifest resources, and project manifest module source. It delegates CSS parsing, CSS import graph resolution, and manifest compilation to `@master/css-compiler`. ESLint, language tooling, CLI, and build integrations should consume `@master/css-manifest` for project-level manifests instead of rediscovering entries locally.
+`packages/project` resolves Master CSS project manifest entries, workspace roots, explicit CSS manifest resources, and project manifest module source. It delegates CSS parsing, CSS import graph resolution, and manifest compilation to `@master/css-compiler`. ESLint, language tooling, CLI, and build integrations should consume `@master/css-project` for project-level manifests instead of rediscovering entries locally.
 
 `packages/integration` defines the virtual module and query protocol shared by build and framework integrations. It must stay adapter-neutral: no Vite, Next, Webpack, Runtime, Server, Extractor, Compiler, or Manifest dependencies. Browser-safe subpaths must not import `node:*` or use Node globals; Node filesystem, path, hash, and resolved-id helpers are isolated under `./node`, while build plugin helpers live under explicit build-only subpaths.
 
-`packages/extractor` scans source files, validates latent classes, and maintains generated CSS extraction state. It consumes `@master/css-source` for source adapters and fallback class candidate extraction. Stylesheet entry detection, native CSS pruning/source directives, generated CSS composition, and emittedGlobals manifest output belong in `@master/css-stylesheet`. Project manifest discovery and manifest loading belong in `@master/css-manifest` or the calling integration.
+`packages/extractor` scans source files, validates latent classes, and maintains generated CSS extraction state. It consumes `@master/css-source` for source adapters and fallback class candidate extraction. Stylesheet entry detection, native CSS pruning/source directives, generated CSS composition, and emittedGlobals manifest output belong in `@master/css-stylesheet`. Project manifest discovery and manifest loading belong in `@master/css-project` or the calling integration.
 
 `packages/stylesheet` owns the stylesheet pipeline used by Vite, Webpack, Next, and the CLI. It detects Master CSS stylesheet entries, resolves stylesheet import graphs, compiles CSS-first directives, registers stylesheet sources, scopes extraction directives, and composes native CSS with generated CSS. It accepts structural extractor state and must not depend on `@master/css-extractor`.
 

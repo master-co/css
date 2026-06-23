@@ -1,6 +1,6 @@
 import { default as defaultOptions, Options } from './options'
 import { MasterCSS } from '@master/css'
-import type { MasterCSSManifest } from 'shared/master-css-manifest'
+import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import { createRequire } from 'node:module'
 import {
     extractClassCandidates,

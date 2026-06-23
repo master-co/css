@@ -7,8 +7,8 @@ import { Settings } from './settings'
 import {
     findCSSManifestEntryFiles,
     findMasterCSSWorkspaceDirectories
-} from '@master/css-manifest/css'
-import { loadProjectManifest } from '@master/css-manifest/load'
+} from '@master/css-project/entries'
+import { loadProjectManifest } from '@master/css-project/manifest'
 import extend from '@techor/extend'
 import settings from './settings'
 import type { MasterCSSManifest } from '@master/css'
@@ -24,7 +24,7 @@ import {
 import { SEMANTIC_TOKENS_LEGEND } from '@master/css-language'
 import glob from 'fast-glob'
 import { URI } from 'vscode-uri'
-import { CSSDirectiveError, type CSSDirectiveSourceReference } from 'shared/css-directives'
+import { CSSDirectiveError, type CSSDirectiveSourceReference } from '@master/css-schema/css-directives'
 
 export declare interface Workspace {
     uri: string

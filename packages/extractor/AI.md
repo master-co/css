@@ -42,7 +42,7 @@
 - Source allow/exclude matching.
 - Vite/Webpack/Next virtual-module consumers.
 - Stylesheet native CSS merging, pruning/source directives, and generated CSS ordering belong in `@master/css-stylesheet`.
-- Do not add project manifest discovery, workspace detection, or manifest loading here; use `@master/css-manifest` in the calling CLI/build/tooling package.
+- Do not add project manifest discovery, workspace detection, or manifest loading here; use `@master/css-project` in the calling CLI/build/tooling package.
 - Do not add independent CSS import graph parsing here; use compiler results and keep extraction-specific decisions local.
 
 ## Required Tests

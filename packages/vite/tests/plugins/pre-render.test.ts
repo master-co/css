@@ -6,7 +6,7 @@ import masterCSS from '../../src'
 import {
     MASTER_CSS_HYDRATION_MANIFEST_ATTR,
     MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID
-} from 'shared/master-css-hydration-manifest'
+} from '@master/css-schema/hydration-manifest'
 
 const FIXTURE_DIR = path.resolve(__dirname, '../fixtures/pre-render/master-css-entry')
 

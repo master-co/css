@@ -419,7 +419,7 @@ These CSS-first directives are manifest inputs. The compiler lowers tokens, mana
 | Artifact | Produced by | Used by | Purpose |
 | --- | --- | --- | --- |
 | CSS entry graph | Project stylesheets with `@master;` or `@import '@master/css'` | Compiler, integrations, static renderer | Authoring source for tokens, settings, variants, managed styles, source directives, and native CSS roots. |
-| `MasterCSSManifest` | `@master/css-compiler` and `@master/css-manifest` | Engine, runtime, server renderer, extractor, linting, language tooling | Shared IR that describes how class names become sorted CSS rules. |
+| `MasterCSSManifest` | `@master/css-compiler` and `@master/css-project` | Engine, runtime, server renderer, extractor, linting, language tooling | Shared IR that describes how class names become sorted CSS rules. |
 | `virtual:master-css-manifest` | Official build integrations | Application runtime code and framework providers | ESM module for the canonical project-level manifest discovered from the CSS entry graph. In production runtime builds, this module may fetch an emitted project manifest JSON asset. |
 | Project manifest JSON asset | Official runtime integrations | `virtual:master-css-manifest` facade and the runtime | Cacheable JSON form of the project manifest. Pure runtime pages can preload it because the runtime needs it before interpreting project classes. |
 | `virtual:master-css-emitted-globals` | Static and build integrations | Runtime code | Counts variables and keyframes already emitted by the CSS entry output, so runtime rendering does not insert duplicate global CSS. |

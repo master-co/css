@@ -1,4 +1,4 @@
-import type { MasterCSSManifest } from 'shared/master-css-manifest'
+import type { MasterCSSManifest } from '@master/css-schema/manifest'
 
 declare const defaultManifest: MasterCSSManifest
 export default defaultManifest

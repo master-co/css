@@ -1,7 +1,7 @@
 import { compareRulePriority, type MasterCSS, type MasterCSSManifest } from '@master/css'
 import { createCSSWithNativeDeclarations } from '@master/css-validator'
 import { createRequire } from 'node:module'
-import UtilityType from 'shared/utility-type'
+import UtilityType from '@master/css-schema/utility-type'
 
 export type { MasterCSS, MasterCSSManifest }
 const require = createRequire(import.meta.url)

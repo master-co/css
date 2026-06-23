@@ -4,7 +4,7 @@ import { getRuleSortTier } from './utils/compare-rule-priority'
 import type {
     MasterCSSGeneratedRuleIR,
     MasterCSSHydrationManifest
-} from 'shared/master-css-hydration-manifest'
+} from '@master/css-schema/hydration-manifest'
 
 function serializeRule(className: string, rule: Utility): MasterCSSGeneratedRuleIR {
     const nodes = rule.nodes?.map((node) => ({ text: node.text }))
@@ -54,4 +54,4 @@ export default function createHydrationManifest(css: MasterCSS): MasterCSSHydrat
 export type {
     MasterCSSGeneratedRuleIR,
     MasterCSSHydrationManifest
-} from 'shared/master-css-hydration-manifest'
+} from '@master/css-schema/hydration-manifest'

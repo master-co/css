@@ -38,7 +38,7 @@ Risks:
 
 ```txt
 project CSS files containing @master; or @import "@master/css"
-  -> @master/css-manifest discovers project entry files only
+  -> @master/css-project discovers project entry files only
   -> @master/css-compiler resolves CSS imports and package style imports
   -> compiler parses @theme token/mode/keyframe directives, @settings root options, top-level @custom-variant definitions, and @defaults/@components/@utilities managed definition directives
   -> compiler lowers directive result into MasterCSSManifest
@@ -48,8 +48,8 @@ project CSS files containing @master; or @import "@master/css"
 
 Main files:
 
-- `packages/manifest/src/css.ts`
-- `packages/manifest/src/load.ts`
+- `packages/project/src/entries.ts`
+- `packages/project/src/manifest.ts`
 - `packages/integration/src/manifest-module.ts`
 - `packages/compiler/src/index.ts`
 - `packages/compiler/src/master-css-manifest.ts`
@@ -60,11 +60,11 @@ Risks:
 
 - Entry detection must only use project-level markers: `@master;` and `@import "@master/css"`.
 - Package CSS such as `@master/css/index.css` must not contain or imply a project entry marker.
-- `@master/css-manifest` must not implement CSS import graph or CSS manifest directive parsing.
+- `@master/css-project` must not implement CSS import graph, CSS manifest directive parsing, or manifest ABI schema.
 - Manifest lowering order affects all manifest consumers.
 - Variable aliases and modes affect inlining vs CSS custom property output.
 - Static utility layer assignment affects semantic class output and cascade behavior.
-- `?master-css-manifest` query ids, virtual module ids, and generated JavaScript module source helpers are integration protocol and belong in `@master/css-integration`, not `@master/css-manifest`.
+- `?master-css-manifest` query ids, virtual module ids, and generated JavaScript module source helpers are integration protocol and belong in `@master/css-integration`, not `@master/css-project`.
 
 ## Build-Time Extraction
 
@@ -74,7 +74,7 @@ source globs / Vite modules / Webpack modules
   -> @master/css-source adapters / extractClassCandidates()
   -> generateValidRules()
   -> insert valid rules into layers
-  -> build tool / CLI registers managed CSS entries discovered by @master/css-manifest with @master/css-stylesheet
+  -> build tool / CLI registers managed CSS entries discovered by @master/css-project with @master/css-stylesheet
   -> @master/css-stylesheet compiles stylesheet CSS through @master/css-compiler
   -> combine stylesheet manifest returned by compiler with explicit manifest options
   -> export css.text / virtual CSS module through @master/css-stylesheet

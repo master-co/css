@@ -74,7 +74,7 @@
         "@master/css-language-server": "workspace:^",
         "@master/css-language-service": "workspace:^",
         "@master/css-lexer": "workspace:^",
-        "@master/css-manifest": "workspace:^",
+        "@master/css-project": "workspace:^",
         "@master/css-preset": "workspace:^",
         "@master/css-runtime": "workspace:^",
         "@master/css-server": "workspace:^",
@@ -94,6 +94,7 @@
         "@types/edit-json-file": "^1.7.4",
         "concurrently": "^9.2.3",
         "master-css-vscode": "workspace:^",
-        "shared": "workspace:^"
+        "shared": "workspace:^",
+        "@master/css-schema": "workspace:^"
     }
 }

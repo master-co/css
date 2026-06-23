@@ -10,7 +10,7 @@ import {
     toNodeManifestFacadeModule
 } from '@master/css-integration/manifest-facade'
 import { toHashedManifestAssetFileName } from '@master/css-integration/node'
-import { loadProjectManifestJSON } from '@master/css-manifest/load'
+import { loadProjectManifestJSON } from '@master/css-project/manifest'
 import type { Plugin } from 'vite'
 import defaultOptions, { type ModuleOptions } from './options'
 

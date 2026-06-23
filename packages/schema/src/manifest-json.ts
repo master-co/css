@@ -1,4 +1,4 @@
-import type { MasterCSSManifest } from './master-css-manifest.js'
+import type { MasterCSSManifest } from './manifest.js'
 
 type ManifestUtility = NonNullable<MasterCSSManifest['utilities']>[number]
 type ManifestVariables = NonNullable<MasterCSSManifest['variables']>

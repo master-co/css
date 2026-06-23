@@ -1,5 +1,5 @@
 import type { PropertiesHyphen } from 'csstype'
-import type { Variable } from 'shared/css-syntax'
+import type { Variable } from '@master/css-schema/css-syntax'
 import { normalizeVariableValue } from './css-variables'
 
 export interface CollectAnimationNamesOptions {

@@ -5,7 +5,7 @@ import { dirname, resolve } from 'node:path'
 import {
     MASTER_CSS_HYDRATION_MANIFEST_ATTR,
     MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID
-} from 'shared/master-css-hydration-manifest'
+} from '@master/css-schema/hydration-manifest'
 import { setupNuxtTest } from './setup-test'
 
 const __filename = fileURLToPath(import.meta.url)

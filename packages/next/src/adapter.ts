@@ -2,13 +2,13 @@ import { readFile, writeFile, mkdir } from 'node:fs/promises'
 import { basename, dirname, extname, join, resolve } from 'node:path'
 import { render } from '@master/css-server'
 import type { NextAdapter } from 'next'
-import { MASTER_CSS_RUNTIME_STYLE_ID } from 'shared/master-css-runtime-style'
+import { MASTER_CSS_RUNTIME_STYLE_ID } from '@master/css-schema/runtime-style'
 import {
     MASTER_CSS_HYDRATION_MANIFEST_ATTR,
     MASTER_CSS_HYDRATION_MANIFEST_FILE_BASENAME,
     MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID,
     serializeMasterCSSHydrationManifest
-} from 'shared/master-css-hydration-manifest'
+} from '@master/css-schema/hydration-manifest'
 import escapeRegExp from 'shared/utils/escape-reg-exp'
 import { toHashedManifestAssetFileName } from '@master/css-integration/node'
 import { getRegisteredOptions, resolveOptions, type AdapterOrder, type Options } from './options'

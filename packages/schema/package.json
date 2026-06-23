@@ -1,0 +1,98 @@
+{
+    "name": "@master/css-schema",
+    "type": "module",
+    "scripts": {
+        "build": "techor build \"src/**/*.ts\" --formats esm",
+        "dev": "pnpm build --watch",
+        "lint": "eslint",
+        "type-check": "tsc --noEmit",
+        "test": "vitest"
+    },
+    "license": "MIT",
+    "description": "Public Master CSS schema and wire-format contracts.",
+    "author": "Aoyue Design LLC.",
+    "funding": "https://rc.css.master.co/sponsor",
+    "homepage": "https://css.master.co",
+    "bugs": {
+        "url": "https://github.com/master-co/css/issues"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/master-co/css.git",
+        "directory": "packages/schema"
+    },
+    "keywords": [
+        "schema",
+        "manifest",
+        "css",
+        "mastercss"
+    ],
+    "sideEffects": false,
+    "main": "./dist/index.mjs",
+    "jsnext:main": "./dist/index.mjs",
+    "esnext": "./dist/index.mjs",
+    "module": "./dist/index.mjs",
+    "types": "./dist/index.d.ts",
+    "exports": {
+        ".": {
+            "types": "./dist/index.d.ts",
+            "import": "./dist/index.mjs",
+            "default": "./dist/index.mjs"
+        },
+        "./manifest": {
+            "types": "./dist/manifest.d.ts",
+            "import": "./dist/manifest.mjs",
+            "default": "./dist/manifest.mjs"
+        },
+        "./manifest-json": {
+            "types": "./dist/manifest-json.d.ts",
+            "import": "./dist/manifest-json.mjs",
+            "default": "./dist/manifest-json.mjs"
+        },
+        "./hydration-manifest": {
+            "types": "./dist/hydration-manifest.d.ts",
+            "import": "./dist/hydration-manifest.mjs",
+            "default": "./dist/hydration-manifest.mjs"
+        },
+        "./css-directives": {
+            "types": "./dist/css-directives.d.ts",
+            "import": "./dist/css-directives.mjs",
+            "default": "./dist/css-directives.mjs"
+        },
+        "./css-syntax": {
+            "types": "./dist/css-syntax.d.ts",
+            "import": "./dist/css-syntax.mjs",
+            "default": "./dist/css-syntax.mjs"
+        },
+        "./utility-type": {
+            "types": "./dist/utility-type.d.ts",
+            "import": "./dist/utility-type.mjs",
+            "default": "./dist/utility-type.mjs"
+        },
+        "./runtime-style": {
+            "types": "./dist/runtime-style.d.ts",
+            "import": "./dist/runtime-style.mjs",
+            "default": "./dist/runtime-style.mjs"
+        },
+        "./native-css-shorthand": {
+            "types": "./dist/native-css-shorthand.d.ts",
+            "import": "./dist/native-css-shorthand.mjs",
+            "default": "./dist/native-css-shorthand.mjs"
+        },
+        "./css-common": {
+            "types": "./dist/css-common.d.ts",
+            "import": "./dist/css-common.mjs",
+            "default": "./dist/css-common.mjs"
+        }
+    },
+    "files": [
+        "dist"
+    ],
+    "publishConfig": {
+        "access": "public",
+        "provenance": true
+    },
+    "dependencies": {
+        "csstype": "^3.2.3"
+    }
+}

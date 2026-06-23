@@ -1,5 +1,5 @@
 import type { MasterCSSHydrationManifest, MasterCSSManifest } from '@master/css-runtime'
-import UtilityType from 'shared/utility-type'
+import UtilityType from '@master/css-schema/utility-type'
 
 export const externalHydrationManifestSource = '/_master-css/hydration/react-provider.json'
 export const externalManifest = {

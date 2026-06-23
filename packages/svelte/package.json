@@ -78,7 +78,8 @@
         "@master/css-runtime": "workspace:^",
         "@master/css-server": "workspace:^",
         "@master/css-source": "workspace:^",
-        "@master/css.vite": "workspace:^"
+        "@master/css.vite": "workspace:^",
+        "@master/css-schema": "workspace:^"
     },
     "devDependencies": {
         "@eslint/compat": "^2.1.0",

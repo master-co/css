@@ -2,13 +2,13 @@ import { mkdir, readFile, readdir, writeFile } from 'node:fs/promises'
 import { join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { toHashedManifestAssetFileName } from '@master/css-integration/node'
-import { MASTER_CSS_RUNTIME_STYLE_ID } from 'shared/master-css-runtime-style'
+import { MASTER_CSS_RUNTIME_STYLE_ID } from '@master/css-schema/runtime-style'
 import {
     MASTER_CSS_HYDRATION_MANIFEST_ASSET_BASE,
     MASTER_CSS_HYDRATION_MANIFEST_ATTR,
     MASTER_CSS_HYDRATION_MANIFEST_FILE_BASENAME,
     MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID
-} from 'shared/master-css-hydration-manifest'
+} from '@master/css-schema/hydration-manifest'
 
 function isMasterCSSRenderedHTML(html: string) {
     return new RegExp(String.raw`<style\b(?=[^>]*\bid=(["'])${MASTER_CSS_RUNTIME_STYLE_ID}\1)`, 'i').test(html)

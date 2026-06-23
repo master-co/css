@@ -1,5 +1,5 @@
 import MasterCSS from './core'
-import type { ResolvedVariableValue, Variable } from 'shared/css-syntax'
+import type { ResolvedVariableValue, Variable } from '@master/css-schema/css-syntax'
 import { normalizeVariableValue, replaceCSSVariableReferences } from './utils/css-variables'
 
 export default class VariableRule {

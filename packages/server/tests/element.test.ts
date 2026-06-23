@@ -1,7 +1,7 @@
 import { it, test, expect } from 'vitest'
 import { render } from '../src'
 import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
-import type { MasterCSSManifest } from 'shared/master-css-manifest'
+import type { MasterCSSManifest } from '@master/css-schema/manifest'
 
 const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
 

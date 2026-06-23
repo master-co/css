@@ -1,7 +1,7 @@
 import { describe, expect, test } from 'vitest'
 import { MasterCSS } from '../src'
 import { cloneManifest } from './helpers/css-tester'
-import { flattenMasterCSSManifestVariables, groupMasterCSSManifestVariables } from 'shared/master-css-manifest'
+import { flattenMasterCSSManifestVariables, groupMasterCSSManifestVariables } from '@master/css-schema/manifest'
 
 describe.concurrent('ThemeLayer', () => {
     test('keeps default variable buckets before mode buckets when defaults are inserted later', () => {

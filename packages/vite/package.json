@@ -59,13 +59,14 @@
     },
     "dependencies": {
         "@master/css": "workspace:^",
-        "@master/css-manifest": "workspace:^",
+        "@master/css-project": "workspace:^",
         "@master/css-extractor": "workspace:^",
         "@master/css-integration": "workspace:^",
         "@master/css-runtime": "workspace:^",
         "@master/css-server": "workspace:^",
         "@master/css-stylesheet": "workspace:^",
-        "magic-string": "^0.30.21"
+        "magic-string": "^0.30.21",
+        "@master/css-schema": "workspace:^"
     },
     "devDependencies": {
         "@master/css-preset": "workspace:^",

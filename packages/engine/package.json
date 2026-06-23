@@ -69,7 +69,8 @@
     },
     "dependencies": {
         "@master/css-lexer": "workspace:^",
-        "csstype": "^3.2.3"
+        "csstype": "^3.2.3",
+        "@master/css-schema": "workspace:^"
     },
     "devDependencies": {
         "@master/css-preset": "workspace:^",

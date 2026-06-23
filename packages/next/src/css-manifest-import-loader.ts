@@ -1,8 +1,8 @@
 import { mkdirSync, writeFileSync } from 'node:fs'
 import { createRequire } from 'node:module'
 import { dirname, isAbsolute, relative, resolve } from 'node:path'
-import { isCSSManifestRequest } from '@master/css-manifest/css'
-import { loadManifestJSONSync } from '@master/css-manifest/load-sync'
+import { isCSSManifestRequest } from '@master/css-project/entries'
+import { loadManifestJSONSync } from '@master/css-project/manifest-sync'
 import {
     isMasterCSSManifestRequest,
     stripMasterCSSManifestQuery

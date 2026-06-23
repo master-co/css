@@ -2,8 +2,8 @@ import { writeFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { MasterCSS } from '@master/css-engine'
-import { normalizeMasterCSSManifestForJSON, stringifyMasterCSSManifestJSON } from 'shared/master-css-manifest-json'
-import type { MasterCSSManifest } from 'shared/master-css-manifest'
+import { normalizeMasterCSSManifestForJSON, stringifyMasterCSSManifestJSON } from '@master/css-schema/manifest-json'
+import type { MasterCSSManifest } from '@master/css-schema/manifest'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const packageRoot = resolve(__dirname, '..')

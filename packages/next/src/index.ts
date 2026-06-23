@@ -2,7 +2,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url'
 import { dirname, relative, resolve } from 'node:path'
 import { mkdirSync, writeFileSync } from 'node:fs'
 import type { NextConfig } from 'next'
-import { createMasterCSSManifestEntryPattern } from '@master/css-manifest/css'
+import { createMasterCSSManifestEntryPattern } from '@master/css-project/entries'
 import {
     MASTER_CSS_MANIFEST_QUERY,
     VIRTUAL_MANIFEST_ID

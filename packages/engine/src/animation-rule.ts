@@ -1,7 +1,7 @@
 import MasterCSS from './core'
 import collectVariableNames from './utils/collect-variable-names'
 import type { PropertiesHyphen } from 'csstype'
-import type { MasterCSSManifestAnimations } from 'shared/master-css-manifest'
+import type { MasterCSSManifestAnimations } from '@master/css-schema/manifest'
 
 export default class AnimationRule {
     native?: CSSKeyframeRule

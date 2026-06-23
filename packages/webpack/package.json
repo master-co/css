@@ -54,7 +54,7 @@
         "@master/css": "workspace:^",
         "@master/css-extractor": "workspace:^",
         "@master/css-integration": "workspace:^",
-        "@master/css-manifest": "workspace:^",
+        "@master/css-project": "workspace:^",
         "@master/css-stylesheet": "workspace:^",
         "@techor/log": "^3.2.5",
         "webpack-virtual-modules": "^0.6.2"

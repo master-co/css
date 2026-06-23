@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { createMasterCSSManifest } from '../src/master-css-manifest'
-import UtilityType from 'shared/utility-type'
-import { flattenMasterCSSManifestVariables, type MasterCSSManifest } from 'shared/master-css-manifest'
+import UtilityType from '@master/css-schema/utility-type'
+import { flattenMasterCSSManifestVariables, type MasterCSSManifest } from '@master/css-schema/manifest'
 import { MasterCSS } from '@master/css-engine'
 
 function variablesOf(manifest: MasterCSSManifest) {

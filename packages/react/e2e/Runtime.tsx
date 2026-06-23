@@ -2,7 +2,7 @@ import { CSSRuntimeProvider } from '../src/runtime-provider'
 import { useState, useEffect, useRef } from 'react'
 import type { MasterCSSManifest } from '@master/css-runtime'
 import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
-import UtilityType from 'shared/utility-type'
+import UtilityType from '@master/css-schema/utility-type'
 import { externalManifest } from './external-hydration-fixture'
 
 const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest

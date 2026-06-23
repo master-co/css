@@ -1,8 +1,8 @@
 import { mkdirSync, writeFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
-import { loadManifestJSONSync } from '@master/css-manifest/load-sync'
-import { loadProjectManifestJSON } from '@master/css-manifest/load'
-import { isCSSManifestRequest } from '@master/css-manifest/css'
+import { loadManifestJSONSync } from '@master/css-project/manifest-sync'
+import { loadProjectManifestJSON } from '@master/css-project/manifest'
+import { isCSSManifestRequest } from '@master/css-project/entries'
 import { toHashedManifestAssetFileName } from '@master/css-integration/node'
 import {
     toInlineManifestModule,

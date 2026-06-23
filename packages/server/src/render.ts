@@ -1,12 +1,12 @@
 import { MasterCSS, createHydrationManifest } from '@master/css'
-import type { MasterCSSManifest } from 'shared/master-css-manifest'
+import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import {
     MASTER_CSS_HYDRATION_MANIFEST_ATTR,
     MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID,
     serializeMasterCSSHydrationManifest,
     type MasterCSSHydrationManifest
-} from 'shared/master-css-hydration-manifest'
-import { MASTER_CSS_RUNTIME_STYLE_ID } from 'shared/master-css-runtime-style'
+} from '@master/css-schema/hydration-manifest'
+import { MASTER_CSS_RUNTIME_STYLE_ID } from '@master/css-schema/runtime-style'
 import parseHTML from './parse-html'
 import getDefaultManifest from './default-manifest'
 import createServerCSS from './create-server-css'

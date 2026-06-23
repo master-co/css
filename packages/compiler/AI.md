@@ -20,7 +20,7 @@
 - This package may depend on the manifest-driven engine for class semantics.
 - Keep directive parsing package-local.
 - Consume dependency-free source range helpers from `@master/css-lexer`; compiler-specific semantic directive parsing stays package-local.
-- Emit shared directive contracts from `shared/css-directives` for low-level consumers, and expose manifest APIs for manifest loading.
+- Emit shared directive contracts from `@master/css-schema/css-directives` for low-level consumers, and expose manifest APIs for manifest loading.
 - Do not reintroduce PostCSS in this package.
 - If CSS manifest directive syntax is expanded or changed incompatibly, update any `@master/css-language` semantic token classification that is affected in the same change when practical.
 

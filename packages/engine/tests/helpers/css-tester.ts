@@ -1,13 +1,13 @@
 import { expect } from 'vitest'
-import UtilityType from 'shared/utility-type'
+import UtilityType from '@master/css-schema/utility-type'
 import type {
     MasterCSSManifest,
     MasterCSSManifestCSSDeclarations,
     MasterCSSManifestVariable,
     MasterCSSManifestUtilityLayerName,
     MasterCSSManifestUtilityRule
-} from 'shared/master-css-manifest'
-import { flattenMasterCSSManifestVariables, groupMasterCSSManifestVariables } from 'shared/master-css-manifest'
+} from '@master/css-schema/manifest'
+import { flattenMasterCSSManifestVariables, groupMasterCSSManifestVariables } from '@master/css-schema/manifest'
 import { builtinNativeValueNamespaces, MasterCSS } from '../../src'
 import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
 

@@ -5,8 +5,8 @@ import {
     externalHydrationManifest,
     externalHydrationManifestSource
 } from './external-hydration-fixture'
-import { MASTER_CSS_HYDRATION_MANIFEST_ATTR, serializeMasterCSSHydrationManifest } from 'shared/master-css-hydration-manifest'
-import { MASTER_CSS_RUNTIME_STYLE_ID } from 'shared/master-css-runtime-style'
+import { MASTER_CSS_HYDRATION_MANIFEST_ATTR, serializeMasterCSSHydrationManifest } from '@master/css-schema/hydration-manifest'
+import { MASTER_CSS_RUNTIME_STYLE_ID } from '@master/css-schema/runtime-style'
 
 test('Runtime - class changed', async ({ page, mount }) => {
     const runtimeComponentInstance = await mount(<RuntimeComponent></RuntimeComponent>)

@@ -1,7 +1,7 @@
 import { describe, expect, test } from 'vitest'
 import { MasterCSS } from '../src'
 import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
-import type { MasterCSSManifest } from 'shared/master-css-manifest'
+import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import {
     cloneManifest,
     createCSSWithSemanticUtilities,

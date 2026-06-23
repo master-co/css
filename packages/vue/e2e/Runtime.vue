@@ -3,7 +3,7 @@
     import { ref, onMounted } from 'vue'
     import type { MasterCSSManifest } from '@master/css-runtime'
     import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
-    import UtilityType from 'shared/utility-type'
+    import UtilityType from '@master/css-schema/utility-type'
     import RuntimeConsumer from './RuntimeConsumer.vue'
 
     const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest

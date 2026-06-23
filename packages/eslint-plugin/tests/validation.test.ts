@@ -2,7 +2,7 @@ import rule from '../src/rules/class-validation'
 import { RuleTester } from '@typescript-eslint/rule-tester'
 import { createTester, jsxTester } from './testers'
 import { createPresetManifest } from './helpers/create-preset-manifest'
-import UtilityType from 'shared/utility-type'
+import UtilityType from '@master/css-schema/utility-type'
 
 jsxTester.run('invalid', rule, {
     valid: [

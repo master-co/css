@@ -12,7 +12,7 @@ import {
     type CSSDirectiveStyleDefinition,
     type CSSDirectiveUtilityDefinition,
     type CSSDirectiveVariableValue
-} from 'shared/css-directives'
+} from '@master/css-schema/css-directives'
 import type {
     CustomAtRules,
     Declaration,

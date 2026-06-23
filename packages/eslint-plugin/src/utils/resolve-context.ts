@@ -1,8 +1,8 @@
 import type { RuleContext } from '@typescript-eslint/utils/ts-eslint'
 import settings, { Settings } from '../settings'
 import { MasterCSS, MasterCSSManifest, createCSSWithNativeDeclarations, defaultManifest } from './master-css'
-import { findMasterCSSWorkspaceDirectoriesSync } from '@master/css-manifest/css'
-import { loadProjectManifestSync } from '@master/css-manifest/load-sync'
+import { findMasterCSSWorkspaceDirectoriesSync } from '@master/css-project/entries'
+import { loadProjectManifestSync } from '@master/css-project/manifest-sync'
 import path from 'node:path'
 import { existsSync } from 'node:fs'
 

@@ -1,1 +1,1 @@
-export type { MasterCSSManifest } from 'shared/master-css-manifest'
+export type { MasterCSSManifest } from '@master/css-schema/manifest'

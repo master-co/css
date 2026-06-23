@@ -51,7 +51,8 @@
     "dependencies": {
         "@master/css": "workspace:^",
         "@master/css-preset": "workspace:^",
-        "css-tree": "^3.2.1"
+        "css-tree": "^3.2.1",
+        "@master/css-schema": "workspace:^"
     },
     "devDependencies": {
         "@types/css-tree": "^2.3.11",

@@ -1,5 +1,5 @@
 import init, { transform } from 'lightningcss-wasm'
-import type { MasterCSSManifest } from 'shared/master-css-manifest'
+import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import {
     compileCSS as compileCSSCore,
     parseDirectives as parseDirectivesCore,

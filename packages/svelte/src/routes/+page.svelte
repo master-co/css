@@ -2,7 +2,7 @@
     import type { MasterCSSManifest } from "@master/css-runtime";
     import defaultManifestJSON from "@master/css-preset/default-manifest.json" with { type: "json" };
     import { CSSRuntimeProvider } from "../lib/runtime-provider.js";
-    import UtilityType from "shared/utility-type";
+    import UtilityType from "@master/css-schema/utility-type";
 
     const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest;
 

@@ -1,7 +1,7 @@
 import { bench, describe } from 'vitest'
 import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
-import type { MasterCSSManifest } from 'shared/master-css-manifest'
-import UtilityType from 'shared/utility-type'
+import type { MasterCSSManifest } from '@master/css-schema/manifest'
+import UtilityType from '@master/css-schema/utility-type'
 import { MasterCSS } from '../src'
 import { compileManifest } from '../src/compile-manifest'
 

@@ -53,11 +53,12 @@
     },
     "dependencies": {
         "@master/css": "workspace:^",
-        "@master/css-manifest": "workspace:^",
+        "@master/css-project": "workspace:^",
         "@master/css-preset": "workspace:^",
         "@master/css-validator": "workspace:^",
         "@typescript-eslint/utils": "^8.61.1",
-        "typescript-eslint": "^8.61.1"
+        "typescript-eslint": "^8.61.1",
+        "@master/css-schema": "workspace:^"
     },
     "devDependencies": {
         "@angular-eslint/template-parser": "^21.4.0",

@@ -51,7 +51,7 @@
     },
     "dependencies": {
         "@master/css-integration": "workspace:^",
-        "@master/css-manifest": "workspace:^",
+        "@master/css-project": "workspace:^",
         "@master/css-server": "workspace:^",
         "@master/css.vite": "workspace:^",
         "@master/css.vue": "workspace:^",
@@ -75,6 +75,7 @@
         "shared": "workspace:^",
         "vite": "^8.0.16",
         "vitest": "^4.1.9",
-        "vue": "^3.5.38"
+        "vue": "^3.5.38",
+        "@master/css-schema": "workspace:^"
     }
 }

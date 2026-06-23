@@ -1,5 +1,5 @@
 import { UNIT_REGEX } from '../common'
-import type { NumberValueComponent, StringValueComponent } from 'shared/css-syntax'
+import type { NumberValueComponent, StringValueComponent } from '@master/css-schema/css-syntax'
 
 export default function parseValue(
     token: string | number,

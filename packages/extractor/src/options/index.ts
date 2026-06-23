@@ -1,4 +1,4 @@
-import type { MasterCSSManifest } from 'shared/master-css-manifest'
+import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import type { Pattern as FastGlobPattern } from 'fast-glob'
 import type { SourceAdapter } from '@master/css-source'
 

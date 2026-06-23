@@ -5,7 +5,7 @@ import { join } from 'node:path'
 import { expect, test } from 'vitest'
 import plugin from '../src'
 import { createPresetManifest } from './helpers/create-preset-manifest'
-import UtilityType from 'shared/utility-type'
+import UtilityType from '@master/css-schema/utility-type'
 
 test('uses explicit Master CSS manifest objects from ESLint settings', async () => {
     const cwd = mkdtempSync(join(tmpdir(), 'master-css-eslint-'))

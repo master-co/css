@@ -1,7 +1,7 @@
 import rule from '../src/rules/class-order'
 import { createTester } from './testers'
 import { createPresetManifest } from './helpers/create-preset-manifest'
-import UtilityType from 'shared/utility-type'
+import UtilityType from '@master/css-schema/utility-type'
 
 createTester({
     settings: {

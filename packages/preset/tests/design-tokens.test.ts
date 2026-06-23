@@ -5,7 +5,7 @@ import {
     flattenMasterCSSManifestVariables,
     groupMasterCSSManifestVariables,
     type MasterCSSManifest
-} from 'shared/master-css-manifest'
+} from '@master/css-schema/manifest'
 
 const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
 

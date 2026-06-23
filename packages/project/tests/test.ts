@@ -1,17 +1,17 @@
 import { expect, test } from 'vitest'
-import { loadManifest, loadManifestJSON, loadProjectManifest } from '../src/load'
-import { loadManifestJSONSync, loadManifestSync, loadProjectManifestSync } from '../src/load-sync'
+import { loadManifest, loadManifestJSON, loadProjectManifest } from '../src/manifest'
+import { loadManifestJSONSync, loadManifestSync, loadProjectManifestSync } from '../src/manifest-sync'
 import { MASTER_CSS_MANIFEST_QUERY } from '@master/css-integration/manifest-module'
 import {
     findCSSManifestEntryFiles,
     findMasterCSSWorkspaceDirectories,
     hasMasterCSSManifestEntrypoint,
     resolveMasterCSSPackageEntryFile
-} from '../src/css'
+} from '../src/entries'
 import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { tmpdir } from 'node:os'
-import { flattenMasterCSSManifestVariables } from 'shared/master-css-manifest'
+import { flattenMasterCSSManifestVariables } from '@master/css-schema/manifest'
 
 function createFixture() {
     return mkdtempSync(join(tmpdir(), 'master-css-manifester-'))
@@ -118,7 +118,7 @@ test('loads package entry preset manifest from CSS imports', async () => {
         if (!packageEntry) throw new Error('Expected Master CSS package entry')
         expect(result.dependencies).toContain(packageEntry)
         const packageDependencies = result.dependencies
-            .filter((dependency) => !dependency.startsWith(cwd))
+            .filter((dependency: string) => !dependency.startsWith(cwd))
         expect(packageDependencies.length).toBeGreaterThan(1)
         expect(flattenMasterCSSManifestVariables(result.manifest.variables)).toContainEqual(expect.objectContaining({
             name: 'breakpoint-sm',

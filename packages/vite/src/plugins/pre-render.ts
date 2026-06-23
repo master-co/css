@@ -2,13 +2,13 @@ import type { Plugin } from 'vite'
 import { PluginContext } from '../core'
 import { render } from '@master/css-server'
 import type { MasterCSSManifest } from '@master/css'
-import { loadProjectManifest } from '@master/css-manifest/load'
+import { loadProjectManifest } from '@master/css-project/manifest'
 import { PluginOptions } from '../options'
 import { toHashedManifestAssetFileName } from '@master/css-integration/node'
 import {
     MASTER_CSS_HYDRATION_MANIFEST_ASSET_BASE,
     MASTER_CSS_HYDRATION_MANIFEST_FILE_BASENAME
-} from 'shared/master-css-hydration-manifest'
+} from '@master/css-schema/hydration-manifest'
 
 const HYDRATION_MANIFEST_ASSET_DIR = '_master-css/hydration'
 

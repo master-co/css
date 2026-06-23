@@ -8,10 +8,10 @@ import {
     MasterCSS,
     type MasterCSSCreateOptions
 } from '@master/css-engine'
-import UtilityType from 'shared/utility-type'
+import UtilityType from '@master/css-schema/utility-type'
 import { createDefaultManifestFromSourceFile } from '../scripts/generate-default-manifest'
 import defaultManifestJSON from '../src/default-manifest.json' with { type: 'json' }
-import { flattenMasterCSSManifestVariables, type MasterCSSManifest } from 'shared/master-css-manifest'
+import { flattenMasterCSSManifestVariables, type MasterCSSManifest } from '@master/css-schema/manifest'
 
 const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
 

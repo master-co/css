@@ -1,4 +1,4 @@
-import type { MasterCSSManifest } from 'shared/master-css-manifest'
+import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import type { CSSRuntime, HydrateResult } from '@master/css-runtime'
 
 export default interface EventCallbacks {

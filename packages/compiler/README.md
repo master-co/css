@@ -12,7 +12,7 @@ npm install @master/css-compiler
 
 `@master/css-compiler` is the CSS source compiler for Master CSS. It parses CSS manifest directives such as `@settings`, `@theme`, `@custom-variant`, `@defaults`, `@components`, `@utilities`, local `@compose`, top-level extraction directives, native CSS, and CSS import graphs.
 
-The compiler delegates class semantics and rule generation to `@master/css-engine`; project entry discovery belongs to `@master/css-manifest`.
+The compiler delegates class semantics and rule generation to `@master/css-engine`; project entry discovery belongs to `@master/css-project`.
 
 ## API
 
@@ -53,5 +53,5 @@ The browser compiler rejects `@reference` directives because they require filesy
 ## Related packages
 
 - `@master/css-engine` executes compiled manifests.
-- `@master/css-manifest` discovers and loads project CSS manifest entries.
+- `@master/css-project` discovers and loads project CSS manifest entries.
 - `@master/css-stylesheet` composes stylesheet entries for static rendering.

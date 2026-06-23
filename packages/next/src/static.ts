@@ -10,7 +10,7 @@ import {
     registerStyleCSSSource,
     type StyleCSSSources
 } from '@master/css-stylesheet'
-import { findCSSManifestEntryFiles } from '@master/css-manifest/css'
+import { findCSSManifestEntryFiles } from '@master/css-project/entries'
 import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import { existsSync, readFileSync } from 'node:fs'
 import { dirname, relative, resolve } from 'node:path'

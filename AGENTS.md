@@ -65,7 +65,7 @@ shared / external data
   -> @master/css-lexer lexical scanning
   -> @master/css-source source candidate extraction
   -> @master/css-engine / @master/css-preset / @master/css-integration
-  -> @master/css-compiler directive parsing / @master/css-manifest loading
+  -> @master/css-compiler directive parsing / @master/css-project loading
   -> validator / server / extractor / runtime / language / language-service
   -> build plugins / CLI / ESLint / language-server
   -> framework integrations / VS Code / examples / site

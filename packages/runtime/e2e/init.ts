@@ -4,14 +4,14 @@ import defaultManifestJSON from '@master/css-preset/default-manifest.json' with 
 import {
     MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID,
     type MasterCSSHydrationManifest
-} from 'shared/master-css-hydration-manifest'
-import { MASTER_CSS_RUNTIME_STYLE_ID } from 'shared/master-css-runtime-style'
+} from '@master/css-schema/hydration-manifest'
+import { MASTER_CSS_RUNTIME_STYLE_ID } from '@master/css-schema/runtime-style'
 import {
     flattenMasterCSSManifestVariables,
     groupMasterCSSManifestVariables,
     type MasterCSSManifestVariable
-} from 'shared/master-css-manifest'
-import UtilityType from 'shared/utility-type'
+} from '@master/css-schema/manifest'
+import UtilityType from '@master/css-schema/utility-type'
 import { dirname, resolve } from 'path'
 import { fileURLToPath } from 'url'
 import { createServer, type ViteDevServer } from 'vite'

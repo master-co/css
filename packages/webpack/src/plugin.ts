@@ -8,7 +8,7 @@ import {
     toVirtualDefaultManifestModulePath,
     toVirtualEmittedGlobalsModulePath
 } from '@master/css-integration/node'
-import { loadProjectManifest } from '@master/css-manifest/load'
+import { loadProjectManifest } from '@master/css-project/manifest'
 import {
     cleanStyleRequest,
     createExtractedCSSResult,

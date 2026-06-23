@@ -71,7 +71,8 @@
         "@master/css-lexer": "workspace:^",
         "@master/css-source": "workspace:^",
         "@master/css-validator": "workspace:^",
-        "@techor/glob": "^3.2.5"
+        "@techor/glob": "^3.2.5",
+        "@master/css-schema": "workspace:^"
     },
     "devDependencies": {
         "@master/css-extractor": "workspace:^",

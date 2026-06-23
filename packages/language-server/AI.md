@@ -37,7 +37,7 @@
 
 - `workspaces: 'auto'` discovery from manifest entry files and package dependencies.
 - Closest workspace selection.
-- Manifest loading with `@master/css-manifest`.
+- Manifest loading with `@master/css-project`.
 - Restart behavior after manifest/settings saves.
 
 ## Required Tests

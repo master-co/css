@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
-import UtilityType from 'shared/utility-type'
-import type { MasterCSSManifest } from 'shared/master-css-manifest'
-import { groupMasterCSSManifestVariables } from 'shared/master-css-manifest'
+import UtilityType from '@master/css-schema/utility-type'
+import type { MasterCSSManifest } from '@master/css-schema/manifest'
+import { groupMasterCSSManifestVariables } from '@master/css-schema/manifest'
 import { MasterCSS } from '../src'
 import createHydrationManifest from '../src/hydration-manifest'
 

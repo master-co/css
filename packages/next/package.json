@@ -67,9 +67,10 @@
         "@master/css": "workspace:^",
         "@master/css-extractor": "workspace:^",
         "@master/css-integration": "workspace:^",
-        "@master/css-manifest": "workspace:^",
+        "@master/css-project": "workspace:^",
         "@master/css-server": "workspace:^",
-        "@master/css-stylesheet": "workspace:^"
+        "@master/css-stylesheet": "workspace:^",
+        "@master/css-schema": "workspace:^"
     },
     "devDependencies": {
         "next": "^16.2.9",

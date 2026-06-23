@@ -8,7 +8,7 @@ import { collectClassListHighlightTokenItems } from './semantic/tokenize-class'
 import { collectCSSHighlightTokenItems, isCSSSemanticTokenDocument } from './semantic/tokenize-css'
 import { toSemanticTokenItems, type HighlightTokenItem } from './semantic/highlight'
 import type { SemanticTokenItem, SemanticTokenModifier } from './semantic/types'
-import type { MasterCSSManifest } from 'shared/master-css-manifest'
+import type { MasterCSSManifest } from '@master/css-schema/manifest'
 
 export {
     SEMANTIC_TOKEN_MODIFIERS,

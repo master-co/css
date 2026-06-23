@@ -1,6 +1,6 @@
-import type { MasterCSSManifest } from 'shared/master-css-manifest'
+import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import type { MasterCSSEmittedGlobals } from '@master/css-engine'
-import type { MasterCSSHydrationManifest } from 'shared/master-css-hydration-manifest'
+import type { MasterCSSHydrationManifest } from '@master/css-schema/hydration-manifest'
 import CSSRuntime from './core'
 
 type CSSRuntimeHostConstructor = new (...args: any[]) => HTMLElement
