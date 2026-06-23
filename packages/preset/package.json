@@ -64,12 +64,7 @@
         "access": "public",
         "provenance": true
     },
-    "dependencies": {
-        "@master/css-engine": "workspace:^",
-        "@master/css-schema": "workspace:^"
-    },
     "devDependencies": {
-        "@master/css-compiler": "workspace:^",
         "tsx": "^4.22.4"
     }
 }

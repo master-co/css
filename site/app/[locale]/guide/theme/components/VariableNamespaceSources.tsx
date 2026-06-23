@@ -1,6 +1,6 @@
 import InlineCode from '~/internal/components/InlineCode'
 import defaultManifest from '@master/css-preset/default-manifest.json' with { type: 'json' }
-import { builtinNativeValueNamespaces } from '@master/css-engine'
+import { builtinNativeValueNamespaces, flattenMasterCSSManifestVariables } from '@master/css-engine'
 import { getUtilityVariableNamespaces, manifestUtilities } from '~/site/utils/manifest-utilities'
 
 const utilities = manifestUtilities
@@ -8,7 +8,7 @@ const MAX_VISIBLE_UTILITIES = 8
 
 const namespaceEntries = (() => {
     const entries = new Map<string, string[]>()
-    for (const variable of defaultManifest.variables || []) {
+    for (const variable of flattenMasterCSSManifestVariables(defaultManifest.variables)) {
         if (variable.namespace) {
             addNamespaceSource(entries, variable.namespace, 'theme tokens')
         }
@@ -23,7 +23,7 @@ const namespaceEntries = (() => {
     }
     for (const utility of utilities) {
         for (const namespace of getUtilityVariableNamespaces(utility)) {
-            addNamespaceSource(entries, namespace, utility.name)
+            addNamespaceSource(entries, namespace, utility.name || utility.id)
         }
     }
     return Array.from(entries).sort(([a], [b]) => a.localeCompare(b))

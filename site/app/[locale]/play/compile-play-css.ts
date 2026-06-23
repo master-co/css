@@ -1,4 +1,4 @@
-import { AnimationRule, VariableRule, createCSS, type MasterCSSManifest } from '@master/css'
+import { AnimationRule, MasterCSS, VariableRule, type MasterCSSManifest } from '@master/css'
 import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
 import { compileCSSManifest, type CompileCSSManifestResult } from '@master/css-compiler/browser'
 import { collectAnimationNamesFromDeclaration } from '@master/css-engine'
@@ -28,7 +28,7 @@ function collectCSSKeyframeNames(source: string) {
     return names
 }
 
-function insertVariableReferences(css: ReturnType<typeof createCSS>, references: Set<string>) {
+function insertVariableReferences(css: ReturnType<typeof MasterCSS.create>, references: Set<string>) {
     const insert = (name: string, visited = new Set<string>()) => {
         if (visited.has(name)) return
         visited.add(name)
@@ -43,7 +43,7 @@ function insertVariableReferences(css: ReturnType<typeof createCSS>, references:
     }
 }
 
-function collectCSSAnimationReferences(source: string, css: ReturnType<typeof createCSS>, ignoredAnimationNames = new Set<string>()) {
+function collectCSSAnimationReferences(source: string, css: ReturnType<typeof MasterCSS.create>, ignoredAnimationNames = new Set<string>()) {
     const references = new Set<string>()
     const animationNames = Array.from(css.animations.keys())
     if (!animationNames.length) return references
@@ -60,7 +60,7 @@ function collectCSSAnimationReferences(source: string, css: ReturnType<typeof cr
     return references
 }
 
-function insertAnimationReferences(css: ReturnType<typeof createCSS>, references: Set<string>) {
+function insertAnimationReferences(css: ReturnType<typeof MasterCSS.create>, references: Set<string>) {
     for (const name of references) {
         const keyframes = css.animations.get(name)
         if (!keyframes) continue
@@ -71,7 +71,7 @@ function insertAnimationReferences(css: ReturnType<typeof createCSS>, references
 }
 
 function renderClassCSS(manifest: MasterCSSManifest, classes: string[], nativeCSS: string) {
-    const css = createCSS(manifest)
+    const css = MasterCSS.create({ manifest })
     const nativeAnimationNames = collectCSSKeyframeNames(nativeCSS)
     if (nativeAnimationNames.size) {
         css.registerEmittedGlobals({

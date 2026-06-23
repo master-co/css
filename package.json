@@ -93,6 +93,7 @@
         "@master/eslint-config-css": "workspace:^",
         "@master/eslint-plugin-css": "workspace:^",
         "@types/edit-json-file": "^1.7.4",
+        "commitlint": "^21.0.2",
         "concurrently": "^9.2.3",
         "eslint-config-techor": "^3.2.5",
         "master-css-vscode": "workspace:^"

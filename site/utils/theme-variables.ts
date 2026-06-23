@@ -1,7 +1,7 @@
 import presetManifest from './preset-manifest'
-import type { MasterCSSManifestVariable } from '@master/css'
+import { flattenMasterCSSManifestVariables, type MasterCSSManifest, type MasterCSSManifestVariable } from '@master/css-engine'
 
-const presetVariables = presetManifest.variables || []
+const presetVariables = flattenMasterCSSManifestVariables((presetManifest as MasterCSSManifest).variables)
 const rootSize = presetManifest.settings?.rootSize || 16
 
 export interface ThemeNumericVariableEntry {
