@@ -3,7 +3,7 @@ import define from 'internal/utils/metadata'
 const metadata = define({
     title: 'box-decoration-break',
     description: 'Setting how an element\'s fragments should be rendered when broken across multiple lines, columns, or pages.',
-    category: 'Syntax',
+    category: 'Borders & Outlines',
     type: 'entity',
     canIUseLink: 'https://caniuse.com/?search=box-decoration-break',
     mdnLink: 'https://developer.mozilla.org/en-US/docs/Web/CSS/box-decoration-break',

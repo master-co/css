@@ -13,4 +13,17 @@ Generated CSS:
     {['--color:red:hover', '--size:5rem@sm']}
 </Class2CSS>
 
-This is useful for component internals: set a variable in one state, then let several child declarations or native CSS rules consume the same custom property.
+Use the variable from another declaration with native CSS `var()`.
+```html
+<!-- @MARK --button-bg:red-60 --><!-- @MARK bg:var(--button-bg) -->
+<button class="--button-bg:red-60 bg:var(--button-bg)">
+    Save
+</button>
+```
+
+This is useful for component internals: set a variable in one state, then let child declarations, shadow parts, or native component CSS consume the same custom property.
+```css
+.button {
+    background: var(--button-bg);
+}
+```

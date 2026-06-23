@@ -3,7 +3,7 @@ import define from 'internal/utils/metadata'
 const metadata = define({
     title: 'width',
     description: 'Setting an element’s width.',
-    category: 'Syntax',
+    category: 'Sizing',
     type: 'entity',
     canIUseLink: 'https://caniuse.com/?search=width',
     mdnLink: 'https://developer.mozilla.org/en-US/docs/Web/CSS/width',

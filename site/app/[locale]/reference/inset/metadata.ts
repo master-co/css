@@ -3,7 +3,7 @@ import define from 'internal/utils/metadata'
 const metadata = define({
     title: 'inset',
     description: 'Setting distance between an element and the parent element.',
-    category: 'Syntax',
+    category: 'Layout',
     type: 'entity',
     canIUseLink: 'https://caniuse.com/?search=inset',
     mdnLink: 'https://developer.mozilla.org/en-US/docs/Web/CSS/inset',

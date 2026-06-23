@@ -3,7 +3,7 @@ import define from 'internal/utils/metadata'
 const metadata = define({
     title: 'shape-margin',
     description: 'Setting a margin for a CSS shape.',
-    category: 'Syntax',
+    category: 'Shapes & Masks',
     type: 'entity',
     canIUseLink: 'https://caniuse.com/?search=shape-margin',
     mdnLink: 'https://developer.mozilla.org/en-US/docs/Web/CSS/shape-margin',

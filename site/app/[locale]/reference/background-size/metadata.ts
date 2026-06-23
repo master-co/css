@@ -3,7 +3,7 @@ import define from 'internal/utils/metadata'
 const metadata = define({
     title: 'background-size',
     description: 'Setting the size of the background image.',
-    category: 'Syntax',
+    category: 'Color & Backgrounds',
     type: 'entity',
     canIUseLink: 'https://caniuse.com/?search=background-size',
     mdnLink: 'https://developer.mozilla.org/en-US/docs/Web/CSS/background-size',

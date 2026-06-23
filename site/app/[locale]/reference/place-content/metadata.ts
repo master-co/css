@@ -3,7 +3,7 @@ import define from 'internal/utils/metadata'
 const metadata = define({
     title: 'place-content',
     description: 'Setting align-content and justify-content at the same time.',
-    category: 'Syntax',
+    category: 'Flexbox & Grid',
     type: 'entity',
     canIUseLink: 'https://caniuse.com/?search=place-content',
     mdnLink: 'https://developer.mozilla.org/en-US/docs/Web/CSS/place-content',

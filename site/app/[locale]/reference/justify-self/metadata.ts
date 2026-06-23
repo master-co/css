@@ -3,7 +3,7 @@ import define from 'internal/utils/metadata'
 const metadata = define({
     title: 'justify-self',
     description: 'Controlling how an individual item is aligned along its inline axis.',
-    category: 'Syntax',
+    category: 'Flexbox & Grid',
     type: 'entity',
     canIUseLink: 'https://caniuse.com/?search=justify-self',
     mdnLink: 'https://developer.mozilla.org/en-US/docs/Web/CSS/justify-self',

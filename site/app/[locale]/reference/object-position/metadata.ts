@@ -3,7 +3,7 @@ import define from 'internal/utils/metadata'
 const metadata = define({
     title: 'object-position',
     description: 'Setting the alignment of the selected replaced element within the element\'s box.',
-    category: 'Syntax',
+    category: 'Media & SVG',
     type: 'entity',
     canIUseLink: 'https://caniuse.com/?search=object-position',
     mdnLink: 'https://developer.mozilla.org/en-US/docs/Web/CSS/object-position',

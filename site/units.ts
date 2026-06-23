@@ -14,7 +14,20 @@ const units = {
         categories: [
             'Overview',
             'Stylesheet',
-            'Syntax'
+            'Layout',
+            'Flexbox & Grid',
+            'Spacing',
+            'Sizing',
+            'Typography',
+            'Color & Backgrounds',
+            'Borders & Outlines',
+            'Effects',
+            'Transforms',
+            'Media & SVG',
+            'Shapes & Masks',
+            'Motion',
+            'Interactivity',
+            'Accessibility'
         ]
     },
     messages: {

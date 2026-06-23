@@ -1,6 +1,12 @@
 import categories from '~/site/.categories/reference.json'
 
-## Syntax
-<OverviewButtons>
-    {categories.find(category => category.name === 'Syntax')?.pages ?? []}
-</OverviewButtons>
+{categories
+    .filter(category => category.name !== 'Overview')
+    .map(category => (
+        <section key={category.name}>
+            <h2>{category.name}</h2>
+            <OverviewButtons>
+                {category.pages}
+            </OverviewButtons>
+        </section>
+    ))}

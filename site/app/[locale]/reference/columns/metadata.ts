@@ -3,7 +3,7 @@ import define from 'internal/utils/metadata'
 const metadata = define({
     title: 'columns',
     description: 'Setting the number of columns within the container.',
-    category: 'Syntax',
+    category: 'Layout',
     type: 'entity',
     canIUseLink: 'https://caniuse.com/?search=columns',
     mdnLink: 'https://developer.mozilla.org/en-US/docs/Web/CSS/columns',

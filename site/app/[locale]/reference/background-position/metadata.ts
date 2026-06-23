@@ -3,7 +3,7 @@ import define from 'internal/utils/metadata'
 const metadata = define({
     title: 'background-position',
     description: 'Setting the initial position for background image.',
-    category: 'Syntax',
+    category: 'Color & Backgrounds',
     type: 'entity',
     canIUseLink: 'https://caniuse.com/?search=background-position',
     mdnLink: 'https://developer.mozilla.org/en-US/docs/Web/CSS/background-position',

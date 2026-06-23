@@ -3,7 +3,7 @@ import define from 'internal/utils/metadata'
 const metadata = define({
     title: 'grid-auto-flow',
     description: 'Controlling how auto-placed items get inserted in the grid.',
-    category: 'Syntax',
+    category: 'Flexbox & Grid',
     type: 'entity',
     canIUseLink: 'https://caniuse.com/?search=grid-auto-flow',
     mdnLink: 'https://developer.mozilla.org/en-US/docs/Web/CSS/grid-auto-flow',
