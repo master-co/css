@@ -111,6 +111,9 @@ importers:
       '@master/css-cli':
         specifier: workspace:^
         version: link:packages/cli
+      '@master/css-compiler':
+        specifier: workspace:^
+        version: link:packages/compiler
       '@master/css-devtools-hook':
         specifier: workspace:^
         version: link:packages/devtools-hook
