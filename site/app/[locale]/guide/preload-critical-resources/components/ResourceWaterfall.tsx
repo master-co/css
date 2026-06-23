@@ -15,6 +15,10 @@ type WaterfallRow = {
 type WaterfallScenario = {
     title: string
     summary: string
+    metric: {
+        label: string
+        position: number
+    }
     rows: WaterfallRow[]
 }
 
@@ -22,9 +26,7 @@ const toneClasses = {
     document: 'bg:neutral text:white',
     stylesheet: 'bg:blue text:white',
     runtime: 'bg:orange text:black',
-    runtimeReuse: 'b:1px|dashed|orange-50 bg:orange-10 text:orange-70 bg:orange-90@dark text:orange-20@dark',
-    manifest: 'bg:green text:black',
-    manifestReuse: 'b:1px|dashed|green-50 bg:green-10 text:green-70 bg:green-90@dark text:green-20@dark'
+    manifest: 'bg:green text:black'
 } as const
 
 const ticks = [0, 25, 50, 75, 100]
@@ -33,6 +35,7 @@ const scenarios: WaterfallScenario[] = [
     {
         title: 'Without preload',
         summary: 'The runtime script starts late, then fetches the manifest.',
+        metric: { label: 'FCP', position: 98 },
         rows: [
             {
                 resource: 'HTML',
@@ -54,7 +57,8 @@ const scenarios: WaterfallScenario[] = [
     },
     {
         title: 'With preload',
-        summary: 'The runtime script and manifest start early and are reused later.',
+        summary: 'The runtime script and manifest start early, so first paint can move earlier.',
+        metric: { label: 'FCP', position: 60 },
         rows: [
             {
                 resource: 'HTML',
@@ -66,17 +70,11 @@ const scenarios: WaterfallScenario[] = [
             },
             {
                 resource: 'Runtime script',
-                bars: [
-                    { label: 'Preload early', start: 12, end: 48, tone: 'runtime' },
-                    { label: 'Reuse', start: 58, end: 70, tone: 'runtimeReuse' }
-                ]
+                bars: [{ label: 'Preload early', start: 12, end: 48, tone: 'runtime' }]
             },
             {
                 resource: 'Default manifest JSON',
-                bars: [
-                    { label: 'Preload early', start: 16, end: 52, tone: 'manifest' },
-                    { label: 'Reuse', start: 70, end: 82, tone: 'manifestReuse' }
-                ]
+                bars: [{ label: 'Preload early', start: 16, end: 52, tone: 'manifest' }]
             }
         ]
     }
@@ -85,10 +83,11 @@ const scenarios: WaterfallScenario[] = [
 export default function ResourceWaterfall() {
     return (
         <figure>
+            <Demo $px={0} $py={0}>
                 <div
                     className="overflow-x:auto w:full"
                     role="img"
-                    aria-label="Conceptual waterfall comparing late runtime discovery with preloaded runtime script and default manifest requests"
+                    aria-label="Conceptual waterfall comparing late runtime discovery with preloaded runtime script and default manifest requests, with FCP markers"
                 >
                     <div style={{ boxSizing: 'border-box', minWidth: '32rem' }}>
                         <div className="gap:md grid-cols:1">
@@ -103,27 +102,37 @@ export default function ResourceWaterfall() {
                                         <div className="rel font:2xs text:gray" style={{ height: '1.5rem' }} aria-hidden="true">
                                             <span className="abs left:0 top:0">Earlier</span>
                                             <span className="abs right:0 top:0">Later</span>
+                                            <MetricLine metric={scenario.metric} />
                                             <span className="abs bg:gray-20 bottom:0 h:1px left:0 right:0 bg:gray-60@dark" />
                                         </div>
                                         {scenario.rows.map((row) => (
-                                            <WaterfallRow key={row.resource} row={row} />
+                                            <WaterfallRow key={row.resource} row={row} metric={scenario.metric} />
                                         ))}
+                                        <div />
+                                        <div className="rel font:2xs" style={{ height: '1.25rem' }}>
+                                            <MetricLabel metric={scenario.metric} />
+                                        </div>
                                     </div>
                                 </section>
                             ))}
                         </div>
                     </div>
                 </div>
+            </Demo>
+            <figcaption className="sr-only">
+                Conceptual request timing for critical runtime resources. The FCP marker is illustrative and shows when first paint can happen after the stylesheet, runtime script, and manifest are ready.
+            </figcaption>
         </figure>
     )
 }
 
-function WaterfallRow({ row }: { row: WaterfallRow }) {
+function WaterfallRow({ row, metric }: { row: WaterfallRow, metric: WaterfallScenario['metric'] }) {
     return (
         <>
             <div className="flex align-items:center font:2xs font:medium min-w:0 text:neutral">{row.resource}</div>
             <div className="rel overflow:hidden bg:gray-5 bg:gray-80@dark" style={{ height: '2rem' }}>
                 <TimelineTicks />
+                <MetricLine metric={metric} />
                 {row.bars.map((bar) => (
                     <div
                         key={bar.label}
@@ -140,6 +149,33 @@ function WaterfallRow({ row }: { row: WaterfallRow }) {
                 ))}
             </div>
         </>
+    )
+}
+
+function MetricLine({ metric }: { metric: WaterfallScenario['metric'] }) {
+    return (
+        <span
+            aria-hidden="true"
+            className="abs bottom:0 text:orange top:0 z:1"
+            style={{
+                borderLeft: '1px dashed currentColor',
+                left: `${metric.position}%`
+            }}
+        />
+    )
+}
+
+function MetricLabel({ metric }: { metric: WaterfallScenario['metric'] }) {
+    return (
+        <span
+            className="abs font:2xs font:semibold text:orange"
+            style={{
+                left: `${metric.position}%`,
+                transform: metric.position > 85 ? 'translateX(-100%)' : 'translateX(-50%)'
+            }}
+        >
+            {metric.label}
+        </span>
     )
 }
 

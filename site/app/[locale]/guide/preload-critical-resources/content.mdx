@@ -6,7 +6,7 @@ import ResourceWaterfall from './components/ResourceWaterfall'
 Without preload hints, the CDN runtime script and its default manifest can be discovered too late.
 Runtime rendering may experience delays in downloading and initializing until the first contentful paint if [runtime-critical resources](/guide/rendering-modes#runtime-rendering) are discovered late.
 
-Conceptual request waterfall for the CDN runtime script and default manifest. Bar positions show relative discovery and reuse timing, not measured network data.
+Conceptual request waterfall for the CDN runtime script and default manifest. The marker shows when the page can first paint after critical runtime resources are ready; positions are illustrative, not measured network data.
 <ResourceWaterfall />
 
 Preload the CDN runtime with `as="script"`. The CDN runtime fetches its split default manifest before starting; preload that JSON with `as="fetch"` and `crossorigin` so the runtime can reuse the response.
