@@ -4,7 +4,7 @@
  * The previous implementation attached an `async` callback to
  * `compilation.hooks.succeedModule` via `.tap()`. `succeedModule` is a
  * tapable `SyncHook` — it does NOT await promises. Webpack therefore
- * proceeded to `emit` while `scanner.scan()` was still running,
+ * proceeded to `emit` while `scanner.scanModule()` was still running,
  * producing CSS output that was missing classes from late-arriving
  * modules.
  *
@@ -106,12 +106,8 @@ function makeModule(resourcePath: string, source: string) {
 // constructor + init() so `this.options` is populated correctly.
 function makePlugin(options: Record<string, unknown> = {}, cwd = process.cwd()) {
     const plugin = new MasterCSSPlugin({
-        include: [],
-        required: [],
         ...options,
     } as any, cwd)
-    // Block prepare() — it would try to read the cwd.
-    ;(plugin as any).prepare = async () => undefined
     // webpack-virtual-modules pokes at compiler.webpack internals; stub
     // its apply() so we don't have to spin a real webpack here.
     return plugin
@@ -255,10 +251,7 @@ describe('MasterCSSPlugin (C1 race fix)', () => {
     })
 
     test('resolves virtual:master-css-manifest to a JS facade and external JSON asset', async () => {
-        const plugin = new MasterCSSPlugin({
-            include: [],
-            required: [],
-        } as any)
+        const plugin = new MasterCSSPlugin()
         const { compiler } = makeFakeCompiler()
         ;(compiler as any).webpack = { sources: { RawSource: function NoopSource(this: object) { /* stub */ } } }
         plugin.apply(compiler as any)
@@ -284,10 +277,7 @@ describe('MasterCSSPlugin (C1 race fix)', () => {
     })
 
     test('resolves virtual:master-css-emitted-globals to a JS virtual module', async () => {
-        const plugin = new MasterCSSPlugin({
-            include: [],
-            required: [],
-        } as any)
+        const plugin = new MasterCSSPlugin()
         const { compiler } = makeFakeCompiler()
         ;(compiler as any).webpack = { sources: { RawSource: function NoopSource(this: object) { /* stub */ } } }
         plugin.apply(compiler as any)
@@ -541,8 +531,6 @@ describe('MasterCSSPlugin (C1 race fix)', () => {
             writeFileSync(entryPath, source)
 
             const plugin = await new MasterCSSPlugin({
-                include: [],
-                required: [],
                 verbose: 0
             }, root).init()
 
@@ -670,11 +658,11 @@ describe('MasterCSSPlugin (C1 race fix)', () => {
         expect(reset).not.toHaveBeenCalled()
     })
 
-    test('finishModules.tapPromise awaits all scanner.scan() calls before resolving', async () => {
+    test('finishModules.tapPromise awaits all scanner.scanModule() calls before resolving', async () => {
         const plugin = makePlugin()
 
         const scanOrder: string[] = []
-        ;(plugin as any).scan = async (id: string) => {
+        ;(plugin as any).scanModule = async (id: string) => {
             // Simulate the async work in a real scanner (regex + validator).
             await new Promise((r) => setTimeout(r, 10))
             scanOrder.push(`scan:${id}`)
@@ -732,7 +720,7 @@ describe('MasterCSSPlugin (C1 race fix)', () => {
         // module on every save).
         const plugin = makePlugin()
         const scannedIds: string[] = []
-        ;(plugin as any).scan = async (id: string) => {
+        ;(plugin as any).scanModule = async (id: string) => {
             scannedIds.push(id)
             return true
         }
@@ -762,7 +750,7 @@ describe('MasterCSSPlugin (C1 race fix)', () => {
         // must tolerate them rather than crash mid-build.
         const plugin = makePlugin()
         const scannedIds: string[] = []
-        ;(plugin as any).scan = async (id: string) => {
+        ;(plugin as any).scanModule = async (id: string) => {
             scannedIds.push(id)
             return true
         }
@@ -786,7 +774,7 @@ describe('MasterCSSPlugin (C1 race fix)', () => {
     test('internal config virtual modules are not re-scanned', async () => {
         const plugin = makePlugin()
         const scannedIds: string[] = []
-        ;(plugin as any).scan = async (id: string) => {
+        ;(plugin as any).scanModule = async (id: string) => {
             scannedIds.push(id)
             return true
         }

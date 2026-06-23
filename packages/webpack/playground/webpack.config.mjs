@@ -13,12 +13,7 @@ export default {
         clean: true
     },
     plugins: [
-        new MasterCSSPlugin({
-            required: [
-                './index.html',
-                './src/**/*.{js,html}'
-            ]
-        }, __dirname)
+        new MasterCSSPlugin({}, __dirname)
     ],
     devServer: {
         static: {

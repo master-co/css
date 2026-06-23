@@ -1,13 +1,15 @@
 import { describe, expect, test } from 'vitest'
 import CSSScanner from '../src'
-import { mkdtempSync, rmSync, writeFileSync } from 'node:fs'
-import { tmpdir } from 'node:os'
-import { join } from 'node:path'
 
 describe('CSSScanner public API', () => {
-    test('does not expose file watch or export helpers', async () => {
-        const scanner = await new CSSScanner({ include: [] }).init()
+    test('does not expose file lifecycle or export helpers', async () => {
+        const scanner = await new CSSScanner({}).init()
 
+        expect('prepare' in scanner).toBe(false)
+        expect('scanFile' in scanner).toBe(false)
+        expect('scanFiles' in scanner).toBe(false)
+        expect('fixedSourcePaths' in scanner).toBe(false)
+        expect('allowedSourcePaths' in scanner).toBe(false)
         expect('startWatch' in scanner).toBe(false)
         expect('closeWatch' in scanner).toBe(false)
         expect('watchSources' in scanner).toBe(false)
@@ -15,21 +17,28 @@ describe('CSSScanner public API', () => {
         expect('export' in scanner).toBe(false)
     })
 
-    test('can reset state without preparing source files', async () => {
-        const root = mkdtempSync(join(tmpdir(), 'master-css-scanner-api-'))
-        try {
-            writeFileSync(join(root, 'index.html'), '<div class="block"></div>')
-            const scanner = await new CSSScanner({ include: ['index.html'] }, root).init()
+    test('can reset scanner state without source discovery', async () => {
+        const scanner = await new CSSScanner({}).init()
 
-            await scanner.reset(scanner.customOptions, { prepare: false })
+        await scanner.scan('index.html', '<div class="block"></div>')
+        expect(scanner.validClasses.has('block')).toBe(true)
 
-            expect(scanner.validClasses.has('block')).toBe(false)
+        await scanner.reset()
 
-            await scanner.prepare()
+        expect(scanner.validClasses.has('block')).toBe(false)
+    })
 
-            expect(scanner.validClasses.has('block')).toBe(true)
-        } finally {
-            rmSync(root, { recursive: true, force: true })
-        }
+    test('inserts safelist during init and reset', async () => {
+        const scanner = await new CSSScanner({
+            safelist: ['block']
+        }).init()
+
+        expect(scanner.css.text).toContain('.block{display:block}')
+
+        await scanner.scan('index.html', '<div class="fg:red"></div>')
+        await scanner.reset()
+
+        expect(scanner.validClasses.has('fg:red')).toBe(false)
+        expect(scanner.css.text).toContain('.block{display:block}')
     })
 })

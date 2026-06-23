@@ -19,7 +19,7 @@
 ## Boundaries
 
 - Do not depend on `@master/css-scanner`; accept structural state instead.
-- Do not scan source files directly except when resolving stylesheet `@source` directives through supplied include/required/exclude options.
+- Do not scan source files directly except when resolving stylesheet `@source` directives through supplied include/exclude options.
 - Do not own source adapters or source candidate extraction; use `@master/css-source` when stylesheet source directives need source file candidates.
 - Do not own project CSS manifest discovery; callers should use `@master/css-project`.
 - Do not change engine CSS output here without focused tests and an explicit CSS output explanation.

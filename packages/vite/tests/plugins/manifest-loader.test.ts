@@ -21,7 +21,7 @@ async function createContext(root = FIXTURE_DIR) {
                 }
             }
         },
-        scanner: new CSSScanner({ include: [] }, root)
+        scanner: new CSSScanner({}, root)
     } as any
     await context.scanner.init()
     return context

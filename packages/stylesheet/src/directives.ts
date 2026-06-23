@@ -16,7 +16,6 @@ export type StylesheetDirectives = CSSDirectiveExtractionPolicy
 export type StylesheetDirectiveStatement = StandaloneCSSDirectiveStatement
 
 export interface StylesheetSourceOptions {
-    required?: string[]
     include?: string[]
     exclude?: string[]
     safelist?: string[]
@@ -36,7 +35,6 @@ export function hasStylesheetDirectives(directives?: StylesheetDirectives) {
     return Boolean(directives && (
         directives.include.length ||
         directives.exclude.length ||
-        directives.required.length ||
         directives.safelist.length ||
         directives.blocklist.length ||
         directives.preserveNative
@@ -46,8 +44,7 @@ export function hasStylesheetDirectives(directives?: StylesheetDirectives) {
 export function hasStylesheetSourceDirectives(directives?: StylesheetDirectives) {
     return Boolean(directives && (
         directives.include.length ||
-        directives.exclude.length ||
-        directives.required.length
+        directives.exclude.length
     ))
 }
 
@@ -76,7 +73,6 @@ export function mergeStylesheetSourceOptions<T extends StylesheetSourceOptions>(
         ...options,
         include: [...new Set([...(options.include || []), ...directives.include])],
         exclude: [...new Set([...(options.exclude || []), ...directives.exclude])],
-        required: [...new Set([...(options.required || []), ...directives.required])],
         safelist: [...new Set([...(options.safelist || []), ...directives.safelist])],
         blocklist: [...(options.blocklist || []), ...directives.blocklist]
     } as T
@@ -98,7 +94,6 @@ export function collectStylesheetDirectives(source: string, file?: string, cwd =
     const directives = collectStandaloneCSSDirectiveExtractionPolicy(source)
     directives.include = directives.include.map((arg: string) => normalizeSourcePattern(arg, file, cwd))
     directives.exclude = directives.exclude.map((arg: string) => normalizeSourcePattern(arg, file, cwd))
-    directives.required = directives.required.map((arg: string) => normalizeSourcePattern(arg, file, cwd))
     return directives
 }
 
@@ -269,11 +264,6 @@ export function resolveStylesheetSourcePaths(options: StylesheetSourceOptions, c
     const paths = new Set<string>()
     if (options.include?.length) {
         for (const sourcePath of explorePathsSync(options.include, { cwd, ignore: options.exclude })) {
-            if (sourcePath) paths.add(sourcePath)
-        }
-    }
-    if (options.required?.length) {
-        for (const sourcePath of explorePathsSync(options.required, { cwd })) {
             if (sourcePath) paths.add(sourcePath)
         }
     }

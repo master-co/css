@@ -17,7 +17,6 @@ Directives do not behave like normal CSS rules. Consumed directives are removed 
 
 @source "src/**/*.{html,js,jsx,ts,tsx,vue,svelte,astro,mdx}";
 @source not "src/**/*.test.tsx";
-@source required "src/generated/critical-classes.ts";
 
 @reference "./theme.css";
 
@@ -321,25 +320,20 @@ For abstraction guidance, see [Reusing styles](/guide/reusing-styles).
 Use `@source` directives to describe which files the scanner should scan.
 
 ### `@source`
-Maps to scanner `include` and broadly includes files that may contain classes.
+Adds files that may contain classes to the stylesheet source set.
 
 ```css
 @source "src/**/*.{html,js,jsx,ts,tsx,vue,svelte,astro,mdx}";
 ```
 
 ### `@source not`
-Maps to scanner `exclude` and removes noisy files such as tests, generated output, or vendor code.
+Removes noisy files such as tests, generated output, or vendor code from the stylesheet source set.
 
 ```css
 @source not "src/**/*.test.tsx";
 ```
 
-### `@source required`
-Maps to scanner `required` and scans mandatory files even when they would otherwise be excluded.
-
-```css
-@source required "src/generated/critical-classes.ts";
-```
+Multiple source directives are combined as `(source union) - (source not union)`.
 
 Bare source globs are resolved from the scanner `cwd`. Globs that start with `./` or `../` are resolved relative to the CSS file that declares the directive.
 

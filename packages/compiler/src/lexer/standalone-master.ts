@@ -128,7 +128,6 @@ export function createCSSDirectiveExtractionPolicy(): CSSDirectiveExtractionPoli
     return {
         include: [],
         exclude: [],
-        required: [],
         safelist: [],
         blocklist: [],
         preserveNative: false
@@ -141,7 +140,6 @@ export function mergeCSSDirectiveExtractionPolicy(...policies: (Partial<CSSDirec
         if (!policy) continue
         addUnique(merged.include, policy.include || [])
         addUnique(merged.exclude, policy.exclude || [])
-        addUnique(merged.required, policy.required || [])
         addUnique(merged.safelist, policy.safelist || [])
         addUnique(merged.blocklist, policy.blocklist || [])
         merged.preserveNative ||= Boolean(policy.preserveNative)
@@ -246,8 +244,6 @@ export function collectStandaloneCSSDirectiveExtractionPolicy(source: string, fi
             case 'source':
                 if (statement.modifiers.includes('not')) {
                     policy.exclude.push(...statement.args)
-                } else if (statement.modifiers.includes('required')) {
-                    policy.required.push(...statement.args)
                 } else {
                     policy.include.push(...statement.args)
                 }

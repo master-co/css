@@ -10,18 +10,15 @@ export default function UsageGraphPlugin(_options: PluginOptions, context: Plugi
         apply(_, env) {
             return !env.isSsrBuild
         },
-        async buildStart() {
-            await getScanner(context).prepare()
-        },
         async transform(code, id) {
             if (id.startsWith('\0')) return
-            await getScanner(context).scan(id, code)
+            await getScanner(context).scanModule(id, code)
         },
         transformIndexHtml: {
             order: 'pre',
             handler: async (html, { filename, server }) => {
                 if (server) return
-                await getScanner(context).scan(filename, html)
+                await getScanner(context).scanModule(filename, html)
             }
         },
         async configureServer(server) {

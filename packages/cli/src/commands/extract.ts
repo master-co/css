@@ -8,12 +8,14 @@ import {
 } from '@master/css-stylesheet'
 import { findCSSManifestEntryFiles } from '@master/css-project/entries'
 import log from '@techor/log'
+import { explorePathsSync } from '@techor/glob'
 import bytes from 'bytes'
 import chokidar, { type FSWatcher } from 'chokidar'
 import fs from 'node:fs'
 import path from 'node:path'
 
 const DEFAULT_EXTRACT_OUTPUT = 'master.css'
+const DEFAULT_SOURCE_PATTERNS = ['**/*.{html,htm,js,jsx,mjs,cjs,ts,tsx,mts,cts,svelte,astro,vue,md,mdx,pug,php}']
 
 async function registerManagedCSSEntries(scanner: CSSScanner, styleCSSSources: StyleCSSSources) {
     styleCSSSources.clear()
@@ -27,9 +29,28 @@ async function registerManagedCSSEntries(scanner: CSSScanner, styleCSSSources: S
     )]
 }
 
-async function prepareScanner(scanner: CSSScanner, styleCSSSources: StyleCSSSources) {
+function normalizeSourcePatterns(specifiedSourcePaths?: string | string[]) {
+    if (!specifiedSourcePaths?.length) return DEFAULT_SOURCE_PATTERNS
+    return Array.isArray(specifiedSourcePaths) ? specifiedSourcePaths : [specifiedSourcePaths]
+}
+
+function resolveSourcePaths(scanner: CSSScanner, sourcePatterns: string[], ignore: string[] = []) {
+    return explorePathsSync(sourcePatterns, { cwd: scanner.cwd, ignore })
+        .filter(Boolean)
+}
+
+async function scanSourceFile(scanner: CSSScanner, source: string) {
+    const filepath = path.resolve(scanner.cwd, source)
+    await scanner.scan(source, fs.readFileSync(filepath, 'utf8'))
+}
+
+async function scanSourceFiles(scanner: CSSScanner, sourcePaths: string[]) {
+    await Promise.all(sourcePaths.map((source) => scanSourceFile(scanner, source)))
+}
+
+async function prepareScanner(scanner: CSSScanner, styleCSSSources: StyleCSSSources, sourcePaths: string[]) {
     await registerManagedCSSEntries(scanner, styleCSSSources)
-    await scanner.prepare()
+    await scanSourceFiles(scanner, sourcePaths)
 }
 
 function exportCSS(scanner: CSSScanner, css: string, filename = DEFAULT_EXTRACT_OUTPUT) {
@@ -62,7 +83,7 @@ export default (program: Command) => program
     .option('-o, --output <path>', 'Specify your CSS file output path', DEFAULT_EXTRACT_OUTPUT)
     .option('-v, --verbose <level>', 'Verbose logging 0~N', '1')
     .option('--no-export', 'Print only CSS results.')
-    .action(async function (specifiedSourcePaths: any, options?: {
+    .action(async function (specifiedSourcePaths: string | string[] | undefined, options?: {
         watch?: boolean,
         output?: string,
         verbose?: number,
@@ -73,6 +94,7 @@ export default (program: Command) => program
         const { watch, output, verbose, cwd } = options || {}
         const scanner = new CSSScanner({}, cwd)
         const styleCSSSources: StyleCSSSources = new Map()
+        const sourcePatterns = normalizeSourcePatterns(specifiedSourcePaths)
         const writeOutput = async () => {
             const css = await createExtractedCSS({
                 scanner,
@@ -86,10 +108,7 @@ export default (program: Command) => program
             }
         }
         scanner.on('init', (options: ScannerOptions) => {
-            if (specifiedSourcePaths?.length) {
-                options.include = specifiedSourcePaths
-                options.exclude = []
-            } else {
+            if (!specifiedSourcePaths?.length) {
                 if (!options.exclude?.includes('**/node_modules/**')) {
                     options.exclude?.push('**/node_modules/**')
                 }
@@ -112,19 +131,21 @@ export default (program: Command) => program
                 await Promise.all(watchers.splice(0).map((watcher) => watcher.close()))
             }
             const startWatchers = async () => {
-                const sourcePaths = scanner.options.required?.length
-                    ? scanner.fixedSourcePaths
-                    : scanner.allowedSourcePaths
+                const sourcePaths = resolveSourcePaths(
+                    scanner,
+                    sourcePatterns,
+                    specifiedSourcePaths?.length ? [] : scanner.options.exclude
+                )
                 if (sourcePaths.length) {
                     const sourceWatcher = chokidar.watch(sourcePaths, {
                         cwd: scanner.cwd,
                         ignoreInitial: true
                     })
                     sourceWatcher.on('add', (source) => {
-                        void scanner.scanFile(source).then(queueWrite)
+                        void scanSourceFile(scanner, source).then(queueWrite)
                     })
                     sourceWatcher.on('change', (source) => {
-                        void scanner.scanFile(source).then(queueWrite)
+                        void scanSourceFile(scanner, source).then(queueWrite)
                     })
                     watchers.push(sourceWatcher)
                     await waitForWatcherReady(sourceWatcher)
@@ -142,8 +163,12 @@ export default (program: Command) => program
                                 log`[change] **${formatWatchedPath(scanner.cwd, resetDependency)}**`
                             }
                             await closeWatchers()
-                            await scanner.reset(scanner.customOptions, { prepare: false, emit: false })
-                            await prepareScanner(scanner, styleCSSSources)
+                            await scanner.reset(scanner.customOptions, { emit: false })
+                            await prepareScanner(scanner, styleCSSSources, resolveSourcePaths(
+                                scanner,
+                                sourcePatterns,
+                                specifiedSourcePaths?.length ? [] : scanner.options.exclude
+                            ))
                             await queueWrite()
                             await startWatchers()
                             log``
@@ -172,13 +197,21 @@ export default (program: Command) => program
             process.once('SIGINT', () => {
                 void closeWatchers().finally(() => process.exit(0))
             })
-            await prepareScanner(scanner, styleCSSSources)
+            await prepareScanner(scanner, styleCSSSources, resolveSourcePaths(
+                scanner,
+                sourcePatterns,
+                specifiedSourcePaths?.length ? [] : scanner.options.exclude
+            ))
             await queueWrite()
             await startWatchers()
             log``
             log.t`Start watching source changes`
         } else {
-            await prepareScanner(scanner, styleCSSSources)
+            await prepareScanner(scanner, styleCSSSources, resolveSourcePaths(
+                scanner,
+                sourcePatterns,
+                specifiedSourcePaths?.length ? [] : scanner.options.exclude
+            ))
             await writeOutput()
         }
     })

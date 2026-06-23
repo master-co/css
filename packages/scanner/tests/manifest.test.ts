@@ -56,7 +56,7 @@ test('ignores native CSS classes from unmanaged CSS files', async () => {
             }
         `)
 
-        const scanner = await new CSSScanner({ include: [] }, cwd).init()
+        const scanner = await new CSSScanner({}, cwd).init()
         const changes: string[][] = []
         scanner.on('change', () => {
             changes.push([...scanner.usedNativeClasses])

@@ -189,7 +189,7 @@ The same imported file can therefore be pruned differently under different roots
 ---
 
 ## Scoped scanning
-By default, a pruned stylesheet uses the global scanner scope. Add `@source`, `@source not`, `@source required`, `@safelist`, and `@blocklist` inside the stylesheet graph when that root needs a narrower or wider usage graph.
+By default, a pruned stylesheet uses the global scanner scope. Add `@source`, `@source not`, `@safelist`, and `@blocklist` inside the stylesheet graph when that root needs a narrower or wider usage graph.
 
 ```txt
 app/a/a.css
@@ -258,13 +258,12 @@ export default function Page() {
 
 The `a.css` output keeps `.a-card` and `.shared-card`. The `b.css` output keeps `.b-card` and `.shared-card`. Both roots remove `.debug-outline` because the imported `@blocklist "debug-*";` directive belongs to each root scope.
 
-Use `@source required` when a root must scan a file even though the global or local exclude list would remove it.
+If a root must scan a file, make sure no `@source not` pattern removes it.
 
 ```css name=app/a/a.css
 @import "@master/css";
 @source "./**/*.tsx";
-@source not "./**/*.test.tsx";
-@source required "./always-scan.test.tsx";
+@source not "./**/*.stories.tsx";
 ```
 
 ---

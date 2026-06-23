@@ -26,8 +26,7 @@ import StyleEntryHMRPlugin from '../../src/plugins/style-entry-hmr'
 
 function makeScanner() {
     const scanner = new EventEmitter() as unknown as Record<string, unknown> & EventEmitter
-    scanner.prepare = vi.fn(async () => undefined)
-    scanner.scan = vi.fn(async () => true)
+    scanner.scanModule = vi.fn(async () => true)
     scanner.css = { text: '/* css */' }
     scanner.options = {}
     return scanner as any
@@ -53,19 +52,14 @@ async function wait(ms: number) {
 }
 
 describe('StyleEntryHMRPlugin (C3+C4 race fixes)', () => {
-    test('C3: handleReset awaits prepare(), index.html re-insert, AND every module-graph re-insert', async () => {
+    test('C3: handleReset awaits index.html re-insert AND every module-graph re-insert', async () => {
         const scanner = makeScanner()
         const scanCalls: string[] = []
         // Slow inserts so we can observe whether handleReset awaited them
-        scanner.scan = vi.fn(async (id: string) => {
+        scanner.scanModule = vi.fn(async (id: string) => {
             await new Promise((r) => setTimeout(r, 10))
             scanCalls.push(id)
             return true
-        })
-        const prepareCalls: string[] = []
-        scanner.prepare = vi.fn(async () => {
-            await new Promise((r) => setTimeout(r, 10))
-            prepareCalls.push('prepare')
         })
 
         const server = makeServer({
@@ -90,8 +84,6 @@ describe('StyleEntryHMRPlugin (C3+C4 race fixes)', () => {
         await wait(60)
         await tick(2)
 
-        // prepare ran
-        expect(prepareCalls).toEqual(['prepare'])
         // insert called for: index.html (from transformIndexHtml), then both real modules
         // (virtual module entries must be filtered).
         expect(scanCalls).toContain('/index.html') // from transformIndexHtml above is recorded BEFORE reset
@@ -108,15 +100,19 @@ describe('StyleEntryHMRPlugin (C3+C4 race fixes)', () => {
     test('C4: a second reset is queued behind the first — no overlap', async () => {
         const scanner = makeScanner()
 
-        // First prepare hangs until we resolve it manually; second resolves quickly.
+        // First module scan hangs until we resolve it manually; second resolves quickly.
         let releaseFirst!: () => void
         const firstPending = new Promise<void>((r) => { releaseFirst = r })
-        const prepareSpy = vi.fn()
+        const scanModuleSpy = vi.fn()
             .mockImplementationOnce(() => firstPending)
             .mockImplementationOnce(() => Promise.resolve())
-        scanner.prepare = prepareSpy
+        scanner.scanModule = scanModuleSpy
 
-        const server = makeServer()
+        const server = makeServer({
+            modules: [
+                ['/a.tsx', { transformResult: { code: '<div class="block"></div>' }, file: '/a.tsx' }],
+            ],
+        })
         const plugin = StyleEntryHMRPlugin({} as any, { scanner } as any)
         ;(plugin as any).configureServer.call({}, server as any)
         ;(plugin as any).buildStart.call({})
@@ -125,14 +121,14 @@ describe('StyleEntryHMRPlugin (C3+C4 race fixes)', () => {
         scanner.emit('reset')
         scanner.emit('reset')
 
-        // First prepare started; second has NOT — it's queued behind the first
+        // First scan started; second has NOT — it's queued behind the first
         await tick(2)
-        expect(prepareSpy).toHaveBeenCalledTimes(1)
+        expect(scanModuleSpy).toHaveBeenCalledTimes(1)
 
         // Release the first; the chain advances to the second
         releaseFirst?.()
         await tick(5)
-        expect(prepareSpy).toHaveBeenCalledTimes(2)
+        expect(scanModuleSpy).toHaveBeenCalledTimes(2)
     })
 
     test('C4: a second change is queued behind the first — no overlap', async () => {
@@ -190,12 +186,16 @@ describe('StyleEntryHMRPlugin (C3+C4 race fixes)', () => {
         const scanner = makeScanner()
 
         const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
-        const prepareSpy = vi.fn()
+        const scanModuleSpy = vi.fn()
             .mockImplementationOnce(() => Promise.reject(new Error('boom')))
             .mockImplementationOnce(() => Promise.resolve())
-        scanner.prepare = prepareSpy
+        scanner.scanModule = scanModuleSpy
 
-        const server = makeServer()
+        const server = makeServer({
+            modules: [
+                ['/a.tsx', { transformResult: { code: '<div class="block"></div>' }, file: '/a.tsx' }],
+            ],
+        })
         const plugin = StyleEntryHMRPlugin({} as any, { scanner } as any)
         ;(plugin as any).configureServer.call({}, server as any)
         ;(plugin as any).buildStart.call({})
@@ -211,7 +211,7 @@ describe('StyleEntryHMRPlugin (C3+C4 race fixes)', () => {
         // Second reset still runs because the chain caught the rejection
         scanner.emit('reset')
         await tick(5)
-        expect(prepareSpy).toHaveBeenCalledTimes(2)
+        expect(scanModuleSpy).toHaveBeenCalledTimes(2)
 
         consoleSpy.mockRestore()
     })
@@ -223,7 +223,7 @@ describe('StyleEntryHMRPlugin (C3+C4 race fixes)', () => {
         // wouldn't be observed by the time the CSS importer reload fired.
         const scanner = makeScanner()
         const completed: string[] = []
-        scanner.scan = vi.fn(async (id: string) => {
+        scanner.scanModule = vi.fn(async (id: string) => {
             // Module b is intentionally slowest to flush out drop-on-the-floor bugs
             const delay = id === '/b.tsx' ? 30 : 1
             await new Promise((r) => setTimeout(r, delay))

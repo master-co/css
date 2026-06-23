@@ -1807,9 +1807,6 @@ importers:
       '@techor/extend':
         specifier: ^3.2.5
         version: 3.2.5
-      '@techor/glob':
-        specifier: ^3.2.5
-        version: 3.2.5
       '@techor/log':
         specifier: ^3.2.5
         version: 3.2.5

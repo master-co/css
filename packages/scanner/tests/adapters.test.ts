@@ -9,7 +9,6 @@ describe('scanner source adapters', () => {
             extract: () => ['block']
         }
         const scanner = await new CSSScanner({
-            include: [],
             adapters: [adapter]
         }).init()
 
@@ -17,9 +16,7 @@ describe('scanner source adapters', () => {
     })
 
     test('uses built-in HTML and OXC adapters from @master/css-source by default', async () => {
-        const scanner = await new CSSScanner({
-            include: []
-        }).init()
+        const scanner = await new CSSScanner({}).init()
 
         expect(scanner.collectCandidates('index.html', `
             <div class="block mx:auto"></div>

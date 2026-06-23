@@ -16,7 +16,7 @@ describe('EmittedGlobalsVirtualModulePlugin', () => {
         const root = mkdtempSync(join(tmpdir(), 'master-css-vite-emittedGlobals-'))
         try {
             mkdirSync(join(root, 'app'), { recursive: true })
-            const scanner = new CSSScanner({ include: [] }, root)
+            const scanner = new CSSScanner({}, root)
             await scanner.init()
             const styleCSSSources = new Map()
             await registerStyleCSSSource(scanner, styleCSSSources, join(root, 'app/globals.css'), `

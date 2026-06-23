@@ -23,7 +23,6 @@ export interface MasterCSSBuildStateResolver {
 export async function createMasterCSSBuildStateResolver(projectDir: string): Promise<MasterCSSBuildStateResolver> {
     const result = await loadProjectManifest(projectDir)
     const scanner = new CSSScanner({
-        include: [],
         manifest: result.manifest
     }, projectDir)
     const styleCSSSources: StyleCSSSources = new Map()

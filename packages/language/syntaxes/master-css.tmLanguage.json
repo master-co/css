@@ -414,7 +414,7 @@
                     "include": "#master-plain-string"
                 },
                 {
-                    "match": "\\b(?:not|required)\\b(?!-)",
+                    "match": "\\bnot\\b(?!-)",
                     "name": "storage.modifier.master-css"
                 },
                 {

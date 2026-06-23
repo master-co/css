@@ -1,8 +1,10 @@
 import { test, expect, it } from 'vitest'
 import CSSScanner from '../src'
+import { readFileSync } from 'node:fs'
+import { join } from 'node:path'
 
 test('syntax', async () => {
-    const scanner = await new CSSScanner({ required: ['syntax.html'], include: [] }, __dirname).init()
+    const scanner = await new CSSScanner({}, __dirname).init()
     const testClasses = [
         '{fg:blue-40/.5;font:2rem;p:4x;w:full;text-center}>li:hover@md',
         'w:calc(+100%-1.25rem)',
@@ -63,7 +65,7 @@ test('syntax', async () => {
         '.sidebar:hover_{opacity:.75}',
         '.navitem:hover_{bg:black/.75}'
     ]
-    await scanner?.prepare()
+    await scanner.scan('syntax.html', readFileSync(join(__dirname, 'syntax.html'), 'utf-8'))
     for (const eachGeneratedClass of scanner?.css.utilitiesLayer.rules.map(({ name }) => name) || []) {
         expect(testClasses).toContain(eachGeneratedClass)
     }

@@ -21,9 +21,8 @@ export default function StyleEntryHMRPlugin(_options: PluginOptions, context: Pl
     const handleReset = async ({ server }: { server: ViteDevServer }) => {
         const scanner = getScanner(context)
         const tasks: Promise<unknown>[] = []
-        tasks.push(scanner.prepare())
         if (transformedIndexHTMLModule) {
-            tasks.push(scanner.scan(transformedIndexHTMLModule.id, transformedIndexHTMLModule.code))
+            tasks.push(scanner.scanModule(transformedIndexHTMLModule.id, transformedIndexHTMLModule.code))
         }
         tasks.push(
             ...Array.from(server.moduleGraph.idToModuleMap.keys())
@@ -36,7 +35,7 @@ export default function StyleEntryHMRPlugin(_options: PluginOptions, context: Pl
                             eachModuleCode = readFileSync(eachModule.file, 'utf-8')
                         }
                         if (eachModuleCode)
-                            await scanner.scan(eachModuleId, eachModuleCode)
+                            await scanner.scanModule(eachModuleId, eachModuleCode)
                     }
                 })
         )
@@ -72,7 +71,7 @@ export default function StyleEntryHMRPlugin(_options: PluginOptions, context: Pl
                     id: filename,
                     code: html
                 }
-                await getScanner(context).scan(filename, html)
+                await getScanner(context).scanModule(filename, html)
             }
         },
         configureServer(server) {

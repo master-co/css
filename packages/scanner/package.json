@@ -71,7 +71,6 @@
         "@master/css-source": "workspace:^",
         "@master/css-validator": "workspace:^",
         "@techor/extend": "^3.2.5",
-        "@techor/glob": "^3.2.5",
         "@techor/log": "^3.2.5",
         "minimatch": "^10.2.5",
         "@master/css-schema": "workspace:^",

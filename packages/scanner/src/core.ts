@@ -9,7 +9,6 @@ import {
     oxcAdapter,
     type SourceAdapter
 } from '@master/css-source'
-import fs from 'fs'
 import { Minimatch } from 'minimatch'
 import log from '@techor/log'
 import extend from '@techor/extend'
@@ -17,7 +16,6 @@ import { createCSSWithNativeDeclarations, generateValidRules } from '@master/css
 import { EventEmitter } from 'node:events'
 import { createHash } from 'node:crypto'
 import { cssEscape } from '@master/css-lexer'
-import { explorePathsSync } from '@techor/glob'
 import path from 'path'
 import {
     createClassExclusionMatcher,
@@ -30,22 +28,39 @@ const builtInAdapters = [
     oxcAdapter()
 ]
 
+const sourceLikeExtensions = new Set([
+    '.html',
+    '.htm',
+    '.js',
+    '.jsx',
+    '.mjs',
+    '.cjs',
+    '.ts',
+    '.tsx',
+    '.mts',
+    '.cts',
+    '.svelte',
+    '.astro',
+    '.vue',
+    '.md',
+    '.mdx',
+    '.pug',
+    '.php'
+])
+
 const sourceMatchOptions = { dot: true }
 const require = createRequire(import.meta.url)
 const defaultManifest = require('@master/css-preset/default-manifest.json') as MasterCSSManifest
 
 interface SourceMatchers {
-    required: Minimatch[]
-    include: Minimatch[]
     exclude: Minimatch[]
 }
 
 interface ScannerResetOptions {
     emit?: boolean
-    prepare?: boolean
 }
 
-function createSourceMatchers(patterns?: ScannerOptions['include']) {
+function createSourceMatchers(patterns?: ScannerOptions['exclude']) {
     return (patterns || []).map((pattern) => new Minimatch(String(pattern), sourceMatchOptions))
 }
 
@@ -67,6 +82,10 @@ function isStyleModuleRequest(source: string) {
 function cleanSourceRequest(source: string) {
     const queryStart = source.indexOf('?')
     return queryStart === -1 ? source : source.slice(0, queryStart)
+}
+
+function isSourceLikeModule(source: string) {
+    return sourceLikeExtensions.has(path.extname(cleanSourceRequest(source)))
 }
 
 function toPosixPath(source: string) {
@@ -123,13 +142,9 @@ export default class CSSScanner extends EventEmitter {
      */
     private validRulesCache = new Map<string, ReturnType<typeof generateValidRules>>()
 
-    /** Memoized result of `fixedSourcePaths` getter (fs IO via fast-glob). */
-    private cachedFixedSourcePaths?: string[]
-    /** Memoized result of `allowedSourcePaths` getter (fs IO via fast-glob). */
-    private cachedAllowedSourcePaths?: string[]
     /** Precompiled minimatch patterns for per-module allow/exclude checks. */
     private sourceMatchers?: SourceMatchers
-    private sourceMatcherOptions?: Pick<ScannerOptions, 'required' | 'include' | 'exclude'>
+    private sourceMatcherOptions?: Pick<ScannerOptions, 'exclude'>
     /** Memoized adapter list so per-file extraction does not rebuild it. */
     private sourceAdapters?: SourceAdapter[]
     private sourceAdapterOptions?: ScannerOptions['adapters']
@@ -172,6 +187,7 @@ export default class CSSScanner extends EventEmitter {
         this.classExclusionOptions = undefined
         this.nativeClassNames = new Set()
         this.css = createCSSWithNativeDeclarations(this.options.manifest || defaultManifest)
+        this.insertSafelist()
         this.emit('init', this.options, this.manifest)
         this.initialized = true
         return this
@@ -189,8 +205,6 @@ export default class CSSScanner extends EventEmitter {
         this.contentHashes.clear()
         this.validRulesCache.clear()
         this.resetDependencies = []
-        this.cachedFixedSourcePaths = undefined
-        this.cachedAllowedSourcePaths = undefined
         this.sourceMatchers = undefined
         this.sourceMatcherOptions = undefined
         this.sourceAdapters = undefined
@@ -200,9 +214,6 @@ export default class CSSScanner extends EventEmitter {
         this.initialized = false
         this.initializing = undefined
         await this.init(customOptions)
-        if (resetOptions.prepare !== false) {
-            await this.prepare()
-        }
         if (resetOptions.emit !== false) {
             this.emit('reset')
         }
@@ -218,8 +229,6 @@ export default class CSSScanner extends EventEmitter {
         this.contentHashes.clear()
         this.validRulesCache.clear()
         this.resetDependencies = []
-        this.cachedFixedSourcePaths = undefined
-        this.cachedAllowedSourcePaths = undefined
         this.sourceMatchers = undefined
         this.sourceMatcherOptions = undefined
         this.sourceAdapters = undefined
@@ -231,8 +240,7 @@ export default class CSSScanner extends EventEmitter {
         return this
     }
 
-    async prepare() {
-        /* 插入指定的固定 class */
+    private insertSafelist() {
         if (this.options.safelist?.length) {
             for (const eachFixedClass of this.options.safelist) {
                 this.css.add(eachFixedClass)
@@ -241,20 +249,16 @@ export default class CSSScanner extends EventEmitter {
                 log.ok`${this.options.safelist.length} fixed classes inserted ${this.options.safelist}`
             }
         }
-        await Promise.all([
-            this.scanFiles(this.fixedSourcePaths),
-            this.scanFiles(this.allowedSourcePaths)
-        ])
     }
 
     /**
-     * @description Filter based on relative file paths and extract content
+     * @description Extract source content candidates.
      * @param source
      * @param content
      * @returns string[] Latent classes
      */
     collectCandidates(source: string, content: string): string[] {
-        if (!source || !content || !this.isSourceAllowed(source)) {
+        if (!source || !content) {
             return []
         }
         const adapter = this.resolveSourceAdapter(source)
@@ -274,7 +278,7 @@ export default class CSSScanner extends EventEmitter {
     }
 
     /**
-     * @description Filter based on relative file paths, extract content, and scan
+     * @description Extract trusted content candidates and scan.
      * @param source
      * @param content
      * @returns string[] Latent classes
@@ -355,6 +359,11 @@ export default class CSSScanner extends EventEmitter {
         return true
     }
 
+    async scanModule(source: string, content: string): Promise<boolean> {
+        if (!this.isModuleAllowed(source)) return false
+        return this.scan(source, content)
+    }
+
     resolveSourceAdapter(source: string): SourceAdapter | undefined {
         if (!this.sourceAdapters || this.sourceAdapterOptions !== this.options.adapters) {
             this.sourceAdapterOptions = this.options.adapters
@@ -368,17 +377,13 @@ export default class CSSScanner extends EventEmitter {
     }
 
     private getSourceMatchers(): SourceMatchers {
-        const { required, include, exclude } = this.options
+        const { exclude } = this.options
         if (
             !this.sourceMatchers ||
-            this.sourceMatcherOptions?.required !== required ||
-            this.sourceMatcherOptions?.include !== include ||
             this.sourceMatcherOptions?.exclude !== exclude
         ) {
-            this.sourceMatcherOptions = { required, include, exclude }
+            this.sourceMatcherOptions = { exclude }
             this.sourceMatchers = {
-                required: createSourceMatchers(required),
-                include: createSourceMatchers(include),
                 exclude: createSourceMatchers(exclude)
             }
         }
@@ -397,68 +402,12 @@ export default class CSSScanner extends EventEmitter {
         return isClassExcludedByMatcher(className, this.getClassExclusionMatcher())
     }
 
-    scanFile(source: string) {
-        return this.scan(source, fs.readFileSync(path.resolve(this.cwd, source), { encoding: 'utf-8' }).toString())
-    }
-
-    scanFiles(sources: string[]) {
-        return Promise.all(sources.map((eachRelPaths) => this.scanFile(eachRelPaths)))
-    }
-
-    /**
-     * computed from `options.required`. Memoized — each access used to re-glob
-     * the filesystem which is expensive on large projects. Cleared on `reset()`.
-     */
-    get fixedSourcePaths(): string[] {
-        if (this.cachedFixedSourcePaths) return this.cachedFixedSourcePaths
-        const { required } = this.options
-        const computed = required?.length
-            ? explorePathsSync(required, { cwd: this.cwd })
-                .filter((eachSourcePath) => !!eachSourcePath)
-            : []
-        this.cachedFixedSourcePaths = computed
-        return computed
-    }
-
-    /**
-     * resolved from `fixedSourcePaths`
-     */
-    get resolvedFixedSourcePaths(): string[] {
-        return this.fixedSourcePaths.map((eachSourcePath) => path.resolve(this.cwd, eachSourcePath))
-    }
-
-    /**
-     * `options.include` - `options.exclude`. Memoized — same reason as
-     * `fixedSourcePaths`. Cleared on `reset()`.
-     */
-    get allowedSourcePaths(): string[] {
-        if (this.cachedAllowedSourcePaths) return this.cachedAllowedSourcePaths
-        const { include, exclude } = this.options
-        const computed = include?.length
-            ? explorePathsSync(include, { cwd: this.cwd, ignore: exclude })
-                .filter((eachSourcePath) => Boolean(eachSourcePath))
-            : []
-        this.cachedAllowedSourcePaths = computed
-        return computed
-    }
-
-    /**
-     * resolved from `allowedSourcePaths`
-     */
-    get resolvedAllowedSourcePaths(): string[] {
-        return this.allowedSourcePaths.map((eachSourcePath) => path.resolve(this.cwd, eachSourcePath))
-    }
-
-    isSourceAllowed(source: string): boolean {
+    isModuleAllowed(source: string): boolean {
+        if (!source || source.startsWith('\0')) return false
         if (isStyleModuleRequest(source)) return false
+        if (!isSourceLikeModule(source)) return false
         const sources = createSourceMatchCandidates(source, this.cwd)
-        const { include, exclude, required } = this.getSourceMatchers()
-        if (required.length && matchesAnySource(sources, required)) {
-            return true
-        }
-        if (include.length && !matchesAnySource(sources, include)) {
-            return false
-        }
+        const { exclude } = this.getSourceMatchers()
         if (exclude.length && matchesAnySource(sources, exclude)) {
             return false
         }

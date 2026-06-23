@@ -1,4 +1,3 @@
-import type { ScannerOptions } from '@master/css-scanner'
 import log from '@techor/log'
 import type { Compiler } from 'webpack'
 import type { MasterCSSWebpackContext, WebpackSubPlugin } from '../plugin'
@@ -9,9 +8,6 @@ export default function ScannerLifecyclePlugin(context: MasterCSSWebpackContext)
         apply(compiler: Compiler) {
             if (context.getPluginInitialized()) return
 
-            context.on('init', (options: ScannerOptions) => {
-                options.include = []
-            })
             context.on('change', () => {
                 context.writeGeneratedCSSModule().catch((error: unknown) => {
                     console.error('[master-css.webpack] generated CSS module update failed:', error)
@@ -27,7 +23,6 @@ export default function ScannerLifecyclePlugin(context: MasterCSSWebpackContext)
 
             compiler.hooks.beforeRun.tapPromise(context.name, async () => {
                 await context.init()
-                await context.prepare()
                 await context.writeGeneratedCSSModule()
                 log``
             })

@@ -58,7 +58,7 @@
 npm install @master/css-scanner
 ```
 
-`@master/css-scanner` is the Node.js source-scanning engine behind Master CSS static rendering. It scans source files, validates possible classes, inserts generated rules, and maintains scanner state for build integrations. File watching and CSS file output are owned by CLI/framework/build integrations.
+`@master/css-scanner` is the Node.js content-scanning engine behind Master CSS static rendering. It scans supplied source text, validates possible classes, inserts generated rules, and maintains scanner state for build integrations. Source discovery, file watching, and CSS file output are owned by CLI/framework/build integrations.
 
 ## Usage
 
@@ -68,7 +68,7 @@ import { CSSScanner } from '@master/css-scanner'
 const scanner = new CSSScanner(options, cwd)
 ```
 
-`cwd` resolves project CSS manifest entries and source patterns such as `include`, `exclude`, and `required`.
+`cwd` resolves project-relative module excludes and log output.
 
 ## Options
 
@@ -82,9 +82,7 @@ import defaultScannerOptions from '@master/css-scanner/options'
 | Option | Type | Description |
 | --- | --- | --- |
 | `manifest` | `MasterCSSManifest` | Explicit compiled manifest. When omitted, integrations and CLI flows load the project CSS entry manifest from `cwd`. |
-| `include` | `FastGlobPattern[]` | Source files and directories to scan. |
-| `exclude` | `FastGlobPattern[]` | Source files and directories to exclude. |
-| `required` | `FastGlobPattern[]` | Mandatory sources scanned even when they match `exclude`. |
+| `exclude` | `string[]` | Module paths to exclude from integration-fed module scans. |
 | `safelist` | `string[]` | Classes generated regardless of source detection. |
 | `blocklist` | `(string \| RegExp)[]` | Classes excluded from accidental scanner matches. |
 
@@ -97,13 +95,12 @@ Scanner options can also be declared in CSS. For the full stylesheet syntax, see
 ```css
 @source 'src/**/*.{html,js,jsx,ts,tsx,vue,svelte,astro,md,mdx}';
 @source not 'src/**/*.test.tsx';
-@source required 'src/generated.tsx';
 
 @safelist 'dialog-open bg:blue-60@dark';
 @blocklist 'debug-*';
 ```
 
-`@source` maps to `include`, `@source not` maps to `exclude`, `@source required` maps to `required`, `@safelist` maps to `safelist`, and `@blocklist` maps to `blocklist`.
+Stylesheet `@source` directives are resolved by the stylesheet pipeline as `(source union) - (source not union)`. `@safelist` maps to `safelist`, and `@blocklist` maps to `blocklist`.
 
 Bare source globs are resolved from `cwd`. Globs that start with `./` or `../` are resolved relative to the CSS file that declares the directive. `@blocklist` accepts exact strings and `*` / `?` wildcard patterns.
 

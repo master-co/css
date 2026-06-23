@@ -22,7 +22,6 @@ describe('stylesheet CSS directives', () => {
         const directives = collectStylesheetDirectives(`
             @source './exclude/**/*.tsx';
             @source not './src/**/*.test.tsx';
-            @source required './src/force-exclude.tsx';
             @safelist 'not-exclude';
             @blocklist 'legacy-*';
             @preserve native;
@@ -30,7 +29,6 @@ describe('stylesheet CSS directives', () => {
 
         expect(directives.include).toEqual(['app/exclude/**/*.tsx'])
         expect(directives.exclude).toEqual(['app/src/**/*.test.tsx'])
-        expect(directives.required).toEqual(['app/src/force-exclude.tsx'])
         expect(directives.safelist).toEqual(['not-exclude'])
         expect(directives.blocklist[0]).toBeInstanceOf(RegExp)
         expect((directives.blocklist[0] as RegExp).test('legacy-card')).toBe(true)
@@ -52,7 +50,6 @@ describe('stylesheet CSS directives', () => {
         expect(directives).toEqual({
             include: [],
             exclude: [],
-            required: [],
             safelist: [],
             blocklist: [],
             preserveNative: false
@@ -69,16 +66,13 @@ describe('stylesheet CSS directives', () => {
         writeFileSync(join(root, 'app/skip.test.tsx'), '<div class="text-center"></div>')
         writeFileSync(join(root, 'app/forced.test.tsx'), '<div class="fg:red"></div>')
 
-        const scanner = new CSSScanner({
-            include: []
-        }, root)
+        const scanner = new CSSScanner({}, root)
         await scanner.init()
         const styleCSSSources = new Map()
         await registerStyleCSSSource(scanner, styleCSSSources, join(root, 'app/entry.css'), `
             @master;
             @source './**/*.tsx';
             @source not './**/*.test.tsx';
-            @source required './forced.test.tsx';
             @safelist 'font:semibold legacy-token';
             @blocklist 'legacy-*';
         `)
@@ -89,19 +83,46 @@ describe('stylesheet CSS directives', () => {
         })
 
         expect(css).toContain('.block{display:block}')
-        expect(css).toContain('.fg\\:red{color:var(--color-red)}')
         expect(css).toContain('.font\\:semibold{font-weight:var(--font-weight-semibold)}')
+        expect(css).not.toContain('.fg\\:red')
         expect(css).not.toContain('.text\\:center')
         expect(css).not.toContain('legacy-token')
+    })
+
+    it('unions source directives and subtracts source not directives', async () => {
+        const root = createFixture()
+        writeFileSync(join(root, 'app/a/page.tsx'), '<div class="block"></div>')
+        writeFileSync(join(root, 'app/b/page.tsx'), '<div class="m:0"></div>')
+        writeFileSync(join(root, 'app/a/skip.tsx'), '<div class="fg:red"></div>')
+        writeFileSync(join(root, 'app/b/skip.tsx'), '<div class="text:center"></div>')
+
+        const scanner = new CSSScanner({}, root)
+        await scanner.init()
+        const styleCSSSources = new Map()
+        await registerStyleCSSSource(scanner, styleCSSSources, join(root, 'app/entry.css'), `
+            @master;
+            @source './a/*.tsx';
+            @source './b/*.tsx';
+            @source not './a/skip.tsx';
+            @source not './b/skip.tsx';
+        `)
+        const css = await createExtractedCSS({
+            scanner,
+            styleCSSSources,
+            projectDir: root
+        })
+
+        expect(css).toContain('.block{display:block}')
+        expect(css).toContain('.m\\:0{margin:0}')
+        expect(css).not.toContain('.fg\\:red')
+        expect(css).not.toContain('.text\\:center')
     })
 
     it('uses stylesheet-local source directives for a pruned CSS root', async () => {
         const root = createFixture()
         writeFileSync(join(root, 'app/a/page.tsx'), '<div class="card"></div>')
         writeFileSync(join(root, 'app/b/page.tsx'), '<div class="unused"></div>')
-        const scanner = new CSSScanner({
-            include: []
-        }, root)
+        const scanner = new CSSScanner({}, root)
         await scanner.init()
 
         const styleCSSSources = new Map()
@@ -144,9 +165,7 @@ describe('stylesheet CSS directives', () => {
                 color: blue;
             }
         `)
-        const scanner = new CSSScanner({
-            include: []
-        }, root)
+        const scanner = new CSSScanner({}, root)
         await scanner.init()
 
         const styleCSSSources = new Map()

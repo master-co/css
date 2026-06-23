@@ -445,7 +445,7 @@ test.concurrent('renders semantic tokens only for compose class lists inside man
 test.concurrent('renders CSS directive ranges with quoted semicolons', () => {
     const { tokens } = renderTokens(`
         @source not "a;b.css";
-        @source required "critical.tsx";
+        @source "critical.tsx";
         @reference "./a;b.css";
         @safelist "block fg:red";
         @blocklist "debug-*";
@@ -463,7 +463,6 @@ test.concurrent('renders CSS directive ranges with quoted semicolons', () => {
     expectToken(tokens, 'red', 'enumMember')
     expect(tokens).not.toContainEqual({ text: '@source', type: 'keyword', modifiers: ['directive'] })
     expect(tokens).not.toContainEqual({ text: 'not', type: 'modifier', modifiers: ['directive'] })
-    expect(tokens).not.toContainEqual({ text: 'required', type: 'modifier', modifiers: ['directive'] })
     expect(tokens).not.toContainEqual({ text: ';', type: 'operator', modifiers: ['directive', 'directiveTerminator'] })
     expect(tokens).not.toContainEqual({ text: '@safelist', type: 'keyword', modifiers: ['directive'] })
     expect(tokens).not.toContainEqual({ text: '@blocklist', type: 'keyword', modifiers: ['directive'] })
@@ -761,7 +760,7 @@ test.concurrent('renders CSS directives in SCSS-like sources', () => {
 
 test.concurrent('renders detailed CSS directive semantic tokens only for class-list syntax', () => {
     const { tokens } = renderTokens(`
-        @source not required "src/**/*.{ts,tsx}";
+        @source not "src/**/*.{ts,tsx}";
         @reference "./tokens.css";
         @blocklist "debug-*";
         @safelist "block fg:red:hover@md";
@@ -805,7 +804,6 @@ test.concurrent('renders detailed CSS directive semantic tokens only for class-l
     expectToken(tokens, 'primary', 'enumMember')
     expect(tokens).not.toContainEqual({ text: '@source', type: 'keyword', modifiers: ['directive'] })
     expect(tokens).not.toContainEqual({ text: 'not', type: 'modifier', modifiers: ['directive'] })
-    expect(tokens).not.toContainEqual({ text: 'required', type: 'modifier', modifiers: ['directive'] })
     expect(tokens).not.toContainEqual({ text: '@reference', type: 'keyword', modifiers: ['directive'] })
     expect(tokens).not.toContainEqual({ text: '@blocklist', type: 'keyword', modifiers: ['directive'] })
     expect(tokens).not.toContainEqual({ text: '@safelist', type: 'keyword', modifiers: ['directive'] })

@@ -159,7 +159,6 @@ export interface CSSDirectiveManifestInput {
 export interface CSSDirectiveExtractionPolicy {
     include: string[]
     exclude: string[]
-    required: string[]
     safelist: string[]
     blocklist: (string | RegExp)[]
     preserveNative: boolean

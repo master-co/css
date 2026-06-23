@@ -9,7 +9,7 @@ import {
     skipCSSWhitespace
 } from '@master/css-lexer'
 
-const SOURCE_MODIFIERS = new Set(['not', 'required'])
+const SOURCE_MODIFIERS = new Set(['not'])
 const PRESERVE_PARAMETERS = new Set(['native'])
 const THEME_MODIFIERS = new Set(['inline', 'static'])
 

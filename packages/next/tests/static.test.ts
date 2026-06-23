@@ -37,6 +37,10 @@ function runStaticLoader(statePath: string, resourcePath: string, source: string
     })
 }
 
+function scanStaticFixtureModule(statePath: string, resourcePath: string) {
+    return runStaticLoader(statePath, resourcePath, readFileSync(resourcePath, 'utf-8'))
+}
+
 function runStaticCSSLoader(statePath: string, resourcePath: string, source: string) {
     return runStaticCSSLoaderWithDependencies(statePath, resourcePath, source)
         .then((result) => result.content)
@@ -70,20 +74,25 @@ describe('Next static mode', () => {
 
     it('writes extracted CSS from source files including imported modules', async () => {
         const root = createFixture()
-        writeFileSync(join(root, 'app/page.tsx'), `
+        const pagePath = join(root, 'app/page.tsx')
+        const modulePath = join(root, 'app/main.ts')
+        writeFileSync(pagePath, `
             import { mainClass } from './main'
 
             export default function Page() {
                 return <main className={mainClass}>Hello</main>
             }
         `)
-        writeFileSync(join(root, 'app/main.ts'), `
+        writeFileSync(modulePath, `
             export const mainClass = 'block m:0'
         `)
 
         const outputPath = resolveStaticOutputPath(root)
+        const statePath = resolveStaticStatePath(outputPath)
 
         await prepareNextStatic({ mode: 'static' }, { projectDir: root })
+        await scanStaticFixtureModule(statePath, pagePath)
+        await scanStaticFixtureModule(statePath, modulePath)
 
         const css = readFileSync(outputPath, 'utf-8')
         expect(css).toContain('display:block')
@@ -99,7 +108,8 @@ describe('Next static mode', () => {
                 --color-primary: #ff0000;
             }
         `)
-        writeFileSync(join(root, 'app/page.tsx'), `
+        const pagePath = join(root, 'app/page.tsx')
+        writeFileSync(pagePath, `
             export default function Page() {
                 return <main className="main block">Hello</main>
             }
@@ -109,6 +119,7 @@ describe('Next static mode', () => {
         const statePath = resolveStaticStatePath(outputPath)
 
         await prepareNextStatic({ mode: 'static' }, { projectDir: root })
+        await scanStaticFixtureModule(statePath, pagePath)
 
         const source = `
             @import "@master/css";
@@ -132,7 +143,8 @@ describe('Next static mode', () => {
 
     it('prunes dev CSS chunks that import @master/css', async () => {
         const root = createFixture()
-        writeFileSync(join(root, 'app/page.tsx'), `
+        const pagePath = join(root, 'app/page.tsx')
+        writeFileSync(pagePath, `
             export default function Page() {
                 return <main className="main block">Hello</main>
             }
@@ -142,6 +154,7 @@ describe('Next static mode', () => {
         const statePath = resolveStaticStatePath(outputPath)
 
         await prepareNextStatic({ mode: 'static' }, { projectDir: root })
+        await scanStaticFixtureModule(statePath, pagePath)
 
         const replaced = await runStaticCSSLoader(statePath, join(root, 'app/globals.css'), `
             @import "@master/css";
@@ -212,12 +225,7 @@ describe('Next static mode', () => {
         const statePath = resolveStaticStatePath(outputPath)
         const scanLogPath = resolveStaticScanLogPath(outputPath)
 
-        await prepareNextStatic({
-            mode: 'static',
-            scannerOptions: {
-                include: []
-            }
-        }, { projectDir: root })
+        await prepareNextStatic({ mode: 'static' }, { projectDir: root })
 
         expect(readFileSync(outputPath, 'utf-8')).not.toContain('display:block')
 
@@ -233,21 +241,26 @@ describe('Next static mode', () => {
         expect(readFileSync(scanLogPath, 'utf-8')).toContain(modulePath)
     })
 
-    it('does not scan node_modules during the baseline source pass', async () => {
+    it('does not scan excluded node_modules modules from the static loader', async () => {
         const root = createFixture()
+        const dependencyPath = join(root, 'node_modules/pkg/index.ts')
+        const pagePath = join(root, 'app/page.tsx')
         mkdirSync(join(root, 'node_modules/pkg'), { recursive: true })
-        writeFileSync(join(root, 'node_modules/pkg/index.ts'), `
+        writeFileSync(dependencyPath, `
             export const leaked = 'width:123456px'
         `)
-        writeFileSync(join(root, 'app/page.tsx'), `
+        writeFileSync(pagePath, `
             export default function Page() {
                 return <main className="block">Hello</main>
             }
         `)
 
         const outputPath = resolveStaticOutputPath(root)
+        const statePath = resolveStaticStatePath(outputPath)
 
         await prepareNextStatic({ mode: 'static' }, { projectDir: root })
+        await scanStaticFixtureModule(statePath, dependencyPath)
+        await scanStaticFixtureModule(statePath, pagePath)
 
         const css = readFileSync(outputPath, 'utf-8')
         expect(css).toContain('display:block')
@@ -267,6 +280,7 @@ describe('Next static mode', () => {
         const statePath = resolveStaticStatePath(outputPath)
 
         await prepareNextStatic({ mode: 'static' }, { projectDir: root, watch: true })
+        await scanStaticFixtureModule(statePath, pagePath)
 
         expect(readFileSync(outputPath, 'utf-8')).toContain('display:block')
         expect(readFileSync(outputPath, 'utf-8')).not.toContain('margin:0')
@@ -285,6 +299,7 @@ describe('Next static mode', () => {
     it('updates static CSS when Turbopack reruns the CSS loader', async () => {
         const root = createFixture()
         const globalsPath = join(root, 'app/globals.css')
+        const pagePath = join(root, 'app/page.tsx')
         writeFileSync(globalsPath, `
             @import "@master/css";
 
@@ -292,7 +307,7 @@ describe('Next static mode', () => {
                 color: red;
             }
         `)
-        writeFileSync(join(root, 'app/page.tsx'), `
+        writeFileSync(pagePath, `
             export default function Page() {
                 return <main className="card">Hello</main>
             }
@@ -302,6 +317,7 @@ describe('Next static mode', () => {
         const statePath = resolveStaticStatePath(outputPath)
 
         await prepareNextStatic({ mode: 'static' }, { projectDir: root, watch: true })
+        await scanStaticFixtureModule(statePath, pagePath)
 
         expect(readFileSync(outputPath, 'utf-8')).toContain('color: red')
 

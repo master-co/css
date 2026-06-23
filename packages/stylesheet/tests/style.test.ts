@@ -278,11 +278,8 @@ describe('style CSS extraction helpers', () => {
 
     it('uses the managed CSS entry config and native CSS sources', async () => {
         const root = createFixture()
-        const scanner = new CSSScanner({
-            include: []
-        }, root)
+        const scanner = new CSSScanner({}, root)
         await scanner.init()
-        await scanner.prepare()
 
         const styleCSSSources = new Map()
         await registerStyleCSSSource(scanner, styleCSSSources, join(root, 'app/globals.css'), `
@@ -345,9 +342,7 @@ describe('style CSS extraction helpers', () => {
 
     it('keeps non-expandable native imports out of generated managed CSS', async () => {
         const root = createFixture()
-        const scanner = new CSSScanner({
-            include: []
-        }, root)
+        const scanner = new CSSScanner({}, root)
         await scanner.init()
 
         const styleCSSSources = new Map()
@@ -374,9 +369,7 @@ describe('style CSS extraction helpers', () => {
 
     it('reports emittedGlobals variables and animations emitted by the Master CSS entry', async () => {
         const root = createFixture()
-        const scanner = new CSSScanner({
-            include: []
-        }, root)
+        const scanner = new CSSScanner({}, root)
         await scanner.init()
 
         const styleCSSSources = new Map()
@@ -444,9 +437,7 @@ describe('style CSS extraction helpers', () => {
 
     it('does not preload inline theme tokens', async () => {
         const root = createFixture()
-        const scanner = new CSSScanner({
-            include: []
-        }, root)
+        const scanner = new CSSScanner({}, root)
         await scanner.init()
 
         const styleCSSSources = new Map()
@@ -470,9 +461,7 @@ describe('style CSS extraction helpers', () => {
 
     it('emits static theme tokens and keyframes without class references', async () => {
         const root = createFixture()
-        const scanner = new CSSScanner({
-            include: []
-        }, root)
+        const scanner = new CSSScanner({}, root)
         await scanner.init()
 
         const styleCSSSources = new Map()
@@ -520,9 +509,7 @@ describe('style CSS extraction helpers', () => {
                 color: blue;
             }
         `)
-        const scanner = new CSSScanner({
-            include: []
-        }, root)
+        const scanner = new CSSScanner({}, root)
         await scanner.init()
 
         const styleCSSSources = new Map()
@@ -558,9 +545,7 @@ describe('style CSS extraction helpers', () => {
 
     it('preserves native CSS when a Master CSS import root opts out of pruning', async () => {
         const root = createFixture()
-        const scanner = new CSSScanner({
-            include: []
-        }, root)
+        const scanner = new CSSScanner({}, root)
         await scanner.init()
 
         const styleCSSSources = new Map()
@@ -603,9 +588,7 @@ describe('style CSS extraction helpers', () => {
                 color: blue;
             }
         `)
-        const scanner = new CSSScanner({
-            include: []
-        }, root)
+        const scanner = new CSSScanner({}, root)
         await scanner.init()
 
         const styleCSSSources = new Map()
@@ -630,9 +613,7 @@ describe('style CSS extraction helpers', () => {
 
     it('can emit pruned native CSS without generated Master CSS', async () => {
         const root = createFixture()
-        const scanner = new CSSScanner({
-            include: []
-        }, root)
+        const scanner = new CSSScanner({}, root)
         await scanner.init()
 
         const styleCSSSources = new Map()
@@ -658,9 +639,7 @@ describe('style CSS extraction helpers', () => {
 
     it('returns empty CSS when generated output is disabled without style sources', async () => {
         const root = createFixture()
-        const scanner = new CSSScanner({
-            include: []
-        }, root)
+        const scanner = new CSSScanner({}, root)
         await scanner.init()
         await scanner.scan(join(root, 'app/page.html'), '<div class="block"></div>')
 

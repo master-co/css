@@ -36,7 +36,7 @@ The same scanning model is used by build integrations and by tools that call `@m
 ---
 
 ## Source boundaries
-The scanner only sees files inside its source boundary. Configure that boundary with `@source`, `@source not`, and, when needed, `@source required`.
+The scanner only sees files inside its source boundary. Configure that boundary with `@source` and `@source not`.
 
 ```css name=index.css
 @master;
@@ -45,15 +45,14 @@ The scanner only sees files inside its source boundary. Configure that boundary 
 @source not 'src/**/*.stories.tsx';
 ```
 
-`@source` broadly defines files that may contain classes. `@source not` removes known noise such as tests, generated files, build output, and vendor code. `@source required` is for mandatory files that should be scanned even if they would otherwise be excluded.
+`@source` broadly defines files that may contain classes. `@source not` removes known noise such as tests, generated files, build output, and vendor code. Multiple source directives are combined as `(source union) - (source not union)`.
 
 For exact stylesheet directive syntax, see [CSS directives](/reference/directives).
 
 ```css name=index.css
 @master;
 @source 'app/**/*.{ts,tsx,mdx}';
-@source not 'app/admin/**';
-@source required 'app/admin/critical-classes.ts';
+@source not 'app/**/*.test.tsx';
 ```
 
 In Vite, transformed modules are also fed to the scanner during development. That makes updates fast, but production correctness still depends on class names that exist in scanned source files or are explicitly included.

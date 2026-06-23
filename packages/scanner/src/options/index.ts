@@ -1,5 +1,4 @@
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
-import type { Pattern as FastGlobPattern } from 'fast-glob'
 import type { SourceAdapter } from '@master/css-source'
 
 const scannerOptions: ScannerOptions = {
@@ -7,11 +6,7 @@ const scannerOptions: ScannerOptions = {
     verbose: 1,
     // specify a compiled Master CSS manifest override
     manifest: undefined,
-    // forcibly specify required sources for scanning, not excluded by `options.exclude`
-    required: [],
-    // specify sources for scanning
-    include: ['**/*.{html,htm,js,jsx,mjs,cjs,ts,tsx,mts,cts,svelte,astro,vue,md,mdx,pug,php}'],
-    // specify sources to exclude
+    // specify module sources to exclude
     exclude: [
         '**/*.css',
         '**/*.d.ts',
@@ -53,9 +48,7 @@ export interface ScannerOptions {
     verbose?: number
     manifest?: MasterCSSManifest,
     path?: string,
-    required?: FastGlobPattern[]
-    include?: FastGlobPattern[]
-    exclude?: FastGlobPattern[]
+    exclude?: string[]
     safelist?: string[]
     blocklist?: (string | RegExp)[]
     adapters?: SourceAdapter[]

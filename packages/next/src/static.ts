@@ -153,7 +153,6 @@ function createSession(projectDir: string, outputPath: string, options: Resolved
         .init()
         .then(async () => {
             await registerStyleCSSEntries(projectDir, session)
-            await scanner.prepare()
             await write()
             return scanner
         })
@@ -284,7 +283,7 @@ export async function scanStaticModule(statePath: string, resourcePath: string, 
     })
     const session = await getOrCreateStaticSession(state.projectDir, state.outputPath, options)
     await appendScannedSource(state.scanLogPath, resourcePath)
-    const changed = await session.scanner.scan(resourcePath, source)
+    const changed = await session.scanner.scanModule(resourcePath, source)
     if (changed) {
         await session.write()
     } else if (!existsSync(state.outputPath)) {

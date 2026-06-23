@@ -6,7 +6,7 @@
 
 ## Inputs And Outputs
 
-- Input: scanner options, source globs, source text, source adapters, and resolved Master CSS manifest.
+- Input: scanner options, source text, source adapters, and resolved Master CSS manifest.
 - Output: `css.text`, valid/invalid/latent class caches, native class usage state, and scanner state events.
 
 ## Public APIs
@@ -31,7 +31,7 @@
 
 - Assuming dynamically concatenated classes are statically knowable.
 - Broadly loosening extraction filters without false-positive tests.
-- Changing default include/exclude patterns casually.
+- Changing default exclude patterns casually.
 
 ## Risk Areas
 
@@ -39,7 +39,7 @@
 - `extractClassCandidates()` false positives and false negatives in `@master/css-source`.
 - `invalidClasses` and `validClasses` cache behavior.
 - Reset loops triggered by integration-managed dependencies.
-- Source allow/exclude matching.
+- Module exclude matching.
 - Vite/Webpack/Next virtual-module consumers.
 - Stylesheet native CSS merging, pruning/source directives, and generated CSS ordering belong in `@master/css-stylesheet`.
 - Do not add project manifest discovery, workspace detection, or manifest loading here; use `@master/css-project` in the calling CLI/build/tooling package.

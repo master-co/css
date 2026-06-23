@@ -48,7 +48,6 @@ export interface MasterCSSWebpackContext {
     on(...args: Parameters<CSSScanner['on']>): unknown
     init(customOptions?: ScannerOptions): Promise<unknown>
     reset(customOptions?: ScannerOptions): Promise<unknown>
-    prepare(): Promise<unknown> | unknown
     getOptions(): ScannerOptions
     getPluginInitialized(): boolean
     setPluginInitialized(pluginInitialized: boolean): void
@@ -153,12 +152,8 @@ export class MasterCSSPlugin {
         return this
     }
 
-    prepare() {
-        return this.scanner.prepare()
-    }
-
-    scan(source: string, content: string) {
-        return this.scanner.scan(source, content)
+    scanModule(source: string, content: string) {
+        return this.scanner.scanModule(source, content)
     }
 
     private async createDefaultManifestModule() {
@@ -257,7 +252,7 @@ export class MasterCSSPlugin {
             this.registerStyleCSSSource(modulePath, content)
         ))
         await Promise.all(insertEntries.map(([modulePath, content]) =>
-            this.scan(modulePath, content)
+            this.scanModule(modulePath, content)
         ))
     }
 
@@ -273,7 +268,6 @@ export class MasterCSSPlugin {
             on: (...args) => this.on(...args),
             init: (customOptions = this.customOptions) => this.init(customOptions),
             reset: (customOptions = this.customOptions) => this.reset(customOptions),
-            prepare: () => this.prepare(),
             getOptions: () => this.options,
             getPluginInitialized: () => this.pluginInitialized,
             setPluginInitialized: (pluginInitialized) => {

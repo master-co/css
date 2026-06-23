@@ -320,7 +320,7 @@ test('highlights every Master CSS directive keyword', () => {
 
 test('highlights directive preludes, strings, class lists, and dynamic patterns', () => {
     const tokens = tokenize(`
-        @source not required "src/**/*.{ts,tsx}";
+        @source not "src/**/*.{ts,tsx}";
         @reference './tokens.css';
         @blocklist "debug-*";
         @theme inline dark {}
@@ -338,7 +338,6 @@ test('highlights directive preludes, strings, class lists, and dynamic patterns'
     `)
 
     expectScope(tokens, 'not', 'storage.modifier.master-css')
-    expectScope(tokens, 'required', 'storage.modifier.master-css')
     expectSomeScope(tokens, 'src', 'string.quoted.double.master-css')
     expectSomeScope(tokens, 'tokens', 'string.quoted.single.master-css')
     expectSomeScope(tokens, 'debug-', 'string.quoted.double.master-css')
@@ -398,7 +397,7 @@ test('highlights detailed Master directive syntax without misclassifying native 
             --tracking-tightest: -0.072em;
         }
 
-        @source not required "src/**/*.{ts,tsx}";
+        @source not "src/**/*.{ts,tsx}";
         @reference "./tokens.css";
         @blocklist "debug-*";
         @safelist "dialog-open bg:primary@dark {fg:red;bg:blue}";
