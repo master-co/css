@@ -8,10 +8,11 @@ Default read order:
 
 1. `AGENTS.md`
 2. `.ai/context/index.md`
-3. The affected package `package.json`
-4. The affected package-local `AI.md`, if present
-5. The task-specific `.ai/context/*.md` pack
-6. Existing source and tests near the behavior being changed
+3. `.ai/context/package-routing.md` when paths, packages, or a diff are known
+4. The affected package `package.json`
+5. The affected package-local `AI.md`, if present
+6. The task-specific `.ai/context/*.md` pack
+7. Existing source and tests near the behavior being changed
 
 Do not read all `.ai/` files by default. Do not modify high-risk parser, compiler, runtime, extraction, language, ESLint, package-boundary, or CSS output behavior using only a short context pack; follow `.ai/context/accuracy-guardrails.md` and escalate to deeper references.
 
@@ -49,6 +50,7 @@ When cycle pressure appears, extract dependency-light contracts into `@master/cs
 ## Before Editing
 
 - Identify the affected package and read its `package.json`.
+- Use `.ai/context/package-routing.md` when the task names paths, packages, or a diff.
 - Read the affected package-local `AI.md`, if present.
 - Read the relevant task pack from `.ai/context/`.
 - Inspect existing source, tests, fixtures, and downstream consumers before designing a change.

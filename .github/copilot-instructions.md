@@ -5,6 +5,7 @@ Follow `AGENTS.md` as the canonical repository instruction file.
 Before changing code, identify the affected package and read:
 
 - `.ai/context/index.md`
+- `.ai/context/package-routing.md` when paths, packages, or a diff are known
 - The package `package.json`
 - The package-local `AI.md`, if present
 - The task-specific `.ai/context/*.md` pack
