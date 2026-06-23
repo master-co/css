@@ -27,7 +27,7 @@
 ## Boundaries
 
 - Do not depend on engine, compiler, scanner, validator, runtime, server, language service, build integrations, framework integrations, examples, or site.
-- Keep this package limited to source text extraction. Static scanner state, filesystem watching, class validation, CSS generation, and stylesheet CSS composition belong in `@master/css-scanner`.
+- Keep this package limited to source text extraction. Static scanner state, class validation, and CSS generation belong in `@master/css-scanner`; file-change observation and invalidation belong in CLI/build/framework integrations.
 - Low-level lexical ranges, class tokenization, directive/import scanners, and CSS unit constants remain in `@master/css-lexer`.
 
 ## Required Tests

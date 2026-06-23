@@ -12,7 +12,7 @@ npm install @master/css-source
 
 `@master/css-source` extracts unvalidated Master CSS class candidates from source text and provides source-format-aware adapters for HTML and JavaScript/TypeScript syntax.
 
-It does not validate classes, generate CSS, maintain scanner state, watch files, or resolve manifests. Those responsibilities belong to `@master/css-scanner`, `@master/css-engine`, and `@master/css-project`.
+It does not validate classes, generate CSS, maintain scanner state, observe file changes, or resolve manifests. Scanner state belongs to `@master/css-scanner`; file-change invalidation belongs to CLI/build/framework integrations; manifest resolution belongs to `@master/css-project`.
 
 ## API
 

@@ -273,7 +273,7 @@ The CSS entry point is explicit: import `@master/css` from the stylesheet that s
 <StepSection>
     <Step>
         #### <StepNum />Load the scanning context
-        The integration creates a source scanner with source directives, optional fixed classes, and the project CSS entry graph. In watch mode, manifest and source changes reset or update this context.
+        The integration creates a source scanner with source directives, optional fixed classes, and the project CSS entry graph. During development, integrations use their host watch, HMR, or invalidation system to reset or update this context.
 
         ```css name=index.css
         @master;
