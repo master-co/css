@@ -3,7 +3,7 @@ on:
     push:
         branches:
             - "**"
-    pull_request_target:
+    pull_request:
         types:
             - opened
             - reopened
@@ -13,112 +13,165 @@ on:
 permissions:
     contents: read
 
-jobs:
-    lint:
-        runs-on: ubuntu-latest
-        strategy:
-            matrix:
-                node-version: [24]
-        steps:
-            - uses: actions/checkout@v6
-            - uses: pnpm/action-setup@v6
-              with:
-                  version: 10.33.2
-            - uses: actions/setup-node@v6
-              with:
-                  node-version: ${{ matrix.node-version }}
-                  cache: 'pnpm'
-            - run: pnpm submodules
-              env:
-                  GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-            - run: pnpm install
-            - run: pnpm run build
-            - run: pnpm run lint
+concurrency:
+    group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+    cancel-in-progress: true
 
-    test:
-        runs-on: ${{ matrix.os }}
-        strategy:
-            matrix:
-                node-version: [24]
-                os: [ubuntu-latest, windows-latest, macos-latest]
+env:
+    BUILD_ARTIFACT_NAME: master-css-build-${{ github.sha }}
+    TRUSTED_CI: ${{ github.event_name == 'push' || (github.event.pull_request.head.repo.full_name == github.repository && github.actor != 'dependabot[bot]') }}
+
+jobs:
+    prepare:
+        runs-on: ubuntu-latest
         steps:
-            - uses: actions/checkout@v6
-            - uses: pnpm/action-setup@v6
+            - if: ${{ env.TRUSTED_CI != 'true' }}
+              run: |
+                  echo "Full CI requires the private internal submodule and is not available for untrusted pull requests."
+                  echo "Prepare is a no-op so validation jobs can fail explicitly."
+            - if: ${{ env.TRUSTED_CI == 'true' }}
+              uses: actions/checkout@v6
+            - if: ${{ env.TRUSTED_CI == 'true' }}
+              uses: ./.github/actions/setup-pnpm
               with:
-                  version: 10.33.2
-            - uses: actions/setup-node@v6
+                  submodules-token: ${{ secrets.GH_TOKEN }}
+            - if: ${{ env.TRUSTED_CI == 'true' }}
+              run: pnpm run build
+            - if: ${{ env.TRUSTED_CI == 'true' }}
+              uses: actions/upload-artifact@v4
               with:
-                  node-version: ${{ matrix.node-version }}
-                  cache: 'pnpm'
-            - run: pnpm submodules
-              env:
-                  GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-            - run: pnpm install
-            - run: pnpm run build
-            - run: pnpm run test:ci
+                  name: ${{ env.BUILD_ARTIFACT_NAME }}
+                  if-no-files-found: error
+                  retention-days: 7
+                  path: |
+                      packages/*/dist/**
+                      packages/preset/src/default-manifest.json
+                      packages/preset/src/default-manifest.json.d.ts
+                      packages/vscode/package.json
+
+    lint:
+        needs: prepare
+        runs-on: ubuntu-latest
+        steps:
+            - if: ${{ env.TRUSTED_CI != 'true' }}
+              run: |
+                  echo "Full CI requires the private internal submodule and is not available for untrusted pull requests."
+                  exit 1
+            - if: ${{ env.TRUSTED_CI == 'true' }}
+              uses: actions/checkout@v6
+            - if: ${{ env.TRUSTED_CI == 'true' }}
+              uses: ./.github/actions/setup-pnpm
+              with:
+                  submodules-token: ${{ secrets.GH_TOKEN }}
+            - if: ${{ env.TRUSTED_CI == 'true' }}
+              uses: actions/download-artifact@v4
+              with:
+                  name: ${{ env.BUILD_ARTIFACT_NAME }}
+                  path: .
+            - if: ${{ env.TRUSTED_CI == 'true' }}
+              run: pnpm run lint
 
     type-check:
+        needs: prepare
         runs-on: ubuntu-latest
-        strategy:
-            matrix:
-                node-version: [24]
         steps:
-            - uses: actions/checkout@v6
-            - uses: pnpm/action-setup@v6
+            - if: ${{ env.TRUSTED_CI != 'true' }}
+              run: |
+                  echo "Full CI requires the private internal submodule and is not available for untrusted pull requests."
+                  exit 1
+            - if: ${{ env.TRUSTED_CI == 'true' }}
+              uses: actions/checkout@v6
+            - if: ${{ env.TRUSTED_CI == 'true' }}
+              uses: ./.github/actions/setup-pnpm
               with:
-                  version: 10.33.2
-            - uses: actions/setup-node@v6
+                  submodules-token: ${{ secrets.GH_TOKEN }}
+            - if: ${{ env.TRUSTED_CI == 'true' }}
+              uses: actions/download-artifact@v4
               with:
-                  node-version: ${{ matrix.node-version }}
-                  cache: 'pnpm'
-            - run: pnpm submodules
-              env:
-                  GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-            - run: pnpm install
-            - run: pnpm run build
-            - run: pnpm run type-check
+                  name: ${{ env.BUILD_ARTIFACT_NAME }}
+                  path: .
+            - if: ${{ env.TRUSTED_CI == 'true' }}
+              run: pnpm run type-check
 
-    example-check:
+    test:
+        needs: prepare
         runs-on: ${{ matrix.os }}
         strategy:
             matrix:
-                node-version: [24]
                 os: [ubuntu-latest, windows-latest, macos-latest]
         steps:
-            - uses: actions/checkout@v6
-            - uses: pnpm/action-setup@v6
+            - if: ${{ env.TRUSTED_CI != 'true' }}
+              run: |
+                  echo "Full CI requires the private internal submodule and is not available for untrusted pull requests."
+                  exit 1
+            - if: ${{ env.TRUSTED_CI == 'true' }}
+              uses: actions/checkout@v6
+            - if: ${{ env.TRUSTED_CI == 'true' }}
+              uses: ./.github/actions/setup-pnpm
               with:
-                  version: 10.33.2
-            - uses: actions/setup-node@v6
+                  submodules-token: ${{ secrets.GH_TOKEN }}
+            - if: ${{ env.TRUSTED_CI == 'true' && matrix.os == 'ubuntu-latest' }}
+              uses: actions/download-artifact@v4
               with:
-                  node-version: ${{ matrix.node-version }}
-                  cache: 'pnpm'
-            - run: pnpm submodules
-              env:
-                  GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-            - run: pnpm install
-            - run: pnpm build
-            - run: pnpm install
-            - run: pnpm build:examples
+                  name: ${{ env.BUILD_ARTIFACT_NAME }}
+                  path: .
+            - if: ${{ env.TRUSTED_CI == 'true' && matrix.os != 'ubuntu-latest' }}
+              run: pnpm run build
+            - if: ${{ env.TRUSTED_CI == 'true' }}
+              run: pnpm run test:ci
+
+    example-check:
+        needs: prepare
+        runs-on: ${{ matrix.os }}
+        strategy:
+            matrix:
+                os: [ubuntu-latest, windows-latest, macos-latest]
+        steps:
+            - if: ${{ env.TRUSTED_CI != 'true' }}
+              run: |
+                  echo "Full CI requires the private internal submodule and is not available for untrusted pull requests."
+                  exit 1
+            - if: ${{ env.TRUSTED_CI == 'true' }}
+              uses: actions/checkout@v6
+            - if: ${{ env.TRUSTED_CI == 'true' }}
+              uses: ./.github/actions/setup-pnpm
+              with:
+                  submodules-token: ${{ secrets.GH_TOKEN }}
+            - if: ${{ env.TRUSTED_CI == 'true' && matrix.os == 'ubuntu-latest' }}
+              uses: actions/download-artifact@v4
+              with:
+                  name: ${{ env.BUILD_ARTIFACT_NAME }}
+                  path: .
+            - if: ${{ env.TRUSTED_CI == 'true' && matrix.os != 'ubuntu-latest' }}
+              run: pnpm build
+            - if: ${{ env.TRUSTED_CI == 'true' }}
+              run: pnpm install --frozen-lockfile
+            - if: ${{ env.TRUSTED_CI == 'true' }}
+              run: pnpm build:examples
 
     e2e:
+        needs: prepare
         runs-on: ubuntu-latest
         steps:
-            - uses: actions/checkout@v6
-            - uses: pnpm/action-setup@v6
+            - if: ${{ env.TRUSTED_CI != 'true' }}
+              run: |
+                  echo "Full CI requires the private internal submodule and is not available for untrusted pull requests."
+                  exit 1
+            - if: ${{ env.TRUSTED_CI == 'true' }}
+              uses: actions/checkout@v6
+            - if: ${{ env.TRUSTED_CI == 'true' }}
+              uses: ./.github/actions/setup-pnpm
               with:
-                  version: 10.33.2
-            - uses: actions/setup-node@v6
+                  submodules-token: ${{ secrets.GH_TOKEN }}
+            - if: ${{ env.TRUSTED_CI == 'true' }}
+              run: pnpm exec playwright install --with-deps
+            - if: ${{ env.TRUSTED_CI == 'true' }}
+              uses: actions/download-artifact@v4
               with:
-                  node-version: 24
-                  cache: 'pnpm'
-            - run: pnpm submodules
-              env:
-                  GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-            - run: pnpm install
-            - run: pnpm exec playwright install --with-deps
-            - run: pnpm run build
-            - run: pnpm e2e
+                  name: ${{ env.BUILD_ARTIFACT_NAME }}
+                  path: .
+            - if: ${{ env.TRUSTED_CI == 'true' }}
+              run: pnpm e2e
 
     release:
         needs:
@@ -136,19 +189,15 @@ jobs:
             id-token: write
         steps:
             - uses: actions/checkout@v6
-            - uses: pnpm/action-setup@v6
+            - uses: ./.github/actions/setup-pnpm
               with:
-                  version: 10.33.2
-            - uses: actions/setup-node@v6
-              with:
-                  node-version: 24
-                  cache: "pnpm"
-            - run: pnpm submodules
-              env:
-                  GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-            - run: pnpm install
+                  submodules-token: ${{ secrets.GH_TOKEN }}
             - run: pnpm install semantic-release-config-techor --workspace-root
-            - run: pnpm run build
+            - uses: actions/download-artifact@v4
+              with:
+                  name: ${{ env.BUILD_ARTIFACT_NAME }}
+                  path: .
+            - run: pnpm --filter master-css-vscode generate
             - run: pnpm exec semantic-release
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
