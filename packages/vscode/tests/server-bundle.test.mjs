@@ -1,6 +1,6 @@
 import { spawn } from 'node:child_process'
 import { readFileSync, statSync } from 'node:fs'
-import { mkdtemp, rm } from 'node:fs/promises'
+import { mkdtemp, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { dirname, join, resolve } from 'node:path'
 import { pathToFileURL, fileURLToPath } from 'node:url'
@@ -16,12 +16,32 @@ const packageDir = resolve(here, '..')
 const distDir = resolve(packageDir, 'dist')
 const serverPath = resolve(distDir, 'server.min.mjs')
 const extensionPath = resolve(distDir, 'extension.min.mjs')
-const workspaceDir = resolve(here, 'fixtures', 'bundled-config')
 const sourceGrammarPath = './node_modules/@master/css-language/syntaxes/master-css.tmLanguage.json'
 const stagedGrammarPath = './dist/node_modules/@master/css-language/syntaxes/master-css.tmLanguage.json'
+const bundledClassName = 'bundle-button'
+const bundledWorkspaceHTML = `<div class="${bundledClassName}"></div>`
+const bundledWorkspaceCSS = `@master;
+
+@components {
+    ${bundledClassName} {
+        display: inline-flex;
+    }
+}
+`
 
 function readPackageJSON(path = resolve(packageDir, 'package.json')) {
     return JSON.parse(readFileSync(path, 'utf8'))
+}
+
+async function createBundledWorkspace() {
+    const workspaceDir = await mkdtemp(join(tmpdir(), 'master-css-vscode-workspace-'))
+    await writeFile(join(workspaceDir, 'index.html'), bundledWorkspaceHTML)
+    await writeFile(join(workspaceDir, 'index.css'), bundledWorkspaceCSS)
+    return workspaceDir
+}
+
+function delay(ms) {
+    return new Promise((resolvePromise) => setTimeout(resolvePromise, ms))
 }
 
 function encode(message) {
@@ -203,6 +223,56 @@ function expectStagedRuntimePackages({ stagingDir, files }, runtimePackages) {
     }
 }
 
+function positionAt(text, offset) {
+    const lines = text.slice(0, offset).split(/\r\n|\r|\n/)
+    return {
+        line: lines.length - 1,
+        character: lines.at(-1).length
+    }
+}
+
+function getHoverText(hover) {
+    const contents = hover?.contents
+    if (typeof contents === 'string') return contents
+    if (Array.isArray(contents)) return contents.map((item) => typeof item === 'string' ? item : item.value).join('\n')
+    return contents?.value ?? ''
+}
+
+async function waitForBundledClassHover(server, documentUri, documentText) {
+    const classOffset = documentText.indexOf(bundledClassName)
+    expect(classOffset).toBeGreaterThanOrEqual(0)
+    const position = positionAt(documentText, classOffset)
+    const deadline = Date.now() + 15000
+    let lastError
+
+    while (Date.now() < deadline) {
+        try {
+            const hover = await server.request('textDocument/hover', {
+                textDocument: { uri: documentUri },
+                position
+            })
+            const hoverText = getHoverText(hover)
+            if (
+                hoverText.includes(`.${bundledClassName}`)
+                && hoverText.includes('display: inline-flex')
+            ) {
+                return hover
+            }
+            lastError = new Error(`Unexpected hover response: ${hoverText || '<empty>'}`)
+        } catch (error) {
+            lastError = error
+        }
+        await delay(100)
+    }
+
+    throw new Error(
+        `Timed out waiting for ${bundledClassName} hover from staged language server.\n`
+        + `Last error: ${lastError?.stack ?? lastError?.message ?? lastError ?? '<none>'}\n`
+        + `stderr:\n${server.stderr() || '<empty>'}\n`
+        + `notifications:\n${JSON.stringify(server.notifications(), null, 2)}`
+    )
+}
+
 test('build emits the server bundle', () => {
     expect(statSync(serverPath).isFile()).toBe(true)
 })
@@ -303,56 +373,58 @@ test('staged extension includes shared TextMate grammar asset', async () => {
 })
 
 test('staged language server loads a CSS workspace entry', async () => {
+    const workspaceDir = await createBundledWorkspace()
     const workspaceUri = pathToFileURL(workspaceDir).toString()
-    const documentUri = pathToFileURL(resolve(workspaceDir, 'index.html')).toString()
+    const documentUri = pathToFileURL(join(workspaceDir, 'index.html')).toString()
 
-    await withStagedExtension(async ({ stagingDir }) => {
-        const server = createLanguageServer({
-            cwd: stagingDir,
-            serverPath: resolve(stagingDir, 'dist', 'server.min.mjs')
-        })
+    try {
+        await withStagedExtension(async ({ stagingDir }) => {
+            const server = createLanguageServer({
+                cwd: stagingDir,
+                serverPath: resolve(stagingDir, 'dist', 'server.min.mjs')
+            })
 
-        try {
-            await server.request('initialize', {
-                processId: null,
-                rootUri: workspaceUri,
-                capabilities: {
-                    textDocument: {
-                        hover: {
-                            contentFormat: ['markdown', 'plaintext']
+            try {
+                await server.request('initialize', {
+                    processId: null,
+                    rootUri: workspaceUri,
+                    capabilities: {
+                        textDocument: {
+                            hover: {
+                                contentFormat: ['markdown', 'plaintext']
+                            }
+                        },
+                        workspace: {
+                            workspaceFolders: true
                         }
                     },
-                    workspace: {
-                        workspaceFolders: true
+                    workspaceFolders: [
+                        {
+                            uri: workspaceUri,
+                            name: 'bundled-config'
+                        }
+                    ]
+                })
+                server.notify('initialized', {})
+                server.notify('textDocument/didOpen', {
+                    textDocument: {
+                        uri: documentUri,
+                        languageId: 'html',
+                        version: 1,
+                        text: bundledWorkspaceHTML
                     }
-                },
-                workspaceFolders: [
-                    {
-                        uri: workspaceUri,
-                        name: 'bundled-config'
-                    }
-                ]
-            })
-            server.notify('initialized', {})
-            server.notify('textDocument/didOpen', {
-                textDocument: {
-                    uri: documentUri,
-                    languageId: 'html',
-                    version: 1,
-                    text: readFileSync(resolve(workspaceDir, 'index.html'), 'utf8')
-                }
-            })
+                })
 
-            await server.waitForNotification((message) =>
-                message.method === 'window/logMessage'
-                && message.params?.message?.includes('Initialized workspace (with manifest entry)')
-            )
+                await waitForBundledClassHover(server, documentUri, bundledWorkspaceHTML)
 
-            expect(server.stderr()).not.toContain('Cannot find module')
-            expect(server.stderr()).not.toContain('Cannot find package')
-            expect(JSON.stringify(server.notifications())).not.toContain('Failed to load manifest')
-        } finally {
-            await server.dispose()
-        }
-    })
+                expect(server.stderr()).not.toContain('Cannot find module')
+                expect(server.stderr()).not.toContain('Cannot find package')
+                expect(JSON.stringify(server.notifications())).not.toContain('Failed to load manifest')
+            } finally {
+                await server.dispose()
+            }
+        })
+    } finally {
+        await rm(workspaceDir, { recursive: true, force: true, maxRetries: 10, retryDelay: 100 })
+    }
 })
