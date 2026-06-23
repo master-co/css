@@ -13,7 +13,6 @@ const units = {
     reference: {
         categories: [
             'Overview',
-            'Stylesheet',
             'Layout',
             'Flexbox & Grid',
             'Spacing',

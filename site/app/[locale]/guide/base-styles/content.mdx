@@ -1,0 +1,61 @@
+## Overview [sr-only]
+Base styles are the normalization and document baseline rules that ship with Master CSS. They live in the `base` cascade layer, before project defaults, components, and utilities.
+
+Most projects should import the default Master CSS entry once from the app stylesheet.
+
+```css
+@import '@master/css';
+```
+
+That entry includes the layer declaration, default theme tokens, base styles, variants, and generated CSS insertion point.
+
+## Base-only import
+Use the split base entry only when a stylesheet needs the default layer order and browser normalization without the full Master CSS entry.
+
+```css
+@import '@master/css/base.css';
+```
+
+The base entry declares the layer order:
+
+```css
+@layer theme, base, defaults, components, utilities;
+```
+
+Base rules are emitted in `@layer base`, so later Master CSS layers can override them predictably.
+
+## Add project base styles
+Write project-wide element defaults in native CSS. Put them in `@layer base` when they should behave like document baseline styles.
+
+```css
+@import '@master/css';
+
+@layer base {
+    html {
+        color-scheme: light dark;
+    }
+
+    body {
+        background: var(--color-surface);
+        color: var(--color-text-body);
+    }
+}
+```
+
+Keep base styles broad and structural. Use `@defaults`, `@components`, and utilities for reusable product vocabulary and local markup decisions.
+
+## Override from higher layers
+Because the layer order is stable, component and utility classes can override base styles without extra specificity.
+
+```html
+<a class="text:blue-60 text-decoration:underline">
+    Account settings
+</a>
+```
+
+This works even though the default base styles normalize links, because utility rules are emitted in the later `utilities` layer.
+
+## Source rules
+For the exact normalization rules shipped by Master CSS, see [`packages/preset/src/base.css`](https://github.com/master-co/css/blob/main/packages/preset/src/base.css).
+
+Treat that file as source reference. This guide focuses on how to include and extend the base layer in an application.

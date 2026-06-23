@@ -22,5 +22,5 @@ Use this for human and AI review.
 - No unnecessary dependencies were added.
 - CI, release, lockfile, package manager, and generated files were not changed casually.
 - Docs/examples were updated if user-facing behavior changed.
-- Directive syntax, semantics, lowering, extraction, or refactor changes updated `site/app/[locale]/reference/directives/content.mdx`.
+- Directive syntax, semantics, lowering, extraction, or refactor changes updated `site/app/[locale]/guide/directives/content.mdx`.
 - Performance risk was considered for hot paths.
