@@ -74,11 +74,10 @@ shasum -a 256 packages/engine/dist/core.mjs packages/runtime/dist/global.min.js 
 
 ## CI Equivalents
 
-- Prepare workflow: `pnpm submodules`, `pnpm install --frozen-lockfile`, then `pnpm run build`; Ubuntu validation and release jobs reuse the uploaded build artifact.
-- Test workflow: install dependencies, download the build artifact on Ubuntu, build locally on Windows/macOS, then `pnpm run test:ci`
-- Lint workflow: install dependencies, download the build artifact, then `pnpm run lint`
-- Type-check workflow: install dependencies, download the build artifact, then `pnpm run type-check`
-- E2E workflow: install dependencies, Playwright install, download the build artifact, then `pnpm e2e`
-- Example check: install dependencies, download the build artifact on Ubuntu or build locally on Windows/macOS, reinstall, then `pnpm build:examples`
-- Release workflow: wait for validation jobs, install release tooling, download the verified build artifact, refresh VS Code generated package assets, then `pnpm exec semantic-release`
+- Test workflow: install dependencies, `pnpm run build`, then `pnpm run test:ci`
+- Lint workflow: install dependencies, `pnpm run build`, then `pnpm run lint`
+- Type-check workflow: install dependencies, `pnpm run build`, then `pnpm run type-check`
+- E2E workflow: install dependencies, Playwright install, `pnpm run build`, then `pnpm e2e`
+- Example check: install dependencies, `pnpm build`, reinstall, then `pnpm build:examples`
+- Release workflow: wait for validation jobs, install release tooling, `pnpm run build`, then `pnpm exec semantic-release`
 - Fork and Dependabot pull requests do not receive the private submodule token; validation jobs fail before checkout with an explicit message instead of running untrusted code with secrets.

@@ -18,17 +18,16 @@ concurrency:
     cancel-in-progress: true
 
 env:
-    BUILD_ARTIFACT_NAME: master-css-build-${{ github.sha }}
     TRUSTED_CI: ${{ github.event_name == 'push' || (github.event.pull_request.head.repo.full_name == github.repository && github.actor != 'dependabot[bot]') }}
 
 jobs:
-    prepare:
+    lint:
         runs-on: ubuntu-latest
         steps:
             - if: ${{ env.TRUSTED_CI != 'true' }}
               run: |
                   echo "Full CI requires the private internal submodule and is not available for untrusted pull requests."
-                  echo "Prepare is a no-op so validation jobs can fail explicitly."
+                  exit 1
             - if: ${{ env.TRUSTED_CI == 'true' }}
               uses: actions/checkout@v6
             - if: ${{ env.TRUSTED_CI == 'true' }}
@@ -38,41 +37,9 @@ jobs:
             - if: ${{ env.TRUSTED_CI == 'true' }}
               run: pnpm run build
             - if: ${{ env.TRUSTED_CI == 'true' }}
-              uses: actions/upload-artifact@v4
-              with:
-                  name: ${{ env.BUILD_ARTIFACT_NAME }}
-                  if-no-files-found: error
-                  retention-days: 7
-                  path: |
-                      packages/*/dist/**
-                      packages/preset/src/default-manifest.json
-                      packages/preset/src/default-manifest.json.d.ts
-                      packages/vscode/package.json
-
-    lint:
-        needs: prepare
-        runs-on: ubuntu-latest
-        steps:
-            - if: ${{ env.TRUSTED_CI != 'true' }}
-              run: |
-                  echo "Full CI requires the private internal submodule and is not available for untrusted pull requests."
-                  exit 1
-            - if: ${{ env.TRUSTED_CI == 'true' }}
-              uses: actions/checkout@v6
-            - if: ${{ env.TRUSTED_CI == 'true' }}
-              uses: ./.github/actions/setup-pnpm
-              with:
-                  submodules-token: ${{ secrets.GH_TOKEN }}
-            - if: ${{ env.TRUSTED_CI == 'true' }}
-              uses: actions/download-artifact@v4
-              with:
-                  name: ${{ env.BUILD_ARTIFACT_NAME }}
-                  path: .
-            - if: ${{ env.TRUSTED_CI == 'true' }}
               run: pnpm run lint
 
     type-check:
-        needs: prepare
         runs-on: ubuntu-latest
         steps:
             - if: ${{ env.TRUSTED_CI != 'true' }}
@@ -86,15 +53,11 @@ jobs:
               with:
                   submodules-token: ${{ secrets.GH_TOKEN }}
             - if: ${{ env.TRUSTED_CI == 'true' }}
-              uses: actions/download-artifact@v4
-              with:
-                  name: ${{ env.BUILD_ARTIFACT_NAME }}
-                  path: .
+              run: pnpm run build
             - if: ${{ env.TRUSTED_CI == 'true' }}
               run: pnpm run type-check
 
     test:
-        needs: prepare
         runs-on: ${{ matrix.os }}
         strategy:
             matrix:
@@ -110,18 +73,12 @@ jobs:
               uses: ./.github/actions/setup-pnpm
               with:
                   submodules-token: ${{ secrets.GH_TOKEN }}
-            - if: ${{ env.TRUSTED_CI == 'true' && matrix.os == 'ubuntu-latest' }}
-              uses: actions/download-artifact@v4
-              with:
-                  name: ${{ env.BUILD_ARTIFACT_NAME }}
-                  path: .
-            - if: ${{ env.TRUSTED_CI == 'true' && matrix.os != 'ubuntu-latest' }}
+            - if: ${{ env.TRUSTED_CI == 'true' }}
               run: pnpm run build
             - if: ${{ env.TRUSTED_CI == 'true' }}
               run: pnpm run test:ci
 
     example-check:
-        needs: prepare
         runs-on: ${{ matrix.os }}
         strategy:
             matrix:
@@ -137,12 +94,7 @@ jobs:
               uses: ./.github/actions/setup-pnpm
               with:
                   submodules-token: ${{ secrets.GH_TOKEN }}
-            - if: ${{ env.TRUSTED_CI == 'true' && matrix.os == 'ubuntu-latest' }}
-              uses: actions/download-artifact@v4
-              with:
-                  name: ${{ env.BUILD_ARTIFACT_NAME }}
-                  path: .
-            - if: ${{ env.TRUSTED_CI == 'true' && matrix.os != 'ubuntu-latest' }}
+            - if: ${{ env.TRUSTED_CI == 'true' }}
               run: pnpm build
             - if: ${{ env.TRUSTED_CI == 'true' }}
               run: pnpm install --frozen-lockfile
@@ -150,7 +102,6 @@ jobs:
               run: pnpm build:examples
 
     e2e:
-        needs: prepare
         runs-on: ubuntu-latest
         steps:
             - if: ${{ env.TRUSTED_CI != 'true' }}
@@ -166,10 +117,7 @@ jobs:
             - if: ${{ env.TRUSTED_CI == 'true' }}
               run: pnpm exec playwright install --with-deps
             - if: ${{ env.TRUSTED_CI == 'true' }}
-              uses: actions/download-artifact@v4
-              with:
-                  name: ${{ env.BUILD_ARTIFACT_NAME }}
-                  path: .
+              run: pnpm run build
             - if: ${{ env.TRUSTED_CI == 'true' }}
               run: pnpm e2e
 
@@ -193,11 +141,7 @@ jobs:
               with:
                   submodules-token: ${{ secrets.GH_TOKEN }}
             - run: pnpm install semantic-release-config-techor --workspace-root
-            - uses: actions/download-artifact@v4
-              with:
-                  name: ${{ env.BUILD_ARTIFACT_NAME }}
-                  path: .
-            - run: pnpm --filter master-css-vscode generate
+            - run: pnpm run build
             - run: pnpm exec semantic-release
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
