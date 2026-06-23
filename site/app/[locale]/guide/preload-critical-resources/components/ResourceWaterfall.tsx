@@ -22,8 +22,9 @@ const toneClasses = {
     document: 'bg:neutral text:white',
     stylesheet: 'bg:blue text:white',
     runtime: 'bg:orange text:black',
+    runtimeReuse: 'b:1px|dashed|orange-50 bg:orange-10 text:orange-70 bg:orange-90@dark text:orange-20@dark',
     manifest: 'bg:green text:black',
-    reuse: 'b:1px|dashed|green-50 bg:green-10 text:green-70 bg:green-90@dark text:green-20@dark'
+    manifestReuse: 'b:1px|dashed|green-50 bg:green-10 text:green-70 bg:green-90@dark text:green-20@dark'
 } as const
 
 const ticks = [0, 25, 50, 75, 100]
@@ -31,7 +32,7 @@ const ticks = [0, 25, 50, 75, 100]
 const scenarios: WaterfallScenario[] = [
     {
         title: 'Without preload',
-        summary: 'The runtime waits until it starts before fetching the manifest.',
+        summary: 'The runtime script starts late, then fetches the manifest.',
         rows: [
             {
                 resource: 'HTML',
@@ -53,7 +54,7 @@ const scenarios: WaterfallScenario[] = [
     },
     {
         title: 'With preload',
-        summary: 'The manifest starts early and is ready when the runtime asks for it.',
+        summary: 'The runtime script and manifest start early and are reused later.',
         rows: [
             {
                 resource: 'HTML',
@@ -65,13 +66,16 @@ const scenarios: WaterfallScenario[] = [
             },
             {
                 resource: 'Runtime script',
-                bars: [{ label: 'Download', start: 58, end: 82, tone: 'runtime' }]
+                bars: [
+                    { label: 'Preload early', start: 12, end: 48, tone: 'runtime' },
+                    { label: 'Reuse', start: 58, end: 70, tone: 'runtimeReuse' }
+                ]
             },
             {
                 resource: 'Default manifest JSON',
                 bars: [
-                    { label: 'Preload early', start: 12, end: 50, tone: 'manifest' },
-                    { label: 'Reuse', start: 82, end: 94, tone: 'reuse' }
+                    { label: 'Preload early', start: 16, end: 52, tone: 'manifest' },
+                    { label: 'Reuse', start: 70, end: 82, tone: 'manifestReuse' }
                 ]
             }
         ]
@@ -80,14 +84,13 @@ const scenarios: WaterfallScenario[] = [
 
 export default function ResourceWaterfall() {
     return (
-        <figure className="my:lg">
-            <Demo $px={0} $py={0} className="overflow:hidden">
+        <figure>
                 <div
                     className="overflow-x:auto w:full"
                     role="img"
-                    aria-label="Conceptual waterfall showing default manifest preload compared with late runtime discovery"
+                    aria-label="Conceptual waterfall comparing late runtime discovery with preloaded runtime script and default manifest requests"
                 >
-                    <div className="p:md" style={{ boxSizing: 'border-box', minWidth: '32rem' }}>
+                    <div style={{ boxSizing: 'border-box', minWidth: '32rem' }}>
                         <div className="gap:md grid-cols:1">
                             {scenarios.map((scenario) => (
                                 <section key={scenario.title} className="b:1px|solid|gray-20 p:md r:lg bg:surface b:1px|solid|gray-70@dark">
@@ -111,10 +114,6 @@ export default function ResourceWaterfall() {
                         </div>
                     </div>
                 </div>
-            </Demo>
-            <figcaption>
-                Conceptual request waterfall for the CDN runtime default manifest. Bar positions show relative discovery and reuse timing, not measured network data.
-            </figcaption>
         </figure>
     )
 }
