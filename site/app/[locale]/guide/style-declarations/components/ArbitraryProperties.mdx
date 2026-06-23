@@ -1,10 +1,9 @@
-Syntax: <code><span className="token value mcss language-mcss"><span className="token mcss"><span className="token Mgroup"><span className="token Mbracket">{'{'}</span><span className="token Mkey">property</span><span className="token Mvalueroot"><span className="token Mcolon">:</span><span className="token Mvalue"><span className="token Mnumber_unit">value</span></span></span></span><span className="token Mbracket">{'}'}</span></span></span></code>
+Syntax: <code><span className="token value mcss language-mcss"><span className="token mcss"><span className="token Mkey">property</span><span className="token Mvalueroot"><span className="token Mcolon">:</span><span className="token Mvalue"><span className="token Mnumber_unit">value</span></span></span></span></span></code>
 
-Supported native CSS declarations can be written directly as `property:value`, even when they are not listed as built-in utilities.
-Use arbitrary properties when you need to force a raw CSS property/value pair or group declarations inside one class.
+Supported native CSS declarations can be written directly as `property:value`, even when they are not listed as built-in utilities. Use this form first for platform properties that already have valid CSS grammar.
 ```html
-<!-- @MARK float:left --><!-- @MARK {block-size:5rem} -->
-<div class="float:left {block-size:5rem}">
+<!-- @MARK float:left --><!-- @MARK field-sizing:content -->
+<div class="float:left field-sizing:content">
 ```
 Generated CSS:
 ```css
@@ -12,9 +11,23 @@ Generated CSS:
     float: left;
 }
 
-.\{block-size\:5rem\} {
-    block-size: 5rem;
+.field-sizing\:content {
+    field-sizing: content;
 }
 ```
 
-Prefer built-in utilities when they exist, because they can include token resolution, aliases, sorting, and shorthand behavior. Arbitrary properties are the escape hatch for raw declarations and one-off declaration groups.
+Prefer built-in utilities when they exist, because they can include token resolution, aliases, sorting, and shorthand behavior.
+
+Use `{...}` for an explicit raw escape hatch or for one-off declaration groups:
+
+```html
+<!-- @MARK {block-size:5rem;inline-size:5rem} -->
+<div class="{block-size:5rem;inline-size:5rem}">
+```
+Generated CSS:
+```css
+.\{block-size\:5rem\;inline-size\:5rem\} {
+    block-size: 5rem;
+    inline-size: 5rem;
+}
+```

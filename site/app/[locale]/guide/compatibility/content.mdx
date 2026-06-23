@@ -68,14 +68,14 @@ Master CSS does not need a built-in utility for every platform feature before yo
 Write a property-like class when the declaration is already valid CSS:
 
 ```html
-<!-- @MARK float:left --><!-- @MARK field-sizing:content --><!-- @MARK view-transition-name:card -->
-<article class="float:left field-sizing:content view-transition-name:card">…</article>
+<!-- @MARK float:left --><!-- @MARK field-sizing:content --><!-- @MARK view-transition-name:card --><!-- @MARK transition-behavior:allow-discrete -->
+<article class="float:left field-sizing:content view-transition-name:card transition-behavior:allow-discrete">…</article>
 ```
 
 <details open>
     <summary>Generated CSS</summary>
     <Class2CSS>
-        {['float:left', 'field-sizing:content', 'view-transition-name:card']}
+        {['float:left', 'field-sizing:content', 'view-transition-name:card', 'transition-behavior:allow-discrete']}
     </Class2CSS>
 </details>
 
@@ -117,21 +117,21 @@ This preserves the expected syntax model:
 - `display:banana` and `float:banana` are rejected instead of emitted as raw CSS.
 
 ### Arbitrary properties
-Use arbitrary property declarations as an escape hatch when you need raw CSS that should not go through the normal declaration matcher, or when an experimental feature is valid in your target browser before static tooling recognizes its grammar:
+Use direct native declaration syntax first for valid CSS declarations. Use arbitrary property groups only when you need an explicit raw escape hatch, or when several raw declarations should share one selector or query suffix:
 
 ```html
-<!-- @MARK {new-platform-property:value} -->
-<div class="{new-platform-property:value}">…</div>
+<!-- @MARK {block-size:5rem;inline-size:5rem} -->
+<div class="{block-size:5rem;inline-size:5rem}">…</div>
 ```
 
 <details>
     <summary>Generated CSS</summary>
-    ```css
-    .\{new-platform-property\:value\} {
-        new-platform-property: value
-    }
-    ```
+    <Class2CSS>
+        {['{block-size:5rem;inline-size:5rem}']}
+    </Class2CSS>
 </details>
+
+This is intentionally less common than `property:value`. Static tooling may reject the newest CSS grammar until its syntax data catches up, while the browser runtime follows `CSS.supports(property, value)` for direct native declarations.
 
 ### New selectors
 Selector suffixes can use native CSS selector syntax as long as the browser supports the selector.

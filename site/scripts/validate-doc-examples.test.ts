@@ -317,7 +317,6 @@ function isAllowedInvalidCandidate(eachCandidate: ExampleCandidate): boolean {
     if (/^[:@]/.test(candidate)) return true
     if (candidate.includes('`') || candidate.includes('…') || /[<>]/.test(candidate)) return true
     if (candidate === 'light' || candidate === 'dark') return true
-    if (candidate === '{new-platform-property:value}') return true
     if (isExpectedDiagnostic(candidate, eachCandidate.file)) return true
     if (isExpectedBareSelectorTarget(candidate, eachCandidate.file)) return true
     if (isLocallyDefinedClass(candidate, eachCandidate.context)) return true
@@ -333,7 +332,7 @@ function isExpectedDiagnostic(candidate: string, file: string): boolean {
         [/guide\/introduction\//, new Set(['font', 'font:'])],
         [/guide\/conditional-queries\//, new Set(['hidden@sm<=h', 'hidden@sm<=h<=lg'])],
         [/guide\/scanning-latent-classes\//, new Set(['card'])],
-        [/guide\/compatibility\//, new Set(['display:banana', 'float:banana', '{new-platform-property:value}'])]
+        [/guide\/compatibility\//, new Set(['display:banana', 'float:banana'])]
     ]
     return diagnosticsByPath.some(([pattern, classes]) => pattern.test(relativePath) && classes.has(candidate))
 }
