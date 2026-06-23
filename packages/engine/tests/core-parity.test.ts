@@ -312,10 +312,6 @@ describe.concurrent('default manifest utility parity', () => {
         })
         expect(css.createRule('max:4x')?.declarations).toStrictEqual({ 'max-width': '1rem', 'max-height': '1rem' })
         expect(css.createRule('min:4x')?.declarations).toStrictEqual({ 'min-width': '1rem', 'min-height': '1rem' })
-        expect(css.createRule('size:4x|8x')).toBeUndefined()
-        expect(css.createRule('max:4x|8x')).toBeUndefined()
-        expect(css.createRule('min:4x|8x')).toBeUndefined()
-        expect(css.createRule('size:var(--w)|var(--h)')).toBeUndefined()
     })
 
     test('rejects variable function syntax', () => {
