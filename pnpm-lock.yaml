@@ -1596,9 +1596,6 @@ importers:
       '@master/css-stylesheet':
         specifier: workspace:^
         version: link:../stylesheet
-      chokidar:
-        specifier: ^5.0.0
-        version: 5.0.0
     devDependencies:
       '@types/react':
         specifier: ^19.2.17

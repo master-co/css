@@ -11,7 +11,6 @@ import {
     type StyleCSSSources
 } from '@master/css-stylesheet'
 import { findCSSManifestEntryFiles } from '@master/css-project/entries'
-import chokidar, { type FSWatcher } from 'chokidar'
 import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import { existsSync, readFileSync } from 'node:fs'
 import { dirname, relative, resolve } from 'node:path'
@@ -38,9 +37,6 @@ interface StaticSession {
     styleCSSSources: StyleCSSSources
     ready: Promise<CSSScanner>
     write: () => Promise<void>
-    watching?: boolean
-    watchers: FSWatcher[]
-    restarting?: boolean
 }
 
 interface PrepareNextStaticOptions {
@@ -94,7 +90,6 @@ export async function transformStaticStyleSource(statePath: string, resourcePath
         projectDir: state.projectDir
     })
     syncScannerResetDependencies(session)
-    await restartStaticWatch(state.projectDir, session)
     await session.write()
     return createStyleCSSHostSource(source, { masterImport: toCSSImportPath(resourcePath, state.outputPath) })
 }
@@ -171,107 +166,10 @@ function createSession(projectDir: string, outputPath: string, options: Resolved
         scanner,
         styleCSSSources,
         ready,
-        write,
-        watchers: []
+        write
     }
 
     return session
-}
-
-async function waitForWatcherReady(watcher: FSWatcher) {
-    await new Promise<void>((resolve) => watcher.once('ready', resolve))
-    // Let chokidar finish registering native watchers before callers mutate files.
-    await new Promise((resolve) => setTimeout(resolve, 0))
-}
-
-async function closeStaticWatch(session: StaticSession) {
-    await Promise.all(session.watchers.splice(0).map((watcher) => watcher.close()))
-    session.watching = false
-}
-
-function getStaticSourcePaths(scanner: CSSScanner) {
-    return scanner.options.required?.length
-        ? scanner.fixedSourcePaths
-        : scanner.allowedSourcePaths
-}
-
-function getStaticResetDependencyPaths(projectDir: string, session: StaticSession) {
-    return [...new Set([
-        ...getStyleDependencyPaths(session),
-        ...session.scanner.resetDependencies
-    ])].map((dependency) => resolve(projectDir, dependency))
-}
-
-async function startStaticWatch(projectDir: string, session: StaticSession) {
-    if (session.watching) return
-    session.watching = true
-    try {
-        const sourcePaths = getStaticSourcePaths(session.scanner)
-        if (sourcePaths.length) {
-            const sourceWatcher = chokidar.watch(sourcePaths, {
-                cwd: projectDir,
-                ignoreInitial: true
-            })
-            const scanSource = (source: string) => {
-                const filepath = resolve(projectDir, source)
-                if (!existsSync(filepath)) return
-                void session.scanner.scanFile(source).catch((error: unknown) => {
-                    console.error('[@master/css.next] failed to scan changed source:', error)
-                })
-            }
-            sourceWatcher.on('add', scanSource)
-            sourceWatcher.on('change', scanSource)
-            session.watchers.push(sourceWatcher)
-            await waitForWatcherReady(sourceWatcher)
-        }
-
-        const resetDependencyPaths = getStaticResetDependencyPaths(projectDir, session)
-        if (resetDependencyPaths.length) {
-            const resetWatcher = chokidar.watch(resetDependencyPaths, {
-                ignoreInitial: true
-            })
-            const handleResetDependencyChange = async () => {
-                if (session.restarting) return
-                session.restarting = true
-                try {
-                    await closeStaticWatch(session)
-                    await session.scanner.reset(session.scanner.customOptions, { prepare: false, emit: false })
-                    await registerStyleCSSEntries(projectDir, session)
-                    await session.scanner.prepare()
-                    await session.write()
-                    session.scanner.emit('reset')
-                } finally {
-                    session.restarting = false
-                    await startStaticWatch(projectDir, session)
-                }
-            }
-            const queueReset = () => {
-                void handleResetDependencyChange().catch((error: unknown) => {
-                    console.error('[@master/css.next] failed to reset static scanner:', error)
-                })
-            }
-            resetWatcher.on('add', queueReset)
-            resetWatcher.on('change', queueReset)
-            resetWatcher.on('unlink', queueReset)
-            session.watchers.push(resetWatcher)
-            await waitForWatcherReady(resetWatcher)
-        }
-    } catch (error) {
-        await closeStaticWatch(session)
-        throw error
-    }
-}
-
-async function restartStaticWatch(projectDir: string, session: StaticSession) {
-    if (!session.watching || session.restarting) return
-    await closeStaticWatch(session)
-    await startStaticWatch(projectDir, session)
-}
-
-export async function closeNextStaticSessions() {
-    const sessions = getSessions()
-    await Promise.all(Array.from(sessions.values()).map(closeStaticWatch))
-    sessions.clear()
 }
 
 export function resolveStaticOutputPath(projectDir: string) {
@@ -359,10 +257,6 @@ export async function prepareNextStatic(rawOptions: Options = {}, setupOptions: 
     const session = await getOrCreateStaticSession(projectDir, outputPath, options)
 
     await writeStaticState(projectDir, outputPath, statePath, scanLogPath, options)
-
-    if (setupOptions.watch && !session.watching) {
-        await startStaticWatch(projectDir, session)
-    }
 
     return {
         projectDir,

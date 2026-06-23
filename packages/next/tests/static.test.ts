@@ -1,9 +1,8 @@
 import { mkdirSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
-import { afterEach, beforeEach, describe, expect, it } from 'vitest'
+import { beforeEach, describe, expect, it } from 'vitest'
 import {
-    closeNextStaticSessions,
     prepareNextStatic,
     resolveStaticOutputPath,
     resolveStaticScanLogPath,
@@ -17,21 +16,6 @@ function createFixture() {
     mkdirSync(join(root, 'app'), { recursive: true })
     writeFileSync(join(root, 'app/globals.css'), '@import "@master/css";')
     return root
-}
-
-async function waitForFileMatch(filepath: string, predicate: (content: string) => boolean) {
-    const deadline = Date.now() + 5000
-    let lastContent = ''
-    while (Date.now() < deadline) {
-        try {
-            lastContent = readFileSync(filepath, 'utf-8')
-            if (predicate(lastContent)) return lastContent
-        } catch {
-            // File is not ready yet.
-        }
-        await new Promise((resolve) => setTimeout(resolve, 25))
-    }
-    throw new Error(`Timed out waiting for ${filepath} to match. Last content: ${lastContent}`)
 }
 
 function runStaticLoader(statePath: string, resourcePath: string, source: string) {
@@ -82,10 +66,6 @@ function runStaticCSSLoaderWithDependencies(statePath: string, resourcePath: str
 describe('Next static mode', () => {
     beforeEach(() => {
         globalThis.__MASTER_CSS_NEXT_STATIC_SESSIONS__ = new Map()
-    })
-
-    afterEach(async () => {
-        await closeNextStaticSessions()
     })
 
     it('writes extracted CSS from source files including imported modules', async () => {
@@ -274,7 +254,7 @@ describe('Next static mode', () => {
         expect(css).not.toContain('123456px')
     })
 
-    it('watches static source changes in development mode', async () => {
+    it('updates static CSS when Turbopack reruns the source loader', async () => {
         const root = createFixture()
         const pagePath = join(root, 'app/page.tsx')
         writeFileSync(pagePath, `
@@ -284,6 +264,7 @@ describe('Next static mode', () => {
         `)
 
         const outputPath = resolveStaticOutputPath(root)
+        const statePath = resolveStaticStatePath(outputPath)
 
         await prepareNextStatic({ mode: 'static' }, { projectDir: root, watch: true })
 
@@ -296,10 +277,12 @@ describe('Next static mode', () => {
             }
         `)
 
-        await waitForFileMatch(outputPath, (css) => css.includes('margin:0'))
-    }, 10000)
+        await runStaticLoader(statePath, pagePath, readFileSync(pagePath, 'utf-8'))
 
-    it('watches static CSS dependency changes in development mode', async () => {
+        expect(readFileSync(outputPath, 'utf-8')).toContain('margin:0')
+    })
+
+    it('updates static CSS when Turbopack reruns the CSS loader', async () => {
         const root = createFixture()
         const globalsPath = join(root, 'app/globals.css')
         writeFileSync(globalsPath, `
@@ -316,6 +299,7 @@ describe('Next static mode', () => {
         `)
 
         const outputPath = resolveStaticOutputPath(root)
+        const statePath = resolveStaticStatePath(outputPath)
 
         await prepareNextStatic({ mode: 'static' }, { projectDir: root, watch: true })
 
@@ -329,7 +313,10 @@ describe('Next static mode', () => {
             }
         `)
 
-        const css = await waitForFileMatch(outputPath, (content) => content.includes('color: #00f'))
+        await runStaticCSSLoader(statePath, globalsPath, readFileSync(globalsPath, 'utf-8'))
+
+        const css = readFileSync(outputPath, 'utf-8')
+        expect(css).toContain('color: #00f')
         expect(css).not.toContain('color: red')
-    }, 10000)
+    })
 })
