@@ -20,8 +20,23 @@ it('basic extract', async () => {
                 --color-primary: var(--blue);
             }
         `, { flag: 'w' })
-        execFileSync(process.execPath, ['--import', tsxLoaderURL, cliFilepath, 'extract'], { cwd })
+        execFileSync(process.execPath, ['--import', tsxLoaderURL, cliFilepath], { cwd })
         expect(readFileSync(join(cwd, 'master.css')).toString()).toMatch(/(fg\\:primary|m\\:12x|text-center|font\\:sans|font\\:heavy|font\\:48px)/)
+    } finally {
+        fs.rmSync(cwd, { recursive: true, force: true })
+    }
+}, 60_000)
+
+it('prints CSS without exporting', async () => {
+    const cwd = fs.mkdtempSync(join(os.tmpdir(), 'master-css-cli-no-export-'))
+    try {
+        fs.writeFileSync(join(cwd, 'index.html'), '<h1 class="text-center">Hello World</h1>', { flag: 'w' })
+        const output = execFileSync(process.execPath, ['--import', tsxLoaderURL, cliFilepath, '--no-export'], {
+            cwd,
+            encoding: 'utf8'
+        })
+        expect(output).toContain('text-center')
+        expect(fs.existsSync(join(cwd, 'master.css'))).toBe(false)
     } finally {
         fs.rmSync(cwd, { recursive: true, force: true })
     }

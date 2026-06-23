@@ -76,7 +76,7 @@ beforeAll(() => {
     virtualCSSFilepath = path.join(workspacePath, 'output.css')
     fs.writeFileSync(HTMLFilepath, originHTMLText, { flag: 'w+' })
     fs.writeFileSync(configFilepath, originConfigText, { flag: 'w+' })
-    subprocess = execa(process.execPath, ['--import', tsxLoaderURL, cliFilepath, 'extract', '-w', '-o', virtualCSSFilepath], {
+    subprocess = execa(process.execPath, ['--import', tsxLoaderURL, cliFilepath, '-w', '-o', virtualCSSFilepath], {
         cwd: workspacePath,
         forceKillAfterDelay: 1000
     })

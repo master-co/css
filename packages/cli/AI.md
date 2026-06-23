@@ -2,26 +2,25 @@
 
 ## Responsibility
 
-`@master/css-cli` exposes `mcss` and `mastercss` commands. It wraps extraction and HTML rendering workflows for command-line usage.
+`@master/css-cli` exposes one package-name binary. It wraps the static scan/extraction workflow for command-line usage.
 
 ## Inputs And Outputs
 
 - Input: command-line args, source globs, manifest entry paths, scanner options.
-- Output: generated CSS to stdout or file, rendered HTML files, logs.
+- Output: generated CSS to stdout or file, logs.
 
 ## Public APIs
 
-- Binaries:
-  - `mcss`
-  - `mastercss`
+- Binary:
+  - `@master/css-cli`
+- There are no public `extract`, `scan`, `render`, `mcss`, or `mastercss` aliases.
 - Internal command runner exported from `src/core.ts`.
 
 ## Core Files
 
 - `src/core.ts`
 - `src/bin/index.ts`
-- `src/commands/extract.ts`
-- `src/commands/render.ts`
+- `src/scan.ts`
 
 ## Allowed Changes
 
@@ -32,15 +31,14 @@
 
 ## Forbidden Without Explicit Request
 
-- Changing command names.
+- Adding command aliases or subcommands.
 - Changing default output paths casually.
-- Writing files in analyze/no-export modes.
+- Writing generated CSS when `--no-export` is set.
 - Changing scanner/server behavior in CLI instead of lower packages.
 
 ## Risk Areas
 
-- `extract --watch` event lifecycle.
-- `render` writing HTML files.
+- Root `--watch` event lifecycle.
 - Manifest path loading.
 - Cross-platform glob behavior.
 
@@ -55,12 +53,12 @@ pnpm --filter @master/css-cli build
 Use or extend:
 
 - `tests/extract`
-- `tests/render`
+- root command tests
 
 ## Good Changes
 
 - Add a fixture for a CLI option regression.
-- Fix render analyze mode without writing files.
+- Add a root command fixture for CLI option regressions.
 
 ## Dangerous Changes
 

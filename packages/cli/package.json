@@ -26,10 +26,7 @@
         "css",
         "mastercss"
     ],
-    "bin": {
-        "mcss": "./dist/bin/index.mjs",
-        "mastercss": "./dist/bin/index.mjs"
-    },
+    "bin": "./dist/bin/index.mjs",
     "files": [
         "dist"
     ],
@@ -42,22 +39,16 @@
         "@master/css-project": "workspace:^",
         "@master/css-scanner": "workspace:^",
         "@master/css-stylesheet": "workspace:^",
-        "@master/css-server": "workspace:^",
-        "@techor/extend": "^3.2.5",
         "@techor/fs": "^3.2.5",
         "@techor/glob": "^3.2.5",
         "@techor/log": "^3.2.5",
         "bytes": "^3.1.2",
         "chokidar": "^5.0.0",
-        "commander": "^14.0.3",
-        "minimatch": "^10.2.5",
-        "pretty-hrtime": "^1.0.3"
+        "commander": "^14.0.3"
     },
     "devDependencies": {
-        "@types/bytes": "^3.1.5",
-        "@types/pretty-hrtime": "^1.0.3",
-        "fast-glob": "^3.3.3",
         "@master/css-lexer": "workspace:^",
+        "@types/bytes": "^3.1.5",
         "upath": "^2.0.1"
     }
 }

@@ -58,22 +58,22 @@
 npm install -D @master/css-cli
 ```
 
-The package exposes both `mcss` and `mastercss` binaries.
+Run the package binary directly with `npx @master/css-cli`. The package does not expose `mcss` or `mastercss` aliases.
 
 ## Commands
 
-### `mcss extract [source paths]`
+### `npx @master/css-cli [source paths]`
 
 Scan source files, detect Master CSS classes, generate CSS rules, and write the generated CSS file.
 
 ```bash
-mcss extract index.html main.js
+npx @master/css-cli index.html main.js
 ```
 
 When no source paths are passed, the CLI scans the current project with the default scanner `include` and `exclude` options.
 
 ```bash
-mcss extract
+npx @master/css-cli
 ```
 
 Options:
@@ -83,20 +83,6 @@ Options:
 | `-o, --output <path>` | `string` | `master.css` | Generated CSS output path. |
 | `-v, --verbose <level>` | `number` | `1` | Logging level. Use `0` to silence terminal output. |
 | `-w, --watch` | `boolean` | `false` | Watch files and rebuild continuously. |
-
-### `mcss render [source paths]`
-
-Render Master CSS into HTML files that match the given glob patterns.
-
-```bash
-mcss render "**/*.html"
-```
-
-Options:
-
-| Option | Type | Default | Description |
-| --- | --- | --- | --- |
-| `-a, --analyze` | `boolean` | `false` | Analyze injected CSS and brotli HTML size without writing files. |
 
 ## Related docs
 

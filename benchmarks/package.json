@@ -1,7 +1,7 @@
 {
     "type": "module",
     "scripts": {
-        "extract": "hyperfine 'cd extract/tailwindcss && npx tailwindcss -i src/main.css' 'cd extract/mastercss && npx mastercss extract --no-export'"
+        "extract": "hyperfine 'cd extract/tailwindcss && npx tailwindcss -i src/main.css' 'cd extract/mastercss && npx @master/css-cli --no-export'"
     },
     "dependencies": {
         "@techor/log": "^3.2.5",

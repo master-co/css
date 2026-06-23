@@ -2,4 +2,4 @@
 
 import runProgram from '../core'
 
-runProgram()
+await runProgram()

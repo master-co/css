@@ -29,7 +29,7 @@
 | `@master/css-validator` | `.` | CSS validation for generated rules |
 | `@master/eslint-plugin-css` | `.`, `./configs/*` | ESLint plugin |
 | `@master/eslint-config-css` | `.` | ESLint config wrapper |
-| `@master/css-cli` | `mcss`, `mastercss` | Extract and render CLI |
+| `@master/css-cli` | package-name binary | Root scan/extract CLI |
 | `@master/css-schema` | `.`, `./manifest`, `./manifest-json`, `./hydration-manifest`, `./css-directives`, `./css-syntax`, `./utility-type`, `./runtime-style`, `./native-css-shorthand`, `./css-common` | Public dependency-light schema, wire-format contracts, serializable constants, and pure codec helpers |
 | `@master/css-project` | `./entries`, `./manifest`, `./manifest-sync` | Resolve project CSS manifest entries, workspace roots, explicit CSS manifest resources, and project manifest module source |
 | `@master/css-integration` | `.`, `./client`, `./module`, `./manifest-module`, `./manifest-facade`, `./style-module`, `./emitted-globals-module`, `./manifest-loader-plugin`, `./runtime`, `./node` | Adapter-neutral integration contracts, browser-safe virtual module/codegen helpers, runtime injection source, client ambient module declarations, and explicit Node/build helper subpaths |
