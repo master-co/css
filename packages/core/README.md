@@ -59,60 +59,6 @@
 
 </div>
 
-## Installation
-
-```bash
-npm install @master/css
-```
-
-## Stylesheet entries
-
-`@master/css` exports the default stylesheet and split stylesheet entries used by integrations.
-
-```css
-@import '@master/css';
-```
-
-The default stylesheet contains:
-
-```css
-@import "./base.css";
-@import "./theme.css";
-@import "./variants.css";
-@import "./utilities.css";
-```
-
-Use `@import '@master/css/base.css';` when a runtime-only page only needs the base layer declaration and normalization rules. Use `@master/css/theme.css`, `@master/css/variants.css`, or `@master/css/utilities.css` when an integration needs only one preset source facet. Use the default `@master/css` import from app stylesheets that should receive generated Master CSS and native CSS pruning in static mode.
-
-## API
-
-### `MasterCSS`
-
-```js
-import { MasterCSS } from '@master/css'
-
-const css = MasterCSS.create({ manifest })
-```
-
-`MasterCSS.create({ manifest })` requires a complete `MasterCSSManifest`.
-
-| API | Type | Description |
-| --- | --- | --- |
-| `css.manifest` | `MasterCSSManifest` | Compiled manifest executed by the engine. |
-| `css.settings` | `MasterCSSManifestSettings` | Resolved settings from the active manifest. |
-| `css.text` | `string` | Joined text of all generated CSS rules. |
-| `css.add(...classNames)` | `boolean` | Adds classes and generated rules. |
-| `css.remove(...classNames)` | `boolean` | Removes classes and unused rules. |
-| `css.createRule(className)` | `GeneratedRule \| undefined` | Creates one generated rule without inserting it. |
-| `css.createRules(className)` | `GeneratedRule[]` | Creates all generated rule branches without inserting them. |
-| `css.refresh(manifest?)` | `this` | Refreshes with a compiled manifest. |
-| `css.reset()` | `this` | Clears all rules and resets the instance. |
-| `css.destroy()` | `this` | Destroys and removes the current instance. |
-
-### `globalThis.MasterCSS`
-
-The browser/global build exposes `MasterCSS` as `globalThis.MasterCSS`.
-
 ## Getting started
 
 Read the [installation guide](https://rc.css.master.co/guide/installation) to set up Master CSS for an application.
