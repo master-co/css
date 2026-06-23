@@ -78,7 +78,7 @@ jobs:
             - if: ${{ env.TRUSTED_CI == 'true' }}
               run: pnpm run test:ci
 
-    example-check:
+    build-examples:
         runs-on: ${{ matrix.os }}
         strategy:
             matrix:
@@ -126,7 +126,7 @@ jobs:
             - lint
             - test
             - type-check
-            - example-check
+            - build-examples
             - e2e
         if: ${{ github.event_name == 'push' && contains(fromJSON('["main","alpha","beta","rc","canary"]'), github.ref_name) }}
         runs-on: ubuntu-latest
