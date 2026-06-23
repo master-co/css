@@ -1,10 +1,8 @@
-import { createRequire } from 'node:module'
+import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
 
-const require = createRequire(import.meta.url)
-let defaultManifest: MasterCSSManifest | undefined
+const defaultManifest = defaultManifestJSON as MasterCSSManifest
 
 export default function getDefaultManifest() {
-    defaultManifest ??= require('@master/css-preset/default-manifest.json') as MasterCSSManifest
     return defaultManifest
 }

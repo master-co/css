@@ -8,10 +8,10 @@ import {
     isMasterCSSPackageStyleFile as isMasterCSSCompilerPackageStyleFile,
     resolveMasterCSSPackageImportGraph
 } from '@master/css-compiler'
-import { AnimationRule, VariableRule, type MasterCSSEmittedGlobals } from '@master/css'
-import { collectAnimationNamesFromDeclaration } from '@master/css-engine'
-import { createCSSWithNativeDeclarations } from '@master/css-validator'
+import type { MasterCSSEmittedGlobals } from '@master/css'
+import type { createCSSWithNativeDeclarations } from '@master/css-validator/native-declaration'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
+import { renderCompiledManifestCSS } from './render'
 import {
     findCSSImportStatements,
     collectCSSDirectiveRanges,
@@ -43,6 +43,7 @@ import {
 import { filterExcludedClasses } from './class-exclusion'
 
 export * from './directives'
+export { collectCSSVariableReferences } from './render'
 
 export const STYLE_CSS_REQUEST_RE = /\.(css|scss|sass)(?:[?#].*)?$/
 
@@ -401,20 +402,11 @@ export async function createMasterCSSPackageHostSource(
     })
     const nativeCSS = getNativeCSS(result)
     const finalizedResult = createManifestFromCSSResult(result, options)
-    const css = createCSSWithNativeDeclarations(finalizedResult.manifest)
-    const nativeAnimationNames = collectStyleCSSKeyframeNames([nativeCSS])
-    if (nativeAnimationNames.size) {
-        css.registerEmittedGlobals({
-            animations: Object.fromEntries([...nativeAnimationNames].map((name) => [name, 1]))
-        })
-    }
-    insertVariableReferences(css, collectCSSVariableReferences(nativeCSS))
-    insertAnimationReferences(css, collectCSSAnimationReferences(nativeCSS, css, nativeAnimationNames))
     return {
-        source: [
-            nativeCSS,
-            css.text
-        ].filter(Boolean).join('\n\n'),
+        source: renderCompiledManifestCSS({
+            manifest: finalizedResult.manifest,
+            nativeCSS
+        }).css,
         dependencies: graph.dependencies
     }
 }
@@ -674,94 +666,6 @@ export async function createStyleCSSManifest(options: CreateStyleCSSManifestOpti
     }
 }
 
-export function collectCSSVariableReferences(source: string) {
-    const references = new Set<string>()
-    for (const match of source.matchAll(/var\(\s*--([_a-zA-Z0-9-]+)/g)) {
-        references.add(match[1])
-    }
-    return references
-}
-
-function collectStyleCSSVariableReferences(nativeCSS: string[]) {
-    const references = new Set<string>()
-    for (const source of nativeCSS) {
-        for (const reference of collectCSSVariableReferences(source)) {
-            references.add(reference)
-        }
-    }
-    return references
-}
-
-function collectCSSKeyframeNames(source: string) {
-    const names = new Set<string>()
-    for (const match of source.matchAll(/@keyframes\s+(-?[_a-zA-Z][-_a-zA-Z0-9]*)/g)) {
-        names.add(match[1])
-    }
-    return names
-}
-
-function collectStyleCSSKeyframeNames(nativeCSS: string[]) {
-    const names = new Set<string>()
-    for (const source of nativeCSS) {
-        for (const name of collectCSSKeyframeNames(source)) {
-            names.add(name)
-        }
-    }
-    return names
-}
-
-function insertVariableReferences(css: ReturnType<typeof createCSSWithNativeDeclarations>, references: Set<string>) {
-    const insert = (name: string, visited = new Set<string>()) => {
-        if (visited.has(name)) return
-        visited.add(name)
-        const variable = css.variables.get(name)
-        if (!variable || variable.inline) return
-        css.themeLayer.insert(new VariableRule(name, variable, css))
-        variable.dependencies?.forEach((dependency) => insert(dependency, visited))
-    }
-    const visited = new Set<string>()
-    for (const name of references) {
-        insert(name, visited)
-    }
-}
-
-function collectCSSAnimationReferences(source: string, css: ReturnType<typeof createCSSWithNativeDeclarations>, ignoredAnimationNames = new Set<string>()) {
-    const references = new Set<string>()
-    const animationNames = Array.from(css.animations.keys())
-    if (!animationNames.length) return references
-    for (const match of source.matchAll(/\b(animation(?:-name)?)\s*:\s*([^;{}]+)/g)) {
-        for (const name of collectAnimationNamesFromDeclaration(match[1], match[2], {
-            animationNames,
-            variables: css.variables,
-            variableNames: collectCSSVariableReferences(match[2])
-        })) {
-            if (ignoredAnimationNames.has(name)) continue
-            references.add(name)
-        }
-    }
-    return references
-}
-
-function collectNativeCSSAnimationReferences(nativeCSS: string[], css: ReturnType<typeof createCSSWithNativeDeclarations>, ignoredAnimationNames = new Set<string>()) {
-    const references = new Set<string>()
-    for (const source of nativeCSS) {
-        for (const reference of collectCSSAnimationReferences(source, css, ignoredAnimationNames)) {
-            references.add(reference)
-        }
-    }
-    return references
-}
-
-function insertAnimationReferences(css: ReturnType<typeof createCSSWithNativeDeclarations>, references: Set<string>) {
-    for (const name of references) {
-        const keyframes = css.animations.get(name)
-        if (!keyframes) continue
-        const rule = new AnimationRule(name, keyframes, css)
-        css.animationsNonLayer.insert(rule)
-        insertVariableReferences(css, rule.variableNames ?? new Set())
-    }
-}
-
 function createEmptyExtractedCSSResult(css = ''): CreateExtractedCSSResult {
     return {
         css,
@@ -770,24 +674,6 @@ function createEmptyExtractedCSSResult(css = ''): CreateExtractedCSSResult {
             animations: {}
         }
     }
-}
-
-function createEmittedGlobals(css: ReturnType<typeof createCSSWithNativeDeclarations>): Required<MasterCSSEmittedGlobals> {
-    const emittedGlobals: Required<MasterCSSEmittedGlobals> = {
-        variables: { ...css.emittedGlobals.variables },
-        animations: { ...css.emittedGlobals.animations }
-    }
-    for (const rule of css.themeLayer.rules) {
-        if (rule instanceof VariableRule) {
-            emittedGlobals.variables[rule.name] = 1
-        }
-    }
-    for (const rule of css.animationsNonLayer.rules) {
-        if (rule instanceof AnimationRule) {
-            emittedGlobals.animations[rule.name] = 1
-        }
-    }
-    return emittedGlobals
 }
 
 export async function createExtractedCSSResult(options: CreateExtractedCSSOptions): Promise<CreateExtractedCSSResult> {
@@ -845,37 +731,24 @@ export async function createExtractedCSSResult(options: CreateExtractedCSSOption
                 .filter(Boolean)
             : [])
     ]
-    const nativeAnimationNames = collectStyleCSSKeyframeNames(nativeCSS)
-    const css = createCSSWithNativeDeclarations(mergedPlan)
-    if (nativeAnimationNames.size) {
-        css.registerEmittedGlobals({
-            animations: Object.fromEntries([...nativeAnimationNames].map((name) => [name, 1]))
-        })
-    }
+    const generatedClasses = new Set(classes)
     if (includeGeneratedCSS) {
-        const generatedClasses = new Set(classes)
         for (const styleSource of styleCSSSources?.values() || []) {
             if (!hasStylesheetDirectives(styleSource.directives)) continue
             for (const className of getStyleSourceClasses(scanner, styleSource, classes, compileOptions.projectDir ?? scanner.cwd)) {
                 generatedClasses.add(className)
             }
         }
-        for (const className of generatedClasses) {
-            css.add(className)
-        }
     }
-    const variableReferences = collectStyleCSSVariableReferences(nativeCSS)
-    const animationReferences = collectNativeCSSAnimationReferences(nativeCSS, css, nativeAnimationNames)
-    insertVariableReferences(css, variableReferences)
-    insertAnimationReferences(css, animationReferences)
-    const shouldIncludeMasterCSS = includeGeneratedCSS || variableReferences.size || animationReferences.size || Boolean(css.text)
-    const cssText = [
-        ...nativeCSS,
-        shouldIncludeMasterCSS ? css.text : ''
-    ].filter(Boolean).join('\n\n')
+    const renderedCSS = renderCompiledManifestCSS({
+        manifest: mergedPlan,
+        nativeCSS,
+        classNames: generatedClasses,
+        includeGeneratedCSS
+    })
     return {
-        css: cssText,
-        emittedGlobals: shouldIncludeMasterCSS || nativeAnimationNames.size ? createEmittedGlobals(css) : createEmptyExtractedCSSResult().emittedGlobals
+        css: renderedCSS.css,
+        emittedGlobals: renderedCSS.emittedGlobals
     }
 }
 

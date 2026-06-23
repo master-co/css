@@ -2,7 +2,7 @@
     "name": "@master/css-server",
     "type": "module",
     "scripts": {
-        "build": "techor build \"src/**/*.ts\" --formats esm",
+        "build": "techor build \"src/**/*.ts\" --formats esm && node scripts/restore-json-import-attributes.mjs",
         "dev": "pnpm build --watch",
         "lint": "eslint",
         "type-check": "tsc --noEmit",

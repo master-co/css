@@ -41,6 +41,8 @@
             "@master/css-language/*": [ "../node_modules/@master/css-language/src/*" ],
             "@master/css-language-service": [ "../node_modules/@master/css-language-service/src" ],
             "@master/css-language-service/*": [ "../node_modules/@master/css-language-service/src/*" ],
+            "@master/css-stylesheet": [ "../node_modules/@master/css-stylesheet/src" ],
+            "@master/css-stylesheet/*": [ "../node_modules/@master/css-stylesheet/src/*" ],
             "@master/css.next": [ "../node_modules/@master/css.next/src" ],
             "@master/css.react": [ "../node_modules/@master/css.react/src" ],
             "@master/css.react/*": [ "../node_modules/@master/css.react/src/*" ],

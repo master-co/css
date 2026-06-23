@@ -39,6 +39,11 @@
             "types": "./dist/index.d.ts",
             "import": "./dist/index.mjs",
             "default": "./dist/index.mjs"
+        },
+        "./native-declaration": {
+            "types": "./dist/native-declaration.d.ts",
+            "import": "./dist/native-declaration.mjs",
+            "default": "./dist/native-declaration.mjs"
         }
     },
     "files": [

@@ -21,6 +21,8 @@ test('compiles the starter Play template into generated CSS', async () => {
     assert.match(result.css, /@layer components/)
     assert.match(result.css, /\.card\{/)
     assert.match(result.css, /--color-card/)
+    assert.equal(result.result.manifest, result.manifest)
+    assert.deepEqual(result.result.warnings, result.warnings)
     assert.ok(result.css.length > 1000)
 })
 

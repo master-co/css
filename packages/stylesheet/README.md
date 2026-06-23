@@ -49,3 +49,19 @@ import {
 ```
 
 For user-facing CSS directive syntax, see [CSS directives](https://rc.css.master.co/reference/directives).
+
+## Browser rendering
+
+Browser-safe CSS directive compilation and class rendering are exported from `./browser`. This subpath does not include filesystem import graphs, Sass preprocessing, or source scanning.
+
+```ts
+import { compileBrowserStyleCSS } from '@master/css-stylesheet/browser'
+
+const result = await compileBrowserStyleCSS('@theme { --color-brand: #ff0; }', {
+    baseManifest,
+    classNames: ['fg:brand'],
+    from: 'playground.css'
+})
+
+console.log(result.css)
+```

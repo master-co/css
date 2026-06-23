@@ -40,6 +40,11 @@
             "import": "./dist/index.mjs",
             "default": "./dist/index.mjs"
         },
+        "./browser": {
+            "types": "./dist/browser.d.ts",
+            "import": "./dist/browser.mjs",
+            "default": "./dist/browser.mjs"
+        },
         "./directives": {
             "types": "./dist/directives.d.ts",
             "import": "./dist/directives.mjs",
@@ -50,6 +55,9 @@
         "*": {
             ".": [
                 "./dist/index.d.ts"
+            ],
+            "./browser": [
+                "./dist/browser.d.ts"
             ],
             "./directives": [
                 "./dist/directives.d.ts"

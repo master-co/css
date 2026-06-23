@@ -58,7 +58,7 @@ it('externalizes Nitro prerender hydration manifests', () => {
         expect(source).toMatch(/^\/_master-css\/hydration\/master-css-hydration\.[0-9a-f]{8}\.json$/)
         expect(route.contents).not.toContain(`id="${MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID}"`)
         if (!source) throw new Error('Expected a Nuxt hydration manifest source.')
-        const file = join(dir, source.replace(/^\//, ''))
+        const file = join(dir, ...source.replace(/^\//, '').split('/'))
         expect(existsSync(file)).toBe(true)
         expect(readFileSync(file, 'utf-8')).toContain('"className":"block"')
     } finally {

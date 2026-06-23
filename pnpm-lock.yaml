@@ -2187,6 +2187,9 @@ importers:
       '@master/css-preset':
         specifier: workspace:^
         version: link:../packages/preset
+      '@master/css-stylesheet':
+        specifier: workspace:^
+        version: link:../packages/stylesheet
       '@master/css-validator':
         specifier: workspace:^
         version: link:../packages/validator

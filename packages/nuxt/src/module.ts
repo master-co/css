@@ -147,7 +147,7 @@ export function externalizeNitroPrerenderHydrationManifest(route: NitroPrerender
         return
     }
     const fileName = toHashedManifestAssetFileName(json, MASTER_CSS_HYDRATION_MANIFEST_FILE_BASENAME)
-    const filePath = resolvePath(nitro.options.output.publicDir, '_master-css/hydration', fileName)
+    const filePath = resolvePath(nitro.options.output.publicDir, '_master-css', 'hydration', fileName)
     mkdirSync(dirname(filePath), { recursive: true })
     writeFileSync(filePath, json)
     route.contents = externalizeMasterCSSHydrationManifest(
@@ -167,7 +167,7 @@ export default defineNuxtModule<ModuleOptions>({
         const { resolve } = createResolver(import.meta.url)
         const manifestResult = await loadProjectManifestJSON(nuxt.options.rootDir)
         const manifestFileName = toHashedManifestAssetFileName(manifestResult.json)
-        const manifestDir = resolvePath(nuxt.options.rootDir, 'node_modules/.master-css/manifest')
+        const manifestDir = resolvePath(nuxt.options.rootDir, 'node_modules', '.master-css', 'manifest')
         const manifestAssetPath = resolvePath(manifestDir, manifestFileName)
         const publicManifestHref = toManifestAssetURL(
             manifestFileName,

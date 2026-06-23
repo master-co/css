@@ -30,6 +30,7 @@
         "@master/css-engine": "workspace:^",
         "@master/css-language": "workspace:^",
         "@master/css-preset": "workspace:^",
+        "@master/css-stylesheet": "workspace:^",
         "@master/css-validator": "workspace:^",
         "@master/theme-mode.react": "^1.1.1",
         "@monaco-editor/react": "^4.7.0",
