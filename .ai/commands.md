@@ -33,7 +33,7 @@ Use the real scripts in each package `package.json`. Some packages have `test`, 
 pnpm --filter @master/css test
 pnpm --filter @master/css-runtime e2e
 pnpm --filter @master/css-server test
-pnpm --filter @master/css-extractor test
+pnpm --filter @master/css-scanner test
 pnpm --filter @master/css.vite test
 pnpm --filter @master/css-language test
 pnpm --filter @master/css-language-service test

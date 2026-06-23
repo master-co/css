@@ -9,7 +9,7 @@ Master CSS is a markup-driven CSS language and framework. Class strings such as 
 - Manifest-driven rule generation in `packages/engine`, re-exported by the public `packages/core` facade
 - Browser runtime rendering and hydration in `packages/runtime`
 - Server-side HTML rendering in `packages/server`
-- Static rendering source scanning in `packages/extractor`
+- Static rendering source scanning in `packages/scanner`
 - Build integrations such as `packages/vite` and `packages/webpack`
 - Editor and lint tooling in `packages/language`, `packages/language-service`, `packages/language-server`, `packages/vscode`, and `packages/eslint-plugin`
 
@@ -66,12 +66,12 @@ shared / external data
   -> @master/css-source source candidate extraction
   -> @master/css-engine / @master/css-preset / @master/css-integration
   -> @master/css-compiler directive parsing / @master/css-project loading
-  -> validator / server / extractor / runtime / language / language-service
+  -> validator / server / scanner / runtime / language / language-service
   -> build plugins / CLI / ESLint / language-server
   -> framework integrations / VS Code / examples / site
 ```
 
-Do not make engine depend on compiler, integrations, runtime, server, extractor, language service, ESLint, or examples. `@master/css` is a facade over engine and preset exports; keep behavior in the owning lower package.
+Do not make engine depend on compiler, integrations, runtime, server, scanner, language service, ESLint, or examples. `@master/css` is a facade over engine and preset exports; keep behavior in the owning lower package.
 
 When package cycles or self-build cycles appear, prefer extracting dependency-free public contracts, IR, and type-only schemas into `@master/css-schema`, dependency-free lexical scanners into `@master/css-lexer`, or source class candidate extraction into `@master/css-source`, then adapt at the owning package boundary. Keep `shared` limited to repo-internal test/build support, keep engine-specific behavior in `@master/css-engine`, and re-export schema contracts from the `@master/css` facade only when they are part of the public boundary.
 
@@ -117,7 +117,7 @@ Type(Target): Summary
 ```
 
 - `Type` must be one of `Bump`, `Feat`, `New`, `Perf`, `Add`, `Update`, `Improve`, `Fix`, `Deprecate`, `Drop`, `Docs`, `Upgrade`, `Revert`, `Example`, `Test`, `Refactor`, `Chore`, or `Misc`.
-- `Target` is required for this monorepo. Use the affected workspace, package, or role, such as `Core`, `Runtime`, `Extractor`, `CLI`, `Site`, `Repo`, or `AI`.
+- `Target` is required for this monorepo. Use the affected workspace, package, or role, such as `Core`, `Runtime`, `Scanner`, `CLI`, `Site`, `Repo`, or `AI`.
 - `Type`, `Target`, and `Summary` use sentence case. Do not end the summary with a period.
 - Examples: `Fix(Core): Parse escaped selectors`, `Docs(Site): Update box shadow reference`, `Test(CLI): Cover watch output`.
 
@@ -154,7 +154,7 @@ Package-scoped examples:
 pnpm --filter @master/css test
 pnpm --filter @master/css-runtime e2e
 pnpm --filter @master/css-server test
-pnpm --filter @master/css-extractor test
+pnpm --filter @master/css-scanner test
 pnpm --filter @master/css.vite test
 pnpm --filter @master/css-language test
 pnpm --filter @master/css-language-service test
@@ -164,7 +164,7 @@ pnpm --filter @master/css-validator test
 pnpm --filter @master/css-cli test
 ```
 
-Core parser, compiler, renderer, runtime, extractor, language tooling, and ESLint changes require tests. Snapshot or fixture updates are acceptable only when the behavior change is intentional and explained.
+Core parser, compiler, renderer, runtime, scanner, language tooling, and ESLint changes require tests. Snapshot or fixture updates are acceptable only when the behavior change is intentional and explained.
 
 ## Documentation System
 

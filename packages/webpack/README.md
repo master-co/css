@@ -85,6 +85,6 @@ Import the default stylesheet from your application CSS so the plugin can replac
 @import '@master/css';
 ```
 
-The Webpack plugin uses `@master/css-extractor` for source scanning and writes generated CSS through virtual modules.
+The Webpack plugin uses `@master/css-scanner` for source scanning and writes generated CSS through virtual modules.
 
 See the [Webpack installation guide](https://rc.css.master.co/guide/installation/webpack) for a complete project setup.

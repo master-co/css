@@ -5,7 +5,7 @@ import { describe, expect, it } from 'vitest'
 import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import { compileCSSManifest } from '@master/css-compiler'
-import CSSExtractor from '@master/css-extractor'
+import CSSScanner from '@master/css-scanner'
 import {
     createStyleCSSHostSource,
     createMasterCSSPackageHostSource,
@@ -278,14 +278,14 @@ describe('style CSS extraction helpers', () => {
 
     it('uses the managed CSS entry config and native CSS sources', async () => {
         const root = createFixture()
-        const extractor = new CSSExtractor({
+        const scanner = new CSSScanner({
             include: []
         }, root)
-        await extractor.init()
-        await extractor.prepare()
+        await scanner.init()
+        await scanner.prepare()
 
         const styleCSSSources = new Map()
-        await registerStyleCSSSource(extractor, styleCSSSources, join(root, 'app/globals.css'), `
+        await registerStyleCSSSource(scanner, styleCSSSources, join(root, 'app/globals.css'), `
             @import "@master/css";
 
             @theme {
@@ -318,10 +318,10 @@ describe('style CSS extraction helpers', () => {
                 color: var(--color-primary);
             }
         `)
-        await extractor.insert(join(root, 'app/page.tsx'), '<main class="btn block main fg:red"></main>')
+        await scanner.scan(join(root, 'app/page.tsx'), '<main class="btn block main fg:red"></main>')
 
         const css = await createExtractedCSS({
-            state: extractor,
+            scanner,
             styleCSSSources,
             projectDir: root
         })
@@ -345,13 +345,13 @@ describe('style CSS extraction helpers', () => {
 
     it('keeps non-expandable native imports out of generated managed CSS', async () => {
         const root = createFixture()
-        const extractor = new CSSExtractor({
+        const scanner = new CSSScanner({
             include: []
         }, root)
-        await extractor.init()
+        await scanner.init()
 
         const styleCSSSources = new Map()
-        await registerStyleCSSSource(extractor, styleCSSSources, join(root, 'app/globals.css'), [
+        await registerStyleCSSSource(scanner, styleCSSSources, join(root, 'app/globals.css'), [
             '@import "@master/css";',
             '@import "@fontsource/fira-mono";',
             '',
@@ -359,10 +359,10 @@ describe('style CSS extraction helpers', () => {
             '    color: red;',
             '}'
         ].join('\n'))
-        await extractor.insert(join(root, 'app/page.html'), '<div class="card"></div>')
+        await scanner.scan(join(root, 'app/page.html'), '<div class="card"></div>')
 
         const css = await createExtractedCSS({
-            state: extractor,
+            scanner,
             styleCSSSources,
             projectDir: root
         })
@@ -374,13 +374,13 @@ describe('style CSS extraction helpers', () => {
 
     it('reports emittedGlobals variables and animations emitted by the Master CSS entry', async () => {
         const root = createFixture()
-        const extractor = new CSSExtractor({
+        const scanner = new CSSScanner({
             include: []
         }, root)
-        await extractor.init()
+        await scanner.init()
 
         const styleCSSSources = new Map()
-        await registerStyleCSSSource(extractor, styleCSSSources, join(root, 'app/globals.css'), `
+        await registerStyleCSSSource(scanner, styleCSSSources, join(root, 'app/globals.css'), `
             @theme {
                 --animation-main: scale 1s;
                 --color-primary: #ff0000;
@@ -417,10 +417,10 @@ describe('style CSS extraction helpers', () => {
                 animation: var(--animation-main);
             }
         `)
-        await extractor.insert(join(root, 'app/page.tsx'), '<main class="main main-animated"></main>')
+        await scanner.scan(join(root, 'app/page.tsx'), '<main class="main main-animated"></main>')
 
         const result = await createExtractedCSSResult({
-            state: extractor,
+            scanner,
             styleCSSSources,
             projectDir: root,
             includeGeneratedCSS: false
@@ -444,21 +444,21 @@ describe('style CSS extraction helpers', () => {
 
     it('does not preload inline theme tokens', async () => {
         const root = createFixture()
-        const extractor = new CSSExtractor({
+        const scanner = new CSSScanner({
             include: []
         }, root)
-        await extractor.init()
+        await scanner.init()
 
         const styleCSSSources = new Map()
-        await registerStyleCSSSource(extractor, styleCSSSources, join(root, 'app/globals.css'), `
+        await registerStyleCSSSource(scanner, styleCSSSources, join(root, 'app/globals.css'), `
             @theme inline {
                 --color-primary: #ff0000;
             }
         `)
-        await extractor.insert(join(root, 'app/page.tsx'), '<main class="fg:primary"></main>')
+        await scanner.scan(join(root, 'app/page.tsx'), '<main class="fg:primary"></main>')
 
         const result = await createExtractedCSSResult({
-            state: extractor,
+            scanner,
             styleCSSSources,
             projectDir: root
         })
@@ -470,13 +470,13 @@ describe('style CSS extraction helpers', () => {
 
     it('emits static theme tokens and keyframes without class references', async () => {
         const root = createFixture()
-        const extractor = new CSSExtractor({
+        const scanner = new CSSScanner({
             include: []
         }, root)
-        await extractor.init()
+        await scanner.init()
 
         const styleCSSSources = new Map()
-        await registerStyleCSSSource(extractor, styleCSSSources, join(root, 'app/globals.css'), `
+        await registerStyleCSSSource(scanner, styleCSSSources, join(root, 'app/globals.css'), `
             @theme static {
                 --color-primary: #ff0000;
 
@@ -489,7 +489,7 @@ describe('style CSS extraction helpers', () => {
         `)
 
         const result = await createExtractedCSSResult({
-            state: extractor,
+            scanner,
             styleCSSSources,
             projectDir: root,
             includeGeneratedCSS: false
@@ -520,13 +520,13 @@ describe('style CSS extraction helpers', () => {
                 color: blue;
             }
         `)
-        const extractor = new CSSExtractor({
+        const scanner = new CSSScanner({
             include: []
         }, root)
-        await extractor.init()
+        await scanner.init()
 
         const styleCSSSources = new Map()
-        const result = await registerStyleCSSSource(extractor, styleCSSSources, join(root, 'app/globals.css'), `
+        const result = await registerStyleCSSSource(scanner, styleCSSSources, join(root, 'app/globals.css'), `
             @import "@master/css";
             @import "./styles/btn.css";
 
@@ -538,10 +538,10 @@ describe('style CSS extraction helpers', () => {
                 display: block;
             }
         `)
-        await extractor.insert(join(root, 'app/page.html'), '<div class="card btn-native"></div>')
+        await scanner.scan(join(root, 'app/page.html'), '<div class="card btn-native"></div>')
 
         const css = await createExtractedCSS({
-            state: extractor,
+            scanner,
             styleCSSSources,
             projectDir: root
         })
@@ -558,13 +558,13 @@ describe('style CSS extraction helpers', () => {
 
     it('preserves native CSS when a Master CSS import root opts out of pruning', async () => {
         const root = createFixture()
-        const extractor = new CSSExtractor({
+        const scanner = new CSSScanner({
             include: []
         }, root)
-        await extractor.init()
+        await scanner.init()
 
         const styleCSSSources = new Map()
-        await registerStyleCSSSource(extractor, styleCSSSources, join(root, 'app/globals.css'), `
+        await registerStyleCSSSource(scanner, styleCSSSources, join(root, 'app/globals.css'), `
             @import "@master/css";
             @preserve native;
 
@@ -576,16 +576,16 @@ describe('style CSS extraction helpers', () => {
                 display: block;
             }
         `)
-        await extractor.insert(join(root, 'app/page.html'), '<div class="card"></div>')
+        await scanner.scan(join(root, 'app/page.html'), '<div class="card"></div>')
 
         const css = await createExtractedCSS({
-            state: extractor,
+            scanner,
             styleCSSSources,
             projectDir: root
         })
 
-        expect([...extractor.nativeClassNames]).toEqual([])
-        expect([...extractor.usedNativeClasses]).toEqual([])
+        expect([...scanner.nativeClassNames]).toEqual([])
+        expect([...scanner.usedNativeClasses]).toEqual([])
         expect(css).toContain('.card')
         expect(css).toContain('.unused')
         expect(css).not.toContain('@preserve native')
@@ -603,26 +603,26 @@ describe('style CSS extraction helpers', () => {
                 color: blue;
             }
         `)
-        const extractor = new CSSExtractor({
+        const scanner = new CSSScanner({
             include: []
         }, root)
-        await extractor.init()
+        await scanner.init()
 
         const styleCSSSources = new Map()
-        await registerStyleCSSSource(extractor, styleCSSSources, join(root, 'app/globals.css'), `
+        await registerStyleCSSSource(scanner, styleCSSSources, join(root, 'app/globals.css'), `
             @import "@master/css";
             @preserve native;
             @import "./styles/btn.css";
         `)
-        await extractor.insert(join(root, 'app/page.html'), '<div class="btn-native"></div>')
+        await scanner.scan(join(root, 'app/page.html'), '<div class="btn-native"></div>')
 
         const css = await createExtractedCSS({
-            state: extractor,
+            scanner,
             styleCSSSources,
             projectDir: root
         })
 
-        expect([...extractor.nativeClassNames]).toEqual([])
+        expect([...scanner.nativeClassNames]).toEqual([])
         expect(css).toContain('.btn-native')
         expect(css).toContain('.btn-unused')
         expect(css).not.toContain('@preserve native')
@@ -630,23 +630,23 @@ describe('style CSS extraction helpers', () => {
 
     it('can emit pruned native CSS without generated Master CSS', async () => {
         const root = createFixture()
-        const extractor = new CSSExtractor({
+        const scanner = new CSSScanner({
             include: []
         }, root)
-        await extractor.init()
+        await scanner.init()
 
         const styleCSSSources = new Map()
-        await registerStyleCSSSource(extractor, styleCSSSources, join(root, 'app/globals.css'), `
+        await registerStyleCSSSource(scanner, styleCSSSources, join(root, 'app/globals.css'), `
             @master;
 
             .card {
                 display: grid;
             }
         `)
-        await extractor.insert(join(root, 'app/page.html'), '<div class="card block"></div>')
+        await scanner.scan(join(root, 'app/page.html'), '<div class="card block"></div>')
 
         const css = await createExtractedCSS({
-            state: extractor,
+            scanner,
             styleCSSSources,
             projectDir: root,
             includeGeneratedCSS: false
@@ -658,14 +658,14 @@ describe('style CSS extraction helpers', () => {
 
     it('returns empty CSS when generated output is disabled without style sources', async () => {
         const root = createFixture()
-        const extractor = new CSSExtractor({
+        const scanner = new CSSScanner({
             include: []
         }, root)
-        await extractor.init()
-        await extractor.insert(join(root, 'app/page.html'), '<div class="block"></div>')
+        await scanner.init()
+        await scanner.scan(join(root, 'app/page.html'), '<div class="block"></div>')
 
         const css = await createExtractedCSS({
-            state: extractor,
+            scanner,
             includeGeneratedCSS: false
         })
 

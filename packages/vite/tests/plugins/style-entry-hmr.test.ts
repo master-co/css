@@ -8,29 +8,29 @@
  *       modules.
  *
  *  C4 — the `reset` and `change` event listeners attached to the
- *       extractor were `() => servers.forEach(...)` with NO await.
+ *       scanner were `() => servers.forEach(...)` with NO await.
  *       EventEmitter does not await async listeners, so two saves in
- *       quick succession would mutate extractor.css concurrently.
+ *       quick succession would mutate scanner.css concurrently.
  *
  * The fix:
  *   - C3: replace tasks.concat with tasks.push(...x)
  *   - C4: chain reset / update onto Promise queues (one each), so a
  *         second reset can never start before the first has settled.
  *
- * These tests drive the plugin against a hand-rolled extractor +
+ * These tests drive the plugin against a hand-rolled scanner +
  * ViteDevServer pair so each guarantee can be checked individually.
  */
 import { describe, test, expect, vi } from 'vitest'
 import { EventEmitter } from 'node:events'
 import StyleEntryHMRPlugin from '../../src/plugins/style-entry-hmr'
 
-function makeExtractor() {
-    const extractor = new EventEmitter() as unknown as Record<string, unknown> & EventEmitter
-    extractor.prepare = vi.fn(async () => undefined)
-    extractor.insert = vi.fn(async () => true)
-    extractor.css = { text: '/* css */' }
-    extractor.options = {}
-    return extractor as any
+function makeScanner() {
+    const scanner = new EventEmitter() as unknown as Record<string, unknown> & EventEmitter
+    scanner.prepare = vi.fn(async () => undefined)
+    scanner.scan = vi.fn(async () => true)
+    scanner.css = { text: '/* css */' }
+    scanner.options = {}
+    return scanner as any
 }
 
 type ModuleEntry = [string, { transformResult?: { code: string }, ssrTransformResult?: { code: string }, file?: string }]
@@ -54,16 +54,16 @@ async function wait(ms: number) {
 
 describe('StyleEntryHMRPlugin (C3+C4 race fixes)', () => {
     test('C3: handleReset awaits prepare(), index.html re-insert, AND every module-graph re-insert', async () => {
-        const extractor = makeExtractor()
-        const insertCalls: string[] = []
+        const scanner = makeScanner()
+        const scanCalls: string[] = []
         // Slow inserts so we can observe whether handleReset awaited them
-        extractor.insert = vi.fn(async (id: string) => {
+        scanner.scan = vi.fn(async (id: string) => {
             await new Promise((r) => setTimeout(r, 10))
-            insertCalls.push(id)
+            scanCalls.push(id)
             return true
         })
         const prepareCalls: string[] = []
-        extractor.prepare = vi.fn(async () => {
+        scanner.prepare = vi.fn(async () => {
             await new Promise((r) => setTimeout(r, 10))
             prepareCalls.push('prepare')
         })
@@ -76,7 +76,7 @@ describe('StyleEntryHMRPlugin (C3+C4 race fixes)', () => {
             ],
         })
 
-        const plugin = StyleEntryHMRPlugin({} as any, { extractor } as any)
+        const plugin = StyleEntryHMRPlugin({} as any, { scanner } as any)
         ;(plugin as any).configureServer.call({}, server as any)
         ;(plugin as any).buildStart.call({})
 
@@ -84,7 +84,7 @@ describe('StyleEntryHMRPlugin (C3+C4 race fixes)', () => {
         await (plugin as any).transformIndexHtml.handler.call({}, '<html class="p:1x"></html>', { filename: '/index.html' })
 
         const updateSendCallsBefore = server.ws.send.mock.calls.length
-        extractor.emit('reset')
+        scanner.emit('reset')
         // The fix serialises onto a Promise chain; wait long enough for the
         // simulated 10ms inserts/prepare to settle, then drain microtasks.
         await wait(60)
@@ -94,11 +94,11 @@ describe('StyleEntryHMRPlugin (C3+C4 race fixes)', () => {
         expect(prepareCalls).toEqual(['prepare'])
         // insert called for: index.html (from transformIndexHtml), then both real modules
         // (virtual module entries must be filtered).
-        expect(insertCalls).toContain('/index.html') // from transformIndexHtml above is recorded BEFORE reset
-        expect(insertCalls).toContain('/a.tsx')
-        expect(insertCalls).toContain('/b.tsx')
+        expect(scanCalls).toContain('/index.html') // from transformIndexHtml above is recorded BEFORE reset
+        expect(scanCalls).toContain('/a.tsx')
+        expect(scanCalls).toContain('/b.tsx')
         // Critically: virtual module ids must never have been re-inserted
-        expect(insertCalls).not.toContain('\0plugin-virtual')
+        expect(scanCalls).not.toContain('\0plugin-virtual')
 
         // CSS importer updates run after reset settles; no importer is registered
         // here, so the assertion below only proves the chain completed.
@@ -106,7 +106,7 @@ describe('StyleEntryHMRPlugin (C3+C4 race fixes)', () => {
     })
 
     test('C4: a second reset is queued behind the first — no overlap', async () => {
-        const extractor = makeExtractor()
+        const scanner = makeScanner()
 
         // First prepare hangs until we resolve it manually; second resolves quickly.
         let releaseFirst!: () => void
@@ -114,16 +114,16 @@ describe('StyleEntryHMRPlugin (C3+C4 race fixes)', () => {
         const prepareSpy = vi.fn()
             .mockImplementationOnce(() => firstPending)
             .mockImplementationOnce(() => Promise.resolve())
-        extractor.prepare = prepareSpy
+        scanner.prepare = prepareSpy
 
         const server = makeServer()
-        const plugin = StyleEntryHMRPlugin({} as any, { extractor } as any)
+        const plugin = StyleEntryHMRPlugin({} as any, { scanner } as any)
         ;(plugin as any).configureServer.call({}, server as any)
         ;(plugin as any).buildStart.call({})
 
         // Fire two resets back-to-back
-        extractor.emit('reset')
-        extractor.emit('reset')
+        scanner.emit('reset')
+        scanner.emit('reset')
 
         // First prepare started; second has NOT — it's queued behind the first
         await tick(2)
@@ -136,7 +136,7 @@ describe('StyleEntryHMRPlugin (C3+C4 race fixes)', () => {
     })
 
     test('C4: a second change is queued behind the first — no overlap', async () => {
-        const extractor = makeExtractor()
+        const scanner = makeScanner()
         // Wire CSS-importer update observability via reloadModule.
         const server = makeServer()
         const cssModule = { file: '/style.css' }
@@ -149,14 +149,14 @@ describe('StyleEntryHMRPlugin (C3+C4 race fixes)', () => {
         ;(server.moduleGraph as any).getModuleById = (id: string) => id === '/style.css' ? cssModule : null
 
         const plugin = StyleEntryHMRPlugin({} as any, {
-            extractor,
+            scanner,
             virtualCSSImporters: new Set(['/style.css'])
         } as any)
         ;(plugin as any).configureServer.call({}, server as any)
         ;(plugin as any).buildStart.call({})
 
-        extractor.emit('change')
-        extractor.emit('change')
+        scanner.emit('change')
+        scanner.emit('change')
 
         // First reloadModule called; second deferred behind the first's promise
         await tick(2)
@@ -168,39 +168,39 @@ describe('StyleEntryHMRPlugin (C3+C4 race fixes)', () => {
     })
 
     test('reloads CSS files that import Master CSS', async () => {
-        const extractor = makeExtractor()
+        const scanner = makeScanner()
         const cssModule = { file: '/style.css' }
         const server = makeServer()
         ;(server.moduleGraph as any).getModuleById = (id: string) => id === '/style.css' ? cssModule : null
 
         const plugin = StyleEntryHMRPlugin({} as any, {
-            extractor,
+            scanner,
             virtualCSSImporters: new Set(['/style.css']),
         } as any)
         ;(plugin as any).configureServer.call({}, server as any)
         ;(plugin as any).buildStart.call({})
 
-        extractor.emit('change')
+        scanner.emit('change')
         await tick(5)
 
         expect(server.reloadModule).toHaveBeenCalledWith(cssModule)
     })
 
     test('C4: an error in one reset does not poison the chain (subsequent resets still run)', async () => {
-        const extractor = makeExtractor()
+        const scanner = makeScanner()
 
         const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
         const prepareSpy = vi.fn()
             .mockImplementationOnce(() => Promise.reject(new Error('boom')))
             .mockImplementationOnce(() => Promise.resolve())
-        extractor.prepare = prepareSpy
+        scanner.prepare = prepareSpy
 
         const server = makeServer()
-        const plugin = StyleEntryHMRPlugin({} as any, { extractor } as any)
+        const plugin = StyleEntryHMRPlugin({} as any, { scanner } as any)
         ;(plugin as any).configureServer.call({}, server as any)
         ;(plugin as any).buildStart.call({})
 
-        extractor.emit('reset')
+        scanner.emit('reset')
         await tick(3)
         // First reset failed — error logged, not thrown
         expect(consoleSpy).toHaveBeenCalledWith(
@@ -209,7 +209,7 @@ describe('StyleEntryHMRPlugin (C3+C4 race fixes)', () => {
         )
 
         // Second reset still runs because the chain caught the rejection
-        extractor.emit('reset')
+        scanner.emit('reset')
         await tick(5)
         expect(prepareSpy).toHaveBeenCalledTimes(2)
 
@@ -221,9 +221,9 @@ describe('StyleEntryHMRPlugin (C3+C4 race fixes)', () => {
         // module-graph promise array were ever silently dropped again (the
         // original C3 bug), this test would fail because the slowest module
         // wouldn't be observed by the time the CSS importer reload fired.
-        const extractor = makeExtractor()
+        const scanner = makeScanner()
         const completed: string[] = []
-        extractor.insert = vi.fn(async (id: string) => {
+        scanner.scan = vi.fn(async (id: string) => {
             // Module b is intentionally slowest to flush out drop-on-the-floor bugs
             const delay = id === '/b.tsx' ? 30 : 1
             await new Promise((r) => setTimeout(r, delay))
@@ -242,13 +242,13 @@ describe('StyleEntryHMRPlugin (C3+C4 race fixes)', () => {
         ;(server.moduleGraph as any).getModuleById = (id: string) => id === '/style.css' ? cssModule : null
 
             const plugin = StyleEntryHMRPlugin({} as any, {
-            extractor,
+            scanner,
             virtualCSSImporters: new Set(['/style.css'])
         } as any)
         ;(plugin as any).configureServer.call({}, server as any)
         ;(plugin as any).buildStart.call({})
 
-        extractor.emit('reset')
+        scanner.emit('reset')
         // Long enough that the slowest insert has finished (b is 30ms)
         await wait(80)
         await tick(2)

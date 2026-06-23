@@ -70,7 +70,7 @@ Scan source files, detect Master CSS classes, generate CSS rules, and write the 
 mcss extract index.html main.js
 ```
 
-When no source paths are passed, the CLI scans the current project with the default extractor `include` and `exclude` options.
+When no source paths are passed, the CLI scans the current project with the default scanner `include` and `exclude` options.
 
 ```bash
 mcss extract
@@ -101,4 +101,4 @@ Options:
 ## Related docs
 
 - [Static rendering guide](https://rc.css.master.co/guide/installation)
-- [Extractor package](../extractor)
+- [Scanner package](../scanner)

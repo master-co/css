@@ -2,7 +2,7 @@ import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import type { Pattern as FastGlobPattern } from 'fast-glob'
 import type { SourceAdapter } from '@master/css-source'
 
-const options: Options = {
+const scannerOptions: ScannerOptions = {
     // enable verbose Logs
     verbose: 1,
     // specify output file path
@@ -51,7 +51,7 @@ const options: Options = {
     adapters: [],
 }
 
-export interface Options {
+export interface ScannerOptions {
     verbose?: number
     manifest?: MasterCSSManifest,
     output?: string,
@@ -64,4 +64,5 @@ export interface Options {
     adapters?: SourceAdapter[]
 }
 
-export default options
+export { scannerOptions }
+export default scannerOptions

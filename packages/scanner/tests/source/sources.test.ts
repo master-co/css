@@ -1,5 +1,5 @@
 import { test, expect, it } from 'vitest'
-import CSSExtractor from '../../src'
+import CSSScanner from '../../src'
 import fs from 'fs'
 import path from 'path'
 
@@ -12,13 +12,13 @@ export default {
 `, { flag: 'w' })
 
 it('check the excluded files', async () => {
-    const extractor = await new CSSExtractor({}, __dirname).init()
-    expect(extractor?.fixedSourcePaths).not.toContain('manual-source.ts')
+    const scanner = await new CSSScanner({}, __dirname).init()
+    expect(scanner?.fixedSourcePaths).not.toContain('manual-source.ts')
 })
 
 it('should contain the specific source', async () => {
-    const extractor = await new CSSExtractor({
+    const scanner = await new CSSScanner({
         required: ['manual-source.ts'],
     }, __dirname).init()
-    expect(extractor?.fixedSourcePaths).toContain('manual-source.ts')
+    expect(scanner?.fixedSourcePaths).toContain('manual-source.ts')
 })

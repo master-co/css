@@ -33,12 +33,16 @@ function buildPlayground() {
     }
 }
 
-function readOutputFiles(dir: string, matches: (path: string) => boolean): string {
-    return readdirSync(dir).map((entry) => {
+function readOutputFileContents(dir: string, matches: (path: string) => boolean): string[] {
+    return readdirSync(dir).flatMap((entry) => {
         const path = join(dir, entry)
-        if (statSync(path).isDirectory()) return readOutputFiles(path, matches)
-        return matches(path) ? readFileSync(path, 'utf-8') : ''
-    }).join('\n')
+        if (statSync(path).isDirectory()) return readOutputFileContents(path, matches)
+        return matches(path) ? [readFileSync(path, 'utf-8')] : []
+    })
+}
+
+function readOutputFiles(dir: string, matches: (path: string) => boolean): string {
+    return readOutputFileContents(dir, matches).join('\n')
 }
 
 function readJavaScriptFiles(dir: string): string {
@@ -49,6 +53,10 @@ function readJSONFiles(dir: string): string {
     return readOutputFiles(dir, (path) => path.endsWith('.json'))
 }
 
+interface ManifestJSON {
+    variables?: Record<string, { key: string }[]>
+}
+
 describe('playground', () => {
     it('imports the global CSS entry as a Next config module', () => {
         buildPlayground()
@@ -57,16 +65,21 @@ describe('playground', () => {
         const htmlPath = join(nextDir, 'server/app/index.html')
         const html = readFileSync(htmlPath, 'utf-8')
         const clientSource = readJavaScriptFiles(join(nextDir, 'static/chunks'))
-        const manifestJSONSource = readJSONFiles(join(nextDir, 'static/media'))
+        const manifestJSONSources = readOutputFileContents(join(nextDir, 'static/media'), (path) => path.endsWith('.json'))
+        const manifestJSON = manifestJSONSources.map((source) => JSON.parse(source) as ManifestJSON)
+        const manifestJSONSource = manifestJSONSources.join('\n')
         const hydrationManifestJSONSource = readJSONFiles(join(nextDir, 'static/master-css/hydration'))
+        const hasVariable = (namespace: string, key: string) => manifestJSON.some((manifest) =>
+            manifest.variables?.[namespace]?.some((variable) => variable.key === key)
+        )
 
         expect(html).toContain('.fg\\:primary{color:var(--color-primary)}')
         expect(html).toContain(`${MASTER_CSS_HYDRATION_MANIFEST_ATTR}="/_next/static/master-css/hydration/`)
         expect(html).not.toContain(`id="${MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID}"`)
         expect(html.match(new RegExp(`id="${MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID}"`, 'g'))?.length ?? 0).toBe(0)
-        expect(clientSource).not.toContain('font-weight-bold')
+        expect(clientSource).not.toContain('var(--font-sans')
         expect(clientSource).not.toContain('#0070f3')
-        expect(manifestJSONSource).toContain('font-weight-bold')
+        expect(hasVariable('font-weight', 'bold')).toBe(true)
         expect(manifestJSONSource).toContain('#0070f3')
         expect(hydrationManifestJSONSource).toContain('"className":"fg:primary"')
     }, 120000)

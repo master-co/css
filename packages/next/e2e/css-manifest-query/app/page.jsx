@@ -1,9 +1,8 @@
 import manifest from './master-css-manifest'
 
 function getVariable(namespace, key) {
-    return manifest.variables?.find((variable) =>
-        variable.namespace === namespace
-        && variable.key === key
+    return manifest.variables?.[namespace]?.find((variable) =>
+        variable.key === key
         && !variable.mode
     )?.value
 }

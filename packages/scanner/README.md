@@ -20,11 +20,11 @@
             <img alt="NPM Version" src="https://img.shields.io/github/v/release/master-co/css?include_prereleases&color=f6f7f8&label=&style=for-the-badge&logo=github">
         </picture>
     </a>
-    <a aria-label="NPM Package" href="https://www.npmjs.com/package/@master/css-extractor">
+    <a aria-label="NPM Package" href="https://www.npmjs.com/package/@master/css-scanner">
         <picture>
-            <source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/npm/dm/@master/css-extractor?color=212022&label=%20&logo=npm&style=for-the-badge">
-            <source media="(prefers-color-scheme: light)" srcset="https://img.shields.io/npm/dm/@master/css-extractor?color=f6f7f8&label=%20&logo=npm&style=for-the-badge">
-            <img alt="NPM package ( download / month )" src="https://img.shields.io/npm/dm/@master/css-extractor?color=f6f7f8&label=%20&logo=npm&style=for-the-badge">
+            <source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/npm/dm/@master/css-scanner?color=212022&label=%20&logo=npm&style=for-the-badge">
+            <source media="(prefers-color-scheme: light)" srcset="https://img.shields.io/npm/dm/@master/css-scanner?color=f6f7f8&label=%20&logo=npm&style=for-the-badge">
+            <img alt="NPM package ( download / month )" src="https://img.shields.io/npm/dm/@master/css-scanner?color=f6f7f8&label=%20&logo=npm&style=for-the-badge">
         </picture>
     </a>
     <a aria-label="Discord Community" href="https://discord.gg/sZNKpAAAw6">
@@ -55,17 +55,17 @@
 ## Installation
 
 ```bash
-npm install @master/css-extractor
+npm install @master/css-scanner
 ```
 
-`@master/css-extractor` is the Node.js source-scanning engine behind Master CSS static rendering. It scans source files, validates possible classes, inserts generated rules, and maintains extraction state for build integrations.
+`@master/css-scanner` is the Node.js source-scanning engine behind Master CSS static rendering. It scans source files, validates possible classes, inserts generated rules, and maintains scanner state for build integrations.
 
 ## Usage
 
 ```js
-import { CSSExtractor } from '@master/css-extractor'
+import { CSSScanner } from '@master/css-scanner'
 
-const extractor = new CSSExtractor(options, cwd)
+const scanner = new CSSScanner(options, cwd)
 ```
 
 `cwd` resolves project CSS manifest entries and source patterns such as `include`, `exclude`, and `required`.
@@ -75,8 +75,8 @@ const extractor = new CSSExtractor(options, cwd)
 Default options are exported from the root package and the side-effect-free `./options` subpath:
 
 ```js
-import { options } from '@master/css-extractor'
-import defaultOptions from '@master/css-extractor/options'
+import { scannerOptions } from '@master/css-scanner'
+import defaultScannerOptions from '@master/css-scanner/options'
 ```
 
 | Option | Type | Description |
@@ -92,7 +92,7 @@ Use `safelist` for classes from asynchronous data, irregular classes, or classes
 
 ## CSS directives
 
-Extractor options can also be declared in CSS. For the full stylesheet syntax, see [CSS directives](https://rc.css.master.co/reference/directives).
+Scanner options can also be declared in CSS. For the full stylesheet syntax, see [CSS directives](https://rc.css.master.co/reference/directives).
 
 ```css
 @source 'src/**/*.{html,js,jsx,ts,tsx,vue,svelte,astro,md,mdx}';
@@ -124,7 +124,7 @@ Prune native CSS class selector rules from a stylesheet by importing `@master/cs
 }
 ```
 
-Local relative `.css` imports are expanded, the Master import is replaced by generated CSS, and native class rules are kept only when their class names are found by the extractor. Add `@preserve native;` to preserve native CSS in a Master-managed root. See [Native CSS pruning](https://rc.css.master.co/guide/native-css-pruning) for the full model.
+Local relative `.css` imports are expanded, the Master import is replaced by generated CSS, and native class rules are kept only when their class names are found by the scanner. Add `@preserve native;` to preserve native CSS in a Master-managed root. See [Native CSS pruning](https://rc.css.master.co/guide/native-css-pruning) for the full model.
 
 ## Class candidate extraction
 

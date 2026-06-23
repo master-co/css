@@ -11,10 +11,10 @@ export const ASTRO_MIDDLEWARE_ENTRYPOINT = '@master/css.astro/middleware'
 function withAstroAdapter(options: IntegrationOptions): IntegrationOptions {
     return {
         ...options,
-        extractor: {
-            ...options.extractor,
+        scanner: {
+            ...options.scanner,
             adapters: [
-                ...(options.extractor?.adapters || []),
+                ...(options.scanner?.adapters || []),
                 astroAdapter()
             ]
         }

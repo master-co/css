@@ -50,9 +50,12 @@
         "access": "public",
         "provenance": true
     },
+    "peerDependencies": {
+        "webpack": ">=5"
+    },
     "dependencies": {
         "@master/css": "workspace:^",
-        "@master/css-extractor": "workspace:^",
+        "@master/css-scanner": "workspace:^",
         "@master/css-integration": "workspace:^",
         "@master/css-project": "workspace:^",
         "@master/css-stylesheet": "workspace:^",
@@ -60,6 +63,7 @@
         "webpack-virtual-modules": "^0.6.2"
     },
     "devDependencies": {
-        "tapable": "^2.3.3"
+        "tapable": "^2.3.3",
+        "webpack": "^5.107.2"
     }
 }

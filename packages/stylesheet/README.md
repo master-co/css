@@ -10,9 +10,9 @@ npm install @master/css-stylesheet
 
 ## Responsibility
 
-`@master/css-stylesheet` detects Master CSS stylesheet entries, resolves stylesheet import graphs, compiles CSS-first directives, registers stylesheet sources, prunes native CSS using extraction state, and composes final CSS with emittedGlobals metadata.
+`@master/css-stylesheet` detects Master CSS stylesheet entries, resolves stylesheet import graphs, compiles CSS-first directives, registers stylesheet sources, prunes native CSS using scanner state, and composes final CSS with emittedGlobals metadata.
 
-It accepts structural extractor state from callers; it does not depend on `@master/css-extractor` or scan source files directly except when resolving stylesheet `@source` directives through supplied options.
+It accepts structural scanner state from callers; it does not depend on `@master/css-scanner` or scan source files directly except when resolving stylesheet `@source` directives through supplied options.
 
 ## API
 

@@ -2,7 +2,7 @@
 
 ## Responsibility
 
-`@master/css.vite` integrates Master CSS into Vite. It supports `runtime`, `static`, `pre-render`, and `progressive` modes, handles manifest and emittedGlobals virtual modules, maintains the shared extractor usage graph, manages stylesheet entries, injects runtime/virtual CSS imports, avoids FOUC, and pre-renders HTML.
+`@master/css.vite` integrates Master CSS into Vite. It supports `runtime`, `static`, `pre-render`, and `progressive` modes, handles manifest and emittedGlobals virtual modules, maintains the shared scanner usage graph, manages stylesheet entries, injects runtime/virtual CSS imports, avoids FOUC, and pre-renders HTML.
 
 ## Inputs And Outputs
 
@@ -11,9 +11,9 @@
 
 ## Architecture Notes
 
-- The extractor lifecycle is shared by every mode. It collects class usage and supports native CSS pruning regardless of whether the mode emits generated utilities.
+- The scanner lifecycle is shared by every mode. It collects class usage and supports native CSS pruning regardless of whether the mode emits generated utilities.
 - `static` mode differs by setting `includeGeneratedCSS`; the style entry pipeline is not static-only.
-- `virtual:master-css-manifest` is the project-level MasterCSSManifest API. It must not manage stylesheet output or extractor usage.
+- `virtual:master-css-manifest` is the project-level MasterCSSManifest API. It must not manage stylesheet output or scanner usage.
 - `virtual:master-css-emitted-globals` is derived from the managed CSS entry output and must only describe generated variables/keyframes that runtime should treat as already present.
 - The style entry plugin only handles CSS files that Vite imports. Do not scan the workspace here to discover unimported CSS manifest entries.
 - Each file in `src/plugins` should define one plugin and default-export it.

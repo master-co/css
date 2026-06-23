@@ -12,7 +12,7 @@ npm install @master/css-source
 
 `@master/css-source` extracts unvalidated Master CSS class candidates from source text and provides source-format-aware adapters for HTML and JavaScript/TypeScript syntax.
 
-It does not validate classes, generate CSS, maintain extraction state, watch files, or resolve manifests. Those responsibilities belong to `@master/css-extractor`, `@master/css-engine`, and `@master/css-project`.
+It does not validate classes, generate CSS, maintain scanner state, watch files, or resolve manifests. Those responsibilities belong to `@master/css-scanner`, `@master/css-engine`, and `@master/css-project`.
 
 ## API
 
@@ -38,7 +38,7 @@ const candidates = extractClassCandidates(`
 `)
 ```
 
-Candidates are intentionally unvalidated. Pass them through `@master/css-validator` or the extractor before generating CSS.
+Candidates are intentionally unvalidated. Pass them through `@master/css-validator` or the scanner before generating CSS.
 
 ### Adapters
 

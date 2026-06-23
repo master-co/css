@@ -213,7 +213,7 @@ const nextConfig = await withMasterCSS({
 export default nextConfig
 ```
 
-Under the hood, static mode scans the configured source files with `@master/css-extractor` and writes a generated CSS file under `.master/`. A Turbopack CSS loader replaces `@import "@master/css"` with that generated CSS, and stylesheets that import `@master/css` are treated as native CSS pruning roots by default.
+Under the hood, static mode scans the configured source files with `@master/css-scanner` and writes a generated CSS file under `.master/`. A Turbopack CSS loader replaces `@import "@master/css"` with that generated CSS, and stylesheets that import `@master/css` are treated as native CSS pruning roots by default.
 
 Ordinary class selectors in those roots are pruned against detected classes. References to `var(--*)` or manifest animation names can pull matching variables and keyframes from the project CSS entry graph. During Turbopack builds, a scanner loader also reads JavaScript and TypeScript modules that pass through the module graph, so imported files can incrementally feed additional class names into the scanner.
 

@@ -1,29 +1,29 @@
 /**
- * Tests for the C7 + C8 fixes to Vite's shared extractor lifecycle.
+ * Tests for the C7 + C8 fixes to Vite's shared scanner lifecycle.
  *
- *  C7 — `master-css:extractor.configResolved` previously did
- *       `context.extractor.options.include = []` unconditionally,
+ *  C7 — `master-css:scanner.configResolved` previously did
+ *       `context.scanner.options.include = []` unconditionally,
  *       silently wiping a user-supplied
- *       `extractor: { include: [...] }` option. Now only
+ *       `scanner: { include: [...] }` option. Now only
  *       blanked when the user did NOT pass one.
  *
- *  C8 — Vite virtual modules must not be sent through the extractor, while
- *       real Vite module ids are delegated to the extractor's own source
+ *  C8 — Vite virtual modules must not be sent through the scanner, while
+ *       real Vite module ids are delegated to the scanner's own source
  *       matcher.
  *
  * Both fixes preserve the current PluginOptions surface.
  */
 import { describe, test, expect, vi, beforeEach } from 'vitest'
-import ExtractorPlugin from '../../src/plugins/extractor'
+import ScannerPlugin from '../../src/plugins/scanner'
 import UsageGraphPlugin from '../../src/plugins/usage-graph'
 
-vi.mock('@master/css-extractor', () => {
-    // Lightweight stand-in for CSSExtractor that records calls without
+vi.mock('@master/css-scanner', () => {
+    // Lightweight stand-in for CSSScanner that records calls without
     // touching the filesystem.
     return {
         default: class {
             options: any = {}
-            insertCalls: string[] = []
+            scanCalls: string[] = []
             constructor(opts: any, _root?: string) {
                 if (typeof opts === 'object' && opts !== null) {
                     this.options = { ...opts }
@@ -31,8 +31,8 @@ vi.mock('@master/css-extractor', () => {
             }
             async init() { return this }
             async prepare() { return undefined }
-            async insert(id: string, _code: string) {
-                this.insertCalls.push(id)
+            async scan(id: string, _code: string) {
+                this.scanCalls.push(id)
                 return true
             }
         },
@@ -47,33 +47,33 @@ function findPlugin(plugins: any[], name: string) {
 
 const fakeViteConfig = { root: '/proj' } as any
 
-describe('shared extractor plugins (C7 + C8 fixes)', () => {
+describe('shared scanner plugins (C7 + C8 fixes)', () => {
     beforeEach(() => {
         vi.clearAllMocks()
     })
 
-    describe('C7 — respects user-supplied extractor.include', () => {
-        test('default options: extractor.options.include is blanked', async () => {
+    describe('C7 — respects user-supplied scanner.include', () => {
+        test('default options: scanner.options.include is blanked', async () => {
             const ctx: any = {}
             const plugins = [
-                ExtractorPlugin({} as any, ctx),
+                ScannerPlugin({} as any, ctx),
                 UsageGraphPlugin({} as any, ctx)
             ]
-            const ex = findPlugin(plugins, 'master-css:extractor')
+            const ex = findPlugin(plugins, 'master-css:scanner')
             await ex.configResolved.call({}, fakeViteConfig)
-            expect(ctx.extractor.options.include).toEqual([])
+            expect(ctx.scanner.options.include).toEqual([])
         })
 
         test('user-supplied include is preserved (NOT blanked)', async () => {
             const ctx: any = {}
-            const pluginOptions = { extractor: { include: ['node_modules/some-lib/dist/**/*.js'] } } as any
+            const pluginOptions = { scanner: { include: ['node_modules/some-lib/dist/**/*.js'] } } as any
             const plugins = [
-                ExtractorPlugin(pluginOptions, ctx),
+                ScannerPlugin(pluginOptions, ctx),
                 UsageGraphPlugin(pluginOptions, ctx)
             ]
-            const ex = findPlugin(plugins, 'master-css:extractor')
+            const ex = findPlugin(plugins, 'master-css:scanner')
             await ex.configResolved.call({}, fakeViteConfig)
-            expect(ctx.extractor.options.include).toEqual([
+            expect(ctx.scanner.options.include).toEqual([
                 'node_modules/some-lib/dist/**/*.js',
             ])
         })
@@ -83,13 +83,13 @@ describe('shared extractor plugins (C7 + C8 fixes)', () => {
             // intent — both mean "trust Vite to feed me modules". Don't trip
             // on this edge case.
             const ctx: any = {}
-            const pluginOptions = { extractor: { include: [] } } as any
+            const pluginOptions = { scanner: { include: [] } } as any
             const plugins = [
-                ExtractorPlugin(pluginOptions, ctx),
+                ScannerPlugin(pluginOptions, ctx),
                 UsageGraphPlugin(pluginOptions, ctx)
             ]
-            await findPlugin(plugins, 'master-css:extractor').configResolved.call({}, fakeViteConfig)
-            expect(ctx.extractor.options.include).toEqual([])
+            await findPlugin(plugins, 'master-css:scanner').configResolved.call({}, fakeViteConfig)
+            expect(ctx.scanner.options.include).toEqual([])
         })
     })
 
@@ -97,18 +97,18 @@ describe('shared extractor plugins (C7 + C8 fixes)', () => {
         async function drive(ids: string[]) {
             const ctx: any = {}
             const plugins = [
-                ExtractorPlugin({} as any, ctx),
+                ScannerPlugin({} as any, ctx),
                 UsageGraphPlugin({} as any, ctx)
             ]
-            await findPlugin(plugins, 'master-css:extractor').configResolved.call({}, fakeViteConfig)
+            await findPlugin(plugins, 'master-css:scanner').configResolved.call({}, fakeViteConfig)
             const usageGraphPlugin = findPlugin(plugins, 'master-css:usage-graph')
             for (const id of ids) {
                 await usageGraphPlugin.transform.call({}, '<div class="bg:white">x</div>', id)
             }
-            return ctx.extractor.insertCalls
+            return ctx.scanner.scanCalls
         }
 
-        test('delegates real source modules to the extractor', async () => {
+        test('delegates real source modules to the scanner', async () => {
             const calls = await drive([
                 '/proj/src/App.tsx',
                 '/proj/src/main.ts',
@@ -129,7 +129,7 @@ describe('shared extractor plugins (C7 + C8 fixes)', () => {
             ])
         })
 
-        test('delegates non-virtual module ids to the extractor source matcher', async () => {
+        test('delegates non-virtual module ids to the scanner source matcher', async () => {
             const calls = await drive([
                 '/proj/src/data.json',                // json
                 '/proj/src/icon.png',                  // raw asset
@@ -151,7 +151,7 @@ describe('shared extractor plugins (C7 + C8 fixes)', () => {
                 '/proj/src/Component.svelte?vue&type=script',
             ])
             // All three are source files Vite is forwarding through transform
-            // with a query suffix. The extractor source matcher owns whether
+            // with a query suffix. The scanner source matcher owns whether
             // they are usable.
             expect(calls).toEqual([
                 '/proj/src/App.tsx?import',
@@ -169,7 +169,7 @@ describe('shared extractor plugins (C7 + C8 fixes)', () => {
             expect(calls).toEqual([])
         })
 
-        test('CSS files are delegated to the extractor source matcher', async () => {
+        test('CSS files are delegated to the scanner source matcher', async () => {
             const calls = await drive([
                 '/proj/src/style.css',
                 '/proj/src/component.module.css',
@@ -180,7 +180,7 @@ describe('shared extractor plugins (C7 + C8 fixes)', () => {
             ])
         })
 
-        test('framework style subrequests are delegated to the extractor source matcher', async () => {
+        test('framework style subrequests are delegated to the scanner source matcher', async () => {
             const calls = await drive([
                 '/proj/src/App.svelte?svelte&type=style&lang.css',
                 '/proj/src/App.vue?vue&type=style&index=0&lang.css',
@@ -191,13 +191,13 @@ describe('shared extractor plugins (C7 + C8 fixes)', () => {
             ])
         })
 
-        test('build transformIndexHtml feeds HTML to the extractor', async () => {
+        test('build transformIndexHtml feeds HTML to the scanner', async () => {
             const ctx: any = {}
             const plugins = [
-                ExtractorPlugin({} as any, ctx),
+                ScannerPlugin({} as any, ctx),
                 UsageGraphPlugin({} as any, ctx)
             ]
-            await findPlugin(plugins, 'master-css:extractor').configResolved.call({}, fakeViteConfig)
+            await findPlugin(plugins, 'master-css:scanner').configResolved.call({}, fakeViteConfig)
             const usageGraphPlugin = findPlugin(plugins, 'master-css:usage-graph')
 
             await usageGraphPlugin.transformIndexHtml.handler.call(
@@ -206,16 +206,16 @@ describe('shared extractor plugins (C7 + C8 fixes)', () => {
                 { filename: '/proj/index.html' }
             )
 
-            expect(ctx.extractor.insertCalls).toEqual(['/proj/index.html'])
+            expect(ctx.scanner.scanCalls).toEqual(['/proj/index.html'])
         })
 
         test('serve transformIndexHtml is left to the HMR plugin', async () => {
             const ctx: any = {}
             const plugins = [
-                ExtractorPlugin({} as any, ctx),
+                ScannerPlugin({} as any, ctx),
                 UsageGraphPlugin({} as any, ctx)
             ]
-            await findPlugin(plugins, 'master-css:extractor').configResolved.call({}, fakeViteConfig)
+            await findPlugin(plugins, 'master-css:scanner').configResolved.call({}, fakeViteConfig)
             const usageGraphPlugin = findPlugin(plugins, 'master-css:usage-graph')
 
             await usageGraphPlugin.transformIndexHtml.handler.call(
@@ -224,7 +224,7 @@ describe('shared extractor plugins (C7 + C8 fixes)', () => {
                 { filename: '/proj/index.html', server: {} }
             )
 
-            expect(ctx.extractor.insertCalls).toEqual([])
+            expect(ctx.scanner.scanCalls).toEqual([])
         })
     })
 })

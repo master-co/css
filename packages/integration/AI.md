@@ -8,7 +8,7 @@
 
 - Keep this package dependency-light and adapter-neutral.
 - This package may depend on `@master/css-engine` for public manifest/emittedGlobals types and `shared` for manifest JSON helpers.
-- Do not depend on Vite, Next, Webpack, Nuxt, Astro, Extractor, Runtime, Server, Configer, or Compiler.
+- Do not depend on Vite, Next, Webpack, Nuxt, Astro, Scanner, Runtime, Server, Configer, or Compiler.
 - Do not implement project manifest discovery, CSS import graph resolution, extraction, runtime hydration, or framework lifecycle behavior here.
 - Browser-safe helpers must not import `node:*`, use `Buffer`, or read `process`.
 - Node filesystem, path, hash, and resolved-id helpers belong in `./node`; build plugins belong in explicit build-only subpaths such as `./manifest-loader-plugin`.

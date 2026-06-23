@@ -28,7 +28,7 @@ export default nextConfig
 | Mode | Description |
 | --- | --- |
 | `pre-render` | Uses the Next.js Adapter API to render CSS into static and pre-rendered HTML outputs during `next build`. |
-| `static` | Scans source files with `@master/css-extractor`, writes a generated stylesheet, and wires Master CSS stylesheet imports into Turbopack CSS processing. |
+| `static` | Scans source files with `@master/css-scanner`, writes a generated stylesheet, and wires Master CSS stylesheet imports into Turbopack CSS processing. |
 
 Use `pre-render` when route HTML should carry its first-render CSS. Use `static` when classes are statically visible in source and should be emitted into a generated CSS asset.
 
@@ -91,7 +91,7 @@ The `options` object is passed to `withMasterCSS(nextConfig, options)`.
 | Option | Type | Default | Description |
 | --- | --- | --- | --- |
 | `mode` | `'pre-render' \| 'static' \| null` | `'pre-render'` | Next.js integration mode. Use `null` to skip rendering modes while keeping CSS manifest loaders. |
-| `extractorOptions` | `ExtractorOptions` | `{}` | Extractor options for static mode. |
+| `scannerOptions` | `ScannerOptions` | `{}` | Scanner options for static mode. |
 | `buildReport` | `boolean \| string` | `false` | Write a build report with rendered files. `true` writes `.next/master-css-build-report.json`; a string is resolved from `distDir`. |
 | `debug` | `boolean` | `false` | Log rendered output details during `next build`. |
 | `adapterOrder` | `'master-first' \| 'external-first'` | `'master-first'` | Adapter execution order when composing with another Next adapter. |

@@ -2,11 +2,11 @@
 
 ## Responsibility
 
-`@master/css-stylesheet` owns the stylesheet entry pipeline for static rendering. It detects Master CSS stylesheet entries, resolves stylesheet import graphs, compiles CSS-first directives, registers stylesheet sources, prunes native CSS using extraction state, and composes final CSS plus runtime emittedGlobals variable/keyframe counts.
+`@master/css-stylesheet` owns the stylesheet entry pipeline for static rendering. It detects Master CSS stylesheet entries, resolves stylesheet import graphs, compiles CSS-first directives, registers stylesheet sources, prunes native CSS using scanner state, and composes final CSS plus runtime emittedGlobals variable/keyframe counts.
 
 ## Inputs And Outputs
 
-- Input: stylesheet ids/source text, project root, optional compile options, `StyleCSSSources`, and structural extractor state from packages such as `@master/css-extractor`.
+- Input: stylesheet ids/source text, project root, optional compile options, `StyleCSSSources`, and structural scanner state from packages such as `@master/css-scanner`.
 - Output: transformed local CSS, stylesheet source records, stylesheet-local manifests, final CSS text, emittedGlobals data, and stylesheet dependencies.
 
 ## Public APIs
@@ -18,7 +18,7 @@
 
 ## Boundaries
 
-- Do not depend on `@master/css-extractor`; accept structural state instead.
+- Do not depend on `@master/css-scanner`; accept structural state instead.
 - Do not scan source files directly except when resolving stylesheet `@source` directives through supplied include/required/exclude options.
 - Do not own source adapters or source candidate extraction; use `@master/css-source` when stylesheet source directives need source file candidates.
 - Do not own project CSS manifest discovery; callers should use `@master/css-project`.

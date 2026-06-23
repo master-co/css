@@ -1,4 +1,4 @@
-import type CSSExtractor from '@master/css-extractor'
+import type CSSScanner from '@master/css-scanner'
 import type { MasterCSSEmittedGlobals } from '@master/css'
 import type { StyleCSSSources } from '@master/css-stylesheet'
 import type { Plugin, ResolvedConfig } from 'vite'
@@ -10,7 +10,7 @@ import RuntimeMode from './modes/runtime'
 import ProgressiveMode from './modes/progressive'
 import PreRenderMode from './modes/pre-render'
 import ContextPlugin from './plugins/context'
-import ExtractorPlugin from './plugins/extractor'
+import ScannerPlugin from './plugins/scanner'
 import UsageGraphPlugin from './plugins/usage-graph'
 import LocalComposePlugin from './plugins/local-compose'
 import StyleEntryPlugin from './plugins/style-entry'
@@ -20,7 +20,7 @@ import defaultPluginOptions, { PluginOptions } from './options'
 
 export interface PluginContext {
     config?: ResolvedConfig
-    extractor?: CSSExtractor
+    scanner?: CSSScanner
     virtualCSSImporters?: Set<string>
     virtualCSSPlaceholderEmitted?: boolean
     styleCSSSources?: StyleCSSSources
@@ -40,7 +40,7 @@ export default function masterCSS(options?: PluginOptions): Plugin[] {
         ManifestVirtualModulePlugin(options, context),
         EmittedGlobalsVirtualModulePlugin(context),
         ManifestLoaderPlugin(context),
-        ExtractorPlugin(options, context),
+        ScannerPlugin(options, context),
         UsageGraphPlugin(options, context),
         LocalComposePlugin(options, context),
         StyleEntryPlugin(options, context),

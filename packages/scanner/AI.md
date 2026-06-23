@@ -1,19 +1,19 @@
-# AI Notes For `@master/css-extractor`
+# AI Notes For `@master/css-scanner`
 
 ## Responsibility
 
-`@master/css-extractor` statically scans source files, validates possible Master CSS classes, inserts valid rules through the manifest-driven engine layers, exports CSS, and maintains extraction state for build integrations. Source-format-aware class adapters and raw class candidate extraction belong to `@master/css-source`. Stylesheet entry handling, CSS-first stylesheet compilation, native CSS pruning, extraction directives, generated CSS composition, and emittedGlobals manifest output belong to `@master/css-stylesheet`.
+`@master/css-scanner` statically scans source files, validates possible Master CSS classes, inserts valid rules through the manifest-driven engine layers, exports CSS, and maintains scanner state for build integrations. Source-format-aware class adapters and raw class candidate extraction belong to `@master/css-source`. Stylesheet entry handling, CSS-first stylesheet compilation, native CSS pruning, extraction directives, generated CSS composition, and emittedGlobals manifest output belong to `@master/css-stylesheet`.
 
 ## Inputs And Outputs
 
-- Input: extractor options, source globs, source text, source adapters, and resolved Master CSS manifest.
+- Input: scanner options, source globs, source text, source adapters, and resolved Master CSS manifest.
 - Output: `css.text`, exported CSS file, valid/invalid/latent class caches, native class usage state, and watch events.
 
 ## Public APIs
 
-- `CSSExtractor`
-- `options`
-- option types
+- `CSSScanner`
+- `scannerOptions`
+- `ScannerOptions`
 
 ## Core Files
 
@@ -22,10 +22,10 @@
 
 ## Allowed Changes
 
-- Focused extraction heuristic fixes.
+- Focused scanning heuristic fixes.
 - Watch/manifest reset fixes.
 - Option handling fixes with tests.
-- Focused extraction state behavior used by Vite, Webpack, Next, stylesheet, and CLI integrations.
+- Focused scanner state behavior used by Vite, Webpack, Next, stylesheet, and CLI integrations.
 
 ## Forbidden Without Explicit Request
 
@@ -48,9 +48,9 @@
 ## Required Tests
 
 ```sh
-pnpm --filter @master/css-extractor test
-pnpm --filter @master/css-extractor type-check
-pnpm --filter @master/css-extractor build
+pnpm --filter @master/css-scanner test
+pnpm --filter @master/css-scanner type-check
+pnpm --filter @master/css-scanner build
 ```
 
 Use or extend:

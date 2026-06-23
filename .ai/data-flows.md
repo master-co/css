@@ -32,7 +32,7 @@ Risks:
 - Class matching order changes can alter valid/invalid class behavior.
 - Value parsing changes can alter many properties.
 - Priority changes can alter cascade outcomes without changing declarations.
-- Selector/at-rule parsing changes affect runtime, server, extractor, language service, and ESLint.
+- Selector/at-rule parsing changes affect runtime, server, scanner, language service, and ESLint.
 
 ## CSS Authoring To Manifest
 
@@ -66,11 +66,11 @@ Risks:
 - Static utility layer assignment affects semantic class output and cascade behavior.
 - `?master-css-manifest` query ids, virtual module ids, and generated JavaScript module source helpers are integration protocol and belong in `@master/css-integration`, not `@master/css-project`.
 
-## Build-Time Extraction
+## Build-Time Scanning
 
 ```txt
 source globs / Vite modules / Webpack modules
-  -> CSSExtractor.init()
+  -> CSSScanner.init()
   -> @master/css-source adapters / extractClassCandidates()
   -> generateValidRules()
   -> insert valid rules into layers
@@ -83,7 +83,7 @@ source globs / Vite modules / Webpack modules
 
 Main files:
 
-- `packages/extractor/src/core.ts`
+- `packages/scanner/src/core.ts`
 - `packages/source/src/adapters/*`
 - `packages/stylesheet/src/index.ts`
 - `packages/validator/src/generate-valid-rules.ts`

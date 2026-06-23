@@ -99,7 +99,7 @@ Default options:
 | Option | Default | Description |
 | --- | --- | --- |
 | `mode` | `'progressive'` | Nuxt defaults to progressive rendering. |
-| `extractor` | `undefined` | Extractor options passed through to the shared Vite pipeline. |
+| `scanner` | `undefined` | Scanner options passed through to the shared Vite pipeline. |
 | `injectRuntime` | `true` | Injects the browser runtime when the selected mode needs it. |
 | `avoidFOUC` | `true` | Adds runtime-mode FOUC protection. |
 

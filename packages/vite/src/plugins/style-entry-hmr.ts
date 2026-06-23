@@ -2,7 +2,7 @@ import type { Plugin, ViteDevServer } from 'vite'
 import { existsSync, readFileSync } from 'fs'
 import type { PluginContext } from '../core'
 import type { PluginOptions } from '../options'
-import { getExtractor } from '../utils/extractor-context'
+import { getScanner } from '../utils/scanner-context'
 
 /** HMR when the config and source files changed */
 export default function StyleEntryHMRPlugin(_options: PluginOptions, context: PluginContext): Plugin {
@@ -19,11 +19,11 @@ export default function StyleEntryHMRPlugin(_options: PluginOptions, context: Pl
         }))
     }
     const handleReset = async ({ server }: { server: ViteDevServer }) => {
-        const extractor = getExtractor(context)
+        const scanner = getScanner(context)
         const tasks: Promise<unknown>[] = []
-        tasks.push(extractor.prepare())
+        tasks.push(scanner.prepare())
         if (transformedIndexHTMLModule) {
-            tasks.push(extractor.insert(transformedIndexHTMLModule.id, transformedIndexHTMLModule.code))
+            tasks.push(scanner.scan(transformedIndexHTMLModule.id, transformedIndexHTMLModule.code))
         }
         tasks.push(
             ...Array.from(server.moduleGraph.idToModuleMap.keys())
@@ -36,7 +36,7 @@ export default function StyleEntryHMRPlugin(_options: PluginOptions, context: Pl
                             eachModuleCode = readFileSync(eachModule.file, 'utf-8')
                         }
                         if (eachModuleCode)
-                            await extractor.insert(eachModuleId, eachModuleCode)
+                            await scanner.scan(eachModuleId, eachModuleCode)
                     }
                 })
         )
@@ -53,7 +53,7 @@ export default function StyleEntryHMRPlugin(_options: PluginOptions, context: Pl
             const onError = (label: string) => (err: unknown) => {
                 console.error(`[master-css.vite] ${label} failed:`, err)
             }
-            getExtractor(context)
+            getScanner(context)
                 .on('reset', () => {
                     resetChain = resetChain
                         .then(() => Promise.all(servers.map((eachServer) => handleReset({ server: eachServer }))))
@@ -72,7 +72,7 @@ export default function StyleEntryHMRPlugin(_options: PluginOptions, context: Pl
                     id: filename,
                     code: html
                 }
-                await getExtractor(context).insert(filename, html)
+                await getScanner(context).scan(filename, html)
             }
         },
         configureServer(server) {

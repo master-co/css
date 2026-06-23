@@ -20,7 +20,7 @@
 
 ## Rules
 
-- Do not import `@master/css-language-service`, `@master/css-language-server`, VS Code extension code, runtime, server, extractor, or ESLint packages.
+- Do not import `@master/css-language-service`, `@master/css-language-server`, VS Code extension code, runtime, server, scanner, or ESLint packages.
 - Keep APIs editor-neutral. Stateful service behavior belongs in `@master/css-language-service`; LSP capabilities and workspace lifecycle belong in `@master/css-language-server`.
 - CSS directive lexical highlighting remains TextMate-first. Semantic tokens classify only Master CSS class-list spans and directive class-list spans.
 - Do not change engine syntax or CSS output here.

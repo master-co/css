@@ -1,4 +1,4 @@
-import CSSExtractor from '../src'
+import CSSScanner from '../src'
 import { mkdtempSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
@@ -6,14 +6,14 @@ import { test, expect } from 'vitest'
 import { compileCSSManifest } from '@master/css-compiler'
 
 test('uses default manifest settings without implicit manifest entry discovery', async () => {
-    const extractor = await new CSSExtractor({}, __dirname).init()
-    expect(extractor.css.settings).toBeDefined()
+    const scanner = await new CSSScanner({}, __dirname).init()
+    expect(scanner.css.settings).toBeDefined()
 })
 
-test('reject string extractor options', async () => {
-    await expect(new CSSExtractor('options' as any, __dirname).init())
+test('reject string scanner options', async () => {
+    await expect(new CSSScanner('options' as any, __dirname).init())
         .rejects
-        .toThrow('CSSExtractor options must be an object.')
+        .toThrow('CSSScanner options must be an object.')
 })
 
 test('uses explicit compiled manifests', async () => {
@@ -27,22 +27,22 @@ test('uses explicit compiled manifests', async () => {
             }
         }
     `)
-    const extractor = await new CSSExtractor({
+    const scanner = await new CSSScanner({
         manifest
     }, __dirname).init()
     expect(
-        extractor.extract('test.tsx',
+        scanner.collectCandidates('test.tsx',
             `
             <h1 className={'rel ' + styles.title}>
             <h1 className="{styles.title + ' ' + 'blue-btn'}">
             <button className="test btn">
         `)
     ).toEqual(['rel', 'blue-btn', 'test', 'btn'])
-    expect(extractor.css.createRule('blue-btn')?.text).toContain('background-color:oklch')
+    expect(scanner.css.createRule('blue-btn')?.text).toContain('background-color:oklch')
 })
 
 test('ignores native CSS classes from unmanaged CSS files', async () => {
-    const cwd = mkdtempSync(join(tmpdir(), 'master-css-extractor-'))
+    const cwd = mkdtempSync(join(tmpdir(), 'master-css-scanner-'))
     try {
         writeFileSync(join(cwd, 'theme.css'), `
             .native-card {
@@ -56,17 +56,17 @@ test('ignores native CSS classes from unmanaged CSS files', async () => {
             }
         `)
 
-        const extractor = await new CSSExtractor({ include: [] }, cwd).init()
+        const scanner = await new CSSScanner({ include: [] }, cwd).init()
         const changes: string[][] = []
-        extractor.on('change', () => {
-            changes.push([...extractor.usedNativeClasses])
+        scanner.on('change', () => {
+            changes.push([...scanner.usedNativeClasses])
         })
 
-        await extractor.insert('src/index.html', '<div class="native-card btn"></div>')
+        await scanner.scan('src/index.html', '<div class="native-card btn"></div>')
 
-        expect([...extractor.nativeClassNames]).toEqual([])
-        expect([...extractor.usedNativeClasses]).toEqual([])
-        expect(extractor.validClasses.has('btn')).toBe(false)
+        expect([...scanner.nativeClassNames]).toEqual([])
+        expect([...scanner.usedNativeClasses]).toEqual([])
+        expect(scanner.validClasses.has('btn')).toBe(false)
         expect(changes).toEqual([])
     } finally {
         rmSync(cwd, { recursive: true, force: true })

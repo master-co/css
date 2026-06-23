@@ -39,7 +39,7 @@ Do not chase benchmark wins by changing CSS output, cascade order, hydration che
 | Variables/tokens/modes | Compiler manifest lowering and engine variable tests; server/runtime fixtures if output or hydration changes |
 | Manifest lowering/execution | Compiler manifest lowering tests and engine parity tests |
 | Server rendering | `pnpm --filter @master/css-server test` |
-| Static extraction | `pnpm --filter @master/css-extractor test`; add extraction false positive/negative cases |
+| Static scanning | `pnpm --filter @master/css-scanner test`; add scanning false positive/negative cases |
 | Runtime/hydration | `pnpm --filter @master/css-runtime e2e` |
 | Vite plugin | `pnpm --filter @master/css.vite test`; run affected example build if integration-level |
 | Language primitives | `pnpm --filter @master/css-language test` |
@@ -68,7 +68,7 @@ Prefer tests that cover the smallest behavior:
 - Manifest lowering behavior: `packages/compiler/tests` or `packages/preset/tests`
 - Server output: `packages/server/tests/fixtures`
 - Runtime hydration: `packages/runtime/e2e/progressive`
-- Extractor source scanning: `packages/extractor/tests`
+- Scanner source scanning: `packages/scanner/tests`
 - Language primitives: `packages/language/tests`
 - Language service features: `packages/language-service/tests`
 - ESLint parser/autofix behavior: `packages/eslint-plugin/tests`

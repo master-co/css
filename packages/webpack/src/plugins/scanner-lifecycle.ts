@@ -1,15 +1,15 @@
-import type { Options } from '@master/css-extractor'
+import type { ScannerOptions } from '@master/css-scanner'
 import log from '@techor/log'
 import type { Compiler } from 'webpack'
 import type { MasterCSSWebpackContext, WebpackSubPlugin } from '../plugin'
 import { hasModifiedFile } from '../utils/path'
 
-export default function ExtractorLifecyclePlugin(context: MasterCSSWebpackContext): WebpackSubPlugin {
+export default function ScannerLifecyclePlugin(context: MasterCSSWebpackContext): WebpackSubPlugin {
     return {
         apply(compiler: Compiler) {
             if (context.getPluginInitialized()) return
 
-            context.on('init', (options: Options) => {
+            context.on('init', (options: ScannerOptions) => {
                 options.include = []
             })
             context.on('change', () => {
@@ -17,7 +17,7 @@ export default function ExtractorLifecyclePlugin(context: MasterCSSWebpackContex
                     console.error('[master-css.webpack] generated CSS module update failed:', error)
                 })
             })
-            context.on('planChange', () => {
+            context.on('resetDependencyChange', () => {
                 context.writeDefaultManifestModule().catch((error: unknown) => {
                     console.error('[master-css.webpack] manifest module update failed:', error)
                 })

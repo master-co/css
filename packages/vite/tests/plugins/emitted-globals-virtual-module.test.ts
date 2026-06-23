@@ -2,7 +2,7 @@ import { mkdirSync, mkdtempSync, rmSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
-import CSSExtractor from '@master/css-extractor'
+import CSSScanner from '@master/css-scanner'
 import { registerStyleCSSSource } from '@master/css-stylesheet'
 import EmittedGlobalsVirtualModulePlugin from '../../src/plugins/emitted-globals-virtual-module'
 import { RESOLVED_VIRTUAL_EMITTED_GLOBALS_ID, VIRTUAL_EMITTED_GLOBALS_ID } from '../../src/common'
@@ -16,10 +16,10 @@ describe('EmittedGlobalsVirtualModulePlugin', () => {
         const root = mkdtempSync(join(tmpdir(), 'master-css-vite-emittedGlobals-'))
         try {
             mkdirSync(join(root, 'app'), { recursive: true })
-            const extractor = new CSSExtractor({ include: [] }, root)
-            await extractor.init()
+            const scanner = new CSSScanner({ include: [] }, root)
+            await scanner.init()
             const styleCSSSources = new Map()
-            await registerStyleCSSSource(extractor, styleCSSSources, join(root, 'app/globals.css'), `
+            await registerStyleCSSSource(scanner, styleCSSSources, join(root, 'app/globals.css'), `
                 @theme {
                     --color-primary: #ff0000;
                 }
@@ -36,11 +36,11 @@ describe('EmittedGlobalsVirtualModulePlugin', () => {
             `, {
                 projectDir: root
             })
-            await extractor.insert(join(root, 'app/page.tsx'), '<main class="main"></main>')
+            await scanner.scan(join(root, 'app/page.tsx'), '<main class="main"></main>')
 
             const context = {
                 config: { root },
-                extractor,
+                scanner,
                 styleCSSSources,
                 includeGeneratedCSS: false
             } as any

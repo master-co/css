@@ -21,7 +21,7 @@ export default function UsageGraphPlugin(context: MasterCSSWebpackContext): Webp
                 }
 
                 // Per-module: only synchronously record source. `succeedModule` is a
-                // SyncHook; async extraction belongs in `finishModules.tapPromise()`.
+                // SyncHook; async scanning belongs in `finishModules.tapPromise()`.
                 const pendingByPath = new Map<string, string>()
                 compilation.hooks.succeedModule.tap(context.name, (module) => {
                     const sourceModule = module as WebpackSourceModule

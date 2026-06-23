@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest'
 import path from 'node:path'
-import CSSExtractor from '@master/css-extractor'
+import CSSScanner from '@master/css-scanner'
 import ManifestLoaderPlugin from '../../src/plugins/manifest-loader'
 import { MASTER_CSS_MANIFEST_QUERY } from '@master/css-integration/manifest-module'
 import { fromResolvedMasterCSSManifestId, toResolvedMasterCSSManifestId } from '@master/css-integration/node'
@@ -21,9 +21,9 @@ async function createContext(root = FIXTURE_DIR) {
                 }
             }
         },
-        extractor: new CSSExtractor({ include: [] }, root)
+        scanner: new CSSScanner({ include: [] }, root)
     } as any
-    await context.extractor.init()
+    await context.scanner.init()
     return context
 }
 

@@ -1,4 +1,4 @@
-import { CSSExtractor, type Options } from '@master/css-extractor'
+import { CSSScanner, type ScannerOptions } from '@master/css-scanner'
 import type { MasterCSSEmittedGlobals } from '@master/css'
 import { toManifestJSON } from '@master/css-integration/manifest-module'
 import { toBrowserManifestFacadeModule } from '@master/css-integration/manifest-facade'
@@ -22,7 +22,7 @@ import type { Compiler } from 'webpack'
 import type VirtualModulesPlugin from 'webpack-virtual-modules'
 import { readFileSync } from 'node:fs'
 import { normalizePath } from './utils/path'
-import ExtractorLifecyclePlugin from './plugins/extractor-lifecycle'
+import ScannerLifecyclePlugin from './plugins/scanner-lifecycle'
 import VirtualModuleRegistryPlugin from './plugins/virtual-modules'
 import ManifestVirtualModulePlugin from './plugins/manifest-virtual-module'
 import ManifestJSONAssetsPlugin from './plugins/manifest-json-assets'
@@ -45,12 +45,12 @@ export interface MasterCSSWebpackContext {
     virtualManifestModuleId: string
     virtualEmittedGlobalsModuleId: string
     virtualModule?: VirtualModulesPlugin
-    on(...args: Parameters<CSSExtractor['on']>): unknown
-    init(customOptions?: Options): Promise<unknown>
-    reset(customOptions?: Options): Promise<unknown>
+    on(...args: Parameters<CSSScanner['on']>): unknown
+    init(customOptions?: ScannerOptions): Promise<unknown>
+    reset(customOptions?: ScannerOptions): Promise<unknown>
     prepare(): Promise<unknown> | unknown
     startWatch(): Promise<unknown> | unknown
-    getOptions(): Options
+    getOptions(): ScannerOptions
     getPluginInitialized(): boolean
     setPluginInitialized(pluginInitialized: boolean): void
     getDefaultManifestDependencyPaths(): string[]
@@ -74,7 +74,7 @@ export interface MasterCSSWebpackContext {
 
 export class MasterCSSPlugin {
 
-    readonly extractor: CSSExtractor
+    readonly scanner: CSSScanner
     pluginInitialized = false
     moduleContentByPath: Record<string, unknown> = {}
     manifestJSONAssets = new Map<string, string>()
@@ -84,91 +84,91 @@ export class MasterCSSPlugin {
     styleCSSSources: StyleCSSSources = new Map()
 
     constructor(
-        customOptions: Options = {},
+        customOptions: ScannerOptions = {},
         public cwd = process.cwd()
     ) {
-        this.extractor = new CSSExtractor(customOptions, cwd)
+        this.scanner = new CSSScanner(customOptions, cwd)
     }
 
     get customOptions() {
-        return this.extractor.customOptions
+        return this.scanner.customOptions
     }
 
-    set customOptions(customOptions: Options) {
-        this.extractor.customOptions = customOptions
+    set customOptions(customOptions: ScannerOptions) {
+        this.scanner.customOptions = customOptions
     }
 
     get options() {
-        return this.extractor.options
+        return this.scanner.options
     }
 
     get css() {
-        return this.extractor.css
+        return this.scanner.css
     }
 
     get manifest() {
-        return this.extractor.manifest
+        return this.scanner.manifest
     }
 
     get slotCSSRule() {
-        return this.extractor.slotCSSRule
+        return this.scanner.slotCSSRule
     }
 
     get latentClasses() {
-        return this.extractor.latentClasses
+        return this.scanner.latentClasses
     }
 
     get validClasses() {
-        return this.extractor.validClasses
+        return this.scanner.validClasses
     }
 
     get invalidClasses() {
-        return this.extractor.invalidClasses
+        return this.scanner.invalidClasses
     }
 
     get nativeClassNames() {
-        return this.extractor.nativeClassNames
+        return this.scanner.nativeClassNames
     }
 
     get usedNativeClasses() {
-        return this.extractor.usedNativeClasses
+        return this.scanner.usedNativeClasses
     }
 
-    on(...args: Parameters<CSSExtractor['on']>) {
-        this.extractor.on(...args)
+    on(...args: Parameters<CSSScanner['on']>) {
+        this.scanner.on(...args)
         return this
     }
 
-    emit(...args: Parameters<CSSExtractor['emit']>) {
-        return this.extractor.emit(...args)
+    emit(...args: Parameters<CSSScanner['emit']>) {
+        return this.scanner.emit(...args)
     }
 
-    async init(customOptions: Options = this.customOptions) {
-        await this.extractor.init(customOptions)
+    async init(customOptions: ScannerOptions = this.customOptions) {
+        await this.scanner.init(customOptions)
         return this
     }
 
-    async reset(customOptions: Options = this.customOptions) {
-        await this.extractor.reset(customOptions)
+    async reset(customOptions: ScannerOptions = this.customOptions) {
+        await this.scanner.reset(customOptions)
         return this
     }
 
     prepare() {
-        return this.extractor.prepare()
+        return this.scanner.prepare()
     }
 
     startWatch() {
-        return this.extractor.startWatch()
+        return this.scanner.startWatch()
     }
 
-    insert(source: string, content: string) {
-        return this.extractor.insert(source, content)
+    scan(source: string, content: string) {
+        return this.scanner.scan(source, content)
     }
 
     private async createDefaultManifestModule() {
         const result = await loadProjectManifest(this.cwd)
-        this.extractor.customOptions = {
-            ...this.extractor.customOptions,
+        this.scanner.customOptions = {
+            ...this.scanner.customOptions,
             manifest: result.manifest
         }
         this.defaultManifestDependencies = result.dependencies
@@ -182,20 +182,20 @@ export class MasterCSSPlugin {
         return this.defaultManifestDependencies
     }
 
-    private getExtractorClasses() {
+    private getScannerClasses() {
         return [...new Set([
-            ...(this.extractor.latentClasses || []),
-            ...(this.extractor.validClasses || []),
-            ...(this.extractor.usedNativeClasses || []),
+            ...(this.scanner.latentClasses || []),
+            ...(this.scanner.validClasses || []),
+            ...(this.scanner.usedNativeClasses || []),
             ...(this.options.safelist || [])
         ])]
     }
 
     private async createExtractedCSSResult(options: { includeNativeCSS?: boolean, includeMasterBaseCSS?: boolean } = {}) {
         const result = await createExtractedCSSResult({
-            state: this.extractor,
+            scanner: this.scanner,
             styleCSSSources: this.styleCSSSources,
-            classes: this.getExtractorClasses(),
+            classes: this.getScannerClasses(),
             projectDir: this.cwd,
             includeNativeCSS: options.includeNativeCSS,
             includeMasterBaseCSS: options.includeMasterBaseCSS
@@ -205,7 +205,7 @@ export class MasterCSSPlugin {
     }
 
     private async createEmittedGlobalsModule() {
-        if (!this.extractor.initialized) {
+        if (!this.scanner.initialized) {
             await this.init()
         }
         await this.createExtractedCSSResult()
@@ -217,7 +217,7 @@ export class MasterCSSPlugin {
     }
 
     private async registerStyleCSSSource(modulePath: string, source: string) {
-        await registerStylesheetCSSSource(this.extractor, this.styleCSSSources, modulePath, source, {
+        await registerStylesheetCSSSource(this.scanner, this.styleCSSSources, modulePath, source, {
             projectDir: this.cwd
         })
     }
@@ -253,7 +253,7 @@ export class MasterCSSPlugin {
             this.registerStyleCSSSource(modulePath, content)
         ))
         await Promise.all(insertEntries.map(([modulePath, content]) =>
-            this.insert(modulePath, content)
+            this.scan(modulePath, content)
         ))
     }
 
@@ -331,7 +331,7 @@ export class MasterCSSPlugin {
 
     private createSubPlugins(context: MasterCSSWebpackContext): WebpackSubPlugin[] {
         return [
-            ExtractorLifecyclePlugin(context),
+            ScannerLifecyclePlugin(context),
             VirtualModuleRegistryPlugin(context),
             ManifestVirtualModulePlugin(context),
             ManifestJSONAssetsPlugin(context),

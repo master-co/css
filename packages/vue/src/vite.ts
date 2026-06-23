@@ -4,10 +4,10 @@ import { vueAdapter } from './adapter'
 export default function masterCSS(options: PluginOptions = {}) {
     return baseVite({
         ...options,
-        extractor: {
-            ...options.extractor,
+        scanner: {
+            ...options.scanner,
             adapters: [
-                ...(options.extractor?.adapters || []),
+                ...(options.scanner?.adapters || []),
                 vueAdapter()
             ]
         }

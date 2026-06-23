@@ -2,7 +2,7 @@ import { mkdirSync, mkdtempSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
-import CSSExtractor from '@master/css-extractor'
+import CSSScanner from '@master/css-scanner'
 import { collectStylesheetDirectives, removeStylesheetDirectiveStatements } from '../src/directives'
 import {
     createExtractedCSS,
@@ -63,18 +63,18 @@ describe('stylesheet CSS directives', () => {
         expect(result.code).toContain('@master no-shake')
     })
 
-    it('loads extractor directives from a managed CSS entry graph', async () => {
+    it('loads scanner directives from a managed CSS entry graph', async () => {
         const root = createFixture()
         writeFileSync(join(root, 'app/page.tsx'), '<div class="block"></div>')
         writeFileSync(join(root, 'app/skip.test.tsx'), '<div class="text-center"></div>')
         writeFileSync(join(root, 'app/forced.test.tsx'), '<div class="fg:red"></div>')
 
-        const extractor = new CSSExtractor({
+        const scanner = new CSSScanner({
             include: []
         }, root)
-        await extractor.init()
+        await scanner.init()
         const styleCSSSources = new Map()
-        await registerStyleCSSSource(extractor, styleCSSSources, join(root, 'app/entry.css'), `
+        await registerStyleCSSSource(scanner, styleCSSSources, join(root, 'app/entry.css'), `
             @master;
             @source './**/*.tsx';
             @source not './**/*.test.tsx';
@@ -83,7 +83,7 @@ describe('stylesheet CSS directives', () => {
             @blocklist 'legacy-*';
         `)
         const css = await createExtractedCSS({
-            state: extractor,
+            scanner,
             styleCSSSources,
             projectDir: root
         })
@@ -99,13 +99,13 @@ describe('stylesheet CSS directives', () => {
         const root = createFixture()
         writeFileSync(join(root, 'app/a/page.tsx'), '<div class="card"></div>')
         writeFileSync(join(root, 'app/b/page.tsx'), '<div class="unused"></div>')
-        const extractor = new CSSExtractor({
+        const scanner = new CSSScanner({
             include: []
         }, root)
-        await extractor.init()
+        await scanner.init()
 
         const styleCSSSources = new Map()
-        const result = await registerStyleCSSSource(extractor, styleCSSSources, join(root, 'app/a/a.css'), `
+        const result = await registerStyleCSSSource(scanner, styleCSSSources, join(root, 'app/a/a.css'), `
             @import "@master/css";
             @source './*.tsx';
 
@@ -119,7 +119,7 @@ describe('stylesheet CSS directives', () => {
         `)
 
         const css = await createExtractedCSS({
-            state: extractor,
+            scanner,
             styleCSSSources,
             includeGeneratedCSS: false,
             projectDir: root
@@ -144,19 +144,19 @@ describe('stylesheet CSS directives', () => {
                 color: blue;
             }
         `)
-        const extractor = new CSSExtractor({
+        const scanner = new CSSScanner({
             include: []
         }, root)
-        await extractor.init()
+        await scanner.init()
 
         const styleCSSSources = new Map()
-        await registerStyleCSSSource(extractor, styleCSSSources, join(root, 'app/a/a.css'), `
+        await registerStyleCSSSource(scanner, styleCSSSources, join(root, 'app/a/a.css'), `
             @import "@master/css";
             @import '../shared.css';
         `)
 
         const css = await createExtractedCSS({
-            state: extractor,
+            scanner,
             styleCSSSources,
             includeGeneratedCSS: false,
             projectDir: root

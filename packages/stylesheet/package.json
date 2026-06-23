@@ -75,7 +75,7 @@
         "@master/css-schema": "workspace:^"
     },
     "devDependencies": {
-        "@master/css-extractor": "workspace:^",
+        "@master/css-scanner": "workspace:^",
         "@master/css-preset": "workspace:^"
     }
 }

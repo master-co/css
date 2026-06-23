@@ -73,7 +73,7 @@ export interface TransformLocalStyleCSSResult {
 export type RegisterStyleCSSSourceOptions = CompileStyleCSSOptions
 
 export interface CreateExtractedCSSOptions extends CompileStyleCSSOptions {
-    state: StylesheetState
+    scanner: ScannerState
     styleCSSSources?: StyleCSSSources
     manifest?: MasterCSSManifest
     includeGeneratedCSS?: boolean
@@ -88,7 +88,7 @@ export interface CreateExtractedCSSResult {
 
 export type StylesheetCSS = ReturnType<typeof createCSSWithNativeDeclarations>
 
-export interface StylesheetState {
+export interface ScannerState {
     cwd: string
     options: StylesheetSourceOptions
     customOptions?: {
@@ -519,13 +519,13 @@ function hasCompiledStyleManifestInput(result: CompileCSSResult) {
     return Boolean(Object.keys(result.manifestInput || {}).length || result.styleDefinitions?.length)
 }
 
-export function getStylesheetClasses(state: StylesheetState) {
+export function getScannerClasses(scanner: ScannerState) {
     return filterExcludedClasses([...new Set([
-        ...(state.latentClasses || []),
-        ...(state.validClasses || []),
-        ...(state.usedNativeClasses || []),
-        ...(state.options.safelist || [])
-    ])], state.options.blocklist)
+        ...(scanner.latentClasses || []),
+        ...(scanner.validClasses || []),
+        ...(scanner.usedNativeClasses || []),
+        ...(scanner.options.safelist || [])
+    ])], scanner.options.blocklist)
 }
 
 function getStylesheetOptionClasses(options: StylesheetSourceOptions, projectDir = process.cwd()) {
@@ -541,13 +541,13 @@ function getStylesheetOptionClasses(options: StylesheetSourceOptions, projectDir
 }
 
 function getStyleSourceClasses(
-    state: StylesheetState,
+    scanner: ScannerState,
     styleSource: StyleCSSSource,
     baseClasses: string[],
     projectDir?: string
 ) {
     if (!hasStylesheetDirectives(styleSource.directives)) return baseClasses
-    const scopedOptions = mergeStylesheetSourceOptions(state.options, styleSource.directives)
+    const scopedOptions = mergeStylesheetSourceOptions(scanner.options, styleSource.directives)
     const classes = hasStylesheetSourceDirectives(styleSource.directives)
         ? getStylesheetOptionClasses(scopedOptions, projectDir)
         : [
@@ -557,37 +557,37 @@ function getStyleSourceClasses(
     return filterExcludedClasses([...new Set(classes)], scopedOptions.blocklist)
 }
 
-export function refreshStylesheetNativeClasses(state: StylesheetState, nativeClassNames: string[]) {
+export function refreshScannerNativeClasses(scanner: ScannerState, nativeClassNames: string[]) {
     let changed = false
     for (const className of nativeClassNames) {
-        if (!state.nativeClassNames.has(className)) {
-            state.nativeClassNames.add(className)
+        if (!scanner.nativeClassNames.has(className)) {
+            scanner.nativeClassNames.add(className)
             changed = true
         }
-        if (state.latentClasses.has(className) && !state.usedNativeClasses.has(className)) {
-            state.usedNativeClasses.add(className)
+        if (scanner.latentClasses.has(className) && !scanner.usedNativeClasses.has(className)) {
+            scanner.usedNativeClasses.add(className)
             changed = true
         }
     }
     if (changed) {
-        state.emit?.('change')
+        scanner.emit?.('change')
     }
 }
 
 export async function registerStyleCSSSource(
-    state: StylesheetState,
+    scanner: ScannerState,
     styleCSSSources: StyleCSSSources,
     id: string,
     source: string,
     options: RegisterStyleCSSSourceOptions = {}
 ) {
     const filename = cleanStyleRequest(id)
-    const detectionSource = resolveStyleCSSImportGraph(filename, source, options.projectDir ?? state.cwd)
-    const resolvedSource = resolveStyleCSSImportGraph(filename, source, options.projectDir ?? state.cwd, {
+    const detectionSource = resolveStyleCSSImportGraph(filename, source, options.projectDir ?? scanner.cwd)
+    const resolvedSource = resolveStyleCSSImportGraph(filename, source, options.projectDir ?? scanner.cwd, {
         expandMasterCSSPackage: false
     })
     const collectedDirectives = extname(filename) === '.css'
-        ? collectStylesheetDirectivesFromCSSGraph(filename, detectionSource.source, state.cwd)
+        ? collectStylesheetDirectivesFromCSSGraph(filename, detectionSource.source, scanner.cwd)
         : {
             directives: createStylesheetDirectives(),
             dependencies: []
@@ -598,9 +598,9 @@ export async function registerStyleCSSSource(
     const cleanSource = removeMasterStyleDirectives(sourceWithoutImports).code
     const compileOptions = options
     const result = await compileStyleCSS(filename, cleanSource, compileOptions)
-    const scopedOptions = mergeStylesheetSourceOptions(state.options, collectedDirectives.directives)
+    const scopedOptions = mergeStylesheetSourceOptions(scanner.options, collectedDirectives.directives)
     const sourceDependencies = hasStylesheetSourceDirectives(collectedDirectives.directives)
-        ? resolveStylesheetSourcePaths(scopedOptions, state.cwd).map((sourcePath) => resolve(state.cwd, sourcePath))
+        ? resolveStylesheetSourcePaths(scopedOptions, scanner.cwd).map((sourcePath) => resolve(scanner.cwd, sourcePath))
         : []
     result.dependencies = [...new Set([
         ...resolvedSource.dependencies,
@@ -618,7 +618,7 @@ export async function registerStyleCSSSource(
         sourceDependencies
     })
     if (pruneNativeCSS) {
-        refreshStylesheetNativeClasses(state, result.nativeClassNames)
+        refreshScannerNativeClasses(scanner, result.nativeClassNames)
     }
     return result
 }
@@ -792,7 +792,7 @@ function createEmittedGlobals(css: ReturnType<typeof createCSSWithNativeDeclarat
 
 export async function createExtractedCSSResult(options: CreateExtractedCSSOptions): Promise<CreateExtractedCSSResult> {
     const {
-        state,
+        scanner,
         styleCSSSources,
         manifest: planOption,
         includeGeneratedCSS = true,
@@ -800,10 +800,10 @@ export async function createExtractedCSSResult(options: CreateExtractedCSSOption
         includeMasterBaseCSS = true,
         ...compileOptions
     } = options
-    const classes = compileOptions.classes ?? getStylesheetClasses(state)
+    const classes = compileOptions.classes ?? getScannerClasses(scanner)
 
     if (!planOption && !compileOptions.classes && !styleCSSSources?.size) {
-        return createEmptyExtractedCSSResult(includeGeneratedCSS ? state.css.text : '')
+        return createEmptyExtractedCSSResult(includeGeneratedCSS ? scanner.css.text : '')
     }
 
     const hasMasterCSS = hasMasterCSSPackageSource(styleCSSSources)
@@ -815,7 +815,7 @@ export async function createExtractedCSSResult(options: CreateExtractedCSSOption
             .map(([id, styleSource]) => compileStyleCSS(id, styleSource.source, {
                 ...compileOptions,
                 classes: styleSource.pruneNativeCSS
-                    ? getStyleSourceClasses(state, styleSource, classes, compileOptions.projectDir ?? state.cwd)
+                    ? getStyleSourceClasses(scanner, styleSource, classes, compileOptions.projectDir ?? scanner.cwd)
                     : undefined
             }))
     )
@@ -823,8 +823,8 @@ export async function createExtractedCSSResult(options: CreateExtractedCSSOption
         ...(masterCSSResult ? [masterCSSResult] : []),
         ...entryStyleResults
     ]
-    const explicitPlan = planOption ?? state.customOptions?.manifest
-    let mergedPlan = compileOptions.baseManifest ?? explicitPlan ?? state.css.manifest
+    const explicitPlan = planOption ?? scanner.customOptions?.manifest
+    let mergedPlan = compileOptions.baseManifest ?? explicitPlan ?? scanner.css.manifest
     const finalizedStyleResults = new Map<CompileCSSResult, ReturnType<typeof createManifestFromCSSResult>>()
     for (const result of styleResults) {
         if (!hasCompiledStyleManifestInput(result)) continue
@@ -856,7 +856,7 @@ export async function createExtractedCSSResult(options: CreateExtractedCSSOption
         const generatedClasses = new Set(classes)
         for (const styleSource of styleCSSSources?.values() || []) {
             if (!hasStylesheetDirectives(styleSource.directives)) continue
-            for (const className of getStyleSourceClasses(state, styleSource, classes, compileOptions.projectDir ?? state.cwd)) {
+            for (const className of getStyleSourceClasses(scanner, styleSource, classes, compileOptions.projectDir ?? scanner.cwd)) {
                 generatedClasses.add(className)
             }
         }

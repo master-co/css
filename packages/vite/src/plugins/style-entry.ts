@@ -11,7 +11,7 @@ import {
     resolveMasterStyleSource
 } from '@master/css-stylesheet'
 import { registerStyleCSSSource } from '../utils/register-style-source'
-import { getExtractor } from '../utils/extractor-context'
+import { getScanner } from '../utils/scanner-context'
 
 const RESOLVED_VIRTUAL_CSS_ID = '\0' + VIRTUAL_CSS_ID
 
@@ -35,7 +35,7 @@ export default function StyleEntryPlugin(_options: PluginOptions, context: Plugi
             }
 
             context.virtualCSSPlaceholderEmitted = true
-            return getExtractor(context).slotCSSRule
+            return getScanner(context).slotCSSRule
         },
         async transform(code, id) {
             if (id.startsWith('\0')) return
@@ -56,7 +56,7 @@ export default function StyleEntryPlugin(_options: PluginOptions, context: Plugi
 
             const masterSource = context.config?.command === 'serve'
                 ? await getExtractedCSS(context)
-                : getExtractor(context).slotCSSRule
+                : getScanner(context).slotCSSRule
 
             if (context.config?.command === 'serve') {
                 context.virtualCSSImporters ??= new Set()

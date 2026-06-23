@@ -1,8 +1,8 @@
 import { test, expect, it } from 'vitest'
-import CSSExtractor from '../src'
+import CSSScanner from '../src'
 
 test('syntax', async () => {
-    const extractor = await new CSSExtractor({ required: ['syntax.html'], include: [] }, __dirname).init()
+    const scanner = await new CSSScanner({ required: ['syntax.html'], include: [] }, __dirname).init()
     const testClasses = [
         '{fg:blue-40/.5;font:2rem;p:4x;w:full;text-center}>li:hover@md',
         'w:calc(+100%-1.25rem)',
@@ -63,8 +63,8 @@ test('syntax', async () => {
         '.sidebar:hover_{opacity:.75}',
         '.navitem:hover_{bg:black/.75}'
     ]
-    await extractor?.prepare()
-    for (const eachGeneratedClass of extractor?.css.utilitiesLayer.rules.map(({ name }) => name) || []) {
+    await scanner?.prepare()
+    for (const eachGeneratedClass of scanner?.css.utilitiesLayer.rules.map(({ name }) => name) || []) {
         expect(testClasses).toContain(eachGeneratedClass)
     }
 })

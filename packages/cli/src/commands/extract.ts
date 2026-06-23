@@ -1,6 +1,6 @@
 import type { Command } from 'commander'
-import { options, type Options } from '@master/css-extractor'
-import type CSSExtractor from '@master/css-extractor'
+import { scannerOptions, type ScannerOptions } from '@master/css-scanner'
+import type CSSScanner from '@master/css-scanner'
 import {
     createExtractedCSS,
     registerStyleCSSSource,
@@ -13,34 +13,34 @@ import chokidar, { type FSWatcher } from 'chokidar'
 import fs from 'node:fs'
 import path from 'node:path'
 
-async function registerManagedCSSEntries(extractor: CSSExtractor, styleCSSSources: StyleCSSSources) {
+async function registerManagedCSSEntries(scanner: CSSScanner, styleCSSSources: StyleCSSSources) {
     styleCSSSources.clear()
-    for (const entry of await findCSSManifestEntryFiles(extractor.cwd)) {
-        await registerStyleCSSSource(extractor, styleCSSSources, entry, fs.readFileSync(entry, 'utf8'), {
-            projectDir: extractor.cwd
+    for (const entry of await findCSSManifestEntryFiles(scanner.cwd)) {
+        await registerStyleCSSSource(scanner, styleCSSSources, entry, fs.readFileSync(entry, 'utf8'), {
+            projectDir: scanner.cwd
         })
     }
-    extractor.planDependencies = [...new Set(
+    scanner.resetDependencies = [...new Set(
         Array.from(styleCSSSources.values()).flatMap((source) => source.dependencies)
     )]
 }
 
-async function prepareExtractor(extractor: CSSExtractor, styleCSSSources: StyleCSSSources) {
-    await registerManagedCSSEntries(extractor, styleCSSSources)
-    await extractor.prepare()
+async function prepareScanner(scanner: CSSScanner, styleCSSSources: StyleCSSSources) {
+    await registerManagedCSSEntries(scanner, styleCSSSources)
+    await scanner.prepare()
 }
 
-function exportCSS(extractor: CSSExtractor, css: string, filename = extractor.options.output as string) {
-    const filepath = path.resolve(extractor.cwd, filename)
+function exportCSS(scanner: CSSScanner, css: string, filename = scanner.options.output as string) {
+    const filepath = path.resolve(scanner.cwd, filename)
     const dir = path.dirname(filepath)
     if (!fs.existsSync(dir)) {
         fs.mkdirSync(dir, { recursive: true })
     }
     fs.writeFileSync(filepath, css)
-    if (extractor.options.verbose) {
+    if (scanner.options.verbose) {
         log.ok`**${filename}** exported ${bytes(css.length)}`
     }
-    extractor.emit('export', filename, filepath)
+    scanner.emit('export', filename, filepath)
 }
 
 function formatWatchedPath(cwd: string, file: string) {
@@ -57,7 +57,7 @@ export default (program: Command) => program
     .command('extract')
     .argument('[source paths]', 'The glob pattern path to extract sources')
     .option('-w, --watch', 'Watch file changed and generate CSS rules.')
-    .option('-o, --output <path>', 'Specify your CSS file output path', options.output)
+    .option('-o, --output <path>', 'Specify your CSS file output path', scannerOptions.output)
     .option('-v, --verbose <level>', 'Verbose logging 0~N', '1')
     .option('--no-export', 'Print only CSS results.')
     .action(async function (specifiedSourcePaths: any, options?: {
@@ -67,23 +67,23 @@ export default (program: Command) => program
         export?: boolean,
         cwd?: string
     }) {
-        const CSSExtractor = (await import('@master/css-extractor')).default
+        const CSSScanner = (await import('@master/css-scanner')).default
         const { watch, output, verbose, cwd } = options || {}
-        const extractor = new CSSExtractor({}, cwd)
+        const scanner = new CSSScanner({}, cwd)
         const styleCSSSources: StyleCSSSources = new Map()
         const writeOutput = async () => {
             const css = await createExtractedCSS({
-                state: extractor,
+                scanner,
                 styleCSSSources,
-                projectDir: extractor.cwd
+                projectDir: scanner.cwd
             })
             if (options?.export) {
-                exportCSS(extractor, css)
+                exportCSS(scanner, css)
             } else {
                 console.log(css)
             }
         }
-        extractor.on('init', (options: Options) => {
+        scanner.on('init', (options: ScannerOptions) => {
             if (specifiedSourcePaths?.length) {
                 options.include = specifiedSourcePaths
                 options.exclude = []
@@ -98,7 +98,7 @@ export default (program: Command) => program
             options.output = output
             options.verbose = verbose ? +verbose : options.verbose
         })
-        await extractor.init()
+        await scanner.init()
         if (watch) {
             const watchers: FSWatcher[] = []
             let restarting = false
@@ -111,55 +111,55 @@ export default (program: Command) => program
                 await Promise.all(watchers.splice(0).map((watcher) => watcher.close()))
             }
             const startWatchers = async () => {
-                const sourcePaths = extractor.options.required?.length
-                    ? extractor.fixedSourcePaths
-                    : extractor.allowedSourcePaths
+                const sourcePaths = scanner.options.required?.length
+                    ? scanner.fixedSourcePaths
+                    : scanner.allowedSourcePaths
                 if (sourcePaths.length) {
                     const sourceWatcher = chokidar.watch(sourcePaths, {
-                        cwd: extractor.cwd,
+                        cwd: scanner.cwd,
                         ignoreInitial: true
                     })
                     sourceWatcher.on('add', (source) => {
-                        void extractor.insertFile(source).then(queueWrite)
+                        void scanner.scanFile(source).then(queueWrite)
                     })
                     sourceWatcher.on('change', (source) => {
-                        void extractor.insertFile(source).then(queueWrite)
+                        void scanner.scanFile(source).then(queueWrite)
                     })
                     watchers.push(sourceWatcher)
                     await waitForWatcherReady(sourceWatcher)
                 }
-                if (extractor.planDependencies.length) {
-                    const planWatcher = chokidar.watch(extractor.planDependencies, {
+                if (scanner.resetDependencies.length) {
+                    const planWatcher = chokidar.watch(scanner.resetDependencies, {
                         ignoreInitial: true
                     })
-                    const handlePlanChange = async (planDependency: string) => {
+                    const handlePlanChange = async (resetDependency: string) => {
                         if (restarting) return
                         restarting = true
                         try {
-                            if (extractor.options.verbose) {
+                            if (scanner.options.verbose) {
                                 log``
-                                log`[change] **${formatWatchedPath(extractor.cwd, planDependency)}**`
+                                log`[change] **${formatWatchedPath(scanner.cwd, resetDependency)}**`
                             }
                             await closeWatchers()
-                            await extractor.reset()
-                            await prepareExtractor(extractor, styleCSSSources)
+                            await scanner.reset()
+                            await prepareScanner(scanner, styleCSSSources)
                             await queueWrite()
                             await startWatchers()
                             log``
                             log.t`Restart watching source changes`
-                            extractor.emit('planChange')
+                            scanner.emit('resetDependencyChange')
                         } finally {
                             restarting = false
                         }
                     }
-                    planWatcher.on('add', (planDependency) => {
-                        void handlePlanChange(planDependency)
+                    planWatcher.on('add', (resetDependency) => {
+                        void handlePlanChange(resetDependency)
                     })
-                    planWatcher.on('change', (planDependency) => {
-                        void handlePlanChange(planDependency)
+                    planWatcher.on('change', (resetDependency) => {
+                        void handlePlanChange(resetDependency)
                     })
-                    planWatcher.on('unlink', (planDependency) => {
-                        void handlePlanChange(planDependency)
+                    planWatcher.on('unlink', (resetDependency) => {
+                        void handlePlanChange(resetDependency)
                     })
                     watchers.push(planWatcher)
                     await waitForWatcherReady(planWatcher)
@@ -171,13 +171,13 @@ export default (program: Command) => program
             process.once('SIGINT', () => {
                 void closeWatchers().finally(() => process.exit(0))
             })
-            await prepareExtractor(extractor, styleCSSSources)
+            await prepareScanner(scanner, styleCSSSources)
             await queueWrite()
             await startWatchers()
             log``
             log.t`Start watching source changes`
         } else {
-            await prepareExtractor(extractor, styleCSSSources)
+            await prepareScanner(scanner, styleCSSSources)
             await writeOutput()
         }
     })

@@ -2,7 +2,7 @@
 
 ## Responsibility
 
-This package provides a Webpack extraction plugin based on `CSSExtractor` and `webpack-virtual-modules`.
+This package provides a Webpack extraction plugin based on `CSSScanner` and `webpack-virtual-modules`.
 
 ## Main File
 
@@ -16,9 +16,9 @@ This package provides a Webpack extraction plugin based on `CSSExtractor` and `w
 
 ## Rules
 
-- Do not duplicate extractor logic here.
-- Preserve `CSSExtractor` as the source of extraction behavior.
-- Keep virtual module ID behavior compatible with configured extractor options.
+- Do not duplicate scanner logic here.
+- Preserve `CSSScanner` as the source of extraction behavior.
+- Keep virtual module ID behavior compatible with configured scanner options.
 
 ## Validation
 

@@ -13,7 +13,7 @@ const mainPackages = [
     await import('~/packages/core/package.json'),
     await import('~/packages/runtime/package.json'),
     await import('~/packages/server/package.json'),
-    await import('~/packages/extractor/package.json'),
+    await import('~/packages/scanner/package.json'),
     await import('~/packages/validator/package.json'),
     await import('~/packages/cli/package.json'),
 ]

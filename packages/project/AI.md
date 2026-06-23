@@ -15,7 +15,7 @@ This package resolves Master CSS project-level CSS manifest entries, workspace r
 
 - CSS manifest loading affects ESLint, language tooling, Vite, Webpack, Next, Nuxt, CLI, and framework query loaders.
 - `?master-css-manifest` module protocol must stay dependency-light in `@master/css-integration`.
-- Project manifest discovery should stay here, not in extractor, ESLint, language-server, or individual build integrations.
+- Project manifest discovery should stay here, not in scanner, ESLint, language-server, or individual build integrations.
 - The project package must not implement CSS import graph resolution, CSS directive parsing, manifest ABI schema, engine matching, runtime hydration, extraction state, or framework adapter behavior.
 
 ## Rules

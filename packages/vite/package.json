@@ -60,7 +60,7 @@
     "dependencies": {
         "@master/css": "workspace:^",
         "@master/css-project": "workspace:^",
-        "@master/css-extractor": "workspace:^",
+        "@master/css-scanner": "workspace:^",
         "@master/css-integration": "workspace:^",
         "@master/css-runtime": "workspace:^",
         "@master/css-server": "workspace:^",

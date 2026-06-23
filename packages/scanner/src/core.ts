@@ -1,4 +1,4 @@
-import { default as defaultOptions, Options } from './options'
+import scannerOptions, { type ScannerOptions } from './options'
 import { MasterCSS } from '@master/css'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import { createRequire } from 'node:module'
@@ -43,7 +43,7 @@ interface SourceMatchers {
     exclude: Minimatch[]
 }
 
-function createSourceMatchers(patterns?: Options['include']) {
+function createSourceMatchers(patterns?: ScannerOptions['include']) {
     return (patterns || []).map((pattern) => new Minimatch(String(pattern), sourceMatchOptions))
 }
 
@@ -66,7 +66,7 @@ function cleanSourceRequest(source: string) {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging
-export default class CSSExtractor extends EventEmitter {
+export default class CSSScanner extends EventEmitter {
     latentClasses = new Set<string>()
     validClasses = new Set<string>()
     invalidClasses = new Set<string>()
@@ -76,7 +76,7 @@ export default class CSSExtractor extends EventEmitter {
     watchers: FSWatcher[] = []
     initialized = false
     initializing?: Promise<this>
-    planDependencies: string[] = []
+    resetDependencies: string[] = []
 
     /**
      * Per-source content-hash cache. When the same `source` arrives with the
@@ -100,22 +100,22 @@ export default class CSSExtractor extends EventEmitter {
     private cachedAllowedSourcePaths?: string[]
     /** Precompiled minimatch patterns for per-module allow/exclude checks. */
     private sourceMatchers?: SourceMatchers
-    private sourceMatcherOptions?: Pick<Options, 'required' | 'include' | 'exclude'>
+    private sourceMatcherOptions?: Pick<ScannerOptions, 'required' | 'include' | 'exclude'>
     /** Memoized adapter list so per-file extraction does not rebuild it. */
     private sourceAdapters?: SourceAdapter[]
-    private sourceAdapterOptions?: Options['adapters']
-    /** Pre-split class exclusion matchers for `insert()` hot path. */
+    private sourceAdapterOptions?: ScannerOptions['adapters']
+    /** Pre-split class exclusion matchers for `scan()` hot path. */
     private classExclusionMatcher?: ClassExclusionMatcher
-    private classExclusionOptions?: Options['blocklist']
+    private classExclusionOptions?: ScannerOptions['blocklist']
 
     constructor(
-        public customOptions: Options = {},
+        public customOptions: ScannerOptions = {},
         public cwd = process.cwd()
     ) {
         super()
     }
 
-    init(customOptions: Options = this.customOptions) {
+    init(customOptions: ScannerOptions = this.customOptions) {
         if (this.initialized) return Promise.resolve(this)
         if (this.initializing) return this.initializing
         return this.initializing = this.initInternal(customOptions)
@@ -124,17 +124,17 @@ export default class CSSExtractor extends EventEmitter {
             })
     }
 
-    private async initInternal(customOptions: Options = this.customOptions) {
+    private async initInternal(customOptions: ScannerOptions = this.customOptions) {
         if (typeof customOptions !== 'object' || customOptions === null || Array.isArray(customOptions)) {
-            throw new TypeError('CSSExtractor options must be an object.')
+            throw new TypeError('CSSScanner options must be an object.')
         }
-        this.options = extend(defaultOptions, customOptions)
+        this.options = extend(scannerOptions, customOptions)
         if (this.options.verbose && this.options.verbose > 1) {
             log.ok`**options**`
             log.tree(this.options)
             log``
         }
-        this.planDependencies = []
+        this.resetDependencies = []
         this.sourceMatchers = undefined
         this.sourceMatcherOptions = undefined
         this.sourceAdapters = undefined
@@ -148,7 +148,7 @@ export default class CSSExtractor extends EventEmitter {
         return this
     }
 
-    async reset(customOptions: Options = this.customOptions) {
+    async reset(customOptions: ScannerOptions = this.customOptions) {
         const watching = this.watching
         if (watching) await this.closeWatch({ emit: false })
         this.latentClasses.clear()
@@ -158,7 +158,7 @@ export default class CSSExtractor extends EventEmitter {
         this.usedNativeClasses.clear()
         this.contentHashes.clear()
         this.validRulesCache.clear()
-        this.planDependencies = []
+        this.resetDependencies = []
         this.cachedFixedSourcePaths = undefined
         this.cachedAllowedSourcePaths = undefined
         this.sourceMatchers = undefined
@@ -184,7 +184,7 @@ export default class CSSExtractor extends EventEmitter {
         this.usedNativeClasses.clear()
         this.contentHashes.clear()
         this.validRulesCache.clear()
-        this.planDependencies = []
+        this.resetDependencies = []
         this.cachedFixedSourcePaths = undefined
         this.cachedAllowedSourcePaths = undefined
         this.sourceMatchers = undefined
@@ -210,8 +210,8 @@ export default class CSSExtractor extends EventEmitter {
             }
         }
         await Promise.all([
-            this.insertFiles(this.fixedSourcePaths),
-            this.insertFiles(this.allowedSourcePaths)
+            this.scanFiles(this.fixedSourcePaths),
+            this.scanFiles(this.allowedSourcePaths)
         ])
     }
 
@@ -221,7 +221,7 @@ export default class CSSExtractor extends EventEmitter {
      * @param content
      * @returns string[] Latent classes
      */
-    extract(source: string, content: string): string[] {
+    collectCandidates(source: string, content: string): string[] {
         if (!source || !content || !this.isSourceAllowed(source)) {
             return []
         }
@@ -242,12 +242,12 @@ export default class CSSExtractor extends EventEmitter {
     }
 
     /**
-     * @description Filter based on relative file paths, extract content, and insert
+     * @description Filter based on relative file paths, extract content, and scan
      * @param source
      * @param content
      * @returns string[] Latent classes
      */
-    async insert(source: string, content: string): Promise<boolean> {
+    async scan(source: string, content: string): Promise<boolean> {
         if (!content) {
             return false
         }
@@ -255,7 +255,7 @@ export default class CSSExtractor extends EventEmitter {
         // Skip the whole pipeline when this exact (source, content) pair has
         // already been processed. HMR commonly re-fires unchanged files; vite
         // can also call `transform` on the same module twice. Hashing 1 KB of
-        // source via SHA-1 is ~2 µs; running extract + validate on it is ms.
+        // source via SHA-1 is ~2 µs; running scan + validate on it is ms.
         if (source) {
             const hash = createHash('sha1').update(content).digest('hex')
             if (this.contentHashes.get(source) === hash) {
@@ -264,7 +264,7 @@ export default class CSSExtractor extends EventEmitter {
             this.contentHashes.set(source, hash)
         }
 
-        const allLatent = this.extract(source, content)
+        const allLatent = this.collectCandidates(source, content)
         if (!allLatent.length) {
             return false
         }
@@ -365,12 +365,12 @@ export default class CSSExtractor extends EventEmitter {
         return isClassExcludedByMatcher(className, this.getClassExclusionMatcher())
     }
 
-    insertFile(source: string) {
-        return this.insert(source, fs.readFileSync(path.resolve(this.cwd, source), { encoding: 'utf-8' }).toString())
+    scanFile(source: string) {
+        return this.scan(source, fs.readFileSync(path.resolve(this.cwd, source), { encoding: 'utf-8' }).toString())
     }
 
-    insertFiles(sources: string[]) {
-        return Promise.all(sources.map((eachRelPaths) => this.insertFile(eachRelPaths)))
+    scanFiles(sources: string[]) {
+        return Promise.all(sources.map((eachRelPaths) => this.scanFile(eachRelPaths)))
     }
 
     export(filename = this.options.output as string) {
@@ -386,8 +386,8 @@ export default class CSSExtractor extends EventEmitter {
         this.emit('export', filename, filepath)
     }
 
-    async watchSource(paths: string | string[], watchOptions?: ChokidarOptions): Promise<void> {
-        await this.watch('add change', paths, (source) => this.insertFile(source), watchOptions)
+    async watchSources(paths: string | string[], watchOptions?: ChokidarOptions): Promise<void> {
+        await this.watch('add change', paths, (source) => this.scanFile(source), watchOptions)
     }
 
     async watch(events: string, paths: string | string[], handle: (path: string, stats?: Stats | undefined) => void, watchOptions?: ChokidarOptions): Promise<void> {
@@ -411,20 +411,20 @@ export default class CSSExtractor extends EventEmitter {
             ? this.fixedSourcePaths
             : this.allowedSourcePaths
         if (sourcePaths.length) {
-            await this.watchSource(sourcePaths)
+            await this.watchSources(sourcePaths)
         }
 
-        if (this.planDependencies.length) {
-            await this.watch('add change unlink', this.planDependencies, async (planDependency) => {
+        if (this.resetDependencies.length) {
+            await this.watch('add change unlink', this.resetDependencies, async (resetDependency) => {
                 if (this.options.verbose) {
                     log``
-                    const changedPlanPath = path.isAbsolute(planDependency)
-                        ? path.relative(this.cwd, planDependency)
-                        : planDependency
+                    const changedPlanPath = path.isAbsolute(resetDependency)
+                        ? path.relative(this.cwd, resetDependency)
+                        : resetDependency
                     log`[change] **${changedPlanPath}**`
                 }
                 await this.reset()
-                this.emit('planChange')
+                this.emit('resetDependencyChange')
             })
         }
         this.watching = true
@@ -514,7 +514,7 @@ export default class CSSExtractor extends EventEmitter {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging
-export default interface CSSExtractor {
+export default interface CSSScanner {
     css: MasterCSS
-    options: Options
+    options: ScannerOptions
 }

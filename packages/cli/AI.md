@@ -6,7 +6,7 @@
 
 ## Inputs And Outputs
 
-- Input: command-line args, source globs, manifest entry paths, extractor options.
+- Input: command-line args, source globs, manifest entry paths, scanner options.
 - Output: generated CSS to stdout or file, rendered HTML files, logs.
 
 ## Public APIs
@@ -35,7 +35,7 @@
 - Changing command names.
 - Changing default output paths casually.
 - Writing files in analyze/no-export modes.
-- Changing extractor/server behavior in CLI instead of lower packages.
+- Changing scanner/server behavior in CLI instead of lower packages.
 
 ## Risk Areas
 
@@ -64,5 +64,5 @@ Use or extend:
 
 ## Dangerous Changes
 
-- Duplicating extractor logic in CLI.
+- Duplicating scanner logic in CLI.
 - Writing generated CSS when `--no-export` is set.

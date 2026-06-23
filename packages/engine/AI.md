@@ -22,7 +22,7 @@
 
 ## Boundaries
 
-- Do not depend on compiler, integration contracts, runtime, server, extractor, language service, ESLint, examples, or site.
+- Do not depend on compiler, integration contracts, runtime, server, scanner, language service, ESLint, examples, or site.
 - Do not resolve project CSS entries, CSS import graphs, package stylesheet imports, or CSS manifest directives here.
 - Keep `MasterCSSManifest` execution behavior here; keep CSS-first authoring and manifest lowering in `@master/css-compiler`.
 - Keep default preset source and generated default manifest ownership in `@master/css-preset`.

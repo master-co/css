@@ -206,7 +206,7 @@ describe('Next static mode', () => {
         expect(readFileSync(outputPath, 'utf-8')).not.toContain('--color-primary')
     })
 
-    it('lets the scanner loader feed an imported module into the extractor incrementally', async () => {
+    it('lets the scanner loader feed an imported module into the scanner incrementally', async () => {
         const root = createFixture()
         const outputPath = resolveStaticOutputPath(root)
         const statePath = resolveStaticStatePath(outputPath)
@@ -214,7 +214,7 @@ describe('Next static mode', () => {
 
         await prepareNextStatic({
             mode: 'static',
-            extractorOptions: {
+            scannerOptions: {
                 include: []
             }
         }, { projectDir: root })

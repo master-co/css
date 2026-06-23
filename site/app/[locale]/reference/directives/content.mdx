@@ -1,5 +1,5 @@
 ## Overview [sr-only]
-CSS directives are Master CSS instructions inside stylesheets. They are read by the compiler, extractor, and build integrations before browser-facing CSS is emitted.
+CSS directives are Master CSS instructions inside stylesheets. They are read by the compiler, scanner, and build integrations before browser-facing CSS is emitted.
 
 Directives do not behave like normal CSS rules. Consumed directives are removed from output CSS, while their effects are applied to generated CSS, source scanning, native CSS pruning, or root engine settings.
 
@@ -318,30 +318,30 @@ For abstraction guidance, see [Reusing styles](/guide/reusing-styles).
 ---
 
 ## Source boundaries
-Use `@source` directives to describe which files the extractor should scan.
+Use `@source` directives to describe which files the scanner should scan.
 
 ### `@source`
-Maps to extractor `include` and broadly includes files that may contain classes.
+Maps to scanner `include` and broadly includes files that may contain classes.
 
 ```css
 @source "src/**/*.{html,js,jsx,ts,tsx,vue,svelte,astro,mdx}";
 ```
 
 ### `@source not`
-Maps to extractor `exclude` and removes noisy files such as tests, generated output, or vendor code.
+Maps to scanner `exclude` and removes noisy files such as tests, generated output, or vendor code.
 
 ```css
 @source not "src/**/*.test.tsx";
 ```
 
 ### `@source required`
-Maps to extractor `required` and scans mandatory files even when they would otherwise be excluded.
+Maps to scanner `required` and scans mandatory files even when they would otherwise be excluded.
 
 ```css
 @source required "src/generated/critical-classes.ts";
 ```
 
-Bare source globs are resolved from the extractor `cwd`. Globs that start with `./` or `../` are resolved relative to the CSS file that declares the directive.
+Bare source globs are resolved from the scanner `cwd`. Globs that start with `./` or `../` are resolved relative to the CSS file that declares the directive.
 
 For the scanning model, see [Scanning latent classes](/guide/scanning-latent-classes).
 

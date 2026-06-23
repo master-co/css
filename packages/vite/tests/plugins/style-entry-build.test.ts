@@ -26,7 +26,7 @@ import path from 'node:path'
 
 function makeContext(slot: string, css: string) {
     return {
-        extractor: {
+        scanner: {
             slotCSSRule: slot,
             css: { text: css },
             config: {},
@@ -209,9 +209,9 @@ describe('StyleEntryBuildPlugin (D1 placeholder-leak warn)', () => {
                     }
                 }
             }
-            ctx.extractor.validClasses = new Set(['btn'])
-            ctx.extractor.usedNativeClasses = new Set(['native-card'])
-            ctx.extractor.options.safelist = []
+            ctx.scanner.validClasses = new Set(['btn'])
+            ctx.scanner.usedNativeClasses = new Set(['native-card'])
+            ctx.scanner.options.safelist = []
             const styleEntryPlugin = StyleEntryPlugin({ mode: 'static' } as any, ctx)
             const plugin = StyleEntryBuildPlugin({} as any, ctx)
             const warn = vi.fn()
@@ -267,7 +267,7 @@ describe('StyleEntryBuildPlugin (D1 placeholder-leak warn)', () => {
                     }
                 }
             }
-            ctx.extractor.latentClasses = new Set(['btn', 'native-used'])
+            ctx.scanner.latentClasses = new Set(['btn', 'native-used'])
 
             const styleEntryPlugin = StyleEntryPlugin({ mode: 'static' } as any, ctx)
             const plugin = StyleEntryBuildPlugin({} as any, ctx)

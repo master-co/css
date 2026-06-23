@@ -1,4 +1,4 @@
-import type { Options as ExtractorOptions } from '@master/css-extractor'
+import type { ScannerOptions } from '@master/css-scanner'
 
 /* The default options */
 const options: PluginOptions = {
@@ -22,9 +22,9 @@ export interface PluginOptions {
     mode?: 'runtime' | 'static' | 'progressive' | 'pre-render' | null
 
     /**
-     * Extractor options for class usage scanning.
+     * Scanner options for class usage scanning.
      */
-    extractor?: ExtractorOptions
+    scanner?: ScannerOptions
 
     /**
      * Whether to include Master CSS’s runtime engine through Vite's HTML transform.

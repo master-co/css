@@ -5,10 +5,10 @@ export default function masterCSS(options: PluginOptions = {}) {
     return baseVite({
         mode: 'progressive',
         ...options,
-        extractor: {
-            ...options.extractor,
+        scanner: {
+            ...options.scanner,
             adapters: [
-                ...(options.extractor?.adapters || []),
+                ...(options.scanner?.adapters || []),
                 svelteAdapter()
             ]
         }

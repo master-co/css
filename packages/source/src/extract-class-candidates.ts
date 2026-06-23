@@ -12,7 +12,7 @@ import { MASTER_CSS_VALUE_UNIT_PATTERN } from '@master/css-lexer'
  *   4. trimString — remove leading `name=` and trailing punctuation
  *   5. needExclude — drop tokens that look like things other than classes
  *
- * Extractor implementation notes:
+ * Scanner implementation notes:
  *   - All regex literals are hoisted to module scope. Within a function,
  *     V8 already memoises them, but module scope makes the intent explicit
  *     and avoids accidental local rebuild.

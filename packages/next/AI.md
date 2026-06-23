@@ -10,7 +10,7 @@
 - It does not transform dynamic SSR responses.
 - It does not implement App Router request-time class collection.
 - Static mode must not rely on `nextConfig.webpack` or `@master/css.webpack`.
-- Static mode uses `CSSExtractor` as the source of static rendering behavior.
+- Static mode uses `CSSScanner` as the source of static rendering behavior.
 - `CSSRuntimeRegistry` is imported from `@master/css.react`; do not alias it to generated App Router files.
 - Turbopack JS manifest-import rules must stay guarded by `content: /master-css-manifest/` so unrelated client modules keep their native Next client boundary handling.
 

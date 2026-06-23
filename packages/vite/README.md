@@ -117,7 +117,7 @@ The `options` object is passed to `masterCSS(options)`.
 | Option | Type | Default | Description |
 | --- | --- | --- | --- |
 | `mode` | `'runtime' \| 'static' \| 'progressive' \| 'pre-render' \| null` | `'runtime'` | Integration mode. Use `null` to disable automatic integration. |
-| `extractor` | `ExtractorOptions` | `undefined` | Class usage scanning options. |
+| `scanner` | `ScannerOptions` | `undefined` | Class usage scanning options. |
 | `injectRuntime` | `boolean` | `true` | Includes the runtime through Vite's HTML transform. |
 | `avoidFOUC` | `boolean` | `true` | Prevents flash of unstyled content during runtime rendering. |
 

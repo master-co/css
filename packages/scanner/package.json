@@ -1,5 +1,5 @@
 {
-    "name": "@master/css-extractor",
+    "name": "@master/css-scanner",
     "type": "module",
     "scripts": {
         "build": "techor build \"src/**/*.ts\" --formats esm",
@@ -19,12 +19,12 @@
     "repository": {
         "type": "git",
         "url": "https://github.com/master-co/css.git",
-        "directory": "packages/extractor"
+        "directory": "packages/scanner"
     },
     "keywords": [
         "plugin",
         "integration",
-        "extractor",
+        "scanner",
         "static",
         "build tools",
         "css",

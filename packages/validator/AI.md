@@ -40,7 +40,7 @@
 - css-tree support gaps for newer CSS functions.
 - At-rule prelude validation.
 - Property value validation exceptions.
-- Consumers in extractor and ESLint.
+- Consumers in scanner and ESLint.
 
 ## Required Tests
 

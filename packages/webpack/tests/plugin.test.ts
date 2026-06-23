@@ -4,13 +4,13 @@
  * The previous implementation attached an `async` callback to
  * `compilation.hooks.succeedModule` via `.tap()`. `succeedModule` is a
  * tapable `SyncHook` — it does NOT await promises. Webpack therefore
- * proceeded to `emit` while `extractor.insert()` was still running,
+ * proceeded to `emit` while `scanner.scan()` was still running,
  * producing CSS output that was missing classes from late-arriving
  * modules.
  *
  * The fix moves the `await`-bearing work to `finishModules` (an
  * `AsyncSeriesHook`) via `.tapPromise()`, so webpack blocks on every
- * pending insert before it processes assets / emits.
+ * pending scan before it processes assets / emits.
  *
  * These tests demonstrate the race using real tapable hooks (rather
  * than the full webpack runtime), and assert the new ordering.
@@ -101,7 +101,7 @@ function makeModule(resourcePath: string, source: string) {
     }
 }
 
-// Construct a plugin whose extractor side-effects are stubbed out — we
+// Construct a plugin whose scanner side-effects are stubbed out — we
 // only want to drive the webpack hook surface. We keep the real
 // constructor + init() so `this.options` is populated correctly.
 function makePlugin(options: Record<string, unknown> = {}, cwd = process.cwd()) {
@@ -565,7 +565,7 @@ describe('MasterCSSPlugin (C1 race fix)', () => {
         }
     })
 
-    test('resets extractor when the default CSS manifest changes in watch mode', async () => {
+    test('resets scanner when the default CSS manifest changes in watch mode', async () => {
         const root = path.resolve(__dirname, 'fixtures/manifest-virtual-module/css-only')
         const configPath = path.join(root, 'app.css')
         const plugin = makePlugin({}, root)
@@ -589,7 +589,7 @@ describe('MasterCSSPlugin (C1 race fix)', () => {
         expect(reset).toHaveBeenCalledWith(plugin.options)
     })
 
-    test('resets extractor when a managed CSS import dependency changes in watch mode', async () => {
+    test('resets scanner when a managed CSS import dependency changes in watch mode', async () => {
         const root = mkdtempSync(path.join(tmpdir(), 'master-css-webpack-watch-'))
         const configPath = path.join(root, 'app.css')
         const tokenPath = path.join(root, 'theme.css')
@@ -621,7 +621,7 @@ describe('MasterCSSPlugin (C1 race fix)', () => {
         }
     })
 
-    test('does not reset extractor when a non-manifest file changes in watch mode', async () => {
+    test('does not reset scanner when a non-manifest file changes in watch mode', async () => {
         const root = path.resolve(__dirname, 'fixtures/manifest-virtual-module/css-only')
         const plugin = makePlugin({}, root)
         ;(plugin as any).defaultManifestDependencies = [path.join(root, 'app.css')]
@@ -644,14 +644,14 @@ describe('MasterCSSPlugin (C1 race fix)', () => {
         expect(reset).not.toHaveBeenCalled()
     })
 
-    test('finishModules.tapPromise awaits all extractor.insert() calls before resolving', async () => {
+    test('finishModules.tapPromise awaits all scanner.scan() calls before resolving', async () => {
         const plugin = makePlugin()
 
-        const insertOrder: string[] = []
-        ;(plugin as any).insert = async (id: string) => {
-            // Simulate the async work in a real extractor (regex + validator).
+        const scanOrder: string[] = []
+        ;(plugin as any).scan = async (id: string) => {
+            // Simulate the async work in a real scanner (regex + validator).
             await new Promise((r) => setTimeout(r, 10))
-            insertOrder.push(`insert:${id}`)
+            scanOrder.push(`scan:${id}`)
             return true
         }
 
@@ -673,10 +673,10 @@ describe('MasterCSSPlugin (C1 race fix)', () => {
         const finishDuration = Date.now() - finishStart
 
         // If the fix is in place, finishModules' promise must have awaited
-        // both inserts. With the old `succeedModule.tap(async)` code,
-        // insertOrder would be empty here (the async callbacks would still
+        // both scans. With the old `succeedModule.tap(async)` code,
+        // scanOrder would be empty here (the async callbacks would still
         // be pending — webpack's SyncHook discarded their promises).
-        expect(insertOrder.sort()).toEqual(['insert:/a.tsx', 'insert:/b.tsx'])
+        expect(scanOrder.sort()).toEqual(['scan:/a.tsx', 'scan:/b.tsx'])
         // And finishModules must have actually waited (>= the simulated 10ms,
         // running in parallel via Promise.all).
         expect(finishDuration).toBeGreaterThanOrEqual(8)
@@ -702,12 +702,12 @@ describe('MasterCSSPlugin (C1 race fix)', () => {
     test('per-compilation pendingByPath is isolated across watch rebuilds', async () => {
         // Watch-mode rebuilds re-run thisCompilation. The pending map is
         // closure-scoped per-compilation, so it must not carry state
-        // across passes (otherwise rebuilds would re-insert every old
+        // across passes (otherwise rebuilds would re-scan every old
         // module on every save).
         const plugin = makePlugin()
-        const insertedIds: string[] = []
-        ;(plugin as any).insert = async (id: string) => {
-            insertedIds.push(id)
+        const scannedIds: string[] = []
+        ;(plugin as any).scan = async (id: string) => {
+            scannedIds.push(id)
             return true
         }
 
@@ -719,7 +719,7 @@ describe('MasterCSSPlugin (C1 race fix)', () => {
         await new Promise<void>((res, rej) => c1.hooks.finishModules.callAsync([], (e) => e ? rej(e) : res()))
 
         // Second compilation pass — only /b.tsx succeeds. /a.tsx must not
-        // be re-inserted in this pass (the closure-scoped map was cleared
+        // be re-scanned in this pass (the closure-scoped map was cleared
         // after pass 1's finishModules resolved, and a fresh map exists
         // in pass 2's closure).
         const { compilation: c2 } = makeFakeCompiler()
@@ -727,7 +727,7 @@ describe('MasterCSSPlugin (C1 race fix)', () => {
         c2.hooks.succeedModule.call(makeModule('/b.tsx', 'b'))
         await new Promise<void>((res, rej) => c2.hooks.finishModules.callAsync([], (e) => e ? rej(e) : res()))
 
-        expect(insertedIds).toEqual(['/a.tsx', '/b.tsx'])
+        expect(scannedIds).toEqual(['/a.tsx', '/b.tsx'])
     })
 
     test('modules without a resource path are skipped without throwing', async () => {
@@ -735,9 +735,9 @@ describe('MasterCSSPlugin (C1 race fix)', () => {
         // succeedModule without resourceResolveData / _source. The plugin
         // must tolerate them rather than crash mid-build.
         const plugin = makePlugin()
-        const insertedIds: string[] = []
-        ;(plugin as any).insert = async (id: string) => {
-            insertedIds.push(id)
+        const scannedIds: string[] = []
+        ;(plugin as any).scan = async (id: string) => {
+            scannedIds.push(id)
             return true
         }
 
@@ -754,14 +754,14 @@ describe('MasterCSSPlugin (C1 race fix)', () => {
             compilation.hooks.finishModules.callAsync([], (e) => e ? rej(e) : res())
         )
 
-        expect(insertedIds).toEqual(['/real.tsx'])
+        expect(scannedIds).toEqual(['/real.tsx'])
     })
 
-    test('internal config virtual modules are not re-extracted', async () => {
+    test('internal config virtual modules are not re-scanned', async () => {
         const plugin = makePlugin()
-        const insertedIds: string[] = []
-        ;(plugin as any).insert = async (id: string) => {
-            insertedIds.push(id)
+        const scannedIds: string[] = []
+        ;(plugin as any).scan = async (id: string) => {
+            scannedIds.push(id)
             return true
         }
 
@@ -777,6 +777,6 @@ describe('MasterCSSPlugin (C1 race fix)', () => {
             compilation.hooks.finishModules.callAsync([], (e) => e ? rej(e) : res())
         )
 
-        expect(insertedIds).toEqual(['/real.tsx'])
+        expect(scannedIds).toEqual(['/real.tsx'])
     })
 })

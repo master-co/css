@@ -7,16 +7,16 @@ function pluginNames(options: PluginOptions = {}) {
 }
 
 describe('masterCSS plugin composition', () => {
-    test.each(['runtime', 'static', 'pre-render', 'progressive', null] as const)('%s mode registers the shared extractor and style entry pipeline', (mode) => {
+    test.each(['runtime', 'static', 'pre-render', 'progressive', null] as const)('%s mode registers the shared scanner and style entry pipeline', (mode) => {
         const names = pluginNames({ mode })
 
-        expect(names.filter((name) => name === 'master-css:extractor')).toHaveLength(1)
+        expect(names.filter((name) => name === 'master-css:scanner')).toHaveLength(1)
         expect(names.filter((name) => name === 'master-css:usage-graph')).toHaveLength(1)
         expect(names.filter((name) => name === 'master-css:style-entry')).toHaveLength(1)
         expect(names.filter((name) => name === 'master-css:style-entry:hmr')).toHaveLength(1)
         expect(names.filter((name) => name === 'master-css:style-entry:build')).toHaveLength(1)
         expect(names).toEqual(expect.arrayContaining([
-            'master-css:extractor',
+            'master-css:scanner',
             'master-css:usage-graph',
             'master-css:style-entry',
             'master-css:style-entry:hmr',

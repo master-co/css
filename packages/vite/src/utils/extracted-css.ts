@@ -1,10 +1,10 @@
 import { createExtractedCSSResult } from '@master/css-stylesheet'
 import type { PluginContext } from '../core'
-import { getExtractor } from './extractor-context'
+import { getScanner } from './scanner-context'
 
 export async function getExtractedCSSResult(context: PluginContext) {
     const result = await createExtractedCSSResult({
-        state: getExtractor(context),
+        scanner: getScanner(context),
         styleCSSSources: context.styleCSSSources,
         projectDir: context.config?.root,
         includeGeneratedCSS: context.includeGeneratedCSS

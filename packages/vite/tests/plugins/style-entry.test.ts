@@ -12,7 +12,7 @@ function makeContext(command: 'serve' | 'build', css = '.fg\\:red{color:red}', i
     return {
         config: { command },
         includeGeneratedCSS,
-        extractor: {
+        scanner: {
             options: { safelist: [] },
             slotCSSRule: SLOT,
             css: { text: css, manifest: defaultManifest },
@@ -125,7 +125,7 @@ describe('StyleEntryPlugin', () => {
 
     test('non-generated modes consume empty Master entries without restoring @master/css imports', async () => {
         const context = makeContext('serve', '', false)
-        context.extractor.latentClasses = new Set()
+        context.scanner.latentClasses = new Set()
         const plugin = StyleEntryPlugin({ mode: 'runtime' } as any, context)
 
         const result = await (plugin as any).transform.call(
@@ -144,7 +144,7 @@ describe('StyleEntryPlugin', () => {
 
     test('non-generated modes preserve native imports when consuming empty Master entries', async () => {
         const context = makeContext('serve', '', false)
-        context.extractor.latentClasses = new Set()
+        context.scanner.latentClasses = new Set()
         const plugin = StyleEntryPlugin({ mode: 'progressive' } as any, context)
 
         const result = await (plugin as any).transform.call(

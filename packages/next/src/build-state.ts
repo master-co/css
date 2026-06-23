@@ -1,4 +1,4 @@
-import CSSExtractor from '@master/css-extractor'
+import CSSScanner from '@master/css-scanner'
 import { loadProjectManifest } from '@master/css-project/manifest'
 import { findCSSManifestEntryFiles } from '@master/css-project/entries'
 import {
@@ -22,14 +22,14 @@ export interface MasterCSSBuildStateResolver {
 
 export async function createMasterCSSBuildStateResolver(projectDir: string): Promise<MasterCSSBuildStateResolver> {
     const result = await loadProjectManifest(projectDir)
-    const extractor = new CSSExtractor({
+    const scanner = new CSSScanner({
         include: [],
         manifest: result.manifest
     }, projectDir)
     const styleCSSSources: StyleCSSSources = new Map()
-    await extractor.init()
+    await scanner.init()
     for (const entry of await findCSSManifestEntryFiles(projectDir)) {
-        await registerStyleCSSSource(extractor, styleCSSSources, entry, await readFile(entry, 'utf8'), {
+        await registerStyleCSSSource(scanner, styleCSSSources, entry, await readFile(entry, 'utf8'), {
             baseManifest: result.manifest,
             projectDir
         })
@@ -39,7 +39,7 @@ export async function createMasterCSSBuildStateResolver(projectDir: string): Pro
         async resolve(classes?: string[]) {
             const nativeCSS = classes?.length
                 ? await createExtractedCSS({
-                    state: extractor,
+                    scanner,
                     styleCSSSources,
                     baseManifest: result.manifest,
                     manifest: result.manifest,
