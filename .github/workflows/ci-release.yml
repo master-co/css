@@ -21,7 +21,7 @@ jobs:
                 node-version: [24]
         steps:
             - uses: actions/checkout@v6
-            - uses: pnpm/action-setup@v4
+            - uses: pnpm/action-setup@v6
               with:
                   version: 10.33.2
             - uses: actions/setup-node@v6
@@ -43,7 +43,7 @@ jobs:
                 os: [ubuntu-latest, windows-latest, macos-latest]
         steps:
             - uses: actions/checkout@v6
-            - uses: pnpm/action-setup@v4
+            - uses: pnpm/action-setup@v6
               with:
                   version: 10.33.2
             - uses: actions/setup-node@v6
@@ -64,7 +64,7 @@ jobs:
                 node-version: [24]
         steps:
             - uses: actions/checkout@v6
-            - uses: pnpm/action-setup@v4
+            - uses: pnpm/action-setup@v6
               with:
                   version: 10.33.2
             - uses: actions/setup-node@v6
@@ -86,7 +86,7 @@ jobs:
                 os: [ubuntu-latest, windows-latest, macos-latest]
         steps:
             - uses: actions/checkout@v6
-            - uses: pnpm/action-setup@v4
+            - uses: pnpm/action-setup@v6
               with:
                   version: 10.33.2
             - uses: actions/setup-node@v6
@@ -105,7 +105,7 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v6
-            - uses: pnpm/action-setup@v4
+            - uses: pnpm/action-setup@v6
               with:
                   version: 10.33.2
             - uses: actions/setup-node@v6
@@ -136,7 +136,7 @@ jobs:
             id-token: write
         steps:
             - uses: actions/checkout@v6
-            - uses: pnpm/action-setup@v4
+            - uses: pnpm/action-setup@v6
               with:
                   version: 10.33.2
             - uses: actions/setup-node@v6
