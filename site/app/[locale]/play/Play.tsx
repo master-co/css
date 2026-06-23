@@ -24,19 +24,46 @@ import Editor, { loader, type Monaco } from '@monaco-editor/react'
 import DocMenuButton from 'internal/components/DocMenuButton'
 import { useTranslation } from 'internal/contexts/i18n'
 import HeaderContent from 'internal/components/HeaderContent'
-import createHighlighter, { themes } from 'internal/utils/create-highlighter'
 import { useApp } from 'internal/contexts/app'
-import { shikiToMonaco, textmateThemeToMonacoTheme } from '@shikijs/monaco'
 import type { MasterCSSManifest } from '@master/css'
 import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
+import masterCSSTextMateGrammar from '@master/css-language/syntaxes/master-css.tmLanguage.json' with { type: 'json' }
 import { renderBrowserSemanticTokens, SEMANTIC_TOKENS_LEGEND } from '@master/css-language/browser'
 
 const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
+const jsdelivrNPMBaseURL = 'https://cdn.jsdelivr.net/npm/'
+const monacoVSBaseURL = `${jsdelivrNPMBaseURL}monaco-editor@0.55.1/min/vs`
+const shikiVersion = '4.2.0'
+const playMonacoThemes = {
+    dark: 'dracula',
+    light: 'min-light'
+}
+const playShikiLanguageModulePaths = [
+    'html',
+    'javascript',
+    'typescript',
+    'jsx',
+    'tsx',
+    'css',
+    'scss',
+    'json',
+    'vue',
+    'svelte',
+    'astro',
+    'markdown',
+    'mdx',
+    'bash',
+    'angular-html'
+].map((languageId) => `@shikijs/langs@${shikiVersion}/${languageId}/+esm`)
+const playShikiThemeModulePaths = [
+    playMonacoThemes.dark,
+    playMonacoThemes.light
+].map((themeId) => `@shikijs/themes@${shikiVersion}/${themeId}/+esm`)
 
 if (typeof window !== 'undefined') {
     loader.config({
         paths: {
-            vs: window.location.origin + '/monaco-editor/vs',
+            vs: monacoVSBaseURL,
         }
     })
 }
@@ -72,7 +99,42 @@ const playShareApiURL = '/api/play'
 const playMonacoLanguageIds = ['html', 'css']
 const playMonacoLanguageIdSet = new Set(playMonacoLanguageIds)
 const playCSSDiagnosticClearDelays = [250, 1000]
-type PlayHighlighter = Awaited<ReturnType<typeof createHighlighter>>
+const masterCSSShikiLanguage = {
+    ...(masterCSSTextMateGrammar as Record<string, unknown>),
+    injectTo: [
+        'source.css',
+        'source.css.scss',
+        'source.css.less',
+        'source.css.postcss'
+    ]
+}
+type PlayHighlighter = {
+    getLoadedThemes(): string[]
+    getTheme(themeName: string): unknown
+    setTheme(themeName: string): { colorMap: unknown[] }
+}
+type PlayShikiRuntime = {
+    highlighter: PlayHighlighter
+    shikiToMonaco(highlighter: PlayHighlighter, monaco: Monaco): void
+    textmateThemeToMonacoTheme(theme: unknown): editor.IStandaloneThemeData
+}
+type PlayShikiCoreModule = {
+    createHighlighterCore(options: {
+        langs: unknown[]
+        themes: unknown[]
+        engine: unknown
+    }): Promise<PlayHighlighter>
+}
+type PlayShikiEngineModule = {
+    createJavaScriptRegexEngine(): unknown
+}
+type PlayShikiMonacoModule = {
+    shikiToMonaco: PlayShikiRuntime['shikiToMonaco']
+    textmateThemeToMonacoTheme: PlayShikiRuntime['textmateThemeToMonacoTheme']
+}
+type PlayShikiDefaultModule = {
+    default: unknown
+}
 type PlayCompilerModule = {
     compilePlayCSS(sourceCSS: string, classes: string[]): Promise<{
         css: string
@@ -88,11 +150,16 @@ declare global {
     }
 }
 let compilerPromise: Promise<PlayCompilerModule> | undefined
-let playHighlighterPromise: Promise<PlayHighlighter> | undefined
+let playShikiRuntimePromise: Promise<PlayShikiRuntime> | undefined
 // shikiToMonaco installs global Monaco providers and patches setTheme without
 // returning disposables. Keep one highlighter alive for those closures.
-const shikiMonacoRegistrations = new WeakMap<Monaco, Promise<PlayHighlighter>>()
+const shikiMonacoRegistrations = new WeakMap<Monaco, Promise<PlayShikiRuntime>>()
 const shikiMonacoLanguageRefreshes = new WeakSet<Monaco>()
+
+function importPlayCDNModule<T>(path: string) {
+    const url = `${jsdelivrNPMBaseURL}${path}`
+    return import(/* webpackIgnore: true */ url) as Promise<T>
+}
 
 function loadCompiler() {
     if (window.__masterCSSPlayCompiler) return Promise.resolve(window.__masterCSSPlayCompiler)
@@ -111,9 +178,44 @@ function loadCompiler() {
     return compilerPromise
 }
 
-function loadPlayHighlighter() {
-    playHighlighterPromise ??= createHighlighter()
-    return playHighlighterPromise
+function flattenPlayShikiDefaultModules(modules: PlayShikiDefaultModule[]) {
+    return modules.flatMap((module) => Array.isArray(module.default) ? module.default : [module.default])
+}
+
+async function createPlayShikiRuntime(): Promise<PlayShikiRuntime> {
+    const [
+        coreModule,
+        engineModule,
+        monacoModule,
+        ...defaultModules
+    ] = await Promise.all([
+        importPlayCDNModule<PlayShikiCoreModule>(`shiki@${shikiVersion}/core/+esm`),
+        importPlayCDNModule<PlayShikiEngineModule>(`shiki@${shikiVersion}/engine/javascript/+esm`),
+        importPlayCDNModule<PlayShikiMonacoModule>(`@shikijs/monaco@${shikiVersion}/+esm`),
+        ...playShikiLanguageModulePaths.map((path) => importPlayCDNModule<PlayShikiDefaultModule>(path)),
+        ...playShikiThemeModulePaths.map((path) => importPlayCDNModule<PlayShikiDefaultModule>(path))
+    ])
+    const languageModules = defaultModules.slice(0, playShikiLanguageModulePaths.length)
+    const themeModules = defaultModules.slice(playShikiLanguageModulePaths.length)
+    const highlighter = await coreModule.createHighlighterCore({
+        langs: [
+            ...flattenPlayShikiDefaultModules(languageModules),
+            masterCSSShikiLanguage
+        ],
+        themes: flattenPlayShikiDefaultModules(themeModules),
+        engine: engineModule.createJavaScriptRegexEngine(),
+    })
+
+    return {
+        highlighter,
+        shikiToMonaco: monacoModule.shikiToMonaco,
+        textmateThemeToMonacoTheme: monacoModule.textmateThemeToMonacoTheme
+    }
+}
+
+function loadPlayShikiRuntime() {
+    playShikiRuntimePromise ??= createPlayShikiRuntime()
+    return playShikiRuntimePromise
 }
 
 function getThemeRuleForeground(theme: editor.IStandaloneThemeData, candidates: string[], fallback?: string) {
@@ -197,7 +299,8 @@ function createMasterCSSSemanticTokenRules(theme: editor.IStandaloneThemeData): 
     ]
 }
 
-function defineMasterCSSMonacoThemes(highlighter: Awaited<ReturnType<typeof createHighlighter>>, monaco: Monaco) {
+function defineMasterCSSMonacoThemes(runtime: PlayShikiRuntime, monaco: Monaco) {
+    const { highlighter, textmateThemeToMonacoTheme } = runtime
     for (const themeName of highlighter.getLoadedThemes()) {
         const theme = textmateThemeToMonacoTheme(highlighter.getTheme(themeName)) as unknown as editor.IStandaloneThemeData
         monaco.editor.defineTheme(themeName, {
@@ -249,18 +352,18 @@ function scheduleClearPlayCSSDiagnostics(monaco: Monaco) {
     }
 }
 
-function installMonacoShiki(highlighter: PlayHighlighter, monaco: Monaco) {
+function installMonacoShiki(runtime: PlayShikiRuntime, monaco: Monaco) {
     registerPlayMonacoLanguages(monaco)
-    shikiToMonaco(highlighter, monaco)
-    defineMasterCSSMonacoThemes(highlighter, monaco)
+    runtime.shikiToMonaco(runtime.highlighter, monaco)
+    defineMasterCSSMonacoThemes(runtime, monaco)
 }
 
 async function registerMonacoShiki(monaco: Monaco) {
     let registration = shikiMonacoRegistrations.get(monaco)
     if (!registration) {
-        registration = loadPlayHighlighter().then((highlighter) => {
-            installMonacoShiki(highlighter, monaco)
-            return highlighter
+        registration = loadPlayShikiRuntime().then((runtime) => {
+            installMonacoShiki(runtime, monaco)
+            return runtime
         })
         shikiMonacoRegistrations.set(monaco, registration)
     }
@@ -277,13 +380,13 @@ function refreshMonacoHighlighting(monaco: Monaco) {
     scheduleClearPlayCSSDiagnostics(monaco)
 }
 
-function scheduleMonacoShikiLanguageRefresh(highlighter: PlayHighlighter, monaco: Monaco, getThemeName: () => string) {
+function scheduleMonacoShikiLanguageRefresh(runtime: PlayShikiRuntime, monaco: Monaco, getThemeName: () => string) {
     if (shikiMonacoLanguageRefreshes.has(monaco)) return
     shikiMonacoLanguageRefreshes.add(monaco)
     setTimeout(() => {
         // Monaco's bundled language contributions can attach after the first
         // editor mount and replace the Shiki token provider.
-        installMonacoShiki(highlighter, monaco)
+        installMonacoShiki(runtime, monaco)
         refreshMonacoHighlighting(monaco)
         monaco.editor.setTheme(getThemeName())
         scheduleClearPlayCSSDiagnostics(monaco)
@@ -478,7 +581,7 @@ export default function Play({ shareId }: PlayProps = {}) {
     const layout = useMemo(() => searchParams?.get('layout'), [searchParams])
     const preview = useMemo(() => searchParams?.get('preview'), [searchParams])
     const tab = useMemo(() => searchParams?.get('tab') || files[0].title, [searchParams, files])
-    const getTheme = useCallback(() => themeMode.value === 'dark' ? themes.dark : themes.light, [themeMode.value])
+    const getTheme = useCallback(() => themeMode.value === 'dark' ? playMonacoThemes.dark : playMonacoThemes.light, [themeMode.value])
 
     const getSearchPath = useCallback((name?: string, value?: any) => {
         const urlSearchParams = new URLSearchParams(searchParams?.toString())
@@ -721,10 +824,10 @@ export default function Play({ shareId }: PlayProps = {}) {
 
     const registerShiki = useCallback(async (monaco: Monaco) => {
         preparePlayMonaco(monaco)
-        const highlighter = await registerMonacoShiki(monaco)
+        const runtime = await registerMonacoShiki(monaco)
         registerMasterCSSSemanticTokens(monaco)
         refreshMonacoHighlighting(monaco)
-        scheduleMonacoShikiLanguageRefresh(highlighter, monaco, getTheme)
+        scheduleMonacoShikiLanguageRefresh(runtime, monaco, getTheme)
         setTimeout(() => {
             monaco.editor.setTheme(getTheme())
         })

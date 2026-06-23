@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest'
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
-import { join } from 'node:path'
+import { join, relative } from 'node:path'
 import masterCSS, { ASTRO_MIDDLEWARE_ENTRYPOINT } from '../src/core'
 import defaultOptions from '../src/options'
 import { CSS_RUNTIME_INJECTION } from '@master/css-integration/runtime'
@@ -147,7 +147,11 @@ describe('@master/css.astro integration', () => {
             const html = readFileSync(htmlFile, 'utf-8')
 
             expect(files).toHaveLength(1)
-            expect(files[0]).toMatch(/_master-css\/hydration\/master-css-hydration\.[0-9a-f]{8}\.json$/)
+            expect(relative(dir, files[0]).split(/[\\/]/)).toEqual([
+                '_master-css',
+                'hydration',
+                expect.stringMatching(/^master-css-hydration\.[0-9a-f]{8}\.json$/)
+            ])
             expect(existsSync(files[0])).toBe(true)
             expect(readFileSync(files[0], 'utf-8')).toContain('"className":"block"')
             expect(html).toContain(`${MASTER_CSS_HYDRATION_MANIFEST_ATTR}="/_master-css/hydration/`)

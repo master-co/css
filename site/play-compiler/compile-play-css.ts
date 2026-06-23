@@ -8,6 +8,7 @@ import {
 import { collectAnimationNamesFromDeclaration } from '@master/css-engine'
 
 const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
+const lightningCSSWasmURL = 'https://cdn.jsdelivr.net/npm/lightningcss-wasm@1.32.0/lightningcss_node.wasm'
 
 export interface CompilePlayCSSResult {
     css: string
@@ -19,7 +20,7 @@ export interface CompilePlayCSSResult {
 async function initPlayCompiler() {
     if (typeof window === 'undefined') return
 
-    const wasmResponse = fetch(new URL('lightningcss_node.wasm', import.meta.url))
+    const wasmResponse = fetch(lightningCSSWasmURL)
     await initCSSCompiler(wasmResponse as unknown as Parameters<typeof initCSSCompiler>[0])
 }
 

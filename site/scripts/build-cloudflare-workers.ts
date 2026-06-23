@@ -6,8 +6,15 @@ import { buildPlayCompiler } from './build-play-compiler'
 
 const siteDir = dirname(fileURLToPath(new URL('../package.json', import.meta.url)))
 const publicPlayCompilerDir = join(siteDir, 'public/play-compiler')
+const publicMonacoEditorDir = join(siteDir, 'public/monaco-editor')
 
-await rm(publicPlayCompilerDir, { recursive: true, force: true })
+await Promise.all([
+    rm(publicPlayCompilerDir, { recursive: true, force: true }),
+    rm(publicMonacoEditorDir, { recursive: true, force: true })
+])
+
+await buildPlayCompiler(publicPlayCompilerDir)
+await stat(join(publicPlayCompilerDir, 'compiler.mjs'))
 
 const buildResult = spawnSync('opennextjs-cloudflare', ['build', '--skipWranglerConfigCheck'], {
     cwd: siteDir,
@@ -26,12 +33,7 @@ if (buildResult.status !== 0) {
 const openNextDir = join(siteDir, '.open-next')
 const assetsDir = join(openNextDir, 'assets/play-compiler')
 
-await buildPlayCompiler(assetsDir)
-
-await Promise.all([
-    stat(join(assetsDir, 'compiler.mjs')),
-    stat(join(assetsDir, 'lightningcss_node.wasm'))
-])
+await stat(join(assetsDir, 'compiler.mjs'))
 
 const serverBundleCopies = [
     join(openNextDir, 'server-functions/default/site/public/play-compiler'),
@@ -51,3 +53,5 @@ for (const serverBundleCopy of serverBundleCopies) {
 }
 
 console.log(`Pruned Play compiler public copy from ${prunedCopies} Worker server bundle path(s)`)
+
+await rm(publicPlayCompilerDir, { recursive: true, force: true })
