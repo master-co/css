@@ -1,0 +1,91 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="960" viewBox="0 0 1440 960" role="img" aria-labelledby="title desc">
+  <title id="title">Unstyled and styled webpage comparison</title>
+  <desc id="desc">A transparent-background vector comparison showing a plain unstyled webpage card next to a modern styled webpage card.</desc>
+
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#D9EEFF"/>
+      <stop offset="100%" stop-color="#F3FAFF"/>
+    </linearGradient>
+    <linearGradient id="blueButton" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#2563EB"/>
+      <stop offset="100%" stop-color="#1D4ED8"/>
+    </linearGradient>
+    <clipPath id="styledHeroClip">
+      <rect x="838" y="112" width="444" height="250" rx="22"/>
+    </clipPath>
+    <clipPath id="unstyledHeroClip">
+      <rect x="164" y="166" width="432" height="176"/>
+    </clipPath>
+  </defs>
+
+  <!-- Left: unstyled page -->
+  <g id="unstyled-panel">
+    <rect x="120" y="70" width="520" height="760" rx="24" fill="#FFFFFF" stroke="#B9C0C8" stroke-width="2"/>
+
+    <text x="164" y="132" font-family="Georgia, Times New Roman, serif" font-size="30" font-weight="700" fill="#0000EE" text-decoration="underline">Example Co.</text>
+
+    <g id="unstyled-image">
+      <rect x="164" y="166" width="432" height="176" fill="#EEF7FF" stroke="#4B5563" stroke-width="2"/>
+      <g clip-path="url(#unstyledHeroClip)">
+        <circle cx="222" cy="221" r="28" fill="#FACC15" stroke="#D4A60A" stroke-width="1.5"/>
+        <path d="M258 342 L368 236 L482 342 Z" fill="#4D79B7" opacity="0.95"/>
+        <path d="M392 342 L506 241 L616 342 Z" fill="#3F6FAE" opacity="0.95"/>
+      </g>
+    </g>
+
+    <text x="164" y="420" font-family="Georgia, Times New Roman, serif" font-size="48" font-weight="700" fill="#111111">
+      <tspan x="164" dy="0">Build better</tspan>
+      <tspan x="164" dy="56">experiences</tspan>
+    </text>
+
+    <text x="164" y="548" font-family="Georgia, Times New Roman, serif" font-size="24" fill="#111111">
+      <tspan x="164" dy="0">We help teams create fast, reliable,</tspan>
+      <tspan x="164" dy="34">and accessible websites for everyone.</tspan>
+    </text>
+
+    <text x="164" y="658" font-family="Georgia, Times New Roman, serif" font-size="24" fill="#0000EE" text-decoration="underline">Learn more</text>
+  </g>
+
+  <!-- Right: styled page -->
+  <g id="styled-panel">
+    <rect x="800" y="70" width="520" height="760" rx="24" fill="#FFFFFF" stroke="#D5DBE3" stroke-width="2"/>
+
+    <g id="styled-hero" clip-path="url(#styledHeroClip)">
+      <rect x="838" y="112" width="444" height="250" fill="url(#sky)"/>
+      <circle cx="914" cy="182" r="31" fill="#FBCB3F"/>
+      <path d="M1057 192 C1059 173 1074 159 1094 159 C1113 159 1127 173 1131 191 C1149 193 1162 207 1162 224 L1048 224 C1048 209 1051 199 1057 192 Z" fill="#FFFFFF" opacity="0.96"/>
+      <path d="M838 320 L940 222 L1044 362 L838 362 Z" fill="#2E5D92" opacity="0.95"/>
+      <path d="M904 362 L1020 178 L1162 362 Z" fill="#477EBB" opacity="0.98"/>
+      <path d="M1094 362 L1188 224 L1282 362 Z" fill="#669BD1" opacity="0.85"/>
+      <path d="M838 326 C922 306 1002 324 1080 356 C1148 383 1221 362 1282 332 L1282 362 L838 362 Z" fill="#7DBA55"/>
+      <path d="M838 362 C932 350 1021 342 1096 356 C1172 370 1230 348 1282 326 L1282 362 Z" fill="#9CCC65" opacity="0.95"/>
+      <path d="M1173 278 C1183 288 1187 314 1177 320 C1167 314 1170 288 1173 278 Z" fill="#2D6A4F"/>
+      <rect x="1174" y="318" width="5" height="28" rx="2" fill="#6B4F31"/>
+      <path d="M1204 265 C1218 282 1225 316 1211 322 C1195 315 1198 282 1204 265 Z" fill="#2D6A4F"/>
+      <rect x="1206" y="319" width="5" height="29" rx="2" fill="#6B4F31"/>
+    </g>
+
+    <text x="838" y="424" font-family="Inter, Arial, Helvetica, sans-serif" font-size="22" font-weight="800" letter-spacing="3" fill="#2563EB">BUILD BETTER</text>
+
+    <text x="838" y="494" font-family="Inter, Arial, Helvetica, sans-serif" font-size="52" font-weight="800" fill="#111827">
+      <tspan x="838" dy="0">Build better</tspan>
+      <tspan x="838" dy="62">experiences</tspan>
+    </text>
+
+    <text x="838" y="626" font-family="Inter, Arial, Helvetica, sans-serif" font-size="23" fill="#4B5563">
+      <tspan x="838" dy="0">We help teams create fast, reliable,</tspan>
+      <tspan x="838" dy="34">and accessible websites for everyone.</tspan>
+    </text>
+
+    <g id="primary-button">
+      <rect x="838" y="716" width="232" height="68" rx="14" fill="url(#blueButton)"/>
+      <text x="866" y="760" font-family="Inter, Arial, Helvetica, sans-serif" font-size="24" font-weight="700" fill="#FFFFFF">Learn more</text>
+      <path d="M1029 750 H1048 M1040 740 L1050 750 L1040 760" fill="none" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+  </g>
+
+  <!-- Labels -->
+  <text x="380" y="902" text-anchor="middle" font-family="Inter, Arial, Helvetica, sans-serif" font-size="42" font-weight="800" fill="#374151">Unstyled</text>
+  <text x="1060" y="902" text-anchor="middle" font-family="Inter, Arial, Helvetica, sans-serif" font-size="42" font-weight="800" fill="#374151">Styled</text>
+</svg>
