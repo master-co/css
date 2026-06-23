@@ -14,8 +14,7 @@ const units = {
         categories: [
             'Overview',
             'Stylesheet',
-            'Syntax',
-            'Packages'
+            'Syntax'
         ]
     },
     messages: {

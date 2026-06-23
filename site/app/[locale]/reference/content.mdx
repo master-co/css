@@ -2,10 +2,5 @@ import categories from '~/site/.categories/reference.json'
 
 ## Syntax
 <OverviewButtons>
-    {categories.find(category => category.name === 'Syntax').pages}
-</OverviewButtons>
-
-## Package
-<OverviewButtons>
-    {categories.find(category => category.name === 'Packages').pages}
+    {categories.find(category => category.name === 'Syntax')?.pages ?? []}
 </OverviewButtons>

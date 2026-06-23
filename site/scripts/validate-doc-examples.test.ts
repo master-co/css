@@ -22,6 +22,37 @@ interface ExampleCandidate {
     line: number
 }
 
+interface PageCategory {
+    name: string
+}
+
+test('overview category references resolve to generated categories', async () => {
+    const failures: string[] = []
+    const entries = await readdir(appRoot, { withFileTypes: true })
+
+    for (const eachEntry of entries) {
+        if (!eachEntry.isDirectory()) continue
+
+        const contentFile = path.join(appRoot, eachEntry.name, 'content.mdx')
+        let content: string
+        try {
+            content = await readFile(contentFile, 'utf8')
+        } catch (error) {
+            if (isNotFoundError(error)) continue
+            throw error
+        }
+
+        const categoryNames = await readGeneratedCategoryNames(eachEntry.name)
+        for (const eachReference of extractOverviewCategoryReferences(content)) {
+            if (!categoryNames.has(eachReference.name)) {
+                failures.push(`${formatFileLine(contentFile, eachReference.line)} | ${eachReference.name}`)
+            }
+        }
+    }
+
+    assert.deepEqual(failures, [])
+})
+
 test('docs example classes are valid default preset classes or locally defined custom classes', async () => {
     const files = [
         ...await collectMdxDocs(),
@@ -68,6 +99,33 @@ async function walk(dir: string, out: string[]) {
             out.push(fullPath)
         }
     }
+}
+
+async function readGeneratedCategoryNames(section: string): Promise<Set<string>> {
+    const categoryFile = path.join(siteRoot, '.categories', `${section}.json`)
+    try {
+        const categories = JSON.parse(await readFile(categoryFile, 'utf8')) as PageCategory[]
+        return new Set(categories.map((eachCategory) => eachCategory.name))
+    } catch (error) {
+        if (isNotFoundError(error)) return new Set()
+        throw error
+    }
+}
+
+function extractOverviewCategoryReferences(content: string): { line: number, name: string }[] {
+    const references: { line: number, name: string }[] = []
+    const pattern = /(?:props\.pageCategories|categories)\.find\(\s*category\s*=>\s*category\.name\s*===\s*['"]([^'"]+)['"]\s*\)\??\.pages/g
+    for (const match of content.matchAll(pattern)) {
+        references.push({
+            line: lineAt(content, match.index),
+            name: match[1]
+        })
+    }
+    return references
+}
+
+function isNotFoundError(error: unknown): boolean {
+    return typeof error === 'object' && error !== null && 'code' in error && error.code === 'ENOENT'
 }
 
 function extractExampleCandidates(file: string, content: string): ExampleCandidate[] {
