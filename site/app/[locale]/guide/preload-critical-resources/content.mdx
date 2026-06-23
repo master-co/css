@@ -1,10 +1,12 @@
+import ResourceWaterfall from './components/ResourceWaterfall'
 
 ---
 
 ## Preload runtime engine
-(!|) The browser loads the runtime engine only after downloading and parsing the stylesheet.
-<Image src={require('~/site/public/images/no-preload-network.png').default} placeholder="blur" alt="Screenshot of Chrome DevTools Network panel" width="841" height="69" />
-It may experience delays in downloading and initializing until the first contentful paint if the [runtime engine](/guide/rendering-modes#runtime-rendering) is discovered late.
+(!|) Without a preload hint, the CDN runtime's default manifest is discovered only after the runtime script starts.
+Runtime rendering may experience delays in downloading and initializing until the first contentful paint if [runtime-critical resources](/guide/rendering-modes#runtime-rendering) are discovered late.
+
+<ResourceWaterfall />
 
 (o) Use `html <link rel="preload">` to preload the critical resources.
 ```html
@@ -20,8 +22,7 @@ It may experience delays in downloading and initializing until the first content
 ```
 <small>The CDN runtime fetches its split default manifest before starting; preload it with `as="fetch"` and `crossorigin` so the runtime can reuse the response.</small>
 
-Now the runtime engine is discovered early, so the download happens in parallel with the stylesheet:
-<Image src={require('~/site/public/images/preload-network.png').default} placeholder="blur" alt="Screenshot of Chrome DevTools Network panel" width="841" height="69" />
+With the preload in place, the default manifest request starts during document parsing and downloads in parallel with the stylesheet. The runtime later reuses the preloaded response instead of waiting on a new request.
 
 You are telling the browser that you would like to fetch it sooner than the browser would otherwise discover it.
 
