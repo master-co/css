@@ -259,7 +259,12 @@ Defines managed utility classes in the `utilities` layer. Utilities still win ov
         text-decoration: --value();
     }
 
-    grid-cols:<number> {
+    size:<~container|number|*> {
+        width: --value();
+        height: --value();
+    }
+
+    grid-cols:<number|*> {
         display: grid;
         grid-template-columns: repeat(--value(), minmax(0, 1fr));
     }
@@ -299,6 +304,11 @@ Dynamic colon entries use `key:<source-list>` and keep the class syntax as `key:
     text-decoration:<~color-text|~color|*> {
         text-decoration: --value();
     }
+
+    size:<~container|number|*> {
+        width: --value();
+        height: --value();
+    }
 }
 ```
 
@@ -308,7 +318,7 @@ Dynamic colon entries use `key:<source-list>` and keep the class syntax as `key:
 
 Literal enum values can stand alone when at least two values are provided, such as `user-select:<auto|none|text|all>`, or combine with one raw kind, such as `line-clamp:<number|none>`. Enum values cannot be mixed with namespaces.
 
-`*` is for raw-any full-value wrappers, such as paired vendor declarations. It may be used alone or with namespace refs, as in `text-decoration:<~color-text|~color|*>`, but it cannot be mixed with enum values or raw kinds. The `<color>` shorthand does not apply to `*` wrappers; list `~color` explicitly when raw-any values should also resolve color tokens.
+`*` is for raw-any full-value wrappers, such as paired vendor declarations or shorthand values that should accept `var(...)`. It may be used alone, with namespace refs, or with one raw kind, as in `text-decoration:<~color-text|~color|*>`, `accent:<color|*>`, or `size:<~container|number|*>`. It cannot be mixed with enum values. A standalone `*` does not imply a color namespace; include `~color` or `color` when raw-any values should also resolve color tokens.
 
 `--value()` accepts no arguments and is only valid inside managed enum pattern or dynamic colon entry declarations.
 

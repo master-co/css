@@ -1826,8 +1826,8 @@ function parseManagedDynamicPatternName(source: string) {
         }
         throw new Error(`Unsupported managed dynamic utility source: ${value}`)
     }
-    if (arbitrary && (kind || literalValues.length)) {
-        throw new Error('Managed dynamic utility wildcard cannot be combined with enum or raw value kinds')
+    if (arbitrary && literalValues.length) {
+        throw new Error('Managed dynamic utility wildcard cannot be combined with enum values')
     }
     if (literalValues.length) {
         if (variableAliasRefs.length) {

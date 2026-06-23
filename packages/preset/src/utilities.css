@@ -476,17 +476,17 @@
         background-image: --value();
     }
 
-    size:<~container|number> {
+    size:<~container|number|*> {
         width: --value();
         height: --value();
     }
 
-    min-size:<~container|number> {
+    min-size:<~container|number|*> {
         min-width: --value();
         min-height: --value();
     }
 
-    max-size:<~container|number> {
+    max-size:<~container|number|*> {
         max-width: --value();
         max-height: --value();
     }
@@ -569,22 +569,22 @@
 
 /* Grid, stroke, and text shorthands. */
 @utilities {
-    grid-cols:<number> {
+    grid-cols:<number|*> {
         display: grid;
         grid-template-columns: repeat(--value(), minmax(0, 1fr));
     }
 
-    grid-rows:<number> {
+    grid-rows:<number|*> {
         display: grid;
         grid-auto-flow: column;
         grid-template-rows: repeat(--value(), minmax(0, 1fr));
     }
 
-    grid-col-span:<number> {
+    grid-col-span:<number|*> {
         grid-column: span --value()/span --value();
     }
 
-    grid-row-span:<number> {
+    grid-row-span:<number|*> {
         grid-row: span --value()/span --value();
     }
 
@@ -624,7 +624,7 @@
         text-decoration: --value();
     }
 
-    text-decoration-thickness:<number> {
+    text-decoration-thickness:<number|*> {
         text-decoration-thickness: --value();
     }
 

@@ -178,14 +178,22 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
                     color: --value();
                 }
 
-                grid-cols:<number> {
+                grid-cols:<number|*> {
                     display: grid;
                     grid-template-columns: repeat(--value(), minmax(0, 1fr));
                 }
 
-                size:<~container|number> {
+                size:<~container|number|*> {
                     width: --value();
                     height: --value();
+                }
+
+                gap:<*|number> {
+                    gap: --value();
+                }
+
+                accent:<color|*> {
+                    accent-color: --value();
                 }
 
                 user-select:<auto|none|text|all> {
@@ -212,8 +220,40 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
                 { type: 'value', keys: ['font'] }
             ])
         })
-        expect(manifest.utilities?.find((utility) => utility.id === 'grid-cols:<number>')?.type).toBe(UtilityType.Normal)
-        expect(manifest.utilities?.find((utility) => utility.id === 'size:<~container|number>')?.type).toBe(UtilityType.Shorthand)
+        expect(manifest.utilities?.find((utility) => utility.id === 'grid-cols:<number|*>')).toMatchObject({
+            kind: 'number',
+            type: UtilityType.Normal,
+            matchers: expect.arrayContaining([
+                { type: 'value', keys: ['grid-cols'] },
+                { type: 'key', keys: ['grid-cols'] }
+            ])
+        })
+        expect(manifest.utilities?.find((utility) => utility.id === 'size:<~container|number|*>')).toMatchObject({
+            kind: 'number',
+            type: UtilityType.Shorthand,
+            variableAliasRefs: ['~container'],
+            matchers: expect.arrayContaining([
+                { type: 'variable', keys: ['size'] },
+                { type: 'value', keys: ['size'] },
+                { type: 'key', keys: ['size'] }
+            ])
+        })
+        expect(manifest.utilities?.find((utility) => utility.id === 'gap:<*|number>')).toMatchObject({
+            kind: 'number',
+            matchers: expect.arrayContaining([
+                { type: 'value', keys: ['gap'] },
+                { type: 'key', keys: ['gap'] }
+            ])
+        })
+        expect(manifest.utilities?.find((utility) => utility.id === 'accent:<~color|color|*>')).toMatchObject({
+            kind: 'color',
+            variableAliasRefs: ['~color'],
+            matchers: expect.arrayContaining([
+                { type: 'variable', keys: ['accent'] },
+                { type: 'value', keys: ['accent'] },
+                { type: 'key', keys: ['accent'] }
+            ])
+        })
         expect(manifest.utilities?.find((utility) => utility.id === 'bg:<~color|color>')).toMatchObject({
             kind: 'color',
             variableAliasRefs: ['~color'],
@@ -260,8 +300,11 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
         expect(css.createRule('bg:#fff')?.text).toBe('.bg\\:\\#fff{background-color:#fff}')
         expect(css.createRule('fg:red')?.text).toBe('.fg\\:red{color:var(--color-text-red)}')
         expect(css.createRule('grid-cols:3')?.text).toBe('.grid-cols\\:3{display:grid;grid-template-columns:repeat(3, minmax(0, 1fr))}')
+        expect(css.createRule('grid-cols:var(--cols)')?.text).toBe('.grid-cols\\:var\\(--cols\\){display:grid;grid-template-columns:repeat(var(--cols), minmax(0, 1fr))}')
         expect(css.createRule('size:4x')?.text).toBe('.size\\:4x{width:1rem;height:1rem}')
-        expect(css.createRule('size:4x|8x')).toBeUndefined()
+        expect(css.createRule('size:4x|8x')?.text).toBe('.size\\:4x\\|8x{width:1rem 2rem;height:1rem 2rem}')
+        expect(css.createRule('gap:var(--gap)')?.text).toBe('.gap\\:var\\(--gap\\){gap:var(--gap)}')
+        expect(css.createRule('accent:var(--accent)')?.text).toBe('.accent\\:var\\(--accent\\){accent-color:var(--accent)}')
         expect(css.createRule('user-select:none')?.text).toBe('.user-select\\:none{-webkit-user-select:none;user-select:none}')
         expect(css.createRule('line-clamp:3')?.text).toBe('.line-clamp\\:3{-webkit-line-clamp:3}')
         expect(css.createRule('line-clamp:none')?.text).toBe('.line-clamp\\:none{-webkit-line-clamp:none}')
@@ -375,23 +418,15 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
                     color: --value();
                 }
             }
-        `, { baseManifest: defaultManifest })).toThrow('Managed dynamic utility wildcard cannot be combined with enum or raw value kinds')
+        `, { baseManifest: defaultManifest })).toThrow('Managed dynamic utility wildcard cannot be combined with enum values')
 
         expect(() => compileCSSManifest(`
             @utilities {
-                x:<color|*> {
+                x:<number|none|*> {
                     color: --value();
                 }
             }
-        `, { baseManifest: defaultManifest })).toThrow('Managed dynamic utility wildcard cannot be combined with enum or raw value kinds')
-
-        expect(() => compileCSSManifest(`
-            @utilities {
-                x:<*|number> {
-                    color: --value();
-                }
-            }
-        `, { baseManifest: defaultManifest })).toThrow('Managed dynamic utility wildcard cannot be combined with enum or raw value kinds')
+        `, { baseManifest: defaultManifest })).toThrow('Managed dynamic utility wildcard cannot be combined with enum values')
 
         expect(() => compileCSSManifest(`
             @utilities {
