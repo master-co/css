@@ -14,14 +14,11 @@ import { Minimatch } from 'minimatch'
 import log from '@techor/log'
 import extend from '@techor/extend'
 import { createCSSWithNativeDeclarations, generateValidRules } from '@master/css-validator'
-import chokidar, { type ChokidarOptions, type FSWatcher } from 'chokidar'
 import { EventEmitter } from 'node:events'
 import { createHash } from 'node:crypto'
 import { cssEscape } from '@master/css-lexer'
 import { explorePathsSync } from '@techor/glob'
 import path from 'path'
-import { Stats } from 'node:fs'
-import bytes from 'bytes'
 import {
     createClassExclusionMatcher,
     isClassExcludedByMatcher,
@@ -41,6 +38,11 @@ interface SourceMatchers {
     required: Minimatch[]
     include: Minimatch[]
     exclude: Minimatch[]
+}
+
+interface ScannerResetOptions {
+    emit?: boolean
+    prepare?: boolean
 }
 
 function createSourceMatchers(patterns?: ScannerOptions['include']) {
@@ -72,8 +74,6 @@ export default class CSSScanner extends EventEmitter {
     invalidClasses = new Set<string>()
     nativeClassNames = new Set<string>()
     usedNativeClasses = new Set<string>()
-    watching = false
-    watchers: FSWatcher[] = []
     initialized = false
     initializing?: Promise<this>
     resetDependencies: string[] = []
@@ -148,9 +148,10 @@ export default class CSSScanner extends EventEmitter {
         return this
     }
 
-    async reset(customOptions: ScannerOptions = this.customOptions) {
-        const watching = this.watching
-        if (watching) await this.closeWatch({ emit: false })
+    async reset(
+        customOptions: ScannerOptions = this.customOptions,
+        resetOptions: ScannerResetOptions = {}
+    ) {
         this.latentClasses.clear()
         this.validClasses.clear()
         this.invalidClasses.clear()
@@ -170,9 +171,12 @@ export default class CSSScanner extends EventEmitter {
         this.initialized = false
         this.initializing = undefined
         await this.init(customOptions)
-        await this.prepare()
-        if (watching) await this.startWatch({ emit: false })
-        this.emit('reset')
+        if (resetOptions.prepare !== false) {
+            await this.prepare()
+        }
+        if (resetOptions.emit !== false) {
+            this.emit('reset')
+        }
         return this
     }
 
@@ -194,7 +198,6 @@ export default class CSSScanner extends EventEmitter {
         this.classExclusionMatcher = undefined
         this.classExclusionOptions = undefined
         this.removeAllListeners()
-        await this.closeWatch()
         this.emit('destroy')
         return this
     }
@@ -371,74 +374,6 @@ export default class CSSScanner extends EventEmitter {
 
     scanFiles(sources: string[]) {
         return Promise.all(sources.map((eachRelPaths) => this.scanFile(eachRelPaths)))
-    }
-
-    export(filename = this.options.output as string) {
-        const filepath = path.resolve(this.cwd, filename)
-        const dir = path.dirname(filepath)
-        if (!fs.existsSync(dir)) {
-            fs.mkdirSync(dir, { recursive: true })
-        }
-        fs.writeFileSync(filepath, this.css.text)
-        if (this.options.verbose) {
-            log.ok`**${filename}** exported ${bytes(this.css.text.length)}`
-        }
-        this.emit('export', filename, filepath)
-    }
-
-    async watchSources(paths: string | string[], watchOptions?: ChokidarOptions): Promise<void> {
-        await this.watch('add change', paths, (source) => this.scanFile(source), watchOptions)
-    }
-
-    async watch(events: string, paths: string | string[], handle: (path: string, stats?: Stats | undefined) => void, watchOptions?: ChokidarOptions): Promise<void> {
-        watchOptions = extend({ ignoreInitial: true, cwd: this.cwd }, watchOptions)
-        const watcher = chokidar.watch(paths, watchOptions)
-        this.watchers.push(watcher)
-        events
-            .split(' ')
-            .forEach((eachEvent) => watcher.on(eachEvent, handle as never))
-        await new Promise<void>(resolve => {
-            watcher.once('ready', resolve)
-        })
-        // Let chokidar finish registering native watchers before callers mutate files.
-        await new Promise(resolve => setTimeout(resolve, 0))
-    }
-
-    async startWatch(options: { emit?: boolean } = { emit: true }) {
-        if (this.watching) return
-
-        const sourcePaths = this.options.required?.length
-            ? this.fixedSourcePaths
-            : this.allowedSourcePaths
-        if (sourcePaths.length) {
-            await this.watchSources(sourcePaths)
-        }
-
-        if (this.resetDependencies.length) {
-            await this.watch('add change unlink', this.resetDependencies, async (resetDependency) => {
-                if (this.options.verbose) {
-                    log``
-                    const changedPlanPath = path.isAbsolute(resetDependency)
-                        ? path.relative(this.cwd, resetDependency)
-                        : resetDependency
-                    log`[change] **${changedPlanPath}**`
-                }
-                await this.reset()
-                this.emit('resetDependencyChange')
-            })
-        }
-        this.watching = true
-        if (options?.emit) this.emit('watchStart')
-    }
-
-    async closeWatch(options: { emit?: boolean } = { emit: true }) {
-        if (!this.watching) return
-        if (this.watchers.length) {
-            await Promise.all(this.watchers.map(eachWatcher => eachWatcher.close()))
-            this.watchers = []
-        }
-        this.watching = false
-        if (options?.emit) this.emit('watchClose')
     }
 
     /**

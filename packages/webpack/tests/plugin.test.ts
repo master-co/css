@@ -110,9 +110,8 @@ function makePlugin(options: Record<string, unknown> = {}, cwd = process.cwd()) 
         required: [],
         ...options,
     } as any, cwd)
-    // Block prepare() / startWatch() — they would try to read the cwd.
+    // Block prepare() — it would try to read the cwd.
     ;(plugin as any).prepare = async () => undefined
-    ;(plugin as any).startWatch = async () => undefined
     // webpack-virtual-modules pokes at compiler.webpack internals; stub
     // its apply() so we don't have to spin a real webpack here.
     return plugin
@@ -598,7 +597,9 @@ describe('MasterCSSPlugin (C1 race fix)', () => {
             writeFileSync(configPath, '@master;\n@import "./theme.css";')
 
             const plugin = makePlugin({}, root)
-            ;(plugin as any).defaultManifestDependencies = [configPath, tokenPath]
+            ;(plugin as any).styleCSSSources = new Map([
+                [configPath, { dependencies: [configPath, tokenPath] }]
+            ])
             const reset = vi.fn(async function (this: MasterCSSPlugin) {
                 this.emit('reset')
                 return this
@@ -616,6 +617,31 @@ describe('MasterCSSPlugin (C1 race fix)', () => {
             })
 
             expect(reset).toHaveBeenCalledWith(plugin.options)
+        } finally {
+            rmSync(root, { recursive: true, force: true })
+        }
+    })
+
+    test('registers reset dependencies with the active compilation', () => {
+        const root = mkdtempSync(path.join(tmpdir(), 'master-css-webpack-deps-'))
+        const configPath = path.join(root, 'app.css')
+        const tokenPath = path.join(root, 'theme.css')
+        try {
+            const plugin = makePlugin({}, root)
+            ;(plugin as any).defaultManifestDependencies = [configPath]
+            ;(plugin as any).styleCSSSources = new Map([
+                [configPath, { dependencies: [configPath, tokenPath] }]
+            ])
+            const { compiler, compilation } = makeFakeCompiler({
+                context: root
+            })
+            ;(compiler as any).webpack = { sources: { RawSource: function NoopSource(this: object) { /* stub */ } } }
+
+            plugin.apply(compiler as any)
+            compiler.hooks.thisCompilation.call(compilation as any)
+
+            expect(compilation.fileDependencies).toContain(configPath)
+            expect(compilation.fileDependencies).toContain(tokenPath)
         } finally {
             rmSync(root, { recursive: true, force: true })
         }

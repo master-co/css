@@ -58,7 +58,7 @@
 npm install @master/css-scanner
 ```
 
-`@master/css-scanner` is the Node.js source-scanning engine behind Master CSS static rendering. It scans source files, validates possible classes, inserts generated rules, and maintains scanner state for build integrations.
+`@master/css-scanner` is the Node.js source-scanning engine behind Master CSS static rendering. It scans source files, validates possible classes, inserts generated rules, and maintains scanner state for build integrations. File watching and CSS file output are owned by CLI/framework/build integrations.
 
 ## Usage
 

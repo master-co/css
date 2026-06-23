@@ -16,7 +16,7 @@ export default function UsageGraphPlugin(context: MasterCSSWebpackContext): Webp
     return {
         apply(compiler: Compiler) {
             compiler.hooks.thisCompilation.tap(context.name, (compilation) => {
-                for (const dependency of context.getDefaultManifestDependencyPaths()) {
+                for (const dependency of context.getResetDependencyPaths()) {
                     compilation.fileDependencies.add(dependency)
                 }
 

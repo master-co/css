@@ -1596,6 +1596,9 @@ importers:
       '@master/css-stylesheet':
         specifier: workspace:^
         version: link:../stylesheet
+      chokidar:
+        specifier: ^5.0.0
+        version: 5.0.0
     devDependencies:
       '@types/react':
         specifier: ^19.2.17
@@ -1810,12 +1813,6 @@ importers:
       '@techor/log':
         specifier: ^3.2.5
         version: 3.2.5
-      bytes:
-        specifier: ^3.1.2
-        version: 3.1.2
-      chokidar:
-        specifier: ^5.0.0
-        version: 5.0.0
       minimatch:
         specifier: ^10.2.5
         version: 10.2.5
@@ -1823,9 +1820,6 @@ importers:
       '@master/css-compiler':
         specifier: workspace:^
         version: link:../compiler
-      '@types/bytes':
-        specifier: ^3.1.5
-        version: 3.1.5
 
   packages/schema:
     dependencies:

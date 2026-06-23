@@ -5,8 +5,6 @@ import type { SourceAdapter } from '@master/css-source'
 const scannerOptions: ScannerOptions = {
     // enable verbose Logs
     verbose: 1,
-    // specify output file path
-    output: 'master.css',
     // specify a compiled Master CSS manifest override
     manifest: undefined,
     // forcibly specify required sources for scanning, not excluded by `options.exclude`
@@ -54,7 +52,6 @@ const scannerOptions: ScannerOptions = {
 export interface ScannerOptions {
     verbose?: number
     manifest?: MasterCSSManifest,
-    output?: string,
     path?: string,
     required?: FastGlobPattern[]
     include?: FastGlobPattern[]

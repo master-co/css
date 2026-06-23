@@ -2,12 +2,12 @@
 
 ## Responsibility
 
-`@master/css-scanner` statically scans source files, validates possible Master CSS classes, inserts valid rules through the manifest-driven engine layers, exports CSS, and maintains scanner state for build integrations. Source-format-aware class adapters and raw class candidate extraction belong to `@master/css-source`. Stylesheet entry handling, CSS-first stylesheet compilation, native CSS pruning, extraction directives, generated CSS composition, and emittedGlobals manifest output belong to `@master/css-stylesheet`.
+`@master/css-scanner` statically scans source files, validates possible Master CSS classes, inserts valid rules through the manifest-driven engine layers, and maintains scanner state for build integrations. Source-format-aware class adapters and raw class candidate extraction belong to `@master/css-source`. File watching, CSS file output, and build-tool lifecycle orchestration belong to CLI/framework/build integrations. Stylesheet entry handling, CSS-first stylesheet compilation, native CSS pruning, extraction directives, generated CSS composition, and emittedGlobals manifest output belong to `@master/css-stylesheet`.
 
 ## Inputs And Outputs
 
 - Input: scanner options, source globs, source text, source adapters, and resolved Master CSS manifest.
-- Output: `css.text`, exported CSS file, valid/invalid/latent class caches, native class usage state, and watch events.
+- Output: `css.text`, valid/invalid/latent class caches, native class usage state, and scanner state events.
 
 ## Public APIs
 
@@ -23,7 +23,7 @@
 ## Allowed Changes
 
 - Focused scanning heuristic fixes.
-- Watch/manifest reset fixes.
+- Manifest reset fixes.
 - Option handling fixes with tests.
 - Focused scanner state behavior used by Vite, Webpack, Next, stylesheet, and CLI integrations.
 
@@ -38,7 +38,7 @@
 - Built-in source adapter behavior from `@master/css-source`.
 - `extractClassCandidates()` false positives and false negatives in `@master/css-source`.
 - `invalidClasses` and `validClasses` cache behavior.
-- Watch reset loops.
+- Reset loops triggered by integration-managed dependencies.
 - Source allow/exclude matching.
 - Vite/Webpack/Next virtual-module consumers.
 - Stylesheet native CSS merging, pruning/source directives, and generated CSS ordering belong in `@master/css-stylesheet`.

@@ -49,11 +49,11 @@ export interface MasterCSSWebpackContext {
     init(customOptions?: ScannerOptions): Promise<unknown>
     reset(customOptions?: ScannerOptions): Promise<unknown>
     prepare(): Promise<unknown> | unknown
-    startWatch(): Promise<unknown> | unknown
     getOptions(): ScannerOptions
     getPluginInitialized(): boolean
     setPluginInitialized(pluginInitialized: boolean): void
     getDefaultManifestDependencyPaths(): string[]
+    getResetDependencyPaths(): string[]
     setModuleContent(modulePath: string, moduleContent: unknown): void
     setManifestJSONAsset(assetFileName: string, json: string): void
     getManifestJSONAssets(): [string, string][]
@@ -157,10 +157,6 @@ export class MasterCSSPlugin {
         return this.scanner.prepare()
     }
 
-    startWatch() {
-        return this.scanner.startWatch()
-    }
-
     scan(source: string, content: string) {
         return this.scanner.scan(source, content)
     }
@@ -180,6 +176,14 @@ export class MasterCSSPlugin {
 
     private getDefaultManifestDependencyPaths() {
         return this.defaultManifestDependencies
+    }
+
+    private getResetDependencyPaths() {
+        return [...new Set([
+            ...this.defaultManifestDependencies,
+            ...Array.from(this.styleCSSSources.values()).flatMap((source) => source.dependencies),
+            ...this.scanner.resetDependencies
+        ])]
     }
 
     private getScannerClasses() {
@@ -270,13 +274,13 @@ export class MasterCSSPlugin {
             init: (customOptions = this.customOptions) => this.init(customOptions),
             reset: (customOptions = this.customOptions) => this.reset(customOptions),
             prepare: () => this.prepare(),
-            startWatch: () => this.startWatch(),
             getOptions: () => this.options,
             getPluginInitialized: () => this.pluginInitialized,
             setPluginInitialized: (pluginInitialized) => {
                 this.pluginInitialized = pluginInitialized
             },
             getDefaultManifestDependencyPaths: () => this.getDefaultManifestDependencyPaths(),
+            getResetDependencyPaths: () => this.getResetDependencyPaths(),
             setModuleContent: (modulePath, moduleContent) => {
                 this.moduleContentByPath[modulePath] = moduleContent
             },

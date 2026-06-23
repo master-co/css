@@ -71,7 +71,8 @@
         "@master/css-server": "workspace:^",
         "@master/css-stylesheet": "workspace:^",
         "@master/css-schema": "workspace:^",
-        "@master/css-lexer": "workspace:^"
+        "@master/css-lexer": "workspace:^",
+        "chokidar": "^5.0.0"
     },
     "devDependencies": {
         "@types/react": "^19.2.17",

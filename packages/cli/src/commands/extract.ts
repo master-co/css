@@ -1,5 +1,5 @@
 import type { Command } from 'commander'
-import { scannerOptions, type ScannerOptions } from '@master/css-scanner'
+import type { ScannerOptions } from '@master/css-scanner'
 import type CSSScanner from '@master/css-scanner'
 import {
     createExtractedCSS,
@@ -12,6 +12,8 @@ import bytes from 'bytes'
 import chokidar, { type FSWatcher } from 'chokidar'
 import fs from 'node:fs'
 import path from 'node:path'
+
+const DEFAULT_EXTRACT_OUTPUT = 'master.css'
 
 async function registerManagedCSSEntries(scanner: CSSScanner, styleCSSSources: StyleCSSSources) {
     styleCSSSources.clear()
@@ -30,7 +32,7 @@ async function prepareScanner(scanner: CSSScanner, styleCSSSources: StyleCSSSour
     await scanner.prepare()
 }
 
-function exportCSS(scanner: CSSScanner, css: string, filename = scanner.options.output as string) {
+function exportCSS(scanner: CSSScanner, css: string, filename = DEFAULT_EXTRACT_OUTPUT) {
     const filepath = path.resolve(scanner.cwd, filename)
     const dir = path.dirname(filepath)
     if (!fs.existsSync(dir)) {
@@ -57,7 +59,7 @@ export default (program: Command) => program
     .command('extract')
     .argument('[source paths]', 'The glob pattern path to extract sources')
     .option('-w, --watch', 'Watch file changed and generate CSS rules.')
-    .option('-o, --output <path>', 'Specify your CSS file output path', scannerOptions.output)
+    .option('-o, --output <path>', 'Specify your CSS file output path', DEFAULT_EXTRACT_OUTPUT)
     .option('-v, --verbose <level>', 'Verbose logging 0~N', '1')
     .option('--no-export', 'Print only CSS results.')
     .action(async function (specifiedSourcePaths: any, options?: {
@@ -78,7 +80,7 @@ export default (program: Command) => program
                 projectDir: scanner.cwd
             })
             if (options?.export) {
-                exportCSS(scanner, css)
+                exportCSS(scanner, css, output)
             } else {
                 console.log(css)
             }
@@ -95,7 +97,6 @@ export default (program: Command) => program
                     options.exclude?.push('node_modules')
                 }
             }
-            options.output = output
             options.verbose = verbose ? +verbose : options.verbose
         })
         await scanner.init()
@@ -141,7 +142,7 @@ export default (program: Command) => program
                                 log`[change] **${formatWatchedPath(scanner.cwd, resetDependency)}**`
                             }
                             await closeWatchers()
-                            await scanner.reset()
+                            await scanner.reset(scanner.customOptions, { prepare: false, emit: false })
                             await prepareScanner(scanner, styleCSSSources)
                             await queueWrite()
                             await startWatchers()

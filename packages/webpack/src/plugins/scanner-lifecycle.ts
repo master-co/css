@@ -17,11 +17,6 @@ export default function ScannerLifecyclePlugin(context: MasterCSSWebpackContext)
                     console.error('[master-css.webpack] generated CSS module update failed:', error)
                 })
             })
-            context.on('resetDependencyChange', () => {
-                context.writeDefaultManifestModule().catch((error: unknown) => {
-                    console.error('[master-css.webpack] manifest module update failed:', error)
-                })
-            })
             context.on('reset', () => {
                 context.writeDefaultManifestModule().catch((error: unknown) => {
                     console.error('[master-css.webpack] manifest module update failed:', error)
@@ -40,12 +35,11 @@ export default function ScannerLifecyclePlugin(context: MasterCSSWebpackContext)
             compiler.hooks.watchRun.tapPromise(context.name, async (watchingCompiler) => {
                 await context.init()
                 const modifiedFiles = (watchingCompiler as Compiler & { modifiedFiles?: ReadonlySet<string> }).modifiedFiles
-                const defaultManifestDependencies = context.getDefaultManifestDependencyPaths()
-                if (defaultManifestDependencies.some((dependency) => hasModifiedFile(modifiedFiles, dependency))) {
+                const resetDependencies = context.getResetDependencyPaths()
+                if (resetDependencies.some((dependency) => hasModifiedFile(modifiedFiles, dependency))) {
                     await context.reset(context.getOptions())
                     await context.waitForResetReplay()
                 }
-                await context.startWatch()
             })
 
             context.setPluginInitialized(true)
