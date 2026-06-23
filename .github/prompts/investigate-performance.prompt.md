@@ -7,9 +7,11 @@ Investigate a performance concern without speculative rewrites.
 ## Read Before Starting
 
 - `AGENTS.md`
-- `.ai/architecture.md`
-- `.ai/data-flows.md`
-- Package `AI.md` for the affected package
+- `.ai/context/index.md`
+- `.ai/context/performance.md`
+- `.ai/context/accuracy-guardrails.md`
+- The affected package `package.json`
+- The affected package `AI.md`
 
 ## Inspect First
 
@@ -26,7 +28,8 @@ Investigate a performance concern without speculative rewrites.
 
 ## Validation
 
-- Run affected tests.
+- Run affected tests before reporting benchmark results.
+- Run affected package lint if code changed and the package defines `lint`.
 - Run or add a focused benchmark only if the repo already has a matching pattern or the user asks for it.
 
 ## Completion Output
@@ -38,4 +41,3 @@ Report:
 - Proposed or implemented change
 - Correctness risks
 - Commands run
-

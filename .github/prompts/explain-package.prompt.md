@@ -7,18 +7,18 @@ Explain how a package works, including inputs, transformations, outputs, depende
 ## Read Before Starting
 
 - `AGENTS.md`
-- `.ai/overview.md`
-- `.ai/architecture.md`
-- `.ai/package-map.md`
+- `.ai/context/index.md`
+- `.ai/context/package-boundaries.md`
+- The package `package.json`
 - The package `AI.md`, if present
 
 ## Inspect First
 
-- Package `package.json`
 - Entry point files
 - Main source files
 - Tests and fixtures
 - Workspace dependencies and dependents
+- Deeper references from `.ai/context/package-boundaries.md` when ownership or dependency direction is unclear
 
 ## Output
 
@@ -37,4 +37,3 @@ Include:
 
 - Do not invent package responsibilities.
 - Do not summarize only file names.
-

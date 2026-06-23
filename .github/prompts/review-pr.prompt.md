@@ -7,10 +7,10 @@ Review a PR for bugs, regressions, missing tests, unsafe package-boundary change
 ## Read Before Starting
 
 - `AGENTS.md`
-- `.ai/review-checklist.md`
-- `.ai/architecture.md`
-- `.ai/boundaries.md`
+- `.ai/context/index.md`
+- `.ai/context/review.md`
 - Package `AI.md` files for affected packages
+- Deeper references required by `.ai/context/accuracy-guardrails.md` for high-risk changes
 
 ## Review Focus
 
@@ -33,4 +33,3 @@ Lead with findings ordered by severity. Include file and line references when av
 
 - Do not approve unexplained CSS output changes.
 - Do not ignore unrelated lockfile, CI, release, or generated-file churn.
-

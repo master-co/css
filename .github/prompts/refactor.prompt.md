@@ -2,14 +2,14 @@
 
 ## Goal
 
-Improve implementation structure without changing behavior unless explicitly requested.
+Improve implementation structure according to the requested refactor goal.
 
 ## Read Before Starting
 
 - `AGENTS.md`
-- `.ai/architecture.md`
-- `.ai/boundaries.md`
-- `.ai/testing-policy.md`
+- `.ai/context/index.md`
+- `.ai/context/refactor.md`
+- The affected package `package.json`
 - The affected package `AI.md`, if present
 
 ## Inspect First
@@ -17,26 +17,28 @@ Improve implementation structure without changing behavior unless explicitly req
 - Existing patterns in the package
 - Current tests that lock behavior
 - Public exports and downstream dependents
+- Deeper references required by `.ai/context/accuracy-guardrails.md` for high-risk behavior
 
 ## Editing Rules
 
-- Keep public behavior and CSS output stable.
-- Do not use refactoring as a reason to change parser semantics, priority, cascade, runtime behavior, or extraction behavior.
+- Keep the refactor scoped to the requested goal.
+- Do not preserve legacy APIs, aliases, adapters, fixtures, or compatibility shims solely for compatibility unless the user or issue requires it.
+- Make public API, CSS output, runtime, extraction, language, and ESLint behavior changes explicit.
 - Avoid broad formatting.
 - Avoid new abstractions unless they remove real duplication or match a local pattern.
 
 ## Validation
 
 - Run package-scoped tests.
+- Run affected package lint if the package defines `lint`.
 - Run type-check/build if public types or package output changed.
-- If CSS output changes, stop and explain why it is no longer a pure refactor.
+- If CSS output changes, explain why it is intentional and no longer a behavior-preserving refactor.
 
 ## Completion Output
 
 Report:
 
 - What was refactored
-- Why behavior should be unchanged
+- Behavior or API changes
+- Compatibility paths removed, if any
 - Commands run
-- Any output/API changes
-

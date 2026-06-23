@@ -7,19 +7,17 @@ Fix a confirmed bug with the smallest safe change and a regression test.
 ## Read Before Starting
 
 - `AGENTS.md`
-- `.ai/overview.md`
-- `.ai/architecture.md`
-- `.ai/data-flows.md`
-- `.ai/testing-policy.md`
-- `.ai/boundaries.md`
+- `.ai/context/index.md`
+- `.ai/context/bugfix.md`
+- The affected package `package.json`
 - The affected package `AI.md`, if present
 
 ## Inspect First
 
-- Affected package `package.json`
 - Source files involved in the failing behavior
 - Nearby tests and fixtures
 - Any downstream package that consumes the changed behavior
+- Deeper references required by `.ai/context/accuracy-guardrails.md` for high-risk behavior
 
 ## Editing Rules
 
@@ -32,6 +30,7 @@ Fix a confirmed bug with the smallest safe change and a regression test.
 ## Validation
 
 - Run the package-scoped test for the affected package.
+- Run affected package lint if the package defines `lint`.
 - Run type-check or build if public types or package output changed.
 - Run broader validation when behavior crosses package boundaries.
 
@@ -44,4 +43,3 @@ Report:
 - Tests added or updated
 - Commands run
 - Any remaining risk
-

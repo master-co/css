@@ -7,9 +7,10 @@ Update documentation to match actual source behavior.
 ## Read Before Starting
 
 - `AGENTS.md`
-- `.ai/overview.md`
-- `.ai/data-flows.md`
+- `.ai/context/index.md`
+- `.ai/context/docs.md`
 - The source/package docs related to the behavior
+- The affected package `AI.md`, if present
 
 ## Inspect First
 
@@ -23,6 +24,7 @@ Update documentation to match actual source behavior.
 - Keep docs aligned with public API and current examples.
 - Do not create a root `docs/` directory unless requested.
 - Do not change code unless explicitly requested.
+- Follow `.ai/context/css-output.md` when docs describe generated CSS.
 
 ## Validation
 
@@ -36,4 +38,3 @@ Report:
 - Docs changed
 - Source behavior verified
 - Commands run or why not run
-
