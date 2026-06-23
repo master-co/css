@@ -25,7 +25,7 @@ export interface DefinedUtility {
 
 export type ExplicitUtilityLayerName = MasterCSSManifestUtilityLayerName
 
-export type MediaFeatureComponent = {
+export interface MediaFeatureComponent {
     type: string
     tokenType?: string
     operator?: string
@@ -39,7 +39,7 @@ export interface MediaQuery {
     type?: string;
 }
 
-type VariableCommon = {
+interface VariableCommon {
     namespace?: string,
     name: string,
     key: string,
@@ -49,8 +49,8 @@ type VariableCommon = {
     dependencies?: Set<string>
 }
 
-export type StringVariable = { type: 'string', value: string | number }
-export type NumberVariable = { type: 'number', value: number | string, numeric?: MasterCSSManifestVariableNumericValue }
+export interface StringVariable { type: 'string', value: string | number }
+export interface NumberVariable { type: 'number', value: number | string, numeric?: MasterCSSManifestVariableNumericValue }
 export type ResolvedVariableValue = StringVariable | NumberVariable
 
 export type Variable = VariableCommon & {

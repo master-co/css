@@ -19,9 +19,9 @@ export interface MasterCSSManifestVariableNumericValue {
     unit?: string
 }
 
-export type MasterCSSManifestAtRuleBooleanNode = { raw?: string, name: string, type: 'boolean' }
-export type MasterCSSManifestAtRuleNumberNode = { raw?: string, name?: string, type: 'number', value: number, unit?: string, operator?: string }
-export type MasterCSSManifestAtRuleStringNode = { raw?: string, name?: string, type: 'string', value: string }
+export interface MasterCSSManifestAtRuleBooleanNode { raw?: string, name: string, type: 'boolean' }
+export interface MasterCSSManifestAtRuleNumberNode { raw?: string, name?: string, type: 'number', value: number, unit?: string, operator?: string }
+export interface MasterCSSManifestAtRuleStringNode { raw?: string, name?: string, type: 'string', value: string }
 export type MasterCSSManifestAtRuleValueNode = MasterCSSManifestAtRuleNumberNode | MasterCSSManifestAtRuleStringNode
 export interface MasterCSSManifestAtRuleComparisonOperatorNode { type: 'comparison', raw?: string, value: string }
 export interface MasterCSSManifestAtRuleLogicalOperatorNode { type: 'logical', raw?: string, value: string }
@@ -41,20 +41,20 @@ export interface MasterCSSManifestAtRule {
 
 export type MasterCSSManifestAtRules = Record<string, MasterCSSManifestAtRule>
 
-export type MasterCSSManifestSelectorLiteralNode = {
+export interface MasterCSSManifestSelectorLiteralNode {
     type?: 'attribute' | 'pseudo-class' | 'pseudo-element' | 'class' | 'universal' | 'id'
     raw?: string
     value?: string
     children?: MasterCSSManifestSelectorNode[]
 }
 
-export type MasterCSSManifestSelectorSeparatorNode = {
+export interface MasterCSSManifestSelectorSeparatorNode {
     type: 'separator'
     raw?: string
     value: string
 }
 
-export type MasterCSSManifestSelectorCombinatorNode = {
+export interface MasterCSSManifestSelectorCombinatorNode {
     type: 'combinator'
     raw?: string
     value: string
