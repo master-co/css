@@ -1,7 +1,7 @@
 import Footer from './footer.mdx'
 
 ## Installation [sr-only]
-Start with Vite and the official plugin. This quick start uses [static rendering](/guide/rendering-modes#static-rendering) for generated CSS.
+Start with Vite and the official plugin. This quick start uses the default runtime integration. For zero-runtime generated CSS, use [static rendering](/guide/rendering-modes#static-rendering) with `mode: 'static'`.
 
 <StepSection>
     <Step $row>
@@ -30,7 +30,7 @@ Start with Vite and the official plugin. This quick start uses [static rendering
     <Step $row>
         <StepL>
             ### <StepNum />Configure Vite
-            Register `masterCSS()` in static mode.
+            Register `masterCSS()` with the default runtime mode. Use `mode: 'static'` when you want generated CSS at build time instead.
         </StepL>
         <StepR>
             ```js name=vite.config.js
@@ -39,9 +39,7 @@ Start with Vite and the official plugin. This quick start uses [static rendering
 
             export default defineConfig({
                 plugins: [
-                    masterCSS({ // [!code highlight]
-                        mode: 'static' // [!code highlight]
-                    }) // [!code highlight]
+                    masterCSS() // [!code highlight]
                 ]
             })
             ```
