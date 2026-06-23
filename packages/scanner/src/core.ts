@@ -49,9 +49,11 @@ function createSourceMatchers(patterns?: ScannerOptions['include']) {
     return (patterns || []).map((pattern) => new Minimatch(String(pattern), sourceMatchOptions))
 }
 
-function matchesAnySource(source: string, matchers: Minimatch[]) {
+function matchesAnySource(sources: string[], matchers: Minimatch[]) {
     for (const matcher of matchers) {
-        if (matcher.match(source)) return true
+        for (const source of sources) {
+            if (matcher.match(source)) return true
+        }
     }
     return false
 }
@@ -65,6 +67,33 @@ function isStyleModuleRequest(source: string) {
 function cleanSourceRequest(source: string) {
     const queryStart = source.indexOf('?')
     return queryStart === -1 ? source : source.slice(0, queryStart)
+}
+
+function toPosixPath(source: string) {
+    return source.replace(/\\/g, '/')
+}
+
+function isRelativeToCwd(source: string) {
+    return source !== ''
+        && !source.startsWith('..')
+        && !path.isAbsolute(source)
+}
+
+function createSourceMatchCandidates(source: string, cwd: string) {
+    const cleanSource = cleanSourceRequest(source)
+    const candidates = [toPosixPath(cleanSource)]
+
+    if (path.isAbsolute(cleanSource)) {
+        const relativeSource = path.relative(path.resolve(cwd), cleanSource)
+        if (isRelativeToCwd(relativeSource)) {
+            const normalizedRelativeSource = toPosixPath(relativeSource)
+            if (!candidates.includes(normalizedRelativeSource)) {
+                candidates.push(normalizedRelativeSource)
+            }
+        }
+    }
+
+    return candidates
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging
@@ -422,15 +451,15 @@ export default class CSSScanner extends EventEmitter {
 
     isSourceAllowed(source: string): boolean {
         if (isStyleModuleRequest(source)) return false
-        source = cleanSourceRequest(source)
+        const sources = createSourceMatchCandidates(source, this.cwd)
         const { include, exclude, required } = this.getSourceMatchers()
-        if (required.length && matchesAnySource(source, required)) {
+        if (required.length && matchesAnySource(sources, required)) {
             return true
         }
-        if (include.length && !matchesAnySource(source, include)) {
+        if (include.length && !matchesAnySource(sources, include)) {
             return false
         }
-        if (exclude.length && matchesAnySource(source, exclude)) {
+        if (exclude.length && matchesAnySource(sources, exclude)) {
             return false
         }
         return true

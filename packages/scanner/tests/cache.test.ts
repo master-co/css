@@ -1,8 +1,14 @@
 import CSSScanner from '../src'
 import { describe, test, expect } from 'vitest'
+import path from 'node:path'
 
 const SOURCE = 'foo.tsx'
 const CONTENT = `<div className="bg:white fg:black m:2x">hi</div>`
+const ROOT = path.join(path.parse(process.cwd()).root, 'project')
+
+function toPosixPath(source: string) {
+    return source.replace(/\\/g, '/')
+}
 
 describe('content-hash cache (Phase A optimisation)', () => {
     test('scan(source, content) returns false on identical re-call', async () => {
@@ -127,5 +133,65 @@ describe('source matcher cache', () => {
         expect(ex.isSourceAllowed('App.vue?vue&type=script')).toBe(true)
         expect(ex.isSourceAllowed('App.vue?vue&type=style&index=0&lang.css')).toBe(false)
         expect(ex.isSourceAllowed('App.svelte?svelte&type=style&lang.css')).toBe(false)
+    })
+
+    test('matches absolute source ids against relative include globs within cwd', async () => {
+        const ex = await new CSSScanner({
+            include: ['src/**/*.tsx'],
+            exclude: []
+        }, ROOT).init()
+
+        expect(ex.isSourceAllowed(path.join(ROOT, 'src/App.tsx'))).toBe(true)
+        expect(ex.isSourceAllowed(path.join(ROOT, 'packages/App.tsx'))).toBe(false)
+    })
+
+    test('matches absolute source ids against relative exclude globs within cwd', async () => {
+        const ex = await new CSSScanner({
+            include: ['src/**/*.tsx'],
+            exclude: ['src/**/*.test.tsx']
+        }, ROOT).init()
+
+        expect(ex.isSourceAllowed(path.join(ROOT, 'src/App.tsx'))).toBe(true)
+        expect(ex.isSourceAllowed(path.join(ROOT, 'src/App.test.tsx'))).toBe(false)
+    })
+
+    test('relative required globs override relative excludes for absolute source ids', async () => {
+        const ex = await new CSSScanner({
+            required: ['src/App.test.tsx'],
+            include: ['src/**/*.tsx'],
+            exclude: ['src/**/*.test.tsx']
+        }, ROOT).init()
+
+        expect(ex.isSourceAllowed(path.join(ROOT, 'src/App.test.tsx'))).toBe(true)
+    })
+
+    test('absolute required globs still override excludes', async () => {
+        const appSource = path.join(ROOT, 'src/App.test.tsx')
+        const ex = await new CSSScanner({
+            required: [toPosixPath(appSource)],
+            include: ['src/**/*.tsx'],
+            exclude: ['src/**/*.test.tsx']
+        }, ROOT).init()
+
+        expect(ex.isSourceAllowed(appSource)).toBe(true)
+    })
+
+    test('strips query suffixes before matching absolute source ids against relative globs', async () => {
+        const ex = await new CSSScanner({
+            include: ['src/**/*.tsx'],
+            exclude: []
+        }, ROOT).init()
+
+        expect(ex.isSourceAllowed(`${path.join(ROOT, 'src/App.tsx')}?import`)).toBe(true)
+    })
+
+    test('rejects absolute framework style module requests before source matching', async () => {
+        const ex = await new CSSScanner({
+            include: ['src/**/*.vue'],
+            exclude: []
+        }, ROOT).init()
+
+        expect(ex.isSourceAllowed(`${path.join(ROOT, 'src/App.vue')}?vue&type=script`)).toBe(true)
+        expect(ex.isSourceAllowed(`${path.join(ROOT, 'src/App.vue')}?vue&type=style&index=0&lang.css`)).toBe(false)
     })
 })
