@@ -37,12 +37,23 @@ function createLanguageServer(options = {}) {
         cwd: options.cwd ?? packageDir,
         stdio: ['pipe', 'pipe', 'pipe']
     })
+    let closed = false
+    let disposed = false
     let nextId = 1
     let stdout = Buffer.alloc(0)
     const stderr = []
     const notifications = []
     const pending = new Map()
     const waiters = new Set()
+    const closedPromise = new Promise((resolvePromise) => {
+        child.on('close', (code) => {
+            closed = true
+            if (!disposed) {
+                rejectAll(new Error(`Language server exited with code ${code}\n${stderr.join('')}`))
+            }
+            resolvePromise()
+        })
+    })
 
     function rejectAll(error) {
         for (const waiter of waiters) {
@@ -100,9 +111,8 @@ function createLanguageServer(options = {}) {
         stderr.push(chunk.toString())
     })
 
-    child.on('error', rejectAll)
-    child.on('close', (code) => {
-        rejectAll(new Error(`Language server exited with code ${code}\n${stderr.join('')}`))
+    child.on('error', (error) => {
+        if (!disposed) rejectAll(error)
     })
 
     function write(message) {
@@ -160,8 +170,14 @@ function createLanguageServer(options = {}) {
             return notifications
         },
         async dispose() {
-            child.stdin.end()
-            child.kill()
+            disposed = true
+            if (!child.stdin.destroyed && !child.stdin.writableEnded) {
+                child.stdin.end()
+            }
+            if (!closed) {
+                child.kill()
+            }
+            await closedPromise
         }
     }
 }
@@ -175,7 +191,7 @@ async function withStagedExtension(callback, options = {}) {
             { getCurrentTarget, getRuntimePackagesForTarget }
         )
     } finally {
-        await rm(stagingRoot, { recursive: true, force: true })
+        await rm(stagingRoot, { recursive: true, force: true, maxRetries: 10, retryDelay: 100 })
     }
 }
 
