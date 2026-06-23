@@ -1,5 +1,5 @@
 import type { CSSDirectiveExtractionPolicy } from '@master/css-schema/css-directives'
-import escapeRegExp from 'shared/utils/escape-reg-exp'
+import { escapeRegExp } from '@master/css-lexer'
 import { findAtRuleStatementEnd, removeSourceRanges } from './source'
 
 export type StandaloneCSSDirectiveName = 'master' | 'source' | 'safelist' | 'blocklist' | 'preserve'

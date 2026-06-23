@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unsafe-declaration-merging */
 import MasterCSS from './core'
-import cssEscape from 'shared/utils/css-escape'
+import { cssEscape } from '@master/css-lexer'
 import UtilityType, { type UtilityType as UtilityTypeValue } from '@master/css-schema/utility-type'
 import { type PropertiesHyphen } from 'csstype'
 import { VALUE_DELIMITERS, BASE_UNIT_REGEX, AT_IDENTIFIERS } from './common'

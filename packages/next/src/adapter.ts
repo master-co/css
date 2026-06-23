@@ -9,7 +9,7 @@ import {
     MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID,
     serializeMasterCSSHydrationManifest
 } from '@master/css-schema/hydration-manifest'
-import escapeRegExp from 'shared/utils/escape-reg-exp'
+import { escapeRegExp } from '@master/css-lexer'
 import { toHashedManifestAssetFileName } from '@master/css-integration/node'
 import { getRegisteredOptions, resolveOptions, type AdapterOrder, type Options } from './options'
 import { createMasterCSSBuildStateResolver } from './build-state'

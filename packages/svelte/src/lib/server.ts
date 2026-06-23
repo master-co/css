@@ -9,7 +9,7 @@ import {
     serializeMasterCSSHydrationManifest
 } from '@master/css-schema/hydration-manifest'
 import { MASTER_CSS_RUNTIME_STYLE_ID } from '@master/css-schema/runtime-style'
-import escapeRegExp from 'shared/utils/escape-reg-exp'
+import { escapeRegExp } from '@master/css-lexer'
 import type { Handle } from '@sveltejs/kit'
 import { toHashedManifestAssetFileName } from '@master/css-integration/node'
 import { mkdirSync, writeFileSync } from 'node:fs'

@@ -17,7 +17,7 @@ import { createCSSWithNativeDeclarations, generateValidRules } from '@master/css
 import chokidar, { type ChokidarOptions, type FSWatcher } from 'chokidar'
 import { EventEmitter } from 'node:events'
 import { createHash } from 'node:crypto'
-import cssEscape from 'shared/utils/css-escape'
+import { cssEscape } from '@master/css-lexer'
 import { explorePathsSync } from '@techor/glob'
 import path from 'path'
 import { Stats } from 'node:fs'

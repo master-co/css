@@ -18,6 +18,63 @@ export function escapeRegExp(source: string) {
     return source.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 }
 
+export function cssEscape(value: string) {
+    if (typeof CSS !== 'undefined') return CSS.escape(value)
+    if (arguments.length == 0) {
+        throw new TypeError('`CSS.escape` requires an argument.')
+    }
+    const string = String(value)
+    const length = string.length
+    let index = -1
+    let result = ''
+    let codeUnit
+    const firstCodeUnit = string.charCodeAt(0)
+
+    if (
+        length == 1 &&
+        firstCodeUnit == 0x002D
+    ) {
+        return '\\' + string
+    }
+
+    while (++index < length) {
+        codeUnit = string.charCodeAt(index)
+
+        if (codeUnit == 0x0000) {
+            result += '\uFFFD'
+            continue
+        }
+
+        if (
+            (codeUnit >= 0x0001 && codeUnit <= 0x001F) || codeUnit == 0x007F ||
+            (index == 0 && codeUnit >= 0x0030 && codeUnit <= 0x0039) ||
+            (
+                index == 1 &&
+                codeUnit >= 0x0030 && codeUnit <= 0x0039 &&
+                firstCodeUnit == 0x002D
+            )
+        ) {
+            result += '\\' + codeUnit.toString(16) + ' '
+            continue
+        }
+
+        if (
+            codeUnit >= 0x0080 ||
+            codeUnit == 0x002D ||
+            codeUnit == 0x005F ||
+            codeUnit >= 0x0030 && codeUnit <= 0x0039 ||
+            codeUnit >= 0x0041 && codeUnit <= 0x005A ||
+            codeUnit >= 0x0061 && codeUnit <= 0x007A
+        ) {
+            result += string.charAt(index)
+            continue
+        }
+
+        result += '\\' + string.charAt(index)
+    }
+    return result
+}
+
 export function isCSSIdentChar(char: string | undefined) {
     return Boolean(char && /[-_a-zA-Z0-9]/.test(char))
 }

@@ -195,12 +195,12 @@ importers:
       concurrently:
         specifier: ^9.2.3
         version: 9.2.3
+      eslint-config-techor:
+        specifier: ^3.2.5
+        version: 3.2.5(@typescript-eslint/parser@8.61.1(eslint@10.5.0(jiti@2.7.0))(typescript@6.0.3))(eslint-plugin-react-hooks@7.1.1(eslint@10.5.0(jiti@2.7.0)))(eslint-plugin-react-refresh@0.5.3(eslint@10.5.0(jiti@2.7.0)))(eslint-plugin-react@7.37.5(eslint@10.5.0(jiti@2.7.0)))(eslint@10.5.0(jiti@2.7.0))(typescript@6.0.3)
       master-css-vscode:
         specifier: workspace:^
         version: link:packages/vscode
-      shared:
-        specifier: workspace:^
-        version: link:shared
 
   examples/angular:
     dependencies:
@@ -1150,9 +1150,6 @@ importers:
       '@master/css-preset':
         specifier: workspace:^
         version: link:../preset
-      shared:
-        specifier: workspace:^
-        version: link:../../shared
 
   packages/cli:
     dependencies:
@@ -1199,15 +1196,21 @@ importers:
         specifier: ^1.0.3
         version: 1.0.3
     devDependencies:
+      '@master/css-lexer':
+        specifier: workspace:^
+        version: link:../lexer
+      '@types/bytes':
+        specifier: ^3.1.5
+        version: 3.1.5
       '@types/pretty-hrtime':
         specifier: ^1.0.3
         version: 1.0.3
       fast-glob:
         specifier: ^3.3.3
         version: 3.3.3
-      shared:
-        specifier: workspace:^
-        version: link:../../shared
+      upath:
+        specifier: ^2.0.1
+        version: 2.0.1
 
   packages/compiler:
     dependencies:
@@ -1239,9 +1242,6 @@ importers:
       '@types/css-tree':
         specifier: ^2.3.11
         version: 2.3.11
-      shared:
-        specifier: workspace:^
-        version: link:../../shared
 
   packages/core:
     dependencies:
@@ -1251,10 +1251,6 @@ importers:
       '@master/css-preset':
         specifier: workspace:^
         version: link:../preset
-    devDependencies:
-      shared:
-        specifier: workspace:^
-        version: link:../../shared
 
   packages/devtools-hook:
     dependencies:
@@ -1265,9 +1261,6 @@ importers:
       '@playwright/test':
         specifier: 1.61.0
         version: 1.61.0
-      shared:
-        specifier: workspace:^
-        version: link:../../shared
 
   packages/engine:
     dependencies:
@@ -1284,9 +1277,6 @@ importers:
       '@master/css-preset':
         specifier: workspace:^
         version: link:../preset
-      shared:
-        specifier: workspace:^
-        version: link:../../shared
 
   packages/eslint-config:
     dependencies:
@@ -1300,9 +1290,6 @@ importers:
       eslint:
         specifier: ^10.5.0
         version: 10.5.0(jiti@2.7.0)
-      shared:
-        specifier: workspace:^
-        version: link:../../shared
 
   packages/eslint-plugin:
     dependencies:
@@ -1346,9 +1333,6 @@ importers:
       eslint-plugin-mdx:
         specifier: ^3.8.1
         version: 3.8.1(eslint@10.5.0(jiti@2.7.0))
-      shared:
-        specifier: workspace:^
-        version: link:../../shared
       svelte-eslint-parser:
         specifier: ^1.8.0
         version: 1.8.0(svelte@5.56.3(@typescript-eslint/types@8.61.1))
@@ -1364,6 +1348,9 @@ importers:
       '@master/css':
         specifier: workspace:^
         version: link:../core
+      '@master/css-lexer':
+        specifier: workspace:^
+        version: link:../lexer
       '@master/css-preset':
         specifier: workspace:^
         version: link:../preset
@@ -1395,12 +1382,12 @@ importers:
         specifier: ^10.2.5
         version: 10.2.5
     devDependencies:
+      '@master/css-compiler':
+        specifier: workspace:^
+        version: link:../compiler
       '@types/bytes':
         specifier: ^3.1.5
         version: 3.1.5
-      shared:
-        specifier: workspace:^
-        version: link:../../shared
 
   packages/figma:
     dependencies:
@@ -1465,10 +1452,6 @@ importers:
       '@master/css-schema':
         specifier: workspace:^
         version: link:../schema
-    devDependencies:
-      shared:
-        specifier: workspace:^
-        version: link:../../shared
 
   packages/language:
     dependencies:
@@ -1493,9 +1476,6 @@ importers:
       oxc-parser:
         specifier: ^0.137.0
         version: 0.137.0
-      shared:
-        specifier: workspace:^
-        version: link:../../shared
       vscode-languageserver-protocol:
         specifier: ^3.18.0
         version: 3.18.0
@@ -1542,9 +1522,6 @@ importers:
       nanoid:
         specifier: ^5.1.15
         version: 5.1.15
-      shared:
-        specifier: workspace:^
-        version: link:../../shared
       vscode-languageserver:
         specifier: ^10.0.0
         version: 10.0.0
@@ -1608,6 +1585,9 @@ importers:
       '@master/css-integration':
         specifier: workspace:^
         version: link:../integration
+      '@master/css-lexer':
+        specifier: workspace:^
+        version: link:../lexer
       '@master/css-project':
         specifier: workspace:^
         version: link:../project
@@ -1624,9 +1604,6 @@ importers:
       next:
         specifier: ^16.2.9
         version: 16.2.9(@babel/core@7.29.7)(@opentelemetry/api@1.9.1)(@playwright/test@1.61.0)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(sass@1.101.0)
-      shared:
-        specifier: workspace:^
-        version: link:../../shared
 
   packages/nuxt:
     dependencies:
@@ -1694,9 +1671,6 @@ importers:
       playwright-core:
         specifier: ^1.61.0
         version: 1.61.0
-      shared:
-        specifier: workspace:^
-        version: link:../../shared
       vite:
         specifier: ^8.0.16
         version: 8.0.16(@types/node@26.0.0)(@vitejs/devtools@0.1.24)(esbuild@0.28.1)(jiti@2.7.0)(less@4.6.4)(sass@1.101.0)(terser@5.48.0)(tsx@4.22.4)(yaml@2.9.0)
@@ -1719,9 +1693,6 @@ importers:
       '@master/css-compiler':
         specifier: workspace:^
         version: link:../compiler
-      shared:
-        specifier: workspace:^
-        version: link:../../shared
       tsx:
         specifier: ^4.22.4
         version: 4.22.4
@@ -1783,9 +1754,6 @@ importers:
       react-dom:
         specifier: 19.2.7
         version: 19.2.7(react@19.2.7)
-      shared:
-        specifier: workspace:^
-        version: link:../../shared
 
   packages/runtime:
     dependencies:
@@ -1814,9 +1782,6 @@ importers:
       '@playwright/test':
         specifier: 1.61.0
         version: 1.61.0
-      shared:
-        specifier: workspace:^
-        version: link:../../shared
 
   packages/schema:
     dependencies:
@@ -1851,9 +1816,6 @@ importers:
       '@master/css-compiler':
         specifier: workspace:^
         version: link:../compiler
-      shared:
-        specifier: workspace:^
-        version: link:../../shared
 
   packages/source:
     dependencies:
@@ -1866,10 +1828,6 @@ importers:
       oxc-parser:
         specifier: ^0.137.0
         version: 0.137.0
-    devDependencies:
-      shared:
-        specifier: workspace:^
-        version: link:../../shared
 
   packages/stylesheet:
     dependencies:
@@ -1907,9 +1865,6 @@ importers:
       '@master/css-preset':
         specifier: workspace:^
         version: link:../preset
-      shared:
-        specifier: workspace:^
-        version: link:../../shared
 
   packages/svelte:
     dependencies:
@@ -1919,6 +1874,9 @@ importers:
       '@master/css-integration':
         specifier: workspace:^
         version: link:../integration
+      '@master/css-lexer':
+        specifier: workspace:^
+        version: link:../lexer
       '@master/css-preset':
         specifier: workspace:^
         version: link:../preset
@@ -1941,6 +1899,9 @@ importers:
       '@eslint/compat':
         specifier: ^2.1.0
         version: 2.1.0(eslint@10.5.0(jiti@2.7.0))
+      '@eslint/js':
+        specifier: ^10.0.1
+        version: 10.0.1(eslint@10.5.0(jiti@2.7.0))
       '@playwright/experimental-ct-svelte':
         specifier: ^1.58.2
         version: 1.58.2(@types/node@26.0.0)(jiti@2.7.0)(less@4.6.4)(lightningcss@1.32.0)(sass@1.101.0)(svelte@5.56.3(@typescript-eslint/types@8.61.1))(terser@5.48.0)(tsx@4.22.4)(vite@8.0.16)(yaml@2.9.0)
@@ -1959,12 +1920,18 @@ importers:
       '@sveltejs/vite-plugin-svelte':
         specifier: ^7.1.2
         version: 7.1.2(svelte@5.56.3(@typescript-eslint/types@8.61.1))(vite@8.0.16)
+      eslint-plugin-playwright:
+        specifier: ^2.10.4
+        version: 2.10.4(eslint@10.5.0(jiti@2.7.0))
+      eslint-plugin-svelte:
+        specifier: ^3.19.0
+        version: 3.19.0(eslint@10.5.0(jiti@2.7.0))(svelte@5.56.3(@typescript-eslint/types@8.61.1))(ts-node@10.9.2(@swc/core@1.15.41(@swc/helpers@0.5.23))(@types/node@26.0.0)(typescript@6.0.3))
+      globals:
+        specifier: ^17.6.0
+        version: 17.6.0
       publint:
         specifier: ^0.3.21
         version: 0.3.21
-      shared:
-        specifier: workspace:^
-        version: link:../../shared
       svelte:
         specifier: ^5.56.3
         version: 5.56.3(@typescript-eslint/types@8.61.1)
@@ -1977,6 +1944,9 @@ importers:
       typescript:
         specifier: ^6.0.3
         version: 6.0.3
+      typescript-eslint:
+        specifier: ^8.61.1
+        version: 8.61.1(eslint@10.5.0(jiti@2.7.0))(typescript@6.0.3)
       vite:
         specifier: ^8.0.16
         version: 8.0.16(@types/node@26.0.0)(@vitejs/devtools@0.1.24)(esbuild@0.28.1)(jiti@2.7.0)(less@4.6.4)(sass@1.101.0)(terser@5.48.0)(tsx@4.22.4)(yaml@2.9.0)
@@ -2002,9 +1972,6 @@ importers:
       '@types/css-tree':
         specifier: ^2.3.11
         version: 2.3.11
-      shared:
-        specifier: workspace:^
-        version: link:../../shared
       ts-jest:
         specifier: ^29.4.11
         version: 29.4.11(@babel/core@7.29.7)(@jest/transform@30.3.0)(@jest/types@30.4.1)(babel-jest@30.3.0(@babel/core@7.29.7))(esbuild@0.28.1)(jest-util@30.3.0)(jest@30.3.0(@types/node@25.9.4)(ts-node@10.9.2(@swc/core@1.15.41(@swc/helpers@0.5.23))(@types/node@25.9.4)(typescript@6.0.3)))(typescript@6.0.3)
@@ -2045,9 +2012,6 @@ importers:
       '@master/css-preset':
         specifier: workspace:^
         version: link:../preset
-      shared:
-        specifier: workspace:^
-        version: link:../../shared
 
   packages/vscode:
     dependencies:
@@ -2082,9 +2046,6 @@ importers:
       '@vscode/vsce':
         specifier: ^3.9.2
         version: 3.9.2
-      shared:
-        specifier: workspace:^
-        version: link:../../shared
       vscode-languageclient:
         specifier: ^10.0.0
         version: 10.0.0
@@ -2149,9 +2110,6 @@ importers:
       eslint-plugin-vue:
         specifier: ^10.9.2
         version: 10.9.2(@stylistic/eslint-plugin@5.10.0(eslint@10.5.0(jiti@2.7.0)))(@typescript-eslint/parser@8.61.1(eslint@10.5.0(jiti@2.7.0))(typescript@6.0.3))(eslint@10.5.0(jiti@2.7.0))(vue-eslint-parser@10.4.1(eslint@10.5.0(jiti@2.7.0)))
-      shared:
-        specifier: workspace:^
-        version: link:../../shared
       typescript:
         specifier: 6.0.3
         version: 6.0.3
@@ -2186,9 +2144,6 @@ importers:
         specifier: ^0.6.2
         version: 0.6.2
     devDependencies:
-      shared:
-        specifier: workspace:^
-        version: link:../../shared
       tapable:
         specifier: ^2.3.3
         version: 2.3.3

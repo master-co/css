@@ -1,4 +1,4 @@
-import log from 'shared/utils/log'
+import log from './log'
 
 export default function registerLifecycleDebugger() {
     const hook = globalThis.__MASTER_CSS_DEVTOOLS_HOOK__

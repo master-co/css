@@ -7,7 +7,7 @@
 | `@master/css` | `.`, `./index.css`, `./base.css`, `./theme.css`, `./variants.css`, `./utilities.css` | Public facade over engine API, manifest types, default preset manifest, and preset stylesheet entries |
 | `@master/css-engine` | `.`, `./compiler` | Browser-safe MasterCSSManifest executor, class semantics, rule generation, layers, variable and animation lifecycle |
 | `@master/css-preset` | `.`, `./index.css`, `./base.css`, `./theme.css`, `./variants.css`, `./utilities.css` | Default preset CSS source and generated default manifest |
-| `@master/css-lexer` | `.` | Dependency-free source ranges, directive/import scanners, Master class lexical tokens, and CSS unit constants |
+| `@master/css-lexer` | `.` | Dependency-free source ranges, directive/import scanners, lexical escaping helpers, Master class lexical tokens, and CSS unit constants |
 | `@master/css-source` | `.`, `./adapters` | Source-level class candidate extraction and source-format-aware adapters, including HTML and OXC JavaScript/TypeScript scanners |
 | `@master/css-compiler` | `.` | Compile Master CSS stylesheet entries into MasterCSSManifest values, directive metadata, and native CSS |
 | `@master/css-runtime` | `.` | Browser runtime, DOM observation, hydration |
@@ -42,4 +42,4 @@ Do not introduce reverse dependencies from engine to compiler, integration contr
 
 ## Package Tests
 
-Most packages use package-local `vitest.config.ts` extending `shared/vitest.config.ts`. Runtime and component integrations use Playwright e2e tests where browser behavior matters.
+Most packages use package-local `vitest.config.ts` extending the repo-internal `shared/vitest.config.ts`. Runtime and component integrations use Playwright e2e tests where browser behavior matters.

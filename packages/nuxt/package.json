@@ -72,7 +72,6 @@
         "js-beautify": "^1.15.4",
         "nuxt": "^4.4.8",
         "playwright-core": "^1.61.0",
-        "shared": "workspace:^",
         "vite": "^8.0.16",
         "vitest": "^4.1.9",
         "vue": "^3.5.38",

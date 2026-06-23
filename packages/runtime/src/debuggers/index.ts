@@ -1,4 +1,4 @@
-import log from 'shared/utils/log'
+import log from './log'
 import registerClassCountDebugger from './class-count'
 import registerLifecycleDebugger from './lifecycle'
 

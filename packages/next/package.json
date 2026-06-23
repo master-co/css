@@ -70,10 +70,10 @@
         "@master/css-project": "workspace:^",
         "@master/css-server": "workspace:^",
         "@master/css-stylesheet": "workspace:^",
-        "@master/css-schema": "workspace:^"
+        "@master/css-schema": "workspace:^",
+        "@master/css-lexer": "workspace:^"
     },
     "devDependencies": {
-        "next": "^16.2.9",
-        "shared": "workspace:^"
+        "next": "^16.2.9"
     }
 }

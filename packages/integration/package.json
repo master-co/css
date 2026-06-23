@@ -94,8 +94,5 @@
     "dependencies": {
         "@master/css-engine": "workspace:^",
         "@master/css-schema": "workspace:^"
-    },
-    "devDependencies": {
-        "shared": "workspace:^"
     }
 }

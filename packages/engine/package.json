@@ -73,7 +73,6 @@
         "@master/css-schema": "workspace:^"
     },
     "devDependencies": {
-        "@master/css-preset": "workspace:^",
-        "shared": "workspace:^"
+        "@master/css-preset": "workspace:^"
     }
 }

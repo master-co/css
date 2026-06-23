@@ -29,6 +29,15 @@ import {
 } from './lexer/imports'
 
 export * from './core'
+export type {
+    CompileCSSFileOptions,
+    CompileCSSOptions,
+    CompileCSSResult,
+    CSSReferenceStatement,
+    ResolvedCSSImportGraph,
+    StandaloneCSSDirectiveStatement,
+    StandaloneMasterDirectiveStatement
+} from './core'
 
 setCSSTransform(transform)
 

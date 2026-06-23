@@ -67,7 +67,6 @@
         "eslint": "^10.5.0",
         "eslint-plugin-markdown": "^5.1.0",
         "eslint-plugin-mdx": "^3.8.1",
-        "shared": "workspace:^",
         "svelte-eslint-parser": "^1.8.0",
         "ts-node": "^10.9.2",
         "vue-eslint-parser": "^10.4.1"

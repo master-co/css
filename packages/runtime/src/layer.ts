@@ -1,5 +1,5 @@
 import { Layer, Rule, VariableRule } from '@master/css-engine'
-import findNativeCSSRuleIndex from 'shared/utils/find-native-css-rule-index'
+import findNativeCSSRuleIndex from './utils/find-native-css-rule-index'
 import CSSRuntime from './core'
 
 function getRuleNodes(rule: Rule | VariableRule) {

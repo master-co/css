@@ -60,7 +60,6 @@
         "@master/css-schema": "workspace:^"
     },
     "devDependencies": {
-        "@master/css-compiler": "workspace:^",
-        "shared": "workspace:^"
+        "@master/css-compiler": "workspace:^"
     }
 }

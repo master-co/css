@@ -76,10 +76,11 @@
         "bytes": "^3.1.2",
         "chokidar": "^5.0.0",
         "minimatch": "^10.2.5",
-        "@master/css-schema": "workspace:^"
+        "@master/css-schema": "workspace:^",
+        "@master/css-lexer": "workspace:^"
     },
     "devDependencies": {
-        "@types/bytes": "^3.1.5",
-        "shared": "workspace:^"
+        "@master/css-compiler": "workspace:^",
+        "@types/bytes": "^3.1.5"
     }
 }

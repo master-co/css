@@ -73,7 +73,7 @@ shared / external data
 
 Do not make engine depend on compiler, integrations, runtime, server, extractor, language service, ESLint, or examples. `@master/css` is a facade over engine and preset exports; keep behavior in the owning lower package.
 
-When package cycles or self-build cycles appear, prefer extracting dependency-free contracts, IR, and type-only schemas into `shared`, dependency-free lexical scanners into `@master/css-lexer`, or source class candidate extraction into `@master/css-source`, then adapt at the owning package boundary. Keep engine-specific behavior in `@master/css-engine` and re-export shared contracts from the `@master/css` facade only when they are part of the public boundary.
+When package cycles or self-build cycles appear, prefer extracting dependency-free public contracts, IR, and type-only schemas into `@master/css-schema`, dependency-free lexical scanners into `@master/css-lexer`, or source class candidate extraction into `@master/css-source`, then adapt at the owning package boundary. Keep `shared` limited to repo-internal test/build support, keep engine-specific behavior in `@master/css-engine`, and re-export schema contracts from the `@master/css` facade only when they are part of the public boundary.
 
 ## High-Risk Areas
 

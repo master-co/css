@@ -54,8 +54,7 @@
         "provenance": true
     },
     "devDependencies": {
-        "@playwright/test": "1.61.0",
-        "shared": "workspace:^"
+        "@playwright/test": "1.61.0"
     },
     "dependencies": {
         "@master/css-schema": "workspace:^"

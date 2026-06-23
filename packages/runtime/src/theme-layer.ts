@@ -1,5 +1,5 @@
 import { ThemeLayer, VariableRule } from '@master/css-engine'
-import findNativeCSSRuleIndex from 'shared/utils/find-native-css-rule-index'
+import findNativeCSSRuleIndex from './utils/find-native-css-rule-index'
 import CSSRuntime from './core'
 
 interface NativeBucket {

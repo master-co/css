@@ -63,7 +63,6 @@
     },
     "devDependencies": {
         "@master/css-preset": "workspace:^",
-        "@types/css-tree": "^2.3.11",
-        "shared": "workspace:^"
+        "@types/css-tree": "^2.3.11"
     }
 }

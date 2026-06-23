@@ -91,7 +91,6 @@
         "@vue/test-utils": "^2.4.11",
         "@vue/tsconfig": "^0.9.1",
         "eslint-plugin-vue": "^10.9.2",
-        "shared": "workspace:^",
         "typescript": "6.0.3",
         "vite": "^8.0.16",
         "vue-tsc": "^3.3.5",

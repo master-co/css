@@ -19,11 +19,11 @@ import {
     hasMasterCSSManifestEntrypoint,
     isMasterCSSModuleId as isMasterCSSManifestModuleId,
     normalizeMasterCSSModuleIds,
-    parseCSSImportSource
+    parseCSSImportSource,
+    escapeRegExp
 } from '@master/css-lexer'
 import { extractClassCandidates } from '@master/css-source'
 import { VIRTUAL_CSS_ID } from '@master/css-integration/style-module'
-import escapeRegExp from 'shared/utils/escape-reg-exp'
 import { createRequire } from 'node:module'
 import { dirname, extname, join, resolve } from 'node:path'
 import { pathToFileURL } from 'node:url'
@@ -655,7 +655,7 @@ export async function createStyleCSSManifest(options: CreateStyleCSSManifestOpti
     ])
     const dependencies = [
         ...entries.flatMap(([, styleSource]) => styleSource.dependencies),
-        ...styleResults.flatMap((result) => result.dependencies || [])
+        ...styleResults.flatMap((result: CompileCSSResult) => result.dependencies || [])
     ]
     let manifest: MasterCSSManifest | undefined = compileOptions.baseManifest
     let hasStyleManifest = false
@@ -841,7 +841,7 @@ export async function createExtractedCSSResult(options: CreateExtractedCSSOption
             : []),
         ...(includeNativeCSS
             ? entryStyleResults
-                .map((result) => finalizedStyleResults.get(result)?.css || result.nativeCSS)
+                .map((result: CompileCSSResult) => finalizedStyleResults.get(result)?.css || result.nativeCSS)
                 .filter(Boolean)
             : [])
     ]

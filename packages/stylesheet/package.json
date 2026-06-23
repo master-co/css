@@ -76,7 +76,6 @@
     },
     "devDependencies": {
         "@master/css-extractor": "workspace:^",
-        "@master/css-preset": "workspace:^",
-        "shared": "workspace:^"
+        "@master/css-preset": "workspace:^"
     }
 }

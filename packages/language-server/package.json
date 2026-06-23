@@ -26,7 +26,6 @@
         "fast-glob": "^3.3.3",
         "js-beautify": "^1.15.4",
         "nanoid": "^5.1.15",
-        "shared": "workspace:^",
         "vscode-languageserver": "^10.0.0",
         "vscode-languageserver-textdocument": "^1.0.12",
         "vscode-uri": "^3.1.0",

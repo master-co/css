@@ -74,9 +74,10 @@
         "@master/css-language-server": "workspace:^",
         "@master/css-language-service": "workspace:^",
         "@master/css-lexer": "workspace:^",
-        "@master/css-project": "workspace:^",
         "@master/css-preset": "workspace:^",
+        "@master/css-project": "workspace:^",
         "@master/css-runtime": "workspace:^",
+        "@master/css-schema": "workspace:^",
         "@master/css-server": "workspace:^",
         "@master/css-source": "workspace:^",
         "@master/css-stylesheet": "workspace:^",
@@ -93,8 +94,7 @@
         "@master/eslint-plugin-css": "workspace:^",
         "@types/edit-json-file": "^1.7.4",
         "concurrently": "^9.2.3",
-        "master-css-vscode": "workspace:^",
-        "shared": "workspace:^",
-        "@master/css-schema": "workspace:^"
+        "eslint-config-techor": "^3.2.5",
+        "master-css-vscode": "workspace:^"
     }
 }

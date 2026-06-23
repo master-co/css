@@ -68,8 +68,5 @@
         "@master/css-lexer": "workspace:^",
         "htmlparser2": "^12.0.0",
         "oxc-parser": "^0.137.0"
-    },
-    "devDependencies": {
-        "shared": "workspace:^"
     }
 }

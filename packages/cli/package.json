@@ -54,8 +54,10 @@
         "pretty-hrtime": "^1.0.3"
     },
     "devDependencies": {
+        "@types/bytes": "^3.1.5",
         "@types/pretty-hrtime": "^1.0.3",
         "fast-glob": "^3.3.3",
-        "shared": "workspace:^"
+        "@master/css-lexer": "workspace:^",
+        "upath": "^2.0.1"
     }
 }

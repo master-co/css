@@ -491,7 +491,6 @@
         "@shikijs/langs": "4.2.0",
         "@types/vscode": "^1.125.0",
         "@vscode/vsce": "^3.9.2",
-        "shared": "workspace:^",
         "vscode-languageclient": "^10.0.0",
         "vscode-oniguruma": "^2.0.1",
         "vscode-textmate": "^9.3.2"

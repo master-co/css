@@ -548,7 +548,7 @@ describe('style CSS extraction helpers', () => {
 
         expect(result.dependencies).toContain(join(root, 'app/globals.css'))
         expect(result.dependencies).toContain(join(root, 'app/styles/btn.css'))
-        expect(result.dependencies.filter((dependency) => !dependency.startsWith(root)).length).toBeGreaterThan(0)
+        expect(result.dependencies.filter((dependency: string) => !dependency.startsWith(root)).length).toBeGreaterThan(0)
         expect(css).toContain('.card')
         expect(css).toContain('.btn-native')
         expect(css).not.toContain('.unused')
