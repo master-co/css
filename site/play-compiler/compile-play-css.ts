@@ -1,6 +1,10 @@
 import { AnimationRule, MasterCSS, VariableRule, type MasterCSSManifest } from '@master/css'
 import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
-import { compileCSSManifest, type CompileCSSManifestResult } from '@master/css-compiler/browser'
+import {
+    compileCSSManifest,
+    initCSSCompiler,
+    type CompileCSSManifestResult
+} from '@master/css-compiler/browser'
 import { collectAnimationNamesFromDeclaration } from '@master/css-engine'
 
 const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
@@ -10,6 +14,13 @@ export interface CompilePlayCSSResult {
     manifest: MasterCSSManifest
     warnings: string[]
     result: CompileCSSManifestResult
+}
+
+async function initPlayCompiler() {
+    if (typeof window === 'undefined') return
+
+    const wasmResponse = fetch(new URL('lightningcss_node.wasm', import.meta.url))
+    await initCSSCompiler(wasmResponse as unknown as Parameters<typeof initCSSCompiler>[0])
 }
 
 function collectCSSVariableReferences(source: string) {
@@ -87,6 +98,8 @@ function renderClassCSS(manifest: MasterCSSManifest, classes: string[], nativeCS
 }
 
 export async function compilePlayCSS(sourceCSS: string, classes: string[]): Promise<CompilePlayCSSResult> {
+    await initPlayCompiler()
+
     const result = await compileCSSManifest(sourceCSS, {
         baseManifest: defaultManifest,
         from: 'playground.css'
@@ -104,3 +117,12 @@ export async function compilePlayCSS(sourceCSS: string, classes: string[]): Prom
         result
     }
 }
+
+const playCompilerModule = { compilePlayCSS }
+const globalPlayCompiler = globalThis as typeof globalThis & {
+    __masterCSSPlayCompiler?: typeof playCompilerModule
+    __masterCSSPlayCompilerResolve?: (module: typeof playCompilerModule) => void
+}
+
+globalPlayCompiler.__masterCSSPlayCompiler = playCompilerModule
+globalPlayCompiler.__masterCSSPlayCompilerResolve?.(playCompilerModule)

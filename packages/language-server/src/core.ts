@@ -120,6 +120,36 @@ function getInitializationSettings(initializationOptions: unknown): Settings | u
     return options.masterCSS ?? options
 }
 
+function isWindowsFilePath(fsPath: string) {
+    return /^[a-z]:[\\/]/i.test(fsPath) || fsPath.startsWith('\\\\') || fsPath.startsWith('//')
+}
+
+function getFilePathTools(...fsPaths: string[]) {
+    return fsPaths.some(isWindowsFilePath) ? path.win32 : path
+}
+
+function toComparableFilePath(uri: string) {
+    const parsedURI = URI.parse(uri)
+    if (parsedURI.scheme !== 'file') return
+    const fsPath = parsedURI.fsPath
+    if (!fsPath) return
+    const filePathTools = getFilePathTools(fsPath)
+    const resolvedPath = filePathTools.resolve(fsPath)
+    return isWindowsFilePath(resolvedPath) ? resolvedPath.toLowerCase() : resolvedPath
+}
+
+function containsFilePath(parentPath: string, childPath: string) {
+    const filePathTools = getFilePathTools(parentPath, childPath)
+    const relativePath = filePathTools.relative(parentPath, childPath)
+    return relativePath === ''
+        || (
+            !!relativePath
+            && relativePath !== '..'
+            && !relativePath.startsWith(`..${filePathTools.sep}`)
+            && !filePathTools.isAbsolute(relativePath)
+        )
+}
+
 export default class CSSLanguageServer {
     workspaceFolders: WorkspaceFolder[] = []
     workspaces = new Map<string, Workspace>()
@@ -404,11 +434,20 @@ export default class CSSLanguageServer {
     }
 
     findClosestWorkspace(textDocumentURI: string) {
+        const documentPath = toComparableFilePath(textDocumentURI)
+        if (!documentPath) {
+            this.console.info(`This is an external document ${textDocumentURI} with the global workspace`)
+            return this.globalWorkspace
+        }
         let foundWorkspace: Workspace | undefined
+        let foundWorkspacePath = ''
         for (const [uri, workspace] of this.workspaces) {
             if (!uri) continue
-            if (textDocumentURI.startsWith(uri) && (!foundWorkspace || uri.length > (foundWorkspace.uri || '').length)) {
+            const workspacePath = toComparableFilePath(uri)
+            if (!workspacePath) continue
+            if (containsFilePath(workspacePath, documentPath) && workspacePath.length > foundWorkspacePath.length) {
                 foundWorkspace = workspace
+                foundWorkspacePath = workspacePath
             }
         }
         if (foundWorkspace) return foundWorkspace

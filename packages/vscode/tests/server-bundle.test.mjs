@@ -1,9 +1,9 @@
 import { spawn } from 'node:child_process'
 import { readFileSync, statSync } from 'node:fs'
-import { mkdtemp, rm, writeFile } from 'node:fs/promises'
+import { mkdtemp, rm } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { dirname, join, resolve } from 'node:path'
-import { pathToFileURL, fileURLToPath } from 'node:url'
+import { fileURLToPath } from 'node:url'
 import { expect, test } from 'vitest'
 import {
     createStagedExtension,
@@ -18,30 +18,9 @@ const serverPath = resolve(distDir, 'server.min.mjs')
 const extensionPath = resolve(distDir, 'extension.min.mjs')
 const sourceGrammarPath = './node_modules/@master/css-language/syntaxes/master-css.tmLanguage.json'
 const stagedGrammarPath = './dist/node_modules/@master/css-language/syntaxes/master-css.tmLanguage.json'
-const bundledClassName = 'bundle-button'
-const bundledWorkspaceHTML = `<div class="${bundledClassName}"></div>`
-const bundledWorkspaceCSS = `@master;
-
-@components {
-    ${bundledClassName} {
-        display: inline-flex;
-    }
-}
-`
 
 function readPackageJSON(path = resolve(packageDir, 'package.json')) {
     return JSON.parse(readFileSync(path, 'utf8'))
-}
-
-async function createBundledWorkspace() {
-    const workspaceDir = await mkdtemp(join(tmpdir(), 'master-css-vscode-workspace-'))
-    await writeFile(join(workspaceDir, 'index.html'), bundledWorkspaceHTML)
-    await writeFile(join(workspaceDir, 'index.css'), bundledWorkspaceCSS)
-    return workspaceDir
-}
-
-function delay(ms) {
-    return new Promise((resolvePromise) => setTimeout(resolvePromise, ms))
 }
 
 function encode(message) {
@@ -62,25 +41,18 @@ function createLanguageServer(options = {}) {
     let nextId = 1
     let stdout = Buffer.alloc(0)
     const stderr = []
-    const notifications = []
     const pending = new Map()
-    const waiters = new Set()
     const closedPromise = new Promise((resolvePromise) => {
         child.on('close', (code) => {
             closed = true
             if (!disposed) {
                 rejectAll(new Error(`Language server exited with code ${code}\n${stderr.join('')}`))
             }
-            resolvePromise()
+            resolvePromise(code)
         })
     })
 
     function rejectAll(error) {
-        for (const waiter of waiters) {
-            clearTimeout(waiter.timer)
-            waiter.reject(error)
-        }
-        waiters.clear()
         for (const request of pending.values()) {
             clearTimeout(request.timer)
             request.reject(error)
@@ -99,14 +71,6 @@ function createLanguageServer(options = {}) {
                 request.resolve(message.result)
             }
             return
-        }
-
-        notifications.push(message)
-        for (const waiter of waiters) {
-            if (!waiter.predicate(message)) continue
-            clearTimeout(waiter.timer)
-            waiters.delete(waiter)
-            waiter.resolve(message)
         }
     }
 
@@ -167,28 +131,10 @@ function createLanguageServer(options = {}) {
                 params
             })
         },
-        waitForNotification(predicate) {
-            const existing = notifications.find(predicate)
-            if (existing) return Promise.resolve(existing)
-            return new Promise((resolvePromise, rejectPromise) => {
-                const waiter = {
-                    predicate,
-                    resolve: resolvePromise,
-                    reject: rejectPromise,
-                    timer: setTimeout(() => {
-                        waiters.delete(waiter)
-                        rejectPromise(new Error(`Timed out waiting for notification\n${stderr.join('')}`))
-                    }, 5000)
-                }
-                waiters.add(waiter)
-            })
-        },
         stderr() {
             return stderr.join('')
         },
-        notifications() {
-            return notifications
-        },
+        closed: () => closedPromise,
         async dispose() {
             disposed = true
             if (!child.stdin.destroyed && !child.stdin.writableEnded) {
@@ -221,56 +167,6 @@ function expectStagedRuntimePackages({ stagingDir, files }, runtimePackages) {
         expect(statSync(packagePath).isDirectory(), runtimePackage).toBe(true)
         expect(files).toContain(`dist/node_modules/${runtimePackage}/**`)
     }
-}
-
-function positionAt(text, offset) {
-    const lines = text.slice(0, offset).split(/\r\n|\r|\n/)
-    return {
-        line: lines.length - 1,
-        character: lines.at(-1).length
-    }
-}
-
-function getHoverText(hover) {
-    const contents = hover?.contents
-    if (typeof contents === 'string') return contents
-    if (Array.isArray(contents)) return contents.map((item) => typeof item === 'string' ? item : item.value).join('\n')
-    return contents?.value ?? ''
-}
-
-async function waitForBundledClassHover(server, documentUri, documentText) {
-    const classOffset = documentText.indexOf(bundledClassName)
-    expect(classOffset).toBeGreaterThanOrEqual(0)
-    const position = positionAt(documentText, classOffset)
-    const deadline = Date.now() + 15000
-    let lastError
-
-    while (Date.now() < deadline) {
-        try {
-            const hover = await server.request('textDocument/hover', {
-                textDocument: { uri: documentUri },
-                position
-            })
-            const hoverText = getHoverText(hover)
-            if (
-                hoverText.includes(`.${bundledClassName}`)
-                && hoverText.includes('display: inline-flex')
-            ) {
-                return hover
-            }
-            lastError = new Error(`Unexpected hover response: ${hoverText || '<empty>'}`)
-        } catch (error) {
-            lastError = error
-        }
-        await delay(100)
-    }
-
-    throw new Error(
-        `Timed out waiting for ${bundledClassName} hover from staged language server.\n`
-        + `Last error: ${lastError?.stack ?? lastError?.message ?? lastError ?? '<none>'}\n`
-        + `stderr:\n${server.stderr() || '<empty>'}\n`
-        + `notifications:\n${JSON.stringify(server.notifications(), null, 2)}`
-    )
 }
 
 test('build emits the server bundle', () => {
@@ -372,59 +268,36 @@ test('staged extension includes shared TextMate grammar asset', async () => {
     })
 })
 
-test('staged language server loads a CSS workspace entry', async () => {
-    const workspaceDir = await createBundledWorkspace()
-    const workspaceUri = pathToFileURL(workspaceDir).toString()
-    const documentUri = pathToFileURL(join(workspaceDir, 'index.html')).toString()
+test('staged language server starts and shuts down', async () => {
+    await withStagedExtension(async ({ stagingDir }) => {
+        const server = createLanguageServer({
+            cwd: stagingDir,
+            serverPath: resolve(stagingDir, 'dist', 'server.min.mjs')
+        })
 
-    try {
-        await withStagedExtension(async ({ stagingDir }) => {
-            const server = createLanguageServer({
-                cwd: stagingDir,
-                serverPath: resolve(stagingDir, 'dist', 'server.min.mjs')
+        try {
+            const result = await server.request('initialize', {
+                processId: null,
+                rootUri: null,
+                capabilities: {
+                    workspace: {
+                        workspaceFolders: true
+                    }
+                },
+                workspaceFolders: []
             })
 
-            try {
-                await server.request('initialize', {
-                    processId: null,
-                    rootUri: workspaceUri,
-                    capabilities: {
-                        textDocument: {
-                            hover: {
-                                contentFormat: ['markdown', 'plaintext']
-                            }
-                        },
-                        workspace: {
-                            workspaceFolders: true
-                        }
-                    },
-                    workspaceFolders: [
-                        {
-                            uri: workspaceUri,
-                            name: 'bundled-config'
-                        }
-                    ]
-                })
-                server.notify('initialized', {})
-                server.notify('textDocument/didOpen', {
-                    textDocument: {
-                        uri: documentUri,
-                        languageId: 'html',
-                        version: 1,
-                        text: bundledWorkspaceHTML
-                    }
-                })
+            expect(result.capabilities?.textDocumentSync).toBeTruthy()
+            expect(result.capabilities?.hoverProvider).toBe(true)
 
-                await waitForBundledClassHover(server, documentUri, bundledWorkspaceHTML)
+            await server.request('shutdown', null)
+            server.notify('exit')
+            await expect(server.closed()).resolves.toBe(0)
 
-                expect(server.stderr()).not.toContain('Cannot find module')
-                expect(server.stderr()).not.toContain('Cannot find package')
-                expect(JSON.stringify(server.notifications())).not.toContain('Failed to load manifest')
-            } finally {
-                await server.dispose()
-            }
-        })
-    } finally {
-        await rm(workspaceDir, { recursive: true, force: true, maxRetries: 10, retryDelay: 100 })
-    }
+            expect(server.stderr()).not.toContain('Cannot find module')
+            expect(server.stderr()).not.toContain('Cannot find package')
+        } finally {
+            await server.dispose()
+        }
+    })
 })

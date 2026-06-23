@@ -11,6 +11,7 @@
 /public/images
 /public/icons
 /public/fonts
+/public/play-compiler
 
 # testing
 /coverage

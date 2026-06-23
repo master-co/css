@@ -1,7 +1,7 @@
 import { strict as assert } from 'node:assert'
 import { readFileSync } from 'node:fs'
 import { test } from 'node:test'
-import { compilePlayCSS } from '../../../[locale]/play/compile-play-css'
+import { compilePlayCSS } from '../../../../play-compiler/compile-play-css'
 
 function readFixture(path: string) {
     return readFileSync(new URL(path, import.meta.url), 'utf-8')

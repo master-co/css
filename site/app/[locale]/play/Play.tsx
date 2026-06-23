@@ -73,7 +73,21 @@ const playMonacoLanguageIds = ['html', 'css']
 const playMonacoLanguageIdSet = new Set(playMonacoLanguageIds)
 const playCSSDiagnosticClearDelays = [250, 1000]
 type PlayHighlighter = Awaited<ReturnType<typeof createHighlighter>>
-let compilerPromise: Promise<typeof import('./compile-play-css')> | undefined
+type PlayCompilerModule = {
+    compilePlayCSS(sourceCSS: string, classes: string[]): Promise<{
+        css: string
+        manifest: MasterCSSManifest
+        warnings: string[]
+        result: unknown
+    }>
+}
+declare global {
+    interface Window {
+        __masterCSSPlayCompiler?: PlayCompilerModule
+        __masterCSSPlayCompilerResolve?: (module: PlayCompilerModule) => void
+    }
+}
+let compilerPromise: Promise<PlayCompilerModule> | undefined
 let playHighlighterPromise: Promise<PlayHighlighter> | undefined
 // shikiToMonaco installs global Monaco providers and patches setTheme without
 // returning disposables. Keep one highlighter alive for those closures.
@@ -81,7 +95,19 @@ const shikiMonacoRegistrations = new WeakMap<Monaco, Promise<PlayHighlighter>>()
 const shikiMonacoLanguageRefreshes = new WeakSet<Monaco>()
 
 function loadCompiler() {
-    compilerPromise ??= import('./compile-play-css')
+    if (window.__masterCSSPlayCompiler) return Promise.resolve(window.__masterCSSPlayCompiler)
+    compilerPromise ??= new Promise((resolve, reject) => {
+        window.__masterCSSPlayCompilerResolve = resolve
+        const existingScript = document.querySelector<HTMLScriptElement>('script[data-play-compiler]')
+        if (existingScript) return
+        const script = document.createElement('script')
+        script.type = 'module'
+        script.async = true
+        script.src = '/play-compiler/compiler.mjs'
+        script.dataset.playCompiler = 'true'
+        script.onerror = () => reject(new Error('Failed to load Play compiler'))
+        document.head.append(script)
+    })
     return compilerPromise
 }
 
