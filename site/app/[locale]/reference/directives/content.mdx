@@ -333,7 +333,21 @@ Removes noisy files such as tests, generated output, or vendor code from the sty
 @source not "src/**/*.test.tsx";
 ```
 
-Multiple source directives are combined as `(source union) - (source not union)`.
+Multiple source directives are evaluated as one include set minus one exclude set:
+
+```txt
+(@source A ∪ @source B ∪ @source C) - (@source not X ∪ @source not Y)
+```
+
+For example, these directives scan files matched by `app/**/*.tsx` or `components/**/*.tsx`, then remove files matched by either `**/*.test.tsx` or `**/*.stories.tsx`:
+
+```css
+@source "app/**/*.tsx";
+@source "components/**/*.tsx";
+
+@source not "**/*.test.tsx";
+@source not "**/*.stories.tsx";
+```
 
 Bare source globs are resolved from the scanner `cwd`. Globs that start with `./` or `../` are resolved relative to the CSS file that declares the directive.
 
