@@ -98,7 +98,7 @@ export default function ResourceWaterfall() {
                                         <h3 className="m:0 font:semibold font:sm text:neutral">{scenario.title}</h3>
                                         <p className="m:0 font:2xs mt:3xs text:gray">{scenario.summary}</p>
                                     </header>
-                                    <div className="grid gap:xs" style={{ gridTemplateColumns: '8rem minmax(0, 1fr)' }}>
+                                    <div className="grid gap:2xs" style={{ gridTemplateColumns: '8rem minmax(0, 1fr)' }}>
                                         <div />
                                         <div className="rel font:2xs text:gray" style={{ height: '1.5rem' }} aria-hidden="true">
                                             <span className="abs left:0 top:0">Earlier</span>
@@ -122,14 +122,14 @@ function WaterfallRow({ row }: { row: WaterfallRow }) {
     return (
         <>
             <div className="flex align-items:center font:2xs font:medium min-w:0 text:neutral">{row.resource}</div>
-            <div className="rel overflow:hidden r:md bg:gray-5 bg:gray-80@dark" style={{ height: '2.5rem' }}>
+            <div className="rel overflow:hidden bg:gray-5 bg:gray-80@dark" style={{ height: '2rem' }}>
                 <TimelineTicks />
                 {row.bars.map((bar) => (
                     <div
                         key={bar.label}
-                        className={`abs top:50% r:sm px:xs flex align-items:center font:2xs font:medium line-height:1 white-space:nowrap overflow:hidden ${toneClasses[bar.tone]}`}
+                        className={`abs top:50% px:2xs flex align-items:center font:2xs font:medium line-height:1 white-space:nowrap overflow:hidden ${toneClasses[bar.tone]}`}
                         style={{
-                            height: '1.5rem',
+                            height: '1.25rem',
                             left: `${bar.start}%`,
                             width: `${bar.end - bar.start}%`,
                             transform: 'translateY(-50%)'
