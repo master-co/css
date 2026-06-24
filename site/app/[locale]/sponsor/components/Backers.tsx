@@ -4,7 +4,7 @@ import toSlug from 'internal/utils/toSlug'
 import clsx from 'clsx'
 
 export default function Backers({ backers }: any) {
-    return <div className="gap:2x grid-cols:6 grid-cols:8@2xs grid-cols:10@xs grid-cols:14@sm">
+    return <div className="gap:xs grid-cols:6 grid-cols:8@2xs grid-cols:10@xs grid-cols:14@sm">
         {backers.map((eachBacker: any, i: number) => {
             let href = eachBacker.websiteUrl || eachBacker.twitterUrl || eachBacker.githubUrl
             if (href && !href?.startsWith('http://') && !href?.startsWith('https://')) {
@@ -14,8 +14,8 @@ export default function Backers({ backers }: any) {
             const className = `rel block round aspect-ratio:1/1 content:''::after`
             const Avatar = () =>
                 <>
-                    <Image src={eachBacker.avatarUrl} alt="avatar" className="full round object-cover" width="64" height="64" />
-                    <div className="abs round p:0.125rem bg:surface bottom:-3px h:22px right:-3px w:22px">
+                    <Image src={eachBacker.avatarUrl} alt="avatar" className="full object-cover round" width="64" height="64" />
+                    <div className="abs round p:4xs size:22px bg:surface bottom:-3px right:-3px">
                         <Image src={'/images/' + toSlug(eachBacker.from) + '.svg'} alt="source" width="18" height="18" />
                     </div>
                 </>

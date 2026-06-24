@@ -17,16 +17,16 @@ export default function BasicDemo({ className }: any) {
         <Demo>
             <div className='grid-cols:3'>
                 <div>
-                    <div className='font:10px text-center'>from</div>
+                    <div className='text-center font:2xs'>from</div>
                     <IconCar className={clsx(className, 'size:12x stroke:.5 stroke:text-disabled')} strokeDasharray={1.5} />
                 </div>
                 <div>
-                    <div className='font:10px text-center'>origin</div>
+                    <div className='text-center font:2xs'>origin</div>
                     <IconCar className={clsx(className, 'size:12x mb:-12x mr:-12x stroke:.5 stroke:text-disabled')} />
                     <IconCar className={clsx(className, 'app-icon-primary size:12x animation-delay:1s! stroke:.5', targetClassName)} />
                 </div>
                 <div>
-                    <div className='font:10px text-center'>to</div>
+                    <div className='text-center font:2xs'>to</div>
                     <IconCar className={clsx(className, 'size:12x stroke:.5 stroke:text-disabled')} strokeDasharray={1.5} />
                 </div>
             </div>

@@ -35,11 +35,11 @@ export default () => {
                                     <tr key={key}>
                                         <th>{key}</th>
                                         <td>
-                                            <div className="inline-flex align-items:center gap:sm w:full">
+                                            <div className="inline-flex items-center gap:sm w:full">
                                                 <span>{value}</span>
-                                                <div className="rel h:1x w:14x bg:line-subtle rounded overflow:hidden">
+                                                <div className="rel rounded overflow:hidden bg:line-subtle h:1x w:14x">
                                                     <div
-                                                        className="abs top:0 left:0 h:full bg:primary/.45 rounded"
+                                                        className="abs rounded bg:primary/.45 h:full left:0 top:0"
                                                         style={{ width: `${duration / maxDuration * 100}%` }}
                                                     />
                                                 </div>

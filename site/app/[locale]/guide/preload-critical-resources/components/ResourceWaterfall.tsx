@@ -95,7 +95,7 @@ export default function ResourceWaterfall() {
                                 <section key={scenario.title} className="b:1px|solid|gray-20 p:md r:lg bg:surface b:1px|solid|gray-70@dark">
                                     <header className="mb:sm">
                                         <h3 className="m:0 font:semibold font:sm text:neutral">{scenario.title}</h3>
-                                        <p className="m:0 font:2xs mt:3xs text:gray">{scenario.summary}</p>
+                                        <p className="mx:0 font:2xs mb:0 mt:3xs text:gray">{scenario.summary}</p>
                                     </header>
                                     <div className="grid gap:2xs" style={{ gridTemplateColumns: '8rem minmax(0, 1fr)' }}>
                                         <div />
@@ -129,7 +129,7 @@ export default function ResourceWaterfall() {
 function WaterfallRow({ row, metric }: { row: WaterfallRow, metric: WaterfallScenario['metric'] }) {
     return (
         <>
-            <div className="flex align-items:center font:2xs font:medium min-w:0 text:neutral">{row.resource}</div>
+            <div className="flex items-center font:2xs font:medium min-w:0 text:neutral">{row.resource}</div>
             <div className="rel overflow:hidden bg:gray-5 bg:gray-80@dark" style={{ height: '2rem' }}>
                 <TimelineTicks />
                 <MetricLine metric={metric} />

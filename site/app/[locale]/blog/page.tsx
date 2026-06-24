@@ -19,14 +19,14 @@ export async function generateMetadata(props: any, parent: any) {
 
 function AuthorAvatarStack({ children }: { children: any[] }) {
     return (
-        <div className="flex align-items:center my:1x pl:1x">
+        <div className="flex items-center my:3xs pl:3xs">
             {children.map((eachAuthor: any, index: number) => {
                 const author = authors.find((x: any) => x.name === eachAuthor.name)
                 if (!author) return null
                 return (
                     <Image
                         key={author.name}
-                        className={clsx('round object-cover outline:2px|solid|canvas', {
+                        className={clsx('object-cover round outline:2px|solid|canvas', {
                             'ml:-1x': index > 0
                         })}
                         src={author.image}
@@ -48,22 +48,22 @@ export default async function Page(props: any) {
         .sort((a: any, b: any) => Date.parse(b.date) - Date.parse(a.date))
 
     return <>
-        <main className='px:5x pt:12x pt:15x@sm'>
-            <div className="mx:auto my:18x max-w:5xl prose my:30x@sm">
+        <main className='px:5x pt:2xl pt:15x@sm'>
+            <div className="prose mx:auto my:18x max-w:5xl my:30x@sm">
                 <div className='bl:1px|solid|muted bt:1px|solid|muted grid-cols:1 grid-cols:2@sm grid-cols:3@md'>
                     {pages
                         .map((page: any, index: number) => {
                             const formattedDate = dayjs(page.date).format('ddd, MMMM D')
                             return (
                                 <div key={page.pathname + index} className={clsx('bb:1px|dotted|muted br:1px|dotted|muted')}>
-                                    <Link href={page.pathname} className={clsx('transition:background-color|.2s gap:5x p:6x flex flex-col h:full bg:surface:hover p:12x@sm')}>
-                                        <div className="flex justify-content:space-between mb:-1x">
-                                            <div className='text:12px fg:accent'>{formattedDate}</div>
-                                            <div className='text:12px text:muted'> <TimeAgo timestamp={page.date} /></div>
+                                    <Link href={page.pathname} className={clsx('flex flex-col gap:5x p:lg transition:background-color|.2s h:full bg:surface:hover p:2xl@sm')}>
+                                        <div className="flex justify-between mb:-1x">
+                                            <div className='text:xs fg:accent'>{formattedDate}</div>
+                                            <div className='text:xs text:muted'> <TimeAgo timestamp={page.date} /></div>
                                         </div>
-                                        <div className='text-pretty my:-1x font:20px leading:1.4'>{page.title}</div>
+                                        <div className='text-pretty my:-1x font:xl leading:sm'>{page.title}</div>
                                         {/* <Image src="/images/gold-pattern.jpg"  className="r:5px aspect-ratio:16/9 h:auto" width={480} height={270} alt={page.title} /> */}
-                                        <div className='text-pretty text:12px fg:text mt:auto'>{page.description}</div>
+                                        <div className='text-pretty text:xs fg:text mt:auto'>{page.description}</div>
                                         <AuthorAvatarStack>{page.authors}</AuthorAvatarStack>
                                     </Link>
                                 </div>
