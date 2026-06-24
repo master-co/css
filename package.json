@@ -1,11 +1,11 @@
 {
     "private": true,
     "type": "module",
-    "packageManager": "pnpm@10.33.2",
+    "packageManager": "pnpm@11.8.0",
     "devEngines": {
         "packageManager": {
             "name": "pnpm",
-            "version": "10.33.2",
+            "version": "11.8.0",
             "onFail": "ignore"
         }
     },
@@ -70,7 +70,6 @@
         "@master/css-compiler": "workspace:^",
         "@master/css-devtools-hook": "workspace:^",
         "@master/css-engine": "workspace:^",
-        "@master/css-scanner": "workspace:^",
         "@master/css-integration": "workspace:^",
         "@master/css-language": "workspace:^",
         "@master/css-language-server": "workspace:^",
@@ -80,6 +79,7 @@
         "@master/css-preset": "workspace:^",
         "@master/css-project": "workspace:^",
         "@master/css-runtime": "workspace:^",
+        "@master/css-scanner": "workspace:^",
         "@master/css-schema": "workspace:^",
         "@master/css-server": "workspace:^",
         "@master/css-source": "workspace:^",
