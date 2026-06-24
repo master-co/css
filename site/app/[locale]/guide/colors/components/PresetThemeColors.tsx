@@ -1,4 +1,3 @@
-import { Fragment } from 'react'
 import Aa from '~/internal/components/Aa'
 import Bg from '~/internal/components/Bg'
 import Demo from '~/internal/components/Demo'
@@ -13,7 +12,6 @@ type PresetThemeColorGroup = 'canvas' | 'surfaces' | 'baseHue' | 'textHue'
 interface PresetThemeColorRow {
     key: string
     token: string
-    classNames: string[]
     previewClassName: string
     previewType: PresetThemeColorPreview
 }
@@ -25,7 +23,6 @@ function tokenName(namespace: string, key: string) {
 
 function getModeRows(
     namespace: string,
-    classNames: (key: string) => string[],
     previewClassName: (key: string) => string,
     previewType: PresetThemeColorPreview
 ): PresetThemeColorRow[] {
@@ -36,7 +33,6 @@ function getModeRows(
         return {
             key,
             token: `--${name}`,
-            classNames: classNames(key),
             previewClassName: previewClassName(key),
             previewType
         }
@@ -45,32 +41,41 @@ function getModeRows(
 
 const colorRows = getModeRows(
     'color',
-    (key) => key === 'canvas' ? ['bg:canvas'] : [`bg:${key}`, `fg:${key}`],
     (key) => key === 'canvas' ? 'bg:canvas@light bg:canvas@dark' : `bg:${key}@light bg:${key}@dark`,
     'background'
 )
 const canvasRows = colorRows.filter(({ token }) => token === '--color-canvas')
 const baseHueRows = colorRows.filter(({ token }) => token !== '--color-canvas')
-const surfaceRows = getModeRows('color-surface', (key) => [`surface:${key}`], (key) => `surface:${key}@light surface:${key}@dark`, 'background')
-const textRows = getModeRows('color-text', (key) => [`text:${key}`], (key) => `text:${key}@light text:${key}@dark`, 'text')
+const surfaceRows = getModeRows('color-surface', (key) => `surface:${key}@light surface:${key}@dark`, 'background')
+const textRows = getModeRows('color-text', (key) => `text:${key}@light text:${key}@dark`, 'text')
 const rowsByGroup = {
     canvas: canvasRows,
     surfaces: surfaceRows,
     baseHue: baseHueRows,
     textHue: textRows
 } satisfies Record<PresetThemeColorGroup, PresetThemeColorRow[]>
-const roleDescriptionByGroup: Partial<Record<PresetThemeColorGroup, Record<string, string>>> = {
-    canvas: {
-        canvas: 'Root page or app background.'
-    },
-    surfaces: {
-        base: 'Default panels, cards, and content containers.',
-        muted: 'Subdued sections and low-emphasis blocks.',
-        raised: 'Raised cards, controls, and stacked surfaces.',
-        overlay: 'Floating layers such as dialogs, popovers, and menus.',
-        inverse: 'High-contrast inverse surfaces.'
-    }
+const columnTitleByGroup = {
+    canvas: 'Role',
+    surfaces: 'Role',
+    baseHue: 'Use for',
+    textHue: 'Use for'
+} satisfies Record<PresetThemeColorGroup, string>
+const canvasDescriptions: Record<string, string> = {
+    canvas: 'Root page or app background.'
 }
+const surfaceDescriptions: Record<string, string> = {
+    base: 'Default panels, cards, and content containers.',
+    muted: 'Subdued sections and low-emphasis blocks.',
+    raised: 'Raised cards, controls, and stacked surfaces.',
+    overlay: 'Floating layers such as dialogs, popovers, and menus.',
+    inverse: 'High-contrast inverse surfaces.'
+}
+const rowDescriptionByGroup = {
+    canvas: (key) => canvasDescriptions[key],
+    surfaces: (key) => surfaceDescriptions[key],
+    baseHue: (key) => `Mode-aware ${key} for backgrounds and foregrounds.`,
+    textHue: (key) => `Mode-aware ${key} foreground text.`
+} satisfies Record<PresetThemeColorGroup, (key: string) => string>
 
 function PresetThemeColorPreviewCell({ previewClassName, previewType }: Pick<PresetThemeColorRow, 'previewClassName' | 'previewType'>) {
     return previewType === 'text'
@@ -132,7 +137,8 @@ export function TextHueDemo() {
 
 export default function PresetThemeColors({ group }: { group: PresetThemeColorGroup }) {
     const rows = rowsByGroup[group]
-    const roleDescriptionByKey = roleDescriptionByGroup[group]
+    const columnTitle = columnTitleByGroup[group]
+    const rowDescription = rowDescriptionByGroup[group]
 
     return (
         <figure>
@@ -141,23 +147,14 @@ export default function PresetThemeColors({ group }: { group: PresetThemeColorGr
                     <thead>
                         <tr>
                             <th>Token</th>
-                            <th>{roleDescriptionByKey ? 'Role' : 'Class'}</th>
+                            <th>{columnTitle}</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {rows.map(({ key, token, classNames, previewClassName, previewType }) => (
+                        {rows.map(({ key, token, previewClassName, previewType }) => (
                             <tr key={token}>
                                 <td><PresetThemeColorPreviewCell previewClassName={previewClassName} previewType={previewType} /><InlineCode className="white-space:nowrap">{token}</InlineCode></td>
-                                <td>
-                                    {roleDescriptionByKey
-                                        ? roleDescriptionByKey[key]
-                                        : classNames.map((className, index) => (
-                                            <Fragment key={className}>
-                                                {index > 0 && ' '}
-                                                <InlineCode className="white-space:nowrap">{className}</InlineCode>
-                                            </Fragment>
-                                        ))}
-                                </td>
+                                <td>{rowDescription(key)}</td>
                             </tr>
                         ))}
                     </tbody>
