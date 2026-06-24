@@ -8,14 +8,14 @@ Master CSS keeps those decisions close to the element that owns them. Use `w:*` 
 <Demo>
     <div className="container w:full">
         <div className="grid-cols:1 grid-cols:2@container(2xs) gap:md w:full">
-            <section className="min-w:0 bg:white r:lg p:lg b:1px|solid|gray-20">
+            <section className="min-w:0 bg:surface r:lg p:lg b:1px|solid|line">
                 <DemoLabel>Fluid wrapper</DemoLabel>
                 <div className="w:full max-w:64x mx:auto">
                     <div className="h:10x bg:blue-60/.15 b:1px|solid|blue-60/.25 r:lg"></div>
                     <div className="mt:sm h:4x w:75% bg:blue-60/.1 r:sm"></div>
                 </div>
             </section>
-            <section className="min-w:0 bg:white r:lg p:lg b:1px|solid|gray-20">
+            <section className="min-w:0 bg:surface r:lg p:lg b:1px|solid|line">
                 <DemoLabel>Measured object</DemoLabel>
                 <div className="flex items-center gap:md">
                     <div className="size:12x round bg:blue-60/.15 b:1px|solid|blue-60/.25"></div>
@@ -208,7 +208,7 @@ When an element should keep a non-square ratio, use [aspect ratio](/reference/as
 Min and max rules are often more stable than fixed widths. They let content, containers, and responsive variants negotiate space without overflow.
 
 <Demo>
-    <div className="w:full max-w:96x mx:auto bg:white r:lg b:1px|solid|gray-20 p:lg">
+    <div className="w:full max-w:96x mx:auto bg:surface r:lg b:1px|solid|line p:lg">
         <DemoLabel>min-w:0 max-w:96x</DemoLabel>
         <div className="flex gap:md">
             <div className="size:10x flex:0 bg:blue-60/.15 r:lg"></div>

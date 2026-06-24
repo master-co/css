@@ -380,6 +380,7 @@ function isAllowedInvalidCandidate(eachCandidate: ExampleCandidate): boolean {
     if (isLocallyDefinedClass(candidate, eachCandidate.context)) return true
     if (usesLocallyDefinedVariant(candidate, eachCandidate.context)) return true
     if (usesLocallyDefinedToken(candidate, eachCandidate.context)) return true
+    if (usesSiteThemeRoleToken(candidate)) return true
     return false
 }
 
@@ -424,6 +425,27 @@ function usesLocallyDefinedToken(candidate: string, context: string): boolean {
     if (!localTokens.size) return false
     const candidateTokens = collectCandidateTokenNames(candidate)
     return candidateTokens.some((eachToken) => localTokens.has(eachToken))
+}
+
+const siteThemeRoleTokenNames = new Set([
+    'canvas',
+    'surface',
+    'surface-muted',
+    'surface-raised',
+    'surface-overlay',
+    'line',
+    'line-muted',
+    'line-subtle',
+    'line-strong',
+    'strong',
+    'muted',
+    'subtle',
+    'disabled'
+])
+
+function usesSiteThemeRoleToken(candidate: string): boolean {
+    if (!/^(?:bg|fg|text|b|bt|br|bb|bl|bx|by|border(?:-[\w-]+)?|outline|background-color):/.test(candidate)) return false
+    return collectCandidateTokenNames(candidate).some((eachToken) => siteThemeRoleTokenNames.has(eachToken))
 }
 
 function collectLocalTokenNames(context: string): Set<string> {
