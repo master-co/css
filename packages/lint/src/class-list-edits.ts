@@ -132,7 +132,7 @@ export function replaceClassGroupInClassList(
 ) {
     const [firstClassName, ...classNamesToRemove] = classNames
     const items = parseClassList(classList, options)
-    if (firstClassName) replaceClassListToken(items, firstClassName, replacement)
+    if (!firstClassName || !replaceClassListToken(items, firstClassName, replacement)) return classList
     for (const className of classNamesToRemove) {
         removeClassListToken(items, className)
     }
