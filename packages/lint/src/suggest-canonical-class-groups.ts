@@ -1,11 +1,10 @@
-import type { GeneratedRule, MasterCSS } from '@master/css'
+import type { GeneratedRule, MasterCSS } from '@master/css-engine'
 import {
     equalVariants,
     getDeclarationSignature
 } from './rule-signatures'
 import suggestCanonicalClassName, {
     defaultCanonicalClassNameOptions,
-    splitClassName,
     type CanonicalClassNameOptions
 } from './suggest-canonical-class-name'
 
@@ -59,7 +58,7 @@ function getEntry(className: string, index: number, css: MasterCSS, options: Res
     const declarationKeys = Object.keys(rule.declarations || {})
     if (declarationKeys.length !== 1) return
 
-    const parts = splitClassName(canonicalClassName)
+    const parts = css.inspectClass(canonicalClassName)
     if (!parts.key || !parts.value) return
 
     return {

@@ -14,9 +14,9 @@ export const expectClassPosition = (target: string, contents: string[], ext: key
         },
         raw: target,
         token: target
-            .replace(/\\\\"/g, '"')
-            .replace(/\\\\'/g, '\'')
-            .replace(/\\\\`/g, '`')
+            .replace(/\\"/g, '"')
+            .replace(/\\'/g, '\'')
+            .replace(/\\`/g, '`')
     })
     expect(classPosition?.contextRange.start).toBeLessThanOrEqual(contents[0].length)
     expect(classPosition?.contextRange.end).toBeGreaterThanOrEqual(contents[0].length + target.length)
@@ -44,6 +44,12 @@ test.concurrent('one class', () => {
 test.concurrent('two classes', () => {
     const target = 'class-b'
     const contents = ['<div class="class-a ', target, '"></div>']
+    expectClassPosition(target, contents)
+})
+
+test.concurrent('full-width spaces are part of the class token', () => {
+    const target = 'class-a\u3000class-b'
+    const contents = ['<div class="', target, '"></div>']
     expectClassPosition(target, contents)
 })
 

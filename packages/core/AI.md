@@ -22,6 +22,7 @@
 
 - `MasterCSS`
 - `MasterCSS.create({ manifest, emittedGlobals })`
+- Engine inspection-related type re-exports such as `MasterCSSClassInspection` and `MasterCSSNormalizedNumericValue`
 - `MasterCSSManifest` and runtime-safe engine types
 - CSS subpaths listed above
 

@@ -1,5 +1,5 @@
 import { generateValidRules } from '@master/css-validator'
-import type { MasterCSS } from '@master/css'
+import type { MasterCSS } from '@master/css-engine'
 import { equalDeclarations, equalVariants } from './rule-signatures'
 
 export interface ClassConflict {

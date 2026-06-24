@@ -1,5 +1,11 @@
 export { defaultClassLintSettings } from './constants'
 export { default as sortClassNames } from './sort-class-names'
+export {
+    removeClassNamesFromClassList,
+    replaceClassGroupInClassList,
+    replaceClassNameInClassList,
+    sortClassList
+} from './class-list-edits'
 export { default as findClassConflicts } from './find-class-conflicts'
 export { default as findPartialClassConflicts } from './find-partial-class-conflicts'
 export { default as findUnapprovedRawValueClasses } from './find-unapproved-raw-value-classes'
@@ -11,6 +17,7 @@ export {
 } from './suggest-canonical-class-name'
 
 export type { ClassConflict } from './find-class-conflicts'
+export type { MasterCSSClassListEditOptions } from './class-list-edits'
 export type { PartialClassConflict } from './find-partial-class-conflicts'
 export type {
     RawValuePolicyOptions,

@@ -82,10 +82,26 @@ export interface MasterCSSSplitPart {
     separatorStart?: number
 }
 
+export type MasterCSSClassListItemType = 'class' | 'space'
+
+export interface MasterCSSClassListItem {
+    type: MasterCSSClassListItemType
+    start: number
+    end: number
+    raw: string
+    token: string
+}
+
 export interface MasterCSSClassListTokenRange {
     start: number
     end: number
     token: string
+}
+
+export interface MasterCSSClassListParseOptions {
+    preserveSpaces?: boolean
+    includeEmpty?: boolean
+    unescape?: string | readonly string[] | false
 }
 
 export interface MasterCSSValueTokenizeOptions {
@@ -100,6 +116,21 @@ const NUMERIC_RE = /^([+-]?(?:\d+\.\d+|\.\d+|\d+))([A-Za-z%]+)?/
 const SIZE_PAIR_RE = /^([+-]?(?:\d+\.\d+|\.\d+|\d+))x([+-]?(?:\d+\.\d+|\.\d+|\d+))(?![0-9A-Za-z])/
 
 const MASTER_CSS_VALUE_UNIT_SET = new Set<string>(MASTER_CSS_VALUE_UNITS)
+const ASCII_WHITESPACE = new Set(['\t', '\n', '\f', '\r', ' '])
+
+function isASCIIWhitespace(char: string | undefined) {
+    return char !== undefined && ASCII_WHITESPACE.has(char)
+}
+
+export function unescapeMasterCSSClassListToken(raw: string, unescape: MasterCSSClassListParseOptions['unescape']) {
+    if (!unescape) return raw
+    const characters = Array.isArray(unescape) ? unescape : [unescape]
+    let token = raw
+    for (const character of characters) {
+        token = token.replace(new RegExp('\\\\' + character.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g'), character)
+    }
+    return token
+}
 
 export function pushMasterCSSLexicalToken(
     tokens: MasterCSSLexicalTokenItem[],
@@ -184,16 +215,59 @@ export function splitMasterCSSTopLevel(source: string, separator: string): Maste
 }
 
 export function collectMasterCSSClassListTokenRanges(classList: string): MasterCSSClassListTokenRange[] {
-    const ranges: MasterCSSClassListTokenRange[] = []
-    for (const match of classList.matchAll(/[^\s]+/g)) {
-        if (match.index === undefined) continue
-        ranges.push({
-            start: match.index,
-            end: match.index + match[0].length,
-            token: match[0]
+    return parseMasterCSSClassList(classList)
+        .filter((item) => item.type === 'class' && item.raw)
+        .map(({ start, end, token }) => ({ start, end, token }))
+}
+
+export function parseMasterCSSClassList(
+    classList: string,
+    options: MasterCSSClassListParseOptions = {}
+): MasterCSSClassListItem[] {
+    const items: MasterCSSClassListItem[] = []
+    const pushClass = (start: number, end: number) => {
+        const raw = classList.slice(start, end)
+        items.push({
+            type: 'class',
+            start,
+            end,
+            raw,
+            token: unescapeMasterCSSClassListToken(raw, options.unescape)
         })
     }
-    return ranges
+    const pushSpace = (start: number, end: number) => {
+        const raw = classList.slice(start, end)
+        items.push({
+            type: 'space',
+            start,
+            end,
+            raw,
+            token: raw
+        })
+    }
+
+    if (!classList) {
+        if (options.includeEmpty) pushClass(0, 0)
+        return items
+    }
+
+    for (let index = 0; index < classList.length;) {
+        const start = index
+        if (isASCIIWhitespace(classList[index])) {
+            while (isASCIIWhitespace(classList[index])) {
+                if (options.includeEmpty) pushClass(index, index)
+                index++
+            }
+            if (options.preserveSpaces) pushSpace(start, index)
+            continue
+        }
+
+        while (index < classList.length && !isASCIIWhitespace(classList[index])) index++
+        pushClass(start, index)
+    }
+
+    if (options.includeEmpty) pushClass(classList.length, classList.length)
+    return items
 }
 
 function withUnitModifier(modifiers: MasterCSSLexicalTokenModifier[] = []) {

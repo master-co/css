@@ -1,4 +1,4 @@
-import { compareRulePriority, type MasterCSS } from '@master/css'
+import { compareRulePriority, type MasterCSS } from '@master/css-engine'
 import UtilityType from '@master/css-schema/utility-type'
 
 const LAYER_ORDER = ['theme', 'base', 'defaults', 'components', 'utilities']

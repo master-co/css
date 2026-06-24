@@ -54,7 +54,8 @@ export function tokenizeClassToken(css: MasterCSS, token: string, offset: number
     }
 
     const tokens: HighlightTokenItem[] = []
-    const rules = css.generate(token)
+    const inspection = css.inspectClass(token)
+    const rules = inspection.rules
     const component = rules.find((rule) => rule.type === UtilityType.Semantic && rule.layerName === 'components')
     if (component) {
         const stateStart = token.length - (component.stateToken?.length ?? 0)
@@ -73,21 +74,21 @@ export function tokenizeClassToken(css: MasterCSS, token: string, offset: number
         return tokens
     }
 
-    if (rule.registeredUtility.matchers.some((matcher) => matcher.type === 'pattern')) {
+    if (inspection.matcherTypes.includes('pattern')) {
         const stateStart = token.length - (rule.stateToken?.length ?? 0)
         pushHighlightToken(tokens, offset, stateStart, 'enumMember', 'utility.semantic')
         tokens.push(...tokenizeState(token, stateStart, offset))
         return tokens
     }
 
-    tokenizeKey(tokens, token, offset, rule.keyToken)
-    const valueStart = rule.keyToken?.length ?? Math.max(0, token.indexOf(rule.valueToken ?? ''))
-    if (rule.valueToken) {
-        tokens.push(...tokenizeUtilityValue(token.slice(valueStart, valueStart + rule.valueToken.length), offset + valueStart, css))
+    tokenizeKey(tokens, token, offset, inspection.keyToken)
+    const valueStart = inspection.keyToken?.length ?? Math.max(0, token.indexOf(inspection.valueToken ?? ''))
+    if (inspection.valueToken) {
+        tokens.push(...tokenizeUtilityValue(token.slice(valueStart, valueStart + inspection.valueToken.length), offset + valueStart, css))
     }
 
-    let stateStart = valueStart + (rule.valueToken?.length ?? 0)
-    if (rule.important && token[stateStart] === '!') {
+    let stateStart = valueStart + (inspection.valueToken?.length ?? 0)
+    if (inspection.important && token[stateStart] === '!') {
         pushHighlightToken(tokens, offset + stateStart, 1, 'operator', 'value.important', ['important'])
         stateStart++
     }

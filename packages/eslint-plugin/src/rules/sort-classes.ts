@@ -2,7 +2,7 @@ import defineVisitors from '../utils/define-visitors'
 import resolveContext from '../utils/resolve-context'
 import createRule from '../create-rule'
 import settingsSchema from '../settings-schema'
-import { sortClassNames } from '@master/css-lint'
+import { sortClassList } from '@master/css-lint'
 
 export default createRule({
     name: 'sort-classes',
@@ -21,21 +21,9 @@ export default createRule({
     create: function (context) {
         const { settings, css } = resolveContext(context)
         const { sourceCode } = context
-        return defineVisitors({ context, settings }, (node, { raw, start, end, nodes, classValueRawMap, classValues }) => {
+        return defineVisitors({ context, settings }, (node, { raw, start, end, nodes, unescape }) => {
             if (nodes.length <= 1) return
-            let orderedClasses = sortClassNames(classValues, css)
-            let orderedRaw = nodes
-                .map((eachNode, i) => {
-                    if (eachNode.type === 'class') {
-                        const value = orderedClasses.shift()
-                        return classValueRawMap.get(value)
-                    }
-                    if (eachNode.type === 'space' && (orderedClasses.length !== 0 || i === nodes.length - 1)) {
-                        return eachNode.raw
-                    }
-                    return ''
-                })
-                .join('')
+            const orderedRaw = sortClassList(raw, css, { unescape })
             if (raw !== orderedRaw) {
                 context.report({
                     node,

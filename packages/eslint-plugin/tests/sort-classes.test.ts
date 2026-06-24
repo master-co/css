@@ -122,6 +122,11 @@ createTester({
             errors: [{ messageId: 'invalidClassOrder' }],
         },
         {
+            code: `clsx('fg:#aaaaaa {content:\\'\\';block;h:full;w:full;abs}::after bg:#ffffff')`,
+            output: `clsx('bg:#ffffff fg:#aaaaaa {content:\\'\\';block;h:full;w:full;abs}::after')`,
+            errors: [{ messageId: 'invalidClassOrder' }],
+        },
+        {
             code: `<div class="w:3x w:0.375rem@lg w:3x">removeDuplicates</div>`,
             output: `<div class="w:3x w:0.375rem@lg">removeDuplicates</div>`,
             errors: [{ messageId: 'invalidClassOrder' }],

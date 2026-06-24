@@ -3,7 +3,7 @@ import type { Position } from 'vscode-languageserver-protocol'
 import findMatchingPairs from './find-matching-brackets'
 import escapeRegexp from 'lodash.escaperegexp'
 import { parseSync, visitorKeys } from 'oxc-parser'
-import { collectCSSDirectiveRanges } from '@master/css-lexer'
+import { collectCSSDirectiveRanges, parseMasterCSSClassList } from '@master/css-lexer'
 
 export interface ClassPosition {
     range: { start: number, end: number }
@@ -158,11 +158,6 @@ export class ClassPositionCache {
     }
 }
 
-function unescapeClass(raw: string, escapeCharacter: string) {
-    if (!escapeCharacter) return raw
-    return raw.replace(new RegExp('\\' + escapeCharacter, 'g'), escapeCharacter)
-}
-
 function getOxcCacheKey(textDocument: TextDocument) {
     return `${textDocument.languageId}:${textDocument.uri}`
 }
@@ -241,23 +236,21 @@ function collectClassPositions(
     }
 ) {
     const classPositions: ClassPosition[] = []
-    /**
-     * Matching classes, including empty string after white space.
-     * @example <div class="class-a class-b "></div>
-     */
-    for (const eachClassMatch of className.matchAll(/(?:[^\s]+)?/g)) {
-        if (eachClassMatch.index === undefined) continue
-        const raw = eachClassMatch[0]
-        if (!raw && !includeEmpty) continue
-        const classStartIndex = classNameStart + eachClassMatch.index
-        const classEndIndex = classStartIndex + raw.length
+    for (const item of parseMasterCSSClassList(className, {
+        includeEmpty,
+        unescape: escapeCharacter || false
+    })) {
+        if (item.type !== 'class') continue
+        if (!item.raw && !includeEmpty) continue
+        const classStartIndex = classNameStart + item.start
+        const classEndIndex = classNameStart + item.end
         if (accept && !accept(classStartIndex, classEndIndex, contextRange)) continue
-        if (!raw && classStartIndex !== classEndIndex) continue
+        if (!item.raw && classStartIndex !== classEndIndex) continue
         classPositions.push({
             range: { start: classStartIndex, end: classEndIndex },
             contextRange,
-            raw,
-            token: unescapeClass(raw, escapeCharacter)
+            raw: item.raw,
+            token: item.token
         })
     }
     return classPositions

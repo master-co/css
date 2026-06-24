@@ -1,6 +1,6 @@
 import { generateValidRules } from '@master/css-validator'
-import type { MasterCSS } from '@master/css'
-import { splitClassName } from './suggest-canonical-class-name'
+import type { MasterCSS } from '@master/css-engine'
+import { splitMasterCSSTopLevel } from '@master/css-lexer'
 
 export interface RawValuePolicyOptions {
     allowRawValues?: boolean
@@ -15,55 +15,12 @@ export interface UnapprovedRawValueClass {
     properties: string[]
 }
 
-function isVariableBackedRule(rule: ReturnType<typeof generateValidRules>[number]) {
-    const variables = (rule as any).registeredUtility?.variables
-    return variables instanceof Map && variables.size > 0
-}
-
-function getVariableKeys(rule: ReturnType<typeof generateValidRules>[number]) {
-    const variables = (rule as any).registeredUtility?.variables
-    if (!(variables instanceof Map)) return []
-    return [...variables.keys()]
-}
-
 function getDeclarationProperties(rules: ReturnType<typeof generateValidRules>) {
     return [...new Set(rules.flatMap((rule) => Object.keys(rule.declarations || {})))].sort()
 }
 
 function splitTopLevelValueSegments(value: string) {
-    let quote = ''
-    let depth = 0
-    let lastIndex = 0
-    const segments: string[] = []
-    for (let index = 0; index < value.length; index++) {
-        const char = value[index]
-        if (quote) {
-            if (char === '\\') {
-                index++
-            } else if (char === quote) {
-                quote = ''
-            }
-            continue
-        }
-        if (char === '"' || char === '\'') {
-            quote = char
-            continue
-        }
-        if (char === '(' || char === '[' || char === '{') {
-            depth++
-            continue
-        }
-        if (char === ')' || char === ']' || char === '}') {
-            if (depth > 0) depth--
-            continue
-        }
-        if (depth !== 0 || char !== '|') continue
-        segments.push(value.slice(lastIndex, index))
-        lastIndex = index + 1
-    }
-    if (!segments.length) return [value]
-    segments.push(value.slice(lastIndex))
-    return segments
+    return splitMasterCSSTopLevel(value, '|').map(({ start, end }) => value.slice(start, end))
 }
 
 function isTokenValue(value: string, variableKeys: Set<string>) {
@@ -90,17 +47,17 @@ export default function findUnapprovedRawValueClasses(
     const issues: UnapprovedRawValueClass[] = []
 
     for (const className of classNames) {
-        const parts = splitClassName(className)
+        const parts = css.inspectClass(className)
         if (!parts.key || !parts.value) continue
         if (matchesAllowedPattern(parts.value, allowedPatterns)) continue
 
         const rules = generateValidRules(className, css)
-        if (!rules.length || !rules.some(isVariableBackedRule)) continue
+        if (!rules.length || !parts.variables.size) continue
 
         const properties = getDeclarationProperties(rules)
         if (isAllowedProperty(parts.key, properties, allowProperties)) continue
 
-        const variableKeys = new Set(rules.flatMap(getVariableKeys))
+        const variableKeys = new Set(parts.variableEntries.map(({ key }) => key))
         if (isTokenValue(parts.value, variableKeys)) continue
 
         issues.push({

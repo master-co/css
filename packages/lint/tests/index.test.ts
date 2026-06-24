@@ -8,7 +8,11 @@ import {
     findPartialClassConflicts,
     findUnapprovedRawValueClasses,
     getClassValidationIssues,
+    removeClassNamesFromClassList,
+    replaceClassGroupInClassList,
+    replaceClassNameInClassList,
     suggestCanonicalClassGroups,
+    sortClassList,
     sortClassNames,
     suggestCanonicalClassName
 } from '../src'
@@ -27,6 +31,25 @@ describe('class sorting', () => {
     test('deduplicates repeated classes', () => {
         expect(sortClassNames(['w:3x', 'w:0.375rem@lg', 'w:3x'], css))
             .toEqual(['w:3x', 'w:0.375rem@lg'])
+    })
+})
+
+describe('class list edits', () => {
+    test('sorts class-list text while preserving useful whitespace and raw tokens', () => {
+        expect(sortClassList('fg:white  m:2x\tfg:white', css))
+            .toBe('m:2x  fg:white')
+    })
+
+    test('removes and replaces class-list tokens with adjacent whitespace', () => {
+        expect(removeClassNamesFromClassList('a  b\tc', ['b']))
+            .toBe('a\tc')
+        expect(replaceClassNameInClassList('content:\\\'\\\' block', 'content:\'\'', 'content:""', { unescape: '\'' }))
+            .toBe('content:"" block')
+    })
+
+    test('replaces grouped class-list tokens', () => {
+        expect(replaceClassGroupInClassList('w:md h:md fg:red-60', ['w:md', 'h:md'], 'size:md'))
+            .toBe('size:md fg:red-60')
     })
 })
 

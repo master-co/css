@@ -29,7 +29,7 @@ export default createRule({
                 })
                 for (const issue of issues) {
                     context.report({
-                        node,
+                        loc: node.loc,
                         messageId: issue.kind === 'invalid' ? 'invalidClass' : 'disallowUnknownClass',
                         data: {
                             message: issue.message

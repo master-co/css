@@ -1525,6 +1525,9 @@ importers:
       '@master/css':
         specifier: workspace:^
         version: link:../core
+      '@master/css-lexer':
+        specifier: workspace:^
+        version: link:../lexer
       '@master/css-lint':
         specifier: workspace:^
         version: link:../lint
@@ -1765,12 +1768,12 @@ importers:
 
   packages/lint:
     dependencies:
-      '@master/css':
-        specifier: workspace:^
-        version: link:../core
       '@master/css-engine':
         specifier: workspace:^
         version: link:../engine
+      '@master/css-lexer':
+        specifier: workspace:^
+        version: link:../lexer
       '@master/css-schema':
         specifier: workspace:^
         version: link:../schema

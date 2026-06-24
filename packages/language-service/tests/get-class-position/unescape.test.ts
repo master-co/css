@@ -6,3 +6,9 @@ test.concurrent('single quote', () => {
     const contents = ['export default () => <div className=\'', target, '\'></div>']
     expectClassPosition(target, contents, 'tsx')
 })
+
+test.concurrent('escaped backticks', () => {
+    const target = 'content:\\`\\`'
+    const contents = ['const className = ctl(`', target, '`)']
+    expectClassPosition(target, contents, 'ts')
+})

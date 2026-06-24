@@ -11,6 +11,7 @@
 - Class validation diagnostic mapping for lint tools.
 - Canonical class name suggestion policy.
 - Canonical class group suggestion policy.
+- Framework-neutral class-list edit helpers for sorting, removing, and replacing tokens while preserving source whitespace.
 - Default lint target settings shared by adapters.
 
 ## Does Not Own
@@ -19,6 +20,8 @@
 - Project manifest discovery or filesystem access.
 - Source extraction adapters.
 - Engine CSS generation semantics.
+- Class-list token/range parsing; use `@master/css-lexer`.
+- Class semantic inspection; use `@master/css-engine`.
 - Language service, scanner, runtime, framework, or site behavior.
 
 ## Public Surface
@@ -30,6 +33,10 @@
 - `getClassValidationIssues`
 - `suggestCanonicalClassGroups`
 - `suggestCanonicalClassName`
+- `sortClassList`
+- `removeClassNamesFromClassList`
+- `replaceClassNameInClassList`
+- `replaceClassGroupInClassList`
 - `defaultClassLintSettings`
 - `defaultCanonicalClassNameOptions`
 
@@ -43,10 +50,12 @@
 - `src/get-class-validation-issues.ts`
 - `src/suggest-canonical-class-groups.ts`
 - `src/suggest-canonical-class-name.ts`
+- `src/class-list-edits.ts`
 
 ## Risk Areas
 
 - Ordering, conflict, and canonical suggestion behavior must match generated engine rules.
+- Do not duplicate class parsing, value segment splitting, numeric normalization, or generated-rule private field inspection in this package.
 - Validation diagnostics must preserve scanner and ESLint expectations.
 - This package must not import ESLint, project resolution, filesystem, scanner, language service, or framework packages.
 

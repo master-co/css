@@ -25,6 +25,7 @@ shared / external data
 - `@master/css-integration` owns adapter-neutral virtual module and integration protocol.
 - `@master/css-source` owns source-level class candidate extraction.
 - `@master/css-stylesheet` owns stylesheet entry output and generated CSS composition.
+- Class pipeline ownership: `@master/css-lexer` owns raw class-list token/range parsing, whitespace splitting, and dependency-free lexical helpers; `@master/css-engine` owns manifest-driven class semantic inspection; `@master/css-lint` owns framework-neutral lint policy and class-list edit plans; `@master/eslint-plugin-css` owns ESLint AST visitors, reports, and fixer adaptation; `@master/css-language` owns editor source-position scanning and semantic tokenization.
 
 ## Escalate When
 

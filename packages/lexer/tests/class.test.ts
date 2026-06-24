@@ -1,5 +1,7 @@
 import { expect, test } from 'vitest'
 import {
+    collectMasterCSSClassListTokenRanges,
+    parseMasterCSSClassList,
     tokenizeMasterCSSAtQuery,
     tokenizeMasterCSSGroupedClassToken,
     tokenizeMasterCSSState,
@@ -15,6 +17,56 @@ function texts(source: string, tokens: MasterCSSLexicalTokenItem[]) {
         modifiers: token.modifiers
     }))
 }
+
+test.concurrent('parses class lists with ASCII whitespace ranges', () => {
+    expect(parseMasterCSSClassList('  block\tfg:red\nm:1x ', { preserveSpaces: true })).toEqual([
+        { type: 'space', start: 0, end: 2, raw: '  ', token: '  ' },
+        { type: 'class', start: 2, end: 7, raw: 'block', token: 'block' },
+        { type: 'space', start: 7, end: 8, raw: '\t', token: '\t' },
+        { type: 'class', start: 8, end: 14, raw: 'fg:red', token: 'fg:red' },
+        { type: 'space', start: 14, end: 15, raw: '\n', token: '\n' },
+        { type: 'class', start: 15, end: 19, raw: 'm:1x', token: 'm:1x' },
+        { type: 'space', start: 19, end: 20, raw: ' ', token: ' ' }
+    ])
+})
+
+test.concurrent('does not split class lists on full-width whitespace', () => {
+    expect(parseMasterCSSClassList('block\u3000fg:red')).toEqual([
+        { type: 'class', start: 0, end: 12, raw: 'block\u3000fg:red', token: 'block\u3000fg:red' }
+    ])
+})
+
+test.concurrent('parses empty class positions for cursor contexts', () => {
+    expect(parseMasterCSSClassList('a  b ', { includeEmpty: true }).filter((item) => item.type === 'class')).toEqual([
+        { type: 'class', start: 0, end: 1, raw: 'a', token: 'a' },
+        { type: 'class', start: 1, end: 1, raw: '', token: '' },
+        { type: 'class', start: 2, end: 2, raw: '', token: '' },
+        { type: 'class', start: 3, end: 4, raw: 'b', token: 'b' },
+        { type: 'class', start: 4, end: 4, raw: '', token: '' },
+        { type: 'class', start: 5, end: 5, raw: '', token: '' }
+    ])
+})
+
+test.concurrent('unescapes configured quote characters in class list tokens', () => {
+    expect(parseMasterCSSClassList("content:\\'\\' block", { unescape: '\'' })).toEqual([
+        { type: 'class', start: 0, end: 12, raw: "content:\\'\\'", token: 'content:\'\'' },
+        { type: 'class', start: 13, end: 18, raw: 'block', token: 'block' }
+    ])
+    expect(parseMasterCSSClassList('content:\\`\\`', { unescape: '`' })[0]).toEqual({
+        type: 'class',
+        start: 0,
+        end: 12,
+        raw: 'content:\\`\\`',
+        token: 'content:``'
+    })
+})
+
+test.concurrent('collects class list token ranges through the shared parser', () => {
+    expect(collectMasterCSSClassListTokenRanges(' block  fg:red\u3000m:1x ')).toEqual([
+        { start: 1, end: 6, token: 'block' },
+        { start: 8, end: 19, token: 'fg:red\u3000m:1x' }
+    ])
+})
 
 test.concurrent('tokenizes values without depending on core utilities', () => {
     const source = '12px/$space url("/a;b.png")!'

@@ -9,6 +9,7 @@
 - Stable source range primitives.
 - CSS directive range scanning.
 - CSS manifest entrypoint statement scanning.
+- Raw Master CSS class-list parsing, ASCII whitespace splitting, raw/token range preservation, and quote/backtick unescape.
 - Master class lexical tokenizers.
 - CSS unit constants and lexical patterns.
 
@@ -27,7 +28,7 @@
 - CSS directive ranges from `src/directive-ranges.ts`.
 - CSS manifest entry scanners from `src/css-manifest-entry.ts`.
 - Unit constants from `src/units.ts`.
-- Class lexical tokenizers from `src/class.ts`.
+- Class-list parser, top-level split helper, and class lexical tokenizers from `src/class.ts`.
 
 ## Key Files
 
@@ -41,7 +42,7 @@
 ## Risk Areas
 
 - Source range recovery.
-- Class tokenization boundaries.
+- Class-list tokenization boundaries, duplicate tokens, escaped string tokens, and cursor/empty-position ranges.
 - Import and directive scanning.
 - Keeping runtime dependencies empty unless explicitly justified.
 

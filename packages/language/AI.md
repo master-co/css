@@ -8,7 +8,8 @@
 
 - Class-position scanning and `ClassPositionCache`.
 - Semantic token classification and encoding.
-- CSS directive and class-list tokenizers.
+- CSS directive scanning and editor source-position/provider scanning.
+- Semantic token classification over class-list and directive ranges.
 - Browser editor helpers.
 - Shiki/TextMate integration and the canonical TextMate grammar asset.
 - Language helpers such as `createLanguageCSS`, `defaultManifest`, and native declaration matching helpers.
@@ -20,6 +21,7 @@
 - VS Code extension code.
 - Runtime, server, scanner, or ESLint behavior.
 - Engine syntax or CSS output semantics.
+- Raw class-list splitting/unescape semantics owned by `@master/css-lexer`.
 
 ## Public Surface
 
@@ -41,6 +43,7 @@
 
 - Class-position scanning across JSX, Vue, Svelte, Astro, strings, and function calls.
 - Semantic token classification for Master CSS class-list spans and directive class-list spans.
+- Preserve raw editor ranges while using lexer class-list token/raw parsing.
 - TextMate grammar compatibility for CSS-family documents.
 - Browser and Shiki helper compatibility.
 

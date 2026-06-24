@@ -1,5 +1,5 @@
 import { validate } from '@master/css-validator'
-import type { MasterCSS } from '@master/css'
+import type { MasterCSS } from '@master/css-engine'
 
 export interface ClassValidationOptions {
     disallowUnknownClass?: boolean

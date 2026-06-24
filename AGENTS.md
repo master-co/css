@@ -54,6 +54,7 @@ When cycle pressure appears, extract dependency-light contracts into `@master/cs
 - Read the affected package-local `AI.md`, if present.
 - Read the relevant task pack from `.ai/context/`.
 - Inspect existing source, tests, fixtures, and downstream consumers before designing a change.
+- For feature work, perform an existing capability discovery pass before designing the implementation: identify the owning package responsibilities, current public APIs, nearby private/internal helpers that may need to be extracted, downstream consumers, and tests that lock the behavior. Prefer existing public APIs when they fit; when the needed behavior exists only as private/internal code in a lower package, first plan an intentional shared API/refactor at that lower layer, then return to the feature-specific implementation.
 - Prefer the smallest focused change that matches existing local patterns.
 - Do not invent a new abstraction before proving existing helpers cannot solve the task.
 

@@ -16,6 +16,7 @@
 - Engine syntax behavior.
 - LSP capabilities and workspace lifecycle.
 - Browser helpers, Shiki helpers, TextMate grammar ownership, semantic tokenizer ownership, or class-position scanner ownership.
+- Raw class-list parsing and unescape behavior; that flows through `@master/css-language` from `@master/css-lexer`.
 - Diagnostics without language-server coordination.
 
 ## Public Surface

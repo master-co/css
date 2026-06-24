@@ -7,6 +7,8 @@
 ## Owns
 
 - `MasterCSS` execution and rule generation.
+- Semantic class inspection, including generated rules, class base/suffix, key/value tokens, matcher type metadata, important/state metadata, and token-backed variable metadata.
+- Numeric value normalization for engine settings such as root size and base unit.
 - Layer state and generated CSS text.
 - Hydration manifest generation.
 - Built-in key aliases, variable namespaces, namespace refs, and native value namespaces.
@@ -23,6 +25,8 @@
 
 - `MasterCSS`
 - `MasterCSS.create({ manifest, emittedGlobals })`
+- `css.inspectClass(className, mode?)`
+- `css.normalizeNumericValue(value)`
 - `compareRulePriority`
 - `createHydrationManifest`
 - Built-in registry exports

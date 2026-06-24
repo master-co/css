@@ -19,6 +19,8 @@ Breaking changes are allowed in requested refactor work, but they must be intent
 ## Workflow
 
 - Confirm the refactor goal and affected ownership boundary.
+- Inventory existing capability before proposing new code: current public APIs, package-local helpers, private/internal implementations that should become shared lower APIs, downstream consumers, and tests.
+- If a feature needs behavior that already exists privately in a lower package, extract the shared lower API first, update consumers to use it, then return to the feature-specific implementation.
 - Remove obsolete compatibility paths when they obscure the new model.
 - Keep unrelated formatting and package churn out of scope.
 - Update tests and fixtures to prove the new intended behavior.

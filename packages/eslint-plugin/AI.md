@@ -15,6 +15,8 @@
 
 - Engine CSS generation semantics.
 - Class lint policy owned by `@master/css-lint`.
+- Class-list token/range parsing owned by `@master/css-lexer`.
+- Framework-neutral class-list edit text owned by `@master/css-lint`.
 - Source extraction adapters outside ESLint visitors.
 - Language service or LSP behavior.
 
@@ -39,6 +41,7 @@
 - AST shape differences across React, Vue, Svelte, Angular, MDX, and template syntaxes.
 - Raw versus cooked string range mapping.
 - Autofix whitespace, quote, and range preservation.
+- Keep AST/report/fixer orchestration here, but delegate token/range parsing and class-list replacement text to lower packages.
 - Manifest cache scoping by cwd/settings.
 - Adapter drift from `@master/css-lint` policy helpers.
 
