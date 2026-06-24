@@ -3,8 +3,15 @@ import { BaseHueDemo, TextHueDemo } from './components/PresetThemeColors'
 ## Default color palette [sr-only]
 
 Master CSS provides a P3-compatible raw palette, preset light and dark color aliases, canvas and surface roles, and text hue aliases.
+
 <ColorPalette />
+
 Each preset color family ranges from `0`, `5`, `10`, and then by tens through `100`. Choose a palette step directly for swatches, illustrations, and intentional brand or status accents.
+
+```html
+<!-- @MARK bg:blue-5 --><!-- @MARK fg:blue-60 -->
+<div class="bg:blue-5 fg:blue-60">…</div>
+```
 
 Use palette tokens such as `bg:blue-60` for direct swatches, `bg:canvas` for the page background, `surface:base` or `surface:raised` for UI layers, and text aliases such as `text:blue` or `text:neutral` for readable foreground color.
 
@@ -16,27 +23,6 @@ Use palette tokens such as `bg:blue-60` for direct swatches, `bg:canvas` for the
     </section>
 </main>
 ```
-
-```html
-<!-- @MARK bg:blue-5 --><!-- @MARK fg:blue-60 -->
-<div class="bg:blue-5 fg:blue-60">…</div>
-```
-
-### Adapting default colors
-You can adapt the default color palette to your brand color by defining color variables in the project CSS entry.
-```css name=index.css
-@theme {
-    --color-brand: #4f46e5; /* [!code highlight] */
-    --color-brand-10: #eef2ff; /* [!code highlight] */
-    --color-brand-60: #4f46e5; /* [!code highlight] */
-}
-```
-Apply them using the color-related syntax:
-```html
-<!-- @MARK bg:brand-10 --><!-- @MARK fg:brand-60 -->
-<div class="bg:brand-10 fg:brand-60">…</div>
-```
-See [theme color tokens](/guide/theme#theme-tokens) for more details on how to add custom colors.
 
 ---
 
