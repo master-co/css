@@ -17,7 +17,7 @@ export const { Page, dynamic, revalidate, generateMetadata } = createLayout({
     icon: 'angular',
     content: ({ $ }) =>
         <Tabs className="mb:xl">
-            <Tab href='/guide/installation/angular'>{$('Progressive Rendering')} <TabBadge>{$('Recommanded')}</TabBadge></Tab>
+            <Tab href='/guide/installation/angular'>{$('Progressive Rendering')} <TabBadge>{$('Default')}</TabBadge></Tab>
             <Tab href='/guide/installation/angular/runtime-rendering'>{$('Runtime Rendering')}</Tab>
             <Tab href='/guide/installation/angular/static-rendering'>{$('Static Rendering')}</Tab>
         </Tabs>,
