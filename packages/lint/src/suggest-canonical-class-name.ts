@@ -8,15 +8,21 @@ import {
 } from './rule-signatures'
 
 export interface CanonicalClassNameOptions {
-    preferStaticUtilities: boolean
-    preferThemeTokens: boolean
-    preferPropertyAliases: boolean
+    preferStaticUtilities?: boolean
+    preferThemeTokens?: boolean
+    preferPropertyAliases?: boolean
+    preferVariableReferences?: boolean
+    preferMultiValueTokens?: boolean
 }
 
-export const defaultCanonicalClassNameOptions: CanonicalClassNameOptions = {
+type ResolvedCanonicalClassNameOptions = Required<CanonicalClassNameOptions>
+
+export const defaultCanonicalClassNameOptions: ResolvedCanonicalClassNameOptions = {
     preferStaticUtilities: true,
     preferThemeTokens: true,
-    preferPropertyAliases: true
+    preferPropertyAliases: true,
+    preferVariableReferences: true,
+    preferMultiValueTokens: true
 }
 
 interface ClassParts {
@@ -79,6 +85,43 @@ function findModifierIndex(className: string, start: number) {
         if (depth === 0 && isTopLevelModifier(className, index)) return index
     }
     return className.length
+}
+
+function splitTopLevelValueSegments(value: string) {
+    let quote = ''
+    let depth = 0
+    let lastIndex = 0
+    const segments: string[] = []
+    for (let index = 0; index < value.length; index++) {
+        const char = value[index]
+        if (quote) {
+            if (char === '\\') {
+                index++
+            } else if (char === quote) {
+                quote = ''
+            }
+            continue
+        }
+        if (char === '"' || char === '\'') {
+            quote = char
+            continue
+        }
+        if (char === '(' || char === '[' || char === '{') {
+            depth++
+            continue
+        }
+        if (char === ')' || char === ']' || char === '}') {
+            if (depth > 0) depth--
+            continue
+        }
+        if (depth !== 0 || char !== '|') continue
+        segments.push(value.slice(lastIndex, index))
+        lastIndex = index + 1
+    }
+    if (!segments.length) return
+    segments.push(value.slice(lastIndex))
+    if (segments.some((segment) => segment === '')) return
+    return segments
 }
 
 function splitClassName(className: string): ClassParts {
@@ -238,16 +281,29 @@ function valuesMatch(a: ReturnType<typeof normalizeNumericValue>, b: ReturnType<
     return Boolean(a && b && a.kind === b.kind && Math.abs(a.value - b.value) < EPSILON)
 }
 
-function getMatchingVariableKeys(rules: GeneratedRule[], rawValue: string, css: MasterCSS) {
+function getVariableReferenceName(value: string) {
+    return /^var\(--([A-Za-z0-9_-]+)\)$/.exec(value)?.[1]
+}
+
+function getMatchingVariableKeys(
+    rules: GeneratedRule[],
+    rawValue: string,
+    css: MasterCSS,
+    options: ResolvedCanonicalClassNameOptions
+) {
     const sourceValue = normalizeNumericValue(rawValue, css)
+    const variableReferenceName = options.preferVariableReferences ? getVariableReferenceName(rawValue) : undefined
     const tokenKeys = new Set<string>()
     const numericKeys = new Set<string>()
     for (const rule of rules) {
         const variables = (rule as any).registeredUtility?.variables
         if (!variables) continue
         if (variables.has(rawValue)) tokenKeys.add(rawValue)
-        if (!sourceValue) continue
         for (const [key, variable] of variables) {
+            if (variableReferenceName && variable?.name === variableReferenceName) {
+                tokenKeys.add(key)
+            }
+            if (!sourceValue) continue
             if (valuesMatch(sourceValue, getVariableNumericValue(variable, css))) {
                 numericKeys.add(key)
             }
@@ -259,6 +315,30 @@ function getMatchingVariableKeys(rules: GeneratedRule[], rawValue: string, css: 
         keys: [...keys].sort((a, b) => a.length - b.length || a.localeCompare(b)),
         kind
     } satisfies MatchingVariableKeys
+}
+
+function getMatchingMultiValueVariableKeys(
+    rules: GeneratedRule[],
+    rawValue: string,
+    css: MasterCSS,
+    options: ResolvedCanonicalClassNameOptions
+): MatchingVariableKeys | undefined {
+    if (!options.preferMultiValueTokens) return
+    const segments = splitTopLevelValueSegments(rawValue)
+    if (!segments) return
+
+    const segmentKeys: string[] = []
+    let kind: MatchingVariableKeys['kind'] = 'token'
+    for (const segment of segments) {
+        const match = getMatchingVariableKeys(rules, segment, css, options)
+        if (!match.keys.length) return
+        if (match.kind === 'numeric') kind = 'numeric'
+        segmentKeys.push(match.keys[0])
+    }
+    return {
+        keys: [segmentKeys.join('|')],
+        kind
+    }
 }
 
 function getVariableCandidateKeys(index: RecommendationIndex, signature: string, sourceKey: string, match: MatchingVariableKeys, preferPropertyAliases: boolean) {
@@ -306,6 +386,10 @@ export default function suggestCanonicalClassName(
     css: MasterCSS,
     options: CanonicalClassNameOptions = defaultCanonicalClassNameOptions
 ) {
+    const resolvedOptions: ResolvedCanonicalClassNameOptions = {
+        ...defaultCanonicalClassNameOptions,
+        ...options
+    }
     const sourceRules = css.generate(className)
     if (!sourceRules.length) return
 
@@ -313,7 +397,7 @@ export default function suggestCanonicalClassName(
     const parts = splitClassName(className)
     const candidates: RecommendationCandidate[] = []
 
-    if (options.preferStaticUtilities) {
+    if (resolvedOptions.preferStaticUtilities) {
         for (const candidateBase of index.staticCandidatesBySignature.get(getRulesSignature(sourceRules)) || []) {
             const candidate = createCandidate(candidateBase, parts, 0)
             if (candidate) candidates.push(candidate)
@@ -321,11 +405,12 @@ export default function suggestCanonicalClassName(
     }
 
     if (parts.key && parts.value) {
-        if (options.preferThemeTokens) {
-            const variableMatch = getMatchingVariableKeys(sourceRules, parts.value, css)
+        if (resolvedOptions.preferThemeTokens) {
+            const variableMatch = getMatchingMultiValueVariableKeys(sourceRules, parts.value, css, resolvedOptions)
+                || getMatchingVariableKeys(sourceRules, parts.value, css, resolvedOptions)
             for (const rule of sourceRules) {
                 const propertySignature = getDeclarationPropertySignature(rule)
-                for (const key of getVariableCandidateKeys(index, propertySignature, parts.key, variableMatch, options.preferPropertyAliases)) {
+                for (const key of getVariableCandidateKeys(index, propertySignature, parts.key, variableMatch, resolvedOptions.preferPropertyAliases)) {
                     for (const variableKey of variableMatch.keys) {
                         const candidate = createCandidate(`${key}:${variableKey}`, parts, 1)
                         if (candidate) candidates.push(candidate)
@@ -334,7 +419,7 @@ export default function suggestCanonicalClassName(
             }
         }
 
-        if (options.preferPropertyAliases) {
+        if (resolvedOptions.preferPropertyAliases) {
             for (const property of Object.keys(sourceRules[0]?.declarations || {})) {
                 if (parts.key !== property) continue
                 for (const alias of index.preferredAliasesByProperty.get(property) || []) {

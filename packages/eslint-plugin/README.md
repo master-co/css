@@ -152,7 +152,7 @@ export default [
 ]
 ```
 
-For example, this rule can fix `text-align:center` to `text-center`, `font:16px` to `font:md`, and `margin:md` to `m:md`.
+For example, this rule can fix `text-align:center` to `text-center`, `font:16px` to `font:md`, `margin:md` to `m:md`, `m:1rem|1.5rem` to `m:md|lg`, and `fg:var(--color-red-60)` to `fg:red-60`.
 
 You can disable specific canonicalization families:
 
@@ -163,7 +163,9 @@ export default [
             '@master/css/prefer-canonical-classes': ['warn', {
                 preferStaticUtilities: true,
                 preferThemeTokens: true,
-                preferPropertyAliases: true
+                preferPropertyAliases: true,
+                preferVariableReferences: true,
+                preferMultiValueTokens: true
             }]
         }
     }
@@ -172,7 +174,7 @@ export default [
 
 ### `@master/css/no-conflicting-classes`
 
-Disallows classes that emit the same CSS declaration for the same variant.
+Disallows classes that emit the same CSS declaration properties for the same variant.
 
 ```js
 export default [
@@ -183,6 +185,8 @@ export default [
     }
 ]
 ```
+
+When two classes conflict, the later class is treated as the effective one and the fix removes the earlier class.
 
 ## Settings
 

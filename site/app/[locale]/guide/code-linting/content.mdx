@@ -20,7 +20,7 @@ export default [
 | --- | --- | --- | --- |
 | `@master/css/sort-classes` | `warn` | Yes | Sort classes into a stable generated-rule order. |
 | `@master/css/no-invalid-classes` | `error` | No | Report invalid Master CSS syntax and invalid generated CSS. |
-| `@master/css/no-conflicting-classes` | `warn` | Yes | Report classes that target the same declarations in the same variant scope. |
+| `@master/css/no-conflicting-classes` | `warn` | Yes | Report classes that target the same declaration properties in the same variant scope. |
 | `@master/css/prefer-canonical-classes` | `warn` | Yes | Prefer semantic utilities, theme tokens, and property aliases. |
 
 ---
@@ -107,11 +107,24 @@ Define project classes in the CSS entry when they are intentional:
 <h1 class="text-center font:md m:md">...</h1>
 ```
 
+It also canonicalizes multi-value tokens and direct CSS variable references when every value maps to the active theme:
+
+```html
+<div class="m:1rem|1.5rem fg:var(--color-red-60)">...</div>
+```
+
+(o) Fixed output:
+```html
+<div class="m:md|lg fg:red-60">...</div>
+```
+
 | Option | Default | Effect |
 | --- | --- | --- |
 | `preferStaticUtilities` | `true` | Prefer named or semantic utilities such as `text-center` over native declaration forms. |
 | `preferThemeTokens` | `true` | Prefer theme token values such as `font:md` over equivalent raw values. |
 | `preferPropertyAliases` | `true` | Prefer shorter property aliases such as `m:md` over `margin:md`. |
+| `preferVariableReferences` | `true` | Prefer token keys such as `fg:red-60` over direct references such as `fg:var(--color-red-60)`. |
+| `preferMultiValueTokens` | `true` | Prefer tokenized multi-value forms such as `m:md|lg` over equivalent raw segments. |
 
 Disable one family when a team wants a more literal authoring style:
 
@@ -138,11 +151,11 @@ export default [
 <div class="m:0.625rem m:5x">...</div>
 ```
 
-(!) `"m:0.625rem" applies the same declarations as "m:5x".`
+(!) `"m:0.625rem" is overridden by "m:5x".`
 
 (o) Fixed output:
 ```html
-<div class="m:0.625rem">...</div>
+<div class="m:5x">...</div>
 ```
 
 Variant scope matters. Classes with different selectors, modes, or at-rules do not conflict with each other.
@@ -151,7 +164,7 @@ Variant scope matters. Classes with different selectors, modes, or at-rules do n
 <div class="m:10x@sm m:3.125rem@md">...</div>
 ```
 
-When a conflict can be fixed automatically, the rule removes the later conflicting class and keeps the earlier class. Review the fix if the authoring order was carrying intent.
+When a conflict can be fixed automatically, the rule removes the earlier overridden class and keeps the later class. Review the fix if the authoring order was carrying intent.
 
 ---
 

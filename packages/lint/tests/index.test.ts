@@ -31,16 +31,22 @@ describe('class conflicts', () => {
     test('finds classes with matching declarations and variants', () => {
         expect(findClassConflicts(['m:10px', 'm:20px', 'm:30px:hover', 'm:40px@dark'], css))
             .toEqual([
-                { className: 'm:10px', conflicts: ['m:20px'] },
-                { className: 'm:20px', conflicts: ['m:10px'] }
+                { className: 'm:10px', conflicts: ['m:20px'] }
             ])
     })
 
     test('ignores invalid classes', () => {
         expect(findClassConflicts(['a', 'hello:world', 'm:10px', 'm:20px'], css))
             .toEqual([
-                { className: 'm:10px', conflicts: ['m:20px'] },
-                { className: 'm:20px', conflicts: ['m:10px'] }
+                { className: 'm:10px', conflicts: ['m:20px'] }
+            ])
+    })
+
+    test('keeps the last conflicting class', () => {
+        expect(findClassConflicts(['m:sm', 'm:md', 'm:lg'], css))
+            .toEqual([
+                { className: 'm:sm', conflicts: ['m:lg'] },
+                { className: 'm:md', conflicts: ['m:lg'] }
             ])
     })
 })
@@ -73,6 +79,23 @@ describe('canonical class suggestions', () => {
         expect(suggestCanonicalClassName('margin:md', css)).toBe('m:md')
     })
 
+    test('suggests multi-value theme tokens', () => {
+        expect(suggestCanonicalClassName('m:1rem|1.5rem', css)).toBe('m:md|lg')
+        expect(suggestCanonicalClassName('p:.5rem|1rem', css)).toBe('p:xs|md')
+        expect(suggestCanonicalClassName('r:.25rem|.375rem', css)).toBe('r:sm|md')
+    })
+
+    test('suggests theme tokens from CSS variable references', () => {
+        expect(suggestCanonicalClassName('m:var(--spacing-md)', css)).toBe('m:md')
+        expect(suggestCanonicalClassName('r:var(--radius-md)', css)).toBe('r:md')
+        expect(suggestCanonicalClassName('fg:var(--color-red-60)', css)).toBe('fg:red-60')
+    })
+
+    test('does not suggest partial multi-value or unknown variable tokens', () => {
+        expect(suggestCanonicalClassName('m:1rem|1.125rem', css)).toBeUndefined()
+        expect(suggestCanonicalClassName('m:var(--spacing-unknown)', css)).toBeUndefined()
+    })
+
     test('respects canonical suggestion options', () => {
         expect(suggestCanonicalClassName('display:block', css, {
             ...defaultCanonicalClassNameOptions,
@@ -85,6 +108,14 @@ describe('canonical class suggestions', () => {
         expect(suggestCanonicalClassName('margin:md', css, {
             ...defaultCanonicalClassNameOptions,
             preferPropertyAliases: false
+        })).toBeUndefined()
+        expect(suggestCanonicalClassName('m:var(--spacing-md)', css, {
+            ...defaultCanonicalClassNameOptions,
+            preferVariableReferences: false
+        })).toBeUndefined()
+        expect(suggestCanonicalClassName('m:1rem|1.5rem', css, {
+            ...defaultCanonicalClassNameOptions,
+            preferMultiValueTokens: false
         })).toBeUndefined()
     })
 

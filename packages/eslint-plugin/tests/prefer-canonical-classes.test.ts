@@ -20,6 +20,14 @@ jsxTester.run('prefer canonical classes', rule, {
             code: `<div class="display:block">Static utilities disabled</div>`,
             options: [{ preferStaticUtilities: false }]
         },
+        {
+            code: `<div class="m:var(--spacing-md)">Variable references disabled</div>`,
+            options: [{ preferVariableReferences: false }]
+        },
+        {
+            code: `<div class="m:1rem|1.5rem">Multi-value tokens disabled</div>`,
+            options: [{ preferMultiValueTokens: false }]
+        },
     ],
     invalid: [
         {
@@ -60,6 +68,24 @@ jsxTester.run('prefer canonical classes', rule, {
             errors: [
                 { messageId: 'preferClass', data: { actual: 'font-size:md', recommended: 'font:md' } },
                 { messageId: 'preferClass', data: { actual: 'background-color:red-60', recommended: 'bg:red-60' } },
+            ]
+        },
+        {
+            code: `<div class="m:1rem|1.5rem p:.5rem|1rem r:.25rem|.375rem">Multi-value tokens</div>`,
+            output: `<div class="m:md|lg p:xs|md r:sm|md">Multi-value tokens</div>`,
+            errors: [
+                { messageId: 'preferClass', data: { actual: 'm:1rem|1.5rem', recommended: 'm:md|lg' } },
+                { messageId: 'preferClass', data: { actual: 'p:.5rem|1rem', recommended: 'p:xs|md' } },
+                { messageId: 'preferClass', data: { actual: 'r:.25rem|.375rem', recommended: 'r:sm|md' } },
+            ]
+        },
+        {
+            code: `<div class="m:var(--spacing-md) r:var(--radius-md) fg:var(--color-red-60)">Variable references</div>`,
+            output: `<div class="m:md r:md fg:red-60">Variable references</div>`,
+            errors: [
+                { messageId: 'preferClass', data: { actual: 'm:var(--spacing-md)', recommended: 'm:md' } },
+                { messageId: 'preferClass', data: { actual: 'r:var(--radius-md)', recommended: 'r:md' } },
+                { messageId: 'preferClass', data: { actual: 'fg:var(--color-red-60)', recommended: 'fg:red-60' } },
             ]
         },
         {

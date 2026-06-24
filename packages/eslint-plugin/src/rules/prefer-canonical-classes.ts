@@ -24,6 +24,8 @@ export default createRule({
                 preferStaticUtilities: { type: 'boolean' },
                 preferThemeTokens: { type: 'boolean' },
                 preferPropertyAliases: { type: 'boolean' },
+                preferVariableReferences: { type: 'boolean' },
+                preferMultiValueTokens: { type: 'boolean' },
             },
             additionalProperties: false
         }]

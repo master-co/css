@@ -26,9 +26,8 @@ jsxTester.run('mdx no conflicting classes', CollisionRule, {
     invalid: [
         {
             code: `<div class="m:10px m:20px m:30px:hover m:40px@dark">Simple</div>`,
-            output: `<div class="m:10px m:30px:hover m:40px@dark">Simple</div>`,
+            output: `<div class="m:20px m:30px:hover m:40px@dark">Simple</div>`,
             errors: [
-                { messageId: 'collisionClass' },
                 { messageId: 'collisionClass' }
             ],
             filename: 'test.mdx',

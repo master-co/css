@@ -10,17 +10,22 @@ jsxTester.run('collision', rule, {
     invalid: [
         {
             code: `<div class="m:10px m:20px m:30px:hover m:40px@dark">collision</div>`,
-            output: `<div class="m:10px m:30px:hover m:40px@dark">collision</div>`,
+            output: `<div class="m:20px m:30px:hover m:40px@dark">collision</div>`,
             errors: [
-                { messageId: 'collisionClass' },
                 { messageId: 'collisionClass' }
             ]
         },
         {
             code: `<div class="a c d hello:world font:error mt:0 mt:0@sm m:10px m:20px m:30px:hover m:40px@dark">Error class</div>`,
-            output: `<div class="a c d hello:world font:error mt:0 mt:0@sm m:10px m:30px:hover m:40px@dark">Error class</div>`,
+            output: `<div class="a c d hello:world font:error mt:0 mt:0@sm m:20px m:30px:hover m:40px@dark">Error class</div>`,
             errors: [
                 { messageId: 'collisionClass' },
+            ]
+        },
+        {
+            code: `<div class="m:10px m:20px m:30px">last class wins</div>`,
+            output: `<div class="m:30px">last class wins</div>`,
+            errors: [
                 { messageId: 'collisionClass' },
             ]
         }

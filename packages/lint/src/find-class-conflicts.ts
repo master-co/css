@@ -9,31 +9,29 @@ export interface ClassConflict {
 
 export default function findClassConflicts(classNames: string[], css: MasterCSS): ClassConflict[] {
     const validRules = classNames
-        .map((className) => generateValidRules(className, css)[0])
-        .filter(Boolean)
+        .map((className) => {
+            const rule = generateValidRules(className, css)[0]
+            return rule ? { className, rule } : undefined
+        })
+        .filter((entry): entry is NonNullable<typeof entry> => Boolean(entry))
     const conflicts: ClassConflict[] = []
-    for (let i = 0; i < classNames.length; i++) {
-        const className = classNames[i]
-        const rule = validRules.find((validRule) => validRule.name === className)
-        const conflictingClassNames = []
-        if (rule) {
-            for (let j = 0; j < classNames.length; j++) {
-                const compareClassName = classNames[j]
-                const compareRule = validRules.find((validRule) => validRule.name === compareClassName)
-                if (i !== j && compareRule
-                    && equalDeclarations(rule.declarations, compareRule.declarations)
-                    && equalVariants(rule, compareRule)
-                ) {
-                    conflictingClassNames.push(compareClassName)
-                }
-            }
-            if (conflictingClassNames.length > 0) {
-                conflicts.push({
-                    className,
-                    conflicts: conflictingClassNames
-                })
+    for (let i = 0; i < validRules.length; i++) {
+        const entry = validRules[i]
+        const laterConflicts = []
+        for (let j = i + 1; j < validRules.length; j++) {
+            const compareEntry = validRules[j]
+            if (
+                equalDeclarations(entry.rule.declarations, compareEntry.rule.declarations)
+                && equalVariants(entry.rule, compareEntry.rule)
+            ) {
+                laterConflicts.push(compareEntry)
             }
         }
+        if (!laterConflicts.length) continue
+        conflicts.push({
+            className: entry.className,
+            conflicts: [laterConflicts[laterConflicts.length - 1].className]
+        })
     }
     return conflicts
 }
