@@ -59,6 +59,14 @@ jsxTester.run('collision', rule, {
             ]
         },
         {
+            code: `<div class="mx:md ml:lg py:md pt:lg">multiple partial conflicts</div>`,
+            output: `<div class="mr:md ml:lg pb:md pt:lg">multiple partial conflicts</div>`,
+            errors: [
+                { messageId: 'partialCollisionClass', data: { actual: 'mx:md', replacement: 'mr:md', conflict: 'ml:lg' } },
+                { messageId: 'partialCollisionClass', data: { actual: 'py:md', replacement: 'pb:md', conflict: 'pt:lg' } },
+            ]
+        },
+        {
             code: `<div class="p:sm p:md px:lg">full conflict before partial conflict</div>`,
             output: [
                 `<div class="p:md px:lg">full conflict before partial conflict</div>`,

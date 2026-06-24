@@ -54,6 +54,11 @@ export default createRule({
             const partialConflicts = findPartialClassConflicts(classValues, css)
             if (!partialConflicts.length) return
 
+            let fixedRaw = raw
+            for (const conflict of partialConflicts) {
+                fixedRaw = replaceClassNameInClassList(fixedRaw, conflict.className, conflict.replacement, { unescape })
+            }
+
             const classNodeQueues = new Map<string, typeof classNodes>()
             for (const classNode of classNodes) {
                 const queue = classNodeQueues.get(classNode.value)
@@ -76,7 +81,7 @@ export default createRule({
                         conflict: conflict.conflict
                     },
                     fix(fixer) {
-                        return fixer.replaceTextRange([start, end], replaceClassNameInClassList(raw, conflict.className, conflict.replacement, { unescape }))
+                        return fixer.replaceTextRange([start, end], fixedRaw)
                     }
                 })
             }
