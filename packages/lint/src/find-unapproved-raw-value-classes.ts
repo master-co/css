@@ -24,12 +24,15 @@ function splitTopLevelValueSegments(value: string) {
     return splitMasterCSSTopLevel(value, '|').map(({ start, end }) => value.slice(start, end))
 }
 
-function isTokenValue(value: string, variableKeys: Set<string>) {
-    return splitTopLevelValueSegments(value).every((segment) => variableKeys.has(segment))
-}
-
 function matchesAllowedPattern(value: string, patterns: string[]) {
     return patterns.some((pattern) => new RegExp(pattern).test(value))
+}
+
+function getUnapprovedRawValueSegments(value: string, variableKeys: Set<string>, allowedPatterns: string[]) {
+    return splitTopLevelValueSegments(value).filter((segment) =>
+        !variableKeys.has(segment)
+        && !matchesAllowedPattern(segment, allowedPatterns)
+    )
 }
 
 function isAllowedProperty(key: string, properties: string[], allowProperties: string[]) {
@@ -50,7 +53,6 @@ export default function findUnapprovedRawValueClasses(
     for (const className of classNames) {
         const parts = inspectMasterCSSClass(css, className)
         if (!parts.key || !parts.value) continue
-        if (matchesAllowedPattern(parts.value, allowedPatterns)) continue
 
         const rules = generateValidRules(className, css)
         if (!rules.length || !parts.variables.size) continue
@@ -59,12 +61,13 @@ export default function findUnapprovedRawValueClasses(
         if (isAllowedProperty(parts.key, properties, allowProperties)) continue
 
         const variableKeys = new Set(parts.variableEntries.map(({ key }) => key))
-        if (isTokenValue(parts.value, variableKeys)) continue
+        const unapprovedSegments = getUnapprovedRawValueSegments(parts.value, variableKeys, allowedPatterns)
+        if (!unapprovedSegments.length) continue
 
         issues.push({
             className,
             key: parts.key,
-            value: parts.value,
+            value: unapprovedSegments.join('|'),
             properties
         })
     }

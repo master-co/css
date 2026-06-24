@@ -41,6 +41,10 @@ jsxTester.run('prefer canonical classes', rule, {
             options: [{ preferConditionOrder: false }]
         },
         {
+            code: `<div class="font:16px@dark@sm">Theme tokens and condition order disabled</div>`,
+            options: [{ preferThemeTokens: false, preferConditionOrder: false }]
+        },
+        {
             code: `<div class="block@sm:hover block:focus:hover block@start@sm block@print@sm block@supports(display:grid)@sm">Unsafe suffix order</div>`
         },
     ],
@@ -118,6 +122,46 @@ jsxTester.run('prefer canonical classes', rule, {
             errors: [
                 { messageId: 'preferClass', data: { actual: 'font:16px@dark@sm', recommended: 'font:md@sm@dark' } },
                 { messageId: 'preferClass', data: { actual: 'text-align:center@dark@sm', recommended: 'text-center@sm@dark' } },
+            ]
+        },
+        {
+            code: `<div class="font:16px@dark@sm">Condition order disabled keeps theme token fix</div>`,
+            output: `<div class="font:md@dark@sm">Condition order disabled keeps theme token fix</div>`,
+            options: [{ preferConditionOrder: false }],
+            errors: [
+                { messageId: 'preferClass', data: { actual: 'font:16px@dark@sm', recommended: 'font:md@dark@sm' } },
+            ]
+        },
+        {
+            code: `<div class="font:16px@dark@sm">Theme tokens disabled keeps condition order fix</div>`,
+            output: `<div class="font:16px@sm@dark">Theme tokens disabled keeps condition order fix</div>`,
+            options: [{ preferThemeTokens: false }],
+            errors: [
+                { messageId: 'preferClass', data: { actual: 'font:16px@dark@sm', recommended: 'font:16px@sm@dark' } },
+            ]
+        },
+        {
+            code: `<div class="margin:md@dark@sm">Property aliases disabled keeps condition order fix</div>`,
+            output: `<div class="margin:md@sm@dark">Property aliases disabled keeps condition order fix</div>`,
+            options: [{ preferPropertyAliases: false }],
+            errors: [
+                { messageId: 'preferClass', data: { actual: 'margin:md@dark@sm', recommended: 'margin:md@sm@dark' } },
+            ]
+        },
+        {
+            code: `<div class="m:var(--spacing-md)@dark@sm">Variable references disabled keeps condition order fix</div>`,
+            output: `<div class="m:var(--spacing-md)@sm@dark">Variable references disabled keeps condition order fix</div>`,
+            options: [{ preferVariableReferences: false }],
+            errors: [
+                { messageId: 'preferClass', data: { actual: 'm:var(--spacing-md)@dark@sm', recommended: 'm:var(--spacing-md)@sm@dark' } },
+            ]
+        },
+        {
+            code: `<div class="m:1rem|1.5rem@dark@sm">Multi-value tokens disabled keeps condition order fix</div>`,
+            output: `<div class="m:1rem|1.5rem@sm@dark">Multi-value tokens disabled keeps condition order fix</div>`,
+            options: [{ preferMultiValueTokens: false }],
+            errors: [
+                { messageId: 'preferClass', data: { actual: 'm:1rem|1.5rem@dark@sm', recommended: 'm:1rem|1.5rem@sm@dark' } },
             ]
         },
         {

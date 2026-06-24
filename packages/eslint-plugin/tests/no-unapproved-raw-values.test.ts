@@ -26,6 +26,10 @@ jsxTester.run('no unapproved raw values', rule, {
             code: `<div class="m:calc(1rem+1px)">Allowed by pattern</div>`,
             options: [{ allowedPatterns: ['^calc\\('] }]
         },
+        {
+            code: `<div class="m:md|calc(1rem+1px) m:calc(1rem+1px)|md">Allowed multi-value segment by pattern</div>`,
+            options: [{ allowedPatterns: ['^calc\\('] }]
+        },
     ],
     invalid: [
         {
@@ -34,6 +38,15 @@ jsxTester.run('no unapproved raw values', rule, {
                 { messageId: 'unapprovedRawValue', data: { value: '15px', className: 'font:15px' } },
                 { messageId: 'unapprovedRawValue', data: { value: '17px', className: 'm:17px' } },
                 { messageId: 'unapprovedRawValue', data: { value: '#123456', className: 'fg:#123456' } },
+            ]
+        },
+        {
+            code: `<div class="m:md|17px m:calc(1rem+1px)|18px m:19px|20px">Multi-value raw value segments</div>`,
+            options: [{ allowedPatterns: ['^calc\\('] }],
+            errors: [
+                { messageId: 'unapprovedRawValue', data: { value: '17px', className: 'm:md|17px' } },
+                { messageId: 'unapprovedRawValue', data: { value: '18px', className: 'm:calc(1rem+1px)|18px' } },
+                { messageId: 'unapprovedRawValue', data: { value: '19px|20px', className: 'm:19px|20px' } },
             ]
         },
         {

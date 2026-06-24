@@ -195,6 +195,19 @@ describe('raw value policy', () => {
         expect(findUnapprovedRawValueClasses(['m:calc(1rem+1px)'], css, { allowedPatterns: ['^calc\\('] })).toEqual([])
         expect(findUnapprovedRawValueClasses(['font:15px'], css, { allowRawValues: true })).toEqual([])
     })
+
+    test('applies raw value allowed patterns to individual multi-value segments', () => {
+        expect(findUnapprovedRawValueClasses(['m:md|calc(1rem+1px)', 'm:calc(1rem+1px)|md'], css, {
+            allowedPatterns: ['^calc\\(']
+        })).toEqual([])
+        expect(findUnapprovedRawValueClasses(['m:md|17px', 'm:calc(1rem+1px)|18px', 'm:19px|20px'], css, {
+            allowedPatterns: ['^calc\\(']
+        })).toEqual([
+            { className: 'm:md|17px', key: 'm', value: '17px', properties: ['margin'] },
+            { className: 'm:calc(1rem+1px)|18px', key: 'm', value: '18px', properties: ['margin'] },
+            { className: 'm:19px|20px', key: 'm', value: '19px|20px', properties: ['margin'] }
+        ])
+    })
 })
 
 describe('canonical class suggestions', () => {
@@ -231,6 +244,34 @@ describe('canonical class suggestions', () => {
         expect(suggestCanonicalClassName('block!@dark@sm', css)).toBe('block!@sm@dark')
         expect(suggestCanonicalClassName('font:16px@dark@sm', css)).toBe('font:md@sm@dark')
         expect(suggestCanonicalClassName('text-align:center@dark@sm', css)).toBe('text-center@sm@dark')
+    })
+
+    test('combines condition order independently with canonical suggestion options', () => {
+        expect(suggestCanonicalClassName('font:16px@dark@sm', css, {
+            ...defaultCanonicalClassNameOptions,
+            preferConditionOrder: false
+        })).toBe('font:md@dark@sm')
+        expect(suggestCanonicalClassName('font:16px@dark@sm', css, {
+            ...defaultCanonicalClassNameOptions,
+            preferThemeTokens: false
+        })).toBe('font:16px@sm@dark')
+        expect(suggestCanonicalClassName('font:16px@dark@sm', css, {
+            ...defaultCanonicalClassNameOptions,
+            preferConditionOrder: false,
+            preferThemeTokens: false
+        })).toBeUndefined()
+        expect(suggestCanonicalClassName('margin:md@dark@sm', css, {
+            ...defaultCanonicalClassNameOptions,
+            preferPropertyAliases: false
+        })).toBe('margin:md@sm@dark')
+        expect(suggestCanonicalClassName('m:var(--spacing-md)@dark@sm', css, {
+            ...defaultCanonicalClassNameOptions,
+            preferVariableReferences: false
+        })).toBe('m:var(--spacing-md)@sm@dark')
+        expect(suggestCanonicalClassName('m:1rem|1.5rem@dark@sm', css, {
+            ...defaultCanonicalClassNameOptions,
+            preferMultiValueTokens: false
+        })).toBe('m:1rem|1.5rem@sm@dark')
     })
 
     test('does not suggest partial multi-value or unknown variable tokens', () => {
