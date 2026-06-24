@@ -1,7 +1,6 @@
 import defineVisitors from '../utils/define-visitors'
 import resolveContext from '../utils/resolve-context'
 import createRule from '../create-rule'
-import settingsSchema from '../settings-schema'
 import {
     findClassConflicts,
     findPartialClassConflicts,
@@ -21,7 +20,7 @@ export default createRule({
             partialCollisionClass: 'Prefer "{{replacement}}" over "{{actual}}" because "{{conflict}}" overrides part of it.',
         },
         fixable: 'code',
-        schema: [settingsSchema]
+        schema: []
     },
     defaultOptions: [],
     create(context) {

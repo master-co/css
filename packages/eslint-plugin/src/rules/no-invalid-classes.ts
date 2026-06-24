@@ -1,7 +1,7 @@
 import defineVisitors from '../utils/define-visitors'
 import resolveContext from '../utils/resolve-context'
 import createRule from '../create-rule'
-import settingsSchema from '../settings-schema'
+import { noInvalidClassesOptionsSchema } from '../settings-schema'
 import { getClassValidationIssues } from '@master/css-lint'
 
 export default createRule({
@@ -16,7 +16,7 @@ export default createRule({
             disallowUnknownClass: '{{message}}',
         },
         fixable: null,
-        schema: [settingsSchema]
+        schema: [noInvalidClassesOptionsSchema]
     },
     defaultOptions: [],
     create: function (context) {

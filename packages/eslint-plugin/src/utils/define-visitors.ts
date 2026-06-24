@@ -6,7 +6,7 @@ import resolveClassNode from './resolve-class-node'
 
 export default function defineVisitors({ context, settings }: { context: RuleContext<any, any[]>, settings: Settings }, visitNode: (node: TSESTree.Node, resolved: ReturnType<typeof resolveClassNode>) => void): RuleListener {
     const classAttributeRegex = new RegExp(`^(?:${settings.classAttributes.join('|')})$`)
-    const classFunctionsRegex = new RegExp(`^(?:${settings.classFunctions.join('|')})`)
+    const classFunctionsRegex = new RegExp(`^(?:${settings.classFunctions.join('|')})$`)
     const classDeclarationsRegex = new RegExp(`^(?:${settings.classDeclarations.join('|')})$`)
     const visitClassNode = withVisitClassNode(visitNode, context)
 

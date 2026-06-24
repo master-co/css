@@ -1,7 +1,6 @@
 import defineVisitors from '../utils/define-visitors'
 import resolveContext from '../utils/resolve-context'
 import createRule from '../create-rule'
-import settingsSchema from '../settings-schema'
 import { sortClassList } from '@master/css-lint'
 
 export default createRule({
@@ -15,7 +14,7 @@ export default createRule({
         messages: {
             invalidClassOrder: 'No consistent class order followed.',
         },
-        schema: [settingsSchema]
+        schema: []
     },
     defaultOptions: [],
     create: function (context) {

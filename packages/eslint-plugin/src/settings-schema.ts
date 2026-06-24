@@ -1,25 +1,31 @@
 import type { JSONSchema4 } from '@typescript-eslint/utils/json-schema'
 
-const settingsSchema: JSONSchema4 = {
+const sourceMatcherSchema: JSONSchema4 = {
+    type: 'array',
+    items: { type: 'string', minLength: 1 },
+    uniqueItems: true
+}
+
+export const masterCSSSettingsSchema: JSONSchema4 = {
     type: 'object',
     properties: {
-        classAttributes: {
-            type: 'array',
-            items: { type: 'string' },
-        },
-        classFunctions: {
-            type: 'array',
-            items: { type: 'string' },
-        },
-        ignoredKeys: {
-            type: 'array',
-            items: { type: 'string', minLength: 0 },
-            uniqueItems: true,
-        },
+        classAttributes: sourceMatcherSchema,
+        classFunctions: sourceMatcherSchema,
+        classDeclarations: sourceMatcherSchema,
+        ignoredKeys: sourceMatcherSchema,
         manifest: {
             type: 'object',
         }
     },
+    additionalProperties: false
 }
 
-export default settingsSchema
+export const noInvalidClassesOptionsSchema: JSONSchema4 = {
+    type: 'object',
+    properties: {
+        disallowUnknownClass: { type: 'boolean' }
+    },
+    additionalProperties: false
+}
+
+export default masterCSSSettingsSchema
