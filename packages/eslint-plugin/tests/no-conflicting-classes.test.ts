@@ -75,6 +75,60 @@ jsxTester.run('collision', rule, {
             errors: [
                 { messageId: 'collisionClass' },
             ]
+        },
+        {
+            code: `<div class="inset:md top:lg">partial inset conflict</div>`,
+            output: `<div class="right:md bottom:md left:md top:lg">partial inset conflict</div>`,
+            errors: [
+                { messageId: 'partialCollisionClass', data: { actual: 'inset:md', replacement: 'right:md bottom:md left:md', conflict: 'top:lg' } },
+            ]
+        },
+        {
+            code: `<div class="r:md rtl:lg">partial radius conflict</div>`,
+            output: `<div class="rtr:md rbr:md rbl:md rtl:lg">partial radius conflict</div>`,
+            errors: [
+                { messageId: 'partialCollisionClass', data: { actual: 'r:md', replacement: 'rtr:md rbr:md rbl:md', conflict: 'rtl:lg' } },
+            ]
+        },
+        {
+            code: `<div class="b:1px bt:2px">partial border width conflict</div>`,
+            output: `<div class="br:1px bb:1px bl:1px bt:2px">partial border width conflict</div>`,
+            errors: [
+                { messageId: 'partialCollisionClass', data: { actual: 'b:1px', replacement: 'br:1px bb:1px bl:1px', conflict: 'bt:2px' } },
+            ]
+        },
+        {
+            code: `<div class="b:red-60 bt:blue-60">partial border color conflict</div>`,
+            output: `<div class="br:red-60 bb:red-60 bl:red-60 bt:blue-60">partial border color conflict</div>`,
+            errors: [
+                { messageId: 'partialCollisionClass', data: { actual: 'b:red-60', replacement: 'br:red-60 bb:red-60 bl:red-60', conflict: 'bt:blue-60' } },
+            ]
+        },
+        {
+            code: `<div class="b-solid bt-dashed">partial border style conflict</div>`,
+            output: `<div class="br-solid bb-solid bl-solid bt-dashed">partial border style conflict</div>`,
+            errors: [
+                { messageId: 'partialCollisionClass', data: { actual: 'b-solid', replacement: 'br-solid bb-solid bl-solid', conflict: 'bt-dashed' } },
+            ]
+        },
+        {
+            code: `<div class="mx:md ml:lg b:1px bt:2px">mixed partial conflicts</div>`,
+            output: `<div class="mr:md ml:lg br:1px bb:1px bl:1px bt:2px">mixed partial conflicts</div>`,
+            errors: [
+                { messageId: 'partialCollisionClass', data: { actual: 'mx:md', replacement: 'mr:md', conflict: 'ml:lg' } },
+                { messageId: 'partialCollisionClass', data: { actual: 'b:1px', replacement: 'br:1px bb:1px bl:1px', conflict: 'bt:2px' } },
+            ]
+        },
+        {
+            code: `<template><div class="b-solid bt-dashed">Vue</div></template>`,
+            output: `<template><div class="br-solid bb-solid bl-solid bt-dashed">Vue</div></template>`,
+            errors: [
+                { messageId: 'partialCollisionClass', data: { actual: 'b-solid', replacement: 'br-solid bb-solid bl-solid', conflict: 'bt-dashed' } },
+            ],
+            filename: 'test.vue',
+            languageOptions: {
+                parser: await import('vue-eslint-parser')
+            }
         }
     ]
 })

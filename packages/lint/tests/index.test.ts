@@ -189,6 +189,69 @@ describe('partial class conflicts', () => {
         expect(findPartialClassConflicts(['mx:md', 'mx:lg'], css)).toEqual([])
         expect(findPartialClassConflicts(['mx:md', 'm:lg'], css)).toEqual([])
     })
+
+    test('splits physical inset shorthands when a later side overrides part of them', () => {
+        expect(findPartialClassConflicts(['inset:md', 'top:lg'], css)).toEqual([
+            { className: 'inset:md', replacement: 'right:md bottom:md left:md', conflict: 'top:lg' }
+        ])
+        expect(findPartialClassConflicts(['inset:md', 'left:lg'], css)).toEqual([
+            { className: 'inset:md', replacement: 'top:md right:md bottom:md', conflict: 'left:lg' }
+        ])
+        expect(findPartialClassConflicts(['inset:md@sm', 'top:lg@sm'], css)).toEqual([
+            { className: 'inset:md@sm', replacement: 'right:md@sm bottom:md@sm left:md@sm', conflict: 'top:lg@sm' }
+        ])
+    })
+
+    test('splits radius shorthands when a later corner overrides part of them', () => {
+        expect(findPartialClassConflicts(['r:md', 'rtl:lg'], css)).toEqual([
+            { className: 'r:md', replacement: 'rtr:md rbr:md rbl:md', conflict: 'rtl:lg' }
+        ])
+        expect(findPartialClassConflicts(['r:md', 'rbr:lg'], css)).toEqual([
+            { className: 'r:md', replacement: 'rtl:md rtr:md rbl:md', conflict: 'rbr:lg' }
+        ])
+        expect(findPartialClassConflicts(['border-radius:.375rem', 'border-top-left-radius:.5rem'], css)).toEqual([
+            { className: 'border-radius:.375rem', replacement: 'rtr:md rbr:md rbl:md', conflict: 'border-top-left-radius:.5rem' }
+        ])
+    })
+
+    test('splits border width shorthands when a later side overrides part of them', () => {
+        expect(findPartialClassConflicts(['b:1px', 'bt:2px'], css)).toEqual([
+            { className: 'b:1px', replacement: 'br:1px bb:1px bl:1px', conflict: 'bt:2px' }
+        ])
+        expect(findPartialClassConflicts(['b:0', 'bl:1px'], css)).toEqual([
+            { className: 'b:0', replacement: 'bt:0 br:0 bb:0', conflict: 'bl:1px' }
+        ])
+        expect(findPartialClassConflicts(['border-width:1px', 'border-top-width:2px'], css)).toEqual([
+            { className: 'border-width:1px', replacement: 'br:1px bb:1px bl:1px', conflict: 'border-top-width:2px' }
+        ])
+    })
+
+    test('splits border color shorthands when a later side overrides part of them', () => {
+        expect(findPartialClassConflicts(['b:red-60', 'bt:blue-60'], css)).toEqual([
+            { className: 'b:red-60', replacement: 'br:red-60 bb:red-60 bl:red-60', conflict: 'bt:blue-60' }
+        ])
+        expect(findPartialClassConflicts(['border-color:red-60', 'border-left-color:blue-60'], css)).toEqual([
+            { className: 'border-color:red-60', replacement: 'bt:red-60 br:red-60 bb:red-60', conflict: 'border-left-color:blue-60' }
+        ])
+    })
+
+    test('splits border style shorthands when a later side overrides part of them', () => {
+        expect(findPartialClassConflicts(['b-solid', 'bt-dashed'], css)).toEqual([
+            { className: 'b-solid', replacement: 'br-solid bb-solid bl-solid', conflict: 'bt-dashed' }
+        ])
+        expect(findPartialClassConflicts(['border-style:solid', 'border-bottom-style:dotted'], css)).toEqual([
+            { className: 'border-style:solid', replacement: 'bt-solid br-solid bl-solid', conflict: 'border-bottom-style:dotted' }
+        ])
+    })
+
+    test('ignores unsupported partial conflict families', () => {
+        expect(findPartialClassConflicts(['b:1px', 'bt:2px@sm'], css)).toEqual([])
+        expect(findPartialClassConflicts(['b:1px', 'b:2px'], css)).toEqual([])
+        expect(findPartialClassConflicts(['b:1px', 'bx:2px'], css)).toEqual([])
+        expect(findPartialClassConflicts(['ix:md', 'ixs:lg'], css)).toEqual([])
+        expect(findPartialClassConflicts(['r:md|lg', 'rtl:xl'], css)).toEqual([])
+        expect(findPartialClassConflicts(['unknown-class', 'btn'], css)).toEqual([])
+    })
 })
 
 describe('class validation issues', () => {

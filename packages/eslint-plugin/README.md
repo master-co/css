@@ -188,7 +188,7 @@ export default [
 ]
 ```
 
-When two classes conflict, the later class is treated as the effective one and the fix removes the earlier class. For partially overlapping spacing shorthands, the fix preserves the surviving declarations by splitting the earlier class, such as `mx:md ml:lg` to `mr:md ml:lg`.
+When two classes conflict, the later class is treated as the effective one and the fix removes the earlier class. For partially overlapping spacing, physical inset, radius, and border width/color/style shorthands, the fix preserves the surviving declarations by splitting the earlier class, such as `mx:md ml:lg` to `mr:md ml:lg` or `b-solid bt-dashed` to `br-solid bb-solid bl-solid bt-dashed`.
 
 ### `@master/css/no-unapproved-raw-values`
 

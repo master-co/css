@@ -157,11 +157,16 @@ m:10x@sm m:3.125rem@md
 
 When a conflict can be fixed automatically, the rule removes the earlier overridden class and keeps the later class. Review the fix if the authoring order was carrying intent.
 
-Partially overlapping spacing shorthands are split so the surviving declarations are kept:
+Partially overlapping spacing, physical inset, radius, and border width/color/style shorthands are split so the surviving declarations are kept:
 
 ```mcss
 mx:md ml:lg <!-- [!code --] -->
 mr:md ml:lg <!-- [!code ++] -->
+```
+
+```mcss
+b-solid bt-dashed <!-- [!code --] -->
+br-solid bb-solid bl-solid bt-dashed <!-- [!code ++] -->
 ```
 
 ---
