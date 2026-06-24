@@ -2,7 +2,7 @@
 
 ## Responsibility
 
-`@master/css-lint` owns framework-neutral Master CSS class lint policy. It sorts class names, detects conflicting classes, validates class diagnostics for lint consumers, and suggests canonical class names.
+`@master/css-lint` owns framework-neutral Master CSS class lint policy. It sorts class names, detects conflicting classes, validates class diagnostics for lint consumers, and suggests canonical class names and class groups.
 
 ## Owns
 
@@ -10,6 +10,7 @@
 - Class conflict detection policy.
 - Class validation diagnostic mapping for lint tools.
 - Canonical class name suggestion policy.
+- Canonical class group suggestion policy.
 - Default lint target settings shared by adapters.
 
 ## Does Not Own
@@ -25,6 +26,7 @@
 - `sortClassNames`
 - `findClassConflicts`
 - `getClassValidationIssues`
+- `suggestCanonicalClassGroups`
 - `suggestCanonicalClassName`
 - `defaultClassLintSettings`
 - `defaultCanonicalClassNameOptions`
@@ -35,6 +37,7 @@
 - `src/sort-class-names.ts`
 - `src/find-class-conflicts.ts`
 - `src/get-class-validation-issues.ts`
+- `src/suggest-canonical-class-groups.ts`
 - `src/suggest-canonical-class-name.ts`
 
 ## Risk Areas

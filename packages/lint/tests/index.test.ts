@@ -6,6 +6,7 @@ import {
     defaultClassLintSettings,
     findClassConflicts,
     getClassValidationIssues,
+    suggestCanonicalClassGroups,
     sortClassNames,
     suggestCanonicalClassName
 } from '../src'
@@ -79,6 +80,15 @@ describe('canonical class suggestions', () => {
         expect(suggestCanonicalClassName('margin:md', css)).toBe('m:md')
     })
 
+    test('suggests static utility aliases from generated declarations', () => {
+        expect(suggestCanonicalClassName('position:relative', css)).toBe('rel')
+        expect(suggestCanonicalClassName('display:none', css)).toBe('hidden')
+        expect(suggestCanonicalClassName('visibility:hidden', css)).toBe('invisible')
+        expect(suggestCanonicalClassName('height:100vh', css)).toBe('vh')
+        expect(suggestCanonicalClassName('width:100vw', css)).toBe('vw')
+        expect(suggestCanonicalClassName('aspect-ratio:1/1', css)).toBe('square')
+    })
+
     test('suggests multi-value theme tokens', () => {
         expect(suggestCanonicalClassName('m:1rem|1.5rem', css)).toBe('m:md|lg')
         expect(suggestCanonicalClassName('p:.5rem|1rem', css)).toBe('p:xs|md')
@@ -131,6 +141,42 @@ describe('canonical class suggestions', () => {
             ]
         }))
         expect(suggestCanonicalClassName('btn', componentCSS)).toBeUndefined()
+    })
+})
+
+describe('canonical class group suggestions', () => {
+    test('suggests size composition utilities', () => {
+        expect(suggestCanonicalClassGroups(['w:md', 'h:md'], css)).toEqual([
+            { classNames: ['w:md', 'h:md'], recommended: 'size:md' }
+        ])
+        expect(suggestCanonicalClassGroups(['width:md', 'height:md'], css)).toEqual([
+            { classNames: ['width:md', 'height:md'], recommended: 'size:md' }
+        ])
+        expect(suggestCanonicalClassGroups(['w:1rem', 'h:1rem'], css)).toEqual([
+            { classNames: ['w:1rem', 'h:1rem'], recommended: 'size:1rem' }
+        ])
+        expect(suggestCanonicalClassGroups(['w:md:hover', 'h:md:hover'], css)).toEqual([
+            { classNames: ['w:md:hover', 'h:md:hover'], recommended: 'size:md:hover' }
+        ])
+    })
+
+    test('suggests min and max size composition utilities', () => {
+        expect(suggestCanonicalClassGroups(['min-w:md', 'min-h:md'], css)).toEqual([
+            { classNames: ['min-w:md', 'min-h:md'], recommended: 'min-size:md' }
+        ])
+        expect(suggestCanonicalClassGroups(['max-w:md', 'max-h:md'], css)).toEqual([
+            { classNames: ['max-w:md', 'max-h:md'], recommended: 'max-size:md' }
+        ])
+    })
+
+    test('does not suggest unsafe composition groups', () => {
+        expect(suggestCanonicalClassGroups(['w:md', 'h:lg'], css)).toEqual([])
+        expect(suggestCanonicalClassGroups(['w:md', 'h:md@sm'], css)).toEqual([])
+        expect(suggestCanonicalClassGroups(['w:error', 'h:md'], css)).toEqual([])
+        expect(suggestCanonicalClassGroups(['w:md', 'h:md'], css, {
+            ...defaultCanonicalClassNameOptions,
+            preferCompositionUtilities: false
+        })).toEqual([])
     })
 })
 

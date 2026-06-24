@@ -28,6 +28,10 @@ jsxTester.run('prefer canonical classes', rule, {
             code: `<div class="m:1rem|1.5rem">Multi-value tokens disabled</div>`,
             options: [{ preferMultiValueTokens: false }]
         },
+        {
+            code: `<div class="w:md h:md">Composition utilities disabled</div>`,
+            options: [{ preferCompositionUtilities: false }]
+        },
     ],
     invalid: [
         {
@@ -89,6 +93,24 @@ jsxTester.run('prefer canonical classes', rule, {
             ]
         },
         {
+            code: `<div class="w:md h:md min-w:md min-h:md max-w:md max-h:md">Composition utilities</div>`,
+            output: `<div class="size:md min-size:md max-size:md">Composition utilities</div>`,
+            errors: [
+                { messageId: 'preferClass', data: { actual: 'w:md h:md', recommended: 'size:md' } },
+                { messageId: 'preferClass', data: { actual: 'min-w:md min-h:md', recommended: 'min-size:md' } },
+                { messageId: 'preferClass', data: { actual: 'max-w:md max-h:md', recommended: 'max-size:md' } },
+            ]
+        },
+        {
+            code: `<div class="width:md height:md w:1rem h:1rem w:md:hover h:md:hover">Composition after canonicalization</div>`,
+            output: `<div class="size:md size:1rem size:md:hover">Composition after canonicalization</div>`,
+            errors: [
+                { messageId: 'preferClass', data: { actual: 'width:md height:md', recommended: 'size:md' } },
+                { messageId: 'preferClass', data: { actual: 'w:1rem h:1rem', recommended: 'size:1rem' } },
+                { messageId: 'preferClass', data: { actual: 'w:md:hover h:md:hover', recommended: 'size:md:hover' } },
+            ]
+        },
+        {
             code: `clsx('display:block font:16px')`,
             output: `clsx('block font:md')`,
             errors: [
@@ -97,11 +119,25 @@ jsxTester.run('prefer canonical classes', rule, {
             ]
         },
         {
+            code: `clsx('width:md height:md')`,
+            output: `clsx('size:md')`,
+            errors: [
+                { messageId: 'preferClass', data: { actual: 'width:md height:md', recommended: 'size:md' } },
+            ]
+        },
+        {
             code: 'ctl(`font:1rem r:.375rem`)',
             output: 'ctl(`font:md r:md`)',
             errors: [
                 { messageId: 'preferClass', data: { actual: 'font:1rem', recommended: 'font:md' } },
                 { messageId: 'preferClass', data: { actual: 'r:.375rem', recommended: 'r:md' } },
+            ]
+        },
+        {
+            code: 'ctl(`w:1rem h:1rem`)',
+            output: 'ctl(`size:1rem`)',
+            errors: [
+                { messageId: 'preferClass', data: { actual: 'w:1rem h:1rem', recommended: 'size:1rem' } },
             ]
         },
     ]
@@ -133,27 +169,27 @@ jsxTester.run('prefer canonical classes parser smoke tests', rule, {
     valid: [],
     invalid: [
         {
-            code: `<template><div class="font:16px">Vue</div></template>`,
-            output: `<template><div class="font:md">Vue</div></template>`,
-            errors: [{ messageId: 'preferClass', data: { actual: 'font:16px', recommended: 'font:md' } }],
+            code: `<template><div class="w:md h:md">Vue</div></template>`,
+            output: `<template><div class="size:md">Vue</div></template>`,
+            errors: [{ messageId: 'preferClass', data: { actual: 'w:md h:md', recommended: 'size:md' } }],
             filename: 'test.vue',
             languageOptions: {
                 parser: await import('vue-eslint-parser')
             }
         },
         {
-            code: `<div class="margin:md">Svelte</div>`,
-            output: `<div class="m:md">Svelte</div>`,
-            errors: [{ messageId: 'preferClass', data: { actual: 'margin:md', recommended: 'm:md' } }],
+            code: `<div class="min-w:md min-h:md">Svelte</div>`,
+            output: `<div class="min-size:md">Svelte</div>`,
+            errors: [{ messageId: 'preferClass', data: { actual: 'min-w:md min-h:md', recommended: 'min-size:md' } }],
             filename: 'test.svelte',
             languageOptions: {
                 parser: await import('svelte-eslint-parser')
             }
         },
         {
-            code: `<div class="text-align:center">Angular</div>`,
-            output: `<div class="text-center">Angular</div>`,
-            errors: [{ messageId: 'preferClass', data: { actual: 'text-align:center', recommended: 'text-center' } }],
+            code: `<div class="max-w:md max-h:md">Angular</div>`,
+            output: `<div class="max-size:md">Angular</div>`,
+            errors: [{ messageId: 'preferClass', data: { actual: 'max-w:md max-h:md', recommended: 'max-size:md' } }],
             languageOptions: {
                 parser: await import('@angular-eslint/template-parser')
             }
@@ -161,11 +197,11 @@ jsxTester.run('prefer canonical classes parser smoke tests', rule, {
         {
             code: `
             # Test
-            <div class="display:block">MDX</div>`,
+            <div class="width:md height:md">MDX</div>`,
             output: `
             # Test
-            <div class="block">MDX</div>`,
-            errors: [{ messageId: 'preferClass', data: { actual: 'display:block', recommended: 'block' } }],
+            <div class="size:md">MDX</div>`,
+            errors: [{ messageId: 'preferClass', data: { actual: 'width:md height:md', recommended: 'size:md' } }],
             filename: 'test.mdx',
             languageOptions: {
                 parser: await import('eslint-mdx')

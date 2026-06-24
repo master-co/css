@@ -64,6 +64,7 @@
         "@types/mdx": "^2.0.14",
         "@types/react": "^19.2.17",
         "@types/react-dom": "^19.2.3",
+        "esbuild": "0.28.1",
         "eslint": "^10.5.0",
         "internal": "workspace:^",
         "tsx": "^4.22.4",

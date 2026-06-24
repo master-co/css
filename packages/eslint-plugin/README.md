@@ -140,7 +140,7 @@ export default [
 
 ### `@master/css/prefer-canonical-classes`
 
-Prefers canonical Master CSS class forms, including semantic utilities, theme tokens, and property aliases.
+Prefers canonical Master CSS class forms, including semantic utilities, theme tokens, property aliases, and composition utilities.
 
 ```js
 export default [
@@ -152,7 +152,7 @@ export default [
 ]
 ```
 
-For example, this rule can fix `text-align:center` to `text-center`, `font:16px` to `font:md`, `margin:md` to `m:md`, `m:1rem|1.5rem` to `m:md|lg`, and `fg:var(--color-red-60)` to `fg:red-60`.
+For example, this rule can fix `text-align:center` to `text-center`, `font:16px` to `font:md`, `margin:md` to `m:md`, `m:1rem|1.5rem` to `m:md|lg`, `fg:var(--color-red-60)` to `fg:red-60`, and `w:md h:md` to `size:md`.
 
 You can disable specific canonicalization families:
 
@@ -165,7 +165,8 @@ export default [
                 preferThemeTokens: true,
                 preferPropertyAliases: true,
                 preferVariableReferences: true,
-                preferMultiValueTokens: true
+                preferMultiValueTokens: true,
+                preferCompositionUtilities: true
             }]
         }
     }

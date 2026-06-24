@@ -13,6 +13,7 @@ export interface CanonicalClassNameOptions {
     preferPropertyAliases?: boolean
     preferVariableReferences?: boolean
     preferMultiValueTokens?: boolean
+    preferCompositionUtilities?: boolean
 }
 
 type ResolvedCanonicalClassNameOptions = Required<CanonicalClassNameOptions>
@@ -22,10 +23,11 @@ export const defaultCanonicalClassNameOptions: ResolvedCanonicalClassNameOptions
     preferThemeTokens: true,
     preferPropertyAliases: true,
     preferVariableReferences: true,
-    preferMultiValueTokens: true
+    preferMultiValueTokens: true,
+    preferCompositionUtilities: true
 }
 
-interface ClassParts {
+export interface ClassParts {
     base: string
     suffix: string
     key?: string
@@ -124,7 +126,7 @@ function splitTopLevelValueSegments(value: string) {
     return segments
 }
 
-function splitClassName(className: string): ClassParts {
+export function splitClassName(className: string): ClassParts {
     const indexOfColon = className.indexOf(':')
     if (indexOfColon > 0) {
         const end = findModifierIndex(className, indexOfColon + 1)

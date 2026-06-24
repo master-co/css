@@ -25,7 +25,8 @@ export default [
 
 ---
 
-## Sort classes
+## Linting rules
+### Sort classes
 `@master/css/sort-classes` keeps class strings stable and reviewable. It sorts known Master CSS classes by generated rule order and leaves unknown classes after known classes.
 
 ```html
@@ -50,9 +51,7 @@ Sorting also removes duplicate class values in the same class string.
 
 Ordering is a formatting policy. It does not change generated CSS, but it makes class strings easier to review and keeps automated fixes deterministic across frameworks and editors.
 
----
-
-## No invalid classes
+### No invalid classes
 `@master/css/no-invalid-classes` reports classes that match Master CSS syntax but generate invalid CSS.
 
 ```html
@@ -93,9 +92,7 @@ Define project classes in the CSS entry when they are intentional:
 }
 ```
 
----
-
-## Prefer canonical classes
+### Prefer canonical classes
 `@master/css/prefer-canonical-classes` keeps committed classes close to the project vocabulary.
 
 ```html
@@ -118,6 +115,17 @@ It also canonicalizes multi-value tokens and direct CSS variable references when
 <div class="m:md|lg fg:red-60">...</div>
 ```
 
+Related width and height pairs can be composed into size utilities:
+
+```html
+<div class="w:md h:md min-w:md min-h:md">...</div>
+```
+
+(o) Fixed output:
+```html
+<div class="size:md min-size:md">...</div>
+```
+
 | Option | Default | Effect |
 | --- | --- | --- |
 | `preferStaticUtilities` | `true` | Prefer named or semantic utilities such as `text-center` over native declaration forms. |
@@ -125,6 +133,7 @@ It also canonicalizes multi-value tokens and direct CSS variable references when
 | `preferPropertyAliases` | `true` | Prefer shorter property aliases such as `m:md` over `margin:md`. |
 | `preferVariableReferences` | `true` | Prefer token keys such as `fg:red-60` over direct references such as `fg:var(--color-red-60)`. |
 | `preferMultiValueTokens` | `true` | Prefer tokenized multi-value forms such as `m:md|lg` over equivalent raw segments. |
+| `preferCompositionUtilities` | `true` | Prefer composed utilities such as `size:md` over equivalent `w:md h:md` pairs. |
 
 Disable one family when a team wants a more literal authoring style:
 
@@ -142,9 +151,7 @@ export default [
 ]
 ```
 
----
-
-## No conflicting classes
+### No conflicting classes
 `@master/css/no-conflicting-classes` reports classes that emit the same declaration properties in the same variant scope.
 
 ```html
