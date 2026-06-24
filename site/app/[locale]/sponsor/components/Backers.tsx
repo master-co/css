@@ -15,7 +15,7 @@ export default function Backers({ backers }: any) {
             const Avatar = () =>
                 <>
                     <Image src={eachBacker.avatarUrl} alt="avatar" className="full round object-cover" width="64" height="64" />
-                    <div className="abs bottom:-3px right:-3px size:22px round p:4xs bg:surface">
+                    <div className="abs bottom:-3px right:-3px size:22px round p:4xs surface:base">
                         <Image src={'/images/' + toSlug(eachBacker.from) + '.svg'} alt="source" width="18" height="18" />
                     </div>
                 </>

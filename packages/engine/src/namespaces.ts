@@ -3,6 +3,7 @@ export const builtinNamespaces = Object.freeze([
     'breakpoint',
     'color',
     'color-line',
+    'color-surface',
     'color-text',
     'container',
     'content',

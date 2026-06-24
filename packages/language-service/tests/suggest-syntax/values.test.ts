@@ -135,6 +135,20 @@ describe.concurrent('sorting', () => {
         expect(labels).not.toContain('blue-surface')
     })
 
+    test.concurrent('surface aliases', () => {
+        const labels = hint('surface:')?.map(({ label }) => label)
+
+        expect(labels).toEqual(expect.arrayContaining([
+            'base',
+            'muted',
+            'raised',
+            'overlay',
+            'inverse'
+        ]))
+        expect(labels).not.toContain('blue')
+        expect(labels).not.toContain('canvas')
+    })
+
     test.concurrent('unitful numeric variables', () => {
         const labels = new Set(['test-tiny', 'test-small', 'test-medium'])
         expect(

@@ -36,9 +36,6 @@ const removedVariableNames = [
     'easing-emphasized',
     'shadow-card',
     'shadow-popover',
-    'color-canvas',
-    'color-surface',
-    'color-surface-overlay',
     'color-backdrop',
     'color-blue-hover',
     'color-on-blue',
@@ -199,9 +196,43 @@ describe.concurrent('@master/css-preset design token parity', () => {
         })
     })
 
-    test('removes UI, product, text role, and expanded hue role tokens from the default preset', () => {
+    test('removes product, text role, and expanded hue role tokens from the default preset', () => {
         for (const name of removedVariableNames) {
             expect(findVariable(name), name).toBeUndefined()
+        }
+    })
+
+    test('keeps canvas and surface color roles mode-specific', () => {
+        expect(findVariable('color-canvas')).toMatchObject({
+            namespace: 'color',
+            key: 'canvas',
+            type: 'string',
+            modes: {
+                light: { type: 'string', value: '$color-white' },
+                dark: { type: 'string', value: '$color-gray-100' }
+            },
+            dependencies: ['color-white', 'color-gray-100']
+        })
+
+        const surfaceAliases = [
+            ['base', '$color-neutral-0', '$color-gray-90'],
+            ['muted', '$color-neutral-5', '$color-gray-95'],
+            ['raised', '$color-white', '$color-gray-80'],
+            ['overlay', '$color-white', '$color-gray-80'],
+            ['inverse', '$color-black', '$color-white']
+        ] as const
+
+        for (const [key, lightValue, darkValue] of surfaceAliases) {
+            expect(findVariable(`color-surface-${key}`), key).toMatchObject({
+                namespace: 'color-surface',
+                key,
+                type: 'string',
+                modes: {
+                    light: { type: 'string', value: lightValue },
+                    dark: { type: 'string', value: darkValue }
+                },
+                dependencies: [lightValue.slice(1), darkValue.slice(1)]
+            })
         }
     })
 
@@ -251,7 +282,7 @@ describe.concurrent('@master/css-preset design token parity', () => {
         expect(Object.hasOwn(defaultManifest, 'variableAliasSets')).toBe(false)
     })
 
-    test('executes built-in registry records without UI role tokens', () => {
+    test('executes built-in registry records with foundation role tokens only', () => {
         const css = createTestCSS(defaultManifest)
 
         expect(css.createRule('font:sans')?.text).toContain('font-family:var(--font-family-sans)')
@@ -270,6 +301,17 @@ describe.concurrent('@master/css-preset design token parity', () => {
         expect(css.createRule('transition-timing-function:smooth')?.text).toContain('transition-timing-function:var(--easing-smooth)')
         expect(css.createRule('bg:blue')?.text).toContain('background-color:var(--color-blue)')
         expect(css.createRule('bg:pink')?.text).toContain('background-color:var(--color-pink)')
+        expect(css.createRule('bg:canvas')?.text).toBe('.bg\\:canvas{background-color:var(--color-canvas)}')
+        expect(css.createRule('bg:surface')).toBeUndefined()
+        expect(css.createRule('bg:surface-base')?.text).toBe('.bg\\:surface-base{background-color:var(--color-surface-base)}')
+        expect(css.createRule('surface:base')?.text).toBe('.surface\\:base{background-color:var(--color-surface-base)}')
+        expect(css.createRule('surface:muted')?.text).toBe('.surface\\:muted{background-color:var(--color-surface-muted)}')
+        expect(css.createRule('surface:raised')?.text).toBe('.surface\\:raised{background-color:var(--color-surface-raised)}')
+        expect(css.createRule('surface:overlay')?.text).toBe('.surface\\:overlay{background-color:var(--color-surface-overlay)}')
+        expect(css.createRule('surface:inverse')?.text).toBe('.surface\\:inverse{background-color:var(--color-surface-inverse)}')
+        expect(css.createRule('surface:overlay/.9')?.text).toBe('.surface\\:overlay\\/\\.9{background-color:color-mix(in oklab,var(--color-surface-overlay) 90%,transparent)}')
+        expect(css.createRule('surface:blue')).toBeUndefined()
+        expect(css.createRule('surface:#fff')).toBeUndefined()
         expect(css.createRule('fg:red')?.text).toBe('.fg\\:red{color:var(--color-red)}')
         expect(css.createRule('text:blue')?.text).toBe('.text\\:blue{color:var(--color-text-blue)}')
         expect(css.createRule('fg:blue-60')?.text).toBe('.fg\\:blue-60{color:var(--color-blue-60)}')

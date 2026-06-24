@@ -231,7 +231,7 @@ Use structural shorthands such as `:first`, `:last`, `:odd`, `:even`, and `:nth(
     <DemoPanel $p={0} className="w:full max-w:90x">
         <ul className="list-style:none py:lg px:0 m:0">
             {furnitures.map((furniture, index) =>
-                <li className="bb:0:last bg:surface-muted:even bb:1px|solid|line px:lg flex align-items:center my:0 gap:sm" key={index}>
+                <li className="bb:0:last surface:muted:even bb:1px|solid|line px:lg flex align-items:center my:0 gap:sm" key={index}>
                     <img className="round object-cover" src={furniture.url} width="56" height="56" alt="avatar" quality={'0'} />
                     <div className="flex flex-col flex:1 py:xs">
                         <div className="flex align-items:center">
@@ -256,7 +256,7 @@ Use form validation pseudo-classes to reflect native validity without writing Ja
 
 (type) Try typing `co` as a valid email address
 <Demo>
-    <input type="email" className="b:red:invalid b:green:valid b:1px|solid|line outline:0 h:12x font:sm px:md bg:surface r:md max-w:75x" defaultValue="aron@master." />
+    <input type="email" className="b:red:invalid b:green:valid b:1px|solid|line outline:0 h:12x font:sm px:md surface:base r:md max-w:75x" defaultValue="aron@master." />
 </Demo>
 ```html
 <!-- @MARK :invalid --><!-- @MARK :invalid -->

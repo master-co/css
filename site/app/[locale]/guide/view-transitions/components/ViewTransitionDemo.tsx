@@ -80,7 +80,7 @@ export default function ViewTransitionDemo() {
                                 className={clsx(
                                     'app-panel min-h:18x p:md text-left cursor:pointer',
                                     'b:1px|solid|line r:md',
-                                    activeButton ? 'outline:2px|solid|accent bg:surface' : 'bg:surface:hover'
+                                    activeButton ? 'outline:2px|solid|accent surface:base' : 'surface:base:hover'
                                 )}
                                 key={view.id}
                                 onClick={() => selectView(view.id)}

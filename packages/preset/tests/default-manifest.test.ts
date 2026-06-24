@@ -231,7 +231,7 @@ describe('@master/css-preset defaultManifest', () => {
         const utilities = manifest.utilities || []
         const compiledUtilities = createTestCSS(manifest).definedUtilities
 
-        expect(utilities).toHaveLength(176)
+        expect(utilities).toHaveLength(177)
         expect(utilities.some((utility) => 'order' in utility)).toBe(false)
         expect(utilities.some((utility) => utility.layer === 'utilities')).toBe(false)
         expect(utilities.some((utility) => utility.name === utility.id)).toBe(false)
@@ -316,6 +316,8 @@ describe('@master/css-preset defaultManifest', () => {
             css.createRule('inline-flex')?.text,
             css.createRule('bg:linear-gradient(#000,#fff)')?.text,
             css.createRule('bg:blue')?.text,
+            css.createRule('bg:canvas')?.text,
+            css.createRule('surface:base')?.text,
             css.createRule('grid-cols:3')?.text,
             css.createRule('line-clamp:3')?.text,
             css.createRule('text:2xl')?.text
@@ -323,10 +325,14 @@ describe('@master/css-preset defaultManifest', () => {
         expect(text).toContain('display:inline-flex')
         expect(text).toContain('background-image:linear-gradient(#000,#fff)')
         expect(text).toContain('background-color:var(--color-blue)')
+        expect(text).toContain('background-color:var(--color-canvas)')
+        expect(text).toContain('background-color:var(--color-surface-base)')
         expect(text).toContain('grid-template-columns:repeat(3, minmax(0, 1fr))')
         expect(text).toContain('-webkit-line-clamp:3')
         expect(text).not.toContain('null')
         expect(css.createRule('gradient(#000,#fff)')).toBeUndefined()
+        expect(css.createRule('surface:blue')).toBeUndefined()
+        expect(css.createRule('surface:#fff')).toBeUndefined()
     })
 
     it('executes CSS-authored semantic and enum pattern utilities', () => {
@@ -493,6 +499,13 @@ describe('@master/css-preset defaultManifest', () => {
         expect(css.createRule('text-decoration-thickness:var(--thickness)')?.text).toBe('.text-decoration-thickness\\:var\\(--thickness\\){text-decoration-thickness:var(--thickness)}')
         expect(css.createRule('background-color:red')?.text).toBe('.background-color\\:red{background-color:var(--color-red)}')
         expect(css.createRule('background-color:#fff')?.text).toBe('.background-color\\:\\#fff{background-color:#fff}')
+        expect(css.createRule('background-color:base')?.text).toBe('.background-color\\:base{background-color:base}')
+        expect(css.createRule('bg:canvas')?.text).toBe('.bg\\:canvas{background-color:var(--color-canvas)}')
+        expect(css.createRule('bg:surface')).toBeUndefined()
+        expect(css.createRule('surface:base')?.text).toBe('.surface\\:base{background-color:var(--color-surface-base)}')
+        expect(css.createRule('surface:overlay/.9')?.text).toBe('.surface\\:overlay\\/\\.9{background-color:color-mix(in oklab,var(--color-surface-overlay) 90%,transparent)}')
+        expect(css.createRule('surface:blue')).toBeUndefined()
+        expect(css.createRule('surface:#fff')).toBeUndefined()
         expect(css.createRule('font-size:sm')?.text).toBe('.font-size\\:sm{font-size:var(--font-size-sm)}')
         expect(css.createRule('font-size:1rem')?.text).toBe('.font-size\\:1rem{font-size:1rem}')
         expect(css.createRule('font-family:sans')?.text).toBe('.font-family\\:sans{font-family:var(--font-family-sans)}')

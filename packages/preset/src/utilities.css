@@ -476,6 +476,10 @@
         background-image: --value();
     }
 
+    surface:<~color-surface> {
+        background-color: --value();
+    }
+
     size:<~container|number|*> {
         width: --value();
         height: --value();
