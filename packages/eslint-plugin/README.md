@@ -189,6 +189,25 @@ export default [
 
 When two classes conflict, the later class is treated as the effective one and the fix removes the earlier class. For partially overlapping spacing shorthands, the fix preserves the surviving declarations by splitting the earlier class, such as `mx:md ml:lg` to `mr:md ml:lg`.
 
+### `@master/css/no-unapproved-raw-values`
+
+Disallows raw values in token-backed utilities unless they are explicitly allowed. This rule is opt-in team policy and is not enabled by the recommended config.
+
+```js
+export default [
+    {
+        rules: {
+            '@master/css/no-unapproved-raw-values': ['warn', {
+                allowProperties: ['width', 'height'],
+                allowedPatterns: ['^var\\(', '^calc\\(']
+            }]
+        }
+    }
+]
+```
+
+For example, this rule reports `font:15px`, `m:17px`, and `fg:#123456` when those values are not theme tokens. It does not autofix because there may be no safe token replacement.
+
 ## Settings
 
 Settings live under the `@master/css` settings key:

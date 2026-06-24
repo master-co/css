@@ -26,6 +26,7 @@
 - `sortClassNames`
 - `findClassConflicts`
 - `findPartialClassConflicts`
+- `findUnapprovedRawValueClasses`
 - `getClassValidationIssues`
 - `suggestCanonicalClassGroups`
 - `suggestCanonicalClassName`
@@ -38,6 +39,7 @@
 - `src/sort-class-names.ts`
 - `src/find-class-conflicts.ts`
 - `src/find-partial-class-conflicts.ts`
+- `src/find-unapproved-raw-value-classes.ts`
 - `src/get-class-validation-issues.ts`
 - `src/suggest-canonical-class-groups.ts`
 - `src/suggest-canonical-class-name.ts`

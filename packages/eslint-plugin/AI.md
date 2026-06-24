@@ -22,7 +22,7 @@
 
 - Default plugin object.
 - Configs under `./configs/*`.
-- Rules: `sort-classes`, `no-invalid-classes`, `no-conflicting-classes`, and `prefer-canonical-classes`.
+- Rules: `sort-classes`, `no-invalid-classes`, `no-conflicting-classes`, `prefer-canonical-classes`, and `no-unapproved-raw-values`.
 
 ## Key Files
 

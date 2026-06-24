@@ -2,6 +2,7 @@ export { defaultClassLintSettings } from './constants'
 export { default as sortClassNames } from './sort-class-names'
 export { default as findClassConflicts } from './find-class-conflicts'
 export { default as findPartialClassConflicts } from './find-partial-class-conflicts'
+export { default as findUnapprovedRawValueClasses } from './find-unapproved-raw-value-classes'
 export { default as getClassValidationIssues } from './get-class-validation-issues'
 export { default as suggestCanonicalClassGroups } from './suggest-canonical-class-groups'
 export {
@@ -11,6 +12,10 @@ export {
 
 export type { ClassConflict } from './find-class-conflicts'
 export type { PartialClassConflict } from './find-partial-class-conflicts'
+export type {
+    RawValuePolicyOptions,
+    UnapprovedRawValueClass
+} from './find-unapproved-raw-value-classes'
 export type { CanonicalClassGroupSuggestion } from './suggest-canonical-class-groups'
 export type {
     ClassValidationIssue,

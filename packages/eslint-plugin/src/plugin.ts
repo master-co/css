@@ -1,5 +1,6 @@
 import noConflictingClasses from './rules/no-conflicting-classes'
 import noInvalidClasses from './rules/no-invalid-classes'
+import noUnapprovedRawValues from './rules/no-unapproved-raw-values'
 import preferCanonicalClasses from './rules/prefer-canonical-classes'
 import sortClasses from './rules/sort-classes'
 import { readFileSync } from 'fs'
@@ -19,6 +20,7 @@ const plugin = {
     rules: {
         'no-conflicting-classes': noConflictingClasses,
         'no-invalid-classes': noInvalidClasses,
+        'no-unapproved-raw-values': noUnapprovedRawValues,
         'prefer-canonical-classes': preferCanonicalClasses,
         'sort-classes': sortClasses
     }

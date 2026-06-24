@@ -6,6 +6,7 @@ import {
     defaultClassLintSettings,
     findClassConflicts,
     findPartialClassConflicts,
+    findUnapprovedRawValueClasses,
     getClassValidationIssues,
     suggestCanonicalClassGroups,
     sortClassNames,
@@ -106,6 +107,46 @@ describe('class validation issues', () => {
         ])
         expect(getClassValidationIssues('unknown-class', css, { disallowUnknownClass: true, displayClassName: 'raw-class' })[0]?.message)
             .toBe('"raw-class" is not a valid or known class.')
+    })
+})
+
+describe('raw value policy', () => {
+    test('reports raw values in token-backed utilities', () => {
+        expect(findUnapprovedRawValueClasses(['font:15px', 'm:17px', 'fg:#123456'], css)).toEqual([
+            { className: 'font:15px', key: 'font', value: '15px', properties: ['font-size'] },
+            { className: 'm:17px', key: 'm', value: '17px', properties: ['margin'] },
+            { className: 'fg:#123456', key: 'fg', value: '#123456', properties: ['color'] }
+        ])
+    })
+
+    test('ignores token, static, invalid, unknown, and component classes', () => {
+        const componentCSS = createCSSWithNativeDeclarations(createPresetManifest({
+            utilities: [
+                {
+                    name: 'btn',
+                    type: UtilityType.Semantic,
+                    layer: 'components',
+                    declarations: { display: 'block' }
+                }
+            ]
+        }))
+        expect(findUnapprovedRawValueClasses([
+            'font:md',
+            'm:md',
+            'm:md|lg',
+            'fg:red-60',
+            'text-center',
+            'font:error',
+            'unknown-class',
+            'btn'
+        ], componentCSS)).toEqual([])
+    })
+
+    test('allows raw values by property, key, pattern, or full opt-out', () => {
+        expect(findUnapprovedRawValueClasses(['w:50%'], css, { allowProperties: ['width'] })).toEqual([])
+        expect(findUnapprovedRawValueClasses(['w:50%'], css, { allowProperties: ['w'] })).toEqual([])
+        expect(findUnapprovedRawValueClasses(['m:calc(1rem+1px)'], css, { allowedPatterns: ['^calc\\('] })).toEqual([])
+        expect(findUnapprovedRawValueClasses(['font:15px'], css, { allowRawValues: true })).toEqual([])
     })
 })
 

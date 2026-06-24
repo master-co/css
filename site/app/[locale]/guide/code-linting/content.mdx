@@ -229,6 +229,28 @@ export default [
 ]
 ```
 
+Enable raw value policy when the team wants token-backed utilities to use tokens unless a value is explicitly allowed:
+
+```js name=eslint.config.js
+export default [
+    css,
+    {
+        rules: {
+            '@master/css/no-unapproved-raw-values': ['warn', {
+                allowProperties: ['width', 'height'],
+                allowedPatterns: ['^var\\(', '^calc\\(']
+            }]
+        }
+    }
+]
+```
+
+```mcss
+font:15px m:17px fg:#123456
+```
+
+(!) Unexpected raw value `"15px"` in `"font:15px"`. Use a token or allow it explicitly.
+
 Use editor sort-on-save for low-friction cleanup:
 
 ```json name=.vscode/settings.json
