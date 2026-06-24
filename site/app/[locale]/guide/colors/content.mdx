@@ -1,8 +1,12 @@
-import PresetThemeColors from './components/PresetThemeColors'
+import { BaseHueDemo, TextHueDemo } from './components/PresetThemeColors'
 
-## Overview [sr-only]
+## Default color palette [sr-only]
 
-Master CSS provides a P3-compatible raw palette, preset light and dark color aliases, canvas and surface roles, and text hue aliases. Use palette tokens such as `bg:blue-60` for direct swatches, `bg:canvas` for the page background, `surface:base` or `surface:raised` for UI layers, and text aliases such as `text:blue` or `text:neutral` for readable foreground color.
+Master CSS provides a P3-compatible raw palette, preset light and dark color aliases, canvas and surface roles, and text hue aliases.
+<ColorPalette />
+Each preset color family ranges from `0`, `5`, `10`, and then by tens through `100`. Choose a palette step directly for swatches, illustrations, and intentional brand or status accents.
+
+Use palette tokens such as `bg:blue-60` for direct swatches, `bg:canvas` for the page background, `surface:base` or `surface:raised` for UI layers, and text aliases such as `text:blue` or `text:neutral` for readable foreground color.
 
 ```html
 <!-- @MARK bg:canvas --><!-- @MARK text:neutral --><!-- @MARK surface:base --><!-- @MARK surface:raised -->
@@ -12,12 +16,6 @@ Master CSS provides a P3-compatible raw palette, preset light and dark color ali
     </section>
 </main>
 ```
-
----
-
-## Color palette
-<ColorPalette />
-Each preset color family ranges from `0`, `5`, `10`, and then by tens through `100`. Choose a palette step directly for swatches, illustrations, and intentional brand or status accents.
 
 ```html
 <!-- @MARK bg:blue-5 --><!-- @MARK fg:blue-60 -->
@@ -40,14 +38,36 @@ Apply them using the color-related syntax:
 ```
 See [theme color tokens](/guide/theme#theme-tokens) for more details on how to add custom colors.
 
-### Preset mode-aware colors
+---
+
+## Preset mode-aware colors
 The default preset ships mode-aware aliases for foundational UI color decisions. Palette steps such as `blue-60` stay fixed, while aliases such as `blue`, `text:blue`, `canvas`, and `surface:base` resolve to different preset references in light and dark modes.
 
 `surface:*` is a dedicated surface shorthand backed by `--color-surface-*` tokens. Use `bg:canvas` for the page canvas and `surface:base`, `surface:muted`, `surface:raised`, `surface:overlay`, or `surface:inverse` for UI surfaces.
 
-<PresetThemeColors />
+### Canvas
+Canvas is the page or app background role. Use it with the regular background color shorthand.
 
-### With variable modes
+<PresetThemeColors group="canvas" />
+
+### Surfaces
+Surface tokens are for panels, cards, floating layers, and inverse blocks. Use the dedicated surface shorthand so only surface roles match.
+
+<PresetThemeColors group="surfaces" />
+
+### Base hue aliases
+Base hue aliases are mode-aware shortcuts for common color choices. Use palette steps when you need a fixed swatch instead.
+
+<PresetThemeColors group="baseHue" />
+<BaseHueDemo />
+
+### Text hue aliases
+Text hue aliases choose foreground-oriented palette steps for light and dark modes.
+
+<PresetThemeColors group="textHue" />
+<TextHueDemo />
+
+## With variable modes
 Use [variable modes](/guide/theme#modes) to define project color roles for light and dark modes. Keep mode-specific decisions in theme variables when a foreground, separator, brand, or status role repeats across the product.
 
 (x) Markup owns the light and dark color choice.
