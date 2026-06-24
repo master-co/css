@@ -1,145 +1,245 @@
-import brands from 'internal/data/brands'
+## Overview [sr-only]
+Code linting validates Master CSS class strings where they are authored: markup attributes, framework templates, JavaScript utility calls, and configured class declarations. The ESLint integration resolves the active project manifest, then checks each class against Master CSS syntax, generated CSS declarations, and team policy.
 
-<Features />
+Use the [installation integrations](/guide/installation/integrations) to add the recommended config to a project. Use [Visual Studio Code setup](/guide/installation/vscode) when you want editor diagnostics and sort-on-save.
 
 ---
 
-## Features
-### Sort classes
-In practice, you pay less attention to the order of classes, and as the number of classes increases, the template markup becomes less readable.
+## Install the recommended config
+The recommended config enables the canonical rule set:
 
-(i) With the [sort classes rule](#sort-classes), you can enforce a consistent and fixed order for classes.
-<Image className="aspect-ratio:2/1 r:lg max-w:3xl w:full" src={require('~/site/public/consistent-class-order.webp').default} alt="Consistent class order" unoptimized />
+```js name=eslint.config.js
+import css from '@master/eslint-config-css'
 
-(!) <span className="text:amber">No consistent class order followed.</span>
-```html
-<div class="font:xs font:2xl@sm m:xl block font:3xl@md mb:2xl">…</div>
-```
-(o) Fix this @master/css/sort-classes problem.
-```html
-<div class="block font:xs font:2xl@sm font:3xl@md m:xl mb:2xl">…</div>
+export default [
+    css
+]
 ```
 
-### No invalid classes
-In the past, you added utility classes to your templates unsafely, lacking the capability to verify their validity or legality directly within the source code.
+| Rule | Default | Fixable | Purpose |
+| --- | --- | --- | --- |
+| `@master/css/sort-classes` | `warn` | Yes | Sort classes into a stable generated-rule order. |
+| `@master/css/no-invalid-classes` | `error` | No | Report invalid Master CSS syntax and invalid generated CSS. |
+| `@master/css/no-conflicting-classes` | `warn` | Yes | Report classes that target the same declarations in the same variant scope. |
+| `@master/css/prefer-canonical-classes` | `warn` | Yes | Prefer semantic utilities, theme tokens, and property aliases. |
 
-(i) With the [no invalid classes rule](#no-invalid-classes), you can check the validity of classes early as you write them.
-<Image className="aspect-ratio:2/1 r:lg max-w:3xl w:full" src={require('~/site/public/syntax-error-checks.webp').default} alt="Syntax error checks" unoptimized />
+---
 
-(x) <span className="text:danger">Invalid value for \`font\` property.</span>
+## Sort classes
+`@master/css/sort-classes` keeps class strings stable and reviewable. It sorts known Master CSS classes by generated rule order and leaves unknown classes after known classes.
+
 ```html
-<!-- @MARK font: -->
-<div class="font:">…</div>
-```
-This is helpful if you make a typo or are unfamiliar with Master CSS syntax!
-
-### Prefer canonical classes
-Native declaration classes and raw values are useful while exploring, but teams often want the committed code to use the most recognizable Master CSS form.
-
-(i) With the `@master/css/prefer-canonical-classes` rule, ESLint can prefer semantic utilities, theme tokens, and short aliases.
-```html
-<!-- @MARK text-align:center font:16px margin:md -->
-<h1 class="text-align:center font:16px margin:md">…</h1>
-```
-(o) Fix this @master/css/prefer-canonical-classes problem.
-```html
-<!-- @MARK text-center font:md m:md -->
-<h1 class="text-center font:md m:md">…</h1>
+<div class="font:xs font:2xl@sm m:xl block font:3xl@md mb:2xl">...</div>
 ```
 
-### Disallow unknown classes
-You can also restrict teams to using [theme](/guide/theme) and [component classes](/guide/reusing-styles#component-classes) instead of defining classes through traditional `html <style>` or CSS files.
-
-(i) Based on invalid class checking, you can [disallow unknown classes](#disallow-unknown-classes).
-<Image className="aspect-ratio:2/1 r:lg max-w:3xl w:full" src={require('~/site/public/disallow-unknown-class.webp').default} alt="Disallow unknown classes" unoptimized />
-
-(x) <span className="text:danger">"btn" is not a valid or known class.</span>
+(o) Fixed output:
 ```html
-<!-- @MARK btn -->
-<button class="btn">…</button>
+<div class="block font:xs font:2xl@sm font:3xl@md m:xl mb:2xl">...</div>
 ```
-(o) Fix this @master/css/no-invalid-classes problem using the Master CSS syntax.
+
+Sorting also removes duplicate class values in the same class string.
+
 ```html
-<button class="inline-flex px:md">…</button>
+<button class="inline-flex px:md inline-flex">...</button>
 ```
-(o) Or create the custom style `btn` using [component classes](/guide/reusing-styles#component-classes) in the project CSS entry.
+
+(o) Fixed output:
+```html
+<button class="inline-flex px:md">...</button>
+```
+
+Ordering is a formatting policy. It does not change generated CSS, but it makes class strings easier to review and keeps automated fixes deterministic across frameworks and editors.
+
+---
+
+## No invalid classes
+`@master/css/no-invalid-classes` reports classes that match Master CSS syntax but generate invalid CSS.
+
+```html
+<div class="font:">...</div>
+```
+
+(x) Invalid value for `font` property.
+
+By default, unmatched classes are ignored so teams can mix Master CSS with existing global classes during migration.
+
+Enable `disallowUnknownClass` when the project should only use classes known to the active Master CSS manifest:
+
+```js name=eslint.config.js
+export default [
+    {
+        rules: {
+            '@master/css/no-invalid-classes': ['error', {
+                disallowUnknownClass: true
+            }]
+        }
+    }
+]
+```
+
+```html
+<button class="btn">...</button>
+```
+
+(x) `"btn" is not a valid or known class.`
+
+Define project classes in the CSS entry when they are intentional:
+
 ```css name=index.css
 @components {
     btn {
-        @compose inline-flex px:md; /* [!code highlight] */
+        @compose inline-flex px:md;
     }
 }
 ```
-Archive and see the changes.
-```html
-<button class="btn">…</button>
-```
-
-### No conflicting classes
-The class you added may collide with existing classes due to human error or having the same declarations as a third-party custom syntax.
-
-(i) With the [no conflicting classes rule](#no-conflicting-classes), you'll no longer collide with existing classes.
-<Image className="aspect-ratio:2/1 r:lg max-w:3xl w:full" src={require('~/site/public/class-collision-detection.webp').default} alt="Class collision detection" unoptimized />
-
-(!) <span className="text:amber">"m:0.625rem" applies the same CSS declarations as "m:5x".</span><br/><span className="text:amber">"m:5x" applies the same CSS declarations as "m:0.625rem".</span>
-```html
-<!-- @MARK m:0.625rem m:5x -->
-<div class="m:0.625rem m:5x">…</div>
-```
-(o) Fix this @master/css/no-conflicting-classes problem by removing other colliding classes.
-```html
-<div class="m:0.625rem">…</div>
-```
-It can also detect whether declarations with the same selector and media query state collide!
-
-(!) <span className="text:amber">"m:10x@sm" applies the same CSS declarations as "m:3.125rem@sm".</span><br/><span className="text:amber">"m:3.125rem@sm" applies the same CSS declarations as "m:10x@sm".</span>
-```html
-<!-- @MARK m:10x@sm m:3.125rem@sm -->
-<div class="m:10x@sm m:3.125rem@sm">…</div>
-```
-(o) Fix this @master/css/no-conflicting-classes problem by removing other colliding classes.
-```html
-<!-- @MARK m:3.125rem@sm -->
-<div class="m:3.125rem@sm">…</div>
-```
-
-### Supports JS utilities
-You may be using [clsx](https://github.com/lukeed/clsx) or [class variant](https://github.com/master-co/styled) to conditionally apply classes, but unfortunately, they're just pure strings in JavaScript.
-
-(i) You can make arguments of JavaScript [callees](#supports-js-utilities) have Master CSS code linting.
-<Image className="aspect-ratio:2/1 r:lg max-w:3xl w:full" src={require('~/site/public/supports-js-utilities.webp').default} alt="Supports JS utilities" unoptimized />
-
-(x) <span className="text:danger">Invalid value for `display` property.</span>
-```tsx
-import clsx from 'clsx'
-
-export default () => (
-    // @MARK display:bloc
-    <h1 className={clsx('display:bloc')}>Hello World</h1>
-)
-```
-(x) <span className="text:danger">Invalid value for `text-align` property.</span>
-```tsx
-import styled from '@master/styled.react'
-
-// @MARK text-align:cente
-const Block = styled`text-align:cente`
-
-export default () => <Block>Hello World</Block>
-```
-Common JavaScript utility names are supported by [default](#supports-js-utilities).
 
 ---
 
-## Setup Guides
-<IconButtons url="/guide/code-linting">
-    {[
-        brands['react'],
-        brands['vuejs'],
-        brands['angular'],
-        brands['svelte'],
-        brands['laravel'],
-        brands['html'],
-        brands['vscode']
-    ]}
-</IconButtons>
+## Prefer canonical classes
+`@master/css/prefer-canonical-classes` keeps committed classes close to the project vocabulary.
+
+```html
+<h1 class="text-align:center font:16px margin:md">...</h1>
+```
+
+(o) Fixed output:
+```html
+<h1 class="text-center font:md m:md">...</h1>
+```
+
+| Option | Default | Effect |
+| --- | --- | --- |
+| `preferStaticUtilities` | `true` | Prefer named or semantic utilities such as `text-center` over native declaration forms. |
+| `preferThemeTokens` | `true` | Prefer theme token values such as `font:md` over equivalent raw values. |
+| `preferPropertyAliases` | `true` | Prefer shorter property aliases such as `m:md` over `margin:md`. |
+
+Disable one family when a team wants a more literal authoring style:
+
+```js name=eslint.config.js
+export default [
+    {
+        rules: {
+            '@master/css/prefer-canonical-classes': ['warn', {
+                preferStaticUtilities: true,
+                preferThemeTokens: true,
+                preferPropertyAliases: false
+            }]
+        }
+    }
+]
+```
+
+---
+
+## No conflicting classes
+`@master/css/no-conflicting-classes` reports classes that emit the same declaration properties in the same variant scope.
+
+```html
+<div class="m:0.625rem m:5x">...</div>
+```
+
+(!) `"m:0.625rem" applies the same declarations as "m:5x".`
+
+(o) Fixed output:
+```html
+<div class="m:0.625rem">...</div>
+```
+
+Variant scope matters. Classes with different selectors, modes, or at-rules do not conflict with each other.
+
+```html
+<div class="m:10x@sm m:3.125rem@md">...</div>
+```
+
+When a conflict can be fixed automatically, the rule removes the later conflicting class and keeps the earlier class. Review the fix if the authoring order was carrying intent.
+
+---
+
+## Supported sources
+The default config checks class strings in common markup and JavaScript locations.
+
+| Setting | Default | Use |
+| --- | --- | --- |
+| `classAttributes` | `['class', 'className']` | Markup attributes that contain class strings. |
+| `classFunctions` | `clsx`, `cva`, `ctl`, `cv`, `classnames`, `styled`, `classList.*` | JavaScript callees whose arguments can contain class strings. |
+| `classDeclarations` | `[]` | Project-specific variables or object properties that should be treated as class declarations. |
+| `ignoredKeys` | `['compoundVariants', 'defaultVariants']` | Object keys ignored while traversing variant config objects. |
+
+Customize settings under the `@master/css` settings key:
+
+```js name=eslint.config.js
+export default [
+    {
+        settings: {
+            '@master/css': {
+                classAttributes: ['class', 'className', 'containerClass'],
+                classFunctions: ['clsx', 'cva'],
+                classDeclarations: ['classes']
+            }
+        }
+    }
+]
+```
+
+---
+
+## Team policy
+Use the recommended config for most projects:
+
+```js name=eslint.config.js
+import css from '@master/eslint-config-css'
+
+export default [
+    css
+]
+```
+
+Use stricter validation when the team wants every class to come from Master CSS syntax or the project manifest:
+
+```js name=eslint.config.js
+export default [
+    css,
+    {
+        rules: {
+            '@master/css/no-invalid-classes': ['error', {
+                disallowUnknownClass: true
+            }]
+        }
+    }
+]
+```
+
+Customize canonicalization when a team wants to keep one class family literal while still applying the other recommendations:
+
+```js name=eslint.config.js
+export default [
+    css,
+    {
+        rules: {
+            '@master/css/prefer-canonical-classes': ['warn', {
+                preferStaticUtilities: true,
+                preferThemeTokens: true,
+                preferPropertyAliases: false
+            }]
+        }
+    }
+]
+```
+
+Use editor sort-on-save for low-friction cleanup:
+
+```json name=.vscode/settings.json
+{
+    "eslint.codeActionsOnSave.rules": [
+        "@master/css/sort-classes"
+    ]
+}
+```
+
+See [Visual Studio Code setup](/guide/installation/vscode) for the full editor flow.
+
+---
+
+## Setup links
+- [Installation integrations](/guide/installation/integrations) for framework setup.
+- [Visual Studio Code setup](/guide/installation/vscode) for editor diagnostics and sort-on-save.

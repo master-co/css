@@ -62,6 +62,55 @@
     </Step>
     <Step $row>
         <StepL>
+            ### <StepNum />Set up code linting
+            Install the Master CSS ESLint config with the Svelte parser stack, then add it to `eslint.config.js`.
+
+            The Svelte parser lets ESLint validate Master CSS classes inside `.svelte` markup and JavaScript class utilities.
+        </StepL>
+        <StepR>
+            ```bash action=install
+            -D @master/eslint-config-css@rc eslint-plugin-svelte @eslint/compat globals typescript-eslint eslint
+            ```
+
+            ```js name=eslint.config.js
+            import js from '@eslint/js'
+            import { includeIgnoreFile } from '@eslint/compat'
+            import { fileURLToPath } from 'node:url'
+            import globals from 'globals'
+            import svelte from 'eslint-plugin-svelte'
+            import ts from 'typescript-eslint'
+            import css from '@master/eslint-config-css' // [!code highlight]
+
+            const gitignorePath = fileURLToPath(new URL('./.gitignore', import.meta.url))
+
+            export default ts.config(
+                includeIgnoreFile(gitignorePath),
+                js.configs.recommended,
+                ...ts.configs.recommended,
+                ...svelte.configs['flat/recommended'],
+                {
+                    languageOptions: {
+                        globals: {
+                            ...globals.browser,
+                            ...globals.node
+                        }
+                    }
+                },
+                {
+                    files: ['**/*.svelte'],
+                    languageOptions: {
+                        parserOptions: {
+                            parser: ts.parser
+                        }
+                    }
+                },
+                css // [!code highlight]
+            )
+            ```
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
             ### <StepNum />Set up Master CSS renderer
             Create a `src/hooks.server.ts` and export the Master CSS handle. It injects early streamed CSS before `</head>`, while the client runtime hydrates classes discovered after the head is flushed.
 

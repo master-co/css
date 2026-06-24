@@ -58,6 +58,36 @@
     </Step>
     <Step $row>
         <StepL>
+            ### <StepNum />Set up code linting
+            Install the Master CSS ESLint config with the Vue parser stack, then add it to `eslint.config.js`.
+
+            Code linting validates classes in Vue templates and JavaScript class utilities.
+        </StepL>
+        <StepR>
+            ```bash action=install
+            -D @master/eslint-config-css@rc eslint-plugin-vue @vue/eslint-config-typescript @eslint/compat eslint
+            ```
+
+            ```js name=eslint.config.js
+            import { includeIgnoreFile } from '@eslint/compat'
+            import { fileURLToPath } from 'node:url'
+            import vue from 'eslint-plugin-vue'
+            import vueTS from '@vue/eslint-config-typescript'
+            import css from '@master/eslint-config-css' // [!code highlight]
+
+            const gitignorePath = fileURLToPath(new URL('./.gitignore', import.meta.url))
+
+            export default [
+                includeIgnoreFile(gitignorePath),
+                ...vue.configs['flat/essential'],
+                ...vueTS(),
+                css // [!code highlight]
+            ]
+            ```
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
             ### <StepNum />Start dev server
             Run the command to start the Vite dev server.
         </StepL>

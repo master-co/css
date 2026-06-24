@@ -12,5 +12,6 @@ export default (props: Props) => create({
     props,
     metadata,
     dictionaries,
-    icon: 'vuejs'
+    title: 'Visual Studio Code',
+    icon: 'vscode'
 })

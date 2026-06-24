@@ -54,6 +54,37 @@
     </Step>
     <Step $row>
         <StepL>
+            ### <StepNum />Set up code linting
+            Install the Master CSS ESLint config and Angular template parser, then configure ESLint for Angular templates and TypeScript.
+
+            Use `@angular-eslint/template-parser` for `.html` files and `@typescript-eslint/parser` for `.ts` files.
+        </StepL>
+        <StepR>
+            ```bash action=install
+            -D @master/eslint-config-css@rc @angular-eslint/template-parser @typescript-eslint/parser eslint
+            ```
+
+            ```js name=eslint.config.js
+            import htmlParser from '@angular-eslint/template-parser'
+            import tsParser from '@typescript-eslint/parser'
+            import css from '@master/eslint-config-css'
+
+            export default [
+                {
+                    files: ['**/*.html'],
+                    languageOptions: { parser: htmlParser }
+                },
+                {
+                    files: ['**/*.ts'],
+                    languageOptions: { parser: tsParser }
+                },
+                css // [!code highlight]
+            ]
+            ```
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
             ### <StepNum />Set up Angular Universal
             Run the command to create a Angular server-side application.
         </StepL>

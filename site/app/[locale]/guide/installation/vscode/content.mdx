@@ -1,0 +1,51 @@
+import VSCodeSvg from '~/site/public/icons/visualstudiocode.svg'
+
+<StepSection>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Install the ESLint extension
+            Install the [ESLint extension](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) from the Visual Studio Marketplace.
+        </StepL>
+        <StepR>
+            <a className="app-object app-object-interactive flex-col px:lg h:12x font:sm font:medium r:sm leading:1 flex-row!" href="vscode:extension/dbaeumer.vscode-eslint">
+                <VSCodeSvg className="ml:-3xs mr:sm" width="20" height="20" />
+                <span>Install to Visual Studio Code</span>
+            </a>
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Set up project linting
+            Add Master CSS linting to the project's ESLint flat config first. Use the setup step in the matching framework installation guide, or add the recommended config directly when the project already has parser support.
+        </StepL>
+        <StepR>
+            ```js name=eslint.config.js
+            import css from '@master/eslint-config-css'
+
+            export default [
+                css
+            ]
+            ```
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Enable sort on save
+            Add `@master/css/sort-classes` to `eslint.codeActionsOnSave.rules` so Visual Studio Code applies the class sorting fix when the ESLint extension runs on save.
+        </StepL>
+        <StepR>
+            ```json name=.vscode/settings.json
+            {
+                "eslint.codeActionsOnSave.rules": [
+                    "@master/css/sort-classes"
+                ]
+            }
+            ```
+        </StepR>
+        <StepEnd />
+    </Step>
+</StepSection>
+
+---
+
+For rule behavior, options, and team policy examples, see [Code linting](/guide/code-linting).
