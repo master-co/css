@@ -5,6 +5,7 @@ import {
     defaultCanonicalClassNameOptions,
     defaultClassLintSettings,
     findClassConflicts,
+    findPartialClassConflicts,
     getClassValidationIssues,
     suggestCanonicalClassGroups,
     sortClassNames,
@@ -49,6 +50,41 @@ describe('class conflicts', () => {
                 { className: 'm:sm', conflicts: ['m:lg'] },
                 { className: 'm:md', conflicts: ['m:lg'] }
             ])
+    })
+})
+
+describe('partial class conflicts', () => {
+    test('splits margin axis classes when a later side overrides part of them', () => {
+        expect(findPartialClassConflicts(['mx:md', 'ml:lg'], css)).toEqual([
+            { className: 'mx:md', replacement: 'mr:md', conflict: 'ml:lg' }
+        ])
+        expect(findPartialClassConflicts(['mx:md', 'mr:lg'], css)).toEqual([
+            { className: 'mx:md', replacement: 'ml:md', conflict: 'mr:lg' }
+        ])
+    })
+
+    test('splits padding shorthand classes when a later axis overrides part of them', () => {
+        expect(findPartialClassConflicts(['p:md', 'px:lg'], css)).toEqual([
+            { className: 'p:md', replacement: 'py:md', conflict: 'px:lg' }
+        ])
+        expect(findPartialClassConflicts(['p:md', 'py:lg'], css)).toEqual([
+            { className: 'p:md', replacement: 'px:md', conflict: 'py:lg' }
+        ])
+    })
+
+    test('splits shorthand classes when a later side overrides part of them', () => {
+        expect(findPartialClassConflicts(['m:md', 'mt:lg'], css)).toEqual([
+            { className: 'm:md', replacement: 'mx:md mb:md', conflict: 'mt:lg' }
+        ])
+        expect(findPartialClassConflicts(['p:md', 'pl:lg'], css)).toEqual([
+            { className: 'p:md', replacement: 'py:md pr:md', conflict: 'pl:lg' }
+        ])
+    })
+
+    test('ignores different variants and fully overridden classes', () => {
+        expect(findPartialClassConflicts(['mx:md', 'ml:lg@sm'], css)).toEqual([])
+        expect(findPartialClassConflicts(['mx:md', 'mx:lg'], css)).toEqual([])
+        expect(findPartialClassConflicts(['mx:md', 'm:lg'], css)).toEqual([])
     })
 })
 
@@ -169,10 +205,40 @@ describe('canonical class group suggestions', () => {
         ])
     })
 
+    test('suggests spacing axis composition utilities', () => {
+        expect(suggestCanonicalClassGroups(['mt:md', 'mb:md'], css)).toEqual([
+            { classNames: ['mt:md', 'mb:md'], recommended: 'my:md' }
+        ])
+        expect(suggestCanonicalClassGroups(['ml:md', 'mr:md'], css)).toEqual([
+            { classNames: ['ml:md', 'mr:md'], recommended: 'mx:md' }
+        ])
+        expect(suggestCanonicalClassGroups(['pt:md', 'pb:md'], css)).toEqual([
+            { classNames: ['pt:md', 'pb:md'], recommended: 'py:md' }
+        ])
+        expect(suggestCanonicalClassGroups(['pl:md', 'pr:md'], css)).toEqual([
+            { classNames: ['pl:md', 'pr:md'], recommended: 'px:md' }
+        ])
+        expect(suggestCanonicalClassGroups(['mt:md:hover@sm', 'mb:md:hover@sm'], css)).toEqual([
+            { classNames: ['mt:md:hover@sm', 'mb:md:hover@sm'], recommended: 'my:md:hover@sm' }
+        ])
+    })
+
+    test('suggests spacing axis composition after canonicalization', () => {
+        expect(suggestCanonicalClassGroups(['margin-top:md', 'margin-bottom:md'], css)).toEqual([
+            { classNames: ['margin-top:md', 'margin-bottom:md'], recommended: 'my:md' }
+        ])
+        expect(suggestCanonicalClassGroups(['padding-left:1rem', 'padding-right:1rem'], css)).toEqual([
+            { classNames: ['padding-left:1rem', 'padding-right:1rem'], recommended: 'px:md' }
+        ])
+    })
+
     test('does not suggest unsafe composition groups', () => {
         expect(suggestCanonicalClassGroups(['w:md', 'h:lg'], css)).toEqual([])
         expect(suggestCanonicalClassGroups(['w:md', 'h:md@sm'], css)).toEqual([])
         expect(suggestCanonicalClassGroups(['w:error', 'h:md'], css)).toEqual([])
+        expect(suggestCanonicalClassGroups(['mt:md', 'mb:lg'], css)).toEqual([])
+        expect(suggestCanonicalClassGroups(['mt:md', 'mb:md@sm'], css)).toEqual([])
+        expect(suggestCanonicalClassGroups(['mt:error', 'mb:md'], css)).toEqual([])
         expect(suggestCanonicalClassGroups(['w:md', 'h:md'], css, {
             ...defaultCanonicalClassNameOptions,
             preferCompositionUtilities: false

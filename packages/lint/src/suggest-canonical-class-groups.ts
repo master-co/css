@@ -17,6 +17,7 @@ export interface CanonicalClassGroupSuggestion {
 interface CompositionRecipe {
     properties: [string, string]
     targetKey: string
+    equivalentProperties?: Record<string, [string, string]>
 }
 
 interface ClassGroupEntry {
@@ -36,6 +37,10 @@ const COMPOSITION_RECIPES: CompositionRecipe[] = [
     { properties: ['width', 'height'], targetKey: 'size' },
     { properties: ['min-width', 'min-height'], targetKey: 'min-size' },
     { properties: ['max-width', 'max-height'], targetKey: 'max-size' },
+    { properties: ['margin-top', 'margin-bottom'], targetKey: 'my', equivalentProperties: { 'margin-block': ['margin-top', 'margin-bottom'] } },
+    { properties: ['margin-left', 'margin-right'], targetKey: 'mx', equivalentProperties: { 'margin-inline': ['margin-left', 'margin-right'] } },
+    { properties: ['padding-top', 'padding-bottom'], targetKey: 'py', equivalentProperties: { 'padding-block': ['padding-top', 'padding-bottom'] } },
+    { properties: ['padding-left', 'padding-right'], targetKey: 'px', equivalentProperties: { 'padding-inline': ['padding-left', 'padding-right'] } },
 ]
 
 function resolveOptions(options: CanonicalClassNameOptions): ResolvedCanonicalClassNameOptions {
@@ -80,6 +85,21 @@ function getMergedDeclarations(entries: ClassGroupEntry[]) {
     return declarations
 }
 
+function normalizeRecipeDeclarations(declarations: object, recipe: CompositionRecipe) {
+    const normalized: Record<string, unknown> = {}
+    for (const [property, value] of Object.entries(declarations)) {
+        const equivalentProperties = recipe.equivalentProperties?.[property]
+        if (!equivalentProperties) {
+            normalized[property] = value
+            continue
+        }
+        for (const equivalentProperty of equivalentProperties) {
+            normalized[equivalentProperty] = value
+        }
+    }
+    return normalized
+}
+
 function isSameVariantScope(entries: ClassGroupEntry[]) {
     return entries.every((entry) => equalVariants(entry.rule, entries[0].rule))
 }
@@ -99,7 +119,7 @@ function getCompositionSuggestion(entries: ClassGroupEntry[], recipe: Compositio
 
     const mergedDeclarations = getMergedDeclarations(entries)
     if (!mergedDeclarations) return
-    const mergedSignature = getDeclarationSignature({ declarations: mergedDeclarations })
+    const mergedSignature = getDeclarationSignature({ declarations: normalizeRecipeDeclarations(mergedDeclarations, recipe) })
 
     for (const candidateClassName of getCandidateClassNames(entries, recipe, css, options)) {
         if (entries.some((entry) => entry.canonicalClassName === candidateClassName)) continue
@@ -109,7 +129,7 @@ function getCompositionSuggestion(entries: ClassGroupEntry[], recipe: Compositio
         const candidateRule = candidateRules[0]
         if (candidateRule.layerName !== 'utilities') continue
         if (!equalVariants(candidateRule, entries[0].rule)) continue
-        if (getDeclarationSignature(candidateRule) !== mergedSignature) continue
+        if (getDeclarationSignature({ declarations: normalizeRecipeDeclarations(candidateRule.declarations || {}, recipe) }) !== mergedSignature) continue
 
         return {
             classNames: entries.map((entry) => entry.className),

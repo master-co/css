@@ -32,6 +32,10 @@ jsxTester.run('prefer canonical classes', rule, {
             code: `<div class="w:md h:md">Composition utilities disabled</div>`,
             options: [{ preferCompositionUtilities: false }]
         },
+        {
+            code: `<div class="mt:md mb:md">Axis composition utilities disabled</div>`,
+            options: [{ preferCompositionUtilities: false }]
+        },
     ],
     invalid: [
         {
@@ -102,12 +106,24 @@ jsxTester.run('prefer canonical classes', rule, {
             ]
         },
         {
-            code: `<div class="width:md height:md w:1rem h:1rem w:md:hover h:md:hover">Composition after canonicalization</div>`,
-            output: `<div class="size:md size:1rem size:md:hover">Composition after canonicalization</div>`,
+            code: `<div class="mt:md mb:md ml:md mr:md pt:md pb:md pl:md pr:md">Axis composition utilities</div>`,
+            output: `<div class="my:md mx:md py:md px:md">Axis composition utilities</div>`,
+            errors: [
+                { messageId: 'preferClass', data: { actual: 'mt:md mb:md', recommended: 'my:md' } },
+                { messageId: 'preferClass', data: { actual: 'ml:md mr:md', recommended: 'mx:md' } },
+                { messageId: 'preferClass', data: { actual: 'pt:md pb:md', recommended: 'py:md' } },
+                { messageId: 'preferClass', data: { actual: 'pl:md pr:md', recommended: 'px:md' } },
+            ]
+        },
+        {
+            code: `<div class="width:md height:md w:1rem h:1rem w:md:hover h:md:hover margin-top:md margin-bottom:md padding-left:1rem padding-right:1rem">Composition after canonicalization</div>`,
+            output: `<div class="size:md size:1rem size:md:hover my:md px:md">Composition after canonicalization</div>`,
             errors: [
                 { messageId: 'preferClass', data: { actual: 'width:md height:md', recommended: 'size:md' } },
                 { messageId: 'preferClass', data: { actual: 'w:1rem h:1rem', recommended: 'size:1rem' } },
                 { messageId: 'preferClass', data: { actual: 'w:md:hover h:md:hover', recommended: 'size:md:hover' } },
+                { messageId: 'preferClass', data: { actual: 'margin-top:md margin-bottom:md', recommended: 'my:md' } },
+                { messageId: 'preferClass', data: { actual: 'padding-left:1rem padding-right:1rem', recommended: 'px:md' } },
             ]
         },
         {
@@ -126,6 +142,13 @@ jsxTester.run('prefer canonical classes', rule, {
             ]
         },
         {
+            code: `clsx('margin-top:md margin-bottom:md')`,
+            output: `clsx('my:md')`,
+            errors: [
+                { messageId: 'preferClass', data: { actual: 'margin-top:md margin-bottom:md', recommended: 'my:md' } },
+            ]
+        },
+        {
             code: 'ctl(`font:1rem r:.375rem`)',
             output: 'ctl(`font:md r:md`)',
             errors: [
@@ -138,6 +161,13 @@ jsxTester.run('prefer canonical classes', rule, {
             output: 'ctl(`size:1rem`)',
             errors: [
                 { messageId: 'preferClass', data: { actual: 'w:1rem h:1rem', recommended: 'size:1rem' } },
+            ]
+        },
+        {
+            code: 'ctl(`padding-left:1rem padding-right:1rem`)',
+            output: 'ctl(`px:md`)',
+            errors: [
+                { messageId: 'preferClass', data: { actual: 'padding-left:1rem padding-right:1rem', recommended: 'px:md' } },
             ]
         },
     ]
@@ -169,27 +199,27 @@ jsxTester.run('prefer canonical classes parser smoke tests', rule, {
     valid: [],
     invalid: [
         {
-            code: `<template><div class="w:md h:md">Vue</div></template>`,
-            output: `<template><div class="size:md">Vue</div></template>`,
-            errors: [{ messageId: 'preferClass', data: { actual: 'w:md h:md', recommended: 'size:md' } }],
+            code: `<template><div class="mt:md mb:md">Vue</div></template>`,
+            output: `<template><div class="my:md">Vue</div></template>`,
+            errors: [{ messageId: 'preferClass', data: { actual: 'mt:md mb:md', recommended: 'my:md' } }],
             filename: 'test.vue',
             languageOptions: {
                 parser: await import('vue-eslint-parser')
             }
         },
         {
-            code: `<div class="min-w:md min-h:md">Svelte</div>`,
-            output: `<div class="min-size:md">Svelte</div>`,
-            errors: [{ messageId: 'preferClass', data: { actual: 'min-w:md min-h:md', recommended: 'min-size:md' } }],
+            code: `<div class="ml:md mr:md">Svelte</div>`,
+            output: `<div class="mx:md">Svelte</div>`,
+            errors: [{ messageId: 'preferClass', data: { actual: 'ml:md mr:md', recommended: 'mx:md' } }],
             filename: 'test.svelte',
             languageOptions: {
                 parser: await import('svelte-eslint-parser')
             }
         },
         {
-            code: `<div class="max-w:md max-h:md">Angular</div>`,
-            output: `<div class="max-size:md">Angular</div>`,
-            errors: [{ messageId: 'preferClass', data: { actual: 'max-w:md max-h:md', recommended: 'max-size:md' } }],
+            code: `<div class="pt:md pb:md">Angular</div>`,
+            output: `<div class="py:md">Angular</div>`,
+            errors: [{ messageId: 'preferClass', data: { actual: 'pt:md pb:md', recommended: 'py:md' } }],
             languageOptions: {
                 parser: await import('@angular-eslint/template-parser')
             }
@@ -197,11 +227,11 @@ jsxTester.run('prefer canonical classes parser smoke tests', rule, {
         {
             code: `
             # Test
-            <div class="width:md height:md">MDX</div>`,
+            <div class="pl:md pr:md">MDX</div>`,
             output: `
             # Test
-            <div class="size:md">MDX</div>`,
-            errors: [{ messageId: 'preferClass', data: { actual: 'width:md height:md', recommended: 'size:md' } }],
+            <div class="px:md">MDX</div>`,
+            errors: [{ messageId: 'preferClass', data: { actual: 'pl:md pr:md', recommended: 'px:md' } }],
             filename: 'test.mdx',
             languageOptions: {
                 parser: await import('eslint-mdx')

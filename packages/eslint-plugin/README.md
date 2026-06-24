@@ -152,7 +152,7 @@ export default [
 ]
 ```
 
-For example, this rule can fix `text-align:center` to `text-center`, `font:16px` to `font:md`, `margin:md` to `m:md`, `m:1rem|1.5rem` to `m:md|lg`, `fg:var(--color-red-60)` to `fg:red-60`, and `w:md h:md` to `size:md`.
+For example, this rule can fix `text-align:center` to `text-center`, `font:16px` to `font:md`, `margin:md` to `m:md`, `m:1rem|1.5rem` to `m:md|lg`, `fg:var(--color-red-60)` to `fg:red-60`, `w:md h:md` to `size:md`, and `mt:md mb:md` to `my:md`.
 
 You can disable specific canonicalization families:
 
@@ -187,7 +187,7 @@ export default [
 ]
 ```
 
-When two classes conflict, the later class is treated as the effective one and the fix removes the earlier class.
+When two classes conflict, the later class is treated as the effective one and the fix removes the earlier class. For partially overlapping spacing shorthands, the fix preserves the surviving declarations by splitting the earlier class, such as `mx:md ml:lg` to `mr:md ml:lg`.
 
 ## Settings
 

@@ -20,8 +20,8 @@ export default [
 | --- | --- | --- | --- |
 | `@master/css/sort-classes` | `warn` | Yes | Sort classes into a stable generated-rule order. |
 | `@master/css/no-invalid-classes` | `error` | No | Report invalid Master CSS syntax and invalid generated CSS. |
-| `@master/css/no-conflicting-classes` | `warn` | Yes | Report classes that target the same declaration properties in the same variant scope. |
-| `@master/css/prefer-canonical-classes` | `warn` | Yes | Prefer semantic utilities, theme tokens, and property aliases. |
+| `@master/css/no-conflicting-classes` | `warn` | Yes | Report full and partial declaration conflicts in the same variant scope. |
+| `@master/css/prefer-canonical-classes` | `warn` | Yes | Prefer semantic utilities, theme tokens, property aliases, and composition utilities. |
 
 ---
 
@@ -99,11 +99,11 @@ It also canonicalizes multi-value tokens and direct CSS variable references when
 <div class="m:md|lg fg:red-60">...</div> <!-- [!code ++] -->
 ```
 
-Related width and height pairs can be composed into size utilities:
+Related size and spacing pairs can be composed into shorter utilities:
 
 ```html
-<div class="w:md h:md min-w:md min-h:md">...</div> <!-- [!code --] -->
-<div class="size:md min-size:md">...</div> <!-- [!code ++] -->
+<div class="w:md h:md mt:md mb:md padding-left:1rem padding-right:1rem">...</div> <!-- [!code --] -->
+<div class="size:md my:md px:md">...</div> <!-- [!code ++] -->
 ```
 
 | Option | Default | Effect |
@@ -148,6 +148,13 @@ Variant scope matters. Classes with different selectors, modes, or at-rules do n
 ```
 
 When a conflict can be fixed automatically, the rule removes the earlier overridden class and keeps the later class. Review the fix if the authoring order was carrying intent.
+
+Partially overlapping spacing shorthands are split so the surviving declarations are kept:
+
+```html
+<div class="mx:md ml:lg">...</div> <!-- [!code --] -->
+<div class="mr:md ml:lg">...</div> <!-- [!code ++] -->
+```
 
 ---
 

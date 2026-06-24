@@ -5,7 +5,7 @@ test('ESLint Configuration is valid', async () => {
     const eslint = new ESLint({ cwd: __dirname })
     const result = await eslint.lintFiles('./index.html')
     expect(result[0].errorCount).toBe(0)
-    expect(result[0].warningCount).toBe(8)
+    expect(result[0].warningCount).toBe(9)
     expect(result[0].messages.map((eachMessage) => eachMessage.message)).toEqual(
         [
             'No consistent class order followed.',
@@ -13,6 +13,7 @@ test('ESLint Configuration is valid', async () => {
             'No consistent class order followed.',
             'Prefer "font:xs" over "font:.75rem".',
             'Prefer "font:2xl@sm" over "font:1.5rem@sm".',
+            'Prefer "mx:8x mt:8x" over "m:8x" because "mb:12x" overrides part of it.',
             'Prefer "m:xl" over "m:8x".',
             'Prefer "font:3xl@md" over "font:2rem@md".',
             'Prefer "mb:2xl" over "mb:12x".',
