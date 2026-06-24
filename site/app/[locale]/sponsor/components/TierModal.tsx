@@ -13,21 +13,21 @@ export default function TierModal({ tierState }: { tierState: [any, Dispatch<any
                 {selectedTier.amount && (
                     <div className="text:sm font:bold text:strong">
                         {selectedTier.amount}
-                            <span className="text:xs fg:text font:regular ml:0.313rem">
+                            <span className="ml:0.313rem text:xs font:regular fg:text">
                             / {selectedTier.one ? 'one-time' : 'month'}
                         </span>
                     </div>
                 )}
             </div>
         </div>
-        <div className="bt:1px|solid|subtle px:1.563rem text:xs mb:0.313rem pt:0.938rem">
+        <div className="mb:0.313rem px:1.563rem pt:0.938rem bt:1px|solid|subtle text:xs">
             Choose a platform
         </div>
-        <Link href={selectedTier.openCollectiveUrl} className="flex items-center gap:sm px:1.563rem text-decoration:none! font:medium min-h:48px">
+        <Link href={selectedTier.openCollectiveUrl} className="flex items-center gap:sm min-h:48px px:1.563rem font:medium text-decoration:none!">
             <Image src="/images/open-collective.svg" alt="open-collective" width="24" height="24" />
             Open Collective
         </Link>
-        <Link href={selectedTier.githubSponsorUrl} className="flex items-center gap:sm px:1.563rem text-decoration:none! font:medium min-h:48px">
+        <Link href={selectedTier.githubSponsorUrl} className="flex items-center gap:sm min-h:48px px:1.563rem font:medium text-decoration:none!">
             <Image src="/images/github-sponsors.svg" alt="github-sponsors" width="24" height="24" className="transform:scale(1.2)" />
             Github Sponsors
         </Link>

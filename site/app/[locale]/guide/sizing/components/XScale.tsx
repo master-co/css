@@ -28,7 +28,7 @@ export default () => {
                                             <td>{row.px}</td>
                                             <td>{row.value}</td>
                                             <td>
-                                                <div className='inline-block bg:primary h:1em vertical-align:middle' style={{ width: row.value }}></div>
+                                                <div className='inline-block h:1em bg:primary vertical-align:middle' style={{ width: row.value }}></div>
                                             </td>
                                         </tr>
                                     ))

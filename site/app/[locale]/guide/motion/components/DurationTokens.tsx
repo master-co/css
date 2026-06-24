@@ -37,9 +37,9 @@ export default () => {
                                         <td>
                                             <div className="inline-flex items-center gap:sm w:full">
                                                 <span>{value}</span>
-                                                <div className="rel rounded overflow:hidden bg:line-subtle h:1x w:14x">
+                                                <div className="rel overflow:hidden h:1x w:14x rounded bg:line-subtle">
                                                     <div
-                                                        className="abs rounded bg:primary/.45 h:full left:0 top:0"
+                                                        className="abs left:0 top:0 h:full rounded bg:primary/.45"
                                                         style={{ width: `${duration / maxDuration * 100}%` }}
                                                     />
                                                 </div>

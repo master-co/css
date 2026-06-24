@@ -90,12 +90,12 @@ export default function ResourceWaterfall() {
                     aria-label="Conceptual waterfall comparing late runtime discovery with preloaded runtime script and default manifest requests, with FCP markers"
                 >
                     <div style={{ boxSizing: 'border-box', minWidth: '32rem' }}>
-                        <div className="gap:md grid-cols:1">
+                        <div className="grid-cols:1 gap:md">
                             {scenarios.map((scenario) => (
-                                <section key={scenario.title} className="b:1px|solid|gray-20 p:md r:lg bg:surface b:1px|solid|gray-70@dark">
+                                <section key={scenario.title} className="p:md b:1px|solid|gray-20 r:lg bg:surface b:1px|solid|gray-70@dark">
                                     <header className="mb:sm">
                                         <h3 className="m:0 font:semibold font:sm text:neutral">{scenario.title}</h3>
-                                        <p className="mx:0 font:2xs mb:0 mt:3xs text:gray">{scenario.summary}</p>
+                                        <p className="mx:0 mb:0 mt:3xs font:2xs text:gray">{scenario.summary}</p>
                                     </header>
                                     <div className="grid gap:2xs" style={{ gridTemplateColumns: '8rem minmax(0, 1fr)' }}>
                                         <div />
@@ -103,7 +103,7 @@ export default function ResourceWaterfall() {
                                             <span className="abs left:0 top:0">Earlier</span>
                                             <span className="abs right:0 top:0">Later</span>
                                             <MetricLine metric={scenario.metric} />
-                                            <span className="abs bg:gray-20 bottom:0 h:1px left:0 right:0 bg:gray-60@dark" />
+                                            <span className="abs bottom:0 left:0 right:0 h:1px bg:gray-20 bg:gray-60@dark" />
                                         </div>
                                         {scenario.rows.map((row) => (
                                             <WaterfallRow key={row.resource} row={row} metric={scenario.metric} />
@@ -129,7 +129,7 @@ export default function ResourceWaterfall() {
 function WaterfallRow({ row, metric }: { row: WaterfallRow, metric: WaterfallScenario['metric'] }) {
     return (
         <>
-            <div className="flex items-center font:2xs font:medium min-w:0 text:neutral">{row.resource}</div>
+            <div className="flex items-center min-w:0 font:2xs font:medium text:neutral">{row.resource}</div>
             <div className="rel overflow:hidden bg:gray-5 bg:gray-80@dark" style={{ height: '2rem' }}>
                 <TimelineTicks />
                 <MetricLine metric={metric} />
@@ -156,7 +156,7 @@ function MetricLine({ metric }: { metric: WaterfallScenario['metric'] }) {
     return (
         <span
             aria-hidden="true"
-            className="abs bottom:0 text:orange top:0 z:1"
+            className="abs bottom:0 top:0 z:1 text:orange"
             style={{
                 borderLeft: '1px dashed currentColor',
                 left: `${metric.position}%`
@@ -186,7 +186,7 @@ function TimelineTicks() {
                 <span
                     key={tick}
                     aria-hidden="true"
-                    className="abs bg:gray-20 bottom:0 top:0 w:1px bg:gray-60@dark"
+                    className="abs bottom:0 top:0 w:1px bg:gray-20 bg:gray-60@dark"
                     style={{ left: `${tick}%` }}
                 />
             ))}

@@ -4,5 +4,5 @@ import Bg from 'internal/components/Bg'
 
 export default (props: any) =>
     <Demo>
-        <Bg {...props} className={clsx(props.className, 'aspect-ratio:3/1 h:12x w:36x')} />
+        <Bg {...props} className={clsx(props.className, 'h:12x w:36x aspect-ratio:3/1')} />
     </Demo>

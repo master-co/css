@@ -32,9 +32,9 @@ export const revalidate = false
 export default async function Page(props: any) {
     return (
         <>
-            <div className="gap:0.938rem p:10x grid-cols:2 grid-cols:3@2xs grid-cols:4@sm grid-cols:5@md">
+            <div className="grid-cols:2 gap:0.938rem p:10x grid-cols:3@2xs grid-cols:4@sm grid-cols:5@md">
                 <Image
-                    className="full object-cover grid-col-span:2 grid-row-span:2 r:5px aspect-ratio:2/1"
+                    className="grid-col-span:2 grid-row-span:2 full aspect-ratio:2/1 r:5px object-cover"
                     src={mountain1.src}
                     blurDataURL={mountain1.blurDataURL}
                     placeholder='blur'
@@ -45,7 +45,7 @@ export default async function Page(props: any) {
                 {mountains.map((mountain) => (
                     <Image
                         key={mountain.src}
-                        className="object-cover r:5px aspect-ratio:2/1 h:auto w:full"
+                        className="h:auto w:full aspect-ratio:2/1 r:5px object-cover"
                         src={mountain.src}
                         blurDataURL={mountain.blurDataURL}
                         placeholder='blur'

@@ -4,7 +4,7 @@ import clsx from 'clsx'
 export default ({ className }: any) => {
     return (
         <Demo className="gap:10x">
-            <button className={clsx(className, 'bg:stripe px:5x r:5px font:medium font:sm h:42px')}>Hover Me</button>
+            <button className={clsx(className, 'h:42px px:5x r:5px font:medium font:sm bg:stripe')}>Hover Me</button>
         </Demo>
     )
 }

@@ -70,15 +70,15 @@ export default function ViewTransitionDemo() {
     return (
         <Demo className="container w:full">
             <span aria-hidden className={clsx(rootTransitionClassName, 'hidden')} />
-            <div className="grid gap:lg grid-cols:1 w:full grid-cols:2@container(3xs)">
-                <div className="grid gap:sm grid-cols:1">
+            <div className="grid grid-cols:1 gap:lg w:full grid-cols:2@container(3xs)">
+                <div className="grid grid-cols:1 gap:sm">
                     {views.map((view) => {
                         const activeButton = view.id === activeId
                         return (
                             <button
                                 aria-pressed={activeButton}
                                 className={clsx(
-                                    'app-panel text-left p:md cursor:pointer min-h:18x',
+                                    'app-panel min-h:18x p:md text-left cursor:pointer',
                                     'b:1px|solid|line r:md',
                                     activeButton ? 'outline:2px|solid|accent bg:surface' : 'bg:surface:hover'
                                 )}
@@ -86,9 +86,9 @@ export default function ViewTransitionDemo() {
                                 onClick={() => selectView(view.id)}
                                 type="button"
                             >
-                                <span className={clsx('inline-block r:full size:2x mr:xs', view.accent)} />
+                                <span className={clsx('inline-block size:2x mr:xs r:full', view.accent)} />
                                 <span className="text:sm font:medium">{view.title}</span>
-                                <span className="block text:xs fg:text mt:2xs">{view.eyebrow}</span>
+                                <span className="block mt:2xs text:xs fg:text">{view.eyebrow}</span>
                             </button>
                         )
                     })}
@@ -98,12 +98,12 @@ export default function ViewTransitionDemo() {
                     'flex flex-col view-transition-name:panel',
                     active.tint
                 )}>
-                    <p className="m:0 text:xs fg:text font:medium">{active.eyebrow}</p>
-                    <h3 className="mx:0 text:2xl font:semibold mb:0 mt:sm view-transition-name:title text:3xl@container(3xs)">
+                    <p className="m:0 text:xs font:medium fg:text">{active.eyebrow}</p>
+                    <h3 className="mx:0 mb:0 mt:sm text:2xl font:semibold view-transition-name:title text:3xl@container(3xs)">
                         {active.title}
                     </h3>
-                    <div className={clsx('rounded h:1x mt:md opacity:.8 w:2em', active.accent)} />
-                    <p className="mx:0 text:sm fg:text max-w:full mb:0 mt:md">
+                    <div className={clsx('h:1x w:2em mt:md rounded opacity:.8', active.accent)} />
+                    <p className="max-w:full mx:0 mb:0 mt:md text:sm fg:text">
                         {active.body}
                     </p>
                 </section>

@@ -26,7 +26,7 @@ function AuthorAvatarStack({ children }: { children: any[] }) {
                 return (
                     <Image
                         key={author.name}
-                        className={clsx('object-cover round outline:2px|solid|canvas', {
+                        className={clsx('round outline:2px|solid|canvas object-cover', {
                             'ml:-1x': index > 0
                         })}
                         src={author.image}
@@ -49,21 +49,21 @@ export default async function Page(props: any) {
 
     return <>
         <main className='px:5x pt:2xl pt:15x@sm'>
-            <div className="prose mx:auto my:18x max-w:5xl my:30x@sm">
-                <div className='bl:1px|solid|muted bt:1px|solid|muted grid-cols:1 grid-cols:2@sm grid-cols:3@md'>
+            <div className="prose max-w:5xl mx:auto my:18x my:30x@sm">
+                <div className='grid-cols:1 bl:1px|solid|muted bt:1px|solid|muted grid-cols:2@sm grid-cols:3@md'>
                     {pages
                         .map((page: any, index: number) => {
                             const formattedDate = dayjs(page.date).format('ddd, MMMM D')
                             return (
                                 <div key={page.pathname + index} className={clsx('bb:1px|dotted|muted br:1px|dotted|muted')}>
-                                    <Link href={page.pathname} className={clsx('flex flex-col gap:5x p:lg transition:background-color|.2s h:full bg:surface:hover p:2xl@sm')}>
+                                    <Link href={page.pathname} className={clsx('flex flex-col gap:5x h:full p:lg transition:background-color|.2s bg:surface:hover p:2xl@sm')}>
                                         <div className="flex justify-between mb:-1x">
                                             <div className='text:xs fg:accent'>{formattedDate}</div>
                                             <div className='text:xs text:muted'> <TimeAgo timestamp={page.date} /></div>
                                         </div>
-                                        <div className='text-pretty my:-1x font:xl leading:sm'>{page.title}</div>
+                                        <div className='my:-1x font:xl leading:sm text-pretty'>{page.title}</div>
                                         {/* <Image src="/images/gold-pattern.jpg"  className="r:5px aspect-ratio:16/9 h:auto" width={480} height={270} alt={page.title} /> */}
-                                        <div className='text-pretty text:xs fg:text mt:auto'>{page.description}</div>
+                                        <div className='mt:auto text:xs text-pretty fg:text'>{page.description}</div>
                                         <AuthorAvatarStack>{page.authors}</AuthorAvatarStack>
                                     </Link>
                                 </div>
