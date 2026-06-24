@@ -18,6 +18,7 @@ shared / external data
 @master/css-project
   ↓
 @master/css-validator
+@master/css-lint
 @master/css-server
 @master/css-scanner
 @master/css-runtime
@@ -112,7 +113,9 @@ Framework packages wrap those lower layers for Astro, Nuxt, React, Vue, and Svel
 
 `packages/vscode` packages the VS Code extension, generated settings, and active semantic token provider. Master CSS no longer ships a TextMate grammar package or `.mcss` language contribution.
 
-`packages/eslint-plugin` scans class locations and uses validator/engine for class validation, ordering, and collision detection.
+`packages/lint` owns framework-neutral class lint policy such as sorting, conflict detection, validation diagnostics, and canonical class suggestions.
+
+`packages/eslint-plugin` scans class locations and adapts `@master/css-lint` helpers to ESLint rules, reports, and autofix ranges.
 
 ## Documentation And Examples
 

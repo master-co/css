@@ -1,20 +1,20 @@
-import rule from '../src/rules/class-recommendation'
+import rule from '../src/rules/prefer-canonical-classes'
 import { createTester, jsxTester } from './testers'
 import { createPresetManifest } from './helpers/create-preset-manifest'
 import UtilityType from '@master/css-schema/utility-type'
 
-jsxTester.run('class recommendation', rule, {
+jsxTester.run('prefer canonical classes', rule, {
     valid: [
         { code: `<div class="text-center font:md m:md r:md fg:red-60">Recommended classes</div>` },
         { code: `<div class="btn width:error unknown-class">Unknown classes are ignored</div>` },
         { code: `<div class="text:muted grid-col-span:4">Manifest aliases are preserved</div>` },
         {
-            code: `<div class="font:16px">Variables disabled</div>`,
-            options: [{ preferVariables: false }]
+            code: `<div class="font:16px">Theme tokens disabled</div>`,
+            options: [{ preferThemeTokens: false }]
         },
         {
-            code: `<div class="margin:md">Key aliases disabled</div>`,
-            options: [{ preferKeyAliases: false }]
+            code: `<div class="margin:md">Property aliases disabled</div>`,
+            options: [{ preferPropertyAliases: false }]
         },
         {
             code: `<div class="display:block">Static utilities disabled</div>`,
@@ -96,14 +96,14 @@ createTester({
             })
         }
     }
-}).run('class recommendation custom components', rule, {
+}).run('prefer canonical classes custom components', rule, {
     valid: [
         { code: `<button class="btn">Component class</button>` }
     ],
     invalid: []
 })
 
-jsxTester.run('class recommendation parser smoke tests', rule, {
+jsxTester.run('prefer canonical classes parser smoke tests', rule, {
     valid: [],
     invalid: [
         {

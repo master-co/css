@@ -86,7 +86,7 @@ export default [
     css,
     {
         rules: {
-            '@master/css/class-validation': ['error', {
+            '@master/css/no-invalid-classes': ['error', {
                 disallowUnknownClass: true
             }]
         }
@@ -96,29 +96,29 @@ export default [
 
 ## Rules
 
-### `@master/css/class-order`
+### `@master/css/sort-classes`
 
-Enforces a consistent and logical order of classes.
+Sorts Master CSS classes into a consistent and logical order.
 
 ```js
 export default [
     {
         rules: {
-            '@master/css/class-order': 'warn'
+            '@master/css/sort-classes': 'warn'
         }
     }
 ]
 ```
 
-### `@master/css/class-validation`
+### `@master/css/no-invalid-classes`
 
-Detects Master CSS syntax errors.
+Disallows invalid Master CSS classes.
 
 ```js
 export default [
     {
         rules: {
-            '@master/css/class-validation': 'error'
+            '@master/css/no-invalid-classes': 'error'
         }
     }
 ]
@@ -130,7 +130,7 @@ Set `disallowUnknownClass: true` to reject classes that do not match the active 
 export default [
     {
         rules: {
-            '@master/css/class-validation': ['error', {
+            '@master/css/no-invalid-classes': ['error', {
                 disallowUnknownClass: true
             }]
         }
@@ -138,15 +138,15 @@ export default [
 ]
 ```
 
-### `@master/css/class-recommendation`
+### `@master/css/prefer-canonical-classes`
 
-Prefers recommended Master CSS class forms, including semantic utilities, theme tokens, and short aliases.
+Prefers canonical Master CSS class forms, including semantic utilities, theme tokens, and property aliases.
 
 ```js
 export default [
     {
         rules: {
-            '@master/css/class-recommendation': 'warn'
+            '@master/css/prefer-canonical-classes': 'warn'
         }
     }
 ]
@@ -154,31 +154,31 @@ export default [
 
 For example, this rule can fix `text-align:center` to `text-center`, `font:16px` to `font:md`, and `margin:md` to `m:md`.
 
-You can disable specific recommendation families:
+You can disable specific canonicalization families:
 
 ```js
 export default [
     {
         rules: {
-            '@master/css/class-recommendation': ['warn', {
+            '@master/css/prefer-canonical-classes': ['warn', {
                 preferStaticUtilities: true,
-                preferVariables: true,
-                preferKeyAliases: true
+                preferThemeTokens: true,
+                preferPropertyAliases: true
             }]
         }
     }
 ]
 ```
 
-### `@master/css/class-collision`
+### `@master/css/no-conflicting-classes`
 
-Detects classes that emit the same CSS declaration.
+Disallows classes that emit the same CSS declaration for the same variant.
 
 ```js
 export default [
     {
         rules: {
-            '@master/css/class-collision': 'warn'
+            '@master/css/no-conflicting-classes': 'warn'
         }
     }
 ]

@@ -1,4 +1,4 @@
-import rule from '../src/rules/class-validation'
+import rule from '../src/rules/no-invalid-classes'
 import { RuleTester } from '@typescript-eslint/rule-tester'
 import { createTester, jsxTester } from './testers'
 import { createPresetManifest } from './helpers/create-preset-manifest'

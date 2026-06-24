@@ -2,18 +2,19 @@
 
 ## Responsibility
 
-`@master/eslint-plugin-css` validates and normalizes Master CSS classes in source code. It detects class locations, validates syntax, enforces class order, and detects classes with equivalent declarations.
+`@master/eslint-plugin-css` adapts Master CSS lint helpers to ESLint. It detects class locations, reports diagnostics, and applies autofixes through ESLint rule APIs.
 
 ## Owns
 
 - ESLint plugin object, configs, and rule definitions.
 - AST visitor helpers for supported source syntaxes.
-- Class validation, ordering, collision reporting, and autofix output.
+- ESLint report formatting and autofix output.
 - ESLint settings resolution and manifest cache behavior.
 
 ## Does Not Own
 
 - Engine CSS generation semantics.
+- Class lint policy owned by `@master/css-lint`.
 - Source extraction adapters outside ESLint visitors.
 - Language service or LSP behavior.
 
@@ -21,7 +22,7 @@
 
 - Default plugin object.
 - Configs under `./configs/*`.
-- Rules: `class-validation`, `class-order`, and `class-collision`.
+- Rules: `sort-classes`, `no-invalid-classes`, `no-conflicting-classes`, and `prefer-canonical-classes`.
 
 ## Key Files
 
@@ -32,7 +33,6 @@
 - `src/utils/resolve-class-node.ts`
 - `src/utils/resolve-context.ts`
 - `src/rules/*`
-- `src/functions/filter-collision-classes.ts`
 
 ## Risk Areas
 
@@ -40,7 +40,7 @@
 - Raw versus cooked string range mapping.
 - Autofix whitespace, quote, and range preservation.
 - Manifest cache scoping by cwd/settings.
-- Collision detection depending on generated declarations and variants.
+- Adapter drift from `@master/css-lint` policy helpers.
 
 ## Safe Changes
 

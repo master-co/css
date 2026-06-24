@@ -53,19 +53,20 @@
     },
     "dependencies": {
         "@master/css": "workspace:^",
-        "@master/css-engine": "workspace:^",
+        "@master/css-lint": "workspace:^",
         "@master/css-project": "workspace:^",
         "@master/css-preset": "workspace:^",
         "@master/css-validator": "workspace:^",
         "@typescript-eslint/utils": "^8.61.1",
-        "typescript-eslint": "^8.61.1",
-        "@master/css-schema": "workspace:^"
+        "typescript-eslint": "^8.61.1"
     },
     "devDependencies": {
         "@angular-eslint/template-parser": "^21.4.0",
+        "@master/css-schema": "workspace:^",
         "@angular/compiler": "^21.2.17",
         "@typescript-eslint/rule-tester": "^8.61.1",
         "eslint": "^10.5.0",
+        "eslint-mdx": "^3.8.1",
         "eslint-plugin-markdown": "^5.1.0",
         "eslint-plugin-mdx": "^3.8.1",
         "svelte-eslint-parser": "^1.8.0",

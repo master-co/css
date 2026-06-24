@@ -5,25 +5,25 @@ import brands from 'internal/data/brands'
 ---
 
 ## Features
-### Consistent class order
+### Sort classes
 In practice, you pay less attention to the order of classes, and as the number of classes increases, the template markup becomes less readable.
 
-(i) With the [class order rule](#consistent-class-order), you can enforce a consistent and fixed order for classes.
+(i) With the [sort classes rule](#sort-classes), you can enforce a consistent and fixed order for classes.
 <Image className="aspect-ratio:2/1 r:lg max-w:3xl w:full" src={require('~/site/public/consistent-class-order.webp').default} alt="Consistent class order" unoptimized />
 
 (!) <span className="text:amber">No consistent class order followed.</span>
 ```html
 <div class="font:xs font:2xl@sm m:xl block font:3xl@md mb:2xl">…</div>
 ```
-(o) Fix this @master/css/class-order problem.
+(o) Fix this @master/css/sort-classes problem.
 ```html
 <div class="block font:xs font:2xl@sm font:3xl@md m:xl mb:2xl">…</div>
 ```
 
-### Syntax error checks
+### No invalid classes
 In the past, you added utility classes to your templates unsafely, lacking the capability to verify their validity or legality directly within the source code.
 
-(i) With the [class validation rule](#syntax-error-checks), you can check the validity of classes early as you write them.
+(i) With the [no invalid classes rule](#no-invalid-classes), you can check the validity of classes early as you write them.
 <Image className="aspect-ratio:2/1 r:lg max-w:3xl w:full" src={require('~/site/public/syntax-error-checks.webp').default} alt="Syntax error checks" unoptimized />
 
 (x) <span className="text:danger">Invalid value for \`font\` property.</span>
@@ -33,15 +33,15 @@ In the past, you added utility classes to your templates unsafely, lacking the c
 ```
 This is helpful if you make a typo or are unfamiliar with Master CSS syntax!
 
-### Class recommendation
+### Prefer canonical classes
 Native declaration classes and raw values are useful while exploring, but teams often want the committed code to use the most recognizable Master CSS form.
 
-(i) With the `@master/css/class-recommendation` rule, ESLint can prefer semantic utilities, theme tokens, and short aliases.
+(i) With the `@master/css/prefer-canonical-classes` rule, ESLint can prefer semantic utilities, theme tokens, and short aliases.
 ```html
 <!-- @MARK text-align:center font:16px margin:md -->
 <h1 class="text-align:center font:16px margin:md">…</h1>
 ```
-(o) Fix this @master/css/class-recommendation problem.
+(o) Fix this @master/css/prefer-canonical-classes problem.
 ```html
 <!-- @MARK text-center font:md m:md -->
 <h1 class="text-center font:md m:md">…</h1>
@@ -50,7 +50,7 @@ Native declaration classes and raw values are useful while exploring, but teams 
 ### Disallow unknown classes
 You can also restrict teams to using [theme](/guide/theme) and [component classes](/guide/reusing-styles#component-classes) instead of defining classes through traditional `html <style>` or CSS files.
 
-(i) Based on syntax error checking, you can [disallow unknown classes](#disallow-unknown-classes).
+(i) Based on invalid class checking, you can [disallow unknown classes](#disallow-unknown-classes).
 <Image className="aspect-ratio:2/1 r:lg max-w:3xl w:full" src={require('~/site/public/disallow-unknown-class.webp').default} alt="Disallow unknown classes" unoptimized />
 
 (x) <span className="text:danger">"btn" is not a valid or known class.</span>
@@ -58,7 +58,7 @@ You can also restrict teams to using [theme](/guide/theme) and [component classe
 <!-- @MARK btn -->
 <button class="btn">…</button>
 ```
-(o) Fix this @master/css/class-validation problem using the Master CSS syntax.
+(o) Fix this @master/css/no-invalid-classes problem using the Master CSS syntax.
 ```html
 <button class="inline-flex px:md">…</button>
 ```
@@ -75,10 +75,10 @@ Archive and see the changes.
 <button class="btn">…</button>
 ```
 
-### Class collision detection
+### No conflicting classes
 The class you added may collide with existing classes due to human error or having the same declarations as a third-party custom syntax.
 
-(i) With the [class collision rule](#class-collision-detection), you'll no longer collide with existing classes.
+(i) With the [no conflicting classes rule](#no-conflicting-classes), you'll no longer collide with existing classes.
 <Image className="aspect-ratio:2/1 r:lg max-w:3xl w:full" src={require('~/site/public/class-collision-detection.webp').default} alt="Class collision detection" unoptimized />
 
 (!) <span className="text:amber">"m:0.625rem" applies the same CSS declarations as "m:5x".</span><br/><span className="text:amber">"m:5x" applies the same CSS declarations as "m:0.625rem".</span>
@@ -86,7 +86,7 @@ The class you added may collide with existing classes due to human error or havi
 <!-- @MARK m:0.625rem m:5x -->
 <div class="m:0.625rem m:5x">…</div>
 ```
-(o) Fix this @master/css/class-collision problem by removing other colliding classes.
+(o) Fix this @master/css/no-conflicting-classes problem by removing other colliding classes.
 ```html
 <div class="m:0.625rem">…</div>
 ```
@@ -97,7 +97,7 @@ It can also detect whether declarations with the same selector and media query s
 <!-- @MARK m:10x@sm m:3.125rem@sm -->
 <div class="m:10x@sm m:3.125rem@sm">…</div>
 ```
-(o) Fix this @master/css/class-collision problem by removing other colliding classes.
+(o) Fix this @master/css/no-conflicting-classes problem by removing other colliding classes.
 ```html
 <!-- @MARK m:3.125rem@sm -->
 <div class="m:3.125rem@sm">…</div>

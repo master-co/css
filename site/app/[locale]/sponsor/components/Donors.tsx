@@ -1,4 +1,4 @@
-/* eslint-disable @master/css/class-order */
+/* eslint-disable @master/css/sort-classes */
 import { Fragment } from 'react'
 import Link from 'internal/components/Link'
 

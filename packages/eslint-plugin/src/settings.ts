@@ -1,10 +1,8 @@
-import { CLASS_ATTRIBUTES, CLASS_DECLARATIONS, CLASS_FUNCTIONS, type MasterCSSManifest } from './utils/master-css'
+import { defaultClassLintSettings } from '@master/css-lint'
+import type { MasterCSSManifest } from './utils/master-css'
 
 const settings = {
-    classAttributes: CLASS_ATTRIBUTES,
-    classFunctions: CLASS_FUNCTIONS,
-    classDeclarations: CLASS_DECLARATIONS,
-    ignoredKeys: ['compoundVariants', 'defaultVariants'],
+    ...defaultClassLintSettings,
     manifest: undefined
 }
 

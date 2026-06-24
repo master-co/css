@@ -2,15 +2,15 @@ import defineVisitors from '../utils/define-visitors'
 import resolveContext from '../utils/resolve-context'
 import createRule from '../create-rule'
 import settingsSchema from '../settings-schema'
-import { sortReadableClasses } from '../utils/master-css'
+import { sortClassNames } from '@master/css-lint'
 
 export default createRule({
-    name: 'consistent-class-order',
+    name: 'sort-classes',
     meta: {
         type: 'layout',
         fixable: 'code',
         docs: {
-            description: 'Enforce a consistent and logical order of classes'
+            description: 'Sort Master CSS classes'
         },
         messages: {
             invalidClassOrder: 'No consistent class order followed.',
@@ -23,7 +23,7 @@ export default createRule({
         const { sourceCode } = context
         return defineVisitors({ context, settings }, (node, { raw, start, end, nodes, classValueRawMap, classValues }) => {
             if (nodes.length <= 1) return
-            let orderedClasses = sortReadableClasses(classValues, css)
+            let orderedClasses = sortClassNames(classValues, css)
             let orderedRaw = nodes
                 .map((eachNode, i) => {
                     if (eachNode.type === 'class') {

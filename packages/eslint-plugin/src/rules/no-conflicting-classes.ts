@@ -1,15 +1,15 @@
 import defineVisitors from '../utils/define-visitors'
 import resolveContext from '../utils/resolve-context'
-import filterCollisionClasses from '../functions/filter-collision-classes'
 import createRule from '../create-rule'
 import settingsSchema from '../settings-schema'
+import { findClassConflicts } from '@master/css-lint'
 
 export default createRule({
-    name: 'class-collision-detection',
+    name: 'no-conflicting-classes',
     meta: {
         type: 'layout',
         docs: {
-            description: 'Avoid applying classes with the same declarations'
+            description: 'Disallow conflicting Master CSS classes'
         },
         messages: {
             collisionClass: '{{message}}',
@@ -21,10 +21,8 @@ export default createRule({
     create(context) {
         const { settings, css } = resolveContext(context)
         return defineVisitors({ context, settings }, (node, { raw, start, end, nodes, classNodes, classValues }) => {
-            const collisionClassesRecord = filterCollisionClasses(classValues, css)
-            for (const className in collisionClassesRecord) {
-                const collisionClasses = collisionClassesRecord[className]
-                const collisionClassNamesMsg = collisionClasses.map(x => `"${x}"`).join(' and ')
+            for (const { className, conflicts } of findClassConflicts(classValues, css)) {
+                const collisionClassNamesMsg = conflicts.map(x => `"${x}"`).join(' and ')
                 const classNode = classNodes.find((node) => node.value === className)
                 const fixedNodes = [...nodes]
                 const removeCollision = (removedClassNode) => {
@@ -32,7 +30,6 @@ export default createRule({
                         const fixedNode = fixedNodes[i]
                         const target = fixedNode === removedClassNode
                         if (target) {
-                            const next = fixedNodes[i + 1]
                             const prev = fixedNodes[i - 1]
                             const isSpaceBefore = prev && prev.type === 'space'
                             fixedNodes.splice(i, 1)
@@ -42,7 +39,7 @@ export default createRule({
                         }
                     }
                 }
-                collisionClasses.forEach((collisionClass) => {
+                conflicts.forEach((collisionClass) => {
                     const collisionNode = classNodes.find((node) => node.value === collisionClass)
                     removeCollision(collisionNode)
                 })

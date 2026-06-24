@@ -1,4 +1,4 @@
-import rule from '../src/rules/class-validation'
+import rule from '../src/rules/no-invalid-classes'
 import { jsxTester } from './testers'
 
 jsxTester.run('class matching react', rule, {

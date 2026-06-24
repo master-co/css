@@ -8,21 +8,21 @@ export default () => (
         <Feature>
             <IconStatusChange className="app-icon-primary" />
             <div>
-                <p className='text:lg!'><Link href="#consistent-class-order">Consistent class order</Link></p>
+                <p className='text:lg!'><Link href="#sort-classes">Sort classes</Link></p>
                 <p>Enforce a consistent and logical order of classes</p>
             </div>
         </Feature>
         <Feature>
             <IconShieldCheck className="app-icon-primary" />
             <div>
-                <p className='text:lg!'><Link href="#syntax-error-checks">Syntax error checks</Link></p>
+                <p className='text:lg!'><Link href="#no-invalid-classes">No invalid classes</Link></p>
                 <p>Detect syntax errors early when writing classes</p>
             </div>
         </Feature>
         <Feature>
             <IconSparkles className="app-icon-primary" />
             <div>
-                <p className='text:lg!'><Link href="#class-recommendation">Class recommendation</Link></p>
+                <p className='text:lg!'><Link href="#prefer-canonical-classes">Prefer canonical classes</Link></p>
                 <p>Prefer semantic utilities, theme tokens, and short aliases</p>
             </div>
         </Feature>
@@ -36,7 +36,7 @@ export default () => (
         <Feature>
             <IconPencilExclamation className="app-icon-primary" />
             <div>
-                <p className='text:lg!'><Link href="#class-collision-detection">Class collision detection</Link></p>
+                <p className='text:lg!'><Link href="#no-conflicting-classes">No conflicting classes</Link></p>
                 <p>Avoid applying classes with the same CSS declaration</p>
             </div>
         </Feature>

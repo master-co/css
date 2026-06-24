@@ -1,4 +1,4 @@
-import rule from '../../src/rules/class-order'
+import rule from '../../src/rules/sort-classes'
 import { jsxTester, source } from '../testers'
 
 jsxTester.run('order', rule, {

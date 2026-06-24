@@ -1,4 +1,4 @@
-import rule from '../src/rules/class-collision'
+import rule from '../src/rules/no-conflicting-classes'
 import { jsxTester } from './testers'
 
 jsxTester.run('collision', rule, {

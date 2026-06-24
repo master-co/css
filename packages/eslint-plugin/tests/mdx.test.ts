@@ -1,8 +1,8 @@
-import OrderRule from '../src/rules/class-order'
-import CollisionRule from '../src/rules/class-collision'
+import OrderRule from '../src/rules/sort-classes'
+import CollisionRule from '../src/rules/no-conflicting-classes'
 import { jsxTester } from './testers'
 
-jsxTester.run('mdx class order', OrderRule, {
+jsxTester.run('mdx sort classes', OrderRule, {
     valid: [{ code: `<div class="m:2x p:2x bg:black fg:white font:1.5rem">Simple, basic</div>` }],
     invalid: [
         {
@@ -21,7 +21,7 @@ jsxTester.run('mdx class order', OrderRule, {
     ],
 })
 
-jsxTester.run('mdx class collision', CollisionRule, {
+jsxTester.run('mdx no conflicting classes', CollisionRule, {
     valid: [],
     invalid: [
         {

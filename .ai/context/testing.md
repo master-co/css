@@ -29,6 +29,7 @@ pnpm --filter @master/css.vite test
 pnpm --filter @master/css-language test
 pnpm --filter @master/css-language-service test
 pnpm --filter @master/css-language-server test
+pnpm --filter @master/css-lint test
 pnpm --filter @master/eslint-plugin-css test
 pnpm --filter @master/css-validator test
 pnpm --filter @master/css-cli test

@@ -21,7 +21,7 @@ export default [
     css,
     {
         rules: {
-            '@master/css/class-validation': ['error', {
+            '@master/css/no-invalid-classes': ['error', {
                 disallowUnknownClass: true
             }],
         },

@@ -1,4 +1,4 @@
-import rule from '../src/rules/class-order'
+import rule from '../src/rules/sort-classes'
 import { createTester } from './testers'
 import { createPresetManifest } from './helpers/create-preset-manifest'
 import UtilityType from '@master/css-schema/utility-type'
@@ -21,7 +21,7 @@ createTester({
             }),
         },
     },
-}).run('class order', rule, {
+}).run('sort classes', rule, {
     valid: [
         { code: `<div class="m:2x p:2x bg:black fg:white font:1.5rem">Simple, basic</div>` },
         { code: `<div class="mt:5x card">Traditional class + syntax</div>` },

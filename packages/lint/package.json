@@ -1,0 +1,59 @@
+{
+    "name": "@master/css-lint",
+    "type": "module",
+    "scripts": {
+        "build": "techor build \"src/**/*.ts\" --formats esm",
+        "dev": "pnpm build --watch",
+        "lint": "eslint",
+        "type-check": "tsc --noEmit",
+        "test": "vitest"
+    },
+    "keywords": [
+        "mastercss",
+        "lint",
+        "classes",
+        "css"
+    ],
+    "license": "MIT",
+    "description": "Master CSS lint helpers",
+    "author": "Aoyue Design LLC.",
+    "funding": "https://rc.css.master.co/sponsor",
+    "homepage": "https://css.master.co",
+    "bugs": {
+        "url": "https://github.com/master-co/css/issues"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/master-co/css.git",
+        "directory": "packages/lint"
+    },
+    "sideEffects": false,
+    "main": "./dist/index.mjs",
+    "module": "./dist/index.mjs",
+    "jsnext:main": "./dist/index.mjs",
+    "esnext": "./dist/index.mjs",
+    "types": "./dist/index.d.ts",
+    "exports": {
+        ".": {
+            "types": "./dist/index.d.ts",
+            "import": "./dist/index.mjs",
+            "default": "./dist/index.mjs"
+        }
+    },
+    "files": [
+        "dist"
+    ],
+    "publishConfig": {
+        "access": "public",
+        "provenance": true
+    },
+    "dependencies": {
+        "@master/css": "workspace:^",
+        "@master/css-engine": "workspace:^",
+        "@master/css-schema": "workspace:^",
+        "@master/css-validator": "workspace:^"
+    },
+    "devDependencies": {
+        "@master/css-preset": "workspace:^"
+    }
+}

@@ -135,6 +135,9 @@ importers:
       '@master/css-lexer':
         specifier: workspace:^
         version: link:packages/lexer
+      '@master/css-lint':
+        specifier: workspace:^
+        version: link:packages/lint
       '@master/css-preset':
         specifier: workspace:^
         version: link:packages/preset
@@ -1323,18 +1326,15 @@ importers:
       '@master/css':
         specifier: workspace:^
         version: link:../core
-      '@master/css-engine':
+      '@master/css-lint':
         specifier: workspace:^
-        version: link:../engine
+        version: link:../lint
       '@master/css-preset':
         specifier: workspace:^
         version: link:../preset
       '@master/css-project':
         specifier: workspace:^
         version: link:../project
-      '@master/css-schema':
-        specifier: workspace:^
-        version: link:../schema
       '@master/css-validator':
         specifier: workspace:^
         version: link:../validator
@@ -1351,12 +1351,18 @@ importers:
       '@angular/compiler':
         specifier: ^21.2.17
         version: 21.2.17
+      '@master/css-schema':
+        specifier: workspace:^
+        version: link:../schema
       '@typescript-eslint/rule-tester':
         specifier: ^8.61.1
         version: 8.61.1(eslint@10.5.0(jiti@2.7.0))(typescript@6.0.3)
       eslint:
         specifier: ^10.5.0
         version: 10.5.0(jiti@2.7.0)
+      eslint-mdx:
+        specifier: ^3.8.1
+        version: 3.8.1(eslint@10.5.0(jiti@2.7.0))
       eslint-plugin-markdown:
         specifier: ^5.1.0
         version: 5.1.0(eslint@10.5.0(jiti@2.7.0))
@@ -1557,6 +1563,25 @@ importers:
         version: 10.0.0
 
   packages/lexer: {}
+
+  packages/lint:
+    dependencies:
+      '@master/css':
+        specifier: workspace:^
+        version: link:../core
+      '@master/css-engine':
+        specifier: workspace:^
+        version: link:../engine
+      '@master/css-schema':
+        specifier: workspace:^
+        version: link:../schema
+      '@master/css-validator':
+        specifier: workspace:^
+        version: link:../validator
+    devDependencies:
+      '@master/css-preset':
+        specifier: workspace:^
+        version: link:../preset
 
   packages/next:
     dependencies:

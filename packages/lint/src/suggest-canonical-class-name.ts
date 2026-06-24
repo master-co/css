@@ -1,12 +1,22 @@
 import { builtinKeyAliases, builtinNativeValueNamespaces } from '@master/css-engine'
 import UtilityType from '@master/css-schema/utility-type'
-import { equalVariants, type MasterCSS } from '../utils/master-css'
-import type { GeneratedRule } from '@master/css'
+import type { GeneratedRule, MasterCSS } from '@master/css'
+import {
+    equalVariants,
+    getDeclarationPropertySignature,
+    getRulesSignature
+} from './rule-signatures'
 
-interface RecommendClassOptions {
+export interface CanonicalClassNameOptions {
     preferStaticUtilities: boolean
-    preferVariables: boolean
-    preferKeyAliases: boolean
+    preferThemeTokens: boolean
+    preferPropertyAliases: boolean
+}
+
+export const defaultCanonicalClassNameOptions: CanonicalClassNameOptions = {
+    preferStaticUtilities: true,
+    preferThemeTokens: true,
+    preferPropertyAliases: true
 }
 
 interface ClassParts {
@@ -36,27 +46,6 @@ const recommendationIndexes = new WeakMap<MasterCSS, RecommendationIndex>()
 
 const MODIFIER_SIGNS = new Set(['!', '*', '>', '+', '~', ':', '[', '@', '_'])
 const EPSILON = 0.000001
-
-function stable(value: unknown): string {
-    if (!value || typeof value !== 'object') return JSON.stringify(value)
-    if (Array.isArray(value)) return `[${value.map(stable).join(',')}]`
-    return `{${Object.entries(value)
-        .sort(([a], [b]) => a.localeCompare(b))
-        .map(([key, item]) => `${JSON.stringify(key)}:${stable(item)}`)
-        .join(',')}}`
-}
-
-function getDeclarationPropertySignature(rule: Pick<GeneratedRule, 'declarations'>) {
-    return Object.keys(rule.declarations || {}).sort().join('\0')
-}
-
-function getDeclarationSignature(rule: Pick<GeneratedRule, 'declarations'>) {
-    return stable(rule.declarations || {})
-}
-
-function getRulesSignature(rules: GeneratedRule[]) {
-    return rules.map(getDeclarationSignature).sort().join('\0')
-}
 
 function isTopLevelModifier(value: string, index: number) {
     return MODIFIER_SIGNS.has(value[index])
@@ -272,11 +261,11 @@ function getMatchingVariableKeys(rules: GeneratedRule[], rawValue: string, css: 
     } satisfies MatchingVariableKeys
 }
 
-function getVariableCandidateKeys(index: RecommendationIndex, signature: string, sourceKey: string, match: MatchingVariableKeys, preferKeyAliases: boolean) {
+function getVariableCandidateKeys(index: RecommendationIndex, signature: string, sourceKey: string, match: MatchingVariableKeys, preferPropertyAliases: boolean) {
     let keys = getCandidateKeysForPropertySignature(index, signature, sourceKey)
-    if (!preferKeyAliases) {
-        const keyAliases = index.preferredAliasesByProperty.get(signature) || []
-        keys = keys.filter((key) => key === sourceKey || !keyAliases.includes(key))
+    if (!preferPropertyAliases) {
+        const propertyAliases = index.preferredAliasesByProperty.get(signature) || []
+        keys = keys.filter((key) => key === sourceKey || !propertyAliases.includes(key))
     }
     if (match.kind === 'numeric') return keys
     return keys.filter((key) => key === sourceKey || signature === sourceKey)
@@ -312,7 +301,11 @@ function createCandidate(candidateBase: string, parts: ClassParts, order: number
     }
 }
 
-export default function recommendClass(className: string, css: MasterCSS, options: RecommendClassOptions) {
+export default function suggestCanonicalClassName(
+    className: string,
+    css: MasterCSS,
+    options: CanonicalClassNameOptions = defaultCanonicalClassNameOptions
+) {
     const sourceRules = css.generate(className)
     if (!sourceRules.length) return
 
@@ -328,11 +321,11 @@ export default function recommendClass(className: string, css: MasterCSS, option
     }
 
     if (parts.key && parts.value) {
-        if (options.preferVariables) {
+        if (options.preferThemeTokens) {
             const variableMatch = getMatchingVariableKeys(sourceRules, parts.value, css)
             for (const rule of sourceRules) {
                 const propertySignature = getDeclarationPropertySignature(rule)
-                for (const key of getVariableCandidateKeys(index, propertySignature, parts.key, variableMatch, options.preferKeyAliases)) {
+                for (const key of getVariableCandidateKeys(index, propertySignature, parts.key, variableMatch, options.preferPropertyAliases)) {
                     for (const variableKey of variableMatch.keys) {
                         const candidate = createCandidate(`${key}:${variableKey}`, parts, 1)
                         if (candidate) candidates.push(candidate)
@@ -341,7 +334,7 @@ export default function recommendClass(className: string, css: MasterCSS, option
             }
         }
 
-        if (options.preferKeyAliases) {
+        if (options.preferPropertyAliases) {
             for (const property of Object.keys(sourceRules[0]?.declarations || {})) {
                 if (parts.key !== property) continue
                 for (const alias of index.preferredAliasesByProperty.get(property) || []) {

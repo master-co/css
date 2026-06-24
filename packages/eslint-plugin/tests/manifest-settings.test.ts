@@ -57,7 +57,7 @@ test('uses explicit Master CSS manifest objects from ESLint settings', async () 
                         }
                     },
                     rules: {
-                        '@master/css/class-validation': [
+                        '@master/css/no-invalid-classes': [
                             'error',
                             {
                                 disallowUnknownClass: true
@@ -112,7 +112,7 @@ test('uses project-level CSS manifest entries from the ESLint workspace', async 
                         }
                     },
                     rules: {
-                        '@master/css/class-validation': [
+                        '@master/css/no-invalid-classes': [
                             'error',
                             {
                                 disallowUnknownClass: true

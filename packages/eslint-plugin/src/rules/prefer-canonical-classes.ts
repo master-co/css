@@ -1,26 +1,18 @@
 import defineVisitors from '../utils/define-visitors'
 import resolveContext from '../utils/resolve-context'
 import createRule from '../create-rule'
-import recommendClass from '../functions/recommend-class'
-
-interface Options {
-    preferStaticUtilities?: boolean
-    preferVariables?: boolean
-    preferKeyAliases?: boolean
-}
-
-const defaultOptions: Required<Options> = {
-    preferStaticUtilities: true,
-    preferVariables: true,
-    preferKeyAliases: true
-}
+import {
+    defaultCanonicalClassNameOptions,
+    suggestCanonicalClassName,
+    type CanonicalClassNameOptions
+} from '@master/css-lint'
 
 export default createRule({
-    name: 'class-recommendation',
+    name: 'prefer-canonical-classes',
     meta: {
         type: 'suggestion',
         docs: {
-            description: 'Prefer recommended Master CSS classes'
+            description: 'Prefer canonical Master CSS classes'
         },
         messages: {
             preferClass: 'Prefer "{{recommended}}" over "{{actual}}".',
@@ -30,23 +22,23 @@ export default createRule({
             type: 'object',
             properties: {
                 preferStaticUtilities: { type: 'boolean' },
-                preferVariables: { type: 'boolean' },
-                preferKeyAliases: { type: 'boolean' },
+                preferThemeTokens: { type: 'boolean' },
+                preferPropertyAliases: { type: 'boolean' },
             },
             additionalProperties: false
         }]
     },
-    defaultOptions: [defaultOptions],
+    defaultOptions: [defaultCanonicalClassNameOptions],
     create(context) {
         const { settings, css } = resolveContext(context)
         const options = {
-            ...defaultOptions,
-            ...((context.options[0] || {}) as Options)
+            ...defaultCanonicalClassNameOptions,
+            ...((context.options[0] || {}) as Partial<CanonicalClassNameOptions>)
         }
 
         return defineVisitors({ context, settings }, (node, { classNodes }) => {
             for (const classNode of classNodes) {
-                const recommended = recommendClass(classNode.value, css, options)
+                const recommended = suggestCanonicalClassName(classNode.value, css, options)
                 if (!recommended) continue
                 context.report({
                     node,

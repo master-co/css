@@ -1,7 +1,7 @@
-import rule from '../src/rules/class-order'
+import rule from '../src/rules/sort-classes'
 import { jsxTester } from './testers'
 
-jsxTester.run('class order', rule, {
+jsxTester.run('sort classes', rule, {
     valid: [],
     invalid: [
         {

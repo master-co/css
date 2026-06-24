@@ -1,9 +1,10 @@
 import { UserWorkspaceConfig, defineConfig } from 'vitest/config'
 import config from '../../shared/vitest.config'
-import extend from '@techor/extend'
 
-export default defineConfig(extend(config, {
+export default defineConfig({
+    ...config,
     test: {
+        ...config.test,
         setupFiles: ['./tests/setup.ts']
     }
-} as UserWorkspaceConfig))
+} as UserWorkspaceConfig)

@@ -1,7 +1,7 @@
-import rule from '../src/rules/class-order'
+import rule from '../src/rules/sort-classes'
 import { jsxTester } from './testers'
 
-jsxTester.run('vue class order', rule, {
+jsxTester.run('vue sort classes', rule, {
     valid: [
         { code: `<div class="m:2x p:2x bg:black fg:white font:1.5rem">Simple, basic</div>` },
         {
