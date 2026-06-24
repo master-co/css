@@ -1,4 +1,4 @@
-import { describe, expect, test } from 'vitest'
+import { describe, expect, test, vi } from 'vitest'
 import UtilityType from '@master/css-schema/utility-type'
 import { createCSSWithNativeDeclarations } from '@master/css-validator'
 import {
@@ -78,14 +78,87 @@ const registryFieldCSS = createCSSWithNativeDeclarations(createPresetManifest({
 describe('class sorting', () => {
     test('sorts known classes and keeps unknown classes last', () => {
         expect(sortClassNames(['font:1.5rem', 'fg:white', 'm:2x', 'p:2x', 'bg:black'], css))
-            .toEqual(['m:2x', 'p:2x', 'bg:black', 'fg:white', 'font:1.5rem'])
+            .toEqual(['m:2x', 'p:2x', 'font:1.5rem', 'bg:black', 'fg:white'])
         expect(sortClassNames(['mt:0', 'hello:world', 'a', 'font:error'], css))
             .toEqual(['mt:0', 'a', 'font:error', 'hello:world'])
+    })
+
+    test('sorts generated classes into readable property groups', () => {
+        const classNames = [
+            'font:heavy',
+            'bg:black:hover',
+            'px:3x@sm',
+            'rel',
+            'grid-cols:2@md',
+            'opacity:.8',
+            'z:10',
+            'fg:white',
+            'hidden@<md',
+            'text-center',
+            'm:0',
+            'flex',
+            'p:4x',
+            'unknown-app-class',
+            'w:full',
+            'r:lg',
+            'bg:blue-60',
+            'gap:2x',
+            'overflow:hidden',
+            'h:full',
+            'transition:opacity|.2s',
+            'b:1px|solid|gray-30',
+            'block@dark',
+            'align-items:center',
+            'mt:2x',
+            'box-shadow:0|2px|8px|#0003',
+            'font:2.5rem@xs',
+            '{content:``;block;h:full;w:full;abs}::after'
+        ]
+
+        expect(sortClassNames(classNames, css)).toEqual([
+            'rel',
+            'z:10',
+            'flex',
+            'overflow:hidden',
+            'align-items:center',
+            'gap:2x',
+            'h:full',
+            'w:full',
+            'm:0',
+            'mt:2x',
+            'p:4x',
+            'b:1px|solid|gray-30',
+            'r:lg',
+            'font:heavy',
+            'text-center',
+            'bg:blue-60',
+            'fg:white',
+            'opacity:.8',
+            'box-shadow:0|2px|8px|#0003',
+            'transition:opacity|.2s',
+            '{content:``;block;h:full;w:full;abs}::after',
+            'bg:black:hover',
+            'block@dark',
+            'font:2.5rem@xs',
+            'px:3x@sm',
+            'grid-cols:2@md',
+            'hidden@<md',
+            'unknown-app-class'
+        ])
     })
 
     test('deduplicates repeated classes', () => {
         expect(sortClassNames(['w:3x', 'w:0.375rem@lg', 'w:3x'], css))
             .toEqual(['w:3x', 'w:0.375rem@lg'])
+    })
+
+    test('generates each unique class once while sorting', () => {
+        const generate = vi.fn((className: string) => css.generate(className))
+        const cssWithGenerateSpy = { generate } as unknown as typeof css
+
+        expect(sortClassNames(['w:3x', 'w:0.375rem@lg', 'w:3x'], cssWithGenerateSpy))
+            .toEqual(['w:3x', 'w:0.375rem@lg'])
+        expect(generate).toHaveBeenCalledTimes(2)
     })
 })
 

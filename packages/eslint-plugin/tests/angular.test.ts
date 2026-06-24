@@ -19,9 +19,9 @@ jsxTester.run('sort classes', rule, {
                     <div class="
                         m:2x
                         p:2x
+                        font:1.5rem
                         bg:black
                         fg:white
-                        font:1.5rem
                     ">
                         :)
                     </div>`,

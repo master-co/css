@@ -27,11 +27,18 @@ export default [
 
 ## Linting rules
 ### Sort classes
-`@master/css/sort-classes` keeps class strings stable and reviewable. It sorts known Master CSS classes by generated rule order and leaves unknown classes after known classes.
+`@master/css/sort-classes` keeps class strings stable and reviewable. It sorts known Master CSS classes before unknown classes, follows generated layer and condition priority, and groups base classes by their generated CSS intent: position and layout, size, spacing, box, typography, paint, and effects.
 
 ```mcss
-font:xs font:2xl@sm m:xl block font:3xl@md mb:2xl <!-- [!code --] -->
-block font:xs font:2xl@sm font:3xl@md m:xl mb:2xl <!-- [!code ++] -->
+bg:white font:md flex px:4x rel w:full shadow:lg rounded z:10 gap:2x <!-- [!code --] -->
+rel z:10 flex gap:2x w:full px:4x rounded font:md bg:white shadow:lg <!-- [!code ++] -->
+```
+
+Variants such as `:hover`, `@dark`, and `@sm` stay after the base class body in generated condition order.
+
+```mcss
+bg:black:hover flex p:2x w:full block@dark text-center <!-- [!code --] -->
+flex w:full p:2x text-center bg:black:hover block@dark <!-- [!code ++] -->
 ```
 
 Sorting also removes duplicate class values in the same class string.
