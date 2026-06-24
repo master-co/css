@@ -29,16 +29,16 @@ export default [
 ### Sort classes
 `@master/css/sort-classes` keeps class strings stable and reviewable. It sorts known Master CSS classes by generated rule order and leaves unknown classes after known classes.
 
-```html
-<div class="font:xs font:2xl@sm m:xl block font:3xl@md mb:2xl">...</div> <!-- [!code --] -->
-<div class="block font:xs font:2xl@sm font:3xl@md m:xl mb:2xl">...</div> <!-- [!code ++] -->
+```mcss
+font:xs font:2xl@sm m:xl block font:3xl@md mb:2xl <!-- [!code --] -->
+block font:xs font:2xl@sm font:3xl@md m:xl mb:2xl <!-- [!code ++] -->
 ```
 
 Sorting also removes duplicate class values in the same class string.
 
-```html
-<button class="inline-flex px:md inline-flex">...</button> <!-- [!code --] -->
-<button class="inline-flex px:md">...</button> <!-- [!code ++] -->
+```mcss
+inline-flex px:md inline-flex <!-- [!code --] -->
+inline-flex px:md <!-- [!code ++] -->
 ```
 
 Ordering is a formatting policy. It does not change generated CSS, but it makes class strings easier to review and keeps automated fixes deterministic across frameworks and editors.
@@ -47,7 +47,7 @@ Ordering is a formatting policy. It does not change generated CSS, but it makes 
 `@master/css/no-invalid-classes` reports classes that match Master CSS syntax but generate invalid CSS.
 
 ```html
-<div class="font:">...</div>
+<button class="font:">...</button>
 ```
 
 (x) Invalid value for `font` property.
@@ -87,23 +87,23 @@ Define project classes in the CSS entry when they are intentional:
 ### Prefer canonical classes
 `@master/css/prefer-canonical-classes` keeps committed classes close to the project vocabulary.
 
-```html
-<h1 class="text-align:center font:16px margin:md">...</h1> <!-- [!code --] -->
-<h1 class="text-center font:md m:md">...</h1> <!-- [!code ++] -->
+```mcss
+text-align:center font:16px margin:md <!-- [!code --] -->
+text-center font:md m:md <!-- [!code ++] -->
 ```
 
 It also canonicalizes multi-value tokens and direct CSS variable references when every value maps to the active theme:
 
-```html
-<div class="m:1rem|1.5rem fg:var(--color-red-60)">...</div> <!-- [!code --] -->
-<div class="m:md|lg fg:red-60">...</div> <!-- [!code ++] -->
+```mcss
+m:1rem|1.5rem fg:var(--color-red-60) <!-- [!code --] -->
+m:md|lg fg:red-60 <!-- [!code ++] -->
 ```
 
 Related size and spacing pairs can be composed into shorter utilities:
 
-```html
-<div class="w:md h:md mt:md mb:md padding-left:1rem padding-right:1rem">...</div> <!-- [!code --] -->
-<div class="size:md my:md px:md">...</div> <!-- [!code ++] -->
+```mcss
+w:md h:md mt:md mb:md padding-left:1rem padding-right:1rem <!-- [!code --] -->
+size:md my:md px:md <!-- [!code ++] -->
 ```
 
 | Option | Default | Effect |
@@ -134,26 +134,26 @@ export default [
 ### No conflicting classes
 `@master/css/no-conflicting-classes` reports classes that emit the same declaration properties in the same variant scope.
 
-```html
-<div class="m:0.625rem m:5x">...</div> <!-- [!code --] -->
-<div class="m:5x">...</div> <!-- [!code ++] -->
+```mcss
+m:0.625rem m:5x <!-- [!code --] -->
+m:5x <!-- [!code ++] -->
 ```
 
 (!) `"m:0.625rem" is overridden by "m:5x".`
 
 Variant scope matters. Classes with different selectors, modes, or at-rules do not conflict with each other.
 
-```html
-<div class="m:10x@sm m:3.125rem@md">...</div>
+```mcss
+m:10x@sm m:3.125rem@md
 ```
 
 When a conflict can be fixed automatically, the rule removes the earlier overridden class and keeps the later class. Review the fix if the authoring order was carrying intent.
 
 Partially overlapping spacing shorthands are split so the surviving declarations are kept:
 
-```html
-<div class="mx:md ml:lg">...</div> <!-- [!code --] -->
-<div class="mr:md ml:lg">...</div> <!-- [!code ++] -->
+```mcss
+mx:md ml:lg <!-- [!code --] -->
+mr:md ml:lg <!-- [!code ++] -->
 ```
 
 ---
