@@ -65,7 +65,7 @@ Scanning is intentionally broad. The scanner looks through markup, JSX, strings,
 ```tsx name=src/Button.tsx
 const toneClasses = {
     neutral: 'bg:white text:neutral',
-    destructive: 'bg:red-60 text:white'
+    destructive: 'bg:red-60 fg:white'
 }
 
 export function Button({ destructive }: { destructive?: boolean }) {
@@ -83,7 +83,7 @@ The scanner can see all complete class strings in this file:
 bg:white
 text:neutral
 bg:red-60
-text:white
+fg:white
 btn
 r:md
 px:md
@@ -104,7 +104,7 @@ Words such as `function`, `return`, `No`, `invoices`, and `found` may be discove
 ## Validation
 After candidate scanning, Master CSS validates each class against the active manifest. A candidate can be accepted in three common ways:
 
-- It is a built-in utility, such as `block`, `text:red-60`, or `grid-cols:3`.
+- It is a built-in utility, such as `block`, `fg:red-60`, or `grid-cols:3`.
 - It is defined by your project CSS entry and compiled into the manifest.
 - It matches a native class collected from a stylesheet that imports [`@master/css`](/guide/native-css-pruning).
 
@@ -125,13 +125,13 @@ export function Hero() {
     return (
         <section className="grid gap:xl">
             <h1 className="hero-title">Master CSS</h1>
-            <a className="btn bg:blue-60 text:white" href="/docs">Read docs</a>
+            <a className="btn bg:blue-60 fg:white" href="/docs">Read docs</a>
         </section>
     )
 }
 ```
 
-`hero-title` and `btn` are valid because the project CSS entry defines them. `grid`, `gap:xl`, `bg:blue-60`, and `text:white` are validated through the utility engine.
+`hero-title` and `btn` are valid because the project CSS entry defines them. `grid`, `gap:xl`, `bg:blue-60`, and `fg:white` are validated through the utility engine.
 
 Configured classes are still on-demand. Defining `.btn` in the project CSS entry does not emit it by itself; `.btn` must appear in scanned source or be included through `@safelist`.
 
@@ -160,7 +160,7 @@ For component variants, map dynamic inputs to complete class lists.
 
 ```tsx
 function Badge({ tone }: { tone: 'red' | 'green' | 'gray' }) {
-    return <span className={`bg:${tone} text:white r:full px:xs`}>Status</span>
+    return <span className={`bg:${tone} fg:white r:full px:xs`}>Status</span>
 }
 ```
 
@@ -168,9 +168,9 @@ function Badge({ tone }: { tone: 'red' | 'green' | 'gray' }) {
 
 ```tsx
 const toneClasses = {
-    destructive: 'bg:red-60 text:white',
-    confirmed: 'bg:green-60 text:white',
-    neutral: 'bg:gray-10 text:gray-90'
+    destructive: 'bg:red-60 fg:white',
+    confirmed: 'bg:green-60 fg:white',
+    neutral: 'bg:gray-10 fg:gray-90'
 }
 
 function Badge({ tone }: { tone: keyof typeof toneClasses }) {

@@ -5,7 +5,7 @@ import animals from 'internal/data/animals'
 
 ```html
 <!-- @MARK :hover -->
-<div class="text:blue-60:hover"></div>
+<div class="fg:blue-60:hover"></div>
 <!-- @MARK :invalid -->
 <input class="border:red:invalid" />
 <!-- @MARK [open] -->
@@ -212,11 +212,11 @@ Use interaction pseudo-classes to give controls feedback as people hover, press,
 
 (click) Try clicking the button to see states change
 <Demo>
-    <button className="bg:blue-60 bg:blue-70:hover bg:blue-80:active px:md h:10x font:sm font:medium text:white r:sm inline-flex align-items:center">Submit</button>
+    <button className="bg:blue-60 bg:blue-70:hover bg:blue-80:active px:md h:10x font:sm font:medium fg:white r:sm inline-flex align-items:center">Submit</button>
 </Demo>
 ```html
 <!-- @MARK :hover --><!-- @MARK :active -->
-<button class="bg:blue-60 text:white bg:blue-70:hover bg:blue-80:active">Submit</button>
+<button class="bg:blue-60 fg:white bg:blue-70:hover bg:blue-80:active">Submit</button>
 ```
 
 Use `:focus-visible` for keyboard focus rings when you want to avoid showing the focus style after every pointer click.
@@ -302,7 +302,7 @@ Use `:has()` when the current element should change because it contains a matchi
 Use `:not()` to exclude a selector from the match.
 ```html
 <!-- @MARK :not(.active) -->
-<div class="text:green-60:not(.active) active">...</div>
+<div class="fg:green-60:not(.active) active">...</div>
 ```
 
 ### `:of()`

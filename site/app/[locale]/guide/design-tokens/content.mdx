@@ -66,7 +66,7 @@ Foundation tokens are the shared vocabulary for the most common UI decisions.
 
 | Foundation | Prefer | Avoid for normal UI |
 | --- | --- | --- |
-| Color | `text:neutral`, `text:blue`, <code>b:1px&#124;solid&#124;gray-20</code>, `bg:blue-5`, custom `text:body` | `bg:#fff`, `text:oklch(...)`, one-off palette values where a token fits |
+| Color | `text:neutral`, `text:blue`, <code>b:1px&#124;solid&#124;gray-20</code>, `bg:blue-5`, custom `text:body` | `bg:#fff`, `fg:oklch(...)`, one-off palette values where a token fits |
 | Spacing | `p:sm`, `gap:md`, `mt:lg`, `px:xl` | `p:3x`, `gap:1rem`, `mt:12px` |
 | Typography | `font:lg`, `text:lg`, `font:medium`, `leading:md`, `tracking:tight` | `font:18px`, `leading:1.4`, `tracking:-0.02em` when a token exists |
 | Corner radius | `r:md`, `r:lg`, `r:2xl`, `rounded`, `round` | `r:2x`, `r:8px` for standard cards and controls |
@@ -112,7 +112,7 @@ Role tokens describe why a value exists. Scale tokens describe where a value sit
 (o) The palette token is appropriate when demonstrating the palette.
 
 ```html
-<div class="bg:blue-5 text:blue-60">Blue swatch</div>
+<div class="bg:blue-5 fg:blue-60">Blue swatch</div>
 ```
 
 Use palette scale tokens such as `blue-60`, `green-70`, or `amber-40` when the page is teaching colors, showing a swatch, or intentionally choosing a brand color. Use project-defined text and line roles when a foreground or separator decision needs a semantic name.
@@ -126,7 +126,7 @@ Property shorthand keeps frequently used declarations compact:
 
 | Prefer | Instead of | Use for |
 | --- | --- | --- |
-| `text:blue-60` | `color:blue-60` | Foreground color |
+| `fg:blue-60` | `color:blue-60` | Foreground color |
 | `bg:blue` | `background-color:blue` | Background color |
 | `p:md`, `px:lg`, `m:0` | `padding:md`, `padding-inline:lg`, `margin:0` | Spacing |
 | `w:full`, `h:100dvh` | `width:full`, `height:100dvh` | Sizing |
@@ -148,9 +148,9 @@ Contextual token shorthand removes redundant namespace prefixes from values. The
 
 | Prefer | Avoid | Why |
 | --- | --- | --- |
-| `text:body` | `text:text-body` | `text` resolves project text color tokens. |
+| `text:body` | `fg:text-body` | `text` resolves project text color tokens. |
 | `caret-color:field` | `caret-color:text-field` | `caret` resolves project text color tokens before general colors. |
-| `text:blue` | `text:text-blue` | Text color resolves text color tokens. |
+| `text:blue` | `fg:text-blue` | Text color resolves text color tokens. |
 | <code>b:1px&#124;solid&#124;divider</code> | <code>b:1px&#124;solid&#124;line-divider</code> | Border shorthands resolve project line color tokens. |
 | <code>outline:1px&#124;solid&#124;divider</code> | <code>outline:1px&#124;solid&#124;line-divider</code> | Outline shorthands resolve project line color tokens. |
 | `p:md`, `gap:lg` | `p:spacing-md`, `gap:spacing-lg` | Spacing utilities resolve spacing tokens. |
@@ -280,7 +280,7 @@ Create a project token only when a value is reused, named in design specs, share
 Use the new tokens from markup:
 
 ```html
-<article class="p:feature r:lg bg:brand text:white shadow:feature">
+<article class="p:feature r:lg bg:brand fg:white shadow:feature">
     ...
 </article>
 ```

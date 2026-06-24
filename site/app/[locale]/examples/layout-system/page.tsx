@@ -41,7 +41,7 @@ export default async function Page() {
                             key={tab}
                             className={
                                 index === 0
-                                    ? 'px:sm py:xs r:md bg:blue-60/.12 text:blue-60 text-decoration:none font:sm font:medium white-space:nowrap'
+                                    ? 'px:sm py:xs r:md bg:blue-60/.12 fg:blue-60 text-decoration:none font:sm font:medium white-space:nowrap'
                                     : 'px:sm py:xs r:md text:gray text-decoration:none font:sm font:medium white-space:nowrap'
                             }
                             href={`#${tab.toLowerCase()}`}
@@ -75,7 +75,7 @@ export default async function Page() {
                             <div className="font:semibold text:neutral">Weekly demand</div>
                             <div className="text:sm text:gray mt:2xs">Traffic and conversion trend</div>
                         </div>
-                        <IconChartBar className="size:5x text:blue-60 stroke:1.75 flex:0" />
+                        <IconChartBar className="size:5x fg:blue-60 stroke:1.75 flex:0" />
                     </div>
                     <div className="flex items-end gap:xs h:22x mt:sm pt:sm bb:1px|solid|gray-20">
                         {bars.map((height, index) => (
@@ -92,7 +92,7 @@ export default async function Page() {
                             <div className="font:semibold text:neutral">Launch tasks</div>
                             <div className="text:sm text:gray mt:2xs">3 open items</div>
                         </div>
-                        <a className="grid place-content:center size:8x r:md bg:blue-60 text:white" href="#launch-tasks" aria-label="Open launch tasks">
+                        <a className="grid place-content:center size:8x r:md bg:blue-60 fg:white" href="#launch-tasks" aria-label="Open launch tasks">
                             <IconArrowUpRight className="size:4x stroke:1.75" />
                         </a>
                     </div>

@@ -19,7 +19,7 @@ export default function SponsorTiers() {
                     {eachSponsorTier.amount && (
                         <div className="text:14px font:bold">
                             {eachSponsorTier.amount}
-                            <span className="text:12px text:text font:regular ml:0.313rem">
+                            <span className="text:12px fg:text font:regular ml:0.313rem">
                                 / {eachSponsorTier.one ? 'one-time' : 'month'}
                             </span>
                         </div>

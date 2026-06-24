@@ -607,7 +607,7 @@
         letter-spacing: clamp(-0.072em, calc((--value() - 1rem) * -0.048), 0em);
     }
 
-    text:<~color-text|~color|color> {
+    text:<~color-text> {
         color: --value();
     }
 

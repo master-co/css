@@ -26,7 +26,7 @@ In the past, you added utility classes to your templates unsafely, lacking the c
 (i) With the [class validation rule](#syntax-error-checks), you can check the validity of classes early as you write them.
 <Image className="aspect-ratio:2/1 r:lg max-w:3xl w:full" src={require('~/site/public/syntax-error-checks.webp').default} alt="Syntax error checks" unoptimized />
 
-(x) <span className="text:error">Invalid value for \`font\` property.</span>
+(x) <span className="text:danger">Invalid value for \`font\` property.</span>
 ```html
 <!-- @MARK font: -->
 <div class="font:">…</div>
@@ -39,7 +39,7 @@ You can also restrict teams to using [theme](/guide/theme) and [component classe
 (i) Based on syntax error checking, you can [disallow unknown classes](#disallow-unknown-classes).
 <Image className="aspect-ratio:2/1 r:lg max-w:3xl w:full" src={require('~/site/public/disallow-unknown-class.webp').default} alt="Disallow unknown classes" unoptimized />
 
-(x) <span className="text:error">"btn" is not a valid or known class.</span>
+(x) <span className="text:danger">"btn" is not a valid or known class.</span>
 ```html
 <!-- @MARK btn -->
 <button class="btn">…</button>
@@ -95,7 +95,7 @@ You may be using [clsx](https://github.com/lukeed/clsx) or [class variant](https
 (i) You can make arguments of JavaScript [callees](#supports-js-utilities) have Master CSS code linting.
 <Image className="aspect-ratio:2/1 r:lg max-w:3xl w:full" src={require('~/site/public/supports-js-utilities.webp').default} alt="Supports JS utilities" unoptimized />
 
-(x) <span className="text:error">Invalid value for `display` property.</span>
+(x) <span className="text:danger">Invalid value for `display` property.</span>
 ```tsx
 import clsx from 'clsx'
 
@@ -104,7 +104,7 @@ export default () => (
     <h1 className={clsx('display:bloc')}>Hello World</h1>
 )
 ```
-(x) <span className="text:error">Invalid value for `text-align` property.</span>
+(x) <span className="text:danger">Invalid value for `text-align` property.</span>
 ```tsx
 import styled from '@master/styled.react'
 

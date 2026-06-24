@@ -21,8 +21,8 @@ Use `opacity:*` to change the opacity of the whole element, including its text, 
 ### Prefer color alpha for surfaces
 When only a color should be translucent, use the color alpha suffix instead of reducing the whole element opacity.
 ```html
-<!-- @MARK bg:blue-60/.12 --><!-- @MARK text:blue-60 -->
-<span class="bg:blue-60/.12 text:blue-60">Status</span>
+<!-- @MARK bg:blue-60/.12 --><!-- @MARK fg:blue-60 -->
+<span class="bg:blue-60/.12 fg:blue-60">Status</span>
 ```
 
 This keeps text and child content fully opaque.

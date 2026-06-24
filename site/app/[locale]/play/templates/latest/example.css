@@ -35,7 +35,7 @@
     }
 
     card {
-        @compose text:text m:auto max-w:md mt:lg_:where(p,ul) my:sm_:where(li) outline:1px|solid|subtle r:lg shadow:lg text:sm_:where(p,li);
+        @compose fg:text m:auto max-w:md mt:lg_:where(p,ul) my:sm_:where(li) outline:1px|solid|subtle r:lg shadow:lg text:sm_:where(p,li);
         background-color: var(--color-card);
     }
 

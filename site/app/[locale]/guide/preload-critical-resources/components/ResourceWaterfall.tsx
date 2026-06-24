@@ -23,10 +23,10 @@ type WaterfallScenario = {
 }
 
 const toneClasses = {
-    document: 'bg:neutral text:white',
-    stylesheet: 'bg:blue text:white',
-    runtime: 'bg:orange text:black',
-    manifest: 'bg:green text:black'
+    document: 'bg:neutral fg:white',
+    stylesheet: 'bg:blue fg:white',
+    runtime: 'bg:orange fg:black',
+    manifest: 'bg:green fg:black'
 } as const
 
 const ticks = [0, 25, 50, 75, 100]

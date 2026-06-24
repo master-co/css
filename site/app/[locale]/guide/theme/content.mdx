@@ -30,7 +30,7 @@ In Master CSS, that vocabulary usually lives in the project CSS entry: `@theme` 
 
 ```html
 <section class="bg:white text:neutral p:lg r:lg shadow:sm grid-cols:2@md">
-    <button class="bg:blue text:white px:md py:xs r:md bg:blue/.85:interactive">Save</button>
+    <button class="bg:blue fg:white px:md py:xs r:md bg:blue/.85:interactive">Save</button>
 </section>
 ```
 
@@ -219,7 +219,7 @@ Mode-specific `@theme` blocks keep markup semantic while values change by mode.
 
 ```html
 <section class="bg:white text:body shadow:sm">
-    <button class="bg:blue text:white">Save</button>
+    <button class="bg:blue fg:white">Save</button>
 </section>
 ```
 
@@ -424,7 +424,7 @@ The theme should describe shared values and named conditions. Reusable UI patter
 @components {
     btn {
         @compose inline-flex align-items:center justify-content:center gap:xs px:md py:xs r:md font:sm font:medium;
-        @compose bg:blue text:white;
+        @compose bg:blue fg:white;
 
         &:disabled {
             @compose opacity:.55 pointer-events:none;

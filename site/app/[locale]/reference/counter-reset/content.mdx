@@ -7,8 +7,8 @@ Use `counter-reset` to create a named counter and set its initial value. Regular
 <Demo $py={0}>
     <DemoPanel>
         <article className="counter-reset:section grid gap:12x">
-            <h2 className="counter-increment:section content:'Section\00a0'counter(section)'.\00a0'::before m:0 p:14x r:8px bg:blue-5 bg:blue-95@dark text:neutral font:20px font-weight:560 text:blue-60::before font:0.875rem::before font-weight:600::before">Setup</h2>
-            <h2 className="counter-increment:section content:'Section\00a0'counter(section)'.\00a0'::before m:0 p:14x r:8px bg:blue-5 bg:blue-95@dark text:neutral font:20px font-weight:560 text:blue-60::before font:0.875rem::before font-weight:600::before">Usage</h2>
+            <h2 className="counter-increment:section content:'Section\00a0'counter(section)'.\00a0'::before m:0 p:14x r:8px bg:blue-5 bg:blue-95@dark text:neutral font:20px font-weight:560 fg:blue-60::before font:0.875rem::before font-weight:600::before">Setup</h2>
+            <h2 className="counter-increment:section content:'Section\00a0'counter(section)'.\00a0'::before m:0 p:14x r:8px bg:blue-5 bg:blue-95@dark text:neutral font:20px font-weight:560 fg:blue-60::before font:0.875rem::before font-weight:600::before">Usage</h2>
         </article>
     </DemoPanel>
 </Demo>
@@ -27,7 +27,7 @@ Add an integer after the counter name to choose its initial value.
 <Demo $py={0}>
     <DemoPanel>
         <article className="counter-reset:chapter|4">
-            <h2 className="counter-increment:chapter content:'Chapter\00a0'counter(chapter)':\00a0'::before m:0 p:16x r:8px border:1px|solid|gray-20 border-color:gray-80@dark text:neutral font:20px font-weight:560 text:blue-60::before font:0.875rem::before font-weight:600::before">Advanced topics</h2>
+            <h2 className="counter-increment:chapter content:'Chapter\00a0'counter(chapter)':\00a0'::before m:0 p:16x r:8px border:1px|solid|gray-20 border-color:gray-80@dark text:neutral font:20px font-weight:560 fg:blue-60::before font:0.875rem::before font-weight:600::before">Advanced topics</h2>
         </article>
     </DemoPanel>
 </Demo>
@@ -45,13 +45,13 @@ Use `reversed()` when a counter should count down from the number of items. Adju
 <Demo $py={0}>
     <DemoPanel>
         <ol className="counter-reset:reversed(step) list-style:none p:0 m:0 grid-cols:3 gap:8x">
-            <li className="counter-increment:step|-1 content:counter(step)::before p:12x r:8px bg:gray-5 bg:gray-90@dark text-center block::before text:blue-60::before font:24px::before font-weight:700::before mb:2x::before">
+            <li className="counter-increment:step|-1 content:counter(step)::before p:12x r:8px bg:gray-5 bg:gray-90@dark text-center block::before fg:blue-60::before font:24px::before font-weight:700::before mb:2x::before">
                 <span className="font:14px">Final review</span>
             </li>
-            <li className="counter-increment:step|-1 content:counter(step)::before p:12x r:8px bg:gray-5 bg:gray-90@dark text-center block::before text:blue-60::before font:24px::before font-weight:700::before mb:2x::before">
+            <li className="counter-increment:step|-1 content:counter(step)::before p:12x r:8px bg:gray-5 bg:gray-90@dark text-center block::before fg:blue-60::before font:24px::before font-weight:700::before mb:2x::before">
                 <span className="font:14px">Deploy</span>
             </li>
-            <li className="counter-increment:step|-1 content:counter(step)::before p:12x r:8px bg:gray-5 bg:gray-90@dark text-center block::before text:blue-60::before font:24px::before font-weight:700::before mb:2x::before">
+            <li className="counter-increment:step|-1 content:counter(step)::before p:12x r:8px bg:gray-5 bg:gray-90@dark text-center block::before fg:blue-60::before font:24px::before font-weight:700::before mb:2x::before">
                 <span className="font:14px">Monitor</span>
             </li>
         </ol>
