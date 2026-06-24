@@ -1,4 +1,4 @@
-import { BaseHueDemo, TextHueDemo } from './components/PresetThemeColors'
+import { BaseHueDemo, CanvasDemo, SurfacesDemo, TextHueDemo } from './components/PresetThemeColors'
 
 ## Default color palette [sr-only]
 
@@ -13,7 +13,10 @@ Each preset color family ranges from `0`, `5`, `10`, and then by tens through `1
 <div class="bg:blue-5 fg:blue-60">…</div>
 ```
 
-Use palette tokens such as `bg:blue-60` for direct swatches, `bg:canvas` for the page background, `surface:base` or `surface:raised` for UI layers, and text aliases such as `text:blue` or `text:neutral` for readable foreground color.
+---
+
+## Preset mode-aware colors
+The default preset ships mode-aware aliases for foundational UI color decisions. Palette steps such as `blue-60` stay fixed, while aliases such as `blue`, `text:blue`, `canvas`, and `surface:base` resolve to different preset references in light and dark modes.
 
 ```html
 <!-- @MARK bg:canvas --><!-- @MARK text:neutral --><!-- @MARK surface:base --><!-- @MARK surface:raised -->
@@ -24,22 +27,27 @@ Use palette tokens such as `bg:blue-60` for direct swatches, `bg:canvas` for the
 </main>
 ```
 
----
-
-## Preset mode-aware colors
-The default preset ships mode-aware aliases for foundational UI color decisions. Palette steps such as `blue-60` stay fixed, while aliases such as `blue`, `text:blue`, `canvas`, and `surface:base` resolve to different preset references in light and dark modes.
-
-`surface:*` is a dedicated surface shorthand backed by `--color-surface-*` tokens. Use `bg:canvas` for the page canvas and `surface:base`, `surface:muted`, `surface:raised`, `surface:overlay`, or `surface:inverse` for UI surfaces.
-
 ### Canvas
 Canvas is the page or app background role. Use it with the regular background color shorthand.
 
 <PresetThemeColors group="canvas" />
+<CanvasDemo />
+
+```html
+<!-- @MARK bg:canvas -->
+<div class="bg:canvas">...</div>
+```
 
 ### Surfaces
 Surface tokens are for panels, cards, floating layers, and inverse blocks. Use the dedicated surface shorthand so only surface roles match.
 
 <PresetThemeColors group="surfaces" />
+<SurfacesDemo />
+
+```html
+<!-- @MARK surface:overlay -->
+<div class="surface:overlay">...</div>
+```
 
 ### Base hue aliases
 Base hue aliases are mode-aware shortcuts for common color choices. Use palette steps when you need a fixed swatch instead.
@@ -47,14 +55,26 @@ Base hue aliases are mode-aware shortcuts for common color choices. Use palette 
 <PresetThemeColors group="baseHue" />
 <BaseHueDemo />
 
+```html
+<!-- @MARK bg:yellow -->
+<div class="bg:yellow">...</div>
+```
+
 ### Text hue aliases
 Text hue aliases choose foreground-oriented palette steps for light and dark modes.
 
 <PresetThemeColors group="textHue" />
 <TextHueDemo />
 
+```html
+<!-- @MARK text:yellow -->
+<div class="text:yellow">...</div>
+```
+
+---
+
 ## With variable modes
-Use [variable modes](/guide/theme#modes) to define project color roles for light and dark modes. Keep mode-specific decisions in theme variables when a foreground, separator, brand, or status role repeats across the product.
+Use [variable modes](/guide/theme#modes) to adjust preset color roles for light and dark modes. Keep mode-specific decisions in theme variables when the same role repeats across the product.
 
 (x) Markup owns the light and dark color choice.
 
@@ -62,25 +82,23 @@ Use [variable modes](/guide/theme#modes) to define project color roles for light
 <div class="fg:white@dark fg:black@light">...</div>
 ```
 
-(o) The theme owns the project-specific role.
+(o) The theme owns the mode-specific role.
 
 ```css name=index.css
 @theme light {
-    --color-text-body: $color-neutral-70;
-    --color-line-divider: oklch(0% 0 none / 0.12);
+    --color-canvas: $color-white;
 }
 
 @theme dark {
-    --color-text-body: $color-gray-30;
-    --color-line-divider: oklch(100% 0 none / 0.12);
+    --color-canvas: $color-gray-100;
 }
 ```
 
 ```html
-<div class="text:body b:1px|solid|divider">...</div>
+<main class="bg:canvas">...</main>
 ```
 
-Use conditional color classes when a one-off interaction genuinely differs by mode. For shared product foreground or separator color, prefer a named token that can resolve differently per mode.
+Use conditional color classes when a one-off interaction genuinely differs by mode. For shared product color decisions, prefer a named token that can resolve differently per mode.
 
 ---
 
