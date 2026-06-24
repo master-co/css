@@ -1,6 +1,7 @@
 import { escapeRegExp, findCSSStatementEnd, isCSSIdentChar } from './source'
 
 export const MASTER_CSS_PACKAGE_MODULE_IDS = ['@master/css'] as const
+export const MASTER_CSS_ENTRY_DIRECTIVE_NAME = 'entry'
 
 const MASTER_CSS_PACKAGE_MODULE_ID_SET = new Set<string>(MASTER_CSS_PACKAGE_MODULE_IDS)
 
@@ -31,7 +32,7 @@ export function createMasterCSSImportPattern() {
 
 export function createMasterCSSManifestEntryPattern() {
     const ids = [...normalizeMasterCSSModuleIds()].map(escapeRegExp)
-    return new RegExp(String.raw`(?:@master\s*;|@import\s+(?:url\(\s*)?(['"])(?:${ids.join('|')})\1\s*\)?[^;]*;)`)
+    return new RegExp(String.raw`(?:@master\s+${MASTER_CSS_ENTRY_DIRECTIVE_NAME}\s*;|@import\s+(?:url\(\s*)?(['"])(?:${ids.join('|')})\1\s*\)?[^;]*;)`)
 }
 
 export function findCSSImportEnd(source: string, start: number) {
@@ -151,14 +152,15 @@ export function findMasterDirectiveStatements(source: string) {
             const end = findMasterDirectiveEnd(source, index)
             if (end === -1) continue
             const statement = source.slice(index, end)
-            if (statement.replace(/^@master\b/, '').replace(/;$/, '').trim()) {
+            const prelude = statement.replace(/^@master\b/, '').replace(/;$/, '').trim()
+            if (prelude !== MASTER_CSS_ENTRY_DIRECTIVE_NAME) {
                 index = end - 1
                 continue
             }
             statements.push({
                 start: index,
                 end,
-                name: ''
+                name: MASTER_CSS_ENTRY_DIRECTIVE_NAME
             })
             index = end - 1
         }
@@ -181,7 +183,7 @@ export function hasMasterCSSImport(source: string) {
 }
 
 export function hasMasterEntryDirective(source: string) {
-    return findMasterDirectiveStatements(source).some((statement) => statement.name === '')
+    return findMasterDirectiveStatements(source).some((statement) => statement.name === MASTER_CSS_ENTRY_DIRECTIVE_NAME)
 }
 
 export function hasMasterCSSManifestEntrypoint(source: string) {

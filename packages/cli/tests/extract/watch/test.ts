@@ -27,7 +27,7 @@ const originHTMLText = dedent`
     </html>
 `
 
-const originConfigText = `@master;
+const originConfigText = `@master entry;
 
 @theme {
     --color-primary: var(--color-blue);

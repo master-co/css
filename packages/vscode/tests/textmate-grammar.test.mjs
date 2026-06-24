@@ -276,7 +276,7 @@ test('documents native CSS punctuation scopes used by semantic token mappings', 
 
 test('highlights every Master CSS directive keyword', () => {
     const tokens = tokenize(`
-        @master;
+        @master entry;
         @settings {}
         @source not "app.tsx";
         @safelist "block";
@@ -316,6 +316,7 @@ test('highlights every Master CSS directive keyword', () => {
     ]) {
         expectScope(tokens, directive, 'keyword.control.at-rule.master-css')
     }
+    expectScope(tokens, 'entry', 'support.constant.property-value.master-css')
 })
 
 test('highlights directive preludes, strings, class lists, and dynamic patterns', () => {

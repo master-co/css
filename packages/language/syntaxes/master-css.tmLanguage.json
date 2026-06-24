@@ -265,7 +265,34 @@
                     ]
                 },
                 {
-                    "begin": "(@)(master|slot)\\b",
+                    "begin": "(@)(master)\\b",
+                    "beginCaptures": {
+                        "1": {
+                            "name": "punctuation.definition.keyword.master-css"
+                        },
+                        "2": {
+                            "name": "keyword.control.at-rule.master-css"
+                        }
+                    },
+                    "end": "(;)|(?<=\\})|$",
+                    "endCaptures": {
+                        "1": {
+                            "name": "punctuation.section.master-css"
+                        }
+                    },
+                    "patterns": [
+                        {
+                            "match": "\\bentry\\b",
+                            "name": "support.constant.property-value.master-css"
+                        },
+                        {
+                            "match": "[;{}]",
+                            "name": "punctuation.section.master-css"
+                        }
+                    ]
+                },
+                {
+                    "begin": "(@)(slot)\\b",
                     "beginCaptures": {
                         "1": {
                             "name": "punctuation.definition.keyword.master-css"

@@ -30,7 +30,7 @@ Common uses:
 | --- | --- |
 | Source primitives | Stable offsets and source locations. |
 | Directive ranges | Locate CSS directives and quoted arguments without compiling them. |
-| Manifest entry scanners | Detect `@master;` and `@import '@master/css'` entry markers. |
+| Manifest entry scanners | Detect `@master entry;` and `@import '@master/css'` entry markers. |
 | Class tokenizers | Split Master CSS class strings into lexical token ranges. |
 | Unit constants | Shared lexical constants for CSS units. |
 

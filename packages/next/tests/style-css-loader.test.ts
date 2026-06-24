@@ -48,10 +48,10 @@ describe('Next style CSS loader', () => {
     it('derives native CSS from @master entry directives', async () => {
         const root = createFixture()
         const entryPath = join(root, 'app/globals.css')
-        const result = await runStyleCSSLoader(root, entryPath, '@master;')
+        const result = await runStyleCSSLoader(root, entryPath, '@master entry;')
 
         expect(result.content).toContain('@layer base')
-        expect(result.content).not.toContain('@master;')
+        expect(result.content).not.toContain('@master entry;')
         expect(result.dependencies).toContain(entryPath)
     })
 
@@ -67,7 +67,7 @@ describe('Next style CSS loader', () => {
     it('locally lowers @compose in CSS Modules without importing package CSS', async () => {
         const root = createFixture()
         writeFileSync(join(root, 'app/globals.css'), `
-            @master;
+            @master entry;
 
             @components {
                 brand {

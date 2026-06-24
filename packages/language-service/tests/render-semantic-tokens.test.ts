@@ -230,7 +230,7 @@ test.concurrent('renders native-aligned semantic tokens for grouped classes with
 
 test.concurrent('renders semantic tokens only for CSS directive class-list spans', () => {
     const { tokens } = renderTokens(`
-        @master;
+        @master entry;
         @reference "./tokens.css";
         @safelist "block fg:red:hover@md";
 

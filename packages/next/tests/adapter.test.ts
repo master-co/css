@@ -179,7 +179,7 @@ describe('renderNextBuildOutputs', () => {
             '}'
         ].join('\n'))
         writeFileSync(join(projectDir, 'app.css'), [
-            '@master;',
+            '@master entry;',
             '',
             '.root-native {',
             '    color: #789;',
@@ -214,7 +214,7 @@ describe('renderNextBuildOutputs', () => {
         const htmlFile = join(distDir, 'server/app/index.html')
         mkdirSync(join(distDir, 'server/app'), { recursive: true })
         writeFileSync(join(projectDir, 'app.css'), [
-            '@master;',
+            '@master entry;',
             '',
             '.root-native {',
             '    color: #789;',

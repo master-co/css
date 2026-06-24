@@ -1,7 +1,7 @@
 ## Foreword [sr-only]
 The [Language Service](/guide/language-service) and [code linting](/guide/code-linting) both support the monorepo.
 
-By default, language server forms independent workspaces from project CSS entries that contain `@master;` or `@import '@master/css'`, or from `package.json` files that declare Master CSS package dependencies, independent of the package manager's workspace. The same goes for ESLint, which forms a new working directory based on the location of its configuration file.
+By default, language server forms independent workspaces from project CSS entries that contain `@master entry;` or `@import '@master/css'`, or from `package.json` files that declare Master CSS package dependencies, independent of the package manager's workspace. The same goes for ESLint, which forms a new working directory based on the location of its configuration file.
 
 Officially integrated packages or extensions automatically read the project CSS entry based on the current running directory. This means that you can start using it with zero setup as long as you create a marked CSS entry in the workspace, or declare a Master CSS dependency in that workspace's `package.json` when using the bundled preset.
 
@@ -39,7 +39,7 @@ This keeps each application's generated CSS, source scanning, diagnostics, and e
 ### Share the project manifest source
 In each workspace, import shared project CSS files and add workspace-specific definitions after them.
 ```css name=projects/admin/index.css
-@master;
+@master entry;
 @import '../../index.css';
 
 @theme {

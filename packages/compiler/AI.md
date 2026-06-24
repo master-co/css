@@ -37,7 +37,7 @@
 
 ## Risk Areas
 
-- `@master;` and `@import "@master/css"` are equivalent user project entry markers; package CSS files must not contain `@master;`.
+- `@master entry;` and `@import "@master/css"` are equivalent user project entry markers; package CSS files must not contain `@master entry;`.
 - Defining components, utilities, variables, variants, or animations does not emit CSS by itself; classes still need use or extraction.
 - Directive syntax changes may require language token updates and docs updates.
 - Native `@layer` blocks are not compiler-managed; use managed directives for generated definitions.

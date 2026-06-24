@@ -49,7 +49,9 @@ describe('style CSS extraction helpers', () => {
 
     it('detects Master CSS entrypoints and preservation directives separately', () => {
         expect(hasMasterStyleEntrypoint('@import "@master/css";')).toBe(true)
-        expect(hasMasterStyleEntrypoint('@master;')).toBe(true)
+        expect(hasMasterStyleEntrypoint('@master entry;')).toBe(true)
+        expect(hasMasterStyleEntrypoint('@master;')).toBe(false)
+        expect(hasMasterStyleEntrypoint('@master global;')).toBe(false)
         expect(hasMasterStyleEntrypoint('@master shake;')).toBe(false)
         expect(hasMasterStyleEntrypoint('@preserve native;')).toBe(false)
         expect(hasMasterStyleEntrypoint('@theme { --color-primary: red; }')).toBe(false)
@@ -64,7 +66,9 @@ describe('style CSS extraction helpers', () => {
         ).source)).toBe(true)
         expect(isMasterStyleSource('@import "virtual:master-utilities.css";')).toBe(false)
         expect(isMasterStyleSource('@import "master.css";')).toBe(false)
-        expect(isMasterStyleSource('@master;')).toBe(true)
+        expect(isMasterStyleSource('@master entry;')).toBe(true)
+        expect(isMasterStyleSource('@master;')).toBe(false)
+        expect(isMasterStyleSource('@master global;')).toBe(false)
         expect(isMasterStyleSource('@master shake;')).toBe(false)
         expect(isMasterStyleSource('@master no-shake;')).toBe(false)
         expect(isMasterStyleSource('@preserve native;')).toBe(false)
@@ -166,7 +170,7 @@ describe('style CSS extraction helpers', () => {
         )
 
         expect(result?.source).toContain('@layer base')
-        expect(result?.source).not.toContain('@master;')
+        expect(result?.source).not.toContain('@master entry;')
         expect(result?.dependencies).toContain(join(root, 'app/globals.css'))
         expect(result?.dependencies.filter((dependency) => !dependency.startsWith(root)).length).toBeGreaterThan(0)
         expect(resolveMasterStyleSource(
@@ -186,7 +190,7 @@ describe('style CSS extraction helpers', () => {
         )).toBeUndefined()
         expect(() => resolveMasterStyleSource(
             join(root, 'app/entry.css'),
-            '@master;\n@import "./missing.css";',
+            '@master entry;\n@import "./missing.css";',
             root
         )).toThrow('CSS file not found')
     })
@@ -212,7 +216,7 @@ describe('style CSS extraction helpers', () => {
             '@safelist "card";',
             '@blocklist "debug-*";',
             '@preserve native;',
-            '@master;',
+            '@master entry;',
             '',
             '@media (min-width: 768px) {',
             '    @preserve native;',
@@ -221,7 +225,7 @@ describe('style CSS extraction helpers', () => {
             '.card { color: red; }'
         ].join('\n'))
 
-        expect(hasMasterStyleEntrypoint('@master;\n.card { color: red; }')).toBe(true)
+        expect(hasMasterStyleEntrypoint('@master entry;\n.card { color: red; }')).toBe(true)
         expect(result.removed).toBe(true)
         expect(result.code).not.toContain('@source')
         expect(result.code).not.toContain('@safelist')
@@ -618,7 +622,7 @@ describe('style CSS extraction helpers', () => {
 
         const styleCSSSources = new Map()
         await registerStyleCSSSource(scanner, styleCSSSources, join(root, 'app/globals.css'), `
-            @master;
+            @master entry;
 
             .card {
                 display: grid;

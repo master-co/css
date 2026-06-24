@@ -34,7 +34,7 @@
 ## Risk Areas
 
 - Manifest loading affects ESLint, language tooling, Vite, Webpack, Next, Nuxt, CLI, and framework query loaders.
-- Entry discovery must only check top-level `@master;` and `@import "@master/css"` markers.
+- Entry discovery must only check top-level `@master entry;` and `@import "@master/css"` markers.
 - CSS dependencies must come from compiler results, not hardcoded package CSS filenames.
 - JavaScript/TypeScript manifest loading is intentionally unsupported.
 

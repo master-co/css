@@ -83,7 +83,7 @@ test('uses project-level CSS manifest entries from the ESLint workspace', async 
 
     try {
         writeFileSync(join(cwd, 'index.css'), `
-            @master;
+            @master entry;
 
             @components {
                 fixture-button {

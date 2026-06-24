@@ -1,5 +1,5 @@
 import type { CSSDirectiveExtractionPolicy } from '@master/css-schema/css-directives'
-import { escapeRegExp } from '@master/css-lexer'
+import { escapeRegExp, MASTER_CSS_ENTRY_DIRECTIVE_NAME } from '@master/css-lexer'
 import { findAtRuleStatementEnd, removeSourceRanges } from './source'
 
 export type StandaloneCSSDirectiveName = 'master' | 'source' | 'safelist' | 'blocklist' | 'preserve'
@@ -164,8 +164,8 @@ function parseStandaloneCSSDirectiveStatement(
     const prelude = statement
         .replace(new RegExp(`^@${atRuleName}\\b`), '')
         .replace(/;$/, '')
-    if (atRuleName === 'master' && prelude.trim()) return
-    const name = atRuleName === 'master' ? '' : atRuleName
+    const name = atRuleName === 'master' ? MASTER_CSS_ENTRY_DIRECTIVE_NAME : atRuleName
+    if (atRuleName === 'master' && prelude.trim() !== MASTER_CSS_ENTRY_DIRECTIVE_NAME) return
     return {
         start,
         end,

@@ -1,4 +1,4 @@
-@master;
+@master entry;
 @import './preset.css';
 
 @layer components {

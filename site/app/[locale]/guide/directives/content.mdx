@@ -4,7 +4,7 @@ CSS directives are Master CSS instructions inside stylesheets. They are read by 
 Directives do not behave like normal CSS rules. Consumed directives are removed from output CSS, while their effects are applied to generated CSS, source scanning, native CSS pruning, or root engine settings.
 
 ```css name=index.css
-@master;
+@master entry;
 
 @settings {
     root-size: 16;
@@ -31,11 +31,11 @@ Directives do not behave like normal CSS rules. Consumed directives are removed 
 ## Entry markers
 Entry markers tell integrations where Master CSS should attach generated CSS.
 
-### `@master`
+### `@master entry`
 Marks the stylesheet as a lightweight Master CSS entry and inserts the generated CSS slot without loading the package stylesheet graph. Use it when a stylesheet should receive generated CSS but should not import the default `@master/css` stylesheet.
 
 ```css
-@master;
+@master entry;
 ```
 
 ### `@import "@master/css"`
@@ -68,7 +68,7 @@ Use `@reference` to load another Master CSS stylesheet as compile-time context w
 Referenced stylesheets can define `@settings`, `@theme`, `@custom-variant`, `@defaults`, `@components`, and `@utilities`. Their definitions are available while compiling the current stylesheet, but their native CSS, generated CSS, and managed class definitions are not emitted just because they were referenced.
 
 ```css name=app.css
-@master;
+@master entry;
 
 @components {
     btn {
@@ -85,7 +85,7 @@ Referenced stylesheets can define `@settings`, `@theme`, `@custom-variant`, `@de
 @reference "@master/css-preset";
 ```
 
-Relative references resolve from the stylesheet that declares them. Package references are limited to Master CSS package stylesheet entries. `@reference` is not an entry marker, does not insert a generated CSS slot, and does not replace `@master;` or `@import "@master/css"` in app entry stylesheets.
+Relative references resolve from the stylesheet that declares them. Package references are limited to Master CSS package stylesheet entries. `@reference` is not an entry marker, does not insert a generated CSS slot, and does not replace `@master entry;` or `@import "@master/css"` in app entry stylesheets.
 
 (!) Because `@reference` is context-only, it does not emit referenced theme variables or managed keyframes. If the current stylesheet lowers to CSS that uses `var(--*)` tokens or animation names from the referenced stylesheet, make sure the referenced app entry is also loaded by the page.
 
@@ -433,7 +433,7 @@ Use `@compose` in these contexts:
 - Nested selectors and nested native at-rules inside those style rules.
 - CSS Modules and SFC `<style>` blocks handled by build integrations.
 
-Master CSS lowers `@compose` before CSS Modules or framework scoped CSS rewrite selectors. A local stylesheet that contains `@compose`, `@reference`, or rule-local `@variant` does not need `@master;`, does not import `@master/css`, does not create a generated CSS slot, and does not become a native CSS pruning root.
+Master CSS lowers `@compose` before CSS Modules or framework scoped CSS rewrite selectors. A local stylesheet that contains `@compose`, `@reference`, or rule-local `@variant` does not need `@master entry;`, does not import `@master/css`, does not create a generated CSS slot, and does not become a native CSS pruning root.
 
 Composed declarations are merged by Master CSS rule priority. Native declarations follow normal source order: declarations after `@compose` override earlier composed declarations, and a later `@compose` can override earlier native declarations unless the earlier declaration is `!important`.
 

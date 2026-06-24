@@ -83,7 +83,7 @@ Important files:
 
 `packages/server` parses HTML, extracts classes, generates CSS, and injects `style#master-css`.
 
-`packages/compiler` is the canonical CSS source compiler. It parses CSS-authored Master manifest directives and native CSS, resolves CSS import graphs, detects project CSS entry markers (`@master;` and `@import "@master/css"`), parses standalone extraction directives, and lowers directive results into `MasterCSSManifest` values. `@master;` and `@import "@master/css"` are user project entry markers; package CSS files such as `@master/css/index.css` must not contain `@master;`.
+`packages/compiler` is the canonical CSS source compiler. It parses CSS-authored Master manifest directives and native CSS, resolves CSS import graphs, detects project CSS entry markers (`@master entry;` and `@import "@master/css"`), parses standalone extraction directives, and lowers directive results into `MasterCSSManifest` values. `@master entry;` and `@import "@master/css"` are user project entry markers; package CSS files such as `@master/css/index.css` must not contain `@master entry;`.
 
 `packages/project` resolves Master CSS project manifest entries, workspace roots, explicit CSS manifest resources, and project manifest module source. It delegates CSS parsing, CSS import graph resolution, and manifest compilation to `@master/css-compiler`. ESLint, language tooling, CLI, and build integrations should consume `@master/css-project` for project-level manifests instead of rediscovering entries locally.
 

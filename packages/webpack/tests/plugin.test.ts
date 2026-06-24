@@ -148,7 +148,7 @@ describe('MasterCSSPlugin (C1 race fix)', () => {
         try {
             writeFileSync(themePath, '@layer components { .card { display: grid; } }')
             writeFileSync(entryPath, [
-                '@master;',
+                '@master entry;',
                 '@import "./theme.css";',
                 '',
                 '.native { color: red; }'
@@ -173,7 +173,7 @@ describe('MasterCSSPlugin (C1 race fix)', () => {
         const modulePath = path.join(root, 'Button.module.css')
         try {
             writeFileSync(entryPath, [
-                '@master;',
+                '@master entry;',
                 '@components {',
                 '  brand { background-color: #123456; }',
                 '}'
@@ -467,7 +467,7 @@ describe('MasterCSSPlugin (C1 race fix)', () => {
         try {
             writeFileSync(themePath, '@components { card { color: #123456; } }')
             writeFileSync(entryPath, [
-                '@master;',
+                '@master entry;',
                 '@import "./theme.css";'
             ].join('\n'))
 
@@ -504,7 +504,7 @@ describe('MasterCSSPlugin (C1 race fix)', () => {
             mkdirSync(path.join(root, 'src'), { recursive: true })
             const entryPath = path.join(root, 'app.css')
             const source = [
-                '@master;',
+                '@master entry;',
                 '',
                 '.root-native {',
                 '    color: #789;',
@@ -582,7 +582,7 @@ describe('MasterCSSPlugin (C1 race fix)', () => {
         const tokenPath = path.join(root, 'theme.css')
         try {
             writeFileSync(tokenPath, '@components { card { color: #123456; } }')
-            writeFileSync(configPath, '@master;\n@import "./theme.css";')
+            writeFileSync(configPath, '@master entry;\n@import "./theme.css";')
 
             const plugin = makePlugin({}, root)
             ;(plugin as any).styleCSSSources = new Map([

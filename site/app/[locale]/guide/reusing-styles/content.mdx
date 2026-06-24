@@ -305,7 +305,7 @@ Use native CSS when the selector is part of a stylesheet surface you already shi
 ---
 
 ### Use local CSS Modules and SFC styles
-CSS Modules and SFC `<style>` blocks can use `@compose` directly. They do not need `@master;` because they are local composed stylesheets, not project CSS entries.
+CSS Modules and SFC `<style>` blocks can use `@compose` directly. They do not need `@master entry;` because they are local composed stylesheets, not project CSS entries.
 
 ```css name=Button.module.css
 .button {
@@ -366,7 +366,7 @@ Split component definitions only when it helps ownership. Local CSS imports from
 </ExplorerView>
 
 ```css name=index.css
-@master;
+@master entry;
 @import './styles/button.css';
 @import './styles/base.css';
 ```

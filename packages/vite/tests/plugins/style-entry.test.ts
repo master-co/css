@@ -165,7 +165,7 @@ describe('StyleEntryPlugin', () => {
 
         const result = await (plugin as any).transform.call(
             {},
-            '@master;\n.card{color:red}',
+            '@master entry;\n.card{color:red}',
             '/project/src/style.css'
         )
 
@@ -174,7 +174,7 @@ describe('StyleEntryPlugin', () => {
             pruneNativeCSS: true,
             source: expect.stringContaining('.card')
         })
-        expect(context.styleCSSSources.get('/project/src/style.css').source).not.toContain('@master;')
+        expect(context.styleCSSSources.get('/project/src/style.css').source).not.toContain('@master entry;')
         expect(context.virtualCSSPlaceholderEmitted).toBe(true)
     })
 

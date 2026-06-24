@@ -318,7 +318,7 @@ describe('withMasterCSS', () => {
         const cwd = process.cwd()
         const root = mkdtempSync(join(tmpdir(), 'master-css-next-config-'))
         mkdirSync(join(root, 'app'), { recursive: true })
-        writeFileSync(join(root, 'index.css'), '@master;')
+        writeFileSync(join(root, 'index.css'), '@master entry;')
         writeFileSync(join(root, 'app/page.tsx'), 'export default function Page() { return <main className="block" /> }')
         try {
             process.chdir(root)

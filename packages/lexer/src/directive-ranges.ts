@@ -7,6 +7,7 @@ import {
     skipCSSWhitespace,
     type SourceRange
 } from './source'
+import { MASTER_CSS_ENTRY_DIRECTIVE_NAME } from './css-manifest-entry'
 
 export type { CSSStatementEnd, SourceLocation, SourceRange } from './source'
 
@@ -265,7 +266,7 @@ export function collectCSSDirectiveRanges(source: string) {
             name.value === 'master'
             && (
                 statementEnd.reason !== 'semicolon'
-                || source.slice(name.end, statementEnd.end - 1).trim()
+                || source.slice(name.end, statementEnd.end - 1).trim() !== MASTER_CSS_ENTRY_DIRECTIVE_NAME
             )
         ) {
             continue

@@ -15,12 +15,13 @@ import { renderCompiledManifestCSS } from './render'
 import {
     findCSSImportStatements,
     collectCSSDirectiveRanges,
+    createMasterCSSManifestEntryPattern,
     hasMasterCSSImport,
     hasMasterCSSManifestEntrypoint,
     isMasterCSSModuleId as isMasterCSSManifestModuleId,
+    MASTER_CSS_ENTRY_DIRECTIVE_NAME,
     normalizeMasterCSSModuleIds,
-    parseCSSImportSource,
-    escapeRegExp
+    parseCSSImportSource
 } from '@master/css-lexer'
 import { extractClassCandidates } from '@master/css-source'
 import { VIRTUAL_CSS_ID } from '@master/css-integration/style-module'
@@ -144,8 +145,7 @@ export function normalizeStyleCSSModuleIds() {
 }
 
 export function createStyleCSSImportPattern() {
-    const ids = [...normalizeStyleCSSModuleIds()].map(escapeRegExp)
-    return new RegExp(String.raw`(?:@master\s*;|@import\s+(?:url\(\s*)?(['"])(?:${ids.join('|')})\1\s*\)?[^;]*;)`)
+    return createMasterCSSManifestEntryPattern()
 }
 
 export function createMasterStyleCSSPattern() {
@@ -412,7 +412,7 @@ export async function createMasterCSSPackageHostSource(
 }
 
 export function hasMasterEntryDirective(source: string) {
-    return findStylesheetDirectiveStatements(source).some((statement) => statement.name === '')
+    return findStylesheetDirectiveStatements(source).some((statement) => statement.name === MASTER_CSS_ENTRY_DIRECTIVE_NAME)
 }
 
 export function hasPreserveNativeDirective(source: string) {

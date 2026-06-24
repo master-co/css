@@ -5,6 +5,7 @@ import { transform } from 'lightningcss'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import { stringifyMasterCSSManifestJSON } from '@master/css-schema/manifest-json'
 import type { CSSDirectiveReference } from '@master/css-schema/css-directives'
+import { MASTER_CSS_ENTRY_DIRECTIVE_NAME } from '@master/css-lexer'
 import { createMasterCSSManifest } from './master-css-manifest'
 import lowerCSSDirectives from './lower-css-directives'
 import {
@@ -155,7 +156,7 @@ export function resolveMasterCSSPackageEntryFile(importSource: string, fromFile 
 
 export function inspectCSS(source: string): InspectCSSResult {
     const hasMasterEntryDirective = findStandaloneMasterDirectiveStatements(source)
-        .some((statement) => statement.name === '')
+        .some((statement) => statement.name === MASTER_CSS_ENTRY_DIRECTIVE_NAME)
     const hasMasterCSSImport = findCSSImportStatements(source)
         .some((statement) => statement.source === MASTER_CSS_PACKAGE_ID)
     return {

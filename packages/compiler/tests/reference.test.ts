@@ -99,7 +99,7 @@ describe('CSS @reference', () => {
             const aPath = join(root, 'a.css')
             const bPath = join(root, 'b.css')
             writeFileSync(aPath, [
-                '@master;',
+                '@master entry;',
                 '@reference "./b.css";',
                 '.a { @compose b; }'
             ].join('\n'))

@@ -38,7 +38,7 @@ function writeCSSFixture(cwd: string) {
         }
     `)
     writeFileSync(entry, `
-        @master;
+        @master entry;
         @import './styles/tokens.css';
 
         @components {
@@ -164,7 +164,9 @@ test('loads project-level CSS manifest entries', async () => {
             }
         `)
 
-        expect(hasMasterCSSManifestEntrypoint('@master;')).toBe(true)
+        expect(hasMasterCSSManifestEntrypoint('@master entry;')).toBe(true)
+        expect(hasMasterCSSManifestEntrypoint('@master;')).toBe(false)
+        expect(hasMasterCSSManifestEntrypoint('@master global;')).toBe(false)
         expect(hasMasterCSSManifestEntrypoint('@preserve native;')).toBe(false)
         expect(hasMasterCSSManifestEntrypoint('@import "@master/css/index.css";')).toBe(false)
         await expect(findCSSManifestEntryFiles(cwd)).resolves.toStrictEqual([entry])
@@ -195,7 +197,7 @@ test('finds Master CSS workspace directories from package and CSS entries', asyn
                 '@master/css': 'workspace:*'
             }
         }))
-        writeFileSync(join(cwd, 'packages', 'app', 'index.css'), '@master;')
+        writeFileSync(join(cwd, 'packages', 'app', 'index.css'), '@master entry;')
         writeFileSync(join(cwd, 'docs', 'styles', 'global.css'), '@import "@master/css";')
 
         await expect(findMasterCSSWorkspaceDirectories(cwd)).resolves.toStrictEqual([
@@ -218,7 +220,7 @@ test('does not match sibling workspace path prefixes', async () => {
                 '@master/css': 'workspace:*'
             }
         }))
-        writeFileSync(join(cwd, 'packages', 'app-kit', 'index.css'), '@master;')
+        writeFileSync(join(cwd, 'packages', 'app-kit', 'index.css'), '@master entry;')
 
         await expect(findMasterCSSWorkspaceDirectories(cwd)).resolves.toStrictEqual([
             cwd,

@@ -37,7 +37,7 @@ Risks:
 ## CSS Authoring To Manifest
 
 ```txt
-project CSS files containing @master; or @import "@master/css"
+project CSS files containing @master entry; or @import "@master/css"
   -> @master/css-project discovers project entry files only
   -> @master/css-compiler resolves CSS imports and package style imports
   -> compiler parses @theme token/mode/keyframe directives, @settings root options, top-level @custom-variant definitions, and @defaults/@components/@utilities managed definition directives
@@ -58,7 +58,7 @@ Main files:
 
 Risks:
 
-- Entry detection must only use project-level markers: `@master;` and `@import "@master/css"`.
+- Entry detection must only use project-level markers: `@master entry;` and `@import "@master/css"`.
 - Package CSS such as `@master/css/index.css` must not contain or imply a project entry marker.
 - `@master/css-project` must not implement CSS import graph, CSS manifest directive parsing, or manifest ABI schema.
 - Manifest lowering order affects all manifest consumers.

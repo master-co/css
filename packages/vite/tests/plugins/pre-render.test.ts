@@ -88,7 +88,7 @@ describe('PreRenderPlugin', () => {
                 '}'
             ].join('\n'))
             writeFileSync(entryPath, [
-                '@master;',
+                '@master entry;',
                 '@import "./theme.css";',
                 '',
                 '@theme {',

@@ -181,7 +181,7 @@ describe('StyleEntryBuildPlugin (D1 placeholder-leak warn)', () => {
         try {
             const entryPath = path.join(root, 'app.css')
             const source = `
-                @master;
+                @master entry;
 
                 body {
                     margin: 0;
@@ -239,7 +239,7 @@ describe('StyleEntryBuildPlugin (D1 placeholder-leak warn)', () => {
         try {
             const entryPath = path.join(root, 'app.css')
             const source = `
-                @master;
+                @master entry;
 
                 .native-used,
                 .native-unused {

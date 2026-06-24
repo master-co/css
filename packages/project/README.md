@@ -62,7 +62,7 @@ npm install @master/css-project
 
 It discovers project CSS entries and Master CSS workspace roots, then delegates CSS parsing, import graph resolution, and manifest compilation to `@master/css-compiler`. JavaScript and TypeScript config files are intentionally unsupported.
 
-Project entry discovery only treats CSS files with top-level `@master;` or `@import '@master/css'` as entries. Imported `@settings`, `@theme`, and `@custom-variant` directives participate in the entry graph, but they are not independent project entries.
+Project entry discovery only treats CSS files with top-level `@master entry;` or `@import '@master/css'` as entries. Imported `@settings`, `@theme`, and `@custom-variant` directives participate in the entry graph, but they are not independent project entries.
 
 ## Load project manifest
 

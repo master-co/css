@@ -70,7 +70,7 @@ describe('stylesheet CSS directives', () => {
         await scanner.init()
         const styleCSSSources = new Map()
         await registerStyleCSSSource(scanner, styleCSSSources, join(root, 'app/entry.css'), `
-            @master;
+            @master entry;
             @source './**/*.tsx';
             @source not './**/*.test.tsx';
             @safelist 'font:semibold legacy-token';
@@ -100,7 +100,7 @@ describe('stylesheet CSS directives', () => {
         await scanner.init()
         const styleCSSSources = new Map()
         await registerStyleCSSSource(scanner, styleCSSSources, join(root, 'app/entry.css'), `
-            @master;
+            @master entry;
             @source './a/*.tsx';
             @source './b/*.tsx';
             @source not './a/skip.tsx';
