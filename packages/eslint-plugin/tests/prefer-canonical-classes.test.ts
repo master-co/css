@@ -3,6 +3,46 @@ import { createTester, jsxTester } from './testers'
 import { createPresetManifest } from './helpers/create-preset-manifest'
 import UtilityType from '@master/css-schema/utility-type'
 
+const customManifest = createPresetManifest({
+    settings: {
+        rootSize: 16,
+        modes: ['dark', 'midnight']
+    },
+    atRules: {
+        tablet: {
+            id: 'media',
+            nodes: [{ type: 'number', value: 48, unit: 'rem' }]
+        }
+    },
+    breakpointAtRules: {
+        tablet: {
+            id: 'media',
+            nodes: [{ type: 'number', value: 48, unit: 'rem' }]
+        }
+    },
+    variables: [
+        { namespace: 'breakpoint', key: 'tablet', name: 'breakpoint-tablet', type: 'number', value: '48rem', numeric: { value: 48, unit: 'rem' } },
+        { namespace: 'spacing', key: 'card', name: 'spacing-card', type: 'number', value: '1.25rem', numeric: { value: 1.25, unit: 'rem' } }
+    ],
+    variants: [
+        { token: '@wide', branches: [{ atRules: ['@media (min-width: 80rem)'] }] }
+    ],
+    utilities: [
+        {
+            name: 'content-auto',
+            type: UtilityType.Semantic,
+            layer: 'utilities',
+            declarations: { 'content-visibility': 'auto' }
+        },
+        {
+            name: 'btn',
+            type: UtilityType.Semantic,
+            layer: 'components',
+            declarations: { display: 'block' }
+        }
+    ]
+})
+
 jsxTester.run('prefer canonical classes', rule, {
     valid: [
         { code: `<div class="text-center font:md m:md r:md fg:red-60">Recommended classes</div>` },
@@ -283,6 +323,28 @@ createTester({
         { code: `<button class="btn">Component class</button>` }
     ],
     invalid: []
+})
+
+createTester({
+    settings: {
+        '@master/css': {
+            manifest: customManifest
+        }
+    }
+}).run('prefer canonical classes custom manifest', rule, {
+    valid: [
+        { code: `<div class="block@midnight@wide btn@midnight@tablet">Custom variants and components</div>` }
+    ],
+    invalid: [
+        {
+            code: `<div class="m:1.25rem@midnight@tablet content-visibility:auto">Custom manifest</div>`,
+            output: `<div class="m:card@tablet@midnight content-auto">Custom manifest</div>`,
+            errors: [
+                { messageId: 'preferClass', data: { actual: 'm:1.25rem@midnight@tablet', recommended: 'm:card@tablet@midnight' } },
+                { messageId: 'preferClass', data: { actual: 'content-visibility:auto', recommended: 'content-auto' } },
+            ]
+        }
+    ]
 })
 
 jsxTester.run('prefer canonical classes parser smoke tests', rule, {

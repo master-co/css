@@ -19,6 +19,61 @@ import {
 import { createPresetManifest } from './helpers/create-preset-manifest'
 
 const css = createCSSWithNativeDeclarations(createPresetManifest())
+const customManifest = createPresetManifest({
+    settings: {
+        rootSize: 16,
+        modes: ['dark', 'midnight']
+    },
+    atRules: {
+        tablet: {
+            id: 'media',
+            nodes: [{ type: 'number', value: 48, unit: 'rem' }]
+        }
+    },
+    breakpointAtRules: {
+        tablet: {
+            id: 'media',
+            nodes: [{ type: 'number', value: 48, unit: 'rem' }]
+        }
+    },
+    variables: [
+        { namespace: 'breakpoint', key: 'tablet', name: 'breakpoint-tablet', type: 'number', value: '48rem', numeric: { value: 48, unit: 'rem' } },
+        { namespace: 'spacing', key: 'card', name: 'spacing-card', type: 'number', value: '1.25rem', numeric: { value: 1.25, unit: 'rem' } }
+    ],
+    variants: [
+        { token: '@wide', branches: [{ atRules: ['@media (min-width: 80rem)'] }] }
+    ],
+    utilities: [
+        {
+            name: 'content-auto',
+            type: UtilityType.Semantic,
+            layer: 'utilities',
+            declarations: { 'content-visibility': 'auto' }
+        },
+        {
+            name: 'btn',
+            type: UtilityType.Semantic,
+            layer: 'components',
+            declarations: { display: 'block' }
+        }
+    ]
+})
+const customCSS = createCSSWithNativeDeclarations(customManifest)
+
+type PresetManifestInput = Parameters<typeof createPresetManifest>[0]
+const registryFieldCSS = createCSSWithNativeDeclarations(createPresetManifest({
+    variables: [
+        { namespace: 'spacing', key: 'card', name: 'spacing-card', type: 'number', value: '1.25rem', numeric: { value: 1.25, unit: 'rem' } }
+    ],
+    keyAliases: { space: 'margin' },
+    nativeValueNamespaces: [{
+        properties: ['--space'],
+        variableAliasRefs: ['~spacing']
+    }]
+} as PresetManifestInput & {
+    keyAliases: Record<string, string>
+    nativeValueNamespaces: { properties: string[], variableAliasRefs: string[] }[]
+}))
 
 describe('class sorting', () => {
     test('sorts known classes and keeps unknown classes last', () => {
@@ -208,6 +263,13 @@ describe('raw value policy', () => {
             { className: 'm:19px|20px', key: 'm', value: '19px|20px', properties: ['margin'] }
         ])
     })
+
+    test('uses active manifest tokens without treating registry fields as token namespaces', () => {
+        expect(findUnapprovedRawValueClasses(['m:card', 'm:17px'], customCSS)).toEqual([
+            { className: 'm:17px', key: 'm', value: '17px', properties: ['margin'] }
+        ])
+        expect(findUnapprovedRawValueClasses(['--space:17px'], registryFieldCSS)).toEqual([])
+    })
 })
 
 describe('canonical class suggestions', () => {
@@ -272,6 +334,23 @@ describe('canonical class suggestions', () => {
             ...defaultCanonicalClassNameOptions,
             preferMultiValueTokens: false
         })).toBe('m:1rem|1.5rem@sm@dark')
+    })
+
+    test('uses custom manifest modes, breakpoints, tokens, and utilities', () => {
+        expect(suggestCanonicalClassName('block@midnight@tablet', customCSS)).toBe('block@tablet@midnight')
+        expect(suggestCanonicalClassName('m:1.25rem@midnight@tablet', customCSS)).toBe('m:card@tablet@midnight')
+        expect(suggestCanonicalClassName('content-visibility:auto', customCSS)).toBe('content-auto')
+    })
+
+    test('does not treat custom variants or component utilities as utilities-only canonical targets', () => {
+        expect(customCSS.generate('block@midnight@wide')).toHaveLength(1)
+        expect(suggestCanonicalClassName('block@midnight@wide', customCSS)).toBeUndefined()
+        expect(suggestCanonicalClassName('btn@midnight@tablet', customCSS)).toBeUndefined()
+    })
+
+    test('ignores manifest-carried key alias and native namespace registry fields', () => {
+        expect(suggestCanonicalClassName('margin:card', registryFieldCSS)).toBe('m:card')
+        expect(suggestCanonicalClassName('--space:card', registryFieldCSS)).toBeUndefined()
     })
 
     test('does not suggest partial multi-value or unknown variable tokens', () => {

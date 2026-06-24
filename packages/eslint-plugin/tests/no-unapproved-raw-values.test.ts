@@ -6,6 +6,25 @@ import rule from '../src/rules/no-unapproved-raw-values'
 import { createTester, jsxTester } from './testers'
 import { createPresetManifest } from './helpers/create-preset-manifest'
 
+const customManifest = createPresetManifest({
+    variables: [
+        { namespace: 'spacing', key: 'card', name: 'spacing-card', type: 'number', value: '1.25rem', numeric: { value: 1.25, unit: 'rem' } }
+    ]
+})
+
+type PresetManifestInput = Parameters<typeof createPresetManifest>[0]
+const registryFieldManifest = createPresetManifest({
+    variables: [
+        { namespace: 'spacing', key: 'card', name: 'spacing-card', type: 'number', value: '1.25rem', numeric: { value: 1.25, unit: 'rem' } }
+    ],
+    nativeValueNamespaces: [{
+        properties: ['--space'],
+        variableAliasRefs: ['~spacing']
+    }]
+} as PresetManifestInput & {
+    nativeValueNamespaces: { properties: string[], variableAliasRefs: string[] }[]
+})
+
 jsxTester.run('no unapproved raw values', rule, {
     valid: [
         { code: `<div class="font:md m:md m:md|lg fg:red-60 text-center">Tokens and static utilities</div>` },
@@ -83,6 +102,39 @@ createTester({
 }).run('no unapproved raw values custom components', rule, {
     valid: [
         { code: `<button class="btn">Component class</button>` }
+    ],
+    invalid: []
+})
+
+createTester({
+    settings: {
+        '@master/css': {
+            manifest: customManifest
+        }
+    }
+}).run('no unapproved raw values custom manifest', rule, {
+    valid: [
+        { code: `<div class="m:card">Custom token</div>` }
+    ],
+    invalid: [
+        {
+            code: `<div class="m:17px">Custom token namespace raw value</div>`,
+            errors: [
+                { messageId: 'unapprovedRawValue', data: { value: '17px', className: 'm:17px' } },
+            ]
+        }
+    ]
+})
+
+createTester({
+    settings: {
+        '@master/css': {
+            manifest: registryFieldManifest
+        }
+    }
+}).run('no unapproved raw values ignored manifest registry fields', rule, {
+    valid: [
+        { code: `<div class="--space:17px">Manifest-carried native namespace is ignored</div>` }
     ],
     invalid: []
 })
