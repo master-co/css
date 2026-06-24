@@ -22,6 +22,7 @@
 - Runtime, server, scanner, or ESLint behavior.
 - Engine syntax or CSS output semantics.
 - Raw class-list splitting/unescape semantics owned by `@master/css-lexer`.
+- Manifest-driven class inspection semantics owned by `@master/css-engine/inspect`.
 
 ## Public Surface
 
@@ -44,6 +45,7 @@
 - Class-position scanning across JSX, Vue, Svelte, Astro, strings, and function calls.
 - Semantic token classification for Master CSS class-list spans and directive class-list spans.
 - Preserve raw editor ranges while using lexer class-list token/raw parsing.
+- Do not require tooling-only semantic token helpers to live on the runtime-covered `MasterCSS` prototype.
 - TextMate grammar compatibility for CSS-family documents.
 - Browser and Shiki helper compatibility.
 

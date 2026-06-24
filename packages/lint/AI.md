@@ -21,7 +21,7 @@
 - Source extraction adapters.
 - Engine CSS generation semantics.
 - Class-list token/range parsing; use `@master/css-lexer`.
-- Class semantic inspection; use `@master/css-engine`.
+- Class semantic inspection; use tooling-only helpers from `@master/css-engine/inspect`.
 - Language service, scanner, runtime, framework, or site behavior.
 
 ## Public Surface
@@ -55,7 +55,7 @@
 ## Risk Areas
 
 - Ordering, conflict, and canonical suggestion behavior must match generated engine rules.
-- Do not duplicate class parsing, value segment splitting, numeric normalization, or generated-rule private field inspection in this package.
+- Do not duplicate class parsing, value segment splitting, numeric normalization, or generated-rule private field inspection in this package. Do not add lint-only inspection helpers to `MasterCSS`; use `@master/css-engine/inspect`.
 - Validation diagnostics must preserve scanner and ESLint expectations.
 - This package must not import ESLint, project resolution, filesystem, scanner, language service, or framework packages.
 

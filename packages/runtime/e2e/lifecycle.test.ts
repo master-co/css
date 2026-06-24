@@ -7,6 +7,17 @@ import init from './init'
 
 const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
 
+test('does not expose tooling-only engine inspection helpers', async ({ page }) => {
+    await init(page)
+    await expect(page.evaluate(() => ({
+        inspectClass: 'inspectClass' in globalThis.masterCSSRuntime,
+        normalizeNumericValue: 'normalizeNumericValue' in globalThis.masterCSSRuntime
+    }))).resolves.toEqual({
+        inspectClass: false,
+        normalizeNumericValue: false
+    })
+})
+
 test('destroy on progressive', async ({ page }) => {
     await init(page, '@layer utilities{}')
     await page.evaluate(() => {

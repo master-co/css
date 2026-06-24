@@ -1,5 +1,6 @@
 import { generateValidRules } from '@master/css-validator'
 import type { MasterCSS } from '@master/css-engine'
+import { inspectMasterCSSClass } from '@master/css-engine/inspect'
 import { splitMasterCSSTopLevel } from '@master/css-lexer'
 
 export interface RawValuePolicyOptions {
@@ -47,7 +48,7 @@ export default function findUnapprovedRawValueClasses(
     const issues: UnapprovedRawValueClass[] = []
 
     for (const className of classNames) {
-        const parts = css.inspectClass(className)
+        const parts = inspectMasterCSSClass(css, className)
         if (!parts.key || !parts.value) continue
         if (matchesAllowedPattern(parts.value, allowedPatterns)) continue
 

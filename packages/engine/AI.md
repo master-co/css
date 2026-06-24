@@ -7,8 +7,7 @@
 ## Owns
 
 - `MasterCSS` execution and rule generation.
-- Semantic class inspection, including generated rules, class base/suffix, key/value tokens, matcher type metadata, important/state metadata, and token-backed variable metadata.
-- Numeric value normalization for engine settings such as root size and base unit.
+- Tooling-only semantic class inspection under `./inspect`, including generated rules, class base/suffix, key/value tokens, matcher type metadata, important/state metadata, and token-backed variable metadata.
 - Layer state and generated CSS text.
 - Hydration manifest generation.
 - Built-in key aliases, variable namespaces, namespace refs, and native value namespaces.
@@ -25,12 +24,11 @@
 
 - `MasterCSS`
 - `MasterCSS.create({ manifest, emittedGlobals })`
-- `css.inspectClass(className, mode?)`
-- `css.normalizeNumericValue(value)`
 - `compareRulePriority`
 - `createHydrationManifest`
 - Built-in registry exports
 - Runtime-safe manifest and generated-rule types
+- `./inspect` tooling helpers
 - `./compiler` helpers
 
 ## Key Files
@@ -49,6 +47,7 @@
 ## Risk Areas
 
 - Class matching and compiled utility order.
+- `src/core.ts` and root value exports are runtime-covered because `@master/css-runtime` extends `MasterCSS`.
 - Value, selector, and at-rule parsing/generation.
 - Priority sorting and cascade layer insertion.
 - Variable, animation, emittedGlobals, and hydration behavior.
@@ -62,6 +61,7 @@
 ## Dangerous Changes
 
 - Moving compiler, runtime, scanner, language, or integration behavior into engine.
+- Adding lint, language, docs, or compiler-only helpers to `MasterCSS` or runtime-imported engine modules instead of an explicit tooling subpath.
 - Serializing compiled indexes or caches into `MasterCSSManifest` without browser payload measurement.
 - Changing CSS output without explicit tests and explanation.
 
@@ -76,4 +76,4 @@ pnpm --filter @master/css-engine build
 
 ## Benchmark Guidance
 
-Run `pnpm --filter @master/css-engine bench` when changing class matching, rule creation, generation, parsing, priority sorting, layer insertion, manifest loading, manifest compilation, or cache/index behavior. Correctness validation must run first. Report benchmark status, `dist/core.mjs` raw/gzip/brotli size risk, memory/cold-start/runtime CPU tradeoffs, and whether CSS output or cascade order changed.
+Run `pnpm --filter @master/css-engine bench` when changing class matching, rule creation, generation, parsing, priority sorting, layer insertion, manifest loading, manifest compilation, or cache/index behavior. Correctness validation must run first. Report benchmark status, `dist/core.mjs` raw/gzip/brotli size risk, memory/cold-start/runtime CPU tradeoffs, and whether CSS output or cascade order changed. For runtime-covered core changes, also report likely `@master/css-runtime` browser bundle impact.

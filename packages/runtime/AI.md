@@ -4,6 +4,8 @@
 
 `@master/css-runtime` runs Master CSS in the browser. It observes DOM class changes, creates or hydrates `style#master-css`, tracks class usage counts, registers emittedGlobals global CSS counts, and inserts/removes native CSS rules.
 
+`CSSRuntime` directly extends `MasterCSS`; any value-level logic added to the engine core or other runtime-imported engine modules can enter the browser runtime bundle.
+
 ## Owns
 
 - Browser runtime lifecycle.
@@ -15,6 +17,7 @@
 ## Does Not Own
 
 - Core parser or CSS generation semantics.
+- Tooling-only engine inspection, lint, language, compiler, or docs helpers.
 - Framework provider lifecycle.
 - Build integration injection policy.
 - Server rendering.
@@ -47,6 +50,7 @@
 - Matching generated rule text to native `CSSRule` text.
 - ShadowRoot versus Document behavior.
 - Native `CSSStyleSheet` insertion indexes.
+- Engine core growth that is not required for runtime execution.
 
 ## Safe Changes
 
@@ -61,6 +65,7 @@
 - Removing class count tracking or hydration error checks.
 - Changing FOUC behavior without integration validation.
 - Changing global names `MasterCSSRuntime` or `masterCSSRuntime` casually.
+- Accepting tooling-only methods on `CSSRuntime` via `MasterCSS` inheritance.
 
 ## Validation
 

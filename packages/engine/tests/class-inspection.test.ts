@@ -1,10 +1,14 @@
 import { describe, expect, test } from 'vitest'
+import {
+    inspectMasterCSSClass,
+    normalizeMasterCSSNumericValue
+} from '../src/inspect'
 import { createDefaultCSS } from './helpers/css-tester'
 
 describe('class inspection', () => {
     test('inspects key/value utilities with variants and token metadata', () => {
         const css = createDefaultCSS()
-        const inspection = css.inspectClass('fg:red-60:hover@sm')
+        const inspection = inspectMasterCSSClass(css, 'fg:red-60:hover@sm')
 
         expect(inspection).toMatchObject({
             className: 'fg:red-60:hover@sm',
@@ -25,12 +29,12 @@ describe('class inspection', () => {
     test('inspects static utilities and important suffixes', () => {
         const css = createDefaultCSS()
 
-        expect(css.inspectClass('block:hover')).toMatchObject({
+        expect(inspectMasterCSSClass(css, 'block:hover')).toMatchObject({
             base: 'block',
             suffix: ':hover',
             stateToken: ':hover'
         })
-        expect(css.inspectClass('m:16px!@sm')).toMatchObject({
+        expect(inspectMasterCSSClass(css, 'm:16px!@sm')).toMatchObject({
             base: 'm:16px',
             suffix: '!@sm',
             key: 'm',
@@ -45,7 +49,7 @@ describe('class inspection', () => {
     test('falls back to lexical class parts for unknown classes', () => {
         const css = createDefaultCSS()
 
-        expect(css.inspectClass('unknown:1.5:hover')).toMatchObject({
+        expect(inspectMasterCSSClass(css, 'unknown:1.5:hover')).toMatchObject({
             rules: [],
             base: 'unknown:1.5',
             suffix: ':hover',
@@ -58,13 +62,13 @@ describe('class inspection', () => {
     test('normalizes number, rem, px, and base-unit numeric values', () => {
         const css = createDefaultCSS()
 
-        expect(css.normalizeNumericValue(1)).toEqual({ kind: 'number', value: 1 })
-        expect(css.normalizeNumericValue('1rem')).toEqual({ kind: 'rem', value: 1 })
-        expect(css.normalizeNumericValue('16px')).toEqual({ kind: 'rem', value: 1 })
-        expect(css.normalizeNumericValue('4x')).toEqual({
+        expect(normalizeMasterCSSNumericValue(css, 1)).toEqual({ kind: 'number', value: 1 })
+        expect(normalizeMasterCSSNumericValue(css, '1rem')).toEqual({ kind: 'rem', value: 1 })
+        expect(normalizeMasterCSSNumericValue(css, '16px')).toEqual({ kind: 'rem', value: 1 })
+        expect(normalizeMasterCSSNumericValue(css, '4x')).toEqual({
             kind: 'rem',
             value: 4 * css.settings.baseUnit / css.settings.rootSize
         })
-        expect(css.normalizeNumericValue('50%')).toBeUndefined()
+        expect(normalizeMasterCSSNumericValue(css, '50%')).toBeUndefined()
     })
 })

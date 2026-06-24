@@ -22,7 +22,7 @@
 
 - `MasterCSS`
 - `MasterCSS.create({ manifest, emittedGlobals })`
-- Engine inspection-related type re-exports such as `MasterCSSClassInspection` and `MasterCSSNormalizedNumericValue`
+- Engine inspection-related type re-exports such as `MasterCSSClassInspection` and `MasterCSSNormalizedNumericValue`; inspection value helpers stay in `@master/css-engine/inspect`
 - `MasterCSSManifest` and runtime-safe engine types
 - CSS subpaths listed above
 

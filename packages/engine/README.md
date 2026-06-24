@@ -50,6 +50,16 @@ import {
 } from '@master/css-engine/compiler'
 ```
 
+### Inspection helpers
+
+`@master/css-engine/inspect` exposes tooling-only class inspection helpers for lint and language tooling without adding those methods to the runtime-covered `MasterCSS` prototype.
+
+```ts
+import { inspectMasterCSSClass } from '@master/css-engine/inspect'
+
+const inspection = inspectMasterCSSClass(css, 'fg:red:hover')
+```
+
 ## Related packages
 
 - `@master/css` is the public facade over this package and the default preset.

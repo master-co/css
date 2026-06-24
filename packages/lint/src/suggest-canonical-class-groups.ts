@@ -1,4 +1,5 @@
 import type { GeneratedRule, MasterCSS } from '@master/css-engine'
+import { inspectMasterCSSClass } from '@master/css-engine/inspect'
 import {
     equalVariants,
     getDeclarationSignature
@@ -58,7 +59,7 @@ function getEntry(className: string, index: number, css: MasterCSS, options: Res
     const declarationKeys = Object.keys(rule.declarations || {})
     if (declarationKeys.length !== 1) return
 
-    const parts = css.inspectClass(canonicalClassName)
+    const parts = inspectMasterCSSClass(css, canonicalClassName)
     if (!parts.key || !parts.value) return
 
     return {

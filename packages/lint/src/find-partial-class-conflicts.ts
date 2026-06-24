@@ -1,5 +1,9 @@
 import { generateValidRules } from '@master/css-validator'
-import type { GeneratedRule, MasterCSS, MasterCSSClassInspection } from '@master/css-engine'
+import type { GeneratedRule, MasterCSS } from '@master/css-engine'
+import {
+    inspectMasterCSSClass,
+    type MasterCSSClassInspection
+} from '@master/css-engine/inspect'
 import { equalVariants } from './rule-signatures'
 import suggestCanonicalClassName from './suggest-canonical-class-name'
 
@@ -109,10 +113,10 @@ function getReplacementClassNames(family: SpacingFamily, sides: Side[], value: s
 }
 
 function getClassEntry(className: string, css: MasterCSS): PartialClassConflictEntry | undefined {
-    const directInspection = css.inspectClass(className)
+    const directInspection = inspectMasterCSSClass(css, className)
     const directFamily = getFamily(directInspection.key)
     const canonicalClassName = directFamily ? className : suggestCanonicalClassName(className, css) || className
-    const parts = directFamily ? directInspection : css.inspectClass(canonicalClassName)
+    const parts = directFamily ? directInspection : inspectMasterCSSClass(css, canonicalClassName)
     const family = getFamily(parts.key)
     if (!family || !parts.key || !parts.value) return
 

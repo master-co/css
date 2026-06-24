@@ -1650,6 +1650,9 @@ importers:
       '@master/css':
         specifier: workspace:^
         version: link:../core
+      '@master/css-engine':
+        specifier: workspace:^
+        version: link:../engine
       '@master/css-lexer':
         specifier: workspace:^
         version: link:../lexer

@@ -1,4 +1,5 @@
 import { UtilityType, type MasterCSS } from '../master-css'
+import { inspectMasterCSSClass } from '@master/css-engine/inspect'
 import {
     collectMasterCSSClassListTokenRanges,
     tokenizeMasterCSSAtQuery,
@@ -54,7 +55,7 @@ export function tokenizeClassToken(css: MasterCSS, token: string, offset: number
     }
 
     const tokens: HighlightTokenItem[] = []
-    const inspection = css.inspectClass(token)
+    const inspection = inspectMasterCSSClass(css, token)
     const rules = inspection.rules
     const component = rules.find((rule) => rule.type === UtilityType.Semantic && rule.layerName === 'components')
     if (component) {

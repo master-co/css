@@ -1,14 +1,16 @@
 export { default as MasterCSS, default } from './core'
 export type {
     CompiledUtility,
-    MasterCSSClassInspection,
     MasterCSSCreateOptions,
-    MasterCSSInspectedClassVariable,
-    MasterCSSNormalizedNumericValue,
     MasterCSSOptions,
     NativeCSSDeclaration,
     NativeCSSDeclarationMatcher
 } from './core'
+export type {
+    MasterCSSClassInspection,
+    MasterCSSInspectedClassVariable,
+    MasterCSSNormalizedNumericValue
+} from './inspect'
 export { Rule } from './rule'
 export { default as Layer } from './layer'
 export { default as ThemeLayer } from './theme-layer'

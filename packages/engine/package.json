@@ -58,6 +58,11 @@
             "types": "./dist/compiler.d.ts",
             "import": "./dist/compiler.mjs",
             "default": "./dist/compiler.mjs"
+        },
+        "./inspect": {
+            "types": "./dist/inspect.d.ts",
+            "import": "./dist/inspect.mjs",
+            "default": "./dist/inspect.mjs"
         }
     },
     "files": [

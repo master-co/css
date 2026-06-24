@@ -2,9 +2,13 @@ import {
     builtinKeyAliases,
     builtinNativeValueNamespaces,
     type GeneratedRule,
-    type MasterCSS,
-    type MasterCSSClassInspection
+    type MasterCSS
 } from '@master/css-engine'
+import {
+    inspectMasterCSSClass,
+    normalizeMasterCSSNumericValue,
+    type MasterCSSClassInspection
+} from '@master/css-engine/inspect'
 import { splitMasterCSSTopLevel } from '@master/css-lexer'
 import UtilityType from '@master/css-schema/utility-type'
 import type { Variable } from '@master/css-schema/css-syntax'
@@ -174,14 +178,15 @@ function splitTopLevelValueSegments(value: string) {
 
 function getVariableNumericValue(variable: Variable, css: MasterCSS) {
     if (variable.numeric) {
-        return css.normalizeNumericValue(
+        return normalizeMasterCSSNumericValue(
+            css,
             `${variable.numeric.value}${variable.numeric.unit || ''}`,
         )
     }
-    if (variable.value !== undefined) return css.normalizeNumericValue(variable.value)
+    if (variable.value !== undefined) return normalizeMasterCSSNumericValue(css, variable.value)
 }
 
-function valuesMatch(a: ReturnType<MasterCSS['normalizeNumericValue']>, b: ReturnType<MasterCSS['normalizeNumericValue']>) {
+function valuesMatch(a: ReturnType<typeof normalizeMasterCSSNumericValue>, b: ReturnType<typeof normalizeMasterCSSNumericValue>) {
     return Boolean(a && b && a.kind === b.kind && Math.abs(a.value - b.value) < EPSILON)
 }
 
@@ -195,7 +200,7 @@ function getMatchingVariableKeys(
     css: MasterCSS,
     options: ResolvedCanonicalClassNameOptions
 ) {
-    const sourceValue = css.normalizeNumericValue(rawValue)
+    const sourceValue = normalizeMasterCSSNumericValue(css, rawValue)
     const variableReferenceName = options.preferVariableReferences ? getVariableReferenceName(rawValue) : undefined
     const tokenKeys = new Set<string>()
     const numericKeys = new Set<string>()
@@ -290,7 +295,7 @@ export default function suggestCanonicalClassName(
         ...defaultCanonicalClassNameOptions,
         ...options
     }
-    const sourceInspection = css.inspectClass(className)
+    const sourceInspection = inspectMasterCSSClass(css, className)
     const sourceRules = sourceInspection.rules
     if (!sourceRules.length) return
 
