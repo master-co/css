@@ -1,9 +1,14 @@
 import log from './log'
-import registerClassCountDebugger from './class-count'
-import registerLifecycleDebugger from './lifecycle'
+export { default as debugRuntimeMutation } from './class-count'
+export {
+    debugRuntimeCreated,
+    debugRuntimeDestroyed,
+    debugRuntimeDisconnected,
+    debugRuntimeHydrated,
+    debugRuntimeObserved,
+    debugRuntimeRefreshed
+} from './lifecycle'
 
 export default function startDebuggers() {
     log.info('Debug mode is enabled by default in development.')
-    registerClassCountDebugger()
-    registerLifecycleDebugger()
 }

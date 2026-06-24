@@ -68,7 +68,6 @@
         "@master/css": "workspace:^",
         "@master/css-cli": "workspace:^",
         "@master/css-compiler": "workspace:^",
-        "@master/css-devtools-hook": "workspace:^",
         "@master/css-engine": "workspace:^",
         "@master/css-integration": "workspace:^",
         "@master/css-language": "workspace:^",

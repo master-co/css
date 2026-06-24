@@ -15,6 +15,15 @@ import RuntimeThemeLayer from './theme-layer'
 import RuntimeClassTracker from './class-tracker'
 import HydratedGeneratedRule from './generated-rule'
 import { browserNativeDeclarationMatcher } from './native-declaration'
+import {
+    debugRuntimeCreated,
+    debugRuntimeDestroyed,
+    debugRuntimeDisconnected,
+    debugRuntimeHydrated,
+    debugRuntimeMutation,
+    debugRuntimeObserved,
+    debugRuntimeRefreshed
+} from './debuggers'
 
 const MASTER_CSS_RUNTIME_STYLE_SELECTOR = `style#${MASTER_CSS_RUNTIME_STYLE_ID}`
 
@@ -128,8 +137,8 @@ export default class CSSRuntime extends MasterCSS {
         if (isDocumentRoot(this.root)) {
             this.root.defaultView!.globalThis.masterCSSRuntime = this
         }
-        if (!registered) {
-            __MASTER_CSS_DEVTOOLS_HOOK__?.emit('runtime:created', { cssRuntime: this })
+        if (!registered && process.env.NODE_ENV === 'development') {
+            debugRuntimeCreated(this)
         }
         return this
     }
@@ -256,11 +265,9 @@ export default class CSSRuntime extends MasterCSS {
         if (addedClassNames.length) this.add(...addedClassNames)
         if (removedClassNames.length) this.remove(...removedClassNames)
 
-        globalThis.__MASTER_CSS_DEVTOOLS_HOOK__?.emit('runtime:mutated', {
-            records,
-            classCounts: deltaCounts,
-            cssRuntime: this
-        })
+        if (process.env.NODE_ENV === 'development') {
+            debugRuntimeMutation(records, deltaCounts, this)
+        }
     }
 
     private startMutationObserver() {
@@ -298,7 +305,9 @@ export default class CSSRuntime extends MasterCSS {
         this.startMutationObserver()
         this.revealHostIfNeeded()
         this.observing = true
-        globalThis.__MASTER_CSS_DEVTOOLS_HOOK__?.emit('runtime:observed', { cssRuntime: this })
+        if (process.env.NODE_ENV === 'development') {
+            debugRuntimeObserved(this)
+        }
         return this
     }
 
@@ -607,7 +616,9 @@ export default class CSSRuntime extends MasterCSS {
             this.hydrateHydrationManifestLayer(layer, nativeLayerRule, manifestRules, result)
         }
 
-        globalThis.__MASTER_CSS_DEVTOOLS_HOOK__?.emit('runtime:hydrated', { cssRuntime: this, result })
+        if (process.env.NODE_ENV === 'development') {
+            debugRuntimeHydrated(this, result)
+        }
         return result
     }
 
@@ -627,7 +638,9 @@ export default class CSSRuntime extends MasterCSS {
             this.style?.remove()
             this.style = null
         }
-        globalThis.__MASTER_CSS_DEVTOOLS_HOOK__?.emit('runtime:disconnected', { cssRuntime: this })
+        if (process.env.NODE_ENV === 'development') {
+            debugRuntimeDisconnected(this)
+        }
         return this
     }
 
@@ -645,14 +658,18 @@ export default class CSSRuntime extends MasterCSS {
         this.classCounts.forEach((_, className) => {
             this.add(className)
         })
-        globalThis.__MASTER_CSS_DEVTOOLS_HOOK__?.emit('runtime:refreshed', { cssRuntime: this, manifest })
+        if (process.env.NODE_ENV === 'development') {
+            debugRuntimeRefreshed(this, manifest)
+        }
         return this
     }
 
     destroy() {
         this.disconnect()
         this.unregister()
-        globalThis.__MASTER_CSS_DEVTOOLS_HOOK__?.emit('runtime:destroyed', { cssRuntime: this })
+        if (process.env.NODE_ENV === 'development') {
+            debugRuntimeDestroyed(this)
+        }
         return this
     }
 }

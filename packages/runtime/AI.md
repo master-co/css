@@ -4,7 +4,9 @@
 
 `@master/css-runtime` runs Master CSS in the browser. It observes DOM class changes, creates or hydrates `style#master-css`, tracks class usage counts, registers emittedGlobals global CSS counts, and inserts/removes native CSS rules.
 
-`CSSRuntime` directly extends `MasterCSS`; any value-level logic added to the engine core or other runtime-imported engine modules can enter the browser runtime bundle.
+`CSSRuntime` directly extends `MasterCSS`; any value-level logic added to runtime source, engine core, engine root value exports, schema value constants, preset manifest loading, or other runtime-imported modules can enter the browser runtime bundle.
+
+Runtime does not expose a global event bus or tooling observer API. Third-party class observation should use DOM `MutationObserver` or explicit public runtime state. Development debug helpers are internal and must remain development-only.
 
 ## Owns
 
@@ -13,6 +15,7 @@
 - Runtime layer state and native stylesheet insertion/deletion.
 - Hydration of pre-rendered CSS rules.
 - Global runtime bundle and registration behavior.
+- Internal development-only runtime debugging.
 
 ## Does Not Own
 
@@ -30,6 +33,7 @@
 - `CSSRuntime#observe()`
 - `RuntimeUtilityLayer`
 - Runtime types
+- Global `MasterCSSRuntime` and `masterCSSRuntime` behavior
 
 ## Key Files
 
@@ -51,6 +55,7 @@
 - ShadowRoot versus Document behavior.
 - Native `CSSStyleSheet` insertion indexes.
 - Engine core growth that is not required for runtime execution.
+- Accidental growth of runtime-covered value dependencies that are neither runtime core nor intentional observability.
 
 ## Safe Changes
 
@@ -66,6 +71,8 @@
 - Changing FOUC behavior without integration validation.
 - Changing global names `MasterCSSRuntime` or `masterCSSRuntime` casually.
 - Accepting tooling-only methods on `CSSRuntime` via `MasterCSS` inheritance.
+- Treating build-time-only config imports or tooling helpers as browser runtime dependencies.
+- Adding global event buses or tooling observer APIs to runtime.
 
 ## Validation
 
@@ -81,3 +88,7 @@ Use or extend `e2e/lifecycle.test.ts`, `e2e/class-usages.test.ts`, `e2e/progress
 ## Benchmark Guidance
 
 Run `pnpm --filter @master/css-runtime bench` when changing DOM observation, class tracking, lifecycle behavior, hydration, runtime layer insertion/deletion, CSSOM mutation, or the global browser bundle. Correctness e2e should remain browser correctness, not timing assertions. Report benchmark status, global runtime asset impact, memory/cold-start/runtime CPU/CSSOM tradeoffs, and whether generated CSS output, progressive hydration, or fallback hydration changed.
+
+## Bundle Audit Notes
+
+When auditing `dist/global.min.js`, the removed devtools hook global, generic listener maps, and runtime event emit callsites must not be present. Build-time-only config imports in `techor.config.ts` are not browser runtime bundle surface.

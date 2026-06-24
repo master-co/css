@@ -18,6 +18,11 @@ test('does not expose tooling-only engine inspection helpers', async ({ page }) 
     })
 })
 
+test('does not install the removed devtools hook global', async ({ page }) => {
+    await init(page)
+    await expect(page.evaluate(() => ['__MASTER', 'CSS', 'DEVTOOLS', 'HOOK__'].join('_') in globalThis)).resolves.toBe(false)
+})
+
 test('destroy on progressive', async ({ page }) => {
     await init(page, '@layer utilities{}')
     await page.evaluate(() => {
