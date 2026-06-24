@@ -1,6 +1,5 @@
 import { type CompletionItem, CompletionItemKind } from 'vscode-languageserver-protocol'
 import { MasterCSS, createDefaultCSS, type Variable, generateCSS } from '@master/css-language'
-import { builtinKeyAliases } from '@master/css-engine'
 import createCSSMarkdownDocumentation from './create-css-markdown-documentation'
 import sortCompletionItems from './sort-completion-items'
 import { getMdnPropertySyntax, getMdnPropertyValueNames } from '@master/css-language'
@@ -43,7 +42,7 @@ function getVariableKeyByNamespace(variableName: string, namespace: string) {
 export default function getValueCompletionItems(css: MasterCSS = createDefaultCSS(), ruleKey: string, valuePrefix = '', completionIndex: CompletionIndex = createCompletionIndex(css)): CompletionItem[] {
     const completionItems: CompletionItem[] = []
     const addedLabels = new Set<string>()
-    const canonicalRuleKey = builtinKeyAliases[ruleKey] || ruleKey
+    const canonicalRuleKey = completionIndex.keyAliases[ruleKey] || ruleKey
     const nativeUtilityKey = completionIndex.nativeUtilityKeys.get(canonicalRuleKey)
     const nativeKey = nativeUtilityKey || (getMdnPropertySyntax(canonicalRuleKey) ? canonicalRuleKey : undefined)
     const nativePropertyValues = getMdnPropertyValueNames(nativeKey)
@@ -60,7 +59,7 @@ export default function getValueCompletionItems(css: MasterCSS = createDefaultCS
         const nativePropertySyntax = getMdnPropertySyntax(variable.namespace) || getMdnPropertySyntax(nativeKey)
         if (variable.type === 'number' && variable.name.startsWith('-') && nativePropertySyntax?.includes('absolute')) return
         const valueToken = appliedValue ?? (scoped ? variable.key : variable.name)
-        const documentation = createCSSMarkdownDocumentation(generateCSS([ruleKey + ':' + valueToken], css))
+        const documentation = createCSSMarkdownDocumentation(generateCSS([ruleKey + ':' + valueToken], css, completionIndex.runtime))
         const completionItemLabel = label ?? variable.name
         const conflicted = addedLabels.has(completionItemLabel)
         const completionItem: CompletionItem = {
@@ -68,9 +67,9 @@ export default function getValueCompletionItems(css: MasterCSS = createDefaultCS
             kind: CompletionItemKind.Value
         }
         if (conflicted) {
-            completionItem.documentation = createCSSMarkdownDocumentation(generateCSS([ruleKey + ':' + completionItem.label], css))
+            completionItem.documentation = createCSSMarkdownDocumentation(generateCSS([ruleKey + ':' + completionItem.label], css, completionIndex.runtime))
         } else {
-            completionItem.documentation = createCSSMarkdownDocumentation(generateCSS([ruleKey + ':' + valueToken], css))
+            completionItem.documentation = createCSSMarkdownDocumentation(generateCSS([ruleKey + ':' + valueToken], css, completionIndex.runtime))
         }
         if (variable.namespace?.startsWith('color')) {
             if (Object.keys(variable.modes || {}).length) {
@@ -146,7 +145,7 @@ export default function getValueCompletionItems(css: MasterCSS = createDefaultCS
         pushCompletionItem({
             label: value,
             kind: CompletionItemKind.Value,
-            documentation: createCSSMarkdownDocumentation(generateCSS([ruleKey + ':' + value], css)),
+            documentation: createCSSMarkdownDocumentation(generateCSS([ruleKey + ':' + value], css, completionIndex.runtime)),
             detail: canonicalRuleKey + ': ' + value
         })
     }
@@ -159,7 +158,7 @@ export default function getValueCompletionItems(css: MasterCSS = createDefaultCS
             pushCompletionItem({
                 label: animationName,
                 kind: CompletionItemKind.Value,
-                documentation: createCSSMarkdownDocumentation(generateCSS([ruleKey + ':' + animationName], css)),
+                documentation: createCSSMarkdownDocumentation(generateCSS([ruleKey + ':' + animationName], css, completionIndex.runtime)),
                 detail: animationUtility.detailPrefix ? animationUtility.detailPrefix + ': ' + animationName : animationName
             })
         })
@@ -171,7 +170,7 @@ export default function getValueCompletionItems(css: MasterCSS = createDefaultCS
             pushCompletionItem({
                 label: animationName,
                 kind: CompletionItemKind.Value,
-                documentation: createCSSMarkdownDocumentation(generateCSS([ruleKey + ':' + animationName], css)),
+                documentation: createCSSMarkdownDocumentation(generateCSS([ruleKey + ':' + animationName], css, completionIndex.runtime)),
                 detail: canonicalRuleKey + ': ' + animationName
             })
         })
@@ -205,7 +204,7 @@ export default function getValueCompletionItems(css: MasterCSS = createDefaultCS
                     sortText: NATIVE_PRIORITY + (value.startsWith('-')
                         ? 'zz' + value.slice(1)
                         : value),
-                    documentation: createCSSMarkdownDocumentation(generateCSS([ruleKey + ':' + value], css)),
+                    documentation: createCSSMarkdownDocumentation(generateCSS([ruleKey + ':' + value], css, completionIndex.runtime)),
                     detail: nativeKey + ': ' + value
                 })
             })

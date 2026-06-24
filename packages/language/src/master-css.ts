@@ -1,4 +1,5 @@
-import { MasterCSS, type CompiledUtility } from '@master/css'
+import { MasterCSS, type CompiledUtility, type NativeCSSDeclarationMatcher } from '@master/css'
+import { builtinKeyAliases, builtinNativeValueNamespaces } from '@master/css-engine'
 import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
 import UtilityType from '@master/css-schema/utility-type'
 import type { ValueComponent, Variable } from '@master/css-schema/css-syntax'
@@ -7,10 +8,28 @@ import { getMdnPropertySyntax } from './utils/mdn-css-data'
 
 export type { CompiledUtility, ValueComponent, Variable }
 const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
-export { defaultManifest, MasterCSS, UtilityType }
+export { builtinKeyAliases, builtinNativeValueNamespaces, defaultManifest, MasterCSS, UtilityType }
 
 export function matchesLanguageServiceNativeDeclaration({ property }: { property: string }) {
     return property.startsWith('--') || Boolean(getMdnPropertySyntax(property))
+}
+
+export interface CSSLanguageRuntime {
+    MasterCSS: typeof MasterCSS
+    UtilityType: typeof UtilityType
+    defaultManifest: MasterCSSManifest
+    builtinKeyAliases: typeof builtinKeyAliases
+    builtinNativeValueNamespaces: typeof builtinNativeValueNamespaces
+    nativeDeclarationMatcher: NativeCSSDeclarationMatcher
+}
+
+export const defaultCSSLanguageRuntime: CSSLanguageRuntime = {
+    MasterCSS,
+    UtilityType,
+    defaultManifest,
+    builtinKeyAliases,
+    builtinNativeValueNamespaces,
+    nativeDeclarationMatcher: matchesLanguageServiceNativeDeclaration
 }
 
 export const SELECTOR_SIGNS = [':', '_', '>', '+', '~']
@@ -28,24 +47,29 @@ export interface AtRule {
     nodes: MasterCSSManifestAtRuleNode[]
 }
 
-export function createDefaultCSS() {
-    return MasterCSS.create({
-        manifest: defaultManifest,
-        nativeDeclarationMatcher: matchesLanguageServiceNativeDeclaration
+export function createDefaultCSS(runtime: CSSLanguageRuntime = defaultCSSLanguageRuntime) {
+    return runtime.MasterCSS.create({
+        manifest: runtime.defaultManifest,
+        nativeDeclarationMatcher: runtime.nativeDeclarationMatcher
     })
 }
 
-export function createLanguageCSS(manifest: MasterCSSManifest = defaultManifest) {
-    return MasterCSS.create({
+export function createLanguageCSS(manifest: MasterCSSManifest = defaultManifest, runtime: CSSLanguageRuntime = defaultCSSLanguageRuntime) {
+    return runtime.MasterCSS.create({
         manifest,
-        nativeDeclarationMatcher: matchesLanguageServiceNativeDeclaration
+        nativeDeclarationMatcher: runtime.nativeDeclarationMatcher
     })
 }
 
-export function generateCSS(classNames: string[], css: MasterCSS = createDefaultCSS()) {
-    const generatedCSS = MasterCSS.create({
+export function generateCSS(
+    classNames: string[],
+    css: MasterCSS = createDefaultCSS(),
+    runtime: CSSLanguageRuntime = defaultCSSLanguageRuntime
+) {
+    const MasterCSSConstructor = css.constructor as typeof MasterCSS
+    const generatedCSS = MasterCSSConstructor.create({
         manifest: css.manifest,
-        nativeDeclarationMatcher: matchesLanguageServiceNativeDeclaration
+        nativeDeclarationMatcher: runtime.nativeDeclarationMatcher
     })
     for (const className of classNames) {
         generatedCSS.add(className)

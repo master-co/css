@@ -488,6 +488,7 @@
         "@master/css-language": "workspace:^",
         "@master/css-language-server": "workspace:^",
         "@master/css-language-service": "workspace:^",
+        "@master/css-project": "workspace:^",
         "@shikijs/langs": "4.2.0",
         "@types/vscode": "^1.125.0",
         "@vscode/vsce": "^3.9.2",

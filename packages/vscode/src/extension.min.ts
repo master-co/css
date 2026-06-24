@@ -1,15 +1,19 @@
 import path from 'path'
 import { LanguageClient, LanguageClientOptions, ServerOptions, TransportKind } from 'vscode-languageclient/node'
-import { commands, Disposable, EventEmitter, ExtensionContext, languages, Position, ProgressLocation, SemanticTokens, SemanticTokensLegend, TextDocument, window, workspace } from 'vscode'
+import { commands, Disposable, EventEmitter, ExtensionContext, languages, type OutputChannel, Position, ProgressLocation, SemanticTokens, SemanticTokensLegend, TextDocument, window, workspace } from 'vscode'
 import { ACTIVE_SEMANTIC_TOKENS_REQUEST, DOCUMENT_SEMANTIC_TOKENS_REQUEST, settings, type Settings } from '@master/css-language-server'
 import { SEMANTIC_TOKENS_LEGEND } from '@master/css-language'
-import type { SemanticTokens as LSPSemanticTokens } from 'vscode-languageserver-protocol'
+import { isCompatibleMasterCSSPackageVersion, resolveMasterCSSWorkspacePackages } from '@master/css-project/workspace'
 
 let client: LanguageClient
+let outputChannel: OutputChannel
 
 const disposables: Disposable[] = []
 
 type DocumentSelector = { scheme: string, language: string }[]
+interface LSPSemanticTokens {
+    data: number[]
+}
 
 const CSS_SEMANTIC_TOKEN_LANGUAGE_IDS = new Set(['css', 'scss', 'less'])
 
@@ -28,6 +32,57 @@ function getMasterCSSSettings(): Partial<Settings> {
 
 function getIncludedLanguages() {
     return getMasterCSSSettings().includedLanguages ?? settings.includedLanguages ?? []
+}
+
+function log(message: string) {
+    outputChannel?.appendLine(message)
+    console.log(`[Master CSS] ${message}`)
+}
+
+function getBundledLanguageServerVersion(context: ExtensionContext) {
+    const packageJSON = context.extension.packageJSON as {
+        dependencies?: Record<string, string>
+        devDependencies?: Record<string, string>
+        version?: string
+    }
+    return packageJSON.dependencies?.['@master/css-language-server']
+        ?? packageJSON.devDependencies?.['@master/css-language-server']
+        ?? packageJSON.version
+}
+
+function resolveWorkspaceServerModule(context: ExtensionContext, bundledServerModule: string) {
+    const workspaceFolders = workspace.workspaceFolders?.filter((folder) => folder.uri.scheme === 'file') ?? []
+    if (!workspaceFolders.length) {
+        log(`Using bundled language server: ${bundledServerModule}`)
+        return bundledServerModule
+    }
+
+    const bundledVersion = getBundledLanguageServerVersion(context)
+    const resolvedServers: string[] = []
+    for (const workspaceFolder of workspaceFolders) {
+        const resolution = resolveMasterCSSWorkspacePackages(workspaceFolder.uri.fsPath)
+        const languageServer = resolution.languageServer
+        if (!languageServer) {
+            log(`Using bundled language server because ${workspaceFolder.uri.fsPath} does not resolve @master/css-language-server/server.`)
+            resolution.errors.forEach(({ name, message }) => log(`Workspace package resolution warning for ${name}: ${message}`))
+            return bundledServerModule
+        }
+        if (!isCompatibleMasterCSSPackageVersion(languageServer.version, bundledVersion)) {
+            log(`Using bundled language server because ${workspaceFolder.uri.fsPath} resolves incompatible @master/css-language-server ${languageServer.version ?? '(unknown version)'}.`)
+            return bundledServerModule
+        }
+        resolvedServers.push(path.resolve(languageServer.entry))
+        log(`Resolved workspace language server ${languageServer.version ?? '(unknown version)'} for ${workspaceFolder.uri.fsPath}: ${languageServer.entry}`)
+    }
+
+    const uniqueServerModules = [...new Set(resolvedServers)]
+    if (uniqueServerModules.length === 1) {
+        log(`Using workspace language server: ${uniqueServerModules[0]}`)
+        return uniqueServerModules[0]
+    }
+
+    log(`Using bundled language server because workspace folders resolve different language server modules.`)
+    return bundledServerModule
 }
 
 function getEmbeddedSyntaxHighlighting(): NonNullable<Settings['embeddedSyntaxHighlighting']> {
@@ -162,10 +217,13 @@ function createSemanticTokensFeature(client: LanguageClient, clientStarted: Then
 }
 
 export function activate(context: ExtensionContext) {
+    outputChannel = window.createOutputChannel('Master CSS')
+    context.subscriptions.push(outputChannel)
 
     // The server is implemented in node
-    const serverModule = context.asAbsolutePath(path.join('dist', 'server.min.mjs'))
-    console.log('Loading server from ', serverModule)
+    const bundledServerModule = context.asAbsolutePath(path.join('dist', 'server.min.mjs'))
+    const serverModule = resolveWorkspaceServerModule(context, bundledServerModule)
+    log(`Loading server from ${serverModule}`)
 
     // The debug options for the server
     // --inspect=6009: runs the server in Node's Inspector mode so VS Code can attach to the server for debugging

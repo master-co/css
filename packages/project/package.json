@@ -44,6 +44,11 @@
             "types": "./dist/entries.d.ts",
             "import": "./dist/entries.mjs",
             "default": "./dist/entries.mjs"
+        },
+        "./workspace": {
+            "types": "./dist/workspace.d.ts",
+            "import": "./dist/workspace.mjs",
+            "default": "./dist/workspace.mjs"
         }
     },
     "files": [

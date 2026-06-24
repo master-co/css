@@ -8,7 +8,11 @@ import {
     hasMasterCSSManifestEntrypoint,
     resolveMasterCSSPackageEntryFile
 } from '../src/entries'
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
+import {
+    isCompatibleMasterCSSPackageVersion,
+    resolveMasterCSSWorkspacePackages
+} from '../src/workspace'
+import { mkdirSync, mkdtempSync, realpathSync, rmSync, writeFileSync } from 'node:fs'
 import { isAbsolute, join, relative, sep } from 'node:path'
 import { tmpdir } from 'node:os'
 import { flattenMasterCSSManifestVariables } from '@master/css-schema/manifest'
@@ -49,6 +53,37 @@ function writeCSSFixture(cwd: string) {
         }
     `)
     return { entry, tokens }
+}
+
+function writeJSON(file: string, value: unknown) {
+    writeFileSync(file, JSON.stringify(value, null, 4))
+}
+
+function toPackagePath(packageName: string) {
+    return join(...packageName.split('/'))
+}
+
+function writeNodePackage(
+    root: string,
+    packageName: string,
+    packageJSON: Record<string, unknown>,
+    files: Record<string, string> = { 'index.mjs': 'export default {}' }
+) {
+    const packageDir = join(root, 'node_modules', toPackagePath(packageName))
+    mkdirSync(packageDir, { recursive: true })
+    writeJSON(join(packageDir, 'package.json'), {
+        name: packageName,
+        type: 'module',
+        version: '1.2.3',
+        exports: {
+            '.': './index.mjs'
+        },
+        ...packageJSON
+    })
+    for (const [file, source] of Object.entries(files)) {
+        writeFileSync(join(packageDir, file), source)
+    }
+    return packageDir
 }
 
 test('loads CSS manifest resources', async () => {
@@ -230,6 +265,130 @@ test('does not match sibling workspace path prefixes', async () => {
     } finally {
         rmSync(cwd, { recursive: true, force: true })
     }
+})
+
+test('resolves Master CSS workspace packages and optional language server', () => {
+    const cwd = createFixture()
+    try {
+        writeJSON(join(cwd, 'package.json'), {
+            dependencies: {
+                '@master/css': '^1.2.3',
+                '@master/css-language-server': '^1.2.3'
+            }
+        })
+        const cssDir = writeNodePackage(cwd, '@master/css', {
+            dependencies: {
+                '@master/css-engine': '^1.2.3',
+                '@master/css-preset': '^1.2.3'
+            }
+        })
+        const engineDir = writeNodePackage(cssDir, '@master/css-engine', {
+            dependencies: {
+                '@master/css-schema': '^1.2.3'
+            }
+        }, {
+            'index.mjs': 'export const builtinKeyAliases = {}; export const builtinNativeValueNamespaces = []'
+        })
+        const presetDir = writeNodePackage(cssDir, '@master/css-preset', {
+            exports: {
+                './default-manifest.json': './default-manifest.json'
+            }
+        }, {
+            'default-manifest.json': '{"version":1}'
+        })
+        const schemaDir = writeNodePackage(engineDir, '@master/css-schema', {
+            exports: {
+                './utility-type': './utility-type.mjs'
+            }
+        }, {
+            'utility-type.mjs': 'export default { Semantic: -2, Shorthand: -1, Normal: 0 }'
+        })
+        const languageServerDir = writeNodePackage(cwd, '@master/css-language-server', {
+            exports: {
+                './server': './server.mjs'
+            }
+        }, {
+            'server.mjs': 'export {}'
+        })
+
+        const resolution = resolveMasterCSSWorkspacePackages(cwd)
+
+        expect(realpathSync(resolution.css?.directory || '')).toBe(realpathSync(cssDir))
+        expect(realpathSync(resolution.engine?.directory || '')).toBe(realpathSync(engineDir))
+        expect(realpathSync(resolution.presetManifest?.directory || '')).toBe(realpathSync(presetDir))
+        expect(realpathSync(resolution.utilityType?.directory || '')).toBe(realpathSync(schemaDir))
+        expect(realpathSync(resolution.languageServer?.directory || '')).toBe(realpathSync(languageServerDir))
+        expect(resolution.errors).toEqual([])
+    } finally {
+        rmSync(cwd, { recursive: true, force: true })
+    }
+})
+
+test('reports missing workspace runtime packages without throwing', () => {
+    const cwd = createFixture()
+    try {
+        writeJSON(join(cwd, 'package.json'), {
+            dependencies: {
+                '@master/css': '^1.2.3'
+            }
+        })
+        const cssDir = writeNodePackage(cwd, '@master/css', {})
+        writeNodePackage(cssDir, '@master/css-engine', {
+            exports: {
+                '.': './missing.mjs'
+            }
+        }, {})
+        writeNodePackage(cssDir, '@master/css-preset', {
+            exports: {
+                './default-manifest.json': './missing.json'
+            }
+        }, {})
+
+        const resolution = resolveMasterCSSWorkspacePackages(cwd)
+
+        expect(realpathSync(resolution.css?.directory || '')).toBe(realpathSync(cssDir))
+        expect(resolution.engine).toBeUndefined()
+        expect(resolution.presetManifest).toBeUndefined()
+        expect(resolution.errors.map(({ name }) => name)).toEqual([
+            '@master/css-engine',
+            '@master/css-preset/default-manifest.json',
+            '@master/css-language-server/server'
+        ])
+    } finally {
+        rmSync(cwd, { recursive: true, force: true })
+    }
+})
+
+test('reports invalid package exports as resolution errors', () => {
+    const cwd = createFixture()
+    try {
+        writeJSON(join(cwd, 'package.json'), {
+            dependencies: {
+                '@master/css': '^1.2.3'
+            }
+        })
+        writeNodePackage(cwd, '@master/css', {
+            exports: {
+                '.': './missing.mjs'
+            }
+        }, {})
+
+        const resolution = resolveMasterCSSWorkspacePackages(cwd)
+
+        expect(resolution.css).toBeUndefined()
+        expect(resolution.errors[0]).toMatchObject({
+            name: '@master/css'
+        })
+    } finally {
+        rmSync(cwd, { recursive: true, force: true })
+    }
+})
+
+test('checks compatible package majors when versions are known', () => {
+    expect(isCompatibleMasterCSSPackageVersion('2.1.0', '^2.0.0')).toBe(true)
+    expect(isCompatibleMasterCSSPackageVersion('3.0.0', '^2.0.0')).toBe(false)
+    expect(isCompatibleMasterCSSPackageVersion(undefined, '^2.0.0')).toBe(true)
+    expect(isCompatibleMasterCSSPackageVersion('3.0.0', undefined)).toBe(true)
 })
 
 test('turns CSS manifest results into JSON sources', async () => {

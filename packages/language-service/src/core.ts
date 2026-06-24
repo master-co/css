@@ -1,4 +1,11 @@
-import { defaultManifest, getClassPositions, MasterCSS, matchesLanguageServiceNativeDeclaration, type ClassPosition, ClassPositionCache } from '@master/css-language'
+import {
+    defaultCSSLanguageRuntime,
+    getClassPositions,
+    type CSSLanguageRuntime,
+    type MasterCSS,
+    type ClassPosition,
+    ClassPositionCache
+} from '@master/css-language'
 import extend from '@techor/extend'
 import EventEmitter from 'node:events'
 import type { Position } from 'vscode-languageserver-protocol'
@@ -14,25 +21,32 @@ import { createCompletionIndex, type CompletionIndex } from './utils/completion-
 
 export type { ClassPosition }
 
+export interface CSSLanguageServiceOptions {
+    runtime?: CSSLanguageRuntime
+}
+
 export default class CSSLanguageService extends EventEmitter {
     css: MasterCSS
+    runtime: CSSLanguageRuntime
     settings: Settings
     private completionIndex?: CompletionIndex
     private classPositionCache = new ClassPositionCache()
 
     constructor(
-        public customSettings?: Settings
+        public customSettings?: Settings,
+        options: CSSLanguageServiceOptions = {}
     ) {
         super()
+        this.runtime = options.runtime ?? defaultCSSLanguageRuntime
         this.settings = extend(settings, customSettings)
-        this.css = MasterCSS.create({
-            manifest: this.settings.manifest || defaultManifest,
-            nativeDeclarationMatcher: matchesLanguageServiceNativeDeclaration
+        this.css = this.runtime.MasterCSS.create({
+            manifest: this.settings.manifest || this.runtime.defaultManifest,
+            nativeDeclarationMatcher: this.runtime.nativeDeclarationMatcher
         })
     }
 
     private getCompletionIndex() {
-        this.completionIndex ??= createCompletionIndex(this.css)
+        this.completionIndex ??= createCompletionIndex(this.css, this.runtime)
         return this.completionIndex
     }
 

@@ -84,7 +84,7 @@ export default function querySyntaxCompletions(q = '', css: MasterCSS = createDe
                 completionItems.push({
                     label: '.<class>',
                     insertText: '.',
-                    documentation: createCSSMarkdownDocumentation(generateCSS([field + '.class'], css)),
+                    documentation: createCSSMarkdownDocumentation(generateCSS([field + '.class'], css, completionIndex.runtime)),
                     kind: CompletionItemKind.Class
                 })
             }

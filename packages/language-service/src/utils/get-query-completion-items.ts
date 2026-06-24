@@ -15,7 +15,7 @@ export default function getQueryCompletionItems(css: MasterCSS = createDefaultCS
                         filterText: name + '()',
                         insertText: name + '()',
                         sortText: name + '()',
-                        documentation: createCSSMarkdownDocumentation(generateCSS([syntax + name + '()'], css)),
+                        documentation: createCSSMarkdownDocumentation(generateCSS([syntax + name + '()'], css, completionIndex.runtime)),
                     }
                 )
             })
@@ -36,7 +36,7 @@ export default function getQueryCompletionItems(css: MasterCSS = createDefaultCS
                 insertText: token,
                 detail: text,
                 kind: CompletionItemKind.Keyword,
-                documentation: createCSSMarkdownDocumentation(generateCSS([syntax + token], css)),
+                documentation: createCSSMarkdownDocumentation(generateCSS([syntax + token], css, completionIndex.runtime)),
             })
             return true
         }
@@ -46,7 +46,7 @@ export default function getQueryCompletionItems(css: MasterCSS = createDefaultCS
         const completionItem: Omit<CompletionItem, 'label'> = {
             filterText: token,
             insertText: token,
-            documentation: createCSSMarkdownDocumentation(generateCSS([syntax + token], css))
+            documentation: createCSSMarkdownDocumentation(generateCSS([syntax + token], css, completionIndex.runtime))
         }
         if ([AT_SIGN, ...QUERY_LOGICAL_OPERATORS].includes(triggerCharacter)) {
             if (handleNumberNodes(atRule, token)) continue
@@ -58,7 +58,7 @@ export default function getQueryCompletionItems(css: MasterCSS = createDefaultCS
                     detail: text,
                     sortText: CompletionItemKind.Keyword + token,
                     kind: CompletionItemKind.Keyword,
-                    documentation: createCSSMarkdownDocumentation(generateCSS([syntax + token], css)),
+                    documentation: createCSSMarkdownDocumentation(generateCSS([syntax + token], css, completionIndex.runtime)),
                 }
             )
         } else if (QUERY_COMPARISON_OPERATORS.includes(triggerCharacter)) {

@@ -1,4 +1,4 @@
-export { default, default as CSSLanguageService } from './core'
+export { default, default as CSSLanguageService, type CSSLanguageServiceOptions } from './core'
 export { default as settings, type Settings } from './settings'
 export * from './common'
 

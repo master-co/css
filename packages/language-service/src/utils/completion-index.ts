@@ -1,6 +1,11 @@
 import { type CompletionItem, CompletionItemKind } from 'vscode-languageserver-protocol'
-import { builtinKeyAliases, builtinNativeValueNamespaces } from '@master/css-engine'
-import { type AtRule, type MasterCSS, UtilityType, createDefaultCSS } from '@master/css-language'
+import {
+    defaultCSSLanguageRuntime,
+    type AtRule,
+    type CSSLanguageRuntime,
+    type MasterCSS,
+    createDefaultCSS
+} from '@master/css-language'
 import type { Variable } from '@master/css-language'
 import { getMdnPseudoClassNames, getMdnPseudoElementNames } from '@master/css-language'
 import getUtilityInfo from './get-utility-info'
@@ -31,6 +36,8 @@ export interface SelectorVariantCandidate {
 }
 
 export interface CompletionIndex {
+    runtime: CSSLanguageRuntime
+    keyAliases: CSSLanguageRuntime['builtinKeyAliases']
     classEntries: ClassCompletionEntry[]
     componentNames: string[]
     utilityNames: string[]
@@ -80,7 +87,7 @@ function addMapValue<Key, Value>(map: Map<Key, Value[]>, key: Key, value: Value)
     }
 }
 
-function collectClassEntries(css: MasterCSS) {
+function collectClassEntries(css: MasterCSS, runtime: CSSLanguageRuntime) {
     const completionItems: ClassCompletionEntry[] = []
     const addedKeys = new Set<string>()
     const addedCompletionLabels = new Set<string>()
@@ -114,7 +121,7 @@ function collectClassEntries(css: MasterCSS) {
     }
 
     for (const eachDefinedUtility of css.definedUtilities) {
-        if (eachDefinedUtility.type === UtilityType.Semantic) {
+        if (eachDefinedUtility.type === runtime.UtilityType.Semantic) {
             const isComponent = eachDefinedUtility.layer === 'components'
             const { detail } = getUtilityInfo(eachDefinedUtility)
             for (const matcher of eachDefinedUtility.matchers) {
@@ -149,11 +156,11 @@ function collectClassEntries(css: MasterCSS) {
         }
     }
 
-    for (const [key, canonicalKey] of Object.entries(builtinKeyAliases)) {
+    for (const [key, canonicalKey] of Object.entries(runtime.builtinKeyAliases)) {
         addPropertyCompletionItem(key, canonicalKey)
     }
 
-    for (const namespace of builtinNativeValueNamespaces) {
+    for (const namespace of runtime.builtinNativeValueNamespaces) {
         for (const property of namespace.properties) {
             addPropertyCompletionItem(property)
         }
@@ -198,9 +205,9 @@ function createPseudoElementSelectors(css: MasterCSS) {
     return selectors
 }
 
-function createNativeVariableNamespacesByProperty() {
+function createNativeVariableNamespacesByProperty(runtime: CSSLanguageRuntime) {
     const namespacesByProperty = new Map<string, string[]>()
-    for (const namespace of builtinNativeValueNamespaces) {
+    for (const namespace of runtime.builtinNativeValueNamespaces) {
         const variableNamespaces = (namespace.variableAliasRefs || [])
             .map((ref) => ref[0] === '=' || ref[0] === '~' ? ref.slice(1) : '')
             .filter(Boolean)
@@ -217,7 +224,10 @@ function createNativeVariableNamespacesByProperty() {
     return namespacesByProperty
 }
 
-export function createCompletionIndex(css: MasterCSS = createDefaultCSS()): CompletionIndex {
+export function createCompletionIndex(
+    css: MasterCSS = createDefaultCSS(),
+    runtime: CSSLanguageRuntime = defaultCSSLanguageRuntime
+): CompletionIndex {
     const componentNames: string[] = []
     const utilityNames: string[] = []
     const nativeUtilityKeys = new Map<string, string>()
@@ -226,17 +236,17 @@ export function createCompletionIndex(css: MasterCSS = createDefaultCSS()): Comp
     const animationUtilitiesByKey = new Map<string, AnimationUtilityCandidate[]>()
 
     for (const utility of css.definedUtilities) {
-        const staticNames = utility.type === UtilityType.Semantic ? utilityNames : undefined
+            const staticNames = utility.type === runtime.UtilityType.Semantic ? utilityNames : undefined
         for (const matcher of utility.matchers) {
             if (matcher.type === 'static') {
                 staticNames?.push(matcher.name)
-                if (utility.type === UtilityType.Semantic && utility.layer === 'components') {
+                if (utility.type === runtime.UtilityType.Semantic && utility.layer === 'components') {
                     componentNames.push(matcher.name)
                 }
             } else if (matcher.type === 'pattern') {
                 const patternNames = matcher.values.map((value) => matcher.prefix + value)
                 utilityNames.push(...patternNames)
-                if (utility.type === UtilityType.Semantic && utility.layer === 'components') {
+                if (utility.type === runtime.UtilityType.Semantic && utility.layer === 'components') {
                     componentNames.push(...patternNames)
                 }
                 if (matcher.prefix.endsWith(':')) {
@@ -277,14 +287,16 @@ export function createCompletionIndex(css: MasterCSS = createDefaultCSS()): Comp
     }
 
     return {
-        classEntries: collectClassEntries(css),
+        runtime,
+        keyAliases: runtime.builtinKeyAliases,
+        classEntries: collectClassEntries(css, runtime),
         componentNames,
         utilityNames,
         nativeUtilityKeys,
         scopedVariablesByKey,
         patternValuesByKey,
         animationUtilitiesByKey,
-        nativeVariableNamespacesByProperty: createNativeVariableNamespacesByProperty(),
+        nativeVariableNamespacesByProperty: createNativeVariableNamespacesByProperty(runtime),
         variables: Array.from(css.variables.values()),
         pseudoClassNames: getMdnPseudoClassNames(),
         pseudoClassSelectors: createPseudoClassSelectors(css),

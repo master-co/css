@@ -44,7 +44,7 @@ export default function getPseudoClassCompletionItems(css: MasterCSS = createDef
             return {
                 label: name,
                 sortText,
-                documentation: createCSSMarkdownDocumentation(generateCSS([syntax + name.slice(1)], css)),
+                documentation: createCSSMarkdownDocumentation(generateCSS([syntax + name.slice(1)], css, completionIndex.runtime)),
                 kind
             } as CompletionItem
         })
@@ -59,7 +59,7 @@ export default function getPseudoClassCompletionItems(css: MasterCSS = createDef
         if (sortText.endsWith('()')) sortText = 'y' + sortText
         const completionItem: CompletionItem = {
             label,
-            documentation: createCSSMarkdownDocumentation(generateCSS([syntax + label.slice(1)], css)),
+            documentation: createCSSMarkdownDocumentation(generateCSS([syntax + label.slice(1)], css, completionIndex.runtime)),
             sortText,
             kind,
             detail: String(value)

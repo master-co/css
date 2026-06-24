@@ -182,6 +182,14 @@ test('extension bundle keeps vscode external without default import interop', ()
     expect(source).not.toMatch(/import\s+[A-Za-z_$][\w$]*\s*from\s*["']vscode["']/)
 })
 
+test('extension bundle includes workspace language server resolution fallback', () => {
+    const source = readFileSync(extensionPath, 'utf8')
+
+    expect(source).toContain('@master/css-language-server/server')
+    expect(source).toContain('Using workspace language server')
+    expect(source).toContain('Using bundled language server')
+})
+
 test('server bundle keeps expected native runtime imports external', () => {
     const source = readFileSync(serverPath, 'utf8')
     const imports = [...source.matchAll(/\bfrom\s*["']([^"']+)["']/g)].map((match) => match[1])

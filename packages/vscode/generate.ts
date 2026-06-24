@@ -12,7 +12,7 @@ import { createRequire } from 'node:module'
 import { fileURLToPath } from 'node:url'
 
 const pkg = editJsonFile(fileURLToPath(new URL('./package.json', import.meta.url)), { stringify_width: 4 })
-const require = createRequire(import.meta.url)
+const compilerRequire = createRequire(fileURLToPath(new URL('../compiler/package.json', import.meta.url)))
 const MASTER_CSS_GRAMMAR_PATH = './node_modules/@master/css-language/syntaxes/master-css.tmLanguage.json'
 
 pkg.unset('contributes.languages')
@@ -123,4 +123,4 @@ pkg.set('contributes.configuration', {
 
 pkg.save()
 
-copyOrSymlink(join(dirname(require.resolve('css-tree/package.json')), 'data'), fileURLToPath(new URL('./data', import.meta.url)))
+copyOrSymlink(join(dirname(compilerRequire.resolve('css-tree/package.json')), 'data'), fileURLToPath(new URL('./data', import.meta.url)))

@@ -17,7 +17,7 @@ export default function getPseudoElementCompletionItems(css: MasterCSS = createD
             return {
                 label: name,
                 sortText,
-                documentation: createCSSMarkdownDocumentation(generateCSS([syntax + name.slice(2)], css)),
+                documentation: createCSSMarkdownDocumentation(generateCSS([syntax + name.slice(2)], css, completionIndex.runtime)),
                 kind
             } as CompletionItem
         })
@@ -35,7 +35,7 @@ export default function getPseudoElementCompletionItems(css: MasterCSS = createD
         if (sortText.endsWith('()')) sortText = 'z' + sortText
         const completionItem: CompletionItem = {
             label: name,
-            documentation: createCSSMarkdownDocumentation(generateCSS([syntax + name.slice(2)], css)),
+            documentation: createCSSMarkdownDocumentation(generateCSS([syntax + name.slice(2)], css, completionIndex.runtime)),
             sortText,
             kind,
             detail: String(value)

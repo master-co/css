@@ -1,4 +1,4 @@
-import CSSLanguageServer from '@master/css-language-server'
+import CSSLanguageServer from './core'
 
 const server = new CSSLanguageServer(undefined, { verbose: true })
 
