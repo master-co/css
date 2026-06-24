@@ -36,6 +36,13 @@ jsxTester.run('prefer canonical classes', rule, {
             code: `<div class="mt:md mb:md">Axis composition utilities disabled</div>`,
             options: [{ preferCompositionUtilities: false }]
         },
+        {
+            code: `<div class="block@dark@sm">Condition order disabled</div>`,
+            options: [{ preferConditionOrder: false }]
+        },
+        {
+            code: `<div class="block@sm:hover block:focus:hover block@start@sm block@print@sm block@supports(display:grid)@sm">Unsafe suffix order</div>`
+        },
     ],
     invalid: [
         {
@@ -97,6 +104,23 @@ jsxTester.run('prefer canonical classes', rule, {
             ]
         },
         {
+            code: `<div class="block@dark@sm block:hover@dark@sm block!@dark@sm">Condition order</div>`,
+            output: `<div class="block@sm@dark block:hover@sm@dark block!@sm@dark">Condition order</div>`,
+            errors: [
+                { messageId: 'preferClass', data: { actual: 'block@dark@sm', recommended: 'block@sm@dark' } },
+                { messageId: 'preferClass', data: { actual: 'block:hover@dark@sm', recommended: 'block:hover@sm@dark' } },
+                { messageId: 'preferClass', data: { actual: 'block!@dark@sm', recommended: 'block!@sm@dark' } },
+            ]
+        },
+        {
+            code: `<div class="font:16px@dark@sm text-align:center@dark@sm">Condition order with canonical classes</div>`,
+            output: `<div class="font:md@sm@dark text-center@sm@dark">Condition order with canonical classes</div>`,
+            errors: [
+                { messageId: 'preferClass', data: { actual: 'font:16px@dark@sm', recommended: 'font:md@sm@dark' } },
+                { messageId: 'preferClass', data: { actual: 'text-align:center@dark@sm', recommended: 'text-center@sm@dark' } },
+            ]
+        },
+        {
             code: `<div class="w:md h:md min-w:md min-h:md max-w:md max-h:md">Composition utilities</div>`,
             output: `<div class="size:md min-size:md max-size:md">Composition utilities</div>`,
             errors: [
@@ -113,6 +137,13 @@ jsxTester.run('prefer canonical classes', rule, {
                 { messageId: 'preferClass', data: { actual: 'ml:md mr:md', recommended: 'mx:md' } },
                 { messageId: 'preferClass', data: { actual: 'pt:md pb:md', recommended: 'py:md' } },
                 { messageId: 'preferClass', data: { actual: 'pl:md pr:md', recommended: 'px:md' } },
+            ]
+        },
+        {
+            code: `<div class="mt:md@dark@sm mb:md@dark@sm">Axis composition with condition order</div>`,
+            output: `<div class="my:md@sm@dark">Axis composition with condition order</div>`,
+            errors: [
+                { messageId: 'preferClass', data: { actual: 'mt:md@dark@sm mb:md@dark@sm', recommended: 'my:md@sm@dark' } },
             ]
         },
         {
@@ -135,6 +166,14 @@ jsxTester.run('prefer canonical classes', rule, {
             ]
         },
         {
+            code: `clsx('block@dark@sm font:16px@dark@sm')`,
+            output: `clsx('block@sm@dark font:md@sm@dark')`,
+            errors: [
+                { messageId: 'preferClass', data: { actual: 'block@dark@sm', recommended: 'block@sm@dark' } },
+                { messageId: 'preferClass', data: { actual: 'font:16px@dark@sm', recommended: 'font:md@sm@dark' } },
+            ]
+        },
+        {
             code: `clsx('width:md height:md')`,
             output: `clsx('size:md')`,
             errors: [
@@ -154,6 +193,13 @@ jsxTester.run('prefer canonical classes', rule, {
             errors: [
                 { messageId: 'preferClass', data: { actual: 'font:1rem', recommended: 'font:md' } },
                 { messageId: 'preferClass', data: { actual: 'r:.375rem', recommended: 'r:md' } },
+            ]
+        },
+        {
+            code: 'ctl(`block:hover@dark@sm`)',
+            output: 'ctl(`block:hover@sm@dark`)',
+            errors: [
+                { messageId: 'preferClass', data: { actual: 'block:hover@dark@sm', recommended: 'block:hover@sm@dark' } },
             ]
         },
         {
@@ -208,9 +254,27 @@ jsxTester.run('prefer canonical classes parser smoke tests', rule, {
             }
         },
         {
+            code: `<template><div class="block@dark@sm">Vue condition</div></template>`,
+            output: `<template><div class="block@sm@dark">Vue condition</div></template>`,
+            errors: [{ messageId: 'preferClass', data: { actual: 'block@dark@sm', recommended: 'block@sm@dark' } }],
+            filename: 'test.vue',
+            languageOptions: {
+                parser: await import('vue-eslint-parser')
+            }
+        },
+        {
             code: `<div class="ml:md mr:md">Svelte</div>`,
             output: `<div class="mx:md">Svelte</div>`,
             errors: [{ messageId: 'preferClass', data: { actual: 'ml:md mr:md', recommended: 'mx:md' } }],
+            filename: 'test.svelte',
+            languageOptions: {
+                parser: await import('svelte-eslint-parser')
+            }
+        },
+        {
+            code: `<div class="block@dark@sm">Svelte condition</div>`,
+            output: `<div class="block@sm@dark">Svelte condition</div>`,
+            errors: [{ messageId: 'preferClass', data: { actual: 'block@dark@sm', recommended: 'block@sm@dark' } }],
             filename: 'test.svelte',
             languageOptions: {
                 parser: await import('svelte-eslint-parser')
@@ -225,6 +289,14 @@ jsxTester.run('prefer canonical classes parser smoke tests', rule, {
             }
         },
         {
+            code: `<div class="block@dark@sm">Angular condition</div>`,
+            output: `<div class="block@sm@dark">Angular condition</div>`,
+            errors: [{ messageId: 'preferClass', data: { actual: 'block@dark@sm', recommended: 'block@sm@dark' } }],
+            languageOptions: {
+                parser: await import('@angular-eslint/template-parser')
+            }
+        },
+        {
             code: `
             # Test
             <div class="pl:md pr:md">MDX</div>`,
@@ -232,6 +304,19 @@ jsxTester.run('prefer canonical classes parser smoke tests', rule, {
             # Test
             <div class="px:md">MDX</div>`,
             errors: [{ messageId: 'preferClass', data: { actual: 'pl:md pr:md', recommended: 'px:md' } }],
+            filename: 'test.mdx',
+            languageOptions: {
+                parser: await import('eslint-mdx')
+            }
+        },
+        {
+            code: `
+            # Test
+            <div class="block@dark@sm">MDX condition</div>`,
+            output: `
+            # Test
+            <div class="block@sm@dark">MDX condition</div>`,
+            errors: [{ messageId: 'preferClass', data: { actual: 'block@dark@sm', recommended: 'block@sm@dark' } }],
             filename: 'test.mdx',
             languageOptions: {
                 parser: await import('eslint-mdx')

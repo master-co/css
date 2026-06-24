@@ -201,9 +201,27 @@ describe('canonical class suggestions', () => {
         expect(suggestCanonicalClassName('fg:var(--color-red-60)', css)).toBe('fg:red-60')
     })
 
+    test('suggests canonical condition suffix order', () => {
+        expect(suggestCanonicalClassName('block@dark@sm', css)).toBe('block@sm@dark')
+        expect(suggestCanonicalClassName('block:hover@dark@sm', css)).toBe('block:hover@sm@dark')
+        expect(suggestCanonicalClassName('block!@dark@sm', css)).toBe('block!@sm@dark')
+        expect(suggestCanonicalClassName('font:16px@dark@sm', css)).toBe('font:md@sm@dark')
+        expect(suggestCanonicalClassName('text-align:center@dark@sm', css)).toBe('text-center@sm@dark')
+    })
+
     test('does not suggest partial multi-value or unknown variable tokens', () => {
         expect(suggestCanonicalClassName('m:1rem|1.125rem', css)).toBeUndefined()
         expect(suggestCanonicalClassName('m:var(--spacing-unknown)', css)).toBeUndefined()
+    })
+
+    test('does not suggest unsafe condition or selector suffix order', () => {
+        expect(suggestCanonicalClassName('block@sm:hover', css)).toBeUndefined()
+        expect(suggestCanonicalClassName('block:focus:hover', css)).toBeUndefined()
+        expect(suggestCanonicalClassName('block@start@sm', css)).toBeUndefined()
+        expect(suggestCanonicalClassName('block@print@sm', css)).toBeUndefined()
+        expect(suggestCanonicalClassName('block@supports(display:grid)@sm', css)).toBeUndefined()
+        expect(suggestCanonicalClassName('font:error@dark@sm', css)).toBeUndefined()
+        expect(suggestCanonicalClassName('unknown-class@dark@sm', css)).toBeUndefined()
     })
 
     test('respects canonical suggestion options', () => {
@@ -227,6 +245,10 @@ describe('canonical class suggestions', () => {
             ...defaultCanonicalClassNameOptions,
             preferMultiValueTokens: false
         })).toBeUndefined()
+        expect(suggestCanonicalClassName('block@dark@sm', css, {
+            ...defaultCanonicalClassNameOptions,
+            preferConditionOrder: false
+        })).toBeUndefined()
     })
 
     test('does not suggest component-layer semantic utilities', () => {
@@ -241,6 +263,7 @@ describe('canonical class suggestions', () => {
             ]
         }))
         expect(suggestCanonicalClassName('btn', componentCSS)).toBeUndefined()
+        expect(suggestCanonicalClassName('btn@dark@sm', componentCSS)).toBeUndefined()
     })
 })
 
@@ -293,6 +316,9 @@ describe('canonical class group suggestions', () => {
         ])
         expect(suggestCanonicalClassGroups(['padding-left:1rem', 'padding-right:1rem'], css)).toEqual([
             { classNames: ['padding-left:1rem', 'padding-right:1rem'], recommended: 'px:md' }
+        ])
+        expect(suggestCanonicalClassGroups(['mt:md@dark@sm', 'mb:md@dark@sm'], css)).toEqual([
+            { classNames: ['mt:md@dark@sm', 'mb:md@dark@sm'], recommended: 'my:md@sm@dark' }
         ])
     })
 

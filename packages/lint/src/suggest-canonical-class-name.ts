@@ -13,9 +13,9 @@ import { splitMasterCSSTopLevel } from '@master/css-lexer'
 import UtilityType from '@master/css-schema/utility-type'
 import type { Variable } from '@master/css-schema/css-syntax'
 import {
-    equalVariants,
     getDeclarationPropertySignature,
-    getRulesSignature
+    getRulesSignature,
+    stable
 } from './rule-signatures'
 
 export interface CanonicalClassNameOptions {
@@ -25,6 +25,7 @@ export interface CanonicalClassNameOptions {
     preferVariableReferences?: boolean
     preferMultiValueTokens?: boolean
     preferCompositionUtilities?: boolean
+    preferConditionOrder?: boolean
 }
 
 type ResolvedCanonicalClassNameOptions = Required<CanonicalClassNameOptions>
@@ -35,7 +36,8 @@ export const defaultCanonicalClassNameOptions: ResolvedCanonicalClassNameOptions
     preferPropertyAliases: true,
     preferVariableReferences: true,
     preferMultiValueTokens: true,
-    preferCompositionUtilities: true
+    preferCompositionUtilities: true,
+    preferConditionOrder: true
 }
 
 export type ClassParts = Pick<MasterCSSClassInspection, 'base' | 'suffix' | 'key' | 'value'>
@@ -263,14 +265,20 @@ function getCandidateKeysForPropertySignature(index: RecommendationIndex, signat
     ].filter(Boolean)
 }
 
-function hasSameRuleShape(sourceRules: GeneratedRule[], candidateRules: GeneratedRule[]) {
+function hasSameRuleScope(sourceRule: GeneratedRule, candidateRule: GeneratedRule) {
+    return candidateRule.layerName === sourceRule.layerName
+        && candidateRule.mode === sourceRule.mode
+        && stable(candidateRule.atRules) === stable(sourceRule.atRules)
+        && stable(candidateRule.selectorNodes) === stable(sourceRule.selectorNodes)
+}
+
+function hasSameCanonicalRuleShape(sourceRules: GeneratedRule[], candidateRules: GeneratedRule[]) {
     if (sourceRules.length !== candidateRules.length) return false
     const remaining = [...candidateRules]
     for (const sourceRule of sourceRules) {
         const index = remaining.findIndex((candidateRule) =>
-            candidateRule.layerName === sourceRule.layerName
+            hasSameRuleScope(sourceRule, candidateRule)
             && getDeclarationPropertySignature(candidateRule) === getDeclarationPropertySignature(sourceRule)
-            && equalVariants(candidateRule, sourceRule)
         )
         if (index === -1) return false
         remaining.splice(index, 1)
@@ -278,10 +286,58 @@ function hasSameRuleShape(sourceRules: GeneratedRule[], candidateRules: Generate
     return true
 }
 
-function createCandidate(candidateBase: string, parts: ClassParts, order: number): RecommendationCandidate | undefined {
-    if (!candidateBase || candidateBase === parts.base) return
+function getSafeBreakpointTokenName(token: string, css: MasterCSS) {
+    const match = /^(?:[<>]=?)?([A-Za-z0-9_-]+)$/.exec(token)
+    if (!match) return
+    const name = match[1]
+    if (!css.breakpointAtRules.has(name)) return
+    return name
+}
+
+function getCanonicalConditionStateToken(stateToken: string | undefined, css: MasterCSS) {
+    if (!stateToken?.includes('@')) return
+
+    const parts = splitMasterCSSTopLevel(stateToken, '@')
+    if (parts.length <= 2) return
+
+    const selectorPrefix = stateToken.slice(parts[0].start, parts[0].end)
+    const conditions = parts.slice(1).map(({ start, end }) => stateToken.slice(start, end))
+    if (conditions.some((condition) => !condition)) return
+
+    let mode: string | undefined
+    const breakpointConditions: string[] = []
+    for (const condition of conditions) {
+        const isMode = css.modes.includes(condition)
+        const isBreakpoint = Boolean(getSafeBreakpointTokenName(condition, css))
+        if (isMode && isBreakpoint) return
+        if (isMode) {
+            if (mode) return
+            mode = condition
+            continue
+        }
+        if (!isBreakpoint) return
+        breakpointConditions.push(condition)
+    }
+
+    if (!mode || !breakpointConditions.length) return
+
+    const canonicalStateToken = selectorPrefix + [...breakpointConditions, mode].map((condition) => `@${condition}`).join('')
+    if (canonicalStateToken === stateToken) return
+    return canonicalStateToken
+}
+
+function getCanonicalConditionSuffix(parts: MasterCSSClassInspection, css: MasterCSS, options: ResolvedCanonicalClassNameOptions) {
+    if (!options.preferConditionOrder) return parts.suffix
+    if (parts.rules.some((rule) => rule.layerName !== 'utilities')) return parts.suffix
+    const canonicalStateToken = getCanonicalConditionStateToken(parts.stateToken, css)
+    if (!canonicalStateToken) return parts.suffix
+    return (parts.important ? '!' : '') + canonicalStateToken
+}
+
+function createCandidate(candidateBase: string, parts: ClassParts, order: number, suffix = parts.suffix): RecommendationCandidate | undefined {
+    if (!candidateBase || (candidateBase === parts.base && suffix === parts.suffix)) return
     return {
-        className: candidateBase + parts.suffix,
+        className: candidateBase + suffix,
         order
     }
 }
@@ -301,11 +357,12 @@ export default function suggestCanonicalClassName(
 
     const index = getRecommendationIndex(css)
     const parts: ClassInspectionParts = sourceInspection
+    const canonicalSuffix = getCanonicalConditionSuffix(sourceInspection, css, resolvedOptions)
     const candidates: RecommendationCandidate[] = []
 
     if (resolvedOptions.preferStaticUtilities) {
         for (const candidateBase of index.staticCandidatesBySignature.get(getRulesSignature(sourceRules)) || []) {
-            const candidate = createCandidate(candidateBase, parts, 0)
+            const candidate = createCandidate(candidateBase, parts, 0, canonicalSuffix)
             if (candidate) candidates.push(candidate)
         }
     }
@@ -318,7 +375,7 @@ export default function suggestCanonicalClassName(
                 const propertySignature = getDeclarationPropertySignature(rule)
                 for (const key of getVariableCandidateKeys(index, propertySignature, parts.key, variableMatch, resolvedOptions.preferPropertyAliases)) {
                     for (const variableKey of variableMatch.keys) {
-                        const candidate = createCandidate(`${key}:${variableKey}`, parts, 1)
+                        const candidate = createCandidate(`${key}:${variableKey}`, parts, 1, canonicalSuffix)
                         if (candidate) candidates.push(candidate)
                     }
                 }
@@ -329,12 +386,15 @@ export default function suggestCanonicalClassName(
             for (const property of Object.keys(sourceRules[0]?.declarations || {})) {
                 if (parts.key !== property) continue
                 for (const alias of index.preferredAliasesByProperty.get(property) || []) {
-                    const candidate = createCandidate(`${alias}:${parts.value}`, parts, 2)
+                    const candidate = createCandidate(`${alias}:${parts.value}`, parts, 2, canonicalSuffix)
                     if (candidate) candidates.push(candidate)
                 }
             }
         }
     }
+
+    const conditionCandidate = createCandidate(parts.base, parts, 3, canonicalSuffix)
+    if (conditionCandidate) candidates.push(conditionCandidate)
 
     const uniqueCandidates = [...new Map(candidates.map((candidate) => [candidate.className, candidate])).values()]
         .sort((a, b) => a.order - b.order || a.className.length - b.className.length || a.className.localeCompare(b.className))
@@ -342,7 +402,7 @@ export default function suggestCanonicalClassName(
     for (const candidate of uniqueCandidates) {
         if (candidate.className === className) continue
         const candidateRules = css.generate(candidate.className)
-        if (!candidateRules.length || !hasSameRuleShape(sourceRules, candidateRules)) continue
+        if (!candidateRules.length || !hasSameCanonicalRuleShape(sourceRules, candidateRules)) continue
         return candidate.className
     }
 }

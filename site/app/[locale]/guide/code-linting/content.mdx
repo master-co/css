@@ -21,7 +21,7 @@ export default [
 | `@master/css/sort-classes` | `warn` | Yes | Sort classes into a stable generated-rule order. |
 | `@master/css/no-invalid-classes` | `error` | No | Report invalid Master CSS syntax and invalid generated CSS. |
 | `@master/css/no-conflicting-classes` | `warn` | Yes | Report full and partial declaration conflicts in the same variant scope. |
-| `@master/css/prefer-canonical-classes` | `warn` | Yes | Prefer semantic utilities, theme tokens, property aliases, and composition utilities. |
+| `@master/css/prefer-canonical-classes` | `warn` | Yes | Prefer semantic utilities, theme tokens, property aliases, composition utilities, and condition order. |
 
 ---
 
@@ -106,6 +106,13 @@ w:md h:md mt:md mb:md padding-left:1rem padding-right:1rem <!-- [!code --] -->
 size:md my:md px:md <!-- [!code ++] -->
 ```
 
+Condition suffixes are kept in a stable order for safe breakpoint and mode combinations:
+
+```mcss
+block@dark@sm font:16px@dark@sm mt:md@dark@sm mb:md@dark@sm <!-- [!code --] -->
+block@sm@dark font:md@sm@dark my:md@sm@dark <!-- [!code ++] -->
+```
+
 | Option | Default | Effect |
 | --- | --- | --- |
 | `preferStaticUtilities` | `true` | Prefer named or semantic utilities such as `text-center` over native declaration forms. |
@@ -114,6 +121,7 @@ size:md my:md px:md <!-- [!code ++] -->
 | `preferVariableReferences` | `true` | Prefer token keys such as `fg:red-60` over direct references such as `fg:var(--color-red-60)`. |
 | `preferMultiValueTokens` | `true` | Prefer tokenized multi-value forms such as `m:md|lg` over equivalent raw segments. |
 | `preferCompositionUtilities` | `true` | Prefer composed utilities such as `size:md` over equivalent `w:md h:md` pairs. |
+| `preferConditionOrder` | `true` | Prefer stable condition suffix order such as `@sm@dark` over `@dark@sm`. |
 
 Disable one family when a team wants a more literal authoring style:
 

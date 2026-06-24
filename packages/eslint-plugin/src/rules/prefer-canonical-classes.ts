@@ -30,6 +30,7 @@ export default createRule({
                 preferVariableReferences: { type: 'boolean' },
                 preferMultiValueTokens: { type: 'boolean' },
                 preferCompositionUtilities: { type: 'boolean' },
+                preferConditionOrder: { type: 'boolean' },
             },
             additionalProperties: false
         }]
