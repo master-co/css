@@ -33,6 +33,20 @@ In the past, you added utility classes to your templates unsafely, lacking the c
 ```
 This is helpful if you make a typo or are unfamiliar with Master CSS syntax!
 
+### Class recommendation
+Native declaration classes and raw values are useful while exploring, but teams often want the committed code to use the most recognizable Master CSS form.
+
+(i) With the `@master/css/class-recommendation` rule, ESLint can prefer semantic utilities, theme tokens, and short aliases.
+```html
+<!-- @MARK text-align:center font:16px margin:md -->
+<h1 class="text-align:center font:16px margin:md">…</h1>
+```
+(o) Fix this @master/css/class-recommendation problem.
+```html
+<!-- @MARK text-center font:md m:md -->
+<h1 class="text-center font:md m:md">…</h1>
+```
+
 ### Disallow unknown classes
 You can also restrict teams to using [theme](/guide/theme) and [component classes](/guide/reusing-styles#component-classes) instead of defining classes through traditional `html <style>` or CSS files.
 

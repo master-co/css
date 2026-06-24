@@ -138,6 +138,38 @@ export default [
 ]
 ```
 
+### `@master/css/class-recommendation`
+
+Prefers recommended Master CSS class forms, including semantic utilities, theme tokens, and short aliases.
+
+```js
+export default [
+    {
+        rules: {
+            '@master/css/class-recommendation': 'warn'
+        }
+    }
+]
+```
+
+For example, this rule can fix `text-align:center` to `text-center`, `font:16px` to `font:md`, and `margin:md` to `m:md`.
+
+You can disable specific recommendation families:
+
+```js
+export default [
+    {
+        rules: {
+            '@master/css/class-recommendation': ['warn', {
+                preferStaticUtilities: true,
+                preferVariables: true,
+                preferKeyAliases: true
+            }]
+        }
+    }
+]
+```
+
 ### `@master/css/class-collision`
 
 Detects classes that emit the same CSS declaration.

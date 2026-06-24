@@ -1,6 +1,6 @@
 import Features from 'internal/components/Features'
 import Feature from 'internal/components/Feature'
-import { IconStatusChange, IconSettingsExclamation, IconArrowMerge, IconShieldCheck, IconPencilExclamation, IconFunction } from '@tabler/icons-react'
+import { IconStatusChange, IconSettingsExclamation, IconShieldCheck, IconPencilExclamation, IconFunction, IconSparkles } from '@tabler/icons-react'
 import Link from 'internal/components/Link'
 
 export default () => (
@@ -17,6 +17,13 @@ export default () => (
             <div>
                 <p className='text:lg!'><Link href="#syntax-error-checks">Syntax error checks</Link></p>
                 <p>Detect syntax errors early when writing classes</p>
+            </div>
+        </Feature>
+        <Feature>
+            <IconSparkles className="app-icon-primary" />
+            <div>
+                <p className='text:lg!'><Link href="#class-recommendation">Class recommendation</Link></p>
+                <p>Prefer semantic utilities, theme tokens, and short aliases</p>
             </div>
         </Feature>
         <Feature>

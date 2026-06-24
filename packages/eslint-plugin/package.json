@@ -53,6 +53,7 @@
     },
     "dependencies": {
         "@master/css": "workspace:^",
+        "@master/css-engine": "workspace:^",
         "@master/css-project": "workspace:^",
         "@master/css-preset": "workspace:^",
         "@master/css-validator": "workspace:^",
