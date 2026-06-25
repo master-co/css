@@ -60,8 +60,8 @@ export function ShadowTokenTable() {
                 <table>
                     <thead>
                         <tr>
-                            <th>Class</th>
                             <th>Variable</th>
+                            <th>Class</th>
                             <th>Role</th>
                         </tr>
                     </thead>
@@ -69,10 +69,10 @@ export function ShadowTokenTable() {
                         {rows.map(({ key, token, utility, role, description }) => (
                             <tr key={key}>
                                 <td>
-                                    <InlineCode className="white-space:nowrap">{utility}</InlineCode>
+                                    <InlineCode className="white-space:nowrap">{token}</InlineCode>
                                 </td>
                                 <td>
-                                    <InlineCode className="white-space:nowrap">{token}</InlineCode>
+                                    <InlineCode className="white-space:nowrap">{utility}</InlineCode>
                                 </td>
                                 <td>
                                     {role}, {description}
@@ -90,9 +90,9 @@ export function ShadowScaleDemo() {
     return (
         <Demo>
             <div className="container w:full">
-                <div className="grid-cols:1 gap:lg w:full grid-cols:2@container(2xs) grid-cols:3@container(md)">
+                <div className="grid-cols:1 gap:xl w:full grid-cols:2@container(2xs)">
                     {getShadowRows().map(({ key, utility, role, description }) => (
-                        <div className={`surface:raised r:lg p:md ${utility}`} key={key}>
+                        <div className={`surface:raised r:lg p:lg ${utility}`} key={key}>
                             <DemoLabel>{utility}</DemoLabel>
                             <div className="font:medium text:strong">{role}</div>
                             <p className="mx:0 mb:0 mt:xs text:sm text:muted">{description}</p>
