@@ -18,6 +18,35 @@ test('proxies size with a px value and restores the placeholder in generated dec
     assert.doesNotMatch(restored, /100000000px/)
 })
 
+test('restores syntax placeholders without styling the whole text token', () => {
+    const placeholders = createSyntaxTrPlaceholderContext()
+    const proxy = placeholders.proxy('mt:`size`')
+    assert.equal(proxy, 'mt:100000000px')
+
+    const root: SyntaxTrHastNode = {
+        type: 'root',
+        children: [{
+            type: 'element',
+            tagName: 'span',
+            properties: { class: 'syntax-token' },
+            children: [{ type: 'text', value: proxy }]
+        }]
+    }
+
+    placeholders.restoreTextNodes(root)
+
+    const token = root.children?.[0]
+    const placeholder = token?.children?.[1]
+
+    assert.equal(collectText(root), 'mt:<size>')
+    assert.equal(token?.properties?.class, 'syntax-token')
+    assert.deepEqual(token?.children?.[0], { type: 'text', value: 'mt:' })
+    assert.equal(placeholder?.type, 'element')
+    assert.equal(placeholder?.tagName, 'span')
+    assert.equal(placeholder?.properties?.class, 'text:muted italic mr:0.125rem:not(:last)')
+    assert.equal(collectText(placeholder ?? {}), '<size>')
+})
+
 test('proxies length without a unit and restores length and color placeholders', () => {
     const placeholders = createSyntaxTrPlaceholderContext()
     const proxy = placeholders.proxy('text-stroke:`length`|`color`')

@@ -7,9 +7,11 @@ const COLOR_PROXY = '#12345678'
 const HEX_PROXY = '123456'
 const ANGLE_PROXY = '45deg'
 const TIME_PROXY = '1s'
+const PLACEHOLDER_CLASS = 'text:muted italic mr:0.125rem:not(:last)'
 
 export type SyntaxTrHastNode = {
     type?: string
+    tagName?: string
     value?: string
     children?: SyntaxTrHastNode[]
     properties?: Record<string, unknown>
@@ -59,13 +61,14 @@ export function createSyntaxTrPlaceholderContext() {
             .replace(/`([^`]+)`/g, (match, placeholder, offset) => createPlaceholderProxy(placeholder, value, offset))
     }
     const restoreTextNodes = (root: SyntaxTrHastNode) => {
-        const entries: { node: SyntaxTrTextNode, parent?: SyntaxTrHastNode, start: number, end: number }[] = []
+        const entries: { node: SyntaxTrTextNode, parent?: SyntaxTrHastNode, index: number, start: number, end: number }[] = []
         let text = ''
         const visit = (node: SyntaxTrHastNode, parent?: SyntaxTrHastNode) => {
             if (node.type === 'text' && typeof node.value === 'string') {
                 const start = text.length
                 text += node.value
-                entries.push({ node: node as SyntaxTrTextNode, parent, start, end: text.length })
+                const index = parent?.children?.indexOf(node) ?? -1
+                entries.push({ node: node as SyntaxTrTextNode, parent, index, start, end: text.length })
                 return
             }
 
@@ -100,9 +103,22 @@ export function createSyntaxTrPlaceholderContext() {
         if (!replacements.length) return
 
         replacements.sort((a, b) => a.start - b.start || b.end - b.start - (a.end - a.start))
-        for (const entry of entries) {
-            let value = ''
+        for (let entryIndex = entries.length - 1; entryIndex >= 0; entryIndex--) {
+            const entry = entries[entryIndex]
+            const nodes: SyntaxTrHastNode[] = []
             let cursor = entry.start
+            const pushText = (value: string) => {
+                if (value) nodes.push({ type: 'text', value })
+            }
+            const pushPlaceholder = (value: string) => {
+                nodes.push({
+                    type: 'element',
+                    tagName: 'span',
+                    properties: { class: PLACEHOLDER_CLASS },
+                    children: [{ type: 'text', value }]
+                })
+            }
+
             for (const replacement of replacements) {
                 if (replacement.end <= entry.start) continue
                 if (replacement.start >= entry.end) break
@@ -112,24 +128,31 @@ export function createSyntaxTrPlaceholderContext() {
                 }
 
                 if (replacement.start >= cursor) {
-                    value += text.slice(cursor, replacement.start)
+                    pushText(text.slice(cursor, replacement.start))
                 }
 
                 if (replacement.start >= entry.start && replacement.start < entry.end) {
-                    value += replacement.value
-                    if (entry.parent?.properties) {
-                        entry.parent.properties.class = 'text:muted italic mr:0.125rem:not(:last)'
-                    }
+                    pushPlaceholder(replacement.value)
                 }
 
                 cursor = Math.max(cursor, Math.min(replacement.end, entry.end))
             }
-            value += text.slice(cursor, entry.end)
-            entry.node.value = value
+            pushText(text.slice(cursor, entry.end))
+
+            if (entry.parent?.children && entry.index !== -1) {
+                entry.parent.children.splice(entry.index, 1, ...nodes)
+            } else {
+                entry.node.value = nodes.map(collectText).join('')
+            }
         }
     }
 
     return { proxy, restoreTextNodes }
+}
+
+function collectText(node: SyntaxTrHastNode): string {
+    if (node.type === 'text') return node.value ?? ''
+    return node.children?.map(collectText).join('') ?? ''
 }
 
 function escapeRegExp(value: string) {
