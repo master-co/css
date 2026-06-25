@@ -8,11 +8,6 @@ const MAX_VISIBLE_UTILITIES = 8
 
 const namespaceEntries = (() => {
     const entries = new Map<string, string[]>()
-    for (const variable of flattenMasterCSSManifestVariables(defaultManifest.variables)) {
-        if (variable.namespace) {
-            addNamespaceSource(entries, variable.namespace, 'theme tokens')
-        }
-    }
     for (const namespace of builtinNativeValueNamespaces) {
         for (const ref of namespace.variableAliasRefs || []) {
             const variableNamespace = ref.replace(/^[=~]/, '')
@@ -37,14 +32,12 @@ export default function VariableNamespaceSources() {
                     <thead>
                         <tr>
                             <th>Namespace</th>
-                            <th>Source</th>
                             <th>Used by</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
                             <th><InlineCode>breakpoint</InlineCode></th>
-                            <td>Built-in condition namespace</td>
                             <td>
                                 <InlineCode>@md</InlineCode>
                                 {', '}
@@ -57,7 +50,6 @@ export default function VariableNamespaceSources() {
                             namespaceEntries.map(([namespace, utilityNames]) => (
                                 <tr key={namespace}>
                                     <th><InlineCode>{`${namespace}-*`}</InlineCode></th>
-                                    <td>Default registry namespace</td>
                                     <td>{renderUtilityNames(utilityNames)}</td>
                                 </tr>
                             ))
