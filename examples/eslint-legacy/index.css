@@ -1,4 +1,4 @@
-@master;
+@import '@master/css';
 
 @layer components {
     .btn {
