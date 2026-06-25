@@ -1,21 +1,19 @@
 import buildingImg from '~/site/public/building.jpg';
 
 <Demo>
-    <div className="surface:base max-w:90x r:lg overflow:hidden shadow:lg outline:1px|solid|base">
+    <div className="surface:base max-w:90x r:lg overflow:hidden shadow:lg">
         <Image src={buildingImg} width="640" height="320" className="aspect-ratio:16/9 object-cover" alt="Typography" />
         <div className="p:lg">
             <div className="uppercase text:blue font:semibold text:2xs tracking:widest mb:3xs">Architectural</div>
-            <div className="text:neutral font:medium text:md">Future-proof infrastructure</div>
-            <div className="text:gray text:sm line-clamp:3 mt:3xs">From typography to spacing, every detail is intentionally designed to provide visual harmony, adaptability, and intuitive customization across your entire site.</div>
+            <div className="text:strong font:medium text:md">Future-proof infrastructure</div>
+            <div className="text:body text:sm line-clamp:3 mt:3xs">From typography to spacing, every detail is intentionally designed to provide visual harmony, adaptability, and intuitive customization across your entire site.</div>
         </div>
     </div>
 </Demo>
 ```html
-…
-<div class="uppercase font:semibold text:2xs tracking:widest …">Architectural</div>
-<div class="font:medium text:md …">Future-proof infrastructure</div>
-<div class="text:sm …">
+<div class="uppercase font:semibold text:2xs tracking:widest">Architectural</div>
+<div class="font:medium text:md text:strong">Future-proof infrastructure</div>
+<div class="text:body text:sm line-clamp:3">
     From typography to spacing, every...
 </div>
-…
 ```

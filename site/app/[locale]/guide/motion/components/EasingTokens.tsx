@@ -1,20 +1,29 @@
+import InlineCode from '~/internal/components/InlineCode'
 import { getThemeVariables } from '~/site/utils/theme-variables'
 
-const easingUsage: Record<string, string> = {
-    smooth: 'Balanced movement',
-    soft: 'Gentle reveal',
-    crisp: 'Quick, polished feedback',
-    snap: 'Firm settling',
-    accelerate: 'Leaving the screen',
-    decelerate: 'Entering the screen',
-    overshoot: 'Playful scale or position',
-    rewind: 'Pulled-back exits',
-    spring: 'Expressive emphasis'
+const easingDescriptions: Record<string, string> = {
+    smooth: 'Balanced movement for common UI transitions.',
+    soft: 'Gentle reveals and quiet fades.',
+    crisp: 'Quick feedback with a polished finish.',
+    snap: 'Firm settling for compact controls.',
+    accelerate: 'Exits or elements leaving the screen.',
+    decelerate: 'Entrances or elements arriving on screen.',
+    overshoot: 'Playful scale or position emphasis.',
+    rewind: 'Pulled-back exits and reversals.',
+    spring: 'Expressive emphasis; use sparingly.'
 }
 
-export default () => {
-    const easingEntries = getThemeVariables('easing')
-        .map(({ key, value }) => [key, String(value)] as const)
+export function EasingTokenTable() {
+    const rows = getThemeVariables('easing').map(({ key, value }) => {
+        const name = String(key)
+        return {
+            key: name,
+            token: `--easing-${name}`,
+            utility: `animation-timing-function:${name}`,
+            value: String(value),
+            description: easingDescriptions[name]
+        }
+    })
 
     return (
         <figure>
@@ -23,20 +32,24 @@ export default () => {
                     <thead>
                         <tr>
                             <th>Token</th>
-                            <th>Value</th>
-                            <th>Use for</th>
+                            <th>Class</th>
+                            <th>Role / Description</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {
-                            easingEntries.map(([key, value]) => (
-                                <tr key={key}>
-                                    <th>{key}</th>
-                                    <td><code>{value}</code></td>
-                                    <td>{easingUsage[key]}</td>
-                                </tr>
-                            ))
-                        }
+                        {rows.map(({ key, token, utility, value, description }) => (
+                            <tr key={key}>
+                                <td className="white-space:nowrap">
+                                    <InlineCode className="white-space:nowrap">{token}</InlineCode>
+                                </td>
+                                <td>
+                                    <InlineCode className="white-space:nowrap">{utility}</InlineCode>
+                                </td>
+                                <td>
+                                    <InlineCode className="white-space:nowrap">{value}</InlineCode> {description}
+                                </td>
+                            </tr>
+                        ))}
                     </tbody>
                 </table>
             </div>

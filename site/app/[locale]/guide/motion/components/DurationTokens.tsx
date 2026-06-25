@@ -1,20 +1,27 @@
+import InlineCode from '~/internal/components/InlineCode'
 import { getThemeVariables } from '~/site/utils/theme-variables'
 
-const durationUsage: Record<string, string> = {
-    fastest: 'Pressed states, tiny feedback',
-    faster: 'Quick exits and icon feedback',
-    fast: 'Popovers, fades, short entrances',
-    slow: 'Default UI movement',
-    slower: 'Panels, drawers, larger reveals',
-    slowest: 'Ambient or emphasized motion'
+const durationDescriptions: Record<string, string> = {
+    fastest: 'Micro feedback such as pressed states and tiny affordances.',
+    faster: 'Quick exits, icon feedback, and very short state changes.',
+    fast: 'Popovers, fades, short entrances, and hover feedback.',
+    normal: 'Default interaction transitions when no stronger rhythm is needed.',
+    slow: 'Standard UI movement and visible state changes.',
+    slower: 'Panels, drawers, and larger reveals.',
+    slowest: 'Ambient or emphasized motion that should be used sparingly.'
 }
 
-const getDurationNumber = (value: string) => Number(value.replace('ms', ''))
-
-export default () => {
-    const durationEntries = getThemeVariables('duration')
-        .map(({ key, value }) => [key, String(value)] as const)
-    const maxDuration = Math.max(...durationEntries.map(([, value]) => getDurationNumber(value)))
+export function DurationTokenTable() {
+    const rows = getThemeVariables('duration').map(({ key, value }) => {
+        const name = String(key)
+        return {
+            key: name,
+            token: `--duration-${name}`,
+            utility: `animation-duration:${name}`,
+            value: String(value),
+            description: durationDescriptions[name]
+        }
+    })
 
     return (
         <figure>
@@ -23,33 +30,24 @@ export default () => {
                     <thead>
                         <tr>
                             <th>Token</th>
-                            <th>Value</th>
-                            <th>Use for</th>
+                            <th>Class</th>
+                            <th>Role / Description</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {
-                            durationEntries.map(([key, value]) => {
-                                const duration = getDurationNumber(value)
-                                return (
-                                    <tr key={key}>
-                                        <th>{key}</th>
-                                        <td>
-                                            <div className="inline-flex items-center gap:sm w:full">
-                                                <span>{value}</span>
-                                                <div className="rel overflow:hidden h:1x w:14x rounded bg:line-subtle">
-                                                    <div
-                                                        className="abs left:0 top:0 h:full rounded bg:primary/.45"
-                                                        style={{ width: `${duration / maxDuration * 100}%` }}
-                                                    />
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td>{durationUsage[key]}</td>
-                                    </tr>
-                                )
-                            })
-                        }
+                        {rows.map(({ key, token, utility, value, description }) => (
+                            <tr key={key}>
+                                <td className="white-space:nowrap">
+                                    <InlineCode className="white-space:nowrap">{token}</InlineCode>
+                                </td>
+                                <td>
+                                    <InlineCode className="white-space:nowrap">{utility}</InlineCode>
+                                </td>
+                                <td>
+                                    <InlineCode className="white-space:nowrap">{value}</InlineCode> {description}
+                                </td>
+                            </tr>
+                        ))}
                     </tbody>
                 </table>
             </div>

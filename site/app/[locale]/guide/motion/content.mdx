@@ -1,146 +1,78 @@
-## Using animations [sr-only]
-[CSS animations](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_animations) interpolate styles over time with [`@keyframes`](https://developer.mozilla.org/en-US/docs/Web/CSS/@keyframes) and animation properties. Master CSS keeps motion close to the element with `animate:` tokens, native `animation:` shorthand syntax, managed `@theme` keyframes, shared duration tokens, shared easing tokens, and conditional queries such as `@motion`.
+import { AnimationTokenTable } from './components/AnimationTokens'
+import { DurationTokenTable } from './components/DurationTokens'
+import { EasingTokenTable } from './components/EasingTokens'
 
-The default preset provides duration and easing scales plus common animation recipes such as `fade`, `ping`, `pulse`, `rotate`, and `zoom`. Override or add shared animation names and keyframes in your project CSS entry when your product needs different motion decisions.
+## Overview [sr-only]
+Motion explains what changed, where attention should go, and whether an action is still in progress. In CSS, that often means [animations](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_animations), [transitions](https://developer.mozilla.org/en-US/docs/Web/CSS/transition), and [`@keyframes`](https://developer.mozilla.org/en-US/docs/Web/CSS/@keyframes), but the design decision comes first: use motion to give feedback, preserve continuity, clarify hierarchy, or reduce surprise.
 
-```css name=index.css
-@theme {
-    --animate-fade: fade 180ms both;
-    --animate-zoom: zoom 300ms both;
-
-    @keyframes fade {
-        from { opacity: 0; }
-        to { opacity: 1; }
-    }
-
-    @keyframes zoom {
-        from { transform: scale(.92); opacity: 0; }
-        to { transform: scale(1); opacity: 1; }
-    }
-}
-```
-
-```html
-<!-- @MARK animation:ping|slow|ease-out|infinite -->
-<span class="animation:ping|slow|ease-out|infinite@motion"></span>
-```
-
-<details>
-    <summary>Generated CSS</summary>
-    <Class2CSS>
-        {['animation:ping|slow|ease-out|infinite@motion']}
-    </Class2CSS>
-</details>
-
-Use motion foundations to answer three questions:
-
-* What should move? Use a managed keyframe such as `fade`, `pulse`, `zoom`, or your own animation name.
-* How long should it take? Use the duration scale from `fastest` to `slowest`.
-* How should it move? Use native timing functions or a custom easing token such as `smooth`, `crisp`, or `overshoot`.
+Master CSS keeps those decisions close to the element with `animate:*` recipes, native `animation:*` and `transition:*` shorthands, shared `duration` tokens, shared `easing` tokens, managed `@theme` keyframes, and motion preference conditions such as `@motion` and `@reduce-motion`.
 
 <Demo>
     <div className="container w:full">
         <div className="grid grid-cols:1 grid-cols:2@container(3xs) gap:md w:full">
-            <div className="surface:base r:lg p:lg b:1px|solid|base">
+            <div className="surface:base r:lg p:lg shadow:xs">
                 <DemoLabel>animation:fade|slow|smooth</DemoLabel>
-                <div className="animation:fade|slow|smooth|infinite|alternate@motion size:14x r:lg bg:blue-5 b:1px|solid|blue-30"></div>
+                <div className="animation:fade|slow|smooth|infinite|alternate@motion size:14x r:lg bg:blue-5"></div>
             </div>
-            <div className="surface:base r:lg p:lg b:1px|solid|base">
+            <div className="surface:base r:lg p:lg shadow:xs">
                 <DemoLabel>animation:zoom|fast|overshoot</DemoLabel>
-                <div className="animation:zoom|fast|overshoot|infinite|alternate@motion size:14x r:lg bg:green-5 b:1px|solid|green-30"></div>
+                <div className="animation:zoom|fast|overshoot|infinite|alternate@motion size:14x r:lg bg:green-5"></div>
             </div>
         </div>
     </div>
 </Demo>
 
+---
+
+## Choose motion tokens
+Start with the job of the motion, then choose the smallest recipe, duration, and curve that communicates it. Most product UI needs short, quiet motion; long loops and large movement should be reserved for progress, live status, or expressive moments.
+
+### Animation recipes
+Animation tokens package a named animation recipe. Use `animate:*` when the preset or project token should own the full animation value.
+
+<AnimationTokenTable />
+
+`animate:*` resolves to `animation: var(--animate-*)`, so updating the token changes every element using that recipe.
+
+### Duration scale
+Duration tokens describe rhythm. They are shared by animation and transition utilities, so the same token can make an entrance, hover state, delay, or transition feel like part of one system.
+
+<DurationTokenTable />
+
+### Easing scale
+Easing tokens describe the curve. Use custom easing tokens for product motion language and native CSS values such as `linear`, `ease-in-out`, `steps()`, or `cubic-bezier()` when a one-off curve is clearer.
+
+<EasingTokenTable />
+
+---
+
+## Use motion tokens
+Use `animate:<token>` when the full recipe should come from an `--animate-*` token.
+
 ```html
-<!-- @MARK animation:fade|slow|smooth -->
-<div class="animation:fade|slow|smooth"></div>
-<!-- @MARK animation:zoom|fast|overshoot -->
-<div class="animation:zoom|fast|overshoot"></div>
+<!-- @MARK animate:fade -->
+<div class="animate:fade"></div>
+
+<!-- @MARK animate:zoom -->
+<div class="animate:zoom"></div>
 ```
 
 <details>
     <summary>Generated CSS</summary>
     <Class2CSS>
-        {['animation:fade|slow|smooth', 'animation:zoom|fast|overshoot']}
+        {['animate:fade', 'animate:zoom']}
     </Class2CSS>
 </details>
 
----
-
-## Duration tokens
-The `duration` namespace is intentionally named with the `fast` and `slow` families so the token remains readable in shorthands such as `animation:fade|fast|smooth` and `transition:opacity|faster|crisp`. Use duration tokens directly with `animation-duration`:
-<DurationTokens />
-
-```html
-<!-- @MARK animation-duration:fast -->
-<div class="animation-duration:fast"></div>
-```
-
-<details>
-    <summary>Generated CSS</summary>
-    <Class2CSS>
-        {['animation-duration:fast', 'animation-duration:slowest']}
-    </Class2CSS>
-</details>
-
----
-
-## Easing tokens
-The `easing` namespace only includes custom curves. Native CSS values such as `linear`, `ease`, `ease-in`, `ease-out`, `ease-in-out`, `step-start`, `step-end`, `steps()`, and `cubic-bezier()` can be written directly when you need them.
-<EasingTokens />
-
-```html
-<!-- @MARK animation-timing-function:crisp -->
-<div class="animation-timing-function:crisp"></div>
-
-<!-- Native CSS timing functions stay native. -->
-<div class="animation:fade|slow|ease-in-out"></div>
-<div class="animation:fade|slow|steps(4,end)"></div>
-```
-
-<details>
-    <summary>Generated CSS</summary>
-    <Class2CSS>
-        {['animation-timing-function:crisp', 'animation-timing-function:overshoot', 'animation:fade|slow|ease-in-out']}
-    </Class2CSS>
-</details>
-
----
-
-## Namespace for motion
-The `duration` and `easing` variable namespaces are shared across related rules:
-<MotionHeirs />
-This lets animation and transition use the same motion language without writing the `duration-` or `easing-` prefix in markup. Master CSS ships duration and easing defaults; add extra duration tokens when your product needs named delay decisions.
-
-```css name=index.css
-@theme {
-    --duration-fast: 150ms;
-    --duration-slow: 300ms;
-    --duration-slower: 500ms;
-    --duration-stagger: 120ms;
-    --easing-smooth: cubic-bezier(.4,0,.2,1);
-    --easing-crisp: cubic-bezier(.16,1,.3,1);
-}
-```
-
-Apply the custom motion tokens in your markup:
-```html
-<!-- @MARK animation-duration:fast --><!-- @MARK animation-timing-function:smooth --><!-- @MARK transition:opacity|fast|crisp -->
-<div class="animation-duration:fast animation-timing-function:smooth transition-delay:stagger transition:opacity|fast|crisp">...</div>
-```
-
----
-
-## Use animation shorthands
-Use the `animation:` shorthand when the animation name, duration, easing, direction, iteration count, fill mode, or delay should travel together.
+Use native `animation:*` shorthand when the animation name, duration, easing, direction, iteration count, fill mode, or delay should be visible in markup.
 
 ```html
 <!-- @MARK animation:fade|fast|smooth -->
 <div class="animation:fade|fast|smooth"></div>
+
 <!-- @MARK animation:rotate|slowest|linear|infinite -->
 <svg class="animation:rotate|slowest|linear|infinite@motion">...</svg>
+
 <!-- @MARK animation:zoom|faster|overshoot|both -->
 <div class="animation:zoom|faster|overshoot|both"></div>
 ```
@@ -152,18 +84,33 @@ Use the `animation:` shorthand when the animation name, duration, easing, direct
     </Class2CSS>
 </details>
 
-For long-lived UI, prefer readable token combinations over raw values. Keep raw durations for one-off timing that does not belong in the design system.
+Use explicit property utilities when only one part of the motion should change.
+
+```html
+<!-- @MARK animation-duration:fast --><!-- @MARK animation-timing-function:crisp -->
+<div class="animation-duration:fast animation-timing-function:crisp"></div>
+```
+
+<details>
+    <summary>Generated CSS</summary>
+    <Class2CSS>
+        {['animation-duration:fast', 'animation-timing-function:crisp']}
+    </Class2CSS>
+</details>
 
 ---
 
 ## Use transition shorthands
-Use the `transition:` shorthand for transitions. The property, duration, easing, and delay will travel together, but the transition only runs on state change instead of automatically like an animation.
+Use `transition:*` for state changes. The property, duration, easing, and delay travel together, but the motion only runs when the state changes.
+
 ```html
 <!-- @MARK transition:opacity|fast|smooth -->
-<div class="transition:opacity|fast|smooth">...</div>
+<button class="transition:opacity|fast|smooth">Save</button>
+
 <!-- @MARK transition:transform|slow|overshoot|150ms -->
 <div class="transition:transform|slow|overshoot|150ms">...</div>
 ```
+
 <details>
     <summary>Generated CSS</summary>
     <Class2CSS>
@@ -171,49 +118,90 @@ Use the `transition:` shorthand for transitions. The property, duration, easing,
     </Class2CSS>
 </details>
 
+Duration and easing namespaces are shared across `animation-duration`, `animation-delay`, `transition-duration`, `transition-delay`, `animation-timing-function`, `transition-timing-function`, `animation:*`, and `transition:*`. Keep the token names readable because they appear inside shorthand class names.
+
 ---
 
-## Use motion conditions
+## Respect motion preference
 Use `@motion` for non-essential motion so it only runs when the user has not asked the system to reduce motion.
 
 ```html
-<!-- @MARK @motion -->
-<div class="animation:pulse|slowest|ease-in-out|infinite@motion"></div>
+<!-- @MARK animate:pulse@motion -->
+<span class="animate:pulse@motion"></span>
 ```
 
 Use `@reduce-motion` to replace motion-heavy effects with a simpler state.
 
 ```html
-<!-- @MARK animation-duration:fast@motion --><!-- @MARK opacity:1@reduce-motion -->
-<div class="animation:fade|fast|smooth@motion opacity:1@reduce-motion"></div>
+<!-- @MARK animation:zoom|fast|overshoot@motion --><!-- @MARK animation:none@reduce-motion --><!-- @MARK translate:0@reduce-motion -->
+<div class="animation:zoom|fast|overshoot@motion animation:none@reduce-motion translate:0@reduce-motion"></div>
 ```
 
 <details>
     <summary>Generated CSS</summary>
     <Class2CSS>
-        {['animation:pulse|slowest|ease-in-out|infinite@motion', 'animation:fade|fast|smooth@motion', 'opacity:1@reduce-motion']}
+        {['animate:pulse@motion', 'animation:zoom|fast|overshoot@motion', 'animation:none@reduce-motion', 'translate:0@reduce-motion']}
     </Class2CSS>
 </details>
+
+Treat reduced motion as a parallel state, not an afterthought. Keep essential feedback visible through opacity, color, text, layout, or an instant end state when movement is removed.
 
 ---
 
 ## Customize motion tokens
-Override motion tokens in the project CSS entry when your product needs a different rhythm. Keep duration and easing keys distinct because the namespaces are shared by animation and transition utilities.
+Override motion tokens in the project CSS entry when your product needs a different rhythm. Keep duration and easing names distinct because both namespaces are shared by animation and transition utilities.
 
 ```css name=index.css
 @theme {
-    --duration-fast: 120ms;
-    --duration-slow: 280ms;
-    --duration-slowest: 700ms;
-    --duration-stagger: 120ms;
-    --easing-smooth: cubic-bezier(.4,0,.2,1);
-    --easing-crisp: cubic-bezier(.2,0,0,1);
+    --duration-enter: 180ms;
+    --duration-exit: 120ms;
+    --easing-standard: cubic-bezier(.4, 0, .2, 1);
+    --easing-emphasized: cubic-bezier(.16, 1, .3, 1);
+    --animate-dialog-in: dialog-in var(--duration-enter) var(--easing-emphasized) both;
+
+    @keyframes dialog-in {
+        from { translate: 0 0.5rem; opacity: 0; }
+        to { translate: 0; opacity: 1; }
+    }
 }
 ```
 
 ```html
-<!-- @MARK animation:fade|fast|smooth --><!-- @MARK transition:opacity|fast|crisp -->
-<div class="animation:fade|fast|smooth transition:opacity|fast|crisp"></div>
+<!-- @MARK animate:dialog-in --><!-- @MARK transition:opacity|exit|standard -->
+<dialog class="animate:dialog-in transition:opacity|exit|standard"></dialog>
 ```
 
-Avoid adding easing tokens named `fast`, `slow`, or `slowest`; those names belong to duration. Avoid adding duration tokens named `smooth`, `crisp`, or `overshoot`; those names belong to easing.
+Use named tokens for repeated motion decisions. Keep raw durations and raw curves for one-off timing that does not belong in the system yet.
+
+---
+
+## Avoid motion noise
+(x) Everything loops, moves far, and uses playful easing.
+
+```html
+<button class="animation:jump|slowest|spring|infinite">Save</button>
+```
+
+(o) The element moves only when the state change needs feedback.
+
+```html
+<button class="transition:transform|fast|crisp">Save</button>
+```
+
+(x) Duration and easing names overlap.
+
+```css
+@theme {
+    --duration-smooth: 200ms;
+    --easing-fast: cubic-bezier(.4, 0, .2, 1);
+}
+```
+
+(o) Names keep their namespace meaning clear.
+
+```css
+@theme {
+    --duration-fast: 150ms;
+    --easing-smooth: cubic-bezier(.4, 0, .2, 1);
+}
+```
