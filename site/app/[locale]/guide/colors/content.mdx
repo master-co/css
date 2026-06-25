@@ -1,22 +1,17 @@
 import { BaseHueDemo, CanvasDemo, LineRolesDemo, SurfacesDemo, TextHueDemo, TextRolesDemo } from './components/PresetThemeColors'
 
-## Default color palette [sr-only]
+## Overview [sr-only]
 
-Master CSS provides a P3-compatible raw palette, preset light and dark color aliases, canvas and surface roles, line roles, text roles, and text hue aliases.
+Master CSS color tokens cover fixed palette steps, preset UI roles, and mode-aware hue aliases. Use palette steps when you need an exact swatch. Use preset roles for the repeated color decisions that define application structure, text hierarchy, and light or dark mode behavior.
 
-<ColorPalette />
+## Choose a color token
+Start with the kind of decision you are making. Most app chrome should use roles first, then reach for palette steps or hue aliases when the color itself is the point.
 
-Each preset color family ranges from `0`, `5`, `10`, and then by tens through `100`. Choose a palette step directly for swatches, illustrations, and intentional brand or status accents.
-
-```html
-<!-- @MARK bg:blue-5 --><!-- @MARK fg:blue-60 -->
-<div class="bg:blue-5 fg:blue-60">…</div>
-```
-
----
-
-## Preset mode-aware colors
-The default preset ships mode-aware aliases for foundational UI color decisions. Palette steps such as `blue-60` stay fixed, while aliases such as `blue`, `text:body`, `text:blue`, `canvas`, `surface:base`, and `b:base` resolve to different preset references in light and dark modes.
+| Decision | Use | Examples |
+| --- | --- | --- |
+| Fixed swatch | Palette steps | `bg:blue-5`, `fg:blue-60` |
+| App structure and hierarchy | Preset roles | `bg:canvas`, `surface:base`, `b:base`, `text:body` |
+| Mode-aware hue choice | Hue aliases | `bg:blue`, `fg:blue`, `text:blue` |
 
 ```html
 <!-- @MARK bg:canvas --><!-- @MARK text:body --><!-- @MARK surface:base --><!-- @MARK b:1px|solid|base --><!-- @MARK text:strong --><!-- @MARK text:muted --><!-- @MARK text:link -->
@@ -29,8 +24,27 @@ The default preset ships mode-aware aliases for foundational UI color decisions.
 </main>
 ```
 
+---
+
+## Default color palette
+The preset palette is a P3-compatible set of fixed color families. Each family ranges from `0`, `5`, `10`, and then by tens through `100`.
+
+<ColorPalette />
+
+Choose palette steps directly for swatches, illustrations, brand accents, and status-color foundations. For page backgrounds, surfaces, lines, and text hierarchy, use preset roles so the same markup can adapt across modes.
+
+```html
+<!-- @MARK bg:blue-5 --><!-- @MARK fg:blue-60 -->
+<div class="bg:blue-5 fg:blue-60">…</div>
+```
+
+---
+
+## Preset color roles
+Preset roles describe the job a color performs in the interface. Their values are mode-aware, so `bg:canvas`, `surface:base`, `b:base`, and `text:body` can stay stable while light and dark modes choose different underlying colors.
+
 ### Canvas
-Canvas is the page or app background role. Use it with the regular background color shorthand.
+Canvas is the root page or app background role. Use it with the regular background color shorthand.
 
 <PresetThemeColors group="canvas" />
 <CanvasDemo />
@@ -41,7 +55,7 @@ Canvas is the page or app background role. Use it with the regular background co
 ```
 
 ### Surfaces
-Surface tokens are for panels, cards, floating layers, and inverse blocks. Use the dedicated surface shorthand so only surface roles match.
+Surface tokens are for panels, cards, floating layers, and inverse blocks. Use the dedicated `surface:*` shorthand so only surface roles match.
 
 <PresetThemeColors group="surfaces" />
 <SurfacesDemo />
@@ -52,7 +66,7 @@ Surface tokens are for panels, cards, floating layers, and inverse blocks. Use t
 ```
 
 ### Line roles
-Line tokens are for borders, dividers, outlines, and strokes. `base` is the default line role, and border and outline utilities search the `color-line` namespace before the general `color` namespace.
+Line tokens are for borders, dividers, outlines, and strokes. `base` is the default line role. Border, outline, and stroke utilities search line roles before the general color palette.
 
 <PresetThemeColors group="lineRoles" />
 <LineRolesDemo />
@@ -63,7 +77,7 @@ Line tokens are for borders, dividers, outlines, and strokes. `base` is the defa
 ```
 
 ### Text roles
-Text role tokens are for common foreground hierarchy and interaction states.
+Text roles are for foreground hierarchy and interaction states. Prefer these roles for body copy, emphasis, disabled content, links, and inverse surfaces instead of using hue aliases as text hierarchy.
 
 <PresetThemeColors group="textRoles" />
 <TextRolesDemo />
@@ -79,8 +93,13 @@ Text role tokens are for common foreground hierarchy and interaction states.
 </article>
 ```
 
+---
+
+## Mode-aware hue aliases
+Hue aliases are shortcuts for choosing a color family while still letting the preset select a light or dark value. Use them when the hue itself matters; use roles when the color is describing structure or text hierarchy.
+
 ### Base hue aliases
-Base hue aliases are mode-aware shortcuts for common color choices. Use palette steps when you need a fixed swatch instead.
+Base hue aliases work for backgrounds and foregrounds when you want a named hue that adapts across modes. Use palette steps when you need a fixed swatch instead.
 
 <PresetThemeColors group="baseHue" />
 <BaseHueDemo />
@@ -96,7 +115,7 @@ Use base hue aliases for foreground when you want a mode-aware color choice.
 ```
 
 ### Text hue aliases
-Text hue aliases choose foreground-oriented palette steps for light and dark modes.
+Text hue aliases choose foreground-oriented palette steps for light and dark modes. They are useful for colored text, but they do not replace semantic text roles such as `text:body`, `text:muted`, or `text:link`.
 
 <PresetThemeColors group="textHue" />
 <TextHueDemo />
@@ -106,10 +125,10 @@ Text hue aliases choose foreground-oriented palette steps for light and dark mod
 <div class="text:yellow">M</div>
 ```
 
-### Customize color roles
-Palette steps are raw swatches. Preset roles are the product-facing layer that lets the same markup adapt across light and dark modes.
+---
 
-Override role tokens when a repeated UI decision needs product-specific colors. Keep the classes semantic so components do not need separate light and dark color choices.
+## Customize color roles
+Override preset role tokens when a repeated UI decision needs product-specific colors. Keep markup semantic so components do not need separate light and dark color classes.
 
 ```css name=index.css
 @theme light {
@@ -140,4 +159,4 @@ Override role tokens when a repeated UI decision needs product-specific colors. 
 </main>
 ```
 
-Use `@theme {}` for fixed project roles that do not change by mode. Use `@theme light` and `@theme dark` when the same role needs different values.
+Use `@theme {}` when a preset role should keep the same value in every mode. Use `@theme light` and `@theme dark` when the same role needs mode-specific values.

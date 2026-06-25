@@ -2,7 +2,7 @@ import define from 'internal/utils/metadata'
 
 const metadata = define({
     title: 'Colors',
-    description: 'Use palette steps, canvas, surface, line, and text roles, plus mode-aware hue and text aliases.',
+    description: 'Choose palette steps, preset color roles, and mode-aware hue aliases for light and dark UI.',
     category: 'Design Foundations',
     fileURL: import.meta.url
 })
