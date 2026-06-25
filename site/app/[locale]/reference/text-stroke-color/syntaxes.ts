@@ -1,7 +1,7 @@
 const syntaxes = [
-    'text-stroke:current',
-    'text-stroke:transparent',
-    ['text-stroke:`color`'],
+    'text-stroke-color:current',
+    'text-stroke-color:transparent',
+    ['text-stroke-color:`color`'],
 ]
 
 export default syntaxes

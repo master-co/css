@@ -13,6 +13,9 @@ const syntaxes = [
     'br:transparent',
     'bx:transparent',
     'by:transparent',
+    'border-color:currentColor',
+    'border-color:transparent',
+    ['border-color:`color`'],
     ['b:`color`'],
 ]
 
