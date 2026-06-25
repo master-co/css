@@ -19,24 +19,16 @@ The role of each token should stay stable across modes. Light and dark recipes c
 ---
 
 ## Pair elevation with color roles
-Elevation needs a visible ground. Pair shadows with `bg:canvas`, `surface:*`, `text:*`, and radius tokens so depth reads correctly in light and dark themes.
+Elevation needs a visible ground. Pair shadows with `surface:*`, `text:*`, and radius tokens so depth reads correctly in light and dark themes.
 
 <SurfaceElevationDemo />
 
 ```html
-<!-- @MARK bg:canvas --><!-- @MARK text:body --><!-- @MARK surface:base --><!-- @MARK surface:raised --><!-- @MARK surface:overlay --><!-- @MARK shadow:sm --><!-- @MARK shadow:lg -->
-<main class="bg:canvas text:body">
-    <section class="surface:base r:lg">
-        <article class="surface:raised r:lg shadow:sm">
-            <h2 class="text:strong">Raised surface</h2>
-            <p class="text:muted">Cards need a clear surface before they need a large shadow.</p>
-        </article>
-
-        <aside class="surface:overlay r:lg shadow:lg">
-            Detached overlay
-        </aside>
-    </section>
-</main>
+<!-- @MARK shadow:lg -->
+<article class="surface:raised r:lg shadow:lg">
+    <h2 class="text:strong">Raised surface</h2>
+    <p class="text:muted">Cards need a clear surface before they need a large shadow.</p>
+</article>
 ```
 
 Use surface roles for the ground and shadows for separation. A strong shadow on every panel makes the page noisy, even when the surfaces use different color roles.

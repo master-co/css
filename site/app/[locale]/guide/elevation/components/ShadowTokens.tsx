@@ -106,19 +106,9 @@ export function ShadowScaleDemo() {
 
 function SurfaceStack() {
     return (
-        <div className="grid gap:xl w:full max-w:3xs p:lg r:lg text:body">
-            <div className="p:md r:lg surface:base">
-                <div className="font:medium text:strong">Base surface</div>
-                <p className="mx:0 mb:0 mt:xs text:sm text:muted">Flat content stays grounded on the canvas.</p>
-            </div>
-            <div className="p:md r:lg surface:raised shadow:sm">
-                <div className="font:medium text:strong">Raised surface</div>
-                <p className="mx:0 mb:0 mt:xs text:sm text:muted">Cards use a small shadow on a raised surface.</p>
-            </div>
-            <div className="justify-self:end p:md r:lg surface:overlay shadow:lg w:5/6">
-                <div className="font:medium text:strong">Overlay surface</div>
-                <p className="mx:0 mb:0 mt:xs text:sm text:muted">Popovers detach from the page without changing the markup by mode.</p>
-            </div>
+        <div className="p:xl r:lg surface:raised shadow:lg">
+            <div className="font:medium text:strong text:lg">Raised surface</div>
+            <p className="mx:0 mb:0 mt:xs text:sm text:muted">Cards use a large shadow on a raised surface.</p>
         </div>
     )
 }
@@ -126,10 +116,10 @@ function SurfaceStack() {
 export function SurfaceElevationDemo() {
     return (
         <Demo $py={0} $px={0}>
-            <DemoLight className="grid place-items:center p:lg light">
+            <DemoLight>
                 <SurfaceStack />
             </DemoLight>
-            <DemoDark className="grid place-items:center p:lg dark">
+            <DemoDark>
                 <SurfaceStack />
             </DemoDark>
         </Demo>
