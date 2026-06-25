@@ -60,7 +60,7 @@ export function ShadowTokenTable() {
                 <table>
                     <thead>
                         <tr>
-                            <th>Variable</th>
+                            <th>Token</th>
                             <th>Class</th>
                             <th>Role</th>
                         </tr>
@@ -106,7 +106,7 @@ export function ShadowScaleDemo() {
 
 function SurfaceStack() {
     return (
-        <div className="p:xl r:lg surface:raised shadow:lg">
+        <div className="p:lg r:lg surface:raised shadow:lg">
             <div className="font:medium text:strong text:lg">Raised surface</div>
             <p className="mx:0 mb:0 mt:xs text:sm text:muted">Cards use a large shadow on a raised surface.</p>
         </div>
