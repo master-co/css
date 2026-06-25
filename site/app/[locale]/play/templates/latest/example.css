@@ -1,3 +1,32 @@
 @settings {
     mode-trigger: class;
 }
+
+@theme {
+    --color-master: $color-yellow-40;
+    --color-master-hover: $color-yellow-50;
+    --color-master-ink: $color-yellow-95;
+}
+
+@components {
+    btn {
+        @compose rel w:full h:48px box-border mt:md inline-flex items-center justify-center px:lg bg:master fg:master-ink b:1px|solid|master-hover r:sm font:sm font:medium text-center text-decoration:none transition:all|fast|smooth;
+
+        &:hover {
+            @compose bg:master-hover;
+        }
+
+        &:hover .btn-arrow-line {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+
+    btn-icon {
+        @compose abs right:md;
+    }
+
+    btn-arrow-line {
+        @compose opacity:0 transform:scale(0) transform-origin:5x|center transition:all|fast|smooth;
+    }
+}
