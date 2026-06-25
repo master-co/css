@@ -107,13 +107,13 @@ export default function ArticleTransitionDemo() {
                                 src={article.image}
                             />
                             <div className="flex flex-col flex:1 p:lg">
-                                <time className={clsx(article.dateTransition, sharedTransitionClassName, 'block mb:xs text:xs fg:text')}>
+                                <time className={clsx(article.dateTransition, sharedTransitionClassName, 'block mb:xs text:xs text:body')}>
                                     {article.date}
                                 </time>
                                 <h3 className={clsx(article.titleTransition, sharedTransitionClassName, 'm:0 text:lg font:semibold leading:sm')}>
                                     {article.title}
                                 </h3>
-                                <p className="mx:0 mb:0 mt:sm text:sm fg:text">
+                                <p className="mx:0 mb:0 mt:sm text:sm text:body">
                                     {article.description}
                                 </p>
                                 <button
@@ -138,13 +138,13 @@ export default function ArticleTransitionDemo() {
                         src={selectedArticle.image}
                     />
                     <div className="p:lg p:xl@container(3xs)">
-                        <time className={clsx(selectedArticle.dateTransition, sharedTransitionClassName, 'block mb:sm text:sm fg:text')}>
+                        <time className={clsx(selectedArticle.dateTransition, sharedTransitionClassName, 'block mb:sm text:sm text:body')}>
                             {selectedArticle.date}
                         </time>
                         <h3 className={clsx(selectedArticle.titleTransition, sharedTransitionClassName, 'm:0 text:2xl font:semibold text:3xl@container(3xs)')}>
                             {selectedArticle.title}
                         </h3>
-                        <p className="mx:0 mb:0 mt:md text:md fg:text">
+                        <p className="mx:0 mb:0 mt:md text:md text:body">
                             {selectedArticle.description} The image, title, and date keep the same transition names in both layouts, so the browser can move each snapshot into its new position while the rest of the interface cross-fades around it.
                         </p>
                         <button

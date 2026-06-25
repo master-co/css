@@ -13,7 +13,7 @@ export default function TierModal({ tierState }: { tierState: [any, Dispatch<any
                 {selectedTier.amount && (
                     <div className="text:sm font:bold text:strong">
                         {selectedTier.amount}
-                            <span className="ml:0.313rem text:xs font:regular fg:text">
+                            <span className="ml:0.313rem text:xs font:regular text:body">
                             / {selectedTier.one ? 'one-time' : 'month'}
                         </span>
                     </div>

@@ -1,8 +1,8 @@
-import { BaseHueDemo, CanvasDemo, SurfacesDemo, TextHueDemo } from './components/PresetThemeColors'
+import { BaseHueDemo, CanvasDemo, SurfacesDemo, TextHueDemo, TextRolesDemo } from './components/PresetThemeColors'
 
 ## Default color palette [sr-only]
 
-Master CSS provides a P3-compatible raw palette, preset light and dark color aliases, canvas and surface roles, and text hue aliases.
+Master CSS provides a P3-compatible raw palette, preset light and dark color aliases, canvas and surface roles, text roles, and text hue aliases.
 
 <ColorPalette />
 
@@ -16,13 +16,15 @@ Each preset color family ranges from `0`, `5`, `10`, and then by tens through `1
 ---
 
 ## Preset mode-aware colors
-The default preset ships mode-aware aliases for foundational UI color decisions. Palette steps such as `blue-60` stay fixed, while aliases such as `blue`, `text:blue`, `canvas`, and `surface:base` resolve to different preset references in light and dark modes.
+The default preset ships mode-aware aliases for foundational UI color decisions. Palette steps such as `blue-60` stay fixed, while aliases such as `blue`, `text:body`, `text:blue`, `canvas`, and `surface:base` resolve to different preset references in light and dark modes.
 
 ```html
-<!-- @MARK bg:canvas --><!-- @MARK text:neutral --><!-- @MARK surface:base --><!-- @MARK surface:raised -->
-<main class="bg:canvas text:neutral">
+<!-- @MARK bg:canvas --><!-- @MARK text:body --><!-- @MARK surface:base --><!-- @MARK text:strong --><!-- @MARK text:muted --><!-- @MARK text:link -->
+<main class="bg:canvas text:body">
     <section class="surface:base">
-        <button class="surface:raised text:blue">Continue</button>
+        <h2 class="text:strong">Project updates</h2>
+        <p class="text:muted">Three milestones changed this week.</p>
+        <a class="text:link" href="#">Continue</a>
     </section>
 </main>
 ```
@@ -47,6 +49,23 @@ Surface tokens are for panels, cards, floating layers, and inverse blocks. Use t
 ```html
 <!-- @MARK surface:overlay -->
 <div class="surface:overlay"></div>
+```
+
+### Text roles
+Text role tokens are for common foreground hierarchy and interaction states.
+
+<PresetThemeColors group="textRoles" />
+<TextRolesDemo />
+
+```html
+<!-- @MARK text:body --><!-- @MARK text:strong --><!-- @MARK text:muted --><!-- @MARK text:disabled --><!-- @MARK text:link --><!-- @MARK text:link-hover --><!-- @MARK text:inverse -->
+<article class="text:body">
+    <h2 class="text:strong">Quarterly report</h2>
+    <p class="text:muted">Updated 12 minutes ago</p>
+    <button class="text:disabled" disabled>Archive</button>
+    <a class="text:link text:link-hover:hover" href="#">Open report</a>
+    <span class="surface:inverse text:inverse">Private</span>
+</article>
 ```
 
 ### Base hue aliases

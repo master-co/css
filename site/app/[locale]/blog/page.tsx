@@ -63,7 +63,7 @@ export default async function Page(props: any) {
                                         </div>
                                         <div className='my:-1x font:xl leading:sm text-pretty'>{page.title}</div>
                                         {/* <Image src="/images/gold-pattern.jpg"  className="r:5px aspect-ratio:16/9 h:auto" width={480} height={270} alt={page.title} /> */}
-                                        <div className='mt:auto text:xs text-pretty fg:text'>{page.description}</div>
+                                        <div className='mt:auto text:xs text-pretty text:body'>{page.description}</div>
                                         <AuthorAvatarStack>{page.authors}</AuthorAvatarStack>
                                     </Link>
                                 </div>

@@ -9,7 +9,6 @@
 
 @theme light {
     --color-card: #ffffff;
-    --color-text: $color-neutral-70;
     --color-text-strong: $color-neutral-95;
     --color-line: $color-neutral-20;
     --color-subtle: $color-neutral-10;
@@ -17,7 +16,6 @@
 
 @theme dark {
     --color-card: $color-gray-80;
-    --color-text: $color-gray-30;
     --color-text-strong: $color-gray-0;
     --color-line: $color-white/.14;
     --color-subtle: $color-white/.2;
@@ -35,7 +33,7 @@
     }
 
     card {
-        @compose fg:text m:auto max-w:md mt:lg_:where(p,ul) my:sm_:where(li) outline:1px|solid|subtle r:lg shadow:lg text:sm_:where(p,li);
+        @compose text:body m:auto max-w:md mt:lg_:where(p,ul) my:sm_:where(li) outline:1px|solid|subtle r:lg shadow:lg text:sm_:where(p,li);
         background-color: var(--color-card);
     }
 

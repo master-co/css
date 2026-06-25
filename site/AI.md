@@ -128,8 +128,8 @@ Before changing guide demo layout, spacing, sizing, color, radius, typography, o
 Follow the public Design Tokens policy when writing site code, demos, and examples:
 
 - Prefer configured foundation tokens from `packages/preset/src/theme.css`.
-- Prefer preset palette and text hue aliases such as `fg:blue-60`, `text:blue`, `text:neutral`, `bg:blue`, and `bg:blue-5`.
-- Use semantic role tokens such as `bg:canvas`, `bg:surface`, `text:body`, `b:1px|solid|divider`, `accent`, or `danger` only when the page or project defines those tokens in `@theme`.
+- Prefer preset palette, surface, and text aliases such as `fg:blue-60`, `text:body`, `text:muted`, `text:blue`, `surface:base`, `bg:canvas`, `bg:blue`, and `bg:blue-5`.
+- Use project semantic tokens such as `b:1px|solid|divider`, `accent`, or `danger` only when the page or project defines those tokens in `@theme`.
 - Preserve typography semantics: use `font:<size>` for raw font-size-only replacements, and `text:<size>` only when the complete type treatment is intended.
 - Prefer scale tokens such as `p:sm`, `gap:md`, and `mt:lg` over routine raw spacing, color, shadow, or timing values.
 - Prefer contextual shorthand such as `b:1px|solid|divider`, `text:body`, and `transition:opacity|normal|standard` when the utility already resolves a namespace.

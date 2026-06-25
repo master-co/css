@@ -7,7 +7,7 @@ import InlineCode from '~/internal/components/InlineCode'
 import { getThemeModeVariables } from '~/site/utils/theme-variables'
 
 type PresetThemeColorPreview = 'background' | 'text'
-type PresetThemeColorGroup = 'canvas' | 'surfaces' | 'baseHue' | 'textHue'
+type PresetThemeColorGroup = 'canvas' | 'surfaces' | 'baseHue' | 'textRoles' | 'textHue'
 
 interface PresetThemeColorRow {
     key: string
@@ -48,16 +48,21 @@ const canvasRows = colorRows.filter(({ token }) => token === '--color-canvas')
 const baseHueRows = colorRows.filter(({ token }) => token !== '--color-canvas')
 const surfaceRows = getModeRows('color-surface', (key) => `surface:${key}@light surface:${key}@dark`, 'background')
 const textRows = getModeRows('color-text', (key) => `text:${key}@light text:${key}@dark`, 'text')
+const textRoleKeys = new Set(['body', 'strong', 'muted', 'subtle', 'disabled', 'placeholder', 'inverse', 'link', 'link-hover'])
+const textRoleRows = textRows.filter(({ key }) => textRoleKeys.has(key))
+const textHueRows = textRows.filter(({ key }) => !textRoleKeys.has(key))
 const rowsByGroup = {
     canvas: canvasRows,
     surfaces: surfaceRows,
     baseHue: baseHueRows,
-    textHue: textRows
+    textRoles: textRoleRows,
+    textHue: textHueRows
 } satisfies Record<PresetThemeColorGroup, PresetThemeColorRow[]>
 const columnTitleByGroup = {
     canvas: 'Role',
     surfaces: 'Role',
     baseHue: 'Use for',
+    textRoles: 'Role',
     textHue: 'Use for'
 } satisfies Record<PresetThemeColorGroup, string>
 const canvasDescriptions: Record<string, string> = {
@@ -70,10 +75,22 @@ const surfaceDescriptions: Record<string, string> = {
     overlay: 'Floating layers such as dialogs, popovers, and menus.',
     inverse: 'High-contrast inverse surfaces.'
 }
+const textRoleDescriptions: Record<string, string> = {
+    body: 'Default readable foreground text.',
+    strong: 'Headings, labels, and emphasized foreground text.',
+    muted: 'Secondary copy, metadata, and quiet navigation.',
+    subtle: 'Low-emphasis helper text and placeholder-adjacent content.',
+    disabled: 'Unavailable actions and disabled controls.',
+    placeholder: 'Input placeholders.',
+    inverse: 'Text on inverse surfaces.',
+    link: 'Default inline links.',
+    'link-hover': 'Interactive link hover state.'
+}
 const rowDescriptionByGroup = {
     canvas: (key) => canvasDescriptions[key],
     surfaces: (key) => surfaceDescriptions[key],
     baseHue: (key) => `Mode-aware ${key} for backgrounds and foregrounds.`,
+    textRoles: (key) => textRoleDescriptions[key],
     textHue: (key) => `Mode-aware ${key} foreground text.`
 } satisfies Record<PresetThemeColorGroup, (key: string) => string>
 
@@ -131,6 +148,29 @@ export function TextHueDemo() {
             <DemoDark>
                 <div className="font:9xl font:heavy text:yellow">M</div>
             </DemoDark>
+        </Demo>
+    )
+}
+
+export function TextRolesDemo() {
+    function renderPreview() {
+        return (
+            <div className="grid gap:xs w:full max-w:3xs p:lg r:sm surface:base text:body font:semibold shadow:lg text-center">
+                <div className="font:md font:semibold text:strong">Quarterly report</div>
+                <p className="m:0 text:body">Revenue is on track for the current cycle.</p>
+                <p className="m:0 text:sm text:muted">Updated 12 minutes ago</p>
+                <p className="m:0 text:sm text:disabled">Archived export unavailable</p>
+                {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
+                <a className="text:link text:link-hover:hover underline" href="#">Open report</a>
+                <div className="w:fit px:sm py:xs r:sm mx:auto mt:sm surface:inverse text:inverse">Private note</div>
+            </div>
+        )
+    }
+
+    return (
+        <Demo $py={0} $px={0}>
+            <DemoLight>{renderPreview()}</DemoLight>
+            <DemoDark>{renderPreview()}</DemoDark>
         </Demo>
     )
 }

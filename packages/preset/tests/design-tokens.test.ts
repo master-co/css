@@ -48,14 +48,6 @@ const removedVariableNames = [
     'color-focus',
     'color-selection',
     'color-text',
-    'color-text-strong',
-    'color-text-muted',
-    'color-text-subtle',
-    'color-text-disabled',
-    'color-text-placeholder',
-    'color-text-link',
-    'color-text-link-hover',
-    'color-text-inverse',
     'color-line',
     'color-line-strong',
     'color-line-muted',
@@ -66,6 +58,18 @@ const removedVariableNames = [
     'color-warning',
     'color-danger',
     'color-info'
+] as const
+
+const textRoleAliases = [
+    ['body', '$color-neutral-70', '$color-gray-30'],
+    ['strong', '$color-neutral-100', '$color-white'],
+    ['muted', '$color-neutral-60', '$color-gray-40'],
+    ['subtle', '$color-neutral-50', '$color-gray-50'],
+    ['disabled', '$color-neutral-40', '$color-gray-60'],
+    ['placeholder', '$color-neutral-40', '$color-gray-60'],
+    ['inverse', '$color-white', '$color-black'],
+    ['link', '$color-blue-60', '$color-blue-30'],
+    ['link-hover', '$color-blue-70', '$color-blue-20']
 ] as const
 
 const baseHueAliases = [
@@ -196,7 +200,7 @@ describe.concurrent('@master/css-preset design token parity', () => {
         })
     })
 
-    test('removes product, text role, and expanded hue role tokens from the default preset', () => {
+    test('removes product and expanded hue role tokens from the default preset', () => {
         for (const name of removedVariableNames) {
             expect(findVariable(name), name).toBeUndefined()
         }
@@ -236,11 +240,24 @@ describe.concurrent('@master/css-preset design token parity', () => {
         }
     })
 
-    test('keeps base hue aliases mode-specific without expanded hue aliases', () => {
+    test('keeps base hue, text role, and text hue aliases mode-specific', () => {
         for (const [hue, lightValue, darkValue] of baseHueAliases) {
             expect(findVariable(`color-${hue}`), hue).toMatchObject({
                 namespace: 'color',
                 key: hue,
+                type: 'string',
+                modes: {
+                    light: { type: 'string', value: lightValue },
+                    dark: { type: 'string', value: darkValue }
+                },
+                dependencies: [lightValue.slice(1), darkValue.slice(1)]
+            })
+        }
+
+        for (const [role, lightValue, darkValue] of textRoleAliases) {
+            expect(findVariable(`color-text-${role}`), role).toMatchObject({
+                namespace: 'color-text',
+                key: role,
                 type: 'string',
                 modes: {
                     light: { type: 'string', value: lightValue },
@@ -289,10 +306,13 @@ describe.concurrent('@master/css-preset design token parity', () => {
         expect(css.createRule('text:2xl')?.text).toContain('font-size:var(--font-size-2xl)')
         expect(css.createRule('m:md')?.text).toContain('margin:var(--spacing-md)')
         expect(css.createRule('r:lg')?.text).toContain('border-radius:var(--radius-lg)')
-        expect(css.createRule('text:inverse')).toBeUndefined()
-        expect(css.createRule('text:muted')).toBeUndefined()
+        expect(css.createRule('text:body')?.text).toBe('.text\\:body{color:var(--color-text-body)}')
+        expect(css.createRule('text:muted')?.text).toBe('.text\\:muted{color:var(--color-text-muted)}')
+        expect(css.createRule('text:inverse')?.text).toBe('.text\\:inverse{color:var(--color-text-inverse)}')
+        expect(css.createRule('text:link')?.text).toBe('.text\\:link{color:var(--color-text-link)}')
+        expect(css.createRule('text:link-hover')?.text).toBe('.text\\:link-hover{color:var(--color-text-link-hover)}')
         expect(css.createRule('bg:line')).toBeUndefined()
-        expect(css.createRule('fg:muted')?.text).not.toContain('var(--color-text-muted)')
+        expect(css.createRule('fg:muted')?.text).toBe('.fg\\:muted{color:var(--color-text-muted)}')
         expect(css.createRule('b:subtle')?.text).not.toContain('var(--color-line-subtle)')
         expect(css.createRule('bg:blue-60')?.text).toContain('background-color:var(--color-blue-60)')
         expect(css.createRule('shadow:sm')?.text).toContain('box-shadow:var(--shadow-sm)')
@@ -330,8 +350,8 @@ describe.concurrent('@master/css-preset design token parity', () => {
         manifest.variables = groupMasterCSSManifestVariables([
             ...flattenMasterCSSManifestVariables(manifest.variables),
             {
-                name: 'color-text-body',
-                key: 'body',
+                name: 'color-text-action',
+                key: 'action',
                 namespace: 'color-text',
                 type: 'string',
                 value: '#111'
@@ -347,7 +367,7 @@ describe.concurrent('@master/css-preset design token parity', () => {
 
         const css = createTestCSS(manifest)
 
-        expect(css.createRule('text:body')?.text).toBe('.text\\:body{color:var(--color-text-body)}')
+        expect(css.createRule('text:action')?.text).toBe('.text\\:action{color:var(--color-text-action)}')
         expect(css.createRule('border-color:divider')?.text).toBe('.border-color\\:divider{border-color:var(--color-line-divider)}')
         expect(css.createRule('b:1px|solid|divider')?.text).toBe('.b\\:1px\\|solid\\|divider{border:1px solid var(--color-line-divider)}')
         expect(css.createRule('outline:1px|solid|divider')?.text).toBe('.outline\\:1px\\|solid\\|divider{outline:1px solid var(--color-line-divider)}')
