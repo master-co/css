@@ -49,7 +49,7 @@ export const code2 = `
 `
 
 export const code3 = `
-    <div class="flex transform:translateY(-5px):hover transition:transform|fast|smooth overflow:hidden surface:base b:1px|solid|line r:xl">
+    <div class="flex transform:translateY(-5px):hover transition:transform|fast|smooth overflow:hidden surface:base b:1px|solid|base r:xl">
         <img class="object-cover w:35x aspect-ratio:16/9" … />
         <div class="p:lg">
             <div class="font:lg font:medium">Mountain</div>
@@ -63,7 +63,7 @@ import mountainImage from '~/site/public/images/mountain.jpg'
 A traditional CSS workflow often starts by turning a visual decision into a named class, even before the team knows whether that decision is reusable.
 <Demo>
     <div className="mx:auto max-w:120x">
-        <div className="flex transform:translateY(-5px):hover transition:transform|fast|smooth overflow:hidden surface:base b:1px|solid|line r:xl shadow:sm justify-center items-center">
+        <div className="flex transform:translateY(-5px):hover transition:transform|fast|smooth overflow:hidden surface:base b:1px|solid|base r:xl shadow:sm justify-center items-center">
             <Image className="object-cover aspect-ratio:1/1 flex:0|0|auto" src={mountainImage} placeholder="blur" width={140} height={140} priority={true} alt="Markup-driven CSS Overview" />
             <div className="p:lg">
                 <div className="text:neutral font:lg font:medium">Mountain</div>

@@ -79,7 +79,7 @@ export default function ViewTransitionDemo() {
                                 aria-pressed={activeButton}
                                 className={clsx(
                                     'app-panel min-h:18x p:md text-left cursor:pointer',
-                                    'b:1px|solid|line r:md',
+                                    'b:1px|solid|base r:md',
                                     activeButton ? 'outline:2px|solid|accent surface:base' : 'surface:base:hover'
                                 )}
                                 key={view.id}

@@ -16,12 +16,12 @@ Each preset color family ranges from `0`, `5`, `10`, and then by tens through `1
 ---
 
 ## Preset mode-aware colors
-The default preset ships mode-aware aliases for foundational UI color decisions. Palette steps such as `blue-60` stay fixed, while aliases such as `blue`, `text:body`, `text:blue`, `canvas`, `line`, and `surface:base` resolve to different preset references in light and dark modes.
+The default preset ships mode-aware aliases for foundational UI color decisions. Palette steps such as `blue-60` stay fixed, while aliases such as `blue`, `text:body`, `text:blue`, `canvas`, `surface:base`, and `b:base` resolve to different preset references in light and dark modes.
 
 ```html
-<!-- @MARK bg:canvas --><!-- @MARK text:body --><!-- @MARK surface:base --><!-- @MARK b:1px|solid|line --><!-- @MARK text:strong --><!-- @MARK text:muted --><!-- @MARK text:link -->
+<!-- @MARK bg:canvas --><!-- @MARK text:body --><!-- @MARK surface:base --><!-- @MARK b:1px|solid|base --><!-- @MARK text:strong --><!-- @MARK text:muted --><!-- @MARK text:link -->
 <main class="bg:canvas text:body">
-    <section class="surface:base b:1px|solid|line">
+    <section class="surface:base b:1px|solid|base">
         <h2 class="text:strong">Project updates</h2>
         <p class="text:muted">Three milestones changed this week.</p>
         <a class="text:link" href="#">Continue</a>
@@ -52,14 +52,14 @@ Surface tokens are for panels, cards, floating layers, and inverse blocks. Use t
 ```
 
 ### Line roles
-Line tokens are for borders, dividers, outlines, and strokes. Border and outline utilities search the `color-line` namespace before the general `color` namespace.
+Line tokens are for borders, dividers, outlines, and strokes. `base` is the default line role, and border and outline utilities search the `color-line` namespace before the general `color` namespace.
 
 <PresetThemeColors group="lineRoles" />
 <LineRolesDemo />
 
 ```html
-<!-- @MARK b:5x|solid|line -->
-<div class="b:5x|solid|line"></div>
+<!-- @MARK b:5x|solid|base -->
+<div class="b:5x|solid|base"></div>
 ```
 
 ### Text roles

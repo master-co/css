@@ -48,6 +48,7 @@ const removedVariableNames = [
     'color-focus',
     'color-selection',
     'color-text',
+    'color-line',
     'color-success',
     'color-text-success',
     'color-line-success',
@@ -69,7 +70,7 @@ const textRoleAliases = [
 ] as const
 
 const lineRoleAliases = [
-    ['color-line', 'color', 'line', 'oklch(0% 0 none / .12)', 'oklch(100% 0 none / .12)'],
+    ['color-line-base', 'color-line', 'base', 'oklch(0% 0 none / .12)', 'oklch(100% 0 none / .12)'],
     ['color-line-strong', 'color-line', 'strong', 'oklch(0% 0 none / .18)', 'oklch(100% 0 none / .18)'],
     ['color-line-muted', 'color-line', 'muted', 'oklch(0% 0 none / .09)', 'oklch(100% 0 none / .09)'],
     ['color-line-subtle', 'color-line', 'subtle', 'oklch(0% 0 none / .06)', 'oklch(100% 0 none / .06)']
@@ -326,10 +327,14 @@ describe.concurrent('@master/css-preset design token parity', () => {
         expect(css.createRule('text:inverse')?.text).toBe('.text\\:inverse{color:var(--color-text-inverse)}')
         expect(css.createRule('text:link')?.text).toBe('.text\\:link{color:var(--color-text-link)}')
         expect(css.createRule('text:link-hover')?.text).toBe('.text\\:link-hover{color:var(--color-text-link-hover)}')
-        expect(css.createRule('bg:line')?.text).toBe('.bg\\:line{background-color:var(--color-line)}')
+        expect(css.createRule('bg:line')).toBeUndefined()
+        expect(css.createRule('bg:base')).toBeUndefined()
         expect(css.createRule('fg:muted')?.text).toBe('.fg\\:muted{color:var(--color-text-muted)}')
-        expect(css.createRule('b:line')?.text).toBe('.b\\:line{border-color:var(--color-line)}')
-        expect(css.createRule('b:1px|solid|line')?.text).toBe('.b\\:1px\\|solid\\|line{border:1px solid var(--color-line)}')
+        expect(css.createRule('b:base')?.text).toBe('.b\\:base{border-color:var(--color-line-base)}')
+        expect(css.createRule('b:1px|solid|base')?.text).toBe('.b\\:1px\\|solid\\|base{border:1px solid var(--color-line-base)}')
+        expect(css.createRule('border-color:base')?.text).toBe('.border-color\\:base{border-color:var(--color-line-base)}')
+        expect(css.createRule('outline:1px|solid|base')?.text).toBe('.outline\\:1px\\|solid\\|base{outline:1px solid var(--color-line-base)}')
+        expect(css.createRule('stroke:base')?.text).toBe('.stroke\\:base{stroke:var(--color-line-base)}')
         expect(css.createRule('b:muted')?.text).toBe('.b\\:muted{border-color:var(--color-line-muted)}')
         expect(css.createRule('b:subtle')?.text).toBe('.b\\:subtle{border-color:var(--color-line-subtle)}')
         expect(css.createRule('outline:1px|solid|subtle')?.text).toBe('.outline\\:1px\\|solid\\|subtle{outline:1px solid var(--color-line-subtle)}')

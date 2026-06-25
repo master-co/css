@@ -630,7 +630,7 @@
     --color-surface-inverse: $color-black;
 
     /* Line color aliases */
-    --color-line: oklch(0% 0 none / 0.12);
+    --color-line-base: oklch(0% 0 none / 0.12);
     --color-line-strong: oklch(0% 0 none / 0.18);
     --color-line-muted: oklch(0% 0 none / 0.09);
     --color-line-subtle: oklch(0% 0 none / 0.06);
@@ -713,7 +713,7 @@
     --color-surface-inverse: $color-white;
 
     /* Line color aliases */
-    --color-line: oklch(100% 0 none / 0.12);
+    --color-line-base: oklch(100% 0 none / 0.12);
     --color-line-strong: oklch(100% 0 none / 0.18);
     --color-line-muted: oklch(100% 0 none / 0.09);
     --color-line-subtle: oklch(100% 0 none / 0.06);

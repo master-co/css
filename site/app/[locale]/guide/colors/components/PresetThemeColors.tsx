@@ -45,11 +45,8 @@ const colorRows = getModeRows(
     'background'
 )
 const canvasRows = colorRows.filter(({ token }) => token === '--color-canvas')
-const lineBaseRows = getModeRows('color', (key) => `outline:${key}@light outline:${key}@dark`, 'line')
-    .filter(({ token }) => token === '--color-line')
-const lineVariantRows = getModeRows('color-line', (key) => `outline:${key}@light outline:${key}@dark`, 'line')
-const lineRows = [...lineBaseRows, ...lineVariantRows]
-const baseHueRows = colorRows.filter(({ token }) => token !== '--color-canvas' && token !== '--color-line')
+const lineRows = getModeRows('color-line', (key) => `outline:${key}@light outline:${key}@dark`, 'line')
+const baseHueRows = colorRows.filter(({ token }) => token !== '--color-canvas')
 const surfaceRows = getModeRows('color-surface', (key) => `surface:${key}@light surface:${key}@dark`, 'background')
 const textRows = getModeRows('color-text', (key) => `text:${key}@light text:${key}@dark`, 'text')
 const textRoleKeys = new Set(['body', 'strong', 'muted', 'subtle', 'disabled', 'placeholder', 'inverse', 'link', 'link-hover'])
@@ -82,7 +79,7 @@ const surfaceDescriptions: Record<string, string> = {
     inverse: 'High-contrast inverse surfaces.'
 }
 const lineRoleDescriptions: Record<string, string> = {
-    line: 'Default borders, dividers, outlines, and strokes.',
+    base: 'Default borders, dividers, outlines, and strokes.',
     strong: 'Emphasized boundaries and selected states.',
     muted: 'Quiet separators in dense interfaces.',
     subtle: 'Low-contrast hairlines and soft outlines.'
@@ -142,7 +139,7 @@ export function SurfacesDemo() {
 export function LineRolesDemo() {
     function renderPreview() {
         return (
-                <div className="size:24x b:5x|solid|line r:sm"></div>
+            <div className="size:24x b:5x|solid|base r:sm"></div>
         )
     }
 

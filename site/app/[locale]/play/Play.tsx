@@ -934,7 +934,7 @@ export default function Play({ shareId }: PlayProps = {}) {
                             {sharing && <span className="ml:0.625rem">{$('Sharing ...')}</span>}
                         </button>}
                     <span className='hidden'>{shareError}</span>
-                    {(shareable || copied) && <div className='h:1em w:1px mx:md bg:line hidden@<md'></div>}
+                    {(shareable || copied) && <div className='h:1em w:1px mx:md bg:line-base hidden@<md'></div>}
                     <button className="app-header-icon hidden@<md" onClick={() => pushShallowURL('layout', layout ? '' : '2')}>
                         <svg className={clsx({ 'stroke:accent': !layout || layout === '2' })} xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" strokeWidth="1.2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
                             <path className={clsx(
@@ -968,7 +968,7 @@ export default function Play({ shareId }: PlayProps = {}) {
                         </svg>
                     </button>
                     <span className='hidden'>{layout}</span>
-                    <div className='h:1em w:1px mx:md bg:line hidden@<md'></div>
+                    <div className='h:1em w:1px mx:md bg:line-base hidden@<md'></div>
                     <button className="app-header-icon hidden@<md" onClick={() => pushShallowURL('preview', '')}>
                         <IconDeviceDesktop width="22" height="22" className={clsx(
                             'stroke:1.3',
@@ -988,7 +988,7 @@ export default function Play({ shareId }: PlayProps = {}) {
                         )} />
                     </button>
                     <span className='hidden'>{preview}</span>
-                    <div className='h:1em w:1px mx:md bg:line hidden@<md'></div>
+                    <div className='h:1em w:1px mx:md bg:line-base hidden@<md'></div>
                     <LanguageButton className="app-header-icon hidden@<md" />
                     <ThemeButton className="app-header-icon mr:-3x hidden@<md"
                         onChange={(theme: string) => {
@@ -1086,8 +1086,8 @@ export default function Play({ shareId }: PlayProps = {}) {
                         overlay={false}
                         originX={'center'}
                         showHandler={responsive ? [false, true, true] : false}
-                        className={clsx('full outline:1px|solid|line.resizing', {
-                            'max-size:100% outline:1px|solid|line-muted': responsive
+                        className={clsx('full outline:1px|solid|base.resizing', {
+                            'max-size:100% outline:1px|solid|muted': responsive
                         })}
                         showHeight={true}
                     >

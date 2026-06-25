@@ -10,14 +10,14 @@
 @theme light {
     --color-card: #ffffff;
     --color-text-strong: $color-neutral-95;
-    --color-line: $color-neutral-20;
+    --color-line-base: $color-neutral-20;
     --color-subtle: $color-neutral-10;
 }
 
 @theme dark {
     --color-card: $color-gray-80;
     --color-text-strong: $color-gray-0;
-    --color-line: $color-white/.14;
+    --color-line-base: $color-white/.14;
     --color-subtle: $color-white/.2;
 }
 
@@ -42,7 +42,7 @@
     }
 
     card-footer {
-        @compose bt:1px|dotted|line p:lg p:xl@sm pt:md@sm;
+        @compose bt:1px|dotted|base p:lg p:xl@sm pt:md@sm;
     }
 
     card-logotype {
@@ -62,7 +62,7 @@
     }
 
     btn {
-        @compose inline-flex items-center justify-center rel b:1px|solid|line bg:accent text:on-accent font:sm font:medium h:48px mt:md px:lg r:sm text-center w:full;
+        @compose inline-flex items-center justify-center rel b:1px|solid|base bg:accent text:on-accent font:sm font:medium h:48px mt:md px:lg r:sm text-center w:full;
 
         &:hover .btn-arrow-line {
             @compose transform:scale(1);
