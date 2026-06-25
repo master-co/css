@@ -14,32 +14,32 @@ Start with the surface relationship, then choose the lowest token that makes tha
 
 <ShadowTokenTable />
 
-The role of each token should stay stable across modes. Light and dark recipes can use different opacity, edge, and blur values, but `shadow:sm` should still mean a standard raised surface in both modes.
+The role of each token should stay stable across modes. Light and dark recipes can use different opacity, offset, and blur values, but `shadow:sm` should still mean a standard raised surface in both modes.
 
 ---
 
 ## Pair elevation with color roles
-Elevation needs a visible ground. Pair shadows with `bg:canvas`, `surface:*`, `b:*`, `text:*`, and radius tokens so depth reads correctly in light and dark themes.
+Elevation needs a visible ground. Pair shadows with `bg:canvas`, `surface:*`, `text:*`, and radius tokens so depth reads correctly in light and dark themes.
 
 <SurfaceElevationDemo />
 
 ```html
-<!-- @MARK bg:canvas --><!-- @MARK text:body --><!-- @MARK surface:base --><!-- @MARK surface:raised --><!-- @MARK surface:overlay --><!-- @MARK b:1px|solid|base --><!-- @MARK shadow:sm --><!-- @MARK shadow:lg -->
+<!-- @MARK bg:canvas --><!-- @MARK text:body --><!-- @MARK surface:base --><!-- @MARK surface:raised --><!-- @MARK surface:overlay --><!-- @MARK shadow:sm --><!-- @MARK shadow:lg -->
 <main class="bg:canvas text:body">
-    <section class="surface:base b:1px|solid|base r:lg">
-        <article class="surface:raised b:1px|solid|base r:lg shadow:sm">
+    <section class="surface:base r:lg">
+        <article class="surface:raised r:lg shadow:sm">
             <h2 class="text:strong">Raised surface</h2>
-            <p class="text:muted">Cards need a clear edge before they need a large shadow.</p>
+            <p class="text:muted">Cards need a clear surface before they need a large shadow.</p>
         </article>
 
-        <aside class="surface:overlay b:1px|solid|base r:lg shadow:lg">
+        <aside class="surface:overlay r:lg shadow:lg">
             Detached overlay
         </aside>
     </section>
 </main>
 ```
 
-Use borders for edges and shadows for separation. A low shadow without a border can disappear on a near-matching background, while a strong shadow on every panel makes the page noisy.
+Use surface roles for the ground and shadows for separation. A strong shadow on every panel makes the page noisy, even when the surfaces use different color roles.
 
 ---
 
@@ -48,12 +48,12 @@ Use `shadow:<token>` for common elevation levels. The utility resolves values fr
 
 ```html
 <!-- @MARK shadow:sm -->
-<article class="surface:base b:1px|solid|base r:lg shadow:sm">
+<article class="surface:raised r:lg shadow:sm">
     ...
 </article>
 
 <!-- @MARK shadow:lg -->
-<div class="surface:overlay b:1px|solid|base r:lg shadow:lg">
+<div class="surface:overlay r:lg shadow:lg">
     ...
 </div>
 ```
@@ -130,8 +130,8 @@ Promote repeated raw shadows into the scale. Keep one-off art direction in local
 
 ```html
 <main class="bg:canvas">
-    <section class="surface:base b:1px|solid|base">
-        <article class="surface:raised b:1px|solid|base shadow:sm">...</article>
+    <section class="surface:base">
+        <article class="surface:raised shadow:sm">...</article>
     </section>
 </main>
 ```

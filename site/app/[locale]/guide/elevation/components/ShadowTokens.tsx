@@ -1,3 +1,5 @@
+import DemoDark from 'internal/components/DemoDark'
+import DemoLight from 'internal/components/DemoLight'
 import Demo from '~/internal/components/Demo'
 import DemoLabel from '~/internal/components/DemoLabel'
 import InlineCode from '~/internal/components/InlineCode'
@@ -49,19 +51,6 @@ function getShadowRows() {
     })
 }
 
-function ShadowPreviewCell({ utility }: { utility: string }) {
-    return (
-        <div className="grid-cols:2 gap:xs min-w:28x">
-            <div className="p:sm b:1px|solid|base r:sm bg:canvas light">
-                <div className={`surface:raised r:sm size:8x mx:auto ${utility}`} />
-            </div>
-            <div className="p:sm b:1px|solid|base r:sm bg:canvas dark">
-                <div className={`surface:raised r:sm size:8x mx:auto ${utility}`} />
-            </div>
-        </div>
-    )
-}
-
 export function ShadowTokenTable() {
     const rows = getShadowRows()
 
@@ -73,7 +62,6 @@ export function ShadowTokenTable() {
                         <tr>
                             <th>Token</th>
                             <th>Role</th>
-                            <th>Preview</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -87,9 +75,6 @@ export function ShadowTokenTable() {
                                 <td>
                                     <div className="font:medium text:strong">{role}</div>
                                     <p className="mx:0 mb:0 mt:xs text:sm text:muted">{description}</p>
-                                </td>
-                                <td>
-                                    <ShadowPreviewCell utility={utility} />
                                 </td>
                             </tr>
                         ))}
@@ -106,7 +91,7 @@ export function ShadowScaleDemo() {
             <div className="container w:full">
                 <div className="grid-cols:1 gap:lg w:full grid-cols:2@container(2xs) grid-cols:3@container(md)">
                     {getShadowRows().map(({ key, utility, role, description }) => (
-                        <div className={`surface:raised b:1px|solid|base r:lg p:md ${utility}`} key={key}>
+                        <div className={`surface:raised r:lg p:md ${utility}`} key={key}>
                             <DemoLabel>{utility}</DemoLabel>
                             <div className="font:medium text:strong">{role}</div>
                             <p className="mx:0 mb:0 mt:xs text:sm text:muted">{description}</p>
@@ -118,18 +103,18 @@ export function ShadowScaleDemo() {
     )
 }
 
-function SurfacePreview() {
+function SurfaceStack() {
     return (
-        <div className="grid gap:md w:full max-w:3xs p:lg r:lg bg:canvas text:body">
-            <div className="p:md b:1px|solid|base r:lg surface:base">
+        <div className="grid gap:xl w:full max-w:3xs p:lg r:lg text:body">
+            <div className="p:md r:lg surface:base">
                 <div className="font:medium text:strong">Base surface</div>
                 <p className="mx:0 mb:0 mt:xs text:sm text:muted">Flat content stays grounded on the canvas.</p>
             </div>
-            <div className="p:md b:1px|solid|base r:lg surface:raised shadow:sm">
+            <div className="p:md r:lg surface:raised shadow:sm">
                 <div className="font:medium text:strong">Raised surface</div>
-                <p className="mx:0 mb:0 mt:xs text:sm text:muted">Cards use a small shadow plus a clear edge.</p>
+                <p className="mx:0 mb:0 mt:xs text:sm text:muted">Cards use a small shadow on a raised surface.</p>
             </div>
-            <div className="justify-self:end p:md b:1px|solid|base r:lg surface:overlay shadow:lg w:5/6">
+            <div className="justify-self:end p:md r:lg surface:overlay shadow:lg w:5/6">
                 <div className="font:medium text:strong">Overlay surface</div>
                 <p className="mx:0 mb:0 mt:xs text:sm text:muted">Popovers detach from the page without changing the markup by mode.</p>
             </div>
@@ -140,16 +125,12 @@ function SurfacePreview() {
 export function SurfaceElevationDemo() {
     return (
         <Demo $py={0} $px={0}>
-            <div className="container w:full">
-                <div className="grid-cols:1 w:full grid-cols:2@container(sm)">
-                    <div className="grid place-items:center p:lg bg:canvas light">
-                        <SurfacePreview />
-                    </div>
-                    <div className="grid place-items:center p:lg bg:canvas dark">
-                        <SurfacePreview />
-                    </div>
-                </div>
-            </div>
+            <DemoLight className="grid place-items:center p:lg light">
+                <SurfaceStack />
+            </DemoLight>
+            <DemoDark className="grid place-items:center p:lg dark">
+                <SurfaceStack />
+            </DemoDark>
         </Demo>
     )
 }
