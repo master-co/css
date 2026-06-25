@@ -1,82 +1,144 @@
-import Overview from './components/Overview'
+import { RadiusTokenTable } from './components/Overview'
 import BorderRadiusBasicUsage from '../../reference/border-radius/components/BasicUsage.mdx'
 import CreatePillButton from '../../reference/border-radius/components/CreatePillButton.mdx'
 import CreateIconButton from '../../reference/border-radius/components/CreateIconButton.mdx'
 
 ## Overview [sr-only]
-Corner radius controls the curvature of surfaces, controls, media, and badges. Master CSS maps the default radius scale to `radius` variables, so repeated UI shapes use stable tokens instead of raw pixel values.
+Corner radius defines the shape language of surfaces, controls, media, and badges. It tells users whether an element is dense and precise, soft and spacious, pill-shaped, or circular.
 
-<Overview />
-
-Use radius tokens to answer what kind of shape the element needs:
-
-* `r:xs` to `r:md` keep inputs, compact buttons, tables, and dense cards crisp.
-* `r:lg` to `r:2xl` suit standard cards, panels, dialogs, and media frames.
-* `r:3xl` and `r:4xl` are expressive values for banners, illustrations, and large feature surfaces.
-* `rounded` and `round` are semantic shortcuts for pill and circular shapes.
-
-```html
-<!-- @MARK r:md --><!-- @MARK r:lg --><!-- @MARK rounded --><!-- @MARK round -->
-<input class="r:md" />
-<article class="r:lg">...</article>
-<span class="rounded">Beta</span>
-<img class="round" alt="" />
-```
-
-<details>
-    <summary>Generated CSS</summary>
-    <Class2CSS>
-        {['r:md', 'r:lg', 'rounded', 'round']}
-    </Class2CSS>
-</details>
+Master CSS maps repeated shape decisions to the `radius` namespace. Use tokens such as `r:sm`, `r:lg`, and `r:2xl` for shared UI curvature instead of repeating raw values across markup. Use `rounded` and `round` when the shape itself is the decision.
 
 <BorderRadiusBasicUsage />
 
 ---
 
-## Choose radius by role
-Use the smallest radius that communicates the intended surface. Radius should reinforce hierarchy instead of becoming decoration.
+## Choose a radius token
+Start with the role of the element, then choose the smallest radius that communicates that role. Radius should reinforce hierarchy and interaction density instead of becoming decoration.
 
-| Role | Prefer | Use for |
-| --- | --- | --- |
-| Dense control | `r:xs`, `r:sm`, `r:md` | Inputs, buttons, table cells, menus |
-| Standard surface | `r:lg`, `r:xl`, `r:2xl` | Cards, modals, popovers, image frames |
-| Expressive surface | `r:3xl`, `r:4xl` | Hero panels, illustrations, large media |
-| Pill shape | `rounded` | Tags, segmented controls, pill buttons |
-| Circle shape | `round` | Avatars, icon buttons, indicators |
+<RadiusTokenTable />
 
-Use the same token for surfaces that should feel related. For example, a card, its image, and its nested action group can share `r:lg` or step down one level for nested elements.
+Use related tokens for related surfaces. A card, its nested media, and an action group can share the same radius or step down one level for nested elements.
 
 ---
 
-## Namespace for corner radius
-Corner radius tokens are defined with the `radius-*` namespace. Radius utilities search this namespace, so `r:lg`, `border-top-left-radius:lg`, and `border-radius:lg` all resolve `radius-lg` without requiring the `radius-` prefix in markup.
+## Use radius tokens
+Use `r:<token>` for all corners. The utility resolves values from `radius-*` tokens and emits a stable `border-radius: var(--radius-*)` declaration.
 
-The following rules share the same namespace:
+```html
+<!-- @MARK r:md -->
+<input class="r:md" />
 
-* `border-radius` for all corners
-* `border-top-left-radius` and `border-top-right-radius`
-* `border-bottom-left-radius` and `border-bottom-right-radius`
-* corner shorthands such as `rtl:*`, `rtr:*`, `rbl:*`, and `rbr:*`
+<!-- @MARK r:lg -->
+<article class="r:lg">
+    ...
+</article>
+
+<!-- @MARK r:2xl -->
+<img class="r:2xl" alt="" />
+```
+
+<details>
+    <summary>Generated CSS</summary>
+    <Class2CSS>
+        {['r:md', 'r:lg', 'r:2xl']}
+    </Class2CSS>
+</details>
+
+Use `r:*` in product markup. Use the explicit `border-radius:*` form when documenting native property mapping or when surrounding code benefits from the native property name.
+
+---
+
+## Use shape shortcuts
+Use `rounded` when the element should behave like a pill, regardless of its width. Use `round` when the element should be circular.
+
+<CreatePillButton />
+
+<CreateIconButton />
+
+```html
+<!-- @MARK rounded --><!-- @MARK round -->
+<span class="rounded">Beta</span>
+<button class="round">...</button>
+```
+
+<details>
+    <summary>Generated CSS</summary>
+    <Class2CSS>
+        {['rounded', 'round']}
+    </Class2CSS>
+</details>
+
+Use shape shortcuts for semantic shapes. Use `r:*` when the element should stay on the shared radius scale.
+
+---
+
+## Round individual corners
+Use corner shorthands when only part of a surface should be rounded. This is useful for grouped controls, attached panels, split media, and directional layouts.
+
+```html
+<!-- @MARK rtl:lg --><!-- @MARK rtr:lg -->
+<section class="rtl:lg rtr:lg">
+    Rounded top
+</section>
+
+<!-- @MARK rtr:md --><!-- @MARK rbl:sm -->
+<div class="rtr:md rbl:sm">
+    Offset corners
+</div>
+```
+
+<details>
+    <summary>Generated CSS</summary>
+    <Class2CSS>
+        {['rtl:lg', 'rtr:lg', 'rtr:md', 'rbl:sm']}
+    </Class2CSS>
+</details>
+
+Use `rtl`, `rtr`, `rbl`, and `rbr` for individual corners. Use native property names such as `border-top-left-radius:*` only when the code needs the native property spelled out.
+
+---
+
+## Customize radius tokens
+Override radius variables when your product needs sharper controls, softer panels, or a named shape decision. Keep token names descriptive so markup reads as a design choice.
 
 ```css name=index.css
 @theme {
-    --radius-soft: 0.75rem;
-    --radius-crisp: 0.375rem;
+    --radius-crisp: 0.25rem;
+    --radius-card: 0.75rem;
+    --radius-panel: 1.25rem;
 }
 ```
 
 ```html
-<!-- @MARK r:soft --><!-- @MARK r:crisp -->
-<article class="r:soft">...</article>
+<!-- @MARK r:crisp --><!-- @MARK r:card --><!-- @MARK r:panel -->
 <button class="r:crisp">Save</button>
+<article class="r:card">...</article>
+<section class="r:panel">...</section>
 ```
 
-See the [border radius](/reference/border-radius) reference for every radius utility and corner shorthand.
+Promote repeated raw values into the radius scale. Keep one-off measured geometry as raw values such as `r:1px` or `r:2x` until it becomes a reusable shape.
 
 ---
 
-## Avoid numeric token keys
+## Avoid radius noise
+(x) Every nested surface uses a larger radius than its parent.
+
+```html
+<article class="r:lg">
+    <img class="r:2xl" alt="" />
+    <button class="r:4xl">Open</button>
+</article>
+```
+
+(o) Nested surfaces share the parent radius or step down.
+
+```html
+<article class="r:lg">
+    <img class="r:lg" alt="" />
+    <button class="r:md">Open</button>
+</article>
+```
+
 (x) Numeric token names are hard to distinguish from raw values.
 
 ```css name=index.css
@@ -91,18 +153,6 @@ See the [border radius](/reference/border-radius) reference for every radius uti
 ```css name=index.css
 @theme {
     --radius-sm: 0.25rem;
-    --radius-soft: 0.75rem;
+    --radius-card: 0.75rem;
 }
 ```
-
-Use raw values such as `r:1px` or `r:2x` only when the guide is teaching value syntax or the element has a local measured requirement.
-
----
-
-## Create a pill button
-<CreatePillButton />
-
----
-
-## Create an icon button
-<CreateIconButton />
