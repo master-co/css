@@ -76,6 +76,15 @@ const lineRoleAliases = [
     ['color-line-subtle', 'color-line', 'subtle', 'oklch(0% 0 none / .06)', 'oklch(100% 0 none / .06)']
 ] as const
 
+const lightShadowEdges = [
+    ['xs', '.04'],
+    ['sm', '.04'],
+    ['md', '.05'],
+    ['lg', '.05'],
+    ['xl', '.06'],
+    ['2xl', '.06']
+] as const
+
 const baseHueAliases = [
     ['stone', '$color-stone-30', '$color-stone-40'],
     ['gray', '$color-gray-30', '$color-gray-40'],
@@ -240,6 +249,24 @@ describe.concurrent('@master/css-preset design token parity', () => {
                     dark: { type: 'string', value: darkValue }
                 },
                 dependencies: [lightValue.slice(1), darkValue.slice(1)]
+            })
+        }
+    })
+
+    test('keeps light shadow tokens separated with a subtle neutral edge', () => {
+        for (const [key, opacity] of lightShadowEdges) {
+            expect(findVariable(`shadow-${key}`), key).toMatchObject({
+                namespace: 'shadow',
+                key,
+                type: 'string',
+                modes: {
+                    light: expect.objectContaining({
+                        value: expect.stringMatching(new RegExp(`^0 0 0 1px oklch\\(0% 0 none / \\${opacity}\\), `))
+                    }),
+                    dark: expect.objectContaining({
+                        value: expect.stringMatching(/^0 0 0 1px oklch\(100% 0 none \/ \.\d+\), /)
+                    })
+                }
             })
         }
     })

@@ -17,7 +17,7 @@ In Master CSS, that vocabulary usually lives in the project CSS entry: `@theme` 
 }
 
 @theme light {
-    --shadow-sm: 0 16px 40px rgb(15 23 42 / .12);
+    --shadow-sm: 0 0 0 1px rgb(15 23 42 / .06), 0 16px 40px rgb(15 23 42 / .12);
 }
 
 @theme dark {
@@ -70,7 +70,7 @@ Theme tokens are CSS custom property declarations inside `@theme` blocks. Write 
 }
 
 @theme light {
-    --shadow-sm: 0 16px 40px rgb(15 23 42 / .12);
+    --shadow-sm: 0 0 0 1px rgb(15 23 42 / .06), 0 16px 40px rgb(15 23 42 / .12);
 }
 
 @theme dark {
@@ -203,7 +203,7 @@ Mode-specific `@theme` blocks keep markup semantic while values change by mode.
 @theme light {
     --color-text-body: #111827;
     --color-blue: #4f46e5;
-    --shadow-sm: 0 16px 40px rgb(15 23 42 / .12);
+    --shadow-sm: 0 0 0 1px rgb(15 23 42 / .06), 0 16px 40px rgb(15 23 42 / .12);
 }
 
 @theme dark {

@@ -3,7 +3,7 @@ import ShadowTokens from './components/ShadowTokens'
 ## Overview [sr-only]
 Elevation creates perceived depth between surfaces. In CSS, that depth is usually expressed with [box-shadow](https://developer.mozilla.org/en-US/docs/Web/CSS/box-shadow), but the design decision is larger than the property: elevation tells users which surface is resting on the page, which surface is floating, and which surface is interrupting the workflow.
 
-Master CSS maps elevation to the `shadow` namespace. Use tokens such as `shadow:xs`, `shadow:sm`, and `shadow:lg` for product surfaces instead of repeating raw multi-part shadow values in markup. The preset shadow scale is mode-aware: the same class resolves to a lighter shadow recipe in light mode and a stronger dark-mode recipe with a subtle edge highlight.
+Master CSS maps elevation to the `shadow` namespace. Use tokens such as `shadow:xs`, `shadow:sm`, and `shadow:lg` for product surfaces instead of repeating raw multi-part shadow values in markup. The preset shadow scale is mode-aware: the same class resolves to a lighter shadow recipe with a subtle neutral edge in light mode and a stronger dark-mode recipe with a subtle light edge.
 
 <Demo>
     <div className="container w:full">
@@ -53,8 +53,8 @@ Use the same token names across modes:
 
 ```css name=index.css
 @theme light {
-    --shadow-sm: 0 1px 2px -1px oklch(0% 0 none / .06), 0 3px 6px -2px oklch(0% 0 none / .08);
-    --shadow-lg: 0 4px 8px -4px oklch(0% 0 none / .08), 0 16px 32px -8px oklch(0% 0 none / .12);
+    --shadow-sm: 0 0 0 1px oklch(0% 0 none / .04), 0 1px 2px -1px oklch(0% 0 none / .06), 0 3px 6px -2px oklch(0% 0 none / .08);
+    --shadow-lg: 0 0 0 1px oklch(0% 0 none / .05), 0 4px 8px -4px oklch(0% 0 none / .08), 0 16px 32px -8px oklch(0% 0 none / .12);
 }
 
 @theme dark {
@@ -110,7 +110,7 @@ The scale should describe the relationship between surfaces, not the visual dram
 ---
 
 ## Build surfaces, not shadows
-Elevation only works when the surface has a clear ground. Pair shadows with background, border, and radius tokens so low elevations remain visible in both light and dark themes. Dark-mode shadows often need a subtle light edge in addition to darker depth layers, so do not judge a token from only one mode.
+Elevation only works when the surface has a clear ground. Pair shadows with background, border, and radius tokens so low elevations remain visible in both light and dark themes. Preset shadows include a subtle edge layer in each mode, but do not judge a token from only one mode.
 
 ```html
 <!-- @MARK surface:base --><!-- @MARK b:1px|solid|base --><!-- @MARK r:lg --><!-- @MARK shadow:sm -->
@@ -126,7 +126,7 @@ Elevation only works when the surface has a clear ground. Pair shadows with back
     </Class2CSS>
 </details>
 
-Use borders for edges and shadows for separation. A low shadow without a border can disappear on light backgrounds; in dark mode, the edge highlight in the shadow helps but should still be paired with surface and line tokens for clear structure.
+Use borders for stronger edges and shadows for separation. A low shadow without a border can still look too soft on near-matching backgrounds, so pair surface and line tokens when the component needs explicit structure.
 
 ---
 
@@ -156,8 +156,8 @@ Override shadow variables when your product needs softer depth, sharper enterpri
 
 ```css name=index.css
 @theme light {
-    --shadow-sm: 0 2px 4px -2px oklch(0% 0 none / .08), 0 8px 20px -6px oklch(0% 0 none / .12);
-    --shadow-lg: 0 10px 20px -8px oklch(0% 0 none / .12), 0 24px 56px -16px oklch(0% 0 none / .16);
+    --shadow-sm: 0 0 0 1px oklch(0% 0 none / .05), 0 2px 4px -2px oklch(0% 0 none / .08), 0 8px 20px -6px oklch(0% 0 none / .12);
+    --shadow-lg: 0 0 0 1px oklch(0% 0 none / .06), 0 10px 20px -8px oklch(0% 0 none / .12), 0 24px 56px -16px oklch(0% 0 none / .16);
 }
 
 @theme dark {
@@ -202,7 +202,7 @@ Promote repeated raw values into the scale. Keep one-off art direction in local 
 
 ```css name=index.css
 @theme light {
-    --shadow-sm: 0 4px 8px -2px oklch(0% 0 none / .08), 0 12px 24px -4px oklch(0% 0 none / .10);
+    --shadow-sm: 0 0 0 1px oklch(0% 0 none / .05), 0 4px 8px -2px oklch(0% 0 none / .08), 0 12px 24px -4px oklch(0% 0 none / .10);
 }
 
 @theme dark {

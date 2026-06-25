@@ -590,12 +590,12 @@
 /* Light mode tokens */
 @theme light {
     /* Shadows */
-    --shadow-xs: 0 1px 2px -1px oklch(0% 0 none / .08);
-    --shadow-sm: 0 1px 2px -1px oklch(0% 0 none / .06), 0 3px 6px -2px oklch(0% 0 none / .08);
-    --shadow-md: 0 2px 4px -2px oklch(0% 0 none / .06), 0 8px 16px -4px oklch(0% 0 none / .10);
-    --shadow-lg: 0 4px 8px -4px oklch(0% 0 none / .08), 0 16px 32px -8px oklch(0% 0 none / .12);
-    --shadow-xl: 0 8px 16px -6px oklch(0% 0 none / .10), 0 24px 48px -12px oklch(0% 0 none / .14);
-    --shadow-2xl: 0 12px 24px -8px oklch(0% 0 none / .12), 0 32px 64px -16px oklch(0% 0 none / .18);
+    --shadow-xs: 0 0 0 1px oklch(0% 0 none / .04), 0 1px 2px -1px oklch(0% 0 none / .08);
+    --shadow-sm: 0 0 0 1px oklch(0% 0 none / .04), 0 1px 2px -1px oklch(0% 0 none / .06), 0 3px 6px -2px oklch(0% 0 none / .08);
+    --shadow-md: 0 0 0 1px oklch(0% 0 none / .05), 0 2px 4px -2px oklch(0% 0 none / .06), 0 8px 16px -4px oklch(0% 0 none / .10);
+    --shadow-lg: 0 0 0 1px oklch(0% 0 none / .05), 0 4px 8px -4px oklch(0% 0 none / .08), 0 16px 32px -8px oklch(0% 0 none / .12);
+    --shadow-xl: 0 0 0 1px oklch(0% 0 none / .06), 0 8px 16px -6px oklch(0% 0 none / .10), 0 24px 48px -12px oklch(0% 0 none / .14);
+    --shadow-2xl: 0 0 0 1px oklch(0% 0 none / .06), 0 12px 24px -8px oklch(0% 0 none / .12), 0 32px 64px -16px oklch(0% 0 none / .18);
 
     /* Color aliases */
     --color-stone: $color-stone-30;
