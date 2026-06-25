@@ -60,7 +60,8 @@ export function ShadowTokenTable() {
                 <table>
                     <thead>
                         <tr>
-                            <th>Token</th>
+                            <th>Class</th>
+                            <th>Variable</th>
                             <th>Role</th>
                         </tr>
                     </thead>
@@ -68,13 +69,13 @@ export function ShadowTokenTable() {
                         {rows.map(({ key, token, utility, role, description }) => (
                             <tr key={key}>
                                 <td>
-                                    <InlineCode className="white-space:nowrap">{token}</InlineCode>
-                                    <br />
                                     <InlineCode className="white-space:nowrap">{utility}</InlineCode>
                                 </td>
                                 <td>
-                                    <div className="font:medium text:strong">{role}</div>
-                                    <p className="mx:0 mb:0 mt:xs text:sm text:muted">{description}</p>
+                                    <InlineCode className="white-space:nowrap">{token}</InlineCode>
+                                </td>
+                                <td>
+                                    {role}, {description}
                                 </td>
                             </tr>
                         ))}
