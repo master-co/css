@@ -15,6 +15,13 @@ export function utilityUsesVariableNamespace(utility: MasterCSSManifestUtility, 
     return getUtilityVariableNamespaces(utility).some((namespace) => namespace.includes(pattern))
 }
 
+export function getVariableNamespacePublicKeys(namespace: string) {
+    return normalizePublicKeys([
+        ...getNativeValueNamespacePublicKeys(namespace),
+        ...getManifestVariableNamespacePublicKeys(namespace)
+    ])
+}
+
 export function getNativeValueNamespacePublicKeys(namespace: string) {
     const properties = new Set<string>()
     for (const eachNamespace of builtinNativeValueNamespaces) {
@@ -33,8 +40,50 @@ export function getNativeValueNamespacePublicKeys(namespace: string) {
     }
 
     return Array.from(keys)
-        .filter((key) => key && !key.includes('<~'))
-        .sort((a, b) => a.localeCompare(b))
+        .filter(isPublicKey)
+        .sort(sortKeys)
+}
+
+function getManifestVariableNamespacePublicKeys(namespace: string) {
+    const keys = new Set<string>()
+    for (const utility of manifestUtilities) {
+        if (!getUtilityVariableNamespaces(utility).includes(namespace)) continue
+        for (const key of getUtilityMatcherKeys(utility)) {
+            keys.add(key)
+        }
+    }
+
+    for (const [alias, key] of Object.entries(builtinKeyAliases)) {
+        if (keys.has(key)) keys.add(alias)
+    }
+
+    return normalizePublicKeys(keys)
+}
+
+function getUtilityMatcherKeys(utility: MasterCSSManifestUtility) {
+    const keys = new Set<string>()
+    for (const matcher of utility.matchers || []) {
+        const matcherKeys = (matcher as { keys?: readonly string[] }).keys
+        if (!matcherKeys) continue
+        for (const key of matcherKeys) {
+            keys.add(key)
+        }
+    }
+    return keys
+}
+
+function normalizePublicKeys(keys: Iterable<string>) {
+    return Array.from(new Set(keys))
+        .filter(isPublicKey)
+        .sort(sortKeys)
+}
+
+function isPublicKey(key: string) {
+    return Boolean(key) && !key.includes('<~')
+}
+
+function sortKeys(a: string, b: string) {
+    return a.localeCompare(b)
 }
 
 function normalizeNamespaceRef(ref: string) {

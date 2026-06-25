@@ -1,4 +1,5 @@
 import { ShadowScaleDemo, ShadowTokenTable, SurfaceElevationDemo } from './components/ShadowTokens'
+import { ShadowNamespaceTable } from './components/ShadowNamespace'
 
 ## Overview [sr-only]
 Elevation describes the relationship between surfaces. In CSS, that relationship is usually rendered with [box-shadow](https://developer.mozilla.org/en-US/docs/Web/CSS/box-shadow), but the design decision is broader than the property: a surface can be grounded on the canvas, raised as a reusable card, detached as an overlay, or placed above the workflow as a modal.
@@ -58,6 +59,15 @@ Use `shadow:<token>` for common elevation levels. The utility resolves values fr
 </details>
 
 Use `shadow:*` in product markup. Use the explicit `box-shadow:*` form when documenting native property mapping or when surrounding code benefits from the native property name.
+
+---
+
+## Namespace for elevation
+The `shadow` variable namespace is shared by the elevation shorthand and the native shadow property.
+
+<ShadowNamespaceTable />
+
+This lets elevation utilities use `sm`, `lg`, or project token names without repeating the `shadow-` prefix.
 
 ---
 

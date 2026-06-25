@@ -1,8 +1,25 @@
+import { ColorNamespaceTable } from './components/ColorNamespaces'
 import { BaseHueDemo, CanvasDemo, LineRolesDemo, SurfacesDemo, TextHueDemo, TextRolesDemo } from './components/PresetThemeColors'
 
 ## Overview [sr-only]
 
 Master CSS color tokens cover fixed palette steps, preset UI roles, and mode-aware hue aliases. Use palette steps when you need an exact swatch. Use preset roles for the repeated color decisions that define application structure, text hierarchy, and light or dark mode behavior.
+
+---
+
+## Default color palette
+The preset palette is a P3-compatible set of fixed color families. Each family ranges from `0`, `5`, `10`, and then by tens through `100`.
+
+<ColorPalette />
+
+Choose palette steps directly for swatches, illustrations, brand accents, and status-color foundations. For page backgrounds, surfaces, lines, and text hierarchy, use preset roles so the same markup can adapt across modes.
+
+```html
+<!-- @MARK bg:blue-5 --><!-- @MARK fg:blue-60 -->
+<div class="bg:blue-5 fg:blue-60">…</div>
+```
+
+---
 
 ## Choose a color token
 Start with the kind of decision you are making. Most app chrome should use roles first, then reach for palette steps or hue aliases when the color itself is the point.
@@ -26,17 +43,12 @@ Start with the kind of decision you are making. Most app chrome should use roles
 
 ---
 
-## Default color palette
-The preset palette is a P3-compatible set of fixed color families. Each family ranges from `0`, `5`, `10`, and then by tens through `100`.
+## Namespaces for color
+Color utilities use focused namespaces so role names stay short in markup. A key such as `muted` can mean a line role in `b:muted`, a surface role in `surface:muted`, or a text role in `text:muted`.
 
-<ColorPalette />
+<ColorNamespaceTable />
 
-Choose palette steps directly for swatches, illustrations, brand accents, and status-color foundations. For page backgrounds, surfaces, lines, and text hierarchy, use preset roles so the same markup can adapt across modes.
-
-```html
-<!-- @MARK bg:blue-5 --><!-- @MARK fg:blue-60 -->
-<div class="bg:blue-5 fg:blue-60">…</div>
-```
+Use the narrow role namespace first when the color describes structure, line work, or text hierarchy. Use the general color namespace when the hue or swatch itself is the decision.
 
 ---
 

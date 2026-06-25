@@ -1,3 +1,5 @@
+import { ContainerNamespaceTable } from './components/ContainerNamespace'
+
 ## Overview [sr-only]
 Containers define the size scale for reusable layout surfaces. In Master CSS, the container namespace has two related jobs:
 
@@ -23,6 +25,15 @@ Container tokens belong in the theme layer and use the `container-*` namespace.
 
 The same token can drive a width cap and a container query. That keeps component dimensions and responsive thresholds from drifting apart.
 Container scale tables read from manifest metadata, so the displayed size and generated query stay aligned when tokens use `rem`, `px`, or legacy unitless numbers.
+
+---
+
+## Namespace for container values
+The `container` variable namespace is shared by width, height, min and max constraints, flex basis, intrinsic size, and media sizing utilities.
+
+<ContainerNamespaceTable />
+
+This lets sizing utilities use `md`, `5xl`, or project token names without the `container-` prefix. Container query variants use the same namespace for thresholds.
 
 ---
 

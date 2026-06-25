@@ -6,6 +6,7 @@ import LineHeightBasicUsage from '../../reference/line-height/components/BasicUs
 import FontWeightBasicUsage from '../../reference/font-weight/components/BasicUsage.mdx'
 import LetterSpacingBasicUsage from '../../reference/letter-spacing/components/BasicUsage.mdx'
 import FontFamilyBasicUsage from '../../reference/font-family/components/BasicUsage.mdx'
+import { TypographyNamespaceTable } from './components/TypographyNamespaces'
 
 ## Overview [sr-only]
 <Overview />
@@ -26,13 +27,9 @@ Typography tokens define readable type scale, line height, letter spacing, font 
 ---
 
 ## Namespaces for typography
-Typography is built from [theme tokens](/guide/theme#theme-tokens) organized into focused namespaces:
+Typography is built from [theme tokens](/guide/theme#theme-tokens) organized into focused namespaces.
 
-* `--font-size-*` for font-size tokens and text scale size.
-* `--font-family-*` for font families.
-* `--font-weight-*` for font weights.
-* `--leading-*` for line height.
-* `--tracking-*` for letter spacing.
+<TypographyNamespaceTable />
 
 Utilities search the relevant namespace, so `font:lg`, `leading:md`, and `tracking:tight` can use short token names without the full custom property prefix.
 

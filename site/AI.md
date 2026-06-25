@@ -140,6 +140,8 @@ Follow the public Design Tokens policy when writing site code, demos, and exampl
 
 For numeric theme variable overview tables, read values from `site/utils/theme-variables` or a narrow derived helper. Render token, value, and reference unit columns; use `ThemeNumberVariableTable` for numeric spacing, radius, breakpoint, and container scales unless a guide needs a specialized table. Keep token overview tables data-driven and separate from generated CSS examples.
 
+For shared foundation namespaces, follow the `/guide/spacing#namespace-for-spacing` pattern: render a namespace-consumer table that groups the utilities and native properties that can use that namespace. Prefer `NamespaceUtilityTable` with keys derived from `site/utils/manifest-utilities` so rows stay aligned with the preset manifest, engine native value namespaces, and built-in key aliases. Keep the group labels reader-facing and curated, but do not hand-author unsupported keys. Use a namespace-consumer table separately from token value tables: token tables explain available values, while namespace tables explain where those values can be used. Verify the namespace source in engine/preset data before documenting it.
+
 ## Assets
 
 Local bitmap assets for demos belong under:

@@ -1,6 +1,7 @@
 import { AnimationTokenTable } from './components/AnimationTokens'
 import { DurationTokenTable } from './components/DurationTokens'
 import { EasingTokenTable } from './components/EasingTokens'
+import { MotionNamespaceTable } from './components/MotionNamespaces'
 
 ## Overview [sr-only]
 Motion explains what changed, where attention should go, and whether an action is still in progress. In CSS, that often means [animations](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_animations), [transitions](https://developer.mozilla.org/en-US/docs/Web/CSS/transition), and [`@keyframes`](https://developer.mozilla.org/en-US/docs/Web/CSS/@keyframes), but the design decision comes first: use motion to give feedback, preserve continuity, clarify hierarchy, or reduce surprise.
@@ -43,6 +44,15 @@ Duration tokens describe rhythm. They are shared by animation and transition uti
 Easing tokens describe the curve. Use custom easing tokens for product motion language and native CSS values such as `linear`, `ease-in-out`, `steps()`, or `cubic-bezier()` when a one-off curve is clearer.
 
 <EasingTokenTable />
+
+---
+
+## Namespaces for motion
+Motion tokens use focused namespaces so recipes, durations, and easing curves can be mixed inside explicit animation and transition classes.
+
+<MotionNamespaceTable />
+
+Keep duration and easing token names readable because they appear inside shorthand class names such as `animation:fade|fast|smooth` and `transition:opacity|normal|standard`.
 
 ---
 

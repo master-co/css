@@ -1,4 +1,5 @@
 import { RadiusTokenTable } from './components/Overview'
+import { RadiusNamespaceTable } from './components/RadiusNamespace'
 import BorderRadiusBasicUsage from '../../reference/border-radius/components/BasicUsage.mdx'
 import CreatePillButton from '../../reference/border-radius/components/CreatePillButton.mdx'
 import CreateIconButton from '../../reference/border-radius/components/CreateIconButton.mdx'
@@ -45,6 +46,15 @@ Use `r:<token>` for all corners. The utility resolves values from `radius-*` tok
 </details>
 
 Use `r:*` in product markup. Use the explicit `border-radius:*` form when documenting native property mapping or when surrounding code benefits from the native property name.
+
+---
+
+## Namespace for corner radius
+The `radius` variable namespace is shared by the all-corner shorthand, physical corner aliases, and native logical corner radius properties.
+
+<RadiusNamespaceTable />
+
+This lets radius utilities use scale or project token names such as `md`, `card`, or `panel` without repeating the `radius-` prefix.
 
 ---
 
