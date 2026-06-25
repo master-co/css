@@ -9,9 +9,10 @@
         "type-check": "tsc --noEmit",
         "lint": "eslint",
         "vscode:package": "node scripts/package-targets.mjs package",
-        "vscode:publish": "node scripts/package-targets.mjs publish"
+        "vscode:publish": "node scripts/package-targets.mjs publish",
+        "release": "node scripts/release.mjs"
     },
-    "version": "2.0.20",
+    "version": "2.0.21",
     "description": "Master CSS for Visual Studio Code",
     "displayName": "Master CSS",
     "author": "Aoyue Design LLC.",
@@ -490,7 +491,7 @@
         "@master/css-language-service": "workspace:^",
         "@master/css-project": "workspace:^",
         "@shikijs/langs": "4.2.0",
-        "@types/vscode": "^1.125.0",
+        "@types/vscode": "^1.120.0",
         "@vscode/vsce": "^3.9.2",
         "vscode-languageclient": "^10.0.0",
         "vscode-oniguruma": "^2.0.1",

@@ -12,15 +12,16 @@
     "scripts": {
         "submodules": "pnpm dlx tsx submodules",
         "postinstall": "pnpm dlx husky install",
-        "build": "cross-env NODE_OPTIONS=--max-old-space-size=16384 pnpm --filter \"./packages/*\" build",
-        "build:examples": "cross-env NODE_OPTIONS=--max-old-space-size=16384 pnpm --filter \"./examples/*\" --parallel build",
-        "check": "pnpm run commit-check && pnpm run build && pnpm --filter \"./packages/*\" --parallel run \"/^(test|lint|type-check)/\"",
-        "test": "cross-env NODE_OPTIONS=--max-old-space-size=16384 pnpm --filter \"./packages/*\" --parallel test",
-        "test:ci": "cross-env NODE_OPTIONS=--max-old-space-size=16384 pnpm --filter \"./packages/*\" --workspace-concurrency=1 test",
+        "build": "cross-env NODE_OPTIONS=--max-old-space-size=16384 TURBO_TELEMETRY_DISABLED=1 turbo run build --filter=\"./packages/*\"",
+        "build:examples": "cross-env NODE_OPTIONS=--max-old-space-size=16384 TURBO_TELEMETRY_DISABLED=1 turbo run build --filter=\"./examples/*\"",
+        "release:vscode": "node packages/vscode/scripts/release.mjs",
+        "check": "pnpm run commit-check && pnpm run build && cross-env NODE_OPTIONS=--max-old-space-size=16384 TURBO_TELEMETRY_DISABLED=1 turbo run test lint type-check --filter=\"./packages/*\"",
+        "test": "cross-env NODE_OPTIONS=--max-old-space-size=16384 TURBO_TELEMETRY_DISABLED=1 turbo run test --filter=\"./packages/*\"",
+        "test:ci": "cross-env NODE_OPTIONS=--max-old-space-size=16384 TURBO_TELEMETRY_DISABLED=1 turbo run test --filter=\"./packages/*\" --concurrency=1",
         "test:docs-consistency": "node --test .ai/scripts/validate-doc-consistency.test.mjs",
-        "e2e": "cross-env NODE_OPTIONS=--max-old-space-size=16384 pnpm --filter \"./packages/*\" --workspace-concurrency=1 e2e",
-        "lint": "cross-env NODE_OPTIONS=--max-old-space-size=16384 pnpm --filter \"./packages/*\" --parallel lint",
-        "type-check": "cross-env NODE_OPTIONS=--max-old-space-size=16384 pnpm --filter \"./packages/*\" --parallel type-check",
+        "e2e": "cross-env NODE_OPTIONS=--max-old-space-size=16384 TURBO_TELEMETRY_DISABLED=1 turbo run e2e --filter=\"./packages/*\" --concurrency=1",
+        "lint": "cross-env NODE_OPTIONS=--max-old-space-size=16384 TURBO_TELEMETRY_DISABLED=1 turbo run lint --filter=\"./packages/*\"",
+        "type-check": "cross-env NODE_OPTIONS=--max-old-space-size=16384 TURBO_TELEMETRY_DISABLED=1 turbo run type-check --filter=\"./packages/*\"",
         "commit-check": "commitlint --from=HEAD~1 --verbose"
     },
     "engines": {
@@ -98,6 +99,7 @@
         "commitlint": "^21.0.2",
         "concurrently": "^9.2.3",
         "eslint-config-techor": "^3.2.5",
-        "master-css-vscode": "workspace:^"
+        "master-css-vscode": "workspace:^",
+        "turbo": "^2.10.0"
     }
 }
