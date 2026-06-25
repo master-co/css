@@ -629,6 +629,12 @@
     --color-surface-overlay: $color-white;
     --color-surface-inverse: $color-black;
 
+    /* Line color aliases */
+    --color-line: oklch(0% 0 none / 0.12);
+    --color-line-strong: oklch(0% 0 none / 0.18);
+    --color-line-muted: oklch(0% 0 none / 0.09);
+    --color-line-subtle: oklch(0% 0 none / 0.06);
+
     /* Text color aliases */
     --color-text-body: $color-neutral-70;
     --color-text-strong: $color-neutral-100;
@@ -705,6 +711,12 @@
     --color-surface-raised: $color-gray-80;
     --color-surface-overlay: $color-gray-80;
     --color-surface-inverse: $color-white;
+
+    /* Line color aliases */
+    --color-line: oklch(100% 0 none / 0.12);
+    --color-line-strong: oklch(100% 0 none / 0.18);
+    --color-line-muted: oklch(100% 0 none / 0.09);
+    --color-line-subtle: oklch(100% 0 none / 0.06);
 
     /* Text color aliases */
     --color-text-body: $color-gray-30;

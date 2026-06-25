@@ -6,8 +6,8 @@ import DemoLight from '~/internal/components/DemoLight'
 import InlineCode from '~/internal/components/InlineCode'
 import { getThemeModeVariables } from '~/site/utils/theme-variables'
 
-type PresetThemeColorPreview = 'background' | 'text'
-type PresetThemeColorGroup = 'canvas' | 'surfaces' | 'baseHue' | 'textRoles' | 'textHue'
+type PresetThemeColorPreview = 'background' | 'line' | 'text'
+type PresetThemeColorGroup = 'canvas' | 'surfaces' | 'lineRoles' | 'baseHue' | 'textRoles' | 'textHue'
 
 interface PresetThemeColorRow {
     key: string
@@ -45,7 +45,11 @@ const colorRows = getModeRows(
     'background'
 )
 const canvasRows = colorRows.filter(({ token }) => token === '--color-canvas')
-const baseHueRows = colorRows.filter(({ token }) => token !== '--color-canvas')
+const lineBaseRows = getModeRows('color', (key) => `outline:${key}@light outline:${key}@dark`, 'line')
+    .filter(({ token }) => token === '--color-line')
+const lineVariantRows = getModeRows('color-line', (key) => `outline:${key}@light outline:${key}@dark`, 'line')
+const lineRows = [...lineBaseRows, ...lineVariantRows]
+const baseHueRows = colorRows.filter(({ token }) => token !== '--color-canvas' && token !== '--color-line')
 const surfaceRows = getModeRows('color-surface', (key) => `surface:${key}@light surface:${key}@dark`, 'background')
 const textRows = getModeRows('color-text', (key) => `text:${key}@light text:${key}@dark`, 'text')
 const textRoleKeys = new Set(['body', 'strong', 'muted', 'subtle', 'disabled', 'placeholder', 'inverse', 'link', 'link-hover'])
@@ -54,6 +58,7 @@ const textHueRows = textRows.filter(({ key }) => !textRoleKeys.has(key))
 const rowsByGroup = {
     canvas: canvasRows,
     surfaces: surfaceRows,
+    lineRoles: lineRows,
     baseHue: baseHueRows,
     textRoles: textRoleRows,
     textHue: textHueRows
@@ -61,6 +66,7 @@ const rowsByGroup = {
 const columnTitleByGroup = {
     canvas: 'Role',
     surfaces: 'Role',
+    lineRoles: 'Role',
     baseHue: 'Use for',
     textRoles: 'Role',
     textHue: 'Use for'
@@ -74,6 +80,12 @@ const surfaceDescriptions: Record<string, string> = {
     raised: 'Raised cards, controls, and stacked surfaces.',
     overlay: 'Floating layers such as dialogs, popovers, and menus.',
     inverse: 'High-contrast inverse surfaces.'
+}
+const lineRoleDescriptions: Record<string, string> = {
+    line: 'Default borders, dividers, outlines, and strokes.',
+    strong: 'Emphasized boundaries and selected states.',
+    muted: 'Quiet separators in dense interfaces.',
+    subtle: 'Low-contrast hairlines and soft outlines.'
 }
 const textRoleDescriptions: Record<string, string> = {
     body: 'Default readable foreground text.',
@@ -89,6 +101,7 @@ const textRoleDescriptions: Record<string, string> = {
 const rowDescriptionByGroup = {
     canvas: (key) => canvasDescriptions[key],
     surfaces: (key) => surfaceDescriptions[key],
+    lineRoles: (key) => lineRoleDescriptions[key],
     baseHue: (key) => `Mode-aware ${key} for backgrounds and foregrounds.`,
     textRoles: (key) => textRoleDescriptions[key],
     textHue: (key) => `Mode-aware ${key} foreground text.`
@@ -126,6 +139,25 @@ export function SurfacesDemo() {
     )
 }
 
+export function LineRolesDemo() {
+    function renderPreview() {
+        return (
+            <div className="grid overflow:hidden w:full max-w:3xs b:1px|solid|line r:sm surface:base text:body shadow:lg">
+                <div className="p:md bb:1px|solid|strong text:strong">Account settings</div>
+                <div className="p:md bb:1px|solid|muted text:muted">Billing cycle renews next month.</div>
+                <div className="mx:md mb:md mt:0 p:md r:sm outline:1px|solid|subtle outline-offset:-1px text:subtle">Optional notification rules</div>
+            </div>
+        )
+    }
+
+    return (
+        <Demo $py={0} $px={0}>
+            <DemoLight>{renderPreview()}</DemoLight>
+            <DemoDark>{renderPreview()}</DemoDark>
+        </Demo>
+    )
+}
+
 export function BaseHueDemo() {
     return (
         <Demo $py={0} $px={0}>
@@ -155,14 +187,14 @@ export function TextHueDemo() {
 export function TextRolesDemo() {
     function renderPreview() {
         return (
-            <div className="grid gap:xs w:full max-w:3xs p:lg r:sm surface:base text:body font:semibold shadow:lg text-center">
+            <div className="grid gap:xs w:full max-w:3xs p:lg r:sm font:semibold text-center surface:base text:body shadow:lg">
                 <div className="font:md font:semibold text:strong">Quarterly report</div>
                 <p className="m:0 text:body">Revenue is on track for the current cycle.</p>
                 <p className="m:0 text:sm text:muted">Updated 12 minutes ago</p>
                 <p className="m:0 text:sm text:disabled">Archived export unavailable</p>
                 {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
-                <a className="text:link text:link-hover:hover underline" href="#">Open report</a>
-                <div className="w:fit px:sm py:xs r:sm mx:auto mt:sm surface:inverse text:inverse">Private note</div>
+                <a className="underline text:link text:link-hover:hover" href="#">Open report</a>
+                <div className="w:fit mx:auto mt:sm px:sm py:xs r:sm surface:inverse text:inverse">Private note</div>
             </div>
         )
     }

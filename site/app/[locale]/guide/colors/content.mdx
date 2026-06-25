@@ -1,8 +1,8 @@
-import { BaseHueDemo, CanvasDemo, SurfacesDemo, TextHueDemo, TextRolesDemo } from './components/PresetThemeColors'
+import { BaseHueDemo, CanvasDemo, LineRolesDemo, SurfacesDemo, TextHueDemo, TextRolesDemo } from './components/PresetThemeColors'
 
 ## Default color palette [sr-only]
 
-Master CSS provides a P3-compatible raw palette, preset light and dark color aliases, canvas and surface roles, text roles, and text hue aliases.
+Master CSS provides a P3-compatible raw palette, preset light and dark color aliases, canvas and surface roles, line roles, text roles, and text hue aliases.
 
 <ColorPalette />
 
@@ -16,12 +16,12 @@ Each preset color family ranges from `0`, `5`, `10`, and then by tens through `1
 ---
 
 ## Preset mode-aware colors
-The default preset ships mode-aware aliases for foundational UI color decisions. Palette steps such as `blue-60` stay fixed, while aliases such as `blue`, `text:body`, `text:blue`, `canvas`, and `surface:base` resolve to different preset references in light and dark modes.
+The default preset ships mode-aware aliases for foundational UI color decisions. Palette steps such as `blue-60` stay fixed, while aliases such as `blue`, `text:body`, `text:blue`, `canvas`, `line`, and `surface:base` resolve to different preset references in light and dark modes.
 
 ```html
-<!-- @MARK bg:canvas --><!-- @MARK text:body --><!-- @MARK surface:base --><!-- @MARK text:strong --><!-- @MARK text:muted --><!-- @MARK text:link -->
+<!-- @MARK bg:canvas --><!-- @MARK text:body --><!-- @MARK surface:base --><!-- @MARK b:1px|solid|line --><!-- @MARK text:strong --><!-- @MARK text:muted --><!-- @MARK text:link -->
 <main class="bg:canvas text:body">
-    <section class="surface:base">
+    <section class="surface:base b:1px|solid|line">
         <h2 class="text:strong">Project updates</h2>
         <p class="text:muted">Three milestones changed this week.</p>
         <a class="text:link" href="#">Continue</a>
@@ -49,6 +49,20 @@ Surface tokens are for panels, cards, floating layers, and inverse blocks. Use t
 ```html
 <!-- @MARK surface:overlay -->
 <div class="surface:overlay"></div>
+```
+
+### Line roles
+Line tokens are for borders, dividers, outlines, and strokes. Border and outline utilities search the `color-line` namespace before the general `color` namespace.
+
+<PresetThemeColors group="lineRoles" />
+<LineRolesDemo />
+
+```html
+<!-- @MARK b:1px|solid|line --><!-- @MARK bb:1px|solid|muted --><!-- @MARK outline:1px|solid|subtle -->
+<section class="b:1px|solid|line">
+    <header class="bb:1px|solid|muted">Account settings</header>
+    <button class="outline:1px|solid|subtle">Edit</button>
+</section>
 ```
 
 ### Text roles
@@ -123,45 +137,3 @@ Use [variable modes](/guide/theme#modes) to adjust preset color roles for light 
 ```
 
 Use conditional color classes when a one-off interaction genuinely differs by mode. For shared product color decisions, prefer a named token that can resolve differently per mode.
-
----
-
-## Border and line colors
-Preset border and outline colors resolve palette and color tokens by default. The `color-line` namespace is available for project-defined separator roles when borders or outlines need semantic, mode-aware names.
-
-```css name=index.css
-@theme light {
-    --color-line-divider: oklch(0% 0 none / 0.12);
-}
-
-@theme dark {
-    --color-line-divider: oklch(100% 0 none / 0.12);
-}
-```
-
-```html
-<div class="b:1px|solid|divider">...</div>
-```
-
-Palette border colors are available without adding custom line tokens.
-
-<Demo $py={0} $px={0}>
-    <DemoLight>
-        <div className="b:3x|solid|gray-20 size:24x"></div>
-    </DemoLight>
-    <DemoDark>
-        <div className="b:3x|solid|gray-20 size:24x"></div>
-    </DemoDark>
-</Demo>
-```html
-<div class="light">
-    <!-- @MARK b:3x|solid|gray-20 -->
-    <div class="b:3x|solid|gray-20 size:24x"></div>
-</div>
-<div class="dark">
-    <!-- @MARK b:3x|solid|gray-20 -->
-    <div class="b:3x|solid|gray-20 size:24x"></div>
-</div>
-```
-
-See the [border color](/reference/border-color#use-custom-border-colors) reference for more details on how to add custom border colors.

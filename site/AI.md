@@ -103,6 +103,7 @@ Visible documentation examples should be as framework-neutral as practical:
 - Use `document.startViewTransition()` with a direct DOM update and fallback in visible JavaScript examples.
 - Avoid exposing Next.js, React state, `flushSync`, or `next/image` in visible examples unless the section is about that framework integration.
 - Implementation demos may use React, Next.js, and `flushSync`; displayed code does not need to match exactly.
+- In `content.mdx`, do not default-import guide-local components from relative `./components/*` modules. MDX injects default exports automatically; import only named exports from those modules to avoid duplicate component registration errors.
 
 For View Transitions examples, keep `view-transition-name` values unique, prefer article-specific names such as `article-image`, use `view-transition-class` to group related snapshots, and avoid broad `::view-transition-group(*)` in shared demos unless intentionally documenting global behavior.
 
@@ -128,11 +129,11 @@ Before changing guide demo layout, spacing, sizing, color, radius, typography, o
 Follow the public Design Tokens policy when writing site code, demos, and examples:
 
 - Prefer configured foundation tokens from `packages/preset/src/theme.css`.
-- Prefer preset palette, surface, and text aliases such as `fg:blue-60`, `text:body`, `text:muted`, `text:blue`, `surface:base`, `bg:canvas`, `bg:blue`, and `bg:blue-5`.
-- Use project semantic tokens such as `b:1px|solid|divider`, `accent`, or `danger` only when the page or project defines those tokens in `@theme`.
+- Prefer preset palette, surface, line, and text aliases such as `fg:blue-60`, `text:body`, `text:muted`, `text:blue`, `surface:base`, `bg:canvas`, `bg:blue`, `bg:blue-5`, and `b:1px|solid|line`.
+- Use project semantic tokens such as `divider`, `accent`, or `danger` only when the page or project defines those tokens in `@theme`.
 - Preserve typography semantics: use `font:<size>` for raw font-size-only replacements, and `text:<size>` only when the complete type treatment is intended.
 - Prefer scale tokens such as `p:sm`, `gap:md`, and `mt:lg` over routine raw spacing, color, shadow, or timing values.
-- Prefer contextual shorthand such as `b:1px|solid|divider`, `text:body`, and `transition:opacity|normal|standard` when the utility already resolves a namespace.
+- Prefer contextual shorthand such as `b:1px|solid|line`, `b:1px|solid|muted`, `text:body`, and `transition:opacity|normal|standard` when the utility already resolves a namespace.
 - Low-level values are acceptable when teaching syntax, no token exists, the value is local measured geometry, or the value is structural layout such as `w:50%`, `h:100dvh`, `m:0`, `m:1px`, `z:1`, or `opacity:.64`.
 - Promote reused visual low-level values to named tokens.
 - Use docs callout markers as regular text paragraphs: `(x)`, `(o)`, `(!)`, and `(i)`.

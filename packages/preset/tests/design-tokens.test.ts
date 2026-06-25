@@ -48,10 +48,6 @@ const removedVariableNames = [
     'color-focus',
     'color-selection',
     'color-text',
-    'color-line',
-    'color-line-strong',
-    'color-line-muted',
-    'color-line-subtle',
     'color-success',
     'color-text-success',
     'color-line-success',
@@ -70,6 +66,13 @@ const textRoleAliases = [
     ['inverse', '$color-white', '$color-black'],
     ['link', '$color-blue-60', '$color-blue-30'],
     ['link-hover', '$color-blue-70', '$color-blue-20']
+] as const
+
+const lineRoleAliases = [
+    ['color-line', 'color', 'line', 'oklch(0% 0 none / .12)', 'oklch(100% 0 none / .12)'],
+    ['color-line-strong', 'color-line', 'strong', 'oklch(0% 0 none / .18)', 'oklch(100% 0 none / .18)'],
+    ['color-line-muted', 'color-line', 'muted', 'oklch(0% 0 none / .09)', 'oklch(100% 0 none / .09)'],
+    ['color-line-subtle', 'color-line', 'subtle', 'oklch(0% 0 none / .06)', 'oklch(100% 0 none / .06)']
 ] as const
 
 const baseHueAliases = [
@@ -240,7 +243,7 @@ describe.concurrent('@master/css-preset design token parity', () => {
         }
     })
 
-    test('keeps base hue, text role, and text hue aliases mode-specific', () => {
+    test('keeps base hue, line role, text role, and text hue aliases mode-specific', () => {
         for (const [hue, lightValue, darkValue] of baseHueAliases) {
             expect(findVariable(`color-${hue}`), hue).toMatchObject({
                 namespace: 'color',
@@ -251,6 +254,18 @@ describe.concurrent('@master/css-preset design token parity', () => {
                     dark: { type: 'string', value: darkValue }
                 },
                 dependencies: [lightValue.slice(1), darkValue.slice(1)]
+            })
+        }
+
+        for (const [name, namespace, key, lightValue, darkValue] of lineRoleAliases) {
+            expect(findVariable(name), name).toMatchObject({
+                namespace,
+                key,
+                type: 'string',
+                modes: {
+                    light: { type: 'string', value: lightValue },
+                    dark: { type: 'string', value: darkValue }
+                }
             })
         }
 
@@ -311,9 +326,13 @@ describe.concurrent('@master/css-preset design token parity', () => {
         expect(css.createRule('text:inverse')?.text).toBe('.text\\:inverse{color:var(--color-text-inverse)}')
         expect(css.createRule('text:link')?.text).toBe('.text\\:link{color:var(--color-text-link)}')
         expect(css.createRule('text:link-hover')?.text).toBe('.text\\:link-hover{color:var(--color-text-link-hover)}')
-        expect(css.createRule('bg:line')).toBeUndefined()
+        expect(css.createRule('bg:line')?.text).toBe('.bg\\:line{background-color:var(--color-line)}')
         expect(css.createRule('fg:muted')?.text).toBe('.fg\\:muted{color:var(--color-text-muted)}')
-        expect(css.createRule('b:subtle')?.text).not.toContain('var(--color-line-subtle)')
+        expect(css.createRule('b:line')?.text).toBe('.b\\:line{border-color:var(--color-line)}')
+        expect(css.createRule('b:1px|solid|line')?.text).toBe('.b\\:1px\\|solid\\|line{border:1px solid var(--color-line)}')
+        expect(css.createRule('b:muted')?.text).toBe('.b\\:muted{border-color:var(--color-line-muted)}')
+        expect(css.createRule('b:subtle')?.text).toBe('.b\\:subtle{border-color:var(--color-line-subtle)}')
+        expect(css.createRule('outline:1px|solid|subtle')?.text).toBe('.outline\\:1px\\|solid\\|subtle{outline:1px solid var(--color-line-subtle)}')
         expect(css.createRule('bg:blue-60')?.text).toContain('background-color:var(--color-blue-60)')
         expect(css.createRule('shadow:sm')?.text).toContain('box-shadow:var(--shadow-sm)')
         expect(css.createRule('w:sm')?.text).toContain('width:var(--container-sm)')
