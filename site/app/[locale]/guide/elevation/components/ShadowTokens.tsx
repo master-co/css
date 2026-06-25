@@ -1,22 +1,69 @@
-import { getThemeModeVariables } from '~/site/utils/theme-variables'
+import Demo from '~/internal/components/Demo'
+import DemoLabel from '~/internal/components/DemoLabel'
 import InlineCode from '~/internal/components/InlineCode'
+import { getThemeModeVariables } from '~/site/utils/theme-variables'
 
-const shadowApplications: Record<string, string> = {
-    xs: 'Subtle separation, small controls',
-    sm: 'Card, raised button, compact panel',
-    md: 'Floating toolbar, hover lift, command menu',
-    lg: 'Dropdown, popover, toast',
-    xl: 'Dialog, drawer, elevated panel',
-    '2xl': 'Modal, blocking overlay, spotlight surface'
+const shadowRoles: Record<string, { utility: string, role: string, description: string }> = {
+    xs: {
+        utility: 'shadow:xs',
+        role: 'Quiet separation',
+        description: 'Small controls, table rows, and subtle raised states.'
+    },
+    sm: {
+        utility: 'shadow:sm',
+        role: 'Standard surface',
+        description: 'Cards, reusable panels, and quiet product surfaces.'
+    },
+    md: {
+        utility: 'shadow:md',
+        role: 'Temporary lift',
+        description: 'Hover lift, floating toolbars, and command surfaces.'
+    },
+    lg: {
+        utility: 'shadow:lg',
+        role: 'Detached overlay',
+        description: 'Dropdowns, popovers, toasts, and menus.'
+    },
+    xl: {
+        utility: 'shadow:xl',
+        role: 'Workflow interruption',
+        description: 'Drawers, dialogs, and focused panels.'
+    },
+    '2xl': {
+        utility: 'shadow:2xl',
+        role: 'Blocking layer',
+        description: 'Modals and spotlight surfaces above a dimmed page.'
+    }
 }
 
-export default () => {
-    const lightShadowEntries = getThemeModeVariables('shadow', 'light')
-        .map(({ key, value }) => [key, String(value)] as const)
-    const darkShadowValueByKey = new Map(
-        getThemeModeVariables('shadow', 'dark')
-            .map(({ key, value }) => [key, String(value)] as const)
+function getShadowRows() {
+    return getThemeModeVariables('shadow', 'light').flatMap(({ key }) => {
+        const role = shadowRoles[key]
+        if (!role) return []
+
+        return [{
+            key,
+            token: `--shadow-${key}`,
+            ...role
+        }]
+    })
+}
+
+function ShadowPreviewCell({ utility }: { utility: string }) {
+    return (
+        <div className="grid-cols:2 gap:xs min-w:28x">
+            <div className="p:sm b:1px|solid|base r:sm bg:canvas light">
+                <div className={`surface:raised r:sm size:8x mx:auto ${utility}`} />
+            </div>
+            <div className="p:sm b:1px|solid|base r:sm bg:canvas dark">
+                <div className={`surface:raised r:sm size:8x mx:auto ${utility}`} />
+            </div>
+        </div>
     )
+}
+
+export function ShadowTokenTable() {
+    const rows = getShadowRows()
 
     return (
         <figure>
@@ -25,25 +72,84 @@ export default () => {
                     <thead>
                         <tr>
                             <th>Token</th>
-                            <th>Light value</th>
-                            <th>Dark value</th>
-                            <th>Application</th>
+                            <th>Role</th>
+                            <th>Preview</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {
-                            lightShadowEntries.map(([key, lightValue]) => (
-                                <tr key={key}>
-                                    <td><InlineCode className="white-space:nowrap">{`shadow-${key}`}</InlineCode></td>
-                                    <td><InlineCode>{lightValue}</InlineCode></td>
-                                    <td><InlineCode>{darkShadowValueByKey.get(key) || ''}</InlineCode></td>
-                                    <td>{shadowApplications[key]}</td>
-                                </tr>
-                            ))
-                        }
+                        {rows.map(({ key, token, utility, role, description }) => (
+                            <tr key={key}>
+                                <td>
+                                    <InlineCode className="white-space:nowrap">{token}</InlineCode>
+                                    <br />
+                                    <InlineCode className="white-space:nowrap">{utility}</InlineCode>
+                                </td>
+                                <td>
+                                    <div className="font:medium text:strong">{role}</div>
+                                    <p className="mx:0 mb:0 mt:xs text:sm text:muted">{description}</p>
+                                </td>
+                                <td>
+                                    <ShadowPreviewCell utility={utility} />
+                                </td>
+                            </tr>
+                        ))}
                     </tbody>
                 </table>
             </div>
         </figure>
+    )
+}
+
+export function ShadowScaleDemo() {
+    return (
+        <Demo>
+            <div className="container w:full">
+                <div className="grid-cols:1 gap:lg w:full grid-cols:2@container(2xs) grid-cols:3@container(md)">
+                    {getShadowRows().map(({ key, utility, role, description }) => (
+                        <div className={`surface:raised b:1px|solid|base r:lg p:md ${utility}`} key={key}>
+                            <DemoLabel>{utility}</DemoLabel>
+                            <div className="font:medium text:strong">{role}</div>
+                            <p className="mx:0 mb:0 mt:xs text:sm text:muted">{description}</p>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        </Demo>
+    )
+}
+
+function SurfacePreview() {
+    return (
+        <div className="grid gap:md w:full max-w:3xs p:lg r:lg bg:canvas text:body">
+            <div className="p:md b:1px|solid|base r:lg surface:base">
+                <div className="font:medium text:strong">Base surface</div>
+                <p className="mx:0 mb:0 mt:xs text:sm text:muted">Flat content stays grounded on the canvas.</p>
+            </div>
+            <div className="p:md b:1px|solid|base r:lg surface:raised shadow:sm">
+                <div className="font:medium text:strong">Raised surface</div>
+                <p className="mx:0 mb:0 mt:xs text:sm text:muted">Cards use a small shadow plus a clear edge.</p>
+            </div>
+            <div className="justify-self:end p:md b:1px|solid|base r:lg surface:overlay shadow:lg w:5/6">
+                <div className="font:medium text:strong">Overlay surface</div>
+                <p className="mx:0 mb:0 mt:xs text:sm text:muted">Popovers detach from the page without changing the markup by mode.</p>
+            </div>
+        </div>
+    )
+}
+
+export function SurfaceElevationDemo() {
+    return (
+        <Demo $py={0} $px={0}>
+            <div className="container w:full">
+                <div className="grid-cols:1 w:full grid-cols:2@container(sm)">
+                    <div className="grid place-items:center p:lg bg:canvas light">
+                        <SurfacePreview />
+                    </div>
+                    <div className="grid place-items:center p:lg bg:canvas dark">
+                        <SurfacePreview />
+                    </div>
+                </div>
+            </div>
+        </Demo>
     )
 }

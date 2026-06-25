@@ -1,83 +1,59 @@
-import ShadowTokens from './components/ShadowTokens'
+import { ShadowScaleDemo, ShadowTokenTable, SurfaceElevationDemo } from './components/ShadowTokens'
 
 ## Overview [sr-only]
-Elevation creates perceived depth between surfaces. In CSS, that depth is usually expressed with [box-shadow](https://developer.mozilla.org/en-US/docs/Web/CSS/box-shadow), but the design decision is larger than the property: elevation tells users which surface is resting on the page, which surface is floating, and which surface is interrupting the workflow.
+Elevation describes the relationship between surfaces. In CSS, that relationship is usually rendered with [box-shadow](https://developer.mozilla.org/en-US/docs/Web/CSS/box-shadow), but the design decision is broader than the property: a surface can be grounded on the canvas, raised as a reusable card, detached as an overlay, or placed above the workflow as a modal.
 
-Master CSS maps elevation to the `shadow` namespace. Use tokens such as `shadow:xs`, `shadow:sm`, and `shadow:lg` for product surfaces instead of repeating raw multi-part shadow values in markup. The preset shadow scale is mode-aware: the same class resolves to a lighter shadow recipe with a subtle neutral edge in light mode and a stronger dark-mode recipe with a subtle light edge.
+Master CSS maps elevation to the `shadow` namespace. Use `shadow:*` tokens for repeated product surfaces instead of copying raw multi-part shadow values into markup. The preset scale is mode-aware, so the same class resolves to a light shadow recipe in light mode and a stronger dark-mode recipe in dark mode.
 
-<Demo>
-    <div className="container w:full">
-        <div className="grid-cols:1 grid-cols:2@container(2xs) grid-cols:3@container(md) gap:lg w:full">
-            <div className="surface:raised r:lg p:md shadow:xs">
-                <DemoLabel>shadow:xs</DemoLabel>
-                <div className="font:medium">Separated</div>
-                <p className="text:gray m:0 mt:xs text:sm">Rows, compact controls</p>
-            </div>
-            <div className="surface:raised r:lg p:md shadow:sm">
-                <DemoLabel>shadow:sm</DemoLabel>
-                <div className="font:medium">Raised</div>
-                <p className="text:gray m:0 mt:xs text:sm">Cards, quiet panels</p>
-            </div>
-            <div className="surface:raised r:lg p:md shadow:md">
-                <DemoLabel>shadow:md</DemoLabel>
-                <div className="font:medium">Floating</div>
-                <p className="text:gray m:0 mt:xs text:sm">Hover lift, toolbars</p>
-            </div>
-            <div className="surface:raised r:lg p:md shadow:lg">
-                <DemoLabel>shadow:lg</DemoLabel>
-                <div className="font:medium">Overlay</div>
-                <p className="text:gray m:0 mt:xs text:sm">Dropdowns, popovers</p>
-            </div>
-            <div className="surface:raised r:lg p:md shadow:xl">
-                <DemoLabel>shadow:xl</DemoLabel>
-                <div className="font:medium">Interrupting</div>
-                <p className="text:gray m:0 mt:xs text:sm">Drawers, dialogs</p>
-            </div>
-            <div className="surface:raised r:lg p:md shadow:2xl">
-                <DemoLabel>shadow:2xl</DemoLabel>
-                <div className="font:medium">Blocking</div>
-                <p className="text:gray m:0 mt:xs text:sm">Modals, spotlight surfaces</p>
-            </div>
-        </div>
-    </div>
-</Demo>
+<ShadowScaleDemo />
 
 ---
 
-## Define mode-aware shadow variables
-Elevation tokens live in the theme layer as `shadow-*` tokens. The default scale runs from `xs` to `2xl`; each step increases offset, blur, and opacity while staying practical for application UI. The preset defines the same token keys in `@theme light` and `@theme dark`, so markup stays stable while the active mode changes the value.
+## Choose an elevation token
+Start with the surface relationship, then choose the lowest token that makes that relationship clear. More shadow does not create more hierarchy when every surface competes for depth.
 
-<ShadowTokens />
+<ShadowTokenTable />
 
-Use the same token names across modes:
+The role of each token should stay stable across modes. Light and dark recipes can use different opacity, edge, and blur values, but `shadow:sm` should still mean a standard raised surface in both modes.
 
-```css name=index.css
-@theme light {
-    --shadow-sm: 0 0 0 1px oklch(0% 0 none / .04), 0 1px 2px -1px oklch(0% 0 none / .06), 0 3px 6px -2px oklch(0% 0 none / .08);
-    --shadow-lg: 0 0 0 1px oklch(0% 0 none / .05), 0 4px 8px -4px oklch(0% 0 none / .08), 0 16px 32px -8px oklch(0% 0 none / .12);
-}
+---
 
-@theme dark {
-    --shadow-sm: 0 0 0 1px oklch(100% 0 none / .05), 0 1px 2px -1px oklch(0% 0 none / .34), 0 3px 6px -2px oklch(0% 0 none / .26);
-    --shadow-lg: 0 0 0 1px oklch(100% 0 none / .06), 0 4px 8px -4px oklch(0% 0 none / .42), 0 16px 32px -8px oklch(0% 0 none / .34);
-}
+## Pair elevation with color roles
+Elevation needs a visible ground. Pair shadows with `bg:canvas`, `surface:*`, `b:*`, `text:*`, and radius tokens so depth reads correctly in light and dark themes.
+
+<SurfaceElevationDemo />
+
+```html
+<!-- @MARK bg:canvas --><!-- @MARK text:body --><!-- @MARK surface:base --><!-- @MARK surface:raised --><!-- @MARK surface:overlay --><!-- @MARK b:1px|solid|base --><!-- @MARK shadow:sm --><!-- @MARK shadow:lg -->
+<main class="bg:canvas text:body">
+    <section class="surface:base b:1px|solid|base r:lg">
+        <article class="surface:raised b:1px|solid|base r:lg shadow:sm">
+            <h2 class="text:strong">Raised surface</h2>
+            <p class="text:muted">Cards need a clear edge before they need a large shadow.</p>
+        </article>
+
+        <aside class="surface:overlay b:1px|solid|base r:lg shadow:lg">
+            Detached overlay
+        </aside>
+    </section>
+</main>
 ```
 
-Keep token names size-based and mode-neutral. Avoid names like `shadow:dark-lg`; define the same key in `@theme light` and `@theme dark` so existing markup remains stable.
+Use borders for edges and shadows for separation. A low shadow without a border can disappear on a near-matching background, while a strong shadow on every panel makes the page noisy.
 
 ---
 
 ## Use shadow tokens
-Use `shadow:<token>` for the common elevation levels. The utility resolves values from the `shadow-*` tokens and emits a stable `box-shadow: var(--shadow-*)` declaration. The variable value changes with the active mode.
+Use `shadow:<token>` for common elevation levels. The utility resolves values from `shadow-*` tokens and emits a stable `box-shadow: var(--shadow-*)` declaration; the active mode changes the variable value.
 
 ```html
 <!-- @MARK shadow:sm -->
-<article class="surface:base r:lg b:1px|solid|base shadow:sm">
+<article class="surface:base b:1px|solid|base r:lg shadow:sm">
     ...
 </article>
 
 <!-- @MARK shadow:lg -->
-<div class="surface:base r:lg b:1px|solid|base shadow:lg">
+<div class="surface:overlay b:1px|solid|base r:lg shadow:lg">
     ...
 </div>
 ```
@@ -89,49 +65,12 @@ Use `shadow:<token>` for the common elevation levels. The utility resolves value
     </Class2CSS>
 </details>
 
-Use `shadow:*` in product markup. Use the more explicit `box-shadow:*` form when the page is teaching native property mapping or when the surrounding code benefits from the native property name.
-
----
-
-## Elevation scale
-Choose the lowest token that makes the surface relationship clear. More shadow is not more hierarchy if every surface is elevated.
-
-| Surface role | Recommended token | Notes |
-| --- | --- | --- |
-| Quiet separation | `shadow:xs` | Small controls, table rows, subtle raised states |
-| Standard card | `shadow:sm` | Default surface elevation for reusable cards and panels |
-| Temporary lift | `shadow:md` | Hover lift, floating toolbars, command surfaces |
-| Detached overlay | `shadow:lg` | Dropdowns, popovers, toasts, menus |
-| Workflow interruption | `shadow:xl` | Drawers, dialogs, focused panels |
-| Blocking layer | `shadow:2xl` | Modals and spotlight surfaces above a dimmed page |
-
-The scale should describe the relationship between surfaces, not the visual drama of a single element. Because light and dark modes share token keys, the role of each step should stay the same in both modes even when the shadow recipe changes.
-
----
-
-## Build surfaces, not shadows
-Elevation only works when the surface has a clear ground. Pair shadows with background, border, and radius tokens so low elevations remain visible in both light and dark themes. Preset shadows include a subtle edge layer in each mode, but do not judge a token from only one mode.
-
-```html
-<!-- @MARK surface:base --><!-- @MARK b:1px|solid|base --><!-- @MARK r:lg --><!-- @MARK shadow:sm -->
-<article class="surface:base b:1px|solid|base r:lg shadow:sm p:lg">
-    ...
-</article>
-```
-
-<details>
-    <summary>Generated CSS</summary>
-    <Class2CSS>
-        {['r:lg', 'shadow:sm', 'p:lg']}
-    </Class2CSS>
-</details>
-
-Use borders for stronger edges and shadows for separation. A low shadow without a border can still look too soft on near-matching backgrounds, so pair surface and line tokens when the component needs explicit structure.
+Use `shadow:*` in product markup. Use the explicit `box-shadow:*` form when documenting native property mapping or when surrounding code benefits from the native property name.
 
 ---
 
 ## Change elevation by state
-State changes should communicate interaction, not decoration. A hover shadow can make a card feel liftable; a focus shadow should not replace an accessible focus indicator.
+State elevation should communicate interaction, not decoration. A hover shadow can make a card feel liftable; a focus shadow should not replace an accessible focus indicator.
 
 ```html
 <!-- @MARK shadow:sm --><!-- @MARK shadow:md:hover --><!-- @MARK shadow:none@print -->
@@ -147,12 +86,12 @@ State changes should communicate interaction, not decoration. A hover shadow can
     </Class2CSS>
 </details>
 
-Keep state elevation small. Moving from `shadow:sm` to `shadow:md` is usually enough for hover. Jumping from `shadow:sm` to `shadow:2xl` makes a normal card feel like a modal.
+Keep state changes small. Moving from `shadow:sm` to `shadow:md` is usually enough for hover. Jumping from `shadow:sm` to `shadow:2xl` makes a normal card feel like a modal.
 
 ---
 
-## Customize the scale
-Override shadow variables when your product needs softer depth, sharper enterprise surfaces, or a stronger overlay system. Customize light and dark values together so the same `shadow:*` classes preserve their meaning across modes.
+## Customize mode-aware shadows
+Override the same `shadow-*` keys in `@theme light` and `@theme dark` when your product needs softer depth, sharper enterprise surfaces, or stronger overlays. Keep the token names size-based and mode-neutral so the markup does not fork by theme.
 
 ```css name=index.css
 @theme light {
@@ -166,7 +105,13 @@ Override shadow variables when your product needs softer depth, sharper enterpri
 }
 ```
 
-Promote repeated raw values into the scale. Keep one-off art direction in local markup or component CSS until it proves reusable. If a one-off raw shadow must differ by mode, prefer promoting it to a token instead of duplicating conditional raw values in markup.
+```html
+<!-- @MARK shadow:sm --><!-- @MARK shadow:lg -->
+<article class="shadow:sm">...</article>
+<div class="shadow:lg">...</div>
+```
+
+Promote repeated raw shadows into the scale. Keep one-off art direction in local markup or component CSS until it proves reusable. If a one-off shadow must differ by mode, prefer promoting it to a token instead of duplicating conditional raw values in markup.
 
 ---
 
@@ -186,7 +131,7 @@ Promote repeated raw values into the scale. Keep one-off art direction in local 
 ```html
 <main class="bg:canvas">
     <section class="surface:base b:1px|solid|base">
-        <article class="surface:base b:1px|solid|base shadow:sm">...</article>
+        <article class="surface:raised b:1px|solid|base shadow:sm">...</article>
     </section>
 </main>
 ```
