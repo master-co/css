@@ -16,6 +16,9 @@ inputs:
     submodules-token:
         description: Token used by pnpm submodules to fetch private submodules.
         default: ""
+    turbo-cache:
+        description: Whether to restore and save the local Turbo cache.
+        default: "true"
 runs:
     using: composite
     steps:
@@ -26,6 +29,14 @@ runs:
           with:
               node-version: ${{ inputs.node-version }}
               cache: pnpm
+        - if: ${{ inputs.turbo-cache == 'true' }}
+          uses: actions/cache@v6
+          with:
+              path: .turbo/cache
+              key: ${{ runner.os }}-turbo-${{ github.ref_name }}-${{ github.sha }}
+              restore-keys: |
+                  ${{ runner.os }}-turbo-${{ github.ref_name }}-
+                  ${{ runner.os }}-turbo-
         - if: ${{ inputs.submodules == 'true' }}
           shell: bash
           run: pnpm submodules
