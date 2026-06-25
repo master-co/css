@@ -15,13 +15,13 @@ const radiusRoles: Record<string, string> = {
 const radiusShortcuts = [
     {
         key: 'rounded',
-        token: 'rounded',
+        token: '',
         utility: 'rounded',
         role: 'Tags, segmented controls, pill buttons.'
     },
     {
         key: 'round',
-        token: 'round',
+        token: '',
         utility: 'round',
         role: 'Avatars, icon buttons, indicators.'
     }
@@ -59,7 +59,7 @@ export function RadiusTokenTable() {
                         {getRadiusRows().map(({ key, token, utility, role }) => (
                             <tr key={key}>
                                 <td>
-                                    <InlineCode className="white-space:nowrap">{token}</InlineCode>
+                                    {token && <InlineCode className="white-space:nowrap">{token}</InlineCode>}
                                 </td>
                                 <td>
                                     <InlineCode className="white-space:nowrap">{utility}</InlineCode>
