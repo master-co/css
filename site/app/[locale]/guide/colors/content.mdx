@@ -106,31 +106,38 @@ Text hue aliases choose foreground-oriented palette steps for light and dark mod
 <div class="text:yellow">M</div>
 ```
 
----
+### Customize color roles
+Palette steps are raw swatches. Preset roles are the product-facing layer that lets the same markup adapt across light and dark modes.
 
-## With variable modes
-Use [variable modes](/guide/theme#modes) to adjust preset color roles for light and dark modes. Keep mode-specific decisions in theme variables when the same role repeats across the product.
-
-(x) Markup owns the light and dark color choice.
-
-```html
-<div class="fg:white@dark fg:black@light">...</div>
-```
-
-(o) The theme owns the mode-specific role.
+Override role tokens when a repeated UI decision needs product-specific colors. Keep the classes semantic so components do not need separate light and dark color choices.
 
 ```css name=index.css
 @theme light {
     --color-canvas: $color-white;
+    --color-surface-base: $color-neutral-0;
+    --color-surface-raised: $color-white;
+    --color-line-base: oklch(0% 0 none / 0.12);
+    --color-text-body: $color-neutral-70;
+    --color-text-muted: $color-neutral-60;
 }
 
 @theme dark {
     --color-canvas: $color-gray-100;
+    --color-surface-base: $color-gray-90;
+    --color-surface-raised: $color-gray-80;
+    --color-line-base: oklch(100% 0 none / 0.12);
+    --color-text-body: $color-gray-30;
+    --color-text-muted: $color-gray-40;
 }
 ```
 
 ```html
-<main class="bg:canvas">...</main>
+<!-- @MARK bg:canvas --><!-- @MARK text:body --><!-- @MARK surface:base --><!-- @MARK b:1px|solid|base --><!-- @MARK text:muted -->
+<main class="bg:canvas text:body">
+    <section class="surface:base b:1px|solid|base">
+        <p class="text:muted">The classes stay the same in every mode.</p>
+    </section>
+</main>
 ```
 
-Use conditional color classes when a one-off interaction genuinely differs by mode. For shared product color decisions, prefer a named token that can resolve differently per mode.
+Use `@theme {}` for fixed project roles that do not change by mode. Use `@theme light` and `@theme dark` when the same role needs different values.
