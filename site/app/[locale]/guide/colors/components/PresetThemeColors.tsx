@@ -12,6 +12,7 @@ type PresetThemeColorGroup = 'canvas' | 'surfaces' | 'lineRoles' | 'baseHue' | '
 interface PresetThemeColorRow {
     key: string
     token: string
+    utilities: string[]
     previewClassName: string
     previewType: PresetThemeColorPreview
 }
@@ -23,6 +24,7 @@ function tokenName(namespace: string, key: string) {
 
 function getModeRows(
     namespace: string,
+    utilities: (key: string) => string[],
     previewClassName: (key: string) => string,
     previewType: PresetThemeColorPreview
 ): PresetThemeColorRow[] {
@@ -33,6 +35,7 @@ function getModeRows(
         return {
             key,
             token: `--${name}`,
+            utilities: utilities(key),
             previewClassName: previewClassName(key),
             previewType
         }
@@ -41,14 +44,15 @@ function getModeRows(
 
 const colorRows = getModeRows(
     'color',
+    (key) => key === 'canvas' ? ['bg:canvas'] : [`bg:${key}`, `fg:${key}`],
     (key) => key === 'canvas' ? 'bg:canvas@light bg:canvas@dark' : `bg:${key}@light bg:${key}@dark`,
     'background'
 )
 const canvasRows = colorRows.filter(({ token }) => token === '--color-canvas')
-const lineRows = getModeRows('color-line', (key) => `outline:${key}@light outline:${key}@dark`, 'line')
+const lineRows = getModeRows('color-line', (key) => [`b:${key}`], (key) => `outline:${key}@light outline:${key}@dark`, 'line')
 const baseHueRows = colorRows.filter(({ token }) => token !== '--color-canvas')
-const surfaceRows = getModeRows('color-surface', (key) => `surface:${key}@light surface:${key}@dark`, 'background')
-const textRows = getModeRows('color-text', (key) => `text:${key}@light text:${key}@dark`, 'text')
+const surfaceRows = getModeRows('color-surface', (key) => [`surface:${key}`], (key) => `surface:${key}@light surface:${key}@dark`, 'background')
+const textRows = getModeRows('color-text', (key) => [`text:${key}`], (key) => `text:${key}@light text:${key}@dark`, 'text')
 const textRoleKeys = new Set(['body', 'strong', 'muted', 'subtle', 'disabled', 'placeholder', 'inverse', 'link', 'link-hover'])
 const textRoleRows = textRows.filter(({ key }) => textRoleKeys.has(key))
 const textHueRows = textRows.filter(({ key }) => !textRoleKeys.has(key))
@@ -212,13 +216,21 @@ export default function PresetThemeColors({ group }: { group: PresetThemeColorGr
                     <thead>
                         <tr>
                             <th>Token</th>
+                            <th>Class</th>
                             <th>{columnTitle}</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {rows.map(({ key, token, previewClassName, previewType }) => (
+                        {rows.map(({ key, token, utilities, previewClassName, previewType }) => (
                             <tr key={token}>
                                 <td><PresetThemeColorPreviewCell previewClassName={previewClassName} previewType={previewType} /><InlineCode className="white-space:nowrap">{token}</InlineCode></td>
+                                <td>
+                                    <div className="flex flex-wrap gap:xs">
+                                        {utilities.map((utility) => (
+                                            <InlineCode key={utility} className="white-space:nowrap">{utility}</InlineCode>
+                                        ))}
+                                    </div>
+                                </td>
                                 <td>{rowDescription(key)}</td>
                             </tr>
                         ))}
