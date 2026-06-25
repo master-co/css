@@ -142,11 +142,7 @@ export function SurfacesDemo() {
 export function LineRolesDemo() {
     function renderPreview() {
         return (
-            <div className="grid overflow:hidden w:full max-w:3xs b:1px|solid|line r:sm surface:base text:body shadow:lg">
-                <div className="p:md bb:1px|solid|strong text:strong">Account settings</div>
-                <div className="p:md bb:1px|solid|muted text:muted">Billing cycle renews next month.</div>
-                <div className="mx:md mb:md mt:0 p:md r:sm outline:1px|solid|subtle outline-offset:-1px text:subtle">Optional notification rules</div>
-            </div>
+                <div className="size:24x b:5x|solid|line r:sm"></div>
         )
     }
 
