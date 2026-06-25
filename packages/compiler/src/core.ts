@@ -489,11 +489,159 @@ function formatDeclarationValue(declaration: Declaration) {
         throw error
     }
     const colonIndex = declarationText.indexOf(':')
-    return declarationText.slice(colonIndex + 1).trim()
+    return formatCSSNumberLiterals(declarationText.slice(colonIndex + 1).trim())
+}
+
+function normalizeNumberText(value: string) {
+    const [rawMantissa, rawExponent] = value.toLowerCase().replace('e+', 'e').split('e')
+    let mantissa = rawMantissa.replace(/^\+/, '')
+    if (mantissa.includes('.')) {
+        mantissa = mantissa.replace(/(\.\d*?)0+$/, '$1').replace(/\.$/, '')
+    }
+    if (mantissa === '-0') mantissa = '0'
+    mantissa = mantissa.replace(/^(-?)0\./, '$1.')
+    return rawExponent === undefined ? mantissa : `${mantissa}e${rawExponent}`
 }
 
 function formatNumber(value: number) {
-    return String(value).replace(/^(-?)0\./, '$1.')
+    if (Object.is(value, -0)) return '0'
+    if (!Number.isFinite(value)) return String(value)
+
+    const direct = normalizeNumberText(String(value))
+    if (Number.isInteger(value)) return direct
+
+    const target = Math.fround(value)
+    if (!Number.isFinite(target)) return direct
+
+    let best = direct
+    for (let precision = 1; precision <= 9; precision++) {
+        const candidate = normalizeNumberText(target.toPrecision(precision))
+        if (!Object.is(Math.fround(Number(candidate)), target)) continue
+        if (
+            candidate.length < best.length
+            || (candidate.length === best.length && best.includes('e') && !candidate.includes('e'))
+        ) {
+            best = candidate
+        }
+    }
+    return best
+}
+
+function isCSSIdentifierChar(value: string | undefined) {
+    return value !== undefined && /[-_a-zA-Z0-9]/.test(value)
+}
+
+function isCSSDigit(value: string | undefined) {
+    return value !== undefined && value >= '0' && value <= '9'
+}
+
+function canStartCSSNumber(value: string, index: number) {
+    const previous = value[index - 1]
+    if (isCSSIdentifierChar(previous) || previous === '#' || previous === '\\') return false
+
+    const current = value[index]
+    const next = value[index + 1]
+    if (current === '+' || current === '-') {
+        return isCSSDigit(next) || (next === '.' && isCSSDigit(value[index + 2]))
+    }
+    return isCSSDigit(current) || (current === '.' && isCSSDigit(next))
+}
+
+function readCSSNumber(value: string, start: number) {
+    let index = start
+    if (value[index] === '+' || value[index] === '-') index++
+
+    let hasDigits = false
+    while (isCSSDigit(value[index])) {
+        hasDigits = true
+        index++
+    }
+
+    if (value[index] === '.') {
+        index++
+        while (isCSSDigit(value[index])) {
+            hasDigits = true
+            index++
+        }
+    }
+
+    if (!hasDigits) return
+
+    if (value[index] === 'e' || value[index] === 'E') {
+        let exponentIndex = index + 1
+        if (value[exponentIndex] === '+' || value[exponentIndex] === '-') exponentIndex++
+        const exponentStart = exponentIndex
+        while (isCSSDigit(value[exponentIndex])) exponentIndex++
+        if (exponentIndex > exponentStart) index = exponentIndex
+    }
+
+    return {
+        text: value.slice(start, index),
+        end: index
+    }
+}
+
+function findCSSFunctionEnd(value: string, start: number) {
+    let depth = 0
+    for (let index = start; index < value.length; index++) {
+        const char = value[index]
+        if (char === '\\') {
+            index++
+            continue
+        }
+        if (char === '"' || char === '\'') {
+            index = findCSSClosingQuote(value, index, char)
+            continue
+        }
+        if (char === '(') {
+            depth++
+            continue
+        }
+        if (char === ')') {
+            depth--
+            if (depth === 0) return index + 1
+        }
+    }
+    return value.length
+}
+
+function formatCSSNumberLiterals(value: string) {
+    let result = ''
+    let index = 0
+    while (index < value.length) {
+        const char = value[index]
+        if (char === '\\') {
+            result += value.slice(index, index + 2)
+            index += 2
+            continue
+        }
+        if (char === '"' || char === '\'') {
+            const end = findCSSClosingQuote(value, index, char) + 1
+            result += value.slice(index, end)
+            index = end
+            continue
+        }
+        if (
+            value.slice(index, index + 4).toLowerCase() === 'url('
+            && !isCSSIdentifierChar(value[index - 1])
+        ) {
+            const end = findCSSFunctionEnd(value, index)
+            result += value.slice(index, end)
+            index = end
+            continue
+        }
+        if (canStartCSSNumber(value, index)) {
+            const number = readCSSNumber(value, index)
+            if (number) {
+                result += formatNumber(Number(number.text))
+                index = number.end
+                continue
+            }
+        }
+        result += char
+        index++
+    }
+    return result
 }
 
 function formatDeclarationValueOverride(declaration: Declaration): string | undefined {
@@ -576,11 +724,11 @@ function formatToken(token: Token): string {
         case 'unquoted-url':
             return `url(${token.value})`
         case 'number':
-            return String(token.value)
+            return formatNumber(token.value)
         case 'percentage':
-            return `${token.value * 100}%`
+            return `${formatNumber(token.value * 100)}%`
         case 'dimension':
-            return `${token.value}${token.unit}`
+            return `${formatNumber(token.value)}${token.unit}`
         case 'white-space':
             return token.value
         case 'comment':
@@ -664,12 +812,13 @@ const COMPARISON_OPERATORS: Record<string, string> = {
 
 function formatFeatureValue(value: any): string {
     if (value === undefined || value === null) return ''
-    if (typeof value === 'string' || typeof value === 'number') return String(value)
+    if (typeof value === 'string') return value
+    if (typeof value === 'number') return formatNumber(value)
     switch (value.type) {
         case 'ident':
             return value.value
         case 'number':
-            return String(value.value)
+            return formatNumber(value.value)
         case 'length': {
             let resolvedValue = value.value
             while (
@@ -686,7 +835,7 @@ function formatFeatureValue(value: any): string {
         case 'ratio':
             return `${value.value.numerator}/${value.value.denominator}`
         default:
-            return formatPrelude(value) || String(value.value ?? '')
+            return formatPrelude(value) || (typeof value.value === 'number' ? formatNumber(value.value) : String(value.value ?? ''))
     }
 }
 
@@ -1542,9 +1691,9 @@ function formatKeyframeSelector(selector: KeyframeSelector) {
         case 'to':
             return selector.type
         case 'percentage':
-            return `${selector.value * 100}%`
+            return `${formatNumber(selector.value * 100)}%`
         case 'timeline-range-percentage':
-            return `${selector.value.name} ${selector.value.percentage * 100}%`
+            return `${selector.value.name} ${formatNumber(selector.value.percentage * 100)}%`
     }
 }
 

@@ -7,18 +7,18 @@ packages:
   - 'site'
 
 allowBuilds:
-  '@firebase/util': set this to true or false
-  '@parcel/watcher': set this to true or false
-  '@swc/core': set this to true or false
-  '@vscode/vsce-sign': set this to true or false
-  esbuild: set this to true or false
-  keytar: set this to true or false
-  lmdb: set this to true or false
-  msgpackr-extract: set this to true or false
-  protobufjs: set this to true or false
-  sharp: set this to true or false
-  unrs-resolver: set this to true or false
-  workerd: set this to true or false
+  '@firebase/util': true
+  '@parcel/watcher': true
+  '@swc/core': true
+  '@vscode/vsce-sign': true
+  esbuild: true
+  keytar: true
+  lmdb: true
+  msgpackr-extract: true
+  protobufjs: true
+  sharp: true
+  unrs-resolver: true
+  workerd: true
 
 supportedArchitectures:
   os:

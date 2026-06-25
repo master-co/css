@@ -306,8 +306,8 @@ const migratedRuleExpectations = [
     {
         source: "packages/core/tests/rules/text.test.ts",
         cases: [
-            ["text:1.25rem", "font-size:1.25rem;line-height:max(1.7999999523162842em - max(0rem, 1.25rem - 1rem) * 1.1200000047683716, 1.25rem);letter-spacing:clamp(-.07199999690055847em, calc((1.25rem - 1rem) * -0.04800000041723251), 0em)"],
-            ["text:50%", "font-size:50%;line-height:max(1.7999999523162842em - max(0rem, 50% - 1rem) * 1.1200000047683716, 50%);letter-spacing:clamp(-.07199999690055847em, calc((50% - 1rem) * -0.04800000041723251), 0em)"],
+            ["text:1.25rem", "font-size:1.25rem;line-height:max(1.8em - max(0rem, 1.25rem - 1rem) * 1.12, 1.25rem);letter-spacing:clamp(-.072em, calc((1.25rem - 1rem) * -.048), 0em)"],
+            ["text:50%", "font-size:50%;line-height:max(1.8em - max(0rem, 50% - 1rem) * 1.12, 50%);letter-spacing:clamp(-.072em, calc((50% - 1rem) * -.048), 0em)"],
             ["text:blue", "color:var(--color-text-blue)"],
             ["text-stroke:#fff", "-webkit-text-stroke-color:#fff"],
             ["text-stroke:transparent", "-webkit-text-stroke-color:transparent"],

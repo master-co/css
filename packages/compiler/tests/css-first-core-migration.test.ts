@@ -205,6 +205,12 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
                     -webkit-line-clamp: --value();
                 }
 
+                text:<~font-size|number> {
+                    font-size: --value();
+                    line-height: max(1.8em - max(0rem, --value() - 1rem) * 1.12, --value());
+                    letter-spacing: clamp(-0.072em, calc((--value() - 1rem) * -0.048), 0em);
+                }
+
                 text-decoration:<~color|*> {
                     -webkit-text-decoration: --value();
                     text-decoration: --value();
@@ -282,6 +288,30 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
                     values: ['none']
                 }
             ])
+        })
+        expect(manifest.utilities?.find((utility) => utility.id === 'text:<~font-size|number>')).toMatchObject({
+            kind: 'number',
+            variableAliasRefs: ['~font-size'],
+            emit: {
+                type: 'static',
+                rules: [{
+                    declarations: {
+                        'font-size': null,
+                        'line-height': [
+                            'max(1.8em - max(0rem, ',
+                            null,
+                            ' - 1rem) * 1.12, ',
+                            null,
+                            ')'
+                        ],
+                        'letter-spacing': [
+                            'clamp(-.072em, calc((',
+                            null,
+                            ' - 1rem) * -.048), 0em)'
+                        ]
+                    }
+                }]
+            }
         })
         expect(manifest.utilities?.find((utility) => utility.id === 'text-decoration:<~color|*>')).toMatchObject({
             variableAliasRefs: ['~color'],
