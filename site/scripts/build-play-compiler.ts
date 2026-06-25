@@ -1,9 +1,20 @@
 import { mkdir, rm, stat } from 'node:fs/promises'
 import { dirname, join } from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
-import { build } from 'esbuild'
+import { build, type Metafile } from 'esbuild'
 
 const siteDir = dirname(fileURLToPath(new URL('../package.json', import.meta.url)))
+const workspaceDistInputPattern = /(?:^|[\\/])packages[\\/][^\\/]+[\\/]dist[\\/]/
+
+function assertNoWorkspaceDistInputs(metafile: Metafile) {
+    const distInputs = Object.keys(metafile.inputs).filter((input) => workspaceDistInputPattern.test(input))
+    if (!distInputs.length) return
+
+    throw new Error([
+        'Play compiler bundle resolved workspace dist files. Build the workspace package from source instead:',
+        ...distInputs.map((input) => `- ${input}`)
+    ].join('\n'))
+}
 
 export async function buildPlayCompiler(outputDir = join(siteDir, 'public/play-compiler')) {
     const compilerOutputPath = join(outputDir, 'compiler.mjs')
@@ -11,7 +22,7 @@ export async function buildPlayCompiler(outputDir = join(siteDir, 'public/play-c
     await rm(outputDir, { recursive: true, force: true })
     await mkdir(outputDir, { recursive: true })
 
-    await build({
+    const result = await build({
         entryPoints: [fileURLToPath(new URL('../play-compiler/compile-play-css.ts', import.meta.url))],
         outfile: compilerOutputPath,
         bundle: true,
@@ -25,8 +36,10 @@ export async function buildPlayCompiler(outputDir = join(siteDir, 'public/play-c
         },
         minify: true,
         legalComments: 'none',
+        metafile: true,
         logLevel: 'silent'
     })
+    assertNoWorkspaceDistInputs(result.metafile)
 
     const { size: compilerSize } = await stat(compilerOutputPath)
 
