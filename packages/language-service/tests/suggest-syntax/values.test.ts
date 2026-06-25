@@ -120,15 +120,17 @@ describe.concurrent('sorting', () => {
 
         expect(labels).toEqual(expect.arrayContaining([
             'blue',
+            'link',
+            'muted',
             'pink',
+            'strong',
             'text-blue',
+            'text-link',
+            'text-muted',
             'text-pink'
         ]))
         expect(labels).not.toContain('accent')
         expect(labels).not.toContain('danger')
-        expect(labels).not.toContain('link')
-        expect(labels).not.toContain('muted')
-        expect(labels).not.toContain('strong')
         expect(labels).not.toContain('text')
         expect(labels).not.toContain('on-blue')
         expect(labels).not.toContain('line-blue')

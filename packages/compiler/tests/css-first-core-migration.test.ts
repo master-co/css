@@ -94,7 +94,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
         const css = createTestCSS(manifest)
         css.add('btn', 'btn:interactive', 'content-auto', 'm:card')
         expect(css.themeLayer.text).toContain(':root{--color-primary:#000;--spacing-card:1rem}')
-        expect(css.themeLayer.text).toContain('.dark{--color-primary:#fff}')
+        expect(css.themeLayer.text).toContain('.dark{color-scheme:dark;--color-primary:#fff}')
         expect(css.componentsLayer.text).toContain('.btn{display:inline-flex;color:var(--color-primary)}')
         expect(css.componentsLayer.text).toContain('@media print{.btn{display:none}}')
         expect(css.componentsLayer.text).toContain('.btn:disabled>span{display:block}')
@@ -656,8 +656,8 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
 
             ${base}
         `, { baseManifest: defaultManifest }).manifest).add('bg:emphasis')
-        expect(lightDefault.themeLayer.text).toContain('.light,:root{--color-emphasis:#000}')
-        expect(lightDefault.themeLayer.text).toContain('.dark{--color-emphasis:#fff}')
+        expect(lightDefault.themeLayer.text).toContain('.light,:root{color-scheme:light;--color-emphasis:#000}')
+        expect(lightDefault.themeLayer.text).toContain('.dark{color-scheme:dark;--color-emphasis:#fff}')
 
         const noDefault = createTestCSS(compileCSSManifest(`
             @settings {
@@ -666,7 +666,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
 
             ${base}
         `, { baseManifest: defaultManifest }).manifest).add('bg:emphasis')
-        expect(noDefault.themeLayer.text).toContain('.light{--color-emphasis:#000}')
+        expect(noDefault.themeLayer.text).toContain('.light{color-scheme:light;--color-emphasis:#000}')
         expect(noDefault.themeLayer.text).not.toContain('.light,:root{--color-emphasis')
     })
 
@@ -698,8 +698,8 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
         const css = createTestCSS(manifest).add('bg:primary', 'bg:primary/.5', 'bg:alias')
 
         expect(css.themeLayer.text).toContain(':root{--color-primary:#000;--color-black:#000;--color-alias:var(--color-primary)}')
-        expect(css.themeLayer.text).toContain('.light{--color-primary:#969696}')
-        expect(css.themeLayer.text).toContain('.dark{--color-primary:#fff}')
+        expect(css.themeLayer.text).toContain('.light{color-scheme:light;--color-primary:#969696}')
+        expect(css.themeLayer.text).toContain('.dark{color-scheme:dark;--color-primary:#fff}')
         expect(css.themeLayer.text).toContain('.chrisma{--color-primary:color-mix(in oklab,var(--color-black) 50%,transparent)}')
         expect(css.utilitiesLayer.text).toContain('.bg\\:primary{background-color:var(--color-primary)}')
         expect(css.utilitiesLayer.text).toContain('.bg\\:primary\\/\\.5{background-color:color-mix(in oklab,var(--color-primary) 50%,transparent)}')
@@ -878,8 +878,8 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
         expect(css.themeLayer.text).toContain('--spacing-x1:1rem')
         expect(css.themeLayer.text).not.toContain('---spacing-x1')
         expect(css.themeLayer.text).toContain('--leading-x1:1.5')
-        expect(css.themeLayer.text).toContain('.light{--spacing-x1:3rem;--leading-x1:3}')
-        expect(css.themeLayer.text).toContain('.dark{--spacing-x1:2rem;--leading-x1:2}')
+        expect(css.themeLayer.text).toContain('.light{color-scheme:light;--spacing-x1:3rem;--leading-x1:3}')
+        expect(css.themeLayer.text).toContain('.dark{color-scheme:dark;--spacing-x1:2rem;--leading-x1:2}')
     })
 
     test('executes CSS-first unitful numeric variables without double conversion', () => {
@@ -994,8 +994,8 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
         expect(manifest.animationOptions?.fade).toEqual({ static: true })
         expect(css.text).toContain('@layer theme{')
         expect(css.text).toContain(':root{--color-primary:#123}')
-        expect(css.text).toContain('.dark{--color-primary:#456}')
-        expect(css.text).toContain('.light,:root{--color-secondary:#789}')
+        expect(css.text).toContain('.dark{color-scheme:dark;--color-primary:#456}')
+        expect(css.text).toContain('.light,:root{color-scheme:light;--color-secondary:#789}')
         expect(css.text).toContain('@keyframes fade{to{opacity:1}}')
     })
 
