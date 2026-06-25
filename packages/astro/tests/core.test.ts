@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from 'vitest'
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join, relative } from 'node:path'
-import masterCSS, { ASTRO_MIDDLEWARE_ENTRYPOINT } from '../src/core'
+import masterCSS, { ASTRO_MIDDLEWARE_ENTRYPOINT, ASTRO_SSR_EXTERNAL } from '../src/core'
 import defaultOptions from '../src/options'
 import { CSS_RUNTIME_INJECTION } from '@master/css-integration/runtime'
 import { externalizeAstroHydrationManifests } from '../src/external-hydration-manifest'
@@ -23,13 +23,20 @@ async function setup(options?: Parameters<typeof masterCSS>[0]) {
         updateConfig
     } as never)
 
-    const config = updateConfig.mock.calls[0]?.[0] as { vite?: { plugins?: unknown[] } } | undefined
+    const config = updateConfig.mock.calls[0]?.[0] as {
+        vite?: {
+            plugins?: unknown[],
+            ssr?: { external?: string[] },
+            build?: { rollupOptions?: { external?: string[] } }
+        }
+    } | undefined
     const plugins = (config?.vite?.plugins || []).flat(Infinity) as { name?: string }[]
 
     return {
         addMiddleware,
         injectScript,
-        pluginNames: plugins.map(({ name }) => name)
+        pluginNames: plugins.map(({ name }) => name),
+        viteConfig: config?.vite
     }
 }
 
@@ -48,6 +55,8 @@ describe('@master/css.astro integration', () => {
         expect(result.injectScript).toHaveBeenCalledWith('page', CSS_RUNTIME_INJECTION)
         expect(result.pluginNames).not.toContain('master-css:pre-render')
         expect(result.pluginNames).not.toContain('master-css:inject-runtime')
+        expect(result.viteConfig?.ssr?.external).toEqual(ASTRO_SSR_EXTERNAL)
+        expect(result.viteConfig?.build?.rollupOptions?.external).toEqual(ASTRO_SSR_EXTERNAL)
     })
 
     it('uses Astro middleware without runtime script in pre-render mode', async () => {

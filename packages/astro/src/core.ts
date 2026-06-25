@@ -7,6 +7,7 @@ import { externalizeAstroHydrationManifests } from './external-hydration-manifes
 import { preloadAstroRuntimeManifest } from './runtime-manifest-preload'
 
 export const ASTRO_MIDDLEWARE_ENTRYPOINT = '@master/css.astro/middleware'
+export const ASTRO_SSR_EXTERNAL = ['@master/css-server']
 
 function withAstroAdapter(options: IntegrationOptions): IntegrationOptions {
     return {
@@ -65,7 +66,19 @@ export default function masterCSS(options?: IntegrationOptions): AstroIntegratio
                         })
                         break
                 }
-                updateConfig({ vite: { plugins: [vitePlugin(getViteOptions(options)) as never] } })
+                updateConfig({
+                    vite: {
+                        plugins: [vitePlugin(getViteOptions(options)) as never],
+                        ssr: {
+                            external: ASTRO_SSR_EXTERNAL
+                        },
+                        build: {
+                            rollupOptions: {
+                                external: ASTRO_SSR_EXTERNAL
+                            }
+                        }
+                    }
+                })
             },
             'astro:config:done': async ({ config, buildOutput: output }) => {
                 astroBase = config.base
