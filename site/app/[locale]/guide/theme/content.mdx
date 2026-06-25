@@ -225,6 +225,29 @@ Mode-specific `@theme` blocks keep markup semantic while values change by mode.
 
 `light` and `dark` are always available. Defining another mode adds it to the theme automatically. When a token has mode-specific values, Master CSS emits a CSS custom property in the theme layer and generated utilities reference that property. This applies to colors, shadows, and any other token namespace that should adapt by mode.
 
+### Derive mode-aware tokens
+Default theme tokens are emitted on `:root`. If a default token references a mode-specific token, the browser computes the derived custom property where it is declared. A local `.dark` or `:host(.dark)` island can override the referenced token, but it does not recompute an inherited derived token.
+
+```css name=index.css
+@theme {
+    --stripe: 0 / 7.5px 7.5px linear-gradient(135deg, $color-line-muted 4.5%, $color-surface-base 0) $color-surface-base;
+}
+```
+
+Define derived tokens inside each mode bucket when they must follow local mode islands:
+
+```css name=index.css
+@theme light {
+    --stripe: 0 / 7.5px 7.5px linear-gradient(135deg, $color-line-muted 4.5%, $color-surface-base 0) $color-surface-base;
+}
+
+@theme dark {
+    --stripe: 0 / 7.5px 7.5px linear-gradient(135deg, $color-line-muted 4.5%, $color-surface-base 0) $color-surface-base;
+}
+```
+
+This is CSS custom property computed-value behavior, not a selector specificity or inheritance issue.
+
 ### Choose a mode trigger
 Most projects leave light and dark mode behavior system-driven:
 
