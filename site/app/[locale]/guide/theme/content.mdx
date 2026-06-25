@@ -21,7 +21,7 @@ In Master CSS, that vocabulary usually lives in the project CSS entry: `@theme` 
 }
 
 @theme dark {
-    --shadow-sm: 0 0 0 1px rgb(255 255 255 / .08), 0 16px 40px rgb(0 0 0 / .36);
+    --shadow-sm: 0 0 0 1px rgb(255 255 255 / .06), 0 16px 40px rgb(0 0 0 / .36);
 }
 
 @custom-variant @motion-safe { @media (prefers-reduced-motion: no-preference) { @slot; } }
@@ -74,7 +74,7 @@ Theme tokens are CSS custom property declarations inside `@theme` blocks. Write 
 }
 
 @theme dark {
-    --shadow-sm: 0 0 0 1px rgb(255 255 255 / .08), 0 16px 40px rgb(0 0 0 / .36);
+    --shadow-sm: 0 0 0 1px rgb(255 255 255 / .06), 0 16px 40px rgb(0 0 0 / .36);
 }
 ```
 
@@ -209,7 +209,7 @@ Mode-specific `@theme` blocks keep markup semantic while values change by mode.
 @theme dark {
     --color-text-body: #f9fafb;
     --color-blue: #818cf8;
-    --shadow-sm: 0 0 0 1px rgb(255 255 255 / .08), 0 16px 40px rgb(0 0 0 / .36);
+    --shadow-sm: 0 0 0 1px rgb(255 255 255 / .06), 0 16px 40px rgb(0 0 0 / .36);
 }
 
 @theme brand {

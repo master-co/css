@@ -85,6 +85,15 @@ const lightShadowEdges = [
     ['2xl', '.06']
 ] as const
 
+const darkShadowEdges = [
+    ['xs', '.04'],
+    ['sm', '.05'],
+    ['md', '.06'],
+    ['lg', '.06'],
+    ['xl', '.07'],
+    ['2xl', '.07']
+] as const
+
 const baseHueAliases = [
     ['stone', '$color-stone-30', '$color-stone-40'],
     ['gray', '$color-gray-30', '$color-gray-40'],
@@ -253,7 +262,7 @@ describe.concurrent('@master/css-preset design token parity', () => {
         }
     })
 
-    test('keeps light shadow tokens separated with a subtle neutral edge', () => {
+    test('keeps shadow tokens separated with subtle mode-specific edges', () => {
         for (const [key, opacity] of lightShadowEdges) {
             expect(findVariable(`shadow-${key}`), key).toMatchObject({
                 namespace: 'shadow',
@@ -262,9 +271,19 @@ describe.concurrent('@master/css-preset design token parity', () => {
                 modes: {
                     light: expect.objectContaining({
                         value: expect.stringMatching(new RegExp(`^0 0 0 1px oklch\\(0% 0 none / \\${opacity}\\), `))
-                    }),
+                    })
+                }
+            })
+        }
+
+        for (const [key, opacity] of darkShadowEdges) {
+            expect(findVariable(`shadow-${key}`), key).toMatchObject({
+                namespace: 'shadow',
+                key,
+                type: 'string',
+                modes: {
                     dark: expect.objectContaining({
-                        value: expect.stringMatching(/^0 0 0 1px oklch\(100% 0 none \/ \.\d+\), /)
+                        value: expect.stringMatching(new RegExp(`^0 0 0 1px oklch\\(100% 0 none / \\${opacity}\\), `))
                     })
                 }
             })
