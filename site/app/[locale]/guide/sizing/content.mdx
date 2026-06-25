@@ -1,24 +1,24 @@
-import XScale from './components/XScale'
+import { ContainerTokenTable, SizingRoleTable } from './components/XScale'
 
 ## Overview [sr-only]
-Sizing describes how much space an element should take, how far it can grow, how small it may become, and which boundary should change that decision. In CSS this includes [width](https://developer.mozilla.org/en-US/docs/Web/CSS/width), [height](https://developer.mozilla.org/en-US/docs/Web/CSS/height), min and max constraints, intrinsic keywords, percentages, viewport units, container values, and CSS functions.
+Sizing describes the space an element should claim, the limits it should respect, and the boundary where that decision changes. In CSS this includes [width](https://developer.mozilla.org/en-US/docs/Web/CSS/width), [height](https://developer.mozilla.org/en-US/docs/Web/CSS/height), min and max constraints, intrinsic keywords, percentages, viewport units, container values, and CSS functions.
 
-Master CSS keeps those decisions close to the element that owns them. Use `w:*` and `h:*` for one axis, `size:*` when both axes intentionally match, `min-*` and `max-*` for constraints, and responsive variants when the size changes by viewport or container.
+Master CSS keeps sizing decisions close to the element that owns them. Use `w:*` and `h:*` for one axis, `size:*` when both axes intentionally match, `min-*` and `max-*` for constraints, container tokens for shared layout surfaces, and responsive variants when the size changes by viewport or container.
 
 <Demo>
     <div className="container w:full">
-        <div className="grid-cols:1 grid-cols:2@container(2xs) gap:md w:full">
-            <section className="min-w:0 surface:base r:lg p:lg b:1px|solid|base">
+        <div className="grid grid-cols:1 grid-cols:2@container(2xs) gap:md w:full">
+            <section className="min-w:0 surface:base r:lg p:lg shadow:xs">
                 <DemoLabel>Fluid wrapper</DemoLabel>
                 <div className="w:full max-w:64x mx:auto">
-                    <div className="h:10x bg:blue-60/.15 b:1px|solid|blue-60/.25 r:lg"></div>
+                    <div className="h:10x bg:blue-60/.15 r:lg"></div>
                     <div className="mt:sm h:4x w:75% bg:blue-60/.1 r:sm"></div>
                 </div>
             </section>
-            <section className="min-w:0 surface:base r:lg p:lg b:1px|solid|base">
+            <section className="min-w:0 surface:base r:lg p:lg shadow:xs">
                 <DemoLabel>Measured object</DemoLabel>
                 <div className="flex items-center gap:md">
-                    <div className="size:12x round bg:blue-60/.15 b:1px|solid|blue-60/.25"></div>
+                    <div className="size:12x round bg:blue-60/.15"></div>
                     <div className="min-w:0 flex:1">
                         <div className="h:4x w:full max-w:28x bg:blue-60/.16 r:sm"></div>
                         <div className="mt:xs h:3x w:calc(100%/3*2) bg:blue-60/.1 r:sm"></div>
@@ -29,36 +29,14 @@ Master CSS keeps those decisions close to the element that owns them. Use `w:*` 
     </div>
 </Demo>
 
-```html
-<!-- @MARK w:full --><!-- @MARK max-w:64x --><!-- @MARK mx:auto -->
-<section class="w:full max-w:64x mx:auto">...</section>
-
-<!-- @MARK size:12x --><!-- @MARK min-w:0 -->
-<article class="flex gap:md">
-    <img class="size:12x round" src="..." alt="" />
-    <div class="min-w:0">...</div>
-</article>
-```
-
-<details>
-    <summary>Generated CSS</summary>
-    <Class2CSS>
-        {['w:full', 'max-w:64x', 'mx:auto', 'size:12x', 'min-w:0']}
-    </Class2CSS>
-</details>
-
 ---
 
-## Start with the sizing job
-A sizing class should have one clear job. It can set the preferred size, keep the element from collapsing, cap growth, or tie both axes together.
+## Choose a sizing role
+A sizing class should have one clear job. It can set the preferred size, keep an element from collapsing, cap growth, tie both axes together, or move the decision to a responsive boundary.
 
-| Job | Use | Example |
-| --- | --- | --- |
-| Set the preferred inline size | `w:*` | `w:full`, `w:72ch`, `w:50%` |
-| Set the preferred block size | `h:*` | `h:12x`, `h:100dvh`, `h:fit` |
-| Keep both axes equal | `size:*` | `size:10x`, `size:md` |
-| Set a lower bound | `min-w:*`, `min-h:*`, `min:*` | `min-w:0`, `min-h:100dvh` |
-| Set an upper bound | `max-w:*`, `max-h:*`, `max:*` | `max-w:7xl`, `max-h:80dvh` |
+<SizingRoleTable />
+
+Use one-axis rules when the element is rectangular by role. Use `size:*`, `min:*`, or `max:*` only when both axes genuinely share the same decision.
 
 ```html
 <!-- @MARK w:full --><!-- @MARK max-w:7xl --><!-- @MARK min-h:100dvh -->
@@ -74,12 +52,10 @@ A sizing class should have one clear job. It can set the preferred size, keep th
     </Class2CSS>
 </details>
 
-Use one-axis rules when the element is rectangular by role. Use `size:*`, `min:*`, or `max:*` only when both axes genuinely share the same decision.
-
 ---
 
-## Prefer fluid layout first
-Most layout should start flexible and then add constraints. A wrapper that fills available space and stops at a cap behaves better than one fixed width that only fits one viewport.
+## Start fluid, then constrain
+Most layout should fill the space it receives and then stop at a cap. A fluid wrapper with `w:full max-w:*` behaves better across viewports than one fixed width that only fits one screen.
 
 ```html
 <!-- @MARK w:full --><!-- @MARK max-w:7xl --><!-- @MARK px:md --><!-- @MARK px:xl@md -->
@@ -100,7 +76,7 @@ Most layout should start flexible and then add constraints. A wrapper that fills
     </Class2CSS>
 </details>
 
-Use `w:full` when the element should follow its parent, percentages such as `w:50%` for proportional regions, `max-w:*` for caps, and native CSS functions such as `clamp()` when the bound itself should be fluid.
+Use `w:full` when the element should follow its parent, percentages such as `w:50%` for proportional regions, `max-w:*` for caps, and CSS functions such as `clamp()` when the bound itself should be fluid.
 
 ```html
 <!-- @MARK w:full --><!-- @MARK w:50%@sm -->
@@ -110,12 +86,14 @@ Use `w:full` when the element should follow its parent, percentages such as `w:5
 <section class="w:clamp(18rem,50vw,42rem)">...</section>
 ```
 
-Percentage widths and heights follow native CSS behavior: the parent needs a definite height before `h:full` or `h:50%` can resolve predictably.
+Percentage widths and heights follow native CSS behavior. The parent needs a definite height before `h:full` or `h:50%` can resolve predictably.
 
 ---
 
-## Use container values for shared surfaces
-Sizing utilities read the container namespace contextually. `max-w:5xl`, `w:md`, `size:sm`, `min-w:xs`, and `flex-basis:lg` use `container-*` tokens without repeating the namespace in markup.
+## Use container tokens
+Sizing utilities read the `container` namespace contextually. `w:md`, `max-w:5xl`, `size:sm`, `min-w:xs`, and `flex-basis:lg` use `--container-*` tokens without repeating the namespace in markup.
+
+<ContainerTokenTable />
 
 ```html
 <!-- @MARK w:full --><!-- @MARK max-w:5xl -->
@@ -134,16 +112,16 @@ Sizing utilities read the container namespace contextually. `max-w:5xl`, `w:md`,
     </Class2CSS>
 </details>
 
-Use container values for shared layout surfaces: page wrappers, panels, modals, sidebars, drawer widths, and component caps. Use local `ch`, `x`, or CSS functions when the dimension belongs to content measure or one component's private geometry.
+Use container tokens for shared layout surfaces: page wrappers, panels, modals, sidebars, drawer widths, and component caps. Use local `ch`, `x`, or CSS functions when the dimension belongs to content measure or one component's private geometry.
 
-For the full container scale and container query behavior, see [containers](/guide/containers).
+For the full container query model, see [containers](/guide/containers).
 
 ---
 
-## Use measured sizes for objects
-The `x` suffix multiplies the [base unit](/guide/theme#project-settings) theme setting, which defaults to **4 pixels**. It is useful when the element is a measured object, not a fluid region.
+## Use measured sizes
+The `x` suffix multiplies the [base unit](/guide/theme#project-settings), which defaults to **4 pixels**. For example, `1x` is `0.25rem`, `4x` is `1rem`, and `10x` is `2.5rem`.
 
-<XScale />
+Use `x` values for measured component geometry such as icons, avatars, handles, skeleton blocks, and fixed media slots. For page structure, reach for `w:full`, percentages, container tokens, viewport units, text units, or `clamp()` first.
 
 ```html
 <!-- @MARK size:10x -->
@@ -160,8 +138,6 @@ The `x` suffix multiplies the [base unit](/guide/theme#project-settings) theme s
     </Class2CSS>
 </details>
 
-Use measured sizes for icons, avatars, handles, checkboxes, skeleton blocks, media slots, and other pieces with deliberate geometry. For page structure, reach for `w:full`, percentages, container values, viewport units, text units, or `clamp()` first.
-
 ---
 
 ## Pair axes deliberately
@@ -171,11 +147,11 @@ Use measured sizes for icons, avatars, handles, checkboxes, skeleton blocks, med
     <div className="flex gap:lg items-center w:full">
         <div className="flex:0">
             <DemoLabel>size:14x</DemoLabel>
-            <div className="size:14x grid place-content:center bg:blue-60/.15 b:1px|solid|blue-60/.25 r:lg font:medium">A</div>
+            <div className="size:14x grid place-content:center bg:blue-60/.15 r:lg font:medium">A</div>
         </div>
         <div className="flex:1 min-w:0">
             <DemoLabel>w:full h:14x</DemoLabel>
-            <div className="w:full h:14x grid place-content:center bg:blue-60/.15 b:1px|solid|blue-60/.25 r:lg font:medium">Banner</div>
+            <div className="w:full h:14x grid place-content:center bg:blue-60/.15 r:lg font:medium">Banner</div>
         </div>
     </div>
 </Demo>
@@ -208,13 +184,13 @@ When an element should keep a non-square ratio, use [aspect ratio](/reference/as
 Min and max rules are often more stable than fixed widths. They let content, containers, and responsive variants negotiate space without overflow.
 
 <Demo>
-    <div className="w:full max-w:96x mx:auto surface:base r:lg b:1px|solid|base p:lg">
+    <div className="w:full max-w:96x mx:auto surface:base r:lg p:lg shadow:xs">
         <DemoLabel>min-w:0 max-w:96x</DemoLabel>
         <div className="flex gap:md">
             <div className="size:10x flex:0 bg:blue-60/.15 r:lg"></div>
             <div className="min-w:0 flex:1">
-                <div className="font:medium text:neutral">Shrinkable content</div>
-                <div className="text:gray text:sm white-space:nowrap overflow:hidden text-overflow:ellipsis">Long text can shrink inside the row without forcing the wrapper wider.</div>
+                <div className="font:medium text:strong">Shrinkable content</div>
+                <div className="text:muted text:sm white-space:nowrap overflow:hidden text-overflow:ellipsis">Long text can shrink inside the row without forcing the wrapper wider.</div>
             </div>
         </div>
     </div>
@@ -265,14 +241,14 @@ Use viewport breakpoints when the whole page shell changes. Use container querie
 
 ---
 
-## Add product sizing tokens
+## Customize sizing tokens
 When a dimension becomes part of the product language, add a named container variable in the project CSS entry. Use explicit CSS lengths for fixed values; functions are preserved.
 
 ```css name=index.css
 @theme {
     --container-sidebar: 17.5rem;
     --container-measure: 72ch;
-    --container-panel: clamp(18rem,50vw,42rem);
+    --container-panel: clamp(18rem, 50vw, 42rem);
 }
 ```
 
@@ -327,15 +303,3 @@ Use descriptive names such as `sidebar`, `measure`, `panel`, or `media` instead 
     <main class="min-w:0 max-w:5xl">Long unbroken content...</main>
 </div>
 ```
-
----
-
-## Common patterns
-* Page wrapper: `w:full max-w:7xl mx:auto`
-* Reading measure: `w:full max-w:72ch`
-* Square avatar: `size:10x round object-cover`
-* Icon button: `size:9x grid place-content:center`
-* Fixed media slot: `w:36x h:20x object-cover`
-* Fluid panel: `w:clamp(18rem,50vw,42rem)`
-* Shrinkable flex child: `min-w:0`
-* Full viewport section: `min-h:100dvh`
