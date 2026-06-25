@@ -18,9 +18,15 @@ test('compiles the starter Play template into generated CSS', async () => {
     const result = await compilePlayCSS(sourceCSS, extractClassNamesFromHTML(html))
 
     assert.match(result.css, /@layer theme/)
-    assert.match(result.css, /@layer components/)
-    assert.match(result.css, /\.card\{/)
-    assert.match(result.css, /--color-card/)
+    assert.match(result.css, /@layer utilities/)
+    assert.equal(result.css.includes('@layer components'), false)
+    assert.match(result.css, /--color-surface-base/)
+    assert.match(result.css, /--color-text-body/)
+    assert.match(result.css, /\.surface\\:base\{/)
+    assert.match(result.css, /\.text\\:body\{/)
+    assert.match(result.css, /\.bg\\:blue\{/)
+    assert.ok(result.css.includes('a:hover .opacity\\:1\\:of\\(a\\:hover\\){opacity:1}'))
+    assert.deepEqual(result.warnings, [])
     assert.equal(result.result.manifest, result.manifest)
     assert.deepEqual(result.result.warnings, result.warnings)
     assert.ok(result.css.length > 1000)
@@ -28,12 +34,13 @@ test('compiles the starter Play template into generated CSS', async () => {
 
 test('keeps native CSS while generating Play classes', async () => {
     const html = readFixture('../../../[locale]/play/templates/latest/example.html')
-    const sourceCSS = readFixture('../../../[locale]/play/templates/latest/example.css') + '\n.native { color: var(--color-card); }'
+    const sourceCSS = readFixture('../../../[locale]/play/templates/latest/example.css') + '\n.native { color: var(--color-text-body); }'
     const result = await compilePlayCSS(sourceCSS, extractClassNamesFromHTML(html))
 
-    assert.match(result.css, /\.native\s*\{\s*color:\s*var\(--color-card\);\s*\}/)
-    assert.match(result.css, /\.card\{/)
-    assert.match(result.css, /--color-card/)
+    assert.match(result.css, /\.native\s*\{\s*color:\s*var\(--color-text-body\);\s*\}/)
+    assert.match(result.css, /\.surface\\:base\{/)
+    assert.match(result.css, /--color-text-body/)
+    assert.deepEqual(result.warnings, [])
 })
 
 test('includes generated keyframes referenced by native CSS', async () => {
