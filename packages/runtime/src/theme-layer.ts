@@ -5,6 +5,7 @@ import CSSRuntime from './core'
 interface NativeBucket {
     key: string
     mediaText: string
+    mode?: string
     selectorText: string
     nativeRule: CSSRule
     styleRule: CSSStyleRule
@@ -37,6 +38,23 @@ export default class RuntimeThemeLayer extends ThemeLayer {
         return normalizedMediaText + '\n' + normalizedSelectorText
     }
 
+    private setBucketSyntheticDeclarations(bucket: NativeBucket, mode?: string) {
+        for (const { name, value } of this.getBucketSyntheticDeclarations({
+            mediaText: bucket.mediaText,
+            mode,
+            selectorText: bucket.selectorText
+        })) {
+            bucket.styleRule.style.setProperty(name, value)
+        }
+    }
+
+    private hasVariableDeclarations(styleRule: CSSStyleRule) {
+        for (let index = 0; index < styleRule.style.length; index++) {
+            if (styleRule.style.item(index).startsWith('--')) return true
+        }
+        return false
+    }
+
     getStyleRule(nativeRule: CSSRule): CSSStyleRule | undefined {
         if (nativeRule instanceof CSSStyleRule) return nativeRule
         if (nativeRule instanceof CSSGroupingRule) {
@@ -63,14 +81,22 @@ export default class RuntimeThemeLayer extends ThemeLayer {
         }
     }
 
-    ensureNativeBucket(mediaText: string, selectorText: string) {
+    ensureNativeBucket(mediaText: string, selectorText: string, mode?: string) {
         if (!this.native) return
         const key = this.getBucketKey(mediaText, selectorText)
         let bucket = this.nativeBuckets.get(key)
-        if (bucket) return bucket
+        if (bucket) {
+            this.setBucketSyntheticDeclarations(bucket, mode)
+            return bucket
+        }
+        const declarationText = this.getBucketSyntheticDeclarations({
+            mediaText,
+            mode,
+            selectorText
+        }).map(({ name, value }) => `${name}:${value}`).join(';')
         const text = mediaText
-            ? `${mediaText}{${selectorText}{}}`
-            : `${selectorText}{}`
+            ? `${mediaText}{${selectorText}{${declarationText}}}`
+            : `${selectorText}{${declarationText}}`
         const insertedIndex = this.native.insertRule(text, this.getNativeBucketInsertIndex(mediaText, selectorText))
         const nativeRule = this.native.cssRules.item(insertedIndex)
         if (!nativeRule) return
@@ -79,6 +105,7 @@ export default class RuntimeThemeLayer extends ThemeLayer {
         const newBucket = {
             key,
             mediaText,
+            mode,
             selectorText,
             nativeRule,
             styleRule
@@ -111,9 +138,12 @@ export default class RuntimeThemeLayer extends ThemeLayer {
         const insertedIndex = super.insert(rule, index)
         if (insertedIndex === undefined || !this.native || wasEmpty) return insertedIndex
         for (const node of rule.nodes) {
-            const bucket = this.ensureNativeBucket(node.mediaText, node.selectorText)
-            bucket?.styleRule.style.setProperty(node.declarationName, node.declarationValue)
-            node.native = bucket?.styleRule
+            const bucket = this.ensureNativeBucket(node.mediaText, node.selectorText, node.mode)
+            if (bucket) {
+                this.setBucketSyntheticDeclarations(bucket, node.mode)
+                bucket.styleRule.style.setProperty(node.declarationName, node.declarationValue)
+                node.native = bucket.styleRule
+            }
         }
         return insertedIndex
     }
@@ -127,7 +157,7 @@ export default class RuntimeThemeLayer extends ThemeLayer {
             const bucket = this.nativeBuckets.get(bucketKey)
             if (!bucket) continue
             bucket.styleRule.style.removeProperty(node.declarationName)
-            if (bucket.styleRule.style.length === 0) {
+            if (!this.hasVariableDeclarations(bucket.styleRule)) {
                 const foundIndex = findNativeCSSRuleIndex(this.native.cssRules, bucket.nativeRule)
                 if (foundIndex !== -1) {
                     this.native.deleteRule(foundIndex)

@@ -40,7 +40,7 @@ test('expects the variable output', async ({ page }) => {
             return globalThis.masterCSSRuntime.text
         }),
         {
-            theme: ':root{--color-first:#111111}.light{--color-first:#333333}.dark{--color-first:#222222}',
+            theme: ':root{--color-first:#111111}.light{color-scheme:light;--color-first:#333333}.dark{color-scheme:dark;--color-first:#222222}',
             utilities: '.bg\\:first{background-color:var(--color-first)}'
         }
     )
@@ -122,6 +122,24 @@ test('expects the variable output', async ({ page }) => {
         return globalThis.masterCSSRuntime.text
     })
     expectLayers(text, {})
+})
+
+test('sets native color-scheme on local class-triggered mode islands', async ({ page }) => {
+    const result = await page.evaluate(async () => {
+        document.documentElement.className = 'light'
+        document.documentElement.style.colorScheme = 'light'
+        const element = document.createElement('div')
+        element.className = 'fg:second dark'
+        document.body.append(element)
+        await new Promise(resolve => setTimeout(resolve, 0))
+        return {
+            colorScheme: getComputedStyle(element).colorScheme,
+            text: globalThis.masterCSSRuntime.text
+        }
+    })
+
+    expect(result.colorScheme).toBe('dark')
+    expect(result.text).toMatch(/\.dark\{color-scheme:dark;--color-second:#444444\}/)
 })
 
 const expectLayers = (

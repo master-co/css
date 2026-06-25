@@ -404,6 +404,7 @@ export default class CSSRuntime extends MasterCSS {
             if (!styleRule) return false
             for (let index = 0; index < styleRule.style.length; index++) {
                 const propertyName = styleRule.style.item(index)
+                if (this.isSyntheticColorSchemeDeclaration(nativeRule, styleRule, propertyName)) continue
                 if (!propertyName.startsWith('--')) return false
                 found = true
                 if (!this.isEmittedGlobalsVariable(propertyName.slice(2))) return false
@@ -415,6 +416,7 @@ export default class CSSRuntime extends MasterCSS {
     private getVariableRuleBuckets(variableRules: VariableRule[]) {
         const buckets = new Map<string, {
             mediaText: string
+            mode?: string
             selectorText: string
             nodes: VariableRule['nodes'][number][]
         }>()
@@ -425,6 +427,7 @@ export default class CSSRuntime extends MasterCSS {
                 if (!bucket) {
                     bucket = {
                         mediaText: node.mediaText,
+                        mode: node.mode,
                         selectorText: node.selectorText,
                         nodes: []
                     }
@@ -434,6 +437,16 @@ export default class CSSRuntime extends MasterCSS {
             }
         }
         return Array.from(buckets.values())
+    }
+
+    private isSyntheticColorSchemeDeclaration(nativeRule: CSSRule, styleRule: CSSStyleRule, propertyName: string) {
+        if (propertyName !== 'color-scheme') return false
+        const colorScheme = styleRule.style.getPropertyValue(propertyName).trim()
+        return colorScheme === this.themeLayer.getBucketColorScheme({
+            mediaText: nativeRule instanceof CSSMediaRule ? `@media ${nativeRule.conditionText}` : '',
+            mode: colorScheme,
+            selectorText: styleRule.selectorText
+        })
     }
 
     private getNativeThemeRuleBucketKey(nativeRule: CSSRule) {

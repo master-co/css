@@ -408,7 +408,7 @@ test('progressive hydration matches theme variable buckets by key', async ({ pag
     })
     await init(
         page,
-        '@layer theme{.dark{--color-primary:#ffffff}.light,:root{--color-primary:#000000}}@layer utilities{.fg\\:primary{color:var(--color-primary)}}',
+        '@layer theme{.dark{color-scheme:dark;--color-primary:#ffffff}.light,:root{color-scheme:light;--color-primary:#000000}}@layer utilities{.fg\\:primary{color:var(--color-primary)}}',
         {
             variables: [
                 { namespace: 'color', key: 'primary', value: '#000000', mode: 'light' },
@@ -433,8 +433,8 @@ test('progressive hydration matches theme variable buckets by key', async ({ pag
         'color-primary': 1
     })
     expect(result.nativeThemeRuleCount).toBe(2)
-    expect(result.text).toContain('.light,:root{--color-primary:#000000}')
-    expect(result.text).toContain('.dark{--color-primary:#ffffff}')
+    expect(result.text).toContain('.light,:root{color-scheme:light;--color-primary:#000000}')
+    expect(result.text).toContain('.dark{color-scheme:dark;--color-primary:#ffffff}')
 })
 
 test('removes shared alias variable dependencies when classes disappear', async ({ page }) => {

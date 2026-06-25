@@ -238,13 +238,13 @@ Most projects leave light and dark mode behavior system-driven:
 | Trigger | Output behavior |
 |---------|-----------------|
 | `media` | Uses `@media (prefers-color-scheme: <mode>)` for light and dark modes. |
-| `class` | Uses class wrappers such as `.dark &`. |
-| `host` | Uses shadow host wrappers such as `:host(.dark) &`. |
+| `class` | Uses class wrappers such as `.dark &`. Built-in `light` and `dark` mode buckets also emit native `color-scheme`. |
+| `host` | Uses shadow host wrappers such as `:host(.dark) &`. Built-in `light` and `dark` host buckets also emit native `color-scheme`. |
 
 `default-mode` controls which class-triggered mode also attaches to `:root`. Set `default-mode: none;` when no mode should be applied by default. It has no effect with `mode-trigger: media`, because the browser decides the active color scheme from user or system preferences.
 
 ### Switch modes manually
-Use `mode-trigger: class` when your app switches modes manually. Put the active mode class on `<html>` and keep `color-scheme` in sync.
+Use `mode-trigger: class` when your app switches modes manually. Put the active mode class on `<html>`; Master CSS keeps native `color-scheme` in sync for the built-in `light` and `dark` modes.
 
 ```html
 <!-- @MARK dark -->
@@ -263,7 +263,6 @@ const value = preference === 'system'
     : preference
 
 document.documentElement.classList.add(value)
-document.documentElement.style.colorScheme = value
 ```
 
 ---
