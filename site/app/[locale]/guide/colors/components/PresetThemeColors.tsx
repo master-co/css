@@ -223,7 +223,7 @@ export default function PresetThemeColors({ group }: { group: PresetThemeColorGr
                     <tbody>
                         {rows.map(({ key, token, utilities, previewClassName, previewType }) => (
                             <tr key={token}>
-                                <td><PresetThemeColorPreviewCell previewClassName={previewClassName} previewType={previewType} /><InlineCode className="white-space:nowrap">{token}</InlineCode></td>
+                                <td className="white-space:nowrap"><PresetThemeColorPreviewCell previewClassName={previewClassName} previewType={previewType} /><InlineCode className="white-space:nowrap">{token}</InlineCode></td>
                                 <td>
                                     <div className="flex flex-wrap gap:xs">
                                         {utilities.map((utility) => (
