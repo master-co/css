@@ -34,11 +34,11 @@ it('should contain the `:hover` selector', () => {
 
 Commit your tests ( and create a Pull Request ):
 ```bash
-Add @1aron tests
+Test(Core): Add @1aron coverage
 ```
 
 ## Linting
-Follow the [Techor ESLint Preset](https://github.com/techor-dev/techor/tree/main/packages/eslint-config)
+Follow the repository ESLint flat config.
 ```bash
 pnpm lint
 ```
@@ -54,7 +54,7 @@ pnpm type-check
 ```
 
 ## Commit Checking
-Follow the [Techor Conventional Commits](https://github.com/techor-dev/techor/tree/main/packages/conventional-commits)
+Follow the [Aronrepo conventional commits](https://github.com/1aron/aronrepo/tree/main/packages/conventional-commits). Commit headers use `Type(Scope): Summary`, with PascalCase types, optional scopes, sentence case, and no trailing period.
 ```bash
 pnpm commit-check
 ```

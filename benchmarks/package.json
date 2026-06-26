@@ -4,9 +4,9 @@
         "extract": "hyperfine 'cd extract/tailwindcss && npx tailwindcss -i src/main.css' 'cd extract/mastercss && npx @master/css-cli --no-export'"
     },
     "dependencies": {
-        "@techor/log": "^3.2.5",
         "axios": "^1.6.7",
         "cheerio": "0.22.0",
+        "consola": "^3.4.2",
         "filesize": "^10.1.0",
         "tinybench": "^2.6.0"
     },

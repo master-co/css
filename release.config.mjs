@@ -1,11 +1,15 @@
-import { configure } from 'semantic-release-config-techor'
+import configure from '@aronrepo/semantic-release-config/configure'
 
 export default configure({
-    assets: [
-        {
-            path: 'packages/runtime/dist/global.min.js',
-            name: 'global-${nextRelease.gitTag}.min.js',
-            label: 'global-${nextRelease.gitTag}.min.js'
+    plugins: {
+        '@semantic-release/github': {
+            assets: [
+                {
+                    path: 'packages/runtime/dist/global.min.js',
+                    name: 'global-${nextRelease.gitTag}.min.js',
+                    label: 'global-${nextRelease.gitTag}.min.js'
+                }
+            ]
         }
-    ]
+    }
 })

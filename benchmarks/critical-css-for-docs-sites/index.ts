@@ -1,7 +1,7 @@
 import axios from 'axios'
 import cheerio from 'cheerio'
 import { brotliCompressSync } from 'zlib'
-import log from '@techor/log'
+import { createConsola } from 'consola'
 import { filesize } from 'filesize'
 import { readFileSync, writeFileSync } from 'fs'
 import { dirname, resolve } from 'path'
@@ -10,6 +10,12 @@ import { fileURLToPath } from 'url'
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
 const fileSizeOptions = { round: 0 }
+const logger = createConsola({ level: 3 })
+
+function log(strings: TemplateStringsArray, ...slots: unknown[]) {
+    const message = strings.reduce((result, string, index) => result + string + String(slots[index] ?? ''), '')
+    logger.log(message)
+}
 
 async function fetchWithBrotli(url: string) {
     try {

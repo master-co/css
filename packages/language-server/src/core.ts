@@ -12,7 +12,7 @@ import {
 } from '@master/css-project/entries'
 import { loadProjectManifest } from '@master/css-project/manifest'
 import { resolveMasterCSSWorkspacePackages, type MasterCSSWorkspacePackageResolution } from '@master/css-project/workspace'
-import extend from '@techor/extend'
+import { defu } from 'defu'
 import settings from './settings'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import {
@@ -185,7 +185,7 @@ export default class CSSLanguageServer {
         public customSettings?: Settings
     ) {
         this.documents = new TextDocuments(TextDocument)
-        this.settings = extend(settings, this.customSettings) as Settings
+        this.settings = defu(this.customSettings, settings) as Settings
         this.globalWorkspace.languageServiceSettings = this.settings as CSSLanguageServiceSettings
         this.console = new Proxy(this.connection.console, {
             get: (target, prop: keyof RemoteConsole) => {
@@ -228,8 +228,8 @@ export default class CSSLanguageServer {
         this.clientCapabilities = params.capabilities
         const initializationSettings = getInitializationSettings(params.initializationOptions)
         if (initializationSettings) {
-            this.customSettings = extend(this.customSettings, initializationSettings) as Settings
-            this.settings = extend(settings, this.customSettings) as Settings
+            this.customSettings = defu(initializationSettings, this.customSettings) as Settings
+            this.settings = defu(this.customSettings, settings) as Settings
             this.globalWorkspace.languageServiceSettings = this.settings as CSSLanguageServiceSettings
         }
         if (params.workspaceFolders?.length) {
@@ -362,7 +362,7 @@ export default class CSSLanguageServer {
         if (changedSettings?.masterCSS) {
             this.connection.sendNotification('masterCSS/globalSettingsChanged', changedSettings.masterCSS)
             this.customSettings = changedSettings.masterCSS
-            this.settings = extend(settings, this.customSettings) as Settings
+            this.settings = defu(this.customSettings, settings) as Settings
             this.globalWorkspace.languageServiceSettings = this.settings as CSSLanguageServiceSettings
             this.refreshSemanticTokens()
             this.connection.sendRequest('masterCSS/restart', {
@@ -385,7 +385,7 @@ export default class CSSLanguageServer {
                 section: 'masterCSS'
             }) as Settings
         }
-        const { workspaces, ...languageServiceSettings } = extend(settings, this.customSettings, customWorkspaceFolderSettings) as Settings
+        const { workspaces, ...languageServiceSettings } = defu(customWorkspaceFolderSettings, this.customSettings, settings) as Settings
         const resolvedWorkspaceDirectories = new Set<string>([workspaceFolderCWD])
         if (workspaceFolderCWD) {
             this.console.info(`Registered workspace folder ${workspaceFolderURI}`)

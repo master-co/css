@@ -1,13 +1,12 @@
-import { resolve } from 'node:path'
+import { readFileSync } from 'node:fs'
+import { dirname, resolve } from 'node:path'
+import { fileURLToPath } from 'node:url'
 import { Command } from 'commander'
-import { readJSONFileSync } from '@techor/fs'
-import { dirname } from 'path'
-import { fileURLToPath } from 'url'
 import runScan, { DEFAULT_SCAN_OUTPUT, type ScanOptions } from './scan'
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
 
-const pkg = readJSONFileSync(resolve(__dirname, '../package.json'))
+const pkg = JSON.parse(readFileSync(resolve(__dirname, '../package.json'), 'utf8'))
 const removedCommands = new Set(['extract', 'render', 'scan'])
 
 function errorRemovedCommand(program: Command, command: string) {

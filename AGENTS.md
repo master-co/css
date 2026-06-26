@@ -105,13 +105,13 @@ Directive syntax, semantics, lowering behavior, extraction behavior, or directiv
 
 ## Commit Message Policy
 
-Commits must follow Techor conventional commits:
+Commits must follow Aronrepo conventional commits:
 
 ```txt
 Type(Target): Summary
 ```
 
-`Type` must be one of `Bump`, `Feat`, `New`, `Perf`, `Add`, `Update`, `Improve`, `Fix`, `Deprecate`, `Drop`, `Docs`, `Upgrade`, `Revert`, `Example`, `Test`, `Refactor`, `Chore`, or `Misc`. `Target` is required. Use sentence case and no trailing period.
+`Type` must be one of `Bump`, `Feat`, `New`, `Perf`, `Add`, `Update`, `Improve`, `Fix`, `Deprecate`, `Drop`, `Docs`, `Upgrade`, `Revert`, `Example`, `Test`, `Refactor`, `Chore`, or `Misc`. `Target` is optional but recommended for monorepo package, workflow, role, or policy changes. Use PascalCase types, sentence case, and no trailing period. Use release-impacting types only when published package behavior, public APIs, release behavior, or published README content changes; use `Chore(Agent)` for internal AI instructions and repository guidance.
 
 ## Review Defaults
 

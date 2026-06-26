@@ -10,8 +10,8 @@ import {
     type SourceAdapter
 } from '@master/css-source'
 import { Minimatch } from 'minimatch'
-import log from '@techor/log'
-import extend from '@techor/extend'
+import { createConsola } from 'consola'
+import { defu } from 'defu'
 import { createCSSWithNativeDeclarations, generateValidRules } from '@master/css-validator'
 import { EventEmitter } from 'node:events'
 import { createHash } from 'node:crypto'
@@ -51,6 +51,7 @@ const sourceLikeExtensions = new Set([
 const sourceMatchOptions = { dot: true }
 const require = createRequire(import.meta.url)
 const defaultManifest = require('@master/css-preset/default-manifest.json') as MasterCSSManifest
+const logger = createConsola({ level: 3 })
 
 interface SourceMatchers {
     exclude: Minimatch[]
@@ -172,11 +173,11 @@ export default class CSSScanner extends EventEmitter {
         if (typeof customOptions !== 'object' || customOptions === null || Array.isArray(customOptions)) {
             throw new TypeError('CSSScanner options must be an object.')
         }
-        this.options = extend(scannerOptions, customOptions)
+        this.options = defu(customOptions, scannerOptions) as ScannerOptions
         if (this.options.verbose && this.options.verbose > 1) {
-            log.ok`**options**`
-            log.tree(this.options)
-            log``
+            logger.success('options')
+            logger.log(this.options)
+            logger.log('')
         }
         this.resetDependencies = []
         this.sourceMatchers = undefined
@@ -246,7 +247,7 @@ export default class CSSScanner extends EventEmitter {
                 this.css.add(eachFixedClass)
             }
             if (this.options.verbose) {
-                log.ok`${this.options.safelist.length} fixed classes inserted ${this.options.safelist}`
+                logger.success(`${this.options.safelist.length} fixed classes inserted ${this.options.safelist.join(', ')}`)
             }
         }
     }
@@ -352,7 +353,7 @@ export default class CSSScanner extends EventEmitter {
                 time = process.hrtime(time)
                 const spent = Math.round(((time[0] * 1e9 + time[1]) / 1e6) * 10) / 10
                 const changedClasses = [...validClasses, ...nativeClasses]
-                log.ok`**${path.relative(this.cwd, source)}** ${changedClasses.length} classes inserted ${log.chalk.gray('in')} ${spent}ms ${this.options.verbose > 1 ? changedClasses : ''}`
+                logger.success(`${path.relative(this.cwd, source)} ${changedClasses.length} classes inserted in ${spent}ms ${this.options.verbose > 1 ? changedClasses.join(', ') : ''}`)
             }
             this.emit('change')
         }

@@ -1,8 +1,6 @@
-import common from '../../eslint.config.mjs'
-import eslintConfigTechor from 'eslint-config-techor'
+import common, { reactConfig } from '../../eslint.config.mjs'
 
 export default [
     ...common,
-    eslintConfigTechor.configs.typescript,
-    eslintConfigTechor.configs.react
+    reactConfig
 ]

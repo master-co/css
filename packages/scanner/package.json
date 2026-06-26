@@ -70,8 +70,8 @@
         "@master/css-preset": "workspace:^",
         "@master/css-source": "workspace:^",
         "@master/css-validator": "workspace:^",
-        "@techor/extend": "^3.2.5",
-        "@techor/log": "^3.2.5",
+        "consola": "^3.4.2",
+        "defu": "^6.1.7",
         "minimatch": "^10.2.5",
         "@master/css-schema": "workspace:^",
         "@master/css-lexer": "workspace:^"

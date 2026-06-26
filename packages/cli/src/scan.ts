@@ -6,16 +6,17 @@ import {
     type StyleCSSSources
 } from '@master/css-stylesheet'
 import { findCSSManifestEntryFiles } from '@master/css-project/entries'
-import log from '@techor/log'
-import { explorePathsSync } from '@techor/glob'
 import bytes from 'bytes'
 import chokidar, { type FSWatcher } from 'chokidar'
+import { createConsola } from 'consola'
+import fg from 'fast-glob'
 import fs from 'node:fs'
 import path from 'node:path'
 
 export const DEFAULT_SCAN_OUTPUT = 'master.css'
 
 const DEFAULT_SOURCE_PATTERNS = ['**/*.{html,htm,js,jsx,mjs,cjs,ts,tsx,mts,cts,svelte,astro,vue,md,mdx,pug,php}']
+const logger = createConsola({ level: 3 })
 
 export interface ScanOptions {
     watch?: boolean
@@ -41,8 +42,15 @@ function normalizeSourcePatterns(specifiedSourcePaths?: string[]) {
     return specifiedSourcePaths?.length ? specifiedSourcePaths : DEFAULT_SOURCE_PATTERNS
 }
 
+function normalizeGlobPatterns(patterns: string[]) {
+    return patterns.map((pattern) => pattern.replace(/\\/g, '/'))
+}
+
 function resolveSourcePaths(scanner: CSSScanner, sourcePatterns: string[], ignore: string[] = []) {
-    return explorePathsSync(sourcePatterns, { cwd: scanner.cwd, ignore })
+    return fg.sync(normalizeGlobPatterns(sourcePatterns), {
+        cwd: scanner.cwd,
+        ignore: normalizeGlobPatterns(ignore)
+    })
         .filter(Boolean)
 }
 
@@ -68,7 +76,7 @@ function exportCSS(scanner: CSSScanner, css: string, filename = DEFAULT_SCAN_OUT
     }
     fs.writeFileSync(filepath, css)
     if (scanner.options.verbose) {
-        log.ok`**${filename}** exported ${bytes(css.length)}`
+        logger.success(`${filename} exported ${bytes(css.length)}`)
     }
     scanner.emit('export', filename, filepath)
 }
@@ -154,16 +162,16 @@ export default async function runScan(specifiedSourcePaths: string[] = [], optio
                     restarting = true
                     try {
                         if (scanner.options.verbose) {
-                            log``
-                            log`[change] **${formatWatchedPath(scanner.cwd, resetDependency)}**`
+                            logger.log('')
+                            logger.info(`[change] ${formatWatchedPath(scanner.cwd, resetDependency)}`)
                         }
                         await closeWatchers()
                         await scanner.reset(scanner.customOptions, { emit: false })
                         await prepareScanner(scanner, styleCSSSources, scanPaths())
                         await queueWrite()
                         await startWatchers()
-                        log``
-                        log.t`Restart watching source changes`
+                        logger.log('')
+                        logger.info('Restart watching source changes')
                         scanner.emit('resetDependencyChange')
                     } finally {
                         restarting = false
@@ -191,8 +199,8 @@ export default async function runScan(specifiedSourcePaths: string[] = [], optio
         await prepareScanner(scanner, styleCSSSources, scanPaths())
         await queueWrite()
         await startWatchers()
-        log``
-        log.t`Start watching source changes`
+        logger.log('')
+        logger.info('Start watching source changes')
     } else {
         await prepareScanner(scanner, styleCSSSources, scanPaths())
         await writeOutput()

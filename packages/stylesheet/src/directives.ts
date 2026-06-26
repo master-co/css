@@ -1,6 +1,6 @@
 import { existsSync, readFileSync } from 'node:fs'
 import { dirname, extname, isAbsolute, relative, resolve } from 'node:path'
-import { explorePathsSync } from '@techor/glob'
+import fg from 'fast-glob'
 import {
     collectStandaloneCSSDirectiveExtractionPolicy,
     createCSSDirectiveExtractionPolicy,
@@ -263,7 +263,7 @@ export function collectStylesheetDirectivesFromCSSGraph(file: string, source?: s
 export function resolveStylesheetSourcePaths(options: StylesheetSourceOptions, cwd = process.cwd()) {
     const paths = new Set<string>()
     if (options.include?.length) {
-        for (const sourcePath of explorePathsSync(options.include, { cwd, ignore: options.exclude })) {
+        for (const sourcePath of fg.sync(options.include, { cwd, ignore: options.exclude })) {
             if (sourcePath) paths.add(sourcePath)
         }
     }

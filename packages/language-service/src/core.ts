@@ -6,7 +6,7 @@ import {
     type ClassPosition,
     ClassPositionCache
 } from '@master/css-language'
-import extend from '@techor/extend'
+import { defu } from 'defu'
 import EventEmitter from 'node:events'
 import type { Position } from 'vscode-languageserver-protocol'
 import settings, { type Settings } from './settings'
@@ -38,7 +38,7 @@ export default class CSSLanguageService extends EventEmitter {
     ) {
         super()
         this.runtime = options.runtime ?? defaultCSSLanguageRuntime
-        this.settings = extend(settings, customSettings)
+        this.settings = defu(customSettings, settings) as Settings
         this.css = this.runtime.MasterCSS.create({
             manifest: this.settings.manifest || this.runtime.defaultManifest,
             nativeDeclarationMatcher: this.runtime.nativeDeclarationMatcher

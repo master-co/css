@@ -78,8 +78,7 @@
         "@master/css-integration": "workspace:^",
         "@master/css-runtime": "workspace:^",
         "@master/css-source": "workspace:^",
-        "@master/css.vite": "workspace:^",
-        "@techor/extend": "^3.2.5"
+        "@master/css.vite": "workspace:^"
     },
     "devDependencies": {
         "@master/css-preset": "workspace:^",

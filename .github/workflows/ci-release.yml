@@ -130,7 +130,6 @@ jobs:
             - uses: ./.github/actions/setup-pnpm
               with:
                   submodules-token: ${{ secrets.GH_TOKEN }}
-            - run: pnpm install semantic-release semantic-release-config-techor @semantic-release/exec --workspace-root
             - run: pnpm run build
             - run: pnpm exec semantic-release
               env:

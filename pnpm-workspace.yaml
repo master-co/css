@@ -20,6 +20,13 @@ allowBuilds:
   unrs-resolver: true
   workerd: true
 
+minimumReleaseAgeExclude:
+  - '@aronrepo/commitlint-config@2.0.0'
+  - '@aronrepo/conventional-changelog-config@2.0.0'
+  - '@aronrepo/conventional-commits@2.0.0'
+  - '@aronrepo/semantic-release-config@2.0.0'
+  - '@aronrepo/semantic-release-pnpm@2.0.0'
+
 supportedArchitectures:
   os:
     - win32

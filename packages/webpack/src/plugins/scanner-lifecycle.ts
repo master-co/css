@@ -1,7 +1,9 @@
-import log from '@techor/log'
+import { createConsola } from 'consola'
 import type { Compiler } from 'webpack'
 import type { MasterCSSWebpackContext, WebpackSubPlugin } from '../plugin'
 import { hasModifiedFile } from '../utils/path'
+
+const logger = createConsola({ level: 3 })
 
 export default function ScannerLifecyclePlugin(context: MasterCSSWebpackContext): WebpackSubPlugin {
     return {
@@ -24,7 +26,7 @@ export default function ScannerLifecyclePlugin(context: MasterCSSWebpackContext)
             compiler.hooks.beforeRun.tapPromise(context.name, async () => {
                 await context.init()
                 await context.writeGeneratedCSSModule()
-                log``
+                logger.log('')
             })
 
             compiler.hooks.watchRun.tapPromise(context.name, async (watchingCompiler) => {

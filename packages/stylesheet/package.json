@@ -79,7 +79,7 @@
         "@master/css-lexer": "workspace:^",
         "@master/css-source": "workspace:^",
         "@master/css-validator": "workspace:^",
-        "@techor/glob": "^3.2.5",
+        "fast-glob": "^3.3.3",
         "@master/css-schema": "workspace:^"
     },
     "devDependencies": {

@@ -3,7 +3,7 @@
 pnpm exec commitlint --edit "$1" || {
     cat <<'EOF'
 
-Master CSS commit messages must follow Techor conventional commits:
+Master CSS commit messages must follow Aronrepo conventional commits:
   Type(Target): Summary
 
 Examples:
@@ -14,7 +14,7 @@ Examples:
 Types:
   Bump, Feat, New, Perf, Add, Update, Improve, Fix, Deprecate, Drop, Docs, Upgrade, Revert, Example, Test, Refactor, Chore, Misc
 
-Use sentence case and no trailing period.
+Use PascalCase types, optional scopes, sentence case, and no trailing period.
 EOF
     exit 1
 }
