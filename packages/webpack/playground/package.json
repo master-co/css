@@ -4,8 +4,8 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "webpack serve --mode development --config webpack.config.mjs",
-    "build": "webpack --mode production --config webpack.config.mjs"
+    "dev": "webpack serve --mode development --config webpack.config.js",
+    "build": "webpack --mode production --config webpack.config.js"
   },
   "devDependencies": {
     "css-loader": "^7.1.3",

@@ -29,8 +29,8 @@
 - `src/server.min.ts`
 - `generate.ts`
 - `package.json`
-- `scripts/package-target-core.mjs`
-- `scripts/package-targets.mjs`
+- `scripts/package-target-core.js`
+- `scripts/package-targets.js`
 - `tsdown.config.ts`
 
 ## Risk Areas

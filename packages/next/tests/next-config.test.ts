@@ -133,17 +133,6 @@ describe('withMasterCSS', () => {
                     type: 'ecmascript'
                 })
             ],
-            '*.mjs': [
-                expect.objectContaining({
-                    condition: {
-                        all: [
-                            { not: 'foreign' },
-                            { content: expect.any(RegExp) }
-                        ]
-                    },
-                    type: 'ecmascript'
-                })
-            ],
             '*.cjs': [
                 expect.objectContaining({
                     condition: {
@@ -223,17 +212,6 @@ describe('withMasterCSS', () => {
                     type: 'ecmascript'
                 })
             ],
-            '*.mjs': [
-                expect.objectContaining({
-                    condition: {
-                        all: [
-                            { not: 'foreign' },
-                            { content: expect.any(RegExp) }
-                        ]
-                    },
-                    type: 'ecmascript'
-                })
-            ],
             '*.cjs': [
                 expect.objectContaining({
                     condition: {
@@ -276,7 +254,7 @@ describe('withMasterCSS', () => {
         try {
             process.chdir(root)
             const nextConfig = withMasterCSS({
-                adapterPath: './external-adapter.mjs'
+                adapterPath: './external-adapter.js'
             }, {
                 adapterOrder: 'external-first'
             }) as any
@@ -284,7 +262,7 @@ describe('withMasterCSS', () => {
 
             expect(toPosixPath(nextConfig.adapterPath)).toContain(composedAdapterProjectPath)
             expect(adapterSource).toContain('createComposedAdapter(createAdapter(), loadExternalAdapter')
-            expect(adapterSource).toContain('const externalAdapterPath = "./external-adapter.mjs"')
+            expect(adapterSource).toContain('const externalAdapterPath = "./external-adapter.js"')
             expect(adapterSource).toContain('const adapterOrder = "external-first"')
         } finally {
             process.chdir(cwd)
@@ -297,12 +275,12 @@ describe('withMasterCSS', () => {
         const originalAdapterPath = process.env.NEXT_ADAPTER_PATH
         try {
             process.chdir(root)
-            process.env.NEXT_ADAPTER_PATH = './env-adapter.mjs'
+            process.env.NEXT_ADAPTER_PATH = './env-adapter.js'
             const nextConfig = withMasterCSS({}) as any
             const adapterSource = readFileSync(nextConfig.adapterPath, 'utf-8')
 
             expect(toPosixPath(nextConfig.adapterPath)).toContain(composedAdapterProjectPath)
-            expect(adapterSource).toContain('const externalAdapterPath = "./env-adapter.mjs"')
+            expect(adapterSource).toContain('const externalAdapterPath = "./env-adapter.js"')
             expect(adapterSource).toContain('const adapterOrder = "master-first"')
         } finally {
             if (originalAdapterPath === undefined) {

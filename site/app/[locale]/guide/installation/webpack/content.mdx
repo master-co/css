@@ -38,10 +38,10 @@
     <Step $row>
         <StepL>
             ### <StepNum />Create a Webpack config file
-            Create and configure the `webpack.config.mjs` file. Webpack feeds JavaScript modules to the scanner, then writes generated CSS into the stylesheet that imports `@master/css`.
+            Create and configure the `webpack.config.js` file. Webpack feeds JavaScript modules to the scanner, then writes generated CSS into the stylesheet that imports `@master/css`.
         </StepL>
         <StepR>
-            ```js name=webpack.config.mjs
+            ```js name=webpack.config.js
             import path from 'node:path'
             import HtmlWebpackPlugin from 'html-webpack-plugin'
             import MasterCSSPlugin from '@master/css.webpack'

@@ -11,7 +11,7 @@ const scannerOptions: ScannerOptions = {
         '**/*.css',
         '**/*.d.ts',
         '**/*.test.*',
-        '**/*test.{js,cjs,mjs,ts}',
+        '**/*test.{js,cjs,ts}',
         '**/*.options.*',
         '**/*README.md',
         '**/dist/**',

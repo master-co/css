@@ -8,9 +8,9 @@
         "test": "vitest",
         "type-check": "tsc -b tsconfig.typecheck.json",
         "lint": "eslint",
-        "vscode:package": "node scripts/package-targets.mjs package",
-        "vscode:publish": "node scripts/package-targets.mjs publish",
-        "release": "node scripts/release.mjs"
+        "vscode:package": "node scripts/package-targets.js package",
+        "vscode:publish": "node scripts/package-targets.js publish",
+        "release": "node scripts/release.js"
     },
     "version": "2.0.21",
     "description": "Master CSS for Visual Studio Code",

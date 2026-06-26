@@ -51,7 +51,7 @@ For `packages/<name>/**`, read `packages/<name>/package.json` and `packages/<nam
 | `shared/**` | `shared/package.json`, `package-boundaries.md` | Repo-internal test/build support only. |
 | `.github/prompts/**`, `AGENTS.md`, `CLAUDE.md`, `.ai/**` | `docs.md` | AI-facing docs and prompt routing. |
 | `.github/workflows/**`, release config, lockfiles | `accuracy-guardrails.md` | Do not modify unless explicitly requested. |
-| root `package.json`, `pnpm-workspace.yaml`, `tsconfig.json`, `eslint.config.mjs` | `package-boundaries.md`, `testing.md` | Treat as repo-wide changes. |
+| root `package.json`, `pnpm-workspace.yaml`, `tsconfig.json`, `eslint.config.js` | `package-boundaries.md`, `testing.md` | Treat as repo-wide changes. |
 
 ## Escalate When
 

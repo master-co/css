@@ -1,9 +1,9 @@
 'use client'
 
 import RootLayout from 'internal/layouts/root'
-import i18n from '~/internal/common/i18n.config.mjs'
+import i18n from '~/internal/common/i18n.config.js'
 import app from '~/site/app'
-import redirects from '~/site/redirects.mjs'
+import redirects from '~/site/redirects.js'
 
 export default function RootClient(props: {
     children: React.ReactNode,

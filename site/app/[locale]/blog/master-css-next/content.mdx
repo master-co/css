@@ -83,8 +83,8 @@ This page hydration manifest is separate from the project manifest and from the 
 ---
 
 ## Adapter integration
-The new adapter is registered in `next.config.mjs`, and Next.js calls it when the full build output is available:
-```js name=next.config.mjs
+The new adapter is registered in `next.config.js`, and Next.js calls it when the full build output is available:
+```js name=next.config.js
 import { withMasterCSS } from '@master/css.next'
 
 /** @type {import('next').NextConfig} */
@@ -160,7 +160,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
 Then register the adapter:
 
-```js name=next.config.mjs
+```js name=next.config.js
 import { withMasterCSS } from '@master/css.next'
 
 /** @type {import('next').NextConfig} */
@@ -198,9 +198,9 @@ Static mode uses the same Master CSS stylesheet import model as the other build 
 }
 ```
 
-Then enable static mode in `next.config.mjs`:
+Then enable static mode in `next.config.js`:
 
-```js name=next.config.mjs
+```js name=next.config.js
 import { withMasterCSS } from '@master/css.next'
 
 /** @type {import('next').NextConfig} */

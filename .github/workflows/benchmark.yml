@@ -42,13 +42,13 @@ jobs:
             - name: Run runtime browser benchmark
               run: pnpm --filter @master/css-runtime bench --output "$BENCHMARK_OUTPUT_DIR/runtime.json"
             - name: Write benchmark reports
-              run: node benchmarks/ci/write-benchmark-report.mjs --output "$BENCHMARK_OUTPUT_DIR" --engine "$BENCHMARK_OUTPUT_DIR/engine-vitest.json" --runtime "$BENCHMARK_OUTPUT_DIR/runtime.json"
+              run: node benchmarks/ci/write-benchmark-report.js --output "$BENCHMARK_OUTPUT_DIR" --engine "$BENCHMARK_OUTPUT_DIR/engine-vitest.json" --runtime "$BENCHMARK_OUTPUT_DIR/runtime.json"
             - name: Compare engine history
-              run: node benchmarks/ci/compare-benchmark-history.mjs --current "$BENCHMARK_OUTPUT_DIR/engine/benchmark-results.json" --output "$BENCHMARK_OUTPUT_DIR/engine/history.md" --limit 50
+              run: node benchmarks/ci/compare-benchmark-history.js --current "$BENCHMARK_OUTPUT_DIR/engine/benchmark-results.json" --output "$BENCHMARK_OUTPUT_DIR/engine/history.md" --limit 50
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
             - name: Compare runtime history
-              run: node benchmarks/ci/compare-benchmark-history.mjs --current "$BENCHMARK_OUTPUT_DIR/runtime/benchmark-results.json" --output "$BENCHMARK_OUTPUT_DIR/runtime/history.md" --limit 50
+              run: node benchmarks/ci/compare-benchmark-history.js --current "$BENCHMARK_OUTPUT_DIR/runtime/benchmark-results.json" --output "$BENCHMARK_OUTPUT_DIR/runtime/history.md" --limit 50
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
             - name: Append benchmark summary

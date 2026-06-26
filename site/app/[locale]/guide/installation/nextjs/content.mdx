@@ -85,7 +85,7 @@
             (i) Static and pre-rendered outputs attach `data-master-css-hydration-manifest` to `style#master-css`. The JSON asset is written under `/_next/static/master-css/hydration/…`, while dynamic SSR responses continue to rely on runtime rendering.
         </StepL>
         <StepR>
-            ```js name=next.config.mjs
+            ```js name=next.config.js
             import { withMasterCSS } from '@master/css.next'
 
             /** @type {import('next').NextConfig} */

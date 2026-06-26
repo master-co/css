@@ -1,4 +1,4 @@
-import i18n from '~/internal/common/i18n.config.mjs'
+import i18n from '~/internal/common/i18n.config.js'
 import DocHeader from '~/internal/components/DocHeader'
 import Body from '~/internal/layouts/body'
 

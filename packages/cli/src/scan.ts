@@ -15,7 +15,7 @@ import path from 'node:path'
 
 export const DEFAULT_SCAN_OUTPUT = 'master.css'
 
-const DEFAULT_SOURCE_PATTERNS = ['**/*.{html,htm,js,jsx,mjs,cjs,ts,tsx,mts,cts,svelte,astro,vue,md,mdx,pug,php}']
+const DEFAULT_SOURCE_PATTERNS = ['**/*.{html,htm,js,jsx,cjs,ts,tsx,mts,cts,svelte,astro,vue,md,mdx,pug,php}']
 const logger = createConsola({ level: 3 })
 
 export interface ScanOptions {

@@ -6,7 +6,7 @@
         "dev": "tsdown --config ../../shared/tsdown-package.config.ts --watch",
         "type-check": "tsc -b tsconfig.typecheck.json",
         "test": "vitest",
-        "lint": "eslint src *.mjs"
+        "lint": "eslint src *.js"
     },
     "keywords": [
         "mastercss",

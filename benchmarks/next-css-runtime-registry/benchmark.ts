@@ -254,7 +254,7 @@ async function prepareApp(variant: VariantName) {
     await cp(join(playgroundRoot, 'next-env.d.ts'), join(appDir, 'next-env.d.ts'))
     await cp(join(playgroundRoot, 'master-css-manifest.d.ts'), join(appDir, 'master-css-manifest.d.ts'))
     await writeFile(join(appDir, 'package.json'), createPackageJSON())
-    await writeFile(join(appDir, 'next.config.mjs'), createNextConfig())
+    await writeFile(join(appDir, 'next.config.js'), createNextConfig())
     await writeFile(join(appDir, 'app/globals.css'), createGlobalsCSS())
     await writeFile(join(appDir, 'app/layout.tsx'), createLayout(variant))
     if (variant === 'dynamic-ssr-false') {

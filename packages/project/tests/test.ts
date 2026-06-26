@@ -67,7 +67,7 @@ function writeNodePackage(
     root: string,
     packageName: string,
     packageJSON: Record<string, unknown>,
-    files: Record<string, string> = { 'index.mjs': 'export default {}' }
+    files: Record<string, string> = { 'index.js': 'export default {}' }
 ) {
     const packageDir = join(root, 'node_modules', toPackagePath(packageName))
     mkdirSync(packageDir, { recursive: true })
@@ -76,7 +76,7 @@ function writeNodePackage(
         type: 'module',
         version: '1.2.3',
         exports: {
-            '.': './index.mjs'
+            '.': './index.js'
         },
         ...packageJSON
     })
@@ -287,7 +287,7 @@ test('resolves Master CSS workspace packages and optional language server', () =
                 '@master/css-schema': '^1.2.3'
             }
         }, {
-            'index.mjs': 'export const builtinKeyAliases = {}; export const builtinNativeValueNamespaces = []'
+            'index.js': 'export const builtinKeyAliases = {}; export const builtinNativeValueNamespaces = []'
         })
         const presetDir = writeNodePackage(cssDir, '@master/css-preset', {
             exports: {
@@ -298,17 +298,17 @@ test('resolves Master CSS workspace packages and optional language server', () =
         })
         const schemaDir = writeNodePackage(engineDir, '@master/css-schema', {
             exports: {
-                './utility-type': './utility-type.mjs'
+                './utility-type': './utility-type.js'
             }
         }, {
-            'utility-type.mjs': 'export default { Semantic: -2, Shorthand: -1, Normal: 0 }'
+            'utility-type.js': 'export default { Semantic: -2, Shorthand: -1, Normal: 0 }'
         })
         const languageServerDir = writeNodePackage(cwd, '@master/css-language-server', {
             exports: {
-                './server': './server.mjs'
+                './server': './server.js'
             }
         }, {
-            'server.mjs': 'export {}'
+            'server.js': 'export {}'
         })
 
         const resolution = resolveMasterCSSWorkspacePackages(cwd)
@@ -335,7 +335,7 @@ test('reports missing workspace runtime packages without throwing', () => {
         const cssDir = writeNodePackage(cwd, '@master/css', {})
         writeNodePackage(cssDir, '@master/css-engine', {
             exports: {
-                '.': './missing.mjs'
+                '.': './missing.js'
             }
         }, {})
         writeNodePackage(cssDir, '@master/css-preset', {
@@ -371,7 +371,7 @@ test('reports invalid package exports as resolution errors', () => {
         })
         writeNodePackage(cwd, '@master/css', {
             exports: {
-                '.': './missing.mjs'
+                '.': './missing.js'
             }
         }, {})
 

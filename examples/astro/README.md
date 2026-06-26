@@ -25,7 +25,7 @@ The integration:
 └── package.json
 ```
 
-`astro.config.mjs` registers `masterCSS()` with no options because progressive rendering is the default.
+`astro.config.js` registers `masterCSS()` with no options because progressive rendering is the default.
 
 `src/layouts/Layout.astro` imports the Master CSS default stylesheet globally:
 

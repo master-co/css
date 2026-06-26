@@ -30,7 +30,7 @@ test('falls back to the bundled runtime when workspace packages are missing', as
             name: '@master/css',
             type: 'module',
             exports: {
-                '.': './missing.mjs'
+                '.': './missing.js'
             }
         }))
         const rootUri = URI.file(cwd).toString()

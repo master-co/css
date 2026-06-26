@@ -2,7 +2,7 @@
     "name": "@master/css-language",
     "type": "module",
     "scripts": {
-        "build": "tsdown --config ../../shared/tsdown-package.config.ts && node scripts/restore-json-import-attributes.mjs",
+        "build": "tsdown --config ../../shared/tsdown-package.config.ts && node scripts/restore-json-import-attributes.js",
         "dev": "tsdown --config ../../shared/tsdown-package.config.ts --watch",
         "type-check": "tsc -b tsconfig.typecheck.json",
         "lint": "eslint",

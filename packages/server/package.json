@@ -2,7 +2,7 @@
     "name": "@master/css-server",
     "type": "module",
     "scripts": {
-        "build": "tsdown --config ../../shared/tsdown-package.config.ts && node scripts/restore-json-import-attributes.mjs",
+        "build": "tsdown --config ../../shared/tsdown-package.config.ts && node scripts/restore-json-import-attributes.js",
         "dev": "tsdown --config ../../shared/tsdown-package.config.ts --watch",
         "lint": "eslint",
         "type-check": "tsc -b tsconfig.typecheck.json",

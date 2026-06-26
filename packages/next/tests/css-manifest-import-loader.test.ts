@@ -86,7 +86,7 @@ describe('css manifest import loader', () => {
         const projectDir = createFixtureDir()
         const appDir = join(projectDir, 'app')
         const packageDir = join(projectDir, 'node_modules/@fixture/tokens')
-        const resourcePath = join(appDir, 'manifest.mjs')
+        const resourcePath = join(appDir, 'manifest.js')
         mkdirSync(appDir, { recursive: true })
         mkdirSync(packageDir, { recursive: true })
         writeFileSync(resourcePath, '')
@@ -114,7 +114,7 @@ describe('css manifest import loader', () => {
 
     it('leaves non-import strings and unrelated imports unchanged', async () => {
         const projectDir = createFixtureDir()
-        const resourcePath = join(projectDir, 'manifest.mjs')
+        const resourcePath = join(projectDir, 'manifest.js')
         mkdirSync(projectDir, { recursive: true })
         writeFileSync(resourcePath, '')
 

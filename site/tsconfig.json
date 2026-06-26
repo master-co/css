@@ -70,7 +70,7 @@
         ".next/types/**/*.ts",
         "**/*.ts",
         "**/*.tsx",
-        "**/*.mjs",
+        "**/*.js",
         "**/*.mdx",
         "../internal/**/*.ts",
         "../internal/**/*.tsx",

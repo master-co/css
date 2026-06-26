@@ -294,7 +294,6 @@ function createCSSManifestImportSourceRules(cssManifestImportLoaderPath: string,
     }
     const sourceRules = [
         ['*.js', 'ecmascript'],
-        ['*.mjs', 'ecmascript'],
         ['*.cjs', 'ecmascript'],
         ['*.ts', 'typescript']
     ] as const
@@ -339,7 +338,6 @@ function applyMasterCSSStaticTurbopackConfig(
         createStaticSourceRule(/\.cts$/, '*.cts', 'typescript'),
         createStaticSourceRule(/\.jsx$/, '*.jsx', 'ecmascript'),
         createStaticSourceRule(/\.js$/, '*.js', 'ecmascript'),
-        createStaticSourceRule(/\.mjs$/, '*.mjs', 'ecmascript'),
         createStaticSourceRule(/\.cjs$/, '*.cjs', 'ecmascript')
     ].map((rule) => ({
         ...rule,

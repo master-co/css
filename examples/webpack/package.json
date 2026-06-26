@@ -2,11 +2,12 @@
     "name": "master-css-webpack-example",
     "private": true,
     "version": "1.0.0",
+    "type": "module",
     "description": "",
     "main": "index.js",
     "scripts": {
-        "dev": "webpack serve --config webpack.config.mjs --mode development",
-        "build": "webpack --config webpack.config.mjs --mode production"
+        "dev": "webpack serve --config webpack.config.js --mode development",
+        "build": "webpack --config webpack.config.js --mode production"
     },
     "keywords": [],
     "author": "",
