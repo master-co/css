@@ -116,10 +116,10 @@ export function SurfacesDemo() {
     return (
         <Demo $py={0} $px={0}>
             <DemoLight>
-                <div className="grid place-content:center h:12x w:full aspect-ratio:2/1 r:sm surface:overlay shadow:lg"></div>
+                <div className="grid place-content:center h:12x w:full aspect-ratio:2/1 r:sm surface:base shadow:lg"></div>
             </DemoLight>
             <DemoDark>
-                <div className="grid place-content:center h:12x w:full aspect-ratio:2/1 r:sm surface:overlay shadow:lg"></div>
+                <div className="grid place-content:center h:12x w:full aspect-ratio:2/1 r:sm surface:base shadow:lg"></div>
             </DemoDark>
         </Demo>
     )
