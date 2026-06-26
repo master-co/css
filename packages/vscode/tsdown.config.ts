@@ -66,6 +66,7 @@ const externalNativePackages = {
 const commonConfig = {
     platform: 'node',
     tsconfig: './tsconfig.prod.json',
+    fixedExtension: false,
     shims: false,
     dts: false,
     deps: {

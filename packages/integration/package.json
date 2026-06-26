@@ -28,54 +28,54 @@
         "mastercss"
     ],
     "sideEffects": false,
-    "main": "./dist/index.mjs",
-    "module": "./dist/index.mjs",
-    "jsnext:main": "./dist/index.mjs",
-    "esnext": "./dist/index.mjs",
-    "types": "./dist/index.d.mts",
+    "main": "./dist/index.js",
+    "module": "./dist/index.js",
+    "jsnext:main": "./dist/index.js",
+    "esnext": "./dist/index.js",
+    "types": "./dist/index.d.ts",
     "exports": {
         ".": {
-            "types": "./dist/index.d.mts",
-            "import": "./dist/index.mjs",
-            "default": "./dist/index.mjs"
+            "types": "./dist/index.d.ts",
+            "import": "./dist/index.js",
+            "default": "./dist/index.js"
         },
         "./client": {
             "types": "./client.d.ts"
         },
         "./module": {
-            "types": "./dist/module.d.mts",
-            "import": "./dist/module.mjs",
-            "default": "./dist/module.mjs"
+            "types": "./dist/module.d.ts",
+            "import": "./dist/module.js",
+            "default": "./dist/module.js"
         },
         "./manifest-module": {
-            "types": "./dist/manifest-module.d.mts",
-            "import": "./dist/manifest-module.mjs",
-            "default": "./dist/manifest-module.mjs"
+            "types": "./dist/manifest-module.d.ts",
+            "import": "./dist/manifest-module.js",
+            "default": "./dist/manifest-module.js"
         },
         "./manifest-facade": {
-            "types": "./dist/manifest-facade.d.mts",
-            "import": "./dist/manifest-facade.mjs",
-            "default": "./dist/manifest-facade.mjs"
+            "types": "./dist/manifest-facade.d.ts",
+            "import": "./dist/manifest-facade.js",
+            "default": "./dist/manifest-facade.js"
         },
         "./style-module": {
-            "types": "./dist/style-module.d.mts",
-            "import": "./dist/style-module.mjs",
-            "default": "./dist/style-module.mjs"
+            "types": "./dist/style-module.d.ts",
+            "import": "./dist/style-module.js",
+            "default": "./dist/style-module.js"
         },
         "./emitted-globals-module": {
-            "types": "./dist/emitted-globals-module.d.mts",
-            "import": "./dist/emitted-globals-module.mjs",
-            "default": "./dist/emitted-globals-module.mjs"
+            "types": "./dist/emitted-globals-module.d.ts",
+            "import": "./dist/emitted-globals-module.js",
+            "default": "./dist/emitted-globals-module.js"
         },
         "./runtime": {
-            "types": "./dist/runtime.d.mts",
-            "import": "./dist/runtime.mjs",
-            "default": "./dist/runtime.mjs"
+            "types": "./dist/runtime.d.ts",
+            "import": "./dist/runtime.js",
+            "default": "./dist/runtime.js"
         },
         "./node": {
-            "types": "./dist/node.d.mts",
-            "import": "./dist/node.mjs",
-            "default": "./dist/node.mjs"
+            "types": "./dist/node.d.ts",
+            "import": "./dist/node.js",
+            "default": "./dist/node.js"
         }
     },
     "files": [

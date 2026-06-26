@@ -221,7 +221,7 @@ export function activate(context: ExtensionContext) {
     context.subscriptions.push(outputChannel)
 
     // The server is implemented in node
-    const bundledServerModule = context.asAbsolutePath(path.join('dist', 'server.min.mjs'))
+    const bundledServerModule = context.asAbsolutePath(path.join('dist', 'server.min.js'))
     const serverModule = resolveWorkspaceServerModule(context, bundledServerModule)
     log(`Loading server from ${serverModule}`)
 

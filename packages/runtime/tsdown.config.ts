@@ -6,6 +6,7 @@ export default defineConfig([
         unbundle: true,
         root: 'src',
         tsconfig: './tsconfig.prod.json',
+        fixedExtension: false,
         dts: {
             emitDtsOnly: true
         },
@@ -22,7 +23,7 @@ export default defineConfig([
         tsconfig: './tsconfig.prod.json',
         dts: false,
         outputOptions: {
-            entryFileNames: '[name].mjs',
+            entryFileNames: '[name].js',
             codeSplitting: false
         }
     },
@@ -34,7 +35,7 @@ export default defineConfig([
         tsconfig: './tsconfig.prod.json',
         dts: false,
         outputOptions: {
-            entryFileNames: '[name].mjs',
+            entryFileNames: '[name].js',
             codeSplitting: false
         }
     },

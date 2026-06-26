@@ -28,61 +28,61 @@
         "mastercss"
     ],
     "sideEffects": false,
-    "main": "./dist/index.mjs",
-    "jsnext:main": "./dist/index.mjs",
-    "esnext": "./dist/index.mjs",
-    "module": "./dist/index.mjs",
-    "types": "./dist/index.d.mts",
+    "main": "./dist/index.js",
+    "jsnext:main": "./dist/index.js",
+    "esnext": "./dist/index.js",
+    "module": "./dist/index.js",
+    "types": "./dist/index.d.ts",
     "exports": {
         ".": {
-            "types": "./dist/index.d.mts",
-            "import": "./dist/index.mjs",
-            "default": "./dist/index.mjs"
+            "types": "./dist/index.d.ts",
+            "import": "./dist/index.js",
+            "default": "./dist/index.js"
         },
         "./manifest": {
-            "types": "./dist/manifest.d.mts",
-            "import": "./dist/manifest.mjs",
-            "default": "./dist/manifest.mjs"
+            "types": "./dist/manifest.d.ts",
+            "import": "./dist/manifest.js",
+            "default": "./dist/manifest.js"
         },
         "./manifest-json": {
-            "types": "./dist/manifest-json.d.mts",
-            "import": "./dist/manifest-json.mjs",
-            "default": "./dist/manifest-json.mjs"
+            "types": "./dist/manifest-json.d.ts",
+            "import": "./dist/manifest-json.js",
+            "default": "./dist/manifest-json.js"
         },
         "./hydration-manifest": {
-            "types": "./dist/hydration-manifest.d.mts",
-            "import": "./dist/hydration-manifest.mjs",
-            "default": "./dist/hydration-manifest.mjs"
+            "types": "./dist/hydration-manifest.d.ts",
+            "import": "./dist/hydration-manifest.js",
+            "default": "./dist/hydration-manifest.js"
         },
         "./css-directives": {
-            "types": "./dist/css-directives.d.mts",
-            "import": "./dist/css-directives.mjs",
-            "default": "./dist/css-directives.mjs"
+            "types": "./dist/css-directives.d.ts",
+            "import": "./dist/css-directives.js",
+            "default": "./dist/css-directives.js"
         },
         "./css-syntax": {
-            "types": "./dist/css-syntax.d.mts",
-            "import": "./dist/css-syntax.mjs",
-            "default": "./dist/css-syntax.mjs"
+            "types": "./dist/css-syntax.d.ts",
+            "import": "./dist/css-syntax.js",
+            "default": "./dist/css-syntax.js"
         },
         "./utility-type": {
-            "types": "./dist/utility-type.d.mts",
-            "import": "./dist/utility-type.mjs",
-            "default": "./dist/utility-type.mjs"
+            "types": "./dist/utility-type.d.ts",
+            "import": "./dist/utility-type.js",
+            "default": "./dist/utility-type.js"
         },
         "./runtime-style": {
-            "types": "./dist/runtime-style.d.mts",
-            "import": "./dist/runtime-style.mjs",
-            "default": "./dist/runtime-style.mjs"
+            "types": "./dist/runtime-style.d.ts",
+            "import": "./dist/runtime-style.js",
+            "default": "./dist/runtime-style.js"
         },
         "./native-css-shorthand": {
-            "types": "./dist/native-css-shorthand.d.mts",
-            "import": "./dist/native-css-shorthand.mjs",
-            "default": "./dist/native-css-shorthand.mjs"
+            "types": "./dist/native-css-shorthand.d.ts",
+            "import": "./dist/native-css-shorthand.js",
+            "default": "./dist/native-css-shorthand.js"
         },
         "./css-common": {
-            "types": "./dist/css-common.d.mts",
-            "import": "./dist/css-common.mjs",
-            "default": "./dist/css-common.mjs"
+            "types": "./dist/css-common.d.ts",
+            "import": "./dist/css-common.js",
+            "default": "./dist/css-common.js"
         }
     },
     "files": [

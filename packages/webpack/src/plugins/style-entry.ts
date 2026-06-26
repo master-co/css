@@ -3,7 +3,7 @@ import type { Compiler } from 'webpack'
 import type { MasterCSSWebpackContext, WebpackSubPlugin } from '../plugin'
 
 function resolveStyleCSSLoaderPath() {
-    return fileURLToPath(new URL('../style-css-loader.mjs', import.meta.url))
+    return fileURLToPath(new URL('../style-css-loader.js', import.meta.url))
 }
 
 export default function StyleEntryPlugin(context: MasterCSSWebpackContext): WebpackSubPlugin {

@@ -12,7 +12,7 @@ export default defineConfig({
     },
     minify: true,
     outputOptions: {
-        entryFileNames: '[name].mjs',
+        entryFileNames: '[name].js',
         codeSplitting: false,
         comments: false
     }

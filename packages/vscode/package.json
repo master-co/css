@@ -32,10 +32,10 @@
     "activationEvents": [
         "onStartupFinished"
     ],
-    "main": "./dist/extension.min.mjs",
+    "main": "./dist/extension.min.js",
     "exports": {
-        ".": "./dist/extension.min.mjs",
-        "./server": "./dist/server.min.mjs"
+        ".": "./dist/extension.min.js",
+        "./server": "./dist/server.min.js"
     },
     "files": [
         "dist",

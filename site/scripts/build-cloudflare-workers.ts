@@ -14,7 +14,7 @@ await Promise.all([
 ])
 
 await buildPlayCompiler(publicPlayCompilerDir)
-await stat(join(publicPlayCompilerDir, 'compiler.mjs'))
+await stat(join(publicPlayCompilerDir, 'compiler.js'))
 
 const buildResult = spawnSync('opennextjs-cloudflare', ['build', '--skipWranglerConfigCheck'], {
     cwd: siteDir,
@@ -33,7 +33,7 @@ if (buildResult.status !== 0) {
 const openNextDir = join(siteDir, '.open-next')
 const assetsDir = join(openNextDir, 'assets/play-compiler')
 
-await stat(join(assetsDir, 'compiler.mjs'))
+await stat(join(assetsDir, 'compiler.js'))
 
 const serverBundleCopies = [
     join(openNextDir, 'server-functions/default/site/public/play-compiler'),

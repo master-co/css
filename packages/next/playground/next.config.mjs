@@ -1,4 +1,4 @@
-import { withMasterCSS } from '../dist/index.mjs'
+import { withMasterCSS } from '../dist/index.js'
 
 /** @type {import('next').NextConfig} */
 const nextConfig = withMasterCSS({

@@ -45,18 +45,18 @@
     "sideEffects": [
         "./src/*.css"
     ],
-    "main": "./dist/index.mjs",
-    "jsnext:main": "./dist/index.mjs",
-    "esnext": "./dist/index.mjs",
-    "module": "./dist/index.mjs",
+    "main": "./dist/index.js",
+    "jsnext:main": "./dist/index.js",
+    "esnext": "./dist/index.js",
+    "module": "./dist/index.js",
     "style": "./src/index.css",
-    "types": "./dist/index.d.mts",
+    "types": "./dist/index.d.ts",
     "exports": {
         ".": {
             "style": "./src/index.css",
-            "types": "./dist/index.d.mts",
-            "import": "./dist/index.mjs",
-            "default": "./dist/index.mjs"
+            "types": "./dist/index.d.ts",
+            "import": "./dist/index.js",
+            "default": "./dist/index.js"
         },
         "./index.css": "./src/index.css",
         "./base.css": "./src/base.css",

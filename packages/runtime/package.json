@@ -33,20 +33,20 @@
         "cdn"
     ],
     "sideEffects": false,
-    "main": "./dist/index.mjs",
-    "jsnext:main": "./dist/index.mjs",
-    "esnext": "./dist/index.mjs",
-    "module": "./dist/index.mjs",
+    "main": "./dist/index.js",
+    "jsnext:main": "./dist/index.js",
+    "esnext": "./dist/index.js",
+    "module": "./dist/index.js",
     "browser": "./dist/global.min.js",
-    "types": "./dist/index.d.mts",
+    "types": "./dist/index.d.ts",
     "exports": {
         ".": {
-            "types": "./dist/index.d.mts",
+            "types": "./dist/index.d.ts",
             "import": {
-                "development": "./dist/index.development.mjs",
-                "default": "./dist/index.mjs"
+                "development": "./dist/index.development.js",
+                "default": "./dist/index.js"
             },
-            "default": "./dist/index.mjs"
+            "default": "./dist/index.js"
         }
     },
     "files": [

@@ -170,7 +170,7 @@ function loadCompiler() {
         const script = document.createElement('script')
         script.type = 'module'
         script.async = true
-        script.src = '/play-compiler/compiler.mjs'
+        script.src = '/play-compiler/compiler.js'
         script.dataset.playCompiler = 'true'
         script.onerror = () => reject(new Error('Failed to load Play compiler'))
         document.head.append(script)

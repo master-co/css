@@ -31,7 +31,7 @@ function assertNoWorkspaceDistInputsPlugin(): TsdownPlugin {
 }
 
 export async function buildPlayCompiler(outputDir = join(siteDir, 'public/play-compiler')) {
-    const compilerOutputPath = join(outputDir, 'compiler.mjs')
+    const compilerOutputPath = join(outputDir, 'compiler.js')
 
     await rm(outputDir, { recursive: true, force: true })
     await mkdir(outputDir, { recursive: true })
@@ -65,7 +65,7 @@ export async function buildPlayCompiler(outputDir = join(siteDir, 'public/play-c
             assertNoWorkspaceDistInputsPlugin()
         ],
         outputOptions: {
-            entryFileNames: 'compiler.mjs',
+            entryFileNames: 'compiler.js',
             codeSplitting: false,
             comments: false
         }
@@ -73,7 +73,7 @@ export async function buildPlayCompiler(outputDir = join(siteDir, 'public/play-c
 
     const { size: compilerSize } = await stat(compilerOutputPath)
 
-    console.log(`Built Play compiler at ${outputDir}: compiler.mjs ${(compilerSize / 1024).toFixed(1)} KiB`)
+    console.log(`Built Play compiler at ${outputDir}: compiler.js ${(compilerSize / 1024).toFixed(1)} KiB`)
 }
 
 if (import.meta.url === pathToFileURL(process.argv[1]).href) {

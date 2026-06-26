@@ -57,6 +57,7 @@ export default defineConfig({
     unbundle: true,
     root: 'src',
     tsconfig: './tsconfig.prod.json',
+    fixedExtension: false,
     deps: {
         skipNodeModulesBundle: true,
         dts: {

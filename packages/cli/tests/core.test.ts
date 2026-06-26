@@ -42,6 +42,6 @@ describe('root command', () => {
     })
 
     it('publishes only the package-name binary', () => {
-        expect(pkg.bin).toBe('./dist/bin/index.mjs')
+        expect(pkg.bin).toBe('./dist/bin/index.js')
     })
 })

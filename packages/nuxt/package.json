@@ -2,10 +2,10 @@
     "name": "@master/css.nuxt",
     "type": "module",
     "scripts": {
-        "build": "nuxt-module-build prepare && nuxt-module-build",
+        "build": "nuxt-module-build prepare && nuxt-module-build && node scripts/normalize-module-build.js",
         "dev": "nuxt-module-build prepare && nuxi dev playground",
         "dev:build": "nuxi build playground",
-        "dev:prepare": "nuxt-module-build build --stub && nuxt-module-build prepare && nuxi prepare playground",
+        "dev:prepare": "nuxt-module-build build --stub && node scripts/normalize-module-build.js && nuxt-module-build prepare && nuxi prepare playground",
         "lint": "eslint .",
         "test": "vitest run"
     },
@@ -36,12 +36,12 @@
     "sideEffects": false,
     "exports": {
         ".": {
-            "types": "./dist/module.d.mts",
-            "default": "./dist/module.mjs"
+            "types": "./dist/module.d.ts",
+            "default": "./dist/module.js"
         }
     },
-    "main": "./dist/module.mjs",
-    "module": "./dist/module.mjs",
+    "main": "./dist/module.js",
+    "module": "./dist/module.js",
     "files": [
         "dist"
     ],

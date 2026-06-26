@@ -12,7 +12,8 @@ import { VIRTUAL_EMITTED_GLOBALS_ID } from '@master/css-integration/emitted-glob
 import {
     createVirtualDefaultManifestModulePathPattern,
     ensureVirtualManifestModulePath,
-    ensureVirtualEmittedGlobalsModulePath
+    ensureVirtualEmittedGlobalsModulePath,
+    ensureVirtualModulePackageJSONPath
 } from '@master/css-integration/node'
 import {
     prepareNextStatic,
@@ -31,10 +32,10 @@ const MASTER_CSS_MANIFEST_IMPORT_CONTENT_PATTERN = new RegExp(`\\${MASTER_CSS_MA
 const MASTER_CSS_VIRTUAL_MANIFEST_PATH_PATTERN = createVirtualDefaultManifestModulePathPattern()
 const MASTER_CSS_STYLE_CONTENT_PATTERN = new RegExp(`${createMasterCSSManifestEntryPattern().source}|@(compose|at)\\b`)
 const MASTER_CSS_REACT_PACKAGE_NAME = '@master/css.react'
-const COMPOSED_ADAPTER_FILE = 'master-css-next-adapter.mjs'
+const COMPOSED_ADAPTER_FILE = 'master-css-next-adapter.js'
 
 function resolveAdapterPath() {
-    return fileURLToPath(new URL('./adapter.mjs', import.meta.url))
+    return fileURLToPath(new URL('./adapter.js', import.meta.url))
 }
 
 function resolveComposedAdapterPath(projectDir = process.cwd()) {
@@ -42,23 +43,23 @@ function resolveComposedAdapterPath(projectDir = process.cwd()) {
 }
 
 function resolveCSSManifestLoaderPath() {
-    return fileURLToPath(new URL('./css-manifest-loader.mjs', import.meta.url))
+    return fileURLToPath(new URL('./css-manifest-loader.js', import.meta.url))
 }
 
 function resolveCSSManifestImportLoaderPath() {
-    return fileURLToPath(new URL('./css-manifest-import-loader.mjs', import.meta.url))
+    return fileURLToPath(new URL('./css-manifest-import-loader.js', import.meta.url))
 }
 
 function resolveStyleCSSLoaderPath() {
-    return fileURLToPath(new URL('./style-css-loader.mjs', import.meta.url))
+    return fileURLToPath(new URL('./style-css-loader.js', import.meta.url))
 }
 
 function resolveStaticLoaderPath() {
-    return fileURLToPath(new URL('./static-loader.mjs', import.meta.url))
+    return fileURLToPath(new URL('./static-loader.js', import.meta.url))
 }
 
 function resolveStaticCSSLoaderPath() {
-    return fileURLToPath(new URL('./static-css-loader.mjs', import.meta.url))
+    return fileURLToPath(new URL('./static-css-loader.js', import.meta.url))
 }
 
 function resolveEmptyCSSPath() {
@@ -87,6 +88,7 @@ function createComposedAdapterSource(masterAdapterPath: string, externalAdapterP
 
 function ensureComposedAdapterPath(projectDir: string, masterAdapterPath: string, externalAdapterPath: string, adapterOrder: string) {
     const composedAdapterPath = resolveComposedAdapterPath(projectDir)
+    ensureVirtualModulePackageJSONPath(projectDir)
     mkdirSync(dirname(composedAdapterPath), { recursive: true })
     writeFileSync(
         composedAdapterPath,

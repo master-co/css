@@ -43,26 +43,26 @@
         "mastercss"
     ],
     "sideEffects": false,
-    "main": "./dist/index.mjs",
-    "jsnext:main": "./dist/index.mjs",
-    "esnext": "./dist/index.mjs",
-    "module": "./dist/index.mjs",
-    "types": "./dist/index.d.mts",
+    "main": "./dist/index.js",
+    "jsnext:main": "./dist/index.js",
+    "esnext": "./dist/index.js",
+    "module": "./dist/index.js",
+    "types": "./dist/index.d.ts",
     "exports": {
         ".": {
-            "types": "./dist/index.d.mts",
-            "import": "./dist/index.mjs",
-            "default": "./dist/index.mjs"
+            "types": "./dist/index.d.ts",
+            "import": "./dist/index.js",
+            "default": "./dist/index.js"
         },
         "./compiler": {
-            "types": "./dist/compiler.d.mts",
-            "import": "./dist/compiler.mjs",
-            "default": "./dist/compiler.mjs"
+            "types": "./dist/compiler.d.ts",
+            "import": "./dist/compiler.js",
+            "default": "./dist/compiler.js"
         },
         "./inspect": {
-            "types": "./dist/inspect.d.mts",
-            "import": "./dist/inspect.mjs",
-            "default": "./dist/inspect.mjs"
+            "types": "./dist/inspect.d.ts",
+            "import": "./dist/inspect.js",
+            "default": "./dist/inspect.js"
         }
     },
     "files": [

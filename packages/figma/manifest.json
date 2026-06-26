@@ -2,7 +2,7 @@
     "name": "Master CSS",
     "id": "1501844200903453211",
     "api": "1.0.0",
-    "main": "./dist/plugin.min.mjs",
+    "main": "./dist/plugin.min.js",
     "enableProposedApi": false,
     "permissions": [ "teamlibrary" ],
     "documentAccess": "dynamic-page",

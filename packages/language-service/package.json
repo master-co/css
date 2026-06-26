@@ -33,21 +33,21 @@
         "@master/css-schema": "workspace:^"
     },
     "sideEffects": false,
-    "main": "./dist/index.mjs",
-    "module": "./dist/index.mjs",
-    "jsnext:main": "./dist/index.mjs",
-    "esnext": "./dist/index.mjs",
-    "types": "./dist/index.d.mts",
+    "main": "./dist/index.js",
+    "module": "./dist/index.js",
+    "jsnext:main": "./dist/index.js",
+    "esnext": "./dist/index.js",
+    "types": "./dist/index.d.ts",
     "exports": {
         ".": {
-            "types": "./dist/index.d.mts",
-            "import": "./dist/index.mjs",
-            "default": "./dist/index.mjs"
+            "types": "./dist/index.d.ts",
+            "import": "./dist/index.js",
+            "default": "./dist/index.js"
         },
         "./common": {
-            "types": "./dist/common.d.mts",
-            "import": "./dist/common.mjs",
-            "default": "./dist/common.mjs"
+            "types": "./dist/common.d.ts",
+            "import": "./dist/common.js",
+            "default": "./dist/common.js"
         }
     },
     "files": [

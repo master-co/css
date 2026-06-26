@@ -26,7 +26,7 @@
         "css",
         "mastercss"
     ],
-    "bin": "./dist/bin/index.mjs",
+    "bin": "./dist/bin/index.js",
     "files": [
         "dist"
     ],

@@ -14,8 +14,8 @@ import {
 const here = dirname(fileURLToPath(import.meta.url))
 const packageDir = resolve(here, '..')
 const distDir = resolve(packageDir, 'dist')
-const serverPath = resolve(distDir, 'server.min.mjs')
-const extensionPath = resolve(distDir, 'extension.min.mjs')
+const serverPath = resolve(distDir, 'server.min.js')
+const extensionPath = resolve(distDir, 'extension.min.js')
 const sourceGrammarPath = './node_modules/@master/css-language/syntaxes/master-css.tmLanguage.json'
 const stagedGrammarPath = './dist/node_modules/@master/css-language/syntaxes/master-css.tmLanguage.json'
 
@@ -280,7 +280,7 @@ test('staged language server starts and shuts down', async () => {
     await withStagedExtension(async ({ stagingDir }) => {
         const server = createLanguageServer({
             cwd: stagingDir,
-            serverPath: resolve(stagingDir, 'dist', 'server.min.mjs')
+            serverPath: resolve(stagingDir, 'dist', 'server.min.js')
         })
 
         try {

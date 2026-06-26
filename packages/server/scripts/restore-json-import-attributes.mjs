@@ -10,7 +10,7 @@ async function* walk(dir) {
         const file = join(dir, entry.name)
         if (entry.isDirectory()) {
             yield* walk(file)
-        } else if (entry.isFile() && file.endsWith('.mjs')) {
+        } else if (entry.isFile() && file.endsWith('.js')) {
             yield file
         }
     }

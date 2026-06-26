@@ -13,7 +13,8 @@ import {
     toVirtualCSSManifestAssetPath,
     toVirtualCSSManifestModulePath,
     toVirtualDefaultManifestModulePath,
-    toVirtualEmittedGlobalsModulePath
+    toVirtualEmittedGlobalsModulePath,
+    toVirtualModulePackageJSONPath
 } from '../src/node'
 import { EMPTY_MANIFEST_JSON } from '../src/manifest-module'
 import { toInlineManifestModule } from '../src/manifest-facade'
@@ -47,6 +48,7 @@ describe('@master/css-integration/node', () => {
         expect(toVirtualCSSManifestAssetPath(root, file)).toMatch(/node_modules[/\\]\.master-css[/\\].+\.manifest\.json$/)
         expect(toVirtualCSSModulePath(root)).toBe(path.join(root, 'node_modules', '.master-css', 'master-utilities.css'))
         expect(toVirtualEmittedGlobalsModulePath(root)).toBe(path.join(root, 'node_modules', '.master-css', 'master-css-emitted-globals.js'))
+        expect(toVirtualModulePackageJSONPath(root)).toBe(path.join(root, 'node_modules', '.master-css', 'package.json'))
         expect(createVirtualDefaultManifestModulePathPattern().test(toVirtualDefaultManifestModulePath(root))).toBe(true)
     })
 
@@ -68,5 +70,6 @@ describe('@master/css-integration/node', () => {
         expect(ensureVirtualEmittedGlobalsModulePath(projectDir)).toBe(emittedGlobalsPath)
         expect(readFileSync(manifestPath, 'utf8')).toBe(toInlineManifestModule(EMPTY_MANIFEST_JSON))
         expect(readFileSync(emittedGlobalsPath, 'utf8')).toBe(EMPTY_EMITTED_GLOBALS_MODULE)
+        expect(JSON.parse(readFileSync(toVirtualModulePackageJSONPath(projectDir), 'utf8'))).toEqual({ type: 'module' })
     })
 })

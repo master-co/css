@@ -35,21 +35,21 @@
         "solidjs"
     ],
     "sideEffects": false,
-    "main": "./dist/index.mjs",
-    "jsnext:main": "./dist/index.mjs",
-    "esnext": "./dist/index.mjs",
-    "module": "./dist/index.mjs",
-    "types": "./dist/index.d.mts",
+    "main": "./dist/index.js",
+    "jsnext:main": "./dist/index.js",
+    "esnext": "./dist/index.js",
+    "module": "./dist/index.js",
+    "types": "./dist/index.d.ts",
     "exports": {
         ".": {
-            "types": "./dist/index.d.mts",
-            "import": "./dist/index.mjs",
-            "default": "./dist/index.mjs"
+            "types": "./dist/index.d.ts",
+            "import": "./dist/index.js",
+            "default": "./dist/index.js"
         },
         "./runtime-provider": {
-            "types": "./dist/runtime-provider.d.mts",
-            "import": "./dist/runtime-provider.mjs",
-            "default": "./dist/runtime-provider.mjs"
+            "types": "./dist/runtime-provider.d.ts",
+            "import": "./dist/runtime-provider.js",
+            "default": "./dist/runtime-provider.js"
         }
     },
     "files": [

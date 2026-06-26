@@ -30,30 +30,30 @@
         "mastercss"
     ],
     "sideEffects": false,
-    "main": "./dist/index.mjs",
-    "module": "./dist/index.mjs",
-    "jsnext:main": "./dist/index.mjs",
-    "esnext": "./dist/index.mjs",
-    "types": "./dist/index.d.mts",
+    "main": "./dist/index.js",
+    "module": "./dist/index.js",
+    "jsnext:main": "./dist/index.js",
+    "esnext": "./dist/index.js",
+    "types": "./dist/index.d.ts",
     "exports": {
         ".": {
-            "types": "./dist/index.d.mts",
-            "import": "./dist/index.mjs",
-            "default": "./dist/index.mjs"
+            "types": "./dist/index.d.ts",
+            "import": "./dist/index.js",
+            "default": "./dist/index.js"
         },
         "./adapters": {
-            "types": "./dist/adapters/index.d.mts",
-            "import": "./dist/adapters/index.mjs",
-            "default": "./dist/adapters/index.mjs"
+            "types": "./dist/adapters/index.d.ts",
+            "import": "./dist/adapters/index.js",
+            "default": "./dist/adapters/index.js"
         }
     },
     "typesVersions": {
         "*": {
             ".": [
-                "./dist/index.d.mts"
+                "./dist/index.d.ts"
             ],
             "./adapters": [
-                "./dist/adapters/index.d.mts"
+                "./dist/adapters/index.d.ts"
             ]
         }
     },

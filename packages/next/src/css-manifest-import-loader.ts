@@ -8,6 +8,7 @@ import {
     stripMasterCSSManifestQuery
 } from '@master/css-integration/manifest-module'
 import {
+    ensureVirtualModulePackageJSONPath,
     toVirtualCSSManifestAssetPath,
     toVirtualCSSManifestModulePath
 } from '@master/css-integration/node'
@@ -71,6 +72,7 @@ function writeCSSManifestModule(context: LoaderContext, manifestPath: string) {
     const virtualManifestPath = toVirtualCSSManifestModulePath(projectDir, manifestPath)
     const virtualManifestAssetPath = toVirtualCSSManifestAssetPath(projectDir, manifestPath)
     const result = loadManifestJSONSync(manifestPath)
+    ensureVirtualModulePackageJSONPath(projectDir)
     mkdirSync(dirname(virtualManifestPath), { recursive: true })
     writeFileSync(virtualManifestAssetPath, result.json)
     writeFileSync(

@@ -28,27 +28,27 @@
         "mastercss"
     ],
     "sideEffects": false,
-    "types": "./dist/manifest.d.mts",
+    "types": "./dist/manifest.d.ts",
     "exports": {
         "./manifest": {
-            "types": "./dist/manifest.d.mts",
-            "import": "./dist/manifest.mjs",
-            "default": "./dist/manifest.mjs"
+            "types": "./dist/manifest.d.ts",
+            "import": "./dist/manifest.js",
+            "default": "./dist/manifest.js"
         },
         "./manifest-sync": {
-            "types": "./dist/manifest-sync.d.mts",
-            "import": "./dist/manifest-sync.mjs",
-            "default": "./dist/manifest-sync.mjs"
+            "types": "./dist/manifest-sync.d.ts",
+            "import": "./dist/manifest-sync.js",
+            "default": "./dist/manifest-sync.js"
         },
         "./entries": {
-            "types": "./dist/entries.d.mts",
-            "import": "./dist/entries.mjs",
-            "default": "./dist/entries.mjs"
+            "types": "./dist/entries.d.ts",
+            "import": "./dist/entries.js",
+            "default": "./dist/entries.js"
         },
         "./workspace": {
-            "types": "./dist/workspace.d.mts",
-            "import": "./dist/workspace.mjs",
-            "default": "./dist/workspace.mjs"
+            "types": "./dist/workspace.d.ts",
+            "import": "./dist/workspace.js",
+            "default": "./dist/workspace.js"
         }
     },
     "files": [

@@ -11,14 +11,14 @@ import { VIRTUAL_EMITTED_GLOBALS_ID } from '@master/css-integration/emitted-glob
 const toPosixPath = (value: string) => value.replace(/\\/g, '/')
 const virtualManifestProjectPath = 'node_modules/.master-css/master-css-manifest.js'
 const virtualEmittedGlobalsProjectPath = 'node_modules/.master-css/master-css-emitted-globals.js'
-const composedAdapterProjectPath = 'node_modules/.master-css/master-css-next-adapter.mjs'
+const composedAdapterProjectPath = 'node_modules/.master-css/master-css-next-adapter.js'
 
 describe('withMasterCSS', () => {
     it('sets the Next adapter path and registers options', () => {
         const nextConfig = withMasterCSS({ reactStrictMode: true }, { buildReport: 'master-css.json' })
 
         expect(nextConfig.reactStrictMode).toBe(true)
-        expect(nextConfig.adapterPath).toContain('adapter.mjs')
+        expect(nextConfig.adapterPath).toContain('adapter.js')
         expect(getRegisteredOptions()).toEqual({ buildReport: 'master-css.json' })
     })
 
