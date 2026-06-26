@@ -52,7 +52,7 @@ const lineRows = getModeRows('color-line', (key) => [`b:${key}`], (key) => `outl
 const baseHueRows = colorRows
 const surfaceRows = getModeRows(
     'color-surface',
-    (key) => key === 'base' ? ['bg:surface-base', 'surface:base'] : [`surface:${key}`],
+    (key) => key === 'base' ? ['surface:base'] : [`surface:${key}`],
     (key) => key === 'base' ? 'bg:surface-base@light bg:surface-base@dark' : `surface:${key}@light surface:${key}@dark`,
     'background'
 )
