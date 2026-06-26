@@ -1,5 +1,5 @@
 import { readFileSync } from 'node:fs'
-import { resolve } from 'node:path'
+import { extname, resolve } from 'node:path'
 import { defineConfig, type TsdownInputOption, type TsdownPlugin } from 'tsdown'
 
 interface PackageJSON {
@@ -47,6 +47,27 @@ const externalVirtualModules: TsdownPlugin = {
     }
 }
 
+const relativeImportSpecifierPattern = /((?:\bfrom\s*|\bimport\s*)['"])(\.{1,2}\/[^'"]+)(['"])/g
+const dynamicImportSpecifierPattern = /(\bimport\(['"])(\.{1,2}\/[^'"]+)(['"]\))/g
+
+function addJSExtensionToRelativeSpecifier(match: string, prefix: string, specifier: string, suffix: string) {
+    if (/[?#]/.test(specifier) || extname(specifier)) return match
+    return `${prefix}${specifier}.js${suffix}`
+}
+
+const preserveDeclarationRelativeImports: TsdownPlugin = {
+    name: 'preserve-declaration-relative-imports',
+    renderChunk: {
+        order: 'post',
+        handler(code, chunk) {
+            if (!chunk.fileName.endsWith('.d.ts')) return
+            return code
+                .replace(relativeImportSpecifierPattern, addJSExtensionToRelativeSpecifier)
+                .replace(dynamicImportSpecifierPattern, addJSExtensionToRelativeSpecifier)
+        }
+    }
+}
+
 function hasExportTypes(exports: unknown): boolean {
     return exports !== undefined && JSON.stringify(exports).includes('"types"')
 }
@@ -61,10 +82,11 @@ export default defineConfig({
     deps: {
         skipNodeModulesBundle: true,
         dts: {
-            neverBundle: [/^[^./]/]
+            neverBundle: [/^[^./]/, /^\.{1,2}\//]
         }
     },
     plugins: [
+        preserveDeclarationRelativeImports,
         externalVirtualModules,
         ...(packageJSON.name === '@master/css-language' ? [externalLanguageSyntaxJSON] : [])
     ],

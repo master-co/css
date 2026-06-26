@@ -1,3 +1,6 @@
-import recommended from '@master/eslint-plugin-css/configs/recommended'
+import css from '@master/eslint-plugin-css'
+import type { Linter } from 'eslint'
+
+const recommended: Linter.Config = css.configs.recommended
 
 export default recommended
