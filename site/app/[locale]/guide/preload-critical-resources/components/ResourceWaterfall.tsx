@@ -92,7 +92,7 @@ export default function ResourceWaterfall() {
                     <div style={{ boxSizing: 'border-box', minWidth: '32rem' }}>
                         <div className="grid-cols:1 gap:md">
                             {scenarios.map((scenario) => (
-                                <section key={scenario.title} className="p:md b:1px|solid|base r:lg surface:base">
+                                <section key={scenario.title} className="p:md b:1px|solid|base r:lg surface:raised">
                                     <header className="mb:sm">
                                         <h3 className="m:0 font:semibold font:sm text:neutral">{scenario.title}</h3>
                                         <p className="mx:0 mb:0 mt:3xs font:2xs text:gray">{scenario.summary}</p>

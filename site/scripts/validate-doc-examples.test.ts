@@ -428,8 +428,8 @@ function usesLocallyDefinedToken(candidate: string, context: string): boolean {
 }
 
 const siteThemeRoleTokenNames = new Set([
-    'canvas',
     'surface',
+    'surface-base',
     'surface-muted',
     'surface-raised',
     'surface-overlay',

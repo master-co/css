@@ -18,24 +18,24 @@ export const revalidate = false
 
 export default async function Page() {
     return (
-        <main className="min-h:100dvh p:md bg:canvas">
+        <main className="min-h:100dvh p:md bg:surface-base">
             <section className="grid-cols:4 gap:sm w:full max-w:3xl mx:auto grid-cols:8@2xs">
-                <header className="flex flex-col grid-col-span:4 items-start justify-between gap:sm p:sm b:1px|solid|base r:lg surface:base shadow:xs flex-row@4xs items-center@4xs grid-col-span:8@2xs">
+                <header className="flex flex-col grid-col-span:4 items-start justify-between gap:sm p:sm b:1px|solid|base r:lg surface:raised shadow:xs flex-row@4xs items-center@4xs grid-col-span:8@2xs">
                     <div className="min-w:0">
                         <div className="font:semibold text:strong">Workspace layout</div>
                         <div className="mt:2xs text:sm text:muted">Responsive product surface</div>
                     </div>
                     <div className="flex items-center gap:xs">
-                        <button className="grid place-content:center size:8x b:1px|solid|base r:md surface:base text:muted" aria-label="Search">
+                        <button className="grid place-content:center size:8x b:1px|solid|base r:md surface:raised text:muted" aria-label="Search">
                             <IconSearch className="size:4x stroke:1.75" />
                         </button>
-                        <button className="grid place-content:center size:8x b:1px|solid|base r:md surface:base text:muted" aria-label="Notifications">
+                        <button className="grid place-content:center size:8x b:1px|solid|base r:md surface:raised text:muted" aria-label="Notifications">
                             <IconBell className="size:4x stroke:1.75" />
                         </button>
                     </div>
                 </header>
 
-                <nav className="flex overflow:auto grid-col-span:4 gap:xs p:xs b:1px|solid|base r:lg surface:base shadow:xs grid-col-span:8@2xs">
+                <nav className="flex overflow:auto grid-col-span:4 gap:xs p:xs b:1px|solid|base r:lg surface:raised shadow:xs grid-col-span:8@2xs">
                     {tabs.map((tab, index) => (
                         <a
                             key={tab}
@@ -51,7 +51,7 @@ export default async function Page() {
                     ))}
                 </nav>
 
-                <article className="grid-col-span:4 p:sm b:1px|solid|base r:lg surface:base shadow:xs grid-col-span:2@4xs grid-col-span:4@2xs">
+                <article className="grid-col-span:4 p:sm b:1px|solid|base r:lg surface:raised shadow:xs grid-col-span:2@4xs grid-col-span:4@2xs">
                     <div className="flex items-center justify-between gap:sm">
                         <span className="size:2x round bg:green-60"></span>
                         <span className="text:xs text:muted">+12.8%</span>
@@ -60,7 +60,7 @@ export default async function Page() {
                     <div className="mt:2xs text:sm text:muted">Revenue</div>
                 </article>
 
-                <article className="grid-col-span:4 p:sm b:1px|solid|base r:lg surface:base shadow:xs grid-col-span:2@4xs grid-col-span:4@2xs">
+                <article className="grid-col-span:4 p:sm b:1px|solid|base r:lg surface:raised shadow:xs grid-col-span:2@4xs grid-col-span:4@2xs">
                     <div className="flex items-center justify-between gap:sm">
                         <span className="size:2x round bg:amber-50"></span>
                         <span className="text:xs text:muted">+4.1%</span>
@@ -69,7 +69,7 @@ export default async function Page() {
                     <div className="mt:2xs text:sm text:muted">Activation</div>
                 </article>
 
-                <article className="grid-col-span:4 p:sm b:1px|solid|base r:lg surface:base shadow:xs grid-col-span:5@2xs">
+                <article className="grid-col-span:4 p:sm b:1px|solid|base r:lg surface:raised shadow:xs grid-col-span:5@2xs">
                     <div className="flex items-center justify-between gap:md">
                         <div>
                             <div className="font:semibold text:strong">Weekly demand</div>
@@ -86,7 +86,7 @@ export default async function Page() {
                     </div>
                 </article>
 
-                <article className="grid-col-span:4 p:sm b:1px|solid|base r:lg surface:base shadow:xs grid-col-span:3@2xs">
+                <article className="grid-col-span:4 p:sm b:1px|solid|base r:lg surface:raised shadow:xs grid-col-span:3@2xs">
                     <div className="flex items-center justify-between gap:md">
                         <div>
                             <div className="font:semibold text:strong">Launch tasks</div>

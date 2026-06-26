@@ -7,7 +7,7 @@ import InlineCode from '~/internal/components/InlineCode'
 import { getThemeModeVariables } from '~/site/utils/theme-variables'
 
 type PresetThemeColorPreview = 'background' | 'line' | 'text'
-type PresetThemeColorGroup = 'canvas' | 'surfaces' | 'lineRoles' | 'baseHue' | 'textRoles' | 'textHue'
+type PresetThemeColorGroup = 'surfaces' | 'lineRoles' | 'baseHue' | 'textRoles' | 'textHue'
 
 interface PresetThemeColorRow {
     key: string
@@ -44,20 +44,23 @@ function getModeRows(
 
 const colorRows = getModeRows(
     'color',
-    (key) => key === 'canvas' ? ['bg:canvas'] : [`bg:${key}`, `fg:${key}`],
-    (key) => key === 'canvas' ? 'bg:canvas@light bg:canvas@dark' : `bg:${key}@light bg:${key}@dark`,
+    (key) => [`bg:${key}`, `fg:${key}`],
+    (key) => `bg:${key}@light bg:${key}@dark`,
     'background'
 )
-const canvasRows = colorRows.filter(({ token }) => token === '--color-canvas')
 const lineRows = getModeRows('color-line', (key) => [`b:${key}`], (key) => `outline:${key}@light outline:${key}@dark`, 'line')
-const baseHueRows = colorRows.filter(({ token }) => token !== '--color-canvas')
-const surfaceRows = getModeRows('color-surface', (key) => [`surface:${key}`], (key) => `surface:${key}@light surface:${key}@dark`, 'background')
+const baseHueRows = colorRows
+const surfaceRows = getModeRows(
+    'color-surface',
+    (key) => key === 'base' ? ['bg:surface-base', 'surface:base'] : [`surface:${key}`],
+    (key) => key === 'base' ? 'bg:surface-base@light bg:surface-base@dark' : `surface:${key}@light surface:${key}@dark`,
+    'background'
+)
 const textRows = getModeRows('color-text', (key) => [`text:${key}`], (key) => `text:${key}@light text:${key}@dark`, 'text')
 const textRoleKeys = new Set(['body', 'strong', 'muted', 'subtle', 'disabled', 'placeholder', 'inverse', 'link', 'link-hover'])
 const textRoleRows = textRows.filter(({ key }) => textRoleKeys.has(key))
 const textHueRows = textRows.filter(({ key }) => !textRoleKeys.has(key))
 const rowsByGroup = {
-    canvas: canvasRows,
     surfaces: surfaceRows,
     lineRoles: lineRows,
     baseHue: baseHueRows,
@@ -65,18 +68,14 @@ const rowsByGroup = {
     textHue: textHueRows
 } satisfies Record<PresetThemeColorGroup, PresetThemeColorRow[]>
 const columnTitleByGroup = {
-    canvas: 'Role',
     surfaces: 'Role',
     lineRoles: 'Role',
     baseHue: 'Use for',
     textRoles: 'Role',
     textHue: 'Use for'
 } satisfies Record<PresetThemeColorGroup, string>
-const canvasDescriptions: Record<string, string> = {
-    canvas: 'Root page or app background.'
-}
 const surfaceDescriptions: Record<string, string> = {
-    base: 'Default panels, cards, and content containers.',
+    base: 'Root page or app background.',
     muted: 'Subdued sections and low-emphasis blocks.',
     raised: 'Raised cards, controls, and stacked surfaces.',
     overlay: 'Floating layers such as dialogs, popovers, and menus.',
@@ -100,7 +99,6 @@ const textRoleDescriptions: Record<string, string> = {
     'link-hover': 'Interactive link hover state.'
 }
 const rowDescriptionByGroup = {
-    canvas: (key) => canvasDescriptions[key],
     surfaces: (key) => surfaceDescriptions[key],
     lineRoles: (key) => lineRoleDescriptions[key],
     baseHue: (key) => `Mode-aware ${key} for backgrounds and foregrounds.`,
@@ -112,19 +110,6 @@ function PresetThemeColorPreviewCell({ previewClassName, previewType }: Pick<Pre
     return previewType === 'text'
         ? <Aa className={previewClassName} />
         : <Bg className={previewClassName} />
-}
-
-export function CanvasDemo() {
-    return (
-        <Demo $py={0} $px={0}>
-            <DemoLight>
-                <div className="grid place-content:center h:12x w:full aspect-ratio:2/1 r:sm bg:canvas shadow:lg"></div>
-            </DemoLight>
-            <DemoDark>
-                <div className="grid place-content:center h:12x w:full aspect-ratio:2/1 r:sm bg:canvas shadow:lg"></div>
-            </DemoDark>
-        </Demo>
-    )
 }
 
 export function SurfacesDemo() {
@@ -184,7 +169,7 @@ export function TextHueDemo() {
 export function TextRolesDemo() {
     function renderPreview() {
         return (
-            <div className="grid gap:xs w:full max-w:3xs p:lg r:sm font:semibold text-center surface:base text:body shadow:lg">
+            <div className="grid gap:xs w:full max-w:3xs p:lg r:sm font:semibold text-center surface:raised text:body shadow:lg">
                 <div className="font:md font:semibold text:strong">Quarterly report</div>
                 <p className="m:0 text:body">Revenue is on track for the current cycle.</p>
                 <p className="m:0 text:sm text:muted">Updated 12 minutes ago</p>

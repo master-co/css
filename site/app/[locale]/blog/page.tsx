@@ -56,7 +56,7 @@ export default async function Page(props: any) {
                             const formattedDate = dayjs(page.date).format('ddd, MMMM D')
                             return (
                                 <div key={page.pathname + index} className={clsx('bb:1px|dotted|muted br:1px|dotted|muted')}>
-                                    <Link href={page.pathname} className={clsx('flex flex-col gap:5x h:full p:lg transition:background-color|.2s surface:base:hover p:2xl@sm')}>
+                                    <Link href={page.pathname} className={clsx('flex flex-col gap:5x h:full p:lg transition:background-color|.2s surface:raised:hover p:2xl@sm')}>
                                         <div className="flex justify-between mb:-1x">
                                             <div className='text:xs fg:accent'>{formattedDate}</div>
                                             <div className='text:xs text:muted'> <TimeAgo timestamp={page.date} /></div>

@@ -621,9 +621,8 @@
     --color-red: $color-red-60;
 
     /* Surface color aliases */
-    --color-canvas: $color-white;
-    --color-surface-base: $color-neutral-0;
-    --color-surface-muted: $color-neutral-5;
+    --color-surface-base: $color-white;
+    --color-surface-muted: $color-neutral-0;
     --color-surface-raised: $color-white;
     --color-surface-overlay: $color-white;
     --color-surface-inverse: $color-black;
@@ -704,10 +703,9 @@
     --color-red: $color-red-50;
 
     /* Surface color aliases */
-    --color-canvas: $color-gray-100;
-    --color-surface-base: $color-gray-90;
-    --color-surface-muted: $color-gray-95;
-    --color-surface-raised: $color-gray-80;
+    --color-surface-base: $color-gray-95;
+    --color-surface-muted: $color-gray-100;
+    --color-surface-raised: $color-gray-90;
     --color-surface-overlay: $color-gray-80;
     --color-surface-inverse: $color-white;
 

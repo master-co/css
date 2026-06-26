@@ -36,6 +36,7 @@ const removedVariableNames = [
     'easing-emphasized',
     'shadow-card',
     'shadow-popover',
+    'color-canvas',
     'color-backdrop',
     'color-blue-hover',
     'color-on-blue',
@@ -222,28 +223,17 @@ describe.concurrent('@master/css-preset design token parity', () => {
         })
     })
 
-    test('removes product and expanded hue role tokens from the default preset', () => {
+    test('removes canvas, product, and expanded hue role tokens from the default preset', () => {
         for (const name of removedVariableNames) {
             expect(findVariable(name), name).toBeUndefined()
         }
     })
 
-    test('keeps canvas and surface color roles mode-specific', () => {
-        expect(findVariable('color-canvas')).toMatchObject({
-            namespace: 'color',
-            key: 'canvas',
-            type: 'string',
-            modes: {
-                light: { type: 'string', value: '$color-white' },
-                dark: { type: 'string', value: '$color-gray-100' }
-            },
-            dependencies: ['color-white', 'color-gray-100']
-        })
-
+    test('keeps surface color roles mode-specific', () => {
         const surfaceAliases = [
-            ['base', '$color-neutral-0', '$color-gray-90'],
-            ['muted', '$color-neutral-5', '$color-gray-95'],
-            ['raised', '$color-white', '$color-gray-80'],
+            ['base', '$color-white', '$color-gray-95'],
+            ['muted', '$color-neutral-0', '$color-gray-100'],
+            ['raised', '$color-white', '$color-gray-90'],
             ['overlay', '$color-white', '$color-gray-80'],
             ['inverse', '$color-black', '$color-white']
         ] as const
@@ -391,7 +381,7 @@ describe.concurrent('@master/css-preset design token parity', () => {
         expect(css.createRule('transition-timing-function:smooth')?.text).toContain('transition-timing-function:var(--easing-smooth)')
         expect(css.createRule('bg:blue')?.text).toContain('background-color:var(--color-blue)')
         expect(css.createRule('bg:pink')?.text).toContain('background-color:var(--color-pink)')
-        expect(css.createRule('bg:canvas')?.text).toBe('.bg\\:canvas{background-color:var(--color-canvas)}')
+        expect(css.createRule('bg:canvas')).toBeUndefined()
         expect(css.createRule('bg:surface')).toBeUndefined()
         expect(css.createRule('bg:surface-base')?.text).toBe('.bg\\:surface-base{background-color:var(--color-surface-base)}')
         expect(css.createRule('surface:base')?.text).toBe('.surface\\:base{background-color:var(--color-surface-base)}')

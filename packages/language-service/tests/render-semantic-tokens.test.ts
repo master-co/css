@@ -368,7 +368,7 @@ test.concurrent('does not render semantic tokens for theme directive declaration
         }
 
         @theme dark {
-            --color-canvas: $color-gray-100;
+            --color-surface-base: $color-gray-100;
         }
 
         @theme inline {

@@ -230,7 +230,7 @@ Default theme tokens are emitted on `:root`. If a default token references a mod
 
 ```css name=index.css
 @theme {
-    --stripe: 0 / 7.5px 7.5px linear-gradient(135deg, $color-line-muted 4.5%, $color-surface-base 0) $color-surface-base;
+    --stripe: 0 / 7.5px 7.5px linear-gradient(135deg, $color-line-muted 4.5%, $color-surface-raised 0) $color-surface-raised;
 }
 ```
 
@@ -238,11 +238,11 @@ Define derived tokens inside each mode bucket when they must follow local mode i
 
 ```css name=index.css
 @theme light {
-    --stripe: 0 / 7.5px 7.5px linear-gradient(135deg, $color-line-muted 4.5%, $color-surface-base 0) $color-surface-base;
+    --stripe: 0 / 7.5px 7.5px linear-gradient(135deg, $color-line-muted 4.5%, $color-surface-raised 0) $color-surface-raised;
 }
 
 @theme dark {
-    --stripe: 0 / 7.5px 7.5px linear-gradient(135deg, $color-line-muted 4.5%, $color-surface-base 0) $color-surface-base;
+    --stripe: 0 / 7.5px 7.5px linear-gradient(135deg, $color-line-muted 4.5%, $color-surface-raised 0) $color-surface-raised;
 }
 ```
 

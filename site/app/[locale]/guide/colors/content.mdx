@@ -1,5 +1,5 @@
 import { ColorNamespaceTable } from './components/ColorNamespaces'
-import { BaseHueDemo, CanvasDemo, LineRolesDemo, SurfacesDemo, TextHueDemo, TextRolesDemo } from './components/PresetThemeColors'
+import { BaseHueDemo, LineRolesDemo, SurfacesDemo, TextHueDemo, TextRolesDemo } from './components/PresetThemeColors'
 
 ## Overview [sr-only]
 
@@ -27,13 +27,13 @@ Start with the kind of decision you are making. Most app chrome should use roles
 | Decision | Use | Examples |
 | --- | --- | --- |
 | Fixed swatch | Palette steps | `bg:blue-5`, `fg:blue-60` |
-| App structure and hierarchy | Preset roles | `bg:canvas`, `surface:base`, `b:base`, `text:body` |
+| App structure and hierarchy | Preset roles | `bg:surface-base`, `surface:raised`, `b:base`, `text:body` |
 | Mode-aware hue choice | Hue aliases | `bg:blue`, `fg:blue`, `text:blue` |
 
 ```html
-<!-- @MARK bg:canvas --><!-- @MARK text:body --><!-- @MARK surface:base --><!-- @MARK b:1px|solid|base --><!-- @MARK text:strong --><!-- @MARK text:muted --><!-- @MARK text:link -->
-<main class="bg:canvas text:body">
-    <section class="surface:base b:1px|solid|base">
+<!-- @MARK bg:surface-base --><!-- @MARK text:body --><!-- @MARK surface:raised --><!-- @MARK b:1px|solid|base --><!-- @MARK text:strong --><!-- @MARK text:muted --><!-- @MARK text:link -->
+<main class="bg:surface-base text:body">
+    <section class="surface:raised b:1px|solid|base">
         <h2 class="text:strong">Project updates</h2>
         <p class="text:muted">Three milestones changed this week.</p>
         <a class="text:link" href="#">Continue</a>
@@ -53,28 +53,19 @@ Use the narrow role namespace first when the color describes structure, line wor
 ---
 
 ## Preset color roles
-Preset roles describe the job a color performs in the interface. Their values are mode-aware, so `bg:canvas`, `surface:base`, `b:base`, and `text:body` can stay stable while light and dark modes choose different underlying colors.
-
-### Canvas
-Canvas is the root page or app background role. Use it with the regular background color shorthand.
-
-<PresetThemeColors group="canvas" />
-<CanvasDemo />
-
-```html
-<!-- @MARK bg:canvas -->
-<body class="bg:canvas">...</body>
-```
+Preset roles describe the job a color performs in the interface. Their values are mode-aware, so `bg:surface-base`, `surface:raised`, `b:base`, and `text:body` can stay stable while light and dark modes choose different underlying colors.
 
 ### Surfaces
-Surface tokens are for panels, cards, floating layers, and inverse blocks. Use the dedicated `surface:*` shorthand so only surface roles match.
+Surface tokens are for the page background, raised panels, floating layers, and inverse blocks. Use `bg:surface-base` for the root canvas and the dedicated `surface:*` shorthand for surface roles.
 
 <PresetThemeColors group="surfaces" />
 <SurfacesDemo />
 
 ```html
-<!-- @MARK surface:overlay -->
-<div class="surface:overlay"></div>
+<!-- @MARK bg:surface-base --><!-- @MARK surface:raised -->
+<main class="bg:surface-base">
+    <section class="surface:raised"></section>
+</main>
 ```
 
 ### Line roles
@@ -144,8 +135,7 @@ Override preset role tokens when a repeated UI decision needs product-specific c
 
 ```css name=index.css
 @theme light {
-    --color-canvas: $color-white;
-    --color-surface-base: $color-neutral-0;
+    --color-surface-base: $color-white;
     --color-surface-raised: $color-white;
     --color-line-base: oklch(0% 0 none / 0.12);
     --color-text-body: $color-neutral-70;
@@ -153,9 +143,8 @@ Override preset role tokens when a repeated UI decision needs product-specific c
 }
 
 @theme dark {
-    --color-canvas: $color-gray-100;
-    --color-surface-base: $color-gray-90;
-    --color-surface-raised: $color-gray-80;
+    --color-surface-base: $color-gray-95;
+    --color-surface-raised: $color-gray-90;
     --color-line-base: oklch(100% 0 none / 0.12);
     --color-text-body: $color-gray-30;
     --color-text-muted: $color-gray-40;
@@ -163,9 +152,9 @@ Override preset role tokens when a repeated UI decision needs product-specific c
 ```
 
 ```html
-<!-- @MARK bg:canvas --><!-- @MARK text:body --><!-- @MARK surface:base --><!-- @MARK b:1px|solid|base --><!-- @MARK text:muted -->
-<main class="bg:canvas text:body">
-    <section class="surface:base b:1px|solid|base">
+<!-- @MARK bg:surface-base --><!-- @MARK text:body --><!-- @MARK surface:raised --><!-- @MARK b:1px|solid|base --><!-- @MARK text:muted -->
+<main class="bg:surface-base text:body">
+    <section class="surface:raised b:1px|solid|base">
         <p class="text:muted">The classes stay the same in every mode.</p>
     </section>
 </main>
