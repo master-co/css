@@ -55,10 +55,28 @@ describe('ManifestLoaderPlugin', () => {
         expect(resolvedId).toBe(toResolvedMasterCSSManifestId(path.join(FIXTURE_DIR, 'theme.css')))
         expect(addWatchFile).toHaveBeenCalledWith(path.join(FIXTURE_DIR, 'theme.css'))
         expect(addWatchFile).toHaveBeenCalledWith(themeComponentsPath)
+        expect(context.config.server.fs.allow).toContain(path.join(FIXTURE_DIR, 'theme.css'))
+        expect(context.config.server.fs.allow).toContain(themeComponentsPath)
         expect(code).toContain('"version":1')
         expect(code).toContain('accent')
         expect(code).toContain('#456')
         expect(code).toContain('badge')
+    })
+
+    it('does not resolve unresolved CSS manifest query imports to filesystem fallbacks', async () => {
+        const context = await createContext()
+        const plugin = ManifestLoaderPlugin(context)
+        const importer = path.join(FIXTURE_DIR, 'entry.ts')
+        const resolve = vi.fn(async () => null)
+
+        const resolvedId = await (plugin.resolveId as any).call(
+            { resolve },
+            './missing.css' + MASTER_CSS_MANIFEST_QUERY,
+            importer
+        )
+
+        expect(resolve).toHaveBeenCalledWith('./missing.css', importer, { skipSelf: true })
+        expect(resolvedId).toBeUndefined()
     })
 
     it('emits per-file CSS manifests as external JSON assets in production build', async () => {

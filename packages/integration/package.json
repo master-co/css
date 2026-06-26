@@ -67,11 +67,6 @@
             "import": "./dist/emitted-globals-module.mjs",
             "default": "./dist/emitted-globals-module.mjs"
         },
-        "./manifest-loader-plugin": {
-            "types": "./dist/manifest-loader-plugin.d.ts",
-            "import": "./dist/manifest-loader-plugin.mjs",
-            "default": "./dist/manifest-loader-plugin.mjs"
-        },
         "./runtime": {
             "types": "./dist/runtime.d.ts",
             "import": "./dist/runtime.mjs",

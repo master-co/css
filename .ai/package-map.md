@@ -33,7 +33,7 @@
 | `@master/css-cli` | package-name binary | Root scan/extract CLI |
 | `@master/css-schema` | `.`, `./manifest`, `./manifest-json`, `./hydration-manifest`, `./css-directives`, `./css-syntax`, `./utility-type`, `./runtime-style`, `./native-css-shorthand`, `./css-common` | Public dependency-light schema, wire-format contracts, serializable constants, and pure codec helpers |
 | `@master/css-project` | `./entries`, `./manifest`, `./manifest-sync` | Resolve project CSS manifest entries, workspace roots, explicit CSS manifest resources, and project manifest module source |
-| `@master/css-integration` | `.`, `./client`, `./module`, `./manifest-module`, `./manifest-facade`, `./style-module`, `./emitted-globals-module`, `./manifest-loader-plugin`, `./runtime`, `./node` | Adapter-neutral integration contracts, browser-safe virtual module/codegen helpers, runtime injection source, client ambient module declarations, and explicit Node/build helper subpaths |
+| `@master/css-integration` | `.`, `./client`, `./module`, `./manifest-module`, `./manifest-facade`, `./style-module`, `./emitted-globals-module`, `./runtime`, `./node` | Adapter-neutral integration contracts, browser-safe virtual module/codegen helpers, runtime injection source, client ambient module declarations, and explicit Node helper subpaths |
 | `@master/css.figma` | plugin bundle | Figma variable import/export |
 
 ## Dependency Direction

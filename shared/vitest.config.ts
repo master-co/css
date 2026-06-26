@@ -1,16 +1,7 @@
 import type { ViteUserConfig } from 'vitest/config'
-import { createMasterCSSManifestLoaderPlugin } from '../packages/integration/src/manifest-loader-plugin'
 import { defaultVitestTestTimeout, withCIConcurrency } from './vitest-ci-config'
 
 const config: ViteUserConfig = {
-    plugins: [
-        createMasterCSSManifestLoaderPlugin({
-            async loadManifestJSON(...args) {
-                const { compileCSSManifestJSON } = await import('../packages/compiler/src')
-                return compileCSSManifestJSON(...args)
-            }
-        })
-    ],
     test: withCIConcurrency({
         include: [
             'tests/**/*.{test,spec}.?(c|m)[jt]s?(x)',

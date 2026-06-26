@@ -9,7 +9,7 @@
 - Virtual module ids and `?master-css-manifest` request helpers.
 - Generated manifest and emittedGlobals module source helpers.
 - Runtime injection source and ambient client module declarations.
-- Explicit Node/build helper subpaths.
+- Explicit Node helper subpaths.
 
 ## Does Not Own
 
@@ -21,7 +21,7 @@
 ## Public Surface
 
 - Browser-safe: `.`, `./client`, `./module`, `./manifest-module`, `./manifest-facade`, `./style-module`, `./emitted-globals-module`, `./runtime`.
-- Node/build-only: `./node`, `./manifest-loader-plugin`.
+- Node-only: `./node`.
 
 ## Key Files
 
@@ -33,7 +33,6 @@
 - `src/emitted-globals-module.ts`
 - `src/runtime.ts`
 - `src/node.ts`
-- `src/manifest-loader-plugin.ts`
 
 ## Risk Areas
 
@@ -46,7 +45,6 @@
 
 - Protocol helper fixes with downstream-aware tests.
 - Node-only path/hash/resolved-id fixes isolated under `./node`.
-- Build helper fixes under explicit build-only subpaths.
 
 ## Dangerous Changes
 
