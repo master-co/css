@@ -184,7 +184,7 @@ test('loads package entry preset manifest from CSS imports', async () => {
     } finally {
         rmSync(cwd, { recursive: true, force: true })
     }
-}, 20000)
+})
 
 test('loads project-level CSS manifest entries', async () => {
     const cwd = createFixture()

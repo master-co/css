@@ -73,5 +73,5 @@ describe('css manifest query e2e', () => {
         expect(hasVariable('font-weight', 'bold')).toBe(true)
         expect(hasVariable('color', 'e2e')).toBe(true)
         expect(jsBundleContents).not.toContain('font-weight-bold')
-    }, 120000)
+    })
 })

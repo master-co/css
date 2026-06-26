@@ -82,5 +82,5 @@ describe('playground', () => {
         expect(hasVariable('font-weight', 'bold')).toBe(true)
         expect(manifestJSONSource).toContain('#0070f3')
         expect(hydrationManifestJSONSource).toContain('"className":"fg:primary"')
-    }, 120000)
+    })
 })

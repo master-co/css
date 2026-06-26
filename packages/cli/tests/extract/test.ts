@@ -25,7 +25,7 @@ it('basic extract', async () => {
     } finally {
         fs.rmSync(cwd, { recursive: true, force: true })
     }
-}, 60_000)
+})
 
 it('prints CSS without exporting', async () => {
     const cwd = fs.mkdtempSync(join(os.tmpdir(), 'master-css-cli-no-export-'))
@@ -40,4 +40,4 @@ it('prints CSS without exporting', async () => {
     } finally {
         fs.rmSync(cwd, { recursive: true, force: true })
     }
-}, 60_000)
+})

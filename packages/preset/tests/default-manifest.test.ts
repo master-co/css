@@ -253,7 +253,7 @@ describe('@master/css-preset defaultManifest', () => {
         expect(hasCSSVariableAssignmentUtility(manifest)).toBe(false)
         expect(hasCSSVariableAssignmentUtility(defaultManifest)).toBe(false)
         expect(manifest).toEqual(defaultManifest)
-    }, 60000)
+    })
 
     it('matches the CSS-authored preset manifest facets', () => {
         const compiledManifest = getCompiledDefaultManifest()
@@ -264,7 +264,7 @@ describe('@master/css-preset defaultManifest', () => {
         expect(compiledManifest.breakpointAtRules).toEqual(defaultManifest.breakpointAtRules)
         expect(compiledManifest.containerAtRules).toEqual(defaultManifest.containerAtRules)
         expect(compiledManifest.selectors).toEqual(defaultManifest.selectors)
-    }, 60000)
+    })
 
     it('does not publish the removed px inline alias', () => {
         expect(variablesOf(defaultManifest).some((variable) => variable.name === 'px')).toBe(false)

@@ -87,7 +87,7 @@ beforeAll(() => {
     subprocess.stderr?.on('data', (data) => {
         subprocessOutput += data.toString()
     })
-}, 120000)
+})
 
 it('start watch process', async () => {
     await Promise.all([
@@ -104,7 +104,7 @@ it('start watch process', async () => {
     expect(fileCSSText).toContain(cssEscape('font:48px'))
     expect(fileCSSText).toContain(cssEscape('bg:primary'))
     expect(fileCSSText).toContain(cssEscape('btn'))
-}, 120000)
+})
 
 it('change config file utilities and reset process', async () => {
     const nextConfigFilepath = configFilepath + '.next'
@@ -117,16 +117,16 @@ it('change config file utilities and reset process', async () => {
     ])
     const fileCSSText = await waitForCSSContent((css) => css.includes('.btn{background-color:oklch(55.1% .027 264.364)'))
     expect(fileCSSText).toContain('.btn{background-color:oklch(55.1% .027 264.364)')
-}, 120000)
+})
 
 it('change html file class attr and update', async () => {
     fs.writeFileSync(HTMLFilepath, originHTMLText.replace('hmr-test', 'underline'))
     const fileCSSText = await waitForCSSContent((css) => css.includes(cssEscape('underline')))
     expect(fileCSSText).toContain(cssEscape('underline'))
-}, 120000)
+})
 
 afterAll(async () => {
     subprocess.kill()
     await subprocess.catch(() => undefined)
     fs.rmSync(workspacePath, { recursive: true, force: true })
-}, 120000)
+})
