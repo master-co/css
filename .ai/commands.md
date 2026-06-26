@@ -4,7 +4,10 @@
 
 ```sh
 pnpm build
+pnpm build:site
 pnpm build:examples
+pnpm dev:site
+pnpm dev:site:clean
 pnpm check
 pnpm test
 pnpm e2e
@@ -18,6 +21,8 @@ pnpm submodules
 ```
 
 `pnpm check` runs commit check, build, and package test/lint/type-check scripts.
+
+Run site orchestration from the repository root (`/Users/aron/master/css`). Use `pnpm dev:site` for normal site development, `pnpm dev:site:clean` when Next's local cache needs to be reset, and `pnpm build:site` for a full site build after package dist warm-up.
 
 `pnpm type-check` runs package-local type-check scripts through Turbo for all packages, including framework-specific checkers such as Vue's `vue-tsc`.
 
@@ -41,6 +46,14 @@ pnpm --filter @master/css lint
 Use the real scripts in each package `package.json`. Some packages have `test`, some have `e2e`, and some only have build/type-check/lint.
 
 For package-local TypeScript checks, most packages use `tsc -b tsconfig.typecheck.json` and emit declaration-only cache output under `.tsbuild/typecheck`. Vue stays on `vue-tsc --noEmit`.
+
+For site-local checks, stay in the repository root and let pnpm set the workspace cwd:
+
+```sh
+pnpm --filter site prepare-app
+pnpm --filter site lint
+pnpm --filter site type-check
+```
 
 ## High-Value Scoped Checks
 

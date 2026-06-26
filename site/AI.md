@@ -161,6 +161,8 @@ Use `placeholder="blur"` when static imports provide blur data. Set an appropria
 
 ## Validation
 
+Run site orchestration commands from the repository root (`/Users/aron/master/css`). Use `pnpm dev:site` for normal development, `pnpm dev:site:clean` when `.next` must be reset, and `pnpm build:site` for the full package-warmed site build. Only use `site/` as cwd for one-off local debugging.
+
 For content-only guide updates, run:
 
 ```sh
@@ -180,7 +182,7 @@ Broader site checks are available when relevant:
 ```sh
 pnpm --filter site lint
 pnpm --filter site type-check
-pnpm --filter site build
+pnpm build:site
 ```
 
 `pnpm --filter site type-check` may have unrelated existing errors. Report those separately and do not hide new errors introduced by the current change.
