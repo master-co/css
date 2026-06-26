@@ -25,6 +25,7 @@
         },
         "test": {
             "dependsOn": [
+                "build",
                 "^build"
             ],
             "outputLogs": "new-only",
@@ -32,6 +33,7 @@
         },
         "lint": {
             "dependsOn": [
+                "build",
                 "^build"
             ],
             "outputLogs": "new-only",
@@ -39,6 +41,7 @@
         },
         "type-check": {
             "dependsOn": [
+                "build",
                 "^build"
             ],
             "outputLogs": "new-only",

@@ -5,7 +5,7 @@
         "build": "techor build && pnpm generate",
         "generate": "node --import tsx generate",
         "dev": "techor build --watch",
-        "test": "pnpm build && vitest",
+        "test": "vitest",
         "type-check": "tsc --noEmit",
         "lint": "eslint",
         "vscode:package": "node scripts/package-targets.mjs package",

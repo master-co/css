@@ -15,7 +15,7 @@
         "build": "turbo run build --filter=\"./packages/*\"",
         "build:examples": "turbo run build --filter=\"./examples/*\"",
         "release:vscode": "node packages/vscode/scripts/release.mjs",
-        "check": "pnpm run commit-check && pnpm run build && turbo run test lint type-check --filter=\"./packages/*\"",
+        "check": "pnpm run commit-check && turbo run test lint type-check --filter=\"./packages/*\"",
         "test": "turbo run test --filter=\"./packages/*\"",
         "test:ci": "turbo run test --filter=\"./packages/*\" --concurrency=1",
         "test:docs-consistency": "node --test .ai/scripts/validate-doc-consistency.test.mjs",
