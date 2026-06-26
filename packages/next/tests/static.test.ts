@@ -139,7 +139,7 @@ describe('Next static mode', () => {
         expect(readFileSync(outputPath, 'utf-8')).toContain('display:block')
         expect(readFileSync(outputPath, 'utf-8')).toContain('color: var(--color-primary)')
         expect(readFileSync(outputPath, 'utf-8')).toContain('--color-primary:red')
-    }, 30000)
+    })
 
     it('prunes dev CSS chunks that import @master/css', async () => {
         const root = createFixture()
