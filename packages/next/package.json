@@ -7,7 +7,7 @@
         "dev:build": "pnpm --dir playground build",
         "e2e": "vitest run tests/css-manifest-query-e2e.test.ts",
         "lint": "eslint",
-        "type-check": "tsc --noEmit",
+        "type-check": "tsc -b tsconfig.typecheck.json",
         "test": "vitest"
     },
     "license": "MIT",

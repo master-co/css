@@ -4,7 +4,7 @@
     "scripts": {
         "build": "tsdown --config ../../shared/tsdown-package.config.ts",
         "dev": "tsdown --config ../../shared/tsdown-package.config.ts --watch",
-        "type-check": "tsc --noEmit",
+        "type-check": "tsc -b tsconfig.typecheck.json",
         "lint": "eslint",
         "test": "vitest"
     },

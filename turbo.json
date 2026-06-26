@@ -41,11 +41,12 @@
         },
         "type-check": {
             "dependsOn": [
-                "build",
-                "^build"
+                "^type-check"
             ],
             "outputLogs": "new-only",
-            "outputs": []
+            "outputs": [
+                ".tsbuild/**"
+            ]
         },
         "e2e": {
             "dependsOn": [

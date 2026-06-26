@@ -6,7 +6,7 @@
         "dev": "tsdown --config ../../shared/tsdown-package.config.ts --watch",
         "test": "vitest",
         "bench": "vitest bench",
-        "type-check": "tsc --noEmit",
+        "type-check": "tsc -b tsconfig.typecheck.json",
         "lint": "eslint"
     },
     "license": "MIT",

@@ -7,7 +7,7 @@
         "dev": "tsdown --watch",
         "e2e": "playwright test",
         "e2e:watch": "nodemon -e js,mjs,ts,html,css --watch dist --watch e2e --watch tests --exec playwright test",
-        "type-check": "tsc --noEmit",
+        "type-check": "tsc -b tsconfig.typecheck.json",
         "lint": "eslint"
     },
     "license": "MIT",

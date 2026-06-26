@@ -22,6 +22,9 @@
         "e2e": "turbo run e2e --filter=\"./packages/*\" --concurrency=1",
         "lint": "turbo run lint --filter=\"./packages/*\"",
         "type-check": "turbo run type-check --filter=\"./packages/*\"",
+        "type-check:refs": "tsc -b tsconfig.typecheck.json",
+        "type-check:clean": "tsc -b tsconfig.typecheck.json --clean",
+        "type-check:affected": "turbo run type-check --affected",
         "commit-check": "commitlint --from=HEAD~1 --verbose"
     },
     "engines": {

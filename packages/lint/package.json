@@ -5,7 +5,7 @@
         "build": "tsdown --config ../../shared/tsdown-package.config.ts",
         "dev": "tsdown --config ../../shared/tsdown-package.config.ts --watch",
         "lint": "eslint",
-        "type-check": "tsc --noEmit",
+        "type-check": "tsc -b tsconfig.typecheck.json",
         "test": "vitest"
     },
     "keywords": [

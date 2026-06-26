@@ -16,6 +16,7 @@
 **/*dist-test
 **/*node_modules
 **/*.turbo
+**/.tsbuild/
 **/*out
 **/*tmp
 **/*test.html

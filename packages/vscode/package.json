@@ -6,7 +6,7 @@
         "generate": "node --import tsx generate",
         "dev": "tsdown --watch",
         "test": "vitest",
-        "type-check": "tsc --noEmit",
+        "type-check": "tsc -b tsconfig.typecheck.json",
         "lint": "eslint",
         "vscode:package": "node scripts/package-targets.mjs package",
         "vscode:publish": "node scripts/package-targets.mjs publish",

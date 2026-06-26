@@ -10,11 +10,24 @@ pnpm test
 pnpm e2e
 pnpm lint
 pnpm type-check
+pnpm type-check:refs
+pnpm type-check:affected
+pnpm type-check:clean
 pnpm commit-check
 pnpm submodules
 ```
 
 `pnpm check` runs commit check, build, and package test/lint/type-check scripts.
+
+`pnpm type-check` runs package-local type-check scripts through Turbo for all packages, including framework-specific checkers such as Vue's `vue-tsc`.
+
+`pnpm type-check:refs` runs the plain TypeScript project-reference solution graph with `tsc -b tsconfig.typecheck.json`. This is the fastest full TypeScript-only check after `.tsbuild/typecheck` is warm.
+
+Use `pnpm run type-check:refs --force` to force a cold project-reference validation.
+
+`pnpm type-check:affected` runs Turbo type-check only for packages affected by the current branch diff.
+
+`pnpm type-check:clean` removes TypeScript project-reference build info and declaration-only cache output for the root solution graph.
 
 ## Common Package Commands
 
@@ -26,6 +39,8 @@ pnpm --filter @master/css lint
 ```
 
 Use the real scripts in each package `package.json`. Some packages have `test`, some have `e2e`, and some only have build/type-check/lint.
+
+For package-local TypeScript checks, most packages use `tsc -b tsconfig.typecheck.json` and emit declaration-only cache output under `.tsbuild/typecheck`. Vue stays on `vue-tsc --noEmit`.
 
 ## High-Value Scoped Checks
 

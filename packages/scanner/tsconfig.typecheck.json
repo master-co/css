@@ -1,0 +1,37 @@
+{
+    "extends": "./tsconfig.json",
+    "compilerOptions": {
+        "composite": true,
+        "incremental": true,
+        "declaration": true,
+        "declarationMap": false,
+        "emitDeclarationOnly": true,
+        "noEmit": false,
+        "rootDir": ".",
+        "outDir": ".tsbuild/typecheck",
+        "tsBuildInfoFile": ".tsbuild/typecheck/tsconfig.tsbuildinfo"
+    },
+    "references": [
+        {
+            "path": "../core/tsconfig.typecheck.json"
+        },
+        {
+            "path": "../compiler/tsconfig.typecheck.json"
+        },
+        {
+            "path": "../lexer/tsconfig.typecheck.json"
+        },
+        {
+            "path": "../preset/tsconfig.typecheck.json"
+        },
+        {
+            "path": "../schema/tsconfig.typecheck.json"
+        },
+        {
+            "path": "../source/tsconfig.typecheck.json"
+        },
+        {
+            "path": "../validator/tsconfig.typecheck.json"
+        }
+    ]
+}

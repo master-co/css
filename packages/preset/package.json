@@ -6,7 +6,7 @@
         "dev": "pnpm generate && tsdown --config ../../shared/tsdown-package.config.ts --watch",
         "generate": "node --import tsx scripts/generate-default-manifest.ts",
         "lint": "eslint",
-        "type-check": "tsc --noEmit",
+        "type-check": "tsc -b tsconfig.typecheck.json",
         "test": "vitest"
     },
     "license": "MIT",
