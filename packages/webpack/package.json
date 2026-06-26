@@ -2,8 +2,8 @@
     "name": "@master/css.webpack",
     "type": "module",
     "scripts": {
-        "build": "techor build \"src/**/*.ts\"",
-        "dev": "pnpm build --watch",
+        "build": "tsdown --config ../../shared/tsdown-package.config.ts",
+        "dev": "tsdown --config ../../shared/tsdown-package.config.ts --watch",
         "type-check": "tsc --noEmit",
         "lint": "eslint",
         "test": "vitest"
@@ -31,16 +31,16 @@
         "webpack-plugin"
     ],
     "sideEffects": false,
-    "main": "./dist/index.cjs",
+    "main": "./dist/index.mjs",
     "module": "./dist/index.mjs",
     "jsnext:main": "./dist/index.mjs",
     "esnext": "./dist/index.mjs",
-    "types": "./dist/index.d.ts",
+    "types": "./dist/index.d.mts",
     "exports": {
         ".": {
-            "types": "./dist/index.d.ts",
+            "types": "./dist/index.d.mts",
             "import": "./dist/index.mjs",
-            "require": "./dist/index.cjs"
+            "default": "./dist/index.mjs"
         }
     },
     "files": [

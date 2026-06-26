@@ -91,4 +91,4 @@ Run `pnpm --filter @master/css-runtime bench` when changing DOM observation, cla
 
 ## Bundle Audit Notes
 
-When auditing `dist/global.min.js`, the removed devtools hook global, generic listener maps, and runtime event emit callsites must not be present. Build-time-only config imports in `techor.config.ts` are not browser runtime bundle surface.
+When auditing `dist/global.min.js`, the removed devtools hook global, generic listener maps, and runtime event emit callsites must not be present. Build-time-only config imports in `tsdown.config.ts` are not browser runtime bundle surface.

@@ -2,8 +2,8 @@
     "name": "@master/css-language-service",
     "type": "module",
     "scripts": {
-        "build": "techor build \"src/**/*.ts\" --formats esm",
-        "dev": "pnpm build --watch",
+        "build": "tsdown --config ../../shared/tsdown-package.config.ts",
+        "dev": "tsdown --config ../../shared/tsdown-package.config.ts --watch",
         "type-check": "tsc --noEmit",
         "lint": "eslint",
         "test": "vitest"
@@ -37,15 +37,15 @@
     "module": "./dist/index.mjs",
     "jsnext:main": "./dist/index.mjs",
     "esnext": "./dist/index.mjs",
-    "types": "./dist/index.d.ts",
+    "types": "./dist/index.d.mts",
     "exports": {
         ".": {
-            "types": "./dist/index.d.ts",
+            "types": "./dist/index.d.mts",
             "import": "./dist/index.mjs",
             "default": "./dist/index.mjs"
         },
         "./common": {
-            "types": "./dist/common.d.ts",
+            "types": "./dist/common.d.mts",
             "import": "./dist/common.mjs",
             "default": "./dist/common.mjs"
         }

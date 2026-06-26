@@ -2,9 +2,9 @@
     "name": "@master/css-runtime",
     "type": "module",
     "scripts": {
-        "build": "techor build && node scripts/copy-default-manifest-json.mjs",
+        "build": "tsdown",
         "bench": "node scripts/benchmark-runtime.mjs",
-        "dev": "pnpm build --watch",
+        "dev": "tsdown --watch",
         "e2e": "playwright test",
         "e2e:watch": "nodemon -e js,mjs,ts,html,css --watch dist --watch e2e --watch tests --exec playwright test",
         "type-check": "tsc --noEmit",
@@ -38,10 +38,10 @@
     "esnext": "./dist/index.mjs",
     "module": "./dist/index.mjs",
     "browser": "./dist/global.min.js",
-    "types": "./dist/index.d.ts",
+    "types": "./dist/index.d.mts",
     "exports": {
         ".": {
-            "types": "./dist/index.d.ts",
+            "types": "./dist/index.d.mts",
             "import": {
                 "development": "./dist/index.development.mjs",
                 "default": "./dist/index.mjs"

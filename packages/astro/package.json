@@ -2,8 +2,8 @@
     "name": "@master/css.astro",
     "type": "module",
     "scripts": {
-        "build": "techor build \"src/**/*.ts\" --formats esm",
-        "dev": "pnpm build --watch",
+        "build": "tsdown --config ../../shared/tsdown-package.config.ts",
+        "dev": "tsdown --config ../../shared/tsdown-package.config.ts --watch",
         "test": "vitest",
         "type-check": "tsc --noEmit",
         "lint": "eslint"
@@ -39,20 +39,20 @@
     "module": "./dist/index.mjs",
     "jsnext:main": "./dist/index.mjs",
     "esnext": "./dist/index.mjs",
-    "types": "./dist/index.d.ts",
+    "types": "./dist/index.d.mts",
     "exports": {
         ".": {
-            "types": "./dist/index.d.ts",
+            "types": "./dist/index.d.mts",
             "import": "./dist/index.mjs",
             "default": "./dist/index.mjs"
         },
         "./adapter": {
-            "types": "./dist/adapter.d.ts",
+            "types": "./dist/adapter.d.mts",
             "import": "./dist/adapter.mjs",
             "default": "./dist/adapter.mjs"
         },
         "./middleware": {
-            "types": "./dist/middleware.d.ts",
+            "types": "./dist/middleware.d.mts",
             "import": "./dist/middleware.mjs",
             "default": "./dist/middleware.mjs"
         }

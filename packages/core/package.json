@@ -2,8 +2,8 @@
     "name": "@master/css",
     "type": "module",
     "scripts": {
-        "build": "techor build \"src/**/*.ts\" --formats esm",
-        "dev": "pnpm build --watch",
+        "build": "tsdown --config ../../shared/tsdown-package.config.ts",
+        "dev": "tsdown --config ../../shared/tsdown-package.config.ts --watch",
         "test": "vitest",
         "bench": "vitest bench",
         "type-check": "tsc --noEmit",
@@ -50,11 +50,11 @@
     "esnext": "./dist/index.mjs",
     "module": "./dist/index.mjs",
     "style": "./src/index.css",
-    "types": "./dist/index.d.ts",
+    "types": "./dist/index.d.mts",
     "exports": {
         ".": {
             "style": "./src/index.css",
-            "types": "./dist/index.d.ts",
+            "types": "./dist/index.d.mts",
             "import": "./dist/index.mjs",
             "default": "./dist/index.mjs"
         },

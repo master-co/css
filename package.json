@@ -55,7 +55,6 @@
         "nodemon": "^3.1.14",
         "shuffle-array": "^1.0.1",
         "strip-ansi": "^7.2.0",
-        "techor": "^3.2.5",
         "tinybench": "^6.0.2",
         "ts-dedent": "^2.3.0",
         "ts-jest": "^29.4.11",
@@ -99,6 +98,7 @@
         "concurrently": "^9.2.3",
         "eslint-config-techor": "^3.2.5",
         "master-css-vscode": "workspace:^",
-        "turbo": "^2.10.0"
+        "turbo": "^2.10.0",
+        "tsdown": "^0.22.3"
     }
 }

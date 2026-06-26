@@ -1,4 +1,5 @@
-import type { Config } from 'techor'
+import { readFileSync } from 'node:fs'
+import { defineConfig } from 'tsdown'
 
 function isBundledJSONModule(id: string) {
     const normalizedId = id.replaceAll('\\', '/')
@@ -8,11 +9,12 @@ function isBundledJSONModule(id: string) {
 
 const bundledJSONModules = {
     name: 'bundled-json-modules',
-    transform(code: string, id: string) {
+    load(id: string) {
         if (!isBundledJSONModule(id)) return
+        const code = readFileSync(id, 'utf8')
         return {
             code: `export default ${code};`,
-            map: null
+            moduleType: 'js'
         }
     }
 } as const
@@ -61,27 +63,37 @@ const externalNativePackages = {
     }
 } as const
 
-const config: Config = {
-    build: {
-        esmShim: false,
-        input: {
-            plugins: [
-                bundledJSONModules,
-                externalVSCodeHostModule,
-                externalNativePackages
-            ]
-        },
-        commonjs: {
-            esmExternals: ['vscode'],
-            extensions: [
-                '.js',
-                '.ts'
-            ]
-        },
-        output: {
-            inlineDynamicImports: true
+const commonConfig = {
+    platform: 'node',
+    tsconfig: './tsconfig.prod.json',
+    shims: false,
+    dts: false,
+    deps: {
+        onlyBundle: false
+    },
+    minify: true,
+    plugins: [
+        bundledJSONModules,
+        externalVSCodeHostModule,
+        externalNativePackages
+    ],
+    outputOptions: {
+        codeSplitting: false,
+        comments: false
+    }
+} as const
+
+export default defineConfig([
+    {
+        ...commonConfig,
+        entry: {
+            'extension.min': 'src/extension.min.ts'
+        }
+    },
+    {
+        ...commonConfig,
+        entry: {
+            'server.min': 'src/server.min.ts'
         }
     }
-}
-
-export default config
+])

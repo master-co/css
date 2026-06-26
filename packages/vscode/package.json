@@ -2,9 +2,9 @@
     "name": "master-css-vscode",
     "type": "module",
     "scripts": {
-        "build": "techor build && pnpm generate",
+        "build": "tsdown && pnpm generate",
         "generate": "node --import tsx generate",
-        "dev": "techor build --watch",
+        "dev": "tsdown --watch",
         "test": "vitest",
         "type-check": "tsc --noEmit",
         "lint": "eslint",

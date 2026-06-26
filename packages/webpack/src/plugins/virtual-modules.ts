@@ -5,6 +5,10 @@ import type { Compiler } from 'webpack'
 import VirtualModulesPlugin from 'webpack-virtual-modules'
 import type { MasterCSSWebpackContext, WebpackSubPlugin } from '../plugin'
 
+interface WebpackPluginAdapter {
+    apply(compiler: Compiler): void
+}
+
 export default function VirtualModuleRegistryPlugin(context: MasterCSSWebpackContext): WebpackSubPlugin {
     return {
         apply(compiler: Compiler) {
@@ -14,7 +18,8 @@ export default function VirtualModuleRegistryPlugin(context: MasterCSSWebpackCon
                 [context.virtualEmittedGlobalsModuleId]: EMPTY_EMITTED_GLOBALS_MODULE
             })
 
-            context.virtualModule.apply(compiler)
+            const virtualModule = context.virtualModule as unknown as WebpackPluginAdapter
+            virtualModule.apply(compiler)
         }
     }
 }

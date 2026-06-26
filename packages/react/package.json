@@ -2,8 +2,8 @@
     "name": "@master/css.react",
     "type": "module",
     "scripts": {
-        "build": "techor build \"src/**/*.tsx\" --formats esm",
-        "dev": "pnpm build --watch",
+        "build": "tsdown --config ../../shared/tsdown-package.config.ts",
+        "dev": "tsdown --config ../../shared/tsdown-package.config.ts --watch",
         "type-check": "tsc --noEmit",
         "lint": "eslint",
         "e2e": "playwright test -c playwright-ct.config.ts"
@@ -39,15 +39,15 @@
     "jsnext:main": "./dist/index.mjs",
     "esnext": "./dist/index.mjs",
     "module": "./dist/index.mjs",
-    "types": "./dist/index.d.ts",
+    "types": "./dist/index.d.mts",
     "exports": {
         ".": {
-            "types": "./dist/index.d.ts",
+            "types": "./dist/index.d.mts",
             "import": "./dist/index.mjs",
             "default": "./dist/index.mjs"
         },
         "./runtime-provider": {
-            "types": "./dist/runtime-provider.d.ts",
+            "types": "./dist/runtime-provider.d.mts",
             "import": "./dist/runtime-provider.mjs",
             "default": "./dist/runtime-provider.mjs"
         }

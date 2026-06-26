@@ -2,8 +2,8 @@
     "name": "@master/css-server",
     "type": "module",
     "scripts": {
-        "build": "techor build \"src/**/*.ts\" --formats esm && node scripts/restore-json-import-attributes.mjs",
-        "dev": "pnpm build --watch",
+        "build": "tsdown --config ../../shared/tsdown-package.config.ts && node scripts/restore-json-import-attributes.mjs",
+        "dev": "tsdown --config ../../shared/tsdown-package.config.ts --watch",
         "lint": "eslint",
         "type-check": "tsc --noEmit",
         "test": "vitest"
@@ -35,10 +35,10 @@
     "module": "./dist/index.mjs",
     "jsnext:main": "./dist/index.mjs",
     "esnext": "./dist/index.mjs",
-    "types": "./dist/index.d.ts",
+    "types": "./dist/index.d.mts",
     "exports": {
         ".": {
-            "types": "./dist/index.d.ts",
+            "types": "./dist/index.d.mts",
             "import": "./dist/index.mjs",
             "default": "./dist/index.mjs"
         }

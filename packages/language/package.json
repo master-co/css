@@ -2,8 +2,8 @@
     "name": "@master/css-language",
     "type": "module",
     "scripts": {
-        "build": "techor build \"src/**/*.ts\" --formats esm && node scripts/restore-json-import-attributes.mjs",
-        "dev": "pnpm build --watch",
+        "build": "tsdown --config ../../shared/tsdown-package.config.ts && node scripts/restore-json-import-attributes.mjs",
+        "dev": "tsdown --config ../../shared/tsdown-package.config.ts --watch",
         "type-check": "tsc --noEmit",
         "lint": "eslint",
         "test": "vitest"
@@ -37,20 +37,20 @@
     "module": "./dist/index.mjs",
     "jsnext:main": "./dist/index.mjs",
     "esnext": "./dist/index.mjs",
-    "types": "./dist/index.d.ts",
+    "types": "./dist/index.d.mts",
     "exports": {
         ".": {
-            "types": "./dist/index.d.ts",
+            "types": "./dist/index.d.mts",
             "import": "./dist/index.mjs",
             "default": "./dist/index.mjs"
         },
         "./browser": {
-            "types": "./dist/browser.d.ts",
+            "types": "./dist/browser.d.mts",
             "import": "./dist/browser.mjs",
             "default": "./dist/browser.mjs"
         },
         "./shiki": {
-            "types": "./dist/shiki.d.ts",
+            "types": "./dist/shiki.d.mts",
             "import": "./dist/shiki.mjs",
             "default": "./dist/shiki.mjs"
         },

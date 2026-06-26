@@ -31,7 +31,7 @@
 - `package.json`
 - `scripts/package-target-core.mjs`
 - `scripts/package-targets.mjs`
-- `techor.config.ts`
+- `tsdown.config.ts`
 
 ## Risk Areas
 

@@ -2,8 +2,8 @@
     "name": "@master/css-stylesheet",
     "type": "module",
     "scripts": {
-        "build": "techor build \"src/**/*.ts\" --formats esm",
-        "dev": "pnpm build --watch",
+        "build": "tsdown --config ../../shared/tsdown-package.config.ts",
+        "dev": "tsdown --config ../../shared/tsdown-package.config.ts --watch",
         "lint": "eslint",
         "type-check": "tsc --noEmit",
         "test": "vitest"
@@ -33,20 +33,20 @@
     "module": "./dist/index.mjs",
     "jsnext:main": "./dist/index.mjs",
     "esnext": "./dist/index.mjs",
-    "types": "./dist/index.d.ts",
+    "types": "./dist/index.d.mts",
     "exports": {
         ".": {
-            "types": "./dist/index.d.ts",
+            "types": "./dist/index.d.mts",
             "import": "./dist/index.mjs",
             "default": "./dist/index.mjs"
         },
         "./browser": {
-            "types": "./dist/browser.d.ts",
+            "types": "./dist/browser.d.mts",
             "import": "./dist/browser.mjs",
             "default": "./dist/browser.mjs"
         },
         "./directives": {
-            "types": "./dist/directives.d.ts",
+            "types": "./dist/directives.d.mts",
             "import": "./dist/directives.mjs",
             "default": "./dist/directives.mjs"
         }
@@ -54,13 +54,13 @@
     "typesVersions": {
         "*": {
             ".": [
-                "./dist/index.d.ts"
+                "./dist/index.d.mts"
             ],
             "./browser": [
-                "./dist/browser.d.ts"
+                "./dist/browser.d.mts"
             ],
             "./directives": [
-                "./dist/directives.d.ts"
+                "./dist/directives.d.mts"
             ]
         }
     },

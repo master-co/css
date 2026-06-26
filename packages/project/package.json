@@ -2,8 +2,8 @@
     "name": "@master/css-project",
     "type": "module",
     "scripts": {
-        "build": "techor build \"src/**/*.ts\" --formats esm",
-        "dev": "pnpm build --watch",
+        "build": "tsdown --config ../../shared/tsdown-package.config.ts",
+        "dev": "tsdown --config ../../shared/tsdown-package.config.ts --watch",
         "lint": "eslint",
         "type-check": "tsc --noEmit",
         "test": "vitest"
@@ -28,25 +28,25 @@
         "mastercss"
     ],
     "sideEffects": false,
-    "types": "./dist/manifest.d.ts",
+    "types": "./dist/manifest.d.mts",
     "exports": {
         "./manifest": {
-            "types": "./dist/manifest.d.ts",
+            "types": "./dist/manifest.d.mts",
             "import": "./dist/manifest.mjs",
             "default": "./dist/manifest.mjs"
         },
         "./manifest-sync": {
-            "types": "./dist/manifest-sync.d.ts",
+            "types": "./dist/manifest-sync.d.mts",
             "import": "./dist/manifest-sync.mjs",
             "default": "./dist/manifest-sync.mjs"
         },
         "./entries": {
-            "types": "./dist/entries.d.ts",
+            "types": "./dist/entries.d.mts",
             "import": "./dist/entries.mjs",
             "default": "./dist/entries.mjs"
         },
         "./workspace": {
-            "types": "./dist/workspace.d.ts",
+            "types": "./dist/workspace.d.mts",
             "import": "./dist/workspace.mjs",
             "default": "./dist/workspace.mjs"
         }

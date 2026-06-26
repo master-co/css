@@ -1,16 +1,19 @@
-const path = require('path')
-const HtmlWebpackPlugin = require('html-webpack-plugin')
-const MasterCSSPlugin = require('@master/css.webpack')
+import { dirname, join } from 'node:path'
+import { fileURLToPath } from 'node:url'
+import HtmlWebpackPlugin from 'html-webpack-plugin'
+import MasterCSSPlugin from '@master/css.webpack'
 
-module.exports = {
+const __dirname = dirname(fileURLToPath(import.meta.url))
+
+export default {
     entry: './src/index.js',
     output: {
         filename: 'bundle.js',
-        path: path.join(__dirname, 'dist')
+        path: join(__dirname, 'dist')
     },
     plugins: [
         new HtmlWebpackPlugin({
-            template: path.join(__dirname, 'src/index.html')
+            template: join(__dirname, 'src/index.html')
         }),
         new MasterCSSPlugin({ sources: ['./src/index.html'] })
     ],

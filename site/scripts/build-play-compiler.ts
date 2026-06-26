@@ -1,13 +1,17 @@
 import { mkdir, rm, stat } from 'node:fs/promises'
 import { dirname, join } from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
-import { build, type Metafile } from 'esbuild'
+import { build, type TsdownPlugin } from 'tsdown'
 
 const siteDir = dirname(fileURLToPath(new URL('../package.json', import.meta.url)))
 const workspaceDistInputPattern = /(?:^|[\\/])packages[\\/][^\\/]+[\\/]dist[\\/]/
 
-function assertNoWorkspaceDistInputs(metafile: Metafile) {
-    const distInputs = Object.keys(metafile.inputs).filter((input) => workspaceDistInputPattern.test(input))
+function toWorkspaceDistInputs(moduleIds: string[]) {
+    return [...new Set(moduleIds.filter((input) => workspaceDistInputPattern.test(input)))]
+}
+
+function assertNoWorkspaceDistInputs(moduleIds: string[]) {
+    const distInputs = toWorkspaceDistInputs(moduleIds)
     if (!distInputs.length) return
 
     throw new Error([
@@ -16,30 +20,56 @@ function assertNoWorkspaceDistInputs(metafile: Metafile) {
     ].join('\n'))
 }
 
+function assertNoWorkspaceDistInputsPlugin(): TsdownPlugin {
+    return {
+        name: 'assert-no-workspace-dist-inputs',
+        generateBundle(_, bundle) {
+            const moduleIds = Object.values(bundle).flatMap((output) => output.type === 'chunk' ? output.moduleIds : [])
+            assertNoWorkspaceDistInputs(moduleIds)
+        }
+    }
+}
+
 export async function buildPlayCompiler(outputDir = join(siteDir, 'public/play-compiler')) {
     const compilerOutputPath = join(outputDir, 'compiler.mjs')
 
     await rm(outputDir, { recursive: true, force: true })
     await mkdir(outputDir, { recursive: true })
 
-    const result = await build({
-        entryPoints: [fileURLToPath(new URL('../play-compiler/compile-play-css.ts', import.meta.url))],
-        outfile: compilerOutputPath,
-        bundle: true,
-        format: 'esm',
+    await build({
+        cwd: siteDir,
+        entry: {
+            compiler: fileURLToPath(new URL('../play-compiler/compile-play-css.ts', import.meta.url))
+        },
+        outDir: outputDir,
         platform: 'browser',
         target: 'es2022',
-        conditions: ['browser', 'default', 'import'],
-        external: ['fs'],
+        tsconfig: './tsconfig.json',
+        deps: {
+            alwaysBundle: [/^[^./]/],
+            neverBundle: ['fs']
+        },
+        inputOptions: {
+            resolve: {
+                conditionNames: ['browser', 'default', 'import']
+            }
+        },
         loader: {
             '.json': 'json'
         },
         minify: true,
-        legalComments: 'none',
-        metafile: true,
-        logLevel: 'silent'
+        dts: false,
+        logLevel: 'silent',
+        report: false,
+        plugins: [
+            assertNoWorkspaceDistInputsPlugin()
+        ],
+        outputOptions: {
+            entryFileNames: 'compiler.mjs',
+            codeSplitting: false,
+            comments: false
+        }
     })
-    assertNoWorkspaceDistInputs(result.metafile)
 
     const { size: compilerSize } = await stat(compilerOutputPath)
 

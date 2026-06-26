@@ -2,8 +2,8 @@
     "name": "@master/css-scanner",
     "type": "module",
     "scripts": {
-        "build": "techor build \"src/**/*.ts\" --formats esm",
-        "dev": "techor build --watch",
+        "build": "tsdown --config ../../shared/tsdown-package.config.ts",
+        "dev": "tsdown --config ../../shared/tsdown-package.config.ts --watch",
         "lint": "eslint",
         "type-check": "tsc --noEmit",
         "test": "vitest"
@@ -35,15 +35,15 @@
     "module": "./dist/index.mjs",
     "jsnext:main": "./dist/index.mjs",
     "esnext": "./dist/index.mjs",
-    "types": "./dist/index.d.ts",
+    "types": "./dist/index.d.mts",
     "exports": {
         ".": {
-            "types": "./dist/index.d.ts",
+            "types": "./dist/index.d.mts",
             "import": "./dist/index.mjs",
             "default": "./dist/index.mjs"
         },
         "./options": {
-            "types": "./dist/options/index.d.ts",
+            "types": "./dist/options/index.d.mts",
             "import": "./dist/options/index.mjs",
             "default": "./dist/options/index.mjs"
         }
@@ -51,10 +51,10 @@
     "typesVersions": {
         "*": {
             ".": [
-                "./dist/index.d.ts"
+                "./dist/index.d.mts"
             ],
             "./options": [
-                "./dist/options/index.d.ts"
+                "./dist/options/index.d.mts"
             ]
         }
     },

@@ -2,8 +2,8 @@
     "name": "@master/css-engine",
     "type": "module",
     "scripts": {
-        "build": "techor build \"src/**/*.ts\" --formats esm",
-        "dev": "pnpm build --watch",
+        "build": "tsdown --config ../../shared/tsdown-package.config.ts",
+        "dev": "tsdown --config ../../shared/tsdown-package.config.ts --watch",
         "test": "vitest",
         "bench": "vitest bench",
         "type-check": "tsc --noEmit",
@@ -47,20 +47,20 @@
     "jsnext:main": "./dist/index.mjs",
     "esnext": "./dist/index.mjs",
     "module": "./dist/index.mjs",
-    "types": "./dist/index.d.ts",
+    "types": "./dist/index.d.mts",
     "exports": {
         ".": {
-            "types": "./dist/index.d.ts",
+            "types": "./dist/index.d.mts",
             "import": "./dist/index.mjs",
             "default": "./dist/index.mjs"
         },
         "./compiler": {
-            "types": "./dist/compiler.d.ts",
+            "types": "./dist/compiler.d.mts",
             "import": "./dist/compiler.mjs",
             "default": "./dist/compiler.mjs"
         },
         "./inspect": {
-            "types": "./dist/inspect.d.ts",
+            "types": "./dist/inspect.d.mts",
             "import": "./dist/inspect.mjs",
             "default": "./dist/inspect.mjs"
         }

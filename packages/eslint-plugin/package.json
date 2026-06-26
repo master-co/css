@@ -2,8 +2,8 @@
     "name": "@master/eslint-plugin-css",
     "type": "module",
     "scripts": {
-        "build": "techor build \"src/**/*.{js,ts}\"",
-        "dev": "pnpm build --watch",
+        "build": "tsdown --config ../../shared/tsdown-package.config.ts",
+        "dev": "tsdown --config ../../shared/tsdown-package.config.ts --watch",
         "test": "vitest",
         "type-check": "tsc --noEmit",
         "lint": "eslint"
@@ -27,21 +27,21 @@
         "directory": "packages/eslint-plugin"
     },
     "sideEffects": false,
-    "main": "./dist/index.cjs",
+    "main": "./dist/index.mjs",
     "module": "./dist/index.mjs",
     "jsnext:main": "./dist/index.mjs",
     "esnext": "./dist/index.mjs",
-    "types": "./dist/index.d.ts",
+    "types": "./dist/index.d.mts",
     "exports": {
         ".": {
-            "types": "./dist/index.d.ts",
+            "types": "./dist/index.d.mts",
             "import": "./dist/index.mjs",
-            "require": "./dist/index.cjs"
+            "default": "./dist/index.mjs"
         },
         "./configs/*": {
-            "types": "./dist/configs/*.d.ts",
+            "types": "./dist/configs/*.d.mts",
             "import": "./dist/configs/*.mjs",
-            "require": "./dist/configs/*.cjs"
+            "default": "./dist/configs/*.mjs"
         }
     },
     "files": [

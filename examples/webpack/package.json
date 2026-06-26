@@ -5,8 +5,8 @@
     "description": "",
     "main": "index.js",
     "scripts": {
-        "dev": "webpack serve --mode development",
-        "build": "webpack --mode production"
+        "dev": "webpack serve --config webpack.config.mjs --mode development",
+        "build": "webpack --config webpack.config.mjs --mode production"
     },
     "keywords": [],
     "author": "",

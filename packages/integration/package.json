@@ -2,8 +2,8 @@
     "name": "@master/css-integration",
     "type": "module",
     "scripts": {
-        "build": "techor build \"src/**/*.ts\" --formats esm",
-        "dev": "pnpm build --watch",
+        "build": "tsdown --config ../../shared/tsdown-package.config.ts",
+        "dev": "tsdown --config ../../shared/tsdown-package.config.ts --watch",
         "type-check": "tsc --noEmit",
         "lint": "eslint",
         "test": "vitest"
@@ -32,10 +32,10 @@
     "module": "./dist/index.mjs",
     "jsnext:main": "./dist/index.mjs",
     "esnext": "./dist/index.mjs",
-    "types": "./dist/index.d.ts",
+    "types": "./dist/index.d.mts",
     "exports": {
         ".": {
-            "types": "./dist/index.d.ts",
+            "types": "./dist/index.d.mts",
             "import": "./dist/index.mjs",
             "default": "./dist/index.mjs"
         },
@@ -43,37 +43,37 @@
             "types": "./client.d.ts"
         },
         "./module": {
-            "types": "./dist/module.d.ts",
+            "types": "./dist/module.d.mts",
             "import": "./dist/module.mjs",
             "default": "./dist/module.mjs"
         },
         "./manifest-module": {
-            "types": "./dist/manifest-module.d.ts",
+            "types": "./dist/manifest-module.d.mts",
             "import": "./dist/manifest-module.mjs",
             "default": "./dist/manifest-module.mjs"
         },
         "./manifest-facade": {
-            "types": "./dist/manifest-facade.d.ts",
+            "types": "./dist/manifest-facade.d.mts",
             "import": "./dist/manifest-facade.mjs",
             "default": "./dist/manifest-facade.mjs"
         },
         "./style-module": {
-            "types": "./dist/style-module.d.ts",
+            "types": "./dist/style-module.d.mts",
             "import": "./dist/style-module.mjs",
             "default": "./dist/style-module.mjs"
         },
         "./emitted-globals-module": {
-            "types": "./dist/emitted-globals-module.d.ts",
+            "types": "./dist/emitted-globals-module.d.mts",
             "import": "./dist/emitted-globals-module.mjs",
             "default": "./dist/emitted-globals-module.mjs"
         },
         "./runtime": {
-            "types": "./dist/runtime.d.ts",
+            "types": "./dist/runtime.d.mts",
             "import": "./dist/runtime.mjs",
             "default": "./dist/runtime.mjs"
         },
         "./node": {
-            "types": "./dist/node.d.ts",
+            "types": "./dist/node.d.mts",
             "import": "./dist/node.mjs",
             "default": "./dist/node.mjs"
         }

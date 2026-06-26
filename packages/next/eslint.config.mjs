@@ -1,10 +1,10 @@
 import common from '../../eslint.config.mjs'
-import techor from 'eslint-config-techor'
+import eslintConfigTechor from 'eslint-config-techor'
 
 export default [
     ...common,
-    techor.configs.typescript,
-    techor.configs.react,
+    eslintConfigTechor.configs.typescript,
+    eslintConfigTechor.configs.react,
     {
         ignores: [
             'dist/**',

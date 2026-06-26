@@ -33,14 +33,14 @@
     <Step $row>
         <StepL>
             ### <StepNum />Set up static rendering
-            - Create a `webpack.config.js` file
+            - Create a `webpack.config.mjs` file
             - Add a `MasterCSSPlugin` to the plugins
         </StepL>
         <StepR>
-            ```js name=webpack.config.js
-            const MasterCSSPlugin = require('@master/css.webpack') // [!code ++]
+            ```js name=webpack.config.mjs
+            import MasterCSSPlugin from '@master/css.webpack' // [!code ++]
 
-            module.exports = (config) => { // [!code ++]
+            export default (config) => { // [!code ++]
                 config.plugins.push( // [!code ++]
                     new MasterCSSPlugin() // [!code ++]
                 ) // [!code ++]
@@ -72,7 +72,7 @@
                                                      "builder": "@angular-builders/custom-webpack:browser", // [!code ++]
                                                      "options": {
                                                          "customWebpackConfig": { // [!code ++]
-                                                             "path": "./webpack.config.js" // [!code ++]
+                                                             "path": "./webpack.config.mjs" // [!code ++]
                                                          }, // [!code ++]
                                                         …
                                                     },

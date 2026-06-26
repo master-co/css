@@ -2,8 +2,8 @@
     "name": "@master/css-preset",
     "type": "module",
     "scripts": {
-        "build": "pnpm generate && techor build \"src/**/!(*.d).ts\" --formats esm",
-        "dev": "pnpm build --watch",
+        "build": "pnpm generate && tsdown --config ../../shared/tsdown-package.config.ts",
+        "dev": "pnpm generate && tsdown --config ../../shared/tsdown-package.config.ts --watch",
         "generate": "node --import tsx scripts/generate-default-manifest.ts",
         "lint": "eslint",
         "type-check": "tsc --noEmit",
@@ -34,12 +34,12 @@
     "module": "./dist/index.mjs",
     "jsnext:main": "./dist/index.mjs",
     "esnext": "./dist/index.mjs",
-    "types": "./dist/index.d.ts",
+    "types": "./dist/index.d.mts",
     "style": "./src/index.css",
     "exports": {
         ".": {
             "style": "./src/index.css",
-            "types": "./dist/index.d.ts",
+            "types": "./dist/index.d.mts",
             "import": "./dist/index.mjs",
             "default": "./dist/index.mjs"
         },

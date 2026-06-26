@@ -2,8 +2,8 @@
     "name": "@master/css-schema",
     "type": "module",
     "scripts": {
-        "build": "techor build \"src/**/*.ts\" --formats esm",
-        "dev": "pnpm build --watch",
+        "build": "tsdown --config ../../shared/tsdown-package.config.ts",
+        "dev": "tsdown --config ../../shared/tsdown-package.config.ts --watch",
         "lint": "eslint",
         "type-check": "tsc --noEmit",
         "test": "vitest"
@@ -32,55 +32,55 @@
     "jsnext:main": "./dist/index.mjs",
     "esnext": "./dist/index.mjs",
     "module": "./dist/index.mjs",
-    "types": "./dist/index.d.ts",
+    "types": "./dist/index.d.mts",
     "exports": {
         ".": {
-            "types": "./dist/index.d.ts",
+            "types": "./dist/index.d.mts",
             "import": "./dist/index.mjs",
             "default": "./dist/index.mjs"
         },
         "./manifest": {
-            "types": "./dist/manifest.d.ts",
+            "types": "./dist/manifest.d.mts",
             "import": "./dist/manifest.mjs",
             "default": "./dist/manifest.mjs"
         },
         "./manifest-json": {
-            "types": "./dist/manifest-json.d.ts",
+            "types": "./dist/manifest-json.d.mts",
             "import": "./dist/manifest-json.mjs",
             "default": "./dist/manifest-json.mjs"
         },
         "./hydration-manifest": {
-            "types": "./dist/hydration-manifest.d.ts",
+            "types": "./dist/hydration-manifest.d.mts",
             "import": "./dist/hydration-manifest.mjs",
             "default": "./dist/hydration-manifest.mjs"
         },
         "./css-directives": {
-            "types": "./dist/css-directives.d.ts",
+            "types": "./dist/css-directives.d.mts",
             "import": "./dist/css-directives.mjs",
             "default": "./dist/css-directives.mjs"
         },
         "./css-syntax": {
-            "types": "./dist/css-syntax.d.ts",
+            "types": "./dist/css-syntax.d.mts",
             "import": "./dist/css-syntax.mjs",
             "default": "./dist/css-syntax.mjs"
         },
         "./utility-type": {
-            "types": "./dist/utility-type.d.ts",
+            "types": "./dist/utility-type.d.mts",
             "import": "./dist/utility-type.mjs",
             "default": "./dist/utility-type.mjs"
         },
         "./runtime-style": {
-            "types": "./dist/runtime-style.d.ts",
+            "types": "./dist/runtime-style.d.mts",
             "import": "./dist/runtime-style.mjs",
             "default": "./dist/runtime-style.mjs"
         },
         "./native-css-shorthand": {
-            "types": "./dist/native-css-shorthand.d.ts",
+            "types": "./dist/native-css-shorthand.d.mts",
             "import": "./dist/native-css-shorthand.mjs",
             "default": "./dist/native-css-shorthand.mjs"
         },
         "./css-common": {
-            "types": "./dist/css-common.d.ts",
+            "types": "./dist/css-common.d.mts",
             "import": "./dist/css-common.mjs",
             "default": "./dist/css-common.mjs"
         }
