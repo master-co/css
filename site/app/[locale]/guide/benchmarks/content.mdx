@@ -1,11 +1,26 @@
 ## Overview [sr-only]
 Benchmarks make Master CSS output and delivery costs inspectable. They are useful for understanding tradeoffs, but they are not universal guarantees for every application.
 
-This page collects reproducible measurements for page CSS size, generated output, build behavior, and runtime delivery. Tailwind CSS comparisons will use the same approach: fixed fixtures, pinned versions, visible commands, and reported environment limits.
+This page is the public benchmark roadmap and results index for Master CSS. Current results stay close to their methodology, and planned work is listed here before it becomes a measured claim.
 
 ---
 
-## Page CSS size
+## Benchmark roadmap
+| Status | Suite | What it answers |
+|--------|-------|-----------------|
+| Available | Page CSS size | How much inline and external CSS do popular documentation pages transfer? |
+| Next | CSS output size | How large is generated CSS for shared fixtures across Master CSS and Tailwind CSS? |
+| Next | Build performance | How do cold build, warm rebuild, and watch updates compare? |
+| Planned | Master CSS delivery modes | What are the payload and runtime costs of runtime, static, pre-render, and progressive delivery? |
+| Planned | Browser CSS cost | How does small, medium, and large CSS affect style calculation, layout, and paint? |
+| Planned | Interaction cost | How expensive are class toggles, DOM insertion/removal, mode switches, and resize-triggered recalculation? |
+| Research | Tailwind CSS runtime-equivalent comparisons | Tailwind CSS is build-time-first, so runtime claims must be limited to comparable browser CSS costs. |
+
+The benchmark target is reproducible comparison, not a single universal score. Each result should include the fixture, command, package versions, machine/browser, sample count, and known limits.
+
+---
+
+## Current result: Page CSS size
 The current page CSS size benchmark compares the CSS transferred by several official documentation sites. It counts both inline `style` tags and external stylesheets discovered in the initial HTML response.
 
 <PageCSSSizeBenchmark />
@@ -14,18 +29,99 @@ Master CSS keeps this documentation site's page CSS around **6 kB with brotli co
 
 The page CSS size snapshot is generated from `benchmarks/docs-page-css-size`. It fetches each documentation page, parses the initial HTML, follows `link[rel*="stylesheet"]`, and records raw and brotli-compressed byte counts.
 
-Use the raw numbers to inspect source size and the brotli numbers to approximate compressed transfer size. Browser cache state, CDN behavior, JavaScript-loaded styles, fonts, images, and application runtime work are outside this benchmark.
+---
 
-The snapshot is advisory. Compare changes on the same machine, with the same input pages, and with the benchmark command and timestamp attached.
+## Fixture matrix
+Future fixture-based suites should use equivalent UI output rather than identical class strings.
+
+| Fixture | Purpose | Expected stress |
+|---------|---------|-----------------|
+| `minimal` | Small marketing or landing page | Cold-start overhead and minimum payload |
+| `docs` | Dense article, navigation, code blocks, tables | Real documentation layout and typography |
+| `dashboard` | Repeated cards, tables, filters, charts, states | Rule reuse, duplicated utilities, and large DOM |
+| `stress-css` | Intentionally large utility surface | Browser style calculation with small/medium/large CSS |
+| `dynamic` | Insert, remove, and toggle classes during interaction | Runtime mutation and recalculation cost |
+
+Each fixture should publish source markup, Master CSS setup, Tailwind CSS setup, generated outputs, and the exact commands used to produce results.
 
 ---
 
-## Planned Tailwind CSS comparisons
-Tailwind CSS comparisons should be fixture-based rather than copied from live websites. The first planned suites are:
+## Metrics
+| Area | Metrics |
+|------|---------|
+| CSS bytes | Raw, gzip, brotli, output hash, generated file count |
+| CSS structure | Rule count, declaration count, selector count, media/container/support blocks, custom properties |
+| Build | Cold build time, warm rebuild time, watch update latency, changed-file rebuild cost |
+| Page load | CSS parse/attach time, style recalculation, layout, paint, FCP/LCP where stable |
+| Interaction | Mutation-to-style-ready time, class toggle cost, rule insertion/removal, long tasks |
+| Payload | Runtime bundle, manifest JSON, hydration manifest, inline `style#master-css`, external CSS |
 
-- Generated CSS output: compare raw, gzip, brotli, rule count, and output hash for the same markup fixture.
-- Build time: compare cold and warm build runs with pinned package versions.
-- Runtime and hydration: compare browser-visible delivery behavior only where both tools expose comparable work.
-- Fixture methodology: publish source fixtures, commands, versions, and machine/browser limits beside the numbers.
+Browser timings should be measured with fixed viewport, device scale, browser version, warmup rounds, and measured rounds. These numbers are advisory because browser scheduling, hardware, and cache state affect them.
 
-These sections will be filled as the corresponding benchmark suites land.
+---
+
+## Master CSS delivery modes
+| Mode | Benchmark focus |
+|------|-----------------|
+| Runtime | Manifest payload, runtime bundle, initial DOM scan, CSSOM insertion/deletion, mutation handling |
+| Static | Generated stylesheet size, source scanning, cold build, warm rebuild, watch update latency |
+| Pre-render | First-response inline `style#master-css`, generated HTML/CSS size, no client runtime hydration |
+| Progressive | Inline `style#master-css`, hydration manifest, runtime adoption, later dynamic mutations |
+
+Pre-render and progressive both begin with server/build-time CSS in the HTML. Progressive adds a runtime handoff, so its benchmark needs both first-response payload metrics and post-hydration mutation metrics.
+
+---
+
+## Tailwind CSS comparisons
+Tailwind CSS comparisons should use pinned Tailwind CSS v4 tooling and official entrypoints:
+
+- [`@tailwindcss/cli`](https://tailwindcss.com/docs/installation/tailwind-cli) for command-line builds.
+- [`@tailwindcss/vite`](https://tailwindcss.com/docs/installation/using-vite) for Vite build comparisons.
+- Tailwind source detection behavior from [Detecting classes in source files](https://tailwindcss.com/docs/detecting-classes-in-source-files).
+
+The first Tailwind CSS suites should compare static outputs and build behavior. Runtime claims should be avoided unless the benchmark is explicitly measuring browser CSS cost from static CSS output, because Tailwind CSS does not perform the same client-side class observation work as Master CSS runtime rendering.
+
+---
+
+## Browser CSS cost
+Large CSS can affect the browser even when no JavaScript framework is involved. The browser-cost suite should produce pages with controlled CSS sizes and measure:
+
+- Initial stylesheet attachment and parse cost.
+- Style recalculation after DOM insertion.
+- Layout and paint cost for repeated components.
+- Selector matching sensitivity when CSS grows but visible DOM stays fixed.
+- FCP/LCP only when the fixture is stable enough to make those numbers meaningful.
+
+This suite should use Playwright or browser tracing with fixed viewport and disabled unrelated network variance. It should report medians and raw samples as artifacts.
+
+---
+
+## Interaction cost
+Interactive fixtures should focus on changes users can feel:
+
+- Toggle state classes on many elements.
+- Insert and remove repeated components.
+- Switch light/dark or theme mode.
+- Resize viewport and container-query layouts.
+- Add classes that already exist in CSS versus classes that require new rule generation.
+
+For Master CSS runtime and progressive modes, interaction benchmarks should report both DOM work and runtime stylesheet work. For static Tailwind CSS output, the comparable measurement is the browser's style/layout/paint cost after the DOM or class change.
+
+---
+
+## Implementation phases
+| Phase | Work |
+|-------|------|
+| 1 | Keep this roadmap updated and mark the page CSS size benchmark as available. |
+| 2 | Add shared fixture manifests, adapter interfaces, normalized report schemas, and JSON/Markdown output. |
+| 3 | Implement CSS output and build benchmarks for Master CSS static output versus Tailwind CSS CLI/Vite. |
+| 4 | Implement Master CSS runtime, static, pre-render, and progressive delivery benchmarks. |
+| 5 | Implement browser CSS cost and interaction benchmarks with Playwright/browser tracing. |
+| 6 | Publish curated result tables on this page while keeping raw benchmark history as ignored artifacts. |
+
+---
+
+## Methodology and limits
+Use the raw numbers to inspect source size and the brotli numbers to approximate compressed transfer size. Browser cache state, CDN behavior, JavaScript-loaded styles, fonts, images, and application runtime work are outside the page CSS size snapshot.
+
+Fixture-based benchmark results should be compared on the same machine, with the same package versions, the same browser version, and the same sample settings. Do not treat benchmark wins as permission to change CSS output, cascade order, hydration behavior, or public APIs.
