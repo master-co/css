@@ -1,8 +1,5 @@
 {
     "type": "module",
-    "scripts": {
-        "extract": "hyperfine 'cd extract/tailwindcss && npx tailwindcss -i src/main.css' 'cd extract/mastercss && npx @master/css-cli --no-export'"
-    },
     "dependencies": {
         "axios": "^1.6.7",
         "cheerio": "0.22.0",
