@@ -1,0 +1,474 @@
+{
+    "schemaVersion": 1,
+    "suite": "docs-page-css-size",
+    "generatedAt": "2026-06-26T19:13:01.130Z",
+    "pages": [
+        {
+            "name": "Tailwind CSS",
+            "url": "https://tailwindcss.com/docs",
+            "resolvedUrl": "https://tailwindcss.com/docs/installation/using-vite",
+            "css": {
+                "total": {
+                    "rawBytes": 698368,
+                    "brotliBytes": 60581
+                },
+                "inline": {
+                    "rawBytes": 0,
+                    "brotliBytes": 0
+                },
+                "external": {
+                    "rawBytes": 698368,
+                    "brotliBytes": 60581
+                }
+            },
+            "assets": [
+                {
+                    "kind": "external",
+                    "url": "/_next/static/chunks/13.qyaai7-a5-.css",
+                    "resolvedUrl": "https://tailwindcss.com/_next/static/chunks/13.qyaai7-a5-.css",
+                    "rawBytes": 695460,
+                    "brotliBytes": 59942
+                },
+                {
+                    "kind": "external",
+                    "url": "/_next/static/chunks/0n9_1tq74i09x.css",
+                    "resolvedUrl": "https://tailwindcss.com/_next/static/chunks/0n9_1tq74i09x.css",
+                    "rawBytes": 2908,
+                    "brotliBytes": 639
+                }
+            ]
+        },
+        {
+            "name": "Next.js",
+            "url": "https://nextjs.org/docs",
+            "resolvedUrl": "https://nextjs.org/docs",
+            "css": {
+                "total": {
+                    "rawBytes": 425657,
+                    "brotliBytes": 54601
+                },
+                "inline": {
+                    "rawBytes": 0,
+                    "brotliBytes": 0
+                },
+                "external": {
+                    "rawBytes": 425657,
+                    "brotliBytes": 54601
+                }
+            },
+            "assets": [
+                {
+                    "kind": "external",
+                    "url": "/_next/static/immutable/chunks/2roz6wfgpywe3.css",
+                    "resolvedUrl": "https://nextjs.org/_next/static/immutable/chunks/2roz6wfgpywe3.css",
+                    "rawBytes": 18343,
+                    "brotliBytes": 3678
+                },
+                {
+                    "kind": "external",
+                    "url": "/_next/static/immutable/chunks/2f6_1x6p7ys2l.css",
+                    "resolvedUrl": "https://nextjs.org/_next/static/immutable/chunks/2f6_1x6p7ys2l.css",
+                    "rawBytes": 17296,
+                    "brotliBytes": 2967
+                },
+                {
+                    "kind": "external",
+                    "url": "/_next/static/immutable/chunks/3rtym_5swbqu7.css",
+                    "resolvedUrl": "https://nextjs.org/_next/static/immutable/chunks/3rtym_5swbqu7.css",
+                    "rawBytes": 389686,
+                    "brotliBytes": 47786
+                },
+                {
+                    "kind": "external",
+                    "url": "/_next/static/immutable/chunks/3hcatbgun-7ra.css",
+                    "resolvedUrl": "https://nextjs.org/_next/static/immutable/chunks/3hcatbgun-7ra.css",
+                    "rawBytes": 332,
+                    "brotliBytes": 170
+                }
+            ]
+        },
+        {
+            "name": "Bootstrap",
+            "url": "https://getbootstrap.com/docs/5.3/getting-started/introduction",
+            "resolvedUrl": "https://getbootstrap.com/docs/5.3/getting-started/introduction/",
+            "css": {
+                "total": {
+                    "rawBytes": 293950,
+                    "brotliBytes": 32607
+                },
+                "inline": {
+                    "rawBytes": 0,
+                    "brotliBytes": 0
+                },
+                "external": {
+                    "rawBytes": 293950,
+                    "brotliBytes": 32607
+                }
+            },
+            "assets": [
+                {
+                    "kind": "external",
+                    "url": "/docs/5.3/dist/css/bootstrap.min.css",
+                    "resolvedUrl": "https://getbootstrap.com/docs/5.3/dist/css/bootstrap.min.css",
+                    "rawBytes": 232111,
+                    "brotliBytes": 22970
+                },
+                {
+                    "kind": "external",
+                    "url": "/docs/5.3/assets/_slug_.CJzlHdSW.css",
+                    "resolvedUrl": "https://getbootstrap.com/docs/5.3/assets/_slug_.CJzlHdSW.css",
+                    "rawBytes": 61839,
+                    "brotliBytes": 9637
+                }
+            ]
+        },
+        {
+            "name": "Material UI",
+            "url": "https://mui.com/material-ui/getting-started",
+            "resolvedUrl": "https://mui.com/material-ui/getting-started/",
+            "css": {
+                "total": {
+                    "rawBytes": 277706,
+                    "brotliBytes": 26860
+                },
+                "inline": {
+                    "rawBytes": 197431,
+                    "brotliBytes": 19239
+                },
+                "external": {
+                    "rawBytes": 80275,
+                    "brotliBytes": 7621
+                }
+            },
+            "assets": [
+                {
+                    "kind": "external",
+                    "url": "/_next/static/css/34d138851e782eff.css",
+                    "resolvedUrl": "https://mui.com/_next/static/css/34d138851e782eff.css",
+                    "rawBytes": 80275,
+                    "brotliBytes": 7621
+                },
+                {
+                    "kind": "inline",
+                    "tag": "<style>",
+                    "rawBytes": 656,
+                    "brotliBytes": 210
+                },
+                {
+                    "kind": "inline",
+                    "tag": "<style id=\"material-icon-font\">",
+                    "rawBytes": 0,
+                    "brotliBytes": 1
+                },
+                {
+                    "kind": "inline",
+                    "tag": "<style id=\"font-awesome-css\">",
+                    "rawBytes": 0,
+                    "brotliBytes": 1
+                },
+                {
+                    "kind": "inline",
+                    "tag": "<style>",
+                    "rawBytes": 37,
+                    "brotliBytes": 41
+                },
+                {
+                    "kind": "inline",
+                    "tag": "<style>",
+                    "rawBytes": 1018,
+                    "brotliBytes": 401
+                },
+                {
+                    "kind": "inline",
+                    "tag": "<style>",
+                    "rawBytes": 21491,
+                    "brotliBytes": 2723
+                },
+                {
+                    "kind": "inline",
+                    "tag": "<style>",
+                    "rawBytes": 48,
+                    "brotliBytes": 52
+                },
+                {
+                    "kind": "inline",
+                    "tag": "<style>",
+                    "rawBytes": 7204,
+                    "brotliBytes": 1273
+                },
+                {
+                    "kind": "inline",
+                    "tag": "<style>",
+                    "rawBytes": 2679,
+                    "brotliBytes": 416
+                },
+                {
+                    "kind": "inline",
+                    "tag": "<style>",
+                    "rawBytes": 51,
+                    "brotliBytes": 53
+                },
+                {
+                    "kind": "inline",
+                    "tag": "<style>",
+                    "rawBytes": 33278,
+                    "brotliBytes": 3190
+                },
+                {
+                    "kind": "inline",
+                    "tag": "<style>",
+                    "rawBytes": 130969,
+                    "brotliBytes": 10876
+                },
+                {
+                    "kind": "inline",
+                    "tag": "<style id=\"app-search\">",
+                    "rawBytes": 0,
+                    "brotliBytes": 1
+                },
+                {
+                    "kind": "inline",
+                    "tag": "<style id=\"prismjs\">",
+                    "rawBytes": 0,
+                    "brotliBytes": 1
+                }
+            ]
+        },
+        {
+            "name": "Angular",
+            "url": "https://angular.dev/overview",
+            "resolvedUrl": "https://angular.dev/overview",
+            "css": {
+                "total": {
+                    "rawBytes": 229689,
+                    "brotliBytes": 33166
+                },
+                "inline": {
+                    "rawBytes": 67163,
+                    "brotliBytes": 11992
+                },
+                "external": {
+                    "rawBytes": 162526,
+                    "brotliBytes": 21174
+                }
+            },
+            "assets": [
+                {
+                    "kind": "external",
+                    "url": "https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600&family=Inter:wght@400;500;600&family=DM+Mono:ital@0;1&display=swap",
+                    "resolvedUrl": "https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600&family=Inter:wght@400;500;600&family=DM+Mono:ital@0;1&display=swap",
+                    "rawBytes": 1550,
+                    "brotliBytes": 322
+                },
+                {
+                    "kind": "external",
+                    "url": "https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0",
+                    "resolvedUrl": "https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0",
+                    "rawBytes": 602,
+                    "brotliBytes": 298
+                },
+                {
+                    "kind": "external",
+                    "url": "styles-BFCWRBNQ.css",
+                    "resolvedUrl": "https://angular.dev/styles-BFCWRBNQ.css",
+                    "rawBytes": 80187,
+                    "brotliBytes": 10277
+                },
+                {
+                    "kind": "external",
+                    "url": "styles-BFCWRBNQ.css",
+                    "resolvedUrl": "https://angular.dev/styles-BFCWRBNQ.css",
+                    "rawBytes": 80187,
+                    "brotliBytes": 10277
+                },
+                {
+                    "kind": "inline",
+                    "tag": "<style>",
+                    "rawBytes": 186,
+                    "brotliBytes": 71
+                },
+                {
+                    "kind": "inline",
+                    "tag": "<style>",
+                    "rawBytes": 34221,
+                    "brotliBytes": 5071
+                },
+                {
+                    "kind": "inline",
+                    "tag": "<style>",
+                    "rawBytes": 2250,
+                    "brotliBytes": 566
+                },
+                {
+                    "kind": "inline",
+                    "tag": "<style>",
+                    "rawBytes": 8464,
+                    "brotliBytes": 1347
+                },
+                {
+                    "kind": "inline",
+                    "tag": "<style>",
+                    "rawBytes": 3938,
+                    "brotliBytes": 686
+                },
+                {
+                    "kind": "inline",
+                    "tag": "<style>",
+                    "rawBytes": 3202,
+                    "brotliBytes": 499
+                },
+                {
+                    "kind": "inline",
+                    "tag": "<style>",
+                    "rawBytes": 137,
+                    "brotliBytes": 126
+                },
+                {
+                    "kind": "inline",
+                    "tag": "<style>",
+                    "rawBytes": 1560,
+                    "brotliBytes": 357
+                },
+                {
+                    "kind": "inline",
+                    "tag": "<style>",
+                    "rawBytes": 1842,
+                    "brotliBytes": 440
+                },
+                {
+                    "kind": "inline",
+                    "tag": "<style>",
+                    "rawBytes": 4952,
+                    "brotliBytes": 1070
+                },
+                {
+                    "kind": "inline",
+                    "tag": "<style>",
+                    "rawBytes": 324,
+                    "brotliBytes": 151
+                },
+                {
+                    "kind": "inline",
+                    "tag": "<style>",
+                    "rawBytes": 453,
+                    "brotliBytes": 182
+                },
+                {
+                    "kind": "inline",
+                    "tag": "<style>",
+                    "rawBytes": 3115,
+                    "brotliBytes": 774
+                },
+                {
+                    "kind": "inline",
+                    "tag": "<style>",
+                    "rawBytes": 2519,
+                    "brotliBytes": 652
+                }
+            ]
+        },
+        {
+            "name": "Vue.js",
+            "url": "https://vuejs.org/guide/introduction",
+            "resolvedUrl": "https://vuejs.org/guide/introduction",
+            "css": {
+                "total": {
+                    "rawBytes": 186308,
+                    "brotliBytes": 33515
+                },
+                "inline": {
+                    "rawBytes": 0,
+                    "brotliBytes": 0
+                },
+                "external": {
+                    "rawBytes": 186308,
+                    "brotliBytes": 33515
+                }
+            },
+            "assets": [
+                {
+                    "kind": "external",
+                    "url": "/assets/style.C-fAR_7P.css",
+                    "resolvedUrl": "https://vuejs.org/assets/style.C-fAR_7P.css",
+                    "rawBytes": 186308,
+                    "brotliBytes": 33514
+                },
+                {
+                    "kind": "external",
+                    "url": "/vp-icons.css",
+                    "resolvedUrl": "https://vuejs.org/vp-icons.css",
+                    "rawBytes": 0,
+                    "brotliBytes": 1
+                }
+            ]
+        },
+        {
+            "name": "React",
+            "url": "https://react.dev/learn",
+            "resolvedUrl": "https://react.dev/learn",
+            "css": {
+                "total": {
+                    "rawBytes": 108587,
+                    "brotliBytes": 16215
+                },
+                "inline": {
+                    "rawBytes": 0,
+                    "brotliBytes": 0
+                },
+                "external": {
+                    "rawBytes": 108587,
+                    "brotliBytes": 16215
+                }
+            },
+            "assets": [
+                {
+                    "kind": "external",
+                    "url": "/_next/static/css/90fb947bd70db324.css",
+                    "resolvedUrl": "https://react.dev/_next/static/css/90fb947bd70db324.css",
+                    "rawBytes": 108587,
+                    "brotliBytes": 16215
+                }
+            ]
+        },
+        {
+            "name": "Master CSS",
+            "url": "https://rc.css.master.co/en/guide",
+            "resolvedUrl": "https://rc.css.master.co/en/guide",
+            "css": {
+                "total": {
+                    "rawBytes": 25240,
+                    "brotliBytes": 6026
+                },
+                "inline": {
+                    "rawBytes": 22987,
+                    "brotliBytes": 5156
+                },
+                "external": {
+                    "rawBytes": 2253,
+                    "brotliBytes": 870
+                }
+            },
+            "assets": [
+                {
+                    "kind": "external",
+                    "url": "/_next/static/chunks/32tk_nbm3zoxu.css",
+                    "resolvedUrl": "https://rc.css.master.co/_next/static/chunks/32tk_nbm3zoxu.css",
+                    "rawBytes": 2253,
+                    "brotliBytes": 870
+                },
+                {
+                    "kind": "inline",
+                    "tag": "<style>",
+                    "rawBytes": 204,
+                    "brotliBytes": 118
+                },
+                {
+                    "kind": "inline",
+                    "tag": "<style id=\"master-css\">",
+                    "rawBytes": 22783,
+                    "brotliBytes": 5038
+                }
+            ]
+        }
+    ]
+}
