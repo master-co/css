@@ -1,7 +1,8 @@
 {
     "type": "module",
     "scripts": {
-        "bench:docs-page-css-size": "vitest bench docs-page-css-size"
+        "bench:docs-page-css-size": "vitest bench docs-page-css-size",
+        "bench:report-smoke": "vitest bench report-smoke"
     },
     "dependencies": {
         "cheerio": "0.22.0"
