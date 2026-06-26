@@ -21,16 +21,24 @@ function formatRatio(bytes: number, baselineBytes: number) {
     return (bytes / baselineBytes).toFixed(1)
 }
 
+function isMasterCSSStyle(asset: typeof masterCSSPage.assets[number]) {
+    return asset.kind === 'inline' && (asset.tag === '<style id="master-css">' || asset.tag === '<style id="master">')
+}
+
+function sumAssetBytes(assets: typeof masterCSSPage.assets, kind: 'rawBytes' | 'brotliBytes') {
+    return assets.reduce((total, asset) => total + asset[kind], 0)
+}
+
 function formatMasterCSSBreakdown(kind: 'rawBytes' | 'brotliBytes') {
-    const masterStyle = masterCSSPage.assets.find((asset) => asset.kind === 'inline' && (asset.tag === '<style id="master-css">' || asset.tag === '<style id="master">'))
-    const fontStyle = masterCSSPage.assets.find((asset) => asset.kind === 'inline' && asset !== masterStyle)
-    const normalStyle = masterCSSPage.assets.find((asset) => asset.kind === 'external')
+    const masterCSSBytes = sumAssetBytes(masterCSSPage.assets.filter(isMasterCSSStyle), kind)
+    const otherInlineBytes = sumAssetBytes(masterCSSPage.assets.filter((asset) => asset.kind === 'inline' && !isMasterCSSStyle(asset)), kind)
+    const externalCSSBytes = sumAssetBytes(masterCSSPage.assets.filter((asset) => asset.kind === 'external'), kind)
 
     return [
-        masterStyle && formatKilobytes(masterStyle[kind]),
-        fontStyle && `Font ${formatKilobytes(fontStyle[kind])}`,
-        normalStyle && `Normal ${formatKilobytes(normalStyle[kind])}`
-    ].filter(Boolean).join(' kB + ') + ' kB'
+        masterCSSBytes > 0 && `Master CSS ${formatKilobytes(masterCSSBytes)} kB`,
+        otherInlineBytes > 0 && `Other inline ${formatKilobytes(otherInlineBytes)} kB`,
+        externalCSSBytes > 0 && `External CSS ${formatKilobytes(externalCSSBytes)} kB`
+    ].filter(Boolean).join(' + ')
 }
 
 export default () => (
