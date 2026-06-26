@@ -1,0 +1,31 @@
+## Overview [sr-only]
+Benchmarks make Master CSS output and delivery costs inspectable. They are useful for understanding tradeoffs, but they are not universal guarantees for every application.
+
+This page collects reproducible measurements for page CSS size, generated output, build behavior, and runtime delivery. Tailwind CSS comparisons will use the same approach: fixed fixtures, pinned versions, visible commands, and reported environment limits.
+
+---
+
+## Page CSS size
+The current page CSS size benchmark compares the CSS transferred by several official documentation sites. It counts both inline `style` tags and external stylesheets discovered in the initial HTML response.
+
+<PageCSSSizeBenchmark />
+
+Master CSS keeps this documentation site's page CSS around **6 kB with brotli compression** because progressive rendering emits only the rules required by the page. The `Master CSS` segment is the generated `style#master-css`; `Other inline` covers non-Master inline style tags; `External CSS` covers linked stylesheets.
+
+The page CSS size snapshot is generated from `benchmarks/docs-page-css-size`. It fetches each documentation page, parses the initial HTML, follows `link[rel*="stylesheet"]`, and records raw and brotli-compressed byte counts.
+
+Use the raw numbers to inspect source size and the brotli numbers to approximate compressed transfer size. Browser cache state, CDN behavior, JavaScript-loaded styles, fonts, images, and application runtime work are outside this benchmark.
+
+The snapshot is advisory. Compare changes on the same machine, with the same input pages, and with the benchmark command and timestamp attached.
+
+---
+
+## Planned Tailwind CSS comparisons
+Tailwind CSS comparisons should be fixture-based rather than copied from live websites. The first planned suites are:
+
+- Generated CSS output: compare raw, gzip, brotli, rule count, and output hash for the same markup fixture.
+- Build time: compare cold and warm build runs with pinned package versions.
+- Runtime and hydration: compare browser-visible delivery behavior only where both tools expose comparable work.
+- Fixture methodology: publish source fixtures, commands, versions, and machine/browser limits beside the numbers.
+
+These sections will be filled as the corresponding benchmark suites land.

@@ -209,11 +209,7 @@ Master CSS provides three main [rendering modes](/guide/rendering-modes):
 
 Choose the mode that fits your framework and deployment model. A static marketing page, an SSR application, and a highly dynamic dashboard can all use the same class syntax while delivering CSS differently.
 
-This benchmark compares the CSS transferred by several official documentation sites. It is a useful reference for page-level CSS weight, not a universal guarantee for every application.
-
-<PageCSSSizeBenchmark />
-
-According to HTTP Archive [CSS Bytes](https://httparchive.org/reports/page-weight#bytesCss), the sum of transfer size kilobytes of all external stylesheets requested by a page is **~82 kB**, excluding internal and inline styles. On this documentation site, Master CSS keeps page CSS around **~6 kB per page** with brotli compression because it emits only the rules required by that page.
+The [benchmarks](/guide/benchmarks) compare page-level CSS weight and delivery tradeoffs with reproducible inputs. On this documentation site, Master CSS keeps page CSS around **~6 kB per page** with brotli compression because it emits only the rules required by that page.
 
 [Progressive rendering](/guide/rendering-modes#progressive-rendering) works by pre-rendering critical CSS from rendered class names, then deferring the runtime engine for future dynamic classes. The [Next.js guide](/guide/installation/nextjs) uses this model through the React runtime provider and the Next.js adapter.
 
