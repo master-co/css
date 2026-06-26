@@ -17,7 +17,6 @@
         "release:vscode": "node packages/vscode/scripts/release.mjs",
         "check": "pnpm run commit-check && turbo run test lint type-check --filter=\"./packages/*\"",
         "test": "turbo run test --filter=\"./packages/*\"",
-        "test:ci": "turbo run test --filter=\"./packages/*\" --concurrency=1",
         "test:docs-consistency": "node --test .ai/scripts/validate-doc-consistency.test.mjs",
         "e2e": "turbo run e2e --filter=\"./packages/*\" --concurrency=1",
         "lint": "turbo run lint --filter=\"./packages/*\"",

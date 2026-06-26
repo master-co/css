@@ -1,8 +1,8 @@
 import type { ViteUserConfig } from 'vitest/config'
-import { defaultVitestTestTimeout, withCIConcurrency } from './vitest-ci-config'
+import { defaultVitestTestTimeout, withCITimeouts } from './vitest-ci-config'
 
 const config: ViteUserConfig = {
-    test: withCIConcurrency({
+    test: withCITimeouts({
         include: [
             'tests/**/*.{test,spec}.?(c|m)[jt]s?(x)',
             'tests/**/test.?(c|m)[jt]s?(x)'

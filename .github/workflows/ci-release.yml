@@ -70,7 +70,7 @@ jobs:
               with:
                   submodules-token: ${{ secrets.GH_TOKEN }}
             - if: ${{ env.TRUSTED_CI == 'true' }}
-              run: pnpm run test:ci
+              run: pnpm run test
 
     build-examples:
         runs-on: ${{ matrix.os }}

@@ -10,13 +10,11 @@ function maxCITimeout(timeout: unknown) {
         : ciVitestTestTimeout
 }
 
-export function withCIConcurrency(test: NonNullable<ViteUserConfig['test']> = {}): NonNullable<ViteUserConfig['test']> {
+export function withCITimeouts(test: NonNullable<ViteUserConfig['test']> = {}): NonNullable<ViteUserConfig['test']> {
     return {
         ...test,
         ...(isCI
             ? {
-                fileParallelism: false,
-                maxConcurrency: 1,
                 testTimeout: maxCITimeout(test.testTimeout),
                 hookTimeout: maxCITimeout(test.hookTimeout),
                 teardownTimeout: maxCITimeout(test.teardownTimeout)

@@ -74,7 +74,7 @@ shasum -a 256 packages/engine/dist/core.mjs packages/runtime/dist/global.min.js 
 
 ## CI Equivalents
 
-- Test workflow: install dependencies, `pnpm run build`, then `pnpm run test:ci`
+- Test workflow: install dependencies, `pnpm run build`, then `pnpm run test`
 - Lint workflow: install dependencies, `pnpm run build`, then `pnpm run lint`
 - Type-check workflow: install dependencies, `pnpm run build`, then `pnpm run type-check`
 - E2E workflow: install dependencies, Playwright install, `pnpm run build`, then `pnpm e2e`
