@@ -97,8 +97,6 @@ jobs:
             - if: ${{ env.TRUSTED_CI == 'true' }}
               run: pnpm build
             - if: ${{ env.TRUSTED_CI == 'true' }}
-              run: pnpm install --frozen-lockfile
-            - if: ${{ env.TRUSTED_CI == 'true' }}
               run: pnpm build:examples
 
     e2e:
