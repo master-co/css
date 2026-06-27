@@ -3,6 +3,7 @@
     "scripts": {
         "bench:build-diagnostics": "vitest bench build-diagnostics",
         "bench:build-performance": "vitest bench build-performance",
+        "bench:browser-css-cost": "vitest bench browser-css-cost",
         "bench:compiler-diagnostics": "vitest bench compiler-diagnostics",
         "bench:css-output-size": "vitest bench css-output-size",
         "bench:css-structure": "vitest bench css-structure",
@@ -23,6 +24,7 @@
         "@master/css-scanner": "workspace:^",
         "@master/css-stylesheet": "workspace:^",
         "@master/css.vite": "workspace:^",
+        "@playwright/test": "1.61.0",
         "@tailwindcss/cli": "^4.3.1",
         "@tailwindcss/vite": "^4.3.1",
         "@types/css-tree": "^2.3.11",

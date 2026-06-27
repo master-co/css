@@ -115,7 +115,7 @@ export function getStaticBenchmarkFixtures(fixtures: BenchmarkFixture[]) {
 }
 
 export async function runStaticBuild(options: {
-    suite: 'css-output-size' | 'css-structure' | 'build-performance' | 'build-diagnostics'
+    suite: 'css-output-size' | 'css-structure' | 'build-performance' | 'build-diagnostics' | 'browser-css-cost'
     fixtureId: BenchmarkFixtureId
     tool: StaticBuildTool
     round: number
