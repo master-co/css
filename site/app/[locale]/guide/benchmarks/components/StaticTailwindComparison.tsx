@@ -17,6 +17,31 @@ type VariantResult = {
         repeatMedianMs: number
         sampleCount: number
     }
+    structure: {
+        styleRules: number
+        selectors: number
+        declarations: number
+        customProperties: number
+        importantDeclarations: number
+        atRules: number
+        layerBlocks: number
+        mediaBlocks: number
+        supportsBlocks: number
+        containerBlocks: number
+        keyframes: number
+        unlayeredStyleRules: number
+        layerStyleRules: {
+            theme: number
+            base: number
+            defaults: number
+            components: number
+            utilities: number
+            other: number
+        }
+        selectorCombinators: number
+        maxSelectorSpecificityScore: number
+        maxSelectorComplexityScore: number
+    }
 }
 
 type FixtureResult = {
@@ -51,6 +76,10 @@ function formatKilobytes(bytes: number) {
 
 function formatMilliseconds(value: number) {
     return `${value.toFixed(value >= 100 ? 0 : 1)} ms`
+}
+
+function formatCount(value: number) {
+    return value.toLocaleString('en-US')
 }
 
 function formatPercent(value: number) {
@@ -96,6 +125,19 @@ function createBuildBarItems(result: FixtureResult): BenchmarkBarItem[] {
     })
 }
 
+function createDeclarationBarItems(result: FixtureResult): BenchmarkBarItem[] {
+    return variants.map((variant) => {
+        const value = result.variants[variant.id].structure.declarations
+        return {
+            id: `${result.fixtureId}-${variant.id}-declarations`,
+            label: variantShortLabels[variant.id],
+            value,
+            valueLabel: formatCount(value),
+            color: variantColors[variant.id]
+        }
+    })
+}
+
 function createSummaryMetrics(): BenchmarkMetric[] {
     const masterCliWins = results.filter((result) => getBestVariant(result, (variant) => variant.css.brotliBytes).id.startsWith('master')).length
     const tailwindCliBuildWins = results.filter((result) => getBestVariant(result, (variant) => variant.build.coldMedianMs).id === 'tailwind-cli').length
@@ -123,6 +165,12 @@ function createSummaryMetrics(): BenchmarkMetric[] {
             value: sampleCount,
             detail: 'measured command rounds per variant',
             tone: 'neutral'
+        },
+        {
+            label: 'CSS structure',
+            value: 'AST',
+            detail: 'rules, selectors, declarations, layers, at-rules, and selector scores are parsed from generated CSS',
+            tone: 'neutral'
         }
     ]
 }
@@ -132,10 +180,10 @@ export default function StaticTailwindComparison() {
         <div className="grid gap:xl">
             <BenchmarkFigure
                 title="Static comparison summary"
-                description="Curated snapshot for generated CSS artifacts and full production command timing."
+                description="Curated snapshot for generated CSS artifacts, CSS structure, and full production command timing."
                 caption={
                     <>
-                        Snapshot generated from <code>css-output-size</code> and <code>build-performance</code> on {snapshot.environment.cpu.model}, Node {snapshot.environment.node}. View the committed <Link href="https://github.com/master-co/css/tree/rc/benchmarks/tailwind-static-comparison/snapshot.json">snapshot data</Link>.
+                        Snapshot generated from <code>css-output-size</code>, <code>build-performance</code>, and <code>css-structure</code> on {snapshot.environment.cpu.model}, Node {snapshot.environment.node}. View the committed <Link href="https://github.com/master-co/css/tree/rc/benchmarks/tailwind-static-comparison/snapshot.json">snapshot data</Link>.
                     </>
                 }>
                 <BenchmarkMetricTable metrics={createSummaryMetrics()} />
@@ -172,6 +220,25 @@ export default function StaticTailwindComparison() {
                             <section key={result.fixtureId} className="grid gap:sm">
                                 <h4 className="m:0 font-weight:460 font:md text:strong">{fixtureName}</h4>
                                 <BenchmarkBars items={createBuildBarItems(result)} unit="ms" />
+                            </section>
+                        )
+                    })}
+                </div>
+            </BenchmarkFigure>
+
+            <BenchmarkFigure
+                title="CSS structure"
+                description="Lower declaration counts usually explain smaller generated CSS. These AST-derived metrics are structure signals, not browser style-calculation timings.">
+                <div className="grid grid-cols:1 gap:lg grid-cols:2@md">
+                    {results.map((result) => {
+                        const fixtureName = getFixtureName(result.fixtureId)
+                        return (
+                            <section key={result.fixtureId} className="grid gap:sm">
+                                <h4 className="m:0 font-weight:460 font:md text:strong">{fixtureName}</h4>
+                                <BenchmarkBars items={createDeclarationBarItems(result)} unit="count" />
+                                <p className="m:0 font:xs text:muted">
+                                    Bars show generated declaration count from a CSS AST parse.
+                                </p>
                             </section>
                         )
                     })}
@@ -236,6 +303,52 @@ export default function StaticTailwindComparison() {
                                         <td>{formatMilliseconds(value.coldMedianMs)}</td>
                                         <td>{formatMilliseconds(value.repeatMedianMs)}</td>
                                         <td>{value.sampleCount}</td>
+                                    </tr>
+                                )
+                            }))}
+                        </tbody>
+                    </table>
+                </div>
+            </BenchmarkFigure>
+
+            <BenchmarkFigure
+                title="CSS structure table"
+                description="Rule, selector, declaration, at-rule, layer, and selector-shape counts parsed from generated CSS artifacts.">
+                <div className="doc-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Fixture</th>
+                                <th>Variant</th>
+                                <th>Rules</th>
+                                <th>Selectors</th>
+                                <th>Declarations</th>
+                                <th>Custom properties</th>
+                                <th>At-rules</th>
+                                <th>Layer blocks</th>
+                                <th>Unlayered rules</th>
+                                <th>Combinators</th>
+                                <th>Max specificity</th>
+                                <th>Max complexity</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {results.flatMap((result) => variants.map((variant) => {
+                                const value = result.variants[variant.id].structure
+                                return (
+                                    <tr key={`${result.fixtureId}-${variant.id}-structure-row`}>
+                                        <th>{getFixtureName(result.fixtureId)}</th>
+                                        <td>{variant.label}</td>
+                                        <td>{formatCount(value.styleRules)}</td>
+                                        <td>{formatCount(value.selectors)}</td>
+                                        <td>{formatCount(value.declarations)}</td>
+                                        <td>{formatCount(value.customProperties)}</td>
+                                        <td>{formatCount(value.atRules)}</td>
+                                        <td>{formatCount(value.layerBlocks)}</td>
+                                        <td>{formatCount(value.unlayeredStyleRules)}</td>
+                                        <td>{formatCount(value.selectorCombinators)}</td>
+                                        <td>{formatCount(value.maxSelectorSpecificityScore)}</td>
+                                        <td>{formatCount(value.maxSelectorComplexityScore)}</td>
                                     </tr>
                                 )
                             }))}

@@ -9,7 +9,8 @@
         "bench:docs-page-css-size": "vitest bench docs-page-css-size",
         "bench:extraction-diagnostics": "vitest bench extraction-diagnostics",
         "bench:report-smoke": "vitest bench report-smoke",
-        "bench:startup-diagnostics": "vitest bench startup-diagnostics"
+        "bench:startup-diagnostics": "vitest bench startup-diagnostics",
+        "snapshot:tailwind-static-comparison": "node tailwind-static-comparison/update-snapshot.mjs"
     },
     "dependencies": {
         "cheerio": "0.22.0"

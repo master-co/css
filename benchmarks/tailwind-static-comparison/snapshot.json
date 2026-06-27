@@ -1,17 +1,22 @@
 {
     "schemaVersion": 1,
     "suite": "tailwind-static-comparison",
-    "generatedAt": "2026-06-27T16:24:37.100Z",
+    "generatedAt": "2026-06-27T17:09:53.801Z",
     "sourceReports": [
         {
             "suite": "css-output-size",
-            "generatedAt": "2026-06-27T16:23:52.267Z",
+            "generatedAt": "2026-06-27T17:07:26.510Z",
             "command": "pnpm --filter ./benchmarks bench:css-output-size"
         },
         {
             "suite": "build-performance",
-            "generatedAt": "2026-06-27T16:18:32.801Z",
+            "generatedAt": "2026-06-27T17:08:00.811Z",
             "command": "pnpm --filter ./benchmarks bench:build-performance"
+        },
+        {
+            "suite": "css-structure",
+            "generatedAt": "2026-06-27T17:08:16.009Z",
+            "command": "pnpm --filter ./benchmarks bench:css-structure"
         }
     ],
     "environment": {
@@ -40,15 +45,19 @@
             "version": "workspace:^"
         },
         {
-            "name": "tailwindcss",
-            "version": "^4.3.1"
-        },
-        {
             "name": "@tailwindcss/cli",
             "version": "^4.3.1"
         },
         {
             "name": "@tailwindcss/vite",
+            "version": "^4.3.1"
+        },
+        {
+            "name": "css-tree",
+            "version": "^3.2.1"
+        },
+        {
+            "name": "tailwindcss",
             "version": "^4.3.1"
         },
         {
@@ -108,32 +117,164 @@
         {
             "id": "css-raw-bytes",
             "label": "CSS raw bytes",
-            "unit": "B"
+            "unit": "B",
+            "description": "Raw bytes of generated CSS files concatenated in output-file order."
         },
         {
             "id": "css-gzip-bytes",
             "label": "CSS gzip bytes",
-            "unit": "B"
+            "unit": "B",
+            "description": "Gzip bytes for the generated CSS payload."
         },
         {
             "id": "css-brotli-bytes",
             "label": "CSS brotli bytes",
-            "unit": "B"
+            "unit": "B",
+            "description": "Brotli bytes for the generated CSS payload."
         },
         {
             "id": "css-file-count",
-            "label": "Generated CSS file count",
-            "unit": "count"
+            "label": "Generated CSS files",
+            "unit": "count",
+            "description": "Number of CSS files emitted by the production output."
         },
         {
             "id": "cold-build-ms",
-            "label": "Cold production command median",
-            "unit": "ms"
+            "label": "Cold production build",
+            "unit": "ms",
+            "description": "Elapsed wall time for the first production build in a clean temp workspace."
         },
         {
             "id": "repeat-build-ms",
-            "label": "Repeat production command median",
-            "unit": "ms"
+            "label": "Repeat production build",
+            "unit": "ms",
+            "description": "Elapsed wall time for a second production build in the same temp workspace."
+        },
+        {
+            "id": "style-rule-count",
+            "label": "Style rules",
+            "unit": "count",
+            "description": "Qualified CSS rules, excluding keyframe step rules."
+        },
+        {
+            "id": "selector-count",
+            "label": "Selectors",
+            "unit": "count",
+            "description": "Top-level selectors in qualified style rules."
+        },
+        {
+            "id": "declaration-count",
+            "label": "Declarations",
+            "unit": "count",
+            "description": "CSS declarations and at-rule descriptors in generated CSS."
+        },
+        {
+            "id": "custom-property-count",
+            "label": "Custom properties",
+            "unit": "count",
+            "description": "Declarations whose property name starts with --."
+        },
+        {
+            "id": "important-declaration-count",
+            "label": "Important declarations",
+            "unit": "count",
+            "description": "Declarations emitted with !important."
+        },
+        {
+            "id": "at-rule-count",
+            "label": "At-rules",
+            "unit": "count",
+            "description": "All CSS at-rules in the generated output."
+        },
+        {
+            "id": "layer-block-count",
+            "label": "Layer blocks",
+            "unit": "count",
+            "description": "@layer rules that contain a block."
+        },
+        {
+            "id": "media-block-count",
+            "label": "Media blocks",
+            "unit": "count",
+            "description": "@media rules that contain a block."
+        },
+        {
+            "id": "supports-block-count",
+            "label": "Supports blocks",
+            "unit": "count",
+            "description": "@supports rules that contain a block."
+        },
+        {
+            "id": "container-block-count",
+            "label": "Container blocks",
+            "unit": "count",
+            "description": "@container rules that contain a block."
+        },
+        {
+            "id": "keyframes-count",
+            "label": "Keyframes",
+            "unit": "count",
+            "description": "@keyframes and vendor-prefixed keyframes rules."
+        },
+        {
+            "id": "unlayered-style-rule-count",
+            "label": "Unlayered style rules",
+            "unit": "count",
+            "description": "Qualified style rules not nested under an @layer block."
+        },
+        {
+            "id": "layer-theme-style-rule-count",
+            "label": "theme layer style rules",
+            "unit": "count",
+            "description": "Qualified style rules nested under the theme layer."
+        },
+        {
+            "id": "layer-base-style-rule-count",
+            "label": "base layer style rules",
+            "unit": "count",
+            "description": "Qualified style rules nested under the base layer."
+        },
+        {
+            "id": "layer-defaults-style-rule-count",
+            "label": "defaults layer style rules",
+            "unit": "count",
+            "description": "Qualified style rules nested under the defaults layer."
+        },
+        {
+            "id": "layer-components-style-rule-count",
+            "label": "components layer style rules",
+            "unit": "count",
+            "description": "Qualified style rules nested under the components layer."
+        },
+        {
+            "id": "layer-utilities-style-rule-count",
+            "label": "utilities layer style rules",
+            "unit": "count",
+            "description": "Qualified style rules nested under the utilities layer."
+        },
+        {
+            "id": "layer-other-style-rule-count",
+            "label": "Other layer style rules",
+            "unit": "count",
+            "description": "Qualified style rules nested under non-standard or anonymous @layer blocks."
+        },
+        {
+            "id": "selector-combinator-count",
+            "label": "Selector combinators",
+            "unit": "count",
+            "description": "Combinator nodes across top-level selectors."
+        },
+        {
+            "id": "max-selector-specificity-score",
+            "label": "Max selector specificity score",
+            "unit": "score",
+            "description": "Maximum selector specificity represented as ID * 100 + class/attribute/pseudo-class * 10 + type/pseudo-element."
+        },
+        {
+            "id": "max-selector-complexity-score",
+            "label": "Max selector complexity score",
+            "unit": "score",
+            "description": "Maximum count of selector components and combinators in a top-level selector."
         }
     ],
     "results": [
@@ -149,9 +290,34 @@
                         "sha256": "b655412a8e2edcdc15f524c9b2c310d3f81f581eb4fb32b5e78dbe6f83cba6ef"
                     },
                     "build": {
-                        "coldMedianMs": 190,
-                        "repeatMedianMs": 188.9,
+                        "coldMedianMs": 179.6,
+                        "repeatMedianMs": 175.4,
                         "sampleCount": 3
+                    },
+                    "structure": {
+                        "styleRules": 84,
+                        "selectors": 135,
+                        "declarations": 124,
+                        "customProperties": 11,
+                        "importantDeclarations": 0,
+                        "atRules": 5,
+                        "layerBlocks": 3,
+                        "mediaBlocks": 0,
+                        "supportsBlocks": 0,
+                        "containerBlocks": 0,
+                        "keyframes": 0,
+                        "unlayeredStyleRules": 1,
+                        "layerStyleRules": {
+                            "theme": 1,
+                            "base": 36,
+                            "defaults": 0,
+                            "components": 0,
+                            "utilities": 46,
+                            "other": 0
+                        },
+                        "selectorCombinators": 0,
+                        "maxSelectorSpecificityScore": 11,
+                        "maxSelectorComplexityScore": 2
                     }
                 },
                 "master-static-vite": {
@@ -163,9 +329,34 @@
                         "sha256": "7e8e20ce7b0979d7bb2c2d7b02ee717432597f24f3ca731a902fd67769180352"
                     },
                     "build": {
-                        "coldMedianMs": 274.1,
-                        "repeatMedianMs": 273.9,
+                        "coldMedianMs": 262.9,
+                        "repeatMedianMs": 269.7,
                         "sampleCount": 3
+                    },
+                    "structure": {
+                        "styleRules": 84,
+                        "selectors": 135,
+                        "declarations": 124,
+                        "customProperties": 11,
+                        "importantDeclarations": 0,
+                        "atRules": 5,
+                        "layerBlocks": 3,
+                        "mediaBlocks": 0,
+                        "supportsBlocks": 0,
+                        "containerBlocks": 0,
+                        "keyframes": 0,
+                        "unlayeredStyleRules": 1,
+                        "layerStyleRules": {
+                            "theme": 1,
+                            "base": 36,
+                            "defaults": 0,
+                            "components": 0,
+                            "utilities": 46,
+                            "other": 0
+                        },
+                        "selectorCombinators": 0,
+                        "maxSelectorSpecificityScore": 11,
+                        "maxSelectorComplexityScore": 2
                     }
                 },
                 "tailwind-cli": {
@@ -177,9 +368,34 @@
                         "sha256": "abccca1aa5e23c265f3e5228826094a7c4cb557e24f52bfc6ea2f18792b5bd10"
                     },
                     "build": {
-                        "coldMedianMs": 101.7,
-                        "repeatMedianMs": 98.1,
+                        "coldMedianMs": 96.6,
+                        "repeatMedianMs": 94.1,
                         "sampleCount": 3
+                    },
+                    "structure": {
+                        "styleRules": 86,
+                        "selectors": 131,
+                        "declarations": 174,
+                        "customProperties": 41,
+                        "importantDeclarations": 1,
+                        "atRules": 13,
+                        "layerBlocks": 4,
+                        "mediaBlocks": 0,
+                        "supportsBlocks": 3,
+                        "containerBlocks": 0,
+                        "keyframes": 0,
+                        "unlayeredStyleRules": 1,
+                        "layerStyleRules": {
+                            "theme": 1,
+                            "base": 36,
+                            "defaults": 0,
+                            "components": 0,
+                            "utilities": 47,
+                            "other": 1
+                        },
+                        "selectorCombinators": 3,
+                        "maxSelectorSpecificityScore": 10,
+                        "maxSelectorComplexityScore": 9
                     }
                 },
                 "tailwind-vite": {
@@ -191,9 +407,34 @@
                         "sha256": "22984cae16c266792aa88165bd33190506aae10d6eb725c01c092a9e4406ec90"
                     },
                     "build": {
-                        "coldMedianMs": 172.6,
-                        "repeatMedianMs": 166.6,
+                        "coldMedianMs": 162.7,
+                        "repeatMedianMs": 151.4,
                         "sampleCount": 3
+                    },
+                    "structure": {
+                        "styleRules": 99,
+                        "selectors": 132,
+                        "declarations": 199,
+                        "customProperties": 41,
+                        "importantDeclarations": 1,
+                        "atRules": 12,
+                        "layerBlocks": 4,
+                        "mediaBlocks": 0,
+                        "supportsBlocks": 3,
+                        "containerBlocks": 0,
+                        "keyframes": 0,
+                        "unlayeredStyleRules": 1,
+                        "layerStyleRules": {
+                            "theme": 1,
+                            "base": 49,
+                            "defaults": 0,
+                            "components": 0,
+                            "utilities": 47,
+                            "other": 1
+                        },
+                        "selectorCombinators": 3,
+                        "maxSelectorSpecificityScore": 10,
+                        "maxSelectorComplexityScore": 9
                     }
                 }
             }
@@ -210,9 +451,34 @@
                         "sha256": "ee05108a4996ff996d89b2b7485606f15b82cd6867dde532129c62c012fa88c0"
                     },
                     "build": {
-                        "coldMedianMs": 193.3,
-                        "repeatMedianMs": 193.5,
+                        "coldMedianMs": 187.5,
+                        "repeatMedianMs": 177.9,
                         "sampleCount": 3
+                    },
+                    "structure": {
+                        "styleRules": 98,
+                        "selectors": 149,
+                        "declarations": 142,
+                        "customProperties": 14,
+                        "importantDeclarations": 0,
+                        "atRules": 6,
+                        "layerBlocks": 3,
+                        "mediaBlocks": 1,
+                        "supportsBlocks": 0,
+                        "containerBlocks": 0,
+                        "keyframes": 0,
+                        "unlayeredStyleRules": 1,
+                        "layerStyleRules": {
+                            "theme": 1,
+                            "base": 36,
+                            "defaults": 0,
+                            "components": 0,
+                            "utilities": 60,
+                            "other": 0
+                        },
+                        "selectorCombinators": 0,
+                        "maxSelectorSpecificityScore": 11,
+                        "maxSelectorComplexityScore": 2
                     }
                 },
                 "master-static-vite": {
@@ -224,9 +490,34 @@
                         "sha256": "33529cd7c2d0e496e5afcc3208e074e4ef6b2b385e139b16fac8622575ae4fe3"
                     },
                     "build": {
-                        "coldMedianMs": 286,
-                        "repeatMedianMs": 291.1,
+                        "coldMedianMs": 268.8,
+                        "repeatMedianMs": 269.9,
                         "sampleCount": 3
+                    },
+                    "structure": {
+                        "styleRules": 98,
+                        "selectors": 149,
+                        "declarations": 142,
+                        "customProperties": 14,
+                        "importantDeclarations": 0,
+                        "atRules": 6,
+                        "layerBlocks": 3,
+                        "mediaBlocks": 1,
+                        "supportsBlocks": 0,
+                        "containerBlocks": 0,
+                        "keyframes": 0,
+                        "unlayeredStyleRules": 1,
+                        "layerStyleRules": {
+                            "theme": 1,
+                            "base": 36,
+                            "defaults": 0,
+                            "components": 0,
+                            "utilities": 60,
+                            "other": 0
+                        },
+                        "selectorCombinators": 0,
+                        "maxSelectorSpecificityScore": 11,
+                        "maxSelectorComplexityScore": 2
                     }
                 },
                 "tailwind-cli": {
@@ -238,9 +529,34 @@
                         "sha256": "c47779d3d1c47a1f97bd052dcbccf07873fe3d2e8e48cf48e17e31f9af57d851"
                     },
                     "build": {
-                        "coldMedianMs": 103.4,
-                        "repeatMedianMs": 98.7,
+                        "coldMedianMs": 97.7,
+                        "repeatMedianMs": 87.9,
                         "sampleCount": 3
+                    },
+                    "structure": {
+                        "styleRules": 102,
+                        "selectors": 147,
+                        "declarations": 226,
+                        "customProperties": 56,
+                        "importantDeclarations": 1,
+                        "atRules": 25,
+                        "layerBlocks": 4,
+                        "mediaBlocks": 2,
+                        "supportsBlocks": 4,
+                        "containerBlocks": 0,
+                        "keyframes": 0,
+                        "unlayeredStyleRules": 1,
+                        "layerStyleRules": {
+                            "theme": 1,
+                            "base": 36,
+                            "defaults": 0,
+                            "components": 0,
+                            "utilities": 63,
+                            "other": 1
+                        },
+                        "selectorCombinators": 3,
+                        "maxSelectorSpecificityScore": 10,
+                        "maxSelectorComplexityScore": 9
                     }
                 },
                 "tailwind-vite": {
@@ -252,9 +568,34 @@
                         "sha256": "3604fa84b2cd02f8a833b26ca372dedf97ee8d35e3c4a29239c6f7d08a0db4ff"
                     },
                     "build": {
-                        "coldMedianMs": 174.7,
-                        "repeatMedianMs": 177.5,
+                        "coldMedianMs": 164.7,
+                        "repeatMedianMs": 165.3,
                         "sampleCount": 3
+                    },
+                    "structure": {
+                        "styleRules": 116,
+                        "selectors": 149,
+                        "declarations": 251,
+                        "customProperties": 56,
+                        "importantDeclarations": 1,
+                        "atRules": 23,
+                        "layerBlocks": 4,
+                        "mediaBlocks": 1,
+                        "supportsBlocks": 4,
+                        "containerBlocks": 0,
+                        "keyframes": 0,
+                        "unlayeredStyleRules": 1,
+                        "layerStyleRules": {
+                            "theme": 1,
+                            "base": 49,
+                            "defaults": 0,
+                            "components": 0,
+                            "utilities": 64,
+                            "other": 1
+                        },
+                        "selectorCombinators": 3,
+                        "maxSelectorSpecificityScore": 10,
+                        "maxSelectorComplexityScore": 9
                     }
                 }
             }
@@ -271,9 +612,34 @@
                         "sha256": "20d837dbb82ea659ca7f3b9c28d20eab8dd590a929f9f8367410487db034065e"
                     },
                     "build": {
-                        "coldMedianMs": 205.8,
-                        "repeatMedianMs": 194.3,
+                        "coldMedianMs": 192.6,
+                        "repeatMedianMs": 179.9,
                         "sampleCount": 3
+                    },
+                    "structure": {
+                        "styleRules": 103,
+                        "selectors": 154,
+                        "declarations": 147,
+                        "customProperties": 15,
+                        "importantDeclarations": 0,
+                        "atRules": 5,
+                        "layerBlocks": 3,
+                        "mediaBlocks": 0,
+                        "supportsBlocks": 0,
+                        "containerBlocks": 0,
+                        "keyframes": 0,
+                        "unlayeredStyleRules": 1,
+                        "layerStyleRules": {
+                            "theme": 1,
+                            "base": 36,
+                            "defaults": 0,
+                            "components": 0,
+                            "utilities": 65,
+                            "other": 0
+                        },
+                        "selectorCombinators": 0,
+                        "maxSelectorSpecificityScore": 20,
+                        "maxSelectorComplexityScore": 2
                     }
                 },
                 "master-static-vite": {
@@ -285,9 +651,34 @@
                         "sha256": "849d3337513877a80d0635d21557558f64549bab476bfb0105a53b5323e66dda"
                     },
                     "build": {
-                        "coldMedianMs": 286.6,
-                        "repeatMedianMs": 279.7,
+                        "coldMedianMs": 277,
+                        "repeatMedianMs": 262.3,
                         "sampleCount": 3
+                    },
+                    "structure": {
+                        "styleRules": 103,
+                        "selectors": 154,
+                        "declarations": 147,
+                        "customProperties": 15,
+                        "importantDeclarations": 0,
+                        "atRules": 5,
+                        "layerBlocks": 3,
+                        "mediaBlocks": 0,
+                        "supportsBlocks": 0,
+                        "containerBlocks": 0,
+                        "keyframes": 0,
+                        "unlayeredStyleRules": 1,
+                        "layerStyleRules": {
+                            "theme": 1,
+                            "base": 36,
+                            "defaults": 0,
+                            "components": 0,
+                            "utilities": 65,
+                            "other": 0
+                        },
+                        "selectorCombinators": 0,
+                        "maxSelectorSpecificityScore": 20,
+                        "maxSelectorComplexityScore": 2
                     }
                 },
                 "tailwind-cli": {
@@ -299,9 +690,34 @@
                         "sha256": "1b313dd3a0615c658235c4c41803f47e52abae677abbac925d702dfe2bd62e83"
                     },
                     "build": {
-                        "coldMedianMs": 100.4,
-                        "repeatMedianMs": 98.1,
+                        "coldMedianMs": 99.1,
+                        "repeatMedianMs": 95.2,
                         "sampleCount": 3
+                    },
+                    "structure": {
+                        "styleRules": 106,
+                        "selectors": 151,
+                        "declarations": 195,
+                        "customProperties": 42,
+                        "importantDeclarations": 1,
+                        "atRules": 13,
+                        "layerBlocks": 4,
+                        "mediaBlocks": 1,
+                        "supportsBlocks": 3,
+                        "containerBlocks": 0,
+                        "keyframes": 0,
+                        "unlayeredStyleRules": 1,
+                        "layerStyleRules": {
+                            "theme": 1,
+                            "base": 36,
+                            "defaults": 0,
+                            "components": 0,
+                            "utilities": 67,
+                            "other": 1
+                        },
+                        "selectorCombinators": 3,
+                        "maxSelectorSpecificityScore": 10,
+                        "maxSelectorComplexityScore": 9
                     }
                 },
                 "tailwind-vite": {
@@ -313,9 +729,34 @@
                         "sha256": "cc89ce4089ff0376b738cf123c11047ba5dd0fc06094be5e1dc9bcebaab93299"
                     },
                     "build": {
-                        "coldMedianMs": 169.3,
-                        "repeatMedianMs": 171.5,
+                        "coldMedianMs": 164.4,
+                        "repeatMedianMs": 166.9,
                         "sampleCount": 3
+                    },
+                    "structure": {
+                        "styleRules": 118,
+                        "selectors": 151,
+                        "declarations": 220,
+                        "customProperties": 42,
+                        "importantDeclarations": 1,
+                        "atRules": 12,
+                        "layerBlocks": 4,
+                        "mediaBlocks": 1,
+                        "supportsBlocks": 3,
+                        "containerBlocks": 0,
+                        "keyframes": 0,
+                        "unlayeredStyleRules": 1,
+                        "layerStyleRules": {
+                            "theme": 1,
+                            "base": 49,
+                            "defaults": 0,
+                            "components": 0,
+                            "utilities": 66,
+                            "other": 1
+                        },
+                        "selectorCombinators": 3,
+                        "maxSelectorSpecificityScore": 20,
+                        "maxSelectorComplexityScore": 9
                     }
                 }
             }
@@ -332,9 +773,34 @@
                         "sha256": "bd7aa3cc6fb5bda13fae2da2967af45103434602a1d82f73249c37e5a2fed373"
                     },
                     "build": {
-                        "coldMedianMs": 211.2,
-                        "repeatMedianMs": 214,
+                        "coldMedianMs": 207.3,
+                        "repeatMedianMs": 211.8,
                         "sampleCount": 3
+                    },
+                    "structure": {
+                        "styleRules": 316,
+                        "selectors": 367,
+                        "declarations": 364,
+                        "customProperties": 20,
+                        "importantDeclarations": 0,
+                        "atRules": 5,
+                        "layerBlocks": 3,
+                        "mediaBlocks": 0,
+                        "supportsBlocks": 0,
+                        "containerBlocks": 0,
+                        "keyframes": 0,
+                        "unlayeredStyleRules": 1,
+                        "layerStyleRules": {
+                            "theme": 1,
+                            "base": 36,
+                            "defaults": 0,
+                            "components": 0,
+                            "utilities": 278,
+                            "other": 0
+                        },
+                        "selectorCombinators": 0,
+                        "maxSelectorSpecificityScore": 11,
+                        "maxSelectorComplexityScore": 2
                     }
                 },
                 "master-static-vite": {
@@ -346,9 +812,34 @@
                         "sha256": "3df6b139720ac9c6a837a1988e3f0112bee65eee495327cf8ec0c16d5d92e956"
                     },
                     "build": {
-                        "coldMedianMs": 294.1,
-                        "repeatMedianMs": 287.5,
+                        "coldMedianMs": 281.1,
+                        "repeatMedianMs": 273.3,
                         "sampleCount": 3
+                    },
+                    "structure": {
+                        "styleRules": 316,
+                        "selectors": 367,
+                        "declarations": 364,
+                        "customProperties": 20,
+                        "importantDeclarations": 0,
+                        "atRules": 5,
+                        "layerBlocks": 3,
+                        "mediaBlocks": 0,
+                        "supportsBlocks": 0,
+                        "containerBlocks": 0,
+                        "keyframes": 0,
+                        "unlayeredStyleRules": 1,
+                        "layerStyleRules": {
+                            "theme": 1,
+                            "base": 36,
+                            "defaults": 0,
+                            "components": 0,
+                            "utilities": 278,
+                            "other": 0
+                        },
+                        "selectorCombinators": 0,
+                        "maxSelectorSpecificityScore": 11,
+                        "maxSelectorComplexityScore": 2
                     }
                 },
                 "tailwind-cli": {
@@ -360,9 +851,34 @@
                         "sha256": "98668caf9c898010185255ede7f0163c5f84ba63329bdcaa3719e6a2e6f376ac"
                     },
                     "build": {
-                        "coldMedianMs": 100.3,
-                        "repeatMedianMs": 104.4,
+                        "coldMedianMs": 98.7,
+                        "repeatMedianMs": 95.5,
                         "sampleCount": 3
+                    },
+                    "structure": {
+                        "styleRules": 300,
+                        "selectors": 345,
+                        "declarations": 369,
+                        "customProperties": 28,
+                        "importantDeclarations": 1,
+                        "atRules": 11,
+                        "layerBlocks": 4,
+                        "mediaBlocks": 0,
+                        "supportsBlocks": 3,
+                        "containerBlocks": 0,
+                        "keyframes": 0,
+                        "unlayeredStyleRules": 1,
+                        "layerStyleRules": {
+                            "theme": 1,
+                            "base": 36,
+                            "defaults": 0,
+                            "components": 0,
+                            "utilities": 261,
+                            "other": 1
+                        },
+                        "selectorCombinators": 3,
+                        "maxSelectorSpecificityScore": 10,
+                        "maxSelectorComplexityScore": 9
                     }
                 },
                 "tailwind-vite": {
@@ -374,17 +890,42 @@
                         "sha256": "0876e7fe85c077e32bc2844b7f5d2d103aa7c65f8668557a07ebb5a8bbcc2d1a"
                     },
                     "build": {
-                        "coldMedianMs": 178.6,
-                        "repeatMedianMs": 176.7,
+                        "coldMedianMs": 169.7,
+                        "repeatMedianMs": 165.7,
                         "sampleCount": 3
+                    },
+                    "structure": {
+                        "styleRules": 312,
+                        "selectors": 346,
+                        "declarations": 393,
+                        "customProperties": 28,
+                        "importantDeclarations": 1,
+                        "atRules": 10,
+                        "layerBlocks": 4,
+                        "mediaBlocks": 0,
+                        "supportsBlocks": 3,
+                        "containerBlocks": 0,
+                        "keyframes": 0,
+                        "unlayeredStyleRules": 1,
+                        "layerStyleRules": {
+                            "theme": 1,
+                            "base": 49,
+                            "defaults": 0,
+                            "components": 0,
+                            "utilities": 260,
+                            "other": 1
+                        },
+                        "selectorCombinators": 3,
+                        "maxSelectorSpecificityScore": 10,
+                        "maxSelectorComplexityScore": 9
                     }
                 }
             }
         }
     ],
     "limits": [
-        "This snapshot compares generated CSS artifacts and full production command elapsed time only.",
-        "CSS bytes are not browser parse, style recalculation, layout, paint, or interaction cost.",
+        "This snapshot compares generated CSS artifacts, CSS structure, and full production command elapsed time only.",
+        "CSS bytes and structure are not browser parse, style recalculation, layout, paint, or interaction cost.",
         "Build timings include Node, CLI, Vite, and package startup for each command path.",
         "Repeat production build means a second command execution in the same temp workspace; it is not watch mode or HMR.",
         "Master CSS and Tailwind CSS fixtures target equivalent rendered UI intent, not identical class strings.",
