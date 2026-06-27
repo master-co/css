@@ -26,6 +26,7 @@ export type BenchmarkSuiteId =
     | 'css-structure'
     | 'build-performance'
     | 'master-delivery-modes'
+    | 'progressive-hydration-diagnostics'
     | 'browser-css-cost'
     | 'interaction-cost'
 

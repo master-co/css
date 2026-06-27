@@ -57,6 +57,49 @@ export interface DeliveryModeMeasurement {
     artifacts: BenchmarkArtifact[]
 }
 
+export interface DeliveryModeDiagnostics {
+    ready: string | undefined
+    textAlign: string
+    runtimeAvailable: boolean
+    progressive: boolean
+    hydrationFailureReason: string
+    htmlHidden: boolean
+    hydrationManifestRuleCount: number
+    hydrationManifestLayerRuleCounts: Record<string, number>
+    hydrationManifestLayerExpandedRuleCounts: Record<string, number>
+    cssomTopLevelRuleCount: number
+    cssomLayerRuleCount: number
+    cssomLayerRuleCounts: Record<string, number>
+    cssomTotalRuleCount: number
+    layerRuleCountMismatches: Record<string, {
+        manifestRules: number
+        manifestExpandedRules: number
+        cssomRules: number
+    }>
+    hydrationManifestSelectorsMissingFromCSSOM: {
+        className: string
+        layer: string
+        selectorText: string
+        text: string
+    }[]
+    runtimeClassUtilityCount: number
+    runtimeClassUtilityNames: string[]
+    runtimeGeneratedRuleCount: number
+    runtimeStyleRawBytes: number
+    runtimeStyleText: string
+    connectedClassCount: number
+    connectedClassNames: string[]
+    missingHydratedClassCount: number
+    missingHydratedClassNames: string[]
+    consoleWarnings: string[]
+}
+
+export interface ProgressiveHydrationDiagnosticMeasurement {
+    samples: BenchmarkSample[]
+    artifacts: BenchmarkArtifact[]
+    diagnostics: DeliveryModeDiagnostics
+}
+
 const fixedViewport = {
     width: 1280,
     height: 720
@@ -322,6 +365,7 @@ export async function createMasterDeliveryModePage(options: {
     fixtureId: BenchmarkFixtureId
     modeId: DeliveryModeId
     variantId: string
+    pageSuite?: 'master-delivery-modes' | 'progressive-hydration-diagnostics'
 }): Promise<DeliveryModePage> {
     if (options.modeId === 'master-static') {
         return createStaticDeliveryModePage({
@@ -359,6 +403,7 @@ export async function measureMasterDeliveryMode(options: {
             deviceScaleFactor: 1
         })
         const page = await context.newPage()
+        const consoleWarnings = collectConsoleWarnings(page)
 
         try {
             const artifactRoot = resolve(benchmarkRoot, '.results', 'master-delivery-modes', 'artifacts', options.variantId, `round-${options.round}`)
@@ -366,15 +411,22 @@ export async function measureMasterDeliveryMode(options: {
 
             const traceFile = resolve(artifactRoot, 'trace.json')
             const screenshotFile = resolve(artifactRoot, 'screenshot.png')
+            const diagnosticsFile = resolve(artifactRoot, 'diagnostics.json')
+            const runtimeStyleFile = resolve(artifactRoot, 'runtime-style.css')
             const traceResult = await traceNavigation(page, server.origin, options.modeId)
+            const diagnostics = await readDeliveryDiagnostics(page, consoleWarnings)
             await writeFile(traceFile, `${JSON.stringify({ traceEvents: traceResult.events }, null, 2)}\n`)
+            await writeDiagnosticsArtifacts({
+                diagnostics,
+                diagnosticsFile,
+                runtimeStyleFile
+            })
             await page.screenshot({ path: screenshotFile, fullPage: false })
 
             const traceMetrics = summarizeTraceEvents(traceResult.events)
-            const artifacts = await Promise.all([
-                measureRelativeArtifact(traceFile),
-                measureRelativeArtifact(screenshotFile)
-            ])
+            const artifactFiles = [traceFile, screenshotFile, diagnosticsFile]
+            if (diagnostics.runtimeStyleText) artifactFiles.push(runtimeStyleFile)
+            const artifacts = await Promise.all(artifactFiles.map((file) => measureRelativeArtifact(file)))
 
             return {
                 samples: createBrowserSamples(options.variantId, options.round, {
@@ -392,10 +444,62 @@ export async function measureMasterDeliveryMode(options: {
     }
 }
 
+export async function measureProgressiveHydrationDiagnostics(options: {
+    browser: Browser
+    pageRoot: string
+    variantId: string
+    round: number
+}) {
+    const server = await startStaticFileServer(options.pageRoot)
+
+    try {
+        const context = await options.browser.newContext({
+            viewport: fixedViewport,
+            deviceScaleFactor: 1
+        })
+        const page = await context.newPage()
+        const consoleWarnings = collectConsoleWarnings(page)
+
+        try {
+            const artifactRoot = resolve(benchmarkRoot, '.results', 'progressive-hydration-diagnostics', 'artifacts', options.variantId, `round-${options.round}`)
+            await resetDirectory(artifactRoot)
+
+            await page.goto(server.origin, { waitUntil: 'load' })
+            await waitForBenchmarkReady(page)
+            await assertDeliveryModeCorrect(page, 'master-progressive')
+            const diagnostics = await readDeliveryDiagnostics(page, consoleWarnings)
+
+            const diagnosticsFile = resolve(artifactRoot, 'diagnostics.json')
+            const runtimeStyleFile = resolve(artifactRoot, 'runtime-style.css')
+            const screenshotFile = resolve(artifactRoot, 'screenshot.png')
+            await writeDiagnosticsArtifacts({
+                diagnostics,
+                diagnosticsFile,
+                runtimeStyleFile
+            })
+            await page.screenshot({ path: screenshotFile, fullPage: false })
+
+            const artifactFiles = [diagnosticsFile, screenshotFile]
+            if (diagnostics.runtimeStyleText) artifactFiles.push(runtimeStyleFile)
+
+            return {
+                samples: createProgressiveHydrationDiagnosticSamples(options.variantId, options.round, diagnostics),
+                artifacts: await Promise.all(artifactFiles.map((file) => measureRelativeArtifact(file))),
+                diagnostics
+            } satisfies ProgressiveHydrationDiagnosticMeasurement
+        } finally {
+            await context.close()
+        }
+    } finally {
+        await server.close()
+    }
+}
+
 async function createStaticDeliveryModePage(options: {
     fixtureId: BenchmarkFixtureId
     modeId: DeliveryModeId
     variantId: string
+    pageSuite?: 'master-delivery-modes' | 'progressive-hydration-diagnostics'
     toolId: Extract<StaticBuildToolId, 'master-static-cli' | 'tailwind-cli'>
 }): Promise<DeliveryModePage> {
     const tool = staticBuildTools.find((candidate) => candidate.id === options.toolId)
@@ -414,6 +518,7 @@ async function createStaticDeliveryModePage(options: {
     const html = addStaticHarness(sourceHtml)
 
     return writeDeliveryModePage({
+        pageSuite: options.pageSuite,
         variantId: options.variantId,
         html,
         externalCSS: css,
@@ -425,6 +530,7 @@ async function createStaticDeliveryModePage(options: {
 async function createRuntimeDeliveryModePage(options: {
     fixtureId: BenchmarkFixtureId
     variantId: string
+    pageSuite?: 'master-delivery-modes' | 'progressive-hydration-diagnostics'
 }): Promise<DeliveryModePage> {
     const fixture = getStaticFixtureSource(options.fixtureId)
     const html = addRuntimeHarness(fixture.masterHtml, {
@@ -432,6 +538,7 @@ async function createRuntimeDeliveryModePage(options: {
     })
 
     return writeDeliveryModePage({
+        pageSuite: options.pageSuite,
         variantId: options.variantId,
         html,
         runtimeJS: await readRuntimeBundle(),
@@ -443,6 +550,7 @@ async function createRuntimeDeliveryModePage(options: {
 async function createProgressiveDeliveryModePage(options: {
     fixtureId: BenchmarkFixtureId
     variantId: string
+    pageSuite?: 'master-delivery-modes' | 'progressive-hydration-diagnostics'
 }): Promise<DeliveryModePage> {
     const fixture = getStaticFixtureSource(options.fixtureId)
     const sourceHtml = addStyleProbe(fixture.masterHtml)
@@ -460,6 +568,7 @@ async function createProgressiveDeliveryModePage(options: {
     })
 
     return writeDeliveryModePage({
+        pageSuite: options.pageSuite,
         variantId: options.variantId,
         html,
         inlineCSS,
@@ -471,6 +580,7 @@ async function createProgressiveDeliveryModePage(options: {
 }
 
 async function writeDeliveryModePage(options: {
+    pageSuite?: 'master-delivery-modes' | 'progressive-hydration-diagnostics'
     variantId: string
     html: string
     deliveredCSS: string
@@ -481,7 +591,7 @@ async function writeDeliveryModePage(options: {
     hydrationManifestJSON?: string
     buildArtifacts?: BenchmarkArtifact[]
 }): Promise<DeliveryModePage> {
-    const root = resolve(benchmarkRoot, '.results', 'master-delivery-modes', 'pages', options.variantId)
+    const root = resolve(benchmarkRoot, '.results', options.pageSuite || 'master-delivery-modes', 'pages', options.variantId)
     await resetDirectory(root)
 
     const files: Record<string, string> = {
@@ -693,6 +803,286 @@ function createBrowserSamples(variantId: string, round: number, metrics: {
             value: metrics.runtimeStyleRawBytes
         }
     ]
+}
+
+function createProgressiveHydrationDiagnosticSamples(variantId: string, round: number, metrics: DeliveryModeDiagnostics): BenchmarkSample[] {
+    return [
+        {
+            metricId: 'progressive-adopted',
+            variantId,
+            round,
+            value: metrics.progressive ? 1 : 0
+        },
+        {
+            metricId: 'hydration-manifest-rule-count',
+            variantId,
+            round,
+            value: metrics.hydrationManifestRuleCount
+        },
+        {
+            metricId: 'cssom-top-level-rule-count',
+            variantId,
+            round,
+            value: metrics.cssomTopLevelRuleCount
+        },
+        {
+            metricId: 'cssom-layer-rule-count',
+            variantId,
+            round,
+            value: metrics.cssomLayerRuleCount
+        },
+        {
+            metricId: 'runtime-generated-rule-count',
+            variantId,
+            round,
+            value: metrics.runtimeGeneratedRuleCount
+        },
+        {
+            metricId: 'runtime-style-raw-bytes',
+            variantId,
+            round,
+            value: metrics.runtimeStyleRawBytes
+        },
+        {
+            metricId: 'connected-class-count',
+            variantId,
+            round,
+            value: metrics.connectedClassCount
+        },
+        {
+            metricId: 'missing-hydrated-class-count',
+            variantId,
+            round,
+            value: metrics.missingHydratedClassCount
+        }
+    ]
+}
+
+function collectConsoleWarnings(page: Page) {
+    const warnings: string[] = []
+    page.on('console', (message) => {
+        if (message.type() === 'warning') warnings.push(message.text())
+    })
+    return warnings
+}
+
+async function readDeliveryDiagnostics(page: Page, consoleWarnings: string[]): Promise<DeliveryModeDiagnostics> {
+    const diagnostics = await page.evaluate(() => {
+        const runtime = globalThis.masterCSSRuntime as unknown as {
+            progressive?: boolean
+            hydrationFailureReason?: string
+            style?: HTMLStyleElement | null
+            text?: string
+            classUtilities?: Map<string, unknown>
+        } | undefined
+        const styleElement = document.querySelector<HTMLStyleElement>('style#master-css')
+        const styleRules = styleElement?.sheet?.cssRules
+        const hydrationManifestScript = document.getElementById('master-css-hydration-manifest')
+        const hydrationManifest = parseHydrationManifest(hydrationManifestScript?.textContent || '')
+        const hydrationManifestRules = Array.isArray(hydrationManifest?.rules) ? hydrationManifest.rules : []
+        const hydrationManifestLayerRuleCounts = countHydrationManifestLayerRules(hydrationManifestRules)
+        const hydrationManifestLayerExpandedRuleCounts = countHydrationManifestLayerRules(hydrationManifestRules, true)
+        const runtimeStyleText = runtime?.style?.textContent || runtime?.text || ''
+        const runtimeClassUtilityNames = [...(runtime?.classUtilities?.keys?.() || [])].map(String).sort()
+        const connectedClassNames = collectConnectedClassNames()
+        const runtimeClassUtilityNameSet = new Set(runtimeClassUtilityNames)
+        const missingHydratedClassNames = connectedClassNames.filter((className) => !runtimeClassUtilityNameSet.has(className))
+        const cssom = summarizeCSSOM(styleRules)
+        const layerRuleCountMismatches = findLayerRuleCountMismatches(
+            hydrationManifestLayerRuleCounts,
+            hydrationManifestLayerExpandedRuleCounts,
+            cssom.layerRuleCounts
+        )
+        const hydrationManifestSelectorsMissingFromCSSOM = findHydrationManifestSelectorsMissingFromCSSOM(
+            hydrationManifestRules,
+            cssom.layerSelectorTexts
+        )
+
+        return {
+            ready: document.documentElement.dataset.benchmarkReady,
+            textAlign: getComputedStyle(document.getElementById('benchmark-style-probe')!).textAlign,
+            runtimeAvailable: Boolean(runtime),
+            progressive: Boolean(runtime?.progressive),
+            hydrationFailureReason: runtime?.hydrationFailureReason || '',
+            htmlHidden: document.documentElement.hasAttribute('hidden'),
+            hydrationManifestRuleCount: hydrationManifestRules.length,
+            hydrationManifestLayerRuleCounts,
+            hydrationManifestLayerExpandedRuleCounts,
+            cssomTopLevelRuleCount: styleRules?.length || 0,
+            cssomLayerRuleCount: cssom.layerRuleCount,
+            cssomLayerRuleCounts: cssom.layerRuleCounts,
+            cssomTotalRuleCount: cssom.totalRuleCount,
+            layerRuleCountMismatches,
+            hydrationManifestSelectorsMissingFromCSSOM,
+            runtimeClassUtilityCount: runtimeClassUtilityNames.length,
+            runtimeClassUtilityNames,
+            runtimeGeneratedRuleCount: cssom.totalRuleCount,
+            runtimeStyleRawBytes: new TextEncoder().encode(runtimeStyleText).length,
+            runtimeStyleText,
+            connectedClassCount: connectedClassNames.length,
+            connectedClassNames,
+            missingHydratedClassCount: missingHydratedClassNames.length,
+            missingHydratedClassNames
+        }
+
+        function parseHydrationManifest(source: string) {
+            try {
+                return source ? JSON.parse(source) as {
+                    rules?: {
+                        className?: string
+                        layer?: string
+                        nodes?: unknown[]
+                        selectorText?: string
+                        text?: string
+                    }[]
+                } : undefined
+            } catch {
+                return undefined
+            }
+        }
+
+        function countHydrationManifestLayerRules(
+            rules: NonNullable<ReturnType<typeof parseHydrationManifest>>['rules'],
+            expanded = false
+        ) {
+            const counts: Record<string, number> = {}
+            for (const rule of rules || []) {
+                const layer = rule.layer || 'unknown'
+                counts[layer] = (counts[layer] || 0) + (expanded ? rule.nodes?.length || 1 : 1)
+            }
+            return counts
+        }
+
+        function findLayerRuleCountMismatches(
+            manifestRuleCounts: Record<string, number>,
+            manifestExpandedRuleCounts: Record<string, number>,
+            cssomRuleCounts: Record<string, number>
+        ) {
+            const mismatches: Record<string, {
+                manifestRules: number
+                manifestExpandedRules: number
+                cssomRules: number
+            }> = {}
+            const layers = new Set([
+                ...Object.keys(manifestRuleCounts),
+                ...Object.keys(manifestExpandedRuleCounts),
+                ...Object.keys(cssomRuleCounts)
+            ])
+
+            for (const layer of layers) {
+                if (layer === 'theme') continue
+                const manifestRules = manifestRuleCounts[layer] || 0
+                const manifestExpandedRules = manifestExpandedRuleCounts[layer] || 0
+                const cssomRules = cssomRuleCounts[layer] || 0
+                if (manifestExpandedRules !== cssomRules) {
+                    mismatches[layer] = {
+                        manifestRules,
+                        manifestExpandedRules,
+                        cssomRules
+                    }
+                }
+            }
+
+            return mismatches
+        }
+
+        function findHydrationManifestSelectorsMissingFromCSSOM(
+            rules: NonNullable<ReturnType<typeof parseHydrationManifest>>['rules'],
+            layerSelectorTexts: Record<string, string[]>
+        ) {
+            const selectorsByLayer = new Map(Object.entries(layerSelectorTexts).map(([layer, selectors]) => [layer, new Set(selectors)]))
+            return (rules || []).filter((rule) => {
+                if (!rule.selectorText) return false
+                return !selectorsByLayer.get(rule.layer || 'unknown')?.has(rule.selectorText)
+            }).map((rule) => ({
+                className: rule.className || '',
+                layer: rule.layer || 'unknown',
+                selectorText: rule.selectorText || '',
+                text: rule.text || ''
+            }))
+        }
+
+        function collectConnectedClassNames() {
+            const names = new Set<string>()
+            for (const element of document.querySelectorAll('[class]')) {
+                for (const className of (element.getAttribute('class') || '').split(/\s+/)) {
+                    if (className) names.add(className)
+                }
+            }
+            return [...names].sort()
+        }
+
+        function summarizeCSSOM(rules?: CSSRuleList) {
+            const layerRuleCounts: Record<string, number> = {}
+            const layerSelectorTexts: Record<string, string[]> = {}
+            let layerRuleCount = 0
+            let totalRuleCount = 0
+
+            if (rules) {
+                for (const rule of rules) {
+                    const childRules = 'cssRules' in rule ? (rule as CSSGroupingRule).cssRules : undefined
+                    if (childRules) {
+                        const name = 'name' in rule ? String((rule as CSSGroupingRule & { name?: string }).name || 'anonymous') : rule.constructor.name
+                        layerRuleCounts[name] = childRules.length
+                        layerSelectorTexts[name] = collectSelectorTexts(childRules)
+                        layerRuleCount += childRules.length
+                        totalRuleCount += countCSSRules(childRules)
+                    } else {
+                        totalRuleCount++
+                    }
+                }
+            }
+
+            return {
+                layerRuleCount,
+                layerRuleCounts,
+                layerSelectorTexts,
+                totalRuleCount
+            }
+        }
+
+        function collectSelectorTexts(rules?: CSSRuleList) {
+            if (!rules) return []
+            const selectors: string[] = []
+            for (const rule of rules) {
+                if ('selectorText' in rule) {
+                    selectors.push(String((rule as CSSStyleRule).selectorText))
+                } else if ('cssRules' in rule) {
+                    selectors.push(...collectSelectorTexts((rule as CSSGroupingRule).cssRules))
+                }
+            }
+            return selectors
+        }
+
+        function countCSSRules(rules?: CSSRuleList): number {
+            if (!rules) return 0
+            let total = 0
+            for (const rule of rules) {
+                total += 'cssRules' in rule
+                    ? countCSSRules((rule as CSSGroupingRule).cssRules)
+                    : 1
+            }
+            return total
+        }
+    })
+
+    return {
+        ...diagnostics,
+        consoleWarnings
+    }
+}
+
+async function writeDiagnosticsArtifacts(options: {
+    diagnostics: DeliveryModeDiagnostics
+    diagnosticsFile: string
+    runtimeStyleFile: string
+}) {
+    const { runtimeStyleText, ...diagnosticsJSON } = options.diagnostics
+    await writeFile(options.diagnosticsFile, `${JSON.stringify({
+        ...diagnosticsJSON,
+        runtimeStyleTextArtifact: runtimeStyleText ? 'runtime-style.css' : undefined
+    }, null, 2)}\n`)
+    if (runtimeStyleText) await writeFile(options.runtimeStyleFile, runtimeStyleText)
 }
 
 function addStaticHarness(html: string) {
