@@ -63,7 +63,7 @@ const primaryVariants = [
     {
         id: 'tailwind-cli',
         label: 'Tailwind CSS',
-        color: 'blue'
+        color: 'cyan'
     }
 ] satisfies { id: PrimaryVariantId; label: string; color: BenchmarkColor }[]
 
@@ -89,12 +89,37 @@ function formatCount(value: number) {
     return value.toLocaleString('en-US')
 }
 
+function formatRatio(value: number, baseline: number) {
+    if (value <= 0 || baseline <= 0) return 'n/a'
+    return `${Number((Math.max(value, baseline) / Math.min(value, baseline)).toFixed(1)).toLocaleString('en-US')}x`
+}
+
+function formatLowerRatio(value: number, baseline: number, label: string) {
+    if (value >= baseline) return
+    return `${formatRatio(value, baseline)} ${label}`
+}
+
+function createComparedLabel(label: string, ratioLabel: string | undefined) {
+    if (!ratioLabel) return label
+    return (
+        <>
+            {label}
+            <span className="ml:xs font:xs text:muted">{ratioLabel}</span>
+        </>
+    )
+}
+
 function createCssBarItems(result: FixtureResult): BenchmarkBarItem[] {
+    const baselineByVariant: Record<PrimaryVariantId, number> = {
+        'master-static-cli': result.variants['tailwind-cli'].css.brotliBytes,
+        'tailwind-cli': result.variants['master-static-cli'].css.brotliBytes
+    }
+
     return primaryVariants.map((variant) => {
         const value = result.variants[variant.id].css.brotliBytes
         return {
             id: `${result.fixtureId}-${variant.id}-css`,
-            label: variant.label,
+            label: createComparedLabel(variant.label, formatLowerRatio(value, baselineByVariant[variant.id], 'smaller')),
             value: value / 1000,
             valueLabel: formatKilobytes(value),
             color: variant.color
@@ -103,11 +128,16 @@ function createCssBarItems(result: FixtureResult): BenchmarkBarItem[] {
 }
 
 function createBuildBarItems(result: FixtureResult): BenchmarkBarItem[] {
+    const baselineByVariant: Record<PrimaryVariantId, number> = {
+        'master-static-cli': result.variants['tailwind-cli'].build.coldMedianMs,
+        'tailwind-cli': result.variants['master-static-cli'].build.coldMedianMs
+    }
+
     return primaryVariants.map((variant) => {
         const value = result.variants[variant.id].build.coldMedianMs
         return {
             id: `${result.fixtureId}-${variant.id}-build`,
-            label: variant.label,
+            label: createComparedLabel(variant.label, formatLowerRatio(value, baselineByVariant[variant.id], 'faster')),
             value,
             valueLabel: formatMilliseconds(value),
             color: variant.color
@@ -116,11 +146,16 @@ function createBuildBarItems(result: FixtureResult): BenchmarkBarItem[] {
 }
 
 function createDeclarationBarItems(result: FixtureResult): BenchmarkBarItem[] {
+    const baselineByVariant: Record<PrimaryVariantId, number> = {
+        'master-static-cli': result.variants['tailwind-cli'].structure.declarations,
+        'tailwind-cli': result.variants['master-static-cli'].structure.declarations
+    }
+
     return primaryVariants.map((variant) => {
         const value = result.variants[variant.id].structure.declarations
         return {
             id: `${result.fixtureId}-${variant.id}-declarations`,
-            label: variant.label,
+            label: createComparedLabel(variant.label, formatLowerRatio(value, baselineByVariant[variant.id], 'fewer')),
             value,
             valueLabel: formatCount(value),
             color: variant.color
