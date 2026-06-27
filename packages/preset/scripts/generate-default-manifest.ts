@@ -8,7 +8,8 @@ import type { MasterCSSManifest } from '@master/css-schema/manifest'
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const packageRoot = resolve(__dirname, '..')
 const sourceFile = resolve(packageRoot, 'src/index.css')
-const outputFile = resolve(packageRoot, 'src/default-manifest.json')
+const manifestOutputFile = resolve(packageRoot, 'src/default-manifest.json')
+const nativeCSSOutputFile = resolve(packageRoot, 'src/default-native.css')
 const defaultEngineSettings = MasterCSS.create({ manifest: { version: 1 } }).settings
 const { compileCSSManifestFile } = await import(new URL('../../compiler/src/index.ts', import.meta.url).href) as typeof import('@master/css-compiler')
 function clone<T>(value: T): T {
@@ -51,14 +52,29 @@ export function createDefaultManifestFromSourceFile(file = sourceFile) {
     return createDefaultManifest(compileCSSManifestFile(file).manifest)
 }
 
+export function createDefaultNativeCSSFromSourceFile(file = sourceFile) {
+    return compileCSSManifestFile(file, {
+        preserveNativeCSS: true
+    }).directives.nativeCSS
+}
+
 export function createDefaultManifestJSON(manifest: MasterCSSManifest) {
     return stringifyMasterCSSManifestJSON(manifest)
 }
 
-export function writeDefaultManifest(file = outputFile) {
+export function writeDefaultManifest(file = manifestOutputFile) {
     writeFileSync(file, createDefaultManifestJSON(createDefaultManifestFromSourceFile()))
 }
 
-if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+export function writeDefaultNativeCSS(file = nativeCSSOutputFile) {
+    writeFileSync(file, createDefaultNativeCSSFromSourceFile())
+}
+
+export function writeDefaultPresetArtifacts() {
     writeDefaultManifest()
+    writeDefaultNativeCSS()
+}
+
+if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+    writeDefaultPresetArtifacts()
 }

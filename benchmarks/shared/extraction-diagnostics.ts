@@ -36,6 +36,7 @@ import {
     type StylesheetSourceOptions
 } from '@master/css-stylesheet/directives'
 import { createCSSWithNativeDeclarations } from '@master/css-validator/native-declaration'
+import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import fg from 'fast-glob'
 import { getStaticFixtureSource } from '../fixtures/static'
 import { hashBytes, summarizeBytes } from './bytes'
@@ -81,6 +82,7 @@ export const extractionDiagnosticMetricIds = [
     'production-create-extracted-css-ms',
     'diagnostic-extraction-total-ms',
     'master-import-graph-resolution-ms',
+    'master-package-artifact-read-ms',
     'master-package-css-compilation-ms',
     'entry-css-compilation-ms',
     'manifest-finalization-ms',
@@ -100,6 +102,8 @@ export const extractionDiagnosticMetricIds = [
     'native-class-name-count',
     'used-native-class-count',
     'generated-class-count',
+    'master-package-shortcut-hit-count',
+    'master-package-shortcut-fallback-count',
     'native-css-source-count',
     'native-css-raw-bytes',
     'generated-css-raw-bytes',
@@ -109,6 +113,19 @@ export const extractionDiagnosticMetricIds = [
     'final-css-gzip-bytes',
     'final-css-brotli-bytes'
 ] as const
+
+const DEFAULT_PRESET_SOURCE_FILES = [
+    'index.css',
+    'base.css',
+    'theme.css',
+    'variants.css',
+    'utilities.css'
+]
+
+interface DefaultMasterCSSPackageArtifact {
+    manifest: MasterCSSManifest
+    nativeCSS: string
+}
 
 export function createExtractionDiagnosticVariants(fixtureIds: BenchmarkFixtureId[]): BenchmarkVariant[] {
     return fixtureIds.map((fixtureId) => ({
@@ -274,7 +291,10 @@ async function createDiagnosticExtractedCSS(options: {
     recorder.setCount('used-native-class-count', scanner.usedNativeClasses.size)
 
     const hasMasterCSS = hasMasterCSSPackageSource(styleCSSSources)
-    const masterCSSResult = hasMasterCSS
+    const defaultArtifact = hasMasterCSS
+        ? readDefaultMasterCSSPackageArtifact(projectDir, recorder)
+        : undefined
+    const masterCSSResult = hasMasterCSS && !defaultArtifact
         ? await compileMasterCSSPackage(projectDir, recorder)
         : undefined
 
@@ -294,7 +314,7 @@ async function createDiagnosticExtractedCSS(options: {
         ...(masterCSSResult ? [masterCSSResult] : []),
         ...entryStyleResults
     ]
-    let mergedManifest = scanner.customOptions?.manifest ?? scanner.css.manifest
+    let mergedManifest = defaultArtifact?.manifest ?? scanner.customOptions?.manifest ?? scanner.css.manifest
     const finalizedStyleResults = new Map<CompileCSSResult, ReturnType<typeof createManifestFromCSSResult>>()
 
     for (const result of styleResults) {
@@ -308,6 +328,9 @@ async function createDiagnosticExtractedCSS(options: {
     }
 
     const nativeCSS = recorder.timeSync('native-css-collection-ms', () => [
+        ...(defaultArtifact
+            ? [defaultArtifact.nativeCSS]
+            : []),
         ...(masterCSSResult
             ? [getNativeCSS(finalizedStyleResults.get(masterCSSResult) || masterCSSResult)]
             : []),
@@ -338,6 +361,7 @@ async function createDiagnosticExtractedCSS(options: {
 }
 
 async function compileMasterCSSPackage(projectDir: string, recorder: DiagnosticRecorder) {
+    recorder.setCount('master-package-shortcut-fallback-count', 1)
     const graph = recorder.timeSync('master-import-graph-resolution-ms', () => resolveMasterCSSPackageCompileSource(projectDir))
     const result = await recorder.time('master-package-css-compilation-ms', () => compileStyleCSS(graph.dependencies[0] || '@master/css', graph.source, {
         projectDir
@@ -353,6 +377,40 @@ function resolveMasterCSSPackageCompileSource(projectDir: string) {
     return {
         source: removeMasterStyleDirectives(removeStyleCSSImports(graph.source).code).code,
         dependencies: graph.dependencies
+    }
+}
+
+function readDefaultMasterCSSPackageArtifact(projectDir: string, recorder: DiagnosticRecorder): DefaultMasterCSSPackageArtifact | undefined {
+    const graph = recorder.timeSync('master-import-graph-resolution-ms', () => resolveMasterCSSPackageImportGraph(projectDir))
+    const artifactFiles = findDefaultPresetArtifactFiles(graph.dependencies)
+    if (!artifactFiles) {
+        recorder.setCount('master-package-shortcut-hit-count', 0)
+        return
+    }
+
+    recorder.setCount('master-package-shortcut-hit-count', 1)
+    recorder.setCount('master-package-shortcut-fallback-count', 0)
+    return recorder.timeSync('master-package-artifact-read-ms', () => ({
+        manifest: JSON.parse(readFileSync(artifactFiles.manifestFile, 'utf8')) as MasterCSSManifest,
+        nativeCSS: readFileSync(artifactFiles.nativeCSSFile, 'utf8')
+    }))
+}
+
+function findDefaultPresetArtifactFiles(dependencies: string[]) {
+    if (dependencies.length !== DEFAULT_PRESET_SOURCE_FILES.length + 1) return
+    const dependencySet = new Set(dependencies.map((dependency) => resolve(dependency)))
+    for (const dependency of dependencies) {
+        const directory = dirname(dependency)
+        const sourceFiles = DEFAULT_PRESET_SOURCE_FILES.map((file) => resolve(directory, file))
+        if (!sourceFiles.every((file) => dependencySet.has(file))) continue
+
+        const manifestFile = resolve(directory, 'default-manifest.json')
+        const nativeCSSFile = resolve(directory, 'default-native.css')
+        if (!existsSync(manifestFile) || !existsSync(nativeCSSFile)) return
+        return {
+            manifestFile,
+            nativeCSSFile
+        }
     }
 }
 

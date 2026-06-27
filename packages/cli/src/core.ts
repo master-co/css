@@ -2,7 +2,8 @@ import { readFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { Command } from 'commander'
-import runScan, { DEFAULT_SCAN_OUTPUT, type ScanOptions } from './scan'
+import { DEFAULT_SCAN_OUTPUT } from './constants'
+import type { ScanOptions } from './scan'
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
 
@@ -24,11 +25,12 @@ export default async function runProgram(argv: string[] = process.argv) {
         .option('-o, --output <path>', 'Specify your CSS file output path', DEFAULT_SCAN_OUTPUT)
         .option('-v, --verbose <level>', 'Verbose logging 0~N', '1')
         .option('--no-export', 'Print only CSS results.')
-        .action((sourcePaths: string[], options: ScanOptions) => {
+        .action(async (sourcePaths: string[], options: ScanOptions) => {
             const removedCommand = sourcePaths[0]
             if (removedCommand && removedCommands.has(removedCommand)) {
                 errorRemovedCommand(program, removedCommand)
             }
+            const { default: runScan } = await import('./scan')
             return runScan(sourcePaths, options)
         })
     const firstArgument = argv[2]

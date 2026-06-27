@@ -1,0 +1,177 @@
+@layer theme;
+
+@layer base {
+  * {
+    text-rendering: geometricprecision;
+  }
+
+  body {
+    -webkit-text-size-adjust: 100%;
+    -moz-text-size-adjust: 100%;
+    -ms-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.2;
+  }
+
+  a, button {
+    touch-action: manipulation;
+  }
+
+  [role="button"], summary, button, [type="button"] {
+    -webkit-user-select: none;
+    user-select: none;
+  }
+
+  *, :before, :after {
+    box-sizing: border-box;
+  }
+
+  body {
+    -moz-tab-size: 4;
+    tab-size: 4;
+  }
+
+  img, svg, video, canvas, audio, iframe, embed, object {
+    max-width: 100%;
+    display: block;
+  }
+
+  html, body {
+    height: -moz-available;
+  }
+
+  abbr[title] {
+    text-decoration: underline dotted;
+  }
+
+  b, strong {
+    font-weight: bolder;
+  }
+
+  pre, code, kbd, samp {
+    font-size: 1em;
+  }
+
+  ::-moz-focus-inner {
+    border-style: none;
+    padding: 0;
+  }
+
+  :-moz-ui-invalid {
+    box-shadow: none;
+  }
+
+  progress {
+    vertical-align: baseline;
+  }
+
+  [type="search"] {
+    appearance: textfield;
+    outline-offset: -2px;
+  }
+
+  ::-webkit-inner-spin-button, ::-webkit-outer-spin-button {
+    height: auto;
+  }
+
+  ::-webkit-search-decoration {
+    -webkit-appearance: none;
+  }
+
+  ::-webkit-file-upload-button {
+    -webkit-appearance: button;
+    font: inherit;
+  }
+
+  hr {
+    height: 0;
+    color: inherit;
+  }
+
+  small {
+    font-size: 80%;
+  }
+
+  sub, sup {
+    vertical-align: baseline;
+    font-size: 75%;
+    line-height: 0;
+    position: relative;
+  }
+
+  sub {
+    bottom: -.25em;
+  }
+
+  sup {
+    top: -.5em;
+  }
+
+  table {
+    text-indent: 0;
+    border-color: inherit;
+  }
+
+  body, :host {
+    font-family: var(--font-family-sans);
+  }
+
+  code, kbd, samp, pre {
+    font-family: var(--font-family-mono);
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  button, input, optgroup, select, textarea {
+    font: inherit;
+    font-feature-settings: inherit;
+    font-variation-settings: inherit;
+    color: inherit;
+    background-color: #0000;
+    margin: 0;
+    padding: 0;
+    font-size: 100%;
+  }
+
+  *, :before, :after {
+    border-style: solid;
+    border-width: 0;
+  }
+
+  body, blockquote, dl, dd, hr, figure, p, pre, h1, h2, h3, h4, h5, h6 {
+    margin: 0;
+  }
+
+  td, legend, fieldset {
+    padding: 0;
+  }
+
+  ul, ol {
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  ul {
+    list-style: none;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-size: inherit;
+    font-weight: inherit;
+  }
+
+  [hidden] {
+    display: none;
+  }
+}
+
+@layer defaults, components, utilities;

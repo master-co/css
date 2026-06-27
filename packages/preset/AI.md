@@ -2,12 +2,13 @@
 
 ## Responsibility
 
-`@master/css-preset` owns the default Master CSS stylesheet source and generated default manifest.
+`@master/css-preset` owns the default Master CSS stylesheet source and generated default preset artifacts.
 
 ## Owns
 
 - Default token, utility, managed keyframe, variant, and layer-statement source.
 - `src/default-manifest.json`.
+- `src/default-native.css`.
 - Public preset CSS entries: `index.css`, `base.css`, `theme.css`, `variants.css`, and `utilities.css`.
 
 ## Does Not Own
@@ -32,11 +33,12 @@
 - `src/variants.css`
 - `src/index.css`
 - `src/default-manifest.json`
+- `src/default-native.css`
 - `src/index.ts`
 
 ## Risk Areas
 
-- Default manifest output changes.
+- Default manifest or native CSS artifact output changes.
 - Layer statement must stay `@layer theme, base, defaults, components, utilities;`.
 - Token namespace changes must align with engine built-ins.
 - Utility additions can accidentally belong in engine aliases or CSS directives instead.
@@ -44,13 +46,14 @@
 ## Safe Changes
 
 - Focused preset source fixes with tests.
-- Intentional generated manifest updates.
+- Intentional generated preset artifact updates.
 - Token or utility additions that follow the utility definition ladder.
 
 ## Dangerous Changes
 
 - Adding `keyAliases`, `nativeValueNamespaces`, or namespace registry data to `default-manifest.json`.
 - Regenerating `src/default-manifest.json` without an intentional source change.
+- Editing `src/default-native.css` by hand instead of updating preset source and regenerating artifacts.
 - Putting engine execution behavior or build integration behavior here.
 
 ## Validation

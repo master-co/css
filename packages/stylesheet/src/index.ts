@@ -129,6 +129,20 @@ export interface CreateStyleCSSHostSourceOptions {
     masterSource?: string
 }
 
+interface DefaultMasterCSSPackageArtifact {
+    manifest: MasterCSSManifest
+    nativeCSS: string
+    dependencies: string[]
+}
+
+const DEFAULT_PRESET_SOURCE_FILES = [
+    'index.css',
+    'base.css',
+    'theme.css',
+    'variants.css',
+    'utilities.css'
+]
+
 function defaultLoadSass(projectDir?: string): SassModule {
     if (projectDir) {
         try {
@@ -383,6 +397,54 @@ export function createStyleCSSHostSource(source: string, options: CreateStyleCSS
     return preservedImports.join('\n')
 }
 
+function canUseDefaultMasterCSSPackageArtifact(options: CompileStyleCSSOptions = {}) {
+    return !options.baseManifest
+        && !options.classes?.length
+        && !options.loadSass
+        && !options.onWarning
+        && options.preserveNativeCSS !== false
+}
+
+function resolveComparablePath(file: string) {
+    return resolve(file)
+}
+
+function findDefaultPresetArtifactFiles(dependencies: string[]) {
+    if (dependencies.length !== DEFAULT_PRESET_SOURCE_FILES.length + 1) return
+    const dependencySet = new Set(dependencies.map(resolveComparablePath))
+    for (const dependency of dependencies) {
+        const directory = dirname(dependency)
+        const sourceFiles = DEFAULT_PRESET_SOURCE_FILES.map((file) => resolveComparablePath(join(directory, file)))
+        if (!sourceFiles.every((file) => dependencySet.has(file))) continue
+
+        const manifestFile = join(directory, 'default-manifest.json')
+        const nativeCSSFile = join(directory, 'default-native.css')
+        if (!existsSync(manifestFile) || !existsSync(nativeCSSFile)) return
+        return {
+            manifestFile,
+            nativeCSSFile
+        }
+    }
+}
+
+function readDefaultMasterCSSPackageArtifact(projectDir: string | undefined, options: CompileStyleCSSOptions = {}): DefaultMasterCSSPackageArtifact | undefined {
+    if (!canUseDefaultMasterCSSPackageArtifact(options)) return
+
+    const graph = resolveMasterCSSPackageImportGraph(projectDir)
+    const artifactFiles = findDefaultPresetArtifactFiles(graph.dependencies)
+    if (!artifactFiles) return
+
+    return {
+        manifest: JSON.parse(readFileSync(artifactFiles.manifestFile, 'utf8')) as MasterCSSManifest,
+        nativeCSS: readFileSync(artifactFiles.nativeCSSFile, 'utf8'),
+        dependencies: [...new Set([
+            ...graph.dependencies,
+            artifactFiles.manifestFile,
+            artifactFiles.nativeCSSFile
+        ])]
+    }
+}
+
 function resolveMasterCSSPackageCompileSource(projectDir?: string) {
     const graph = resolveMasterCSSPackageImportGraph(projectDir)
     return {
@@ -395,6 +457,18 @@ export async function createMasterCSSPackageHostSource(
     projectDir: string | undefined,
     options: CompileStyleCSSOptions = {}
 ) {
+    const defaultArtifact = readDefaultMasterCSSPackageArtifact(options.projectDir ?? projectDir, options)
+    if (defaultArtifact) {
+        const renderedCSS = renderCompiledManifestCSS({
+            manifest: defaultArtifact.manifest,
+            nativeCSS: defaultArtifact.nativeCSS
+        })
+        return {
+            source: renderedCSS.css,
+            dependencies: defaultArtifact.dependencies
+        }
+    }
+
     const graph = resolveMasterCSSPackageCompileSource(projectDir)
     const result = await compileStyleCSS(graph.dependencies[0] || '@master/css', graph.source, {
         ...options,
@@ -590,6 +664,9 @@ export async function registerStyleCSSSource(
     const cleanSource = removeMasterStyleDirectives(sourceWithoutImports).code
     const compileOptions = options
     const result = await compileStyleCSS(filename, cleanSource, compileOptions)
+    const defaultArtifact = masterCSS
+        ? readDefaultMasterCSSPackageArtifact(options.projectDir ?? scanner.cwd, options)
+        : undefined
     const scopedOptions = mergeStylesheetSourceOptions(scanner.options, collectedDirectives.directives)
     const sourceDependencies = hasStylesheetSourceDirectives(collectedDirectives.directives)
         ? resolveStylesheetSourcePaths(scopedOptions, scanner.cwd).map((sourcePath) => resolve(scanner.cwd, sourcePath))
@@ -599,7 +676,8 @@ export async function registerStyleCSSSource(
         ...detectionSource.dependencies,
         ...(result.dependencies || []),
         ...collectedDirectives.dependencies,
-        ...sourceDependencies
+        ...sourceDependencies,
+        ...(defaultArtifact?.dependencies || [])
     ])]
     styleCSSSources.set(filename, {
         source: cleanSource,
@@ -639,18 +717,22 @@ export async function createStyleCSSManifest(options: CreateStyleCSSManifestOpti
     } = options
     const entries = Array.from(styleCSSSources || [])
     const hasMasterCSS = hasMasterCSSPackageSource(styleCSSSources)
+    const defaultArtifact = hasMasterCSS
+        ? readDefaultMasterCSSPackageArtifact(compileOptions.projectDir, compileOptions)
+        : undefined
     const styleResults = await Promise.all([
-        ...(hasMasterCSS
+        ...(hasMasterCSS && !defaultArtifact
             ? [compileMasterCSSPackage(compileOptions.projectDir, compileOptions)]
             : []),
         ...entries.map(([id, styleSource]) => compileStyleCSS(id, styleSource.source, compileOptions))
     ])
     const dependencies = [
+        ...(defaultArtifact?.dependencies || []),
         ...entries.flatMap(([, styleSource]) => styleSource.dependencies),
         ...styleResults.flatMap((result: CompileCSSResult) => result.dependencies || [])
     ]
-    let manifest: MasterCSSManifest | undefined = compileOptions.baseManifest
-    let hasStyleManifest = false
+    let manifest: MasterCSSManifest | undefined = defaultArtifact?.manifest ?? compileOptions.baseManifest
+    let hasStyleManifest = Boolean(defaultArtifact)
     for (const result of styleResults) {
         if (!hasCompiledStyleManifestInput(result)) continue
         const finalizedResult = createManifestFromCSSResult(result, {
@@ -693,7 +775,11 @@ export async function createExtractedCSSResult(options: CreateExtractedCSSOption
     }
 
     const hasMasterCSS = hasMasterCSSPackageSource(styleCSSSources)
-    const masterCSSResult = hasMasterCSS
+    const explicitPlan = planOption ?? scanner.customOptions?.manifest
+    const defaultArtifact = hasMasterCSS && !explicitPlan
+        ? readDefaultMasterCSSPackageArtifact(compileOptions.projectDir ?? scanner.cwd, compileOptions)
+        : undefined
+    const masterCSSResult = hasMasterCSS && !defaultArtifact
         ? await compileMasterCSSPackage(compileOptions.projectDir, compileOptions)
         : undefined
     const entryStyleResults = await Promise.all(
@@ -709,8 +795,7 @@ export async function createExtractedCSSResult(options: CreateExtractedCSSOption
         ...(masterCSSResult ? [masterCSSResult] : []),
         ...entryStyleResults
     ]
-    const explicitPlan = planOption ?? scanner.customOptions?.manifest
-    let mergedPlan = compileOptions.baseManifest ?? explicitPlan ?? scanner.css.manifest
+    let mergedPlan = defaultArtifact?.manifest ?? compileOptions.baseManifest ?? explicitPlan ?? scanner.css.manifest
     const finalizedStyleResults = new Map<CompileCSSResult, ReturnType<typeof createManifestFromCSSResult>>()
     for (const result of styleResults) {
         if (!hasCompiledStyleManifestInput(result)) continue
@@ -722,8 +807,11 @@ export async function createExtractedCSSResult(options: CreateExtractedCSSOption
         finalizedStyleResults.set(result, finalizedResult)
     }
     const nativeCSS = [
-        ...(includeGeneratedCSS && includeMasterBaseCSS && masterCSSResult
-            ? [getNativeCSS(finalizedStyleResults.get(masterCSSResult) || masterCSSResult)]
+        ...(includeGeneratedCSS && includeMasterBaseCSS
+            ? [
+                ...(defaultArtifact ? [defaultArtifact.nativeCSS] : []),
+                ...(masterCSSResult ? [getNativeCSS(finalizedStyleResults.get(masterCSSResult) || masterCSSResult)] : [])
+            ]
             : []),
         ...(includeNativeCSS
             ? entryStyleResults

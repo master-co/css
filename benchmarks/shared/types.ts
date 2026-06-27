@@ -21,6 +21,7 @@ export type BenchmarkSuiteId =
     | 'build-diagnostics'
     | 'extraction-diagnostics'
     | 'compiler-diagnostics'
+    | 'startup-diagnostics'
     | 'css-output-size'
     | 'build-performance'
     | 'master-delivery-modes'

@@ -4,25 +4,33 @@ import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
 import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
-import { compileCSSManifest } from '@master/css-compiler'
+import {
+    compileCSSManifest,
+    createManifestFromCSSResult,
+    resolveMasterCSSPackageImportGraph
+} from '@master/css-compiler'
 import CSSScanner from '@master/css-scanner'
 import {
+    compileStyleCSS,
     createStyleCSSHostSource,
     createMasterCSSPackageHostSource,
     createExtractedCSS,
     createExtractedCSSResult,
+    getNativeCSS,
     hasPreserveNativeDirective,
     hasMasterStyleEntrypoint,
     hasLocalStyleDirectives,
     isMasterStyleSource,
     isStyleCSSRequest,
     removeMasterStyleDirectives,
+    removeStyleCSSImports,
     registerStyleCSSSource,
     resolveMasterStyleSource,
     resolveStyleCSSImportGraph,
     replaceStyleCSSImports,
     transformLocalStyleCSS
 } from '../src'
+import { renderCompiledManifestCSS } from '../src/render'
 
 const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
 
@@ -199,8 +207,24 @@ describe('style CSS extraction helpers', () => {
         const hostSource = await createMasterCSSPackageHostSource(process.cwd(), {
             projectDir: process.cwd()
         })
+        const graph = resolveMasterCSSPackageImportGraph(process.cwd())
+        const compileSource = removeMasterStyleDirectives(removeStyleCSSImports(graph.source).code).code
+        const compiledResult = await compileStyleCSS(graph.dependencies[0] || '@master/css', compileSource, {
+            projectDir: process.cwd(),
+            preserveNativeCSS: true
+        })
+        const finalizedResult = createManifestFromCSSResult(compiledResult, {
+            root: process.cwd()
+        })
+        const expectedCSS = renderCompiledManifestCSS({
+            manifest: finalizedResult.manifest,
+            nativeCSS: getNativeCSS(finalizedResult)
+        }).css
 
         expect(hostSource.dependencies.length).toBeGreaterThan(1)
+        expect(hostSource.dependencies.some((dependency) => dependency.endsWith('default-manifest.json'))).toBe(true)
+        expect(hostSource.dependencies.some((dependency) => dependency.endsWith('default-native.css'))).toBe(true)
+        expect(hostSource.source).toBe(expectedCSS)
         expect(hostSource.source).toContain('@layer base')
         expect(hostSource.source).toContain('text-rendering: geometricprecision')
         expect(hostSource.source).toContain('--font-family-sans:var(--font-sans, ui-sans-serif)')
@@ -208,6 +232,18 @@ describe('style CSS extraction helpers', () => {
         expect(hostSource.source).not.toContain('@master/css/base.css')
         expect(hostSource.source).not.toContain('virtual:master-utilities.css')
         expect(hostSource.source).not.toContain('@master')
+    })
+
+    it('tracks default package artifacts as style dependencies', async () => {
+        const root = createFixture()
+        const scanner = new CSSScanner({}, root)
+        await scanner.init()
+
+        const styleCSSSources = new Map()
+        const result = await registerStyleCSSSource(scanner, styleCSSSources, join(root, 'app/globals.css'), '@import "@master/css";')
+
+        expect(result.dependencies.some((dependency: string) => dependency.endsWith('default-manifest.json'))).toBe(true)
+        expect(result.dependencies.some((dependency: string) => dependency.endsWith('default-native.css'))).toBe(true)
     })
 
     it('removes top-level master style directives', () => {
@@ -326,7 +362,14 @@ describe('style CSS extraction helpers', () => {
             styleCSSSources,
             projectDir: root
         })
+        const fallbackCSS = await createExtractedCSS({
+            scanner,
+            styleCSSSources,
+            baseManifest: defaultManifest,
+            projectDir: root
+        })
 
+        expect(css).toBe(fallbackCSS)
         expect(css).toContain('@layer base')
         expect(css).toContain('text-rendering: geometricprecision')
         expect(css).toContain('.main')

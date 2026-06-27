@@ -1,4 +1,5 @@
 import { fileURLToPath } from 'node:url'
+import { readFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { describe, expect, it } from 'vitest'
 import {
@@ -9,7 +10,10 @@ import {
     type MasterCSSCreateOptions
 } from '@master/css-engine'
 import UtilityType from '@master/css-schema/utility-type'
-import { createDefaultManifestFromSourceFile } from '../scripts/generate-default-manifest'
+import {
+    createDefaultManifestFromSourceFile,
+    createDefaultNativeCSSFromSourceFile
+} from '../scripts/generate-default-manifest'
 import defaultManifestJSON from '../src/default-manifest.json' with { type: 'json' }
 import { flattenMasterCSSManifestVariables, type MasterCSSManifest } from '@master/css-schema/manifest'
 
@@ -253,6 +257,17 @@ describe('@master/css-preset defaultManifest', () => {
         expect(hasCSSVariableAssignmentUtility(manifest)).toBe(false)
         expect(hasCSSVariableAssignmentUtility(defaultManifest)).toBe(false)
         expect(manifest).toEqual(defaultManifest)
+    })
+
+    it('matches the readable preset native CSS', () => {
+        const sourceFile = resolve(__dirname, '../src/index.css')
+        const nativeCSSFile = resolve(__dirname, '../src/default-native.css')
+        const nativeCSS = createDefaultNativeCSSFromSourceFile(sourceFile)
+
+        expect(readFileSync(nativeCSSFile, 'utf8')).toBe(nativeCSS)
+        expect(nativeCSS).toContain('@layer base')
+        expect(nativeCSS).toContain('text-rendering: geometricprecision')
+        expect(nativeCSS).toContain('font-family: var(--font-family-sans)')
     })
 
     it('matches the CSS-authored preset manifest facets', () => {
