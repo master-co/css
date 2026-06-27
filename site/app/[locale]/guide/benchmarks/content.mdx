@@ -24,7 +24,7 @@ This page is the public benchmark roadmap and results index for Master CSS. Curr
 | Available | CSS structure metrics | How many rules, selectors, declarations, at-rules, layers, and selector-complexity signals explain CSS byte differences? |
 | Internal | Build path diagnostics | Which Master CSS build, startup, extraction, and compiler substeps explain full command cost? |
 | Internal | Browser CSS cost | How does CSS rule volume affect stylesheet parsing, style calculation, layout, paint, and long tasks with fixed DOM, and how does DOM scaling behave as a fixed-CSS control? |
-| Planned | Master CSS delivery modes | What are the payload and runtime costs of runtime, static, and progressive delivery? |
+| Internal | Master CSS delivery modes | What are the initial payload, browser load, runtime bootstrap, and progressive adoption costs of static, runtime, and progressive delivery? |
 | Planned | Interaction cost | How expensive are class toggles, rule generation, DOM insertion/removal, theme switches, and resize-triggered recalculation? |
 | Research | Tailwind CSS runtime-equivalent comparisons | Tailwind CSS is build-time-first, so runtime claims must be limited to comparable browser CSS costs. |
 | Research | Lighthouse and Web Vitals | Can local fixture runs produce stable enough FCP/LCP/CLS numbers to publish as secondary signals? |
@@ -169,6 +169,8 @@ CSS structure metrics are published beside byte size and production build timing
 
 Progressive begins with server/build-time CSS in the HTML and adds a runtime handoff, so its benchmark needs both first-response payload metrics and post-hydration mutation metrics.
 
+The internal delivery-mode suite currently measures initial payload, local Chromium page load, runtime bootstrap, manifest loading, and progressive style adoption across Master CSS static, runtime, progressive, and Tailwind CSS static variants. It does not publish public result tables yet, and it does not measure post-load mutation; those interaction costs stay in the next suite.
+
 ---
 
 ## Tailwind CSS comparisons
@@ -236,7 +238,7 @@ For Master CSS runtime and progressive modes, interaction benchmarks should repo
 | 3 | Available: implement and publish curated CSS output and production build benchmarks for Master CSS static output versus Tailwind CSS CLI/Vite. |
 | 4 | Available: publish CSS structure metrics from the curated static comparison snapshot. |
 | 5 | Internal: implement browser load cost suites with Playwright/browser tracing, correctness checks, and stable fixture pages. |
-| 6 | Implement Master CSS runtime, static, and progressive delivery benchmarks, reusing existing runtime benchmark coverage where possible. |
+| 6 | Internal: implement Master CSS static, runtime, and progressive delivery benchmarks with local Chromium payload/load/adoption measurements. |
 | 7 | Implement interaction cost suites with Playwright/browser tracing, correctness checks, and stable fixture pages. |
 | 8 | Continue publishing curated result tables on this page while keeping planned/research suites visible until measured. |
 

@@ -449,6 +449,9 @@ importers:
       '@master/css-cli':
         specifier: workspace:^
         version: link:../packages/cli
+      '@master/css-preset':
+        specifier: workspace:^
+        version: link:../packages/preset
       '@master/css-project':
         specifier: workspace:^
         version: link:../packages/project
@@ -458,6 +461,9 @@ importers:
       '@master/css-scanner':
         specifier: workspace:^
         version: link:../packages/scanner
+      '@master/css-server':
+        specifier: workspace:^
+        version: link:../packages/server
       '@master/css-stylesheet':
         specifier: workspace:^
         version: link:../packages/stylesheet
