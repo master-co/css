@@ -178,7 +178,7 @@ function CLIComparisonNote() {
 
 export default function StaticTailwindComparison() {
     return (
-        <div className="grid gap:xl">
+        <>
             <BenchmarkFigure
                 title="Static comparison summary"
                 description="Curated snapshot for Master CSS vs Tailwind CSS generated artifacts, CSS structure, and full production command timing."
@@ -366,6 +366,6 @@ export default function StaticTailwindComparison() {
                     </div>
                 </ExpandContent>
             </BenchmarkFigure>
-        </div>
+        </>
     )
 }

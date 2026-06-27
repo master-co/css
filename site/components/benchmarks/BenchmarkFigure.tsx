@@ -13,7 +13,7 @@ export default function BenchmarkFigure(props: BenchmarkFigureProps) {
     const { title, description, caption, children, className } = props
 
     return (
-        <figure className={clsx('my:xl', className)}>
+        <figure className={className}>
             {(title || description) && (
                 <div className="mb:md">
                     {title && <h3 className="m:0 font-weight:460 font:lg text:strong">{title}</h3>}
