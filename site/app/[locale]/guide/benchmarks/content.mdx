@@ -9,8 +9,9 @@ This page is the public benchmark roadmap and results index for Master CSS. Curr
 | Status | Suite | What it answers |
 |--------|-------|-----------------|
 | Available | Page CSS size | How much inline and external CSS do popular documentation pages transfer? |
-| Next | CSS output size | How large is generated CSS for shared fixtures across Master CSS and Tailwind CSS? |
-| Next | Build and dev performance | How do cold build, warm rebuild, watch updates, dev startup, and scanner work compare? |
+| Available | CSS output size | How large is generated CSS for shared fixtures across Master CSS and Tailwind CSS? |
+| Available | Production build performance | How do cold and repeat production commands compare across Master CSS and Tailwind CSS? |
+| Planned | Dev workflow performance | How do watch updates, dev startup, HMR, and scanner work compare? |
 | Planned | Master CSS delivery modes | What are the payload and runtime costs of runtime, static, and progressive delivery? |
 | Planned | Browser CSS cost | How does CSS volume, selector shape, and DOM size affect style calculation, layout, paint, memory, and long tasks? |
 | Planned | Interaction cost | How expensive are class toggles, rule generation, DOM insertion/removal, theme switches, and resize-triggered recalculation? |
@@ -40,6 +41,15 @@ The current page CSS size benchmark compares the CSS transferred by several offi
 Master CSS keeps this documentation site's page CSS around **6 kB with brotli compression** because progressive rendering emits only the rules required by the page. The `Master CSS` segment is the generated `style#master-css`; `Other inline` covers non-Master inline style tags; `External CSS` covers linked stylesheets.
 
 The page CSS size snapshot is generated from `benchmarks/docs-page-css-size`. It fetches each documentation page, parses the initial HTML, follows `link[rel*="stylesheet"]`, and records raw and brotli-compressed byte counts.
+
+---
+
+## Current result: Static CSS output and production build
+The current Tailwind CSS comparison uses equivalent static fixtures for Master CSS and Tailwind CSS v4. It reports generated CSS artifact size and full production command elapsed time for CLI and Vite setups.
+
+<StaticTailwindComparison />
+
+These numbers do not measure browser parsing, style recalculation, layout, paint, interaction cost, watch mode, or HMR. Tailwind CSS and Master CSS fixtures target equivalent rendered UI intent, not identical class strings.
 
 ---
 
@@ -92,7 +102,7 @@ Tailwind CSS comparisons should use pinned Tailwind CSS v4 tooling and official 
 - [`@tailwindcss/vite`](https://tailwindcss.com/docs/installation/using-vite) for Vite build comparisons.
 - Tailwind source detection behavior from [Detecting classes in source files](https://tailwindcss.com/docs/detecting-classes-in-source-files).
 
-The first Tailwind CSS suites should compare static outputs and build behavior. Runtime claims should be avoided unless the benchmark is explicitly measuring browser CSS cost from static CSS output, because Tailwind CSS does not perform the same client-side class observation work as Master CSS runtime rendering.
+The available Tailwind CSS suites compare static outputs and production build behavior. Runtime claims should be avoided unless the benchmark is explicitly measuring browser CSS cost from static CSS output, because Tailwind CSS does not perform the same client-side class observation work as Master CSS runtime rendering.
 
 Tailwind CSS and Master CSS fixtures should render equivalent UI, but they do not need identical class strings. Setup labels should be explicit: recommended/default setup and utility-only setup are separate results if both are measured. Dynamic-class fixtures should document extraction limits and capability differences separately from raw benchmark wins.
 
@@ -131,10 +141,10 @@ For Master CSS runtime and progressive modes, interaction benchmarks should repo
 |-------|------|
 | 1 | Keep this roadmap updated, add guardrails, and mark the page CSS size benchmark as available. |
 | 2 | Add shared fixture manifests, adapter names, normalized report schemas, ignored raw artifacts, and curated JSON/Markdown output. |
-| 3 | Implement CSS output and build/dev benchmarks for Master CSS static output versus Tailwind CSS CLI/Vite. |
+| 3 | Available: implement and publish curated CSS output and production build benchmarks for Master CSS static output versus Tailwind CSS CLI/Vite. |
 | 4 | Implement Master CSS runtime, static, and progressive delivery benchmarks, reusing existing runtime benchmark coverage where possible. |
 | 5 | Implement browser load and interaction cost suites with Playwright/browser tracing, correctness checks, and stable fixture pages. |
-| 6 | Publish curated result tables on this page while keeping planned/research suites visible until measured. |
+| 6 | Continue publishing curated result tables on this page while keeping planned/research suites visible until measured. |
 
 Future normalized reports should stay internal to the benchmark workspace unless they become a documented public data format. A report should include `schemaVersion`, `suite`, `generatedAt`, `environment`, `packages`, `fixtures`, `variants`, `metrics`, `samples`, `summary`, `limits`, and `artifacts`.
 
