@@ -1,6 +1,7 @@
 import { describe, expect, test } from 'vitest'
 import { MasterCSS } from '@master/css-engine'
 import { compileCSS, compileCSSManifest } from '../src'
+import type { CompilerDiagnosticRecorder } from '../src/diagnostics'
 import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
 import { flattenMasterCSSManifestVariables, type MasterCSSManifest } from '@master/css-schema/manifest'
 import UtilityType from '@master/css-schema/utility-type'
@@ -13,6 +14,31 @@ function variablesOf(manifest: MasterCSSManifest) {
 
 function createTestCSS(manifest: MasterCSSManifest) {
     return MasterCSS.create({ manifest })
+}
+
+class TestDiagnosticRecorder implements CompilerDiagnosticRecorder {
+    readonly counts: Record<string, number> = {}
+
+    time<T>(_metricId: string, callback: () => T): T {
+        return callback()
+    }
+
+    addCount(metricId: string, value = 1) {
+        this.counts[metricId] = (this.counts[metricId] || 0) + value
+    }
+
+    setCount(metricId: string, value: number) {
+        this.counts[metricId] = value
+    }
+}
+
+function compileCSSManifestWithDiagnostics(source: string) {
+    const diagnostics = new TestDiagnosticRecorder()
+    const result = compileCSSManifest(source, {
+        baseManifest: defaultManifest,
+        diagnostics
+    } as NonNullable<Parameters<typeof compileCSSManifest>[1]> & { diagnostics: CompilerDiagnosticRecorder })
+    return { result, diagnostics }
 }
 
 describe.concurrent('CSS-first lowering for migrated core tests', () => {
@@ -852,6 +878,93 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
         expect(css.text).toContain('opacity:0.7')
         expect(css.text).toContain('translate:-5px')
         expect(result.css).toContain('.list>li{text-align:center}')
+    })
+
+    test('batches independent managed style refreshes before native compose', () => {
+        const { result, diagnostics } = compileCSSManifestWithDiagnostics(`
+            @components {
+                alpha {
+                    color: red;
+                }
+
+                beta {
+                    background: blue;
+                }
+            }
+
+            .card {
+                @compose alpha beta;
+            }
+        `)
+
+        expect(result.css).toContain('.card{color:red;background:#00f}')
+        expect(diagnostics.counts['lower-managed-style-refresh-count']).toBe(1)
+    })
+
+    test('refreshes once before a managed compose dependency', () => {
+        const { result, diagnostics } = compileCSSManifestWithDiagnostics(`
+            @components {
+                alpha {
+                    color: red;
+                }
+
+                beta {
+                    @compose alpha;
+                    background: blue;
+                }
+            }
+        `)
+        const css = createTestCSS(result.manifest)
+
+        css.add('beta')
+        expect(css.componentsLayer.text).toContain('.beta{color:red;background:#00f}')
+        expect(diagnostics.counts['lower-managed-style-refresh-count']).toBe(1)
+    })
+
+    test('refreshes once for a multi-dependency managed compose group', () => {
+        const { result, diagnostics } = compileCSSManifestWithDiagnostics(`
+            @components {
+                alpha {
+                    color: red;
+                }
+
+                beta {
+                    background: blue;
+                }
+
+                gamma {
+                    @compose alpha beta;
+                    border-color: green;
+                }
+            }
+        `)
+        const css = createTestCSS(result.manifest)
+
+        css.add('gamma')
+        expect(css.componentsLayer.text).toContain('.gamma{color:red;background:#00f;border-color:green}')
+        expect(diagnostics.counts['lower-managed-style-refresh-count']).toBe(1)
+    })
+
+    test('refreshes pending managed definitions before native compose', () => {
+        const { result, diagnostics } = compileCSSManifestWithDiagnostics(`
+            @components {
+                alpha {
+                    color: red;
+                }
+
+                beta {
+                    @compose alpha;
+                    background: blue;
+                }
+            }
+
+            .card {
+                @compose beta;
+            }
+        `)
+
+        expect(result.css).toContain('.card{color:red;background:#00f}')
+        expect(diagnostics.counts['lower-managed-style-refresh-count']).toBe(2)
     })
 
     test('rejects quoted and grouped compose class lists', () => {

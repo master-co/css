@@ -809,6 +809,11 @@ function createMergedStyleDefinitions(definitions: CSSDirectiveStyleDefinition[]
 type ManagedStyleDefinition = CSSDirectiveStyleDefinition & { name: string }
 type ManagedComposeStyleDefinition = Extract<CSSDirectiveStyleDefinition, { type: 'compose' }> & { name: string }
 
+interface ManagedStyleDefinitionPlan {
+    sortedKeys: string[]
+    dependenciesByKey: Map<string, Set<string>>
+}
+
 function isManagedStyleDefinition(definition: CSSDirectiveStyleDefinition): definition is ManagedStyleDefinition {
     return Boolean(definition.name)
 }
@@ -840,12 +845,12 @@ function getManagedComposeDependencyName(className: string, names: Set<string>) 
     }
 }
 
-function sortManagedStyleDefinitionKeys(
+function createManagedStyleDefinitionPlan(
     groups: Map<string, ManagedStyleDefinition[]>,
     keysByName: Map<string, Set<string>>
-) {
+): ManagedStyleDefinitionPlan {
     const names = new Set(keysByName.keys())
-    const dependencies = new Map<string, Set<string>>()
+    const dependenciesByKey = new Map<string, Set<string>>()
     const dependencyDefinitions = new Map<string, ManagedComposeStyleDefinition>()
     for (const [key, definitions] of groups) {
         const keyDependencies = new Set<string>()
@@ -858,7 +863,7 @@ function sortManagedStyleDefinitionKeys(
                 dependencyDefinitions.set(`${key}\0${dependencyKey}`, definition)
             }
         }
-        dependencies.set(key, keyDependencies)
+        dependenciesByKey.set(key, keyDependencies)
     }
 
     const sorted: string[] = []
@@ -893,7 +898,7 @@ function sortManagedStyleDefinitionKeys(
         }
         visiting.add(key)
         path.push(key)
-        for (const dependency of dependencies.get(key) || []) {
+        for (const dependency of dependenciesByKey.get(key) || []) {
             visit(dependency)
         }
         path.pop()
@@ -905,7 +910,10 @@ function sortManagedStyleDefinitionKeys(
     for (const key of groups.keys()) {
         visit(key)
     }
-    return sorted
+    return {
+        sortedKeys: sorted,
+        dependenciesByKey
+    }
 }
 
 function renderStyleDefinitions(definitions: MergedStyleDefinition[]) {
@@ -952,6 +960,28 @@ function pushStaticUtilityStyleRule(definition: CSSDirectiveUtilityDefinition, s
     definition.rules.push(rule)
 }
 
+function hasUnrefreshedDependencies(dependencies: Set<string> | undefined, unrefreshedKeys: Set<string>) {
+    if (!dependencies?.size || !unrefreshedKeys.size) return false
+    for (const dependency of dependencies) {
+        if (unrefreshedKeys.has(dependency)) return true
+    }
+    return false
+}
+
+function refreshManagedStyleContext(
+    input: CSSDirectiveManifestInput,
+    css: MasterCSS,
+    options: LowerCSSDirectivesOptions
+) {
+    const diagnostics = options.diagnostics
+    const refreshManifest = timeCompilerDiagnostic(diagnostics, 'lower-managed-refresh-manifest-creation-ms', () => createMasterCSSManifest(input, {
+        baseManifest: getResolutionManifest(options),
+        diagnostics
+    }))
+    timeCompilerDiagnostic(diagnostics, 'lower-managed-css-refresh-ms', () => css.refresh(refreshManifest))
+    addCompilerDiagnosticCount(diagnostics, 'lower-managed-style-refresh-count')
+}
+
 function finalizeStyleDefinitions(
     input: CSSDirectiveManifestInput,
     styleDefinitions: CSSDirectiveStyleDefinition[] | undefined,
@@ -991,9 +1021,16 @@ function finalizeStyleDefinitions(
     setCompilerDiagnosticCount(diagnostics, 'lower-managed-style-definition-count', styleDefinitions.length - nativeDefinitions.length)
     setCompilerDiagnosticCount(diagnostics, 'lower-native-style-definition-count', nativeDefinitions.length)
     setCompilerDiagnosticCount(diagnostics, 'lower-managed-style-group-count', managedGroups.size)
+    setCompilerDiagnosticCount(diagnostics, 'lower-managed-style-refresh-count', 0)
 
-    const sortedManagedKeys = timeCompilerDiagnostic(diagnostics, 'lower-managed-style-sort-ms', () => sortManagedStyleDefinitionKeys(managedGroups, keysByName))
-    for (const key of sortedManagedKeys) {
+    const managedPlan = timeCompilerDiagnostic(diagnostics, 'lower-managed-style-sort-ms', () => createManagedStyleDefinitionPlan(managedGroups, keysByName))
+    const unrefreshedKeys = new Set<string>()
+    for (const key of managedPlan.sortedKeys) {
+        if (hasUnrefreshedDependencies(managedPlan.dependenciesByKey.get(key), unrefreshedKeys)) {
+            refreshManagedStyleContext(input, css, options)
+            unrefreshedKeys.clear()
+        }
+
         const definitions = managedGroups.get(key)
         if (!definitions) continue
         const { name, layer } = splitManagedStyleDefinitionKey(key)
@@ -1005,15 +1042,14 @@ function finalizeStyleDefinitions(
                 pushStaticUtilityStyleRule(utilityDefinition, definition)
             }
         })
-        const refreshManifest = timeCompilerDiagnostic(diagnostics, 'lower-managed-refresh-manifest-creation-ms', () => createMasterCSSManifest(input, {
-            baseManifest: getResolutionManifest(options),
-            diagnostics
-        }))
-        timeCompilerDiagnostic(diagnostics, 'lower-managed-css-refresh-ms', () => css.refresh(refreshManifest))
-        addCompilerDiagnosticCount(diagnostics, 'lower-managed-style-refresh-count')
+        unrefreshedKeys.add(key)
     }
 
     if (!nativeDefinitions.length) return ''
+    if (unrefreshedKeys.size) {
+        refreshManagedStyleContext(input, css, options)
+        unrefreshedKeys.clear()
+    }
     const mergedNativeDefinitions = timeCompilerDiagnostic(diagnostics, 'lower-native-style-merge-ms', () => createMergedStyleDefinitions(nativeDefinitions, css))
     addCompilerDiagnosticCount(diagnostics, 'lower-native-merged-style-definition-count', mergedNativeDefinitions.length)
     return timeCompilerDiagnostic(diagnostics, 'lower-native-style-render-ms', () => renderStyleDefinitions(mergedNativeDefinitions))
