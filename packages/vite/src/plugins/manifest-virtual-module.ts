@@ -73,6 +73,7 @@ export default function ManifestVirtualModulePlugin(
         name: 'master-css:virtual-module:manifest',
         enforce: 'pre',
         async buildStart() {
+            if (isProductionBuild(context)) return
             await loadDefaultManifest(this)
         },
         async resolveId(id) {

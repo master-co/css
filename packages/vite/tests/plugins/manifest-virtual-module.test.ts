@@ -67,6 +67,17 @@ describe('ManifestVirtualModulePlugin', () => {
         expect(context.defaultManifestAssetSource).toContain('"version":1')
     })
 
+    it('does not eagerly load the default manifest during production buildStart', async () => {
+        const root = path.join(FIXTURE_DIR, 'css-only')
+        const { context, viteConfig } = createContext(root)
+        context.config.command = 'build'
+        const plugin = ManifestVirtualModulePlugin({}, context)
+
+        await (plugin.buildStart as any).call({})
+
+        expect(viteConfig.server.fs.allow).toEqual([])
+    })
+
     it('emits the default manifest through a universal facade in SSR production build', async () => {
         const root = path.join(FIXTURE_DIR, 'css-only')
         const { context } = createContext(root)
