@@ -308,14 +308,14 @@ importers:
         version: 4.1.9(@opentelemetry/api@1.9.1)(@types/node@25.9.4)(happy-dom@20.10.6)(jsdom@26.1.0)(vite@8.0.16)
     devDependencies:
       '@aronrepo/commitlint-config':
-        specifier: ^2.0.0
-        version: 2.0.0(@commitlint/cli@21.1.0(@types/node@25.9.4)(conventional-commits-filter@5.0.0)(conventional-commits-parser@6.4.0)(typescript@6.0.3))
+        specifier: ^2.1.0
+        version: 2.1.0(@commitlint/cli@21.1.0(@types/node@25.9.4)(conventional-commits-filter@5.0.0)(conventional-commits-parser@6.4.0)(typescript@6.0.3))
       '@aronrepo/semantic-release-config':
-        specifier: ^2.0.0
-        version: 2.0.0(@aronrepo/semantic-release-pnpm@2.0.0(semantic-release@25.0.5(supports-color@5.5.0)(typescript@6.0.3)))(semantic-release@25.0.5(supports-color@5.5.0)(typescript@6.0.3))
+        specifier: ^2.1.0
+        version: 2.1.0(@aronrepo/semantic-release-pnpm@2.1.0(semantic-release@25.0.5(supports-color@5.5.0)(typescript@6.0.3)))(semantic-release@25.0.5(supports-color@5.5.0)(typescript@6.0.3))
       '@aronrepo/semantic-release-pnpm':
-        specifier: ^2.0.0
-        version: 2.0.0(semantic-release@25.0.5(supports-color@5.5.0)(typescript@6.0.3))
+        specifier: ^2.1.0
+        version: 2.1.0(semantic-release@25.0.5(supports-color@5.5.0)(typescript@6.0.3))
       '@commitlint/cli':
         specifier: ^21.1.0
         version: 21.1.0(@types/node@25.9.4)(conventional-commits-filter@5.0.0)(conventional-commits-parser@6.4.0)(typescript@6.0.3)
@@ -2947,25 +2947,25 @@ packages:
   '@apify/utilities@2.34.0':
     resolution: {integrity: sha512-IWpSIwJfdQw+ik1tqWdUMk5k99t1pfDALDQ8yjtXS80UGjVFj23jsi090y00ILuBeyD+BWrobm2pDklUMsAzIQ==}
 
-  '@aronrepo/commitlint-config@2.0.0':
-    resolution: {integrity: sha512-Oj7HXBGVRkS63XIMeUlPEsnZYR8NigliMspieMp6Gv/fc1Gy9FUYKoxFj+GM7BTH4o7YtklFiOV7Oh80e2W4mA==}
+  '@aronrepo/commitlint-config@2.1.0':
+    resolution: {integrity: sha512-fZ7hjHVDWlgxWtJeZ71t+BneGCQnX9yjzEYhiRL4YMOLz6N4WWBBOrt4JCFlBdXLD2mvRnqyC+iC+HDZ620jDQ==}
     peerDependencies:
       '@commitlint/cli': '*'
 
-  '@aronrepo/conventional-changelog-config@2.0.0':
-    resolution: {integrity: sha512-Ry8hHfwG7KucD1kDeySkR5yTL8MlWbM69qkJsnov8+vYkq+crpQQLIspJZ0iJRSsthLJf6dOWcGAPbclBmKi/Q==}
+  '@aronrepo/conventional-changelog-config@2.1.0':
+    resolution: {integrity: sha512-mgaAMlSspRPncxjsyqF+l2WUP+IJjuy+OEiPnBBlF5wEZlIa6LJmDmAGSh1YQIivJHzNxiiYhbBMi59f/4IIkg==}
 
-  '@aronrepo/conventional-commits@2.0.0':
-    resolution: {integrity: sha512-XfUurZYB9JYmbwyDAUYR4XC9Ic9sRvbj9IGfGJP9gAZmvU3vGuAetX56jWoL4TYTRfyPJG56pJnesy9aIYbapA==}
+  '@aronrepo/conventional-commits@2.1.0':
+    resolution: {integrity: sha512-La6rAR/VejmpdduKKa27ggRes7Cwx8ZFq2RHCmXnr4/RQbxZ9oGaM1NHMVh8mBzRFgoKAq2N75PXgajeZIiBVQ==}
 
-  '@aronrepo/semantic-release-config@2.0.0':
-    resolution: {integrity: sha512-zF+T3+6fbfoG4h18WeAIoIDRZ/rGzw0UnJkBfPUj10fwSsx4AB8Rx2WpcMCO9Y5T0fRCO3SoyVadHIY1nVc8ug==}
+  '@aronrepo/semantic-release-config@2.1.0':
+    resolution: {integrity: sha512-qT8yVM1NhxzX6u3wjOT2GXbMuelLtGAmJySBF5j/vUHIt5RYpJ1j02TIHqe0/VeoOUnXp2F0Io7U6OQBJdUb4A==}
     peerDependencies:
       '@aronrepo/semantic-release-pnpm': '*'
       semantic-release: '*'
 
-  '@aronrepo/semantic-release-pnpm@2.0.0':
-    resolution: {integrity: sha512-PAT3wzblYUdxyvEe75TqzgjT4qixf01rru8W1+uSf9rtp6hRsUi9tTlWgEYchptdQIxJnYFGVB3ETSZ+xC93OA==}
+  '@aronrepo/semantic-release-pnpm@2.1.0':
+    resolution: {integrity: sha512-WbLzNHIYPHz1JEjHZscdDPFSzohdIN4BYAhkLiC1fSDMuGFpgvXuR6Mxt9pZIMzEaYHVpa+sR8/2rw39ujvtHQ==}
     peerDependencies:
       semantic-release: '*'
 
@@ -21436,23 +21436,23 @@ snapshots:
       '@apify/consts': 2.53.3
       '@apify/log': 2.5.41
 
-  '@aronrepo/commitlint-config@2.0.0(@commitlint/cli@21.1.0(@types/node@25.9.4)(conventional-commits-filter@5.0.0)(conventional-commits-parser@6.4.0)(typescript@6.0.3))':
+  '@aronrepo/commitlint-config@2.1.0(@commitlint/cli@21.1.0(@types/node@25.9.4)(conventional-commits-filter@5.0.0)(conventional-commits-parser@6.4.0)(typescript@6.0.3))':
     dependencies:
-      '@aronrepo/conventional-changelog-config': 2.0.0
-      '@aronrepo/conventional-commits': 2.0.0
+      '@aronrepo/conventional-changelog-config': 2.1.0
+      '@aronrepo/conventional-commits': 2.1.0
       '@commitlint/cli': 21.1.0(@types/node@25.9.4)(conventional-commits-filter@5.0.0)(conventional-commits-parser@6.4.0)(typescript@6.0.3)
 
-  '@aronrepo/conventional-changelog-config@2.0.0':
+  '@aronrepo/conventional-changelog-config@2.1.0':
     dependencies:
-      '@aronrepo/conventional-commits': 2.0.0
+      '@aronrepo/conventional-commits': 2.1.0
 
-  '@aronrepo/conventional-commits@2.0.0': {}
+  '@aronrepo/conventional-commits@2.1.0': {}
 
-  '@aronrepo/semantic-release-config@2.0.0(@aronrepo/semantic-release-pnpm@2.0.0(semantic-release@25.0.5(supports-color@5.5.0)(typescript@6.0.3)))(semantic-release@25.0.5(supports-color@5.5.0)(typescript@6.0.3))':
+  '@aronrepo/semantic-release-config@2.1.0(@aronrepo/semantic-release-pnpm@2.1.0(semantic-release@25.0.5(supports-color@5.5.0)(typescript@6.0.3)))(semantic-release@25.0.5(supports-color@5.5.0)(typescript@6.0.3))':
     dependencies:
-      '@aronrepo/conventional-changelog-config': 2.0.0
-      '@aronrepo/conventional-commits': 2.0.0
-      '@aronrepo/semantic-release-pnpm': 2.0.0(semantic-release@25.0.5(supports-color@5.5.0)(typescript@6.0.3))
+      '@aronrepo/conventional-changelog-config': 2.1.0
+      '@aronrepo/conventional-commits': 2.1.0
+      '@aronrepo/semantic-release-pnpm': 2.1.0(semantic-release@25.0.5(supports-color@5.5.0)(typescript@6.0.3))
       consola: 3.4.2
       defu: 6.1.7
       fast-glob: 3.3.3
@@ -21460,7 +21460,7 @@ snapshots:
       js-yaml: 5.1.0
       semantic-release: 25.0.5(supports-color@5.5.0)(typescript@6.0.3)
 
-  '@aronrepo/semantic-release-pnpm@2.0.0(semantic-release@25.0.5(supports-color@5.5.0)(typescript@6.0.3))':
+  '@aronrepo/semantic-release-pnpm@2.1.0(semantic-release@25.0.5(supports-color@5.5.0)(typescript@6.0.3))':
     dependencies:
       '@actions/core': 3.0.1
       '@semantic-release/error': 4.0.0

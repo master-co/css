@@ -111,7 +111,7 @@ Commits must follow Aronrepo conventional commits:
 Type(Target): Summary
 ```
 
-`Type` must be one of `Bump`, `Feat`, `New`, `Perf`, `Add`, `Update`, `Improve`, `Fix`, `Deprecate`, `Drop`, `Docs`, `Upgrade`, `Revert`, `Example`, `Test`, `Refactor`, `Chore`, or `Misc`. `Target` is optional but recommended for monorepo package, workflow, role, or policy changes. Use PascalCase types, sentence case, and no trailing period. Use release-impacting types only when published package behavior, public APIs, release behavior, or published README content changes; use `Chore(Agent)` for internal AI instructions and repository guidance.
+`Type` must be one of `Bump`, `Feat`, `New`, `Perf`, `Add`, `Update`, `Improve`, `Fix`, `Deprecate`, `Drop`, `Docs`, `Upgrade`, `Revert`, `Example`, `Test`, `Benchmark`, `Build`, `CI`, `Style`, `Refactor`, `Chore`, or `Misc`. `Target` is optional but recommended for monorepo package, workflow, role, or policy changes. Use PascalCase types except uppercase `CI`, sentence case, and no trailing period. Use release-impacting types only when published package behavior, public APIs, release behavior, or published README content changes; use `Chore(Agent)` for internal AI instructions, `Chore(Deps)` for development dependency or lockfile changes, `Build` for dev-only tooling, `CI` for workflow/status checks, `Style` for formatting/lint-only changes, and `Benchmark` for measurement-only changes.
 
 ## Review Defaults
 
