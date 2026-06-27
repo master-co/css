@@ -22,7 +22,7 @@ export const benchmarkFixtures = [
         name: 'Dashboard',
         purpose: 'Repeated cards, tables, filters, charts, and states.',
         stress: 'Rule reuse, duplicated utilities, and large DOM.',
-        suites: ['css-output-size', 'css-structure', 'build-performance', 'build-diagnostics', 'extraction-diagnostics', 'compiler-diagnostics', 'startup-diagnostics', 'master-delivery-modes', 'progressive-hydration-diagnostics', 'browser-css-cost'],
+        suites: ['css-output-size', 'css-structure', 'build-performance', 'build-diagnostics', 'extraction-diagnostics', 'compiler-diagnostics', 'startup-diagnostics', 'master-delivery-modes', 'progressive-hydration-diagnostics', 'browser-css-cost', 'interaction-cost'],
         limits: ['Chart visuals are fixture placeholders, not a chart-library benchmark.']
     },
     {

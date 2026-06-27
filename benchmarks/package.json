@@ -9,6 +9,7 @@
         "bench:css-structure": "vitest bench css-structure",
         "bench:docs-page-css-size": "vitest bench docs-page-css-size",
         "bench:extraction-diagnostics": "vitest bench extraction-diagnostics",
+        "bench:interaction-cost": "vitest bench interaction-cost",
         "bench:master-delivery-modes": "vitest bench master-delivery-modes",
         "bench:progressive-hydration-diagnostics": "vitest bench progressive-hydration-diagnostics",
         "bench:report-smoke": "vitest bench report-smoke",
