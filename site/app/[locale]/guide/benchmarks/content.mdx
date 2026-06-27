@@ -63,7 +63,10 @@ The current Tailwind CSS comparison uses equivalent static fixtures for Master C
 ### Snapshot summary
 This curated snapshot is generated from `css-output-size`, `build-performance`, and `css-structure` on Apple M3 Max with Node v24.15.0. View the committed [snapshot data](https://github.com/master-co/css/tree/rc/benchmarks/tailwind-static-comparison/snapshot.json).
 
-<StaticComparisonSummary />
+<figure>
+    <StaticComparisonSummary />
+    <figcaption>Summary of the curated static comparison snapshot across all measured fixtures.</figcaption>
+</figure>
 
 ### Representative fixture
 The primary charts show the `docs` fixture so the visual comparison stays focused. This fixture represents a dense article and documentation layout with navigation, code blocks, and tables.
@@ -73,17 +76,26 @@ The primary charts compare Master CSS and Tailwind CSS using CLI output so the h
 #### Brotli CSS output
 Master CSS versus Tailwind CSS compressed output for the `docs` fixture. Lower is smaller generated CSS, not browser style cost.
 
-<StaticCSSOutputChart />
+<figure>
+    <StaticCSSOutputChart />
+    <figcaption>Brotli-compressed CSS output for the `docs` fixture using the CLI setup.</figcaption>
+</figure>
 
 #### Cold production command
 Master CSS versus Tailwind CSS full production command timing for the `docs` fixture. Lower is faster and this is not watch mode.
 
-<StaticBuildChart />
+<figure>
+    <StaticBuildChart />
+    <figcaption>Cold production command median for the `docs` fixture using the CLI setup.</figcaption>
+</figure>
 
 #### CSS structure
 Master CSS versus Tailwind CSS declaration counts for the `docs` fixture. These AST-derived metrics are structure signals, not browser style-calculation timings.
 
-<StaticStructureChart />
+<figure>
+    <StaticStructureChart />
+    <figcaption>Generated declaration counts for the `docs` fixture from a CSS AST parse.</figcaption>
+</figure>
 
 ### Complete data tables
 The tables keep every measured fixture and both CLI/Vite setup variants for verification.
@@ -91,17 +103,26 @@ The tables keep every measured fixture and both CLI/Vite setup variants for veri
 #### CSS bytes
 Raw, gzip, and brotli byte counts for each generated CSS artifact.
 
-<StaticCSSBytesTable />
+<figure>
+    <StaticCSSBytesTable />
+    <figcaption>Complete CSS byte data for every measured fixture and CLI/Vite setup.</figcaption>
+</figure>
 
 #### Production build
 Median elapsed time for cold and repeat production commands.
 
-<StaticBuildTable />
+<figure>
+    <StaticBuildTable />
+    <figcaption>Complete production command timing data for every measured fixture and CLI/Vite setup.</figcaption>
+</figure>
 
 #### CSS structure table
 Rule, selector, declaration, at-rule, layer, and selector-shape counts parsed from generated CSS artifacts.
 
-<StaticStructureTable />
+<figure>
+    <StaticStructureTable />
+    <figcaption>Complete CSS structure data for every measured fixture and CLI/Vite setup.</figcaption>
+</figure>
 
 These numbers do not measure browser parsing, style recalculation, layout, paint, interaction cost, watch mode, or HMR. CSS structure metrics explain generated output shape; they are not browser timing metrics. Tailwind CSS and Master CSS fixtures target equivalent rendered UI intent, not identical class strings.
 
