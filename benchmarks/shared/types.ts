@@ -19,6 +19,7 @@ export type BenchmarkSuiteId =
     | 'docs-page-css-size'
     | 'report-smoke'
     | 'build-diagnostics'
+    | 'extraction-diagnostics'
     | 'css-output-size'
     | 'build-performance'
     | 'master-delivery-modes'
