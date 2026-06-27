@@ -23,6 +23,7 @@ export type BenchmarkSuiteId =
     | 'compiler-diagnostics'
     | 'startup-diagnostics'
     | 'css-output-size'
+    | 'css-structure'
     | 'build-performance'
     | 'master-delivery-modes'
     | 'browser-css-cost'

@@ -39,6 +39,7 @@ export interface StaticBuildTool {
 export interface StaticBuildResult {
     elapsedMs: number
     artifacts: BenchmarkArtifact[]
+    cssFiles: string[]
     cssFileCount: number
     cssBytes: ByteSummary
 }
@@ -114,7 +115,7 @@ export function getStaticBenchmarkFixtures(fixtures: BenchmarkFixture[]) {
 }
 
 export async function runStaticBuild(options: {
-    suite: 'css-output-size' | 'build-performance' | 'build-diagnostics'
+    suite: 'css-output-size' | 'css-structure' | 'build-performance' | 'build-diagnostics'
     fixtureId: BenchmarkFixtureId
     tool: StaticBuildTool
     round: number
@@ -158,6 +159,7 @@ export async function runPreparedStaticBuild(workspace: string, fixtureId: Bench
     return {
         elapsedMs: result.elapsedMs,
         artifacts: await Promise.all(cssFiles.map((file) => measureRelativeArtifact(file))),
+        cssFiles,
         cssFileCount: cssFiles.length,
         cssBytes: summarizeBytes(cssBuffer)
     }

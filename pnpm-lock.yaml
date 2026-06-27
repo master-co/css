@@ -470,6 +470,12 @@ importers:
       '@tailwindcss/vite':
         specifier: ^4.3.1
         version: 4.3.1(vite@8.0.16)
+      '@types/css-tree':
+        specifier: ^2.3.11
+        version: 2.3.11
+      css-tree:
+        specifier: ^3.2.1
+        version: 3.2.1
       fast-glob:
         specifier: ^3.3.3
         version: 3.3.3
