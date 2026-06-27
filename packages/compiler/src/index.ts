@@ -8,6 +8,7 @@ import type { CSSDirectiveReference } from '@master/css-schema/css-directives'
 import { MASTER_CSS_ENTRY_DIRECTIVE_NAME } from '@master/css-lexer'
 import { createMasterCSSManifest } from './master-css-manifest'
 import lowerCSSDirectives from './lower-css-directives'
+import type { CompilerDiagnosticRecorder } from './diagnostics'
 import {
     compileCSS,
     createCSSDirectiveExtractionPolicy,
@@ -74,6 +75,7 @@ export type CompileCSSManifestSourceOptions = CompileCSSOptions & {
 
 type CompileCSSManifestInternalOptions = CompileCSSManifestSourceOptions & {
     referenceStack?: string[]
+    diagnostics?: CompilerDiagnosticRecorder
 }
 
 export interface CompileCSSManifestResult extends Omit<CompileCSSResult, 'manifestInput'> {
@@ -356,7 +358,8 @@ function toCompileCSSManifestResult(
     const lowerResult = lowerCSSDirectives(result, {
         baseManifest: options.baseManifest,
         resolutionManifest: referenceContext.manifest,
-        onWarning: options.onWarning
+        onWarning: options.onWarning,
+        diagnostics: options.diagnostics
     })
     const dependencies: string[] = []
     const warnings: string[] = []

@@ -20,6 +20,7 @@ export type BenchmarkSuiteId =
     | 'report-smoke'
     | 'build-diagnostics'
     | 'extraction-diagnostics'
+    | 'compiler-diagnostics'
     | 'css-output-size'
     | 'build-performance'
     | 'master-delivery-modes'

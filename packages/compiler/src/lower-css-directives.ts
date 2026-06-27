@@ -25,11 +25,18 @@ import { createMasterCSSManifest, createVariableNameResolver, type CSSDirectiveV
 import { combineStyleSelectors } from './utils/selectors'
 import wrapAtRules from './utils/wrap-at-rules'
 import { cssTreeNativeDeclarationMatcher } from './native-declaration'
+import {
+    addCompilerDiagnosticCount,
+    setCompilerDiagnosticCount,
+    timeCompilerDiagnostic,
+    type CompilerDiagnosticRecorder
+} from './diagnostics'
 
 export interface LowerCSSDirectivesOptions {
     baseManifest?: MasterCSSManifest
     resolutionManifest?: MasterCSSManifest
     onWarning?: (warning: string) => void
+    diagnostics?: CompilerDiagnosticRecorder
 }
 
 export interface LowerCSSDirectivesResult {
@@ -271,11 +278,13 @@ function warnUnsupportedMediaModes(input: CSSDirectiveManifestInput, options: Lo
 }
 
 function createDirectiveCSS(input: CSSDirectiveManifestInput, options: LowerCSSDirectivesOptions) {
-    return createCompilerCSS(createMasterCSSManifest(input, {
-        baseManifest: getResolutionManifest(options)
-    }), undefined, {
+    const manifest = timeCompilerDiagnostic(options.diagnostics, 'lower-directive-css-manifest-creation-ms', () => createMasterCSSManifest(input, {
+        baseManifest: getResolutionManifest(options),
+        diagnostics: options.diagnostics
+    }))
+    return timeCompilerDiagnostic(options.diagnostics, 'lower-create-compiler-css-ms', () => createCompilerCSS(manifest, undefined, {
         nativeDeclarationMatcher: cssTreeNativeDeclarationMatcher
-    })
+    }))
 }
 
 function getUtilityAtRuleDefinitions(utility: GeneratedRule) {
@@ -569,13 +578,15 @@ function ensureUtilityRules(definition: CSSDirectiveUtilityDefinition) {
     })
 }
 
-function finalizeUtilityDefinitions(input: CSSDirectiveManifestInput, css: MasterCSS) {
+function finalizeUtilityDefinitions(input: CSSDirectiveManifestInput, css: MasterCSS, options: LowerCSSDirectivesOptions) {
     const utilities = input.utilities
     if (!utilities?.length) return
 
+    const diagnostics = options.diagnostics
+    setCompilerDiagnosticCount(diagnostics, 'lower-utility-definition-count', utilities.length)
     for (const definition of utilities) {
         if (definition.atRules?.some(readCSSDirectiveVariantReference)) {
-            const resolvedBranches = resolveConfiguredBranches(definition.atRules, css)
+            const resolvedBranches = timeCompilerDiagnostic(diagnostics, 'lower-utility-at-rule-resolution-ms', () => resolveConfiguredBranches(definition.atRules, css))
             delete definition.atRules
             if (definition.declarations) {
                 definition.rules ??= []
@@ -592,7 +603,7 @@ function finalizeUtilityDefinitions(input: CSSDirectiveManifestInput, css: Maste
 
         if (!definition.rules?.length) continue
         definition.rules = definition.rules.flatMap((rule) => {
-            const resolvedBranches = resolveConfiguredBranches(rule.atRules, css, rule.selector || '&')
+            const resolvedBranches = timeCompilerDiagnostic(diagnostics, 'lower-utility-rule-resolution-ms', () => resolveConfiguredBranches(rule.atRules, css, rule.selector || '&'))
             return resolvedBranches.map((resolved) => ({
                 declarations: rule.declarations,
                 ...(resolved.selector !== '&' ? { selector: resolved.selector } : {}),
@@ -949,59 +960,90 @@ function finalizeStyleDefinitions(
 ) {
     if (!styleDefinitions?.length) return ''
 
+    const diagnostics = options.diagnostics
+    setCompilerDiagnosticCount(diagnostics, 'lower-style-definition-count', styleDefinitions.length)
     const managedGroups = new Map<string, ManagedStyleDefinition[]>()
     const keysByName = new Map<string, Set<string>>()
     const nativeDefinitions: CSSDirectiveStyleDefinition[] = []
 
-    for (const definition of styleDefinitions) {
-        if (!isManagedStyleDefinition(definition)) {
-            nativeDefinitions.push(definition)
-            continue
+    timeCompilerDiagnostic(diagnostics, 'lower-style-definition-grouping-ms', () => {
+        for (const definition of styleDefinitions) {
+            if (!isManagedStyleDefinition(definition)) {
+                nativeDefinitions.push(definition)
+                continue
+            }
+            const key = getManagedStyleDefinitionKey(definition)
+            const group = managedGroups.get(key)
+            if (group) {
+                group.push(definition)
+            } else {
+                managedGroups.set(key, [definition])
+            }
+            const nameKeys = keysByName.get(definition.name)
+            if (nameKeys) {
+                nameKeys.add(key)
+            } else {
+                keysByName.set(definition.name, new Set([key]))
+            }
         }
-        const key = getManagedStyleDefinitionKey(definition)
-        const group = managedGroups.get(key)
-        if (group) {
-            group.push(definition)
-        } else {
-            managedGroups.set(key, [definition])
-        }
-        const nameKeys = keysByName.get(definition.name)
-        if (nameKeys) {
-            nameKeys.add(key)
-        } else {
-            keysByName.set(definition.name, new Set([key]))
-        }
-    }
+    })
 
-    for (const key of sortManagedStyleDefinitionKeys(managedGroups, keysByName)) {
+    setCompilerDiagnosticCount(diagnostics, 'lower-managed-style-definition-count', styleDefinitions.length - nativeDefinitions.length)
+    setCompilerDiagnosticCount(diagnostics, 'lower-native-style-definition-count', nativeDefinitions.length)
+    setCompilerDiagnosticCount(diagnostics, 'lower-managed-style-group-count', managedGroups.size)
+
+    const sortedManagedKeys = timeCompilerDiagnostic(diagnostics, 'lower-managed-style-sort-ms', () => sortManagedStyleDefinitionKeys(managedGroups, keysByName))
+    for (const key of sortedManagedKeys) {
         const definitions = managedGroups.get(key)
         if (!definitions) continue
         const { name, layer } = splitManagedStyleDefinitionKey(key)
-        const mergedDefinitions = createMergedStyleDefinitions(definitions, css, layer)
-        for (const definition of mergedDefinitions) {
-            const utilityDefinition = getStaticUtilityDefinition(input, name, layer)
-            pushStaticUtilityStyleRule(utilityDefinition, definition)
-        }
-        css.refresh(createMasterCSSManifest(input, { baseManifest: getResolutionManifest(options) }))
+        const mergedDefinitions = timeCompilerDiagnostic(diagnostics, 'lower-managed-style-merge-ms', () => createMergedStyleDefinitions(definitions, css, layer))
+        addCompilerDiagnosticCount(diagnostics, 'lower-managed-merged-style-definition-count', mergedDefinitions.length)
+        timeCompilerDiagnostic(diagnostics, 'lower-managed-style-push-ms', () => {
+            for (const definition of mergedDefinitions) {
+                const utilityDefinition = getStaticUtilityDefinition(input, name, layer)
+                pushStaticUtilityStyleRule(utilityDefinition, definition)
+            }
+        })
+        const refreshManifest = timeCompilerDiagnostic(diagnostics, 'lower-managed-refresh-manifest-creation-ms', () => createMasterCSSManifest(input, {
+            baseManifest: getResolutionManifest(options),
+            diagnostics
+        }))
+        timeCompilerDiagnostic(diagnostics, 'lower-managed-css-refresh-ms', () => css.refresh(refreshManifest))
+        addCompilerDiagnosticCount(diagnostics, 'lower-managed-style-refresh-count')
     }
 
     if (!nativeDefinitions.length) return ''
-    return renderStyleDefinitions(createMergedStyleDefinitions(nativeDefinitions, css))
+    const mergedNativeDefinitions = timeCompilerDiagnostic(diagnostics, 'lower-native-style-merge-ms', () => createMergedStyleDefinitions(nativeDefinitions, css))
+    addCompilerDiagnosticCount(diagnostics, 'lower-native-merged-style-definition-count', mergedNativeDefinitions.length)
+    return timeCompilerDiagnostic(diagnostics, 'lower-native-style-render-ms', () => renderStyleDefinitions(mergedNativeDefinitions))
 }
 
 export default function lowerCSSDirectives(input: CSSDirectiveManifestInputSource, options: LowerCSSDirectivesOptions = {}): LowerCSSDirectivesResult {
-    const directiveInput = normalizeDirectiveInput(input, options)
-    const resolveVariableName = createVariableNameResolver(directiveInput, { baseManifest: getResolutionManifest(options) })
+    const diagnostics = options.diagnostics
+    const directiveInput = timeCompilerDiagnostic(diagnostics, 'lower-normalize-directive-input-ms', () => normalizeDirectiveInput(input, options))
+    setCompilerDiagnosticCount(diagnostics, 'lower-input-variable-count', directiveInput.variables?.length || 0)
+    setCompilerDiagnosticCount(diagnostics, 'lower-input-utility-count', directiveInput.utilities?.length || 0)
+    setCompilerDiagnosticCount(diagnostics, 'lower-input-variant-count', directiveInput.variants?.length || 0)
+    setCompilerDiagnosticCount(diagnostics, 'lower-input-animation-count', Object.keys(directiveInput.animations || {}).length)
+    const resolveVariableName = timeCompilerDiagnostic(diagnostics, 'lower-variable-name-resolver-ms', () => createVariableNameResolver(directiveInput, { baseManifest: getResolutionManifest(options) }))
     const warnings = isCSSDirectiveResult(input) ? [...input.warnings] : []
 
-    validateTokenConflicts(directiveInput, resolveVariableName)
-    warnUnsupportedMediaModes(directiveInput, options, warnings)
+    timeCompilerDiagnostic(diagnostics, 'lower-validate-token-conflicts-ms', () => validateTokenConflicts(directiveInput, resolveVariableName))
+    timeCompilerDiagnostic(diagnostics, 'lower-warn-media-modes-ms', () => warnUnsupportedMediaModes(directiveInput, options, warnings))
 
-    const css = createDirectiveCSS(directiveInput, options)
-    finalizeUtilityDefinitions(directiveInput, css)
-    css.refresh(createMasterCSSManifest(directiveInput, { baseManifest: getResolutionManifest(options) }))
-    const generatedCSS = finalizeStyleDefinitions(directiveInput, getStyleDefinitions(input), css, options)
-    const manifest = createMasterCSSManifest(directiveInput, { baseManifest: options.baseManifest })
+    const css = timeCompilerDiagnostic(diagnostics, 'lower-create-directive-css-total-ms', () => createDirectiveCSS(directiveInput, options))
+    timeCompilerDiagnostic(diagnostics, 'lower-finalize-utility-definitions-ms', () => finalizeUtilityDefinitions(directiveInput, css, options))
+    const initialRefreshManifest = timeCompilerDiagnostic(diagnostics, 'lower-initial-refresh-manifest-creation-ms', () => createMasterCSSManifest(directiveInput, {
+        baseManifest: getResolutionManifest(options),
+        diagnostics
+    }))
+    timeCompilerDiagnostic(diagnostics, 'lower-initial-css-refresh-ms', () => css.refresh(initialRefreshManifest))
+    const generatedCSS = timeCompilerDiagnostic(diagnostics, 'lower-finalize-style-definitions-total-ms', () => finalizeStyleDefinitions(directiveInput, getStyleDefinitions(input), css, options))
+    const manifest = timeCompilerDiagnostic(diagnostics, 'lower-final-manifest-creation-ms', () => createMasterCSSManifest(directiveInput, {
+        baseManifest: options.baseManifest,
+        diagnostics
+    }))
 
     return {
         input: directiveInput,

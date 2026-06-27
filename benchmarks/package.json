@@ -3,6 +3,7 @@
     "scripts": {
         "bench:build-diagnostics": "vitest bench build-diagnostics",
         "bench:build-performance": "vitest bench build-performance",
+        "bench:compiler-diagnostics": "vitest bench compiler-diagnostics",
         "bench:css-output-size": "vitest bench css-output-size",
         "bench:docs-page-css-size": "vitest bench docs-page-css-size",
         "bench:extraction-diagnostics": "vitest bench extraction-diagnostics",

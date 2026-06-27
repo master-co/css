@@ -33,6 +33,12 @@ import {
     parseAt,
     parseSelector
 } from '@master/css-engine/compiler'
+import {
+    addCompilerDiagnosticCount,
+    setCompilerDiagnosticCount,
+    timeCompilerDiagnostic,
+    type CompilerDiagnosticRecorder
+} from './diagnostics'
 import { builtinNamespaces } from '@master/css-engine'
 import { isNativeCSSShorthandProperty } from '@master/css-schema/native-css-shorthand'
 
@@ -40,6 +46,7 @@ export type CSSDirectiveManifestInput = SharedCSSDirectiveManifestInput
 
 export interface CreateMasterCSSManifestOptions {
     baseManifest?: MasterCSSManifest
+    diagnostics?: CompilerDiagnosticRecorder
 }
 
 const NUMERIC_THEME_NAMESPACES = new Set(['font-size', 'radius', 'spacing', 'breakpoint', 'container'])
@@ -709,11 +716,18 @@ function mergeManifest(baseManifest: MasterCSSManifest | undefined, fragment: Ma
 }
 
 export function createMasterCSSManifest(input: CSSDirectiveManifestInput = {}, options: CreateMasterCSSManifestOptions = {}): MasterCSSManifest {
+    const diagnostics = options.diagnostics
+    addCompilerDiagnosticCount(diagnostics, 'manifest-create-count')
+    setCompilerDiagnosticCount(diagnostics, 'manifest-input-variable-count', input.variables?.length || 0)
+    setCompilerDiagnosticCount(diagnostics, 'manifest-input-utility-count', input.utilities?.length || 0)
+    setCompilerDiagnosticCount(diagnostics, 'manifest-input-variant-count', input.variants?.length || 0)
+    setCompilerDiagnosticCount(diagnostics, 'manifest-input-animation-count', Object.keys(input.animations || {}).length)
+
     const rootSize = input.rootSize ?? options.baseManifest?.settings?.rootSize ?? 16
-    const resolveVariableName = createVariableNameResolver(input, options)
-    const variableDefinitions = compileVariables(input.variables, resolveVariableName)
-    const variables = groupMasterCSSManifestVariables(variableDefinitions)
-    const { atRules, breakpointAtRules, containerAtRules } = compileAtRules(variableDefinitions, rootSize)
+    const resolveVariableName = timeCompilerDiagnostic(diagnostics, 'manifest-variable-name-resolver-ms', () => createVariableNameResolver(input, options))
+    const variableDefinitions = timeCompilerDiagnostic(diagnostics, 'manifest-compile-variables-ms', () => compileVariables(input.variables, resolveVariableName))
+    const variables = timeCompilerDiagnostic(diagnostics, 'manifest-group-variables-ms', () => groupMasterCSSManifestVariables(variableDefinitions))
+    const { atRules, breakpointAtRules, containerAtRules } = timeCompilerDiagnostic(diagnostics, 'manifest-compile-at-rules-ms', () => compileAtRules(variableDefinitions, rootSize))
     const settings = {
         ...(input.rootSize !== undefined ? { rootSize: input.rootSize } : {}),
         ...(input.baseUnit !== undefined ? { baseUnit: input.baseUnit } : {}),
@@ -723,18 +737,18 @@ export function createMasterCSSManifest(input: CSSDirectiveManifestInput = {}, o
         ...(input.modeTrigger !== undefined ? { modeTrigger: input.modeTrigger } : {}),
         ...(input.modes?.length ? { modes: [...input.modes] } : {})
     }
-    const variantBaseManifest = mergeManifest(options.baseManifest, {
+    const variantBaseManifest = timeCompilerDiagnostic(diagnostics, 'manifest-variant-base-merge-ms', () => mergeManifest(options.baseManifest, {
         version: 1,
         ...(Object.keys(settings).length ? { settings } : {}),
         ...(variables ? { variables } : {}),
         ...(atRules ? { atRules } : {}),
         ...(breakpointAtRules ? { breakpointAtRules } : {}),
         ...(containerAtRules ? { containerAtRules } : {})
-    })
-    const { variants, selectors, atRules: variantAtRules } = compileVariants(input.variants as MasterCSSManifestVariants | undefined, variantBaseManifest)
-    const utilities = compileUtilities(input.utilities)
-    const animations = compileAnimations(input.animations)
-    const animationOptions = compileAnimationOptions(input.animationOptions)
+    }))
+    const { variants, selectors, atRules: variantAtRules } = timeCompilerDiagnostic(diagnostics, 'manifest-compile-variants-ms', () => compileVariants(input.variants as MasterCSSManifestVariants | undefined, variantBaseManifest))
+    const utilities = timeCompilerDiagnostic(diagnostics, 'manifest-compile-utilities-ms', () => compileUtilities(input.utilities))
+    const animations = timeCompilerDiagnostic(diagnostics, 'manifest-compile-animations-ms', () => compileAnimations(input.animations))
+    const animationOptions = timeCompilerDiagnostic(diagnostics, 'manifest-compile-animation-options-ms', () => compileAnimationOptions(input.animationOptions))
     const fragment: MasterCSSManifest = {
         version: 1,
         ...(Object.keys(settings).length ? { settings } : {}),
@@ -748,5 +762,12 @@ export function createMasterCSSManifest(input: CSSDirectiveManifestInput = {}, o
         ...(selectors ? { selectors } : {}),
         ...(utilities?.length ? { utilities } : {})
     }
-    return mergeManifest(options.baseManifest, fragment)
+    const manifest = timeCompilerDiagnostic(diagnostics, 'manifest-final-merge-ms', () => mergeManifest(options.baseManifest, fragment))
+    setCompilerDiagnosticCount(diagnostics, 'manifest-output-variable-count', Object.keys(manifest.variables || {}).length)
+    setCompilerDiagnosticCount(diagnostics, 'manifest-output-utility-count', manifest.utilities?.length || 0)
+    setCompilerDiagnosticCount(diagnostics, 'manifest-output-variant-count', manifest.variants?.length || 0)
+    setCompilerDiagnosticCount(diagnostics, 'manifest-output-selector-count', Object.keys(manifest.selectors || {}).length)
+    setCompilerDiagnosticCount(diagnostics, 'manifest-output-at-rule-count', Object.keys(manifest.atRules || {}).length)
+    setCompilerDiagnosticCount(diagnostics, 'manifest-output-animation-count', Object.keys(manifest.animations || {}).length)
+    return manifest
 }
