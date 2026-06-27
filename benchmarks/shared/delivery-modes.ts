@@ -422,6 +422,9 @@ export async function measureMasterDeliveryMode(options: {
                 runtimeStyleFile
             })
             await page.screenshot({ path: screenshotFile, fullPage: false })
+            if (options.modeId === 'master-progressive') {
+                assertNoMissingHydrationSelectors(options.variantId, diagnostics)
+            }
 
             const traceMetrics = summarizeTraceEvents(traceResult.events)
             const artifactFiles = [traceFile, screenshotFile, diagnosticsFile]
@@ -478,6 +481,7 @@ export async function measureProgressiveHydrationDiagnostics(options: {
                 runtimeStyleFile
             })
             await page.screenshot({ path: screenshotFile, fullPage: false })
+            assertNoMissingHydrationSelectors(options.variantId, diagnostics)
 
             const artifactFiles = [diagnosticsFile, screenshotFile]
             if (diagnostics.runtimeStyleText) artifactFiles.push(runtimeStyleFile)
@@ -1083,6 +1087,20 @@ async function writeDiagnosticsArtifacts(options: {
         runtimeStyleTextArtifact: runtimeStyleText ? 'runtime-style.css' : undefined
     }, null, 2)}\n`)
     if (runtimeStyleText) await writeFile(options.runtimeStyleFile, runtimeStyleText)
+}
+
+function assertNoMissingHydrationSelectors(variantId: string, diagnostics: DeliveryModeDiagnostics) {
+    if (!diagnostics.hydrationManifestSelectorsMissingFromCSSOM.length) return
+
+    const missingSelectors = diagnostics.hydrationManifestSelectorsMissingFromCSSOM
+        .map((selector) => `${selector.className || selector.selectorText} (${selector.selectorText})`)
+        .join(', ')
+
+    throw new Error([
+        `${variantId} generated hydration manifest selectors that browser CSSOM did not preserve.`,
+        `Missing selectors: ${missingSelectors}`,
+        'Use browser-CSSOM-valid fixture class syntax before publishing benchmark results.'
+    ].join('\n'))
 }
 
 function addStaticHarness(html: string) {

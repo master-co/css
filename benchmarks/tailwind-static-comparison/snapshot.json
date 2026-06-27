@@ -1,21 +1,21 @@
 {
     "schemaVersion": 1,
     "suite": "tailwind-static-comparison",
-    "generatedAt": "2026-06-27T17:09:53.801Z",
+    "generatedAt": "2026-06-27T22:53:52.173Z",
     "sourceReports": [
         {
             "suite": "css-output-size",
-            "generatedAt": "2026-06-27T17:07:26.510Z",
+            "generatedAt": "2026-06-27T22:53:14.626Z",
             "command": "pnpm --filter ./benchmarks bench:css-output-size"
         },
         {
             "suite": "build-performance",
-            "generatedAt": "2026-06-27T17:08:00.811Z",
+            "generatedAt": "2026-06-27T22:53:38.834Z",
             "command": "pnpm --filter ./benchmarks bench:build-performance"
         },
         {
             "suite": "css-structure",
-            "generatedAt": "2026-06-27T17:08:16.009Z",
+            "generatedAt": "2026-06-27T22:53:46.955Z",
             "command": "pnpm --filter ./benchmarks bench:css-structure"
         }
     ],
@@ -290,8 +290,8 @@
                         "sha256": "b655412a8e2edcdc15f524c9b2c310d3f81f581eb4fb32b5e78dbe6f83cba6ef"
                     },
                     "build": {
-                        "coldMedianMs": 179.6,
-                        "repeatMedianMs": 175.4,
+                        "coldMedianMs": 182.4,
+                        "repeatMedianMs": 178.9,
                         "sampleCount": 3
                     },
                     "structure": {
@@ -329,8 +329,8 @@
                         "sha256": "7e8e20ce7b0979d7bb2c2d7b02ee717432597f24f3ca731a902fd67769180352"
                     },
                     "build": {
-                        "coldMedianMs": 262.9,
-                        "repeatMedianMs": 269.7,
+                        "coldMedianMs": 276.2,
+                        "repeatMedianMs": 253.1,
                         "sampleCount": 3
                     },
                     "structure": {
@@ -368,8 +368,8 @@
                         "sha256": "abccca1aa5e23c265f3e5228826094a7c4cb557e24f52bfc6ea2f18792b5bd10"
                     },
                     "build": {
-                        "coldMedianMs": 96.6,
-                        "repeatMedianMs": 94.1,
+                        "coldMedianMs": 95.1,
+                        "repeatMedianMs": 93.4,
                         "sampleCount": 3
                     },
                     "structure": {
@@ -407,8 +407,8 @@
                         "sha256": "22984cae16c266792aa88165bd33190506aae10d6eb725c01c092a9e4406ec90"
                     },
                     "build": {
-                        "coldMedianMs": 162.7,
-                        "repeatMedianMs": 151.4,
+                        "coldMedianMs": 160.3,
+                        "repeatMedianMs": 162.5,
                         "sampleCount": 3
                     },
                     "structure": {
@@ -444,15 +444,15 @@
             "variants": {
                 "master-static-cli": {
                     "css": {
-                        "rawBytes": 5775,
+                        "rawBytes": 5781,
                         "gzipBytes": 2154,
-                        "brotliBytes": 1831,
+                        "brotliBytes": 1838,
                         "fileCount": 1,
-                        "sha256": "ee05108a4996ff996d89b2b7485606f15b82cd6867dde532129c62c012fa88c0"
+                        "sha256": "9a380d607e865d39e48c7c832ce0f917325ce9cbdfcd2e77b59d3b4ec9306445"
                     },
                     "build": {
-                        "coldMedianMs": 187.5,
-                        "repeatMedianMs": 177.9,
+                        "coldMedianMs": 193.7,
+                        "repeatMedianMs": 187.5,
                         "sampleCount": 3
                     },
                     "structure": {
@@ -483,15 +483,15 @@
                 },
                 "master-static-vite": {
                     "css": {
-                        "rawBytes": 5776,
+                        "rawBytes": 5782,
                         "gzipBytes": 2155,
-                        "brotliBytes": 1830,
+                        "brotliBytes": 1834,
                         "fileCount": 1,
-                        "sha256": "33529cd7c2d0e496e5afcc3208e074e4ef6b2b385e139b16fac8622575ae4fe3"
+                        "sha256": "0bc30bf9247a30d782a9f82be7e9213e0c2364b2e57bd3486caaa5a9c3f24fdd"
                     },
                     "build": {
-                        "coldMedianMs": 268.8,
-                        "repeatMedianMs": 269.9,
+                        "coldMedianMs": 265,
+                        "repeatMedianMs": 266.3,
                         "sampleCount": 3
                     },
                     "structure": {
@@ -529,8 +529,8 @@
                         "sha256": "c47779d3d1c47a1f97bd052dcbccf07873fe3d2e8e48cf48e17e31f9af57d851"
                     },
                     "build": {
-                        "coldMedianMs": 97.7,
-                        "repeatMedianMs": 87.9,
+                        "coldMedianMs": 96.3,
+                        "repeatMedianMs": 95,
                         "sampleCount": 3
                     },
                     "structure": {
@@ -568,8 +568,8 @@
                         "sha256": "3604fa84b2cd02f8a833b26ca372dedf97ee8d35e3c4a29239c6f7d08a0db4ff"
                     },
                     "build": {
-                        "coldMedianMs": 164.7,
-                        "repeatMedianMs": 165.3,
+                        "coldMedianMs": 162.2,
+                        "repeatMedianMs": 163.4,
                         "sampleCount": 3
                     },
                     "structure": {
@@ -605,15 +605,15 @@
             "variants": {
                 "master-static-cli": {
                     "css": {
-                        "rawBytes": 5977,
-                        "gzipBytes": 2114,
-                        "brotliBytes": 1788,
+                        "rawBytes": 5979,
+                        "gzipBytes": 2113,
+                        "brotliBytes": 1794,
                         "fileCount": 1,
-                        "sha256": "20d837dbb82ea659ca7f3b9c28d20eab8dd590a929f9f8367410487db034065e"
+                        "sha256": "b600183a1fdb0917efe02503156e649fc0ef17a70041b7b79a76e4cdb2c24afe"
                     },
                     "build": {
-                        "coldMedianMs": 192.6,
-                        "repeatMedianMs": 179.9,
+                        "coldMedianMs": 191.6,
+                        "repeatMedianMs": 185.7,
                         "sampleCount": 3
                     },
                     "structure": {
@@ -644,15 +644,15 @@
                 },
                 "master-static-vite": {
                     "css": {
-                        "rawBytes": 5978,
-                        "gzipBytes": 2115,
-                        "brotliBytes": 1790,
+                        "rawBytes": 5980,
+                        "gzipBytes": 2114,
+                        "brotliBytes": 1787,
                         "fileCount": 1,
-                        "sha256": "849d3337513877a80d0635d21557558f64549bab476bfb0105a53b5323e66dda"
+                        "sha256": "59ba2de1b60a30cb88266dd5f7f0c93769f7120fba97059ee0fe51585bb952e7"
                     },
                     "build": {
-                        "coldMedianMs": 277,
-                        "repeatMedianMs": 262.3,
+                        "coldMedianMs": 268.3,
+                        "repeatMedianMs": 269,
                         "sampleCount": 3
                     },
                     "structure": {
@@ -690,8 +690,8 @@
                         "sha256": "1b313dd3a0615c658235c4c41803f47e52abae677abbac925d702dfe2bd62e83"
                     },
                     "build": {
-                        "coldMedianMs": 99.1,
-                        "repeatMedianMs": 95.2,
+                        "coldMedianMs": 95.8,
+                        "repeatMedianMs": 93.7,
                         "sampleCount": 3
                     },
                     "structure": {
@@ -729,8 +729,8 @@
                         "sha256": "cc89ce4089ff0376b738cf123c11047ba5dd0fc06094be5e1dc9bcebaab93299"
                     },
                     "build": {
-                        "coldMedianMs": 164.4,
-                        "repeatMedianMs": 166.9,
+                        "coldMedianMs": 165.4,
+                        "repeatMedianMs": 163.2,
                         "sampleCount": 3
                     },
                     "structure": {
@@ -766,15 +766,15 @@
             "variants": {
                 "master-static-cli": {
                     "css": {
-                        "rawBytes": 11653,
-                        "gzipBytes": 3070,
-                        "brotliBytes": 2056,
+                        "rawBytes": 11657,
+                        "gzipBytes": 3067,
+                        "brotliBytes": 2054,
                         "fileCount": 1,
-                        "sha256": "bd7aa3cc6fb5bda13fae2da2967af45103434602a1d82f73249c37e5a2fed373"
+                        "sha256": "8cbd85f214ed44a7a52384c8553bfb9befe8ebd7dcbdc96329bd420f0f4c81e0"
                     },
                     "build": {
-                        "coldMedianMs": 207.3,
-                        "repeatMedianMs": 211.8,
+                        "coldMedianMs": 208.6,
+                        "repeatMedianMs": 202.7,
                         "sampleCount": 3
                     },
                     "structure": {
@@ -805,15 +805,15 @@
                 },
                 "master-static-vite": {
                     "css": {
-                        "rawBytes": 11654,
-                        "gzipBytes": 3071,
-                        "brotliBytes": 2062,
+                        "rawBytes": 11658,
+                        "gzipBytes": 3068,
+                        "brotliBytes": 2054,
                         "fileCount": 1,
-                        "sha256": "3df6b139720ac9c6a837a1988e3f0112bee65eee495327cf8ec0c16d5d92e956"
+                        "sha256": "038400f1b3356a8b546e1bd87db8fb4fe502d74fa55a16e974c52f7ffc17f10e"
                     },
                     "build": {
-                        "coldMedianMs": 281.1,
-                        "repeatMedianMs": 273.3,
+                        "coldMedianMs": 281.5,
+                        "repeatMedianMs": 279,
                         "sampleCount": 3
                     },
                     "structure": {
@@ -851,8 +851,8 @@
                         "sha256": "98668caf9c898010185255ede7f0163c5f84ba63329bdcaa3719e6a2e6f376ac"
                     },
                     "build": {
-                        "coldMedianMs": 98.7,
-                        "repeatMedianMs": 95.5,
+                        "coldMedianMs": 96.6,
+                        "repeatMedianMs": 96.2,
                         "sampleCount": 3
                     },
                     "structure": {
@@ -890,8 +890,8 @@
                         "sha256": "0876e7fe85c077e32bc2844b7f5d2d103aa7c65f8668557a07ebb5a8bbcc2d1a"
                     },
                     "build": {
-                        "coldMedianMs": 169.7,
-                        "repeatMedianMs": 165.7,
+                        "coldMedianMs": 166.2,
+                        "repeatMedianMs": 163.2,
                         "sampleCount": 3
                     },
                     "structure": {

@@ -109,7 +109,7 @@ import '@master/css'</code></pre>
                             </table>
                         </section>
                         <section class="p:5x r:10px bg:blue-5 border:1px|solid|blue-20">
-                            <h2 class="m:0_0_2x font:22px font:bold">Benchmark note</h2>
+                            <h2 class="m:0|0|2x font:22px font:bold">Benchmark note</h2>
                             <p class="m:0 leading:1.7 fg:slate-70">Numbers are advisory and must pass correctness checks before being compared.</p>
                         </section>
                     </article>
@@ -178,7 +178,7 @@ import '@master/css'</code></pre>
                     <header class="flex items-center justify-between gap:4x">
                         <div>
                             <p class="m:0 font:13px font:semibold fg:blue-60 uppercase letter-spacing:.08em">Operations</p>
-                            <h1 class="m:1x_0_0 font:34px font:heavy tracking:-.02em">Revenue dashboard</h1>
+                            <h1 class="m:1x|0|0 font:34px font:heavy tracking:-.02em">Revenue dashboard</h1>
                         </div>
                         <button class="h:40px px:4x r:8px bg:slate-90 fg:white border:0 font:14px font:semibold">Export</button>
                     </header>
@@ -240,7 +240,7 @@ import '@master/css'</code></pre>
         expectedCSSMarkers: ['text-center'],
         masterHtml: page(`
             <main class="p:6x bg:white fg:slate-90">
-                <h1 class="m:0_0_4x font:32px font:heavy text-center">Stress CSS fixture</h1>
+                <h1 class="m:0|0|4x font:32px font:heavy text-center">Stress CSS fixture</h1>
                 <section class="grid grid-cols:6 gap:2x">${masterStressNodes()}</section>
             </main>
         `),
