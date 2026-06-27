@@ -3,17 +3,18 @@ import { bench, describe } from 'vitest'
 import { benchmarkFixtures } from '../fixtures/manifest'
 import {
     browserCostCacheModes,
+    browserCostCSSVolumeLevels,
     browserCostFixtureIds,
     browserCostMetrics,
-    browserCostStaticFixtureIds,
     browserCostStressDOMScales,
-    createBrowserCostStaticPage,
-    createBrowserCostStaticVariantId,
+    createBrowserCostCSSVolumePage,
+    createBrowserCostCSSVolumeSamples,
+    createBrowserCostCSSVolumeVariantId,
     createBrowserCostStressDOMPage,
+    createBrowserCostStressDOMSamples,
     createBrowserCostStressDOMVariantId,
     createBrowserCostVariants,
     getBrowserCostAdapters,
-    getBrowserCostStaticTools,
     measureBrowserCost,
     type BrowserCacheMode
 } from '../shared/browser-cost'
@@ -63,29 +64,27 @@ async function createBrowserCSSCostReport(): Promise<BenchmarkReport> {
     const browser = await chromium.launch({ headless: true })
 
     try {
-        for (const fixtureId of browserCostStaticFixtureIds) {
-            for (const tool of getBrowserCostStaticTools()) {
-                for (const cacheMode of browserCostCacheModes) {
-                    const variantId = createBrowserCostStaticVariantId(fixtureId, tool.id, cacheMode)
-                    console.log(`Preparing browser CSS cost page for ${variantId}`)
-                    const page = await createBrowserCostStaticPage({
-                        fixtureId,
-                        tool,
-                        variantId
-                    })
+        for (const level of browserCostCSSVolumeLevels) {
+            for (const cacheMode of browserCostCacheModes) {
+                const variantId = createBrowserCostCSSVolumeVariantId(level.id, cacheMode)
+                console.log(`Preparing CSS rule volume browser cost page for ${variantId}`)
+                const page = await createBrowserCostCSSVolumePage({
+                    level,
+                    variantId
+                })
 
-                    artifacts.push(...page.artifacts)
-                    await collectBrowserCostSamples({
-                        browser,
-                        pageRoot: page.root,
-                        variantId,
-                        cacheMode,
-                        rounds,
-                        warmupRounds,
-                        samples,
-                        artifacts
-                    })
-                }
+                samples.push(...createBrowserCostCSSVolumeSamples(variantId, page.css))
+                artifacts.push(...page.artifacts)
+                await collectBrowserCostSamples({
+                    browser,
+                    pageRoot: page.root,
+                    variantId,
+                    cacheMode,
+                    rounds,
+                    warmupRounds,
+                    samples,
+                    artifacts
+                })
             }
         }
 
@@ -98,6 +97,7 @@ async function createBrowserCSSCostReport(): Promise<BenchmarkReport> {
                     variantId
                 })
 
+                samples.push(...createBrowserCostStressDOMSamples(variantId, scale, page.css))
                 artifacts.push(...page.artifacts)
                 await collectBrowserCostSamples({
                     browser,
@@ -123,12 +123,8 @@ async function createBrowserCSSCostReport(): Promise<BenchmarkReport> {
         generatedAt: new Date().toISOString(),
         environment: collectEnvironment(),
         packages: await collectPackageVersions([
-            '@master/css',
-            '@master/css-cli',
-            'tailwindcss',
-            '@tailwindcss/cli',
             '@playwright/test',
-            'vite'
+            'css-tree'
         ]),
         fixtures: getBrowserCostFixtures(),
         adapters: getBrowserCostAdapters(),
@@ -137,11 +133,13 @@ async function createBrowserCSSCostReport(): Promise<BenchmarkReport> {
         samples,
         summary: summarizeReportSamples(samples, metricUnits),
         limits: [
-            'This suite measures Chromium load-time browser costs on local fixture pages; it does not measure interaction mutation cost, runtime rule generation, HMR, or real application JavaScript.',
+            'This suite primarily measures Chromium load-time browser costs as deterministic CSS rule volume grows while visible DOM stays fixed.',
+            'Neutral CSS volume variants are browser-only controls; they are not a Master CSS versus Tailwind CSS comparison.',
+            'Stress DOM variants are secondary diagnostics for DOM scaling with fixed CSS and should not be used as the main delivery-mode decision input.',
+            'DOM control variants record repeated item count, measured DOM node count, fixed CSS bytes, and fixed CSS structure so CSS and DOM axes can be separated.',
+            'This suite does not measure interaction mutation cost, runtime rule generation, HMR, or real application JavaScript.',
             'Trace-derived event names can change across Chromium versions, so raw trace artifacts are kept for review before publishing public conclusions.',
-            'Cold-cache and warm-cache variants use fresh browser contexts per measured sample; warm-cache samples prime the context before tracing.',
-            'Master CSS and Tailwind CSS static variants use CLI-generated CSS from equivalent rendered fixture intent, not identical class strings.',
-            'Stress DOM variants use fixed native CSS and browser-only DOM scaling, so they are not a framework comparison.'
+            'Cold-cache and warm-cache variants use fresh browser contexts per measured sample; warm-cache samples prime the context before tracing.'
         ],
         artifacts
     }

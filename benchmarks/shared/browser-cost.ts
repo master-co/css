@@ -3,16 +3,10 @@ import { readFile, writeFile } from 'node:fs/promises'
 import { extname, isAbsolute, relative, resolve } from 'node:path'
 import { performance } from 'node:perf_hooks'
 import type { Browser, Page } from '@playwright/test'
-import { getStaticFixtureSource } from '../fixtures/static'
 import { benchmarkAdapters } from '../fixtures/manifest'
-import { benchmarkRoot, measureRelativeArtifact, readFiles, resetDirectory, writeWorkspaceFiles } from './runner'
-import {
-    createStaticBuildVariantId,
-    runStaticBuild,
-    staticBuildTools,
-    type StaticBuildTool,
-    type StaticBuildToolId
-} from './static-build'
+import { summarizeBytes } from './bytes'
+import { analyzeCSSStructure, createCSSStructureSamples, cssStructureMetrics } from './css-structure'
+import { benchmarkRoot, measureRelativeArtifact, resetDirectory, writeWorkspaceFiles } from './runner'
 import type {
     BenchmarkAdapter,
     BenchmarkArtifact,
@@ -46,31 +40,51 @@ interface StressDOMScale {
     itemCount: number
 }
 
+interface CSSVolumeLevel {
+    id: 'small-css' | 'medium-css' | 'large-css' | 'xlarge-css'
+    label: string
+    generatedRuleCount: number
+}
+
+const cssVolumeItemCount = 48
+
 const fixedViewport = {
     width: 1280,
     height: 720
 }
 
-export const browserCostStaticFixtureIds = [
-    'docs',
-    'dashboard',
-    'stress-css'
-] satisfies BenchmarkFixtureId[]
-
 export const browserCostFixtureIds = [
-    ...browserCostStaticFixtureIds,
+    'stress-css',
     'stress-dom'
 ] satisfies BenchmarkFixtureId[]
-
-export const browserCostStaticToolIds = [
-    'master-static-cli',
-    'tailwind-cli'
-] satisfies StaticBuildToolId[]
 
 export const browserCostCacheModes = [
     'cold-cache',
     'warm-cache'
 ] satisfies BrowserCacheMode[]
+
+export const browserCostCSSVolumeLevels = [
+    {
+        id: 'small-css',
+        label: 'Small CSS',
+        generatedRuleCount: 250
+    },
+    {
+        id: 'medium-css',
+        label: 'Medium CSS',
+        generatedRuleCount: 2500
+    },
+    {
+        id: 'large-css',
+        label: 'Large CSS',
+        generatedRuleCount: 10000
+    },
+    {
+        id: 'xlarge-css',
+        label: 'XLarge CSS',
+        generatedRuleCount: 30000
+    }
+] satisfies CSSVolumeLevel[]
 
 export const browserCostStressDOMScales = [
     {
@@ -90,7 +104,7 @@ export const browserCostStressDOMScales = [
     }
 ] satisfies StressDOMScale[]
 
-export const browserCostMetrics = [
+const browserTimingMetrics = [
     {
         id: 'navigation-ready-ms',
         label: 'Navigation to ready',
@@ -129,26 +143,61 @@ export const browserCostMetrics = [
     }
 ] satisfies BenchmarkMetric[]
 
-export function getBrowserCostStaticTools() {
-    return browserCostStaticToolIds.map((id) => {
-        const tool = staticBuildTools.find((candidate) => candidate.id === id)
-        if (!tool) throw new Error(`Missing static build tool: ${id}`)
-        return tool
-    })
-}
+const cssByteMetrics = [
+    {
+        id: 'css-raw-bytes',
+        label: 'CSS raw bytes',
+        unit: 'B',
+        description: 'Raw bytes for the external CSS file loaded by the fixture page.'
+    },
+    {
+        id: 'css-gzip-bytes',
+        label: 'CSS gzip bytes',
+        unit: 'B',
+        description: 'Gzip bytes for the external CSS file loaded by the fixture page.'
+    },
+    {
+        id: 'css-brotli-bytes',
+        label: 'CSS brotli bytes',
+        unit: 'B',
+        description: 'Brotli bytes for the external CSS file loaded by the fixture page.'
+    }
+] satisfies BenchmarkMetric[]
+
+const browserDOMMetrics = [
+    {
+        id: 'dom-item-count',
+        label: 'DOM fixture items',
+        unit: 'count',
+        description: 'Repeated fixture item count. CSS volume variants keep this fixed; stress DOM variants intentionally scale it.'
+    },
+    {
+        id: 'dom-node-count',
+        label: 'DOM nodes',
+        unit: 'count',
+        description: 'Total DOM element count after the benchmark page has loaded and passed computed-style assertions.'
+    }
+] satisfies BenchmarkMetric[]
+
+export const browserCostMetrics = [
+    ...browserTimingMetrics,
+    ...browserDOMMetrics,
+    ...cssByteMetrics,
+    ...cssStructureMetrics
+] satisfies BenchmarkMetric[]
 
 export function getBrowserCostAdapters(): BenchmarkAdapter[] {
-    const ids = new Set(['master-static', 'tailwind-cli', 'browser-dom'])
+    const ids = new Set(['browser-css', 'browser-dom'])
     return benchmarkAdapters.filter((adapter) => ids.has(adapter.id))
 }
 
 export function createBrowserCostVariants(): BenchmarkVariant[] {
-    const staticVariants = browserCostStaticFixtureIds.flatMap((fixtureId) => getBrowserCostStaticTools().flatMap((tool) => browserCostCacheModes.map((cacheMode) => ({
-        id: createBrowserCostStaticVariantId(fixtureId, tool.id, cacheMode),
-        fixtureId,
-        adapterId: tool.adapterId,
-        label: `${fixtureId} / ${tool.label} / ${formatCacheMode(cacheMode)}`
-    }))))
+    const cssVolumeVariants = browserCostCSSVolumeLevels.flatMap((level) => browserCostCacheModes.map((cacheMode) => ({
+        id: createBrowserCostCSSVolumeVariantId(level.id, cacheMode),
+        fixtureId: 'stress-css' as const,
+        adapterId: 'browser-css' as const,
+        label: `stress-css / ${level.label} / ${formatCacheMode(cacheMode)}`
+    })))
 
     const stressDOMVariants = browserCostStressDOMScales.flatMap((scale) => browserCostCacheModes.map((cacheMode) => ({
         id: createBrowserCostStressDOMVariantId(scale.id, cacheMode),
@@ -158,53 +207,100 @@ export function createBrowserCostVariants(): BenchmarkVariant[] {
     })))
 
     return [
-        ...staticVariants,
+        ...cssVolumeVariants,
         ...stressDOMVariants
     ]
 }
 
-export function createBrowserCostStaticVariantId(fixtureId: BenchmarkFixtureId, toolId: StaticBuildToolId, cacheMode: BrowserCacheMode) {
-    return `${fixtureId}-${toolId}-${cacheMode}`
+export function createBrowserCostCSSVolumeVariantId(levelId: CSSVolumeLevel['id'], cacheMode: BrowserCacheMode) {
+    return `stress-css-${levelId}-${cacheMode}`
+}
+
+export function createBrowserCostCSSVolumeSamples(variantId: string, css: string): BenchmarkSample[] {
+    return [
+        {
+            metricId: 'dom-item-count',
+            variantId,
+            round: 0,
+            value: cssVolumeItemCount
+        },
+        ...createBrowserCostCSSArtifactSamples(variantId, css)
+    ]
+}
+
+export function createBrowserCostStressDOMSamples(variantId: string, scale: StressDOMScale, css: string): BenchmarkSample[] {
+    return [
+        {
+            metricId: 'dom-item-count',
+            variantId,
+            round: 0,
+            value: scale.itemCount
+        },
+        ...createBrowserCostCSSArtifactSamples(variantId, css)
+    ]
+}
+
+function createBrowserCostCSSArtifactSamples(variantId: string, css: string): BenchmarkSample[] {
+    const bytes = summarizeBytes(Buffer.from(css))
+    return [
+        {
+            metricId: 'css-raw-bytes',
+            variantId,
+            round: 0,
+            value: bytes.rawBytes
+        },
+        {
+            metricId: 'css-gzip-bytes',
+            variantId,
+            round: 0,
+            value: bytes.gzipBytes
+        },
+        {
+            metricId: 'css-brotli-bytes',
+            variantId,
+            round: 0,
+            value: bytes.brotliBytes
+        },
+        ...createCSSStructureSamples(variantId, analyzeCSSStructure(css))
+    ]
+}
+
+export async function createBrowserCostCSSVolumePage(options: {
+    level: CSSVolumeLevel
+    variantId: string
+}) {
+    const css = renderCSSVolumeCSS(options.level)
+
+    return {
+        ...await writeBrowserCostPage({
+            variantId: options.variantId,
+            html: renderCSSVolumeHTML(options.level),
+            css,
+            artifacts: []
+        }),
+        css
+    }
 }
 
 export function createBrowserCostStressDOMVariantId(scaleId: StressDOMScale['id'], cacheMode: BrowserCacheMode) {
     return `stress-dom-${scaleId}-${cacheMode}`
 }
 
-export async function createBrowserCostStaticPage(options: {
-    fixtureId: BenchmarkFixtureId
-    tool: StaticBuildTool
-    variantId: string
-}) {
-    const result = await runStaticBuild({
-        suite: 'browser-css-cost',
-        fixtureId: options.fixtureId,
-        tool: options.tool,
-        round: 0,
-        workspaceName: `static-builds/${createStaticBuildVariantId(options.fixtureId, options.tool.id)}`
-    })
-    const css = await readFiles(result.cssFiles)
-    const fixture = getStaticFixtureSource(options.fixtureId)
-    const sourceHtml = options.tool.family === 'master' ? fixture.masterHtml : fixture.tailwindHtml
-
-    return writeBrowserCostPage({
-        variantId: options.variantId,
-        html: addBrowserCostHarness(sourceHtml),
-        css: css.toString('utf8'),
-        artifacts: result.artifacts
-    })
-}
-
 export async function createBrowserCostStressDOMPage(options: {
     scale: StressDOMScale
     variantId: string
 }) {
-    return writeBrowserCostPage({
-        variantId: options.variantId,
-        html: renderStressDOMHTML(options.scale),
-        css: renderStressDOMCSS(),
-        artifacts: []
-    })
+    const css = renderStressDOMCSS()
+
+    return {
+        ...await writeBrowserCostPage({
+            variantId: options.variantId,
+            html: renderStressDOMHTML(options.scale),
+            css,
+            artifacts: []
+        }),
+        css
+    }
 }
 
 export async function measureBrowserCost(options: {
@@ -249,6 +345,7 @@ export async function measureBrowserCost(options: {
             return {
                 samples: createBrowserCostSamples(options.variantId, options.round, {
                     navigationReadyMs: traceResult.navigationReadyMs,
+                    domNodeCount: traceResult.domNodeCount,
                     ...traceMetrics
                 }),
                 artifacts
@@ -268,6 +365,7 @@ function createBrowserCostSamples(variantId: string, round: number, metrics: {
     layoutMs: number
     paintMs: number
     longTaskCount: number
+    domNodeCount: number
 }): BenchmarkSample[] {
     return [
         {
@@ -305,6 +403,12 @@ function createBrowserCostSamples(variantId: string, round: number, metrics: {
             variantId,
             round,
             value: metrics.longTaskCount
+        },
+        {
+            metricId: 'dom-node-count',
+            variantId,
+            round,
+            value: metrics.domNodeCount
         }
     ]
 }
@@ -336,10 +440,65 @@ async function writeBrowserCostPage(options: {
     }
 }
 
-function addBrowserCostHarness(html: string) {
-    return html
-        .replace('</head>', '    <link rel="stylesheet" href="/style.css">\n</head>')
-        .replace('</body>', `${renderReadyHarness()}\n</body>`)
+function renderCSSVolumeHTML(level: CSSVolumeLevel) {
+    const cards = Array.from({ length: cssVolumeItemCount }, (_, index) => `
+        <article class="volume-card">
+            <strong>Card ${index + 1}</strong>
+            <p>Fixed DOM node for CSS rule-volume calibration.</p>
+            <span>${level.label}</span>
+        </article>
+    `).join('\n')
+
+    return [
+        '<!doctype html>',
+        '<html lang="en">',
+        '<head>',
+        '    <meta charset="utf-8">',
+        '    <meta name="viewport" content="width=device-width, initial-scale=1">',
+        `    <title>${level.label} browser CSS cost</title>`,
+        '    <link rel="stylesheet" href="/style.css">',
+        '</head>',
+        '<body class="benchmark-root">',
+        '    <main class="volume-shell">',
+        `        <h1>${level.label}</h1>`,
+        '        <p class="volume-summary">Fixed DOM with deterministic external CSS rule volume.</p>',
+        '        <section class="volume-grid">',
+        cards,
+        '        </section>',
+        '    </main>',
+        renderReadyHarness(),
+        '</body>',
+        '</html>'
+    ].join('\n')
+}
+
+function renderCSSVolumeCSS(level: CSSVolumeLevel) {
+    const baseRules = [
+        '.benchmark-root{box-sizing:border-box;margin:0;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#f8fafc;color:#0f172a}',
+        '*,::before,::after{box-sizing:inherit}',
+        '.volume-shell{max-width:1180px;margin:0 auto;padding:32px}',
+        '.volume-shell h1{margin:0 0 8px;font-size:32px;line-height:1.1}',
+        '.volume-summary{margin:0 0 24px;color:#475569;font-size:14px;line-height:1.6}',
+        '.volume-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}',
+        '.volume-card{display:grid;gap:8px;min-width:0;padding:16px;border:1px solid #cbd5e1;border-radius:12px;background:#fff}',
+        '.volume-card strong{font-size:14px}',
+        '.volume-card p{margin:0;color:#475569;font-size:13px;line-height:1.5}',
+        '.volume-card span{display:inline-flex;width:max-content;border-radius:999px;background:#e0f2fe;color:#0369a1;padding:2px 8px;font-size:12px;font-weight:700}',
+        '@media (max-width: 820px){.volume-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}',
+        '@media (max-width: 520px){.volume-shell{padding:20px}.volume-grid{grid-template-columns:1fr}}'
+    ]
+    const generatedRules = Array.from({ length: level.generatedRuleCount }, (_, index) => {
+        const hue = (index * 37) % 360
+        const pairedHue = (hue + 180) % 360
+        const className = `browser-css-volume-${String(index).padStart(5, '0')}`
+        return `.${className}{color:hsl(${hue} 70% 34%);background-color:hsl(${pairedHue} 70% 96%);border-color:hsl(${hue} 60% 70%)}`
+    })
+
+    return [
+        ...baseRules,
+        ...generatedRules,
+        ''
+    ].join('\n')
 }
 
 function renderStressDOMHTML(scale: StressDOMScale) {
@@ -437,6 +596,7 @@ async function traceNavigation(page: Page, url: string) {
     await page.goto(url, { waitUntil: 'load' })
     await waitForBenchmarkReady(page)
     await assertCSSApplied(page)
+    const domNodeCount = await page.evaluate(() => document.getElementsByTagName('*').length)
     const navigationReadyMs = performance.now() - startedAt
 
     await client.send('Tracing.end')
@@ -445,6 +605,7 @@ async function traceNavigation(page: Page, url: string) {
 
     return {
         events,
+        domNodeCount,
         navigationReadyMs
     }
 }

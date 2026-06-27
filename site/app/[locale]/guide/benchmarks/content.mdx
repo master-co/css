@@ -23,7 +23,7 @@ This page is the public benchmark roadmap and results index for Master CSS. Curr
 | Available | Production build performance | How do cold and repeat production commands compare across Master CSS and Tailwind CSS? |
 | Available | CSS structure metrics | How many rules, selectors, declarations, at-rules, layers, and selector-complexity signals explain CSS byte differences? |
 | Internal | Build path diagnostics | Which Master CSS build, startup, extraction, and compiler substeps explain full command cost? |
-| Internal | Browser CSS cost | How does CSS volume, selector shape, and DOM size affect style calculation, layout, paint, and long tasks? |
+| Internal | Browser CSS cost | How does CSS rule volume affect stylesheet parsing, style calculation, layout, paint, and long tasks with fixed DOM, and how does DOM scaling behave as a fixed-CSS control? |
 | Planned | Master CSS delivery modes | What are the payload and runtime costs of runtime, static, and progressive delivery? |
 | Planned | Interaction cost | How expensive are class toggles, rule generation, DOM insertion/removal, theme switches, and resize-triggered recalculation? |
 | Research | Tailwind CSS runtime-equivalent comparisons | Tailwind CSS is build-time-first, so runtime claims must be limited to comparable browser CSS costs. |
@@ -149,7 +149,7 @@ Each fixture should publish source markup, Master CSS setup, Tailwind CSS setup,
 | Transfer | Raw, gzip, and brotli bytes for CSS, HTML, runtime JS, manifest JSON, hydration manifest, request count, cacheability |
 | CSS structure | Rule count, declaration count, selector count, cascade layers, media/container/support blocks, custom properties, selector complexity |
 | Build | Cold build, warm rebuild, changed-file rebuild cost, startup diagnostics, scanner time |
-| Browser load | Stylesheet parse/attach, style recalculation, layout, paint, long tasks, memory where stable, FCP/LCP where stable |
+| Browser load | CSS rule-volume curve with fixed DOM, fixed-CSS DOM scaling control, stylesheet parse/attach, style recalculation, layout, paint, long tasks, memory where stable |
 | Interaction | Class toggle cost, new-rule generation, existing-rule toggle, DOM append/remove, theme switch, viewport/container resize |
 | Correctness | Output hash, screenshot smoke, computed-style assertions, missing-rule checks, generated file inventory |
 | Payload | Runtime bundle, manifest JSON, hydration manifest, inline `style#master-css`, external CSS, per-route HTML variance |
@@ -185,16 +185,32 @@ Tailwind CSS and Master CSS fixtures should render equivalent UI, but they do no
 ---
 
 ## Browser CSS cost
-Large CSS can affect the browser even when no JavaScript framework is involved. The internal browser-cost suite starts with local pages and load-time measurements:
+Large CSS can affect the browser even when no JavaScript framework is involved. The internal browser-cost suite keeps the CSS and DOM axes separate so later delivery-mode comparisons can explain whether a result came from upfront rule volume, DOM size, or runtime work.
 
+### Primary: CSS rule volume
+The primary calibration keeps visible DOM fixed and varies deterministic external CSS rule volume:
+
+- `small-css`, `medium-css`, `large-css`, and `xlarge-css` external stylesheets.
+- A fixed repeated DOM item count for every CSS volume level.
+- Raw, gzip, and brotli CSS bytes for each volume level.
+- Rule, selector, and declaration counts parsed from the generated CSS.
 - Initial stylesheet attachment and parse cost.
-- Style recalculation during initial page load.
-- Layout and paint cost for repeated components.
-- Selector matching sensitivity when CSS grows but visible DOM stays fixed.
-- DOM scaling with fixed CSS in the `stress-dom` fixture.
+- Style recalculation, layout, and paint while the visible DOM stays fixed.
 - Long tasks where Chromium exposes stable trace data.
 
-This suite uses local fixture pages, Playwright, and browser tracing with fixed viewport, fixed device scale, and disabled unrelated network variance. It reports medians plus raw samples as ignored artifacts, with cold-cache and warm-cache results separated when cache state affects the measurement. Results stay internal until the traces and fixture assertions are reviewed.
+This curve is the main input for judging how much upfront CSS a delivery mode asks the browser to load before interaction.
+
+### Secondary: DOM scaling control
+The `stress-dom` control stays in the suite, but it answers a different question. It keeps CSS fixed and varies DOM volume:
+
+- `small-dom`, `medium-dom`, and `large-dom` repeated item counts.
+- Measured DOM node count after the page reaches the benchmark-ready marker.
+- The same fixed CSS bytes and CSS structure metadata for each DOM scale.
+- Style recalculation, layout, paint, navigation-ready time, and long tasks while CSS volume stays fixed.
+
+This control is useful for interpreting runtime scan, mutation, route transition, and layout sensitivity later. It is not the main input for comparing CSS delivery modes because delivery modes primarily change when and how many CSS rules are loaded or generated.
+
+This suite uses local fixture pages, Playwright, and browser tracing with fixed viewport, fixed device scale, and disabled unrelated network variance. It reports medians plus raw samples as ignored artifacts, with cold-cache and warm-cache results separated when cache state affects the measurement.
 
 ---
 
