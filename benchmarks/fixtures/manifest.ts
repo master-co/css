@@ -6,7 +6,7 @@ export const benchmarkFixtures = [
         name: 'Minimal',
         purpose: 'Small useful page or landing section.',
         stress: 'Framework overhead, cold-start cost, and minimum payload.',
-        suites: ['css-output-size', 'build-performance', 'master-delivery-modes'],
+        suites: ['css-output-size', 'build-performance', 'build-diagnostics', 'master-delivery-modes'],
         limits: ['Not representative of dense application UI.']
     },
     {
@@ -14,7 +14,7 @@ export const benchmarkFixtures = [
         name: 'Docs',
         purpose: 'Dense article, navigation, code blocks, and tables.',
         stress: 'Documentation layout, typography, and nested content.',
-        suites: ['css-output-size', 'build-performance', 'browser-css-cost'],
+        suites: ['css-output-size', 'build-performance', 'build-diagnostics', 'browser-css-cost'],
         limits: ['Does not model frequent runtime mutation.']
     },
     {
@@ -22,7 +22,7 @@ export const benchmarkFixtures = [
         name: 'Dashboard',
         purpose: 'Repeated cards, tables, filters, charts, and states.',
         stress: 'Rule reuse, duplicated utilities, and large DOM.',
-        suites: ['css-output-size', 'build-performance', 'browser-css-cost'],
+        suites: ['css-output-size', 'build-performance', 'build-diagnostics', 'browser-css-cost'],
         limits: ['Chart visuals are fixture placeholders, not a chart-library benchmark.']
     },
     {
@@ -38,7 +38,7 @@ export const benchmarkFixtures = [
         name: 'Stress CSS',
         purpose: 'Controlled small, medium, and large CSS outputs.',
         stress: 'Browser style calculation as CSS volume grows.',
-        suites: ['css-output-size', 'browser-css-cost'],
+        suites: ['css-output-size', 'build-diagnostics', 'browser-css-cost'],
         limits: ['Intentionally artificial CSS volume.']
     },
     {

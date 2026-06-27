@@ -114,7 +114,7 @@ export function getStaticBenchmarkFixtures(fixtures: BenchmarkFixture[]) {
 }
 
 export async function runStaticBuild(options: {
-    suite: 'css-output-size' | 'build-performance'
+    suite: 'css-output-size' | 'build-performance' | 'build-diagnostics'
     fixtureId: BenchmarkFixtureId
     tool: StaticBuildTool
     round: number
@@ -197,7 +197,7 @@ export function createByteSamples(variantId: string, result: StaticBuildResult):
     ]
 }
 
-async function writeStaticWorkspace(workspace: string, fixtureId: BenchmarkFixtureId, tool: StaticBuildTool) {
+export async function writeStaticWorkspace(workspace: string, fixtureId: BenchmarkFixtureId, tool: StaticBuildTool) {
     const fixture = getStaticFixtureSource(fixtureId)
     const sourceHtml = tool.family === 'master' ? fixture.masterHtml : fixture.tailwindHtml
     const html = isViteTool(tool) ? addViteEntryScript(sourceHtml) : sourceHtml
@@ -228,7 +228,7 @@ function isViteTool(tool: StaticBuildTool) {
     return tool.command === 'master-vite' || tool.command === 'tailwind-vite'
 }
 
-function addViteEntryScript(html: string) {
+export function addViteEntryScript(html: string) {
     return html.replace('</body>', '<script type="module" src="/src/main.js"></script>\n</body>')
 }
 
