@@ -403,6 +403,7 @@ export async function writeMergedRuntimeStyleInvalidationDiagnosticsReport(repor
         suite: 'runtime-style-invalidation-diagnostics',
         generatedAt: new Date().toISOString(),
         environment: reports[0].environment,
+        browser: reports[0].browser,
         packages: reports[0].packages,
         fixtures: getRuntimeStyleInvalidationFixtures(),
         adapters: getRuntimeStyleInvalidationAdapters(variants),
@@ -526,6 +527,7 @@ async function createRuntimeStyleInvalidationDiagnosticsReport(): Promise<Benchm
     const artifacts: BenchmarkArtifact[] = []
     const rounds = getMeasuredRounds()
     const warmupRounds = getWarmupRounds()
+    let browserVersion: string | undefined
     console.log('Launching Chromium per measurement for runtime style invalidation diagnostics')
 
     for (const variant of variants) {
@@ -545,6 +547,7 @@ async function createRuntimeStyleInvalidationDiagnosticsReport(): Promise<Benchm
         for (let round = 0; round < warmupRounds; round++) {
             console.log(`Warming runtime style invalidation diagnostics for ${variant.id}, round ${round + 1}/${warmupRounds}`)
             const browser = await chromium.launch({ headless: true })
+            browserVersion ??= browser.version()
             try {
                 await measureRuntimeStyleInvalidationDiagnostic({
                     browser,
@@ -561,6 +564,7 @@ async function createRuntimeStyleInvalidationDiagnosticsReport(): Promise<Benchm
         for (let round = 0; round < rounds; round++) {
             console.log(`Measuring runtime style invalidation diagnostics for ${variant.id}, round ${round + 1}/${rounds}`)
             const browser = await chromium.launch({ headless: true })
+            browserVersion ??= browser.version()
             try {
                 const result = await measureRuntimeStyleInvalidationDiagnostic({
                     browser,
@@ -585,6 +589,12 @@ async function createRuntimeStyleInvalidationDiagnosticsReport(): Promise<Benchm
         suite: 'runtime-style-invalidation-diagnostics',
         generatedAt: new Date().toISOString(),
         environment: collectEnvironment(),
+        browser: browserVersion
+            ? {
+                name: 'Chromium',
+                version: browserVersion
+            }
+            : undefined,
         packages: await collectPackageVersions([
             '@master/css',
             '@master/css-runtime',

@@ -544,6 +544,7 @@ async function createRuntimeMutationDiagnosticsReport(): Promise<BenchmarkReport
     const rounds = getRuntimeMutationDiagnosticRounds()
     console.log('Launching Chromium for runtime mutation diagnostics')
     const browser = await chromium.launch({ headless: true })
+    const browserVersion = browser.version()
 
     try {
         for (const fixtureId of runtimeMutationDiagnosticFixtureIds) {
@@ -593,6 +594,10 @@ async function createRuntimeMutationDiagnosticsReport(): Promise<BenchmarkReport
         suite: 'runtime-mutation-diagnostics',
         generatedAt: new Date().toISOString(),
         environment: collectEnvironment(),
+        browser: {
+            name: 'Chromium',
+            version: browserVersion
+        },
         packages: await collectPackageVersions([
             '@master/css',
             '@master/css-runtime',
