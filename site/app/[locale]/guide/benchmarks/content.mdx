@@ -394,7 +394,11 @@ The internal runtime mutation diagnostics suite narrows the cleanup-cycle hotspo
 | 6 | Available: implement and publish Master CSS static, runtime, and progressive delivery benchmarks with local Chromium payload/load/adoption measurements. |
 | 7 | Available: implement and publish interaction cost suites with Playwright/browser tracing, correctness checks, and stable fixture pages. |
 | 8 | Internal: diagnose runtime mutation cleanup hotspots before optimizing runtime/progressive interaction behavior. |
-| 9 | Continue publishing curated result tables on this page while keeping planned/research suites visible until measured. |
+| 9 | Internal: reduce retained generated stylesheet volume after runtime mutation diagnostics. |
+| 10 | Available: refresh the published interaction-cost snapshot after retained stylesheet optimization. |
+| 11 | Build: replace stale `core` TypeScript project references with the `@master/css` facade project. |
+| 12 | Internal: investigated queued runtime stylesheet invalidation and abandoned the runtime optimization path because diagnostics did not show meaningful improvement. |
+| 13 | Planned: choose the next benchmark publication or product-level runtime strategy; no interaction-cost refresh is required from Phase 12 because no runtime change landed. |
 
 Future normalized reports should stay internal to the benchmark workspace unless they become a documented public data format. A report should include `schemaVersion`, `suite`, `generatedAt`, `environment`, `packages`, `fixtures`, `variants`, `metrics`, `samples`, `summary`, `limits`, and `artifacts`.
 

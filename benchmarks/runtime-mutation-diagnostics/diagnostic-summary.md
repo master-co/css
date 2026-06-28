@@ -110,13 +110,24 @@ After changing hard-limit cleanup to return retained inactive rules to the soft 
 
 The post-change retained-512 variants settled to `168` runtime style rules after flush, which is the active baseline plus the retained soft target. This confirms retained stylesheet volume was a valid first optimization target; the remaining stress-dom gap is still browser style invalidation rather than runtime ensure/delete duration.
 
-## Most Justified Optimization Target
+### Phase 12 Investigation Closure
 
-Plan the next optimization around runtime stylesheet invalidation pressure, not public API changes:
+Queued cold-rule stylesheet invalidation was investigated but not optimized. Same-machine exploratory runs did not show a meaningful stress-dom cold temporary-rule insertion improvement, so no runtime behavior change was kept.
 
-1. Reduce or defer first-time temporary rule insertion on cleanup-sensitive mutation paths.
-2. Keep retained generated CSS volume bounded so inactive retained rules do not inflate later style recalculation.
-3. Treat MutationObserver callback reduction as secondary unless a future run shows callback duration dominates on a real fixture.
+Rejected approaches:
+
+- CSSOM layer batching and native `@layer` block replacement did not reduce style recalculation: stress-dom runtime moved from `6.916ms` to `7.034ms`, and progressive moved from `6.977ms` to `7.044ms`.
+- Moving queued cold-class flushes to a microtask did not materially change the browser-side cost: stress-dom runtime moved from `6.916ms` to `6.921ms`, and progressive moved from `6.977ms` to `6.919ms`.
+- Flushing queued cold classes synchronously from observer delivery made the runtime stress-dom baseline worse: `6.916ms` to `7.004ms`.
+- Pre-creating empty native runtime layer blocks did not materially improve the runtime stress-dom baseline: `6.916ms` to `6.955ms`.
+
+These results indicate the remaining cold-insertion gap is not a narrow CSSOM churn issue that should be solved by private runtime batching. The rejected code paths were not committed.
+
+## Current Recommendation
+
+1. Keep the Phase 9 retained generated CSS volume bound as the accepted runtime optimization from this diagnostic cycle.
+2. Do not revisit queued CSSOM batching, microtask/synchronous cold flushes, or empty native layer priming without new fixture evidence.
+3. Treat any remaining cold first-time rule insertion cost as a browser invalidation/product strategy question rather than a narrow runtime internals change.
 
 ## Must Not Change
 
