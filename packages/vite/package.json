@@ -34,7 +34,9 @@
         "mastercss",
         "vite-plugin"
     ],
-    "sideEffects": false,
+    "sideEffects": [
+        "./dist/runtime.js"
+    ],
     "main": "./dist/index.js",
     "module": "./dist/index.js",
     "jsnext:main": "./dist/index.js",
@@ -45,6 +47,11 @@
             "types": "./dist/index.d.ts",
             "import": "./dist/index.js",
             "default": "./dist/index.js"
+        },
+        "./runtime": {
+            "types": "./dist/runtime.d.ts",
+            "import": "./dist/runtime.js",
+            "default": "./dist/runtime.js"
         }
     },
     "files": [

@@ -22,6 +22,7 @@
 ## Public Surface
 
 - Default `masterCSS()` plugin factory.
+- `@master/css.vite/runtime` browser runtime entry.
 - `options`
 - `PluginOptions`
 - `PluginContext`
@@ -29,6 +30,7 @@
 ## Key Files
 
 - `src/core.ts`
+- `src/runtime.ts`
 - `src/options.ts`
 - `src/common.ts`
 - `src/modes/*`

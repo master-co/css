@@ -1,32 +1,99 @@
+import { mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs'
+import { join, resolve } from 'node:path'
+import { build } from 'vite'
 import { describe, expect, it } from 'vitest'
+import masterCSS from '../../src/core'
+import {
+    DEV_RUNTIME_ENTRY_ID,
+    RUNTIME_ENTRY_ID
+} from '../../src/common'
 import InjectRuntimePlugin from '../../src/plugins/inject-runtime'
 
 describe('InjectRuntimePlugin', () => {
-    it('injects the runtime through Vite HTML transform tags', () => {
+    it('injects the runtime through a Vite build entry tag', () => {
         const plugin = InjectRuntimePlugin({})
-        const result = (plugin.transformIndexHtml as any)('<html><head></head><body></body></html>')
+        const result = (plugin.transformIndexHtml as any).handler('<html><head></head><body></body></html>', {})
 
         expect(result.html).toBe('<html><head></head><body></body></html>')
         expect(result.tags).toHaveLength(1)
         expect(result.tags[0]).toMatchObject({
             tag: 'script',
             attrs: {
-                type: 'module'
+                type: 'module',
+                src: RUNTIME_ENTRY_ID
             },
             injectTo: 'head-prepend'
         })
-        expect(result.tags[0].children).toContain('/*__MASTER_CSS_RUNTIME_INJECTED__*/')
-        expect(result.tags[0].children).toContain(`import { CSSRuntime } from '@master/css-runtime';`)
-        expect(result.tags[0].children).toContain(`import masterCSSManifest from 'virtual:master-css-manifest';`)
-        expect(result.tags[0].children).toContain(`import masterCSSEmittedGlobals from 'virtual:master-css-emitted-globals';`)
-        expect(result.tags[0].children).toContain('const masterCSSRuntime = CSSRuntime.create({ manifest: masterCSSManifest, emittedGlobals: masterCSSEmittedGlobals });')
-        expect(result.tags[0].children).toContain('void masterCSSRuntime.loadHydrationManifest().then(() => masterCSSRuntime.observe());')
+        expect(result.tags[0].children).toBeUndefined()
     })
 
-    it('does not inject twice when the marker is already present', () => {
+    it('injects the runtime through a Vite dev id tag', () => {
         const plugin = InjectRuntimePlugin({})
-        const result = (plugin.transformIndexHtml as any)('/*__MASTER_CSS_RUNTIME_INJECTED__*/')
+        const result = (plugin.transformIndexHtml as any).handler(
+            '<html><head></head><body></body></html>',
+            { server: {} }
+        )
+
+        expect(result.tags[0].attrs.src).toBe(DEV_RUNTIME_ENTRY_ID)
+    })
+
+    it('does not inject twice when the runtime entry is already present', () => {
+        const plugin = InjectRuntimePlugin({})
+        const result = (plugin.transformIndexHtml as any).handler(
+            `<script type="module" src="${RUNTIME_ENTRY_ID}"></script>`,
+            {}
+        )
 
         expect(result).toBeUndefined()
+    })
+
+    it('bundles the injected runtime module in production builds', async () => {
+        const tmpRoot = join(process.cwd(), 'tmp')
+        mkdirSync(tmpRoot, { recursive: true })
+        const root = mkdtempSync(join(tmpRoot, 'master-css-vite-runtime-'))
+
+        try {
+            mkdirSync(join(root, 'src'), { recursive: true })
+            writeFileSync(join(root, 'index.html'), [
+                '<html>',
+                '<head></head>',
+                '<body>',
+                '<main class="block"></main>',
+                '<script type="module" src="/src/main.ts"></script>',
+                '</body>',
+                '</html>'
+            ].join(''))
+            writeFileSync(join(root, 'src/main.ts'), '')
+
+            await build({
+                root,
+                logLevel: 'silent',
+                resolve: {
+                    alias: {
+                        [RUNTIME_ENTRY_ID]: resolve(process.cwd(), 'src/runtime.ts')
+                    }
+                },
+                plugins: [
+                    masterCSS({ mode: 'runtime' })
+                ],
+                build: {
+                    outDir: 'dist',
+                    emptyOutDir: true
+                }
+            })
+
+            const html = readFileSync(join(root, 'dist/index.html'), 'utf8')
+            const assetsDir = join(root, 'dist/assets')
+            const jsFiles = readdirSync(assetsDir).filter((file) => file.endsWith('.js'))
+            const jsSources = jsFiles.map((file) => readFileSync(join(assetsDir, file), 'utf8')).join('\n')
+
+            expect(html).toMatch(/<script\b[^>]*\bsrc="\/assets\/[^"]+\.js"/)
+            expect(html).not.toContain('@master/css-runtime')
+            expect(html).not.toContain(RUNTIME_ENTRY_ID)
+            expect(jsSources).not.toContain(`from '@master/css-runtime'`)
+            expect(jsSources).not.toContain(`from "@master/css-runtime"`)
+        } finally {
+            rmSync(root, { recursive: true, force: true })
+        }
     })
 })

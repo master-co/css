@@ -2,9 +2,12 @@ import { describe, expect, it, vi } from 'vitest'
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join, relative } from 'node:path'
-import masterCSS, { ASTRO_MIDDLEWARE_ENTRYPOINT, ASTRO_SSR_EXTERNAL } from '../src/core'
+import masterCSS, {
+    ASTRO_MIDDLEWARE_ENTRYPOINT,
+    ASTRO_RUNTIME_INJECTION,
+    ASTRO_SSR_EXTERNAL
+} from '../src/core'
 import defaultOptions from '../src/options'
-import { CSS_RUNTIME_INJECTION } from '@master/css-integration/runtime'
 import { externalizeAstroHydrationManifests } from '../src/external-hydration-manifest'
 import {
     MASTER_CSS_HYDRATION_MANIFEST_ATTR,
@@ -52,7 +55,7 @@ describe('@master/css.astro integration', () => {
             order: 'pre',
             entrypoint: ASTRO_MIDDLEWARE_ENTRYPOINT
         })
-        expect(result.injectScript).toHaveBeenCalledWith('page', CSS_RUNTIME_INJECTION)
+        expect(result.injectScript).toHaveBeenCalledWith('page', ASTRO_RUNTIME_INJECTION)
         expect(result.pluginNames).not.toContain('master-css:pre-render')
         expect(result.pluginNames).not.toContain('master-css:inject-runtime')
         expect(result.viteConfig?.ssr?.external).toEqual(ASTRO_SSR_EXTERNAL)
@@ -74,7 +77,7 @@ describe('@master/css.astro integration', () => {
         const result = await setup({ mode: 'runtime' })
 
         expect(result.addMiddleware).not.toHaveBeenCalled()
-        expect(result.injectScript).toHaveBeenCalledWith('page', CSS_RUNTIME_INJECTION)
+        expect(result.injectScript).toHaveBeenCalledWith('page', ASTRO_RUNTIME_INJECTION)
         expect(result.pluginNames).toContain('master-css:avoid-fouc')
         expect(result.pluginNames).not.toContain('master-css:inject-runtime')
     })

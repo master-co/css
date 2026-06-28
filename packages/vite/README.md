@@ -110,6 +110,8 @@ Use these virtual modules when application code should receive the same manifest
 
 In production `runtime` mode, the plugin preloads the emitted manifest JSON when it also injects the runtime script. `injectRuntime: false` disables both automatic runtime injection and the manifest JSON preload.
 
+The browser runtime entry is available as `@master/css.vite/runtime` for official integrations that need to inject the same Vite-managed runtime startup module.
+
 ## Options
 
 The `options` object is passed to `masterCSS(options)`.

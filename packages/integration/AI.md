@@ -8,7 +8,7 @@
 
 - Virtual module ids and `?master-css-manifest` request helpers.
 - Generated manifest and emittedGlobals module source helpers.
-- Runtime injection source and ambient client module declarations.
+- Ambient client module declarations.
 - Explicit Node helper subpaths.
 
 ## Does Not Own
@@ -16,11 +16,12 @@
 - Vite, Next, Webpack, Nuxt, Astro, or framework lifecycle behavior.
 - Project manifest discovery or CSS import graph resolution.
 - Extraction, runtime hydration, server rendering, scanner state, or compiler lowering.
+- Browser runtime boot code.
 - Browser-safe helpers that import `node:*`, use `Buffer`, or read `process`.
 
 ## Public Surface
 
-- Browser-safe: `.`, `./client`, `./module`, `./manifest-module`, `./manifest-facade`, `./style-module`, `./emitted-globals-module`, `./runtime`.
+- Browser-safe: `.`, `./client`, `./module`, `./manifest-module`, `./manifest-facade`, `./style-module`, `./emitted-globals-module`.
 - Node-only: `./node`.
 
 ## Key Files
@@ -31,7 +32,6 @@
 - `src/manifest-facade.ts`
 - `src/style-module.ts`
 - `src/emitted-globals-module.ts`
-- `src/runtime.ts`
 - `src/node.ts`
 
 ## Risk Areas

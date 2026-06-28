@@ -1,6 +1,8 @@
+import { readFileSync } from 'node:fs'
+import { resolve } from 'node:path'
 import { describe, expect, it } from 'vitest'
+import * as moduleHelpers from '../src/module'
 import {
-    CSS_RUNTIME_INJECTION,
     EMPTY_MANIFEST_JSON,
     EMPTY_EMITTED_GLOBALS_MODULE,
     MASTER_CSS_MANIFEST_QUERY,
@@ -33,6 +35,17 @@ describe('@master/css-integration module helpers', () => {
         expect(normalizeEmittedGlobals()).toEqual({ variables: {}, animations: {} })
     })
 
+    it('does not expose runtime injection source helpers', () => {
+        const packageJSON = JSON.parse(
+            readFileSync(resolve(__dirname, '../package.json'), 'utf8')
+        ) as { exports: Record<string, unknown> }
+
+        expect(moduleHelpers).not.toHaveProperty('CSS_RUNTIME_INJECTION')
+        expect(moduleHelpers).not.toHaveProperty('MASTER_CSS_RUNTIME_INJECTED_MARKER')
+        expect(moduleHelpers).not.toHaveProperty('VIRTUAL_RUNTIME_ID')
+        expect(packageJSON.exports).not.toHaveProperty('./runtime')
+    })
+
     it('matches and strips CSS manifest resource queries', () => {
         expect(stripMasterCSSManifestQuery('./theme.css?master-css-manifest')).toBe('./theme.css')
         expect(stripResourceQuery('./theme.css?master-css-manifest')).toBe('./theme.css')
@@ -49,14 +62,6 @@ describe('@master/css-integration module helpers', () => {
         expect(toManifestPreloadLinkTag('/assets/master-css-manifest.json?x=1&name="main"')).toBe(
             '<link rel="preload" as="fetch" type="application/json" crossorigin href="/assets/master-css-manifest.json?x=1&amp;name=&quot;main&quot;">'
         )
-    })
-
-    it('builds shared runtime injection source', () => {
-        expect(CSS_RUNTIME_INJECTION).toContain(`import { CSSRuntime } from '@master/css-runtime';`)
-        expect(CSS_RUNTIME_INJECTION).toContain(`import masterCSSManifest from '${VIRTUAL_MANIFEST_ID}';`)
-        expect(CSS_RUNTIME_INJECTION).toContain(`import masterCSSEmittedGlobals from '${VIRTUAL_EMITTED_GLOBALS_ID}';`)
-        expect(CSS_RUNTIME_INJECTION).toContain('const masterCSSRuntime = CSSRuntime.create({ manifest: masterCSSManifest, emittedGlobals: masterCSSEmittedGlobals });')
-        expect(CSS_RUNTIME_INJECTION).toContain('void masterCSSRuntime.loadHydrationManifest().then(() => masterCSSRuntime.observe());')
     })
 
     it('builds a universal manifest facade that resolves Next production and dev assets', () => {

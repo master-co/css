@@ -8,8 +8,7 @@ const BROWSER_SAFE_SOURCES = [
     'manifest-module.ts',
     'manifest-facade.ts',
     'style-module.ts',
-    'emitted-globals-module.ts',
-    'runtime.ts'
+    'emitted-globals-module.ts'
 ]
 
 function stripStringAndCommentContent(source: string) {

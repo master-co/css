@@ -67,11 +67,6 @@
             "import": "./dist/emitted-globals-module.js",
             "default": "./dist/emitted-globals-module.js"
         },
-        "./runtime": {
-            "types": "./dist/runtime.d.ts",
-            "import": "./dist/runtime.js",
-            "default": "./dist/runtime.js"
-        },
         "./node": {
             "types": "./dist/node.d.ts",
             "import": "./dist/node.js",

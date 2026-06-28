@@ -10,9 +10,9 @@ npm install @master/css-integration
 
 ## Responsibility
 
-`@master/css-integration` is adapter-neutral glue for official build and framework integrations. It owns virtual module IDs, `?master-css-manifest` request helpers, generated manifest and emittedGlobals module source helpers, runtime injection source, ambient client declarations, and explicit Node helper subpaths.
+`@master/css-integration` is adapter-neutral glue for official build and framework integrations. It owns virtual module IDs, `?master-css-manifest` request helpers, generated manifest and emittedGlobals module source helpers, ambient client declarations, and explicit Node helper subpaths.
 
-It does not implement project manifest discovery, CSS import graph resolution, extraction, runtime hydration, or framework lifecycle behavior.
+It does not implement project manifest discovery, CSS import graph resolution, extraction, runtime hydration, browser runtime boot code, or framework lifecycle behavior.
 
 ## Public subpaths
 
@@ -25,7 +25,6 @@ It does not implement project manifest discovery, CSS import graph resolution, e
 | `@master/css-integration/manifest-facade` | Generated manifest facade source helpers. |
 | `@master/css-integration/style-module` | Generated style module helpers. |
 | `@master/css-integration/emitted-globals-module` | Generated emittedGlobals module helpers. |
-| `@master/css-integration/runtime` | Runtime injection source helpers. |
 | `@master/css-integration/node` | Node filesystem/path helpers. |
 
 ## Client types
