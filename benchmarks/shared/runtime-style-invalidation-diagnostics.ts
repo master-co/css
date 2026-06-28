@@ -194,21 +194,21 @@ export const runtimeStyleInvalidationMetrics = [
     },
     {
         id: 'runtime-mutation-ms',
-        label: 'Runtime add/remove total',
+        label: 'Runtime ensure/delete total',
         unit: 'ms',
-        description: 'Instrumented Master CSS runtime add/remove duration during the diagnostic action.'
+        description: 'Instrumented Master CSS runtime ensure/delete class-rules duration during the diagnostic action.'
     },
     {
-        id: 'runtime-add-duration-ms',
-        label: 'Runtime add duration',
+        id: 'runtime-ensure-class-rules-duration-ms',
+        label: 'Runtime ensure class rules duration',
         unit: 'ms',
-        description: 'Instrumented duration spent inside CSSRuntime.add(...).'
+        description: 'Instrumented duration spent inside CSSRuntime.ensureClassRules(...).'
     },
     {
-        id: 'runtime-remove-duration-ms',
-        label: 'Runtime remove duration',
+        id: 'runtime-delete-class-rules-duration-ms',
+        label: 'Runtime delete class rules duration',
         unit: 'ms',
-        description: 'Instrumented duration spent inside CSSRuntime.remove(...).'
+        description: 'Instrumented duration spent inside CSSRuntime.deleteClassRules(...).'
     },
     {
         id: 'mutation-observer-callback-count',
@@ -763,13 +763,13 @@ async function preseedRuntimeTempRules(page: Page) {
             classUtilities?: {
                 size?: number
             }
-            add?: (...classNames: string[]) => unknown
+            ensureClassRules?: (...classNames: string[]) => unknown
         } | undefined
         const tempClassNames = config.classes?.temp || []
-        if (!runtime?.add || !tempClassNames.length) return 0
+        if (!runtime?.ensureClassRules || !tempClassNames.length) return 0
 
         const before = runtime.classUtilities?.size || 0
-        runtime.add(...tempClassNames)
+        runtime.ensureClassRules(...tempClassNames)
         const after = runtime.classUtilities?.size || 0
 
         return Math.max(0, after - before)
@@ -779,7 +779,7 @@ async function preseedRuntimeTempRules(page: Page) {
 async function seedRetainedRuntimeRules(page: Page, count: number) {
     return page.evaluate((classCount) => {
         const runtime = globalThis.masterCSSRuntime as {
-            add?: (...classNames: string[]) => unknown
+            ensureClassRules?: (...classNames: string[]) => unknown
             classUtilities?: Map<string, Array<{
                 text?: string
                 nodes?: Array<{
@@ -793,7 +793,7 @@ async function seedRetainedRuntimeRules(page: Page, count: number) {
                 ruleCount: number
             }>
         } | undefined
-        if (!runtime?.add || !runtime.classUtilities || !runtime.retainedClassNames || !runtime.retainedClassRules) {
+        if (!runtime?.ensureClassRules || !runtime.classUtilities || !runtime.retainedClassNames || !runtime.retainedClassRules) {
             return {
                 classCount: 0,
                 ruleCount: 0,
@@ -802,7 +802,7 @@ async function seedRetainedRuntimeRules(page: Page, count: number) {
         }
 
         const classNames = Array.from({ length: classCount }, (_, index) => `z:${10000 + index}`)
-        runtime.add(...classNames)
+        runtime.ensureClassRules(...classNames)
         const retainedAt = Date.now() - 2000
         let ruleCount = 0
         let rawBytes = 0
@@ -1037,8 +1037,8 @@ function createRuntimeStyleInvalidationSamples(
         sample('paint-ms', variantId, round, result.traceMetrics.paintMs),
         sample('long-task-count', variantId, round, result.traceMetrics.longTaskCount),
         sample('runtime-mutation-ms', variantId, round, result.interaction.runtimeMutationMs),
-        sample('runtime-add-duration-ms', variantId, round, result.runtimeDiagnostics.runtimeAddDurationMs),
-        sample('runtime-remove-duration-ms', variantId, round, result.runtimeDiagnostics.runtimeRemoveDurationMs),
+        sample('runtime-ensure-class-rules-duration-ms', variantId, round, result.runtimeDiagnostics.runtimeAddDurationMs),
+        sample('runtime-delete-class-rules-duration-ms', variantId, round, result.runtimeDiagnostics.runtimeRemoveDurationMs),
         sample('mutation-observer-callback-count', variantId, round, result.runtimeDiagnostics.mutationObserverCallbackCount),
         sample('mutation-observer-callback-duration-ms', variantId, round, result.runtimeDiagnostics.mutationObserverCallbackDurationMs),
         sample('mutation-record-count', variantId, round, result.runtimeDiagnostics.mutationRecordCount),

@@ -47,6 +47,11 @@ test('destroy on progressive', async ({ page }) => {
         document.body.classList.add('block')
         document.body.classList.add('font:bold')
     })
+    await page.evaluate(() => new Promise<void>((resolve) => {
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => resolve())
+        })
+    }))
     expect(await page.evaluate(() => Array.from(globalThis.masterCSSRuntime.style?.sheet?.cssRules || []).length)).toBe(2)
 })
 
@@ -68,6 +73,11 @@ test('prevent attach layer twice', async ({ page }) => {
     await page.evaluate(() => {
         document.body.classList.add('app-wrapper')
     })
+    await page.evaluate(() => new Promise<void>((resolve) => {
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => resolve())
+        })
+    }))
     expect(await page.evaluate(() => globalThis.masterCSSRuntime.componentsLayer.native?.cssRules?.length)).toBe(3)
 })
 

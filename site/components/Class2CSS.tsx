@@ -11,7 +11,7 @@ const Class2CSS = (props: any) => {
     const { children: classes } = props
     const generatedCSS = useMemo(() => {
         const css = createPresetCSS()
-        normalizeClasses(classes).forEach((className) => css.add(className))
+        normalizeClasses(classes).forEach((className) => css.ensureClassRules(className))
         return css.text
     }, [classes])
     return (

@@ -436,7 +436,7 @@ function renderDiagnosticCompiledManifestCSS(options: {
 
     recorder.timeSync('engine-rule-generation-ms', () => {
         for (const className of classNames) {
-            css.add(className)
+            css.ensureClassRules(className)
         }
     })
 

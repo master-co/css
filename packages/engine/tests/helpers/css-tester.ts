@@ -229,7 +229,7 @@ export function expectClassText(css: MasterCSS, className: string, expected: str
 }
 
 export function expectLayerText(css: MasterCSS, classNames: string | string[], layer: keyof Pick<MasterCSS, 'themeLayer' | 'baseLayer' | 'defaultsLayer' | 'componentsLayer' | 'utilitiesLayer' | 'animationsNonLayer'>, expected: string) {
-    css.add(...(Array.isArray(classNames) ? classNames : [classNames]))
+    css.ensureClassRules(...(Array.isArray(classNames) ? classNames : [classNames]))
     expect(css[layer].text).toContain(expected)
-    css.remove(...(Array.isArray(classNames) ? classNames : [classNames]))
+    css.deleteClassRules(...(Array.isArray(classNames) ? classNames : [classNames]))
 }

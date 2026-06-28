@@ -136,7 +136,7 @@ describe('MasterCSS engine hot paths', () => {
         let total = 0
         for (let index = 0; index < 100; index++) {
             const css = MasterCSS.create({ manifest: defaultManifest, ...options })
-            css.add(...runtimeClassNames)
+            css.ensureClassRules(...runtimeClassNames)
             total += css.text.length
         }
         sink = total

@@ -203,45 +203,45 @@ export const runtimeMutationDiagnosticMetrics = [
     },
     {
         id: 'runtime-mutation-ms',
-        label: 'Runtime add/remove total',
+        label: 'Runtime ensure/delete total',
         unit: 'ms',
-        description: 'Instrumented Master CSS runtime add/remove duration during cleanup cycles.'
+        description: 'Instrumented Master CSS runtime ensure/delete class-rules duration during cleanup cycles.'
     },
     {
-        id: 'runtime-add-duration-ms',
-        label: 'Runtime add duration',
+        id: 'runtime-ensure-class-rules-duration-ms',
+        label: 'Runtime ensure class rules duration',
         unit: 'ms',
-        description: 'Instrumented duration spent inside CSSRuntime.add(...).'
+        description: 'Instrumented duration spent inside CSSRuntime.ensureClassRules(...).'
     },
     {
-        id: 'runtime-remove-duration-ms',
-        label: 'Runtime remove duration',
+        id: 'runtime-delete-class-rules-duration-ms',
+        label: 'Runtime delete class rules duration',
         unit: 'ms',
-        description: 'Instrumented duration spent inside CSSRuntime.remove(...).'
+        description: 'Instrumented duration spent inside CSSRuntime.deleteClassRules(...).'
     },
     {
-        id: 'runtime-add-call-count',
-        label: 'Runtime add calls',
+        id: 'runtime-ensure-class-rules-call-count',
+        label: 'Runtime ensure class rules calls',
         unit: 'count',
-        description: 'Number of CSSRuntime.add(...) calls during cleanup cycles.'
+        description: 'Number of CSSRuntime.ensureClassRules(...) calls during cleanup cycles.'
     },
     {
-        id: 'runtime-remove-call-count',
-        label: 'Runtime remove calls',
+        id: 'runtime-delete-class-rules-call-count',
+        label: 'Runtime delete class rules calls',
         unit: 'count',
-        description: 'Number of CSSRuntime.remove(...) calls during cleanup cycles.'
+        description: 'Number of CSSRuntime.deleteClassRules(...) calls during cleanup cycles.'
     },
     {
-        id: 'runtime-add-class-count',
-        label: 'Runtime added classes',
+        id: 'runtime-ensured-class-count',
+        label: 'Runtime ensured classes',
         unit: 'count',
-        description: 'Total class arguments passed to CSSRuntime.add(...).'
+        description: 'Total class arguments passed to CSSRuntime.ensureClassRules(...).'
     },
     {
-        id: 'runtime-remove-class-count',
-        label: 'Runtime removed classes',
+        id: 'runtime-deleted-class-count',
+        label: 'Runtime deleted classes',
         unit: 'count',
-        description: 'Total class arguments passed to CSSRuntime.remove(...).'
+        description: 'Total class arguments passed to CSSRuntime.deleteClassRules(...).'
     },
     {
         id: 'runtime-deferred-remove-call-count',
@@ -271,7 +271,7 @@ export const runtimeMutationDiagnosticMetrics = [
         id: 'runtime-flush-remove-call-count',
         label: 'Flush remove calls',
         unit: 'count',
-        description: 'Batched CSSRuntime.remove(...) calls executed by the benchmark-only flush strategy.'
+        description: 'Batched CSSRuntime.deleteClassRules(...) calls executed by the benchmark-only flush strategy.'
     },
     {
         id: 'runtime-flush-remove-class-count',
@@ -612,7 +612,7 @@ async function createRuntimeMutationDiagnosticsReport(): Promise<BenchmarkReport
             'The trace-window axis compares ending trace collection before the deferred product cleanup flush with keeping the current post-interaction settle window.',
             'The rule-state axis compares first-time temporary rule generation with preseeded temporary runtime rules.',
             'Instrumentation is injected into the benchmark page harness; @master/css-runtime source and public behavior are not changed.',
-            'MutationObserver and CSSRuntime.add/remove wrappers add measurement overhead, so use these numbers to localize costs, not as public performance claims.',
+            'MutationObserver and CSSRuntime.ensureClassRules/deleteClassRules wrappers add measurement overhead, so use these numbers to localize costs, not as public performance claims.',
             'Progressive variants fail if they fall back to runtime rendering before the cleanup scenario.',
             'Trace-derived event names can change across Chromium versions, so raw trace artifacts are kept for review before optimization work.'
         ],
@@ -703,13 +703,13 @@ async function preseedRuntimeTempRules(page: Page, ruleState: RuntimeMutationRul
             classUtilities?: {
                 size?: number
             }
-            add?: (...classNames: string[]) => unknown
+            ensureClassRules?: (...classNames: string[]) => unknown
         } | undefined
         const tempClassNames = config.classes?.temp || []
-        if (!runtime?.add || !tempClassNames.length) return 0
+        if (!runtime?.ensureClassRules || !tempClassNames.length) return 0
 
         const before = runtime.classUtilities?.size || 0
-        runtime.add(...tempClassNames)
+        runtime.ensureClassRules(...tempClassNames)
         const after = runtime.classUtilities?.size || 0
 
         return Math.max(0, after - before)
@@ -859,37 +859,37 @@ function createRuntimeMutationDiagnosticSamples(
             value: result.interaction.runtimeMutationMs
         },
         {
-            metricId: 'runtime-add-duration-ms',
+            metricId: 'runtime-ensure-class-rules-duration-ms',
             variantId,
             round,
             value: result.runtimeDiagnostics.runtimeAddDurationMs
         },
         {
-            metricId: 'runtime-remove-duration-ms',
+            metricId: 'runtime-delete-class-rules-duration-ms',
             variantId,
             round,
             value: result.runtimeDiagnostics.runtimeRemoveDurationMs
         },
         {
-            metricId: 'runtime-add-call-count',
+            metricId: 'runtime-ensure-class-rules-call-count',
             variantId,
             round,
             value: result.runtimeDiagnostics.runtimeAddCallCount
         },
         {
-            metricId: 'runtime-remove-call-count',
+            metricId: 'runtime-delete-class-rules-call-count',
             variantId,
             round,
             value: result.runtimeDiagnostics.runtimeRemoveCallCount
         },
         {
-            metricId: 'runtime-add-class-count',
+            metricId: 'runtime-ensured-class-count',
             variantId,
             round,
             value: result.runtimeDiagnostics.runtimeAddClassCount
         },
         {
-            metricId: 'runtime-remove-class-count',
+            metricId: 'runtime-deleted-class-count',
             variantId,
             round,
             value: result.runtimeDiagnostics.runtimeRemoveClassCount

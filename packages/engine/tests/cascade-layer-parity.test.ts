@@ -18,9 +18,9 @@ describe.concurrent('migrated cascade and layer parity', () => {
         const css = createDefaultCSS()
 
         expect(css.text).toBe('')
-        css.add('text-center')
+        css.ensureClassRules('text-center')
         expect(css.text).toContain('@layer utilities{.text-center{text-align:center}}')
-        css.remove('text-center')
+        css.deleteClassRules('text-center')
         expect(css.text).toBe('')
 
         const componentCSS = createCSSWithSemanticUtilities([
@@ -30,18 +30,18 @@ describe.concurrent('migrated cascade and layer parity', () => {
             }
         ])
 
-        componentCSS.add('text-center', 'font:bold')
+        componentCSS.ensureClassRules('text-center', 'font:bold')
         expect(componentCSS.text).toContain('@layer theme{:root{--font-weight-bold:700}}')
         expect(componentCSS.text).toContain('@layer utilities{.text-center{text-align:center}.font\\:bold{font-weight:var(--font-weight-bold)}}')
-        componentCSS.add('btn')
+        componentCSS.ensureClassRules('btn')
         expect(componentCSS.text).toContain('@layer components{.btn{display:block}}')
-        componentCSS.remove('text-center', 'font:bold', 'btn')
+        componentCSS.deleteClassRules('text-center', 'font:bold', 'btn')
         expect(componentCSS.text).toBe('')
     })
 
     test('prevents duplicate insertion and preserves emittedGlobals variable and animation counts', () => {
         const css = createDefaultCSS()
-        css.add('text-center', 'text-center')
+        css.ensureClassRules('text-center', 'text-center')
         expect(css.utilitiesLayer.rules).toHaveLength(1)
 
         const emittedGlobalsVariableCSS = MasterCSS.create({
@@ -52,12 +52,12 @@ describe.concurrent('migrated cascade and layer parity', () => {
                 }
             }
         })
-        emittedGlobalsVariableCSS.add('bg:red-60')
+        emittedGlobalsVariableCSS.ensureClassRules('bg:red-60')
         expect(emittedGlobalsVariableCSS.text).toBe('@layer utilities{.bg\\:red-60{background-color:var(--color-red-60)}}')
         expect(Object.fromEntries(emittedGlobalsVariableCSS.themeLayer.tokenCounts)).toMatchObject({
             'color-red-60': 2
         })
-        emittedGlobalsVariableCSS.remove('bg:red-60')
+        emittedGlobalsVariableCSS.deleteClassRules('bg:red-60')
         expect(emittedGlobalsVariableCSS.text).toBe('')
         expect(Object.fromEntries(emittedGlobalsVariableCSS.themeLayer.tokenCounts)).toMatchObject({
             'color-red-60': 1
@@ -71,12 +71,12 @@ describe.concurrent('migrated cascade and layer parity', () => {
                 }
             }
         })
-        emittedGlobalsAnimationCSS.add('animate:fade')
+        emittedGlobalsAnimationCSS.ensureClassRules('animate:fade')
         expect(emittedGlobalsAnimationCSS.text).toBe('@layer theme{:root{--animate-fade:fade 1s infinite}}@layer utilities{.animate\\:fade{animation:var(--animate-fade)}}')
         expect(Object.fromEntries(emittedGlobalsAnimationCSS.animationsNonLayer.tokenCounts)).toEqual({
             fade: 2
         })
-        emittedGlobalsAnimationCSS.remove('animate:fade')
+        emittedGlobalsAnimationCSS.deleteClassRules('animate:fade')
         expect(emittedGlobalsAnimationCSS.text).toBe('')
         expect(Object.fromEntries(emittedGlobalsAnimationCSS.animationsNonLayer.tokenCounts)).toEqual({
             fade: 1
@@ -140,12 +140,12 @@ describe.concurrent('migrated cascade and layer parity', () => {
         expect(css.text).toContain('---spacing-card:-16')
         expect(css.text).toContain('@keyframes static-fade{to{color:var(--color-static-base)}}')
 
-        css.add('fg:static-alias')
+        css.ensureClassRules('fg:static-alias')
         expect(Object.fromEntries(css.themeLayer.tokenCounts)).toMatchObject({
             'color-static-alias': 2,
             'color-static-base': 2
         })
-        css.remove('fg:static-alias')
+        css.deleteClassRules('fg:static-alias')
         expect(css.text).toContain('--color-static-alias:var(--color-static-base)')
         expect(css.text).toContain('--color-static-base:#123')
         expect(Object.fromEntries(css.themeLayer.tokenCounts)).toMatchObject({
@@ -191,16 +191,16 @@ describe.concurrent('migrated cascade and layer parity', () => {
         })
 
         expect(css.text).toBe('')
-        css.add('fg:static-simple')
+        css.ensureClassRules('fg:static-simple')
         expect(css.text).toBe('@layer utilities{.fg\\:static-simple{color:var(--color-static-simple)}}')
-        css.remove('fg:static-simple')
+        css.deleteClassRules('fg:static-simple')
         expect(css.text).toBe('')
     })
 
     test('emits referenced keyframes outside cascade layers', () => {
         const css = createDefaultCSS()
 
-        css.add('animate:fade')
+        css.ensureClassRules('animate:fade')
         expect(css.text).toBe([
             '@layer theme{:root{--animate-fade:fade 1s infinite}}',
             '@layer utilities{.animate\\:fade{animation:var(--animate-fade)}}',
@@ -218,7 +218,7 @@ describe.concurrent('migrated cascade and layer parity', () => {
         expectLayerText(createDefaultCSS(), 'font:.75rem_:is(code,pre)@base', 'baseLayer', '.font\\:\\.75rem_\\:is\\(code\\,pre\\)\\@base :is(code,pre){font-size:0.75rem}')
         expectLayerText(createDefaultCSS(), 'font:.75rem_:is(code,pre)@default', 'defaultsLayer', '.font\\:\\.75rem_\\:is\\(code\\,pre\\)\\@default :is(code,pre){font-size:0.75rem}')
 
-        const conflicted = createDefaultCSS().add('block@base@default')
+        const conflicted = createDefaultCSS().ensureClassRules('block@base@default')
         expect(conflicted.text).not.toContain('block\\@base\\@default')
     })
 
@@ -234,7 +234,7 @@ describe.concurrent('migrated cascade and layer parity', () => {
         ])
         })
 
-        css.add('btn')
+        css.ensureClassRules('btn')
         expect(css.componentsLayer.text).toContain('@layer base{.btn{display:block}}')
     })
 
@@ -259,14 +259,14 @@ describe.concurrent('migrated cascade and layer parity', () => {
 
         for (const input of inputs) {
             const css = createDefaultCSS()
-            css.add(...input)
+            css.ensureClassRules(...input)
             expect(css.utilitiesLayer.rules.map(({ name }) => name)).toEqual(expected)
         }
     })
 
     test('keeps declaration and media priority order', () => {
         const css = createDefaultCSS()
-        css.add('font:.75rem', 'font:2rem@md', 'font:1.5rem@sm', 'm:8x', 'block', 'px:4x', 'bg:blue-60:hover', 'round', 'mb:12x')
+        css.ensureClassRules('font:.75rem', 'font:2rem@md', 'font:1.5rem@sm', 'm:8x', 'block', 'px:4x', 'bg:blue-60:hover', 'round', 'mb:12x')
         expect(css.utilitiesLayer.rules.map(({ name }) => name)).toEqual([
             'block',
             'round',
@@ -288,7 +288,7 @@ describe.concurrent('migrated cascade and layer parity', () => {
             manifest,
             nativeDeclarationMatcher: ({ property }) => property === 'justify-content' || property === 'min-width'
         })
-        mediaCSS.add('min-w:12.875rem', '{flex-row}@xs', 'justify-content:flex-end@xs', 'hidden@tablet&<desktop', '{flex-row}@2xs&<xs')
+        mediaCSS.ensureClassRules('min-w:12.875rem', '{flex-row}@xs', 'justify-content:flex-end@xs', 'hidden@tablet&<desktop', '{flex-row}@2xs&<xs')
         expect(mediaCSS.utilitiesLayer.rules.map(({ name }) => name)).toEqual([
             'min-w:12.875rem',
             '{flex-row}@xs',
@@ -310,7 +310,7 @@ describe.concurrent('migrated cascade and layer parity', () => {
             }
         ])
 
-        css.add('btn-primary')
+        css.ensureClassRules('btn-primary')
         expect(css.componentsLayer.rules.map(({ name }) => name)).toEqual(['btn-primary'])
         expect(css.componentsLayer.text).toContain('.btn-primary{background-color:oklch(63.7% 0.237 25.331)}')
         expect(css.componentsLayer.text).toContain('.btn-primary:hover{background-color:oklch(63.7% 0.237 25.331)}')

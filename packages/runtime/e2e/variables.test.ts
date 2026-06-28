@@ -39,27 +39,35 @@ async function waitForRuntimeRemovalFlush(page: Page) {
     }))
 }
 
+async function waitForRuntimeRuleFlush(page: Page) {
+    await page.evaluate(() => new Promise<void>((resolve) => {
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => resolve())
+        })
+    }))
+}
+
 async function flushRetainedClassRules(page: Page) {
     await page.evaluate(() => globalThis.masterCSSRuntime.flushRetainedClassRules())
 }
 
 test('expects the variable output', async ({ page }) => {
+    await page.evaluate(() => {
+        const p = document.createElement('p')
+        p.id = 'mp'
+        p.classList.add('bg:first')
+        document.body.append(p)
+    })
+    await waitForRuntimeRuleFlush(page)
     expectLayers(
-        await page.evaluate(async () => {
-            const p = document.createElement('p')
-            p.id = 'mp'
-            p.classList.add('bg:first')
-            document.body.append(p)
-            await new Promise(resolve => setTimeout(resolve, 0))
-            return globalThis.masterCSSRuntime.text
-        }),
+        await page.evaluate(() => globalThis.masterCSSRuntime.text),
         {
             theme: ':root{--color-first:#111111}.light{color-scheme:light;--color-first:#333333}.dark{color-scheme:dark;--color-first:#222222}',
             utilities: '.bg\\:first{background-color:var(--color-first)}'
         }
     )
 
-    let text = await page.evaluate(async () => {
+    await page.evaluate(() => {
         const p = document.getElementById('mp')
         p?.classList.add(
             'bg:second',
@@ -68,9 +76,9 @@ test('expects the variable output', async ({ page }) => {
             'fg:second',
             'accent-color:sixth'
         )
-        await new Promise(resolve => setTimeout(resolve, 0))
-        return globalThis.masterCSSRuntime.text
     })
+    await waitForRuntimeRuleFlush(page)
+    let text = await page.evaluate(() => globalThis.masterCSSRuntime.text)
     expect(text).toMatch(/\.dark\{[^}]*--color-second:#444444[^}]*\}/)
     expect(text).toMatch(/\.light,:root\{[^}]*--color-second:#555555[^}]*\}/)
     expect(text).toContain('.bg\\:second{background-color:var(--color-second)}')
@@ -151,7 +159,11 @@ test('sets native color-scheme on local class-triggered mode islands', async ({ 
         const element = document.createElement('div')
         element.className = 'fg:second dark'
         document.body.append(element)
-        await new Promise(resolve => setTimeout(resolve, 0))
+        await new Promise<void>(resolve => {
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => resolve())
+            })
+        })
         return {
             colorScheme: getComputedStyle(element).colorScheme,
             text: globalThis.masterCSSRuntime.text

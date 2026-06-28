@@ -43,7 +43,7 @@ describe.concurrent('migrated parser boundary parity', () => {
         expect(css.createRule('uppercase::first-letter')?.text)
             .toBe('.uppercase\\:\\:first-letter::first-letter{text-transform:uppercase}')
 
-        css.add('hidden:hocus')
+        css.ensureClassRules('hidden:hocus')
         expect(css.utilitiesLayer.text)
             .toBe('@layer utilities{.hidden\\:hocus:hover{display:none}.hidden\\:hocus:focus-visible{display:none}}')
     })

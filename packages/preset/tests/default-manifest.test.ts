@@ -446,7 +446,7 @@ describe('@master/css-preset defaultManifest', () => {
         })
 
         const orderedCSS = createTestCSS(defaultManifest)
-        orderedCSS.add('items-center', 'items-start', 'justify-between', 'justify-center')
+        orderedCSS.ensureClassRules('items-center', 'items-start', 'justify-between', 'justify-center')
         expect(orderedCSS.utilitiesLayer.text)
             .toBe('@layer utilities{.items-center{align-items:center}.items-start{align-items:start}.justify-between{justify-content:space-between}.justify-center{justify-content:center}}')
 

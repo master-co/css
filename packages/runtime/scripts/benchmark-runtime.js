@@ -103,7 +103,7 @@ function createHydrationFixture(classNames) {
         manifest: defaultManifest,
         nativeDeclarationMatcher: () => true
     })
-    css.add(...classNames)
+    css.ensureClassRules(...classNames)
     return {
         bodyMarkup: createClassMarkup(classNames),
         hydrationManifest: createHydrationManifest(css),
@@ -423,7 +423,7 @@ try {
         }
     }))
 
-    results.push(await runBenchmark('mutation add/remove classes', async () => {
+    results.push(await runBenchmark('mutation ensure/delete class rules', async () => {
         const page = await createObservedPage(browser, server.url, scriptURL, '', { preloadManifest: true })
         try {
             const elapsed = await page.evaluate(async ({ html }) => {
@@ -452,18 +452,18 @@ try {
         }
     }))
 
-    results.push(await runBenchmark('direct CSSOM add/remove generated rules', async () => {
+    results.push(await runBenchmark('direct CSSOM ensure/delete generated rules', async () => {
         const page = await createObservedPage(browser, server.url, scriptURL, '', { preloadManifest: true })
         try {
             const elapsed = await page.evaluate((classes) => {
                 const startedAt = performance.now()
-                globalThis.masterCSSRuntime.add(...classes)
-                globalThis.masterCSSRuntime.remove(...classes)
+                globalThis.masterCSSRuntime.ensureClassRules(...classes)
+                globalThis.masterCSSRuntime.deleteClassRules(...classes)
                 return performance.now() - startedAt
             }, mutationClasses)
             const generatedCount = await page.evaluate(() => globalThis.masterCSSRuntime.classUtilities.size)
             if (generatedCount) {
-                throw new Error(`Expected direct add/remove cleanup to empty classUtilities, got ${generatedCount}.`)
+                throw new Error(`Expected direct ensure/delete cleanup to empty classUtilities, got ${generatedCount}.`)
             }
             return elapsed
         } finally {

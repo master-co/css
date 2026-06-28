@@ -23,7 +23,7 @@ test.concurrent('browser compileCSSManifest lowers directives with a base manife
     })
     const css = createTestCSS(result.manifest)
 
-    css.add('btn')
+    css.ensureClassRules('btn')
 
     expect(result.warnings).toEqual([])
     expect(result.manifest.utilities?.some((utility) => utility.name === 'btn' && utility.layer === 'components')).toBe(true)

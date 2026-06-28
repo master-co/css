@@ -215,8 +215,8 @@ test('mutation removal flush keeps remaining native CSSOM references valid', asy
 
     const afterDirectMutation = await page.evaluate(() => {
         const runtime = globalThis.masterCSSRuntime
-        runtime.add('block')
-        runtime.remove('fg:blue-60')
+        runtime.ensureClassRules('block')
+        runtime.deleteClassRules('fg:blue-60')
         const sheetText = Array.from(runtime.style!.sheet!.cssRules)
             .map((cssRule) => cssRule.cssText)
             .join('\n')
@@ -238,7 +238,11 @@ test('re-adding a retained class cancels retained cleanup', async ({ page }) => 
     await init(page)
     await page.evaluate(async () => {
         document.body.innerHTML = '<p id="target" class="fg:red-60"></p>'
-        await new Promise(resolve => setTimeout(resolve, 0))
+        await new Promise<void>((resolve) => {
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => resolve())
+            })
+        })
         document.getElementById('target')?.remove()
     })
     await waitForRuntimeRemovalFlush(page)
@@ -274,7 +278,7 @@ test('direct remove deletes retained CSSOM rules synchronously', async ({ page }
     await waitForRuntimeRemovalFlush(page)
 
     const afterDirectRemove = await page.evaluate(() => {
-        globalThis.masterCSSRuntime.remove('fg:red-60')
+        globalThis.masterCSSRuntime.deleteClassRules('fg:red-60')
         return {
             retainedClassNames: [...globalThis.masterCSSRuntime.retainedClassNames],
             hasClassUtility: globalThis.masterCSSRuntime.classUtilities.has('fg:red-60'),
@@ -374,16 +378,16 @@ test('mutation removals are canceled when a class returns before flush', async (
     expect(afterFlush.text).toContain('.fg\\:red-60')
 })
 
-test('direct add and remove stay synchronous', async ({ page }) => {
+test('direct ensureClassRules and deleteClassRules stay synchronous', async ({ page }) => {
     await init(page)
 
     const result = await page.evaluate(() => {
-        globalThis.masterCSSRuntime.add('fg:red-60')
+        globalThis.masterCSSRuntime.ensureClassRules('fg:red-60')
         const added = {
             hasClassUtility: globalThis.masterCSSRuntime.classUtilities.has('fg:red-60'),
             text: globalThis.masterCSSRuntime.text
         }
-        globalThis.masterCSSRuntime.remove('fg:red-60')
+        globalThis.masterCSSRuntime.deleteClassRules('fg:red-60')
         return {
             added,
             removed: {
@@ -401,10 +405,189 @@ test('direct add and remove stay synchronous', async ({ page }) => {
     })
 })
 
-test('disconnect and destroy clear pending mutation removals', async ({ page }) => {
+test('observer-added cold classes update counts immediately and flush rules before paint', async ({ page }) => {
+    await init(page)
+
+    const result = await page.evaluate(async () => {
+        const queuedFrames = new Map<number, FrameRequestCallback>()
+        const nativeRequestAnimationFrame = window.requestAnimationFrame
+        const nativeCancelAnimationFrame = window.cancelAnimationFrame
+        let nextFrameHandle = 1
+        window.requestAnimationFrame = (callback) => {
+            const handle = nextFrameHandle++
+            queuedFrames.set(handle, callback)
+            return handle
+        }
+        window.cancelAnimationFrame = (handle) => {
+            queuedFrames.delete(handle)
+        }
+
+        try {
+            const target = document.createElement('p')
+            target.className = 'fg:red-60'
+            document.body.append(target)
+            await new Promise(resolve => setTimeout(resolve, 0))
+
+            const beforeFlush = {
+                queuedFrameCount: queuedFrames.size,
+                counts: Object.fromEntries(globalThis.masterCSSRuntime.classCounts),
+                hasClassUtility: globalThis.masterCSSRuntime.classUtilities.has('fg:red-60'),
+                text: globalThis.masterCSSRuntime.text
+            }
+
+            for (const callback of queuedFrames.values()) {
+                callback(performance.now())
+            }
+            queuedFrames.clear()
+
+            const afterFlush = {
+                counts: Object.fromEntries(globalThis.masterCSSRuntime.classCounts),
+                hasClassUtility: globalThis.masterCSSRuntime.classUtilities.has('fg:red-60'),
+                text: globalThis.masterCSSRuntime.text
+            }
+
+            return { beforeFlush, afterFlush }
+        } finally {
+            window.requestAnimationFrame = nativeRequestAnimationFrame
+            window.cancelAnimationFrame = nativeCancelAnimationFrame
+        }
+    })
+
+    expect(result.beforeFlush).toEqual({
+        queuedFrameCount: 1,
+        counts: {
+            'fg:red-60': 1
+        },
+        hasClassUtility: false,
+        text: ''
+    })
+    expect(result.afterFlush.counts).toEqual({
+        'fg:red-60': 1
+    })
+    expect(result.afterFlush.hasClassUtility).toBe(true)
+    expect(result.afterFlush.text).toContain('.fg\\:red-60')
+})
+
+test('observer-added retained classes are reused immediately', async ({ page }) => {
+    await init(page)
+    await page.evaluate(async () => {
+        document.body.innerHTML = '<p id="target" class="fg:red-60"></p>'
+        await new Promise<void>((resolve) => {
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => resolve())
+            })
+        })
+        document.getElementById('target')?.remove()
+    })
+    await waitForRuntimeRemovalFlush(page)
+
+    const result = await page.evaluate(async () => {
+        const queuedFrames = new Map<number, FrameRequestCallback>()
+        const nativeRequestAnimationFrame = window.requestAnimationFrame
+        const nativeCancelAnimationFrame = window.cancelAnimationFrame
+        let nextFrameHandle = 1
+        window.requestAnimationFrame = (callback) => {
+            const handle = nextFrameHandle++
+            queuedFrames.set(handle, callback)
+            return handle
+        }
+        window.cancelAnimationFrame = (handle) => {
+            queuedFrames.delete(handle)
+        }
+
+        try {
+            document.body.innerHTML = '<p id="target" class="fg:red-60"></p>'
+            await new Promise(resolve => setTimeout(resolve, 0))
+            return {
+                queuedFrameCount: queuedFrames.size,
+                counts: Object.fromEntries(globalThis.masterCSSRuntime.classCounts),
+                retainedClassNames: [...globalThis.masterCSSRuntime.retainedClassNames],
+                hasClassUtility: globalThis.masterCSSRuntime.classUtilities.has('fg:red-60'),
+                text: globalThis.masterCSSRuntime.text
+            }
+        } finally {
+            window.requestAnimationFrame = nativeRequestAnimationFrame
+            window.cancelAnimationFrame = nativeCancelAnimationFrame
+        }
+    })
+
+    expect(result.counts).toEqual({
+        'fg:red-60': 1
+    })
+    expect(result.queuedFrameCount).toBe(0)
+    expect(result.retainedClassNames).toEqual([])
+    expect(result.hasClassUtility).toBe(true)
+    expect(result.text).toContain('.fg\\:red-60')
+})
+
+test('observer queued cold classes removed before flush are skipped', async ({ page }) => {
+    await init(page)
+
+    const result = await page.evaluate(async () => {
+        const queuedFrames = new Map<number, FrameRequestCallback>()
+        const nativeRequestAnimationFrame = window.requestAnimationFrame
+        const nativeCancelAnimationFrame = window.cancelAnimationFrame
+        let nextFrameHandle = 1
+        window.requestAnimationFrame = (callback) => {
+            const handle = nextFrameHandle++
+            queuedFrames.set(handle, callback)
+            return handle
+        }
+        window.cancelAnimationFrame = (handle) => {
+            queuedFrames.delete(handle)
+        }
+
+        try {
+            const target = document.createElement('p')
+            target.className = 'z:1234'
+            document.body.append(target)
+            await new Promise(resolve => setTimeout(resolve, 0))
+            target.remove()
+            await new Promise(resolve => setTimeout(resolve, 0))
+
+            const beforeFlush = {
+                queuedFrameCount: queuedFrames.size,
+                counts: Object.fromEntries(globalThis.masterCSSRuntime.classCounts),
+                hasClassUtility: globalThis.masterCSSRuntime.classUtilities.has('z:1234'),
+                text: globalThis.masterCSSRuntime.text
+            }
+
+            for (const callback of queuedFrames.values()) {
+                callback(performance.now())
+            }
+            queuedFrames.clear()
+
+            return {
+                beforeFlush,
+                afterFlush: {
+                    counts: Object.fromEntries(globalThis.masterCSSRuntime.classCounts),
+                    hasClassUtility: globalThis.masterCSSRuntime.classUtilities.has('z:1234'),
+                    text: globalThis.masterCSSRuntime.text
+                }
+            }
+        } finally {
+            window.requestAnimationFrame = nativeRequestAnimationFrame
+            window.cancelAnimationFrame = nativeCancelAnimationFrame
+        }
+    })
+
+    expect(result.beforeFlush.queuedFrameCount).toBeGreaterThanOrEqual(0)
+    expect(result.beforeFlush).toMatchObject({
+        counts: {},
+        hasClassUtility: false,
+        text: ''
+    })
+    expect(result.afterFlush).toEqual({
+        counts: {},
+        hasClassUtility: false,
+        text: ''
+    })
+})
+
+test('disconnect and destroy clear pending mutation additions and removals', async ({ page }) => {
     await init(page)
     const disconnected = await page.evaluate(async () => {
-        document.body.innerHTML = '<p id="target" class="fg:red-60"></p>'
+        document.body.innerHTML = '<p id="target" class="fg:red-60"></p><p class="z:1234"></p>'
         await new Promise(resolve => setTimeout(resolve, 0))
         document.getElementById('target')?.remove()
         await new Promise(resolve => setTimeout(resolve, 0))
@@ -427,7 +610,7 @@ test('disconnect and destroy clear pending mutation removals', async ({ page }) 
 
     await page.evaluate(() => globalThis.masterCSSRuntime.observe())
     const destroyed = await page.evaluate(async () => {
-        document.body.innerHTML = '<p id="target" class="fg:red-60"></p>'
+        document.body.innerHTML = '<p id="target" class="fg:red-60"></p><p class="z:1234"></p>'
         await new Promise(resolve => setTimeout(resolve, 0))
         document.getElementById('target')?.remove()
         await new Promise(resolve => setTimeout(resolve, 0))
@@ -513,10 +696,10 @@ test('progressive hydration without a manifest rebuilds with runtime CSS', async
 
 test('progressive hydration with a mismatched manifest rebuilds with runtime CSS', async ({ page }) => {
     const css = MasterCSS.create({ manifest: defaultManifest })
-    css.add('fg:red-60', 'bg:red-60')
+    css.ensureClassRules('fg:red-60', 'bg:red-60')
     const hydrationManifest = createHydrationManifest(css)
     const prerenderedCSS = MasterCSS.create({ manifest: defaultManifest })
-    prerenderedCSS.add('fg:red-60')
+    prerenderedCSS.ensureClassRules('fg:red-60')
     const consoleWarnings: string[] = []
     page.on('console', (message) => {
         if (message.type() === 'warning') consoleWarnings.push(message.text())
@@ -567,7 +750,7 @@ test('progressive hydration with an empty manifest rebuilds with runtime CSS', a
 
 test('progressive hydration uses hydration manifest and retains removed hydrated classes', async ({ page }) => {
     const css = MasterCSS.create({ manifest: defaultManifest })
-    css.add('fg:red-60')
+    css.ensureClassRules('fg:red-60')
     const hydrationManifest = createHydrationManifest(css)
 
     await page.evaluate(() => {
@@ -638,7 +821,7 @@ test('progressive hydration uses hydration manifest and retains removed hydrated
 
 test('progressive hydration imports an external style hydration manifest', async ({ page }) => {
     const css = MasterCSS.create({ manifest: defaultManifest })
-    css.add('fg:red-60')
+    css.ensureClassRules('fg:red-60')
     const hydrationManifest = createHydrationManifest(css)
     const loaderURL = await getRuntimeLoaderURL()
     const source = new URL('/_master-css/hydration/external.json', loaderURL).href
@@ -746,7 +929,7 @@ test('progressive hydration falls back when an external style hydration manifest
 
 test('explicit hydration manifest wins over external DOM discovery', async ({ page }) => {
     const css = MasterCSS.create({ manifest: defaultManifest })
-    css.add('fg:red-60')
+    css.ensureClassRules('fg:red-60')
     const hydrationManifest = createHydrationManifest(css)
     let requests = 0
     const loaderURL = await getRuntimeLoaderURL()
@@ -787,7 +970,7 @@ test('explicit hydration manifest wins over external DOM discovery', async ({ pa
 
 test('progressive hydration matches bucketed theme variables', async ({ page }) => {
     const css = MasterCSS.create({ manifest: defaultManifest })
-    css.add('fg:red-60', 'bg:blue-60')
+    css.ensureClassRules('fg:red-60', 'bg:blue-60')
     const hydrationManifest = createHydrationManifest(css)
     const consoleWarnings: string[] = []
     page.on('console', (message) => {
@@ -946,7 +1129,11 @@ test('inlines variables without runtime theme counts', async ({ page }) => {
 
     const result = await page.evaluate(async () => {
         document.body.innerHTML = '<p class="fg:brand"></p>'
-        await new Promise(resolve => setTimeout(resolve, 0))
+        await new Promise<void>((resolve) => {
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => resolve())
+            })
+        })
         return {
             text: globalThis.masterCSSRuntime.text,
             counts: Object.fromEntries(globalThis.masterCSSRuntime.themeLayer.tokenCounts)

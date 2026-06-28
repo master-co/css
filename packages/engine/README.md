@@ -23,15 +23,15 @@ import { MasterCSS } from '@master/css-engine'
 
 const css = MasterCSS.create({ manifest })
 
-css.add('text:center', 'font:semibold')
+css.ensureClassRules('text:center', 'font:semibold')
 console.log(css.text)
 ```
 
 | API | Description |
 | --- | --- |
 | `MasterCSS.create({ manifest, emittedGlobals })` | Creates a `MasterCSS` instance. |
-| `css.add(...classNames)` | Adds class names and generated rules. |
-| `css.remove(...classNames)` | Removes class names and unused rules. |
+| `css.ensureClassRules(...classNames)` | Ensures class names have generated rules. |
+| `css.deleteClassRules(...classNames)` | Deletes generated rules for class names. |
 | `css.createRule(className)` | Creates one generated rule without inserting it. |
 | `css.createRules(className)` | Creates all generated rule branches without inserting them. |
 | `css.refresh(manifest?)` | Refreshes with a compiled manifest. |

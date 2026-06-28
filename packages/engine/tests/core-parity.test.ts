@@ -52,7 +52,7 @@ describe.concurrent('default manifest utility parity', () => {
         expectClassText(css, 'mx:4x', 'margin-inline:1rem')
         expectClassText(css, 'my:4x', 'margin-block:1rem')
 
-        css.add('mx:0', 'ml:0', 'mr:0', 'm:0', 'mt:0', 'mb:0', 'my:0')
+        css.ensureClassRules('mx:0', 'ml:0', 'mr:0', 'm:0', 'mt:0', 'mb:0', 'my:0')
         expect(css.utilitiesLayer.rules.map(({ name }) => name))
             .toEqual(['m:0', 'mx:0', 'my:0', 'mb:0', 'ml:0', 'mr:0', 'mt:0'])
     })
@@ -490,7 +490,7 @@ describe.concurrent('default manifest utility parity', () => {
         expect(css.createRule('margin:1rem')?.type).toBe(UtilityType.Shorthand)
         expect(css.createRule('margin-left:2rem')?.type).toBe(UtilityType.Normal)
 
-        css.add('mx:2rem', 'margin:1rem')
+        css.ensureClassRules('mx:2rem', 'margin:1rem')
         expect(css.utilitiesLayer.rules.map(({ name }) => name))
             .toEqual(['margin:1rem', 'mx:2rem'])
     })
@@ -501,14 +501,14 @@ describe.concurrent('manifest-driven layer and lifecycle parity', () => {
         const css = createDefaultCSS()
 
         expect(css.text).toBe('')
-        css.add('text-center')
+        css.ensureClassRules('text-center')
         expect(css.text).toContain('@layer utilities{.text-center{text-align:center}}')
     })
 
     test('prevents duplicate insertion', () => {
         const css = createDefaultCSS()
 
-        css.add('text-center', 'text-center')
+        css.ensureClassRules('text-center', 'text-center')
         expect(css.utilitiesLayer.rules).toHaveLength(1)
     })
 
@@ -522,13 +522,13 @@ describe.concurrent('manifest-driven layer and lifecycle parity', () => {
             }
         })
 
-        css.add('bg:red-60')
+        css.ensureClassRules('bg:red-60')
         expect(css.text).toBe('@layer utilities{.bg\\:red-60{background-color:var(--color-red-60)}}')
         expect(Object.fromEntries(css.themeLayer.tokenCounts)).toMatchObject({
             'color-red-60': 2
         })
 
-        css.remove('bg:red-60')
+        css.deleteClassRules('bg:red-60')
         expect(css.text).toBe('')
         expect(Object.fromEntries(css.themeLayer.tokenCounts)).toMatchObject({
             'color-red-60': 1
@@ -545,13 +545,13 @@ describe.concurrent('manifest-driven layer and lifecycle parity', () => {
             }
         })
 
-        css.add('animate:fade')
+        css.ensureClassRules('animate:fade')
         expect(css.text).toBe('@layer theme{:root{--animate-fade:fade 1s infinite}}@layer utilities{.animate\\:fade{animation:var(--animate-fade)}}')
         expect(Object.fromEntries(css.animationsNonLayer.tokenCounts)).toEqual({
             fade: 2
         })
 
-        css.remove('animate:fade')
+        css.deleteClassRules('animate:fade')
         expect(css.text).toBe('')
         expect(Object.fromEntries(css.animationsNonLayer.tokenCounts)).toEqual({
             fade: 1
@@ -586,7 +586,7 @@ describe.concurrent('manifest-driven layer and lifecycle parity', () => {
         ])
         })
 
-        css.add('prose')
+        css.ensureClassRules('prose')
         expect(css.defaultsLayer.text).toContain('@layer defaults{.prose :is(p){font-size:1rem}}')
         expect(css.componentsLayer.text).toBe('')
         expect(css.text).not.toContain('@layer components{@layer defaults')
@@ -602,7 +602,7 @@ describe.concurrent('manifest-driven layer and lifecycle parity', () => {
 
     test('keeps deterministic rule ordering independent of insertion order', () => {
         const css = createDefaultCSS()
-        css.add(
+        css.ensureClassRules(
             'px:0', 'pl:0', 'pr:0', 'p:0', 'pt:0', 'pb:0', 'py:0',
             'mx:0', 'ml:0', 'mr:0', 'm:0', 'mt:0', 'mb:0', 'my:0',
             'font:.75rem', 'font:medium', 'text-center', 'fixed', 'block', 'round', 'b:0'

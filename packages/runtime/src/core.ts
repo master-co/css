@@ -124,8 +124,10 @@ export default class CSSRuntime extends MasterCSS {
     readonly classCounts = new Map<string, number>()
     readonly retainedClassNames = new Set<string>()
     private readonly classTracker = new RuntimeClassTracker()
+    private readonly pendingAddedClassNames = new Set<string>()
     private readonly pendingRemovedClassNames = new Set<string>()
     private readonly retainedClassRules = new Map<string, RetainedClassRule>()
+    private pendingAdditionFrame: number | undefined
     private pendingRemovalFrame: number | undefined
     private pendingRemovalFlushFrame: number | undefined
     private retainedCleanupIdleHandle: number | undefined
@@ -244,7 +246,7 @@ export default class CSSRuntime extends MasterCSS {
         this.progressive = false
         this.createRuntimeStyle()
         this.insertStaticResources()
-        connectedNames.forEach(cls => this.add(cls))
+        connectedNames.forEach(cls => this.ensureClassRules(cls))
     }
 
     private detectRuntimeStyle() {
@@ -270,7 +272,7 @@ export default class CSSRuntime extends MasterCSS {
             const hydratedClassNames = new Set(hydrateResult.allUtilities.map(({ fixedClass, name }) => fixedClass || name))
             for (const cls of connectedNames) {
                 if (!hydratedClassNames.has(cls)) {
-                    this.add(cls)
+                    this.ensureClassRules(cls)
                     if (process.env.NODE_ENV === 'development') {
                         console.debug(`Missing prerendered rule for class \`${cls}\``)
                     }
@@ -284,7 +286,7 @@ export default class CSSRuntime extends MasterCSS {
     private renderRuntimeStyle(connectedNames: Set<string>) {
         this.createRuntimeStyle()
         this.insertStaticResources()
-        connectedNames.forEach(cls => this.add(cls))
+        connectedNames.forEach(cls => this.ensureClassRules(cls))
     }
 
     private getAnimationFrameWindow() {
@@ -304,6 +306,18 @@ export default class CSSRuntime extends MasterCSS {
             view.cancelAnimationFrame(this.pendingRemovalFlushFrame)
             this.pendingRemovalFlushFrame = undefined
         }
+    }
+
+    private cancelPendingAdditionFrame() {
+        if (this.pendingAdditionFrame === undefined) return
+        const view = this.getAnimationFrameWindow()
+        view.cancelAnimationFrame(this.pendingAdditionFrame)
+        this.pendingAdditionFrame = undefined
+    }
+
+    private clearPendingAddedClassNames() {
+        this.pendingAddedClassNames.clear()
+        this.cancelPendingAdditionFrame()
     }
 
     private clearPendingRemovedClassNames() {
@@ -341,6 +355,14 @@ export default class CSSRuntime extends MasterCSS {
         if (!this.pendingRemovedClassNames.size) this.cancelPendingRemovalFrames()
     }
 
+    private cancelPendingAddedClassNames(classNames: Iterable<string>) {
+        if (!this.pendingAddedClassNames.size) return
+        for (const className of classNames) {
+            this.pendingAddedClassNames.delete(className)
+        }
+        if (!this.pendingAddedClassNames.size) this.cancelPendingAdditionFrame()
+    }
+
     private cancelRetainedClassNames(classNames: Iterable<string>) {
         if (!this.retainedClassNames.size) return
         for (const className of classNames) {
@@ -368,6 +390,23 @@ export default class CSSRuntime extends MasterCSS {
             if (!this.classCounts.has(className)) this.pendingRemovedClassNames.add(className)
         }
         this.schedulePendingRemovalFlush()
+    }
+
+    private schedulePendingAdditionFlush() {
+        if (!this.pendingAddedClassNames.size) return
+        if (this.pendingAdditionFrame !== undefined) return
+        const view = this.getAnimationFrameWindow()
+        this.pendingAdditionFrame = view.requestAnimationFrame(() => {
+            this.pendingAdditionFrame = undefined
+            this.flushPendingAddedClassNames()
+        })
+    }
+
+    private queueAddedClassNames(classNames: Iterable<string>) {
+        for (const className of classNames) {
+            if (this.classCounts.has(className)) this.pendingAddedClassNames.add(className)
+        }
+        this.schedulePendingAdditionFlush()
     }
 
     private estimateRetainedClassRule(className: string): RetainedClassRule | undefined {
@@ -474,7 +513,7 @@ export default class CSSRuntime extends MasterCSS {
                 removedClassNames.push(className)
             }
         }
-        if (removedClassNames.length) super.remove(...removedClassNames)
+        if (removedClassNames.length) super.deleteClassRules(...removedClassNames)
         return removedClassNames.length
     }
 
@@ -503,9 +542,20 @@ export default class CSSRuntime extends MasterCSS {
         if (classNames.length) this.retainRemovedClassRules(classNames)
     }
 
+    private flushPendingAddedClassNames() {
+        if (!this.pendingAddedClassNames.size) return
+        const classNames: string[] = []
+        for (const className of this.pendingAddedClassNames) {
+            if (this.classCounts.has(className)) classNames.push(className)
+        }
+        this.pendingAddedClassNames.clear()
+        if (classNames.length) this.ensureClassRules(...classNames)
+    }
+
     private handleMutationRecords(records: MutationRecord[]) {
         const deltaCounts = this.classTracker.collectMutations(records)
-        const addedClassNames: string[] = []
+        const warmClassNames: string[] = []
+        const queuedClassNames: string[] = []
         const removedClassNames: string[] = []
 
         for (const [cls, change] of deltaCounts) {
@@ -513,31 +563,43 @@ export default class CSSRuntime extends MasterCSS {
             const next = current + change
             if (next > 0) {
                 this.classCounts.set(cls, next)
-                if (current === 0) addedClassNames.push(cls)
+                if (current === 0) {
+                    if (this.classUtilities.has(cls) || this.retainedClassNames.has(cls)) {
+                        warmClassNames.push(cls)
+                    } else {
+                        queuedClassNames.push(cls)
+                    }
+                }
             } else {
                 this.classCounts.delete(cls)
                 removedClassNames.push(cls)
             }
         }
 
-        if (addedClassNames.length) this.add(...addedClassNames)
-        if (removedClassNames.length) this.queueRemovedClassNames(removedClassNames)
+        if (warmClassNames.length) this.ensureClassRules(...warmClassNames)
+        if (queuedClassNames.length) this.queueAddedClassNames(queuedClassNames)
+        if (removedClassNames.length) {
+            this.cancelPendingAddedClassNames(removedClassNames)
+            this.queueRemovedClassNames(removedClassNames)
+        }
 
         if (process.env.NODE_ENV === 'development') {
             debugRuntimeMutation(records, deltaCounts, this)
         }
     }
 
-    add(...classNames: string[]) {
+    ensureClassRules(...classNames: string[]) {
+        this.cancelPendingAddedClassNames(classNames)
         this.cancelPendingRemovedClassNames(classNames)
         this.cancelRetainedClassNames(classNames)
-        return super.add(...classNames)
+        return super.ensureClassRules(...classNames)
     }
 
-    remove(...classNames: string[]) {
+    deleteClassRules(...classNames: string[]) {
+        this.cancelPendingAddedClassNames(classNames)
         this.cancelPendingRemovedClassNames(classNames)
         this.cancelRetainedClassNames(classNames)
-        super.remove(...classNames)
+        super.deleteClassRules(...classNames)
     }
 
     private startMutationObserver() {
@@ -906,6 +968,7 @@ export default class CSSRuntime extends MasterCSS {
     }
 
     disconnect() {
+        this.clearPendingAddedClassNames()
         this.clearPendingRemovedClassNames()
         this.clearRetainedClassRules()
         if (!this.observing) return
@@ -930,6 +993,7 @@ export default class CSSRuntime extends MasterCSS {
     }
 
     refresh(manifest: MasterCSSManifest = this.manifest) {
+        this.clearPendingAddedClassNames()
         this.clearPendingRemovedClassNames()
         this.clearRetainedClassRules()
         if (!this.observing || !this.style!.sheet) return this
@@ -943,7 +1007,7 @@ export default class CSSRuntime extends MasterCSS {
          * 所以 refresh 過後 rules 可能會變多也可能會變少
          */
         this.classCounts.forEach((_, className) => {
-            this.add(className)
+            this.ensureClassRules(className)
         })
         if (process.env.NODE_ENV === 'development') {
             debugRuntimeRefreshed(this, manifest)

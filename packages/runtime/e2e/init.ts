@@ -197,7 +197,7 @@ async function createHydrationManifestForPage(page: Page, manifest: MasterCSSMan
         return [...classNames]
     })
     const css = MasterCSS.create({ manifest })
-    css.add(...classNames)
+    css.ensureClassRules(...classNames)
     return createHydrationManifest(css)
 }
 

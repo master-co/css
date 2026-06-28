@@ -105,7 +105,7 @@ function createMasterHydrationManifest(
 
 export function collectMasterCSSClasses(css: MasterCSS, html: string) {
     for (const className of parseHTML(html).classes) {
-        css.add(className)
+        css.ensureClassRules(className)
     }
 }
 

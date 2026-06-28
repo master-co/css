@@ -154,7 +154,7 @@ export function renderCompiledManifestCSS(options: RenderCompiledManifestCSSOpti
     }
     if (includeGeneratedCSS) {
         for (const className of classNames) {
-            css.add(className)
+            css.ensureClassRules(className)
         }
     }
     const variableReferences = collectStyleCSSVariableReferences(nativeCSS)

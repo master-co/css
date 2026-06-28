@@ -15,15 +15,20 @@ test('keeps default variable buckets before mode buckets when CSSOM buckets are 
     })
 
     const result = await page.evaluate(async () => {
+        const waitForRuntimeRuleFlush = () => new Promise<void>((resolve) => {
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => resolve())
+            })
+        })
         document.documentElement.classList.add('dark')
         const dependency = document.createElement('p')
         dependency.className = 'fg:blue'
         document.body.append(dependency)
-        await new Promise(resolve => setTimeout(resolve, 0))
+        await waitForRuntimeRuleFlush()
         const target = document.createElement('p')
         target.className = 'fg:accent'
         document.body.append(target)
-        await new Promise(resolve => setTimeout(resolve, 0))
+        await waitForRuntimeRuleFlush()
         const sheet = document.querySelector<HTMLStyleElement>('style#master-css')?.sheet
         const themeRule = sheet
             ? Array.from(sheet.cssRules).map((rule) => rule.cssText).find((text) => text.includes('@layer theme')) || ''

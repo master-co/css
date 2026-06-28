@@ -337,7 +337,7 @@ describe.concurrent('MasterCSSManifest execution', () => {
         })
         const css = MasterCSS.create({ manifest: manifest })
 
-        emittedGlobalsCSS.add('m:card')
+        emittedGlobalsCSS.ensureClassRules('m:card')
         expect(emittedGlobalsCSS.text).toBe('@layer utilities{.m\\:card{margin:var(--spacing-card)}}')
         expect(Object.fromEntries(emittedGlobalsCSS.themeLayer.tokenCounts)).toEqual({
             'spacing-card': 2
@@ -345,7 +345,7 @@ describe.concurrent('MasterCSSManifest execution', () => {
         expect(css.text).toBe('')
         expect(Object.fromEntries(css.themeLayer.tokenCounts)).toEqual({})
 
-        css.add('m:card')
+        css.ensureClassRules('m:card')
         expect(css.text).toBe('@layer theme{:root{--spacing-card:16}}@layer utilities{.m\\:card{margin:var(--spacing-card)}}')
         expect(Object.fromEntries(css.themeLayer.tokenCounts)).toEqual({
             'spacing-card': 1
@@ -533,7 +533,7 @@ describe.concurrent('MasterCSSManifest execution', () => {
             ]
         }
         const css = MasterCSS.create({ manifest: manifest })
-        css.add('block:hover@card', 'fg:brand', 'animation:fade|1s', 'multi')
+        css.ensureClassRules('block:hover@card', 'fg:brand', 'animation:fade|1s', 'multi')
 
         const hydrationManifest = createHydrationManifest(css)
 

@@ -75,7 +75,7 @@ describe.concurrent('migrated complex utility parity', () => {
         expect(css.createRule('bottom:0')?.text).toBe('.bottom\\:0{bottom:0}')
 
         const ordered = createDefaultCSS()
-        ordered.add('top:0', 'left:0', 'inset:0', 'right:0', 'bottom:0')
+        ordered.ensureClassRules('top:0', 'left:0', 'inset:0', 'right:0', 'bottom:0')
         expect(ordered.utilitiesLayer.rules.map(({ name }) => name)).toEqual([
             'inset:0',
             'bottom:0',

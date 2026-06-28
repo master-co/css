@@ -243,7 +243,7 @@ export default class CSSScanner extends EventEmitter {
     private insertSafelist() {
         if (this.options.safelist?.length) {
             for (const eachFixedClass of this.options.safelist) {
-                this.css.add(eachFixedClass)
+                this.css.ensureClassRules(eachFixedClass)
             }
             if (this.options.verbose) {
                 logger.success(`${this.options.safelist.length} fixed classes inserted ${this.options.safelist.join(', ')}`)

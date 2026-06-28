@@ -47,8 +47,8 @@ describe.concurrent('ThemeLayer', () => {
         ])
 
         const css = MasterCSS.create({ manifest: manifest })
-        css.add('fg:blue')
-        css.add('fg:accent')
+        css.ensureClassRules('fg:blue')
+        css.ensureClassRules('fg:accent')
 
         const text = css.themeLayer.text
         expect(text).toContain('.light,:root{color-scheme:light;--color-blue:#66f}')
@@ -61,7 +61,7 @@ describe.concurrent('ThemeLayer', () => {
         const manifest = createModeVariableManifest('class')
         const css = MasterCSS.create({ manifest })
 
-        css.add('fg:primary')
+        css.ensureClassRules('fg:primary')
 
         expect(css.themeLayer.text).toBe('@layer theme{.light,:root{color-scheme:light;--color-primary:#000}.dark{color-scheme:dark;--color-primary:#fff}}')
     })
@@ -70,7 +70,7 @@ describe.concurrent('ThemeLayer', () => {
         const manifest = createModeVariableManifest('host')
         const css = MasterCSS.create({ manifest })
 
-        css.add('fg:primary')
+        css.ensureClassRules('fg:primary')
 
         expect(css.themeLayer.text).toBe('@layer theme{:host(.light),:host{color-scheme:light;--color-primary:#000}:host(.dark){color-scheme:dark;--color-primary:#fff}}')
     })
@@ -79,7 +79,7 @@ describe.concurrent('ThemeLayer', () => {
         const manifest = createModeVariableManifest('class', 'none')
         const css = MasterCSS.create({ manifest })
 
-        css.add('fg:primary')
+        css.ensureClassRules('fg:primary')
 
         expect(css.themeLayer.text).toBe('@layer theme{.light{color-scheme:light;--color-primary:#000}.dark{color-scheme:dark;--color-primary:#fff}}')
     })
@@ -88,7 +88,7 @@ describe.concurrent('ThemeLayer', () => {
         const manifest = createModeVariableManifest('media')
         const css = MasterCSS.create({ manifest })
 
-        css.add('fg:primary')
+        css.ensureClassRules('fg:primary')
 
         expect(css.themeLayer.text).toBe('@layer theme{@media (prefers-color-scheme:light){:root{--color-primary:#000}}@media (prefers-color-scheme:dark){:root{--color-primary:#fff}}}')
     })
@@ -107,7 +107,7 @@ describe.concurrent('ThemeLayer', () => {
         }])
         const css = MasterCSS.create({ manifest })
 
-        css.add('fg:primary')
+        css.ensureClassRules('fg:primary')
 
         expect(css.themeLayer.text).toBe('@layer theme{.sepia{--color-primary:#753}}')
     })

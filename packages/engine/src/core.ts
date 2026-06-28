@@ -964,7 +964,7 @@ export default class MasterCSS {
         return this
     }
 
-    add(...classNames: string[]) {
+    ensureClassRules(...classNames: string[]) {
         for (const className of classNames) {
             const rules = this.classUtilities.get(className)
             if (rules) continue
@@ -977,7 +977,7 @@ export default class MasterCSS {
         return this
     }
 
-    remove(...classNames: string[]) {
+    deleteClassRules(...classNames: string[]) {
         /**
          * class name 從 DOM tree 中被移除，
          * 匹配並刪除對應的 rule

@@ -119,13 +119,15 @@ cssRuntime.observe()
 | `loadHydrationManifest()` | `Promise<this>` | Reads inline hydration data or imports the external hydration manifest URL from `style#master-css`. |
 | `setHydrationManifest(manifest?)` | `this` | Sets the hydration manifest used by progressive hydration. |
 | `observe()` | `this` | Observes class attribute changes. |
+| `ensureClassRules(...classNames)` | `this` | Synchronously ensures generated rules exist for class names. Use this to warm rules before DOM insertion. |
+| `deleteClassRules(...classNames)` | `void` | Synchronously deletes generated rules for class names. |
 | `flushRetainedClassRules()` | `number` | Synchronously removes retained mutation rules that are no longer active and returns the removed class count. |
 | `disconnect()` | `this \| undefined` | Cancels observation. |
 | `refresh(manifest?)` | `this` | Refreshes with a complete `MasterCSSManifest`. |
 | `reset()` | `this` | Clears rules and styles. |
 | `destroy()` | `this` | Removes this runtime from `CSSRuntime.instances`. |
 
-MutationObserver removals update `classCounts` immediately, but generated CSS rules may be retained briefly to avoid CSSOM deletion during interaction-heavy updates. Re-adding a retained class reuses the existing generated rule. Direct `cssRuntime.remove(...)`, `refresh()`, `disconnect()`, and `destroy()` still clean synchronously.
+MutationObserver additions update `classCounts` immediately. Existing and retained generated rules are reused immediately, while first-time rules discovered by the observer are batched into the next pre-paint flush. MutationObserver removals also update `classCounts` immediately, but generated CSS rules may be retained briefly to avoid CSSOM deletion during interaction-heavy updates. Re-adding a retained class reuses the existing generated rule. Direct `cssRuntime.ensureClassRules(...)`, `cssRuntime.deleteClassRules(...)`, `refresh()`, `disconnect()`, and `destroy()` stay synchronous.
 
 ### Progressive Hydration
 

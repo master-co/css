@@ -18,6 +18,14 @@ async function waitForRuntimeRemovalFlush(page: Page) {
     }))
 }
 
+async function waitForRuntimeRuleFlush(page: Page) {
+    await page.evaluate(() => new Promise<void>((resolve) => {
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => resolve())
+        })
+    }))
+}
+
 async function expectNoAnimation(page: Page, name: string) {
     await waitForRuntimeRemovalFlush(page)
     await page.evaluate(() => globalThis.masterCSSRuntime.flushRetainedClassRules())
@@ -32,6 +40,7 @@ test('expects the animate token output', async ({ page }) => {
         p.classList.add('animate:fade')
         document.body.append(p)
     })
+    await waitForRuntimeRuleFlush(page)
 
     const cssText = await page.evaluate(() => globalThis.masterCSSRuntime.text)
     expect(cssText).toContain('--animate-fade:fade 1s infinite')
@@ -68,6 +77,7 @@ test('expects the animation output', async ({ page }) => {
             '{animation:zoom|1s;f:16}'
         )
     })
+    await waitForRuntimeRuleFlush(page)
     expect(await page.evaluate(() => Object.fromEntries(globalThis.masterCSSRuntime.animationsNonLayer.tokenCounts))).toMatchObject({
         fade: 1,
         flash: 1,

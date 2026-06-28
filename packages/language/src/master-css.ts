@@ -72,7 +72,7 @@ export function generateCSS(
         nativeDeclarationMatcher: runtime.nativeDeclarationMatcher
     })
     for (const className of classNames) {
-        generatedCSS.add(className)
+        generatedCSS.ensureClassRules(className)
     }
     return generatedCSS.text
 }

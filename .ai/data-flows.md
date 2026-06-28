@@ -4,7 +4,7 @@
 
 ```txt
 class string
-  -> MasterCSS.add()
+  -> MasterCSS.ensureClassRules()
   -> generate()
   -> match compiled utilities, including components-layer project styles
   -> create()

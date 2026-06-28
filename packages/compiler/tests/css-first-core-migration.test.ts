@@ -118,7 +118,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
         expect(manifest.utilities?.some((utility) => utility.name === 'content-auto' && utility.layer === 'utilities')).toBe(true)
 
         const css = createTestCSS(manifest)
-        css.add('btn', 'btn:interactive', 'content-auto', 'm:card')
+        css.ensureClassRules('btn', 'btn:interactive', 'content-auto', 'm:card')
         expect(css.themeLayer.text).toContain(':root{--color-primary:#000;--spacing-card:1rem}')
         expect(css.themeLayer.text).toContain('.dark{color-scheme:dark;--color-primary:#fff}')
         expect(css.componentsLayer.text).toContain('.btn{display:inline-flex;color:var(--color-primary)}')
@@ -585,8 +585,8 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
             }
         `, { baseManifest: defaultManifest })
 
-        const explicitCSS = createTestCSS(explicit.manifest).add('panel')
-        const shorthandCSS = createTestCSS(shorthand.manifest).add('panel')
+        const explicitCSS = createTestCSS(explicit.manifest).ensureClassRules('panel')
+        const shorthandCSS = createTestCSS(shorthand.manifest).ensureClassRules('panel')
 
         expect(shorthand.css).toBe(explicit.css)
         expect(shorthandCSS.componentsLayer.text).toBe(explicitCSS.componentsLayer.text)
@@ -647,7 +647,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
         })
         const css = createTestCSS(second.manifest)
 
-        css.add('a', 'b', 'c')
+        css.ensureClassRules('a', 'b', 'c')
         expect(css.componentsLayer.text).toContain('.a{order:1}')
         expect(css.componentsLayer.text).toContain('.b{order:22}')
         expect(css.componentsLayer.text).toContain('.c{order:3}')
@@ -681,10 +681,10 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
                 background: 'var(--color-primary)'
             }
         })
-        css.add('btn')
+        css.ensureClassRules('btn')
         expect(css.themeLayer.text).toContain(':root{--color-primary:#ff0}')
         expect(css.animationsNonLayer.text).toContain('@keyframes fade{to{background:var(--color-primary)}}')
-        css.remove('btn')
+        css.deleteClassRules('btn')
         expect(css.themeLayer.text).toBe('')
         expect(css.animationsNonLayer.text).toBe('')
     })
@@ -711,7 +711,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
             }
 
             ${base}
-        `, { baseManifest: defaultManifest }).manifest).add('bg:emphasis')
+        `, { baseManifest: defaultManifest }).manifest).ensureClassRules('bg:emphasis')
         expect(lightDefault.themeLayer.text).toContain('.light,:root{color-scheme:light;--color-emphasis:#000}')
         expect(lightDefault.themeLayer.text).toContain('.dark{color-scheme:dark;--color-emphasis:#fff}')
 
@@ -721,7 +721,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
             }
 
             ${base}
-        `, { baseManifest: defaultManifest }).manifest).add('bg:emphasis')
+        `, { baseManifest: defaultManifest }).manifest).ensureClassRules('bg:emphasis')
         expect(noDefault.themeLayer.text).toContain('.light{color-scheme:light;--color-emphasis:#000}')
         expect(noDefault.themeLayer.text).not.toContain('.light,:root{--color-emphasis')
     })
@@ -751,7 +751,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
                 --color-primary: $color-black/.5;
             }
         `, { baseManifest: defaultManifest })
-        const css = createTestCSS(manifest).add('bg:primary', 'bg:primary/.5', 'bg:alias')
+        const css = createTestCSS(manifest).ensureClassRules('bg:primary', 'bg:primary/.5', 'bg:alias')
 
         expect(css.themeLayer.text).toContain(':root{--color-primary:#000;--color-black:#000;--color-alias:var(--color-primary)}')
         expect(css.themeLayer.text).toContain('.light{color-scheme:light;--color-primary:#969696}')
@@ -829,7 +829,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
         expect(css.createRule('bg:primary')?.text).toBe('.bg\\:primary{background-color:var(--color-primary)}')
         expect(css.createRule('shadow:sm')?.text).toBe('.shadow\\:sm{box-shadow:var(--shadow-sm)}')
 
-        css.add('demo')
+        css.ensureClassRules('demo')
         expect(css.defaultsLayer.text).toContain('.demo{content:var(--content-stripe)}')
         expect(css.themeLayer.text).toContain('--content-stripe:"stripe"')
     })
@@ -852,7 +852,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
         `, { baseManifest: defaultManifest })
         const css = createTestCSS(result.manifest)
 
-        css.add('card')
+        css.ensureClassRules('card')
 
         expect(result.directives.styleDefinitions).toEqual(expect.arrayContaining([
             expect.objectContaining({
@@ -916,7 +916,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
         `)
         const css = createTestCSS(result.manifest)
 
-        css.add('beta')
+        css.ensureClassRules('beta')
         expect(css.componentsLayer.text).toContain('.beta{color:red;background:#00f}')
         expect(diagnostics.counts['lower-managed-style-refresh-count']).toBe(1)
     })
@@ -940,7 +940,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
         `)
         const css = createTestCSS(result.manifest)
 
-        css.add('gamma')
+        css.ensureClassRules('gamma')
         expect(css.componentsLayer.text).toContain('.gamma{color:red;background:#00f;border-color:green}')
         expect(diagnostics.counts['lower-managed-style-refresh-count']).toBe(1)
     })
@@ -1016,7 +1016,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
         expect(css.createRule('w:calc(-2px+var(--spacing-x1))')?.text).toBe('.w\\:calc\\(-2px\\+var\\(--spacing-x1\\)\\){width:calc(-2px + var(--spacing-x1))}')
         expect(css.createRule('w:calc(-2px+$(spacing-x1))')).toBeUndefined()
 
-        css.add('m:x1', 'm:-x1', 'line-height:x1')
+        css.ensureClassRules('m:x1', 'm:-x1', 'line-height:x1')
         expect(css.themeLayer.text).toContain(':root{')
         expect(css.themeLayer.text).toContain('--spacing-x1:1rem')
         expect(css.themeLayer.text).not.toContain('---spacing-x1')
@@ -1076,7 +1076,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
         `, { baseManifest: defaultManifest })
         const css = createTestCSS(manifest)
 
-        css.add('bg:primary', 'fg:brand', 'm:card', 'fg:inline-regular')
+        css.ensureClassRules('bg:primary', 'fg:brand', 'm:card', 'fg:inline-regular')
         expect(css.utilitiesLayer.text).toContain('.bg\\:primary{background-color:#123}')
         expect(css.utilitiesLayer.text).toContain('.fg\\:brand{color:#123}')
         expect(css.utilitiesLayer.text).toContain('.m\\:card{margin:1rem}')
@@ -1234,7 +1234,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
         `, { baseManifest: defaultManifest })
         const css = createTestCSS(manifest)
 
-        css.add(
+        css.ensureClassRules(
             'bg:rgb',
             'bg:hsl-modern',
             'bg:hsl-legacy',

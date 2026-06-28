@@ -166,7 +166,7 @@ describe.concurrent('migrated issue regressions', () => {
                 { name: 'color-mix', namespace: 'color', key: 'mix', type: 'string', value: 'color-mix(in oklch, red, blue)' }
             ])
 
-            css.add('bg:soft', 'bg:mix')
+            css.ensureClassRules('bg:soft', 'bg:mix')
             expect(css.themeLayer.text).toContain('--color-soft:color-mix(in oklab,var(--color-primary) 30%,transparent)')
             expect(css.themeLayer.text).toContain('--color-primary:oklch(0.5 0.15 240)')
             expect(css.themeLayer.text).toContain('--color-mix:color-mix(in oklch, red, blue)')
