@@ -621,8 +621,8 @@
     --color-red: $color-red-60;
 
     /* Surface color aliases */
-    --color-surface-base: $color-white;
-    --color-surface-muted: $color-neutral-0;
+    --color-surface-base: $color-neutral-0;
+    --color-surface-muted: $color-neutral-5;
     --color-surface-raised: $color-white;
     --color-surface-overlay: $color-white;
     --color-surface-inverse: $color-black;
