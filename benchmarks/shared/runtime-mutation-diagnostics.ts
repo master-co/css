@@ -16,6 +16,7 @@ import {
     createInteractionVariantId,
     type InteractionModeId,
     type InteractionResult,
+    type RuntimeMutationStrategyId,
     type RuntimeState
 } from './interaction-cost'
 import { writeBenchmarkReport } from './report'
@@ -50,6 +51,30 @@ interface RuntimeMutationDiagnostics {
     runtimeRemoveClassCount: number
     runtimeAddDurationMs: number
     runtimeRemoveDurationMs: number
+    runtimeDeferredRemoveCallCount: number
+    runtimeDeferredRemoveClassCount: number
+    runtimeSuppressedRemoveCallCount: number
+    runtimeSuppressedRemoveClassCount: number
+    runtimeFlushRemoveCallCount: number
+    runtimeFlushRemoveClassCount: number
+    runtimeFlushRemoveDurationMs: number
+    runtimeQueuedRemoveClassCount: number
+}
+
+interface RuntimeMutationStrategyFlushResult {
+    reason: string
+    strategyId: RuntimeMutationStrategyId
+    flushed: boolean
+    callCount: number
+    classCount: number
+    durationMs: number
+    queuedClassCountBeforeFlush: number
+}
+
+interface RuntimeMutationCleanupValidation {
+    cleanupValid: number
+    runtimeClean: number
+    scratchChildCount: number
 }
 
 interface RuntimeMutationDiagnosticMeasurement {
@@ -67,7 +92,10 @@ interface RuntimeMutationDiagnosticResult {
     }
     runtimeDiagnostics: RuntimeMutationDiagnostics
     beforeState: RuntimeState
-    afterState: RuntimeState
+    afterTraceState: RuntimeState
+    afterFlushState: RuntimeState
+    strategyFlush: RuntimeMutationStrategyFlushResult
+    cleanupAfterFlush: RuntimeMutationCleanupValidation
     consoleWarnings: string[]
 }
 
@@ -86,7 +114,11 @@ const runtimeMutationDiagnosticModeIds = [
     'master-progressive'
 ] satisfies InteractionModeId[]
 
-type RuntimeMutationDiagnosticModeId = typeof runtimeMutationDiagnosticModeIds[number]
+const runtimeMutationDiagnosticStrategyIds = [
+    'baseline',
+    'defer-remove',
+    'suppress-remove-during-trace'
+] satisfies RuntimeMutationStrategyId[]
 
 export const runtimeMutationDiagnosticMetrics = [
     {
@@ -160,6 +192,54 @@ export const runtimeMutationDiagnosticMetrics = [
         label: 'Runtime removed classes',
         unit: 'count',
         description: 'Total class arguments passed to CSSRuntime.remove(...).'
+    },
+    {
+        id: 'runtime-deferred-remove-call-count',
+        label: 'Deferred remove calls',
+        unit: 'count',
+        description: 'Benchmark-only remove calls queued for an in-trace batched flush.'
+    },
+    {
+        id: 'runtime-deferred-remove-class-count',
+        label: 'Deferred removed classes',
+        unit: 'count',
+        description: 'Benchmark-only class arguments queued for an in-trace batched remove flush.'
+    },
+    {
+        id: 'runtime-suppressed-remove-call-count',
+        label: 'Suppressed remove calls',
+        unit: 'count',
+        description: 'Benchmark-only remove calls suppressed until after trace collection.'
+    },
+    {
+        id: 'runtime-suppressed-remove-class-count',
+        label: 'Suppressed removed classes',
+        unit: 'count',
+        description: 'Benchmark-only class arguments suppressed until after trace collection.'
+    },
+    {
+        id: 'runtime-flush-remove-call-count',
+        label: 'Flush remove calls',
+        unit: 'count',
+        description: 'Batched CSSRuntime.remove(...) calls executed by the benchmark-only flush strategy.'
+    },
+    {
+        id: 'runtime-flush-remove-class-count',
+        label: 'Flush removed classes',
+        unit: 'count',
+        description: 'Unique class arguments removed by the benchmark-only flush strategy.'
+    },
+    {
+        id: 'runtime-flush-remove-duration-ms',
+        label: 'Flush remove duration',
+        unit: 'ms',
+        description: 'Duration spent executing the benchmark-only batched remove flush.'
+    },
+    {
+        id: 'runtime-queued-remove-class-count',
+        label: 'Queued remove classes',
+        unit: 'count',
+        description: 'Total class arguments queued by benchmark-only runtime removal strategies.'
     },
     {
         id: 'mutation-observer-callback-count',
@@ -241,9 +321,9 @@ export const runtimeMutationDiagnosticMetrics = [
     },
     {
         id: 'runtime-utility-count-after',
-        label: 'Runtime utility count after',
+        label: 'Runtime utility count after trace',
         unit: 'count',
-        description: 'Runtime classUtilities.size after the cleanup scenario.'
+        description: 'Runtime classUtilities.size after trace collection and before any post-trace strategy flush.'
     },
     {
         id: 'temporary-class-count-before',
@@ -253,9 +333,27 @@ export const runtimeMutationDiagnosticMetrics = [
     },
     {
         id: 'temporary-class-count-after',
-        label: 'Temporary class count after',
+        label: 'Temporary class count after trace',
         unit: 'count',
-        description: 'Tracked temporary cleanup class count after the scenario.'
+        description: 'Tracked temporary cleanup class count after trace collection and before any post-trace strategy flush.'
+    },
+    {
+        id: 'runtime-class-count-after-flush',
+        label: 'Runtime class counts after flush',
+        unit: 'count',
+        description: 'Runtime classCounts.size after the benchmark-only post-trace flush.'
+    },
+    {
+        id: 'runtime-utility-count-after-flush',
+        label: 'Runtime utility count after flush',
+        unit: 'count',
+        description: 'Runtime classUtilities.size after the benchmark-only post-trace flush.'
+    },
+    {
+        id: 'temporary-class-count-after-flush',
+        label: 'Temporary class count after flush',
+        unit: 'count',
+        description: 'Tracked temporary cleanup class count after the benchmark-only post-trace flush.'
     },
     {
         id: 'runtime-generated-rule-count-delta',
@@ -279,7 +377,19 @@ export const runtimeMutationDiagnosticMetrics = [
         id: 'cleanup-valid',
         label: 'Cleanup valid',
         unit: 'count',
-        description: '1 when temporary DOM/runtime classes were cleaned up, otherwise 0.'
+        description: '1 when temporary DOM/runtime classes were cleaned up after the strategy flush, otherwise 0.'
+    },
+    {
+        id: 'cleanup-valid-during-trace',
+        label: 'Cleanup valid during trace',
+        unit: 'count',
+        description: '1 when temporary DOM/runtime classes were cleaned up before trace collection ended.'
+    },
+    {
+        id: 'cleanup-valid-after-flush',
+        label: 'Cleanup valid after flush',
+        unit: 'count',
+        description: '1 when temporary DOM/runtime classes were cleaned up after the strategy flush.'
     },
     {
         id: 'progressive-adopted',
@@ -295,16 +405,23 @@ export async function writeRuntimeMutationDiagnosticsReport() {
 }
 
 function createRuntimeMutationDiagnosticVariants(): BenchmarkVariant[] {
-    return runtimeMutationDiagnosticFixtureIds.flatMap((fixtureId) => runtimeMutationDiagnosticModeIds.map((modeId) => ({
-        id: createRuntimeMutationDiagnosticVariantId(fixtureId, modeId),
+    return runtimeMutationDiagnosticFixtureIds.flatMap((fixtureId) => runtimeMutationDiagnosticModeIds.flatMap((modeId) => runtimeMutationDiagnosticStrategyIds.map((strategyId) => ({
+        id: createRuntimeMutationDiagnosticVariantId(fixtureId, modeId, strategyId),
         fixtureId,
         adapterId: modeId,
-        label: `${fixtureId} / ${formatModeLabel(modeId)} / mutation cleanup diagnostics`
-    })))
+        label: `${fixtureId} / ${formatModeLabel(modeId)} / ${formatStrategyLabel(strategyId)}`
+    }))))
 }
 
-function createRuntimeMutationDiagnosticVariantId(fixtureId: BenchmarkFixtureId, modeId: InteractionModeId) {
-    return createInteractionVariantId(fixtureId, modeId, 'mutation-cleanup-cycle')
+function createRuntimeMutationDiagnosticVariantId(
+    fixtureId: BenchmarkFixtureId,
+    modeId: InteractionModeId,
+    strategyId: RuntimeMutationStrategyId
+) {
+    const baseId = createInteractionVariantId(fixtureId, modeId, 'mutation-cleanup-cycle')
+    return strategyId === 'baseline'
+        ? baseId
+        : `${baseId}-${strategyId}`
 }
 
 async function createRuntimeMutationDiagnosticsReport(): Promise<BenchmarkReport> {
@@ -320,30 +437,34 @@ async function createRuntimeMutationDiagnosticsReport(): Promise<BenchmarkReport
     try {
         for (const fixtureId of runtimeMutationDiagnosticFixtureIds) {
             for (const modeId of runtimeMutationDiagnosticModeIds) {
-                const variantId = createRuntimeMutationDiagnosticVariantId(fixtureId, modeId)
-                console.log(`Preparing runtime mutation diagnostic page for ${variantId}`)
-                const page = await createInteractionPage({
-                    fixtureId,
-                    modeId,
-                    scenarioId: 'mutation-cleanup-cycle',
-                    variantId,
-                    pageSuite: 'runtime-mutation-diagnostics',
-                    runtimeDiagnostics: true
-                })
-
-                artifacts.push(...page.artifacts)
-                for (let round = 0; round < rounds; round++) {
-                    console.log(`Measuring runtime mutation diagnostics for ${variantId}, round ${round + 1}/${rounds}`)
-                    const result = await measureRuntimeMutationDiagnostic({
-                        browser,
-                        pageRoot: page.root,
-                        variantId,
+                for (const strategyId of runtimeMutationDiagnosticStrategyIds) {
+                    const variantId = createRuntimeMutationDiagnosticVariantId(fixtureId, modeId, strategyId)
+                    console.log(`Preparing runtime mutation diagnostic page for ${variantId}`)
+                    const page = await createInteractionPage({
+                        fixtureId,
                         modeId,
-                        round
+                        scenarioId: 'mutation-cleanup-cycle',
+                        variantId,
+                        pageSuite: 'runtime-mutation-diagnostics',
+                        runtimeDiagnostics: true,
+                        runtimeMutationStrategy: strategyId
                     })
 
-                    samples.push(...result.samples)
-                    artifacts.push(...result.artifacts)
+                    artifacts.push(...page.artifacts)
+                    for (let round = 0; round < rounds; round++) {
+                        console.log(`Measuring runtime mutation diagnostics for ${variantId}, round ${round + 1}/${rounds}`)
+                        const result = await measureRuntimeMutationDiagnostic({
+                            browser,
+                            pageRoot: page.root,
+                            variantId,
+                            modeId,
+                            strategyId,
+                            round
+                        })
+
+                        samples.push(...result.samples)
+                        artifacts.push(...result.artifacts)
+                    }
                 }
             }
         }
@@ -374,6 +495,7 @@ async function createRuntimeMutationDiagnosticsReport(): Promise<BenchmarkReport
         limits: [
             'This suite is diagnostic-only and measures Master CSS runtime/progressive mutation cleanup internals.',
             'Only the dynamic and stress-dom fixtures are measured, using the interaction-cost mutation-cleanup-cycle scenario.',
+            'The baseline strategy uses product runtime behavior; defer-remove and suppress-remove-during-trace are benchmark-only harness strategies.',
             'Instrumentation is injected into the benchmark page harness; @master/css-runtime source and public behavior are not changed.',
             'MutationObserver and CSSRuntime.add/remove wrappers add measurement overhead, so use these numbers to localize costs, not as public performance claims.',
             'Progressive variants fail if they fall back to runtime rendering before the cleanup scenario.',
@@ -388,6 +510,7 @@ async function measureRuntimeMutationDiagnostic(options: {
     pageRoot: string
     variantId: string
     modeId: InteractionModeId
+    strategyId: RuntimeMutationStrategyId
     round: number
 }): Promise<RuntimeMutationDiagnosticMeasurement> {
     const server = await startStaticFileServer(options.pageRoot)
@@ -418,7 +541,7 @@ async function measureRuntimeMutationDiagnostic(options: {
                 consoleWarnings
             }
 
-            assertRuntimeMutationDiagnosticResult(options.variantId, options.modeId, fullResult)
+            assertRuntimeMutationDiagnosticResult(options.variantId, options.modeId, options.strategyId, fullResult)
             await writeFile(traceFile, `${JSON.stringify({ traceEvents: result.events }, null, 2)}\n`)
             await writeRuntimeMutationDiagnosticArtifacts({
                 file: diagnosticsFile,
@@ -475,14 +598,46 @@ async function traceRuntimeMutationDiagnostic(page: Page) {
     await tracingComplete
     await client.detach()
 
-    const afterState = await page.evaluate(() => globalThis.__readInteractionState())
+    const afterTraceState = await page.evaluate(() => globalThis.__readInteractionState())
+    const strategyFlush = await page.evaluate(() => (
+        globalThis.__flushRuntimeMutationStrategy?.('after-trace') || {
+            reason: 'after-trace',
+            strategyId: 'baseline',
+            flushed: false,
+            callCount: 0,
+            classCount: 0,
+            durationMs: 0,
+            queuedClassCountBeforeFlush: 0
+        }
+    )) as RuntimeMutationStrategyFlushResult
+    const afterFlushState = await page.evaluate(() => globalThis.__readInteractionState())
+    const cleanupAfterFlush = await page.evaluate(() => {
+        const config = globalThis.__interactionConfig as {
+            classes?: {
+                temp?: string[]
+            }
+        }
+        const state = globalThis.__readInteractionState()
+        const tempClassNames = config.classes?.temp || []
+        const runtimeClean = !state.runtimeAvailable || tempClassNames.every((className) => !state.classCounts[className] && !state.classUtilityNames.includes(className))
+        const scratch = document.getElementById('interaction-scratch')
+
+        return {
+            cleanupValid: scratch?.children.length === 0 && runtimeClean ? 1 : 0,
+            runtimeClean: runtimeClean ? 1 : 0,
+            scratchChildCount: scratch?.children.length || 0
+        }
+    })
     const runtimeDiagnostics = await page.evaluate(() => globalThis.__readRuntimeMutationDiagnostics())
 
     return {
         events,
         interaction,
         beforeState,
-        afterState,
+        afterTraceState,
+        afterFlushState,
+        strategyFlush,
+        cleanupAfterFlush,
         runtimeDiagnostics,
         traceMetrics: summarizeTraceEvents(events)
     }
@@ -569,6 +724,54 @@ function createRuntimeMutationDiagnosticSamples(
             value: result.runtimeDiagnostics.runtimeRemoveClassCount
         },
         {
+            metricId: 'runtime-deferred-remove-call-count',
+            variantId,
+            round,
+            value: result.runtimeDiagnostics.runtimeDeferredRemoveCallCount
+        },
+        {
+            metricId: 'runtime-deferred-remove-class-count',
+            variantId,
+            round,
+            value: result.runtimeDiagnostics.runtimeDeferredRemoveClassCount
+        },
+        {
+            metricId: 'runtime-suppressed-remove-call-count',
+            variantId,
+            round,
+            value: result.runtimeDiagnostics.runtimeSuppressedRemoveCallCount
+        },
+        {
+            metricId: 'runtime-suppressed-remove-class-count',
+            variantId,
+            round,
+            value: result.runtimeDiagnostics.runtimeSuppressedRemoveClassCount
+        },
+        {
+            metricId: 'runtime-flush-remove-call-count',
+            variantId,
+            round,
+            value: result.runtimeDiagnostics.runtimeFlushRemoveCallCount
+        },
+        {
+            metricId: 'runtime-flush-remove-class-count',
+            variantId,
+            round,
+            value: result.runtimeDiagnostics.runtimeFlushRemoveClassCount
+        },
+        {
+            metricId: 'runtime-flush-remove-duration-ms',
+            variantId,
+            round,
+            value: result.runtimeDiagnostics.runtimeFlushRemoveDurationMs
+        },
+        {
+            metricId: 'runtime-queued-remove-class-count',
+            variantId,
+            round,
+            value: result.runtimeDiagnostics.runtimeQueuedRemoveClassCount
+        },
+        {
             metricId: 'mutation-observer-callback-count',
             variantId,
             round,
@@ -638,7 +841,7 @@ function createRuntimeMutationDiagnosticSamples(
             metricId: 'runtime-class-count-after',
             variantId,
             round,
-            value: Object.keys(result.afterState.classCounts).length
+            value: Object.keys(result.afterTraceState.classCounts).length
         },
         {
             metricId: 'runtime-utility-count-before',
@@ -650,7 +853,7 @@ function createRuntimeMutationDiagnosticSamples(
             metricId: 'runtime-utility-count-after',
             variantId,
             round,
-            value: result.afterState.classUtilityNames.length
+            value: result.afterTraceState.classUtilityNames.length
         },
         {
             metricId: 'temporary-class-count-before',
@@ -662,7 +865,25 @@ function createRuntimeMutationDiagnosticSamples(
             metricId: 'temporary-class-count-after',
             variantId,
             round,
-            value: countTemporaryClasses(result.afterState, tempClassNames)
+            value: countTemporaryClasses(result.afterTraceState, tempClassNames)
+        },
+        {
+            metricId: 'runtime-class-count-after-flush',
+            variantId,
+            round,
+            value: Object.keys(result.afterFlushState.classCounts).length
+        },
+        {
+            metricId: 'runtime-utility-count-after-flush',
+            variantId,
+            round,
+            value: result.afterFlushState.classUtilityNames.length
+        },
+        {
+            metricId: 'temporary-class-count-after-flush',
+            variantId,
+            round,
+            value: countTemporaryClasses(result.afterFlushState, tempClassNames)
         },
         {
             metricId: 'runtime-generated-rule-count-delta',
@@ -686,7 +907,19 @@ function createRuntimeMutationDiagnosticSamples(
             metricId: 'cleanup-valid',
             variantId,
             round,
+            value: result.cleanupAfterFlush.cleanupValid
+        },
+        {
+            metricId: 'cleanup-valid-during-trace',
+            variantId,
+            round,
             value: result.interaction.cleanupValid
+        },
+        {
+            metricId: 'cleanup-valid-after-flush',
+            variantId,
+            round,
+            value: result.cleanupAfterFlush.cleanupValid
         },
         {
             metricId: 'progressive-adopted',
@@ -708,7 +941,10 @@ async function writeRuntimeMutationDiagnosticArtifacts(options: {
         traceMetrics: options.result.traceMetrics,
         runtimeDiagnostics: options.result.runtimeDiagnostics,
         beforeState: omitRuntimeStyleText(options.result.beforeState),
-        afterState: omitRuntimeStyleText(options.result.afterState),
+        afterTraceState: omitRuntimeStyleText(options.result.afterTraceState),
+        afterFlushState: omitRuntimeStyleText(options.result.afterFlushState),
+        strategyFlush: options.result.strategyFlush,
+        cleanupAfterFlush: options.result.cleanupAfterFlush,
         consoleWarnings: options.result.consoleWarnings,
         runtimeStyleTextArtifact: runtimeStyleText ? 'runtime-style.css' : undefined
     }, null, 2)}\n`)
@@ -718,17 +954,22 @@ async function writeRuntimeMutationDiagnosticArtifacts(options: {
 function assertRuntimeMutationDiagnosticResult(
     variantId: string,
     modeId: InteractionModeId,
+    strategyId: RuntimeMutationStrategyId,
     result: RuntimeMutationDiagnosticResult
 ) {
     if (result.interaction.computedStyleValid !== 1) {
         throw new Error(`${variantId} failed computed-style validation.`)
     }
 
-    if (result.interaction.cleanupValid !== 1) {
+    if (strategyId !== 'suppress-remove-during-trace' && result.interaction.cleanupValid !== 1) {
         throw new Error(`${variantId} failed cleanup validation.`)
     }
 
-    if (countTemporaryClasses(result.afterState, getTemporaryClassNames()) !== 0) {
+    if (result.cleanupAfterFlush.cleanupValid !== 1) {
+        throw new Error(`${variantId} failed cleanup validation after strategy flush.`)
+    }
+
+    if (countTemporaryClasses(result.afterFlushState, getTemporaryClassNames()) !== 0) {
         throw new Error(`${variantId} left temporary class counts after cleanup.`)
     }
 
@@ -894,7 +1135,7 @@ function getRuntimeMutationDiagnosticFixtures(): BenchmarkFixture[] {
 
 function getRuntimeMutationDiagnosticAdapters(): BenchmarkAdapter[] {
     const ids = new Set(runtimeMutationDiagnosticModeIds)
-    return benchmarkAdapters.filter((adapter) => ids.has(adapter.id as RuntimeMutationDiagnosticModeId))
+    return benchmarkAdapters.filter((adapter) => ids.has(adapter.id as typeof runtimeMutationDiagnosticModeIds[number]))
 }
 
 function countTemporaryClasses(state: RuntimeState, temporaryClassNames: string[]) {
@@ -921,6 +1162,17 @@ function formatModeLabel(modeId: InteractionModeId) {
     return modeId === 'master-progressive'
         ? 'Master CSS progressive'
         : 'Master CSS runtime'
+}
+
+function formatStrategyLabel(strategyId: RuntimeMutationStrategyId) {
+    switch (strategyId) {
+        case 'defer-remove':
+            return 'defer remove strategy'
+        case 'suppress-remove-during-trace':
+            return 'suppress remove during trace strategy'
+        default:
+            return 'baseline strategy'
+    }
 }
 
 function getRuntimeMutationDiagnosticRounds() {

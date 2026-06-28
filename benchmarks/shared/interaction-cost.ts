@@ -46,6 +46,11 @@ export type InteractionScenarioId =
     | 'viewport-resize'
     | 'mutation-cleanup-cycle'
 
+export type RuntimeMutationStrategyId =
+    | 'baseline'
+    | 'defer-remove'
+    | 'suppress-remove-during-trace'
+
 interface ChromeTraceEvent {
     name?: string
     ph?: string
@@ -474,6 +479,7 @@ export async function createInteractionPage(options: {
     variantId: string
     pageSuite?: InteractionPageSuite
     runtimeDiagnostics?: boolean
+    runtimeMutationStrategy?: RuntimeMutationStrategyId
 }): Promise<InteractionPage> {
     if (options.modeId === 'tailwind-static') {
         const sourceHtml = renderInteractionDocument({
@@ -496,7 +502,8 @@ export async function createInteractionPage(options: {
         modeId: options.modeId,
         scenarioId: options.scenarioId,
         classes: masterClasses,
-        includeStaticClassSource: options.modeId === 'master-static'
+        includeStaticClassSource: options.modeId === 'master-static',
+        runtimeMutationStrategy: options.runtimeMutationStrategy
     })
 
     if (options.modeId === 'master-static') {
@@ -514,7 +521,8 @@ export async function createInteractionPage(options: {
             variantId: options.variantId,
             html: addRuntimeHarness(sourceHtml, {
                 hideUntilRuntime: true,
-                runtimeDiagnostics: options.runtimeDiagnostics
+                runtimeDiagnostics: options.runtimeDiagnostics,
+                runtimeMutationStrategy: options.runtimeMutationStrategy
             }),
             runtimeJS: await readRuntimeBundle(),
             manifestJSON: await readDefaultManifestJSON()
@@ -534,7 +542,8 @@ export async function createInteractionPage(options: {
         variantId: options.variantId,
         html: addRuntimeHarness(result.html, {
             hideUntilRuntime: false,
-            runtimeDiagnostics: options.runtimeDiagnostics
+            runtimeDiagnostics: options.runtimeDiagnostics,
+            runtimeMutationStrategy: options.runtimeMutationStrategy
         }),
         inlineCSS,
         hydrationManifestJSON,
@@ -613,6 +622,7 @@ function renderInteractionDocument(options: {
     scenarioId: InteractionScenarioId
     classes: InteractionClassModel
     includeStaticClassSource: boolean
+    runtimeMutationStrategy?: RuntimeMutationStrategyId
 }) {
     const fixture = getInteractionFixtureShape(options.fixtureId)
     const staticClassSource = options.includeStaticClassSource
@@ -652,7 +662,8 @@ function renderInteractionDocument(options: {
             classes: options.classes,
             affectedCount: fixture.affectedCount,
             appendCount: fixture.appendCount,
-            cleanupCycles: fixture.cleanupCycles
+            cleanupCycles: fixture.cleanupCycles,
+            runtimeMutationStrategy: options.runtimeMutationStrategy
         }),
         '</body>',
         '</html>'
@@ -683,6 +694,7 @@ function renderInteractionScript(options: {
     affectedCount: number
     appendCount: number
     cleanupCycles: number
+    runtimeMutationStrategy?: RuntimeMutationStrategyId
 }) {
     const config = JSON.stringify({
         fixtureId: options.fixtureId,
@@ -691,6 +703,7 @@ function renderInteractionScript(options: {
         affectedCount: options.affectedCount,
         appendCount: options.appendCount,
         cleanupCycles: options.cleanupCycles,
+        runtimeMutationStrategy: options.runtimeMutationStrategy || 'baseline',
         classes: {
             itemBase: options.classes.itemBase,
             light: options.classes.itemLight,
@@ -721,6 +734,8 @@ function renderInteractionScript(options: {
         '            if (config.scenarioId === "theme-switch") scenarioDetails = runThemeSwitch(config);',
         '            if (config.scenarioId === "mutation-cleanup-cycle") scenarioDetails = await runCleanupCycle(config);',
         '            await waitFrames(3);',
+        '            const strategyFlushResult = flushDeferredRuntimeRemovalsBeforeResult();',
+        '            if (config.scenarioId === "mutation-cleanup-cycle") scenarioDetails = finalizeCleanupCycleDetails(config, scenarioDetails, strategyFlushResult);',
         '            scenarioDetails = finalizeScenarioDetails(config, scenarioDetails);',
         '            metrics.collectInteractionMutations = false;',
         '            const after = readRuntimeState();',
@@ -841,14 +856,19 @@ function renderInteractionScript(options: {
         '            const state = readRuntimeState();',
         '            const tempClassNames = config.classes.temp;',
         '            const runtimeClean = !state.runtimeAvailable || tempClassNames.every((className) => !state.classCounts[className] && !state.classUtilityNames.includes(className));',
+        '            const cleanupValid = scratch.children.length === 0 && runtimeClean;',
         '            return {',
         '                affectedElementCount: config.appendCount * config.cleanupCycles,',
         '                mutationCycleCount: config.cleanupCycles,',
         '                appendCount: config.appendCount,',
         '                removedNodeCount: config.appendCount * config.cleanupCycles,',
         '                computedStyleValid: true,',
-        '                cleanupValid: scratch.children.length === 0 && runtimeClean,',
-        '                runtimeClean',
+        '                cleanupValid,',
+        '                cleanupValidDuringTrace: cleanupValid,',
+        '                cleanupValidAfterFlush: cleanupValid,',
+        '                runtimeClean,',
+        '                runtimeCleanDuringTrace: runtimeClean,',
+        '                runtimeCleanAfterFlush: runtimeClean',
         '            };',
         '        }',
         '        function createInteractionItem(config, index, extraClasses) {',
@@ -904,6 +924,25 @@ function renderInteractionScript(options: {
         '            }',
         '            return details;',
         '        }',
+        '        function finalizeCleanupCycleDetails(config, details, strategyFlushResult) {',
+        '            const state = readRuntimeState();',
+        '            const tempClassNames = config.classes.temp;',
+        '            const runtimeCleanAfterFlush = !state.runtimeAvailable || tempClassNames.every((className) => !state.classCounts[className] && !state.classUtilityNames.includes(className));',
+        '            const cleanupValidAfterFlush = getScratch().children.length === 0 && runtimeCleanAfterFlush;',
+        '            return {',
+        '                ...details,',
+        '                cleanupValid: cleanupValidAfterFlush,',
+        '                cleanupValidAfterFlush,',
+        '                runtimeCleanAfterFlush,',
+        '                strategyFlushResult: strategyFlushResult || null',
+        '            };',
+        '        }',
+        '        function flushDeferredRuntimeRemovalsBeforeResult() {',
+        '            const metrics = window.__interactionMetrics;',
+        '            if (metrics?.runtimeMutationStrategyId !== "defer-remove") return null;',
+        '            if (typeof window.__flushRuntimeMutationStrategy !== "function") return null;',
+        '            return window.__flushRuntimeMutationStrategy("before-result");',
+        '        }',
         '        function readRuntimeState() {',
         '            const runtime = globalThis.masterCSSRuntime;',
         '            const runtimeStyleText = runtime?.style?.textContent || runtime?.text || "";',
@@ -931,7 +970,15 @@ function renderInteractionScript(options: {
         '                runtimeAddClassCount: metrics.runtimeAddClassCount || 0,',
         '                runtimeRemoveClassCount: metrics.runtimeRemoveClassCount || 0,',
         '                runtimeAddDurationMs: metrics.runtimeAddDurationMs || 0,',
-        '                runtimeRemoveDurationMs: metrics.runtimeRemoveDurationMs || 0',
+        '                runtimeRemoveDurationMs: metrics.runtimeRemoveDurationMs || 0,',
+        '                runtimeDeferredRemoveCallCount: metrics.runtimeDeferredRemoveCallCount || 0,',
+        '                runtimeDeferredRemoveClassCount: metrics.runtimeDeferredRemoveClassCount || 0,',
+        '                runtimeSuppressedRemoveCallCount: metrics.runtimeSuppressedRemoveCallCount || 0,',
+        '                runtimeSuppressedRemoveClassCount: metrics.runtimeSuppressedRemoveClassCount || 0,',
+        '                runtimeFlushRemoveCallCount: metrics.runtimeFlushRemoveCallCount || 0,',
+        '                runtimeFlushRemoveClassCount: metrics.runtimeFlushRemoveClassCount || 0,',
+        '                runtimeFlushRemoveDurationMs: metrics.runtimeFlushRemoveDurationMs || 0,',
+        '                runtimeQueuedRemoveClassCount: metrics.runtimeQueuedRemoveClassCount || 0',
         '            };',
         '        }',
         '        function countCSSRules(rules) {',
@@ -1239,16 +1286,19 @@ function addStaticHarness(html: string) {
 function addRuntimeHarness(html: string, options: {
     hideUntilRuntime: boolean
     runtimeDiagnostics?: boolean
+    runtimeMutationStrategy?: RuntimeMutationStrategyId
 }) {
     const withVisibility = options.hideUntilRuntime ? addHiddenAttribute(html) : html
+    const runtimeMutationStrategy = options.runtimeMutationStrategy || 'baseline'
 
     return insertBeforeHeadEnd(withVisibility, [
         '    <script>',
         '        window.__benchmarkReady = false;',
-        `        window.__interactionMetrics = createInteractionMetrics(${options.runtimeDiagnostics ? 'true' : 'false'});`,
-        '        function createInteractionMetrics(runtimeDiagnosticsEnabled) {',
+        `        window.__interactionMetrics = createInteractionMetrics(${options.runtimeDiagnostics ? 'true' : 'false'}, ${JSON.stringify(runtimeMutationStrategy)});`,
+        '        function createInteractionMetrics(runtimeDiagnosticsEnabled, runtimeMutationStrategyId) {',
         '            return {',
         '                runtimeDiagnosticsEnabled,',
+        '                runtimeMutationStrategyId,',
         '                runtimeMutationMs: 0,',
         '                collectInteractionMutations: false,',
         '                mutationObserverCallbackCount: 0,',
@@ -1261,7 +1311,16 @@ function addRuntimeHarness(html: string, options: {
         '                runtimeAddClassCount: 0,',
         '                runtimeRemoveClassCount: 0,',
         '                runtimeAddDurationMs: 0,',
-        '                runtimeRemoveDurationMs: 0',
+        '                runtimeRemoveDurationMs: 0,',
+        '                runtimeDeferredRemoveCallCount: 0,',
+        '                runtimeDeferredRemoveClassCount: 0,',
+        '                runtimeSuppressedRemoveCallCount: 0,',
+        '                runtimeSuppressedRemoveClassCount: 0,',
+        '                runtimeFlushRemoveCallCount: 0,',
+        '                runtimeFlushRemoveClassCount: 0,',
+        '                runtimeFlushRemoveDurationMs: 0,',
+        '                runtimeQueuedRemoveClassCount: 0,',
+        '                runtimeRemoveQueue: []',
         '            };',
         '        }',
         '        function resetRuntimeMutationDiagnostics(metrics) {',
@@ -1276,6 +1335,15 @@ function addRuntimeHarness(html: string, options: {
         '            metrics.runtimeRemoveClassCount = 0;',
         '            metrics.runtimeAddDurationMs = 0;',
         '            metrics.runtimeRemoveDurationMs = 0;',
+        '            metrics.runtimeDeferredRemoveCallCount = 0;',
+        '            metrics.runtimeDeferredRemoveClassCount = 0;',
+        '            metrics.runtimeSuppressedRemoveCallCount = 0;',
+        '            metrics.runtimeSuppressedRemoveClassCount = 0;',
+        '            metrics.runtimeFlushRemoveCallCount = 0;',
+        '            metrics.runtimeFlushRemoveClassCount = 0;',
+        '            metrics.runtimeFlushRemoveDurationMs = 0;',
+        '            metrics.runtimeQueuedRemoveClassCount = 0;',
+        '            metrics.runtimeRemoveQueue = [];',
         '        }',
         '        if (window.__interactionMetrics.runtimeDiagnosticsEnabled) {',
         '            const NativeMutationObserver = window.MutationObserver;',
@@ -1324,6 +1392,20 @@ function addRuntimeHarness(html: string, options: {
         '                return result;',
         '            };',
         '            Runtime.prototype.remove = function(...args) {',
+        '                const strategyId = metrics.runtimeMutationStrategyId || "baseline";',
+        '                if (metrics.collectInteractionMutations && strategyId !== "baseline") {',
+        '                    const startedAt = performance.now();',
+        '                    const classNames = normalizeRuntimeClassNames(args);',
+        '                    queueRuntimeRemoval(this, classNames, strategyId);',
+        '                    const elapsed = performance.now() - startedAt;',
+        '                    metrics.runtimeMutationMs += elapsed;',
+        '                    if (metrics.runtimeDiagnosticsEnabled) {',
+        '                        metrics.runtimeRemoveCallCount++;',
+        '                        metrics.runtimeRemoveClassCount += classNames.length;',
+        '                        metrics.runtimeRemoveDurationMs += elapsed;',
+        '                    }',
+        '                    return this;',
+        '                }',
         '                const startedAt = performance.now();',
         '                const result = originalRemove.apply(this, args);',
         '                const elapsed = performance.now() - startedAt;',
@@ -1336,6 +1418,80 @@ function addRuntimeHarness(html: string, options: {
         '                    }',
         '                }',
         '                return result;',
+        '            };',
+        '            function normalizeRuntimeClassNames(args) {',
+        '                const classNames = [];',
+        '                for (const arg of args) {',
+        '                    if (Array.isArray(arg)) {',
+        '                        for (const value of arg) if (typeof value === "string" && value) classNames.push(value);',
+        '                    } else if (typeof arg === "string" && arg) {',
+        '                        classNames.push(arg);',
+        '                    }',
+        '                }',
+        '                return classNames;',
+        '            }',
+        '            function queueRuntimeRemoval(runtime, classNames, strategyId) {',
+        '                if (!classNames.length) return;',
+        '                metrics.runtimeRemoveQueue.push({ runtime, classNames });',
+        '                metrics.runtimeQueuedRemoveClassCount += classNames.length;',
+        '                if (strategyId === "defer-remove") {',
+        '                    metrics.runtimeDeferredRemoveCallCount++;',
+        '                    metrics.runtimeDeferredRemoveClassCount += classNames.length;',
+        '                } else if (strategyId === "suppress-remove-during-trace") {',
+        '                    metrics.runtimeSuppressedRemoveCallCount++;',
+        '                    metrics.runtimeSuppressedRemoveClassCount += classNames.length;',
+        '                }',
+        '            }',
+        '            window.__flushRuntimeMutationStrategy = function(reason) {',
+        '                const queue = metrics.runtimeRemoveQueue || [];',
+        '                if (!queue.length) {',
+        '                    return {',
+        '                        reason,',
+        '                        strategyId: metrics.runtimeMutationStrategyId || "baseline",',
+        '                        flushed: false,',
+        '                        callCount: 0,',
+        '                        classCount: 0,',
+        '                        durationMs: 0,',
+        '                        queuedClassCountBeforeFlush: 0',
+        '                    };',
+        '                }',
+        '                const byRuntime = new Map();',
+        '                let queuedClassCountBeforeFlush = 0;',
+        '                for (const entry of queue) {',
+        '                    let classNames = byRuntime.get(entry.runtime);',
+        '                    if (!classNames) {',
+        '                        classNames = new Set();',
+        '                        byRuntime.set(entry.runtime, classNames);',
+        '                    }',
+        '                    for (const className of entry.classNames) {',
+        '                        classNames.add(className);',
+        '                        queuedClassCountBeforeFlush++;',
+        '                    }',
+        '                }',
+        '                metrics.runtimeRemoveQueue = [];',
+        '                const startedAt = performance.now();',
+        '                let callCount = 0;',
+        '                let classCount = 0;',
+        '                for (const [runtime, classNames] of byRuntime) {',
+        '                    const names = [...classNames];',
+        '                    if (!names.length) continue;',
+        '                    originalRemove.apply(runtime, names);',
+        '                    callCount++;',
+        '                    classCount += names.length;',
+        '                }',
+        '                const elapsed = performance.now() - startedAt;',
+        '                metrics.runtimeFlushRemoveCallCount += callCount;',
+        '                metrics.runtimeFlushRemoveClassCount += classCount;',
+        '                metrics.runtimeFlushRemoveDurationMs += elapsed;',
+        '                return {',
+        '                    reason,',
+        '                    strategyId: metrics.runtimeMutationStrategyId || "baseline",',
+        '                    flushed: true,',
+        '                    callCount,',
+        '                    classCount,',
+        '                    durationMs: elapsed,',
+        '                    queuedClassCountBeforeFlush',
+        '                };',
         '            };',
         '            Runtime.prototype.observe = function(...args) {',
         '                const result = originalObserve.apply(this, args);',
@@ -1676,6 +1832,7 @@ declare global {
     var __interactionMetrics: {
         error?: string
         runtimeDiagnosticsEnabled?: boolean
+        runtimeMutationStrategyId?: RuntimeMutationStrategyId
         runtimeMutationMs: number
         collectInteractionMutations: boolean
         mutationObserverCallbackCount?: number
@@ -1689,7 +1846,28 @@ declare global {
         runtimeRemoveClassCount?: number
         runtimeAddDurationMs?: number
         runtimeRemoveDurationMs?: number
+        runtimeDeferredRemoveCallCount?: number
+        runtimeDeferredRemoveClassCount?: number
+        runtimeSuppressedRemoveCallCount?: number
+        runtimeSuppressedRemoveClassCount?: number
+        runtimeFlushRemoveCallCount?: number
+        runtimeFlushRemoveClassCount?: number
+        runtimeFlushRemoveDurationMs?: number
+        runtimeQueuedRemoveClassCount?: number
+        runtimeRemoveQueue?: Array<{
+            runtime: unknown
+            classNames: string[]
+        }>
     } | undefined
+    var __flushRuntimeMutationStrategy: ((reason: string) => {
+        reason: string
+        strategyId: RuntimeMutationStrategyId
+        flushed: boolean
+        callCount: number
+        classCount: number
+        durationMs: number
+        queuedClassCountBeforeFlush: number
+    }) | undefined
     var __runInteractionScenario: () => Promise<InteractionResult>
     var __readInteractionState: () => RuntimeState
     var __readRuntimeMutationDiagnostics: () => {
@@ -1704,6 +1882,14 @@ declare global {
         runtimeRemoveClassCount: number
         runtimeAddDurationMs: number
         runtimeRemoveDurationMs: number
+        runtimeDeferredRemoveCallCount: number
+        runtimeDeferredRemoveClassCount: number
+        runtimeSuppressedRemoveCallCount: number
+        runtimeSuppressedRemoveClassCount: number
+        runtimeFlushRemoveCallCount: number
+        runtimeFlushRemoveClassCount: number
+        runtimeFlushRemoveDurationMs: number
+        runtimeQueuedRemoveClassCount: number
     }
     var __waitInteractionFrames: (count: number) => Promise<void>
     var __finishViewportInteraction: (input: {
