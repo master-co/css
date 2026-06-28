@@ -292,52 +292,148 @@ test('direct remove deletes retained CSSOM rules synchronously', async ({ page }
     })
 })
 
-test('retained hard-limit cleanup runs in batches and preserves active classes', async ({ page }) => {
+test('retained hard-limit cleanup returns to soft target and preserves active classes', async ({ page }) => {
     await init(page)
-    await page.evaluate(async () => {
-        const wrapper = document.createElement('section')
-        for (let index = 0; index < 520; index++) {
-            const element = document.createElement('p')
-            element.className = `z:${index}`
-            wrapper.append(element)
+    const result = await page.evaluate(async () => {
+        const idleCallbacks = new Map<number, IdleRequestCallback>()
+        const nativeRequestIdleCallback = window.requestIdleCallback
+        const nativeCancelIdleCallback = window.cancelIdleCallback
+        let nextIdleHandle = 1
+        window.requestIdleCallback = (callback) => {
+            const handle = nextIdleHandle++
+            idleCallbacks.set(handle, callback)
+            return handle
         }
-        document.body.innerHTML = '<p class="fg:blue-60"></p>'
-        document.body.append(wrapper)
-        await new Promise(resolve => setTimeout(resolve, 0))
-        wrapper.remove()
-    })
-    await waitForRuntimeRemovalFlush(page)
-    await page.evaluate(() => new Promise(resolve => setTimeout(resolve, 50)))
+        window.cancelIdleCallback = (handle) => {
+            idleCallbacks.delete(handle)
+        }
+        const waitFrames = (count: number) => new Promise<void>((resolve) => {
+            const step = () => {
+                if (count <= 0) {
+                    resolve()
+                    return
+                }
+                count--
+                requestAnimationFrame(step)
+            }
+            step()
+        })
+        const flushIdleCallbacks = () => {
+            const callbacks = [...idleCallbacks]
+            idleCallbacks.clear()
+            for (const [, callback] of callbacks) {
+                callback({
+                    didTimeout: false,
+                    timeRemaining: () => 50
+                })
+            }
+        }
 
-    const afterHardLimitCleanup = await page.evaluate(() => ({
-        counts: Object.fromEntries(globalThis.masterCSSRuntime.classCounts),
-        retainedCount: globalThis.masterCSSRuntime.retainedClassNames.size,
-        hasActiveClassUtility: globalThis.masterCSSRuntime.classUtilities.has('fg:blue-60'),
-        text: globalThis.masterCSSRuntime.text
-    }))
-    expect(afterHardLimitCleanup.counts).toEqual({
+        try {
+            const wrapper = document.createElement('section')
+            for (let index = 0; index < 520; index++) {
+                const element = document.createElement('p')
+                element.className = `z:${index}`
+                wrapper.append(element)
+            }
+            document.body.innerHTML = '<p class="fg:blue-60"></p>'
+            document.body.append(wrapper)
+            await waitFrames(2)
+            wrapper.remove()
+            await waitFrames(3)
+
+            const beforeHardLimitCleanup = {
+                counts: Object.fromEntries(globalThis.masterCSSRuntime.classCounts),
+                retainedCount: globalThis.masterCSSRuntime.retainedClassNames.size,
+                retainedHasReusedClass: globalThis.masterCSSRuntime.retainedClassNames.has('z:0'),
+                queuedIdleCount: idleCallbacks.size
+            }
+
+            const reused = document.createElement('p')
+            reused.className = 'z:0'
+            document.body.append(reused)
+            await new Promise(resolve => setTimeout(resolve, 0))
+            const afterReuseBeforeCleanup = {
+                counts: Object.fromEntries(globalThis.masterCSSRuntime.classCounts),
+                retainedCount: globalThis.masterCSSRuntime.retainedClassNames.size,
+                retainedHasReusedClass: globalThis.masterCSSRuntime.retainedClassNames.has('z:0'),
+                hasReusedClassUtility: globalThis.masterCSSRuntime.classUtilities.has('z:0'),
+                hasActiveClassUtility: globalThis.masterCSSRuntime.classUtilities.has('fg:blue-60'),
+                queuedIdleCount: idleCallbacks.size
+            }
+
+            flushIdleCallbacks()
+            const afterHardLimitCleanup = {
+                counts: Object.fromEntries(globalThis.masterCSSRuntime.classCounts),
+                retainedCount: globalThis.masterCSSRuntime.retainedClassNames.size,
+                retainedHasReusedClass: globalThis.masterCSSRuntime.retainedClassNames.has('z:0'),
+                hasReusedClassUtility: globalThis.masterCSSRuntime.classUtilities.has('z:0'),
+                hasActiveClassUtility: globalThis.masterCSSRuntime.classUtilities.has('fg:blue-60'),
+                text: globalThis.masterCSSRuntime.text,
+                queuedIdleCount: idleCallbacks.size
+            }
+
+            const afterForcedCleanup = {
+                removedCount: globalThis.masterCSSRuntime.flushRetainedClassRules(),
+                retainedCount: globalThis.masterCSSRuntime.retainedClassNames.size,
+                counts: Object.fromEntries(globalThis.masterCSSRuntime.classCounts),
+                hasReusedClassUtility: globalThis.masterCSSRuntime.classUtilities.has('z:0'),
+                hasActiveClassUtility: globalThis.masterCSSRuntime.classUtilities.has('fg:blue-60'),
+                text: globalThis.masterCSSRuntime.text
+            }
+
+            return {
+                beforeHardLimitCleanup,
+                afterReuseBeforeCleanup,
+                afterHardLimitCleanup,
+                afterForcedCleanup
+            }
+        } finally {
+            window.requestIdleCallback = nativeRequestIdleCallback
+            window.cancelIdleCallback = nativeCancelIdleCallback
+        }
+    })
+    expect(result.beforeHardLimitCleanup.counts).toEqual({
         'fg:blue-60': 1
     })
-    expect(afterHardLimitCleanup.retainedCount).toBeLessThanOrEqual(512)
-    expect(afterHardLimitCleanup.retainedCount).toBeGreaterThan(128)
-    expect(afterHardLimitCleanup.hasActiveClassUtility).toBe(true)
-    expect(afterHardLimitCleanup.text).toContain('.fg\\:blue-60')
+    expect(result.beforeHardLimitCleanup.retainedCount).toBe(520)
+    expect(result.beforeHardLimitCleanup.retainedHasReusedClass).toBe(true)
+    expect(result.beforeHardLimitCleanup.queuedIdleCount).toBe(1)
 
-    const afterForcedCleanup = await page.evaluate(() => ({
-        removedCount: globalThis.masterCSSRuntime.flushRetainedClassRules(),
-        retainedCount: globalThis.masterCSSRuntime.retainedClassNames.size,
-        counts: Object.fromEntries(globalThis.masterCSSRuntime.classCounts),
-        hasActiveClassUtility: globalThis.masterCSSRuntime.classUtilities.has('fg:blue-60'),
-        text: globalThis.masterCSSRuntime.text
-    }))
-    expect(afterForcedCleanup.removedCount).toBe(afterHardLimitCleanup.retainedCount)
-    expect(afterForcedCleanup.retainedCount).toBe(0)
-    expect(afterForcedCleanup.counts).toEqual({
-        'fg:blue-60': 1
+    expect(result.afterReuseBeforeCleanup.counts).toEqual({
+        'fg:blue-60': 1,
+        'z:0': 1
     })
-    expect(afterForcedCleanup.hasActiveClassUtility).toBe(true)
-    expect(afterForcedCleanup.text).toContain('.fg\\:blue-60')
-    expect(afterForcedCleanup.text).not.toContain('.z\\:0')
+    expect(result.afterReuseBeforeCleanup.retainedCount).toBe(519)
+    expect(result.afterReuseBeforeCleanup.retainedHasReusedClass).toBe(false)
+    expect(result.afterReuseBeforeCleanup.hasReusedClassUtility).toBe(true)
+    expect(result.afterReuseBeforeCleanup.hasActiveClassUtility).toBe(true)
+    expect(result.afterReuseBeforeCleanup.queuedIdleCount).toBe(1)
+
+    expect(result.afterHardLimitCleanup.counts).toEqual({
+        'fg:blue-60': 1,
+        'z:0': 1
+    })
+    expect(result.afterHardLimitCleanup.retainedCount).toBeLessThanOrEqual(128)
+    expect(result.afterHardLimitCleanup.retainedCount).toBeGreaterThan(0)
+    expect(result.afterHardLimitCleanup.retainedHasReusedClass).toBe(false)
+    expect(result.afterHardLimitCleanup.hasReusedClassUtility).toBe(true)
+    expect(result.afterHardLimitCleanup.hasActiveClassUtility).toBe(true)
+    expect(result.afterHardLimitCleanup.text).toContain('.fg\\:blue-60')
+    expect(result.afterHardLimitCleanup.text).toContain('.z\\:0')
+    expect(result.afterHardLimitCleanup.queuedIdleCount).toBe(0)
+
+    expect(result.afterForcedCleanup.removedCount).toBe(result.afterHardLimitCleanup.retainedCount)
+    expect(result.afterForcedCleanup.retainedCount).toBe(0)
+    expect(result.afterForcedCleanup.counts).toEqual({
+        'fg:blue-60': 1,
+        'z:0': 1
+    })
+    expect(result.afterForcedCleanup.hasReusedClassUtility).toBe(true)
+    expect(result.afterForcedCleanup.hasActiveClassUtility).toBe(true)
+    expect(result.afterForcedCleanup.text).toContain('.fg\\:blue-60')
+    expect(result.afterForcedCleanup.text).toContain('.z\\:0')
+    expect(result.afterForcedCleanup.text).not.toContain('.z\\:1')
 })
 
 test('mutation removals are canceled when a class returns before flush', async ({ page }) => {

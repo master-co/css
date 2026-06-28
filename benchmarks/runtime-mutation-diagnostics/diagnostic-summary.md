@@ -95,7 +95,20 @@ Retained generated rules increased style recalculation as seeded retained volume
 | Stress DOM runtime | `2.11ms` | `2.74ms` | `4.52ms` |
 | Stress DOM progressive | `2.17ms` | `2.70ms` | `4.41ms` |
 
-Runtime style rule count before trace rose from `42` to `554` in retained-512. After flush, the retained variants settled to `106` rules and `1596B` retained raw CSS for retained-128/512.
+Runtime style rule count before trace rose from `42` to `554` in retained-512. In the initial diagnostic run, after-flush retained variants settled to `106` rules and `1596B` retained raw CSS for retained-128/512.
+
+### Phase 9 Validation
+
+After changing hard-limit cleanup to return retained inactive rules to the soft target, retained-512 no longer kept the larger style recalculation cost:
+
+| Fixture / mode | Before | After |
+| --- | ---: | ---: |
+| Dynamic runtime retained-512 | `1.89ms` | `1.39ms` |
+| Dynamic progressive retained-512 | `2.04ms` | `1.39ms` |
+| Stress DOM runtime retained-512 | `4.52ms` | `2.65ms` |
+| Stress DOM progressive retained-512 | `4.41ms` | `2.69ms` |
+
+The post-change retained-512 variants settled to `168` runtime style rules after flush, which is the active baseline plus the retained soft target. This confirms retained stylesheet volume was a valid first optimization target; the remaining stress-dom gap is still browser style invalidation rather than runtime ensure/delete duration.
 
 ## Most Justified Optimization Target
 

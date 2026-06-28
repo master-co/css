@@ -498,8 +498,11 @@ export default class CSSRuntime extends MasterCSS {
         }
 
         entries.sort(([, a], [, b]) => a.retainedAt - b.retainedAt)
+        const cleanupCount = hardLimitExceeded
+            ? Math.max(RETAINED_CLASS_RULE_CLEANUP_BATCH_SIZE, this.retainedClassNames.size - RETAINED_CLASS_RULE_SOFT_TARGET)
+            : RETAINED_CLASS_RULE_CLEANUP_BATCH_SIZE
         return entries
-            .slice(0, force ? entries.length : RETAINED_CLASS_RULE_CLEANUP_BATCH_SIZE)
+            .slice(0, force ? entries.length : cleanupCount)
             .map(([className]) => className)
     }
 
