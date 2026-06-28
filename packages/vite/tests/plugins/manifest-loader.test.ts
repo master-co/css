@@ -101,7 +101,8 @@ describe('ManifestLoaderPlugin', () => {
             source: expect.stringContaining('#456')
         }))
         expect(code).toContain('const masterCSSManifestURL = import.meta.ROLLUP_FILE_URL_master_css_query_manifest_ref;')
-        expect(code).toContain('await fetch(masterCSSManifestURL)')
+        expect(code).toContain(`new Function('specifier', "return import(specifier, { with: { type: 'json' } })")`)
+        expect(code).toContain(`await loadMasterCSSManifestModule(typeof masterCSSManifestURL === 'string' ? masterCSSManifestURL : masterCSSManifestURL.href)`)
         expect(code).not.toContain('#456')
     })
 
@@ -124,6 +125,8 @@ describe('ManifestLoaderPlugin', () => {
 
         expect(code).toContain('const masterCSSManifestURL = import.meta.ROLLUP_FILE_URL_master_css_query_manifest_ref;')
         expect(code).toContain('loadMasterCSSManifestFromFile')
+        expect(code).toContain(`with: { type: 'json' }`)
+        expect(code).not.toContain('fetch(')
         expect(code).not.toContain(`import { readFile } from 'node:fs/promises';`)
         expect(code).not.toContain('#456')
     })

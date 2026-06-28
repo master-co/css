@@ -116,7 +116,7 @@ cssRuntime.observe()
 | `register()` | `this` | Registers this runtime in `CSSRuntime.instances`. |
 | `unregister()` | `this` | Removes this runtime from `CSSRuntime.instances`. |
 | `needsHydrationManifest()` | `boolean` | Returns `true` when an external hydration manifest should be loaded before observation. |
-| `loadHydrationManifest()` | `Promise<this>` | Reads inline hydration data or fetches the external hydration manifest URL from `style#master-css`. |
+| `loadHydrationManifest()` | `Promise<this>` | Reads inline hydration data or imports the external hydration manifest URL from `style#master-css`. |
 | `setHydrationManifest(manifest?)` | `this` | Sets the hydration manifest used by progressive hydration. |
 | `observe()` | `this` | Observes class attribute changes. |
 | `flushRetainedClassRules()` | `number` | Synchronously removes retained mutation rules that are no longer active and returns the removed class count. |

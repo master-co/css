@@ -12,7 +12,7 @@ const rootDir = resolve(__dirname, './fixtures/runtime/')
 setupNuxtTest({ rootDir })
 
 function getManifestPreloadHref(html: string) {
-    return html.match(/<link\b(?=[^>]*\brel="preload")(?=[^>]*\bas="fetch")(?=[^>]*\bhref="([^"]*master-css-manifest[^"]*\.json)")/i)?.[1]
+    return html.match(/<link\b(?=[^>]*\brel="modulepreload")(?=[^>]*\bas="json")(?=[^>]*\bhref="([^"]*master-css-manifest[^"]*\.json)")/i)?.[1]
 }
 
 it('does not pre-render style#master-css in runtime mode', async () => {

@@ -132,26 +132,18 @@ function startServer() {
             }
 
             if (path === '/manifest-consumer') {
-                const strategy = url.searchParams.get('strategy')
-                const preload = strategy === 'modulepreload-import'
-                    ? '<link rel="modulepreload" as="json" crossorigin href="/default-manifest.json">'
-                    : '<link rel="preload" as="fetch" type="application/json" crossorigin href="/default-manifest.json">'
-                const consumer = strategy === 'modulepreload-import'
-                    ? 'await import("/default-manifest.json", { with: { type: "json" } });'
-                    : 'await fetch("/default-manifest.json", { credentials: "same-origin" }).then((response) => response.json());'
-
                 response.writeHead(200, {
                     'content-type': 'text/html; charset=utf-8',
                     'cache-control': 'no-store'
                 })
                 response.end([
                     '<!doctype html><html hidden><head><meta charset="utf-8">',
-                    preload,
+                    '<link rel="modulepreload" as="json" crossorigin href="/default-manifest.json">',
                     '<script>',
                     'globalThis.benchmarkManifestLoad = async () => {',
                     'await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));',
                     'const startedAt = performance.now();',
-                    consumer,
+                    'await import("/default-manifest.json", { with: { type: "json" } });',
                     'return performance.now() - startedAt;',
                     '};',
                     '</script>',
@@ -239,10 +231,9 @@ async function createPage(browser, baseURL, bodyMarkup = '', options = {}) {
     return page
 }
 
-async function consumeManifest(browser, baseURL, strategy) {
+async function consumeManifest(browser, baseURL) {
     const page = await createBenchmarkPage(browser)
     const url = new URL('/manifest-consumer', baseURL)
-    url.searchParams.set('strategy', strategy)
     await page.goto(url.href)
     try {
         return await page.evaluate(() => globalThis.benchmarkManifestLoad())
@@ -391,12 +382,8 @@ try {
     const hydrationFixture = createHydrationFixture(hydrationClasses)
     const results = []
 
-    results.push(await runBenchmark('default manifest consume (fetch preload)', () => {
-        return consumeManifest(browser, server.url, 'fetch-preload')
-    }))
-
     results.push(await runBenchmark('default manifest consume (modulepreload)', () => {
-        return consumeManifest(browser, server.url, 'modulepreload-import')
+        return consumeManifest(browser, server.url)
     }))
 
     results.push(await runBenchmark('empty DOM startup (modulepreload)', async () => {

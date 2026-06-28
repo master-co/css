@@ -25,7 +25,7 @@ function toPublicAssetHref(root: string, file: string, base?: string) {
 function hasManifestPreloadLink(html: string, href: string) {
     const quotedHref = escapeRegExp(href)
     return new RegExp(
-        String.raw`<link\b(?=[^>]*\brel=(["'])preload\1)(?=[^>]*\bas=(["'])fetch\2)(?=[^>]*\bhref=(["'])${quotedHref}\3)[^>]*>`,
+        String.raw`<link\b(?=[^>]*\brel=(["'])modulepreload\1)(?=[^>]*\bas=(["'])json\2)(?=[^>]*\bhref=(["'])${quotedHref}\3)[^>]*>`,
         'i'
     ).test(html)
 }

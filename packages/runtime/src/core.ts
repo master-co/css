@@ -66,12 +66,16 @@ function findElementById(root: Document | ShadowRoot, id: string) {
             : undefined
 }
 
+function validateHydrationManifest(hydrationManifest: unknown): MasterCSSHydrationManifest | undefined {
+    return (hydrationManifest as MasterCSSHydrationManifest | undefined)?.version === 1
+        && Array.isArray((hydrationManifest as MasterCSSHydrationManifest | undefined)?.rules)
+        ? hydrationManifest as MasterCSSHydrationManifest
+        : undefined
+}
+
 function parseHydrationManifest(source: string): MasterCSSHydrationManifest | undefined {
     try {
-        const hydrationManifest = JSON.parse(source) as MasterCSSHydrationManifest
-        return hydrationManifest?.version === 1 && Array.isArray(hydrationManifest.rules)
-            ? hydrationManifest
-            : undefined
+        return validateHydrationManifest(JSON.parse(source))
     } catch (error) {
         if (process.env.NODE_ENV === 'development') {
             console.debug('Cannot parse Master CSS hydration manifest.', error)
@@ -92,6 +96,20 @@ function readExternalHydrationManifestSource(root: Document | ShadowRoot) {
     return HTMLStyleElementConstructor && styleElement instanceof HTMLStyleElementConstructor
         ? styleElement.getAttribute(MASTER_CSS_HYDRATION_MANIFEST_ATTR)
         : undefined
+}
+
+function resolveExternalHydrationManifestURL(root: Document | ShadowRoot, source: string) {
+    const ownerDocument = isDocumentRoot(root) ? root : root.ownerDocument
+    return new URL(source, ownerDocument.baseURI).href
+}
+
+async function importHydrationManifest(url: string): Promise<MasterCSSHydrationManifest | undefined> {
+    const loadHydrationManifestModule = globalThis.Function(
+        'specifier',
+        "return import(specifier, { with: { type: 'json' } })"
+    ) as (specifier: string) => Promise<{ default: unknown }>
+    const hydrationManifestModule = await loadHydrationManifestModule(url)
+    return validateHydrationManifest(hydrationManifestModule.default)
 }
 
 export default class CSSRuntime extends MasterCSS {
@@ -197,9 +215,7 @@ export default class CSSRuntime extends MasterCSS {
         if (!source) return this
 
         try {
-            const response = await fetch(source, { credentials: 'same-origin' })
-            if (!response.ok) return this
-            this.setHydrationManifest(parseHydrationManifest(await response.text()))
+            this.setHydrationManifest(await importHydrationManifest(resolveExternalHydrationManifestURL(this.root, source)))
         } catch (error) {
             if (process.env.NODE_ENV === 'development') {
                 console.debug('Cannot load Master CSS hydration manifest.', error)

@@ -161,13 +161,13 @@ The manifest tells the runtime how to interpret project-specific tokens, modes, 
 ### Project manifest delivery
 `virtual:master-css-manifest` is the project-level runtime input. It represents the compiled CSS entry graph, so it can include project tokens, modes, component definitions, utility definitions, variants, and managed keyframes.
 
-During development, integrations can serve that manifest as an inline virtual module. In production runtime builds, official integrations may emit it as a hashed JSON asset and make the virtual module fetch that asset before the runtime starts. Runtime-only pages need this JSON before they can interpret classes, so integrations that inject the runtime can also add:
+During development, integrations can serve that manifest as an inline virtual module. In production runtime builds, official integrations may emit it as a hashed JSON asset and make the virtual module import that asset before the runtime starts. Runtime-only pages need this JSON before they can interpret classes, so integrations that inject the runtime can also add:
 
 ```html
-<link rel="preload" as="fetch" type="application/json" crossorigin href="/assets/master-css-manifest.<hash>.json">
+<link rel="modulepreload" as="json" crossorigin href="/assets/master-css-manifest.<hash>.json">
 ```
 
-This does not change generated CSS or cascade order. It only moves discovery of the project manifest earlier so the runtime's later fetch can reuse the browser's preloaded response.
+This does not change generated CSS or cascade order. It only moves discovery of the project manifest earlier so the runtime's later import can reuse the browser's preloaded module.
 
 ---
 
@@ -184,7 +184,7 @@ Static and pre-rendered outputs use an external page hydration manifest by defau
 <style id="master-css" data-master-css-hydration-manifest="/_master-css/hydration/master-css-hydration.<hash>.json">...</style>
 ```
 
-This keeps the first-render CSS in the HTML while moving the runtime handoff data into a cacheable route-level JSON file. The browser can paint from `style#master-css` without waiting for the manifest request. When the runtime starts, it loads the manifest, adopts the existing native CSS rules, and continues observing dynamic classes. If the manifest is missing, invalid, fails to load, or no longer matches `style#master-css`, the runtime safely rebuilds the stylesheet from connected DOM classes.
+This keeps the first-render CSS in the HTML while moving the runtime handoff data into a cacheable route-level JSON file. The browser can paint from `style#master-css` without waiting for the manifest request. When the runtime starts, it imports the manifest as a JSON module, adopts the existing native CSS rules, and continues observing dynamic classes. If the manifest is missing, invalid, fails to import, or no longer matches `style#master-css`, the runtime safely rebuilds the stylesheet from connected DOM classes.
 
 Inline `script#master-css-hydration-manifest` is still supported for compatibility and for dynamic SSR responses that cannot write a stable public JSON asset. Pages with no generated rules do not need a hydration manifest pointer.
 
@@ -249,7 +249,7 @@ Master CSS hydration is the process that restores the server-side or build-time 
     <ModeImg src="/master-css-hydration.svg" alt='Master CSS Hydration' />
     <figcaption>Master CSS Hydration — Creates virtual rules from DOM style sheet</figcaption>
 </figure>
-The runtime reads explicit `hydrationManifest` options first. Without an explicit option, `CSSRuntime.create()` reads inline `script#master-css-hydration-manifest` for compatibility. When `runtime.needsHydrationManifest()` is true, call `await runtime.loadHydrationManifest()` before `runtime.observe()` to fetch the URL from `style#master-css[data-master-css-hydration-manifest]`.
+The runtime reads explicit `hydrationManifest` options first. Without an explicit option, `CSSRuntime.create()` reads inline `script#master-css-hydration-manifest` for compatibility. When `runtime.needsHydrationManifest()` is true, call `await runtime.loadHydrationManifest()` before `runtime.observe()` to import the URL from `style#master-css[data-master-css-hydration-manifest]`.
 
 Each manifest rule stores the class name, layer, priority, selector text, generated CSS text, and any referenced variables or animations. During hydration, the runtime compares that IR with the native rules already present in `style#master-css`. When they match, it attaches those native CSS rules to runtime-managed rule objects instead of regenerating them.
 
@@ -418,7 +418,7 @@ These CSS-first directives are manifest inputs. The compiler lowers tokens, mana
 | --- | --- | --- | --- |
 | CSS entry graph | Project stylesheets with `@master entry;` or `@import '@master/css'` | Compiler, integrations, static renderer | Authoring source for tokens, settings, variants, managed styles, source directives, and native CSS roots. |
 | `MasterCSSManifest` | `@master/css-compiler` and `@master/css-project` | Engine, runtime, server renderer, scanner, linting, language tooling | Shared IR that describes how class names become sorted CSS rules. |
-| `virtual:master-css-manifest` | Official build integrations | Application runtime code and framework providers | ESM module for the canonical project-level manifest discovered from the CSS entry graph. In production runtime builds, this module may fetch an emitted project manifest JSON asset. |
+| `virtual:master-css-manifest` | Official build integrations | Application runtime code and framework providers | ESM module for the canonical project-level manifest discovered from the CSS entry graph. In production runtime builds, this module may import an emitted project manifest JSON asset. |
 | Project manifest JSON asset | Official runtime integrations | `virtual:master-css-manifest` facade and the runtime | Cacheable JSON form of the project manifest. Pure runtime pages can preload it because the runtime needs it before interpreting project classes. |
 | `virtual:master-css-emitted-globals` | Static and build integrations | Runtime code | Counts variables and keyframes already emitted by the CSS entry output, so runtime rendering does not insert duplicate global CSS. |
 | Hydration manifest | Server rendering and progressive integrations | Runtime hydration | JSON rule IR with `version: 1`, used to map `style#master-css` back into runtime-managed rule objects. |

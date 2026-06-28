@@ -32,9 +32,8 @@ describe('ManifestPreloadPlugin', () => {
             {
                 tag: 'link',
                 attrs: {
-                    rel: 'preload',
-                    as: 'fetch',
-                    type: 'application/json',
+                    rel: 'modulepreload',
+                    as: 'json',
                     crossorigin: '',
                     href: '/assets/master-css-manifest.CzuVhIZV.json'
                 },
@@ -83,7 +82,7 @@ describe('ManifestPreloadPlugin', () => {
             }
         }
         const plugin = ManifestPreloadPlugin(context as never)
-        const html = '<html><head><link rel="preload" as="fetch" href="/assets/master-css-manifest.CzuVhIZV.json"></head></html>'
+        const html = '<html><head><link rel="modulepreload" as="json" href="/assets/master-css-manifest.CzuVhIZV.json"></head></html>'
         const result = (plugin.transformIndexHtml as any).handler.call(
             {},
             html,

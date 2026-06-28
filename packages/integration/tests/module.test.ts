@@ -53,14 +53,13 @@ describe('@master/css-integration module helpers', () => {
 
     it('builds manifest JSON preload link attributes and HTML', () => {
         expect(toManifestPreloadLinkAttrs('/assets/master-css-manifest.json')).toEqual({
-            rel: 'preload',
-            as: 'fetch',
-            type: 'application/json',
+            rel: 'modulepreload',
+            as: 'json',
             crossorigin: '',
             href: '/assets/master-css-manifest.json'
         })
         expect(toManifestPreloadLinkTag('/assets/master-css-manifest.json?x=1&name="main"')).toBe(
-            '<link rel="preload" as="fetch" type="application/json" crossorigin href="/assets/master-css-manifest.json?x=1&amp;name=&quot;main&quot;">'
+            '<link rel="modulepreload" as="json" crossorigin href="/assets/master-css-manifest.json?x=1&amp;name=&quot;main&quot;">'
         )
     })
 
@@ -70,5 +69,9 @@ describe('@master/css-integration module helpers', () => {
         expect(source).toContain(`join(process.cwd(), '.next', value.slice('/_next/'.length))`)
         expect(source).toContain(`join(process.cwd(), '.next', 'dev', value.slice('/_next/'.length))`)
         expect(source).toContain('for (const file of files)')
+        expect(source).toContain(`return import(specifier, options)`)
+        expect(source).toContain(`with: { type: 'json' }`)
+        expect(source).not.toContain('fetch(')
+        expect(source).not.toContain('readFile')
     })
 })

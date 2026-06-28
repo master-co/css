@@ -23,6 +23,16 @@ async function startCSSRuntimeAsync(
     await page.waitForFunction(() => !!globalThis.masterCSSRuntime)
 }
 
+async function gotoRuntimeOrigin(page: Page, loaderURL: string) {
+    const blankURL = new URL('/__master-css-runtime-e2e.html', loaderURL).href
+    await page.route(blankURL, route => route.fulfill({
+        status: 200,
+        contentType: 'text/html',
+        body: '<!doctype html><html><head></head><body></body></html>'
+    }))
+    await page.goto(blankURL)
+}
+
 async function waitForRuntimeRemovalFlush(page: Page) {
     await page.evaluate(() => new Promise<void>((resolve) => {
         requestAnimationFrame(() => {
@@ -626,16 +636,20 @@ test('progressive hydration uses hydration manifest and retains removed hydrated
     })
 })
 
-test('progressive hydration fetches an external style hydration manifest', async ({ page }) => {
+test('progressive hydration imports an external style hydration manifest', async ({ page }) => {
     const css = MasterCSS.create({ manifest: defaultManifest })
     css.add('fg:red-60')
     const hydrationManifest = createHydrationManifest(css)
     const loaderURL = await getRuntimeLoaderURL()
     const source = new URL('/_master-css/hydration/external.json', loaderURL).href
 
+    await gotoRuntimeOrigin(page, loaderURL)
     await page.route(source, route => route.fulfill({
         status: 200,
-        contentType: 'application/json',
+        headers: {
+            'content-type': 'application/json',
+            'access-control-allow-origin': '*'
+        },
         body: serializeMasterCSSHydrationManifest(hydrationManifest)
     }))
     await page.evaluate(({ attr, runtimeStyleId, source, text }) => {
@@ -664,7 +678,7 @@ test('progressive hydration fetches an external style hydration manifest', async
     expect(result.text).toContain('.fg\\:red-60')
 })
 
-test('runtime start does not fetch a hydration manifest without a runtime style source', async ({ page }) => {
+test('runtime start does not import a hydration manifest without a runtime style source', async ({ page }) => {
     let requests = 0
     const loaderURL = await getRuntimeLoaderURL()
     const source = new URL('/_master-css/hydration/unreferenced.json', loaderURL).href
@@ -696,10 +710,11 @@ test('runtime start does not fetch a hydration manifest without a runtime style 
     })
 })
 
-test('progressive hydration falls back when an external style hydration manifest fetch fails', async ({ page }) => {
+test('progressive hydration falls back when an external style hydration manifest import fails', async ({ page }) => {
     const loaderURL = await getRuntimeLoaderURL()
     const source = new URL('/_master-css/hydration/missing.json', loaderURL).href
 
+    await gotoRuntimeOrigin(page, loaderURL)
     await page.route(source, route => route.fulfill({
         status: 404,
         body: 'not found'

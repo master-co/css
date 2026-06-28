@@ -269,7 +269,7 @@ describe('MasterCSSPlugin (C1 race fix)', () => {
 
         expect(resolveData.request).toContain(path.join('node_modules', '.master-css', 'master-css-manifest.js'))
         expect((compiler.inputFileSystem._writeVirtualFile as any).mock.calls.at(-1)?.[2])
-            .toContain('await fetch(masterCSSManifestURL)')
+            .toContain(`await loadMasterCSSManifestModule(typeof masterCSSManifestURL === 'string' ? masterCSSManifestURL : masterCSSManifestURL.href)`)
         expect((compiler.inputFileSystem._writeVirtualFile as any).mock.calls.at(-1)?.[2])
             .not.toContain('font-weight-bold')
         expect([...(plugin as any).manifestJSONAssets.values()].at(-1))
@@ -320,7 +320,7 @@ describe('MasterCSSPlugin (C1 race fix)', () => {
         expect(resolveData.request).toContain('.manifest.js')
         expect(resolveData.fileDependencies.has(fixturePath)).toBe(true)
         expect((compiler.inputFileSystem._writeVirtualFile as any).mock.calls.at(-1)?.[2])
-            .toContain('await fetch(masterCSSManifestURL)')
+            .toContain(`await loadMasterCSSManifestModule(typeof masterCSSManifestURL === 'string' ? masterCSSManifestURL : masterCSSManifestURL.href)`)
         expect((compiler.inputFileSystem._writeVirtualFile as any).mock.calls.at(-1)?.[2])
             .not.toContain('#456')
         expect([...(plugin as any).manifestJSONAssets.values()].at(-1))

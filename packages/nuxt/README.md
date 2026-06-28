@@ -78,7 +78,7 @@ Import the default stylesheet from a global Vue style block:
 
 The default `progressive` mode integrates Nuxt SSR, SSG, ISR, and Hybrid rendering strategies through Nitro, automatically loading custom configuration.
 
-In `mode: 'runtime'`, the module publishes a stable manifest JSON asset and preloads it from the Nuxt document head when it also injects the client runtime plugin. `injectRuntime: false` disables both automatic runtime injection and the manifest JSON preload.
+In `mode: 'runtime'`, the module publishes a stable manifest JSON asset and modulepreloads it from the Nuxt document head when it also injects the client runtime plugin. `injectRuntime: false` disables both automatic runtime injection and the manifest JSON modulepreload.
 
 ## Options
 

@@ -122,7 +122,7 @@ export default defineConfig({
 
 This is the mode that best represents the Master CSS rendering model: render what can be known early, keep the runtime for what becomes known later.
 
-In progressive mode, the runtime fetches the page hydration manifest when it starts. Do not add a preload hint for that JSON file: the browser can already paint from `style#master-css`, and the manifest is only needed for the runtime to adopt those rules instead of rebuilding them.
+In progressive mode, the runtime imports the page hydration manifest as a JSON module when it starts. Do not add a preload hint for that JSON file: the browser can already paint from `style#master-css`, and the manifest is only needed for the runtime to adopt those rules instead of rebuilding them.
 
 ---
 

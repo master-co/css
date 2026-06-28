@@ -108,7 +108,7 @@ import emittedGlobals from 'virtual:master-css-emitted-globals'
 
 Use these virtual modules when application code should receive the same manifest graph and emittedGlobals global CSS state that the plugin discovered from the project CSS entry.
 
-In production `runtime` mode, the plugin preloads the emitted manifest JSON when it also injects the runtime script. `injectRuntime: false` disables both automatic runtime injection and the manifest JSON preload.
+In production `runtime` mode, the plugin modulepreloads the emitted manifest JSON module when it also injects the runtime script. `injectRuntime: false` disables both automatic runtime injection and the manifest JSON modulepreload.
 
 The browser runtime entry is available as `@master/css.vite/runtime` for official integrations that need to inject the same Vite-managed runtime startup module.
 

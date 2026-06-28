@@ -113,9 +113,8 @@ function toManifestAssetURL(fileName: string, base = MASTER_CSS_MANIFEST_ASSET_B
 
 function toManifestPreloadHeadLink(href: string) {
     return {
-        rel: 'preload',
-        as: 'fetch',
-        type: 'application/json',
+        rel: 'modulepreload',
+        as: 'json',
         crossorigin: '',
         href
     }

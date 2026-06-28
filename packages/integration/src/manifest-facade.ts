@@ -1,13 +1,11 @@
 export const MANIFEST_MODULE_FILE = 'master-css-manifest.js'
 export const MANIFEST_ASSET_FILE = 'master-css-manifest.json'
-export const MASTER_CSS_MANIFEST_PRELOAD_REL = 'preload'
-export const MASTER_CSS_MANIFEST_PRELOAD_AS = 'fetch'
-export const MASTER_CSS_MANIFEST_PRELOAD_TYPE = 'application/json'
+export const MASTER_CSS_MANIFEST_PRELOAD_REL = 'modulepreload'
+export const MASTER_CSS_MANIFEST_PRELOAD_AS = 'json'
 
 export interface ManifestPreloadLinkAttrs {
     rel: typeof MASTER_CSS_MANIFEST_PRELOAD_REL
     as: typeof MASTER_CSS_MANIFEST_PRELOAD_AS
-    type: typeof MASTER_CSS_MANIFEST_PRELOAD_TYPE
     crossorigin: ''
     href: string
 }
@@ -26,7 +24,6 @@ export function toManifestPreloadLinkAttrs(href: string): ManifestPreloadLinkAtt
     return {
         rel: MASTER_CSS_MANIFEST_PRELOAD_REL,
         as: MASTER_CSS_MANIFEST_PRELOAD_AS,
-        type: MASTER_CSS_MANIFEST_PRELOAD_TYPE,
         crossorigin: '',
         href
     }
@@ -38,7 +35,6 @@ export function toManifestPreloadLinkTag(href: string) {
         '<link',
         `rel="${attrs.rel}"`,
         `as="${attrs.as}"`,
-        `type="${attrs.type}"`,
         'crossorigin',
         `href="${escapeAttributeValue(attrs.href)}">`
     ].join(' ')
@@ -47,22 +43,21 @@ export function toManifestPreloadLinkTag(href: string) {
 export function toBrowserManifestFacadeModule(urlExpression: string) {
     return [
         `const masterCSSManifestURL = ${urlExpression};`,
-        `const masterCSSManifestResponse = await fetch(masterCSSManifestURL);`,
-        `if (!masterCSSManifestResponse.ok) {`,
-        `    throw new Error(\`Failed to load Master CSS manifest JSON: \${masterCSSManifestResponse.status} \${masterCSSManifestResponse.statusText}\`);`,
-        `}`,
-        `export default await masterCSSManifestResponse.json();`,
+        `const loadMasterCSSManifestModule = new Function('specifier', "return import(specifier, { with: { type: 'json' } })");`,
+        `const masterCSSManifestModule = await loadMasterCSSManifestModule(typeof masterCSSManifestURL === 'string' ? masterCSSManifestURL : masterCSSManifestURL.href);`,
+        `export default masterCSSManifestModule.default;`,
         ``
     ].join('\n')
 }
 
 export function toNodeManifestFacadeModule(urlExpression: string) {
     return [
-        `import { readFile } from 'node:fs/promises';`,
-        `import { fileURLToPath } from 'node:url';`,
+        `import { fileURLToPath, pathToFileURL } from 'node:url';`,
         ``,
         `const masterCSSManifestURL = ${urlExpression};`,
-        `export default JSON.parse(await readFile(fileURLToPath(new URL(masterCSSManifestURL, import.meta.url).href), 'utf8'));`,
+        `const masterCSSManifestFile = fileURLToPath(new URL(masterCSSManifestURL, import.meta.url));`,
+        `const masterCSSManifestModule = await import(pathToFileURL(masterCSSManifestFile).href, { with: { type: 'json' } });`,
+        `export default masterCSSManifestModule.default;`,
         ``
     ].join('\n')
 }
@@ -72,9 +67,8 @@ export function toUniversalManifestFacadeModule(urlExpression: string) {
         `const masterCSSManifestURL = ${urlExpression};`,
         ``,
         `async function loadMasterCSSManifestFromFile(url) {`,
-        `    const load = new Function('specifier', 'return import(specifier)');`,
-        `    const { readFile } = await load('node:fs/promises');`,
-        `    const { fileURLToPath } = await load('node:url');`,
+        `    const load = new Function('specifier', 'options', 'return import(specifier, options)');`,
+        `    const { fileURLToPath, pathToFileURL } = await load('node:url');`,
         `    const { join } = await load('node:path');`,
         `    const value = typeof url === 'string' ? url : url.href;`,
         `    const files = value.startsWith('/_next/')`,
@@ -86,7 +80,8 @@ export function toUniversalManifestFacadeModule(urlExpression: string) {
         `    let lastError;`,
         `    for (const file of files) {`,
         `        try {`,
-        `            return JSON.parse(await readFile(file, 'utf8'));`,
+        `            const manifestModule = await load(pathToFileURL(file).href, { with: { type: 'json' } });`,
+        `            return manifestModule.default;`,
         `        } catch (error) {`,
         `            lastError = error;`,
         `        }`,
@@ -94,17 +89,16 @@ export function toUniversalManifestFacadeModule(urlExpression: string) {
         `    throw lastError;`,
         `}`,
         ``,
-        `async function loadMasterCSSManifestFromFetch(url) {`,
-        `    const response = await fetch(url);`,
-        `    if (!response.ok) {`,
-        `        throw new Error(\`Failed to load Master CSS manifest JSON: \${response.status} \${response.statusText}\`);`,
-        `    }`,
-        `    return response.json();`,
+        `async function loadMasterCSSManifestFromImport(url) {`,
+        `    const specifier = typeof url === 'string' ? url : url.href;`,
+        `    const load = new Function('specifier', "return import(specifier, { with: { type: 'json' } })");`,
+        `    const manifestModule = await load(specifier);`,
+        `    return manifestModule.default;`,
         `}`,
         ``,
         `export default typeof window === 'undefined'`,
         `    ? await loadMasterCSSManifestFromFile(masterCSSManifestURL)`,
-        `    : await loadMasterCSSManifestFromFetch(masterCSSManifestURL);`,
+        `    : await loadMasterCSSManifestFromImport(masterCSSManifestURL);`,
         ``
     ].join('\n')
 }
