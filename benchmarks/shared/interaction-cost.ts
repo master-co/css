@@ -372,6 +372,7 @@ async function createInteractionCostReport(): Promise<BenchmarkReport> {
     const warmupRounds = getInteractionCostWarmupRounds()
     console.log('Launching Chromium for interaction cost benchmark')
     const browser = await chromium.launch({ headless: true })
+    const browserVersion = browser.version()
 
     try {
         for (const fixtureId of interactionFixtureIds) {
@@ -413,6 +414,10 @@ async function createInteractionCostReport(): Promise<BenchmarkReport> {
         suite: 'interaction-cost',
         generatedAt: new Date().toISOString(),
         environment: collectEnvironment(),
+        browser: {
+            name: 'Chromium',
+            version: browserVersion
+        },
         packages: await collectPackageVersions([
             '@master/css',
             '@master/css-cli',

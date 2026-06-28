@@ -17,6 +17,7 @@
         "bench:runtime-style-invalidation-diagnostics": "vitest bench runtime-style-invalidation-diagnostics",
         "bench:startup-diagnostics": "vitest bench startup-diagnostics",
         "snapshot:browser-css-cost": "node browser-css-cost/update-snapshot.mjs",
+        "snapshot:interaction-cost": "node interaction-cost/update-snapshot.mjs",
         "snapshot:master-delivery-modes": "node master-delivery-modes/update-snapshot.mjs",
         "snapshot:tailwind-static-comparison": "node tailwind-static-comparison/update-snapshot.mjs"
     },

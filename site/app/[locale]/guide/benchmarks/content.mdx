@@ -20,6 +20,12 @@ import {
     MasterDeliveryPayloadChart,
     MasterDeliveryRuntimeChart
 } from './components/MasterDeliveryModesBenchmark'
+import {
+    InteractionCostSummary,
+    InteractionCostTables,
+    InteractionPrimaryCharts,
+    InteractionRuntimeCharts
+} from './components/InteractionCostBenchmark'
 
 ## Overview [sr-only]
 Benchmarks make Master CSS output and delivery costs inspectable. They are useful for understanding tradeoffs, but they are not universal guarantees for every application.
@@ -38,7 +44,7 @@ This page is the public benchmark roadmap and results index for Master CSS. Curr
 | Internal | Build path diagnostics | Which Master CSS build, startup, extraction, and compiler substeps explain full command cost? |
 | Available | Browser CSS cost | How does CSS rule volume affect stylesheet parsing, style calculation, layout, paint, and long tasks with fixed DOM, and how does DOM scaling behave as a fixed-CSS control? |
 | Available | Master CSS delivery modes | What are the initial payload, browser load, runtime bootstrap, and progressive adoption costs of static, runtime, and progressive delivery? |
-| Internal | Interaction cost | How expensive are class toggles, rule generation, DOM insertion/removal, theme switches, and resize-triggered recalculation? |
+| Available | Interaction cost | How expensive are class toggles, rule generation, DOM insertion/removal, theme switches, and resize-triggered recalculation? |
 | Internal | Runtime mutation diagnostics | Which MutationObserver and ensure/delete rule substeps explain cleanup-cycle cost in runtime and progressive modes? |
 | Research | Tailwind CSS runtime-equivalent comparisons | Tailwind CSS is build-time-first, so runtime claims must be limited to comparable browser CSS costs. |
 | Research | Lighthouse and Web Vitals | Can local fixture runs produce stable enough FCP/LCP/CLS numbers to publish as secondary signals? |
@@ -230,6 +236,48 @@ These numbers measure initial local fixture loads only. They do not measure post
 
 ---
 
+## Current result: Interaction cost
+The interaction cost benchmark measures post-load user-facing changes in local Chromium: class toggles, runtime rule generation, DOM append/remove, theme switches, viewport resize, and repeated mutation cleanup.
+
+### Snapshot summary
+This curated snapshot is generated from `interaction-cost`. It uses `dynamic`, `dashboard`, and `stress-dom` fixtures across supported Master CSS static, runtime, progressive, and Tailwind CSS static variants.
+
+<figure>
+    <InteractionCostSummary />
+    <figcaption>Summary of the curated interaction cost snapshot.</figcaption>
+</figure>
+
+### Representative fixture
+The primary charts show the `dynamic` fixture because it covers class toggles, new-rule generation, DOM mutation, and cleanup-cycle behavior.
+
+#### Mutation readiness
+Mutation-ready timing is measured from the interaction start until the page completes the post-mutation settle frame and correctness assertions.
+
+<figure>
+    <InteractionPrimaryCharts />
+    <figcaption>Mutation-ready medians for primary `dynamic` fixture scenarios.</figcaption>
+</figure>
+
+#### Runtime update cost
+Runtime update charts isolate Master runtime/progressive stylesheet work during interaction scenarios.
+
+<figure>
+    <InteractionRuntimeCharts />
+    <figcaption>Runtime rule-update medians for Master runtime and progressive `dynamic` fixture scenarios.</figcaption>
+</figure>
+
+### Complete data table
+The full table keeps every supported fixture, mode, and scenario combination for verification.
+
+<figure>
+    <InteractionCostTables />
+    <figcaption>Complete interaction cost snapshot data for supported fixture, mode, and scenario combinations.</figcaption>
+</figure>
+
+These numbers measure local Chromium post-load fixture interactions only. They do not measure route transitions, HMR, dev workflow, CDN behavior, Firefox, WebKit, or public real-world application variance. Tailwind CSS static variants are browser controls for style/layout/paint work; they do not have a client-side runtime rule-generation equivalent.
+
+---
+
 ## Fixture matrix
 Future fixture-based suites should use equivalent UI output rather than identical class strings.
 
@@ -320,7 +368,7 @@ This suite uses local fixture pages, Playwright, and browser tracing with fixed 
 ---
 
 ## Interaction cost
-The internal interaction-cost suite now measures changes users can feel:
+The interaction-cost suite measures changes users can feel:
 
 - Toggle state classes on many elements.
 - Toggle classes that are already represented in CSS versus classes that require new rule generation.
@@ -329,7 +377,7 @@ The internal interaction-cost suite now measures changes users can feel:
 - Resize viewport and container-query layouts.
 - Repeat mutation cycles to catch cleanup and memory issues.
 
-For Master CSS runtime and progressive modes, the suite reports both DOM work and runtime stylesheet work. For static Tailwind CSS output, the comparable measurement is the browser's style/layout/paint cost after the DOM or class change. These results stay internal until the fixture coverage and repeated-sample variance are reviewed.
+For Master CSS runtime and progressive modes, the suite reports both DOM work and runtime stylesheet work. For static Tailwind CSS output, the comparable measurement is the browser's style/layout/paint cost after the DOM or class change.
 
 The internal runtime mutation diagnostics suite narrows the cleanup-cycle hotspot to `dynamic` and `stress-dom` fixtures in Master runtime and progressive modes. It records MutationObserver delivery counts, `ensureClassRules`/`deleteClassRules` call shape, temporary class cleanup, retained rule state, and Chromium trace timings so optimization work can target the confirmed source of cost.
 
@@ -344,7 +392,7 @@ The internal runtime mutation diagnostics suite narrows the cleanup-cycle hotspo
 | 4 | Available: publish CSS structure metrics from the curated static comparison snapshot. |
 | 5 | Available: implement and publish browser load cost suites with Playwright/browser tracing, correctness checks, and stable fixture pages. |
 | 6 | Available: implement and publish Master CSS static, runtime, and progressive delivery benchmarks with local Chromium payload/load/adoption measurements. |
-| 7 | Internal: implement interaction cost suites with Playwright/browser tracing, correctness checks, and stable fixture pages. |
+| 7 | Available: implement and publish interaction cost suites with Playwright/browser tracing, correctness checks, and stable fixture pages. |
 | 8 | Internal: diagnose runtime mutation cleanup hotspots before optimizing runtime/progressive interaction behavior. |
 | 9 | Continue publishing curated result tables on this page while keeping planned/research suites visible until measured. |
 
