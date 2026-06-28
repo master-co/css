@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test'
+import { test, expect, type Page } from '@playwright/test'
 import { dirname } from 'path'
 import { fileURLToPath } from 'url'
 import init from './init'
@@ -28,6 +28,16 @@ const modes = ['light', 'dark']
 test.beforeEach(async ({ page }) => {
     await init(page, '', { variables, modes, modeTrigger: 'class' })
 })
+
+async function waitForRuntimeRemovalFlush(page: Page) {
+    await page.evaluate(() => new Promise<void>((resolve) => {
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => resolve())
+            })
+        })
+    }))
+}
 
 test('expects the variable output', async ({ page }) => {
     expectLayers(
@@ -72,55 +82,55 @@ test('expects the variable output', async ({ page }) => {
     expect(text).toContain('.fg\\:second{color:var(--color-second)}')
     expect(text).toMatch(/\.light,:root\{[^}]*--color-sixth:#666666[^}]*\}/)
 
-    text = await page.evaluate(async () => {
+    await page.evaluate(() => {
         document.getElementById('mp')?.classList.remove('bg:second')
-        await new Promise(resolve => setTimeout(resolve, 0))
-        return globalThis.masterCSSRuntime.text
     })
+    await waitForRuntimeRemovalFlush(page)
+    text = await page.evaluate(() => globalThis.masterCSSRuntime.text)
     expect(text).toMatch(/\.dark\{[^}]*--color-second:#444444[^}]*\}/)
     expect(text).toMatch(/\.light,:root\{[^}]*--color-second:#555555[^}]*\}/)
 
-    text = await page.evaluate(async () => {
+    await page.evaluate(() => {
         document.getElementById('mp')?.classList.remove('b:third')
-        await new Promise(resolve => setTimeout(resolve, 0))
-        return globalThis.masterCSSRuntime.text
     })
+    await waitForRuntimeRemovalFlush(page)
+    text = await page.evaluate(() => globalThis.masterCSSRuntime.text)
     expect(text).not.toMatch(/:root\{[^}]*--color-third:#666666[^}]*\}/)
     expect(text).not.toMatch(/\.light\{[^}]*--color-third:#777777[^}]*\}/)
 
-    text = await page.evaluate(async () => {
+    await page.evaluate(() => {
         document.getElementById('mp')?.classList.remove('{outline:fourth;accent-color:fifth}')
-        await new Promise(resolve => setTimeout(resolve, 0))
-        return globalThis.masterCSSRuntime.text
     })
+    await waitForRuntimeRemovalFlush(page)
+    text = await page.evaluate(() => globalThis.masterCSSRuntime.text)
     expect(text).not.toMatch(/:root\{[^}]*--color-fourth:#888888[^}]*\}/)
     expect(text).not.toMatch(/\.dark\{[^}]*--color-fourth:#999999[^}]*\}/)
     expect(text).not.toMatch(/\.light, :root\{[^}]*--color-fourth:#000000[^}]*\}/)
     expect(text).not.toMatch(/\.dark\{[^}]*--color-fifth:#022222[^}]*\}/)
     expect(text).not.toMatch(/\.light, :root\{[^}]*--color-fifth:#033333[^}]*\}/)
 
-    text = await page.evaluate(async () => {
+    await page.evaluate(() => {
         document.getElementById('mp')?.classList.remove('fg:second')
-        await new Promise(resolve => setTimeout(resolve, 0))
-        return globalThis.masterCSSRuntime.text
     })
+    await waitForRuntimeRemovalFlush(page)
+    text = await page.evaluate(() => globalThis.masterCSSRuntime.text)
     expect(text).not.toMatch(/\.dark\{[^}]*--color-second:#444444[^}]*\}/)
     expect(text).not.toMatch(/\.light,:root\{[^}]*--color-second:#555555[^}]*\}/)
 
-    text = await page.evaluate(async () => {
+    await page.evaluate(() => {
         document.getElementById('mp')?.classList.remove('bg:first')
-        await new Promise(resolve => setTimeout(resolve, 0))
-        return globalThis.masterCSSRuntime.text
     })
+    await waitForRuntimeRemovalFlush(page)
+    text = await page.evaluate(() => globalThis.masterCSSRuntime.text)
     expect(text).not.toMatch(/:root\{[^}]*--color-first:#111111[^}]*\}/)
     expect(text).not.toMatch(/\.dark\{[^}]*--color-first:#222222[^}]*\}/)
     expect(text).not.toMatch(/\.light, :root\{[^}]*--color-first:#333333[^}]*\}/)
 
-    text = await page.evaluate(async () => {
+    await page.evaluate(() => {
         document.getElementById('mp')?.classList.remove('accent-color:sixth')
-        await new Promise(resolve => setTimeout(resolve, 0))
-        return globalThis.masterCSSRuntime.text
     })
+    await waitForRuntimeRemovalFlush(page)
+    text = await page.evaluate(() => globalThis.masterCSSRuntime.text)
     expectLayers(text, {})
 })
 

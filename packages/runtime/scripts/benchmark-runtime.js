@@ -71,6 +71,16 @@ function parseArgs(values) {
     return parsed
 }
 
+async function waitForRuntimeRemovalFlush(page) {
+    await page.evaluate(() => new Promise((resolve) => {
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => resolve())
+            })
+        })
+    }))
+}
+
 function createHydrationFixture(classNames) {
     const css = MasterCSS.create({
         manifest: defaultManifest,
@@ -348,6 +358,7 @@ try {
                 await new Promise((resolveMutation) => setTimeout(resolveMutation, 0))
                 return performance.now() - startedAt
             }, { html: mutationMarkup })
+            await waitForRuntimeRemovalFlush(page)
             const state = await page.evaluate(() => ({
                 classes: globalThis.masterCSSRuntime.classCounts.size,
                 utilities: globalThis.masterCSSRuntime.classUtilities.size

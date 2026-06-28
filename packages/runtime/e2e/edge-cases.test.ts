@@ -23,6 +23,16 @@ async function startCSSRuntimeAsync(
     await page.waitForFunction(() => !!globalThis.masterCSSRuntime)
 }
 
+async function waitForRuntimeRemovalFlush(page: Page) {
+    await page.evaluate(() => new Promise<void>((resolve) => {
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => resolve())
+            })
+        })
+    }))
+}
+
 test('disconnect clears counts and observe rescans the current DOM', async ({ page }) => {
     await init(page)
     await page.evaluate(async () => {
@@ -61,6 +71,150 @@ test('disconnect clears counts and observe rescans the current DOM', async ({ pa
     expect(reconnected.text).toContain(':root{--font-weight-bold:700}')
     expect(reconnected.text).toContain('.font\\:bold{font-weight:var(--font-weight-bold)}')
     expect(reconnected.text).not.toContain('.block{display:block}')
+})
+
+test('mutation removals keep counts immediate and flush CSSOM after settle', async ({ page }) => {
+    await init(page)
+    await page.evaluate(async () => {
+        document.body.innerHTML = '<p id="target" class="fg:red-60"></p>'
+        await new Promise(resolve => setTimeout(resolve, 0))
+    })
+
+    const duringFlushWindow = await page.evaluate(async () => {
+        document.getElementById('target')?.remove()
+        await new Promise(resolve => setTimeout(resolve, 0))
+        return {
+            counts: Object.fromEntries(globalThis.masterCSSRuntime.classCounts),
+            hasClassUtility: globalThis.masterCSSRuntime.classUtilities.has('fg:red-60'),
+            text: globalThis.masterCSSRuntime.text
+        }
+    })
+    expect(duringFlushWindow.counts).toEqual({})
+    expect(duringFlushWindow.hasClassUtility).toBe(true)
+    expect(duringFlushWindow.text).toContain('.fg\\:red-60')
+
+    await waitForRuntimeRemovalFlush(page)
+    const afterFlush = await page.evaluate(() => ({
+        counts: Object.fromEntries(globalThis.masterCSSRuntime.classCounts),
+        hasClassUtility: globalThis.masterCSSRuntime.classUtilities.has('fg:red-60'),
+        text: globalThis.masterCSSRuntime.text
+    }))
+    expect(afterFlush).toEqual({
+        counts: {},
+        hasClassUtility: false,
+        text: ''
+    })
+})
+
+test('mutation removals are canceled when a class returns before flush', async ({ page }) => {
+    await init(page)
+    await page.evaluate(async () => {
+        document.body.innerHTML = '<p id="target" class="fg:red-60"></p>'
+        await new Promise(resolve => setTimeout(resolve, 0))
+    })
+
+    const duringFlushWindow = await page.evaluate(async () => {
+        const target = document.getElementById('target')!
+        target.remove()
+        await new Promise(resolve => setTimeout(resolve, 0))
+        document.body.append(target)
+        await new Promise(resolve => setTimeout(resolve, 0))
+        return {
+            counts: Object.fromEntries(globalThis.masterCSSRuntime.classCounts),
+            hasClassUtility: globalThis.masterCSSRuntime.classUtilities.has('fg:red-60')
+        }
+    })
+    expect(duringFlushWindow).toEqual({
+        counts: {
+            'fg:red-60': 1
+        },
+        hasClassUtility: true
+    })
+
+    await waitForRuntimeRemovalFlush(page)
+    const afterFlush = await page.evaluate(() => ({
+        counts: Object.fromEntries(globalThis.masterCSSRuntime.classCounts),
+        hasClassUtility: globalThis.masterCSSRuntime.classUtilities.has('fg:red-60'),
+        text: globalThis.masterCSSRuntime.text
+    }))
+    expect(afterFlush.counts).toEqual({
+        'fg:red-60': 1
+    })
+    expect(afterFlush.hasClassUtility).toBe(true)
+    expect(afterFlush.text).toContain('.fg\\:red-60')
+})
+
+test('direct add and remove stay synchronous', async ({ page }) => {
+    await init(page)
+
+    const result = await page.evaluate(() => {
+        globalThis.masterCSSRuntime.add('fg:red-60')
+        const added = {
+            hasClassUtility: globalThis.masterCSSRuntime.classUtilities.has('fg:red-60'),
+            text: globalThis.masterCSSRuntime.text
+        }
+        globalThis.masterCSSRuntime.remove('fg:red-60')
+        return {
+            added,
+            removed: {
+                hasClassUtility: globalThis.masterCSSRuntime.classUtilities.has('fg:red-60'),
+                text: globalThis.masterCSSRuntime.text
+            }
+        }
+    })
+
+    expect(result.added.hasClassUtility).toBe(true)
+    expect(result.added.text).toContain('.fg\\:red-60')
+    expect(result.removed).toEqual({
+        hasClassUtility: false,
+        text: ''
+    })
+})
+
+test('disconnect and destroy clear pending mutation removals', async ({ page }) => {
+    await init(page)
+    const disconnected = await page.evaluate(async () => {
+        document.body.innerHTML = '<p id="target" class="fg:red-60"></p>'
+        await new Promise(resolve => setTimeout(resolve, 0))
+        document.getElementById('target')?.remove()
+        await new Promise(resolve => setTimeout(resolve, 0))
+        globalThis.masterCSSRuntime.disconnect()
+        return {
+            counts: Object.fromEntries(globalThis.masterCSSRuntime.classCounts),
+            utilities: globalThis.masterCSSRuntime.classUtilities.size,
+            hasStyle: !!document.head.querySelector('style#master-css')
+        }
+    })
+    expect(disconnected).toEqual({
+        counts: {},
+        utilities: 0,
+        hasStyle: false
+    })
+    await waitForRuntimeRemovalFlush(page)
+    expect(await page.evaluate(() => globalThis.masterCSSRuntime.classUtilities.size)).toBe(0)
+
+    await page.evaluate(() => globalThis.masterCSSRuntime.observe())
+    const destroyed = await page.evaluate(async () => {
+        document.body.innerHTML = '<p id="target" class="fg:red-60"></p>'
+        await new Promise(resolve => setTimeout(resolve, 0))
+        document.getElementById('target')?.remove()
+        await new Promise(resolve => setTimeout(resolve, 0))
+        const runtime = globalThis.masterCSSRuntime
+        runtime.destroy()
+        return {
+            registered: globalThis.MasterCSSRuntime.instances.get(document) === runtime,
+            globalRuntime: globalThis.masterCSSRuntime,
+            counts: Object.fromEntries(runtime.classCounts),
+            utilities: runtime.classUtilities.size
+        }
+    })
+    expect(destroyed).toEqual({
+        registered: false,
+        globalRuntime: undefined,
+        counts: {},
+        utilities: 0
+    })
+    await waitForRuntimeRemovalFlush(page)
 })
 
 test('shadow roots maintain isolated runtime state and style nodes', async ({ page }) => {
@@ -214,7 +368,15 @@ test('progressive hydration uses hydration manifest and removes hydrated classes
             utilityRules: globalThis.masterCSSRuntime.utilitiesLayer.rules.map(({ name }) => name)
         }
     })
-    expect(removed).toEqual({
+    expect(removed.utilityRules).toEqual(['fg:red-60'])
+
+    await waitForRuntimeRemovalFlush(page)
+    const afterFlush = await page.evaluate(() => ({
+        text: globalThis.masterCSSRuntime.text,
+        counts: Object.fromEntries(globalThis.masterCSSRuntime.themeLayer.tokenCounts),
+        utilityRules: globalThis.masterCSSRuntime.utilitiesLayer.rules.map(({ name }) => name)
+    }))
+    expect(afterFlush).toEqual({
         text: '',
         counts: {},
         utilityRules: []
@@ -463,14 +625,14 @@ test('removes shared alias variable dependencies when classes disappear', async 
         }
     })
 
-    const afterOneRemoval = await page.evaluate(async () => {
+    await page.evaluate(() => {
         document.querySelector('p')?.classList.remove('fg:brand')
-        await new Promise(resolve => setTimeout(resolve, 0))
-        return {
-            text: globalThis.masterCSSRuntime.themeLayer.text,
-            counts: Object.fromEntries(globalThis.masterCSSRuntime.themeLayer.tokenCounts)
-        }
     })
+    await waitForRuntimeRemovalFlush(page)
+    const afterOneRemoval = await page.evaluate(() => ({
+        text: globalThis.masterCSSRuntime.themeLayer.text,
+        counts: Object.fromEntries(globalThis.masterCSSRuntime.themeLayer.tokenCounts)
+    }))
     expect(afterOneRemoval).toEqual({
         text: '@layer theme{:root{--brand:var(--surface);--surface:#ffffff}}',
         counts: {
@@ -479,15 +641,15 @@ test('removes shared alias variable dependencies when classes disappear', async 
         }
     })
 
-    const afterAllRemoved = await page.evaluate(async () => {
+    await page.evaluate(() => {
         document.querySelector('p')?.classList.remove('color:brand')
-        await new Promise(resolve => setTimeout(resolve, 0))
-        return {
-            text: globalThis.masterCSSRuntime.themeLayer.text,
-            counts: Object.fromEntries(globalThis.masterCSSRuntime.themeLayer.tokenCounts),
-            nativeAttached: !!globalThis.masterCSSRuntime.themeLayer.native?.parentStyleSheet
-        }
     })
+    await waitForRuntimeRemovalFlush(page)
+    const afterAllRemoved = await page.evaluate(() => ({
+        text: globalThis.masterCSSRuntime.themeLayer.text,
+        counts: Object.fromEntries(globalThis.masterCSSRuntime.themeLayer.tokenCounts),
+        nativeAttached: !!globalThis.masterCSSRuntime.themeLayer.native?.parentStyleSheet
+    }))
     expect(afterAllRemoved).toEqual({
         text: '',
         counts: {},

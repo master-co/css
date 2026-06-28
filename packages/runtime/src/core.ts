@@ -86,6 +86,9 @@ export default class CSSRuntime extends MasterCSS {
     readonly utilitiesLayer = new RuntimeUtilityLayer('utilities', this)
     readonly classCounts = new Map<string, number>()
     private readonly classTracker = new RuntimeClassTracker()
+    private readonly pendingRemovedClassNames = new Set<string>()
+    private pendingRemovalFrame: number | undefined
+    private pendingRemovalFlushFrame: number | undefined
     private hydrationFailureReason?: string
     observer?: MutationObserver
     progressive = false
@@ -245,6 +248,68 @@ export default class CSSRuntime extends MasterCSS {
         connectedNames.forEach(cls => this.add(cls))
     }
 
+    private getAnimationFrameWindow() {
+        const ownerDocument = isDocumentRoot(this.root)
+            ? this.root
+            : this.root.ownerDocument
+        return ownerDocument?.defaultView || globalThis
+    }
+
+    private cancelPendingRemovalFrames() {
+        const view = this.getAnimationFrameWindow()
+        if (this.pendingRemovalFrame !== undefined) {
+            view.cancelAnimationFrame(this.pendingRemovalFrame)
+            this.pendingRemovalFrame = undefined
+        }
+        if (this.pendingRemovalFlushFrame !== undefined) {
+            view.cancelAnimationFrame(this.pendingRemovalFlushFrame)
+            this.pendingRemovalFlushFrame = undefined
+        }
+    }
+
+    private clearPendingRemovedClassNames() {
+        this.pendingRemovedClassNames.clear()
+        this.cancelPendingRemovalFrames()
+    }
+
+    private cancelPendingRemovedClassNames(classNames: Iterable<string>) {
+        if (!this.pendingRemovedClassNames.size) return
+        for (const className of classNames) {
+            this.pendingRemovedClassNames.delete(className)
+        }
+        if (!this.pendingRemovedClassNames.size) this.cancelPendingRemovalFrames()
+    }
+
+    private schedulePendingRemovalFlush() {
+        if (!this.pendingRemovedClassNames.size) return
+        if (this.pendingRemovalFrame !== undefined || this.pendingRemovalFlushFrame !== undefined) return
+        const view = this.getAnimationFrameWindow()
+        this.pendingRemovalFrame = view.requestAnimationFrame(() => {
+            this.pendingRemovalFrame = undefined
+            this.pendingRemovalFlushFrame = view.requestAnimationFrame(() => {
+                this.pendingRemovalFlushFrame = undefined
+                this.flushPendingRemovedClassNames()
+            })
+        })
+    }
+
+    private queueRemovedClassNames(classNames: Iterable<string>) {
+        for (const className of classNames) {
+            if (!this.classCounts.has(className)) this.pendingRemovedClassNames.add(className)
+        }
+        this.schedulePendingRemovalFlush()
+    }
+
+    private flushPendingRemovedClassNames() {
+        if (!this.pendingRemovedClassNames.size) return
+        const classNames: string[] = []
+        for (const className of this.pendingRemovedClassNames) {
+            if (!this.classCounts.has(className)) classNames.push(className)
+        }
+        this.pendingRemovedClassNames.clear()
+        if (classNames.length) super.remove(...classNames)
+    }
+
     private handleMutationRecords(records: MutationRecord[]) {
         const deltaCounts = this.classTracker.collectMutations(records)
         const addedClassNames: string[] = []
@@ -263,11 +328,21 @@ export default class CSSRuntime extends MasterCSS {
         }
 
         if (addedClassNames.length) this.add(...addedClassNames)
-        if (removedClassNames.length) this.remove(...removedClassNames)
+        if (removedClassNames.length) this.queueRemovedClassNames(removedClassNames)
 
         if (process.env.NODE_ENV === 'development') {
             debugRuntimeMutation(records, deltaCounts, this)
         }
+    }
+
+    add(...classNames: string[]) {
+        this.cancelPendingRemovedClassNames(classNames)
+        return super.add(...classNames)
+    }
+
+    remove(...classNames: string[]) {
+        this.cancelPendingRemovedClassNames(classNames)
+        super.remove(...classNames)
     }
 
     private startMutationObserver() {
@@ -636,6 +711,7 @@ export default class CSSRuntime extends MasterCSS {
     }
 
     disconnect() {
+        this.clearPendingRemovedClassNames()
         if (!this.observing) return
         if (this.observer) {
             this.observer.disconnect()
@@ -658,6 +734,7 @@ export default class CSSRuntime extends MasterCSS {
     }
 
     refresh(manifest: MasterCSSManifest = this.manifest) {
+        this.clearPendingRemovedClassNames()
         if (!this.observing || !this.style!.sheet) return this
         const cssRules = this.style!.sheet.cssRules
         for (let i = cssRules.length - 1; i >= 0; i--) {

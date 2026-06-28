@@ -8,7 +8,18 @@ function expectAnimation(cssText: string, name: string, declarations: string[]) 
     })
 }
 
+async function waitForRuntimeRemovalFlush(page: Page) {
+    await page.evaluate(() => new Promise<void>((resolve) => {
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => resolve())
+            })
+        })
+    }))
+}
+
 async function expectNoAnimation(page: Page, name: string) {
+    await waitForRuntimeRemovalFlush(page)
     expect(await page.evaluate(() => globalThis.masterCSSRuntime.text)).not.toContain(`@keyframes ${name}{`)
 }
 
@@ -136,6 +147,7 @@ test('expects the animation output', async ({ page }) => {
         const p = document.getElementById('mp')
         p?.classList.remove('animation:zoom|1s')
     })
+    await waitForRuntimeRemovalFlush(page)
     expect(await page.evaluate(() => Object.fromEntries(globalThis.masterCSSRuntime.animationsNonLayer.tokenCounts))).toEqual({ zoom: 1 })
     expectAnimation(await page.evaluate(() => globalThis.masterCSSRuntime.text), 'zoom', ['transform:scale(0)', 'transform:none'])
     await page.evaluate(() => {
@@ -143,6 +155,7 @@ test('expects the animation output', async ({ page }) => {
         p?.classList.remove('{animation:zoom|1s;f:16}')
     })
 
+    await waitForRuntimeRemovalFlush(page)
     expect(await page.evaluate(() => Object.fromEntries(globalThis.masterCSSRuntime.animationsNonLayer.tokenCounts))).toEqual({})
     await expectNoAnimation(page, 'zoom')
 })
