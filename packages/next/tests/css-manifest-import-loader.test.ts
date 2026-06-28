@@ -13,7 +13,10 @@ function createFixtureDir() {
 
 function readVirtualManifestSource(projectDir: string) {
     const manifestDir = join(projectDir, 'node_modules/.master-css')
-    const [filename] = readdirSync(manifestDir).filter((entry) => entry.endsWith('.json'))
+    const filename = readdirSync(manifestDir).find((entry) => entry.endsWith('.manifest.json'))
+    if (!filename) {
+        throw new Error(`Expected generated CSS manifest asset in ${manifestDir}.`)
+    }
     return readFileSync(join(manifestDir, filename), 'utf-8')
 }
 
