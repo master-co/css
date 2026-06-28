@@ -9,7 +9,11 @@ const RUNTIME_ASSET_BASE_URL = 'http://master-css-runtime.test'
 const RUNTIME_SCRIPT_URL = `${RUNTIME_ASSET_BASE_URL}/css-runtime@rc`
 const DEFAULT_MANIFEST_URL = `${RUNTIME_ASSET_BASE_URL}/css-runtime@rc/default-manifest.json`
 
-async function routeRuntimeAssets(page: Page) {
+type RuntimeAssetRouteOptions = {
+    onDefaultManifestRequest?: () => void
+}
+
+async function routeRuntimeAssets(page: Page, options: RuntimeAssetRouteOptions = {}) {
     await page.route(RUNTIME_SCRIPT_URL, (route) => {
         route.fulfill({
             contentType: 'text/javascript',
@@ -17,6 +21,7 @@ async function routeRuntimeAssets(page: Page) {
         })
     })
     await page.route(DEFAULT_MANIFEST_URL, (route) => {
+        options.onDefaultManifestRequest?.()
         route.fulfill({
             contentType: 'application/json',
             headers: {
@@ -38,6 +43,38 @@ test('uses split bundled preset manifest', async ({ page }) => {
 
     expect(await page.evaluate(() => globalThis.masterCSSRuntime.variables.get('font-weight-bold'))).toBeDefined()
     expect(await page.evaluate(() => globalThis.masterCSSRuntime.variables.get('color-white'))).toBeDefined()
+    expect(await page.evaluate(() => globalThis.masterCSSRuntime.manifest.version)).toBe(1)
+})
+
+test('uses modulepreloaded default manifest', async ({ page }) => {
+    let defaultManifestRequests = 0
+    const consoleMessages: string[] = []
+
+    await routeRuntimeAssets(page, {
+        onDefaultManifestRequest: () => {
+            defaultManifestRequests++
+        }
+    })
+    page.on('console', (message) => {
+        if (message.type() === 'warning' || message.type() === 'error') {
+            consoleMessages.push(message.text())
+        }
+    })
+
+    await page.setContent(`
+        <!doctype html>
+        <html hidden>
+        <head>
+            <link rel="modulepreload" as="json" crossorigin href="${DEFAULT_MANIFEST_URL}">
+            <script src="${RUNTIME_SCRIPT_URL}"></script>
+        </head>
+        <body></body>
+        </html>
+    `)
+    await page.waitForFunction(() => !!globalThis.masterCSSRuntime?.observing)
+
+    expect(defaultManifestRequests).toBe(1)
+    expect(consoleMessages).toEqual([])
     expect(await page.evaluate(() => globalThis.masterCSSRuntime.manifest.version)).toBe(1)
 })
 

@@ -3,7 +3,7 @@ import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import { createServer } from 'node:http'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { firefox } from '@playwright/test'
+import { chromium, firefox, webkit } from '@playwright/test'
 
 const packageRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const distRoot = resolve(packageRoot, 'dist')
@@ -16,6 +16,8 @@ const scanClassCount = Number(process.env.MASTER_CSS_BENCH_SCAN_CLASSES || 1000)
 const mutationClassCount = Number(process.env.MASTER_CSS_BENCH_MUTATION_CLASSES || 1000)
 const hydrationClassCount = Number(process.env.MASTER_CSS_BENCH_HYDRATION_CLASSES || 250)
 const outputFile = args.get('output') || process.env.MASTER_CSS_BENCH_OUTPUT || process.env.MASTER_CSS_BENCH_JSON
+const browserName = args.get('browser') || process.env.MASTER_CSS_BENCH_BROWSER || 'chromium'
+const cpuThrottleRate = Number(args.get('cpu-throttle') || process.env.MASTER_CSS_BENCH_CPU_THROTTLE || 1)
 const MASTER_CSS_RUNTIME_STYLE_ID = 'master-css'
 
 const nativeProperties = [
@@ -39,6 +41,21 @@ if (!existsSync(globalBundleFile) || !existsSync(defaultManifestFile)) {
 
 const { MasterCSS, createHydrationManifest } = await import('@master/css-engine')
 const defaultManifest = (await import('@master/css-preset/default-manifest.json', { with: { type: 'json' } })).default
+const browserTypes = {
+    chromium,
+    firefox,
+    webkit
+}
+
+if (!Object.hasOwn(browserTypes, browserName)) {
+    console.error(`Unsupported runtime benchmark browser "${browserName}". Use chromium, firefox, or webkit.`)
+    process.exit(1)
+}
+
+if (cpuThrottleRate !== 1 && browserName !== 'chromium') {
+    console.error('MASTER_CSS_BENCH_CPU_THROTTLE requires the chromium benchmark browser.')
+    process.exit(1)
+}
 
 function createClassNames(count) {
     return Array.from({ length: count }, (_, index) => {
@@ -108,9 +125,38 @@ function startServer() {
                 })
                 response.end([
                     '<!doctype html><html hidden><head><meta charset="utf-8">',
-                    manifestPreload ? '<link rel="preload" as="fetch" type="application/json" crossorigin href="/default-manifest.json">' : '',
+                    manifestPreload ? '<link rel="modulepreload" as="json" crossorigin href="/default-manifest.json">' : '',
                     '</head><body></body></html>'
                 ].join(''))
+                return
+            }
+
+            if (path === '/manifest-consumer') {
+                const strategy = url.searchParams.get('strategy')
+                const preload = strategy === 'modulepreload-import'
+                    ? '<link rel="modulepreload" as="json" crossorigin href="/default-manifest.json">'
+                    : '<link rel="preload" as="fetch" type="application/json" crossorigin href="/default-manifest.json">'
+                const consumer = strategy === 'modulepreload-import'
+                    ? 'await import("/default-manifest.json", { with: { type: "json" } });'
+                    : 'await fetch("/default-manifest.json", { credentials: "same-origin" }).then((response) => response.json());'
+
+                response.writeHead(200, {
+                    'content-type': 'text/html; charset=utf-8',
+                    'cache-control': 'no-store'
+                })
+                response.end([
+                    '<!doctype html><html hidden><head><meta charset="utf-8">',
+                    preload,
+                    '<script>',
+                    'globalThis.benchmarkManifestLoad = async () => {',
+                    'await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));',
+                    'const startedAt = performance.now();',
+                    consumer,
+                    'return performance.now() - startedAt;',
+                    '};',
+                    '</script>',
+                    '</head><body></body></html>'
+                ].join('\n'))
                 return
             }
 
@@ -126,7 +172,8 @@ function startServer() {
             if (path === '/default-manifest.json') {
                 response.writeHead(200, {
                     'content-type': 'application/json; charset=utf-8',
-                    'cache-control': 'no-store'
+                    'cache-control': 'no-store',
+                    'access-control-allow-origin': '*'
                 })
                 response.end(await readFile(defaultManifestFile))
                 return
@@ -152,6 +199,15 @@ function startServer() {
     })
 }
 
+async function createBenchmarkPage(browser) {
+    const page = await browser.newPage()
+    if (cpuThrottleRate !== 1) {
+        const client = await page.context().newCDPSession(page)
+        await client.send('Emulation.setCPUThrottlingRate', { rate: cpuThrottleRate })
+    }
+    return page
+}
+
 async function loadRuntime(page, scriptURL) {
     return page.evaluate(async (url) => {
         const startedAt = performance.now()
@@ -171,7 +227,7 @@ async function loadRuntime(page, scriptURL) {
 }
 
 async function createPage(browser, baseURL, bodyMarkup = '', options = {}) {
-    const page = await browser.newPage()
+    const page = await createBenchmarkPage(browser)
     const url = new URL(baseURL)
     if (options.preloadManifest) url.searchParams.set('preloadManifest', 'true')
     await page.goto(url.href)
@@ -181,6 +237,18 @@ async function createPage(browser, baseURL, bodyMarkup = '', options = {}) {
         }, bodyMarkup)
     }
     return page
+}
+
+async function consumeManifest(browser, baseURL, strategy) {
+    const page = await createBenchmarkPage(browser)
+    const url = new URL('/manifest-consumer', baseURL)
+    url.searchParams.set('strategy', strategy)
+    await page.goto(url.href)
+    try {
+        return await page.evaluate(() => globalThis.benchmarkManifestLoad())
+    } finally {
+        await page.close()
+    }
 }
 
 async function createObservedPage(browser, baseURL, scriptURL, bodyMarkup = '', options = {}) {
@@ -237,11 +305,13 @@ function summarize(samples) {
     const sorted = [...samples].sort((left, right) => left - right)
     const sum = samples.reduce((total, value) => total + value, 0)
     const middle = Math.floor(sorted.length / 2)
+    const p90Index = Math.min(sorted.length - 1, Math.ceil(sorted.length * 0.9) - 1)
     return {
         max: sorted[sorted.length - 1],
         mean: sum / samples.length,
         median: sorted.length % 2 ? sorted[middle] : (sorted[middle - 1] + sorted[middle]) / 2,
-        min: sorted[0]
+        min: sorted[0],
+        p90: sorted[p90Index]
     }
 }
 
@@ -251,7 +321,8 @@ function formatMs(value) {
 
 function printResults(results) {
     console.log('Master CSS runtime browser benchmark')
-    console.log('Browser: Firefox via Playwright')
+    console.log(`Browser: ${browserName} via Playwright`)
+    console.log(`CPU throttle: ${cpuThrottleRate}x`)
     console.log(`Rounds: ${rounds} measured, ${warmupRounds} warmup`)
     console.log(`Class counts: scan=${scanClassCount}, mutation=${mutationClassCount}, hydration=${hydrationClassCount}`)
     console.log('')
@@ -260,6 +331,7 @@ function printResults(results) {
         console.log([
             result.name.padEnd(48),
             `median ${formatMs(result.median)}`.padEnd(18),
+            `p90 ${formatMs(result.p90)}`.padEnd(15),
             `mean ${formatMs(result.mean)}`.padEnd(16),
             `min ${formatMs(result.min)}`.padEnd(15),
             `max ${formatMs(result.max)}`
@@ -279,12 +351,13 @@ async function writeResults(results, browserVersion) {
         tool: 'playwright',
         generatedAt: new Date().toISOString(),
         browser: {
-            name: 'firefox',
+            name: browserName,
             version: browserVersion
         },
         config: {
             rounds,
             warmupRounds,
+            cpuThrottleRate,
             scanClassCount,
             mutationClassCount,
             hydrationClassCount
@@ -296,7 +369,8 @@ async function writeResults(results, browserVersion) {
             min: result.min,
             max: result.max,
             mean: result.mean,
-            median: result.median
+            median: result.median,
+            p90: result.p90
         }))
     }, null, 2)}\n`)
 }
@@ -305,7 +379,7 @@ const server = await startServer()
 let browser
 
 try {
-    browser = await firefox.launch()
+    browser = await browserTypes[browserName].launch()
     const browserVersion = browser.version()
 
     const scriptURL = `${server.url}/global.min.js`
@@ -316,6 +390,23 @@ try {
     const mutationMarkup = createClassMarkup(mutationClasses)
     const hydrationFixture = createHydrationFixture(hydrationClasses)
     const results = []
+
+    results.push(await runBenchmark('default manifest consume (fetch preload)', () => {
+        return consumeManifest(browser, server.url, 'fetch-preload')
+    }))
+
+    results.push(await runBenchmark('default manifest consume (modulepreload)', () => {
+        return consumeManifest(browser, server.url, 'modulepreload-import')
+    }))
+
+    results.push(await runBenchmark('empty DOM startup (modulepreload)', async () => {
+        const page = await createPage(browser, server.url, '', { preloadManifest: true })
+        try {
+            return await loadRuntime(page, scriptURL)
+        } finally {
+            await page.close()
+        }
+    }))
 
     results.push(await runBenchmark('initial DOM scan + unique class add (no preload)', async () => {
         const page = await createPage(browser, server.url, scanMarkup)

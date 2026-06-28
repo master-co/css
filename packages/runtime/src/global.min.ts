@@ -17,11 +17,12 @@ function resolveDefaultManifestURL(scriptURL: string) {
 
 async function loadDefaultManifest(scriptURL: string): Promise<MasterCSSManifest> {
     const defaultManifestURL = resolveDefaultManifestURL(scriptURL)
-    const response = await fetch(defaultManifestURL, { credentials: 'same-origin' })
-    if (!response.ok) {
-        throw new Error(`Cannot load Master CSS default manifest from ${defaultManifestURL.href}.`)
+    try {
+        const defaultManifestModule = await import(defaultManifestURL.href, { with: { type: 'json' } }) as { default: MasterCSSManifest }
+        return defaultManifestModule.default
+    } catch (error) {
+        throw new Error(`Cannot load Master CSS default manifest from ${defaultManifestURL.href}.`, { cause: error })
     }
-    return await response.json() as MasterCSSManifest
 }
 
 const currentScript = document.currentScript as HTMLScriptElement | null

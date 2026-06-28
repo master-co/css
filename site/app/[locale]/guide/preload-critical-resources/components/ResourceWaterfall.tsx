@@ -34,7 +34,7 @@ const ticks = [0, 25, 50, 75, 100]
 const scenarios: WaterfallScenario[] = [
     {
         title: 'Without preload',
-        summary: 'The runtime script starts late, then fetches the manifest.',
+        summary: 'The runtime script starts late, then imports the manifest.',
         metric: { label: 'FCP', position: 98 },
         rows: [
             {
@@ -57,7 +57,7 @@ const scenarios: WaterfallScenario[] = [
     },
     {
         title: 'With preload',
-        summary: 'The runtime script and manifest start early, so first paint can move earlier.',
+        summary: 'The runtime script and manifest module start early, so first paint can move earlier.',
         metric: { label: 'FCP', position: 60 },
         rows: [
             {
