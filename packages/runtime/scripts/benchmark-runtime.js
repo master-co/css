@@ -359,11 +359,13 @@ try {
                 return performance.now() - startedAt
             }, { html: mutationMarkup })
             await waitForRuntimeRemovalFlush(page)
+            await page.evaluate(() => globalThis.masterCSSRuntime.flushRetainedClassRules())
             const state = await page.evaluate(() => ({
                 classes: globalThis.masterCSSRuntime.classCounts.size,
-                utilities: globalThis.masterCSSRuntime.classUtilities.size
+                utilities: globalThis.masterCSSRuntime.classUtilities.size,
+                retained: globalThis.masterCSSRuntime.retainedClassNames.size
             }))
-            if (state.classes || state.utilities) {
+            if (state.classes || state.utilities || state.retained) {
                 throw new Error(`Expected mutation cleanup to empty runtime state, got ${JSON.stringify(state)}.`)
             }
             return elapsed

@@ -110,16 +110,22 @@ cssRuntime.observe()
 | `cssRuntime.host` | `Element` | Root host, usually `root.host` or `document.documentElement`. |
 | `cssRuntime.container` | `HTMLElement \| ShadowRoot` | Container for `style#master-css`. |
 | `cssRuntime.observing` | `boolean` | `true` after `observe()`, `false` after `disconnect()`. |
+| `cssRuntime.classCounts` | `Map<string, number>` | Active DOM class usage counts. This is the source of truth for observed DOM usage. |
+| `cssRuntime.classUtilities` | `Map<string, Utility[]>` | Generated rule cache. It can include retained mutation rules that are no longer active in the DOM. |
+| `cssRuntime.retainedClassNames` | `Set<string>` | Mutation-removed class names whose generated rules are temporarily retained in CSSOM. |
 | `register()` | `this` | Registers this runtime in `CSSRuntime.instances`. |
 | `unregister()` | `this` | Removes this runtime from `CSSRuntime.instances`. |
 | `needsHydrationManifest()` | `boolean` | Returns `true` when an external hydration manifest should be loaded before observation. |
 | `loadHydrationManifest()` | `Promise<this>` | Reads inline hydration data or fetches the external hydration manifest URL from `style#master-css`. |
 | `setHydrationManifest(manifest?)` | `this` | Sets the hydration manifest used by progressive hydration. |
 | `observe()` | `this` | Observes class attribute changes. |
+| `flushRetainedClassRules()` | `number` | Synchronously removes retained mutation rules that are no longer active and returns the removed class count. |
 | `disconnect()` | `this \| undefined` | Cancels observation. |
 | `refresh(manifest?)` | `this` | Refreshes with a complete `MasterCSSManifest`. |
 | `reset()` | `this` | Clears rules and styles. |
 | `destroy()` | `this` | Removes this runtime from `CSSRuntime.instances`. |
+
+MutationObserver removals update `classCounts` immediately, but generated CSS rules may be retained briefly to avoid CSSOM deletion during interaction-heavy updates. Re-adding a retained class reuses the existing generated rule. Direct `cssRuntime.remove(...)`, `refresh()`, `disconnect()`, and `destroy()` still clean synchronously.
 
 ### Progressive Hydration
 

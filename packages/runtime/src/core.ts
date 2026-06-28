@@ -26,6 +26,25 @@ import {
 } from './debuggers'
 
 const MASTER_CSS_RUNTIME_STYLE_SELECTOR = `style#${MASTER_CSS_RUNTIME_STYLE_ID}`
+const RETAINED_CLASS_RULE_MIN_AGE_MS = 1000
+const RETAINED_CLASS_RULE_IDLE_TIMEOUT_MS = 5000
+const RETAINED_CLASS_RULE_CLEANUP_BATCH_SIZE = 64
+const RETAINED_CLASS_RULE_SOFT_TARGET = 128
+const RETAINED_CLASS_RULE_HARD_LIMIT = 512
+const RETAINED_CLASS_RULE_HARD_RAW_BYTES = 256 * 1024
+
+interface RetainedClassRule {
+    retainedAt: number
+    rawBytes: number
+    ruleCount: number
+}
+
+interface RuntimeCleanupWindow {
+    requestIdleCallback?: (callback: () => void, options?: { timeout?: number }) => number
+    cancelIdleCallback?: (handle: number) => void
+    setTimeout: typeof globalThis.setTimeout
+    clearTimeout: typeof globalThis.clearTimeout
+}
 
 export interface CSSRuntimeCreateOptions {
     manifest: MasterCSSManifest
@@ -85,10 +104,14 @@ export default class CSSRuntime extends MasterCSS {
     readonly componentsLayer = new RuntimeUtilityLayer('components', this)
     readonly utilitiesLayer = new RuntimeUtilityLayer('utilities', this)
     readonly classCounts = new Map<string, number>()
+    readonly retainedClassNames = new Set<string>()
     private readonly classTracker = new RuntimeClassTracker()
     private readonly pendingRemovedClassNames = new Set<string>()
+    private readonly retainedClassRules = new Map<string, RetainedClassRule>()
     private pendingRemovalFrame: number | undefined
     private pendingRemovalFlushFrame: number | undefined
+    private retainedCleanupIdleHandle: number | undefined
+    private retainedCleanupTimeoutHandle: ReturnType<typeof globalThis.setTimeout> | undefined
     private hydrationFailureReason?: string
     observer?: MutationObserver
     progressive = false
@@ -272,12 +295,43 @@ export default class CSSRuntime extends MasterCSS {
         this.cancelPendingRemovalFrames()
     }
 
+    private getCleanupWindow() {
+        return this.getAnimationFrameWindow() as RuntimeCleanupWindow
+    }
+
+    private cancelRetainedClassRuleCleanup() {
+        const view = this.getCleanupWindow()
+        if (this.retainedCleanupIdleHandle !== undefined) {
+            view.cancelIdleCallback?.(this.retainedCleanupIdleHandle)
+            this.retainedCleanupIdleHandle = undefined
+        }
+        if (this.retainedCleanupTimeoutHandle !== undefined) {
+            view.clearTimeout(this.retainedCleanupTimeoutHandle)
+            this.retainedCleanupTimeoutHandle = undefined
+        }
+    }
+
+    private clearRetainedClassRules() {
+        this.retainedClassNames.clear()
+        this.retainedClassRules.clear()
+        this.cancelRetainedClassRuleCleanup()
+    }
+
     private cancelPendingRemovedClassNames(classNames: Iterable<string>) {
         if (!this.pendingRemovedClassNames.size) return
         for (const className of classNames) {
             this.pendingRemovedClassNames.delete(className)
         }
         if (!this.pendingRemovedClassNames.size) this.cancelPendingRemovalFrames()
+    }
+
+    private cancelRetainedClassNames(classNames: Iterable<string>) {
+        if (!this.retainedClassNames.size) return
+        for (const className of classNames) {
+            this.retainedClassNames.delete(className)
+            this.retainedClassRules.delete(className)
+        }
+        if (!this.retainedClassNames.size) this.cancelRetainedClassRuleCleanup()
     }
 
     private schedulePendingRemovalFlush() {
@@ -300,6 +354,129 @@ export default class CSSRuntime extends MasterCSS {
         this.schedulePendingRemovalFlush()
     }
 
+    private estimateRetainedClassRule(className: string): RetainedClassRule | undefined {
+        const rules = this.classUtilities.get(className)
+        if (!rules?.length) return
+        let rawBytes = 0
+        let ruleCount = 0
+        for (const rule of rules) {
+            const nodes = (rule as { nodes?: { text: string }[] }).nodes
+            if (nodes?.length) {
+                for (const node of nodes) {
+                    rawBytes += node.text.length
+                    ruleCount++
+                }
+            } else {
+                rawBytes += rule.text.length
+                ruleCount++
+            }
+        }
+        return {
+            retainedAt: Date.now(),
+            rawBytes,
+            ruleCount
+        }
+    }
+
+    private getRetainedClassRuleRawBytes() {
+        let rawBytes = 0
+        for (const retainedRule of this.retainedClassRules.values()) {
+            rawBytes += retainedRule.rawBytes
+        }
+        return rawBytes
+    }
+
+    private exceedsRetainedClassRuleHardLimits() {
+        return this.retainedClassNames.size > RETAINED_CLASS_RULE_HARD_LIMIT
+            || this.getRetainedClassRuleRawBytes() > RETAINED_CLASS_RULE_HARD_RAW_BYTES
+    }
+
+    private scheduleRetainedClassRuleCleanup() {
+        if (!this.retainedClassNames.size) return
+        if (this.retainedCleanupIdleHandle !== undefined || this.retainedCleanupTimeoutHandle !== undefined) return
+        const view = this.getCleanupWindow()
+        const hardLimitExceeded = this.exceedsRetainedClassRuleHardLimits()
+        const cleanup = () => {
+            this.retainedCleanupIdleHandle = undefined
+            this.retainedCleanupTimeoutHandle = undefined
+            this.cleanupRetainedClassRules()
+        }
+        const timeout = hardLimitExceeded ? 0 : RETAINED_CLASS_RULE_IDLE_TIMEOUT_MS
+        if (view.requestIdleCallback) {
+            this.retainedCleanupIdleHandle = view.requestIdleCallback(cleanup, { timeout })
+        } else {
+            this.retainedCleanupTimeoutHandle = view.setTimeout(cleanup, timeout)
+        }
+    }
+
+    private retainRemovedClassRules(classNames: string[]) {
+        for (const className of classNames) {
+            if (this.classCounts.has(className)) continue
+            const retainedRule = this.retainedClassRules.get(className) || this.estimateRetainedClassRule(className)
+            if (!retainedRule) continue
+            this.retainedClassNames.add(className)
+            this.retainedClassRules.set(className, retainedRule)
+        }
+        this.scheduleRetainedClassRuleCleanup()
+    }
+
+    private getRetainedClassRuleCleanupCandidates(force = false) {
+        const now = Date.now()
+        const hardLimitExceeded = this.exceedsRetainedClassRuleHardLimits()
+        const entries: [string, RetainedClassRule][] = []
+
+        for (const className of this.retainedClassNames) {
+            if (this.classCounts.has(className)) {
+                this.retainedClassNames.delete(className)
+                this.retainedClassRules.delete(className)
+                continue
+            }
+            const retainedRule = this.retainedClassRules.get(className)
+            if (!retainedRule) {
+                this.retainedClassNames.delete(className)
+                continue
+            }
+            const oldEnough = now - retainedRule.retainedAt >= RETAINED_CLASS_RULE_MIN_AGE_MS
+            if (force || hardLimitExceeded || (oldEnough && this.retainedClassNames.size > RETAINED_CLASS_RULE_SOFT_TARGET)) {
+                entries.push([className, retainedRule])
+            }
+        }
+
+        entries.sort(([, a], [, b]) => a.retainedAt - b.retainedAt)
+        return entries
+            .slice(0, force ? entries.length : RETAINED_CLASS_RULE_CLEANUP_BATCH_SIZE)
+            .map(([className]) => className)
+    }
+
+    private removeRetainedClassRules(classNames: string[]) {
+        const removedClassNames: string[] = []
+        for (const className of classNames) {
+            if (!this.retainedClassNames.has(className)) continue
+            this.retainedClassNames.delete(className)
+            this.retainedClassRules.delete(className)
+            if (!this.classCounts.has(className)) {
+                removedClassNames.push(className)
+            }
+        }
+        if (removedClassNames.length) super.remove(...removedClassNames)
+        return removedClassNames.length
+    }
+
+    private cleanupRetainedClassRules(force = false) {
+        const removedCount = this.removeRetainedClassRules(this.getRetainedClassRuleCleanupCandidates(force))
+        if (this.retainedClassNames.size && (force || this.retainedClassNames.size > RETAINED_CLASS_RULE_SOFT_TARGET || this.exceedsRetainedClassRuleHardLimits())) {
+            this.scheduleRetainedClassRuleCleanup()
+        }
+        return removedCount
+    }
+
+    flushRetainedClassRules() {
+        this.cancelRetainedClassRuleCleanup()
+        const removedCount = this.cleanupRetainedClassRules(true)
+        if (this.retainedClassNames.size) this.scheduleRetainedClassRuleCleanup()
+        return removedCount
+    }
+
     private flushPendingRemovedClassNames() {
         if (!this.pendingRemovedClassNames.size) return
         const classNames: string[] = []
@@ -307,7 +484,7 @@ export default class CSSRuntime extends MasterCSS {
             if (!this.classCounts.has(className)) classNames.push(className)
         }
         this.pendingRemovedClassNames.clear()
-        if (classNames.length) super.remove(...classNames)
+        if (classNames.length) this.retainRemovedClassRules(classNames)
     }
 
     private handleMutationRecords(records: MutationRecord[]) {
@@ -337,11 +514,13 @@ export default class CSSRuntime extends MasterCSS {
 
     add(...classNames: string[]) {
         this.cancelPendingRemovedClassNames(classNames)
+        this.cancelRetainedClassNames(classNames)
         return super.add(...classNames)
     }
 
     remove(...classNames: string[]) {
         this.cancelPendingRemovedClassNames(classNames)
+        this.cancelRetainedClassNames(classNames)
         super.remove(...classNames)
     }
 
@@ -712,6 +891,7 @@ export default class CSSRuntime extends MasterCSS {
 
     disconnect() {
         this.clearPendingRemovedClassNames()
+        this.clearRetainedClassRules()
         if (!this.observing) return
         if (this.observer) {
             this.observer.disconnect()
@@ -735,6 +915,7 @@ export default class CSSRuntime extends MasterCSS {
 
     refresh(manifest: MasterCSSManifest = this.manifest) {
         this.clearPendingRemovedClassNames()
+        this.clearRetainedClassRules()
         if (!this.observing || !this.style!.sheet) return this
         const cssRules = this.style!.sheet.cssRules
         for (let i = cssRules.length - 1; i >= 0; i--) {

@@ -25,7 +25,27 @@ test('383', async ({ page }) => {
         document.body.innerHTML = ``
     })
     await waitForRuntimeRemovalFlush(page)
-    expect(await page.evaluate(() => globalThis.masterCSSRuntime.utilitiesLayer?.native?.parentStyleSheet)).toBeNull()
+    const retained = await page.evaluate(() => ({
+        retainedClassNames: [...globalThis.masterCSSRuntime.retainedClassNames],
+        hasClassUtility: globalThis.masterCSSRuntime.classUtilities.has('text-center'),
+        utilitiesStyleSheet: globalThis.masterCSSRuntime.utilitiesLayer?.native?.parentStyleSheet
+    }))
+    expect(retained.retainedClassNames).toEqual(['text-center'])
+    expect(retained.hasClassUtility).toBe(true)
+    expect(retained.utilitiesStyleSheet).toBeDefined()
+
+    const afterForcedCleanup = await page.evaluate(() => ({
+        removedCount: globalThis.masterCSSRuntime.flushRetainedClassRules(),
+        retainedClassNames: [...globalThis.masterCSSRuntime.retainedClassNames],
+        hasClassUtility: globalThis.masterCSSRuntime.classUtilities.has('text-center'),
+        utilitiesStyleSheet: globalThis.masterCSSRuntime.utilitiesLayer?.native?.parentStyleSheet
+    }))
+    expect(afterForcedCleanup).toEqual({
+        removedCount: 1,
+        retainedClassNames: [],
+        hasClassUtility: false,
+        utilitiesStyleSheet: null
+    })
     await page.evaluate(() => {
         document.body.innerHTML = `
             <div class="font:bold fg:red"></div>

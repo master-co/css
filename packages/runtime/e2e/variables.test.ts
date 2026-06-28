@@ -39,6 +39,10 @@ async function waitForRuntimeRemovalFlush(page: Page) {
     }))
 }
 
+async function flushRetainedClassRules(page: Page) {
+    await page.evaluate(() => globalThis.masterCSSRuntime.flushRetainedClassRules())
+}
+
 test('expects the variable output', async ({ page }) => {
     expectLayers(
         await page.evaluate(async () => {
@@ -86,6 +90,7 @@ test('expects the variable output', async ({ page }) => {
         document.getElementById('mp')?.classList.remove('bg:second')
     })
     await waitForRuntimeRemovalFlush(page)
+    await flushRetainedClassRules(page)
     text = await page.evaluate(() => globalThis.masterCSSRuntime.text)
     expect(text).toMatch(/\.dark\{[^}]*--color-second:#444444[^}]*\}/)
     expect(text).toMatch(/\.light,:root\{[^}]*--color-second:#555555[^}]*\}/)
@@ -94,6 +99,7 @@ test('expects the variable output', async ({ page }) => {
         document.getElementById('mp')?.classList.remove('b:third')
     })
     await waitForRuntimeRemovalFlush(page)
+    await flushRetainedClassRules(page)
     text = await page.evaluate(() => globalThis.masterCSSRuntime.text)
     expect(text).not.toMatch(/:root\{[^}]*--color-third:#666666[^}]*\}/)
     expect(text).not.toMatch(/\.light\{[^}]*--color-third:#777777[^}]*\}/)
@@ -102,6 +108,7 @@ test('expects the variable output', async ({ page }) => {
         document.getElementById('mp')?.classList.remove('{outline:fourth;accent-color:fifth}')
     })
     await waitForRuntimeRemovalFlush(page)
+    await flushRetainedClassRules(page)
     text = await page.evaluate(() => globalThis.masterCSSRuntime.text)
     expect(text).not.toMatch(/:root\{[^}]*--color-fourth:#888888[^}]*\}/)
     expect(text).not.toMatch(/\.dark\{[^}]*--color-fourth:#999999[^}]*\}/)
@@ -113,6 +120,7 @@ test('expects the variable output', async ({ page }) => {
         document.getElementById('mp')?.classList.remove('fg:second')
     })
     await waitForRuntimeRemovalFlush(page)
+    await flushRetainedClassRules(page)
     text = await page.evaluate(() => globalThis.masterCSSRuntime.text)
     expect(text).not.toMatch(/\.dark\{[^}]*--color-second:#444444[^}]*\}/)
     expect(text).not.toMatch(/\.light,:root\{[^}]*--color-second:#555555[^}]*\}/)
@@ -121,6 +129,7 @@ test('expects the variable output', async ({ page }) => {
         document.getElementById('mp')?.classList.remove('bg:first')
     })
     await waitForRuntimeRemovalFlush(page)
+    await flushRetainedClassRules(page)
     text = await page.evaluate(() => globalThis.masterCSSRuntime.text)
     expect(text).not.toMatch(/:root\{[^}]*--color-first:#111111[^}]*\}/)
     expect(text).not.toMatch(/\.dark\{[^}]*--color-first:#222222[^}]*\}/)
@@ -130,6 +139,7 @@ test('expects the variable output', async ({ page }) => {
         document.getElementById('mp')?.classList.remove('accent-color:sixth')
     })
     await waitForRuntimeRemovalFlush(page)
+    await flushRetainedClassRules(page)
     text = await page.evaluate(() => globalThis.masterCSSRuntime.text)
     expectLayers(text, {})
 })

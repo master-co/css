@@ -97,6 +97,12 @@ export interface InteractionResult {
     details: Record<string, unknown>
 }
 
+export interface RetainedRuleState {
+    retainedClassNames: string[]
+    retainedClassRuleCount: number
+    retainedClassRawBytes: number
+}
+
 export interface RuntimeState {
     runtimeAvailable: boolean
     progressiveAdopted: number
@@ -105,6 +111,9 @@ export interface RuntimeState {
     runtimeStyleText: string
     classCounts: Record<string, number>
     classUtilityNames: string[]
+    retainedClassNames: string[]
+    retainedClassRuleCount: number
+    retainedClassRawBytes: number
     domNodeCount: number
 }
 
@@ -266,7 +275,7 @@ export const interactionCostMetrics = [
         id: 'cleanup-valid',
         label: 'Cleanup valid',
         unit: 'count',
-        description: '1 when temporary DOM/runtime classes were cleaned up after scenarios that remove nodes.'
+        description: '1 when temporary DOM nodes are removed and temporary classes are absent from runtime classCounts after scenarios that remove nodes.'
     },
     {
         id: 'progressive-adopted',
@@ -862,7 +871,7 @@ function renderInteractionScript(options: {
         '            }',
         '            const state = readRuntimeState();',
         '            const tempClassNames = config.classes.temp;',
-        '            const runtimeClean = !state.runtimeAvailable || tempClassNames.every((className) => !state.classCounts[className] && !state.classUtilityNames.includes(className));',
+        '            const runtimeClean = !state.runtimeAvailable || tempClassNames.every((className) => !state.classCounts[className]);',
         '            const cleanupValid = scratch.children.length === 0 && runtimeClean;',
         '            return {',
         '                affectedElementCount: config.appendCount * config.cleanupCycles,',
@@ -934,7 +943,7 @@ function renderInteractionScript(options: {
         '        function finalizeCleanupCycleDetails(config, details, strategyFlushResult) {',
         '            const state = readRuntimeState();',
         '            const tempClassNames = config.classes.temp;',
-        '            const runtimeCleanAfterFlush = !state.runtimeAvailable || tempClassNames.every((className) => !state.classCounts[className] && !state.classUtilityNames.includes(className));',
+        '            const runtimeCleanAfterFlush = !state.runtimeAvailable || tempClassNames.every((className) => !state.classCounts[className]);',
         '            const cleanupValidAfterFlush = getScratch().children.length === 0 && runtimeCleanAfterFlush;',
         '            return {',
         '                ...details,',
@@ -953,6 +962,8 @@ function renderInteractionScript(options: {
         '        function readRuntimeState() {',
         '            const runtime = globalThis.masterCSSRuntime;',
         '            const runtimeStyleText = runtime?.style?.textContent || runtime?.text || "";',
+        '            const retainedClassNames = [...(runtime?.retainedClassNames || [])].map(String);',
+        '            const retainedRuleState = readRetainedRuleState(runtime, retainedClassNames);',
         '            return {',
         '                runtimeAvailable: Boolean(runtime),',
         '                progressiveAdopted: runtime?.progressive ? 1 : 0,',
@@ -961,8 +972,29 @@ function renderInteractionScript(options: {
         '                runtimeStyleText,',
         '                classCounts: Object.fromEntries(runtime?.classCounts || []),',
         '                classUtilityNames: [...(runtime?.classUtilities?.keys?.() || [])].map(String),',
+        '                retainedClassNames,',
+        '                retainedClassRuleCount: retainedRuleState.retainedClassRuleCount,',
+        '                retainedClassRawBytes: retainedRuleState.retainedClassRawBytes,',
         '                domNodeCount: document.getElementsByTagName("*").length',
         '            };',
+        '        }',
+        '        function readRetainedRuleState(runtime, retainedClassNames) {',
+        '            let retainedClassRuleCount = 0;',
+        '            let retainedClassRawBytes = 0;',
+        '            for (const className of retainedClassNames) {',
+        '                const rules = runtime?.classUtilities?.get?.(className) || [];',
+        '                for (const rule of rules) {',
+        '                    const nodes = Array.isArray(rule?.nodes) ? rule.nodes : null;',
+        '                    if (nodes?.length) {',
+        '                        retainedClassRuleCount += nodes.length;',
+        '                        for (const node of nodes) retainedClassRawBytes += new TextEncoder().encode(node.text || "").length;',
+        '                    } else {',
+        '                        retainedClassRuleCount++;',
+        '                        retainedClassRawBytes += new TextEncoder().encode(rule?.text || "").length;',
+        '                    }',
+        '                }',
+        '            }',
+        '            return { retainedClassRuleCount, retainedClassRawBytes };',
         '        }',
         '        function readRuntimeMutationDiagnostics() {',
         '            const metrics = window.__interactionMetrics || {};',
@@ -1047,6 +1079,28 @@ async function traceInteraction(page: Page, scenarioId: InteractionScenarioId) {
     await client.send('Tracing.end')
     await tracingComplete
     await client.detach()
+
+    if (scenarioId === 'mutation-cleanup-cycle') {
+        const forcedRetainedCleanup = await page.evaluate(() => {
+            const runtime = globalThis.masterCSSRuntime as {
+                flushRetainedClassRules?: () => number
+                retainedClassNames?: Set<string>
+            } | undefined
+            const beforeRetainedClassCount = runtime?.retainedClassNames?.size || 0
+            const startedAt = performance.now()
+            const removedClassCount = runtime?.flushRetainedClassRules?.() || 0
+            return {
+                beforeRetainedClassCount,
+                removedClassCount,
+                durationMs: performance.now() - startedAt,
+                afterRetainedClassCount: runtime?.retainedClassNames?.size || 0
+            }
+        })
+        result.details = {
+            ...result.details,
+            forcedRetainedCleanup
+        }
+    }
 
     return {
         events,

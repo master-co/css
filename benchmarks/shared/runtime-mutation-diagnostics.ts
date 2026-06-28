@@ -98,7 +98,12 @@ interface RuntimeMutationDiagnosticResult {
     beforeState: RuntimeState
     afterTraceState: RuntimeState
     afterFlushState: RuntimeState
+    afterForcedCleanupState: RuntimeState
     strategyFlush: RuntimeMutationStrategyFlushResult
+    forcedRetainedCleanup: {
+        removedClassCount: number
+        durationMs: number
+    }
     cleanupAfterFlush: RuntimeMutationCleanupValidation
     consoleWarnings: string[]
 }
@@ -406,6 +411,54 @@ export const runtimeMutationDiagnosticMetrics = [
         description: 'Runtime classUtilities.size after the post-trace product cleanup flush wait.'
     },
     {
+        id: 'retained-class-count-before',
+        label: 'Retained classes before',
+        unit: 'count',
+        description: 'Runtime retainedClassNames.size before the cleanup scenario.'
+    },
+    {
+        id: 'retained-class-count-after',
+        label: 'Retained classes after trace',
+        unit: 'count',
+        description: 'Runtime retainedClassNames.size after trace collection.'
+    },
+    {
+        id: 'retained-class-count-after-flush',
+        label: 'Retained classes after flush',
+        unit: 'count',
+        description: 'Runtime retainedClassNames.size after the product retained-rule settle window.'
+    },
+    {
+        id: 'retained-class-count-after-forced-cleanup',
+        label: 'Retained classes after forced cleanup',
+        unit: 'count',
+        description: 'Runtime retainedClassNames.size after the out-of-trace forced retained-rule cleanup.'
+    },
+    {
+        id: 'retained-rule-count-after-flush',
+        label: 'Retained rules after flush',
+        unit: 'count',
+        description: 'Estimated retained generated rule count after the product retained-rule settle window.'
+    },
+    {
+        id: 'retained-raw-bytes-after-flush',
+        label: 'Retained bytes after flush',
+        unit: 'B',
+        description: 'Estimated retained generated CSS raw bytes after the product retained-rule settle window.'
+    },
+    {
+        id: 'retained-cleanup-removed-class-count',
+        label: 'Forced retained cleanup classes',
+        unit: 'count',
+        description: 'Class count removed by the out-of-trace flushRetainedClassRules() validation.'
+    },
+    {
+        id: 'retained-cleanup-duration-ms',
+        label: 'Forced retained cleanup duration',
+        unit: 'ms',
+        description: 'Duration of the out-of-trace flushRetainedClassRules() validation.'
+    },
+    {
         id: 'temporary-class-count-after-flush',
         label: 'Temporary class count after flush',
         unit: 'count',
@@ -433,19 +486,19 @@ export const runtimeMutationDiagnosticMetrics = [
         id: 'cleanup-valid',
         label: 'Cleanup valid',
         unit: 'count',
-        description: '1 when temporary DOM/runtime classes were cleaned up after the product cleanup flush wait, otherwise 0.'
+        description: '1 when temporary DOM nodes are removed and temporary classes are absent from runtime classCounts after the product cleanup wait.'
     },
     {
         id: 'cleanup-valid-during-trace',
         label: 'Cleanup valid during trace',
         unit: 'count',
-        description: '1 when temporary DOM/runtime classes were cleaned up before trace collection ended.'
+        description: '1 when temporary DOM nodes are removed and temporary classes are absent from runtime classCounts before trace collection ended.'
     },
     {
         id: 'cleanup-valid-after-flush',
         label: 'Cleanup valid after flush',
         unit: 'count',
-        description: '1 when temporary DOM/runtime classes were cleaned up after the product cleanup flush wait.'
+        description: '1 when temporary DOM nodes are removed and temporary classes are absent from runtime classCounts after the product cleanup wait.'
     },
     {
         id: 'progressive-adopted',
@@ -724,7 +777,7 @@ async function traceRuntimeMutationDiagnostic(page: Page) {
         }
         const state = globalThis.__readInteractionState()
         const tempClassNames = config.classes?.temp || []
-        const runtimeClean = !state.runtimeAvailable || tempClassNames.every((className) => !state.classCounts[className] && !state.classUtilityNames.includes(className))
+        const runtimeClean = !state.runtimeAvailable || tempClassNames.every((className) => !state.classCounts[className])
         const scratch = document.getElementById('interaction-scratch')
 
         return {
@@ -733,13 +786,27 @@ async function traceRuntimeMutationDiagnostic(page: Page) {
             scratchChildCount: scratch?.children.length || 0
         }
     })
+    const forcedRetainedCleanup = await page.evaluate(() => {
+        const runtime = globalThis.masterCSSRuntime as {
+            flushRetainedClassRules?: () => number
+        } | undefined
+        const startedAt = performance.now()
+        const removedClassCount = runtime?.flushRetainedClassRules?.() || 0
+        return {
+            removedClassCount,
+            durationMs: performance.now() - startedAt
+        }
+    })
+    const afterForcedCleanupState = await page.evaluate(() => globalThis.__readInteractionState())
     return {
         events,
         interaction,
         beforeState,
         afterTraceState,
         afterFlushState,
+        afterForcedCleanupState,
         strategyFlush,
+        forcedRetainedCleanup,
         cleanupAfterFlush,
         runtimeDiagnostics,
         traceMetrics: summarizeTraceEvents(events)
@@ -995,6 +1062,54 @@ function createRuntimeMutationDiagnosticSamples(
             value: result.afterFlushState.classUtilityNames.length
         },
         {
+            metricId: 'retained-class-count-before',
+            variantId,
+            round,
+            value: result.beforeState.retainedClassNames.length
+        },
+        {
+            metricId: 'retained-class-count-after',
+            variantId,
+            round,
+            value: result.afterTraceState.retainedClassNames.length
+        },
+        {
+            metricId: 'retained-class-count-after-flush',
+            variantId,
+            round,
+            value: result.afterFlushState.retainedClassNames.length
+        },
+        {
+            metricId: 'retained-class-count-after-forced-cleanup',
+            variantId,
+            round,
+            value: result.afterForcedCleanupState.retainedClassNames.length
+        },
+        {
+            metricId: 'retained-rule-count-after-flush',
+            variantId,
+            round,
+            value: result.afterFlushState.retainedClassRuleCount
+        },
+        {
+            metricId: 'retained-raw-bytes-after-flush',
+            variantId,
+            round,
+            value: result.afterFlushState.retainedClassRawBytes
+        },
+        {
+            metricId: 'retained-cleanup-removed-class-count',
+            variantId,
+            round,
+            value: result.forcedRetainedCleanup.removedClassCount
+        },
+        {
+            metricId: 'retained-cleanup-duration-ms',
+            variantId,
+            round,
+            value: result.forcedRetainedCleanup.durationMs
+        },
+        {
             metricId: 'temporary-class-count-after-flush',
             variantId,
             round,
@@ -1055,6 +1170,7 @@ async function writeRuntimeMutationDiagnosticArtifacts(options: {
         interaction,
         traceMetrics: options.result.traceMetrics,
         runtimeDiagnostics: options.result.runtimeDiagnostics,
+        forcedRetainedCleanup: options.result.forcedRetainedCleanup,
         traceWindowId: options.result.traceWindowId,
         ruleStateId: options.result.ruleStateId,
         postInteractionSettleFrameCount: options.result.postInteractionSettleFrameCount,
@@ -1090,6 +1206,17 @@ function assertRuntimeMutationDiagnosticResult(
 
     if (countTemporaryClasses(result.afterFlushState, getTemporaryClassNames()) !== 0) {
         throw new Error(`${variantId} left temporary class counts after cleanup.`)
+    }
+
+    const temporaryClassNames = getTemporaryClassNames()
+    const retainedTemporaryClassNames = temporaryClassNames.filter((className) => result.afterForcedCleanupState.retainedClassNames.includes(className))
+    if (retainedTemporaryClassNames.length) {
+        throw new Error(`${variantId} left retained temporary classes after forced cleanup: ${retainedTemporaryClassNames.join(', ')}.`)
+    }
+
+    const generatedTemporaryClassNames = temporaryClassNames.filter((className) => result.afterForcedCleanupState.classUtilityNames.includes(className))
+    if (generatedTemporaryClassNames.length) {
+        throw new Error(`${variantId} left generated temporary classes after forced cleanup: ${generatedTemporaryClassNames.join(', ')}.`)
     }
 
     if (modeId === 'master-progressive' && result.interaction.progressiveAdopted !== 1) {
