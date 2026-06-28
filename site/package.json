@@ -5,7 +5,7 @@
     "scripts": {
         "prepare-app": "tsx --env-file=.env ./prepare",
         "clean:next": "rm -rf .next",
-        "dev": "pnpm prepare-app && pnpm build:play-compiler && next dev --turbo",
+        "dev": "pnpm clean:next && pnpm prepare-app && pnpm build:play-compiler && next dev --turbo",
         "build": "pnpm prepare-app && pnpm build:llms && pnpm build:play-compiler && pnpm build:next",
         "build:cloudflare-next": "pnpm prepare-app && pnpm build:llms && pnpm build:next",
         "build:cloudflare-workers": "tsx scripts/build-cloudflare-workers.ts",
