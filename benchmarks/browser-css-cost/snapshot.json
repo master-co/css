@@ -1,0 +1,1311 @@
+{
+    "schemaVersion": 1,
+    "suite": "browser-css-cost",
+    "generatedAt": "2026-06-28T15:50:51.035Z",
+    "sourceReport": {
+        "suite": "browser-css-cost",
+        "generatedAt": "2026-06-28T15:50:43.891Z",
+        "command": "pnpm --filter ./benchmarks bench:browser-css-cost"
+    },
+    "environment": {
+        "os": {
+            "platform": "darwin",
+            "release": "25.5.0",
+            "arch": "arm64"
+        },
+        "node": "v24.15.0",
+        "cpu": {
+            "model": "Apple M3 Max",
+            "count": 16
+        }
+    },
+    "browser": {
+        "name": "Chromium",
+        "version": "149.0.7827.55"
+    },
+    "packages": [
+        {
+            "name": "@playwright/test",
+            "version": "1.61.0"
+        },
+        {
+            "name": "css-tree",
+            "version": "^3.2.1"
+        }
+    ],
+    "fixtures": [
+        {
+            "id": "stress-css",
+            "name": "Stress CSS",
+            "purpose": "Controlled small, medium, and large CSS outputs."
+        },
+        {
+            "id": "stress-dom",
+            "name": "Stress DOM",
+            "purpose": "Large DOM with fixed CSS."
+        }
+    ],
+    "variants": [
+        {
+            "id": "stress-css-small-css-cold-cache",
+            "fixtureId": "stress-css",
+            "adapterId": "browser-css",
+            "label": "stress-css / Small CSS / Cold cache"
+        },
+        {
+            "id": "stress-css-small-css-warm-cache",
+            "fixtureId": "stress-css",
+            "adapterId": "browser-css",
+            "label": "stress-css / Small CSS / Warm cache"
+        },
+        {
+            "id": "stress-css-medium-css-cold-cache",
+            "fixtureId": "stress-css",
+            "adapterId": "browser-css",
+            "label": "stress-css / Medium CSS / Cold cache"
+        },
+        {
+            "id": "stress-css-medium-css-warm-cache",
+            "fixtureId": "stress-css",
+            "adapterId": "browser-css",
+            "label": "stress-css / Medium CSS / Warm cache"
+        },
+        {
+            "id": "stress-css-large-css-cold-cache",
+            "fixtureId": "stress-css",
+            "adapterId": "browser-css",
+            "label": "stress-css / Large CSS / Cold cache"
+        },
+        {
+            "id": "stress-css-large-css-warm-cache",
+            "fixtureId": "stress-css",
+            "adapterId": "browser-css",
+            "label": "stress-css / Large CSS / Warm cache"
+        },
+        {
+            "id": "stress-css-xlarge-css-cold-cache",
+            "fixtureId": "stress-css",
+            "adapterId": "browser-css",
+            "label": "stress-css / XLarge CSS / Cold cache"
+        },
+        {
+            "id": "stress-css-xlarge-css-warm-cache",
+            "fixtureId": "stress-css",
+            "adapterId": "browser-css",
+            "label": "stress-css / XLarge CSS / Warm cache"
+        },
+        {
+            "id": "stress-dom-small-dom-cold-cache",
+            "fixtureId": "stress-dom",
+            "adapterId": "browser-dom",
+            "label": "stress-dom / Small DOM / Cold cache"
+        },
+        {
+            "id": "stress-dom-small-dom-warm-cache",
+            "fixtureId": "stress-dom",
+            "adapterId": "browser-dom",
+            "label": "stress-dom / Small DOM / Warm cache"
+        },
+        {
+            "id": "stress-dom-medium-dom-cold-cache",
+            "fixtureId": "stress-dom",
+            "adapterId": "browser-dom",
+            "label": "stress-dom / Medium DOM / Cold cache"
+        },
+        {
+            "id": "stress-dom-medium-dom-warm-cache",
+            "fixtureId": "stress-dom",
+            "adapterId": "browser-dom",
+            "label": "stress-dom / Medium DOM / Warm cache"
+        },
+        {
+            "id": "stress-dom-large-dom-cold-cache",
+            "fixtureId": "stress-dom",
+            "adapterId": "browser-dom",
+            "label": "stress-dom / Large DOM / Cold cache"
+        },
+        {
+            "id": "stress-dom-large-dom-warm-cache",
+            "fixtureId": "stress-dom",
+            "adapterId": "browser-dom",
+            "label": "stress-dom / Large DOM / Warm cache"
+        }
+    ],
+    "metrics": [
+        {
+            "id": "navigation-ready-ms",
+            "label": "Navigation to ready",
+            "unit": "ms",
+            "description": "Elapsed wall time from navigation start until the page has loaded, completed two animation frames, and passed computed-style assertions."
+        },
+        {
+            "id": "stylesheet-parse-ms",
+            "label": "Stylesheet parse/attach",
+            "unit": "ms",
+            "description": "Trace-derived stylesheet parsing and attachment duration where Chromium exposes stable timeline events."
+        },
+        {
+            "id": "style-recalculation-ms",
+            "label": "Style recalculation",
+            "unit": "ms",
+            "description": "Trace-derived style recalculation duration from Chromium timeline events."
+        },
+        {
+            "id": "layout-ms",
+            "label": "Layout",
+            "unit": "ms",
+            "description": "Trace-derived layout duration from Chromium timeline events."
+        },
+        {
+            "id": "paint-ms",
+            "label": "Paint",
+            "unit": "ms",
+            "description": "Trace-derived paint and pre-paint duration from Chromium timeline events."
+        },
+        {
+            "id": "long-task-count",
+            "label": "Long tasks",
+            "unit": "count",
+            "description": "Count of trace task events at or above 50 ms."
+        },
+        {
+            "id": "dom-item-count",
+            "label": "DOM fixture items",
+            "unit": "count",
+            "description": "Repeated fixture item count. CSS volume variants keep this fixed; stress DOM variants intentionally scale it."
+        },
+        {
+            "id": "dom-node-count",
+            "label": "DOM nodes",
+            "unit": "count",
+            "description": "Total DOM element count after the benchmark page has loaded and passed computed-style assertions."
+        },
+        {
+            "id": "css-raw-bytes",
+            "label": "CSS raw bytes",
+            "unit": "B",
+            "description": "Raw bytes for the external CSS file loaded by the fixture page."
+        },
+        {
+            "id": "css-gzip-bytes",
+            "label": "CSS gzip bytes",
+            "unit": "B",
+            "description": "Gzip bytes for the external CSS file loaded by the fixture page."
+        },
+        {
+            "id": "css-brotli-bytes",
+            "label": "CSS brotli bytes",
+            "unit": "B",
+            "description": "Brotli bytes for the external CSS file loaded by the fixture page."
+        },
+        {
+            "id": "style-rule-count",
+            "label": "Style rules",
+            "unit": "count",
+            "description": "Qualified CSS rules, excluding keyframe step rules."
+        },
+        {
+            "id": "selector-count",
+            "label": "Selectors",
+            "unit": "count",
+            "description": "Top-level selectors in qualified style rules."
+        },
+        {
+            "id": "declaration-count",
+            "label": "Declarations",
+            "unit": "count",
+            "description": "CSS declarations and at-rule descriptors in generated CSS."
+        }
+    ],
+    "cssVolume": [
+        {
+            "id": "small-css",
+            "label": "Small CSS",
+            "results": {
+                "cold-cache": {
+                    "variantId": "stress-css-small-css-cold-cache",
+                    "timing": {
+                        "navigationReadyMs": {
+                            "min": 18.2,
+                            "median": 19.2,
+                            "mean": 19.6,
+                            "max": 21.5,
+                            "sampleCount": 3,
+                            "unit": "ms"
+                        },
+                        "stylesheetParseMs": {
+                            "min": 0.1,
+                            "median": 0.2,
+                            "mean": 0.2,
+                            "max": 0.2,
+                            "sampleCount": 3,
+                            "unit": "ms"
+                        },
+                        "styleRecalculationMs": {
+                            "min": 0.6,
+                            "median": 0.6,
+                            "mean": 0.6,
+                            "max": 0.7,
+                            "sampleCount": 3,
+                            "unit": "ms"
+                        },
+                        "layoutMs": {
+                            "min": 3.9,
+                            "median": 4.1,
+                            "mean": 4.1,
+                            "max": 4.1,
+                            "sampleCount": 3,
+                            "unit": "ms"
+                        },
+                        "paintMs": {
+                            "min": 1,
+                            "median": 1.1,
+                            "mean": 1.1,
+                            "max": 1.1,
+                            "sampleCount": 3,
+                            "unit": "ms"
+                        },
+                        "longTaskCount": {
+                            "min": 0,
+                            "median": 0,
+                            "mean": 0,
+                            "max": 0,
+                            "sampleCount": 3,
+                            "unit": "count"
+                        }
+                    },
+                    "dom": {
+                        "itemCount": 48,
+                        "nodeCount": {
+                            "min": 205,
+                            "median": 205,
+                            "mean": 205,
+                            "max": 205,
+                            "sampleCount": 3,
+                            "unit": "count"
+                        }
+                    },
+                    "css": {
+                        "rawBytes": 29313,
+                        "gzipBytes": 3389,
+                        "brotliBytes": 1589
+                    },
+                    "structure": {
+                        "styleRules": 263,
+                        "selectors": 265,
+                        "declarations": 792
+                    }
+                },
+                "warm-cache": {
+                    "variantId": "stress-css-small-css-warm-cache",
+                    "timing": {
+                        "navigationReadyMs": {
+                            "min": 11.8,
+                            "median": 20.1,
+                            "mean": 17.9,
+                            "max": 21.7,
+                            "sampleCount": 3,
+                            "unit": "ms"
+                        },
+                        "stylesheetParseMs": {
+                            "min": 0,
+                            "median": 0,
+                            "mean": 0,
+                            "max": 0,
+                            "sampleCount": 3,
+                            "unit": "ms"
+                        },
+                        "styleRecalculationMs": {
+                            "min": 0.4,
+                            "median": 0.5,
+                            "mean": 0.5,
+                            "max": 0.5,
+                            "sampleCount": 3,
+                            "unit": "ms"
+                        },
+                        "layoutMs": {
+                            "min": 0.9,
+                            "median": 1,
+                            "mean": 1,
+                            "max": 1,
+                            "sampleCount": 3,
+                            "unit": "ms"
+                        },
+                        "paintMs": {
+                            "min": 0.6,
+                            "median": 0.6,
+                            "mean": 0.7,
+                            "max": 0.7,
+                            "sampleCount": 3,
+                            "unit": "ms"
+                        },
+                        "longTaskCount": {
+                            "min": 0,
+                            "median": 0,
+                            "mean": 0,
+                            "max": 0,
+                            "sampleCount": 3,
+                            "unit": "count"
+                        }
+                    },
+                    "dom": {
+                        "itemCount": 48,
+                        "nodeCount": {
+                            "min": 205,
+                            "median": 205,
+                            "mean": 205,
+                            "max": 205,
+                            "sampleCount": 3,
+                            "unit": "count"
+                        }
+                    },
+                    "css": {
+                        "rawBytes": 29313,
+                        "gzipBytes": 3389,
+                        "brotliBytes": 1589
+                    },
+                    "structure": {
+                        "styleRules": 263,
+                        "selectors": 265,
+                        "declarations": 792
+                    }
+                }
+            }
+        },
+        {
+            "id": "medium-css",
+            "label": "Medium CSS",
+            "results": {
+                "cold-cache": {
+                    "variantId": "stress-css-medium-css-cold-cache",
+                    "timing": {
+                        "navigationReadyMs": {
+                            "min": 18.6,
+                            "median": 19,
+                            "mean": 19.9,
+                            "max": 22.1,
+                            "sampleCount": 3,
+                            "unit": "ms"
+                        },
+                        "stylesheetParseMs": {
+                            "min": 0.8,
+                            "median": 0.8,
+                            "mean": 0.8,
+                            "max": 0.9,
+                            "sampleCount": 3,
+                            "unit": "ms"
+                        },
+                        "styleRecalculationMs": {
+                            "min": 0.9,
+                            "median": 0.9,
+                            "mean": 0.9,
+                            "max": 1,
+                            "sampleCount": 3,
+                            "unit": "ms"
+                        },
+                        "layoutMs": {
+                            "min": 4,
+                            "median": 4.1,
+                            "mean": 4.1,
+                            "max": 4.3,
+                            "sampleCount": 3,
+                            "unit": "ms"
+                        },
+                        "paintMs": {
+                            "min": 1,
+                            "median": 1.1,
+                            "mean": 1.1,
+                            "max": 1.2,
+                            "sampleCount": 3,
+                            "unit": "ms"
+                        },
+                        "longTaskCount": {
+                            "min": 0,
+                            "median": 0,
+                            "mean": 0,
+                            "max": 0,
+                            "sampleCount": 3,
+                            "unit": "count"
+                        }
+                    },
+                    "dom": {
+                        "itemCount": 48,
+                        "nodeCount": {
+                            "min": 205,
+                            "median": 205,
+                            "mean": 205,
+                            "max": 205,
+                            "sampleCount": 3,
+                            "unit": "count"
+                        }
+                    },
+                    "css": {
+                        "rawBytes": 283749,
+                        "gzipBytes": 27368,
+                        "brotliBytes": 5383
+                    },
+                    "structure": {
+                        "styleRules": 2513,
+                        "selectors": 2515,
+                        "declarations": 7542
+                    }
+                },
+                "warm-cache": {
+                    "variantId": "stress-css-medium-css-warm-cache",
+                    "timing": {
+                        "navigationReadyMs": {
+                            "min": 13.8,
+                            "median": 13.9,
+                            "mean": 15.7,
+                            "max": 19.3,
+                            "sampleCount": 3,
+                            "unit": "ms"
+                        },
+                        "stylesheetParseMs": {
+                            "min": 0,
+                            "median": 0,
+                            "mean": 0,
+                            "max": 0,
+                            "sampleCount": 3,
+                            "unit": "ms"
+                        },
+                        "styleRecalculationMs": {
+                            "min": 0.4,
+                            "median": 0.4,
+                            "mean": 0.4,
+                            "max": 0.5,
+                            "sampleCount": 3,
+                            "unit": "ms"
+                        },
+                        "layoutMs": {
+                            "min": 1,
+                            "median": 1,
+                            "mean": 1,
+                            "max": 1,
+                            "sampleCount": 3,
+                            "unit": "ms"
+                        },
+                        "paintMs": {
+                            "min": 0.6,
+                            "median": 0.7,
+                            "mean": 0.7,
+                            "max": 0.7,
+                            "sampleCount": 3,
+                            "unit": "ms"
+                        },
+                        "longTaskCount": {
+                            "min": 0,
+                            "median": 0,
+                            "mean": 0,
+                            "max": 0,
+                            "sampleCount": 3,
+                            "unit": "count"
+                        }
+                    },
+                    "dom": {
+                        "itemCount": 48,
+                        "nodeCount": {
+                            "min": 205,
+                            "median": 205,
+                            "mean": 205,
+                            "max": 205,
+                            "sampleCount": 3,
+                            "unit": "count"
+                        }
+                    },
+                    "css": {
+                        "rawBytes": 283749,
+                        "gzipBytes": 27368,
+                        "brotliBytes": 5383
+                    },
+                    "structure": {
+                        "styleRules": 2513,
+                        "selectors": 2515,
+                        "declarations": 7542
+                    }
+                }
+            }
+        },
+        {
+            "id": "large-css",
+            "label": "Large CSS",
+            "results": {
+                "cold-cache": {
+                    "variantId": "stress-css-large-css-cold-cache",
+                    "timing": {
+                        "navigationReadyMs": {
+                            "min": 21.3,
+                            "median": 21.3,
+                            "mean": 22.6,
+                            "max": 25.2,
+                            "sampleCount": 3,
+                            "unit": "ms"
+                        },
+                        "stylesheetParseMs": {
+                            "min": 2.7,
+                            "median": 2.8,
+                            "mean": 2.8,
+                            "max": 2.9,
+                            "sampleCount": 3,
+                            "unit": "ms"
+                        },
+                        "styleRecalculationMs": {
+                            "min": 1.9,
+                            "median": 1.9,
+                            "mean": 1.9,
+                            "max": 1.9,
+                            "sampleCount": 3,
+                            "unit": "ms"
+                        },
+                        "layoutMs": {
+                            "min": 4.1,
+                            "median": 4.1,
+                            "mean": 4.1,
+                            "max": 4.1,
+                            "sampleCount": 3,
+                            "unit": "ms"
+                        },
+                        "paintMs": {
+                            "min": 1,
+                            "median": 1,
+                            "mean": 1,
+                            "max": 1,
+                            "sampleCount": 3,
+                            "unit": "ms"
+                        },
+                        "longTaskCount": {
+                            "min": 0,
+                            "median": 0,
+                            "mean": 0,
+                            "max": 0,
+                            "sampleCount": 3,
+                            "unit": "count"
+                        }
+                    },
+                    "dom": {
+                        "itemCount": 48,
+                        "nodeCount": {
+                            "min": 205,
+                            "median": 205,
+                            "mean": 205,
+                            "max": 205,
+                            "sampleCount": 3,
+                            "unit": "count"
+                        }
+                    },
+                    "css": {
+                        "rawBytes": 1131873,
+                        "gzipBytes": 106803,
+                        "brotliBytes": 16389
+                    },
+                    "structure": {
+                        "styleRules": 10013,
+                        "selectors": 10015,
+                        "declarations": 30042
+                    }
+                },
+                "warm-cache": {
+                    "variantId": "stress-css-large-css-warm-cache",
+                    "timing": {
+                        "navigationReadyMs": {
+                            "min": 17.8,
+                            "median": 18.4,
+                            "mean": 18.7,
+                            "max": 20,
+                            "sampleCount": 3,
+                            "unit": "ms"
+                        },
+                        "stylesheetParseMs": {
+                            "min": 0,
+                            "median": 0,
+                            "mean": 0,
+                            "max": 0,
+                            "sampleCount": 3,
+                            "unit": "ms"
+                        },
+                        "styleRecalculationMs": {
+                            "min": 0.4,
+                            "median": 0.4,
+                            "mean": 0.4,
+                            "max": 0.4,
+                            "sampleCount": 3,
+                            "unit": "ms"
+                        },
+                        "layoutMs": {
+                            "min": 1,
+                            "median": 1,
+                            "mean": 1,
+                            "max": 1,
+                            "sampleCount": 3,
+                            "unit": "ms"
+                        },
+                        "paintMs": {
+                            "min": 0.6,
+                            "median": 0.6,
+                            "mean": 0.6,
+                            "max": 0.6,
+                            "sampleCount": 3,
+                            "unit": "ms"
+                        },
+                        "longTaskCount": {
+                            "min": 0,
+                            "median": 0,
+                            "mean": 0,
+                            "max": 0,
+                            "sampleCount": 3,
+                            "unit": "count"
+                        }
+                    },
+                    "dom": {
+                        "itemCount": 48,
+                        "nodeCount": {
+                            "min": 205,
+                            "median": 205,
+                            "mean": 205,
+                            "max": 205,
+                            "sampleCount": 3,
+                            "unit": "count"
+                        }
+                    },
+                    "css": {
+                        "rawBytes": 1131873,
+                        "gzipBytes": 106803,
+                        "brotliBytes": 16389
+                    },
+                    "structure": {
+                        "styleRules": 10013,
+                        "selectors": 10015,
+                        "declarations": 30042
+                    }
+                }
+            }
+        },
+        {
+            "id": "xlarge-css",
+            "label": "XLarge CSS",
+            "results": {
+                "cold-cache": {
+                    "variantId": "stress-css-xlarge-css-cold-cache",
+                    "timing": {
+                        "navigationReadyMs": {
+                            "min": 28.9,
+                            "median": 32,
+                            "mean": 31,
+                            "max": 32.1,
+                            "sampleCount": 3,
+                            "unit": "ms"
+                        },
+                        "stylesheetParseMs": {
+                            "min": 8.7,
+                            "median": 8.7,
+                            "mean": 8.8,
+                            "max": 8.9,
+                            "sampleCount": 3,
+                            "unit": "ms"
+                        },
+                        "styleRecalculationMs": {
+                            "min": 3.8,
+                            "median": 3.9,
+                            "mean": 3.9,
+                            "max": 3.9,
+                            "sampleCount": 3,
+                            "unit": "ms"
+                        },
+                        "layoutMs": {
+                            "min": 3.8,
+                            "median": 3.9,
+                            "mean": 3.9,
+                            "max": 4.1,
+                            "sampleCount": 3,
+                            "unit": "ms"
+                        },
+                        "paintMs": {
+                            "min": 1.1,
+                            "median": 1.1,
+                            "mean": 1.1,
+                            "max": 1.1,
+                            "sampleCount": 3,
+                            "unit": "ms"
+                        },
+                        "longTaskCount": {
+                            "min": 0,
+                            "median": 0,
+                            "mean": 0,
+                            "max": 0,
+                            "sampleCount": 3,
+                            "unit": "count"
+                        }
+                    },
+                    "dom": {
+                        "itemCount": 48,
+                        "nodeCount": {
+                            "min": 205,
+                            "median": 205,
+                            "mean": 205,
+                            "max": 205,
+                            "sampleCount": 3,
+                            "unit": "count"
+                        }
+                    },
+                    "css": {
+                        "rawBytes": 3393539,
+                        "gzipBytes": 318697,
+                        "brotliBytes": 45587
+                    },
+                    "structure": {
+                        "styleRules": 30013,
+                        "selectors": 30015,
+                        "declarations": 90042
+                    }
+                },
+                "warm-cache": {
+                    "variantId": "stress-css-xlarge-css-warm-cache",
+                    "timing": {
+                        "navigationReadyMs": {
+                            "min": 12,
+                            "median": 15.3,
+                            "mean": 14.7,
+                            "max": 16.8,
+                            "sampleCount": 3,
+                            "unit": "ms"
+                        },
+                        "stylesheetParseMs": {
+                            "min": 0,
+                            "median": 0,
+                            "mean": 0,
+                            "max": 0,
+                            "sampleCount": 3,
+                            "unit": "ms"
+                        },
+                        "styleRecalculationMs": {
+                            "min": 0.4,
+                            "median": 0.5,
+                            "mean": 0.5,
+                            "max": 0.5,
+                            "sampleCount": 3,
+                            "unit": "ms"
+                        },
+                        "layoutMs": {
+                            "min": 1,
+                            "median": 1,
+                            "mean": 1,
+                            "max": 1,
+                            "sampleCount": 3,
+                            "unit": "ms"
+                        },
+                        "paintMs": {
+                            "min": 0.6,
+                            "median": 0.6,
+                            "mean": 0.6,
+                            "max": 0.7,
+                            "sampleCount": 3,
+                            "unit": "ms"
+                        },
+                        "longTaskCount": {
+                            "min": 0,
+                            "median": 0,
+                            "mean": 0,
+                            "max": 0,
+                            "sampleCount": 3,
+                            "unit": "count"
+                        }
+                    },
+                    "dom": {
+                        "itemCount": 48,
+                        "nodeCount": {
+                            "min": 205,
+                            "median": 205,
+                            "mean": 205,
+                            "max": 205,
+                            "sampleCount": 3,
+                            "unit": "count"
+                        }
+                    },
+                    "css": {
+                        "rawBytes": 3393539,
+                        "gzipBytes": 318697,
+                        "brotliBytes": 45587
+                    },
+                    "structure": {
+                        "styleRules": 30013,
+                        "selectors": 30015,
+                        "declarations": 90042
+                    }
+                }
+            }
+        }
+    ],
+    "domScaling": [
+        {
+            "id": "small-dom",
+            "label": "Small DOM",
+            "results": {
+                "cold-cache": {
+                    "variantId": "stress-dom-small-dom-cold-cache",
+                    "timing": {
+                        "navigationReadyMs": {
+                            "min": 20.2,
+                            "median": 20.4,
+                            "mean": 21,
+                            "max": 22.5,
+                            "sampleCount": 3,
+                            "unit": "ms"
+                        },
+                        "stylesheetParseMs": {
+                            "min": 0.1,
+                            "median": 0.1,
+                            "mean": 0.1,
+                            "max": 0.1,
+                            "sampleCount": 3,
+                            "unit": "ms"
+                        },
+                        "styleRecalculationMs": {
+                            "min": 1.2,
+                            "median": 1.2,
+                            "mean": 1.2,
+                            "max": 1.2,
+                            "sampleCount": 3,
+                            "unit": "ms"
+                        },
+                        "layoutMs": {
+                            "min": 5.2,
+                            "median": 5.3,
+                            "mean": 5.3,
+                            "max": 5.3,
+                            "sampleCount": 3,
+                            "unit": "ms"
+                        },
+                        "paintMs": {
+                            "min": 1.7,
+                            "median": 2,
+                            "mean": 1.9,
+                            "max": 2,
+                            "sampleCount": 3,
+                            "unit": "ms"
+                        },
+                        "longTaskCount": {
+                            "min": 0,
+                            "median": 0,
+                            "mean": 0,
+                            "max": 0,
+                            "sampleCount": 3,
+                            "unit": "count"
+                        }
+                    },
+                    "dom": {
+                        "itemCount": 100,
+                        "nodeCount": {
+                            "min": 712,
+                            "median": 712,
+                            "mean": 712,
+                            "max": 712,
+                            "sampleCount": 3,
+                            "unit": "count"
+                        }
+                    },
+                    "css": {
+                        "rawBytes": 1154,
+                        "gzipBytes": 592,
+                        "brotliBytes": 467
+                    },
+                    "structure": {
+                        "styleRules": 15,
+                        "selectors": 17,
+                        "declarations": 50
+                    }
+                },
+                "warm-cache": {
+                    "variantId": "stress-dom-small-dom-warm-cache",
+                    "timing": {
+                        "navigationReadyMs": {
+                            "min": 12.9,
+                            "median": 16.4,
+                            "mean": 15.5,
+                            "max": 17.1,
+                            "sampleCount": 3,
+                            "unit": "ms"
+                        },
+                        "stylesheetParseMs": {
+                            "min": 0,
+                            "median": 0,
+                            "mean": 0,
+                            "max": 0,
+                            "sampleCount": 3,
+                            "unit": "ms"
+                        },
+                        "styleRecalculationMs": {
+                            "min": 1,
+                            "median": 1.1,
+                            "mean": 1.1,
+                            "max": 1.1,
+                            "sampleCount": 3,
+                            "unit": "ms"
+                        },
+                        "layoutMs": {
+                            "min": 2,
+                            "median": 2.1,
+                            "mean": 2.1,
+                            "max": 2.1,
+                            "sampleCount": 3,
+                            "unit": "ms"
+                        },
+                        "paintMs": {
+                            "min": 1.3,
+                            "median": 1.4,
+                            "mean": 1.5,
+                            "max": 1.7,
+                            "sampleCount": 3,
+                            "unit": "ms"
+                        },
+                        "longTaskCount": {
+                            "min": 0,
+                            "median": 0,
+                            "mean": 0,
+                            "max": 0,
+                            "sampleCount": 3,
+                            "unit": "count"
+                        }
+                    },
+                    "dom": {
+                        "itemCount": 100,
+                        "nodeCount": {
+                            "min": 712,
+                            "median": 712,
+                            "mean": 712,
+                            "max": 712,
+                            "sampleCount": 3,
+                            "unit": "count"
+                        }
+                    },
+                    "css": {
+                        "rawBytes": 1154,
+                        "gzipBytes": 592,
+                        "brotliBytes": 467
+                    },
+                    "structure": {
+                        "styleRules": 15,
+                        "selectors": 17,
+                        "declarations": 50
+                    }
+                }
+            }
+        },
+        {
+            "id": "medium-dom",
+            "label": "Medium DOM",
+            "results": {
+                "cold-cache": {
+                    "variantId": "stress-dom-medium-dom-cold-cache",
+                    "timing": {
+                        "navigationReadyMs": {
+                            "min": 52.2,
+                            "median": 52.3,
+                            "mean": 53,
+                            "max": 54.6,
+                            "sampleCount": 3,
+                            "unit": "ms"
+                        },
+                        "stylesheetParseMs": {
+                            "min": 0.1,
+                            "median": 0.1,
+                            "mean": 0.1,
+                            "max": 0.1,
+                            "sampleCount": 3,
+                            "unit": "ms"
+                        },
+                        "styleRecalculationMs": {
+                            "min": 8.1,
+                            "median": 8.1,
+                            "mean": 8.2,
+                            "max": 8.5,
+                            "sampleCount": 3,
+                            "unit": "ms"
+                        },
+                        "layoutMs": {
+                            "min": 24.5,
+                            "median": 24.6,
+                            "mean": 24.6,
+                            "max": 24.7,
+                            "sampleCount": 3,
+                            "unit": "ms"
+                        },
+                        "paintMs": {
+                            "min": 6,
+                            "median": 6.2,
+                            "mean": 6.1,
+                            "max": 6.3,
+                            "sampleCount": 3,
+                            "unit": "ms"
+                        },
+                        "longTaskCount": {
+                            "min": 0,
+                            "median": 0,
+                            "mean": 0,
+                            "max": 0,
+                            "sampleCount": 3,
+                            "unit": "count"
+                        }
+                    },
+                    "dom": {
+                        "itemCount": 1000,
+                        "nodeCount": {
+                            "min": 7012,
+                            "median": 7012,
+                            "mean": 7012,
+                            "max": 7012,
+                            "sampleCount": 3,
+                            "unit": "count"
+                        }
+                    },
+                    "css": {
+                        "rawBytes": 1154,
+                        "gzipBytes": 592,
+                        "brotliBytes": 467
+                    },
+                    "structure": {
+                        "styleRules": 15,
+                        "selectors": 17,
+                        "declarations": 50
+                    }
+                },
+                "warm-cache": {
+                    "variantId": "stress-dom-medium-dom-warm-cache",
+                    "timing": {
+                        "navigationReadyMs": {
+                            "min": 40.3,
+                            "median": 40.6,
+                            "mean": 40.7,
+                            "max": 41.1,
+                            "sampleCount": 3,
+                            "unit": "ms"
+                        },
+                        "stylesheetParseMs": {
+                            "min": 0,
+                            "median": 0,
+                            "mean": 0,
+                            "max": 0,
+                            "sampleCount": 3,
+                            "unit": "ms"
+                        },
+                        "styleRecalculationMs": {
+                            "min": 7.9,
+                            "median": 8,
+                            "mean": 8,
+                            "max": 8,
+                            "sampleCount": 3,
+                            "unit": "ms"
+                        },
+                        "layoutMs": {
+                            "min": 19.9,
+                            "median": 19.9,
+                            "mean": 20.1,
+                            "max": 20.5,
+                            "sampleCount": 3,
+                            "unit": "ms"
+                        },
+                        "paintMs": {
+                            "min": 5.7,
+                            "median": 5.7,
+                            "mean": 5.8,
+                            "max": 6,
+                            "sampleCount": 3,
+                            "unit": "ms"
+                        },
+                        "longTaskCount": {
+                            "min": 0,
+                            "median": 0,
+                            "mean": 0,
+                            "max": 0,
+                            "sampleCount": 3,
+                            "unit": "count"
+                        }
+                    },
+                    "dom": {
+                        "itemCount": 1000,
+                        "nodeCount": {
+                            "min": 7012,
+                            "median": 7012,
+                            "mean": 7012,
+                            "max": 7012,
+                            "sampleCount": 3,
+                            "unit": "count"
+                        }
+                    },
+                    "css": {
+                        "rawBytes": 1154,
+                        "gzipBytes": 592,
+                        "brotliBytes": 467
+                    },
+                    "structure": {
+                        "styleRules": 15,
+                        "selectors": 17,
+                        "declarations": 50
+                    }
+                }
+            }
+        },
+        {
+            "id": "large-dom",
+            "label": "Large DOM",
+            "results": {
+                "cold-cache": {
+                    "variantId": "stress-dom-large-dom-cold-cache",
+                    "timing": {
+                        "navigationReadyMs": {
+                            "min": 119.3,
+                            "median": 123.9,
+                            "mean": 122.7,
+                            "max": 124.8,
+                            "sampleCount": 3,
+                            "unit": "ms"
+                        },
+                        "stylesheetParseMs": {
+                            "min": 0.1,
+                            "median": 0.1,
+                            "mean": 0.1,
+                            "max": 0.1,
+                            "sampleCount": 3,
+                            "unit": "ms"
+                        },
+                        "styleRecalculationMs": {
+                            "min": 23.2,
+                            "median": 23.4,
+                            "mean": 23.5,
+                            "max": 23.9,
+                            "sampleCount": 3,
+                            "unit": "ms"
+                        },
+                        "layoutMs": {
+                            "min": 68.2,
+                            "median": 69,
+                            "mean": 68.8,
+                            "max": 69.1,
+                            "sampleCount": 3,
+                            "unit": "ms"
+                        },
+                        "paintMs": {
+                            "min": 10.7,
+                            "median": 13.8,
+                            "mean": 12.9,
+                            "max": 14.3,
+                            "sampleCount": 3,
+                            "unit": "ms"
+                        },
+                        "longTaskCount": {
+                            "min": 1,
+                            "median": 1,
+                            "mean": 1,
+                            "max": 1,
+                            "sampleCount": 3,
+                            "unit": "count"
+                        }
+                    },
+                    "dom": {
+                        "itemCount": 3000,
+                        "nodeCount": {
+                            "min": 21012,
+                            "median": 21012,
+                            "mean": 21012,
+                            "max": 21012,
+                            "sampleCount": 3,
+                            "unit": "count"
+                        }
+                    },
+                    "css": {
+                        "rawBytes": 1154,
+                        "gzipBytes": 592,
+                        "brotliBytes": 467
+                    },
+                    "structure": {
+                        "styleRules": 15,
+                        "selectors": 17,
+                        "declarations": 50
+                    }
+                },
+                "warm-cache": {
+                    "variantId": "stress-dom-large-dom-warm-cache",
+                    "timing": {
+                        "navigationReadyMs": {
+                            "min": 108.2,
+                            "median": 108.5,
+                            "mean": 108.7,
+                            "max": 109.2,
+                            "sampleCount": 3,
+                            "unit": "ms"
+                        },
+                        "stylesheetParseMs": {
+                            "min": 0,
+                            "median": 0,
+                            "mean": 0,
+                            "max": 0,
+                            "sampleCount": 3,
+                            "unit": "ms"
+                        },
+                        "styleRecalculationMs": {
+                            "min": 22.9,
+                            "median": 23.1,
+                            "mean": 23.1,
+                            "max": 23.2,
+                            "sampleCount": 3,
+                            "unit": "ms"
+                        },
+                        "layoutMs": {
+                            "min": 62.6,
+                            "median": 63,
+                            "mean": 63,
+                            "max": 63.4,
+                            "sampleCount": 3,
+                            "unit": "ms"
+                        },
+                        "paintMs": {
+                            "min": 13.4,
+                            "median": 13.7,
+                            "mean": 13.6,
+                            "max": 13.8,
+                            "sampleCount": 3,
+                            "unit": "ms"
+                        },
+                        "longTaskCount": {
+                            "min": 1,
+                            "median": 1,
+                            "mean": 1,
+                            "max": 1,
+                            "sampleCount": 3,
+                            "unit": "count"
+                        }
+                    },
+                    "dom": {
+                        "itemCount": 3000,
+                        "nodeCount": {
+                            "min": 21012,
+                            "median": 21012,
+                            "mean": 21012,
+                            "max": 21012,
+                            "sampleCount": 3,
+                            "unit": "count"
+                        }
+                    },
+                    "css": {
+                        "rawBytes": 1154,
+                        "gzipBytes": 592,
+                        "brotliBytes": 467
+                    },
+                    "structure": {
+                        "styleRules": 15,
+                        "selectors": 17,
+                        "declarations": 50
+                    }
+                }
+            }
+        }
+    ],
+    "limits": [
+        "This suite primarily measures Chromium load-time browser costs as deterministic CSS rule volume grows while visible DOM stays fixed.",
+        "Neutral CSS volume variants are browser-only controls; they are not a Master CSS versus Tailwind CSS comparison.",
+        "Stress DOM variants are secondary diagnostics for DOM scaling with fixed CSS and should not be used as the main delivery-mode decision input.",
+        "DOM control variants record repeated item count, measured DOM node count, fixed CSS bytes, and fixed CSS structure so CSS and DOM axes can be separated.",
+        "This suite does not measure interaction mutation cost, runtime rule generation, HMR, or real application JavaScript.",
+        "Trace-derived event names can change across Chromium versions, so raw trace artifacts are kept for review before publishing public conclusions.",
+        "Cold-cache and warm-cache variants use fresh browser contexts per measured sample; warm-cache samples prime the context before tracing."
+    ]
+}

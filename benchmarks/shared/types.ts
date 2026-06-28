@@ -67,6 +67,11 @@ export interface BenchmarkPackage {
     version: string
 }
 
+export interface BenchmarkBrowser {
+    name: string
+    version: string
+}
+
 export interface ByteSummary {
     rawBytes: number
     gzipBytes: number
@@ -116,6 +121,7 @@ export interface BenchmarkReport {
     suite: BenchmarkSuiteId
     generatedAt: string
     environment: BenchmarkEnvironment
+    browser?: BenchmarkBrowser
     packages: BenchmarkPackage[]
     fixtures: BenchmarkFixture[]
     adapters: BenchmarkAdapter[]

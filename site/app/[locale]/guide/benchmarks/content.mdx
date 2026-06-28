@@ -7,6 +7,12 @@ import {
     StaticStructureChart,
     StaticStructureTable
 } from './components/StaticTailwindComparison'
+import {
+    BrowserCSSCostSummary,
+    BrowserCSSCostTables,
+    BrowserCSSVolumeTraceChart,
+    BrowserDOMScalingTraceChart
+} from './components/BrowserCSSCostBenchmark'
 
 ## Overview [sr-only]
 Benchmarks make Master CSS output and delivery costs inspectable. They are useful for understanding tradeoffs, but they are not universal guarantees for every application.
@@ -23,7 +29,7 @@ This page is the public benchmark roadmap and results index for Master CSS. Curr
 | Available | Production build performance | How do cold and repeat production commands compare across Master CSS and Tailwind CSS? |
 | Available | CSS structure metrics | How many rules, selectors, declarations, at-rules, layers, and selector-complexity signals explain CSS byte differences? |
 | Internal | Build path diagnostics | Which Master CSS build, startup, extraction, and compiler substeps explain full command cost? |
-| Internal | Browser CSS cost | How does CSS rule volume affect stylesheet parsing, style calculation, layout, paint, and long tasks with fixed DOM, and how does DOM scaling behave as a fixed-CSS control? |
+| Available | Browser CSS cost | How does CSS rule volume affect stylesheet parsing, style calculation, layout, paint, and long tasks with fixed DOM, and how does DOM scaling behave as a fixed-CSS control? |
 | Internal | Master CSS delivery modes | What are the initial payload, browser load, runtime bootstrap, and progressive adoption costs of static, runtime, and progressive delivery? |
 | Internal | Interaction cost | How expensive are class toggles, rule generation, DOM insertion/removal, theme switches, and resize-triggered recalculation? |
 | Internal | Runtime mutation diagnostics | Which MutationObserver and ensure/delete rule substeps explain cleanup-cycle cost in runtime and progressive modes? |
@@ -128,6 +134,45 @@ These numbers do not measure browser parsing, style recalculation, layout, paint
 
 ---
 
+## Current result: Browser CSS cost
+The browser CSS cost benchmark uses local fixture pages, deterministic external CSS, Playwright, and Chromium tracing. It is a browser-only calibration suite, not a Master CSS versus Tailwind CSS comparison.
+
+### Snapshot summary
+This curated snapshot is generated from `browser-css-cost`. It keeps the CSS and DOM axes separate so later delivery-mode results can explain whether a cost comes from upfront rule volume, DOM size, or runtime work.
+
+<figure>
+    <BrowserCSSCostSummary />
+    <figcaption>Summary of the curated browser CSS cost snapshot.</figcaption>
+</figure>
+
+### CSS rule volume
+The primary curve keeps visible DOM fixed and varies deterministic external CSS rule volume. The charts show warm-cache median Chromium trace timings for style recalculation, layout, and paint.
+
+<figure>
+    <BrowserCSSVolumeTraceChart />
+    <figcaption>Warm-cache trace timing medians while CSS rule volume grows and visible DOM stays fixed.</figcaption>
+</figure>
+
+### DOM scaling control
+The secondary control keeps CSS fixed and increases repeated DOM items. This helps separate DOM, style, and layout scaling from CSS payload size.
+
+<figure>
+    <BrowserDOMScalingTraceChart />
+    <figcaption>Warm-cache trace timing medians while DOM volume grows and CSS stays fixed.</figcaption>
+</figure>
+
+### Browser cost data table
+The complete table includes cold-cache and warm-cache variants for both axes.
+
+<figure>
+    <BrowserCSSCostTables />
+    <figcaption>Complete browser CSS cost snapshot data for CSS volume and DOM scaling variants.</figcaption>
+</figure>
+
+These numbers do not measure runtime rule generation, interaction mutation cost, HMR, real application JavaScript, Firefox, WebKit, CDN behavior, or public real-world page variance. Chromium trace event names can change across browser versions, so browser-cost conclusions should be read with the fixture source, package versions, browser version, sample count, and committed snapshot data.
+
+---
+
 ## Fixture matrix
 Future fixture-based suites should use equivalent UI output rather than identical class strings.
 
@@ -188,7 +233,7 @@ Tailwind CSS and Master CSS fixtures should render equivalent UI, but they do no
 ---
 
 ## Browser CSS cost
-Large CSS can affect the browser even when no JavaScript framework is involved. The internal browser-cost suite keeps the CSS and DOM axes separate so later delivery-mode comparisons can explain whether a result came from upfront rule volume, DOM size, or runtime work.
+Large CSS can affect the browser even when no JavaScript framework is involved. The browser-cost suite keeps the CSS and DOM axes separate so later delivery-mode comparisons can explain whether a result came from upfront rule volume, DOM size, or runtime work.
 
 ### Primary: CSS rule volume
 The primary calibration keeps visible DOM fixed and varies deterministic external CSS rule volume:
@@ -240,7 +285,7 @@ The internal runtime mutation diagnostics suite narrows the cleanup-cycle hotspo
 | 2 | Add shared fixture manifests, adapter names, normalized report schemas, ignored raw artifacts, and curated JSON/Markdown output. |
 | 3 | Available: implement and publish curated CSS output and production build benchmarks for Master CSS static output versus Tailwind CSS CLI/Vite. |
 | 4 | Available: publish CSS structure metrics from the curated static comparison snapshot. |
-| 5 | Internal: implement browser load cost suites with Playwright/browser tracing, correctness checks, and stable fixture pages. |
+| 5 | Available: implement and publish browser load cost suites with Playwright/browser tracing, correctness checks, and stable fixture pages. |
 | 6 | Internal: implement Master CSS static, runtime, and progressive delivery benchmarks with local Chromium payload/load/adoption measurements. |
 | 7 | Internal: implement interaction cost suites with Playwright/browser tracing, correctness checks, and stable fixture pages. |
 | 8 | Internal: diagnose runtime mutation cleanup hotspots before optimizing runtime/progressive interaction behavior. |

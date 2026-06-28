@@ -37,6 +37,10 @@ function renderBenchmarkReportMarkdown(report: BenchmarkReport) {
         '|---|---|'
     ]
 
+    if (report.browser) {
+        lines.splice(5, 0, `- Browser: ${report.browser.name} ${report.browser.version}`)
+    }
+
     for (const packageInfo of report.packages) {
         lines.push(`| ${packageInfo.name} | ${packageInfo.version} |`)
     }

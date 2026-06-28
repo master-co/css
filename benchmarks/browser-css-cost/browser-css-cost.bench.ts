@@ -62,6 +62,7 @@ async function createBrowserCSSCostReport(): Promise<BenchmarkReport> {
     const rounds = getBrowserCostRounds()
     const warmupRounds = getBrowserCostWarmupRounds()
     const browser = await chromium.launch({ headless: true })
+    const browserVersion = browser.version()
 
     try {
         for (const level of browserCostCSSVolumeLevels) {
@@ -122,6 +123,10 @@ async function createBrowserCSSCostReport(): Promise<BenchmarkReport> {
         suite: 'browser-css-cost',
         generatedAt: new Date().toISOString(),
         environment: collectEnvironment(),
+        browser: {
+            name: 'Chromium',
+            version: browserVersion
+        },
         packages: await collectPackageVersions([
             '@playwright/test',
             'css-tree'

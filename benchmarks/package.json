@@ -16,6 +16,7 @@
         "bench:runtime-mutation-diagnostics": "vitest bench runtime-mutation-diagnostics",
         "bench:runtime-style-invalidation-diagnostics": "vitest bench runtime-style-invalidation-diagnostics",
         "bench:startup-diagnostics": "vitest bench startup-diagnostics",
+        "snapshot:browser-css-cost": "node browser-css-cost/update-snapshot.mjs",
         "snapshot:tailwind-static-comparison": "node tailwind-static-comparison/update-snapshot.mjs"
     },
     "dependencies": {
