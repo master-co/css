@@ -31,6 +31,7 @@ async function createMasterDeliveryModeReport(): Promise<BenchmarkReport> {
     const rounds = getMasterDeliveryModeRounds()
     console.log('Launching Chromium for Master delivery mode benchmark')
     const browser = await chromium.launch({ headless: true })
+    const browserVersion = browser.version()
 
     try {
         for (const fixtureId of masterDeliveryModeFixtureIds) {
@@ -67,6 +68,10 @@ async function createMasterDeliveryModeReport(): Promise<BenchmarkReport> {
         suite: 'master-delivery-modes',
         generatedAt: new Date().toISOString(),
         environment: collectEnvironment(),
+        browser: {
+            name: 'Chromium',
+            version: browserVersion
+        },
         packages: await collectPackageVersions([
             '@master/css',
             '@master/css-cli',

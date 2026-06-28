@@ -13,6 +13,13 @@ import {
     BrowserCSSVolumeTraceChart,
     BrowserDOMScalingTraceChart
 } from './components/BrowserCSSCostBenchmark'
+import {
+    MasterDeliveryLoadChart,
+    MasterDeliveryModesSummary,
+    MasterDeliveryModesTables,
+    MasterDeliveryPayloadChart,
+    MasterDeliveryRuntimeChart
+} from './components/MasterDeliveryModesBenchmark'
 
 ## Overview [sr-only]
 Benchmarks make Master CSS output and delivery costs inspectable. They are useful for understanding tradeoffs, but they are not universal guarantees for every application.
@@ -30,7 +37,7 @@ This page is the public benchmark roadmap and results index for Master CSS. Curr
 | Available | CSS structure metrics | How many rules, selectors, declarations, at-rules, layers, and selector-complexity signals explain CSS byte differences? |
 | Internal | Build path diagnostics | Which Master CSS build, startup, extraction, and compiler substeps explain full command cost? |
 | Available | Browser CSS cost | How does CSS rule volume affect stylesheet parsing, style calculation, layout, paint, and long tasks with fixed DOM, and how does DOM scaling behave as a fixed-CSS control? |
-| Internal | Master CSS delivery modes | What are the initial payload, browser load, runtime bootstrap, and progressive adoption costs of static, runtime, and progressive delivery? |
+| Available | Master CSS delivery modes | What are the initial payload, browser load, runtime bootstrap, and progressive adoption costs of static, runtime, and progressive delivery? |
 | Internal | Interaction cost | How expensive are class toggles, rule generation, DOM insertion/removal, theme switches, and resize-triggered recalculation? |
 | Internal | Runtime mutation diagnostics | Which MutationObserver and ensure/delete rule substeps explain cleanup-cycle cost in runtime and progressive modes? |
 | Research | Tailwind CSS runtime-equivalent comparisons | Tailwind CSS is build-time-first, so runtime claims must be limited to comparable browser CSS costs. |
@@ -173,6 +180,56 @@ These numbers do not measure runtime rule generation, interaction mutation cost,
 
 ---
 
+## Current result: Master CSS delivery modes
+The Master CSS delivery modes benchmark compares initial payload, local Chromium load cost, runtime bootstrap, manifest loading, and progressive adoption across Master CSS static, runtime, progressive, and Tailwind CSS static variants.
+
+### Snapshot summary
+This curated snapshot is generated from `master-delivery-modes`. It uses the static fixture set and reports local Chromium medians beside payload bytes and delivered CSS structure.
+
+<figure>
+    <MasterDeliveryModesSummary />
+    <figcaption>Summary of the curated Master CSS delivery modes snapshot.</figcaption>
+</figure>
+
+### Representative fixture
+The primary charts show the `docs` fixture so the visual comparison stays focused on a dense article and documentation layout.
+
+#### Initial payload
+Payload composition includes HTML, external CSS, inline CSS, runtime JavaScript, manifest JSON, and progressive hydration manifest bytes. Values use brotli compression.
+
+<figure>
+    <MasterDeliveryPayloadChart />
+    <figcaption>Brotli-compressed initial payload composition for the `docs` fixture.</figcaption>
+</figure>
+
+#### Browser load
+Load timing charts show local Chromium medians for navigation-ready, style recalculation, layout, and paint.
+
+<figure>
+    <MasterDeliveryLoadChart />
+    <figcaption>Local Chromium load timing medians for the `docs` fixture.</figcaption>
+</figure>
+
+#### Runtime bootstrap
+Runtime bootstrap and observe timings apply to Master runtime and progressive modes.
+
+<figure>
+    <MasterDeliveryRuntimeChart />
+    <figcaption>Master runtime bootstrap and observe medians for the `docs` fixture.</figcaption>
+</figure>
+
+### Complete data table
+The full table keeps every measured fixture and delivery mode for verification.
+
+<figure>
+    <MasterDeliveryModesTables />
+    <figcaption>Complete Master CSS delivery mode snapshot data for every measured fixture and mode.</figcaption>
+</figure>
+
+These numbers measure initial local fixture loads only. They do not measure post-load mutation, route transitions, HMR, dev workflow, Vite injection cost, CDN behavior, Firefox, WebKit, or public real-world page variance. Master static and Tailwind static use CLI-generated CSS from equivalent rendered fixture intent, not identical class strings.
+
+---
+
 ## Fixture matrix
 Future fixture-based suites should use equivalent UI output rather than identical class strings.
 
@@ -215,7 +272,7 @@ CSS structure metrics are published beside byte size and production build timing
 
 Progressive begins with server/build-time CSS in the HTML and adds a runtime handoff, so its benchmark needs both first-response payload metrics and post-hydration mutation metrics.
 
-The internal delivery-mode suite currently measures initial payload, local Chromium page load, runtime bootstrap, manifest loading, and progressive style adoption across Master CSS static, runtime, progressive, and Tailwind CSS static variants. It does not publish public result tables yet, and it does not measure post-load mutation; those interaction costs stay in the next suite.
+The delivery-mode suite measures initial payload, local Chromium page load, runtime bootstrap, manifest loading, and progressive style adoption across Master CSS static, runtime, progressive, and Tailwind CSS static variants. It does not measure post-load mutation; those interaction costs stay in the next suite.
 
 ---
 
@@ -286,7 +343,7 @@ The internal runtime mutation diagnostics suite narrows the cleanup-cycle hotspo
 | 3 | Available: implement and publish curated CSS output and production build benchmarks for Master CSS static output versus Tailwind CSS CLI/Vite. |
 | 4 | Available: publish CSS structure metrics from the curated static comparison snapshot. |
 | 5 | Available: implement and publish browser load cost suites with Playwright/browser tracing, correctness checks, and stable fixture pages. |
-| 6 | Internal: implement Master CSS static, runtime, and progressive delivery benchmarks with local Chromium payload/load/adoption measurements. |
+| 6 | Available: implement and publish Master CSS static, runtime, and progressive delivery benchmarks with local Chromium payload/load/adoption measurements. |
 | 7 | Internal: implement interaction cost suites with Playwright/browser tracing, correctness checks, and stable fixture pages. |
 | 8 | Internal: diagnose runtime mutation cleanup hotspots before optimizing runtime/progressive interaction behavior. |
 | 9 | Continue publishing curated result tables on this page while keeping planned/research suites visible until measured. |
