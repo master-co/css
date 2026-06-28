@@ -5,10 +5,6 @@ import type { Plugin, ResolvedConfig } from 'vite'
 import ManifestLoaderPlugin from './plugins/manifest-loader'
 import ManifestVirtualModulePlugin from './plugins/manifest-virtual-module'
 import EmittedGlobalsVirtualModulePlugin from './plugins/emitted-globals-virtual-module'
-import StaticMode from './modes/static'
-import RuntimeMode from './modes/runtime'
-import ProgressiveMode from './modes/progressive'
-import PreRenderMode from './modes/pre-render'
 import ContextPlugin from './plugins/context'
 import ScannerPlugin from './plugins/scanner'
 import UsageGraphPlugin from './plugins/usage-graph'
@@ -16,7 +12,7 @@ import LocalComposePlugin from './plugins/local-compose'
 import StyleEntryPlugin from './plugins/style-entry'
 import StyleEntryHMRPlugin from './plugins/style-entry-hmr'
 import StyleEntryBuildPlugin from './plugins/style-entry-build'
-import defaultPluginOptions, { PluginOptions } from './options'
+import defaultPluginOptions, { type PluginOptions } from './options'
 
 export interface PluginContext {
     config?: ResolvedConfig
@@ -49,18 +45,147 @@ export default function masterCSS(options?: PluginOptions): Plugin[] {
     ]
     switch (options.mode) {
         case 'runtime':
-            plugins.push(...RuntimeMode(options, context))
+            if (options.injectRuntime) {
+                plugins.push(InjectRuntimePlugin(options))
+                plugins.push(ManifestPreloadPlugin(context))
+            }
+            if (options.avoidFOUC) {
+                plugins.push(AvoidFOUCPlugin(options, context))
+            }
             break
         case 'static':
-            plugins.push(...StaticMode(options, context))
             break
         case 'progressive':
-            plugins.push(...ProgressiveMode(options, context))
+            plugins.push(PreRenderPlugin(options, context))
+            if (options.injectRuntime) {
+                plugins.push(InjectRuntimePlugin(options))
+            }
             break
         case 'pre-render':
-            plugins.push(...PreRenderMode(options, context))
+            plugins.push(PreRenderPlugin(options, context))
             break
     }
 
     return plugins
+}
+
+type LazyPluginHook =
+    | 'configResolved'
+    | 'buildStart'
+    | 'handleHotUpdate'
+    | 'configureServer'
+    | 'transform'
+    | 'generateBundle'
+    | 'transformIndexHtml'
+    | {
+        name: 'transformIndexHtml'
+        order: 'pre' | 'post'
+    }
+
+type HookObject = {
+    handler?: (...args: unknown[]) => unknown
+}
+
+function InjectRuntimePlugin(options: PluginOptions): Plugin {
+    return createLazyPlugin(
+        {
+            name: 'master-css:inject-runtime',
+            enforce: 'pre'
+        },
+        async () => (await import('./plugins/inject-runtime')).default(options),
+        [{ name: 'transformIndexHtml', order: 'pre' }]
+    )
+}
+
+function ManifestPreloadPlugin(context: PluginContext): Plugin {
+    return createLazyPlugin(
+        {
+            name: 'master-css:manifest-preload',
+            apply: 'build'
+        },
+        async () => (await import('./plugins/manifest-preload')).default(context),
+        [{ name: 'transformIndexHtml', order: 'post' }]
+    )
+}
+
+function AvoidFOUCPlugin(options: PluginOptions, context: PluginContext): Plugin {
+    return createLazyPlugin(
+        {
+            name: 'master-css:avoid-fouc',
+            enforce: 'pre'
+        },
+        async () => (await import('./plugins/avoid-fouc')).default(options, context),
+        ['transformIndexHtml', 'transform']
+    )
+}
+
+function PreRenderPlugin(options: PluginOptions, context: PluginContext): Plugin {
+    return createLazyPlugin(
+        {
+            name: 'master-css:pre-render',
+            enforce: 'pre'
+        },
+        async () => (await import('./plugins/pre-render')).default(options, context),
+        [
+            'configResolved',
+            'buildStart',
+            'handleHotUpdate',
+            'configureServer',
+            'transformIndexHtml',
+            'transform',
+            'generateBundle'
+        ]
+    )
+}
+
+function createLazyPlugin(
+    shell: Pick<Plugin, 'name' | 'enforce' | 'apply'>,
+    loadPlugin: () => Promise<Plugin>,
+    hooks: LazyPluginHook[]
+): Plugin {
+    let loadedPlugin: Plugin | undefined
+    let pluginPromise: Promise<Plugin> | undefined
+    const load = () => {
+        if (loadedPlugin) return Promise.resolve(loadedPlugin)
+        pluginPromise ||= loadPlugin().then((plugin) => {
+            loadedPlugin = plugin
+            return plugin
+        })
+        return pluginPromise
+    }
+    const call = (hookName: string, thisArg: unknown, args: unknown[]) => {
+        if (loadedPlugin) return callLazyPluginHook(loadedPlugin, hookName, thisArg, args)
+        return load().then((plugin) => callLazyPluginHook(plugin, hookName, thisArg, args))
+    }
+    const plugin = { ...shell } as Plugin & Record<string, unknown>
+
+    for (const hook of hooks) {
+        if (typeof hook === 'object') {
+            plugin[hook.name] = {
+                order: hook.order,
+                handler(this: unknown, ...args: unknown[]) {
+                    return call(hook.name, this, args)
+                }
+            }
+            continue
+        }
+
+        plugin[hook] = function lazyPluginHook(this: unknown, ...args: unknown[]) {
+            return call(hook, this, args)
+        }
+    }
+
+    return plugin
+}
+
+function callLazyPluginHook(plugin: Plugin, hookName: string, thisArg: unknown, args: unknown[]) {
+    const hook = (plugin as unknown as Record<string, unknown>)[hookName]
+    if (typeof hook === 'function') return hook.apply(thisArg, args)
+    if (isHookObject(hook) && typeof hook.handler === 'function') {
+        return hook.handler.apply(thisArg, args)
+    }
+}
+
+function isHookObject(value: unknown): value is HookObject {
+    return !!value && typeof value === 'object'
 }
