@@ -41,6 +41,7 @@ interface ChromeTraceEvent {
 
 interface RuntimeMutationDiagnostics {
     mutationObserverCallbackCount: number
+    mutationObserverCallbackDurationMs: number
     mutationRecordCount: number
     mutationAddedNodeCount: number
     mutationRemovedNodeCount: number

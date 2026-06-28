@@ -72,6 +72,7 @@ interface InteractionScenarioDescriptor {
 export type InteractionPageSuite =
     | 'interaction-cost'
     | 'runtime-mutation-diagnostics'
+    | 'runtime-style-invalidation-diagnostics'
 
 export interface InteractionPage {
     root: string
@@ -1000,6 +1001,7 @@ function renderInteractionScript(options: {
         '            const metrics = window.__interactionMetrics || {};',
         '            return {',
         '                mutationObserverCallbackCount: metrics.mutationObserverCallbackCount || 0,',
+        '                mutationObserverCallbackDurationMs: metrics.mutationObserverCallbackDurationMs || 0,',
         '                mutationRecordCount: metrics.mutationRecordCount || 0,',
         '                mutationAddedNodeCount: metrics.mutationAddedNodeCount || 0,',
         '                mutationRemovedNodeCount: metrics.mutationRemovedNodeCount || 0,',
@@ -1367,6 +1369,7 @@ function addRuntimeHarness(html: string, options: {
         '                runtimeMutationMs: 0,',
         '                collectInteractionMutations: false,',
         '                mutationObserverCallbackCount: 0,',
+        '                mutationObserverCallbackDurationMs: 0,',
         '                mutationRecordCount: 0,',
         '                mutationAddedNodeCount: 0,',
         '                mutationRemovedNodeCount: 0,',
@@ -1390,6 +1393,7 @@ function addRuntimeHarness(html: string, options: {
         '        }',
         '        function resetRuntimeMutationDiagnostics(metrics) {',
         '            metrics.mutationObserverCallbackCount = 0;',
+        '            metrics.mutationObserverCallbackDurationMs = 0;',
         '            metrics.mutationRecordCount = 0;',
         '            metrics.mutationAddedNodeCount = 0;',
         '            metrics.mutationRemovedNodeCount = 0;',
@@ -1416,6 +1420,7 @@ function addRuntimeHarness(html: string, options: {
         '                constructor(callback) {',
         '                    super((records, observer) => {',
         '                        const metrics = window.__interactionMetrics;',
+        '                        const startedAt = performance.now();',
         '                        if (metrics?.collectInteractionMutations) {',
         '                            metrics.mutationObserverCallbackCount++;',
         '                            metrics.mutationRecordCount += records.length;',
@@ -1427,7 +1432,11 @@ function addRuntimeHarness(html: string, options: {
         '                                }',
         '                            }',
         '                        }',
-        '                        callback(records, observer);',
+        '                        try {',
+        '                            callback(records, observer);',
+        '                        } finally {',
+        '                            if (metrics?.collectInteractionMutations) metrics.mutationObserverCallbackDurationMs += performance.now() - startedAt;',
+        '                        }',
         '                    });',
         '                }',
         '            };',
@@ -1901,6 +1910,7 @@ declare global {
         runtimeMutationMs: number
         collectInteractionMutations: boolean
         mutationObserverCallbackCount?: number
+        mutationObserverCallbackDurationMs?: number
         mutationRecordCount?: number
         mutationAddedNodeCount?: number
         mutationRemovedNodeCount?: number
@@ -1937,6 +1947,7 @@ declare global {
     var __readInteractionState: () => RuntimeState
     var __readRuntimeMutationDiagnostics: () => {
         mutationObserverCallbackCount: number
+        mutationObserverCallbackDurationMs: number
         mutationRecordCount: number
         mutationAddedNodeCount: number
         mutationRemovedNodeCount: number

@@ -20,6 +20,11 @@ export interface CommandRunResult {
     stderr: string
 }
 
+export interface CommandRunOptions {
+    env?: NodeJS.ProcessEnv
+    timeoutMs?: number
+}
+
 export async function resetDirectory(path: string) {
     await rm(path, { recursive: true, force: true })
     await mkdir(path, { recursive: true })
@@ -37,7 +42,7 @@ export function resolveBenchmarkPackageFile(packageName: string, file: string) {
     return resolve(benchmarkRoot, 'node_modules', ...packageName.split('/'), file)
 }
 
-export async function runCommand(command: string, args: string[], cwd: string): Promise<CommandRunResult> {
+export async function runCommand(command: string, args: string[], cwd: string, options: CommandRunOptions = {}): Promise<CommandRunResult> {
     const startedAt = performance.now()
 
     try {
@@ -45,10 +50,11 @@ export async function runCommand(command: string, args: string[], cwd: string): 
             cwd,
             env: {
                 ...process.env,
+                ...options.env,
                 FORCE_COLOR: '0',
                 NO_COLOR: '1'
             },
-            timeout: getCommandTimeoutMs(),
+            timeout: options.timeoutMs ?? getCommandTimeoutMs(),
             killSignal: 'SIGTERM',
             maxBuffer: 1024 * 1024 * 32
         })

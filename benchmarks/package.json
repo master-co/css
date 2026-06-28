@@ -14,6 +14,7 @@
         "bench:progressive-hydration-diagnostics": "vitest bench progressive-hydration-diagnostics",
         "bench:report-smoke": "vitest bench report-smoke",
         "bench:runtime-mutation-diagnostics": "vitest bench runtime-mutation-diagnostics",
+        "bench:runtime-style-invalidation-diagnostics": "vitest bench runtime-style-invalidation-diagnostics",
         "bench:startup-diagnostics": "vitest bench startup-diagnostics",
         "snapshot:tailwind-static-comparison": "node tailwind-static-comparison/update-snapshot.mjs"
     },

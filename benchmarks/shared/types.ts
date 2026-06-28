@@ -30,6 +30,7 @@ export type BenchmarkSuiteId =
     | 'browser-css-cost'
     | 'interaction-cost'
     | 'runtime-mutation-diagnostics'
+    | 'runtime-style-invalidation-diagnostics'
 
 export type BenchmarkMetricUnit = 'B' | 'ms' | 'count' | 'ratio' | 'percent' | 'score'
 
