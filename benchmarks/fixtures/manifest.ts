@@ -6,7 +6,7 @@ export const benchmarkFixtures = [
         name: 'Minimal',
         purpose: 'Small useful page or landing section.',
         stress: 'Framework overhead, cold-start cost, and minimum payload.',
-        suites: ['css-output-size', 'css-structure', 'build-performance', 'build-diagnostics', 'extraction-diagnostics', 'compiler-diagnostics', 'startup-diagnostics', 'master-delivery-modes', 'progressive-hydration-diagnostics'],
+        suites: ['css-output-size', 'css-structure', 'build-performance', 'build-diagnostics', 'extraction-diagnostics', 'compiler-diagnostics', 'startup-diagnostics', 'master-delivery-modes', 'progressive-hydration-diagnostics', 'browser-lifecycle'],
         limits: ['Not representative of dense application UI.']
     },
     {
@@ -14,7 +14,7 @@ export const benchmarkFixtures = [
         name: 'Docs',
         purpose: 'Dense article, navigation, code blocks, and tables.',
         stress: 'Documentation layout, typography, and nested content.',
-        suites: ['css-output-size', 'css-structure', 'build-performance', 'build-diagnostics', 'extraction-diagnostics', 'compiler-diagnostics', 'startup-diagnostics', 'master-delivery-modes', 'progressive-hydration-diagnostics', 'browser-css-cost'],
+        suites: ['css-output-size', 'css-structure', 'build-performance', 'build-diagnostics', 'extraction-diagnostics', 'compiler-diagnostics', 'startup-diagnostics', 'master-delivery-modes', 'progressive-hydration-diagnostics', 'browser-css-cost', 'browser-lifecycle'],
         limits: ['Does not model frequent runtime mutation.']
     },
     {
@@ -22,7 +22,7 @@ export const benchmarkFixtures = [
         name: 'Dashboard',
         purpose: 'Repeated cards, tables, filters, charts, and states.',
         stress: 'Rule reuse, duplicated utilities, and large DOM.',
-        suites: ['css-output-size', 'css-structure', 'build-performance', 'build-diagnostics', 'extraction-diagnostics', 'compiler-diagnostics', 'startup-diagnostics', 'master-delivery-modes', 'progressive-hydration-diagnostics', 'browser-css-cost', 'interaction-cost'],
+        suites: ['css-output-size', 'css-structure', 'build-performance', 'build-diagnostics', 'extraction-diagnostics', 'compiler-diagnostics', 'startup-diagnostics', 'master-delivery-modes', 'progressive-hydration-diagnostics', 'browser-css-cost', 'interaction-cost', 'browser-lifecycle'],
         limits: ['Chart visuals are fixture placeholders, not a chart-library benchmark.']
     },
     {
@@ -30,7 +30,7 @@ export const benchmarkFixtures = [
         name: 'Dynamic',
         purpose: 'Insert, remove, and toggle classes during interaction.',
         stress: 'Runtime mutation, extraction limits, and recalculation cost.',
-        suites: ['master-delivery-modes', 'interaction-cost', 'runtime-mutation-diagnostics', 'runtime-style-invalidation-diagnostics'],
+        suites: ['master-delivery-modes', 'interaction-cost', 'runtime-mutation-diagnostics', 'runtime-style-invalidation-diagnostics', 'browser-lifecycle'],
         limits: ['Browser scheduling can affect interaction timing.']
     },
     {
@@ -46,7 +46,7 @@ export const benchmarkFixtures = [
         name: 'Stress DOM',
         purpose: 'Large DOM with fixed CSS.',
         stress: 'DOM, style, and layout scaling isolated from CSS output size.',
-        suites: ['browser-css-cost', 'interaction-cost', 'runtime-mutation-diagnostics', 'runtime-style-invalidation-diagnostics'],
+        suites: ['browser-css-cost', 'interaction-cost', 'runtime-mutation-diagnostics', 'runtime-style-invalidation-diagnostics', 'browser-lifecycle'],
         limits: ['Intentionally artificial DOM volume.']
     }
 ] satisfies BenchmarkFixture[]

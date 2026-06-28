@@ -28,6 +28,7 @@ export type BenchmarkSuiteId =
     | 'master-delivery-modes'
     | 'progressive-hydration-diagnostics'
     | 'browser-css-cost'
+    | 'browser-lifecycle'
     | 'interaction-cost'
     | 'runtime-mutation-diagnostics'
     | 'runtime-style-invalidation-diagnostics'
