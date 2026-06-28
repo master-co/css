@@ -76,16 +76,16 @@ export default () => (
                 </tr>
                 <tr>
                     <th>Style calculation</th>
-                    <td><InlineGood />Minimal</td>
-                    <td><InlineGood />Minimal</td>
-                    <td><InlineWarn />Heavy</td>
-                    <td><InlineGood />Minimal</td>
+                    <td><InlineWarn />Hydrated + dynamic</td>
+                    <td><InlineWarn />Dynamic</td>
+                    <td><InlineGood />Prebuilt</td>
+                    <td><InlineGood />Initial</td>
                 </tr>
                 <tr>
                     <th>Memory overhead</th>
-                    <td><InlineGood />Lifecycle</td>
-                    <td><InlineGood />Lifecycle</td>
-                    <td><InlineWarn />Heavy</td>
+                    <td><InlineWarn />Runtime cache</td>
+                    <td><InlineWarn />Runtime cache</td>
+                    <td><InlineWarn />CSS bundle</td>
                     <td><InlineGood />Minimal</td>
                 </tr>
                 <tr>

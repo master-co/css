@@ -26,7 +26,7 @@ This page is the public benchmark roadmap and results index for Master CSS. Curr
 | Internal | Browser CSS cost | How does CSS rule volume affect stylesheet parsing, style calculation, layout, paint, and long tasks with fixed DOM, and how does DOM scaling behave as a fixed-CSS control? |
 | Internal | Master CSS delivery modes | What are the initial payload, browser load, runtime bootstrap, and progressive adoption costs of static, runtime, and progressive delivery? |
 | Internal | Interaction cost | How expensive are class toggles, rule generation, DOM insertion/removal, theme switches, and resize-triggered recalculation? |
-| Internal | Runtime mutation diagnostics | Which MutationObserver and runtime add/remove substeps explain cleanup-cycle cost in runtime and progressive modes? |
+| Internal | Runtime mutation diagnostics | Which MutationObserver and ensure/delete rule substeps explain cleanup-cycle cost in runtime and progressive modes? |
 | Research | Tailwind CSS runtime-equivalent comparisons | Tailwind CSS is build-time-first, so runtime claims must be limited to comparable browser CSS costs. |
 | Research | Lighthouse and Web Vitals | Can local fixture runs produce stable enough FCP/LCP/CLS numbers to publish as secondary signals? |
 | Research | Firefox and WebKit browser cost | Can cross-browser trace collection become stable enough to compare beside Chromium results? |
@@ -229,7 +229,7 @@ The internal interaction-cost suite now measures changes users can feel:
 
 For Master CSS runtime and progressive modes, the suite reports both DOM work and runtime stylesheet work. For static Tailwind CSS output, the comparable measurement is the browser's style/layout/paint cost after the DOM or class change. These results stay internal until the fixture coverage and repeated-sample variance are reviewed.
 
-The internal runtime mutation diagnostics suite narrows the cleanup-cycle hotspot to `dynamic` and `stress-dom` fixtures in Master runtime and progressive modes. It records MutationObserver delivery counts, runtime `add`/`remove` call shape, temporary class cleanup, and Chromium trace timings so optimization work can target the confirmed source of cost.
+The internal runtime mutation diagnostics suite narrows the cleanup-cycle hotspot to `dynamic` and `stress-dom` fixtures in Master runtime and progressive modes. It records MutationObserver delivery counts, `ensureClassRules`/`deleteClassRules` call shape, temporary class cleanup, retained rule state, and Chromium trace timings so optimization work can target the confirmed source of cost.
 
 ---
 
