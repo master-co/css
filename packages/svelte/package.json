@@ -13,7 +13,7 @@
         "lint": "eslint"
     },
     "license": "MIT",
-    "description": "Integrate Master CSS in Svelte way",
+    "description": "Svelte and SvelteKit runtime integration for Master CSS",
     "author": "Aoyue Design LLC.",
     "funding": "https://rc.css.master.co/sponsor",
     "homepage": "https://css.master.co",

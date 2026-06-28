@@ -10,7 +10,7 @@
         </picture>
     </a>
 </p>
-<p align="center">Run Master CSS right in the browser</p>
+<p align="center">Browser runtime for Master CSS</p>
 
 <p align="center">
     <a aria-label="GitHub release (latest by date including pre-releases)" href="https://github.com/master-co/css/releases">

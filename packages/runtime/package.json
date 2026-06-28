@@ -11,7 +11,7 @@
         "lint": "eslint"
     },
     "license": "MIT",
-    "description": "Run Master CSS right in the browser",
+    "description": "Browser runtime for Master CSS",
     "author": "Aoyue Design LLC.",
     "funding": "https://rc.css.master.co/sponsor",
     "homepage": "https://css.master.co",

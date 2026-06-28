@@ -1,6 +1,6 @@
 # @master/css.next
 
-Integrate Master CSS with Next.js.
+Next.js integration for Master CSS.
 
 ## Installation
 

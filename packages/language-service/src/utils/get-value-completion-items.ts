@@ -76,7 +76,7 @@ export default function getValueCompletionItems(css: MasterCSS = createDefaultCS
                 completionItem.kind = CompletionItemKind.Color
                 completionItem.detail = variable.name
             } else {
-                // todo: packages/core should support getTextByVariable(variable)
+                // todo: @master/css should support getTextByVariable(variable)
                 const configKey = 'variables.' + (variable.namespace ? variable.namespace + '.' + variable.key : variable.name)
                 const valueToken = variable.value ?? variable.name
                 // detail is shown in the detail pane

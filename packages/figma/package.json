@@ -1,7 +1,7 @@
 {
     "name": "@master/css.figma",
     "version": "1.0.0",
-    "description": "Master CSS Figma Plugin",
+    "description": "Figma plugin for Master CSS variables and modes",
     "main": "./dist/plugin.min.js",
     "type": "module",
     "scripts": {

@@ -11,7 +11,7 @@
         "e2e": "playwright test -c playwright-ct.config.ts"
     },
     "license": "MIT",
-    "description": "Integrate Master CSS in Vue way",
+    "description": "Vue runtime provider and adapter for Master CSS",
     "author": "Aoyue Design LLC.",
     "funding": "https://rc.css.master.co/sponsor",
     "homepage": "https://css.master.co",

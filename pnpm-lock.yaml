@@ -321,7 +321,7 @@ importers:
         version: 21.1.0(@types/node@25.9.4)(conventional-commits-filter@5.0.0)(conventional-commits-parser@6.4.0)(typescript@6.0.3)
       '@master/css':
         specifier: workspace:^
-        version: link:packages/core
+        version: link:packages/facade
       '@master/css-cli':
         specifier: workspace:^
         version: link:packages/cli
@@ -445,7 +445,7 @@ importers:
     devDependencies:
       '@master/css':
         specifier: workspace:^
-        version: link:../packages/core
+        version: link:../packages/facade
       '@master/css-cli':
         specifier: workspace:^
         version: link:../packages/cli
@@ -532,7 +532,7 @@ importers:
         version: 22.0.3(62607e610fa15a49be9c0d87b9313b54)
       '@master/css':
         specifier: workspace:^
-        version: link:../../packages/core
+        version: link:../../packages/facade
       '@master/css-preset':
         specifier: workspace:^
         version: link:../../packages/preset
@@ -602,7 +602,7 @@ importers:
         version: 3.7.3
       '@master/css':
         specifier: workspace:^
-        version: link:../../packages/core
+        version: link:../../packages/facade
       '@master/css.astro':
         specifier: workspace:^
         version: link:../../packages/astro
@@ -614,7 +614,7 @@ importers:
     dependencies:
       '@master/css':
         specifier: workspace:^
-        version: link:../../packages/core
+        version: link:../../packages/facade
     devDependencies:
       '@master/css-integration':
         specifier: workspace:^
@@ -678,7 +678,7 @@ importers:
         version: 3.4.0(axios@1.18.0)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
       '@master/css':
         specifier: workspace:^
-        version: link:../../packages/core
+        version: link:../../packages/facade
       '@master/css.vite':
         specifier: workspace:^
         version: link:../../packages/vite
@@ -818,7 +818,7 @@ importers:
     dependencies:
       '@master/css':
         specifier: workspace:^
-        version: link:../../packages/core
+        version: link:../../packages/facade
       '@master/css-runtime':
         specifier: workspace:^
         version: link:../../packages/runtime
@@ -843,7 +843,7 @@ importers:
     dependencies:
       '@master/css':
         specifier: workspace:^
-        version: link:../../packages/core
+        version: link:../../packages/facade
       '@master/css.react':
         specifier: workspace:^
         version: link:../../packages/react
@@ -886,7 +886,7 @@ importers:
     dependencies:
       '@master/css':
         specifier: workspace:^
-        version: link:../../packages/core
+        version: link:../../packages/facade
       '@master/css.nuxt':
         specifier: workspace:^
         version: link:../../packages/nuxt
@@ -908,7 +908,7 @@ importers:
     dependencies:
       '@master/css':
         specifier: workspace:^
-        version: link:../../packages/core
+        version: link:../../packages/facade
       '@master/css.vite':
         specifier: workspace:^
         version: link:../../packages/vite
@@ -966,7 +966,7 @@ importers:
     dependencies:
       '@master/css':
         specifier: workspace:^
-        version: link:../../packages/core
+        version: link:../../packages/facade
       '@master/css.svelte':
         specifier: workspace:^
         version: link:../../packages/svelte
@@ -1018,7 +1018,7 @@ importers:
     dependencies:
       '@master/css':
         specifier: workspace:^
-        version: link:../../packages/core
+        version: link:../../packages/facade
     devDependencies:
       '@master/css.vite':
         specifier: workspace:^
@@ -1034,7 +1034,7 @@ importers:
     dependencies:
       '@master/css':
         specifier: workspace:^
-        version: link:../../packages/core
+        version: link:../../packages/facade
       '@master/css.vue':
         specifier: workspace:^
         version: link:../../packages/vue
@@ -1083,7 +1083,7 @@ importers:
     devDependencies:
       '@master/css':
         specifier: workspace:^
-        version: link:../../packages/core
+        version: link:../../packages/facade
       '@master/css.webpack':
         specifier: workspace:^
         version: link:../../packages/webpack
@@ -1122,7 +1122,7 @@ importers:
         version: 7.21.0
       '@master/css':
         specifier: workspace:^
-        version: link:../packages/core
+        version: link:../packages/facade
       '@master/css-engine':
         specifier: workspace:^
         version: link:../packages/engine
@@ -1456,7 +1456,7 @@ importers:
     dependencies:
       '@master/css':
         specifier: workspace:^
-        version: link:../core
+        version: link:../facade
       '@master/css-integration':
         specifier: workspace:^
         version: link:../integration
@@ -1487,7 +1487,7 @@ importers:
     dependencies:
       '@master/css':
         specifier: workspace:^
-        version: link:../core
+        version: link:../facade
       '@master/css-project':
         specifier: workspace:^
         version: link:../project
@@ -1554,7 +1554,7 @@ importers:
         specifier: ^2.3.11
         version: 2.3.11
 
-  packages/core:
+  packages/facade:
     dependencies:
       '@master/css-engine':
         specifier: workspace:^
@@ -1596,7 +1596,7 @@ importers:
     dependencies:
       '@master/css':
         specifier: workspace:^
-        version: link:../core
+        version: link:../facade
       '@master/css-lexer':
         specifier: workspace:^
         version: link:../lexer
@@ -1679,7 +1679,7 @@ importers:
         version: 1.129.0
       '@master/css':
         specifier: workspace:^
-        version: link:../core
+        version: link:../facade
       '@types/react':
         specifier: ^19.2.17
         version: 19.2.17
@@ -1721,7 +1721,7 @@ importers:
     dependencies:
       '@master/css':
         specifier: workspace:^
-        version: link:../core
+        version: link:../facade
       '@master/css-engine':
         specifier: workspace:^
         version: link:../engine
@@ -1761,7 +1761,7 @@ importers:
     dependencies:
       '@master/css':
         specifier: workspace:^
-        version: link:../core
+        version: link:../facade
       '@master/css-compiler':
         specifier: workspace:^
         version: link:../compiler
@@ -1803,7 +1803,7 @@ importers:
     dependencies:
       '@master/css':
         specifier: workspace:^
-        version: link:../core
+        version: link:../facade
       '@master/css-engine':
         specifier: workspace:^
         version: link:../engine
@@ -1864,7 +1864,7 @@ importers:
     dependencies:
       '@master/css':
         specifier: workspace:^
-        version: link:../core
+        version: link:../facade
       '@master/css-integration':
         specifier: workspace:^
         version: link:../integration
@@ -2007,7 +2007,7 @@ importers:
     dependencies:
       '@master/css':
         specifier: workspace:^
-        version: link:../core
+        version: link:../facade
       '@master/css-integration':
         specifier: workspace:^
         version: link:../integration
@@ -2057,7 +2057,7 @@ importers:
     devDependencies:
       '@master/css':
         specifier: workspace:^
-        version: link:../core
+        version: link:../facade
       '@master/css-compiler':
         specifier: workspace:^
         version: link:../compiler
@@ -2072,7 +2072,7 @@ importers:
     dependencies:
       '@master/css':
         specifier: workspace:^
-        version: link:../core
+        version: link:../facade
       '@master/css-lexer':
         specifier: workspace:^
         version: link:../lexer
@@ -2112,7 +2112,7 @@ importers:
     dependencies:
       '@master/css':
         specifier: workspace:^
-        version: link:../core
+        version: link:../facade
       '@master/css-preset':
         specifier: workspace:^
         version: link:../preset
@@ -2152,7 +2152,7 @@ importers:
     dependencies:
       '@master/css':
         specifier: workspace:^
-        version: link:../core
+        version: link:../facade
       '@master/css-compiler':
         specifier: workspace:^
         version: link:../compiler
@@ -2189,7 +2189,7 @@ importers:
     dependencies:
       '@master/css':
         specifier: workspace:^
-        version: link:../core
+        version: link:../facade
       '@master/css-integration':
         specifier: workspace:^
         version: link:../integration
@@ -2277,7 +2277,7 @@ importers:
     dependencies:
       '@master/css':
         specifier: workspace:^
-        version: link:../core
+        version: link:../facade
       '@master/css-preset':
         specifier: workspace:^
         version: link:../preset
@@ -2299,7 +2299,7 @@ importers:
     dependencies:
       '@master/css':
         specifier: workspace:^
-        version: link:../core
+        version: link:../facade
       '@master/css-integration':
         specifier: workspace:^
         version: link:../integration
@@ -2382,7 +2382,7 @@ importers:
     dependencies:
       '@master/css':
         specifier: workspace:^
-        version: link:../core
+        version: link:../facade
       '@master/css-integration':
         specifier: workspace:^
         version: link:../integration
@@ -2446,7 +2446,7 @@ importers:
     dependencies:
       '@master/css':
         specifier: workspace:^
-        version: link:../core
+        version: link:../facade
       '@master/css-integration':
         specifier: workspace:^
         version: link:../integration
@@ -2479,7 +2479,7 @@ importers:
     dependencies:
       '@master/css':
         specifier: workspace:^
-        version: link:../packages/core
+        version: link:../packages/facade
       '@master/css-compiler':
         specifier: workspace:^
         version: link:../packages/compiler

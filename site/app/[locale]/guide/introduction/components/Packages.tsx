@@ -10,7 +10,7 @@ type PackageMetadata = {
 }
 
 const mainPackages = [
-    await import('~/packages/core/package.json'),
+    await import('~/packages/facade/package.json'),
     await import('~/packages/runtime/package.json'),
     await import('~/packages/server/package.json'),
     await import('~/packages/scanner/package.json'),

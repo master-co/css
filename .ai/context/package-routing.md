@@ -23,7 +23,7 @@ For `packages/<name>/**`, read `packages/<name>/package.json` and `packages/<nam
 | `packages/source/**` | `@master/css-source` | `package-boundaries.md`, `testing.md` |
 | `packages/engine/**` | `@master/css-engine` | `css-output.md`, `performance.md` |
 | `packages/preset/**` | `@master/css-preset` | `css-output.md` |
-| `packages/core/**` | `@master/css` | `package-boundaries.md`, `css-output.md` |
+| `packages/facade/**` | `@master/css` | `package-boundaries.md`, `css-output.md` |
 | `packages/compiler/**` | `@master/css-compiler` | `css-output.md`, `package-boundaries.md` |
 | `packages/project/**` | `@master/css-project` | `package-boundaries.md` |
 | `packages/integration/**` | `@master/css-integration` | `package-boundaries.md` |

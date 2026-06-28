@@ -10,7 +10,7 @@
         </picture>
     </a>
 </p>
-<p align="center">Integrate Master CSS in Svelte way</p>
+<p align="center">Svelte and SvelteKit runtime integration for Master CSS</p>
 
 <p align="center">
     <a aria-label="GitHub release (latest by date including pre-releases)" href="https://github.com/master-co/css/releases">

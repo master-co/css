@@ -9,7 +9,7 @@
         "lint": "eslint"
     },
     "license": "MIT",
-    "description": "Integrate Master CSS in Astro way",
+    "description": "Astro integration for Master CSS",
     "author": "Aoyue Design LLC.",
     "funding": "https://rc.css.master.co/sponsor",
     "homepage": "https://css.master.co",

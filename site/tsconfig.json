@@ -47,6 +47,8 @@
             "@master/css-lexer/*": [ "../node_modules/@master/css-lexer/src/*" ],
             "@master/css-schema": [ "../node_modules/@master/css-schema/src" ],
             "@master/css-schema/*": [ "../node_modules/@master/css-schema/src/*" ],
+            "@master/css-scanner": [ "../node_modules/@master/css-scanner/src" ],
+            "@master/css-scanner/*": [ "../node_modules/@master/css-scanner/src/*" ],
             "@master/css-stylesheet": [ "../node_modules/@master/css-stylesheet/src" ],
             "@master/css-stylesheet/*": [ "../node_modules/@master/css-stylesheet/src/*" ],
             "@master/css-validator": [ "../node_modules/@master/css-validator/src" ],

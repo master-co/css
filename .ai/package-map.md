@@ -14,7 +14,6 @@
 | `@master/css-server` | `.` | HTML render and CSS injection |
 | `@master/css-scanner` | `.`, `./options` | Static source scanning, class validation, scanner caches, and generated CSS scanner state |
 | `@master/css-stylesheet` | `.`, `./directives` | Stylesheet entry detection, CSS-first stylesheet compilation, native CSS pruning, generated CSS composition, and emittedGlobals manifest output |
-| `@master/postcss` | `.` | PostCSS directives for CSS-defined variables, utilities, and components |
 | `@master/css.vite` | `.` | Vite modes and plugin orchestration |
 | `@master/css.webpack` | `.` | Webpack extraction plugin |
 | `@master/css.astro` | `.` | Astro integration |

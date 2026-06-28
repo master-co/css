@@ -19,7 +19,7 @@ Current executable coverage anchors:
 - Engine representative parity: `packages/engine/tests/core-parity.test.ts`, `packages/engine/tests/master-css-manifest.test.ts`, and `packages/engine/tests/parser-parity.test.ts`.
 - Compiler CSS-first lowering: `packages/compiler/tests/master-css-manifest.test.ts` and `packages/compiler/tests/css-first-core-migration.test.ts`.
 - Preset source/default manifest: `packages/preset/tests/default-manifest.test.ts` and `packages/preset/tests/design-tokens.test.ts`.
-- Facade smoke: `packages/core/tests/facade.test.ts`.
+- Facade smoke: `packages/facade/tests/facade.test.ts`.
 
 Current audit summary:
 

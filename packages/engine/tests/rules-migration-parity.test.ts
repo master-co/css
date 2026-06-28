@@ -3,24 +3,24 @@ import { createDefaultCSS } from './helpers/css-tester'
 
 const migratedRuleExpectations = [
     {
-        source: "packages/core/tests/rules/accent.test.ts",
+        source: "legacy core tests/rules/accent.test.ts",
         cases: [
             ["accent-color:transparent", "accent-color:transparent"],
         ]
     },
     {
-        source: "packages/core/tests/rules/area.test.ts",
+        source: "legacy core tests/rules/area.test.ts",
         cases: [
             ["full", "width:100%;height:100%"],
         ]
     },
     {
-        source: "packages/core/tests/rules/background-clip.test.ts",
+        source: "legacy core tests/rules/background-clip.test.ts",
         cases: [
         ]
     },
     {
-        source: "packages/core/tests/rules/background.test.ts",
+        source: "legacy core tests/rules/background.test.ts",
         cases: [
             ["bg:light-dark(#000,#fff)", "background-color:light-dark(#000,#fff)"],
             ["bg:#fff", "background-color:#fff"],
@@ -32,7 +32,7 @@ const migratedRuleExpectations = [
         ]
     },
     {
-        source: "packages/core/tests/rules/border-color.test.ts",
+        source: "legacy core tests/rules/border-color.test.ts",
         cases: [
             ["b:blue-50", "border-color:var(--color-blue-50)"],
             ["b:rgb(0,0,0,0.75)", "border-color:rgb(0,0,0,0.75)"],
@@ -44,7 +44,7 @@ const migratedRuleExpectations = [
         ]
     },
     {
-        source: "packages/core/tests/rules/border-radius.test.ts",
+        source: "legacy core tests/rules/border-radius.test.ts",
         cases: [
             ["r:4x", "border-radius:1rem"],
             ["border-radius:1rem", "border-radius:1rem"],
@@ -55,7 +55,7 @@ const migratedRuleExpectations = [
         ]
     },
     {
-        source: "packages/core/tests/rules/border-style.test.ts",
+        source: "legacy core tests/rules/border-style.test.ts",
         cases: [
             ["b-solid", "border-style:solid"],
             ["border-style:solid", "border-style:solid"],
@@ -71,7 +71,7 @@ const migratedRuleExpectations = [
         ]
     },
     {
-        source: "packages/core/tests/rules/border-width.test.ts",
+        source: "legacy core tests/rules/border-width.test.ts",
         cases: [
             ["border-width:1px", "border-width:1px"],
             ["border-bottom-width:1px", "border-bottom-width:1px"],
@@ -82,7 +82,7 @@ const migratedRuleExpectations = [
         ]
     },
     {
-        source: "packages/core/tests/rules/border.test.ts",
+        source: "legacy core tests/rules/border.test.ts",
         cases: [
             ["border:transparent", "border:transparent"],
             ["border:1px|solid", "border:1px solid"],
@@ -115,7 +115,7 @@ const migratedRuleExpectations = [
         ]
     },
     {
-        source: "packages/core/tests/rules/box-shadow.test.ts",
+        source: "legacy core tests/rules/box-shadow.test.ts",
         cases: [
             ["box-shadow:8px|8px|10px|#00b0de", "box-shadow:8px 8px 10px #00b0de"],
             ["box-shadow:8px|8px|10px|var(--my-shadow,#00b0de)", "box-shadow:8px 8px 10px var(--my-shadow,#00b0de)"],
@@ -123,19 +123,19 @@ const migratedRuleExpectations = [
         ]
     },
     {
-        source: "packages/core/tests/rules/box.test.ts",
+        source: "legacy core tests/rules/box.test.ts",
         cases: [
             ["box-content", "box-sizing:content-box"],
         ]
     },
     {
-        source: "packages/core/tests/rules/caret.test.ts",
+        source: "legacy core tests/rules/caret.test.ts",
         cases: [
             ["caret-color:transparent", "caret-color:transparent"],
         ]
     },
     {
-        source: "packages/core/tests/rules/color.test.ts",
+        source: "legacy core tests/rules/color.test.ts",
         cases: [
             ["color:rgb(255,255,255)", "color:rgb(255,255,255)"],
             ["fg:#fff", "color:#fff"],
@@ -146,17 +146,17 @@ const migratedRuleExpectations = [
         ]
     },
     {
-        source: "packages/core/tests/rules/content.test.ts",
+        source: "legacy core tests/rules/content.test.ts",
         cases: [
         ]
     },
     {
-        source: "packages/core/tests/rules/counter.test.ts",
+        source: "legacy core tests/rules/counter.test.ts",
         cases: [
         ]
     },
     {
-        source: "packages/core/tests/rules/font-size.test.ts",
+        source: "legacy core tests/rules/font-size.test.ts",
         cases: [
             ["font:1rem", "font-size:1rem"],
             ["font:.5rem", "font-size:0.5rem"],
@@ -164,13 +164,13 @@ const migratedRuleExpectations = [
         ]
     },
     {
-        source: "packages/core/tests/rules/gap.test.ts",
+        source: "legacy core tests/rules/gap.test.ts",
         cases: [
             ["gap:4x", "gap:1rem"],
         ]
     },
     {
-        source: "packages/core/tests/rules/logical-properties.test.ts",
+        source: "legacy core tests/rules/logical-properties.test.ts",
         cases: [
             ["mys:4x", "margin-block-start:1rem"],
             ["mye:4x", "margin-block-end:1rem"],
@@ -189,7 +189,7 @@ const migratedRuleExpectations = [
         ]
     },
     {
-        source: "packages/core/tests/rules/margin.test.ts",
+        source: "legacy core tests/rules/margin.test.ts",
         cases: [
             ["ml:4x", "margin-left:1rem"],
             ["mr:4x", "margin-right:1rem"],
@@ -203,7 +203,7 @@ const migratedRuleExpectations = [
         ]
     },
     {
-        source: "packages/core/tests/rules/outline.test.ts",
+        source: "legacy core tests/rules/outline.test.ts",
         cases: [
             ["outline:transparent", "outline-color:transparent"],
             ["outline:gray-20", "outline-color:var(--color-gray-20)"],
@@ -225,7 +225,7 @@ const migratedRuleExpectations = [
         ]
     },
     {
-        source: "packages/core/tests/rules/overflow.test.ts",
+        source: "legacy core tests/rules/overflow.test.ts",
         cases: [
             ["overflow", "overflow:visible"],
             ["overflow:hidden", "overflow:hidden"],
@@ -233,7 +233,7 @@ const migratedRuleExpectations = [
         ]
     },
     {
-        source: "packages/core/tests/rules/padding.test.ts",
+        source: "legacy core tests/rules/padding.test.ts",
         cases: [
             ["pl:4x", "padding-left:1rem"],
             ["pr:4x", "padding-right:1rem"],
@@ -246,7 +246,7 @@ const migratedRuleExpectations = [
         ]
     },
     {
-        source: "packages/core/tests/rules/scroll-margin.test.ts",
+        source: "legacy core tests/rules/scroll-margin.test.ts",
         cases: [
             ["scroll-ml:4x", "scroll-margin-left:1rem"],
             ["scroll-mr:4x", "scroll-margin-right:1rem"],
@@ -256,7 +256,7 @@ const migratedRuleExpectations = [
         ]
     },
     {
-        source: "packages/core/tests/rules/scroll-padding.test.ts",
+        source: "legacy core tests/rules/scroll-padding.test.ts",
         cases: [
             ["scroll-pl:4x", "scroll-padding-left:1rem"],
             ["scroll-pr:4x", "scroll-padding-right:1rem"],
@@ -266,7 +266,7 @@ const migratedRuleExpectations = [
         ]
     },
     {
-        source: "packages/core/tests/rules/scroll-snap-type.test.ts",
+        source: "legacy core tests/rules/scroll-snap-type.test.ts",
         cases: [
             ["snap-x", "scroll-snap-type:x"],
             ["scroll-snap-type:x", "scroll-snap-type:x"],
@@ -274,13 +274,13 @@ const migratedRuleExpectations = [
         ]
     },
     {
-        source: "packages/core/tests/rules/stroke.test.ts",
+        source: "legacy core tests/rules/stroke.test.ts",
         cases: [
             ["stroke:.75!", "stroke-width:0.75!important"],
         ]
     },
     {
-        source: "packages/core/tests/rules/text-overflow.test.ts",
+        source: "legacy core tests/rules/text-overflow.test.ts",
         cases: [
             ["text-clip", "text-overflow:clip"],
             ["text-overflow:clip", "text-overflow:clip"],
@@ -289,13 +289,13 @@ const migratedRuleExpectations = [
         ]
     },
     {
-        source: "packages/core/tests/rules/text-stroke-width.test.ts",
+        source: "legacy core tests/rules/text-stroke-width.test.ts",
         cases: [
             ["text-stroke-width:thin", "-webkit-text-stroke-width:thin"],
         ]
     },
     {
-        source: "packages/core/tests/rules/text-wrap.test.ts",
+        source: "legacy core tests/rules/text-wrap.test.ts",
         cases: [
             ["text-wrap", "text-wrap:wrap"],
             ["text-nowrap", "text-wrap:nowrap"],
@@ -304,7 +304,7 @@ const migratedRuleExpectations = [
         ]
     },
     {
-        source: "packages/core/tests/rules/text.test.ts",
+        source: "legacy core tests/rules/text.test.ts",
         cases: [
             ["text:1.25rem", "font-size:1.25rem;line-height:max(1.8em - max(0rem, 1.25rem - 1rem) * 1.12, 1.25rem);letter-spacing:clamp(-.072em, calc((1.25rem - 1rem) * -.048), 0em)"],
             ["text:50%", "font-size:50%;line-height:max(1.8em - max(0rem, 50% - 1rem) * 1.12, 50%);letter-spacing:clamp(-.072em, calc((50% - 1rem) * -.048), 0em)"],
@@ -314,13 +314,13 @@ const migratedRuleExpectations = [
         ]
     },
     {
-        source: "packages/core/tests/rules/transform.test.ts",
+        source: "legacy core tests/rules/transform.test.ts",
         cases: [
             ["transform-content", "transform-box:content-box"],
         ]
     },
     {
-        source: "packages/core/tests/rules/width.test.ts",
+        source: "legacy core tests/rules/width.test.ts",
         cases: [
             ["w:sm", "width:var(--container-sm)"],
             ["w:25%", "width:25%"],
@@ -340,7 +340,7 @@ const migratedRuleExpectations = [
         ]
     },
     {
-        source: "packages/core/tests/rules/writing-mode.test.ts",
+        source: "legacy core tests/rules/writing-mode.test.ts",
         cases: [
         ]
     },

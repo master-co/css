@@ -64,7 +64,7 @@ When a feature creates a package cycle or self-build cycle, extract dependency-f
 
 `packages/preset` owns default preset CSS source files and the generated default manifest.
 
-`packages/core` keeps the public package name `@master/css`, but it is a facade over engine and preset exports. It must not own config resolution, matcher construction, declarers, transformers, or runtime authoring adapters.
+`packages/facade` keeps the public package name `@master/css`, but it is a facade over engine and preset exports. It must not own config resolution, matcher construction, declarers, transformers, or runtime authoring adapters.
 
 Important files:
 
@@ -75,7 +75,7 @@ Important files:
 - `packages/engine/src/utils/parse-selector.ts`
 - `packages/engine/src/utils/generate-selector.ts`
 - `packages/preset/src/default-manifest.json`
-- `packages/core/src/index.ts`
+- `packages/facade/src/index.ts`
 
 ## Rendering Packages
 
