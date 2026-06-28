@@ -480,6 +480,7 @@ export async function createInteractionPage(options: {
     pageSuite?: InteractionPageSuite
     runtimeDiagnostics?: boolean
     runtimeMutationStrategy?: RuntimeMutationStrategyId
+    postInteractionSettleFrames?: number
 }): Promise<InteractionPage> {
     if (options.modeId === 'tailwind-static') {
         const sourceHtml = renderInteractionDocument({
@@ -487,7 +488,8 @@ export async function createInteractionPage(options: {
             modeId: options.modeId,
             scenarioId: options.scenarioId,
             classes: tailwindClasses,
-            includeStaticClassSource: true
+            includeStaticClassSource: true,
+            postInteractionSettleFrames: options.postInteractionSettleFrames
         })
         return writeInteractionPage({
             pageSuite: options.pageSuite,
@@ -503,7 +505,8 @@ export async function createInteractionPage(options: {
         scenarioId: options.scenarioId,
         classes: masterClasses,
         includeStaticClassSource: options.modeId === 'master-static',
-        runtimeMutationStrategy: options.runtimeMutationStrategy
+        runtimeMutationStrategy: options.runtimeMutationStrategy,
+        postInteractionSettleFrames: options.postInteractionSettleFrames
     })
 
     if (options.modeId === 'master-static') {
@@ -623,6 +626,7 @@ function renderInteractionDocument(options: {
     classes: InteractionClassModel
     includeStaticClassSource: boolean
     runtimeMutationStrategy?: RuntimeMutationStrategyId
+    postInteractionSettleFrames?: number
 }) {
     const fixture = getInteractionFixtureShape(options.fixtureId)
     const staticClassSource = options.includeStaticClassSource
@@ -663,7 +667,8 @@ function renderInteractionDocument(options: {
             affectedCount: fixture.affectedCount,
             appendCount: fixture.appendCount,
             cleanupCycles: fixture.cleanupCycles,
-            runtimeMutationStrategy: options.runtimeMutationStrategy
+            runtimeMutationStrategy: options.runtimeMutationStrategy,
+            postInteractionSettleFrames: options.postInteractionSettleFrames
         }),
         '</body>',
         '</html>'
@@ -695,6 +700,7 @@ function renderInteractionScript(options: {
     appendCount: number
     cleanupCycles: number
     runtimeMutationStrategy?: RuntimeMutationStrategyId
+    postInteractionSettleFrames?: number
 }) {
     const config = JSON.stringify({
         fixtureId: options.fixtureId,
@@ -703,6 +709,7 @@ function renderInteractionScript(options: {
         affectedCount: options.affectedCount,
         appendCount: options.appendCount,
         cleanupCycles: options.cleanupCycles,
+        postInteractionSettleFrames: options.postInteractionSettleFrames ?? 3,
         runtimeMutationStrategy: options.runtimeMutationStrategy || 'baseline',
         classes: {
             itemBase: options.classes.itemBase,
@@ -733,7 +740,7 @@ function renderInteractionScript(options: {
         '            if (config.scenarioId === "dom-append-remove") scenarioDetails = runAppendRemove(config);',
         '            if (config.scenarioId === "theme-switch") scenarioDetails = runThemeSwitch(config);',
         '            if (config.scenarioId === "mutation-cleanup-cycle") scenarioDetails = await runCleanupCycle(config);',
-        '            await waitFrames(3);',
+        '            await waitPostInteractionSettleFrames(config.postInteractionSettleFrames);',
         '            const strategyFlushResult = flushDeferredRuntimeRemovalsBeforeResult();',
         '            if (config.scenarioId === "mutation-cleanup-cycle") scenarioDetails = finalizeCleanupCycleDetails(config, scenarioDetails, strategyFlushResult);',
         '            scenarioDetails = finalizeScenarioDetails(config, scenarioDetails);',
@@ -993,6 +1000,10 @@ function renderInteractionScript(options: {
         '        function hasEveryClass(element, classes) { return classes.every((className) => element.classList.contains(className)); }',
         '        function addClasses(element, classes) { if (classes.length) element.classList.add(...classes); }',
         '        function removeClasses(element, classes) { if (classes.length) element.classList.remove(...classes); }',
+        '        function waitPostInteractionSettleFrames(count) {',
+        '            const frameCount = Number.isFinite(count) ? Math.max(0, Math.floor(count)) : 3;',
+        '            return frameCount > 0 ? waitFrames(frameCount) : Promise.resolve();',
+        '        }',
         '        function waitFrames(count) {',
         '            return new Promise((resolve) => {',
         '                const step = () => {',
