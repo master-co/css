@@ -30,7 +30,7 @@ export const benchmarkFixtures = [
         name: 'Dynamic',
         purpose: 'Insert, remove, and toggle classes during interaction.',
         stress: 'Runtime mutation, extraction limits, and recalculation cost.',
-        suites: ['master-delivery-modes', 'interaction-cost'],
+        suites: ['master-delivery-modes', 'interaction-cost', 'runtime-mutation-diagnostics'],
         limits: ['Browser scheduling can affect interaction timing.']
     },
     {
@@ -46,7 +46,7 @@ export const benchmarkFixtures = [
         name: 'Stress DOM',
         purpose: 'Large DOM with fixed CSS.',
         stress: 'DOM, style, and layout scaling isolated from CSS output size.',
-        suites: ['browser-css-cost', 'interaction-cost'],
+        suites: ['browser-css-cost', 'interaction-cost', 'runtime-mutation-diagnostics'],
         limits: ['Intentionally artificial DOM volume.']
     }
 ] satisfies BenchmarkFixture[]

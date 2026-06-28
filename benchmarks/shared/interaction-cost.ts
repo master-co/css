@@ -64,7 +64,11 @@ interface InteractionScenarioDescriptor {
     description: string
 }
 
-interface InteractionPage {
+export type InteractionPageSuite =
+    | 'interaction-cost'
+    | 'runtime-mutation-diagnostics'
+
+export interface InteractionPage {
     root: string
     artifacts: BenchmarkArtifact[]
 }
@@ -74,7 +78,7 @@ interface InteractionMeasurement {
     artifacts: BenchmarkArtifact[]
 }
 
-interface InteractionResult {
+export interface InteractionResult {
     elapsedMs: number
     runtimeMutationMs: number
     runtimeGeneratedRuleCountDelta: number
@@ -88,7 +92,7 @@ interface InteractionResult {
     details: Record<string, unknown>
 }
 
-interface RuntimeState {
+export interface RuntimeState {
     runtimeAvailable: boolean
     progressiveAdopted: number
     runtimeGeneratedRuleCount: number
@@ -463,11 +467,13 @@ async function collectInteractionSamples(options: {
     }
 }
 
-async function createInteractionPage(options: {
+export async function createInteractionPage(options: {
     fixtureId: BenchmarkFixtureId
     modeId: InteractionModeId
     scenarioId: InteractionScenarioId
     variantId: string
+    pageSuite?: InteractionPageSuite
+    runtimeDiagnostics?: boolean
 }): Promise<InteractionPage> {
     if (options.modeId === 'tailwind-static') {
         const sourceHtml = renderInteractionDocument({
@@ -478,6 +484,7 @@ async function createInteractionPage(options: {
             includeStaticClassSource: true
         })
         return writeInteractionPage({
+            pageSuite: options.pageSuite,
             variantId: options.variantId,
             html: addStaticHarness(sourceHtml),
             externalCSS: await readTailwindStaticCSS(options.fixtureId)
@@ -494,6 +501,7 @@ async function createInteractionPage(options: {
 
     if (options.modeId === 'master-static') {
         return writeInteractionPage({
+            pageSuite: options.pageSuite,
             variantId: options.variantId,
             html: addStaticHarness(sourceHtml),
             externalCSS: await readMasterStaticCSS(options.fixtureId)
@@ -502,8 +510,12 @@ async function createInteractionPage(options: {
 
     if (options.modeId === 'master-runtime') {
         return writeInteractionPage({
+            pageSuite: options.pageSuite,
             variantId: options.variantId,
-            html: addRuntimeHarness(sourceHtml, { hideUntilRuntime: true }),
+            html: addRuntimeHarness(sourceHtml, {
+                hideUntilRuntime: true,
+                runtimeDiagnostics: options.runtimeDiagnostics
+            }),
             runtimeJS: await readRuntimeBundle(),
             manifestJSON: await readDefaultManifestJSON()
         })
@@ -518,8 +530,12 @@ async function createInteractionPage(options: {
         : ''
 
     return writeInteractionPage({
+        pageSuite: options.pageSuite,
         variantId: options.variantId,
-        html: addRuntimeHarness(result.html, { hideUntilRuntime: false }),
+        html: addRuntimeHarness(result.html, {
+            hideUntilRuntime: false,
+            runtimeDiagnostics: options.runtimeDiagnostics
+        }),
         inlineCSS,
         hydrationManifestJSON,
         runtimeJS: await readRuntimeBundle(),
@@ -694,6 +710,7 @@ function renderInteractionScript(options: {
         '            const config = window.__interactionConfig;',
         '            const metrics = window.__interactionMetrics || { runtimeMutationMs: 0, collectInteractionMutations: false };',
         '            metrics.runtimeMutationMs = 0;',
+        '            if (metrics.runtimeDiagnosticsEnabled) resetRuntimeMutationDiagnostics(metrics);',
         '            const before = readRuntimeState();',
         '            const startedAt = performance.now();',
         '            metrics.collectInteractionMutations = true;',
@@ -716,6 +733,7 @@ function renderInteractionScript(options: {
         '            });',
         '        };',
         '        window.__readInteractionState = readRuntimeState;',
+        '        window.__readRuntimeMutationDiagnostics = readRuntimeMutationDiagnostics;',
         '        window.__waitInteractionFrames = waitFrames;',
         '        window.__finishViewportInteraction = function(input) {',
         '            const after = readRuntimeState();',
@@ -825,6 +843,9 @@ function renderInteractionScript(options: {
         '            const runtimeClean = !state.runtimeAvailable || tempClassNames.every((className) => !state.classCounts[className] && !state.classUtilityNames.includes(className));',
         '            return {',
         '                affectedElementCount: config.appendCount * config.cleanupCycles,',
+        '                mutationCycleCount: config.cleanupCycles,',
+        '                appendCount: config.appendCount,',
+        '                removedNodeCount: config.appendCount * config.cleanupCycles,',
         '                computedStyleValid: true,',
         '                cleanupValid: scratch.children.length === 0 && runtimeClean,',
         '                runtimeClean',
@@ -895,6 +916,22 @@ function renderInteractionScript(options: {
         '                classCounts: Object.fromEntries(runtime?.classCounts || []),',
         '                classUtilityNames: [...(runtime?.classUtilities?.keys?.() || [])].map(String),',
         '                domNodeCount: document.getElementsByTagName("*").length',
+        '            };',
+        '        }',
+        '        function readRuntimeMutationDiagnostics() {',
+        '            const metrics = window.__interactionMetrics || {};',
+        '            return {',
+        '                mutationObserverCallbackCount: metrics.mutationObserverCallbackCount || 0,',
+        '                mutationRecordCount: metrics.mutationRecordCount || 0,',
+        '                mutationAddedNodeCount: metrics.mutationAddedNodeCount || 0,',
+        '                mutationRemovedNodeCount: metrics.mutationRemovedNodeCount || 0,',
+        '                mutationClassAttributeCount: metrics.mutationClassAttributeCount || 0,',
+        '                runtimeAddCallCount: metrics.runtimeAddCallCount || 0,',
+        '                runtimeRemoveCallCount: metrics.runtimeRemoveCallCount || 0,',
+        '                runtimeAddClassCount: metrics.runtimeAddClassCount || 0,',
+        '                runtimeRemoveClassCount: metrics.runtimeRemoveClassCount || 0,',
+        '                runtimeAddDurationMs: metrics.runtimeAddDurationMs || 0,',
+        '                runtimeRemoveDurationMs: metrics.runtimeRemoveDurationMs || 0',
         '            };',
         '        }',
         '        function countCSSRules(rules) {',
@@ -982,6 +1019,7 @@ async function measureViewportResizeInteraction(page: Page): Promise<Interaction
 }
 
 async function writeInteractionPage(options: {
+    pageSuite?: InteractionPageSuite
     variantId: string
     html: string
     externalCSS?: string
@@ -990,7 +1028,7 @@ async function writeInteractionPage(options: {
     manifestJSON?: Buffer
     hydrationManifestJSON?: string
 }): Promise<InteractionPage> {
-    const root = resolve(benchmarkRoot, '.results', 'interaction-cost', 'pages', options.variantId)
+    const root = resolve(benchmarkRoot, '.results', options.pageSuite || 'interaction-cost', 'pages', options.variantId)
     await resetDirectory(root)
 
     const files: Record<string, string> = {
@@ -1200,13 +1238,67 @@ function addStaticHarness(html: string) {
 
 function addRuntimeHarness(html: string, options: {
     hideUntilRuntime: boolean
+    runtimeDiagnostics?: boolean
 }) {
     const withVisibility = options.hideUntilRuntime ? addHiddenAttribute(html) : html
 
     return insertBeforeHeadEnd(withVisibility, [
         '    <script>',
         '        window.__benchmarkReady = false;',
-        '        window.__interactionMetrics = { runtimeMutationMs: 0, collectInteractionMutations: false };',
+        `        window.__interactionMetrics = createInteractionMetrics(${options.runtimeDiagnostics ? 'true' : 'false'});`,
+        '        function createInteractionMetrics(runtimeDiagnosticsEnabled) {',
+        '            return {',
+        '                runtimeDiagnosticsEnabled,',
+        '                runtimeMutationMs: 0,',
+        '                collectInteractionMutations: false,',
+        '                mutationObserverCallbackCount: 0,',
+        '                mutationRecordCount: 0,',
+        '                mutationAddedNodeCount: 0,',
+        '                mutationRemovedNodeCount: 0,',
+        '                mutationClassAttributeCount: 0,',
+        '                runtimeAddCallCount: 0,',
+        '                runtimeRemoveCallCount: 0,',
+        '                runtimeAddClassCount: 0,',
+        '                runtimeRemoveClassCount: 0,',
+        '                runtimeAddDurationMs: 0,',
+        '                runtimeRemoveDurationMs: 0',
+        '            };',
+        '        }',
+        '        function resetRuntimeMutationDiagnostics(metrics) {',
+        '            metrics.mutationObserverCallbackCount = 0;',
+        '            metrics.mutationRecordCount = 0;',
+        '            metrics.mutationAddedNodeCount = 0;',
+        '            metrics.mutationRemovedNodeCount = 0;',
+        '            metrics.mutationClassAttributeCount = 0;',
+        '            metrics.runtimeAddCallCount = 0;',
+        '            metrics.runtimeRemoveCallCount = 0;',
+        '            metrics.runtimeAddClassCount = 0;',
+        '            metrics.runtimeRemoveClassCount = 0;',
+        '            metrics.runtimeAddDurationMs = 0;',
+        '            metrics.runtimeRemoveDurationMs = 0;',
+        '        }',
+        '        if (window.__interactionMetrics.runtimeDiagnosticsEnabled) {',
+        '            const NativeMutationObserver = window.MutationObserver;',
+        '            window.MutationObserver = class BenchmarkMutationObserver extends NativeMutationObserver {',
+        '                constructor(callback) {',
+        '                    super((records, observer) => {',
+        '                        const metrics = window.__interactionMetrics;',
+        '                        if (metrics?.collectInteractionMutations) {',
+        '                            metrics.mutationObserverCallbackCount++;',
+        '                            metrics.mutationRecordCount += records.length;',
+        '                            for (const record of records) {',
+        '                                metrics.mutationAddedNodeCount += record.addedNodes?.length || 0;',
+        '                                metrics.mutationRemovedNodeCount += record.removedNodes?.length || 0;',
+        '                                if (record.type === "attributes" && record.attributeName === "class") {',
+        '                                    metrics.mutationClassAttributeCount++;',
+        '                                }',
+        '                            }',
+        '                        }',
+        '                        callback(records, observer);',
+        '                    });',
+        '                }',
+        '            };',
+        '        }',
         '    </script>',
         '    <script src="/global.min.js"></script>',
         '    <script>',
@@ -1220,13 +1312,29 @@ function addRuntimeHarness(html: string, options: {
         '            Runtime.prototype.add = function(...args) {',
         '                const startedAt = performance.now();',
         '                const result = originalAdd.apply(this, args);',
-        '                if (metrics.collectInteractionMutations) metrics.runtimeMutationMs += performance.now() - startedAt;',
+        '                const elapsed = performance.now() - startedAt;',
+        '                if (metrics.collectInteractionMutations) {',
+        '                    metrics.runtimeMutationMs += elapsed;',
+        '                    if (metrics.runtimeDiagnosticsEnabled) {',
+        '                        metrics.runtimeAddCallCount++;',
+        '                        metrics.runtimeAddClassCount += args.length;',
+        '                        metrics.runtimeAddDurationMs += elapsed;',
+        '                    }',
+        '                }',
         '                return result;',
         '            };',
         '            Runtime.prototype.remove = function(...args) {',
         '                const startedAt = performance.now();',
         '                const result = originalRemove.apply(this, args);',
-        '                if (metrics.collectInteractionMutations) metrics.runtimeMutationMs += performance.now() - startedAt;',
+        '                const elapsed = performance.now() - startedAt;',
+        '                if (metrics.collectInteractionMutations) {',
+        '                    metrics.runtimeMutationMs += elapsed;',
+        '                    if (metrics.runtimeDiagnosticsEnabled) {',
+        '                        metrics.runtimeRemoveCallCount++;',
+        '                        metrics.runtimeRemoveClassCount += args.length;',
+        '                        metrics.runtimeRemoveDurationMs += elapsed;',
+        '                    }',
+        '                }',
         '                return result;',
         '            };',
         '            Runtime.prototype.observe = function(...args) {',
@@ -1567,11 +1675,36 @@ declare global {
     var __interactionConfig: unknown
     var __interactionMetrics: {
         error?: string
+        runtimeDiagnosticsEnabled?: boolean
         runtimeMutationMs: number
         collectInteractionMutations: boolean
+        mutationObserverCallbackCount?: number
+        mutationRecordCount?: number
+        mutationAddedNodeCount?: number
+        mutationRemovedNodeCount?: number
+        mutationClassAttributeCount?: number
+        runtimeAddCallCount?: number
+        runtimeRemoveCallCount?: number
+        runtimeAddClassCount?: number
+        runtimeRemoveClassCount?: number
+        runtimeAddDurationMs?: number
+        runtimeRemoveDurationMs?: number
     } | undefined
     var __runInteractionScenario: () => Promise<InteractionResult>
     var __readInteractionState: () => RuntimeState
+    var __readRuntimeMutationDiagnostics: () => {
+        mutationObserverCallbackCount: number
+        mutationRecordCount: number
+        mutationAddedNodeCount: number
+        mutationRemovedNodeCount: number
+        mutationClassAttributeCount: number
+        runtimeAddCallCount: number
+        runtimeRemoveCallCount: number
+        runtimeAddClassCount: number
+        runtimeRemoveClassCount: number
+        runtimeAddDurationMs: number
+        runtimeRemoveDurationMs: number
+    }
     var __waitInteractionFrames: (count: number) => Promise<void>
     var __finishViewportInteraction: (input: {
         before: RuntimeState

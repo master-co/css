@@ -29,6 +29,7 @@ export type BenchmarkSuiteId =
     | 'progressive-hydration-diagnostics'
     | 'browser-css-cost'
     | 'interaction-cost'
+    | 'runtime-mutation-diagnostics'
 
 export type BenchmarkMetricUnit = 'B' | 'ms' | 'count' | 'ratio' | 'percent' | 'score'
 
