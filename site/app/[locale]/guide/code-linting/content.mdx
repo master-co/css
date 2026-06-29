@@ -120,6 +120,17 @@ block@dark@sm font:16px@dark@sm mt:md@dark@sm mb:md@dark@sm <!-- [!code --] -->
 block@sm@dark font:md@sm@dark my:md@sm@dark <!-- [!code ++] -->
 ```
 
+The same fixes apply inside unquoted `@compose` class lists when ESLint is running on a parsed CSS or style source:
+
+```css
+.btn {
+    @compose font:16px margin:md; /* [!code --] */
+    @compose font:md m:md; /* [!code ++] */
+}
+```
+
+Plain `.css` files still need an ESLint CSS parser or language setup so ESLint can parse the file before Master CSS rules run. Framework files with parsed `<style>` blocks, such as Vue and Svelte files, can lint `@compose` in those style blocks.
+
 | Option | Default | Effect |
 | --- | --- | --- |
 | `preferStaticUtilities` | `true` | Prefer named or semantic utilities such as `text-center` over native declaration forms. |
@@ -179,7 +190,7 @@ br-solid bb-solid bl-solid bt-dashed <!-- [!code ++] -->
 ---
 
 ## Supported sources
-The default config checks class strings in common markup and JavaScript locations.
+The default config checks class strings in common markup, JavaScript locations, and unquoted `@compose` class lists in parsed CSS/style sources.
 
 | Setting | Default | Use |
 | --- | --- | --- |

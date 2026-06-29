@@ -1,5 +1,6 @@
 import defineVisitors from '../utils/define-visitors'
 import resolveContext from '../utils/resolve-context'
+import resolveComposeDirectiveClassNodes from '../utils/resolve-compose-directive-class-nodes'
 import createRule from '../create-rule'
 import {
     defaultCanonicalClassNameOptions,
@@ -9,6 +10,7 @@ import {
     suggestCanonicalClassName,
     type CanonicalClassNameOptions
 } from '@master/css-lint'
+import type { ResolvedClassNode } from '../utils/resolve-class-node'
 
 export default createRule({
     name: 'prefer-canonical-classes',
@@ -43,7 +45,7 @@ export default createRule({
             ...((context.options[0] || {}) as Partial<CanonicalClassNameOptions>)
         }
 
-        return defineVisitors({ context, settings }, (node, { raw, start, end, unescape, classNodes, classValues }) => {
+        const reportCanonicalClassList = (node, { raw, start, end, unescape, classNodes, classValues }: ResolvedClassNode) => {
             const groupSuggestions = suggestCanonicalClassGroups(classValues, css, options)
             const coveredClassNames = new Set(groupSuggestions.flatMap((suggestion) => suggestion.classNames))
             const reports: {
@@ -90,6 +92,21 @@ export default createRule({
                     }
                 })
             }
-        })
+        }
+
+        const visitors = defineVisitors({ context, settings }, reportCanonicalClassList)
+        const visitProgram = visitors.Program
+
+        return {
+            ...visitors,
+            Program(node) {
+                if (typeof visitProgram === 'function') {
+                    visitProgram(node)
+                }
+                for (const classNode of resolveComposeDirectiveClassNodes(context)) {
+                    reportCanonicalClassList(node, classNode)
+                }
+            }
+        }
     }
 })

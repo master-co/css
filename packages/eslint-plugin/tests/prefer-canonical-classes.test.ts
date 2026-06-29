@@ -3,6 +3,34 @@ import { createTester, jsxTester } from './testers'
 import { createPresetManifest } from './helpers/create-preset-manifest'
 import UtilityType from '@master/css-schema/utility-type'
 
+const cssParser = {
+    meta: {
+        name: 'master-css-test-css-parser',
+        version: '1.0.0'
+    },
+    parseForESLint(code: string) {
+        const lines = code.split(/\r\n|[\r\n]/)
+        return {
+            ast: {
+                type: 'Program',
+                body: [],
+                sourceType: 'module',
+                comments: [],
+                tokens: [],
+                range: [0, code.length],
+                loc: {
+                    start: { line: 1, column: 0 },
+                    end: { line: lines.length, column: lines.at(-1)?.length || 0 }
+                }
+            },
+            services: {},
+            visitorKeys: {
+                Program: []
+            }
+        }
+    }
+}
+
 const customManifest = createPresetManifest({
     settings: {
         rootSize: 16,
@@ -427,6 +455,126 @@ jsxTester.run('prefer canonical classes parser smoke tests', rule, {
             languageOptions: {
                 parser: await import('eslint-mdx')
             }
+        },
+    ]
+})
+
+jsxTester.run('prefer canonical classes compose directives', rule, {
+    valid: [
+        {
+            code: `.btn { @compose "font:16px margin:md"; }`,
+            filename: 'test.css',
+            languageOptions: {
+                parser: cssParser
+            }
+        },
+        {
+            code: `.btn { @compose { font:16px margin:md }; }`,
+            filename: 'test.css',
+            languageOptions: {
+                parser: cssParser
+            }
+        },
+        {
+            code: `const css = '.btn { @compose font:16px margin:md; }'`,
+            filename: 'test.tsx'
+        },
+        {
+            code: `<template><p>@compose font:16px margin:md</p></template><style>.btn { @compose font:md m:md; }</style>`,
+            filename: 'test.vue',
+            languageOptions: {
+                parser: await import('vue-eslint-parser')
+            }
+        },
+        {
+            code: `<script>const css = '.btn { @compose font:16px margin:md; }'</script><style>.btn { @compose font:md m:md; }</style>`,
+            filename: 'test.svelte',
+            languageOptions: {
+                parser: await import('svelte-eslint-parser')
+            }
+        },
+    ],
+    invalid: [
+        {
+            code: `.btn { @compose font:16px margin:md; }`,
+            output: `.btn { @compose font:md m:md; }`,
+            filename: 'test.css',
+            languageOptions: {
+                parser: cssParser
+            },
+            errors: [
+                { messageId: 'preferClass', data: { actual: 'font:16px', recommended: 'font:md' } },
+                { messageId: 'preferClass', data: { actual: 'margin:md', recommended: 'm:md' } },
+            ]
+        },
+        {
+            code: `.btn { @compose w:md h:md mt:md mb:md; }`,
+            output: `.btn { @compose size:md my:md; }`,
+            filename: 'test.css',
+            languageOptions: {
+                parser: cssParser
+            },
+            errors: [
+                { messageId: 'preferClass', data: { actual: 'w:md h:md', recommended: 'size:md' } },
+                { messageId: 'preferClass', data: { actual: 'mt:md mb:md', recommended: 'my:md' } },
+            ]
+        },
+        {
+            code: `.btn { @compose block@dark@sm font:16px@dark@sm; }`,
+            output: `.btn { @compose block@sm@dark font:md@sm@dark; }`,
+            filename: 'test.css',
+            languageOptions: {
+                parser: cssParser
+            },
+            errors: [
+                { messageId: 'preferClass', data: { actual: 'block@dark@sm', recommended: 'block@sm@dark' } },
+                { messageId: 'preferClass', data: { actual: 'font:16px@dark@sm', recommended: 'font:md@sm@dark' } },
+            ]
+        },
+        {
+            code: `.btn {
+  @compose
+    font:16px
+    margin:md
+  ;
+}`,
+            output: `.btn {
+  @compose
+    font:md
+    m:md
+  ;
+}`,
+            filename: 'test.css',
+            languageOptions: {
+                parser: cssParser
+            },
+            errors: [
+                { messageId: 'preferClass', data: { actual: 'font:16px', recommended: 'font:md' } },
+                { messageId: 'preferClass', data: { actual: 'margin:md', recommended: 'm:md' } },
+            ]
+        },
+        {
+            code: `<template><button /></template><style>.btn { @compose font:16px margin:md; }</style>`,
+            output: `<template><button /></template><style>.btn { @compose font:md m:md; }</style>`,
+            filename: 'test.vue',
+            languageOptions: {
+                parser: await import('vue-eslint-parser')
+            },
+            errors: [
+                { messageId: 'preferClass', data: { actual: 'font:16px', recommended: 'font:md' } },
+                { messageId: 'preferClass', data: { actual: 'margin:md', recommended: 'm:md' } },
+            ]
+        },
+        {
+            code: `<script>const value = true</script><style>.btn { @compose w:md h:md; }</style>`,
+            output: `<script>const value = true</script><style>.btn { @compose size:md; }</style>`,
+            filename: 'test.svelte',
+            languageOptions: {
+                parser: await import('svelte-eslint-parser')
+            },
+            errors: [
+                { messageId: 'preferClass', data: { actual: 'w:md h:md', recommended: 'size:md' } },
+            ]
         },
     ]
 })
