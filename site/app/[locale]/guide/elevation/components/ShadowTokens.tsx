@@ -107,7 +107,7 @@ export function ShadowScaleDemo() {
 function SurfaceStack() {
     return (
         <div className="p:lg r:lg surface:raised shadow:lg">
-            <div className="font:medium text:strong text:lg">Raised surface</div>
+            <div className="text:lg font:medium text:strong">Raised surface</div>
             <p className="mx:0 mb:0 mt:xs text:sm text:muted">Cards use a large shadow on a raised surface.</p>
         </div>
     )
