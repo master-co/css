@@ -1,6 +1,6 @@
 import { resolve } from 'node:path'
 import { bench, describe } from 'vitest'
-import { benchmarkRoot, runCommand } from '../shared/runner'
+import { benchmarkRoot, runCommandStream } from '../shared/runner'
 
 const benchOptions = {
     iterations: 1,
@@ -17,18 +17,19 @@ let reportPromise: Promise<number> | undefined
 async function writeBrowserLifecycleReportOnce() {
     if (!reportPromise) {
         reportPromise = (async () => {
-            const result = await runCommand(
+            const result = await runCommandStream(
                 process.execPath,
                 [
                     '--import',
                     'tsx',
                     resolve('browser-lifecycle', 'run-report.ts')
                 ],
-                benchmarkRoot
+                benchmarkRoot,
+                {
+                    stdout: (chunk) => process.stdout.write(chunk),
+                    stderr: (chunk) => process.stderr.write(chunk)
+                }
             )
-
-            if (result.stdout) console.log(result.stdout.trim())
-            if (result.stderr) console.error(result.stderr.trim())
 
             return result.elapsedMs
         })()

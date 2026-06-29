@@ -3,7 +3,7 @@ import { existsSync } from 'node:fs'
 import { copyFile, mkdir, readFile, writeFile } from 'node:fs/promises'
 import { extname, isAbsolute, relative, resolve } from 'node:path'
 import { performance } from 'node:perf_hooks'
-import { chromium, type Browser, type CDPSession, type Page } from '@playwright/test'
+import { chromium, type Browser, type BrowserContext, type CDPSession, type Page } from '@playwright/test'
 import { render } from '@master/css-server'
 import type { MasterCSSManifest } from '@master/css'
 import { benchmarkAdapters, benchmarkFixtures } from '../fixtures/manifest'
@@ -771,7 +771,9 @@ async function collectBrowserLifecycleSamples(options: {
             browser: options.browser,
             pageRoot: options.pageRoot,
             variant: options.variant,
-            round: -round - 1
+            round: -round - 1,
+            roundLabel: `warmup ${round + 1}/${options.warmupRounds}`,
+            collectArtifacts: false
         })
         console.log(`Warmed browser lifecycle ${options.variantNumber}/${options.totalVariants}: ${options.variant.id}, warmup ${round + 1}/${options.warmupRounds} in ${formatDuration(performance.now() - roundStartedAt)}`)
     }
@@ -783,7 +785,9 @@ async function collectBrowserLifecycleSamples(options: {
             browser: options.browser,
             pageRoot: options.pageRoot,
             variant: options.variant,
-            round
+            round,
+            roundLabel: `round ${round + 1}/${options.rounds}`,
+            collectArtifacts: true
         })
 
         options.samples.push(...result.samples)
@@ -961,6 +965,8 @@ async function measureBrowserLifecycle(options: {
     pageRoot: string
     variant: BrowserLifecycleVariant
     round: number
+    roundLabel: string
+    collectArtifacts: boolean
 }): Promise<BrowserLifecycleMeasurement> {
     const server = await startStaticFileServer(options.pageRoot)
 
@@ -969,46 +975,96 @@ async function measureBrowserLifecycle(options: {
             viewport: fixedViewport,
             deviceScaleFactor: 1
         })
-        const page = await context.newPage()
-        const consoleWarnings = collectConsoleWarnings(page)
 
         try {
-            const artifactRoot = resolve(benchmarkRoot, '.results', 'browser-lifecycle', 'artifacts', options.variant.id, `round-${options.round}`)
-            await resetDirectory(artifactRoot)
+            return await withLifecycleMeasurementTimeout(options, context, async () => {
+                const page = await context.newPage()
+                const consoleWarnings = collectConsoleWarnings(page)
+                const measurement = options.variant.scenarioId === 'initial-load'
+                    ? await measureLifecycleNavigation(page, server.origin)
+                    : await measureLifecycleInteraction(page, server.origin)
 
-            const traceFile = resolve(artifactRoot, 'trace.json')
-            const diagnosticsFile = resolve(artifactRoot, 'diagnostics.json')
-            const screenshotFile = resolve(artifactRoot, 'screenshot.png')
-            const runtimeStyleFile = resolve(artifactRoot, 'runtime-style.css')
-            const measurement = options.variant.scenarioId === 'initial-load'
-                ? await measureLifecycleNavigation(page, server.origin)
-                : await measureLifecycleInteraction(page, server.origin)
-            await writeFile(traceFile, `${JSON.stringify({ traceEvents: measurement.events }, null, 2)}\n`)
-            await page.screenshot({ path: screenshotFile, fullPage: false })
+                if (!options.collectArtifacts) {
+                    return {
+                        samples: createLifecycleMetricSamples(options.variant.id, options.round, measurement.values),
+                        artifacts: []
+                    }
+                }
 
-            const diagnostics = {
-                variant: options.variant,
-                values: measurement.values,
-                state: measurement.state,
-                action: measurement.action,
-                consoleWarnings,
-                runtimeStyleArtifact: measurement.runtimeStyleText ? 'runtime-style.css' : undefined
-            }
-            await writeFile(diagnosticsFile, `${JSON.stringify(diagnostics, null, 2)}\n`)
-            if (measurement.runtimeStyleText) await writeFile(runtimeStyleFile, measurement.runtimeStyleText)
+                const artifactRoot = resolve(benchmarkRoot, '.results', 'browser-lifecycle', 'artifacts', options.variant.id, `round-${options.round}`)
+                await resetDirectory(artifactRoot)
 
-            const artifactFiles = [traceFile, diagnosticsFile, screenshotFile]
-            if (measurement.runtimeStyleText) artifactFiles.push(runtimeStyleFile)
+                const traceFile = resolve(artifactRoot, 'trace.json')
+                const diagnosticsFile = resolve(artifactRoot, 'diagnostics.json')
+                const screenshotFile = resolve(artifactRoot, 'screenshot.png')
+                const runtimeStyleFile = resolve(artifactRoot, 'runtime-style.css')
+                await writeFile(traceFile, `${JSON.stringify({ traceEvents: measurement.events }, null, 2)}\n`)
+                await page.screenshot({ path: screenshotFile, fullPage: false })
 
-            return {
-                samples: createLifecycleMetricSamples(options.variant.id, options.round, measurement.values),
-                artifacts: await Promise.all(artifactFiles.map((file) => measureRelativeArtifact(file)))
-            }
+                const diagnostics = {
+                    variant: options.variant,
+                    values: measurement.values,
+                    state: measurement.state,
+                    action: measurement.action,
+                    consoleWarnings,
+                    runtimeStyleArtifact: measurement.runtimeStyleText ? 'runtime-style.css' : undefined
+                }
+                await writeFile(diagnosticsFile, `${JSON.stringify(diagnostics, null, 2)}\n`)
+                if (measurement.runtimeStyleText) await writeFile(runtimeStyleFile, measurement.runtimeStyleText)
+
+                const artifactFiles = [traceFile, diagnosticsFile, screenshotFile]
+                if (measurement.runtimeStyleText) artifactFiles.push(runtimeStyleFile)
+
+                return {
+                    samples: createLifecycleMetricSamples(options.variant.id, options.round, measurement.values),
+                    artifacts: await Promise.all(artifactFiles.map((file) => measureRelativeArtifact(file)))
+                }
+            })
         } finally {
             await context.close()
         }
     } finally {
         await server.close()
+    }
+}
+
+async function withLifecycleMeasurementTimeout<T>(
+    options: {
+        variant: BrowserLifecycleVariant
+        roundLabel: string
+    },
+    context: BrowserContext,
+    action: () => Promise<T>
+): Promise<T> {
+    const timeoutMs = getBrowserLifecycleMeasureTimeoutMs()
+    let timeout: NodeJS.Timeout | undefined
+    let timedOut = false
+
+    try {
+        const actionPromise = action()
+        return await new Promise<T>((resolvePromise, rejectPromise) => {
+            timeout = setTimeout(() => {
+                timedOut = true
+                void context.close().catch(() => undefined)
+                rejectPromise(new Error([
+                    `Browser lifecycle measurement timed out for ${options.variant.id}.`,
+                    `Scenario: ${options.variant.scenarioId}.`,
+                    `Round: ${options.roundLabel}.`,
+                    `Timeout: ${timeoutMs}ms.`
+                ].join(' ')))
+            }, timeoutMs)
+
+            actionPromise.then(
+                (value) => {
+                    if (!timedOut) resolvePromise(value)
+                },
+                (error) => {
+                    if (!timedOut) rejectPromise(error)
+                }
+            )
+        })
+    } finally {
+        if (timeout) clearTimeout(timeout)
     }
 }
 
@@ -1735,6 +1791,13 @@ function getBrowserLifecycleWarmupRounds() {
 function getLongSessionDurationMs() {
     const value = Number(process.env.BROWSER_LIFECYCLE_LONG_SESSION_MS || 1000)
     if (!Number.isFinite(value) || value < 100) return 1000
+    return Math.floor(value)
+}
+
+function getBrowserLifecycleMeasureTimeoutMs() {
+    const fallback = Math.max(30000, getLongSessionDurationMs() + 120000)
+    const value = Number(process.env.BROWSER_LIFECYCLE_MEASURE_TIMEOUT_MS || fallback)
+    if (!Number.isFinite(value) || value < 1000) return fallback
     return Math.floor(value)
 }
 
