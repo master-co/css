@@ -1,0 +1,2895 @@
+{
+    "schemaVersion": 1,
+    "suite": "browser-lifecycle-long-session-evidence",
+    "generatedAt": "2026-06-29T17:31:36.892Z",
+    "sourceReports": [
+        {
+            "modeId": "master-static",
+            "suite": "browser-lifecycle",
+            "generatedAt": "2026-06-29T13:30:21.552Z",
+            "source": ".results/browser-lifecycle/report.long-session-5m-master-static.json",
+            "command": "BROWSER_LIFECYCLE_SCENARIOS=long-session BROWSER_LIFECYCLE_MODES=master-static BROWSER_LIFECYCLE_ROUNDS=1 BROWSER_LIFECYCLE_WARMUP_ROUNDS=1 BROWSER_LIFECYCLE_LONG_SESSION_MS=300000 BROWSER_LIFECYCLE_MEASURE_TIMEOUT_MS=420000 BROWSER_LIFECYCLE_REPORT_LABEL=long-session-5m-master-static BENCHMARK_COMMAND_TIMEOUT_MS=900000 pnpm --filter ./benchmarks bench:browser-lifecycle"
+        },
+        {
+            "modeId": "master-runtime",
+            "suite": "browser-lifecycle",
+            "generatedAt": "2026-06-29T16:16:16.990Z",
+            "source": ".results/browser-lifecycle/report.long-session-5m-master-runtime.json",
+            "command": "BROWSER_LIFECYCLE_SCENARIOS=long-session BROWSER_LIFECYCLE_MODES=master-runtime BROWSER_LIFECYCLE_ROUNDS=1 BROWSER_LIFECYCLE_WARMUP_ROUNDS=1 BROWSER_LIFECYCLE_LONG_SESSION_MS=300000 BROWSER_LIFECYCLE_MEASURE_TIMEOUT_MS=420000 BROWSER_LIFECYCLE_REPORT_LABEL=long-session-5m-master-runtime BENCHMARK_COMMAND_TIMEOUT_MS=900000 pnpm --filter ./benchmarks bench:browser-lifecycle"
+        },
+        {
+            "modeId": "master-progressive",
+            "suite": "browser-lifecycle",
+            "generatedAt": "2026-06-29T16:27:23.338Z",
+            "source": ".results/browser-lifecycle/report.long-session-5m-master-progressive.json",
+            "command": "BROWSER_LIFECYCLE_SCENARIOS=long-session BROWSER_LIFECYCLE_MODES=master-progressive BROWSER_LIFECYCLE_ROUNDS=1 BROWSER_LIFECYCLE_WARMUP_ROUNDS=1 BROWSER_LIFECYCLE_LONG_SESSION_MS=300000 BROWSER_LIFECYCLE_MEASURE_TIMEOUT_MS=420000 BROWSER_LIFECYCLE_REPORT_LABEL=long-session-5m-master-progressive BENCHMARK_COMMAND_TIMEOUT_MS=900000 pnpm --filter ./benchmarks bench:browser-lifecycle"
+        },
+        {
+            "modeId": "tailwind-static",
+            "suite": "browser-lifecycle",
+            "generatedAt": "2026-06-29T16:38:26.270Z",
+            "source": ".results/browser-lifecycle/report.long-session-5m-tailwind-static.json",
+            "command": "BROWSER_LIFECYCLE_SCENARIOS=long-session BROWSER_LIFECYCLE_MODES=tailwind-static BROWSER_LIFECYCLE_ROUNDS=1 BROWSER_LIFECYCLE_WARMUP_ROUNDS=1 BROWSER_LIFECYCLE_LONG_SESSION_MS=300000 BROWSER_LIFECYCLE_MEASURE_TIMEOUT_MS=420000 BROWSER_LIFECYCLE_REPORT_LABEL=long-session-5m-tailwind-static BENCHMARK_COMMAND_TIMEOUT_MS=900000 pnpm --filter ./benchmarks bench:browser-lifecycle"
+        }
+    ],
+    "environment": {
+        "os": {
+            "platform": "darwin",
+            "release": "25.5.0",
+            "arch": "arm64"
+        },
+        "node": "v24.15.0",
+        "cpu": {
+            "model": "Apple M3 Max",
+            "count": 16
+        }
+    },
+    "browser": {
+        "name": "Chromium",
+        "version": "149.0.7827.55"
+    },
+    "packages": [
+        {
+            "name": "@master/css",
+            "version": "workspace:^"
+        },
+        {
+            "name": "@master/css-cli",
+            "version": "workspace:^"
+        },
+        {
+            "name": "@master/css-runtime",
+            "version": "workspace:^"
+        },
+        {
+            "name": "@master/css-server",
+            "version": "workspace:^"
+        },
+        {
+            "name": "@master/css-preset",
+            "version": "workspace:^"
+        },
+        {
+            "name": "@playwright/test",
+            "version": "1.61.0"
+        },
+        {
+            "name": "tailwindcss",
+            "version": "^4.3.1"
+        },
+        {
+            "name": "@tailwindcss/cli",
+            "version": "^4.3.1"
+        }
+    ],
+    "modes": [
+        {
+            "id": "master-static",
+            "label": "Master CSS static",
+            "family": "master-css"
+        },
+        {
+            "id": "master-runtime",
+            "label": "Master CSS runtime",
+            "family": "master-css"
+        },
+        {
+            "id": "master-progressive",
+            "label": "Master CSS progressive",
+            "family": "master-css"
+        },
+        {
+            "id": "tailwind-static",
+            "label": "Tailwind CSS static",
+            "family": "tailwind-css"
+        }
+    ],
+    "scenarios": [
+        {
+            "id": "long-session",
+            "label": "Long session"
+        }
+    ],
+    "details": [
+        {
+            "id": "mixed-operations",
+            "scenarioId": "long-session",
+            "label": "Long session mixed operations"
+        }
+    ],
+    "variants": [
+        {
+            "id": "long-session-master-static-mixed-operations",
+            "fixtureId": "dynamic",
+            "modeId": "master-static",
+            "scenarioId": "long-session",
+            "detailId": "mixed-operations",
+            "adapterId": "master-static",
+            "label": "Long session mixed operations / Master CSS static",
+            "limits": [
+                "Default long-session duration is short unless BROWSER_LIFECYCLE_LONG_SESSION_MS is set."
+            ]
+        },
+        {
+            "id": "long-session-master-runtime-mixed-operations",
+            "fixtureId": "dynamic",
+            "modeId": "master-runtime",
+            "scenarioId": "long-session",
+            "detailId": "mixed-operations",
+            "adapterId": "master-runtime",
+            "label": "Long session mixed operations / Master CSS runtime",
+            "limits": [
+                "Default long-session duration is short unless BROWSER_LIFECYCLE_LONG_SESSION_MS is set."
+            ]
+        },
+        {
+            "id": "long-session-master-progressive-mixed-operations",
+            "fixtureId": "dynamic",
+            "modeId": "master-progressive",
+            "scenarioId": "long-session",
+            "detailId": "mixed-operations",
+            "adapterId": "master-progressive",
+            "label": "Long session mixed operations / Master CSS progressive",
+            "limits": [
+                "Default long-session duration is short unless BROWSER_LIFECYCLE_LONG_SESSION_MS is set."
+            ]
+        },
+        {
+            "id": "long-session-tailwind-static-mixed-operations",
+            "fixtureId": "dynamic",
+            "modeId": "tailwind-static",
+            "scenarioId": "long-session",
+            "detailId": "mixed-operations",
+            "adapterId": "tailwind-cli",
+            "label": "Long session mixed operations / Tailwind CSS static",
+            "limits": [
+                "Default long-session duration is short unless BROWSER_LIFECYCLE_LONG_SESSION_MS is set.",
+                "Tailwind CSS is measured as a static browser-control variant, not as a runtime-equivalent implementation."
+            ]
+        }
+    ],
+    "variantSummaries": [
+        {
+            "variantId": "long-session-master-static-mixed-operations",
+            "fixtureId": "dynamic",
+            "adapterId": "master-static",
+            "modeId": "master-static",
+            "scenarioId": "long-session",
+            "detailId": "mixed-operations",
+            "correctness": {
+                "computedStyleValid": {
+                    "min": 1,
+                    "median": 1,
+                    "mean": 1,
+                    "max": 1,
+                    "sampleCount": 1,
+                    "unit": "count"
+                },
+                "progressiveAdopted": {
+                    "min": 0,
+                    "median": 0,
+                    "mean": 0,
+                    "max": 0,
+                    "sampleCount": 1,
+                    "unit": "count"
+                }
+            },
+            "metrics": {
+                "html-raw-bytes": {
+                    "min": 93377,
+                    "median": 93377,
+                    "mean": 93377,
+                    "max": 93377,
+                    "sampleCount": 1,
+                    "unit": "B"
+                },
+                "html-gzip-bytes": {
+                    "min": 6401,
+                    "median": 6401,
+                    "mean": 6401,
+                    "max": 6401,
+                    "sampleCount": 1,
+                    "unit": "B"
+                },
+                "html-brotli-bytes": {
+                    "min": 4370,
+                    "median": 4370,
+                    "mean": 4370,
+                    "max": 4370,
+                    "sampleCount": 1,
+                    "unit": "B"
+                },
+                "external-css-raw-bytes": {
+                    "min": 5770,
+                    "median": 5770,
+                    "mean": 5770,
+                    "max": 5770,
+                    "sampleCount": 1,
+                    "unit": "B"
+                },
+                "external-css-gzip-bytes": {
+                    "min": 2087,
+                    "median": 2087,
+                    "mean": 2087,
+                    "max": 2087,
+                    "sampleCount": 1,
+                    "unit": "B"
+                },
+                "external-css-brotli-bytes": {
+                    "min": 1779,
+                    "median": 1779,
+                    "mean": 1779,
+                    "max": 1779,
+                    "sampleCount": 1,
+                    "unit": "B"
+                },
+                "inline-css-raw-bytes": {
+                    "min": 0,
+                    "median": 0,
+                    "mean": 0,
+                    "max": 0,
+                    "sampleCount": 1,
+                    "unit": "B"
+                },
+                "inline-css-gzip-bytes": {
+                    "min": 20,
+                    "median": 20,
+                    "mean": 20,
+                    "max": 20,
+                    "sampleCount": 1,
+                    "unit": "B"
+                },
+                "inline-css-brotli-bytes": {
+                    "min": 1,
+                    "median": 1,
+                    "mean": 1,
+                    "max": 1,
+                    "sampleCount": 1,
+                    "unit": "B"
+                },
+                "runtime-js-raw-bytes": {
+                    "min": 0,
+                    "median": 0,
+                    "mean": 0,
+                    "max": 0,
+                    "sampleCount": 1,
+                    "unit": "B"
+                },
+                "runtime-js-gzip-bytes": {
+                    "min": 20,
+                    "median": 20,
+                    "mean": 20,
+                    "max": 20,
+                    "sampleCount": 1,
+                    "unit": "B"
+                },
+                "runtime-js-brotli-bytes": {
+                    "min": 1,
+                    "median": 1,
+                    "mean": 1,
+                    "max": 1,
+                    "sampleCount": 1,
+                    "unit": "B"
+                },
+                "manifest-json-raw-bytes": {
+                    "min": 0,
+                    "median": 0,
+                    "mean": 0,
+                    "max": 0,
+                    "sampleCount": 1,
+                    "unit": "B"
+                },
+                "manifest-json-gzip-bytes": {
+                    "min": 20,
+                    "median": 20,
+                    "mean": 20,
+                    "max": 20,
+                    "sampleCount": 1,
+                    "unit": "B"
+                },
+                "manifest-json-brotli-bytes": {
+                    "min": 1,
+                    "median": 1,
+                    "mean": 1,
+                    "max": 1,
+                    "sampleCount": 1,
+                    "unit": "B"
+                },
+                "hydration-manifest-raw-bytes": {
+                    "min": 0,
+                    "median": 0,
+                    "mean": 0,
+                    "max": 0,
+                    "sampleCount": 1,
+                    "unit": "B"
+                },
+                "hydration-manifest-gzip-bytes": {
+                    "min": 20,
+                    "median": 20,
+                    "mean": 20,
+                    "max": 20,
+                    "sampleCount": 1,
+                    "unit": "B"
+                },
+                "hydration-manifest-brotli-bytes": {
+                    "min": 1,
+                    "median": 1,
+                    "mean": 1,
+                    "max": 1,
+                    "sampleCount": 1,
+                    "unit": "B"
+                },
+                "delivered-style-rule-count": {
+                    "min": 92,
+                    "median": 92,
+                    "mean": 92,
+                    "max": 92,
+                    "sampleCount": 1,
+                    "unit": "count"
+                },
+                "delivered-selector-count": {
+                    "min": 143,
+                    "median": 143,
+                    "mean": 143,
+                    "max": 143,
+                    "sampleCount": 1,
+                    "unit": "count"
+                },
+                "delivered-declaration-count": {
+                    "min": 136,
+                    "median": 136,
+                    "mean": 136,
+                    "max": 136,
+                    "sampleCount": 1,
+                    "unit": "count"
+                },
+                "navigation-ready-ms": {
+                    "min": 300057.6,
+                    "median": 300057.6,
+                    "mean": 300057.6,
+                    "max": 300057.6,
+                    "sampleCount": 1,
+                    "unit": "ms"
+                },
+                "stylesheet-parse-ms": {
+                    "min": 0,
+                    "median": 0,
+                    "mean": 0,
+                    "max": 0,
+                    "sampleCount": 1,
+                    "unit": "ms"
+                },
+                "style-recalculation-ms": {
+                    "min": 13395.8,
+                    "median": 13395.8,
+                    "mean": 13395.8,
+                    "max": 13395.8,
+                    "sampleCount": 1,
+                    "unit": "ms"
+                },
+                "style-recalculation-count": {
+                    "min": 22940,
+                    "median": 22940,
+                    "mean": 22940,
+                    "max": 22940,
+                    "sampleCount": 1,
+                    "unit": "count"
+                },
+                "layout-ms": {
+                    "min": 2823.7,
+                    "median": 2823.7,
+                    "mean": 2823.7,
+                    "max": 2823.7,
+                    "sampleCount": 1,
+                    "unit": "ms"
+                },
+                "paint-ms": {
+                    "min": 13357.1,
+                    "median": 13357.1,
+                    "mean": 13357.1,
+                    "max": 13357.1,
+                    "sampleCount": 1,
+                    "unit": "ms"
+                },
+                "long-task-count": {
+                    "min": 28,
+                    "median": 28,
+                    "mean": 28,
+                    "max": 28,
+                    "sampleCount": 1,
+                    "unit": "count"
+                },
+                "fcp-ms": {
+                    "min": 28,
+                    "median": 28,
+                    "mean": 28,
+                    "max": 28,
+                    "sampleCount": 1,
+                    "unit": "ms"
+                },
+                "lcp-ms": {
+                    "min": 28,
+                    "median": 28,
+                    "mean": 28,
+                    "max": 28,
+                    "sampleCount": 1,
+                    "unit": "ms"
+                },
+                "inp-style-interaction-ms": {
+                    "min": 300051.7,
+                    "median": 300051.7,
+                    "mean": 300051.7,
+                    "max": 300051.7,
+                    "sampleCount": 1,
+                    "unit": "ms"
+                },
+                "js-heap-used-bytes": {
+                    "min": 1429672,
+                    "median": 1429672,
+                    "mean": 1429672,
+                    "max": 1429672,
+                    "sampleCount": 1,
+                    "unit": "B"
+                },
+                "dom-node-count": {
+                    "min": 745,
+                    "median": 745,
+                    "mean": 745,
+                    "max": 745,
+                    "sampleCount": 1,
+                    "unit": "count"
+                },
+                "affected-element-count": {
+                    "min": 2299932,
+                    "median": 2299932,
+                    "mean": 2299932,
+                    "max": 2299932,
+                    "sampleCount": 1,
+                    "unit": "count"
+                },
+                "average-class-count": {
+                    "min": 5.93,
+                    "median": 5.93,
+                    "mean": 5.93,
+                    "max": 5.93,
+                    "sampleCount": 1,
+                    "unit": "count"
+                },
+                "cssom-rule-count": {
+                    "min": 2,
+                    "median": 2,
+                    "mean": 2,
+                    "max": 2,
+                    "sampleCount": 1,
+                    "unit": "count"
+                },
+                "runtime-ready-ms": {
+                    "min": 0,
+                    "median": 0,
+                    "mean": 0,
+                    "max": 0,
+                    "sampleCount": 1,
+                    "unit": "ms"
+                },
+                "runtime-bootstrap-ms": {
+                    "min": 0,
+                    "median": 0,
+                    "mean": 0,
+                    "max": 0,
+                    "sampleCount": 1,
+                    "unit": "ms"
+                },
+                "runtime-observe-ms": {
+                    "min": 0,
+                    "median": 0,
+                    "mean": 0,
+                    "max": 0,
+                    "sampleCount": 1,
+                    "unit": "ms"
+                },
+                "runtime-mutation-ms": {
+                    "min": 0,
+                    "median": 0,
+                    "mean": 0,
+                    "max": 0,
+                    "sampleCount": 1,
+                    "unit": "ms"
+                },
+                "runtime-generated-rule-count": {
+                    "min": 0,
+                    "median": 0,
+                    "mean": 0,
+                    "max": 0,
+                    "sampleCount": 1,
+                    "unit": "count"
+                },
+                "runtime-generated-rule-count-delta": {
+                    "min": 0,
+                    "median": 0,
+                    "mean": 0,
+                    "max": 0,
+                    "sampleCount": 1,
+                    "unit": "count"
+                },
+                "runtime-style-raw-bytes": {
+                    "min": 0,
+                    "median": 0,
+                    "mean": 0,
+                    "max": 0,
+                    "sampleCount": 1,
+                    "unit": "B"
+                },
+                "runtime-style-raw-bytes-delta": {
+                    "min": 0,
+                    "median": 0,
+                    "mean": 0,
+                    "max": 0,
+                    "sampleCount": 1,
+                    "unit": "B"
+                },
+                "retained-class-count": {
+                    "min": 0,
+                    "median": 0,
+                    "mean": 0,
+                    "max": 0,
+                    "sampleCount": 1,
+                    "unit": "count"
+                },
+                "retained-rule-count": {
+                    "min": 0,
+                    "median": 0,
+                    "mean": 0,
+                    "max": 0,
+                    "sampleCount": 1,
+                    "unit": "count"
+                },
+                "mutation-observer-callback-count": {
+                    "min": 0,
+                    "median": 0,
+                    "mean": 0,
+                    "max": 0,
+                    "sampleCount": 1,
+                    "unit": "count"
+                },
+                "mutation-observer-callback-duration-ms": {
+                    "min": 0,
+                    "median": 0,
+                    "mean": 0,
+                    "max": 0,
+                    "sampleCount": 1,
+                    "unit": "ms"
+                },
+                "route-count": {
+                    "min": 0,
+                    "median": 0,
+                    "mean": 0,
+                    "max": 0,
+                    "sampleCount": 1,
+                    "unit": "count"
+                },
+                "progressive-adopted": {
+                    "min": 0,
+                    "median": 0,
+                    "mean": 0,
+                    "max": 0,
+                    "sampleCount": 1,
+                    "unit": "count"
+                },
+                "computed-style-valid": {
+                    "min": 1,
+                    "median": 1,
+                    "mean": 1,
+                    "max": 1,
+                    "sampleCount": 1,
+                    "unit": "count"
+                }
+            }
+        },
+        {
+            "variantId": "long-session-master-runtime-mixed-operations",
+            "fixtureId": "dynamic",
+            "adapterId": "master-runtime",
+            "modeId": "master-runtime",
+            "scenarioId": "long-session",
+            "detailId": "mixed-operations",
+            "correctness": {
+                "computedStyleValid": {
+                    "min": 1,
+                    "median": 1,
+                    "mean": 1,
+                    "max": 1,
+                    "sampleCount": 1,
+                    "unit": "count"
+                },
+                "progressiveAdopted": {
+                    "min": 0,
+                    "median": 0,
+                    "mean": 0,
+                    "max": 0,
+                    "sampleCount": 1,
+                    "unit": "count"
+                }
+            },
+            "metrics": {
+                "html-raw-bytes": {
+                    "min": 95332,
+                    "median": 95332,
+                    "mean": 95332,
+                    "max": 95332,
+                    "sampleCount": 1,
+                    "unit": "B"
+                },
+                "html-gzip-bytes": {
+                    "min": 6595,
+                    "median": 6595,
+                    "mean": 6595,
+                    "max": 6595,
+                    "sampleCount": 1,
+                    "unit": "B"
+                },
+                "html-brotli-bytes": {
+                    "min": 4454,
+                    "median": 4454,
+                    "mean": 4454,
+                    "max": 4454,
+                    "sampleCount": 1,
+                    "unit": "B"
+                },
+                "external-css-raw-bytes": {
+                    "min": 0,
+                    "median": 0,
+                    "mean": 0,
+                    "max": 0,
+                    "sampleCount": 1,
+                    "unit": "B"
+                },
+                "external-css-gzip-bytes": {
+                    "min": 20,
+                    "median": 20,
+                    "mean": 20,
+                    "max": 20,
+                    "sampleCount": 1,
+                    "unit": "B"
+                },
+                "external-css-brotli-bytes": {
+                    "min": 1,
+                    "median": 1,
+                    "mean": 1,
+                    "max": 1,
+                    "sampleCount": 1,
+                    "unit": "B"
+                },
+                "inline-css-raw-bytes": {
+                    "min": 0,
+                    "median": 0,
+                    "mean": 0,
+                    "max": 0,
+                    "sampleCount": 1,
+                    "unit": "B"
+                },
+                "inline-css-gzip-bytes": {
+                    "min": 20,
+                    "median": 20,
+                    "mean": 20,
+                    "max": 20,
+                    "sampleCount": 1,
+                    "unit": "B"
+                },
+                "inline-css-brotli-bytes": {
+                    "min": 1,
+                    "median": 1,
+                    "mean": 1,
+                    "max": 1,
+                    "sampleCount": 1,
+                    "unit": "B"
+                },
+                "runtime-js-raw-bytes": {
+                    "min": 96365,
+                    "median": 96365,
+                    "mean": 96365,
+                    "max": 96365,
+                    "sampleCount": 1,
+                    "unit": "B"
+                },
+                "runtime-js-gzip-bytes": {
+                    "min": 26133,
+                    "median": 26133,
+                    "mean": 26133,
+                    "max": 26133,
+                    "sampleCount": 1,
+                    "unit": "B"
+                },
+                "runtime-js-brotli-bytes": {
+                    "min": 22757,
+                    "median": 22757,
+                    "mean": 22757,
+                    "max": 22757,
+                    "sampleCount": 1,
+                    "unit": "B"
+                },
+                "manifest-json-raw-bytes": {
+                    "min": 86502,
+                    "median": 86502,
+                    "mean": 86502,
+                    "max": 86502,
+                    "sampleCount": 1,
+                    "unit": "B"
+                },
+                "manifest-json-gzip-bytes": {
+                    "min": 12235,
+                    "median": 12235,
+                    "mean": 12235,
+                    "max": 12235,
+                    "sampleCount": 1,
+                    "unit": "B"
+                },
+                "manifest-json-brotli-bytes": {
+                    "min": 9795,
+                    "median": 9795,
+                    "mean": 9795,
+                    "max": 9795,
+                    "sampleCount": 1,
+                    "unit": "B"
+                },
+                "hydration-manifest-raw-bytes": {
+                    "min": 0,
+                    "median": 0,
+                    "mean": 0,
+                    "max": 0,
+                    "sampleCount": 1,
+                    "unit": "B"
+                },
+                "hydration-manifest-gzip-bytes": {
+                    "min": 20,
+                    "median": 20,
+                    "mean": 20,
+                    "max": 20,
+                    "sampleCount": 1,
+                    "unit": "B"
+                },
+                "hydration-manifest-brotli-bytes": {
+                    "min": 1,
+                    "median": 1,
+                    "mean": 1,
+                    "max": 1,
+                    "sampleCount": 1,
+                    "unit": "B"
+                },
+                "delivered-style-rule-count": {
+                    "min": 0,
+                    "median": 0,
+                    "mean": 0,
+                    "max": 0,
+                    "sampleCount": 1,
+                    "unit": "count"
+                },
+                "delivered-selector-count": {
+                    "min": 0,
+                    "median": 0,
+                    "mean": 0,
+                    "max": 0,
+                    "sampleCount": 1,
+                    "unit": "count"
+                },
+                "delivered-declaration-count": {
+                    "min": 0,
+                    "median": 0,
+                    "mean": 0,
+                    "max": 0,
+                    "sampleCount": 1,
+                    "unit": "count"
+                },
+                "navigation-ready-ms": {
+                    "min": 300075.5,
+                    "median": 300075.5,
+                    "mean": 300075.5,
+                    "max": 300075.5,
+                    "sampleCount": 1,
+                    "unit": "ms"
+                },
+                "stylesheet-parse-ms": {
+                    "min": 0,
+                    "median": 0,
+                    "mean": 0,
+                    "max": 0,
+                    "sampleCount": 1,
+                    "unit": "ms"
+                },
+                "style-recalculation-ms": {
+                    "min": 6773.4,
+                    "median": 6773.4,
+                    "mean": 6773.4,
+                    "max": 6773.4,
+                    "sampleCount": 1,
+                    "unit": "ms"
+                },
+                "style-recalculation-count": {
+                    "min": 21324,
+                    "median": 21324,
+                    "mean": 21324,
+                    "max": 21324,
+                    "sampleCount": 1,
+                    "unit": "count"
+                },
+                "layout-ms": {
+                    "min": 1193,
+                    "median": 1193,
+                    "mean": 1193,
+                    "max": 1193,
+                    "sampleCount": 1,
+                    "unit": "ms"
+                },
+                "paint-ms": {
+                    "min": 6006.2,
+                    "median": 6006.2,
+                    "mean": 6006.2,
+                    "max": 6006.2,
+                    "sampleCount": 1,
+                    "unit": "ms"
+                },
+                "long-task-count": {
+                    "min": 0,
+                    "median": 0,
+                    "mean": 0,
+                    "max": 0,
+                    "sampleCount": 1,
+                    "unit": "count"
+                },
+                "fcp-ms": {
+                    "min": 36,
+                    "median": 36,
+                    "mean": 36,
+                    "max": 36,
+                    "sampleCount": 1,
+                    "unit": "ms"
+                },
+                "lcp-ms": {
+                    "min": 36,
+                    "median": 36,
+                    "mean": 36,
+                    "max": 36,
+                    "sampleCount": 1,
+                    "unit": "ms"
+                },
+                "inp-style-interaction-ms": {
+                    "min": 300066.3,
+                    "median": 300066.3,
+                    "mean": 300066.3,
+                    "max": 300066.3,
+                    "sampleCount": 1,
+                    "unit": "ms"
+                },
+                "js-heap-used-bytes": {
+                    "min": 4121500,
+                    "median": 4121500,
+                    "mean": 4121500,
+                    "max": 4121500,
+                    "sampleCount": 1,
+                    "unit": "B"
+                },
+                "dom-node-count": {
+                    "min": 747,
+                    "median": 747,
+                    "mean": 747,
+                    "max": 747,
+                    "sampleCount": 1,
+                    "unit": "count"
+                },
+                "affected-element-count": {
+                    "min": 2340260,
+                    "median": 2340260,
+                    "mean": 2340260,
+                    "max": 2340260,
+                    "sampleCount": 1,
+                    "unit": "count"
+                },
+                "average-class-count": {
+                    "min": 5.52,
+                    "median": 5.52,
+                    "mean": 5.52,
+                    "max": 5.52,
+                    "sampleCount": 1,
+                    "unit": "count"
+                },
+                "cssom-rule-count": {
+                    "min": 0,
+                    "median": 0,
+                    "mean": 0,
+                    "max": 0,
+                    "sampleCount": 1,
+                    "unit": "count"
+                },
+                "runtime-ready-ms": {
+                    "min": 25,
+                    "median": 25,
+                    "mean": 25,
+                    "max": 25,
+                    "sampleCount": 1,
+                    "unit": "ms"
+                },
+                "runtime-bootstrap-ms": {
+                    "min": 12.9,
+                    "median": 12.9,
+                    "mean": 12.9,
+                    "max": 12.9,
+                    "sampleCount": 1,
+                    "unit": "ms"
+                },
+                "runtime-observe-ms": {
+                    "min": 5.8,
+                    "median": 5.8,
+                    "mean": 5.8,
+                    "max": 5.8,
+                    "sampleCount": 1,
+                    "unit": "ms"
+                },
+                "runtime-mutation-ms": {
+                    "min": 36.2,
+                    "median": 36.2,
+                    "mean": 36.2,
+                    "max": 36.2,
+                    "sampleCount": 1,
+                    "unit": "ms"
+                },
+                "runtime-generated-rule-count": {
+                    "min": 47,
+                    "median": 47,
+                    "mean": 47,
+                    "max": 47,
+                    "sampleCount": 1,
+                    "unit": "count"
+                },
+                "runtime-generated-rule-count-delta": {
+                    "min": 4,
+                    "median": 4,
+                    "mean": 4,
+                    "max": 4,
+                    "sampleCount": 1,
+                    "unit": "count"
+                },
+                "runtime-style-raw-bytes": {
+                    "min": 2462,
+                    "median": 2462,
+                    "mean": 2462,
+                    "max": 2462,
+                    "sampleCount": 1,
+                    "unit": "B"
+                },
+                "runtime-style-raw-bytes-delta": {
+                    "min": 558,
+                    "median": 558,
+                    "mean": 558,
+                    "max": 558,
+                    "sampleCount": 1,
+                    "unit": "B"
+                },
+                "retained-class-count": {
+                    "min": 2,
+                    "median": 2,
+                    "mean": 2,
+                    "max": 2,
+                    "sampleCount": 1,
+                    "unit": "count"
+                },
+                "retained-rule-count": {
+                    "min": 2,
+                    "median": 2,
+                    "mean": 2,
+                    "max": 2,
+                    "sampleCount": 1,
+                    "unit": "count"
+                },
+                "mutation-observer-callback-count": {
+                    "min": 18002,
+                    "median": 18002,
+                    "mean": 18002,
+                    "max": 18002,
+                    "sampleCount": 1,
+                    "unit": "count"
+                },
+                "mutation-observer-callback-duration-ms": {
+                    "min": 7074.6,
+                    "median": 7074.6,
+                    "mean": 7074.6,
+                    "max": 7074.6,
+                    "sampleCount": 1,
+                    "unit": "ms"
+                },
+                "route-count": {
+                    "min": 0,
+                    "median": 0,
+                    "mean": 0,
+                    "max": 0,
+                    "sampleCount": 1,
+                    "unit": "count"
+                },
+                "progressive-adopted": {
+                    "min": 0,
+                    "median": 0,
+                    "mean": 0,
+                    "max": 0,
+                    "sampleCount": 1,
+                    "unit": "count"
+                },
+                "computed-style-valid": {
+                    "min": 1,
+                    "median": 1,
+                    "mean": 1,
+                    "max": 1,
+                    "sampleCount": 1,
+                    "unit": "count"
+                }
+            }
+        },
+        {
+            "variantId": "long-session-master-progressive-mixed-operations",
+            "fixtureId": "dynamic",
+            "adapterId": "master-progressive",
+            "modeId": "master-progressive",
+            "scenarioId": "long-session",
+            "detailId": "mixed-operations",
+            "correctness": {
+                "computedStyleValid": {
+                    "min": 1,
+                    "median": 1,
+                    "mean": 1,
+                    "max": 1,
+                    "sampleCount": 1,
+                    "unit": "count"
+                },
+                "progressiveAdopted": {
+                    "min": 1,
+                    "median": 1,
+                    "mean": 1,
+                    "max": 1,
+                    "sampleCount": 1,
+                    "unit": "count"
+                }
+            },
+            "metrics": {
+                "html-raw-bytes": {
+                    "min": 105770,
+                    "median": 105770,
+                    "mean": 105770,
+                    "max": 105770,
+                    "sampleCount": 1,
+                    "unit": "B"
+                },
+                "html-gzip-bytes": {
+                    "min": 8286,
+                    "median": 8286,
+                    "mean": 8286,
+                    "max": 8286,
+                    "sampleCount": 1,
+                    "unit": "B"
+                },
+                "html-brotli-bytes": {
+                    "min": 5833,
+                    "median": 5833,
+                    "mean": 5833,
+                    "max": 5833,
+                    "sampleCount": 1,
+                    "unit": "B"
+                },
+                "external-css-raw-bytes": {
+                    "min": 0,
+                    "median": 0,
+                    "mean": 0,
+                    "max": 0,
+                    "sampleCount": 1,
+                    "unit": "B"
+                },
+                "external-css-gzip-bytes": {
+                    "min": 20,
+                    "median": 20,
+                    "mean": 20,
+                    "max": 20,
+                    "sampleCount": 1,
+                    "unit": "B"
+                },
+                "external-css-brotli-bytes": {
+                    "min": 1,
+                    "median": 1,
+                    "mean": 1,
+                    "max": 1,
+                    "sampleCount": 1,
+                    "unit": "B"
+                },
+                "inline-css-raw-bytes": {
+                    "min": 1904,
+                    "median": 1904,
+                    "mean": 1904,
+                    "max": 1904,
+                    "sampleCount": 1,
+                    "unit": "B"
+                },
+                "inline-css-gzip-bytes": {
+                    "min": 728,
+                    "median": 728,
+                    "mean": 728,
+                    "max": 728,
+                    "sampleCount": 1,
+                    "unit": "B"
+                },
+                "inline-css-brotli-bytes": {
+                    "min": 618,
+                    "median": 618,
+                    "mean": 618,
+                    "max": 618,
+                    "sampleCount": 1,
+                    "unit": "B"
+                },
+                "runtime-js-raw-bytes": {
+                    "min": 96365,
+                    "median": 96365,
+                    "mean": 96365,
+                    "max": 96365,
+                    "sampleCount": 1,
+                    "unit": "B"
+                },
+                "runtime-js-gzip-bytes": {
+                    "min": 26133,
+                    "median": 26133,
+                    "mean": 26133,
+                    "max": 26133,
+                    "sampleCount": 1,
+                    "unit": "B"
+                },
+                "runtime-js-brotli-bytes": {
+                    "min": 22757,
+                    "median": 22757,
+                    "mean": 22757,
+                    "max": 22757,
+                    "sampleCount": 1,
+                    "unit": "B"
+                },
+                "manifest-json-raw-bytes": {
+                    "min": 86502,
+                    "median": 86502,
+                    "mean": 86502,
+                    "max": 86502,
+                    "sampleCount": 1,
+                    "unit": "B"
+                },
+                "manifest-json-gzip-bytes": {
+                    "min": 12235,
+                    "median": 12235,
+                    "mean": 12235,
+                    "max": 12235,
+                    "sampleCount": 1,
+                    "unit": "B"
+                },
+                "manifest-json-brotli-bytes": {
+                    "min": 9795,
+                    "median": 9795,
+                    "mean": 9795,
+                    "max": 9795,
+                    "sampleCount": 1,
+                    "unit": "B"
+                },
+                "hydration-manifest-raw-bytes": {
+                    "min": 8434,
+                    "median": 8434,
+                    "mean": 8434,
+                    "max": 8434,
+                    "sampleCount": 1,
+                    "unit": "B"
+                },
+                "hydration-manifest-gzip-bytes": {
+                    "min": 1258,
+                    "median": 1258,
+                    "mean": 1258,
+                    "max": 1258,
+                    "sampleCount": 1,
+                    "unit": "B"
+                },
+                "hydration-manifest-brotli-bytes": {
+                    "min": 1047,
+                    "median": 1047,
+                    "mean": 1047,
+                    "max": 1047,
+                    "sampleCount": 1,
+                    "unit": "B"
+                },
+                "delivered-style-rule-count": {
+                    "min": 44,
+                    "median": 44,
+                    "mean": 44,
+                    "max": 44,
+                    "sampleCount": 1,
+                    "unit": "count"
+                },
+                "delivered-selector-count": {
+                    "min": 44,
+                    "median": 44,
+                    "mean": 44,
+                    "max": 44,
+                    "sampleCount": 1,
+                    "unit": "count"
+                },
+                "delivered-declaration-count": {
+                    "min": 55,
+                    "median": 55,
+                    "mean": 55,
+                    "max": 55,
+                    "sampleCount": 1,
+                    "unit": "count"
+                },
+                "navigation-ready-ms": {
+                    "min": 300063.8,
+                    "median": 300063.8,
+                    "mean": 300063.8,
+                    "max": 300063.8,
+                    "sampleCount": 1,
+                    "unit": "ms"
+                },
+                "stylesheet-parse-ms": {
+                    "min": 0,
+                    "median": 0,
+                    "mean": 0,
+                    "max": 0,
+                    "sampleCount": 1,
+                    "unit": "ms"
+                },
+                "style-recalculation-ms": {
+                    "min": 6761.9,
+                    "median": 6761.9,
+                    "mean": 6761.9,
+                    "max": 6761.9,
+                    "sampleCount": 1,
+                    "unit": "ms"
+                },
+                "style-recalculation-count": {
+                    "min": 21344,
+                    "median": 21344,
+                    "mean": 21344,
+                    "max": 21344,
+                    "sampleCount": 1,
+                    "unit": "count"
+                },
+                "layout-ms": {
+                    "min": 1178.1,
+                    "median": 1178.1,
+                    "mean": 1178.1,
+                    "max": 1178.1,
+                    "sampleCount": 1,
+                    "unit": "ms"
+                },
+                "paint-ms": {
+                    "min": 5975.8,
+                    "median": 5975.8,
+                    "mean": 5975.8,
+                    "max": 5975.8,
+                    "sampleCount": 1,
+                    "unit": "ms"
+                },
+                "long-task-count": {
+                    "min": 0,
+                    "median": 0,
+                    "mean": 0,
+                    "max": 0,
+                    "sampleCount": 1,
+                    "unit": "count"
+                },
+                "fcp-ms": {
+                    "min": 24,
+                    "median": 24,
+                    "mean": 24,
+                    "max": 24,
+                    "sampleCount": 1,
+                    "unit": "ms"
+                },
+                "lcp-ms": {
+                    "min": 24,
+                    "median": 24,
+                    "mean": 24,
+                    "max": 24,
+                    "sampleCount": 1,
+                    "unit": "ms"
+                },
+                "inp-style-interaction-ms": {
+                    "min": 300059.6,
+                    "median": 300059.6,
+                    "mean": 300059.6,
+                    "max": 300059.6,
+                    "sampleCount": 1,
+                    "unit": "ms"
+                },
+                "js-heap-used-bytes": {
+                    "min": 3526980,
+                    "median": 3526980,
+                    "mean": 3526980,
+                    "max": 3526980,
+                    "sampleCount": 1,
+                    "unit": "B"
+                },
+                "dom-node-count": {
+                    "min": 748,
+                    "median": 748,
+                    "mean": 748,
+                    "max": 748,
+                    "sampleCount": 1,
+                    "unit": "count"
+                },
+                "affected-element-count": {
+                    "min": 2340260,
+                    "median": 2340260,
+                    "mean": 2340260,
+                    "max": 2340260,
+                    "sampleCount": 1,
+                    "unit": "count"
+                },
+                "average-class-count": {
+                    "min": 5.52,
+                    "median": 5.52,
+                    "mean": 5.52,
+                    "max": 5.52,
+                    "sampleCount": 1,
+                    "unit": "count"
+                },
+                "cssom-rule-count": {
+                    "min": 0,
+                    "median": 0,
+                    "mean": 0,
+                    "max": 0,
+                    "sampleCount": 1,
+                    "unit": "count"
+                },
+                "runtime-ready-ms": {
+                    "min": 29.5,
+                    "median": 29.5,
+                    "mean": 29.5,
+                    "max": 29.5,
+                    "sampleCount": 1,
+                    "unit": "ms"
+                },
+                "runtime-bootstrap-ms": {
+                    "min": 17.9,
+                    "median": 17.9,
+                    "mean": 17.9,
+                    "max": 17.9,
+                    "sampleCount": 1,
+                    "unit": "ms"
+                },
+                "runtime-observe-ms": {
+                    "min": 3.6,
+                    "median": 3.6,
+                    "mean": 3.6,
+                    "max": 3.6,
+                    "sampleCount": 1,
+                    "unit": "ms"
+                },
+                "runtime-mutation-ms": {
+                    "min": 42.4,
+                    "median": 42.4,
+                    "mean": 42.4,
+                    "max": 42.4,
+                    "sampleCount": 1,
+                    "unit": "ms"
+                },
+                "runtime-generated-rule-count": {
+                    "min": 47,
+                    "median": 47,
+                    "mean": 47,
+                    "max": 47,
+                    "sampleCount": 1,
+                    "unit": "count"
+                },
+                "runtime-generated-rule-count-delta": {
+                    "min": 4,
+                    "median": 4,
+                    "mean": 4,
+                    "max": 4,
+                    "sampleCount": 1,
+                    "unit": "count"
+                },
+                "runtime-style-raw-bytes": {
+                    "min": 1904,
+                    "median": 1904,
+                    "mean": 1904,
+                    "max": 1904,
+                    "sampleCount": 1,
+                    "unit": "B"
+                },
+                "runtime-style-raw-bytes-delta": {
+                    "min": 0,
+                    "median": 0,
+                    "mean": 0,
+                    "max": 0,
+                    "sampleCount": 1,
+                    "unit": "B"
+                },
+                "retained-class-count": {
+                    "min": 2,
+                    "median": 2,
+                    "mean": 2,
+                    "max": 2,
+                    "sampleCount": 1,
+                    "unit": "count"
+                },
+                "retained-rule-count": {
+                    "min": 2,
+                    "median": 2,
+                    "mean": 2,
+                    "max": 2,
+                    "sampleCount": 1,
+                    "unit": "count"
+                },
+                "mutation-observer-callback-count": {
+                    "min": 18002,
+                    "median": 18002,
+                    "mean": 18002,
+                    "max": 18002,
+                    "sampleCount": 1,
+                    "unit": "count"
+                },
+                "mutation-observer-callback-duration-ms": {
+                    "min": 6415.7,
+                    "median": 6415.7,
+                    "mean": 6415.7,
+                    "max": 6415.7,
+                    "sampleCount": 1,
+                    "unit": "ms"
+                },
+                "route-count": {
+                    "min": 0,
+                    "median": 0,
+                    "mean": 0,
+                    "max": 0,
+                    "sampleCount": 1,
+                    "unit": "count"
+                },
+                "progressive-adopted": {
+                    "min": 1,
+                    "median": 1,
+                    "mean": 1,
+                    "max": 1,
+                    "sampleCount": 1,
+                    "unit": "count"
+                },
+                "computed-style-valid": {
+                    "min": 1,
+                    "median": 1,
+                    "mean": 1,
+                    "max": 1,
+                    "sampleCount": 1,
+                    "unit": "count"
+                }
+            }
+        },
+        {
+            "variantId": "long-session-tailwind-static-mixed-operations",
+            "fixtureId": "dynamic",
+            "adapterId": "tailwind-cli",
+            "modeId": "tailwind-static",
+            "scenarioId": "long-session",
+            "detailId": "mixed-operations",
+            "correctness": {
+                "computedStyleValid": {
+                    "min": 1,
+                    "median": 1,
+                    "mean": 1,
+                    "max": 1,
+                    "sampleCount": 1,
+                    "unit": "count"
+                },
+                "progressiveAdopted": {
+                    "min": 0,
+                    "median": 0,
+                    "mean": 0,
+                    "max": 0,
+                    "sampleCount": 1,
+                    "unit": "count"
+                }
+            },
+            "metrics": {
+                "html-raw-bytes": {
+                    "min": 94614,
+                    "median": 94614,
+                    "mean": 94614,
+                    "max": 94614,
+                    "sampleCount": 1,
+                    "unit": "B"
+                },
+                "html-gzip-bytes": {
+                    "min": 6402,
+                    "median": 6402,
+                    "mean": 6402,
+                    "max": 6402,
+                    "sampleCount": 1,
+                    "unit": "B"
+                },
+                "html-brotli-bytes": {
+                    "min": 4421,
+                    "median": 4421,
+                    "mean": 4421,
+                    "max": 4421,
+                    "sampleCount": 1,
+                    "unit": "B"
+                },
+                "external-css-raw-bytes": {
+                    "min": 11358,
+                    "median": 11358,
+                    "mean": 11358,
+                    "max": 11358,
+                    "sampleCount": 1,
+                    "unit": "B"
+                },
+                "external-css-gzip-bytes": {
+                    "min": 2870,
+                    "median": 2870,
+                    "mean": 2870,
+                    "max": 2870,
+                    "sampleCount": 1,
+                    "unit": "B"
+                },
+                "external-css-brotli-bytes": {
+                    "min": 2446,
+                    "median": 2446,
+                    "mean": 2446,
+                    "max": 2446,
+                    "sampleCount": 1,
+                    "unit": "B"
+                },
+                "inline-css-raw-bytes": {
+                    "min": 0,
+                    "median": 0,
+                    "mean": 0,
+                    "max": 0,
+                    "sampleCount": 1,
+                    "unit": "B"
+                },
+                "inline-css-gzip-bytes": {
+                    "min": 20,
+                    "median": 20,
+                    "mean": 20,
+                    "max": 20,
+                    "sampleCount": 1,
+                    "unit": "B"
+                },
+                "inline-css-brotli-bytes": {
+                    "min": 1,
+                    "median": 1,
+                    "mean": 1,
+                    "max": 1,
+                    "sampleCount": 1,
+                    "unit": "B"
+                },
+                "runtime-js-raw-bytes": {
+                    "min": 0,
+                    "median": 0,
+                    "mean": 0,
+                    "max": 0,
+                    "sampleCount": 1,
+                    "unit": "B"
+                },
+                "runtime-js-gzip-bytes": {
+                    "min": 20,
+                    "median": 20,
+                    "mean": 20,
+                    "max": 20,
+                    "sampleCount": 1,
+                    "unit": "B"
+                },
+                "runtime-js-brotli-bytes": {
+                    "min": 1,
+                    "median": 1,
+                    "mean": 1,
+                    "max": 1,
+                    "sampleCount": 1,
+                    "unit": "B"
+                },
+                "manifest-json-raw-bytes": {
+                    "min": 0,
+                    "median": 0,
+                    "mean": 0,
+                    "max": 0,
+                    "sampleCount": 1,
+                    "unit": "B"
+                },
+                "manifest-json-gzip-bytes": {
+                    "min": 20,
+                    "median": 20,
+                    "mean": 20,
+                    "max": 20,
+                    "sampleCount": 1,
+                    "unit": "B"
+                },
+                "manifest-json-brotli-bytes": {
+                    "min": 1,
+                    "median": 1,
+                    "mean": 1,
+                    "max": 1,
+                    "sampleCount": 1,
+                    "unit": "B"
+                },
+                "hydration-manifest-raw-bytes": {
+                    "min": 0,
+                    "median": 0,
+                    "mean": 0,
+                    "max": 0,
+                    "sampleCount": 1,
+                    "unit": "B"
+                },
+                "hydration-manifest-gzip-bytes": {
+                    "min": 20,
+                    "median": 20,
+                    "mean": 20,
+                    "max": 20,
+                    "sampleCount": 1,
+                    "unit": "B"
+                },
+                "hydration-manifest-brotli-bytes": {
+                    "min": 1,
+                    "median": 1,
+                    "mean": 1,
+                    "max": 1,
+                    "sampleCount": 1,
+                    "unit": "B"
+                },
+                "delivered-style-rule-count": {
+                    "min": 88,
+                    "median": 88,
+                    "mean": 88,
+                    "max": 88,
+                    "sampleCount": 1,
+                    "unit": "count"
+                },
+                "delivered-selector-count": {
+                    "min": 133,
+                    "median": 133,
+                    "mean": 133,
+                    "max": 133,
+                    "sampleCount": 1,
+                    "unit": "count"
+                },
+                "delivered-declaration-count": {
+                    "min": 229,
+                    "median": 229,
+                    "mean": 229,
+                    "max": 229,
+                    "sampleCount": 1,
+                    "unit": "count"
+                },
+                "navigation-ready-ms": {
+                    "min": 300068.2,
+                    "median": 300068.2,
+                    "mean": 300068.2,
+                    "max": 300068.2,
+                    "sampleCount": 1,
+                    "unit": "ms"
+                },
+                "stylesheet-parse-ms": {
+                    "min": 0,
+                    "median": 0,
+                    "mean": 0,
+                    "max": 0,
+                    "sampleCount": 1,
+                    "unit": "ms"
+                },
+                "style-recalculation-ms": {
+                    "min": 12101.9,
+                    "median": 12101.9,
+                    "mean": 12101.9,
+                    "max": 12101.9,
+                    "sampleCount": 1,
+                    "unit": "ms"
+                },
+                "style-recalculation-count": {
+                    "min": 22962,
+                    "median": 22962,
+                    "mean": 22962,
+                    "max": 22962,
+                    "sampleCount": 1,
+                    "unit": "count"
+                },
+                "layout-ms": {
+                    "min": 1353.6,
+                    "median": 1353.6,
+                    "mean": 1353.6,
+                    "max": 1353.6,
+                    "sampleCount": 1,
+                    "unit": "ms"
+                },
+                "paint-ms": {
+                    "min": 6553.9,
+                    "median": 6553.9,
+                    "mean": 6553.9,
+                    "max": 6553.9,
+                    "sampleCount": 1,
+                    "unit": "ms"
+                },
+                "long-task-count": {
+                    "min": 0,
+                    "median": 0,
+                    "mean": 0,
+                    "max": 0,
+                    "sampleCount": 1,
+                    "unit": "count"
+                },
+                "fcp-ms": {
+                    "min": 24,
+                    "median": 24,
+                    "mean": 24,
+                    "max": 24,
+                    "sampleCount": 1,
+                    "unit": "ms"
+                },
+                "lcp-ms": {
+                    "min": 24,
+                    "median": 24,
+                    "mean": 24,
+                    "max": 24,
+                    "sampleCount": 1,
+                    "unit": "ms"
+                },
+                "inp-style-interaction-ms": {
+                    "min": 300060.2,
+                    "median": 300060.2,
+                    "mean": 300060.2,
+                    "max": 300060.2,
+                    "sampleCount": 1,
+                    "unit": "ms"
+                },
+                "js-heap-used-bytes": {
+                    "min": 1798288,
+                    "median": 1798288,
+                    "mean": 1798288,
+                    "max": 1798288,
+                    "sampleCount": 1,
+                    "unit": "B"
+                },
+                "dom-node-count": {
+                    "min": 745,
+                    "median": 745,
+                    "mean": 745,
+                    "max": 745,
+                    "sampleCount": 1,
+                    "unit": "count"
+                },
+                "affected-element-count": {
+                    "min": 2349261,
+                    "median": 2349261,
+                    "mean": 2349261,
+                    "max": 2349261,
+                    "sampleCount": 1,
+                    "unit": "count"
+                },
+                "average-class-count": {
+                    "min": 5.93,
+                    "median": 5.93,
+                    "mean": 5.93,
+                    "max": 5.93,
+                    "sampleCount": 1,
+                    "unit": "count"
+                },
+                "cssom-rule-count": {
+                    "min": 22,
+                    "median": 22,
+                    "mean": 22,
+                    "max": 22,
+                    "sampleCount": 1,
+                    "unit": "count"
+                },
+                "runtime-ready-ms": {
+                    "min": 0,
+                    "median": 0,
+                    "mean": 0,
+                    "max": 0,
+                    "sampleCount": 1,
+                    "unit": "ms"
+                },
+                "runtime-bootstrap-ms": {
+                    "min": 0,
+                    "median": 0,
+                    "mean": 0,
+                    "max": 0,
+                    "sampleCount": 1,
+                    "unit": "ms"
+                },
+                "runtime-observe-ms": {
+                    "min": 0,
+                    "median": 0,
+                    "mean": 0,
+                    "max": 0,
+                    "sampleCount": 1,
+                    "unit": "ms"
+                },
+                "runtime-mutation-ms": {
+                    "min": 0,
+                    "median": 0,
+                    "mean": 0,
+                    "max": 0,
+                    "sampleCount": 1,
+                    "unit": "ms"
+                },
+                "runtime-generated-rule-count": {
+                    "min": 0,
+                    "median": 0,
+                    "mean": 0,
+                    "max": 0,
+                    "sampleCount": 1,
+                    "unit": "count"
+                },
+                "runtime-generated-rule-count-delta": {
+                    "min": 0,
+                    "median": 0,
+                    "mean": 0,
+                    "max": 0,
+                    "sampleCount": 1,
+                    "unit": "count"
+                },
+                "runtime-style-raw-bytes": {
+                    "min": 0,
+                    "median": 0,
+                    "mean": 0,
+                    "max": 0,
+                    "sampleCount": 1,
+                    "unit": "B"
+                },
+                "runtime-style-raw-bytes-delta": {
+                    "min": 0,
+                    "median": 0,
+                    "mean": 0,
+                    "max": 0,
+                    "sampleCount": 1,
+                    "unit": "B"
+                },
+                "retained-class-count": {
+                    "min": 0,
+                    "median": 0,
+                    "mean": 0,
+                    "max": 0,
+                    "sampleCount": 1,
+                    "unit": "count"
+                },
+                "retained-rule-count": {
+                    "min": 0,
+                    "median": 0,
+                    "mean": 0,
+                    "max": 0,
+                    "sampleCount": 1,
+                    "unit": "count"
+                },
+                "mutation-observer-callback-count": {
+                    "min": 0,
+                    "median": 0,
+                    "mean": 0,
+                    "max": 0,
+                    "sampleCount": 1,
+                    "unit": "count"
+                },
+                "mutation-observer-callback-duration-ms": {
+                    "min": 0,
+                    "median": 0,
+                    "mean": 0,
+                    "max": 0,
+                    "sampleCount": 1,
+                    "unit": "ms"
+                },
+                "route-count": {
+                    "min": 0,
+                    "median": 0,
+                    "mean": 0,
+                    "max": 0,
+                    "sampleCount": 1,
+                    "unit": "count"
+                },
+                "progressive-adopted": {
+                    "min": 0,
+                    "median": 0,
+                    "mean": 0,
+                    "max": 0,
+                    "sampleCount": 1,
+                    "unit": "count"
+                },
+                "computed-style-valid": {
+                    "min": 1,
+                    "median": 1,
+                    "mean": 1,
+                    "max": 1,
+                    "sampleCount": 1,
+                    "unit": "count"
+                }
+            }
+        }
+    ],
+    "metrics": [
+        {
+            "id": "html-raw-bytes",
+            "label": "HTML raw bytes",
+            "unit": "B",
+            "description": "Raw bytes for the benchmark page HTML."
+        },
+        {
+            "id": "html-gzip-bytes",
+            "label": "HTML gzip bytes",
+            "unit": "B",
+            "description": "Gzip bytes for the benchmark page HTML."
+        },
+        {
+            "id": "html-brotli-bytes",
+            "label": "HTML brotli bytes",
+            "unit": "B",
+            "description": "Brotli bytes for the benchmark page HTML."
+        },
+        {
+            "id": "external-css-raw-bytes",
+            "label": "External CSS raw bytes",
+            "unit": "B",
+            "description": "Raw bytes for externally linked CSS."
+        },
+        {
+            "id": "external-css-gzip-bytes",
+            "label": "External CSS gzip bytes",
+            "unit": "B",
+            "description": "Gzip bytes for externally linked CSS."
+        },
+        {
+            "id": "external-css-brotli-bytes",
+            "label": "External CSS brotli bytes",
+            "unit": "B",
+            "description": "Brotli bytes for externally linked CSS."
+        },
+        {
+            "id": "inline-css-raw-bytes",
+            "label": "Inline CSS raw bytes",
+            "unit": "B",
+            "description": "Raw bytes for inline style#master-css."
+        },
+        {
+            "id": "inline-css-gzip-bytes",
+            "label": "Inline CSS gzip bytes",
+            "unit": "B",
+            "description": "Gzip bytes for inline style#master-css."
+        },
+        {
+            "id": "inline-css-brotli-bytes",
+            "label": "Inline CSS brotli bytes",
+            "unit": "B",
+            "description": "Brotli bytes for inline style#master-css."
+        },
+        {
+            "id": "runtime-js-raw-bytes",
+            "label": "Runtime JS raw bytes",
+            "unit": "B",
+            "description": "Raw bytes for the Master CSS browser runtime bundle."
+        },
+        {
+            "id": "runtime-js-gzip-bytes",
+            "label": "Runtime JS gzip bytes",
+            "unit": "B",
+            "description": "Gzip bytes for the Master CSS browser runtime bundle."
+        },
+        {
+            "id": "runtime-js-brotli-bytes",
+            "label": "Runtime JS brotli bytes",
+            "unit": "B",
+            "description": "Brotli bytes for the Master CSS browser runtime bundle."
+        },
+        {
+            "id": "manifest-json-raw-bytes",
+            "label": "Manifest JSON raw bytes",
+            "unit": "B",
+            "description": "Raw bytes for the runtime default manifest JSON payload."
+        },
+        {
+            "id": "manifest-json-gzip-bytes",
+            "label": "Manifest JSON gzip bytes",
+            "unit": "B",
+            "description": "Gzip bytes for the runtime default manifest JSON payload."
+        },
+        {
+            "id": "manifest-json-brotli-bytes",
+            "label": "Manifest JSON brotli bytes",
+            "unit": "B",
+            "description": "Brotli bytes for the runtime default manifest JSON payload."
+        },
+        {
+            "id": "hydration-manifest-raw-bytes",
+            "label": "Hydration manifest raw bytes",
+            "unit": "B",
+            "description": "Raw bytes for inline progressive hydration manifest JSON."
+        },
+        {
+            "id": "hydration-manifest-gzip-bytes",
+            "label": "Hydration manifest gzip bytes",
+            "unit": "B",
+            "description": "Gzip bytes for inline progressive hydration manifest JSON."
+        },
+        {
+            "id": "hydration-manifest-brotli-bytes",
+            "label": "Hydration manifest brotli bytes",
+            "unit": "B",
+            "description": "Brotli bytes for inline progressive hydration manifest JSON."
+        },
+        {
+            "id": "delivered-style-rule-count",
+            "label": "Delivered style rules",
+            "unit": "count",
+            "description": "Style rule count for CSS delivered before runtime-generated rules."
+        },
+        {
+            "id": "delivered-selector-count",
+            "label": "Delivered selectors",
+            "unit": "count",
+            "description": "Selector count for CSS delivered before runtime-generated rules."
+        },
+        {
+            "id": "delivered-declaration-count",
+            "label": "Delivered declarations",
+            "unit": "count",
+            "description": "Declaration count for CSS delivered before runtime-generated rules."
+        },
+        {
+            "id": "navigation-ready-ms",
+            "label": "Navigation to ready",
+            "unit": "ms",
+            "description": "Elapsed wall time from navigation or interaction start until the page reaches the benchmark ready marker."
+        },
+        {
+            "id": "stylesheet-parse-ms",
+            "label": "Stylesheet parse/attach",
+            "unit": "ms",
+            "description": "Trace-derived stylesheet parsing and attachment duration where Chromium exposes stable events."
+        },
+        {
+            "id": "style-recalculation-ms",
+            "label": "Style recalculation",
+            "unit": "ms",
+            "description": "Trace-derived style recalculation duration from Chromium timeline events."
+        },
+        {
+            "id": "style-recalculation-count",
+            "label": "Style recalculation count",
+            "unit": "count",
+            "description": "Count of trace events treated as style recalculation."
+        },
+        {
+            "id": "layout-ms",
+            "label": "Layout",
+            "unit": "ms",
+            "description": "Trace-derived layout duration."
+        },
+        {
+            "id": "paint-ms",
+            "label": "Paint",
+            "unit": "ms",
+            "description": "Trace-derived paint and pre-paint duration."
+        },
+        {
+            "id": "long-task-count",
+            "label": "Long tasks",
+            "unit": "count",
+            "description": "Count of trace task events at or above 50 ms."
+        },
+        {
+            "id": "fcp-ms",
+            "label": "FCP",
+            "unit": "ms",
+            "description": "Local fixture first-contentful-paint from the browser Performance API."
+        },
+        {
+            "id": "lcp-ms",
+            "label": "LCP candidate",
+            "unit": "ms",
+            "description": "Local fixture largest-contentful-paint candidate captured by PerformanceObserver."
+        },
+        {
+            "id": "inp-style-interaction-ms",
+            "label": "INP-style interaction latency",
+            "unit": "ms",
+            "description": "Local fixture interaction-to-settle latency. This is not a real Web Vitals INP value."
+        },
+        {
+            "id": "js-heap-used-bytes",
+            "label": "JS heap used",
+            "unit": "B",
+            "description": "Chromium Runtime.getHeapUsage usedSize where available."
+        },
+        {
+            "id": "dom-node-count",
+            "label": "DOM nodes",
+            "unit": "count",
+            "description": "Total DOM element count after the measured scenario."
+        },
+        {
+            "id": "affected-element-count",
+            "label": "Affected elements",
+            "unit": "count",
+            "description": "Number of elements intentionally touched by the measured scenario."
+        },
+        {
+            "id": "average-class-count",
+            "label": "Average class count",
+            "unit": "count",
+            "description": "Average classList length across DOM elements after the measured scenario."
+        },
+        {
+            "id": "cssom-rule-count",
+            "label": "CSSOM rules",
+            "unit": "count",
+            "description": "Recursive CSSOM rule count across accessible stylesheets after the measured scenario."
+        },
+        {
+            "id": "runtime-ready-ms",
+            "label": "Runtime ready",
+            "unit": "ms",
+            "description": "Browser performance timestamp when Master CSS runtime finished observe/hydration."
+        },
+        {
+            "id": "runtime-bootstrap-ms",
+            "label": "Runtime bootstrap",
+            "unit": "ms",
+            "description": "Time from runtime script execution to runtime observe/hydration completion."
+        },
+        {
+            "id": "runtime-observe-ms",
+            "label": "Runtime observe/hydrate",
+            "unit": "ms",
+            "description": "Synchronous duration of CSSRuntime.observe(), including progressive hydration when applicable."
+        },
+        {
+            "id": "runtime-mutation-ms",
+            "label": "Runtime mutation work",
+            "unit": "ms",
+            "description": "Instrumented Master CSS runtime ensure/delete class-rules duration during the measured scenario."
+        },
+        {
+            "id": "runtime-generated-rule-count",
+            "label": "Runtime generated rules",
+            "unit": "count",
+            "description": "Runtime class utility count or recursive style#master-css rule count after the measured scenario."
+        },
+        {
+            "id": "runtime-generated-rule-count-delta",
+            "label": "Runtime generated rule delta",
+            "unit": "count",
+            "description": "Change in runtime generated rule count during the measured scenario."
+        },
+        {
+            "id": "runtime-style-raw-bytes",
+            "label": "Runtime style raw bytes",
+            "unit": "B",
+            "description": "Raw bytes of style#master-css after the measured scenario."
+        },
+        {
+            "id": "runtime-style-raw-bytes-delta",
+            "label": "Runtime style byte delta",
+            "unit": "B",
+            "description": "Change in raw style#master-css bytes during the measured scenario."
+        },
+        {
+            "id": "retained-class-count",
+            "label": "Retained classes",
+            "unit": "count",
+            "description": "Runtime retainedClassNames count after the measured scenario."
+        },
+        {
+            "id": "retained-rule-count",
+            "label": "Retained rules",
+            "unit": "count",
+            "description": "Estimated retained generated rule count after the measured scenario."
+        },
+        {
+            "id": "mutation-observer-callback-count",
+            "label": "MutationObserver callbacks",
+            "unit": "count",
+            "description": "Number of MutationObserver callback deliveries during the measured scenario."
+        },
+        {
+            "id": "mutation-observer-callback-duration-ms",
+            "label": "MutationObserver callback duration",
+            "unit": "ms",
+            "description": "Instrumented duration spent inside delivered MutationObserver callbacks."
+        },
+        {
+            "id": "route-count",
+            "label": "Routes",
+            "unit": "count",
+            "description": "Number of route states visited by the scenario."
+        },
+        {
+            "id": "progressive-adopted",
+            "label": "Progressive adopted",
+            "unit": "count",
+            "description": "1 when the Master progressive variant adopted server-rendered CSS before the scenario."
+        },
+        {
+            "id": "computed-style-valid",
+            "label": "Computed style valid",
+            "unit": "count",
+            "description": "1 when the scenario computed-style assertion passed, otherwise 0."
+        }
+    ],
+    "results": [
+        {
+            "scenarioId": "long-session",
+            "detailId": "mixed-operations",
+            "modes": {
+                "master-static": {
+                    "variantId": "long-session-master-static-mixed-operations",
+                    "timing": {
+                        "inpStyleInteractionMs": {
+                            "min": 300051.7,
+                            "median": 300051.7,
+                            "mean": 300051.7,
+                            "max": 300051.7,
+                            "sampleCount": 1,
+                            "unit": "ms"
+                        },
+                        "styleRecalculationMs": {
+                            "min": 13395.8,
+                            "median": 13395.8,
+                            "mean": 13395.8,
+                            "max": 13395.8,
+                            "sampleCount": 1,
+                            "unit": "ms"
+                        },
+                        "styleRecalculationCount": {
+                            "min": 22940,
+                            "median": 22940,
+                            "mean": 22940,
+                            "max": 22940,
+                            "sampleCount": 1,
+                            "unit": "count"
+                        },
+                        "layoutMs": {
+                            "min": 2823.7,
+                            "median": 2823.7,
+                            "mean": 2823.7,
+                            "max": 2823.7,
+                            "sampleCount": 1,
+                            "unit": "ms"
+                        },
+                        "paintMs": {
+                            "min": 13357.1,
+                            "median": 13357.1,
+                            "mean": 13357.1,
+                            "max": 13357.1,
+                            "sampleCount": 1,
+                            "unit": "ms"
+                        },
+                        "longTaskCount": {
+                            "min": 28,
+                            "median": 28,
+                            "mean": 28,
+                            "max": 28,
+                            "sampleCount": 1,
+                            "unit": "count"
+                        }
+                    },
+                    "browser": {
+                        "jsHeapUsedBytes": {
+                            "min": 1429672,
+                            "median": 1429672,
+                            "mean": 1429672,
+                            "max": 1429672,
+                            "sampleCount": 1,
+                            "unit": "B"
+                        },
+                        "cssomRuleCount": {
+                            "min": 2,
+                            "median": 2,
+                            "mean": 2,
+                            "max": 2,
+                            "sampleCount": 1,
+                            "unit": "count"
+                        }
+                    },
+                    "runtime": {
+                        "mutationMs": {
+                            "min": 0,
+                            "median": 0,
+                            "mean": 0,
+                            "max": 0,
+                            "sampleCount": 1,
+                            "unit": "ms"
+                        },
+                        "generatedRuleCount": {
+                            "min": 0,
+                            "median": 0,
+                            "mean": 0,
+                            "max": 0,
+                            "sampleCount": 1,
+                            "unit": "count"
+                        },
+                        "generatedRuleCountDelta": {
+                            "min": 0,
+                            "median": 0,
+                            "mean": 0,
+                            "max": 0,
+                            "sampleCount": 1,
+                            "unit": "count"
+                        },
+                        "styleRawBytes": {
+                            "min": 0,
+                            "median": 0,
+                            "mean": 0,
+                            "max": 0,
+                            "sampleCount": 1,
+                            "unit": "B"
+                        },
+                        "styleRawBytesDelta": {
+                            "min": 0,
+                            "median": 0,
+                            "mean": 0,
+                            "max": 0,
+                            "sampleCount": 1,
+                            "unit": "B"
+                        },
+                        "retainedClassCount": {
+                            "min": 0,
+                            "median": 0,
+                            "mean": 0,
+                            "max": 0,
+                            "sampleCount": 1,
+                            "unit": "count"
+                        },
+                        "retainedRuleCount": {
+                            "min": 0,
+                            "median": 0,
+                            "mean": 0,
+                            "max": 0,
+                            "sampleCount": 1,
+                            "unit": "count"
+                        },
+                        "mutationObserverCallbackCount": {
+                            "min": 0,
+                            "median": 0,
+                            "mean": 0,
+                            "max": 0,
+                            "sampleCount": 1,
+                            "unit": "count"
+                        },
+                        "mutationObserverCallbackDurationMs": {
+                            "min": 0,
+                            "median": 0,
+                            "mean": 0,
+                            "max": 0,
+                            "sampleCount": 1,
+                            "unit": "ms"
+                        }
+                    },
+                    "correctness": {
+                        "computedStyleValid": {
+                            "min": 1,
+                            "median": 1,
+                            "mean": 1,
+                            "max": 1,
+                            "sampleCount": 1,
+                            "unit": "count"
+                        },
+                        "progressiveAdopted": {
+                            "min": 0,
+                            "median": 0,
+                            "mean": 0,
+                            "max": 0,
+                            "sampleCount": 1,
+                            "unit": "count"
+                        }
+                    }
+                },
+                "master-runtime": {
+                    "variantId": "long-session-master-runtime-mixed-operations",
+                    "timing": {
+                        "inpStyleInteractionMs": {
+                            "min": 300066.3,
+                            "median": 300066.3,
+                            "mean": 300066.3,
+                            "max": 300066.3,
+                            "sampleCount": 1,
+                            "unit": "ms"
+                        },
+                        "styleRecalculationMs": {
+                            "min": 6773.4,
+                            "median": 6773.4,
+                            "mean": 6773.4,
+                            "max": 6773.4,
+                            "sampleCount": 1,
+                            "unit": "ms"
+                        },
+                        "styleRecalculationCount": {
+                            "min": 21324,
+                            "median": 21324,
+                            "mean": 21324,
+                            "max": 21324,
+                            "sampleCount": 1,
+                            "unit": "count"
+                        },
+                        "layoutMs": {
+                            "min": 1193,
+                            "median": 1193,
+                            "mean": 1193,
+                            "max": 1193,
+                            "sampleCount": 1,
+                            "unit": "ms"
+                        },
+                        "paintMs": {
+                            "min": 6006.2,
+                            "median": 6006.2,
+                            "mean": 6006.2,
+                            "max": 6006.2,
+                            "sampleCount": 1,
+                            "unit": "ms"
+                        },
+                        "longTaskCount": {
+                            "min": 0,
+                            "median": 0,
+                            "mean": 0,
+                            "max": 0,
+                            "sampleCount": 1,
+                            "unit": "count"
+                        }
+                    },
+                    "browser": {
+                        "jsHeapUsedBytes": {
+                            "min": 4121500,
+                            "median": 4121500,
+                            "mean": 4121500,
+                            "max": 4121500,
+                            "sampleCount": 1,
+                            "unit": "B"
+                        },
+                        "cssomRuleCount": {
+                            "min": 0,
+                            "median": 0,
+                            "mean": 0,
+                            "max": 0,
+                            "sampleCount": 1,
+                            "unit": "count"
+                        }
+                    },
+                    "runtime": {
+                        "mutationMs": {
+                            "min": 36.2,
+                            "median": 36.2,
+                            "mean": 36.2,
+                            "max": 36.2,
+                            "sampleCount": 1,
+                            "unit": "ms"
+                        },
+                        "generatedRuleCount": {
+                            "min": 47,
+                            "median": 47,
+                            "mean": 47,
+                            "max": 47,
+                            "sampleCount": 1,
+                            "unit": "count"
+                        },
+                        "generatedRuleCountDelta": {
+                            "min": 4,
+                            "median": 4,
+                            "mean": 4,
+                            "max": 4,
+                            "sampleCount": 1,
+                            "unit": "count"
+                        },
+                        "styleRawBytes": {
+                            "min": 2462,
+                            "median": 2462,
+                            "mean": 2462,
+                            "max": 2462,
+                            "sampleCount": 1,
+                            "unit": "B"
+                        },
+                        "styleRawBytesDelta": {
+                            "min": 558,
+                            "median": 558,
+                            "mean": 558,
+                            "max": 558,
+                            "sampleCount": 1,
+                            "unit": "B"
+                        },
+                        "retainedClassCount": {
+                            "min": 2,
+                            "median": 2,
+                            "mean": 2,
+                            "max": 2,
+                            "sampleCount": 1,
+                            "unit": "count"
+                        },
+                        "retainedRuleCount": {
+                            "min": 2,
+                            "median": 2,
+                            "mean": 2,
+                            "max": 2,
+                            "sampleCount": 1,
+                            "unit": "count"
+                        },
+                        "mutationObserverCallbackCount": {
+                            "min": 18002,
+                            "median": 18002,
+                            "mean": 18002,
+                            "max": 18002,
+                            "sampleCount": 1,
+                            "unit": "count"
+                        },
+                        "mutationObserverCallbackDurationMs": {
+                            "min": 7074.6,
+                            "median": 7074.6,
+                            "mean": 7074.6,
+                            "max": 7074.6,
+                            "sampleCount": 1,
+                            "unit": "ms"
+                        }
+                    },
+                    "correctness": {
+                        "computedStyleValid": {
+                            "min": 1,
+                            "median": 1,
+                            "mean": 1,
+                            "max": 1,
+                            "sampleCount": 1,
+                            "unit": "count"
+                        },
+                        "progressiveAdopted": {
+                            "min": 0,
+                            "median": 0,
+                            "mean": 0,
+                            "max": 0,
+                            "sampleCount": 1,
+                            "unit": "count"
+                        }
+                    }
+                },
+                "master-progressive": {
+                    "variantId": "long-session-master-progressive-mixed-operations",
+                    "timing": {
+                        "inpStyleInteractionMs": {
+                            "min": 300059.6,
+                            "median": 300059.6,
+                            "mean": 300059.6,
+                            "max": 300059.6,
+                            "sampleCount": 1,
+                            "unit": "ms"
+                        },
+                        "styleRecalculationMs": {
+                            "min": 6761.9,
+                            "median": 6761.9,
+                            "mean": 6761.9,
+                            "max": 6761.9,
+                            "sampleCount": 1,
+                            "unit": "ms"
+                        },
+                        "styleRecalculationCount": {
+                            "min": 21344,
+                            "median": 21344,
+                            "mean": 21344,
+                            "max": 21344,
+                            "sampleCount": 1,
+                            "unit": "count"
+                        },
+                        "layoutMs": {
+                            "min": 1178.1,
+                            "median": 1178.1,
+                            "mean": 1178.1,
+                            "max": 1178.1,
+                            "sampleCount": 1,
+                            "unit": "ms"
+                        },
+                        "paintMs": {
+                            "min": 5975.8,
+                            "median": 5975.8,
+                            "mean": 5975.8,
+                            "max": 5975.8,
+                            "sampleCount": 1,
+                            "unit": "ms"
+                        },
+                        "longTaskCount": {
+                            "min": 0,
+                            "median": 0,
+                            "mean": 0,
+                            "max": 0,
+                            "sampleCount": 1,
+                            "unit": "count"
+                        }
+                    },
+                    "browser": {
+                        "jsHeapUsedBytes": {
+                            "min": 3526980,
+                            "median": 3526980,
+                            "mean": 3526980,
+                            "max": 3526980,
+                            "sampleCount": 1,
+                            "unit": "B"
+                        },
+                        "cssomRuleCount": {
+                            "min": 0,
+                            "median": 0,
+                            "mean": 0,
+                            "max": 0,
+                            "sampleCount": 1,
+                            "unit": "count"
+                        }
+                    },
+                    "runtime": {
+                        "mutationMs": {
+                            "min": 42.4,
+                            "median": 42.4,
+                            "mean": 42.4,
+                            "max": 42.4,
+                            "sampleCount": 1,
+                            "unit": "ms"
+                        },
+                        "generatedRuleCount": {
+                            "min": 47,
+                            "median": 47,
+                            "mean": 47,
+                            "max": 47,
+                            "sampleCount": 1,
+                            "unit": "count"
+                        },
+                        "generatedRuleCountDelta": {
+                            "min": 4,
+                            "median": 4,
+                            "mean": 4,
+                            "max": 4,
+                            "sampleCount": 1,
+                            "unit": "count"
+                        },
+                        "styleRawBytes": {
+                            "min": 1904,
+                            "median": 1904,
+                            "mean": 1904,
+                            "max": 1904,
+                            "sampleCount": 1,
+                            "unit": "B"
+                        },
+                        "styleRawBytesDelta": {
+                            "min": 0,
+                            "median": 0,
+                            "mean": 0,
+                            "max": 0,
+                            "sampleCount": 1,
+                            "unit": "B"
+                        },
+                        "retainedClassCount": {
+                            "min": 2,
+                            "median": 2,
+                            "mean": 2,
+                            "max": 2,
+                            "sampleCount": 1,
+                            "unit": "count"
+                        },
+                        "retainedRuleCount": {
+                            "min": 2,
+                            "median": 2,
+                            "mean": 2,
+                            "max": 2,
+                            "sampleCount": 1,
+                            "unit": "count"
+                        },
+                        "mutationObserverCallbackCount": {
+                            "min": 18002,
+                            "median": 18002,
+                            "mean": 18002,
+                            "max": 18002,
+                            "sampleCount": 1,
+                            "unit": "count"
+                        },
+                        "mutationObserverCallbackDurationMs": {
+                            "min": 6415.7,
+                            "median": 6415.7,
+                            "mean": 6415.7,
+                            "max": 6415.7,
+                            "sampleCount": 1,
+                            "unit": "ms"
+                        }
+                    },
+                    "correctness": {
+                        "computedStyleValid": {
+                            "min": 1,
+                            "median": 1,
+                            "mean": 1,
+                            "max": 1,
+                            "sampleCount": 1,
+                            "unit": "count"
+                        },
+                        "progressiveAdopted": {
+                            "min": 1,
+                            "median": 1,
+                            "mean": 1,
+                            "max": 1,
+                            "sampleCount": 1,
+                            "unit": "count"
+                        }
+                    }
+                },
+                "tailwind-static": {
+                    "variantId": "long-session-tailwind-static-mixed-operations",
+                    "timing": {
+                        "inpStyleInteractionMs": {
+                            "min": 300060.2,
+                            "median": 300060.2,
+                            "mean": 300060.2,
+                            "max": 300060.2,
+                            "sampleCount": 1,
+                            "unit": "ms"
+                        },
+                        "styleRecalculationMs": {
+                            "min": 12101.9,
+                            "median": 12101.9,
+                            "mean": 12101.9,
+                            "max": 12101.9,
+                            "sampleCount": 1,
+                            "unit": "ms"
+                        },
+                        "styleRecalculationCount": {
+                            "min": 22962,
+                            "median": 22962,
+                            "mean": 22962,
+                            "max": 22962,
+                            "sampleCount": 1,
+                            "unit": "count"
+                        },
+                        "layoutMs": {
+                            "min": 1353.6,
+                            "median": 1353.6,
+                            "mean": 1353.6,
+                            "max": 1353.6,
+                            "sampleCount": 1,
+                            "unit": "ms"
+                        },
+                        "paintMs": {
+                            "min": 6553.9,
+                            "median": 6553.9,
+                            "mean": 6553.9,
+                            "max": 6553.9,
+                            "sampleCount": 1,
+                            "unit": "ms"
+                        },
+                        "longTaskCount": {
+                            "min": 0,
+                            "median": 0,
+                            "mean": 0,
+                            "max": 0,
+                            "sampleCount": 1,
+                            "unit": "count"
+                        }
+                    },
+                    "browser": {
+                        "jsHeapUsedBytes": {
+                            "min": 1798288,
+                            "median": 1798288,
+                            "mean": 1798288,
+                            "max": 1798288,
+                            "sampleCount": 1,
+                            "unit": "B"
+                        },
+                        "cssomRuleCount": {
+                            "min": 22,
+                            "median": 22,
+                            "mean": 22,
+                            "max": 22,
+                            "sampleCount": 1,
+                            "unit": "count"
+                        }
+                    },
+                    "runtime": {
+                        "mutationMs": {
+                            "min": 0,
+                            "median": 0,
+                            "mean": 0,
+                            "max": 0,
+                            "sampleCount": 1,
+                            "unit": "ms"
+                        },
+                        "generatedRuleCount": {
+                            "min": 0,
+                            "median": 0,
+                            "mean": 0,
+                            "max": 0,
+                            "sampleCount": 1,
+                            "unit": "count"
+                        },
+                        "generatedRuleCountDelta": {
+                            "min": 0,
+                            "median": 0,
+                            "mean": 0,
+                            "max": 0,
+                            "sampleCount": 1,
+                            "unit": "count"
+                        },
+                        "styleRawBytes": {
+                            "min": 0,
+                            "median": 0,
+                            "mean": 0,
+                            "max": 0,
+                            "sampleCount": 1,
+                            "unit": "B"
+                        },
+                        "styleRawBytesDelta": {
+                            "min": 0,
+                            "median": 0,
+                            "mean": 0,
+                            "max": 0,
+                            "sampleCount": 1,
+                            "unit": "B"
+                        },
+                        "retainedClassCount": {
+                            "min": 0,
+                            "median": 0,
+                            "mean": 0,
+                            "max": 0,
+                            "sampleCount": 1,
+                            "unit": "count"
+                        },
+                        "retainedRuleCount": {
+                            "min": 0,
+                            "median": 0,
+                            "mean": 0,
+                            "max": 0,
+                            "sampleCount": 1,
+                            "unit": "count"
+                        },
+                        "mutationObserverCallbackCount": {
+                            "min": 0,
+                            "median": 0,
+                            "mean": 0,
+                            "max": 0,
+                            "sampleCount": 1,
+                            "unit": "count"
+                        },
+                        "mutationObserverCallbackDurationMs": {
+                            "min": 0,
+                            "median": 0,
+                            "mean": 0,
+                            "max": 0,
+                            "sampleCount": 1,
+                            "unit": "ms"
+                        }
+                    },
+                    "correctness": {
+                        "computedStyleValid": {
+                            "min": 1,
+                            "median": 1,
+                            "mean": 1,
+                            "max": 1,
+                            "sampleCount": 1,
+                            "unit": "count"
+                        },
+                        "progressiveAdopted": {
+                            "min": 0,
+                            "median": 0,
+                            "mean": 0,
+                            "max": 0,
+                            "sampleCount": 1,
+                            "unit": "count"
+                        }
+                    }
+                }
+            }
+        }
+    ],
+    "limits": [
+        "This suite measures local Chromium lifecycle fixture behavior only.",
+        "Tailwind CSS variants are static browser controls; Tailwind CSS has no runtime rule-generation equivalent.",
+        "INP-style interaction latency is a local fixture interaction-to-settle metric, not a real Web Vitals INP value.",
+        "Selector matching is inferred from rule/selector/CSSOM volume plus style recalculation because Chromium does not expose a stable direct selector-matching metric here.",
+        "CSSOM memory is not reported until a stable browser collection method is available.",
+        "The default long-session duration is intentionally short for local validation; use BROWSER_LIFECYCLE_LONG_SESSION_MS=300000 for review-grade runs.",
+        "Trace-derived event names can change across Chromium versions, so raw trace artifacts are kept for review before publishing public conclusions.",
+        "This evidence is curated from segmented five-minute long-session reports; raw reports, traces, diagnostics, and screenshots remain ignored artifacts."
+    ]
+}

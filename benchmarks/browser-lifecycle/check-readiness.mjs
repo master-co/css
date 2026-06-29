@@ -56,7 +56,7 @@ const measuredMetricIds = [
     'computed-style-valid'
 ]
 
-const profileIds = new Set(['snapshot', 'baseline', 'long-session'])
+const profileIds = new Set(['snapshot', 'baseline', 'long-session', 'long-session-evidence'])
 
 try {
     const cli = parseArgs(process.argv.slice(2))
@@ -74,6 +74,7 @@ try {
     if (profile === 'snapshot') validateSnapshot(data, errors)
     if (profile === 'baseline') validateBaselineReport(data, errors)
     if (profile === 'long-session') validateLongSessionReport(data, minLongSessionMs, errors)
+    if (profile === 'long-session-evidence') validateLongSessionEvidence(data, minLongSessionMs, errors)
 
     if (errors.length) {
         console.error(`Browser lifecycle ${profile} readiness check failed for ${source}`)
@@ -123,6 +124,21 @@ function validateLongSessionReport(report, minLongSessionMs, errors) {
     validateLongSessionDuration(variants, minLongSessionMs, errors)
 }
 
+function validateLongSessionEvidence(evidence, minLongSessionMs, errors) {
+    validateLongSessionEvidenceShape(evidence, errors)
+    validateIdSet('long-session evidence scenarios', collectIds(evidence.scenarios), ['long-session'], errors)
+    validateIdSet('long-session evidence modes', collectIds(evidence.modes), expectedModeIds, errors)
+    validateIdSet('long-session evidence source report modes', collectVariantIds(evidence.sourceReports, 'modeId'), expectedModeIds, errors)
+
+    const variants = normalizeSnapshotVariants(evidence, errors)
+    validateIdSet('long-session evidence variant scenarios', variants.map((variant) => variant.scenarioId), ['long-session'], errors)
+    validateIdSet('long-session evidence variant modes', variants.map((variant) => variant.modeId), expectedModeIds, errors)
+    validateVariantMetricShape(evidence.metrics, variants, errors)
+    validateMeasuredSampleCounts(variants, errors)
+    validateCorrectness(variants, errors)
+    validateLongSessionDuration(variants, minLongSessionMs, errors)
+}
+
 function validateTopLevelSnapshotShape(snapshot, errors) {
     if (snapshot?.schemaVersion !== 1) errors.push('Snapshot schemaVersion must be 1.')
     if (snapshot?.suite !== 'browser-lifecycle') errors.push('Snapshot suite must be browser-lifecycle.')
@@ -152,6 +168,31 @@ function validateRawReportShape(report, errors) {
 
     for (const key of ['packages', 'fixtures', 'adapters', 'variants', 'metrics', 'samples', 'summary', 'limits', 'artifacts']) {
         if (!Array.isArray(report?.[key])) errors.push(`Report ${key} must be an array.`)
+    }
+}
+
+function validateLongSessionEvidenceShape(evidence, errors) {
+    if (evidence?.schemaVersion !== 1) errors.push('Long-session evidence schemaVersion must be 1.')
+    if (evidence?.suite !== 'browser-lifecycle-long-session-evidence') {
+        errors.push('Long-session evidence suite must be browser-lifecycle-long-session-evidence.')
+    }
+
+    for (const key of ['environment', 'browser']) {
+        if (!evidence?.[key]) errors.push(`Long-session evidence is missing ${key}.`)
+    }
+
+    for (const key of ['sourceReports', 'packages', 'modes', 'scenarios', 'metrics', 'limits', 'variants', 'variantSummaries']) {
+        if (!Array.isArray(evidence?.[key]) || !evidence[key].length) {
+            errors.push(`Long-session evidence ${key} must be a non-empty array.`)
+        }
+    }
+
+    if (Array.isArray(evidence?.variants) && evidence.variants.length !== expectedModeIds.length) {
+        errors.push(`Long-session evidence variants count (${evidence.variants.length}) must be ${expectedModeIds.length}.`)
+    }
+
+    if (Array.isArray(evidence?.variantSummaries) && evidence.variantSummaries.length !== expectedModeIds.length) {
+        errors.push(`Long-session evidence variantSummaries count (${evidence.variantSummaries.length}) must be ${expectedModeIds.length}.`)
     }
 }
 
@@ -304,7 +345,9 @@ function printSuccess(profile, source, data, minLongSessionMs) {
 
     console.log(`Browser lifecycle ${profile} readiness check passed for ${source}`)
     console.log(`Variants: ${variantCount}; metrics: ${metricCount}; scenarios: ${scenarioIds.join(',')}; modes: ${modeIds.join(',')}`)
-    if (profile === 'long-session') console.log(`Minimum long-session INP-style median: ${minLongSessionMs} ms`)
+    if (profile === 'long-session' || profile === 'long-session-evidence') {
+        console.log(`Minimum long-session INP-style median: ${minLongSessionMs} ms`)
+    }
 }
 
 function parseArgs(argv) {
@@ -349,12 +392,13 @@ function resolveSource(source) {
 
 function printHelp() {
     console.log([
-        'Usage: node browser-lifecycle/check-readiness.mjs [source] [--profile snapshot|baseline|long-session] [--min-long-session-ms 300000]',
+        'Usage: node browser-lifecycle/check-readiness.mjs [source] [--profile snapshot|baseline|long-session|long-session-evidence] [--min-long-session-ms 300000]',
         '',
         `Default source: ${defaultSource}`,
         'Profiles:',
         '  snapshot      Validate committed curated browser lifecycle snapshot shape and correctness.',
         '  baseline      Validate all-scenario raw browser lifecycle report shape and correctness.',
-        '  long-session  Validate focused long-session raw report and minimum INP-style duration.'
+        '  long-session  Validate focused long-session raw report and minimum INP-style duration.',
+        '  long-session-evidence  Validate committed curated five-minute long-session evidence.'
     ].join('\n'))
 }
