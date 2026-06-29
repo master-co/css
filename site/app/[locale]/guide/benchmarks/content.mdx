@@ -71,7 +71,7 @@ The delivery-mode and interaction suites add the Master CSS runtime side of the 
 
 Internal runtime diagnostics have also localized one important interaction hotspot: cleanup-cycle cost was dominated by browser style invalidation from runtime stylesheet changes and retained generated stylesheet volume, while MutationObserver delivery and `ensureClassRules`/`deleteClassRules` instrumentation were measurable but not the primary cost in that diagnostic run.
 
-The remaining public gap is lifecycle evidence. The browser lifecycle suite now has an internal all-scenario baseline and curated snapshot, but this page should not yet claim that runtime rendering produces better real-user interaction performance overall. Segmented five-minute long-session evidence has passed internally across Master static, runtime, progressive, and Tailwind static browser-control modes; public conclusions still require repeated review and presentation.
+The remaining public gap is lifecycle evidence. The browser lifecycle suite now has a committed internal snapshot refreshed from a 2026-06-30 review-grade all-scenario baseline, but this page should not yet claim that runtime rendering produces better real-user interaction performance overall. Segmented five-minute long-session evidence has passed internally across Master static, runtime, progressive, and Tailwind static browser-control modes; public conclusions still require repeated review and presentation.
 
 ---
 
@@ -402,7 +402,7 @@ The internal browser lifecycle suite tests the lifecycle version of the runtime 
 
 This suite should keep Tailwind CSS as a static browser-control setup and Master CSS as static, runtime, and progressive setups. It should publish only measured comparisons that share equivalent rendered UI intent and should keep "INP" labels reserved for measurements that match the platform metric closely enough; otherwise use INP-style interaction latency.
 
-A curated internal snapshot is generated from the all-scenario `browser-lifecycle` baseline. It remains internal even though segmented five-minute long-session evidence has passed across Master static, runtime, progressive, and Tailwind static browser-control modes, because public conclusions still need repeated review and presentation. The current data should be used for benchmark validation rather than public performance claims.
+A curated internal snapshot is generated from the all-scenario `browser-lifecycle` baseline and has been refreshed from the 2026-06-30 review-grade run. It remains internal even though segmented five-minute long-session evidence has passed across Master static, runtime, progressive, and Tailwind static browser-control modes, because public conclusions still need repeated review and presentation. The current data should be used for benchmark validation rather than public performance claims.
 
 ### Lifecycle scenarios
 | Scenario | Internal measurement |
