@@ -1117,9 +1117,6 @@ importers:
       '@floating-ui/react':
         specifier: ^0.27.19
         version: 0.27.19(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
-      '@google-cloud/storage':
-        specifier: ^7.21.0
-        version: 7.21.0
       '@master/css':
         specifier: workspace:^
         version: link:../packages/facade
@@ -1348,9 +1345,6 @@ importers:
       next:
         specifier: 16.2.9
         version: 16.2.9(@babel/core@7.29.7)(@opentelemetry/api@1.9.1)(@playwright/test@1.61.0)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(sass@1.101.0)
-      node-fetch:
-        specifier: ^2.7.0
-        version: 2.7.0
       package-manager-detector:
         specifier: ^1.6.0
         version: 1.6.0
@@ -1445,9 +1439,6 @@ importers:
       '@types/hast':
         specifier: ^3.0.4
         version: 3.0.4
-      '@types/node-fetch':
-        specifier: ^2.6.13
-        version: 2.6.13
       '@typescript-eslint/parser':
         specifier: 8.61.1
         version: 8.61.1(eslint@10.5.0(jiti@2.7.0))(supports-color@5.5.0)(typescript@6.0.3)
