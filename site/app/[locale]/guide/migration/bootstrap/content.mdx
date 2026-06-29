@@ -1,15 +1,194 @@
-This Bootstrap migration guide is being rebuilt. Use the [quick start](/guide/migration) to direct your local coding agent, then ask it to inspect Bootstrap-specific styling before changing code.
+Bootstrap and Master CSS can run side by side. Keep Bootstrap loaded while existing markup still depends on its grid, utilities, components, JavaScript behavior, Sass variables, or selector overrides. Convert one screen or component family at a time, then remove Bootstrap only after the product no longer relies on it.
 
-## Inspect first
-- Bootstrap package imports, CSS entry files, Sass variable overrides, and compiled output.
-- Grid, spacing, display, typography, and utility classes used in templates.
-- JavaScript-driven components, data attributes, and third-party markup that should remain compatible.
-- Custom overrides that depend on Bootstrap selectors or cascade order.
+This guide focuses on app-owned Bootstrap usage. Vendor markup, third-party plugins, generated HTML, and Bootstrap JavaScript components can stay on Bootstrap until the project has a deliberate replacement.
 
-## References
+---
+
+## Migration strategy
+Start with coexistence.
+
+1. Import Master CSS from the app stylesheet without removing Bootstrap.
+2. Keep Bootstrap CSS, Sass output, and JavaScript imports while current screens depend on them.
+3. Audit Bootstrap utilities, grid classes, components, Sass variable overrides, and custom selectors.
+4. Move project-owned design values into Master CSS `@theme`.
+5. Convert layout wrappers, spacing, typography, and simple surfaces to Master CSS classes.
+6. Keep Bootstrap JavaScript components and data attributes until equivalent behavior exists.
+7. Remove Bootstrap packages only after validation proves no converted path needs them.
+
+The first milestone is a stable app where both systems load and new Master CSS classes work. Dependency removal is the last step, not the first.
+
+---
+
+## Audit checklist
+Inspect the Bootstrap surface before changing files.
+
+| Area | What to look for | Migration decision |
+| --- | --- | --- |
+| CSS entry | `bootstrap/dist/css/bootstrap.css`, compiled Sass output, and app CSS import order | Add Master CSS beside the existing entry and preserve cascade order during migration. |
+| Sass setup | `$theme-colors`, `$spacers`, `$grid-breakpoints`, `$container-max-widths`, and partial imports | Move product-owned values into `@theme`; keep Bootstrap variables needed by remaining Bootstrap components. |
+| Grid and layout | `.container`, `.row`, `.col-*`, `.g-*`, display, flex, and spacing utilities | Convert app-owned layout wrappers to Master CSS classes. |
+| Components | Buttons, navs, modals, dropdowns, accordions, alerts, forms, and cards | Convert simple visual surfaces first; keep behavior-heavy components on Bootstrap. |
+| JavaScript behavior | `data-bs-*`, Bootstrap plugin imports, portals, focus handling, transitions, and events | Keep until a replacement interaction is implemented and tested. |
+| Overrides | Selectors that target Bootstrap classes, component states, or generated markup | Keep as CSS until the underlying component is migrated. |
+
+---
+
+## Add Master CSS beside Bootstrap
+Import Master CSS from the stylesheet your app already loads. Do not remove Bootstrap imports yet.
+
+```css name=app.css
+@import "bootstrap/dist/css/bootstrap.css";
+@import "@master/css";
+```
+
+Default source discovery is enough for ordinary app files. Add explicit source directives only when the app needs custom include, exclude, safelist, or blocklist behavior.
+
+If Bootstrap should stay lower in the cascade, keep its import before Master CSS or wrap vendor CSS in a lower-priority layer controlled by the project. Verify the resulting cascade in the browser before deleting any overrides.
+
+---
+
+## Move Bootstrap Sass values into `@theme`
+Bootstrap Sass variables often contain product decisions. Move those decisions into Master CSS tokens when they should be used by markup outside Bootstrap components.
+
+```scss name=bootstrap-theme.scss
+$primary: #2563eb;
+$body-color: #172033;
+$border-radius: .5rem;
+$spacer: 1rem;
+```
+
+```css name=app.css
+@import "@master/css";
+
+@theme {
+    --color-primary: #2563eb;
+    --color-body: #172033;
+    --radius-control: .5rem;
+    --spacing-page: 1rem;
+}
+```
+
+```html
+<section class="fg:body p:page r:control bg:white">
+    ...
+</section>
+```
+
+Do not assume Bootstrap's scale names match the Master CSS preset. Move the values that matter to the product, then choose Master CSS token names that describe their role.
+
+---
+
+## Convert grid and utility classes
+Start with layout wrappers and simple utility-only markup.
+
+Instead of preserving Bootstrap class spelling, preserve layout intent:
+
+```html
+<!-- Before: container py-5 -->
+<!-- Before: row g-4 -->
+<!-- Before: col-md-4 -->
+```
+
+```html
+<section class="w:full max-w:6xl mx:auto px:md py:2xl">
+    <div class="grid grid-cols:3@md gap:lg">
+        <article class="p:lg r:lg bg:white b:1px|solid|base">
+            ...
+        </article>
+    </div>
+</section>
+```
+
+Use native declaration syntax when it is clearer than a utility alias:
+
+```html
+<div class="display:contents@md scroll-margin-top:4rem">
+    ...
+</div>
+```
+
+Keep Bootstrap layout classes in templates that still need Bootstrap's container widths, gutter assumptions, or component internals.
+
+---
+
+## Convert simple components
+Buttons, cards, alerts, and badges are often app-owned visual patterns. Convert them to markup classes or Master CSS component classes when the project owns the behavior.
+
+```css name=app.css
+@import "@master/css";
+
+@components {
+    btn-primary {
+        @compose inline-flex align-items:center justify-content:center gap:xs px:md h:10x r:control bg:primary fg:white;
+        @compose bg:blue-70:hover opacity:.5:disabled;
+    }
+
+    panel {
+        @compose bg:white fg:body r:lg b:1px|solid|base p:lg shadow:sm;
+    }
+}
+```
+
+```html
+<button class="btn-primary">Save</button>
+<article class="panel">...</article>
+```
+
+Keep Bootstrap components when they still provide behavior, accessibility, or internal structure, such as dropdowns, modals, tabs, carousels, and collapse regions. You can still add a small Master CSS class to a Bootstrap root element when the component forwards the class and the cascade is clear.
+
+---
+
+## Preserve JavaScript-driven components
+Bootstrap JavaScript components are not just CSS. They can manage focus, ARIA attributes, transitions, body scroll locks, popper positioning, and events.
+
+Keep markup with `data-bs-*` attributes on Bootstrap until the replacement behavior has been implemented and tested. Convert only the surrounding layout or product-owned wrappers first.
+
+```html
+<section class="grid gap:md">
+    <!-- Bootstrap modal trigger and modal markup can remain unchanged here. -->
+</section>
+```
+
+When a component is replaced, remove its Bootstrap JavaScript import and related data attributes in the same reviewable batch.
+
+---
+
+## Handle overrides and vendor CSS
+Many Bootstrap projects rely on selector overrides such as component state classes, nested markup selectors, or specificity fixes. Do not translate those blindly.
+
+Keep the override as CSS when it targets Bootstrap internals:
+
+```css name=bootstrap-overrides.css
+.navbar .dropdown-menu {
+    min-width: 16rem;
+}
+```
+
+Move the override to Master CSS only after the markup is app-owned:
+
+```html
+<nav class="flex align-items:center gap:md">
+    <div class="min-w:64x">...</div>
+</nav>
+```
+
+Vendor CSS and third-party Bootstrap themes should remain regular CSS until the project replaces the vendor contract.
+
+---
+
+## Validate the migration
+- Run the project's formatter, linter, type check, tests, and production build after each batch.
+- Compare pages that used Bootstrap grid, container, form, modal, dropdown, collapse, tooltip, popover, and responsive utilities.
+- Test hover, focus-visible, disabled, expanded, selected, validation, and dark-mode states if the project supports them.
+- Keep Bootstrap loaded until no remaining template, component, plugin, or override depends on it.
+- Remove Bootstrap Sass, CSS, JavaScript imports, and packages only after the full validation suite passes.
+
+---
+
+## Useful references
 - [Installation](/guide/installation) for adding Master CSS.
 - [Rendering modes](/guide/rendering-modes) for choosing static, runtime, or progressive rendering.
 - [Style declarations](/guide/style-declarations) for class syntax.
-- [Customizing your theme](/guide/theme) for tokens and custom variants.
-- [Reusing styles](/guide/reusing-styles) for deciding what should stay in markup or move into CSS.
+- [Customizing your theme](/guide/theme) for tokens, modes, and custom variants.
+- [Reusing styles](/guide/reusing-styles) for deciding between markup classes, theme tokens, custom utilities, and component classes.
 - [Code linting](/guide/code-linting) for validating class strings during migration.

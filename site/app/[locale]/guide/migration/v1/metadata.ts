@@ -2,9 +2,8 @@ import define from 'internal/utils/metadata'
 
 const metadata = define({
     title: 'Migrating from Master CSS v1',
-    description: 'Use the migration quick start to plan a Master CSS v1 project upgrade with current docs and tooling.',
+    description: 'Upgrade a Master CSS v1 project to the current CSS-first setup by auditing packages, entries, rendering mode, theme directives, and class syntax.',
     category: 'Migration',
-    unfinished: true,
     fileURL: import.meta.url
 })
 

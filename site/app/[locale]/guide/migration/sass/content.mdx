@@ -1,15 +1,200 @@
-This Sass migration guide is being rebuilt. Use the [quick start](/guide/migration) to direct your local coding agent, then ask it to inspect Sass-specific styling before changing code.
+Sass and Master CSS can coexist. Keep Sass for vendor imports, generated selectors, complex nesting, and styles that read better as CSS. Move repeated visual values and markup-owned component styles into Master CSS when the result is easier to maintain.
 
-## Inspect first
-- `.scss` and `.sass` entry files, partials, imports, `@use`, and `@forward`.
-- Variables, maps, mixins, functions, placeholders, and generated selectors.
-- Component styles that can become markup classes or `@components` definitions.
-- Vendor imports, generated CSS, and complex nesting that should stay in regular CSS.
+This guide covers `.scss` and `.sass` projects that use variables, maps, mixins, functions, placeholders, partials, and nested selectors.
 
-## References
+---
+
+## Migration strategy
+Start from the Sass entry files your app already builds.
+
+1. Import Master CSS from the app CSS entry while Sass continues to compile.
+2. Audit Sass variables, maps, mixins, functions, placeholders, partials, and generated selectors.
+3. Move shared design values into Master CSS `@theme`.
+4. Convert local visual rules to markup classes when the markup stays readable.
+5. Convert reusable Sass patterns to `@components`, `@utilities`, `@compose`, or native CSS.
+6. Keep vendor imports, generated CSS, complex animation CSS, and hard-to-read selectors in Sass or regular CSS.
+7. Remove Sass only after converted screens no longer depend on it.
+
+Do not translate every Sass rule. The goal is clearer ownership, not fewer file extensions.
+
+---
+
+## Audit checklist
+Inspect the Sass surface before changing files.
+
+| Area | What to look for | Migration decision |
+| --- | --- | --- |
+| Entry files | `.scss` and `.sass` entries, partials, `@use`, `@forward`, and app imports | Add Master CSS beside the current entry first. |
+| Variables and maps | Colors, spacing, radius, typography, shadows, breakpoints, and z-index scales | Move product-owned values into `@theme`. |
+| Mixins and functions | Responsive helpers, fluid calculations, color helpers, and repeated declarations | Replace with utilities, tokens, native CSS functions, or keep in CSS when clearer. |
+| Placeholders | `%button`, `%card`, `%stack`, and `@extend` usage | Convert real product roles to `@components`; convert primitives to `@utilities`. |
+| Nesting | Component states, descendant selectors, media queries, and structural selectors | Move simple states into classes; keep complex selectors as CSS. |
+| Generated CSS | Loops, maps, vendor output, icon fonts, and theme packages | Keep generated output until a deliberate replacement exists. |
+
+---
+
+## Add Master CSS beside Sass
+Import Master CSS from the stylesheet your app already loads. Keep Sass compilation in place.
+
+```css name=app.css
+@import "@master/css";
+@import "./legacy.scss";
+```
+
+Default source discovery is enough for ordinary app files. Add explicit source directives only when the app needs custom include, exclude, safelist, or blocklist behavior.
+
+If Sass currently emits global resets, vendor CSS, or generated selectors, keep those imports while the migration is in progress.
+
+---
+
+## Move variables and maps into `@theme`
+Sass variables and maps that define product values usually become Master CSS theme tokens.
+
+```scss name=_tokens.scss
+$color-primary: #2563eb;
+$color-body: #172033;
+$space-card: 1.5rem;
+$radius-card: .75rem;
+```
+
+```css name=app.css
+@import "@master/css";
+
+@theme {
+    --color-primary: #2563eb;
+    --color-body: #172033;
+    --spacing-card: 1.5rem;
+    --radius-card: .75rem;
+}
+```
+
+```html
+<article class="bg:white fg:body p:card r:card b:1px|solid|base">
+    ...
+</article>
+```
+
+Use token names that describe the product role. Do not preserve Sass variable names when they were only implementation details.
+
+---
+
+## Convert local component styles
+Move local visual rules into markup when the style belongs to one element or one component instance.
+
+```scss name=Card.module.scss
+.card {
+    display: grid;
+    gap: 1rem;
+    padding: 1.5rem;
+    border-radius: .75rem;
+    background: #fff;
+}
+```
+
+```tsx name=Card.tsx
+export function Card({ children }: { children: React.ReactNode }) {
+    return (
+        <section className="grid gap:md p:card r:card bg:white">
+            {children}
+        </section>
+    )
+}
+```
+
+Keep Sass or regular CSS when the selector describes document structure, generated content, print rules, complex animation timelines, or third-party markup.
+
+---
+
+## Replace placeholders and mixins intentionally
+Sass placeholders and mixins often represent either product roles or low-level primitives. Choose the Master CSS target based on ownership.
+
+Use `@components` for product roles:
+
+```css name=app.css
+@import "@master/css";
+
+@components {
+    card {
+        @compose grid gap:md p:card r:card bg:white b:1px|solid|base shadow:sm;
+    }
+
+    btn {
+        @compose inline-flex align-items:center justify-content:center gap:xs h:10x px:md r:md bg:primary fg:white;
+    }
+}
+```
+
+```html
+<article class="card">...</article>
+<button class="btn">Save</button>
+```
+
+Use `@utilities` for reusable primitives:
+
+```css name=app.css
+@utilities {
+    content-auto {
+        content-visibility: auto;
+        contain-intrinsic-size: auto 32rem;
+    }
+}
+```
+
+```html
+<section class="content-auto">...</section>
+```
+
+Keep Sass mixins when they generate many selectors, encode browser workarounds, or produce CSS that would be harder to understand as classes.
+
+---
+
+## Keep useful nesting as CSS
+Nested Sass can map cleanly to Master CSS states when the target is a single element.
+
+```html
+<button class="bg:blue-60 bg:blue-70:hover opacity:.5:disabled">
+    Save
+</button>
+```
+
+Keep nested selectors in CSS when they express internal structure:
+
+```css name=app.css
+.article-content {
+    h2 {
+        margin-top: 2rem;
+    }
+
+    pre code {
+        white-space: pre;
+    }
+}
+```
+
+If that stylesheet uses `@compose`, add `@reference` instead of importing the app CSS output again.
+
+```css name=Article.module.css
+@reference "../app.css";
+
+.article {
+    @compose grid gap:lg;
+}
+```
+
+---
+
+## Validate the migration
+- Run the Sass compiler, formatter, linter, type check, tests, and production build after each batch.
+- Compare converted pages in responsive breakpoints, dark mode, hover, focus-visible, disabled, and print states.
+- Keep Sass for vendor imports, generated CSS, complex nesting, mixins with browser workarounds, and one-off rules that are clearer as CSS.
+- Remove Sass packages and build configuration only after no imported stylesheet, component, or package still depends on Sass.
+
+---
+
+## Useful references
 - [Installation](/guide/installation) for adding Master CSS.
 - [Rendering modes](/guide/rendering-modes) for choosing static, runtime, or progressive rendering.
 - [Style declarations](/guide/style-declarations) for class syntax.
-- [Customizing your theme](/guide/theme) for tokens and custom variants.
-- [Reusing styles](/guide/reusing-styles) for deciding what should stay in markup or move into CSS.
-- [Code linting](/guide/code-linting) for validating class strings during migration.
+- [Customizing your theme](/guide/theme) for tokens, modes, and custom variants.
+- [CSS directives](/guide/directives) for `@theme`, `@components`, `@utilities`, `@reference`, and `@compose`.
+- [Reusing styles](/guide/reusing-styles) for deciding between markup classes, theme tokens, custom utilities, and component classes.

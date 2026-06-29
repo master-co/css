@@ -1,0 +1,189 @@
+CSS-in-JS migrations are most successful when static visual styles move first and runtime behavior moves last. Styled Components and Emotion can stay in the project while Master CSS takes over class-based styling one component family at a time.
+
+This guide covers `styled-components`, `@emotion/react`, and `@emotion/styled`. It does not require deleting CSS-in-JS from components that still need runtime-generated selectors or values.
+
+---
+
+## Migration strategy
+Run both systems during migration.
+
+1. Add Master CSS to the app CSS entry and choose a rendering mode.
+2. Audit styled wrappers, `css` helpers, object styles, global styles, theme providers, and variant props.
+3. Move project-owned theme values into Master CSS `@theme`.
+4. Convert static styles to class strings or `@components`.
+5. Convert variant props to complete class maps.
+6. Pass truly dynamic values through CSS variables.
+7. Remove CSS-in-JS packages only after no converted surface depends on their runtime.
+
+Do not start with a global codemod. CSS-in-JS often mixes layout, visual styling, variants, element selection, animation, and runtime state in the same component.
+
+---
+
+## Audit checklist
+Inspect the CSS-in-JS surface before changing files.
+
+| Area | What to look for | Migration decision |
+| --- | --- | --- |
+| Styled wrappers | `styled.div`, `styled(Component)`, `as`, transient props, and polymorphic components | Convert pure visual wrappers first; keep wrappers that encode behavior or DOM choice. |
+| Emotion `css` | `css` prop, `css()` helper, object styles, arrays, and conditional fragments | Replace static fragments with class strings or class maps. |
+| Themes | `ThemeProvider`, `DefaultTheme`, palette, spacing, radius, typography, breakpoints, and modes | Move shared design values into `@theme`; keep non-CSS app config in the JS theme. |
+| Global styles | `createGlobalStyle`, Emotion `Global`, resets, font faces, and base element rules | Move app-owned CSS to the CSS entry; keep third-party resets that still matter. |
+| Variants | Props such as `tone`, `size`, `selected`, `dense`, and `disabled` | Use complete class maps so static rendering can see every class. |
+| Runtime values | Measurements, user colors, drag positions, progress, and live layout values | Use CSS variables or keep the CSS-in-JS rule until there is a clearer replacement. |
+
+---
+
+## Convert static styled components
+Start with wrappers that only apply stable visual styles.
+
+```tsx name=Button.tsx
+import styled from 'styled-components'
+
+const Button = styled.button`
+    display: inline-flex;
+    align-items: center;
+    gap: .5rem;
+    min-height: 2.5rem;
+    padding: 0 1rem;
+    border-radius: .5rem;
+    background: ${({ theme }) => theme.colors.primary};
+    color: white;
+`
+```
+
+Move the reusable value into `@theme`, then use a class string where the button is rendered.
+
+```css name=app.css
+@import "@master/css";
+
+@theme {
+    --color-primary: #2563eb;
+}
+```
+
+```tsx name=Button.tsx
+export function Button(props: React.ButtonHTMLAttributes<HTMLButtonElement>) {
+    return (
+        <button
+            className="inline-flex align-items:center gap:xs min-h:10x px:md r:md bg:primary fg:white"
+            {...props}
+        />
+    )
+}
+```
+
+If the project needs a named component class, define it once in CSS.
+
+```css name=app.css
+@import "@master/css";
+
+@components {
+    btn {
+        @compose inline-flex align-items:center justify-content:center gap:xs min-h:10x px:md r:md bg:primary fg:white;
+        @compose bg:blue-70:hover opacity:.5:disabled;
+    }
+}
+```
+
+```html
+<button class="btn">Save</button>
+```
+
+---
+
+## Convert variants to class maps
+Avoid building Master CSS class names from string fragments. Static rendering and linting work best with complete class strings.
+
+```tsx
+const toneClasses = {
+    neutral: 'bg:surface fg:body b:1px|solid|base',
+    primary: 'bg:blue-60 fg:white bg:blue-70:hover',
+    danger: 'bg:red-60 fg:white bg:red-70:hover'
+}
+
+const sizeClasses = {
+    sm: 'h:8x px:sm font:sm',
+    md: 'h:10x px:md font:sm',
+    lg: 'h:12x px:lg font:md'
+}
+
+export function Button({ tone = 'primary', size = 'md', className, ...props }: ButtonProps) {
+    return (
+        <button
+            className={`${toneClasses[tone]} ${sizeClasses[size]} inline-flex align-items:center r:md ${className ?? ''}`}
+            {...props}
+        />
+    )
+}
+```
+
+When a variant controls more than visual styles, keep the prop and only migrate the visual declarations.
+
+---
+
+## Use CSS variables for dynamic values
+Runtime values should not become generated class names. Keep the class static and pass the changing value through a CSS variable.
+
+```tsx
+export function Meter({ value }: { value: number }) {
+    return (
+        <div className="h:2x bg:gray-10 r:full overflow:hidden">
+            <div
+                className="h:full w:$value bg:green-60 transition:width|fast|smooth"
+                style={{ '--value': `${value}%` } as React.CSSProperties}
+            />
+        </div>
+    )
+}
+```
+
+Keep CSS-in-JS for cases where the component must create selectors, keyframes, or style blocks from runtime data that cannot be represented clearly with CSS variables.
+
+---
+
+## Move global styles carefully
+Global styles often contain real app infrastructure. Move them in small groups.
+
+```tsx name=GlobalStyles.tsx
+import { Global, css } from '@emotion/react'
+
+export function GlobalStyles() {
+    return <Global styles={css`
+        body {
+            margin: 0;
+            background: var(--color-surface);
+        }
+    `} />
+}
+```
+
+```css name=app.css
+@import "@master/css";
+
+@layer base {
+    body {
+        margin: 0;
+        background: var(--color-surface);
+    }
+}
+```
+
+Keep CSS-in-JS global styles until the replacement CSS entry is loaded in every route, shell, and server-rendered path that previously received them.
+
+---
+
+## Validate the migration
+- Run formatter, lint, type check, tests, and production build after each batch.
+- Compare server-rendered output if the CSS-in-JS setup had SSR extraction or hydration logic.
+- Check dark mode, responsive breakpoints, hover, focus-visible, disabled, selected, and polymorphic `as` states.
+- Remove Babel plugins, Emotion cache setup, styled-components SSR wiring, and package dependencies only after no remaining component needs them.
+
+---
+
+## Useful references
+- [Installation](/guide/installation) for adding Master CSS to a project.
+- [Rendering modes](/guide/rendering-modes) for static, runtime, and progressive rendering.
+- [Style declarations](/guide/style-declarations) for class syntax.
+- [Customizing your theme](/guide/theme) for design tokens and modes.
+- [Scanning latent classes](/guide/scanning-latent-classes) for class maps and static extraction.
+- [Reusing styles](/guide/reusing-styles) for choosing markup classes, theme tokens, custom utilities, and components.

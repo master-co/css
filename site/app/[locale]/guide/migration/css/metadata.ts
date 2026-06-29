@@ -1,10 +1,9 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Migrating from CSS',
-    description: 'Use the migration quick start to move regular CSS into Master CSS only where it improves maintainability.',
+    title: 'Migrating from CSS and CSS Modules',
+    description: 'Move global CSS and CSS Modules toward Master CSS where class strings, tokens, or composition make the result easier to maintain.',
     category: 'Migration',
-    unfinished: true,
     fileURL: import.meta.url
 })
 

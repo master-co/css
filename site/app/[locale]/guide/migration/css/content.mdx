@@ -1,15 +1,149 @@
-This CSS migration guide is being rebuilt. Use the [quick start](/guide/migration) to direct your local coding agent, then ask it to inspect existing CSS before converting anything.
+Regular CSS and CSS Modules can coexist with Master CSS for as long as the project needs. Treat migration as a cleanup pass, not a rule that every declaration must become a class.
 
-## Inspect first
-- Global stylesheets, reset files, layout files, and component CSS.
-- CSS modules, framework style blocks, and files imported by app entry points.
-- Custom properties, theme values, cascade layers, and media queries.
-- Vendor CSS, generated CSS, animations, and one-off rules that should stay in regular CSS.
+Move repeated, visual, markup-owned styles into Master CSS classes. Keep global resets, vendor styles, complex selectors, generated CSS, and hard-to-read one-off rules in regular CSS.
 
-## References
-- [Installation](/guide/installation) for adding Master CSS.
+---
+
+## Migration strategy
+Start with the stylesheet your app already loads.
+
+1. Import `@master/css` from the app CSS entry.
+2. Keep default source discovery unless the project needs a narrower scan boundary.
+3. Move shared design values into `@theme`.
+4. Convert component-local visual rules into class strings when the markup stays readable.
+5. Use `@reference` and `@compose` inside CSS Modules when a local class name is still the clearest API.
+6. Delete old CSS only after the affected screens build and visually match.
+
+Avoid converting selectors that describe document structure, third-party internals, browser quirks, or animation timelines better than a class list can.
+
+---
+
+## Audit checklist
+Inspect the CSS surface before changing files.
+
+| Area | What to look for | Migration decision |
+| --- | --- | --- |
+| App CSS entry | Global imports, reset files, cascade layers, and framework CSS entries | Add Master CSS beside the existing CSS first. |
+| Global CSS | Base element styles, custom properties, fonts, media queries, and layout primitives | Keep broad document rules in CSS; move reusable values into `@theme`. |
+| CSS Modules | `.module.css` files, `styles.*` usage, `:global`, `composes`, and local variants | Convert to markup classes or use `@compose` inside the module. |
+| Tokens | `--*` custom properties, theme files, spacing scales, color variables, and breakpoints | Move project-owned values into Master CSS `@theme` blocks. |
+| Dynamic values | Inline styles, CSS variables, runtime-calculated measurements, and data attributes | Keep the class static and pass dynamic values through CSS variables. |
+| External CSS | Vendor styles, generated CSS, editor themes, maps, and third-party component styles | Keep as CSS unless the project owns the styling contract. |
+
+---
+
+## Add Master CSS beside existing CSS
+Keep the current CSS files loaded while Master CSS starts generating rules for new or converted markup.
+
+```css name=app.css
+@import "@master/css";
+```
+
+Default source discovery is enough for most projects. Add `@source`, `@source not`, `@safelist`, or `@blocklist` only when the migration needs explicit scan boundaries or classes that are not present as complete source strings.
+
+Use [Rendering modes](/guide/rendering-modes) to decide whether the project should use static rendering, runtime rendering, or progressive rendering before converting many files.
+
+---
+
+## Convert local CSS to markup classes
+Move local visual declarations into markup when the class list is easier to review than a separate selector.
+
+```css name=Card.module.css
+.card {
+    display: grid;
+    gap: 1rem;
+    padding: 1.5rem;
+    border-radius: .75rem;
+    background: var(--color-surface);
+}
+```
+
+```tsx name=Card.tsx
+export function Card({ children }: { children: React.ReactNode }) {
+    return (
+        <section className="grid gap:md p:lg r:lg bg:surface">
+            {children}
+        </section>
+    )
+}
+```
+
+Prefer named theme tokens such as `bg:surface`, `p:card`, or `r:card` when the value is a product decision. Prefer direct native declaration classes such as `scroll-margin-top:4rem` when the CSS property is clearer than inventing a new abstraction.
+
+---
+
+## Keep CSS Modules when they are the component API
+CSS Modules are still useful when a component exposes a stable local class name, needs selectors that target internal structure, or composes shared styles with a local variant.
+
+Use `@reference` to make project tokens, components, utilities, and custom variants available without importing the app CSS output again.
+
+```css name=Button.module.css
+@reference "../app.css";
+
+.button {
+    @compose inline-flex align-items:center justify-content:center gap:xs h:10x px:md r:md bg:blue-60 fg:white;
+}
+
+.button:disabled {
+    @compose opacity:.5 pointer-events:none;
+}
+```
+
+```tsx name=Button.tsx
+import styles from './Button.module.css'
+
+export function Button(props: React.ButtonHTMLAttributes<HTMLButtonElement>) {
+    return <button className={styles.button} {...props} />
+}
+```
+
+Use this pattern when removing the module would force too many call sites to change at once. Convert the module away later if the local class stops adding value.
+
+---
+
+## Move shared values into `@theme`
+Project-owned custom properties usually belong in `@theme` before large-scale class conversion. That lets markup use token names instead of hard-coded values.
+
+```css name=app.css
+@import "@master/css";
+
+@theme {
+    --color-surface: #ffffff;
+    --color-body: #172033;
+    --spacing-card: 1.5rem;
+    --radius-card: .75rem;
+}
+```
+
+```html
+<article class="bg:surface fg:body p:card r:card grid-cols:3@md">
+    ...
+</article>
+```
+
+Keep plain CSS custom properties when the value is runtime-owned, component-private, or intentionally outside the design system.
+
+```tsx
+<div className="w:$progress bg:blue-60" style={{ '--progress': `${value}%` } as React.CSSProperties} />
+```
+
+---
+
+## Validate the migration
+Review each batch as both code and UI.
+
+- Run the project's formatter, linter, type check, tests, and production build.
+- Use [Code linting](/guide/code-linting) to validate Master CSS class strings.
+- Compare migrated screens in light mode, dark mode, responsive breakpoints, hover and focus states.
+- Keep CSS for selectors, animations, and vendor output that would become harder to understand as class strings.
+- Remove old CSS only after no component or page still depends on it.
+
+---
+
+## Useful references
+- [Installation](/guide/installation) for adding Master CSS to a project.
 - [Rendering modes](/guide/rendering-modes) for choosing static, runtime, or progressive rendering.
 - [Style declarations](/guide/style-declarations) for class syntax.
-- [Customizing your theme](/guide/theme) for tokens and custom variants.
-- [Reusing styles](/guide/reusing-styles) for deciding what should stay in markup or move into CSS.
-- [Code linting](/guide/code-linting) for validating class strings during migration.
+- [Customizing your theme](/guide/theme) for `@theme`, tokens, modes, and custom variants.
+- [CSS directives](/guide/directives) for `@reference`, `@compose`, `@source`, `@safelist`, and `@blocklist`.
+- [Reusing styles](/guide/reusing-styles) for deciding between markup utilities, theme tokens, custom utilities, and component classes.

@@ -1,15 +1,184 @@
-This Master CSS v1 migration guide is being rebuilt. Use the [quick start](/guide/migration) to direct your local coding agent, then ask it to inspect v1-specific setup before changing code.
+Master CSS v1 projects should be upgraded as real application migrations, not as automatic string rewrites. The current documentation is CSS-first: the project CSS entry, `@theme`, `@settings`, `@custom-variant`, managed classes, rendering modes, linting, and language tooling are the source of truth.
 
-## Inspect first
-- Installed `@master/*` package versions and old runtime or server initialization code.
-- Project CSS entries, imported Master CSS files, and any legacy config files.
-- Custom theme values, breakpoints, queries, classes, and selector syntax.
-- Color shades, variable references, and component abstractions that may need current syntax.
+This guide avoids unverified one-to-one mappings for old v1 syntax. Audit the old project, install the current packages, then convert setup, theme, and class usage in small reviewed batches.
 
-## References
-- [Installation](/guide/installation) for adding Master CSS.
-- [Rendering modes](/guide/rendering-modes) for choosing static, runtime, or progressive rendering.
-- [Style declarations](/guide/style-declarations) for class syntax.
-- [Customizing your theme](/guide/theme) for tokens and custom variants.
-- [Reusing styles](/guide/reusing-styles) for deciding what should stay in markup or move into CSS.
-- [Code linting](/guide/code-linting) for validating class strings during migration.
+---
+
+## Migration strategy
+Start by making the current toolchain run beside the old setup.
+
+1. Audit installed `@master/*` packages, integrations, runtime/server initialization, CSS entries, and legacy config files.
+2. Choose the current [rendering mode](/guide/rendering-modes): runtime, static, or progressive.
+3. Install the current integration package for the framework or build tool.
+4. Import `@master/css` from the stylesheet the app already loads.
+5. Move project settings, tokens, modes, variants, components, and utilities into CSS-first directives.
+6. Review class syntax and generated CSS in small batches.
+7. Remove old package imports, config files, and initialization code only after the migrated paths validate.
+
+Do not delete the old setup until the new CSS entry can generate styles for at least one migrated route or component family.
+
+---
+
+## Audit checklist
+Inspect the v1 project before changing files.
+
+| Area | What to look for | Migration decision |
+| --- | --- | --- |
+| Packages | `@master/css`, runtime, server, framework packages, language tooling, and ESLint packages | Replace v1 packages with the current package or integration that owns the behavior. |
+| Runtime setup | Manual runtime initialization, framework providers, server rendering hooks, and virtual modules | Move to the current integration guide for the app framework. |
+| CSS entries | Imported Master CSS files, generated CSS files, global styles, and old config references | Create a current CSS entry with `@import "@master/css";`. |
+| Config and theme | Legacy config files, theme values, breakpoints, modes, aliases, and component definitions | Move project-owned values into `@theme`, `@settings`, `@custom-variant`, `@components`, and `@utilities`. |
+| Class syntax | Old class strings, dynamic class builders, custom utilities, selectors, variables, and important flags | Convert intentionally and validate generated CSS. |
+| Tooling | Editor extension, language service, lint rules, build commands, and CI scripts | Update after the app compiles with current packages. |
+
+---
+
+## Install the current setup
+Use the current [Installation](/guide/installation) guide for the app framework. For Vite-style projects, the current baseline is a CSS entry plus the integration plugin.
+
+```css name=app.css
+@import "@master/css";
+```
+
+Default source discovery is enough for ordinary app files. Add explicit source directives only when the app needs custom include, exclude, safelist, or blocklist behavior.
+
+Choose the rendering mode before converting many classes:
+
+| Project shape | Recommended starting point |
+| --- | --- |
+| App already used browser runtime generation | Runtime rendering |
+| App wants zero-runtime generated CSS from complete source strings | Static rendering |
+| SSR or SSG app needs first-page CSS plus client-side class changes | Progressive rendering |
+| Mixed legacy app with dynamic class creation | Start with runtime or progressive, then move stable surfaces toward static-safe class strings |
+
+Use the framework-specific installation guide for exact package names and setup code instead of carrying old initialization forward.
+
+---
+
+## Move config into CSS-first directives
+The current project CSS entry owns theme and manifest inputs. Move values out of legacy config shapes and into CSS directives.
+
+```css name=app.css
+@import "@master/css";
+
+@settings {
+    root-size: 16;
+    base-unit: 4;
+}
+
+@theme {
+    --color-primary: #2563eb;
+    --color-body: #172033;
+    --spacing-card: 1.5rem;
+    --radius-card: .75rem;
+    --breakpoint-dashboard: 72rem;
+}
+
+@custom-variant @dashboard {
+    @media (width >= 72rem) {
+        @slot;
+    }
+}
+```
+
+```html
+<section class="grid grid-cols:3@dashboard gap:lg p:card r:card fg:body">
+    ...
+</section>
+```
+
+Keep non-CSS application configuration in JavaScript or TypeScript. Move only values that are part of the styling vocabulary.
+
+---
+
+## Move reusable classes into managed definitions
+If the v1 project had reusable component abstractions, migrate them to `@components` when the name describes a product UI role.
+
+```css name=app.css
+@components {
+    card {
+        @compose grid gap:md p:card r:card bg:white b:1px|solid|base shadow:sm;
+    }
+
+    btn-primary {
+        @compose inline-flex align-items:center justify-content:center gap:xs h:10x px:md r:md bg:primary fg:white;
+        @compose bg:blue-70:hover opacity:.5:disabled;
+    }
+}
+```
+
+```html
+<article class="card">
+    <button class="btn-primary">Save</button>
+</article>
+```
+
+Use `@utilities` when the reusable name is a low-level primitive rather than a component role.
+
+```css name=app.css
+@utilities {
+    content-auto {
+        content-visibility: auto;
+        contain-intrinsic-size: auto 32rem;
+    }
+}
+```
+
+---
+
+## Review class syntax in batches
+Current Master CSS class strings should be complete, explicit, and validated by the current engine.
+
+Use current syntax for states, conditions, native declarations, and CSS variables:
+
+```html
+<button class="inline-flex align-items:center gap:xs px:md h:10x r:md bg:blue-60 fg:white bg:blue-70:hover opacity:.5:disabled">
+    Save
+</button>
+```
+
+```tsx
+function Progress({ value }: { value: number }) {
+    return (
+        <div className="h:2x bg:gray-10 r:full overflow:hidden">
+            <div
+                className="h:full w:$progress bg:blue-60 transition:width|fast|smooth"
+                style={{ '--progress': `${value}%` } as React.CSSProperties}
+            />
+        </div>
+    )
+}
+```
+
+For static rendering, rewrite dynamic class fragments into complete class maps before expecting the scanner to find every class.
+
+---
+
+## Replace old runtime and server wiring
+Old runtime or server initialization should be replaced with current integration setup, not patched in place.
+
+- Use the current framework integration when one exists.
+- Use [Rendering modes](/guide/rendering-modes) to choose runtime, static, server, or progressive delivery.
+- Use `@master/css-runtime` directly only for custom runtime integration work.
+- Use `@master/css-server` directly only when the project owns the HTML rendering step.
+
+After replacing setup code, remove old imports, virtual module names, config loaders, and generated assets that are no longer part of the current integration.
+
+---
+
+## Validate the upgrade
+- Run the formatter, linter, type check, tests, and production build after each batch.
+- Use [Code linting](/guide/code-linting) and the [Language Service](/guide/language-service) to catch invalid classes early.
+- Compare generated CSS for migrated components where priority, cascade layers, variables, modes, or important flags matter.
+- Test runtime, static, or progressive rendering in the browser depending on the chosen mode.
+- Remove old v1 packages, config files, and initialization code only after the migrated app builds and visually matches.
+
+---
+
+## Useful references
+- [Installation](/guide/installation) for current package and integration setup.
+- [Rendering modes](/guide/rendering-modes) for runtime, static, server, and progressive delivery.
+- [Style declarations](/guide/style-declarations) for current class syntax.
+- [Customizing your theme](/guide/theme) for `@settings`, `@theme`, modes, tokens, and custom variants.
+- [CSS directives](/guide/directives) for `@components`, `@utilities`, `@compose`, `@reference`, and source exceptions.
+- [Scanning latent classes](/guide/scanning-latent-classes) for static-safe complete class strings.

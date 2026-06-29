@@ -7,17 +7,17 @@ If you use a local AI coding agent, start with [AI Coding with Master CSS](/guid
 ---
 
 ## Frameworks
-Migration guides for common source styling systems.
+Migration guides for source styling systems with enough differences to need their own migration path.
 
-<IconButtons url="/guide/migration" className="my:lg grid-cols:5@sm">
+<IconButtons url="/guide/migration" className="my:lg grid-cols:4@sm">
     {[
         { ...brands['tailwindcss'], disabled: false },
-        { ...brands['css'], disabled: false, path: 'css' },
-        { ...brands['v1'], disabled: false, name: 'Master CSS v1' },
-        { ...brands['styled-components'], disabled: false },
+        { ...brands['css'], disabled: false, name: 'CSS Modules', path: 'css' },
+        { ...brands['styled-components'], disabled: false, name: 'CSS-in-JS', path: 'css-in-js' },
+        { ...brands['mui'], disabled: false, path: 'material-ui' },
         { ...brands['bootstrap'], disabled: false, path: 'bootstrap' },
-        { ...brands['emotion'], disabled: false },
         { ...brands['sass'], disabled: false },
+        { ...brands['v1'], disabled: false, name: 'Master CSS v1' },
     ]}
 </IconButtons>
 
@@ -32,7 +32,7 @@ Start with an audit, then migrate incrementally. The first milestone is not dele
 
 ## Before you start
 - Start from a clean git working tree, or commit your current work first.
-- Identify the existing styling systems, such as global CSS, CSS modules, Tailwind CSS, styled components, Sass, framework style blocks, or component-library CSS.
+- Identify the existing styling systems, such as global CSS, CSS Modules, Tailwind CSS, CSS-in-JS, Sass, framework style blocks, or component-library CSS.
 - Decide which [rendering mode](/guide/rendering-modes) fits the project: static rendering, runtime rendering, or progressive rendering.
 - Find the CSS file your app already loads. This is usually where `@import '@master/css';` should enter the project.
 - Keep the old styling system in place until the migrated screens build, run, and visually match the previous UI.
@@ -46,7 +46,7 @@ Paste this into your local coding agent from the project root. For general AI wo
 You are migrating this project to Master CSS.
 
 Use the official Master CSS documentation as the source of truth:
-https://rc.css.master.co
+Documentation: https://rc.css.master.co
 
 Do not invent Master CSS classes, APIs, directives, or package names.
 

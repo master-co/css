@@ -1,0 +1,197 @@
+Material UI and Master CSS can coexist. Most projects should migrate app-owned layout, product surfaces, and repeated `sx` styles first, while keeping Material UI components where their accessibility, state management, slots, and JavaScript behavior still provide value.
+
+Do not treat this as a component-for-component rewrite. A good migration often keeps `Button`, `Dialog`, `Menu`, `Select`, `DataGrid`, or theme-driven component overrides until the product has a deliberate replacement.
+
+---
+
+## Migration strategy
+Run Master CSS beside Material UI.
+
+1. Add Master CSS to the app CSS entry.
+2. Keep `ThemeProvider`, `CssBaseline`, Emotion cache, and Material UI SSR setup while screens still depend on them.
+3. Audit `sx`, `styled()`, `className`, `slotProps`, `classes`, `styleOverrides`, and theme tokens.
+4. Move app-owned design values into `@theme`.
+5. Convert layout wrappers and repeated `sx` objects to Master CSS classes.
+6. Keep component-internal styling in Material UI overrides until a replacement component exists.
+7. Remove Material UI packages only if the project actually replaces the component system.
+
+Many migrations stop at coexistence: Master CSS owns app layout and custom surfaces, while Material UI continues to own complex interactive widgets.
+
+---
+
+## Audit checklist
+Inspect the Material UI surface before changing files.
+
+| Area | What to look for | Migration decision |
+| --- | --- | --- |
+| Theme | `createTheme`, palette, typography, spacing, shape, shadows, breakpoints, and color schemes | Move product tokens into `@theme`; keep MUI theme values required by remaining MUI components. |
+| `sx` usage | Layout, spacing, color, responsive arrays, pseudo selectors, and one-off overrides | Convert app-owned static `sx` to class strings. |
+| `styled()` usage | Styled MUI components, ownerState variants, and theme callbacks | Convert pure visual wrappers; keep wrappers tied to MUI slots or owner state. |
+| Component overrides | `components.*.styleOverrides`, `variants`, `defaultProps`, `classes`, and `slotProps` | Keep while the MUI component remains the source of behavior. |
+| Baseline and globals | `CssBaseline`, `GlobalStyles`, font imports, and reset assumptions | Keep until equivalent global CSS is loaded everywhere. |
+| Injection order | Emotion cache, SSR extraction, and style precedence | Verify class-based overrides in the browser before removing old style setup. |
+
+---
+
+## Add Master CSS beside Material UI
+Import Master CSS from the app stylesheet and keep the current Material UI providers in place.
+
+```css name=app.css
+@import "@master/css";
+```
+
+Default source discovery is enough for most projects. Add explicit source directives only when the app needs custom include, exclude, safelist, or blocklist behavior.
+
+Use [Rendering modes](/guide/rendering-modes) before a large migration. Runtime rendering is often the easiest starting point for React apps that are actively changing during migration; static or progressive rendering may be better once class strings are stable.
+
+---
+
+## Move theme values into `@theme`
+Start with product-owned values that should be shared outside Material UI components.
+
+```ts name=theme.ts
+export const theme = createTheme({
+    palette: {
+        primary: { main: '#2563eb' },
+        background: { paper: '#ffffff' },
+        text: { primary: '#172033' }
+    },
+    shape: {
+        borderRadius: 8
+    }
+})
+```
+
+```css name=app.css
+@import "@master/css";
+
+@theme {
+    --color-primary: #2563eb;
+    --color-surface: #ffffff;
+    --color-body: #172033;
+    --radius-control: .5rem;
+}
+```
+
+```html
+<section class="bg:surface fg:body r:control b:1px|solid|base">
+    ...
+</section>
+```
+
+Do not assume Material UI spacing, breakpoint, radius, or palette scales match the Master CSS preset. Move product tokens intentionally, then review any default-token substitutions.
+
+---
+
+## Convert app-owned `sx`
+Start with `sx` blocks that style layout wrappers, cards, sections, and simple product UI.
+
+```tsx name=DashboardPanel.tsx
+import Box from '@mui/material/Box'
+
+export function DashboardPanel({ children }: { children: React.ReactNode }) {
+    return (
+        <Box sx={{
+            display: 'grid',
+            gap: 2,
+            p: 3,
+            borderRadius: 2,
+            bgcolor: 'background.paper'
+        }}>
+            {children}
+        </Box>
+    )
+}
+```
+
+```tsx name=DashboardPanel.tsx
+export function DashboardPanel({ children }: { children: React.ReactNode }) {
+    return (
+        <section className="grid gap:md p:lg r:control bg:surface">
+            {children}
+        </section>
+    )
+}
+```
+
+Use Material UI components with `className` when the component still provides useful behavior and forwards the class to the root element.
+
+```tsx
+<Button className="min-w:0 px:md" variant="contained">
+    Save
+</Button>
+```
+
+Keep `sx`, `slotProps`, or `classes` when the styling targets a MUI slot, state class, or generated internal structure.
+
+---
+
+## Convert repeated patterns to component classes
+When many `sx` blocks encode the same product role, move that role into a Master CSS component class.
+
+```css name=app.css
+@import "@master/css";
+
+@components {
+    panel {
+        @compose bg:surface fg:body r:lg b:1px|solid|base p:lg shadow:sm;
+    }
+
+    toolbar {
+        @compose flex align-items:center gap:sm min-h:12x;
+    }
+}
+```
+
+```tsx
+<section className="panel">
+    <div className="toolbar">
+        ...
+    </div>
+</section>
+```
+
+Prefer component classes for project-owned roles. Keep Material UI theme variants for Material UI components that remain part of the design system.
+
+---
+
+## Handle responsive and state styles
+Translate static responsive `sx` into Master CSS conditions.
+
+```tsx
+<Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: 'repeat(3, 1fr)' }, gap: 2 }} />
+```
+
+```html
+<section class="grid grid-cols:1 grid-cols:3@md gap:md">
+    ...
+</section>
+```
+
+For component state, prefer the native state or attribute when it belongs to your markup.
+
+```html
+<button class="bg:blue-60 bg:blue-70:hover opacity:.5:disabled">
+    Save
+</button>
+```
+
+Keep MUI state classes such as selected, expanded, focused, or error styling in MUI overrides when they target internal slots or behavior that the app does not own.
+
+---
+
+## Validate the migration
+- Run formatter, lint, type check, tests, and production build after each batch.
+- Compare important screens in light mode, dark mode, responsive breakpoints, hover, focus-visible, disabled, selected, and loading states.
+- Test dialogs, menus, selects, popovers, portals, transitions, and focus traps before removing any Material UI component.
+- Keep Emotion cache and SSR setup until no remaining Material UI or Emotion path needs it.
+- Remove Material UI packages only after replacing both visual styling and component behavior.
+
+---
+
+## Useful references
+- [Installation](/guide/installation) for adding Master CSS.
+- [Rendering modes](/guide/rendering-modes) for choosing CSS delivery.
+- [Style declarations](/guide/style-declarations) for class syntax.
+- [Customizing your theme](/guide/theme) for tokens, modes, and breakpoints.
+- [Reusing styles](/guide/reusing-styles) for markup utilities, component classes, and custom utilities.
