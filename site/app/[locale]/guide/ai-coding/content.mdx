@@ -1,0 +1,196 @@
+AI coding works best when the agent can see the same styling system your team uses: the framework, the CSS entry, the theme tokens, the reusable component vocabulary, and the checks that keep class strings valid.
+
+Master CSS gives an agent a compact styling language. Classes map closely to CSS declarations, token values, selector states, conditional queries, and generated CSS output. That makes it easier for an AI coding agent to suggest useful markup, but the workflow still needs product judgment from a developer.
+
+Use AI to move faster through routine styling decisions, generate first drafts, compare alternatives, and review class strings. Keep decisions about semantics, shared tokens, reusable components, and visual quality with the person reviewing the change.
+
+Popular local coding agents include [Codex App](https://openai.com/codex/), [Claude Code](https://code.claude.com/docs/en/setup), [Cursor](https://cursor.com/download), and [Windsurf / Devin Desktop](https://devin.ai/download). Use a local agent that can inspect your repository, edit files in small batches, and run the project's own checks.
+
+---
+
+## Set up the project first
+AI output improves when the project already has a real Master CSS setup. Install Master CSS, import the stylesheet from the CSS file your app already loads, and choose the [rendering mode](/guide/rendering-modes) that fits the framework.
+
+```css name=app.css
+@import '@master/css';
+```
+
+Then give the project a vocabulary the agent can reuse. Theme tokens make repeated values explicit, and component classes give shared product patterns a stable name.
+
+```css name=app.css
+@import '@master/css';
+
+@theme {
+    --color-brand: #4f46e5;
+    --spacing-card: 1.5rem;
+    --radius-card: 0.75rem;
+}
+
+@components {
+    btn {
+        @compose inline-flex align-items:center justify-content:center gap:2x px:md h:10x r:md font:medium;
+    }
+}
+```
+
+Use [Language Service](/guide/language-service) for completions, syntax highlighting, color tools, and generated CSS hover previews. Use [Code linting](/guide/code-linting) when AI-generated class strings should be checked before they enter the codebase.
+
+```js name=eslint.config.js
+import css from '@master/eslint-config-css'
+
+export default [
+    css
+]
+```
+
+This setup gives both the developer and the agent fast feedback. The agent can use project tokens instead of raw values, and linting can catch invalid classes, conflicting declarations, non-canonical syntax, and unstable class order.
+
+---
+
+## Give the agent useful context
+Do not start with "make this look better." Ask the agent to inspect the project first, then make a focused change.
+
+Good context includes:
+
+- The official documentation URL: `https://rc.css.master.co`
+- The framework, build tool, package manager, and rendering mode.
+- The CSS entry that imports `@master/css`.
+- Existing `@theme`, `@components`, `@utilities`, and `@custom-variant` definitions.
+- Existing component, template, and design-system patterns near the target UI.
+- The formatter, lint, type-check, test, build, and visual review commands.
+
+Use a prompt like this from the project root:
+
+```text name=prompt
+You are working in a Master CSS project.
+
+Use the official Master CSS documentation as the source of truth:
+https://rc.css.master.co
+
+Before editing, inspect the framework, package manager, CSS entry, theme tokens, component classes, nearby UI patterns, and available validation commands.
+
+When styling markup:
+- use valid Master CSS syntax
+- prefer existing theme tokens and component classes
+- use explicit CSS-like classes when the shorter alias is unclear
+- do not invent Master CSS APIs, directives, package names, or Tailwind-style syntax
+- keep semantic HTML and accessibility behavior unchanged
+- explain any value that should become a shared token
+
+Work in a small batch. After editing, show the changed files, explain the styling decisions, and run the relevant formatter, lint, type-check, test, or build command when available.
+```
+
+---
+
+## Prompt for readable class strings
+Ask the agent to optimize for readable markup, not the shortest possible class list.
+
+```html
+<button class="inline-flex align-items:center gap:2x h:10x px:md r:md bg:brand fg:white bg:blue-70:hover opacity:.5:disabled">
+    Save
+</button>
+```
+
+Readable Master CSS usually follows these habits:
+
+- Use complete class strings instead of building classes from small string fragments.
+- Prefer project tokens such as `bg:brand`, `p:card`, and `r:card` when they exist.
+- Use native declaration syntax such as `scroll-margin-top:4rem` when it is clearer than a custom abstraction.
+- Keep selector states and conditions attached to the class they affect, such as `bg:blue-70:hover` and `grid-cols:3@md`.
+- Move repeated product values into `@theme`; move repeated product patterns into `@components` only when a named abstraction improves maintainability.
+
+When a class list becomes hard to scan, ask the agent whether the problem is repetition, missing tokens, or a real component abstraction.
+
+```text name=prompt
+Review this component's Master CSS classes for readability.
+
+Look for invalid syntax, conflicting declarations, repeated raw values that should become tokens, over-specific one-off styling, missing responsive or dark-mode states, and class strings that should be split into a component class.
+
+Do not rewrite working markup only to make it shorter. Explain each recommended change.
+```
+
+---
+
+## Review AI output
+Treat AI-generated styling as a first draft. Review the diff as code and as UI.
+
+Check the class strings:
+
+- Are all classes valid Master CSS syntax?
+- Did the agent use Tailwind, Bootstrap, or another framework's class syntax by mistake?
+- Do repeated colors, spacing, radius, shadow, or typography values belong in `@theme`?
+- Do reusable product patterns belong in `@components`, or are local utility classes clearer?
+- Are responsive conditions, mode conditions, selector states, and disabled states attached to the correct declarations?
+- Did the generated CSS preview match the intended CSS?
+
+Use linting for mechanical feedback:
+
+```bash name=Terminal
+eslint .
+```
+
+Use the browser for visual feedback. Compare the important states: default, hover, focus-visible, disabled, loading, narrow containers, dark mode, and reduced motion when the component supports them.
+
+---
+
+## Know what to leave alone
+Not every style should become a Master CSS class. Ask the agent to keep regular CSS when conversion would make the project harder to maintain.
+
+Leave these alone unless there is a clear benefit:
+
+- Vendor CSS, reset CSS, generated CSS, and third-party package styles.
+- Complex keyframe animation rules that are easier to read as CSS.
+- Highly dynamic values controlled by user input, pointer position, charts, maps, or editors.
+- One-off native declarations where a direct CSS rule is more obvious than a dense class string.
+- Framework or library styles that external code expects to own.
+
+For dynamic values, prefer stable classes plus CSS variables or inline styles at the boundary.
+
+```html
+<div class="transform:translateX(var(--x)) opacity:var(--opacity)">
+    ...
+</div>
+```
+
+---
+
+## Prompt templates
+### Feature styling
+```text name=prompt
+Style this feature with Master CSS.
+
+Use existing project tokens and component classes when they fit. Keep local one-off decisions in markup. Add new `@theme` tokens only for values that are reused or represent product vocabulary. Do not change semantic HTML, accessibility attributes, or behavior.
+
+After editing, explain the class choices and run the available checks.
+```
+
+### Token extraction
+```text name=prompt
+Find repeated visual values in this component or route.
+
+Recommend which values should become Master CSS `@theme` tokens, which repeated patterns should become `@components`, and which values should stay local. Do not edit until you explain the proposed token names and why they are product vocabulary.
+```
+
+### Class review
+```text name=prompt
+Review these Master CSS class strings.
+
+Check for invalid classes, conflicts, non-canonical syntax, condition order, repeated raw values, missed states, and places where a component class would make the code easier to maintain. Prefer small fixes over broad rewrites.
+```
+
+### Visual QA
+```text name=prompt
+Visually review this Master CSS change.
+
+Run the app, inspect the affected page in desktop and mobile widths, and compare default, hover, focus-visible, disabled, responsive, and dark-mode states where applicable. Report any layout shift, overflow, missing CSS, or behavior change before editing further.
+```
+
+---
+
+## Next steps
+- Use [Installation](/guide/installation) to add Master CSS to a project.
+- Use [Language Service](/guide/language-service) for editor intelligence and generated CSS previews.
+- Use [Code linting](/guide/code-linting) for validation and class sorting.
+- Use [Style declarations](/guide/style-declarations) when you need syntax details.
+- Use [Customizing your theme](/guide/theme) and [Reusing styles](/guide/reusing-styles) when AI suggestions reveal repeated product vocabulary.
+- Use [Migration](/guide/migration) when an AI coding agent is converting an existing styling system to Master CSS.

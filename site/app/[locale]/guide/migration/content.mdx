@@ -1,10 +1,8 @@
 import brands from 'internal/data/brands'
 
-Migrating a real product to Master CSS is rarely a one-to-one syntax rewrite. The safest path is to let a local AI coding agent inspect the actual project, make small focused changes, and validate each batch against the project’s own checks.
+Migrating a real product to Master CSS is rarely a one-to-one syntax rewrite. Treat the work as a product styling change: inspect the existing styling systems, add Master CSS beside them, convert one reviewable slice at a time, and remove old dependencies only after the migrated UI is validated.
 
-Use this guide with a local coding agent that can read and edit your local repository. Popular options include [Codex App](https://openai.com/codex/), [Claude Code](https://code.claude.com/docs/en/setup), [Cursor](https://cursor.com/download), and [Windsurf / Devin Desktop](https://devin.ai/download).
-
-The prompt below gives the agent enough direction to choose the right Master CSS setup, convert styles where it improves the codebase, and leave existing CSS alone when conversion would make the result harder to maintain.
+If you use a local AI coding agent, start with [AI Coding with Master CSS](/guide/ai-coding) for setup, context, prompts, and review habits. This page keeps the migration-specific checklist and prompt focused on converting an existing project.
 
 ---
 
@@ -25,12 +23,10 @@ Migration guides for common source styling systems.
 
 ---
 
-## Why use an AI coding agent
+## Migration strategy
 CSS migration depends on project context. A static checklist cannot reliably know which files contain product styles, which classes come from a third-party package, which values are design tokens, or which custom CSS is clearer than a generated utility class.
 
-A local coding agent can inspect the framework, package manager, build setup, templates, components, CSS entry files, and test commands before changing code. That makes migration more practical than following a separate guide for every previous styling library.
-
-Treat the agent as a careful pair programmer, not an automatic converter. Ask it to explain changes, work in small batches, and keep each diff reviewable.
+Start with an audit, then migrate incrementally. The first milestone is not deleting the previous styling system; it is getting Master CSS installed, generating CSS for new or converted markup, and keeping the existing UI stable while conversion is in progress.
 
 ---
 
@@ -44,16 +40,15 @@ Treat the agent as a careful pair programmer, not an automatic converter. Ask it
 ---
 
 ## Migration prompt
-Paste this into your local coding agent from the project root:
+Paste this into your local coding agent from the project root. For general AI workflow guidance, use [AI Coding with Master CSS](/guide/ai-coding).
 
 ```text name=prompt
 You are migrating this project to Master CSS.
 
-Use the official Master CSS documentation and repository as references:
-- Documentation: https://rc.css.master.co
-- Repository: https://github.com/master-co/css
+Use the official Master CSS documentation as the source of truth:
+https://rc.css.master.co
 
-Prefer the documentation for public syntax, setup, and recommended usage. Use the repository when you need to verify package names, integration examples, source behavior, or current project conventions. Do not invent Master CSS classes, APIs, directives, or package names.
+Do not invent Master CSS classes, APIs, directives, or package names.
 
 First inspect the repository and identify:
 - the framework, build tool, package manager, and current styling systems
@@ -71,7 +66,7 @@ Then migrate incrementally:
 7. Keep vendor CSS, generated CSS, complex animation CSS, and hard-to-read one-off CSS in regular CSS unless converting it improves maintainability.
 8. Remove the old styling dependency only after the migrated screens build and match the previous UI.
 
-Work in small batches. After each focused batch, show me the changed files, explain the reasoning, and run the project’s formatter, type check, tests, and build if available. Call out anything that needs manual review, especially visual differences, removed CSS, changed tokens, or unsupported syntax.
+Work in small migration batches. After each focused batch, show me the changed files, explain the conversion decisions, and run the project’s formatter, type check, tests, and build if available. Call out anything that needs manual review, especially visual differences, removed CSS, changed tokens, old styling dependencies, or unsupported syntax.
 ```
 
 ---
