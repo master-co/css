@@ -1,15 +1,440 @@
-This Tailwind CSS migration guide is being rebuilt. Use the [quick start](/guide/migration) to direct your local coding agent, then ask it to inspect Tailwind-specific styling before changing code.
+Tailwind CSS v4 and Master CSS both generate CSS from class names and CSS directives, but they are not drop-in replacements for each other. Treat the migration as a product styling change: install Master CSS beside Tailwind, convert one route or component family at a time, and remove Tailwind only after the migrated surfaces build and visually match the intended design.
 
-## Inspect first
-- `tailwind.config.*`, preset files, plugins, and theme extensions.
-- CSS entries with `@tailwind`, `@layer`, or `@apply`.
-- Markup class strings, helper functions, and component props that compose Tailwind classes.
-- Custom utilities, design tokens, and third-party classes that should stay in place.
+This guide focuses on Tailwind CSS v4's CSS-first workflow: `@import "tailwindcss"`, `@theme`, `@utility`, `@variant`, `@custom-variant`, `@source`, and `@apply`. For Tailwind behavior, use the official references for [functions and directives](https://tailwindcss.com/docs/functions-and-directives), [theme variables](https://tailwindcss.com/docs/theme), [detecting classes in source files](https://tailwindcss.com/docs/detecting-classes-in-source-files), and [states and variants](https://tailwindcss.com/docs/hover-focus-and-other-states).
 
-## References
-- [Installation](/guide/installation) for adding Master CSS.
+---
+
+## Migration strategy
+Run both systems while you migrate. Tailwind can keep styling existing screens while Master CSS takes over one reviewed slice at a time.
+
+1. Add Master CSS to the project without removing Tailwind.
+2. Keep the Tailwind CSS entry loaded until converted screens no longer depend on it.
+3. Move shared design values into Master CSS `@theme` tokens.
+4. Convert markup classes where the class list stays readable.
+5. Replace reusable `@apply` rules with `@compose`, `@components`, `@utilities`, or native CSS.
+6. Run project checks and compare important screens before deleting Tailwind.
+
+Avoid global search-and-replace. Tailwind class names encode a different vocabulary, default theme, Preflight reset, container model, ring model, and variant syntax. A reviewable migration preserves intent instead of preserving spelling.
+
+---
+
+## Audit checklist
+Inspect the Tailwind surface before changing files.
+
+| Area | What to look for | Migration decision |
+| --- | --- | --- |
+| CSS entry | `@import "tailwindcss"` and any imported theme files | Add `@import "@master/css"` beside it during migration. |
+| Theme | Tailwind `@theme`, `@theme inline`, and `@theme static` blocks | Move shared tokens into Master CSS `@theme` blocks. |
+| Custom utilities | Tailwind `@utility` blocks | Recreate reusable primitives in Master CSS `@utilities`. |
+| Custom variants | Tailwind `@custom-variant` and CSS rules using `@variant` | Recreate shared conditions with Master CSS `@custom-variant` and `@variant`. |
+| Composition | Rules using `@apply` | Replace with `@compose` or ordinary CSS declarations. |
+| Source policy | `@source`, `@source not`, `@source inline()`, ignored paths | Use Master CSS `@source`, `@source not`, `@safelist`, and `@blocklist`. |
+| Markup | Class strings in HTML, JSX, templates, helper maps, and component props | Convert complete class strings, not fragments. |
+| Third-party styling | Plugin CSS, vendor CSS, component-library overrides | Keep regular CSS until a Master CSS replacement is clearly better. |
+
+Use a clean git branch and commit migration batches by feature area. If a screen depends heavily on Tailwind-specific plugins or class generation, leave that screen on Tailwind until its replacement is explicit.
+
+---
+
+## Install Master CSS beside Tailwind
+Keep the existing Tailwind import while introducing Master CSS from the stylesheet your app already loads.
+
+```css name=app.css
+@import "tailwindcss";
+@import "@master/css";
+
+@source "src/**/*.{html,js,jsx,ts,tsx,vue,svelte,astro,mdx}";
+@source not "src/**/*.test.tsx";
+```
+
+Then add the framework or build integration that matches the project. Start from [Installation](/guide/installation), then choose the specific framework guide for Vite, Next.js, Nuxt, Vue, Svelte, Astro, Webpack, React, Angular, Laravel, Blazor, Lit, or the CLI.
+
+Do not remove Tailwind at this point. The first milestone is a project that still looks the same while Master CSS can generate rules for new or converted markup.
+
+---
+
+## Choose a rendering mode
+Use [Rendering modes](/guide/rendering-modes) before converting many files. The rendering mode controls CSS delivery, not class syntax.
+
+| Project shape | Recommended starting point | Why |
+| --- | --- | --- |
+| Vite SPA or component app | Runtime rendering | Fast adoption while classes are changing during migration. |
+| Static marketing site or content site | Static rendering | Builds a zero-runtime CSS asset from complete class strings. |
+| SSR or SSG app with dynamic client state | Progressive rendering | Sends first-page CSS early, then lets the runtime handle later class changes. |
+| Highly interactive editor, builder, or data grid | Mixed approach | Keep stable classes in Master CSS and volatile per-element values in CSS variables or inline styles. |
+
+Static rendering depends on complete class strings in scanned source. If a Tailwind component builds class names from fragments, rewrite that part to explicit class maps before expecting static output to be complete.
+
+---
+
+## Translate CSS-first theme values
+Tailwind v4 `@theme` variables create utility classes and variants. Master CSS `@theme` variables define design tokens for Master CSS namespaces. The shape is similar, but the generated class syntax is different.
+
+```css name=tailwind.css
+@import "tailwindcss";
+
+@theme {
+    --color-brand: oklch(0.62 0.2 265);
+    --spacing-card: 1.5rem;
+    --radius-card: 1rem;
+    --breakpoint-dashboard: 72rem;
+}
+```
+
+```css name=app.css
+@import "@master/css";
+
+@theme {
+    --color-brand: oklch(0.62 0.2 265);
+    --spacing-card: 1.5rem;
+    --radius-card: 1rem;
+    --breakpoint-dashboard: 72rem;
+}
+```
+
+```html
+<article class="bg:brand p:card r:card grid-cols:3@md">
+    ...
+</article>
+```
+
+Master CSS resolves token names by namespace. A token like `--color-brand` becomes available to color utilities such as `bg:brand`, `fg:brand`, and border color utilities. A token like `--spacing-card` becomes available to spacing utilities such as `p:card`, `gap:card`, and `m:card`.
+
+| Tailwind v4 theme concept | Master CSS equivalent | Notes |
+| --- | --- | --- |
+| `--color-*` | `--color-*` | Use color tokens with `bg:*`, `fg:*`, `text:*`, border, outline, shadow, and other color-aware utilities. |
+| `--spacing-*` or base spacing | `--spacing-*` and `@settings { base-unit: ...; }` | Use named spacing tokens for product decisions and multiplier units such as `4x` for base-unit spacing. |
+| `--radius-*` | `--radius-*` | Use with `r:*` and border-radius utilities. |
+| `--shadow-*` | `--shadow-*` | Use with `shadow:*` or `box-shadow:*`. |
+| `--font-*`, `--text-*`, `--leading-*`, `--tracking-*` | Font, text, leading, and tracking namespaces | Prefer `text:*` when the complete type treatment should be shared. |
+| `--breakpoint-*` | `--breakpoint-*` | Creates viewport suffixes such as `@md` or `@dashboard`. |
+| `@theme inline` | `@theme inline` | Use when a token is only a utility shorthand and should be written into generated declarations. |
+| `@theme static` | `@theme static` | Use when a token or managed keyframes should be emitted up front. |
+
+Use `@theme light` and `@theme dark` when token values should change by mode.
+
+```css name=app.css
+@import "@master/css";
+
+@settings {
+    mode-trigger: class;
+}
+
+@theme light {
+    --color-panel: #fff;
+    --color-text-body: #111827;
+}
+
+@theme dark {
+    --color-panel: #111827;
+    --color-text-body: #f9fafb;
+}
+```
+
+```html
+<section class="bg:panel text:body">
+    ...
+</section>
+```
+
+Tailwind's default theme and Master CSS's default theme are not the same. Convert custom product tokens first, then review default palette and scale replacements intentionally.
+
+---
+
+## Translate utilities
+Start with explicit Master CSS declarations, then shorten them where the local vocabulary is obvious.
+
+| Tailwind v4 pattern | Master CSS pattern | Notes |
+| --- | --- | --- |
+| `p-6`, `px-4`, `mt-8` | `p:6x`, `px:4x`, `mt:8x` | Multiplier units use the Master CSS `base-unit`. Use named tokens like `p:card` for product spacing. |
+| `-mt-4` | `mt:-4x` | The minus sign belongs to the value. |
+| `w-full`, `h-screen`, `min-w-0` | `w:full`, `h:100vh`, `min-w:0` | Use native values when they read better. |
+| `rounded-lg` | `r:lg` | Radius tokens come from the `radius` namespace. |
+| `bg-blue-600`, `text-white` | `bg:blue-60`, `fg:white` | Master CSS preset color steps differ from Tailwind's default palette. |
+| `text-lg`, `font-semibold`, `leading-7` | `font:lg`, `font:semibold`, `line-height:1.75rem` | Use `text:*` only when the full type treatment is intended. |
+| `flex`, `items-center`, `justify-between` | `flex`, `align-items:center`, `justify-between` | Use built-in semantic utilities or native declaration syntax. |
+| `grid-cols-3`, `gap-4` | `grid-cols:3`, `gap:4x` | Grid column helpers and gap utilities are built in. |
+| Arbitrary value such as `w-[min(100%,72rem)]` | `w:min(100%,72rem)` | Write native CSS function values directly. |
+| Arbitrary property such as `[scroll-margin-top:4rem]` | `scroll-margin-top:4rem` | Master CSS accepts native declaration syntax as a class. |
+| Important modifier such as `!mt-0` | `mt:0!` | The important marker goes at the end of the value. |
+
+Example conversion:
+
+```html
+<section class="w:full max-w:5xl mx:auto px:md py:2xl grid grid-cols:3@md gap:lg">
+    <article class="bg:white r:lg shadow:sm p:lg">
+        <h2 class="m:0 font:2xl font:semibold text:neutral">Account</h2>
+        <p class="mt:xs text:muted">Review profile settings.</p>
+    </article>
+</section>
+```
+
+When a Tailwind class does not have a short Master CSS alias, use the CSS property directly:
+
+```html
+<div class="scroll-margin-top:4rem text-wrap:balance">
+    ...
+</div>
+```
+
+---
+
+## Translate variants and states
+Tailwind writes variants before the utility. Master CSS appends selectors and conditions after the declaration.
+
+| Tailwind v4 pattern | Master CSS pattern | Notes |
+| --- | --- | --- |
+| `hover:bg-blue-700` | `bg:blue-70:hover` | Selector states follow the value. |
+| `focus-visible:outline-2` | `outline:2px:focus-visible` | Use native pseudo-class names when they are clearer. |
+| `disabled:opacity-50` | `opacity:.5:disabled` | Attribute and pseudo-class selectors are supported. |
+| `md:grid-cols-3` | `grid-cols:3@md` | Breakpoint and condition suffixes use `@`. |
+| `dark:bg-slate-950` | `bg:slate-95@dark` | Output depends on `mode-trigger`. |
+| `motion-safe:animate-spin` | `animation:rotate|slowest|linear|infinite@motion` | Built-in motion variants are `@motion` and `@reduce-motion`. |
+| `supports-[backdrop-filter]:...` | `backdrop-filter:blur(12px)@supports(backdrop-filter(0px))` | Use raw `@supports()` for local conditions. |
+| `data-[state=open]:...` | `bg:blue-5[data-state=open]` | Native attribute selectors are appended directly. |
+| `has-[:checked]:...` | `bg:blue-5:has(:checked)` | Native `:has()` is supported. |
+
+```html
+<button class="inline-flex align-items:center px:md h:10x r:md bg:blue-60 fg:white bg:blue-70:hover opacity:.5:disabled">
+    Save
+</button>
+```
+
+Use `@custom-variant` when a Tailwind custom variant represents shared product language.
+
+```css name=app.css
+@import "@master/css";
+
+@custom-variant @compact {
+    @media (width < 48rem) {
+        @slot;
+    }
+}
+
+@custom-variant :interactive {
+    &:is(:hover, :focus-visible) {
+        @slot;
+    }
+}
+```
+
+```html
+<button class="px:sm@compact bg:blue-70:interactive">
+    Save
+</button>
+```
+
+For Tailwind `group-*` and `peer-*` patterns, prefer native selectors when possible. Master CSS can target descendants, children, siblings, attributes, `:has()`, and `:of()`, but it does not implement Tailwind's group and peer variant naming.
+
+```html
+<article class="bg:blue-5:hover_h2">
+    <h2 class="text:neutral">Project</h2>
+</article>
+```
+
+---
+
+## Replace `@apply` with `@compose`
+Tailwind `@apply` inlines Tailwind utilities into a CSS rule. Master CSS uses `@compose` for the same kind of rule-local composition, but the class list must be Master CSS syntax.
+
+```css name=tailwind.css
+.btn {
+    @apply inline-flex items-center gap-2 rounded-md bg-blue-600 px-4 py-2 text-white shadow-sm;
+}
+```
+
+```css name=app.css
+@import "@master/css";
+
+.btn {
+    @compose inline-flex align-items:center gap:xs r:md bg:blue-60 px:md py:xs fg:white shadow:sm;
+}
+```
+
+Use native declarations when the value is clearer than a class:
+
+```css name=app.css
+.form-panel {
+    @compose p:lg r:lg bg:white shadow:sm;
+    border: 1px solid color-mix(in oklab, currentColor 12%, transparent);
+}
+```
+
+Use `@reference` in CSS Modules and framework style blocks when the local stylesheet needs project tokens, components, utilities, or variants without including the app CSS again.
+
+```css name=Button.module.css
+@reference "../app.css";
+
+.button {
+    @compose inline-flex align-items:center px:md h:10x r:md bg:blue-60 fg:white;
+}
+```
+
+Do not quote `@compose` values. Keep quoted strings, complex content values, and unusual selectors as ordinary CSS declarations or nested CSS.
+
+---
+
+## Migrate custom utilities and components
+Tailwind `@utility` creates custom utilities that work with variants. In Master CSS, use `@utilities` for reusable primitives and `@components` for product roles.
+
+```css name=tailwind.css
+@utility content-auto {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 32rem;
+}
+```
+
+```css name=app.css
+@import "@master/css";
+
+@utilities {
+    content-auto {
+        content-visibility: auto;
+        contain-intrinsic-size: auto 32rem;
+    }
+}
+```
+
+```html
+<section class="content-auto">
+    ...
+</section>
+```
+
+Use `@components` when the name describes a product UI role rather than a low-level primitive.
+
+```css name=app.css
+@components {
+    btn {
+        @compose inline-flex align-items:center justify-content:center gap:xs px:md py:xs r:md font:sm font:medium;
+        @compose bg:blue-60 fg:white;
+
+        &:disabled {
+            @compose opacity:.5 pointer-events:none;
+        }
+
+        @variant @md {
+            @compose px:lg;
+        }
+    }
+}
+```
+
+```html
+<button class="btn">
+    Submit
+</button>
+```
+
+Keep complex third-party overrides as native CSS when utility composition would make the rule harder to read.
+
+---
+
+## Handle dynamic classes
+Tailwind and Master CSS static rendering both depend on class names that can be found before the page runs. Complete strings are the safest migration target.
+
+(x) Avoid fragment assembly.
+
+```ts
+const className = 'bg:' + tone
+```
+
+(o) Use complete class maps.
+
+```ts
+const toneClasses = {
+    neutral: 'bg:white text:neutral',
+    success: 'bg:green-60 fg:white',
+    danger: 'bg:red-60 fg:white'
+}
+```
+
+When only the value is dynamic, keep the class static and pass the runtime value through a CSS variable.
+
+```tsx
+function Progress({ value }: { value: number }) {
+    return (
+        <div className="h:4x bg:gray-10 r:full overflow:hidden">
+            <div
+                className="h:full w:$progress bg:blue-60 transition:width|fast|smooth"
+                style={{ '--progress': `${value}%` } as React.CSSProperties}
+            />
+        </div>
+    )
+}
+```
+
+Use `@source` and `@source not` to define the scanner boundary.
+
+```css name=app.css
+@import "@master/css";
+
+@source "src/**/*.{html,js,jsx,ts,tsx,vue,svelte,astro,mdx}";
+@source not "src/**/*.test.tsx";
+@source not "src/**/*.stories.tsx";
+```
+
+Use `@safelist` for bounded classes that do not exist in scanned source, and `@blocklist` for false positives.
+
+```css name=app.css
+@import "@master/css";
+
+@safelist "bg:blue-60 bg:red-60@dark";
+@blocklist "debug-*";
+```
+
+Tailwind `@source inline()` can generate classes from inline strings and brace expansion. Master CSS `@safelist` is explicit: list the classes the project needs.
+
+---
+
+## Validate the migration
+Review each batch as code and UI.
+
+- Run the project's formatter, linter, type check, tests, and production build.
+- Use [Code linting](/guide/code-linting) to validate Master CSS class strings and catch conflicts.
+- Compare migrated pages against the previous Tailwind version in light mode, dark mode, responsive breakpoints, hover/focus states, and print if relevant.
+- Check routes that depended on Tailwind Preflight, default theme values, ring utilities, `container`, official plugins, or group/peer variants.
+- Keep Tailwind loaded until converted pages no longer rely on Tailwind classes or plugin output.
+
+After a batch passes checks, remove only the Tailwind utilities that are no longer used. A gradual migration can keep Tailwind and Master CSS side by side for as long as the product needs.
+
+---
+
+## Remove Tailwind
+Remove Tailwind only after the converted paths build and visually match the intended design.
+
+1. Delete `@import "tailwindcss"` from the app CSS entry.
+2. Remove Tailwind-specific `@theme`, `@utility`, `@custom-variant`, `@variant`, `@apply`, `@source inline()`, and `@plugin` usage that has been replaced.
+3. Remove Tailwind packages and PostCSS or Vite integration code when no stylesheet imports Tailwind.
+4. Run the full project validation suite.
+5. Re-check important pages in the browser.
+
+If a third-party plugin or vendor stylesheet still supplies useful CSS, keep it as regular CSS until there is a product-specific replacement.
+
+---
+
+## Useful references
+- [Installation](/guide/installation) for adding Master CSS to a project.
 - [Rendering modes](/guide/rendering-modes) for choosing static, runtime, or progressive rendering.
 - [Style declarations](/guide/style-declarations) for class syntax.
-- [Customizing your theme](/guide/theme) for tokens and custom variants.
-- [Reusing styles](/guide/reusing-styles) for deciding what should stay in markup or move into CSS.
-- [Code linting](/guide/code-linting) for validating class strings during migration.
+- [Customizing your theme](/guide/theme) for `@theme`, tokens, modes, and custom variants.
+- [CSS directives](/guide/directives) for `@source`, `@safelist`, `@blocklist`, `@compose`, and `@variant`.
+- [Scanning latent classes](/guide/scanning-latent-classes) for static source scanning behavior.
+- [Reusing styles](/guide/reusing-styles) for deciding between markup utilities, theme tokens, custom utilities, and component classes.
+- [Code linting](/guide/code-linting) for validating Master CSS classes during migration.
+
+---
+
+## Tailwind CSS capabilities without a direct Master CSS equivalent
+| Tailwind capability | Master CSS status | Migration path |
+| --- | --- | --- |
+| Tailwind class syntax and drop-in compatibility | Master CSS does not read Tailwind class syntax. | Rewrite classes to Master CSS syntax or keep Tailwind loaded until each area is migrated. |
+| Tailwind CSS plugin loading through `@plugin` | Master CSS does not execute Tailwind plugins. | Recreate needed output with native CSS, `@theme`, `@utilities`, or `@components`; keep plugin CSS temporarily when needed. |
+| Tailwind CSS-first theme resolver behavior | Master CSS has its own token namespaces and utility matching. | Move shared values into Master CSS `@theme` directives and review generated class names. |
+| Tailwind `prefix(...)` | Master CSS has no class-prefix mode. | Use Master CSS syntax directly; use `@settings scope` only when generated selectors should be scoped to an app root. |
+| Tailwind `@source inline()` brace-expansion safelisting | Master CSS does not provide an equivalent brace-expansion directive. | Use explicit `@safelist` entries and complete class strings. |
+| Exact Tailwind Preflight | Master CSS base styles are not Tailwind Preflight. | Compare UI and add native CSS where the project relies on Tailwind reset details. |
+| Official plugin outputs such as typography or forms | Master CSS does not automatically recreate Tailwind plugin CSS. | Keep plugin CSS temporarily or author product-specific components and utilities. |
+| Tailwind `container` utility semantics | Master CSS `container` creates a container-query boundary. | Use `w:full max-w:* mx:auto px:*` for page wrappers and `container` only for container queries. |
+| Tailwind ring utility model | Master CSS does not provide the same ring utility family. | Use `outline:*`, `outline-offset:*`, `box-shadow:*`, or custom utilities. |
+| Tailwind group and peer variant syntax | Master CSS does not implement `group-*` or `peer-*` variants. | Use native selectors, `:has()`, `:of()`, combinators, or `@custom-variant`. |
