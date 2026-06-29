@@ -390,7 +390,7 @@ function isExpectedDiagnostic(candidate: string, file: string): boolean {
         [/guide\/introduction\//, new Set(['font', 'font:'])],
         [/guide\/conditional-queries\//, new Set(['hidden@sm<=h', 'hidden@sm<=h<=lg'])],
         [/guide\/scanning-latent-classes\//, new Set(['card'])],
-        [/guide\/compatibility\//, new Set(['display:banana', 'float:banana'])]
+        [/guide\/compatibility\//, new Set(['field-sizing:banana', 'interpolate-size:banana'])]
     ]
     return diagnosticsByPath.some(([pattern, classes]) => pattern.test(relativePath) && classes.has(candidate))
 }

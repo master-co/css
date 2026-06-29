@@ -18,7 +18,7 @@ The Master CSS engine does not polyfill every CSS feature. It generates CSS from
 
 For example, `bg:red` depends on normal `background-color` support, while `backdrop-filter:blur(16px)` depends on `backdrop-filter` support. Modern features should be checked in [Can I use](https://caniuse.com/) or MDN before relying on them in production.
 
-Property-like classes can also fall back to native CSS declarations. In the browser runtime, Master CSS validates those declarations with `CSS.supports(property, value)`. Static, server, extraction, compiler, validator, and linting workflows use a CSS syntax matcher so invalid declarations such as `display:banana` do not emit CSS. High-frequency native properties such as spacing, sizing, radius, color, and timing still keep curated Master CSS token and unit behavior before this native validation step.
+Property-like classes can also fall back to native CSS declarations. In the browser runtime, Master CSS validates those declarations with `CSS.supports(property, value)`. Static, server, extraction, compiler, validator, and linting workflows use a CSS syntax matcher so invalid declarations such as `interpolate-size:banana` do not emit CSS. High-frequency native properties such as spacing, sizing, radius, color, and timing still keep curated Master CSS token and unit behavior before this native validation step.
 
 Use this rule of thumb:
 
@@ -68,14 +68,14 @@ Master CSS does not need a built-in utility for every platform feature before yo
 Write a property-like class when the declaration is already valid CSS:
 
 ```html
-<!-- @MARK float:left --><!-- @MARK field-sizing:content --><!-- @MARK view-transition-name:card --><!-- @MARK transition-behavior:allow-discrete -->
-<article class="float:left field-sizing:content view-transition-name:card transition-behavior:allow-discrete">…</article>
+<!-- @MARK field-sizing:content --><!-- @MARK interpolate-size:allow-keywords --><!-- @MARK view-transition-name:card --><!-- @MARK transition-behavior:allow-discrete -->
+<article class="field-sizing:content interpolate-size:allow-keywords view-transition-name:card transition-behavior:allow-discrete">…</article>
 ```
 
 <details open>
     <summary>Generated CSS</summary>
     <Class2CSS>
-        {['float:left', 'field-sizing:content', 'view-transition-name:card', 'transition-behavior:allow-discrete']}
+        {['field-sizing:content', 'interpolate-size:allow-keywords', 'view-transition-name:card', 'transition-behavior:allow-discrete']}
     </Class2CSS>
 </details>
 
@@ -113,25 +113,25 @@ This preserves the expected syntax model:
 - `mt:4x` uses a curated alias and emits `margin-top:1rem`.
 - `margin:1rem` writes the native property value as-is and emits `margin:1rem`.
 - `bg:red-60` resolves the theme token and emits `background-color:var(--color-red-60)`.
-- Rare native properties without Master CSS token behavior should use valid CSS values directly, such as `float:left` or `view-transition-name:card`.
-- `display:banana` and `float:banana` are rejected instead of emitted as raw CSS.
+- Rare native properties without Master CSS token behavior should use valid CSS values directly, such as `field-sizing:content` or `interpolate-size:allow-keywords`.
+- `field-sizing:banana` and `interpolate-size:banana` are rejected instead of emitted as raw CSS.
 
 ### Arbitrary properties
-Use direct native declaration syntax first for valid CSS declarations. Use arbitrary property groups only when you need an explicit raw escape hatch, or when several raw declarations should share one selector or query suffix:
+Arbitrary properties do not need `{}`. If the declaration is valid CSS, write it directly with `property:value` syntax:
 
 ```html
-<!-- @MARK {block-size:5rem;inline-size:5rem} -->
-<div class="{block-size:5rem;inline-size:5rem}">…</div>
+<!-- @MARK interpolate-size:allow-keywords --><!-- @MARK scroll-timeline-name:--cards --><!-- @MARK paint-order:stroke|fill -->
+<div class="interpolate-size:allow-keywords scroll-timeline-name:--cards paint-order:stroke|fill">…</div>
 ```
 
 <details>
     <summary>Generated CSS</summary>
     <Class2CSS>
-        {['{block-size:5rem;inline-size:5rem}']}
+        {['interpolate-size:allow-keywords', 'scroll-timeline-name:--cards', 'paint-order:stroke|fill']}
     </Class2CSS>
 </details>
 
-This is intentionally less common than `property:value`. Static tooling may reject the newest CSS grammar until its syntax data catches up, while the browser runtime follows `CSS.supports(property, value)` for direct native declarations.
+Use `{...}` only as an explicit raw escape hatch, or when several raw declarations should share one selector or query suffix. Static tooling may reject the newest CSS grammar until its syntax data catches up, while the browser runtime follows `CSS.supports(property, value)` for direct native declarations.
 
 ### New selectors
 Selector suffixes can use native CSS selector syntax as long as the browser supports the selector.
@@ -224,7 +224,7 @@ When a CSS file imports `@master/css`, it becomes a Master-managed stylesheet. K
 - Check browser support for the generated CSS feature, not just the Master CSS class.
 - Treat native cascade layers as the main browser compatibility boundary for the default stylesheet.
 - Write standard unprefixed properties and selectors when Master CSS already prefixes them.
-- Use native declaration syntax for valid CSS declarations, and arbitrary properties only when you need an explicit raw escape hatch.
+- Use native declaration syntax for valid CSS declarations; reserve `{...}` groups for explicit raw escape hatches or multi-declaration groups.
 - Keep curated Master CSS aliases, tokens, unit conversion, and shorthands ahead of native declaration fallback.
 - Expect browser runtime validation and static validation to occasionally differ for the newest CSS grammar; test experimental declarations in the rendering mode you ship.
 - Put third-party CSS in `defaults` when you want components and utilities to override it.
