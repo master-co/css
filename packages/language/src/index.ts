@@ -1,5 +1,6 @@
 export * from './common'
 export * from './master-css'
+export * from './format-directives'
 export * from './render-semantic-tokens'
 export { default as renderSemanticTokens } from './render-semantic-tokens'
 export { default as languageSettings, type LanguageSettings } from './settings'

@@ -263,6 +263,10 @@ test('manifest contributes TextMate grammar, semantic token scopes, and CSS diag
         'scss',
         'less'
     ]))
+    expect(packageJSON.contributes.configuration.properties['masterCSS.formatDirectives']).toMatchObject({
+        type: 'boolean',
+        default: true
+    })
 })
 
 test('staged extension includes shared TextMate grammar asset', async () => {

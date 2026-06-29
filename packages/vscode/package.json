@@ -183,6 +183,11 @@
                     "type": "boolean",
                     "default": true
                 },
+                "masterCSS.formatDirectives": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Enables Master CSS directive formatting in CSS-family documents."
+                },
                 "masterCSS.embeddedSyntaxHighlighting": {
                     "type": "string",
                     "enum": [

@@ -14,6 +14,7 @@ import { minimatch } from 'minimatch'
 import inspectSyntax from './features/inspect-syntax'
 import renderSyntaxColors from './features/render-syntax-colors'
 import editSyntaxColors from './features/edit-syntax-colors'
+import formatDirectives from './features/format-directives'
 import renderSemanticTokens, { renderSemanticTokensAtPosition } from './features/render-semantic-tokens'
 import suggestSyntax from './features/suggest-syntax'
 import { TextDocument } from 'vscode-languageserver-textdocument'
@@ -63,6 +64,11 @@ export default class CSSLanguageService extends EventEmitter {
     editSyntaxColors(...params: Parameters<typeof editSyntaxColors>) {
         if (this.settings.editSyntaxColors && this.isDocumentAccepted(params[0]))
             return editSyntaxColors?.call(this, ...params)
+    }
+
+    formatDirectives(...params: Parameters<typeof formatDirectives>) {
+        if (this.settings.formatDirectives && this.isDocumentAccepted(params[0]))
+            return formatDirectives?.call(this, ...params)
     }
 
     renderSemanticTokens(...params: Parameters<typeof renderSemanticTokens>) {

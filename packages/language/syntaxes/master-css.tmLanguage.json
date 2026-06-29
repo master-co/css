@@ -871,6 +871,10 @@
                     "name": "support.constant.property-value.master-css"
                 },
                 {
+                    "match": "!(?=[:@_>+~\\s;'\")]|$)",
+                    "name": "keyword.operator.important.css"
+                },
+                {
                     "match": "(?<=:)([_a-zA-Z-][_a-zA-Z0-9-]*)(?=@|\\s|[;'\"])",
                     "name": "entity.other.attribute-name.pseudo-class.master-css"
                 },

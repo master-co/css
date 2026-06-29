@@ -50,6 +50,7 @@ const settings: Settings = {
     inspectSyntax: true,
     renderSyntaxColors: true,
     editSyntaxColors: true,
+    formatDirectives: true,
     embeddedSyntaxHighlighting: 'active'
 }
 
@@ -64,4 +65,5 @@ export declare interface Settings extends LanguageSettings {
     inspectSyntax?: boolean
     renderSyntaxColors?: boolean
     editSyntaxColors?: boolean
+    formatDirectives?: boolean
 }

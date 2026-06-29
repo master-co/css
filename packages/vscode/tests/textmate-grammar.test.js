@@ -327,7 +327,7 @@ test('highlights directive preludes, strings, class lists, and dynamic patterns'
         @theme inline dark {}
         @preserve native;
         @safelist "block fg:red:hover@md";
-        @compose inline-flex fg:primary:hover@md;
+        @compose inline-flex fg:primary:hover@md bg:transparent! bg:transparent!@sm;
         @utilities {
             font:<~font-size|number> {
                 font-size: --value();
@@ -354,6 +354,8 @@ test('highlights directive preludes, strings, class lists, and dynamic patterns'
     expectScope(tokens, 'primary', 'support.constant.property-value.master-css')
     expectScope(tokens, 'hover', 'entity.other.attribute-name.pseudo-class.master-css')
     expectScope(tokens, 'md', 'keyword.control.at-rule.master-css.query')
+    expectScope(tokens, '!', 'keyword.operator.important.css')
+    expectScope(tokens, 'sm', 'keyword.control.at-rule.master-css.query')
     expectScope(tokens, 'font', 'support.type.property-name.master-css')
     expectScope(tokens, '~', 'keyword.operator.master-css')
     expectScope(tokens, 'font-size', 'variable.parameter.master-css')

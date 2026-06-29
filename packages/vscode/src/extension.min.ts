@@ -1,8 +1,8 @@
 import path from 'path'
 import { LanguageClient, LanguageClientOptions, ServerOptions, TransportKind } from 'vscode-languageclient/node'
-import { commands, Disposable, EventEmitter, ExtensionContext, languages, type OutputChannel, Position, ProgressLocation, SemanticTokens, SemanticTokensLegend, TextDocument, window, workspace } from 'vscode'
+import { commands, Disposable, EventEmitter, ExtensionContext, languages, ProgressLocation, Range, SemanticTokens, SemanticTokensLegend, TextEdit, window, workspace, type CancellationToken, type FormattingOptions, type OutputChannel, type Position, type ProviderResult, type TextDocument } from 'vscode'
 import { ACTIVE_SEMANTIC_TOKENS_REQUEST, DOCUMENT_SEMANTIC_TOKENS_REQUEST, settings, type Settings } from '@master/css-language-server'
-import { SEMANTIC_TOKENS_LEGEND } from '@master/css-language'
+import { applyMasterCSSDirectiveFormatEdits, formatMasterCSSDirectives, SEMANTIC_TOKENS_LEGEND } from '@master/css-language'
 import { isCompatibleMasterCSSPackageVersion, resolveMasterCSSWorkspacePackages } from '@master/css-project/workspace'
 
 let client: LanguageClient
@@ -16,6 +16,8 @@ interface LSPSemanticTokens {
 }
 
 const CSS_SEMANTIC_TOKEN_LANGUAGE_IDS = new Set(['css', 'scss', 'less'])
+const CSS_FORMAT_LANGUAGE_IDS = new Set(['css', 'scss', 'less'])
+let formattingDelegationDepth = 0
 
 function getMasterCSSSettings(): Partial<Settings> {
     const configuration = workspace.getConfiguration('masterCSS')
@@ -103,6 +105,83 @@ function isSelectedDocument(document: TextDocument, documentSelector: DocumentSe
 
 function isCSSSemanticTokenDocument(document: TextDocument) {
     return CSS_SEMANTIC_TOKEN_LANGUAGE_IDS.has(document.languageId)
+}
+
+function isCSSFormattingDocument(document: TextDocument) {
+    return CSS_FORMAT_LANGUAGE_IDS.has(document.languageId)
+}
+
+function getFullDocumentRange(document: TextDocument) {
+    const lastLine = document.lineAt(document.lineCount - 1)
+    return new Range(0, 0, lastLine.lineNumber, lastLine.text.length)
+}
+
+function applyTextEdits(document: TextDocument, edits: readonly TextEdit[]) {
+    return [...edits]
+        .sort((a, b) => document.offsetAt(b.range.start) - document.offsetAt(a.range.start))
+        .reduce((text, edit) => {
+            const start = document.offsetAt(edit.range.start)
+            const end = document.offsetAt(edit.range.end)
+            return text.slice(0, start) + edit.newText + text.slice(end)
+        }, document.getText())
+}
+
+function formatDirectiveText(text: string) {
+    return applyMasterCSSDirectiveFormatEdits(text, formatMasterCSSDirectives(text))
+}
+
+function createDirectiveTextEdits(document: TextDocument, range?: Range) {
+    const source = document.getText()
+    const offsetRange = range
+        ? {
+            start: document.offsetAt(range.start),
+            end: document.offsetAt(range.end)
+        }
+        : undefined
+    return formatMasterCSSDirectives(source, { range: offsetRange }).map((edit) => TextEdit.replace(
+        new Range(document.positionAt(edit.start), document.positionAt(edit.end)),
+        edit.newText
+    ))
+}
+
+async function getDelegatedDocumentFormattingEdits(document: TextDocument, options: FormattingOptions) {
+    formattingDelegationDepth++
+    try {
+        return await commands.executeCommand<TextEdit[]>('vscode.executeFormatDocumentProvider', document.uri, options) ?? []
+    } finally {
+        formattingDelegationDepth--
+    }
+}
+
+async function provideDocumentFormattingEdits(
+    document: TextDocument,
+    options: FormattingOptions,
+    token: CancellationToken,
+    next: (document: TextDocument, options: FormattingOptions, token: CancellationToken) => ProviderResult<TextEdit[]>
+): Promise<TextEdit[]> {
+    if (formattingDelegationDepth) return []
+    if (!getMasterCSSSettings().formatDirectives) return []
+    if (!isCSSFormattingDocument(document)) return await next(document, options, token) ?? []
+
+    const delegatedEdits = await getDelegatedDocumentFormattingEdits(document, options)
+    if (token.isCancellationRequested) return []
+    const nativeFormattedText = delegatedEdits.length ? applyTextEdits(document, delegatedEdits) : document.getText()
+    const formattedText = formatDirectiveText(nativeFormattedText)
+    if (formattedText === document.getText()) return []
+    return [TextEdit.replace(getFullDocumentRange(document), formattedText)]
+}
+
+async function provideDocumentRangeFormattingEdits(
+    document: TextDocument,
+    range: Range,
+    options: FormattingOptions,
+    token: CancellationToken,
+    next: (document: TextDocument, range: Range, options: FormattingOptions, token: CancellationToken) => ProviderResult<TextEdit[]>
+): Promise<TextEdit[]> {
+    if (formattingDelegationDepth) return []
+    if (!getMasterCSSSettings().formatDirectives) return []
+    if (!isCSSFormattingDocument(document)) return await next(document, range, options, token) ?? []
+    return createDirectiveTextEdits(document, range)
 }
 
 function createSemanticTokensFeature(client: LanguageClient, clientStarted: Thenable<void>, documentSelector: DocumentSelector) {
@@ -249,6 +328,10 @@ export function activate(context: ExtensionContext) {
         initializationOptions: () => ({
             masterCSS: getMasterCSSSettings()
         }),
+        middleware: {
+            provideDocumentFormattingEdits,
+            provideDocumentRangeFormattingEdits
+        },
         synchronize: {
             // Notify the server about file changes to '.clientrc files contained in the workspace
             fileEvents: workspace.createFileSystemWatcher('**/.clientrc')

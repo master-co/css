@@ -1,4 +1,4 @@
-import { createConnection, TextDocuments, InitializeParams, InitializeResult, WorkspaceFolder, Disposable, Connection, ClientCapabilities, TextDocumentChangeEvent, DidChangeConfigurationParams, HoverParams, CompletionParams, DocumentColorParams, ColorPresentationParams, RemoteConsole, SemanticTokensParams, TextDocumentPositionParams, DiagnosticSeverity, TextDocumentSyncKind, type Diagnostic, type DiagnosticRelatedInformation, type Range, type ServerCapabilities } from 'vscode-languageserver/node'
+import { createConnection, TextDocuments, InitializeParams, InitializeResult, WorkspaceFolder, Disposable, Connection, ClientCapabilities, TextDocumentChangeEvent, DidChangeConfigurationParams, HoverParams, CompletionParams, DocumentColorParams, ColorPresentationParams, DocumentFormattingParams, DocumentRangeFormattingParams, RemoteConsole, SemanticTokensParams, TextDocumentPositionParams, DiagnosticSeverity, TextDocumentSyncKind, type Diagnostic, type DiagnosticRelatedInformation, type Range, type ServerCapabilities, type TextEdit } from 'vscode-languageserver/node'
 import { TextDocument } from 'vscode-languageserver-textdocument'
 import path from 'node:path'
 import { readFile } from 'node:fs/promises'
@@ -67,6 +67,8 @@ const SERVER_CAPABILITIES: ServerCapabilities = {
     },
     colorProvider: true,
     hoverProvider: true,
+    documentFormattingProvider: true,
+    documentRangeFormattingProvider: true,
     semanticTokensProvider: {
         legend: SEMANTIC_TOKENS_LEGEND,
         full: true
@@ -207,6 +209,8 @@ export default class CSSLanguageServer {
             this.connection.onCompletion(this.onCompletion.bind(this)),
             this.connection.onDocumentColor(this.onDocumentColor.bind(this)),
             this.connection.onColorPresentation(this.onColorPresentation.bind(this)),
+            this.connection.onDocumentFormatting(this.onDocumentFormatting.bind(this)),
+            this.connection.onDocumentRangeFormatting(this.onDocumentRangeFormatting.bind(this)),
             this.connection.languages.semanticTokens.on(this.onSemanticTokens.bind(this)),
             this.connection.onRequest(DOCUMENT_SEMANTIC_TOKENS_REQUEST, this.onDocumentSemanticTokens.bind(this)),
             this.connection.onRequest(ACTIVE_SEMANTIC_TOKENS_REQUEST, this.onActiveSemanticTokens.bind(this)),
@@ -240,6 +244,10 @@ export default class CSSLanguageServer {
         }
         if (this.settings?.embeddedSyntaxHighlighting !== 'always') {
             delete capabilities.semanticTokensProvider
+        }
+        if (!this.settings?.formatDirectives) {
+            delete capabilities.documentFormattingProvider
+            delete capabilities.documentRangeFormattingProvider
         }
         return {
             capabilities
@@ -284,14 +292,34 @@ export default class CSSLanguageServer {
         return []
     }
 
+    private getWorkspaceDocument(uri: string) {
+        const workspace = this.findClosestWorkspace(uri)
+        if (!workspace?.languageService) return
+        const document = this.documents.get(uri)
+            ?? workspace.openedTextDocuments.find((document) => document.uri === uri)
+        if (!document) return
+        return {
+            workspace,
+            document
+        }
+    }
+
+    async onDocumentFormatting(params: DocumentFormattingParams): Promise<TextEdit[]> {
+        await this.init()
+        const context = this.getWorkspaceDocument(params.textDocument.uri)
+        return context?.workspace.languageService?.formatDirectives(context.document) ?? []
+    }
+
+    async onDocumentRangeFormatting(params: DocumentRangeFormattingParams): Promise<TextEdit[]> {
+        await this.init()
+        const context = this.getWorkspaceDocument(params.textDocument.uri)
+        return context?.workspace.languageService?.formatDirectives(context.document, params.range) ?? []
+    }
+
     async onSemanticTokens(params: SemanticTokensParams) {
         await this.init()
-        const workspace = this.findClosestWorkspace(params.textDocument.uri)
-        if (workspace?.languageService) {
-            const document = this.documents.get(params.textDocument.uri)
-                ?? workspace.openedTextDocuments.find((document) => document.uri === params.textDocument.uri)
-            if (document) return workspace.languageService.renderSemanticTokens(document) ?? { data: [] }
-        }
+        const context = this.getWorkspaceDocument(params.textDocument.uri)
+        if (context) return context.workspace.languageService?.renderSemanticTokens(context.document) ?? { data: [] }
         return { data: [] }
     }
 
@@ -301,12 +329,8 @@ export default class CSSLanguageServer {
 
     async onActiveSemanticTokens(params: TextDocumentPositionParams) {
         await this.init()
-        const workspace = this.findClosestWorkspace(params.textDocument.uri)
-        if (workspace?.languageService) {
-            const document = this.documents.get(params.textDocument.uri)
-                ?? workspace.openedTextDocuments.find((document) => document.uri === params.textDocument.uri)
-            if (document) return workspace.languageService.renderSemanticTokensAtPosition(document, params.position) ?? { data: [] }
-        }
+        const context = this.getWorkspaceDocument(params.textDocument.uri)
+        if (context) return context.workspace.languageService?.renderSemanticTokensAtPosition(context.document, params.position) ?? { data: [] }
         return { data: [] }
     }
 

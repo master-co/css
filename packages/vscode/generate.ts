@@ -104,6 +104,11 @@ pkg.set('contributes.configuration', {
             'type': 'boolean',
             'default': settings.renderSyntaxColors
         },
+        'masterCSS.formatDirectives': {
+            'type': 'boolean',
+            'default': settings.formatDirectives,
+            'description': 'Enables Master CSS directive formatting in CSS-family documents.'
+        },
         'masterCSS.embeddedSyntaxHighlighting': {
             'type': 'string',
             'enum': ['active', 'always', 'off'],
