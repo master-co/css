@@ -8,9 +8,8 @@ export const { Page, dynamic, revalidate, generateMetadata } = createPage({
     metadata,
     dictionaries,
     categories,
-    noTOC: true,
     icon: 'tailwindcss',
-    categoryLink: '/guide/migration/frameworks',
+    categoryLink: '/guide/migration#frameworks',
     content: import('./content.mdx'),
     Layout,
 })

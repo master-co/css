@@ -1,9 +1,27 @@
-## Quick start [sr-only]
+import brands from 'internal/data/brands'
+
 Migrating a real product to Master CSS is rarely a one-to-one syntax rewrite. The safest path is to let a local AI coding agent inspect the actual project, make small focused changes, and validate each batch against the project’s own checks.
 
 Use this guide with a local coding agent that can read and edit your local repository. Popular options include [Codex App](https://openai.com/codex/), [Claude Code](https://code.claude.com/docs/en/setup), [Cursor](https://cursor.com/download), and [Windsurf / Devin Desktop](https://devin.ai/download).
 
 The prompt below gives the agent enough direction to choose the right Master CSS setup, convert styles where it improves the codebase, and leave existing CSS alone when conversion would make the result harder to maintain.
+
+---
+
+## Frameworks
+Migration guides for common source styling systems.
+
+<IconButtons url="/guide/migration" className="mt:2xl">
+    {[
+        { ...brands['tailwindcss'], disabled: false },
+        { ...brands['css'], disabled: false, path: 'css' },
+        { ...brands['v1'], disabled: false, name: 'Master CSS v1' },
+        { ...brands['styled-components'], disabled: false },
+        { ...brands['bootstrap'], disabled: false, path: 'bootstrap' },
+        { ...brands['emotion'], disabled: false },
+        { ...brands['sass'], disabled: false },
+    ]}
+</IconButtons>
 
 ---
 
