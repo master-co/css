@@ -31,11 +31,11 @@ import VSCodeSvg from '~/site/public/icons/visualstudiocode.svg'
     <Step $row>
         <StepL>
             ### <StepNum />Use a project-aware entry
-            Make sure the project has a CSS entry with `@master entry;`, imports `@master/css`, or declares a Master CSS package dependency in `package.json`. This lets the language service load project variables, components, utilities, and modes.
+            Make sure the project has a CSS entry that imports `@master/css`, or declares a Master CSS package dependency in `package.json`. This lets the language service load project variables, components, utilities, and modes.
         </StepL>
         <StepR>
             ```css name=index.css
-            @master entry;
+            @import '@master/css';
 
             @theme {
                 --color-primary: #4f46e5;

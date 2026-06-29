@@ -87,8 +87,8 @@ The language server creates a root workspace, then `masterCSS.workspaces` contro
 
 With the default `auto` mode, it detects:
 
-- CSS files containing `@master entry;`
 - CSS files importing `@master/css`
+- CSS files containing the lightweight `@master entry;` marker
 - `package.json` files that declare Master CSS package dependencies
 
 Each detected workspace gets its own language service and manifest. In a monorepo, this keeps completions, hover previews, colors, directive diagnostics, and component names aligned with the nearest Master CSS project.
@@ -157,7 +157,7 @@ Run `Master CSS: Restart Language Server` after dependency changes, major worksp
 | Symptom | Fix |
 | --- | --- |
 | Completions do not show inside strings. | Enable `editor.quickSuggestions.strings`. |
-| Project variables, components, or utilities are missing. | Add a CSS entry with `@master entry;`, import `@master/css`, or declare a Master CSS package dependency, then restart the language server. |
+| Project variables, components, or utilities are missing. | Add a CSS entry that imports `@master/css`, or declare a Master CSS package dependency, then restart the language server. |
 | The wrong monorepo package is used. | Set `masterCSS.workspaces` to explicit workspace directories. |
 | Embedded highlighting is too noisy or too quiet. | Change `masterCSS.embeddedSyntaxHighlighting` to `active`, `always`, or `off`. |
 | Color decorators do not appear. | Keep `masterCSS.renderSyntaxColors` enabled and confirm the editor theme supports semantic highlighting. |

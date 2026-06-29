@@ -302,7 +302,7 @@ The CSS entry point is explicit: import `@master/css` from the stylesheet that s
         The integration creates a source scanner with source directives, optional fixed classes, and the project CSS entry graph. During development, integrations use their host watch, HMR, or invalidation system to reset or update this context.
 
         ```css name=index.css
-        @master entry;
+        @import '@master/css';
         @source 'src/**/*.{html,js,jsx,ts,tsx,vue,svelte,astro,md,mdx}';
         ```
     </Step>
@@ -444,7 +444,7 @@ These CSS-first directives are manifest inputs. The compiler lowers tokens, mana
 
 | Artifact | Produced by | Used by | Purpose |
 | --- | --- | --- | --- |
-| CSS entry graph | Project stylesheets with `@master entry;` or `@import '@master/css'` | Compiler, integrations, static renderer | Authoring source for tokens, settings, variants, managed styles, source directives, and native CSS roots. |
+| CSS entry graph | Project stylesheets with `@import '@master/css'` or the lightweight `@master entry;` marker | Compiler, integrations, static renderer | Authoring source for tokens, settings, variants, managed styles, source directives, and native CSS roots. |
 | `MasterCSSManifest` | `@master/css-compiler` and `@master/css-project` | Engine, runtime, server renderer, scanner, linting, language tooling | Shared IR that describes how class names become sorted CSS rules. |
 | `virtual:master-css-manifest` | Official build integrations | Application runtime code and framework providers | ESM module for the canonical project-level manifest discovered from the CSS entry graph. In production runtime builds, this module may import an emitted project manifest JSON asset. |
 | Project manifest JSON asset | Official runtime integrations | `virtual:master-css-manifest` facade and the runtime | Cacheable JSON form of the project manifest. Pure runtime pages can preload it because the runtime needs it before interpreting project classes. |

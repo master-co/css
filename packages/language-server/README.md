@@ -99,4 +99,4 @@ import { settings } from '@master/css-language-server'
 | `verbose` | `boolean` | `false` | Print server logs. |
 | `embeddedSyntaxHighlighting` | `'active' \| 'always' \| 'off'` | `'active'` | Inherited language-service semantic token mode. |
 
-With `workspaces: 'auto'`, the server creates workspaces from CSS files containing `@master entry;` or `@import '@master/css'`, and from `package.json` files that declare Master CSS package dependencies.
+With `workspaces: 'auto'`, the server creates workspaces from CSS files importing `@master/css`, CSS files containing the lightweight `@master entry;` marker, and `package.json` files that declare Master CSS package dependencies.

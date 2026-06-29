@@ -6,14 +6,14 @@ An integration started without finding a project CSS entry in the current projec
 ```txt
 [@master/css.vite] Master CSS entry was not found in /path/to/project.
 Create /path/to/project/index.css and mark it as the project entry, for example:
-  @master entry;
+  @import "@master/css";
   @import "./src/globals.css";
 Master CSS uses this entry graph for integrations, language service, and VS Code. Imported CSS manifest directives participate in the graph.
 ```
 
 Master CSS can still generate utility CSS without a project entry, but integrations and editor tooling use the project CSS entry to compile the shared MasterCSSManifest for tokens, component definitions, animations, and workspace behavior.
 
-`@theme`, `@settings`, `@custom-variant`, and managed definition directives do not have to be written directly in the entry file. They can live in ordinary CSS files such as `src/globals.css` or `app/globals.css`, as long as the entry imports those files with a relative CSS import. The entry itself is recognized by `@master entry;` or `@import '@master/css'`.
+`@theme`, `@settings`, `@custom-variant`, and managed definition directives do not have to be written directly in the entry file. They can live in ordinary CSS files such as `src/globals.css` or `app/globals.css`, as long as the entry imports those files with a relative CSS import. The normal app entry imports `@master/css`; the lightweight `@master entry;` marker is also recognized when a stylesheet intentionally should not load the package stylesheet graph.
 
 ---
 
@@ -23,7 +23,7 @@ Master CSS can still generate utility CSS without a project entry, but integrati
 Create `index.css` at the project root and import your stylesheet entry.
 
 ```css name=index.css
-@master entry;
+@import '@master/css';
 @import './src/globals.css';
 ```
 

@@ -39,7 +39,7 @@ The same scanning model is used by build integrations and by tools that call `@m
 The scanner only sees files inside its source boundary. Configure that boundary with `@source` and `@source not`.
 
 ```css name=index.css
-@master entry;
+@import '@master/css';
 @source 'src/**/*.{html,js,jsx,ts,tsx,vue,svelte,astro,mdx}';
 @source not 'src/**/*.test.tsx';
 @source not 'src/**/*.stories.tsx';
@@ -50,7 +50,7 @@ The scanner only sees files inside its source boundary. Configure that boundary 
 For exact stylesheet directive syntax, see [CSS directives](/guide/directives).
 
 ```css name=index.css
-@master entry;
+@import '@master/css';
 @source 'app/**/*.{ts,tsx,mdx}';
 @source not 'app/**/*.test.tsx';
 ```
@@ -223,7 +223,7 @@ If the class name itself only exists after the page is running, use [runtime ren
 Use `@safelist` for bounded classes that do not exist in scanned source. Common cases include CMS enums, database values, server-rendered fragments, or a third-party widget with a known class contract.
 
 ```css name=index.css
-@master entry;
+@import '@master/css';
 @safelist 'opacity:1 transform:translateY(-5px):hover bg:blue-60@dark';
 ```
 
@@ -232,7 +232,7 @@ Use `@safelist` for bounded classes that do not exist in scanned source. Common 
 Use `@blocklist` when broad scanning finds tokens that look like valid classes but should not generate CSS.
 
 ```css name=index.css
-@master entry;
+@import '@master/css';
 @blocklist 'debug-*';
 @blocklist 'example-token';
 ```

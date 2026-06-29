@@ -24,10 +24,10 @@ Enable suggestions inside strings so utility completions appear in markup, JSX, 
 }
 ```
 
-For project-aware tokens, create a CSS entry that contains `@master entry;` or `@import "@master/css";`, or declare a Master CSS package dependency in the project `package.json`.
+For project-aware tokens, create a CSS entry that imports `@master/css`, or declare a Master CSS package dependency in the project `package.json`.
 
 ```css
-@master entry;
+@import "@master/css";
 
 @theme {
     --color-primary: #4f46e5;
@@ -55,7 +55,8 @@ The default language list covers HTML, PHP, JavaScript, TypeScript, JSX, TSX, CS
 
 `masterCSS.workspaces` defaults to `auto`. In auto mode, the language server always creates a root workspace and also detects:
 
-- CSS files containing `@master entry;` or `@import "@master/css";`
+- CSS files importing `@master/css`
+- CSS files containing the lightweight `@master entry;` marker
 - `package.json` files that declare Master CSS package dependencies such as `@master/css`, `@master/css-runtime`, or official integration packages matching `@master/css*`
 
 Each detected workspace gets its own language service and project manifest. In monorepos, this lets each package use its nearest Master CSS manifest while still keeping the root workspace available.

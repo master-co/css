@@ -4,7 +4,7 @@ CSS directives are Master CSS instructions inside stylesheets. They are read by 
 Directives do not behave like normal CSS rules. Consumed directives are removed from output CSS, while their effects are applied to generated CSS, source scanning, native CSS pruning, or root engine settings.
 
 ```css name=index.css
-@master entry;
+@import "@master/css";
 
 @settings {
     root-size: 16;
@@ -68,7 +68,7 @@ Use `@reference` to load another Master CSS stylesheet as compile-time context w
 Referenced stylesheets can define `@settings`, `@theme`, `@custom-variant`, `@defaults`, `@components`, and `@utilities`. Their definitions are available while compiling the current stylesheet, but their native CSS, generated CSS, and managed class definitions are not emitted just because they were referenced.
 
 ```css name=app.css
-@master entry;
+@import "@master/css";
 
 @components {
     btn {
