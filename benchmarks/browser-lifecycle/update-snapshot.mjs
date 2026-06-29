@@ -122,6 +122,7 @@ const snapshot = {
         label: variant.label,
         limits: variant.limits || []
     })),
+    variantSummaries: report.variants.map(createVariantSummary),
     metrics: getMetrics(metricIds),
     results: scenarios.map((scenario) => ({
         scenarioId: scenario.id,
@@ -216,6 +217,21 @@ function createVariantResult(variantId) {
             progressiveAdopted: createMetricSummary(variantId, 'progressive-adopted'),
             computedStyleValid: createMetricSummary(variantId, 'computed-style-valid')
         }
+    }
+}
+
+function createVariantSummary(variant) {
+    return {
+        variantId: variant.id,
+        fixtureId: variant.fixtureId,
+        adapterId: variant.adapterId,
+        modeId: variant.modeId,
+        scenarioId: variant.scenarioId,
+        detailId: variant.detailId,
+        metrics: Object.fromEntries(metricIds.map((metricId) => [
+            metricId,
+            createMetricSummary(variant.id, metricId)
+        ]))
     }
 }
 
