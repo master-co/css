@@ -295,6 +295,38 @@ export function resolveStyleCSSImportGraph(
     }
 }
 
+export function collectStyleCSSDependencies(
+    file: string,
+    source?: string,
+    projectDir?: string
+) {
+    const dependencies = new Set<string>()
+    const filename = cleanStyleRequest(file)
+    dependencies.add(filename)
+
+    let resolvedSource = source
+    if (resolvedSource === undefined) {
+        try {
+            resolvedSource = readFileSync(filename, 'utf-8')
+        } catch {
+            return [...dependencies]
+        }
+    }
+
+    try {
+        const graph = resolveStyleCSSImportGraph(filename, resolvedSource, projectDir, {
+            expandMasterCSSPackage: false
+        })
+        for (const dependency of graph.dependencies) {
+            dependencies.add(cleanStyleRequest(dependency))
+        }
+    } catch {
+        // Keep the direct file dependency so the next valid edit can rerun the integration.
+    }
+
+    return [...dependencies]
+}
+
 export function removeStyleCSSImports(source: string) {
     return replaceStyleCSSImports(source, '')
 }

@@ -1,6 +1,7 @@
 import type { ModuleNode, Plugin, ViteDevServer } from 'vite'
 import { PluginContext } from '../core'
 import { loadProjectManifest } from '@master/css-project/manifest'
+import { findCSSManifestEntryFiles } from '@master/css-project/entries'
 import { toManifestJSON } from '@master/css-integration/manifest-module'
 import {
     MANIFEST_ASSET_FILE,
@@ -10,11 +11,13 @@ import {
 } from '@master/css-integration/manifest-facade'
 import { RESOLVED_VIRTUAL_MANIFEST_ID, VIRTUAL_MANIFEST_ID } from '../common'
 import { PluginOptions } from '../options'
+import { collectStyleCSSDependencies } from '@master/css-stylesheet'
+import { includesFile } from '../utils/path'
 
-function invalidateManifestModule(module: ModuleNode | undefined, server: ViteDevServer): boolean {
-    if (!module) return false
+function invalidateManifestModule(module: ModuleNode | undefined, server: ViteDevServer): ModuleNode[] {
+    if (!module) return []
     server.moduleGraph.invalidateModule(module)
-    return module.importers.size > 0
+    return [module]
 }
 
 function isProductionBuild(context: PluginContext) {
@@ -61,12 +64,26 @@ export default function ManifestVirtualModulePlugin(
         }
     }
     const loadDefaultManifest = async (pluginContext: { addWatchFile?: (id: string) => void }) => {
-        const result = await loadProjectManifest(context.config?.root)
-        cssManifestDependencies = result.dependencies
-        addServerAllow(result.dependencies)
-        for (const dependency of result.dependencies) {
+        const root = context.config?.root
+        const entries = await findCSSManifestEntryFiles(root)
+        const dependencies = new Set<string>()
+        for (const entry of entries) {
+            for (const dependency of collectStyleCSSDependencies(entry, undefined, root)) {
+                dependencies.add(dependency)
+            }
+        }
+        cssManifestDependencies = [...dependencies]
+        addServerAllow(cssManifestDependencies)
+        for (const dependency of cssManifestDependencies) {
             pluginContext.addWatchFile?.(dependency)
         }
+        const result = await loadProjectManifest(root, { entries })
+        for (const dependency of result.dependencies) {
+            dependencies.add(dependency)
+            pluginContext.addWatchFile?.(dependency)
+        }
+        cssManifestDependencies = [...dependencies]
+        addServerAllow(cssManifestDependencies)
         return result
     }
     return {
@@ -86,22 +103,15 @@ export default function ManifestVirtualModulePlugin(
         },
         async handleHotUpdate({ file, server }) {
             let handled = false
-            let needsFullReload = false
-            if (cssManifestDependencies.includes(file)) {
+            const modules: ModuleNode[] = []
+            if (includesFile(cssManifestDependencies, file)) {
                 handled = true
-                needsFullReload ||= invalidateManifestModule(
+                modules.push(...invalidateManifestModule(
                     server.moduleGraph.getModuleById(RESOLVED_VIRTUAL_MANIFEST_ID),
                     server
-                )
+                ))
             }
-            if (needsFullReload) {
-                server.ws.send({
-                    type: 'full-reload',
-                    path: '*',
-                    triggeredBy: file
-                })
-            }
-            if (handled) return []
+            if (handled) return modules
         }
     }
 }

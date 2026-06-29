@@ -6,10 +6,10 @@ import {
     isMasterCSSPackageStyleFile,
     removeMasterStyleDirectives,
     resolveMasterStyleSource,
-    transformLocalStyleCSS
+    transformLocalStyleCSS,
+    collectStyleCSSDependencies
 } from '@master/css-stylesheet'
 import { loadProjectManifest } from '@master/css-project/manifest'
-import { addStyleCSSDependencies } from './style-dependencies'
 
 interface LoaderContext {
     resourcePath: string
@@ -93,8 +93,11 @@ export default function masterCSSStyleCSSLoader(this: LoaderContext, source: str
         throw new Error('[@master/css.next] Style CSS loader requires an async loader context.')
     }
     const dependencies = shouldAddStyleDependencies(this.resourcePath, source, this.rootContext)
-        ? new Set(addStyleCSSDependencies(this, this.resourcePath, source, this.rootContext))
+        ? new Set(collectStyleCSSDependencies(this.resourcePath, source, this.rootContext))
         : new Set<string>()
+    for (const dependency of dependencies) {
+        this.addDependency?.(dependency)
+    }
     transformStyleSource(this.resourcePath, source, this.rootContext)
         .then((result) => {
             for (const dependency of new Set(result.dependencies)) {

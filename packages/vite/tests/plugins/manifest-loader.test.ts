@@ -1,5 +1,7 @@
 import { describe, expect, it, vi } from 'vitest'
 import path from 'node:path'
+import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
+import { tmpdir } from 'node:os'
 import CSSScanner from '@master/css-scanner'
 import ManifestLoaderPlugin from '../../src/plugins/manifest-loader'
 import { MASTER_CSS_MANIFEST_QUERY } from '@master/css-integration/manifest-module'
@@ -61,6 +63,41 @@ describe('ManifestLoaderPlugin', () => {
         expect(code).toContain('accent')
         expect(code).toContain('#456')
         expect(code).toContain('badge')
+    })
+
+    it('keeps per-file manifest dependencies registered after invalid CSS and recovers on the next run', async () => {
+        const root = mkdtempSync(path.join(tmpdir(), 'master-css-vite-query-manifest-'))
+        const manifestPath = path.join(root, 'theme.css')
+        try {
+            mkdirSync(root, { recursive: true })
+            writeFileSync(manifestPath, [
+                '@components {',
+                '    card { @compose bg:neutral-120; }',
+                '}'
+            ].join('\n'))
+            const context = await createContext(root)
+            const plugin = ManifestLoaderPlugin(context)
+            const resolvedId = toResolvedMasterCSSManifestId(manifestPath)
+            const addWatchFile = vi.fn()
+
+            await expect((plugin.load as any).call({ addWatchFile }, resolvedId))
+                .rejects.toThrow('Invalid @compose class')
+            expect(addWatchFile).toHaveBeenCalledWith(manifestPath)
+            expect(context.config.server.fs.allow).toContain(manifestPath)
+
+            writeFileSync(manifestPath, [
+                '@components {',
+                '    card { @compose block; }',
+                '}'
+            ].join('\n'))
+
+            const code = await (plugin.load as any).call({ addWatchFile: vi.fn() }, resolvedId)
+
+            expect(code).toContain('"card"')
+            expect(code).toContain('display')
+        } finally {
+            rmSync(root, { recursive: true, force: true })
+        }
     })
 
     it('does not resolve unresolved CSS manifest query imports to filesystem fallbacks', async () => {
@@ -131,7 +168,7 @@ describe('ManifestLoaderPlugin', () => {
         expect(code).not.toContain('#456')
     })
 
-    it('full reloads when a per-file CSS manifest module is imported', async () => {
+    it('updates per-file CSS manifest modules through HMR when imported', async () => {
         const context = await createContext()
         const plugin = ManifestLoaderPlugin(context)
         const manifestPath = path.join(FIXTURE_DIR, 'theme.css')
@@ -154,11 +191,7 @@ describe('ManifestLoaderPlugin', () => {
         })
 
         expect(invalidateModule).toHaveBeenCalledWith(module)
-        expect(send).toHaveBeenCalledWith({
-            type: 'full-reload',
-            path: '*',
-            triggeredBy: manifestPath
-        })
-        expect(result).toEqual([])
+        expect(send).not.toHaveBeenCalled()
+        expect(result).toEqual([module])
     })
 })

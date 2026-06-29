@@ -1,6 +1,8 @@
 import type { ModuleNode, Plugin, ViteDevServer } from 'vite'
 import { loadProjectManifest } from '@master/css-project/manifest'
+import { findCSSManifestEntryFiles } from '@master/css-project/entries'
 import {
+    collectStyleCSSDependencies,
     hasLocalStyleDirectives,
     isStyleCSSRequest,
     resolveMasterStyleSource,
@@ -8,11 +10,12 @@ import {
 } from '@master/css-stylesheet'
 import type { PluginContext } from '../core'
 import type { PluginOptions } from '../options'
+import { includesFile } from '../utils/path'
 
 function invalidateModule(module: ModuleNode | undefined, server: ViteDevServer): boolean {
     if (!module) return false
     server.moduleGraph.invalidateModule(module)
-    return module.importers.size > 0
+    return true
 }
 
 export default function LocalComposePlugin(options: PluginOptions, context: PluginContext): Plugin {
@@ -30,12 +33,27 @@ export default function LocalComposePlugin(options: PluginOptions, context: Plug
 
     const loadComposeContext = async (pluginContext: { addWatchFile?: (id: string) => void }) => {
         if (projectManifest) return projectManifest
-        projectManifest = await loadProjectManifest(context.config?.root)
-        projectManifestDependencies = projectManifest.dependencies
-        addServerAllow(projectManifest.dependencies)
-        for (const dependency of projectManifest.dependencies) {
+        const root = context.config?.root
+        const entries = await findCSSManifestEntryFiles(root)
+        const dependencies = new Set<string>()
+        for (const entry of entries) {
+            for (const dependency of collectStyleCSSDependencies(entry, undefined, root)) {
+                dependencies.add(dependency)
+            }
+        }
+        projectManifestDependencies = [...dependencies]
+        addServerAllow(projectManifestDependencies)
+        for (const dependency of projectManifestDependencies) {
             pluginContext.addWatchFile?.(dependency)
         }
+        projectManifest = await loadProjectManifest(root, { entries })
+        for (const dependency of projectManifest.dependencies) {
+            if (dependencies.has(dependency)) continue
+            dependencies.add(dependency)
+            pluginContext.addWatchFile?.(dependency)
+        }
+        projectManifestDependencies = [...dependencies]
+        addServerAllow(projectManifestDependencies)
         return projectManifest
     }
 
@@ -52,6 +70,10 @@ export default function LocalComposePlugin(options: PluginOptions, context: Plug
             if (!hasLocalStyleDirectives(code)) return
             if (resolveMasterStyleSource(id, code, context.config?.root)) return
 
+            const dependencies = new Set(collectStyleCSSDependencies(id, code, context.config?.root))
+            for (const dependency of dependencies) {
+                this.addWatchFile?.(dependency)
+            }
             const manifestResult = await loadComposeContext(this)
             const result = await transformLocalStyleCSS(id, code, {
                 baseManifest: manifestResult.manifest,
@@ -60,6 +82,7 @@ export default function LocalComposePlugin(options: PluginOptions, context: Plug
             if (!result.transformed) return
             localComposeModules.add(id)
             for (const dependency of result.dependencies) {
+                if (dependencies.has(dependency)) continue
                 this.addWatchFile?.(dependency)
             }
             return {
@@ -68,23 +91,15 @@ export default function LocalComposePlugin(options: PluginOptions, context: Plug
             }
         },
         async handleHotUpdate({ file, server }) {
-            if (!projectManifestDependencies.includes(file)) return
+            if (!includesFile(projectManifestDependencies, file)) return
             projectManifest = undefined
             projectManifestDependencies = []
             let handled = false
-            let needsFullReload = false
             for (const moduleId of localComposeModules) {
                 const module = server.moduleGraph.getModuleById(moduleId)
                 handled ||= Boolean(module)
-                needsFullReload ||= invalidateModule(module, server)
+                invalidateModule(module, server)
                 if (module) await server.reloadModule(module)
-            }
-            if (needsFullReload) {
-                server.ws.send({
-                    type: 'full-reload',
-                    path: '*',
-                    triggeredBy: file
-                })
             }
             if (handled) return []
         }

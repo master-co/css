@@ -16,6 +16,7 @@ import {
     createMasterCSSPackageHostSource,
     createExtractedCSS,
     createExtractedCSSResult,
+    collectStyleCSSDependencies,
     getNativeCSS,
     hasPreserveNativeDirective,
     hasMasterStyleEntrypoint,
@@ -94,6 +95,31 @@ describe('style CSS extraction helpers', () => {
         expect(isStyleCSSRequest('/project/src/Button.module.css')).toBe(true)
         expect(isStyleCSSRequest('/project/src/Button.vue?vue&type=style&index=0&lang.css')).toBe(true)
         expect(isMasterStyleSource('.card { @compose block; }')).toBe(false)
+    })
+
+    it('collects best-effort style dependencies from local import graphs', () => {
+        const root = createFixture()
+        const entryPath = join(root, 'app/globals.css')
+        const tokenPath = join(root, 'app/tokens.css')
+        writeFileSync(tokenPath, '@components { card { display: block; } }')
+        writeFileSync(entryPath, '@master entry;\n@import "./tokens.css";')
+
+        expect(collectStyleCSSDependencies(entryPath, undefined, root)).toEqual([
+            entryPath,
+            tokenPath
+        ])
+    })
+
+    it('keeps direct style dependencies when dependency graph resolution fails', () => {
+        const root = createFixture()
+        const entryPath = join(root, 'app/globals.css')
+
+        expect(collectStyleCSSDependencies(entryPath, '@master entry;\n@import "./missing.css";', root)).toEqual([
+            entryPath
+        ])
+        expect(collectStyleCSSDependencies(join(root, 'app/missing.css'), undefined, root)).toEqual([
+            join(root, 'app/missing.css')
+        ])
     })
 
     it('locally lowers @compose using the provided project context', async () => {

@@ -13,7 +13,7 @@ import {
     toVirtualCSSManifestModulePath
 } from '@master/css-integration/node'
 import { toUniversalManifestFacadeModule } from '@master/css-integration/manifest-facade'
-import { addStyleCSSDependencies } from './style-dependencies'
+import { collectStyleCSSDependencies } from '@master/css-stylesheet'
 
 const MASTER_CSS_MANIFEST_IMPORT_PATTERN = /(\bimport\s+(?:[^'"]*?\s+from\s*)?|\bexport\s+[^'"]*?\s+from\s*|\bimport\s*\(\s*)(['"])([^'"]+)\2/g
 
@@ -72,7 +72,10 @@ function writeCSSManifestModule(context: LoaderContext, manifestPath: string) {
     const projectDir = context.getOptions?.().projectDir || context.rootContext || process.cwd()
     const virtualManifestPath = toVirtualCSSManifestModulePath(projectDir, manifestPath)
     const virtualManifestAssetPath = toVirtualCSSManifestAssetPath(projectDir, manifestPath)
-    const dependencies = new Set(addStyleCSSDependencies(context, manifestPath, undefined, projectDir))
+    const dependencies = new Set(collectStyleCSSDependencies(manifestPath, undefined, projectDir))
+    for (const dependency of dependencies) {
+        context.addDependency?.(dependency)
+    }
     const result = loadManifestJSONSync(manifestPath)
     ensureVirtualModulePackageJSONPath(projectDir)
     mkdirSync(dirname(virtualManifestPath), { recursive: true })

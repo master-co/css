@@ -16,11 +16,13 @@ import {
     toInlineManifestModule,
     toUniversalManifestFacadeModule
 } from '@master/css-integration/manifest-facade'
+import { collectStyleCSSDependencies } from '@master/css-stylesheet'
+import { includesFile } from '../utils/path'
 
-function invalidateManifestModule(module: ModuleNode | undefined, server: ViteDevServer): boolean {
-    if (!module) return false
+function invalidateManifestModule(module: ModuleNode | undefined, server: ViteDevServer): ModuleNode[] {
+    if (!module) return []
     server.moduleGraph.invalidateModule(module)
-    return module.importers.size > 0
+    return [module]
 }
 
 function isProductionBuild(context: PluginContext) {
@@ -76,34 +78,34 @@ export default function ManifestLoaderPlugin(context: PluginContext): Plugin {
             if (!isCSSManifestRequest(manifestPath)) {
                 throw new TypeError('Master CSS manifest queries only support CSS entry files.')
             }
-            const result = await loadManifestJSON(manifestPath)
-            for (const dependency of result.dependencies) {
+            const dependencies = new Set(collectStyleCSSDependencies(manifestPath, undefined, context.config?.root))
+            for (const dependency of dependencies) {
                 this.addWatchFile(dependency)
             }
-            watchManifestDependencies(manifestPath, result.dependencies)
+            watchManifestDependencies(manifestPath, [...dependencies])
+            const result = await loadManifestJSON(manifestPath)
+            for (const dependency of result.dependencies) {
+                if (dependencies.has(dependency)) continue
+                dependencies.add(dependency)
+                this.addWatchFile(dependency)
+            }
+            watchManifestDependencies(manifestPath, [...dependencies])
             return createManifestModule(context, this, result.json)
         },
         async handleHotUpdate({ file, server }) {
             let handled = false
-            let needsFullReload = false
+            const modules: ModuleNode[] = []
             const queryManifestPaths = new Set([file])
             for (const [manifestPath, dependencies] of cssManifestDependencies) {
-                if (dependencies.includes(file)) queryManifestPaths.add(manifestPath)
+                if (includesFile(dependencies, file)) queryManifestPaths.add(manifestPath)
             }
             for (const manifestPath of queryManifestPaths) {
                 const queryModule = server.moduleGraph.getModuleById(toResolvedMasterCSSManifestId(manifestPath))
                 if (!queryModule) continue
                 handled = true
-                needsFullReload ||= invalidateManifestModule(queryModule, server)
+                modules.push(...invalidateManifestModule(queryModule, server))
             }
-            if (needsFullReload) {
-                server.ws.send({
-                    type: 'full-reload',
-                    path: '*',
-                    triggeredBy: file
-                })
-            }
-            if (handled) return []
+            if (handled) return modules
         }
     }
 }

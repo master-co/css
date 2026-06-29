@@ -54,6 +54,7 @@ describe('LocalComposePlugin', () => {
             expect(result.code).not.toContain('@compose')
             expect(result.code).not.toContain('master-css-slot')
             expect(addWatchFile).toHaveBeenCalledWith(path.join(root, 'app.css'))
+            expect(addWatchFile).toHaveBeenCalledWith(path.join(root, 'src/Button.module.css'))
         } finally {
             rmSync(root, { recursive: true, force: true })
         }
@@ -117,6 +118,70 @@ describe('LocalComposePlugin', () => {
             expect(result.code).not.toContain('@reference')
             expect(result.code).not.toContain('master-css-slot')
             expect(addWatchFile).toHaveBeenCalledWith(themePath)
+        } finally {
+            rmSync(root, { recursive: true, force: true })
+        }
+    })
+
+    test('keeps local style dependencies registered after invalid @compose and recovers on the next run', async () => {
+        const root = createFixture()
+        try {
+            const context = createContext(root)
+            const plugin = LocalComposePlugin({} as any, context)
+            const modulePath = path.join(root, 'src/Button.module.css')
+            const addWatchFile = vi.fn()
+
+            await expect((plugin as any).transform.call(
+                { addWatchFile },
+                '.button { @compose bg:neutral-120; }',
+                modulePath
+            )).rejects.toThrow('Invalid @compose class')
+            expect(addWatchFile).toHaveBeenCalledWith(modulePath)
+
+            const result = await (plugin as any).transform.call(
+                { addWatchFile: vi.fn() },
+                '.button { @compose block; }',
+                modulePath
+            )
+
+            expect(result.code).toContain('.button{display:block}')
+        } finally {
+            rmSync(root, { recursive: true, force: true })
+        }
+    })
+
+    test('reloads local compose modules without forcing a full reload when project manifest dependencies change', async () => {
+        const root = createFixture()
+        try {
+            const context = createContext(root)
+            const plugin = LocalComposePlugin({} as any, context)
+            const modulePath = path.join(root, 'src/Button.module.css')
+            const module = { id: modulePath }
+            const invalidateModule = vi.fn()
+            const reloadModule = vi.fn(async () => undefined)
+            const send = vi.fn()
+
+            await (plugin as any).transform.call(
+                { addWatchFile: vi.fn() },
+                '.button { @compose brand; }',
+                modulePath
+            )
+            const result = await (plugin as any).handleHotUpdate({
+                file: path.join(root, 'app.css'),
+                server: {
+                    moduleGraph: {
+                        getModuleById: vi.fn((id) => id === modulePath ? module : undefined),
+                        invalidateModule
+                    },
+                    reloadModule,
+                    ws: { send }
+                }
+            })
+
+            expect(invalidateModule).toHaveBeenCalledWith(module)
+            expect(reloadModule).toHaveBeenCalledWith(module)
+            expect(send).not.toHaveBeenCalled()
+            expect(result).toEqual([])
         } finally {
             rmSync(root, { recursive: true, force: true })
         }

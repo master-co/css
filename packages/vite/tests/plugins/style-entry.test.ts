@@ -1,4 +1,4 @@
-import { describe, expect, test } from 'vitest'
+import { describe, expect, test, vi } from 'vitest'
 import StyleEntryPlugin from '../../src/plugins/style-entry'
 import { VIRTUAL_CSS_ID } from '@master/css-integration/style-module'
 import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
@@ -103,6 +103,25 @@ describe('StyleEntryPlugin', () => {
         expect(result.code).not.toBe(SLOT)
         expect(context.virtualCSSImporters).toEqual(new Set(['/project/src/style.css']))
         expect(context.virtualCSSPlaceholderEmitted).toBeUndefined()
+    })
+
+    test('keeps managed style dependencies registered after invalid CSS', async () => {
+        const context = makeContext('serve')
+        const plugin = StyleEntryPlugin({ mode: 'static' } as any, context)
+        const addWatchFile = vi.fn()
+
+        await expect((plugin as any).transform.call(
+            { addWatchFile },
+            [
+                '@master entry;',
+                '@components {',
+                '    card { @compose bg:neutral-120; }',
+                '}'
+            ].join('\n'),
+            '/project/src/style.css'
+        )).rejects.toThrow('Invalid @compose class')
+
+        expect(addWatchFile).toHaveBeenCalledWith('/project/src/style.css')
     })
 
     test('serve transform keeps native imports before generated CSS when @master/css comes first', async () => {

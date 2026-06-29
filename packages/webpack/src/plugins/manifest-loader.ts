@@ -2,7 +2,10 @@ import {
     MASTER_CSS_MANIFEST_QUERY,
     stripMasterCSSManifestQuery
 } from '@master/css-integration/manifest-module'
-import { toBrowserManifestFacadeModule } from '@master/css-integration/manifest-facade'
+import {
+    toBrowserManifestFacadeModule,
+    toInlineManifestModule
+} from '@master/css-integration/manifest-facade'
 import {
     toHashedManifestAssetFileName,
     toVirtualCSSManifestModulePath
@@ -11,6 +14,7 @@ import { loadManifestJSON } from '@master/css-project/manifest'
 import type { Compiler } from 'webpack'
 import type { MasterCSSWebpackContext, WebpackSubPlugin } from '../plugin'
 import { isCSSManifestRequest } from '@master/css-project/entries'
+import { collectStyleCSSDependencies } from '@master/css-stylesheet'
 
 export default function ManifestLoaderPlugin(context: MasterCSSWebpackContext): WebpackSubPlugin {
     return {
@@ -45,17 +49,27 @@ export default function ManifestLoaderPlugin(context: MasterCSSWebpackContext): 
                                     callback(new TypeError('Master CSS manifest queries only support CSS entry files.'))
                                     return
                                 }
+                                const dependencies = new Set(collectStyleCSSDependencies(resolvedPath, undefined, context.cwd))
+                                for (const dependency of dependencies) {
+                                    resolveData.fileDependencies.add(dependency)
+                                }
                                 const result = await loadManifestJSON(resolvedPath)
-                                const assetFileName = toHashedManifestAssetFileName(result.json)
-                                const virtualModuleId = toVirtualCSSManifestModulePath(context.compilerContext, resolvedPath)
-                                context.setManifestJSONAsset(assetFileName, result.json)
-                                context.virtualModule?.writeModule(
-                                    virtualModuleId,
-                                    toBrowserManifestFacadeModule(`__webpack_public_path__ + ${JSON.stringify(assetFileName)}`)
-                                )
                                 for (const dependency of result.dependencies) {
                                     resolveData.fileDependencies.add(dependency)
                                 }
+                                const virtualModuleId = toVirtualCSSManifestModulePath(context.compilerContext, resolvedPath)
+                                let moduleContent: string
+                                if (compiler.options.mode === 'development') {
+                                    moduleContent = toInlineManifestModule(result.json)
+                                } else {
+                                    const assetFileName = toHashedManifestAssetFileName(result.json)
+                                    context.setManifestJSONAsset(assetFileName, result.json)
+                                    moduleContent = toBrowserManifestFacadeModule(`__webpack_public_path__ + ${JSON.stringify(assetFileName)}`)
+                                }
+                                context.virtualModule?.writeModule(
+                                    virtualModuleId,
+                                    moduleContent
+                                )
                                 resolveData.request = virtualModuleId
                                 callback()
                             } catch (error) {

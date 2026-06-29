@@ -1,7 +1,10 @@
 import { CSSScanner, type ScannerOptions } from '@master/css-scanner'
 import type { MasterCSSEmittedGlobals } from '@master/css'
 import { toManifestJSON } from '@master/css-integration/manifest-module'
-import { toBrowserManifestFacadeModule } from '@master/css-integration/manifest-facade'
+import {
+    toBrowserManifestFacadeModule,
+    toInlineManifestModule
+} from '@master/css-integration/manifest-facade'
 import {
     toHashedManifestAssetFileName,
     toVirtualCSSModulePath,
@@ -9,8 +12,10 @@ import {
     toVirtualEmittedGlobalsModulePath
 } from '@master/css-integration/node'
 import { loadProjectManifest } from '@master/css-project/manifest'
+import { findCSSManifestEntryFiles } from '@master/css-project/entries'
 import {
     cleanStyleRequest,
+    collectStyleCSSDependencies,
     createExtractedCSSResult,
     isStyleCSSRequest,
     registerStyleCSSSource as registerStylesheetCSSSource,
@@ -81,6 +86,8 @@ export class MasterCSSPlugin {
     emittedGlobals: MasterCSSEmittedGlobals = {}
     resetReplayChain: Promise<unknown> = Promise.resolve()
     styleCSSSources: StyleCSSSources = new Map()
+    styleCSSDependencyFallbacks = new Map<string, string[]>()
+    development = false
 
     constructor(
         customOptions: ScannerOptions = {},
@@ -157,13 +164,27 @@ export class MasterCSSPlugin {
     }
 
     private async createDefaultManifestModule() {
-        const result = await loadProjectManifest(this.cwd)
+        const entries = await findCSSManifestEntryFiles(this.cwd)
+        const dependencies = new Set<string>()
+        for (const entry of entries) {
+            for (const dependency of collectStyleCSSDependencies(entry, undefined, this.cwd)) {
+                dependencies.add(dependency)
+            }
+        }
+        this.defaultManifestDependencies = [...dependencies]
+
+        const result = await loadProjectManifest(this.cwd, { entries })
         this.scanner.customOptions = {
             ...this.scanner.customOptions,
             manifest: result.manifest
         }
-        this.defaultManifestDependencies = result.dependencies
+        for (const dependency of result.dependencies) {
+            dependencies.add(dependency)
+        }
+        this.defaultManifestDependencies = [...dependencies]
         const json = toManifestJSON(result.manifest)
+        if (this.development) return toInlineManifestModule(json)
+
         const assetFileName = toHashedManifestAssetFileName(json)
         this.manifestJSONAssets.set(assetFileName, json)
         return toBrowserManifestFacadeModule(`__webpack_public_path__ + ${JSON.stringify(assetFileName)}`)
@@ -177,6 +198,7 @@ export class MasterCSSPlugin {
         return [...new Set([
             ...this.defaultManifestDependencies,
             ...Array.from(this.styleCSSSources.values()).flatMap((source) => source.dependencies),
+            ...Array.from(this.styleCSSDependencyFallbacks.values()).flat(),
             ...this.scanner.resetDependencies
         ])]
     }
@@ -238,10 +260,25 @@ export class MasterCSSPlugin {
             if (isGeneratedCSSModulePath(modulePath)) continue
             const source = this.readOriginalStyleSource(modulePath, content)
             if (isStyleCSSRequest(modulePath)) {
-                if (resolveMasterStyleSource(modulePath, source, this.cwd)) {
+                let resolvedStyleSource: ReturnType<typeof resolveMasterStyleSource>
+                try {
+                    resolvedStyleSource = resolveMasterStyleSource(modulePath, source, this.cwd)
+                } catch (error) {
+                    this.styleCSSDependencyFallbacks.set(
+                        cleanStyleRequest(modulePath),
+                        collectStyleCSSDependencies(modulePath, source, this.cwd)
+                    )
+                    throw error
+                }
+                if (resolvedStyleSource) {
+                    this.styleCSSDependencyFallbacks.set(
+                        cleanStyleRequest(modulePath),
+                        collectStyleCSSDependencies(modulePath, source, this.cwd)
+                    )
                     styleEntries.push([modulePath, source])
                 } else {
                     this.styleCSSSources.delete(cleanStyleRequest(modulePath))
+                    this.styleCSSDependencyFallbacks.delete(cleanStyleRequest(modulePath))
                 }
                 continue
             }
@@ -258,6 +295,7 @@ export class MasterCSSPlugin {
 
     private createContext(compiler: Compiler): MasterCSSWebpackContext {
         const compilerContext = compiler.context || this.cwd || process.cwd()
+        this.development = compiler.options.mode === 'development'
         const context: MasterCSSWebpackContext = {
             name: NAME,
             cwd: this.cwd,

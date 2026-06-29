@@ -29,7 +29,12 @@ export default function ManifestVirtualModulePlugin(context: MasterCSSWebpackCon
                                 resolveData.request = context.virtualManifestModuleId
                                 callback()
                             })
-                            .catch((error: Error) => callback(error))
+                            .catch((error: Error) => {
+                                for (const dependency of context.getDefaultManifestDependencyPaths()) {
+                                    resolveData.fileDependencies.add(dependency)
+                                }
+                                callback(error)
+                            })
                         return
                     }
 

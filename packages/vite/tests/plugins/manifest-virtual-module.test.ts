@@ -1,5 +1,7 @@
 import { describe, expect, it, vi } from 'vitest'
 import path from 'node:path'
+import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
+import { tmpdir } from 'node:os'
 import ManifestVirtualModulePlugin from '../../src/plugins/manifest-virtual-module'
 import {
     RESOLVED_VIRTUAL_MANIFEST_ID
@@ -44,6 +46,42 @@ describe('ManifestVirtualModulePlugin', () => {
         expect(viteConfig.server.fs.allow).toContain(buttonManifestPath)
         expect(code).toContain('export default ')
         expect(code).toContain('"version":1')
+    })
+
+    it('keeps default manifest dependencies registered after invalid CSS and recovers on the next run', async () => {
+        const root = mkdtempSync(path.join(tmpdir(), 'master-css-vite-manifest-'))
+        const entryPath = path.join(root, 'app.css')
+        try {
+            mkdirSync(root, { recursive: true })
+            writeFileSync(entryPath, [
+                '@master entry;',
+                '@components {',
+                '    card { @compose bg:neutral-120; }',
+                '}'
+            ].join('\n'))
+            const { context, viteConfig } = createContext(root)
+            const plugin = ManifestVirtualModulePlugin({}, context)
+            const addWatchFile = vi.fn()
+
+            await expect((plugin.load as any).call({ addWatchFile }, RESOLVED_VIRTUAL_MANIFEST_ID))
+                .rejects.toThrow('Invalid @compose class')
+            expect(addWatchFile).toHaveBeenCalledWith(entryPath)
+            expect(viteConfig.server.fs.allow).toContain(entryPath)
+
+            writeFileSync(entryPath, [
+                '@master entry;',
+                '@components {',
+                '    card { @compose block; }',
+                '}'
+            ].join('\n'))
+
+            const code = await (plugin.load as any).call({ addWatchFile: vi.fn() }, RESOLVED_VIRTUAL_MANIFEST_ID)
+
+            expect(code).toContain('"card"')
+            expect(code).toContain('display')
+        } finally {
+            rmSync(root, { recursive: true, force: true })
+        }
     })
 
     it('emits the default manifest as an external JSON asset in production build', async () => {
@@ -122,10 +160,10 @@ describe('ManifestVirtualModulePlugin', () => {
 
         expect(invalidateModule).toHaveBeenCalledWith(module)
         expect(send).not.toHaveBeenCalled()
-        expect(result).toEqual([])
+        expect(result).toEqual([module])
     })
 
-    it('full reloads when the default virtual manifest module is imported', async () => {
+    it('updates the default virtual manifest module through HMR when imported', async () => {
         const root = path.join(FIXTURE_DIR, 'css-only')
         const { context } = createContext(root)
         const plugin = ManifestVirtualModulePlugin({}, context)
@@ -148,12 +186,8 @@ describe('ManifestVirtualModulePlugin', () => {
         })
 
         expect(invalidateModule).toHaveBeenCalledWith(module)
-        expect(send).toHaveBeenCalledWith({
-            type: 'full-reload',
-            path: '*',
-            triggeredBy: manifestEntryPath
-        })
-        expect(result).toEqual([])
+        expect(send).not.toHaveBeenCalled()
+        expect(result).toEqual([module])
     })
 
 })

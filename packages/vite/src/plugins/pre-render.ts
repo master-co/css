@@ -3,12 +3,15 @@ import { PluginContext } from '../core'
 import { render } from '@master/css-server'
 import type { MasterCSSManifest } from '@master/css'
 import { loadProjectManifest } from '@master/css-project/manifest'
+import { findCSSManifestEntryFiles } from '@master/css-project/entries'
 import { PluginOptions } from '../options'
 import { toHashedManifestAssetFileName } from '@master/css-integration/node'
 import {
     MASTER_CSS_HYDRATION_MANIFEST_ASSET_BASE,
     MASTER_CSS_HYDRATION_MANIFEST_FILE_BASENAME
 } from '@master/css-schema/hydration-manifest'
+import { collectStyleCSSDependencies } from '@master/css-stylesheet'
+import { includesFile } from '../utils/path'
 
 const HYDRATION_MANIFEST_ASSET_DIR = '_master-css/hydration'
 
@@ -25,13 +28,28 @@ export default function PreRenderPlugin(options: PluginOptions, context: PluginC
         }
     }
     const loadCSSManifest = async (pluginContext?: { addWatchFile?: (id: string) => void }) => {
-        const result = await loadProjectManifest(context.config?.root)
-        cssManifest = result.manifest
-        cssManifestDependencies = result.dependencies
+        const root = context.config?.root
+        const entries = await findCSSManifestEntryFiles(root)
+        const dependencies = new Set<string>()
+        for (const entry of entries) {
+            for (const dependency of collectStyleCSSDependencies(entry, undefined, root)) {
+                dependencies.add(dependency)
+            }
+        }
+        cssManifestDependencies = [...dependencies]
         addServerAllow(cssManifestDependencies)
         for (const dependency of cssManifestDependencies) {
             pluginContext?.addWatchFile?.(dependency)
         }
+        const result = await loadProjectManifest(root, { entries })
+        cssManifest = result.manifest
+        for (const dependency of result.dependencies) {
+            if (dependencies.has(dependency)) continue
+            dependencies.add(dependency)
+            pluginContext?.addWatchFile?.(dependency)
+        }
+        cssManifestDependencies = [...dependencies]
+        addServerAllow(cssManifestDependencies)
     }
     const toBuildHydrationManifestAssetFileName = (fileName: string) => {
         const assetsDir = context.config?.build.assetsDir || 'assets'
@@ -75,7 +93,7 @@ export default function PreRenderPlugin(options: PluginOptions, context: PluginC
             await loadCSSManifest(this)
         },
         async handleHotUpdate({ file }) {
-            if (!enabled || !cssManifestDependencies.includes(file)) return
+            if (!enabled || !includesFile(cssManifestDependencies, file)) return
             await loadCSSManifest()
         },
         configureServer(server) {

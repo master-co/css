@@ -22,6 +22,7 @@ import { VIRTUAL_MANIFEST_ID, MASTER_CSS_MANIFEST_QUERY } from '@master/css-inte
 import { VIRTUAL_CSS_ID } from '@master/css-integration/style-module'
 import { VIRTUAL_EMITTED_GLOBALS_ID } from '@master/css-integration/emitted-globals-module'
 import { transformStyleSource } from '../src/utils/transform-style-source'
+import masterCSSStyleCSSLoader from '../src/style-css-loader'
 import path from 'node:path'
 import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
@@ -33,6 +34,7 @@ import { tmpdir } from 'node:os'
 function makeFakeCompiler(options: {
     context?: string
     modifiedFiles?: Set<string>
+    mode?: 'development' | 'production' | 'none'
 } = {}) {
     const compilation = {
         fileDependencies: new Set<string>(),
@@ -54,6 +56,7 @@ function makeFakeCompiler(options: {
         context: options.context || process.cwd(),
         modifiedFiles: options.modifiedFiles,
         options: {
+            mode: options.mode,
             module: {
                 rules: []
             }
@@ -111,6 +114,27 @@ function makePlugin(options: Record<string, unknown> = {}, cwd = process.cwd()) 
     // webpack-virtual-modules pokes at compiler.webpack internals; stub
     // its apply() so we don't have to spin a real webpack here.
     return plugin
+}
+
+function runStyleCSSLoader(root: string, resourcePath: string, source: string) {
+    const dependencies: string[] = []
+    return new Promise<string>((resolve, reject) => {
+        masterCSSStyleCSSLoader.call({
+            resourcePath,
+            rootContext: root,
+            addDependency: (dependency) => dependencies.push(dependency),
+            getOptions: () => ({}),
+            async: () => (error, content) => {
+                if (error) {
+                    const loaderError = error as Error & { dependencies?: string[] }
+                    loaderError.dependencies = dependencies
+                    reject(loaderError)
+                } else {
+                    resolve(content || '')
+                }
+            }
+        }, source)
+    }).then((content) => ({ content, dependencies }))
 }
 
 describe('MasterCSSPlugin (C1 race fix)', () => {
@@ -197,6 +221,29 @@ describe('MasterCSSPlugin (C1 race fix)', () => {
         }
     })
 
+    test('style loader keeps local style dependencies registered after invalid @compose', async () => {
+        const root = mkdtempSync(path.join(tmpdir(), 'master-css-webpack-loader-invalid-'))
+        const modulePath = path.join(root, 'Button.module.css')
+        try {
+            let error: Error & { dependencies?: string[] } | undefined
+            try {
+                await runStyleCSSLoader(root, modulePath, '.button { @compose bg:neutral-120; }')
+            } catch (caught) {
+                error = caught as Error & { dependencies?: string[] }
+            }
+
+            expect(error).toBeInstanceOf(Error)
+            expect(error?.message).toContain('Invalid @compose class')
+            expect(error?.dependencies).toContain(modulePath)
+
+            const result = await runStyleCSSLoader(root, modulePath, '.button { @compose block; }')
+            expect(result.content).toContain('.button{display:block}')
+            expect(result.dependencies).toContain(modulePath)
+        } finally {
+            rmSync(root, { recursive: true, force: true })
+        }
+    })
+
     test('locally lowers explicit @reference CSS Modules and reports reference dependencies', async () => {
         const root = mkdtempSync(path.join(tmpdir(), 'master-css-webpack-reference-'))
         const modulePath = path.join(root, 'Button.module.css')
@@ -276,6 +323,73 @@ describe('MasterCSSPlugin (C1 race fix)', () => {
             .toContain('"version":1')
     })
 
+    test('resolves virtual:master-css-manifest to an inline module in development', async () => {
+        const root = path.resolve(__dirname, 'fixtures/manifest-virtual-module/css-only')
+        const plugin = makePlugin({}, root)
+        const { compiler } = makeFakeCompiler({ context: root, mode: 'development' })
+        ;(compiler as any).webpack = { sources: { RawSource: function NoopSource(this: object) { /* stub */ } } }
+        plugin.apply(compiler as any)
+
+        const normalModuleFactory = makeNormalModuleFactory()
+        compiler.hooks.normalModuleFactory.call(normalModuleFactory)
+        const resolveData = {
+            request: VIRTUAL_MANIFEST_ID,
+            context: root,
+            contextInfo: {},
+            fileDependencies: new Set<string>()
+        }
+
+        await resolveBefore(normalModuleFactory, resolveData)
+
+        expect((compiler.inputFileSystem._writeVirtualFile as any).mock.calls.at(-1)?.[2])
+            .toMatch(/^export default \{"version":1/)
+        expect((compiler.inputFileSystem._writeVirtualFile as any).mock.calls.at(-1)?.[2])
+            .not.toContain('loadMasterCSSManifestModule')
+        expect([...(plugin as any).manifestJSONAssets.values()]).toEqual([])
+    })
+
+    test('keeps virtual manifest file dependencies after invalid CSS', async () => {
+        const root = mkdtempSync(path.join(tmpdir(), 'master-css-webpack-invalid-manifest-'))
+        const entryPath = path.join(root, 'app.css')
+        try {
+            writeFileSync(entryPath, [
+                '@master entry;',
+                '@components {',
+                '  card { @compose bg:neutral-120; }',
+                '}'
+            ].join('\n'))
+            const plugin = makePlugin({}, root)
+            const { compiler } = makeFakeCompiler({ context: root })
+            ;(compiler as any).webpack = { sources: { RawSource: function NoopSource(this: object) { /* stub */ } } }
+            plugin.apply(compiler as any)
+
+            const normalModuleFactory = makeNormalModuleFactory()
+            compiler.hooks.normalModuleFactory.call(normalModuleFactory)
+            const resolveData = {
+                request: VIRTUAL_MANIFEST_ID,
+                context: root,
+                contextInfo: {},
+                fileDependencies: new Set<string>()
+            }
+
+            await expect(resolveBefore(normalModuleFactory, resolveData)).rejects.toThrow('Invalid @compose class')
+            expect(resolveData.fileDependencies.has(entryPath)).toBe(true)
+
+            writeFileSync(entryPath, [
+                '@master entry;',
+                '@components {',
+                '  card { @compose block; }',
+                '}'
+            ].join('\n'))
+
+            await resolveBefore(normalModuleFactory, resolveData)
+            expect((compiler.inputFileSystem._writeVirtualFile as any).mock.calls.at(-1)?.[2])
+                .toContain('masterCSSManifestURL')
+        } finally {
+            rmSync(root, { recursive: true, force: true })
+        }
+    })
+
     test('resolves virtual:master-css-emitted-globals to a JS virtual module', async () => {
         const plugin = new MasterCSSPlugin()
         const { compiler } = makeFakeCompiler()
@@ -327,6 +441,70 @@ describe('MasterCSSPlugin (C1 race fix)', () => {
             .toContain('accent')
         expect([...(plugin as any).manifestJSONAssets.values()].at(-1))
             .toContain('#456')
+    })
+
+    test('resolves ?master-css-manifest imports to inline modules in development', async () => {
+        const fixturePath = path.resolve(__dirname, 'fixtures/manifest-virtual-module/theme.css')
+        const plugin = makePlugin()
+        const { compiler } = makeFakeCompiler({ mode: 'development' })
+        ;(compiler as any).webpack = { sources: { RawSource: function NoopSource(this: object) { /* stub */ } } }
+        plugin.apply(compiler as any)
+
+        const normalModuleFactory = makeNormalModuleFactory(fixturePath)
+        compiler.hooks.normalModuleFactory.call(normalModuleFactory)
+        const resolveData = {
+            request: './theme.css' + MASTER_CSS_MANIFEST_QUERY,
+            context: path.dirname(fixturePath),
+            contextInfo: {},
+            fileDependencies: new Set<string>()
+        }
+
+        await resolveBefore(normalModuleFactory, resolveData)
+
+        expect((compiler.inputFileSystem._writeVirtualFile as any).mock.calls.at(-1)?.[2])
+            .toMatch(/^export default \{"version":1/)
+        expect((compiler.inputFileSystem._writeVirtualFile as any).mock.calls.at(-1)?.[2])
+            .toContain('#456')
+        expect([...(plugin as any).manifestJSONAssets.values()]).toEqual([])
+    })
+
+    test('keeps ?master-css-manifest file dependencies after invalid CSS', async () => {
+        const root = mkdtempSync(path.join(tmpdir(), 'master-css-webpack-invalid-query-manifest-'))
+        const manifestPath = path.join(root, 'theme.css')
+        try {
+            writeFileSync(manifestPath, [
+                '@components {',
+                '  card { @compose bg:neutral-120; }',
+                '}'
+            ].join('\n'))
+            const plugin = makePlugin({}, root)
+            const { compiler } = makeFakeCompiler({ context: root })
+            ;(compiler as any).webpack = { sources: { RawSource: function NoopSource(this: object) { /* stub */ } } }
+            plugin.apply(compiler as any)
+
+            const normalModuleFactory = makeNormalModuleFactory(manifestPath)
+            compiler.hooks.normalModuleFactory.call(normalModuleFactory)
+            const resolveData = {
+                request: './theme.css' + MASTER_CSS_MANIFEST_QUERY,
+                context: root,
+                contextInfo: {},
+                fileDependencies: new Set<string>()
+            }
+
+            await expect(resolveBefore(normalModuleFactory, resolveData)).rejects.toThrow('Invalid @compose class')
+            expect(resolveData.fileDependencies.has(manifestPath)).toBe(true)
+
+            writeFileSync(manifestPath, [
+                '@components {',
+                '  card { @compose block; }',
+                '}'
+            ].join('\n'))
+
+            await resolveBefore(normalModuleFactory, resolveData)
+            expect(resolveData.request).toContain('.manifest.js')
+        } finally {
+            rmSync(root, { recursive: true, force: true })
+        }
     })
 
     test('resolves virtual CSS module imports to the generated CSS virtual module', async () => {
@@ -547,6 +725,38 @@ describe('MasterCSSPlugin (C1 race fix)', () => {
             expect(css).not.toContain('.root-unused')
             expect(css).toMatch(/--color-primary:(rgb\(18 52 86\)|#123456)/)
             expect(css).toMatch(/\.btn\s*\{\s*display:\s*grid;?\s*\}/)
+        } finally {
+            rmSync(root, { recursive: true, force: true })
+        }
+    })
+
+    test('keeps managed CSS fallback reset dependencies after failed style registration', async () => {
+        const root = mkdtempSync(path.join(tmpdir(), 'master-css-webpack-style-invalid-'))
+        const entryPath = path.join(root, 'app.css')
+        try {
+            const source = [
+                '@master entry;',
+                '@components {',
+                '  card { @compose bg:neutral-120; }',
+                '}'
+            ].join('\n')
+            writeFileSync(entryPath, source)
+            const plugin = await new MasterCSSPlugin({ verbose: 0 }, root).init()
+
+            await expect((plugin as any).processModuleContents([[entryPath, source]], () => false))
+                .rejects.toThrow('Invalid @compose class')
+
+            expect((plugin as any).getResetDependencyPaths()).toContain(entryPath)
+
+            const validSource = [
+                '@master entry;',
+                '@components {',
+                '  card { display: block; }',
+                '}'
+            ].join('\n')
+            writeFileSync(entryPath, validSource)
+            await (plugin as any).processModuleContents([[entryPath, validSource]], () => false)
+            expect((plugin as any).styleCSSSources.get(entryPath)?.dependencies).toContain(entryPath)
         } finally {
             rmSync(root, { recursive: true, force: true })
         }

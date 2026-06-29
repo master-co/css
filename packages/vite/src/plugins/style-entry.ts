@@ -4,6 +4,7 @@ import type { PluginContext } from '../core'
 import type { PluginOptions } from '../options'
 import getExtractedCSS from '../utils/extracted-css'
 import {
+    collectStyleCSSDependencies,
     createStyleCSSHostSource,
     isMasterCSSPackageStyleFile,
     isStyleCSSRequest,
@@ -40,7 +41,23 @@ export default function StyleEntryPlugin(_options: PluginOptions, context: Plugi
         async transform(code, id) {
             if (id.startsWith('\0')) return
             if (!isStyleCSSRequest(id)) return
-            if (!resolveMasterStyleSource(id, code, context.config?.root)) return
+            const dependencies = new Set<string>()
+            let resolvedStyleSource: ReturnType<typeof resolveMasterStyleSource>
+            try {
+                resolvedStyleSource = resolveMasterStyleSource(id, code, context.config?.root)
+            } catch (error) {
+                for (const dependency of collectStyleCSSDependencies(id, code, context.config?.root)) {
+                    dependencies.add(dependency)
+                    this.addWatchFile?.(dependency)
+                }
+                throw error
+            }
+            if (!resolvedStyleSource) return
+
+            for (const dependency of collectStyleCSSDependencies(id, code, context.config?.root)) {
+                dependencies.add(dependency)
+                this.addWatchFile?.(dependency)
+            }
 
             if (isMasterCSSPackageStyleFile(id, context.config?.root)) {
                 return {
@@ -51,6 +68,7 @@ export default function StyleEntryPlugin(_options: PluginOptions, context: Plugi
 
             const result = await registerStyleCSSSource(context, id, code)
             for (const dependency of result.dependencies) {
+                if (dependencies.has(dependency)) continue
                 this.addWatchFile?.(dependency)
             }
 

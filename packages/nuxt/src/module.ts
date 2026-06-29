@@ -1,5 +1,5 @@
 import { defineNuxtModule, addServerPlugin, createResolver, addPlugin, setGlobalHead } from '@nuxt/kit'
-import { mkdirSync, writeFileSync } from 'node:fs'
+import { mkdirSync, realpathSync, writeFileSync } from 'node:fs'
 import { dirname, resolve as resolvePath } from 'node:path'
 import { pathToFileURL } from 'node:url'
 import { name } from '../package.json'
@@ -7,11 +7,13 @@ import masterCSS from '@master/css.vue/vite'
 import { VIRTUAL_MANIFEST_ID } from '@master/css-integration/manifest-module'
 import {
     toBrowserManifestFacadeModule,
-    toNodeManifestFacadeModule
+    toInlineManifestModule
 } from '@master/css-integration/manifest-facade'
 import { toHashedManifestAssetFileName } from '@master/css-integration/node'
 import { loadProjectManifestJSON } from '@master/css-project/manifest'
-import type { Plugin } from 'vite'
+import { findCSSManifestEntryFiles } from '@master/css-project/entries'
+import { collectStyleCSSDependencies } from '@master/css-stylesheet'
+import type { ModuleNode, Plugin } from 'vite'
 import defaultOptions, { type ModuleOptions } from './options'
 
 const MASTER_CSS_RUNTIME_STYLE_ID = 'master-css'
@@ -71,6 +73,19 @@ function escapeAttributeValue(value: string) {
         .replace(/"/g, '&quot;')
 }
 
+function normalizeFilePath(file: string) {
+    try {
+        return realpathSync.native(file).replace(/\\/g, '/')
+    } catch {
+        return resolvePath(file).replace(/\\/g, '/')
+    }
+}
+
+function includesFile(dependencies: string[], file: string) {
+    const normalizedFile = normalizeFilePath(file)
+    return dependencies.some((dependency) => normalizeFilePath(dependency) === normalizedFile)
+}
+
 function createHydrationManifestScriptPattern(flags: string) {
     return new RegExp(
         String.raw`<script\b(?=[^>]*\bid=(["'])${escapeRegExp(MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID)}\1)[^>]*>([\s\S]*?)<\/script>`,
@@ -120,18 +135,70 @@ function toManifestPreloadHeadLink(href: string) {
     }
 }
 
-function RuntimeManifestVirtualModulePlugin(publicManifestHref: string): Plugin {
+function toNodeManifestReadFileModule(urlExpression: string) {
+    return [
+        `import { readFile } from 'node:fs/promises';`,
+        `import { fileURLToPath } from 'node:url';`,
+        ``,
+        `const masterCSSManifestURL = ${urlExpression};`,
+        `const masterCSSManifestFile = fileURLToPath(new URL(masterCSSManifestURL, import.meta.url));`,
+        `export default JSON.parse(await readFile(masterCSSManifestFile, 'utf8'));`,
+        ``
+    ].join('\n')
+}
+
+function invalidateManifestModule(module: ModuleNode | undefined, server: { moduleGraph: { invalidateModule(module: ModuleNode): void } }) {
+    if (!module) return []
+    server.moduleGraph.invalidateModule(module)
+    return [module]
+}
+
+function RuntimeManifestVirtualModulePlugin(publicManifestHref: string, projectDir: string): Plugin {
     const resolvedManifestId = `\0${VIRTUAL_MANIFEST_ID}`
+    let command: string | undefined
+    let cssManifestDependencies: string[] = []
+    const loadInlineManifest = async (pluginContext?: { addWatchFile?: (id: string) => void }) => {
+        const entries = await findCSSManifestEntryFiles(projectDir)
+        const dependencies = new Set<string>()
+        for (const entry of entries) {
+            for (const dependency of collectStyleCSSDependencies(entry, undefined, projectDir)) {
+                dependencies.add(dependency)
+            }
+        }
+        cssManifestDependencies = [...dependencies]
+        for (const dependency of cssManifestDependencies) {
+            pluginContext?.addWatchFile?.(dependency)
+        }
+        const result = await loadProjectManifestJSON(projectDir, { entries })
+        for (const dependency of result.dependencies) {
+            if (dependencies.has(dependency)) continue
+            dependencies.add(dependency)
+            pluginContext?.addWatchFile?.(dependency)
+        }
+        cssManifestDependencies = [...dependencies]
+        return result.json
+    }
     return {
         name: 'master-css:nuxt-runtime-manifest',
         enforce: 'pre',
+        configResolved(config) {
+            command = config.command
+        },
         resolveId(id) {
             if (id === VIRTUAL_MANIFEST_ID) return resolvedManifestId
         },
-        load(id) {
+        async load(id) {
             if (id === resolvedManifestId) {
+                if (command === 'serve') {
+                    return toInlineManifestModule(await loadInlineManifest(this))
+                }
                 return toBrowserManifestFacadeModule(JSON.stringify(publicManifestHref))
             }
+        },
+        handleHotUpdate({ file, server }) {
+            if (command !== 'serve' || !includesFile(cssManifestDependencies, file)) return
+            const module = server.moduleGraph.getModuleById(resolvedManifestId)
+            return invalidateManifestModule(module, server)
         }
     }
 }
@@ -164,7 +231,18 @@ export default defineNuxtModule<ModuleOptions>({
         options = { ...defaultOptions, ...options }
         if (!nuxt.options.ssr || nuxt.options._prepare) return
         const { resolve } = createResolver(import.meta.url)
-        const manifestResult = await loadProjectManifestJSON(nuxt.options.rootDir)
+        const manifestEntries = await findCSSManifestEntryFiles(nuxt.options.rootDir)
+        let manifestDependencies = [...new Set(manifestEntries.flatMap((entry) =>
+            collectStyleCSSDependencies(entry, undefined, nuxt.options.rootDir)
+        ))]
+        nuxt.hook('nitro:config', async (config) => {
+            addNitroWatchDependencies(config, manifestDependencies)
+        })
+        const manifestResult = await loadProjectManifestJSON(nuxt.options.rootDir, { entries: manifestEntries })
+        manifestDependencies = [...new Set([
+            ...manifestDependencies,
+            ...manifestResult.dependencies
+        ])]
         const manifestFileName = toHashedManifestAssetFileName(manifestResult.json)
         const manifestDir = resolvePath(nuxt.options.rootDir, 'node_modules', '.master-css', 'manifest')
         const manifestAssetPath = resolvePath(manifestDir, manifestFileName)
@@ -185,10 +263,10 @@ export default defineNuxtModule<ModuleOptions>({
             })
         }
         nuxt.hook('nitro:config', async (config) => {
-            addNitroWatchDependencies(config, manifestResult.dependencies)
+            addNitroWatchDependencies(config, manifestDependencies)
             ensureManifestAsset()
             config.virtual ??= {}
-            config.virtual[VIRTUAL_MANIFEST_ID] = toNodeManifestFacadeModule(
+            config.virtual[VIRTUAL_MANIFEST_ID] = toNodeManifestReadFileModule(
                 `new URL(${JSON.stringify(pathToFileURL(manifestAssetPath).href)})`
             )
             if (options.mode === 'runtime' && options.injectRuntime) {
@@ -199,7 +277,7 @@ export default defineNuxtModule<ModuleOptions>({
             nuxt.hook('vite:extendConfig', (viteConfig) => {
                 viteConfig.plugins = viteConfig.plugins || []
                 if (options.mode === 'runtime' && options.injectRuntime && mode === null) {
-                    viteConfig.plugins.push(RuntimeManifestVirtualModulePlugin(publicManifestHref))
+                    viteConfig.plugins.push(RuntimeManifestVirtualModulePlugin(publicManifestHref, nuxt.options.rootDir))
                 }
                 viteConfig.plugins.push(masterCSS({ ...options, mode }) as unknown as Plugin)
             })

@@ -8,7 +8,7 @@ import {
     toInlineManifestModule,
     toUniversalManifestFacadeModule
 } from '@master/css-integration/manifest-facade'
-import { addStyleCSSDependencies } from './style-dependencies'
+import { collectStyleCSSDependencies } from '@master/css-stylesheet'
 
 interface LoaderContext {
     resourcePath: string
@@ -55,8 +55,9 @@ async function loadVirtualManifestJSON(context: LoaderContext) {
     const entries = await findCSSManifestEntryFiles(projectDir)
     const dependencies = new Set<string>()
     for (const entry of entries) {
-        for (const dependency of addStyleCSSDependencies(context, entry, undefined, projectDir)) {
+        for (const dependency of collectStyleCSSDependencies(entry, undefined, projectDir)) {
             dependencies.add(dependency)
+            context.addDependency?.(dependency)
         }
     }
     const result = await loadProjectManifestJSON(projectDir, { entries })
@@ -72,7 +73,10 @@ function loadCSSManifestJSON(context: LoaderContext) {
     if (!isCSSManifestRequest(resourcePath)) {
         throw new TypeError('Master CSS manifest queries only support CSS entry files.')
     }
-    const dependencies = new Set(addStyleCSSDependencies(context, resourcePath, undefined, context.rootContext))
+    const dependencies = new Set(collectStyleCSSDependencies(resourcePath, undefined, context.rootContext))
+    for (const dependency of dependencies) {
+        context.addDependency?.(dependency)
+    }
     const result = loadManifestJSONSync(resourcePath)
     for (const dependency of result.dependencies) {
         if (dependencies.has(dependency)) continue
