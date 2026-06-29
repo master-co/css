@@ -15,9 +15,6 @@ Directives do not behave like normal CSS rules. Consumed directives are removed 
     important: false;
 }
 
-@source "src/**/*.{html,js,jsx,ts,tsx,vue,svelte,astro,mdx}";
-@source not "src/**/*.test.tsx";
-
 @reference "./theme.css";
 
 @safelist "opacity:1 bg:blue-60@dark";
@@ -327,20 +324,20 @@ For abstraction guidance, see [Reusing styles](/guide/reusing-styles).
 ---
 
 ## Source boundaries
-Use `@source` directives to describe which files the scanner should scan.
+Integrations and CLI flows scan ordinary project sources with defaults. Use `@source` directives only when the stylesheet needs an explicit source exception, such as external content, shared workspace source, or a scoped native CSS pruning root.
 
 ### `@source`
 Adds files that may contain classes to the stylesheet source set.
 
 ```css
-@source "src/**/*.{html,js,jsx,ts,tsx,vue,svelte,astro,mdx}";
+@source "../content/**/*.mdx";
 ```
 
 ### `@source not`
-Removes noisy files such as tests, generated output, or vendor code from the stylesheet source set.
+Removes files from the stylesheet source set.
 
 ```css
-@source not "src/**/*.test.tsx";
+@source not "../content/drafts/**";
 ```
 
 Multiple source directives are evaluated as one include set minus one exclude set:
@@ -349,14 +346,14 @@ Multiple source directives are evaluated as one include set minus one exclude se
 (@source A ∪ @source B ∪ @source C) - (@source not X ∪ @source not Y)
 ```
 
-For example, these directives scan files matched by `app/**/*.tsx` or `components/**/*.tsx`, then remove files matched by either `**/*.test.tsx` or `**/*.stories.tsx`:
+For example, these directives scan content files and a shared UI package, then remove draft content and Storybook files:
 
 ```css
-@source "app/**/*.tsx";
-@source "components/**/*.tsx";
+@source "../content/**/*.mdx";
+@source "../packages/ui/**/*.{ts,tsx}";
 
-@source not "**/*.test.tsx";
-@source not "**/*.stories.tsx";
+@source not "../content/drafts/**";
+@source not "../packages/ui/**/*.stories.tsx";
 ```
 
 Bare source globs are resolved from the scanner `cwd`. Globs that start with `./` or `../` are resolved relative to the CSS file that declares the directive.

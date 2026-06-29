@@ -28,7 +28,7 @@ Inspect the Tailwind surface before changing files.
 | Custom utilities | Tailwind `@utility` blocks | Recreate reusable primitives in Master CSS `@utilities`. |
 | Custom variants | Tailwind `@custom-variant` and CSS rules using `@variant` | Recreate shared conditions with Master CSS `@custom-variant` and `@variant`. |
 | Composition | Rules using `@apply` | Replace with `@compose` or ordinary CSS declarations. |
-| Source policy | `@source`, `@source not`, `@source inline()`, ignored paths | Use Master CSS `@source`, `@source not`, `@safelist`, and `@blocklist`. |
+| Source policy | `@source`, `@source not`, `@source inline()`, ignored paths | Remove broad scan directives; use Master CSS `@source` and `@source not` only for explicit source exceptions, and `@safelist` or `@blocklist` for candidate policy. |
 | Markup | Class strings in HTML, JSX, templates, helper maps, and component props | Convert complete class strings, not fragments. |
 | Third-party styling | Plugin CSS, vendor CSS, component-library overrides | Keep regular CSS until a Master CSS replacement is clearly better. |
 
@@ -42,10 +42,9 @@ Keep the existing Tailwind import while introducing Master CSS from the styleshe
 ```css name=app.css
 @import "tailwindcss";
 @import "@master/css";
-
-@source "src/**/*.{html,js,jsx,ts,tsx,vue,svelte,astro,mdx}";
-@source not "src/**/*.test.tsx";
 ```
+
+For most integrations, no Master CSS source directive is needed here. The integration or CLI scanner discovers ordinary app files; add `@source` only for migrated markup outside that default scope.
 
 Then add the framework or build integration that matches the project. Start from [Installation](/guide/installation), then choose the specific framework guide for Vite, Next.js, Nuxt, Vue, Svelte, Astro, Webpack, React, Angular, Laravel, Blazor, Lit, or the CLI.
 
@@ -364,14 +363,14 @@ function Progress({ value }: { value: number }) {
 }
 ```
 
-Use `@source` and `@source not` to define the scanner boundary.
+Most Tailwind `@source` boundaries can be deleted when switching to Master CSS. Keep or add Master CSS `@source` only for source the integration or CLI would not otherwise scan, such as shared workspace packages or external content.
 
 ```css name=app.css
 @import "@master/css";
 
-@source "src/**/*.{html,js,jsx,ts,tsx,vue,svelte,astro,mdx}";
-@source not "src/**/*.test.tsx";
-@source not "src/**/*.stories.tsx";
+@source "../content/**/*.mdx";
+@source "../packages/ui/**/*.{ts,tsx}";
+@source not "../packages/ui/**/*.stories.tsx";
 ```
 
 Use `@safelist` for bounded classes that do not exist in scanned source, and `@blocklist` for false positives.

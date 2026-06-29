@@ -90,17 +90,18 @@ Use `safelist` for classes from asynchronous data, irregular classes, or classes
 
 ## CSS directives
 
-Scanner options can also be declared in CSS. For the full stylesheet syntax, see [CSS directives](https://rc.css.master.co/reference/directives).
+CLI and framework/build integrations handle ordinary project source discovery. Use stylesheet directives when a stylesheet needs explicit source exceptions or candidate policy. For the full stylesheet syntax, see [CSS directives](https://rc.css.master.co/reference/directives).
 
 ```css
-@source 'src/**/*.{html,js,jsx,ts,tsx,vue,svelte,astro,md,mdx}';
-@source not 'src/**/*.test.tsx';
+@source '../content/**/*.mdx';
+@source '../packages/ui/**/*.{ts,tsx}';
+@source not '../packages/ui/**/*.stories.tsx';
 
 @safelist 'dialog-open bg:blue-60@dark';
 @blocklist 'debug-*';
 ```
 
-Stylesheet `@source` directives are resolved by the stylesheet pipeline as `(source union) - (source not union)`. `@safelist` maps to `safelist`, and `@blocklist` maps to `blocklist`.
+Stylesheet `@source` directives are resolved by the stylesheet pipeline as `(source union) - (source not union)`. Use them for extra content, shared source, or scoped roots rather than restating the default app scan. `@safelist` maps to `safelist`, and `@blocklist` maps to `blocklist`.
 
 Bare source globs are resolved from `cwd`. Globs that start with `./` or `../` are resolved relative to the CSS file that declares the directive. `@blocklist` accepts exact strings and `*` / `?` wildcard patterns.
 

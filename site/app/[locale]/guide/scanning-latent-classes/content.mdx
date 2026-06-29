@@ -36,24 +36,20 @@ The same scanning model is used by build integrations and by tools that call `@m
 ---
 
 ## Source boundaries
-The scanner only sees files inside its source boundary. Configure that boundary with `@source` and `@source not`.
+Build integrations and CLI flows scan common source-like project files by default. Ordinary app files such as HTML, JavaScript, TypeScript, JSX, TSX, framework files, Markdown, MDX, and PHP should not need a broad `@source` directive or a matching test-file exclusion.
+
+Use `@source` and `@source not` only when a stylesheet needs an explicit exception, such as content outside the normal project scan, shared workspace source, or a scoped native CSS pruning root.
 
 ```css name=index.css
 @import '@master/css';
-@source 'src/**/*.{html,js,jsx,ts,tsx,vue,svelte,astro,mdx}';
-@source not 'src/**/*.test.tsx';
-@source not 'src/**/*.stories.tsx';
+@source '../content/**/*.mdx';
+@source '../packages/ui/**/*.{ts,tsx}';
+@source not '../packages/ui/**/*.stories.tsx';
 ```
 
-`@source` broadly defines files that may contain classes. `@source not` removes known noise such as tests, generated files, build output, and vendor code. Multiple source directives are combined as `(source union) - (source not union)`.
+`@source` adds files that may contain classes. `@source not` removes files from that explicit source set. Multiple source directives are combined as `(source union) - (source not union)`.
 
 For exact stylesheet directive syntax, see [CSS directives](/guide/directives).
-
-```css name=index.css
-@import '@master/css';
-@source 'app/**/*.{ts,tsx,mdx}';
-@source not 'app/**/*.test.tsx';
-```
 
 In Vite, transformed modules are also fed to the scanner during development. That makes updates fast, but production correctness still depends on class names that exist in scanned source files or are explicitly included.
 
@@ -245,7 +241,8 @@ Keep both lists small. The most reliable scanning path is still complete class s
 - Put complete class names in scanned source.
 - Map variants to complete class strings.
 - Use CSS variables for runtime values.
-- Keep source globs broad enough to include framework files and content files.
+- Rely on integration or CLI defaults for ordinary app source files.
+- Add `@source` only for extra source roots or scoped pruning roots.
 - Use `@safelist` only for bounded classes the scanner cannot see.
 - Use `@blocklist` for real false positives.
 - Use runtime or progressive rendering for classes created after startup.
