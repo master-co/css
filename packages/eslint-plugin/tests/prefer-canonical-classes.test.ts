@@ -2,6 +2,7 @@ import rule from '../src/rules/prefer-canonical-classes'
 import { createTester, jsxTester } from './testers'
 import { createPresetManifest } from './helpers/create-preset-manifest'
 import UtilityType from '@master/css-schema/utility-type'
+import stylesheetParser from '../src/stylesheet-parser'
 
 const cssParser = {
     meta: {
@@ -459,6 +460,56 @@ jsxTester.run('prefer canonical classes parser smoke tests', rule, {
     ]
 })
 
+createTester({
+    languageOptions: {
+        parser: stylesheetParser as any
+    }
+}).run('prefer canonical classes in compose directives', rule, {
+    valid: [
+        {
+            code: `.btn {\n    @compose text-center;\n    contain: content;\n}`,
+            filename: 'test.css'
+        }
+    ],
+    invalid: [
+        {
+            code: `.btn {\n    @compose text-align:center contain:content;\n}`,
+            output: `.btn {\n    @compose text-center;\n    contain: content;\n}`,
+            filename: 'test.css',
+            errors: [
+                { messageId: 'preferClass', data: { actual: 'text-align:center', recommended: 'text-center' } },
+                { messageId: 'preferClass', data: { actual: 'contain:content', recommended: 'contain: content' } }
+            ]
+        },
+        {
+            code: `.btn { @compose contain:content; }`,
+            output: `.btn { contain: content; }`,
+            filename: 'test.css',
+            errors: [
+                { messageId: 'preferClass', data: { actual: 'contain:content', recommended: 'contain: content' } }
+            ]
+        },
+        {
+            code: `@components {\n    btn {\n        @compose bg:blue-60:hover@sm block@dark;\n    }\n}`,
+            output: `@components {\n    btn {\n        @variant :hover@sm { @compose bg:blue-60; }\n        @dark { @compose block; }\n    }\n}`,
+            filename: 'test.css',
+            errors: [
+                { messageId: 'preferClass', data: { actual: 'bg:blue-60:hover@sm', recommended: '@variant :hover@sm { @compose bg:blue-60; }' } },
+                { messageId: 'preferClass', data: { actual: 'block@dark', recommended: '@dark { @compose block; }' } }
+            ]
+        },
+        {
+            code: `.btn {\n    @compose contain:content contain:none;\n}`,
+            output: null,
+            filename: 'test.css',
+            errors: [
+                { messageId: 'preferClass', data: { actual: 'contain:content', recommended: 'contain: content' } },
+                { messageId: 'preferClass', data: { actual: 'contain:none', recommended: 'contain: none' } }
+            ]
+        }
+    ]
+})
+
 jsxTester.run('prefer canonical classes compose directives', rule, {
     valid: [
         {
@@ -521,7 +572,7 @@ jsxTester.run('prefer canonical classes compose directives', rule, {
         },
         {
             code: `.btn { @compose block@dark@sm font:16px@dark@sm; }`,
-            output: `.btn { @compose block@sm@dark font:md@sm@dark; }`,
+            output: `.btn { @variant @sm@dark { @compose block font:md; } }`,
             filename: 'test.css',
             languageOptions: {
                 parser: cssParser

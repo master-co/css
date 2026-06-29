@@ -10,5 +10,5 @@ export default [
     includeIgnoreFile(gitignorePath),
     ...vue.configs['flat/essential'],
     ...vueTS(),
-    css
+    ...css
 ]

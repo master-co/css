@@ -6,7 +6,7 @@ const gitignorePath = fileURLToPath(new URL('./.gitignore', import.meta.url))
 
 export default [
     includeIgnoreFile(gitignorePath),
-    ...common,
+    ...common.flat(),
     // {
     //     rules: {
     //         '@master/css/no-invalid-classes': ['error', {

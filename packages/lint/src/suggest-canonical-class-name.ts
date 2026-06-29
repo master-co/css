@@ -26,6 +26,8 @@ export interface CanonicalClassNameOptions {
     preferMultiValueTokens?: boolean
     preferCompositionUtilities?: boolean
     preferConditionOrder?: boolean
+    preferNativeDeclarationsInCompose?: boolean
+    preferVariantBlocksInCompose?: boolean
 }
 
 type ResolvedCanonicalClassNameOptions = Required<CanonicalClassNameOptions>
@@ -37,7 +39,9 @@ export const defaultCanonicalClassNameOptions: ResolvedCanonicalClassNameOptions
     preferVariableReferences: true,
     preferMultiValueTokens: true,
     preferCompositionUtilities: true,
-    preferConditionOrder: true
+    preferConditionOrder: true,
+    preferNativeDeclarationsInCompose: true,
+    preferVariantBlocksInCompose: true
 }
 
 export type ClassParts = Pick<MasterCSSClassInspection, 'base' | 'suffix' | 'key' | 'value'>

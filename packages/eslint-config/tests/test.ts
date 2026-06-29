@@ -1,5 +1,6 @@
 import { test, expect } from 'vitest'
 import { ESLint } from 'eslint'
+import css from '../src/index'
 
 test('ESLint Configuration is valid', async () => {
     const eslint = new ESLint({ cwd: __dirname })
@@ -19,4 +20,24 @@ test('ESLint Configuration is valid', async () => {
             'Prefer "mb:2xl" over "mb:12x".',
         ]
     )
+})
+
+test('Default ESLint configuration lints standalone stylesheets', async () => {
+    const diagnosticESLint = new ESLint({
+        cwd: __dirname,
+        overrideConfigFile: true,
+        overrideConfig: css
+    })
+    const fixESLint = new ESLint({
+        cwd: __dirname,
+        fix: true,
+        overrideConfigFile: true,
+        overrideConfig: css
+    })
+    const [diagnosticResult] = await diagnosticESLint.lintText('.btn { @compose contain:content; }', { filePath: 'index.css' })
+    const [fixResult] = await fixESLint.lintText('.btn { @compose contain:content; }', { filePath: 'index.css' })
+
+    expect(diagnosticResult.errorCount).toBe(0)
+    expect(diagnosticResult.warningCount).toBe(1)
+    expect(fixResult.output).toBe('.btn { contain: content; }')
 })

@@ -29,5 +29,5 @@ export default tseslint.config(
             ...reactHooks.configs.recommended.rules,
         },
     },
-    css
+    ...css
 )

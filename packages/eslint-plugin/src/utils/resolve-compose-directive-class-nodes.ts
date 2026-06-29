@@ -10,6 +10,11 @@ interface ComposeDirectiveSourceRange extends SourceRange {
     lineComments?: boolean
 }
 
+export interface ResolvedComposeDirectiveClassNode extends ResolvedClassNode {
+    directiveStart: number
+    directiveEnd: number
+}
+
 const CSS_LIKE_FILE_RE = /\.(?:css|scss|sass|less|pcss|postcss)$/i
 const CSS_LINE_COMMENT_FILE_RE = /\.(?:scss|sass|less)$/i
 const STYLE_CONTAINER_FILE_RE = /\.(?:vue|svelte|astro|html|htm|mdx)$/i
@@ -163,10 +168,10 @@ function resolveComposeDirectiveClassNode(
     }
 }
 
-export default function resolveComposeDirectiveClassNodes(context: RuleContext<any, any[]>): ResolvedClassNode[] {
+export default function resolveComposeDirectiveClassNodes(context: RuleContext<any, any[]>): ResolvedComposeDirectiveClassNode[] {
     const filename = getFilename(context)
     const source = context.sourceCode.getText()
-    const nodes: ResolvedClassNode[] = []
+    const nodes: ResolvedComposeDirectiveClassNode[] = []
     for (const range of collectCandidateRanges(source, filename)) {
         const lineCommentRanges = range.lineComments
             ? collectLineCommentRanges(source, range.start, range.end)
@@ -186,7 +191,11 @@ export default function resolveComposeDirectiveClassNodes(context: RuleContext<a
             )
             if (!classNode) continue
             if (overlapsRange(classNode.start, classNode.end, lineCommentRanges)) continue
-            nodes.push(classNode)
+            nodes.push({
+                ...classNode,
+                directiveStart: range.start + directive.start,
+                directiveEnd: range.start + (directive.semicolonRange?.end ?? directive.end)
+            })
         }
     }
     return nodes

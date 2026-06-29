@@ -66,18 +66,16 @@ Use the flat config in `eslint.config.js`:
 import css from '@master/eslint-config-css'
 
 /** @type {import('eslint').Linter.Config[]} */
-export default [
-    css
-]
+export default css
 ```
 
-This package re-exports the recommended config from `@master/eslint-plugin-css`.
+This package combines the recommended class linting config and the standalone stylesheet config from `@master/eslint-plugin-css`.
 
 For custom rules and settings, configure the plugin rules in the same flat config:
 
 ```js
 export default [
-    css,
+    ...css,
     {
         rules: {
             '@master/css/no-invalid-classes': ['error', {

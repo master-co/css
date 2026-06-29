@@ -29,5 +29,5 @@ export default ts.config(
             }
         }
     },
-    css
+    ...css
 )

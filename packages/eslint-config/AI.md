@@ -2,12 +2,12 @@
 
 ## Responsibility
 
-`@master/eslint-config-css` re-exports the recommended config from `@master/eslint-plugin-css`.
+`@master/eslint-config-css` combines the recommended class linting config and stylesheet linting config from `@master/eslint-plugin-css`.
 
 ## Owns
 
 - Config wrapper package entrypoint.
-- Compatibility with the plugin recommended config shape.
+- Compatibility with the plugin recommended and stylesheet config shapes.
 
 ## Does Not Own
 

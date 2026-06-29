@@ -11,9 +11,7 @@ The recommended config enables the canonical rule set:
 ```js name=eslint.config.js
 import css from '@master/eslint-config-css'
 
-export default [
-    css
-]
+export default css
 ```
 
 | Rule | Default | Fixable | Purpose |
@@ -124,12 +122,22 @@ The same fixes apply inside unquoted `@compose` class lists when ESLint is runni
 
 ```css
 .btn {
-    @compose font:16px margin:md; /* [!code --] */
-    @compose font:md m:md; /* [!code ++] */
+    @compose text-align:center contain:content bg:blue-60:hover@sm; /* [!code --] */
+    @compose text-center; /* [!code ++] */
+    contain: content; /* [!code ++] */
+    @variant :hover@sm { @compose bg:blue-60; } /* [!code ++] */
 }
 ```
 
-Plain `.css` files still need an ESLint CSS parser or language setup so ESLint can parse the file before Master CSS rules run. Framework files with parsed `<style>` blocks, such as Vue and Svelte files, can lint `@compose` in those style blocks.
+Standalone CSS files are checked by the default `@master/eslint-config-css` export:
+
+```js name=eslint.config.js
+import css from '@master/eslint-config-css'
+
+export default css
+```
+
+Framework files with parsed `<style>` blocks, such as Vue and Svelte files, can lint `@compose` in those style blocks through the normal framework parser setup.
 
 | Option | Default | Effect |
 | --- | --- | --- |
@@ -140,6 +148,8 @@ Plain `.css` files still need an ESLint CSS parser or language setup so ESLint c
 | `preferMultiValueTokens` | `true` | Prefer tokenized multi-value forms such as `m:md|lg` over equivalent raw segments. |
 | `preferCompositionUtilities` | `true` | Prefer composed utilities such as `size:md` over equivalent `w:md h:md` pairs. |
 | `preferConditionOrder` | `true` | Prefer stable condition suffix order such as `@sm@dark` over `@dark@sm`. |
+| `preferNativeDeclarationsInCompose` | `true` | Prefer native declarations over declaration-like classes inside CSS `@compose`. |
+| `preferVariantBlocksInCompose` | `true` | Prefer `@variant`, `@dark`, and `@light` blocks over suffixes inside CSS `@compose`. |
 
 Disable one family when a team wants a more literal authoring style:
 
@@ -223,16 +233,14 @@ Use the recommended config for most projects:
 ```js name=eslint.config.js
 import css from '@master/eslint-config-css'
 
-export default [
-    css
-]
+export default css
 ```
 
 Use stricter validation when the team wants every class to come from Master CSS syntax or the project manifest:
 
 ```js name=eslint.config.js
 export default [
-    css,
+    ...css,
     {
         rules: {
             '@master/css/no-invalid-classes': ['error', {
@@ -247,7 +255,7 @@ Customize canonicalization when a team wants to keep one class family literal wh
 
 ```js name=eslint.config.js
 export default [
-    css,
+    ...css,
     {
         rules: {
             '@master/css/prefer-canonical-classes': ['warn', {
@@ -264,7 +272,7 @@ Enable raw value policy when the team wants token-backed utilities to use tokens
 
 ```js name=eslint.config.js
 export default [
-    css,
+    ...css,
     {
         rules: {
             '@master/css/no-unapproved-raw-values': ['warn', {

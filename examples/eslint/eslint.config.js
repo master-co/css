@@ -18,7 +18,7 @@ export default [
         }
     },
     flat,
-    css,
+    ...css,
     {
         rules: {
             '@master/css/no-invalid-classes': ['error', {

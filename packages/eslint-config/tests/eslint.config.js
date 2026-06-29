@@ -2,7 +2,7 @@ import css from '@master/eslint-config-css'
 import htmlParser from '@angular-eslint/template-parser'
 
 export default [
-    css,
+    ...css,
     {
         files: [
             '*.html'

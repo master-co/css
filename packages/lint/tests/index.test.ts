@@ -12,6 +12,7 @@ import {
     replaceClassGroupInClassList,
     replaceClassNameInClassList,
     suggestCanonicalClassGroups,
+    suggestCanonicalComposeDirective,
     sortClassList,
     sortClassNames,
     suggestCanonicalClassName
@@ -613,6 +614,94 @@ describe('canonical class group suggestions', () => {
             ...defaultCanonicalClassNameOptions,
             preferCompositionUtilities: false
         })).toEqual([])
+    })
+})
+
+describe('canonical compose directive suggestions', () => {
+    test('keeps canonical utilities and extracts native declarations', () => {
+        expect(suggestCanonicalComposeDirective('text-align:center contain:content', css)).toEqual({
+            suggestions: [
+                {
+                    actual: 'text-align:center',
+                    recommended: 'text-center',
+                    classNames: ['text-align:center'],
+                    kind: 'class'
+                },
+                {
+                    actual: 'contain:content',
+                    recommended: 'contain: content',
+                    classNames: ['contain:content'],
+                    kind: 'native-declaration'
+                }
+            ],
+            structuralChange: true,
+            replacement: '@compose text-center;\ncontain: content;'
+        })
+    })
+
+    test('extracts variant suffixes into variant blocks', () => {
+        expect(suggestCanonicalComposeDirective('bg:blue-60:hover@sm block@dark', css)).toEqual({
+            suggestions: [
+                {
+                    actual: 'bg:blue-60:hover@sm',
+                    recommended: '@variant :hover@sm { @compose bg:blue-60; }',
+                    classNames: ['bg:blue-60:hover@sm'],
+                    kind: 'variant-block'
+                },
+                {
+                    actual: 'block@dark',
+                    recommended: '@dark { @compose block; }',
+                    classNames: ['block@dark'],
+                    kind: 'variant-block'
+                }
+            ],
+            structuralChange: true,
+            replacement: '@variant :hover@sm { @compose bg:blue-60; }\n@dark { @compose block; }'
+        })
+    })
+
+    test('extracts important native declarations', () => {
+        expect(suggestCanonicalComposeDirective('contain:content!', css)).toEqual({
+            suggestions: [
+                {
+                    actual: 'contain:content!',
+                    recommended: 'contain: content !important',
+                    classNames: ['contain:content!'],
+                    kind: 'native-declaration'
+                }
+            ],
+            structuralChange: true,
+            replacement: 'contain: content !important;'
+        })
+    })
+
+    test('does not extract token-backed, semantic, or alias classes as native declarations', () => {
+        expect(suggestCanonicalComposeDirective('font:16px block width:10px', css, {
+            ...defaultCanonicalClassNameOptions,
+            preferThemeTokens: false,
+            preferStaticUtilities: false,
+            preferPropertyAliases: false
+        })).toBeUndefined()
+    })
+
+    test('reports duplicate native declarations without autofix', () => {
+        expect(suggestCanonicalComposeDirective('contain:content contain:none', css)).toEqual({
+            suggestions: [
+                {
+                    actual: 'contain:content',
+                    recommended: 'contain: content',
+                    classNames: ['contain:content'],
+                    kind: 'native-declaration'
+                },
+                {
+                    actual: 'contain:none',
+                    recommended: 'contain: none',
+                    classNames: ['contain:none'],
+                    kind: 'native-declaration'
+                }
+            ],
+            structuralChange: true
+        })
     })
 })
 

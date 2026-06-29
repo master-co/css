@@ -3,7 +3,7 @@ import htmlParser from '@angular-eslint/template-parser'
 import tsParser from '@typescript-eslint/parser'
 
 export default [
-    css,
+    ...css,
     {
         files: [
             '*.html'

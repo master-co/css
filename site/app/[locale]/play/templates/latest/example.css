@@ -27,6 +27,8 @@
     }
 
     btn-arrow-line {
-        @compose opacity:0 transform:scale(0) transform-origin:5x|center transition:all|fast|smooth;
+        @compose transform-origin:5x|center transition:all|fast|smooth;
+        opacity: 0;
+        transform: scale(0);
     }
 }

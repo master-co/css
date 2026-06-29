@@ -83,7 +83,7 @@ export default [
             parser: tsParser
         }
     },
-    css,
+    ...css,
     {
         rules: {
             '@master/css/no-invalid-classes': ['error', {
@@ -154,7 +154,17 @@ export default [
 
 For example, this rule can fix `text-align:center` to `text-center`, `font:16px` to `font:md`, `margin:md` to `m:md`, `m:1rem|1.5rem` to `m:md|lg`, `fg:var(--color-red-60)` to `fg:red-60`, `w:md h:md` to `size:md`, `mt:md mb:md` to `my:md`, and `block@dark@sm` to `block@sm@dark`.
 
-The same canonicalization applies to unquoted `@compose` class lists when ESLint runs on a parsed CSS or style source, such as `<style>` blocks in supported framework files. Plain `.css` files still need an ESLint CSS parser or language setup so ESLint can parse the file before this rule runs.
+The same canonicalization applies to unquoted `@compose` class lists. In CSS, declaration-like classes are moved to native declarations and suffixes are moved to `@variant`, `@dark`, or `@light` blocks when the rewrite is safe.
+
+Standalone CSS files are included by default when using `@master/eslint-config-css`:
+
+```js
+import css from '@master/eslint-config-css'
+
+export default css
+```
+
+Direct plugin users can add `css.configs.stylesheet` from `@master/eslint-plugin-css` alongside the recommended config.
 
 You can disable specific canonicalization families:
 
@@ -169,7 +179,9 @@ export default [
                 preferVariableReferences: true,
                 preferMultiValueTokens: true,
                 preferCompositionUtilities: true,
-                preferConditionOrder: true
+                preferConditionOrder: true,
+                preferNativeDeclarationsInCompose: true,
+                preferVariantBlocksInCompose: true
             }]
         }
     }

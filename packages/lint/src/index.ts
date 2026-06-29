@@ -10,6 +10,7 @@ export { default as findClassConflicts } from './find-class-conflicts'
 export { default as findPartialClassConflicts } from './find-partial-class-conflicts'
 export { default as findUnapprovedRawValueClasses } from './find-unapproved-raw-value-classes'
 export { default as getClassValidationIssues } from './get-class-validation-issues'
+export { default as suggestCanonicalComposeDirective } from './suggest-canonical-compose-directive'
 export { default as suggestCanonicalClassGroups } from './suggest-canonical-class-groups'
 export {
     default as suggestCanonicalClassName,
@@ -24,6 +25,10 @@ export type {
     UnapprovedRawValueClass
 } from './find-unapproved-raw-value-classes'
 export type { CanonicalClassGroupSuggestion } from './suggest-canonical-class-groups'
+export type {
+    CanonicalComposeDirectiveResult,
+    CanonicalComposeDirectiveSuggestion
+} from './suggest-canonical-compose-directive'
 export type {
     ClassValidationIssue,
     ClassValidationIssueKind,

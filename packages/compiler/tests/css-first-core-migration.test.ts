@@ -16,6 +16,14 @@ function createTestCSS(manifest: MasterCSSManifest) {
     return MasterCSS.create({ manifest })
 }
 
+function normalizeDeclarationOrder(css: string) {
+    return css.replace(/\{([^{}]*)\}/g, (_, body: string) => {
+        if (!body.includes(':')) return `{${body}}`
+        const declarations = body.split(';').filter(Boolean).sort()
+        return `{${declarations.join(';')}}`
+    })
+}
+
 class TestDiagnosticRecorder implements CompilerDiagnosticRecorder {
     readonly counts: Record<string, number> = {}
 
@@ -594,6 +602,61 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
         expect(shorthand.css).toContain('.light .banner{display:none}')
         expect(shorthandCSS.componentsLayer.text).toContain('.dark .panel{color:#fff}')
         expect(shorthandCSS.componentsLayer.text).toContain('.light .panel{color:#000}')
+    })
+
+    test('keeps compose canonicalization rewrites output-equivalent', () => {
+        const before = compileCSSManifest(`
+            @settings {
+                mode-trigger: class;
+            }
+
+            @components {
+                btn {
+                    @compose text-align:center contain:content bg:blue-60:hover@sm block@dark;
+                }
+            }
+
+            .card {
+                @compose text-align:center contain:content bg:blue-60:hover@sm block@dark;
+            }
+        `, { baseManifest: defaultManifest })
+        const after = compileCSSManifest(`
+            @settings {
+                mode-trigger: class;
+            }
+
+            @components {
+                btn {
+                    @compose text-center;
+                    contain: content;
+
+                    @variant :hover@sm {
+                        @compose bg:blue-60;
+                    }
+
+                    @dark {
+                        @compose block;
+                    }
+                }
+            }
+
+            .card {
+                @compose text-center;
+                contain: content;
+
+                @variant :hover@sm {
+                    @compose bg:blue-60;
+                }
+
+                @dark {
+                    @compose block;
+                }
+            }
+        `, { baseManifest: defaultManifest })
+
+        expect(normalizeDeclarationOrder(after.css)).toBe(normalizeDeclarationOrder(before.css))
+        expect(normalizeDeclarationOrder(createTestCSS(after.manifest).ensureClassRules('btn').componentsLayer.text))
+            .toBe(normalizeDeclarationOrder(createTestCSS(before.manifest).ensureClassRules('btn').componentsLayer.text))
     })
 
     test('keeps custom modes explicit behind @variant', () => {

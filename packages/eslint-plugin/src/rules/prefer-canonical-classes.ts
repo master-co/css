@@ -6,11 +6,13 @@ import {
     defaultCanonicalClassNameOptions,
     replaceClassGroupInClassList,
     replaceClassNameInClassList,
+    suggestCanonicalComposeDirective,
     suggestCanonicalClassGroups,
     suggestCanonicalClassName,
     type CanonicalClassNameOptions
 } from '@master/css-lint'
 import type { ResolvedClassNode } from '../utils/resolve-class-node'
+import type { ResolvedComposeDirectiveClassNode } from '../utils/resolve-compose-directive-class-nodes'
 
 export default createRule({
     name: 'prefer-canonical-classes',
@@ -33,6 +35,8 @@ export default createRule({
                 preferMultiValueTokens: { type: 'boolean' },
                 preferCompositionUtilities: { type: 'boolean' },
                 preferConditionOrder: { type: 'boolean' },
+                preferNativeDeclarationsInCompose: { type: 'boolean' },
+                preferVariantBlocksInCompose: { type: 'boolean' },
             },
             additionalProperties: false
         }]
@@ -94,6 +98,44 @@ export default createRule({
             }
         }
 
+        const reportCanonicalComposeDirective = (node, classNode: ResolvedComposeDirectiveClassNode) => {
+            const result = suggestCanonicalComposeDirective(classNode.raw, css, options)
+            if (!result) return
+            if (!result.structuralChange) {
+                reportCanonicalClassList(node, classNode)
+                return
+            }
+
+            const replacement = result.replacement
+                ? formatComposeDirectiveReplacement(
+                    context.sourceCode.getText(),
+                    classNode.directiveStart,
+                    result.replacement
+                )
+                : undefined
+
+            for (const suggestion of result.suggestions) {
+                const firstClassNode = classNode.classNodes.find((node) => node.value === suggestion.classNames[0])
+                    || classNode.classNodes[0]
+                context.report({
+                    node,
+                    loc: firstClassNode?.loc,
+                    messageId: 'preferClass',
+                    data: {
+                        actual: suggestion.actual,
+                        recommended: suggestion.recommended
+                    },
+                    ...(replacement
+                        ? {
+                            fix(fixer) {
+                                return fixer.replaceTextRange([classNode.directiveStart, classNode.directiveEnd], replacement)
+                            }
+                        }
+                        : {})
+                })
+            }
+        }
+
         const visitors = defineVisitors({ context, settings }, reportCanonicalClassList)
         const visitProgram = visitors.Program
 
@@ -104,9 +146,19 @@ export default createRule({
                     visitProgram(node)
                 }
                 for (const classNode of resolveComposeDirectiveClassNodes(context)) {
-                    reportCanonicalClassList(node, classNode)
+                    reportCanonicalComposeDirective(node, classNode)
                 }
             }
         }
     }
 })
+
+function getLinePrefix(source: string, index: number) {
+    return source.slice(source.lastIndexOf('\n', index - 1) + 1, index)
+}
+
+function formatComposeDirectiveReplacement(source: string, index: number, replacement: string) {
+    const linePrefix = getLinePrefix(source, index)
+    if (/\S/.test(linePrefix)) return replacement.replace(/\n\s*/g, ' ')
+    return replacement.replace(/\n/g, `\n${linePrefix}`)
+}

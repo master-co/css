@@ -425,6 +425,15 @@ Do not put quotes, grouped class syntax, or class tokens that need CSS quoted st
     @compose block size:12x r:full;
     content: '';
 }
+
+.btn {
+    @compose text-center;
+    contain: content;
+
+    @variant :hover@sm {
+        @compose bg:blue-60;
+    }
+}
 ```
 
 Top-level `@compose` is invalid because there is no selector context to receive the lowered declarations.
