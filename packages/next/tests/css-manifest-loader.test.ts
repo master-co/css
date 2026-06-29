@@ -98,6 +98,34 @@ describe('css manifest loader', () => {
         expect(readFileSync(join(projectDir, '.next/dev/static/media', assetFile || ''), 'utf8')).toContain('#123')
     })
 
+    it('inlines manifest modules in development for HMR', async () => {
+        const originalNodeEnv = process.env.NODE_ENV
+        const env = process.env as Record<string, string | undefined>
+        const projectDir = createFixtureDir()
+        const manifestPath = join(projectDir, 'index.css')
+        mkdirSync(projectDir, { recursive: true })
+        writeFileSync(manifestPath, '@theme { --color-primary: #123; }')
+
+        try {
+            env.NODE_ENV = 'development'
+            const source = await runManifestLoader({
+                resourcePath: manifestPath,
+                rootContext: projectDir,
+                getOptions: () => ({ module: true, external: true })
+            })
+
+            expect(source).toMatch(/^export default \{"version":1/)
+            expect(source).toContain('#123')
+            expect(source).not.toContain('loadMasterCSSManifestFromImport')
+        } finally {
+            if (originalNodeEnv === undefined) {
+                delete env.NODE_ENV
+            } else {
+                env.NODE_ENV = originalNodeEnv
+            }
+        }
+    })
+
     it('loads CSS when the loader resource includes ?master-css-manifest', async () => {
         const projectDir = createFixtureDir()
         const manifestPath = join(projectDir, 'index.css')
@@ -163,5 +191,48 @@ describe('css manifest loader', () => {
         expect(source).not.toContain('ignored')
         expect(dependencies).toContain(entryPath)
         expect(dependencies).not.toContain(preserveOnlyPath)
+    })
+
+    it('keeps virtual manifest dependencies registered after invalid CSS and recovers on the next run', async () => {
+        const projectDir = createFixtureDir()
+        const entryPath = join(projectDir, 'app/globals.css')
+        const virtualManifestPath = join(projectDir, 'node_modules/.master-css/master-css-manifest.js')
+        const dependencies: string[] = []
+        mkdirSync(join(projectDir, 'app'), { recursive: true })
+        writeFileSync(entryPath, [
+            '@import "@master/css";',
+            '@components {',
+            '    card {',
+            '        @compose bg:neutral-120;',
+            '    }',
+            '}'
+        ].join('\n'))
+
+        await expect(runManifestLoader({
+            resourcePath: virtualManifestPath,
+            rootContext: projectDir,
+            getOptions: () => ({ virtual: true, module: true }),
+            addDependency: (dependency: string) => dependencies.push(dependency)
+        })).rejects.toThrow('Invalid @compose class')
+        expect(dependencies).toContain(entryPath)
+
+        writeFileSync(entryPath, [
+            '@import "@master/css";',
+            '@components {',
+            '    card {',
+            '        @compose block;',
+            '    }',
+            '}'
+        ].join('\n'))
+
+        const source = await runManifestLoader({
+            resourcePath: virtualManifestPath,
+            rootContext: projectDir,
+            getOptions: () => ({ virtual: true, module: true })
+        })
+
+        expect(source).toContain('"version":1')
+        expect(source).toContain('"card"')
+        expect(source).toContain('display')
     })
 })

@@ -9,6 +9,7 @@ import {
     transformLocalStyleCSS
 } from '@master/css-stylesheet'
 import { loadProjectManifest } from '@master/css-project/manifest'
+import { addStyleCSSDependencies } from './style-dependencies'
 
 interface LoaderContext {
     resourcePath: string
@@ -19,6 +20,16 @@ interface LoaderContext {
 
 function hasMasterStyleDirective(source: string) {
     return source.includes('@settings') || source.includes('@theme') || source.includes('@master')
+}
+
+function shouldAddStyleDependencies(resourcePath: string, source: string, projectDir?: string) {
+    if (hasLocalStyleDirectives(source)) return true
+    if (isMasterCSSPackageStyleFile(resourcePath, projectDir)) return true
+    try {
+        return Boolean(resolveMasterStyleSource(resourcePath, source, projectDir))
+    } catch {
+        return true
+    }
 }
 
 async function transformStyleSource(resourcePath: string, source: string, projectDir?: string) {
@@ -81,9 +92,13 @@ export default function masterCSSStyleCSSLoader(this: LoaderContext, source: str
     if (!callback) {
         throw new Error('[@master/css.next] Style CSS loader requires an async loader context.')
     }
+    const dependencies = shouldAddStyleDependencies(this.resourcePath, source, this.rootContext)
+        ? new Set(addStyleCSSDependencies(this, this.resourcePath, source, this.rootContext))
+        : new Set<string>()
     transformStyleSource(this.resourcePath, source, this.rootContext)
         .then((result) => {
             for (const dependency of new Set(result.dependencies)) {
+                if (dependencies.has(dependency)) continue
                 this.addDependency?.(dependency)
             }
             callback(null, result.code)

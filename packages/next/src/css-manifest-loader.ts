@@ -2,12 +2,13 @@ import { mkdirSync, writeFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { loadManifestJSONSync } from '@master/css-project/manifest-sync'
 import { loadProjectManifestJSON } from '@master/css-project/manifest'
-import { isCSSManifestRequest } from '@master/css-project/entries'
+import { findCSSManifestEntryFiles, isCSSManifestRequest } from '@master/css-project/entries'
 import { toHashedManifestAssetFileName } from '@master/css-integration/node'
 import {
     toInlineManifestModule,
     toUniversalManifestFacadeModule
 } from '@master/css-integration/manifest-facade'
+import { addStyleCSSDependencies } from './style-dependencies'
 
 interface LoaderContext {
     resourcePath: string
@@ -38,6 +39,7 @@ function writeExternalManifestAssets(projectDir: string, json: string) {
 
 function toLoaderResult(context: LoaderContext, json: string, options: MasterCSSManifestLoaderOptions) {
     if (!options.module) return json
+    if (process.env.NODE_ENV === 'development') return toInlineManifestModule(json)
     if (!options.external) return toInlineManifestModule(json)
 
     const projectDir = context.rootContext || process.cwd()
@@ -50,8 +52,16 @@ function toLoaderResult(context: LoaderContext, json: string, options: MasterCSS
 
 async function loadVirtualManifestJSON(context: LoaderContext) {
     const projectDir = context.rootContext || process.cwd()
-    const result = await loadProjectManifestJSON(projectDir)
+    const entries = await findCSSManifestEntryFiles(projectDir)
+    const dependencies = new Set<string>()
+    for (const entry of entries) {
+        for (const dependency of addStyleCSSDependencies(context, entry, undefined, projectDir)) {
+            dependencies.add(dependency)
+        }
+    }
+    const result = await loadProjectManifestJSON(projectDir, { entries })
     for (const dependency of result.dependencies) {
+        if (dependencies.has(dependency)) continue
         context.addDependency?.(dependency)
     }
     return result.json
@@ -62,8 +72,10 @@ function loadCSSManifestJSON(context: LoaderContext) {
     if (!isCSSManifestRequest(resourcePath)) {
         throw new TypeError('Master CSS manifest queries only support CSS entry files.')
     }
+    const dependencies = new Set(addStyleCSSDependencies(context, resourcePath, undefined, context.rootContext))
     const result = loadManifestJSONSync(resourcePath)
     for (const dependency of result.dependencies) {
+        if (dependencies.has(dependency)) continue
         context.addDependency?.(dependency)
     }
     return result.json

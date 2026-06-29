@@ -19,7 +19,9 @@ function runStyleCSSLoader(root: string, resourcePath: string, source: string) {
             addDependency: (dependency) => dependencies.push(dependency),
             async: () => (error, content) => {
                 if (error) {
-                    reject(error)
+                    const loaderError = error as Error & { dependencies?: string[] }
+                    loaderError.dependencies = dependencies
+                    reject(loaderError)
                 } else {
                     resolve(content || '')
                 }
@@ -107,5 +109,25 @@ describe('Next style CSS loader', () => {
         expect(result.content).not.toContain('@master/css')
         expect(result.dependencies).toContain(modulePath)
         expect(result.dependencies).toContain(tokenPath)
+    })
+
+    it('keeps local style dependencies registered after invalid @compose and recovers on the next run', async () => {
+        const root = createFixture()
+        const modulePath = join(root, 'app/Button.module.css')
+        let error: Error & { dependencies?: string[] } | undefined
+
+        try {
+            await runStyleCSSLoader(root, modulePath, '.button { @compose bg:neutral-120; }')
+        } catch (caught) {
+            error = caught as Error & { dependencies?: string[] }
+        }
+        expect(error).toBeInstanceOf(Error)
+        expect(error?.message).toContain('Invalid @compose class')
+        expect(error?.dependencies).toContain(modulePath)
+
+        const result = await runStyleCSSLoader(root, modulePath, '.button { @compose block; }')
+
+        expect(result.content).toContain('.button{display:block}')
+        expect(result.dependencies).toContain(modulePath)
     })
 })
