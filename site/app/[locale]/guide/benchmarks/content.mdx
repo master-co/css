@@ -26,6 +26,11 @@ import {
     InteractionPrimaryCharts,
     InteractionRuntimeCharts
 } from './components/InteractionCostBenchmark'
+import {
+    BrowserLifecycleLongSessionCharts,
+    BrowserLifecycleLongSessionTable,
+    BrowserLifecycleSummary
+} from './components/BrowserLifecycleBenchmark'
 
 ## Overview [sr-only]
 Benchmarks make Master CSS output and delivery costs inspectable. They are useful for understanding tradeoffs, but they are not universal guarantees for every application.
@@ -403,6 +408,26 @@ The internal browser lifecycle suite tests the lifecycle version of the runtime 
 This suite should keep Tailwind CSS as a static browser-control setup and Master CSS as static, runtime, and progressive setups. It should publish only measured comparisons that share equivalent rendered UI intent and should keep "INP" labels reserved for measurements that match the platform metric closely enough; otherwise use INP-style interaction latency.
 
 A curated internal snapshot is generated from the all-scenario `browser-lifecycle` baseline and has been refreshed from the 2026-06-30 review-grade run. Committed five-minute long-session evidence also covers Master static, runtime, progressive, and Tailwind static browser-control modes. The suite remains internal because public conclusions still need repeated review and presentation, so the current data should be used for benchmark validation rather than public performance claims.
+
+### Internal evidence: Browser lifecycle
+This internal evidence summarizes the committed all-scenario snapshot and the committed five-minute segmented long-session evidence. It is not an `Available` benchmark result, and the latency value remains INP-style interaction latency rather than real Web Vitals INP.
+
+<figure>
+    <BrowserLifecycleSummary />
+    <figcaption>Coverage and correctness checks for the internal browser lifecycle evidence.</figcaption>
+</figure>
+
+The five-minute evidence keeps Tailwind CSS as a static browser-control mode. It shows local fixture medians for browser work and runtime instrumentation, while selector matching remains an inference from CSSOM/rule volume plus style recalculation.
+
+<figure>
+    <BrowserLifecycleLongSessionCharts />
+    <figcaption>Committed five-minute long-session medians for browser rendering and runtime work.</figcaption>
+</figure>
+
+<figure>
+    <BrowserLifecycleLongSessionTable />
+    <figcaption>Complete committed five-minute long-session evidence for every mode.</figcaption>
+</figure>
 
 ### Lifecycle scenarios
 | Scenario | Internal measurement |
