@@ -25,6 +25,9 @@ function createTestCSS(manifest: MasterCSSManifest, options: Omit<MasterCSSCreat
 function variablesOf(manifest: MasterCSSManifest) {
     return flattenMasterCSSManifestVariables(manifest.variables)
 }
+function normalizeLineEndings(value: string) {
+    return value.replace(/\r\n?/g, '\n')
+}
 const __dirname = dirname(fileURLToPath(import.meta.url))
 let compiledDefaultManifest: MasterCSSManifest
 
@@ -264,7 +267,7 @@ describe('@master/css-preset defaultManifest', () => {
         const nativeCSSFile = resolve(__dirname, '../src/default-native.css')
         const nativeCSS = createDefaultNativeCSSFromSourceFile(sourceFile)
 
-        expect(readFileSync(nativeCSSFile, 'utf8')).toBe(nativeCSS)
+        expect(normalizeLineEndings(readFileSync(nativeCSSFile, 'utf8'))).toBe(nativeCSS)
         expect(nativeCSS).toContain('@layer base')
         expect(nativeCSS).toContain('text-rendering: geometricprecision')
         expect(nativeCSS).toContain('font-family: var(--font-family-sans)')
