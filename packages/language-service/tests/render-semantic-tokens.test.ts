@@ -135,6 +135,19 @@ test.concurrent('renders semantic tokens for CSS-like values', () => {
     expectToken(tokens, '@base', 'keyword', ['query'])
 })
 
+test.concurrent('renders semantic tokens for vendor-prefixed native declarations', () => {
+    const { tokens } = renderTokens(
+        '<div className="-webkit-text-size-adjust:none -moz-text-size-adjust:none -ms-text-size-adjust:none"></div>',
+        'tsx'
+    )
+
+    expectToken(tokens, '-webkit-text-size-adjust', 'property')
+    expectToken(tokens, '-moz-text-size-adjust', 'property')
+    expectToken(tokens, '-ms-text-size-adjust', 'property')
+    expectToken(tokens, ':', 'operator', ['declarationSeparator'])
+    expect(tokens.filter(({ text, type }) => text === 'none' && type === 'enumMember')).toHaveLength(3)
+})
+
 test.concurrent('renders semantic tokens for container queries and slash-separated string values', () => {
     const { tokens } = renderTokens(
         '<div className="hidden@container(sm&<=md) container:card/inline-size grid-cols:2@card(3xs) bg-center bg-cover bg:url(/hero.jpg) hidden@media(pointer:coarse) hidden@h>=sm&h<lg"></div>',
@@ -174,6 +187,27 @@ test.concurrent('renders semantic tokens for container queries and slash-separat
     expectToken(tokens, '<', 'operator', ['query', 'queryOperator'])
     expectToken(tokens, 'lg', 'enumMember', ['query'])
     expect(tokens.filter(({ text, type, modifiers }) => text === '/' && type === 'operator' && modifiers.includes('valueSeparator'))).toHaveLength(1)
+})
+
+test.concurrent('renders semantic tokens for internal styles dogfood directives', () => {
+    const { tokens } = renderTokens([
+        '@components {',
+        '    monaco-editor {',
+        '        @compose --vscode-editor-background:transparent! bg:blue filter:drop-shadow(0|2px|2px|rgba(0,0,0,.2px));',
+        '    }',
+        '}'
+    ].join('\n'), 'css')
+
+    expectToken(tokens, '--vscode-editor-background', 'property')
+    expectToken(tokens, 'transparent', 'enumMember')
+    expectToken(tokens, '!', 'operator', ['important'])
+    expectToken(tokens, 'bg', 'property')
+    expectToken(tokens, 'blue', 'enumMember')
+    expectToken(tokens, 'filter', 'property')
+    expectToken(tokens, 'drop-shadow', 'function')
+    expectToken(tokens, 'rgba', 'function')
+    expectToken(tokens, '.2', 'number')
+    expectToken(tokens, 'px', 'enumMember', ['unit'])
 })
 
 test.concurrent('renders semantic tokens for grouped declarations, strings, units, and important marks', () => {

@@ -47,3 +47,13 @@ test.concurrent('hidden', async () => {
         `
     })
 })
+
+test.concurrent('vendor-prefixed native declarations use unprefixed MDN hover syntax', () => {
+    for (const property of ['-webkit-text-size-adjust', '-moz-text-size-adjust', '-ms-text-size-adjust']) {
+        const hover = inspect(property + ':none')
+        const contents = hover?.contents as { value?: string } | undefined
+
+        expect(contents?.value).toContain(`${property}: none`)
+        expect(contents?.value).toContain(`.${property}\\:none`)
+    }
+})

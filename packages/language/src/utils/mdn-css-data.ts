@@ -22,6 +22,7 @@ const PAGE_PSEUDO_CLASS_NAMES = new Set([':first', ':left', ':right', ':blank'])
 const LOCAL_PSEUDO_CLASS_NAMES = [':nth']
 const REFERENCE_RE = /<('([^']+)'|([a-zA-Z][\w-]*)(?:\s+[^>]*)?)>/g
 const TOKEN_RE = /-?[a-zA-Z_][\w-]*/g
+const VENDOR_PREFIX_RE = /^-(?:webkit|moz|ms)-/
 const NON_KEYWORD_TOKENS = new Set([
     '∞',
     'n',
@@ -33,7 +34,12 @@ function unique(values: Iterable<string>) {
 }
 
 export function getMdnPropertySyntax(name: string | undefined) {
-    return name ? mdnCSSData.properties[name]?.syntax : undefined
+    if (!name) return
+    const exactSyntax = mdnCSSData.properties[name]?.syntax
+    if (exactSyntax) return exactSyntax
+    if (VENDOR_PREFIX_RE.test(name)) {
+        return mdnCSSData.properties[name.replace(VENDOR_PREFIX_RE, '')]?.syntax
+    }
 }
 
 function getSyntaxByReference(name: string) {

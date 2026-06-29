@@ -28,6 +28,18 @@ test.concurrent('formats @safelist quoted class lists while preserving quote sty
         .toBe('@safelist \'bg:transparent! fg:red!@sm\';\n@safelist "block bg:blue!";')
 })
 
+test.concurrent('leaves internal styles dogfood directives unchanged', () => {
+    const source = [
+        '@components {',
+        '    monaco-editor {',
+        '        @compose --vscode-editor-background:transparent! bg:blue filter:drop-shadow(0|2px|2px|rgba(0,0,0,.2px));',
+        '    }',
+        '}'
+    ].join('\n')
+
+    expect(format(source)).toBe(source)
+})
+
 test.concurrent('normalizes directive spacing without changing block contents', () => {
     expect(format('@theme  dark{ .x { color: red; } @slot ; }'))
         .toBe('@theme dark { .x { color: red; } @slot; }')

@@ -39,10 +39,15 @@ function getVariableKeyByNamespace(variableName: string, namespace: string) {
     return negative ? '-' + key : key
 }
 
+function uniqueKeys(...keys: string[]) {
+    return [...new Set(keys)]
+}
+
 export default function getValueCompletionItems(css: MasterCSS = createDefaultCSS(), ruleKey: string, valuePrefix = '', completionIndex: CompletionIndex = createCompletionIndex(css)): CompletionItem[] {
     const completionItems: CompletionItem[] = []
     const addedLabels = new Set<string>()
     const canonicalRuleKey = completionIndex.keyAliases[ruleKey] || ruleKey
+    const valueLookupKeys = uniqueKeys(ruleKey, canonicalRuleKey)
     const nativeUtilityKey = completionIndex.nativeUtilityKeys.get(canonicalRuleKey)
     const nativeKey = nativeUtilityKey || (getMdnPropertySyntax(canonicalRuleKey) ? canonicalRuleKey : undefined)
     const nativePropertyValues = getMdnPropertyValueNames(nativeKey)
@@ -136,18 +141,22 @@ export default function getValueCompletionItems(css: MasterCSS = createDefaultCS
      * Scoped variables
      * @example box: + content -> box-sizing:content
      */
-    for (const { name, variable } of completionIndex.scopedVariablesByKey.get(canonicalRuleKey) || []) {
-        addScopedVariableCompletionItem(variable, name)
+    for (const valueLookupKey of valueLookupKeys) {
+        for (const { name, variable } of completionIndex.scopedVariablesByKey.get(valueLookupKey) || []) {
+            addScopedVariableCompletionItem(variable, name)
+        }
     }
 
-    for (const { value } of completionIndex.patternValuesByKey.get(canonicalRuleKey) || []) {
-        if (addedLabels.has(value)) continue
-        pushCompletionItem({
-            label: value,
-            kind: CompletionItemKind.Value,
-            documentation: createCSSMarkdownDocumentation(generateCSS([ruleKey + ':' + value], css, completionIndex.runtime)),
-            detail: canonicalRuleKey + ': ' + value
-        })
+    for (const valueLookupKey of valueLookupKeys) {
+        for (const { value } of completionIndex.patternValuesByKey.get(valueLookupKey) || []) {
+            if (addedLabels.has(value)) continue
+            pushCompletionItem({
+                label: value,
+                kind: CompletionItemKind.Value,
+                documentation: createCSSMarkdownDocumentation(generateCSS([ruleKey + ':' + value], css, completionIndex.runtime)),
+                detail: valueLookupKey + ': ' + value
+            })
+        }
     }
 
     /**
@@ -177,12 +186,14 @@ export default function getValueCompletionItems(css: MasterCSS = createDefaultCS
     }
 
     const usedKeys = new Set<string>()
-    for (const variableNamespace of completionIndex.nativeVariableNamespacesByProperty.get(canonicalRuleKey) || []) {
-        for (const variable of completionIndex.variables) {
-            const variableName = getVariableKeyByNamespace(variable.name, variableNamespace)
-            if (variableName === undefined || usedKeys.has(variableName)) continue
-            usedKeys.add(variableName)
-            addScopedVariableCompletionItem(variable, variableName)
+    for (const valueLookupKey of valueLookupKeys) {
+        for (const variableNamespace of completionIndex.nativeVariableNamespacesByProperty.get(valueLookupKey) || []) {
+            for (const variable of completionIndex.variables) {
+                const variableName = getVariableKeyByNamespace(variable.name, variableNamespace)
+                if (variableName === undefined || usedKeys.has(variableName)) continue
+                usedKeys.add(variableName)
+                addScopedVariableCompletionItem(variable, variableName)
+            }
         }
     }
 

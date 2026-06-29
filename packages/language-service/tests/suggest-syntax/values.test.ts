@@ -3,8 +3,20 @@ import dedent from 'ts-dedent'
 import { hint } from './helper'
 import { CompletionItemKind } from 'vscode-languageserver-protocol'
 import { createPresetManifest } from '../helpers/create-preset-manifest'
+import CSSLanguageService from '../../src/core'
+import createDoc from '../../src/utils/create-doc'
 
 test.todo('convert any color spaces to RGB and hint correctly')
+
+function cssComposeHint(target: string, settings: ConstructorParameters<typeof CSSLanguageService>[0] = {}) {
+    const contents = ['.btn { @compose ', target, '; }']
+    const doc = createDoc('css', contents.join(''))
+    const languageService = new CSSLanguageService(settings)
+    return languageService.suggestSyntax(doc, doc.positionAt(contents[0].length + target.length), {
+        triggerKind: 2,
+        triggerCharacter: target.charAt(target.length - 1)
+    })
+}
 
 it.concurrent('should ignore values containing blanks', () => expect(hint('font-family:')?.map(({ label }) => label)).not.toContain('Arial, Helvetica, sans-serif'))
 it.concurrent('types | delimiter', () => expect(hint('b:1px|')?.map(({ label }) => label)).toContain('solid'))
@@ -88,6 +100,40 @@ describe.concurrent('key aliases', () => {
     test.concurrent('native value namespace alias values use canonical property namespace', () => {
         expect(hint('w:')?.map(({ label }) => label)).toContain('sm')
         expect(hint('width:')?.map(({ label }) => label)).toContain('sm')
+    })
+
+    test.concurrent('background alias values include raw utility color scopes and native values', () => {
+        const settings = {
+            manifest: createPresetManifest({
+                variables: [
+                    { namespace: 'color', key: 'accent', value: '#123456' }
+                ]
+            })
+        }
+        const labels = hint('bg:', settings)?.map(({ label }) => label) || []
+
+        expect(labels).toEqual(expect.arrayContaining(['accent', 'blue', 'cover']))
+        expect(labels.filter((label) => label === 'blue')).toHaveLength(1)
+    })
+
+    test.concurrent('CSS @compose background alias values include raw utility color scopes', () => {
+        const settings = {
+            manifest: createPresetManifest({
+                variables: [
+                    { namespace: 'color', key: 'accent', value: '#123456' }
+                ]
+            })
+        }
+        const labels = cssComposeHint('bg:', settings)?.map(({ label }) => label) || []
+
+        expect(labels).toEqual(expect.arrayContaining(['accent', 'blue', 'cover']))
+        expect(labels.filter((label) => label === 'blue')).toHaveLength(1)
+    })
+
+    test.concurrent('vendor-prefixed text-size-adjust values use unprefixed syntax data', () => {
+        for (const property of ['-webkit-text-size-adjust', '-moz-text-size-adjust', '-ms-text-size-adjust']) {
+            expect(hint(property + ':')?.map(({ label }) => label)).toEqual(expect.arrayContaining(['auto', 'none']))
+        }
     })
 })
 
