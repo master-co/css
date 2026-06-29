@@ -9,7 +9,7 @@ pnpm build
 ```
 Split a new terminal and switch to the target directory for testing to avoid running tests from other packages:
 ```bash
-cd packages/core
+cd packages/facade
 ```
 
 ## Testing
@@ -18,7 +18,7 @@ pnpm test -- --watch
 ```
 
 ### Contributing your test cases
-Taking the CSS project as an example, you can freely create a file like **aron.test.ts** in [packages/core/tests/contributions](https://github.com/master-co/css/tree/dev/rc/packages/core/tests/contributions) for unit testing:
+Taking the CSS project as an example, you can freely create a file like **aron.test.ts** in [packages/facade/tests/contributions](https://github.com/master-co/css/tree/dev/rc/packages/facade/tests/contributions) for unit testing:
 
 ```ts
 import { createCSS } from '../src'
