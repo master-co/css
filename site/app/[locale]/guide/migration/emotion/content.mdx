@@ -1,0 +1,16 @@
+## Guide status [sr-only]
+This Emotion migration guide is being rebuilt. Use the [quick start](/guide/migration) to direct your local coding agent, then ask it to inspect Emotion-specific styling before changing code.
+
+## Inspect first
+- `@emotion/react`, `@emotion/styled`, `css` prop usage, and object style helpers.
+- Theme providers, `Global` styles, shared fragments, and variant props.
+- Components where static class strings would be clearer than runtime style objects.
+- Dynamic styles that should stay in component logic until there is a simpler Master CSS form.
+
+## References
+- [Installation](/guide/installation) for adding Master CSS.
+- [Rendering modes](/guide/rendering-modes) for choosing static, runtime, or progressive rendering.
+- [Style declarations](/guide/style-declarations) for class syntax.
+- [Customizing your theme](/guide/theme) for tokens and custom variants.
+- [Reusing styles](/guide/reusing-styles) for deciding what should stay in markup or move into CSS.
+- [Code linting](/guide/code-linting) for validating class strings during migration.
