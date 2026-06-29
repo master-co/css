@@ -2,13 +2,13 @@ import { afterEach, describe, expect, it } from 'vitest'
 import { chromium, type Browser } from '@playwright/test'
 import { createServer, type ViteDevServer } from 'vite'
 import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
-import { tmpdir } from 'node:os'
 import path from 'node:path'
 import masterCSS from '../src'
 
 let server: ViteDevServer | undefined
 let browser: Browser | undefined
 let fixtureDir: string | undefined
+const fixtureRoot = path.resolve(__dirname, '../tmp')
 
 function writeStyle(root: string, displayClass: string) {
     writeFileSync(path.join(root, 'app.css'), [
@@ -36,7 +36,8 @@ afterEach(async () => {
 
 describe('Vite dev HMR', () => {
     it('updates runtime CSS without full reload and recovers after invalid CSS', async () => {
-        fixtureDir = mkdtempSync(path.join(tmpdir(), 'master-css-vite-dev-hmr-'))
+        mkdirSync(fixtureRoot, { recursive: true })
+        fixtureDir = mkdtempSync(path.join(fixtureRoot, 'dev-hmr-'))
         mkdirSync(fixtureDir, { recursive: true })
         writeFileSync(path.join(fixtureDir, 'index.html'), [
             '<!doctype html>',
