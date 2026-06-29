@@ -53,11 +53,23 @@ export type BrowserLifecycleScenarioId =
 type LifecycleFamily = 'master' | 'tailwind'
 type ThemeModel = 'class-swap' | 'data-attribute' | 'css-variable'
 type AppendRuleState = 'existing-rule' | 'new-rule'
+type BrowserLifecycleTraceArtifactMode = 'filtered' | 'raw' | 'off'
 
 interface ChromeTraceEvent {
     name?: string
+    cat?: string
     ph?: string
+    ts?: number
     dur?: number
+    pid?: number
+    tid?: number
+}
+
+interface BrowserLifecycleTraceArtifact {
+    mode: BrowserLifecycleTraceArtifactMode
+    eventCount: number
+    retainedEventCount: number
+    content?: string
 }
 
 interface BrowserLifecycleModeDescriptor {
@@ -217,6 +229,21 @@ const fixedViewport = {
     width: 1280,
     height: 720
 }
+
+const stylesheetParseTraceNames = new Set([
+    'ParseAuthorStyleSheet',
+    'ParseStyleSheet',
+    'CSSParserImpl::parseStyleSheet'
+])
+
+const styleRecalculationTraceNames = new Set([
+    'UpdateLayoutTree',
+    'RecalculateStyles',
+    'Document::updateStyle'
+])
+
+const layoutTraceNames = new Set(['Layout'])
+const paintTraceNames = new Set(['PrePaint', 'Paint'])
 
 const lifecycleModes = [
     {
@@ -671,6 +698,7 @@ async function createBrowserLifecycleReport(): Promise<BenchmarkReport> {
     const rounds = getBrowserLifecycleRounds()
     const warmupRounds = getBrowserLifecycleWarmupRounds()
     const longSessionMs = getLongSessionDurationMs()
+    const traceArtifactMode = getBrowserLifecycleTraceArtifactMode()
 
     console.log([
         'Browser lifecycle selection:',
@@ -679,7 +707,8 @@ async function createBrowserLifecycleReport(): Promise<BenchmarkReport> {
         `variants=${variants.length}`,
         `rounds=${rounds}`,
         `warmupRounds=${warmupRounds}`,
-        `longSessionMs=${longSessionMs}`
+        `longSessionMs=${longSessionMs}`,
+        `traceArtifactMode=${traceArtifactMode}`
     ].join(' '))
     console.log('Launching Chromium for browser lifecycle benchmark')
     const browser = await chromium.launch({ headless: true })
@@ -998,7 +1027,8 @@ async function measureBrowserLifecycle(options: {
                 const diagnosticsFile = resolve(artifactRoot, 'diagnostics.json')
                 const screenshotFile = resolve(artifactRoot, 'screenshot.png')
                 const runtimeStyleFile = resolve(artifactRoot, 'runtime-style.css')
-                await writeFile(traceFile, `${JSON.stringify({ traceEvents: measurement.events }, null, 2)}\n`)
+                const traceArtifact = createLifecycleTraceArtifact(measurement.events, measurement.values)
+                if (traceArtifact.content) await writeFile(traceFile, `${traceArtifact.content}\n`)
                 await page.screenshot({ path: screenshotFile, fullPage: false })
 
                 const diagnostics = {
@@ -1006,13 +1036,17 @@ async function measureBrowserLifecycle(options: {
                     values: measurement.values,
                     state: measurement.state,
                     action: measurement.action,
+                    traceArtifactMode: traceArtifact.mode,
+                    traceEventCount: traceArtifact.eventCount,
+                    retainedTraceEventCount: traceArtifact.retainedEventCount,
                     consoleWarnings,
                     runtimeStyleArtifact: measurement.runtimeStyleText ? 'runtime-style.css' : undefined
                 }
                 await writeFile(diagnosticsFile, `${JSON.stringify(diagnostics, null, 2)}\n`)
                 if (measurement.runtimeStyleText) await writeFile(runtimeStyleFile, measurement.runtimeStyleText)
 
-                const artifactFiles = [traceFile, diagnosticsFile, screenshotFile]
+                const artifactFiles = [diagnosticsFile, screenshotFile]
+                if (traceArtifact.content) artifactFiles.unshift(traceFile)
                 if (measurement.runtimeStyleText) artifactFiles.push(runtimeStyleFile)
 
                 return {
@@ -1801,6 +1835,12 @@ function getBrowserLifecycleMeasureTimeoutMs() {
     return Math.floor(value)
 }
 
+function getBrowserLifecycleTraceArtifactMode(): BrowserLifecycleTraceArtifactMode {
+    const value = process.env.BROWSER_LIFECYCLE_TRACE_ARTIFACT_MODE || 'filtered'
+    if (value === 'filtered' || value === 'raw' || value === 'off') return value
+    throw new Error('BROWSER_LIFECYCLE_TRACE_ARTIFACT_MODE must be one of: filtered, raw, off.')
+}
+
 async function copyLabeledBrowserLifecycleReport(output: {
     outputRoot: string
     jsonFile: string
@@ -2019,23 +2059,90 @@ function omitRuntimeStyleText(state: LifecycleStateWithRuntimeStyle): LifecycleS
     return serializableState
 }
 
-function summarizeTraceEvents(events: ChromeTraceEvent[]): LifecycleTraceMetrics {
-    const styleNames = new Set([
-        'UpdateLayoutTree',
-        'RecalculateStyles',
-        'Document::updateStyle'
-    ])
+function createLifecycleTraceArtifact(
+    events: ChromeTraceEvent[],
+    values: LifecycleMeasurementValues
+): BrowserLifecycleTraceArtifact {
+    const mode = getBrowserLifecycleTraceArtifactMode()
+    if (mode === 'off') {
+        return {
+            mode,
+            eventCount: events.length,
+            retainedEventCount: 0
+        }
+    }
+
+    if (mode === 'raw') {
+        return {
+            mode,
+            eventCount: events.length,
+            retainedEventCount: events.length,
+            content: JSON.stringify({ traceEvents: events })
+        }
+    }
+
+    const retainedEvents = events
+        .filter(isLifecycleSummaryTraceEvent)
+        .map(compactTraceEvent)
 
     return {
-        stylesheetParseMs: sumTraceDurations(events, new Set([
-            'ParseAuthorStyleSheet',
-            'ParseStyleSheet',
-            'CSSParserImpl::parseStyleSheet'
-        ])),
-        styleRecalculationMs: sumTraceDurations(events, styleNames),
-        styleRecalculationCount: countTraceEvents(events, styleNames),
-        layoutMs: sumTraceDurations(events, new Set(['Layout'])),
-        paintMs: sumTraceDurations(events, new Set(['PrePaint', 'Paint'])),
+        mode,
+        eventCount: events.length,
+        retainedEventCount: retainedEvents.length,
+        content: JSON.stringify({
+            mode,
+            eventCount: events.length,
+            retainedEventCount: retainedEvents.length,
+            droppedEventCount: events.length - retainedEvents.length,
+            traceMetrics: createLifecycleTraceMetricsSnapshot(values),
+            traceEvents: retainedEvents
+        })
+    }
+}
+
+function createLifecycleTraceMetricsSnapshot(values: LifecycleMeasurementValues): LifecycleTraceMetrics {
+    return {
+        stylesheetParseMs: values.stylesheetParseMs,
+        styleRecalculationMs: values.styleRecalculationMs,
+        styleRecalculationCount: values.styleRecalculationCount,
+        layoutMs: values.layoutMs,
+        paintMs: values.paintMs,
+        longTaskCount: values.longTaskCount
+    }
+}
+
+function compactTraceEvent(event: ChromeTraceEvent): ChromeTraceEvent {
+    const compact: ChromeTraceEvent = {}
+    if (event.name !== undefined) compact.name = event.name
+    if (event.cat !== undefined) compact.cat = event.cat
+    if (event.ph !== undefined) compact.ph = event.ph
+    if (event.ts !== undefined) compact.ts = event.ts
+    if (event.dur !== undefined) compact.dur = event.dur
+    if (event.pid !== undefined) compact.pid = event.pid
+    if (event.tid !== undefined) compact.tid = event.tid
+    return compact
+}
+
+function isLifecycleSummaryTraceEvent(event: ChromeTraceEvent) {
+    const isSummaryName = Boolean(
+        event.name
+        && (
+            stylesheetParseTraceNames.has(event.name)
+            || styleRecalculationTraceNames.has(event.name)
+            || layoutTraceNames.has(event.name)
+            || paintTraceNames.has(event.name)
+        )
+    )
+    return (event.ph === 'X' && isSummaryName) || isLongTaskTraceEvent(event)
+}
+
+function summarizeTraceEvents(events: ChromeTraceEvent[]): LifecycleTraceMetrics {
+    return {
+        stylesheetParseMs: sumTraceDurations(events, stylesheetParseTraceNames),
+        styleRecalculationMs: sumTraceDurations(events, styleRecalculationTraceNames),
+        styleRecalculationCount: countTraceEvents(events, styleRecalculationTraceNames),
+        layoutMs: sumTraceDurations(events, layoutTraceNames),
+        paintMs: sumTraceDurations(events, paintTraceNames),
         longTaskCount: countLongTasks(events)
     }
 }
@@ -2052,12 +2159,16 @@ function countTraceEvents(events: ChromeTraceEvent[], names: Set<string>) {
 }
 
 function countLongTasks(events: ChromeTraceEvent[]) {
-    return events.filter((event) => (
+    return events.filter(isLongTaskTraceEvent).length
+}
+
+function isLongTaskTraceEvent(event: ChromeTraceEvent) {
+    return (
         event.ph === 'X'
         && typeof event.dur === 'number'
         && event.dur >= 50000
         && Boolean(event.name?.includes('RunTask') || event.name?.includes('ProcessTask'))
-    )).length
+    )
 }
 
 function collectConsoleWarnings(page: Page) {
