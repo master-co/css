@@ -73,7 +73,9 @@ jobs:
               run: pnpm exec playwright install --with-deps --only-shell chromium
             - if: ${{ env.TRUSTED_CI == 'true' && matrix.os != 'ubuntu-latest' }}
               run: pnpm exec playwright install --only-shell chromium
-            - if: ${{ env.TRUSTED_CI == 'true' }}
+            - if: ${{ env.TRUSTED_CI == 'true' && matrix.os == 'windows-latest' }}
+              run: pnpm exec turbo run test --filter="./packages/*" --concurrency=4
+            - if: ${{ env.TRUSTED_CI == 'true' && matrix.os != 'windows-latest' }}
               run: pnpm run test
 
     build-examples:
