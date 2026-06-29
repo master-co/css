@@ -3,8 +3,56 @@ import VSCodeSvg from '~/site/public/icons/visualstudiocode.svg'
 <StepSection>
     <Step $row>
         <StepL>
+            ### <StepNum />Install the Master CSS extension
+            Install the official [Master CSS extension](https://marketplace.visualstudio.com/items?itemName=masterco.master-css) from the Visual Studio Marketplace.
+        </StepL>
+        <StepR>
+            <a className="app-object app-object-interactive flex-col px:lg h:12x font:sm font:medium r:sm leading:1 flex-row!" href="vscode:extension/masterco.master-css">
+                <VSCodeSvg className="ml:-3xs mr:sm" width="20" height="20" />
+                <span>Install to Visual Studio Code</span>
+            </a>
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Enable suggestions in strings
+            Enable quick suggestions inside strings so Master CSS completions appear in markup, JSX, template strings, and helper calls.
+        </StepL>
+        <StepR>
+            ```json name=.vscode/settings.json
+            {
+                "editor.quickSuggestions": {
+                    "strings": true
+                }
+            }
+            ```
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Use a project-aware entry
+            Make sure the project has a CSS entry with `@master entry;`, imports `@master/css`, or declares a Master CSS package dependency in `package.json`. This lets the language service load project variables, components, utilities, and modes.
+        </StepL>
+        <StepR>
+            ```css name=index.css
+            @master entry;
+
+            @theme {
+                --color-primary: #4f46e5;
+            }
+
+            @components {
+                btn {
+                    @compose inline-flex align-items:center gap:2x px:md py:xs r:md fg:primary;
+                }
+            }
+            ```
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
             ### <StepNum />Install the ESLint extension
-            Install the [ESLint extension](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) from the Visual Studio Marketplace.
+            Install the [ESLint extension](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) when you want editor diagnostics and sort-on-save for committed class strings.
         </StepL>
         <StepR>
             <a className="app-object app-object-interactive flex-col px:lg h:12x font:sm font:medium r:sm leading:1 flex-row!" href="vscode:extension/dbaeumer.vscode-eslint">
@@ -16,7 +64,7 @@ import VSCodeSvg from '~/site/public/icons/visualstudiocode.svg'
     <Step $row>
         <StepL>
             ### <StepNum />Set up project linting
-            Add Master CSS linting to the project's ESLint flat config first. Use the setup step in the matching framework installation guide, or add the recommended config directly when the project already has parser support.
+            Add Master CSS linting to the project's ESLint flat config. Use the setup step in the matching framework installation guide, or add the recommended config directly when the project already has parser support.
         </StepL>
         <StepR>
             ```js name=eslint.config.js
@@ -36,6 +84,9 @@ import VSCodeSvg from '~/site/public/icons/visualstudiocode.svg'
         <StepR>
             ```json name=.vscode/settings.json
             {
+                "editor.quickSuggestions": {
+                    "strings": true
+                },
                 "eslint.codeActionsOnSave.rules": [
                     "@master/css/sort-classes"
                 ]
@@ -48,4 +99,4 @@ import VSCodeSvg from '~/site/public/icons/visualstudiocode.svg'
 
 ---
 
-For rule behavior, options, and team policy examples, see [Code linting](/guide/code-linting).
+For editor intelligence details, see [Language Service](/guide/language-service). For rule behavior, options, and team policy examples, see [Code linting](/guide/code-linting).

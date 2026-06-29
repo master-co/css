@@ -4,12 +4,16 @@ const metadata = define({
     title: {
         absolute: 'Language Service for Master CSS'
     },
-    description: 'Enhance the developer experience in code editors or IDEs with syntax highlighting, code completion, and more.',
+    description: 'Use manifest-aware editor intelligence for Master CSS classes, directives, project tokens, generated CSS previews, colors, and workspace-specific configuration.',
     category: 'Getting Started',
     other: {
         subject: 'Language Service'
     },
     order: 4,
+    openGraph: {
+        description: 'Manifest-aware completion, hover previews, highlighting, color tools, and directive diagnostics for Master CSS.'
+    },
+    vercelOG: true,
     fileURL: import.meta.url
 })
 

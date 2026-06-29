@@ -8,7 +8,6 @@ export const { Page, dynamic, revalidate, generateMetadata } = createPage({
     metadata,
     dictionaries,
     categories,
-    noTOC: true,
     content: import('./content.mdx'),
     Layout,
 })
