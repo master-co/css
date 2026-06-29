@@ -91,6 +91,20 @@ const semanticTokens = languageService.renderSemanticTokensAtPosition(textDocume
 
 CSS directive syntax in CSS-family documents is highlighted by the shared TextMate grammar. Semantic tokens are only added for directive class-list spans such as bare `@compose` preludes and quoted `@safelist` strings.
 
+### Directive formatting
+
+```ts
+const edits = languageService.formatDirectives(textDocument)
+```
+
+Directive formatting returns LSP text edits for Master CSS directive source. It supports CSS, SCSS, and LESS documents, plus CSS-family `<style>` blocks in Vue, Svelte, and Astro documents. The formatter repairs directive class-list important markers such as `bg:transparent !` to `bg:transparent!` and does not change compiler semantics or generated CSS.
+
+Pass an LSP range as the second argument for range formatting:
+
+```ts
+const edits = languageService.formatDirectives(textDocument, range)
+```
+
 ## Settings
 
 ```js
@@ -109,6 +123,7 @@ import { settings } from '@master/css-language-service'
 | `inspectSyntax` | `boolean` | `true` | Enables hover inspection and generated CSS previews. |
 | `renderSyntaxColors` | `boolean` | `true` | Enables color rendering. |
 | `editSyntaxColors` | `boolean` | `true` | Enables color editing. |
+| `formatDirectives` | `boolean` | `true` | Enables Master CSS directive formatting. |
 | `embeddedSyntaxHighlighting` | `'active' \| 'always' \| 'off'` | `'active'` | Controls embedded semantic token highlighting. |
 
 Use `@master/css-language` directly for browser helpers, Shiki integration, TextMate grammar assets, and raw class-position scanning.

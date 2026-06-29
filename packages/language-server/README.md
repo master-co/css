@@ -73,7 +73,7 @@ import CSSLanguageServer from '@master/css-language-server'
 const languageServer = new CSSLanguageServer(connection, customSettings)
 ```
 
-`CSSLanguageServer` wraps `@master/css-language-service` with LSP workspace lifecycle, completion, hover, document color, color presentation, and semantic token handlers.
+`CSSLanguageServer` wraps `@master/css-language-service` with LSP workspace lifecycle, completion, hover, document color, color presentation, semantic token, and directive formatting handlers.
 
 ## Semantic tokens
 
@@ -87,6 +87,12 @@ The language server supports full-document and active-position semantic tokens.
 
 CSS directive syntax is highlighted by the shared TextMate grammar. Server semantic tokens cover Master CSS class-list spans and directive class-list spans such as `@compose` and `@safelist`.
 
+## Formatting
+
+The server advertises `documentFormattingProvider` and `documentRangeFormattingProvider` when `formatDirectives` is enabled. Formatting returns directive-only edits for CSS, SCSS, and LESS documents, plus CSS-family `<style>` blocks in Vue, Svelte, and Astro documents.
+
+Directive formatting normalizes safe directive spacing and repairs class-list important markers such as `bg:transparent !` to `bg:transparent!`. It does not run the compiler and does not change generated CSS output.
+
 ## Settings
 
 ```js
@@ -97,6 +103,7 @@ import { settings } from '@master/css-language-server'
 | --- | --- | --- | --- |
 | `workspaces` | `FastGlobPattern[] \| 'auto'` | `'auto'` | Workspace roots where independent language services are created. The root workspace is always included. |
 | `verbose` | `boolean` | `false` | Print server logs. |
+| `formatDirectives` | `boolean` | `true` | Enables LSP document and range formatting for Master CSS directives. |
 | `embeddedSyntaxHighlighting` | `'active' \| 'always' \| 'off'` | `'active'` | Inherited language-service semantic token mode. |
 
 With `workspaces: 'auto'`, the server creates workspaces from CSS files importing `@master/css`, CSS files containing the lightweight `@master entry;` marker, and `package.json` files that declare Master CSS package dependencies.

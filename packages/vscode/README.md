@@ -8,7 +8,7 @@
 
 </div>
 
-Master CSS for Visual Studio Code provides manifest-aware language features for Master CSS classes, CSS directives, and project-specific tokens. The extension starts the bundled Master CSS language server, loads the nearest project manifest, and brings completion, hover, TextMate directive highlighting, semantic class-list highlighting, color tools, and directive diagnostics into supported files.
+Master CSS for Visual Studio Code provides manifest-aware language features for Master CSS classes, CSS directives, and project-specific tokens. The extension starts the bundled Master CSS language server, loads the nearest project manifest, and brings completion, hover, TextMate directive highlighting, semantic class-list highlighting, color tools, directive diagnostics, and directive formatting into supported files.
 
 ## Quick Start
 
@@ -46,10 +46,13 @@ For project-aware tokens, create a CSS entry that imports `@master/css`, or decl
 - **Embedded highlighting modes**: Highlights the active class context by default, can highlight every discovered embedded utility, or can disable embedded utility highlighting.
 - **Color support**: Shows VS Code color decorators for supported Master CSS color syntax and lets the VS Code color picker edit those values.
 - **Directive diagnostics**: Reports Master CSS directive errors in CSS, SCSS, LESS, and style blocks inside Vue, Svelte, and Astro files.
+- **Directive formatting**: Formats Master CSS directives and keeps class important markers attached, such as `bg:transparent !` to `bg:transparent!`.
 - **Workspace-aware manifests**: Loads project manifests from the closest detected Master CSS workspace so completions and tokens reflect custom variables, components, utilities, and modes.
 - **Restart command**: Provides `Master CSS: Restart Language Server` for reloading the language server after dependency, manifest, or workspace changes.
 
 The default language list covers HTML, PHP, JavaScript, TypeScript, JSX, TSX, CSS, SCSS, LESS, Vue, Svelte, Rust, Astro, Markdown, and MDX.
+
+For CSS, SCSS, and LESS document formatting, the extension delegates to VS Code's existing formatter first, then repairs Master CSS directive spacing and class-list important markers on the formatted text. Vue, Svelte, and Astro CSS-family `<style>` blocks can be formatted when Master CSS is explicitly selected as the formatter, but the extension does not take over their default formatters automatically.
 
 ## Workspace Discovery
 
@@ -80,6 +83,7 @@ Set options in `.vscode/settings.json` or VS Code user settings with the `master
 ```json
 {
     "masterCSS.suggestSyntax": true,
+    "masterCSS.formatDirectives": true,
     "masterCSS.embeddedSyntaxHighlighting": "active"
 }
 ```
@@ -95,6 +99,7 @@ Set options in `.vscode/settings.json` or VS Code user settings with the `master
 | `masterCSS.suggestSyntax` | `boolean`, default `true` | Enables Master CSS completion items. |
 | `masterCSS.inspectSyntax` | `boolean`, default `true` | Enables hover inspection and generated CSS previews. |
 | `masterCSS.renderSyntaxColors` | `boolean`, default `true` | Enables color information for Master CSS syntax. |
+| `masterCSS.formatDirectives` | `boolean`, default `true` | Enables Master CSS directive formatting in CSS-family documents. |
 | `masterCSS.embeddedSyntaxHighlighting` | `"active"`, `"always"`, or `"off"`; default `"active"` | Controls semantic highlighting for embedded utilities in markup and scripts. CSS directive syntax is still highlighted by the TextMate grammar. |
 | `masterCSS.workspaces` | `"auto"` or `string[]`, default `"auto"` | Configures Master CSS workspaces. Auto mode detects CSS entries and Master CSS package dependencies. |
 
@@ -187,6 +192,14 @@ Choose embedded highlighting behavior:
 ```
 
 Use `active` for lower-noise active-context highlighting, `always` to highlight all discovered embedded utility classes, and `off` to disable embedded utility highlighting. Master CSS syntax inside CSS, SCSS, and LESS documents remains highlighted by the extension.
+
+Disable directive formatting when another formatter integration must own all directive whitespace:
+
+```json
+{
+    "masterCSS.formatDirectives": false
+}
+```
 
 ## Commands
 

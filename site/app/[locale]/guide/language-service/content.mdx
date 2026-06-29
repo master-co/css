@@ -40,6 +40,27 @@ Color syntax can use VS Code color decorators and the color picker. This include
 <span class="fg:#4f46e5 bg:blue-60/.1">Primary</span>
 ```
 
+### Directive formatting
+Document and range formatting can repair Master CSS directive source without changing compiler semantics, cascade behavior, or generated CSS. It is enabled by default with `masterCSS.formatDirectives`.
+
+The formatter supports CSS, SCSS, and LESS documents. It also scans CSS-family `<style>` blocks in Vue, Svelte, and Astro documents when the Master CSS formatter handles the request.
+
+For class-list directives, formatting keeps important markers attached to the class token:
+
+```css
+.card {
+    @compose bg:transparent !;
+}
+```
+
+becomes:
+
+```css
+.card {
+    @compose bg:transparent!;
+}
+```
+
 ### Directive diagnostics
 The language server reports Master CSS directive errors in CSS, SCSS, LESS, and style blocks inside Vue, Svelte, and Astro files. These diagnostics focus on stylesheet directive authoring, such as invalid `@compose` classes.
 
@@ -137,6 +158,7 @@ Set options in `.vscode/settings.json` or VS Code user settings with the `master
     "masterCSS.suggestSyntax": true,
     "masterCSS.inspectSyntax": true,
     "masterCSS.renderSyntaxColors": true,
+    "masterCSS.formatDirectives": true,
     "masterCSS.embeddedSyntaxHighlighting": "active"
 }
 ```
@@ -146,6 +168,7 @@ Set options in `.vscode/settings.json` or VS Code user settings with the `master
 | `masterCSS.suggestSyntax` | `true` | Enables Master CSS completion items. |
 | `masterCSS.inspectSyntax` | `true` | Enables hover inspection and generated CSS previews. |
 | `masterCSS.renderSyntaxColors` | `true` | Enables color information for supported Master CSS color syntax. |
+| `masterCSS.formatDirectives` | `true` | Enables Master CSS directive formatting in CSS-family documents and style blocks. |
 | `masterCSS.embeddedSyntaxHighlighting` | `active` | Controls semantic highlighting for embedded utility classes. |
 | `masterCSS.workspaces` | `auto` | Controls workspace detection for project-aware manifests. |
 

@@ -22,7 +22,7 @@ npm install @master/css-language
 
 ## Usage
 
-`@master/css-language` provides editor-neutral Master CSS language primitives such as semantic token legends, class-list tokenizers, class-position scanning, browser semantic tokens, Shiki integration, and the shared TextMate grammar.
+`@master/css-language` provides editor-neutral Master CSS language primitives such as semantic token legends, class-list tokenizers, class-position scanning, directive formatting, browser semantic tokens, Shiki integration, and the shared TextMate grammar.
 
 ### Semantic token legend
 
@@ -65,3 +65,19 @@ import { getClassPositions, languageSettings } from '@master/css-language'
 
 const positions = getClassPositions(textDocument, languageSettings)
 ```
+
+### Directive formatting
+
+Use `formatMasterCSSDirectives()` when an editor integration needs source-offset edits for Master CSS directive formatting without LSP service lifecycle.
+
+```ts
+import {
+    applyMasterCSSDirectiveFormatEdits,
+    formatMasterCSSDirectives
+} from '@master/css-language'
+
+const edits = formatMasterCSSDirectives(source)
+const formatted = applyMasterCSSDirectiveFormatEdits(source, edits)
+```
+
+The helper repairs directive class-list important markers such as `bg:transparent !` to `bg:transparent!` and returns offset edits only; it does not compile CSS or change generated output.
