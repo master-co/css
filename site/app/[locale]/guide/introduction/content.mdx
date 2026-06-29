@@ -1,466 +1,111 @@
-## What is Master CSS? [sr-only]
+## Overview [sr-only]
+Master CSS is a markup-driven CSS language and framework. This quick introduction shows the basic class syntax, the project CSS entry, the main delivery choices, and the next guides to read.
 
 ---
 
-## The CSS language
-Master CSS is a markup-driven CSS language and framework. It lets you write CSS decisions directly in HTML, JSX, Vue, Svelte, and other template markup using compact class syntax.
+## What is Master CSS?
+Master CSS lets you write styling decisions in markup using CSS-like class strings, then generates the CSS those classes need.
 
-Think of each class as a small CSS statement:
-
-- Start with the declaration you want, such as `fg:blue-60`, `font:3xl`, or `text-center`.
-- Add a selector state when the style should react, such as `:hover`.
-- Add a conditional query when the style should be scoped, such as `@sm` or `@dark`.
+Use it when you want the style to stay close to the element while still keeping access to real CSS features such as tokens, selectors, media queries, cascade layers, and generated stylesheets.
 
 ```html
-<!-- @MARK fg:blue-60 --><!-- @MARK :hover --><!-- @MARK @sm -->
-<h1 class="fg:blue-60 fg:red-60:hover font:3xl font:5xl@sm font:heavy m:2xl text-center">
+<h1 class="m:0 font:4xl font:heavy fg:blue-60">
     Hello World
 </h1>
 ```
 
-<Demo $py={0}>
-    <h1 className="fg:blue-60 fg:red-60:hover font:3xl font:5xl@sm font:heavy m:2xl text-center">Hello World</h1>
-</Demo>
+Each class is a small styling instruction:
 
-<details>
-    <summary>Generated CSS</summary>
-    <Class2CSS>
-        {'fg:blue-60 fg:red-60:hover font:3xl font:5xl@sm font:heavy m:2xl text-center'}
-    </Class2CSS>
-</details>
+- `m:0` sets margin to zero.
+- `font:4xl` uses a font-size token.
+- `font:heavy` sets font weight.
+- `fg:blue-60` sets the text color.
 
-Under the hood, Master CSS generates real CSS rules, adds [vendor prefixes](/guide/compatibility#vendor-prefixes), places rules in predictable [cascade layers](/guide/cascade-layers), and [orders CSS rules](#smart-rule-ordering) for you. You keep the styling decision close to the element, while the engine handles the CSS output.
-
-For one-off interface work, you can stay in markup. When a value, selector, condition, primitive, native rule, or repeated pattern becomes part of your product vocabulary, move it into the [project CSS entry](/guide/theme) as a token, selector token, at token, utility, native composed rule, or [component class](/guide/reusing-styles#component-classes).
-
-### Readable structured syntax
-Master CSS is not trying to put a second `style=""` attribute inside `class=""`. The syntax is CSS-like, but it is designed to be shorter, composable, and easier for tools to understand.
-
-It can begin with native CSS wording, then become shorter as the meaning becomes clear:
-
-```html
-<!-- Same as native CSS -->
-<div class="text-align:center">
-
-<!-- Context-aware shorthand -->
-<div class="text-center">
-
-<!-- Abbreviation -->
-<div class="text-center">
-```
-
-It can express common CSS values without ceremony:
-
-```html
-<!-- Set the background to blue-60 with 50% opacity -->
-<div class="bg:blue-60/.5">
-
-<!-- Scale the element to 1.5x -->
-<div class="transform:scale(1.5)">
-
-<!-- Transition transform for .3s with ease timing -->
-<div class="transition:transform|.3s|ease">
-
-<!-- Use a static utility that emits display: block -->
-<div class="block">
-```
-
-It can attach [state selectors](/guide/state-selectors) and [selector variants](/guide/theme#selector-variants) to the same declaration:
-
-```html
-<!-- Set a pink background on hover -->
-<div class="bg:blue-70:hover">
-
-<!-- Set a pink background for all subsequent siblings -->
-<div class="bg:blue-60~*">
-
-<!-- Set a pink background for all subsequent div siblings -->
-<div class="bg:blue-60+div">
-
-<!-- Set a pink background for descendant p elements -->
-<div class="bg:blue-60_:where(p)">
-
-<!-- Use :first instead of :nth-child(...) -->
-<div class="bg:blue-60:first">
-```
-
-It can also attach [responsive](/guide/responsive-design) and [conditional](/guide/conditional-queries) rules:
-
-```html
-<!-- Set width to 800px when viewport width is at least 1024px -->
-<div class="width:800px@>=1024">
-
-<!-- Use a breakpoint theme token -->
-<div class="width:800px@sm">
-
-<!-- Position at 1px when viewport width is >= xs and < lg -->
-<div class="top:1px@xs&<lg">
-
-<!-- Set background to gray-20 in dark mode -->
-<div class="bg:gray-20@dark">
-
-<!-- Hide the element for print -->
-<div class="hidden@print">
-
-<!-- Fade only when reduced motion is not requested -->
-<div class="animation:fade|.2s@motion">
-```
-
-You do not need to memorize everything before starting. Begin with explicit CSS-like classes, then adopt shorthands, abbreviations, tokens, and functions when they make the markup easier to read.
-
-### Tooling built for class syntax
-Class-heavy markup can become hard to scan when every class is plain text. The [Master CSS Language Service](/guide/language-service) gives class names semantic highlighting, autocompletion, generated CSS previews, and syntax-aware feedback inside editors.
-
-(!) Utility classes are hard to read when the editor cannot identify the property, value, selector, and query.
-<Demo $py={0}>
-    <DemoPanel>
-        <code className="font:md@sm token language-html">
-            <span className="token tag"><span className="token tag"><span className="token punctuation">&lt;</span>div</span> <span className="token attr-name">class</span><span className="token attr-value"><span className="token punctuation attr-equals">=</span><span className="token punctuation">"</span>sm:hover:bg-[#ceb195] …<span className="token punctuation">"</span></span><span className="token punctuation">&gt;</span></span>
-        </code>
-    </DemoPanel>
-</Demo>
-
-(o) Master CSS highlights the declaration, value, selector state, and conditional query.
-<Demo $py={0}>
-    <DemoPanel>
-        <InlineCode lang="html" className="font:md@sm">{'<div class="bg:#ceb195:hover@sm …">'}</InlineCode>
-    </DemoPanel>
-</Demo>
-
-(!) Without syntax-aware tooling, long class strings read like one flat sequence.
-```text
-mt-9 rounded-lg flex text-slate-700 hover:bg-slate-200 sm:bg-slate-300
-mt-9 rounded-lg flex text-slate-700 hover:bg-slate-200 sm:bg-slate-300
-mt-9 rounded-lg flex text-slate-700 hover:bg-slate-200 sm:bg-slate-300
-```
-
-(o) With Master CSS highlighting, each class keeps its CSS shape.
-```text
-mt:9x r:lg flex fg:slate-70 bg:slate-20:hover bg:slate-30@sm
-mt:9x r:lg flex fg:slate-70 bg:slate-20:hover bg:slate-30@sm
-mt:9x r:lg flex fg:slate-70 bg:slate-20:hover bg:slate-30@sm
-```
-
-### Predictable authoring
-Master CSS also gives teams guardrails for class syntax. [Code linting](/guide/code-linting) can catch invalid classes, enforce consistent class order, reject unknown classes, detect collisions, and validate classes inside JavaScript utilities such as `clsx()`.
-
-<Image className="aspect-ratio:2/1 r:lg max-w:3xl w:full" src={require('~/site/public/syntax-error-checks.webp').default} alt="Syntax error checks" unoptimized />
-
-(x) <span className="text:danger">Invalid value for `font` property.</span>
-```html
-<!-- @MARK font: -->
-<div class="font:">…</div>
-```
-
-This matters because markup-driven CSS should still be refactorable, reviewable, and safe in large codebases. You get the speed of authoring in markup without giving up validation.
+You do not need to learn every shorthand before starting. Use the classes that read clearly, then move deeper into the syntax guides when you need more control.
 
 ---
 
-## The CSS framework
-Master CSS is also a standalone CSS framework. It includes the core rule engine, browser runtime rendering, server rendering, static rendering, framework integrations, [code linting](/guide/code-linting), [language service](/guide/language-service), and a CSS-first [theme](/guide/theme).
+## Write your first class
+Start with local styling in markup. This is enough for a first screen, prototype, or component draft:
 
-<details>
-    <summary>View all official packages</summary>
-    <div>
-        <Packages />
-    </div>
-</details>
+```html
+<section class="grid gap:md p:lg r:lg bg:blue-60 fg:white">
+    <h2 class="m:0 font:2xl font:semibold">Dashboard</h2>
+    <p class="m:0 fg:white/.8">A compact panel styled from its class list.</p>
+</section>
+```
 
-### CSS-first manifest authoring
-The project CSS entry is the primary manifest source. Theme tokens live in `@theme`, reusable selector and conditional variants use `@custom-variant`, low-level custom utilities live in `@utilities`, semantic component classes live in `@components`, and native CSS rules can use `@compose` when they should lower to ordinary stylesheet output.
+Master CSS reads those class names, validates them against the active project vocabulary, and emits CSS for the classes that are actually used.
 
-```css name=index.css
+When a value or pattern becomes shared across the product, promote it later. Repeated values usually belong in [theme tokens](/guide/theme), and repeated product roles can become [component classes](/guide/reusing-styles#component-classes).
+
+---
+
+## Add states and conditions
+A Master CSS class can carry the condition that controls when it applies.
+
+```html
+<!-- @MARK :hover --><!-- @MARK @md -->
+<button class="px:md py:xs r:md bg:blue-60 bg:blue-70:hover grid-cols:2@md fg:white">
+    Save
+</button>
+```
+
+Read the suffixes after the declaration:
+
+- `bg:blue-70:hover` changes the background on hover.
+- `grid-cols:2@md` applies at the `md` breakpoint.
+
+The same idea extends to responsive design, dark mode, print styles, container queries, feature queries, attributes, pseudo-classes, and custom variants. Learn the pieces in [Style Declarations](/guide/style-declarations), [State Selectors](/guide/state-selectors), and [Conditional Queries](/guide/conditional-queries).
+
+---
+
+## Add a project CSS entry
+Most projects start by importing Master CSS from the stylesheet the app already loads:
+
+```css name=app.css
+@import "@master/css";
+```
+
+That stylesheet becomes the project CSS entry. It can later define shared styling vocabulary:
+
+```css name=app.css
+@import "@master/css";
+
 @theme {
-    --color-primary: #4f46e5;
-    --breakpoint-md: 48rem;
-}
-
-@custom-variant @motion-safe { @media (prefers-reduced-motion: no-preference) { @slot; } }
-@custom-variant :interactive { &:is(:hover, :focus-visible) { @slot; } }
-
-@components {
-    btn {
-        @compose inline-flex align-items:center justify-content:center px:md py:xs r:lg;
-        background: var(--color-primary);
-
-        @variant :interactive {
-            @compose outline:2px|solid|blue-60 outline-offset:0.125rem;
-        }
-    }
-}
-
-.notice {
-    @compose p:md r:lg;
-
-    @variant @motion-safe {
-        @compose transition:opacity|fast|smooth;
-    }
+    --color-brand: #4f46e5;
+    --spacing-card: 1.5rem;
 }
 ```
-
-The `@theme`, `@settings`, top-level custom directives, and managed definition directives are manifest inputs, not regular stylesheet output. Master CSS compiles them into a `MasterCSSManifest`, then generates only the classes used in markup, discovered by source scanners, or composed by another CSS-defined style. Native rules such as `.notice` lower to CSS for the stylesheet that contains them.
-
-### Rendering for different delivery models
-Master CSS provides three main [rendering modes](/guide/rendering-modes):
-
-- Runtime rendering watches class names in the browser and generates rules as elements appear or change.
-- Static rendering scans source files during builds and emits CSS before deployment.
-- Progressive rendering pre-renders first-page CSS, then hydrates the runtime for dynamic classes.
-
-Choose the mode that fits your framework and deployment model. A static marketing page, an SSR application, and a highly dynamic dashboard can all use the same class syntax while delivering CSS differently.
-
-The [benchmarks](/guide/benchmarks) compare page-level CSS weight and delivery tradeoffs with reproducible inputs. On this documentation site, Master CSS keeps page CSS around **~6 kB per page** with brotli compression because it emits only the rules required by that page.
-
-[Progressive rendering](/guide/rendering-modes#progressive-rendering) works by pre-rendering critical CSS from rendered class names, then deferring the runtime engine for future dynamic classes. The [Next.js guide](/guide/installation/nextjs) uses this model through the React runtime provider and the Next.js adapter.
-
-```html name=index.html
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    …
-    <!-- Generate only the critical CSS required for the page. -->
-    <style id="master-css">
-        .block { /* [!code ++] */
-            display: block /* [!code ++] */
-        } /* [!code ++] */
-    </style>
-</head>
-<body>
-    <!-- @MARK block -->
-    <h1 class="block">Hello World</h1>
-</body>
-</html>
-```
-
-Master CSS generates optimized CSS directly. Integrations can pre-render, statically render, or hydrate CSS without depending on a PostCSS, Autoprefixer, or CSS minifier pipeline.
-
-### The foundation for design systems
-Master CSS provides a rich [theme layer](/guide/theme) for scalable design systems. Use theme tokens for color, spacing, typography, radius, elevation, and motion; use [breakpoints](/guide/breakpoints), [containers](/guide/containers), [sizing](/guide/sizing), and the [layout system](/guide/layout-system) to keep page structure aligned with those foundations.
-
-The important habit is to abstract only when the abstraction carries product meaning. A `primary` color, a `breakpoint-md` breakpoint, or a `btn` component can communicate a shared design decision. A one-off homepage flourish usually belongs directly in markup until the pattern proves itself.
-
-### Predictable cascade layers
-The default `@master/css/base.css` stylesheet declares the cascade layer order once:
-
-```css
-@layer theme, base, defaults, components, utilities;
-```
-
-Generated CSS emits rules into `theme`, `base`, `defaults`, `components`, and `utilities` blocks. `theme` emits variables, `base` normalizes the platform, `defaults` holds broad defaults, `components` holds product vocabulary from CSS-defined component classes, and `utilities` holds utility classes. Because `utilities` comes last, local utility decisions can override reusable project styles without reaching for `!important`.
-
----
-
-## Why author styles in markup?
-Traditional CSS often asks you to name an abstraction before you know whether the style deserves one. That can be expensive during product work, where layouts, content, and interaction details change quickly.
-
-### Premature abstraction
-<PrematureAbstraction />
-
-When a team starts by naming every visual detail, each small change can trigger design questions that are not really about design:
-
-- What should this class be called?
-- Is `.card` already used somewhere else?
-- Is `.card-title` part of a naming convention everyone follows?
-- Does this style belong to all cards, this page only, or this one element?
-- Will a small variation require another class name?
-- Which stylesheet owns this rule?
-- Which selector or media query might override it?
-- Is `!important` needed because of specificity?
-- If the rule changes, where else will it leak?
-
-These questions are sometimes necessary, but they should appear when abstraction is justified, not before the first interface exists.
-
-### Syntax first, semantic second
-Master CSS encourages a mixed strategy: **syntax first, semantic second**.
-
-Use syntax classes when:
-
-- The style is local to one element or one section.
-- The design is still being explored.
-- The class list communicates the decision more clearly than a new name.
-- There is no stable reuse pattern yet.
-
-Use semantic tokens and components when:
-
-- A value must stay consistent across the product.
-- A repeated pattern has a clear role, such as `btn`, `field`, `card`, or `navbar`.
-- The team has a design-system decision worth naming.
-- Consumers should use the concept without knowing every underlying utility.
-
-Assuming the card has become reusable, define it as a [component class](/guide/reusing-styles#component-classes) in the project CSS entry:
-
-```css name=index.css
-@components {
-    card {
-        @compose flex transition:transform|fast|smooth overflow:hidden surface:raised b:1px|solid|base r:xl;
-
-        &:hover {
-            @compose transform:translateY(-5px);
-        }
-    }
-
-    card-image {
-        @compose object-cover w:35x aspect-ratio:16/9;
-    }
-
-    .card-content {
-        @compose p:lg;
-    }
-
-    .card-title {
-        @compose font:lg font:medium;
-    }
-
-    .card-text {
-        @compose font:sm line-clamp:2;
-    }
-}
-```
-
-Then use the semantic classes in markup:
-
-```html name=card.html
-<div class="card">
-    <img class="card-image" … />
-    <div class="card-content">
-        <div class="card-title">Mountain</div>
-        <div class="card-text">A mountain is an elevated portion of the Earth's crust, generally with steep sides that show significant exposed bedrock.</div>
-    </div>
-</div>
-```
-
-The component definitions stay on-demand. They are emitted in the `components` layer only when `card`, `card-image`, and the other component classes appear in markup, are discovered by source scanning, or are composed by another CSS-defined style.
-
----
-
-### Generate CSS based on markup
-<GeneratedCSSBasedOnMarkup />
-
-### Smart rule ordering
-CSS rule order decides which matching rule wins. Responsive styles are a common place to make mistakes.
-
-"Center-align the homepage headline when the viewport width is `>=1280px`, and align right when it is `>=1024px`."
-
-(x) Incorrect responsive media rule order.
-```css
-@media (width>=80rem) {
-    h1 {
-        text-align: center;
-    }
-}
-
-@media (width>=64rem) {
-    h1 {
-        text-align: right;
-    }
-}
-```
-
-When the viewport is at least `80rem`, both media queries match. Because the `64rem` rule appears later, it wins, so the headline stays right-aligned instead of centered.
-
-(o) Let Master CSS generate the correct priority order.
-```html
-<!-- @MARK text-right@md text-center@lg -->
-<h1 class="text-right@md text-center@lg">
-```
-
-No matter how you order the classes in markup, Master CSS emits the media rules in the order that matches the intended cascade:
-
-```css
-@media (width>=64rem) {
-    .text\:right\@md {
-        text-align: right
-    }
-}
-
-@media (width>=80rem) {
-    .text\:center\@lg {
-        text-align: center
-    }
-}
-```
-
-The same priority model covers selector states such as `:disabled`, `:active`, `:focus`, `:hover`, selector expressions such as `:where()`, and breakpoint combinations such as `@lg` or `@sm&<lg`.
-
-### Unit-sensed conversions
-Design specs often use pixels, while browser-friendly typography and spacing often need relative units. Master CSS can infer common units and convert them for you.
-
-(!) Without conversion, you need to remember that `24px` equals `1.5rem`.
-
-| px  | 12    | 14    | 16    | 18    | 20    | 22    | 24    | 26    | 28    |
-| --- | ----- | ----- | ----- | ----- | ----- | ----- | ----- | ----- | ----- |
-| rem | 0.75  | 0.875 | 1     | 1.125 | 1.25  | 1.375 | 1.5   | 1.625 | 1.75  |
 
 ```html
-<!-- @MARK font:1.5rem -->
-<h1 class="font:1.5rem">
+<article class="p:card bg:brand fg:white">
+    ...
+</article>
 ```
 
-(o) Omit the unit when the property can infer it clearly.
-```html
-<!-- @MARK font:24px -->
-<h1 class="font:24px">
-```
-
-<details>
-    <summary>Generated CSS</summary>
-    <Class2CSS>
-        {'font:24px'}
-    </Class2CSS>
-</details>
-
-This keeps markup close to design measurements while still producing practical CSS output.
+Keep this simple at first. Add tokens, component classes, custom utilities, and custom variants only when the project has a repeated decision worth naming.
 
 ---
 
-## Separation of concerns
-Master CSS does not treat "HTML in one file, CSS in another file" as the only way to separate concerns. For UI work, structure and style often describe the same component responsibility.
+## Choose how CSS is delivered
+Master CSS uses the same class syntax across different delivery modes. Choose the mode that fits the app:
 
-The concern to separate is usually business responsibility: page layout, product component, reusable primitive, form control, data display, theme token, and so on. A class such as `text:primary:hover@sm` is not business logic; it is the styling decision for an element in a particular UI state.
+- Runtime rendering watches class names in the browser and generates CSS as elements appear or change.
+- Static rendering scans source files during the build and emits CSS before deployment.
+- Server or pre-rendered CSS generates CSS from rendered HTML.
+- Progressive rendering sends first-page CSS early, then lets the runtime handle later dynamic classes.
 
-> Separate responsibilities, not files by default.
-
-When the styling decision is local, markup is the clearest place for it. When the decision becomes shared vocabulary, promote it into tokens, utilities, native composed CSS, or components.
-
----
-
-## Why not just inline styles?
-Inline styles look similar at first, but they cannot express the CSS features most interfaces need.
-
-(x) Inline styles cannot apply selectors, media queries, pseudo-classes, cascade layers, or reusable design tokens.
-```html
-<button style="font-size: 0.875rem" disabled>Oops!</button>
-```
-
-(o) Master CSS keeps those CSS capabilities available in markup.
-```html
-<!-- @MARK @md [disabled] -->
-<button class="font:sm font:xl@md opacity:.5[disabled]" disabled>Bravo!</button>
-```
-
-(o) It also keeps the interface aligned with design tokens.
-```html
-<h1 class="font:lg fg:blue-60">Hello World</h1>
-```
+You can start with the recommended setup for your framework, then revisit delivery once the project shape is clearer. See [Rendering Modes](/guide/rendering-modes) when you need to compare the tradeoffs.
 
 ---
 
-## What to read next
-If you are new to Master CSS, continue in this order:
+## Keep going
+If you are new to Master CSS, read these next:
 
-1. [Installation](/guide/installation) to set up the package for your framework.
-2. [Style declarations](/guide/style-declarations) to learn the class syntax in detail.
-3. [State selectors](/guide/state-selectors), [responsive design](/guide/responsive-design), and [conditional queries](/guide/conditional-queries) to control when styles apply.
-4. [Rendering modes](/guide/rendering-modes) to choose runtime rendering, static rendering, or progressive rendering.
-5. [Theme](/guide/theme) and [component classes](/guide/reusing-styles#component-classes) when your project needs shared vocabulary.
-
----
-
-## Comprehensive comparisons
-For a broader positioning snapshot, here is a comparison of Master CSS, Tailwind CSS, and Bootstrap:
-
-<Comparisons />
-
----
-
-<StarUs />
+1. [Installation](/guide/installation) to add Master CSS to a project.
+2. [Style Declarations](/guide/style-declarations) to learn how class names map to CSS.
+3. [State Selectors](/guide/state-selectors) and [Conditional Queries](/guide/conditional-queries) to control when styles apply.
+4. [Customizing your Theme](/guide/theme) when you need shared tokens, modes, variants, components, or utilities.
+5. [Rendering Modes](/guide/rendering-modes) when CSS delivery matters.
+6. [Language Service](/guide/language-service), [Code Linting](/guide/code-linting), and [AI Coding](/guide/ai-coding) when you want editor help, team checks, or AI-assisted styling.
