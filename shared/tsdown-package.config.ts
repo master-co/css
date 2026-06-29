@@ -12,7 +12,6 @@ const packageRoot = process.cwd()
 const packageJSON = JSON.parse(readFileSync(resolve(packageRoot, 'package.json'), 'utf8')) as PackageJSON
 
 const entryByPackageName: Record<string, TsdownInputOption> = {
-    '@master/css-preset': ['src/**/*.ts', '!src/**/*.d.ts'],
     '@master/css.react': ['src/**/*.tsx'],
     '@master/eslint-plugin-css': ['src/**/*.{js,ts}']
 }

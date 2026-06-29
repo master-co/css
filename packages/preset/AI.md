@@ -34,7 +34,6 @@
 - `src/index.css`
 - `src/default-manifest.json`
 - `src/default-native.css`
-- `src/index.ts`
 
 ## Risk Areas
 

@@ -231,8 +231,8 @@ describe.concurrent('@master/css-preset design token parity', () => {
 
     test('keeps surface color roles mode-specific', () => {
         const surfaceAliases = [
-            ['base', '$color-white', '$color-gray-95'],
-            ['muted', '$color-neutral-0', '$color-gray-100'],
+            ['base', '$color-neutral-0', '$color-gray-95'],
+            ['muted', '$color-neutral-5', '$color-gray-100'],
             ['raised', '$color-white', '$color-gray-90'],
             ['overlay', '$color-white', '$color-gray-80'],
             ['inverse', '$color-black', '$color-white']
