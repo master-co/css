@@ -17,6 +17,7 @@
         "bench:runtime-mutation-diagnostics": "vitest bench runtime-mutation-diagnostics",
         "bench:runtime-style-invalidation-diagnostics": "vitest bench runtime-style-invalidation-diagnostics",
         "bench:startup-diagnostics": "vitest bench startup-diagnostics",
+        "check:browser-lifecycle": "node browser-lifecycle/check-readiness.mjs",
         "snapshot:browser-css-cost": "node browser-css-cost/update-snapshot.mjs",
         "snapshot:browser-lifecycle": "node browser-lifecycle/update-snapshot.mjs",
         "snapshot:interaction-cost": "node interaction-cost/update-snapshot.mjs",

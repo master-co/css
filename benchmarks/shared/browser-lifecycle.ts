@@ -1,6 +1,6 @@
 import { createServer, type Server } from 'node:http'
 import { existsSync } from 'node:fs'
-import { mkdir, readFile, writeFile } from 'node:fs/promises'
+import { copyFile, mkdir, readFile, writeFile } from 'node:fs/promises'
 import { extname, isAbsolute, relative, resolve } from 'node:path'
 import { performance } from 'node:perf_hooks'
 import { chromium, type Browser, type CDPSession, type Page } from '@playwright/test'
@@ -89,6 +89,11 @@ interface BrowserLifecycleVariant extends BenchmarkVariant {
     modeId: BrowserLifecycleModeId
     detailId: string
     detailLabel: string
+}
+
+interface BrowserLifecycleSelection {
+    enabledScenarioIds: Set<BrowserLifecycleScenarioId>
+    enabledModeIds: Set<BrowserLifecycleModeId>
 }
 
 interface LifecycleClassModel {
@@ -628,18 +633,21 @@ let defaultManifestPromise: Promise<MasterCSSManifest> | undefined
 
 export async function writeBrowserLifecycleReport() {
     const report = await createBrowserLifecycleReport()
-    return writeBenchmarkReport(report)
+    const output = await writeBenchmarkReport(report)
+    await copyLabeledBrowserLifecycleReport(output)
+    return output
 }
 
-export function createBrowserLifecycleVariants(): BrowserLifecycleVariant[] {
-    const enabledScenarios = getEnabledScenarioIds()
+export function createBrowserLifecycleVariants(selection = getBrowserLifecycleSelection()): BrowserLifecycleVariant[] {
     return getBrowserLifecycleVariantSpecs()
-        .filter((spec) => enabledScenarios.has(spec.scenarioId))
-        .flatMap((spec) => lifecycleModes.map((mode) => createBrowserLifecycleVariant(spec, mode)))
+        .filter((spec) => selection.enabledScenarioIds.has(spec.scenarioId))
+        .flatMap((spec) => lifecycleModes
+            .filter((mode) => selection.enabledModeIds.has(mode.id))
+            .map((mode) => createBrowserLifecycleVariant(spec, mode)))
 }
 
-export function getBrowserLifecycleAdapters(): BenchmarkAdapter[] {
-    const ids = new Set(lifecycleModes.map((mode) => mode.adapterId))
+export function getBrowserLifecycleAdapters(variants = createBrowserLifecycleVariants()): BenchmarkAdapter[] {
+    const ids = new Set(variants.map((variant) => getModeForVariant(variant).adapterId))
     return benchmarkAdapters.filter((adapter) => ids.has(adapter.id as BrowserLifecycleModeDescriptor['adapterId']))
 }
 
@@ -654,19 +662,37 @@ export function createBrowserLifecycleVariantId(
 async function createBrowserLifecycleReport(): Promise<BenchmarkReport> {
     validateFixtures(benchmarkFixtures)
 
-    const variants = createBrowserLifecycleVariants()
+    const selection = getBrowserLifecycleSelection()
+    const variants = createBrowserLifecycleVariants(selection)
+    if (!variants.length) throw new Error('Browser lifecycle selection produced no variants.')
+
     const samples: BenchmarkSample[] = []
     const artifacts: BenchmarkArtifact[] = []
     const rounds = getBrowserLifecycleRounds()
     const warmupRounds = getBrowserLifecycleWarmupRounds()
+    const longSessionMs = getLongSessionDurationMs()
+
+    console.log([
+        'Browser lifecycle selection:',
+        `scenarios=${[...selection.enabledScenarioIds].join(',')}`,
+        `modes=${[...selection.enabledModeIds].join(',')}`,
+        `variants=${variants.length}`,
+        `rounds=${rounds}`,
+        `warmupRounds=${warmupRounds}`,
+        `longSessionMs=${longSessionMs}`
+    ].join(' '))
     console.log('Launching Chromium for browser lifecycle benchmark')
     const browser = await chromium.launch({ headless: true })
     const browserVersion = browser.version()
 
     try {
-        for (const variant of variants) {
-            console.log(`Preparing browser lifecycle page for ${variant.id}`)
+        for (const [index, variant] of variants.entries()) {
+            const variantStartedAt = performance.now()
+            const variantNumber = index + 1
+            console.log(`Preparing browser lifecycle page ${variantNumber}/${variants.length}: ${variant.id}`)
+            const prepareStartedAt = performance.now()
             const page = await createBrowserLifecyclePage(variant)
+            console.log(`Prepared browser lifecycle page ${variantNumber}/${variants.length}: ${variant.id} in ${formatDuration(performance.now() - prepareStartedAt)}`)
 
             samples.push(...page.samples)
             artifacts.push(...page.artifacts)
@@ -674,11 +700,14 @@ async function createBrowserLifecycleReport(): Promise<BenchmarkReport> {
                 browser,
                 pageRoot: page.root,
                 variant,
+                variantNumber,
+                totalVariants: variants.length,
                 rounds,
                 warmupRounds,
                 samples,
                 artifacts
             })
+            console.log(`Finished browser lifecycle variant ${variantNumber}/${variants.length}: ${variant.id} in ${formatDuration(performance.now() - variantStartedAt)}`)
         }
     } finally {
         await browser.close()
@@ -706,7 +735,7 @@ async function createBrowserLifecycleReport(): Promise<BenchmarkReport> {
             '@tailwindcss/cli'
         ]),
         fixtures: getBrowserLifecycleFixtures(variants),
-        adapters: getBrowserLifecycleAdapters(),
+        adapters: getBrowserLifecycleAdapters(variants),
         variants,
         metrics: browserLifecycleMetrics,
         samples,
@@ -728,23 +757,28 @@ async function collectBrowserLifecycleSamples(options: {
     browser: Browser
     pageRoot: string
     variant: BrowserLifecycleVariant
+    variantNumber: number
+    totalVariants: number
     rounds: number
     warmupRounds: number
     samples: BenchmarkSample[]
     artifacts: BenchmarkArtifact[]
 }) {
     for (let round = 0; round < options.warmupRounds; round++) {
-        console.log(`Warming browser lifecycle for ${options.variant.id}, warmup ${round + 1}/${options.warmupRounds}`)
+        const roundStartedAt = performance.now()
+        console.log(`Warming browser lifecycle ${options.variantNumber}/${options.totalVariants}: ${options.variant.id}, warmup ${round + 1}/${options.warmupRounds}`)
         await measureBrowserLifecycle({
             browser: options.browser,
             pageRoot: options.pageRoot,
             variant: options.variant,
             round: -round - 1
         })
+        console.log(`Warmed browser lifecycle ${options.variantNumber}/${options.totalVariants}: ${options.variant.id}, warmup ${round + 1}/${options.warmupRounds} in ${formatDuration(performance.now() - roundStartedAt)}`)
     }
 
     for (let round = 0; round < options.rounds; round++) {
-        console.log(`Measuring browser lifecycle for ${options.variant.id}, round ${round + 1}/${options.rounds}`)
+        const roundStartedAt = performance.now()
+        console.log(`Measuring browser lifecycle ${options.variantNumber}/${options.totalVariants}: ${options.variant.id}, round ${round + 1}/${options.rounds}`)
         const result = await measureBrowserLifecycle({
             browser: options.browser,
             pageRoot: options.pageRoot,
@@ -754,6 +788,7 @@ async function collectBrowserLifecycleSamples(options: {
 
         options.samples.push(...result.samples)
         if (round === options.rounds - 1) options.artifacts.push(...result.artifacts)
+        console.log(`Measured browser lifecycle ${options.variantNumber}/${options.totalVariants}: ${options.variant.id}, round ${round + 1}/${options.rounds} in ${formatDuration(performance.now() - roundStartedAt)}`)
     }
 }
 
@@ -1646,12 +1681,43 @@ function getModeForVariant(variant: BrowserLifecycleVariant) {
     return mode
 }
 
+function getBrowserLifecycleSelection(): BrowserLifecycleSelection {
+    return {
+        enabledScenarioIds: getEnabledScenarioIds(),
+        enabledModeIds: getEnabledModeIds()
+    }
+}
+
 function getEnabledScenarioIds() {
-    const value = process.env.BROWSER_LIFECYCLE_SCENARIOS
-    if (!value) return new Set(browserLifecycleScenarios.map((scenario) => scenario.id))
-    const ids = new Set(value.split(',').map((entry) => entry.trim()).filter(Boolean) as BrowserLifecycleScenarioId[])
-    if (!ids.size) return new Set(browserLifecycleScenarios.map((scenario) => scenario.id))
-    return ids
+    return parseEnabledIds(
+        'BROWSER_LIFECYCLE_SCENARIOS',
+        browserLifecycleScenarios.map((scenario) => scenario.id)
+    )
+}
+
+function getEnabledModeIds() {
+    return parseEnabledIds(
+        'BROWSER_LIFECYCLE_MODES',
+        lifecycleModes.map((mode) => mode.id)
+    )
+}
+
+function parseEnabledIds<T extends string>(envName: string, allowedIds: T[]) {
+    const value = process.env[envName]
+    const allowed = new Set(allowedIds)
+    if (!value) return new Set(allowedIds)
+
+    const ids = value.split(',').map((entry) => entry.trim()).filter(Boolean)
+    if (!ids.length) {
+        throw new Error(`${envName} must include at least one id. Expected one or more of: ${allowedIds.join(', ')}.`)
+    }
+
+    const unknownIds = ids.filter((id) => !allowed.has(id as T))
+    if (unknownIds.length) {
+        throw new Error(`${envName} contains unknown ids: ${unknownIds.join(', ')}. Expected one or more of: ${allowedIds.join(', ')}.`)
+    }
+
+    return new Set(ids as T[])
 }
 
 function getBrowserLifecycleRounds() {
@@ -1670,6 +1736,42 @@ function getLongSessionDurationMs() {
     const value = Number(process.env.BROWSER_LIFECYCLE_LONG_SESSION_MS || 1000)
     if (!Number.isFinite(value) || value < 100) return 1000
     return Math.floor(value)
+}
+
+async function copyLabeledBrowserLifecycleReport(output: {
+    outputRoot: string
+    jsonFile: string
+    markdownFile: string
+}) {
+    const label = getBrowserLifecycleReportLabel()
+    if (!label) return
+
+    const jsonFile = resolve(output.outputRoot, `report.${label}.json`)
+    const markdownFile = resolve(output.outputRoot, `report.${label}.md`)
+    await copyFile(output.jsonFile, jsonFile)
+    await copyFile(output.markdownFile, markdownFile)
+    console.log(`Copied browser lifecycle labeled report JSON to ${jsonFile}`)
+    console.log(`Copied browser lifecycle labeled report Markdown to ${markdownFile}`)
+}
+
+function getBrowserLifecycleReportLabel() {
+    const value = process.env.BROWSER_LIFECYCLE_REPORT_LABEL
+    if (!value) return ''
+
+    const label = value.toLowerCase()
+        .replace(/[^a-z0-9._-]+/g, '-')
+        .replace(/^-+|-+$/g, '')
+
+    if (!label) {
+        throw new Error('BROWSER_LIFECYCLE_REPORT_LABEL must contain at least one alphanumeric, dot, underscore, or dash character after sanitization.')
+    }
+
+    return label
+}
+
+function formatDuration(ms: number) {
+    if (ms < 1000) return `${Number(ms.toFixed(1))}ms`
+    return `${Number((ms / 1000).toFixed(2))}s`
 }
 
 function createPayloadSamples(variantId: string, payload: {
