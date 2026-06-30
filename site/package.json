@@ -15,6 +15,7 @@
         "postbuild:static": "tsx scripts/postbuild-static.tsx",
         "preview:cloudflare-pages": "pnpm build:cloudflare-pages && wrangler pages dev site/out --cwd .. --kv PLAY_SHARES",
         "cf-typegen": "wrangler types site/cloudflare-env.d.ts --cwd .. --env-interface CloudflareEnv",
+        "test:image-loader": "tsx --test utils/cloudflare-image-loader.test.ts",
         "test:public-env": "tsx --test utils/public-env.test.ts",
         "test:play": "tsx --test app/api/play/_lib/route-handlers.test.ts app/api/play/_lib/compile-play-css.test.ts app/api/play/_lib/preview-script.test.ts",
         "test:llms": "tsx --test scripts/generate-llms-txt.test.ts",
