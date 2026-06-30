@@ -1,0 +1,108 @@
+## Overview [sr-only]
+The Master CSS MCP server gives AI clients a project-aware interface for Master CSS. It runs locally over stdio, reads the workspace you point it at, and exposes tools for manifest inspection, class diagnostics, generated CSS previews, syntax suggestions, and safe fix previews.
+
+Use it when an AI coding agent should reason from the same Master CSS setup as the project: the CSS entry manifest, theme tokens, component classes, scanner state, stylesheet entries, and lint policy. It is not a replacement for editor completions, ESLint, or CI commands. It is a tool surface for AI clients that speak the [Model Context Protocol](https://modelcontextprotocol.io/).
+
+---
+
+## Install and start
+Install the package in the project or run it with `npx`. The server uses stdio, so it is usually started by an MCP client rather than by a long-running terminal session.
+
+```bash name=Terminal
+npx -y @master/css-mcp@rc --root /absolute/path/to/project
+```
+
+Use an absolute `--root` path so the server can resolve the intended workspace. When `--root` is omitted, the current working directory becomes the workspace root.
+
+You can also set the preview confirmation token lifetime:
+
+```bash name=Terminal
+npx -y @master/css-mcp@rc --root /absolute/path/to/project --preview-ttl 300000
+```
+
+---
+
+## Configure an MCP client
+Most MCP clients accept a JSON entry with a command and arguments. Use the same command you would run from the terminal:
+
+```json name=mcp.json
+{
+  "mcpServers": {
+    "master-css": {
+      "command": "npx",
+      "args": ["-y", "@master/css-mcp@rc", "--root", "/absolute/path/to/project"]
+    }
+  }
+}
+```
+
+After connecting, ask the client to inspect the workspace before editing. Good first tasks include scanning the project, inspecting one class, linting changed files, and previewing fixes without applying them.
+
+```text name=prompt
+Use the Master CSS MCP server to inspect this workspace before editing.
+
+Check the project manifest, scan source files, lint the affected class strings, and inspect any classes whose generated CSS is unclear. If fixes are needed, create a preview first and explain the diff before applying it.
+```
+
+---
+
+## Available tools
+The server exposes focused tools instead of asking the agent to infer Master CSS behavior from files alone.
+
+| Tool | Use |
+| --- | --- |
+| `mastercss_workspace_info` | Report workspace roots, resolved Master CSS package locations, and manifest status. |
+| `mastercss_inspect_class` | Inspect one class and return semantic parts, generated rules, variables, and CSS text. |
+| `mastercss_render_css` | Generate CSS from an HTML fragment or a whitespace-separated class list. |
+| `mastercss_scan_project` | Scan source files, register stylesheet entries, and report scanner state and generated CSS metadata. |
+| `mastercss_lint_project` | Run Master CSS class-list diagnostics and return fix proposals without writing files. |
+| `mastercss_suggest_syntax` | Return language-service completions and hover context for a document position. |
+| `mastercss_preview_fixes` | Create a diff preview for lint fixes or generated CSS output and return a confirmation token. |
+| `mastercss_apply_preview` | Apply a previously generated preview after validating the token, file hashes, and workspace containment. |
+
+The server also exposes workspace resources for the loaded manifest, entry files, and resolved Master CSS package locations. Prompt templates guide common workflows such as debugging missing CSS, reviewing class strings, and planning migrations.
+
+---
+
+## Safe write previews
+Read-only tools never write files. Tools that can lead to writes use a two-step flow:
+
+1. `mastercss_preview_fixes` creates a diff preview and returns a confirmation token.
+2. The client shows or explains the preview.
+3. `mastercss_apply_preview` applies the preview only after validating the token, workspace containment, and the original file hash.
+
+This keeps AI-assisted edits reviewable. If a file changes after the preview is created, applying the preview fails instead of overwriting newer work.
+
+Use `includeDirectiveFixes` only when structural `@compose` rewrites are acceptable. Class-list fixes are safer because they replace class-list text in place; directive fixes can rewrite CSS directive structure.
+
+---
+
+## Choose the right tool
+Use each Master CSS tool surface for the workflow it owns.
+
+| Surface | Best for |
+| --- | --- |
+| MCP server | AI client tool calls with project context, scanner diagnostics, class inspection, syntax suggestions, and safe fix previews. |
+| CLI JSON output | Terminal, CI, scripts, and native preflight checks that need machine-readable lint or scan reports. |
+| ESLint | Human development workflow, editor diagnostics through ESLint extensions, team policy, and JavaScript/framework CI linting. |
+| Language Service | Editor completion, hover previews, color tools, directive formatting, highlighting, and manifest diagnostics. |
+
+When an AI client supports MCP, prefer the MCP server because it can call specific tools and keep write previews explicit. When a client cannot use MCP, use CLI JSON output as the fallback:
+
+```bash name=Terminal
+npx @master/css-cli lint --format json --exit-code never
+```
+
+For scanner state, stylesheet entry metadata, generated CSS size, or explicit missing CSS checks, use:
+
+```bash name=Terminal
+npx @master/css-cli inspect --format json --exit-code never
+```
+
+---
+
+## Next steps
+- Use [AI Coding](/guide/ai-coding) for prompts and review habits around AI-generated styling.
+- Use [Code Linting](/guide/code-linting) for the ESLint rules that enforce class policy in normal development.
+- Use [Language Service](/guide/language-service) for editor intelligence and generated CSS previews.
+- Use [Scanning latent classes](/guide/scanning-latent-classes) when generated CSS is missing because source discovery needs inspection.

@@ -80,6 +80,24 @@ Work in a small batch. After editing, show the changed files, explain the stylin
 
 ---
 
+## Use the MCP server
+When your AI client supports the Model Context Protocol, connect it to the [Master CSS MCP server](/guide/mcp-server). The server lets the agent inspect the active manifest, scan project sources, lint class strings, inspect generated CSS, request syntax suggestions, and create safe write previews from one local tool surface.
+
+```json name=mcp.json
+{
+  "mcpServers": {
+    "master-css": {
+      "command": "npx",
+      "args": ["-y", "@master/css-mcp@rc", "--root", "/absolute/path/to/project"]
+    }
+  }
+}
+```
+
+Use MCP for project-aware AI tool calls. When an agent cannot use MCP, fall back to the CLI JSON commands in the review workflow below.
+
+---
+
 ## Prompt for readable class strings
 Ask the agent to optimize for readable markup, not the shortest possible class list.
 
@@ -127,7 +145,7 @@ Use linting for mechanical feedback:
 eslint .
 ```
 
-When an MCP server or agent needs machine-readable Master CSS preflight output, use the native CLI with JSON output:
+When an agent needs machine-readable Master CSS preflight output without an MCP client, use the native CLI with JSON output:
 
 ```bash name=Terminal
 npx @master/css-cli lint --format json --exit-code never
