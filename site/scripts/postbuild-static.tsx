@@ -40,6 +40,7 @@ await generateSitemap()
 await generateStaticOgImages()
 await writeHeaders()
 await writeRedirects()
+await validateInlineScripts()
 
 async function copyDefaultLocaleToRoot() {
     const localeDir = path.join(outDir, 'en')
@@ -128,9 +129,18 @@ function findOgImageUrls(html: string) {
     const matches = new Set<string>()
     const pattern = /(?:https?:\/\/[^"'<>\s]+)?\/api\/og-image\?[^"'<>\s]+/g
     for (const match of html.matchAll(pattern)) {
-        matches.add(match[0])
+        const rawUrl = trimEscapedStringTerminator(html, match.index || 0, match[0])
+        matches.add(rawUrl)
     }
     return [...matches]
+}
+
+function trimEscapedStringTerminator(content: string, matchIndex: number, rawUrl: string) {
+    const nextCharacter = content[matchIndex + rawUrl.length]
+    if (nextCharacter === '"' && rawUrl.endsWith('\\')) {
+        return rawUrl.slice(0, -1)
+    }
+    return rawUrl
 }
 
 function normalizeOgImageUrl(rawUrl: string) {
@@ -381,6 +391,35 @@ async function writeRedirects() {
         '/cdn/* https://cdn.jsdelivr.net/npm/@master/:splat 200',
         ''
     ].join('\n'), 'utf8')
+}
+
+async function validateInlineScripts() {
+    const htmlFiles = (await listFiles(outDir)).filter((file) => file.endsWith('.html'))
+
+    for (const file of htmlFiles) {
+        const content = await readFile(file, 'utf8')
+        const scriptPattern = /<script\b([^>]*)>([\s\S]*?)<\/script>/gi
+        let index = 0
+
+        for (const match of content.matchAll(scriptPattern)) {
+            index++
+            const [, attributes, script] = match
+            if (!script.trim() || /\bsrc\s*=/.test(attributes) || !isClassicScript(attributes)) {
+                continue
+            }
+
+            try {
+                new Function(script)
+            } catch (error) {
+                throw new Error(`Invalid inline script ${index} in ${path.relative(siteDir, file)}: ${(error as Error).message}`)
+            }
+        }
+    }
+}
+
+function isClassicScript(attributes: string) {
+    const type = attributes.match(/\btype=(["'])(.*?)\1/i)?.[2]
+    return !type || /^(?:text|application)\/(?:javascript|ecmascript)$/i.test(type)
 }
 
 async function listFiles(dir: string): Promise<string[]> {
