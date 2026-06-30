@@ -23,9 +23,9 @@ npx -y @master/css-mcp@rc --root /absolute/path/to/project --preview-ttl 300000
 ---
 
 ## Configure an MCP client
-Most MCP clients accept a JSON entry with a command and arguments. Use the same command you would run from the terminal:
+MCP clients that accept `mcpServers` JSON can use the same command you would run from the terminal. Treat this as a copyable config shape, not a universal project file that every client automatically reads. For example, Claude Desktop uses this shape in `claude_desktop_config.json` and requires a restart after config changes.
 
-```json name=mcp.json
+```json name=mcp-client-config.json
 {
   "mcpServers": {
     "master-css": {
@@ -60,6 +60,21 @@ codex mcp get master-css
 ```
 
 If `codex mcp` cannot read the configuration, fix the local Codex config parse error first, then run the add command again.
+
+### Use with Claude Code
+Claude Code can register the same local stdio server through its MCP CLI:
+
+```bash name=Terminal
+claude mcp add --transport stdio master-css -- npx -y @master/css-mcp@rc --root /absolute/path/to/project
+```
+
+For a team-maintained project config, use project scope:
+
+```bash name=Terminal
+claude mcp add --transport stdio --scope project master-css -- npx -y @master/css-mcp@rc --root /absolute/path/to/project
+```
+
+Review the generated `.mcp.json` before committing it because absolute `--root` paths are machine-specific.
 
 After connecting, ask the client to inspect the workspace before editing. Good first tasks include scanning the project, inspecting one class, linting changed files, and previewing fixes without applying them.
 
