@@ -56,6 +56,18 @@ These read-only tools are for Master CSS repository contributors, AI coding agen
 | `mastercss_test_router` | Return focused validation commands for contributor changes. |
 | `mastercss_package_graph` | Report workspace package ownership, scripts, exports, workspace dependencies, and dependents. |
 
+## Prompt templates
+
+| Prompt | Use |
+| --- | --- |
+| `debug-missing-css` | Debug scanner coverage, manifest loading, invalid syntax, native CSS pruning, and stylesheet entry configuration. |
+| `review-mastercss-classes` | Review class lists and propose only safe, scoped write previews. |
+| `migrate-to-mastercss` | Audit an existing styling system and produce an incremental migration plan before editing. |
+
+Use `migrate-to-mastercss` when an MCP-capable AI client is helping migrate CSS, CSS Modules, Sass, Tailwind CSS, CSS-in-JS, component-library styling, or Master CSS v1. The prompt asks the agent to inspect the workspace first, identify stylesheet entries and source extraction coverage, recommend a rendering mode, choose the first reviewable migration batch, and list validation commands and visual review risks.
+
+The migration prompt is a planning workflow, not a one-shot converter. Keep the previous styling system in place until each migrated slice builds, runs, and visually matches the old UI.
+
 ## Machine-readable results
 
 Project scan, lint, and contributor routing reports use `version: 1`. Tooling can rely on stable top-level fields such as `version`, `root`, `manifest`, `inputs`, `files`, `diagnostics`, `risks`, `validation`, and `summary` when present. Nested diagnostic `data` objects may gain additional fields over time.

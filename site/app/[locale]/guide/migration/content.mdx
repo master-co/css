@@ -2,7 +2,7 @@ import brands from 'internal/data/brands'
 
 Migrating a real product to Master CSS is rarely a one-to-one syntax rewrite. Treat the work as a product styling change: inspect the existing styling systems, add Master CSS beside them, convert one reviewable slice at a time, and remove old dependencies only after the migrated UI is validated.
 
-If you use a local AI coding agent, start with [AI Coding with Master CSS](/guide/ai-coding) for setup, context, prompts, and review habits. This page keeps the migration-specific checklist and prompt focused on converting an existing project.
+If you use a local AI coding agent, start with [AI Coding with Master CSS](/guide/ai-coding) for setup, context, prompts, and review habits. When your client supports MCP, connect the [Master CSS MCP server](/guide/mcp-server) and use the `migrate-to-mastercss` prompt so the agent can inspect the workspace before planning migration batches. This page keeps the migration-specific checklist and fallback prompt focused on converting an existing project.
 
 ---
 
@@ -27,6 +27,8 @@ Migration guides for source styling systems with enough differences to need thei
 CSS migration depends on project context. A static checklist cannot reliably know which files contain product styles, which classes come from a third-party package, which values are design tokens, or which custom CSS is clearer than a generated utility class.
 
 Start with an audit, then migrate incrementally. The first milestone is not deleting the previous styling system; it is getting Master CSS installed, generating CSS for new or converted markup, and keeping the existing UI stable while conversion is in progress.
+
+For MCP-capable agents, use the MCP migration prompt for the audit step. It can inspect the active manifest, stylesheet entries, source extraction coverage, generated CSS, and class diagnostics before proposing the first reviewable batch.
 
 ---
 

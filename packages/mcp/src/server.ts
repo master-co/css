@@ -118,7 +118,12 @@ function registerPrompts(server: McpServer) {
                     role: 'user',
                     content: {
                         type: 'text',
-                        text: 'Inspect the workspace with Master CSS MCP tools, identify current stylesheet entries and class extraction coverage, then plan migration steps that preserve CSS output unless a deliberate behavior change is requested.'
+                        text: [
+                            'Use the Master CSS MCP tools to plan an incremental migration to Master CSS before editing.',
+                            'Inspect the workspace, identify the framework, package manager, current styling systems, stylesheet entries, source extraction coverage, existing theme tokens, component classes, and available validation commands.',
+                            'Produce a migration plan with the recommended rendering mode, the first reviewable migration batch, CSS output risks, manual visual checks, and the formatter, lint, type-check, test, or build commands to run.',
+                            'Preserve CSS output unless a deliberate behavior change is requested, keep vendor or generated CSS in place, and use write previews only for safe, scoped changes.'
+                        ].join('\n')
                     }
                 }
             ]

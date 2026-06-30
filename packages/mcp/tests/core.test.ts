@@ -136,7 +136,19 @@ describe('@master/css-mcp', () => {
             ]))
 
             const prompts = await connection.client.listPrompts()
-            expect(prompts.prompts.map((prompt) => prompt.name)).toContain('debug-missing-css')
+            expect(prompts.prompts.map((prompt) => prompt.name)).toEqual(expect.arrayContaining([
+                'debug-missing-css',
+                'review-mastercss-classes',
+                'migrate-to-mastercss'
+            ]))
+
+            const migrationPrompt = await connection.client.getPrompt({ name: 'migrate-to-mastercss' })
+            const migrationText = migrationPrompt.messages.map((message) => {
+                return message.content.type === 'text' ? message.content.text : ''
+            }).join('\n')
+            expect(migrationText).toContain('plan an incremental migration')
+            expect(migrationText).toContain('recommended rendering mode')
+            expect(migrationText).toContain('Preserve CSS output')
 
             const resource = await connection.client.readResource({ uri: 'mastercss://workspace/manifest' })
             expect(resource.contents[0]).toEqual(expect.objectContaining({

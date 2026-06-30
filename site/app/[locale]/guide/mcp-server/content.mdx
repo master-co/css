@@ -136,7 +136,33 @@ These read-only tools are for Master CSS repository contributors, AI coding agen
 | `mastercss_test_router` | Return focused validation commands for contributor changes. |
 | `mastercss_package_graph` | Report workspace package ownership, scripts, exports, workspace dependencies, and dependents. |
 
-The server also exposes workspace resources for the loaded manifest, entry files, and resolved Master CSS package locations. Prompt templates guide common workflows such as debugging missing CSS, reviewing class strings, and planning migrations.
+The server also exposes workspace resources for the loaded manifest, entry files, and resolved Master CSS package locations.
+
+---
+
+## Prompt templates
+Prompt templates guide common AI workflows without asking the client to infer the right tool sequence.
+
+| Prompt | Use |
+| --- | --- |
+| `debug-missing-css` | Inspect scanner coverage, manifest loading, syntax, native CSS pruning, and stylesheet entry configuration when classes do not produce CSS. |
+| `review-mastercss-classes` | Run class diagnostics and propose only safe, scoped write previews. |
+| `migrate-to-mastercss` | Audit an existing styling system and produce an incremental migration plan before editing. |
+
+Use `migrate-to-mastercss` when a project is moving from CSS, CSS Modules, Sass, Tailwind CSS, CSS-in-JS, component-library styling, or Master CSS v1. The prompt should make the agent inspect the workspace first, then return a plan with:
+
+- the current framework, package manager, and styling systems
+- stylesheet entries, source extraction coverage, and existing Master CSS tokens or component classes
+- the recommended rendering mode and first reviewable migration batch
+- CSS output risks, validation commands, and manual visual checks
+
+The migration prompt is a planning workflow, not a one-shot converter. Keep the previous styling system in place until each migrated slice builds, runs, and visually matches the old UI. Use write previews only for safe, scoped changes that can be reviewed before applying.
+
+```text name=prompt
+Use the Master CSS MCP prompt `migrate-to-mastercss` for this workspace.
+
+Inspect the project with MCP tools first. Do not edit yet. Return an incremental migration plan with the current styling inventory, recommended rendering mode, first migration batch, validation commands, and visual review risks.
+```
 
 ---
 
