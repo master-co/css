@@ -23,6 +23,9 @@ type StaticOgImageOptions = {
 
 const siteDir = path.resolve(fileURLToPath(import.meta.url), '..', '..')
 const outDir = path.join(siteDir, 'out')
+const nextStaticDir = path.join(siteDir, '.next', 'static')
+const nextHydrationManifestDir = path.join(nextStaticDir, 'master-css', 'hydration')
+const outHydrationManifestDir = path.join(outDir, '_next', 'static', 'master-css', 'hydration')
 const publicEnv = readPublicEnv({ input: '.generated/public-env.json' })
 const authorImageFiles: Record<string, string> = {
     Aron: 'aron.jpg',
@@ -36,10 +39,12 @@ Object.assign(process.env, publicEnv)
 process.chdir(siteDir)
 
 await copyDefaultLocaleToRoot()
+await copyHydrationManifests()
 await generateSitemap()
 await generateStaticOgImages()
 await writeHeaders()
 await writeRedirects()
+await validateHydrationManifestReferences()
 await validateInlineScripts()
 
 async function copyDefaultLocaleToRoot() {
@@ -61,6 +66,20 @@ async function copyDefaultLocaleToRoot() {
     for (const source of files) {
         const relativePath = path.relative(localeDir, source)
         const target = path.join(outDir, relativePath)
+        await mkdir(path.dirname(target), { recursive: true })
+        await copyFile(source, target)
+    }
+}
+
+async function copyHydrationManifests() {
+    if (!await exists(nextHydrationManifestDir)) return
+
+    await rm(outHydrationManifestDir, { recursive: true, force: true })
+
+    const files = await listFiles(nextHydrationManifestDir)
+    for (const source of files) {
+        const relativePath = path.relative(nextHydrationManifestDir, source)
+        const target = path.join(outHydrationManifestDir, relativePath)
         await mkdir(path.dirname(target), { recursive: true })
         await copyFile(source, target)
     }
@@ -420,6 +439,43 @@ async function validateInlineScripts() {
 function isClassicScript(attributes: string) {
     const type = attributes.match(/\btype=(["'])(.*?)\1/i)?.[2]
     return !type || /^(?:text|application)\/(?:javascript|ecmascript)$/i.test(type)
+}
+
+async function validateHydrationManifestReferences() {
+    const htmlFiles = (await listFiles(outDir)).filter((file) => file.endsWith('.html'))
+
+    for (const file of htmlFiles) {
+        const content = await readFile(file, 'utf8')
+        const pattern = /\bdata-master-css-hydration-manifest=(["'])(.*?)\1/g
+
+        for (const match of content.matchAll(pattern)) {
+            const source = match[2]
+            const outputPath = toPublicOutputPath(source)
+            if (!outputPath) continue
+
+            if (!await exists(outputPath)) {
+                throw new Error(`Missing Master CSS hydration manifest ${source} referenced by ${path.relative(siteDir, file)}`)
+            }
+        }
+    }
+}
+
+function toPublicOutputPath(source: string) {
+    const url = new URL(source, publicEnv.NEXT_PUBLIC_URL)
+    const baseUrl = new URL(publicEnv.NEXT_PUBLIC_URL)
+
+    if (url.origin !== baseUrl.origin && /^https?:\/\//.test(source)) {
+        return undefined
+    }
+
+    const pathname = decodeURIComponent(url.pathname)
+    if (!pathname.startsWith('/')) return undefined
+
+    const outputPath = path.join(outDir, ...pathname.split('/').filter(Boolean))
+    const relativePath = path.relative(outDir, outputPath)
+    if (relativePath.startsWith('..') || path.isAbsolute(relativePath)) return undefined
+
+    return outputPath
 }
 
 async function listFiles(dir: string): Promise<string[]> {
