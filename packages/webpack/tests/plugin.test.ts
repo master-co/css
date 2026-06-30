@@ -730,6 +730,27 @@ describe('MasterCSSPlugin (C1 race fix)', () => {
         }
     })
 
+    test('includes package base CSS for managed package imports', async () => {
+        const root = mkdtempSync(path.join(tmpdir(), 'master-css-webpack-package-'))
+        const entryPath = path.join(root, 'app.css')
+        try {
+            writeFileSync(entryPath, '@import "@master/css";')
+
+            const plugin = await new MasterCSSPlugin({
+                verbose: 0
+            }, root).init()
+
+            await (plugin as any).processModuleContents([[entryPath, '@import "@master/css";']], () => false)
+            const css = await (plugin as any).createExtractedCSS()
+
+            expect(css).toContain('@layer base')
+            expect(css).toContain('text-rendering: geometricprecision')
+            expect(css).not.toContain('@master/css')
+        } finally {
+            rmSync(root, { recursive: true, force: true })
+        }
+    })
+
     test('keeps managed CSS fallback reset dependencies after failed style registration', async () => {
         const root = mkdtempSync(path.join(tmpdir(), 'master-css-webpack-style-invalid-'))
         const entryPath = path.join(root, 'app.css')

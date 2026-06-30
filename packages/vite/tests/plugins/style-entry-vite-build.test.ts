@@ -93,8 +93,9 @@ describe('StyleEntryPlugin Vite build integration', () => {
         expect(css).not.toContain('@master/css')
     })
 
-    test('default runtime mode consumes the root Master CSS import without emitting preset base CSS', async () => {
+    test('default runtime mode emits preset base CSS for the root Master CSS import', async () => {
         const css = await buildCSSFixture({
+            appClass: 'block',
             styleCSS: [
                 '@import "@master/css";',
                 '',
@@ -102,10 +103,29 @@ describe('StyleEntryPlugin Vite build integration', () => {
             ].join('\n')
         })
 
+        expectMasterBaseCSS(css)
         expect(css).toMatch(/body\s*\{\s*margin:\s*0/)
-        expect(css).not.toContain('@layer base')
-        expect(css).not.toContain('text-rendering: geometricprecision')
-        expect(css).not.toMatch(/font-family:\s*var\(--font-family-sans\)/)
+        expect(css).not.toContain('.block{display:block}')
+        expect(css).not.toContain('@master/css')
+        expect(css).not.toContain('#master-css-slot')
+    })
+
+    test.each(['progressive', 'pre-render'] as const)('%s mode emits preset base CSS for the root Master CSS import', async (mode) => {
+        const css = await buildCSSFixture({
+            appClass: 'block',
+            plugins: [
+                masterCSS({ mode })
+            ],
+            styleCSS: [
+                '@import "@master/css";',
+                '',
+                'body { margin: 0; }'
+            ].join('\n')
+        })
+
+        expectMasterBaseCSS(css)
+        expect(css).toMatch(/body\s*\{\s*margin:\s*0/)
+        expect(css).not.toContain('.block{display:block}')
         expect(css).not.toContain('@master/css')
         expect(css).not.toContain('#master-css-slot')
     })

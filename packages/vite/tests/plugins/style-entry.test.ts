@@ -10,9 +10,10 @@ const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
 
 function makeContext(command: 'serve' | 'build', css = '.fg\\:red{color:red}', includeGeneratedCSS = true) {
     return {
-        config: { command },
+        config: { command, root: process.cwd() },
         includeGeneratedCSS,
         scanner: {
+            cwd: process.cwd(),
             options: { safelist: [] },
             slotCSSRule: SLOT,
             css: { text: css, manifest: defaultManifest },
@@ -142,7 +143,7 @@ describe('StyleEntryPlugin', () => {
         expect(context.virtualCSSPlaceholderEmitted).toBeUndefined()
     })
 
-    test('non-generated modes consume empty Master entries without restoring @master/css imports', async () => {
+    test('non-generated modes emit package base CSS for Master imports without generated utilities', async () => {
         const context = makeContext('serve', '', false)
         context.scanner.latentClasses = new Set()
         const plugin = StyleEntryPlugin({ mode: 'runtime' } as any, context)
@@ -153,8 +154,11 @@ describe('StyleEntryPlugin', () => {
             '/project/src/style.css'
         )
 
+        expect(result.code).toContain('@layer base')
+        expect(result.code).toContain('text-rendering: geometricprecision')
         expect(result.code).not.toContain('@master/css')
         expect(result.code).not.toContain(SLOT)
+        expect(result.code).not.toContain('.fg\\:red')
         expect(context.styleCSSSources.get('/project/src/style.css')).toMatchObject({
             pruneNativeCSS: true
         })
@@ -172,7 +176,8 @@ describe('StyleEntryPlugin', () => {
             '/project/src/style.css'
         )
 
-        expect(result.code).toBe('@import "@fontsource/fira-mono";')
+        expect(result.code.indexOf('@import "@fontsource/fira-mono";')).toBe(0)
+        expect(result.code).toContain('@layer base')
         expect(result.code).not.toContain('@master/css')
         expect(result.code).not.toContain(SLOT)
         expect(context.virtualCSSImporters).toEqual(new Set(['/project/src/style.css']))

@@ -34,6 +34,8 @@ describe('resolveMasterCSSBuildState', () => {
         const result = await resolveMasterCSSBuildState(root, ['hidden-card'])
 
         expect(result.styleSources).toEqual([entry])
+        expect(result.nativeCSS).toContain('@layer base')
+        expect(result.nativeCSS).toContain('text-rendering: geometricprecision')
         expect(result.nativeCSS).toContain('.hidden-card')
         expect(result.nativeCSS).toContain('display:none')
     })

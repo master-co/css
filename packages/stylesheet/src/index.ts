@@ -839,7 +839,7 @@ export async function createExtractedCSSResult(options: CreateExtractedCSSOption
         finalizedStyleResults.set(result, finalizedResult)
     }
     const nativeCSS = [
-        ...(includeGeneratedCSS && includeMasterBaseCSS
+        ...(includeMasterBaseCSS
             ? [
                 ...(defaultArtifact ? [defaultArtifact.nativeCSS] : []),
                 ...(masterCSSResult ? [getNativeCSS(finalizedStyleResults.get(masterCSSResult) || masterCSSResult)] : [])

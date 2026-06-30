@@ -95,6 +95,8 @@ describe('Next static mode', () => {
         await scanStaticFixtureModule(statePath, modulePath)
 
         const css = readFileSync(outputPath, 'utf-8')
+        expect(css).toContain('@layer base')
+        expect(css).toContain('text-rendering: geometricprecision')
         expect(css).toContain('display:block')
         expect(css).toContain('margin:0')
     })

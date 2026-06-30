@@ -707,7 +707,32 @@ describe('style CSS extraction helpers', () => {
         })
 
         expect(css).toContain('.card')
+        expect(css).not.toContain('@layer base')
+        expect(css).not.toContain('text-rendering: geometricprecision')
         expect(css).not.toContain('.block{display:block}')
+    })
+
+    it('keeps package base CSS without generated utilities for Master CSS imports', async () => {
+        const root = createFixture()
+        const scanner = new CSSScanner({}, root)
+        await scanner.init()
+
+        const styleCSSSources = new Map()
+        await registerStyleCSSSource(scanner, styleCSSSources, join(root, 'app/globals.css'), '@import "@master/css";')
+        await scanner.scan(join(root, 'app/page.html'), '<div class="block"></div>')
+
+        const css = await createExtractedCSS({
+            scanner,
+            styleCSSSources,
+            projectDir: root,
+            includeGeneratedCSS: false
+        })
+
+        expect(css).toContain('@layer base')
+        expect(css).toContain('text-rendering: geometricprecision')
+        expect(css).toMatch(/font-family:\s*var\(--font-family-sans\)/)
+        expect(css).not.toContain('.block{display:block}')
+        expect(css).not.toContain('@master/css')
     })
 
     it('returns empty CSS when generated output is disabled without style sources', async () => {
