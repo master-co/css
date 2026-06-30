@@ -2,7 +2,7 @@ import highlightCode from '~/internal/utils/highlight-code'
 import { toJsxRuntime } from 'hast-util-to-jsx-runtime'
 import { Fragment, jsxs, jsx } from 'react/jsx-runtime'
 import dedent from 'ts-dedent'
-import { ShikiTransformer } from 'shiki'
+import type { ShikiTransformer } from 'shiki/core'
 import { generateSyntaxTrDeclarations } from './syntax-tr-declarations'
 import { createSyntaxTrPlaceholderContext } from './syntax-tr-placeholders'
 
