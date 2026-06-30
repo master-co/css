@@ -3,8 +3,10 @@ const units = {
         categories: [
             'Overview',
             'Getting Started',
-            'Fundamentals',
+            'Integrations',
+            'Agentic Workflows',
             'Syntax Tutorial',
+            'Fundamentals',
             'Design Foundations',
             'Customization',
             'Build & Delivery',

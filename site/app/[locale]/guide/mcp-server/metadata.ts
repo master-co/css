@@ -5,11 +5,11 @@ const metadata = define({
         absolute: 'MCP Server for Master CSS'
     },
     description: 'Connect AI clients to Master CSS project context, diagnostics, generated CSS previews, and safe write previews through the Model Context Protocol.',
-    category: 'Getting Started',
+    category: 'Agentic Workflows',
     other: {
         subject: 'MCP Server'
     },
-    order: 7,
+    order: 4,
     fileURL: import.meta.url
 })
 

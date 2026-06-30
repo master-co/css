@@ -36,6 +36,31 @@ Most MCP clients accept a JSON entry with a command and arguments. Use the same 
 }
 ```
 
+### Use with Codex App
+Codex App can register stdio MCP servers through the Codex CLI:
+
+```bash name=Terminal
+codex mcp add master-css -- npx -y @master/css-mcp@rc --root /absolute/path/to/project
+```
+
+This writes an equivalent entry to `~/.codex/config.toml`:
+
+```toml name=~/.codex/config.toml
+[mcp_servers.master-css]
+command = "npx"
+args = ["-y", "@master/css-mcp@rc", "--root", "/absolute/path/to/project"]
+startup_timeout_sec = 120
+```
+
+Restart Codex App or open a new thread after changing MCP settings. Verify the server is registered with:
+
+```bash name=Terminal
+codex mcp list
+codex mcp get master-css
+```
+
+If `codex mcp` cannot read the configuration, fix the local Codex config parse error first, then run the add command again.
+
 After connecting, ask the client to inspect the workspace before editing. Good first tasks include scanning the project, inspecting one class, linting changed files, and previewing fixes without applying them.
 
 ```text name=prompt

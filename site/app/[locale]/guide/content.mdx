@@ -1,21 +1,31 @@
 ## Getting Started
 <OverviewButtons>
-    {props.pageCategories.find(category => category.name === 'Getting Started').pages}
+    {props.pageCategories.find(category => category.name === 'Getting Started').pages.filter(page => page.pathname.split('/').length === 3)}
+</OverviewButtons>
+
+## Agentic Workflows
+<OverviewButtons>
+    {props.pageCategories.find(category => category.name === 'Agentic Workflows').pages.filter(page => page.pathname.split('/').length === 3)}
 </OverviewButtons>
 
 ## Syntax Tutorial
 <OverviewButtons>
-    {props.pageCategories.find(category => category.name === 'Syntax Tutorial').pages}
+    {props.pageCategories.find(category => category.name === 'Syntax Tutorial').pages.filter(page => page.pathname.split('/').length === 3)}
 </OverviewButtons>
 
 ## Fundamentals
 <OverviewButtons>
-    {props.pageCategories.find(category => category.name === 'Fundamentals').pages}
+    {props.pageCategories.find(category => category.name === 'Fundamentals').pages.filter(page => page.pathname.split('/').length === 3)}
+</OverviewButtons>
+
+## Design Foundations
+<OverviewButtons>
+    {props.pageCategories.find(category => category.name === 'Design Foundations').pages.filter(page => page.pathname.split('/').length === 3)}
 </OverviewButtons>
 
 ## Build & Delivery
 <OverviewButtons>
-    {props.pageCategories.find(category => category.name === 'Build & Delivery').pages}
+    {props.pageCategories.find(category => category.name === 'Build & Delivery').pages.filter(page => page.pathname.split('/').length === 3)}
 </OverviewButtons>
 
 ---

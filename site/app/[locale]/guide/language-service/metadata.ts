@@ -5,11 +5,11 @@ const metadata = define({
         absolute: 'Language Service for Master CSS'
     },
     description: 'Use manifest-aware editor intelligence for Master CSS classes, directives, project tokens, generated CSS previews, colors, and workspace-specific configuration.',
-    category: 'Getting Started',
+    category: 'Agentic Workflows',
     other: {
         subject: 'Language Service'
     },
-    order: 4,
+    order: 1,
     openGraph: {
         description: 'Manifest-aware completion, hover previews, highlighting, color tools, directive diagnostics, and manifest diagnostics for Master CSS.'
     },
