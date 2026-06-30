@@ -163,7 +163,7 @@ Standalone CSS files are included by default when using `@master/eslint-config-c
 ```js
 import css from '@master/eslint-config-css'
 
-export default css
+export default [...css]
 ```
 
 Direct plugin users can add `css.configs.stylesheet` from `@master/eslint-plugin-css` alongside the recommended config.
