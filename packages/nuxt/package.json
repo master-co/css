@@ -52,6 +52,7 @@
     "dependencies": {
         "@master/css-integration": "workspace:^",
         "@master/css-project": "workspace:^",
+        "@master/css-runtime": "workspace:^",
         "@master/css-server": "workspace:^",
         "@master/css-stylesheet": "workspace:^",
         "@master/css.vite": "workspace:^",

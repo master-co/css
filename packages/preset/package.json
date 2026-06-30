@@ -55,6 +55,9 @@
         "access": "public",
         "provenance": true
     },
+    "dependencies": {
+        "@master/css-schema": "workspace:^"
+    },
     "devDependencies": {
         "tsx": "^4.22.4"
     }

@@ -21,6 +21,7 @@ import MasterCSSPlugin from '../src'
 import { VIRTUAL_MANIFEST_ID, MASTER_CSS_MANIFEST_QUERY } from '@master/css-integration/manifest-module'
 import { VIRTUAL_CSS_ID } from '@master/css-integration/style-module'
 import { VIRTUAL_EMITTED_GLOBALS_ID } from '@master/css-integration/emitted-globals-module'
+import { createStylesheetDirectives } from '@master/css-stylesheet'
 import { transformStyleSource } from '../src/utils/transform-style-source'
 import masterCSSStyleCSSLoader from '../src/style-css-loader'
 import path from 'node:path'
@@ -135,6 +136,17 @@ function runStyleCSSLoader(root: string, resourcePath: string, source: string) {
             }
         }, source)
     }).then((content) => ({ content, dependencies }))
+}
+
+function makeRegisteredStyleSource(dependencies: string[]) {
+    return {
+        source: '',
+        pruneNativeCSS: false,
+        masterCSS: false,
+        directives: createStylesheetDirectives(),
+        dependencies,
+        sourceDependencies: []
+    }
 }
 
 describe('MasterCSSPlugin (C1 race fix)', () => {
@@ -817,7 +829,7 @@ describe('MasterCSSPlugin (C1 race fix)', () => {
 
             const plugin = makePlugin({}, root)
             ;(plugin as any).styleCSSSources = new Map([
-                [configPath, { dependencies: [configPath, tokenPath] }]
+                [configPath, makeRegisteredStyleSource([configPath, tokenPath])]
             ])
             const reset = vi.fn(async function (this: MasterCSSPlugin) {
                 this.emit('reset')
@@ -849,7 +861,7 @@ describe('MasterCSSPlugin (C1 race fix)', () => {
             const plugin = makePlugin({}, root)
             ;(plugin as any).defaultManifestDependencies = [configPath]
             ;(plugin as any).styleCSSSources = new Map([
-                [configPath, { dependencies: [configPath, tokenPath] }]
+                [configPath, makeRegisteredStyleSource([configPath, tokenPath])]
             ])
             const { compiler, compilation } = makeFakeCompiler({
                 context: root
