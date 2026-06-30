@@ -21,7 +21,9 @@ export interface RenderCompiledManifestCSSResult {
 }
 
 function normalizeNativeCSS(nativeCSS: string | string[] | undefined) {
-    return (Array.isArray(nativeCSS) ? nativeCSS : [nativeCSS]).filter((source): source is string => Boolean(source))
+    return (Array.isArray(nativeCSS) ? nativeCSS : [nativeCSS])
+        .filter((source): source is string => Boolean(source))
+        .map((source) => source.replace(/\r\n?/g, '\n'))
 }
 
 export function collectCSSVariableReferences(source: string) {

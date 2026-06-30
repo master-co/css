@@ -42,6 +42,23 @@ function createFixture() {
 }
 
 describe('style CSS extraction helpers', () => {
+    it('normalizes native CSS line endings while rendering managed CSS', () => {
+        const result = renderCompiledManifestCSS({
+            manifest: defaultManifest,
+            nativeCSS: [
+                '.card {\r\n    color: red;\r\n}',
+                '.button {\r    color: blue;\r}'
+            ],
+            includeGeneratedCSS: false
+        })
+
+        expect(result.nativeCSS).toBe([
+            '.card {\n    color: red;\n}',
+            '.button {\n    color: blue;\n}'
+        ].join('\n\n'))
+        expect(result.css).toBe(result.nativeCSS)
+    })
+
     it('replaces @master/css imports with CSS import modifiers', () => {
         const result = replaceStyleCSSImports([
             '@import "@master/css" layer(master);',
