@@ -116,6 +116,29 @@ describe('@master/css-mcp', () => {
         }
     })
 
+    it('lints cjs files with the shared script language mapping', async () => {
+        const root = createTempDir('master-css-mcp-cjs-')
+        writeFileSync(join(root, 'component.cjs'), 'const view = <div className="fg:white m:2x" />')
+
+        const connection = await connect(root)
+        try {
+            const report = parseToolJSON(await connection.client.callTool({
+                name: 'mastercss_lint_project',
+                arguments: {
+                    patterns: ['component.cjs']
+                }
+            }))
+
+            expect(report.files).toHaveLength(1)
+            expect(report.files[0].languageId).toBe('javascript')
+            expect(report.files[0].diagnostics).toContainEqual(expect.objectContaining({
+                code: 'invalid-class-order'
+            }))
+        } finally {
+            await connection.close()
+        }
+    })
+
     it('rejects root escape patterns and stale preview writes', async () => {
         const root = createTempDir('master-css-mcp-safety-')
         const file = join(root, 'index.html')

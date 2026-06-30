@@ -13,6 +13,7 @@
 - Canonical class group suggestion policy.
 - Framework-neutral class-list edit helpers for sorting, removing, and replacing tokens while preserving source whitespace.
 - Default lint target settings shared by adapters.
+- Framework-neutral source-content lint orchestration that maps class-list diagnostics and fixes onto source ranges.
 
 ## Does Not Own
 
@@ -22,7 +23,7 @@
 - Engine CSS generation semantics.
 - Class-list token/range parsing; use `@master/css-lexer`.
 - Class semantic inspection; use tooling-only helpers from `@master/css-engine/inspect`.
-- Language service, scanner, runtime, framework, or site behavior.
+- Language service lifecycle, scanner, runtime, framework, or site behavior.
 
 ## Public Surface
 
@@ -37,6 +38,10 @@
 - `removeClassNamesFromClassList`
 - `replaceClassNameInClassList`
 - `replaceClassGroupInClassList`
+- `lintMasterCSSContent`
+- `fixMasterCSSContent`
+- `resolveMasterCSSLintRules`
+- `summarizeMasterCSSLintFiles`
 - `defaultClassLintSettings`
 - `defaultCanonicalClassNameOptions`
 

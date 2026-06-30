@@ -1849,6 +1849,9 @@ importers:
       '@master/css-engine':
         specifier: workspace:^
         version: link:../engine
+      '@master/css-language':
+        specifier: workspace:^
+        version: link:../language
       '@master/css-lexer':
         specifier: workspace:^
         version: link:../lexer
@@ -1868,15 +1871,9 @@ importers:
       '@master/css-engine':
         specifier: workspace:^
         version: link:../engine
-      '@master/css-language':
-        specifier: workspace:^
-        version: link:../language
       '@master/css-language-service':
         specifier: workspace:^
         version: link:../language-service
-      '@master/css-lexer':
-        specifier: workspace:^
-        version: link:../lexer
       '@master/css-lint':
         specifier: workspace:^
         version: link:../lint

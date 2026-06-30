@@ -8,13 +8,17 @@ import {
     createClassListLintReport,
     createConflictingClassesReport,
     createSortClassesReport,
+    fixMasterCSSContent,
     findClassConflicts,
     findPartialClassConflicts,
     findUnapprovedRawValueClasses,
     getClassValidationIssues,
+    lintMasterCSSContent,
     removeClassNamesFromClassList,
     replaceClassGroupInClassList,
     replaceClassNameInClassList,
+    resolveMasterCSSLintRules,
+    summarizeMasterCSSLintFiles,
     suggestCanonicalClassGroups,
     suggestCanonicalComposeDirective,
     sortClassList,
@@ -273,6 +277,104 @@ describe('lint diagnostics', () => {
                 text: expect.stringContaining('contain: content;')
             })
         }))
+    })
+})
+
+describe('source content linting', () => {
+    test('resolves rule presets and explicit rule sets', () => {
+        expect(resolveMasterCSSLintRules('no-invalid-classes')).toEqual({
+            'sort-classes': false,
+            'no-invalid-classes': true,
+            'no-conflicting-classes': false,
+            'prefer-canonical-classes': false,
+            'no-unapproved-raw-values': false
+        })
+        expect(resolveMasterCSSLintRules('recommended')).toEqual({
+            'sort-classes': true,
+            'no-invalid-classes': true,
+            'no-conflicting-classes': true,
+            'prefer-canonical-classes': true,
+            'no-unapproved-raw-values': false
+        })
+        expect(() => resolveMasterCSSLintRules('unknown-rule')).toThrow('Unknown Master CSS lint rule')
+    })
+
+    test('maps class diagnostics and safe fixes onto source ranges', () => {
+        const result = lintMasterCSSContent({
+            content: '<div class="fg:white m:2x"></div>',
+            filePath: '/project/index.html',
+            css
+        })
+
+        expect(result.languageId).toBe('html')
+        expect(result.sourceKind).toBe('source')
+        expect(result.diagnostics).toContainEqual(expect.objectContaining({
+            code: 'invalid-class-order',
+            sourceKind: 'class-attribute',
+            loc: {
+                start: { line: 1, column: 13 },
+                end: { line: 1, column: 26 }
+            },
+            fixes: [expect.objectContaining({
+                kind: 'class-list',
+                safety: 'safe',
+                text: 'm:2x fg:white'
+            })]
+        }))
+        expect(fixMasterCSSContent({
+            content: '<div class="fg:white m:2x"></div>',
+            filePath: '/project/index.html',
+            css
+        })).toBe('<div class="m:xs fg:white"></div>')
+        expect(summarizeMasterCSSLintFiles([result])).toMatchObject({
+            files: 1,
+            warnings: result.diagnostics.length,
+            safeFixes: expect.any(Number)
+        })
+    })
+
+    test('uses script language ids for cjs and typescript module files', () => {
+        expect(lintMasterCSSContent({
+            content: 'const cls = "fg:white m:2x"',
+            filePath: '/project/component.cjs',
+            css
+        })).toMatchObject({
+            languageId: 'javascript'
+        })
+        expect(lintMasterCSSContent({
+            content: 'const cls = "fg:white m:2x"',
+            filePath: '/project/component.mts',
+            css
+        })).toMatchObject({
+            languageId: 'typescript'
+        })
+    })
+
+    test('reports and applies structural compose directive fixes when allowed', () => {
+        const content = '.btn { @compose contain:content; }'
+        const result = lintMasterCSSContent({
+            content,
+            filePath: '/project/index.css',
+            css
+        })
+
+        expect(result.sourceKind).toBe('stylesheet')
+        expect(result.diagnostics).toContainEqual(expect.objectContaining({
+            code: 'prefer-native-declaration',
+            sourceKind: 'compose-directive',
+            fixes: [expect.objectContaining({ kind: 'directive', safety: 'structural' })]
+        }))
+        expect(fixMasterCSSContent({
+            content,
+            filePath: '/project/index.css',
+            css
+        })).toBe(content)
+        expect(fixMasterCSSContent({
+            content,
+            filePath: '/project/index.css',
+            css,
+            includeDirectiveFixes: true
+        })).toBe('.btn { contain: content; }')
     })
 })
 

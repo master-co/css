@@ -19,6 +19,14 @@ export {
     createSortClassesReport,
     createUnapprovedRawValueClassesReport
 } from './diagnostics'
+export {
+    defaultMasterCSSLintRules,
+    fixMasterCSSContent,
+    lintMasterCSSContent,
+    masterCSSLintRuleIds,
+    resolveMasterCSSLintRules,
+    summarizeMasterCSSLintFiles
+} from './source'
 export { default as suggestCanonicalComposeDirective } from './suggest-canonical-compose-directive'
 export { default as suggestCanonicalClassGroups } from './suggest-canonical-class-groups'
 export {
@@ -58,4 +66,18 @@ export type {
     MasterCSSInvalidClassesReportOptions,
     MasterCSSUnapprovedRawValueClassesReportOptions
 } from './diagnostics'
+export type {
+    MasterCSSFixContentOptions,
+    MasterCSSLintContentOptions,
+    MasterCSSLintDiagnosticSourceKind,
+    MasterCSSLintFileResult,
+    MasterCSSLintFileSourceKind,
+    MasterCSSLintSourceDiagnostic,
+    MasterCSSLintSourceFix,
+    MasterCSSLintSourceFixKind,
+    MasterCSSLintSourceFixSafety,
+    MasterCSSLintSourceLocation,
+    MasterCSSLintSourceLocationRange,
+    MasterCSSLintSummary
+} from './source'
 export type { CanonicalClassNameOptions } from './suggest-canonical-class-name'
