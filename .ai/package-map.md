@@ -5,35 +5,37 @@
 | Package | Entry Points | Responsibility |
 |---|---|---|
 | `@master/css` | `.`, `./index.css`, `./base.css`, `./theme.css`, `./variants.css`, `./utilities.css` | Public facade over engine API, manifest types, default preset manifest, and preset stylesheet entries |
-| `@master/css-engine` | `.`, `./compiler` | Browser-safe MasterCSSManifest executor, class semantics, rule generation, layers, variable and animation lifecycle |
-| `@master/css-preset` | `.`, `./index.css`, `./base.css`, `./theme.css`, `./variants.css`, `./utilities.css` | Default preset CSS source and generated default manifest |
+| `@master/css-engine` | `.`, `./compiler`, `./inspect` | Browser-safe MasterCSSManifest executor, class semantics, rule generation, layers, variable and animation lifecycle |
+| `@master/css-preset` | `.`, `./default-manifest.json`, `./index.css`, `./base.css`, `./theme.css`, `./variants.css`, `./utilities.css` | Default preset CSS source and generated default manifest |
 | `@master/css-lexer` | `.` | Dependency-free source ranges, directive/import scanners, lexical escaping helpers, Master class lexical tokens, and CSS unit constants |
 | `@master/css-source` | `.`, `./adapters` | Source-level class candidate extraction and source-format-aware adapters, including HTML and OXC JavaScript/TypeScript scanners |
-| `@master/css-compiler` | `.` | Compile Master CSS stylesheet entries into MasterCSSManifest values, directive metadata, and native CSS |
+| `@master/css-compiler` | `.`, `./browser` | Compile Master CSS stylesheet entries into MasterCSSManifest values, directive metadata, and native CSS |
 | `@master/css-runtime` | `.` | Browser runtime, DOM observation, hydration |
 | `@master/css-server` | `.` | HTML render and CSS injection |
 | `@master/css-scanner` | `.`, `./options` | Static source scanning, class validation, scanner caches, and generated CSS scanner state |
-| `@master/css-stylesheet` | `.`, `./directives` | Stylesheet entry detection, CSS-first stylesheet compilation, native CSS pruning, generated CSS composition, and emittedGlobals manifest output |
-| `@master/css.vite` | `.` | Vite modes and plugin orchestration |
+| `@master/css-stylesheet` | `.`, `./browser`, `./directives` | Stylesheet entry detection, CSS-first stylesheet compilation, native CSS pruning, generated CSS composition, and emittedGlobals manifest output |
+| `@master/css.vite` | `.`, `./runtime` | Vite modes and plugin orchestration |
 | `@master/css.webpack` | `.` | Webpack extraction plugin |
-| `@master/css.astro` | `.` | Astro integration |
+| `@master/css.next` | `.`, `./adapter` | Next.js integration |
+| `@master/css.astro` | `.`, `./adapter`, `./middleware` | Astro integration |
 | `@master/css.nuxt` | `.` | Nuxt module |
 | `@master/css.react` | `.`, `./runtime-provider` | React runtime registry, provider, and hooks |
 | `@master/css.vue` | `.`, `./runtime-provider`, `./adapter`, `./vite` | Vue runtime registry, provider, and Vue SFC extraction adapter |
 | `@master/css.svelte` | `.`, `./runtime-provider`, `./adapter`, `./vite`, `./hooks.server` | Svelte runtime registry, provider, SvelteKit hook, Vite wrapper, and Svelte source adapter |
 | `@master/css-language` | `.`, `./browser`, `./shiki`, `./syntaxes/master-css.tmLanguage.json` | Editor-neutral language primitives, class-position scanning, semantic tokens, browser helpers, Shiki helpers, and shared TextMate grammar |
-| `@master/css-language-service` | `.` | Stateful language service wrapper for completion, hover, colors, semantic token methods, and `TextDocument` feature gating |
-| `@master/css-language-server` | `.` | LSP wrapper and active/full semantic token request handling |
+| `@master/css-language-service` | `.`, `./common` | Stateful language service wrapper for completion, hover, colors, semantic token methods, and `TextDocument` feature gating |
+| `@master/css-language-server` | `.`, `./server` | LSP wrapper and active/full semantic token request handling |
 | `master-css-vscode` | `.`, `./server` | VS Code extension |
-| `@master/css-validator` | `.` | CSS validation for generated rules |
+| `@master/css-validator` | `.`, `./native-declaration` | CSS validation for generated rules |
 | `@master/css-diagnostics` | `.` | Adapter-neutral project inspection reports for scanner state, stylesheet entries, generated CSS metadata, and missing CSS diagnostics |
 | `@master/css-lint` | `.` | Framework-neutral Master CSS class lint policy helpers |
 | `@master/eslint-plugin-css` | `.`, `./configs/*` | ESLint plugin |
 | `@master/eslint-config-css` | `.` | ESLint config wrapper |
 | `@master/css-cli` | package-name binary | Root scan/extract CLI |
+| `@master/css-mcp` | `.`, `./server` | Model Context Protocol server and tools for AI clients |
 | `@master/css-schema` | `.`, `./manifest`, `./manifest-json`, `./hydration-manifest`, `./css-directives`, `./css-syntax`, `./utility-type`, `./runtime-style`, `./native-css-shorthand`, `./css-common` | Public dependency-light schema, wire-format contracts, serializable constants, and pure codec helpers |
-| `@master/css-project` | `./entries`, `./manifest`, `./manifest-sync` | Resolve project CSS manifest entries, workspace roots, explicit CSS manifest resources, and project manifest module source |
-| `@master/css-integration` | `.`, `./client`, `./module`, `./manifest-module`, `./manifest-facade`, `./style-module`, `./emitted-globals-module`, `./runtime`, `./node` | Adapter-neutral integration contracts, browser-safe virtual module/codegen helpers, runtime injection source, client ambient module declarations, and explicit Node helper subpaths |
+| `@master/css-project` | `./entries`, `./manifest`, `./manifest-sync`, `./workspace` | Resolve project CSS manifest entries, workspace roots, explicit CSS manifest resources, and project manifest module source |
+| `@master/css-integration` | `.`, `./client`, `./module`, `./manifest-module`, `./manifest-facade`, `./style-module`, `./emitted-globals-module`, `./node` | Adapter-neutral integration contracts, browser-safe virtual module/codegen helpers, client ambient module declarations, and explicit Node helper subpaths |
 | `@master/css.figma` | plugin bundle | Figma variable import/export |
 
 ## Dependency Direction

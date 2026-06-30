@@ -21,7 +21,7 @@
 ## Public Surface
 
 - No root export.
-- Explicit subpaths: `./entries`, `./manifest`, and `./manifest-sync`.
+- Explicit subpaths: `./entries`, `./manifest`, `./manifest-sync`, and `./workspace`.
 - `loadManifest()` returns both resolved manifest and dependency paths; call sites that only need the manifest should read `.manifest`.
 
 ## Key Files
@@ -29,6 +29,7 @@
 - `src/entries.ts`
 - `src/manifest.ts`
 - `src/manifest-sync.ts`
+- `src/workspace.ts`
 - `src/options.ts`
 
 ## Risk Areas
