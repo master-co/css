@@ -22,6 +22,7 @@ function writeJSON(filePath: string, value: unknown) {
 function createContributorFixture() {
     const root = createTempDir('master-css-mcp-contributor-')
     mkdirSync(join(root, '.ai/context'), { recursive: true })
+    mkdirSync(join(root, '.github/prompts'), { recursive: true })
     mkdirSync(join(root, 'packages/engine'), { recursive: true })
     mkdirSync(join(root, 'packages/runtime'), { recursive: true })
     mkdirSync(join(root, 'packages/mcp'), { recursive: true })
@@ -29,6 +30,8 @@ function createContributorFixture() {
     writeFileSync(join(root, 'AGENTS.md'), 'Read .ai/context/index.md')
     writeFileSync(join(root, '.ai/context/index.md'), '# Context Pack Index')
     writeFileSync(join(root, '.ai/context/package-routing.md'), '# Package Routing Pack')
+    writeFileSync(join(root, '.ai/context/docs.md'), '# Docs Pack')
+    writeFileSync(join(root, '.github/prompts/fix-bug.prompt.md'), '# Fix Bug')
     writeJSON(join(root, 'package.json'), {
         name: 'master-css-repo',
         private: true,
@@ -245,6 +248,128 @@ describe('@master/css-mcp', () => {
                     dependents: ['@master/css-runtime']
                 })
             ])
+        } finally {
+            await connection.close()
+        }
+    })
+
+    it('returns limited contributor routing outside the Master CSS repository', async () => {
+        const root = createTempDir('master-css-mcp-limited-')
+        mkdirSync(join(root, 'src'), { recursive: true })
+        writeJSON(join(root, 'package.json'), {
+            name: 'ordinary-app',
+            scripts: {
+                test: 'vitest'
+            }
+        })
+        writeFileSync(join(root, 'src/App.tsx'), 'export function App() { return null }')
+
+        const connection = await connect(root)
+        try {
+            const report = parseToolJSON(await connection.client.callTool({
+                name: 'mastercss_repo_context',
+                arguments: {
+                    paths: ['src/App.tsx']
+                }
+            }))
+
+            expect(report.status).toBe('limited')
+            expect(report.reason).toContain('optimized for the Master CSS monorepo')
+            expect(report.affectedPackages).toContainEqual(expect.objectContaining({
+                name: 'ordinary-app',
+                path: '.',
+                aiNotes: null
+            }))
+            expect(report.context.files).toEqual([])
+            expect(report.risks).toEqual([])
+            expect(report.validation.commands).toEqual([])
+
+            const graph = parseToolJSON(await connection.client.callTool({
+                name: 'mastercss_package_graph',
+                arguments: {}
+            }))
+            expect(graph.status).toBe('limited')
+            expect(graph.packages).toContainEqual(expect.objectContaining({
+                name: 'ordinary-app',
+                scripts: ['test']
+            }))
+        } finally {
+            await connection.close()
+        }
+    })
+
+    it('routes AI-facing documentation changes to docs consistency validation', async () => {
+        const root = createContributorFixture()
+        const connection = await connect(root)
+        try {
+            const report = parseToolJSON(await connection.client.callTool({
+                name: 'mastercss_repo_context',
+                arguments: {
+                    paths: [
+                        'AGENTS.md',
+                        '.ai/context/index.md',
+                        '.github/prompts/fix-bug.prompt.md'
+                    ]
+                }
+            }))
+
+            expect(report.status).toBe('loaded')
+            expect(report.affectedPackages).toEqual([
+                expect.objectContaining({
+                    name: 'agent-docs',
+                    path: '.ai',
+                    kind: 'agent-docs'
+                })
+            ])
+            expect(report.risks).toContainEqual(expect.objectContaining({
+                id: 'agent-instructions',
+                severity: 'info'
+            }))
+            expect(report.validation.commands).toContainEqual(expect.objectContaining({
+                command: 'pnpm run test:docs-consistency'
+            }))
+        } finally {
+            await connection.close()
+        }
+    })
+
+    it('routes site documentation changes to site context and prepare validation', async () => {
+        const root = createContributorFixture()
+        const connection = await connect(root)
+        try {
+            const report = parseToolJSON(await connection.client.callTool({
+                name: 'mastercss_repo_context',
+                arguments: {
+                    paths: [
+                        'site/app/[locale]/guide/mcp-server/content.mdx',
+                        'site/package.json'
+                    ]
+                }
+            }))
+
+            expect(report.status).toBe('loaded')
+            expect(report.affectedPackages).toContainEqual(expect.objectContaining({
+                name: 'site',
+                path: 'site',
+                aiNotes: 'site/AI.md'
+            }))
+            expect(report.context.files).toEqual(expect.arrayContaining([
+                '.ai/context/docs.md',
+                '.ai/context/package-boundaries.md',
+                'site/package.json',
+                'site/AI.md'
+            ]))
+            expect(report.risks).toContainEqual(expect.objectContaining({
+                id: 'docs',
+                severity: 'info'
+            }))
+            expect(report.risks).toContainEqual(expect.objectContaining({
+                id: 'public-api-or-package-boundary',
+                severity: 'warning'
+            }))
+            expect(report.validation.commands).toContainEqual(expect.objectContaining({
+                command: 'pnpm --filter site prepare-app'
+            }))
         } finally {
             await connection.close()
         }

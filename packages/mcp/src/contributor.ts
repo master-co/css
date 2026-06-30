@@ -272,7 +272,7 @@ function routePath(packages: WorkspacePackage[], path: string): Omit<RoutedPacka
             path: 'site',
             kind: 'site',
             packageJSON: 'site/package.json',
-            aiNotes: 'site/AI.md'
+            aiNotes: pkg?.aiNotes ?? null
         }
     }
     if (path.startsWith('shared/')) {
@@ -315,12 +315,13 @@ function routePath(packages: WorkspacePackage[], path: string): Omit<RoutedPacka
             aiNotes: null
         }
     }
+    const rootPackage = packages.find((candidate) => candidate.path === '.')
     return {
-        name: 'repo-root',
+        name: rootPackage?.name ?? 'repo-root',
         path: '.',
         kind: 'repo-root',
-        packageJSON: 'package.json',
-        aiNotes: 'AGENTS.md'
+        packageJSON: rootPackage ? 'package.json' : undefined,
+        aiNotes: rootPackage?.aiNotes ?? null
     }
 }
 
@@ -563,7 +564,8 @@ async function buildContributorResult(context: MasterCSSMCPContext, input: Contr
     const packages = await loadWorkspacePackages(context)
     const paths = normalizeInputPaths(context, input)
     const routes = routePaths(packages, paths)
-    const risks = detectRisks(paths, routes)
+    const isLoaded = support.status === 'loaded'
+    const risks = isLoaded ? detectRisks(paths, routes) : []
     return {
         version: REPORT_VERSION,
         audience: AUDIENCE,
@@ -576,12 +578,14 @@ async function buildContributorResult(context: MasterCSSMCPContext, input: Contr
         },
         affectedPackages: routes,
         context: {
-            files: contextFiles(paths, routes, risks, input.task),
-            note: 'Read these files as routing inputs; source and nearby tests remain the final authority.'
+            files: isLoaded ? contextFiles(paths, routes, risks, input.task) : [],
+            note: isLoaded
+                ? 'Read these files as routing inputs; source and nearby tests remain the final authority.'
+                : 'Contributor context routing is limited outside the Master CSS repository; no Master CSS repo-specific context files are recommended.'
         },
         risks,
         validation: {
-            commands: validationCommands(packages, routes, risks)
+            commands: isLoaded ? validationCommands(packages, routes, risks) : []
         }
     }
 }
