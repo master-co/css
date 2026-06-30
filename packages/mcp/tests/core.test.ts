@@ -216,4 +216,22 @@ describe('@master/css-mcp', () => {
         await expect(context.applyPreview(preview.confirmToken!)).rejects.toThrow('changed')
         expect(readFileSync(file, 'utf8')).toBe('<div class="flex"></div>')
     })
+
+    it('accepts writable files addressed through the configured root path alias', async () => {
+        const root = createTempDir('master-css-mcp-alias-')
+        const context = new MasterCSSMCPContext({ root })
+        const file = join(root, 'generated.css')
+
+        const preview = await context.createPreview([
+            {
+                filePath: file,
+                afterText: '.block{display:block}'
+            }
+        ])
+
+        expect(preview.confirmToken).toEqual(expect.any(String))
+        const applied = await context.applyPreview(preview.confirmToken!)
+        expect(applied.applied).toBe(true)
+        expect(readFileSync(file, 'utf8')).toBe('.block{display:block}')
+    })
 })

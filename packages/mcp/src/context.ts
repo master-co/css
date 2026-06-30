@@ -81,11 +81,14 @@ export default class MasterCSSMCPContext {
     readonly root: string
     readonly roots: string[]
     readonly previewTTL: number
+    private readonly containmentRoots: string[]
     private previews = new Map<string, StoredPreview>()
 
     constructor(options: MasterCSSMCPContextOptions = {}) {
         const configuredRoots = options.roots?.length ? options.roots : [options.root || process.cwd()]
-        this.roots = configuredRoots.map((root) => {
+        const roots: string[] = []
+        const containmentRoots: string[] = []
+        for (const root of configuredRoots) {
             const resolved = resolve(root)
             if (!existsSync(resolved)) {
                 throw new Error(`Workspace root does not exist: ${resolved}`)
@@ -94,18 +97,21 @@ export default class MasterCSSMCPContext {
             if (!statSync(real).isDirectory()) {
                 throw new Error(`Workspace root is not a directory: ${real}`)
             }
-            return real
-        })
+            roots.push(real)
+            containmentRoots.push(real, resolved)
+        }
+        this.roots = roots
         this.root = this.roots[0]
+        this.containmentRoots = [...new Set(containmentRoots)]
         this.previewTTL = options.previewTTL ?? DEFAULT_PREVIEW_TTL
     }
 
     assertContained(filePath: string) {
-        const realPath = resolve(filePath)
-        if (!this.roots.some((root) => isContained(root, realPath))) {
+        const resolvedPath = resolve(filePath)
+        if (!this.containmentRoots.some((root) => isContained(root, resolvedPath))) {
             throw new Error(`Path is outside the allowed workspace roots: ${filePath}`)
         }
-        return realPath
+        return resolvedPath
     }
 
     resolveVirtualPath(filePath: string) {
