@@ -9,6 +9,7 @@ import { getWorkspaceInfo, loadWorkspaceManifest } from './project'
 import { inspectClass, previewGeneratedCSS, renderCSS, scanProject } from './scan'
 import { suggestSyntax } from './language'
 import { lintContent, lintProject, previewLintFixes } from './lint'
+import { getChangeImpact, getPackageGraph, getRepoContext, getTestRouter } from './contributor'
 import { jsonResourceResult, jsonToolResult } from './result'
 
 export interface MasterCSSMCPServerInstance {
@@ -197,6 +198,85 @@ function registerTools(server: McpServer, context: MasterCSSMCPContext) {
             }
         },
         async (input) => jsonToolResult(await scanProject(context, input))
+    )
+
+    server.registerTool(
+        'mastercss_repo_context',
+        {
+            title: 'Master CSS Repository Context',
+            description: 'Route Master CSS repository contributor work to affected packages, required context files, risks, and validation commands.',
+            inputSchema: {
+                task: z.string().optional(),
+                paths: z.array(z.string()).optional(),
+                diff: z.string().optional()
+            },
+            annotations: {
+                readOnlyHint: true,
+                destructiveHint: false,
+                idempotentHint: true,
+                openWorldHint: false
+            }
+        },
+        async (input) => jsonToolResult(await getRepoContext(context, input))
+    )
+
+    server.registerTool(
+        'mastercss_change_impact',
+        {
+            title: 'Master CSS Change Impact',
+            description: 'Classify contributor change risk for CSS output, runtime, extraction, language, ESLint, docs, and package boundaries.',
+            inputSchema: {
+                task: z.string().optional(),
+                paths: z.array(z.string()).optional(),
+                diff: z.string().optional()
+            },
+            annotations: {
+                readOnlyHint: true,
+                destructiveHint: false,
+                idempotentHint: true,
+                openWorldHint: false
+            }
+        },
+        async (input) => jsonToolResult(await getChangeImpact(context, input))
+    )
+
+    server.registerTool(
+        'mastercss_test_router',
+        {
+            title: 'Master CSS Test Router',
+            description: 'Return focused validation commands for Master CSS repository contributor changes.',
+            inputSchema: {
+                task: z.string().optional(),
+                paths: z.array(z.string()).optional(),
+                diff: z.string().optional()
+            },
+            annotations: {
+                readOnlyHint: true,
+                destructiveHint: false,
+                idempotentHint: true,
+                openWorldHint: false
+            }
+        },
+        async (input) => jsonToolResult(await getTestRouter(context, input))
+    )
+
+    server.registerTool(
+        'mastercss_package_graph',
+        {
+            title: 'Master CSS Package Graph',
+            description: 'Report Master CSS workspace package ownership, scripts, exports, workspace dependencies, and dependents.',
+            inputSchema: {
+                packageName: z.string().optional(),
+                includeExamples: z.boolean().optional()
+            },
+            annotations: {
+                readOnlyHint: true,
+                destructiveHint: false,
+                idempotentHint: true,
+                openWorldHint: false
+            }
+        },
+        async (input) => jsonToolResult(await getPackageGraph(context, input))
     )
 
     server.registerTool(

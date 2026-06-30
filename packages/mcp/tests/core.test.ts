@@ -1,4 +1,4 @@
-import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
+import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join, resolve } from 'node:path'
 import { Client } from '@modelcontextprotocol/sdk/client/index.js'
@@ -13,6 +13,70 @@ function createTempDir(prefix: string) {
     const dir = mkdtempSync(join(tmpdir(), prefix))
     tempDirs.push(dir)
     return dir
+}
+
+function writeJSON(filePath: string, value: unknown) {
+    writeFileSync(filePath, JSON.stringify(value, null, 2))
+}
+
+function createContributorFixture() {
+    const root = createTempDir('master-css-mcp-contributor-')
+    mkdirSync(join(root, '.ai/context'), { recursive: true })
+    mkdirSync(join(root, 'packages/engine'), { recursive: true })
+    mkdirSync(join(root, 'packages/runtime'), { recursive: true })
+    mkdirSync(join(root, 'packages/mcp'), { recursive: true })
+    mkdirSync(join(root, 'site'), { recursive: true })
+    writeFileSync(join(root, 'AGENTS.md'), 'Read .ai/context/index.md')
+    writeFileSync(join(root, '.ai/context/index.md'), '# Context Pack Index')
+    writeFileSync(join(root, '.ai/context/package-routing.md'), '# Package Routing Pack')
+    writeJSON(join(root, 'package.json'), {
+        name: 'master-css-repo',
+        private: true,
+        scripts: {
+            'test:docs-consistency': 'node --test .ai/scripts/validate-doc-consistency.test.js'
+        }
+    })
+    writeJSON(join(root, 'packages/engine/package.json'), {
+        name: '@master/css-engine',
+        scripts: {
+            build: 'tsdown',
+            lint: 'eslint',
+            test: 'vitest',
+            'type-check': 'tsc -b tsconfig.typecheck.json'
+        }
+    })
+    writeFileSync(join(root, 'packages/engine/AI.md'), '# AI Notes For `@master/css-engine`')
+    writeJSON(join(root, 'packages/runtime/package.json'), {
+        name: '@master/css-runtime',
+        scripts: {
+            e2e: 'playwright test',
+            lint: 'eslint',
+            test: 'vitest'
+        },
+        dependencies: {
+            '@master/css-engine': 'workspace:^'
+        }
+    })
+    writeFileSync(join(root, 'packages/runtime/AI.md'), '# AI Notes For `@master/css-runtime`')
+    writeJSON(join(root, 'packages/mcp/package.json'), {
+        name: '@master/css-mcp',
+        scripts: {
+            build: 'tsdown',
+            lint: 'eslint',
+            test: 'vitest',
+            'type-check': 'tsc -b tsconfig.typecheck.json'
+        }
+    })
+    writeFileSync(join(root, 'packages/mcp/AI.md'), '# AI Notes For `@master/css-mcp`')
+    writeJSON(join(root, 'site/package.json'), {
+        name: 'site',
+        private: true,
+        scripts: {
+            'prepare-app': 'tsx ./prepare'
+        }
+    })
+    writeFileSync(join(root, 'site/AI.md'), '# Site AI Instructions')
+    return root
 }
 
 async function connect(root: string) {
@@ -59,6 +123,10 @@ describe('@master/css-mcp', () => {
             expect(tools.tools.map((tool) => tool.name)).toEqual(expect.arrayContaining([
                 'mastercss_workspace_info',
                 'mastercss_render_css',
+                'mastercss_repo_context',
+                'mastercss_change_impact',
+                'mastercss_test_router',
+                'mastercss_package_graph',
                 'mastercss_lint_content',
                 'mastercss_preview_fixes',
                 'mastercss_apply_preview'
@@ -80,6 +148,103 @@ describe('@master/css-mcp', () => {
             }))
             expect(rendered.classes).toEqual(['block'])
             expect(rendered.css.text).toContain('display:block')
+        } finally {
+            await connection.close()
+        }
+    })
+
+    it('routes Master CSS contributor paths to context files, risks, and validation commands', async () => {
+        const root = createContributorFixture()
+        const connection = await connect(root)
+        try {
+            const report = parseToolJSON(await connection.client.callTool({
+                name: 'mastercss_repo_context',
+                arguments: {
+                    task: 'fix generated css output regression',
+                    paths: [
+                        'packages/engine/src/core.ts',
+                        'packages/engine/tests/core.test.ts'
+                    ]
+                }
+            }))
+
+            expect(report.version).toBe(1)
+            expect(report.audience).toBe('master-css-repository-contributors')
+            expect(report.status).toBe('loaded')
+            expect(report.affectedPackages).toContainEqual(expect.objectContaining({
+                name: '@master/css-engine',
+                path: 'packages/engine',
+                aiNotes: 'packages/engine/AI.md'
+            }))
+            expect(report.context.files).toEqual(expect.arrayContaining([
+                'AGENTS.md',
+                '.ai/context/index.md',
+                '.ai/context/package-routing.md',
+                '.ai/context/css-output.md',
+                '.ai/context/testing.md',
+                '.ai/context/accuracy-guardrails.md',
+                'packages/engine/package.json',
+                'packages/engine/AI.md'
+            ]))
+            expect(report.risks).toContainEqual(expect.objectContaining({
+                id: 'css-output',
+                severity: 'high'
+            }))
+            expect(report.validation.commands).toContainEqual(expect.objectContaining({
+                command: 'pnpm --filter @master/css-engine test'
+            }))
+            expect(report.validation.commands).toContainEqual(expect.objectContaining({
+                command: 'pnpm --filter @master/css-engine lint'
+            }))
+        } finally {
+            await connection.close()
+        }
+    })
+
+    it('summarizes change impact and package graph for contributor tools', async () => {
+        const root = createContributorFixture()
+        const connection = await connect(root)
+        try {
+            const impact = parseToolJSON(await connection.client.callTool({
+                name: 'mastercss_change_impact',
+                arguments: {
+                    diff: [
+                        'diff --git a/packages/runtime/src/core.ts b/packages/runtime/src/core.ts',
+                        '--- a/packages/runtime/src/core.ts',
+                        '+++ b/packages/runtime/src/core.ts'
+                    ].join('\n')
+                }
+            }))
+
+            expect(impact.status).toBe('loaded')
+            expect(impact.summary.highRisk).toBeGreaterThan(0)
+            expect(impact.risks).toContainEqual(expect.objectContaining({
+                id: 'runtime',
+                severity: 'high'
+            }))
+
+            const tests = parseToolJSON(await connection.client.callTool({
+                name: 'mastercss_test_router',
+                arguments: {
+                    paths: ['packages/runtime/src/core.ts']
+                }
+            }))
+            expect(tests.validation.commands).toContainEqual(expect.objectContaining({
+                command: 'pnpm --filter @master/css-runtime e2e'
+            }))
+
+            const graph = parseToolJSON(await connection.client.callTool({
+                name: 'mastercss_package_graph',
+                arguments: {
+                    packageName: '@master/css-engine'
+                }
+            }))
+            expect(graph.packages).toEqual([
+                expect.objectContaining({
+                    name: '@master/css-engine',
+                    dependents: ['@master/css-runtime']
+                })
+            ])
         } finally {
             await connection.close()
         }

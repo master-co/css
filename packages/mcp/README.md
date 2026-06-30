@@ -1,6 +1,6 @@
 # Master CSS MCP Server
 
-Model Context Protocol server for Master CSS tooling. It lets AI clients inspect a Master CSS workspace, read the active project manifest, scan source files, inspect classes, render generated CSS, run lint diagnostics, request syntax suggestions, and apply reviewed fix previews.
+Model Context Protocol server for Master CSS tooling. It lets AI clients inspect a Master CSS workspace, read the active project manifest, scan source files, inspect classes, render generated CSS, run lint diagnostics, request syntax suggestions, apply reviewed fix previews, and route Master CSS repository contributor work through deterministic context tools.
 
 ## Installation
 
@@ -31,7 +31,7 @@ Most MCP clients accept a command and arguments for stdio servers:
 
 Use an absolute `--root` path so the server resolves the intended workspace.
 
-## Tools
+## Project tools
 
 | Tool | Use |
 | --- | --- |
@@ -45,9 +45,20 @@ Use an absolute `--root` path so the server resolves the intended workspace.
 | `mastercss_preview_fixes` | Create a diff preview and confirmation token. |
 | `mastercss_apply_preview` | Apply a preview after token, hash, and workspace checks. |
 
+## Contributor tools
+
+These read-only tools are for Master CSS repository contributors, AI coding agents, review bots, and CI support. They expose repository-specific routing as low-token JSON instead of asking an agent to repeatedly infer package ownership, risk, and validation from raw files. In non-Master CSS workspaces they return limited package data instead of guessing.
+
+| Tool | Use |
+| --- | --- |
+| `mastercss_repo_context` | Route changed paths or a diff to affected packages, required context files, risks, and validation commands. |
+| `mastercss_change_impact` | Summarize contributor change risk for CSS output, runtime, extraction, language tooling, ESLint, docs, and package boundaries. |
+| `mastercss_test_router` | Return focused validation commands for contributor changes. |
+| `mastercss_package_graph` | Report workspace package ownership, scripts, exports, workspace dependencies, and dependents. |
+
 ## Machine-readable results
 
-Project scan and lint reports use `version: 1`. Tooling can rely on stable top-level fields such as `version`, `root`, `manifest`, `inputs`, `files`, `diagnostics`, and `summary` when present. Nested diagnostic `data` objects may gain additional fields over time.
+Project scan, lint, and contributor routing reports use `version: 1`. Tooling can rely on stable top-level fields such as `version`, `root`, `manifest`, `inputs`, `files`, `diagnostics`, `risks`, `validation`, and `summary` when present. Nested diagnostic `data` objects may gain additional fields over time.
 
 ## Safety
 

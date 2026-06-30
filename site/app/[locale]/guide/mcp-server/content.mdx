@@ -111,6 +111,8 @@ Check the project manifest, scan source files, lint the affected class strings, 
 ## Available tools
 The server exposes focused tools instead of asking the agent to infer Master CSS behavior from files alone.
 
+### Project tools
+
 | Tool | Use |
 | --- | --- |
 | `mastercss_workspace_info` | Report workspace roots, resolved Master CSS package locations, and manifest status. |
@@ -123,12 +125,23 @@ The server exposes focused tools instead of asking the agent to infer Master CSS
 | `mastercss_preview_fixes` | Create a diff preview for lint fixes or generated CSS output and return a confirmation token. |
 | `mastercss_apply_preview` | Apply a previously generated preview after validating the token, file hashes, and workspace containment. |
 
+### Contributor tools
+
+These read-only tools are for Master CSS repository contributors, AI coding agents, review bots, and CI support. They return repository-specific routing as compact JSON: affected packages, required context files, risk flags, and focused validation commands. In non-Master CSS workspaces they return limited package data instead of guessing.
+
+| Tool | Use |
+| --- | --- |
+| `mastercss_repo_context` | Route changed paths or a diff to affected packages, required context files, risks, and validation commands. |
+| `mastercss_change_impact` | Summarize contributor change risk for CSS output, runtime, extraction, language tooling, ESLint, docs, and package boundaries. |
+| `mastercss_test_router` | Return focused validation commands for contributor changes. |
+| `mastercss_package_graph` | Report workspace package ownership, scripts, exports, workspace dependencies, and dependents. |
+
 The server also exposes workspace resources for the loaded manifest, entry files, and resolved Master CSS package locations. Prompt templates guide common workflows such as debugging missing CSS, reviewing class strings, and planning migrations.
 
 ---
 
 ## Machine-readable results
-Project scan and lint reports use `version: 1`. Tooling can rely on stable top-level fields such as `version`, `root`, `manifest`, `inputs`, `files`, `diagnostics`, and `summary` when present. Nested diagnostic `data` and generated detail objects may gain fields as diagnostics become more precise.
+Project scan, lint, and contributor routing reports use `version: 1`. Tooling can rely on stable top-level fields such as `version`, `root`, `manifest`, `inputs`, `files`, `diagnostics`, `risks`, `validation`, and `summary` when present. Nested diagnostic `data` and generated detail objects may gain fields as diagnostics become more precise.
 
 For CLI fallback reports, `cwd` is the command root. For MCP reports, `root` is the configured workspace root.
 
