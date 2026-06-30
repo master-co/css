@@ -10,6 +10,15 @@ export { default as findClassConflicts } from './find-class-conflicts'
 export { default as findPartialClassConflicts } from './find-partial-class-conflicts'
 export { default as findUnapprovedRawValueClasses } from './find-unapproved-raw-value-classes'
 export { default as getClassValidationIssues } from './get-class-validation-issues'
+export {
+    createCanonicalClassesReport,
+    createCanonicalComposeDirectiveReport,
+    createClassListLintReport,
+    createConflictingClassesReport,
+    createInvalidClassesReport,
+    createSortClassesReport,
+    createUnapprovedRawValueClassesReport
+} from './diagnostics'
 export { default as suggestCanonicalComposeDirective } from './suggest-canonical-compose-directive'
 export { default as suggestCanonicalClassGroups } from './suggest-canonical-class-groups'
 export {
@@ -34,4 +43,19 @@ export type {
     ClassValidationIssueKind,
     ClassValidationOptions
 } from './get-class-validation-issues'
+export type {
+    MasterCSSCanonicalClassesReportOptions,
+    MasterCSSClassListLintReportOptions,
+    MasterCSSConflictingClassesReportOptions,
+    MasterCSSLintDiagnostic,
+    MasterCSSLintDiagnosticData,
+    MasterCSSLintDiagnosticSeverity,
+    MasterCSSLintFix,
+    MasterCSSLintRange,
+    MasterCSSLintReport,
+    MasterCSSLintReportOptions,
+    MasterCSSLintRuleId,
+    MasterCSSInvalidClassesReportOptions,
+    MasterCSSUnapprovedRawValueClassesReportOptions
+} from './diagnostics'
 export type { CanonicalClassNameOptions } from './suggest-canonical-class-name'

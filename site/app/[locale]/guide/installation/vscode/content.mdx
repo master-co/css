@@ -1,5 +1,7 @@
 import VSCodeSvg from '~/site/public/icons/visualstudiocode.svg'
 
+The full Master CSS experience in Visual Studio Code uses two extensions together: the Master CSS extension for completion, hover, color tools, highlighting, directive diagnostics, manifest diagnostics, and directive formatting; and the ESLint extension for class policy diagnostics and sort-on-save.
+
 <StepSection>
     <Step $row>
         <StepL>
@@ -52,7 +54,7 @@ import VSCodeSvg from '~/site/public/icons/visualstudiocode.svg'
     <Step $row>
         <StepL>
             ### <StepNum />Install the ESLint extension
-            Install the [ESLint extension](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) when you want editor diagnostics and sort-on-save for committed class strings.
+            Install the [ESLint extension](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) for class policy diagnostics and sort-on-save for committed class strings. The Master CSS extension does not duplicate these ESLint policy warnings by default.
         </StepL>
         <StepR>
             <a className="app-object app-object-interactive flex-col px:lg h:12x font:sm font:medium r:sm leading:1 flex-row!" href="vscode:extension/dbaeumer.vscode-eslint">

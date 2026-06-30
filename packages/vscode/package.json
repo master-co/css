@@ -188,6 +188,11 @@
                     "default": true,
                     "description": "Enables Master CSS directive formatting in CSS-family documents."
                 },
+                "masterCSS.diagnoseClassSyntax": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Enables basic class syntax diagnostics from the Master CSS language server. Class policy diagnostics and sorting remain owned by ESLint."
+                },
                 "masterCSS.embeddedSyntaxHighlighting": {
                     "type": "string",
                     "enum": [

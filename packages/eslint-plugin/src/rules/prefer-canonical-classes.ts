@@ -3,16 +3,14 @@ import resolveContext from '../utils/resolve-context'
 import resolveComposeDirectiveClassNodes from '../utils/resolve-compose-directive-class-nodes'
 import createRule from '../create-rule'
 import {
+    createCanonicalClassesReport,
+    createCanonicalComposeDirectiveReport,
     defaultCanonicalClassNameOptions,
-    replaceClassGroupInClassList,
-    replaceClassNameInClassList,
-    suggestCanonicalComposeDirective,
-    suggestCanonicalClassGroups,
-    suggestCanonicalClassName,
     type CanonicalClassNameOptions
 } from '@master/css-lint'
 import type { ResolvedClassNode } from '../utils/resolve-class-node'
 import type { ResolvedComposeDirectiveClassNode } from '../utils/resolve-compose-directive-class-nodes'
+import reportLintDiagnostics from '../utils/report-lint-diagnostics'
 
 export default createRule({
     name: 'prefer-canonical-classes',
@@ -50,90 +48,39 @@ export default createRule({
         }
 
         const reportCanonicalClassList = (node, { raw, start, end, unescape, classNodes, classValues }: ResolvedClassNode) => {
-            const groupSuggestions = suggestCanonicalClassGroups(classValues, css, options)
-            const coveredClassNames = new Set(groupSuggestions.flatMap((suggestion) => suggestion.classNames))
-            const reports: {
-                loc: (typeof classNodes)[number]['loc']
-                actual: string
-                recommended: string
-            }[] = []
-            let fixedRaw = raw
-
-            for (const suggestion of groupSuggestions) {
-                const firstClassNode = classNodes.find((node) => node.value === suggestion.classNames[0])
-                if (!firstClassNode) continue
-                fixedRaw = replaceClassGroupInClassList(fixedRaw, suggestion.classNames, suggestion.recommended, { unescape })
-                reports.push({
-                    loc: firstClassNode.loc,
-                    actual: suggestion.classNames.join(' '),
-                    recommended: suggestion.recommended
-                })
-            }
-
-            for (const classNode of classNodes) {
-                if (coveredClassNames.has(classNode.value)) continue
-                const recommended = suggestCanonicalClassName(classNode.value, css, options)
-                if (!recommended) continue
-                fixedRaw = replaceClassNameInClassList(fixedRaw, classNode.value, recommended, { unescape })
-                reports.push({
-                    loc: classNode.loc,
-                    actual: classNode.value,
-                    recommended
-                })
-            }
-
-            for (const report of reports) {
-                context.report({
-                    node,
-                    loc: report.loc,
-                    messageId: 'preferClass',
-                    data: {
-                        actual: report.actual,
-                        recommended: report.recommended
-                    },
-                    fix(fixer) {
-                        return fixer.replaceTextRange([start, end], fixedRaw)
-                    }
-                })
-            }
+            reportLintDiagnostics(
+                context,
+                node,
+                { raw, start, end, unescape, classNodes, classValues, nodes: [], value: raw },
+                createCanonicalClassesReport(raw, css, { ...options, unescape }).diagnostics
+            )
         }
 
         const reportCanonicalComposeDirective = (node, classNode: ResolvedComposeDirectiveClassNode) => {
-            const result = suggestCanonicalComposeDirective(classNode.raw, css, options)
-            if (!result) return
-            if (!result.structuralChange) {
-                reportCanonicalClassList(node, classNode)
-                return
-            }
-
-            const replacement = result.replacement
-                ? formatComposeDirectiveReplacement(
-                    context.sourceCode.getText(),
-                    classNode.directiveStart,
-                    result.replacement
-                )
-                : undefined
-
-            for (const suggestion of result.suggestions) {
-                const firstClassNode = classNode.classNodes.find((node) => node.value === suggestion.classNames[0])
-                    || classNode.classNodes[0]
-                context.report({
-                    node,
-                    loc: firstClassNode?.loc,
-                    messageId: 'preferClass',
-                    data: {
-                        actual: suggestion.actual,
-                        recommended: suggestion.recommended
-                    },
-                    ...(replacement
-                        ? {
-                            fix(fixer) {
-                                return fixer.replaceTextRange([classNode.directiveStart, classNode.directiveEnd], replacement)
+            reportLintDiagnostics(
+                context,
+                node,
+                classNode,
+                createCanonicalComposeDirectiveReport(classNode.raw, css, options).diagnostics,
+                {
+                    getFix(_, fix) {
+                        if (fix.scope !== 'directive') {
+                            return {
+                                range: [classNode.start + fix.range.start, classNode.start + fix.range.end],
+                                text: fix.text
                             }
                         }
-                        : {})
-                })
-            }
+                        return {
+                            range: [classNode.directiveStart, classNode.directiveEnd],
+                            text: formatComposeDirectiveReplacement(
+                                context.sourceCode.getText(),
+                                classNode.directiveStart,
+                                fix.text
+                            )
+                        }
+                    }
+                }
+            )
         }
 
         const visitors = defineVisitors({ context, settings }, reportCanonicalClassList)

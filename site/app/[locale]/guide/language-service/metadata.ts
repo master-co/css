@@ -11,7 +11,7 @@ const metadata = define({
     },
     order: 4,
     openGraph: {
-        description: 'Manifest-aware completion, hover previews, highlighting, color tools, and directive diagnostics for Master CSS.'
+        description: 'Manifest-aware completion, hover previews, highlighting, color tools, directive diagnostics, and manifest diagnostics for Master CSS.'
     },
     vercelOG: true,
     fileURL: import.meta.url

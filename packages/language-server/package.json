@@ -22,6 +22,7 @@
         "@master/css-language": "workspace:^",
         "@master/css-language-service": "workspace:^",
         "@master/css-project": "workspace:^",
+        "@master/css-validator": "workspace:^",
         "defu": "^6.1.7",
         "fast-glob": "^3.3.3",
         "js-beautify": "^1.15.4",

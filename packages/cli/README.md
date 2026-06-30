@@ -84,6 +84,22 @@ Options:
 | `-v, --verbose <level>` | `number` | `1` | Logging level. Use `0` to silence terminal output. |
 | `-w, --watch` | `boolean` | `false` | Watch files and rebuild continuously. |
 
+### `npx @master/css-cli lint [source paths]`
+
+Lint Master CSS class strings with the same class policy diagnostics used by `@master/eslint-plugin-css`.
+
+```bash
+npx @master/css-cli lint index.html main.js
+```
+
+Options:
+
+| Option | Type | Default | Description |
+| --- | --- | --- | --- |
+| `--fix` | `boolean` | `false` | Apply fixable class-list diagnostics. |
+| `--format <format>` | `stylish` or `json` | `stylish` | Print human-readable output or machine-readable diagnostics. |
+| `--max-warnings <number>` | `number` | none | Exit with a non-zero status when warnings exceed this count. |
+
 ## Related docs
 
 - [Static rendering guide](https://rc.css.master.co/guide/installation)

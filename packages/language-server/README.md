@@ -75,6 +75,8 @@ const languageServer = new CSSLanguageServer(connection, customSettings)
 
 `CSSLanguageServer` wraps `@master/css-language-service` with LSP workspace lifecycle, completion, hover, document color, color presentation, semantic token, and directive formatting handlers.
 
+Diagnostics are intentionally limited to language-server-owned behavior: CSS directive diagnostics, project manifest loading diagnostics, and optional basic class syntax diagnostics. Class policy rules such as sorting, canonical class preference, conflict detection, and raw-value approval are owned by `@master/eslint-plugin-css`.
+
 ## Semantic tokens
 
 The language server supports full-document and active-position semantic tokens.
@@ -104,6 +106,7 @@ import { settings } from '@master/css-language-server'
 | `workspaces` | `FastGlobPattern[] \| 'auto'` | `'auto'` | Workspace roots where independent language services are created. The root workspace is always included. |
 | `verbose` | `boolean` | `false` | Print server logs. |
 | `formatDirectives` | `boolean` | `true` | Enables LSP document and range formatting for Master CSS directives. |
+| `diagnoseClassSyntax` | `boolean` | `false` | Enables basic class syntax diagnostics. ESLint remains the default owner for class policy diagnostics and sorting. |
 | `embeddedSyntaxHighlighting` | `'active' \| 'always' \| 'off'` | `'active'` | Inherited language-service semantic token mode. |
 
 With `workspaces: 'auto'`, the server creates workspaces from CSS files importing `@master/css`, CSS files containing the lightweight `@master entry;` marker, and `package.json` files that declare Master CSS package dependencies.

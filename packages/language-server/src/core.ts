@@ -3,7 +3,7 @@ import { TextDocument } from 'vscode-languageserver-textdocument'
 import path from 'node:path'
 import { readFile } from 'node:fs/promises'
 import { pathToFileURL } from 'node:url'
-import CSSLanguageService, { Settings as CSSLanguageServiceSettings } from '@master/css-language-service'
+import CSSLanguageService from '@master/css-language-service'
 import { compileCSSManifest } from '@master/css-compiler'
 import { Settings } from './settings'
 import {
@@ -33,15 +33,17 @@ import {
 import glob from 'fast-glob'
 import { URI } from 'vscode-uri'
 import { CSSDirectiveError, type CSSDirectiveSourceReference } from '@master/css-schema/css-directives'
+import { validate } from '@master/css-validator'
 
 export declare interface Workspace {
     uri: string
     openedTextDocuments: TextDocument[]
     languageService?: CSSLanguageService
-    languageServiceSettings: CSSLanguageServiceSettings
+    languageServiceSettings: Settings
     languageRuntime?: CSSLanguageRuntime
     languageRuntimeResolution?: MasterCSSWorkspacePackageResolution
     languageRuntimeSource?: 'workspace' | 'bundled'
+    manifestErrors?: unknown[]
     planEntries?: string[]
 }
 
@@ -169,7 +171,7 @@ export default class CSSLanguageServer {
     globalWorkspace: Workspace = {
         uri: '',
         openedTextDocuments: [],
-        languageServiceSettings: this.settings as CSSLanguageServiceSettings,
+        languageServiceSettings: this.settings as Settings,
         languageRuntime: defaultCSSLanguageRuntime,
         languageRuntimeSource: 'bundled'
     }
@@ -188,7 +190,7 @@ export default class CSSLanguageServer {
     ) {
         this.documents = new TextDocuments(TextDocument)
         this.settings = defu(this.customSettings, settings) as Settings
-        this.globalWorkspace.languageServiceSettings = this.settings as CSSLanguageServiceSettings
+        this.globalWorkspace.languageServiceSettings = this.settings as Settings
         this.console = new Proxy(this.connection.console, {
             get: (target, prop: keyof RemoteConsole) => {
                 if (!this.settings?.verbose) return () => { }
@@ -234,7 +236,7 @@ export default class CSSLanguageServer {
         if (initializationSettings) {
             this.customSettings = defu(initializationSettings, this.customSettings) as Settings
             this.settings = defu(this.customSettings, settings) as Settings
-            this.globalWorkspace.languageServiceSettings = this.settings as CSSLanguageServiceSettings
+            this.globalWorkspace.languageServiceSettings = this.settings as Settings
         }
         if (params.workspaceFolders?.length) {
             this.workspaceFolders = params.workspaceFolders
@@ -339,21 +341,21 @@ export default class CSSLanguageServer {
         const workspace = this.findClosestWorkspace(params.document.uri)
         if (!workspace) return
         if (workspace.openedTextDocuments.includes(params.document)) {
-            this.publishCSSDirectiveDiagnostics(params.document, workspace)
+            this.publishDiagnostics(params.document, workspace)
             return
         }
         if (!workspace.openedTextDocuments.length) {
             await this.initWorkspaceLanguageService(workspace)
         }
         workspace.openedTextDocuments.push(params.document)
-        this.publishCSSDirectiveDiagnostics(params.document, workspace)
+        this.publishDiagnostics(params.document, workspace)
     }
 
     async onDidChangeContent(params: TextDocumentChangeEvent<TextDocument>) {
         await this.init()
         const workspace = this.findClosestWorkspace(params.document.uri)
         if (!workspace) return
-        this.publishCSSDirectiveDiagnostics(params.document, workspace)
+        this.publishDiagnostics(params.document, workspace)
     }
 
     async onDidClose(params: TextDocumentChangeEvent<TextDocument>) {
@@ -371,7 +373,7 @@ export default class CSSLanguageServer {
         await this.init()
         const workspace = this.findClosestWorkspace(params.document.uri)
         if (!workspace) return
-        this.publishCSSDirectiveDiagnostics(params.document, workspace)
+        this.publishDiagnostics(params.document, workspace)
         const name = path.basename(URI.parse(params.document.uri).fsPath)
         if (name.endsWith('.css')) {
             this.refreshSemanticTokens()
@@ -387,14 +389,14 @@ export default class CSSLanguageServer {
             this.connection.sendNotification('masterCSS/globalSettingsChanged', changedSettings.masterCSS)
             this.customSettings = changedSettings.masterCSS
             this.settings = defu(this.customSettings, settings) as Settings
-            this.globalWorkspace.languageServiceSettings = this.settings as CSSLanguageServiceSettings
+            this.globalWorkspace.languageServiceSettings = this.settings as Settings
             this.refreshSemanticTokens()
             this.connection.sendRequest('masterCSS/restart', {
                 title: 'Updating Master CSS settings',
             })
             for (const workspace of [this.globalWorkspace, ...this.workspaces.values()]) {
                 for (const document of workspace.openedTextDocuments) {
-                    this.publishCSSDirectiveDiagnostics(document, workspace)
+                    this.publishDiagnostics(document, workspace)
                 }
             }
         }
@@ -444,10 +446,12 @@ export default class CSSLanguageServer {
     async initWorkspaceLanguageService(workspace: Workspace) {
         workspace.languageRuntime = await this.loadWorkspaceLanguageRuntime(workspace)
         let workspacePlan: MasterCSSManifest | undefined
+        workspace.manifestErrors = []
         if (workspace !== this.globalWorkspace) {
             try {
                 workspacePlan = await this.loadWorkspacePlan(workspace)
             } catch (e: any) {
+                workspace.manifestErrors = [e]
                 this.console.info(`Failed to load manifest from ${workspace.uri}`)
                 this.console.error(e instanceof Error ? e.stack : e.toString())
             }
@@ -565,8 +569,20 @@ export default class CSSLanguageServer {
         return this.globalWorkspace
     }
 
-    private publishCSSDirectiveDiagnostics(textDocument: TextDocument, workspace: Workspace) {
-        if (!isCSSDiagnosticDocument(textDocument)) return
+    private publishDiagnostics(textDocument: TextDocument, workspace: Workspace) {
+        const diagnostics: Diagnostic[] = []
+        diagnostics.push(...this.createManifestLoadingDiagnostics(textDocument, workspace))
+        diagnostics.push(...this.createCSSDirectiveDiagnostics(textDocument, workspace))
+        diagnostics.push(...this.createClassSyntaxDiagnostics(textDocument, workspace))
+
+        this.connection.sendDiagnostics({
+            uri: textDocument.uri,
+            diagnostics
+        })
+    }
+
+    private createCSSDirectiveDiagnostics(textDocument: TextDocument, workspace: Workspace) {
+        if (!isCSSDiagnosticDocument(textDocument)) return []
         const diagnostics: Diagnostic[] = []
         const documentFile = path.resolve(URI.parse(textDocument.uri).fsPath)
         for (const { source, offset } of getCSSDiagnosticSources(textDocument)) {
@@ -581,11 +597,55 @@ export default class CSSLanguageServer {
                 if (diagnostic) diagnostics.push(diagnostic)
             }
         }
+        return diagnostics
+    }
 
-        this.connection.sendDiagnostics({
-            uri: textDocument.uri,
-            diagnostics
+    private createManifestLoadingDiagnostics(textDocument: TextDocument, workspace: Workspace): Diagnostic[] {
+        if (!workspace.manifestErrors?.length) return []
+        const documentFile = path.resolve(URI.parse(textDocument.uri).fsPath)
+        return workspace.manifestErrors.map((error) => {
+            const directiveError = isCSSDirectiveError(error) ? error : undefined
+            const source = directiveError?.source
+            return {
+                range: source && (!source.file || path.resolve(source.file) === documentFile)
+                    ? this.createCSSDirectiveRange(source, textDocument, documentFile, 0)
+                    : {
+                        start: { line: 0, character: 0 },
+                        end: { line: 0, character: 0 }
+                    },
+                severity: DiagnosticSeverity.Error,
+                code: 'manifest-loading-error',
+                source: 'Master CSS',
+                message: `Failed to load Master CSS manifest: ${error instanceof Error ? error.message : String(error)}`,
+                relatedInformation: directiveError
+                    ? this.createCSSDirectiveRelatedInformation(directiveError.related, textDocument, documentFile, 0)
+                    : undefined
+            }
         })
+    }
+
+    private createClassSyntaxDiagnostics(textDocument: TextDocument, workspace: Workspace): Diagnostic[] {
+        const languageService = workspace.languageService
+        if (!workspace.languageServiceSettings.diagnoseClassSyntax || !languageService) return []
+        const diagnostics: Diagnostic[] = []
+        for (const classPosition of languageService.getClassPositions(textDocument)) {
+            const { matched, errors } = validate(classPosition.token, languageService.css)
+            if (!matched) continue
+            for (const error of errors) {
+                const message = error.message || 'Invalid Master CSS class'
+                diagnostics.push({
+                    range: {
+                        start: textDocument.positionAt(classPosition.range.start),
+                        end: textDocument.positionAt(classPosition.range.end)
+                    },
+                    severity: DiagnosticSeverity.Error,
+                    code: 'invalid-class',
+                    source: 'Master CSS',
+                    message: /[.!?]$/.test(message) ? message : `${message}.`
+                })
+            }
+        }
+        return diagnostics
     }
 
     private createCSSDirectiveDiagnostic(

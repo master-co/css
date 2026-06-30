@@ -1,7 +1,9 @@
 ## Overview [sr-only]
 Code linting validates Master CSS class strings where they are authored: markup attributes, framework templates, JavaScript utility calls, and configured class declarations. The ESLint integration resolves the active project manifest, then checks each class against Master CSS syntax, generated CSS declarations, and team policy.
 
-Use the [installation integrations](/guide/installation/integrations) to add the recommended config to a project. Use [Visual Studio Code setup](/guide/installation/vscode) when you want editor diagnostics and sort-on-save.
+Use the [installation integrations](/guide/installation/integrations) to add the recommended config to a project. Use [Visual Studio Code setup](/guide/installation/vscode) when you want the VS Code ESLint extension to surface class policy diagnostics and apply sort-on-save.
+
+The Master CSS VS Code extension and the VS Code ESLint extension are complementary. Master CSS provides completion, hover, color tools, highlighting, directive diagnostics, manifest diagnostics, and directive formatting. ESLint provides `sort-classes`, `prefer-canonical-classes`, `no-conflicting-classes`, `no-invalid-classes`, and opt-in raw-value policy diagnostics, so the Master CSS extension does not duplicate these warnings by default.
 
 ---
 

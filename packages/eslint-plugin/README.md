@@ -60,6 +60,8 @@ npm install -D @master/eslint-plugin-css
 
 The recommended config is also available through `@master/eslint-config-css`.
 
+In Visual Studio Code, install the VS Code ESLint extension to surface these diagnostics and run sort-on-save. The Master CSS extension provides completion, hover, colors, highlighting, directive diagnostics, manifest diagnostics, and directive formatting; it does not duplicate class policy warnings by default.
+
 ## Usage
 
 Use ESLint flat configuration:

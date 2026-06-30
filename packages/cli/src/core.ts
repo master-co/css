@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url'
 import { Command } from 'commander'
 import { DEFAULT_SCAN_OUTPUT } from './constants'
 import type { ScanOptions } from './scan'
+import type { LintOptions } from './lint'
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
 
@@ -32,6 +33,17 @@ export default async function runProgram(argv: string[] = process.argv) {
             }
             const { default: runScan } = await import('./scan')
             return runScan(sourcePaths, options)
+        })
+    program
+        .command('lint')
+        .description('Lint Master CSS class strings in source files.')
+        .argument('[source paths...]', 'The glob pattern paths to lint sources')
+        .option('--fix', 'Automatically fix fixable class policy diagnostics.')
+        .option('--format <format>', 'Diagnostic output format: stylish or json.', 'stylish')
+        .option('--max-warnings <number>', 'Exit with a non-zero status if warnings exceed this count.')
+        .action(async (sourcePaths: string[], options: LintOptions) => {
+            const { default: runLint } = await import('./lint')
+            await runLint(sourcePaths, options)
         })
     const firstArgument = argv[2]
     if (firstArgument && removedCommands.has(firstArgument)) {

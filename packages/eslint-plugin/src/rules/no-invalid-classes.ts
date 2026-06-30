@@ -2,7 +2,8 @@ import defineVisitors from '../utils/define-visitors'
 import resolveContext from '../utils/resolve-context'
 import createRule from '../create-rule'
 import { noInvalidClassesOptionsSchema } from '../settings-schema'
-import { getClassValidationIssues } from '@master/css-lint'
+import { createInvalidClassesReport } from '@master/css-lint'
+import reportLintDiagnostics from '../utils/report-lint-diagnostics'
 
 export default createRule({
     name: 'no-invalid-classes',
@@ -21,22 +22,16 @@ export default createRule({
     defaultOptions: [],
     create: function (context) {
         const { options, settings, css } = resolveContext(context)
-        return defineVisitors({ context, settings }, (_, { classNodes }) => {
-            for (const node of classNodes) {
-                const issues = getClassValidationIssues(node.value, css, {
-                    disallowUnknownClass: options.disallowUnknownClass,
-                    displayClassName: node.raw
-                })
-                for (const issue of issues) {
-                    context.report({
-                        loc: node.loc,
-                        messageId: issue.kind === 'invalid' ? 'invalidClass' : 'disallowUnknownClass',
-                        data: {
-                            message: issue.message
-                        }
-                    })
-                }
-            }
+        return defineVisitors({ context, settings }, (node, resolved) => {
+            reportLintDiagnostics(
+                context,
+                node,
+                resolved,
+                createInvalidClassesReport(resolved.raw, css, {
+                    unescape: resolved.unescape,
+                    disallowUnknownClass: options.disallowUnknownClass
+                }).diagnostics
+            )
         })
     }
 })

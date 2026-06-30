@@ -1479,6 +1479,12 @@ importers:
       '@master/css':
         specifier: workspace:^
         version: link:../facade
+      '@master/css-language':
+        specifier: workspace:^
+        version: link:../language
+      '@master/css-lint':
+        specifier: workspace:^
+        version: link:../lint
       '@master/css-project':
         specifier: workspace:^
         version: link:../project
@@ -1488,6 +1494,9 @@ importers:
       '@master/css-stylesheet':
         specifier: workspace:^
         version: link:../stylesheet
+      '@master/css-validator':
+        specifier: workspace:^
+        version: link:../validator
       bytes:
         specifier: ^3.1.2
         version: 3.1.2
@@ -1768,6 +1777,9 @@ importers:
       '@master/css-schema':
         specifier: workspace:^
         version: link:../schema
+      '@master/css-validator':
+        specifier: workspace:^
+        version: link:../validator
       defu:
         specifier: ^6.1.7
         version: 6.1.7

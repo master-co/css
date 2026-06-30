@@ -4,6 +4,10 @@ import { createCSSWithNativeDeclarations } from '@master/css-validator'
 import {
     defaultCanonicalClassNameOptions,
     defaultClassLintSettings,
+    createCanonicalComposeDirectiveReport,
+    createClassListLintReport,
+    createConflictingClassesReport,
+    createSortClassesReport,
     findClassConflicts,
     findPartialClassConflicts,
     findUnapprovedRawValueClasses,
@@ -203,6 +207,72 @@ describe('class list edits', () => {
             .toBe('h:md fg:red-60')
         expect(replaceClassGroupInClassList('content:\\`\\` block', ['content:``', 'block'], 'content:none', { unescape: '`' }))
             .toBe('content:none')
+    })
+})
+
+describe('lint diagnostics', () => {
+    test('reports sort diagnostics with a machine-readable fix', () => {
+        expect(createSortClassesReport('fg:white m:2x', css)).toEqual({
+            diagnostics: [{
+                ruleId: 'sort-classes',
+                code: 'invalid-class-order',
+                message: 'No consistent class order followed.',
+                severity: 'warning',
+                range: { start: 0, end: 13 },
+                fix: {
+                    range: { start: 0, end: 13 },
+                    text: 'm:2x fg:white',
+                    scope: 'class-list'
+                }
+            }]
+        })
+    })
+
+    test('reports conflict diagnostics with token-relative ranges', () => {
+        const report = createConflictingClassesReport('mx:md ml:lg', css)
+        expect(report.diagnostics).toEqual([expect.objectContaining({
+            ruleId: 'no-conflicting-classes',
+            code: 'partially-conflicting-class',
+            message: 'Prefer "mr:md" over "mx:md" because "ml:lg" overrides part of it.',
+            severity: 'warning',
+            range: { start: 0, end: 5 },
+            data: {
+                actual: 'mx:md',
+                replacement: 'mr:md',
+                conflict: 'ml:lg'
+            },
+            fix: {
+                range: { start: 0, end: 11 },
+                text: 'mr:md ml:lg',
+                scope: 'class-list'
+            }
+        })])
+        expect(JSON.parse(JSON.stringify(report))).toEqual(report)
+    })
+
+    test('keeps raw value policy opt-in in combined reports', () => {
+        expect(createClassListLintReport('font:15px', css).diagnostics.map(({ code }) => code))
+            .not.toContain('unapproved-raw-value')
+        expect(createClassListLintReport('font:15px', css, {
+            rules: { 'no-unapproved-raw-values': true }
+        }).diagnostics.map(({ code }) => code))
+            .toContain('unapproved-raw-value')
+    })
+
+    test('reports structural compose fixes with directive scope', () => {
+        const report = createCanonicalComposeDirectiveReport('contain:content bg:blue-60:hover@sm', css)
+        expect(report.diagnostics).toContainEqual(expect.objectContaining({
+            ruleId: 'prefer-canonical-classes',
+            code: 'prefer-native-declaration',
+            data: expect.objectContaining({
+                actual: 'contain:content',
+                recommended: 'contain: content'
+            }),
+            fix: expect.objectContaining({
+                scope: 'directive',
+                text: expect.stringContaining('contain: content;')
+            })
+        }))
     })
 })
 

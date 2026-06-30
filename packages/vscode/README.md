@@ -10,6 +10,8 @@
 
 Master CSS for Visual Studio Code provides manifest-aware language features for Master CSS classes, CSS directives, and project-specific tokens. The extension starts the bundled Master CSS language server, loads the nearest project manifest, and brings completion, hover, TextMate directive highlighting, semantic class-list highlighting, color tools, directive diagnostics, and directive formatting into supported files.
 
+For the complete VS Code workflow, use this extension together with the official VS Code ESLint extension. Master CSS owns completion, hover, colors, highlighting, directive diagnostics, manifest diagnostics, and directive formatting. ESLint owns class policy diagnostics and sort-on-save for rules such as `@master/css/sort-classes`, `@master/css/prefer-canonical-classes`, and `@master/css/no-conflicting-classes`.
+
 ## Quick Start
 
 Install the extension from the [Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=masterco.master-css) or open it directly in VS Code with [vscode:extension/masterco.master-css](vscode:extension/masterco.master-css).
@@ -46,6 +48,7 @@ For project-aware tokens, create a CSS entry that imports `@master/css`, or decl
 - **Embedded highlighting modes**: Highlights the active class context by default, can highlight every discovered embedded utility, or can disable embedded utility highlighting.
 - **Color support**: Shows VS Code color decorators for supported Master CSS color syntax and lets the VS Code color picker edit those values.
 - **Directive diagnostics**: Reports Master CSS directive errors in CSS, SCSS, LESS, and style blocks inside Vue, Svelte, and Astro files.
+- **Manifest diagnostics**: Reports project manifest loading errors without taking over ESLint class policy warnings.
 - **Directive formatting**: Formats Master CSS directives and keeps class important markers attached, such as `bg:transparent !` to `bg:transparent!`.
 - **Workspace-aware manifests**: Loads project manifests from the closest detected Master CSS workspace so completions and tokens reflect custom variables, components, utilities, and modes.
 - **Restart command**: Provides `Master CSS: Restart Language Server` for reloading the language server after dependency, manifest, or workspace changes.
@@ -100,6 +103,7 @@ Set options in `.vscode/settings.json` or VS Code user settings with the `master
 | `masterCSS.inspectSyntax` | `boolean`, default `true` | Enables hover inspection and generated CSS previews. |
 | `masterCSS.renderSyntaxColors` | `boolean`, default `true` | Enables color information for Master CSS syntax. |
 | `masterCSS.formatDirectives` | `boolean`, default `true` | Enables Master CSS directive formatting in CSS-family documents. |
+| `masterCSS.diagnoseClassSyntax` | `boolean`, default `false` | Enables basic language-server class syntax diagnostics. Class policy diagnostics and sorting remain owned by ESLint. |
 | `masterCSS.embeddedSyntaxHighlighting` | `"active"`, `"always"`, or `"off"`; default `"active"` | Controls semantic highlighting for embedded utilities in markup and scripts. CSS directive syntax is still highlighted by the TextMate grammar. |
 | `masterCSS.workspaces` | `"auto"` or `string[]`, default `"auto"` | Configures Master CSS workspaces. Auto mode detects CSS entries and Master CSS package dependencies. |
 

@@ -109,6 +109,11 @@ pkg.set('contributes.configuration', {
             'default': settings.formatDirectives,
             'description': 'Enables Master CSS directive formatting in CSS-family documents.'
         },
+        'masterCSS.diagnoseClassSyntax': {
+            'type': 'boolean',
+            'default': settings.diagnoseClassSyntax,
+            'description': 'Enables basic class syntax diagnostics from the Master CSS language server. Class policy diagnostics and sorting remain owned by ESLint.'
+        },
         'masterCSS.embeddedSyntaxHighlighting': {
             'type': 'string',
             'enum': ['active', 'always', 'off'],

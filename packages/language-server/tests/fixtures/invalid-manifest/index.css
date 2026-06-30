@@ -1,0 +1,5 @@
+@master entry;
+
+.btn {
+    @compose "block";
+}

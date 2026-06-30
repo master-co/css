@@ -2,9 +2,10 @@ import defineVisitors from '../utils/define-visitors'
 import resolveContext from '../utils/resolve-context'
 import createRule from '../create-rule'
 import {
-    findUnapprovedRawValueClasses,
+    createUnapprovedRawValueClassesReport,
     type RawValuePolicyOptions
 } from '@master/css-lint'
+import reportLintDiagnostics from '../utils/report-lint-diagnostics'
 
 export default createRule({
     name: 'no-unapproved-raw-values',
@@ -44,21 +45,16 @@ export default createRule({
         const { settings, css } = resolveContext(context)
         const options = (context.options[0] || {}) as RawValuePolicyOptions
 
-        return defineVisitors({ context, settings }, (node, { classNodes, classValues }) => {
-            const issues = findUnapprovedRawValueClasses(classValues, css, options)
-            for (const issue of issues) {
-                const classNode = classNodes.find((node) => node.value === issue.className)
-                if (!classNode) continue
-                context.report({
-                    node,
-                    loc: classNode.loc,
-                    messageId: 'unapprovedRawValue',
-                    data: {
-                        className: issue.className,
-                        value: issue.value
-                    }
-                })
-            }
+        return defineVisitors({ context, settings }, (node, resolved) => {
+            reportLintDiagnostics(
+                context,
+                node,
+                resolved,
+                createUnapprovedRawValueClassesReport(resolved.raw, css, {
+                    ...options,
+                    unescape: resolved.unescape
+                }).diagnostics
+            )
         })
     }
 })
