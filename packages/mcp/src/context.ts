@@ -55,6 +55,23 @@ function isContained(root: string, filePath: string) {
     return path === '' || Boolean(path && !path.startsWith('..') && !isAbsolute(path))
 }
 
+function pushUniquePath(paths: string[], filePath: string) {
+    if (!paths.includes(filePath)) paths.push(filePath)
+}
+
+function collectPathAliases(filePath: string) {
+    const aliases: string[] = []
+    const resolved = resolve(filePath)
+    pushUniquePath(aliases, resolved)
+    try {
+        pushUniquePath(aliases, realpathSync(resolved))
+    } catch {}
+    try {
+        pushUniquePath(aliases, realpathSync.native(resolved))
+    } catch {}
+    return aliases
+}
+
 function assertFilePattern(pattern: string) {
     if (isAbsolute(pattern)) {
         throw new Error(`Absolute glob patterns are not allowed: ${pattern}`)
@@ -89,7 +106,7 @@ export default class MasterCSSMCPContext {
         const roots: string[] = []
         const containmentRoots: string[] = []
         for (const root of configuredRoots) {
-            const resolved = resolve(root)
+            const [resolved] = collectPathAliases(root)
             if (!existsSync(resolved)) {
                 throw new Error(`Workspace root does not exist: ${resolved}`)
             }
@@ -98,7 +115,7 @@ export default class MasterCSSMCPContext {
                 throw new Error(`Workspace root is not a directory: ${real}`)
             }
             roots.push(real)
-            containmentRoots.push(real, resolved)
+            containmentRoots.push(...collectPathAliases(resolved))
         }
         this.roots = roots
         this.root = this.roots[0]
@@ -108,7 +125,8 @@ export default class MasterCSSMCPContext {
 
     assertContained(filePath: string) {
         const resolvedPath = resolve(filePath)
-        if (!this.containmentRoots.some((root) => isContained(root, resolvedPath))) {
+        const pathAliases = collectPathAliases(resolvedPath)
+        if (!this.containmentRoots.some((root) => pathAliases.some((pathAlias) => isContained(root, pathAlias)))) {
             throw new Error(`Path is outside the allowed workspace roots: ${filePath}`)
         }
         return resolvedPath
