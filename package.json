@@ -76,6 +76,7 @@
         "@master/css": "workspace:^",
         "@master/css-cli": "workspace:^",
         "@master/css-compiler": "workspace:^",
+        "@master/css-diagnostics": "workspace:^",
         "@master/css-engine": "workspace:^",
         "@master/css-integration": "workspace:^",
         "@master/css-language": "workspace:^",

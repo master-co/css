@@ -13,15 +13,6 @@
     },
     "references": [
         {
-            "path": "../facade/tsconfig.typecheck.json"
-        },
-        {
-            "path": "../diagnostics/tsconfig.typecheck.json"
-        },
-        {
-            "path": "../lexer/tsconfig.typecheck.json"
-        },
-        {
             "path": "../project/tsconfig.typecheck.json"
         },
         {
@@ -35,7 +26,6 @@
         "src/**/*.ts",
         "tests/**/*.test.ts",
         "tests/**/test.ts",
-        "package.json",
-        "tests/helpers/**/*.ts"
+        "package.json"
     ]
 }

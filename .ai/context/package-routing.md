@@ -32,6 +32,7 @@ For `packages/<name>/**`, read `packages/<name>/package.json` and `packages/<nam
 | `packages/server/**` | `@master/css-server` | `css-output.md` |
 | `packages/scanner/**` | `@master/css-scanner` | `testing.md`, `css-output.md` |
 | `packages/validator/**` | `@master/css-validator` | `testing.md`, `css-output.md` |
+| `packages/diagnostics/**` | `@master/css-diagnostics` | `testing.md`, `package-boundaries.md` |
 | `packages/lint/**` | `@master/css-lint` | `testing.md`, `package-boundaries.md` |
 | `packages/language*/**`, `packages/vscode/**` | language tooling | `testing.md` |
 | `packages/eslint-*/**` | ESLint tooling | `testing.md` |

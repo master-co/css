@@ -5,6 +5,7 @@
             "@master/css-cli": [ "./node_modules/@master/css-cli/src" ],
             "@master/css-compiler": [ "./node_modules/@master/css-compiler/src" ],
             "@master/css-compiler/*": [ "./node_modules/@master/css-compiler/src/*" ],
+            "@master/css-diagnostics": [ "./node_modules/@master/css-diagnostics/src" ],
             "@master/css-engine": [ "./node_modules/@master/css-engine/src" ],
             "@master/css-engine/*": [ "./node_modules/@master/css-engine/src/*" ],
             "@master/css-preset": [ "./node_modules/@master/css-preset/src" ],

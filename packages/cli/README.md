@@ -112,6 +112,8 @@ Options:
 | `--exit-code <mode>` | `diagnostics` or `never` | `diagnostics` | Control whether diagnostics set a non-zero exit code. |
 | `--max-warnings <number>` | `number` | none | Exit with a non-zero status when warnings exceed this count. |
 
+The JSON report uses `version: 1`. Tooling can rely on the top-level `version`, `cwd`, `manifest`, `files`, and `summary` fields. Diagnostic `data` objects may gain additional fields as Master CSS reports become more precise.
+
 ### `npx @master/css-cli inspect [source paths]`
 
 Inspect scanner state, managed stylesheet entries, generated CSS size, and explicit missing CSS checks. This command is for MCP servers, AI agents, build diagnostics, and support tooling that need machine-readable extraction state, not class policy linting.
@@ -134,6 +136,8 @@ The JSON report includes:
 | `files` | Per-file scanner discoveries for latent, valid, invalid, and native CSS classes. |
 | `diagnostics` | Machine-readable `scanner`, `stylesheet`, and `missing-css` diagnostics. |
 | `summary` | File, stylesheet, diagnostic, error, warning, missing CSS, and invalid class totals. |
+
+The JSON report uses `version: 1`. Tooling can rely on the top-level `version`, `cwd`, `inputs`, `scanner`, `stylesheets`, `css`, `missingCSS`, `files`, `diagnostics`, and `summary` fields. Nested diagnostic `data` and stylesheet details may evolve unless documented for a specific diagnostic code.
 
 Options:
 

@@ -1,19 +1,11 @@
-import { readFile } from 'node:fs/promises'
 import { createRequire } from 'node:module'
 import { resolve } from 'node:path'
 import fg from 'fast-glob'
+import { createMasterCSSInspectionReport } from '@master/css-diagnostics'
 import { inspectMasterCSSClass } from '@master/css-engine/inspect'
-import CSSScanner from '@master/css-scanner'
 import { createCSSWithNativeDeclarations } from '@master/css-validator/native-declaration'
 import { parseHTML } from '@master/css-server'
-import {
-    createExtractedCSSResult,
-    registerStyleCSSSource,
-    type StyleCSSSources
-} from '@master/css-stylesheet'
-import { findCSSManifestEntryFiles } from '@master/css-project/entries'
 import type MasterCSSMCPContext from './context'
-import { getErrorMessage } from './result'
 import { loadWorkspaceManifest } from './project'
 import type { MasterCSSManifest } from '@master/css-engine'
 
@@ -24,6 +16,7 @@ const defaultManifest = require('@master/css-preset/default-manifest.json') as M
 
 export interface ScanProjectOptions {
     patterns?: string[]
+    classes?: string[]
     includeCss?: boolean
 }
 
@@ -47,92 +40,20 @@ export async function resolveSourceFiles(context: MasterCSSMCPContext, patterns 
     return Promise.all(sources.map((source) => context.resolveExistingFile(source)))
 }
 
-async function createScanner(context: MasterCSSMCPContext) {
-    const manifest = await loadWorkspaceManifest(context)
-    const scanner = new CSSScanner(
-        manifest.status === 'loaded' ? { manifest: manifest.manifest } : {},
-        context.root
-    )
-    await scanner.init()
-    return { scanner, manifest }
-}
-
-async function registerManagedStyleSources(context: MasterCSSMCPContext, scanner: CSSScanner) {
-    const styleCSSSources: StyleCSSSources = new Map()
-    const entries = []
-    const errors = []
-    for (const entry of await findCSSManifestEntryFiles(context.root)) {
-        const filePath = await context.resolveExistingFile(entry)
-        try {
-            const result = await registerStyleCSSSource(scanner, styleCSSSources, filePath, await readFile(filePath, 'utf8'), {
-                projectDir: context.root
-            })
-            const source = styleCSSSources.get(filePath)
-            entries.push({
-                filePath,
-                masterCSS: Boolean(source?.masterCSS),
-                pruneNativeCSS: Boolean(source?.pruneNativeCSS),
-                dependencies: [...new Set(source?.dependencies ?? [])],
-                sourceDependencies: [...new Set(source?.sourceDependencies ?? [])],
-                warnings: result.warnings ?? [],
-                errors: []
-            })
-        } catch (error) {
-            entries.push({
-                filePath,
-                masterCSS: false,
-                pruneNativeCSS: false,
-                dependencies: [],
-                sourceDependencies: [],
-                warnings: [],
-                errors: [getErrorMessage(error)]
-            })
-            errors.push({
-                filePath,
-                message: getErrorMessage(error)
-            })
-        }
-    }
-    scanner.resetDependencies = [...new Set(Array.from(styleCSSSources.values()).flatMap((source) => source.dependencies))]
-    return { styleCSSSources, entries, errors }
-}
-
 export async function scanProject(context: MasterCSSMCPContext, options: ScanProjectOptions = {}) {
-    const { scanner, manifest } = await createScanner(context)
-    const files = await resolveSourceFiles(context, options.patterns ?? DEFAULT_SOURCE_PATTERNS, options.patterns ? [] : DEFAULT_IGNORE_PATTERNS)
-    const firstSourceByInvalidClass = new Map<string, string>()
-    for (const filePath of files) {
-        const beforeInvalid = new Set(scanner.invalidClasses)
-        await scanner.scanModule(filePath, await readFile(filePath, 'utf8'))
-        for (const className of scanner.invalidClasses) {
-            if (!beforeInvalid.has(className) && !firstSourceByInvalidClass.has(className)) {
-                firstSourceByInvalidClass.set(className, filePath)
-            }
-        }
-    }
-    const stylesheets = await registerManagedStyleSources(context, scanner)
-    const extracted = await createExtractedCSSResult({
-        scanner,
-        styleCSSSources: stylesheets.styleCSSSources,
-        projectDir: context.root
-    })
-    const diagnostics = [
-        ...[...scanner.invalidClasses].sort().map((className) => ({
-            code: 'invalid-scanner-class',
-            severity: 'warning' as const,
-            message: `Scanner candidate "${className}" did not generate Master CSS rules.`,
-            filePath: firstSourceByInvalidClass.get(className),
-            data: { className }
-        })),
-        ...stylesheets.errors.map((error) => ({
-            code: 'stylesheet-error',
-            severity: 'error' as const,
-            message: error.message,
-            filePath: error.filePath
-        }))
-    ]
-
+    const [report, manifest] = await Promise.all([
+        createMasterCSSInspectionReport({
+            cwd: context.root,
+            patterns: options.patterns,
+            classes: options.classes,
+            includeCss: options.includeCss,
+            resolveExistingFile: (filePath) => context.resolveExistingFile(filePath),
+            validatePatterns: (patterns) => context.validateGlobPatterns(patterns)
+        }),
+        loadWorkspaceManifest(context)
+    ])
     return {
+        ...report,
         root: context.root,
         manifest: {
             status: manifest.status,
@@ -140,47 +61,6 @@ export async function scanProject(context: MasterCSSMCPContext, options: ScanPro
             dependencies: manifest.dependencies,
             warnings: manifest.warnings,
             ...(manifest.status === 'error' ? { error: manifest.error } : {})
-        },
-        inputs: {
-            patterns: options.patterns ?? DEFAULT_SOURCE_PATTERNS,
-            files
-        },
-        scanner: {
-            counts: {
-                latent: scanner.latentClasses.size,
-                valid: scanner.validClasses.size,
-                invalid: scanner.invalidClasses.size,
-                native: scanner.nativeClassNames.size,
-                usedNative: scanner.usedNativeClasses.size
-            },
-            classes: {
-                latent: [...scanner.latentClasses].sort(),
-                valid: [...scanner.validClasses].sort(),
-                invalid: [...scanner.invalidClasses].sort(),
-                native: [...scanner.nativeClassNames].sort(),
-                usedNative: [...scanner.usedNativeClasses].sort()
-            },
-            resetDependencies: scanner.resetDependencies
-        },
-        stylesheets: {
-            entries: stylesheets.entries,
-            errors: stylesheets.errors
-        },
-        css: {
-            bytes: extracted.css.length,
-            included: Boolean(options.includeCss),
-            emittedGlobals: {
-                variables: Object.keys(extracted.emittedGlobals.variables).length,
-                animations: Object.keys(extracted.emittedGlobals.animations).length
-            },
-            ...(options.includeCss ? { text: extracted.css } : {})
-        },
-        diagnostics,
-        summary: {
-            files: files.length,
-            diagnostics: diagnostics.length,
-            errors: diagnostics.filter((diagnostic) => diagnostic.severity === 'error').length,
-            warnings: diagnostics.filter((diagnostic) => diagnostic.severity === 'warning').length
         }
     }
 }
@@ -255,6 +135,7 @@ export async function previewGeneratedCSS(
 ) {
     const report = await scanProject(context, {
         patterns: options.patterns,
+        classes: options.classes,
         includeCss: true
     })
     const preview = await context.createPreview([

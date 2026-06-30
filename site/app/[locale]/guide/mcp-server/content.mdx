@@ -54,13 +54,21 @@ The server exposes focused tools instead of asking the agent to infer Master CSS
 | `mastercss_workspace_info` | Report workspace roots, resolved Master CSS package locations, and manifest status. |
 | `mastercss_inspect_class` | Inspect one class and return semantic parts, generated rules, variables, and CSS text. |
 | `mastercss_render_css` | Generate CSS from an HTML fragment or a whitespace-separated class list. |
-| `mastercss_scan_project` | Scan source files, register stylesheet entries, and report scanner state and generated CSS metadata. |
-| `mastercss_lint_project` | Run Master CSS class-list diagnostics and return fix proposals without writing files. |
+| `mastercss_scan_project` | Scan source files, register stylesheet entries, check optional classes, and report scanner state, generated CSS metadata, and missing CSS diagnostics. |
+| `mastercss_lint_project` | Run Master CSS class-list diagnostics for workspace files and return fix proposals without writing files. |
+| `mastercss_lint_content` | Run Master CSS class-list diagnostics on an in-memory source buffer without writing files. |
 | `mastercss_suggest_syntax` | Return language-service completions and hover context for a document position. |
 | `mastercss_preview_fixes` | Create a diff preview for lint fixes or generated CSS output and return a confirmation token. |
 | `mastercss_apply_preview` | Apply a previously generated preview after validating the token, file hashes, and workspace containment. |
 
 The server also exposes workspace resources for the loaded manifest, entry files, and resolved Master CSS package locations. Prompt templates guide common workflows such as debugging missing CSS, reviewing class strings, and planning migrations.
+
+---
+
+## Machine-readable results
+Project scan and lint reports use `version: 1`. Tooling can rely on stable top-level fields such as `version`, `root`, `manifest`, `inputs`, `files`, `diagnostics`, and `summary` when present. Nested diagnostic `data` and generated detail objects may gain fields as diagnostics become more precise.
+
+For CLI fallback reports, `cwd` is the command root. For MCP reports, `root` is the configured workspace root.
 
 ---
 
@@ -103,6 +111,7 @@ npx @master/css-cli inspect --format json --exit-code never
 
 ## Next steps
 - Use [AI Coding](/guide/ai-coding) for prompts and review habits around AI-generated styling.
+- Use [Project agent rules](/guide/ai-coding#add-project-agent-rules) when you want a reusable rules block for local AI coding agents.
 - Use [Code Linting](/guide/code-linting) for the ESLint rules that enforce class policy in normal development.
 - Use [Language Service](/guide/language-service) for editor intelligence and generated CSS previews.
 - Use [Scanning latent classes](/guide/scanning-latent-classes) when generated CSS is missing because source discovery needs inspection.

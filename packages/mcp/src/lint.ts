@@ -15,9 +15,16 @@ import { loadWorkspaceManifest } from './project'
 
 const DEFAULT_LINT_SOURCE_PATTERNS = ['**/*.{html,htm,js,jsx,cjs,ts,tsx,mts,cts,svelte,astro,vue,md,mdx,pug,php,css,scss,less}']
 const DEFAULT_IGNORE_PATTERNS = ['**/node_modules/**', 'node_modules']
+const LINT_REPORT_VERSION = 1
 
 export interface LintProjectOptions {
     patterns?: string[]
+    rules?: string
+}
+
+export interface LintContentOptions {
+    content: string
+    filePath: string
     rules?: string
 }
 
@@ -95,11 +102,38 @@ export async function lintProject(context: MasterCSSMCPContext, options: LintPro
         : lintInputs(state.inputs, state.css, state.rules)
 
     return {
+        version: LINT_REPORT_VERSION,
         root: context.root,
         manifest: {
             status: state.manifest.status,
             entries: state.manifest.entries,
             diagnostics: state.manifest.status === 'error' ? files[0].diagnostics : []
+        },
+        files,
+        summary: summarizeMasterCSSLintFiles(files)
+    }
+}
+
+export async function lintContent(context: MasterCSSMCPContext, options: LintContentOptions) {
+    const rules = resolveMasterCSSLintRules(options.rules)
+    const filePath = context.resolveVirtualPath(options.filePath)
+    const manifest = await loadWorkspaceManifest(context)
+    const files = manifest.status === 'error'
+        ? [createManifestFileResult(context, createManifestDiagnostic(context, `Failed to load Master CSS manifest: ${manifest.error}`))]
+        : [lintMasterCSSContent({
+            content: options.content,
+            filePath,
+            css: createCSSWithNativeDeclarations(manifest.manifest),
+            rules
+        })]
+
+    return {
+        version: LINT_REPORT_VERSION,
+        root: context.root,
+        manifest: {
+            status: manifest.status,
+            entries: manifest.entries,
+            diagnostics: manifest.status === 'error' ? files[0].diagnostics : []
         },
         files,
         summary: summarizeMasterCSSLintFiles(files)

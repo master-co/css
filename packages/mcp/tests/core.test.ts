@@ -59,6 +59,7 @@ describe('@master/css-mcp', () => {
             expect(tools.tools.map((tool) => tool.name)).toEqual(expect.arrayContaining([
                 'mastercss_workspace_info',
                 'mastercss_render_css',
+                'mastercss_lint_content',
                 'mastercss_preview_fixes',
                 'mastercss_apply_preview'
             ]))
@@ -131,6 +132,63 @@ describe('@master/css-mcp', () => {
 
             expect(report.files).toHaveLength(1)
             expect(report.files[0].languageId).toBe('javascript')
+            expect(report.files[0].diagnostics).toContainEqual(expect.objectContaining({
+                code: 'invalid-class-order'
+            }))
+        } finally {
+            await connection.close()
+        }
+    })
+
+    it('scans project sources with missing CSS classification', async () => {
+        const root = createTempDir('master-css-mcp-scan-')
+        writeFileSync(join(root, 'index.html'), '<div class="block text-decoration:bad()"></div>')
+
+        const connection = await connect(root)
+        try {
+            const report = parseToolJSON(await connection.client.callTool({
+                name: 'mastercss_scan_project',
+                arguments: {
+                    patterns: ['index.html'],
+                    classes: ['block', 'never-generated-class']
+                }
+            }))
+
+            expect(report.version).toBe(1)
+            expect(report.root).toBe(connection.instance.context.root)
+            expect(report.files[0].discovered.valid).toContain('block')
+            expect(report.files[0].discovered.invalid).toContain('text-decoration:bad()')
+            expect(report.missingCSS.present).toContainEqual(expect.objectContaining({
+                className: 'block',
+                reason: 'generated'
+            }))
+            expect(report.missingCSS.missing).toContainEqual(expect.objectContaining({
+                className: 'never-generated-class',
+                reason: 'not-detected'
+            }))
+        } finally {
+            await connection.close()
+        }
+    })
+
+    it('lints in-memory content without requiring a file on disk', async () => {
+        const root = createTempDir('master-css-mcp-content-')
+
+        const connection = await connect(root)
+        try {
+            const report = parseToolJSON(await connection.client.callTool({
+                name: 'mastercss_lint_content',
+                arguments: {
+                    filePath: 'src/Component.tsx',
+                    content: 'export function Component() { return <div className="fg:white m:2x" /> }'
+                }
+            }))
+
+            expect(report.version).toBe(1)
+            expect(report.root).toBe(connection.instance.context.root)
+            expect(report.files).toHaveLength(1)
+            expect(report.files[0].filePath).toBe(resolve(connection.instance.context.root, 'src/Component.tsx'))
+            expect(report.files[0].languageId).toBe('typescriptreact')
             expect(report.files[0].diagnostics).toContainEqual(expect.objectContaining({
                 code: 'invalid-class-order'
             }))

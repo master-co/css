@@ -16,6 +16,9 @@
             "path": "../engine/tsconfig.typecheck.json"
         },
         {
+            "path": "../diagnostics/tsconfig.typecheck.json"
+        },
+        {
             "path": "../language-service/tsconfig.typecheck.json"
         },
         {

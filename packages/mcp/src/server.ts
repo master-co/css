@@ -8,7 +8,7 @@ import MasterCSSMCPContext, { type MasterCSSMCPContextOptions } from './context'
 import { getWorkspaceInfo, loadWorkspaceManifest } from './project'
 import { inspectClass, previewGeneratedCSS, renderCSS, scanProject } from './scan'
 import { suggestSyntax } from './language'
-import { lintProject, previewLintFixes } from './lint'
+import { lintContent, lintProject, previewLintFixes } from './lint'
 import { jsonResourceResult, jsonToolResult } from './result'
 
 export interface MasterCSSMCPServerInstance {
@@ -186,6 +186,7 @@ function registerTools(server: McpServer, context: MasterCSSMCPContext) {
             description: 'Scan source files, register stylesheet entries, and report scanner state and generated CSS metadata.',
             inputSchema: {
                 patterns: z.array(z.string()).optional(),
+                classes: z.array(z.string()).optional(),
                 includeCss: z.boolean().optional()
             },
             annotations: {
@@ -215,6 +216,26 @@ function registerTools(server: McpServer, context: MasterCSSMCPContext) {
             }
         },
         async (input) => jsonToolResult(await lintProject(context, input))
+    )
+
+    server.registerTool(
+        'mastercss_lint_content',
+        {
+            title: 'Lint Master CSS Content',
+            description: 'Run Master CSS class-list diagnostics on an in-memory source buffer without writing files.',
+            inputSchema: {
+                content: z.string(),
+                filePath: z.string(),
+                rules: z.string().optional()
+            },
+            annotations: {
+                readOnlyHint: true,
+                destructiveHint: false,
+                idempotentHint: true,
+                openWorldHint: false
+            }
+        },
+        async (input) => jsonToolResult(await lintContent(context, input))
     )
 
     server.registerTool(

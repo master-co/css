@@ -98,6 +98,25 @@ Use MCP for project-aware AI tool calls. When an agent cannot use MCP, fall back
 
 ---
 
+## Add project agent rules
+For recurring work, add a short Master CSS rules block to the project's agent instructions, such as `AGENTS.md`, Claude instructions, Cursor rules, or Copilot instructions.
+
+```text name=AGENTS.md
+When editing Master CSS:
+- Use https://rc.css.master.co as the source of truth.
+- Before editing, inspect the framework, package manager, CSS entry, rendering mode, theme tokens, component classes, utilities, custom variants, and validation commands.
+- Prefer existing @theme tokens, @components, @utilities, and @custom-variant definitions.
+- Use the Master CSS MCP server when available. Without MCP, use CLI JSON fallback commands such as `npx @master/css-cli lint --format json --exit-code never` and `npx @master/css-cli inspect --format json --exit-code never`.
+- Use ESLint for class policy diagnostics and the Master CSS Language Service for completion, hover, colors, highlighting, and directive formatting.
+- Do not invent Master CSS APIs, directives, package names, or Tailwind-style syntax.
+- Preserve semantic HTML, accessibility attributes, and behavior.
+- Run the relevant formatter, lint, type-check, test, or build command before reporting completion.
+```
+
+Keep project-specific commands in the same file so the agent does not have to infer how validation works.
+
+---
+
 ## Prompt for readable class strings
 Ask the agent to optimize for readable markup, not the shortest possible class list.
 

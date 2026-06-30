@@ -328,6 +328,9 @@ importers:
       '@master/css-compiler':
         specifier: workspace:^
         version: link:packages/compiler
+      '@master/css-diagnostics':
+        specifier: workspace:^
+        version: link:packages/diagnostics
       '@master/css-engine':
         specifier: workspace:^
         version: link:packages/engine
@@ -1482,6 +1485,9 @@ importers:
       '@master/css':
         specifier: workspace:^
         version: link:../facade
+      '@master/css-diagnostics':
+        specifier: workspace:^
+        version: link:../diagnostics
       '@master/css-lexer':
         specifier: workspace:^
         version: link:../lexer
@@ -1565,6 +1571,21 @@ importers:
       '@master/css-preset':
         specifier: workspace:^
         version: link:../preset
+
+  packages/diagnostics:
+    dependencies:
+      '@master/css-project':
+        specifier: workspace:^
+        version: link:../project
+      '@master/css-scanner':
+        specifier: workspace:^
+        version: link:../scanner
+      '@master/css-stylesheet':
+        specifier: workspace:^
+        version: link:../stylesheet
+      fast-glob:
+        specifier: ^3.3.3
+        version: 3.3.3
 
   packages/engine:
     dependencies:
@@ -1868,6 +1889,9 @@ importers:
 
   packages/mcp:
     dependencies:
+      '@master/css-diagnostics':
+        specifier: workspace:^
+        version: link:../diagnostics
       '@master/css-engine':
         specifier: workspace:^
         version: link:../engine
@@ -1883,15 +1907,9 @@ importers:
       '@master/css-project':
         specifier: workspace:^
         version: link:../project
-      '@master/css-scanner':
-        specifier: workspace:^
-        version: link:../scanner
       '@master/css-server':
         specifier: workspace:^
         version: link:../server
-      '@master/css-stylesheet':
-        specifier: workspace:^
-        version: link:../stylesheet
       '@master/css-validator':
         specifier: workspace:^
         version: link:../validator

@@ -11,6 +11,9 @@
             "path": "./packages/compiler/tsconfig.typecheck.json"
         },
         {
+            "path": "./packages/diagnostics/tsconfig.typecheck.json"
+        },
+        {
             "path": "./packages/facade/tsconfig.typecheck.json"
         },
         {

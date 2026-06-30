@@ -38,11 +38,16 @@ Use an absolute `--root` path so the server resolves the intended workspace.
 | `mastercss_workspace_info` | Report workspace roots, resolved packages, and manifest status. |
 | `mastercss_inspect_class` | Inspect one class and return generated rules and CSS text. |
 | `mastercss_render_css` | Generate CSS from HTML or a class list. |
-| `mastercss_scan_project` | Scan sources and report scanner state and generated CSS metadata. |
-| `mastercss_lint_project` | Run class-list diagnostics without writing files. |
+| `mastercss_scan_project` | Scan sources, check optional classes, and report scanner state, stylesheet entries, generated CSS metadata, and missing CSS diagnostics. |
+| `mastercss_lint_project` | Run class-list diagnostics for workspace files without writing files. |
+| `mastercss_lint_content` | Run class-list diagnostics on an in-memory source buffer without writing files. |
 | `mastercss_suggest_syntax` | Return language-service completions and hover context. |
 | `mastercss_preview_fixes` | Create a diff preview and confirmation token. |
 | `mastercss_apply_preview` | Apply a preview after token, hash, and workspace checks. |
+
+## Machine-readable results
+
+Project scan and lint reports use `version: 1`. Tooling can rely on stable top-level fields such as `version`, `root`, `manifest`, `inputs`, `files`, `diagnostics`, and `summary` when present. Nested diagnostic `data` objects may gain additional fields over time.
 
 ## Safety
 

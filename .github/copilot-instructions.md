@@ -15,9 +15,4 @@ Use `.ai/context/accuracy-guardrails.md` to decide when to read deeper `.ai/*.md
 
 Any CSS output difference must be intentional, explainable, and covered by tests.
 
-When creating commit messages, use Techor conventional commits in the required monorepo form `Type(Target): Summary`.
-
-- Allowed types: `Bump`, `Feat`, `New`, `Perf`, `Add`, `Update`, `Improve`, `Fix`, `Deprecate`, `Drop`, `Docs`, `Upgrade`, `Revert`, `Example`, `Test`, `Refactor`, `Chore`, `Misc`.
-- Always include a `Target` such as `Core`, `Runtime`, `Scanner`, `CLI`, `Site`, `Repo`, or `AI`.
-- Use sentence case and no trailing period.
-- Examples: `Fix(Core): Parse escaped selectors`, `Docs(Site): Update box shadow reference`, `Test(CLI): Cover extract watch mode`.
+When creating commit messages, follow the commit message policy in `AGENTS.md`. Do not duplicate or reinterpret that policy here.
