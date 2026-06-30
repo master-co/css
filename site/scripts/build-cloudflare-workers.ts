@@ -1,8 +1,8 @@
 import { rm, stat } from 'node:fs/promises'
 import { dirname, join } from 'node:path'
-import { spawnSync } from 'node:child_process'
 import { fileURLToPath } from 'node:url'
 import { buildPlayCompiler } from './build-play-compiler'
+import { buildOpenNextCloudflareWorker } from './open-next-cloudflare-build'
 
 const siteDir = dirname(fileURLToPath(new URL('../package.json', import.meta.url)))
 const publicPlayCompilerDir = join(siteDir, 'public/play-compiler')
@@ -16,19 +16,7 @@ await Promise.all([
 await buildPlayCompiler(publicPlayCompilerDir)
 await stat(join(publicPlayCompilerDir, 'compiler.js'))
 
-const buildResult = spawnSync('opennextjs-cloudflare', ['build', '--skipWranglerConfigCheck'], {
-    cwd: siteDir,
-    stdio: 'inherit',
-    shell: process.platform === 'win32'
-})
-
-if (buildResult.error) {
-    throw buildResult.error
-}
-
-if (buildResult.status !== 0) {
-    process.exit(buildResult.status ?? 1)
-}
+await buildOpenNextCloudflareWorker(siteDir)
 
 const openNextDir = join(siteDir, '.open-next')
 const assetsDir = join(openNextDir, 'assets/play-compiler')
