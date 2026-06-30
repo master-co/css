@@ -1,0 +1,160 @@
+## Overview [sr-only]
+An authoring package is the smallest way to share a Master CSS styling vocabulary across projects. It is just a package with a CSS source entry, so another project can import its tokens, variants, utilities, and component classes from the app's normal CSS entry.
+
+Use an authoring package for shared design-system vocabulary. Do not ship compiled generated CSS or a generated manifest unless your package has a separate runtime integration reason. Let each consuming project compile the source with its own Master CSS entry graph.
+
+---
+
+## Create a package
+Start with a package name chosen by your project or organization. The internal stylesheet can be named `master.css`; users import the package name, not the internal file path.
+
+```txt
+my-master-theme/
+  package.json
+  master.css
+  README.md
+```
+
+Point the package root to `master.css`:
+
+```json name=package.json
+{
+  "name": "<package-name>",
+  "version": "0.1.0",
+  "style": "./master.css",
+  "exports": {
+    ".": {
+      "style": "./master.css",
+      "default": "./master.css"
+    }
+  },
+  "sideEffects": ["./master.css"]
+}
+```
+
+No bundler, TypeScript build, manifest generation, or compiled CSS output is required for this package shape. The package publishes source CSS that Master CSS-aware projects can compile as part of their own stylesheet graph.
+
+---
+
+## Write master.css
+Use `master.css` for shared vocabulary that should be available to consuming projects.
+
+```css name=master.css
+@theme {
+    --color-brand: #4f46e5;
+    --color-text-action: $color-brand;
+    --spacing-action-x: 1rem;
+    --radius-action: 0.5rem;
+}
+
+@custom-variant :interactive {
+    &:is(:hover, :focus-visible) {
+        @slot;
+    }
+}
+
+@utilities {
+    content-auto {
+        content-visibility: auto;
+        contain-intrinsic-size: auto 32rem;
+    }
+}
+
+@components {
+    btn {
+        @compose inline-flex align-items:center justify-content:center gap:xs px:action-x py:xs r:action font:sm font:medium;
+        @compose bg:brand fg:white bg:brand/.85:interactive;
+    }
+}
+```
+
+Good package vocabulary is stable and reusable:
+
+- Use `@theme` for shared values such as colors, spacing, radius, typography, shadow, motion, breakpoint, and container tokens.
+- Use `@custom-variant` for shared selector or condition names.
+- Use `@utilities` for low-level primitives that are useful across apps.
+- Use `@components` only when the package intentionally owns semantic UI vocabulary such as `btn`, `field`, `card`, or `toolbar`.
+
+For token namespace behavior, see [Customizing your theme](/guide/theme). For directive syntax, see [CSS directives](/guide/directives). For abstraction decisions, see [Reusing styles](/guide/reusing-styles).
+
+---
+
+## Use the package
+Install the package in the consuming project, then import the package from the app CSS entry:
+
+```css name=app.css
+@import '@master/css';
+@import '<package-name>';
+```
+
+The imported source becomes part of the project CSS entry graph. Project markup can use the shared vocabulary as ordinary Master CSS classes:
+
+```html
+<button class="btn">Save changes</button>
+<section class="content-auto p:lg">...</section>
+```
+
+When a local CSS file only needs the package as compile-time context, use `@reference` instead:
+
+```css name=Button.module.css
+@reference '../app.css';
+@reference '<package-name>';
+
+.button {
+    @compose btn;
+}
+```
+
+`@reference` makes package tokens, variants, utilities, and component classes available while compiling the local stylesheet. It does not import the referenced package's output CSS by itself, so make sure the app entry that imports the package is also loaded by the page.
+
+---
+
+## Keep app policy in the app
+A reusable authoring package should not decide how one application scans, filters, or ships its source files.
+
+Keep these in the consuming app:
+
+- App-specific `@source` and `@source not` rules.
+- App-specific `@safelist` and `@blocklist` policy.
+- Route, page, or component one-off classes.
+- Generated manifest JSON and compiled generated CSS output.
+
+Use the package for shared vocabulary. Use the app CSS entry for local source boundaries, delivery choices, and application-specific policy.
+
+---
+
+## Version vocabulary
+Treat exported tokens and managed class names like public API.
+
+Removing or renaming a token, variant, utility, or component class is a breaking change. Changing the generated CSS for an existing public class should be intentional and documented. Adding new tokens, variants, utilities, or component classes is usually a minor change when it does not alter existing output.
+
+Prefer readable names over internal implementation names. A consuming app should be able to understand why it uses `bg:brand`, `text:action`, `content-auto`, or `btn` without reading the package source.
+
+---
+
+## Validate with an example
+Before publishing, test the package through a small consuming project or fixture:
+
+```css name=app.css
+@import '@master/css';
+@import '<package-name>';
+```
+
+```html
+<button class="btn">Save</button>
+<article class="content-auto bg:surface-raised p:lg r:lg">
+    ...
+</article>
+```
+
+Run the same checks the app uses for Master CSS, such as ESLint or the CLI lint and inspect commands:
+
+```bash name=Terminal
+npx @master/css-cli lint --format json --exit-code never
+```
+
+```bash name=Terminal
+npx @master/css-cli inspect --classes "btn content-auto bg:brand" --format json --exit-code never
+```
+
+The goal is to confirm that the package can be imported by name, its vocabulary is visible to the project manifest, and the generated CSS matches the contract you intend to publish.

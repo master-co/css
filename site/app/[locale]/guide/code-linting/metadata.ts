@@ -5,7 +5,7 @@ const metadata = define({
         absolute: 'Code Linting for Master CSS'
     },
     description: 'An ESLint integration for enforcing team coding styles, making your template markup more organized, and catching syntax errors early.',
-    category: 'Agentic Workflows',
+    category: 'Authoring',
     other: {
         subject: 'Code Linting'
     },

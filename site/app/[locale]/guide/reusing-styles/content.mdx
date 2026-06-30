@@ -1,5 +1,5 @@
 ## Overview [sr-only]
-Reusable styling starts with a decision, not a file. Keep local choices in markup, move shared values into theme tokens, and define component classes only when a repeated pattern has product meaning.
+Reusable styling is an authoring decision, not just a file organization choice. Keep local choices in markup, move shared values into theme tokens, and define component classes only when a repeated pattern has product meaning.
 
 Writing `.btn` at the top level of a stylesheet creates a normal CSS rule. Writing `btn` inside `@components` defines an on-demand component class. Writing `flow` inside `@utilities` defines an on-demand utility class. All three can use `@compose` and `@variant`, but they serve different ownership needs.
 
