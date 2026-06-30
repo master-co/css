@@ -3,6 +3,7 @@
 .parcel-cache
 .pnpm-store
 /internal
+.env.local
 
 # compiled output
 /dist
