@@ -10,7 +10,7 @@
         }
     },
     "scripts": {
-        "submodules": "pnpm dlx tsx submodules",
+        "submodules": "node submodules.js",
         "postinstall": "husky install",
         "build": "turbo run build --filter=\"./packages/*\"",
         "build:site": "pnpm build && pnpm --filter site build",
