@@ -10,6 +10,12 @@ import { inspectClass, previewGeneratedCSS, renderCSS, scanProject } from './sca
 import { suggestSyntax } from './language'
 import { lintContent, lintProject, previewLintFixes } from './lint'
 import { getChangeImpact, getPackageGraph, getRepoContext, getTestRouter } from './contributor'
+import { auditSetup } from './setup'
+import { inspectDirectives } from './directives'
+import { extractClasses, traceClass } from './classes'
+import { queryManifest } from './manifest-query'
+import { previewDirectiveFormat } from './format'
+import { compareCSS } from './compare'
 import { jsonResourceResult, jsonToolResult } from './result'
 
 export interface MasterCSSMCPServerInstance {
@@ -132,6 +138,17 @@ function registerPrompts(server: McpServer) {
 }
 
 function registerTools(server: McpServer, context: MasterCSSMCPContext) {
+    const rangeSchema = z.object({
+        start: z.object({
+            line: z.number().int().min(0),
+            character: z.number().int().min(0)
+        }),
+        end: z.object({
+            line: z.number().int().min(0),
+            character: z.number().int().min(0)
+        })
+    })
+
     server.registerTool(
         'mastercss_workspace_info',
         {
@@ -145,6 +162,21 @@ function registerTools(server: McpServer, context: MasterCSSMCPContext) {
             }
         },
         async () => jsonToolResult(await getWorkspaceInfo(context))
+    )
+
+    server.registerTool(
+        'mastercss_setup_audit',
+        {
+            title: 'Audit Master CSS Setup',
+            description: 'Audit package, entry stylesheet, manifest, integration, and package-resolution setup for a workspace.',
+            annotations: {
+                readOnlyHint: true,
+                destructiveHint: false,
+                idempotentHint: true,
+                openWorldHint: false
+            }
+        },
+        async () => jsonToolResult(await auditSetup(context))
     )
 
     server.registerTool(
@@ -164,6 +196,69 @@ function registerTools(server: McpServer, context: MasterCSSMCPContext) {
             }
         },
         async (input) => jsonToolResult(await inspectClass(context, input))
+    )
+
+    server.registerTool(
+        'mastercss_trace_class',
+        {
+            title: 'Trace Master CSS Class',
+            description: 'Trace one class from project extraction through generated CSS, missing CSS classification, and engine inspection.',
+            inputSchema: {
+                className: z.string().min(1),
+                patterns: z.array(z.string()).optional(),
+                includeCss: z.boolean().optional(),
+                mode: z.string().optional()
+            },
+            annotations: {
+                readOnlyHint: true,
+                destructiveHint: false,
+                idempotentHint: true,
+                openWorldHint: false
+            }
+        },
+        async (input) => jsonToolResult(await traceClass(context, input))
+    )
+
+    server.registerTool(
+        'mastercss_extract_classes',
+        {
+            title: 'Extract Master CSS Classes',
+            description: 'Extract class positions and validation summaries from project files or an in-memory source buffer.',
+            inputSchema: {
+                content: z.string().optional(),
+                filePath: z.string().optional(),
+                patterns: z.array(z.string()).optional(),
+                includeRules: z.boolean().optional()
+            },
+            annotations: {
+                readOnlyHint: true,
+                destructiveHint: false,
+                idempotentHint: true,
+                openWorldHint: false
+            }
+        },
+        async (input) => jsonToolResult(await extractClasses(context, input))
+    )
+
+    server.registerTool(
+        'mastercss_inspect_directives',
+        {
+            title: 'Inspect Master CSS Directives',
+            description: 'Inspect CSS-first directives from a stylesheet entry or in-memory CSS content and report manifest/CSS effects.',
+            inputSchema: {
+                content: z.string().optional(),
+                filePath: z.string().optional(),
+                entryPath: z.string().optional(),
+                preserveNativeCSS: z.boolean().optional()
+            },
+            annotations: {
+                readOnlyHint: true,
+                destructiveHint: false,
+                idempotentHint: true,
+                openWorldHint: false
+            }
+        },
+        async (input) => jsonToolResult(await inspectDirectives(context, input))
     )
 
     server.registerTool(
@@ -285,6 +380,51 @@ function registerTools(server: McpServer, context: MasterCSSMCPContext) {
     )
 
     server.registerTool(
+        'mastercss_manifest_query',
+        {
+            title: 'Query Master CSS Manifest',
+            description: 'Query active manifest tokens, utilities, variants, modes, at-rules, and aliases.',
+            inputSchema: {
+                query: z.string().optional(),
+                kind: z.enum(['all', 'token', 'utility', 'variant', 'mode', 'at-rule', 'alias']).optional(),
+                namespace: z.string().optional(),
+                limit: z.number().int().min(1).max(500).optional()
+            },
+            annotations: {
+                readOnlyHint: true,
+                destructiveHint: false,
+                idempotentHint: true,
+                openWorldHint: false
+            }
+        },
+        async (input) => jsonToolResult(await queryManifest(context, input))
+    )
+
+    server.registerTool(
+        'mastercss_css_compare',
+        {
+            title: 'Compare Master CSS Output',
+            description: 'Compare generated CSS for before/after class lists, HTML fragments, or source buffers.',
+            inputSchema: {
+                beforeClassList: z.string().optional(),
+                afterClassList: z.string().optional(),
+                beforeHtml: z.string().optional(),
+                afterHtml: z.string().optional(),
+                beforeContent: z.string().optional(),
+                afterContent: z.string().optional(),
+                filePath: z.string().optional()
+            },
+            annotations: {
+                readOnlyHint: true,
+                destructiveHint: false,
+                idempotentHint: true,
+                openWorldHint: false
+            }
+        },
+        async (input) => jsonToolResult(await compareCSS(context, input))
+    )
+
+    server.registerTool(
         'mastercss_lint_project',
         {
             title: 'Lint Master CSS Project',
@@ -380,6 +520,28 @@ function registerTools(server: McpServer, context: MasterCSSMCPContext) {
             }
             return jsonToolResult(await previewLintFixes(context, input))
         }
+    )
+
+    server.registerTool(
+        'mastercss_preview_directive_format',
+        {
+            title: 'Preview Master CSS Directive Format',
+            description: 'Create a safe preview for formatting Master CSS directives, or format in-memory content without writing files.',
+            inputSchema: {
+                content: z.string().optional(),
+                filePath: z.string().optional(),
+                patterns: z.array(z.string()).optional(),
+                range: rangeSchema.optional(),
+                ttlMs: z.number().int().min(1000).max(60 * 60 * 1000).optional()
+            },
+            annotations: {
+                readOnlyHint: false,
+                destructiveHint: false,
+                idempotentHint: false,
+                openWorldHint: false
+            }
+        },
+        async (input) => jsonToolResult(await previewDirectiveFormat(context, input))
     )
 
     server.registerTool(

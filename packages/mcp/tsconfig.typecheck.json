@@ -13,6 +13,9 @@
     },
     "references": [
         {
+            "path": "../compiler/tsconfig.typecheck.json"
+        },
+        {
             "path": "../engine/tsconfig.typecheck.json"
         },
         {
@@ -20,6 +23,9 @@
         },
         {
             "path": "../language-service/tsconfig.typecheck.json"
+        },
+        {
+            "path": "../lexer/tsconfig.typecheck.json"
         },
         {
             "path": "../lint/tsconfig.typecheck.json"

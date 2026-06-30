@@ -1,5 +1,5 @@
 ## Overview [sr-only]
-The Master CSS MCP server gives AI clients a project-aware interface for Master CSS. It runs locally over stdio, reads the workspace you point it at, and exposes tools for manifest inspection, class diagnostics, generated CSS previews, syntax suggestions, and safe fix previews.
+The Master CSS MCP server gives AI clients a project-aware interface for Master CSS. It runs locally over stdio, reads the workspace you point it at, and exposes tools for setup audits, manifest inspection, directive inspection, class diagnostics, generated CSS previews, syntax suggestions, CSS output comparison, and safe fix previews.
 
 Use it when an AI coding agent should reason from the same Master CSS setup as the project: the CSS entry manifest, theme tokens, component classes, scanner state, stylesheet entries, and lint policy. It is not a replacement for editor completions, ESLint, or CI commands. It is a tool surface for AI clients that speak the [Model Context Protocol](https://modelcontextprotocol.io/).
 
@@ -116,13 +116,20 @@ The server exposes focused tools instead of asking the agent to infer Master CSS
 | Tool | Use |
 | --- | --- |
 | `mastercss_workspace_info` | Report workspace roots, resolved Master CSS package locations, and manifest status. |
+| `mastercss_setup_audit` | Audit package, entry stylesheet, manifest, integration, and package-resolution setup. |
 | `mastercss_inspect_class` | Inspect one class and return semantic parts, generated rules, variables, and CSS text. |
+| `mastercss_trace_class` | Trace one class through source extraction, scanner state, missing CSS classification, and generated rules. |
+| `mastercss_extract_classes` | Extract class positions and validation summaries from project files or an in-memory source buffer. |
+| `mastercss_inspect_directives` | Inspect CSS-first directives and report manifest, dependency, warning, and CSS effects. |
 | `mastercss_render_css` | Generate CSS from an HTML fragment or a whitespace-separated class list. |
 | `mastercss_scan_project` | Scan source files, register stylesheet entries, check optional classes, and report scanner state, generated CSS metadata, and missing CSS diagnostics. |
+| `mastercss_manifest_query` | Query active manifest tokens, utilities, variants, modes, at-rules, and aliases. |
+| `mastercss_css_compare` | Compare generated CSS for before/after class lists, HTML fragments, or source buffers. |
 | `mastercss_lint_project` | Run Master CSS class-list diagnostics for workspace files and return fix proposals without writing files. |
 | `mastercss_lint_content` | Run Master CSS class-list diagnostics on an in-memory source buffer without writing files. |
 | `mastercss_suggest_syntax` | Return language-service completions and hover context for a document position. |
 | `mastercss_preview_fixes` | Create a diff preview for lint fixes or generated CSS output and return a confirmation token. |
+| `mastercss_preview_directive_format` | Preview Master CSS directive formatting for files, or format in-memory content without writing. |
 | `mastercss_apply_preview` | Apply a previously generated preview after validating the token, file hashes, and workspace containment. |
 
 ### Contributor tools
@@ -167,7 +174,7 @@ Inspect the project with MCP tools first. Do not edit yet. Return an incremental
 ---
 
 ## Machine-readable results
-Project scan, lint, and contributor routing reports use `version: 1`. Tooling can rely on stable top-level fields such as `version`, `root`, `manifest`, `inputs`, `files`, `diagnostics`, `risks`, `validation`, and `summary` when present. Nested diagnostic `data` and generated detail objects may gain fields as diagnostics become more precise.
+Project scan, lint, setup audit, directive inspection, class extraction, class tracing, CSS comparison, manifest query, and contributor routing reports use `version: 1`. Tooling can rely on stable top-level fields such as `version`, `root`, `manifest`, `inputs`, `files`, `diagnostics`, `risks`, `validation`, and `summary` when present. Nested diagnostic `data` and generated detail objects may gain fields as diagnostics become more precise.
 
 For CLI fallback reports, `cwd` is the command root. For MCP reports, `root` is the configured workspace root.
 
@@ -176,13 +183,13 @@ For CLI fallback reports, `cwd` is the command root. For MCP reports, `root` is 
 ## Safe write previews
 Read-only tools never write files. Tools that can lead to writes use a two-step flow:
 
-1. `mastercss_preview_fixes` creates a diff preview and returns a confirmation token.
+1. A preview tool such as `mastercss_preview_fixes` or `mastercss_preview_directive_format` creates a diff preview and returns a confirmation token.
 2. The client shows or explains the preview.
 3. `mastercss_apply_preview` applies the preview only after validating the token, workspace containment, and the original file hash.
 
 This keeps AI-assisted edits reviewable. If a file changes after the preview is created, applying the preview fails instead of overwriting newer work.
 
-Use `includeDirectiveFixes` only when structural `@compose` rewrites are acceptable. Class-list fixes are safer because they replace class-list text in place; directive fixes can rewrite CSS directive structure.
+Use `includeDirectiveFixes` only when structural `@compose` rewrites are acceptable. Class-list fixes are safer because they replace class-list text in place; directive fixes can rewrite CSS directive structure. Directive formatting previews are separate from lint fixes and use the same preview/apply safety checks.
 
 ---
 
@@ -191,7 +198,7 @@ Use each Master CSS tool surface for the workflow it owns.
 
 | Surface | Best for |
 | --- | --- |
-| MCP server | AI client tool calls with project context, scanner diagnostics, class inspection, syntax suggestions, and safe fix previews. |
+| MCP server | AI client tool calls with project context, setup audits, scanner diagnostics, class tracing, manifest queries, CSS comparison, syntax suggestions, and safe fix previews. |
 | CLI JSON output | Terminal, CI, scripts, and native preflight checks that need machine-readable lint or scan reports. |
 | ESLint | Human development workflow, editor diagnostics through ESLint extensions, team policy, and JavaScript/framework CI linting. |
 | Language Service | Editor completion, hover previews, color tools, directive formatting, highlighting, and manifest diagnostics. |

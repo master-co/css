@@ -56,9 +56,11 @@
         "provenance": true
     },
     "dependencies": {
+        "@master/css-compiler": "workspace:^",
         "@master/css-engine": "workspace:^",
         "@master/css-diagnostics": "workspace:^",
         "@master/css-language-service": "workspace:^",
+        "@master/css-lexer": "workspace:^",
         "@master/css-lint": "workspace:^",
         "@master/css-preset": "workspace:^",
         "@master/css-project": "workspace:^",

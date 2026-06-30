@@ -1,26 +1,7 @@
-import { extname } from 'node:path'
-import { pathToFileURL } from 'node:url'
 import CSSLanguageService from '@master/css-language-service'
-import { TextDocument } from 'vscode-languageserver-textdocument'
 import type MasterCSSMCPContext from './context'
 import { loadWorkspaceManifest } from './project'
-
-const languageByExtension: Record<string, string> = {
-    '.astro': 'astro',
-    '.css': 'css',
-    '.htm': 'html',
-    '.html': 'html',
-    '.js': 'javascript',
-    '.jsx': 'javascriptreact',
-    '.less': 'less',
-    '.md': 'markdown',
-    '.mdx': 'mdx',
-    '.scss': 'scss',
-    '.svelte': 'svelte',
-    '.ts': 'typescript',
-    '.tsx': 'typescriptreact',
-    '.vue': 'vue'
-}
+import { createMCPTextDocument } from './document'
 
 export interface SuggestSyntaxOptions {
     content: string
@@ -37,12 +18,7 @@ export async function suggestSyntax(context: MasterCSSMCPContext, options: Sugge
     const filePath = context.resolveVirtualPath(options.filePath)
     const manifest = await loadWorkspaceManifest(context)
     const service = new CSSLanguageService(manifest.status === 'loaded' ? { manifest: manifest.manifest } : undefined)
-    const document = TextDocument.create(
-        pathToFileURL(filePath).href,
-        languageByExtension[extname(filePath).toLowerCase()] || 'html',
-        0,
-        options.content
-    )
+    const document = createMCPTextDocument(filePath, options.content)
     const completions = service.suggestSyntax(document, options.position, {
         triggerKind: options.triggerCharacter ? 2 : 1,
         ...(options.triggerCharacter ? { triggerCharacter: options.triggerCharacter } : {})

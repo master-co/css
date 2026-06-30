@@ -1898,6 +1898,9 @@ importers:
 
   packages/mcp:
     dependencies:
+      '@master/css-compiler':
+        specifier: workspace:^
+        version: link:../compiler
       '@master/css-diagnostics':
         specifier: workspace:^
         version: link:../diagnostics
@@ -1907,6 +1910,9 @@ importers:
       '@master/css-language-service':
         specifier: workspace:^
         version: link:../language-service
+      '@master/css-lexer':
+        specifier: workspace:^
+        version: link:../lexer
       '@master/css-lint':
         specifier: workspace:^
         version: link:../lint

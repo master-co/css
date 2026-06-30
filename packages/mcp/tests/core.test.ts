@@ -125,13 +125,20 @@ describe('@master/css-mcp', () => {
             const tools = await connection.client.listTools()
             expect(tools.tools.map((tool) => tool.name)).toEqual(expect.arrayContaining([
                 'mastercss_workspace_info',
+                'mastercss_setup_audit',
                 'mastercss_render_css',
+                'mastercss_trace_class',
+                'mastercss_extract_classes',
+                'mastercss_inspect_directives',
                 'mastercss_repo_context',
                 'mastercss_change_impact',
                 'mastercss_test_router',
                 'mastercss_package_graph',
+                'mastercss_manifest_query',
+                'mastercss_css_compare',
                 'mastercss_lint_content',
                 'mastercss_preview_fixes',
+                'mastercss_preview_directive_format',
                 'mastercss_apply_preview'
             ]))
 
@@ -163,6 +170,166 @@ describe('@master/css-mcp', () => {
             }))
             expect(rendered.classes).toEqual(['block'])
             expect(rendered.css.text).toContain('display:block')
+        } finally {
+            await connection.close()
+        }
+    })
+
+    it('audits setup and inspects CSS-first directives through MCP', async () => {
+        const root = createTempDir('master-css-mcp-setup-')
+        writeJSON(join(root, 'package.json'), {
+            name: 'setup-fixture',
+            devDependencies: {
+                '@master/css': 'workspace:^',
+                '@master/css-cli': 'workspace:^'
+            },
+            scripts: {
+                build: 'master-css src/index.html -o master.css'
+            }
+        })
+        writeFileSync(join(root, 'master.css'), [
+            '@master entry;',
+            '@settings {',
+            '  mode-trigger: class;',
+            '}',
+            '@theme {',
+            '  --color-brand: #123456;',
+            '}'
+        ].join('\n'))
+
+        const connection = await connect(root)
+        try {
+            const audit = parseToolJSON(await connection.client.callTool({
+                name: 'mastercss_setup_audit',
+                arguments: {}
+            }))
+            expect(audit.version).toBe(1)
+            expect(audit.manifest.entries).toHaveLength(1)
+            expect(audit.packages.declared).toContainEqual(expect.objectContaining({
+                name: '@master/css'
+            }))
+            expect(audit.integrations).toEqual(expect.arrayContaining([
+                expect.objectContaining({
+                    name: '@master/css-cli'
+                })
+            ]))
+
+            const directives = parseToolJSON(await connection.client.callTool({
+                name: 'mastercss_inspect_directives',
+                arguments: {
+                    entryPath: 'master.css'
+                }
+            }))
+            expect(directives.version).toBe(1)
+            expect(directives.status).toBe('ok')
+            expect(directives.directiveEntries).toEqual(expect.arrayContaining([
+                expect.objectContaining({ name: 'theme' }),
+                expect.objectContaining({ name: 'settings' })
+            ]))
+            expect(directives.manifest.counts.variables).toBeGreaterThan(0)
+        } finally {
+            await connection.close()
+        }
+    })
+
+    it('traces, extracts, queries, and compares Master CSS classes through MCP', async () => {
+        const root = createTempDir('master-css-mcp-class-tools-')
+        writeFileSync(join(root, 'index.html'), '<div class="block fg:red"></div>')
+
+        const connection = await connect(root)
+        try {
+            const trace = parseToolJSON(await connection.client.callTool({
+                name: 'mastercss_trace_class',
+                arguments: {
+                    className: 'block',
+                    patterns: ['index.html']
+                }
+            }))
+            expect(trace.version).toBe(1)
+            expect(trace.status).toBe('present')
+            expect(trace.reason).toBe('generated')
+            expect(trace.detected).toBe(true)
+            expect(trace.inspection.valid).toBe(true)
+
+            const extracted = parseToolJSON(await connection.client.callTool({
+                name: 'mastercss_extract_classes',
+                arguments: {
+                    content: '<div className="block fg:red"></div>',
+                    filePath: 'src/App.tsx'
+                }
+            }))
+            expect(extracted.version).toBe(1)
+            expect(extracted.files[0].languageId).toBe('typescriptreact')
+            expect(extracted.files[0].classes).toEqual(expect.arrayContaining([
+                expect.objectContaining({
+                    token: 'block',
+                    valid: true
+                })
+            ]))
+
+            const manifest = parseToolJSON(await connection.client.callTool({
+                name: 'mastercss_manifest_query',
+                arguments: {
+                    query: 'spacing',
+                    kind: 'token',
+                    limit: 5
+                }
+            }))
+            expect(manifest.version).toBe(1)
+            expect(manifest.results.tokens.length).toBeGreaterThan(0)
+
+            const compare = parseToolJSON(await connection.client.callTool({
+                name: 'mastercss_css_compare',
+                arguments: {
+                    beforeClassList: 'block',
+                    afterClassList: 'block inline'
+                }
+            }))
+            expect(compare.version).toBe(1)
+            expect(compare.summary.changed).toBe(true)
+            expect(compare.classes.added).toEqual(['inline'])
+            expect(compare.rules.added.length).toBeGreaterThan(0)
+        } finally {
+            await connection.close()
+        }
+    })
+
+    it('previews directive formatting without writing until the preview is applied', async () => {
+        const root = createTempDir('master-css-mcp-format-')
+        const file = join(root, 'style.css')
+        writeFileSync(file, '@compose block   inline;')
+
+        const connection = await connect(root)
+        try {
+            const contentFormat = parseToolJSON(await connection.client.callTool({
+                name: 'mastercss_preview_directive_format',
+                arguments: {
+                    content: '@compose block   inline;',
+                    filePath: 'style.css'
+                }
+            }))
+            expect(contentFormat.mode).toBe('content')
+            expect(contentFormat.formatted).toBe('@compose block inline;')
+
+            const preview = parseToolJSON(await connection.client.callTool({
+                name: 'mastercss_preview_directive_format',
+                arguments: {
+                    patterns: ['style.css']
+                }
+            }))
+            expect(preview.mode).toBe('files')
+            expect(preview.preview.confirmToken).toEqual(expect.any(String))
+            expect(preview.preview.changes).toHaveLength(1)
+            expect(readFileSync(file, 'utf8')).toBe('@compose block   inline;')
+
+            const applied = parseToolJSON(await connection.client.callTool({
+                name: 'mastercss_apply_preview',
+                arguments: {
+                    confirmToken: preview.preview.confirmToken
+                }
+            }))
+            expect(applied.applied).toBe(true)
+            expect(readFileSync(file, 'utf8')).toBe('@compose block inline;')
         } finally {
             await connection.close()
         }
