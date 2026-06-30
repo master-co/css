@@ -1,0 +1,16 @@
+{
+    "$schema": "site/node_modules/wrangler/config-schema.json",
+    "name": "master-css-site-rc",
+    "compatibility_date": "2026-06-11",
+    "pages_build_output_dir": "site/out",
+    "kv_namespaces": [
+        {
+            "binding": "PLAY_SHARES",
+            "id": "d1211ca89fed447c9fa17966091faea8"
+        }
+    ],
+    "vars": {
+        "PLAY_SHARE_TTL_SECONDS": "2592000",
+        "PLAY_ALLOWED_ORIGINS": "https://rc.css.master.co,http://localhost:3000,http://127.0.0.1:3000,http://localhost:8787,http://127.0.0.1:8787,https://localhost:8787,https://127.0.0.1:8787"
+    }
+}

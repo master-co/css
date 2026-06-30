@@ -4,7 +4,6 @@ const metadata = define({
     title: 'Set up Master CSS in Lit',
     description: 'Guide to setting up Master CSS in your Lit project.',
     category: 'Integrations',
-    vercelOG: true,
     fileURL: import.meta.url
 })
 

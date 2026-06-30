@@ -2,6 +2,7 @@
 
 .categories
 .pages.json
+.generated
 
 # dependencies
 /node_modules

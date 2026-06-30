@@ -142,3 +142,13 @@ jobs:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
                   NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
                   VSCE_PAT: ${{ secrets.VSCE_PAT }}
+            - name: Trigger Cloudflare Pages site deploy
+              if: ${{ github.ref_name == 'rc' }}
+              run: |
+                  if [ -z "$CLOUDFLARE_PAGES_RC_DEPLOY_HOOK" ]; then
+                      echo "CLOUDFLARE_PAGES_RC_DEPLOY_HOOK is required to deploy the site after release."
+                      exit 1
+                  fi
+                  curl -fsS -X POST "$CLOUDFLARE_PAGES_RC_DEPLOY_HOOK"
+              env:
+                  CLOUDFLARE_PAGES_RC_DEPLOY_HOOK: ${{ secrets.CLOUDFLARE_PAGES_RC_DEPLOY_HOOK }}

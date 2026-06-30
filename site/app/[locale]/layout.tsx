@@ -4,6 +4,10 @@ import { importTranslations } from '~/internal/utils/i18n'
 import HTML from 'internal/layouts/html'
 import dictionaries from '~/site/dictionaries'
 
+export async function generateStaticParams() {
+    return i18n.locales.map((locale) => ({ locale }))
+}
+
 export default async function Layout({ children, params }: {
     children: React.ReactNode,
     params: Promise<{ locale: typeof i18n.locales[number] }>

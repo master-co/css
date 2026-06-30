@@ -1,6 +1,4 @@
-import { getCloudflareContext } from '@opennextjs/cloudflare'
-
-interface PlayKVNamespace {
+export interface PlayKVNamespace {
     get(key: string): Promise<string | null>
     put(key: string, value: string, options?: { expirationTtl?: number }): Promise<void>
 }
@@ -18,15 +16,10 @@ interface PlayShareFile {
     content?: string
 }
 
-interface PlayShareRouteProps {
-    params: Promise<{ id?: string }> | { id?: string }
-}
-
 const shareKeyPrefix = 'share:'
 const maxPayloadBytes = 256 * 1024
 const maxFiles = 8
 const defaultShareTtlSeconds = 60 * 60 * 24 * 30
-const shareIdPattern = /^[A-Za-z0-9_-]{8,48}$/
 const validLanguages = new Set(['html', 'javascript', 'css', 'plaintext'])
 const defaultAllowedOrigins = [
     'https://css.master.co',
@@ -38,27 +31,6 @@ const defaultAllowedOrigins = [
     'https://localhost:8787',
     'https://127.0.0.1:8787'
 ]
-
-export async function OPTIONS(request: Request) {
-    return handlePlayOptions(request, await getPlayEnv())
-}
-
-export async function GET_HEALTH(request: Request) {
-    return getPlayHealth(request, await getPlayEnv())
-}
-
-export async function POST_SHARES(request: Request) {
-    return createPlayShare(request, await getPlayEnv())
-}
-
-export async function GET_SHARE(request: Request, props: PlayShareRouteProps) {
-    const env = await getPlayEnv()
-    const { id = '' } = await props.params
-    if (!shareIdPattern.test(id)) {
-        return json({ error: 'Not found' }, request, env, 404)
-    }
-    return getPlayShare(id, request, env)
-}
 
 export function handlePlayOptions(request: Request, env: PlayEnv = {}) {
     return new Response(null, { status: 204, headers: corsHeaders(request, env) })
@@ -137,9 +109,8 @@ export async function getPlayShare(id: string, request: Request, env: PlayEnv) {
     })
 }
 
-async function getPlayEnv(): Promise<PlayEnv> {
-    const { env } = await getCloudflareContext({ async: true })
-    return env as PlayEnv
+export function isValidShareId(id: string) {
+    return /^[A-Za-z0-9_-]{8,48}$/.test(id)
 }
 
 function validateFiles(body: unknown): { value: PlayShareFile[] } | { error: string } {

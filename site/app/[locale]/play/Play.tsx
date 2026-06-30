@@ -95,7 +95,7 @@ const editorHTMLOptions: any = {
 }
 
 const template = templates[0]
-const playShareApiURL = '/api/play'
+const playShareApiURL = process.env.NEXT_PUBLIC_PLAY_API_URL || '/api/play'
 const playMonacoLanguageIds = ['html', 'css']
 const playMonacoLanguageIdSet = new Set(playMonacoLanguageIds)
 const playCSSDiagnosticClearDelays = [250, 1000]

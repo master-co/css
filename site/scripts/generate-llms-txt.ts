@@ -1,9 +1,10 @@
 import { readFile, writeFile, readdir } from 'node:fs/promises'
 import path from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
+import { resolvePublicEnv } from '../utils/public-env.js'
 
 const DEFAULT_LOCALE = 'en'
-const SITE_URL = process.env.NEXT_PUBLIC_URL || 'https://rc.css.master.co'
+const SITE_URL = resolvePublicEnv().NEXT_PUBLIC_URL
 const PROJECT_NAME = 'Master CSS'
 const PROJECT_DESC =
     'A CSS language and framework for rapidly building beautiful websites and design systems with rule-based CSS-in-class.'

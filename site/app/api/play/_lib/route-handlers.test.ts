@@ -6,7 +6,7 @@ import {
     getPlayShare,
     handlePlayOptions,
     type PlayEnv
-} from './route-handlers'
+} from '../../../../play-api/route-handlers'
 
 class MemoryKV {
     values = new Map<string, string>()

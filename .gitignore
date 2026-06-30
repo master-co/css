@@ -2,6 +2,7 @@
 
 .parcel-cache
 .pnpm-store
+.wrangler/
 /internal
 .env.local
 

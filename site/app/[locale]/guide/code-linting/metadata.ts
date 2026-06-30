@@ -13,7 +13,6 @@ const metadata = define({
     openGraph: {
         description: 'An ESLint plugin enforcing a consistent coding style for Master CSS.'
     },
-    vercelOG: true,
     fileURL: import.meta.url
 })
 
