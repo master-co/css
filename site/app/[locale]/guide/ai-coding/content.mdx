@@ -127,6 +127,12 @@ Use linting for mechanical feedback:
 eslint .
 ```
 
+When an MCP server or agent needs machine-readable Master CSS preflight output, use the native CLI with JSON output:
+
+```bash name=Terminal
+npx @master/css-cli lint --format json --exit-code never
+```
+
 Use the browser for visual feedback. Compare the important states: default, hover, focus-visible, disabled, loading, narrow containers, dark mode, and reduced motion when the component supports them.
 
 ---

@@ -103,7 +103,6 @@ Set options in `.vscode/settings.json` or VS Code user settings with the `master
 | `masterCSS.inspectSyntax` | `boolean`, default `true` | Enables hover inspection and generated CSS previews. |
 | `masterCSS.renderSyntaxColors` | `boolean`, default `true` | Enables color information for Master CSS syntax. |
 | `masterCSS.formatDirectives` | `boolean`, default `true` | Enables Master CSS directive formatting in CSS-family documents. |
-| `masterCSS.diagnoseClassSyntax` | `boolean`, default `false` | Enables basic language-server class syntax diagnostics. Class policy diagnostics and sorting remain owned by ESLint. |
 | `masterCSS.embeddedSyntaxHighlighting` | `"active"`, `"always"`, or `"off"`; default `"active"` | Controls semantic highlighting for embedded utilities in markup and scripts. CSS directive syntax is still highlighted by the TextMate grammar. |
 | `masterCSS.workspaces` | `"auto"` or `string[]`, default `"auto"` | Configures Master CSS workspaces. Auto mode detects CSS entries and Master CSS package dependencies. |
 

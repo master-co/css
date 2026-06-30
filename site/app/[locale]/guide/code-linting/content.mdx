@@ -5,6 +5,8 @@ Use the [installation integrations](/guide/installation/integrations) to add the
 
 The Master CSS VS Code extension and the VS Code ESLint extension are complementary. Master CSS provides completion, hover, color tools, highlighting, directive diagnostics, manifest diagnostics, and directive formatting. ESLint provides `sort-classes`, `prefer-canonical-classes`, `no-conflicting-classes`, `no-invalid-classes`, and opt-in raw-value policy diagnostics, so the Master CSS extension does not duplicate these warnings by default.
 
+For MCP servers, AI agents, and other tools that need a Master CSS native machine interface without loading an ESLint parser stack, use `npx @master/css-cli lint --format json`. Treat it as a preflight diagnostics surface; keep `eslint .` as the normal human development and CI lint command for JavaScript and framework projects.
+
 ---
 
 ## Install the recommended config

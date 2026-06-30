@@ -36,6 +36,7 @@
     },
     "dependencies": {
         "@master/css": "workspace:^",
+        "@master/css-lexer": "workspace:^",
         "@master/css-language": "workspace:^",
         "@master/css-lint": "workspace:^",
         "@master/css-project": "workspace:^",
@@ -49,7 +50,6 @@
         "fast-glob": "^3.3.3"
     },
     "devDependencies": {
-        "@master/css-lexer": "workspace:^",
         "@types/bytes": "^3.1.5",
         "upath": "^2.0.1"
     }

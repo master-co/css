@@ -33,7 +33,6 @@ import {
 import glob from 'fast-glob'
 import { URI } from 'vscode-uri'
 import { CSSDirectiveError, type CSSDirectiveSourceReference } from '@master/css-schema/css-directives'
-import { validate } from '@master/css-validator'
 
 export declare interface Workspace {
     uri: string
@@ -573,7 +572,6 @@ export default class CSSLanguageServer {
         const diagnostics: Diagnostic[] = []
         diagnostics.push(...this.createManifestLoadingDiagnostics(textDocument, workspace))
         diagnostics.push(...this.createCSSDirectiveDiagnostics(textDocument, workspace))
-        diagnostics.push(...this.createClassSyntaxDiagnostics(textDocument, workspace))
 
         this.connection.sendDiagnostics({
             uri: textDocument.uri,
@@ -622,30 +620,6 @@ export default class CSSLanguageServer {
                     : undefined
             }
         })
-    }
-
-    private createClassSyntaxDiagnostics(textDocument: TextDocument, workspace: Workspace): Diagnostic[] {
-        const languageService = workspace.languageService
-        if (!workspace.languageServiceSettings.diagnoseClassSyntax || !languageService) return []
-        const diagnostics: Diagnostic[] = []
-        for (const classPosition of languageService.getClassPositions(textDocument)) {
-            const { matched, errors } = validate(classPosition.token, languageService.css)
-            if (!matched) continue
-            for (const error of errors) {
-                const message = error.message || 'Invalid Master CSS class'
-                diagnostics.push({
-                    range: {
-                        start: textDocument.positionAt(classPosition.range.start),
-                        end: textDocument.positionAt(classPosition.range.end)
-                    },
-                    severity: DiagnosticSeverity.Error,
-                    code: 'invalid-class',
-                    source: 'Master CSS',
-                    message: /[.!?]$/.test(message) ? message : `${message}.`
-                })
-            }
-        }
-        return diagnostics
     }
 
     private createCSSDirectiveDiagnostic(

@@ -10,8 +10,10 @@ import {
 import { dirname, join } from 'node:path'
 import { createRequire } from 'node:module'
 import { fileURLToPath } from 'node:url'
+import { readFileSync, writeFileSync } from 'node:fs'
 
-const pkg = editJsonFile(fileURLToPath(new URL('./package.json', import.meta.url)), { stringify_width: 4 })
+const packageJSONPath = fileURLToPath(new URL('./package.json', import.meta.url))
+const pkg = editJsonFile(packageJSONPath, { stringify_width: 4 })
 const compilerRequire = createRequire(fileURLToPath(new URL('../compiler/package.json', import.meta.url)))
 const MASTER_CSS_GRAMMAR_PATH = './node_modules/@master/css-language/syntaxes/master-css.tmLanguage.json'
 
@@ -109,11 +111,6 @@ pkg.set('contributes.configuration', {
             'default': settings.formatDirectives,
             'description': 'Enables Master CSS directive formatting in CSS-family documents.'
         },
-        'masterCSS.diagnoseClassSyntax': {
-            'type': 'boolean',
-            'default': settings.diagnoseClassSyntax,
-            'description': 'Enables basic class syntax diagnostics from the Master CSS language server. Class policy diagnostics and sorting remain owned by ESLint.'
-        },
         'masterCSS.embeddedSyntaxHighlighting': {
             'type': 'string',
             'enum': ['active', 'always', 'off'],
@@ -132,5 +129,7 @@ pkg.set('contributes.configuration', {
 })
 
 pkg.save()
+const packageJSON = readFileSync(packageJSONPath, 'utf8')
+if (!packageJSON.endsWith('\n')) writeFileSync(packageJSONPath, `${packageJSON}\n`)
 
 copyOrSymlink(join(dirname(compilerRequire.resolve('css-tree/package.json')), 'data'), fileURLToPath(new URL('./data', import.meta.url)))

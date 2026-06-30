@@ -1479,6 +1479,9 @@ importers:
       '@master/css':
         specifier: workspace:^
         version: link:../facade
+      '@master/css-lexer':
+        specifier: workspace:^
+        version: link:../lexer
       '@master/css-language':
         specifier: workspace:^
         version: link:../language
@@ -1513,9 +1516,6 @@ importers:
         specifier: ^3.3.3
         version: 3.3.3
     devDependencies:
-      '@master/css-lexer':
-        specifier: workspace:^
-        version: link:../lexer
       '@types/bytes':
         specifier: ^3.1.5
         version: 3.1.5
@@ -1777,9 +1777,6 @@ importers:
       '@master/css-schema':
         specifier: workspace:^
         version: link:../schema
-      '@master/css-validator':
-        specifier: workspace:^
-        version: link:../validator
       defu:
         specifier: ^6.1.7
         version: 6.1.7

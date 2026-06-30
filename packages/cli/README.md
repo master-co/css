@@ -86,18 +86,30 @@ Options:
 
 ### `npx @master/css-cli lint [source paths]`
 
-Lint Master CSS class strings with the same class policy diagnostics used by `@master/eslint-plugin-css`.
+Run machine-readable Master CSS diagnostics for agents, MCP servers, editor tools, and native CI checks. JavaScript and VS Code projects should still use ESLint as the main human lint workflow; this command is a native preflight surface that shares the same class policy engine.
 
 ```bash
 npx @master/css-cli lint index.html main.js
+```
+
+Use JSON output for tools:
+
+```bash
+cat src/App.tsx | npx @master/css-cli lint --exit-code never --stdin --stdin-filepath src/App.tsx
 ```
 
 Options:
 
 | Option | Type | Default | Description |
 | --- | --- | --- | --- |
-| `--fix` | `boolean` | `false` | Apply fixable class-list diagnostics. |
-| `--format <format>` | `stylish` or `json` | `stylish` | Print human-readable output or machine-readable diagnostics. |
+| `--stdin` | `boolean` | `false` | Read one source buffer from stdin. |
+| `--stdin-filepath <path>` | `string` | `stdin.html` | File path used to infer the stdin language. |
+| `--fix` | `boolean` | `false` | Apply safe class-list fixes to files. |
+| `--fix-dry-run` | `boolean` | `false` | Return fix proposals without writing files. |
+| `--fix-directives` | `boolean` | `false` | Allow structural directive fixes when `--fix` writes files. |
+| `--format <format>` | `json` or `stylish` | `json` | Print machine-readable diagnostics or human-readable output. |
+| `--rules <rules>` | comma list | recommended | Select lint rules, `recommended`, or `all`. |
+| `--exit-code <mode>` | `diagnostics` or `never` | `diagnostics` | Control whether diagnostics set a non-zero exit code. |
 | `--max-warnings <number>` | `number` | none | Exit with a non-zero status when warnings exceed this count. |
 
 ## Related docs

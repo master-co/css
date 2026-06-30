@@ -75,24 +75,6 @@ withFixture('basic', async (context) => {
     })
 })
 
-withFixture('basic', async (context) => {
-    test('publishes opt-in class syntax diagnostics without class policy rules', async ({ expect }) => {
-        const text = '<div class="fg:white m:2x text-decoration:bad()"></div>'
-        const document = context.createDocument(text, { lang: 'html' })
-        const sendDiagnostics = vi.spyOn(context.server.connection, 'sendDiagnostics').mockImplementation(() => undefined as any)
-
-        await context.server.onDidOpen({ document })
-
-        const diagnostics = sendDiagnostics.mock.calls.at(-1)?.[0].diagnostics || []
-        expect(diagnostics.map((diagnostic) => diagnostic.code)).toEqual(['invalid-class'])
-        expect(document.offsetAt(diagnostics[0].range.start)).toBe(text.indexOf('text-decoration:bad()'))
-        expect(diagnostics.some((diagnostic) => diagnostic.code === 'invalid-class-order')).toBe(false)
-
-        await context.server.onDidClose({ document })
-        sendDiagnostics.mockRestore()
-    })
-}, { diagnoseClassSyntax: true })
-
 withFixture('invalid-manifest', async (context) => {
     test('publishes manifest loading diagnostics', async ({ expect }) => {
         const document = context.createDocument('<div class="block"></div>', { lang: 'html' })
