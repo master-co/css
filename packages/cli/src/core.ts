@@ -5,6 +5,7 @@ import { Command } from 'commander'
 import { DEFAULT_SCAN_OUTPUT } from './constants'
 import type { ScanOptions } from './scan'
 import type { LintOptions } from './lint'
+import type { InspectOptions } from './inspect'
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
 
@@ -50,6 +51,19 @@ export default async function runProgram(argv: string[] = process.argv) {
         .action(async (sourcePaths: string[], options: LintOptions) => {
             const { default: runLint } = await import('./lint')
             await runLint(sourcePaths, options)
+        })
+    program
+        .command('inspect')
+        .description('Inspect scanner state, stylesheet entries, generated CSS, and missing CSS.')
+        .argument('[source paths...]', 'The glob pattern paths to inspect')
+        .option('--classes <classes>', 'Whitespace-separated class names to verify in generated CSS.')
+        .option('--include-css', 'Include generated CSS text in the JSON report.')
+        .option('--format <format>', 'Diagnostic output format: json or stylish.', 'json')
+        .option('--exit-code <mode>', 'Exit code behavior: diagnostics or never.', 'diagnostics')
+        .option('--max-warnings <number>', 'Exit with a non-zero status if warnings exceed this count.')
+        .action(async (sourcePaths: string[], options: InspectOptions) => {
+            const { default: runInspect } = await import('./inspect')
+            await runInspect(sourcePaths, options)
         })
     const firstArgument = argv[2]
     if (firstArgument && removedCommands.has(firstArgument)) {

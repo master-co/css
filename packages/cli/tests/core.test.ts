@@ -47,6 +47,7 @@ describe('root command', () => {
         expect(output).toContain('--no-export')
         expect(output).toContain('Commands:')
         expect(output).toContain('lint')
+        expect(output).toContain('inspect')
         expect(output).not.toContain('extract [options]')
         expect(output).not.toContain('render [options]')
     })
@@ -59,6 +60,108 @@ describe('root command', () => {
 
     it('publishes only the package-name binary', () => {
         expect(pkg.bin).toBe('./dist/bin/index.js')
+    })
+})
+
+describe('inspect command', () => {
+    it('prints scanner state and missing CSS diagnostics as json', () => {
+        const cwd = fs.mkdtempSync(resolve(os.tmpdir(), 'master-css-cli-inspect-json-'))
+        try {
+            fs.writeFileSync(resolve(cwd, 'index.html'), '<div class="block text-decoration:bad()"></div>')
+            const error = runFailedCLI([
+                'inspect',
+                '--classes',
+                'block never-generated-class',
+                'index.html'
+            ], { cwd })
+            expect(error.status).toBe(1)
+            const report = JSON.parse(String(error.stdout))
+            expect(report.version).toBe(1)
+            expect(report.inputs.files[0]).toMatch(/index\.html$/)
+            expect(report.scanner.classes.valid).toContain('block')
+            expect(report.scanner.classes.invalid).toContain('text-decoration:bad()')
+            expect(report.files).toHaveLength(1)
+            expect(report.files[0].discovered.valid).toContain('block')
+            expect(report.files[0].discovered.invalid).toContain('text-decoration:bad()')
+            expect(report.missingCSS.present).toContainEqual(expect.objectContaining({
+                className: 'block',
+                reason: 'generated'
+            }))
+            expect(report.missingCSS.missing).toContainEqual(expect.objectContaining({
+                className: 'never-generated-class',
+                reason: 'not-detected'
+            }))
+            expect(report.diagnostics).toContainEqual(expect.objectContaining({
+                code: 'invalid-scanner-class',
+                sourceKind: 'scanner',
+                filePath: expect.stringMatching(/index\.html$/)
+            }))
+            expect(report.diagnostics).toContainEqual(expect.objectContaining({
+                code: 'missing-css',
+                sourceKind: 'missing-css'
+            }))
+            expect(report.summary.errors).toBe(1)
+            expect(report.summary.warnings).toBe(1)
+            expect(report.css.bytes).toBeGreaterThan(0)
+        } finally {
+            fs.rmSync(cwd, { recursive: true, force: true })
+        }
+    })
+
+    it('can include generated CSS and stylesheet entry metadata without failing', () => {
+        const cwd = fs.mkdtempSync(resolve(os.tmpdir(), 'master-css-cli-inspect-css-'))
+        try {
+            fs.writeFileSync(resolve(cwd, 'index.css'), '@master entry;')
+            fs.writeFileSync(resolve(cwd, 'index.html'), '<div class="block"></div>')
+            const output = runCLI([
+                'inspect',
+                '--classes',
+                'block',
+                '--include-css',
+                '--exit-code',
+                'never',
+                'index.html'
+            ], { cwd })
+            const report = JSON.parse(output)
+            expect(report.stylesheets.entries).toHaveLength(1)
+            expect(report.stylesheets.entries[0]).toEqual(expect.objectContaining({
+                filePath: fs.realpathSync(resolve(cwd, 'index.css')),
+                masterCSS: false,
+                pruneNativeCSS: true
+            }))
+            expect(report.stylesheets.entries[0].dependencies).toContain(fs.realpathSync(resolve(cwd, 'index.css')))
+            expect(report.css.included).toBe(true)
+            expect(report.css.text).toContain('display:block')
+            expect(report.missingCSS.missing).toHaveLength(0)
+        } finally {
+            fs.rmSync(cwd, { recursive: true, force: true })
+        }
+    })
+
+    it('reports stylesheet entry errors without hiding scanner diagnostics', () => {
+        const cwd = fs.mkdtempSync(resolve(os.tmpdir(), 'master-css-cli-inspect-entry-error-'))
+        try {
+            fs.writeFileSync(resolve(cwd, 'index.css'), '@master entry;\n@import "./missing.css";')
+            fs.writeFileSync(resolve(cwd, 'index.html'), '<div class="block"></div>')
+            const error = runFailedCLI(['inspect', 'index.html'], { cwd })
+            expect(error.status).toBe(1)
+            const report = JSON.parse(String(error.stdout))
+            expect(report.stylesheets.entries).toHaveLength(1)
+            expect(report.stylesheets.entries[0].errors[0]).toContain('CSS file not found')
+            expect(report.stylesheets.errors).toContainEqual(expect.objectContaining({
+                filePath: fs.realpathSync(resolve(cwd, 'index.css')),
+                message: expect.stringContaining('CSS file not found')
+            }))
+            expect(report.scanner.classes.valid).toContain('block')
+            expect(report.diagnostics).toContainEqual(expect.objectContaining({
+                code: 'stylesheet-error',
+                severity: 'error',
+                sourceKind: 'stylesheet',
+                filePath: fs.realpathSync(resolve(cwd, 'index.css'))
+            }))
+        } finally {
+            fs.rmSync(cwd, { recursive: true, force: true })
+        }
     })
 })
 

@@ -112,6 +112,39 @@ Options:
 | `--exit-code <mode>` | `diagnostics` or `never` | `diagnostics` | Control whether diagnostics set a non-zero exit code. |
 | `--max-warnings <number>` | `number` | none | Exit with a non-zero status when warnings exceed this count. |
 
+### `npx @master/css-cli inspect [source paths]`
+
+Inspect scanner state, managed stylesheet entries, generated CSS size, and explicit missing CSS checks. This command is for MCP servers, AI agents, build diagnostics, and support tooling that need machine-readable extraction state, not class policy linting.
+
+```bash
+npx @master/css-cli inspect --classes "btn card" --format json --exit-code never
+```
+
+Use `--classes` to ask whether specific class names are present in the generated CSS path. The report explains each checked class as `generated`, `native-css`, `safelist`, `invalid`, `blocklisted`, or `not-detected`.
+
+The JSON report includes:
+
+| Field | Description |
+| --- | --- |
+| `inputs` | Source patterns, resolved files, and explicit classes checked by this run. |
+| `scanner` | Global scanner class sets, counts, safelist/blocklist counts, and reset dependencies. |
+| `stylesheets` | Managed CSS entries, dependency metadata, warnings, and entry loading errors. |
+| `css` | Generated CSS byte size, emitted global counts, and optional CSS text. |
+| `missingCSS` | Present and missing results for `--classes`. |
+| `files` | Per-file scanner discoveries for latent, valid, invalid, and native CSS classes. |
+| `diagnostics` | Machine-readable `scanner`, `stylesheet`, and `missing-css` diagnostics. |
+| `summary` | File, stylesheet, diagnostic, error, warning, missing CSS, and invalid class totals. |
+
+Options:
+
+| Option | Type | Default | Description |
+| --- | --- | --- | --- |
+| `--classes <classes>` | whitespace list | none | Class names to verify against scanner state and generated CSS. |
+| `--include-css` | `boolean` | `false` | Include generated CSS text in the JSON report. |
+| `--format <format>` | `json` or `stylish` | `json` | Print machine-readable diagnostics or human-readable output. |
+| `--exit-code <mode>` | `diagnostics` or `never` | `diagnostics` | Control whether diagnostics set a non-zero exit code. |
+| `--max-warnings <number>` | `number` | none | Exit with a non-zero status when warnings exceed this count. |
+
 ## Related docs
 
 - [Static rendering guide](https://rc.css.master.co/guide/installation)
