@@ -12,6 +12,7 @@ allowBuilds:
   '@parcel/watcher': true
   '@swc/core': true
   '@vscode/vsce-sign': true
+  aronrepo: true
   esbuild: true
   keytar: true
   lmdb: true
@@ -23,6 +24,7 @@ allowBuilds:
 
 minimumReleaseAgeExclude:
   - '@aronrepo/*'
+  - aronrepo
 
 supportedArchitectures:
   os:
