@@ -349,6 +349,9 @@ importers:
       '@master/css-lint':
         specifier: workspace:^
         version: link:packages/lint
+      '@master/css-mcp':
+        specifier: workspace:^
+        version: link:packages/mcp
       '@master/css-preset':
         specifier: workspace:^
         version: link:packages/preset
@@ -1859,6 +1862,54 @@ importers:
       '@master/css-preset':
         specifier: workspace:^
         version: link:../preset
+
+  packages/mcp:
+    dependencies:
+      '@master/css-engine':
+        specifier: workspace:^
+        version: link:../engine
+      '@master/css-language':
+        specifier: workspace:^
+        version: link:../language
+      '@master/css-language-service':
+        specifier: workspace:^
+        version: link:../language-service
+      '@master/css-lexer':
+        specifier: workspace:^
+        version: link:../lexer
+      '@master/css-lint':
+        specifier: workspace:^
+        version: link:../lint
+      '@master/css-preset':
+        specifier: workspace:^
+        version: link:../preset
+      '@master/css-project':
+        specifier: workspace:^
+        version: link:../project
+      '@master/css-scanner':
+        specifier: workspace:^
+        version: link:../scanner
+      '@master/css-server':
+        specifier: workspace:^
+        version: link:../server
+      '@master/css-stylesheet':
+        specifier: workspace:^
+        version: link:../stylesheet
+      '@master/css-validator':
+        specifier: workspace:^
+        version: link:../validator
+      '@modelcontextprotocol/sdk':
+        specifier: ^1.29.0
+        version: 1.29.0(zod@4.4.3)
+      fast-glob:
+        specifier: ^3.3.3
+        version: 3.3.3
+      vscode-languageserver-textdocument:
+        specifier: ^1.0.12
+        version: 1.0.12
+      zod:
+        specifier: ^4.4.3
+        version: 4.4.3
 
   packages/next:
     dependencies:

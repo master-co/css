@@ -44,6 +44,9 @@
             "path": "./packages/lint/tsconfig.typecheck.json"
         },
         {
+            "path": "./packages/mcp/tsconfig.typecheck.json"
+        },
+        {
             "path": "./packages/next/tsconfig.typecheck.json"
         },
         {

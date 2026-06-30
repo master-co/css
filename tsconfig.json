@@ -30,6 +30,8 @@
             "@master/css-lexer": [ "./node_modules/@master/css-lexer/src" ],
             "@master/css-lexer/*": [ "./node_modules/@master/css-lexer/src/*" ],
             "@master/css-lint": [ "./node_modules/@master/css-lint/src" ],
+            "@master/css-mcp": [ "./node_modules/@master/css-mcp/src" ],
+            "@master/css-mcp/*": [ "./node_modules/@master/css-mcp/src/*" ],
             "@master/css-source": [ "./node_modules/@master/css-source/src" ],
             "@master/css-source/*": [ "./node_modules/@master/css-source/src/*" ],
             "@master/css-stylesheet": [ "./node_modules/@master/css-stylesheet/src" ],

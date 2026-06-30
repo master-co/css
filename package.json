@@ -83,6 +83,7 @@
         "@master/css-language-service": "workspace:^",
         "@master/css-lexer": "workspace:^",
         "@master/css-lint": "workspace:^",
+        "@master/css-mcp": "workspace:^",
         "@master/css-preset": "workspace:^",
         "@master/css-project": "workspace:^",
         "@master/css-runtime": "workspace:^",
