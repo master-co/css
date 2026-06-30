@@ -20,6 +20,28 @@ You can also set the preview confirmation token lifetime:
 npx -y @master/css-mcp@rc --root /absolute/path/to/project --preview-ttl 300000
 ```
 
+### Ask an agent to set it up
+You can ask a local AI coding agent to register the MCP server for you. The agent should identify the MCP client first, then use that client's native setup path instead of assuming every client reads the same project config file.
+
+```text name=prompt
+Set up the Master CSS MCP server for this project.
+
+Project root: /absolute/path/to/project
+Package: @master/css-mcp@rc
+
+First identify which MCP client is being configured. Use the client's native registration path:
+- Codex App: use `codex mcp add`
+- Claude Code: use `claude mcp add --transport stdio`
+- Clients that accept `mcpServers` JSON: add the command/args shape to that client's config
+
+Use this stdio command:
+npx -y @master/css-mcp@rc --root /absolute/path/to/project
+
+Do not assume a project `mcp.json` is read automatically by every client. Do not commit machine-specific absolute paths unless I explicitly ask for a project-scoped team config.
+
+After setup, verify the server is registered, restart or open a new client session if needed, then call `mastercss_workspace_info` to confirm the MCP server is connected to the intended project root.
+```
+
 ---
 
 ## Configure an MCP client
