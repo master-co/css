@@ -1,5 +1,5 @@
-import { describe, expect, it } from 'vitest'
-import { mkdirSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs'
+import { describe, expect, it, vi } from 'vitest'
+import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import withMasterCSS from '../src'
@@ -15,6 +15,71 @@ const composedAdapterProjectPath = 'node_modules/.master-css/master-css-next-ada
 const nextInstrumentationClientId = 'private-next-instrumentation-client'
 const masterCSSUserInstrumentationClientId = 'private-next-master-css-user-instrumentation-client'
 const removedReactPackageName = ['@master', 'css.react'].join('/')
+
+function readGeneratedInstrumentationClientSource(root: string) {
+    const cwd = process.cwd()
+    try {
+        process.chdir(root)
+        withMasterCSS({})
+        return readFileSync(join(root, 'node_modules', '.master-css', 'master-css-next-instrumentation-client.cjs'), 'utf-8')
+    } finally {
+        process.chdir(cwd)
+    }
+}
+
+async function runInstrumentationClient(source: string, modules: Record<string, unknown>) {
+    const runtimeGlobal = globalThis as unknown as {
+        document?: unknown
+        __MASTER_CSS_NEXT_RUNTIME__?: unknown
+    }
+    const previousDocument = runtimeGlobal.document
+    const previousRuntimeState = runtimeGlobal.__MASTER_CSS_NEXT_RUNTIME__
+    const module = { hot: undefined }
+    const require = vi.fn((id: string) => {
+        if (Object.prototype.hasOwnProperty.call(modules, id)) return modules[id]
+        throw new Error(`Unexpected require: ${id}`)
+    })
+
+    runtimeGlobal.document = {}
+    delete runtimeGlobal.__MASTER_CSS_NEXT_RUNTIME__
+
+    try {
+        Function('require', 'module', source)(require, module)
+        await new Promise((resolve) => setTimeout(resolve, 0))
+    } finally {
+        if (previousDocument === undefined) {
+            delete runtimeGlobal.document
+        } else {
+            runtimeGlobal.document = previousDocument
+        }
+        if (previousRuntimeState === undefined) {
+            delete runtimeGlobal.__MASTER_CSS_NEXT_RUNTIME__
+        } else {
+            runtimeGlobal.__MASTER_CSS_NEXT_RUNTIME__ = previousRuntimeState
+        }
+    }
+
+    return { require }
+}
+
+function createCSSRuntimeTestModule() {
+    const runtime = {
+        destroy: vi.fn(),
+        needsHydrationManifest: vi.fn(() => false),
+        loadHydrationManifest: vi.fn(),
+        observe: vi.fn()
+    }
+    runtime.observe.mockReturnValue(runtime)
+
+    return {
+        runtime,
+        module: {
+            CSSRuntime: {
+                create: vi.fn(() => runtime)
+            }
+        }
+    }
+}
 
 describe('withMasterCSS', () => {
     it('sets the Next adapter path and registers options', () => {
@@ -208,6 +273,57 @@ describe('withMasterCSS', () => {
             expect(nextConfig.webpack({ module: { rules: [] } }, {}).resolve.alias[masterCSSUserInstrumentationClientId]).toContain(join('src', 'instrumentation-client.ts'))
         } finally {
             process.chdir(cwd)
+        }
+    })
+
+    it('resolves async virtual manifest modules before starting the runtime', async () => {
+        const root = mkdtempSync(join(tmpdir(), 'master-css-next-async-runtime-'))
+        const manifest = { version: 1, marker: 'async-manifest' }
+        const emittedGlobals = { variables: { primary: 1 }, animations: {} }
+        const { module: cssRuntimeModule, runtime } = createCSSRuntimeTestModule()
+
+        try {
+            const source = readGeneratedInstrumentationClientSource(root)
+
+            await runInstrumentationClient(source, {
+                'private-next-master-css-user-instrumentation-client': {},
+                '@master/css-runtime': cssRuntimeModule,
+                'virtual:master-css-manifest': Promise.resolve({ default: manifest }),
+                'virtual:master-css-emitted-globals': Promise.resolve({ default: emittedGlobals })
+            })
+
+            expect(cssRuntimeModule.CSSRuntime.create).toHaveBeenCalledWith({
+                manifest,
+                emittedGlobals
+            })
+            expect(runtime.observe).toHaveBeenCalled()
+        } finally {
+            rmSync(root, { recursive: true, force: true })
+        }
+    })
+
+    it('keeps sync virtual manifest modules working in the runtime wrapper', async () => {
+        const root = mkdtempSync(join(tmpdir(), 'master-css-next-sync-runtime-'))
+        const manifest = { version: 1, marker: 'sync-manifest' }
+        const emittedGlobals = { variables: {}, animations: {} }
+        const { module: cssRuntimeModule } = createCSSRuntimeTestModule()
+
+        try {
+            const source = readGeneratedInstrumentationClientSource(root)
+
+            await runInstrumentationClient(source, {
+                'private-next-master-css-user-instrumentation-client': {},
+                '@master/css-runtime': cssRuntimeModule,
+                'virtual:master-css-manifest': { default: manifest },
+                'virtual:master-css-emitted-globals': { default: emittedGlobals }
+            })
+
+            expect(cssRuntimeModule.CSSRuntime.create).toHaveBeenCalledWith({
+                manifest,
+                emittedGlobals
+            })
+        } finally {
+            rmSync(root, { recursive: true, force: true })
         }
     })
 
