@@ -189,7 +189,6 @@
         "embedded-path-segment|packages/vscode/scripts/release.js|resolve(scriptDir, '../../..')": 1,
         "embedded-path-segment|packages/webpack/tests/plugin.test.ts|path.join(process.cwd(), 'src/main.ts')": 2,
         "embedded-path-segment|packages/webpack/tests/plugin.test.ts|path.join(process.cwd(), 'src/styles.css')": 3,
-        "embedded-path-segment|packages/webpack/tests/plugin.test.ts|path.join(root, 'src/main.js')": 1,
         "embedded-path-segment|packages/webpack/tests/plugin.test.ts|path.resolve(__dirname, '../../../examples/webpack')": 1,
         "embedded-path-segment|packages/webpack/tests/plugin.test.ts|path.resolve(__dirname, '../../core/src/theme.css')": 1,
         "embedded-path-segment|packages/webpack/tests/plugin.test.ts|path.resolve(__dirname, 'fixtures/manifest-virtual-module/css-only')": 4,

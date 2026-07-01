@@ -6,7 +6,9 @@ import { fileURLToPath } from 'node:url'
 import { test } from 'node:test'
 import ts from 'typescript'
 
-const repoRoot = fileURLToPath(new URL('../../', import.meta.url))
+const repoRoot = process.env.CROSS_PLATFORM_PATH_REPO_ROOT
+    ? path.resolve(process.env.CROSS_PLATFORM_PATH_REPO_ROOT)
+    : fileURLToPath(new URL('../../', import.meta.url))
 const baselinePath = path.join(repoRoot, '.ai', 'cross-platform-path-baseline.json')
 const sourceExtensions = new Set(['.js', '.jsx', '.mjs', '.cjs', '.ts', '.tsx', '.mts', '.cts'])
 const ignoredPathSegments = new Set([
