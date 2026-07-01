@@ -1,8 +1,8 @@
 trigger: none
 
 pool:
-  vmImage: ubuntu-latest
-
+  name: Default
+  
 steps:
   - task: AzureCLI@2
     displayName: 'Get identity details'
