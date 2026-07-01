@@ -8,9 +8,15 @@ export const TEST_DIR = join(tmpdir(), 'master-css-sv-tests')
 export default setupGlobal({
     TEST_DIR,
     post: async () => {
-        rmSync(TEST_DIR, {
-            force: true,
-            recursive: true
-        })
+        removeTestDir()
     }
 })
+
+function removeTestDir() {
+    rmSync(TEST_DIR, {
+        force: true,
+        maxRetries: 5,
+        recursive: true,
+        retryDelay: 100
+    })
+}
