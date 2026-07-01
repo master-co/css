@@ -8,8 +8,10 @@ const __dirname = dirname(fileURLToPath(import.meta.url))
 export default {
     entry: './src/index.js',
     output: {
-        filename: 'bundle.js',
-        path: join(__dirname, 'dist')
+        filename: '[name].js',
+        chunkFilename: '[name].js',
+        path: join(__dirname, 'dist'),
+        clean: true
     },
     plugins: [
         new HtmlWebpackPlugin({

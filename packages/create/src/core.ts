@@ -3,11 +3,16 @@ import { dirname, join, resolve } from 'node:path'
 import { createInterface } from 'node:readline/promises'
 import { fileURLToPath } from 'node:url'
 import { Command } from 'commander'
-import { applySetupPlan, createSetupPlan, type FrameworkOption, type PackageManager } from '.'
+import { applySetupPlan, createSetupPlan } from '.'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
 const pkg = JSON.parse(readFileSync(resolve(__dirname, '../package.json'), 'utf8'))
+// Keep these local so generated core.d.ts does not emit value imports for root-only types.
+type CommandFramework = 'none' | 'vite' | 'react' | 'nextjs' | 'svelte' | 'nuxt' | 'astro' | 'webpack' | 'laravel' | 'lit' | 'angular'
+type CommandFrameworkOption = CommandFramework | 'auto'
+type CommandPackageManager = 'npm' | 'pnpm' | 'yarn' | 'bun'
+
 const newProjectCommands = [
     'npm create vite@latest my-app',
     'cd my-app',
@@ -16,18 +21,18 @@ const newProjectCommands = [
 
 export interface CommandOptions {
     cwd?: string
-    framework?: FrameworkOption
+    framework?: CommandFrameworkOption
     eslint?: boolean
     mcp?: boolean
     ai?: boolean
     minimal?: boolean
-    install?: PackageManager | false
+    install?: CommandPackageManager | false
     dryRun?: boolean
     json?: boolean
     yes?: boolean
 }
 
-export type InstallResolution = PackageManager | false | 'detected' | undefined
+export type InstallResolution = CommandPackageManager | false | 'detected' | undefined
 export type PromptQuestion = (question: string) => Promise<string>
 
 export interface ResolvedCommandOptions {
@@ -131,7 +136,7 @@ async function resolveRecommendedBoolean(value: boolean | undefined, minimal: bo
     return true
 }
 
-async function resolveInstall(install: PackageManager | false | undefined, yes: boolean | undefined, prompt: PromptQuestion | undefined): Promise<InstallResolution> {
+async function resolveInstall(install: CommandPackageManager | false | undefined, yes: boolean | undefined, prompt: PromptQuestion | undefined): Promise<InstallResolution> {
     if (install !== undefined) return install
     if (yes) return 'detected'
     if (prompt) return await confirm('Install dependencies now?', prompt) ? 'detected' : false
