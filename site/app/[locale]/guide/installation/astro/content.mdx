@@ -33,18 +33,15 @@
             ```
         </StepR>
     </Step>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Start using Master CSS
-            Now style your first Astro page using Master CSS syntax.
-        </StepL>
-        <StepR>
-            ```astro name=src/pages/index.astro
-            <h1 class="italic m:2xl text:neutral font:5xl font:heavy">
-                Hello World
-            </h1>
-            ```
-        </StepR>
+    <Step>
+        ### <StepNum />Start using Master CSS
+        Now style your first Astro page using Master CSS syntax.
     </Step>
     <HelloWorld url="localhost:4321" />
 </StepSection>
+
+```astro name=src/pages/index.astro
+<h1 class="italic m:2xl text:neutral font:5xl font:heavy">
+    Hello World
+</h1>
+```

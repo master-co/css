@@ -33,20 +33,17 @@
             ```
         </StepR>
     </Step>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Start using Master CSS
-            Now style your first component using Master CSS syntax.
-        </StepL>
-        <StepR>
-            ```vue name=app.vue
-            <template>
-                <h1 class="italic m:2xl text:neutral font:5xl font:heavy">
-                    Hello World
-                </h1>
-            </template>
-            ```
-        </StepR>
+    <Step>
+        ### <StepNum />Start using Master CSS
+        Now style your first component using Master CSS syntax.
     </Step>
     <HelloWorld url="localhost:3000" />
 </StepSection>
+
+```vue name=app.vue
+<template>
+    <h1 class="italic m:2xl text:neutral font:5xl font:heavy">
+        Hello World
+    </h1>
+</template>
+```

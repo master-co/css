@@ -5,28 +5,28 @@ Copy and paste the CDN links to instantly launch the [runtime](/guide/rendering-
         ### <StepNum />Start in one step
         Add the default stylesheet and runtime script to your document, then start using Master CSS classes.
 
-        ```html name=index.html
-        <!DOCTYPE html>
-        <html lang="en" hidden>
-        <head>
-            <meta charset="utf-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1">
-            <link rel="preload" as="style" href="https://cdn.master.co/css@rc/base.css">
-            <link rel="preload" as="script" href="https://cdn.master.co/css-runtime@rc">
-            <link rel="modulepreload" as="json" crossorigin href="https://cdn.master.co/css-runtime@rc/default-manifest.json">
-            <link rel="stylesheet" href="https://cdn.master.co/css@rc/base.css">
-            <script src="https://cdn.master.co/css-runtime@rc"></script>
-        </head>
-        <body>
-            <h1 class="italic m:2xl text:neutral font:5xl font:heavy">Hello World</h1>
-        </body>
-        </html>
-        ```
-
         Open your browser to watch the changes.
-        <HelloWorld />
     </Step>
+    <HelloWorld />
 </StepSection>
+
+```html name=index.html
+<!DOCTYPE html>
+<html lang="en" hidden>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="preload" as="style" href="https://cdn.master.co/css@rc/base.css">
+    <link rel="preload" as="script" href="https://cdn.master.co/css-runtime@rc">
+    <link rel="modulepreload" as="json" crossorigin href="https://cdn.master.co/css-runtime@rc/default-manifest.json">
+    <link rel="stylesheet" href="https://cdn.master.co/css@rc/base.css">
+    <script src="https://cdn.master.co/css-runtime@rc"></script>
+</head>
+<body>
+    <h1 class="italic m:2xl text:neutral font:5xl font:heavy">Hello World</h1>
+</body>
+</html>
+```
 
 The CDN runtime only includes the default preset. Use a package-manager installation when you need custom theme tokens, utilities, modes, emitted globals, or framework integration. See [preload critical resources](/guide/preload-critical-resources#preload-runtime-engine) for the request preload details.
 

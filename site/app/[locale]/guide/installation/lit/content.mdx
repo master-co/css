@@ -33,22 +33,19 @@
             ```
         </StepR>
     </Step>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Start using Master CSS
-            Now style elements inside your Lit templates using Master CSS syntax.
-        </StepL>
-        <StepR>
-            ```ts name=src/my-element.ts
-            render() {
-                return html`
-                    <button class="inline-flex items-center gap:xs px:md py:xs r:lg bg:blue fg:white">
-                        Hello Lit
-                    </button>
-                `
-            }
-            ```
-        </StepR>
+    <Step>
+        ### <StepNum />Start using Master CSS
+        Now style elements inside your Lit templates using Master CSS syntax.
     </Step>
     <HelloWorld url="localhost:5173" />
 </StepSection>
+
+```ts name=src/my-element.ts
+render() {
+    return html`
+        <button class="inline-flex items-center gap:xs px:md py:xs r:lg bg:blue fg:white">
+            Hello Lit
+        </button>
+    `
+}
+```

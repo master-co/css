@@ -34,18 +34,15 @@
             ```
         </StepR>
     </Step>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Start using Master CSS
-            Now style your first element using Master CSS syntax!
-        </StepL>
-        <StepR>
-            ```svelte name=src/routes/%2Bpage.svelte
-            <h1 class="italic m:2xl text:neutral font:5xl font:heavy">
-                Hello World
-            </h1>
-            ```
-        </StepR>
+    <Step>
+        ### <StepNum />Start using Master CSS
+        Now style your first element using Master CSS syntax!
     </Step>
     <HelloWorld url="localhost:5173" />
 </StepSection>
+
+```svelte name=src/routes/%2Bpage.svelte
+<h1 class="italic m:2xl text:neutral font:5xl font:heavy">
+    Hello World
+</h1>
+```

@@ -35,32 +35,29 @@ The pure way to [statically render](/guide/rendering-modes#static-rendering) cla
             ```
         </StepR>
     </Step>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Start using Master CSS
-            Master CSS scans raw sources and generates the `./master.css` file for you.
+    <Step>
+        ### <StepNum />Start using Master CSS
+        Master CSS scans raw sources and generates the `./master.css` file for you.
 
-            Now style your first element using Master CSS syntax!
-        </StepL>
-        <StepR>
-            ```html name=index.html
-            <!DOCTYPE html>
-            <html lang="en">
-            <head>
-                <meta charset="utf-8">
-                <meta name="viewport" content="width=device-width, initial-scale=1">
-                <link rel="stylesheet" href="./master.css"> <!-- [!code highlight] -->
-            </head>
-            <body>
-                <!-- @MARK italic m:2xl text:neutral font:5xl font:heavy -->
-                <h1 class="italic m:2xl text:neutral font:5xl font:heavy">Hello World</h1>
-            </body>
-            </html>
-            ```
-        </StepR>
+        Now style your first element using Master CSS syntax!
     </Step>
     <HelloWorld />
 </StepSection>
+
+```html name=index.html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="./master.css"> <!-- [!code highlight] -->
+</head>
+<body>
+    <!-- @MARK italic m:2xl text:neutral font:5xl font:heavy -->
+    <h1 class="italic m:2xl text:neutral font:5xl font:heavy">Hello World</h1>
+</body>
+</html>
+```
 
 import Footer from '../footer.mdx'
 
