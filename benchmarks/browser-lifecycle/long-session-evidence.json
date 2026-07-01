@@ -1,33 +1,33 @@
 {
     "schemaVersion": 1,
     "suite": "browser-lifecycle-long-session-evidence",
-    "generatedAt": "2026-06-29T17:31:36.892Z",
+    "generatedAt": "2026-07-01T21:26:45.147Z",
     "sourceReports": [
         {
             "modeId": "master-static",
             "suite": "browser-lifecycle",
-            "generatedAt": "2026-06-29T13:30:21.552Z",
+            "generatedAt": "2026-07-01T20:53:13.639Z",
             "source": ".results/browser-lifecycle/report.long-session-5m-master-static.json",
             "command": "BROWSER_LIFECYCLE_SCENARIOS=long-session BROWSER_LIFECYCLE_MODES=master-static BROWSER_LIFECYCLE_ROUNDS=1 BROWSER_LIFECYCLE_WARMUP_ROUNDS=1 BROWSER_LIFECYCLE_LONG_SESSION_MS=300000 BROWSER_LIFECYCLE_MEASURE_TIMEOUT_MS=420000 BROWSER_LIFECYCLE_REPORT_LABEL=long-session-5m-master-static BENCHMARK_COMMAND_TIMEOUT_MS=900000 pnpm --filter ./benchmarks bench:browser-lifecycle"
         },
         {
             "modeId": "master-runtime",
             "suite": "browser-lifecycle",
-            "generatedAt": "2026-06-29T16:16:16.990Z",
+            "generatedAt": "2026-07-01T21:04:10.585Z",
             "source": ".results/browser-lifecycle/report.long-session-5m-master-runtime.json",
             "command": "BROWSER_LIFECYCLE_SCENARIOS=long-session BROWSER_LIFECYCLE_MODES=master-runtime BROWSER_LIFECYCLE_ROUNDS=1 BROWSER_LIFECYCLE_WARMUP_ROUNDS=1 BROWSER_LIFECYCLE_LONG_SESSION_MS=300000 BROWSER_LIFECYCLE_MEASURE_TIMEOUT_MS=420000 BROWSER_LIFECYCLE_REPORT_LABEL=long-session-5m-master-runtime BENCHMARK_COMMAND_TIMEOUT_MS=900000 pnpm --filter ./benchmarks bench:browser-lifecycle"
         },
         {
             "modeId": "master-progressive",
             "suite": "browser-lifecycle",
-            "generatedAt": "2026-06-29T16:27:23.338Z",
+            "generatedAt": "2026-07-01T21:15:41.367Z",
             "source": ".results/browser-lifecycle/report.long-session-5m-master-progressive.json",
             "command": "BROWSER_LIFECYCLE_SCENARIOS=long-session BROWSER_LIFECYCLE_MODES=master-progressive BROWSER_LIFECYCLE_ROUNDS=1 BROWSER_LIFECYCLE_WARMUP_ROUNDS=1 BROWSER_LIFECYCLE_LONG_SESSION_MS=300000 BROWSER_LIFECYCLE_MEASURE_TIMEOUT_MS=420000 BROWSER_LIFECYCLE_REPORT_LABEL=long-session-5m-master-progressive BENCHMARK_COMMAND_TIMEOUT_MS=900000 pnpm --filter ./benchmarks bench:browser-lifecycle"
         },
         {
             "modeId": "tailwind-static",
             "suite": "browser-lifecycle",
-            "generatedAt": "2026-06-29T16:38:26.270Z",
+            "generatedAt": "2026-07-01T21:26:40.172Z",
             "source": ".results/browser-lifecycle/report.long-session-5m-tailwind-static.json",
             "command": "BROWSER_LIFECYCLE_SCENARIOS=long-session BROWSER_LIFECYCLE_MODES=tailwind-static BROWSER_LIFECYCLE_ROUNDS=1 BROWSER_LIFECYCLE_WARMUP_ROUNDS=1 BROWSER_LIFECYCLE_LONG_SESSION_MS=300000 BROWSER_LIFECYCLE_MEASURE_TIMEOUT_MS=420000 BROWSER_LIFECYCLE_REPORT_LABEL=long-session-5m-tailwind-static BENCHMARK_COMMAND_TIMEOUT_MS=900000 pnpm --filter ./benchmarks bench:browser-lifecycle"
         }
@@ -364,10 +364,10 @@
                     "unit": "count"
                 },
                 "navigation-ready-ms": {
-                    "min": 300057.6,
-                    "median": 300057.6,
-                    "mean": 300057.6,
-                    "max": 300057.6,
+                    "min": 300064.6,
+                    "median": 300064.6,
+                    "mean": 300064.6,
+                    "max": 300064.6,
                     "sampleCount": 1,
                     "unit": "ms"
                 },
@@ -380,74 +380,74 @@
                     "unit": "ms"
                 },
                 "style-recalculation-ms": {
-                    "min": 13395.8,
-                    "median": 13395.8,
-                    "mean": 13395.8,
-                    "max": 13395.8,
+                    "min": 7770,
+                    "median": 7770,
+                    "mean": 7770,
+                    "max": 7770,
                     "sampleCount": 1,
                     "unit": "ms"
                 },
                 "style-recalculation-count": {
-                    "min": 22940,
-                    "median": 22940,
-                    "mean": 22940,
-                    "max": 22940,
+                    "min": 22882,
+                    "median": 22882,
+                    "mean": 22882,
+                    "max": 22882,
                     "sampleCount": 1,
                     "unit": "count"
                 },
                 "layout-ms": {
-                    "min": 2823.7,
-                    "median": 2823.7,
-                    "mean": 2823.7,
-                    "max": 2823.7,
+                    "min": 1513.8,
+                    "median": 1513.8,
+                    "mean": 1513.8,
+                    "max": 1513.8,
                     "sampleCount": 1,
                     "unit": "ms"
                 },
                 "paint-ms": {
-                    "min": 13357.1,
-                    "median": 13357.1,
-                    "mean": 13357.1,
-                    "max": 13357.1,
+                    "min": 6508.5,
+                    "median": 6508.5,
+                    "mean": 6508.5,
+                    "max": 6508.5,
                     "sampleCount": 1,
                     "unit": "ms"
                 },
                 "long-task-count": {
-                    "min": 28,
-                    "median": 28,
-                    "mean": 28,
-                    "max": 28,
+                    "min": 0,
+                    "median": 0,
+                    "mean": 0,
+                    "max": 0,
                     "sampleCount": 1,
                     "unit": "count"
                 },
                 "fcp-ms": {
-                    "min": 28,
-                    "median": 28,
-                    "mean": 28,
-                    "max": 28,
+                    "min": 24,
+                    "median": 24,
+                    "mean": 24,
+                    "max": 24,
                     "sampleCount": 1,
                     "unit": "ms"
                 },
                 "lcp-ms": {
-                    "min": 28,
-                    "median": 28,
-                    "mean": 28,
-                    "max": 28,
+                    "min": 24,
+                    "median": 24,
+                    "mean": 24,
+                    "max": 24,
                     "sampleCount": 1,
                     "unit": "ms"
                 },
                 "inp-style-interaction-ms": {
-                    "min": 300051.7,
-                    "median": 300051.7,
-                    "mean": 300051.7,
-                    "max": 300051.7,
+                    "min": 300058.8,
+                    "median": 300058.8,
+                    "mean": 300058.8,
+                    "max": 300058.8,
                     "sampleCount": 1,
                     "unit": "ms"
                 },
                 "js-heap-used-bytes": {
-                    "min": 1429672,
-                    "median": 1429672,
-                    "mean": 1429672,
-                    "max": 1429672,
+                    "min": 1750060,
+                    "median": 1750060,
+                    "mean": 1750060,
+                    "max": 1750060,
                     "sampleCount": 1,
                     "unit": "B"
                 },
@@ -460,18 +460,18 @@
                     "unit": "count"
                 },
                 "affected-element-count": {
-                    "min": 2299932,
-                    "median": 2299932,
-                    "mean": 2299932,
-                    "max": 2299932,
+                    "min": 2349261,
+                    "median": 2349261,
+                    "mean": 2349261,
+                    "max": 2349261,
                     "sampleCount": 1,
                     "unit": "count"
                 },
                 "average-class-count": {
-                    "min": 5.93,
-                    "median": 5.93,
-                    "mean": 5.93,
-                    "max": 5.93,
+                    "min": 5.61,
+                    "median": 5.61,
+                    "mean": 5.61,
+                    "max": 5.61,
                     "sampleCount": 1,
                     "unit": "count"
                 },
@@ -800,10 +800,10 @@
                     "unit": "count"
                 },
                 "navigation-ready-ms": {
-                    "min": 300075.5,
-                    "median": 300075.5,
-                    "mean": 300075.5,
-                    "max": 300075.5,
+                    "min": 300066.4,
+                    "median": 300066.4,
+                    "mean": 300066.4,
+                    "max": 300066.4,
                     "sampleCount": 1,
                     "unit": "ms"
                 },
@@ -816,34 +816,34 @@
                     "unit": "ms"
                 },
                 "style-recalculation-ms": {
-                    "min": 6773.4,
-                    "median": 6773.4,
-                    "mean": 6773.4,
-                    "max": 6773.4,
+                    "min": 6205.9,
+                    "median": 6205.9,
+                    "mean": 6205.9,
+                    "max": 6205.9,
                     "sampleCount": 1,
                     "unit": "ms"
                 },
                 "style-recalculation-count": {
-                    "min": 21324,
-                    "median": 21324,
-                    "mean": 21324,
-                    "max": 21324,
+                    "min": 21212,
+                    "median": 21212,
+                    "mean": 21212,
+                    "max": 21212,
                     "sampleCount": 1,
                     "unit": "count"
                 },
                 "layout-ms": {
-                    "min": 1193,
-                    "median": 1193,
-                    "mean": 1193,
-                    "max": 1193,
+                    "min": 1443.3,
+                    "median": 1443.3,
+                    "mean": 1443.3,
+                    "max": 1443.3,
                     "sampleCount": 1,
                     "unit": "ms"
                 },
                 "paint-ms": {
-                    "min": 6006.2,
-                    "median": 6006.2,
-                    "mean": 6006.2,
-                    "max": 6006.2,
+                    "min": 5861,
+                    "median": 5861,
+                    "mean": 5861,
+                    "max": 5861,
                     "sampleCount": 1,
                     "unit": "ms"
                 },
@@ -856,34 +856,34 @@
                     "unit": "count"
                 },
                 "fcp-ms": {
-                    "min": 36,
-                    "median": 36,
-                    "mean": 36,
-                    "max": 36,
+                    "min": 40,
+                    "median": 40,
+                    "mean": 40,
+                    "max": 40,
                     "sampleCount": 1,
                     "unit": "ms"
                 },
                 "lcp-ms": {
-                    "min": 36,
-                    "median": 36,
-                    "mean": 36,
-                    "max": 36,
+                    "min": 40,
+                    "median": 40,
+                    "mean": 40,
+                    "max": 40,
                     "sampleCount": 1,
                     "unit": "ms"
                 },
                 "inp-style-interaction-ms": {
-                    "min": 300066.3,
-                    "median": 300066.3,
-                    "mean": 300066.3,
-                    "max": 300066.3,
+                    "min": 300062.5,
+                    "median": 300062.5,
+                    "mean": 300062.5,
+                    "max": 300062.5,
                     "sampleCount": 1,
                     "unit": "ms"
                 },
                 "js-heap-used-bytes": {
-                    "min": 4121500,
-                    "median": 4121500,
-                    "mean": 4121500,
-                    "max": 4121500,
+                    "min": 6119404,
+                    "median": 6119404,
+                    "mean": 6119404,
+                    "max": 6119404,
                     "sampleCount": 1,
                     "unit": "B"
                 },
@@ -920,10 +920,10 @@
                     "unit": "count"
                 },
                 "runtime-ready-ms": {
-                    "min": 25,
-                    "median": 25,
-                    "mean": 25,
-                    "max": 25,
+                    "min": 24.3,
+                    "median": 24.3,
+                    "mean": 24.3,
+                    "max": 24.3,
                     "sampleCount": 1,
                     "unit": "ms"
                 },
@@ -936,18 +936,18 @@
                     "unit": "ms"
                 },
                 "runtime-observe-ms": {
-                    "min": 5.8,
-                    "median": 5.8,
-                    "mean": 5.8,
-                    "max": 5.8,
+                    "min": 5.9,
+                    "median": 5.9,
+                    "mean": 5.9,
+                    "max": 5.9,
                     "sampleCount": 1,
                     "unit": "ms"
                 },
                 "runtime-mutation-ms": {
-                    "min": 36.2,
-                    "median": 36.2,
-                    "mean": 36.2,
-                    "max": 36.2,
+                    "min": 70.7,
+                    "median": 70.7,
+                    "mean": 70.7,
+                    "max": 70.7,
                     "sampleCount": 1,
                     "unit": "ms"
                 },
@@ -1008,10 +1008,10 @@
                     "unit": "count"
                 },
                 "mutation-observer-callback-duration-ms": {
-                    "min": 7074.6,
-                    "median": 7074.6,
-                    "mean": 7074.6,
-                    "max": 7074.6,
+                    "min": 5578.1,
+                    "median": 5578.1,
+                    "mean": 5578.1,
+                    "max": 5578.1,
                     "sampleCount": 1,
                     "unit": "ms"
                 },
@@ -1236,10 +1236,10 @@
                     "unit": "count"
                 },
                 "navigation-ready-ms": {
-                    "min": 300063.8,
-                    "median": 300063.8,
-                    "mean": 300063.8,
-                    "max": 300063.8,
+                    "min": 300063.3,
+                    "median": 300063.3,
+                    "mean": 300063.3,
+                    "max": 300063.3,
                     "sampleCount": 1,
                     "unit": "ms"
                 },
@@ -1252,34 +1252,34 @@
                     "unit": "ms"
                 },
                 "style-recalculation-ms": {
-                    "min": 6761.9,
-                    "median": 6761.9,
-                    "mean": 6761.9,
-                    "max": 6761.9,
+                    "min": 5353.3,
+                    "median": 5353.3,
+                    "mean": 5353.3,
+                    "max": 5353.3,
                     "sampleCount": 1,
                     "unit": "ms"
                 },
                 "style-recalculation-count": {
-                    "min": 21344,
-                    "median": 21344,
-                    "mean": 21344,
-                    "max": 21344,
+                    "min": 21236,
+                    "median": 21236,
+                    "mean": 21236,
+                    "max": 21236,
                     "sampleCount": 1,
                     "unit": "count"
                 },
                 "layout-ms": {
-                    "min": 1178.1,
-                    "median": 1178.1,
-                    "mean": 1178.1,
-                    "max": 1178.1,
+                    "min": 1363.8,
+                    "median": 1363.8,
+                    "mean": 1363.8,
+                    "max": 1363.8,
                     "sampleCount": 1,
                     "unit": "ms"
                 },
                 "paint-ms": {
-                    "min": 5975.8,
-                    "median": 5975.8,
-                    "mean": 5975.8,
-                    "max": 5975.8,
+                    "min": 5231,
+                    "median": 5231,
+                    "mean": 5231,
+                    "max": 5231,
                     "sampleCount": 1,
                     "unit": "ms"
                 },
@@ -1308,18 +1308,18 @@
                     "unit": "ms"
                 },
                 "inp-style-interaction-ms": {
-                    "min": 300059.6,
-                    "median": 300059.6,
-                    "mean": 300059.6,
-                    "max": 300059.6,
+                    "min": 300058.3,
+                    "median": 300058.3,
+                    "mean": 300058.3,
+                    "max": 300058.3,
                     "sampleCount": 1,
                     "unit": "ms"
                 },
                 "js-heap-used-bytes": {
-                    "min": 3526980,
-                    "median": 3526980,
-                    "mean": 3526980,
-                    "max": 3526980,
+                    "min": 5944212,
+                    "median": 5944212,
+                    "mean": 5944212,
+                    "max": 5944212,
                     "sampleCount": 1,
                     "unit": "B"
                 },
@@ -1356,34 +1356,34 @@
                     "unit": "count"
                 },
                 "runtime-ready-ms": {
-                    "min": 29.5,
-                    "median": 29.5,
-                    "mean": 29.5,
-                    "max": 29.5,
+                    "min": 30.5,
+                    "median": 30.5,
+                    "mean": 30.5,
+                    "max": 30.5,
                     "sampleCount": 1,
                     "unit": "ms"
                 },
                 "runtime-bootstrap-ms": {
-                    "min": 17.9,
-                    "median": 17.9,
-                    "mean": 17.9,
-                    "max": 17.9,
+                    "min": 18.4,
+                    "median": 18.4,
+                    "mean": 18.4,
+                    "max": 18.4,
                     "sampleCount": 1,
                     "unit": "ms"
                 },
                 "runtime-observe-ms": {
-                    "min": 3.6,
-                    "median": 3.6,
-                    "mean": 3.6,
-                    "max": 3.6,
+                    "min": 3.7,
+                    "median": 3.7,
+                    "mean": 3.7,
+                    "max": 3.7,
                     "sampleCount": 1,
                     "unit": "ms"
                 },
                 "runtime-mutation-ms": {
-                    "min": 42.4,
-                    "median": 42.4,
-                    "mean": 42.4,
-                    "max": 42.4,
+                    "min": 78.7,
+                    "median": 78.7,
+                    "mean": 78.7,
+                    "max": 78.7,
                     "sampleCount": 1,
                     "unit": "ms"
                 },
@@ -1444,10 +1444,10 @@
                     "unit": "count"
                 },
                 "mutation-observer-callback-duration-ms": {
-                    "min": 6415.7,
-                    "median": 6415.7,
-                    "mean": 6415.7,
-                    "max": 6415.7,
+                    "min": 5055.6,
+                    "median": 5055.6,
+                    "mean": 5055.6,
+                    "max": 5055.6,
                     "sampleCount": 1,
                     "unit": "ms"
                 },
@@ -1672,10 +1672,10 @@
                     "unit": "count"
                 },
                 "navigation-ready-ms": {
-                    "min": 300068.2,
-                    "median": 300068.2,
-                    "mean": 300068.2,
-                    "max": 300068.2,
+                    "min": 300067.4,
+                    "median": 300067.4,
+                    "mean": 300067.4,
+                    "max": 300067.4,
                     "sampleCount": 1,
                     "unit": "ms"
                 },
@@ -1688,34 +1688,34 @@
                     "unit": "ms"
                 },
                 "style-recalculation-ms": {
-                    "min": 12101.9,
-                    "median": 12101.9,
-                    "mean": 12101.9,
-                    "max": 12101.9,
+                    "min": 9107.8,
+                    "median": 9107.8,
+                    "mean": 9107.8,
+                    "max": 9107.8,
                     "sampleCount": 1,
                     "unit": "ms"
                 },
                 "style-recalculation-count": {
-                    "min": 22962,
-                    "median": 22962,
-                    "mean": 22962,
-                    "max": 22962,
+                    "min": 22866,
+                    "median": 22866,
+                    "mean": 22866,
+                    "max": 22866,
                     "sampleCount": 1,
                     "unit": "count"
                 },
                 "layout-ms": {
-                    "min": 1353.6,
-                    "median": 1353.6,
-                    "mean": 1353.6,
-                    "max": 1353.6,
+                    "min": 1495.1,
+                    "median": 1495.1,
+                    "mean": 1495.1,
+                    "max": 1495.1,
                     "sampleCount": 1,
                     "unit": "ms"
                 },
                 "paint-ms": {
-                    "min": 6553.9,
-                    "median": 6553.9,
-                    "mean": 6553.9,
-                    "max": 6553.9,
+                    "min": 5761.9,
+                    "median": 5761.9,
+                    "mean": 5761.9,
+                    "max": 5761.9,
                     "sampleCount": 1,
                     "unit": "ms"
                 },
@@ -1744,18 +1744,18 @@
                     "unit": "ms"
                 },
                 "inp-style-interaction-ms": {
-                    "min": 300060.2,
-                    "median": 300060.2,
-                    "mean": 300060.2,
-                    "max": 300060.2,
+                    "min": 300062.2,
+                    "median": 300062.2,
+                    "mean": 300062.2,
+                    "max": 300062.2,
                     "sampleCount": 1,
                     "unit": "ms"
                 },
                 "js-heap-used-bytes": {
-                    "min": 1798288,
-                    "median": 1798288,
-                    "mean": 1798288,
-                    "max": 1798288,
+                    "min": 1798092,
+                    "median": 1798092,
+                    "mean": 1798092,
+                    "max": 1798092,
                     "sampleCount": 1,
                     "unit": "B"
                 },
@@ -2231,60 +2231,60 @@
                     "variantId": "long-session-master-static-mixed-operations",
                     "timing": {
                         "inpStyleInteractionMs": {
-                            "min": 300051.7,
-                            "median": 300051.7,
-                            "mean": 300051.7,
-                            "max": 300051.7,
+                            "min": 300058.8,
+                            "median": 300058.8,
+                            "mean": 300058.8,
+                            "max": 300058.8,
                             "sampleCount": 1,
                             "unit": "ms"
                         },
                         "styleRecalculationMs": {
-                            "min": 13395.8,
-                            "median": 13395.8,
-                            "mean": 13395.8,
-                            "max": 13395.8,
+                            "min": 7770,
+                            "median": 7770,
+                            "mean": 7770,
+                            "max": 7770,
                             "sampleCount": 1,
                             "unit": "ms"
                         },
                         "styleRecalculationCount": {
-                            "min": 22940,
-                            "median": 22940,
-                            "mean": 22940,
-                            "max": 22940,
+                            "min": 22882,
+                            "median": 22882,
+                            "mean": 22882,
+                            "max": 22882,
                             "sampleCount": 1,
                             "unit": "count"
                         },
                         "layoutMs": {
-                            "min": 2823.7,
-                            "median": 2823.7,
-                            "mean": 2823.7,
-                            "max": 2823.7,
+                            "min": 1513.8,
+                            "median": 1513.8,
+                            "mean": 1513.8,
+                            "max": 1513.8,
                             "sampleCount": 1,
                             "unit": "ms"
                         },
                         "paintMs": {
-                            "min": 13357.1,
-                            "median": 13357.1,
-                            "mean": 13357.1,
-                            "max": 13357.1,
+                            "min": 6508.5,
+                            "median": 6508.5,
+                            "mean": 6508.5,
+                            "max": 6508.5,
                             "sampleCount": 1,
                             "unit": "ms"
                         },
                         "longTaskCount": {
-                            "min": 28,
-                            "median": 28,
-                            "mean": 28,
-                            "max": 28,
+                            "min": 0,
+                            "median": 0,
+                            "mean": 0,
+                            "max": 0,
                             "sampleCount": 1,
                             "unit": "count"
                         }
                     },
                     "browser": {
                         "jsHeapUsedBytes": {
-                            "min": 1429672,
-                            "median": 1429672,
-                            "mean": 1429672,
-                            "max": 1429672,
+                            "min": 1750060,
+                            "median": 1750060,
+                            "mean": 1750060,
+                            "max": 1750060,
                             "sampleCount": 1,
                             "unit": "B"
                         },
@@ -2394,42 +2394,42 @@
                     "variantId": "long-session-master-runtime-mixed-operations",
                     "timing": {
                         "inpStyleInteractionMs": {
-                            "min": 300066.3,
-                            "median": 300066.3,
-                            "mean": 300066.3,
-                            "max": 300066.3,
+                            "min": 300062.5,
+                            "median": 300062.5,
+                            "mean": 300062.5,
+                            "max": 300062.5,
                             "sampleCount": 1,
                             "unit": "ms"
                         },
                         "styleRecalculationMs": {
-                            "min": 6773.4,
-                            "median": 6773.4,
-                            "mean": 6773.4,
-                            "max": 6773.4,
+                            "min": 6205.9,
+                            "median": 6205.9,
+                            "mean": 6205.9,
+                            "max": 6205.9,
                             "sampleCount": 1,
                             "unit": "ms"
                         },
                         "styleRecalculationCount": {
-                            "min": 21324,
-                            "median": 21324,
-                            "mean": 21324,
-                            "max": 21324,
+                            "min": 21212,
+                            "median": 21212,
+                            "mean": 21212,
+                            "max": 21212,
                             "sampleCount": 1,
                             "unit": "count"
                         },
                         "layoutMs": {
-                            "min": 1193,
-                            "median": 1193,
-                            "mean": 1193,
-                            "max": 1193,
+                            "min": 1443.3,
+                            "median": 1443.3,
+                            "mean": 1443.3,
+                            "max": 1443.3,
                             "sampleCount": 1,
                             "unit": "ms"
                         },
                         "paintMs": {
-                            "min": 6006.2,
-                            "median": 6006.2,
-                            "mean": 6006.2,
-                            "max": 6006.2,
+                            "min": 5861,
+                            "median": 5861,
+                            "mean": 5861,
+                            "max": 5861,
                             "sampleCount": 1,
                             "unit": "ms"
                         },
@@ -2444,10 +2444,10 @@
                     },
                     "browser": {
                         "jsHeapUsedBytes": {
-                            "min": 4121500,
-                            "median": 4121500,
-                            "mean": 4121500,
-                            "max": 4121500,
+                            "min": 6119404,
+                            "median": 6119404,
+                            "mean": 6119404,
+                            "max": 6119404,
                             "sampleCount": 1,
                             "unit": "B"
                         },
@@ -2462,10 +2462,10 @@
                     },
                     "runtime": {
                         "mutationMs": {
-                            "min": 36.2,
-                            "median": 36.2,
-                            "mean": 36.2,
-                            "max": 36.2,
+                            "min": 70.7,
+                            "median": 70.7,
+                            "mean": 70.7,
+                            "max": 70.7,
                             "sampleCount": 1,
                             "unit": "ms"
                         },
@@ -2526,10 +2526,10 @@
                             "unit": "count"
                         },
                         "mutationObserverCallbackDurationMs": {
-                            "min": 7074.6,
-                            "median": 7074.6,
-                            "mean": 7074.6,
-                            "max": 7074.6,
+                            "min": 5578.1,
+                            "median": 5578.1,
+                            "mean": 5578.1,
+                            "max": 5578.1,
                             "sampleCount": 1,
                             "unit": "ms"
                         }
@@ -2557,42 +2557,42 @@
                     "variantId": "long-session-master-progressive-mixed-operations",
                     "timing": {
                         "inpStyleInteractionMs": {
-                            "min": 300059.6,
-                            "median": 300059.6,
-                            "mean": 300059.6,
-                            "max": 300059.6,
+                            "min": 300058.3,
+                            "median": 300058.3,
+                            "mean": 300058.3,
+                            "max": 300058.3,
                             "sampleCount": 1,
                             "unit": "ms"
                         },
                         "styleRecalculationMs": {
-                            "min": 6761.9,
-                            "median": 6761.9,
-                            "mean": 6761.9,
-                            "max": 6761.9,
+                            "min": 5353.3,
+                            "median": 5353.3,
+                            "mean": 5353.3,
+                            "max": 5353.3,
                             "sampleCount": 1,
                             "unit": "ms"
                         },
                         "styleRecalculationCount": {
-                            "min": 21344,
-                            "median": 21344,
-                            "mean": 21344,
-                            "max": 21344,
+                            "min": 21236,
+                            "median": 21236,
+                            "mean": 21236,
+                            "max": 21236,
                             "sampleCount": 1,
                             "unit": "count"
                         },
                         "layoutMs": {
-                            "min": 1178.1,
-                            "median": 1178.1,
-                            "mean": 1178.1,
-                            "max": 1178.1,
+                            "min": 1363.8,
+                            "median": 1363.8,
+                            "mean": 1363.8,
+                            "max": 1363.8,
                             "sampleCount": 1,
                             "unit": "ms"
                         },
                         "paintMs": {
-                            "min": 5975.8,
-                            "median": 5975.8,
-                            "mean": 5975.8,
-                            "max": 5975.8,
+                            "min": 5231,
+                            "median": 5231,
+                            "mean": 5231,
+                            "max": 5231,
                             "sampleCount": 1,
                             "unit": "ms"
                         },
@@ -2607,10 +2607,10 @@
                     },
                     "browser": {
                         "jsHeapUsedBytes": {
-                            "min": 3526980,
-                            "median": 3526980,
-                            "mean": 3526980,
-                            "max": 3526980,
+                            "min": 5944212,
+                            "median": 5944212,
+                            "mean": 5944212,
+                            "max": 5944212,
                             "sampleCount": 1,
                             "unit": "B"
                         },
@@ -2625,10 +2625,10 @@
                     },
                     "runtime": {
                         "mutationMs": {
-                            "min": 42.4,
-                            "median": 42.4,
-                            "mean": 42.4,
-                            "max": 42.4,
+                            "min": 78.7,
+                            "median": 78.7,
+                            "mean": 78.7,
+                            "max": 78.7,
                             "sampleCount": 1,
                             "unit": "ms"
                         },
@@ -2689,10 +2689,10 @@
                             "unit": "count"
                         },
                         "mutationObserverCallbackDurationMs": {
-                            "min": 6415.7,
-                            "median": 6415.7,
-                            "mean": 6415.7,
-                            "max": 6415.7,
+                            "min": 5055.6,
+                            "median": 5055.6,
+                            "mean": 5055.6,
+                            "max": 5055.6,
                             "sampleCount": 1,
                             "unit": "ms"
                         }
@@ -2720,42 +2720,42 @@
                     "variantId": "long-session-tailwind-static-mixed-operations",
                     "timing": {
                         "inpStyleInteractionMs": {
-                            "min": 300060.2,
-                            "median": 300060.2,
-                            "mean": 300060.2,
-                            "max": 300060.2,
+                            "min": 300062.2,
+                            "median": 300062.2,
+                            "mean": 300062.2,
+                            "max": 300062.2,
                             "sampleCount": 1,
                             "unit": "ms"
                         },
                         "styleRecalculationMs": {
-                            "min": 12101.9,
-                            "median": 12101.9,
-                            "mean": 12101.9,
-                            "max": 12101.9,
+                            "min": 9107.8,
+                            "median": 9107.8,
+                            "mean": 9107.8,
+                            "max": 9107.8,
                             "sampleCount": 1,
                             "unit": "ms"
                         },
                         "styleRecalculationCount": {
-                            "min": 22962,
-                            "median": 22962,
-                            "mean": 22962,
-                            "max": 22962,
+                            "min": 22866,
+                            "median": 22866,
+                            "mean": 22866,
+                            "max": 22866,
                             "sampleCount": 1,
                             "unit": "count"
                         },
                         "layoutMs": {
-                            "min": 1353.6,
-                            "median": 1353.6,
-                            "mean": 1353.6,
-                            "max": 1353.6,
+                            "min": 1495.1,
+                            "median": 1495.1,
+                            "mean": 1495.1,
+                            "max": 1495.1,
                             "sampleCount": 1,
                             "unit": "ms"
                         },
                         "paintMs": {
-                            "min": 6553.9,
-                            "median": 6553.9,
-                            "mean": 6553.9,
-                            "max": 6553.9,
+                            "min": 5761.9,
+                            "median": 5761.9,
+                            "mean": 5761.9,
+                            "max": 5761.9,
                             "sampleCount": 1,
                             "unit": "ms"
                         },
@@ -2770,10 +2770,10 @@
                     },
                     "browser": {
                         "jsHeapUsedBytes": {
-                            "min": 1798288,
-                            "median": 1798288,
-                            "mean": 1798288,
-                            "max": 1798288,
+                            "min": 1798092,
+                            "median": 1798092,
+                            "mean": 1798092,
+                            "max": 1798092,
                             "sampleCount": 1,
                             "unit": "B"
                         },

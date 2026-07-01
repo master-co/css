@@ -1,10 +1,10 @@
 {
     "schemaVersion": 1,
     "suite": "master-delivery-modes",
-    "generatedAt": "2026-06-28T16:21:17.007Z",
+    "generatedAt": "2026-07-01T20:13:52.574Z",
     "sourceReport": {
         "suite": "master-delivery-modes",
-        "generatedAt": "2026-06-28T16:21:09.156Z",
+        "generatedAt": "2026-07-01T20:13:48.696Z",
         "command": "pnpm --filter ./benchmarks bench:master-delivery-modes"
     },
     "environment": {
@@ -472,42 +472,42 @@
                     },
                     "timing": {
                         "navigationReadyMs": {
-                            "min": 20.5,
-                            "median": 23.6,
-                            "mean": 34.1,
-                            "max": 58.1,
+                            "min": 19.5,
+                            "median": 21.9,
+                            "mean": 22.3,
+                            "max": 25.6,
                             "sampleCount": 3,
                             "unit": "ms"
                         },
                         "stylesheetParseMs": {
                             "min": 0.1,
                             "median": 0.2,
-                            "mean": 0.6,
-                            "max": 1.5,
+                            "mean": 0.5,
+                            "max": 1.2,
                             "sampleCount": 3,
                             "unit": "ms"
                         },
                         "styleRecalculationMs": {
-                            "min": 0.7,
-                            "median": 0.7,
-                            "mean": 1.6,
-                            "max": 3.5,
+                            "min": 0.6,
+                            "median": 0.6,
+                            "mean": 0.8,
+                            "max": 1.2,
                             "sampleCount": 3,
                             "unit": "ms"
                         },
                         "layoutMs": {
-                            "min": 6,
-                            "median": 6.5,
-                            "mean": 7.2,
-                            "max": 9.1,
+                            "min": 5.8,
+                            "median": 5.9,
+                            "mean": 5.9,
+                            "max": 5.9,
                             "sampleCount": 3,
                             "unit": "ms"
                         },
                         "paintMs": {
                             "min": 0.8,
-                            "median": 1,
-                            "mean": 1,
-                            "max": 1.3,
+                            "median": 0.8,
+                            "mean": 0.8,
+                            "max": 0.8,
                             "sampleCount": 3,
                             "unit": "ms"
                         },
@@ -604,14 +604,14 @@
                             "brotliBytes": 1
                         },
                         "runtimeJS": {
-                            "rawBytes": 96309,
-                            "gzipBytes": 26110,
-                            "brotliBytes": 22733
+                            "rawBytes": 96365,
+                            "gzipBytes": 26133,
+                            "brotliBytes": 22757
                         },
                         "manifestJSON": {
-                            "rawBytes": 86592,
-                            "gzipBytes": 12303,
-                            "brotliBytes": 9851
+                            "rawBytes": 86502,
+                            "gzipBytes": 12235,
+                            "brotliBytes": 9795
                         },
                         "hydrationManifest": {
                             "rawBytes": 0,
@@ -626,10 +626,10 @@
                     },
                     "timing": {
                         "navigationReadyMs": {
-                            "min": 38.3,
-                            "median": 38.6,
-                            "mean": 41.7,
-                            "max": 48.2,
+                            "min": 36.2,
+                            "median": 39.1,
+                            "mean": 40.6,
+                            "max": 46.5,
                             "sampleCount": 3,
                             "unit": "ms"
                         },
@@ -644,15 +644,15 @@
                         "styleRecalculationMs": {
                             "min": 0.6,
                             "median": 0.7,
-                            "mean": 0.8,
-                            "max": 1.1,
+                            "mean": 0.6,
+                            "max": 0.7,
                             "sampleCount": 3,
                             "unit": "ms"
                         },
                         "layoutMs": {
-                            "min": 3.6,
-                            "median": 3.8,
-                            "mean": 3.8,
+                            "min": 3.3,
+                            "median": 3.7,
+                            "mean": 3.7,
                             "max": 4.1,
                             "sampleCount": 3,
                             "unit": "ms"
@@ -682,34 +682,34 @@
                             "unit": "count"
                         },
                         "runtimeReadyMs": {
-                            "min": 25.3,
-                            "median": 25.9,
-                            "mean": 28.8,
-                            "max": 35.2,
+                            "min": 24.1,
+                            "median": 26.3,
+                            "mean": 28.1,
+                            "max": 33.9,
                             "sampleCount": 3,
                             "unit": "ms"
                         },
                         "runtimeBootstrapMs": {
-                            "min": 13.3,
+                            "min": 12.9,
                             "median": 14,
-                            "mean": 15.6,
-                            "max": 19.4,
+                            "mean": 15.1,
+                            "max": 18.4,
                             "sampleCount": 3,
                             "unit": "ms"
                         },
                         "manifestLoadMs": {
-                            "min": 0.9,
-                            "median": 1.1,
-                            "mean": 1.3,
-                            "max": 1.9,
+                            "min": 1.9,
+                            "median": 2,
+                            "mean": 2,
+                            "max": 2.2,
                             "sampleCount": 3,
                             "unit": "ms"
                         },
                         "runtimeObserveMs": {
-                            "min": 5.7,
-                            "median": 5.8,
-                            "mean": 6.9,
-                            "max": 9.2,
+                            "min": 5.1,
+                            "median": 5.6,
+                            "mean": 6.5,
+                            "max": 8.9,
                             "sampleCount": 3,
                             "unit": "ms"
                         },
@@ -758,14 +758,14 @@
                             "brotliBytes": 646
                         },
                         "runtimeJS": {
-                            "rawBytes": 96309,
-                            "gzipBytes": 26110,
-                            "brotliBytes": 22733
+                            "rawBytes": 96365,
+                            "gzipBytes": 26133,
+                            "brotliBytes": 22757
                         },
                         "manifestJSON": {
-                            "rawBytes": 86592,
-                            "gzipBytes": 12303,
-                            "brotliBytes": 9851
+                            "rawBytes": 86502,
+                            "gzipBytes": 12235,
+                            "brotliBytes": 9795
                         },
                         "hydrationManifest": {
                             "rawBytes": 8909,
@@ -780,10 +780,10 @@
                     },
                     "timing": {
                         "navigationReadyMs": {
-                            "min": 31.4,
-                            "median": 32.4,
-                            "mean": 32.4,
-                            "max": 33.4,
+                            "min": 30.6,
+                            "median": 31.4,
+                            "mean": 32.1,
+                            "max": 34.3,
                             "sampleCount": 3,
                             "unit": "ms"
                         },
@@ -804,15 +804,15 @@
                             "unit": "ms"
                         },
                         "layoutMs": {
-                            "min": 3.7,
-                            "median": 3.7,
-                            "mean": 3.7,
-                            "max": 3.8,
+                            "min": 3.5,
+                            "median": 3.6,
+                            "mean": 3.6,
+                            "max": 3.6,
                             "sampleCount": 3,
                             "unit": "ms"
                         },
                         "paintMs": {
-                            "min": 0.6,
+                            "min": 0.5,
                             "median": 0.6,
                             "mean": 0.6,
                             "max": 0.6,
@@ -836,34 +836,34 @@
                             "unit": "count"
                         },
                         "runtimeReadyMs": {
-                            "min": 25.3,
-                            "median": 27.2,
-                            "mean": 26.8,
-                            "max": 27.8,
+                            "min": 23.3,
+                            "median": 27,
+                            "mean": 25.8,
+                            "max": 27,
                             "sampleCount": 3,
                             "unit": "ms"
                         },
                         "runtimeBootstrapMs": {
-                            "min": 13.7,
-                            "median": 15.9,
-                            "mean": 15.4,
-                            "max": 16.5,
+                            "min": 12.9,
+                            "median": 15.3,
+                            "mean": 14.9,
+                            "max": 16.4,
                             "sampleCount": 3,
                             "unit": "ms"
                         },
                         "manifestLoadMs": {
                             "min": 0.8,
-                            "median": 1,
-                            "mean": 1.3,
-                            "max": 2,
+                            "median": 0.8,
+                            "mean": 0.9,
+                            "max": 1,
                             "sampleCount": 3,
                             "unit": "ms"
                         },
                         "runtimeObserveMs": {
                             "min": 1.4,
-                            "median": 1.5,
-                            "mean": 1.5,
-                            "max": 1.7,
+                            "median": 1.4,
+                            "mean": 1.4,
+                            "max": 1.4,
                             "sampleCount": 3,
                             "unit": "ms"
                         },
@@ -934,42 +934,42 @@
                     },
                     "timing": {
                         "navigationReadyMs": {
-                            "min": 20.3,
-                            "median": 20.8,
-                            "mean": 21.2,
-                            "max": 22.7,
+                            "min": 19,
+                            "median": 19.5,
+                            "mean": 19.5,
+                            "max": 20,
                             "sampleCount": 3,
                             "unit": "ms"
                         },
                         "stylesheetParseMs": {
                             "min": 0.2,
-                            "median": 0.2,
+                            "median": 0.3,
                             "mean": 0.3,
-                            "max": 0.4,
+                            "max": 0.3,
                             "sampleCount": 3,
                             "unit": "ms"
                         },
                         "styleRecalculationMs": {
-                            "min": 0.9,
+                            "min": 0.8,
                             "median": 0.9,
-                            "mean": 2.1,
-                            "max": 4.4,
+                            "mean": 1.2,
+                            "max": 2,
                             "sampleCount": 3,
                             "unit": "ms"
                         },
                         "layoutMs": {
-                            "min": 6.2,
-                            "median": 6.5,
-                            "mean": 6.6,
-                            "max": 7.3,
+                            "min": 5.7,
+                            "median": 6,
+                            "mean": 5.9,
+                            "max": 6,
                             "sampleCount": 3,
                             "unit": "ms"
                         },
                         "paintMs": {
                             "min": 0.7,
-                            "median": 0.8,
-                            "mean": 0.8,
-                            "max": 0.9,
+                            "median": 0.7,
+                            "mean": 0.7,
+                            "max": 0.8,
                             "sampleCount": 3,
                             "unit": "ms"
                         },
@@ -1063,7 +1063,7 @@
                         "externalCSS": {
                             "rawBytes": 5781,
                             "gzipBytes": 2154,
-                            "brotliBytes": 1838
+                            "brotliBytes": 1835
                         },
                         "inlineCSS": {
                             "rawBytes": 0,
@@ -1093,10 +1093,10 @@
                     },
                     "timing": {
                         "navigationReadyMs": {
-                            "min": 22.9,
-                            "median": 23.7,
-                            "mean": 24.9,
-                            "max": 28.1,
+                            "min": 22.6,
+                            "median": 22.8,
+                            "mean": 24.6,
+                            "max": 28.4,
                             "sampleCount": 3,
                             "unit": "ms"
                         },
@@ -1104,22 +1104,22 @@
                             "min": 0.2,
                             "median": 0.2,
                             "mean": 0.2,
-                            "max": 0.3,
+                            "max": 0.2,
                             "sampleCount": 3,
                             "unit": "ms"
                         },
                         "styleRecalculationMs": {
                             "min": 1,
-                            "median": 1,
-                            "mean": 1.5,
-                            "max": 2.5,
+                            "median": 1.1,
+                            "mean": 1.2,
+                            "max": 1.5,
                             "sampleCount": 3,
                             "unit": "ms"
                         },
                         "layoutMs": {
                             "min": 8.2,
-                            "median": 8.2,
-                            "mean": 8.4,
+                            "median": 8.7,
+                            "mean": 8.6,
                             "max": 8.9,
                             "sampleCount": 3,
                             "unit": "ms"
@@ -1128,7 +1128,7 @@
                             "min": 1.4,
                             "median": 1.5,
                             "mean": 1.6,
-                            "max": 2,
+                            "max": 1.8,
                             "sampleCount": 3,
                             "unit": "ms"
                         },
@@ -1225,14 +1225,14 @@
                             "brotliBytes": 1
                         },
                         "runtimeJS": {
-                            "rawBytes": 96309,
-                            "gzipBytes": 26110,
-                            "brotliBytes": 22733
+                            "rawBytes": 96365,
+                            "gzipBytes": 26133,
+                            "brotliBytes": 22757
                         },
                         "manifestJSON": {
-                            "rawBytes": 86592,
-                            "gzipBytes": 12303,
-                            "brotliBytes": 9851
+                            "rawBytes": 86502,
+                            "gzipBytes": 12235,
+                            "brotliBytes": 9795
                         },
                         "hydrationManifest": {
                             "rawBytes": 0,
@@ -1247,10 +1247,10 @@
                     },
                     "timing": {
                         "navigationReadyMs": {
-                            "min": 38.3,
-                            "median": 40.5,
-                            "mean": 39.9,
-                            "max": 41.1,
+                            "min": 38.6,
+                            "median": 38.7,
+                            "mean": 38.8,
+                            "max": 39.1,
                             "sampleCount": 3,
                             "unit": "ms"
                         },
@@ -1264,24 +1264,24 @@
                         },
                         "styleRecalculationMs": {
                             "min": 0.8,
-                            "median": 1,
+                            "median": 0.9,
                             "mean": 0.9,
-                            "max": 1,
+                            "max": 0.9,
                             "sampleCount": 3,
                             "unit": "ms"
                         },
                         "layoutMs": {
-                            "min": 4.7,
-                            "median": 4.8,
-                            "mean": 5.1,
-                            "max": 5.7,
+                            "min": 4.9,
+                            "median": 5.1,
+                            "mean": 5,
+                            "max": 5.1,
                             "sampleCount": 3,
                             "unit": "ms"
                         },
                         "paintMs": {
                             "min": 0.9,
                             "median": 1,
-                            "mean": 0.9,
+                            "mean": 1,
                             "max": 1,
                             "sampleCount": 3,
                             "unit": "ms"
@@ -1303,34 +1303,34 @@
                             "unit": "count"
                         },
                         "runtimeReadyMs": {
-                            "min": 24.4,
-                            "median": 26.2,
-                            "mean": 25.8,
-                            "max": 26.8,
+                            "min": 24.2,
+                            "median": 24.6,
+                            "mean": 24.5,
+                            "max": 24.7,
                             "sampleCount": 3,
                             "unit": "ms"
                         },
                         "runtimeBootstrapMs": {
-                            "min": 13.8,
-                            "median": 14.9,
-                            "mean": 14.6,
-                            "max": 15.1,
+                            "min": 13.5,
+                            "median": 13.9,
+                            "mean": 14,
+                            "max": 14.6,
                             "sampleCount": 3,
                             "unit": "ms"
                         },
                         "manifestLoadMs": {
-                            "min": 1.8,
-                            "median": 1.8,
-                            "mean": 1.8,
-                            "max": 1.9,
+                            "min": 1,
+                            "median": 1.1,
+                            "mean": 1.1,
+                            "max": 1.2,
                             "sampleCount": 3,
                             "unit": "ms"
                         },
                         "runtimeObserveMs": {
-                            "min": 6.2,
-                            "median": 6.4,
-                            "mean": 6.5,
-                            "max": 6.8,
+                            "min": 6.5,
+                            "median": 6.5,
+                            "mean": 6.6,
+                            "max": 6.9,
                             "sampleCount": 3,
                             "unit": "ms"
                         },
@@ -1365,8 +1365,8 @@
                     "payload": {
                         "html": {
                             "rawBytes": 21933,
-                            "gzipBytes": 4343,
-                            "brotliBytes": 3577
+                            "gzipBytes": 4342,
+                            "brotliBytes": 3586
                         },
                         "externalCSS": {
                             "rawBytes": 0,
@@ -1376,17 +1376,17 @@
                         "inlineCSS": {
                             "rawBytes": 2671,
                             "gzipBytes": 1036,
-                            "brotliBytes": 873
+                            "brotliBytes": 874
                         },
                         "runtimeJS": {
-                            "rawBytes": 96309,
-                            "gzipBytes": 26110,
-                            "brotliBytes": 22733
+                            "rawBytes": 96365,
+                            "gzipBytes": 26133,
+                            "brotliBytes": 22757
                         },
                         "manifestJSON": {
-                            "rawBytes": 86592,
-                            "gzipBytes": 12303,
-                            "brotliBytes": 9851
+                            "rawBytes": 86502,
+                            "gzipBytes": 12235,
+                            "brotliBytes": 9795
                         },
                         "hydrationManifest": {
                             "rawBytes": 11991,
@@ -1401,10 +1401,10 @@
                     },
                     "timing": {
                         "navigationReadyMs": {
-                            "min": 36.5,
-                            "median": 43.3,
-                            "mean": 41.1,
-                            "max": 43.4,
+                            "min": 33.7,
+                            "median": 37.5,
+                            "mean": 36.7,
+                            "max": 38.8,
                             "sampleCount": 3,
                             "unit": "ms"
                         },
@@ -1417,18 +1417,18 @@
                             "unit": "ms"
                         },
                         "styleRecalculationMs": {
-                            "min": 0.7,
+                            "min": 0.6,
                             "median": 0.7,
-                            "mean": 0.8,
-                            "max": 0.9,
+                            "mean": 0.7,
+                            "max": 0.7,
                             "sampleCount": 3,
                             "unit": "ms"
                         },
                         "layoutMs": {
-                            "min": 4.8,
-                            "median": 5,
-                            "mean": 5.1,
-                            "max": 5.5,
+                            "min": 4.4,
+                            "median": 4.5,
+                            "mean": 4.5,
+                            "max": 4.6,
                             "sampleCount": 3,
                             "unit": "ms"
                         },
@@ -1457,33 +1457,33 @@
                             "unit": "count"
                         },
                         "runtimeReadyMs": {
-                            "min": 31.3,
-                            "median": 31.4,
-                            "mean": 31.9,
-                            "max": 33.1,
+                            "min": 27.1,
+                            "median": 28.6,
+                            "mean": 29.3,
+                            "max": 32.2,
                             "sampleCount": 3,
                             "unit": "ms"
                         },
                         "runtimeBootstrapMs": {
-                            "min": 19.7,
-                            "median": 19.9,
-                            "mean": 20.3,
-                            "max": 21.3,
+                            "min": 16.2,
+                            "median": 17.7,
+                            "mean": 17.7,
+                            "max": 19.3,
                             "sampleCount": 3,
                             "unit": "ms"
                         },
                         "manifestLoadMs": {
                             "min": 0.9,
-                            "median": 1,
-                            "mean": 1,
-                            "max": 1.1,
+                            "median": 0.9,
+                            "mean": 0.9,
+                            "max": 1,
                             "sampleCount": 3,
                             "unit": "ms"
                         },
                         "runtimeObserveMs": {
                             "min": 2.5,
-                            "median": 3,
-                            "mean": 2.8,
+                            "median": 2.6,
+                            "mean": 2.7,
                             "max": 3,
                             "sampleCount": 3,
                             "unit": "ms"
@@ -1555,10 +1555,10 @@
                     },
                     "timing": {
                         "navigationReadyMs": {
-                            "min": 22.4,
-                            "median": 24.5,
-                            "mean": 23.8,
-                            "max": 24.7,
+                            "min": 22.2,
+                            "median": 22.9,
+                            "mean": 23.3,
+                            "max": 24.9,
                             "sampleCount": 3,
                             "unit": "ms"
                         },
@@ -1571,26 +1571,26 @@
                             "unit": "ms"
                         },
                         "styleRecalculationMs": {
-                            "min": 1.1,
-                            "median": 1.3,
-                            "mean": 1.2,
-                            "max": 1.4,
+                            "min": 1,
+                            "median": 1.1,
+                            "mean": 1.1,
+                            "max": 1.2,
                             "sampleCount": 3,
                             "unit": "ms"
                         },
                         "layoutMs": {
-                            "min": 8.4,
-                            "median": 9.3,
-                            "mean": 9,
-                            "max": 9.4,
+                            "min": 7.8,
+                            "median": 8,
+                            "mean": 8.1,
+                            "max": 8.6,
                             "sampleCount": 3,
                             "unit": "ms"
                         },
                         "paintMs": {
                             "min": 1.3,
-                            "median": 1.4,
-                            "mean": 1.4,
-                            "max": 1.5,
+                            "median": 1.3,
+                            "mean": 1.3,
+                            "max": 1.4,
                             "sampleCount": 3,
                             "unit": "ms"
                         },
@@ -1684,7 +1684,7 @@
                         "externalCSS": {
                             "rawBytes": 5979,
                             "gzipBytes": 2113,
-                            "brotliBytes": 1794
+                            "brotliBytes": 1788
                         },
                         "inlineCSS": {
                             "rawBytes": 0,
@@ -1714,42 +1714,42 @@
                     },
                     "timing": {
                         "navigationReadyMs": {
-                            "min": 23.4,
-                            "median": 26,
-                            "mean": 26.6,
-                            "max": 30.5,
+                            "min": 21.7,
+                            "median": 21.8,
+                            "mean": 22.5,
+                            "max": 23.9,
                             "sampleCount": 3,
                             "unit": "ms"
                         },
                         "stylesheetParseMs": {
-                            "min": 0.2,
-                            "median": 0.2,
-                            "mean": 0.2,
+                            "min": 0.1,
+                            "median": 0.1,
+                            "mean": 0.1,
                             "max": 0.2,
                             "sampleCount": 3,
                             "unit": "ms"
                         },
                         "styleRecalculationMs": {
-                            "min": 9.7,
-                            "median": 10.9,
-                            "mean": 10.7,
-                            "max": 11.5,
+                            "min": 9.1,
+                            "median": 9.3,
+                            "mean": 9.4,
+                            "max": 9.8,
                             "sampleCount": 3,
                             "unit": "ms"
                         },
                         "layoutMs": {
-                            "min": 2.9,
-                            "median": 3.3,
-                            "mean": 3.4,
-                            "max": 4.1,
+                            "min": 2.8,
+                            "median": 2.8,
+                            "mean": 3.1,
+                            "max": 3.6,
                             "sampleCount": 3,
                             "unit": "ms"
                         },
                         "paintMs": {
                             "min": 1.6,
-                            "median": 1.8,
-                            "mean": 1.9,
-                            "max": 2.3,
+                            "median": 1.7,
+                            "mean": 1.7,
+                            "max": 1.7,
                             "sampleCount": 3,
                             "unit": "ms"
                         },
@@ -1846,14 +1846,14 @@
                             "brotliBytes": 1
                         },
                         "runtimeJS": {
-                            "rawBytes": 96309,
-                            "gzipBytes": 26110,
-                            "brotliBytes": 22733
+                            "rawBytes": 96365,
+                            "gzipBytes": 26133,
+                            "brotliBytes": 22757
                         },
                         "manifestJSON": {
-                            "rawBytes": 86592,
-                            "gzipBytes": 12303,
-                            "brotliBytes": 9851
+                            "rawBytes": 86502,
+                            "gzipBytes": 12235,
+                            "brotliBytes": 9795
                         },
                         "hydrationManifest": {
                             "rawBytes": 0,
@@ -1868,10 +1868,10 @@
                     },
                     "timing": {
                         "navigationReadyMs": {
-                            "min": 40.2,
-                            "median": 41.7,
-                            "mean": 41.5,
-                            "max": 42.5,
+                            "min": 37.3,
+                            "median": 39.1,
+                            "mean": 39.6,
+                            "max": 42.3,
                             "sampleCount": 3,
                             "unit": "ms"
                         },
@@ -1884,25 +1884,25 @@
                             "unit": "ms"
                         },
                         "styleRecalculationMs": {
-                            "min": 7.2,
-                            "median": 7.5,
-                            "mean": 7.4,
-                            "max": 7.6,
+                            "min": 6.8,
+                            "median": 7.3,
+                            "mean": 7.3,
+                            "max": 7.7,
                             "sampleCount": 3,
                             "unit": "ms"
                         },
                         "layoutMs": {
-                            "min": 2.4,
-                            "median": 2.8,
-                            "mean": 2.9,
-                            "max": 3.6,
+                            "min": 2.5,
+                            "median": 2.5,
+                            "mean": 2.6,
+                            "max": 2.8,
                             "sampleCount": 3,
                             "unit": "ms"
                         },
                         "paintMs": {
-                            "min": 1,
-                            "median": 1.1,
-                            "mean": 1.1,
+                            "min": 0.9,
+                            "median": 1,
+                            "mean": 1,
                             "max": 1.2,
                             "sampleCount": 3,
                             "unit": "ms"
@@ -1924,34 +1924,34 @@
                             "unit": "count"
                         },
                         "runtimeReadyMs": {
-                            "min": 25.5,
-                            "median": 25.6,
-                            "mean": 26,
-                            "max": 26.8,
+                            "min": 22.8,
+                            "median": 24.5,
+                            "mean": 24.6,
+                            "max": 26.5,
                             "sampleCount": 3,
                             "unit": "ms"
                         },
                         "runtimeBootstrapMs": {
-                            "min": 13.7,
-                            "median": 14.1,
-                            "mean": 14,
-                            "max": 14.3,
+                            "min": 12.8,
+                            "median": 13.2,
+                            "mean": 13.6,
+                            "max": 14.7,
                             "sampleCount": 3,
                             "unit": "ms"
                         },
                         "manifestLoadMs": {
-                            "min": 1,
-                            "median": 1.5,
-                            "mean": 1.4,
-                            "max": 1.7,
+                            "min": 0.6,
+                            "median": 0.8,
+                            "mean": 0.8,
+                            "max": 1.1,
                             "sampleCount": 3,
                             "unit": "ms"
                         },
                         "runtimeObserveMs": {
-                            "min": 6.3,
-                            "median": 6.4,
-                            "mean": 6.4,
-                            "max": 6.5,
+                            "min": 6.2,
+                            "median": 6.2,
+                            "mean": 6.5,
+                            "max": 7,
                             "sampleCount": 3,
                             "unit": "ms"
                         },
@@ -1987,7 +1987,7 @@
                         "html": {
                             "rawBytes": 27620,
                             "gzipBytes": 4354,
-                            "brotliBytes": 3526
+                            "brotliBytes": 3530
                         },
                         "externalCSS": {
                             "rawBytes": 0,
@@ -1996,18 +1996,18 @@
                         },
                         "inlineCSS": {
                             "rawBytes": 2892,
-                            "gzipBytes": 988,
-                            "brotliBytes": 826
+                            "gzipBytes": 989,
+                            "brotliBytes": 824
                         },
                         "runtimeJS": {
-                            "rawBytes": 96309,
-                            "gzipBytes": 26110,
-                            "brotliBytes": 22733
+                            "rawBytes": 96365,
+                            "gzipBytes": 26133,
+                            "brotliBytes": 22757
                         },
                         "manifestJSON": {
-                            "rawBytes": 86592,
-                            "gzipBytes": 12303,
-                            "brotliBytes": 9851
+                            "rawBytes": 86502,
+                            "gzipBytes": 12235,
+                            "brotliBytes": 9795
                         },
                         "hydrationManifest": {
                             "rawBytes": 13130,
@@ -2022,10 +2022,10 @@
                     },
                     "timing": {
                         "navigationReadyMs": {
-                            "min": 37.7,
-                            "median": 38.4,
-                            "mean": 39.8,
-                            "max": 43.4,
+                            "min": 35,
+                            "median": 35.2,
+                            "mean": 35.4,
+                            "max": 35.9,
                             "sampleCount": 3,
                             "unit": "ms"
                         },
@@ -2038,26 +2038,26 @@
                             "unit": "ms"
                         },
                         "styleRecalculationMs": {
-                            "min": 7.8,
-                            "median": 8.1,
-                            "mean": 8,
-                            "max": 8.1,
+                            "min": 6.6,
+                            "median": 6.7,
+                            "mean": 6.7,
+                            "max": 6.8,
                             "sampleCount": 3,
                             "unit": "ms"
                         },
                         "layoutMs": {
-                            "min": 2.7,
-                            "median": 2.7,
-                            "mean": 2.9,
-                            "max": 3.1,
+                            "min": 2.4,
+                            "median": 2.4,
+                            "mean": 2.4,
+                            "max": 2.4,
                             "sampleCount": 3,
                             "unit": "ms"
                         },
                         "paintMs": {
-                            "min": 1.2,
-                            "median": 1.2,
-                            "mean": 1.2,
-                            "max": 1.3,
+                            "min": 1.1,
+                            "median": 1.1,
+                            "mean": 1.1,
+                            "max": 1.2,
                             "sampleCount": 3,
                             "unit": "ms"
                         },
@@ -2078,34 +2078,34 @@
                             "unit": "count"
                         },
                         "runtimeReadyMs": {
-                            "min": 29.7,
-                            "median": 30.5,
-                            "mean": 30.9,
-                            "max": 32.5,
+                            "min": 27.7,
+                            "median": 27.8,
+                            "mean": 28,
+                            "max": 28.4,
                             "sampleCount": 3,
                             "unit": "ms"
                         },
                         "runtimeBootstrapMs": {
-                            "min": 18,
-                            "median": 18.9,
-                            "mean": 18.6,
-                            "max": 19,
+                            "min": 16.8,
+                            "median": 16.9,
+                            "mean": 16.9,
+                            "max": 17.1,
                             "sampleCount": 3,
                             "unit": "ms"
                         },
                         "manifestLoadMs": {
-                            "min": 1,
-                            "median": 1.1,
-                            "mean": 1.1,
-                            "max": 1.2,
+                            "min": 0.8,
+                            "median": 0.9,
+                            "mean": 0.9,
+                            "max": 1.1,
                             "sampleCount": 3,
                             "unit": "ms"
                         },
                         "runtimeObserveMs": {
-                            "min": 2.9,
-                            "median": 3.1,
-                            "mean": 3.1,
-                            "max": 3.4,
+                            "min": 2.8,
+                            "median": 2.9,
+                            "mean": 2.9,
+                            "max": 3,
                             "sampleCount": 3,
                             "unit": "ms"
                         },
@@ -2176,15 +2176,15 @@
                     },
                     "timing": {
                         "navigationReadyMs": {
-                            "min": 23.8,
-                            "median": 24.8,
-                            "mean": 25.1,
-                            "max": 26.6,
+                            "min": 22.2,
+                            "median": 23.3,
+                            "mean": 23.5,
+                            "max": 25.1,
                             "sampleCount": 3,
                             "unit": "ms"
                         },
                         "stylesheetParseMs": {
-                            "min": 0.2,
+                            "min": 0.3,
                             "median": 0.3,
                             "mean": 0.3,
                             "max": 0.3,
@@ -2192,25 +2192,25 @@
                             "unit": "ms"
                         },
                         "styleRecalculationMs": {
-                            "min": 10,
-                            "median": 10.9,
-                            "mean": 11,
-                            "max": 12.2,
+                            "min": 9.6,
+                            "median": 10.2,
+                            "mean": 10.1,
+                            "max": 10.5,
                             "sampleCount": 3,
                             "unit": "ms"
                         },
                         "layoutMs": {
-                            "min": 2.9,
-                            "median": 3,
-                            "mean": 3,
-                            "max": 3,
+                            "min": 2.7,
+                            "median": 2.7,
+                            "mean": 2.7,
+                            "max": 2.8,
                             "sampleCount": 3,
                             "unit": "ms"
                         },
                         "paintMs": {
-                            "min": 1.5,
-                            "median": 1.5,
-                            "mean": 1.5,
+                            "min": 1.2,
+                            "median": 1.4,
+                            "mean": 1.4,
                             "max": 1.5,
                             "sampleCount": 3,
                             "unit": "ms"
@@ -2305,7 +2305,7 @@
                         "externalCSS": {
                             "rawBytes": 11657,
                             "gzipBytes": 3067,
-                            "brotliBytes": 2054
+                            "brotliBytes": 2047
                         },
                         "inlineCSS": {
                             "rawBytes": 0,
@@ -2335,15 +2335,15 @@
                     },
                     "timing": {
                         "navigationReadyMs": {
-                            "min": 22.4,
-                            "median": 24.2,
-                            "mean": 24.2,
-                            "max": 26,
+                            "min": 21.3,
+                            "median": 21.8,
+                            "mean": 21.8,
+                            "max": 22.4,
                             "sampleCount": 3,
                             "unit": "ms"
                         },
                         "stylesheetParseMs": {
-                            "min": 0.3,
+                            "min": 0.2,
                             "median": 0.3,
                             "mean": 0.3,
                             "max": 0.3,
@@ -2351,26 +2351,26 @@
                             "unit": "ms"
                         },
                         "styleRecalculationMs": {
-                            "min": 1.7,
-                            "median": 1.8,
-                            "mean": 1.8,
-                            "max": 2,
+                            "min": 1.6,
+                            "median": 1.7,
+                            "mean": 1.7,
+                            "max": 1.8,
                             "sampleCount": 3,
                             "unit": "ms"
                         },
                         "layoutMs": {
-                            "min": 7.2,
-                            "median": 7.3,
-                            "mean": 7.5,
-                            "max": 8.1,
+                            "min": 6.9,
+                            "median": 6.9,
+                            "mean": 7.1,
+                            "max": 7.4,
                             "sampleCount": 3,
                             "unit": "ms"
                         },
                         "paintMs": {
                             "min": 1.3,
-                            "median": 1.4,
-                            "mean": 1.4,
-                            "max": 1.7,
+                            "median": 1.3,
+                            "mean": 1.3,
+                            "max": 1.3,
                             "sampleCount": 3,
                             "unit": "ms"
                         },
@@ -2467,14 +2467,14 @@
                             "brotliBytes": 1
                         },
                         "runtimeJS": {
-                            "rawBytes": 96309,
-                            "gzipBytes": 26110,
-                            "brotliBytes": 22733
+                            "rawBytes": 96365,
+                            "gzipBytes": 26133,
+                            "brotliBytes": 22757
                         },
                         "manifestJSON": {
-                            "rawBytes": 86592,
-                            "gzipBytes": 12303,
-                            "brotliBytes": 9851
+                            "rawBytes": 86502,
+                            "gzipBytes": 12235,
+                            "brotliBytes": 9795
                         },
                         "hydrationManifest": {
                             "rawBytes": 0,
@@ -2489,10 +2489,10 @@
                     },
                     "timing": {
                         "navigationReadyMs": {
-                            "min": 43.4,
-                            "median": 44.9,
-                            "mean": 45.1,
-                            "max": 46.9,
+                            "min": 40.3,
+                            "median": 42.8,
+                            "mean": 42.1,
+                            "max": 43.1,
                             "sampleCount": 3,
                             "unit": "ms"
                         },
@@ -2505,7 +2505,7 @@
                             "unit": "ms"
                         },
                         "styleRecalculationMs": {
-                            "min": 1.6,
+                            "min": 1.5,
                             "median": 1.6,
                             "mean": 1.6,
                             "max": 1.6,
@@ -2514,16 +2514,16 @@
                         },
                         "layoutMs": {
                             "min": 3.9,
-                            "median": 4.4,
-                            "mean": 4.4,
-                            "max": 5,
+                            "median": 4,
+                            "mean": 4.1,
+                            "max": 4.3,
                             "sampleCount": 3,
                             "unit": "ms"
                         },
                         "paintMs": {
                             "min": 0.8,
                             "median": 0.9,
-                            "mean": 0.8,
+                            "mean": 0.9,
                             "max": 0.9,
                             "sampleCount": 3,
                             "unit": "ms"
@@ -2545,18 +2545,18 @@
                             "unit": "count"
                         },
                         "runtimeReadyMs": {
-                            "min": 29.8,
-                            "median": 29.8,
-                            "mean": 30.4,
-                            "max": 31.5,
+                            "min": 27,
+                            "median": 29,
+                            "mean": 28.3,
+                            "max": 29,
                             "sampleCount": 3,
                             "unit": "ms"
                         },
                         "runtimeBootstrapMs": {
-                            "min": 18.3,
-                            "median": 19,
-                            "mean": 18.8,
-                            "max": 19,
+                            "min": 16.7,
+                            "median": 17.6,
+                            "mean": 17.4,
+                            "max": 17.9,
                             "sampleCount": 3,
                             "unit": "ms"
                         },
@@ -2564,15 +2564,15 @@
                             "min": 0.9,
                             "median": 1,
                             "mean": 1,
-                            "max": 1,
+                            "max": 1.1,
                             "sampleCount": 3,
                             "unit": "ms"
                         },
                         "runtimeObserveMs": {
-                            "min": 10.9,
-                            "median": 11.6,
-                            "mean": 11.4,
-                            "max": 11.6,
+                            "min": 9.9,
+                            "median": 10.3,
+                            "mean": 10.2,
+                            "max": 10.5,
                             "sampleCount": 3,
                             "unit": "ms"
                         },
@@ -2608,7 +2608,7 @@
                         "html": {
                             "rawBytes": 79672,
                             "gzipBytes": 10114,
-                            "brotliBytes": 5190
+                            "brotliBytes": 5260
                         },
                         "externalCSS": {
                             "rawBytes": 0,
@@ -2618,17 +2618,17 @@
                         "inlineCSS": {
                             "rawBytes": 8570,
                             "gzipBytes": 1833,
-                            "brotliBytes": 1074
+                            "brotliBytes": 1072
                         },
                         "runtimeJS": {
-                            "rawBytes": 96309,
-                            "gzipBytes": 26110,
-                            "brotliBytes": 22733
+                            "rawBytes": 96365,
+                            "gzipBytes": 26133,
+                            "brotliBytes": 22757
                         },
                         "manifestJSON": {
-                            "rawBytes": 86592,
-                            "gzipBytes": 12303,
-                            "brotliBytes": 9851
+                            "rawBytes": 86502,
+                            "gzipBytes": 12235,
+                            "brotliBytes": 9795
                         },
                         "hydrationManifest": {
                             "rawBytes": 51905,
@@ -2643,10 +2643,10 @@
                     },
                     "timing": {
                         "navigationReadyMs": {
-                            "min": 34.7,
-                            "median": 35.2,
-                            "mean": 35.3,
-                            "max": 35.9,
+                            "min": 34.3,
+                            "median": 34.5,
+                            "mean": 34.7,
+                            "max": 35.2,
                             "sampleCount": 3,
                             "unit": "ms"
                         },
@@ -2660,23 +2660,23 @@
                         },
                         "styleRecalculationMs": {
                             "min": 1.4,
-                            "median": 1.5,
-                            "mean": 1.5,
-                            "max": 1.5,
+                            "median": 1.4,
+                            "mean": 1.4,
+                            "max": 1.4,
                             "sampleCount": 3,
                             "unit": "ms"
                         },
                         "layoutMs": {
-                            "min": 4.1,
-                            "median": 4.5,
-                            "mean": 4.4,
-                            "max": 4.7,
+                            "min": 4,
+                            "median": 4,
+                            "mean": 4,
+                            "max": 4,
                             "sampleCount": 3,
                             "unit": "ms"
                         },
                         "paintMs": {
-                            "min": 1,
-                            "median": 1,
+                            "min": 0.9,
+                            "median": 0.9,
                             "mean": 1,
                             "max": 1,
                             "sampleCount": 3,
@@ -2699,34 +2699,34 @@
                             "unit": "count"
                         },
                         "runtimeReadyMs": {
-                            "min": 29.6,
-                            "median": 31.4,
-                            "mean": 30.9,
-                            "max": 31.7,
+                            "min": 26.3,
+                            "median": 30,
+                            "mean": 28.9,
+                            "max": 30.5,
                             "sampleCount": 3,
                             "unit": "ms"
                         },
                         "runtimeBootstrapMs": {
-                            "min": 17.8,
-                            "median": 19.7,
-                            "mean": 19.2,
-                            "max": 20,
+                            "min": 15.1,
+                            "median": 18.7,
+                            "mean": 17.8,
+                            "max": 19.5,
                             "sampleCount": 3,
                             "unit": "ms"
                         },
                         "manifestLoadMs": {
                             "min": 0.9,
-                            "median": 0.9,
-                            "mean": 1,
-                            "max": 1.2,
+                            "median": 1.2,
+                            "mean": 1.1,
+                            "max": 1.3,
                             "sampleCount": 3,
                             "unit": "ms"
                         },
                         "runtimeObserveMs": {
-                            "min": 2,
-                            "median": 2.1,
-                            "mean": 2.1,
-                            "max": 2.2,
+                            "min": 1.9,
+                            "median": 2,
+                            "mean": 2,
+                            "max": 2.1,
                             "sampleCount": 3,
                             "unit": "ms"
                         },
@@ -2797,15 +2797,15 @@
                     },
                     "timing": {
                         "navigationReadyMs": {
-                            "min": 24.5,
-                            "median": 25.6,
-                            "mean": 25.6,
-                            "max": 26.6,
+                            "min": 22,
+                            "median": 22.5,
+                            "mean": 23.9,
+                            "max": 27.1,
                             "sampleCount": 3,
                             "unit": "ms"
                         },
                         "stylesheetParseMs": {
-                            "min": 0.4,
+                            "min": 0.3,
                             "median": 0.4,
                             "mean": 0.4,
                             "max": 0.4,
@@ -2813,18 +2813,18 @@
                             "unit": "ms"
                         },
                         "styleRecalculationMs": {
-                            "min": 2.3,
-                            "median": 2.4,
-                            "mean": 2.4,
-                            "max": 2.4,
+                            "min": 2.4,
+                            "median": 2.5,
+                            "mean": 2.5,
+                            "max": 2.5,
                             "sampleCount": 3,
                             "unit": "ms"
                         },
                         "layoutMs": {
-                            "min": 7,
-                            "median": 7.5,
-                            "mean": 7.6,
-                            "max": 8.4,
+                            "min": 6.9,
+                            "median": 7.2,
+                            "mean": 7.1,
+                            "max": 7.3,
                             "sampleCount": 3,
                             "unit": "ms"
                         },

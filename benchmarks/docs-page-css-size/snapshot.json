@@ -1,7 +1,7 @@
 {
     "schemaVersion": 1,
     "suite": "docs-page-css-size",
-    "generatedAt": "2026-06-26T19:13:01.130Z",
+    "generatedAt": "2026-07-01T20:10:11.829Z",
     "pages": [
         {
             "name": "Tailwind CSS",
@@ -44,39 +44,39 @@
             "resolvedUrl": "https://nextjs.org/docs",
             "css": {
                 "total": {
-                    "rawBytes": 425657,
-                    "brotliBytes": 54601
+                    "rawBytes": 424816,
+                    "brotliBytes": 54543
                 },
                 "inline": {
                     "rawBytes": 0,
                     "brotliBytes": 0
                 },
                 "external": {
-                    "rawBytes": 425657,
-                    "brotliBytes": 54601
+                    "rawBytes": 424816,
+                    "brotliBytes": 54543
                 }
             },
             "assets": [
                 {
                     "kind": "external",
-                    "url": "/_next/static/immutable/chunks/2roz6wfgpywe3.css",
-                    "resolvedUrl": "https://nextjs.org/_next/static/immutable/chunks/2roz6wfgpywe3.css",
-                    "rawBytes": 18343,
-                    "brotliBytes": 3678
+                    "url": "/_next/static/immutable/chunks/06jeco1sf4hjj.css",
+                    "resolvedUrl": "https://nextjs.org/_next/static/immutable/chunks/06jeco1sf4hjj.css",
+                    "rawBytes": 17189,
+                    "brotliBytes": 3621
                 },
                 {
                     "kind": "external",
-                    "url": "/_next/static/immutable/chunks/2f6_1x6p7ys2l.css",
-                    "resolvedUrl": "https://nextjs.org/_next/static/immutable/chunks/2f6_1x6p7ys2l.css",
-                    "rawBytes": 17296,
-                    "brotliBytes": 2967
+                    "url": "/_next/static/immutable/chunks/3zlwhcx-a_s0h.css",
+                    "resolvedUrl": "https://nextjs.org/_next/static/immutable/chunks/3zlwhcx-a_s0h.css",
+                    "rawBytes": 17638,
+                    "brotliBytes": 2997
                 },
                 {
                     "kind": "external",
-                    "url": "/_next/static/immutable/chunks/3rtym_5swbqu7.css",
-                    "resolvedUrl": "https://nextjs.org/_next/static/immutable/chunks/3rtym_5swbqu7.css",
-                    "rawBytes": 389686,
-                    "brotliBytes": 47786
+                    "url": "/_next/static/immutable/chunks/0uehoq303d8fn.css",
+                    "resolvedUrl": "https://nextjs.org/_next/static/immutable/chunks/0uehoq303d8fn.css",
+                    "rawBytes": 389657,
+                    "brotliBytes": 47755
                 },
                 {
                     "kind": "external",
@@ -240,16 +240,16 @@
             "resolvedUrl": "https://angular.dev/overview",
             "css": {
                 "total": {
-                    "rawBytes": 229689,
-                    "brotliBytes": 33166
+                    "rawBytes": 230232,
+                    "brotliBytes": 33220
                 },
                 "inline": {
-                    "rawBytes": 67163,
-                    "brotliBytes": 11992
+                    "rawBytes": 67510,
+                    "brotliBytes": 12034
                 },
                 "external": {
-                    "rawBytes": 162526,
-                    "brotliBytes": 21174
+                    "rawBytes": 162722,
+                    "brotliBytes": 21186
                 }
             },
             "assets": [
@@ -269,17 +269,17 @@
                 },
                 {
                     "kind": "external",
-                    "url": "styles-BFCWRBNQ.css",
-                    "resolvedUrl": "https://angular.dev/styles-BFCWRBNQ.css",
-                    "rawBytes": 80187,
-                    "brotliBytes": 10277
+                    "url": "styles-HRWHOM5S.css",
+                    "resolvedUrl": "https://angular.dev/styles-HRWHOM5S.css",
+                    "rawBytes": 80285,
+                    "brotliBytes": 10283
                 },
                 {
                     "kind": "external",
-                    "url": "styles-BFCWRBNQ.css",
-                    "resolvedUrl": "https://angular.dev/styles-BFCWRBNQ.css",
-                    "rawBytes": 80187,
-                    "brotliBytes": 10277
+                    "url": "styles-HRWHOM5S.css",
+                    "resolvedUrl": "https://angular.dev/styles-HRWHOM5S.css",
+                    "rawBytes": 80285,
+                    "brotliBytes": 10283
                 },
                 {
                     "kind": "inline",
@@ -290,8 +290,8 @@
                 {
                     "kind": "inline",
                     "tag": "<style>",
-                    "rawBytes": 34221,
-                    "brotliBytes": 5071
+                    "rawBytes": 34336,
+                    "brotliBytes": 5092
                 },
                 {
                     "kind": "inline",
@@ -338,8 +338,8 @@
                 {
                     "kind": "inline",
                     "tag": "<style>",
-                    "rawBytes": 4952,
-                    "brotliBytes": 1070
+                    "rawBytes": 5184,
+                    "brotliBytes": 1091
                 },
                 {
                     "kind": "inline",
@@ -433,15 +433,15 @@
         {
             "name": "Master CSS",
             "url": "https://rc.css.master.co/en/guide",
-            "resolvedUrl": "https://rc.css.master.co/en/guide",
+            "resolvedUrl": "https://rc.css.master.co/guide",
             "css": {
                 "total": {
-                    "rawBytes": 25240,
-                    "brotliBytes": 6026
+                    "rawBytes": 25836,
+                    "brotliBytes": 6052
                 },
                 "inline": {
-                    "rawBytes": 22987,
-                    "brotliBytes": 5156
+                    "rawBytes": 23583,
+                    "brotliBytes": 5182
                 },
                 "external": {
                     "rawBytes": 2253,
@@ -465,8 +465,8 @@
                 {
                     "kind": "inline",
                     "tag": "<style id=\"master-css\">",
-                    "rawBytes": 22783,
-                    "brotliBytes": 5038
+                    "rawBytes": 23379,
+                    "brotliBytes": 5064
                 }
             ]
         }

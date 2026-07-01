@@ -1,0 +1,1278 @@
+{
+    "schemaVersion": 1,
+    "suite": "build-path-diagnostics",
+    "generatedAt": "2026-07-01T20:38:53.402Z",
+    "sourceReports": [
+        {
+            "suite": "startup-diagnostics",
+            "generatedAt": "2026-07-01T20:37:57.275Z",
+            "command": "BENCHMARK_ROUNDS=3 pnpm --filter ./benchmarks bench:startup-diagnostics"
+        },
+        {
+            "suite": "build-diagnostics",
+            "generatedAt": "2026-07-01T20:38:23.195Z",
+            "command": "BENCHMARK_ROUNDS=3 pnpm --filter ./benchmarks bench:build-diagnostics"
+        },
+        {
+            "suite": "compiler-diagnostics",
+            "generatedAt": "2026-07-01T20:38:35.862Z",
+            "command": "BENCHMARK_ROUNDS=3 pnpm --filter ./benchmarks bench:compiler-diagnostics"
+        },
+        {
+            "suite": "extraction-diagnostics",
+            "generatedAt": "2026-07-01T20:38:49.287Z",
+            "command": "BENCHMARK_ROUNDS=3 pnpm --filter ./benchmarks bench:extraction-diagnostics"
+        }
+    ],
+    "environment": {
+        "os": {
+            "platform": "darwin",
+            "release": "25.5.0",
+            "arch": "arm64"
+        },
+        "node": "v24.15.0",
+        "cpu": {
+            "model": "Apple M3 Max",
+            "count": 16
+        }
+    },
+    "packages": [
+        {
+            "name": "@master/css",
+            "version": "workspace:^"
+        },
+        {
+            "name": "@master/css-cli",
+            "version": "workspace:^"
+        },
+        {
+            "name": "@master/css-compiler",
+            "version": "workspace:^"
+        },
+        {
+            "name": "@master/css-engine",
+            "version": "workspace:^"
+        },
+        {
+            "name": "@master/css-project",
+            "version": "workspace:^"
+        },
+        {
+            "name": "@master/css-scanner",
+            "version": "workspace:^"
+        },
+        {
+            "name": "@master/css-source",
+            "version": "workspace:^"
+        },
+        {
+            "name": "@master/css-stylesheet",
+            "version": "workspace:^"
+        },
+        {
+            "name": "@master/css-validator",
+            "version": "workspace:^"
+        },
+        {
+            "name": "@master/css.vite",
+            "version": "workspace:^"
+        },
+        {
+            "name": "chokidar",
+            "version": "unknown"
+        },
+        {
+            "name": "commander",
+            "version": "unknown"
+        },
+        {
+            "name": "consola",
+            "version": "unknown"
+        },
+        {
+            "name": "fast-glob",
+            "version": "^3.3.3"
+        },
+        {
+            "name": "vite",
+            "version": "^8.1.0"
+        }
+    ],
+    "fixtures": [
+        {
+            "id": "minimal",
+            "name": "Minimal",
+            "purpose": "Small useful page or landing section."
+        },
+        {
+            "id": "docs",
+            "name": "Docs",
+            "purpose": "Dense article, navigation, code blocks, and tables."
+        },
+        {
+            "id": "dashboard",
+            "name": "Dashboard",
+            "purpose": "Repeated cards, tables, filters, charts, and states."
+        },
+        {
+            "id": "stress-css",
+            "name": "Stress CSS",
+            "purpose": "Controlled small, medium, and large CSS outputs."
+        }
+    ],
+    "metrics": {
+        "startup-diagnostics": [
+            {
+                "id": "cli-command-elapsed-ms",
+                "label": "Cli Command Elapsed Ms",
+                "unit": "ms",
+                "description": "Full child-process command timing measured by the benchmark parent process."
+            },
+            {
+                "id": "cli-probe-command-elapsed-ms",
+                "label": "Cli Probe Command Elapsed Ms",
+                "unit": "ms",
+                "description": "Full child-process command timing measured by the benchmark parent process."
+            },
+            {
+                "id": "cli-scanner-import-ms",
+                "label": "Cli Scanner Import Ms",
+                "unit": "ms",
+                "description": "Cold child-process module import timing for startup diagnostics."
+            },
+            {
+                "id": "vite-master-command-overhead-ms",
+                "label": "Vite Master Command Overhead Ms",
+                "unit": "ms",
+                "description": "Full child-process command timing measured by the benchmark parent process."
+            },
+            {
+                "id": "master-vite-import-ms",
+                "label": "Master Vite Import Ms",
+                "unit": "ms",
+                "description": "Cold child-process module import timing for startup diagnostics."
+            },
+            {
+                "id": "master-vite-core-module-import-ms",
+                "label": "Master Vite Core Module Import Ms",
+                "unit": "ms",
+                "description": "Cold child-process module import timing for startup diagnostics."
+            },
+            {
+                "id": "vite-master-scanner-init-ms",
+                "label": "Vite Master Scanner Init Ms",
+                "unit": "ms",
+                "description": "Instrumented Master CSS Vite plugin startup or hook timing."
+            },
+            {
+                "id": "vite-build-with-master-ms",
+                "label": "Vite Build With Master Ms",
+                "unit": "ms",
+                "description": "Startup diagnostic metric."
+            }
+        ],
+        "build-diagnostics": [
+            {
+                "id": "cli-source-scan-ms",
+                "label": "CLI source scan",
+                "unit": "ms",
+                "description": "Time spent scanning fixture source files."
+            },
+            {
+                "id": "cli-css-extraction-ms",
+                "label": "CLI CSS extraction",
+                "unit": "ms",
+                "description": "Time spent creating extracted Master CSS."
+            },
+            {
+                "id": "vite-baseline-build-ms",
+                "label": "Vite baseline build",
+                "unit": "ms",
+                "description": "Vite production build time for the fixture without Master CSS plugin work."
+            },
+            {
+                "id": "vite-total-build-ms",
+                "label": "Vite total build",
+                "unit": "ms",
+                "description": "Total Vite production build time with instrumented Master CSS plugin work."
+            },
+            {
+                "id": "vite-master-scanner-init-ms",
+                "label": "Vite scanner init",
+                "unit": "ms",
+                "description": "Time spent initializing the Master CSS scanner during Vite config resolution."
+            },
+            {
+                "id": "vite-master-generate-bundle-ms",
+                "label": "Vite bundle CSS extraction",
+                "unit": "ms",
+                "description": "Time spent extracting generated CSS and splicing it into the final CSS bundle."
+            }
+        ],
+        "compiler-diagnostics": [
+            {
+                "id": "production-create-extracted-css-ms",
+                "label": "Production Create Extracted Css Ms",
+                "unit": "ms",
+                "description": "Time spent in the production createExtractedCSS path after scanner setup."
+            },
+            {
+                "id": "diagnostic-compiler-total-ms",
+                "label": "Diagnostic Compiler Total Ms",
+                "unit": "ms",
+                "description": "Total elapsed time for the benchmark-local compiler diagnostic extraction path."
+            },
+            {
+                "id": "render-compiled-css-ms",
+                "label": "Render Compiled Css Ms",
+                "unit": "ms",
+                "description": "Compiler diagnostic metric."
+            },
+            {
+                "id": "generated-css-raw-bytes",
+                "label": "Generated Css Raw Bytes",
+                "unit": "B",
+                "description": "Compiler diagnostic metric."
+            },
+            {
+                "id": "final-css-raw-bytes",
+                "label": "Final Css Raw Bytes",
+                "unit": "B",
+                "description": "Compiler diagnostic metric."
+            }
+        ],
+        "extraction-diagnostics": [
+            {
+                "id": "production-create-extracted-css-ms",
+                "label": "Production createExtractedCSS",
+                "unit": "ms",
+                "description": "Time spent in the production createExtractedCSS path after scanner setup."
+            },
+            {
+                "id": "diagnostic-extraction-total-ms",
+                "label": "Diagnostic extraction total",
+                "unit": "ms",
+                "description": "Total elapsed time for the benchmark-local diagnostic extraction decomposition."
+            },
+            {
+                "id": "engine-rule-generation-ms",
+                "label": "Engine rule generation",
+                "unit": "ms",
+                "description": "Time spent adding generated classes to the engine."
+            },
+            {
+                "id": "css-text-serialization-ms",
+                "label": "CSS text serialization",
+                "unit": "ms",
+                "description": "Time spent serializing generated engine layers into CSS text."
+            },
+            {
+                "id": "final-css-assembly-ms",
+                "label": "Final CSS assembly",
+                "unit": "ms",
+                "description": "Time spent joining native and generated CSS into the final output string."
+            },
+            {
+                "id": "generated-css-brotli-bytes",
+                "label": "Generated CSS brotli bytes",
+                "unit": "B",
+                "description": "Brotli bytes of generated Master CSS."
+            },
+            {
+                "id": "final-css-brotli-bytes",
+                "label": "Final CSS brotli bytes",
+                "unit": "B",
+                "description": "Brotli bytes of byte-for-byte validated final CSS."
+            }
+        ]
+    },
+    "results": [
+        {
+            "fixtureId": "minimal",
+            "cli": {
+                "startup": {
+                    "variantId": "minimal-master-cli-startup-diagnostic",
+                    "metrics": {
+                        "cli-command-elapsed-ms": {
+                            "min": 189.53,
+                            "median": 190.3,
+                            "mean": 192.08,
+                            "max": 196.41,
+                            "sampleCount": 3,
+                            "unit": "ms"
+                        },
+                        "cli-probe-command-elapsed-ms": {
+                            "min": 185.14,
+                            "median": 185.77,
+                            "mean": 186.68,
+                            "max": 189.11,
+                            "sampleCount": 3,
+                            "unit": "ms"
+                        },
+                        "cli-scanner-import-ms": {
+                            "min": 70.32,
+                            "median": 70.39,
+                            "mean": 70.65,
+                            "max": 71.23,
+                            "sampleCount": 3,
+                            "unit": "ms"
+                        }
+                    }
+                },
+                "build": {
+                    "variantId": "minimal-master-cli-diagnostic",
+                    "metrics": {
+                        "cli-source-scan-ms": {
+                            "min": 12.09,
+                            "median": 13.69,
+                            "mean": 13.2,
+                            "max": 13.82,
+                            "sampleCount": 3,
+                            "unit": "ms"
+                        },
+                        "cli-css-extraction-ms": {
+                            "min": 14.72,
+                            "median": 15,
+                            "mean": 15.02,
+                            "max": 15.34,
+                            "sampleCount": 3,
+                            "unit": "ms"
+                        }
+                    }
+                }
+            },
+            "vite": {
+                "startup": {
+                    "variantId": "minimal-master-vite-startup-diagnostic",
+                    "metrics": {
+                        "vite-master-command-overhead-ms": {
+                            "min": 143.36,
+                            "median": 145.78,
+                            "mean": 170.49,
+                            "max": 222.31,
+                            "sampleCount": 3,
+                            "unit": "ms"
+                        },
+                        "master-vite-import-ms": {
+                            "min": 71.06,
+                            "median": 72.5,
+                            "mean": 72.37,
+                            "max": 73.54,
+                            "sampleCount": 3,
+                            "unit": "ms"
+                        },
+                        "master-vite-core-module-import-ms": {
+                            "min": 97.2,
+                            "median": 104.63,
+                            "mean": 105.59,
+                            "max": 114.94,
+                            "sampleCount": 3,
+                            "unit": "ms"
+                        },
+                        "vite-master-scanner-init-ms": {
+                            "min": 5.5,
+                            "median": 5.69,
+                            "mean": 5.66,
+                            "max": 5.77,
+                            "sampleCount": 3,
+                            "unit": "ms"
+                        },
+                        "vite-build-with-master-ms": {
+                            "min": 99.97,
+                            "median": 100.09,
+                            "mean": 100.32,
+                            "max": 100.91,
+                            "sampleCount": 3,
+                            "unit": "ms"
+                        }
+                    }
+                },
+                "build": {
+                    "variantId": "minimal-master-vite-diagnostic",
+                    "metrics": {
+                        "vite-baseline-build-ms": {
+                            "min": 335.99,
+                            "median": 352.59,
+                            "mean": 352.88,
+                            "max": 370.06,
+                            "sampleCount": 3,
+                            "unit": "ms"
+                        },
+                        "vite-total-build-ms": {
+                            "min": 81.37,
+                            "median": 84.5,
+                            "mean": 84.15,
+                            "max": 86.59,
+                            "sampleCount": 3,
+                            "unit": "ms"
+                        },
+                        "vite-master-scanner-init-ms": {
+                            "min": 5.08,
+                            "median": 5.19,
+                            "mean": 5.21,
+                            "max": 5.36,
+                            "sampleCount": 3,
+                            "unit": "ms"
+                        },
+                        "vite-master-generate-bundle-ms": {
+                            "min": 14.19,
+                            "median": 14.24,
+                            "mean": 14.4,
+                            "max": 14.78,
+                            "sampleCount": 3,
+                            "unit": "ms"
+                        }
+                    }
+                }
+            },
+            "compiler": {
+                "variantId": "minimal-master-static-compiler",
+                "metrics": {
+                    "production-create-extracted-css-ms": {
+                        "min": 14.76,
+                        "median": 15.8,
+                        "mean": 15.6,
+                        "max": 16.24,
+                        "sampleCount": 3,
+                        "unit": "ms"
+                    },
+                    "diagnostic-compiler-total-ms": {
+                        "min": 11.56,
+                        "median": 11.77,
+                        "mean": 11.95,
+                        "max": 12.53,
+                        "sampleCount": 3,
+                        "unit": "ms"
+                    },
+                    "render-compiled-css-ms": {
+                        "min": 4.89,
+                        "median": 5.13,
+                        "mean": 5.13,
+                        "max": 5.37,
+                        "sampleCount": 3,
+                        "unit": "ms"
+                    },
+                    "generated-css-raw-bytes": {
+                        "min": 2350,
+                        "median": 2350,
+                        "mean": 2350,
+                        "max": 2350,
+                        "sampleCount": 3,
+                        "unit": "B"
+                    },
+                    "final-css-raw-bytes": {
+                        "min": 5056,
+                        "median": 5056,
+                        "mean": 5056,
+                        "max": 5056,
+                        "sampleCount": 3,
+                        "unit": "B"
+                    }
+                }
+            },
+            "extraction": {
+                "variantId": "minimal-master-static-extraction",
+                "metrics": {
+                    "production-create-extracted-css-ms": {
+                        "min": 14.2,
+                        "median": 14.77,
+                        "mean": 14.63,
+                        "max": 14.93,
+                        "sampleCount": 3,
+                        "unit": "ms"
+                    },
+                    "diagnostic-extraction-total-ms": {
+                        "min": 11.87,
+                        "median": 11.95,
+                        "mean": 12.11,
+                        "max": 12.51,
+                        "sampleCount": 3,
+                        "unit": "ms"
+                    },
+                    "engine-rule-generation-ms": {
+                        "min": 1.08,
+                        "median": 1.13,
+                        "mean": 1.21,
+                        "max": 1.42,
+                        "sampleCount": 3,
+                        "unit": "ms"
+                    },
+                    "css-text-serialization-ms": {
+                        "min": 0.13,
+                        "median": 0.13,
+                        "mean": 0.13,
+                        "max": 0.13,
+                        "sampleCount": 3,
+                        "unit": "ms"
+                    },
+                    "final-css-assembly-ms": {
+                        "min": 0.01,
+                        "median": 0.01,
+                        "mean": 0.01,
+                        "max": 0.01,
+                        "sampleCount": 3,
+                        "unit": "ms"
+                    },
+                    "generated-css-brotli-bytes": {
+                        "min": 857,
+                        "median": 857,
+                        "mean": 857,
+                        "max": 857,
+                        "sampleCount": 3,
+                        "unit": "B"
+                    },
+                    "final-css-brotli-bytes": {
+                        "min": 1614,
+                        "median": 1614,
+                        "mean": 1614,
+                        "max": 1614,
+                        "sampleCount": 3,
+                        "unit": "B"
+                    }
+                }
+            }
+        },
+        {
+            "fixtureId": "docs",
+            "cli": {
+                "startup": {
+                    "variantId": "docs-master-cli-startup-diagnostic",
+                    "metrics": {
+                        "cli-command-elapsed-ms": {
+                            "min": 196.15,
+                            "median": 198.33,
+                            "mean": 199.67,
+                            "max": 204.53,
+                            "sampleCount": 3,
+                            "unit": "ms"
+                        },
+                        "cli-probe-command-elapsed-ms": {
+                            "min": 200.09,
+                            "median": 203.52,
+                            "mean": 215.86,
+                            "max": 243.97,
+                            "sampleCount": 3,
+                            "unit": "ms"
+                        },
+                        "cli-scanner-import-ms": {
+                            "min": 74.36,
+                            "median": 74.37,
+                            "mean": 75.01,
+                            "max": 76.3,
+                            "sampleCount": 3,
+                            "unit": "ms"
+                        }
+                    }
+                },
+                "build": {
+                    "variantId": "docs-master-cli-diagnostic",
+                    "metrics": {
+                        "cli-source-scan-ms": {
+                            "min": 17.49,
+                            "median": 17.85,
+                            "mean": 17.91,
+                            "max": 18.4,
+                            "sampleCount": 3,
+                            "unit": "ms"
+                        },
+                        "cli-css-extraction-ms": {
+                            "min": 15.83,
+                            "median": 15.97,
+                            "mean": 16.21,
+                            "max": 16.83,
+                            "sampleCount": 3,
+                            "unit": "ms"
+                        }
+                    }
+                }
+            },
+            "vite": {
+                "startup": {
+                    "variantId": "docs-master-vite-startup-diagnostic",
+                    "metrics": {
+                        "vite-master-command-overhead-ms": {
+                            "min": 139.66,
+                            "median": 145.79,
+                            "mean": 145.44,
+                            "max": 150.89,
+                            "sampleCount": 3,
+                            "unit": "ms"
+                        },
+                        "master-vite-import-ms": {
+                            "min": 72.21,
+                            "median": 75.99,
+                            "mean": 74.73,
+                            "max": 76,
+                            "sampleCount": 3,
+                            "unit": "ms"
+                        },
+                        "master-vite-core-module-import-ms": {
+                            "min": 98.33,
+                            "median": 105.31,
+                            "mean": 104.41,
+                            "max": 109.6,
+                            "sampleCount": 3,
+                            "unit": "ms"
+                        },
+                        "vite-master-scanner-init-ms": {
+                            "min": 5.09,
+                            "median": 5.33,
+                            "mean": 5.27,
+                            "max": 5.39,
+                            "sampleCount": 3,
+                            "unit": "ms"
+                        },
+                        "vite-build-with-master-ms": {
+                            "min": 103.41,
+                            "median": 105.94,
+                            "mean": 106.73,
+                            "max": 110.84,
+                            "sampleCount": 3,
+                            "unit": "ms"
+                        }
+                    }
+                },
+                "build": {
+                    "variantId": "docs-master-vite-diagnostic",
+                    "metrics": {
+                        "vite-baseline-build-ms": {
+                            "min": 317.99,
+                            "median": 326.39,
+                            "mean": 327.37,
+                            "max": 337.73,
+                            "sampleCount": 3,
+                            "unit": "ms"
+                        },
+                        "vite-total-build-ms": {
+                            "min": 90.53,
+                            "median": 91.12,
+                            "mean": 92.47,
+                            "max": 95.75,
+                            "sampleCount": 3,
+                            "unit": "ms"
+                        },
+                        "vite-master-scanner-init-ms": {
+                            "min": 5.12,
+                            "median": 5.82,
+                            "mean": 5.65,
+                            "max": 6.01,
+                            "sampleCount": 3,
+                            "unit": "ms"
+                        },
+                        "vite-master-generate-bundle-ms": {
+                            "min": 14.8,
+                            "median": 16.17,
+                            "mean": 16.88,
+                            "max": 19.68,
+                            "sampleCount": 3,
+                            "unit": "ms"
+                        }
+                    }
+                }
+            },
+            "compiler": {
+                "variantId": "docs-master-static-compiler",
+                "metrics": {
+                    "production-create-extracted-css-ms": {
+                        "min": 15.6,
+                        "median": 15.81,
+                        "mean": 16.09,
+                        "max": 16.87,
+                        "sampleCount": 3,
+                        "unit": "ms"
+                    },
+                    "diagnostic-compiler-total-ms": {
+                        "min": 12.24,
+                        "median": 13.52,
+                        "mean": 13.14,
+                        "max": 13.65,
+                        "sampleCount": 3,
+                        "unit": "ms"
+                    },
+                    "render-compiled-css-ms": {
+                        "min": 4.47,
+                        "median": 6.21,
+                        "mean": 5.8,
+                        "max": 6.71,
+                        "sampleCount": 3,
+                        "unit": "ms"
+                    },
+                    "generated-css-raw-bytes": {
+                        "min": 3075,
+                        "median": 3075,
+                        "mean": 3075,
+                        "max": 3075,
+                        "sampleCount": 3,
+                        "unit": "B"
+                    },
+                    "final-css-raw-bytes": {
+                        "min": 5781,
+                        "median": 5781,
+                        "mean": 5781,
+                        "max": 5781,
+                        "sampleCount": 3,
+                        "unit": "B"
+                    }
+                }
+            },
+            "extraction": {
+                "variantId": "docs-master-static-extraction",
+                "metrics": {
+                    "production-create-extracted-css-ms": {
+                        "min": 15.67,
+                        "median": 16.42,
+                        "mean": 16.2,
+                        "max": 16.52,
+                        "sampleCount": 3,
+                        "unit": "ms"
+                    },
+                    "diagnostic-extraction-total-ms": {
+                        "min": 12.47,
+                        "median": 12.93,
+                        "mean": 13.2,
+                        "max": 14.2,
+                        "sampleCount": 3,
+                        "unit": "ms"
+                    },
+                    "engine-rule-generation-ms": {
+                        "min": 1.64,
+                        "median": 1.89,
+                        "mean": 2.53,
+                        "max": 4.06,
+                        "sampleCount": 3,
+                        "unit": "ms"
+                    },
+                    "css-text-serialization-ms": {
+                        "min": 0.14,
+                        "median": 0.16,
+                        "mean": 0.15,
+                        "max": 0.16,
+                        "sampleCount": 3,
+                        "unit": "ms"
+                    },
+                    "final-css-assembly-ms": {
+                        "min": 0.01,
+                        "median": 0.01,
+                        "mean": 0.01,
+                        "max": 0.01,
+                        "sampleCount": 3,
+                        "unit": "ms"
+                    },
+                    "generated-css-brotli-bytes": {
+                        "min": 1072,
+                        "median": 1072,
+                        "mean": 1072,
+                        "max": 1072,
+                        "sampleCount": 3,
+                        "unit": "B"
+                    },
+                    "final-css-brotli-bytes": {
+                        "min": 1835,
+                        "median": 1835,
+                        "mean": 1835,
+                        "max": 1835,
+                        "sampleCount": 3,
+                        "unit": "B"
+                    }
+                }
+            }
+        },
+        {
+            "fixtureId": "dashboard",
+            "cli": {
+                "startup": {
+                    "variantId": "dashboard-master-cli-startup-diagnostic",
+                    "metrics": {
+                        "cli-command-elapsed-ms": {
+                            "min": 190.72,
+                            "median": 193.09,
+                            "mean": 193.74,
+                            "max": 197.4,
+                            "sampleCount": 3,
+                            "unit": "ms"
+                        },
+                        "cli-probe-command-elapsed-ms": {
+                            "min": 188.08,
+                            "median": 200.17,
+                            "mean": 197.03,
+                            "max": 202.85,
+                            "sampleCount": 3,
+                            "unit": "ms"
+                        },
+                        "cli-scanner-import-ms": {
+                            "min": 71.75,
+                            "median": 73.34,
+                            "mean": 72.82,
+                            "max": 73.36,
+                            "sampleCount": 3,
+                            "unit": "ms"
+                        }
+                    }
+                },
+                "build": {
+                    "variantId": "dashboard-master-cli-diagnostic",
+                    "metrics": {
+                        "cli-source-scan-ms": {
+                            "min": 18.3,
+                            "median": 18.92,
+                            "mean": 20.34,
+                            "max": 23.78,
+                            "sampleCount": 3,
+                            "unit": "ms"
+                        },
+                        "cli-css-extraction-ms": {
+                            "min": 16.78,
+                            "median": 17.3,
+                            "mean": 19.38,
+                            "max": 24.05,
+                            "sampleCount": 3,
+                            "unit": "ms"
+                        }
+                    }
+                }
+            },
+            "vite": {
+                "startup": {
+                    "variantId": "dashboard-master-vite-startup-diagnostic",
+                    "metrics": {
+                        "vite-master-command-overhead-ms": {
+                            "min": 144.44,
+                            "median": 150.58,
+                            "mean": 150.06,
+                            "max": 155.15,
+                            "sampleCount": 3,
+                            "unit": "ms"
+                        },
+                        "master-vite-import-ms": {
+                            "min": 68.43,
+                            "median": 71.65,
+                            "mean": 70.67,
+                            "max": 71.93,
+                            "sampleCount": 3,
+                            "unit": "ms"
+                        },
+                        "master-vite-core-module-import-ms": {
+                            "min": 99.14,
+                            "median": 105.87,
+                            "mean": 104,
+                            "max": 106.99,
+                            "sampleCount": 3,
+                            "unit": "ms"
+                        },
+                        "vite-master-scanner-init-ms": {
+                            "min": 5.09,
+                            "median": 5.11,
+                            "mean": 5.27,
+                            "max": 5.61,
+                            "sampleCount": 3,
+                            "unit": "ms"
+                        },
+                        "vite-build-with-master-ms": {
+                            "min": 104.74,
+                            "median": 107.57,
+                            "mean": 106.8,
+                            "max": 108.08,
+                            "sampleCount": 3,
+                            "unit": "ms"
+                        }
+                    }
+                },
+                "build": {
+                    "variantId": "dashboard-master-vite-diagnostic",
+                    "metrics": {
+                        "vite-baseline-build-ms": {
+                            "min": 323.68,
+                            "median": 342.89,
+                            "mean": 345.66,
+                            "max": 370.4,
+                            "sampleCount": 3,
+                            "unit": "ms"
+                        },
+                        "vite-total-build-ms": {
+                            "min": 92.41,
+                            "median": 95.04,
+                            "mean": 94.23,
+                            "max": 95.23,
+                            "sampleCount": 3,
+                            "unit": "ms"
+                        },
+                        "vite-master-scanner-init-ms": {
+                            "min": 5.18,
+                            "median": 5.58,
+                            "mean": 5.61,
+                            "max": 6.06,
+                            "sampleCount": 3,
+                            "unit": "ms"
+                        },
+                        "vite-master-generate-bundle-ms": {
+                            "min": 14.96,
+                            "median": 15.36,
+                            "mean": 15.62,
+                            "max": 16.54,
+                            "sampleCount": 3,
+                            "unit": "ms"
+                        }
+                    }
+                }
+            },
+            "compiler": {
+                "variantId": "dashboard-master-static-compiler",
+                "metrics": {
+                    "production-create-extracted-css-ms": {
+                        "min": 16.04,
+                        "median": 16.6,
+                        "mean": 16.51,
+                        "max": 16.89,
+                        "sampleCount": 3,
+                        "unit": "ms"
+                    },
+                    "diagnostic-compiler-total-ms": {
+                        "min": 12.33,
+                        "median": 13.46,
+                        "mean": 13.13,
+                        "max": 13.6,
+                        "sampleCount": 3,
+                        "unit": "ms"
+                    },
+                    "render-compiled-css-ms": {
+                        "min": 4.7,
+                        "median": 5.21,
+                        "mean": 5.44,
+                        "max": 6.4,
+                        "sampleCount": 3,
+                        "unit": "ms"
+                    },
+                    "generated-css-raw-bytes": {
+                        "min": 3273,
+                        "median": 3273,
+                        "mean": 3273,
+                        "max": 3273,
+                        "sampleCount": 3,
+                        "unit": "B"
+                    },
+                    "final-css-raw-bytes": {
+                        "min": 5979,
+                        "median": 5979,
+                        "mean": 5979,
+                        "max": 5979,
+                        "sampleCount": 3,
+                        "unit": "B"
+                    }
+                }
+            },
+            "extraction": {
+                "variantId": "dashboard-master-static-extraction",
+                "metrics": {
+                    "production-create-extracted-css-ms": {
+                        "min": 16,
+                        "median": 16.77,
+                        "mean": 16.62,
+                        "max": 17.1,
+                        "sampleCount": 3,
+                        "unit": "ms"
+                    },
+                    "diagnostic-extraction-total-ms": {
+                        "min": 12.44,
+                        "median": 13.03,
+                        "mean": 12.96,
+                        "max": 13.41,
+                        "sampleCount": 3,
+                        "unit": "ms"
+                    },
+                    "engine-rule-generation-ms": {
+                        "min": 1.4,
+                        "median": 1.47,
+                        "mean": 1.51,
+                        "max": 1.68,
+                        "sampleCount": 3,
+                        "unit": "ms"
+                    },
+                    "css-text-serialization-ms": {
+                        "min": 0.13,
+                        "median": 0.15,
+                        "mean": 0.14,
+                        "max": 0.15,
+                        "sampleCount": 3,
+                        "unit": "ms"
+                    },
+                    "final-css-assembly-ms": {
+                        "min": 0.01,
+                        "median": 0.01,
+                        "mean": 0.01,
+                        "max": 0.01,
+                        "sampleCount": 3,
+                        "unit": "ms"
+                    },
+                    "generated-css-brotli-bytes": {
+                        "min": 1006,
+                        "median": 1006,
+                        "mean": 1006,
+                        "max": 1006,
+                        "sampleCount": 3,
+                        "unit": "B"
+                    },
+                    "final-css-brotli-bytes": {
+                        "min": 1788,
+                        "median": 1788,
+                        "mean": 1788,
+                        "max": 1788,
+                        "sampleCount": 3,
+                        "unit": "B"
+                    }
+                }
+            }
+        },
+        {
+            "fixtureId": "stress-css",
+            "cli": {
+                "startup": {
+                    "variantId": "stress-css-master-cli-startup-diagnostic",
+                    "metrics": {
+                        "cli-command-elapsed-ms": {
+                            "min": 208.15,
+                            "median": 215.47,
+                            "mean": 214.35,
+                            "max": 219.44,
+                            "sampleCount": 3,
+                            "unit": "ms"
+                        },
+                        "cli-probe-command-elapsed-ms": {
+                            "min": 199.7,
+                            "median": 205.47,
+                            "mean": 206.46,
+                            "max": 214.22,
+                            "sampleCount": 3,
+                            "unit": "ms"
+                        },
+                        "cli-scanner-import-ms": {
+                            "min": 73.24,
+                            "median": 73.56,
+                            "mean": 73.61,
+                            "max": 74.05,
+                            "sampleCount": 3,
+                            "unit": "ms"
+                        }
+                    }
+                },
+                "build": {
+                    "variantId": "stress-css-master-cli-diagnostic",
+                    "metrics": {
+                        "cli-source-scan-ms": {
+                            "min": 24.43,
+                            "median": 25.02,
+                            "mean": 25.32,
+                            "max": 26.5,
+                            "sampleCount": 3,
+                            "unit": "ms"
+                        },
+                        "cli-css-extraction-ms": {
+                            "min": 19.54,
+                            "median": 21.19,
+                            "mean": 20.7,
+                            "max": 21.37,
+                            "sampleCount": 3,
+                            "unit": "ms"
+                        }
+                    }
+                }
+            },
+            "vite": {
+                "startup": {
+                    "variantId": "stress-css-master-vite-startup-diagnostic",
+                    "metrics": {
+                        "vite-master-command-overhead-ms": {
+                            "min": 159.03,
+                            "median": 163.74,
+                            "mean": 166.38,
+                            "max": 176.38,
+                            "sampleCount": 3,
+                            "unit": "ms"
+                        },
+                        "master-vite-import-ms": {
+                            "min": 74.97,
+                            "median": 79.5,
+                            "mean": 79.39,
+                            "max": 83.71,
+                            "sampleCount": 3,
+                            "unit": "ms"
+                        },
+                        "master-vite-core-module-import-ms": {
+                            "min": 97.27,
+                            "median": 104.75,
+                            "mean": 105.71,
+                            "max": 115.13,
+                            "sampleCount": 3,
+                            "unit": "ms"
+                        },
+                        "vite-master-scanner-init-ms": {
+                            "min": 5.55,
+                            "median": 6.11,
+                            "mean": 6.08,
+                            "max": 6.57,
+                            "sampleCount": 3,
+                            "unit": "ms"
+                        },
+                        "vite-build-with-master-ms": {
+                            "min": 121.74,
+                            "median": 123.87,
+                            "mean": 124.75,
+                            "max": 128.64,
+                            "sampleCount": 3,
+                            "unit": "ms"
+                        }
+                    }
+                },
+                "build": {
+                    "variantId": "stress-css-master-vite-diagnostic",
+                    "metrics": {
+                        "vite-baseline-build-ms": {
+                            "min": 317.78,
+                            "median": 328.21,
+                            "mean": 330.37,
+                            "max": 345.11,
+                            "sampleCount": 3,
+                            "unit": "ms"
+                        },
+                        "vite-total-build-ms": {
+                            "min": 101.01,
+                            "median": 101.29,
+                            "mean": 102.23,
+                            "max": 104.4,
+                            "sampleCount": 3,
+                            "unit": "ms"
+                        },
+                        "vite-master-scanner-init-ms": {
+                            "min": 5.06,
+                            "median": 5.2,
+                            "mean": 6.11,
+                            "max": 8.07,
+                            "sampleCount": 3,
+                            "unit": "ms"
+                        },
+                        "vite-master-generate-bundle-ms": {
+                            "min": 19.06,
+                            "median": 19.38,
+                            "mean": 20.01,
+                            "max": 21.6,
+                            "sampleCount": 3,
+                            "unit": "ms"
+                        }
+                    }
+                }
+            },
+            "compiler": {
+                "variantId": "stress-css-master-static-compiler",
+                "metrics": {
+                    "production-create-extracted-css-ms": {
+                        "min": 20.9,
+                        "median": 21.71,
+                        "mean": 21.56,
+                        "max": 22.07,
+                        "sampleCount": 3,
+                        "unit": "ms"
+                    },
+                    "diagnostic-compiler-total-ms": {
+                        "min": 16.76,
+                        "median": 17.41,
+                        "mean": 17.66,
+                        "max": 18.81,
+                        "sampleCount": 3,
+                        "unit": "ms"
+                    },
+                    "render-compiled-css-ms": {
+                        "min": 8.55,
+                        "median": 8.6,
+                        "mean": 8.78,
+                        "max": 9.19,
+                        "sampleCount": 3,
+                        "unit": "ms"
+                    },
+                    "generated-css-raw-bytes": {
+                        "min": 8951,
+                        "median": 8951,
+                        "mean": 8951,
+                        "max": 8951,
+                        "sampleCount": 3,
+                        "unit": "B"
+                    },
+                    "final-css-raw-bytes": {
+                        "min": 11657,
+                        "median": 11657,
+                        "mean": 11657,
+                        "max": 11657,
+                        "sampleCount": 3,
+                        "unit": "B"
+                    }
+                }
+            },
+            "extraction": {
+                "variantId": "stress-css-master-static-extraction",
+                "metrics": {
+                    "production-create-extracted-css-ms": {
+                        "min": 20.54,
+                        "median": 21.07,
+                        "mean": 21.07,
+                        "max": 21.6,
+                        "sampleCount": 3,
+                        "unit": "ms"
+                    },
+                    "diagnostic-extraction-total-ms": {
+                        "min": 17.42,
+                        "median": 18.31,
+                        "mean": 18.2,
+                        "max": 18.88,
+                        "sampleCount": 3,
+                        "unit": "ms"
+                    },
+                    "engine-rule-generation-ms": {
+                        "min": 4.05,
+                        "median": 4.71,
+                        "mean": 4.95,
+                        "max": 6.09,
+                        "sampleCount": 3,
+                        "unit": "ms"
+                    },
+                    "css-text-serialization-ms": {
+                        "min": 0.26,
+                        "median": 0.27,
+                        "mean": 0.3,
+                        "max": 0.37,
+                        "sampleCount": 3,
+                        "unit": "ms"
+                    },
+                    "final-css-assembly-ms": {
+                        "min": 0.01,
+                        "median": 0.01,
+                        "mean": 0.01,
+                        "max": 0.01,
+                        "sampleCount": 3,
+                        "unit": "ms"
+                    },
+                    "generated-css-brotli-bytes": {
+                        "min": 1287,
+                        "median": 1287,
+                        "mean": 1287,
+                        "max": 1287,
+                        "sampleCount": 3,
+                        "unit": "B"
+                    },
+                    "final-css-brotli-bytes": {
+                        "min": 2047,
+                        "median": 2047,
+                        "mean": 2047,
+                        "max": 2047,
+                        "sampleCount": 3,
+                        "unit": "B"
+                    }
+                }
+            }
+        }
+    ],
+    "limits": [
+        "This snapshot summarizes Master CSS build-path diagnostics only; it is not a cross-framework build benchmark.",
+        "Startup diagnostics run child-process probes, so import timings are directional and are not additive flamegraphs.",
+        "Build diagnostics instrument CLI and Vite paths but do not replace full production command timing.",
+        "Compiler and extraction diagnostics require unchanged output hashes before their timings are useful.",
+        "Results are advisory and should be read with the package versions, commands, machine details, and fixture source."
+    ]
+}

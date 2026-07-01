@@ -1,21 +1,21 @@
 {
     "schemaVersion": 1,
     "suite": "tailwind-static-comparison",
-    "generatedAt": "2026-06-27T22:53:52.173Z",
+    "generatedAt": "2026-07-01T20:11:00.803Z",
     "sourceReports": [
         {
             "suite": "css-output-size",
-            "generatedAt": "2026-06-27T22:53:14.626Z",
+            "generatedAt": "2026-07-01T20:10:24.217Z",
             "command": "pnpm --filter ./benchmarks bench:css-output-size"
         },
         {
             "suite": "build-performance",
-            "generatedAt": "2026-06-27T22:53:38.834Z",
+            "generatedAt": "2026-07-01T20:10:48.605Z",
             "command": "pnpm --filter ./benchmarks bench:build-performance"
         },
         {
             "suite": "css-structure",
-            "generatedAt": "2026-06-27T22:53:46.955Z",
+            "generatedAt": "2026-07-01T20:10:56.494Z",
             "command": "pnpm --filter ./benchmarks bench:css-structure"
         }
     ],
@@ -62,7 +62,7 @@
         },
         {
             "name": "vite",
-            "version": "^8.0.16"
+            "version": "^8.1.0"
         }
     ],
     "fixtures": [
@@ -290,8 +290,8 @@
                         "sha256": "b655412a8e2edcdc15f524c9b2c310d3f81f581eb4fb32b5e78dbe6f83cba6ef"
                     },
                     "build": {
-                        "coldMedianMs": 182.4,
-                        "repeatMedianMs": 178.9,
+                        "coldMedianMs": 189.8,
+                        "repeatMedianMs": 186.1,
                         "sampleCount": 3
                     },
                     "structure": {
@@ -329,8 +329,8 @@
                         "sha256": "7e8e20ce7b0979d7bb2c2d7b02ee717432597f24f3ca731a902fd67769180352"
                     },
                     "build": {
-                        "coldMedianMs": 276.2,
-                        "repeatMedianMs": 253.1,
+                        "coldMedianMs": 263.2,
+                        "repeatMedianMs": 260.2,
                         "sampleCount": 3
                     },
                     "structure": {
@@ -368,8 +368,8 @@
                         "sha256": "abccca1aa5e23c265f3e5228826094a7c4cb557e24f52bfc6ea2f18792b5bd10"
                     },
                     "build": {
-                        "coldMedianMs": 95.1,
-                        "repeatMedianMs": 93.4,
+                        "coldMedianMs": 95.2,
+                        "repeatMedianMs": 98,
                         "sampleCount": 3
                     },
                     "structure": {
@@ -407,8 +407,8 @@
                         "sha256": "22984cae16c266792aa88165bd33190506aae10d6eb725c01c092a9e4406ec90"
                     },
                     "build": {
-                        "coldMedianMs": 160.3,
-                        "repeatMedianMs": 162.5,
+                        "coldMedianMs": 160.4,
+                        "repeatMedianMs": 160.3,
                         "sampleCount": 3
                     },
                     "structure": {
@@ -446,13 +446,13 @@
                     "css": {
                         "rawBytes": 5781,
                         "gzipBytes": 2154,
-                        "brotliBytes": 1838,
+                        "brotliBytes": 1835,
                         "fileCount": 1,
-                        "sha256": "9a380d607e865d39e48c7c832ce0f917325ce9cbdfcd2e77b59d3b4ec9306445"
+                        "sha256": "0722856df802ce2015ea0c6f154a8439aa1acd00d6e214c6f98caa94a24f37d9"
                     },
                     "build": {
-                        "coldMedianMs": 193.7,
-                        "repeatMedianMs": 187.5,
+                        "coldMedianMs": 195.5,
+                        "repeatMedianMs": 187.6,
                         "sampleCount": 3
                     },
                     "structure": {
@@ -485,13 +485,13 @@
                     "css": {
                         "rawBytes": 5782,
                         "gzipBytes": 2155,
-                        "brotliBytes": 1834,
+                        "brotliBytes": 1838,
                         "fileCount": 1,
-                        "sha256": "0bc30bf9247a30d782a9f82be7e9213e0c2364b2e57bd3486caaa5a9c3f24fdd"
+                        "sha256": "cb4b3e04b9c1986101947a0e872d70d726bfaadc6f60bcc63176886a316c6425"
                     },
                     "build": {
-                        "coldMedianMs": 265,
-                        "repeatMedianMs": 266.3,
+                        "coldMedianMs": 284.1,
+                        "repeatMedianMs": 266.7,
                         "sampleCount": 3
                     },
                     "structure": {
@@ -529,8 +529,8 @@
                         "sha256": "c47779d3d1c47a1f97bd052dcbccf07873fe3d2e8e48cf48e17e31f9af57d851"
                     },
                     "build": {
-                        "coldMedianMs": 96.3,
-                        "repeatMedianMs": 95,
+                        "coldMedianMs": 99.5,
+                        "repeatMedianMs": 95.7,
                         "sampleCount": 3
                     },
                     "structure": {
@@ -568,8 +568,8 @@
                         "sha256": "3604fa84b2cd02f8a833b26ca372dedf97ee8d35e3c4a29239c6f7d08a0db4ff"
                     },
                     "build": {
-                        "coldMedianMs": 162.2,
-                        "repeatMedianMs": 163.4,
+                        "coldMedianMs": 164,
+                        "repeatMedianMs": 161.9,
                         "sampleCount": 3
                     },
                     "structure": {
@@ -607,13 +607,13 @@
                     "css": {
                         "rawBytes": 5979,
                         "gzipBytes": 2113,
-                        "brotliBytes": 1794,
+                        "brotliBytes": 1788,
                         "fileCount": 1,
-                        "sha256": "b600183a1fdb0917efe02503156e649fc0ef17a70041b7b79a76e4cdb2c24afe"
+                        "sha256": "7e913f7868b24c3123a2534b389ee3560277f8506c0d4c12e87ff2918731b55b"
                     },
                     "build": {
-                        "coldMedianMs": 191.6,
-                        "repeatMedianMs": 185.7,
+                        "coldMedianMs": 199.8,
+                        "repeatMedianMs": 189.3,
                         "sampleCount": 3
                     },
                     "structure": {
@@ -646,13 +646,13 @@
                     "css": {
                         "rawBytes": 5980,
                         "gzipBytes": 2114,
-                        "brotliBytes": 1787,
+                        "brotliBytes": 1785,
                         "fileCount": 1,
-                        "sha256": "59ba2de1b60a30cb88266dd5f7f0c93769f7120fba97059ee0fe51585bb952e7"
+                        "sha256": "d00a854bf2e72b577f0197d68e4b1d5109cdbfa9a58e8ce650bdbf14f4e63640"
                     },
                     "build": {
-                        "coldMedianMs": 268.3,
-                        "repeatMedianMs": 269,
+                        "coldMedianMs": 274.1,
+                        "repeatMedianMs": 267.9,
                         "sampleCount": 3
                     },
                     "structure": {
@@ -690,8 +690,8 @@
                         "sha256": "1b313dd3a0615c658235c4c41803f47e52abae677abbac925d702dfe2bd62e83"
                     },
                     "build": {
-                        "coldMedianMs": 95.8,
-                        "repeatMedianMs": 93.7,
+                        "coldMedianMs": 99.7,
+                        "repeatMedianMs": 95.4,
                         "sampleCount": 3
                     },
                     "structure": {
@@ -729,8 +729,8 @@
                         "sha256": "cc89ce4089ff0376b738cf123c11047ba5dd0fc06094be5e1dc9bcebaab93299"
                     },
                     "build": {
-                        "coldMedianMs": 165.4,
-                        "repeatMedianMs": 163.2,
+                        "coldMedianMs": 164.7,
+                        "repeatMedianMs": 169.6,
                         "sampleCount": 3
                     },
                     "structure": {
@@ -768,13 +768,13 @@
                     "css": {
                         "rawBytes": 11657,
                         "gzipBytes": 3067,
-                        "brotliBytes": 2054,
+                        "brotliBytes": 2047,
                         "fileCount": 1,
-                        "sha256": "8cbd85f214ed44a7a52384c8553bfb9befe8ebd7dcbdc96329bd420f0f4c81e0"
+                        "sha256": "30fd468a7c0ef8304c7d8402f15d0922b7e86656daa14e2387f061fff78dd83a"
                     },
                     "build": {
-                        "coldMedianMs": 208.6,
-                        "repeatMedianMs": 202.7,
+                        "coldMedianMs": 217.8,
+                        "repeatMedianMs": 207.3,
                         "sampleCount": 3
                     },
                     "structure": {
@@ -807,13 +807,13 @@
                     "css": {
                         "rawBytes": 11658,
                         "gzipBytes": 3068,
-                        "brotliBytes": 2054,
+                        "brotliBytes": 2052,
                         "fileCount": 1,
-                        "sha256": "038400f1b3356a8b546e1bd87db8fb4fe502d74fa55a16e974c52f7ffc17f10e"
+                        "sha256": "884ca406f73bb565dcb1b3ac35db0adff1c90a9e266fb19253a0d3c09526dd30"
                     },
                     "build": {
                         "coldMedianMs": 281.5,
-                        "repeatMedianMs": 279,
+                        "repeatMedianMs": 278.7,
                         "sampleCount": 3
                     },
                     "structure": {
@@ -851,8 +851,8 @@
                         "sha256": "98668caf9c898010185255ede7f0163c5f84ba63329bdcaa3719e6a2e6f376ac"
                     },
                     "build": {
-                        "coldMedianMs": 96.6,
-                        "repeatMedianMs": 96.2,
+                        "coldMedianMs": 100.8,
+                        "repeatMedianMs": 103,
                         "sampleCount": 3
                     },
                     "structure": {
@@ -890,8 +890,8 @@
                         "sha256": "0876e7fe85c077e32bc2844b7f5d2d103aa7c65f8668557a07ebb5a8bbcc2d1a"
                     },
                     "build": {
-                        "coldMedianMs": 166.2,
-                        "repeatMedianMs": 163.2,
+                        "coldMedianMs": 174,
+                        "repeatMedianMs": 168,
                         "sampleCount": 3
                     },
                     "structure": {

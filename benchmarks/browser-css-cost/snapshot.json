@@ -1,10 +1,10 @@
 {
     "schemaVersion": 1,
     "suite": "browser-css-cost",
-    "generatedAt": "2026-06-28T15:50:51.035Z",
+    "generatedAt": "2026-07-01T20:13:04.801Z",
     "sourceReport": {
         "suite": "browser-css-cost",
-        "generatedAt": "2026-06-28T15:50:43.891Z",
+        "generatedAt": "2026-07-01T20:13:01.262Z",
         "command": "pnpm --filter ./benchmarks bench:browser-css-cost"
     },
     "environment": {
@@ -226,10 +226,10 @@
                     "variantId": "stress-css-small-css-cold-cache",
                     "timing": {
                         "navigationReadyMs": {
-                            "min": 18.2,
-                            "median": 19.2,
-                            "mean": 19.6,
-                            "max": 21.5,
+                            "min": 19,
+                            "median": 19.1,
+                            "mean": 19.2,
+                            "max": 19.5,
                             "sampleCount": 3,
                             "unit": "ms"
                         },
@@ -250,18 +250,18 @@
                             "unit": "ms"
                         },
                         "layoutMs": {
-                            "min": 3.9,
-                            "median": 4.1,
-                            "mean": 4.1,
-                            "max": 4.1,
+                            "min": 4.3,
+                            "median": 4.5,
+                            "mean": 4.5,
+                            "max": 4.6,
                             "sampleCount": 3,
                             "unit": "ms"
                         },
                         "paintMs": {
-                            "min": 1,
-                            "median": 1.1,
-                            "mean": 1.1,
-                            "max": 1.1,
+                            "min": 1.1,
+                            "median": 1.2,
+                            "mean": 1.2,
+                            "max": 1.2,
                             "sampleCount": 3,
                             "unit": "ms"
                         },
@@ -300,10 +300,10 @@
                     "variantId": "stress-css-small-css-warm-cache",
                     "timing": {
                         "navigationReadyMs": {
-                            "min": 11.8,
-                            "median": 20.1,
+                            "min": 15,
+                            "median": 19.2,
                             "mean": 17.9,
-                            "max": 21.7,
+                            "max": 19.5,
                             "sampleCount": 3,
                             "unit": "ms"
                         },
@@ -316,7 +316,7 @@
                             "unit": "ms"
                         },
                         "styleRecalculationMs": {
-                            "min": 0.4,
+                            "min": 0.5,
                             "median": 0.5,
                             "mean": 0.5,
                             "max": 0.5,
@@ -324,7 +324,7 @@
                             "unit": "ms"
                         },
                         "layoutMs": {
-                            "min": 0.9,
+                            "min": 1,
                             "median": 1,
                             "mean": 1,
                             "max": 1,
@@ -335,7 +335,7 @@
                             "min": 0.6,
                             "median": 0.6,
                             "mean": 0.7,
-                            "max": 0.7,
+                            "max": 0.8,
                             "sampleCount": 3,
                             "unit": "ms"
                         },
@@ -380,10 +380,10 @@
                     "variantId": "stress-css-medium-css-cold-cache",
                     "timing": {
                         "navigationReadyMs": {
-                            "min": 18.6,
-                            "median": 19,
-                            "mean": 19.9,
-                            "max": 22.1,
+                            "min": 18.8,
+                            "median": 20.3,
+                            "mean": 20.4,
+                            "max": 22,
                             "sampleCount": 3,
                             "unit": "ms"
                         },
@@ -391,30 +391,30 @@
                             "min": 0.8,
                             "median": 0.8,
                             "mean": 0.8,
-                            "max": 0.9,
+                            "max": 0.8,
                             "sampleCount": 3,
                             "unit": "ms"
                         },
                         "styleRecalculationMs": {
                             "min": 0.9,
-                            "median": 0.9,
-                            "mean": 0.9,
+                            "median": 1,
+                            "mean": 1,
                             "max": 1,
                             "sampleCount": 3,
                             "unit": "ms"
                         },
                         "layoutMs": {
-                            "min": 4,
-                            "median": 4.1,
-                            "mean": 4.1,
-                            "max": 4.3,
+                            "min": 4.1,
+                            "median": 4.3,
+                            "mean": 4.3,
+                            "max": 4.5,
                             "sampleCount": 3,
                             "unit": "ms"
                         },
                         "paintMs": {
-                            "min": 1,
-                            "median": 1.1,
-                            "mean": 1.1,
+                            "min": 1.1,
+                            "median": 1.2,
+                            "mean": 1.2,
                             "max": 1.2,
                             "sampleCount": 3,
                             "unit": "ms"
@@ -454,10 +454,10 @@
                     "variantId": "stress-css-medium-css-warm-cache",
                     "timing": {
                         "navigationReadyMs": {
-                            "min": 13.8,
-                            "median": 13.9,
-                            "mean": 15.7,
-                            "max": 19.3,
+                            "min": 11.3,
+                            "median": 17.9,
+                            "mean": 16.1,
+                            "max": 19.1,
                             "sampleCount": 3,
                             "unit": "ms"
                         },
@@ -470,26 +470,26 @@
                             "unit": "ms"
                         },
                         "styleRecalculationMs": {
-                            "min": 0.4,
-                            "median": 0.4,
-                            "mean": 0.4,
-                            "max": 0.5,
+                            "min": 0.5,
+                            "median": 0.5,
+                            "mean": 0.6,
+                            "max": 0.7,
                             "sampleCount": 3,
                             "unit": "ms"
                         },
                         "layoutMs": {
                             "min": 1,
-                            "median": 1,
-                            "mean": 1,
-                            "max": 1,
+                            "median": 1.1,
+                            "mean": 1.1,
+                            "max": 1.1,
                             "sampleCount": 3,
                             "unit": "ms"
                         },
                         "paintMs": {
-                            "min": 0.6,
-                            "median": 0.7,
+                            "min": 0.7,
+                            "median": 0.8,
                             "mean": 0.7,
-                            "max": 0.7,
+                            "max": 0.8,
                             "sampleCount": 3,
                             "unit": "ms"
                         },
@@ -534,42 +534,42 @@
                     "variantId": "stress-css-large-css-cold-cache",
                     "timing": {
                         "navigationReadyMs": {
-                            "min": 21.3,
-                            "median": 21.3,
-                            "mean": 22.6,
-                            "max": 25.2,
+                            "min": 21.8,
+                            "median": 24.8,
+                            "mean": 23.9,
+                            "max": 25,
                             "sampleCount": 3,
                             "unit": "ms"
                         },
                         "stylesheetParseMs": {
-                            "min": 2.7,
-                            "median": 2.8,
-                            "mean": 2.8,
-                            "max": 2.9,
+                            "min": 2.8,
+                            "median": 2.9,
+                            "mean": 2.9,
+                            "max": 3.1,
                             "sampleCount": 3,
                             "unit": "ms"
                         },
                         "styleRecalculationMs": {
                             "min": 1.9,
-                            "median": 1.9,
-                            "mean": 1.9,
-                            "max": 1.9,
+                            "median": 2,
+                            "mean": 2,
+                            "max": 2.1,
                             "sampleCount": 3,
                             "unit": "ms"
                         },
                         "layoutMs": {
                             "min": 4.1,
                             "median": 4.1,
-                            "mean": 4.1,
-                            "max": 4.1,
+                            "mean": 4.2,
+                            "max": 4.3,
                             "sampleCount": 3,
                             "unit": "ms"
                         },
                         "paintMs": {
-                            "min": 1,
-                            "median": 1,
-                            "mean": 1,
-                            "max": 1,
+                            "min": 1.1,
+                            "median": 1.2,
+                            "mean": 1.2,
+                            "max": 1.2,
                             "sampleCount": 3,
                             "unit": "ms"
                         },
@@ -608,10 +608,10 @@
                     "variantId": "stress-css-large-css-warm-cache",
                     "timing": {
                         "navigationReadyMs": {
-                            "min": 17.8,
-                            "median": 18.4,
-                            "mean": 18.7,
-                            "max": 20,
+                            "min": 12.4,
+                            "median": 16.9,
+                            "mean": 16,
+                            "max": 18.6,
                             "sampleCount": 3,
                             "unit": "ms"
                         },
@@ -625,9 +625,9 @@
                         },
                         "styleRecalculationMs": {
                             "min": 0.4,
-                            "median": 0.4,
-                            "mean": 0.4,
-                            "max": 0.4,
+                            "median": 0.5,
+                            "mean": 0.5,
+                            "max": 0.5,
                             "sampleCount": 3,
                             "unit": "ms"
                         },
@@ -635,15 +635,15 @@
                             "min": 1,
                             "median": 1,
                             "mean": 1,
-                            "max": 1,
+                            "max": 1.1,
                             "sampleCount": 3,
                             "unit": "ms"
                         },
                         "paintMs": {
                             "min": 0.6,
                             "median": 0.6,
-                            "mean": 0.6,
-                            "max": 0.6,
+                            "mean": 0.7,
+                            "max": 0.7,
                             "sampleCount": 3,
                             "unit": "ms"
                         },
@@ -688,42 +688,42 @@
                     "variantId": "stress-css-xlarge-css-cold-cache",
                     "timing": {
                         "navigationReadyMs": {
-                            "min": 28.9,
-                            "median": 32,
-                            "mean": 31,
+                            "min": 30.1,
+                            "median": 30.3,
+                            "mean": 30.8,
                             "max": 32.1,
                             "sampleCount": 3,
                             "unit": "ms"
                         },
                         "stylesheetParseMs": {
-                            "min": 8.7,
-                            "median": 8.7,
-                            "mean": 8.8,
-                            "max": 8.9,
+                            "min": 9.2,
+                            "median": 9.3,
+                            "mean": 9.3,
+                            "max": 9.4,
                             "sampleCount": 3,
                             "unit": "ms"
                         },
                         "styleRecalculationMs": {
-                            "min": 3.8,
-                            "median": 3.9,
-                            "mean": 3.9,
-                            "max": 3.9,
+                            "min": 4,
+                            "median": 4.1,
+                            "mean": 4.1,
+                            "max": 4.2,
                             "sampleCount": 3,
                             "unit": "ms"
                         },
                         "layoutMs": {
                             "min": 3.8,
-                            "median": 3.9,
-                            "mean": 3.9,
-                            "max": 4.1,
+                            "median": 4.2,
+                            "mean": 4.1,
+                            "max": 4.3,
                             "sampleCount": 3,
                             "unit": "ms"
                         },
                         "paintMs": {
                             "min": 1.1,
-                            "median": 1.1,
+                            "median": 1.2,
                             "mean": 1.1,
-                            "max": 1.1,
+                            "max": 1.2,
                             "sampleCount": 3,
                             "unit": "ms"
                         },
@@ -762,10 +762,10 @@
                     "variantId": "stress-css-xlarge-css-warm-cache",
                     "timing": {
                         "navigationReadyMs": {
-                            "min": 12,
-                            "median": 15.3,
-                            "mean": 14.7,
-                            "max": 16.8,
+                            "min": 11.8,
+                            "median": 17.2,
+                            "mean": 16.2,
+                            "max": 19.4,
                             "sampleCount": 3,
                             "unit": "ms"
                         },
@@ -796,8 +796,8 @@
                         "paintMs": {
                             "min": 0.6,
                             "median": 0.6,
-                            "mean": 0.6,
-                            "max": 0.7,
+                            "mean": 0.7,
+                            "max": 0.8,
                             "sampleCount": 3,
                             "unit": "ms"
                         },
@@ -844,9 +844,9 @@
                     "variantId": "stress-dom-small-dom-cold-cache",
                     "timing": {
                         "navigationReadyMs": {
-                            "min": 20.2,
-                            "median": 20.4,
-                            "mean": 21,
+                            "min": 20.3,
+                            "median": 20.8,
+                            "mean": 21.2,
                             "max": 22.5,
                             "sampleCount": 3,
                             "unit": "ms"
@@ -862,21 +862,21 @@
                         "styleRecalculationMs": {
                             "min": 1.2,
                             "median": 1.2,
-                            "mean": 1.2,
-                            "max": 1.2,
+                            "mean": 1.3,
+                            "max": 1.3,
                             "sampleCount": 3,
                             "unit": "ms"
                         },
                         "layoutMs": {
-                            "min": 5.2,
-                            "median": 5.3,
-                            "mean": 5.3,
-                            "max": 5.3,
+                            "min": 4.9,
+                            "median": 5.4,
+                            "mean": 5.2,
+                            "max": 5.5,
                             "sampleCount": 3,
                             "unit": "ms"
                         },
                         "paintMs": {
-                            "min": 1.7,
+                            "min": 1.8,
                             "median": 2,
                             "mean": 1.9,
                             "max": 2,
@@ -918,10 +918,10 @@
                     "variantId": "stress-dom-small-dom-warm-cache",
                     "timing": {
                         "navigationReadyMs": {
-                            "min": 12.9,
-                            "median": 16.4,
-                            "mean": 15.5,
-                            "max": 17.1,
+                            "min": 13.2,
+                            "median": 13.4,
+                            "mean": 15,
+                            "max": 18.5,
                             "sampleCount": 3,
                             "unit": "ms"
                         },
@@ -934,26 +934,26 @@
                             "unit": "ms"
                         },
                         "styleRecalculationMs": {
-                            "min": 1,
+                            "min": 1.1,
                             "median": 1.1,
                             "mean": 1.1,
-                            "max": 1.1,
+                            "max": 1.2,
                             "sampleCount": 3,
                             "unit": "ms"
                         },
                         "layoutMs": {
-                            "min": 2,
-                            "median": 2.1,
-                            "mean": 2.1,
-                            "max": 2.1,
+                            "min": 2.1,
+                            "median": 2.2,
+                            "mean": 2.2,
+                            "max": 2.2,
                             "sampleCount": 3,
                             "unit": "ms"
                         },
                         "paintMs": {
-                            "min": 1.3,
-                            "median": 1.4,
-                            "mean": 1.5,
-                            "max": 1.7,
+                            "min": 1.4,
+                            "median": 1.8,
+                            "mean": 1.7,
+                            "max": 1.8,
                             "sampleCount": 3,
                             "unit": "ms"
                         },
@@ -998,10 +998,10 @@
                     "variantId": "stress-dom-medium-dom-cold-cache",
                     "timing": {
                         "navigationReadyMs": {
-                            "min": 52.2,
-                            "median": 52.3,
-                            "mean": 53,
-                            "max": 54.6,
+                            "min": 52.3,
+                            "median": 52.5,
+                            "mean": 52.6,
+                            "max": 53.2,
                             "sampleCount": 3,
                             "unit": "ms"
                         },
@@ -1014,26 +1014,26 @@
                             "unit": "ms"
                         },
                         "styleRecalculationMs": {
-                            "min": 8.1,
-                            "median": 8.1,
+                            "min": 8,
+                            "median": 8.2,
                             "mean": 8.2,
-                            "max": 8.5,
+                            "max": 8.3,
                             "sampleCount": 3,
                             "unit": "ms"
                         },
                         "layoutMs": {
-                            "min": 24.5,
-                            "median": 24.6,
-                            "mean": 24.6,
-                            "max": 24.7,
+                            "min": 24.7,
+                            "median": 24.9,
+                            "mean": 24.9,
+                            "max": 25,
                             "sampleCount": 3,
                             "unit": "ms"
                         },
                         "paintMs": {
-                            "min": 6,
-                            "median": 6.2,
-                            "mean": 6.1,
-                            "max": 6.3,
+                            "min": 4.6,
+                            "median": 5.9,
+                            "mean": 5.6,
+                            "max": 6.1,
                             "sampleCount": 3,
                             "unit": "ms"
                         },
@@ -1072,10 +1072,10 @@
                     "variantId": "stress-dom-medium-dom-warm-cache",
                     "timing": {
                         "navigationReadyMs": {
-                            "min": 40.3,
-                            "median": 40.6,
-                            "mean": 40.7,
-                            "max": 41.1,
+                            "min": 41.2,
+                            "median": 41.9,
+                            "mean": 42.3,
+                            "max": 43.9,
                             "sampleCount": 3,
                             "unit": "ms"
                         },
@@ -1088,26 +1088,26 @@
                             "unit": "ms"
                         },
                         "styleRecalculationMs": {
-                            "min": 7.9,
-                            "median": 8,
-                            "mean": 8,
-                            "max": 8,
+                            "min": 8,
+                            "median": 8.3,
+                            "mean": 8.2,
+                            "max": 8.4,
                             "sampleCount": 3,
                             "unit": "ms"
                         },
                         "layoutMs": {
-                            "min": 19.9,
-                            "median": 19.9,
-                            "mean": 20.1,
-                            "max": 20.5,
+                            "min": 20.2,
+                            "median": 20.4,
+                            "mean": 20.6,
+                            "max": 21.1,
                             "sampleCount": 3,
                             "unit": "ms"
                         },
                         "paintMs": {
                             "min": 5.7,
-                            "median": 5.7,
-                            "mean": 5.8,
-                            "max": 6,
+                            "median": 5.8,
+                            "mean": 6,
+                            "max": 6.4,
                             "sampleCount": 3,
                             "unit": "ms"
                         },
@@ -1152,10 +1152,10 @@
                     "variantId": "stress-dom-large-dom-cold-cache",
                     "timing": {
                         "navigationReadyMs": {
-                            "min": 119.3,
-                            "median": 123.9,
-                            "mean": 122.7,
-                            "max": 124.8,
+                            "min": 122.2,
+                            "median": 127.4,
+                            "mean": 127.3,
+                            "max": 132.4,
                             "sampleCount": 3,
                             "unit": "ms"
                         },
@@ -1168,26 +1168,26 @@
                             "unit": "ms"
                         },
                         "styleRecalculationMs": {
-                            "min": 23.2,
-                            "median": 23.4,
-                            "mean": 23.5,
-                            "max": 23.9,
+                            "min": 24.1,
+                            "median": 24.2,
+                            "mean": 24.4,
+                            "max": 24.7,
                             "sampleCount": 3,
                             "unit": "ms"
                         },
                         "layoutMs": {
-                            "min": 68.2,
-                            "median": 69,
-                            "mean": 68.8,
-                            "max": 69.1,
+                            "min": 68.5,
+                            "median": 70.9,
+                            "mean": 70.9,
+                            "max": 73.3,
                             "sampleCount": 3,
                             "unit": "ms"
                         },
                         "paintMs": {
-                            "min": 10.7,
-                            "median": 13.8,
-                            "mean": 12.9,
-                            "max": 14.3,
+                            "min": 13.9,
+                            "median": 14.9,
+                            "mean": 14.6,
+                            "max": 15,
                             "sampleCount": 3,
                             "unit": "ms"
                         },
@@ -1226,10 +1226,10 @@
                     "variantId": "stress-dom-large-dom-warm-cache",
                     "timing": {
                         "navigationReadyMs": {
-                            "min": 108.2,
-                            "median": 108.5,
-                            "mean": 108.7,
-                            "max": 109.2,
+                            "min": 109.8,
+                            "median": 113.9,
+                            "mean": 112.9,
+                            "max": 115.1,
                             "sampleCount": 3,
                             "unit": "ms"
                         },
@@ -1242,26 +1242,26 @@
                             "unit": "ms"
                         },
                         "styleRecalculationMs": {
-                            "min": 22.9,
-                            "median": 23.1,
-                            "mean": 23.1,
-                            "max": 23.2,
+                            "min": 23.7,
+                            "median": 23.8,
+                            "mean": 24,
+                            "max": 24.5,
                             "sampleCount": 3,
                             "unit": "ms"
                         },
                         "layoutMs": {
-                            "min": 62.6,
-                            "median": 63,
-                            "mean": 63,
-                            "max": 63.4,
+                            "min": 64,
+                            "median": 64.6,
+                            "mean": 64.7,
+                            "max": 65.4,
                             "sampleCount": 3,
                             "unit": "ms"
                         },
                         "paintMs": {
-                            "min": 13.4,
-                            "median": 13.7,
-                            "mean": 13.6,
-                            "max": 13.8,
+                            "min": 13.5,
+                            "median": 14.5,
+                            "mean": 14.5,
+                            "max": 15.4,
                             "sampleCount": 3,
                             "unit": "ms"
                         },

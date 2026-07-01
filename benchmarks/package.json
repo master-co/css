@@ -21,6 +21,7 @@
         "evidence:browser-lifecycle": "node browser-lifecycle/update-long-session-evidence.mjs",
         "stability:browser-lifecycle": "node browser-lifecycle/compare-stability.mjs",
         "snapshot:browser-css-cost": "node browser-css-cost/update-snapshot.mjs",
+        "snapshot:build-path-diagnostics": "node build-path-diagnostics/update-snapshot.mjs",
         "snapshot:browser-lifecycle": "node browser-lifecycle/update-snapshot.mjs",
         "snapshot:interaction-cost": "node interaction-cost/update-snapshot.mjs",
         "snapshot:master-delivery-modes": "node master-delivery-modes/update-snapshot.mjs",

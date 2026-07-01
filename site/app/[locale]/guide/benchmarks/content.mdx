@@ -31,28 +31,33 @@ import {
     BrowserLifecycleLongSessionTable,
     BrowserLifecycleSummary
 } from './components/BrowserLifecycleBenchmark'
+import {
+    BuildPathDiagnosticsCharts,
+    BuildPathDiagnosticsSummary,
+    BuildPathDiagnosticsTable
+} from './components/BuildPathDiagnosticsBenchmark'
 
 ## Overview [sr-only]
 Benchmarks make Master CSS output and delivery costs inspectable. They are useful for understanding tradeoffs, but they are not universal guarantees for every application.
 
-This page is the public benchmark roadmap and results index for Master CSS. Current results stay close to their methodology, and planned work is listed here before it becomes a measured claim.
+This page is the public benchmark results index for Master CSS. Results stay close to their methodology: each claim is scoped to the measured fixture, command, package versions, machine, browser, sample count, and known limits.
 
 ---
 
-## Benchmark roadmap
+## Benchmark results
 | Status | Suite | What it answers |
 |--------|-------|-----------------|
 | Available | Page CSS size | How much inline and external CSS do popular documentation pages transfer? |
 | Available | CSS output size | How large is generated CSS for shared fixtures across Master CSS and Tailwind CSS? |
 | Available | Production build performance | How do cold and repeat production commands compare across Master CSS and Tailwind CSS? |
 | Available | CSS structure metrics | How many rules, selectors, declarations, at-rules, layers, and selector-complexity signals explain CSS byte differences? |
-| Internal | Build path diagnostics | Which Master CSS build, startup, extraction, and compiler substeps explain full command cost? |
+| Available | Build path diagnostics | Which Master CSS startup, build, extraction, and compiler substeps explain full command cost? |
 | Available | Browser CSS cost | How does CSS rule volume affect stylesheet parsing, style calculation, layout, paint, and long tasks with fixed DOM, and how does DOM scaling behave as a fixed-CSS control? |
 | Available | Master CSS delivery modes | What are the initial payload, browser load, runtime bootstrap, and progressive adoption costs of static, runtime, and progressive delivery? |
 | Available | Interaction cost | How expensive are class toggles, rule generation, DOM insertion/removal, theme switches, and resize-triggered recalculation? |
-| Internal | Runtime mutation diagnostics | Which MutationObserver and ensure/delete rule substeps explain cleanup-cycle cost in runtime and progressive modes? |
-| Internal | Browser lifecycle and INP-style interactions | Does a small runtime plus fewer generated CSS rules reduce style recalculation, route, and long-session interaction cost enough to offset runtime work? |
-| Research | Tailwind CSS runtime-equivalent comparisons | Tailwind CSS is build-time-first, so runtime claims must be limited to comparable browser CSS costs. |
+| Diagnostic | Runtime mutation diagnostics | Which MutationObserver, rule generation, and browser invalidation signals explain cleanup-cycle cost in runtime and progressive modes? |
+| Available | Browser lifecycle and INP-style interactions | Does a small runtime plus fewer generated CSS rules reduce style recalculation, route, and long-session interaction cost enough to offset runtime work? |
+| Out of scope | Tailwind CSS runtime-equivalent comparisons | Tailwind CSS is build-time-first, so runtime claims stay limited to static browser-control measurements. |
 
 The benchmark target is reproducible comparison, not a single universal score. Each result should include the fixture, command, package versions, machine/browser, sample count, and known limits.
 
@@ -69,14 +74,14 @@ No benchmark result is permission to change CSS output, cascade order, hydration
 
 ---
 
-## Current evidence and remaining gap
-The current benchmark set already answers the first part of the browser-rendering question. Static comparison snapshots record generated rule, selector, declaration, layer, at-rule, and byte counts. The browser CSS cost suite separately isolates a fixed DOM while deterministic external CSS grows from small to xlarge rule volumes, then records Chromium style recalculation, layout, and paint.
+## Published evidence
+The current benchmark set answers the browser-rendering question in stages. Static comparison snapshots record generated rule, selector, declaration, layer, at-rule, and byte counts. The browser CSS cost suite separately isolates a fixed DOM while deterministic external CSS grows from small to xlarge rule volumes, then records Chromium style recalculation, layout, and paint.
 
 The delivery-mode and interaction suites add the Master CSS runtime side of the question. They measure HTML, CSS, runtime JavaScript, manifest payloads, runtime bootstrap, observe/hydrate time, runtime generated rule count, style raw bytes, post-load class toggles, new-rule generation, DOM append/remove, theme switching, viewport resize, and cleanup cycles. Tailwind CSS remains a static browser-control variant in those suites, not a runtime-equivalent comparison.
 
-Internal runtime diagnostics have also localized one important interaction hotspot: cleanup-cycle cost was dominated by browser style invalidation from runtime stylesheet changes and retained generated stylesheet volume, while MutationObserver delivery and `ensureClassRules`/`deleteClassRules` instrumentation were measurable but not the primary cost in that diagnostic run.
+Build-path diagnostics show that ordinary fixture build cost is dominated by cold process/module startup and integration startup overhead, not by compiler lowering or CSS extraction. Runtime mutation diagnostics localize cleanup-cycle cost to browser style invalidation from first-time runtime stylesheet changes and retained generated stylesheet volume.
 
-The remaining public gap is lifecycle evidence. The browser lifecycle suite now has a committed internal snapshot refreshed from a 2026-06-30 review-grade all-scenario baseline, but this page should not yet claim that runtime rendering produces better real-user interaction performance overall. Segmented five-minute long-session evidence now has committed curated evidence across Master static, runtime, progressive, and Tailwind static browser-control modes; public conclusions still require repeated review and presentation.
+Browser lifecycle evidence now covers initial load, large DOM, large append, repeated toggles, theme switching, route navigation, and five-minute long-session behavior across Master static, runtime, progressive, and Tailwind static browser-control modes. In the five-minute local Chromium evidence, Master runtime and progressive clear the strict same-machine repeat gate for style recalculation medians against both Master static and the Tailwind static browser control. Layout, paint, long-task, and INP-style latency medians are published as measured data, but they are not described as wins because they do not pass the same direction plus threshold gate.
 
 ---
 
@@ -159,6 +164,37 @@ Rule, selector, declaration, at-rule, layer, and selector-shape counts parsed fr
 </figure>
 
 These numbers do not measure browser parsing, style recalculation, layout, paint, interaction cost, watch mode, or HMR. CSS structure metrics explain generated output shape; they are not browser timing metrics. Tailwind CSS and Master CSS fixtures target equivalent rendered UI intent, not identical class strings.
+
+---
+
+## Current result: Build path diagnostics
+The build-path diagnostics snapshot summarizes Master CSS startup, build, compiler, and extraction substeps. It explains where Master CSS command time goes; it is not a cross-framework production benchmark.
+
+### Snapshot summary
+This curated snapshot is generated from `startup-diagnostics`, `build-diagnostics`, `compiler-diagnostics`, and `extraction-diagnostics`. The same static fixture set is used across each report.
+
+<figure>
+    <BuildPathDiagnosticsSummary />
+    <figcaption>Summary of the curated Master CSS build-path diagnostics snapshot.</figcaption>
+</figure>
+
+### Representative fixture
+The primary charts show the `docs` fixture. The command and import probes show cold startup envelopes; the extraction and compiler charts show measured Master CSS work after setup.
+
+<figure>
+    <BuildPathDiagnosticsCharts />
+    <figcaption>Build-path diagnostic medians for the `docs` fixture. Startup probes are directional and are not additive flamegraphs.</figcaption>
+</figure>
+
+### Complete data table
+The full table keeps every measured fixture for verification.
+
+<figure>
+    <BuildPathDiagnosticsTable />
+    <figcaption>Complete build-path diagnostic snapshot data for every measured fixture.</figcaption>
+</figure>
+
+These numbers show the current optimization target: cold process/module startup and Vite integration startup are larger than normal-fixture compiler and extraction medians. They do not justify changing generated CSS, cascade order, extraction correctness, runtime behavior, or public APIs.
 
 ---
 
@@ -402,31 +438,32 @@ The internal runtime mutation diagnostics suite narrows the cleanup-cycle hotspo
 
 ---
 
-## Browser lifecycle suite
-The internal browser lifecycle suite tests the lifecycle version of the runtime tradeoff: does a small amount of runtime work buy enough reduction in generated CSS rules to lower style recalculation, selector matching proxies, and user-visible interaction latency over time?
+## Current result: Browser lifecycle and INP-style interactions
+The browser lifecycle suite tests the lifecycle version of the runtime tradeoff: does a small amount of runtime work buy enough reduction in generated CSS rules to lower style recalculation, route, and long-session interaction cost over time?
 
-This suite should keep Tailwind CSS as a static browser-control setup and Master CSS as static, runtime, and progressive setups. It should publish only measured comparisons that share equivalent rendered UI intent and should keep "INP" labels reserved for measurements that match the platform metric closely enough; otherwise use INP-style interaction latency.
+This suite keeps Tailwind CSS as a static browser-control setup and Master CSS as static, runtime, and progressive setups. The latency value is INP-style interaction latency from a local fixture, not real Web Vitals INP.
 
-A curated internal snapshot is generated from the all-scenario `browser-lifecycle` baseline and has been refreshed from the 2026-06-30 review-grade run. Committed five-minute long-session evidence also covers Master static, runtime, progressive, and Tailwind static browser-control modes. A same-machine repeat review has passed coverage, correctness, sample-count, and long-session duration gates, but the suite remains internal until the deltas have final claim and narrative review; the current data should be used for benchmark validation rather than public performance claims.
-
-### Internal evidence: Browser lifecycle
-This internal evidence summarizes the committed all-scenario snapshot and the committed five-minute segmented long-session evidence. It is not an `Available` benchmark result, and the latency value remains INP-style interaction latency rather than real Web Vitals INP.
+### Snapshot summary
+This curated result is generated from the all-scenario `browser-lifecycle` snapshot and the segmented five-minute long-session evidence. The published win/loss wording is limited to metrics that passed same-machine repeat review and the strict threshold gate.
 
 <figure>
     <BrowserLifecycleSummary />
-    <figcaption>Coverage and correctness checks for the internal browser lifecycle evidence.</figcaption>
+    <figcaption>Coverage and correctness checks for the browser lifecycle evidence.</figcaption>
 </figure>
 
+### Five-minute long session
 The five-minute evidence keeps Tailwind CSS as a static browser-control mode. It shows local fixture medians for browser work and runtime instrumentation, while selector matching remains an inference from CSSOM/rule volume plus style recalculation.
+
+Master runtime and progressive clear the strict win gate for five-minute style recalculation medians against both Master static and the Tailwind static browser-control mode. Layout and paint are reported as measured data but not as strict wins: layout does not repeat in the same direction against Master static and remains below the threshold against Tailwind static, while paint does not clear the threshold in the repeat evidence. Long-task counts are zero across these five-minute variants, so they are not treated as a win.
 
 <figure>
     <BrowserLifecycleLongSessionCharts />
-    <figcaption>Committed five-minute long-session medians for browser rendering and runtime work.</figcaption>
+    <figcaption>Five-minute long-session medians for browser rendering and runtime work.</figcaption>
 </figure>
 
 <figure>
     <BrowserLifecycleLongSessionTable />
-    <figcaption>Complete committed five-minute long-session evidence for every mode.</figcaption>
+    <figcaption>Complete five-minute long-session evidence for every mode.</figcaption>
 </figure>
 
 ### Lifecycle scenarios
@@ -441,30 +478,25 @@ The five-minute evidence keeps Tailwind CSS as a static browser-control mode. It
 | Long session | Simulate repeated add, remove, toggle, resize, scroll, and route operations for at least five minutes; track retained rules, memory, long tasks, and GC pressure when Chromium exposes stable signals. |
 
 ### Lifecycle limits
-Selector matching time should remain an inference unless Chromium exposes a stable trace metric for it. CSSOM memory and GC pressure should be reported only when the collection method is stable enough to reproduce on the same browser version. Lifecycle reports should keep raw traces internal and publish curated snapshots only after repeated same-machine runs.
+Selector matching time remains an inference unless Chromium exposes a stable trace metric for it. CSSOM memory and GC pressure are reported only when the collection method is stable enough to reproduce on the same browser version. Raw traces, diagnostics, and screenshots remain ignored artifacts; only curated snapshots are committed.
 
 ---
 
-## Implementation phases
-| Phase | Work |
-|-------|------|
-| 1 | Keep this roadmap updated, add guardrails, and mark the page CSS size benchmark as available. |
-| 2 | Add shared fixture manifests, adapter names, normalized report schemas, ignored raw artifacts, and curated JSON/Markdown output. |
-| 3 | Available: implement and publish curated CSS output and production build benchmarks for Master CSS static output versus Tailwind CSS CLI/Vite. |
-| 4 | Available: publish CSS structure metrics from the curated static comparison snapshot. |
-| 5 | Available: implement and publish browser load cost suites with Playwright/browser tracing, correctness checks, and stable fixture pages. |
-| 6 | Available: implement and publish Master CSS static, runtime, and progressive delivery benchmarks with local Chromium payload/load/adoption measurements. |
-| 7 | Available: implement and publish interaction cost suites with Playwright/browser tracing, correctness checks, and stable fixture pages. |
-| 8 | Internal: diagnose runtime mutation cleanup hotspots before optimizing runtime/progressive interaction behavior. |
-| 9 | Internal: reduce retained generated stylesheet volume after runtime mutation diagnostics. |
-| 10 | Available: refresh the published interaction-cost snapshot after retained stylesheet optimization. |
-| 11 | Build: replace stale `core` TypeScript project references with the `@master/css` facade project. |
-| 12 | Internal: investigated queued runtime stylesheet invalidation and abandoned the runtime optimization path because diagnostics did not show meaningful improvement. |
-| 13 | Internal: summarize build path diagnostics across CLI startup, Vite integration, compiler, and extraction substeps. |
-| 14 | Planned: decide whether to optimize startup/build path costs or publish a curated public build-path result. |
-| 15 | Internal: implement browser lifecycle and INP-style interaction benchmarks for initial load, large DOM, append, repeated toggles, theme switching, route navigation, and long-session behavior; segmented five-minute long-session runs and same-machine repeat review have passed internal gates, and public conclusions wait for final claim and narrative review. |
+## Data sources
+Curated snapshots are committed under `benchmarks/**/snapshot.json` and `benchmarks/browser-lifecycle/long-session-evidence.json`. Raw reports, traces, diagnostics, screenshots, and temporary workspaces stay under `benchmarks/.results/**`.
 
-Future normalized reports should stay internal to the benchmark workspace unless they become a documented public data format. A report should include `schemaVersion`, `suite`, `generatedAt`, `environment`, `packages`, `fixtures`, `variants`, `metrics`, `samples`, `summary`, `limits`, and `artifacts`.
+| Result | Committed data | Snapshot command |
+|--------|----------------|------------------|
+| Page CSS size | [`docs-page-css-size/snapshot.json`](https://github.com/master-co/css/tree/rc/benchmarks/docs-page-css-size/snapshot.json) | `UPDATE_BENCHMARK_SNAPSHOT=true pnpm --filter ./benchmarks bench:docs-page-css-size` |
+| Static CSS output, structure, and production build | [`tailwind-static-comparison/snapshot.json`](https://github.com/master-co/css/tree/rc/benchmarks/tailwind-static-comparison/snapshot.json) | `pnpm --filter ./benchmarks bench:css-output-size`, `pnpm --filter ./benchmarks bench:build-performance`, `pnpm --filter ./benchmarks bench:css-structure`, then `pnpm --filter ./benchmarks snapshot:tailwind-static-comparison` |
+| Build path diagnostics | [`build-path-diagnostics/snapshot.json`](https://github.com/master-co/css/tree/rc/benchmarks/build-path-diagnostics/snapshot.json) | `BENCHMARK_ROUNDS=3 pnpm --filter ./benchmarks bench:startup-diagnostics`, `BENCHMARK_ROUNDS=3 pnpm --filter ./benchmarks bench:build-diagnostics`, `BENCHMARK_ROUNDS=3 pnpm --filter ./benchmarks bench:compiler-diagnostics`, `BENCHMARK_ROUNDS=3 pnpm --filter ./benchmarks bench:extraction-diagnostics`, then `pnpm --filter ./benchmarks snapshot:build-path-diagnostics` |
+| Browser CSS cost | [`browser-css-cost/snapshot.json`](https://github.com/master-co/css/tree/rc/benchmarks/browser-css-cost/snapshot.json) | `pnpm --filter ./benchmarks bench:browser-css-cost`, then `pnpm --filter ./benchmarks snapshot:browser-css-cost` |
+| Master CSS delivery modes | [`master-delivery-modes/snapshot.json`](https://github.com/master-co/css/tree/rc/benchmarks/master-delivery-modes/snapshot.json) | `pnpm --filter ./benchmarks bench:master-delivery-modes`, then `pnpm --filter ./benchmarks snapshot:master-delivery-modes` |
+| Interaction cost | [`interaction-cost/snapshot.json`](https://github.com/master-co/css/tree/rc/benchmarks/interaction-cost/snapshot.json) | `INTERACTION_COST_ROUNDS=3 INTERACTION_COST_WARMUP_ROUNDS=1 pnpm --filter ./benchmarks bench:interaction-cost`, then `pnpm --filter ./benchmarks snapshot:interaction-cost` |
+| Browser lifecycle | [`browser-lifecycle/snapshot.json`](https://github.com/master-co/css/tree/rc/benchmarks/browser-lifecycle/snapshot.json) | `BROWSER_LIFECYCLE_ROUNDS=3 BROWSER_LIFECYCLE_WARMUP_ROUNDS=1 BROWSER_LIFECYCLE_REPORT_LABEL=baseline-review-$(date +%F) BENCHMARK_COMMAND_TIMEOUT_MS=900000 pnpm --filter ./benchmarks bench:browser-lifecycle`, then `pnpm --filter ./benchmarks snapshot:browser-lifecycle` |
+| Five-minute lifecycle evidence | [`browser-lifecycle/long-session-evidence.json`](https://github.com/master-co/css/tree/rc/benchmarks/browser-lifecycle/long-session-evidence.json) | Run `bench:browser-lifecycle` once per mode with `BROWSER_LIFECYCLE_SCENARIOS=long-session`, `BROWSER_LIFECYCLE_MODES=<mode>`, `BROWSER_LIFECYCLE_ROUNDS=1`, `BROWSER_LIFECYCLE_WARMUP_ROUNDS=1`, `BROWSER_LIFECYCLE_LONG_SESSION_MS=300000`, `BROWSER_LIFECYCLE_MEASURE_TIMEOUT_MS=420000`, `BROWSER_LIFECYCLE_REPORT_LABEL=long-session-5m-<mode>`, and `BENCHMARK_COMMAND_TIMEOUT_MS=900000`, then `pnpm --filter ./benchmarks evidence:browser-lifecycle` |
+
+Lifecycle publication checks are `pnpm --filter ./benchmarks check:browser-lifecycle`, `node benchmarks/browser-lifecycle/check-readiness.mjs --profile long-session-evidence browser-lifecycle/long-session-evidence.json`, and `node benchmarks/browser-lifecycle/compare-stability.mjs` after same-machine repeat reports.
 
 ---
 
