@@ -6,6 +6,7 @@ import { fileURLToPath } from 'node:url'
 export const publicProjectName = 'Master CSS'
 export const defaultRcUrl = 'https://rc.css.master.co'
 export const defaultPlayApiUrl = '/api/play'
+export const localePrefixModes = new Set(['always', 'canonical'])
 
 const siteDir = dirname(fileURLToPath(new URL('../package.json', import.meta.url)))
 const repoRoot = resolve(siteDir, '..')
@@ -34,6 +35,7 @@ export function resolvePublicEnv(options = {}) {
         NEXT_PUBLIC_HOST: env.NEXT_PUBLIC_HOST || new URL(siteUrl).host,
         NEXT_PUBLIC_URL: siteUrl,
         NEXT_PUBLIC_PLAY_API_URL: env.NEXT_PUBLIC_PLAY_API_URL || defaultPlayApiUrl,
+        NEXT_PUBLIC_SITE_LOCALE_PREFIX_MODE: resolveLocalePrefixMode(env),
         NEXT_PUBLIC_VERSION: env.NEXT_PUBLIC_VERSION || resolveVersion(runGit),
         NEXT_PUBLIC_REPO_OWNER: env.NEXT_PUBLIC_REPO_OWNER || owner,
         NEXT_PUBLIC_REPO_SLUG: env.NEXT_PUBLIC_REPO_SLUG || slug,
@@ -81,6 +83,17 @@ function resolveSiteUrl(env, commitRef) {
     if (env.CF_PAGES_URL) return env.CF_PAGES_URL
 
     return localUrl
+}
+
+function resolveLocalePrefixMode(env) {
+    const mode = env.NEXT_PUBLIC_SITE_LOCALE_PREFIX_MODE
+    if (mode) {
+        if (!localePrefixModes.has(mode)) {
+            throw new Error(`NEXT_PUBLIC_SITE_LOCALE_PREFIX_MODE must be "always" or "canonical", got "${mode}"`)
+        }
+        return mode
+    }
+    return env.NODE_ENV === 'development' ? 'always' : 'canonical'
 }
 
 function isRcBranch(commitRef) {
