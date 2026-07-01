@@ -15,6 +15,7 @@ import type { Compiler } from 'webpack'
 import type { MasterCSSWebpackContext, WebpackSubPlugin } from '../plugin'
 import { isCSSManifestRequest } from '@master/css-project/entries'
 import { collectStyleCSSDependencies } from '@master/css-stylesheet'
+import { addFileDependency } from '../utils/file-dependencies'
 
 export default function ManifestLoaderPlugin(context: MasterCSSWebpackContext): WebpackSubPlugin {
     return {
@@ -51,11 +52,11 @@ export default function ManifestLoaderPlugin(context: MasterCSSWebpackContext): 
                                 }
                                 const dependencies = new Set(collectStyleCSSDependencies(resolvedPath, undefined, context.cwd))
                                 for (const dependency of dependencies) {
-                                    resolveData.fileDependencies.add(dependency)
+                                    addFileDependency(resolveData.fileDependencies, dependency)
                                 }
                                 const result = await loadManifestJSON(resolvedPath)
                                 for (const dependency of result.dependencies) {
-                                    resolveData.fileDependencies.add(dependency)
+                                    addFileDependency(resolveData.fileDependencies, dependency)
                                 }
                                 const virtualModuleId = toVirtualCSSManifestModulePath(context.compilerContext, resolvedPath)
                                 let moduleContent: string

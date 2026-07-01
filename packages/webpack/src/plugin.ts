@@ -38,6 +38,7 @@ import UsageGraphPlugin from './plugins/usage-graph'
 import StyleEntryPlugin from './plugins/style-entry'
 import RuntimeEntryPlugin from './plugins/runtime-entry'
 import RuntimeHTMLAssetsPlugin from './plugins/runtime-html-assets'
+import GeneratedCSSAssetsPlugin from './plugins/generated-css-assets'
 import {
     resolvePluginOptions,
     shouldInjectRuntime,
@@ -62,6 +63,7 @@ export interface MasterCSSWebpackContext {
     virtualManifestModuleId: string
     virtualEmittedGlobalsModuleId: string
     runtimeEntryName: string
+    slotCSSRule: string
     mode: Mode
     virtualModule?: VirtualModulesPlugin
     shouldInjectRuntime(): boolean
@@ -80,6 +82,7 @@ export interface MasterCSSWebpackContext {
     getManifestJSONAssets(): [string, string][]
     createDefaultManifestModule(): Promise<string>
     createEmittedGlobalsModule(): Promise<string>
+    createGeneratedCSSModule(): Promise<string>
     processModuleContents(
         entries: [string, string][],
         isGeneratedCSSModulePath: (modulePath: string) => boolean
@@ -324,6 +327,7 @@ export class MasterCSSPlugin {
             virtualManifestModuleId: toVirtualDefaultManifestModulePath(compilerContext),
             virtualEmittedGlobalsModuleId: toVirtualEmittedGlobalsModulePath(compilerContext),
             runtimeEntryName: RUNTIME_ENTRY_NAME,
+            slotCSSRule: this.scanner.slotCSSRule,
             mode: this.pluginOptions.mode,
             shouldInjectRuntime: () => shouldInjectRuntime(this.pluginOptions),
             shouldPreloadRuntime: () => shouldPreloadRuntime(this.pluginOptions),
@@ -357,14 +361,21 @@ export class MasterCSSPlugin {
             getManifestJSONAssets: () => [...this.manifestJSONAssets],
             createDefaultManifestModule: () => this.createDefaultManifestModule(),
             createEmittedGlobalsModule: () => this.createEmittedGlobalsModule(),
-            processModuleContents: (entries, isGeneratedCSSModulePath) => this.processModuleContents(entries, isGeneratedCSSModulePath),
-            writeGeneratedCSSModule: async () => {
-                if (!context.virtualModule || !context.virtualCSSImportModuleId) return
+            createGeneratedCSSModule: async () => {
                 const result = await this.createExtractedCSSResult({
                     includeNativeCSS: false,
                     includeMasterBaseCSS: false
                 })
-                context.writeVirtualModule(context.virtualCSSImportModuleId, result.css)
+                return result.css
+            },
+            processModuleContents: (entries, isGeneratedCSSModulePath) => this.processModuleContents(entries, isGeneratedCSSModulePath),
+            writeGeneratedCSSModule: async () => {
+                if (!context.virtualModule || !context.virtualCSSImportModuleId) return
+                const css = await context.createGeneratedCSSModule()
+                context.writeVirtualModule(
+                    context.virtualCSSImportModuleId,
+                    context.mode === 'static' && !this.development ? context.slotCSSRule : css
+                )
                 await context.writeEmittedGlobalsModule()
             },
             writeDefaultManifestModule: async () => {
@@ -412,6 +423,7 @@ export class MasterCSSPlugin {
             ManifestLoaderPlugin(context),
             StyleEntryPlugin(context),
             UsageGraphPlugin(context),
+            GeneratedCSSAssetsPlugin(context),
             ...context.shouldInjectRuntime()
                 ? [
                     RuntimeEntryPlugin(context),

@@ -111,19 +111,27 @@ export default function RuntimeHTMLAssetsPlugin(context: MasterCSSWebpackContext
         apply(compiler: Compiler) {
             compiler.hooks.thisCompilation.tap(context.name, (compilation: Compilation) => {
                 if (!compilation.hooks.processAssets?.tap || !compiler.webpack?.Compilation || !compiler.webpack?.sources?.RawSource) return
-                compilation.hooks.processAssets.tap({
-                    name: context.name,
-                    stage: compiler.webpack.Compilation.PROCESS_ASSETS_STAGE_OPTIMIZE
-                }, (assets) => {
-                    const RawSource = compiler.webpack.sources.RawSource
-                    for (const [fileName, asset] of Object.entries(assets)) {
-                        if (!fileName.endsWith('.html') && !fileName.endsWith('.htm')) continue
-                        const source = asset.source().toString()
-                        const nextSource = transformHTML(source, context, compilation)
-                        if (nextSource === source) continue
-                        compilation.updateAsset(fileName, new RawSource(nextSource))
-                    }
-                })
+                const stages = [
+                    compiler.webpack.Compilation.PROCESS_ASSETS_STAGE_OPTIMIZE,
+                    compiler.webpack.Compilation.PROCESS_ASSETS_STAGE_REPORT
+                        ?? compiler.webpack.Compilation.PROCESS_ASSETS_STAGE_SUMMARIZE
+                        ?? compiler.webpack.Compilation.PROCESS_ASSETS_STAGE_OPTIMIZE + 1000
+                ]
+                for (const stage of stages) {
+                    compilation.hooks.processAssets.tap({
+                        name: context.name,
+                        stage
+                    }, (assets) => {
+                        const RawSource = compiler.webpack.sources.RawSource
+                        for (const [fileName, asset] of Object.entries(assets)) {
+                            if (!fileName.endsWith('.html') && !fileName.endsWith('.htm')) continue
+                            const source = asset.source().toString()
+                            const nextSource = transformHTML(source, context, compilation)
+                            if (nextSource === source) continue
+                            compilation.updateAsset(fileName, new RawSource(nextSource))
+                        }
+                    })
+                }
             })
         }
     }

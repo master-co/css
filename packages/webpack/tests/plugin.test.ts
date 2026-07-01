@@ -24,6 +24,7 @@ import { VIRTUAL_EMITTED_GLOBALS_ID } from '@master/css-integration/emitted-glob
 import { createStylesheetDirectives } from '@master/css-stylesheet'
 import { transformStyleSource } from '../src/utils/transform-style-source'
 import masterCSSStyleCSSLoader from '../src/style-css-loader'
+import { addFileDependency } from '../src/utils/file-dependencies'
 import path from 'node:path'
 import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
@@ -252,6 +253,29 @@ describe('MasterCSSPlugin (C1 race fix)', () => {
         }
     })
 
+    test('scans modules that expose source through originalSource()', async () => {
+        const root = mkdtempSync(path.join(tmpdir(), 'master-css-webpack-rspack-source-'))
+        try {
+            const plugin = await new MasterCSSPlugin({ verbose: 0 }, root).init()
+            const { compiler, compilation } = makeFakeCompiler({ context: root })
+            ;(compiler as any).webpack = { sources: { RawSource: function NoopSource(this: object) { /* stub */ } } }
+
+            plugin.apply(compiler as any)
+            compiler.hooks.thisCompilation.call(compilation)
+            compilation.hooks.succeedModule.call({
+                resource: path.join(root, 'src/main.js'),
+                originalSource: () => ({
+                    source: () => 'document.body.className = "block"'
+                })
+            })
+            await compilation.hooks.finishModules.promise([])
+
+            expect([...plugin.validClasses]).toContain('block')
+        } finally {
+            rmSync(root, { recursive: true, force: true })
+        }
+    })
+
     test('locally lowers @compose in CSS Modules without rewriting to the virtual CSS import', async () => {
         const root = mkdtempSync(path.join(tmpdir(), 'master-css-webpack-local-compose-'))
         const entryPath = path.join(root, 'app.css')
@@ -382,6 +406,19 @@ describe('MasterCSSPlugin (C1 race fix)', () => {
             .not.toContain('font-weight-bold')
         expect([...(plugin as any).manifestJSONAssets.values()].at(-1))
             .toContain('"version":1')
+    })
+
+    test('adds resolve file dependencies to Set and array-like containers', () => {
+        const dependency = path.join(process.cwd(), 'master.css')
+        const setDependencies = new Set<string>()
+        const arrayDependencies: string[] = []
+
+        addFileDependency(setDependencies, dependency)
+        addFileDependency(arrayDependencies, dependency)
+        addFileDependency(arrayDependencies, dependency)
+
+        expect(setDependencies.has(dependency)).toBe(true)
+        expect(arrayDependencies).toEqual([dependency])
     })
 
     test('resolves virtual:master-css-manifest to an inline module in development', async () => {

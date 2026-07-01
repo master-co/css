@@ -2,6 +2,7 @@ import { VIRTUAL_MANIFEST_ID } from '@master/css-integration/manifest-module'
 import { VIRTUAL_EMITTED_GLOBALS_ID } from '@master/css-integration/emitted-globals-module'
 import type { Compiler } from 'webpack'
 import type { MasterCSSWebpackContext, WebpackSubPlugin } from '../plugin'
+import { addFileDependency } from '../utils/file-dependencies'
 
 export default function ManifestVirtualModulePlugin(context: MasterCSSWebpackContext): WebpackSubPlugin {
     return {
@@ -24,14 +25,14 @@ export default function ManifestVirtualModulePlugin(context: MasterCSSWebpackCon
                             .then((moduleContent) => {
                                 context.writeVirtualModule(context.virtualManifestModuleId, moduleContent)
                                 for (const dependency of context.getDefaultManifestDependencyPaths()) {
-                                    resolveData.fileDependencies.add(dependency)
+                                    addFileDependency(resolveData.fileDependencies, dependency)
                                 }
                                 resolveData.request = context.virtualManifestModuleId
                                 callback()
                             })
                             .catch((error: Error) => {
                                 for (const dependency of context.getDefaultManifestDependencyPaths()) {
-                                    resolveData.fileDependencies.add(dependency)
+                                    addFileDependency(resolveData.fileDependencies, dependency)
                                 }
                                 callback(error)
                             })
