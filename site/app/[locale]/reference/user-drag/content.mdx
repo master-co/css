@@ -4,10 +4,12 @@
 ## Examples
 ### Prevent dragging media
 Use `user-drag:none` to prevent images, icons, and decorative media from being dragged out of the interface.
+{/* eslint-disable @master/css/no-invalid-classes -- documented vendor property is not validated by the default runtime CSS validator */}
 ```html
 <!-- @MARK user-drag:none -->
 <img class="user-drag:none" src="/images/product.png" alt="Product preview">
 ```
+{/* eslint-enable @master/css/no-invalid-classes */}
 
 <details>
     <summary>Generated CSS</summary>
@@ -18,22 +20,28 @@ Use `user-drag:none` to prevent images, icons, and decorative media from being d
 
 ### Keep draggable elements explicit
 Use `user-drag:element` only when the element is intended to participate in native drag behavior.
+{/* eslint-disable @master/css/no-invalid-classes -- documented vendor property is not validated by the default runtime CSS validator */}
 ```html
 <!-- @MARK user-drag:element -->
 <div class="user-drag:element">
     Draggable asset
 </div>
 ```
+{/* eslint-enable @master/css/no-invalid-classes */}
 
 ### Reset to browser behavior
 Use `user-drag:auto` when a component variant should restore the default drag behavior.
+{/* eslint-disable @master/css/no-invalid-classes -- documented vendor property is not validated by the default runtime CSS validator */}
 ```html
 <!-- @MARK user-drag:auto -->
 <img class="user-drag:none user-drag:auto@sm" src="/images/file.png" alt="File">
 ```
+{/* eslint-enable @master/css/no-invalid-classes */}
 
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
+{/* eslint-disable @master/css/no-invalid-classes -- documented vendor property is not validated by the default runtime CSS validator */}
 ```html
 <div class="user-drag:none:hover user-drag:auto@sm user-drag:none@print">...</div>
 ```
+{/* eslint-enable @master/css/no-invalid-classes */}

@@ -6,6 +6,7 @@ import {
     type RawValuePolicyOptions
 } from '@master/css-lint'
 import reportLintDiagnostics from '../utils/report-lint-diagnostics'
+import defineSourceVisitors, { shouldUseSourceVisitors } from '../utils/define-source-visitors'
 
 export default createRule({
     name: 'no-unapproved-raw-values',
@@ -44,6 +45,14 @@ export default createRule({
     create(context) {
         const { settings, css } = resolveContext(context)
         const options = (context.options[0] || {}) as RawValuePolicyOptions
+        if (shouldUseSourceVisitors(context)) {
+            return defineSourceVisitors({
+                context,
+                css,
+                ruleId: 'no-unapproved-raw-values',
+                ruleOptions: options
+            })
+        }
 
         return defineVisitors({ context, settings }, (node, resolved) => {
             reportLintDiagnostics(

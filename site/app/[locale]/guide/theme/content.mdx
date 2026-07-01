@@ -305,12 +305,14 @@ Native CSS cannot store full `@media`, `@supports`, or `@container` rules in CSS
 
 The token is written with the same leading `@` in the definition and in CSS `@variant` blocks. In markup, use the token name as an `@` suffix:
 
+{/* eslint-disable @master/css/no-invalid-classes -- custom variants are defined in the adjacent CSS example */}
 ```html
 <!-- @MARK @motion-safe --><!-- @MARK @supports-backdrop -->
 <div class="animation:fade-in|fast@motion-safe bg:white/.8@supports-backdrop">
     ...
 </div>
 ```
+{/* eslint-enable @master/css/no-invalid-classes */}
 
 ### At variants in CSS rules
 Inside managed definitions and native style rules, use `@variant` blocks instead of putting conditional suffixes inside `@compose`.
@@ -404,11 +406,13 @@ Motion belongs in the theme when timing, easing, and keyframes are shared by mor
 @custom-variant @motion-safe { @media (prefers-reduced-motion: no-preference) { @slot; } }
 ```
 
+{/* eslint-disable @master/css/no-invalid-classes -- custom variant is defined in the adjacent CSS example */}
 ```html
 <div class="animation:fade-in|slow|smooth@motion-safe animation-delay:short">
     ...
 </div>
 ```
+{/* eslint-enable @master/css/no-invalid-classes */}
 
 Keyframes are emitted outside cascade layers, while animation utilities still generate in the utilities layer. For the complete animation syntax, see [Animation](/reference/animation).
 

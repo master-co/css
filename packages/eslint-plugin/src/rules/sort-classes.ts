@@ -3,6 +3,7 @@ import resolveContext from '../utils/resolve-context'
 import createRule from '../create-rule'
 import { createSortClassesReport } from '@master/css-lint'
 import reportLintDiagnostics from '../utils/report-lint-diagnostics'
+import defineSourceVisitors, { shouldUseSourceVisitors } from '../utils/define-source-visitors'
 
 export default createRule({
     name: 'sort-classes',
@@ -20,6 +21,9 @@ export default createRule({
     defaultOptions: [],
     create: function (context) {
         const { settings, css } = resolveContext(context)
+        if (shouldUseSourceVisitors(context)) {
+            return defineSourceVisitors({ context, css, ruleId: 'sort-classes' })
+        }
         return defineVisitors({ context, settings }, (node, { raw, start, end, nodes, unescape }) => {
             if (nodes.length <= 1) return
             reportLintDiagnostics(

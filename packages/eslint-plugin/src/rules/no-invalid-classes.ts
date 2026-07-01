@@ -4,6 +4,7 @@ import createRule from '../create-rule'
 import { noInvalidClassesOptionsSchema } from '../settings-schema'
 import { createInvalidClassesReport } from '@master/css-lint'
 import reportLintDiagnostics from '../utils/report-lint-diagnostics'
+import defineSourceVisitors, { shouldUseSourceVisitors } from '../utils/define-source-visitors'
 
 export default createRule({
     name: 'no-invalid-classes',
@@ -22,6 +23,16 @@ export default createRule({
     defaultOptions: [],
     create: function (context) {
         const { options, settings, css } = resolveContext(context)
+        if (shouldUseSourceVisitors(context)) {
+            return defineSourceVisitors({
+                context,
+                css,
+                ruleId: 'no-invalid-classes',
+                ruleOptions: {
+                    disallowUnknownClass: options.disallowUnknownClass
+                }
+            })
+        }
         return defineVisitors({ context, settings }, (node, resolved) => {
             reportLintDiagnostics(
                 context,

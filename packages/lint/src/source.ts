@@ -14,12 +14,17 @@ import {
     createInvalidClassesReport,
     createSortClassesReport,
     createUnapprovedRawValueClassesReport,
+    type MasterCSSCanonicalClassesReportOptions,
+    type MasterCSSClassListLintReportOptions,
+    type MasterCSSInvalidClassesReportOptions,
+    type MasterCSSLintReportOptions,
     type MasterCSSLintDiagnostic,
     type MasterCSSLintDiagnosticData,
     type MasterCSSLintDiagnosticSeverity,
     type MasterCSSLintFix,
     type MasterCSSLintRange,
-    type MasterCSSLintRuleId
+    type MasterCSSLintRuleId,
+    type MasterCSSUnapprovedRawValueClassesReportOptions
 } from './diagnostics'
 
 const MAX_FIX_PASSES = 10
@@ -99,10 +104,18 @@ export interface MasterCSSLintContentOptions {
     filePath: string
     css: MasterCSS
     rules?: Partial<Record<MasterCSSLintRuleId, boolean>>
+    ruleOptions?: MasterCSSLintContentRuleOptions
+    severities?: Partial<Record<MasterCSSLintRuleId, MasterCSSLintDiagnosticSeverity>>
 }
 
 export interface MasterCSSFixContentOptions extends MasterCSSLintContentOptions {
     includeDirectiveFixes?: boolean
+}
+
+export interface MasterCSSLintContentRuleOptions {
+    'no-invalid-classes'?: MasterCSSInvalidClassesReportOptions
+    'prefer-canonical-classes'?: MasterCSSCanonicalClassesReportOptions
+    'no-unapproved-raw-values'?: MasterCSSUnapprovedRawValueClassesReportOptions
 }
 
 interface TextDocumentLike {
@@ -254,14 +267,15 @@ function toLocationRange(content: string, range: SourceRange): MasterCSSLintSour
 function createComposeDirectiveLintDiagnostics(
     context: ClassListContext,
     css: MasterCSS,
-    rules: Record<MasterCSSLintRuleId, boolean>
+    rules: Record<MasterCSSLintRuleId, boolean>,
+    options: MasterCSSLintContentOptions
 ) {
     return [
-        rules['sort-classes'] && createSortClassesReport(context.text, css, { unescape: context.unescape }),
-        rules['no-invalid-classes'] && createInvalidClassesReport(context.text, css, { unescape: context.unescape }),
-        rules['no-conflicting-classes'] && createConflictingClassesReport(context.text, css, { unescape: context.unescape }),
-        rules['prefer-canonical-classes'] && createCanonicalComposeDirectiveReport(context.text, css, { unescape: context.unescape }),
-        rules['no-unapproved-raw-values'] && createUnapprovedRawValueClassesReport(context.text, css, { unescape: context.unescape })
+        rules['sort-classes'] && createSortClassesReport(context.text, css, withSourceRuleOptions(context, options, 'sort-classes')),
+        rules['no-invalid-classes'] && createInvalidClassesReport(context.text, css, withSourceRuleOptions(context, options, 'no-invalid-classes')),
+        rules['no-conflicting-classes'] && createConflictingClassesReport(context.text, css, withSourceRuleOptions(context, options, 'no-conflicting-classes')),
+        rules['prefer-canonical-classes'] && createCanonicalComposeDirectiveReport(context.text, css, withSourceRuleOptions(context, options, 'prefer-canonical-classes')),
+        rules['no-unapproved-raw-values'] && createUnapprovedRawValueClassesReport(context.text, css, withSourceRuleOptions(context, options, 'no-unapproved-raw-values'))
     ].filter((report): report is { diagnostics: MasterCSSLintDiagnostic[] } => Boolean(report))
         .flatMap((report) => report.diagnostics)
 }
@@ -269,14 +283,60 @@ function createComposeDirectiveLintDiagnostics(
 function createContextLintDiagnostics(
     context: ClassListContext,
     css: MasterCSS,
-    rules: Record<MasterCSSLintRuleId, boolean>
+    rules: Record<MasterCSSLintRuleId, boolean>,
+    options: MasterCSSLintContentOptions
 ) {
     return context.sourceKind === 'compose-directive'
-        ? createComposeDirectiveLintDiagnostics(context, css, rules)
+        ? createComposeDirectiveLintDiagnostics(context, css, rules, options)
         : createClassListLintReport(context.text, css, {
-            unescape: context.unescape,
-            rules
+            ...createClassListLintOptions(context, options),
+            rules,
+            severities: options.severities
         }).diagnostics
+}
+
+function getRuleOptions(options: MasterCSSLintContentOptions): MasterCSSClassListLintReportOptions {
+    return {
+        ...options.ruleOptions?.['no-invalid-classes'],
+        ...options.ruleOptions?.['prefer-canonical-classes'],
+        ...options.ruleOptions?.['no-unapproved-raw-values']
+    }
+}
+
+function createClassListLintOptions(
+    context: ClassListContext,
+    options: MasterCSSLintContentOptions
+): MasterCSSClassListLintReportOptions {
+    return {
+        ...getRuleOptions(options),
+        unescape: context.unescape
+    }
+}
+
+function withSourceRuleOptions(
+    context: ClassListContext,
+    options: MasterCSSLintContentOptions,
+    ruleId: MasterCSSLintRuleId
+): MasterCSSLintReportOptions {
+    return {
+        ...getRuleOptions(options),
+        ...getSpecificRuleOptions(options, ruleId),
+        severity: options.severities?.[ruleId],
+        unescape: context.unescape
+    }
+}
+
+function getSpecificRuleOptions(options: MasterCSSLintContentOptions, ruleId: MasterCSSLintRuleId) {
+    switch (ruleId) {
+        case 'no-invalid-classes':
+            return options.ruleOptions?.['no-invalid-classes']
+        case 'prefer-canonical-classes':
+            return options.ruleOptions?.['prefer-canonical-classes']
+        case 'no-unapproved-raw-values':
+            return options.ruleOptions?.['no-unapproved-raw-values']
+        default:
+            return undefined
+    }
 }
 
 function toSourceFix(context: ClassListContext, fix: MasterCSSLintFix): MasterCSSLintSourceFix | undefined {
@@ -336,7 +396,7 @@ export function lintMasterCSSContent(options: MasterCSSLintContentOptions): Mast
     const diagnostics: MasterCSSLintSourceDiagnostic[] = []
     const rules = resolveRules(options.rules)
     for (const context of collectClassListContexts(options.content, options.filePath)) {
-        diagnostics.push(...createContextLintDiagnostics(context, options.css, rules).map((diagnostic) => toSourceDiagnostic(options.content, context, diagnostic)))
+        diagnostics.push(...createContextLintDiagnostics(context, options.css, rules, options).map((diagnostic) => toSourceDiagnostic(options.content, context, diagnostic)))
     }
     const languageId = getLanguageId(options.filePath)
     return {
@@ -375,7 +435,7 @@ function applyFixes(content: string, fixes: MasterCSSLintSourceFix[]) {
     return fixed
 }
 
-function fixClassListText(context: ClassListContext, css: MasterCSS, rules: Record<MasterCSSLintRuleId, boolean>) {
+function fixClassListText(context: ClassListContext, css: MasterCSS, rules: Record<MasterCSSLintRuleId, boolean>, options: MasterCSSLintContentOptions) {
     let fixed = context.text
     for (let pass = 0; pass < MAX_FIX_PASSES; pass++) {
         const nextContext: ClassListContext = {
@@ -383,7 +443,7 @@ function fixClassListText(context: ClassListContext, css: MasterCSS, rules: Reco
             range: { start: 0, end: fixed.length },
             text: fixed
         }
-        const fix = createContextLintDiagnostics(nextContext, css, rules)
+        const fix = createContextLintDiagnostics(nextContext, css, rules, options)
             .map((diagnostic) => diagnostic.fix)
             .find((fix): fix is MasterCSSLintFix => Boolean(fix && fix.scope !== 'directive'))
         if (!fix) return fixed
@@ -394,11 +454,11 @@ function fixClassListText(context: ClassListContext, css: MasterCSS, rules: Reco
     return fixed
 }
 
-function fixSafeClassLists(content: string, filePath: string, css: MasterCSS, rules: Record<MasterCSSLintRuleId, boolean>) {
+function fixSafeClassLists(content: string, filePath: string, css: MasterCSS, rules: Record<MasterCSSLintRuleId, boolean>, options: MasterCSSLintContentOptions) {
     const replacements = collectClassListContexts(content, filePath)
         .map((context) => ({
             range: context.range,
-            text: fixClassListText(context, css, rules)
+            text: fixClassListText(context, css, rules, options)
         }))
         .filter((replacement) => content.slice(replacement.range.start, replacement.range.end) !== replacement.text)
         .sort((a, b) => b.range.start - a.range.start || b.range.end - a.range.end)
@@ -415,7 +475,7 @@ function fixSafeClassLists(content: string, filePath: string, css: MasterCSS, ru
 
 export function fixMasterCSSContent(options: MasterCSSFixContentOptions) {
     const rules = resolveRules(options.rules)
-    let fixed = fixSafeClassLists(options.content, options.filePath, options.css, rules)
+    let fixed = fixSafeClassLists(options.content, options.filePath, options.css, rules, options)
     if (!options.includeDirectiveFixes) return fixed
     const structuralFixes = collectStructuralFixes(lintMasterCSSContent({
         ...options,

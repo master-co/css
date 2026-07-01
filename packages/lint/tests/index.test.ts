@@ -333,6 +333,95 @@ describe('source content linting', () => {
         })
     })
 
+    test('lints and fixes class lists inside mdx fenced html examples', () => {
+        const content = [
+            '```html',
+            '<button class="inline-flex align-items:center gap:2x px:md py:xs r:md fg:white bg:blue-60">',
+            '    Save',
+            '</button>',
+            '```'
+        ].join('\n')
+        const result = lintMasterCSSContent({
+            content,
+            filePath: '/project/content.mdx',
+            css
+        })
+
+        expect(result).toMatchObject({
+            languageId: 'mdx',
+            sourceKind: 'source'
+        })
+        expect(result.diagnostics.map((diagnostic) => diagnostic.ruleId)).toEqual([
+            'sort-classes',
+            'prefer-canonical-classes',
+            'prefer-canonical-classes'
+        ])
+        expect(fixMasterCSSContent({
+            content,
+            filePath: '/project/content.mdx',
+            css
+        })).toBe([
+            '```html',
+            '<button class="inline-flex items-center gap:xs px:md py:xs r:md bg:blue-60 fg:white">',
+            '    Save',
+            '</button>',
+            '```'
+        ].join('\n'))
+    })
+
+    test('passes rule options to source content diagnostics', () => {
+        const content = [
+            '```html',
+            '<div class="btn font:15px w:17px"></div>',
+            '```'
+        ].join('\n')
+        const result = lintMasterCSSContent({
+            content,
+            filePath: '/project/content.mdx',
+            css,
+            rules: {
+                'sort-classes': false,
+                'no-conflicting-classes': false,
+                'prefer-canonical-classes': false,
+                'no-invalid-classes': true,
+                'no-unapproved-raw-values': true
+            },
+            ruleOptions: {
+                'no-invalid-classes': {
+                    disallowUnknownClass: true
+                },
+                'no-unapproved-raw-values': {
+                    allowProperties: ['width']
+                }
+            }
+        })
+
+        expect(result.diagnostics.map((diagnostic) => ({
+            ruleId: diagnostic.ruleId,
+            code: diagnostic.code,
+            message: diagnostic.message
+        }))).toEqual([
+            {
+                ruleId: 'no-invalid-classes',
+                code: 'unknown-class',
+                message: '"btn" is not a valid or known class.'
+            },
+            {
+                ruleId: 'no-unapproved-raw-values',
+                code: 'unapproved-raw-value',
+                message: 'Unexpected raw value "15px" in "font:15px". Use a token or allow it explicitly.'
+            }
+        ])
+    })
+
+    test('applies source fixes until class lists are stable', () => {
+        expect(fixMasterCSSContent({
+            content: '<div class="size:md w:md h:md block"></div>',
+            filePath: '/project/index.html',
+            css
+        })).toBe('<div class="block size:md"></div>')
+    })
+
     test('uses script language ids for cjs and typescript module files', () => {
         expect(lintMasterCSSContent({
             content: 'const cls = "fg:white m:2x"',

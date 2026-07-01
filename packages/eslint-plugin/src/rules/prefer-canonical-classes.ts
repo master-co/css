@@ -11,6 +11,7 @@ import {
 import type { ResolvedClassNode } from '../utils/resolve-class-node'
 import type { ResolvedComposeDirectiveClassNode } from '../utils/resolve-compose-directive-class-nodes'
 import reportLintDiagnostics from '../utils/report-lint-diagnostics'
+import defineSourceVisitors, { shouldUseSourceVisitors } from '../utils/define-source-visitors'
 
 export default createRule({
     name: 'prefer-canonical-classes',
@@ -45,6 +46,14 @@ export default createRule({
         const options = {
             ...defaultCanonicalClassNameOptions,
             ...((context.options[0] || {}) as Partial<CanonicalClassNameOptions>)
+        }
+        if (shouldUseSourceVisitors(context)) {
+            return defineSourceVisitors({
+                context,
+                css,
+                ruleId: 'prefer-canonical-classes',
+                ruleOptions: options
+            })
         }
 
         const reportCanonicalClassList = (node, { raw, start, end, unescape, classNodes, classValues }: ResolvedClassNode) => {

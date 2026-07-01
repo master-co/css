@@ -9,7 +9,7 @@ interface ReportLintDiagnosticsOptions {
     getFix?: (diagnostic: MasterCSSLintDiagnostic, fix: MasterCSSLintFix) => { range: FixRange, text: string } | undefined
 }
 
-const messageIdByCode: Record<string, string> = {
+export const messageIdByCode: Record<string, string> = {
     'invalid-class-order': 'invalidClassOrder',
     'invalid-class': 'invalidClass',
     'unknown-class': 'disallowUnknownClass',
@@ -21,7 +21,7 @@ const messageIdByCode: Record<string, string> = {
     'unapproved-raw-value': 'unapprovedRawValue'
 }
 
-function stringifyData(data: MasterCSSLintDiagnostic['data'] = {}) {
+export function stringifyLintDiagnosticData(data: MasterCSSLintDiagnostic['data'] = {}) {
     return Object.fromEntries(
         Object.entries(data)
             .filter(([, value]) => value !== undefined)
@@ -65,7 +65,7 @@ export default function reportLintDiagnostics(
             ...(messageId
                 ? {
                     messageId,
-                    data: stringifyData(diagnostic.data || { message: diagnostic.message })
+                    data: stringifyLintDiagnosticData(diagnostic.data || { message: diagnostic.message })
                 }
                 : { message: diagnostic.message })
         }

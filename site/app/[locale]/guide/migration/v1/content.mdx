@@ -81,11 +81,13 @@ The current project CSS entry owns theme and manifest inputs. Move values out of
 }
 ```
 
+{/* eslint-disable @master/css/no-invalid-classes -- custom variant is defined in the adjacent CSS example */}
 ```html
 <section class="grid grid-cols:3@dashboard gap:lg p:card r:card fg:body">
     ...
 </section>
 ```
+{/* eslint-enable @master/css/no-invalid-classes */}
 
 Keep non-CSS application configuration in JavaScript or TypeScript. Move only values that are part of the styling vocabulary.
 

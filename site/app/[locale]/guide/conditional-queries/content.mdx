@@ -304,10 +304,12 @@ You can prefix a comparison with `w` for `width` or `h` for `height`. If no feat
 </details>
 
 (x) Put the feature name before the operator. Feature names after or between operators are not supported yet.
+{/* eslint-disable @master/css/no-invalid-classes -- intentional unsupported query examples */}
 ```html
 <div class="hidden@sm<=h">
 <div class="hidden@sm<=h<=lg">
 ```
+{/* eslint-enable @master/css/no-invalid-classes */}
 
 
 ### `@>=N` — At or above

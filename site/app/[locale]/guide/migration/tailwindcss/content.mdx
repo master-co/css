@@ -217,11 +217,13 @@ Use `@custom-variant` when a Tailwind custom variant represents shared product l
 }
 ```
 
+{/* eslint-disable @master/css/no-invalid-classes -- custom variants are defined in the adjacent CSS example */}
 ```html
 <button class="px:sm@compact bg:blue-70:interactive">
     Save
 </button>
 ```
+{/* eslint-enable @master/css/no-invalid-classes */}
 
 For Tailwind `group-*` and `peer-*` patterns, prefer native selectors when possible. Master CSS can target descendants, children, siblings, attributes, `:has()`, and `:of()`, but it does not implement Tailwind's group and peer variant naming.
 

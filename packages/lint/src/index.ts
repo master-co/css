@@ -69,6 +69,7 @@ export type {
 export type {
     MasterCSSFixContentOptions,
     MasterCSSLintContentOptions,
+    MasterCSSLintContentRuleOptions,
     MasterCSSLintDiagnosticSourceKind,
     MasterCSSLintFileResult,
     MasterCSSLintFileSourceKind,
