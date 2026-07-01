@@ -41,6 +41,51 @@ export function addMasterCSSStaticVitePlugin(content: string) {
     return addMasterCSSVitePluginCall(content, "masterCSS({ mode: 'static' })")
 }
 
+export function addMasterCSSRspackPlugin(content: string) {
+    if (content.includes('@master/css.webpack')) return content
+    let next = addImport(content, "import MasterCSSPlugin from '@master/css.webpack'")
+    if (/plugins\s*:\s*\[/.test(next)) {
+        return replaceFirst(next, /plugins\s*:\s*\[/, 'plugins: [\n        new MasterCSSPlugin(),')
+    }
+    if (/export\s+default\s+\{/.test(next)) {
+        return replaceFirst(next, /export\s+default\s+\{/, 'export default {\n    plugins: [new MasterCSSPlugin()],')
+    }
+    return next
+}
+
+export function addMasterCSSRsbuildPlugin(content: string) {
+    if (content.includes('@master/css.webpack')) return content
+    let next = addImport(content, "import MasterCSSPlugin from '@master/css.webpack'")
+    const rspackSetupBody = `            config.plugins ||= []
+            config.plugins.push(new MasterCSSPlugin())
+            return config`
+    const rspackSetup = `rspack(config) {
+${rspackSetupBody}
+        }`
+
+    if (/rspack\s*\(\s*config\s*\)\s*\{/.test(next)) {
+        return replaceFirst(next, /rspack\s*\(\s*config\s*\)\s*\{/, `rspack(config) {
+${rspackSetupBody}`)
+    }
+    if (/tools\s*:\s*\{/.test(next)) {
+        return replaceFirst(next, /tools\s*:\s*\{/, `tools: {
+        ${rspackSetup},`)
+    }
+    if (/defineConfig\(\s*\{/.test(next)) {
+        return replaceFirst(next, /defineConfig\(\s*\{/, `defineConfig({
+    tools: {
+        ${rspackSetup}
+    },`)
+    }
+    if (/export\s+default\s+\{/.test(next)) {
+        return replaceFirst(next, /export\s+default\s+\{/, `export default {
+    tools: {
+        ${rspackSetup}
+    },`)
+    }
+    return next
+}
+
 function addMasterCSSVitePluginCall(content: string, pluginCall: string) {
     if (content.includes('@master/css.vite')) return content
     let next = addImport(content, "import masterCSS from '@master/css.vite'")
@@ -73,6 +118,41 @@ export default defineConfig({
     plugins: [
         masterCSS({ mode: 'static' })
     ]
+})
+`
+}
+
+export function createRspackConfig() {
+    return `import MasterCSSPlugin from '@master/css.webpack'
+
+export default {
+    module: {
+        rules: [
+            {
+                test: /\\.css$/i,
+                type: 'css/auto'
+            }
+        ]
+    },
+    plugins: [
+        new MasterCSSPlugin()
+    ]
+}
+`
+}
+
+export function createRsbuildConfig() {
+    return `import { defineConfig } from '@rsbuild/core'
+import MasterCSSPlugin from '@master/css.webpack'
+
+export default defineConfig({
+    tools: {
+        rspack(config) {
+            config.plugins ||= []
+            config.plugins.push(new MasterCSSPlugin())
+            return config
+        }
+    }
 })
 `
 }

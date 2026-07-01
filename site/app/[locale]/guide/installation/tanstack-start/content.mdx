@@ -1,0 +1,103 @@
+TanStack Start can use Master CSS through its Vite or Rsbuild build path. Use the setup that matches the build config in your project.
+
+<StepSection>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Create a project
+            If you don't have a TanStack Start project, create one first.
+        </StepL>
+        <StepR>
+            ```bash name=Terminal
+            npx @tanstack/cli@latest create
+            cd my-app
+            ```
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Install Master CSS
+            Install the package pair for the build tool used by the project.
+        </StepL>
+        <StepR>
+            ```bash name=Terminal
+            npm install @master/css@rc @master/css.vite@rc
+            ```
+        </StepR>
+    </Step>
+</StepSection>
+
+## Vite setup
+
+Use `@master/css.vite` in the TanStack Start Vite config.
+
+```ts name=vite.config.ts
+import { defineConfig } from 'vite'
+import { tanstackStart } from '@tanstack/react-start/plugin/vite'
+import react from '@vitejs/plugin-react'
+import masterCSS from '@master/css.vite'
+
+export default defineConfig({
+    plugins: [
+        tanstackStart(),
+        masterCSS({ mode: 'static' }),
+        react()
+    ]
+})
+```
+
+## Rsbuild setup
+
+For the Rsbuild variant, install `@master/css.webpack` instead of `@master/css.vite`.
+
+```bash name=Terminal
+npm install @master/css@rc @master/css.webpack@rc
+```
+
+Register the plugin through Rsbuild's `tools.rspack` hook.
+
+```ts name=rsbuild.config.ts
+import { defineConfig } from '@rsbuild/core'
+import { tanstackStart } from '@tanstack/react-start/plugin/rsbuild'
+import MasterCSSPlugin from '@master/css.webpack'
+
+export default defineConfig({
+    plugins: [
+        tanstackStart()
+    ],
+    tools: {
+        rspack(config) {
+            config.plugins ||= []
+            config.plugins.push(new MasterCSSPlugin({ mode: 'static' }))
+            return config
+        }
+    }
+})
+```
+
+## CSS entry
+
+Create a shared stylesheet entry and import it from the root route.
+
+```css name=src/styles/app.css
+@import '@master/css';
+```
+
+```tsx name=src/routes/__root.tsx
+import '../styles/app.css'
+```
+
+```tsx name=src/routes/index.tsx
+import { createFileRoute } from '@tanstack/react-router'
+
+export const Route = createFileRoute('/')({
+    component: Home
+})
+
+function Home() {
+    return (
+        <h1 className="italic m:2xl text:neutral font:5xl font:heavy">
+            Hello World
+        </h1>
+    )
+}
+```

@@ -663,6 +663,146 @@ export default function App() {
         }).toEqual(once)
     })
 
+    test('plans Rspack projects with the Webpack-compatible plugin before generic React', () => {
+        const root = createTempProject('master-css-create-rspack-', {
+            dependencies: {
+                '@rspack/core': '^2.0.0',
+                '@rspack/cli': '^2.0.0',
+                react: '^19.0.0'
+            }
+        })
+        writeProjectFile(root, 'rspack.config.mjs', `export default {
+    plugins: []
+}
+`)
+        writeProjectFile(root, 'src/index.css', 'body { margin: 0; }\n')
+
+        const plan = createSetupPlan({ root })
+
+        expect(plan.framework).toBe('rspack')
+        expect(plan.dependencies.map((dependency) => dependency.name)).toEqual([
+            '@master/css',
+            '@master/css.webpack',
+            '@master/eslint-config-css',
+            'eslint',
+            '@master/css-mcp'
+        ])
+        expect(plan.dependencies.map((dependency) => dependency.name)).not.toContain('webpack')
+        expect(plan.files.map((file) => [file.path, file.action])).toEqual([
+            ['rspack.config.mjs', 'update'],
+            ['src/index.css', 'update'],
+            ['eslint.config.js', 'create'],
+            ['AGENTS.md', 'create']
+        ])
+
+        applySetup({ root, install: false })
+
+        expect(readProjectFile(root, 'rspack.config.mjs')).toContain("import MasterCSSPlugin from '@master/css.webpack'")
+        expect(readProjectFile(root, 'rspack.config.mjs')).toContain('new MasterCSSPlugin()')
+        expect(readProjectFile(root, 'src/index.css')).toContain("@import '@master/css';")
+    })
+
+    test('applies idempotent explicit Rspack setup with fallback config', () => {
+        const root = createTempProject('master-css-create-rspack-explicit-')
+
+        applySetup({
+            root,
+            framework: 'rspack',
+            minimal: true,
+            install: false
+        })
+        const once = {
+            config: readProjectFile(root, 'rspack.config.mjs'),
+            css: readProjectFile(root, 'src/index.css'),
+            packageJSON: readProjectFile(root, 'package.json')
+        }
+
+        applySetup({
+            root,
+            framework: 'rspack',
+            minimal: true,
+            install: false
+        })
+
+        expect({
+            config: readProjectFile(root, 'rspack.config.mjs'),
+            css: readProjectFile(root, 'src/index.css'),
+            packageJSON: readProjectFile(root, 'package.json')
+        }).toEqual(once)
+        expect(once.config).toContain("type: 'css/auto'")
+    })
+
+    test('plans Rsbuild projects with tools.rspack before generic Vue', () => {
+        const root = createTempProject('master-css-create-rsbuild-', {
+            dependencies: {
+                '@rsbuild/core': '^2.0.0',
+                vue: '^3.5.0'
+            }
+        })
+        writeProjectFile(root, 'rsbuild.config.ts', `import { defineConfig } from '@rsbuild/core'
+
+export default defineConfig({
+    plugins: []
+})
+`)
+
+        const plan = createSetupPlan({ root })
+
+        expect(plan.framework).toBe('rsbuild')
+        expect(plan.dependencies.map((dependency) => dependency.name)).toEqual([
+            '@master/css',
+            '@master/css.webpack',
+            '@master/eslint-config-css',
+            'eslint',
+            '@master/css-mcp'
+        ])
+        expect(plan.dependencies.map((dependency) => dependency.name)).not.toContain('webpack')
+        expect(plan.files.map((file) => [file.path, file.action])).toEqual([
+            ['rsbuild.config.ts', 'update'],
+            ['src/index.css', 'create'],
+            ['eslint.config.js', 'create'],
+            ['AGENTS.md', 'create']
+        ])
+
+        applySetup({ root, install: false })
+
+        expect(readProjectFile(root, 'rsbuild.config.ts')).toContain("import MasterCSSPlugin from '@master/css.webpack'")
+        expect(readProjectFile(root, 'rsbuild.config.ts')).toContain('tools: {')
+        expect(readProjectFile(root, 'rsbuild.config.ts')).toContain('rspack(config)')
+        expect(readProjectFile(root, 'rsbuild.config.ts')).toContain('config.plugins.push(new MasterCSSPlugin())')
+        expect(readProjectFile(root, 'src/index.css')).toBe("@import '@master/css';\n")
+    })
+
+    test('applies idempotent explicit Rsbuild setup with fallback config', () => {
+        const root = createTempProject('master-css-create-rsbuild-explicit-')
+
+        applySetup({
+            root,
+            framework: 'rsbuild',
+            minimal: true,
+            install: false
+        })
+        const once = {
+            config: readProjectFile(root, 'rsbuild.config.ts'),
+            css: readProjectFile(root, 'src/index.css'),
+            packageJSON: readProjectFile(root, 'package.json')
+        }
+
+        applySetup({
+            root,
+            framework: 'rsbuild',
+            minimal: true,
+            install: false
+        })
+
+        expect({
+            config: readProjectFile(root, 'rsbuild.config.ts'),
+            css: readProjectFile(root, 'src/index.css'),
+            packageJSON: readProjectFile(root, 'package.json')
+        }).toEqual(once)
+        expect(once.config).toContain("import { defineConfig } from '@rsbuild/core'")
+    })
+
     test('plans Laravel projects with the Vite plugin in static mode', () => {
         const root = createTempProject('master-css-create-laravel-', {
             dependencies: {

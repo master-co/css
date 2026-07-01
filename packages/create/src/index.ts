@@ -9,6 +9,8 @@ import {
     addMasterCSSImportToStylesheet,
     addMasterCSSNextConfig,
     addMasterCSSNuxtModule,
+    addMasterCSSRsbuildPlugin,
+    addMasterCSSRspackPlugin,
     addMasterCSSStaticVitePlugin,
     addMasterCSSVitePlugin,
     addReactRouterRootCSSImport,
@@ -18,11 +20,13 @@ import {
     createMasterCSSStylesheet,
     createNextConfig,
     createNuxtConfig,
+    createRsbuildConfig,
+    createRspackConfig,
     createStaticViteConfig,
     createViteConfig
 } from './transforms'
 
-export type Framework = 'none' | 'vite' | 'react' | 'react-router' | 'vue' | 'nextjs' | 'svelte' | 'nuxt' | 'astro' | 'webpack' | 'laravel' | 'lit' | 'angular'
+export type Framework = 'none' | 'vite' | 'react' | 'react-router' | 'vue' | 'nextjs' | 'svelte' | 'nuxt' | 'astro' | 'webpack' | 'rspack' | 'rsbuild' | 'laravel' | 'lit' | 'angular'
 export type FrameworkOption = Framework | 'auto'
 export type PackageManager = 'npm' | 'pnpm' | 'yarn' | 'bun'
 export type FileAction = 'create' | 'update' | 'skip'
@@ -279,6 +283,16 @@ function filesForFramework(root: string, framework: Framework, warnings: string[
             }
             return files
         }
+        case 'rspack':
+            return [
+                planTextFile(root, firstExistingPath(root, ['rspack.config.ts', 'rspack.config.mts', 'rspack.config.mjs', 'rspack.config.js', 'rspack.config.cjs'], 'rspack.config.mjs'), addMasterCSSRspackPlugin, createRspackConfig(), 'Register the Master CSS Webpack-compatible plugin in the Rspack config.'),
+                planTextFile(root, 'src/index.css', addMasterCSSImportToStylesheet, createMasterCSSStylesheet(), 'Create or update the project CSS entry for Rspack.')
+            ]
+        case 'rsbuild':
+            return [
+                planTextFile(root, firstExistingPath(root, ['rsbuild.config.ts', 'rsbuild.config.mts', 'rsbuild.config.mjs', 'rsbuild.config.js'], 'rsbuild.config.ts'), addMasterCSSRsbuildPlugin, createRsbuildConfig(), 'Register the Master CSS Webpack-compatible plugin through Rsbuild tools.rspack.'),
+                planTextFile(root, 'src/index.css', addMasterCSSImportToStylesheet, createMasterCSSStylesheet(), 'Create or update the project CSS entry for Rsbuild.')
+            ]
         case 'webpack':
             return [
                 planTextFile(root, 'src/index.css', addMasterCSSImportToStylesheet, createMasterCSSStylesheet(), 'Create or update the project CSS entry for Webpack.')
@@ -297,7 +311,7 @@ function dependenciesForFramework(framework: Framework, version: string): Planne
     if (framework === 'nextjs') dependencies.push({ name: MASTER_CSS_PACKAGES.next, version, dev: false })
     if (framework === 'nuxt') dependencies.push({ name: MASTER_CSS_PACKAGES.nuxt, version, dev: false })
     if (framework === 'astro') dependencies.push({ name: MASTER_CSS_PACKAGES.astro, version, dev: false })
-    if (framework === 'webpack') dependencies.push({ name: MASTER_CSS_PACKAGES.webpack, version, dev: false })
+    if (framework === 'webpack' || framework === 'rspack' || framework === 'rsbuild') dependencies.push({ name: MASTER_CSS_PACKAGES.webpack, version, dev: false })
     if (framework === 'none' || framework === 'lit' || framework === 'angular') dependencies.push({ name: MASTER_CSS_PACKAGES.runtime, version, dev: false })
     if (framework === 'angular') dependencies.push({ name: MASTER_CSS_PACKAGES.preset, version, dev: false })
     return dependencies
@@ -392,9 +406,11 @@ function resolveFramework(root: string, packageJSON: PackageJSON | undefined, fr
     if (existsSync(join(root, 'astro.config.mjs')) || existsSync(join(root, 'astro.config.js')) || dependencies.astro) return 'astro'
     if (existsSync(join(root, 'angular.json')) || dependencies['@angular/core']) return 'angular'
     if (dependencies['laravel-vite-plugin'] || existsSync(join(root, 'artisan'))) return 'laravel'
-    if (dependencies.lit) return 'lit'
+    if (existsSync(join(root, 'rsbuild.config.ts')) || existsSync(join(root, 'rsbuild.config.mts')) || existsSync(join(root, 'rsbuild.config.mjs')) || existsSync(join(root, 'rsbuild.config.js')) || dependencies['@rsbuild/core']) return 'rsbuild'
+    if (existsSync(join(root, 'rspack.config.ts')) || existsSync(join(root, 'rspack.config.mts')) || existsSync(join(root, 'rspack.config.mjs')) || existsSync(join(root, 'rspack.config.js')) || existsSync(join(root, 'rspack.config.cjs')) || dependencies['@rspack/core'] || dependencies['@rspack/cli']) return 'rspack'
     if (existsSync(join(root, 'react-router.config.ts')) || existsSync(join(root, 'react-router.config.js')) || existsSync(join(root, 'react-router.config.mjs')) || existsSync(join(root, 'react-router.config.mts')) || dependencies['@react-router/dev']) return 'react-router'
     if (dependencies.vue || dependencies['@vitejs/plugin-vue'] || existsSync(join(root, 'src/App.vue'))) return 'vue'
+    if (dependencies.lit) return 'lit'
     if (dependencies.react || dependencies['react-dom']) return 'react'
     if (existsSync(join(root, 'webpack.config.js')) || existsSync(join(root, 'webpack.config.mjs')) || dependencies.webpack) return 'webpack'
     if (existsSync(join(root, 'vite.config.ts')) || existsSync(join(root, 'vite.config.js')) || dependencies.vite) return 'vite'

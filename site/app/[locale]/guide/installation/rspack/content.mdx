@@ -1,0 +1,71 @@
+<StepSection>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Create a project
+            If you don't have a Rspack project, create one first.
+        </StepL>
+        <StepR>
+            ```bash name=Terminal
+            npm create rspack@latest my-app
+            cd my-app
+            ```
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Add Master CSS
+            Run the installer from the Rspack project root.
+        </StepL>
+        <StepR>
+            ```bash name=Terminal
+            npm create @master/css@rc -- --framework rspack --yes
+            ```
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Start dev server
+            Run the command to start the Rspack dev server.
+        </StepL>
+        <StepR>
+            ```bash name=Terminal&action=run
+            dev
+            ```
+        </StepR>
+    </Step>
+    <Step>
+        ### <StepNum />Start using Master CSS
+        Now style your first Rspack page using Master CSS syntax.
+    </Step>
+    <HelloWorld />
+</StepSection>
+
+The installer registers the Webpack-compatible plugin in `rspack.config.*` and creates `src/index.css` as the Master CSS entry.
+
+```js name=rspack.config.mjs
+import MasterCSSPlugin from '@master/css.webpack'
+
+export default {
+    module: {
+        rules: [
+            {
+                test: /\.css$/i,
+                type: 'css/auto'
+            }
+        ]
+    },
+    plugins: [
+        new MasterCSSPlugin()
+    ]
+}
+```
+
+```css name=src/index.css
+@import '@master/css';
+```
+
+```html
+<h1 class="italic m:2xl text:neutral font:5xl font:heavy">
+    Hello World
+</h1>
+```

@@ -10,7 +10,7 @@ const siteRoot = fileURLToPath(new URL('../', import.meta.url))
 const appRoot = path.join(siteRoot, 'app/[locale]')
 const docSections = new Set(['blog', 'guide', 'messages', 'reference'])
 const visibleSourceFiles = [
-    'app/[locale]/examples/layout-system/page.tsx'
+    'app/examples/layout-system/page.tsx'
 ]
 
 interface ExampleCandidate {
