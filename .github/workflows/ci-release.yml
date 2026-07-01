@@ -149,18 +149,30 @@ jobs:
                   git add packages/vscode/package.json pnpm-lock.yaml
                   git commit -m "Chore(VSCode): Bump extension version [skip ci]"
                   git push origin "HEAD:${{ github.ref_name }}"
+            - name: Azure login for VSCE
+              if: ${{ github.ref_name == 'rc' }}
+              uses: azure/login@v3
+              with:
+                  client-id: ${{ vars.AZURE_CLIENT_ID }}
+                  tenant-id: ${{ vars.AZURE_TENANT_ID }}
+                  subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
             - name: Publish VS Code extension
               if: ${{ github.ref_name == 'rc' }}
               run: |
-                  pnpm --filter master-css-vscode exec vsce verify-pat masterco
-                  pnpm --filter master-css-vscode vscode:publish
-              env:
-                  VSCE_PAT: ${{ secrets.VSCE_PAT }}
+                  cd packages/vscode
+                  shopt -s nullglob
+                  packages=(vsix/*.vsix)
+                  if [ ${#packages[@]} -eq 0 ]; then
+                      echo "No VSIX packages found in packages/vscode/vsix."
+                      exit 1
+                  fi
+                  for package in "${packages[@]}"; do
+                      pnpm exec vsce publish --packagePath "$package" --azure-credential
+                  done
             - run: pnpm exec semantic-release
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
                   NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-                  VSCE_PAT: ${{ secrets.VSCE_PAT }}
             - name: Trigger Cloudflare Pages site deploy
               if: ${{ github.ref_name == 'rc' }}
               run: |
