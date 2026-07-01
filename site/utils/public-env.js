@@ -23,11 +23,11 @@ export function resolvePublicEnv(options = {}) {
 
     const repository = options.repositoryUrl ?? readRepository(cwd)
     const { owner, slug } = parseRepository(repository)
-    const commitRef = env.NEXT_PUBLIC_COMMIT_REF
+    const resolvedCommitRef = env.NEXT_PUBLIC_COMMIT_REF
         || env.CF_PAGES_BRANCH
         || env.GITHUB_REF_NAME
         || getGitBranch(runGit)
-        || 'rc'
+    const commitRef = resolvedCommitRef || 'rc'
     const siteUrl = resolveSiteUrl(env, commitRef)
 
     return {
@@ -36,7 +36,12 @@ export function resolvePublicEnv(options = {}) {
         NEXT_PUBLIC_URL: siteUrl,
         NEXT_PUBLIC_PLAY_API_URL: env.NEXT_PUBLIC_PLAY_API_URL || defaultPlayApiUrl,
         NEXT_PUBLIC_SITE_LOCALE_PREFIX_MODE: resolveLocalePrefixMode(env),
-        NEXT_PUBLIC_VERSION: env.NEXT_PUBLIC_VERSION || resolveVersion(runGit),
+        NEXT_PUBLIC_VERSION: env.NEXT_PUBLIC_VERSION || resolveVersion({
+            runGit,
+            repositoryUrl: repository,
+            commitRef,
+            releaseRequired: options.releaseRequired ?? isReleaseRef(resolvedCommitRef)
+        }),
         NEXT_PUBLIC_REPO_OWNER: env.NEXT_PUBLIC_REPO_OWNER || owner,
         NEXT_PUBLIC_REPO_SLUG: env.NEXT_PUBLIC_REPO_SLUG || slug,
         NEXT_PUBLIC_COMMIT_REF: commitRef
@@ -59,15 +64,30 @@ export function readPublicEnv(options = {}) {
     return resolvePublicEnv(options)
 }
 
-export function resolveVersion(runGit) {
-    const headTag = firstLine(tryRunGit(runGit, ['tag', '--points-at', 'HEAD', '--list', 'v*', '--sort=-v:refname']))
+export function resolveVersion({ runGit, repositoryUrl, commitRef, releaseRequired = false }) {
+    const selector = createVersionSelector(commitRef)
+    const headTag = firstMatchingTag(
+        tryRunGit(runGit, ['tag', '--points-at', 'HEAD', '--list', selector.tagPattern, '--sort=-v:refname']),
+        selector
+    )
     if (headTag) {
         return stripTagPrefix(headTag)
     }
 
-    const latestTag = tryRunGit(runGit, ['describe', '--tags', '--abbrev=0', '--match', 'v*'])
+    const remoteTag = repositoryUrl
+        ? firstMatchingTag(tryRunGit(runGit, ['ls-remote', '--tags', '--sort=-v:refname', repositoryUrl, selector.tagPattern]), selector)
+        : ''
+    if (remoteTag) {
+        return stripTagPrefix(remoteTag)
+    }
+
+    const latestTag = firstMatchingTag(tryRunGit(runGit, selector.describeArgs), selector)
     if (latestTag) {
         return stripTagPrefix(latestTag)
+    }
+
+    if (releaseRequired) {
+        throw new Error(`Unable to resolve Master CSS site version for "${commitRef || '(unknown ref)'}". Expected a ${selector.label} release tag matching "${selector.tagPattern}". Ensure release tags are available locally or git ls-remote can query the repository.`)
     }
 
     const shortSha = tryRunGit(runGit, ['rev-parse', '--short', 'HEAD']) || 'dev'
@@ -100,6 +120,50 @@ function isRcBranch(commitRef) {
     return commitRef === 'rc' || commitRef.endsWith('/rc')
 }
 
+function isReleaseRef(commitRef) {
+    return Boolean(getReleaseChannel(commitRef))
+}
+
+function createVersionSelector(commitRef) {
+    const channel = getReleaseChannel(commitRef)
+    if (channel === 'stable') {
+        return {
+            label: 'stable',
+            tagPattern: 'v*',
+            describeArgs: ['describe', '--tags', '--abbrev=0', '--match', 'v*', '--exclude', 'v*-*'],
+            matches: (tag) => /^v\d+\.\d+\.\d+$/.test(tag)
+        }
+    }
+
+    if (channel) {
+        const tagPattern = `v*-${channel}.*`
+        return {
+            label: channel,
+            tagPattern,
+            describeArgs: ['describe', '--tags', '--abbrev=0', '--match', tagPattern],
+            matches: (tag) => new RegExp(String.raw`^v\d+\.\d+\.\d+-${channel}\.\d+$`).test(tag)
+        }
+    }
+
+    return {
+        label: 'version',
+        tagPattern: 'v*',
+        describeArgs: ['describe', '--tags', '--abbrev=0', '--match', 'v*'],
+        matches: (tag) => tag.startsWith('v')
+    }
+}
+
+function getReleaseChannel(commitRef = '') {
+    if (matchesCommitRef(commitRef, 'main')) return 'stable'
+    for (const channel of ['alpha', 'beta', 'rc', 'canary']) {
+        if (matchesCommitRef(commitRef, channel)) return channel
+    }
+}
+
+function matchesCommitRef(commitRef, refName) {
+    return commitRef === refName || commitRef.endsWith(`/${refName}`)
+}
+
 function getGitBranch(runGit) {
     return tryRunGit(runGit, ['symbolic-ref', '--short', 'HEAD'])
 }
@@ -122,6 +186,22 @@ function tryRunGit(runGit, args) {
 
 function firstLine(value) {
     return value.split(/\r?\n/).find(Boolean) || ''
+}
+
+function firstMatchingTag(value, selector) {
+    for (const line of value.split(/\r?\n/)) {
+        const tag = extractTagName(line.trim())
+        if (tag && selector.matches(tag)) return tag
+    }
+    return ''
+}
+
+function extractTagName(line) {
+    if (!line) return ''
+    const ref = line.includes('\t') ? line.split('\t').at(-1) : firstLine(line)
+    if (!ref?.startsWith('refs/tags/')) return ref
+    if (ref.endsWith('^{}')) return ''
+    return ref.slice('refs/tags/'.length)
 }
 
 function stripTagPrefix(tag) {
