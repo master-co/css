@@ -7,6 +7,7 @@ const units = {
             'Agentic Workflows',
             'Syntax Tutorial',
             'Fundamentals',
+            'Authoring',
             'Design Foundations',
             'Customization',
             'Build & Delivery',
