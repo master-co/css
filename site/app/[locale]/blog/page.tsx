@@ -1,5 +1,6 @@
 import Footer from 'internal/components/Footer'
 import pageCategories from '~/site/.categories/blog.json'
+import { footerProps } from '~/site/navigation'
 import Image from 'next/image'
 import clsx from 'clsx'
 import dayjs from 'dayjs'
@@ -73,6 +74,6 @@ export default async function Page(props: any) {
                 </div>
             </div>
         </main>
-        <Footer className="app-wrapper" />
+        <Footer {...footerProps} className="app-wrapper" />
     </>
 }

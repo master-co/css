@@ -1,5 +1,5 @@
 import createLayout from '~/internal/factories/create-layout'
-import Layout from 'internal/layouts/doc'
+import Layout from '~/site/layouts/doc'
 import dictionaries from '~/site/dictionaries'
 import categories from '~/site/.categories/guide.json'
 import Tabs, { Tab, TabBadge } from '~/internal/components/Tabs'
