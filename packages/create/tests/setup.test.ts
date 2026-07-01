@@ -2,7 +2,7 @@ import { createRequire } from 'node:module'
 import { spawnSync } from 'node:child_process'
 import { chmodSync, existsSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
-import { dirname, join, resolve } from 'node:path'
+import { delimiter, dirname, join, resolve } from 'node:path'
 import { pathToFileURL } from 'node:url'
 import { describe, expect, test } from 'vitest'
 import { applySetup, createSetupPlan } from '../src'
@@ -51,17 +51,29 @@ function createFakePackageManager(name: string) {
     const root = mkdtempSync(join(tmpdir(), 'master-css-create-pm-'))
     const marker = join(root, 'install.log')
     const binary = join(root, name)
-    writeFileSync(binary, `#!/bin/sh
-printf "%s" "$PWD $*" > ${JSON.stringify(marker)}
+    const windowsBinary = join(root, `${name}.cmd`)
+    const shim = join(root, `${name}.cjs`)
+    const envKey = pathEnvKey()
+    writeFileSync(shim, `const { realpathSync, writeFileSync } = require('node:fs')
+writeFileSync(${JSON.stringify(marker)}, \`\${realpathSync(process.cwd())} \${process.argv.slice(2).join(' ')}\`)
 `, 'utf8')
+    writeFileSync(binary, `#!/bin/sh
+exec ${JSON.stringify(process.execPath)} ${JSON.stringify(shim)} "$@"
+`, 'utf8')
+    writeFileSync(windowsBinary, `@echo off\r\n"${process.execPath}" "${shim}" %*\r\n`, 'utf8')
     chmodSync(binary, 0o755)
     return {
         root,
         marker,
         env: {
-            PATH: `${root}:${process.env.PATH || ''}`
+            [envKey]: `${root}${delimiter}${process.env[envKey] || ''}`
         }
     }
+}
+
+function pathEnvKey() {
+    if (process.platform !== 'win32') return 'PATH'
+    return Object.keys(process.env).find((key) => key.toLowerCase() === 'path') || 'Path'
 }
 
 describe('@master/create-css setup planner', () => {
