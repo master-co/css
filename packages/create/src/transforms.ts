@@ -32,6 +32,11 @@ export function addMasterCSSVitePlugin(content: string) {
     return addMasterCSSVitePluginCall(content, 'masterCSS()')
 }
 
+export function addReactRouterRootCSSImport(content: string) {
+    if (/^\s*import\s+['"]\.\/app\.css['"]\s*;?/m.test(content)) return content
+    return addImport(content, "import './app.css'")
+}
+
 export function addMasterCSSStaticVitePlugin(content: string) {
     return addMasterCSSVitePluginCall(content, "masterCSS({ mode: 'static' })")
 }

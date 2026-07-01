@@ -11,6 +11,7 @@ import {
     addMasterCSSNuxtModule,
     addMasterCSSStaticVitePlugin,
     addMasterCSSVitePlugin,
+    addReactRouterRootCSSImport,
     addLitShadowRuntime,
     addViteClientTypes,
     createAstroConfig,
@@ -21,7 +22,7 @@ import {
     createViteConfig
 } from './transforms'
 
-export type Framework = 'none' | 'vite' | 'react' | 'nextjs' | 'svelte' | 'nuxt' | 'astro' | 'webpack' | 'laravel' | 'lit' | 'angular'
+export type Framework = 'none' | 'vite' | 'react' | 'react-router' | 'vue' | 'nextjs' | 'svelte' | 'nuxt' | 'astro' | 'webpack' | 'laravel' | 'lit' | 'angular'
 export type FrameworkOption = Framework | 'auto'
 export type PackageManager = 'npm' | 'pnpm' | 'yarn' | 'bun'
 export type FileAction = 'create' | 'update' | 'skip'
@@ -205,6 +206,24 @@ function filesForFramework(root: string, framework: Framework, warnings: string[
                 planTextFile(root, firstExistingPath(root, ['vite.config.ts', 'vite.config.js', 'vite.config.mjs'], 'vite.config.js'), addMasterCSSVitePlugin, createViteConfig(), 'Register the Master CSS Vite plugin.'),
                 planTextFile(root, firstExistingPath(root, ['src/index.css', 'src/style.css'], 'src/index.css'), addMasterCSSImportToStylesheet, createMasterCSSStylesheet(), 'Create or update the React project CSS entry.')
             ]
+        case 'react-router': {
+            const files: PlannedFileChange[] = [
+                planTextFile(root, firstExistingPath(root, ['vite.config.ts', 'vite.config.js', 'vite.config.mjs'], 'vite.config.ts'), addMasterCSSVitePlugin, createViteConfig(), 'Register the Master CSS Vite plugin.'),
+                planTextFile(root, 'app/app.css', addMasterCSSImportToStylesheet, createMasterCSSStylesheet(), 'Create or update the React Router app stylesheet entry.')
+            ]
+            const rootEntryPath = findExistingPath(root, ['app/root.tsx', 'app/root.jsx', 'app/root.ts', 'app/root.js'])
+            if (rootEntryPath) {
+                files.push(planTextFile(root, rootEntryPath, addReactRouterRootCSSImport, '', 'Import the React Router app stylesheet from the root route.'))
+            } else {
+                warnings.push('No app/root.tsx, app/root.jsx, app/root.ts, or app/root.js file was found. Import ./app.css from the React Router root route manually after setup.')
+            }
+            return files
+        }
+        case 'vue':
+            return [
+                planTextFile(root, firstExistingPath(root, ['vite.config.ts', 'vite.config.js', 'vite.config.mjs'], 'vite.config.ts'), addMasterCSSVitePlugin, createViteConfig(), 'Register the Master CSS Vite plugin.'),
+                planTextFile(root, firstExistingPath(root, ['src/assets/main.css', 'src/style.css', 'src/main.css'], 'src/assets/main.css'), addMasterCSSImportToStylesheet, createMasterCSSStylesheet(), 'Create or update the Vue project CSS entry.')
+            ]
         case 'nextjs':
             return [
                 planTextFile(root, firstExistingPath(root, ['next.config.ts', 'next.config.mjs', 'next.config.js'], 'next.config.js'), addMasterCSSNextConfig, createNextConfig(), 'Register the Master CSS Next.js adapter.'),
@@ -274,7 +293,7 @@ function filesForFramework(root: string, framework: Framework, warnings: string[
 
 function dependenciesForFramework(framework: Framework, version: string): PlannedDependency[] {
     const dependencies = [{ name: MASTER_CSS_PACKAGES.css, version, dev: false }]
-    if (framework === 'vite' || framework === 'react' || framework === 'laravel' || framework === 'lit') dependencies.push({ name: MASTER_CSS_PACKAGES.vite, version, dev: false })
+    if (framework === 'vite' || framework === 'react' || framework === 'react-router' || framework === 'vue' || framework === 'laravel' || framework === 'lit') dependencies.push({ name: MASTER_CSS_PACKAGES.vite, version, dev: false })
     if (framework === 'nextjs') dependencies.push({ name: MASTER_CSS_PACKAGES.next, version, dev: false })
     if (framework === 'nuxt') dependencies.push({ name: MASTER_CSS_PACKAGES.nuxt, version, dev: false })
     if (framework === 'astro') dependencies.push({ name: MASTER_CSS_PACKAGES.astro, version, dev: false })
@@ -374,6 +393,8 @@ function resolveFramework(root: string, packageJSON: PackageJSON | undefined, fr
     if (existsSync(join(root, 'angular.json')) || dependencies['@angular/core']) return 'angular'
     if (dependencies['laravel-vite-plugin'] || existsSync(join(root, 'artisan'))) return 'laravel'
     if (dependencies.lit) return 'lit'
+    if (existsSync(join(root, 'react-router.config.ts')) || existsSync(join(root, 'react-router.config.js')) || existsSync(join(root, 'react-router.config.mjs')) || existsSync(join(root, 'react-router.config.mts')) || dependencies['@react-router/dev']) return 'react-router'
+    if (dependencies.vue || dependencies['@vitejs/plugin-vue'] || existsSync(join(root, 'src/App.vue'))) return 'vue'
     if (dependencies.react || dependencies['react-dom']) return 'react'
     if (existsSync(join(root, 'webpack.config.js')) || existsSync(join(root, 'webpack.config.mjs')) || dependencies.webpack) return 'webpack'
     if (existsSync(join(root, 'vite.config.ts')) || existsSync(join(root, 'vite.config.js')) || dependencies.vite) return 'vite'

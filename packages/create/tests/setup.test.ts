@@ -503,6 +503,154 @@ export default defineConfig({
         expect(existsSync(join(root, 'vite.config.js'))).toBe(false)
     })
 
+    test('plans Vue projects with the Vite plugin and assets CSS entry', () => {
+        const root = createTempProject('master-css-create-vue-', {
+            dependencies: {
+                '@vitejs/plugin-vue': '^7.0.0',
+                vue: '^3.5.0',
+                vite: '^8.0.0'
+            }
+        })
+        writeProjectFile(root, 'vite.config.ts', `import { defineConfig } from 'vite'
+import vue from '@vitejs/plugin-vue'
+
+export default defineConfig({
+    plugins: [
+        vue()
+    ]
+})
+`)
+        writeProjectFile(root, 'src/assets/main.css', 'body { margin: 0; }\n')
+        writeProjectFile(root, 'src/App.vue', '<template><h1 class="block">Hello</h1></template>\n')
+
+        const plan = createSetupPlan({ root })
+
+        expect(plan.framework).toBe('vue')
+        expect(plan.dependencies.map((dependency) => dependency.name)).toEqual([
+            '@master/css',
+            '@master/css.vite',
+            '@master/eslint-config-css',
+            'eslint',
+            '@master/css-mcp'
+        ])
+        expect(plan.files.map((file) => [file.path, file.action])).toEqual([
+            ['vite.config.ts', 'update'],
+            ['src/assets/main.css', 'update'],
+            ['eslint.config.js', 'create'],
+            ['AGENTS.md', 'create']
+        ])
+
+        applySetup({ root, install: false })
+
+        expect(readProjectFile(root, 'vite.config.ts')).toContain("import masterCSS from '@master/css.vite'")
+        expect(readProjectFile(root, 'vite.config.ts')).toContain('masterCSS()')
+        expect(readProjectFile(root, 'src/assets/main.css')).toContain("@import '@master/css';")
+    })
+
+    test('honors explicit Vue setup without framework auto detection', () => {
+        const root = createTempProject('master-css-create-vue-explicit-')
+
+        const plan = createSetupPlan({
+            root,
+            framework: 'vue',
+            minimal: true
+        })
+
+        expect(plan.framework).toBe('vue')
+        expect(plan.dependencies.map((dependency) => dependency.name)).toEqual([
+            '@master/css',
+            '@master/css.vite'
+        ])
+        expect(plan.files.map((file) => [file.path, file.action])).toEqual([
+            ['vite.config.ts', 'create'],
+            ['src/assets/main.css', 'create']
+        ])
+    })
+
+    test('plans React Router framework projects before generic React', () => {
+        const root = createTempProject('master-css-create-react-router-', {
+            dependencies: {
+                '@react-router/dev': '^8.0.0',
+                react: '^19.0.0',
+                'react-dom': '^19.0.0',
+                vite: '^8.0.0'
+            }
+        })
+        writeProjectFile(root, 'react-router.config.ts', 'export default {}\n')
+        writeProjectFile(root, 'vite.config.ts', `import { defineConfig } from 'vite'
+
+export default defineConfig({
+    plugins: []
+})
+`)
+        writeProjectFile(root, 'app/root.tsx', `import { Links, Meta, Outlet, Scripts, ScrollRestoration } from 'react-router'
+
+export function Layout({ children }: { children: React.ReactNode }) {
+    return <html><body>{children}</body></html>
+}
+
+export default function App() {
+    return <Outlet />
+}
+`)
+
+        const plan = createSetupPlan({ root })
+
+        expect(plan.framework).toBe('react-router')
+        expect(plan.dependencies.map((dependency) => dependency.name)).toEqual([
+            '@master/css',
+            '@master/css.vite',
+            '@master/eslint-config-css',
+            'eslint',
+            '@master/css-mcp'
+        ])
+        expect(plan.files.map((file) => [file.path, file.action])).toEqual([
+            ['vite.config.ts', 'update'],
+            ['app/app.css', 'create'],
+            ['app/root.tsx', 'update'],
+            ['eslint.config.js', 'create'],
+            ['AGENTS.md', 'create']
+        ])
+
+        applySetup({ root, install: false })
+
+        expect(readProjectFile(root, 'vite.config.ts')).toContain("import masterCSS from '@master/css.vite'")
+        expect(readProjectFile(root, 'app/app.css')).toBe("@import '@master/css';\n")
+        expect(readProjectFile(root, 'app/root.tsx')).toContain("import './app.css'")
+    })
+
+    test('applies idempotent React Router root CSS imports', () => {
+        const root = createTempProject('master-css-create-react-router-idempotent-', {
+            dependencies: {
+                '@react-router/dev': '^8.0.0',
+                react: '^19.0.0',
+                vite: '^8.0.0'
+            }
+        })
+        writeProjectFile(root, 'react-router.config.ts', 'export default {}\n')
+        writeProjectFile(root, 'app/root.tsx', `import { Outlet } from 'react-router'
+
+export default function App() {
+    return <Outlet />
+}
+`)
+
+        applySetup({ root, install: false })
+        const once = {
+            root: readProjectFile(root, 'app/root.tsx'),
+            css: readProjectFile(root, 'app/app.css'),
+            vite: readProjectFile(root, 'vite.config.ts')
+        }
+
+        applySetup({ root, install: false })
+
+        expect({
+            root: readProjectFile(root, 'app/root.tsx'),
+            css: readProjectFile(root, 'app/app.css'),
+            vite: readProjectFile(root, 'vite.config.ts')
+        }).toEqual(once)
+    })
+
     test('plans Laravel projects with the Vite plugin in static mode', () => {
         const root = createTempProject('master-css-create-laravel-', {
             dependencies: {

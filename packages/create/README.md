@@ -55,7 +55,7 @@ npx @master/create-css@rc add --json --minimal --eslint
 Supported `--framework` values:
 
 ```txt
-auto, vite, react, nextjs, svelte, nuxt, astro, webpack, laravel, lit, angular, none
+auto, vite, react, react-router, vue, nextjs, svelte, nuxt, astro, webpack, laravel, lit, angular, none
 ```
 
 SvelteKit setup is delegated to the Svelte CLI add-on:

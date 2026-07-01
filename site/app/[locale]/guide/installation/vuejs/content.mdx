@@ -1,0 +1,49 @@
+<StepSection>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Create a project
+            If you don't have a Vue.js project, create one first.
+        </StepL>
+        <StepR>
+            ```bash name=Terminal
+            npm create vue@latest my-app
+            cd my-app
+            ```
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Add Master CSS
+            Run the installer from the Vue.js project root.
+        </StepL>
+        <StepR>
+            ```bash name=Terminal
+            npm create @master/css@rc -- --framework vue --yes
+            ```
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Start dev server
+            Run the command to start the Vite dev server.
+        </StepL>
+        <StepR>
+            ```bash name=Terminal&action=run
+            dev
+            ```
+        </StepR>
+    </Step>
+    <Step>
+        ### <StepNum />Start using Master CSS
+        Now style your first Vue.js component using Master CSS syntax.
+    </Step>
+    <HelloWorld url="localhost:5173" />
+</StepSection>
+
+```vue name=src/App.vue
+<template>
+    <h1 class="italic m:2xl text:neutral font:5xl font:heavy">
+        Hello World
+    </h1>
+</template>
+```

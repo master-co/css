@@ -1,0 +1,45 @@
+## Storybook setup
+
+Install Storybook in the application that already uses Master CSS.
+
+```bash name=Terminal
+npm create storybook@latest
+```
+
+When Storybook uses the app's Vite configuration, keep Master CSS registered in `vite.config.ts` and import the app stylesheet from the Storybook preview.
+
+```ts name=.storybook/preview.ts
+import type { Preview } from '@storybook/react-vite'
+
+import '../src/index.css'
+
+const preview: Preview = {
+    parameters: {},
+}
+
+export default preview
+```
+
+If Storybook does not load the app's Vite configuration, register Master CSS in `viteFinal`.
+
+```ts name=.storybook/main.ts
+import type { StorybookConfig } from '@storybook/react-vite'
+
+const config: StorybookConfig = {
+    framework: '@storybook/react-vite',
+    async viteFinal(config) {
+        const { mergeConfig } = await import('vite')
+        const { default: masterCSS } = await import('@master/css.vite')
+
+        return mergeConfig(config, {
+            plugins: [
+                masterCSS()
+            ]
+        })
+    }
+}
+
+export default config
+```
+
+Use the matching Storybook framework package for Vue, Svelte, Angular, or Web Components projects, and keep the stylesheet import pointed at the CSS entry used by your app.
