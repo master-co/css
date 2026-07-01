@@ -26,6 +26,7 @@ Do not read every `.ai/` file by default. Do read `.ai/context/accuracy-guardrai
 | PR/code review | `.ai/context/review.md` |
 | Public docs or examples | `.ai/context/docs.md` |
 | Package ownership, dependency direction, exports, cycles | `.ai/context/package-boundaries.md` |
+| Filesystem paths, file URLs, public URLs, virtual ids, import specifiers | `.ai/context/cross-platform.md` |
 | File path, package, or diff routing | `.ai/context/package-routing.md` |
 
 ## Deep References
@@ -38,6 +39,7 @@ Do not read every `.ai/` file by default. Do read `.ai/context/accuracy-guardrai
 - Validation matrix and benchmark policy: `.ai/testing-policy.md`
 - Commands and CI equivalents: `.ai/commands.md`
 - Style and path conventions: `.ai/code-style.md`
+- Cross-platform path workflow: `.ai/context/cross-platform.md`
 - PR review checklist: `.ai/review-checklist.md`
 
 ## Accuracy Rule

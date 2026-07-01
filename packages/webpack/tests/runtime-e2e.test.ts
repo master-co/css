@@ -11,18 +11,18 @@ import { describe, expect, it } from 'vitest'
 import webpack from 'webpack'
 
 const packageDir = dirname(fileURLToPath(new URL('../package.json', import.meta.url)))
-const pnpmCommand = process.platform === 'win32' ? 'pnpm.cmd' : 'pnpm'
 const require = createRequire(import.meta.url)
 let built = false
 
 function buildPackage() {
     if (built) return
-    execFileSync(pnpmCommand, ['--dir', packageDir, 'build'], {
+    execFileSync('pnpm', ['--dir', packageDir, 'build'], {
         cwd: packageDir,
         env: {
             ...process.env,
             CI: 'true'
         },
+        shell: process.platform === 'win32',
         stdio: 'pipe',
         timeout: 120000
     })

@@ -21,7 +21,7 @@ Read deeper references before editing when touching:
 - Package ownership or cycles: `.ai/architecture.md`, `.ai/package-map.md`, `.ai/boundaries.md`.
 - Performance: `.ai/commands.md`, `.ai/testing-policy.md`, affected package `AI.md`.
 - Review: `.ai/review-checklist.md`, `.ai/boundaries.md`, affected package `AI.md`.
-- Cross-platform paths: `.ai/code-style.md` and affected package tests.
+- Cross-platform paths: `.ai/context/cross-platform.md`, `.ai/code-style.md`, and affected package tests.
 
 ## Work Rules
 
