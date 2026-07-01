@@ -1,9 +1,16 @@
-import { mkdirSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs'
+import { createRequire } from 'node:module'
+import { spawnSync } from 'node:child_process'
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
-import { dirname, join } from 'node:path'
+import { dirname, join, resolve } from 'node:path'
+import { pathToFileURL } from 'node:url'
 import { describe, expect, test } from 'vitest'
 import { applySetup, createSetupPlan } from '../src'
 import { addMasterCSSEslintConfig } from '../src/transforms'
+
+const cliFilepath = resolve(__dirname, '../src/bin/index.ts')
+const tsconfigPath = resolve(__dirname, '../../../tsconfig.json')
+const tsxLoaderURL = pathToFileURL(createRequire(import.meta.url).resolve('tsx')).href
 
 function createTempProject(name: string, packageJSON: Record<string, unknown> = {}) {
     const root = mkdtempSync(join(tmpdir(), name))
@@ -25,6 +32,17 @@ function writeProjectFile(root: string, file: string, content: string) {
     const filePath = join(root, file)
     mkdirSync(dirname(filePath), { recursive: true })
     writeFileSync(filePath, content, 'utf8')
+}
+
+function runCLI(args: string[], options: { cwd?: string } = {}) {
+    return spawnSync(process.execPath, ['--import', tsxLoaderURL, cliFilepath, ...args], {
+        cwd: options.cwd,
+        encoding: 'utf8',
+        env: {
+            ...process.env,
+            TSX_TSCONFIG_PATH: tsconfigPath
+        }
+    })
 }
 
 describe('@master/create-css setup planner', () => {
@@ -115,6 +133,50 @@ export default defineConfig([
         expect(plan.commands[0].command).toContain('@master/css-mcp@rc')
     })
 
+    test('prints new project guidance instead of writing files outside a project', () => {
+        const root = mkdtempSync(join(tmpdir(), 'master-css-create-empty-'))
+        try {
+            const result = runCLI(['--cwd', root])
+
+            expect(result.status).toBe(0)
+            expect(result.stdout).toContain('No package.json was found')
+            expect(result.stdout).toContain('npm create vite@latest my-app')
+            expect(result.stdout).toContain('cd my-app')
+            expect(result.stdout).toContain('npm create @master/css@rc -- --yes')
+            expect(existsSync(join(root, 'src/master.css'))).toBe(false)
+        } finally {
+            rmSync(root, { recursive: true, force: true })
+        }
+    })
+
+    test('rejects positional project scaffolding with Vite guidance', () => {
+        const result = runCLI(['my-app'])
+
+        expect(result.status).toBe(1)
+        expect(result.stderr).toContain('Project scaffolding is not provided by @master/create-css')
+        expect(result.stderr).toContain('npm create vite@latest my-app')
+        expect(result.stderr).toContain('npm create @master/css@rc -- --yes')
+    })
+
+    test('prints an auto-detected Vite plan without explicit framework', () => {
+        const root = createTempProject('master-css-create-cli-vite-', {
+            dependencies: {
+                vite: '^8.0.0'
+            }
+        })
+
+        const result = runCLI(['--cwd', root, '--json'])
+        const plan = JSON.parse(result.stdout)
+
+        expect(result.status).toBe(0)
+        expect(plan.framework).toBe('vite')
+        expect(plan.files.map((file: { path: string }) => file.path)).toEqual([
+            'vite.config.js',
+            'src/style.css'
+        ])
+        expect(existsSync(join(root, 'vite.config.js'))).toBe(false)
+    })
+
     test('applies idempotent Vite and ESLint setup', () => {
         const root = createTempProject('master-css-create-apply-', {
             packageManager: 'pnpm@11.9.0',
@@ -175,6 +237,27 @@ export default defineConfig({
             ['vite.config.ts', 'update'],
             ['src/index.css', 'update']
         ])
+    })
+
+    test('prints an auto-detected React Vite plan without explicit framework', () => {
+        const root = createTempProject('master-css-create-cli-react-', {
+            dependencies: {
+                '@vitejs/plugin-react': '^6.0.0',
+                react: '^19.0.0',
+                vite: '^8.0.0'
+            }
+        })
+
+        const result = runCLI(['--cwd', root, '--json'])
+        const plan = JSON.parse(result.stdout)
+
+        expect(result.status).toBe(0)
+        expect(plan.framework).toBe('react')
+        expect(plan.files.map((file: { path: string }) => file.path)).toEqual([
+            'vite.config.js',
+            'src/index.css'
+        ])
+        expect(existsSync(join(root, 'vite.config.js'))).toBe(false)
     })
 
     test('plans Laravel projects with the Vite plugin in static mode', () => {

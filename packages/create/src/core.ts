@@ -1,5 +1,5 @@
-import { readFileSync } from 'node:fs'
-import { dirname, resolve } from 'node:path'
+import { existsSync, readFileSync } from 'node:fs'
+import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { Command } from 'commander'
 import { applySetupPlan, createSetupPlan, type FrameworkOption, type PackageManager } from '.'
@@ -7,6 +7,11 @@ import { applySetupPlan, createSetupPlan, type FrameworkOption, type PackageMana
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
 const pkg = JSON.parse(readFileSync(resolve(__dirname, '../package.json'), 'utf8'))
+const newProjectCommands = [
+    'npm create vite@latest my-app',
+    'cd my-app',
+    'npm create @master/css@rc -- --yes'
+]
 
 interface CommandOptions {
     cwd?: string
@@ -43,7 +48,7 @@ export default async function runProgram(argv: string[] = process.argv) {
         .argument('[project name]', 'Deprecated. The installer now updates the current project; use --cwd for another root.')
         .action(async (projectName: string | undefined, options: CommandOptions) => {
             if (projectName && projectName !== 'add') {
-                program.error('Project scaffolding was removed. Run "create-css add" inside an existing project, or pass --cwd.')
+                program.error(`Project scaffolding is not provided by @master/create-css. Create a Vite project first, then run the installer from the project root:\n\n${formatNewProjectCommands()}`)
             }
             await runAdd(options)
         })
@@ -68,7 +73,12 @@ async function runAdd(options: CommandOptions) {
 
     if (options.dryRun || options.json) {
         process.stdout.write(`${JSON.stringify(plan, null, 2)}\n`)
-        if (options.dryRun) return
+        return
+    }
+
+    if (!existsSync(join(root, 'package.json'))) {
+        printNonProjectGuidance(root)
+        return
     }
 
     applySetupPlan(plan, {
@@ -79,6 +89,17 @@ async function runAdd(options: CommandOptions) {
     if (!options.json) {
         printSummary(plan)
     }
+}
+
+function printNonProjectGuidance(root: string) {
+    process.stdout.write(`No package.json was found in ${root}.\n`)
+    process.stdout.write('@master/create-css adds Master CSS to an existing project.\n\n')
+    process.stdout.write('Create a Vite project first, then run the installer from the project root:\n\n')
+    process.stdout.write(`${formatNewProjectCommands()}\n`)
+}
+
+function formatNewProjectCommands() {
+    return newProjectCommands.map((command) => `  ${command}`).join('\n')
 }
 
 function printSummary(plan: ReturnType<typeof createSetupPlan>) {
