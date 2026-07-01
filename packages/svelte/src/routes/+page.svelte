@@ -1,70 +1,19 @@
 <script lang="ts">
-    import type { MasterCSSManifest } from "@master/css-runtime";
-    import defaultManifestJSON from "@master/css-preset/default-manifest.json" with { type: "json" };
-    import { CSSRuntimeProvider } from "../lib/runtime-provider.js";
-    import UtilityType from "@master/css-schema/utility-type";
-
-    const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest;
-
-    let containerRef = $state<HTMLDivElement>();
-    let manifest = $state<MasterCSSManifest>({
-        version: 1,
-        utilities: [
-            {
-                id: "btn",
-                name: "btn",
-                type: UtilityType.Semantic,
-                order: 0,
-                layer: "components",
-                emit: {
-                    type: "static",
-                    rules: [
-                        { selector: "&", declarations: { border: "0.125rem var(--color-red) solid" } },
-                    ],
-                },
-                matchers: [{ type: "static", name: "btn" }],
-            },
-        ],
-    });
-    let root = $state<ShadowRoot | Document | undefined | null>();
-    let destroy = $state(false);
-
-    $effect(() => {
-        if (containerRef) {
-            containerRef.attachShadow({ mode: "open" });
-        } else {
-            root = null
-        }
-    });
-
-    $effect(() => {
-        if (!destroy) {
-            const shadowContent = document.createElement("div");
-            shadowContent.innerHTML = "SHADOW CONTENT";
-            shadowContent.className = "fg:red-60";
-            containerRef?.shadowRoot?.appendChild(shadowContent);
-        }
-    });
+    const items = [
+        'SvelteKit Vite plugin',
+        'Server hook rendering',
+        'Automatic .svelte source extraction'
+    ];
 </script>
 
-{#if destroy}
-    <button onclick={() => (destroy = false)}>INIT</button>
-{/if}
-
-{#if !destroy}
-    <CSSRuntimeProvider {manifest} {root}>
-        <button onclick={() => (destroy = true)}>DESTROY</button>
-        <button
-            id="config-btn"
-            class="btn bg:blue-50"
-            onclick={() => (manifest = defaultManifest)}>CONFIG</button
-        >
-        <button
-            id="root-btn"
-            onclick={() => {
-                root = containerRef?.shadowRoot;
-            }}>ROOT</button
-        >
-        <div bind:this={containerRef}></div>
-    </CSSRuntimeProvider>
-{/if}
+<main class="max-w:40rem mx:auto p:2rem font:system">
+    <h1 class="font:700 font:2rem m:0 mb:1rem">Master CSS Svelte</h1>
+    <p class="fg:gray-60 mb:1.5rem">
+        This local page exercises Svelte source extraction without runtime provider APIs.
+    </p>
+    <ul class="list-style:none p:0 m:0 d:grid gap:.75rem">
+        {#each items as item (item)}
+            <li class="p:1rem r:.5rem bg:gray-5 fg:gray-90">{item}</li>
+        {/each}
+    </ul>
+</main>

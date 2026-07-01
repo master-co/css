@@ -56,7 +56,6 @@
         "@master/css-server": "workspace:^",
         "@master/css-stylesheet": "workspace:^",
         "@master/css.vite": "workspace:^",
-        "@master/css.vue": "workspace:^",
         "@nuxt/kit": "^4.4.8"
     },
     "devDependencies": {

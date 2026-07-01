@@ -4,9 +4,12 @@ import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import { createRequire } from 'node:module'
 import {
     extractClassCandidates,
+    astroAdapter,
     htmlAdapter,
     matchesSourceAdapter,
     oxcAdapter,
+    svelteAdapter,
+    vueAdapter,
     type SourceAdapter
 } from '@master/css-source'
 import { Minimatch } from 'minimatch'
@@ -24,6 +27,9 @@ import {
 } from './utils/class-exclusion'
 
 const builtInAdapters = [
+    vueAdapter(),
+    svelteAdapter(),
+    astroAdapter(),
     htmlAdapter(),
     oxcAdapter()
 ]
@@ -255,15 +261,15 @@ export default class CSSScanner extends EventEmitter {
      * @description Extract source content candidates.
      * @param source
      * @param content
-     * @returns string[] Latent classes
+     * @returns Promise<string[]> Latent classes
      */
-    collectCandidates(source: string, content: string): string[] {
+    async collectCandidates(source: string, content: string): Promise<string[]> {
         if (!source || !content) {
             return []
         }
         const adapter = this.resolveSourceAdapter(source)
         const extractedClasses = adapter
-            ? adapter.extract({ source, content })
+            ? await adapter.extract({ source, content })
             : extractClassCandidates(content)
         const latentClasses: string[] = []
         for (const eachLatentClasses of extractedClasses) {
@@ -300,7 +306,7 @@ export default class CSSScanner extends EventEmitter {
             this.contentHashes.set(source, hash)
         }
 
-        const allLatent = this.collectCandidates(source, content)
+        const allLatent = await this.collectCandidates(source, content)
         if (!allLatent.length) {
             return false
         }

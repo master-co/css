@@ -66,7 +66,6 @@
         "@master/css.nuxt": "workspace:^",
         "@master/css.svelte": "workspace:^",
         "@master/css.vite": "workspace:^",
-        "@master/css.vue": "workspace:^",
         "@master/css.webpack": "workspace:^",
         "@master/eslint-config-css": "workspace:^",
         "@master/eslint-plugin-css": "workspace:^"

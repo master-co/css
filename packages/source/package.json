@@ -45,6 +45,21 @@
             "types": "./dist/adapters/index.d.ts",
             "import": "./dist/adapters/index.js",
             "default": "./dist/adapters/index.js"
+        },
+        "./adapters/astro": {
+            "types": "./dist/adapters/astro.d.ts",
+            "import": "./dist/adapters/astro.js",
+            "default": "./dist/adapters/astro.js"
+        },
+        "./adapters/svelte": {
+            "types": "./dist/adapters/svelte.d.ts",
+            "import": "./dist/adapters/svelte.js",
+            "default": "./dist/adapters/svelte.js"
+        },
+        "./adapters/vue": {
+            "types": "./dist/adapters/vue.d.ts",
+            "import": "./dist/adapters/vue.js",
+            "default": "./dist/adapters/vue.js"
         }
     },
     "typesVersions": {
@@ -54,6 +69,15 @@
             ],
             "./adapters": [
                 "./dist/adapters/index.d.ts"
+            ],
+            "./adapters/astro": [
+                "./dist/adapters/astro.d.ts"
+            ],
+            "./adapters/svelte": [
+                "./dist/adapters/svelte.d.ts"
+            ],
+            "./adapters/vue": [
+                "./dist/adapters/vue.d.ts"
             ]
         }
     },
@@ -68,5 +92,21 @@
         "@master/css-lexer": "workspace:^",
         "htmlparser2": "^12.0.0",
         "oxc-parser": "^0.137.0"
+    },
+    "peerDependencies": {
+        "svelte": ">=4",
+        "vue": ">=3"
+    },
+    "peerDependenciesMeta": {
+        "svelte": {
+            "optional": true
+        },
+        "vue": {
+            "optional": true
+        }
+    },
+    "devDependencies": {
+        "svelte": "^5.56.3",
+        "vue": "^3.5.38"
     }
 }

@@ -82,7 +82,7 @@ In `mode: 'runtime'`, the module publishes a stable manifest JSON asset and modu
 
 ## Options
 
-The module options extend `@master/css.vue/vite` options.
+The module options extend `@master/css.vite` options.
 
 ```ts
 export default defineNuxtConfig({

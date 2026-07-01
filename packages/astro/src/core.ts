@@ -1,7 +1,6 @@
 import { AstroIntegration } from 'astro'
 import vitePlugin from '@master/css.vite'
 import defaultOptions, { type IntegrationOptions } from './options'
-import { astroAdapter } from './adapter'
 import { externalizeAstroHydrationManifests } from './external-hydration-manifest'
 import { preloadAstroRuntimeAssets } from './runtime-preload'
 
@@ -9,35 +8,21 @@ export const ASTRO_MIDDLEWARE_ENTRYPOINT = '@master/css.astro/middleware'
 export const ASTRO_SSR_EXTERNAL = ['@master/css-server']
 export const ASTRO_RUNTIME_INJECTION = 'import "@master/css.vite/runtime";'
 
-function withAstroAdapter(options: IntegrationOptions): IntegrationOptions {
-    return {
-        ...options,
-        scanner: {
-            ...options.scanner,
-            adapters: [
-                ...(options.scanner?.adapters || []),
-                astroAdapter()
-            ]
-        }
-    }
-}
-
 function getViteOptions(options: IntegrationOptions): IntegrationOptions {
-    const viteOptions = withAstroAdapter(options)
     switch (options.mode) {
         case 'pre-render':
         case 'progressive':
             return {
-                ...viteOptions,
+                ...options,
                 mode: null
             }
         case 'runtime':
             return {
-                ...viteOptions,
+                ...options,
                 injectRuntime: false
             }
         default:
-            return viteOptions
+            return options
     }
 }
 

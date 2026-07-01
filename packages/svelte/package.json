@@ -13,7 +13,7 @@
         "lint": "eslint"
     },
     "license": "MIT",
-    "description": "Svelte and SvelteKit runtime integration for Master CSS",
+    "description": "Svelte and SvelteKit integration for Master CSS",
     "author": "Aoyue Design LLC.",
     "funding": "https://rc.css.master.co/sponsor",
     "homepage": "https://css.master.co",
@@ -27,22 +27,12 @@
     },
     "keywords": [
         "svelte",
-        "providers",
+        "sveltekit",
         "css",
         "mastercss"
     ],
     "sideEffects": false,
-    "svelte": "./dist/index.js",
-    "types": "./dist/index.d.ts",
     "exports": {
-        ".": {
-            "types": "./dist/index.d.ts",
-            "svelte": "./dist/index.js"
-        },
-        "./runtime-provider": {
-            "types": "./dist/runtime-provider.d.ts",
-            "svelte": "./dist/runtime-provider.js"
-        },
         "./adapter": {
             "types": "./dist/adapter.d.ts",
             "import": "./dist/adapter.js",
@@ -75,7 +65,6 @@
         "@master/css": "workspace:^",
         "@master/css-integration": "workspace:^",
         "@master/css-preset": "workspace:^",
-        "@master/css-runtime": "workspace:^",
         "@master/css-server": "workspace:^",
         "@master/css-source": "workspace:^",
         "@master/css.vite": "workspace:^",

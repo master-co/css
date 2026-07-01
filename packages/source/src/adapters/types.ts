@@ -6,7 +6,7 @@ export interface SourceAdapterInput {
 export interface SourceAdapter {
     name: string
     test: RegExp | ((source: string) => boolean)
-    extract(input: SourceAdapterInput): string[]
+    extract(input: SourceAdapterInput): Promise<string[]>
 }
 
 export function matchesSourceAdapter(adapter: SourceAdapter, source: string) {

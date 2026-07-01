@@ -8,7 +8,7 @@
 | `@master/css-engine` | `.`, `./compiler`, `./inspect` | Browser-safe MasterCSSManifest executor, class semantics, rule generation, layers, variable and animation lifecycle |
 | `@master/css-preset` | `.`, `./default-manifest.json`, `./index.css`, `./base.css`, `./theme.css`, `./variants.css`, `./utilities.css` | Default preset CSS source and generated default manifest |
 | `@master/css-lexer` | `.` | Dependency-free source ranges, directive/import scanners, lexical escaping helpers, Master class lexical tokens, and CSS unit constants |
-| `@master/css-source` | `.`, `./adapters` | Source-level class candidate extraction and source-format-aware adapters, including HTML and OXC JavaScript/TypeScript scanners |
+| `@master/css-source` | `.`, `./adapters`, `./adapters/astro`, `./adapters/svelte`, `./adapters/vue` | Source-level class candidate extraction and source-format-aware adapters, including HTML, OXC JavaScript/TypeScript, Astro, Svelte, and Vue scanners |
 | `@master/css-compiler` | `.`, `./browser` | Compile Master CSS stylesheet entries into MasterCSSManifest values, directive metadata, and native CSS |
 | `@master/css-runtime` | `.` | Browser runtime, DOM observation, hydration |
 | `@master/css-server` | `.` | HTML render and CSS injection |
@@ -19,8 +19,7 @@
 | `@master/css.next` | `.`, `./adapter` | Next.js integration and client instrumentation runtime injection |
 | `@master/css.astro` | `.`, `./adapter`, `./middleware` | Astro integration |
 | `@master/css.nuxt` | `.` | Nuxt module |
-| `@master/css.vue` | `.`, `./runtime-provider`, `./adapter`, `./vite` | Vue runtime registry, provider, and Vue SFC extraction adapter |
-| `@master/css.svelte` | `.`, `./runtime-provider`, `./adapter`, `./vite`, `./hooks.server` | Svelte runtime registry, provider, SvelteKit hook, Vite wrapper, and Svelte source adapter |
+| `@master/css.svelte` | `./adapter`, `./vite`, `./hooks.server` | SvelteKit hook, Vite wrapper, and compatibility adapter re-export |
 | `@master/css-language` | `.`, `./browser`, `./shiki`, `./syntaxes/master-css.tmLanguage.json` | Editor-neutral language primitives, class-position scanning, semantic tokens, browser helpers, Shiki helpers, and shared TextMate grammar |
 | `@master/css-language-service` | `.`, `./common` | Stateful language service wrapper for completion, hover, colors, semantic token methods, and `TextDocument` feature gating |
 | `@master/css-language-server` | `.`, `./server` | LSP wrapper and active/full semantic token request handling |

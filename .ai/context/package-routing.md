@@ -37,7 +37,7 @@ For `packages/<name>/**`, read `packages/<name>/package.json` and `packages/<nam
 | `packages/language*/**`, `packages/vscode/**` | language tooling | `testing.md` |
 | `packages/eslint-*/**` | ESLint tooling | `testing.md` |
 | `packages/vite/**`, `packages/webpack/**`, `packages/next/**` | build integrations | `package-boundaries.md`, `css-output.md` |
-| `packages/astro/**`, `packages/nuxt/**`, `packages/vue/**`, `packages/svelte/**` | framework integrations | `testing.md`, `css-output.md` |
+| `packages/astro/**`, `packages/nuxt/**`, `packages/svelte/**` | framework integrations | `testing.md`, `css-output.md` |
 | `packages/cli/**` | CLI | `testing.md`, `package-boundaries.md` |
 | `packages/devtools-hook/**`, `packages/figma/**` | app/plugin surfaces | `testing.md` |
 
@@ -46,7 +46,7 @@ For `packages/<name>/**`, read `packages/<name>/package.json` and `packages/<nam
 | Path | Read | Notes |
 |---|---|---|
 | `site/**` | `site/package.json`, `site/AI.md`, `docs.md` | Public docs and site behavior. |
-| `examples/<framework>/**` | example `package.json`, matching integration package `AI.md` when one exists | Map `astro`, `next.js`, `nuxt.js`, `react`, `svelte`, `vite`, `vue.js`, `webpack`, and `eslint*` to their package peers; use `docs.md` for content-only examples. |
+| `examples/<framework>/**` | example `package.json`, matching integration package `AI.md` when one exists | Map `astro`, `next.js`, `nuxt.js`, `react`, `svelte`, `vite`, `webpack`, and `eslint*` to their package peers; use `docs.md` for content-only examples. |
 | `benchmarks/**` | `benchmarks/package.json`, `performance.md` | Do not commit benchmark history output. |
 | `internal/**` | `internal/package.json`, `site/AI.md` when used by site | Internal site support, not public package API. |
 | `shared/**` | `shared/package.json`, `package-boundaries.md` | Repo-internal test/build support only. |

@@ -1,6 +1,5 @@
 import baseVite, { type PluginOptions } from '@master/css.vite'
 import type { Plugin } from 'vite'
-import { svelteAdapter } from './adapter.js'
 
 export const SVELTEKIT_SSR_EXTERNAL = ['@master/css-server']
 
@@ -27,14 +26,7 @@ export default function masterCSS(options: PluginOptions = {}): Plugin[] {
         SvelteKitServerExternalPlugin(),
         ...baseVite({
             mode: 'progressive',
-            ...options,
-            scanner: {
-                ...options.scanner,
-                adapters: [
-                    ...(options.scanner?.adapters || []),
-                    svelteAdapter()
-                ]
-            }
+            ...options
         })
     ]
 }

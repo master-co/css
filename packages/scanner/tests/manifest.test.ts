@@ -30,14 +30,14 @@ test('uses explicit compiled manifests', async () => {
     const scanner = await new CSSScanner({
         manifest
     }, __dirname).init()
-    expect(
+    await expect(
         scanner.collectCandidates('test.tsx',
             `
             <h1 className={'rel ' + styles.title}>
             <h1 className="{styles.title + ' ' + 'blue-btn'}">
             <button className="test btn">
         `)
-    ).toEqual(['rel', 'blue-btn', 'test', 'btn'])
+    ).resolves.toEqual(['rel', 'blue-btn', 'test', 'btn'])
     expect(scanner.css.createRule('blue-btn')?.text).toContain('background-color:oklch')
 })
 

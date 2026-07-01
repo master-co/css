@@ -13,7 +13,7 @@
 ## Does Not Own
 
 - Vite mode semantics.
-- Vue SFC extraction; use `@master/css.vue/vite`.
+- Vue SFC extraction; `@master/css-source` handles source parsing through scanner auto adapters.
 - Core runtime, server, scanner, or CSS generation behavior.
 
 ## Public Surface

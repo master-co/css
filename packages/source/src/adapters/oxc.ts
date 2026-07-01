@@ -111,7 +111,7 @@ export function oxcAdapter(): SourceAdapter {
     return {
         name: 'oxc',
         test: OXC_SOURCE_EXT,
-        extract({ source, content }) {
+        async extract({ source, content }) {
             return extractOxcClasses(source, content)
         }
     }

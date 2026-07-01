@@ -25,7 +25,7 @@ Inspect the v1 project before changing files.
 | Area | What to look for | Migration decision |
 | --- | --- | --- |
 | Packages | `@master/css`, runtime, server, framework packages, language tooling, and ESLint packages | Replace v1 packages with the current package or integration that owns the behavior. |
-| Runtime setup | Manual runtime initialization, framework providers, server rendering hooks, and virtual modules | Move to the current integration guide for the app framework. |
+| Runtime setup | Manual runtime initialization, framework runtime helpers, server rendering hooks, and virtual modules | Move to the current integration guide for the app framework. |
 | CSS entries | Imported Master CSS files, generated CSS files, global styles, and old config references | Create a current CSS entry with `@import "@master/css";`. |
 | Config and theme | Legacy config files, theme values, breakpoints, modes, aliases, and component definitions | Move project-owned values into `@theme`, `@settings`, `@custom-variant`, `@components`, and `@utilities`. |
 | Class syntax | Old class strings, dynamic class builders, custom utilities, selectors, variables, and important flags | Convert intentionally and validate generated CSS. |

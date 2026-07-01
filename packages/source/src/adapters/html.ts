@@ -52,7 +52,7 @@ export function htmlAdapter(): SourceAdapter {
     return {
         name: 'html',
         test: HTML_SOURCE_EXT,
-        extract({ source, content }) {
+        async extract({ source, content }) {
             return extractHTMLClasses(source, content)
         }
     }

@@ -3,7 +3,7 @@ import { mkdirSync, realpathSync, writeFileSync } from 'node:fs'
 import { dirname, resolve as resolvePath } from 'node:path'
 import { pathToFileURL } from 'node:url'
 import { name } from '../package.json'
-import masterCSS from '@master/css.vue/vite'
+import masterCSS from '@master/css.vite'
 import { VIRTUAL_MANIFEST_ID } from '@master/css-integration/manifest-module'
 import {
     toBrowserManifestFacadeModule,

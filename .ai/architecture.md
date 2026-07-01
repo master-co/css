@@ -34,7 +34,6 @@ shared / external data
   ↓
 @master/css.astro
 @master/css.nuxt
-@master/css.vue
 @master/css.svelte
 master-css-vscode
 examples
@@ -45,7 +44,7 @@ The engine package must remain independent from integrations and tooling package
 
 When a feature creates a package cycle or self-build cycle, extract dependency-free contracts, IR, or lexical source scanners into the lowest owning package first. Use `@master/css-schema` for public type/data contracts, `@master/css-lexer` for raw source/range/token scanning, and `@master/css-source` for source-level class candidate extraction. Keep `shared` limited to repo-internal test/build support. Keep engine independent; packages above engine may depend on engine for manifest-driven semantic interpretation.
 
-`@master/css-schema` owns public dependency-light contracts such as MasterCSSManifest, manifest JSON normalization helpers, hydration manifest contracts, CSS directive result contracts, CSS syntax value types, utility type constants, and runtime style constants. `shared` is private and should only hold repo-internal test/build support. `@master/css-lexer` owns dependency-free source scanners and lexical helpers: generic ranges, CSS directive ranges, Master CSS manifest entrypoint statements, CSS escaping, regular-expression escaping, Master class lexical display tokens, and CSS unit constants. `@master/css-source` owns source-level class candidate extraction and source-format-aware adapters such as HTML and OXC-based JavaScript/TypeScript scanning, and depends on `@master/css-lexer` for lexical constants rather than duplicating low-level data. `@master/css-integration` owns adapter-neutral integration contracts such as `?master-css-manifest`, `virtual:master-css-manifest`, `virtual:master-css-emitted-globals`, `virtual:master-utilities.css`, generated JSON/emittedGlobals source helpers, and runtime injection source. `@master/css-stylesheet` composes compiler, integration protocol, validator/native CSS helpers, and structural scanner state for stylesheet entry output. None of these lower packages should own framework lifecycle behavior.
+`@master/css-schema` owns public dependency-light contracts such as MasterCSSManifest, manifest JSON normalization helpers, hydration manifest contracts, CSS directive result contracts, CSS syntax value types, utility type constants, and runtime style constants. `shared` is private and should only hold repo-internal test/build support. `@master/css-lexer` owns dependency-free source scanners and lexical helpers: generic ranges, CSS directive ranges, Master CSS manifest entrypoint statements, CSS escaping, regular-expression escaping, Master class lexical display tokens, and CSS unit constants. `@master/css-source` owns source-level class candidate extraction and source-format-aware adapters such as HTML, OXC-based JavaScript/TypeScript, Astro, Svelte, and Vue scanning, and depends on `@master/css-lexer` for lexical constants rather than duplicating low-level data. `@master/css-integration` owns adapter-neutral integration contracts such as `?master-css-manifest`, `virtual:master-css-manifest`, `virtual:master-css-emitted-globals`, `virtual:master-utilities.css`, generated JSON/emittedGlobals source helpers, and runtime injection source. `@master/css-stylesheet` composes compiler, integration protocol, validator/native CSS helpers, and structural scanner state for stylesheet entry output. None of these lower packages should own framework lifecycle behavior.
 
 ## Engine, Preset, And Facade Packages
 
@@ -100,7 +99,7 @@ Important files:
 
 `packages/next` integrates pre-render and static modes without depending on Webpack-specific extraction internals.
 
-Framework packages wrap those lower layers for Astro, Nuxt, React, Vue, and Svelte.
+Framework packages wrap those lower layers for Astro, Nuxt, React, and Svelte.
 
 ## Tooling Packages
 

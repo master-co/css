@@ -9,6 +9,7 @@
 - Unvalidated class-like candidate extraction from raw source text.
 - Source-format-aware HTML helpers.
 - OXC-based JavaScript/TypeScript helpers.
+- Astro, Svelte, and Vue source adapters used by scanner auto extraction.
 - Source adapter matching and registration primitives.
 
 ## Does Not Own
@@ -24,8 +25,11 @@
 - `matchesSourceAdapter`
 - `addClassString`
 - `extractClassCandidates`
-- HTML and OXC source constants and helpers
+- HTML, OXC, Astro, Svelte, and Vue source constants and helpers
 - `./adapters`
+- `./adapters/astro`
+- `./adapters/svelte`
+- `./adapters/vue`
 
 ## Key Files
 
@@ -38,12 +42,13 @@
 - False positives increasing generated CSS.
 - False negatives omitting required CSS.
 - Adapter matching by file id/source extension.
+- Optional Vue/Svelte parser peers must warn once and fall back to text extraction when missing.
 - OXC parsing differences across JS/TS syntax.
 
 ## Safe Changes
 
 - Focused adapter matching fixes.
-- HTML or OXC extraction fixes with fixtures.
+- HTML, OXC, Astro, Svelte, or Vue extraction fixes with fixtures.
 - Candidate extraction tests that do not validate or generate CSS.
 
 ## Dangerous Changes

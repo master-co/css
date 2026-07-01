@@ -21,6 +21,7 @@
 ## Public Surface
 
 - `CSSScanner`
+- `CSSScanner.collectCandidates()` returns a `Promise<string[]>`.
 - `scannerOptions`
 - `ScannerOptions`
 - `./options`
@@ -34,6 +35,7 @@
 ## Risk Areas
 
 - Built-in source adapter behavior from `@master/css-source`.
+- Async extraction must be awaited by all scanner consumers.
 - `extractClassCandidates()` false positives and false negatives in `@master/css-source`.
 - `invalidClasses` and `validClasses` cache behavior.
 - Reset loops from integration-managed dependencies.
