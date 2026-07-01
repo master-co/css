@@ -35,6 +35,7 @@ shared / external data
 @master/css.astro
 @master/css.nuxt
 @master/css.svelte
+@master/css-sv
 master-css-vscode
 examples
 site
@@ -99,7 +100,7 @@ Important files:
 
 `packages/next` integrates pre-render and static modes without depending on Webpack-specific extraction internals.
 
-Framework packages wrap those lower layers for Astro, Nuxt, React, and Svelte.
+Framework packages wrap those lower layers for Astro, Nuxt, React, and Svelte. `@master/css-sv` is a Svelte CLI add-on that edits a SvelteKit app once and installs `@master/css.svelte`; it must not own runtime, SSR, hydration manifest, Vite mode, or CSS output behavior.
 
 ## Tooling Packages
 

@@ -43,6 +43,7 @@
             "@master/css.next": [ "./node_modules/@master/css.next/src" ],
             "@master/css-runtime": [ "./node_modules/@master/css-runtime/src" ],
             "@master/css-server": [ "./node_modules/@master/css-server/src" ],
+            "@master/css-sv": [ "./node_modules/@master/css-sv/src" ],
             "@master/css.svelte/*": [ "./node_modules/@master/css.svelte/src/lib/*" ],
             "@master/css-validator": [ "./node_modules/@master/css-validator/src" ],
             "@master/css-validator/*": [ "./node_modules/@master/css-validator/src/*" ],

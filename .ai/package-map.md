@@ -20,6 +20,7 @@
 | `@master/css.astro` | `.`, `./middleware` | Astro integration |
 | `@master/css.nuxt` | `.` | Nuxt module |
 | `@master/css.svelte` | `./vite`, `./hooks.server` | SvelteKit hook and Vite wrapper |
+| `@master/css-sv` | `.` | Svelte CLI add-on for one-time SvelteKit project setup |
 | `@master/css-language` | `.`, `./browser`, `./shiki`, `./syntaxes/master-css.tmLanguage.json` | Editor-neutral language primitives, class-position scanning, semantic tokens, browser helpers, Shiki helpers, and shared TextMate grammar |
 | `@master/css-language-service` | `.`, `./common` | Stateful language service wrapper for completion, hover, colors, semantic token methods, and `TextDocument` feature gating |
 | `@master/css-language-server` | `.`, `./server` | LSP wrapper and active/full semantic token request handling |

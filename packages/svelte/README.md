@@ -55,12 +55,20 @@
 ## Installation
 
 ```bash
-npm install @master/css.svelte
+npx sv add @master/css-sv
 ```
 
-`@master/css.svelte` provides the SvelteKit Vite integration and server hook for Svelte apps. Source extraction for `.svelte` files is handled automatically by `@master/css-source`.
+The Svelte CLI add-on installs `@master/css.svelte`, wires Vite, creates the stylesheet entry, imports it from the root layout, and composes the SvelteKit server hook.
 
-## Usage
+`@master/css.svelte` provides the SvelteKit Vite integration and server hook used at dev, build, and SSR time. Source extraction for `.svelte` files is handled automatically by `@master/css-source`.
+
+## Manual setup
+
+Use this path when `sv add` is not available for the project.
+
+```bash
+npm install @master/css @master/css.svelte
+```
 
 ### Vite plugin
 

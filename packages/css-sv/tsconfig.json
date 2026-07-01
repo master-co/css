@@ -1,0 +1,13 @@
+{
+    "extends": "../../tsconfig.json",
+    "compilerOptions": {
+        "outDir": "dist",
+        "moduleResolution": "bundler",
+        "noEmit": true
+    },
+    "include": [
+        "src",
+        "tests"
+    ],
+    "files": []
+}

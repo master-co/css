@@ -59,6 +59,7 @@
         "@master/css-schema": "workspace:^",
         "@master/css-server": "workspace:^",
         "@master/css-source": "workspace:^",
+        "@master/css-sv": "workspace:^",
         "@master/css-stylesheet": "workspace:^",
         "@master/css-validator": "workspace:^",
         "@master/css.figma": "workspace:^",
