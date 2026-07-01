@@ -1411,9 +1411,6 @@ importers:
       '@master/css-server':
         specifier: workspace:^
         version: link:../server
-      '@master/css-source':
-        specifier: workspace:^
-        version: link:../source
       '@master/css.vite':
         specifier: workspace:^
         version: link:../vite
@@ -2202,9 +2199,6 @@ importers:
       '@master/css-server':
         specifier: workspace:^
         version: link:../server
-      '@master/css-source':
-        specifier: workspace:^
-        version: link:../source
       '@master/css.vite':
         specifier: workspace:^
         version: link:../vite

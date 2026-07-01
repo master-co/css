@@ -46,11 +46,6 @@
             "import": "./dist/index.js",
             "default": "./dist/index.js"
         },
-        "./adapter": {
-            "types": "./dist/adapter.d.ts",
-            "import": "./dist/adapter.js",
-            "default": "./dist/adapter.js"
-        },
         "./middleware": {
             "types": "./dist/middleware.d.ts",
             "import": "./dist/middleware.js",
@@ -72,7 +67,6 @@
         "@master/css": "workspace:^",
         "@master/css-integration": "workspace:^",
         "@master/css-server": "workspace:^",
-        "@master/css-source": "workspace:^",
         "@master/css.vite": "workspace:^",
         "@master/css-schema": "workspace:^"
     },

@@ -33,11 +33,6 @@
     ],
     "sideEffects": false,
     "exports": {
-        "./adapter": {
-            "types": "./dist/adapter.d.ts",
-            "import": "./dist/adapter.js",
-            "default": "./dist/adapter.js"
-        },
         "./vite": {
             "types": "./dist/vite.d.ts",
             "import": "./dist/vite.js",
@@ -66,7 +61,6 @@
         "@master/css-integration": "workspace:^",
         "@master/css-preset": "workspace:^",
         "@master/css-server": "workspace:^",
-        "@master/css-source": "workspace:^",
         "@master/css.vite": "workspace:^",
         "@master/css-schema": "workspace:^",
         "@master/css-lexer": "workspace:^"

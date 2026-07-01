@@ -2,11 +2,11 @@
 
 ## Responsibility
 
-`@master/css.svelte` provides a SvelteKit Vite wrapper, a compatibility Svelte source adapter re-export, and a SvelteKit server hook that injects early streamed CSS through `@master/css-server`.
+`@master/css.svelte` provides a SvelteKit Vite wrapper and a SvelteKit server hook that injects early streamed CSS through `@master/css-server`.
 
 ## Owns
 
-- Svelte adapter compatibility re-export and Vite wrapper.
+- SvelteKit Vite wrapper.
 - SvelteKit `hooks.server` integration.
 
 ## Does Not Own
@@ -19,13 +19,11 @@
 
 ## Public Surface
 
-- `./adapter`
 - `./vite`
 - `./hooks.server`
 
 ## Key Files
 
-- `src/lib/adapter.ts`
 - `src/lib/server.ts`
 - `src/lib/hooks.server.ts`
 - `src/lib/vite.ts`
@@ -34,7 +32,6 @@
 
 - Svelte package output behavior.
 - Server hook streaming behavior and early CSS injection.
-- `./adapter` must stay a re-export/wrapper over `@master/css-source`; do not duplicate extraction logic.
 
 ## Safe Changes
 

@@ -20,12 +20,11 @@
 ## Public Surface
 
 - Default Astro integration export.
-- `./adapter` and `./middleware` subpaths.
+- `./middleware` subpath.
 
 ## Key Files
 
 - `src/core.ts`
-- `src/adapter.ts`
 - `src/options.ts`
 - `src/middleware.ts`
 - `src/server.ts`
@@ -36,7 +35,6 @@
 
 - Runtime script injection can duplicate Vite runtime injection.
 - Progressive and pre-render modes depend on Astro middleware seeing HTML before it is sent or written.
-- `./adapter` should remain a re-export/wrapper over `@master/css-source`.
 - Tests are sparse, so integration behavior needs focused coverage or example validation.
 
 ## Safe Changes
