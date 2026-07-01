@@ -4,54 +4,7 @@ import {
     toManifestPreloadLinkAttrs
 } from '@master/css-integration/manifest-facade'
 import type { PluginContext } from '../core'
-
-function escapeRegExp(source: string) {
-    return source.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-}
-
-function splitPathSegments(path: string) {
-    return path.split('/').filter(Boolean)
-}
-
-function getHTMLDirectorySegments(path = '/index.html') {
-    const cleanPath = path.split(/[?#]/)[0] || '/index.html'
-    const segments = splitPathSegments(cleanPath)
-    if (!cleanPath.endsWith('/')) segments.pop()
-    return segments
-}
-
-function toRelativeAssetHref(fileName: string, htmlPath?: string) {
-    const fromSegments = getHTMLDirectorySegments(htmlPath)
-    const toSegments = splitPathSegments(fileName)
-    let common = 0
-    while (
-        common < fromSegments.length
-        && common < toSegments.length
-        && fromSegments[common] === toSegments[common]
-    ) {
-        common += 1
-    }
-    return [
-        ...Array.from({ length: fromSegments.length - common }, () => '..'),
-        ...toSegments.slice(common)
-    ].join('/') || '.'
-}
-
-function toAssetHref(fileName: string, base = '/', htmlPath?: string) {
-    const normalizedFileName = fileName.replace(/^\/+/, '')
-    if (base && base !== './') {
-        return `${base.replace(/\/?$/, '/')}${normalizedFileName}`
-    }
-    return toRelativeAssetHref(normalizedFileName, htmlPath)
-}
-
-function hasManifestPreloadLink(html: string, href: string) {
-    const quotedHref = escapeRegExp(href)
-    return new RegExp(
-        String.raw`<link\b(?=[^>]*\brel=(["'])modulepreload\1)(?=[^>]*\bas=(["'])json\2)(?=[^>]*\bhref=(["'])${quotedHref}\3)[^>]*>`,
-        'i'
-    ).test(html)
-}
+import { hasModulePreloadLink, toAssetHref } from '../utils/html'
 
 interface OutputAssetLike {
     type: string
@@ -86,7 +39,7 @@ export default function ManifestPreloadPlugin(context: PluginContext): Plugin {
                 const fileName = findDefaultManifestAssetFileName(context, htmlContext.bundle as Record<string, OutputAssetLike>)
                 if (!fileName) return
                 const href = toAssetHref(fileName, context.config?.base, htmlContext.path)
-                if (hasManifestPreloadLink(html, href)) return
+                if (hasModulePreloadLink(html, href, { as: 'json' })) return
                 return {
                     html,
                     tags: [

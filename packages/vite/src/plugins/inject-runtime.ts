@@ -11,9 +11,10 @@ export default function InjectRuntimePlugin(
     return {
         name: 'master-css:inject-runtime',
         enforce: 'pre',
+        apply: 'build',
         transformIndexHtml: {
             order: 'pre',
-            handler(html, { server }) {
+            handler(html) {
                 if (
                     html.includes(RUNTIME_ENTRY_ID)
                     || html.includes(DEV_RUNTIME_ENTRY_ID)
@@ -27,9 +28,42 @@ export default function InjectRuntimePlugin(
                             tag: 'script',
                             attrs: {
                                 type: 'module',
-                                src: server ? DEV_RUNTIME_ENTRY_ID : RUNTIME_ENTRY_ID
+                                src: RUNTIME_ENTRY_ID
                             },
-                            injectTo: 'head-prepend'
+                            injectTo: 'body'
+                        }
+                    ]
+                }
+            }
+        }
+    }
+}
+
+export function InjectRuntimeServePlugin(
+    _options: PluginOptions
+): Plugin {
+    return {
+        name: 'master-css:inject-runtime:serve',
+        apply: 'serve',
+        transformIndexHtml: {
+            order: 'post',
+            handler(html) {
+                if (
+                    html.includes(RUNTIME_ENTRY_ID)
+                    || html.includes(DEV_RUNTIME_ENTRY_ID)
+                ) {
+                    return
+                }
+                return {
+                    html,
+                    tags: [
+                        {
+                            tag: 'script',
+                            attrs: {
+                                type: 'module',
+                                src: DEV_RUNTIME_ENTRY_ID
+                            },
+                            injectTo: 'body'
                         }
                     ]
                 }

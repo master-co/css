@@ -107,6 +107,9 @@ describe('@master/css.astro integration', () => {
             await integration.hooks['astro:build:done']?.({ dir } as never)
 
             expect(readFileSync(htmlFile, 'utf-8')).toContain(
+                '<link rel="modulepreload" crossorigin href="/docs/_astro/page.C2zmEykZ.js">'
+            )
+            expect(readFileSync(htmlFile, 'utf-8')).toContain(
                 '<link rel="modulepreload" as="json" crossorigin href="/docs/_astro/master-css-manifest.CzuVhIZV.json">'
             )
         } finally {
@@ -137,7 +140,7 @@ describe('@master/css.astro integration', () => {
                 } as never)
                 await integration.hooks['astro:build:done']?.({ dir } as never)
 
-                expect(readFileSync(htmlFile, 'utf-8')).not.toContain('rel="modulepreload" as="json"')
+                expect(readFileSync(htmlFile, 'utf-8')).not.toContain('rel="modulepreload"')
             } finally {
                 rmSync(dir, { recursive: true, force: true })
             }

@@ -1,6 +1,7 @@
 import { it, expect } from 'vitest'
 import { fileURLToPath } from 'node:url'
 import { $fetch } from '@nuxt/test-utils'
+import { createPage } from '@nuxt/test-utils/e2e'
 import { dirname, resolve } from 'node:path'
 import { MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID } from '@master/css-schema/hydration-manifest'
 import { setupNuxtTest } from './setup-test'
@@ -30,4 +31,16 @@ it('preloads the runtime manifest JSON in runtime mode', async () => {
     const manifest = await $fetch(href || '') as { version?: number } | string
     const parsedManifest = typeof manifest === 'string' ? JSON.parse(manifest) : manifest
     expect(parsedManifest.version).toBe(1)
+})
+
+it('lets runtime utilities override global component layer CSS', async () => {
+    const page = await createPage('/')
+    try {
+        await page.waitForSelector('#probe')
+        await page.waitForFunction(() => getComputedStyle(document.querySelector('#probe')!).display === 'block')
+
+        expect(await page.locator('#probe').evaluate((element) => getComputedStyle(element).display)).toBe('block')
+    } finally {
+        await page.close()
+    }
 })

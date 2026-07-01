@@ -290,6 +290,8 @@ export default defineNuxtModule<ModuleOptions>({
                     addPlugin({
                         mode: 'client',
                         src: resolve('./runtime/css-runtime')
+                    }, {
+                        append: true
                     })
                 }
                 break

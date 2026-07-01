@@ -30,10 +30,34 @@ function hasManifestPreloadLink(html: string, href: string) {
     ).test(html)
 }
 
-function injectManifestPreload(html: string, href: string) {
-    if (hasManifestPreloadLink(html, href)) return html
-    const tag = toManifestPreloadLinkTag(href)
-    return html.replace(/<head\b[^>]*>/i, (openingTag) => `${openingTag}${tag}`)
+function escapeAttributeValue(value: string) {
+    return value
+        .replace(/&/g, '&amp;')
+        .replace(/"/g, '&quot;')
+}
+
+function hasRuntimeScriptPreloadLink(html: string, href: string) {
+    const quotedHref = escapeRegExp(href)
+    return new RegExp(
+        String.raw`<link\b(?=[^>]*\brel=(["'])modulepreload\1)(?=[^>]*\bhref=(["'])${quotedHref}\2)[^>]*>`,
+        'i'
+    ).test(html)
+}
+
+function toRuntimeScriptPreloadLinkTag(href: string) {
+    return `<link rel="modulepreload" crossorigin href="${escapeAttributeValue(href)}">`
+}
+
+function injectRuntimePreloads(html: string, runtimeScriptHref: string | undefined, manifestHref: string) {
+    const tags: string[] = []
+    if (runtimeScriptHref && !hasRuntimeScriptPreloadLink(html, runtimeScriptHref)) {
+        tags.push(toRuntimeScriptPreloadLinkTag(runtimeScriptHref))
+    }
+    if (!hasManifestPreloadLink(html, manifestHref)) {
+        tags.push(toManifestPreloadLinkTag(manifestHref))
+    }
+    if (!tags.length) return html
+    return html.replace(/<head\b[^>]*>/i, (openingTag) => `${openingTag}${tags.join('')}`)
 }
 
 async function pathExists(file: string) {
@@ -70,22 +94,32 @@ async function findReferencedManifestAsset(files: string[]) {
             const specifier = match[2]
             if (!specifier) continue
             const manifestFile = join(dirname(file), specifier)
-            if (await pathExists(manifestFile)) return manifestFile
+            if (await pathExists(manifestFile)) {
+                return {
+                    manifestFile,
+                    runtimeScriptFile: file
+                }
+            }
         }
     }
-    return files.find(isManifestAssetFile)
+    const manifestFile = files.find(isManifestAssetFile)
+    if (!manifestFile) return
+    return { manifestFile }
 }
 
 export async function preloadAstroRuntimeManifest(dir: URL | string, base?: string) {
     const root = toRootPath(dir)
     const files = await collectOutputFiles(root)
-    const manifestFile = await findReferencedManifestAsset(files)
-    if (!manifestFile) return []
-    const href = toPublicAssetHref(root, manifestFile, base)
+    const assets = await findReferencedManifestAsset(files)
+    if (!assets) return []
+    const manifestHref = toPublicAssetHref(root, assets.manifestFile, base)
+    const runtimeScriptHref = assets.runtimeScriptFile
+        ? toPublicAssetHref(root, assets.runtimeScriptFile, base)
+        : undefined
     const updatedFiles: string[] = []
     for (const htmlFile of files.filter((file) => file.endsWith('.html'))) {
         const html = await readFile(htmlFile, 'utf8')
-        const nextHTML = injectManifestPreload(html, href)
+        const nextHTML = injectRuntimePreloads(html, runtimeScriptHref, manifestHref)
         if (nextHTML === html) continue
         await writeFile(htmlFile, nextHTML)
         updatedFiles.push(htmlFile)

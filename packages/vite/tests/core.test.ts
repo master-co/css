@@ -24,12 +24,18 @@ describe('masterCSS plugin composition', () => {
         ]))
     })
 
-    test('runtime mode registers manifest preload only with runtime injection', () => {
+    test('runtime mode registers runtime preloads only with runtime injection', () => {
         expect(pluginNames({ mode: 'runtime' })).toContain('master-css:manifest-preload')
+        expect(pluginNames({ mode: 'runtime' })).toContain('master-css:runtime-preload')
         expect(pluginNames({ mode: 'runtime', injectRuntime: false })).not.toContain('master-css:manifest-preload')
+        expect(pluginNames({ mode: 'runtime', injectRuntime: false })).not.toContain('master-css:runtime-preload')
         expect(pluginNames({ mode: 'progressive' })).not.toContain('master-css:manifest-preload')
+        expect(pluginNames({ mode: 'progressive' })).not.toContain('master-css:runtime-preload')
         expect(pluginNames({ mode: 'static' })).not.toContain('master-css:manifest-preload')
+        expect(pluginNames({ mode: 'static' })).not.toContain('master-css:runtime-preload')
         expect(pluginNames({ mode: 'pre-render' })).not.toContain('master-css:manifest-preload')
+        expect(pluginNames({ mode: 'pre-render' })).not.toContain('master-css:runtime-preload')
         expect(pluginNames({ mode: null })).not.toContain('master-css:manifest-preload')
+        expect(pluginNames({ mode: null })).not.toContain('master-css:runtime-preload')
     })
 })

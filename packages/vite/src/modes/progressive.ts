@@ -1,5 +1,5 @@
 import type { Plugin } from 'vite'
-import InjectRuntimePlugin from '../plugins/inject-runtime'
+import InjectRuntimePlugin, { InjectRuntimeServePlugin } from '../plugins/inject-runtime'
 import { PluginContext } from '../core'
 import PreRenderPlugin from '../plugins/pre-render'
 import { PluginOptions } from '../options'
@@ -10,6 +10,7 @@ export default function ProgressiveMode(options: PluginOptions, context: PluginC
     ]
     if (options.injectRuntime) {
         plugins.push(InjectRuntimePlugin(options))
+        plugins.push(InjectRuntimeServePlugin(options))
     }
     return plugins
 }

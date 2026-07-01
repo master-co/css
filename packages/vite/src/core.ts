@@ -46,7 +46,8 @@ export default function masterCSS(options?: PluginOptions): Plugin[] {
     switch (options.mode) {
         case 'runtime':
             if (options.injectRuntime) {
-                plugins.push(InjectRuntimePlugin(options))
+                plugins.push(...InjectRuntimePlugins(options))
+                plugins.push(RuntimePreloadPlugin(context))
                 plugins.push(ManifestPreloadPlugin(context))
             }
             if (options.avoidFOUC) {
@@ -58,7 +59,7 @@ export default function masterCSS(options?: PluginOptions): Plugin[] {
         case 'progressive':
             plugins.push(PreRenderPlugin(options, context))
             if (options.injectRuntime) {
-                plugins.push(InjectRuntimePlugin(options))
+                plugins.push(...InjectRuntimePlugins(options))
             }
             break
         case 'pre-render':
@@ -86,15 +87,26 @@ type HookObject = {
     handler?: (...args: unknown[]) => unknown
 }
 
-function InjectRuntimePlugin(options: PluginOptions): Plugin {
-    return createLazyPlugin(
-        {
-            name: 'master-css:inject-runtime',
-            enforce: 'pre'
-        },
-        async () => (await import('./plugins/inject-runtime')).default(options),
-        [{ name: 'transformIndexHtml', order: 'pre' }]
-    )
+function InjectRuntimePlugins(options: PluginOptions): Plugin[] {
+    return [
+        createLazyPlugin(
+            {
+                name: 'master-css:inject-runtime',
+                enforce: 'pre',
+                apply: 'build'
+            },
+            async () => (await import('./plugins/inject-runtime')).default(options),
+            [{ name: 'transformIndexHtml', order: 'pre' }]
+        ),
+        createLazyPlugin(
+            {
+                name: 'master-css:inject-runtime:serve',
+                apply: 'serve'
+            },
+            async () => (await import('./plugins/inject-runtime')).InjectRuntimeServePlugin(options),
+            [{ name: 'transformIndexHtml', order: 'post' }]
+        )
+    ]
 }
 
 function ManifestPreloadPlugin(context: PluginContext): Plugin {
@@ -104,6 +116,16 @@ function ManifestPreloadPlugin(context: PluginContext): Plugin {
             apply: 'build'
         },
         async () => (await import('./plugins/manifest-preload')).default(context),
+        [{ name: 'transformIndexHtml', order: 'post' }]
+    )
+}
+
+function RuntimePreloadPlugin(context: PluginContext): Plugin {
+    return createLazyPlugin(
+        {
+            name: 'master-css:runtime-preload'
+        },
+        async () => (await import('./plugins/runtime-preload')).default(context),
         [{ name: 'transformIndexHtml', order: 'post' }]
     )
 }
