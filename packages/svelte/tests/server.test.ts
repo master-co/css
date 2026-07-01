@@ -73,6 +73,31 @@ describe('Svelte server hook renderer', () => {
         expect(countManifestScripts(html)).toBe(0)
     })
 
+    test('does not duplicate emitted global variables and keyframes in streamed CSS', () => {
+        const renderer = createMasterCSSChunkRenderer(defaultManifest, {
+            emittedGlobals: {
+                variables: {
+                    'animate-fade': 1,
+                    'color-red-60': 1
+                },
+                animations: {
+                    fade: 1
+                }
+            }
+        })
+
+        const html = renderer.transform(
+            '<html><head></head><body><div class="bg:red-60 animate:fade"></div></body></html>',
+            true
+        )
+
+        expect(html).toContain('.bg\\:red-60{background-color:var(--color-red-60)}')
+        expect(html).toContain('.animate\\:fade{animation:var(--animate-fade)}')
+        expect(html).not.toContain('--color-red-60:')
+        expect(html).not.toContain('--animate-fade:')
+        expect(html).not.toContain('@keyframes fade')
+    })
+
     test('writes static external hydration manifests', () => {
         const dir = mkdtempSync(join(tmpdir(), 'master-css-svelte-'))
         try {

@@ -1,4 +1,4 @@
-import { createHydrationManifest, type MasterCSS, type MasterCSSManifest } from '@master/css'
+import { createHydrationManifest, type MasterCSS, type MasterCSSEmittedGlobals, type MasterCSSManifest } from '@master/css'
 import { createServerCSS, parseHTML } from '@master/css-server'
 import {
     MASTER_CSS_HYDRATION_MANIFEST_ASSET_BASE,
@@ -41,6 +41,12 @@ export type MasterCSSSvelteHydrationManifestOption =
 export interface MasterCSSSvelteHandleOptions {
     manifest: MasterCSSManifest
     hydrationManifest?: MasterCSSSvelteHydrationManifestOption
+    emittedGlobals?: MasterCSSEmittedGlobals
+}
+
+export interface MasterCSSSvelteChunkRendererOptions {
+    hydrationManifest?: MasterCSSSvelteHydrationManifestOption
+    emittedGlobals?: MasterCSSEmittedGlobals
 }
 
 export interface MasterCSSChunkRenderer {
@@ -156,11 +162,31 @@ export function createMasterCSSStaticHydrationManifestWriter({
     }
 }
 
+function isMasterCSSSvelteChunkRendererOptions(
+    options: MasterCSSSvelteHydrationManifestOption | MasterCSSSvelteChunkRendererOptions | undefined
+): options is MasterCSSSvelteChunkRendererOptions {
+    return !!options
+        && typeof options === 'object'
+        && !('type' in options)
+}
+
 export function createMasterCSSChunkRenderer(
     manifest: MasterCSSManifest,
-    hydrationManifest: MasterCSSSvelteHydrationManifestOption = 'inline'
+    hydrationManifest?: MasterCSSSvelteHydrationManifestOption
+): MasterCSSChunkRenderer
+export function createMasterCSSChunkRenderer(
+    manifest: MasterCSSManifest,
+    options?: MasterCSSSvelteChunkRendererOptions
+): MasterCSSChunkRenderer
+export function createMasterCSSChunkRenderer(
+    manifest: MasterCSSManifest,
+    options: MasterCSSSvelteHydrationManifestOption | MasterCSSSvelteChunkRendererOptions = 'inline'
 ): MasterCSSChunkRenderer {
-    const css = createServerCSS(manifest)
+    const rendererOptions = isMasterCSSSvelteChunkRendererOptions(options)
+        ? options
+        : { hydrationManifest: options }
+    const hydrationManifest = rendererOptions.hydrationManifest ?? 'inline'
+    const css = createServerCSS(manifest, rendererOptions.emittedGlobals)
     let injected = false
     let carry = ''
 
@@ -194,7 +220,10 @@ export function createMasterCSSChunkRenderer(
 
 export function createMasterCSSHandle(options: MasterCSSSvelteHandleOptions): Handle {
     return async ({ event, resolve }) => {
-        const renderer = createMasterCSSChunkRenderer(options.manifest, options.hydrationManifest)
+        const renderer = createMasterCSSChunkRenderer(options.manifest, {
+            hydrationManifest: options.hydrationManifest,
+            emittedGlobals: options.emittedGlobals
+        })
         return await resolve(event, {
             transformPageChunk: ({ html, done }) => renderer.transform(html, done)
         })
