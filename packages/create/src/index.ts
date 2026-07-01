@@ -32,6 +32,7 @@ export interface SetupOptions {
     eslint?: boolean
     mcp?: boolean
     ai?: boolean
+    minimal?: boolean
     install?: PackageManager | false
     yes?: boolean
     packageTag?: string
@@ -93,6 +94,9 @@ export function createSetupPlan(options: SetupOptions = {}): SetupPlan {
     const packageManager = resolvePackageManager(root, packageJSON, options.install || undefined)
     const framework = resolveFramework(root, packageJSON, options.framework || 'auto')
     const version = options.packageTag || MASTER_CSS_VERSION
+    const eslint = resolveRecommendedOption(options.eslint, options.minimal)
+    const mcp = resolveRecommendedOption(options.mcp, options.minimal)
+    const ai = resolveRecommendedOption(options.ai, options.minimal)
     const dependencies: PlannedDependency[] = []
     const files: PlannedFileChange[] = []
     const commands: PlannedCommand[] = []
@@ -116,13 +120,13 @@ export function createSetupPlan(options: SetupOptions = {}): SetupPlan {
         files.push(...filesForFramework(root, framework, warnings))
     }
 
-    if (options.eslint) {
+    if (eslint) {
         pushDependency(dependencies, MASTER_CSS_PACKAGES.eslintConfig, true, version)
         pushDependency(dependencies, 'eslint', true, '^9.0.0 || ^10.0.0')
         files.push(planTextFile(root, 'eslint.config.js', addMasterCSSEslintConfig, CANONICAL_ESLINT_CONFIG, 'Add the Master CSS recommended ESLint flat config.'))
     }
 
-    if (options.mcp) {
+    if (mcp) {
         pushDependency(dependencies, MASTER_CSS_PACKAGES.mcp, true, version)
         commands.push({
             command: `npx -y @master/css-mcp@${version} --root ${root}`,
@@ -130,7 +134,7 @@ export function createSetupPlan(options: SetupOptions = {}): SetupPlan {
         })
     }
 
-    if (options.ai) {
+    if (ai) {
         files.push(planTextFile(root, 'AGENTS.md', appendAgentRules, AGENT_RULES_BLOCK, 'Add Master CSS instructions for local coding agents.'))
     }
 
@@ -378,6 +382,11 @@ function resolveFramework(root: string, packageJSON: PackageJSON | undefined, fr
 
 function isPackageManager(value: unknown): value is PackageManager {
     return value === 'npm' || value === 'pnpm' || value === 'yarn' || value === 'bun'
+}
+
+function resolveRecommendedOption(value: boolean | undefined, minimal: boolean | undefined) {
+    if (value !== undefined) return value
+    return !minimal
 }
 
 function appendAgentRules(content: string) {

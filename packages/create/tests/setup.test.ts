@@ -1,11 +1,12 @@
 import { createRequire } from 'node:module'
 import { spawnSync } from 'node:child_process'
-import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
+import { chmodSync, existsSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { dirname, join, resolve } from 'node:path'
 import { pathToFileURL } from 'node:url'
 import { describe, expect, test } from 'vitest'
 import { applySetup, createSetupPlan } from '../src'
+import { resolveCommandOptions } from '../src/core'
 import { addMasterCSSEslintConfig } from '../src/transforms'
 
 const cliFilepath = resolve(__dirname, '../src/bin/index.ts')
@@ -34,15 +35,33 @@ function writeProjectFile(root: string, file: string, content: string) {
     writeFileSync(filePath, content, 'utf8')
 }
 
-function runCLI(args: string[], options: { cwd?: string } = {}) {
+function runCLI(args: string[], options: { cwd?: string, env?: NodeJS.ProcessEnv } = {}) {
     return spawnSync(process.execPath, ['--import', tsxLoaderURL, cliFilepath, ...args], {
         cwd: options.cwd,
         encoding: 'utf8',
         env: {
             ...process.env,
+            ...(options.env || {}),
             TSX_TSCONFIG_PATH: tsconfigPath
         }
     })
+}
+
+function createFakePackageManager(name: string) {
+    const root = mkdtempSync(join(tmpdir(), 'master-css-create-pm-'))
+    const marker = join(root, 'install.log')
+    const binary = join(root, name)
+    writeFileSync(binary, `#!/bin/sh
+printf "%s" "$PWD $*" > ${JSON.stringify(marker)}
+`, 'utf8')
+    chmodSync(binary, 0o755)
+    return {
+        root,
+        marker,
+        env: {
+            PATH: `${root}:${process.env.PATH || ''}`
+        }
+    }
 }
 
 describe('@master/create-css setup planner', () => {
@@ -103,7 +122,7 @@ export default defineConfig([
         expect(addMasterCSSEslintConfig(content)).toBe(content)
     })
 
-    test('plans a Vite project add with ESLint and MCP', () => {
+    test('plans a Vite project add with recommended integrations by default', () => {
         const root = createTempProject('master-css-create-vite-', {
             dependencies: {
                 vite: '^8.0.0'
@@ -112,9 +131,7 @@ export default defineConfig([
 
         const plan = createSetupPlan({
             root,
-            framework: 'auto',
-            eslint: true,
-            mcp: true
+            framework: 'auto'
         })
 
         expect(plan.framework).toBe('vite')
@@ -128,9 +145,113 @@ export default defineConfig([
         expect(plan.files.map((file) => [file.path, file.action])).toEqual([
             ['vite.config.js', 'create'],
             ['src/style.css', 'create'],
-            ['eslint.config.js', 'create']
+            ['eslint.config.js', 'create'],
+            ['AGENTS.md', 'create']
         ])
         expect(plan.commands[0].command).toContain('@master/css-mcp@rc')
+    })
+
+    test('plans minimal Vite setup without recommended integrations', () => {
+        const root = createTempProject('master-css-create-vite-minimal-', {
+            dependencies: {
+                vite: '^8.0.0'
+            }
+        })
+
+        const plan = createSetupPlan({
+            root,
+            minimal: true
+        })
+
+        expect(plan.dependencies.map((dependency) => dependency.name)).toEqual([
+            '@master/css',
+            '@master/css.vite'
+        ])
+        expect(plan.files.map((file) => file.path)).toEqual([
+            'vite.config.js',
+            'src/style.css'
+        ])
+        expect(plan.commands).toEqual([])
+    })
+
+    test('allows explicit recommended integrations to override minimal mode', () => {
+        const root = createTempProject('master-css-create-vite-minimal-eslint-', {
+            dependencies: {
+                vite: '^8.0.0'
+            }
+        })
+
+        const plan = createSetupPlan({
+            root,
+            minimal: true,
+            eslint: true
+        })
+
+        expect(plan.dependencies.map((dependency) => dependency.name)).toEqual([
+            '@master/css',
+            '@master/css.vite',
+            '@master/eslint-config-css',
+            'eslint'
+        ])
+        expect(plan.files.map((file) => file.path)).toEqual([
+            'vite.config.js',
+            'src/style.css',
+            'eslint.config.js'
+        ])
+        expect(plan.commands).toEqual([])
+    })
+
+    test('honors explicit recommended integration opt-outs', () => {
+        const root = createTempProject('master-css-create-vite-no-recommended-', {
+            dependencies: {
+                vite: '^8.0.0'
+            }
+        })
+
+        const plan = createSetupPlan({
+            root,
+            eslint: false,
+            mcp: false,
+            ai: false
+        })
+
+        expect(plan.dependencies.map((dependency) => dependency.name)).toEqual([
+            '@master/css',
+            '@master/css.vite'
+        ])
+        expect(plan.files.map((file) => file.path)).toEqual([
+            'vite.config.js',
+            'src/style.css'
+        ])
+        expect(plan.commands).toEqual([])
+    })
+
+    test('resolves interactive prompt defaults to recommended options', async () => {
+        const questions: string[] = []
+        const resolved = await resolveCommandOptions({}, async (question) => {
+            questions.push(question)
+            return ''
+        })
+
+        expect(resolved).toEqual({
+            eslint: true,
+            mcp: true,
+            ai: true,
+            install: 'detected'
+        })
+        expect(questions).toHaveLength(4)
+    })
+
+    test('resolves interactive no answers for recommended options', async () => {
+        const answers = ['n', 'no', 'N', 'No']
+        const resolved = await resolveCommandOptions({}, async () => answers.shift() || '')
+
+        expect(resolved).toEqual({
+            eslint: false,
+            mcp: false,
+            ai: false,
+            install: false
+        })
     })
 
     test('prints new project guidance instead of writing files outside a project', () => {
@@ -172,9 +293,122 @@ export default defineConfig([
         expect(plan.framework).toBe('vite')
         expect(plan.files.map((file: { path: string }) => file.path)).toEqual([
             'vite.config.js',
-            'src/style.css'
+            'src/style.css',
+            'eslint.config.js',
+            'AGENTS.md'
         ])
         expect(existsSync(join(root, 'vite.config.js'))).toBe(false)
+    })
+
+    test('prints a minimal JSON plan from the CLI without recommended integrations', () => {
+        const root = createTempProject('master-css-create-cli-minimal-', {
+            dependencies: {
+                vite: '^8.0.0'
+            }
+        })
+
+        const result = runCLI(['--cwd', root, '--json', '--minimal'])
+        const plan = JSON.parse(result.stdout)
+
+        expect(result.status).toBe(0)
+        expect(plan.dependencies.map((dependency: { name: string }) => dependency.name)).toEqual([
+            '@master/css',
+            '@master/css.vite'
+        ])
+        expect(plan.files.map((file: { path: string }) => file.path)).toEqual([
+            'vite.config.js',
+            'src/style.css'
+        ])
+        expect(plan.commands).toEqual([])
+    })
+
+    test('re-enables explicit recommended integrations from the CLI minimal mode', () => {
+        const root = createTempProject('master-css-create-cli-minimal-eslint-', {
+            dependencies: {
+                vite: '^8.0.0'
+            }
+        })
+
+        const result = runCLI(['--cwd', root, '--json', '--minimal', '--eslint'])
+        const plan = JSON.parse(result.stdout)
+
+        expect(result.status).toBe(0)
+        expect(plan.dependencies.map((dependency: { name: string }) => dependency.name)).toEqual([
+            '@master/css',
+            '@master/css.vite',
+            '@master/eslint-config-css',
+            'eslint'
+        ])
+        expect(plan.files.map((file: { path: string }) => file.path)).toEqual([
+            'vite.config.js',
+            'src/style.css',
+            'eslint.config.js'
+        ])
+        expect(plan.commands).toEqual([])
+    })
+
+    test('honors CLI opt-outs for recommended integrations', () => {
+        const root = createTempProject('master-css-create-cli-no-recommended-', {
+            dependencies: {
+                vite: '^8.0.0'
+            }
+        })
+
+        const result = runCLI(['--cwd', root, '--json', '--no-eslint', '--no-mcp', '--no-ai'])
+        const plan = JSON.parse(result.stdout)
+
+        expect(result.status).toBe(0)
+        expect(plan.dependencies.map((dependency: { name: string }) => dependency.name)).toEqual([
+            '@master/css',
+            '@master/css.vite'
+        ])
+        expect(plan.files.map((file: { path: string }) => file.path)).toEqual([
+            'vite.config.js',
+            'src/style.css'
+        ])
+        expect(plan.commands).toEqual([])
+    })
+
+    test('runs detected package manager install with --yes', () => {
+        const root = createTempProject('master-css-create-cli-yes-install-', {
+            packageManager: 'npm@12.0.0',
+            dependencies: {
+                vite: '^8.0.0'
+            }
+        })
+        const fakePackageManager = createFakePackageManager('npm')
+
+        try {
+            const result = runCLI(['--cwd', root, '--yes'], {
+                env: fakePackageManager.env
+            })
+
+            expect(result.status).toBe(0)
+            expect(readFileSync(fakePackageManager.marker, 'utf8')).toBe(`${realpathSync(root)} install`)
+        } finally {
+            rmSync(fakePackageManager.root, { recursive: true, force: true })
+        }
+    })
+
+    test('skips detected package manager install with --yes --no-install', () => {
+        const root = createTempProject('master-css-create-cli-yes-no-install-', {
+            packageManager: 'npm@12.0.0',
+            dependencies: {
+                vite: '^8.0.0'
+            }
+        })
+        const fakePackageManager = createFakePackageManager('npm')
+
+        try {
+            const result = runCLI(['--cwd', root, '--yes', '--no-install'], {
+                env: fakePackageManager.env
+            })
+
+            expect(result.status).toBe(0)
+            expect(existsSync(fakePackageManager.marker)).toBe(false)
+        } finally {
+            rmSync(fakePackageManager.root, { recursive: true, force: true })
+        }
     })
 
     test('applies idempotent Vite and ESLint setup', () => {
@@ -194,7 +428,8 @@ export default defineConfig([
             packageJSON: readProjectFile(root, 'package.json'),
             vite: readProjectFile(root, 'vite.config.js'),
             css: readProjectFile(root, 'src/style.css'),
-            eslint: readProjectFile(root, 'eslint.config.js')
+            eslint: readProjectFile(root, 'eslint.config.js'),
+            agents: readProjectFile(root, 'AGENTS.md')
         }
 
         applySetup({
@@ -206,7 +441,8 @@ export default defineConfig([
             packageJSON: readProjectFile(root, 'package.json'),
             vite: readProjectFile(root, 'vite.config.js'),
             css: readProjectFile(root, 'src/style.css'),
-            eslint: readProjectFile(root, 'eslint.config.js')
+            eslint: readProjectFile(root, 'eslint.config.js'),
+            agents: readProjectFile(root, 'AGENTS.md')
         }).toEqual(once)
     })
 
@@ -231,11 +467,16 @@ export default defineConfig({
         expect(plan.framework).toBe('react')
         expect(plan.dependencies.map((dependency) => dependency.name)).toEqual([
             '@master/css',
-            '@master/css.vite'
+            '@master/css.vite',
+            '@master/eslint-config-css',
+            'eslint',
+            '@master/css-mcp'
         ])
         expect(plan.files.map((file) => [file.path, file.action])).toEqual([
             ['vite.config.ts', 'update'],
-            ['src/index.css', 'update']
+            ['src/index.css', 'update'],
+            ['eslint.config.js', 'create'],
+            ['AGENTS.md', 'create']
         ])
     })
 
@@ -255,7 +496,9 @@ export default defineConfig({
         expect(plan.framework).toBe('react')
         expect(plan.files.map((file: { path: string }) => file.path)).toEqual([
             'vite.config.js',
-            'src/index.css'
+            'src/index.css',
+            'eslint.config.js',
+            'AGENTS.md'
         ])
         expect(existsSync(join(root, 'vite.config.js'))).toBe(false)
     })
@@ -333,7 +576,10 @@ bootstrapApplication(AppComponent)
         expect(plan.dependencies.map((dependency) => dependency.name)).toEqual([
             '@master/css',
             '@master/css-runtime',
-            '@master/css-preset'
+            '@master/css-preset',
+            '@master/eslint-config-css',
+            'eslint',
+            '@master/css-mcp'
         ])
 
         applySetup({ root, install: false })
@@ -372,8 +618,16 @@ export default nextConfig;
         const plan = createSetupPlan({ root })
 
         expect(plan.framework).toBe('svelte')
-        expect(plan.dependencies).toEqual([])
-        expect(plan.files).toEqual([])
+        expect(plan.dependencies.map((dependency) => dependency.name)).toEqual([
+            '@master/eslint-config-css',
+            'eslint',
+            '@master/css-mcp'
+        ])
+        expect(plan.files.map((file) => file.path)).toEqual([
+            'eslint.config.js',
+            'AGENTS.md'
+        ])
         expect(plan.commands[0].command).toContain('sv add @master/css-sv')
+        expect(plan.commands[1].command).toContain('@master/css-mcp@rc')
     })
 })

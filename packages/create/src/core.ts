@@ -1,5 +1,6 @@
 import { existsSync, readFileSync } from 'node:fs'
 import { dirname, join, resolve } from 'node:path'
+import { createInterface } from 'node:readline/promises'
 import { fileURLToPath } from 'node:url'
 import { Command } from 'commander'
 import { applySetupPlan, createSetupPlan, type FrameworkOption, type PackageManager } from '.'
@@ -13,16 +14,27 @@ const newProjectCommands = [
     'npm create @master/css@rc -- --yes'
 ]
 
-interface CommandOptions {
+export interface CommandOptions {
     cwd?: string
     framework?: FrameworkOption
     eslint?: boolean
     mcp?: boolean
     ai?: boolean
+    minimal?: boolean
     install?: PackageManager | false
     dryRun?: boolean
     json?: boolean
     yes?: boolean
+}
+
+export type InstallResolution = PackageManager | false | 'detected' | undefined
+export type PromptQuestion = (question: string) => Promise<string>
+
+export interface ResolvedCommandOptions {
+    eslint: boolean
+    mcp: boolean
+    ai: boolean
+    install: InstallResolution
 }
 
 export default async function runProgram(argv: string[] = process.argv) {
@@ -36,13 +48,17 @@ export default async function runProgram(argv: string[] = process.argv) {
         .option('-C, --cwd <path>', 'Project root to update.')
         .option('--framework <framework>', 'Framework: auto, vite, react, nextjs, svelte, nuxt, astro, webpack, laravel, lit, angular, none.', 'auto')
         .option('--eslint', 'Add the Master CSS recommended ESLint flat config.')
+        .option('--no-eslint', 'Skip the Master CSS recommended ESLint flat config.')
         .option('--mcp', 'Add the Master CSS MCP package and print the stdio registration command.')
+        .option('--no-mcp', 'Skip the Master CSS MCP package and registration command.')
         .option('--ai', 'Add Master CSS guidance to AGENTS.md.')
+        .option('--no-ai', 'Skip Master CSS guidance for coding agents.')
+        .option('--minimal', 'Only add core Master CSS framework setup.')
         .option('--install <package-manager>', 'Run dependency installation with npm, pnpm, yarn, or bun after edits.')
         .option('--no-install', 'Do not run dependency installation.')
         .option('--dry-run', 'Print the setup plan without writing files.')
         .option('--json', 'Print machine-readable JSON.')
-        .option('-y, --yes', 'Accept defaults and run package installation with the detected package manager.')
+        .option('-y, --yes', 'Accept recommended defaults and run package installation with the detected package manager.')
 
     configure(program)
         .argument('[project name]', 'Deprecated. The installer now updates the current project; use --cwd for another root.')
@@ -61,14 +77,27 @@ export default async function runProgram(argv: string[] = process.argv) {
 
 async function runAdd(options: CommandOptions) {
     const root = resolve(options.cwd || process.cwd())
+    if (!options.dryRun && !options.json && !existsSync(join(root, 'package.json'))) {
+        printNonProjectGuidance(root)
+        return
+    }
+
+    const prompt = shouldPrompt(options) ? createTTYPrompt() : undefined
+    let resolvedOptions: ResolvedCommandOptions
+    try {
+        resolvedOptions = await resolveCommandOptions(options, prompt?.question)
+    } finally {
+        prompt?.close()
+    }
+
+    const planInstall = resolvedOptions.install === 'detected' ? undefined : resolvedOptions.install
     const plan = createSetupPlan({
         root,
         framework: options.framework,
-        eslint: options.eslint,
-        mcp: options.mcp,
-        ai: options.ai,
-        install: options.install,
-        yes: options.yes
+        eslint: resolvedOptions.eslint,
+        mcp: resolvedOptions.mcp,
+        ai: resolvedOptions.ai,
+        install: planInstall
     })
 
     if (options.dryRun || options.json) {
@@ -76,18 +105,59 @@ async function runAdd(options: CommandOptions) {
         return
     }
 
-    if (!existsSync(join(root, 'package.json'))) {
-        printNonProjectGuidance(root)
-        return
-    }
-
     applySetupPlan(plan, {
-        install: options.install,
-        yes: options.yes
+        install: resolvedOptions.install === 'detected' ? plan.packageManager : resolvedOptions.install
     })
 
     if (!options.json) {
         printSummary(plan)
+    }
+}
+
+export async function resolveCommandOptions(options: CommandOptions, prompt?: PromptQuestion): Promise<ResolvedCommandOptions> {
+    const question = options.yes ? undefined : prompt
+    return {
+        eslint: await resolveRecommendedBoolean(options.eslint, options.minimal, 'Add Master CSS ESLint diagnostics?', question),
+        mcp: await resolveRecommendedBoolean(options.mcp, options.minimal, 'Add the Master CSS MCP package?', question),
+        ai: await resolveRecommendedBoolean(options.ai, options.minimal, 'Add Master CSS AI agent guidance?', question),
+        install: await resolveInstall(options.install, options.yes, question)
+    }
+}
+
+async function resolveRecommendedBoolean(value: boolean | undefined, minimal: boolean | undefined, question: string, prompt: PromptQuestion | undefined) {
+    if (value !== undefined) return value
+    if (minimal) return false
+    if (prompt) return confirm(question, prompt)
+    return true
+}
+
+async function resolveInstall(install: PackageManager | false | undefined, yes: boolean | undefined, prompt: PromptQuestion | undefined): Promise<InstallResolution> {
+    if (install !== undefined) return install
+    if (yes) return 'detected'
+    if (prompt) return await confirm('Install dependencies now?', prompt) ? 'detected' : false
+    return undefined
+}
+
+async function confirm(question: string, prompt: PromptQuestion) {
+    while (true) {
+        const answer = (await prompt(`${question} (Y/n) `)).trim().toLowerCase()
+        if (!answer || answer === 'y' || answer === 'yes') return true
+        if (answer === 'n' || answer === 'no') return false
+        process.stdout.write('Please answer yes or no.\n')
+    }
+}
+
+function shouldPrompt(options: CommandOptions) {
+    return !options.yes && !options.json && !options.dryRun && Boolean(process.stdin.isTTY) && Boolean(process.stdout.isTTY)
+}
+
+function createTTYPrompt() {
+    const input = process.stdin
+    const output = process.stdout
+    const rl = createInterface({ input, output })
+    return {
+        question: (question: string) => rl.question(question),
+        close: () => rl.close()
     }
 }
 
