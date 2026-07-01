@@ -15,7 +15,7 @@ export const { Page, dynamic, revalidate, generateMetadata } = createLayout({
         <Tabs className="mb:xl">
             <Tab href='/guide/installation'>{$('Quick Start')}</Tab>
             <Tab href='/guide/installation/integrations'>{$('Integrations')}</Tab>
-            <Tab href='/guide/installation/cdn'>{$('Runtime CDN')}</Tab>
+            <Tab href='/guide/installation/cdn'>{$('CDN')}</Tab>
             <Tab href='/guide/installation/cli'>{$('CLI')}</Tab>
         </Tabs>,
     Layout,
