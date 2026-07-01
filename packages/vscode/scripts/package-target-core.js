@@ -341,16 +341,21 @@ export async function packageTargets(options = {}) {
     return packagePaths
 }
 
+export function createVSCEPublishArgs(packagePath, options = {}) {
+    return [
+        'publish',
+        '--packagePath',
+        packagePath,
+        ...(options.azureCredential ? ['--azure-credential'] : [])
+    ]
+}
+
 export async function publishTargets(options = {}) {
     const packagePaths = await packageTargets(options)
 
     for (const packagePath of packagePaths) {
         console.log(`Publishing ${packagePath}`)
-        await runVSCE([
-            'publish',
-            '--packagePath',
-            packagePath
-        ], packageDir)
+        await runVSCE(createVSCEPublishArgs(packagePath, options), packageDir)
     }
 
     return packagePaths

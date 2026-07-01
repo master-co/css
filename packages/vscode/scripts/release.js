@@ -27,8 +27,9 @@ function parseTargets(rawTargets) {
     return targets
 }
 
-function parseArgs(argv) {
+export function parseArgs(argv) {
     const rawTargets = []
+    let azureCredential = false
     let dryRun = false
     let noPublish = false
     let bump = 'patch'
@@ -41,6 +42,8 @@ function parseArgs(argv) {
             dryRun = true
         } else if (arg === '--no-publish') {
             noPublish = true
+        } else if (arg === '--azure-credential') {
+            azureCredential = true
         } else if (arg === '--patch') {
             bump = 'patch'
         } else if (arg === '--minor') {
@@ -67,6 +70,7 @@ function parseArgs(argv) {
     }
 
     return {
+        azureCredential,
         bump,
         dryRun,
         noPublish,
@@ -85,6 +89,7 @@ Options:
   --target, -t <targets>  Release one or more targets, comma or space separated
   --all-targets           Release every supported target (default)
   --no-publish            Build, bump, validate, and package VSIX files only
+  --azure-credential      Use Microsoft Entra ID when verifying and publishing
   --dry-run               Print the release plan without mutating files
   --help, -h              Show this help
 `)
@@ -183,6 +188,7 @@ function printPlan(options, manifest, statusLines) {
     console.log(`Version bump: ${options.bump}`)
     console.log(`Targets: ${options.targets.join(', ')}`)
     console.log(`Publish: ${options.noPublish ? 'no, package only' : 'yes'}`)
+    console.log(`Authentication: ${options.noPublish ? 'not used' : options.azureCredential ? 'Microsoft Entra ID' : 'VSCE credential store or PAT'}`)
     console.log(`Marketplace: ${marketplaceUrl}`)
     console.log(`VS Code engine: ${manifest.engines?.vscode}`)
     console.log(`@types/vscode: ${manifest.devDependencies?.['@types/vscode']}`)
@@ -194,6 +200,15 @@ function printPlan(options, manifest, statusLines) {
 
 function targetArgs(targets) {
     return targets.length === TARGETS.length ? [] : ['--', '--target', ...targets]
+}
+
+function publishArgs(options) {
+    const args = targetArgs(options.targets)
+    if (options.azureCredential) {
+        if (!args.length) args.push('--')
+        args.push('--azure-credential')
+    }
+    return args
 }
 
 async function main() {
@@ -228,8 +243,17 @@ async function main() {
     if (options.noPublish) {
         await run(corepackCommand(), ['pnpm', '--filter', 'master-css-vscode', 'vscode:package', ...targetArgs(options.targets)])
     } else {
-        await run(corepackCommand(), ['pnpm', '--filter', 'master-css-vscode', 'exec', 'vsce', 'verify-pat', bumpedManifest.publisher])
-        await run(corepackCommand(), ['pnpm', '--filter', 'master-css-vscode', 'vscode:publish', ...targetArgs(options.targets)])
+        await run(corepackCommand(), [
+            'pnpm',
+            '--filter',
+            'master-css-vscode',
+            'exec',
+            'vsce',
+            'verify-pat',
+            ...(options.azureCredential ? ['--azure-credential'] : []),
+            bumpedManifest.publisher
+        ])
+        await run(corepackCommand(), ['pnpm', '--filter', 'master-css-vscode', 'vscode:publish', ...publishArgs(options)])
     }
 
     console.log('\nVS Code extension release complete')
@@ -240,7 +264,9 @@ async function main() {
     for (const line of await gitStatus()) console.log(line)
 }
 
-main().catch((error) => {
-    console.error(error)
-    process.exitCode = 1
-})
+if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+    main().catch((error) => {
+        console.error(error)
+        process.exitCode = 1
+    })
+}

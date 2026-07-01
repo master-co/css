@@ -159,16 +159,8 @@ jobs:
             - name: Publish VS Code extension
               if: ${{ github.ref_name == 'rc' }}
               run: |
-                  cd packages/vscode
-                  shopt -s nullglob
-                  packages=(vsix/*.vsix)
-                  if [ ${#packages[@]} -eq 0 ]; then
-                      echo "No VSIX packages found in packages/vscode/vsix."
-                      exit 1
-                  fi
-                  for package in "${packages[@]}"; do
-                      pnpm exec vsce publish --packagePath "$package" --azure-credential
-                  done
+                  pnpm --filter master-css-vscode exec vsce verify-pat --azure-credential masterco
+                  pnpm --filter master-css-vscode vscode:publish -- --azure-credential
             - run: pnpm exec semantic-release
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

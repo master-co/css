@@ -17,12 +17,13 @@ function parseTargets(rawTargets) {
     return targets
 }
 
-function parseCLIArgs(argv) {
+export function parseCLIArgs(argv) {
     const args = [...argv]
     const command = args[0] && !args[0].startsWith('-') ? args.shift() : 'package'
     const rawTargets = []
     const packageArgs = []
     let outDir
+    let azureCredential = false
 
     while (args.length) {
         const arg = args.shift()
@@ -38,6 +39,9 @@ function parseCLIArgs(argv) {
             outDir = resolve(packageDir, value)
         } else if (arg === '--all-targets') {
             rawTargets.length = 0
+        } else if (arg === '--azure-credential') {
+            if (command !== 'publish') throw new Error('--azure-credential is only supported for publish')
+            azureCredential = true
         } else {
             packageArgs.push(arg)
         }
@@ -47,7 +51,8 @@ function parseCLIArgs(argv) {
         command,
         targets: rawTargets.length ? parseTargets(rawTargets) : TARGETS,
         outDir,
-        packageArgs
+        packageArgs,
+        azureCredential
     }
 }
 
