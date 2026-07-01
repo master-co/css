@@ -115,6 +115,8 @@ const PACKAGE_COMMON_PACKS: Record<string, string[]> = {
     validator: ['.ai/context/testing.md', '.ai/context/css-output.md'],
     diagnostics: ['.ai/context/testing.md', '.ai/context/package-boundaries.md'],
     lint: ['.ai/context/testing.md', '.ai/context/package-boundaries.md'],
+    create: ['.ai/context/testing.md', '.ai/context/package-boundaries.md'],
+    'css-sv': ['.ai/context/testing.md', '.ai/context/package-boundaries.md'],
     vite: ['.ai/context/package-boundaries.md', '.ai/context/css-output.md'],
     webpack: ['.ai/context/package-boundaries.md', '.ai/context/css-output.md'],
     next: ['.ai/context/package-boundaries.md', '.ai/context/css-output.md'],

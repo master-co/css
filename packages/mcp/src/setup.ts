@@ -20,6 +20,7 @@ const MASTER_CSS_PACKAGES = [
     '@master/css',
     '@master/css-cli',
     '@master/css-mcp',
+    '@master/create-css',
     '@master/css-runtime',
     '@master/css-language-server',
     '@master/css.vite',
@@ -28,6 +29,8 @@ const MASTER_CSS_PACKAGES = [
     '@master/css.nuxt',
     '@master/css.astro',
     '@master/css.svelte',
+    '@master/css-sv',
+    '@master/eslint-config-css',
     '@master/eslint-plugin-css'
 ]
 
@@ -39,7 +42,13 @@ const INTEGRATION_PACKAGES = [
     '@master/css.nuxt',
     '@master/css.astro',
     '@master/css.svelte',
+    '@master/eslint-config-css',
     '@master/eslint-plugin-css'
+]
+
+const SETUP_PACKAGES = [
+    '@master/create-css',
+    '@master/css-sv'
 ]
 
 interface PackageJSON {
@@ -108,6 +117,16 @@ function detectDeclaredPackages(packageJSON: PackageJSON | undefined) {
         }))
 }
 
+function detectSetupPackages(packageJSON: PackageJSON | undefined) {
+    const dependencies = getDependencies(packageJSON)
+    return SETUP_PACKAGES
+        .filter((name) => dependencies[name])
+        .map((name) => ({
+            name,
+            version: dependencies[name]
+        }))
+}
+
 function detectIntegrations(packageJSON: PackageJSON | undefined) {
     const dependencies = getDependencies(packageJSON)
     const scripts = packageJSON?.scripts || {}
@@ -152,6 +171,7 @@ export async function auditSetup(context: MasterCSSMCPContext) {
     const packageJSON = packageJSONResult.value
     const packageManager = detectPackageManager(context, packageJSON)
     const declaredPackages = detectDeclaredPackages(packageJSON)
+    const setupPackages = detectSetupPackages(packageJSON)
     const integrations = detectIntegrations(packageJSON)
     const resolvedPackages = resolveMasterCSSWorkspacePackages(context.root)
     const diagnostics: SetupDiagnostic[] = []
@@ -208,6 +228,7 @@ export async function auditSetup(context: MasterCSSMCPContext) {
         },
         packages: {
             declared: declaredPackages,
+            setup: setupPackages,
             resolved: resolvedPackages
         },
         integrations,
@@ -223,6 +244,7 @@ export async function auditSetup(context: MasterCSSMCPContext) {
             status,
             entries: (manifest.entries.length ? manifest.entries : discoveredEntries).length,
             declaredPackages: declaredPackages.length,
+            setupPackages: setupPackages.length,
             integrations: integrations.length,
             errors: diagnostics.filter((diagnostic) => diagnostic.severity === 'error').length,
             warnings: diagnostics.filter((diagnostic) => diagnostic.severity === 'warning').length,

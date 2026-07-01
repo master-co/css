@@ -26,6 +26,8 @@ function createContributorFixture() {
     mkdirSync(join(root, 'packages/engine'), { recursive: true })
     mkdirSync(join(root, 'packages/runtime'), { recursive: true })
     mkdirSync(join(root, 'packages/mcp'), { recursive: true })
+    mkdirSync(join(root, 'packages/create'), { recursive: true })
+    mkdirSync(join(root, 'packages/css-sv'), { recursive: true })
     mkdirSync(join(root, 'site'), { recursive: true })
     writeFileSync(join(root, 'AGENTS.md'), 'Read .ai/context/index.md')
     writeFileSync(join(root, '.ai/context/index.md'), '# Context Pack Index')
@@ -71,6 +73,24 @@ function createContributorFixture() {
         }
     })
     writeFileSync(join(root, 'packages/mcp/AI.md'), '# AI Notes For `@master/css-mcp`')
+    writeJSON(join(root, 'packages/create/package.json'), {
+        name: '@master/create-css',
+        scripts: {
+            build: 'tsdown',
+            lint: 'eslint',
+            test: 'vitest'
+        }
+    })
+    writeFileSync(join(root, 'packages/create/AI.md'), '# AI Notes For `@master/create-css`')
+    writeJSON(join(root, 'packages/css-sv/package.json'), {
+        name: '@master/css-sv',
+        scripts: {
+            build: 'tsdown',
+            lint: 'eslint',
+            test: 'vitest'
+        }
+    })
+    writeFileSync(join(root, 'packages/css-sv/AI.md'), '# AI Notes For `@master/css-sv`')
     writeJSON(join(root, 'site/package.json'), {
         name: 'site',
         private: true,
@@ -181,7 +201,10 @@ describe('@master/css-mcp', () => {
             name: 'setup-fixture',
             devDependencies: {
                 '@master/css': 'workspace:^',
-                '@master/css-cli': 'workspace:^'
+                '@master/css-cli': 'workspace:^',
+                '@master/create-css': 'workspace:^',
+                '@master/css-sv': 'workspace:^',
+                '@master/eslint-config-css': 'workspace:^'
             },
             scripts: {
                 build: 'master-css src/index.html -o master.css'
@@ -208,11 +231,29 @@ describe('@master/css-mcp', () => {
             expect(audit.packages.declared).toContainEqual(expect.objectContaining({
                 name: '@master/css'
             }))
+            expect(audit.packages.declared).toEqual(expect.arrayContaining([
+                expect.objectContaining({ name: '@master/create-css' }),
+                expect.objectContaining({ name: '@master/css-sv' }),
+                expect.objectContaining({ name: '@master/eslint-config-css' })
+            ]))
+            expect(audit.packages.setup).toEqual(expect.arrayContaining([
+                expect.objectContaining({ name: '@master/create-css' }),
+                expect.objectContaining({ name: '@master/css-sv' })
+            ]))
+            expect(audit.summary.setupPackages).toBe(2)
             expect(audit.integrations).toEqual(expect.arrayContaining([
                 expect.objectContaining({
                     name: '@master/css-cli'
+                }),
+                expect.objectContaining({
+                    name: '@master/eslint-config-css'
                 })
             ]))
+            const integrationPackageNames = audit.integrations
+                .filter((integration: { type: string }) => integration.type === 'package')
+                .map((integration: { name: string }) => integration.name)
+            expect(integrationPackageNames).not.toContain('@master/create-css')
+            expect(integrationPackageNames).not.toContain('@master/css-sv')
 
             const directives = parseToolJSON(await connection.client.callTool({
                 name: 'mastercss_inspect_directives',
@@ -427,6 +468,60 @@ describe('@master/css-mcp', () => {
                     dependents: ['@master/css-runtime']
                 })
             ])
+        } finally {
+            await connection.close()
+        }
+    })
+
+    it('routes setup package contributor paths to testing and package-boundary context', async () => {
+        const root = createContributorFixture()
+        const connection = await connect(root)
+        try {
+            const report = parseToolJSON(await connection.client.callTool({
+                name: 'mastercss_repo_context',
+                arguments: {
+                    paths: [
+                        'packages/create/src/core.ts',
+                        'packages/css-sv/src/transforms.ts'
+                    ]
+                }
+            }))
+
+            expect(report.status).toBe('loaded')
+            expect(report.affectedPackages).toEqual(expect.arrayContaining([
+                expect.objectContaining({
+                    name: '@master/create-css',
+                    path: 'packages/create',
+                    aiNotes: 'packages/create/AI.md'
+                }),
+                expect.objectContaining({
+                    name: '@master/css-sv',
+                    path: 'packages/css-sv',
+                    aiNotes: 'packages/css-sv/AI.md'
+                })
+            ]))
+            expect(report.context.files).toEqual(expect.arrayContaining([
+                '.ai/context/testing.md',
+                '.ai/context/package-boundaries.md',
+                'packages/create/package.json',
+                'packages/create/AI.md',
+                'packages/css-sv/package.json',
+                'packages/css-sv/AI.md'
+            ]))
+            expect(report.validation.commands).toEqual(expect.arrayContaining([
+                expect.objectContaining({
+                    command: 'pnpm --filter @master/create-css test'
+                }),
+                expect.objectContaining({
+                    command: 'pnpm --filter @master/create-css lint'
+                }),
+                expect.objectContaining({
+                    command: 'pnpm --filter @master/css-sv test'
+                }),
+                expect.objectContaining({
+                    command: 'pnpm --filter @master/css-sv lint'
+                })
+            ]))
         } finally {
             await connection.close()
         }
