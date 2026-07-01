@@ -86,4 +86,4 @@
 
 
 ## Documentation
-Check out the official [installation guide](https://rc.css.master.co/guide/installation).
+Check out the official [CDN installation guide](https://rc.css.master.co/guide/installation/cdn).

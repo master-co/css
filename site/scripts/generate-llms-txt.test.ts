@@ -59,14 +59,14 @@ test('pageUrl strips content.mdx and prefixes locale', () => {
 })
 
 test('pageUrl strips Next.js route groups', () => {
-    assert.equal(normalizeRoutePath('guide/installation/(main)/cli/content.mdx'), 'guide/installation/cli')
+    assert.equal(normalizeRoutePath('guide/installation/(main)/cdn/content.mdx'), 'guide/installation/cdn')
     assert.equal(pageUrl('guide/installation/(main)/content.mdx'), '/en/guide/installation')
-    assert.equal(pageUrl('guide/installation/(main)/cli/content.mdx'), '/en/guide/installation/cli')
+    assert.equal(pageUrl('guide/installation/(main)/cdn/content.mdx'), '/en/guide/installation/cdn')
 })
 
 test('topSection extracts the first segment', () => {
     assert.equal(topSection('guide/colors/content.mdx'), 'guide')
-    assert.equal(topSection('guide/installation/(main)/cli/content.mdx'), 'guide')
+    assert.equal(topSection('guide/installation/(main)/cdn/content.mdx'), 'guide')
     assert.equal(topSection('reference/content.mdx'), 'reference')
 })
 

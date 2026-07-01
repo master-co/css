@@ -1,8 +1,8 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Integrations',
-    description: 'Master CSS allows you to install from package managers, copy-paste CDNs, and integrate with frameworks.',
+    title: 'Using CDNs',
+    description: 'Copy and paste the CDN links to start the Master CSS runtime in your browser.',
     category: 'Getting Started',
     fileURL: import.meta.url
 })
