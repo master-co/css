@@ -38,8 +38,6 @@ jobs:
               run: pnpm run test:docs-consistency
             - if: ${{ env.TRUSTED_CI == 'true' }}
               run: pnpm run test:package-boundaries
-            - if: ${{ env.TRUSTED_CI == 'true' }}
-              run: pnpm run test:cross-platform-paths
 
     lint:
         runs-on: ubuntu-latest

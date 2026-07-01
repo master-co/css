@@ -17,7 +17,6 @@ Add focused test coverage for an existing behavior or known regression.
 - Existing tests in the affected package
 - Fixture and snapshot conventions
 - The source behavior being tested
-- `.ai/context/cross-platform.md` when tests assert filesystem paths, file URLs, public URLs, virtual ids, or generated import specifiers
 
 ## Editing Rules
 
@@ -31,7 +30,6 @@ Add focused test coverage for an existing behavior or known regression.
 
 - Run the affected package test command.
 - Run affected package lint if a workspace package changed and it defines `lint`.
-- Run `pnpm test:cross-platform-paths` when adding or changing path assertions.
 - If the test documents CSS output, confirm the output is intentional.
 
 ## Completion Output

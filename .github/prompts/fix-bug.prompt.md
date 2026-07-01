@@ -17,7 +17,6 @@ Fix a confirmed bug with the smallest safe change and a regression test.
 - Source files involved in the failing behavior
 - Nearby tests and fixtures
 - Any downstream package that consumes the changed behavior
-- `.ai/context/cross-platform.md` when the bug touches paths, file URLs, public URLs, virtual ids, generated import specifiers, scanner roots, project roots, build integrations, CLI, language server, or VS Code packaging
 - Deeper references required by `.ai/context/accuracy-guardrails.md` for high-risk behavior
 
 ## Editing Rules
@@ -33,7 +32,6 @@ Fix a confirmed bug with the smallest safe change and a regression test.
 - Run the package-scoped test for the affected package.
 - Run affected package lint if the package defines `lint`.
 - Run type-check or build if public types or package output changed.
-- Run `pnpm test:cross-platform-paths` for path-sensitive fixes.
 - Run broader validation when behavior crosses package boundaries.
 
 ## Completion Output

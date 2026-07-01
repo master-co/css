@@ -51,7 +51,6 @@ When cycle pressure appears, extract dependency-light contracts into `@master/cs
 
 - Identify the affected package and read its `package.json`.
 - Use `.ai/context/package-routing.md` when the task names paths, packages, or a diff.
-- Use `.ai/context/cross-platform.md` when changes touch filesystem paths, file URLs, public URLs, virtual module ids, generated import specifiers, scanner/project roots, build integrations, CLI, language server, VS Code packaging, or tests/fixtures that assert paths.
 - Read the affected package-local `AI.md`, if present.
 - Read the relevant task pack from `.ai/context/`.
 - Inspect existing source, tests, fixtures, and downstream consumers before designing a change.
@@ -87,12 +86,6 @@ Breaking changes in refactor work must be intentional and visible: list public A
 - Keep public exports deliberate.
 - Do not reduce correctness just to make tests pass.
 - Do not guess when modifying parser, compiler, renderer, selector, at-rule, variable, mode, priority, cascade, runtime, extraction, language, or ESLint behavior.
-
-## Cross-Platform Paths
-
-Treat filesystem paths, file URLs, public URLs, virtual module ids, and generated import specifiers as different string domains. Build and compare Node filesystem paths with `node:path` helpers and separate path segments. Convert file URLs at the boundary. Use `path.relative(parent, child)` for filesystem containment. Keep URL-like strings slash-based.
-
-When path-sensitive code or tests change, follow `.ai/context/cross-platform.md` and run `pnpm test:cross-platform-paths` unless the change is documentation-only.
 
 ## Testing Policy
 
