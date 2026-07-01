@@ -3,7 +3,7 @@ import vitePlugin from '@master/css.vite'
 import defaultOptions, { type IntegrationOptions } from './options'
 import { astroAdapter } from './adapter'
 import { externalizeAstroHydrationManifests } from './external-hydration-manifest'
-import { preloadAstroRuntimeManifest } from './runtime-manifest-preload'
+import { preloadAstroRuntimeAssets } from './runtime-preload'
 
 export const ASTRO_MIDDLEWARE_ENTRYPOINT = '@master/css.astro/middleware'
 export const ASTRO_SSR_EXTERNAL = ['@master/css-server']
@@ -86,7 +86,7 @@ export default function masterCSS(options?: IntegrationOptions): AstroIntegratio
             },
             'astro:build:done': async ({ dir }) => {
                 if (options.mode === 'runtime' && options.injectRuntime && buildOutput !== 'server') {
-                    await preloadAstroRuntimeManifest(dir, astroBase)
+                    await preloadAstroRuntimeAssets(dir, astroBase)
                 }
                 switch (options.mode) {
                     case 'pre-render':

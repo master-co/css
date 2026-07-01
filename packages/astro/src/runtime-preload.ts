@@ -86,7 +86,7 @@ function isManifestAssetFile(file: string) {
     return name.startsWith('master-css-manifest') && name.endsWith('.json')
 }
 
-async function findReferencedManifestAsset(files: string[]) {
+async function findRuntimePreloadAssets(files: string[]) {
     for (const file of files) {
         if (!file.endsWith('.js')) continue
         const source = await readFile(file, 'utf8')
@@ -107,10 +107,10 @@ async function findReferencedManifestAsset(files: string[]) {
     return { manifestFile }
 }
 
-export async function preloadAstroRuntimeManifest(dir: URL | string, base?: string) {
+export async function preloadAstroRuntimeAssets(dir: URL | string, base?: string) {
     const root = toRootPath(dir)
     const files = await collectOutputFiles(root)
-    const assets = await findReferencedManifestAsset(files)
+    const assets = await findRuntimePreloadAssets(files)
     if (!assets) return []
     const manifestHref = toPublicAssetHref(root, assets.manifestFile, base)
     const runtimeScriptHref = assets.runtimeScriptFile
