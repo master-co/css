@@ -2,7 +2,7 @@
     <Step $row>
         <StepL>
             ### <StepNum />Create a project
-            If you don't have an Astro project, create one first. It's recommended to refer to [Getting Started - Astro](https://docs.astro.build/en/getting-started).
+            If you don't have an Astro project, create one first.
         </StepL>
         <StepR>
             ```bash name=Terminal
@@ -13,62 +13,12 @@
     </Step>
     <Step $row>
         <StepL>
-            ### <StepNum />Install Master CSS
-            Install the [`@master/css.astro`](https://www.npmjs.com/package/@master/css.astro) integration into your project.
-        </StepL>
-        <StepR>
-            ```bash action=install
-            @master/css.astro@rc
-            ```
-        </StepR>
-    </Step>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Set up Master CSS
-            Add the Master CSS Astro integration in `astro.config.js`.
-
-            - By default, `options.mode` is set to `progressive`.
-            - The scanner extracts classes from `.astro` files automatically.
-            - Progressive mode pre-renders initial CSS with Astro middleware, then hydrates the runtime in the browser.
-            - Static build output externalizes page hydration manifests under `dist/_master-css/hydration/…`; middleware SSR keeps the inline manifest for the current response.
-            - In `mode: 'runtime'`, static build output preloads the emitted project manifest JSON when runtime injection is enabled. SSR-only output does not add this preload because the final client asset URL is not available through a stable build-time head hook. See [Preload runtime project manifests](/guide/preload-critical-resources#preload-runtime-project-manifests).
-        </StepL>
-        <StepR>
-            ```js name=astro.config.js
-            import { defineConfig } from 'astro/config'
-            import masterCSS from '@master/css.astro' // [!code highlight]
-
-            export default defineConfig({
-                integrations: [
-                    masterCSS() // [!code highlight]
-                ]
-            })
-            ```
-        </StepR>
-    </Step>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Import the default stylesheet
-            Import Master CSS from a global Astro stylesheet. This style block is also the project CSS entry.
-        </StepL>
-        <StepR>
-            ```astro name=src/layouts/Layout.astro
-            <style is:global>
-                @import '@master/css';
-            </style>
-            ```
-        </StepR>
-    </Step>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Verify progressive output
-            Run a production build to verify that Astro writes pre-rendered CSS into the generated HTML.
-
-            Static output should include `html <style id="master-css" data-master-css-hydration-manifest="…">` for initial classes and a module script for runtime hydration.
+            ### <StepNum />Add Master CSS
+            Run the installer from the Astro project root.
         </StepL>
         <StepR>
             ```bash name=Terminal
-            npm run build
+            npm create @master/css@rc -- --framework astro --yes
             ```
         </StepR>
     </Step>
@@ -86,22 +36,15 @@
     <Step $row>
         <StepL>
             ### <StepNum />Start using Master CSS
-            Now style your first element using Master CSS syntax!
+            Now style your first Astro page using Master CSS syntax.
         </StepL>
         <StepR>
             ```astro name=src/pages/index.astro
-            ---
-            import Layout from '../layouts/Layout.astro';
-            ---
-            <Layout title="Welcome to Astro.">
-                <main>
-                    <h1 class="italic m:2xl text:neutral font:5xl font:heavy">
-                        Hello World
-                    </h1>
-                </main>
-            </Layout>
+            <h1 class="italic m:2xl text:neutral font:5xl font:heavy">
+                Hello World
+            </h1>
             ```
         </StepR>
     </Step>
-    <HelloWorld url="localhost:3000" />
+    <HelloWorld url="localhost:4321" />
 </StepSection>

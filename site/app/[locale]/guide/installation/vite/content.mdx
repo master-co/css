@@ -2,7 +2,7 @@
     <Step $row>
         <StepL>
             ### <StepNum />Create a Vite project
-            If you don't have a Vite project, create one first. Vite treats the project root `index.html` as the entry point and the default templates usually load source files from `src/`.
+            If you don't have a Vite project, create one first.
         </StepL>
         <StepR>
             ```bash name=Terminal
@@ -13,87 +13,12 @@
     </Step>
     <Step $row>
         <StepL>
-            ### <StepNum />Install Master CSS
-            Install [`@master/css.vite`](https://www.npmjs.com/package/@master/css.vite) plugin into your project.
+            ### <StepNum />Add Master CSS
+            Run the installer from the Vite project root.
         </StepL>
         <StepR>
-            ```bash action=install
-            @master/css.vite@rc
-            ```
-        </StepR>
-    </Step>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Set up Master CSS
-            Add a `masterCSS` vite plugin in `vite.config.js`.
-
-            By default, `masterCSS()` uses runtime rendering. Use `mode: 'static'` when you want zero-runtime generated CSS at build time.
-
-            (i) In production `runtime` mode, Vite emits the project manifest as a JSON asset and preloads it when the plugin also injects the runtime. `injectRuntime: false` disables both automatic runtime injection and that preload. See [Preload runtime project manifests](/guide/preload-critical-resources#preload-runtime-project-manifests).
-
-            (i) In `progressive` and `pre-render` modes, Vite pre-renders page CSS into `style#master-css` and externalizes the page hydration manifest. During dev, the manifest JSON is served from `/_master-css/hydration/…`; during build, it is emitted under the configured Vite asset path.
-        </StepL>
-        <StepR>
-            ```js name=vite.config.js
-            import { defineConfig } from 'vite'
-            import masterCSS from '@master/css.vite' // [!code highlight]
-
-            export default defineConfig({
-                plugins: [
-                    masterCSS() // [!code highlight]
-                ]
-            })
-            ```
-        </StepR>
-    </Step>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Import stylesheets
-            Import Master CSS from the stylesheet your Vite entry already loads, such as `src/style.css`. This stylesheet is also the project CSS entry.
-        </StepL>
-        <StepR>
-            ```css name=src/style.css
-            @import '@master/css';
-            ```
-        </StepR>
-    </Step>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Define local CSS
-            Source stylesheets can contain ordinary CSS, `@settings`, `@theme` tokens and keyframes, top-level custom conditions/selectors, and managed definition directives together. Ordinary class selectors are kept only when they appear in scanned source. Add `@preserve native;` only when native CSS must be preserved as written.
-
-            (i) A stylesheet that imports `@master/css` is also a project CSS entry, so its Master CSS manifest directives participate in the project manifest graph.
-        </StepL>
-        <StepR>
-            ```css name=src/style.css
-            @import '@master/css';
-
-            .native-card {
-                border: 1px solid rgb(0 0 0 / 12%);
-            }
-
-            @components {
-                btn {
-                    @compose inline-flex align-items:center px:md h:40px r:md bg:blue fg:white;
-                }
-            }
-            ```
-
-            ```css name=index.css
-            @import '@master/css';
-            @import './src/style.css';
-            ```
-        </StepR>
-    </Step>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Add client types
-            If TypeScript source files import Master CSS virtual manifest, emittedGlobals, or generated CSS modules, add the Vite client types and Master CSS integration client types to your environment file.
-        </StepL>
-        <StepR>
-            ```ts name=src/vite-env.d.ts
-            /// <reference types="vite/client" />
-            /// <reference types="@master/css-integration/client" />
+            ```bash name=Terminal
+            npm create @master/css@rc -- --framework vite --yes
             ```
         </StepR>
     </Step>
@@ -111,11 +36,13 @@
     <Step $row>
         <StepL>
             ### <StepNum />Start using Master CSS
-            Now style your first element using Master CSS syntax!
+            Now style your first element using Master CSS syntax.
         </StepL>
         <StepR>
             ```html name=index.html
-            <h1 class="btn native-card m:2xl">Hello World</h1>
+            <h1 class="italic m:2xl text:neutral font:5xl font:heavy">
+                Hello World
+            </h1>
             ```
         </StepR>
     </Step>

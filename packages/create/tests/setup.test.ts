@@ -1,6 +1,6 @@
-import { mkdtempSync, readFileSync, writeFileSync } from 'node:fs'
+import { mkdirSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
-import { join } from 'node:path'
+import { dirname, join } from 'node:path'
 import { describe, expect, test } from 'vitest'
 import { applySetup, createSetupPlan } from '../src'
 import { addMasterCSSEslintConfig } from '../src/transforms'
@@ -19,6 +19,12 @@ function createTempProject(name: string, packageJSON: Record<string, unknown> = 
 
 function readProjectFile(root: string, file: string) {
     return readFileSync(join(root, file), 'utf8')
+}
+
+function writeProjectFile(root: string, file: string, content: string) {
+    const filePath = join(root, file)
+    mkdirSync(dirname(filePath), { recursive: true })
+    writeFileSync(filePath, content, 'utf8')
 }
 
 describe('@master/create-css setup planner', () => {
@@ -140,6 +146,137 @@ export default defineConfig([
             css: readProjectFile(root, 'src/style.css'),
             eslint: readProjectFile(root, 'eslint.config.js')
         }).toEqual(once)
+    })
+
+    test('plans React projects with the Vite plugin and index CSS entry', () => {
+        const root = createTempProject('master-css-create-react-', {
+            dependencies: {
+                '@vitejs/plugin-react': '^6.0.0',
+                react: '^19.0.0',
+                vite: '^8.0.0'
+            }
+        })
+        writeProjectFile(root, 'vite.config.ts', `import { defineConfig } from 'vite'
+
+export default defineConfig({
+    plugins: []
+})
+`)
+        writeProjectFile(root, 'src/index.css', 'body { margin: 0; }\n')
+
+        const plan = createSetupPlan({ root })
+
+        expect(plan.framework).toBe('react')
+        expect(plan.dependencies.map((dependency) => dependency.name)).toEqual([
+            '@master/css',
+            '@master/css.vite'
+        ])
+        expect(plan.files.map((file) => [file.path, file.action])).toEqual([
+            ['vite.config.ts', 'update'],
+            ['src/index.css', 'update']
+        ])
+    })
+
+    test('plans Laravel projects with the Vite plugin in static mode', () => {
+        const root = createTempProject('master-css-create-laravel-', {
+            dependencies: {
+                'laravel-vite-plugin': '^3.0.0',
+                vite: '^8.0.0'
+            }
+        })
+        writeProjectFile(root, 'vite.config.ts', `import { defineConfig } from 'vite'
+import laravel from 'laravel-vite-plugin'
+
+export default defineConfig({
+    plugins: [
+        laravel({
+            input: ['resources/css/app.css']
+        })
+    ]
+})
+`)
+
+        applySetup({ root, install: false })
+
+        expect(readProjectFile(root, 'vite.config.ts')).toContain("masterCSS({ mode: 'static' })")
+        expect(readProjectFile(root, 'resources/css/app.css')).toBe("@import '@master/css';\n")
+    })
+
+    test('plans Lit projects with runtime client types and shadow-root setup', () => {
+        const root = createTempProject('master-css-create-lit-', {
+            dependencies: {
+                lit: '^3.0.0',
+                vite: '^8.0.0'
+            }
+        })
+        writeProjectFile(root, 'vite.config.ts', `import { defineConfig } from 'vite'
+
+export default defineConfig({})
+`)
+        writeProjectFile(root, 'src/my-element.ts', `import { LitElement, html } from 'lit'
+import { customElement } from 'lit/decorators.js'
+
+@customElement('my-element')
+export class MyElement extends LitElement {
+    render() {
+        return html\`<h1>Hello</h1>\`
+    }
+}
+`)
+
+        applySetup({ root, install: false })
+
+        expect(readProjectFile(root, 'src/vite-env.d.ts')).toContain('@master/css-integration/client')
+        expect(readProjectFile(root, 'src/my-element.ts')).toContain('@cssRuntime({ manifest, emittedGlobals })')
+        expect(readProjectFile(root, 'src/my-element.ts')).toContain('cssRuntime?: CSSRuntime')
+    })
+
+    test('plans Angular projects with runtime setup', () => {
+        const root = createTempProject('master-css-create-angular-', {
+            dependencies: {
+                '@angular/core': '^22.0.0'
+            }
+        })
+        writeProjectFile(root, 'angular.json', '{}\n')
+        writeProjectFile(root, 'src/main.ts', `import { bootstrapApplication } from '@angular/platform-browser'
+import { AppComponent } from './app/app.component'
+
+bootstrapApplication(AppComponent)
+`)
+
+        const plan = createSetupPlan({ root })
+
+        expect(plan.framework).toBe('angular')
+        expect(plan.dependencies.map((dependency) => dependency.name)).toEqual([
+            '@master/css',
+            '@master/css-runtime',
+            '@master/css-preset'
+        ])
+
+        applySetup({ root, install: false })
+
+        expect(readProjectFile(root, 'src/main.ts')).toContain("import { CSSRuntime } from '@master/css-runtime'")
+        expect(readProjectFile(root, 'src/main.ts')).toContain('CSSRuntime.create({ manifest: defaultManifest }).observe()')
+        expect(readProjectFile(root, 'src/styles.css')).toBe("@import '@master/css';\n")
+    })
+
+    test('updates existing Next.js config wrappers', () => {
+        const root = createTempProject('master-css-create-next-', {
+            dependencies: {
+                next: '^16.0.0'
+            }
+        })
+        writeProjectFile(root, 'next.config.mjs', `const nextConfig = {
+    reactStrictMode: true
+}
+
+export default nextConfig;
+`)
+
+        applySetup({ root, install: false })
+
+        expect(readProjectFile(root, 'next.config.mjs')).toContain("import { withMasterCSS } from '@master/css.next'")
+        expect(readProjectFile(root, 'next.config.mjs')).toContain('export default withMasterCSS(nextConfig);')
     })
 
     test('delegates SvelteKit setup to @master/css-sv', () => {

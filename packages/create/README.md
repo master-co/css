@@ -26,6 +26,12 @@ npx @master/create-css@rc add --framework vite --eslint
 npx @master/create-css@rc add --dry-run --json --eslint --mcp
 ```
 
+Supported `--framework` values:
+
+```txt
+auto, vite, react, nextjs, svelte, nuxt, astro, webpack, laravel, lit, angular, none
+```
+
 SvelteKit setup is delegated to the Svelte CLI add-on:
 
 ```bash

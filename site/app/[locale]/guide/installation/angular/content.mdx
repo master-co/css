@@ -2,7 +2,7 @@
     <Step $row>
         <StepL>
             ### <StepNum />Create a project
-            If you don&#39;t have a Angular project, create one first. It&#39;s recommended to refer [Angular CLI](https://angular.io/cli).
+            If you don't have an Angular project, create one first.
         </StepL>
         <StepR>
             ```bash name=Terminal
@@ -13,133 +13,36 @@
     </Step>
     <Step $row>
         <StepL>
-            ### <StepNum />Install Master CSS
-            Install Master CSS Server into your project via package managers.
-        </StepL>
-        <StepR>
-            ```bash action=install
-            @master/css@rc @master/css-runtime@rc @master/css-server@rc
-            ```
-        </StepR>
-    </Step>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Set up CSS runtime engine
-            Initialize the runtime engine in the browser entry. This manual setup uses the bundled preset manifest; use an official build integration when application code needs to import the compiled project manifest.
-        </StepL>
-        <StepR>
-            ```ts name=src/main.ts
-            import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
-            import { AppModule } from './app/app.module';
-            import defaultManifest from '@master/css-preset/default-manifest.json' with { type: 'json' }; // [!code ++]
-            import { CSSRuntime } from '@master/css-runtime'; // [!code ++]
-
-            CSSRuntime.create({ manifest: defaultManifest }).observe(); // [!code ++]
-
-            platformBrowserDynamic().bootstrapModule(AppModule)
-                .catch(err => console.error(err));
-            ```
-        </StepR>
-    </Step>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Import the default stylesheet
-            Import Master CSS from Angular's app stylesheet. This stylesheet is also the project CSS entry.
-        </StepL>
-        <StepR>
-            ```css name=src/styles.css
-            @import '@master/css';
-            ```
-        </StepR>
-    </Step>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Set up code linting
-            Install the Master CSS ESLint config and Angular template parser, then configure ESLint for Angular templates and TypeScript.
-
-            Use `@angular-eslint/template-parser` for `.html` files and `@typescript-eslint/parser` for `.ts` files.
-        </StepL>
-        <StepR>
-            ```bash action=install
-            -D @master/eslint-config-css@rc @angular-eslint/template-parser @typescript-eslint/parser eslint
-            ```
-
-            ```js name=eslint.config.js
-            import { defineConfig } from 'eslint/config'
-            import htmlParser from '@angular-eslint/template-parser'
-            import tsParser from '@typescript-eslint/parser'
-            import css from '@master/eslint-config-css'
-
-            export default defineConfig([
-                {
-                    files: ['**/*.html'],
-                    languageOptions: { parser: htmlParser }
-                },
-                {
-                    files: ['**/*.ts'],
-                    languageOptions: { parser: tsParser }
-                },
-                ...css // [!code highlight]
-            ])
-            ```
-        </StepR>
-    </Step>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Set up Angular Universal
-            Run the command to create a Angular server-side application.
+            ### <StepNum />Add Master CSS
+            Run the installer from the Angular project root.
         </StepL>
         <StepR>
             ```bash name=Terminal
-            npx ng add @nguniversal/express-engine
-            ```
-        </StepR>
-    </Step>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Set up CSS pre-rendering
-            All CSS rules are pre-rendered and injected into HTML on the server side or at build time. This manual example renders with the default preset manifest.
-        </StepL>
-        <StepR>
-            ```ts name=server.ts
-            import defaultManifest from '@master/css-preset/default-manifest.json' with { type: 'json' }; // [!code ++]
-            import { render } from '@master/css-server'; // [!code ++]
-            …
-            export function app() {
-                …
-                server.get('*', (req, res) => {
-                    …
-                    res.render(indexHtml, { req, providers: [{ provide: APP_BASE_HREF, useValue: req.baseUrl }] }); // [!code --]
-                    res.render(indexHtml, { req, providers: [{ provide: APP_BASE_HREF, useValue: req.baseUrl }] }, // [!code ++]
-                        (error: Error, html: string) => { // [!code ++]
-                            error // [!code ++]
-                                ? console.error(error) // [!code ++]
-                                : res.send(render(html, defaultManifest).html) // [!code ++]
-                        } // [!code ++]
-                    ) // [!code ++]
-                }); // [!code ++]
-            }
+            npm create @master/css@rc -- --framework angular --yes
             ```
         </StepR>
     </Step>
     <Step $row>
         <StepL>
             ### <StepNum />Launch server
-            Run the development server.
+            Run the Angular development server.
         </StepL>
         <StepR>
             ```bash name=Terminal
-            npm run dev:ssr
+            npm start
             ```
         </StepR>
     </Step>
     <Step>
         ### <StepNum />Start using Master CSS
-        Now style your first element using Master CSS syntax!
+        Now style your first template using Master CSS syntax.
         ```html name=src/app/app.component.html
         <h1 class="italic m:2xl text:neutral font:5xl font:heavy">Hello World</h1>
         ```
-        Open your browser to watch the changes.
-        <HelloWorld url="localhost:3000" />
+        <HelloWorld url="localhost:4200" />
     </Step>
 </StepSection>
+
+---
+
+Use [Angular runtime rendering](/guide/installation/angular/runtime-rendering) or [Angular static rendering](/guide/installation/angular/static-rendering) when you need rendering-mode details.

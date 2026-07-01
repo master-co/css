@@ -29,7 +29,7 @@ export default async function runProgram(argv: string[] = process.argv) {
 
     const configure = (command: Command) => command
         .option('-C, --cwd <path>', 'Project root to update.')
-        .option('--framework <framework>', 'Framework: auto, vite, nextjs, svelte, nuxt, astro, webpack, none.', 'auto')
+        .option('--framework <framework>', 'Framework: auto, vite, react, nextjs, svelte, nuxt, astro, webpack, laravel, lit, angular, none.', 'auto')
         .option('--eslint', 'Add the Master CSS recommended ESLint flat config.')
         .option('--mcp', 'Add the Master CSS MCP package and print the stdio registration command.')
         .option('--ai', 'Add Master CSS guidance to AGENTS.md.')

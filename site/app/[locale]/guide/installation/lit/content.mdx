@@ -2,7 +2,7 @@
     <Step $row>
         <StepL>
             ### <StepNum />Create a Lit project
-            If you don't have a Lit project, create one first. It's recommended to refer to [Lit documentation](https://lit.dev/docs/).
+            If you don't have a Lit project, create one first.
         </StepL>
         <StepR>
             ```bash name=Terminal
@@ -13,85 +13,12 @@
     </Step>
     <Step $row>
         <StepL>
-            ### <StepNum />Install Master CSS
-            Install [`@master/css-runtime`](https://www.npmjs.com/package/@master/css-runtime) and [`@master/css.vite`](/guide/installation/vite) into your project.
+            ### <StepNum />Add Master CSS
+            Run the installer from the Lit project root.
         </StepL>
         <StepR>
-            ```bash action=install
-            @master/css-runtime@rc @master/css.vite@rc
-            ```
-        </StepR>
-    </Step>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Set up Vite config
-            Register the Master CSS Vite plugin. The default runtime integration initializes the document root; the Lit decorator below initializes each component shadow root.
-
-            (i) Production runtime builds follow the [Vite project manifest preload](/guide/preload-critical-resources#preload-runtime-project-manifests) behavior.
-        </StepL>
-        <StepR>
-            ```ts name=vite.config.ts
-            import { defineConfig } from 'vite'
-            import masterCSS from '@master/css.vite' // [!code highlight]
-
-            export default defineConfig({
-                plugins: [
-                    masterCSS() // [!code highlight]
-                ]
-            })
-            ```
-        </StepR>
-    </Step>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Import the default stylesheet
-            Import Master CSS from the page stylesheet your Lit entry already loads. This stylesheet is also the project CSS entry.
-        </StepL>
-        <StepR>
-            ```css name=src/index.css
-            @import '@master/css';
-            ```
-        </StepR>
-    </Step>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Add client types
-            Add the Vite client types and Master CSS integration client types before importing `virtual:master-css-manifest` from TypeScript.
-        </StepL>
-        <StepR>
-            ```ts name=src/vite-env.d.ts
-            /// <reference types="vite/client" />
-            /// <reference types="@master/css-integration/client" />
-            ```
-        </StepR>
-    </Step>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Set up shadow-root runtime
-            Decorate your Lit element with `@cssRuntime()` to initialize Master CSS Runtime for the element's shadow root. Import the virtual runtime inputs so the shadow runtime receives the same project-level manifest and emittedGlobals global CSS state that Vite discovered from the project CSS entry.
-        </StepL>
-        <StepR>
-            ```ts name=src/my-element.ts
-            import { LitElement, html } from 'lit'
-            import { customElement } from 'lit/decorators.js'
-            import { cssRuntime } from '@master/css-runtime' // [!code highlight]
-            import type { CSSRuntime } from '@master/css-runtime' // [!code highlight]
-            import manifest from 'virtual:master-css-manifest' // [!code highlight]
-            import emittedGlobals from 'virtual:master-css-emitted-globals' // [!code highlight]
-
-            @customElement('my-element')
-            @cssRuntime({ manifest, emittedGlobals }) // [!code highlight]
-            export class MyElement extends LitElement {
-                cssRuntime?: CSSRuntime // [!code highlight]
-
-                render() {
-                    return html`
-                        <h1 class="italic m:2xl text:neutral font:5xl font:heavy">
-                            Hello World
-                        </h1>
-                    `
-                }
-            }
+            ```bash name=Terminal
+            npm create @master/css@rc -- --framework lit --yes
             ```
         </StepR>
     </Step>
@@ -109,7 +36,7 @@
     <Step $row>
         <StepL>
             ### <StepNum />Start using Master CSS
-            Now style elements inside your Lit templates using Master CSS syntax!
+            Now style elements inside your Lit templates using Master CSS syntax.
         </StepL>
         <StepR>
             ```ts name=src/my-element.ts

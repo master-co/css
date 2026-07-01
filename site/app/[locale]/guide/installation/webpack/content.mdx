@@ -2,166 +2,32 @@
     <Step $row>
         <StepL>
             ### <StepNum />Create a project
-            If you don't have a Webpack project, create one first. This guide uses a small app with `src/index.js`, `src/style.css`, and `src/index.html`.
+            If you don't have a Webpack project, create one first.
         </StepL>
         <StepR>
             ```bash name=Terminal
             mkdir my-app
             cd my-app
             npm init -y
-            npm install webpack webpack-cli webpack-dev-server html-webpack-plugin css-loader style-loader --save-dev
+            npm install -D webpack webpack-cli webpack-dev-server
             ```
         </StepR>
     </Step>
     <Step $row>
         <StepL>
-            ### <StepNum />Install Master CSS Webpack
-            Install the Master CSS Webpack integration into your project via package managers.
+            ### <StepNum />Add Master CSS
+            Run the installer from the Webpack project root.
         </StepL>
         <StepR>
-            ```bash action=install
-            @master/css.webpack@rc
-            ```
-        </StepR>
-    </Step>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Add client types
-            If your source files are type-checked, add the Master CSS integration client types before importing Master CSS virtual manifest, emittedGlobals, or generated CSS modules.
-        </StepL>
-        <StepR>
-            ```ts name=src/master-css-env.d.ts
-            /// <reference types="@master/css-integration/client" />
-            ```
-        </StepR>
-    </Step>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Create a Webpack config file
-            Create and configure the `webpack.config.js` file. Webpack feeds JavaScript modules to the scanner, then writes generated CSS into the stylesheet that imports `@master/css`.
-        </StepL>
-        <StepR>
-            ```js name=webpack.config.js
-            import path from 'node:path'
-            import HtmlWebpackPlugin from 'html-webpack-plugin'
-            import MasterCSSPlugin from '@master/css.webpack'
-
-            export default {
-                entry: './src/index.js',
-                output: {
-                    filename: 'bundle.js',
-                    path: path.resolve('dist')
-                },
-                plugins: [
-                    new HtmlWebpackPlugin({
-                        template: path.resolve('src/index.html')
-                    }),
-                    new MasterCSSPlugin()
-                ],
-                devServer: {
-                    static: './dist',
-                    port: 8080,
-                    watchFiles: ['src/**/*']
-                },
-                module: {
-                    rules: [
-                        { test: /\.css$/, use: ['style-loader', 'css-loader'] }
-                    ]
-                }
-            }
-            ```
-        </StepR>
-    </Step>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Configure a HTML file
-            Create and configure the `src/index.html` template file.
-        </StepL>
-        <StepR>
-            ```html name=src/index.html
-            <!doctype html>
-            <html lang="en">
-            <head>
-                <meta charset="utf-8" />
-                <title>Master CSS Webpack</title>
-            </head>
-            <body>
-                <h1 class="hero-title native-card">Hello World</h1>
-            </body>
-            </html>
-            ```
-        </StepR>
-    </Step>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Import the app stylesheet
-            Import your stylesheet from the JavaScript entry.
-        </StepL>
-        <StepR>
-            ```js name=src/index.js
-            import './style.css'
-            ```
-        </StepR>
-    </Step>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Import stylesheets
-            Import Master CSS from `src/style.css`. This stylesheet is also the project CSS entry.
-        </StepL>
-        <StepR>
-            ```css name=src/style.css
-            @import '@master/css';
-            ```
-        </StepR>
-    </Step>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Author app CSS and manifest directives
-            Source stylesheets can contain ordinary CSS, `@settings`, `@theme` tokens and keyframes, top-level custom conditions/selectors, and managed definition directives together. Ordinary class selectors are kept only when they appear in scanned source. Add `@preserve native;` only when native CSS must be preserved as written.
-
-            (i) A stylesheet that imports `@master/css` is also a project CSS entry, so its Master CSS manifest directives participate in the project manifest graph.
-        </StepL>
-        <StepR>
-            ```css name=src/style.css
-            @import '@master/css';
-
-            .native-card {
-                border: 1px solid rgb(0 0 0 / 12%);
-            }
-
-            @components {
-                hero-title {
-                    @compose m:0 font:5xl font:heavy text:neutral;
-                }
-            }
-            ```
-
-            ```css name=index.css
-            @import '@master/css';
-            @import './src/style.css';
-            ```
-        </StepR>
-    </Step>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Add scripts to `package.json`
-            Add `start` and `build` scripts to standardize the development process.
-        </StepL>
-        <StepR>
-            ```js name=package.json
-            {
-                "scripts": {
-                    "dev": "webpack serve --mode development",
-                    "build": "webpack --mode production"
-                }
-            }
+            ```bash name=Terminal
+            npm create @master/css@rc -- --framework webpack --yes
             ```
         </StepR>
     </Step>
     <Step $row>
         <StepL>
             ### <StepNum />Launch server
-            Run the development server.
+            Run your Webpack development command.
         </StepL>
         <StepR>
             ```bash name=Terminal
@@ -170,21 +36,13 @@
         </StepR>
     </Step>
     <Step>
-        ### <StepNum />Hello world!
-        Now style your first element using Master CSS syntax!
-        ```html name=src/index.html
-        <!doctype html>
-        <html lang="en">
-        <head>
-            <meta charset="utf-8" />
-            <title>Master CSS Webpack</title>
-        </head>
-        <body>
-            <h1 class="hero-title native-card">Hello World</h1>
-        </body>
-        </html>
+        ### <StepNum />Hello world
+        Now style your first element using Master CSS syntax.
+        ```html
+        <h1 class="italic m:2xl text:neutral font:5xl font:heavy">
+            Hello World
+        </h1>
         ```
-        Open your browser to watch the changes.
-        <HelloWorld url="localhost:8080" />
+        <HelloWorld />
     </Step>
 </StepSection>

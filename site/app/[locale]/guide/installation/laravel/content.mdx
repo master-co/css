@@ -2,89 +2,23 @@
     <Step $row>
         <StepL>
             ### <StepNum />Create a project
-            If you don't have a Laravel project, create one first. It's recommended to refer to [Installation - Laravel](https://laravel.com/docs/installation)
+            If you don't have a Laravel project, create one first.
         </StepL>
         <StepR>
             ```bash name=Terminal
             laravel new my-app
+            cd my-app
             ```
         </StepR>
     </Step>
     <Step $row>
         <StepL>
-            ### <StepNum />Install Master CSS
-            Install `@master/css.vite` plugin into your project.
+            ### <StepNum />Add Master CSS
+            Run the installer from the Laravel project root.
         </StepL>
         <StepR>
-            ```bash action=install
-            @master/css.vite@rc
-            ```
-        </StepR>
-    </Step>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Set up Master CSS
-            Add a `masterCSS` vite plugin in `vite.config.js`.
-
-            - Set `options.mode` to `static`
-        </StepL>
-        <StepR>
-            ```js name=vite.config.js
-            import { defineConfig } from 'vite'
-            import masterCSS from '@master/css.vite' // [!code highlight]
-
-            export default defineConfig({
-                plugins: [
-                    masterCSS({ // [!code highlight]
-                        mode: 'static' // [!code highlight]
-                    }) // [!code highlight]
-                ]
-            })
-            ```
-        </StepR>
-    </Step>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Import stylesheets
-            Import Master CSS from Laravel's Vite CSS entry. This stylesheet is also the project CSS entry.
-        </StepL>
-        <StepR>
-            ```css name=resources/css/app.css
-            @import '@master/css';
-            @source '../views/**/*.php';
-            ```
-        </StepR>
-    </Step>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Set up code linting
-            Install the Master CSS ESLint config and HTML parser, then configure ESLint for Blade templates.
-
-            Use `@angular-eslint/template-parser` to parse `.blade.php` files.
-        </StepL>
-        <StepR>
-            ```bash action=install
-            -D @master/eslint-config-css@rc @angular-eslint/template-parser eslint
-            ```
-
-            ```js name=eslint.config.js
-            import { defineConfig, globalIgnores } from 'eslint/config'
-            import htmlParser from '@angular-eslint/template-parser'
-            import css from '@master/eslint-config-css'
-
-            export default defineConfig([
-                globalIgnores([
-                    'vendor/**',
-                    'node_modules/**',
-                    'public/**',
-                    'bootstrap/ssr/**'
-                ]),
-                {
-                    files: ['**/*.blade.php'],
-                    languageOptions: { parser: htmlParser }
-                },
-                ...css // [!code highlight]
-            ])
+            ```bash name=Terminal
+            npm create @master/css@rc -- --framework laravel --yes
             ```
         </StepR>
     </Step>
@@ -101,18 +35,14 @@
     </Step>
     <Step $row>
         <StepL>
-            ### <StepNum />Hello world!
-            Now style your first element using Master CSS syntax!
+            ### <StepNum />Hello world
+            Now style your first Blade view using Master CSS syntax.
         </StepL>
         <StepR>
             ```html name=resources/views/app.blade.php
-            …
-            <body>
-                <h1 class="italic m:2xl text:neutral font:5xl font:heavy">
-                    Hello World
-                </h1>
-            </body>
-            …
+            <h1 class="italic m:2xl text:neutral font:5xl font:heavy">
+                Hello World
+            </h1>
             ```
         </StepR>
     </Step>

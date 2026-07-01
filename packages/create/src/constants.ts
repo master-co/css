@@ -3,6 +3,7 @@ export const MASTER_CSS_VERSION = 'rc'
 export const MASTER_CSS_PACKAGES = {
     css: '@master/css',
     runtime: '@master/css-runtime',
+    preset: '@master/css-preset',
     cli: '@master/css-cli',
     vite: '@master/css.vite',
     next: '@master/css.next',

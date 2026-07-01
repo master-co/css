@@ -29,13 +29,21 @@ export function createMasterCSSStylesheet() {
 }
 
 export function addMasterCSSVitePlugin(content: string) {
+    return addMasterCSSVitePluginCall(content, 'masterCSS()')
+}
+
+export function addMasterCSSStaticVitePlugin(content: string) {
+    return addMasterCSSVitePluginCall(content, "masterCSS({ mode: 'static' })")
+}
+
+function addMasterCSSVitePluginCall(content: string, pluginCall: string) {
     if (content.includes('@master/css.vite')) return content
     let next = addImport(content, "import masterCSS from '@master/css.vite'")
     if (/plugins\s*:\s*\[/.test(next)) {
-        return replaceFirst(next, /plugins\s*:\s*\[/, 'plugins: [\n            masterCSS(),')
+        return replaceFirst(next, /plugins\s*:\s*\[/, `plugins: [\n            ${pluginCall},`)
     }
     if (/defineConfig\(\s*\{/.test(next)) {
-        return replaceFirst(next, /defineConfig\(\s*\{/, 'defineConfig({\n    plugins: [masterCSS()],')
+        return replaceFirst(next, /defineConfig\(\s*\{/, `defineConfig({\n    plugins: [${pluginCall}],`)
     }
     return next
 }
@@ -52,12 +60,36 @@ export default defineConfig({
 `
 }
 
+export function createStaticViteConfig() {
+    return `import { defineConfig } from 'vite'
+import masterCSS from '@master/css.vite'
+
+export default defineConfig({
+    plugins: [
+        masterCSS({ mode: 'static' })
+    ]
+})
+`
+}
+
 export function createNextConfig() {
     return `import { withMasterCSS } from '@master/css.next'
 
 const nextConfig = withMasterCSS({})
 
 export default nextConfig
+`
+}
+
+export function addMasterCSSNextConfig(content: string) {
+    if (content.includes('@master/css.next')) return content
+    const next = addImport(content, "import { withMasterCSS } from '@master/css.next'")
+    if (/export\s+default\s+/.test(next)) {
+        return next.replace(/export\s+default\s+([^;\n]+)(;?)(\n|$)/, 'export default withMasterCSS($1)$2$3')
+    }
+    return `${next.trimEnd()}
+
+export default withMasterCSS({})
 `
 }
 
@@ -102,6 +134,68 @@ export default defineConfig({
     ]
 })
 `
+}
+
+export function addViteClientTypes(content: string) {
+    let next = content
+    if (!next.includes('/// <reference types="vite/client" />')) {
+        next = `/// <reference types="vite/client" />\n${next}`
+    }
+    if (!next.includes('/// <reference types="@master/css-integration/client" />')) {
+        const lines = next.split('\n')
+        const viteReferenceIndex = lines.findIndex((line) => line.includes('/// <reference types="vite/client" />'))
+        lines.splice(viteReferenceIndex + 1, 0, '/// <reference types="@master/css-integration/client" />')
+        next = lines.join('\n')
+    }
+    return next
+}
+
+export function addLitShadowRuntime(content: string) {
+    if (
+        content.includes('@master/css-runtime')
+        && content.includes('virtual:master-css-manifest')
+        && content.includes('@cssRuntime({ manifest, emittedGlobals })')
+        && content.includes('cssRuntime?: CSSRuntime')
+    ) return content
+    let next = addImport(content, "import { cssRuntime } from '@master/css-runtime'")
+    next = addImport(next, "import type { CSSRuntime } from '@master/css-runtime'")
+    next = addImport(next, "import manifest from 'virtual:master-css-manifest'")
+    next = addImport(next, "import emittedGlobals from 'virtual:master-css-emitted-globals'")
+
+    if (!next.includes('@cssRuntime({ manifest, emittedGlobals })')) {
+        if (/@customElement\([^\n]+\)\nexport\s+class\s/.test(next)) {
+            next = next.replace(/(@customElement\([^\n]+\)\n)(export\s+class\s)/, '$1@cssRuntime({ manifest, emittedGlobals })\n$2')
+        } else {
+            next = next.replace(/export\s+class\s/, '@cssRuntime({ manifest, emittedGlobals })\nexport class ')
+        }
+    }
+
+    if (!next.includes('cssRuntime?: CSSRuntime')) {
+        next = next.replace(/(export\s+class\s+\w+[^{]*\{)/, '$1\n\n    cssRuntime?: CSSRuntime')
+    }
+
+    return next
+}
+
+export function addAngularRuntimeSetup(content: string) {
+    if (content.includes('@master/css-runtime')) return content
+    let next = addImport(content, "import defaultManifestJSON from '@master/css-preset/default-manifest.json'")
+    next = addImport(next, "import { CSSRuntime } from '@master/css-runtime'")
+    next = addImport(next, "import type { MasterCSSManifest } from '@master/css-runtime'")
+    const setup = `const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
+
+CSSRuntime.create({ manifest: defaultManifest }).observe()
+
+`
+    if (/bootstrapApplication\s*\(/.test(next)) {
+        return next.replace(/bootstrapApplication\s*\(/, `${setup}bootstrapApplication(`)
+    }
+    if (/platformBrowserDynamic\s*\(/.test(next)) {
+        return next.replace(/platformBrowserDynamic\s*\(/, `${setup}platformBrowserDynamic(`)
+    }
+    return `${next.trimEnd()}
+
+${setup}`
 }
 
 export function addMasterCSSEslintConfig(content: string) {

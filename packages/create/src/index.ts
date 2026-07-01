@@ -3,19 +3,25 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { dirname, join, resolve } from 'node:path'
 import { AGENT_RULES_BLOCK, CANONICAL_ESLINT_CONFIG, MASTER_CSS_PACKAGES, MASTER_CSS_VERSION } from './constants'
 import {
+    addAngularRuntimeSetup,
     addMasterCSSAstroIntegration,
     addMasterCSSEslintConfig,
     addMasterCSSImportToStylesheet,
+    addMasterCSSNextConfig,
     addMasterCSSNuxtModule,
+    addMasterCSSStaticVitePlugin,
     addMasterCSSVitePlugin,
+    addLitShadowRuntime,
+    addViteClientTypes,
     createAstroConfig,
     createMasterCSSStylesheet,
     createNextConfig,
     createNuxtConfig,
+    createStaticViteConfig,
     createViteConfig
 } from './transforms'
 
-export type Framework = 'none' | 'vite' | 'nextjs' | 'svelte' | 'nuxt' | 'astro' | 'webpack'
+export type Framework = 'none' | 'vite' | 'react' | 'nextjs' | 'svelte' | 'nuxt' | 'astro' | 'webpack' | 'laravel' | 'lit' | 'angular'
 export type FrameworkOption = Framework | 'auto'
 export type PackageManager = 'npm' | 'pnpm' | 'yarn' | 'bun'
 export type FileAction = 'create' | 'update' | 'skip'
@@ -107,7 +113,7 @@ export function createSetupPlan(options: SetupOptions = {}): SetupPlan {
         for (const dependency of dependenciesForFramework(framework, version)) {
             pushDependency(dependencies, dependency.name, dependency.dev, dependency.version)
         }
-        files.push(...filesForFramework(root, framework))
+        files.push(...filesForFramework(root, framework, warnings))
     }
 
     if (options.eslint) {
@@ -183,28 +189,73 @@ export function applySetup(options: SetupOptions = {}) {
     return plan
 }
 
-function filesForFramework(root: string, framework: Framework): PlannedFileChange[] {
+function filesForFramework(root: string, framework: Framework, warnings: string[]): PlannedFileChange[] {
     switch (framework) {
         case 'vite':
             return [
-                planTextFile(root, 'vite.config.js', addMasterCSSVitePlugin, createViteConfig(), 'Register the Master CSS Vite plugin.'),
-                planTextFile(root, 'src/style.css', addMasterCSSImportToStylesheet, createMasterCSSStylesheet(), 'Create or update the project CSS entry.')
+                planTextFile(root, firstExistingPath(root, ['vite.config.ts', 'vite.config.js', 'vite.config.mjs'], 'vite.config.js'), addMasterCSSVitePlugin, createViteConfig(), 'Register the Master CSS Vite plugin.'),
+                planTextFile(root, firstExistingPath(root, ['src/style.css', 'src/index.css', 'src/main.css'], 'src/style.css'), addMasterCSSImportToStylesheet, createMasterCSSStylesheet(), 'Create or update the project CSS entry.')
+            ]
+        case 'react':
+            return [
+                planTextFile(root, firstExistingPath(root, ['vite.config.ts', 'vite.config.js', 'vite.config.mjs'], 'vite.config.js'), addMasterCSSVitePlugin, createViteConfig(), 'Register the Master CSS Vite plugin.'),
+                planTextFile(root, firstExistingPath(root, ['src/index.css', 'src/style.css'], 'src/index.css'), addMasterCSSImportToStylesheet, createMasterCSSStylesheet(), 'Create or update the React project CSS entry.')
             ]
         case 'nextjs':
             return [
-                planTextFile(root, 'next.config.js', (content) => content.includes('@master/css.next') ? content : content, createNextConfig(), 'Create the Master CSS Next.js config wrapper when no config exists.'),
+                planTextFile(root, firstExistingPath(root, ['next.config.ts', 'next.config.mjs', 'next.config.js'], 'next.config.js'), addMasterCSSNextConfig, createNextConfig(), 'Register the Master CSS Next.js adapter.'),
                 planTextFile(root, 'app/globals.css', addMasterCSSImportToStylesheet, createMasterCSSStylesheet(), 'Create or update the Next.js global stylesheet entry.')
             ]
         case 'nuxt':
             return [
-                planTextFile(root, 'nuxt.config.ts', addMasterCSSNuxtModule, createNuxtConfig(), 'Register the Master CSS Nuxt module.'),
+                planTextFile(root, firstExistingPath(root, ['nuxt.config.ts', 'nuxt.config.js'], 'nuxt.config.ts'), addMasterCSSNuxtModule, createNuxtConfig(), 'Register the Master CSS Nuxt module.'),
                 planTextFile(root, 'assets/css/master.css', addMasterCSSImportToStylesheet, createMasterCSSStylesheet(), 'Create the Nuxt CSS entry referenced by nuxt.config.')
             ]
         case 'astro':
             return [
-                planTextFile(root, 'astro.config.mjs', addMasterCSSAstroIntegration, createAstroConfig(), 'Register the Master CSS Astro integration.'),
+                planTextFile(root, firstExistingPath(root, ['astro.config.mjs', 'astro.config.js', 'astro.config.ts'], 'astro.config.mjs'), addMasterCSSAstroIntegration, createAstroConfig(), 'Register the Master CSS Astro integration.'),
                 planTextFile(root, 'src/styles/global.css', addMasterCSSImportToStylesheet, createMasterCSSStylesheet(), 'Create the Astro project CSS entry.')
             ]
+        case 'laravel': {
+            const viteConfigPath = findExistingPath(root, ['vite.config.ts', 'vite.config.js'])
+            const files: PlannedFileChange[] = [
+                planTextFile(root, 'resources/css/app.css', addMasterCSSImportToStylesheet, createMasterCSSStylesheet(), 'Create or update the Laravel Vite CSS entry.')
+            ]
+            if (viteConfigPath) {
+                files.unshift(planTextFile(root, viteConfigPath, addMasterCSSStaticVitePlugin, createStaticViteConfig(), 'Register the Master CSS Vite plugin in static mode.'))
+            } else {
+                warnings.push('No vite.config.ts or vite.config.js was found. Add @master/css.vite to the Laravel Vite config manually after setup.')
+            }
+            return files
+        }
+        case 'lit': {
+            const files = [
+                planTextFile(root, firstExistingPath(root, ['vite.config.ts', 'vite.config.js', 'vite.config.mjs'], 'vite.config.ts'), addMasterCSSVitePlugin, createViteConfig(), 'Register the Master CSS Vite plugin.'),
+                planTextFile(root, 'src/index.css', addMasterCSSImportToStylesheet, createMasterCSSStylesheet(), 'Create or update the Lit project CSS entry.'),
+                planTextFile(root, 'src/vite-env.d.ts', addViteClientTypes, `/// <reference types="vite/client" />
+/// <reference types="@master/css-integration/client" />
+`, 'Add Vite and Master CSS integration client types.')
+            ]
+            const elementPath = findExistingPath(root, ['src/my-element.ts', 'src/my-element.js'])
+            if (elementPath) {
+                files.push(planTextFile(root, elementPath, addLitShadowRuntime, '', 'Initialize Master CSS Runtime for the Lit shadow root.'))
+            } else {
+                warnings.push('No standard src/my-element.ts or src/my-element.js file was found. Add @cssRuntime to Lit elements that render Master CSS classes inside shadow roots.')
+            }
+            return files
+        }
+        case 'angular': {
+            const files = [
+                planTextFile(root, 'src/styles.css', addMasterCSSImportToStylesheet, createMasterCSSStylesheet(), 'Create or update the Angular global stylesheet entry.')
+            ]
+            const mainPath = findExistingPath(root, ['src/main.ts'])
+            if (mainPath) {
+                files.unshift(planTextFile(root, mainPath, addAngularRuntimeSetup, '', 'Initialize Master CSS Runtime in the Angular browser entry.'))
+            } else {
+                warnings.push('No src/main.ts file was found. Initialize CSSRuntime manually in the Angular browser entry after setup.')
+            }
+            return files
+        }
         case 'webpack':
             return [
                 planTextFile(root, 'src/index.css', addMasterCSSImportToStylesheet, createMasterCSSStylesheet(), 'Create or update the project CSS entry for Webpack.')
@@ -219,12 +270,13 @@ function filesForFramework(root: string, framework: Framework): PlannedFileChang
 
 function dependenciesForFramework(framework: Framework, version: string): PlannedDependency[] {
     const dependencies = [{ name: MASTER_CSS_PACKAGES.css, version, dev: false }]
-    if (framework === 'vite') dependencies.push({ name: MASTER_CSS_PACKAGES.vite, version, dev: false })
+    if (framework === 'vite' || framework === 'react' || framework === 'laravel' || framework === 'lit') dependencies.push({ name: MASTER_CSS_PACKAGES.vite, version, dev: false })
     if (framework === 'nextjs') dependencies.push({ name: MASTER_CSS_PACKAGES.next, version, dev: false })
     if (framework === 'nuxt') dependencies.push({ name: MASTER_CSS_PACKAGES.nuxt, version, dev: false })
     if (framework === 'astro') dependencies.push({ name: MASTER_CSS_PACKAGES.astro, version, dev: false })
     if (framework === 'webpack') dependencies.push({ name: MASTER_CSS_PACKAGES.webpack, version, dev: false })
-    if (framework === 'none') dependencies.push({ name: MASTER_CSS_PACKAGES.runtime, version, dev: false })
+    if (framework === 'none' || framework === 'lit' || framework === 'angular') dependencies.push({ name: MASTER_CSS_PACKAGES.runtime, version, dev: false })
+    if (framework === 'angular') dependencies.push({ name: MASTER_CSS_PACKAGES.preset, version, dev: false })
     return dependencies
 }
 
@@ -279,6 +331,14 @@ function pushDependency(dependencies: PlannedDependency[], name: string, dev: bo
     dependencies.push({ name, dev, version })
 }
 
+function firstExistingPath(root: string, paths: string[], fallback: string): string {
+    return findExistingPath(root, paths) || fallback
+}
+
+function findExistingPath(root: string, paths: string[]): string | undefined {
+    return paths.find((path) => existsSync(join(root, path)))
+}
+
 function readPackageJSON(root: string): PackageJSON | undefined {
     try {
         return JSON.parse(readFileSync(join(root, 'package.json'), 'utf8')) as PackageJSON
@@ -303,10 +363,14 @@ function resolveFramework(root: string, packageJSON: PackageJSON | undefined, fr
         ...packageJSON?.dependencies,
         ...packageJSON?.devDependencies
     }
-    if (existsSync(join(root, 'next.config.js')) || existsSync(join(root, 'next.config.mjs')) || dependencies.next) return 'nextjs'
+    if (existsSync(join(root, 'next.config.js')) || existsSync(join(root, 'next.config.mjs')) || existsSync(join(root, 'next.config.ts')) || dependencies.next) return 'nextjs'
     if (existsSync(join(root, 'svelte.config.js')) || existsSync(join(root, 'svelte.config.mjs')) || dependencies['@sveltejs/kit']) return 'svelte'
     if (existsSync(join(root, 'nuxt.config.ts')) || existsSync(join(root, 'nuxt.config.js')) || dependencies.nuxt) return 'nuxt'
     if (existsSync(join(root, 'astro.config.mjs')) || existsSync(join(root, 'astro.config.js')) || dependencies.astro) return 'astro'
+    if (existsSync(join(root, 'angular.json')) || dependencies['@angular/core']) return 'angular'
+    if (dependencies['laravel-vite-plugin'] || existsSync(join(root, 'artisan'))) return 'laravel'
+    if (dependencies.lit) return 'lit'
+    if (dependencies.react || dependencies['react-dom']) return 'react'
     if (existsSync(join(root, 'webpack.config.js')) || existsSync(join(root, 'webpack.config.mjs')) || dependencies.webpack) return 'webpack'
     if (existsSync(join(root, 'vite.config.ts')) || existsSync(join(root, 'vite.config.js')) || dependencies.vite) return 'vite'
     return 'none'

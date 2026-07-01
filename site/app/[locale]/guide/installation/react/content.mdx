@@ -2,7 +2,7 @@
     <Step $row>
         <StepL>
             ### <StepNum />Create a project
-            If you don't have a React project, create one first. It's recommended to refer to [Start a New React Project](https://react.dev/learn/start-a-new-react-project).
+            If you don't have a React project, create one first.
         </StepL>
         <StepR>
             ```bash name=Terminal
@@ -13,101 +13,12 @@
     </Step>
     <Step $row>
         <StepL>
-            ### <StepNum />Install Master CSS
-            Install `@master/css.vite` plugin into your project.
+            ### <StepNum />Add Master CSS
+            Run the installer from the React project root.
         </StepL>
         <StepR>
-            ```bash action=install
-            @master/css.vite@rc
-            ```
-        </StepR>
-    </Step>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Set up Master CSS
-            Add a `masterCSS` vite plugin in `vite.config.js`.
-
-            - By default, `options.mode` is set to `runtime`.
-            - Production runtime builds follow the [Vite project manifest preload](/guide/preload-critical-resources#preload-runtime-project-manifests) behavior.
-        </StepL>
-        <StepR>
-            ```js name=vite.config.js
-            import { defineConfig } from 'vite'
-            import masterCSS from '@master/css.vite' // [!code highlight]
-
-            export default defineConfig({
-                plugins: [
-                    masterCSS() // [!code highlight]
-                ]
-            })
-            ```
-        </StepR>
-    </Step>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Import the default stylesheet
-            Import Master CSS from your app stylesheet. This stylesheet is also the project CSS entry.
-        </StepL>
-        <StepR>
-            ```css name=src/index.css
-            @import '@master/css';
-            ```
-        </StepR>
-    </Step>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Set up code linting
-            Install the Master CSS ESLint config with your React ESLint stack, then add it to `eslint.config.js`.
-
-            Code linting validates Master CSS class strings, sorts classes, detects conflicting declarations, and can prefer canonical class forms.
-        </StepL>
-        <StepR>
-            ```bash action=install
-            -D @master/eslint-config-css@rc @eslint/compat eslint-plugin-react eslint-plugin-react-hooks eslint-plugin-react-refresh globals typescript-eslint eslint
-            ```
-
-            ```js name=eslint.config.js
-            import js from '@eslint/js'
-            import { fixupConfigRules, fixupPluginRules } from '@eslint/compat'
-            import { defineConfig, globalIgnores } from 'eslint/config'
-            import globals from 'globals'
-            import react from 'eslint-plugin-react'
-            import reactHooks from 'eslint-plugin-react-hooks'
-            import reactRefresh from 'eslint-plugin-react-refresh'
-            import tseslint from 'typescript-eslint'
-            import css from '@master/eslint-config-css' // [!code highlight]
-
-            export default defineConfig([
-                globalIgnores(['dist/**']),
-                {
-                    files: ['**/*.{js,cjs,mjs,jsx,ts,cts,mts,tsx}'],
-                    extends: [
-                        js.configs.recommended,
-                        tseslint.configs.recommended,
-                        ...fixupConfigRules(react.configs.flat.recommended),
-                        ...fixupConfigRules(react.configs.flat['jsx-runtime'])
-                    ],
-                    languageOptions: {
-                        globals: globals.browser
-                    },
-                    plugins: {
-                        'react-hooks': fixupPluginRules(reactHooks),
-                        'react-refresh': fixupPluginRules(reactRefresh)
-                    },
-                    rules: {
-                        ...reactHooks.configs.recommended.rules,
-                        'react-refresh/only-export-components': ['warn', {
-                            allowConstantExport: true
-                        }]
-                    },
-                    settings: {
-                        react: {
-                            version: 'detect'
-                        }
-                    }
-                },
-                ...css // [!code highlight]
-            ])
+            ```bash name=Terminal
+            npm create @master/css@rc -- --framework react --yes
             ```
         </StepR>
     </Step>
@@ -125,7 +36,7 @@
     <Step $row>
         <StepL>
             ### <StepNum />Start using Master CSS
-            Now style your first element using Master CSS syntax!
+            Now style your first component using Master CSS syntax.
         </StepL>
         <StepR>
             ```tsx name=src/App.tsx

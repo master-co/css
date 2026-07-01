@@ -2,7 +2,7 @@
     <Step $row>
         <StepL>
             ### <StepNum />Create a project
-            If you don't have a Nuxt.js project, create one first. It's recommended to refer to [Get started with Nuxt.js](https://nuxt.com/docs/getting-started/installation).
+            If you don't have a Nuxt project, create one first.
         </StepL>
         <StepR>
             ```bash name=Terminal
@@ -13,63 +13,30 @@
     </Step>
     <Step $row>
         <StepL>
-            ### <StepNum />Install Master CSS
-            Install [`@master/css.nuxt`](https://www.npmjs.com/package/@master/css.nuxt) plugin into your project.
+            ### <StepNum />Add Master CSS
+            Run the installer from the Nuxt project root.
         </StepL>
         <StepR>
-            ```bash action=install
-            @master/css.nuxt@rc
-            ```
-        </StepR>
-    </Step>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Set up Master CSS
-            Add a [`@master/css.nuxt`](https://www.npmjs.com/package/@master/css.nuxt) module in `nuxt.config.ts`.
-
-            - By default, `options.mode` is set to `progressive`.
-            - Nitro prerendered HTML externalizes page hydration manifests to `/_master-css/hydration/…`.
-            - Ordinary dynamic SSR responses keep the inline hydration manifest for the current request.
-            - In `mode: 'runtime'`, Nuxt publishes `/_master-css/manifest/master-css-manifest.<hash>.json` and preloads it from the document head when client runtime injection is enabled. Progressive mode does not preload page hydration manifests. See [Preload runtime project manifests](/guide/preload-critical-resources#preload-runtime-project-manifests).
-        </StepL>
-        <StepR>
-            ```ts name=nuxt.config.ts
-            export default defineNuxtConfig({
-                modules: [
-                    '@master/css.nuxt' // [!code highlight]
-                ]
-            })
-            ```
-        </StepR>
-    </Step>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Import the default stylesheet
-            Import Master CSS from a global Vue style block. This style block is also the project CSS entry.
-        </StepL>
-        <StepR>
-            ```vue name=app.vue
-            <style>
-            @import '@master/css';
-            </style>
+            ```bash name=Terminal
+            npm create @master/css@rc -- --framework nuxt --yes
             ```
         </StepR>
     </Step>
     <Step $row>
         <StepL>
             ### <StepNum />Launch server
-            Run `npm run dev` to start your Nuxt.js development server
+            Run the development server.
         </StepL>
         <StepR>
-            ```bash name=Terminal
-            npm run dev
+            ```bash name=Terminal&action=run
+            dev
             ```
         </StepR>
     </Step>
     <Step $row>
         <StepL>
             ### <StepNum />Start using Master CSS
-            Now style your first element using Master CSS syntax!
+            Now style your first component using Master CSS syntax.
         </StepL>
         <StepR>
             ```vue name=app.vue

@@ -1,19 +1,13 @@
 import Footer from './footer.mdx'
 
 ## Installation [sr-only]
-Add Master CSS to an existing project with the installer first. It detects common frameworks, applies the matching setup, and can add the modern ESLint flat config, MCP package, and AI agent guidance.
-
-```bash name=Terminal
-npm create @master/css@rc
-```
-
-Use the manual Vite steps below when you want to see the exact files being changed. This quick start uses the default runtime integration. For zero-runtime generated CSS, use [static rendering](/guide/rendering-modes#static-rendering) with `mode: 'static'`.
+Add Master CSS to an existing project with the installer. It detects common frameworks, applies the matching setup, and can install the required packages.
 
 <StepSection>
     <Step $row>
         <StepL>
-            ### <StepNum />Create a Vite project
-            Create an app and enter the project directory.
+            ### <StepNum />Create a project
+            Start from a Vite project when you do not have an app yet.
         </StepL>
         <StepR>
             ```bash name=Terminal
@@ -24,48 +18,19 @@ Use the manual Vite steps below when you want to see the exact files being chang
     </Step>
     <Step $row>
         <StepL>
-            ### <StepNum />Install Master CSS
-            Add the Vite plugin.
+            ### <StepNum />Add Master CSS
+            Run the installer from the project root. It updates the project setup and installs the packages with the detected package manager.
         </StepL>
         <StepR>
-            ```bash action=install
-            @master/css.vite@rc
-            ```
-        </StepR>
-    </Step>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Configure Vite
-            Register `masterCSS()` with the default runtime mode. Use `mode: 'static'` when you want generated CSS at build time instead.
-        </StepL>
-        <StepR>
-            ```js name=vite.config.js
-            import { defineConfig } from 'vite'
-            import masterCSS from '@master/css.vite' // [!code highlight]
-
-            export default defineConfig({
-                plugins: [
-                    masterCSS() // [!code highlight]
-                ]
-            })
-            ```
-        </StepR>
-    </Step>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Import stylesheets
-            Import Master CSS once from the CSS file your app already loads. This stylesheet is also the project CSS entry.
-        </StepL>
-        <StepR>
-            ```css name=src/style.css
-            @import '@master/css';
+            ```bash name=Terminal
+            npm create @master/css@rc -- --framework vite --yes
             ```
         </StepR>
     </Step>
     <Step $row>
         <StepL>
             ### <StepNum />Run and style
-            Start the dev server, then add Master CSS classes.
+            Start the dev server, then use Master CSS classes in your markup.
         </StepL>
         <StepR>
             ```bash name=Terminal&action=run
