@@ -58,6 +58,7 @@
     },
     "devDependencies": {
         "@eslint/compat": "^2.1.0",
+        "@eslint/config-helpers": "^0.6.0",
         "@master/css-integration": "workspace:^",
         "@master/css-source": "workspace:^",
         "@master/css.next": "workspace:^",
