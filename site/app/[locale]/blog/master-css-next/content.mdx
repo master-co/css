@@ -131,32 +131,29 @@ Import Master CSS from the stylesheet your app already loads. This stylesheet al
 @import '@master/css';
 ```
 
-Install the React runtime provider and the Next.js adapter:
+Install Master CSS and the Next.js adapter:
 
 ```bash action=install
-@master/css.react@rc @master/css.next@rc
+@master/css@rc @master/css.next@rc
 ```
 
-Wrap the root layout with the React runtime registry:
+Keep the root layout focused on the global stylesheet:
 
 ```tsx name=app/layout.tsx
 import './globals.css'
-import { CSSRuntimeRegistry } from '@master/css.react'
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
     return (
-        <html lang="en" hidden={process.env.NODE_ENV === 'development'}>
+        <html lang="en">
             <body>
-                <CSSRuntimeRegistry>
-                    {children}
-                </CSSRuntimeRegistry>
+                {children}
             </body>
         </html>
     )
 }
 ```
 
-`CSSRuntimeRegistry` loads the canonical project-level MasterCSSManifest compiled by the Next.js adapter.
+The Next.js adapter injects the runtime through the build tool and loads the canonical project-level MasterCSSManifest automatically. React apps outside build-tool integrations can use `@master/css-runtime` directly.
 
 Then register the adapter:
 

@@ -1,5 +1,4 @@
 import './globals.css'
-import { CSSRuntimeRegistry } from '@master/css.react'
 
 export const metadata = {
     title: 'Master CSS Next.js Adapter',
@@ -10,11 +9,9 @@ export default function RootLayout({ children }: {
     children: React.ReactNode
 }) {
     return (
-        <html lang="en" hidden={process.env.NODE_ENV === 'development'}>
+        <html lang="en">
             <body>
-                <CSSRuntimeRegistry>
-                    {children}
-                </CSSRuntimeRegistry>
+                {children}
             </body>
         </html>
     )

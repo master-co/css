@@ -54,8 +54,6 @@
             "@master/css-validator": [ "../node_modules/@master/css-validator/src" ],
             "@master/css-validator/*": [ "../node_modules/@master/css-validator/src/*" ],
             "@master/css.next": [ "../node_modules/@master/css.next/src" ],
-            "@master/css.react": [ "../node_modules/@master/css.react/src" ],
-            "@master/css.react/*": [ "../node_modules/@master/css.react/src/*" ],
             "internal": [ "../internal" ],
             "internal/*": [ "../internal/*" ],
             "~/internal/*": [ "../internal/*" ],

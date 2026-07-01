@@ -14,11 +14,11 @@
     <Step $row>
         <StepL>
             ### <StepNum />Install Master CSS
-            Install Master CSS React and the Next.js adapter into your project via package managers.
+            Install Master CSS and the Next.js adapter into your project via package managers.
         </StepL>
         <StepR>
             ```bash action=install
-            @master/css.react@rc @master/css.next@rc
+            @master/css@rc @master/css.next@rc
             ```
         </StepR>
     </Step>
@@ -46,13 +46,12 @@
     </Step>
     <Step $row>
         <StepL>
-            ### <StepNum />Register the CSS runtime
-            Wrap the root layout with `CSSRuntimeRegistry`. The registry is a client component that loads the project-level manifest through the Next.js adapter. Progressive rendering hides development HTML until the runtime engine is ready.
+            ### <StepNum />Keep the root layout simple
+            Keep importing your global stylesheet from the root layout. The Next.js adapter injects the runtime through the build tool, so no React runtime registry is required.
         </StepL>
         <StepR>
             ```tsx name=app/layout.tsx
             import './globals.css'
-            import { CSSRuntimeRegistry } from '@master/css.react'
 
             export const metadata = {
                 title: 'Create Next App',
@@ -61,11 +60,9 @@
 
             export default function RootLayout({ children }: { children: React.ReactNode }) {
                 return (
-                    <html lang="en" hidden={process.env.NODE_ENV === 'development'}>
+                    <html lang="en">
                         <body>
-                            <CSSRuntimeRegistry>
-                                {children}
-                            </CSSRuntimeRegistry>
+                            {children}
                         </body>
                     </html>
                 )
@@ -76,13 +73,15 @@
     <Step $row>
         <StepL>
             ### <StepNum />Set up Next.js adapter
-            Register the Master CSS Next.js adapter to pre-render CSS for build-time HTML outputs during `next build`.
+            Register the Master CSS Next.js adapter to inject the runtime in development and pre-render CSS for build-time HTML outputs during `next build`.
 
             (i) This adapter uses the Next.js 16 Adapter API and runs in `onBuildComplete`. It pre-renders static and pre-rendered HTML outputs, while dynamic SSR responses continue to rely on the runtime engine.
 
             (i) Component CSS is generated when component classes are found in the built HTML or later observed by the runtime engine.
 
             (i) Static and pre-rendered outputs attach `data-master-css-hydration-manifest` to `style#master-css`. The JSON asset is written under `/_next/static/master-css/hydration/…`, while dynamic SSR responses continue to rely on runtime rendering.
+
+            (i) React apps outside build-tool integrations can use `@master/css-runtime` directly.
         </StepL>
         <StepR>
             ```js name=next.config.js

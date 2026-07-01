@@ -2,11 +2,12 @@
 
 ## Responsibility
 
-`@master/css.webpack` provides a Webpack extraction plugin based on `CSSScanner` and `webpack-virtual-modules`.
+`@master/css.webpack` provides a Webpack integration plugin based on `CSSScanner`, `webpack-virtual-modules`, and build-tool runtime injection.
 
 ## Owns
 
 - Webpack plugin integration.
+- Runtime mode script injection and runtime/manifest preload for HTML assets emitted by the Webpack compilation.
 - Virtual module update orchestration.
 - Webpack style CSS loader behavior.
 
@@ -25,6 +26,8 @@
 
 - `src/index.ts`
 - `src/plugin.ts`
+- `src/options.ts`
+- `src/runtime.ts`
 - `src/style-css-loader.ts`
 - `src/plugins/*`
 
@@ -32,8 +35,11 @@
 
 - Module source detection depends on Webpack internals.
 - Virtual module updates affect static CSS output.
+- Runtime HTML mutation only covers compilation HTML assets; do not claim devServer static file mutation.
+- Script/preload tags must match Webpack output type: `modulepreload` for module output and `preload as="script"` for classic output.
 - Tests are sparse, so behavior changes need coverage.
 - Virtual module id behavior must stay compatible with configured scanner options.
+- Runtime, preload, mode default, and cascade-layer changes must be audited against Vite, Next, Nuxt, and Astro so integration behavior does not drift.
 
 ## Safe Changes
 
@@ -46,6 +52,7 @@
 - Duplicating scanner logic here.
 - Replacing `CSSScanner` as the source of extraction behavior.
 - Changing virtual module id behavior casually.
+- Injecting runtime through app source rewrites instead of Webpack asset/entry orchestration.
 
 ## Validation
 

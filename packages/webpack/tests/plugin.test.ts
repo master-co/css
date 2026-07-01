@@ -36,12 +36,35 @@ function makeFakeCompiler(options: {
     context?: string
     modifiedFiles?: Set<string>
     mode?: 'development' | 'production' | 'none'
+    assets?: Record<string, { source: () => string }>
+    entryFiles?: string[]
+    publicPath?: string
+    outputModule?: boolean
 } = {}) {
+    const entryPluginCalls: unknown[][] = []
+    const assets = options.assets || {}
     const compilation = {
         fileDependencies: new Set<string>(),
+        entrypoints: new Map(options.entryFiles ? [[
+            'master-css-runtime',
+            {
+                getFiles: () => options.entryFiles || []
+            }
+        ]] : []),
+        outputOptions: {
+            publicPath: options.publicPath,
+            module: options.outputModule
+        },
+        emitAsset: vi.fn((fileName: string, source: { source: () => string }) => {
+            assets[fileName] = source
+        }),
+        updateAsset: vi.fn((fileName: string, source: { source: () => string }) => {
+            assets[fileName] = source
+        }),
         hooks: {
             succeedModule: new SyncHook<[unknown]>(['module']),
             finishModules: new AsyncSeriesHook<[Iterable<unknown>]>(['modules']),
+            processAssets: new SyncHook<[Record<string, { source: () => string }>]>(['assets']),
         },
     }
     const compiler = {
@@ -60,6 +83,32 @@ function makeFakeCompiler(options: {
             mode: options.mode,
             module: {
                 rules: []
+            },
+            output: {
+                publicPath: options.publicPath,
+                module: options.outputModule
+            }
+        },
+        webpack: {
+            EntryPlugin: class FakeEntryPlugin {
+                constructor(...args: unknown[]) {
+                    entryPluginCalls.push(args)
+                }
+
+                apply() {}
+            },
+            Compilation: {
+                PROCESS_ASSETS_STAGE_ADDITIONS: -100,
+                PROCESS_ASSETS_STAGE_OPTIMIZE: 100
+            },
+            sources: {
+                RawSource: class RawSource {
+                    constructor(private value: string) {}
+
+                    source() {
+                        return this.value
+                    }
+                }
             }
         },
         inputFileSystem: {
@@ -67,7 +116,7 @@ function makeFakeCompiler(options: {
         },
         resolverFactory: { hooks: { resolver: { for: () => ({ tap: () => {} }) } } },
     }
-    return { compiler, compilation }
+    return { compiler, compilation, assets, entryPluginCalls }
 }
 
 function makeNormalModuleFactory(resolvedPath?: string) {
@@ -1035,5 +1084,100 @@ describe('MasterCSSPlugin (C1 race fix)', () => {
         )
 
         expect(scannedIds).toEqual(['/real.tsx'])
+    })
+
+    test('registers a runtime entry only when runtime injection is enabled', () => {
+        const runtimePlugin = makePlugin({ mode: 'runtime' })
+        const runtimeCompiler = makeFakeCompiler()
+        runtimePlugin.apply(runtimeCompiler.compiler as any)
+
+        expect(runtimeCompiler.entryPluginCalls[0]).toEqual(expect.arrayContaining([
+            expect.any(String),
+            expect.stringContaining('runtime.js'),
+            { name: 'master-css-runtime' }
+        ]))
+
+        const staticPlugin = makePlugin({ mode: 'static' })
+        const staticCompiler = makeFakeCompiler()
+        staticPlugin.apply(staticCompiler.compiler as any)
+
+        expect(staticCompiler.entryPluginCalls).toEqual([])
+    })
+
+    test('injects classic runtime script and pure-runtime preloads into emitted HTML assets', () => {
+        const plugin = makePlugin({ mode: 'runtime' })
+        ;(plugin as any).manifestJSONAssets.set('assets/master-css-manifest.12345678.json', '{}')
+        const assets = {
+            'index.html': {
+                source: () => '<html><head></head><body><main class="box block"></main></body></html>'
+            }
+        }
+        const { compiler, compilation } = makeFakeCompiler({
+            assets,
+            entryFiles: ['assets/master-css-runtime.js'],
+            publicPath: '/static/'
+        })
+
+        plugin.apply(compiler as any)
+        compiler.hooks.thisCompilation.call(compilation as any)
+        compilation.hooks.processAssets.call(assets)
+
+        const html = assets['index.html'].source()
+        expect(html).toContain('<link rel="preload" as="script" href="/static/assets/master-css-runtime.js">')
+        expect(html).toContain('<link rel="modulepreload" as="json" crossorigin href="/static/assets/master-css-manifest.12345678.json">')
+        expect(html).toContain('<script defer src="/static/assets/master-css-runtime.js"></script></body>')
+    })
+
+    test('injects module runtime preloads for module output', () => {
+        const plugin = makePlugin({ mode: 'runtime' })
+        const assets = {
+            'index.html': {
+                source: () => '<html><head></head><body></body></html>'
+            }
+        }
+        const { compiler, compilation } = makeFakeCompiler({
+            assets,
+            entryFiles: ['runtime.mjs'],
+            outputModule: true
+        })
+
+        plugin.apply(compiler as any)
+        compiler.hooks.thisCompilation.call(compilation as any)
+        compilation.hooks.processAssets.call(assets)
+
+        const html = assets['index.html'].source()
+        expect(html).toContain('<link rel="modulepreload" crossorigin href="runtime.mjs">')
+        expect(html).toContain('<script type="module" src="runtime.mjs"></script></body>')
+    })
+
+    test('does not duplicate runtime script or preload tags', () => {
+        const plugin = makePlugin({ mode: 'runtime' })
+        ;(plugin as any).manifestJSONAssets.set('master-css-manifest.12345678.json', '{}')
+        const source = [
+            '<html><head>',
+            '<link rel="preload" as="script" href="runtime.js">',
+            '<link rel="modulepreload" as="json" crossorigin href="master-css-manifest.12345678.json">',
+            '</head><body>',
+            '<script defer src="runtime.js"></script>',
+            '</body></html>'
+        ].join('')
+        const assets = {
+            'index.html': {
+                source: () => source
+            }
+        }
+        const { compiler, compilation } = makeFakeCompiler({
+            assets,
+            entryFiles: ['runtime.js']
+        })
+
+        plugin.apply(compiler as any)
+        compiler.hooks.thisCompilation.call(compilation as any)
+        compilation.hooks.processAssets.call(assets)
+
+        const html = assets['index.html'].source()
+        expect(html.match(/href="runtime\.js"/g)).toHaveLength(1)
+        expect(html.match(/href="master-css-manifest\.12345678\.json"/g)).toHaveLength(1)
+        expect(html.match(/src="runtime\.js"/g)).toHaveLength(1)
     })
 })

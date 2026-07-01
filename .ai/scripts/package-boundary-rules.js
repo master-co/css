@@ -31,7 +31,7 @@ export const forbiddenProductionDependencies = new Map([
     ['@master/css-source', ['@master/css-engine', '@master/css-compiler', '@master/css-scanner', '@master/css-runtime', '@master/css-server', '@master/css-language-service', '@master/eslint-plugin-css']],
     ['@master/css-stylesheet', ['@master/css-scanner']],
     ['@master/css-lint', ['@master/eslint-plugin-css', '@master/css-project', '@master/css-scanner', '@master/css-language-service', '@master/css-runtime', '@master/css-cli']],
-    ['@master/css-integration', ['@master/css-compiler', '@master/css-project', '@master/css-scanner', '@master/css-runtime', '@master/css-server', '@master/css.vite', '@master/css.webpack', '@master/css.next', '@master/css.astro', '@master/css.nuxt', '@master/css.vue', '@master/css.svelte', '@master/css.react']]
+    ['@master/css-integration', ['@master/css-compiler', '@master/css-project', '@master/css-scanner', '@master/css-runtime', '@master/css-server', '@master/css.vite', '@master/css.webpack', '@master/css.next', '@master/css.astro', '@master/css.nuxt', '@master/css.vue', '@master/css.svelte']]
 ])
 
 export const focusedSourceImportBoundaries = [

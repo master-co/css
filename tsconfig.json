@@ -41,8 +41,6 @@
             "@master/css-project/*": [ "./node_modules/@master/css-project/src/*" ],
             "@master/css.nuxt": [ "./node_modules/@master/css.nuxt/src/module.ts" ],
             "@master/css.next": [ "./node_modules/@master/css.next/src" ],
-            "@master/css.react": [ "./node_modules/@master/css.react/src" ],
-            "@master/css.react/*": [ "./node_modules/@master/css.react/src/*" ],
             "@master/css-runtime": [ "./node_modules/@master/css-runtime/src" ],
             "@master/css-server": [ "./node_modules/@master/css-server/src" ],
             "@master/css.svelte": [ "./node_modules/@master/css.svelte/src/lib" ],

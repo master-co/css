@@ -1,6 +1,6 @@
 import type { ScannerOptions } from '@master/css-scanner'
 
-export type Mode = 'pre-render' | 'static' | null
+export type Mode = 'runtime' | 'pre-render' | 'static' | 'progressive' | null
 export type AdapterOrder = 'master-first' | 'external-first'
 
 export interface Options {
@@ -9,6 +9,10 @@ export interface Options {
      * Set to `null` to skip rendering modes while keeping the CSS manifest loaders.
      */
     mode?: Mode
+    /**
+     * Whether to include Master CSS runtime through the Next client instrumentation hook.
+     */
+    injectRuntime?: boolean
     /**
      * Scanner options for static rendering mode.
      */
@@ -30,6 +34,7 @@ export interface Options {
 
 export interface ResolvedOptions {
     mode: Mode
+    injectRuntime: boolean
     scannerOptions: ScannerOptions
     buildReport: boolean | string
     debug: boolean
@@ -42,7 +47,8 @@ declare global {
 
 export function resolveOptions(options: Options = {}): ResolvedOptions {
     return {
-        mode: options.mode ?? 'pre-render',
+        mode: options.mode === undefined ? 'progressive' : options.mode,
+        injectRuntime: options.injectRuntime ?? true,
         scannerOptions: options.scannerOptions ?? {},
         buildReport: options.buildReport ?? false,
         debug: options.debug ?? false,

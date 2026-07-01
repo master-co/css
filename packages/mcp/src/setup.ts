@@ -27,7 +27,6 @@ const MASTER_CSS_PACKAGES = [
     '@master/css.next',
     '@master/css.nuxt',
     '@master/css.astro',
-    '@master/css.react',
     '@master/css.vue',
     '@master/css.svelte',
     '@master/eslint-plugin-css'
@@ -40,7 +39,6 @@ const INTEGRATION_PACKAGES = [
     '@master/css.next',
     '@master/css.nuxt',
     '@master/css.astro',
-    '@master/css.react',
     '@master/css.vue',
     '@master/css.svelte',
     '@master/eslint-plugin-css'

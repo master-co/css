@@ -12,14 +12,18 @@ interface WebpackPluginAdapter {
 export default function VirtualModuleRegistryPlugin(context: MasterCSSWebpackContext): WebpackSubPlugin {
     return {
         apply(compiler: Compiler) {
-            context.virtualModule = new VirtualModulesPlugin({
+            const initialModules = {
                 [context.virtualCSSImportModuleId]: '',
                 [context.virtualManifestModuleId]: toInlineManifestModule(EMPTY_MANIFEST_JSON),
                 [context.virtualEmittedGlobalsModuleId]: EMPTY_EMITTED_GLOBALS_MODULE
-            })
+            }
+            context.virtualModule = new VirtualModulesPlugin(initialModules)
 
             const virtualModule = context.virtualModule as unknown as WebpackPluginAdapter
             virtualModule.apply(compiler)
+            for (const [modulePath, moduleContent] of Object.entries(initialModules)) {
+                context.writeVirtualModule(modulePath, moduleContent)
+            }
         }
     }
 }

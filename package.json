@@ -64,7 +64,6 @@
         "@master/css.figma": "workspace:^",
         "@master/css.next": "workspace:^",
         "@master/css.nuxt": "workspace:^",
-        "@master/css.react": "workspace:^",
         "@master/css.svelte": "workspace:^",
         "@master/css.vite": "workspace:^",
         "@master/css.vue": "workspace:^",

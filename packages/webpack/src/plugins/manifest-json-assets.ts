@@ -5,7 +5,7 @@ export default function ManifestJSONAssetsPlugin(context: MasterCSSWebpackContex
     return {
         apply(compiler: Compiler) {
             compiler.hooks.thisCompilation.tap(context.name, (compilation: Compilation) => {
-                if (!compilation.hooks.processAssets?.tap || !compilation.emitAsset) return
+                if (!compilation.hooks.processAssets?.tap || !compilation.emitAsset || !compiler.webpack?.Compilation || !compiler.webpack?.sources?.RawSource) return
                 const emitManifestJSONAssets = () => {
                     const RawSource = compiler.webpack.sources.RawSource
                     for (const [assetFileName, json] of context.getManifestJSONAssets()) {

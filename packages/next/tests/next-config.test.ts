@@ -12,6 +12,9 @@ const toPosixPath = (value: string) => value.replace(/\\/g, '/')
 const virtualManifestProjectPath = 'node_modules/.master-css/master-css-manifest.js'
 const virtualEmittedGlobalsProjectPath = 'node_modules/.master-css/master-css-emitted-globals.js'
 const composedAdapterProjectPath = 'node_modules/.master-css/master-css-next-adapter.js'
+const nextInstrumentationClientId = 'private-next-instrumentation-client'
+const masterCSSUserInstrumentationClientId = 'private-next-master-css-user-instrumentation-client'
+const removedReactPackageName = ['@master', 'css.react'].join('/')
 
 describe('withMasterCSS', () => {
     it('sets the Next adapter path and registers options', () => {
@@ -60,8 +63,10 @@ describe('withMasterCSS', () => {
         ]))
         expect(resolvedConfig.resolve.alias[VIRTUAL_MANIFEST_ID]).toContain(join('node_modules', '.master-css', 'master-css-manifest.js'))
         expect(resolvedConfig.resolve.alias[VIRTUAL_EMITTED_GLOBALS_ID]).toContain(join('node_modules', '.master-css', 'master-css-emitted-globals.js'))
-        expect(resolvedConfig.resolve.alias['@master/css.react']).toBeUndefined()
-        expect(resolvedConfig.resolve.alias['@master/css.react$']).toBeUndefined()
+        expect(resolvedConfig.resolve.alias[nextInstrumentationClientId]).toContain('instrumentation-client.cjs')
+        expect(resolvedConfig.resolve.alias[masterCSSUserInstrumentationClientId]).toContain('empty.js')
+        expect(resolvedConfig.resolve.alias[removedReactPackageName]).toBeUndefined()
+        expect(resolvedConfig.resolve.alias[`${removedReactPackageName}$`]).toBeUndefined()
     })
 
     it('adds a CSS manifest Turbopack loader', () => {
@@ -161,11 +166,52 @@ describe('withMasterCSS', () => {
         })
         expect((nextConfig as any).turbopack.resolveAlias[VIRTUAL_MANIFEST_ID]).toContain(virtualManifestProjectPath)
         expect((nextConfig as any).turbopack.resolveAlias[VIRTUAL_EMITTED_GLOBALS_ID]).toContain(virtualEmittedGlobalsProjectPath)
-        expect((nextConfig as any).turbopack.resolveAlias['@master/css.react']).toBeUndefined()
-        expect((nextConfig as any).transpilePackages).toContain('@master/css.react')
+        expect((nextConfig as any).turbopack.resolveAlias[nextInstrumentationClientId]).toContain('instrumentation-client.cjs')
+        expect((nextConfig as any).turbopack.resolveAlias[masterCSSUserInstrumentationClientId]).toContain('empty.js')
+        expect((nextConfig as any).turbopack.resolveAlias[removedReactPackageName]).toBeUndefined()
+        expect((nextConfig as any).transpilePackages || []).not.toContain(removedReactPackageName)
     })
 
-    it('adds CSS manifest loaders without the adapter when mode is null', () => {
+    it('adds CSS manifest loaders and runtime aliases without the adapter when mode is runtime', () => {
+        const nextConfig = { reactStrictMode: true }
+        const resolvedConfig = withMasterCSS(nextConfig, { mode: 'runtime' }) as any
+
+        expect(resolvedConfig.reactStrictMode).toBe(true)
+        expect(resolvedConfig.adapterPath).toBeUndefined()
+        expect(resolvedConfig.turbopack.resolveAlias[nextInstrumentationClientId]).toContain('instrumentation-client.cjs')
+        expect(resolvedConfig.turbopack.resolveAlias[masterCSSUserInstrumentationClientId]).toContain('empty.js')
+        const turbopackConfig = withMasterCSS({
+            turbopack: {
+                resolveAlias: {
+                    [nextInstrumentationClientId]: './custom-instrumentation-client.js'
+                }
+            }
+        }, { mode: 'runtime' }) as any
+        expect(turbopackConfig.turbopack.resolveAlias[masterCSSUserInstrumentationClientId]).toBe('./custom-instrumentation-client.js')
+        const webpackConfig = resolvedConfig.webpack({ module: { rules: [] }, resolve: { alias: {
+            [nextInstrumentationClientId]: './custom-instrumentation-client.js'
+        } } }, {})
+        expect(webpackConfig.resolve.alias[nextInstrumentationClientId]).toContain('instrumentation-client.cjs')
+        expect(webpackConfig.resolve.alias[masterCSSUserInstrumentationClientId]).toBe('./custom-instrumentation-client.js')
+    })
+
+    it('preserves an existing user instrumentation-client file behind the Master CSS runtime wrapper', () => {
+        const cwd = process.cwd()
+        const root = mkdtempSync(join(tmpdir(), 'master-css-next-instrumentation-'))
+        mkdirSync(join(root, 'src'), { recursive: true })
+        writeFileSync(join(root, 'src/instrumentation-client.ts'), 'export const marker = true')
+        try {
+            process.chdir(root)
+            const nextConfig = withMasterCSS({}) as any
+
+            expect(nextConfig.turbopack.resolveAlias[masterCSSUserInstrumentationClientId]).toBe('./src/instrumentation-client.ts')
+            expect(nextConfig.webpack({ module: { rules: [] } }, {}).resolve.alias[masterCSSUserInstrumentationClientId]).toContain(join('src', 'instrumentation-client.ts'))
+        } finally {
+            process.chdir(cwd)
+        }
+    })
+
+    it('adds CSS manifest loaders without runtime aliases or the adapter when mode is null', () => {
         const nextConfig = { reactStrictMode: true }
         const resolvedConfig = withMasterCSS(nextConfig, { mode: null }) as any
 
@@ -246,6 +292,8 @@ describe('withMasterCSS', () => {
                 test: /\.(css|scss|sass)$/
             })
         ]))
+        expect(resolvedConfig.turbopack.resolveAlias[nextInstrumentationClientId]).toBeUndefined()
+        expect(resolvedConfig.turbopack.resolveAlias[masterCSSUserInstrumentationClientId]).toBeUndefined()
     })
 
     it('composes an existing Next adapter path with the Master CSS adapter', () => {

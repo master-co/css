@@ -25,7 +25,8 @@ import {
 import { toEmittedGlobalsModule } from '@master/css-integration/emitted-globals-module'
 import type { Compiler } from 'webpack'
 import type VirtualModulesPlugin from 'webpack-virtual-modules'
-import { readFileSync } from 'node:fs'
+import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
+import { dirname } from 'node:path'
 import { normalizePath } from './utils/path'
 import ScannerLifecyclePlugin from './plugins/scanner-lifecycle'
 import VirtualModuleRegistryPlugin from './plugins/virtual-modules'
@@ -35,8 +36,19 @@ import VirtualCSSImportPlugin from './plugins/virtual-css-import'
 import ManifestLoaderPlugin from './plugins/manifest-loader'
 import UsageGraphPlugin from './plugins/usage-graph'
 import StyleEntryPlugin from './plugins/style-entry'
+import RuntimeEntryPlugin from './plugins/runtime-entry'
+import RuntimeHTMLAssetsPlugin from './plugins/runtime-html-assets'
+import {
+    resolvePluginOptions,
+    shouldInjectRuntime,
+    shouldPreloadRuntime,
+    type Mode,
+    type PluginOptions,
+    type ResolvedPluginOptions
+} from './options'
 
 const NAME = 'MasterCSSPlugin'
+const RUNTIME_ENTRY_NAME = 'master-css-runtime'
 
 export interface WebpackSubPlugin {
     apply(compiler: Compiler): void
@@ -49,7 +61,11 @@ export interface MasterCSSWebpackContext {
     virtualCSSImportModuleId: string
     virtualManifestModuleId: string
     virtualEmittedGlobalsModuleId: string
+    runtimeEntryName: string
+    mode: Mode
     virtualModule?: VirtualModulesPlugin
+    shouldInjectRuntime(): boolean
+    shouldPreloadRuntime(): boolean
     on(...args: Parameters<CSSScanner['on']>): unknown
     init(customOptions?: ScannerOptions): Promise<unknown>
     reset(customOptions?: ScannerOptions): Promise<unknown>
@@ -59,6 +75,7 @@ export interface MasterCSSWebpackContext {
     getDefaultManifestDependencyPaths(): string[]
     getResetDependencyPaths(): string[]
     setModuleContent(modulePath: string, moduleContent: unknown): void
+    writeVirtualModule(modulePath: string, moduleContent: string): void
     setManifestJSONAsset(assetFileName: string, json: string): void
     getManifestJSONAssets(): [string, string][]
     createDefaultManifestModule(): Promise<string>
@@ -79,6 +96,7 @@ export interface MasterCSSWebpackContext {
 export class MasterCSSPlugin {
 
     readonly scanner: CSSScanner
+    readonly pluginOptions: ResolvedPluginOptions
     pluginInitialized = false
     moduleContentByPath: Record<string, unknown> = {}
     manifestJSONAssets = new Map<string, string>()
@@ -90,10 +108,11 @@ export class MasterCSSPlugin {
     development = false
 
     constructor(
-        customOptions: ScannerOptions = {},
+        customOptions: ScannerOptions | PluginOptions = {},
         public cwd = process.cwd()
     ) {
-        this.scanner = new CSSScanner(customOptions, cwd)
+        this.pluginOptions = resolvePluginOptions(customOptions)
+        this.scanner = new CSSScanner(this.pluginOptions.scanner, cwd)
     }
 
     get customOptions() {
@@ -101,6 +120,7 @@ export class MasterCSSPlugin {
     }
 
     set customOptions(customOptions: ScannerOptions) {
+        this.pluginOptions.scanner = customOptions
         this.scanner.customOptions = customOptions
     }
 
@@ -303,6 +323,10 @@ export class MasterCSSPlugin {
             virtualCSSImportModuleId: toVirtualCSSModulePath(compilerContext),
             virtualManifestModuleId: toVirtualDefaultManifestModulePath(compilerContext),
             virtualEmittedGlobalsModuleId: toVirtualEmittedGlobalsModulePath(compilerContext),
+            runtimeEntryName: RUNTIME_ENTRY_NAME,
+            mode: this.pluginOptions.mode,
+            shouldInjectRuntime: () => shouldInjectRuntime(this.pluginOptions),
+            shouldPreloadRuntime: () => shouldPreloadRuntime(this.pluginOptions),
             on: (...args) => this.on(...args),
             init: (customOptions = this.customOptions) => this.init(customOptions),
             reset: (customOptions = this.customOptions) => this.reset(customOptions),
@@ -315,6 +339,17 @@ export class MasterCSSPlugin {
             getResetDependencyPaths: () => this.getResetDependencyPaths(),
             setModuleContent: (modulePath, moduleContent) => {
                 this.moduleContentByPath[modulePath] = moduleContent
+            },
+            writeVirtualModule: (modulePath, moduleContent) => {
+                try {
+                    context.virtualModule?.writeModule(modulePath, moduleContent)
+                } catch (error) {
+                    if (!(error instanceof TypeError) || !String(error.message).includes('_writeVirtualFile')) {
+                        throw error
+                    }
+                }
+                mkdirSync(dirname(modulePath), { recursive: true })
+                writeFileSync(modulePath, moduleContent)
             },
             setManifestJSONAsset: (assetFileName, json) => {
                 this.manifestJSONAssets.set(assetFileName, json)
@@ -329,16 +364,16 @@ export class MasterCSSPlugin {
                     includeNativeCSS: false,
                     includeMasterBaseCSS: false
                 })
-                context.virtualModule.writeModule(context.virtualCSSImportModuleId, result.css)
+                context.writeVirtualModule(context.virtualCSSImportModuleId, result.css)
                 await context.writeEmittedGlobalsModule()
             },
             writeDefaultManifestModule: async () => {
                 if (!context.virtualModule || !context.virtualManifestModuleId) return
-                context.virtualModule.writeModule(context.virtualManifestModuleId, await this.createDefaultManifestModule())
+                context.writeVirtualModule(context.virtualManifestModuleId, await this.createDefaultManifestModule())
             },
             writeEmittedGlobalsModule: async () => {
                 if (!context.virtualModule || !context.virtualEmittedGlobalsModuleId) return
-                context.virtualModule.writeModule(context.virtualEmittedGlobalsModuleId, toEmittedGlobalsModule(this.emittedGlobals))
+                context.writeVirtualModule(context.virtualEmittedGlobalsModuleId, toEmittedGlobalsModule(this.emittedGlobals))
             },
             replayModuleContents: async () => {
                 const entries = Object.entries(this.moduleContentByPath)
@@ -366,6 +401,8 @@ export class MasterCSSPlugin {
     }
 
     private createSubPlugins(context: MasterCSSWebpackContext): WebpackSubPlugin[] {
+        if (context.mode === null) return []
+
         return [
             ScannerLifecyclePlugin(context),
             VirtualModuleRegistryPlugin(context),
@@ -374,7 +411,13 @@ export class MasterCSSPlugin {
             VirtualCSSImportPlugin(context),
             ManifestLoaderPlugin(context),
             StyleEntryPlugin(context),
-            UsageGraphPlugin(context)
+            UsageGraphPlugin(context),
+            ...context.shouldInjectRuntime()
+                ? [
+                    RuntimeEntryPlugin(context),
+                    RuntimeHTMLAssetsPlugin(context)
+                ]
+                : []
         ]
     }
 

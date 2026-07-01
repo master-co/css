@@ -279,9 +279,6 @@ importers:
       '@master/css.nuxt':
         specifier: workspace:^
         version: link:packages/nuxt
-      '@master/css.react':
-        specifier: workspace:^
-        version: link:packages/react
       '@master/css.svelte':
         specifier: workspace:^
         version: link:packages/svelte
@@ -859,9 +856,6 @@ importers:
       '@master/css':
         specifier: workspace:^
         version: link:../../packages/facade
-      '@master/css.react':
-        specifier: workspace:^
-        version: link:../../packages/react
       next:
         specifier: ^16.2.9
         version: 16.2.9(@babel/core@7.29.7)(@opentelemetry/api@1.9.1)(@playwright/test@1.61.0)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(sass@1.101.0)
@@ -1144,9 +1138,6 @@ importers:
       '@master/css-preset':
         specifier: workspace:^
         version: link:../packages/preset
-      '@master/css.react':
-        specifier: workspace:^
-        version: link:../packages/react
       '@master/styled.react':
         specifier: ^2.0.6
         version: 2.0.6(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
@@ -1955,6 +1946,9 @@ importers:
       '@master/css-project':
         specifier: workspace:^
         version: link:../project
+      '@master/css-runtime':
+        specifier: workspace:^
+        version: link:../runtime
       '@master/css-scanner':
         specifier: workspace:^
         version: link:../scanner
@@ -1992,6 +1986,9 @@ importers:
       '@master/css-project':
         specifier: workspace:^
         version: link:../project
+      '@master/css-runtime':
+        specifier: workspace:^
+        version: link:../runtime
       '@master/css-server':
         specifier: workspace:^
         version: link:../server
@@ -2064,6 +2061,10 @@ importers:
         version: 3.5.38(typescript@6.0.3)
 
   packages/preset:
+    dependencies:
+      '@master/css-schema':
+        specifier: workspace:^
+        version: link:../schema
     devDependencies:
       tsx:
         specifier: ^4.22.4
@@ -2086,46 +2087,6 @@ importers:
       '@master/css-schema':
         specifier: workspace:^
         version: link:../schema
-
-  packages/react:
-    dependencies:
-      '@master/css':
-        specifier: workspace:^
-        version: link:../facade
-      '@master/css-integration':
-        specifier: workspace:^
-        version: link:../integration
-      '@master/css-runtime':
-        specifier: workspace:^
-        version: link:../runtime
-    devDependencies:
-      '@master/css-preset':
-        specifier: workspace:^
-        version: link:../preset
-      '@master/css-schema':
-        specifier: workspace:^
-        version: link:../schema
-      '@playwright/experimental-ct-react':
-        specifier: 1.61.0
-        version: 1.61.0(@types/node@26.0.0)(jiti@2.7.0)(less@4.6.4)(lightningcss@1.32.0)(sass@1.101.0)(terser@5.48.0)(tsx@4.22.4)(vite@8.1.0(@types/node@26.0.0)(esbuild@0.28.1)(jiti@2.7.0)(less@4.6.4)(sass@1.101.0)(terser@5.48.0)(tsx@4.22.4)(yaml@2.9.0))(yaml@2.9.0)
-      '@playwright/test':
-        specifier: 1.61.0
-        version: 1.61.0
-      '@types/node':
-        specifier: ^26.0.0
-        version: 26.0.0
-      '@types/react':
-        specifier: ^19.2.17
-        version: 19.2.17
-      '@types/react-dom':
-        specifier: ^19.2.3
-        version: 19.2.3(@types/react@19.2.17)
-      react:
-        specifier: 19.2.7
-        version: 19.2.7
-      react-dom:
-        specifier: 19.2.7
-        version: 19.2.7(react@19.2.7)
 
   packages/runtime:
     dependencies:
@@ -2537,6 +2498,9 @@ importers:
       '@master/css-project':
         specifier: workspace:^
         version: link:../project
+      '@master/css-runtime':
+        specifier: workspace:^
+        version: link:../runtime
       '@master/css-scanner':
         specifier: workspace:^
         version: link:../scanner
@@ -2550,6 +2514,9 @@ importers:
         specifier: ^0.6.2
         version: 0.6.2
     devDependencies:
+      '@playwright/test':
+        specifier: 1.61.0
+        version: 1.61.0
       tapable:
         specifier: ^2.3.3
         version: 2.3.3
@@ -3681,18 +3648,6 @@ packages:
 
   '@babel/plugin-transform-react-jsx-development@7.29.7':
     resolution: {integrity: sha512-Xfy3UVMF04+ypnFbkhvfqtmvwfe92qwQdbGZVonhE+6v35GzlofmOnA1szaZqzb9xYWr0nl1e5EMmzi0DNON1g==}
-    engines: {node: '>=6.9.0'}
-    peerDependencies:
-      '@babel/core': ^7.0.0-0
-
-  '@babel/plugin-transform-react-jsx-self@7.29.7':
-    resolution: {integrity: sha512-TL0hMc9xzy86VD31nUiwzd5otRAcyEPcsegCxolO0PvcXuH1v0kECe/UIznYFihpkvU5wg/jk4v0TTEFfm53fw==}
-    engines: {node: '>=6.9.0'}
-    peerDependencies:
-      '@babel/core': ^7.0.0-0
-
-  '@babel/plugin-transform-react-jsx-source@7.29.7':
-    resolution: {integrity: sha512-06IyK09H3wi4cGbhDBwp5gUGo0IKtnYa8tyTiephirPCK6fbobVGiXMMI5zLQ4aKEYP3wZ3ArU44o+8KMrSG/Q==}
     engines: {node: '>=6.9.0'}
     peerDependencies:
       '@babel/core': ^7.0.0-0
@@ -7783,11 +7738,6 @@ packages:
     resolution: {integrity: sha512-BXfrGmeFzEHVvbL4K9jvtfKS/3Fh19b7Kv+WCXmI53EyzNfvYUxoq3EDj3Uw/wDKj9Xkh0l1TLpgkyL9e2h0fQ==}
     engines: {node: '>=18'}
 
-  '@playwright/experimental-ct-react@1.61.0':
-    resolution: {integrity: sha512-TBWvHB97+4nqM1CIhNJDNh771yVG+J+TIwzZZGnecTRJQexYWnYDrr1EOHxL+ABWP9kw/FPBp2Vhzzxpvot3/Q==}
-    engines: {node: '>=18'}
-    hasBin: true
-
   '@playwright/experimental-ct-svelte@1.58.2':
     resolution: {integrity: sha512-75hpAyYIRIJPYJ8lU5SzjzFJWax6FIUESJ6hJqke2QejuFkYg1gKspBQ9pBLSs3JTs0h/CVe22ilIy696hTEjA==}
     engines: {node: '>=18'}
@@ -8569,9 +8519,6 @@ packages:
 
   '@rolldown/debug@1.1.3':
     resolution: {integrity: sha512-1OMsP69fnm1Ky82qFODn6ekpmKetcIZ5Zk+wRR4apdJhhMs4DztmK6Bxnr70Lg6BRjWcesEnpU1cjHD2O74oYg==}
-
-  '@rolldown/pluginutils@1.0.0-beta.27':
-    resolution: {integrity: sha512-+d0F4MKMCbeVUJwG96uQ4SgAznZNSq93I3V+9NHA4OpvqG8mRCpGdKmK8l/dl02h2CCDHwW2FqilnTyDcAnqjA==}
 
   '@rolldown/pluginutils@1.0.1':
     resolution: {integrity: sha512-2j9bGt5Jh8hj+vPtgzPtl72j0yRxHAyumoo6TNfAjsLB04UtpSvPbPcDcBMxz7n+9CYB0c1GxQFxYRg2jimqGw==}
@@ -10204,12 +10151,6 @@ packages:
     engines: {node: ^18.0.0 || ^20.0.0 || >=22.0.0}
     peerDependencies:
       vite: ^6.0.0 || ^7.0.0 || ^8.0.0
-
-  '@vitejs/plugin-react@4.7.0':
-    resolution: {integrity: sha512-gUu9hwfWvvEDBBmgtAowQCojwZmJ5mcLn3aufeCsitijs3+f2NsrPtlAWIR6OPiqljl96GVCUbLe0HyqIpVaoA==}
-    engines: {node: ^14.18.0 || >=16.0.0}
-    peerDependencies:
-      vite: ^4.2.0 || ^5.0.0 || ^6.0.0 || ^7.0.0
 
   '@vitejs/plugin-react@6.0.2':
     resolution: {integrity: sha512-DlSMqo4WhThw4vB8Mpn0Woe9J+Jfq1geJ61AKW0QEgLzGMNwtIMdxbDUzLxcun8W7NbJO0e2Jg/Nxm3cCSVzzg==}
@@ -17401,10 +17342,6 @@ packages:
   react-is@19.2.7:
     resolution: {integrity: sha512-kZFnouyVv7eP/Phmrlo9FK+zcAdriZJvzxXHF1Sl1P377WSGe2G/JxVolhTrB/jeV47lKImhNUsijjHAAbcl/A==}
 
-  react-refresh@0.17.0:
-    resolution: {integrity: sha512-z6F7K9bV85EfseRCp2bzrpyQ0Gkw1uLoCel9XBVWPg/TjRj94SkJzUTGfOa4bs7iJvBWtQG0Wq7wnI0syw3EBQ==}
-    engines: {node: '>=0.10.0'}
-
   react-remove-scroll-bar@2.3.8:
     resolution: {integrity: sha512-9r+yi9+mgU33AKcj6IbT9oRCO78WriSj6t/cF8DWBZJ9aOGPOTEDvdUDz1FwKim7QXWwmHqtdHnRJfhAxEG46Q==}
     engines: {node: '>=10'}
@@ -22278,16 +22215,6 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@babel/plugin-transform-react-jsx-self@7.29.7(@babel/core@7.29.7)':
-    dependencies:
-      '@babel/core': 7.29.7
-      '@babel/helper-plugin-utils': 7.29.7
-
-  '@babel/plugin-transform-react-jsx-source@7.29.7(@babel/core@7.29.7)':
-    dependencies:
-      '@babel/core': 7.29.7
-      '@babel/helper-plugin-utils': 7.29.7
-
   '@babel/plugin-transform-react-jsx@7.29.7(@babel/core@7.29.7)':
     dependencies:
       '@babel/core': 7.29.7
@@ -26829,24 +26756,6 @@ snapshots:
       - tsx
       - yaml
 
-  '@playwright/experimental-ct-core@1.61.0(@types/node@26.0.0)(jiti@2.7.0)(less@4.6.4)(lightningcss@1.32.0)(sass@1.101.0)(terser@5.48.0)(tsx@4.22.4)(yaml@2.9.0)':
-    dependencies:
-      playwright: 1.61.0
-      playwright-core: 1.61.0
-      vite: 6.4.3(@types/node@26.0.0)(jiti@2.7.0)(less@4.6.4)(lightningcss@1.32.0)(sass@1.101.0)(terser@5.48.0)(tsx@4.22.4)(yaml@2.9.0)
-    transitivePeerDependencies:
-      - '@types/node'
-      - jiti
-      - less
-      - lightningcss
-      - sass
-      - sass-embedded
-      - stylus
-      - sugarss
-      - terser
-      - tsx
-      - yaml
-
   '@playwright/experimental-ct-core@1.61.0(@types/node@26.0.1)(jiti@2.7.0)(less@4.6.4)(lightningcss@1.32.0)(sass@1.101.0)(terser@5.48.0)(tsx@4.22.4)(yaml@2.9.0)':
     dependencies:
       playwright: 1.61.0
@@ -26863,25 +26772,6 @@ snapshots:
       - sugarss
       - terser
       - tsx
-      - yaml
-
-  '@playwright/experimental-ct-react@1.61.0(@types/node@26.0.0)(jiti@2.7.0)(less@4.6.4)(lightningcss@1.32.0)(sass@1.101.0)(terser@5.48.0)(tsx@4.22.4)(vite@8.1.0(@types/node@26.0.0)(esbuild@0.28.1)(jiti@2.7.0)(less@4.6.4)(sass@1.101.0)(terser@5.48.0)(tsx@4.22.4)(yaml@2.9.0))(yaml@2.9.0)':
-    dependencies:
-      '@playwright/experimental-ct-core': 1.61.0(@types/node@26.0.0)(jiti@2.7.0)(less@4.6.4)(lightningcss@1.32.0)(sass@1.101.0)(terser@5.48.0)(tsx@4.22.4)(yaml@2.9.0)
-      '@vitejs/plugin-react': 4.7.0(vite@8.1.0(@types/node@26.0.0)(esbuild@0.28.1)(jiti@2.7.0)(less@4.6.4)(sass@1.101.0)(terser@5.48.0)(tsx@4.22.4)(yaml@2.9.0))
-    transitivePeerDependencies:
-      - '@types/node'
-      - jiti
-      - less
-      - lightningcss
-      - sass
-      - sass-embedded
-      - stylus
-      - sugarss
-      - supports-color
-      - terser
-      - tsx
-      - vite
       - yaml
 
   '@playwright/experimental-ct-svelte@1.58.2(@types/node@26.0.0)(jiti@2.7.0)(less@4.6.4)(lightningcss@1.32.0)(sass@1.101.0)(supports-color@5.5.0)(svelte@5.56.3(@typescript-eslint/types@8.62.0))(terser@5.48.0)(tsx@4.22.4)(vite@8.0.16)(yaml@2.9.0)':
@@ -27616,8 +27506,6 @@ snapshots:
     optional: true
 
   '@rolldown/debug@1.1.3': {}
-
-  '@rolldown/pluginutils@1.0.0-beta.27': {}
 
   '@rolldown/pluginutils@1.0.1': {}
 
@@ -29841,18 +29729,6 @@ snapshots:
   '@vitejs/plugin-basic-ssl@2.3.0(vite@7.3.5(@types/node@26.0.0)(jiti@2.7.0)(less@4.6.4)(lightningcss@1.32.0)(sass@1.99.0)(terser@5.46.2)(tsx@4.22.4)(yaml@2.9.0))':
     dependencies:
       vite: 7.3.5(@types/node@26.0.0)(jiti@2.7.0)(less@4.6.4)(lightningcss@1.32.0)(sass@1.99.0)(terser@5.46.2)(tsx@4.22.4)(yaml@2.9.0)
-
-  '@vitejs/plugin-react@4.7.0(vite@8.1.0(@types/node@26.0.0)(esbuild@0.28.1)(jiti@2.7.0)(less@4.6.4)(sass@1.101.0)(terser@5.48.0)(tsx@4.22.4)(yaml@2.9.0))':
-    dependencies:
-      '@babel/core': 7.29.7
-      '@babel/plugin-transform-react-jsx-self': 7.29.7(@babel/core@7.29.7)
-      '@babel/plugin-transform-react-jsx-source': 7.29.7(@babel/core@7.29.7)
-      '@rolldown/pluginutils': 1.0.0-beta.27
-      '@types/babel__core': 7.20.5
-      react-refresh: 0.17.0
-      vite: 8.1.0(@types/node@26.0.0)(esbuild@0.28.1)(jiti@2.7.0)(less@4.6.4)(sass@1.101.0)(terser@5.48.0)(tsx@4.22.4)(yaml@2.9.0)
-    transitivePeerDependencies:
-      - supports-color
 
   '@vitejs/plugin-react@6.0.2(vite@8.0.16)':
     dependencies:
@@ -39692,8 +39568,6 @@ snapshots:
 
   react-is@19.2.7: {}
 
-  react-refresh@0.17.0: {}
-
   react-remove-scroll-bar@2.3.8(@types/react@19.2.17)(react@19.2.7):
     dependencies:
       react: 19.2.7
@@ -42864,24 +42738,6 @@ snapshots:
       tinyglobby: 0.2.17
     optionalDependencies:
       '@types/node': 25.9.4
-      esbuild: 0.28.1
-      fsevents: 2.3.3
-      jiti: 2.7.0
-      less: 4.6.4
-      sass: 1.101.0
-      terser: 5.48.0
-      tsx: 4.22.4
-      yaml: 2.9.0
-
-  vite@8.1.0(@types/node@26.0.0)(esbuild@0.28.1)(jiti@2.7.0)(less@4.6.4)(sass@1.101.0)(terser@5.48.0)(tsx@4.22.4)(yaml@2.9.0):
-    dependencies:
-      lightningcss: 1.32.0
-      picomatch: 4.0.4
-      postcss: 8.5.16
-      rolldown: 1.1.3
-      tinyglobby: 0.2.17
-    optionalDependencies:
-      '@types/node': 26.0.0
       esbuild: 0.28.1
       fsevents: 2.3.3
       jiti: 2.7.0

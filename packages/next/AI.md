@@ -7,6 +7,8 @@
 ## Owns
 
 - `pre-render` mode through the Next.js Adapter API.
+- `runtime` mode through the Next client instrumentation hook.
+- `progressive` mode as runtime plus pre-render behavior.
 - `static` mode through generated CSS and Turbopack scanner loaders.
 - Next-specific manifest import/loaders and static CSS loaders.
 - Build output rendering helpers.
@@ -17,7 +19,7 @@
 - App Router request-time class collection.
 - Static extraction semantics; `CSSScanner` remains the source of static behavior.
 - Webpack-specific extraction internals.
-- React runtime registry implementation.
+- React component registry/provider APIs.
 
 ## Public Surface
 
@@ -37,6 +39,7 @@
 - `src/css-manifest-loader.ts`
 - `src/css-manifest-import-loader.ts`
 - `src/options.ts`
+- Generated `node_modules/.master-css/master-css-next-instrumentation-client.cjs` source from `src/index.ts`
 
 ## Risk Areas
 
@@ -45,7 +48,8 @@
 - Duplicate writes for fallback HTML listed through multiple output groups.
 - Turbopack loader behavior as an incremental scanner.
 - Over-broad Turbopack JS loader rules breaking Next client component classification for linked workspace packages.
-- `CSSRuntimeRegistry` must come from `@master/css.react` and not generated App Router files.
+- Runtime injection must preserve user `instrumentation-client` via the secondary alias before overriding Next's `private-next-instrumentation-client`.
+- Runtime, preload, mode default, and cascade-layer changes must be audited against Vite, Webpack, Nuxt, and Astro so integration behavior does not drift.
 
 ## Safe Changes
 
@@ -58,6 +62,7 @@
 - Hiding request-time limitations behind build-time behavior.
 - Making static mode rely on `nextConfig.webpack` or `@master/css.webpack`.
 - Broadening JS loader rules beyond manifest-import handling.
+- Reintroducing React tree wrappers for automatic runtime injection.
 
 ## Validation
 

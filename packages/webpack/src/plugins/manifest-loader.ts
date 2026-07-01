@@ -66,7 +66,7 @@ export default function ManifestLoaderPlugin(context: MasterCSSWebpackContext): 
                                     context.setManifestJSONAsset(assetFileName, result.json)
                                     moduleContent = toBrowserManifestFacadeModule(`__webpack_public_path__ + ${JSON.stringify(assetFileName)}`)
                                 }
-                                context.virtualModule?.writeModule(
+                                context.writeVirtualModule(
                                     virtualModuleId,
                                     moduleContent
                                 )

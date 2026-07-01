@@ -34,7 +34,6 @@ shared / external data
   ↓
 @master/css.astro
 @master/css.nuxt
-@master/css.react
 @master/css.vue
 @master/css.svelte
 master-css-vscode

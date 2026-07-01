@@ -15,11 +15,10 @@
 | `@master/css-scanner` | `.`, `./options` | Static source scanning, class validation, scanner caches, and generated CSS scanner state |
 | `@master/css-stylesheet` | `.`, `./browser`, `./directives` | Stylesheet entry detection, CSS-first stylesheet compilation, native CSS pruning, generated CSS composition, and emittedGlobals manifest output |
 | `@master/css.vite` | `.`, `./runtime` | Vite modes and plugin orchestration |
-| `@master/css.webpack` | `.` | Webpack extraction plugin |
-| `@master/css.next` | `.`, `./adapter` | Next.js integration |
+| `@master/css.webpack` | `.` | Webpack integration, runtime script injection, and extraction plugin |
+| `@master/css.next` | `.`, `./adapter` | Next.js integration and client instrumentation runtime injection |
 | `@master/css.astro` | `.`, `./adapter`, `./middleware` | Astro integration |
 | `@master/css.nuxt` | `.` | Nuxt module |
-| `@master/css.react` | `.`, `./runtime-provider` | React runtime registry, provider, and hooks |
 | `@master/css.vue` | `.`, `./runtime-provider`, `./adapter`, `./vite` | Vue runtime registry, provider, and Vue SFC extraction adapter |
 | `@master/css.svelte` | `.`, `./runtime-provider`, `./adapter`, `./vite`, `./hooks.server` | Svelte runtime registry, provider, SvelteKit hook, Vite wrapper, and Svelte source adapter |
 | `@master/css-language` | `.`, `./browser`, `./shiki`, `./syntaxes/master-css.tmLanguage.json` | Editor-neutral language primitives, class-position scanning, semantic tokens, browser helpers, Shiki helpers, and shared TextMate grammar |
@@ -45,3 +44,5 @@ Do not introduce reverse dependencies from engine to compiler, integration contr
 ## Package Tests
 
 Most packages use package-local `vitest.config.ts` extending the repo-internal `shared/vitest.config.ts`. Runtime and component integrations use Playwright e2e tests where browser behavior matters.
+
+Runtime script injection, runtime script preload, manifest JSON preload, mode defaults, and cascade-layer initialization are cross-integration behavior. Changes in one build/framework integration must audit Vite, Webpack, Next, Nuxt, and Astro and update package-local `AI.md` files or tests when behavior intentionally differs.

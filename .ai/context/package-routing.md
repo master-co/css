@@ -37,7 +37,7 @@ For `packages/<name>/**`, read `packages/<name>/package.json` and `packages/<nam
 | `packages/language*/**`, `packages/vscode/**` | language tooling | `testing.md` |
 | `packages/eslint-*/**` | ESLint tooling | `testing.md` |
 | `packages/vite/**`, `packages/webpack/**`, `packages/next/**` | build integrations | `package-boundaries.md`, `css-output.md` |
-| `packages/astro/**`, `packages/nuxt/**`, `packages/react/**`, `packages/vue/**`, `packages/svelte/**` | framework integrations | `testing.md`, `css-output.md` |
+| `packages/astro/**`, `packages/nuxt/**`, `packages/vue/**`, `packages/svelte/**` | framework integrations | `testing.md`, `css-output.md` |
 | `packages/cli/**` | CLI | `testing.md`, `package-boundaries.md` |
 | `packages/devtools-hook/**`, `packages/figma/**` | app/plugin surfaces | `testing.md` |
 

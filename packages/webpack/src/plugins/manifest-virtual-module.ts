@@ -11,7 +11,7 @@ export default function ManifestVirtualModulePlugin(context: MasterCSSWebpackCon
                     if (resolveData.request === VIRTUAL_EMITTED_GLOBALS_ID) {
                         context.createEmittedGlobalsModule()
                             .then((moduleContent) => {
-                                context.virtualModule?.writeModule(context.virtualEmittedGlobalsModuleId, moduleContent)
+                                context.writeVirtualModule(context.virtualEmittedGlobalsModuleId, moduleContent)
                                 resolveData.request = context.virtualEmittedGlobalsModuleId
                                 callback()
                             })
@@ -22,7 +22,7 @@ export default function ManifestVirtualModulePlugin(context: MasterCSSWebpackCon
                     if (resolveData.request === VIRTUAL_MANIFEST_ID) {
                         context.createDefaultManifestModule()
                             .then((moduleContent) => {
-                                context.virtualModule?.writeModule(context.virtualManifestModuleId, moduleContent)
+                                context.writeVirtualModule(context.virtualManifestModuleId, moduleContent)
                                 for (const dependency of context.getDefaultManifestDependencyPaths()) {
                                     resolveData.fileDependencies.add(dependency)
                                 }
