@@ -31,6 +31,7 @@
 | `@master/eslint-plugin-css` | `.`, `./configs/*` | ESLint plugin |
 | `@master/eslint-config-css` | `.` | ESLint config wrapper |
 | `@master/css-cli` | package-name binary | Root scan/extract CLI |
+| `@master/create-css` | `.` | Add-first installer for applying Master CSS, ESLint config, MCP, and AI guidance to existing projects |
 | `@master/css-mcp` | `.`, `./server` | Model Context Protocol server and tools for AI clients |
 | `@master/css-schema` | `.`, `./manifest`, `./manifest-json`, `./hydration-manifest`, `./css-directives`, `./css-syntax`, `./utility-type`, `./runtime-style`, `./native-css-shorthand`, `./css-common` | Public dependency-light schema, wire-format contracts, serializable constants, and pure codec helpers |
 | `@master/css-project` | `./entries`, `./manifest`, `./manifest-sync`, `./workspace` | Resolve project CSS manifest entries, workspace roots, explicit CSS manifest resources, and project manifest module source |

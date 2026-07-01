@@ -1,0 +1,50 @@
+{
+    "name": "@master/create-css",
+    "type": "module",
+    "scripts": {
+        "build": "tsdown --config ../../shared/tsdown-package.config.ts",
+        "dev": "tsdown --config ../../shared/tsdown-package.config.ts --watch",
+        "lint": "eslint",
+        "test": "vitest"
+    },
+    "license": "MIT",
+    "description": "Add Master CSS to an existing project.",
+    "author": "Aoyue Design LLC.",
+    "funding": "https://rc.css.master.co/sponsor",
+    "homepage": "https://css.master.co",
+    "bugs": {
+        "url": "https://github.com/master-co/css/issues"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/master-co/css.git",
+        "directory": "packages/create"
+    },
+    "keywords": [
+        "cli",
+        "create",
+        "init",
+        "css",
+        "mastercss"
+    ],
+    "bin": {
+        "create-css": "./dist/bin/index.js"
+    },
+    "exports": {
+        ".": {
+            "types": "./dist/index.d.ts",
+            "import": "./dist/index.js",
+            "default": "./dist/index.js"
+        }
+    },
+    "files": [
+        "dist"
+    ],
+    "publishConfig": {
+        "access": "public",
+        "provenance": true
+    },
+    "dependencies": {
+        "commander": "^14.0.3"
+    }
+}

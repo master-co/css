@@ -67,12 +67,12 @@ In Visual Studio Code, install the VS Code ESLint extension to surface these dia
 Use ESLint flat configuration:
 
 ```js
+import { defineConfig } from 'eslint/config'
 import css from '@master/eslint-config-css'
 import htmlParser from '@angular-eslint/template-parser'
 import tsParser from '@typescript-eslint/parser'
 
-/** @type {import('eslint').Linter.Config[]} */
-export default [
+export default defineConfig([
     {
         files: ['**/*.html'],
         languageOptions: {
@@ -93,7 +93,7 @@ export default [
             }]
         }
     }
-]
+])
 ```
 
 ## Rules
@@ -103,13 +103,15 @@ export default [
 Sorts Master CSS classes into a consistent and logical order.
 
 ```js
-export default [
+import { defineConfig } from 'eslint/config'
+
+export default defineConfig([
     {
         rules: {
             '@master/css/sort-classes': 'warn'
         }
     }
-]
+])
 ```
 
 ### `@master/css/no-invalid-classes`
@@ -117,19 +119,23 @@ export default [
 Disallows invalid Master CSS classes.
 
 ```js
-export default [
+import { defineConfig } from 'eslint/config'
+
+export default defineConfig([
     {
         rules: {
             '@master/css/no-invalid-classes': 'error'
         }
     }
-]
+])
 ```
 
 Set `disallowUnknownClass: true` to reject classes that do not match the active manifest:
 
 ```js
-export default [
+import { defineConfig } from 'eslint/config'
+
+export default defineConfig([
     {
         rules: {
             '@master/css/no-invalid-classes': ['error', {
@@ -137,7 +143,7 @@ export default [
             }]
         }
     }
-]
+])
 ```
 
 ### `@master/css/prefer-canonical-classes`
@@ -145,13 +151,15 @@ export default [
 Prefers canonical Master CSS class forms, including semantic utilities, theme tokens, property aliases, composition utilities, and condition suffix order.
 
 ```js
-export default [
+import { defineConfig } from 'eslint/config'
+
+export default defineConfig([
     {
         rules: {
             '@master/css/prefer-canonical-classes': 'warn'
         }
     }
-]
+])
 ```
 
 For example, this rule can fix `text-align:center` to `text-center`, `font:16px` to `font:md`, `margin:md` to `m:md`, `m:1rem|1.5rem` to `m:md|lg`, `fg:var(--color-red-60)` to `fg:red-60`, `w:md h:md` to `size:md`, `mt:md mb:md` to `my:md`, and `block@dark@sm` to `block@sm@dark`.
@@ -161,9 +169,12 @@ The same canonicalization applies to unquoted `@compose` class lists. In CSS, de
 Standalone CSS files are included by default when using `@master/eslint-config-css`:
 
 ```js
+import { defineConfig } from 'eslint/config'
 import css from '@master/eslint-config-css'
 
-export default [...css]
+export default defineConfig([
+    ...css
+])
 ```
 
 Direct plugin users can add `css.configs.stylesheet` from `@master/eslint-plugin-css` alongside the recommended config.
@@ -171,7 +182,9 @@ Direct plugin users can add `css.configs.stylesheet` from `@master/eslint-plugin
 You can disable specific canonicalization families:
 
 ```js
-export default [
+import { defineConfig } from 'eslint/config'
+
+export default defineConfig([
     {
         rules: {
             '@master/css/prefer-canonical-classes': ['warn', {
@@ -187,7 +200,7 @@ export default [
             }]
         }
     }
-]
+])
 ```
 
 ### `@master/css/no-conflicting-classes`
@@ -195,13 +208,15 @@ export default [
 Disallows classes that emit the same CSS declaration properties for the same variant.
 
 ```js
-export default [
+import { defineConfig } from 'eslint/config'
+
+export default defineConfig([
     {
         rules: {
             '@master/css/no-conflicting-classes': 'warn'
         }
     }
-]
+])
 ```
 
 When two classes conflict, the later class is treated as the effective one and the fix removes the earlier class. For partially overlapping spacing, physical inset, radius, and border width/color/style shorthands, the fix preserves the surviving declarations by splitting the earlier class, such as `mx:md ml:lg` to `mr:md ml:lg` or `b-solid bt-dashed` to `br-solid bb-solid bl-solid bt-dashed`.
@@ -211,7 +226,9 @@ When two classes conflict, the later class is treated as the effective one and t
 Disallows raw values in token-backed utilities unless they are explicitly allowed. This rule is opt-in team policy and is not enabled by the recommended config.
 
 ```js
-export default [
+import { defineConfig } from 'eslint/config'
+
+export default defineConfig([
     {
         rules: {
             '@master/css/no-unapproved-raw-values': ['warn', {
@@ -220,7 +237,7 @@ export default [
             }]
         }
     }
-]
+])
 ```
 
 For example, this rule reports `font:15px`, `m:17px`, and `fg:#123456` when those values are not theme tokens. It does not autofix because there may be no safe token replacement.
@@ -230,7 +247,9 @@ For example, this rule reports `font:15px`, `m:17px`, and `fg:#123456` when thos
 Settings live under the `@master/css` settings key:
 
 ```js
-export default [
+import { defineConfig } from 'eslint/config'
+
+export default defineConfig([
     {
         settings: {
             '@master/css': {
@@ -242,7 +261,7 @@ export default [
             }
         }
     }
-]
+])
 ```
 
 | Setting | Type | Description |

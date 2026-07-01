@@ -68,16 +68,23 @@
             ```
 
             ```js name=eslint.config.js
+            import { defineConfig, globalIgnores } from 'eslint/config'
             import htmlParser from '@angular-eslint/template-parser'
             import css from '@master/eslint-config-css'
 
-            export default [
+            export default defineConfig([
+                globalIgnores([
+                    'vendor/**',
+                    'node_modules/**',
+                    'public/**',
+                    'bootstrap/ssr/**'
+                ]),
                 {
                     files: ['**/*.blade.php'],
                     languageOptions: { parser: htmlParser }
                 },
                 ...css // [!code highlight]
-            ]
+            ])
             ```
         </StepR>
     </Step>

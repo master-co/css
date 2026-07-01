@@ -785,9 +785,15 @@ importers:
         specifier: ^8.0.16
         version: 8.0.16(@types/node@25.9.4)(@vitejs/devtools@0.1.24)(esbuild@0.28.1)(jiti@2.7.0)(less@4.6.4)(sass@1.101.0)(terser@5.48.0)(tsx@4.22.4)(yaml@2.9.0)
     devDependencies:
+      '@eslint/compat':
+        specifier: ^2.1.0
+        version: 2.1.0(eslint@10.5.0(jiti@2.7.0))
       '@eslint/js':
         specifier: ^10.0.1
         version: 10.0.1(eslint@10.5.0(jiti@2.7.0))
+      '@master/eslint-config-css':
+        specifier: workspace:^
+        version: link:../../packages/eslint-config
       '@types/node':
         specifier: ^25.9.4
         version: 25.9.4
@@ -866,12 +872,18 @@ importers:
         specifier: ^19.2.7
         version: 19.2.7(react@19.2.7)
     devDependencies:
+      '@eslint/compat':
+        specifier: ^2.1.0
+        version: 2.1.0(eslint@10.5.0(jiti@2.7.0))
       '@master/css-cli':
         specifier: workspace:^
         version: link:../../packages/cli
       '@master/css.next':
         specifier: workspace:^
         version: link:../../packages/next
+      '@master/eslint-config-css':
+        specifier: workspace:^
+        version: link:../../packages/eslint-config
       '@types/node':
         specifier: ^25.9.4
         version: 25.9.4
@@ -980,9 +992,6 @@ importers:
         specifier: workspace:^
         version: link:../../packages/svelte
     devDependencies:
-      '@eslint/compat':
-        specifier: ^2.1.0
-        version: 2.1.0(eslint@10.5.0(jiti@2.7.0))
       '@fontsource/fira-mono':
         specifier: ^5.2.7
         version: 5.2.7
@@ -1510,6 +1519,12 @@ importers:
       '@types/css-tree':
         specifier: ^2.3.11
         version: 2.3.11
+
+  packages/create:
+    dependencies:
+      commander:
+        specifier: ^14.0.3
+        version: 14.0.3
 
   packages/css-sv:
     devDependencies:

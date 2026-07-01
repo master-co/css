@@ -1,19 +1,19 @@
 import js from '@eslint/js'
-import { includeIgnoreFile } from '@eslint/compat'
+import { defineConfig, globalIgnores } from 'eslint/config'
 import svelte from 'eslint-plugin-svelte'
-import globals from 'globals';
-import { fileURLToPath } from 'node:url'
+import globals from 'globals'
 import ts from 'typescript-eslint'
 import css from '@master/eslint-config-css'
 
-const gitignorePath = fileURLToPath(new URL("./.gitignore", import.meta.url))
-
-export default ts.config(
-    includeIgnoreFile(gitignorePath),
-    js.configs.recommended,
-    ...ts.configs.recommended,
-    ...svelte.configs["flat/recommended"],
+export default defineConfig([
+    globalIgnores(['.svelte-kit/**', '.vercel/**', 'build/**']),
     {
+        files: ['**/*.{js,cjs,mjs,ts,cts,mts,svelte}'],
+        extends: [
+            js.configs.recommended,
+            ts.configs.recommended,
+            ...svelte.configs['flat/recommended']
+        ],
         languageOptions: {
             globals: {
                 ...globals.browser,
@@ -22,12 +22,17 @@ export default ts.config(
         }
     },
     {
-        files: ["**/*.svelte"],
+        files: ['**/*.svelte'],
         languageOptions: {
             parserOptions: {
                 parser: ts.parser
             }
+        },
+        rules: {
+            'svelte/no-navigation-without-resolve': 'off',
+            'svelte/prefer-writable-derived': 'off',
+            'svelte/require-each-key': 'off'
         }
     },
     ...css
-)
+])

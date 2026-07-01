@@ -65,11 +65,12 @@
             ```
 
             ```js name=eslint.config.js
+            import { defineConfig } from 'eslint/config'
             import htmlParser from '@angular-eslint/template-parser'
             import tsParser from '@typescript-eslint/parser'
             import css from '@master/eslint-config-css'
 
-            export default [
+            export default defineConfig([
                 {
                     files: ['**/*.html'],
                     languageOptions: { parser: htmlParser }
@@ -79,7 +80,7 @@
                     languageOptions: { parser: tsParser }
                 },
                 ...css // [!code highlight]
-            ]
+            ])
             ```
         </StepR>
     </Step>

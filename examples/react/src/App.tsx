@@ -7,10 +7,10 @@ function App() {
     return (
         <>
             <div className='grid-cols:2 w:fit mx:auto'>
-                <a href="https://rc.css.master.co" target="_blank">
+                <a href="https://rc.css.master.co" target="_blank" rel="noreferrer">
                     <img src={masterLogo} className="logo master scale(2)" alt="Master logo" />
                 </a>
-                <a href="https://reactjs.org" target="_blank">
+                <a href="https://reactjs.org" target="_blank" rel="noreferrer">
                     <img src={reactLogo} className="logo react" alt="React logo" />
                 </a>
             </div>

@@ -63,43 +63,51 @@
         </StepL>
         <StepR>
             ```bash action=install
-            -D @master/eslint-config-css@rc eslint-plugin-react eslint-plugin-react-hooks eslint-plugin-react-refresh @eslint/compat globals typescript-eslint eslint
+            -D @master/eslint-config-css@rc @eslint/compat eslint-plugin-react eslint-plugin-react-hooks eslint-plugin-react-refresh globals typescript-eslint eslint
             ```
 
             ```js name=eslint.config.js
             import js from '@eslint/js'
-            import { includeIgnoreFile } from '@eslint/compat'
-            import { fileURLToPath } from 'node:url'
+            import { fixupConfigRules, fixupPluginRules } from '@eslint/compat'
+            import { defineConfig, globalIgnores } from 'eslint/config'
             import globals from 'globals'
-            import tseslint from 'typescript-eslint'
             import react from 'eslint-plugin-react'
             import reactHooks from 'eslint-plugin-react-hooks'
             import reactRefresh from 'eslint-plugin-react-refresh'
+            import tseslint from 'typescript-eslint'
             import css from '@master/eslint-config-css' // [!code highlight]
 
-            const gitignorePath = fileURLToPath(new URL('./.gitignore', import.meta.url))
-
-            export default tseslint.config(
-                includeIgnoreFile(gitignorePath),
+            export default defineConfig([
+                globalIgnores(['dist/**']),
                 {
-                    extends: [js.configs.recommended, ...tseslint.configs.recommended],
-                    files: ['**/*.{ts,tsx}'],
+                    files: ['**/*.{js,cjs,mjs,jsx,ts,cts,mts,tsx}'],
+                    extends: [
+                        js.configs.recommended,
+                        tseslint.configs.recommended,
+                        ...fixupConfigRules(react.configs.flat.recommended),
+                        ...fixupConfigRules(react.configs.flat['jsx-runtime'])
+                    ],
                     languageOptions: {
-                        ecmaVersion: 2020,
-                        globals: globals.browser,
+                        globals: globals.browser
                     },
                     plugins: {
-                        react,
-                        'react-hooks': reactHooks,
-                        'react-refresh': reactRefresh,
+                        'react-hooks': fixupPluginRules(reactHooks),
+                        'react-refresh': fixupPluginRules(reactRefresh)
                     },
                     rules: {
-                        ...react.configs['jsx-runtime'].rules,
                         ...reactHooks.configs.recommended.rules,
+                        'react-refresh/only-export-components': ['warn', {
+                            allowConstantExport: true
+                        }]
                     },
+                    settings: {
+                        react: {
+                            version: 'detect'
+                        }
+                    }
                 },
                 ...css // [!code highlight]
-            )
+            ])
             ```
         </StepR>
     </Step>

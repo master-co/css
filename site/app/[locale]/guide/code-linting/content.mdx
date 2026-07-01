@@ -17,9 +17,12 @@ Use `npx @master/css-cli inspect --format json` when the tool needs scanner stat
 The recommended config enables the canonical rule set:
 
 ```js name=eslint.config.js
+import { defineConfig } from 'eslint/config'
 import css from '@master/eslint-config-css'
 
-export default [...css]
+export default defineConfig([
+    ...css
+])
 ```
 
 | Rule | Default | Fixable | Purpose |
@@ -70,7 +73,11 @@ By default, unmatched classes are ignored so teams can mix Master CSS with exist
 Enable `disallowUnknownClass` when the project should only use classes known to the active Master CSS manifest:
 
 ```js name=eslint.config.js
-export default [
+import { defineConfig } from 'eslint/config'
+import css from '@master/eslint-config-css'
+
+export default defineConfig([
+    ...css,
     {
         rules: {
             '@master/css/no-invalid-classes': ['error', {
@@ -78,7 +85,7 @@ export default [
             }]
         }
     }
-]
+])
 ```
 
 ```html
@@ -140,9 +147,12 @@ The same fixes apply inside unquoted `@compose` class lists when ESLint is runni
 Standalone CSS files are checked by the default `@master/eslint-config-css` export:
 
 ```js name=eslint.config.js
+import { defineConfig } from 'eslint/config'
 import css from '@master/eslint-config-css'
 
-export default [...css]
+export default defineConfig([
+    ...css
+])
 ```
 
 Framework files with parsed `<style>` blocks, such as Vue and Svelte files, can lint `@compose` in those style blocks through the normal framework parser setup.
@@ -162,7 +172,11 @@ Framework files with parsed `<style>` blocks, such as Vue and Svelte files, can 
 Disable one family when a team wants a more literal authoring style:
 
 ```js name=eslint.config.js
-export default [
+import { defineConfig } from 'eslint/config'
+import css from '@master/eslint-config-css'
+
+export default defineConfig([
+    ...css,
     {
         rules: {
             '@master/css/prefer-canonical-classes': ['warn', {
@@ -172,7 +186,7 @@ export default [
             }]
         }
     }
-]
+])
 ```
 
 ### No conflicting classes
@@ -220,7 +234,11 @@ The default config checks class strings in common markup, JavaScript locations, 
 Customize settings under the `@master/css` settings key:
 
 ```js name=eslint.config.js
-export default [
+import { defineConfig } from 'eslint/config'
+import css from '@master/eslint-config-css'
+
+export default defineConfig([
+    ...css,
     {
         settings: {
             '@master/css': {
@@ -230,7 +248,7 @@ export default [
             }
         }
     }
-]
+])
 ```
 
 ---
@@ -239,15 +257,21 @@ export default [
 Use the recommended config for most projects:
 
 ```js name=eslint.config.js
+import { defineConfig } from 'eslint/config'
 import css from '@master/eslint-config-css'
 
-export default [...css]
+export default defineConfig([
+    ...css
+])
 ```
 
 Use stricter validation when the team wants every class to come from Master CSS syntax or the project manifest:
 
 ```js name=eslint.config.js
-export default [
+import { defineConfig } from 'eslint/config'
+import css from '@master/eslint-config-css'
+
+export default defineConfig([
     ...css,
     {
         rules: {
@@ -256,13 +280,16 @@ export default [
             }]
         }
     }
-]
+])
 ```
 
 Customize canonicalization when a team wants to keep one class family literal while still applying the other recommendations:
 
 ```js name=eslint.config.js
-export default [
+import { defineConfig } from 'eslint/config'
+import css from '@master/eslint-config-css'
+
+export default defineConfig([
     ...css,
     {
         rules: {
@@ -273,13 +300,16 @@ export default [
             }]
         }
     }
-]
+])
 ```
 
 Enable raw value policy when the team wants token-backed utilities to use tokens unless a value is explicitly allowed:
 
 ```js name=eslint.config.js
-export default [
+import { defineConfig } from 'eslint/config'
+import css from '@master/eslint-config-css'
+
+export default defineConfig([
     ...css,
     {
         rules: {
@@ -289,7 +319,7 @@ export default [
             }]
         }
     }
-]
+])
 ```
 
 ```mcss

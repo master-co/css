@@ -1,10 +1,10 @@
+import { defineConfig } from 'eslint/config'
 import css from '@master/eslint-config-css'
-import htmlParser from "@angular-eslint/template-parser"
+import htmlParser from '@angular-eslint/template-parser'
 import tsParser from '@typescript-eslint/parser'
 import { flat } from 'eslint-plugin-mdx'
 
-/** @type {import('eslint').Linter.Config[]} */
-export default [
+export default defineConfig([
     {
         files: ['**/*.html'],
         languageOptions: {
@@ -23,10 +23,10 @@ export default [
         rules: {
             '@master/css/no-invalid-classes': ['error', {
                 disallowUnknownClass: true
-            }],
+            }]
         },
         settings: {
             'mdx/code-blocks': true
-        },
-    },
-]
+        }
+    }
+])

@@ -12,7 +12,9 @@
         "types": "tsc --noEmit"
     },
     "devDependencies": {
+        "@eslint/compat": "^2.1.0",
         "@eslint/js": "^10.0.1",
+        "@master/eslint-config-css": "workspace:^",
         "@types/node": "^25.9.4",
         "eslint": "^10.5.0",
         "eslint-config-prettier": "^10.1.8",

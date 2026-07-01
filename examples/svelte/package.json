@@ -15,7 +15,6 @@
         "@master/css.svelte": "workspace:^"
     },
     "devDependencies": {
-        "@eslint/compat": "^2.1.0",
         "@fontsource/fira-mono": "^5.2.7",
         "@neoconfetti/svelte": "^2.2.2",
         "@sveltejs/adapter-vercel": "^6.3.4",

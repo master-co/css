@@ -36,9 +36,12 @@ Then give the project a vocabulary the agent can reuse. Theme tokens make repeat
 Use [Language Service](/guide/language-service) for completions, syntax highlighting, color tools, and generated CSS hover previews. Use [Code linting](/guide/code-linting) when AI-generated class strings should be checked before they enter the codebase.
 
 ```js name=eslint.config.js
+import { defineConfig } from 'eslint/config'
 import css from '@master/eslint-config-css'
 
-export default [...css]
+export default defineConfig([
+    ...css
+])
 ```
 
 This setup gives both the developer and the agent fast feedback. The agent can use project tokens instead of raw values, and linting can catch invalid classes, conflicting declarations, non-canonical syntax, and unstable class order.

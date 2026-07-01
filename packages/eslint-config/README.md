@@ -63,10 +63,12 @@ npm install -D @master/eslint-config-css
 Use the flat config in `eslint.config.js`:
 
 ```js
+import { defineConfig } from 'eslint/config'
 import css from '@master/eslint-config-css'
 
-/** @type {import('eslint').Linter.Config[]} */
-export default [...css]
+export default defineConfig([
+    ...css
+])
 ```
 
 This package combines the recommended class linting config and the standalone stylesheet config from `@master/eslint-plugin-css`.
@@ -74,7 +76,10 @@ This package combines the recommended class linting config and the standalone st
 For custom rules and settings, configure the plugin rules in the same flat config:
 
 ```js
-export default [
+import { defineConfig } from 'eslint/config'
+import css from '@master/eslint-config-css'
+
+export default defineConfig([
     ...css,
     {
         rules: {
@@ -83,7 +88,7 @@ export default [
             }]
         }
     }
-]
+])
 ```
 
 ## Related docs
