@@ -1,5 +1,6 @@
 import Body from 'internal/layouts/body'
 import i18n from 'internal/common/i18n.config.js'
+import HTML from 'internal/layouts/html'
 
 export const metadata = {
     title: {
@@ -16,8 +17,10 @@ export default async function Layout({ children }: {
     children: React.ReactNode
 }) {
     return (
-        <Body>
-            {children}
-        </Body>
+        <HTML locale="en">
+            <Body>
+                {children}
+            </Body>
+        </HTML>
     )
 }
