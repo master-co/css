@@ -16,11 +16,11 @@
     <Step $row>
         <StepL>
             ### <StepNum />Add Master CSS
-            Run the installer in runtime mode from the Webpack project root. It registers the Webpack plugin and creates the Master CSS entry stylesheet.
+            Run the installer from the Webpack project root. The default Webpack setup uses runtime rendering, registers the Webpack plugin, and creates the Master CSS entry stylesheet.
         </StepL>
         <StepR>
             ```bash name=Terminal
-            npm create @master/css@rc -- --framework webpack --mode runtime --yes
+            npm create @master/css@rc -- --framework webpack --yes
             ```
         </StepR>
     </Step>
@@ -49,7 +49,7 @@ import MasterCSSPlugin from '@master/css.webpack'
 
 export default {
     plugins: [
-        new MasterCSSPlugin({ mode: 'runtime' })
+        new MasterCSSPlugin()
     ]
 }
 ```
