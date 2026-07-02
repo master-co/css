@@ -1,12 +1,12 @@
 import path from 'path'
 import { LanguageClient, LanguageClientOptions, ServerOptions, TransportKind } from 'vscode-languageclient/node'
-import { commands, Disposable, EventEmitter, ExtensionContext, languages, ProgressLocation, Range, SemanticTokens, SemanticTokensLegend, TextEdit, window, workspace, type CancellationToken, type FormattingOptions, type OutputChannel, type Position, type ProviderResult, type TextDocument } from 'vscode'
+import { commands, Disposable, EventEmitter, ExtensionContext, languages, ProgressLocation, Range, SemanticTokens, SemanticTokensLegend, TextEdit, window, workspace, type CancellationToken, type FormattingOptions, type LogOutputChannel, type Position, type ProviderResult, type TextDocument } from 'vscode'
 import { ACTIVE_SEMANTIC_TOKENS_REQUEST, DOCUMENT_SEMANTIC_TOKENS_REQUEST, settings, type Settings } from '@master/css-language-server'
 import { applyMasterCSSDirectiveFormatEdits, formatMasterCSSDirectives, SEMANTIC_TOKENS_LEGEND } from '@master/css-language'
 import { isCompatibleMasterCSSPackageVersion, resolveMasterCSSWorkspacePackages } from '@master/css-project/workspace'
 
 let client: LanguageClient
-let outputChannel: OutputChannel
+let outputChannel: LogOutputChannel
 
 const disposables: Disposable[] = []
 
@@ -296,7 +296,7 @@ function createSemanticTokensFeature(client: LanguageClient, clientStarted: Then
 }
 
 export function activate(context: ExtensionContext) {
-    outputChannel = window.createOutputChannel('Master CSS')
+    outputChannel = window.createOutputChannel('Master CSS', { log: true })
     context.subscriptions.push(outputChannel)
 
     // The server is implemented in node
@@ -325,6 +325,7 @@ export function activate(context: ExtensionContext) {
     const clientOptions: LanguageClientOptions = {
         // Register the server for documents
         documentSelector,
+        outputChannel,
         initializationOptions: () => ({
             masterCSS: getMasterCSSSettings()
         }),

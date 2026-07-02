@@ -190,6 +190,17 @@ test('extension bundle includes workspace language server resolution fallback', 
     expect(source).toContain('Using bundled language server')
 })
 
+test('extension bundle reuses one Master CSS output channel for the language client', () => {
+    const source = readFileSync(extensionPath, 'utf8')
+    const masterCSSOutputChannelCalls = source.match(/\.createOutputChannel\((?:`Master CSS`|"Master CSS"|'Master CSS')/g) ?? []
+    const languageClientConstruction = source.match(
+        /new\s+[A-Za-z_$][\w$]*\.LanguageClient\(\s*(?:`masterCSS`|"masterCSS"|'masterCSS')\s*,\s*(?:`Master CSS`|"Master CSS"|'Master CSS')[\s\S]*?\}\)/
+    )?.[0]
+
+    expect(masterCSSOutputChannelCalls).toHaveLength(1)
+    expect(languageClientConstruction).toContain('outputChannel:')
+})
+
 test('server bundle keeps expected native runtime imports external', () => {
     const source = readFileSync(serverPath, 'utf8')
     const imports = [...source.matchAll(/\bfrom\s*["']([^"']+)["']/g)].map((match) => match[1])
