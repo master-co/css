@@ -9,7 +9,7 @@ const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
 const pkg = JSON.parse(readFileSync(resolve(__dirname, '../package.json'), 'utf8'))
 // Keep these local so generated core.d.ts does not emit value imports for root-only types.
-type CommandFramework = 'none' | 'vite' | 'react' | 'react-router' | 'vue' | 'nextjs' | 'svelte' | 'nuxt' | 'astro' | 'webpack' | 'rspack' | 'rsbuild' | 'laravel' | 'lit' | 'angular'
+type CommandFramework = 'none' | 'vite' | 'react' | 'react-router' | 'tanstack-start' | 'vue' | 'nextjs' | 'svelte' | 'nuxt' | 'astro' | 'webpack' | 'rspack' | 'rsbuild' | 'laravel' | 'lit' | 'angular'
 type CommandFrameworkOption = CommandFramework | 'auto'
 type CommandPackageManager = 'npm' | 'pnpm' | 'yarn' | 'bun'
 
@@ -51,7 +51,7 @@ export default async function runProgram(argv: string[] = process.argv) {
 
     const configure = (command: Command) => command
         .option('-C, --cwd <path>', 'Project root to update.')
-        .option('--framework <framework>', 'Framework: auto, vite, react, react-router, vue, nextjs, svelte, nuxt, astro, webpack, rspack, rsbuild, laravel, lit, angular, none.', 'auto')
+        .option('--framework <framework>', 'Framework: auto, vite, react, react-router, tanstack-start, vue, nextjs, svelte, nuxt, astro, webpack, rspack, rsbuild, laravel, lit, angular, none.', 'auto')
         .option('--eslint', 'Add the Master CSS recommended ESLint flat config.')
         .option('--no-eslint', 'Skip the Master CSS recommended ESLint flat config.')
         .option('--mcp', 'Add the Master CSS MCP package and print the stdio registration command.')

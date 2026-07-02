@@ -37,8 +37,32 @@ export function addReactRouterRootCSSImport(content: string) {
     return addImport(content, "import './app.css'")
 }
 
+export function addTanStackStartRootCSSImport(content: string) {
+    if (/^\s*import\s+['"]\.\.\/styles\/app\.css['"]\s*;?/m.test(content)) return content
+    return addImport(content, "import '../styles/app.css'")
+}
+
 export function addMasterCSSStaticVitePlugin(content: string) {
     return addMasterCSSVitePluginCall(content, "masterCSS({ mode: 'static' })")
+}
+
+export function addMasterCSSTanStackStartVitePlugin(content: string) {
+    const pluginCall = "masterCSS({ mode: 'static' })"
+    if (content.includes('@master/css.vite')) return content
+    let next = addImport(content, "import masterCSS from '@master/css.vite'")
+    const tanStackStartPluginPattern = /^(\s*)tanstackStart\([^)]*\),?/m
+    if (tanStackStartPluginPattern.test(next)) {
+        return next.replace(tanStackStartPluginPattern, (match, indent: string) => {
+            return `${match.endsWith(',') ? match : `${match},`}\n${indent}${pluginCall},`
+        })
+    }
+    if (/plugins\s*:\s*\[/.test(next)) {
+        return replaceFirst(next, /plugins\s*:\s*\[/, `plugins: [\n            ${pluginCall},`)
+    }
+    if (/defineConfig\(\s*\{/.test(next)) {
+        return replaceFirst(next, /defineConfig\(\s*\{/, `defineConfig({\n    plugins: [${pluginCall}],`)
+    }
+    return next
 }
 
 export function addMasterCSSRspackPlugin(content: string) {

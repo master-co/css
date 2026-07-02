@@ -663,6 +663,122 @@ export default function App() {
         }).toEqual(once)
     })
 
+    test('plans TanStack Start Vite projects before generic React', () => {
+        const root = createTempProject('master-css-create-tanstack-start-', {
+            dependencies: {
+                '@tanstack/react-router': '^1.170.0',
+                '@tanstack/react-start': '^1.168.0',
+                '@vitejs/plugin-react': '^6.0.0',
+                react: '^19.0.0',
+                'react-dom': '^19.0.0',
+                vite: '^8.0.0'
+            }
+        })
+        writeProjectFile(root, 'vite.config.ts', `import { defineConfig } from 'vite'
+import { tanstackStart } from '@tanstack/react-start/plugin/vite'
+import react from '@vitejs/plugin-react'
+
+export default defineConfig({
+    plugins: [
+        tanstackStart(),
+        react()
+    ]
+})
+`)
+        writeProjectFile(root, 'src/routes/__root.tsx', `import { createRootRoute, Outlet } from '@tanstack/react-router'
+
+export const Route = createRootRoute({
+    component: RootComponent
+})
+
+function RootComponent() {
+    return <Outlet />
+}
+`)
+
+        const plan = createSetupPlan({ root })
+
+        expect(plan.framework).toBe('tanstack-start')
+        expect(plan.dependencies.map((dependency) => dependency.name)).toEqual([
+            '@master/css',
+            '@master/css.vite',
+            '@master/eslint-config-css',
+            'eslint',
+            '@master/css-mcp'
+        ])
+        expect(plan.files.map((file) => [file.path, file.action])).toEqual([
+            ['vite.config.ts', 'update'],
+            ['src/styles/app.css', 'create'],
+            ['src/routes/__root.tsx', 'update'],
+            ['eslint.config.js', 'create'],
+            ['AGENTS.md', 'create']
+        ])
+
+        applySetup({ root, install: false })
+
+        const viteConfig = readProjectFile(root, 'vite.config.ts')
+        expect(viteConfig).toContain("import masterCSS from '@master/css.vite'")
+        expect(viteConfig).toContain("masterCSS({ mode: 'static' })")
+        expect(viteConfig.indexOf('tanstackStart()')).toBeLessThan(viteConfig.indexOf("masterCSS({ mode: 'static' })"))
+        expect(viteConfig.indexOf("masterCSS({ mode: 'static' })")).toBeLessThan(viteConfig.indexOf('react()'))
+        expect(readProjectFile(root, 'src/styles/app.css')).toBe("@import '@master/css';\n")
+        expect(readProjectFile(root, 'src/routes/__root.tsx')).toContain("import '../styles/app.css'")
+    })
+
+    test('allows explicit TanStack Start setup without framework auto detection', () => {
+        const root = createTempProject('master-css-create-tanstack-start-explicit-')
+
+        const plan = createSetupPlan({
+            root,
+            framework: 'tanstack-start',
+            minimal: true
+        })
+
+        expect(plan.framework).toBe('tanstack-start')
+        expect(plan.dependencies.map((dependency) => dependency.name)).toEqual([
+            '@master/css',
+            '@master/css.vite'
+        ])
+        expect(plan.files.map((file) => [file.path, file.action])).toEqual([
+            ['vite.config.ts', 'create'],
+            ['src/styles/app.css', 'create']
+        ])
+        expect(plan.warnings).toEqual([
+            'No src/routes/__root.tsx, src/routes/__root.jsx, src/routes/__root.ts, or src/routes/__root.js file was found. Import ../styles/app.css from the TanStack Start root route manually after setup.'
+        ])
+    })
+
+    test('applies idempotent TanStack Start root CSS imports', () => {
+        const root = createTempProject('master-css-create-tanstack-start-idempotent-', {
+            dependencies: {
+                '@tanstack/react-start': '^1.168.0',
+                react: '^19.0.0',
+                vite: '^8.0.0'
+            }
+        })
+        writeProjectFile(root, 'src/routes/__root.tsx', `import { Outlet } from '@tanstack/react-router'
+
+export default function Root() {
+    return <Outlet />
+}
+`)
+
+        applySetup({ root, install: false })
+        const once = {
+            root: readProjectFile(root, 'src/routes/__root.tsx'),
+            css: readProjectFile(root, 'src/styles/app.css'),
+            vite: readProjectFile(root, 'vite.config.ts')
+        }
+
+        applySetup({ root, install: false })
+
+        expect({
+            root: readProjectFile(root, 'src/routes/__root.tsx'),
+            css: readProjectFile(root, 'src/styles/app.css'),
+            vite: readProjectFile(root, 'vite.config.ts')
+        }).toEqual(once)
+    })
+
     test('plans Rspack projects with the Webpack-compatible plugin before generic React', () => {
         const root = createTempProject('master-css-create-rspack-', {
             dependencies: {

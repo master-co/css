@@ -8,6 +8,7 @@ export const { Page, dynamic, revalidate, generateMetadata } = createPage({
     metadata,
     dictionaries,
     categories,
+    noTOC: true,
     icon: 'tanstack-start',
     categoryLink: '/guide/installation/integrations',
     content: import('./content.mdx'),

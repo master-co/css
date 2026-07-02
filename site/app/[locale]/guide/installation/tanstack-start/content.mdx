@@ -1,4 +1,4 @@
-TanStack Start can use Master CSS through its Vite or Rsbuild build path. Use the setup that matches the build config in your project.
+TanStack Start supports Vite and Rsbuild. This guide uses the Vite setup path.
 
 <StepSection>
     <Step $row>
@@ -15,76 +15,34 @@ TanStack Start can use Master CSS through its Vite or Rsbuild build path. Use th
     </Step>
     <Step $row>
         <StepL>
-            ### <StepNum />Install Master CSS
-            Install the package pair for the build tool used by the project.
+            ### <StepNum />Add Master CSS
+            Run the installer from the TanStack Start project root.
         </StepL>
         <StepR>
             ```bash name=Terminal
-            npm install @master/css@rc @master/css.vite@rc
+            npm create @master/css@rc -- --framework tanstack-start --yes
             ```
         </StepR>
     </Step>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Start dev server
+            Run the command to start the TanStack Start dev server.
+        </StepL>
+        <StepR>
+            ```bash name=Terminal&action=run
+            dev
+            ```
+        </StepR>
+    </Step>
+    <Step>
+        ### <StepNum />Start using Master CSS
+        Now style your first route using Master CSS syntax.
+    </Step>
+    <HelloWorld url="localhost:3000" />
 </StepSection>
 
-## Vite setup
-
-Use `@master/css.vite` in the TanStack Start Vite config.
-
-```ts name=vite.config.ts
-import { defineConfig } from 'vite'
-import { tanstackStart } from '@tanstack/react-start/plugin/vite'
-import react from '@vitejs/plugin-react'
-import masterCSS from '@master/css.vite'
-
-export default defineConfig({
-    plugins: [
-        tanstackStart(),
-        masterCSS({ mode: 'static' }),
-        react()
-    ]
-})
-```
-
-## Rsbuild setup
-
-For the Rsbuild variant, install `@master/css.webpack` instead of `@master/css.vite`.
-
-```bash name=Terminal
-npm install @master/css@rc @master/css.webpack@rc
-```
-
-Register the plugin through Rsbuild's `tools.rspack` hook.
-
-```ts name=rsbuild.config.ts
-import { defineConfig } from '@rsbuild/core'
-import { tanstackStart } from '@tanstack/react-start/plugin/rsbuild'
-import MasterCSSPlugin from '@master/css.webpack'
-
-export default defineConfig({
-    plugins: [
-        tanstackStart()
-    ],
-    tools: {
-        rspack(config) {
-            config.plugins ||= []
-            config.plugins.push(new MasterCSSPlugin({ mode: 'static' }))
-            return config
-        }
-    }
-})
-```
-
-## CSS entry
-
-Create a shared stylesheet entry and import it from the root route.
-
-```css name=src/styles/app.css
-@import '@master/css';
-```
-
-```tsx name=src/routes/__root.tsx
-import '../styles/app.css'
-```
+The installer registers `@master/css.vite` in static mode, creates `src/styles/app.css`, and imports it from `src/routes/__root.tsx`.
 
 ```tsx name=src/routes/index.tsx
 import { createFileRoute } from '@tanstack/react-router'

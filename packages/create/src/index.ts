@@ -12,8 +12,10 @@ import {
     addMasterCSSRsbuildPlugin,
     addMasterCSSRspackPlugin,
     addMasterCSSStaticVitePlugin,
+    addMasterCSSTanStackStartVitePlugin,
     addMasterCSSVitePlugin,
     addReactRouterRootCSSImport,
+    addTanStackStartRootCSSImport,
     addLitShadowRuntime,
     addViteClientTypes,
     createAstroConfig,
@@ -26,7 +28,7 @@ import {
     createViteConfig
 } from './transforms'
 
-export type Framework = 'none' | 'vite' | 'react' | 'react-router' | 'vue' | 'nextjs' | 'svelte' | 'nuxt' | 'astro' | 'webpack' | 'rspack' | 'rsbuild' | 'laravel' | 'lit' | 'angular'
+export type Framework = 'none' | 'vite' | 'react' | 'react-router' | 'tanstack-start' | 'vue' | 'nextjs' | 'svelte' | 'nuxt' | 'astro' | 'webpack' | 'rspack' | 'rsbuild' | 'laravel' | 'lit' | 'angular'
 export type FrameworkOption = Framework | 'auto'
 export type PackageManager = 'npm' | 'pnpm' | 'yarn' | 'bun'
 export type FileAction = 'create' | 'update' | 'skip'
@@ -223,6 +225,19 @@ function filesForFramework(root: string, framework: Framework, warnings: string[
             }
             return files
         }
+        case 'tanstack-start': {
+            const files: PlannedFileChange[] = [
+                planTextFile(root, firstExistingPath(root, ['vite.config.ts', 'vite.config.js', 'vite.config.mjs'], 'vite.config.ts'), addMasterCSSTanStackStartVitePlugin, createStaticViteConfig(), 'Register the Master CSS Vite plugin in static mode.'),
+                planTextFile(root, 'src/styles/app.css', addMasterCSSImportToStylesheet, createMasterCSSStylesheet(), 'Create or update the TanStack Start stylesheet entry.')
+            ]
+            const rootEntryPath = findExistingPath(root, ['src/routes/__root.tsx', 'src/routes/__root.jsx', 'src/routes/__root.ts', 'src/routes/__root.js'])
+            if (rootEntryPath) {
+                files.push(planTextFile(root, rootEntryPath, addTanStackStartRootCSSImport, '', 'Import the TanStack Start stylesheet from the root route.'))
+            } else {
+                warnings.push('No src/routes/__root.tsx, src/routes/__root.jsx, src/routes/__root.ts, or src/routes/__root.js file was found. Import ../styles/app.css from the TanStack Start root route manually after setup.')
+            }
+            return files
+        }
         case 'vue':
             return [
                 planTextFile(root, firstExistingPath(root, ['vite.config.ts', 'vite.config.js', 'vite.config.mjs'], 'vite.config.ts'), addMasterCSSVitePlugin, createViteConfig(), 'Register the Master CSS Vite plugin.'),
@@ -307,7 +322,7 @@ function filesForFramework(root: string, framework: Framework, warnings: string[
 
 function dependenciesForFramework(framework: Framework, version: string): PlannedDependency[] {
     const dependencies = [{ name: MASTER_CSS_PACKAGES.css, version, dev: false }]
-    if (framework === 'vite' || framework === 'react' || framework === 'react-router' || framework === 'vue' || framework === 'laravel' || framework === 'lit') dependencies.push({ name: MASTER_CSS_PACKAGES.vite, version, dev: false })
+    if (framework === 'vite' || framework === 'react' || framework === 'react-router' || framework === 'tanstack-start' || framework === 'vue' || framework === 'laravel' || framework === 'lit') dependencies.push({ name: MASTER_CSS_PACKAGES.vite, version, dev: false })
     if (framework === 'nextjs') dependencies.push({ name: MASTER_CSS_PACKAGES.next, version, dev: false })
     if (framework === 'nuxt') dependencies.push({ name: MASTER_CSS_PACKAGES.nuxt, version, dev: false })
     if (framework === 'astro') dependencies.push({ name: MASTER_CSS_PACKAGES.astro, version, dev: false })
@@ -409,6 +424,7 @@ function resolveFramework(root: string, packageJSON: PackageJSON | undefined, fr
     if (existsSync(join(root, 'rsbuild.config.ts')) || existsSync(join(root, 'rsbuild.config.mts')) || existsSync(join(root, 'rsbuild.config.mjs')) || existsSync(join(root, 'rsbuild.config.js')) || dependencies['@rsbuild/core']) return 'rsbuild'
     if (existsSync(join(root, 'rspack.config.ts')) || existsSync(join(root, 'rspack.config.mts')) || existsSync(join(root, 'rspack.config.mjs')) || existsSync(join(root, 'rspack.config.js')) || existsSync(join(root, 'rspack.config.cjs')) || dependencies['@rspack/core'] || dependencies['@rspack/cli']) return 'rspack'
     if (existsSync(join(root, 'react-router.config.ts')) || existsSync(join(root, 'react-router.config.js')) || existsSync(join(root, 'react-router.config.mjs')) || existsSync(join(root, 'react-router.config.mts')) || dependencies['@react-router/dev']) return 'react-router'
+    if (dependencies['@tanstack/react-start']) return 'tanstack-start'
     if (dependencies.vue || dependencies['@vitejs/plugin-vue'] || existsSync(join(root, 'src/App.vue'))) return 'vue'
     if (dependencies.lit) return 'lit'
     if (dependencies.react || dependencies['react-dom']) return 'react'
