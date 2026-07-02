@@ -136,8 +136,21 @@ jobs:
             - uses: ./.github/actions/setup-pnpm
               with:
                   submodules-token: ${{ secrets.GH_TOKEN }}
-            - if: ${{ github.ref_name != 'rc' }}
-              run: pnpm run build
+            - run: pnpm run build
+            - run: pnpm exec semantic-release
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+            - name: Trigger Cloudflare Pages site deploy
+              if: ${{ github.ref_name == 'rc' }}
+              run: |
+                  if [ -z "$CLOUDFLARE_PAGES_RC_DEPLOY_HOOK" ]; then
+                      echo "CLOUDFLARE_PAGES_RC_DEPLOY_HOOK is required to deploy the site after release."
+                      exit 1
+                  fi
+                  curl -fsS -X POST "$CLOUDFLARE_PAGES_RC_DEPLOY_HOOK"
+              env:
+                  CLOUDFLARE_PAGES_RC_DEPLOY_HOOK: ${{ secrets.CLOUDFLARE_PAGES_RC_DEPLOY_HOOK }}
             - name: Build and package VS Code extension release
               if: ${{ github.ref_name == 'rc' }}
               run: pnpm release:vscode -- --patch --no-publish
@@ -156,22 +169,17 @@ jobs:
                   client-id: ${{ vars.AZURE_CLIENT_ID }}
                   tenant-id: ${{ vars.AZURE_TENANT_ID }}
                   subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+            - name: Inspect VSCE Azure identity
+              if: ${{ github.ref_name == 'rc' }}
+              run: |
+                  az account show --query '{tenantId:tenantId,user:user}' -o json
+                  az rest \
+                      -u https://app.vssps.visualstudio.com/_apis/profile/profiles/me \
+                      --resource 499b84ac-1321-427f-aa17-267ca6975798 \
+                      --query '{id:id,displayName:displayName,uniqueName:uniqueName}' \
+                      -o json
             - name: Publish VS Code extension
               if: ${{ github.ref_name == 'rc' }}
               run: |
                   pnpm --filter master-css-vscode exec vsce verify-pat --azure-credential masterco
                   pnpm --filter master-css-vscode vscode:publish -- --azure-credential
-            - run: pnpm exec semantic-release
-              env:
-                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-                  NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-            - name: Trigger Cloudflare Pages site deploy
-              if: ${{ github.ref_name == 'rc' }}
-              run: |
-                  if [ -z "$CLOUDFLARE_PAGES_RC_DEPLOY_HOOK" ]; then
-                      echo "CLOUDFLARE_PAGES_RC_DEPLOY_HOOK is required to deploy the site after release."
-                      exit 1
-                  fi
-                  curl -fsS -X POST "$CLOUDFLARE_PAGES_RC_DEPLOY_HOOK"
-              env:
-                  CLOUDFLARE_PAGES_RC_DEPLOY_HOOK: ${{ secrets.CLOUDFLARE_PAGES_RC_DEPLOY_HOOK }}
