@@ -44,8 +44,27 @@ This page collects the public benchmark snapshots used to explain Master CSS per
 
 ---
 
+## Core hypothesis
+The central performance question is not whether a runtime is faster than no runtime in isolation. It is whether **small Runtime plus very few CSS rules** can produce lower whole-browser cost than **zero Runtime plus many CSS rules** over the page lifecycle.
+
+For Master CSS, runtime and progressive rendering trade a small amount of JavaScript work for lower delivered CSS, smaller CSSOM/rule volume, and fewer rules for the browser to consider during style recalculation. Tailwind CSS is useful here as a zero-runtime static CSS control: it does not provide a runtime-equivalent implementation, but it does represent the large static CSS side of the tradeoff.
+
+The current evidence should be read as directional. It can support the hypothesis in measured fixtures when runtime/progressive modes reduce CSSOM/rule volume and style recalculation enough to offset runtime bootstrap, observe, and mutation work. It does not establish that every application will be faster.
+
+Selector matching is not directly measured as a stable Chromium metric in these suites. It is inferred from delivered selectors, CSSOM rule count, runtime-generated rule count, and trace-derived style recalculation.
+
+---
+
 ## How to read these results
-Benchmarks are useful when they answer a narrow question. Read each chart as evidence for the measured fixture and command, then compare it with the complete table and the committed snapshot before applying the result to another app.
+Benchmarks are useful when they answer a narrow question. This page builds the runtime/CSSOM hypothesis in a validation ladder:
+
+1. Static CSS output and structure show how many bytes, selectors, declarations, and rules each static setup delivers.
+2. Browser CSS cost calibrates how Chromium responds when CSS rule volume grows while DOM is fixed.
+3. Delivery modes show what Master static, runtime, progressive, and Tailwind static send and do on initial load.
+4. Interaction cost measures post-load DOM and class changes, including runtime rule work.
+5. Browser lifecycle evidence combines long-session browser work, CSSOM/rule volume, and runtime instrumentation.
+
+Read each chart as evidence for the measured fixture and command, then compare it with the complete table and committed snapshot before applying the result to another app.
 
 | Question | Primary evidence |
 |----------|------------------|
@@ -56,6 +75,8 @@ Benchmarks are useful when they answer a narrow question. Read each chart as evi
 | What does each delivery mode send and do on first load? | Master CSS delivery modes |
 | What happens after load when classes and DOM change? | Interaction cost |
 | Does runtime work change long-session browser cost? | Browser lifecycle evidence |
+
+Tailwind CSS is not a runtime-equivalent comparison. In runtime-oriented suites, it is the static browser-control baseline for the zero-runtime, larger-static-CSS side of the hypothesis.
 
 Lower numbers are not automatically better in every context. A smaller CSS artifact can shift work into runtime, a faster cold command can hide less useful output, and a local Chromium trace does not replace real production telemetry.
 
@@ -246,9 +267,9 @@ Interpretation: runtime and progressive modes should be read in two layers: user
 Limits: these numbers do not measure route transitions, HMR, dev workflow, CDN behavior, Firefox, WebKit, or public real-world application variance.
 
 ### Browser lifecycle and INP-style interactions
-Question answered: does a small amount of runtime work reduce generated CSS rule volume enough to lower style recalculation, route, and long-session interaction cost over time?
+Question answered: can small runtime/progressive work plus low CSSOM/rule volume lower whole-browser lifecycle cost compared with zero-runtime static CSS?
 
-The suite keeps Tailwind CSS as a static browser-control setup and compares it with Master CSS static, runtime, and progressive setups. The latency value is an INP-style local fixture measurement, not real Web Vitals INP.
+The suite is the closest current test of the core hypothesis. It keeps Tailwind CSS as the zero-runtime static browser-control setup and compares it with Master CSS static, runtime, and progressive setups across lifecycle scenarios. The latency value is an INP-style local fixture measurement, not real Web Vitals INP.
 
 <figure>
     <BrowserLifecycleSummary />
@@ -265,7 +286,7 @@ The suite keeps Tailwind CSS as a static browser-control setup and compares it w
     <figcaption>Complete five-minute long-session evidence for every mode.</figcaption>
 </figure>
 
-Interpretation: in the five-minute local Chromium evidence, Master runtime and progressive clear the strict same-machine repeat gate for style recalculation medians against both Master static and the Tailwind static browser control. Layout, paint, long-task, and INP-style latency medians are published as measured data, but they are not described as wins because they do not pass the same direction plus threshold gate.
+Interpretation: current five-minute local Chromium evidence directionally supports the hypothesis for style recalculation: Master runtime and progressive show lower style recalculation medians than the Tailwind static browser control while carrying measured runtime mutation work. Layout, paint, long-task, and INP-style latency medians remain measured data, not wins, because they do not establish the same directional advantage.
 
 Limits: selector matching time remains an inference from CSSOM/rule volume plus style recalculation unless Chromium exposes a stable trace metric for it. CSSOM memory and GC pressure are reported only when the collection method is stable enough to reproduce on the same browser version.
 
@@ -309,10 +330,17 @@ Browser timings should be measured with fixed viewport, device scale, browser ve
 
 Runtime and progressive rendering optimize what CSS is delivered up front. They do not make browser style calculation free: when an interaction creates many first-time utility rules, the browser still needs to account for those new stylesheet rules before it can paint the updated DOM.
 
+### Tailwind CSS comparisons
+Tailwind CSS comparisons use pinned Tailwind CSS v4 tooling and official entrypoints for static output, production build, and static browser-control measurements.
+
+Runtime-equivalent claims should be avoided because Tailwind CSS does not perform the same client-side class observation work as Master CSS runtime rendering. In the runtime/CSSOM hypothesis, Tailwind CSS represents the zero-runtime static baseline, not a runtime competitor.
+
 ### Publication rules
 Curated snapshots are committed; raw reports are not. Raw reports, traces, diagnostics, screenshots, downloaded history, and temporary workspaces stay under `benchmarks/.results/**`.
 
 Every public result should include the fixture, adapter or mode, package versions, command, machine, operating system, browser version when relevant, viewport/device scale, warmup rounds, measured rounds, cache mode, sample count, and known limits.
+
+Allowed public claim language is intentionally narrow: use "directional evidence," "supports the hypothesis in this fixture," and "static browser-control baseline." Avoid "proves," "overall faster," and "runtime wins" unless future same-machine repeat evidence passes an explicit direction and threshold gate for the named metric.
 
 Real Web Vitals and Lighthouse scores are outside the current benchmark source. The benchmark suite prefers direct output, build, trace, and interaction measurements that can be tied back to a specific fixture and command.
 
