@@ -27,7 +27,7 @@
     <Step $row>
         <StepL>
             ### <StepNum />Configure Webpack
-            Register the Webpack plugin in runtime mode. Generic Webpack config shapes vary, so the installer does not rewrite this file automatically.
+            Register the Webpack plugin in static mode. Static mode scans complete class strings and emits generated CSS at build time.
         </StepL>
         <StepR>
             ```js name=webpack.config.mjs
@@ -35,7 +35,7 @@
 
             export default {
                 plugins: [
-                    new MasterCSSPlugin({ mode: 'runtime' })
+                    new MasterCSSPlugin({ mode: 'static' })
                 ]
             }
             ```
