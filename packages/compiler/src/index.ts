@@ -123,6 +123,62 @@ function findPackageRoot(entryFile: string, packageName: string) {
     }
 }
 
+function resolvePackageDirectory(directory: string) {
+    try {
+        return realpathSync(directory)
+    } catch {
+        return directory
+    }
+}
+
+function findNodeModulesPackageRoot(baseDirectory: string, packageName: string) {
+    let directory = resolve(baseDirectory)
+    const packagePath = packageName.split('/')
+    while (true) {
+        const packageJSONFile = resolve(directory, 'node_modules', ...packagePath, 'package.json')
+        if (existsSync(packageJSONFile)) {
+            try {
+                const packageJSON = readJSONFile<CSSPackageJSON>(packageJSONFile)
+                if (packageJSON.name === packageName) {
+                    return {
+                        directory: resolvePackageDirectory(dirname(packageJSONFile)),
+                        packageJSON
+                    }
+                }
+            } catch {
+                // Keep walking up in case this is not the package root.
+            }
+        }
+        const parentDirectory = dirname(directory)
+        if (parentDirectory === directory) return
+        directory = parentDirectory
+    }
+}
+
+function resolvePackageRoot(packageName: string, fromFile: string, projectDir?: string) {
+    const resolvedFromFile = resolve(projectDir || '', fromFile)
+    const searchDirectories = [
+        projectDir,
+        resolvedFromFile,
+        dirname(resolvedFromFile),
+        process.cwd()
+    ].filter((directory): directory is string => typeof directory === 'string')
+
+    for (const directory of new Set(searchDirectories)) {
+        const packageRoot = findNodeModulesPackageRoot(directory, packageName)
+        if (packageRoot) return packageRoot
+    }
+
+    const resolver = createProjectRequire(fromFile, projectDir)
+    let packageEntryFile: string
+    try {
+        packageEntryFile = resolver.resolve(packageName)
+    } catch {
+        packageEntryFile = require.resolve(packageName)
+    }
+    return findPackageRoot(packageEntryFile, packageName)
+}
+
 function getPackageStyleEntry(packageJSON: CSSPackageJSON) {
     if (typeof packageJSON.style === 'string') return packageJSON.style
     if (!packageJSON.exports || typeof packageJSON.exports !== 'object') return
@@ -138,14 +194,7 @@ function createProjectRequire(fromFile: string, projectDir?: string) {
 
 export function resolveMasterCSSPackageEntryFile(importSource: string, fromFile = process.cwd(), projectDir?: string) {
     if (!MASTER_CSS_PACKAGE_IDS.has(importSource)) return
-    const resolver = createProjectRequire(fromFile, projectDir)
-    let packageEntryFile: string
-    try {
-        packageEntryFile = resolver.resolve(importSource)
-    } catch {
-        packageEntryFile = require.resolve(importSource)
-    }
-    const packageRoot = findPackageRoot(packageEntryFile, importSource)
+    const packageRoot = resolvePackageRoot(importSource, fromFile, projectDir)
     if (!packageRoot) return
     const styleEntry = getPackageStyleEntry(packageRoot.packageJSON)
     if (!styleEntry) return

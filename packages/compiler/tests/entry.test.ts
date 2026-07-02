@@ -1,9 +1,11 @@
-import { existsSync, readFileSync } from 'node:fs'
-import { dirname, resolve } from 'node:path'
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync, writeFileSync } from 'node:fs'
+import { tmpdir } from 'node:os'
+import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { expect, test } from 'vitest'
 import {
     compileCSS,
+    compileProjectManifest,
     findStandaloneMasterDirectiveStatements,
     inspectCSS,
     resolveMasterCSSPackageEntryFile
@@ -54,4 +56,36 @@ test('resolves CSS-only preset package root to stylesheet entry', () => {
 
     expect(entry).toBe(expectedEntry)
     expect(entry ? existsSync(entry) : false).toBe(true)
+})
+
+test('resolves package stylesheet entry before requiring the package JavaScript entry', () => {
+    const root = mkdtempSync(join(tmpdir(), 'master-css-package-entry-'))
+    try {
+        const packageRoot = join(root, 'node_modules/@master/css')
+        const entryFile = join(root, 'src/app.css')
+        mkdirSync(join(packageRoot, 'src'), { recursive: true })
+        mkdirSync(dirname(entryFile), { recursive: true })
+        writeFileSync(join(packageRoot, 'package.json'), JSON.stringify({
+            name: '@master/css',
+            style: './src/index.css',
+            exports: {
+                '.': {
+                    style: './src/index.css',
+                    import: './dist/index.js',
+                    default: './dist/index.js'
+                }
+            }
+        }))
+        writeFileSync(join(packageRoot, 'src/index.css'), '@theme { --color-primary: #123456; }')
+        writeFileSync(entryFile, '@import "@master/css";')
+
+        const packageStyleEntry = join(realpathSync(packageRoot), 'src/index.css')
+        const entry = resolveMasterCSSPackageEntryFile('@master/css', entryFile, root)
+        const result = compileProjectManifest([entryFile], { root })
+
+        expect(entry).toBe(packageStyleEntry)
+        expect(result.dependencies).toContain(packageStyleEntry)
+    } finally {
+        rmSync(root, { recursive: true, force: true })
+    }
 })
