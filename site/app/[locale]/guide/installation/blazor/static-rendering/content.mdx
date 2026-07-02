@@ -1,4 +1,4 @@
-Use Vite to build the browser runtime entry for a Blazor app. Vite owns the frontend assets, while Blazor and .NET still own the app host page, project files, and server/runtime lifecycle.
+Use Vite to build the browser assets for a Blazor app, then let Master CSS scan `.razor`, `.cshtml`, and host HTML files during that asset build. Vite owns the frontend asset pipeline; Blazor and .NET still own the app host page, project files, and server/runtime lifecycle.
 
 <StepSection>
     <Step $row>
@@ -16,7 +16,7 @@ Use Vite to build the browser runtime entry for a Blazor app. Vite owns the fron
     <Step $row>
         <StepL>
             ### <StepNum />Install Vite and Master CSS
-            Install Vite and the Master CSS Vite integration in the Blazor project root.
+            Install Vite and the Master CSS Vite integration in the project root.
         </StepL>
         <StepR>
             ```bash name=Terminal
@@ -28,7 +28,7 @@ Use Vite to build the browser runtime entry for a Blazor app. Vite owns the fron
     <Step $row>
         <StepL>
             ### <StepNum />Configure Vite
-            Build the runtime entry and base stylesheet into `wwwroot/assets` so the Blazor host page can load them as static assets.
+            Build static CSS into `wwwroot/assets` so the Blazor host page can load it as a normal static asset.
         </StepL>
         <StepR>
             ```ts name=vite.config.ts
@@ -37,7 +37,7 @@ Use Vite to build the browser runtime entry for a Blazor app. Vite owns the fron
 
             export default defineConfig({
                 plugins: [
-                    masterCSS({ mode: 'runtime', injectRuntime: false })
+                    masterCSS({ mode: 'static' })
                 ],
                 build: {
                     outDir: 'wwwroot/assets',
@@ -57,16 +57,21 @@ Use Vite to build the browser runtime entry for a Blazor app. Vite owns the fron
     <Step $row>
         <StepL>
             ### <StepNum />Create the asset entry
-            Import the Vite-managed runtime and the Master CSS stylesheet from the browser entry.
+            Import the Master CSS entry from the Vite stylesheet and explicitly include Blazor source files.
         </StepL>
         <StepR>
             ```ts name=src/main.ts
-            import '@master/css.vite/runtime'
             import './app.css'
             ```
 
             ```css name=src/app.css
             @import "@master/css";
+
+            @source "../**/*.{razor,cshtml,html}";
+            @source not "../bin/**";
+            @source not "../obj/**";
+            @source not "../node_modules/**";
+            @source not "../wwwroot/assets/**";
             ```
         </StepR>
     </Step>
@@ -93,11 +98,10 @@ Use Vite to build the browser runtime entry for a Blazor app. Vite owns the fron
     <Step $row>
         <StepL>
             ### <StepNum />Load the built assets
-            Reference the Vite output from the Blazor host page your project uses, such as `Components/App.razor`, `wwwroot/index.html`, or `Pages/_Host.cshtml`. Add `hidden` to the root document so the runtime can avoid a flash of unstyled content before it injects class rules.
+            Reference the Vite output from the Blazor host page your project uses, such as `Components/App.razor`, `wwwroot/index.html`, or `Pages/_Host.cshtml`.
         </StepL>
         <StepR>
             ```html name=Components/App.razor
-            <html lang="en" hidden>
             <head>
                 <link rel="stylesheet" href="/assets/app.css">
             </head>
@@ -105,7 +109,6 @@ Use Vite to build the browser runtime entry for a Blazor app. Vite owns the fron
                 <Routes />
                 <script type="module" src="/assets/app.js"></script>
             </body>
-            </html>
             ```
         </StepR>
     </Step>
@@ -134,4 +137,4 @@ Use Vite to build the browser runtime entry for a Blazor app. Vite owns the fron
 </h1>
 ```
 
-Runtime rendering generates CSS in the browser as Blazor renders and updates elements. Use [Blazor static rendering](/guide/installation/blazor/static-rendering) when classes are statically visible and you need build-time CSS output.
+Static rendering depends on complete class strings in scanned source files. If a Razor component assembles class names from fragments, map states to complete class strings or add bounded candidates with [`@safelist`](/guide/directives#safelist).
