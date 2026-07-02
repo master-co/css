@@ -884,7 +884,7 @@ bootstrapApplication(AppComponent)
 
         applySetup({ root, install: false })
 
-        expect(readProjectFile(root, 'src/main.ts')).toContain("import { CSSRuntime } from '@master/css-runtime'")
+        expect(readProjectFile(root, 'src/main.ts')).toContain("import CSSRuntime from '@master/css-runtime'")
         expect(readProjectFile(root, 'src/main.ts')).toContain('CSSRuntime.create({ manifest: defaultManifest }).observe()')
         expect(readProjectFile(root, 'src/styles.css')).toBe("@import '@master/css';\n")
     })

@@ -39,7 +39,7 @@
 - `src/css-manifest-loader.ts`
 - `src/css-manifest-import-loader.ts`
 - `src/options.ts`
-- Generated `node_modules/.master-css/master-css-next-instrumentation-client.cjs` source from `src/index.ts`
+- Generated `node_modules/.master-css/master-css-next-instrumentation-client.js` source from `src/index.ts`
 
 ## Risk Areas
 

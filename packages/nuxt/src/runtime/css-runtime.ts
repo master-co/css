@@ -1,5 +1,5 @@
 import { defineNuxtPlugin } from '#imports'
-import { CSSRuntime } from '@master/css-runtime'
+import CSSRuntime from '@master/css-runtime'
 // @ts-expect-error virtual module
 import manifest from 'virtual:master-css-manifest'
 // @ts-expect-error virtual module

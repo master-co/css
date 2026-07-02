@@ -1,4 +1,4 @@
-export { default as CSSRuntime, default } from './core'
+export { default } from './core'
 export type { CSSRuntimeCreateOptions } from './core'
 export { default as cssRuntime } from './css-runtime'
 export { default as RuntimeUtilityLayer } from './utility-layer'

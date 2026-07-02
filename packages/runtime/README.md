@@ -68,7 +68,7 @@ npm install @master/css-runtime
 Initialize the runtime with the project manifest and emitted global CSS state provided by an official integration:
 
 ```js
-import { CSSRuntime } from '@master/css-runtime'
+import CSSRuntime from '@master/css-runtime'
 import manifest from 'virtual:master-css-manifest'
 import emittedGlobals from 'virtual:master-css-emitted-globals'
 
@@ -132,7 +132,7 @@ MutationObserver additions update `classCounts` immediately. Existing and retain
 ### Progressive Hydration
 
 ```ts
-import { CSSRuntime } from '@master/css-runtime'
+import CSSRuntime from '@master/css-runtime'
 import manifest from 'virtual:master-css-manifest'
 import emittedGlobals from 'virtual:master-css-emitted-globals'
 

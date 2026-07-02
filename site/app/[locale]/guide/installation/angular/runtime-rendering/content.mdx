@@ -40,7 +40,7 @@
                import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
                import { AppModule } from './app/app.module';
                import defaultManifest from '@master/css-preset/default-manifest.json' with { type: 'json' }; // [!code ++]
-               import { CSSRuntime } from '@master/css-runtime'; // [!code ++]
+               import CSSRuntime from '@master/css-runtime'; // [!code ++]
 
                CSSRuntime.create({ manifest: defaultManifest }).observe(); // [!code ++]
 

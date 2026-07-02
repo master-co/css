@@ -27,7 +27,7 @@ The runtime engine uses the standard [Web APIs - Mutation Observer](https://deve
 It is packaged as [`@master/css-runtime`](https://www.npmjs.com/package/@master/css-runtime). Most applications start it through a framework integration or a bundler entry:
 
 ```ts name=src/main.ts
-import { CSSRuntime } from '@master/css-runtime'
+import CSSRuntime from '@master/css-runtime'
 import manifest from 'virtual:master-css-manifest'
 import emittedGlobals from 'virtual:master-css-emitted-globals'
 
@@ -152,7 +152,7 @@ console.log(sheet.cssRules)
 When runtime code needs project tokens, modes, or component definitions, load the compiled runtime inputs from the integration. `virtual:master-css-manifest` resolves the canonical project-level manifest discovered from the CSS entry, and `virtual:master-css-emitted-globals` records variables and keyframes that the entry already emitted.
 
 ```js
-import { CSSRuntime } from '@master/css-runtime'
+import CSSRuntime from '@master/css-runtime'
 import manifest from 'virtual:master-css-manifest'
 import emittedGlobals from 'virtual:master-css-emitted-globals'
 

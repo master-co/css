@@ -41,7 +41,7 @@ const NEXT_REQUIRE_INSTRUMENTATION_CLIENT_IDS = [
     'next/dist/esm/lib/require-instrumentation-client'
 ]
 const COMPOSED_ADAPTER_FILE = 'master-css-next-adapter.js'
-const INSTRUMENTATION_CLIENT_FILE = 'master-css-next-instrumentation-client.cjs'
+const INSTRUMENTATION_CLIENT_FILE = 'master-css-next-instrumentation-client.js'
 const PACKAGE_ROOT = dirname(dirname(fileURLToPath(import.meta.url)))
 
 function resolveAdapterPath() {
@@ -66,10 +66,10 @@ function resolveStyleCSSLoaderPath() {
 
 function createInstrumentationClientSource() {
     return [
-        `require('private-next-master-css-user-instrumentation-client')`,
-        `const { CSSRuntime } = require('@master/css-runtime')`,
-        `const masterCSSManifestModule = require('virtual:master-css-manifest')`,
-        `const masterCSSEmittedGlobalsModule = require('virtual:master-css-emitted-globals')`,
+        `import 'private-next-master-css-user-instrumentation-client'`,
+        `import CSSRuntime from '@master/css-runtime'`,
+        `import masterCSSManifest from 'virtual:master-css-manifest'`,
+        `import masterCSSEmittedGlobals from 'virtual:master-css-emitted-globals'`,
         ``,
         `const state = (globalThis.__MASTER_CSS_NEXT_RUNTIME__ ??= {})`,
         ``,
@@ -89,7 +89,7 @@ function createInstrumentationClientSource() {
         `    destroyRuntime()`,
         `}`,
         ``,
-        `async function startRuntime(manifestModule = masterCSSManifestModule, emittedGlobalsModule = masterCSSEmittedGlobalsModule) {`,
+        `async function startRuntime(manifestModule = masterCSSManifest, emittedGlobalsModule = masterCSSEmittedGlobals) {`,
         `    if (typeof document === 'undefined') return`,
         `    const startToken = {}`,
         `    state.startToken = startToken`,
@@ -113,7 +113,7 @@ function createInstrumentationClientSource() {
         `    if (typeof document !== 'undefined') {`,
         `        void startRuntime()`,
         `    }`,
-        `    const hot = module.hot`,
+        `    const hot = import.meta.turbopackHot || import.meta.webpackHot`,
         `    if (hot && !state.hotRegistered) {`,
         `        state.hotRegistered = true`,
         `        hot.accept(() => {})`,
@@ -121,8 +121,8 @@ function createInstrumentationClientSource() {
         `            'virtual:master-css-manifest',`,
         `            'virtual:master-css-emitted-globals'`,
         `        ], () => {`,
-        `            const nextManifestModule = require('virtual:master-css-manifest')`,
-        `            const nextEmittedGlobalsModule = require('virtual:master-css-emitted-globals')`,
+        `            const nextManifestModule = import('virtual:master-css-manifest')`,
+        `            const nextEmittedGlobalsModule = import('virtual:master-css-emitted-globals')`,
         `            void startRuntime(`,
         `                nextManifestModule,`,
         `                nextEmittedGlobalsModule`,

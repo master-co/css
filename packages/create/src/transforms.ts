@@ -243,7 +243,7 @@ export function addLitShadowRuntime(content: string) {
         && content.includes('cssRuntime?: CSSRuntime')
     ) return content
     let next = addImport(content, "import { cssRuntime } from '@master/css-runtime'")
-    next = addImport(next, "import type { CSSRuntime } from '@master/css-runtime'")
+    next = addImport(next, "import type CSSRuntime from '@master/css-runtime'")
     next = addImport(next, "import manifest from 'virtual:master-css-manifest'")
     next = addImport(next, "import emittedGlobals from 'virtual:master-css-emitted-globals'")
 
@@ -265,7 +265,7 @@ export function addLitShadowRuntime(content: string) {
 export function addAngularRuntimeSetup(content: string) {
     if (content.includes('@master/css-runtime')) return content
     let next = addImport(content, "import defaultManifestJSON from '@master/css-preset/default-manifest.json'")
-    next = addImport(next, "import { CSSRuntime } from '@master/css-runtime'")
+    next = addImport(next, "import CSSRuntime from '@master/css-runtime'")
     next = addImport(next, "import type { MasterCSSManifest } from '@master/css-runtime'")
     const setup = `const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
 

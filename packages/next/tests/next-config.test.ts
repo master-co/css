@@ -12,6 +12,7 @@ const toPosixPath = (value: string) => value.replace(/\\/g, '/')
 const virtualManifestProjectPath = 'node_modules/.master-css/master-css-manifest.js'
 const virtualEmittedGlobalsProjectPath = 'node_modules/.master-css/master-css-emitted-globals.js'
 const composedAdapterProjectPath = 'node_modules/.master-css/master-css-next-adapter.js'
+const instrumentationClientProjectPath = 'node_modules/.master-css/master-css-next-instrumentation-client.js'
 const nextInstrumentationClientId = 'private-next-instrumentation-client'
 const masterCSSUserInstrumentationClientId = 'private-next-master-css-user-instrumentation-client'
 const removedReactPackageName = ['@master', 'css.react'].join('/')
@@ -21,10 +22,24 @@ function readGeneratedInstrumentationClientSource(root: string) {
     try {
         process.chdir(root)
         withMasterCSS({})
-        return readFileSync(join(root, 'node_modules', '.master-css', 'master-css-next-instrumentation-client.cjs'), 'utf-8')
+        return readFileSync(join(root, 'node_modules', '.master-css', 'master-css-next-instrumentation-client.js'), 'utf-8')
     } finally {
         process.chdir(cwd)
     }
+}
+
+const AsyncFunction = async function () { }.constructor as new (...args: string[]) => (...args: unknown[]) => Promise<void>
+
+function toRunnableInstrumentationClientSource(source: string) {
+    return source
+        .replace(`import 'private-next-master-css-user-instrumentation-client'`, `await importModule('private-next-master-css-user-instrumentation-client')`)
+        .replace(`import CSSRuntime from '@master/css-runtime'`, `const CSSRuntime = await importDefault('@master/css-runtime')`)
+        .replace(`import masterCSSManifest from 'virtual:master-css-manifest'`, `const masterCSSManifest = await importDefault('virtual:master-css-manifest')`)
+        .replace(`import masterCSSEmittedGlobals from 'virtual:master-css-emitted-globals'`, `const masterCSSEmittedGlobals = await importDefault('virtual:master-css-emitted-globals')`)
+        .replaceAll(`import('virtual:master-css-manifest')`, `importModule('virtual:master-css-manifest')`)
+        .replaceAll(`import('virtual:master-css-emitted-globals')`, `importModule('virtual:master-css-emitted-globals')`)
+        .replaceAll('import.meta.turbopackHot', 'importMeta.turbopackHot')
+        .replaceAll('import.meta.webpackHot', 'importMeta.webpackHot')
 }
 
 async function runInstrumentationClient(source: string, modules: Record<string, unknown>) {
@@ -34,17 +49,24 @@ async function runInstrumentationClient(source: string, modules: Record<string, 
     }
     const previousDocument = runtimeGlobal.document
     const previousRuntimeState = runtimeGlobal.__MASTER_CSS_NEXT_RUNTIME__
-    const module = { hot: undefined }
-    const require = vi.fn((id: string) => {
+    const importModule = vi.fn(async (id: string) => {
         if (Object.prototype.hasOwnProperty.call(modules, id)) return modules[id]
-        throw new Error(`Unexpected require: ${id}`)
+        throw new Error(`Unexpected import: ${id}`)
     })
+    const importDefault = async (id: string) => {
+        const module = await importModule(id)
+        return module && typeof module === 'object' && 'default' in module
+            ? module.default
+            : module
+    }
+    const importMeta = { turbopackHot: undefined, webpackHot: undefined }
 
     runtimeGlobal.document = {}
     delete runtimeGlobal.__MASTER_CSS_NEXT_RUNTIME__
 
     try {
-        Function('require', 'module', source)(require, module)
+        const run = new AsyncFunction('importModule', 'importDefault', 'importMeta', toRunnableInstrumentationClientSource(source))
+        await run(importModule, importDefault, importMeta)
         await new Promise((resolve) => setTimeout(resolve, 0))
     } finally {
         if (previousDocument === undefined) {
@@ -59,7 +81,7 @@ async function runInstrumentationClient(source: string, modules: Record<string, 
         }
     }
 
-    return { require }
+    return { importModule }
 }
 
 function createCSSRuntimeTestModule() {
@@ -74,7 +96,7 @@ function createCSSRuntimeTestModule() {
     return {
         runtime,
         module: {
-            CSSRuntime: {
+            default: {
                 create: vi.fn(() => runtime)
             }
         }
@@ -128,7 +150,7 @@ describe('withMasterCSS', () => {
         ]))
         expect(resolvedConfig.resolve.alias[VIRTUAL_MANIFEST_ID]).toContain(join('node_modules', '.master-css', 'master-css-manifest.js'))
         expect(resolvedConfig.resolve.alias[VIRTUAL_EMITTED_GLOBALS_ID]).toContain(join('node_modules', '.master-css', 'master-css-emitted-globals.js'))
-        expect(resolvedConfig.resolve.alias[nextInstrumentationClientId]).toContain('instrumentation-client.cjs')
+        expect(resolvedConfig.resolve.alias[nextInstrumentationClientId]).toContain('instrumentation-client.js')
         expect(resolvedConfig.resolve.alias[masterCSSUserInstrumentationClientId]).toContain('empty.js')
         expect(resolvedConfig.resolve.alias[removedReactPackageName]).toBeUndefined()
         expect(resolvedConfig.resolve.alias[`${removedReactPackageName}$`]).toBeUndefined()
@@ -231,7 +253,7 @@ describe('withMasterCSS', () => {
         })
         expect((nextConfig as any).turbopack.resolveAlias[VIRTUAL_MANIFEST_ID]).toContain(virtualManifestProjectPath)
         expect((nextConfig as any).turbopack.resolveAlias[VIRTUAL_EMITTED_GLOBALS_ID]).toContain(virtualEmittedGlobalsProjectPath)
-        expect((nextConfig as any).turbopack.resolveAlias[nextInstrumentationClientId]).toContain('instrumentation-client.cjs')
+        expect((nextConfig as any).turbopack.resolveAlias[nextInstrumentationClientId]).toContain(instrumentationClientProjectPath)
         expect((nextConfig as any).turbopack.resolveAlias[masterCSSUserInstrumentationClientId]).toContain('empty.js')
         expect((nextConfig as any).turbopack.resolveAlias[removedReactPackageName]).toBeUndefined()
         expect((nextConfig as any).transpilePackages || []).not.toContain(removedReactPackageName)
@@ -243,7 +265,7 @@ describe('withMasterCSS', () => {
 
         expect(resolvedConfig.reactStrictMode).toBe(true)
         expect(resolvedConfig.adapterPath).toBeUndefined()
-        expect(resolvedConfig.turbopack.resolveAlias[nextInstrumentationClientId]).toContain('instrumentation-client.cjs')
+        expect(resolvedConfig.turbopack.resolveAlias[nextInstrumentationClientId]).toContain(instrumentationClientProjectPath)
         expect(resolvedConfig.turbopack.resolveAlias[masterCSSUserInstrumentationClientId]).toContain('empty.js')
         const turbopackConfig = withMasterCSS({
             turbopack: {
@@ -256,7 +278,7 @@ describe('withMasterCSS', () => {
         const webpackConfig = resolvedConfig.webpack({ module: { rules: [] }, resolve: { alias: {
             [nextInstrumentationClientId]: './custom-instrumentation-client.js'
         } } }, {})
-        expect(webpackConfig.resolve.alias[nextInstrumentationClientId]).toContain('instrumentation-client.cjs')
+        expect(webpackConfig.resolve.alias[nextInstrumentationClientId]).toContain('instrumentation-client.js')
         expect(webpackConfig.resolve.alias[masterCSSUserInstrumentationClientId]).toBe('./custom-instrumentation-client.js')
     })
 
@@ -276,6 +298,23 @@ describe('withMasterCSS', () => {
         }
     })
 
+    it('generates the runtime instrumentation wrapper as ESM', () => {
+        const root = mkdtempSync(join(tmpdir(), 'master-css-next-esm-runtime-'))
+        try {
+            const source = readGeneratedInstrumentationClientSource(root)
+
+            expect(source).toContain(`import CSSRuntime from '@master/css-runtime'`)
+            expect(source).toContain(`import masterCSSManifest from 'virtual:master-css-manifest'`)
+            expect(source).toContain('import.meta.turbopackHot')
+            expect(source).toContain('import.meta.webpackHot')
+            expect(source).not.toContain('require(')
+            expect(source).not.toContain('module.hot')
+            expect(source).not.toContain('module.exports')
+        } finally {
+            rmSync(root, { recursive: true, force: true })
+        }
+    })
+
     it('resolves async virtual manifest modules before starting the runtime', async () => {
         const root = mkdtempSync(join(tmpdir(), 'master-css-next-async-runtime-'))
         const manifest = { version: 1, marker: 'async-manifest' }
@@ -292,7 +331,7 @@ describe('withMasterCSS', () => {
                 'virtual:master-css-emitted-globals': Promise.resolve({ default: emittedGlobals })
             })
 
-            expect(cssRuntimeModule.CSSRuntime.create).toHaveBeenCalledWith({
+            expect(cssRuntimeModule.default.create).toHaveBeenCalledWith({
                 manifest,
                 emittedGlobals
             })
@@ -318,7 +357,7 @@ describe('withMasterCSS', () => {
                 'virtual:master-css-emitted-globals': { default: emittedGlobals }
             })
 
-            expect(cssRuntimeModule.CSSRuntime.create).toHaveBeenCalledWith({
+            expect(cssRuntimeModule.default.create).toHaveBeenCalledWith({
                 manifest,
                 emittedGlobals
             })

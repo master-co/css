@@ -1,7 +1,7 @@
 /// <reference types="@master/css-integration/client" />
 /// <reference types="vite/client" />
 
-import { CSSRuntime } from '@master/css-runtime'
+import CSSRuntime from '@master/css-runtime'
 import masterCSSManifest from 'virtual:master-css-manifest'
 import masterCSSEmittedGlobals from 'virtual:master-css-emitted-globals'
 
