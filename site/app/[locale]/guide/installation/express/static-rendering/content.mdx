@@ -1,14 +1,14 @@
-Use Vite runtime rendering when PHP renders pages directly from templates. PHP serves the page, while the Vite-built Master CSS runtime generates class rules in the browser as templates render.
+Use static rendering when Express templates contain complete class strings and you want Vite to build a generated CSS asset before the server responds.
 
 <StepSection>
     <Step $row>
         <StepL>
             ### <StepNum />Open your project
-            Start from the PHP or CodeIgniter project root.
+            Start from an Express project root.
         </StepL>
         <StepR>
             ```bash name=Terminal
-            cd my-php-app
+            cd my-express-app
             npm init -y
             ```
         </StepR>
@@ -27,7 +27,7 @@ Use Vite runtime rendering when PHP renders pages directly from templates. PHP s
     <Step $row>
         <StepL>
             ### <StepNum />Configure Vite
-            Build the runtime entry and base stylesheet into `public/assets`.
+            Build static CSS into `public/assets`.
         </StepL>
         <StepR>
             ```ts name=vite.config.ts
@@ -36,13 +36,13 @@ Use Vite runtime rendering when PHP renders pages directly from templates. PHP s
 
             export default defineConfig({
                 plugins: [
-                    masterCSS({ mode: 'runtime', injectRuntime: false })
+                    masterCSS({ mode: 'static' })
                 ],
                 build: {
                     outDir: 'public/assets',
                     emptyOutDir: true,
                     rollupOptions: {
-                        input: 'resources/main.ts',
+                        input: 'src/main.ts',
                         output: {
                             entryFileNames: 'app.js',
                             assetFileNames: 'app[extname]'
@@ -56,54 +56,47 @@ Use Vite runtime rendering when PHP renders pages directly from templates. PHP s
     <Step $row>
         <StepL>
             ### <StepNum />Create the asset entry
-            Import the Vite-managed runtime and the Master CSS stylesheet.
+            Import Master CSS and scan the server templates where classes are written.
         </StepL>
         <StepR>
-            ```ts name=resources/main.ts
-            import '@master/css.vite/runtime'
+            ```ts name=src/main.ts
             import './app.css'
             ```
 
-            ```css name=resources/app.css
+            ```css name=src/app.css
             @import "@master/css";
+
+            @source "../views/**/*.{ejs,hbs,pug}";
+            @source "../public/**/*.html";
             ```
         </StepR>
     </Step>
     <Step $row>
         <StepL>
-            ### <StepNum />Add build scripts
-            Build the frontend assets before deploying, or keep Vite watching in development.
+            ### <StepNum />Serve the CSS
+            Serve `public` from Express and link the generated stylesheet from your layout.
         </StepL>
         <StepR>
-            ```json name=package.json
-            {
-                "scripts": {
-                    "build:assets": "vite build",
-                    "watch:assets": "vite build --watch"
-                }
-            }
+            ```js name=app.js
+            app.use(express.static('public'))
+            ```
+
+            ```html name=views/layout.ejs
+            <link rel="stylesheet" href="/assets/app.css">
             ```
         </StepR>
     </Step>
     <Step>
         ### <StepNum />Hello world
-        Load the Vite output and style your first PHP template.
+        Now style your first server-rendered template using Master CSS syntax.
     </Step>
-    <HelloWorld url="localhost" />
+    <HelloWorld url="localhost:3000" />
 </StepSection>
 
-```html name=public/index.php
-<html lang="en" hidden>
-<head>
-    <link rel="stylesheet" href="/assets/app.css">
-</head>
-<body>
-    <h1 class="m:2xl italic font:5xl font:heavy text:neutral">
-        Hello World
-    </h1>
-    <script type="module" src="/assets/app.js"></script>
-</body>
-</html>
+```html name=views/index.ejs
+<h1 class="m:2xl italic font:5xl font:heavy text:neutral">
+    Hello World
+</h1>
 ```
 
-For CodeIgniter, load `/assets/app.css` and `/assets/app.js` with your normal asset helper. Use [PHP static rendering](/guide/installation/php/static-rendering) when complete PHP template class strings should be compiled into a CSS asset.
+Static rendering depends on complete class strings in scanned source files. If a template assembles class names from fragments, map states to complete class strings or add bounded candidates with [`@safelist`](/guide/directives#safelist).

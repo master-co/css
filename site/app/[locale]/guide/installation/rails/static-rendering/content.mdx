@@ -1,4 +1,4 @@
-Use Vite runtime rendering when Rails owns the page lifecycle. Rails renders ERB views, while the Vite-built Master CSS runtime generates class rules in the browser as pages and Turbo updates appear.
+Use static rendering when Rails ERB views contain complete class strings and you want Vite to build a generated CSS asset before Rails serves the page.
 
 <StepSection>
     <Step $row>
@@ -28,7 +28,7 @@ Use Vite runtime rendering when Rails owns the page lifecycle. Rails renders ERB
     <Step $row>
         <StepL>
             ### <StepNum />Configure Vite
-            Build the runtime entry and base stylesheet into `public/assets`.
+            Build static CSS into `public/assets`.
         </StepL>
         <StepR>
             ```ts name=vite.config.ts
@@ -37,7 +37,7 @@ Use Vite runtime rendering when Rails owns the page lifecycle. Rails renders ERB
 
             export default defineConfig({
                 plugins: [
-                    masterCSS({ mode: 'runtime', injectRuntime: false })
+                    masterCSS({ mode: 'static' })
                 ],
                 build: {
                     outDir: 'public/assets',
@@ -57,51 +57,28 @@ Use Vite runtime rendering when Rails owns the page lifecycle. Rails renders ERB
     <Step $row>
         <StepL>
             ### <StepNum />Create the asset entry
-            Import the Vite-managed runtime and the Master CSS stylesheet.
+            Import Master CSS and scan ERB views where classes are authored.
         </StepL>
         <StepR>
             ```ts name=app/frontend/main.ts
-            import '@master/css.vite/runtime'
             import './app.css'
             ```
 
             ```css name=app/frontend/app.css
             @import "@master/css";
+
+            @source "../views/**/*.erb";
             ```
         </StepR>
     </Step>
     <Step $row>
         <StepL>
-            ### <StepNum />Load the assets
-            Reference the Vite output from the Rails application layout. Add `hidden` so the runtime can avoid a flash of unstyled content before it injects class rules.
+            ### <StepNum />Load the stylesheet
+            Reference the generated stylesheet from the application layout.
         </StepL>
         <StepR>
             ```erb name=app/views/layouts/application.html.erb
-            <html lang="en" hidden>
-            <head>
-                <%= stylesheet_link_tag "/assets/app.css" %>
-            </head>
-            <body>
-                <%= yield %>
-                <%= javascript_include_tag "/assets/app.js", type: "module" %>
-            </body>
-            </html>
-            ```
-        </StepR>
-    </Step>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Add build scripts
-            Build or watch the frontend assets beside the Rails server.
-        </StepL>
-        <StepR>
-            ```json name=package.json
-            {
-                "scripts": {
-                    "build:assets": "vite build",
-                    "watch:assets": "vite build --watch"
-                }
-            }
+            <%= stylesheet_link_tag "/assets/app.css", "data-turbo-track": "reload" %>
             ```
         </StepR>
     </Step>
@@ -118,4 +95,4 @@ Use Vite runtime rendering when Rails owns the page lifecycle. Rails renders ERB
 </h1>
 ```
 
-Use [Rails static rendering](/guide/installation/rails/static-rendering) when ERB class strings are complete at build time and you want a generated CSS asset.
+Static rendering depends on complete class strings in scanned source files. If an ERB view assembles class names from fragments, map states to complete class strings or add bounded candidates with [`@safelist`](/guide/directives#safelist).

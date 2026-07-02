@@ -1,8 +1,8 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Static Rendering in Lit',
-    description: 'Guide to setting up Master CSS static rendering in your Lit project.',
+    title: 'Static Rendering in WordPress',
+    description: 'Guide to setting up Master CSS static rendering in your WordPress theme.',
     category: 'Integrations',
     fileURL: import.meta.url
 })

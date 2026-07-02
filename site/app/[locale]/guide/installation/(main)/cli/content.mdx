@@ -1,15 +1,15 @@
-The pure way to [statically render](/guide/rendering-modes#static-rendering) classes from scratch is by using the CLI tool. All you need is an `index.html` file, a CSS entry, and terminal to get started.
+Use the CLI as a standalone [static rendering](/guide/rendering-modes#static-rendering) fallback when a project does not have a Vite asset build, framework integration, or server rendering hook. Integration guides should prefer the matching Vite, runtime, static, or progressive setup first.
 
 ## Installation [sr-only]
 <StepSection>
     <Step $row>
         <StepL>
             ### <StepNum />Install Master CSS
-            Install Master CSS [CLI](https://www.npmjs.com/package/@master/css-cli) into your project via package managers.
+            Install Master CSS [CLI](https://www.npmjs.com/package/@master/css-cli) as a development dependency.
         </StepL>
         <StepR>
-            ```bash action=install
-            @master/css-cli@rc
+            ```bash name=Terminal
+            npm install -D @master/css-cli@rc
             ```
         </StepR>
     </Step>
@@ -27,11 +27,11 @@ The pure way to [statically render](/guide/rendering-modes#static-rendering) cla
     <Step $row>
         <StepL>
             ### <StepNum />Run the build command
-            Run the command to watch for file changes and build continuously.
+            Run the command to scan sources and write `master.css`.
         </StepL>
         <StepR>
             ```bash name=Terminal
-            npx @master/css-cli -w
+            npx @master/css-cli "index.html" --output master.css --watch
             ```
         </StepR>
     </Step>

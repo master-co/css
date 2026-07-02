@@ -1,4 +1,4 @@
-Use Vite runtime rendering when ASP.NET Core owns Razor Pages or MVC views. ASP.NET Core serves the app, while the Vite-built Master CSS runtime generates class rules in the browser as Razor output appears.
+Use static rendering when ASP.NET Core Razor Pages or MVC views contain complete class strings and you want Vite to build a generated CSS asset before .NET serves the page.
 
 <StepSection>
     <Step $row>
@@ -28,7 +28,7 @@ Use Vite runtime rendering when ASP.NET Core owns Razor Pages or MVC views. ASP.
     <Step $row>
         <StepL>
             ### <StepNum />Configure Vite
-            Build the runtime entry and base stylesheet into `wwwroot/assets`.
+            Build static CSS into `wwwroot/assets`.
         </StepL>
         <StepR>
             ```ts name=vite.config.ts
@@ -37,7 +37,7 @@ Use Vite runtime rendering when ASP.NET Core owns Razor Pages or MVC views. ASP.
 
             export default defineConfig({
                 plugins: [
-                    masterCSS({ mode: 'runtime', injectRuntime: false })
+                    masterCSS({ mode: 'static' })
                 ],
                 build: {
                     outDir: 'wwwroot/assets',
@@ -57,51 +57,31 @@ Use Vite runtime rendering when ASP.NET Core owns Razor Pages or MVC views. ASP.
     <Step $row>
         <StepL>
             ### <StepNum />Create the asset entry
-            Import the Vite-managed runtime and the Master CSS stylesheet.
+            Import Master CSS and scan Razor Pages and MVC views where classes are authored.
         </StepL>
         <StepR>
             ```ts name=src/main.ts
-            import '@master/css.vite/runtime'
             import './app.css'
             ```
 
             ```css name=src/app.css
             @import "@master/css";
+
+            @source "../Pages/**/*.cshtml";
+            @source "../Views/**/*.cshtml";
+            @source not "../bin/**";
+            @source not "../obj/**";
             ```
         </StepR>
     </Step>
     <Step $row>
         <StepL>
-            ### <StepNum />Load the assets
-            Reference the Vite output from your shared layout. Add `hidden` so the runtime can avoid a flash of unstyled content before it injects class rules.
+            ### <StepNum />Load the stylesheet
+            Reference the generated CSS from your shared layout.
         </StepL>
         <StepR>
             ```html name=Pages/Shared/_Layout.cshtml
-            <html lang="en" hidden>
-            <head>
-                <link rel="stylesheet" href="~/assets/app.css" asp-append-version="true">
-            </head>
-            <body>
-                @RenderBody()
-                <script type="module" src="~/assets/app.js" asp-append-version="true"></script>
-            </body>
-            </html>
-            ```
-        </StepR>
-    </Step>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Add build scripts
-            Build or watch the frontend assets beside the .NET server.
-        </StepL>
-        <StepR>
-            ```json name=package.json
-            {
-                "scripts": {
-                    "build:assets": "vite build",
-                    "watch:assets": "vite build --watch"
-                }
-            }
+            <link rel="stylesheet" href="~/assets/app.css" asp-append-version="true">
             ```
         </StepR>
     </Step>
@@ -118,4 +98,4 @@ Use Vite runtime rendering when ASP.NET Core owns Razor Pages or MVC views. ASP.
 </h1>
 ```
 
-Use [ASP.NET Core static rendering](/guide/installation/aspnet-core/static-rendering) when Razor class strings are complete at build time and you want a generated CSS asset.
+Static rendering depends on complete class strings in scanned source files. If a Razor view assembles class names from fragments, map states to complete class strings or add bounded candidates with [`@safelist`](/guide/directives#safelist).

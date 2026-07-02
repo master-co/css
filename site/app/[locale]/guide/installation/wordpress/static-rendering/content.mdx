@@ -1,4 +1,4 @@
-Use Vite runtime rendering when WordPress owns the PHP template lifecycle. WordPress renders the theme, while the Vite-built Master CSS runtime generates class rules in the browser for theme and plugin output.
+Use static rendering when WordPress theme templates contain complete class strings and you want Vite to build a generated CSS asset before WordPress serves the page.
 
 <StepSection>
     <Step $row>
@@ -27,7 +27,7 @@ Use Vite runtime rendering when WordPress owns the PHP template lifecycle. WordP
     <Step $row>
         <StepL>
             ### <StepNum />Configure Vite
-            Build the runtime entry and base stylesheet into the theme `assets` directory.
+            Build static CSS into the theme `assets` directory.
         </StepL>
         <StepR>
             ```ts name=vite.config.ts
@@ -36,7 +36,7 @@ Use Vite runtime rendering when WordPress owns the PHP template lifecycle. WordP
 
             export default defineConfig({
                 plugins: [
-                    masterCSS({ mode: 'runtime', injectRuntime: false })
+                    masterCSS({ mode: 'static' })
                 ],
                 build: {
                     outDir: '.',
@@ -56,56 +56,37 @@ Use Vite runtime rendering when WordPress owns the PHP template lifecycle. WordP
     <Step $row>
         <StepL>
             ### <StepNum />Create the asset entry
-            Import the Vite-managed runtime and the Master CSS stylesheet.
+            Import Master CSS and point the stylesheet at PHP templates in the theme.
         </StepL>
         <StepR>
             ```ts name=resources/master.ts
-            import '@master/css.vite/runtime'
             import './master.css'
             ```
 
             ```css name=resources/master.css
             @import "@master/css";
+
+            @source "../**/*.php";
+            @source not "../vendor/**";
+            @source not "../node_modules/**";
             ```
         </StepR>
     </Step>
     <Step $row>
         <StepL>
-            ### <StepNum />Enqueue the assets
-            Load the generated stylesheet and runtime script from `functions.php`.
+            ### <StepNum />Enqueue the stylesheet
+            Load the generated stylesheet from `functions.php`.
         </StepL>
         <StepR>
             ```php name=functions.php
             add_action('wp_enqueue_scripts', function () {
-                $theme_dir = get_template_directory();
-                $theme_uri = get_template_directory_uri();
-
                 wp_enqueue_style(
                     'master-css',
-                    $theme_uri . '/assets/master.css',
+                    get_template_directory_uri() . '/assets/master.css',
                     [],
-                    filemtime($theme_dir . '/assets/master.css')
-                );
-
-                wp_enqueue_script(
-                    'master-css-runtime',
-                    $theme_uri . '/assets/master.js',
-                    [],
-                    filemtime($theme_dir . '/assets/master.js'),
-                    true
+                    filemtime(get_template_directory() . '/assets/master.css')
                 );
             });
-            ```
-        </StepR>
-    </Step>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Prevent unstyled first paint
-            Add `hidden` to the root document in the theme header so the runtime can reveal the page after it starts.
-        </StepL>
-        <StepR>
-            ```php name=header.php
-            <html <?php language_attributes(); ?> hidden>
             ```
         </StepR>
     </Step>
@@ -122,4 +103,4 @@ Use Vite runtime rendering when WordPress owns the PHP template lifecycle. WordP
 </h1>
 ```
 
-Use [WordPress static rendering](/guide/installation/wordpress/static-rendering) when theme template class strings are complete at build time and you want a generated CSS asset. For WooCommerce templates, include your theme overrides and avoid scanning plugin internals unless your theme stores complete class strings there.
+Static rendering depends on complete class strings in scanned source files. For WooCommerce templates, include your theme overrides such as `@source "../woocommerce/**/*.php"` and avoid scanning plugin internals unless your theme stores complete class strings there.

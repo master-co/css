@@ -1,4 +1,4 @@
-Use the CLI when Express renders EJS, Handlebars, or Pug templates on the server. Master CSS scans template files, then Express serves the generated stylesheet as a static asset.
+Use progressive rendering when Express owns the HTML response. Express renders the template, `@master/css-server` injects the first-response CSS, and the Vite runtime asset adopts that CSS in the browser for later dynamic classes.
 
 <StepSection>
     <Step $row>
@@ -16,51 +16,113 @@ Use the CLI when Express renders EJS, Handlebars, or Pug templates on the server
     <Step $row>
         <StepL>
             ### <StepNum />Install Master CSS
-            Install the CLI as a development dependency.
+            Install the server renderer, Vite, and the Vite integration.
         </StepL>
         <StepR>
             ```bash name=Terminal
-            npm install -D @master/css-cli@rc
+            npm install express ejs @master/css-server@rc
+            npm install -D vite @master/css.vite@rc
             ```
         </StepR>
     </Step>
     <Step $row>
         <StepL>
-            ### <StepNum />Create your CSS entry
-            Include the server templates where classes are written.
+            ### <StepNum />Configure Vite
+            Build the browser runtime entry and base stylesheet into `public/assets`.
         </StepL>
         <StepR>
-            ```css name=src/master.css
-            @import "@master/css";
+            ```ts name=vite.config.ts
+            import { defineConfig } from 'vite'
+            import masterCSS from '@master/css.vite'
 
-            @source "../views/**/*.{ejs,hbs,pug}";
-            @source "../public/**/*.html";
+            export default defineConfig({
+                plugins: [
+                    masterCSS({ mode: 'runtime', injectRuntime: false })
+                ],
+                build: {
+                    outDir: 'public/assets',
+                    emptyOutDir: true,
+                    rollupOptions: {
+                        input: 'src/main.ts',
+                        output: {
+                            entryFileNames: 'app.js',
+                            assetFileNames: 'app[extname]'
+                        }
+                    }
+                }
+            })
             ```
         </StepR>
     </Step>
     <Step $row>
         <StepL>
-            ### <StepNum />Build the stylesheet
-            Scan the server templates and write CSS into the public directory.
+            ### <StepNum />Create the browser entry
+            Import the Vite-managed runtime and the Master CSS stylesheet.
         </StepL>
         <StepR>
-            ```bash name=Terminal
-            npx @master/css-cli "views/**/*.{ejs,hbs,pug}" "public/**/*.html" --output public/master.css --watch
+            ```ts name=src/main.ts
+            import '@master/css.vite/runtime'
+            import './app.css'
+            ```
+
+            ```css name=src/app.css
+            @import "@master/css";
             ```
         </StepR>
     </Step>
     <Step $row>
         <StepL>
-            ### <StepNum />Serve the asset
-            Serve `public` from Express and link the generated stylesheet from your layout.
+            ### <StepNum />Render with Master CSS
+            Render the template first, then pass the full document to `@master/css-server`.
         </StepL>
         <StepR>
             ```js name=app.js
-            app.use(express.static('public'))
-            ```
+            import express from 'express'
+            import ejs from 'ejs'
+            import { render } from '@master/css-server'
 
-            ```html name=views/layout.ejs
-            <link rel="stylesheet" href="/master.css">
+            const app = express()
+
+            app.use('/assets', express.static('public/assets'))
+
+            app.get('/', async (_request, response) => {
+                const body = await ejs.renderFile('views/index.ejs')
+                const document = `<!doctype html>
+            <html lang="en">
+            <head>
+                <meta charset="utf-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1">
+                <link rel="stylesheet" href="/assets/app.css">
+            </head>
+            <body>
+                ${body}
+                <script type="module" src="/assets/app.js"></script>
+            </body>
+            </html>`
+
+                response.send(render(document, undefined, {
+                    hydrationManifest: 'inject'
+                }).html)
+            })
+
+            app.listen(3000)
+            ```
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Add build scripts
+            Build or watch the frontend assets beside the Express server.
+        </StepL>
+        <StepR>
+            ```json name=package.json
+            {
+                "scripts": {
+                    "build:assets": "vite build",
+                    "watch:assets": "vite build --watch",
+                    "start": "node app.js"
+                }
+            }
             ```
         </StepR>
     </Step>
@@ -77,4 +139,4 @@ Use the CLI when Express renders EJS, Handlebars, or Pug templates on the server
 </h1>
 ```
 
-If the Express app already serves Vite-built assets, install `vite @master/css.vite@rc`, use `masterCSS({ mode: 'static' })`, and keep `@source "./views/**/*.{ejs,hbs,pug}"` in the CSS entry.
+Progressive rendering sends the first response with `style#master-css`, then the runtime adopts the injected hydration manifest and keeps handling classes added after the initial response. Use [Express static rendering](/guide/installation/express/static-rendering) when templates contain complete class strings and you want a generated CSS asset instead.

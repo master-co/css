@@ -1,4 +1,4 @@
-Use Vite runtime rendering when PHP renders pages directly from templates. PHP serves the page, while the Vite-built Master CSS runtime generates class rules in the browser as templates render.
+Use static rendering when PHP templates contain complete class strings and you want Vite to build a generated CSS asset before PHP serves the page.
 
 <StepSection>
     <Step $row>
@@ -27,7 +27,7 @@ Use Vite runtime rendering when PHP renders pages directly from templates. PHP s
     <Step $row>
         <StepL>
             ### <StepNum />Configure Vite
-            Build the runtime entry and base stylesheet into `public/assets`.
+            Build static CSS into `public/assets`.
         </StepL>
         <StepR>
             ```ts name=vite.config.ts
@@ -36,7 +36,7 @@ Use Vite runtime rendering when PHP renders pages directly from templates. PHP s
 
             export default defineConfig({
                 plugins: [
-                    masterCSS({ mode: 'runtime', injectRuntime: false })
+                    masterCSS({ mode: 'static' })
                 ],
                 build: {
                     outDir: 'public/assets',
@@ -56,54 +56,34 @@ Use Vite runtime rendering when PHP renders pages directly from templates. PHP s
     <Step $row>
         <StepL>
             ### <StepNum />Create the asset entry
-            Import the Vite-managed runtime and the Master CSS stylesheet.
+            Import Master CSS and scan PHP files where complete class strings are written.
         </StepL>
         <StepR>
             ```ts name=resources/main.ts
-            import '@master/css.vite/runtime'
             import './app.css'
             ```
 
             ```css name=resources/app.css
             @import "@master/css";
-            ```
-        </StepR>
-    </Step>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Add build scripts
-            Build the frontend assets before deploying, or keep Vite watching in development.
-        </StepL>
-        <StepR>
-            ```json name=package.json
-            {
-                "scripts": {
-                    "build:assets": "vite build",
-                    "watch:assets": "vite build --watch"
-                }
-            }
+
+            @source "../app/**/*.php";
+            @source "../public/**/*.php";
             ```
         </StepR>
     </Step>
     <Step>
         ### <StepNum />Hello world
-        Load the Vite output and style your first PHP template.
+        Load the generated CSS and style your first PHP template.
     </Step>
     <HelloWorld url="localhost" />
 </StepSection>
 
 ```html name=public/index.php
-<html lang="en" hidden>
-<head>
-    <link rel="stylesheet" href="/assets/app.css">
-</head>
-<body>
-    <h1 class="m:2xl italic font:5xl font:heavy text:neutral">
-        Hello World
-    </h1>
-    <script type="module" src="/assets/app.js"></script>
-</body>
-</html>
+<link rel="stylesheet" href="/assets/app.css">
+
+<h1 class="m:2xl italic font:5xl font:heavy text:neutral">
+    Hello World
+</h1>
 ```
 
-For CodeIgniter, load `/assets/app.css` and `/assets/app.js` with your normal asset helper. Use [PHP static rendering](/guide/installation/php/static-rendering) when complete PHP template class strings should be compiled into a CSS asset.
+For CodeIgniter, scan `app/Views/**/*.php` and load `/assets/app.css` with your normal asset helper. Static rendering depends on complete class strings in scanned source files.

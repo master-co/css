@@ -6,19 +6,19 @@ import Tabs, { Tab, TabBadge } from '~/internal/components/Tabs'
 
 export const { Page, dynamic, revalidate, generateMetadata } = createLayout({
     metadata: {
-        title: 'Set up Master CSS in Lit',
-        description: 'Guide to setting up Master CSS in your Lit project.',
+        title: 'Set up Master CSS in Express',
+        description: 'Guide to setting up Master CSS in Express server-rendered templates.',
         category: 'Integrations'
     },
     dictionaries,
     categories,
     noTOC: true,
     categoryLink: '/guide/installation/integrations',
-    icon: 'lit',
+    icon: 'express',
     content: ({ $ }) =>
         <Tabs className="mb:xl">
-            <Tab href='/guide/installation/lit'>{$('Runtime Rendering')} <TabBadge>{$('Default')}</TabBadge></Tab>
-            <Tab href='/guide/installation/lit/static-rendering'>{$('Static Rendering')}</Tab>
+            <Tab href='/guide/installation/express'>{$('Progressive Rendering')} <TabBadge>{$('Default')}</TabBadge></Tab>
+            <Tab href='/guide/installation/express/static-rendering'>{$('Static Rendering')}</Tab>
         </Tabs>,
     Layout,
 })
