@@ -153,7 +153,7 @@ async function withStagedExtension(callback, options = {}) {
     try {
         const target = options.target ?? getCurrentTarget()
         return await callback(
-            await createStagedExtension(target, { stagingRoot }),
+            await createStagedExtension(target, { stagingRoot, publisher: options.publisher }),
             { getCurrentTarget, getRuntimePackagesForTarget }
         )
     } finally {
@@ -210,6 +210,20 @@ test('staged extension includes runtime packages for win32-x64', async () => {
     await withStagedExtension(({ stagingDir, files }, { getRuntimePackagesForTarget }) => {
         expectStagedRuntimePackages({ stagingDir, files }, getRuntimePackagesForTarget('win32-x64'))
     }, { target: 'win32-x64' })
+})
+
+test('staged extension preserves the Marketplace publisher by default', async () => {
+    await withStagedExtension(({ stagingDir }) => {
+        expect(readPackageJSON().publisher).toBe('masterco')
+        expect(readPackageJSON(join(stagingDir, 'package.json')).publisher).toBe('masterco')
+    })
+})
+
+test('staged extension supports an Open VSX publisher override', async () => {
+    await withStagedExtension(({ stagingDir }) => {
+        expect(readPackageJSON().publisher).toBe('masterco')
+        expect(readPackageJSON(join(stagingDir, 'package.json')).publisher).toBe('master')
+    }, { publisher: 'master' })
 })
 
 test('staged extension rejects unsupported targets', async () => {

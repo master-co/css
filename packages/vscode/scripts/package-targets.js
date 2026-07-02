@@ -24,6 +24,7 @@ export function parseCLIArgs(argv) {
     const packageArgs = []
     let outDir
     let azureCredential = false
+    let publisher
 
     while (args.length) {
         const arg = args.shift()
@@ -37,6 +38,10 @@ export function parseCLIArgs(argv) {
             const value = args.shift()
             if (!value) throw new Error('--out-dir requires a value')
             outDir = resolve(packageDir, value)
+        } else if (arg === '--publisher') {
+            const value = args.shift()
+            if (!value) throw new Error('--publisher requires a value')
+            publisher = value
         } else if (arg === '--all-targets') {
             rawTargets.length = 0
         } else if (arg === '--azure-credential') {
@@ -52,7 +57,8 @@ export function parseCLIArgs(argv) {
         targets: rawTargets.length ? parseTargets(rawTargets) : TARGETS,
         outDir,
         packageArgs,
-        azureCredential
+        azureCredential,
+        publisher
     }
 }
 

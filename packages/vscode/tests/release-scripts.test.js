@@ -31,6 +31,18 @@ test('package rejects Azure credential authentication', () => {
         .toThrow('--azure-credential is only supported for publish')
 })
 
+test('package accepts publisher override for staged VSIX manifests', () => {
+    const options = parseCLIArgs(['package', '--publisher', 'master', '--out-dir', 'open-vsx', '--target', 'darwin-arm64'])
+
+    expect(options).toMatchObject({
+        command: 'package',
+        publisher: 'master',
+        packageArgs: [],
+        targets: ['darwin-arm64']
+    })
+    expect(options.outDir).toBe(resolve(packageDir, 'open-vsx'))
+})
+
 test('release dry run reports Azure credential authentication', () => {
     const result = spawnSync(process.execPath, ['scripts/release.js', '--', '--dry-run', '--azure-credential'], {
         cwd: packageDir,

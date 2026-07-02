@@ -262,6 +262,10 @@ export async function createStagedExtension(target = getCurrentTarget(), options
         }
     }
 
+    if (options.publisher) {
+        manifest.publisher = options.publisher
+    }
+
     manifest.files = [
         'dist',
         'data',
@@ -310,7 +314,7 @@ export async function packageTarget(target, options = {}) {
     const packageArgs = options.packageArgs ?? []
 
     try {
-        const { stagingDir } = await createStagedExtension(target, { stagingRoot })
+        const { stagingDir } = await createStagedExtension(target, { stagingRoot, publisher: options.publisher })
         await mkdir(outDir, { recursive: true })
         const manifest = JSON.parse(await readFile(join(stagingDir, 'package.json'), 'utf8'))
         const packagePath = join(outDir, `${manifest.name}-${manifest.version}-${target}.vsix`)

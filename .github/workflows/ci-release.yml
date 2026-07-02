@@ -197,3 +197,38 @@ jobs:
               run: |
                   pnpm --filter master-css-vscode exec vsce verify-pat --azure-credential masterco
                   pnpm --filter master-css-vscode vscode:publish -- --azure-credential
+
+    publish-open-vsx:
+        needs: release
+        if: ${{ github.event_name == 'push' && github.ref_name == 'rc' }}
+        runs-on: ubuntu-latest
+        permissions:
+            contents: read
+        steps:
+            - uses: actions/checkout@v6
+            - uses: ./.github/actions/setup-pnpm
+              with:
+                  submodules-token: ${{ secrets.GH_TOKEN }}
+            - name: Build and package Open VSX extension release
+              run: |
+                  pnpm release:vscode -- --patch --no-publish
+                  pnpm --filter master-css-vscode vscode:package -- --publisher master --out-dir open-vsx
+            - name: Publish Open VSX extension
+              run: |
+                  if [ -z "$OVSX_PAT" ]; then
+                      echo "OVSX_PAT is required to publish Open VSX extension."
+                      exit 1
+                  fi
+
+                  shopt -s nullglob
+                  files=(packages/vscode/open-vsx/*.vsix)
+                  if [ "${#files[@]}" -eq 0 ]; then
+                      echo "No Open VSX VSIX files found in packages/vscode/open-vsx."
+                      exit 1
+                  fi
+
+                  for file in "${files[@]}"; do
+                      pnpm dlx ovsx publish "$file"
+                  done
+              env:
+                  OVSX_PAT: ${{ secrets.OVSX_PAT }}
