@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react'
 import clsx from 'clsx'
+import Translate from '~/internal/components/Translate'
 import type { BenchmarkStackedBarItem } from './types'
 import { benchmarkColorClasses, benchmarkColors, clampPercent, formatMetricValue } from './utils'
 
@@ -24,11 +25,11 @@ export default function BenchmarkStackedBars(props: BenchmarkStackedBarsProps) {
                         <div className="flex items-baseline justify-between gap:sm">
                             <div className="flex items-center gap:xs min-w:0">
                                 {item.icon}
-                                <span className="overflow:hidden min-w:0 font-weight:460 font:sm text-ellipsis white-space:nowrap text:strong">{item.label}</span>
+                                <span className="overflow:hidden min-w:0 font-weight:460 font:sm text-ellipsis white-space:nowrap text:strong"><Translate>{item.label}</Translate></span>
                             </div>
                             <div className="flex items-baseline gap:xs white-space:nowrap">
                                 <strong className="font-weight:460 font:sm text:strong">{totalLabel}</strong>
-                                {item.detail && <span className="font:xs text:muted">{item.detail}</span>}
+                                {item.detail && <span className="font:xs text:muted"><Translate>{item.detail}</Translate></span>}
                             </div>
                         </div>
                         <div className="flex overflow:hidden h:12px r:xs bg:surface-muted" role="img" aria-label={`${item.label}: ${totalLabel}`}>
@@ -59,7 +60,7 @@ export default function BenchmarkStackedBars(props: BenchmarkStackedBarsProps) {
                                 return (
                                     <div key={segment.id} className="inline-flex items-center gap:2xs font:xs text:muted">
                                         <span className={clsx('inline-block size:0.625rem r:xs', colorClasses.background)} />
-                                        <span>{segment.label}</span>
+                                        <span><Translate>{segment.label}</Translate></span>
                                         <span className="text:strong">{valueLabel}</span>
                                     </div>
                                 )

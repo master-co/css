@@ -10,6 +10,7 @@ import generate from 'internal/utils/generate-metadata'
 import dictionaries from '~/site/dictionaries'
 import TimeAgo from 'internal/components/TimeAgo'
 import authors from 'internal/data/authors'
+import { createTranslation } from 'internal/utils/i18n'
 
 export const dynamic = 'force-static'
 export const revalidate = false
@@ -43,6 +44,7 @@ function AuthorAvatarStack({ children }: { children: any[] }) {
 
 export default async function Page(props: any) {
     const { locale } = await props.params
+    const $ = await createTranslation(locale, dictionaries)
     const pages = pageCategories
         .map(({ pages }) => pages)
         .flat()
@@ -62,9 +64,9 @@ export default async function Page(props: any) {
                                             <div className='text:xs fg:accent'>{formattedDate}</div>
                                             <div className='text:xs text:muted'> <TimeAgo timestamp={page.date} /></div>
                                         </div>
-                                        <div className='my:-1x font:xl leading:sm text-pretty'>{page.title}</div>
+                                        <div className='my:-1x font:xl leading:sm text-pretty'>{$(page.title)}</div>
                                         {/* <Image src="/images/gold-pattern.jpg"  className="r:5px aspect-ratio:16/9 h:auto" width={480} height={270} alt={page.title} /> */}
-                                        <div className='mt:auto text:xs text-pretty text:body'>{page.description}</div>
+                                        <div className='mt:auto text:xs text-pretty text:body'>{$(page.description)}</div>
                                         <AuthorAvatarStack>{page.authors}</AuthorAvatarStack>
                                     </Link>
                                 </div>

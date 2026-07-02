@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react'
 import InlineCode from '~/internal/components/InlineCode'
+import Translate from '~/internal/components/Translate'
 import { getVariableNamespacePublicKeys } from '~/site/utils/manifest-utilities'
 
 export interface NamespaceUtilityGroup {
@@ -29,18 +30,18 @@ export default function NamespaceUtilityTable(props: NamespaceUtilityTableProps)
                 <table>
                     <thead>
                         <tr>
-                            <th>Group</th>
-                            <th>Utility keys</th>
-                            {hasDescriptions && <th>Description</th>}
+                            <th><Translate>Group</Translate></th>
+                            <th><Translate>Utility keys</Translate></th>
+                            {hasDescriptions && <th><Translate>Description</Translate></th>}
                         </tr>
                     </thead>
                     <tbody>
                         {
                             groups.map((group) => (
                                 <tr key={group.label}>
-                                    <th className="white-space:nowrap">{group.label}</th>
+                                    <th className="white-space:nowrap"><Translate>{group.label}</Translate></th>
                                     <td>{renderKeys(group.keys)}</td>
-                                    {hasDescriptions && <td>{group.description}</td>}
+                                    {hasDescriptions && <td><Translate>{group.description}</Translate></td>}
                                 </tr>
                             ))
                         }

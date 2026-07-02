@@ -13,6 +13,8 @@
         "build:llms": "tsx scripts/generate-llms-txt.ts",
         "build:play-compiler": "tsx scripts/build-play-compiler.ts",
         "postbuild:static": "tsx scripts/postbuild-static.tsx",
+        "translate:site": "tsx scripts/translate-site.ts",
+        "audit:i18n": "tsx scripts/audit-i18n.ts",
         "preview:cloudflare-pages": "pnpm build:cloudflare-pages && wrangler pages dev site/out --cwd .. --kv PLAY_SHARES",
         "cf-typegen": "wrangler types site/cloudflare-env.d.ts --cwd .. --env-interface CloudflareEnv",
         "test:image-loader": "tsx --test utils/cloudflare-image-loader.test.ts",

@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react'
+import Translate from '~/internal/components/Translate'
 import type { BenchmarkSampleSummaryStats } from './types'
 import { formatMetricValue } from './utils'
 
@@ -21,7 +22,7 @@ export default function BenchmarkSampleSummary(props: BenchmarkSampleSummaryProp
         <dl className="grid grid-cols:2 gap:xs grid-cols:5@sm">
             {entries.map(([label, value]) => (
                 <div key={label} className="p:sm r:sm bg:surface-muted">
-                    <dt className="font:xs text:muted">{label}</dt>
+                    <dt className="font:xs text:muted"><Translate>{label}</Translate></dt>
                     <dd className="mx:0 mb:0 mt:2xs font-weight:460 font:sm text:strong">{value}</dd>
                 </div>
             ))}

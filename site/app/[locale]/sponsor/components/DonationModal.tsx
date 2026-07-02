@@ -5,9 +5,11 @@ import clsx from 'clsx'
 import Image from 'next/image'
 import { useSearchParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
+import { useTranslation } from 'internal/contexts/i18n'
 
 
 export default function DonationModal() {
+    const $ = useTranslation()
     const [donationOrder, setDonationOrder] = useState<any>(null)
     const searchParams = useSearchParams()
 
@@ -90,7 +92,7 @@ export default function DonationModal() {
             <Image className="rel top:4xs round mx:auto object-contain" width="124" height="124" src={donationOrder.avatar} alt="sponsor" />
         </div>
         <div className="font:2xl font:bold text-center">{donationOrder.name || 'Unknown'}</div>
-        <p className="text-center">Thanks for your donation 🥳</p>
+        <p className="text-center">{$('Thanks for your donation 🥳')}</p>
 
         <ul>
             {donationOrder.tier && (

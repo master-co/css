@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react'
 import clsx from 'clsx'
+import Translate from '~/internal/components/Translate'
 import type { BenchmarkBarItem } from './types'
 import { benchmarkColorClasses, benchmarkColors, clampPercent, formatMetricValue } from './utils'
 
@@ -29,11 +30,11 @@ export default function BenchmarkBars(props: BenchmarkBarsProps) {
                         <div className="flex items-baseline justify-between gap:sm">
                             <div className="flex items-center gap:xs min-w:0">
                                 {item.icon}
-                                <span className="overflow:hidden min-w:0 font-weight:460 font:sm text-ellipsis white-space:nowrap text:strong">{item.label}</span>
+                                <span className="overflow:hidden min-w:0 font-weight:460 font:sm text-ellipsis white-space:nowrap text:strong"><Translate>{item.label}</Translate></span>
                             </div>
                             <div className="flex items-baseline gap:xs white-space:nowrap">
                                 <strong className="font-weight:460 font:sm text:strong">{valueLabel}</strong>
-                                {item.detail && <span className="font:xs text:muted">{item.detail}</span>}
+                                {item.detail && <span className="font:xs text:muted"><Translate>{item.detail}</Translate></span>}
                             </div>
                         </div>
                         <div

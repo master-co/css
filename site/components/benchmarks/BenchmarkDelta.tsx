@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react'
 import clsx from 'clsx'
+import Translate from '~/internal/components/Translate'
 import type { BenchmarkTone } from './types'
 import { benchmarkToneTextClasses } from './utils'
 
@@ -19,7 +20,7 @@ export default function BenchmarkDelta(props: BenchmarkDeltaProps) {
         <span
             className={clsx('inline-flex items-center gap:2xs px:xs py:3xs r:sm font-weight:460 font:xs bg:surface-muted', benchmarkToneTextClasses[tone], className)}>
             <strong>{renderedValue}</strong>
-            {label && <span>{label}</span>}
+            {label && <span><Translate>{label}</Translate></span>}
         </span>
     )
 }

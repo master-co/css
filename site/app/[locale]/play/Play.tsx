@@ -1039,10 +1039,10 @@ export default function Play({ shareId }: PlayProps = {}) {
                             </Tab>
                         ))}
                         <Tab onClick={() => pushShallowURL('tab', 'Generated CSS')} size="sm" className="hidden@md" active={tab === 'Generated CSS'}>
-                            Generated CSS
+                            {$('Generated CSS')}
                         </Tab>
                         <Tab onClick={() => pushShallowURL('tab', 'Preview')} className="hidden@md" size="sm" active={tab === 'Preview'}>
-                            Preview
+                            {$('Preview')}
                         </Tab>
                     </Tabs>
                     <span className='hidden'>{tab}</span>
@@ -1092,7 +1092,7 @@ export default function Play({ shareId }: PlayProps = {}) {
                         showHeight={true}
                     >
                         <iframe
-                            title="Preview"
+                            title={$('Preview')}
                             ref={previewIframeRef}
                             className={clsx('demo', { hidden: preview === 'css' })}
                             style={{ width: '100%', height: '100%', borderRadius: 0, margin: 0, padding: 0, border: 0 }}
@@ -1102,8 +1102,8 @@ export default function Play({ shareId }: PlayProps = {}) {
                         />
                         <div className={clsx('flex flex-col h:full', { 'hidden!': preview !== 'css' })}>
                             <div className='flex flex:0|0|auto items-center justify-between h:48px px:5x bb:1px|solid|subtle font:xs px:10x@sm'>
-                                <div>{compiling ? 'Compiling CSS' : 'Generated CSS'}</div>
-                                <div className="text:muted">{compileWarnings.length ? `${compileWarnings.length} warnings` : generatedCSSSize}</div>
+                                <div>{compiling ? $('Compiling CSS') : $('Generated CSS')}</div>
+                                <div className="text:muted">{compileWarnings.length ? `${compileWarnings.length} ${$('warnings')}` : generatedCSSSize}</div>
                             </div>
                             <Editor
                                 height="100%"
@@ -1121,7 +1121,7 @@ export default function Play({ shareId }: PlayProps = {}) {
                         </div>
                         {previewErrorEvent &&
                             <div className="abs inset:0 full p:2xl text:danger bg:red-5@light bg:red-95@dark">
-                                <h2 className="font:xl">Error at line {previewErrorEvent.lineno === 1 ? 1 : previewErrorEvent.lineno - 1}</h2>
+                                <h2 className="font:xl">{$('Error at line')} {previewErrorEvent.lineno === 1 ? 1 : previewErrorEvent.lineno - 1}</h2>
                                 <div className="my:5x p:0.938rem|5x r:5px font:medium font:sm white-space:pre-wrap bg:black/.2@dark bg:red-90@light">
                                     {previewErrorEvent.message}
                                 </div>

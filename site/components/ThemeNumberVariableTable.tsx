@@ -1,4 +1,5 @@
 import InlineCode from '~/internal/components/InlineCode'
+import Translate from '~/internal/components/Translate'
 import { getThemeNumericVariableEntries } from '~/site/utils/theme-variables'
 
 interface ThemeNumberVariableTableProps {
@@ -24,11 +25,11 @@ export default function ThemeNumberVariableTable(props: ThemeNumberVariableTable
                 <table>
                     <thead>
                         <tr>
-                            <th>Token</th>
-                            <th>Value</th>
+                            <th><Translate>Token</Translate></th>
+                            <th><Translate>Value</Translate></th>
                             <th>{referenceUnit.toUpperCase()}</th>
-                            {hasSpacingRepresentation && <th>Representation</th>}
-                            {hasDescriptions && <th>Description</th>}
+                            {hasSpacingRepresentation && <th><Translate>Representation</Translate></th>}
+                            {hasDescriptions && <th><Translate>Description</Translate></th>}
                         </tr>
                     </thead>
                     <tbody>
@@ -39,7 +40,7 @@ export default function ThemeNumberVariableTable(props: ThemeNumberVariableTable
                                     <td><InlineCode>{entry.value}</InlineCode></td>
                                     <td>{referenceUnit === 'px' ? formatPx(entry.px) : formatRem(entry.rem)}</td>
                                     {hasSpacingRepresentation && <td>{renderSpacingRepresentation(entry.value, index, entries.length)}</td>}
-                                    {hasDescriptions && <td>{descriptions?.[entry.key]}</td>}
+                                    {hasDescriptions && <td><Translate>{descriptions?.[entry.key]}</Translate></td>}
                                 </tr>
                             ))
                         }
