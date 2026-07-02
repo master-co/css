@@ -1,0 +1,67 @@
+Use the CLI when PHP renders pages directly from templates. If the project later adopts Vite, move the same `@source` rules into the Vite stylesheet and enable static rendering.
+
+<StepSection>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Open your project
+            Start from the PHP or CodeIgniter project root.
+        </StepL>
+        <StepR>
+            ```bash name=Terminal
+            cd my-php-app
+            npm init -y
+            ```
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Install Master CSS
+            Install the CLI as a development dependency.
+        </StepL>
+        <StepR>
+            ```bash name=Terminal
+            npm install -D @master/css-cli@rc
+            ```
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Create your CSS entry
+            Include the PHP files where complete class strings are written.
+        </StepL>
+        <StepR>
+            ```css name=resources/master.css
+            @import "@master/css";
+
+            @source "../app/**/*.php";
+            @source "../public/**/*.php";
+            ```
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Build the stylesheet
+            Scan templates and write the generated CSS into your public directory.
+        </StepL>
+        <StepR>
+            ```bash name=Terminal
+            npx @master/css-cli "app/**/*.php" "public/**/*.php" --output public/master.css --watch
+            ```
+        </StepR>
+    </Step>
+    <Step>
+        ### <StepNum />Hello world
+        Load the generated CSS and style your first PHP template.
+    </Step>
+    <HelloWorld url="localhost" />
+</StepSection>
+
+```html name=public/index.php
+<link rel="stylesheet" href="/master.css">
+
+<h1 class="m:2xl italic font:5xl font:heavy text:neutral">
+    Hello World
+</h1>
+```
+
+For CodeIgniter, scan `app/Views/**/*.php` and load the generated file with your normal asset helper, such as `base_url('master.css')`. For a Vite-powered PHP project, install `vite @master/css.vite@rc`, use `masterCSS({ mode: 'static' })`, and keep `@source "./**/*.php"` in the CSS entry.

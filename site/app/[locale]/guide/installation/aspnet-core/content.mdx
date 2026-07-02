@@ -1,0 +1,79 @@
+Use the CLI for ASP.NET Core Razor Pages and MVC projects that serve static assets from `wwwroot`. If you already have a Vite asset workspace, use static rendering and keep the same Razor `@source` directives in the CSS entry.
+
+<StepSection>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Create a project
+            If you do not have an ASP.NET Core project, create one first.
+        </StepL>
+        <StepR>
+            ```bash name=Terminal
+            dotnet new webapp -o my-app
+            cd my-app
+            npm init -y
+            ```
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Install Master CSS
+            Install the CLI in the project root.
+        </StepL>
+        <StepR>
+            ```bash name=Terminal
+            npm install -D @master/css-cli@rc
+            ```
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Create your CSS entry
+            Include Razor Pages and MVC views where classes are authored.
+        </StepL>
+        <StepR>
+            ```css name=Styles/master.css
+            @import "@master/css";
+
+            @source "../Pages/**/*.cshtml";
+            @source "../Views/**/*.cshtml";
+            @source not "../bin/**";
+            @source not "../obj/**";
+            ```
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Build the stylesheet
+            Write the generated CSS into `wwwroot`.
+        </StepL>
+        <StepR>
+            ```bash name=Terminal
+            npx @master/css-cli "Pages/**/*.cshtml" "Views/**/*.cshtml" --output wwwroot/css/master.css --watch
+            ```
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Load the stylesheet
+            Reference the generated CSS from your shared layout.
+        </StepL>
+        <StepR>
+            ```html name=Pages/Shared/_Layout.cshtml
+            <link rel="stylesheet" href="~/css/master.css" asp-append-version="true">
+            ```
+        </StepR>
+    </Step>
+    <Step>
+        ### <StepNum />Hello world
+        Now style your first Razor page using Master CSS syntax.
+    </Step>
+    <HelloWorld url="localhost:5000" />
+</StepSection>
+
+```html name=Pages/Index.cshtml
+<h1 class="m:2xl italic font:5xl font:heavy text:neutral">
+    Hello World
+</h1>
+```
+
+For a Vite asset workspace, install `vite @master/css.vite@rc`, enable `masterCSS({ mode: 'static' })`, and scan `./Pages/**/*.cshtml` plus `./Views/**/*.cshtml` from the Vite CSS entry.

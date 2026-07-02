@@ -1,0 +1,84 @@
+Use the CLI for existing WordPress themes, or use Vite static rendering when your theme already has a frontend asset build. WordPress owns the PHP template lifecycle; Master CSS only scans complete class strings and writes the stylesheet your theme enqueues.
+
+<StepSection>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Open your theme
+            Start from a theme directory inside your WordPress installation.
+        </StepL>
+        <StepR>
+            ```bash name=Terminal
+            cd wp-content/themes/my-theme
+            npm init -y
+            ```
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Install Master CSS
+            Install the CLI for themes that do not already use a JavaScript build tool.
+        </StepL>
+        <StepR>
+            ```bash name=Terminal
+            npm install -D @master/css-cli@rc
+            ```
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Create your CSS entry
+            Import Master CSS and point the stylesheet at PHP templates in the theme.
+        </StepL>
+        <StepR>
+            ```css name=resources/master.css
+            @import "@master/css";
+
+            @source "../**/*.php";
+            @source not "../vendor/**";
+            @source not "../node_modules/**";
+            ```
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Build the theme CSS
+            Scan the theme templates and write a static stylesheet into the public theme assets.
+        </StepL>
+        <StepR>
+            ```bash name=Terminal
+            npx @master/css-cli "**/*.php" --output assets/master.css --watch
+            ```
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Enqueue the stylesheet
+            Load the generated stylesheet from `functions.php`.
+        </StepL>
+        <StepR>
+            ```php name=functions.php
+            add_action('wp_enqueue_scripts', function () {
+                wp_enqueue_style(
+                    'master-css',
+                    get_template_directory_uri() . '/assets/master.css',
+                    [],
+                    filemtime(get_template_directory() . '/assets/master.css')
+                );
+            });
+            ```
+        </StepR>
+    </Step>
+    <Step>
+        ### <StepNum />Hello world
+        Now style your first PHP template using Master CSS syntax.
+    </Step>
+    <HelloWorld url="localhost" />
+</StepSection>
+
+```html name=index.php
+<h1 class="m:2xl italic font:5xl font:heavy text:neutral">
+    Hello World
+</h1>
+```
+
+If the theme uses Vite, install `@master/css.vite@rc`, add `masterCSS({ mode: 'static' })`, and keep the same `@source "./**/*.php"` policy in the CSS entry. For WooCommerce templates, include your theme overrides such as `@source "../woocommerce/**/*.php"` and avoid scanning plugin internals unless your theme stores complete class strings there.

@@ -1,0 +1,76 @@
+Use the CLI for Rails apps that load stylesheets from the asset pipeline. Master CSS scans ERB views and writes a generated stylesheet that Rails can serve like any other asset.
+
+<StepSection>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Create a project
+            If you do not have a Rails project, create one first.
+        </StepL>
+        <StepR>
+            ```bash name=Terminal
+            rails new my-app
+            cd my-app
+            npm init -y
+            ```
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Install Master CSS
+            Install the CLI in the Rails project root.
+        </StepL>
+        <StepR>
+            ```bash name=Terminal
+            npm install -D @master/css-cli@rc
+            ```
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Create your CSS entry
+            Include ERB views where classes are authored.
+        </StepL>
+        <StepR>
+            ```css name=app/assets/stylesheets/master.source.css
+            @import "@master/css";
+
+            @source "../../views/**/*.erb";
+            ```
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Build the stylesheet
+            Write the generated CSS into the Rails stylesheets directory.
+        </StepL>
+        <StepR>
+            ```bash name=Terminal
+            npx @master/css-cli "app/views/**/*.erb" --output app/assets/stylesheets/master.css --watch
+            ```
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Load the stylesheet
+            Reference the generated asset from the application layout.
+        </StepL>
+        <StepR>
+            ```erb name=app/views/layouts/application.html.erb
+            <%= stylesheet_link_tag "master", "data-turbo-track": "reload" %>
+            ```
+        </StepR>
+    </Step>
+    <Step>
+        ### <StepNum />Hello world
+        Now style your first ERB view using Master CSS syntax.
+    </Step>
+    <HelloWorld url="localhost:3000" />
+</StepSection>
+
+```html name=app/views/home/index.html.erb
+<h1 class="m:2xl italic font:5xl font:heavy text:neutral">
+    Hello World
+</h1>
+```
+
+For `vite_rails`, install `@master/css.vite@rc`, add `masterCSS({ mode: 'static' })` to the Vite config, and keep `@source "./app/views/**/*.erb"` in the Vite CSS entry.

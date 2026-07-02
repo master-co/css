@@ -89,6 +89,31 @@ describe('stylesheet CSS directives', () => {
         expect(css).not.toContain('legacy-token')
     })
 
+    it('loads source directives from server template extensions', async () => {
+        const root = createFixture()
+        mkdirSync(join(root, 'app/templates'), { recursive: true })
+        writeFileSync(join(root, 'app/templates/product.liquid'), '<h1 class="block"></h1>')
+        writeFileSync(join(root, 'app/templates/index.cshtml'), '<h1 class="m:0"></h1>')
+        writeFileSync(join(root, 'app/templates/show.erb'), '<h1 class="font:semibold"></h1>')
+
+        const scanner = new CSSScanner({}, root)
+        await scanner.init()
+        const styleCSSSources = new Map()
+        await registerStyleCSSSource(scanner, styleCSSSources, join(root, 'app/entry.css'), `
+            @master entry;
+            @source './templates/**/*.{liquid,cshtml,erb}';
+        `)
+        const css = await createExtractedCSS({
+            scanner,
+            styleCSSSources,
+            projectDir: root
+        })
+
+        expect(css).toContain('.block{display:block}')
+        expect(css).toContain('.m\\:0{margin:0}')
+        expect(css).toContain('.font\\:semibold{font-weight:var(--font-weight-semibold)}')
+    })
+
     it('unions source directives and subtracts source not directives', async () => {
         const root = createFixture()
         writeFileSync(join(root, 'app/a/page.tsx'), '<div class="block"></div>')
