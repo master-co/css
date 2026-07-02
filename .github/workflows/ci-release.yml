@@ -53,6 +53,22 @@ jobs:
             - if: ${{ env.TRUSTED_CI == 'true' }}
               run: pnpm run type-check
 
+    audit-site-i18n:
+        runs-on: ubuntu-latest
+        steps:
+            - if: ${{ env.TRUSTED_CI != 'true' }}
+              run: |
+                  echo "Full CI requires the private internal submodule and is not available for untrusted pull requests."
+                  exit 1
+            - if: ${{ env.TRUSTED_CI == 'true' }}
+              uses: actions/checkout@v6
+            - if: ${{ env.TRUSTED_CI == 'true' }}
+              uses: ./.github/actions/setup-pnpm
+              with:
+                  submodules-token: ${{ secrets.GH_TOKEN }}
+            - if: ${{ env.TRUSTED_CI == 'true' }}
+              run: pnpm --filter site audit:i18n
+
     test:
         runs-on: ${{ matrix.os }}
         strategy:
