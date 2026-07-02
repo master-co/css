@@ -166,16 +166,34 @@ function statusPath(line) {
     return rawPath.includes(' -> ') ? rawPath.split(' -> ').at(-1) : rawPath
 }
 
-async function assertCleanWorktree(message) {
+function baselineStatusPaths(baselineLines) {
+    return new Set(baselineLines.map(statusPath))
+}
+
+export function newStatusLines(lines, baselineLines = []) {
+    const baselinePaths = baselineStatusPaths(baselineLines)
+    return lines.filter((line) => !baselinePaths.has(statusPath(line)))
+}
+
+export function unexpectedReleaseStatusLines(lines, baselineLines = []) {
+    const baselinePaths = baselineStatusPaths(baselineLines)
+    return lines.filter((line) => {
+        const path = statusPath(line)
+        return !baselinePaths.has(path) && !allowedReleaseChanges.has(path)
+    })
+}
+
+async function assertNoNewChanges(message, baselineLines) {
     const lines = await gitStatus()
-    if (lines.length) {
-        throw new Error(`${message}\n${lines.join('\n')}`)
+    const unexpected = newStatusLines(lines, baselineLines)
+    if (unexpected.length) {
+        throw new Error(`${message}\n${unexpected.join('\n')}`)
     }
 }
 
-async function assertOnlyExpectedChanges() {
+async function assertOnlyExpectedChanges(baselineLines) {
     const lines = await gitStatus()
-    const unexpected = lines.filter((line) => !allowedReleaseChanges.has(statusPath(line)))
+    const unexpected = unexpectedReleaseStatusLines(lines, baselineLines)
     if (unexpected.length) {
         throw new Error(`Release produced unexpected tracked changes:\n${unexpected.join('\n')}`)
     }
@@ -193,7 +211,7 @@ function printPlan(options, manifest, statusLines) {
     console.log(`VS Code engine: ${manifest.engines?.vscode}`)
     console.log(`@types/vscode: ${manifest.devDependencies?.['@types/vscode']}`)
     if (statusLines.length) {
-        console.log('\nCurrent worktree is not clean. A real release will fail before mutating files:')
+        console.log('\nCurrent worktree has existing changes. A real release will preserve them and only allow expected VS Code version changes:')
         for (const line of statusLines) console.log(line)
     }
 }
@@ -226,10 +244,10 @@ async function main() {
         return
     }
 
-    await assertCleanWorktree('VS Code release must start from a clean worktree.')
+    const initialStatusLines = await gitStatus()
 
     await run(corepackCommand(), ['pnpm', 'build'])
-    await assertCleanWorktree('Root build changed tracked files; review those changes before releasing.')
+    await assertNoNewChanges('Root build changed tracked files; review those changes before releasing.', initialStatusLines)
 
     await run(corepackCommand(), ['pnpm', '--dir', relative(rootDir, packageDir), 'version', options.bump, '--no-git-tag-version'])
 
@@ -238,7 +256,7 @@ async function main() {
 
     await run(corepackCommand(), ['pnpm', '--filter', 'master-css-vscode', 'build'])
     await run(corepackCommand(), ['pnpm', '--filter', 'master-css-vscode', 'type-check'])
-    await assertOnlyExpectedChanges()
+    await assertOnlyExpectedChanges(initialStatusLines)
 
     if (options.noPublish) {
         await run(corepackCommand(), ['pnpm', '--filter', 'master-css-vscode', 'vscode:package', ...targetArgs(options.targets)])
