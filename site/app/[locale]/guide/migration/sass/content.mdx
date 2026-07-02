@@ -69,7 +69,7 @@ $radius-card: .75rem;
 ```
 
 ```html
-<article class="bg:white fg:body p:card r:card b:1px|solid|base">
+<article class="b:1px|solid|base r:card bg:white fg:body p:card">
     ...
 </article>
 ```
@@ -94,7 +94,7 @@ Move local visual rules into markup when the style belongs to one element or one
 ```tsx name=Card.tsx
 export function Card({ children }: { children: React.ReactNode }) {
     return (
-        <section className="grid gap:md p:card r:card bg:white">
+        <section className="grid gap:md r:card bg:white p:card">
             {children}
         </section>
     )
@@ -115,11 +115,11 @@ Use `@components` for product roles:
 
 @components {
     card {
-        @compose grid gap:md p:card r:card bg:white b:1px|solid|base shadow:sm;
+        @compose grid gap:md b:1px|solid|base r:card bg:white shadow:sm p:card;
     }
 
     btn {
-        @compose inline-flex align-items:center justify-content:center gap:xs h:10x px:md r:md bg:primary fg:white;
+        @compose inline-flex items-center justify-center gap:xs h:10x px:md r:md bg:primary fg:white;
     }
 }
 ```

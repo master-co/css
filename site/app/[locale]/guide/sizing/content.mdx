@@ -7,21 +7,21 @@ Master CSS keeps sizing decisions close to the element that owns them. Use `w:*`
 
 <Demo>
     <div className="container w:full">
-        <div className="grid grid-cols:1 grid-cols:2@container(2xs) gap:md w:full">
-            <section className="min-w:0 surface:raised r:lg p:lg shadow:xs">
+        <div className="grid grid-cols:1 gap:md w:full grid-cols:2@container(2xs)">
+            <section className="min-w:0 p:lg r:lg surface:raised shadow:xs">
                 <DemoLabel>Fluid wrapper</DemoLabel>
-                <div className="w:full max-w:64x mx:auto">
-                    <div className="h:10x bg:blue-60/.15 r:lg"></div>
-                    <div className="mt:sm h:4x w:75% bg:blue-60/.1 r:sm"></div>
+                <div className="w:full max-w:3xs mx:auto">
+                    <div className="h:10x r:lg bg:blue-60/.15"></div>
+                    <div className="h:4x w:75% mt:sm r:sm bg:blue-60/.1"></div>
                 </div>
             </section>
-            <section className="min-w:0 surface:raised r:lg p:lg shadow:xs">
+            <section className="min-w:0 p:lg r:lg surface:raised shadow:xs">
                 <DemoLabel>Measured object</DemoLabel>
                 <div className="flex items-center gap:md">
                     <div className="size:12x round bg:blue-60/.15"></div>
-                    <div className="min-w:0 flex:1">
-                        <div className="h:4x w:full max-w:28x bg:blue-60/.16 r:sm"></div>
-                        <div className="mt:xs h:3x w:calc(100%/3*2) bg:blue-60/.1 r:sm"></div>
+                    <div className="flex:1 min-w:0">
+                        <div className="h:4x w:full max-w:28x r:sm bg:blue-60/.16"></div>
+                        <div className="h:3x w:calc(100%/3*2) mt:xs r:sm bg:blue-60/.1"></div>
                     </div>
                 </div>
             </section>
@@ -40,7 +40,7 @@ Use one-axis rules when the element is rectangular by role. Use `size:*`, `min:*
 
 ```html
 <!-- @MARK w:full --><!-- @MARK max-w:7xl --><!-- @MARK min-h:100dvh -->
-<main class="w:full max-w:7xl min-h:100dvh mx:auto">
+<main class="w:full min-h:100dvh max-w:7xl mx:auto">
     ...
 </main>
 ```
@@ -128,7 +128,7 @@ Use `x` values for measured component geometry such as icons, avatars, handles, 
 <img class="size:10x round object-cover" src="..." alt="" />
 
 <!-- @MARK w:36x --><!-- @MARK h:20x -->
-<figure class="w:36x h:20x">...</figure>
+<figure class="h:20x w:36x">...</figure>
 ```
 
 <details>
@@ -144,24 +144,24 @@ Use `x` values for measured component geometry such as icons, avatars, handles, 
 `size:*` is not a shorter way to avoid thinking about dimensions. It is the right tool when an element is square by design.
 
 <Demo>
-    <div className="flex gap:lg items-center w:full">
+    <div className="flex items-center gap:lg w:full">
         <div className="flex:0">
             <DemoLabel>size:14x</DemoLabel>
-            <div className="size:14x grid place-content:center bg:blue-60/.15 r:lg font:medium">A</div>
+            <div className="grid place-content:center size:14x r:lg font:medium bg:blue-60/.15">A</div>
         </div>
         <div className="flex:1 min-w:0">
             <DemoLabel>w:full h:14x</DemoLabel>
-            <div className="w:full h:14x grid place-content:center bg:blue-60/.15 r:lg font:medium">Banner</div>
+            <div className="grid place-content:center h:14x w:full r:lg font:medium bg:blue-60/.15">Banner</div>
         </div>
     </div>
 </Demo>
 
 ```html
 <!-- @MARK size:14x -->
-<button class="size:14x grid place-content:center">...</button>
+<button class="grid place-content:center size:14x">...</button>
 
 <!-- @MARK w:full --><!-- @MARK h:14x -->
-<div class="w:full h:14x">...</div>
+<div class="h:14x w:full">...</div>
 ```
 
 <details>
@@ -184,13 +184,13 @@ When an element should keep a non-square ratio, use [aspect ratio](/reference/as
 Min and max rules are often more stable than fixed widths. They let content, containers, and responsive variants negotiate space without overflow.
 
 <Demo>
-    <div className="w:full max-w:96x mx:auto surface:raised r:lg p:lg shadow:xs">
+    <div className="w:full max-w:sm mx:auto p:lg r:lg surface:raised shadow:xs">
         <DemoLabel>min-w:0 max-w:96x</DemoLabel>
         <div className="flex gap:md">
-            <div className="size:10x flex:0 bg:blue-60/.15 r:lg"></div>
-            <div className="min-w:0 flex:1">
+            <div className="flex:0 size:10x r:lg bg:blue-60/.15"></div>
+            <div className="flex:1 min-w:0">
                 <div className="font:medium text:strong">Shrinkable content</div>
-                <div className="text:muted text:sm white-space:nowrap overflow:hidden text-overflow:ellipsis">Long text can shrink inside the row without forcing the wrapper wider.</div>
+                <div className="overflow:hidden text:sm text-ellipsis white-space:nowrap text:muted">Long text can shrink inside the row without forcing the wrapper wider.</div>
             </div>
         </div>
     </div>
@@ -198,8 +198,8 @@ Min and max rules are often more stable than fixed widths. They let content, con
 
 ```html
 <!-- @MARK flex --><!-- @MARK min-w:0 --><!-- @MARK max-w:96x -->
-<article class="flex gap:md max-w:96x">
-    <img class="size:10x flex:0" alt="" />
+<article class="flex gap:md max-w:sm">
+    <img class="flex:0 size:10x" alt="" />
     <div class="min-w:0">Long content...</div>
 </article>
 ```
@@ -267,7 +267,7 @@ Use descriptive names such as `sidebar`, `measure`, `panel`, or `media` instead 
 (x) A page wrapper is fixed, so small screens overflow.
 
 ```html
-<main class="w:320x">...</main>
+<main class="w:7xl">...</main>
 ```
 
 (o) The wrapper fills available space and stops at a shared cap.
@@ -279,7 +279,7 @@ Use descriptive names such as `sidebar`, `measure`, `panel`, or `media` instead 
 (x) A square component repeats separate width and height values that can drift.
 
 ```html
-<button class="w:10x h:12x">...</button>
+<button class="h:12x w:10x">...</button>
 ```
 
 (o) The component uses one sizing decision.

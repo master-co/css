@@ -1,4 +1,4 @@
-export const code1 = `
+export const code1 = /* eslint-disable @master/css/prefer-canonical-classes, @master/css/sort-classes -- intentional shorthand comparison source */ `
     <!-- @MARK text-align:center --><!-- @MARK font-size:16px --><!-- @MARK font-weight:bold --><!-- @MARK border-style:solid -->
     <p class="text-align:center font-size:16px font-weight:bold border-style:solid">
 `
@@ -6,8 +6,9 @@ export const code2 = `
     <!-- @MARK text-center --><!-- @MARK font:16px --><!-- @MARK font:bold --><!-- @MARK b-solid -->
     <p class="text-center font:16px font:bold b-solid">
 `
+/* eslint-enable @master/css/prefer-canonical-classes, @master/css/sort-classes */
 
-Syntax: <code><span className="token value mcss language-mcss"><span className="token mcss"><span className="token Mkey">property-name</span><span className="token Mvalueroot"><span className="token Mcolon">:</span><span className="token Mvalue"><span className="token Mnumber_unit"><span className="token Mnumber">value</span></span></span></span></span></span></code> -> <code><span className="token value mcss language-mcss"><span className="token mcss"><span className="token Mkey">property</span><span className="token Mvalueroot"><span className="token Mcolon">:</span><span className="token Mvalue"><span className="token Mnumber_unit"><span className="token Mnumber">value</span></span></span></span></span></span></code>
+Syntax: <code><span className="language-mcss mcss token value"><span className="mcss token"><span className="Mkey token">property-name</span><span className="Mvalueroot token"><span className="Mcolon token">:</span><span className="Mvalue token"><span className="Mnumber_unit token"><span className="Mnumber token">value</span></span></span></span></span></span></code> -> <code><span className="language-mcss mcss token value"><span className="mcss token"><span className="Mkey token">property</span><span className="Mvalueroot token"><span className="Mcolon token">:</span><span className="Mvalue token"><span className="Mnumber_unit token"><span className="Mnumber token">value</span></span></span></span></span></span></code>
 
 Native CSS shorthands usually combine several longhand properties. Master CSS also has shorter names for single declarations when the property and value together make the target property clear.
 <Code lang="html">

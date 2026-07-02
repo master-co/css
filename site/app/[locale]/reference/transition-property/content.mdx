@@ -6,7 +6,7 @@
 Use `transition-property:*` to choose the properties that are allowed to animate. Prefer a small property list for predictable state changes.
 ```html
 <!-- @MARK transition-property:opacity -->
-<div class="opacity:.6 transition-property:opacity transition-duration:150ms opacity:1:hover">
+<div class="opacity:.6 transition-duration:150ms transition-property:opacity opacity:1:hover">
     Online
 </div>
 ```
@@ -22,7 +22,7 @@ Use `transition-property:*` to choose the properties that are allowed to animate
 `transition-property:*` only chooses the property. Add `transition-duration:*` and `transition-timing-function:*` when the transition needs a specific feel.
 ```html
 <!-- @MARK transition-property:transform -->
-<button class="transition-property:transform transition-duration:200ms transition-timing-function:ease-out transform:translateY(-1px):hover">
+<button class="transition-duration:200ms transition-property:transform transition-timing-function:ease-out transform:translateY(-1px):hover">
     Lift
 </button>
 ```
@@ -39,5 +39,5 @@ Use `transition-property:none` to stop inherited component styles or variant sty
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<div class="transition-property:opacity:hover transition-property:transform@sm transition-property:none@print">...</div>
+<div class="transition-property:opacity:hover transition-property:none@print transition-property:transform@sm">...</div>
 ```

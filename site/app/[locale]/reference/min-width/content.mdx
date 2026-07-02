@@ -23,8 +23,8 @@ In flex and grid layouts, `min-w:0` is often the fix for text or media that refu
 ```html
 <!-- @MARK flex --><!-- @MARK min-w:0 --><!-- @MARK overflow:hidden -->
 <article class="flex gap:md">
-    <img class="size:12x flex:0" alt="" />
-    <div class="min-w:0 overflow:hidden">
+    <img class="flex:0 size:12x" alt="" />
+    <div class="overflow:hidden min-w:0">
         Long content can truncate instead of widening the row.
     </div>
 </article>
@@ -51,7 +51,7 @@ Use `min-w:fit`, `min-w:min`, or `min-w:max` when content sizing should drive th
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<div class="min-w:0 min-w:32x@sm min-w:fit:hover min-w:0@print">...</div>
+<div class="min-w:0 min-w:fit:hover min-w:0@print min-w:32x@sm">...</div>
 ```
 
 Use [max-width](/reference/max-width) for upper bounds and [width](/reference/width) for the preferred size.

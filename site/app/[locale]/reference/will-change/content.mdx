@@ -6,7 +6,7 @@
 Use `will-change:*` sparingly to tell the browser that a property is likely to change soon.
 ```html
 <!-- @MARK will-change:transform -->
-<button class="will-change:transform transition:transform|150ms|ease-out transform:translateY(-2px):hover">
+<button class="transition:transform|150ms|ease-out will-change:transform transform:translateY(-2px):hover">
     Hover
 </button>
 ```
@@ -22,7 +22,7 @@ Use `will-change:*` sparingly to tell the browser that a property is likely to c
 Use `will-change:opacity` for elements that fade frequently, such as popovers or temporary overlays.
 ```html
 <!-- @MARK will-change:opacity -->
-<div class="will-change:opacity transition:opacity|150ms|ease-out opacity:0 opacity:1:hover">
+<div class="opacity:0 transition:opacity|150ms|ease-out will-change:opacity opacity:1:hover">
     Preview
 </div>
 ```
@@ -39,5 +39,5 @@ Do not leave `will-change` on large parts of the page by default. Reset it with 
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<div class="will-change:transform:hover will-change:opacity@sm will-change:auto@print">...</div>
+<div class="will-change:transform:hover will-change:auto@print will-change:opacity@sm">...</div>
 ```

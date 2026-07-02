@@ -6,7 +6,7 @@
 Use `content-*` utilities to distribute rows in a multi-line flex container or tracks in a grid container along the cross axis.
 ```html
 <!-- @MARK flex --><!-- @MARK flex-wrap --><!-- @MARK content-between -->
-<div class="flex flex-wrap content-between h:64x">
+<div class="flex flex-wrap content-between h:3xs">
     ...
 </div>
 ```
@@ -22,7 +22,7 @@ Use `content-*` utilities to distribute rows in a multi-line flex container or t
 Use `content-center` when the group of rows should sit in the middle of the container.
 ```html
 <!-- @MARK content-center -->
-<section class="grid content-center h:64x">
+<section class="grid content-center h:3xs">
     ...
 </section>
 ```
@@ -32,7 +32,7 @@ Use `content-center` when the group of rows should sit in the middle of the cont
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<div class="content-start content-between@sm content-start@print">...</div>
+<div class="content-start content-start@print content-between@sm">...</div>
 ```
 
 Use [align-items](/reference/align-items) for item alignment within each row.

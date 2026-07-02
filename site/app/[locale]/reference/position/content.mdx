@@ -8,16 +8,16 @@ import clsx from 'clsx'
 ### Positioning elements as static
 Use `static` to position an element according to the normal document flow. HTML elements are static by default.
 <Demo className="pb:15x">
-    <code className="static p:5x box-perspective-pink">
+    <code className="box-perspective-pink static p:5x">
         <div>static parent</div>
-        <code className="abs left:10px bottom:10px box w:fit">abs child</code>
+        <code className="box abs bottom:10px left:10px w:fit">abs child</code>
     </code>
 </Demo>
 ```html
 <!-- @MARK static -->
 <div class="static p:5x">
     <div>static parent</div>
-    <div class="abs left:10px bottom:10px">abs child</div>
+    <div class="abs bottom:10px left:10px">abs child</div>
 </div>
 ```
 
@@ -25,14 +25,14 @@ Use `static` to position an element according to the normal document flow. HTML 
 Use `rel` to keep an element in the normal document flow while offsetting it relative to itself with top, right, bottom, and left values.
 <Demo className="pb:15x">
     <div className="bg:stripe">
-        <code className="rel p:5x top:30px left:20px box-perspective-pink inline-block">
+        <code className="box-perspective-pink rel left:20px top:30px inline-block p:5x">
             <div>relative parent</div>
         </code>
     </div>
 </Demo>
 ```html
 <!-- @MARK rel -->
-<div class="rel p:5x top:30px left:20px">
+<div class="rel left:20px top:30px p:5x">
     <div>relative parent</div>
 </div>
 ```
@@ -40,14 +40,14 @@ Use `rel` to keep an element in the normal document flow while offsetting it rel
 ### Positioning elements as absolute
 Use `abs` to remove an element from the normal document flow and position it relative to its closest positioned ancestor.
 <Demo>
-    <code className="rel p:12x! box bg:stripe">
+    <code className="box rel p:2xl! bg:stripe">
         <div>relative parent</div>
         <code className="box-perspective-pink abs left:0 top:0 w:fit">abs child</code>
     </code>
 </Demo>
 ```html
 <!-- @MARK rel -->
-<div class="rel p:12x">
+<div class="rel p:2xl">
     <div>relative parent</div>
     <!-- @MARK abs -->
     <div class="abs left:0 top:0">abs child</div>
@@ -57,21 +57,21 @@ Use `abs` to remove an element from the normal document flow and position it rel
 ### Positioning elements as fixed
 Use `fixed` to remove an element from the normal document flow and position it relative to the viewport.
 <Demo>
-    <div className="box align-items:initial! justify-content:initial! p:2x|5x_li p:0.625rem|0! r:10px w:full max-w:340px@sm max-h:250px overflow:auto">
-        <input className="fixed z:1 bg:gray-23 bg:gray-18:focus fg:gray-40::placeholder outline:0 font:14px w:300px mx:0.625rem p:3x leading:1 r:5px" placeholder="Search for chats and messages" type="search" />
-        <ul className="list-style:none mt:0.625rem pl:0 w:full">
+    <div className="box overflow:auto align-items:initial! justify-content:initial! w:full max-h:250px p:0.625rem|0! r:10px p:2x|5x_li max-w:340px@sm">
+        <input className="fixed z:1 w:300px mx:0.625rem p:sm r:5px outline:0 font:sm leading:1 fg:gray-40::placeholder bg:gray-18:focus bg:gray-23" placeholder="Search for chats and messages" type="search" />
+        <ul className="w:full mt:0.625rem pl:0 list-style:none">
             {users.map((user, index) =>
-                <li className="bg:gray-28:hover bg:gray-32:active flex gap:3x cursor:pointer" key={index}>
+                <li className="flex gap:sm cursor:pointer bg:gray-28:hover bg:gray-32:active" key={index}>
                     <div className="rel">
                         <Image src={user.url} width="40" height="40" className="round object-cover" alt="avatar" />
-                        {index < 2 && <svg className="abs right:1px bottom:1px bg:green-70 outline:2px|solid|white outline:gray-20@dark round w:7px h:7px" />}
+                        {index < 2 && <svg className="abs bottom:1px right:1px size:7px round outline:2px|solid|white bg:green-70 outline:gray-20@dark" />}
                     </div>
                     <div>
-                        <div className="flex align-items:center">
-                            <div className="text:14px font:medium fg:gray-88@dark capitalize">{user.name}</div>
-                            <div className="font:12px fg:slate-54 fg:gray-44@dark ml:2x">{user.time}</div>
+                        <div className="flex items-center">
+                            <div className="text:sm font:medium capitalize fg:gray-88@dark">{user.name}</div>
+                            <div className="ml:xs font:xs fg:gray-44@dark fg:slate-54">{user.time}</div>
                         </div>
-                        <p className="text:13px m:0 text-left">{user.message}</p>
+                        <p className="m:0 text:13px text-left">{user.message}</p>
                     </div>
                 </li>
             )}
@@ -103,20 +103,20 @@ Use `fixed` to remove an element from the normal document flow and position it r
 ### Positioning elements as sticky
 Use `sticky` to position an element based on scroll position. It behaves like a relatively positioned element until a given offset is reached, then sticks to that offset.
 <Demo>
-    <div className="box block! p:2x|5x_li p:0.625rem|0! r:10px w:full max-w:340px@sm max-h:250px overflow:auto">
-        <ul className="list-style:none mt:0.625rem pl:0 w:full">
+    <div className="box block! overflow:auto w:full max-h:250px p:0.625rem|0! r:10px p:2x|5x_li max-w:340px@sm">
+        <ul className="w:full mt:0.625rem pl:0 list-style:none">
             {users.map((user, index) =>
-                <li className={clsx(index === 1 ? 'sticky top:0 z:1' : '', 'bg:gray-30 bg:gray-28:hover bg:gray-32:active flex gap:3x cursor:pointer')} key={index}>
+                <li className={clsx(index === 1 ? 'sticky top:0 z:1' : '', 'flex gap:sm bg:gray-30 cursor:pointer bg:gray-28:hover bg:gray-32:active')} key={index}>
                     <div className="rel">
                         <Image src={user.url} width="40" height="40" className="round object-cover" alt="avatar" />
-                        {index < 2 && <svg className="abs right:1px bottom:1px bg:green-70 outline:2px|solid|white outline:gray-20@dark round w:7px h:7px" />}
+                        {index < 2 && <svg className="abs bottom:1px right:1px size:7px round outline:2px|solid|white bg:green-70 outline:gray-20@dark" />}
                     </div>
                     <div>
-                        <div className="flex align-items:center">
-                            <div className="text:14px font:medium fg:gray-88@dark capitalize">{user.name}</div>
-                            <div className="font:12px fg:slate-54 fg:gray-44@dark ml:2x">{user.time}</div>
+                        <div className="flex items-center">
+                            <div className="text:sm font:medium capitalize fg:gray-88@dark">{user.name}</div>
+                            <div className="ml:xs font:xs fg:gray-44@dark fg:slate-54">{user.time}</div>
                         </div>
-                        <p className="text:13px m:0 text-left">{user.message}</p>
+                        <p className="m:0 text:13px text-left">{user.message}</p>
                     </div>
                 </li>
             )}
@@ -139,5 +139,5 @@ Use `sticky` to position an element based on scroll position. It behaves like a 
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<div class="rel:hover rel@sm rel@dark rel@print">...</div>
+<div class="rel:hover rel@dark rel@print rel@sm">...</div>
 ```

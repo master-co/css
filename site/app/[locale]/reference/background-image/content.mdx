@@ -6,7 +6,7 @@
 Use `bg:url(...)` to set `background-image`.
 ```html
 <!-- @MARK bg:url(/hero.jpg) -->
-<section class="bg:url(/hero.jpg) bg-center bg-cover">
+<section class="bg-center bg-cover bg:url(/hero.jpg)">
     ...
 </section>
 ```
@@ -32,7 +32,7 @@ Pair image utilities with [background-position](/reference/background-position),
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<div class="background-image:none bg:url(/hero.jpg)@sm background-image:none@print">...</div>
+<div class="background-image:none background-image:none@print bg:url(/hero.jpg)@sm">...</div>
 ```
 
 Use local or bundled assets according to the framework integration you are using.

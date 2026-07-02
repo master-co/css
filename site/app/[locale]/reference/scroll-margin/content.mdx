@@ -6,7 +6,7 @@
 Use `scroll-mt:*` on the target element so anchor navigation leaves room for fixed headers.
 ```html
 <!-- @MARK scroll-mt:16x -->
-<section id="pricing" class="scroll-mt:16x">
+<section id="pricing" class="scroll-mt:3xl">
     Pricing
 </section>
 ```
@@ -22,7 +22,7 @@ Use `scroll-mt:*` on the target element so anchor navigation leaves room for fix
 Use `scroll-mx:*` on snap items when the item should stop with space on both sides.
 ```html
 <!-- @MARK scroll-mx:4x -->
-<article class="snap-start scroll-mx:4x">
+<article class="scroll-mx:md snap-start">
     Slide
 </article>
 ```
@@ -37,5 +37,5 @@ Use `scroll-m:*` when the same offset should apply on every side of the target.
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<section class="scroll-mt:16x scroll-mt:8x@sm scroll-m:0@print">...</section>
+<section class="scroll-mt:3xl scroll-m:0@print scroll-mt:xl@sm">...</section>
 ```

@@ -40,14 +40,14 @@ Start with wrappers that only apply stable visual styles.
 import styled from 'styled-components'
 
 const Button = styled.button`
-    display: inline-flex;
-    align-items: center;
-    gap: .5rem;
-    min-height: 2.5rem;
-    padding: 0 1rem;
-    border-radius: .5rem;
-    background: ${({ theme }) => theme.colors.primary};
-    color: white;
+    .5rem; })
+    => ${({
+    0 1rem;
+    2.5rem; align-items:
+    background: border-radius: center;
+    color: display:
+    gap: inline-flex; min-height: padding: theme theme.colors.primary};
+    white;
 `
 ```
 
@@ -65,7 +65,7 @@ Move the reusable value into `@theme`, then use a class string where the button 
 export function Button(props: React.ButtonHTMLAttributes<HTMLButtonElement>) {
     return (
         <button
-            className="inline-flex align-items:center gap:xs min-h:10x px:md r:md bg:primary fg:white"
+            className="inline-flex items-center gap:xs min-h:10x px:md r:md bg:primary fg:white"
             {...props}
         />
     )
@@ -79,8 +79,9 @@ If the project needs a named component class, define it once in CSS.
 
 @components {
     btn {
-        @compose inline-flex align-items:center justify-content:center gap:xs min-h:10x px:md r:md bg:primary fg:white;
-        @compose bg:blue-70:hover opacity:.5:disabled;
+        @compose inline-flex items-center justify-center gap:xs min-h:10x px:md r:md bg:primary fg:white;
+        @variant :hover { @compose bg:blue-70; }
+@variant :disabled { opacity: 0.5; }
     }
 }
 ```
@@ -110,7 +111,7 @@ const sizeClasses = {
 export function Button({ tone = 'primary', size = 'md', className, ...props }: ButtonProps) {
     return (
         <button
-            className={`${toneClasses[tone]} ${sizeClasses[size]} inline-flex align-items:center r:md ${className ?? ''}`}
+            className={`inline-flex align-items:center r:md ?? ''} ${className ${sizeClasses[size]} ${toneClasses[tone]}`}
             {...props}
         />
     )
@@ -127,7 +128,7 @@ Runtime values should not become generated class names. Keep the class static an
 ```tsx
 export function Meter({ value }: { value: number }) {
     return (
-        <div className="h:2x bg:gray-10 r:full overflow:hidden">
+        <div className="overflow:hidden h:2x r:full bg:gray-10">
             <div
                 className="h:full w:$value bg:green-60 transition:width|fast|smooth"
                 style={{ '--value': `${value}%` } as React.CSSProperties}

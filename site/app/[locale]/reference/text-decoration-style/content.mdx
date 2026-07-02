@@ -1,5 +1,6 @@
 ## Overview [sr-only]
 <Overview/>
+{/* eslint-disable @master/css/prefer-canonical-classes -- reference examples intentionally document text-decoration-style syntax */}
 
 ## Examples
 ### Use a wavy decoration
@@ -39,5 +40,6 @@ Use `text-decoration-style:solid` when a state should remove a more decorative s
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<a class="text-decoration-style:wavy:hover text-decoration-style:dashed@sm text-decoration-style:solid@print">...</a>
+<a class="text-decoration-style:wavy:hover text-decoration-style:solid@print text-decoration-style:dashed@sm">...</a>
 ```
+{/* eslint-enable @master/css/prefer-canonical-classes */}

@@ -6,16 +6,16 @@
 Use `border-image-source` to choose the image painted into the border. Pair it with [`border-image-slice`](/reference/border-image-slice), plus a visible border width and style.
 <Demo $py={0}>
     <DemoPanel>
-        <div className="b:16px|solid|transparent border-image-source:linear-gradient(135deg,dodgerblue,hotpink) border-image-slice:30 p:10x r:8px surface:raised">
-            <div className="text:neutral font:18px font-weight:560">Gradient source</div>
-            <p className="text:gray font:14px my:4x">The source image supplies the pixels for the border.</p>
+        <div className="p:10x b:16px|solid|transparent r:lg border-image-slice:30 border-image-source:linear-gradient(135deg,dodgerblue,hotpink) surface:raised">
+            <div className="font-weight:560 font:lg text:neutral">Gradient source</div>
+            <p className="my:md font:sm text:gray">The source image supplies the pixels for the border.</p>
         </div>
     </DemoPanel>
 </Demo>
 ```html
 <!-- @MARK border-image-source:linear-gradient(135deg,dodgerblue,hotpink) -->
 <!-- @MARK border-image-slice:30 -->
-<div class="b:16px|solid|transparent border-image-source:linear-gradient(135deg,dodgerblue,hotpink) border-image-slice:30">
+<div class="b:16px|solid|transparent border-image-slice:30 border-image-source:linear-gradient(135deg,dodgerblue,hotpink)">
     Gradient source
 </div>
 ```
@@ -30,5 +30,5 @@ When the source is `none`, the normal border style is displayed instead.
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<div class="border-image-source:linear-gradient(135deg,dodgerblue,hotpink):hover border-image-source:linear-gradient(135deg,dodgerblue,hotpink)@sm border-image-source:linear-gradient(135deg,dodgerblue,hotpink)@dark border-image-source:linear-gradient(135deg,dodgerblue,hotpink)@print">…</div>
+<div class="border-image-source:linear-gradient(135deg,dodgerblue,hotpink):hover border-image-source:linear-gradient(135deg,dodgerblue,hotpink)@dark border-image-source:linear-gradient(135deg,dodgerblue,hotpink)@print border-image-source:linear-gradient(135deg,dodgerblue,hotpink)@sm">…</div>
 ```

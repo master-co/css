@@ -1,4 +1,4 @@
-export const code1 = `
+export const code1 = /* eslint-disable @master/css/prefer-canonical-classes, @master/css/sort-classes -- intentional shorthand comparison source */ `
     <!-- @MARK padding-top:1rem --><!-- @MARK padding-bottom:1rem --><!-- @MARK padding-left:2rem --><!-- @MARK padding-right:2rem --><!-- @MARK border-width:.0625rem --><!-- @MARK border-color:red --><!-- @MARK border-style:solid -->
     <p class="padding-top:1rem padding-bottom:1rem padding-left:2rem padding-right:2rem border-width:.0625rem border-color:red border-style:solid">
 `
@@ -10,8 +10,9 @@ export const code3 = `
     <!-- @MARK p:4x|8x --><!-- @MARK b:1px|solid|red -->
     <p class="p:4x|8x b:1px|solid|red">
 `
+/* eslint-enable @master/css/prefer-canonical-classes, @master/css/sort-classes */
 
-Syntax: <code><span className="token value mcss language-mcss"><span className="token mcss"><span className="token Mkey">property</span><span className="token Mvalueroot"><span className="token Mcolon">:</span><span className="token Mvalue"><span className="token Mnumber_unit"><span className="token Mnumber">value</span></span><span className="token Mspace">|</span><span className="token Mnumber_unit"><span className="token Mnumber">value</span></span><span className="token Mspace">|</span><span className="token Mnumber_unit"><span className="token Mnumber">value</span></span><span className="token Mspace">…</span></span></span></span></span></code>
+Syntax: <code><span className="language-mcss mcss token value"><span className="mcss token"><span className="Mkey token">property</span><span className="Mvalueroot token"><span className="Mcolon token">:</span><span className="Mvalue token"><span className="Mnumber_unit token"><span className="Mnumber token">value</span></span><span className="Mspace token">|</span><span className="Mnumber_unit token"><span className="Mnumber token">value</span></span><span className="Mspace token">|</span><span className="Mnumber_unit token"><span className="Mnumber token">value</span></span><span className="Mspace token">…</span></span></span></span></span></code>
 
 Use the same value order as native CSS shorthands, but replace spaces with `|` so the class attribute still contains one class name.
 <Code lang="html">
@@ -31,9 +32,11 @@ Use the same value order as native CSS shorthands, but replace spaces with `|` s
 Class attributes use whitespace to separate class names, so a value like `10 20 30 40` must be written with a delimiter.
 
 (o) Use `|` delimiters instead of whitespaces between CSS parameter values.
+{/* eslint-disable @master/css/prefer-canonical-classes -- intentional raw shorthand value order example */}
 ```html
 <div class="m:1rem|2rem|3rem|4rem"></div>
 ```
+{/* eslint-enable @master/css/prefer-canonical-classes */}
 Review native CSS:
 ```css
 div {

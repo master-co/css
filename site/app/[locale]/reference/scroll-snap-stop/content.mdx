@@ -6,7 +6,7 @@
 Use `snap-always` on an important snap item when fast scrolling should not skip over it.
 ```html
 <!-- @MARK snap-always -->
-<section class="snap-start snap-always">
+<section class="snap-always snap-start">
     Required step
 </section>
 ```
@@ -22,7 +22,7 @@ Use `snap-always` on an important snap item when fast scrolling should not skip 
 Use `snap-normal` for ordinary items where the browser can skip a snap point during fast scrolling.
 ```html
 <!-- @MARK snap-normal -->
-<section class="snap-start snap-normal">
+<section class="snap-normal snap-start">
     Optional step
 </section>
 ```
@@ -30,7 +30,7 @@ Use `snap-normal` for ordinary items where the browser can skip a snap point dur
 ### Use sparingly
 Reserve `always` for onboarding steps, paged experiences, or essential panels. Too many forced stops can make scroll feel heavy.
 ```html
-<section class="snap-start snap-always">
+<section class="snap-always snap-start">
     Confirm details
 </section>
 ```
@@ -38,5 +38,5 @@ Reserve `always` for onboarding steps, paged experiences, or essential panels. T
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<section class="snap-normal snap-always@sm snap-normal@print">...</section>
+<section class="snap-normal snap-normal@print snap-always@sm">...</section>
 ```

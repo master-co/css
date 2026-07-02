@@ -1,5 +1,6 @@
 ## Overview [sr-only]
 <Overview/>
+{/* eslint-disable @master/css/prefer-canonical-classes -- reference examples intentionally document transform-box syntax */}
 
 ## Examples
 ### Choose the transform reference box
@@ -7,7 +8,7 @@ Use `transform-box:*` to choose which box is used for transform calculations. Th
 ```html
 <!-- @MARK transform-box:fill-box -->
 <svg viewBox="0 0 24 24">
-    <path class="transform-box:fill-box transform-origin:center transform:scale(.92)" d="M4 4h16v16H4z" />
+    <path class="transform:scale(.92) transform-box:fill-box transform-origin:center" d="M4 4h16v16H4z" />
 </svg>
 ```
 
@@ -22,7 +23,7 @@ Use `transform-box:*` to choose which box is used for transform calculations. Th
 For regular HTML elements, `border-box` makes the element border box the transform reference.
 ```html
 <!-- @MARK transform-box:border-box -->
-<div class="transform-box:border-box transform-origin:center transform:rotate(1deg)">
+<div class="transform:rotate(1deg) transform-box:border-box transform-origin:center">
     Card
 </div>
 ```
@@ -31,12 +32,13 @@ For regular HTML elements, `border-box` makes the element border box the transfo
 `transform-box:*` changes the box; `transform-origin:*` chooses the point inside that box.
 ```html
 <svg viewBox="0 0 24 24">
-    <circle class="transform-box:fill-box transform-origin:center transform:scale(1.1)" cx="12" cy="12" r="8" />
+    <circle class="transform:scale(1.1) transform-box:fill-box transform-origin:center" cx="12" cy="12" r="8" />
 </svg>
 ```
 
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<div class="transform-box:fill-box:hover transform-box:border-box@sm transform-box:border-box@print">...</div>
+<div class="transform-box:fill-box:hover transform-box:border-box@print transform-box:border-box@sm">...</div>
 ```
+{/* eslint-enable @master/css/prefer-canonical-classes */}

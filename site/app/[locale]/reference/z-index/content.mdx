@@ -5,12 +5,12 @@
 ### Order positioned elements
 Use `z:*` to control the stacking order of overlapping positioned elements. Values can be positive, negative, or zero.
 <Demo className="py:0">
-    <div className="flex ml:-2x>div p:8x">
-        <div className="z:9 box bg:blue-58! fg:white b:2px">1</div>
-        <div className="z:3 box bg:blue-58! fg:white b:2px">2</div>
-        <div className="z:1 box bg:blue-58! fg:white b:2px">3</div>
-        <div className="z:-1 box bg:blue-58! fg:white b:2px">4</div>
-        <div className="z:-9 box bg:blue-58! fg:white b:2px">5</div>
+    <div className="flex p:xl ml:-2x>div">
+        <div className="box z:9 b:2px fg:white bg:blue-58!">1</div>
+        <div className="box z:3 b:2px fg:white bg:blue-58!">2</div>
+        <div className="box z:1 b:2px fg:white bg:blue-58!">3</div>
+        <div className="box z:-1 b:2px fg:white bg:blue-58!">4</div>
+        <div className="box z:-9 b:2px fg:white bg:blue-58!">5</div>
     </div>
 </Demo>
 ```html
@@ -33,7 +33,7 @@ Use `z:*` to control the stacking order of overlapping positioned elements. Valu
 Negative z-index is useful for decorative layers inside an isolated component.
 ```html
 <!-- @MARK z:-1 -->
-<div class="isolate rel">
+<div class="rel isolate">
     <div class="abs inset:0 z:-1"></div>
 </div>
 ```
@@ -41,7 +41,7 @@ Negative z-index is useful for decorative layers inside an isolated component.
 ### Prefer local stacking contexts
 Use `isolate` or another stacking-context boundary when z-index values should not compete with the whole page.
 ```html
-<article class="isolate rel">
+<article class="rel isolate">
     <div class="z:10">Menu</div>
 </article>
 ```
@@ -49,5 +49,5 @@ Use `isolate` or another stacking-context boundary when z-index values should no
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<div class="z:1:hover z:10@sm z:0@print">...</div>
+<div class="z:1:hover z:0@print z:10@sm">...</div>
 ```

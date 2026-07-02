@@ -5,11 +5,11 @@
 ### Set the break after behavior
 Use `break-after:value` to set how breaks should behave after a generated box.
 <Demo className="py:0!">
-    <div className="bg:float p:8x">
-        <div className="gap:8x columns:2">
+    <div className="p:xl bg:float">
+        <div className="gap:xl columns:2">
             <div className="font:28px font:bold">Briefs</div>
             <p>A content brief is a document that outlines the key details of a piece of content. It should include an overview of the project, a well as any specific instructions or requirements. </p>
-            <hr className="border:2px|solid|gray-80 break-after:column m:0!" />
+            <hr className="m:0! b:2px|solid|gray-80 break-after:column" />
             <div className="font:28px font:bold">Animals</div>
             <p>There are a wide variety of animals in the world, and each one has its own unique set of characteristics and habits.</p>
         </div>
@@ -29,6 +29,6 @@ Use `break-after:value` to set how breaks should behave after a generated box.
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<div class="break-after:auto:hover break-after:auto@sm break-after:auto@dark break-after:auto@print">…</div>
+<div class="break-after:auto:hover break-after:auto@dark break-after:auto@print break-after:auto@sm">…</div>
 ```
 

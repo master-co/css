@@ -74,7 +74,7 @@ export const theme = createTheme({
 ```
 
 ```html
-<section class="bg:surface fg:body r:control b:1px|solid|base">
+<section class="b:1px|solid|base fg:body bg:surface r:control">
     ...
 </section>
 ```
@@ -107,7 +107,7 @@ export function DashboardPanel({ children }: { children: React.ReactNode }) {
 ```tsx name=DashboardPanel.tsx
 export function DashboardPanel({ children }: { children: React.ReactNode }) {
     return (
-        <section className="grid gap:md p:lg r:control bg:surface">
+        <section className="grid gap:md p:lg bg:surface r:control">
             {children}
         </section>
     )
@@ -134,11 +134,11 @@ When many `sx` blocks encode the same product role, move that role into a Master
 
 @components {
     panel {
-        @compose bg:surface fg:body r:lg b:1px|solid|base p:lg shadow:sm;
+        @compose p:lg b:1px|solid|base r:lg fg:body shadow:sm bg:surface;
     }
 
     toolbar {
-        @compose flex align-items:center gap:sm min-h:12x;
+        @compose flex items-center gap:sm min-h:12x;
     }
 }
 ```
@@ -163,7 +163,7 @@ Translate static responsive `sx` into Master CSS conditions.
 ```
 
 ```html
-<section class="grid grid-cols:1 grid-cols:3@md gap:md">
+<section class="grid grid-cols:1 gap:md grid-cols:3@md">
     ...
 </section>
 ```

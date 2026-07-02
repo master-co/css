@@ -6,7 +6,7 @@
 Use `animation-play-state:running` to ensure an animation is active when another state may pause it.
 ```html
 <!-- @MARK animation-play-state:running -->
-<div class="animation-name:rotate animation-duration:1s animation-iteration-count:infinite animation-play-state:running">
+<div class="animation-duration:1s animation-iteration-count:infinite animation-name:rotate animation-play-state:running">
     Running
 </div>
 ```
@@ -22,7 +22,7 @@ Use `animation-play-state:running` to ensure an animation is active when another
 Use `animation-play-state:paused` when an animation should stop without resetting its current frame.
 ```html
 <!-- @MARK animation-play-state:paused -->
-<button class="animation-name:rotate animation-duration:1s animation-iteration-count:infinite animation-play-state:paused:hover">
+<button class="animation-duration:1s animation-iteration-count:infinite animation-name:rotate animation-play-state:paused:hover">
     Pause on hover
 </button>
 ```
@@ -38,5 +38,5 @@ Pause decoration when the user is interacting with the control or when the motio
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<div class="animation-play-state:paused:hover animation-play-state:running@sm animation-play-state:paused@print">...</div>
+<div class="animation-play-state:paused:hover animation-play-state:paused@print animation-play-state:running@sm">...</div>
 ```

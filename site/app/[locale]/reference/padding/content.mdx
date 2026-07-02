@@ -6,7 +6,7 @@
 Use `p:*` to create space inside an element on all four sides. Padding is part of the element box, so backgrounds and borders include the padded area.
 ```html
 <!-- @MARK p:md -->
-<section class="p:md bg:white b:1px|solid|gray-20">
+<section class="p:md b:1px|solid|gray-20 bg:white">
     Content with breathing room.
 </section>
 ```
@@ -22,7 +22,7 @@ Use `p:*` to create space inside an element on all four sides. Padding is part o
 Use `pt:*`, `pr:*`, `pb:*`, and `pl:*` when only one physical side needs spacing.
 ```html
 <!-- @MARK pt:lg --><!-- @MARK pr:md --><!-- @MARK pb:xl --><!-- @MARK pl:md -->
-<article class="pt:lg pr:md pb:xl pl:md">
+<article class="px:md pb:xl pt:lg">
     ...
 </article>
 ```
@@ -40,8 +40,8 @@ Use `px:*` for inline padding and `py:*` for block padding. This is the common p
 
 Use `p:0` to remove inherited or component-level padding at a breakpoint or state.
 ```html
-<!-- @MARK p:0@sm --><!-- @MARK px:lg@sm -->
-<section class="p:md p:0@sm px:lg@sm">
+<!-- @MARK p:0@sm -->
+<section class="p:md p:0@sm">
     ...
 </section>
 ```
@@ -49,7 +49,7 @@ Use `p:0` to remove inherited or component-level padding at a breakpoint or stat
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<div class="p:sm:hover p:md@sm p:lg@dark p:0@print">...</div>
+<div class="p:sm:hover p:lg@dark p:0@print p:md@sm">...</div>
 ```
 
 Use spacing tokens for repeated component rhythm. Use raw values only when the padding is a measured local detail.

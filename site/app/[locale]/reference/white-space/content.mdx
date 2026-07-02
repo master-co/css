@@ -6,7 +6,7 @@
 Use `white-space:nowrap` when inline text should not wrap. Pair it with overflow handling when the container can become narrow.
 ```html
 <!-- @MARK white-space:nowrap --><!-- @MARK overflow:hidden --><!-- @MARK text-ellipsis -->
-<span class="white-space:nowrap overflow:hidden text-ellipsis">
+<span class="overflow:hidden text-ellipsis white-space:nowrap">
     A long single-line label
 </span>
 ```
@@ -38,7 +38,7 @@ Use `white-space:pre-wrap` or `break-spaces` when user-authored spacing should r
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<div class="white-space:normal white-space:nowrap@sm break-spaces@print">...</div>
+<div class="white-space:normal break-spaces@print white-space:nowrap@sm">...</div>
 ```
 
 Use [text-wrap](/reference/text-wrap) when the problem is line balancing rather than preserving whitespace.

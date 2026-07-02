@@ -69,7 +69,7 @@ $spacer: 1rem;
 ```
 
 ```html
-<section class="fg:body p:page r:control bg:white">
+<section class="bg:white fg:body p:page r:control">
     ...
 </section>
 ```
@@ -91,8 +91,8 @@ Instead of preserving Bootstrap class spelling, preserve layout intent:
 
 ```html
 <section class="w:full max-w:6xl mx:auto px:md py:2xl">
-    <div class="grid grid-cols:3@md gap:lg">
-        <article class="p:lg r:lg bg:white b:1px|solid|base">
+    <div class="grid gap:lg grid-cols:3@md">
+        <article class="p:lg b:1px|solid|base r:lg bg:white">
             ...
         </article>
     </div>
@@ -101,11 +101,13 @@ Instead of preserving Bootstrap class spelling, preserve layout intent:
 
 Use native declaration syntax when it is clearer than a utility alias:
 
+{/* eslint-disable @master/css/prefer-canonical-classes -- intentional native declaration example */}
 ```html
-<div class="display:contents@md scroll-margin-top:4rem">
+<div class="scroll-margin-top:4rem display:contents@md">
     ...
 </div>
 ```
+{/* eslint-enable @master/css/prefer-canonical-classes */}
 
 Keep Bootstrap layout classes in templates that still need Bootstrap's container widths, gutter assumptions, or component internals.
 
@@ -119,12 +121,13 @@ Buttons, cards, alerts, and badges are often app-owned visual patterns. Convert 
 
 @components {
     btn-primary {
-        @compose inline-flex align-items:center justify-content:center gap:xs px:md h:10x r:control bg:primary fg:white;
-        @compose bg:blue-70:hover opacity:.5:disabled;
+        @compose inline-flex items-center justify-center gap:xs h:10x px:md bg:primary fg:white r:control;
+        @variant :hover { @compose bg:blue-70; }
+@variant :disabled { opacity: 0.5; }
     }
 
     panel {
-        @compose bg:white fg:body r:lg b:1px|solid|base p:lg shadow:sm;
+        @compose p:lg b:1px|solid|base r:lg bg:white fg:body shadow:sm;
     }
 }
 ```
@@ -167,8 +170,8 @@ Keep the override as CSS when it targets Bootstrap internals:
 Move the override to Master CSS only after the markup is app-owned:
 
 ```html
-<nav class="flex align-items:center gap:md">
-    <div class="min-w:64x">...</div>
+<nav class="flex items-center gap:md">
+    <div class="min-w:3xs">...</div>
 </nav>
 ```
 

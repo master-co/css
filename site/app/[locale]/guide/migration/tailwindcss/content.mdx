@@ -92,7 +92,7 @@ Tailwind v4 `@theme` variables create utility classes and variants. Master CSS `
 ```
 
 ```html
-<article class="bg:brand p:card r:card grid-cols:3@md">
+<article class="r:card grid-cols:3@md bg:brand p:card">
     ...
 </article>
 ```
@@ -131,7 +131,7 @@ Use `@theme light` and `@theme dark` when token values should change by mode.
 ```
 
 ```html
-<section class="bg:panel text:body">
+<section class="text:body bg:panel">
     ...
 </section>
 ```
@@ -160,8 +160,8 @@ Start with explicit Master CSS declarations, then shorten them where the local v
 Example conversion:
 
 ```html
-<section class="w:full max-w:5xl mx:auto px:md py:2xl grid grid-cols:3@md gap:lg">
-    <article class="bg:white r:lg shadow:sm p:lg">
+<section class="grid gap:lg w:full max-w:5xl mx:auto px:md py:2xl grid-cols:3@md">
+    <article class="p:lg r:lg bg:white shadow:sm">
         <h2 class="m:0 font:2xl font:semibold text:neutral">Account</h2>
         <p class="mt:xs text:muted">Review profile settings.</p>
     </article>
@@ -170,11 +170,13 @@ Example conversion:
 
 When a Tailwind class does not have a short Master CSS alias, use the CSS property directly:
 
+{/* eslint-disable @master/css/prefer-canonical-classes -- intentional native declaration example */}
 ```html
 <div class="scroll-margin-top:4rem text-wrap:balance">
     ...
 </div>
 ```
+{/* eslint-enable @master/css/prefer-canonical-classes */}
 
 ---
 
@@ -194,7 +196,7 @@ Tailwind writes variants before the utility. Master CSS appends selectors and co
 | `has-[:checked]:...` | `bg:blue-5:has(:checked)` | Native `:has()` is supported. |
 
 ```html
-<button class="inline-flex align-items:center px:md h:10x r:md bg:blue-60 fg:white bg:blue-70:hover opacity:.5:disabled">
+<button class="inline-flex items-center h:10x px:md r:md bg:blue-60 fg:white bg:blue-70:hover opacity:.5:disabled">
     Save
 </button>
 ```
@@ -219,7 +221,7 @@ Use `@custom-variant` when a Tailwind custom variant represents shared product l
 
 {/* eslint-disable @master/css/no-invalid-classes -- custom variants are defined in the adjacent CSS example */}
 ```html
-<button class="px:sm@compact bg:blue-70:interactive">
+<button class="bg:blue-70:interactive px:sm@compact">
     Save
 </button>
 ```
@@ -355,7 +357,7 @@ When only the value is dynamic, keep the class static and pass the runtime value
 ```tsx
 function Progress({ value }: { value: number }) {
     return (
-        <div className="h:4x bg:gray-10 r:full overflow:hidden">
+        <div className="overflow:hidden h:4x r:full bg:gray-10">
             <div
                 className="h:full w:$progress bg:blue-60 transition:width|fast|smooth"
                 style={{ '--progress': `${value}%` } as React.CSSProperties}

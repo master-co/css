@@ -8,9 +8,9 @@
 Use `both:clear` to move the element below all floated elements.
 <Demo>
     <div>
-        <div className="box w:150px h:200px float:left">Left</div>
-        <div className="box w:150px h:120px float:right">Right</div>
-        <div className="box w:300px h:80px clear:both">Clear</div>
+        <div className="box float:left h:200px w:150px">Left</div>
+        <div className="box float:right h:120px w:150px">Right</div>
+        <div className="box clear:both h:80px w:300px">Clear</div>
     </div>
 </Demo>
 ```html
@@ -26,10 +26,10 @@ Use `both:clear` to move the element below all floated elements.
 Use `both:left` to move the element below all left floated elements.
 <Demo>
     <div>
-        <div className="box w:150px h:200px float:right">Right</div>
-        <div className="box w:150px h:200px float:right">Right</div>
-        <div className="box w:150px h:120px float:left">Left</div>
-        <div className="box w:150px h:120px clear:left">Clear</div>
+        <div className="box float:right h:200px w:150px">Right</div>
+        <div className="box float:right h:200px w:150px">Right</div>
+        <div className="box float:left h:120px w:150px">Left</div>
+        <div className="box clear:left h:120px w:150px">Clear</div>
     </div>
 </Demo>
 ```html
@@ -46,10 +46,10 @@ Use `both:left` to move the element below all left floated elements.
 Use `both:right` to move the element below all right floated elements.
 <Demo>
     <div>
-        <div className="box w:150px h:200px float:left">Left</div>
-        <div className="box w:150px h:200px float:left">Left</div>
-        <div className="box w:150px h:120px float:right">Right</div>
-        <div className="box w:150px h:120px clear:right">Clear</div>
+        <div className="box float:left h:200px w:150px">Left</div>
+        <div className="box float:left h:200px w:150px">Left</div>
+        <div className="box float:right h:120px w:150px">Right</div>
+        <div className="box clear:right h:120px w:150px">Clear</div>
     </div>
 </Demo>
 ```html
@@ -65,6 +65,6 @@ Use `both:right` to move the element below all right floated elements.
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<div class="clear:both:hover clear:both@sm clear:both@dark clear:both@print">…</div>
+<div class="clear:both:hover clear:both@dark clear:both@print clear:both@sm">…</div>
 ```
 

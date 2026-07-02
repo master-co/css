@@ -22,7 +22,7 @@ Use `flex-wrap` when flex items should move onto additional lines instead of shr
 Use `flex-nowrap` for toolbars, segmented controls, and rows where wrapping would break the interaction.
 ```html
 <!-- @MARK flex-nowrap --><!-- @MARK overflow-x:auto -->
-<div class="flex flex-nowrap overflow-x:auto">
+<div class="flex overflow-x:auto flex-nowrap">
     ...
 </div>
 ```
@@ -37,7 +37,7 @@ Use `flex-wrap-reverse` when new lines should stack in the opposite cross-axis d
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<div class="flex-nowrap flex-wrap@sm flex-nowrap@print">...</div>
+<div class="flex-nowrap flex-nowrap@print flex-wrap@sm">...</div>
 ```
 
 Use `gap-y:*` as well as `gap-x:*` when wrapped rows need vertical spacing.

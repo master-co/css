@@ -6,7 +6,7 @@
 Use `bg-clip-border`, `bg-clip-padding`, or `bg-clip-content` to control where the background is painted.
 ```html
 <!-- @MARK bg-clip-padding -->
-<section class="bg-clip-padding b:8px|solid|black/.1">
+<section class="b:8px|solid|black/.1 bg-clip-padding">
     ...
 </section>
 ```
@@ -22,7 +22,7 @@ Use `bg-clip-border`, `bg-clip-padding`, or `bg-clip-content` to control where t
 Use `bg-clip-text` with a transparent text fill when a gradient or image should show through the glyphs.
 ```html
 <!-- @MARK bg-clip-text --><!-- @MARK text-fill-color:transparent -->
-<h1 class="bg:linear-gradient(90deg,red,blue) bg-clip-text text-fill-color:transparent">
+<h1 class="bg-clip-text bg:linear-gradient(90deg,red,blue) text-fill-color:transparent">
     Gradient text
 </h1>
 ```
@@ -32,7 +32,7 @@ Use this for display text, not body copy, because it can reduce contrast and sel
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<div class="bg-clip-border bg-clip-padding@sm bg-clip-border@print">...</div>
+<div class="bg-clip-border bg-clip-border@print bg-clip-padding@sm">...</div>
 ```
 
 Use [background-origin](/reference/background-origin) when the issue is positioning rather than painting.

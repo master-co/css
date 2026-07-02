@@ -124,7 +124,7 @@ Keep project-specific commands in the same file so the agent does not have to in
 Ask the agent to optimize for readable markup, not the shortest possible class list.
 
 ```html
-<button class="inline-flex align-items:center gap:2x h:10x px:md r:md bg:brand fg:white bg:blue-70:hover opacity:.5:disabled">
+<button class="inline-flex items-center gap:xs h:10x px:md r:md fg:white bg:blue-70:hover opacity:.5:disabled bg:brand">
     Save
 </button>
 ```
@@ -199,7 +199,7 @@ Leave these alone unless there is a clear benefit:
 For dynamic values, prefer stable classes plus CSS variables or inline styles at the boundary.
 
 ```html
-<div class="transform:translateX(var(--x)) opacity:var(--opacity)">
+<div class="opacity:var(--opacity) transform:translateX(var(--x))">
     ...
 </div>
 ```

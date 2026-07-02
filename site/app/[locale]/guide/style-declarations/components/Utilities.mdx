@@ -1,4 +1,4 @@
-export const code1 = `
+export const code1 = /* eslint-disable @master/css/prefer-canonical-classes, @master/css/sort-classes -- intentional utility shorthand comparison source */ `
     <!-- @MARK text-transform:capitalize --><!-- @MARK position:absolute --><!-- @MARK display:block --><!-- @MARK border-radius:50% -->
     <p class="text-transform:capitalize position:absolute display:block border-radius:50%">
 `
@@ -6,8 +6,9 @@ export const code2 = `
     <!-- @MARK capitalize --><!-- @MARK abs --><!-- @MARK block --><!-- @MARK round -->
     <p class="capitalize abs block round">
 `
+/* eslint-enable @master/css/prefer-canonical-classes, @master/css/sort-classes */
 
-Syntax: <code className="token language-mcss"><span className="token mcss"><span className="token Mvalue">utility</span></span></code>
+Syntax: <code className="language-mcss token"><span className="mcss token"><span className="Mvalue token">utility</span></span></code>
 
 The most explicit form is a native property name plus a value. It is easy to understand, but it can make markup noisy when the same common properties appear everywhere.
 <Code lang="html">

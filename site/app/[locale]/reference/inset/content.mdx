@@ -6,7 +6,7 @@
 Use `inset:*` on positioned elements to set `top`, `right`, `bottom`, and `left` together.
 <Demo>
     <div className="bg:stripe-pink">
-        <div className="box w:180px aspect-ratio:1/1 inset:20px rel">`inset:20px`</div>
+        <div className="box rel inset:20px w:180px aspect-ratio:1/1">`inset:20px`</div>
     </div>
 </Demo>
 ```html
@@ -27,7 +27,7 @@ Use `inset:*` on positioned elements to set `top`, `right`, `bottom`, and `left`
 Use side utilities such as `top:*`, `right:*`, `bottom:*`, and `left:*` when only one edge should move.
 ```html
 <!-- @MARK top:0 --><!-- @MARK right:0 -->
-<button class="abs top:0 right:0">
+<button class="abs right:0 top:0">
     Close
 </button>
 ```
@@ -43,5 +43,5 @@ Use side utilities such as `top:*`, `right:*`, `bottom:*`, and `left:*` when onl
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<div class="inset:0.625rem:hover inset:20px@sm inset:0@print">...</div>
+<div class="inset:0.625rem:hover inset:0@print inset:20px@sm">...</div>
 ```

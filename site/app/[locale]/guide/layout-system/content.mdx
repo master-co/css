@@ -18,7 +18,7 @@ In Master CSS, those decisions stay close to the markup and share the same found
 ```html
 <!-- @MARK max-w:3xl --><!-- @MARK grid-cols:4 --><!-- @MARK grid-cols:8@2xs --><!-- @MARK gap:md@2xs -->
 <main class="w:full max-w:3xl mx:auto p:md">
-    <section class="grid-cols:4 grid-cols:8@2xs gap:sm gap:md@2xs">
+    <section class="grid-cols:4 gap:sm grid-cols:8@2xs gap:md@2xs">
         <header class="grid-col-span:4 grid-col-span:8@2xs">...</header>
         <article class="grid-col-span:4 grid-col-span:4@2xs">...</article>
         <article class="grid-col-span:4 grid-col-span:5@2xs">...</article>
@@ -81,7 +81,7 @@ Use `grid-cols:<count>` to create equal-width columns. It also sets `display:gri
 
 ```html
 <!-- @MARK grid-cols:4 --><!-- @MARK grid-cols:8@2xs --><!-- @MARK grid-cols:12@md --><!-- @MARK gap:lg -->
-<section class="grid-cols:4 grid-cols:8@2xs grid-cols:12@md gap:lg">
+<section class="grid-cols:4 gap:lg grid-cols:8@2xs grid-cols:12@md">
     <article class="grid-col-span:4 grid-col-span:5@2xs grid-col-span:8@md">...</article>
     <aside class="grid-col-span:4 grid-col-span:3@2xs grid-col-span:4@md">...</aside>
 </section>
@@ -105,7 +105,7 @@ Use `gap:*` when both axes share the same rhythm. Use `gap-x:*` and `gap-y:*` wh
 
 ```html
 <!-- @MARK gap:md --><!-- @MARK gap-x:lg@md --><!-- @MARK gap-y:xl@md -->
-<section class="grid-cols:1 grid-cols:3@md gap:md gap-x:lg@md gap-y:xl@md">
+<section class="grid-cols:1 gap:md grid-cols:3@md gap-x:lg@md gap-y:xl@md">
     ...
 </section>
 ```
@@ -174,24 +174,24 @@ Use Grid when the parent owns the columns, rows, or area placement. Use Flexbox 
 | Two-axis alignment | One-axis distribution |
 
 <Demo>
-    <article className="container w:full flex flex-col flex-row@container(2xs) gap:md surface:raised b:1px|solid|base shadow:xs r:lg p:md">
-        <div className="grid place-content:center w:full w:36x@container(2xs) aspect-ratio:4/3 flex:0@container(2xs) bg:blue-60/.12 r:md">
+    <article className="flex container flex-col gap:md w:full p:md b:1px|solid|base r:lg surface:raised shadow:xs flex-row@container(2xs)">
+        <div className="grid place-content:center w:full aspect-ratio:4/3 r:md bg:blue-60/.12 flex:0@container(2xs) w:36x@container(2xs)">
             <div className="grid-cols:3 gap:2xs w:20x">
-                <div className="h:5x bg:blue-60/.25 r:sm"></div>
-                <div className="h:5x bg:blue-60/.35 r:sm"></div>
-                <div className="h:5x bg:blue-60/.2 r:sm"></div>
-                <div className="h:5x bg:blue-60/.2 r:sm"></div>
-                <div className="h:5x bg:blue-60/.45 r:sm"></div>
-                <div className="h:5x bg:blue-60/.3 r:sm"></div>
+                <div className="h:5x r:sm bg:blue-60/.25"></div>
+                <div className="h:5x r:sm bg:blue-60/.35"></div>
+                <div className="h:5x r:sm bg:blue-60/.2"></div>
+                <div className="h:5x r:sm bg:blue-60/.2"></div>
+                <div className="h:5x r:sm bg:blue-60/.45"></div>
+                <div className="h:5x r:sm bg:blue-60/.3"></div>
             </div>
         </div>
-        <div className="min-w:0 flex:1">
+        <div className="flex:1 min-w:0">
             <DemoLabel>Flex media object</DemoLabel>
             <div className="font:semibold text:neutral">Quarterly planning</div>
-            <p className="m:0 mt:xs text:sm text:gray">The image keeps a measured basis while the content expands, shrinks, and wraps around the available inline space.</p>
+            <p className="mx:0 mb:0 mt:xs text:sm text:gray">The image keeps a measured basis while the content expands, shrinks, and wraps around the available inline space.</p>
             <div className="flex flex-wrap gap:xs mt:md">
-                <span className="px:xs py:2xs r:sm bg:blue-60/.12 fg:blue-60 text:xs">Roadmap</span>
-                <span className="px:xs py:2xs r:sm bg:green/.12 text:green text:xs">Ready</span>
+                <span className="px:xs py:2xs r:sm text:xs bg:blue-60/.12 fg:blue-60">Roadmap</span>
+                <span className="px:xs py:2xs r:sm text:xs bg:green/.12 text:green">Ready</span>
             </div>
         </div>
     </article>
@@ -199,9 +199,9 @@ Use Grid when the parent owns the columns, rows, or area placement. Use Flexbox 
 
 ```html
 <!-- @MARK container --><!-- @MARK w:full --><!-- @MARK flex --><!-- @MARK flex-col --><!-- @MARK flex-row@container(2xs) -->
-<article class="container w:full flex flex-col flex-row@container(2xs) gap:md">
-    <img class="w:full w:36x@container(2xs) flex:0@container(2xs)" alt="" />
-    <div class="min-w:0 flex:1">...</div>
+<article class="flex container flex-col gap:md w:full flex-row@container(2xs)">
+    <img class="w:full flex:0@container(2xs) w:36x@container(2xs)" alt="" />
+    <div class="flex:1 min-w:0">...</div>
 </article>
 ```
 
@@ -224,7 +224,7 @@ Add `container` to the component boundary, then use `@container(<size>)` on desc
 ```html
 <section class="container">
     <!-- @MARK grid-cols:2@container(2xs) --><!-- @MARK gap:lg@container(2xs) -->
-    <article class="grid-cols:1 grid-cols:2@container(2xs) gap:md gap:lg@container(2xs)">
+    <article class="grid-cols:1 gap:md grid-cols:2@container(2xs) gap:lg@container(2xs)">
         ...
     </article>
 </section>
@@ -275,7 +275,7 @@ Use explicit tracks for app shells, data views, split panes, and content that ha
 ### Content with sidebar
 ```html
 <!-- @MARK grid-cols:12@md --><!-- @MARK grid-col-span:8@md --><!-- @MARK grid-col-span:4@md -->
-<section class="grid-cols:1 grid-cols:12@md gap:xl">
+<section class="grid-cols:1 gap:xl grid-cols:12@md">
     <article class="grid-col-span:8@md">...</article>
     <aside class="grid-col-span:4@md">...</aside>
 </section>
@@ -284,7 +284,7 @@ Use explicit tracks for app shells, data views, split panes, and content that ha
 ### Responsive card gallery
 ```html
 <!-- @MARK grid-cols:2@2xs --><!-- @MARK grid-cols:3@md --><!-- @MARK gap:lg -->
-<section class="grid-cols:1 grid-cols:2@2xs grid-cols:3@md gap:lg">
+<section class="grid-cols:1 gap:lg grid-cols:2@2xs grid-cols:3@md">
     ...
 </section>
 ```
@@ -300,8 +300,8 @@ Use explicit tracks for app shells, data views, split panes, and content that ha
 ### Media object
 ```html
 <!-- @MARK flex-row@2xs --><!-- @MARK w:32x@2xs --><!-- @MARK min-w:0 -->
-<article class="flex flex-col flex-row@2xs gap:md">
-    <img class="w:full w:32x@2xs flex:0@2xs" alt="" />
+<article class="flex flex-col gap:md flex-row@2xs">
+    <img class="w:full flex:0@2xs w:32x@2xs" alt="" />
     <div class="min-w:0">...</div>
 </article>
 ```
@@ -313,7 +313,7 @@ Use explicit tracks for app shells, data views, split panes, and content that ha
 (x) The grid becomes 12 columns, but each region still spans the mobile 4-column structure.
 
 ```html
-<section class="grid-cols:4 grid-cols:12@md gap:lg">
+<section class="grid-cols:4 gap:lg grid-cols:12@md">
     <article class="grid-col-span:4">...</article>
     <aside class="grid-col-span:4">...</aside>
 </section>
@@ -322,7 +322,7 @@ Use explicit tracks for app shells, data views, split panes, and content that ha
 (o) Update the spans at the same breakpoint as the column change.
 
 ```html
-<section class="grid-cols:4 grid-cols:12@md gap:lg">
+<section class="grid-cols:4 gap:lg grid-cols:12@md">
     <article class="grid-col-span:4 grid-col-span:8@md">...</article>
     <aside class="grid-col-span:4 grid-col-span:4@md">...</aside>
 </section>
@@ -332,14 +332,14 @@ Use explicit tracks for app shells, data views, split panes, and content that ha
 (x) The card changes based on the page viewport, even when it appears in a narrow parent.
 
 ```html
-<article class="grid-cols:1 grid-cols:2@md gap:lg">...</article>
+<article class="grid-cols:1 gap:lg grid-cols:2@md">...</article>
 ```
 
 (o) Let the card respond to the space it actually receives.
 
 ```html
 <section class="container">
-    <article class="grid-cols:1 grid-cols:2@container(2xs) gap:lg">...</article>
+    <article class="grid-cols:1 gap:lg grid-cols:2@container(2xs)">...</article>
 </section>
 ```
 

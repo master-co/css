@@ -5,7 +5,7 @@
 ### Set the break inside behavior
 Use `break-inside:value` to set how breaks should behave inside a generated box.
 <Demo>
-    <ul className="columns:2 w:200px_:where(li) m:0!_:where(li:first-child) p:0">
+    <ul className="columns:2 p:0 w:200px_:where(li) m:0!_:where(li:first-child)">
         <li className="box h:90px">1</li>
         <li className="box h:70px break-inside:avoid">2</li>
         <li className="box h:90px">3</li>
@@ -23,7 +23,7 @@ Use `break-inside:value` to set how breaks should behave inside a generated box.
 ```
 Before setting the `break-inside:avoid`, the item is break within the list. It looks like this:
 <Demo>
-    <ul className="columns:2 w:200px_:where(li) m:0!_:where(li:first-child) p:0">
+    <ul className="columns:2 p:0 w:200px_:where(li) m:0!_:where(li:first-child)">
         <li className="box h:90px">1</li>
         <li className="box h:70px">2</li>
         <li className="box h:90px">3</li>
@@ -42,6 +42,6 @@ Before setting the `break-inside:avoid`, the item is break within the list. It l
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<div class="break-inside:avoid:hover break-inside:avoid@sm break-inside:avoid@dark break-inside:avoid@print">…</div>
+<div class="break-inside:avoid:hover break-inside:avoid@dark break-inside:avoid@print break-inside:avoid@sm">…</div>
 ```
 

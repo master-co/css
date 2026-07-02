@@ -6,7 +6,7 @@
 Use `transition-timing-function:*` to control acceleration during a transition. Pair it with a duration so the curve is visible.
 ```html
 <!-- @MARK transition-timing-function:ease-out -->
-<button class="transition-property:transform transition-duration:180ms transition-timing-function:ease-out transform:translateY(-2px):hover">
+<button class="transition-duration:180ms transition-property:transform transition-timing-function:ease-out transform:translateY(-2px):hover">
     Hover
 </button>
 ```
@@ -22,7 +22,7 @@ Use `transition-timing-function:*` to control acceleration during a transition. 
 Use `linear` when the transition represents steady progress instead of physical easing.
 ```html
 <!-- @MARK transition-timing-function:linear -->
-<div class="transition-property:opacity transition-duration:1s transition-timing-function:linear">
+<div class="transition-duration:1s transition-property:opacity transition-timing-function:linear">
     Syncing
 </div>
 ```
@@ -39,5 +39,5 @@ Use `linear` when the transition represents steady progress instead of physical 
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<div class="transition-timing-function:ease-out:hover transition-timing-function:linear@sm transition-timing-function:ease-in@print">...</div>
+<div class="transition-timing-function:ease-out:hover transition-timing-function:ease-in@print transition-timing-function:linear@sm">...</div>
 ```

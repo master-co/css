@@ -30,7 +30,7 @@ Keep the transitioned property narrow. A transform transition is cheaper to reas
 ### Split longhands when states differ
 Use the longhand utilities when one part changes independently, such as disabling the duration for print while keeping the same property and easing.
 ```html
-<button class="transition-property:opacity transition-duration:150ms transition-timing-function:ease-out transition-duration:0ms@print">
+<button class="transition-duration:150ms transition-property:opacity transition-timing-function:ease-out transition-duration:0ms@print">
     Continue
 </button>
 ```
@@ -38,5 +38,5 @@ Use the longhand utilities when one part changes independently, such as disablin
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<div class="transition:opacity|150ms|ease-out:hover transition:opacity|150ms|ease-out@sm transition:opacity|150ms|ease-out@dark transition:none@print">...</div>
+<div class="transition:opacity|150ms|ease-out:hover transition:opacity|150ms|ease-out@dark transition:none@print transition:opacity|150ms|ease-out@sm">...</div>
 ```

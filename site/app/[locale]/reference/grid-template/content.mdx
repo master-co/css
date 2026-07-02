@@ -6,10 +6,10 @@
 Use `grid-template` to set grid rows and columns in one shorthand.
 <Demo $py={0}>
     <DemoPanel>
-        <div className="grid grid-template:64px|1fr/120px|1fr gap:2x h:180px">
-            <div className="min-w:0 p:3x r:8px bg:blue-5 bg:blue-95@dark border:1px|solid|blue-20 border-color:blue-80@dark text-ellipsis overflow:hidden white-space:nowrap">Nav</div>
-            <div className="min-w:0 p:3x r:8px bg:gray-5 bg:gray-90@dark text-ellipsis overflow:hidden white-space:nowrap">Header</div>
-            <div className="min-w:0 p:3x r:8px bg:gray-5 bg:gray-90@dark text-ellipsis overflow:hidden white-space:nowrap">Main</div>
+        <div className="grid grid-template:64px|1fr/120px|1fr gap:xs h:180px">
+            <div className="overflow:hidden min-w:0 p:sm b:1px|solid|blue-20 r:lg text-ellipsis white-space:nowrap bg:blue-5 b:blue-80@dark bg:blue-95@dark">Nav</div>
+            <div className="overflow:hidden min-w:0 p:sm r:lg text-ellipsis white-space:nowrap bg:gray-5 bg:gray-90@dark">Header</div>
+            <div className="overflow:hidden min-w:0 p:sm r:lg text-ellipsis white-space:nowrap bg:gray-5 bg:gray-90@dark">Main</div>
         </div>
     </DemoPanel>
 </Demo>
@@ -21,5 +21,5 @@ Use `grid-template` to set grid rows and columns in one shorthand.
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<div class="grid-template:64px|1fr/120px|1fr:hover grid-template:64px|1fr/120px|1fr@sm grid-template:64px|1fr/120px|1fr@dark grid-template:64px|1fr/120px|1fr@print">…</div>
+<div class="grid-template:64px|1fr/120px|1fr:hover grid-template:64px|1fr/120px|1fr@dark grid-template:64px|1fr/120px|1fr@print grid-template:64px|1fr/120px|1fr@sm">…</div>
 ```

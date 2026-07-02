@@ -7,13 +7,13 @@ Use the `accent-color:color` to set a custom accent color of user interface elem
 <Demo className="gap:10x">
     <label className="flex">
         <input type="checkbox" defaultChecked
-            className="w:16px h:16px r:2px inline-block vertical-align:middle mr:6px" />
-        <span className="inline-block font:black font:white@dark font:14px">Default</span>
+            className="inline-block size:16px mr:2xs r:xs vertical-align:middle" />
+        <span className="inline-block font:sm font:black font:white@dark">Default</span>
     </label>
     <label className="flex">
         <input type="checkbox" defaultChecked
-            className="w:16px h:16px r:2px inline-block vertical-align:middle mr:6px accent-color:red-50 transition:accent-color|.3s" />
-        <span className="inline-block font:black font:white@dark font:14px">Customized</span>
+            className="inline-block size:16px mr:2xs r:xs accent-color:red-50 transition:accent-color|.3s vertical-align:middle" />
+        <span className="inline-block font:sm font:black font:white@dark">Customized</span>
     </label>
 </Demo>
 ```html
@@ -31,5 +31,5 @@ Use the `accent-color:color` to set a custom accent color of user interface elem
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<div class="accent-color:red-50:hover accent-color:red-50@sm accent-color:red-50@dark accent-color:red-50@print">…</div>
+<div class="accent-color:red-50:hover accent-color:red-50@dark accent-color:red-50@print accent-color:red-50@sm">…</div>
 ```

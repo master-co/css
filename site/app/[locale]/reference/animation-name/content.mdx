@@ -6,7 +6,7 @@
 Use `animation-name:*` to select a named keyframes rule while controlling the other animation parts separately.
 ```html
 <!-- @MARK animation-name:fade -->
-<div class="animation-name:fade animation-duration:300ms animation-timing-function:ease-out">
+<div class="animation-duration:300ms animation-name:fade animation-timing-function:ease-out">
     Saved
 </div>
 ```
@@ -30,7 +30,7 @@ Use `animation-name:none` when the element should keep the rest of its animation
 ### Combine with timing longhands
 The name alone does not define how long the animation runs. Pair it with duration, timing, delay, iteration count, and fill mode as needed.
 ```html
-<span class="animation-name:fade animation-duration:200ms animation-fill-mode:both">
+<span class="animation-duration:200ms animation-fill-mode:both animation-name:fade">
     Appears once
 </span>
 ```
@@ -38,5 +38,5 @@ The name alone does not define how long the animation runs. Pair it with duratio
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<div class="animation-name:fade:hover animation-name:fade@sm animation-name:none@print">...</div>
+<div class="animation-name:fade:hover animation-name:none@print animation-name:fade@sm">...</div>
 ```

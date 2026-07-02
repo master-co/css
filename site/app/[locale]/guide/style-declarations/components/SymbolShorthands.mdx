@@ -1,6 +1,6 @@
 export const code1 = `
     <!-- @MARK animation-name:fade --><!-- @MARK animation-duration:1s --><!-- @MARK transition-property:opacity -->
-    <div class="animation-name:fade animation-duration:1s transition-property:opacity">
+    <div class="transition-property:opacity animation-duration:1s animation-name:fade">
 `
 
 Animation and transition longhand declarations use their CSS property keys.
@@ -11,7 +11,7 @@ Animation and transition longhand declarations use their CSS property keys.
 Animation and transition shorthand declarations also keep the explicit property key:
 ```html
 <!-- @MARK animation:fade|1s|ease --><!-- @MARK transition:opacity|3s -->
-<div class="animation:fade|1s|ease transition:opacity|3s">
+<div class="transition:opacity|3s animation:fade|1s|ease">
 ```
 
 To learn more, check out the [animation](/reference/animation) and [transition](/reference/transition) documentation.

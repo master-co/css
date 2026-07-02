@@ -12,7 +12,7 @@ Use the scale by relationship:
 * `2xl` to `5xl` for layout gutters, section spacing, and large editorial rhythm.
 
 <Demo>
-    <div className="grid-cols:2 grid-cols:5@sm gap:md bg:stripe-pink r:md p:md w:full">
+    <div className="grid-cols:2 gap:md w:full p:md r:md bg:stripe-pink grid-cols:5@sm">
         <div className='app-box'>1</div>
         <div className='app-box'>2</div>
         <div className='app-box'>3</div>
@@ -65,7 +65,7 @@ Apply the custom spacing tokens in your markup:
 ```html
 <!-- @MARK mt:md --><!-- @MARK p:sm --><!-- @MARK gap:lg --><!-- @MARK py:wide -->
 <section class="py:wide">
-    <div class="mt:md p:sm gap:lg">...</div>
+    <div class="gap:lg mt:md p:sm">...</div>
 </section>
 ```
 
@@ -78,13 +78,13 @@ For example, `1x` is `0.25rem`, `2x` is `0.5rem`, `3x` is `0.75rem`, and `8x` is
 
 ```html
 <!-- @MARK 1x -->
-<div class="m:1x"></div>       <!--  4px, margin: 0.25rem -->
+<div class="m:3xs"></div>       <!--  4px, margin: 0.25rem -->
 <!-- @MARK 2x -->
-<div class="p:2x"></div>       <!--  8px, padding: 0.5rem -->
+<div class="p:xs"></div>       <!--  8px, padding: 0.5rem -->
 <!-- @MARK 8x -->
 <div class="w:8x"></div>       <!-- 32px, width: 2rem -->
 <!-- @MARK 3x -->
-<div class="gap:3x"></div>     <!-- 12px, gap: 0.75rem -->
+<div class="gap:sm"></div>     <!-- 12px, gap: 0.75rem -->
 ```
 
 For product surfaces, prefer named spacing tokens such as `sm`, `md`, and `lg`. Use `x` values for measured local geometry, such as icon size, avatar size, skeleton blocks, or a component-specific fixed width.

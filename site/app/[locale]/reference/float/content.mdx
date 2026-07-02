@@ -6,7 +6,7 @@
 Use `float:left` when inline content should wrap around an element on the left.
 ```html
 <!-- @MARK float:left -->
-<img class="float:left mr:4x" src="/images/avatar.jpg" alt="Avatar">
+<img class="float:left mr:md" src="/images/avatar.jpg" alt="Avatar">
 ```
 
 <details>
@@ -20,7 +20,7 @@ Use `float:left` when inline content should wrap around an element on the left.
 Use `float:right` to place a pull quote, image, or callout on the right side of a text flow.
 ```html
 <!-- @MARK float:right -->
-<aside class="float:right ml:4x">
+<aside class="float:right ml:md">
     Pull quote
 </aside>
 ```
@@ -35,5 +35,5 @@ Use `float:none` when a responsive or print context should return the element to
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<img class="float:left:hover float:right@sm float:none@print" src="/images/avatar.jpg" alt="">
+<img class="float:left:hover float:none@print float:right@sm" src="/images/avatar.jpg" alt="">
 ```

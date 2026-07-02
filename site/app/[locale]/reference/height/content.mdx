@@ -22,7 +22,7 @@ Use `h:*` to set the CSS `height` property. Fixed heights are best for controls,
 Use `h:full` when the parent has a definite height.
 ```html
 <!-- @MARK h:64x --><!-- @MARK h:full -->
-<section class="h:64x">
+<section class="h:3xs">
     <div class="h:full">...</div>
 </section>
 ```
@@ -49,7 +49,7 @@ For square icons, avatars, and controls, prefer [size](/reference/size) over rep
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<div class="h:10x:hover h:14x@sm h:full@dark h:auto@print">...</div>
+<div class="h:10x:hover h:full@dark h:auto@print h:14x@sm">...</div>
 ```
 
 Use [min-height](/reference/min-height) when content may grow but the region still needs a baseline size.

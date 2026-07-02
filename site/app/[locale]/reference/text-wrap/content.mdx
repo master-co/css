@@ -31,7 +31,7 @@ Use `text-pretty` for paragraphs where the browser should avoid awkward last lin
 Use `text-nowrap` when a label, tab, or inline control must stay on one line.
 ```html
 <!-- @MARK text-nowrap --><!-- @MARK overflow:hidden --><!-- @MARK text-ellipsis -->
-<span class="text-nowrap overflow:hidden text-ellipsis">
+<span class="overflow:hidden text-ellipsis text-nowrap">
     Very long file name
 </span>
 ```
@@ -41,7 +41,7 @@ Only use no-wrap when the container has an overflow strategy. Otherwise the text
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<div class="text-wrap text-balance@sm text-pretty@lg text-wrap@print">...</div>
+<div class="text-wrap text-wrap@print text-balance@sm text-pretty@lg">...</div>
 ```
 
 Use [white-space](/reference/white-space) when the requirement is preserving spaces or line breaks.

@@ -6,7 +6,7 @@
 Use `box-decoration-break:slice` when inline fragments should share one continuous background, border, shadow, and decoration.
 ```html
 <!-- @MARK box-decoration-break:slice -->
-<span class="box-decoration-break:slice bg:blue-60/.12">
+<span class="bg:blue-60/.12 box-decoration-break:slice">
     Wrapped inline text
 </span>
 ```
@@ -22,7 +22,7 @@ Use `box-decoration-break:slice` when inline fragments should share one continuo
 Use `box-decoration-break:clone` when each wrapped line should get its own background, border, shadow, and decoration.
 ```html
 <!-- @MARK box-decoration-break:clone -->
-<span class="box-decoration-break:clone bg:blue-60/.12 px:1x">
+<span class="px:3xs bg:blue-60/.12 box-decoration-break:clone">
     Wrapped inline text
 </span>
 ```
@@ -30,7 +30,7 @@ Use `box-decoration-break:clone` when each wrapped line should get its own backg
 ### Use on inline content
 This property is most visible when inline content wraps across multiple lines.
 ```html
-<span class="box-decoration-break:clone bg:blue-5">
+<span class="bg:blue-5 box-decoration-break:clone">
     A highlighted phrase that can wrap
 </span>
 ```
@@ -38,5 +38,5 @@ This property is most visible when inline content wraps across multiple lines.
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<span class="box-decoration-break:clone:hover box-decoration-break:slice@sm box-decoration-break:slice@print">...</span>
+<span class="box-decoration-break:clone:hover box-decoration-break:slice@print box-decoration-break:slice@sm">...</span>
 ```

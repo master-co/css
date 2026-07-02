@@ -6,10 +6,10 @@
 Use `grid-rows` to create equal-height rows. It also sets `display:grid` and `grid-auto-flow:column`.
 <Demo $py={0}>
     <DemoPanel>
-        <div className="grid-rows:3 gap:2x h:180px">
-            <div className="min-w:0 p:3x r:8px bg:blue-5 bg:blue-95@dark border:1px|solid|blue-20 border-color:blue-80@dark">1</div>
-            <div className="min-w:0 p:3x r:8px bg:gray-5 bg:gray-90@dark">2</div>
-            <div className="min-w:0 p:3x r:8px bg:gray-5 bg:gray-90@dark">3</div>
+        <div className="grid-rows:3 gap:xs h:180px">
+            <div className="min-w:0 p:sm b:1px|solid|blue-20 r:lg bg:blue-5 b:blue-80@dark bg:blue-95@dark">1</div>
+            <div className="min-w:0 p:sm r:lg bg:gray-5 bg:gray-90@dark">2</div>
+            <div className="min-w:0 p:sm r:lg bg:gray-5 bg:gray-90@dark">3</div>
         </div>
     </DemoPanel>
 </Demo>
@@ -23,5 +23,5 @@ Use `grid-rows` to create equal-height rows. It also sets `display:grid` and `gr
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<div class="grid-rows:3:hover grid-rows:3@sm grid-rows:3@dark grid-rows:3@print">…</div>
+<div class="grid-rows:3:hover grid-rows:3@dark grid-rows:3@print grid-rows:3@sm">…</div>
 ```

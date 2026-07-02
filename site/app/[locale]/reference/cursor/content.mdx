@@ -22,7 +22,7 @@ Use `cursor:pointer` for custom controls that are not native buttons or links.
 Use `cursor:not-allowed` with a real disabled state or equivalent accessibility attributes.
 ```html
 <!-- @MARK cursor:not-allowed -->
-<button disabled class="cursor:not-allowed opacity:.5">
+<button disabled class="opacity:.5 cursor:not-allowed">
     Unavailable
 </button>
 ```
@@ -39,5 +39,5 @@ Use `cursor:grab` and `cursor:grabbing` to make draggable handles clearer.
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<div class="cursor:pointer:hover cursor:default@sm cursor:auto@print">...</div>
+<div class="cursor:pointer:hover cursor:auto@print cursor:default@sm">...</div>
 ```

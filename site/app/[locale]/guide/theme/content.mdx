@@ -29,8 +29,8 @@ In Master CSS, that vocabulary usually lives in the project CSS entry: `@theme` 
 ```
 
 ```html
-<section class="bg:white text:neutral p:lg r:lg shadow:sm grid-cols:2@md">
-    <button class="bg:blue fg:white px:md py:xs r:md bg:blue/.85:interactive">Save</button>
+<section class="p:lg r:lg bg:white text:neutral shadow:sm grid-cols:2@md">
+    <button class="px:md py:xs r:md bg:blue fg:white bg:blue/.85:interactive">Save</button>
 </section>
 ```
 
@@ -101,7 +101,7 @@ Function utilities do not become namespaces by name. Tokens such as `blur-sm`, `
 ```
 
 ```html
-<pre class="animation-duration:fast transition-delay:fast font-feature-settings:tabular leading:body content:empty">...</pre>
+<pre class="font-feature-settings:tabular transition-delay:fast animation-duration:fast content:empty leading:body">...</pre>
 ```
 
 ### Default namespace sources
@@ -114,7 +114,7 @@ Utilities resolve token values from the namespace they use. The same short key c
 
 ```html
 <!-- @MARK bg:white --><!-- @MARK p:md --><!-- @MARK r:lg --><!-- @MARK font:sans -->
-<article class="bg:white text:neutral p:md r:lg shadow:sm font:sans">
+<article class="p:md r:lg font:sans bg:white text:neutral shadow:sm">
     <h2 class="font:sans">Dashboard</h2>
     <a class="text:blue" href="/settings">Settings</a>
 </article>
@@ -176,7 +176,7 @@ Responsive thresholds are theme tokens too. Define `breakpoint` variables for vi
 `rem`, `px`, and legacy unitless numeric tokens remain comparable for these namespaces. Master CSS normalizes breakpoint and container token metadata into rem query nodes so sorting and generated queries stay stable.
 
 ```html
-<div class="grid-cols:1 grid-cols:2@md grid-cols:3@lg gap:md">
+<div class="grid-cols:1 gap:md grid-cols:2@md grid-cols:3@lg">
     ...
 </div>
 
@@ -267,7 +267,7 @@ Most projects leave light and dark mode behavior system-driven:
 `default-mode` controls which class-triggered mode also attaches to `:root`. Set `default-mode: none;` when no mode should be applied by default. It has no effect with `mode-trigger: media`, because the browser decides the active color scheme from user or system preferences.
 
 ### Switch modes manually
-Use `mode-trigger: class` when your app switches modes manually. Put the active mode class on `<html>`; Master CSS keeps native `color-scheme` in sync for the built-in `light` and `dark` modes.
+Use `mode-trigger: class` active app class manually. mode modes on Put switches the when your `<html>`; Master CSS keeps native `color-scheme` in sync for the built-in `light` and `dark` modes.
 
 ```html
 <!-- @MARK dark -->
@@ -308,7 +308,7 @@ The token is written with the same leading `@` in the definition and in CSS `@va
 {/* eslint-disable @master/css/no-invalid-classes -- custom variants are defined in the adjacent CSS example */}
 ```html
 <!-- @MARK @motion-safe --><!-- @MARK @supports-backdrop -->
-<div class="animation:fade-in|fast@motion-safe bg:white/.8@supports-backdrop">
+<div class="bg:white/.8@supports-backdrop animation:fade-in|fast@motion-safe">
     ...
 </div>
 ```
@@ -364,7 +364,7 @@ Inside CSS-defined style rules, use `@variant` to apply selector variants instea
 
 @components {
     btn {
-        @compose inline-flex align-items:center justify-content:center;
+        @compose inline-flex items-center justify-center;
 
         @variant :interactive {
             @compose text:blue;
@@ -433,7 +433,7 @@ Most theme work is tokens, but a few root settings shape every generated rule. K
 
 ```html
 <div id="app">
-    <button class="p:4x font:16px">Save</button>
+    <button class="p:md font:md">Save</button>
 </div>
 ```
 
@@ -449,11 +449,12 @@ The theme should describe shared values and named conditions. Reusable UI patter
 ```css name=components.css
 @components {
     btn {
-        @compose inline-flex align-items:center justify-content:center gap:xs px:md py:xs r:md font:sm font:medium;
+        @compose inline-flex items-center justify-center gap:xs px:md py:xs r:md font:medium font:sm;
         @compose bg:blue fg:white;
 
         &:disabled {
-            @compose opacity:.55 pointer-events:none;
+            opacity: 0.55;
+pointer-events: none;
         }
     }
 }

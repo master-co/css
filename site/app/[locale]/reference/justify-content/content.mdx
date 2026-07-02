@@ -32,7 +32,7 @@ Use `justify-start`, `justify-center`, and `justify-end` for the most common pos
 In a column flexbox, the main axis becomes vertical, so `justify-center` centers items vertically instead.
 ```html
 <!-- @MARK flex-col --><!-- @MARK justify-center -->
-<section class="flex flex-col justify-center h:64x">
+<section class="flex flex-col justify-center h:3xs">
     ...
 </section>
 ```
@@ -62,7 +62,7 @@ Use `justify-content:<value>` when you need a value that does not have a shortcu
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<div class="justify-start justify-center@sm justify-between@lg justify-start@print">...</div>
+<div class="justify-start justify-start@print justify-center@sm justify-between@lg">...</div>
 ```
 
 Use [align-items](/reference/align-items) for the cross axis.

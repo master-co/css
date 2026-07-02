@@ -63,11 +63,11 @@ In the list view, every article gets unique names for its shared elements:
 <article>
     <img
         alt="A mountain ridge under soft light"
-        class="view-transition-name:article-image view-transition-class:article"
+        class="view-transition-class:article view-transition-name:article-image"
         src="/images/article-aurora.jpg"
     />
-    <time class="view-transition-name:article-date view-transition-class:article">May 12, 2026</time>
-    <h3 class="view-transition-name:article-title view-transition-class:article">
+    <time class="view-transition-class:article view-transition-name:article-date">May 12, 2026</time>
+    <h3 class="view-transition-class:article view-transition-name:article-title">
         Designing transitions that preserve context
     </h3>
     <p>...</p>
@@ -81,11 +81,11 @@ In the detail view, render the same image, date, and title with the same names:
 <article>
     <img
         alt="A mountain ridge under soft light"
-        class="view-transition-name:article-image view-transition-class:article"
+        class="view-transition-class:article view-transition-name:article-image"
         src="/images/article-aurora.jpg"
     />
-    <time class="view-transition-name:article-date view-transition-class:article">May 12, 2026</time>
-    <h1 class="view-transition-name:article-title view-transition-class:article">
+    <time class="view-transition-class:article view-transition-name:article-date">May 12, 2026</time>
+    <h1 class="view-transition-class:article view-transition-name:article-title">
         Designing transitions that preserve context
     </h1>
     <p>...</p>
@@ -161,9 +161,9 @@ In Master CSS, write the pseudo-element after the declaration:
 
 ```html
 <html class="
-    animation-duration:slow::vt-group(hero)
-    animation:fade|fast|both|reverse::vt-old(hero)
     animation:fade|fast|both::vt-new(hero)
+    animation:fade|fast|both|reverse::vt-old(hero)
+    animation-duration:slow::vt-group(hero)
 ">
 ```
 
@@ -183,7 +183,7 @@ In Master CSS, write the pseudo-element after the declaration:
 You can also group related named snapshots with `view-transition-class` and then target the class selector in the pseudo-element argument:
 
 ```html
-<article class="view-transition-name:product-card view-transition-class:shared-card">
+<article class="view-transition-class:shared-card view-transition-name:product-card">
     ...
 </article>
 

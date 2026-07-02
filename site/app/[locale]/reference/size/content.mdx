@@ -6,7 +6,7 @@
 Use `size:*` when the same value should apply to both `width` and `height`. This keeps square UI pieces readable in markup.
 ```html
 <!-- @MARK size:10x -->
-<button class="size:10x grid place-content:center">
+<button class="grid place-content:center size:10x">
     ...
 </button>
 ```
@@ -60,7 +60,7 @@ Use `fit` when both axes should follow `fit-content`, or `full` when both axes s
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<div class="size:8x size:10x@sm full@dark size:6x@print">...</div>
+<div class="size:8x full@dark size:6x@print size:10x@sm">...</div>
 ```
 
 For physical one-axis sizing, use [width](/reference/width) and [height](/reference/height).

@@ -30,11 +30,11 @@ The animation **reverses direction each cycle** and **the first iteration plays 
 ### Fade out
 Reverse a project-defined `fade` keyframe so that you don't need to define a new keyframe for `fade-out`.
 <Demo>
-    <IconCircle className="app-icon-primary stroke:.5 animation-name:fade animation-duration:1s animation-direction:reverse animation-iteration-count:infinite" width="48" height="48" />
+    <IconCircle className="app-icon-primary animation-direction:reverse animation-duration:1s animation-iteration-count:infinite animation-name:fade stroke:.5" width="48" height="48" />
 </Demo>
 ```html
 <!-- @MARK animation-name:fade --><!-- @MARK animation-direction:reverse -->
-<svg class="animation-name:fade animation-duration:1s animation-direction:reverse animation-iteration-count:infinite">…</svg>
+<svg class="animation-direction:reverse animation-duration:1s animation-iteration-count:infinite animation-name:fade">…</svg>
 ```
 For one-shot animations, remove `infinite`.
 

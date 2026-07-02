@@ -33,7 +33,7 @@ Use `items-start` or `items-end` when children should align to one edge of the c
 Use `items-stretch` when children should fill the cross size of the container. The container needs a definite cross size for the stretch to be visible.
 ```html
 <!-- @MARK items-stretch --><!-- @MARK h:32x -->
-<div class="flex items-stretch h:32x gap:sm">
+<div class="flex items-stretch gap:sm h:32x">
     <div>One</div>
     <div>Two</div>
 </div>
@@ -54,7 +54,7 @@ For one item only, use [align-self](/reference/align-self).
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<div class="items-start items-center@sm items-stretch@lg items-start@print">...</div>
+<div class="items-start items-start@print items-center@sm items-stretch@lg">...</div>
 ```
 
 Use [justify-content](/reference/justify-content) for the main axis.

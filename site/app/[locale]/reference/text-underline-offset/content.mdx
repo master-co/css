@@ -1,5 +1,6 @@
 ## Overview [sr-only]
 <Overview/>
+{/* eslint-disable @master/css/prefer-canonical-classes -- reference examples intentionally document text-underline-offset syntax */}
 
 ## Examples
 ### Move underline away from text
@@ -36,5 +37,6 @@ Use `text-underline-offset:0` for dense table or navigation labels when extra of
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<a class="text-underline-offset:4px:hover text-underline-offset:2px@sm text-underline-offset:0@print">...</a>
+<a class="text-underline-offset:4px:hover text-underline-offset:0@print text-underline-offset:2px@sm">...</a>
 ```
+{/* eslint-enable @master/css/prefer-canonical-classes */}

@@ -6,13 +6,13 @@
 Use `grid-auto-rows` to size rows created outside the explicit grid.
 <Demo $py={0}>
     <DemoPanel>
-        <div className="grid grid-cols:2 grid-auto-rows:64px gap:2x">
-            <div className="min-w:0 p:3x r:8px bg:blue-5 bg:blue-95@dark border:1px|solid|blue-20 border-color:blue-80@dark">
-                <div className="fg:blue-60 font:11px font-weight:700 text-ellipsis overflow:hidden white-space:nowrap">64px row</div>
-                <div className="text:neutral font:14px font-weight:560">A</div>
+        <div className="grid grid-cols:2 grid-auto-rows:64px gap:xs">
+            <div className="min-w:0 p:sm b:1px|solid|blue-20 r:lg bg:blue-5 b:blue-80@dark bg:blue-95@dark">
+                <div className="overflow:hidden font:11px font:bold text-ellipsis white-space:nowrap fg:blue-60">64px row</div>
+                <div className="font-weight:560 font:sm text:neutral">A</div>
             </div>
-            <div className="min-w:0 p:3x r:8px bg:gray-5 bg:gray-90@dark">B</div>
-            <div className="min-w:0 p:3x r:8px bg:gray-5 bg:gray-90@dark">C</div>
+            <div className="min-w:0 p:sm r:lg bg:gray-5 bg:gray-90@dark">B</div>
+            <div className="min-w:0 p:sm r:lg bg:gray-5 bg:gray-90@dark">C</div>
         </div>
     </DemoPanel>
 </Demo>
@@ -26,5 +26,5 @@ Use `grid-auto-rows` to size rows created outside the explicit grid.
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<div class="grid-auto-rows:64px:hover grid-auto-rows:64px@sm grid-auto-rows:64px@dark grid-auto-rows:64px@print">…</div>
+<div class="grid-auto-rows:64px:hover grid-auto-rows:64px@dark grid-auto-rows:64px@print grid-auto-rows:64px@sm">…</div>
 ```

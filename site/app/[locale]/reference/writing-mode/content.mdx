@@ -30,11 +30,11 @@ Use `writing-mode:horizontal-tb` to return nested content to normal horizontal f
 ### Pair with text orientation
 Use [`text-orientation:upright`](/reference/text-orientation) when characters should remain upright inside vertical writing.
 ```html
-<p class="writing-mode:vertical-rl text-orientation:upright">2026</p>
+<p class="text-orientation:upright writing-mode:vertical-rl">2026</p>
 ```
 
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<p class="writing-mode:vertical-rl:hover writing-mode:horizontal-tb@sm writing-mode:horizontal-tb@print">...</p>
+<p class="writing-mode:vertical-rl:hover writing-mode:horizontal-tb@print writing-mode:horizontal-tb@sm">...</p>
 ```

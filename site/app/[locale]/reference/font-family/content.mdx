@@ -8,7 +8,7 @@
 ### Set the font family
 Set the typeface of an element using the `font-family:` syntax.
 <Demo $py={0}>
-    <DemoPanel className="flex flex-col gap:8x">
+    <DemoPanel className="flex flex-col gap:xl">
         <div className="w:full">
             <DemoP className="font-family:cursive">Heavy boxes perform quick waltzes and jigs.</DemoP>
         </div>
@@ -30,7 +30,7 @@ Relying on the `font-family` inherited behavior, you can set the entire page fon
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<div class="font:mono:hover font:mono@sm font:mono@dark font:mono@print">…</div>
+<div class="font:mono:hover font:mono@dark font:mono@print font:mono@sm">…</div>
 ```
 ### Apply fonts to specified elements
 Use the `mcss _:is(code,pre)` to select specified elements and apply the font.
@@ -75,7 +75,7 @@ Customize your font tokens by defining [theme tokens](/guide/theme#theme-tokens)
 Apply the defined `font-family` variables. For example, presetting the global fonts in `html <body>`:
 ```html
 <!-- @MARK font:sans --><!-- @MARK font:mono_:is(code,pre) -->
-<body class="font:sans font:mono_:is(code,pre) font-feature-settings:'salt'">…</body>
+<body class="font-feature-settings:'salt' font:sans font:mono_:is(code,pre)">…</body>
 ```
 Don't forget to add the [font faces](/guide/fonts#font-faces).
 

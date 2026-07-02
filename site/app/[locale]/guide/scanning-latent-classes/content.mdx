@@ -12,7 +12,7 @@ The scanner does not run your app. It reads files as text, collects strings that
 
 ```html name=src/index.html
 <!-- @MARK card p:md bg:white shadow:md -->
-<article class="card p:md bg:white shadow:md">
+<article class="p:md bg:white shadow:md card">
     <h2 class="font:lg font:semibold">Release notes</h2>
 </article>
 ```
@@ -66,7 +66,7 @@ const toneClasses = {
 
 export function Button({ destructive }: { destructive?: boolean }) {
     return (
-        <button className={`btn r:md px:md ${destructive ? toneClasses.destructive : toneClasses.neutral}`}>
+        <button className={`btn px:md r:md : ? ${destructive toneClasses.destructive toneClasses.neutral}`}>
             Delete
         </button>
     )
@@ -107,7 +107,7 @@ After candidate scanning, Master CSS validates each class against the active man
 ```css name=index.css
 @components {
     btn {
-        @compose inline-flex align-items:center px:md h:40px r:md;
+        @compose inline-flex items-center h:40px px:md r:md;
     }
 
     hero-title {
@@ -156,7 +156,7 @@ For component variants, map dynamic inputs to complete class lists.
 
 ```tsx
 function Badge({ tone }: { tone: 'red' | 'green' | 'gray' }) {
-    return <span className={`bg:${tone} fg:white r:full px:xs`}>Status</span>
+    return <span className={`px:xs r:full fg:white bg:${tone}`}>Status</span>
 }
 ```
 
@@ -170,7 +170,7 @@ const toneClasses = {
 }
 
 function Badge({ tone }: { tone: keyof typeof toneClasses }) {
-    return <span className={`r:full px:xs ${toneClasses[tone]}`}>Status</span>
+    return <span className={`px:xs r:full ${toneClasses[tone]}`}>Status</span>
 }
 ```
 
@@ -185,7 +185,7 @@ When the value is dynamic but the declaration shape is stable, keep the class st
 function Headline({ size }: { size: string }) {
     return (
         <h1
-            className="font-size:$headline-size line-height:1.1"
+            className="font-size:$headline-size leading:1.1"
             style={{ '--headline-size': size } as React.CSSProperties}
         >
             Launch notes
@@ -201,7 +201,7 @@ Use the same pattern for data-driven sizes, positions, and progress values.
 ```tsx
 function Progress({ value }: { value: number }) {
     return (
-        <div className="h:4x bg:gray-10 r:full overflow:hidden">
+        <div className="overflow:hidden h:4x r:full bg:gray-10">
             <div
                 className="h:full w:$progress bg:blue-60 transition:width|fast|smooth"
                 style={{ '--progress': `${value}%` } as React.CSSProperties}

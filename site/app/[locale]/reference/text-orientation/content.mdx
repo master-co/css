@@ -6,7 +6,7 @@
 Use `text-orientation:upright` with vertical writing when each character should remain upright instead of rotating sideways.
 ```html
 <!-- @MARK text-orientation:upright -->
-<p class="writing-mode:vertical-rl text-orientation:upright">2026</p>
+<p class="text-orientation:upright writing-mode:vertical-rl">2026</p>
 ```
 
 <details>
@@ -20,18 +20,18 @@ Use `text-orientation:upright` with vertical writing when each character should 
 Use `text-orientation:mixed` to let the browser rotate horizontal scripts while keeping vertical scripts upright.
 ```html
 <!-- @MARK text-orientation:mixed -->
-<p class="writing-mode:vertical-rl text-orientation:mixed">Label 2026</p>
+<p class="text-orientation:mixed writing-mode:vertical-rl">Label 2026</p>
 ```
 
 ### Use sideways orientation
 Use `text-orientation:sideways` when text should rotate as a run inside a vertical flow.
 ```html
 <!-- @MARK text-orientation:sideways -->
-<p class="writing-mode:vertical-rl text-orientation:sideways">Side label</p>
+<p class="text-orientation:sideways writing-mode:vertical-rl">Side label</p>
 ```
 
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<p class="text-orientation:upright:hover text-orientation:mixed@sm text-orientation:mixed@print">...</p>
+<p class="text-orientation:upright:hover text-orientation:mixed@print text-orientation:mixed@sm">...</p>
 ```

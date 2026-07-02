@@ -72,7 +72,7 @@ The following continuous DOM manipulation takes you to understand the behavior o
         Add class name `font:6xl` to `html <h1>`
         ```html
         <!-- @MARK font:6xl -->
-        <h1 class="text-center font:6xl">Hello World</h1>
+        <h1 class="font:6xl text-center">Hello World</h1>
         ```
         The runtime engine observes that `html <h1>` adds the new class name `font:6xl` and ensures the corresponding CSS rule:
         ```css
@@ -93,7 +93,7 @@ The following continuous DOM manipulation takes you to understand the behavior o
         ```
         Remove class name `text-center` from `html <h1>`
         ```html
-        <h1 class="text-center font:6xl">Hello World</h1>
+        <h1 class="font:6xl text-center">Hello World</h1>
         ```
         The runtime engine observes that the class name `text-center` is removed from `html <h1>` and updates active usage immediately. Mutation-driven cleanup may retain the generated rule briefly so a fast remove/re-add does not churn the browser CSSOM. After retained-rule cleanup, the unused rule can be deleted:
         ```css
@@ -382,7 +382,7 @@ Those native rules can also pull matching theme variables referenced by `var(--*
 
 ```html
 <!-- @MARK btn -->
-<article class="native-card btn">Card</article>
+<article class="btn native-card">Card</article>
 ```
 
 The generated CSS contains `.native-card` and `.btn` when both classes are scanned. `.unused-card` is removed because no scanned source uses it.
@@ -435,7 +435,7 @@ Rendering modes change delivery, not the authoring model. The source of truth is
 
 @components {
     btn {
-        @compose inline-flex align-items:center px:md py:xs r:md;
+        @compose inline-flex items-center px:md py:xs r:md;
         background: var(--color-primary);
     }
 }

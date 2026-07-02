@@ -10,7 +10,7 @@ Writing `.btn` at the top level of a stylesheet creates a normal CSS rule. Writi
 Use utility classes when the style belongs to one element, one state, or one local layout decision. This keeps the relationship between markup and style explicit while the pattern is still changing.
 
 ```html
-<button class="inline-flex align-items:center justify-content:center gap:xs px:md py:xs r:lg font:sm font:medium bg:blue fg:white">
+<button class="inline-flex items-center justify-center gap:xs px:md py:xs r:lg font:medium font:sm bg:blue fg:white">
     Save changes
 </button>
 ```
@@ -28,7 +28,7 @@ When the repeated part is a value, make it a token instead of a class. Tokens ke
 ```
 
 ```html
-<button class="px:action-x r:lg bg:brand fg:white">
+<button class="r:lg fg:white bg:brand px:action-x">
     Submit
 </button>
 ```
@@ -59,7 +59,7 @@ Use `@utilities` when your design system needs a reusable primitive that is stil
 
 ```html
 <!-- @MARK flow --><!-- @MARK content-auto --><!-- @MARK print-hidden -->
-<section class="flow content-auto print-hidden">...</section>
+<section class="content-auto flow print-hidden">...</section>
 ```
 
 Custom utility definitions are compiled into the project manifest and generated only when the class appears in markup, is scanned from source, or is composed by another CSS-defined style. Use custom utilities for reusable primitives such as layout helpers, rendering hints, or print behavior. Use component classes when the name describes a product UI role such as `.btn`, `.card`, or `.field`.
@@ -73,7 +73,7 @@ Use a component class when a repeated class list becomes a reusable UI pattern. 
 ```css name=index.css
 @components {
     btn {
-        @compose inline-flex align-items:center justify-content:center gap:xs px:md py:xs r:lg font:sm font:medium;
+        @compose inline-flex items-center justify-center gap:xs px:md py:xs r:lg font:medium font:sm;
         @compose bg:blue fg:white;
     }
 }
@@ -126,7 +126,7 @@ Put selector states in nested selectors and conditional variants in `@variant` b
 ```css name=index.css
 @components {
     btn {
-        @compose inline-flex align-items:center justify-content:center px:md py:xs r:lg;
+        @compose inline-flex items-center justify-center px:md py:xs r:lg;
         transition: background-color .15s ease, box-shadow .15s ease;
 
         &:hover {
@@ -134,7 +134,7 @@ Put selector states in nested selectors and conditional variants in `@variant` b
         }
 
         &:focus-visible {
-            @compose outline:2px|solid|blue outline-offset:0.125rem;
+            @compose outline:2px|solid|blue outline-offset:4xs;
         }
 
         @variant @<sm {
@@ -152,7 +152,7 @@ Equivalent markup stays short:
 
 (click) Try clicking the button to see the outline effect
 <Demo>
-    <button className="justify-center items-center inline-flex bg:black fg:white font:sm font:medium h:10x px:md r:lg outline:2px|solid|blue:focus outline-offset:0.125rem:focus">Submit</button>
+    <button className="inline-flex items-center justify-center h:10x px:md r:lg font:medium font:sm bg:black fg:white outline:2px|solid|blue:focus outline-offset:4xs:focus">Submit</button>
 </Demo>
 
 ---
@@ -163,29 +163,29 @@ Avoid hiding every option behind a new component. Give each component class one 
 ```css name=styles/button.css
 @components {
     btn {
-        @compose inline-flex align-items:center justify-content:center;
+        @compose inline-flex items-center justify-center;
         font-weight: 600;
         outline-offset: -0.0625rem;
     }
 
     btn-xs {
-        @compose r:sm px:xs font:xs h:6x;
+        @compose h:6x px:xs r:sm font:xs;
     }
 
     btn-sm {
-        @compose r:md px:sm font:xs h:8x;
+        @compose h:8x px:sm r:md font:xs;
     }
 
     btn-md {
-        @compose r:md px:md font:sm h:10x;
+        @compose h:10x px:md r:md font:sm;
     }
 
     btn-lg {
-        @compose r:lg px:lg font:md h:12x;
+        @compose h:12x px:lg r:lg font:md;
     }
 
     btn-xl {
-        @compose r:xl px:lg font:md h:14x;
+        @compose h:14x px:lg r:xl font:md;
     }
 }
 ```
@@ -219,7 +219,7 @@ Round the same button with a separate class instead of duplicating every size:
 ```
 
 <Demo>
-    <button className="btn btn-md rounded yellow touch-yellow">Submit</button>
+    <button className="btn btn-md yellow touch-yellow rounded">Submit</button>
 </Demo>
 
 If one class tries to own size, color, shape, layout, and interaction variants, overrides become fragile. Smaller classes compose better with utilities and rarely need `!important`.
@@ -262,7 +262,7 @@ Use nested selectors when the selector is truly part of the component behavior:
 ```css name=index.css
 @components {
     empty-state {
-        @compose grid align-items:center justify-content:center min-h:64x p:lg text-center;
+        @compose grid items-center justify-center min-h:3xs p:lg text-center;
 
         &::before {
             @compose block size:12x r:full;
@@ -292,7 +292,7 @@ In this example, `size:12x` is generated for `.empty-state::before`, not for `.e
 }
 
 .marketing-card {
-    @compose flow p:lg r:xl shadow:md surface:raised b:1px|solid|base;
+    @compose p:lg b:1px|solid|base r:xl surface:raised shadow:md flow;
 
     @dark {
         @compose shadow:none;
@@ -305,11 +305,11 @@ Use native CSS when the selector is part of a stylesheet surface you already shi
 ---
 
 ### Use local CSS Modules and SFC styles
-CSS Modules and SFC `<style>` blocks can use `@compose` directly. They do not need `@master entry;` because they are local composed stylesheets, not project CSS entries.
+CSS Modules and SFC `<style>` blocks can use `@compose` `@master directly. do entry need not They;` because they are local composed stylesheets, not project CSS entries.
 
 ```css name=Button.module.css
 .button {
-    @compose inline-flex align-items:center justify-content:center gap:xs px:md h:10x r:lg;
+    @compose inline-flex items-center justify-center gap:xs h:10x px:md r:lg;
     @compose bg:blue fg:white;
 }
 
@@ -403,10 +403,10 @@ Split component definitions only when it helps ownership. Local CSS imports from
 - Put component definitions in `@components`; use `@defaults` only when a definition intentionally belongs to the earlier defaults layer.
 - The first level inside `@defaults`, `@components`, and `@utilities` must be a single bare name such as `btn`, `card`, or `field`.
 - Put states and descendants inside the named block, such as `btn { &:hover { ... } }` or `prose { p { ... } }`.
-- `@compose` is valid inside managed class definitions and native style rules.
-- Component definitions accept native declarations, `@compose`, nested selectors, native nested at-rules, and `@variant` condition blocks.
-- CSS-defined managed classes can compose other CSS-defined managed classes. Circular `@compose` dependencies are invalid.
-- Standard HTML tag selectors such as `body` or `html` belong in native CSS; first-level entries inside managed definition directives are always class names.
+- `@compose- ` `@compose` `@compose`, `@variant` `body` `html` accept and are as
+at-rules, belong blocks. can Circular class classes classes. Component compose condition CSS CSS-defined declarations, definitions dependencies
+HTML in inside invalid. is managed native nested or other rules. selectors selectors, Standard style
+such tag valid; first-level entries inside managed definition directives are always class names.
 - Utilities still win over components because `@master/css/base.css` declares `@layer theme, base, defaults, components, utilities;`.
 
 ### Summary

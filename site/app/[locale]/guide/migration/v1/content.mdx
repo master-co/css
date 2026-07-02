@@ -83,7 +83,7 @@ The current project CSS entry owns theme and manifest inputs. Move values out of
 
 {/* eslint-disable @master/css/no-invalid-classes -- custom variant is defined in the adjacent CSS example */}
 ```html
-<section class="grid grid-cols:3@dashboard gap:lg p:card r:card fg:body">
+<section class="grid gap:lg r:card fg:body grid-cols:3@dashboard p:card">
     ...
 </section>
 ```
@@ -99,12 +99,13 @@ If the v1 project had reusable component abstractions, migrate them to `@compone
 ```css name=app.css
 @components {
     card {
-        @compose grid gap:md p:card r:card bg:white b:1px|solid|base shadow:sm;
+        @compose grid gap:md b:1px|solid|base r:card bg:white shadow:sm p:card;
     }
 
     btn-primary {
-        @compose inline-flex align-items:center justify-content:center gap:xs h:10x px:md r:md bg:primary fg:white;
-        @compose bg:blue-70:hover opacity:.5:disabled;
+        @compose inline-flex items-center justify-center gap:xs h:10x px:md r:md bg:primary fg:white;
+        @variant :hover { @compose bg:blue-70; }
+@variant :disabled { opacity: 0.5; }
     }
 }
 ```
@@ -134,7 +135,7 @@ Current Master CSS class strings should be complete, explicit, and validated by 
 Use current syntax for states, conditions, native declarations, and CSS variables:
 
 ```html
-<button class="inline-flex align-items:center gap:xs px:md h:10x r:md bg:blue-60 fg:white bg:blue-70:hover opacity:.5:disabled">
+<button class="inline-flex items-center gap:xs h:10x px:md r:md bg:blue-60 fg:white bg:blue-70:hover opacity:.5:disabled">
     Save
 </button>
 ```
@@ -142,7 +143,7 @@ Use current syntax for states, conditions, native declarations, and CSS variable
 ```tsx
 function Progress({ value }: { value: number }) {
     return (
-        <div className="h:2x bg:gray-10 r:full overflow:hidden">
+        <div className="overflow:hidden h:2x r:full bg:gray-10">
             <div
                 className="h:full w:$progress bg:blue-60 transition:width|fast|smooth"
                 style={{ '--progress': `${value}%` } as React.CSSProperties}

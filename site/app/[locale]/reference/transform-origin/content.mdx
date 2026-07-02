@@ -22,7 +22,7 @@ Use `transform-origin:*` to define the point an element rotates, scales, or skew
 Separate multi-word origins with `|` so they become space-separated CSS values.
 ```html
 <!-- @MARK transform-origin:top|right -->
-<div class="transform-origin:top|right transform:rotate(2deg)">
+<div class="transform:rotate(2deg) transform-origin:top|right">
     Rotates from the corner
 </div>
 ```
@@ -30,7 +30,7 @@ Separate multi-word origins with `|` so they become space-separated CSS values.
 ### Match the origin to the interaction
 Menus, tooltips, and popovers usually feel more natural when their origin is close to the anchor that opened them.
 ```html
-<div class="transform-origin:top|left transform:scale(.98)">
+<div class="transform:scale(.98) transform-origin:top|left">
     Anchored menu
 </div>
 ```
@@ -38,5 +38,5 @@ Menus, tooltips, and popovers usually feel more natural when their origin is clo
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<div class="transform-origin:center:hover transform-origin:top|right@sm transform-origin:center@print">...</div>
+<div class="transform-origin:center:hover transform-origin:center@print transform-origin:top|right@sm">...</div>
 ```

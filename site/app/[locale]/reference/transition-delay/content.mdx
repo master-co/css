@@ -22,9 +22,9 @@ Use `transition-delay:*` to wait before a transition starts. This is useful for 
 Apply different delays to related elements while keeping the same duration and easing.
 ```html
 <!-- @MARK transition-delay:150ms -->
-<div class="transition-property:opacity transition-duration:200ms">
-    <span class="transition-delay:0ms opacity:1">Step one</span>
-    <span class="transition-delay:150ms opacity:1">Step two</span>
+<div class="transition-duration:200ms transition-property:opacity">
+    <span class="opacity:1 transition-delay:0ms">Step one</span>
+    <span class="opacity:1 transition-delay:150ms">Step two</span>
 </div>
 ```
 
@@ -53,5 +53,5 @@ Remove a delay when the same UI becomes dense or task-focused at a larger viewpo
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<div class="transition-delay:75ms:hover transition-delay:0ms@sm transition-delay:0ms@print">...</div>
+<div class="transition-delay:75ms:hover transition-delay:0ms@print transition-delay:0ms@sm">...</div>
 ```

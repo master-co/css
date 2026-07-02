@@ -6,7 +6,7 @@
 Use `b:*` with a size value to set `border-width`.
 ```html
 <!-- @MARK b:1px -->
-<div class="b:1px b-solid">
+<div class="b-solid b:1px">
     ...
 </div>
 ```
@@ -22,7 +22,7 @@ Use `b:*` with a size value to set `border-width`.
 Use `bt:*`, `br:*`, `bb:*`, and `bl:*` for physical sides. Use `bx:*` and `by:*` for logical axes.
 ```html
 <!-- @MARK bt:2px --><!-- @MARK by:1px -->
-<div class="bt:2px by:1px">...</div>
+<div class="by:1px bt:2px">...</div>
 ```
 
 Use [border](/reference/border) when width, style, and color should be declared together.
@@ -30,7 +30,7 @@ Use [border](/reference/border) when width, style, and color should be declared 
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<div class="b:0 b:1px@sm b:0@print">...</div>
+<div class="b:0 b:0@print b:1px@sm">...</div>
 ```
 
 Remember that a border is not visible unless its style is not `none`.

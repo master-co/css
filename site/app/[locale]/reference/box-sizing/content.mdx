@@ -6,7 +6,7 @@
 Use `box-border` when an element's declared width and height should include its padding and border.
 ```html
 <!-- @MARK box-border -->
-<div class="box-border w:40x p:4x b:1px|solid|gray-20">
+<div class="w:40x p:md b:1px|solid|gray-20 box-border">
     Border-box
 </div>
 ```
@@ -22,7 +22,7 @@ Use `box-border` when an element's declared width and height should include its 
 Use `box-content` when the declared size should apply only to the content area and padding or border can add to the rendered size.
 ```html
 <!-- @MARK box-content -->
-<div class="box-content w:40x p:4x b:1px|solid|gray-20">
+<div class="w:40x p:md b:1px|solid|gray-20 box-content">
     Content-box
 </div>
 ```
@@ -38,5 +38,5 @@ Most UI components should use one sizing model consistently. Switch box sizing o
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<div class="box-border box-content@sm box-border@print">...</div>
+<div class="box-border box-border@print box-content@sm">...</div>
 ```

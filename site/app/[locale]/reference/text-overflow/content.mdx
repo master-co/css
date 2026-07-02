@@ -13,7 +13,7 @@ Use `text-clip` when overflowing inline content should be cut off without an ell
 Use `text-ellipsis` with `overflow:hidden`, `white-space:nowrap`, and a constrained width.
 ```html
 <!-- @MARK w:40x --><!-- @MARK overflow:hidden --><!-- @MARK white-space:nowrap --><!-- @MARK text-ellipsis -->
-<span class="w:40x overflow:hidden white-space:nowrap text-ellipsis">
+<span class="overflow:hidden w:40x text-ellipsis white-space:nowrap">
     quarterly-roadmap-final-version.pdf
 </span>
 ```
@@ -33,7 +33,7 @@ In flex or grid children, add `min-w:0` to the shrinking text region so the elli
 <!-- @MARK flex --><!-- @MARK min-w:0 --><!-- @MARK text-ellipsis -->
 <div class="flex gap:sm">
     <span class="flex:0">File</span>
-    <span class="min-w:0 overflow:hidden white-space:nowrap text-ellipsis">
+    <span class="overflow:hidden min-w:0 text-ellipsis white-space:nowrap">
         quarterly-roadmap-final-version.pdf
     </span>
 </div>
@@ -42,7 +42,7 @@ In flex or grid children, add `min-w:0` to the shrinking text region so the elli
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<div class="text-clip text-ellipsis@sm text-clip@print">...</div>
+<div class="text-clip text-clip@print text-ellipsis@sm">...</div>
 ```
 
 Use [line-clamp](/reference/line-clamp) for multi-line truncation.

@@ -31,7 +31,7 @@ Use text-relative units when the maximum width is based on reading comfort inste
 Use `max-w:full` to prevent replaced elements such as images or videos from overflowing their parent.
 ```html
 <!-- @MARK max-w:full --><!-- @MARK h:auto -->
-<img class="max-w:full h:auto" src="..." alt="" />
+<img class="h:auto max-w:full" src="..." alt="" />
 ```
 
 ### Use viewport and container caps
@@ -46,7 +46,7 @@ Use `max-vw` when an element should never exceed the viewport width. Use `max-w:
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<div class="max-w:full max-w:4xl@sm max-w:72ch@print">...</div>
+<div class="max-w:full max-w:72ch@print max-w:4xl@sm">...</div>
 ```
 
 Pair `max-w:*` with `w:full` for wrappers that should be fluid until they hit the cap.

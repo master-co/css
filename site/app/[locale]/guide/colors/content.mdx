@@ -33,7 +33,7 @@ Start with the kind of decision you are making. Most app chrome should use roles
 ```html
 <!-- @MARK bg:surface-base --><!-- @MARK text:body --><!-- @MARK surface:raised --><!-- @MARK b:1px|solid|base --><!-- @MARK text:strong --><!-- @MARK text:muted --><!-- @MARK text:link -->
 <main class="bg:surface-base text:body">
-    <section class="surface:raised b:1px|solid|base">
+    <section class="b:1px|solid|base surface:raised">
         <h2 class="text:strong">Project updates</h2>
         <p class="text:muted">Three milestones changed this week.</p>
         <a class="text:link" href="#">Continue</a>
@@ -152,7 +152,7 @@ Override preset role tokens when a repeated UI decision needs product-specific c
 ```html
 <!-- @MARK bg:surface-base --><!-- @MARK text:body --><!-- @MARK surface:raised --><!-- @MARK b:1px|solid|base --><!-- @MARK text:muted -->
 <main class="bg:surface-base text:body">
-    <section class="surface:raised b:1px|solid|base">
+    <section class="b:1px|solid|base surface:raised">
         <p class="text:muted">The classes stay the same in every mode.</p>
     </section>
 </main>

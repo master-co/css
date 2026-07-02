@@ -53,12 +53,12 @@ The `container` class is a utility class that applies the `container-type: inlin
 (resize) Try making the container smaller.
 <ResizeZone width="100%" originX="center" showRuler>
     <Demo>
-        <div className="container w:full surface:raised b:1px|solid|base r:lg overflow:hidden">
+        <div className="overflow:hidden container w:full b:1px|solid|base r:lg surface:raised">
             <div className="flex flex-col@container(<=2xs)">
-                <Image src="/images/blur.png" className="object-cover aspect-ratio:3/2 w:64x {w:full;aspect-ratio:16/9}@container(<=2xs)" width={300} height={200} alt="container left" />
+                <Image src="/images/blur.png" className="w:3xs aspect-ratio:3/2 object-cover {w:full;aspect-ratio:16/9}@container(<=2xs)" width={300} height={200} alt="container left" />
                 <div className='p:lg|xl'>
-                    <div className='text:md text:neutral font:medium'>Lorem ipsum</div>
-                    <div className='text:sm mt:3xs'>It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.</div>
+                    <div className='text:md font:medium text:neutral'>Lorem ipsum</div>
+                    <div className='mt:3xs text:sm'>It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.</div>
                 </div>
             </div>
         </div>

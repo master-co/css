@@ -6,7 +6,7 @@
 Use `background-blend-mode:*` when multiple background layers or a background image and color should blend together.
 ```html
 <!-- @MARK bg:url(/hero.jpg) --><!-- @MARK bg:blue-60/.4 --><!-- @MARK background-blend-mode:multiply -->
-<section class="bg:url(/hero.jpg) bg:blue-60/.4 background-blend-mode:multiply">
+<section class="background-blend-mode:multiply bg:blue-60/.4 bg:url(/hero.jpg)">
     ...
 </section>
 ```
@@ -30,7 +30,7 @@ For blending the whole element with content behind it, use [mix-blend-mode](/ref
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<div class="background-blend-mode:normal background-blend-mode:multiply@sm background-blend-mode:normal@print">...</div>
+<div class="background-blend-mode:normal background-blend-mode:normal@print background-blend-mode:multiply@sm">...</div>
 ```
 
 Check contrast after blending, especially when text sits on top of the background.

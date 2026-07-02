@@ -5,18 +5,18 @@
 ### Block & Inline
 Use `block`, `inline`, and `inline-block` to set the flow of elements.
 <Demo $py={0}>
-    <div className='bg:float p:8x'>
+    <div className='p:xl bg:float'>
         <p>
             Block elements start on a new line and take the available width.
             <span className="box block! bg:slate-95!@light">
                 `display:block`
             </span>
             Inline elements stay in the same text flow and only occupy the space they need.
-            <span className="box inline! my:2x bg:slate-95!@light">
+            <span className="box inline! my:xs bg:slate-95!@light">
                 `display:inline`
             </span>
             Inline-block elements stay inline but can accept box dimensions.
-            <span className="box inline-block! my:2x bg:slate-95!@light">
+            <span className="box inline-block! my:xs bg:slate-95!@light">
                 `display:inline-block`
             </span>
             Use the display mode that matches the element's role in the flow.
@@ -46,16 +46,16 @@ import aron from '~/site/public/images/authors/aron.jpg'
 ### Flex
 Use `flex` to create a block-level flex container.
 <Demo>
-    <div className="flex gap:3x align-items:center bg:float p:2x|5x r:10px">
-        <Image src={aron} alt="avatar" className="object-cover round h:auto" width="64" height="64" />
+    <div className="flex items-center gap:sm p:2x|5x r:10px bg:float">
+        <Image src={aron} alt="avatar" className="h:auto round object-cover" width="64" height="64" />
         <div>
-            <div className="text:14px font:medium font:gray-88@dark capitalize">aron</div>
-            <p className="text:13px m:0">CSS needs a revolution</p>
+            <div className="text:sm font:medium capitalize font:gray-88@dark">aron</div>
+            <p className="m:0 text:13px">CSS needs a revolution</p>
         </div>
     </div>
 </Demo>
 ```html
-<div class="flex gap:3x align-items:center">
+<div class="flex items-center gap:sm">
     <img src="...">
     <div>
         <div>aron</div>
@@ -67,13 +67,13 @@ Use `flex` to create a block-level flex container.
 ### Inline Flex
 Use `inline-flex` to create an inline-level flex container.
 <Demo $py={0}>
-    <div className='bg:float p:8x'>
-        <p className="font:16px leading:1.75rem">
+    <div className='p:xl bg:float'>
+        <p className="font:md leading:1.75rem">
             Inline flex is useful when an inline phrase needs aligned children.
             The element still participates in text flow while its contents use flex alignment.
-            <span className="inline-flex! align-items:baseline! mx:3x box b:0 bg:slate-95!@light p:0! overflow:hidden">
-                <Image src={aron} alt="avatar" className="object-cover h:auto align-self:end" width="24" height="24" />
-                <span className="text:14px font:medium font:gray-88@dark capitalize px:0.625rem">aron</span>
+            <span className="box inline-flex! overflow:hidden items-baseline! mx:sm p:0! b:0 bg:slate-95!@light">
+                <Image src={aron} alt="avatar" className="self-end h:auto object-cover" width="24" height="24" />
+                <span className="px:0.625rem text:sm font:medium capitalize font:gray-88@dark">aron</span>
             </span>
             This keeps the badge baseline-aligned with the surrounding sentence.
         </p>
@@ -82,7 +82,7 @@ Use `inline-flex` to create an inline-level flex container.
 ```html
 <div>
     Inline flex keeps this badge in the text flow.
-    <div class="inline-flex align-items:baseline mx:3x">
+    <div class="inline-flex items-baseline mx:sm">
         <img src="...">
         <div>Aron</div>
     </div>
@@ -94,7 +94,7 @@ Use `inline-flex` to create an inline-level flex container.
 Use `grid` to create a block-level grid container.
 <Demo>
     <div className="w:full">
-        <div className="grid grid-template-columns:repeat(2,auto) gap:3x">
+        <div className="grid grid-template-columns:repeat(2,auto) gap:sm">
             <div className="box">01</div>
             <div className="box">02</div>
             <div className="box">03</div>
@@ -103,7 +103,7 @@ Use `grid` to create a block-level grid container.
     </div>
 </Demo>
 ```html
-<div class="grid grid-template-columns:repeat(2,auto) gap:3x">
+<div class="grid grid-template-columns:repeat(2,auto) gap:sm">
     <div>01</div>
     <div>02</div>
     <div>03</div>
@@ -114,14 +114,14 @@ Use `grid` to create a block-level grid container.
 ### Inline Grid
 Use `inline-grid` to create a inline-level grid container.
 <Demo>
-    <div className="flex gap:3x w:full">
-        <div className="inline-grid grid-template-columns:repeat(2,auto) gap:3x">
+    <div className="flex gap:sm w:full">
+        <div className="inline-grid grid-template-columns:repeat(2,auto) gap:sm">
             <div className="box">01</div>
             <div className="box">02</div>
             <div className="box">03</div>
             <div className="box">04</div>
         </div>
-        <div className="inline-grid grid-template-columns:repeat(2,auto) gap:3x">
+        <div className="inline-grid grid-template-columns:repeat(2,auto) gap:sm">
             <div className="box">01</div>
             <div className="box">02</div>
             <div className="box">03</div>
@@ -130,13 +130,13 @@ Use `inline-grid` to create a inline-level grid container.
     </div>
 </Demo>
 ```html
-<div class="inline-grid grid-template-columns:repeat(2,auto) gap:3x">
+<div class="inline-grid grid-template-columns:repeat(2,auto) gap:sm">
     <div>01</div>
     <div>02</div>
     <div>03</div>
     <div>04</div>
 </div>
-<div class="inline-grid grid-template-columns:repeat(2,auto) gap:3x">
+<div class="inline-grid grid-template-columns:repeat(2,auto) gap:sm">
     <div>01</div>
     <div>02</div>
     <div>03</div>
@@ -147,16 +147,16 @@ Use `inline-grid` to create a inline-level grid container.
 ### Table
 Use `table`, `table-row`, `table-column`, `table-cell`, `table-caption`, `table-row-group`, `table-column-group`, `table-header-group`, and `table-footer-group` to create elements that behave like their respective table elements.
 <Demo>
-    <div className="table w:80% b:1px|solid|slate-90 r:10px overflow:hidden p:5x|1.875rem_:where(div)">
-        <div className="table-caption text-center font:bold">Orders</div>
-        <div className="table-header-group bg:gray-90 font:bold">
+    <div className="table overflow:hidden w:80% b:1px|solid|slate-90 r:10px p:5x|1.875rem_:where(div)">
+        <div className="table-caption font:bold text-center">Orders</div>
+        <div className="table-header-group font:bold bg:gray-90">
             <div className="table-row">
                 <div className="table-cell">Product</div>
                 <div className="table-cell text-center">Qty</div>
                 <div className="table-cell text-center">Price</div>
             </div>
         </div>
-        <div className="table-row-group bg:slate-99 bb:1px|solid|slate-90_:where(div)">
+        <div className="table-row-group bb:1px|solid|slate-90_:where(div) bg:slate-99">
             <div className="table-row">
                 <div className="table-cell">Milk</div>
                 <div className="table-cell text-center">2</div>
@@ -173,7 +173,7 @@ Use `table`, `table-row`, `table-column`, `table-cell`, `table-caption`, `table-
                 <div className="table-cell text-center">18.00</div>
             </div>
         </div>
-        <div className="table-footer-group bg:gray-90 font:bold">
+        <div className="table-footer-group font:bold bg:gray-90">
             <div className="table-row">
                 <div className="table-cell">Total</div>
                 <div className="table-cell text-center">10</div>
@@ -223,12 +223,12 @@ Use `table`, `table-row`, `table-column`, `table-cell`, `table-caption`, `table-
 Use `contents` to make the element's children behave like direct children of the element's parent, ignoring the element itself.
 <Demo>
     <div className="flex gap:5x w:full">
-        <div className="flex:1 box">01</div>
+        <div className="box flex:1">01</div>
         <div className="contents">
             <div className="box flex:1">02</div>
             <div className="box flex:1">03</div>
         </div>
-        <div className="flex:1 box">04</div>
+        <div className="box flex:1">04</div>
     </div>
 </Demo>
 ```html
@@ -245,9 +245,9 @@ Use `contents` to make the element's children behave like direct children of the
 ### Flow Root
 Use `flow-root` to create a block-level element that establishes a new block formatting context.
 {<Demo $py={0}>
-    <div className="bg:float p:8x w:full">
-        <div className="w:full flow-root bg:stripe-pink">
-            <Image src="/images/blur.png" className="r:8px object-cover my:0 mr:1.875rem float:left" width={160} height={90} alt="Float Image" />
+    <div className="w:full p:xl bg:float">
+        <div className="flow-root w:full bg:stripe-pink">
+            <Image src="/images/blur.png" className="float:left my:0 mr:1.875rem r:lg object-cover" width={160} height={90} alt="Float Image" />
             <p className="my:0">The paragraph wraps around the floated image because the parent establishes a new formatting context.</p>
         </div>
         <p>Use `flow-root` to clear floats.</p>
@@ -264,7 +264,7 @@ Use flow-root to clear floats
 ### List Item
 Use `list-item` to create a block that behave like a list item.
 <Demo>
-    <div className="my:2x_:where(div)">
+    <div className="my:xs_:where(div)">
         <div className="list-item">01</div>
         <div className="list-item">02</div>
         <div className="list-item">03</div>
@@ -298,5 +298,5 @@ Use `hidden` to hide the element. The element is not rendered in the document.
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<div class="display:block:hover display:block@sm display:block@dark display:block@print">...</div>
+<div class="display:block:hover display:block@dark display:block@print display:block@sm">...</div>
 ```

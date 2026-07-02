@@ -91,7 +91,7 @@ The imported source becomes part of the project CSS entry graph. Project markup 
 
 ```html
 <button class="btn">Save changes</button>
-<section class="content-auto p:lg">...</section>
+<section class="p:lg content-auto">...</section>
 ```
 
 When a local CSS file only needs the package as compile-time context, use `@reference` instead:
@@ -142,7 +142,7 @@ Before publishing, test the package through a small consuming project or fixture
 
 ```html
 <button class="btn">Save</button>
-<article class="content-auto bg:surface-raised p:lg r:lg">
+<article class="p:lg r:lg bg:surface-raised content-auto">
     ...
 </article>
 ```

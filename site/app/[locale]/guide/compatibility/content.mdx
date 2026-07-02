@@ -69,7 +69,7 @@ Write a property-like class when the declaration is already valid CSS:
 
 ```html
 <!-- @MARK field-sizing:content --><!-- @MARK interpolate-size:allow-keywords --><!-- @MARK view-transition-name:card --><!-- @MARK transition-behavior:allow-discrete -->
-<article class="field-sizing:content interpolate-size:allow-keywords view-transition-name:card transition-behavior:allow-discrete">…</article>
+<article class="transition-behavior:allow-discrete field-sizing:content interpolate-size:allow-keywords view-transition-name:card">…</article>
 ```
 
 <details open>
@@ -96,10 +96,12 @@ Custom properties can use the same direct declaration form:
 ### Master CSS syntax first
 Native fallback is intentionally lower priority than Master CSS semantics. Curated aliases, token resolution, unit conversion, transform helpers, and shorthand utilities continue to use Master CSS semantics before a plain native declaration is considered.
 
+{/* eslint-disable @master/css/prefer-canonical-classes -- intentional native fallback precedence example */}
 ```html
 <!-- @MARK mt:4x --><!-- @MARK margin:1rem --><!-- @MARK bg:red-60 -->
-<div class="mt:4x margin:1rem bg:red-60">…</div>
+<div class="mx:md mb:md mt:4x bg:red-60">…</div>
 ```
+{/* eslint-enable @master/css/prefer-canonical-classes */}
 
 <details>
     <summary>Generated CSS</summary>
@@ -121,7 +123,7 @@ Arbitrary properties do not need `{}`. If the declaration is valid CSS, write it
 
 ```html
 <!-- @MARK interpolate-size:allow-keywords --><!-- @MARK scroll-timeline-name:--cards --><!-- @MARK paint-order:stroke|fill -->
-<div class="interpolate-size:allow-keywords scroll-timeline-name:--cards paint-order:stroke|fill">…</div>
+<div class="scroll-timeline-name:--cards interpolate-size:allow-keywords paint-order:stroke|fill">…</div>
 ```
 
 <details>
@@ -191,7 +193,7 @@ Then define your application overrides in the `components` layer or use utilitie
 
 ```html
 <!-- @MARK bg:blue-60 -->
-<div class="swiper-slide bg:blue-60">Slide 1</div>
+<div class="bg:blue-60 swiper-slide">Slide 1</div>
 ```
 
 This keeps vendor defaults below product components and utilities, reducing the need for forceful overrides.
@@ -213,7 +215,7 @@ Use native CSS variables from your theme when module-scoped or component-scoped 
 Use Master CSS classes in markup for styling that should be generated, validated, ordered, and highlighted by Master CSS tooling:
 
 ```html
-<button class="bg:blue r:md px:md h:40px">Save</button>
+<button class="h:40px px:md r:md bg:blue">Save</button>
 ```
 
 When a CSS file imports `@master/css`, it becomes a Master-managed stylesheet. Keep vendor, CMS, or externally injected classes outside managed roots unless the class usage is visible to extraction or protected with [`@preserve native`](/guide/native-css-pruning#default-pruning).

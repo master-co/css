@@ -26,7 +26,7 @@ Master CSS is markup-driven. The class string is the styling source of truth:
 export default function Page() {
     return (
         <main className="min-h:100vh p:10x bg:surface-base text:neutral">
-            <h1 className="font:48px font:heavy tracking:tight">
+            <h1 className="font:6xl font:heavy tracking:tight">
                 Master CSS pre-rendered by Next.js
             </h1>
         </main>
@@ -58,7 +58,7 @@ For a minimal page:
 
 ```tsx name=app/page.tsx
 export default function Page() {
-    return <h1 className="font:48px">Hello</h1>
+    return <h1 className="font:6xl">Hello</h1>
 }
 ```
 
@@ -71,7 +71,7 @@ Progressive Rendering produces HTML shaped like this:
     <style id="master-css" data-master-css-hydration-manifest="/_next/static/master-css/hydration/master-css-hydration.8f3a1c2d.json">@layer utilities{.font\:48px{font-size:48px}}</style>
 </head>
 <body>
-    <h1 class="font:48px">Hello</h1>
+    <h1 class="font:6xl">Hello</h1>
 </body>
 </html>
 ```
@@ -235,7 +235,7 @@ export function Badge({ tone }: {
     tone: 'blue' | 'neutral'
 }) {
     return (
-        <span className={`r:4px px:2x py:1x text:${tone} bg:${tone}/.1`}>
+        <span className={`px:xs py:3xs r:sm bg:${tone}/.1 text:${tone}`}>
             New
         </span>
     )
@@ -245,7 +245,7 @@ export function Badge({ tone }: {
 If a pre-rendered route outputs this HTML:
 
 ```html
-<span class="r:4px px:2x py:1x text:blue bg:blue/.1">New</span>
+<span class="px:xs py:3xs r:sm bg:blue/.1 text:blue">New</span>
 ```
 
 `@master/css.next` reads that final class list from the generated document and injects the matching CSS for the first response. The runtime can then continue covering client-only and dynamic UI after hydration.

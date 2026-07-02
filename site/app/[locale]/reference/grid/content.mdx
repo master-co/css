@@ -32,7 +32,7 @@ The `grid` shorthand resets several grid longhands. For most layouts, prefer foc
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<div class="grid:none grid:auto-flow|1fr/1fr|1fr@sm grid:none@print">...</div>
+<div class="grid:none grid:none@print grid:auto-flow|1fr/1fr|1fr@sm">...</div>
 ```
 
 Use the static `grid` display utility when the goal is only `display: grid`.

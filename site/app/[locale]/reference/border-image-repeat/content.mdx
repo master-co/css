@@ -6,15 +6,15 @@
 Use `border-image-repeat` to control how the edge slices fit the border image area.
 <Demo $py={0}>
     <DemoPanel>
-        <div className="b:16px|solid|transparent border-image-source:linear-gradient(45deg,dodgerblue,hotpink) border-image-slice:30 border-image-repeat:round p:10x r:8px surface:raised">
-            <div className="text:neutral font:18px font-weight:560">Round repeat</div>
-            <p className="text:gray font:14px my:4x">The slices are adjusted so repetitions fit evenly.</p>
+        <div className="p:10x b:16px|solid|transparent r:lg border-image-repeat:round border-image-slice:30 border-image-source:linear-gradient(45deg,dodgerblue,hotpink) surface:raised">
+            <div className="font-weight:560 font:lg text:neutral">Round repeat</div>
+            <p className="my:md font:sm text:gray">The slices are adjusted so repetitions fit evenly.</p>
         </div>
     </DemoPanel>
 </Demo>
 ```html
 <!-- @MARK border-image-repeat:round -->
-<div class="b:16px|solid|transparent border-image-source:linear-gradient(45deg,dodgerblue,hotpink) border-image-slice:30 border-image-repeat:round">
+<div class="b:16px|solid|transparent border-image-repeat:round border-image-slice:30 border-image-source:linear-gradient(45deg,dodgerblue,hotpink)">
     Round repeat
 </div>
 ```
@@ -22,7 +22,7 @@ Use `border-image-repeat` to control how the edge slices fit the border image ar
 ### Set vertical and horizontal behavior
 ```html
 <!-- @MARK border-image-repeat:round|stretch -->
-<div class="b:16px|solid|transparent border-image-source:linear-gradient(45deg,dodgerblue,hotpink) border-image-slice:30 border-image-repeat:round|stretch">
+<div class="b:16px|solid|transparent border-image-repeat:round|stretch border-image-slice:30 border-image-source:linear-gradient(45deg,dodgerblue,hotpink)">
     Round vertically, stretch horizontally
 </div>
 ```
@@ -30,5 +30,5 @@ Use `border-image-repeat` to control how the edge slices fit the border image ar
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<div class="border-image-repeat:round:hover border-image-repeat:round@sm border-image-repeat:round@dark border-image-repeat:round@print">…</div>
+<div class="border-image-repeat:round:hover border-image-repeat:round@dark border-image-repeat:round@print border-image-repeat:round@sm">…</div>
 ```

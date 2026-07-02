@@ -6,15 +6,15 @@
 Use `border-image-outset` to paint the border image beyond the element's border box. The outset area does not create extra layout space.
 <Demo $py={0}>
     <DemoPanel>
-        <div className="m:8x b:12px|solid|transparent border-image-source:linear-gradient(45deg,dodgerblue,hotpink) border-image-slice:30 border-image-outset:8 p:10x r:8px surface:raised">
-            <div className="text:neutral font:18px font-weight:560">Outset 8</div>
-            <p className="text:gray font:14px my:4x">The painted border image extends outward.</p>
+        <div className="m:xl p:10x b:12px|solid|transparent r:lg border-image-outset:8 border-image-slice:30 border-image-source:linear-gradient(45deg,dodgerblue,hotpink) surface:raised">
+            <div className="font-weight:560 font:lg text:neutral">Outset 8</div>
+            <p className="my:md font:sm text:gray">The painted border image extends outward.</p>
         </div>
     </DemoPanel>
 </Demo>
 ```html
 <!-- @MARK border-image-outset:8 -->
-<div class="b:12px|solid|transparent border-image-source:linear-gradient(45deg,dodgerblue,hotpink) border-image-slice:30 border-image-outset:8">
+<div class="b:12px|solid|transparent border-image-outset:8 border-image-slice:30 border-image-source:linear-gradient(45deg,dodgerblue,hotpink)">
     Outset 8
 </div>
 ```
@@ -22,7 +22,7 @@ Use `border-image-outset` to paint the border image beyond the element's border 
 ### Use separate vertical and horizontal values
 ```html
 <!-- @MARK border-image-outset:8|16 -->
-<div class="b:12px|solid|transparent border-image-source:linear-gradient(45deg,dodgerblue,hotpink) border-image-slice:30 border-image-outset:8|16">
+<div class="b:12px|solid|transparent border-image-outset:8|16 border-image-slice:30 border-image-source:linear-gradient(45deg,dodgerblue,hotpink)">
     Vertical and horizontal outset
 </div>
 ```
@@ -30,5 +30,5 @@ Use `border-image-outset` to paint the border image beyond the element's border 
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<div class="border-image-outset:8:hover border-image-outset:8@sm border-image-outset:8@dark border-image-outset:8@print">…</div>
+<div class="border-image-outset:8:hover border-image-outset:8@dark border-image-outset:8@print border-image-outset:8@sm">…</div>
 ```

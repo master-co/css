@@ -6,7 +6,7 @@
 Use `resize:both` on elements that should be manually resizable in both directions, such as textareas or debug panels.
 ```html
 <!-- @MARK resize:both -->
-<textarea class="resize:both min-w:20x min-h:12x">
+<textarea class="min-h:12x min-w:20x resize:both">
     Notes
 </textarea>
 ```
@@ -22,7 +22,7 @@ Use `resize:both` on elements that should be manually resizable in both directio
 Use `resize:vertical` for text inputs that can grow without breaking the surrounding layout.
 ```html
 <!-- @MARK resize:vertical -->
-<textarea class="resize:vertical w:full min-h:10x">
+<textarea class="w:full min-h:10x resize:vertical">
     Comment
 </textarea>
 ```
@@ -39,5 +39,5 @@ Use `resize:none` when the component already controls its own size or when the s
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<textarea class="resize:none resize:vertical@sm resize:none@print">...</textarea>
+<textarea class="resize:none resize:none@print resize:vertical@sm">...</textarea>
 ```

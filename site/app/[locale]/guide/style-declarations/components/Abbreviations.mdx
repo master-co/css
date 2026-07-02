@@ -1,4 +1,4 @@
-export const code1 = `
+export const code1 = /* eslint-disable @master/css/prefer-canonical-classes, @master/css/sort-classes -- intentional shorthand progression examples */ `
     <!-- @MARK font-size:1rem --><!-- @MARK margin-top:32px --><!-- @MARK justify-content:center -->
     <p class="font-size:1rem margin-top:32px justify-content:center">
 `
@@ -6,8 +6,9 @@ export const code2 = `
     <!-- @MARK font:16px --><!-- @MARK mt:32px --><!-- @MARK justify-content:center -->
     <p class="font:16px mt:32px justify-content:center">
 `
+/* eslint-enable @master/css/prefer-canonical-classes, @master/css/sort-classes */
 
-Syntax: <code><span className="token value mcss language-mcss"><span className="token mcss"><span className="token Mkey">property-name</span><span className="token Mvalueroot"><span className="token Mcolon">:</span><span className="token Mvalue"><span className="token Mnumber_unit"><span className="token Mnumber">value</span></span></span></span></span></span></code> -> <code><span className="token value mcss language-mcss"><span className="token mcss"><span className="token Mkey">alias</span><span className="token Mvalueroot"><span className="token Mcolon">:</span><span className="token Mvalue"><span className="token Mnumber_unit"><span className="token Mnumber">value</span></span></span></span></span></span></code>
+Syntax: <code><span className="language-mcss mcss token value"><span className="mcss token"><span className="Mkey token">property-name</span><span className="Mvalueroot token"><span className="Mcolon token">:</span><span className="Mvalue token"><span className="Mnumber_unit token"><span className="Mnumber token">value</span></span></span></span></span></span></code> -> <code><span className="language-mcss mcss token value"><span className="mcss token"><span className="Mkey token">alias</span><span className="Mvalueroot token"><span className="Mcolon token">:</span><span className="Mvalue token"><span className="Mnumber_unit token"><span className="Mnumber token">value</span></span></span></span></span></span></code>
 
 Property names can still be long after you learn the syntax. Master CSS keeps a small curated set of abbreviations for common geometry, spacing, color, and typography patterns.
 <Code lang="html">
@@ -23,7 +24,7 @@ Use full property names for rare CSS properties. Valid native declarations can b
 
 Retained abbreviations canonicalize to full property keys, so the same token and unit behavior works whether you write `w:32px` or `width:32px`.
 
-export const code3 = `
+export const code3 = /* eslint-disable @master/css/prefer-canonical-classes, @master/css/sort-classes -- intentional shorthand progression examples */ `
     <!-- @MARK width:32px --><!-- @MARK height:32px --><!-- @MARK border-radius:5px --><!-- @MARK z-index:10 --><!-- @MARK margin-top:1px --><!-- @MARK margin-bottom:1px --><!-- @MARK padding-left:1px --><!-- @MARK padding-right:1px -->
     <div class="width:32px height:32px border-radius:5px z-index:10 margin-top:1px margin-bottom:1px padding-left:1px padding-right:1px">
 `
@@ -39,6 +40,7 @@ export const code6 = `
     <!-- @MARK size:32px -->
     <div class="size:32px r:5px z:10 my:1px px:1px">
 `
+/* eslint-enable @master/css/prefer-canonical-classes, @master/css/sort-classes */
 
 <Code lang="html">
     {code3}

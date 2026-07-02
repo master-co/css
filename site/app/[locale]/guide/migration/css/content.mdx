@@ -81,11 +81,12 @@ Use `@reference` to make project tokens, components, utilities, and custom varia
 @reference "../app.css";
 
 .button {
-    @compose inline-flex align-items:center justify-content:center gap:xs h:10x px:md r:md bg:blue-60 fg:white;
+    @compose inline-flex items-center justify-center gap:xs h:10x px:md r:md bg:blue-60 fg:white;
 }
 
 .button:disabled {
-    @compose opacity:.5 pointer-events:none;
+    opacity: 0.5;
+pointer-events: none;
 }
 ```
 
@@ -116,7 +117,7 @@ Project-owned custom properties usually belong in `@theme` before large-scale cl
 ```
 
 ```html
-<article class="bg:surface fg:body p:card r:card grid-cols:3@md">
+<article class="r:card fg:body grid-cols:3@md bg:surface p:card">
     ...
 </article>
 ```

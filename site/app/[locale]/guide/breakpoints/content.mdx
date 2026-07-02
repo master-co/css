@@ -65,7 +65,7 @@ A breakpoint should exist because something meaningful changes. Avoid adding thr
 
 ```html
 <!-- @MARK grid-cols:4 --><!-- @MARK grid-cols:8@sm --><!-- @MARK grid-cols:12@md -->
-<section class="grid-cols:4 grid-cols:8@sm grid-cols:12@md gap:md gap:lg@md">
+<section class="grid-cols:4 gap:md grid-cols:8@sm grid-cols:12@md gap:lg@md">
     ...
 </section>
 ```
@@ -103,7 +103,7 @@ Viewport breakpoints decide when the page changes. Container size values decide 
 
 ```html
 <!-- @MARK max-w:4xl@sm --><!-- @MARK max-w:5xl@md --><!-- @MARK max-w:7xl@lg -->
-<main class="w:full max-w:4xl@sm max-w:5xl@md max-w:7xl@lg mx:auto px:md px:xl@md">
+<main class="w:full mx:auto px:md max-w:4xl@sm max-w:5xl@md px:xl@md max-w:7xl@lg">
     ...
 </main>
 ```

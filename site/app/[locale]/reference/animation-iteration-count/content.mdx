@@ -6,7 +6,7 @@
 Use `animation-iteration-count:infinite` when an animation should repeat until the state changes.
 ```html
 <!-- @MARK animation-iteration-count:infinite -->
-<div class="animation-name:rotate animation-duration:1s animation-timing-function:linear animation-iteration-count:infinite">
+<div class="animation-duration:1s animation-iteration-count:infinite animation-name:rotate animation-timing-function:linear">
     Loading
 </div>
 ```
@@ -22,7 +22,7 @@ Use `animation-iteration-count:infinite` when an animation should repeat until t
 Use a number for one-shot or limited loops. Decimal values are valid when you need an animation to stop partway through a cycle.
 ```html
 <!-- @MARK animation-iteration-count:3 -->
-<div class="animation-name:fade animation-duration:300ms animation-iteration-count:3">
+<div class="animation-duration:300ms animation-iteration-count:3 animation-name:fade">
     Repeats three times
 </div>
 ```
@@ -30,7 +30,7 @@ Use a number for one-shot or limited loops. Decimal values are valid when you ne
 ### Pair with fill mode
 When the last iteration should leave the element in its final state, combine the count with `animation-fill-mode:forwards` or `animation-fill-mode:both`.
 ```html
-<div class="animation-name:fade animation-iteration-count:1 animation-fill-mode:both">
+<div class="animation-fill-mode:both animation-iteration-count:1 animation-name:fade">
     Ends at the final keyframe
 </div>
 ```
@@ -38,5 +38,5 @@ When the last iteration should leave the element in its final state, combine the
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<div class="animation-iteration-count:infinite:hover animation-iteration-count:3@sm animation-iteration-count:1@print">...</div>
+<div class="animation-iteration-count:infinite:hover animation-iteration-count:1@print animation-iteration-count:3@sm">...</div>
 ```

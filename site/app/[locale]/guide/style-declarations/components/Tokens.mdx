@@ -1,4 +1,4 @@
-export const code1 =`
+export const code1 = /* eslint-disable @master/css/prefer-canonical-classes, @master/css/sort-classes -- intentional native-value token comparison source */ `
     <!-- @MARK fit-content --><!-- @MARK border-box --><!-- @MARK column -->
     <p class="width:fit-content box-sizing:border-box flex-direction:column">
 `
@@ -6,6 +6,7 @@ export const code2 =`
     <!-- @MARK w:fit --><!-- @MARK border-box --><!-- @MARK flex-col -->
     <p class="width:fit border-box flex-col">
 `
+/* eslint-enable @master/css/prefer-canonical-classes, @master/css/sort-classes */
 
 Some native values are descriptive but long in markup, especially when they appear in every component.
 <Code lang="html">

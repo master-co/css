@@ -39,7 +39,7 @@ Use CSS corner properties or corner shorthands when only part of the element sho
 Use `rtl`, `rtr`, `rbl`, and `rbr` for individual corners.
 ```html
 <!-- @MARK rtr:md --><!-- @MARK rbl:sm -->
-<div class="rtr:md rbl:sm">
+<div class="rbl:sm rtr:md">
     Rounded corners
 </div>
 ```
@@ -47,7 +47,7 @@ Use `rtl`, `rtr`, `rbl`, and `rbr` for individual corners.
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<div class="r:md:hover r:lg@sm r:0@print">...</div>
+<div class="r:md:hover r:0@print r:lg@sm">...</div>
 ```
 
 ---

@@ -24,7 +24,7 @@ Use `gap:*` on flex and grid containers to set the spacing between children. Unl
 Use `gap-y:*` for row gaps and `gap-x:*` for column gaps. This is common in card grids where horizontal gutters and vertical rhythm need different values.
 ```html
 <!-- @MARK gap-x:lg --><!-- @MARK gap-y:xl -->
-<section class="grid-cols:1 grid-cols:3@md gap-x:lg gap-y:xl">
+<section class="grid-cols:1 gap-x:lg gap-y:xl grid-cols:3@md">
     ...
 </section>
 ```
@@ -50,7 +50,7 @@ Gap is usually easier to maintain than child margins for toolbars, stacks, media
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<div class="gap:xs:hover gap:md@sm gap:lg@dark gap:0@print">...</div>
+<div class="gap:xs:hover gap:lg@dark gap:0@print gap:md@sm">...</div>
 ```
 
 For page and component rhythm, prefer shared spacing tokens such as `sm`, `md`, and `lg`.
