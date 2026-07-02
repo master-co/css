@@ -962,6 +962,85 @@ export default defineConfig({
         expect(once.config).toContain("import { defineConfig } from '@rsbuild/core'")
     })
 
+    test('plans Webpack projects with the Webpack plugin before generic setup', () => {
+        const root = createTempProject('master-css-create-webpack-', {
+            dependencies: {
+                webpack: '^5.0.0',
+                react: '^19.0.0'
+            }
+        })
+        writeProjectFile(root, 'webpack.config.mjs', `export default {
+    plugins: []
+}
+`)
+
+        const plan = createSetupPlan({ root })
+
+        expect(plan.framework).toBe('webpack')
+        expect(plan.dependencies.map((dependency) => dependency.name)).toEqual([
+            '@master/css',
+            '@master/css.webpack',
+            '@master/eslint-config-css',
+            'eslint',
+            '@master/css-mcp'
+        ])
+        expect(plan.dependencies.map((dependency) => dependency.name)).not.toContain('webpack')
+        expect(plan.files.map((file) => [file.path, file.action])).toEqual([
+            ['webpack.config.mjs', 'update'],
+            ['src/index.css', 'create'],
+            ['eslint.config.js', 'create'],
+            ['AGENTS.md', 'create']
+        ])
+
+        applySetup({ root, install: false })
+
+        expect(readProjectFile(root, 'webpack.config.mjs')).toContain("import MasterCSSPlugin from '@master/css.webpack'")
+        expect(readProjectFile(root, 'webpack.config.mjs')).toContain('new MasterCSSPlugin()')
+        expect(readProjectFile(root, 'src/index.css')).toBe("@import '@master/css';\n")
+    })
+
+    test('writes Webpack rendering modes into fallback and existing configs', () => {
+        const fallbackRoot = createTempProject('master-css-create-webpack-static-mode-')
+        applySetup({
+            root: fallbackRoot,
+            framework: 'webpack',
+            mode: 'static',
+            minimal: true,
+            install: false
+        })
+
+        expect(readProjectFile(fallbackRoot, 'webpack.config.mjs')).toContain("new MasterCSSPlugin({ mode: 'static' })")
+        expect(readProjectFile(fallbackRoot, 'src/index.css')).toBe("@import '@master/css';\n")
+
+        const pluginsRoot = createTempProject('master-css-create-webpack-runtime-mode-')
+        writeProjectFile(pluginsRoot, 'webpack.config.mjs', `export default {
+    plugins: []
+}
+`)
+        applySetup({
+            root: pluginsRoot,
+            framework: 'webpack',
+            mode: 'runtime',
+            minimal: true,
+            install: false
+        })
+
+        expect(readProjectFile(pluginsRoot, 'webpack.config.mjs')).toContain("new MasterCSSPlugin({ mode: 'runtime' })")
+
+        const exportDefaultRoot = createTempProject('master-css-create-webpack-export-default-mode-')
+        writeProjectFile(exportDefaultRoot, 'webpack.config.mjs', `export default {}
+`)
+        applySetup({
+            root: exportDefaultRoot,
+            framework: 'webpack',
+            mode: 'static',
+            minimal: true,
+            install: false
+        })
+
+        expect(readProjectFile(exportDefaultRoot, 'webpack.config.mjs')).toContain("plugins: [new MasterCSSPlugin({ mode: 'static' })]")
+    })
+
     test('plans Laravel projects with the Vite plugin in static mode', () => {
         const root = createTempProject('master-css-create-laravel-', {
             dependencies: {
@@ -1166,6 +1245,12 @@ export default nextConfig;
                 file: 'rsbuild.config.ts',
                 expected: "config.plugins.push(new MasterCSSPlugin({ mode: 'runtime' }))",
                 mode: 'runtime' as const
+            },
+            {
+                framework: 'webpack' as const,
+                file: 'webpack.config.mjs',
+                expected: "new MasterCSSPlugin({ mode: 'pre-render' })",
+                mode: 'pre-render' as const
             }
         ]
 
@@ -1186,7 +1271,7 @@ export default nextConfig;
     test('rejects rendering mode for unsupported setup targets', () => {
         const root = createTempProject('master-css-create-unsupported-mode-')
 
-        for (const framework of ['angular', 'svelte', 'webpack', 'none'] as const) {
+        for (const framework of ['angular', 'svelte', 'none'] as const) {
             expect(() => createSetupPlan({
                 root,
                 framework,

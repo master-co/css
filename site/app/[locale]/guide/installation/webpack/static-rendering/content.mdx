@@ -16,28 +16,11 @@
     <Step $row>
         <StepL>
             ### <StepNum />Add Master CSS
-            Run the installer from the Webpack project root. It adds the packages and creates the Master CSS entry stylesheet.
+            Run the installer in static mode from the Webpack project root. It registers the Webpack plugin and creates the Master CSS entry stylesheet.
         </StepL>
         <StepR>
             ```bash name=Terminal
-            npm create @master/css@rc -- --framework webpack --yes
-            ```
-        </StepR>
-    </Step>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Configure Webpack
-            Register the Webpack plugin in static mode. Static mode scans complete class strings and emits generated CSS at build time.
-        </StepL>
-        <StepR>
-            ```js name=webpack.config.mjs
-            import MasterCSSPlugin from '@master/css.webpack'
-
-            export default {
-                plugins: [
-                    new MasterCSSPlugin({ mode: 'static' })
-                ]
-            }
+            npm create @master/css@rc -- --framework webpack --mode static --yes
             ```
         </StepR>
     </Step>
@@ -58,6 +41,18 @@
     </Step>
     <HelloWorld />
 </StepSection>
+
+The installer registers the Webpack plugin in `webpack.config.*` and creates `src/index.css` as the Master CSS entry.
+
+```js name=webpack.config.mjs
+import MasterCSSPlugin from '@master/css.webpack'
+
+export default {
+    plugins: [
+        new MasterCSSPlugin({ mode: 'static' })
+    ]
+}
+```
 
 ```css name=src/index.css
 @import '@master/css';

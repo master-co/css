@@ -15,6 +15,7 @@ import {
     addMasterCSSStaticVitePlugin,
     addMasterCSSTanStackStartVitePlugin,
     addMasterCSSVitePlugin,
+    addMasterCSSWebpackPlugin,
     addReactRouterRootCSSImport,
     addTanStackStartRootCSSImport,
     addLitShadowRuntime,
@@ -26,7 +27,8 @@ import {
     createRsbuildConfig,
     createRspackConfig,
     createStaticViteConfig,
-    createViteConfig
+    createViteConfig,
+    createWebpackConfig
 } from './transforms'
 
 export type Framework = 'none' | 'vite' | 'react' | 'react-router' | 'tanstack-start' | 'vue' | 'nextjs' | 'svelte' | 'nuxt' | 'astro' | 'webpack' | 'rspack' | 'rsbuild' | 'laravel' | 'lit' | 'angular'
@@ -318,6 +320,7 @@ function filesForFramework(root: string, framework: Framework, warnings: string[
             ]
         case 'webpack':
             return [
+                planTextFile(root, firstExistingPath(root, ['webpack.config.ts', 'webpack.config.mts', 'webpack.config.mjs', 'webpack.config.js', 'webpack.config.cjs'], 'webpack.config.mjs'), (content) => addMasterCSSWebpackPlugin(content, mode), createWebpackConfig(mode), 'Register the Master CSS Webpack plugin.'),
                 planTextFile(root, 'src/index.css', addMasterCSSImportToStylesheet, createMasterCSSStylesheet(), 'Create or update the project CSS entry for Webpack.')
             ]
         case 'none':
@@ -334,8 +337,8 @@ function assertFrameworkSupportsMode(framework: Framework, mode: RenderingMode |
         if (mode === 'static') return
         throw new Error(`--mode ${mode} is not supported for laravel. The Laravel installer only supports --mode static.`)
     }
-    if (framework === 'angular' || framework === 'svelte' || framework === 'webpack' || framework === 'none') {
-        throw new Error(`--mode is not supported for ${framework}. Supported frameworks: vite, react, react-router, tanstack-start, vue, nextjs, nuxt, astro, rspack, rsbuild, laravel, lit.`)
+    if (framework === 'angular' || framework === 'svelte' || framework === 'none') {
+        throw new Error(`--mode is not supported for ${framework}. Supported frameworks: vite, react, react-router, tanstack-start, vue, nextjs, nuxt, astro, webpack, rspack, rsbuild, laravel, lit.`)
     }
 }
 
@@ -434,6 +437,7 @@ function resolveFramework(root: string, packageJSON: PackageJSON | undefined, fr
         ...packageJSON?.dependencies,
         ...packageJSON?.devDependencies
     }
+    const hasWebpackConfig = existsSync(join(root, 'webpack.config.ts')) || existsSync(join(root, 'webpack.config.mts')) || existsSync(join(root, 'webpack.config.mjs')) || existsSync(join(root, 'webpack.config.js')) || existsSync(join(root, 'webpack.config.cjs'))
     if (existsSync(join(root, 'next.config.js')) || existsSync(join(root, 'next.config.mjs')) || existsSync(join(root, 'next.config.ts')) || dependencies.next) return 'nextjs'
     if (existsSync(join(root, 'svelte.config.js')) || existsSync(join(root, 'svelte.config.mjs')) || dependencies['@sveltejs/kit']) return 'svelte'
     if (existsSync(join(root, 'nuxt.config.ts')) || existsSync(join(root, 'nuxt.config.js')) || dependencies.nuxt) return 'nuxt'
@@ -442,12 +446,13 @@ function resolveFramework(root: string, packageJSON: PackageJSON | undefined, fr
     if (dependencies['laravel-vite-plugin'] || existsSync(join(root, 'artisan'))) return 'laravel'
     if (existsSync(join(root, 'rsbuild.config.ts')) || existsSync(join(root, 'rsbuild.config.mts')) || existsSync(join(root, 'rsbuild.config.mjs')) || existsSync(join(root, 'rsbuild.config.js')) || dependencies['@rsbuild/core']) return 'rsbuild'
     if (existsSync(join(root, 'rspack.config.ts')) || existsSync(join(root, 'rspack.config.mts')) || existsSync(join(root, 'rspack.config.mjs')) || existsSync(join(root, 'rspack.config.js')) || existsSync(join(root, 'rspack.config.cjs')) || dependencies['@rspack/core'] || dependencies['@rspack/cli']) return 'rspack'
+    if (hasWebpackConfig) return 'webpack'
     if (existsSync(join(root, 'react-router.config.ts')) || existsSync(join(root, 'react-router.config.js')) || existsSync(join(root, 'react-router.config.mjs')) || existsSync(join(root, 'react-router.config.mts')) || dependencies['@react-router/dev']) return 'react-router'
     if (dependencies['@tanstack/react-start']) return 'tanstack-start'
     if (dependencies.vue || dependencies['@vitejs/plugin-vue'] || existsSync(join(root, 'src/App.vue'))) return 'vue'
     if (dependencies.lit) return 'lit'
     if (dependencies.react || dependencies['react-dom']) return 'react'
-    if (existsSync(join(root, 'webpack.config.js')) || existsSync(join(root, 'webpack.config.mjs')) || dependencies.webpack) return 'webpack'
+    if (dependencies.webpack) return 'webpack'
     if (existsSync(join(root, 'vite.config.ts')) || existsSync(join(root, 'vite.config.js')) || dependencies.vite) return 'vite'
     return 'none'
 }

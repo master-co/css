@@ -98,6 +98,19 @@ export function addMasterCSSRspackPlugin(content: string, mode?: RenderingMode) 
     return next
 }
 
+export function addMasterCSSWebpackPlugin(content: string, mode?: RenderingMode) {
+    if (content.includes('@master/css.webpack')) return content
+    const pluginCall = formatWebpackPluginCall(mode)
+    let next = addImport(content, "import MasterCSSPlugin from '@master/css.webpack'")
+    if (/plugins\s*:\s*\[/.test(next)) {
+        return replaceFirst(next, /plugins\s*:\s*\[/, `plugins: [\n        ${pluginCall},`)
+    }
+    if (/export\s+default\s+\{/.test(next)) {
+        return replaceFirst(next, /export\s+default\s+\{/, `export default {\n    plugins: [${pluginCall}],`)
+    }
+    return next
+}
+
 export function addMasterCSSRsbuildPlugin(content: string, mode?: RenderingMode) {
     if (content.includes('@master/css.webpack')) return content
     let next = addImport(content, "import MasterCSSPlugin from '@master/css.webpack'")
@@ -172,6 +185,17 @@ export default {
             }
         ]
     },
+    plugins: [
+        ${formatWebpackPluginCall(mode)}
+    ]
+}
+`
+}
+
+export function createWebpackConfig(mode?: RenderingMode) {
+    return `import MasterCSSPlugin from '@master/css.webpack'
+
+export default {
     plugins: [
         ${formatWebpackPluginCall(mode)}
     ]
