@@ -1,0 +1,51 @@
+<StepSection>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Create a project
+            If you don't have a React project, create one first.
+        </StepL>
+        <StepR>
+            ```bash name=Terminal
+            npm create vite@latest my-app -- --template react-ts
+            cd my-app
+            ```
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Add Master CSS
+            Run the installer in static mode from the React project root. Static mode scans complete class strings and emits generated CSS at build time.
+        </StepL>
+        <StepR>
+            ```bash name=Terminal
+            npm create @master/css@rc -- --framework react --mode static --yes
+            ```
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Start dev server
+            Run the command to start the Vite dev server.
+        </StepL>
+        <StepR>
+            ```bash name=Terminal&action=run
+            dev
+            ```
+        </StepR>
+    </Step>
+    <Step>
+        ### <StepNum />Start using Master CSS
+        Now style your first component using Master CSS syntax.
+    </Step>
+    <HelloWorld url="localhost:5173" />
+</StepSection>
+
+```tsx name=src/App.tsx
+export default function App() {
+    return (
+        <h1 className="m:2xl italic font:5xl font:heavy text:neutral">
+            Hello World
+        </h1>
+    )
+}
+```

@@ -1,0 +1,47 @@
+<StepSection>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Create a project
+            If you don't have an Astro project, create one first.
+        </StepL>
+        <StepR>
+            ```bash name=Terminal
+            npm create astro@latest my-app
+            cd my-app
+            ```
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Add Master CSS
+            Run the installer in static mode from the Astro project root. Static mode scans complete class strings and emits generated CSS at build time.
+        </StepL>
+        <StepR>
+            ```bash name=Terminal
+            npm create @master/css@rc -- --framework astro --mode static --yes
+            ```
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Start dev server
+            Run the command to start the Astro dev server.
+        </StepL>
+        <StepR>
+            ```bash name=Terminal&action=run
+            dev
+            ```
+        </StepR>
+    </Step>
+    <Step>
+        ### <StepNum />Start using Master CSS
+        Now style your first Astro page using Master CSS syntax.
+    </Step>
+    <HelloWorld url="localhost:4321" />
+</StepSection>
+
+```astro name=src/pages/index.astro
+<h1 class="m:2xl italic font:5xl font:heavy text:neutral">
+    Hello World
+</h1>
+```

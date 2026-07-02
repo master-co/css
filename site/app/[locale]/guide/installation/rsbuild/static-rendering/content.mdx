@@ -1,0 +1,72 @@
+<StepSection>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Create a project
+            If you don't have an Rsbuild project, create one first.
+        </StepL>
+        <StepR>
+            ```bash name=Terminal
+            npm create rsbuild@latest my-app
+            cd my-app
+            ```
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Add Master CSS
+            Run the installer in static mode from the Rsbuild project root. Static mode scans complete class strings and emits generated CSS at build time.
+        </StepL>
+        <StepR>
+            ```bash name=Terminal
+            npm create @master/css@rc -- --framework rsbuild --mode static --yes
+            ```
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Start dev server
+            Run the command to start the Rsbuild dev server.
+        </StepL>
+        <StepR>
+            ```bash name=Terminal&action=run
+            dev
+            ```
+        </StepR>
+    </Step>
+    <Step>
+        ### <StepNum />Start using Master CSS
+        Now style your first Rsbuild page using Master CSS syntax.
+    </Step>
+    <HelloWorld url="localhost:3000" />
+</StepSection>
+
+The installer uses Rsbuild's `tools.rspack` hook to register the Webpack-compatible plugin and creates `src/index.css` as the Master CSS entry.
+
+```ts name=rsbuild.config.ts
+import { defineConfig } from '@rsbuild/core'
+import MasterCSSPlugin from '@master/css.webpack'
+
+export default defineConfig({
+    tools: {
+        rspack(config) {
+            config.plugins ||= []
+            config.plugins.push(new MasterCSSPlugin({ mode: 'static' }))
+            return config
+        }
+    }
+})
+```
+
+```css name=src/index.css
+@import '@master/css';
+```
+
+```tsx
+export default function App() {
+    return (
+        <h1 className="m:2xl italic font:5xl font:heavy text:neutral">
+            Hello World
+        </h1>
+    )
+}
+```
