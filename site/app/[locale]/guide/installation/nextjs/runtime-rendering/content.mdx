@@ -24,20 +24,18 @@
     </Step>
     <Step $row>
         <StepL>
-            ### <StepNum />Set up static mode
-            Change the installer-generated Next.js config to `static` mode. Static setup writes the generated stylesheet before Next.js loads the config, so use `await`.
-
-            (i) Keep the installer-added `@import '@master/css';` in `app/globals.css`. Static mode replaces that import with the generated stylesheet and uses source scanning as the correctness baseline.
+            ### <StepNum />Set up runtime mode
+            Change the installer-generated Next.js config to `runtime` mode. This injects the Master CSS runtime through Next.js client instrumentation without using the build adapter to pre-render page CSS.
         </StepL>
         <StepR>
             ```js name=next.config.js
             import { withMasterCSS } from '@master/css.next'
 
             /** @type {import('next').NextConfig} */
-            const nextConfig = await withMasterCSS({
+            const nextConfig = withMasterCSS({
                 /* your Next.js config */
             }, {
-                mode: 'static'
+                mode: 'runtime'
             })
 
             export default nextConfig

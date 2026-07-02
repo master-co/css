@@ -23,14 +23,17 @@ export default nextConfig
 
 ## Modes
 
-`@master/css.next` supports two integration modes:
+`@master/css.next` defaults to progressive rendering and supports these mode values:
 
 | Mode | Description |
 | --- | --- |
+| `progressive` | Combines pre-rendered first-page CSS with the browser runtime for later client-side class changes. |
+| `runtime` | Injects the browser runtime through the Next.js client instrumentation hook without adding the build adapter. |
 | `pre-render` | Uses the Next.js Adapter API to render CSS into static and pre-rendered HTML outputs during `next build`. |
 | `static` | Scans source files with `@master/css-scanner`, writes a generated stylesheet, and wires Master CSS stylesheet imports into Turbopack CSS processing. |
+| `null` | Skips rendering modes while keeping the CSS manifest loaders available. |
 
-Use `pre-render` when route HTML should carry its first-render CSS. Use `static` when classes are statically visible in source and should be emitted into a generated CSS asset.
+Use `progressive` when route HTML should carry its first-render CSS and client-side class changes still need runtime coverage. Use `runtime` when CSS should be generated only in the browser. Use `pre-render` when build-rendered HTML should carry first-render CSS without runtime injection. Use `static` when classes are statically visible in source and should be emitted into a generated CSS asset.
 
 ## Static rendering
 
@@ -90,7 +93,8 @@ The `options` object is passed to `withMasterCSS(nextConfig, options)`.
 
 | Option | Type | Default | Description |
 | --- | --- | --- | --- |
-| `mode` | `'pre-render' \| 'static' \| null` | `'pre-render'` | Next.js integration mode. Use `null` to skip rendering modes while keeping CSS manifest loaders. |
+| `mode` | `'runtime' \| 'pre-render' \| 'static' \| 'progressive' \| null` | `'progressive'` | Next.js integration mode. Use `null` to skip rendering modes while keeping CSS manifest loaders. |
+| `injectRuntime` | `boolean` | `true` | Include the Master CSS runtime through the Next.js client instrumentation hook in `runtime` and `progressive` modes. |
 | `scannerOptions` | `ScannerOptions` | `{}` | Scanner options for static mode. |
 | `buildReport` | `boolean \| string` | `false` | Write a build report with rendered files. `true` writes `.next/master-css-build-report.json`; a string is resolved from `distDir`. |
 | `debug` | `boolean` | `false` | Log rendered output details during `next build`. |

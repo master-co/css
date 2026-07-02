@@ -18,6 +18,7 @@ export const { Page, dynamic, revalidate, generateMetadata } = createLayout({
     content: ({ $ }) =>
         <Tabs className="mb:xl">
             <Tab href='/guide/installation/nextjs'>{$('Progressive Rendering')} <TabBadge>{$('Default')}</TabBadge></Tab>
+            <Tab href='/guide/installation/nextjs/runtime-rendering'>{$('Runtime Rendering')}</Tab>
             <Tab href='/guide/installation/nextjs/static-rendering'>{$('Static Rendering')}</Tab>
         </Tabs>,
     Layout,
