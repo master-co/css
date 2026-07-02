@@ -14,31 +14,11 @@
     <Step $row>
         <StepL>
             ### <StepNum />Add Master CSS
-            Run the installer from the Next.js project root.
+            Run the installer in runtime mode from the Next.js project root. This injects the Master CSS runtime through Next.js client instrumentation without using the build adapter to pre-render page CSS.
         </StepL>
         <StepR>
             ```bash name=Terminal
-            npm create @master/css@rc -- --framework nextjs --yes
-            ```
-        </StepR>
-    </Step>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Set up runtime mode
-            Change the installer-generated Next.js config to `runtime` mode. This injects the Master CSS runtime through Next.js client instrumentation without using the build adapter to pre-render page CSS.
-        </StepL>
-        <StepR>
-            ```js name=next.config.js
-            import { withMasterCSS } from '@master/css.next'
-
-            /** @type {import('next').NextConfig} */
-            const nextConfig = withMasterCSS({
-                /* your Next.js config */
-            }, {
-                mode: 'runtime'
-            })
-
-            export default nextConfig
+            npm create @master/css@rc -- --framework nextjs --mode runtime --yes
             ```
         </StepR>
     </Step>

@@ -312,6 +312,49 @@ export default defineConfig([
         expect(existsSync(join(root, 'vite.config.js'))).toBe(false)
     })
 
+    test('prints the requested rendering mode in a CLI JSON plan', () => {
+        const root = createTempProject('master-css-create-cli-mode-next-', {
+            dependencies: {
+                next: '^16.0.0'
+            }
+        })
+
+        const result = runCLI(['--cwd', root, '--json', '--minimal', '--framework', 'nextjs', '--mode', 'static'])
+        const plan = JSON.parse(result.stdout)
+
+        expect(result.status).toBe(0)
+        expect(plan.mode).toBe('static')
+        expect(plan.files.find((file: { path: string }) => file.path === 'next.config.js').content).toContain("await withMasterCSS({}, { mode: 'static' })")
+        expect(existsSync(join(root, 'next.config.js'))).toBe(false)
+    })
+
+    test('rejects invalid rendering modes before planning', () => {
+        const root = createTempProject('master-css-create-cli-invalid-mode-', {
+            dependencies: {
+                next: '^16.0.0'
+            }
+        })
+
+        const result = runCLI(['--cwd', root, '--json', '--mode', 'browser'])
+
+        expect(result.status).toBe(1)
+        expect(result.stderr).toContain('Invalid rendering mode "browser"')
+    })
+
+    test('prints a concise CLI error for unsupported rendering mode targets', () => {
+        const root = createTempProject('master-css-create-cli-unsupported-mode-', {
+            dependencies: {
+                '@angular/core': '^22.0.0'
+            }
+        })
+
+        const result = runCLI(['--cwd', root, '--json', '--framework', 'angular', '--mode', 'static'])
+
+        expect(result.status).toBe(1)
+        expect(result.stderr).toContain('--mode is not supported for angular')
+        expect(result.stderr).not.toContain('Error:')
+    })
+
     test('prints a minimal JSON plan from the CLI without recommended integrations', () => {
         const root = createTempProject('master-css-create-cli-minimal-', {
             dependencies: {
@@ -944,6 +987,37 @@ export default defineConfig({
         expect(readProjectFile(root, 'resources/css/app.css')).toBe("@import '@master/css';\n")
     })
 
+    test('allows only static rendering mode for Laravel setup', () => {
+        const root = createTempProject('master-css-create-laravel-mode-', {
+            dependencies: {
+                'laravel-vite-plugin': '^3.0.0',
+                vite: '^8.0.0'
+            }
+        })
+        writeProjectFile(root, 'vite.config.ts', `import { defineConfig } from 'vite'
+
+export default defineConfig({
+    plugins: []
+})
+`)
+
+        const staticPlan = createSetupPlan({
+            root,
+            framework: 'laravel',
+            mode: 'static',
+            minimal: true
+        })
+
+        expect(staticPlan.mode).toBe('static')
+        expect(staticPlan.files.find((file) => file.path === 'vite.config.ts')?.content).toContain("masterCSS({ mode: 'static' })")
+        expect(() => createSetupPlan({
+            root,
+            framework: 'laravel',
+            mode: 'runtime',
+            minimal: true
+        })).toThrow('--mode runtime is not supported for laravel')
+    })
+
     test('plans Lit projects with runtime client types and shadow-root setup', () => {
         const root = createTempProject('master-css-create-lit-', {
             dependencies: {
@@ -1022,6 +1096,104 @@ export default nextConfig;
 
         expect(readProjectFile(root, 'next.config.mjs')).toContain("import { withMasterCSS } from '@master/css.next'")
         expect(readProjectFile(root, 'next.config.mjs')).toContain('export default withMasterCSS(nextConfig);')
+    })
+
+    test('writes async Next.js config for static mode', () => {
+        const root = createTempProject('master-css-create-next-static-', {
+            dependencies: {
+                next: '^16.0.0'
+            }
+        })
+
+        applySetup({
+            root,
+            framework: 'nextjs',
+            mode: 'static',
+            minimal: true,
+            install: false
+        })
+
+        expect(readProjectFile(root, 'next.config.js')).toContain("const nextConfig = await withMasterCSS({}, { mode: 'static' })")
+    })
+
+    test('writes synchronous Next.js config for runtime mode', () => {
+        const root = createTempProject('master-css-create-next-runtime-', {
+            dependencies: {
+                next: '^16.0.0'
+            }
+        })
+
+        applySetup({
+            root,
+            framework: 'nextjs',
+            mode: 'runtime',
+            minimal: true,
+            install: false
+        })
+
+        const config = readProjectFile(root, 'next.config.js')
+        expect(config).toContain("const nextConfig = withMasterCSS({}, { mode: 'runtime' })")
+        expect(config).not.toContain('await withMasterCSS')
+    })
+
+    test('writes requested modes into supported integration configs', () => {
+        const cases = [
+            {
+                framework: 'vite' as const,
+                file: 'vite.config.js',
+                expected: "masterCSS({ mode: 'progressive' })"
+            },
+            {
+                framework: 'nuxt' as const,
+                file: 'nuxt.config.ts',
+                expected: "['@master/css.nuxt', { mode: 'runtime' }]",
+                mode: 'runtime' as const
+            },
+            {
+                framework: 'astro' as const,
+                file: 'astro.config.mjs',
+                expected: "masterCSS({ mode: 'pre-render' })",
+                mode: 'pre-render' as const
+            },
+            {
+                framework: 'rspack' as const,
+                file: 'rspack.config.mjs',
+                expected: "new MasterCSSPlugin({ mode: 'static' })",
+                mode: 'static' as const
+            },
+            {
+                framework: 'rsbuild' as const,
+                file: 'rsbuild.config.ts',
+                expected: "config.plugins.push(new MasterCSSPlugin({ mode: 'runtime' }))",
+                mode: 'runtime' as const
+            }
+        ]
+
+        for (const eachCase of cases) {
+            const root = createTempProject(`master-css-create-${eachCase.framework}-mode-`)
+            applySetup({
+                root,
+                framework: eachCase.framework,
+                mode: eachCase.mode ?? 'progressive',
+                minimal: true,
+                install: false
+            })
+
+            expect(readProjectFile(root, eachCase.file)).toContain(eachCase.expected)
+        }
+    })
+
+    test('rejects rendering mode for unsupported setup targets', () => {
+        const root = createTempProject('master-css-create-unsupported-mode-')
+
+        for (const framework of ['angular', 'svelte', 'webpack', 'none'] as const) {
+            expect(() => createSetupPlan({
+                root,
+                framework,
+                mode: 'static',
+                minimal: true
+            })).toThrow(`--mode is not supported for ${framework}`)
+        }
     })
 
     test('delegates SvelteKit setup to @master/css-sv', () => {

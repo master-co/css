@@ -26,6 +26,14 @@ Without `--yes`, TTY sessions ask about ESLint, MCP, AI guidance, and dependency
 
 Use `--minimal` for core framework setup only, or disable individual recommended integrations with `--no-eslint`, `--no-mcp`, or `--no-ai`.
 
+Use `--mode <mode>` when the framework integration should be configured for a specific rendering mode during setup:
+
+```bash
+npm create @master/css@rc -- --framework nextjs --mode static --yes
+```
+
+Supported `--mode` values are `runtime`, `static`, `progressive`, and `pre-render`. Mode setup is supported for `vite`, `react`, `react-router`, `tanstack-start`, `vue`, `nextjs`, `nuxt`, `astro`, `rspack`, `rsbuild`, `laravel`, and `lit`; Laravel supports `static` only.
+
 If you do not have a project yet, create one first:
 
 ```bash
@@ -52,10 +60,14 @@ npx @master/create-css@rc add --no-mcp --no-ai
 npx @master/create-css@rc add --json --minimal --eslint
 ```
 
+```bash
+npx @master/create-css@rc add --framework nextjs --mode runtime --yes
+```
+
 Supported `--framework` values:
 
 ```txt
-auto, vite, react, react-router, vue, nextjs, svelte, nuxt, astro, webpack, rspack, rsbuild, laravel, lit, angular, none
+auto, vite, react, react-router, tanstack-start, vue, nextjs, svelte, nuxt, astro, webpack, rspack, rsbuild, laravel, lit, angular, none
 ```
 
 SvelteKit setup is delegated to the Svelte CLI add-on:

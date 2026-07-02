@@ -14,33 +14,13 @@
     <Step $row>
         <StepL>
             ### <StepNum />Add Master CSS
-            Run the installer from the Next.js project root.
-        </StepL>
-        <StepR>
-            ```bash name=Terminal
-            npm create @master/css@rc -- --framework nextjs --yes
-            ```
-        </StepR>
-    </Step>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Set up static mode
-            Change the installer-generated Next.js config to `static` mode. Static setup writes the generated stylesheet before Next.js loads the config, so use `await`.
+            Run the installer in static mode from the Next.js project root. Static setup writes the generated stylesheet before Next.js loads the config.
 
             (i) Keep the installer-added `@import '@master/css';` in `app/globals.css`. Static mode replaces that import with the generated stylesheet and uses source scanning as the correctness baseline.
         </StepL>
         <StepR>
-            ```js name=next.config.js
-            import { withMasterCSS } from '@master/css.next'
-
-            /** @type {import('next').NextConfig} */
-            const nextConfig = await withMasterCSS({
-                /* your Next.js config */
-            }, {
-                mode: 'static'
-            })
-
-            export default nextConfig
+            ```bash name=Terminal
+            npm create @master/css@rc -- --framework nextjs --mode static --yes
             ```
         </StepR>
     </Step>

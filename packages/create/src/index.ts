@@ -2,6 +2,7 @@ import { spawnSync } from 'node:child_process'
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { dirname, join, resolve } from 'node:path'
 import { AGENT_RULES_BLOCK, CANONICAL_ESLINT_CONFIG, MASTER_CSS_PACKAGES, MASTER_CSS_VERSION } from './constants'
+import { resolveRenderingMode, type RenderingMode } from './modes'
 import {
     addAngularRuntimeSetup,
     addMasterCSSAstroIntegration,
@@ -32,6 +33,7 @@ export type Framework = 'none' | 'vite' | 'react' | 'react-router' | 'tanstack-s
 export type FrameworkOption = Framework | 'auto'
 export type PackageManager = 'npm' | 'pnpm' | 'yarn' | 'bun'
 export type FileAction = 'create' | 'update' | 'skip'
+export type { RenderingMode }
 
 export interface SetupOptions {
     root?: string
@@ -43,6 +45,7 @@ export interface SetupOptions {
     install?: PackageManager | false
     yes?: boolean
     packageTag?: string
+    mode?: RenderingMode
 }
 
 export interface PlannedDependency {
@@ -72,6 +75,7 @@ export interface SetupPlan {
     files: PlannedFileChange[]
     commands: PlannedCommand[]
     warnings: string[]
+    mode?: RenderingMode
     summary: {
         dependencies: number
         filesToCreate: number
@@ -100,6 +104,8 @@ export function createSetupPlan(options: SetupOptions = {}): SetupPlan {
     const packageJSON = readPackageJSON(root)
     const packageManager = resolvePackageManager(root, packageJSON, options.install || undefined)
     const framework = resolveFramework(root, packageJSON, options.framework || 'auto')
+    const mode = resolveRenderingMode(options.mode)
+    assertFrameworkSupportsMode(framework, mode)
     const version = options.packageTag || MASTER_CSS_VERSION
     const eslint = resolveRecommendedOption(options.eslint, options.minimal)
     const mcp = resolveRecommendedOption(options.mcp, options.minimal)
@@ -124,7 +130,7 @@ export function createSetupPlan(options: SetupOptions = {}): SetupPlan {
         for (const dependency of dependenciesForFramework(framework, version)) {
             pushDependency(dependencies, dependency.name, dependency.dev, dependency.version)
         }
-        files.push(...filesForFramework(root, framework, warnings))
+        files.push(...filesForFramework(root, framework, warnings, mode))
     }
 
     if (eslint) {
@@ -162,6 +168,7 @@ export function createSetupPlan(options: SetupOptions = {}): SetupPlan {
         files,
         commands,
         warnings,
+        ...(mode ? { mode } : {}),
         summary: {
             dependencies: dependencies.length,
             filesToCreate: files.filter((file) => file.action === 'create').length,
@@ -200,21 +207,21 @@ export function applySetup(options: SetupOptions = {}) {
     return plan
 }
 
-function filesForFramework(root: string, framework: Framework, warnings: string[]): PlannedFileChange[] {
+function filesForFramework(root: string, framework: Framework, warnings: string[], mode?: RenderingMode): PlannedFileChange[] {
     switch (framework) {
         case 'vite':
             return [
-                planTextFile(root, firstExistingPath(root, ['vite.config.ts', 'vite.config.js', 'vite.config.mjs'], 'vite.config.js'), addMasterCSSVitePlugin, createViteConfig(), 'Register the Master CSS Vite plugin.'),
+                planTextFile(root, firstExistingPath(root, ['vite.config.ts', 'vite.config.js', 'vite.config.mjs'], 'vite.config.js'), (content) => addMasterCSSVitePlugin(content, mode), createViteConfig(mode), 'Register the Master CSS Vite plugin.'),
                 planTextFile(root, firstExistingPath(root, ['src/style.css', 'src/index.css', 'src/main.css'], 'src/style.css'), addMasterCSSImportToStylesheet, createMasterCSSStylesheet(), 'Create or update the project CSS entry.')
             ]
         case 'react':
             return [
-                planTextFile(root, firstExistingPath(root, ['vite.config.ts', 'vite.config.js', 'vite.config.mjs'], 'vite.config.js'), addMasterCSSVitePlugin, createViteConfig(), 'Register the Master CSS Vite plugin.'),
+                planTextFile(root, firstExistingPath(root, ['vite.config.ts', 'vite.config.js', 'vite.config.mjs'], 'vite.config.js'), (content) => addMasterCSSVitePlugin(content, mode), createViteConfig(mode), 'Register the Master CSS Vite plugin.'),
                 planTextFile(root, firstExistingPath(root, ['src/index.css', 'src/style.css'], 'src/index.css'), addMasterCSSImportToStylesheet, createMasterCSSStylesheet(), 'Create or update the React project CSS entry.')
             ]
         case 'react-router': {
             const files: PlannedFileChange[] = [
-                planTextFile(root, firstExistingPath(root, ['vite.config.ts', 'vite.config.js', 'vite.config.mjs'], 'vite.config.ts'), addMasterCSSVitePlugin, createViteConfig(), 'Register the Master CSS Vite plugin.'),
+                planTextFile(root, firstExistingPath(root, ['vite.config.ts', 'vite.config.js', 'vite.config.mjs'], 'vite.config.ts'), (content) => addMasterCSSVitePlugin(content, mode), createViteConfig(mode), 'Register the Master CSS Vite plugin.'),
                 planTextFile(root, 'app/app.css', addMasterCSSImportToStylesheet, createMasterCSSStylesheet(), 'Create or update the React Router app stylesheet entry.')
             ]
             const rootEntryPath = findExistingPath(root, ['app/root.tsx', 'app/root.jsx', 'app/root.ts', 'app/root.js'])
@@ -226,8 +233,9 @@ function filesForFramework(root: string, framework: Framework, warnings: string[
             return files
         }
         case 'tanstack-start': {
+            const pluginMode = mode ?? 'static'
             const files: PlannedFileChange[] = [
-                planTextFile(root, firstExistingPath(root, ['vite.config.ts', 'vite.config.js', 'vite.config.mjs'], 'vite.config.ts'), addMasterCSSTanStackStartVitePlugin, createStaticViteConfig(), 'Register the Master CSS Vite plugin in static mode.'),
+                planTextFile(root, firstExistingPath(root, ['vite.config.ts', 'vite.config.js', 'vite.config.mjs'], 'vite.config.ts'), (content) => addMasterCSSTanStackStartVitePlugin(content, pluginMode), createViteConfig(pluginMode), `Register the Master CSS Vite plugin in ${pluginMode} mode.`),
                 planTextFile(root, 'src/styles/app.css', addMasterCSSImportToStylesheet, createMasterCSSStylesheet(), 'Create or update the TanStack Start stylesheet entry.')
             ]
             const rootEntryPath = findExistingPath(root, ['src/routes/__root.tsx', 'src/routes/__root.jsx', 'src/routes/__root.ts', 'src/routes/__root.js'])
@@ -240,22 +248,22 @@ function filesForFramework(root: string, framework: Framework, warnings: string[
         }
         case 'vue':
             return [
-                planTextFile(root, firstExistingPath(root, ['vite.config.ts', 'vite.config.js', 'vite.config.mjs'], 'vite.config.ts'), addMasterCSSVitePlugin, createViteConfig(), 'Register the Master CSS Vite plugin.'),
+                planTextFile(root, firstExistingPath(root, ['vite.config.ts', 'vite.config.js', 'vite.config.mjs'], 'vite.config.ts'), (content) => addMasterCSSVitePlugin(content, mode), createViteConfig(mode), 'Register the Master CSS Vite plugin.'),
                 planTextFile(root, firstExistingPath(root, ['src/assets/main.css', 'src/style.css', 'src/main.css'], 'src/assets/main.css'), addMasterCSSImportToStylesheet, createMasterCSSStylesheet(), 'Create or update the Vue project CSS entry.')
             ]
         case 'nextjs':
             return [
-                planTextFile(root, firstExistingPath(root, ['next.config.ts', 'next.config.mjs', 'next.config.js'], 'next.config.js'), addMasterCSSNextConfig, createNextConfig(), 'Register the Master CSS Next.js adapter.'),
+                planTextFile(root, firstExistingPath(root, ['next.config.ts', 'next.config.mjs', 'next.config.js'], 'next.config.js'), (content) => addMasterCSSNextConfig(content, mode), createNextConfig(mode), 'Register the Master CSS Next.js adapter.'),
                 planTextFile(root, 'app/globals.css', addMasterCSSImportToStylesheet, createMasterCSSStylesheet(), 'Create or update the Next.js global stylesheet entry.')
             ]
         case 'nuxt':
             return [
-                planTextFile(root, firstExistingPath(root, ['nuxt.config.ts', 'nuxt.config.js'], 'nuxt.config.ts'), addMasterCSSNuxtModule, createNuxtConfig(), 'Register the Master CSS Nuxt module.'),
+                planTextFile(root, firstExistingPath(root, ['nuxt.config.ts', 'nuxt.config.js'], 'nuxt.config.ts'), (content) => addMasterCSSNuxtModule(content, mode), createNuxtConfig(mode), 'Register the Master CSS Nuxt module.'),
                 planTextFile(root, 'assets/css/master.css', addMasterCSSImportToStylesheet, createMasterCSSStylesheet(), 'Create the Nuxt CSS entry referenced by nuxt.config.')
             ]
         case 'astro':
             return [
-                planTextFile(root, firstExistingPath(root, ['astro.config.mjs', 'astro.config.js', 'astro.config.ts'], 'astro.config.mjs'), addMasterCSSAstroIntegration, createAstroConfig(), 'Register the Master CSS Astro integration.'),
+                planTextFile(root, firstExistingPath(root, ['astro.config.mjs', 'astro.config.js', 'astro.config.ts'], 'astro.config.mjs'), (content) => addMasterCSSAstroIntegration(content, mode), createAstroConfig(mode), 'Register the Master CSS Astro integration.'),
                 planTextFile(root, 'src/styles/global.css', addMasterCSSImportToStylesheet, createMasterCSSStylesheet(), 'Create the Astro project CSS entry.')
             ]
         case 'laravel': {
@@ -272,7 +280,7 @@ function filesForFramework(root: string, framework: Framework, warnings: string[
         }
         case 'lit': {
             const files = [
-                planTextFile(root, firstExistingPath(root, ['vite.config.ts', 'vite.config.js', 'vite.config.mjs'], 'vite.config.ts'), addMasterCSSVitePlugin, createViteConfig(), 'Register the Master CSS Vite plugin.'),
+                planTextFile(root, firstExistingPath(root, ['vite.config.ts', 'vite.config.js', 'vite.config.mjs'], 'vite.config.ts'), (content) => addMasterCSSVitePlugin(content, mode), createViteConfig(mode), 'Register the Master CSS Vite plugin.'),
                 planTextFile(root, 'src/index.css', addMasterCSSImportToStylesheet, createMasterCSSStylesheet(), 'Create or update the Lit project CSS entry.'),
                 planTextFile(root, 'src/vite-env.d.ts', addViteClientTypes, `/// <reference types="vite/client" />
 /// <reference types="@master/css-integration/client" />
@@ -300,12 +308,12 @@ function filesForFramework(root: string, framework: Framework, warnings: string[
         }
         case 'rspack':
             return [
-                planTextFile(root, firstExistingPath(root, ['rspack.config.ts', 'rspack.config.mts', 'rspack.config.mjs', 'rspack.config.js', 'rspack.config.cjs'], 'rspack.config.mjs'), addMasterCSSRspackPlugin, createRspackConfig(), 'Register the Master CSS Webpack-compatible plugin in the Rspack config.'),
+                planTextFile(root, firstExistingPath(root, ['rspack.config.ts', 'rspack.config.mts', 'rspack.config.mjs', 'rspack.config.js', 'rspack.config.cjs'], 'rspack.config.mjs'), (content) => addMasterCSSRspackPlugin(content, mode), createRspackConfig(mode), 'Register the Master CSS Webpack-compatible plugin in the Rspack config.'),
                 planTextFile(root, 'src/index.css', addMasterCSSImportToStylesheet, createMasterCSSStylesheet(), 'Create or update the project CSS entry for Rspack.')
             ]
         case 'rsbuild':
             return [
-                planTextFile(root, firstExistingPath(root, ['rsbuild.config.ts', 'rsbuild.config.mts', 'rsbuild.config.mjs', 'rsbuild.config.js'], 'rsbuild.config.ts'), addMasterCSSRsbuildPlugin, createRsbuildConfig(), 'Register the Master CSS Webpack-compatible plugin through Rsbuild tools.rspack.'),
+                planTextFile(root, firstExistingPath(root, ['rsbuild.config.ts', 'rsbuild.config.mts', 'rsbuild.config.mjs', 'rsbuild.config.js'], 'rsbuild.config.ts'), (content) => addMasterCSSRsbuildPlugin(content, mode), createRsbuildConfig(mode), 'Register the Master CSS Webpack-compatible plugin through Rsbuild tools.rspack.'),
                 planTextFile(root, 'src/index.css', addMasterCSSImportToStylesheet, createMasterCSSStylesheet(), 'Create or update the project CSS entry for Rsbuild.')
             ]
         case 'webpack':
@@ -317,6 +325,17 @@ function filesForFramework(root: string, framework: Framework, warnings: string[
             return [
                 planTextFile(root, 'src/master.css', addMasterCSSImportToStylesheet, createMasterCSSStylesheet(), 'Create a standalone Master CSS stylesheet entry.')
             ]
+    }
+}
+
+function assertFrameworkSupportsMode(framework: Framework, mode: RenderingMode | undefined) {
+    if (!mode) return
+    if (framework === 'laravel') {
+        if (mode === 'static') return
+        throw new Error(`--mode ${mode} is not supported for laravel. The Laravel installer only supports --mode static.`)
+    }
+    if (framework === 'angular' || framework === 'svelte' || framework === 'webpack' || framework === 'none') {
+        throw new Error(`--mode is not supported for ${framework}. Supported frameworks: vite, react, react-router, tanstack-start, vue, nextjs, nuxt, astro, rspack, rsbuild, laravel, lit.`)
     }
 }
 
