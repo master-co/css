@@ -23,7 +23,7 @@
         "test:llms": "tsx --test scripts/generate-llms-txt.test.ts",
         "test:docs-examples": "tsx --test scripts/validate-doc-examples.test.ts",
         "test:syntax": "tsx --test components/SyntaxTr.test.ts",
-        "test:home": "tsx --test utils/home-content.test.ts utils/home-browser-css-cost.test.ts",
+        "test:home": "tsx --test utils/home-content.test.ts utils/home-browser-css-cost.test.ts utils/home-page-css-size.test.ts",
         "start": "wrangler pages dev site/out --cwd .. --kv PLAY_SHARES",
         "lint": "eslint .",
         "type-check": "tsc --noEmit"
