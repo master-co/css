@@ -15,6 +15,7 @@ type BenchmarkSizeChartLabels = {
 
 const barDuration = 0.82
 const rowDelayStep = 0.085
+const axisTickTarget = 4
 
 const brandColorClasses: Record<string, string> = {
     beryl: 'bg:green',
@@ -45,6 +46,7 @@ export default function BenchmarkSizeChart({
         () => pageCSSSize.modes.find((mode) => mode.id === activeModeId) || pageCSSSize.modes[0],
         [activeModeId, pageCSSSize.modes]
     )
+    const axis = useMemo(() => createBenchmarkAxis(activeMode.maxBytes), [activeMode.maxBytes])
     const revealDelay = (activeMode.rows.length - 1) * rowDelayStep + barDuration + 0.12
 
     useEffect(() => {
@@ -82,17 +84,51 @@ export default function BenchmarkSizeChart({
                     })}
                 </div>
 
-                <div className="grid gap:2xs" key={activeMode.id}>
-                    {activeMode.rows.map((row, index) => (
-                        <PageCSSSizeRow
-                            inView={inView}
-                            index={index}
-                            key={row.name}
-                            labels={labels}
-                            reduceMotion={Boolean(reduceMotion)}
-                            row={row}
-                            showValues={showValues} />
-                    ))}
+                <div className="rel" key={activeMode.id}>
+                    <div
+                        aria-hidden="true"
+                        className="abs left:0 top:0 w:30% pointer-events:none w:60%@md w:72%@lg"
+                        style={{ bottom: '1.5rem' }}>
+                        {axis.ticks.map((tick) => (
+                            <span
+                                className="abs bottom:0 top:0 w:1px bg:line-muted opacity:.42"
+                                data-home-axis-guide
+                                key={tick.label}
+                                style={{ left: `${tick.percent}%` }} />
+                        ))}
+                    </div>
+
+                    <div className="rel z:1 grid gap:2xs">
+                        {activeMode.rows.map((row, index) => (
+                            <PageCSSSizeRow
+                                axisMaxBytes={axis.maxBytes}
+                                inView={inView}
+                                index={index}
+                                key={row.name}
+                                labels={labels}
+                                reduceMotion={Boolean(reduceMotion)}
+                                row={row}
+                                showValues={showValues} />
+                        ))}
+                    </div>
+
+                    <div className="rel h:5x w:30% mt:xs w:60%@md w:72%@lg">
+                        {axis.ticks.map((tick, index) => {
+                            const compactTick = index === 0 || index === Math.floor((axis.ticks.length - 1) / 2) || index === axis.ticks.length - 1
+                            return (
+                                <span
+                                    className={clsx('abs top:0 font:2xs white-space:nowrap text:muted', !compactTick && 'hidden@<md')}
+                                    data-home-axis-label
+                                    key={tick.label}
+                                    style={{
+                                        left: `${tick.percent}%`,
+                                        transform: tick.percent === 0 ? undefined : tick.percent === 100 ? 'translateX(-100%)' : 'translateX(-50%)'
+                                    }}>
+                                    {tick.label}
+                                </span>
+                            )
+                        })}
+                    </div>
                 </div>
             </div>
         </div>
@@ -100,6 +136,7 @@ export default function BenchmarkSizeChart({
 }
 
 function PageCSSSizeRow({
+    axisMaxBytes,
     inView,
     index,
     labels,
@@ -107,6 +144,7 @@ function PageCSSSizeRow({
     row,
     showValues
 }: {
+    axisMaxBytes: number
     inView: boolean
     index: number
     labels: BenchmarkSizeChartLabels
@@ -117,7 +155,8 @@ function PageCSSSizeRow({
     const brand = Object.values(brands).find((eachBrand) => eachBrand.name === row.name)
     const BrandIcon = brand?.src
     const colorClassName = row.isMasterCSS ? 'bg:yellow' : brandColorClasses[brand?.color || ''] || 'bg:blue'
-    const markerPercent = Math.max(0, Math.min(100, row.percent))
+    const rowPercent = toPercent(row.bytes, axisMaxBytes)
+    const markerPercent = Math.max(0, Math.min(100, rowPercent))
     const ratioLabel = `${row.ratio.toFixed(1)}${labels.largerSuffix}`
 
     return (
@@ -125,7 +164,7 @@ function PageCSSSizeRow({
             <div className="rel min-h:11x">
                 <div className="rel h:11x w:30% w:60%@md w:72%@lg">
                     <motion.div
-                        animate={{ width: reduceMotion || inView ? `${row.percent}%` : '100%' }}
+                        animate={{ width: reduceMotion || inView ? `${rowPercent}%` : '100%' }}
                         className={clsx('abs inset:50%|auto|auto|0 h:12px min-w:1px r:xs transform:translateY(-50%)', colorClassName)}
                         data-home-bar-fill
                         initial={reduceMotion ? false : { width: '100%' }}
@@ -155,4 +194,49 @@ function PageCSSSizeRow({
             </div>
         </div>
     )
+}
+
+type BenchmarkAxisTick = {
+    label: string
+    percent: number
+    valueKilobytes: number
+}
+
+function createBenchmarkAxis(maxBytes: number) {
+    const maxKilobytes = Math.max(1, maxBytes / 1000)
+    const step = getNiceAxisStep(maxKilobytes / axisTickTarget)
+    const axisMaxKilobytes = Math.ceil(maxKilobytes / step) * step
+    const ticks: BenchmarkAxisTick[] = []
+
+    for (let valueKilobytes = 0; valueKilobytes <= axisMaxKilobytes + step / 2; valueKilobytes += step) {
+        ticks.push({
+            label: `${formatAxisNumber(valueKilobytes)}kB`,
+            percent: toPercent(valueKilobytes, axisMaxKilobytes),
+            valueKilobytes
+        })
+    }
+
+    return {
+        maxBytes: axisMaxKilobytes * 1000,
+        ticks
+    }
+}
+
+function getNiceAxisStep(targetKilobytes: number) {
+    const magnitude = 10 ** Math.floor(Math.log10(targetKilobytes))
+    const normalized = targetKilobytes / magnitude
+
+    if (normalized <= 1) return magnitude
+    if (normalized <= 2) return 2 * magnitude
+    if (normalized <= 5) return 5 * magnitude
+    return 10 * magnitude
+}
+
+function formatAxisNumber(value: number) {
+    return new Intl.NumberFormat('en-US', { maximumFractionDigits: value >= 10 ? 0 : 1 }).format(value)
+}
+
+function toPercent(value: number, max: number) {
+    if (!Number.isFinite(value) || !Number.isFinite(max) || max <= 0) return 0
+    return Math.max(0, Math.min(100, value / max * 100))
 }
