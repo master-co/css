@@ -2,24 +2,20 @@ import {
     IconArrowRight,
     IconCode,
     IconDeviceDesktopAnalytics,
-    IconLayersIntersect,
     IconPalette,
-    IconSparkles,
-    IconTools
+    IconSparkles
 } from '@tabler/icons-react'
 import type { ComponentType, ReactNode } from 'react'
 import clsx from 'clsx'
 import Link from '~/internal/components/Link'
 import { MotionHoverSurface, MotionSection, MotionVisualFrame } from './HomeMotion'
-import { bentoTiles, homeInteractions, homeSections, sectionBodyClassName, sectionHeadingClassName, sectionLabelClassName, type BentoIconId, type BentoTileContent, type BentoVisualType, type Translate } from './home-content'
+import { bentoTiles, homeInteractions, homeSections, sectionBodyClassName, sectionHeadingClassName, type BentoIconId, type BentoTileContent, type BentoVisualType, type Translate } from './home-content'
 
 const bentoIcons = {
     code: IconCode,
     desktop: IconDeviceDesktopAnalytics,
-    layers: IconLayersIntersect,
     palette: IconPalette,
-    sparkles: IconSparkles,
-    tools: IconTools
+    sparkles: IconSparkles
 } satisfies Record<BentoIconId, ComponentType<{ className?: string }>>
 
 export default function BentoSection({ t }: { t: Translate }) {
@@ -31,7 +27,7 @@ export default function BentoSection({ t }: { t: Translate }) {
                         {t('A complete styling system for modern interfaces.')}
                     </h2>
                     <p className={sectionBodyClassName}>
-                        {t('Compose layout, tokens, states, delivery, and tooling from one readable syntax, whether you work in markup or stylesheets.')}
+                        {t('Compose layout, tokens, responsive rules, and interaction states from one readable syntax.')}
                     </p>
                 </div>
 
@@ -133,33 +129,8 @@ function BentoVisual({ accent, type }: { accent: string; type: BentoVisualType }
                 ))}
             </div>
         )
-    } else if (type === 'delivery') {
-        content = (
-            <div className="flex items-center gap:xs">
-                {['HTML', 'CSS', 'Runtime'].map((label, index) => (
-                    <div className="contents" key={label}>
-                        <div className={clsx('px:xs py:2xs r:sm font:xs bg:surface-muted text:strong', index === 1 && accent, index === 1 && 'fg:white')}>{label}</div>
-                        {index < 2 && <div className="flex:1 h:1px bg:line-base" />}
-                    </div>
-                ))}
-            </div>
-        )
     } else {
-        content = (
-            <div className="grid gap:xs">
-                {[
-                    ['completion', 'bg:green'],
-                    ['diagnostic', 'bg:yellow'],
-                    ['sorted', accent]
-                ].map(([label, color]) => (
-                    <div className="flex items-center gap:xs" key={label}>
-                        <span className={clsx('size:2x round', color)} />
-                        <span className="font:xs text:muted">{label}</span>
-                        <span className="h:2x w:20x ml:auto r:xs bg:surface-muted" />
-                    </div>
-                ))}
-            </div>
-        )
+        content = null
     }
 
     return <div className="grid content-center min-h:16x mt:lg">{content}</div>

@@ -2,9 +2,11 @@ export type Translate = (text: string) => string
 
 export type BentoAccentClassName = 'bg:blue' | 'bg:cyan' | 'bg:green' | 'bg:red' | 'bg:yellow'
 
-export type BentoIconId = 'code' | 'desktop' | 'layers' | 'palette' | 'sparkles' | 'tools'
+export type BentoIconId = 'code' | 'desktop' | 'palette' | 'sparkles'
 
-export type BentoVisualType = 'delivery' | 'markup' | 'responsive' | 'states' | 'tokens' | 'tooling'
+export type BentoVisualType = 'markup' | 'responsive' | 'states' | 'tokens'
+
+export type DeliveryModeIconId = 'bolt' | 'fileCode' | 'server' | 'stack'
 
 export type HomeInteractionId = typeof homeInteractions[keyof typeof homeInteractions]
 
@@ -21,6 +23,22 @@ export interface BentoTileContent {
     sample: readonly string[]
 }
 
+export interface DeliveryModeContent {
+    title: string
+    body: string
+    href: string
+    icon: DeliveryModeIconId
+    accent: BentoAccentClassName
+    signal: string
+}
+
+export interface DiagnosticSignalContent {
+    title: string
+    body: string
+    accent: BentoAccentClassName
+    status: string
+}
+
 export const sectionLabelClassName = 'font:sm tracking:wider text:muted'
 export const sectionHeadingClassName = 'max-w:32ch mx:0 mb:0 mt:md font:3xl font:regular leading:1.08 tracking:tight text:strong text-balance font:6xl@md'
 export const sectionBodyClassName = 'max-w:72ch mb:0 mt:lg text:lg text:muted'
@@ -29,6 +47,8 @@ export const homeSections = {
     hero: 'hero',
     cssCost: 'css-cost',
     designSystem: 'design-system',
+    deliveryModes: 'delivery-modes',
+    codeDiagnostics: 'code-diagnostics',
     getStarted: 'get-started'
 } as const
 
@@ -100,25 +120,61 @@ export const bentoTiles = [
         span: 'grid-col-span:7@lg',
         visual: 'states',
         sample: ['bg:yellow:hover', 'hidden@print', 'fg:white@dark']
-    },
-    {
-        title: 'Delivery modes',
-        body: 'Choose runtime, static, server, or progressive rendering from the same styling vocabulary.',
-        href: '/guide/rendering-modes',
-        icon: 'layers',
-        accent: 'bg:red',
-        span: 'grid-col-span:6@lg',
-        visual: 'delivery',
-        sample: ['Runtime', 'Static', 'Progressive']
-    },
-    {
-        title: 'Editor and linting',
-        body: 'Completion, diagnostics, sorting, and class policy checks keep large teams working in one syntax.',
-        href: '/guide/language-service',
-        icon: 'tools',
-        accent: 'bg:green',
-        span: 'grid-col-span:6@lg',
-        visual: 'tooling',
-        sample: ['completion', 'diagnostics', 'sort']
     }
 ] satisfies readonly BentoTileContent[]
+
+export const deliveryModes = [
+    {
+        title: 'Runtime rendering',
+        body: 'Generate rules from live DOM changes while teams keep moving.',
+        href: '/guide/rendering-modes#runtime-rendering',
+        icon: 'bolt',
+        accent: 'bg:yellow',
+        signal: 'Live DOM'
+    },
+    {
+        title: 'Static rendering',
+        body: 'Scan source once and ship a compact CSS file with production builds.',
+        href: '/guide/rendering-modes#static-rendering',
+        icon: 'fileCode',
+        accent: 'bg:blue',
+        signal: 'Build CSS'
+    },
+    {
+        title: 'Server rendering',
+        body: 'Resolve first-page styles during SSR or SSG so HTML arrives already styled.',
+        href: '/guide/rendering-modes#pre-rendering-ssg-ssr',
+        icon: 'server',
+        accent: 'bg:green',
+        signal: 'SSR / SSG'
+    },
+    {
+        title: 'Progressive rendering',
+        body: 'Pre-render known classes, then let runtime hydration adopt late UI states.',
+        href: '/guide/rendering-modes#progressive-rendering',
+        icon: 'stack',
+        accent: 'bg:red',
+        signal: 'Hybrid'
+    }
+] satisfies readonly DeliveryModeContent[]
+
+export const diagnosticSignals = [
+    {
+        title: 'Project scan',
+        body: 'Find stylesheet entries, source coverage, and missing CSS before edits start.',
+        accent: 'bg:blue',
+        status: 'context'
+    },
+    {
+        title: 'Class diagnostics',
+        body: 'Catch invalid classes, conflicts, non-canonical syntax, and unstable order.',
+        accent: 'bg:yellow',
+        status: 'lint'
+    },
+    {
+        title: 'Safe fix preview',
+        body: 'Return a reviewable diff before an agent writes fixes back to the workspace.',
+        accent: 'bg:green',
+        status: 'preview'
+    }
+] satisfies readonly DiagnosticSignalContent[]
