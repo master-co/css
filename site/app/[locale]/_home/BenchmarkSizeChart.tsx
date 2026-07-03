@@ -63,14 +63,14 @@ export default function BenchmarkSizeChart({
     return (
         <div ref={chartRef} className="rel py:md">
             <div className="flex flex-col gap:lg">
-                <div className="flex w:fit p:5px r:lg surface:muted">
+                <div className="flex w:fit p:3px rounded surface:muted">
                     {pageCSSSize.modes.map((mode) => {
                         const active = mode.id === activeMode.id
                         return (
                             <button
                                 aria-pressed={active}
                                 className={clsx(
-                                    'h:9x px:md r:sm outline-offset:2xs font:sm transition:background-color|fast|smooth,color|fast|smooth outline:2px|solid|yellow:focus-visible',
+                                    'h:8x px:sm rounded outline-offset:2xs font:xs transition:background-color|fast|smooth,color|fast|smooth outline:2px|solid|yellow:focus-visible',
                                     active ? 'surface:raised text:strong shadow:xs' : 'text:muted text:strong:hover'
                                 )}
                                 key={mode.id}
@@ -122,11 +122,11 @@ function PageCSSSizeRow({
 
     return (
         <div className="py:0">
-            <div className="rel min-h:10x">
-                <div className="rel h:10x w:30% w:60%@md w:72%@lg">
+            <div className="rel min-h:11x">
+                <div className="rel h:11x w:30% w:60%@md w:72%@lg">
                     <motion.div
                         animate={{ width: reduceMotion || inView ? `${row.percent}%` : '100%' }}
-                        className={clsx('abs inset:50%|auto|auto|0 h:10px min-w:1px r:xs transform:translateY(-50%)', colorClassName)}
+                        className={clsx('abs inset:50%|auto|auto|0 h:12px min-w:1px r:xs transform:translateY(-50%)', colorClassName)}
                         data-home-bar-fill
                         initial={reduceMotion ? false : { width: '100%' }}
                         transition={{ delay: index * rowDelayStep, duration: barDuration, ease: [0.22, 1, 0.36, 1] }} />
@@ -137,17 +137,17 @@ function PageCSSSizeRow({
                         initial={reduceMotion ? false : { left: '100%' }}
                         style={{ transform: 'translate(0, -50%)' }}
                         transition={{ delay: index * rowDelayStep, duration: barDuration, ease: [0.22, 1, 0.36, 1] }}>
-                        <span className="grid flex:0|0|auto place-content:center size:7x r:sm outline:1px|solid|subtle bg:surface-base shadow:xs size:8x@md">
-                            {BrandIcon && <BrandIcon width={20} height={20} className={clsx('mx:0', brand?.className)} />}
+                        <span className="grid flex:0|0|auto place-content:center size:8x r:sm outline:1px|solid|subtle bg:surface-base shadow:xs size:9x@md">
+                            {BrandIcon && <BrandIcon width={22} height={22} className={clsx('mx:0', brand?.className)} />}
                         </span>
-                        <span className="font:xs text:strong font:sm@md">{row.name}</span>
+                        <span className="font:sm text:strong">{row.name}</span>
                         <motion.span
                             animate={showValues ? { opacity: 1, y: 0 } : { opacity: 0, y: 4 }}
                             className="inline-flex items-baseline gap:2xs gap:xs@md"
                             data-home-value
                             initial={reduceMotion ? false : { opacity: 0, y: 4 }}
                             transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}>
-                            <span className={clsx('font-weight:560 font:md text:strong font:lg@md', row.isMasterCSS && 'text:yellow')}>{row.valueLabel}</span>
+                            <span className={clsx('font-weight:560 font:lg text:strong font:xl@md', row.isMasterCSS && 'text:yellow')}>{row.valueLabel}</span>
                             {!row.isMasterCSS && <span className="font:xs text:muted">{ratioLabel}</span>}
                         </motion.span>
                     </motion.span>
