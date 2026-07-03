@@ -39,7 +39,6 @@ export default function BenchmarkSizeChart({
     pageCSSSize: PageCSSSize
 }) {
     const [activeModeId, setActiveModeId] = useState<HomePageCSSSizeModeId>('brotli')
-    const [showValues, setShowValues] = useState(false)
     const chartRef = useRef<HTMLDivElement>(null)
     const reduceMotion = useReducedMotion()
     const inView = useInView(chartRef, { once: true, amount: 0.34 })
@@ -48,20 +47,6 @@ export default function BenchmarkSizeChart({
         [activeModeId, pageCSSSize.modes]
     )
     const axis = useMemo(() => createBenchmarkAxis(activeMode.maxBytes), [activeMode.maxBytes])
-    const revealDelay = (activeMode.rows.length - 1) * rowDelayStep + barDuration + 0.12
-
-    useEffect(() => {
-        if (reduceMotion) {
-            setShowValues(true)
-            return
-        }
-
-        setShowValues(false)
-        if (!inView) return
-
-        const timeout = window.setTimeout(() => setShowValues(true), revealDelay * 1000)
-        return () => window.clearTimeout(timeout)
-    }, [activeModeId, inView, reduceMotion, revealDelay])
 
     return (
         <div ref={chartRef} className="rel py:md">
@@ -115,8 +100,7 @@ export default function BenchmarkSizeChart({
                                 key={row.name}
                                 labels={labels}
                                 reduceMotion={Boolean(reduceMotion)}
-                                row={row}
-                                showValues={showValues} />
+                                row={row} />
                         ))}
                     </div>
 
@@ -152,8 +136,7 @@ function PageCSSSizeRow({
     index,
     labels,
     reduceMotion,
-    row,
-    showValues
+    row
 }: {
     axisMaxBytes: number
     inView: boolean
@@ -161,7 +144,6 @@ function PageCSSSizeRow({
     labels: BenchmarkSizeChartLabels
     reduceMotion: boolean
     row: HomePageCSSSizeRow
-    showValues: boolean
 }) {
     const brand = Object.values(brands).find((eachBrand) => eachBrand.name === row.name)
     const BrandIcon = brand?.src
@@ -187,28 +169,109 @@ function PageCSSSizeRow({
                         transition={{ delay: index * rowDelayStep, duration: barDuration, ease: [0.22, 1, 0.36, 1] }} />
                     <motion.span
                         animate={{ left: reduceMotion || inView ? `${markerPercent}%` : '100%' }}
-                        className="abs top:50% z:1 inline-flex items-center gap:2xs white-space:nowrap pointer-events:none gap:xs@md"
+                        className="abs top:50% z:1 inline-flex items-center gap:xs white-space:nowrap pointer-events:none gap:sm@md"
                         data-home-marker
                         initial={reduceMotion ? false : { left: '100%' }}
                         style={{ transform: 'translate(0, -50%)' }}
                         transition={{ delay: index * rowDelayStep, duration: barDuration, ease: [0.22, 1, 0.36, 1] }}>
-                        <span className="grid flex:0|0|auto place-content:center size:8x r:sm outline:1px|solid|subtle bg:surface-base shadow:xs size:9x@md">
-                            {BrandIcon && <BrandIcon width={22} height={22} className={clsx('mx:0', brand?.className)} />}
+                        {BrandIcon && <BrandIcon width={28} height={28} className={clsx('flex:0|0|auto mx:0', brand?.className)} />}
+                        <span className="inline-flex items-baseline gap:2xs gap:xs@md" data-home-value>
+                            <CountdownKilobytes
+                                active={inView}
+                                className={clsx('tabular-nums font-weight:560 font:lg text:strong font:xl@md', row.isMasterCSS && 'text:yellow')}
+                                delay={index * rowDelayStep}
+                                fromBytes={axisMaxBytes}
+                                reduceMotion={reduceMotion}
+                                toBytes={row.bytes} />
+                            {!row.isMasterCSS && (
+                                <RatioLabel
+                                    active={inView}
+                                    delay={index * rowDelayStep + barDuration}
+                                    reduceMotion={reduceMotion}>
+                                    {ratioLabel}
+                                </RatioLabel>
+                            )}
                         </span>
-                        <motion.span
-                            animate={showValues ? { opacity: 1, y: 0 } : { opacity: 0, y: 4 }}
-                            className="inline-flex items-baseline gap:2xs gap:xs@md"
-                            data-home-value
-                            initial={reduceMotion ? false : { opacity: 0, y: 4 }}
-                            transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}>
-                            <span className={clsx('font-weight:560 font:lg text:strong font:xl@md', row.isMasterCSS && 'text:yellow')}>{row.valueLabel}</span>
-                            {!row.isMasterCSS && <span className="font:xs text:muted">{ratioLabel}</span>}
-                        </motion.span>
                     </motion.span>
                     </div>
                 </div>
             </div>
         </div>
+    )
+}
+
+function CountdownKilobytes({
+    active,
+    className,
+    delay,
+    fromBytes,
+    reduceMotion,
+    toBytes
+}: {
+    active: boolean
+    className?: string
+    delay: number
+    fromBytes: number
+    reduceMotion: boolean
+    toBytes: number
+}) {
+    const [displayBytes, setDisplayBytes] = useState(reduceMotion ? toBytes : fromBytes)
+
+    useEffect(() => {
+        if (reduceMotion) {
+            setDisplayBytes(toBytes)
+            return
+        }
+
+        setDisplayBytes(fromBytes)
+        if (!active) return
+
+        let animationFrame = 0
+        let startedAt = 0
+        const timeout = window.setTimeout(() => {
+            const step = (timestamp: number) => {
+                if (!startedAt) startedAt = timestamp
+                const progress = Math.min(1, (timestamp - startedAt) / (barDuration * 1000))
+                const easedProgress = 1 - (1 - progress) ** 3
+                setDisplayBytes(fromBytes + (toBytes - fromBytes) * easedProgress)
+                if (progress < 1) {
+                    animationFrame = window.requestAnimationFrame(step)
+                } else {
+                    setDisplayBytes(toBytes)
+                }
+            }
+            animationFrame = window.requestAnimationFrame(step)
+        }, delay * 1000)
+
+        return () => {
+            window.clearTimeout(timeout)
+            if (animationFrame) window.cancelAnimationFrame(animationFrame)
+        }
+    }, [active, delay, fromBytes, reduceMotion, toBytes])
+
+    return <span className={className}>{formatKilobytes(displayBytes)}</span>
+}
+
+function RatioLabel({
+    active,
+    children,
+    delay,
+    reduceMotion
+}: {
+    active: boolean
+    children: string
+    delay: number
+    reduceMotion: boolean
+}) {
+    return (
+        <motion.span
+            animate={reduceMotion || active ? { opacity: 1, y: 0 } : { opacity: 0, y: 3 }}
+            className="font:xs text:muted"
+            data-home-ratio-label
+            initial={reduceMotion ? false : { opacity: 0, y: 3 }}
+            transition={{ delay: reduceMotion ? 0 : delay, duration: 0.24, ease: [0.22, 1, 0.36, 1] }}>
+            {children}
+        </motion.span>
     )
 }
 
@@ -250,6 +313,11 @@ function getNiceAxisStep(targetKilobytes: number) {
 
 function formatAxisNumber(value: number) {
     return new Intl.NumberFormat('en-US', { maximumFractionDigits: value >= 10 ? 0 : 1 }).format(value)
+}
+
+function formatKilobytes(bytes: number) {
+    const kilobytes = bytes / 1000
+    return `${new Intl.NumberFormat('en-US', { maximumFractionDigits: 1 }).format(kilobytes)} kB`
 }
 
 function toPercent(value: number, max: number) {
