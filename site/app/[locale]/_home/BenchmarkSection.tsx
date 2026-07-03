@@ -42,8 +42,8 @@ export default function BenchmarkSection({
                 </div>
 
                 <div className="mt:lg">
-                    <Link href="/guide/benchmarks#page-css-size" className="inline-flex items-center gap:xs font:medium text-decoration:none text:strong">
-                        {t('View page CSS benchmark')}
+                    <Link href="/guide/benchmarks#page-css-size" className="inline-flex items-center gap:xs text-decoration:none text:muted">
+                        {t('View benchmark detail')}
                         <IconArrowRight className="size:4x stroke:1.75" />
                     </Link>
                 </div>

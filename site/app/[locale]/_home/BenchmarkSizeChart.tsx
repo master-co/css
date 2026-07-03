@@ -60,7 +60,7 @@ export default function BenchmarkSizeChart({
                             <button
                                 aria-pressed={active}
                                 className={clsx(
-                                    'h:8x px:sm rounded outline-offset:2xs font:xs transition:background-color|fast|smooth,color|fast|smooth outline:2px|solid|yellow:focus-visible',
+                                    'h:8x px:md rounded outline-offset:2xs font:xs outline:2px|solid|yellow:focus-visible',
                                     active ? 'surface:raised text:strong shadow:xs' : 'text:muted text:strong:hover'
                                 )}
                                 key={mode.id}
