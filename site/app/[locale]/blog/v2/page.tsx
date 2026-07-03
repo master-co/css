@@ -2,7 +2,7 @@ import createPage from '~/internal/factories/create-page'
 import Layout from '~/site/layouts/article'
 import metadata from './metadata'
 import dictionaries from '~/site/dictionaries'
-import categories from '~/site/.categories/reference.json'
+import categories from '~/site/.categories/blog.json'
 
 export const { Page, dynamic, revalidate, generateMetadata } = createPage({
     metadata,

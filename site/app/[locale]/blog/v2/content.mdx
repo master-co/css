@@ -1,66 +1,237 @@
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus luctus felis eget tellus tempus, in tempor nisl pretium. Sed ac dapibus lectus. Proin sed mauris sed risus mollis bibendum. Ut efficitur mi ut turpis efficitur, et tempor lorem volutpat. Quisque fringilla, turpis eu suscipit rhoncus, tortor enim malesuada risus, id pulvinar lorem felis et nunc. Nullam finibus augue at ipsum luctus iaculis. Aenean et ullamcorper lorem.
+Master CSS 2.0 is here.
+
+This release is a new foundation for authoring design systems in CSS stylesheets, rendering only the CSS a page needs, and giving humans and coding agents the same inspectable styling model.
+
+The big shift is simple: your project stylesheet becomes the source of truth. It defines the tokens, modes, components, utilities, variants, and managed keyframes your product speaks. Your markup uses that vocabulary through class strings that stay close to CSS declarations.
+
+It is a release for the modern web:
+
+- CSS stylesheet authoring instead of a separate configuration layer.
+- Native CSS foundations: cascade layers, custom properties, media queries, container queries, selectors, and keyframes.
+- Four rendering modes: runtime, static, pre-render, and progressive.
+- Project-aware language tooling, linting, generated CSS inspection, and MCP tools for agentic workflows.
 
 <ArticleTOC data={toc}/>
 
-```bash action=install
-@master/css@latest
-```
-
 ---
 
-## Framework Integration
-Vestibulum fringilla varius semper. Sed in placerat est, in iaculis urna. Sed at dignissim mauris. Cras ac feugiat quam, eget rutrum mauris. Sed consequat placerat neque in dictum. Nullam maximus est ut quam ultrices fringilla. Sed vehicula neque non bibendum ullamcorper. Maecenas mattis scelerisque tortor, ac ullamcorper tellus eleifend a. Suspendisse bibendum nibh at metus tempus, ac dignissim sem viverra. Morbi a tortor tincidunt, aliquam lectus nec, convallis mauris. Fusce non lorem vitae mauris ultrices aliquam. Donec id risus id massa lacinia semper. Curabitur laoreet magna a fringilla congue.
+## CSS Stylesheet Authoring
 
----
+Master CSS 2.0 starts from a stylesheet. Import `@master/css` from the CSS file your application already loads, then define the design vocabulary next to the rest of the CSS graph.
 
-## New Configuration API
+```css name=app.css
+@import '@master/css';
 
-### Managed keyframes
-You can now customize CSS [animations](/guide/theme#motion) in the project CSS entry:
-```css name=index.css
 @theme {
-    @keyframes fade {
-        0% {
-            opacity: 0;
-        }
+    --color-brand: #4f46e5;
+    --color-surface-card: #ffffff;
+    --spacing-shell: 2rem;
+    --radius-card: 1rem;
 
-        to {
-            opacity: 1;
+    @keyframes reveal {
+        from { opacity: 0; transform: translateY(.5rem); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+}
+
+@theme dark {
+    --color-surface-card: #111827;
+}
+
+@custom-variant @motion-safe {
+    @media (prefers-reduced-motion: no-preference) {
+        @slot;
+    }
+}
+
+@custom-variant :interactive {
+    &:is(:hover, :focus-visible) {
+        @slot;
+    }
+}
+
+@components {
+    btn {
+        @compose inline-flex items-center justify-center gap:xs h:10x px:md r:md font:medium;
+    }
+}
+
+@utilities {
+    content-grid {
+        @compose grid grid-cols:1 gap:lg;
+
+        @variant @md {
+            @compose grid-cols:2;
         }
     }
 }
 ```
-Apply the `fade` keyframe via [animation syntax](/reference/animation):
+
+That stylesheet is not a loose collection of variables. It is the project CSS entry graph. Master CSS reads it as manifest input, resolves the vocabulary, and emits only the variables, keyframes, components, and utility rules that are actually used.
+
+Markup stays direct:
+
 ```html
-<!-- @MARK animation:fade|.5s|ease -->
-<div class="animation:fade|.5s|ease"></div>
+<section class="content-grid p:shell">
+    <article class="p:lg r:card animation:reveal|.4s|ease@motion bg:surface-card">
+        <h2 class="font:3xl font:heavy text:brand">Stylesheet-authored design systems</h2>
+        <p class="mt:xs text:body">
+            Tokens, modes, components, utilities, variants, and keyframes all come from CSS.
+        </p>
+        <a class="btn mt:md fg:white bg:brand bg:brand/.85:interactive" href="/guide/theme">
+            Explore theme authoring
+        </a>
+    </article>
+</section>
 ```
-It only generates the CSS keyframe rule used:
-```css
-@keyframes fade {
-    0% {
-        opacity: 0
-    }
 
-    to {
-        opacity: 1
-    }
-}
-
-.animation\:fade\|\.5s\|ease {
-    animation: fade .5s ease
-}
-```
+This is the heart of v2. CSS remains the place where product styling vocabulary is named. Markup remains the place where interface structure and state are composed.
 
 ---
 
-## Explicit Motion Declarations
+## Built For The Modern Web
 
-Animation and transition longhands use their full CSS property keys:
-```html
-<div class="animation-play-state:paused">
-<div class="animation-fill-mode:forwards">
-<div class="animation-iteration-count:infinite">
-<div class="animation-direction:alternate">
+Master CSS 2.0 is designed around the platform instead of hiding it.
+
+The default stylesheet declares the stable cascade layer order:
+
+```css
+@layer theme, base, defaults, components, utilities;
 ```
-To learn more, check out the [animation](/reference/animation) documentation.
+
+Generated rules are emitted into those layers. Theme variables remain CSS custom properties. Modes are expressed through CSS selectors or media conditions. Responsive behavior uses viewport and container query tokens. Selector states stay attached to the declarations they affect.
+
+```html
+<main class="min-h:100dvh bg:surface-base text:neutral">
+    <section class="container max-w:lg mx:auto px:md py:2xl">
+        <div class="grid grid-cols:1 gap:lg grid-cols:2@md">
+            <article class="p:lg b:1px|solid|base r:lg bg:surface-raised">
+                <p class="text:xs text:muted">Modern CSS, authored from markup</p>
+                <h1 class="mt:xs font:5xl font:heavy text:brand">
+                    One vocabulary for every surface
+                </h1>
+            </article>
+
+            <aside class="container p:lg b:1px|solid|base r:lg">
+                <div class="grid grid-cols:1 gap:md grid-cols:2@container(md)">
+                    <button class="btn fg:white bg:brand bg:brand/.85:hover">Create</button>
+                    <button class="btn b:1px|solid|base bg:surface-base">Preview</button>
+                </div>
+            </aside>
+        </div>
+    </section>
+</main>
+```
+
+Nothing in that example requires a framework-specific styling API. The same class syntax can live in HTML, MDX, JSX, templates, server-rendered views, and client components. The delivery strategy can change later without changing the authoring model.
+
+---
+
+## Rendering Modes
+
+Different applications need different CSS delivery. Master CSS 2.0 keeps one authoring model and lets the integration choose the rendering mode.
+
+| Mode | When to use it |
+| --- | --- |
+| `runtime` | Start quickly, keep maximum flexibility, and generate rules as classes appear in the browser. |
+| `static` | Scan source-visible class strings and build a CSS asset ahead of time. |
+| `pre-render` | Render HTML output at build time or on the server and inject the CSS needed by that document. |
+| `progressive` | Send first-response CSS early, then let the runtime adopt those rules and continue handling dynamic UI. |
+
+For Vite projects, one plugin can switch between modes:
+
+```js name=vite.config.js
+import { defineConfig } from 'vite'
+import masterCSS from '@master/css.vite'
+
+export default defineConfig({
+    plugins: [
+        masterCSS({ mode: 'progressive' })
+    ]
+})
+```
+
+For Next.js, the official adapter plugs into the build:
+
+```js name=next.config.js
+import { withMasterCSS } from '@master/css.next'
+
+/** @type {import('next').NextConfig} */
+const nextConfig = withMasterCSS({
+    // your Next.js config
+})
+
+export default nextConfig
+```
+
+Progressive Rendering is the mode that best shows where v2 is going. The first HTML response can carry the CSS that is already knowable, while the runtime keeps the page alive for client-only state, late-rendered components, route transitions, and dynamic classes.
+
+```html
+<head>
+    <style id="master-css" data-master-css-hydration-manifest="/_master-css/hydration/master-css-hydration.8f3a1c2d.json">
+        @layer utilities{.font\:3xl{font-size:1.875rem}}
+    </style>
+</head>
+<body>
+    <h1 class="font:3xl">Already styled</h1>
+</body>
+```
+
+The browser can paint from `style#master-css`. When the runtime starts, it imports the hydration manifest, adopts those existing rules, and continues from the same stylesheet instead of starting over.
+
+That is the v2 delivery model: render early when the page shape is known, stay flexible when the interface becomes dynamic.
+
+---
+
+## Agentic Workflows
+
+Master CSS 2.0 is also built for the way software is now written. A coding agent can only make reliable styling changes when the system is inspectable: the active stylesheet entry, tokens, component vocabulary, generated CSS, lint policy, and source extraction rules all need to be visible.
+
+The v2 toolchain gives agents and developers the same feedback loop:
+
+- The [Language Service](/guide/language-service) reads the project manifest and provides completions, hover previews, colors, highlighting, and directive formatting.
+- [Code linting](/guide/code-linting) checks invalid classes, conflicting declarations, non-canonical syntax, unstable order, and team policy.
+- The [MCP Server](/guide/mcp-server) gives AI clients project-aware tools for setup audits, manifest queries, class inspection, generated CSS rendering, lint diagnostics, and safe fix previews.
+- The [AI Coding](/guide/ai-coding) guide explains how to give agents the context they need without asking them to invent styling APIs.
+
+Set up the MCP server for a local project:
+
+```bash name=Terminal
+npx -y @master/css-mcp@rc --root /absolute/path/to/project
+```
+
+Then ask an agent to inspect before editing:
+
+```text name=prompt
+Use the Master CSS MCP server to inspect this workspace before editing.
+
+Check the project stylesheet entry, theme tokens, component classes, rendering mode, lint diagnostics, and generated CSS for the classes you plan to change. Create a safe preview before applying fixes.
+```
+
+This matters because Master CSS classes are compact but not magical. They resolve to CSS. The better an agent can inspect that resolution, the easier it is to review the result as real code.
+
+---
+
+## Start Building With 2.0
+
+Install the v2 release candidate:
+
+```bash action=install
+@master/css@rc
+```
+
+For framework integrations, install the matching package:
+
+```bash action=install
+@master/css@rc @master/css.vite@rc @master/css.next@rc
+```
+
+Start with the guides that match your project:
+
+- [Theme](/guide/theme) for stylesheet-authored tokens, modes, variants, components, utilities, and managed keyframes.
+- [Rendering Modes](/guide/rendering-modes) for runtime, static, pre-render, and progressive delivery.
+- [Vite installation](/guide/installation/vite) for Vite-powered apps.
+- [Next.js installation](/guide/installation/nextjs) for Progressive Rendering in Next.js.
+- [AI Coding](/guide/ai-coding) and [MCP Server](/guide/mcp-server) for agent-assisted development.
+
+Master CSS 2.0 makes the stylesheet the shared contract: humans author it, frameworks render from it, tools inspect it, and agents can reason through it. That is the foundation we want for modern web styling.

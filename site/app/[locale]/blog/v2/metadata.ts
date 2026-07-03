@@ -2,15 +2,15 @@ import define from 'internal/utils/metadata'
 
 const metadata = define({
     title: 'Master CSS 2.0',
-    description: 'Configuration API, progressive rendering, design system, and more!',
+    description: 'A new stylesheet-authored foundation for modern web styling, rendering modes, and agentic workflows.',
+    category: 'Major',
     authors: [
         { name: 'Aron' },
         { name: 'BenSeage' },
         { name: 'Miles' },
         { name: 'Lola' },
-        { name: 'Joy' }
     ],
-    date: '2023-12-19T15:04:56.712Z',
+    date: '2026-07-03T08:00:00.000Z',
     fileURL: import.meta.url
 })
 
