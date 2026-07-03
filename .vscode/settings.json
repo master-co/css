@@ -5,6 +5,9 @@
         "editor.insertSpaces": true,
         "editor.tabSize": 4
     },
+    "eslint.codeActionsOnSave.rules": [
+        "@master/css/sort-classes"
+    ],
     "eslint.validate": [
         "html",
         "php",
