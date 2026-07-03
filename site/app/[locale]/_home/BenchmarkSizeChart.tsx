@@ -16,6 +16,7 @@ type BenchmarkSizeChartLabels = {
 const barDuration = 0.82
 const rowDelayStep = 0.085
 const axisTickTarget = 4
+const chartGridStyle = { gridTemplateColumns: 'minmax(5.25rem, 6.5rem) minmax(0, 1fr)' }
 
 const brandColorClasses: Record<string, string> = {
     beryl: 'bg:green',
@@ -87,15 +88,22 @@ export default function BenchmarkSizeChart({
                 <div className="rel" key={activeMode.id}>
                     <div
                         aria-hidden="true"
-                        className="abs left:0 top:0 w:30% pointer-events:none w:60%@md w:72%@lg"
+                        className="abs inset:0|0|auto|0 pointer-events:none"
                         style={{ bottom: '1.5rem' }}>
-                        {axis.ticks.map((tick) => (
-                            <span
-                                className="abs bottom:0 top:0 w:1px bg:line-muted opacity:.42"
-                                data-home-axis-guide
-                                key={tick.label}
-                                style={{ left: `${tick.percent}%` }} />
-                        ))}
+                        <div className="grid gap:sm h:full" style={chartGridStyle}>
+                            <span />
+                            <div className="rel h:full">
+                                <div className="abs bottom:0 left:0 top:0 w:38% w:60%@md w:72%@lg">
+                                    {axis.ticks.map((tick) => (
+                                        <span
+                                            className="abs bottom:0 top:0 w:1px bg:line-muted opacity:.42"
+                                            data-home-axis-guide
+                                            key={tick.label}
+                                            style={{ left: `${tick.percent}%` }} />
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     <div className="rel z:1 grid gap:2xs">
@@ -112,22 +120,25 @@ export default function BenchmarkSizeChart({
                         ))}
                     </div>
 
-                    <div className="rel h:5x w:30% mt:xs w:60%@md w:72%@lg">
-                        {axis.ticks.map((tick, index) => {
-                            const compactTick = index === 0 || index === Math.floor((axis.ticks.length - 1) / 2) || index === axis.ticks.length - 1
-                            return (
-                                <span
-                                    className={clsx('abs top:0 font:2xs white-space:nowrap text:muted', !compactTick && 'hidden@<md')}
-                                    data-home-axis-label
-                                    key={tick.label}
-                                    style={{
-                                        left: `${tick.percent}%`,
-                                        transform: tick.percent === 0 ? undefined : tick.percent === 100 ? 'translateX(-100%)' : 'translateX(-50%)'
-                                    }}>
-                                    {tick.label}
-                                </span>
-                            )
-                        })}
+                    <div className="grid gap:sm mt:xs" style={chartGridStyle}>
+                        <span />
+                        <div className="rel h:5x w:38% w:60%@md w:72%@lg">
+                            {axis.ticks.map((tick, index) => {
+                                const compactTick = index === 0 || index === Math.floor((axis.ticks.length - 1) / 2) || index === axis.ticks.length - 1
+                                return (
+                                    <span
+                                        className={clsx('abs top:0 font:2xs white-space:nowrap text:muted', !compactTick && 'hidden@<md')}
+                                        data-home-axis-label
+                                        key={tick.label}
+                                        style={{
+                                            left: `${tick.percent}%`,
+                                            transform: tick.percent === 0 ? undefined : tick.percent === 100 ? 'translateX(-100%)' : 'translateX(-50%)'
+                                        }}>
+                                        {tick.label}
+                                    </span>
+                                )
+                            })}
+                        </div>
                     </div>
                 </div>
             </div>
@@ -161,8 +172,13 @@ function PageCSSSizeRow({
 
     return (
         <div className="py:0">
-            <div className="rel min-h:11x">
-                <div className="rel h:11x w:30% w:60%@md w:72%@lg">
+            <div className="grid items-center gap:sm min-h:11x" style={chartGridStyle}>
+                <div className="min-w:0">
+                    <span className="block overflow:hidden font:sm text-ellipsis white-space:nowrap text:strong" data-home-row-label>{row.name}</span>
+                </div>
+
+                <div className="rel h:11x min-w:0">
+                    <div className="rel h:11x w:38% w:60%@md w:72%@lg">
                     <motion.div
                         animate={{ width: reduceMotion || inView ? `${rowPercent}%` : '100%' }}
                         className={clsx('abs inset:50%|auto|auto|0 h:12px min-w:1px r:xs transform:translateY(-50%)', colorClassName)}
@@ -179,7 +195,6 @@ function PageCSSSizeRow({
                         <span className="grid flex:0|0|auto place-content:center size:8x r:sm outline:1px|solid|subtle bg:surface-base shadow:xs size:9x@md">
                             {BrandIcon && <BrandIcon width={22} height={22} className={clsx('mx:0', brand?.className)} />}
                         </span>
-                        <span className="font:sm text:strong">{row.name}</span>
                         <motion.span
                             animate={showValues ? { opacity: 1, y: 0 } : { opacity: 0, y: 4 }}
                             className="inline-flex items-baseline gap:2xs gap:xs@md"
@@ -190,6 +205,7 @@ function PageCSSSizeRow({
                             {!row.isMasterCSS && <span className="font:xs text:muted">{ratioLabel}</span>}
                         </motion.span>
                     </motion.span>
+                    </div>
                 </div>
             </div>
         </div>
