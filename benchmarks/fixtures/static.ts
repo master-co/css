@@ -178,7 +178,7 @@ import '@master/css'</code></pre>
                     <header class="flex items-center justify-between gap:4x">
                         <div>
                             <p class="m:0 font:13px font:semibold fg:blue-60 uppercase letter-spacing:.08em">Operations</p>
-                            <h1 class="m:1x|0|0 font:34px font:heavy tracking:-.02em">Revenue dashboard</h1>
+                            <h1 class="m:1x|0|0 font:3xl font:heavy tracking:-.02em">Revenue dashboard</h1>
                         </div>
                         <button class="h:40px px:4x r:8px bg:slate-90 fg:white border:0 font:14px font:semibold">Export</button>
                     </header>

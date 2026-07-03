@@ -28,7 +28,7 @@ export default function BentoSection({ t }: { t: Translate }) {
             <div className="app-wrapper max-w:breakpoint-2xl">
                 <div className="max-w:breakpoint-md">
                     <p className={sectionLabelClassName}>{t('Modern web design system')}</p>
-                    <h2 className="mx:0 mb:0 mt:md font-weight:560 font:34px leading:1.08 tracking:tight text:strong font:6xl@md">
+                    <h2 className="mx:0 mb:0 mt:md font-weight:560 font:3xl leading:1 tracking:tight text:strong font:6xl@md">
                         {t('A complete styling system, compressed into class strings.')}
                     </h2>
                     <p className="max-w:70ch mb:0 mt:lg leading:1.7 text:muted">

@@ -23,7 +23,7 @@ const brandColorClasses: Record<string, string> = {
     beryl: 'bg:green',
     blue: 'bg:blue',
     cyan: 'bg:cyan',
-    gray: 'bg:slate-50@light bg:slate-70@dark',
+    gray: 'bg:neutral',
     green: 'bg:green',
     orange: 'bg:orange',
     pink: 'bg:red',

@@ -13,7 +13,7 @@ export default function CTASection({ t }: { t: Translate }) {
                 <div className="grid-cols:1 items-center gap:2xl grid-cols:12@lg gap:2xl@lg">
                     <div className="grid-col-span:7@lg">
                         <p className={sectionLabelClassName}>{t('Get started')}</p>
-                        <h2 className="max-w:15ch mx:0 mb:0 mt:lg font-weight:560 font:34px leading:1.12 tracking:tight text:strong font:6xl@md">
+                        <h2 className="max-w:15ch mx:0 mb:0 mt:lg font-weight:560 font:3xl leading:1.12 tracking:tight text:strong font:6xl@md">
                             {t('Start with one class string, then grow into a design system.')}
                         </h2>
                     </div>

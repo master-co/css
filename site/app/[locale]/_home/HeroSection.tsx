@@ -13,10 +13,10 @@ export default function HeroSection({ t }: { t: Translate }) {
             className="rel overflow:hidden isolate py:5xl">
             <div className="app-wrapper max-w:breakpoint-2xl">
                 <MotionDiv className="max-w:breakpoint-xl text-center">
-                    <h1 className="mx:0 mb:0 mt:xl font:5xl font:light leading:.96 tracking:tight text-balance text:strong font:9xl@md">
+                    <h1 className="mx:0 mb:0 mt:xl font:5xl font:light leading:1 tracking:tight text-balance text:strong font:9xl@md">
                         {t('The markup-driven CSS language and framework')}<br></br>
                     </h1>
-                    <p className="max-w:50ch mx:auto mb:0 mt:xl font:md leading:md text:muted text:xl@lg">
+                    <p className="max-w:50ch mx:auto mb:0 mt:xl text:md text:muted text:2xl@lg">
                         {t('build interfaces that are readable by humans, reliable for AI agents, and expressive enough for modern design systems.')}
                     </p>
                     <div className="flex flex-wrap gap:sm|md w:fit mx:auto mt:2xl">
