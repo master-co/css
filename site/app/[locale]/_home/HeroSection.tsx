@@ -16,8 +16,8 @@ export default function HeroSection({ t }: { t: Translate }) {
                     <h1 className="mx:0 mb:0 mt:xl font:5xl font:light leading:.96 tracking:tight text-balance text:strong font:9xl@md">
                         {t('The markup-driven CSS language and framework')}<br></br>
                     </h1>
-                    <p className="mb:0 mt:xl font:md leading:md text:muted text:xl@lg">
-                        {t('for build interfaces that are readable by humans and reliable for agents.')}
+                    <p className="max-w:50ch mx:auto mb:0 mt:xl font:md leading:md text:muted text:xl@lg">
+                        {t('build interfaces that are readable by humans, reliable for AI agents, and expressive enough for modern design systems.')}
                     </p>
                     <div className="flex flex-wrap gap:sm|md w:fit mx:auto mt:2xl">
                         <Link href="/guide/introduction" className="btn btn-lg touch-yellow r:md outline-offset:2xs text-decoration:none bg:yellow fg:yellow-95 outline:2px|solid|yellow:focus-visible">

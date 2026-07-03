@@ -21,7 +21,7 @@ export default async function Page({ params }: {
 
     return (
         <Body className="bg-cover bg-no-repeat background-image:linear-gradient(var(--color-surface-base),var(--color-surface-raised)|100vh,var(--color-surface-base)) bg:surface-base">
-            <DocHeader stickable />
+            <DocHeader stickable className="site-home-header" primaryNavClassName="site-home-header-primary-nav" />
             <HomePage t={t} />
         </Body>
     )

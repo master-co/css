@@ -2,3 +2,7 @@
 @import '../../internal/styles/main.css';
 @import '../styles/base.css';
 @import '../styles/btn.css';
+
+.site-home-header.at-top .site-home-header-primary-nav {
+    visibility: hidden;
+}
