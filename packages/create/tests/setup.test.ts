@@ -761,11 +761,46 @@ function RootComponent() {
 
         const viteConfig = readProjectFile(root, 'vite.config.ts')
         expect(viteConfig).toContain("import masterCSS from '@master/css.vite'")
+        expect(viteConfig).toContain("masterCSS({ mode: 'runtime' })")
+        expect(viteConfig.indexOf('tanstackStart()')).toBeLessThan(viteConfig.indexOf("masterCSS({ mode: 'runtime' })"))
+        expect(viteConfig.indexOf("masterCSS({ mode: 'runtime' })")).toBeLessThan(viteConfig.indexOf('react()'))
+        expect(readProjectFile(root, 'src/styles/app.css')).toBe("@import '@master/css';\n")
+        expect(readProjectFile(root, 'src/routes/__root.tsx')).toContain("import '../styles/app.css'")
+    })
+
+    test('writes explicit static mode for TanStack Start setup', () => {
+        const root = createTempProject('master-css-create-tanstack-start-static-mode-', {
+            dependencies: {
+                '@tanstack/react-start': '^1.168.0',
+                '@vitejs/plugin-react': '^6.0.0',
+                react: '^19.0.0',
+                vite: '^8.0.0'
+            }
+        })
+        writeProjectFile(root, 'vite.config.ts', `import { defineConfig } from 'vite'
+import { tanstackStart } from '@tanstack/react-start/plugin/vite'
+import react from '@vitejs/plugin-react'
+
+export default defineConfig({
+    plugins: [
+        tanstackStart(),
+        react()
+    ]
+})
+`)
+
+        applySetup({
+            root,
+            framework: 'tanstack-start',
+            mode: 'static',
+            minimal: true,
+            install: false
+        })
+
+        const viteConfig = readProjectFile(root, 'vite.config.ts')
         expect(viteConfig).toContain("masterCSS({ mode: 'static' })")
         expect(viteConfig.indexOf('tanstackStart()')).toBeLessThan(viteConfig.indexOf("masterCSS({ mode: 'static' })"))
         expect(viteConfig.indexOf("masterCSS({ mode: 'static' })")).toBeLessThan(viteConfig.indexOf('react()'))
-        expect(readProjectFile(root, 'src/styles/app.css')).toBe("@import '@master/css';\n")
-        expect(readProjectFile(root, 'src/routes/__root.tsx')).toContain("import '../styles/app.css'")
     })
 
     test('allows explicit TanStack Start setup without framework auto detection', () => {

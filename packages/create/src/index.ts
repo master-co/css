@@ -235,7 +235,7 @@ function filesForFramework(root: string, framework: Framework, warnings: string[
             return files
         }
         case 'tanstack-start': {
-            const pluginMode = mode ?? 'static'
+            const pluginMode = mode ?? 'runtime'
             const files: PlannedFileChange[] = [
                 planTextFile(root, firstExistingPath(root, ['vite.config.ts', 'vite.config.js', 'vite.config.mjs'], 'vite.config.ts'), (content) => addMasterCSSTanStackStartVitePlugin(content, pluginMode), createViteConfig(pluginMode), `Register the Master CSS Vite plugin in ${pluginMode} mode.`),
                 planTextFile(root, 'src/styles/app.css', addMasterCSSImportToStylesheet, createMasterCSSStylesheet(), 'Create or update the TanStack Start stylesheet entry.')
