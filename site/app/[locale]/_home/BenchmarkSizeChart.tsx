@@ -80,7 +80,7 @@ export default function BenchmarkSizeChart({
                         <div className="grid gap:sm h:full" style={chartGridStyle}>
                             <span />
                             <div className="rel h:full">
-                                <div className="abs bottom:0 left:0 top:0 w:38% w:60%@md w:72%@lg">
+                                <div className="abs bottom:0 left:0 top:0 w:full">
                                     {axis.ticks.map((tick) => (
                                         <span
                                             className="abs bottom:0 top:0 w:1px bg:line-muted opacity:.42"
@@ -109,7 +109,7 @@ export default function BenchmarkSizeChart({
 
                     <div className="grid gap:sm mt:xs" style={chartGridStyle}>
                         <span />
-                        <div className="rel h:5x w:38% w:60%@md w:72%@lg">
+                        <div className="rel h:5x w:full">
                             {axis.ticks.map((tick, index) => {
                                 const compactTick = index === 0 || index === Math.floor((axis.ticks.length - 1) / 2) || index === axis.ticks.length - 1
                                 return (
@@ -165,7 +165,7 @@ function PageCSSSizeRow({
                 </div>
 
                 <div className="rel h:11x min-w:0">
-                    <div className="rel h:11x w:38% w:60%@md w:72%@lg">
+                    <div className="rel h:11x w:full">
                     <motion.div
                         animate={{ width: reduceMotion || inView ? `${rowPercent}%` : '100%' }}
                         className={clsx('abs inset:50%|auto|auto|0 h:12px min-w:1px r:xs transform:translateY(-50%)', colorClassName)}
@@ -174,7 +174,7 @@ function PageCSSSizeRow({
                         transition={{ delay: index * rowDelayStep, duration: barDuration, ease: [0.22, 1, 0.36, 1] }} />
                     <motion.span
                         animate={{ left: reduceMotion || inView ? `${markerPercent}%` : '100%' }}
-                        className="abs top:50% z:1 inline-flex items-center gap:xs white-space:nowrap pointer-events:none gap:sm@md"
+                        className="abs top:50% z:1 inline-flex items-center gap:2xs white-space:nowrap pointer-events:none gap:sm@md"
                         data-home-marker
                         initial={reduceMotion ? false : { left: '100%' }}
                         style={{ transform: 'translate(0, -50%)' }}
@@ -278,7 +278,7 @@ function RatioLabel({
     return (
         <motion.span
             animate={reduceMotion || active ? { opacity: 1, y: 0 } : { opacity: 0, y: 3 }}
-            className="font:xs text:muted"
+            className="font:xs text:muted hidden@<md"
             data-home-ratio-label
             initial={reduceMotion ? false : { opacity: 0, y: 3 }}
             transition={{ delay: reduceMotion ? 0 : delay, duration: ratioFadeDuration, ease: [0.22, 1, 0.36, 1] }}>
@@ -296,7 +296,7 @@ type BenchmarkAxisTick = {
 function createBenchmarkAxis(maxBytes: number) {
     const maxKilobytes = Math.max(1, maxBytes / 1000)
     const step = getNiceAxisStep(maxKilobytes / axisTickTarget)
-    const axisMaxKilobytes = Math.ceil(maxKilobytes / step) * step
+    const axisMaxKilobytes = (Math.ceil(maxKilobytes / step) + 1) * step
     const ticks: BenchmarkAxisTick[] = []
 
     for (let valueKilobytes = 0; valueKilobytes <= axisMaxKilobytes + step / 2; valueKilobytes += step) {
