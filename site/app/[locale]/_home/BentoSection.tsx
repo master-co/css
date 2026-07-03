@@ -11,7 +11,7 @@ import type { ComponentType, ReactNode } from 'react'
 import clsx from 'clsx'
 import Link from '~/internal/components/Link'
 import { MotionHoverSurface, MotionSection, MotionVisualFrame } from './HomeMotion'
-import { bentoTiles, homeInteractions, homeSections, sectionLabelClassName, type BentoIconId, type BentoTileContent, type BentoVisualType, type Translate } from './home-content'
+import { bentoTiles, homeInteractions, homeSections, sectionBodyClassName, sectionHeadingClassName, sectionLabelClassName, type BentoIconId, type BentoTileContent, type BentoVisualType, type Translate } from './home-content'
 
 const bentoIcons = {
     code: IconCode,
@@ -28,10 +28,10 @@ export default function BentoSection({ t }: { t: Translate }) {
             <div className="app-wrapper max-w:breakpoint-2xl">
                 <div className="max-w:breakpoint-md">
                     <p className={sectionLabelClassName}>{t('Modern web design system')}</p>
-                    <h2 className="mx:0 mb:0 mt:md font-weight:560 font:3xl leading:1 tracking:tight text:strong font:6xl@md">
+                    <h2 className={sectionHeadingClassName}>
                         {t('A complete styling system, compressed into class strings.')}
                     </h2>
-                    <p className="max-w:70ch mb:0 mt:lg leading:1.7 text:muted">
+                    <p className={sectionBodyClassName}>
                         {t('The homepage bento is intentionally made from real product primitives: layout, tokens, conditions, delivery, and tooling. Each tile links to the documentation that owns the capability.')}
                     </p>
                 </div>

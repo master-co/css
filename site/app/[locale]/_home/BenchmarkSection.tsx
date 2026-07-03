@@ -3,7 +3,7 @@ import Link from '~/internal/components/Link'
 import { getHomePageCSSSize } from '~/site/utils/home-page-css-size'
 import { MotionSection } from './HomeMotion'
 import BenchmarkSizeChart from './BenchmarkSizeChart'
-import { homeSections, type Translate } from './home-content'
+import { homeSections, sectionBodyClassName, sectionHeadingClassName, type Translate } from './home-content'
 
 type PageCSSSize = ReturnType<typeof getHomePageCSSSize>
 
@@ -21,10 +21,10 @@ export default function BenchmarkSection({
             className="rel py:5xl bb:1px|solid|subtle bt:1px|solid|subtle bg:surface-raised/.26">
             <div className="app-wrapper max-w:breakpoint-2xl">
                 <div className="max-w:breakpoint-md">
-                    <h2 className="mx:0 mb:0 mt:md font:3xl font:regular leading:1 tracking:tight text:strong font:6xl@md">
+                    <h2 className={sectionHeadingClassName}>
                         {t('Ship the smallest CSS ever.')}
                     </h2>
-                    <p className="max-w:72ch mb:0 mt:lg text:lg text:muted">
+                    <p className={sectionBodyClassName}>
                         {t('Measured from real documentation pages, Master CSS keeps critical styling small without reducing expressiveness, so modern interfaces stay fast to ship and light to load.')}
                     </p>
                 </div>

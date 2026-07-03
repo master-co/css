@@ -14,6 +14,7 @@ type BenchmarkSizeChartLabels = {
 }
 
 const chartAnimationDuration = 3
+const chartAnimationStartPercent = 90
 const ratioFadeDuration = 0.24
 const rowDelayStep = 0.085
 const axisTickTarget = 4
@@ -155,6 +156,9 @@ function PageCSSSizeRow({
     const colorClassName = row.isMasterCSS ? 'bg:yellow' : brandColorClasses[brand?.color || ''] || 'bg:blue'
     const rowPercent = toPercent(row.bytes, axisMaxBytes)
     const markerPercent = Math.max(0, Math.min(100, rowPercent))
+    const startBytes = axisMaxBytes * chartAnimationStartPercent / 100
+    const startPercent = `${chartAnimationStartPercent}%`
+    const markerStartPosition = `min(${startPercent}, calc(100% - 5.25rem))`
     const ratioLabel = `${row.ratio.toFixed(1)}${labels.largerSuffix}`
 
     return (
@@ -167,16 +171,16 @@ function PageCSSSizeRow({
                 <div className="rel h:11x min-w:0">
                     <div className="rel h:11x w:full">
                     <motion.div
-                        animate={{ width: reduceMotion || inView ? `${rowPercent}%` : '100%' }}
+                        animate={{ width: reduceMotion || inView ? `${rowPercent}%` : startPercent }}
                         className={clsx('abs inset:50%|auto|auto|0 h:12px min-w:1px r:xs transform:translateY(-50%)', colorClassName)}
                         data-home-bar-fill
-                        initial={reduceMotion ? false : { width: '100%' }}
+                        initial={reduceMotion ? false : { width: startPercent }}
                         transition={{ delay: index * rowDelayStep, duration: barDuration, ease: [0.22, 1, 0.36, 1] }} />
                     <motion.span
-                        animate={{ left: reduceMotion || inView ? `${markerPercent}%` : '100%' }}
+                        animate={{ left: reduceMotion || inView ? `${markerPercent}%` : markerStartPosition }}
                         className="abs top:50% z:1 inline-flex items-center gap:2xs white-space:nowrap pointer-events:none gap:sm@md"
                         data-home-marker
-                        initial={reduceMotion ? false : { left: '100%' }}
+                        initial={reduceMotion ? false : { left: markerStartPosition }}
                         style={{ transform: 'translate(0, -50%)' }}
                         transition={{ delay: index * rowDelayStep, duration: barDuration, ease: [0.22, 1, 0.36, 1] }}>
                         {BrandIcon && (
@@ -190,7 +194,7 @@ function PageCSSSizeRow({
                                 barDuration={barDuration}
                                 className={clsx('tabular-nums font:lg text:strong', row.isMasterCSS && 'text:yellow')}
                                 delay={index * rowDelayStep}
-                                fromBytes={axisMaxBytes}
+                                fromBytes={startBytes}
                                 reduceMotion={reduceMotion}
                                 toBytes={row.bytes} />
                             {!row.isMasterCSS && (

@@ -1,19 +1,19 @@
 import { IconArrowRight, IconBrandGithub, IconTerminal2 } from '@tabler/icons-react'
 import Link from '~/internal/components/Link'
 import { MotionSection } from './HomeMotion'
-import { homeInteractions, homeSections, sectionLabelClassName, type Translate } from './home-content'
+import { homeInteractions, homeSections, sectionHeadingClassName, sectionLabelClassName, type Translate } from './home-content'
 
 export default function CTASection({ t }: { t: Translate }) {
     return (
         <MotionSection
             homeSection={homeSections.getStarted}
             id={homeSections.getStarted}
-            className="bt:1px|solid|subtle bg:surface-raised/.38 py:5xl">
+            className="py:5xl bt:1px|solid|subtle bg:surface-raised/.38">
             <div className="app-wrapper max-w:breakpoint-2xl">
                 <div className="grid-cols:1 items-center gap:2xl grid-cols:12@lg gap:2xl@lg">
-                    <div className="grid-col-span:7@lg">
+                    <div className="max-w:breakpoint-md grid-col-span:7@lg">
                         <p className={sectionLabelClassName}>{t('Get started')}</p>
-                        <h2 className="max-w:15ch mx:0 mb:0 mt:lg font-weight:560 font:3xl leading:1.12 tracking:tight text:strong font:6xl@md">
+                        <h2 className={sectionHeadingClassName}>
                             {t('Start with one class string, then grow into a design system.')}
                         </h2>
                     </div>
