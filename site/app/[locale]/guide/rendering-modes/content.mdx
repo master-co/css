@@ -3,10 +3,10 @@ Master CSS integrations choose how generated rules reach the browser. The same p
 
 | Mode                      | Description                                                                                                                                           |
 |---------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `'runtime'`               | Starts `CSSRuntime` in the browser, loads the project manifest, observes connected elements, and ensures generated rules as class names appear. |
-| `'static'`                | Scans source files, replaces `@import '@master/css'` in managed CSS entries, prunes native CSS, and generates CSS from the project CSS entry graph. |
-| `'pre-render'`            | Renders HTML output and injects the CSS required by the rendered class names. This mode is usually owned by SSR/SSG integrations. |
-| `'progressive'`           | Combines server-rendered first-page CSS, a hydration manifest, and client-side runtime adoption for classes that appear after the initial HTML. |
+| `runtime`                 | Starts `CSSRuntime` in the browser, loads the project manifest, observes connected elements, and ensures generated rules as class names appear. |
+| `static`                  | Scans source files, replaces `@import '@master/css'` in managed CSS entries, prunes native CSS, and generates CSS from the project CSS entry graph. |
+| `pre-render`              | Renders HTML output and injects the CSS required by the rendered class names. This mode is usually owned by SSR/SSG integrations. |
+| `progressive`             | Combines server-rendered first-page CSS, a hydration manifest, and client-side runtime adoption for classes that appear after the initial HTML. |
 
 Every mode uses the same cascade layer model. The default `@master/css/base.css` stylesheet declares `@layer theme, base, defaults, components, utilities;`, while generated rules are emitted into layer blocks without redeclaring the global order.
 
