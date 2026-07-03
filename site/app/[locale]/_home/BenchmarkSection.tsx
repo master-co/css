@@ -24,8 +24,8 @@ export default function BenchmarkSection({
                     <h2 className="mx:0 mb:0 mt:md font:3xl font:regular leading:1 tracking:tight text:strong font:6xl@md">
                         {t('Ship the smallest CSS ever.')}
                     </h2>
-                    <p className="max-w:64ch mb:0 mt:lg text:lg text:muted">
-                        {t('This benchmark starts with real documentation pages, not a slogan. Compare the CSS that reaches the first HTML response, then open the full evidence when you need the details.')}
+                    <p className="max-w:72ch mb:0 mt:lg text:lg text:muted">
+                        {t('Measured from real documentation pages, Master CSS keeps critical styling small without reducing expressiveness, so modern interfaces stay fast to ship and light to load.')}
                     </p>
                 </div>
 

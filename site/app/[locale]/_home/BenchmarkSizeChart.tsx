@@ -188,7 +188,7 @@ function PageCSSSizeRow({
                             <CountdownKilobytes
                                 active={inView}
                                 barDuration={barDuration}
-                                className={clsx('tabular-nums font-weight:560 font:lg text:strong font:xl@md', row.isMasterCSS && 'text:yellow')}
+                                className={clsx('tabular-nums font:lg text:strong', row.isMasterCSS && 'text:yellow')}
                                 delay={index * rowDelayStep}
                                 fromBytes={axisMaxBytes}
                                 reduceMotion={reduceMotion}
