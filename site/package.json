@@ -23,6 +23,7 @@
         "test:llms": "tsx --test scripts/generate-llms-txt.test.ts",
         "test:docs-examples": "tsx --test scripts/validate-doc-examples.test.ts",
         "test:syntax": "tsx --test components/SyntaxTr.test.ts",
+        "test:home": "tsx --test utils/home-content.test.ts utils/home-browser-css-cost.test.ts",
         "start": "wrangler pages dev site/out --cwd .. --kv PLAY_SHARES",
         "lint": "eslint .",
         "type-check": "tsc --noEmit"
@@ -49,6 +50,7 @@
         "mdast-util-mdxjs-esm": "^2.0.1",
         "micromark-extension-mdx-jsx": "^3.0.2",
         "micromark-extension-mdxjs-esm": "^3.0.0",
+        "motion": "^12.42.2",
         "nanoid": "^5.1.15",
         "next": "^16.2.9",
         "react": "^19.2.7",
