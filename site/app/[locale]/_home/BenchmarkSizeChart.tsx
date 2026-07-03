@@ -13,7 +13,8 @@ type BenchmarkSizeChartLabels = {
     modeLabels: Record<HomePageCSSSizeModeId, string>
 }
 
-const barDuration = 0.82
+const chartAnimationDuration = 3
+const ratioFadeDuration = 0.24
 const rowDelayStep = 0.085
 const axisTickTarget = 4
 const chartGridStyle = { gridTemplateColumns: 'minmax(5.25rem, 6.5rem) minmax(0, 1fr)' }
@@ -47,6 +48,7 @@ export default function BenchmarkSizeChart({
         [activeModeId, pageCSSSize.modes]
     )
     const axis = useMemo(() => createBenchmarkAxis(activeMode.maxBytes), [activeMode.maxBytes])
+    const barDuration = Math.max(1.2, chartAnimationDuration - (activeMode.rows.length - 1) * rowDelayStep - ratioFadeDuration)
 
     return (
         <div ref={chartRef} className="rel py:md">
@@ -95,6 +97,7 @@ export default function BenchmarkSizeChart({
                         {activeMode.rows.map((row, index) => (
                             <PageCSSSizeRow
                                 axisMaxBytes={axis.maxBytes}
+                                barDuration={barDuration}
                                 inView={inView}
                                 index={index}
                                 key={row.name}
@@ -132,6 +135,7 @@ export default function BenchmarkSizeChart({
 
 function PageCSSSizeRow({
     axisMaxBytes,
+    barDuration,
     inView,
     index,
     labels,
@@ -139,6 +143,7 @@ function PageCSSSizeRow({
     row
 }: {
     axisMaxBytes: number
+    barDuration: number
     inView: boolean
     index: number
     labels: BenchmarkSizeChartLabels
@@ -174,10 +179,15 @@ function PageCSSSizeRow({
                         initial={reduceMotion ? false : { left: '100%' }}
                         style={{ transform: 'translate(0, -50%)' }}
                         transition={{ delay: index * rowDelayStep, duration: barDuration, ease: [0.22, 1, 0.36, 1] }}>
-                        {BrandIcon && <BrandIcon width={28} height={28} className={clsx('flex:0|0|auto mx:0', brand?.className)} />}
+                        {BrandIcon && (
+                            <span className="inline-flex flex:0|0|auto ml:xs ml:sm@md">
+                                <BrandIcon width={28} height={28} className={clsx('flex:0|0|auto mx:0', brand?.className)} />
+                            </span>
+                        )}
                         <span className="inline-flex items-baseline gap:2xs gap:xs@md" data-home-value>
                             <CountdownKilobytes
                                 active={inView}
+                                barDuration={barDuration}
                                 className={clsx('tabular-nums font-weight:560 font:lg text:strong font:xl@md', row.isMasterCSS && 'text:yellow')}
                                 delay={index * rowDelayStep}
                                 fromBytes={axisMaxBytes}
@@ -202,6 +212,7 @@ function PageCSSSizeRow({
 
 function CountdownKilobytes({
     active,
+    barDuration,
     className,
     delay,
     fromBytes,
@@ -209,6 +220,7 @@ function CountdownKilobytes({
     toBytes
 }: {
     active: boolean
+    barDuration: number
     className?: string
     delay: number
     fromBytes: number
@@ -247,7 +259,7 @@ function CountdownKilobytes({
             window.clearTimeout(timeout)
             if (animationFrame) window.cancelAnimationFrame(animationFrame)
         }
-    }, [active, delay, fromBytes, reduceMotion, toBytes])
+    }, [active, barDuration, delay, fromBytes, reduceMotion, toBytes])
 
     return <span className={className}>{formatKilobytes(displayBytes)}</span>
 }
@@ -269,7 +281,7 @@ function RatioLabel({
             className="font:xs text:muted"
             data-home-ratio-label
             initial={reduceMotion ? false : { opacity: 0, y: 3 }}
-            transition={{ delay: reduceMotion ? 0 : delay, duration: 0.24, ease: [0.22, 1, 0.36, 1] }}>
+            transition={{ delay: reduceMotion ? 0 : delay, duration: ratioFadeDuration, ease: [0.22, 1, 0.36, 1] }}>
             {children}
         </motion.span>
     )
