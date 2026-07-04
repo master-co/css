@@ -39,7 +39,7 @@ export interface DiagnosticSignalContent {
     status: string
 }
 
-export const sectionLabelClassName = 'font:sm tracking:wider text:muted'
+export const sectionLabelClassName = 'font:sm tracking:widest uppercase font:semibold'
 export const sectionHeadingClassName = 'max-w:32ch mx:0 mb:0 mt:md font:3xl font:regular leading:1.08 tracking:tight text:strong text-balance font:6xl@md'
 export const sectionBodyClassName = 'max-w:72ch mb:0 mt:lg text:lg text:muted'
 

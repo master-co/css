@@ -24,7 +24,7 @@ export default function DeliveryModesSection({ t }: { t: Translate }) {
             className="py:5xl">
             <div className="app-wrapper max-w:breakpoint-2xl">
                 <div className="max-w:breakpoint-md">
-                    <p className={sectionLabelClassName}>{t('Delivery modes')}</p>
+                    <p className={sectionLabelClassName + ' text:blue'}>{t('Delivery modes')}</p>
                     <h2 className={sectionHeadingClassName}>
                         {t('One syntax. Every delivery path.')}
                     </h2>

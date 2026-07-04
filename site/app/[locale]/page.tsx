@@ -20,7 +20,7 @@ export default async function Page({ params }: {
     const t = (text: string) => translations[text] || text
 
     return (
-        <Body className="bg-cover bg-no-repeat background-image:linear-gradient(var(--color-surface-base),var(--color-surface-raised)|100vh,var(--color-surface-base)) bg:surface-base">
+        <Body className="bg-cover bg-no-repeat bg:linear-gradient(white,neutral-0|100vh,neutral-0) bg:linear-gradient(gray-90,gray-95|100vh,gray-95)@dark">
             <DocHeader stickable className="site-home-header" primaryNavClassName="visibility:hidden:of(.at-top)" />
             <HomePage t={t} />
         </Body>

@@ -3,7 +3,7 @@ import Link from '~/internal/components/Link'
 import { getHomePageCSSSize } from '~/site/utils/home-page-css-size'
 import { MotionSection } from './HomeMotion'
 import BenchmarkSizeChart from './BenchmarkSizeChart'
-import { homeSections, sectionBodyClassName, sectionHeadingClassName, type Translate } from './home-content'
+import { homeSections, sectionBodyClassName, sectionHeadingClassName, sectionLabelClassName, type Translate } from './home-content'
 
 type PageCSSSize = ReturnType<typeof getHomePageCSSSize>
 
@@ -21,6 +21,7 @@ export default function BenchmarkSection({
             className="rel py:5xl">
             <div className="app-wrapper max-w:breakpoint-2xl">
                 <div className="max-w:breakpoint-md">
+                    <p className={sectionLabelClassName + ' text:yellow'}>{t('Fastest delivery')}</p>
                     <h2 className={sectionHeadingClassName}>
                         {t('Ship the smallest CSS ever.')}
                     </h2>
