@@ -23,28 +23,26 @@ export default function DeliveryModesSection({ t }: { t: Translate }) {
             id={homeSections.deliveryModes}
             className="py:5xl bt:1px|solid|subtle bg:surface-raised/.2">
             <div className="app-wrapper max-w:breakpoint-2xl">
-                <div className="grid-cols:1 items-start gap:2xl grid-cols:12@lg">
-                    <div className="max-w:breakpoint-md grid-col-span:5@lg">
-                        <p className={sectionLabelClassName}>{t('Delivery modes')}</p>
-                        <h2 className={sectionHeadingClassName}>
-                            {t('One syntax. Every delivery path.')}
-                        </h2>
-                        <p className={sectionBodyClassName}>
-                            {t('Start in the browser, build a static CSS asset, or hydrate progressively without changing how teams write classes.')}
-                        </p>
-                        <Link href="/guide/rendering-modes" className="inline-flex items-center gap:xs mt:lg text-decoration:none text:muted">
-                            {t('Compare rendering modes')}
-                            <IconArrowRight className="size:4x stroke:1.75" />
-                        </Link>
-                    </div>
+                <div className="max-w:breakpoint-md">
+                    <p className={sectionLabelClassName}>{t('Delivery modes')}</p>
+                    <h2 className={sectionHeadingClassName}>
+                        {t('One syntax. Every delivery path.')}
+                    </h2>
+                    <p className={sectionBodyClassName}>
+                        {t('Start in the browser, build a static CSS asset, or hydrate progressively without changing how teams write classes.')}
+                    </p>
+                    <Link href="/guide/rendering-modes" className="inline-flex items-center gap:xs mt:lg text-decoration:none text:muted">
+                        {t('Compare rendering modes')}
+                        <IconArrowRight className="size:4x stroke:1.75" />
+                    </Link>
+                </div>
 
-                    <div className="grid gap:md grid-col-span:7@lg">
-                        <DeliveryPipeline t={t} />
-                        <div className="grid-cols:1 gap:sm grid-cols:2@md">
-                            {deliveryModes.map((mode) => (
-                                <DeliveryModeCard key={mode.title} mode={mode} t={t} />
-                            ))}
-                        </div>
+                <div className="mt:10x">
+                    <DeliveryPipeline t={t} />
+                    <div className="grid-cols:1 gap:sm mt:md grid-cols:3@lg">
+                        {deliveryModes.map((mode) => (
+                            <DeliveryModeCard key={mode.title} mode={mode} t={t} />
+                        ))}
                     </div>
                 </div>
             </div>

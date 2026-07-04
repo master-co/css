@@ -18,30 +18,28 @@ export default function AgentDiagnosticsSection({ t }: { t: Translate }) {
             id={homeSections.codeDiagnostics}
             className="py:5xl bt:1px|solid|subtle">
             <div className="app-wrapper max-w:breakpoint-2xl">
-                <div className="grid-cols:1 items-center gap:2xl grid-cols:12@lg">
-                    <div className="grid-col-span:7@lg">
-                        <DiagnosticVisual t={t} />
+                <div className="max-w:breakpoint-md">
+                    <p className={sectionLabelClassName}>{t('Code diagnostics for AI agents.')}</p>
+                    <h2 className={sectionHeadingClassName}>
+                        {t('Give agents the same feedback your team trusts.')}
+                    </h2>
+                    <p className={sectionBodyClassName}>
+                        {t('Project-aware scans, class diagnostics, generated CSS inspection, and safe fix previews make AI styling changes reviewable before they land.')}
+                    </p>
+                    <div className="flex flex-wrap gap:sm mt:lg">
+                        <Link href="/guide/ai-coding" className="btn btn-lg touch-yellow r:md outline-offset:2xs text-decoration:none bg:yellow fg:yellow-95 outline:2px|solid|yellow:focus-visible">
+                            {t('Guide AI agents')}
+                            <IconArrowRight className="size:4x ml:xs stroke:1.75" />
+                        </Link>
+                        <Link href="/guide/mcp-server" className="app-object btn btn-lg app-object-interactive r:md outline-offset:2xs outline:2px|solid|yellow:focus-visible">
+                            <IconTerminal2 className="size:4x mr:xs stroke:1.75" />
+                            {t('Connect MCP')}
+                        </Link>
                     </div>
+                </div>
 
-                    <div className="max-w:breakpoint-md grid-col-span:5@lg">
-                        <p className={sectionLabelClassName}>{t('Code diagnostics for AI agents.')}</p>
-                        <h2 className={sectionHeadingClassName}>
-                            {t('Give agents the same feedback your team trusts.')}
-                        </h2>
-                        <p className={sectionBodyClassName}>
-                            {t('Project-aware scans, class diagnostics, generated CSS inspection, and safe fix previews make AI styling changes reviewable before they land.')}
-                        </p>
-                        <div className="flex flex-wrap gap:sm mt:lg">
-                            <Link href="/guide/ai-coding" className="btn btn-lg touch-yellow r:md outline-offset:2xs text-decoration:none bg:yellow fg:yellow-95 outline:2px|solid|yellow:focus-visible">
-                                {t('Guide AI agents')}
-                                <IconArrowRight className="size:4x ml:xs stroke:1.75" />
-                            </Link>
-                            <Link href="/guide/mcp-server" className="app-object btn btn-lg app-object-interactive r:md outline-offset:2xs outline:2px|solid|yellow:focus-visible">
-                                <IconTerminal2 className="size:4x mr:xs stroke:1.75" />
-                                {t('Connect MCP')}
-                            </Link>
-                        </div>
-                    </div>
+                <div className="mt:10x">
+                    <DiagnosticVisual t={t} />
                 </div>
             </div>
         </MotionSection>
