@@ -9,7 +9,7 @@ import type { ComponentType, ReactNode } from 'react'
 import clsx from 'clsx'
 import Link from '~/internal/components/Link'
 import { MotionHoverSurface, MotionSection, MotionVisualFrame } from './HomeMotion'
-import { bentoTiles, homeInteractions, homeSections, sectionBodyClassName, sectionHeadingClassName, type BentoIconId, type BentoTileContent, type BentoVisualType, type Translate } from './home-content'
+import { bentoTiles, homeInteractions, homeSections, sectionBodyClassName, sectionHeadingClassName, sectionLabelClassName, type BentoIconId, type BentoTileContent, type BentoVisualType, type Translate } from './home-content'
 
 const bentoIcons = {
     code: IconCode,
@@ -23,8 +23,9 @@ export default function BentoSection({ t }: { t: Translate }) {
         <MotionSection homeSection={homeSections.designSystem} id={homeSections.designSystem} className="py:5xl">
             <div className="app-wrapper max-w:breakpoint-2xl">
                 <div className="max-w:breakpoint-md">
+                    <p className={sectionLabelClassName + ' text:yellow'}>{t('Styling system')}</p>
                     <h2 className={sectionHeadingClassName}>
-                        {t('A complete styling system for modern interfaces.')}
+                        {t('Styling modern interfaces.')}
                     </h2>
                     <p className={sectionBodyClassName}>
                         {t('Compose layout, tokens, responsive rules, and interaction states from one readable syntax.')}
