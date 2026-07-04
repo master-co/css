@@ -14,7 +14,6 @@ test('homepage section anchors and interaction hooks stay stable', () => {
 
     assert.deepEqual(Object.values(homeInteractions), [
         'benchmark-row',
-        'bento-tile',
         'cta-link'
     ])
 })
@@ -32,19 +31,19 @@ test('hero example keeps a concise static Master CSS sample', () => {
     }
 })
 
-test('bento content model keeps four unique core styling tiles', () => {
-    assert.equal(bentoTiles.length, 4)
+test('bento content model keeps static placeholder layout tiles', () => {
+    assert.equal(bentoTiles.length, 3)
     assert.equal(new Set(bentoTiles.map((tile) => tile.title)).size, bentoTiles.length)
-    assert.equal(new Set(bentoTiles.map((tile) => tile.href)).size, bentoTiles.length)
-    assert.equal(new Set(bentoTiles.map((tile) => tile.visual)).size, bentoTiles.length)
+    assert.deepEqual(bentoTiles.map((tile) => tile.previewClassName), [
+        'grid-cols:2',
+        'grid-cols:1',
+        'grid-cols:3'
+    ])
     assert.equal(bentoTiles.some((tile) => tile.title === 'Delivery modes'), false)
     assert.equal(bentoTiles.some((tile) => tile.title === 'Editor and linting'), false)
 
     for (const tile of bentoTiles) {
-        assert.match(tile.href, /^\/guide\//)
-        assert.match(tile.accent, /^bg:/)
-        assert.match(tile.span, /@lg/)
-        assert.equal(tile.sample.length, 3)
+        assert.equal(tile.blockCount > 0, true)
         assert.ok(tile.body.length > tile.title.length)
     }
 })

@@ -2,10 +2,6 @@ export type Translate = (text: string) => string
 
 export type BentoAccentClassName = 'bg:blue' | 'bg:cyan' | 'bg:green' | 'bg:red' | 'bg:yellow'
 
-export type BentoIconId = 'code' | 'desktop' | 'palette' | 'sparkles'
-
-export type BentoVisualType = 'markup' | 'responsive' | 'states' | 'tokens'
-
 export type DeliveryModeIconId = 'bolt' | 'fileCode' | 'stack'
 
 export type HomeInteractionId = typeof homeInteractions[keyof typeof homeInteractions]
@@ -15,12 +11,8 @@ export type HomeSectionId = typeof homeSections[keyof typeof homeSections]
 export interface BentoTileContent {
     title: string
     body: string
-    href: string
-    icon: BentoIconId
-    accent: BentoAccentClassName
-    span: string
-    visual: BentoVisualType
-    sample: readonly string[]
+    previewClassName: string
+    blockCount: number
 }
 
 export interface DeliveryModeContent {
@@ -54,7 +46,6 @@ export const homeSections = {
 
 export const homeInteractions = {
     benchmarkRow: 'benchmark-row',
-    bentoTile: 'bento-tile',
     ctaLink: 'cta-link'
 } as const
 
@@ -82,44 +73,22 @@ export const heroExampleCode = `
 
 export const bentoTiles = [
     {
-        title: 'Markup-driven styling',
-        body: 'Write the styling decision where the element lives, then let Master CSS emit only the rules in use.',
-        href: '/guide/introduction',
-        icon: 'code',
-        accent: 'bg:yellow',
-        span: 'grid-col-span:7@lg',
-        visual: 'markup',
-        sample: ['surface:raised', 'p:lg', 'text:strong']
+        title: 'Two-column composition',
+        body: 'A simple placeholder grid for paired content, preview panels, or side-by-side feature blocks.',
+        previewClassName: 'grid-cols:2',
+        blockCount: 4
     },
     {
-        title: 'Tokens and modes',
-        body: 'Theme variables, surfaces, text colors, and modes stay available from the same compact class language.',
-        href: '/guide/variables-and-modes',
-        icon: 'palette',
-        accent: 'bg:green',
-        span: 'grid-col-span:5@lg',
-        visual: 'tokens',
-        sample: ['bg:surface-base', 'text:muted', 'fg:accent']
+        title: 'Single-column stack',
+        body: 'A focused placeholder grid for content that should read in one steady vertical rhythm.',
+        previewClassName: 'grid-cols:1',
+        blockCount: 3
     },
     {
-        title: 'Responsive layout',
-        body: 'Use grid, flex, breakpoints, and container queries without splitting the layout across files.',
-        href: '/guide/layout-system',
-        icon: 'desktop',
-        accent: 'bg:blue',
-        span: 'grid-col-span:5@lg',
-        visual: 'responsive',
-        sample: ['grid-cols:4', 'grid-cols:12@md', '@container']
-    },
-    {
-        title: 'States and conditions',
-        body: 'Selectors, media conditions, dark mode, and interaction states travel with the declaration they affect.',
-        href: '/guide/state-selectors',
-        icon: 'sparkles',
-        accent: 'bg:cyan',
-        span: 'grid-col-span:7@lg',
-        visual: 'states',
-        sample: ['bg:yellow:hover', 'hidden@print', 'fg:white@dark']
+        title: 'Three-column spread',
+        body: 'A compact placeholder grid for repeated items with equal height and consistent spacing.',
+        previewClassName: 'grid-cols:3',
+        blockCount: 6
     }
 ] satisfies readonly BentoTileContent[]
 
