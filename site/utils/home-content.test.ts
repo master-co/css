@@ -50,11 +50,10 @@ test('bento content model keeps four unique core styling tiles', () => {
 })
 
 test('delivery modes content model links to rendering mode sections', () => {
-    assert.equal(deliveryModes.length, 4)
+    assert.equal(deliveryModes.length, 3)
     assert.deepEqual(deliveryModes.map((mode) => mode.title), [
         'Runtime rendering',
         'Static rendering',
-        'Server rendering',
         'Progressive rendering'
     ])
     assert.equal(new Set(deliveryModes.map((mode) => mode.href)).size, deliveryModes.length)

@@ -88,7 +88,7 @@ Master CSS uses the same class syntax across different delivery modes. Choose th
 
 - Runtime rendering watches class names in the browser and generates CSS as elements appear or change.
 - Static rendering scans source files during the build and emits CSS before deployment.
-- Server or pre-rendered CSS generates CSS from rendered HTML.
+- Progressive rendering generates first-response CSS from rendered HTML.
 - Progressive rendering sends first-page CSS early, then lets the runtime handle later dynamic classes.
 
 You can start with the recommended setup for your framework, then revisit delivery once the project shape is clearer. See [Rendering Modes](/guide/rendering-modes) when you need to compare the tradeoffs.

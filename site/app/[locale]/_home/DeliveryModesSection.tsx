@@ -2,7 +2,6 @@ import {
     IconArrowRight,
     IconBolt,
     IconFileCode,
-    IconServer2,
     IconStack3
 } from '@tabler/icons-react'
 import type { ComponentType } from 'react'
@@ -14,7 +13,6 @@ import { deliveryModes, homeSections, sectionBodyClassName, sectionHeadingClassN
 const deliveryModeIcons = {
     bolt: IconBolt,
     fileCode: IconFileCode,
-    server: IconServer2,
     stack: IconStack3
 } satisfies Record<DeliveryModeIconId, ComponentType<{ className?: string }>>
 
@@ -32,7 +30,7 @@ export default function DeliveryModesSection({ t }: { t: Translate }) {
                             {t('One syntax. Every delivery path.')}
                         </h2>
                         <p className={sectionBodyClassName}>
-                            {t('Start in the browser, pre-render for production, or hydrate progressively without changing how teams write classes.')}
+                            {t('Start in the browser, build a static CSS asset, or hydrate progressively without changing how teams write classes.')}
                         </p>
                         <Link href="/guide/rendering-modes" className="inline-flex items-center gap:xs mt:lg text-decoration:none text:muted">
                             {t('Compare rendering modes')}

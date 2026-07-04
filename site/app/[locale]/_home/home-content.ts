@@ -6,7 +6,7 @@ export type BentoIconId = 'code' | 'desktop' | 'palette' | 'sparkles'
 
 export type BentoVisualType = 'markup' | 'responsive' | 'states' | 'tokens'
 
-export type DeliveryModeIconId = 'bolt' | 'fileCode' | 'server' | 'stack'
+export type DeliveryModeIconId = 'bolt' | 'fileCode' | 'stack'
 
 export type HomeInteractionId = typeof homeInteractions[keyof typeof homeInteractions]
 
@@ -141,16 +141,8 @@ export const deliveryModes = [
         signal: 'Build CSS'
     },
     {
-        title: 'Server rendering',
-        body: 'Resolve first-page styles during SSR or SSG so HTML arrives already styled.',
-        href: '/guide/rendering-modes#pre-rendering-ssg-ssr',
-        icon: 'server',
-        accent: 'bg:green',
-        signal: 'SSR / SSG'
-    },
-    {
         title: 'Progressive rendering',
-        body: 'Pre-render known classes, then let runtime hydration adopt late UI states.',
+        body: 'Render first-response CSS, then let runtime hydration adopt late UI states.',
         href: '/guide/rendering-modes#progressive-rendering',
         icon: 'stack',
         accent: 'bg:red',

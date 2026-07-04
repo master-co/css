@@ -8,7 +8,7 @@ It is a release for the modern web:
 
 - CSS stylesheet authoring instead of a separate configuration layer.
 - Native CSS foundations: cascade layers, custom properties, media queries, container queries, selectors, and keyframes.
-- Four rendering modes: runtime, static, pre-render, and progressive.
+- Three rendering modes: runtime, static, and progressive.
 - Project-aware language tooling, linting, generated CSS inspection, and MCP tools for agentic workflows.
 
 <ArticleTOC data={toc}/>
@@ -135,7 +135,6 @@ Different applications need different CSS delivery. Master CSS 2.0 keeps one aut
 | --- | --- |
 | `runtime` | Start quickly, keep maximum flexibility, and generate rules as classes appear in the browser. |
 | `static` | Scan source-visible class strings and build a CSS asset ahead of time. |
-| `pre-render` | Render HTML output at build time or on the server and inject the CSS needed by that document. |
 | `progressive` | Send first-response CSS early, then let the runtime adopt those rules and continue handling dynamic UI. |
 
 For Vite projects, one plugin can switch between modes:
@@ -229,7 +228,7 @@ For framework integrations, install the matching package:
 Start with the guides that match your project:
 
 - [Theme](/guide/theme) for stylesheet-authored tokens, modes, variants, components, utilities, and managed keyframes.
-- [Rendering Modes](/guide/rendering-modes) for runtime, static, pre-render, and progressive delivery.
+- [Rendering Modes](/guide/rendering-modes) for runtime, static, and progressive delivery.
 - [Vite installation](/guide/installation/vite) for Vite-powered apps.
 - [Next.js installation](/guide/installation/nextjs) for Progressive Rendering in Next.js.
 - [AI Coding](/guide/ai-coding) and [MCP Server](/guide/mcp-server) for agent-assisted development.

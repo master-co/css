@@ -55,7 +55,7 @@ const launchCards = [
         Icon: IconDeviceDesktop,
         accent: accentClasses.green,
         title: 'Rendering modes',
-        text: 'Runtime, static, pre-render, and progressive delivery share the same authoring model.',
+        text: 'Runtime, static, and progressive delivery share the same authoring model.',
     },
     {
         Icon: IconWand,
@@ -103,12 +103,6 @@ const modeRows = [
         name: 'static',
         accent: 'bg:green-60/.12 fg:green-60',
         description: 'Source scan to a CSS asset at build time.',
-        active: ['Author', 'Resolve', 'Render', 'Inspect'],
-    },
-    {
-        name: 'pre-render',
-        accent: 'bg:cyan-60/.12 fg:cyan-60',
-        description: 'HTML-shaped CSS for build or server output.',
         active: ['Author', 'Resolve', 'Render', 'Inspect'],
     },
     {
@@ -230,7 +224,7 @@ export function ReleaseSystemPreview() {
                             </div>
                         </div>
                         <div className="flex flex-wrap gap:xs">
-                            {['runtime', 'static', 'pre-render', 'progressive'].map((mode) => (
+                            {['runtime', 'static', 'progressive'].map((mode) => (
                                 <span className="px:xs py:2xs r:sm font:mono font:xs bg:green-60/.10 fg:green-60" key={mode}>
                                     {mode}
                                 </span>
@@ -331,7 +325,7 @@ export function RenderingModesChart() {
             description="Each mode uses the same stylesheet-authored vocabulary, but moves the resolve, render, and hydrate work to the place that fits the app."
             eyebrow="Mode chart"
             Icon={IconDeviceDesktop}
-            title="Four rendering modes, one authoring model"
+            title="Three rendering modes, one authoring model"
         >
             <div className="grid gap:sm" role="img" aria-label="Qualitative rendering mode chart with author, resolve, render, hydrate, and inspect phases">
                 {modeRows.map((mode) => (
@@ -400,7 +394,7 @@ export function AgentWorkflowDemo() {
                     <DemoLabel>Inspect</DemoLabel>
                     <pre className="overflow:hidden m:0 p:sm r:md font:xs leading:lg bg:surface-base text:muted">
                         <code className="block overflow:hidden text-ellipsis white-space:nowrap">
-                            class="btn bg:brand bg:brand/.85:hover"
+                            {'class="btn bg:brand bg:brand/.85:hover"'}
                         </code>
                         <code className="block overflow:hidden text-ellipsis white-space:nowrap">
                             -&gt; color tokens, hover state, component compose

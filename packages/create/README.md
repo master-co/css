@@ -32,7 +32,7 @@ Use `--mode <mode>` when the framework integration should be configured for a sp
 npm create @master/css@rc -- --framework nextjs --mode static --yes
 ```
 
-Supported `--mode` values are `runtime`, `static`, `progressive`, and `pre-render`. Mode setup is supported for `vite`, `react`, `react-router`, `tanstack-start`, `vue`, `nextjs`, `nuxt`, `astro`, `webpack`, `rspack`, `rsbuild`, `laravel`, and `lit`; Laravel supports `static` only.
+Supported `--mode` values are `runtime`, `static`, and `progressive`. Mode setup is supported for `vite`, `react`, `react-router`, `tanstack-start`, `vue`, `nextjs`, `nuxt`, `astro`, `webpack`, `rspack`, `rsbuild`, `laravel`, and `lit`; Laravel supports `static` only.
 
 If you do not have a project yet, create one first:
 

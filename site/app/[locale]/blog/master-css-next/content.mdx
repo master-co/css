@@ -1,6 +1,6 @@
 Today we are introducing `@master/css.next`, the official Master CSS integration for Next.js.
 
-The headline is Progressive Rendering through the Next.js Adapter API. The adapter plugs into the Next.js build pipeline, receives the final static and pre-rendered HTML outputs, renders the Master CSS rules each document needs, and writes them back into the page as `<style id="master-css">`.
+The headline is Progressive Rendering through the Next.js Adapter API. The adapter plugs into the Next.js build pipeline, receives the final build-rendered HTML outputs, renders the Master CSS rules each document needs, and writes them back into the page as `<style id="master-css">`.
 
 This release also includes Static Rendering for Turbopack, so teams that prefer a generated CSS asset can use a source-scanned workflow. That path is useful, but it is secondary to the larger integration: Master CSS can now render from the HTML that Next.js actually produced.
 
@@ -10,11 +10,11 @@ This release also includes Static Rendering for Turbopack, so teams that prefer 
 
 ## Why this release matters
 
-Next.js 16.2 introduced a stable [Adapter API](https://nextjs.org/blog/nextjs-across-platforms#the-adapter-api). In the Next.js team's words, the build now exposes a typed, versioned description of the application, including routes, prerenders, static assets, runtime targets, dependencies, caching rules, and routing decisions.
+Next.js 16.2 introduced a stable [Adapter API](https://nextjs.org/blog/nextjs-across-platforms#the-adapter-api). The build now exposes a typed, versioned description of the application, including routes, rendered outputs, static assets, runtime targets, dependencies, caching rules, and routing decisions.
 
 That gives Master CSS a better integration point than a post-build file glob. `@master/css.next` uses the public `onBuildComplete` hook to read the final build output and process the HTML that Next.js already knows about.
 
-For App Router applications, Server Components, MDX, generated pages, static routes, and pre-rendered routes, this matters because the adapter works from the framework output instead of guessing how the build directory is shaped.
+For App Router applications, Server Components, MDX, generated pages, static routes, and build-rendered routes, this matters because the adapter works from the framework output instead of guessing how the build directory is shaped.
 
 ---
 
@@ -27,7 +27,7 @@ export default function Page() {
     return (
         <main className="min-h:100vh p:10x bg:surface-base text:neutral">
             <h1 className="font:6xl font:heavy tracking:tight">
-                Master CSS pre-rendered by Next.js
+                Master CSS rendered by Next.js
             </h1>
         </main>
     )
@@ -38,7 +38,7 @@ In runtime mode, Master CSS reads those classes in the browser and generates the
 
 Progressive Rendering moves that first CSS pass into the build:
 
-1. Next.js renders static and pre-rendered HTML during `next build`.
+1. Next.js renders static HTML outputs during `next build`.
 2. `@master/css.next` receives those build outputs through the Adapter API.
 3. The adapter runs the Master CSS server renderer against each HTML document.
 4. The generated CSS is injected as `<style id="master-css">`, and the page hydration manifest is written as a hashed JSON asset.
@@ -103,7 +103,7 @@ This turns Progressive Rendering from a post-build convention into a framework-l
 
 ### Faster first paint
 
-The critical CSS for a pre-rendered page is already in the HTML response. The browser does not need to wait for the Master CSS runtime to boot before styling the first screen, which reduces the risk of flash of unstyled content.
+The critical CSS for a build-rendered page is already in the HTML response. The browser does not need to wait for the Master CSS runtime to boot before styling the first screen, which reduces the risk of flash of unstyled content.
 
 ### Route-level CSS output
 
@@ -168,7 +168,7 @@ const nextConfig = withMasterCSS({
 export default nextConfig
 ```
 
-Development uses the runtime engine directly for fast refresh. Run a production build to verify that `<style id="master-css">` is pre-rendered into static and pre-rendered HTML outputs:
+Development uses the runtime engine directly for fast refresh. Run a production build to verify that `<style id="master-css">` is rendered into static HTML outputs:
 
 ```bash name=Terminal
 npm run build
@@ -179,7 +179,7 @@ npm run start
 
 ## Static Rendering for Turbopack
 
-`@master/css.next` also supports a source-scanned CSS workflow for projects that do not need runtime rendering or route-level HTML pre-rendering.
+`@master/css.next` also supports a source-scanned CSS workflow for projects that do not need runtime rendering or route-level first-response CSS.
 
 Static mode uses the same Master CSS stylesheet import model as the other build integrations:
 
@@ -228,7 +228,7 @@ The larger difference is Progressive Rendering.
 
 With `@master/css.next`, the first CSS pass can start from the HTML that Next.js has already rendered. That means layout composition, MDX output, generated markup, Server Component output, and route-level rendering all converge into one artifact before Master CSS renders the page CSS.
 
-For source scanning, a dynamic class still needs to resolve to complete class strings in source. For Progressive Rendering, a pre-rendered route can produce the final class list in HTML first:
+For source scanning, a dynamic class still needs to resolve to complete class strings in source. For Progressive Rendering, a build-rendered route can produce the final class list in HTML first:
 
 ```tsx
 export function Badge({ tone }: {
@@ -242,7 +242,7 @@ export function Badge({ tone }: {
 }
 ```
 
-If a pre-rendered route outputs this HTML:
+If a build-rendered route outputs this HTML:
 
 ```html
 <span class="px:xs py:3xs r:sm bg:blue/.1 text:blue">New</span>
@@ -263,7 +263,7 @@ This is a different tradeoff, not a claim that one pipeline replaces the other. 
 
 ## Current boundary
 
-`@master/css.next` is a build-time adapter. It processes static and pre-rendered HTML outputs produced during `next build`.
+`@master/css.next` is a build-time adapter. It processes static HTML outputs produced during `next build`.
 
 Dynamic SSR responses still rely on the Master CSS runtime engine, because those responses are produced at request time rather than in the completed build output. This is intentional: the first HTML response gets the CSS that can be known at build time, and the runtime continues the rendering model where the page becomes dynamic.
 
@@ -280,7 +280,7 @@ The important change is not just that the setup is shorter. It is that Master CS
 That gives the integration a better long-term shape-outside:
 
 - it is tied to a typed Next.js output contract;
-- it runs when all static and pre-rendered outputs are known;
+- it runs when all static HTML outputs are known;
 - it removes file-glob assumptions from the user setup;
 - it keeps runtime rendering available for the parts of the UI that cannot be known at build time;
 - it makes Progressive Rendering the default story for serious Next.js projects.

@@ -5,14 +5,29 @@ import Link from '~/internal/components/Link'
 
 export default () => (
     <>
-        <table className=''>
+        <style>{`
+            .rendering-mode-comparison :is(th, td) {
+                overflow-wrap: normal;
+                white-space: normal !important;
+            }
+
+            .rendering-mode-comparison tbody th {
+                overflow-wrap: anywhere;
+            }
+
+            @media (width < 40rem) {
+                .rendering-mode-comparison :is(th, td) {
+                    padding-inline: .25rem;
+                }
+            }
+        `}</style>
+        <table className="w:full table-layout:fixed rendering-mode-comparison">
             <thead>
                 <tr>
                     <th className="sticky top:2xl z:1 pt:md surface:raised top:60px@sm">Modes</th>
-                    <th className="sticky top:2xl z:1 w:calc(100%/6) pt:md text-center bg:surface-base top:60px@sm">Progressive</th>
-                    <th className="sticky top:2xl z:1 w:calc(100%/6) pt:md text-center bg:surface-base top:60px@sm">Runtime</th>
-                    <th className="sticky top:2xl z:1 w:calc(100%/6) pt:md text-center bg:surface-base top:60px@sm">Static</th>
-                    <th className="sticky top:2xl z:1 w:calc(100%/6) pt:md text-center bg:surface-base top:60px@sm">Pre-render</th>
+                    <th className="sticky top:2xl z:1 pt:md text-center bg:surface-base top:60px@sm">Progressive</th>
+                    <th className="sticky top:2xl z:1 pt:md text-center bg:surface-base top:60px@sm">Runtime</th>
+                    <th className="sticky top:2xl z:1 pt:md text-center bg:surface-base top:60px@sm">Static</th>
                 </tr>
             </thead>
             <tbody>
@@ -24,21 +39,18 @@ export default () => (
                     <td><InlineGood /></td>
                     <td><InlineGood /></td>
                     <td>-</td>
-                    <td>-</td>
                 </tr>
                 <tr>
                     <th>SSR (Server-side Rendering)</th>
                     <td><InlineGood /></td>
                     <td>-</td>
                     <td>-</td>
-                    <td><InlineGood /></td>
                 </tr>
                 <tr>
                     <th>SSG (Static Site Generation)</th>
                     <td><InlineGood /></td>
                     <td>-</td>
                     <td>-</td>
-                    <td><InlineGood /></td>
                 </tr>
                 <tr>
                     <td colSpan={4}><small>Frameworks</small></td>
@@ -48,20 +60,17 @@ export default () => (
                     <td><InlineGood /></td>
                     <td><InlineGood /> ~27kB</td>
                     <td><InlineGood /></td>
-                    <td><InlineGood /></td>
                 </tr>
                 <tr>
                     <th><Link href="https://tailwindcss.com/" indicate>Tailwind CSS</Link></th>
                     <td><InlineBad /></td>
                     <td><InlineBad /> Dev</td>
                     <td><InlineGood /></td>
-                    <td>-</td>
                 </tr>
                 <tr>
                     <th><Link href="https://unocss.dev/" indicate>Uno CSS</Link></th>
                     <td><InlineBad /></td>
                     <td><InlineGood /> ~53kB</td>
-                    <td><InlineGood /></td>
                     <td><InlineGood /></td>
                 </tr>
                 <tr>
@@ -72,21 +81,18 @@ export default () => (
                     <td><InlineWarn /></td>
                     <td><InlineWarn /></td>
                     <td><InlineGood />Zero</td>
-                    <td><InlineGood />Zero</td>
                 </tr>
                 <tr>
                     <th>Style calculation</th>
                     <td><InlineWarn />Hydrated + dynamic</td>
                     <td><InlineWarn />Dynamic</td>
                     <td><InlineGood />Prebuilt</td>
-                    <td><InlineGood />Initial</td>
                 </tr>
                 <tr>
                     <th>Memory overhead</th>
                     <td><InlineWarn />Runtime cache</td>
                     <td><InlineWarn />Runtime cache</td>
                     <td><InlineWarn />CSS bundle</td>
-                    <td><InlineGood />Minimal</td>
                 </tr>
                 <tr>
                     <td colSpan={4}><small>Page Load Speed</small></td>
@@ -96,21 +102,18 @@ export default () => (
                     <td><InlineGood />Internal</td>
                     <td><InlineGood />Internal</td>
                     <td><InlineWarn />External</td>
-                    <td><InlineGood />Internal</td>
                 </tr>
                 <tr>
                     <th>Render-blocking JS</th>
                     <td><InlineGood />Defer</td>
                     <td><InlineWarn />Yes</td>
                     <td><InlineGood />No</td>
-                    <td><InlineGood />No</td>
                 </tr>
                 <tr>
-                    <th>Pre-rendering</th>
+                    <th>First-response CSS</th>
                     <td><InlineGood /></td>
                     <td><InlineBad /></td>
                     <td><InlineWarn /></td>
-                    <td><InlineGood /></td>
                 </tr>
                 <tr>
                     <td colSpan={4}><small>CSS Sources</small></td>
@@ -120,21 +123,18 @@ export default () => (
                     <td><InlineGood />~5kB</td>
                     <td><InlineGood />0kB</td>
                     <td><InlineWarn />~400kB</td>
-                    <td><InlineGood />~5kB</td>
                 </tr>
                 <tr>
                     <th>Source of CSS bytes</th>
                     <td><InlineGood />Page</td>
                     <td><InlineGood />Page</td>
                     <td><InlineWarn />Bundle</td>
-                    <td><InlineGood />Page</td>
                 </tr>
                 <tr>
                     <th>The source of generated CSS</th>
                     <td><InlineGood />Attribute</td>
                     <td><InlineGood />Attribute</td>
                     <td><InlineWarn />Raw</td>
-                    <td><InlineGood />Attribute</td>
                 </tr>
                 <tr>
                     <td colSpan={4}><small>Capability</small></td>
@@ -144,18 +144,15 @@ export default () => (
                     <td><InlineGood />Yes</td>
                     <td><InlineGood />Yes</td>
                     <td><InlineBad />No</td>
-                    <td><InlineWarn />Initial</td>
                 </tr>
                 <tr>
                     <th>Class interpolation</th>
                     <td><InlineGood />Yes</td>
                     <td><InlineGood />Yes</td>
                     <td><InlineBad />No</td>
-                    <td><InlineWarn />Initial</td>
                 </tr>
                 <tr>
                     <th>Classes in .html</th>
-                    <td><InlineGood />Yes</td>
                     <td><InlineGood />Yes</td>
                     <td><InlineGood />Yes</td>
                     <td><InlineGood />Yes</td>
@@ -165,7 +162,6 @@ export default () => (
                     <td><InlineGood />Yes</td>
                     <td><InlineGood />Yes</td>
                     <td><InlineWarn />Partial</td>
-                    <td><InlineBad />No</td>
                 </tr>
                 <tr>
                     <td colSpan={4}><small>SEO metrics</small></td>
@@ -175,18 +171,15 @@ export default () => (
                     <td><InlineGood />Fastest</td>
                     <td><InlineWarn /></td>
                     <td><InlineWarn /></td>
-                    <td><InlineGood />Fastest</td>
                 </tr>
                 <tr>
                     <th>FCP (First Contentful Paint)</th>
                     <td><InlineGood />Fastest</td>
                     <td><InlineWarn /></td>
                     <td><InlineWarn /></td>
-                    <td><InlineGood />Fastest</td>
                 </tr>
                 <tr>
                     <th>CLS (Cumulative Layout Shift)</th>
-                    <td><InlineGood /></td>
                     <td><InlineGood /></td>
                     <td><InlineGood /></td>
                     <td><InlineGood /></td>
@@ -195,7 +188,6 @@ export default () => (
                     <th>INP (Interaction to Next Paint)</th>
                     <td><InlineGood /></td>
                     <td><InlineWarn /></td>
-                    <td><InlineGood /></td>
                     <td><InlineGood /></td>
                 </tr>
             </tbody>
