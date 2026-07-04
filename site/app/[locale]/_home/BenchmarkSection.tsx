@@ -18,7 +18,7 @@ export default function BenchmarkSection({
         <MotionSection
             homeSection={homeSections.cssCost}
             id={homeSections.cssCost}
-            className="rel py:5xl bb:1px|solid|subtle bt:1px|solid|subtle bg:surface-raised/.26">
+            className="rel py:5xl">
             <div className="app-wrapper max-w:breakpoint-2xl">
                 <div className="max-w:breakpoint-md">
                     <h2 className={sectionHeadingClassName}>

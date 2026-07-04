@@ -16,7 +16,7 @@ export default function AgentDiagnosticsSection({ t }: { t: Translate }) {
         <MotionSection
             homeSection={homeSections.codeDiagnostics}
             id={homeSections.codeDiagnostics}
-            className="py:5xl bt:1px|solid|subtle">
+            className="py:5xl">
             <div className="app-wrapper max-w:breakpoint-2xl">
                 <div className="max-w:breakpoint-md">
                     <p className={sectionLabelClassName}>{t('Code diagnostics for AI agents.')}</p>

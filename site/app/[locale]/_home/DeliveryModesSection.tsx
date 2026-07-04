@@ -21,7 +21,7 @@ export default function DeliveryModesSection({ t }: { t: Translate }) {
         <MotionSection
             homeSection={homeSections.deliveryModes}
             id={homeSections.deliveryModes}
-            className="py:5xl bt:1px|solid|subtle bg:surface-raised/.2">
+            className="py:5xl">
             <div className="app-wrapper max-w:breakpoint-2xl">
                 <div className="max-w:breakpoint-md">
                     <p className={sectionLabelClassName}>{t('Delivery modes')}</p>

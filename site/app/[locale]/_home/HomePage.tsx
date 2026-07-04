@@ -15,12 +15,12 @@ export default function HomePage({ t }: { t: Translate }) {
     return (
         <main className="overflow:hidden">
             <HeroSection t={t} />
-            <BenchmarkSection t={t} pageCSSSize={pageCSSSize} />
             <BentoSection t={t} />
+            <BenchmarkSection t={t} pageCSSSize={pageCSSSize} />
             <DeliveryModesSection t={t} />
             <AgentDiagnosticsSection t={t} />
             <CTASection t={t} />
-            <Footer {...footerProps} className="bg:surface-raised/.35" />
+            <Footer {...footerProps} className="bt:0px!" />
         </main>
     )
 }
