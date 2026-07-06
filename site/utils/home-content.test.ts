@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
-import { benchmarkChartColors, bentoTiles, deliveryModes, diagnosticSignals, heroExampleClassNames, heroExampleCode, homeInteractions, homeSections } from '../app/[locale]/_home/home-content.js'
+import { benchmarkChartColors, bentoRows, deliveryModes, diagnosticSignals, heroExampleClassNames, heroExampleCode, homeInteractions, homeSections } from '../app/[locale]/_home/home-content.js'
 
 test('homepage section anchors and interaction hooks stay stable', () => {
     assert.deepEqual(Object.values(homeSections), [
@@ -32,19 +32,19 @@ test('hero example keeps a concise static Master CSS sample', () => {
 })
 
 test('bento content model keeps static placeholder layout tiles', () => {
-    assert.equal(bentoTiles.length, 3)
-    assert.equal(new Set(bentoTiles.map((tile) => tile.title)).size, bentoTiles.length)
-    assert.deepEqual(bentoTiles.map((tile) => tile.previewClassName), [
-        'grid-cols:2',
+    assert.equal(bentoRows.length, 3)
+    assert.equal(new Set(bentoRows.map((row) => row.title)).size, bentoRows.length)
+    assert.deepEqual(bentoRows.map((row) => row.gridClassName), [
+        'grid-cols:1 grid-cols:2@md',
         'grid-cols:1',
-        'grid-cols:3'
+        'grid-cols:1 grid-cols:3@md'
     ])
-    assert.equal(bentoTiles.some((tile) => tile.title === 'Delivery modes'), false)
-    assert.equal(bentoTiles.some((tile) => tile.title === 'Editor and linting'), false)
+    assert.deepEqual(bentoRows.map((row) => row.gridCount), [2, 1, 3])
+    assert.equal(bentoRows.some((row) => row.title === 'Delivery modes'), false)
+    assert.equal(bentoRows.some((row) => row.title === 'Editor and linting'), false)
 
-    for (const tile of bentoTiles) {
-        assert.equal(tile.blockCount > 0, true)
-        assert.ok(tile.body.length > tile.title.length)
+    for (const row of bentoRows) {
+        assert.ok(row.body.length > row.title.length)
     }
 })
 

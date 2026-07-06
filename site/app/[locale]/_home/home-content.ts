@@ -8,11 +8,11 @@ export type HomeInteractionId = typeof homeInteractions[keyof typeof homeInterac
 
 export type HomeSectionId = typeof homeSections[keyof typeof homeSections]
 
-export interface BentoTileContent {
+export interface BentoRowContent {
     title: string
     body: string
-    previewClassName: string
-    blockCount: number
+    gridClassName: string
+    gridCount: number
 }
 
 export interface DeliveryModeContent {
@@ -71,26 +71,26 @@ export const heroExampleCode = `
 </article>
 `
 
-export const bentoTiles = [
+export const bentoRows = [
     {
-        title: 'Two-column composition',
+        title: 'Two-column grid',
         body: 'A simple placeholder grid for paired content, preview panels, or side-by-side feature blocks.',
-        previewClassName: 'grid-cols:2',
-        blockCount: 4
+        gridClassName: 'grid-cols:1 grid-cols:2@md',
+        gridCount: 2
     },
     {
-        title: 'Single-column stack',
+        title: 'Single-column grid',
         body: 'A focused placeholder grid for content that should read in one steady vertical rhythm.',
-        previewClassName: 'grid-cols:1',
-        blockCount: 3
+        gridClassName: 'grid-cols:1',
+        gridCount: 1
     },
     {
-        title: 'Three-column spread',
+        title: 'Three-column grid',
         body: 'A compact placeholder grid for repeated items with equal height and consistent spacing.',
-        previewClassName: 'grid-cols:3',
-        blockCount: 6
+        gridClassName: 'grid-cols:1 grid-cols:3@md',
+        gridCount: 3
     }
-] satisfies readonly BentoTileContent[]
+] satisfies readonly BentoRowContent[]
 
 export const deliveryModes = [
     {

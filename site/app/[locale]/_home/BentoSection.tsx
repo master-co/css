@@ -1,6 +1,6 @@
 import clsx from 'clsx'
 import { MotionSection } from './HomeMotion'
-import { bentoTiles, homeSections, sectionBodyClassName, sectionHeadingClassName, sectionLabelClassName, type BentoTileContent, type Translate } from './home-content'
+import { bentoRows, homeSections, sectionBodyClassName, sectionHeadingClassName, sectionLabelClassName, type BentoRowContent, type Translate } from './home-content'
 
 export default function BentoSection({ t }: { t: Translate }) {
     return (
@@ -16,10 +16,10 @@ export default function BentoSection({ t }: { t: Translate }) {
                     </p>
                 </div>
 
-                <div className="mt:10x p:md r:lg surface:muted">
-                    <div className="grid-cols:1 gap:md grid-cols:3@lg">
-                        {bentoTiles.map((tile) => (
-                            <BentoTile key={tile.title} tile={tile} t={t} />
+                <div className="mx:-md mt:10x p:md r:lg surface:muted">
+                    <div className="grid gap:md">
+                        {bentoRows.map((row) => (
+                            <BentoGridRow key={row.title} row={row} t={t} />
                         ))}
                     </div>
                 </div>
@@ -28,16 +28,18 @@ export default function BentoSection({ t }: { t: Translate }) {
     )
 }
 
-function BentoTile({ t, tile }: { t: Translate; tile: BentoTileContent }) {
+function BentoGridRow({ t, row }: { t: Translate; row: BentoRowContent }) {
     return (
-        <article className="flex flex-col min-h:68x p:md b:1px|solid|subtle r:md surface:base">
-            <h3 className="mx:0 mb:0 font-weight:560 font:xl text:strong">{t(tile.title)}</h3>
-            <p className="mx:0 mb:0 mt:sm leading:1.65 text:muted">{t(tile.body)}</p>
-            <div className={clsx('grid gap:sm mt:auto pt:lg', tile.previewClassName)}>
-                {Array.from({ length: tile.blockCount }, (_, index) => (
-                    <div className="min-h:24x b:1px|solid|subtle r:sm bg:surface-muted" key={index} />
-                ))}
-            </div>
-        </article>
+        <div className={clsx('grid gap:md', row.gridClassName)}>
+            {Array.from({ length: row.gridCount }, (_, index) => (
+                <article className="flex flex-col min-h:68x p:md b:1px|solid|subtle r:md surface:base" key={index}>
+                    <h3 className="mx:0 mb:0 font-weight:560 font:xl text:strong">
+                        {t(row.title)}{row.gridCount > 1 && ` ${index + 1}`}
+                    </h3>
+                    <p className="mx:0 mb:0 mt:sm leading:1.65 text:muted">{t(row.body)}</p>
+                    <div className="h:28x mt:auto b:1px|solid|subtle r:sm bg:surface-muted" />
+                </article>
+            ))}
+        </div>
     )
 }
