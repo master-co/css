@@ -114,6 +114,12 @@ describe('shared scanner plugins', () => {
             expect(calls).toEqual([])
         })
 
+        test('does not wait for Vite request idle during dev server setup', () => {
+            const usageGraphPlugin = UsageGraphPlugin({} as any, {} as any)
+
+            expect(usageGraphPlugin).not.toHaveProperty('configureServer')
+        })
+
         test('build transformIndexHtml feeds HTML to scanModule', async () => {
             const ctx: any = {}
             const plugins = [
