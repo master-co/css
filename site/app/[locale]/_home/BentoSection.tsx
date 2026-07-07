@@ -32,11 +32,13 @@ function BentoGridRow({ t, row }: { t: Translate; row: BentoRowContent }) {
     return (
         <div className={clsx('grid gap:md', row.gridClassName)}>
             {Array.from({ length: row.gridCount }, (_, index) => (
-                <article className="flex flex-col min-h:68x p:md b:1px|solid|subtle r:md surface:base" key={index}>
-                    <h3 className="mx:0 mb:0 font-weight:560 font:xl text:strong">
-                        {t(row.title)}{row.gridCount > 1 && ` ${index + 1}`}
-                    </h3>
-                    <p className="mx:0 mb:0 mt:sm leading:1.65 text:muted">{t(row.body)}</p>
+                <article className="flex flex-col b:1px|solid|subtle r:md surface:base" key={index}>
+                    <div className="flex flex-col p:2xl">
+                        <h3 className="mx:0 mb:0 font:2xl text:strong">
+                            {t(row.title)}{row.gridCount > 1 && ` ${index + 1}`}
+                        </h3>
+                        <p className="mx:0 mb:0 mt:sm text:sm max-w:48ch text:muted">{t(row.body)}</p>
+                    </div>
                     <div className="h:28x mt:auto b:1px|solid|subtle r:sm bg:surface-muted" />
                 </article>
             ))}
