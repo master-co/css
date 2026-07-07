@@ -32,8 +32,8 @@ export default function BentoSection({ t }: { t: Translate }) {
                     </p>
                 </div>
 
-                <div className="mx:-md mt:10x p:md r:4xl surface:muted">
-                    <div className="grid gap:md">
+                <div className="mx:-md mt:10x p:calc(var(--spacing-md)+1px) r:4xl surface:muted">
+                    <div className="grid gap:calc(var(--spacing-md)+1px)">
                         {bentoRows.map((row) => (
                             <BentoGridRow key={row.title} row={row} t={t} />
                         ))}
@@ -47,14 +47,14 @@ export default function BentoSection({ t }: { t: Translate }) {
 function BentoGridRow({ t, row }: { t: Translate; row: BentoRowContent }) {
     if (row.visual === 'p3-palette') {
         return (
-            <div className={clsx('grid gap:md', row.gridClassName)}>
+            <div className={clsx('grid gap:calc(var(--spacing-md)+1px)', row.gridClassName)}>
                 <P3PaletteCard row={row} t={t} />
             </div>
         )
     }
 
     return (
-        <div className={clsx('grid gap:md', row.gridClassName)}>
+        <div className={clsx('grid gap:calc(var(--spacing-md)+1px)', row.gridClassName)}>
             {Array.from({ length: row.gridCount }, (_, index) => (
                 <article className="flex flex-col r:2xl outline:1px|solid|subtle surface:base" key={index}>
                     <div className="flex flex-col p:2xl">
@@ -89,20 +89,20 @@ function P3PalettePreview() {
     return (
         <div
             aria-label="P3 palette tiers from 100 through 0"
-            className="rel overflow:hidden mx:sm mb:sm mt:auto r:xl outline:1px|solid|subtle bg:surface-muted"
+            className="rel overflow:hidden mx:calc(var(--spacing-sm)+1px) mb:calc(var(--spacing-sm)+1px) mt:auto r:xl outline:1px|solid|subtle bg:surface-muted"
             role="img">
             <div aria-hidden="true" className="abs inset:0 opacity:.8 pointer-events:none" style={p3PaletteDotGridStyle} />
 
-            <div aria-hidden="true" className="rel z:1 px:xl py:xl pointer-events:none" style={p3PaletteCanvasStyle}>
-                <div className="grid gap:xs" style={p3PaletteGridStyle}>
+            <div aria-hidden="true" className="rel z:1 px:calc(var(--spacing-xl)+1px) py:calc(var(--spacing-xl)+1px) pointer-events:none" style={p3PaletteCanvasStyle}>
+                <div className="grid gap:2xs" style={p3PaletteGridStyle}>
                     {p3PaletteTiers.map((tier) => (
                         <Fragment key={tier}>
-                            <div className="flex items-center pr:sm tabular-nums font:mono font:sm text:muted">
+                            <div className="flex items-center justify-end pr:lg tabular-nums font:mono font:xs text:muted">
                                 {tier}
                             </div>
                             {p3PaletteColorNames.map((colorName) => (
                                 <span
-                                    className="block size:full r:lg outline:1px|solid|subtle"
+                                    className="block size:full outline:1px|solid|subtle outline-offset:-1px"
                                     key={`${colorName}-${tier}`}
                                     style={{ backgroundColor: getColor(colorName, tier) }} />
                             ))}
