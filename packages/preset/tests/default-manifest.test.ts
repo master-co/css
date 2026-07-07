@@ -466,7 +466,7 @@ describe('@master/css-preset defaultManifest', () => {
     it('removes fixed keyword value aliases while preserving raw ambiguous matches', () => {
         const css = createTestCSS(defaultManifest)
 
-        expect(css.createRule('text:center')).toBeUndefined()
+        expect(css.createRule('text-center')).toBeUndefined()
         expect(css.createRule('text:underline')).toBeUndefined()
         expect(css.createRule('bg:cover')).toBeUndefined()
         expect(css.createRule('object:cover')).toBeUndefined()

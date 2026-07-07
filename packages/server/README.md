@@ -69,7 +69,7 @@ Render HTML and inject generated CSS.
 ```ts
 import { render } from '@master/css-server'
 
-const result = render('<div class="text:center"></div>', manifest)
+const result = render('<div class="text-center"></div>', manifest)
 
 console.log(result.html)
 console.log(result.css.text)
@@ -82,7 +82,7 @@ Render only the CSS needed by an HTML string.
 ```ts
 import { renderCSS } from '@master/css-server'
 
-const css = renderCSS('<div class="text:center"></div>', manifest)
+const css = renderCSS('<div class="text-center"></div>', manifest)
 ```
 
 ### `parseHTML()`

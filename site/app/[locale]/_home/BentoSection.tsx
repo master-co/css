@@ -6,7 +6,7 @@ import { bentoRows, homeSections, p3PaletteColorNames, p3PaletteTiers, sectionBo
 
 const p3PaletteGridStyle = {
     gridTemplateColumns: `3.25rem repeat(${p3PaletteColorNames.length}, minmax(2.75rem, 1fr))`,
-    gridAutoRows: 'clamp(2.2rem, 3.4vw, 2.45rem)'
+    gridTemplateRows: `1rem repeat(${p3PaletteTiers.length}, clamp(2.2rem, 3.4vw, 2.45rem))`
 }
 
 const p3PaletteCanvasStyle = {
@@ -95,9 +95,17 @@ function P3PalettePreview() {
 
             <div aria-hidden="true" className="rel z:1 px:calc(var(--spacing-xl)+1px) py:calc(var(--spacing-xl)+1px) pointer-events:none" style={p3PaletteCanvasStyle}>
                 <div className="grid gap:2xs" style={p3PaletteGridStyle}>
+                    <span />
+                    {p3PaletteColorNames.map((colorName) => (
+                        <span
+                            className="flex overflow:hidden items-center justify-center min-w:0 px:1px font:2xs font:mono leading:1 text-ellipsis white-space:nowrap text:muted opacity:.72"
+                            key={`label-${colorName}`}>
+                            {colorName}
+                        </span>
+                    ))}
                     {p3PaletteTiers.map((tier) => (
                         <Fragment key={tier}>
-                            <div className="flex items-center justify-end pr:lg tabular-nums font:mono font:xs text:muted">
+                            <div className="flex items-center justify-end tabular-nums font:2xs font:mono leading:1 text:muted opacity:.72">
                                 {tier}
                             </div>
                             {p3PaletteColorNames.map((colorName) => (

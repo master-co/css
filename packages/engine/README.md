@@ -23,7 +23,7 @@ import { MasterCSS } from '@master/css-engine'
 
 const css = MasterCSS.create({ manifest })
 
-css.ensureClassRules('text:center', 'font:semibold')
+css.ensureClassRules('text-center', 'font:semibold')
 console.log(css.text)
 ```
 

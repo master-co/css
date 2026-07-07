@@ -119,7 +119,7 @@ describe('stylesheet CSS directives', () => {
         writeFileSync(join(root, 'app/a/page.tsx'), '<div class="block"></div>')
         writeFileSync(join(root, 'app/b/page.tsx'), '<div class="m:0"></div>')
         writeFileSync(join(root, 'app/a/skip.tsx'), '<div class="fg:red"></div>')
-        writeFileSync(join(root, 'app/b/skip.tsx'), '<div class="text:center"></div>')
+        writeFileSync(join(root, 'app/b/skip.tsx'), '<div class="text-center"></div>')
 
         const scanner = new CSSScanner({}, root)
         await scanner.init()

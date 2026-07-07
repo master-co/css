@@ -346,7 +346,7 @@ export function RenderingModesChart() {
                                     return (
                                         <div
                                             className={clsx(
-                                                'flex items-center justify-center min-h:12x px:xs py:sm b:1px|solid|base r:md font:medium font:xs text:center',
+                                                'flex items-center justify-center min-h:12x px:xs py:sm b:1px|solid|base r:md font:medium font:xs text-center',
                                                 active ? 'surface:raised text:strong' : 'surface:muted text:muted'
                                             )}
                                             key={phase}
