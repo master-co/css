@@ -9,10 +9,6 @@ const p3PaletteGridStyle = {
     gridAutoRows: 'clamp(2.2rem, 3.4vw, 2.45rem)'
 }
 
-const p3PaletteStageStyle = {
-    height: 'clamp(22rem, 34vw, 26rem)'
-}
-
 const p3PaletteCanvasStyle = {
     width: 'max(100%, 74rem)'
 }
@@ -93,12 +89,11 @@ function P3PalettePreview() {
     return (
         <div
             aria-label="P3 palette tiers from 80 through 0"
-            className="rel overflow:hidden mx:md mb:md mt:auto b:1px|solid|subtle r:sm bg:surface-muted"
-            role="img"
-            style={p3PaletteStageStyle}>
+            className="rel overflow:hidden mx:sm mb:sm mt:auto outline:1px|solid|subtle r:sm bg:surface-muted"
+            role="img">
             <div aria-hidden="true" className="abs inset:0 opacity:.8 pointer-events:none" style={p3PaletteDotGridStyle} />
 
-            <div aria-hidden="true" className="abs left:0 top:0 z:1 px:xl py:xl pointer-events:none" style={p3PaletteCanvasStyle}>
+            <div aria-hidden="true" className="rel z:1 px:xl py:xl pointer-events:none" style={p3PaletteCanvasStyle}>
                 <div className="grid gap:xs" style={p3PaletteGridStyle}>
                     {p3PaletteTiers.map((tier) => (
                         <Fragment key={tier}>
@@ -107,7 +102,7 @@ function P3PalettePreview() {
                             </div>
                             {p3PaletteColorNames.map((colorName) => (
                                 <span
-                                    className="block size:full b:1px|solid|subtle r:xs shadow:xs"
+                                    className="block size:full b:1px|solid|subtle r:xs"
                                     key={`${colorName}-${tier}`}
                                     style={{ backgroundColor: getColor(colorName, tier) }} />
                             ))}

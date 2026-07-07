@@ -77,7 +77,7 @@ export const heroExampleCode = `
 
 export const p3PaletteColorNames = [...presetColorNames].reverse()
 
-export const p3PaletteTiers = COLOR_LEVELS.filter((tier) => tier <= 80).reverse()
+export const p3PaletteTiers = [...COLOR_LEVELS].reverse()
 
 export const bentoRows = [
     {

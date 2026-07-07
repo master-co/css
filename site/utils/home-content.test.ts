@@ -59,7 +59,7 @@ test('bento content model keeps targeted layout tiles', () => {
 
 test('homepage P3 palette preview uses every guide color in reverse order', () => {
     assert.deepEqual(p3PaletteColorNames, [...guideColorNames].reverse())
-    assert.deepEqual(p3PaletteTiers, COLOR_LEVELS.filter((tier) => tier <= 80).reverse())
+    assert.deepEqual(p3PaletteTiers, [...COLOR_LEVELS].reverse())
     assert.equal(new Set(p3PaletteColorNames).size, p3PaletteColorNames.length)
     assert.equal(p3PaletteColorNames.length, guideColorNames.length)
 })
