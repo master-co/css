@@ -1,8 +1,8 @@
 import { Fragment } from 'react'
-import { IconArrowsHorizontal, IconMoon, IconSun } from '@tabler/icons-react'
 import clsx from 'clsx'
 import { getColor } from '~/internal/data/color-palette'
 import { MotionSection } from './HomeMotion'
+import ThemeModesPreview from './ThemeModesPreview'
 import { bentoRows, homeSections, p3PaletteColorNames, p3PaletteTiers, sectionBodyClassName, sectionHeadingClassName, sectionLabelClassName, type BentoRowContent, type BentoTileContent, type Translate } from './home-content'
 
 const p3PaletteGridStyle = {
@@ -100,61 +100,8 @@ function ThemeModesCard({ t, tile }: { t: Translate; tile: BentoTileContent }) {
                 <p className={bentoCardBodyClassName}>{t(tile.body)}</p>
             </div>
 
-            <ThemeModesPreview />
+            <ThemeModesPreview className={bentoVisualClassName} />
         </article>
-    )
-}
-
-function ThemeModesPreview() {
-    return (
-        <div className={clsx(bentoVisualClassName, 'h:40x')}>
-            <div aria-hidden="true" className="abs inset:0 opacity:.8 pointer-events:none" style={p3PaletteDotGridStyle} />
-            <div className="abs inset:calc(var(--spacing-sm)+1px) overflow:hidden r:xl outline:1px|solid|subtle bg:surface-base">
-                <div className="abs inset:0 grid-cols:2">
-                    <div className="rel overflow:hidden bg:surface-base">
-                        <div className="abs inset:0 bg:linear-gradient(180deg,white/.72,transparent)" />
-                        <div className="rel z:1 flex flex-col justify-between h:full p:md">
-                            <div className="flex items-center justify-between">
-                                <span className="inline-flex items-center gap:xs font:medium font:xs text:strong">
-                                    <IconSun className="size:3.5x text:yellow stroke:1.75" />
-                                    Light
-                                </span>
-                                <code className="font:2xs font:mono text:muted">@light</code>
-                            </div>
-                            <div>
-                                <p className="m:0 font:2xs font:mono tracking:wider uppercase text:muted">surface</p>
-                                <p className="mx:0 mb:0 mt:2xs font:2xl leading:1 text:strong">base</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="rel overflow:hidden bg:neutral-100 fg:white">
-                        <div className="abs inset:0 bg:linear-gradient(180deg,white/.10,transparent)" />
-                        <div className="rel z:1 flex flex-col justify-between h:full p:md">
-                            <div className="flex items-center justify-between">
-                                <span className="inline-flex items-center gap:xs font:medium font:xs">
-                                    <IconMoon className="size:3.5x text:cyan stroke:1.75" />
-                                    Dark
-                                </span>
-                                <code className="font:2xs font:mono opacity:.64">@dark</code>
-                            </div>
-                            <div>
-                                <p className="m:0 font:2xs font:mono tracking:wider uppercase opacity:.56">surface</p>
-                                <p className="mx:0 mb:0 mt:2xs font:2xl leading:1">base</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div aria-hidden="true" className="abs bottom:0 left:50% top:0 z:2 w:1px bg:cyan" />
-                <span
-                    aria-hidden="true"
-                    className="abs left:50% top:50% z:3 grid place-content:center size:8x r:xl bg:cyan fg:white shadow:xs"
-                    style={{ transform: 'translate(-50%, -50%)' }}>
-                    <IconArrowsHorizontal className="size:4x stroke:1.75" />
-                </span>
-            </div>
-        </div>
     )
 }
 
