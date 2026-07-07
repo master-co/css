@@ -10,7 +10,7 @@ const p3PaletteGridStyle = {
 }
 
 const p3PaletteStageStyle = {
-    height: 'clamp(28rem, 42vw, 34rem)'
+    height: 'clamp(22rem, 34vw, 26rem)'
 }
 
 const p3PaletteCanvasStyle = {
@@ -92,14 +92,14 @@ function P3PaletteCard({ t, row }: { t: Translate; row: BentoRowContent }) {
 function P3PalettePreview() {
     return (
         <div
-            aria-label="P3 palette tiers from 100 through 30"
+            aria-label="P3 palette tiers from 80 through 0"
             className="rel overflow:hidden mx:md mb:md mt:auto b:1px|solid|subtle r:sm bg:surface-muted"
             role="img"
             style={p3PaletteStageStyle}>
             <div aria-hidden="true" className="abs inset:0 opacity:.8 pointer-events:none" style={p3PaletteDotGridStyle} />
 
-            <div className="rel z:1 px:lg pb:lg pt:xl" style={p3PaletteCanvasStyle}>
-                <div aria-hidden="true" className="grid gap:xs" style={p3PaletteGridStyle}>
+            <div aria-hidden="true" className="abs left:0 top:0 z:1 px:xl py:xl pointer-events:none" style={p3PaletteCanvasStyle}>
+                <div className="grid gap:xs" style={p3PaletteGridStyle}>
                     {p3PaletteTiers.map((tier) => (
                         <Fragment key={tier}>
                             <div className="flex items-center pr:sm tabular-nums font:mono font:sm text:muted">
@@ -116,8 +116,7 @@ function P3PalettePreview() {
                 </div>
             </div>
 
-            <div aria-hidden="true" className="abs bottom:0 left:0 right:0 h:20x bg:linear-gradient(transparent,surface-muted) pointer-events:none" />
-            <div aria-hidden="true" className="abs bottom:0 right:0 top:0 w:20x bg:linear-gradient(90deg,transparent,surface-muted) pointer-events:none hidden@md" />
+            <div aria-hidden="true" className="abs bottom:0 right:0 top:0 z:2 w:20x bg:linear-gradient(90deg,transparent,surface-muted) pointer-events:none hidden@md" />
         </div>
     )
 }
