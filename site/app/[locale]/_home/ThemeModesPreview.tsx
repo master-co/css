@@ -90,9 +90,14 @@ export default function ThemeModesPreview({ className }: { className?: string })
                 role="slider"
                 tabIndex={0}>
                 <div
-                    className={phoneFrameClassName}
-                    style={{ transform: 'translateX(-50%)' }}>
-                    <ShoppingAppMock mode="light" />
+                    aria-hidden="true"
+                    className="abs inset:0 z:1 overflow:hidden"
+                    style={{ clipPath: `inset(0 ${100 - split}% 0 0)` }}>
+                    <div
+                        className={phoneFrameClassName}
+                        style={{ transform: 'translateX(-50%)' }}>
+                        <ShoppingAppMock mode="light" />
+                    </div>
                 </div>
                 <div
                     aria-hidden="true"
