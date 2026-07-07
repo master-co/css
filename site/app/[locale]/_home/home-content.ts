@@ -16,7 +16,14 @@ export interface BentoRowContent {
     body: string
     gridClassName: string
     gridCount: number
+    tiles?: readonly BentoTileContent[]
     visual?: 'p3-palette'
+}
+
+export interface BentoTileContent {
+    title: string
+    body: string
+    visual?: 'theme-modes'
 }
 
 export interface DeliveryModeContent {
@@ -84,7 +91,18 @@ export const bentoRows = [
         title: 'Two-column grid',
         body: 'A simple placeholder grid for paired content, preview panels, or side-by-side feature blocks.',
         gridClassName: 'grid-cols:1 grid-cols:2@md',
-        gridCount: 2
+        gridCount: 2,
+        tiles: [
+            {
+                title: 'Theme modes',
+                body: 'Flip the same tokens between light, dark, and custom modes without changing the markup.',
+                visual: 'theme-modes'
+            },
+            {
+                title: 'Two-column grid 2',
+                body: 'A simple placeholder grid for paired content, preview panels, or side-by-side feature blocks.'
+            }
+        ]
     },
     {
         title: 'High-saturation P3 colors',

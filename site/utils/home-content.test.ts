@@ -48,6 +48,8 @@ test('bento content model keeps targeted layout tiles', () => {
     ])
     assert.deepEqual(bentoRows.map((row) => row.gridCount), [2, 1, 3])
     assert.deepEqual(bentoRows.map((row) => row.visual || 'placeholder'), ['placeholder', 'p3-palette', 'placeholder'])
+    assert.deepEqual(bentoRows[0].tiles?.map((tile) => tile.title), ['Theme modes', 'Two-column grid 2'])
+    assert.deepEqual(bentoRows[0].tiles?.map((tile) => tile.visual || 'placeholder'), ['theme-modes', 'placeholder'])
     assert.equal(bentoRows.some((row) => row.title === 'Delivery modes'), false)
     assert.equal(bentoRows.some((row) => row.title === 'Editor and linting'), false)
     assert.equal(bentoRows.some((row) => row.title === 'Single-column grid'), false)
