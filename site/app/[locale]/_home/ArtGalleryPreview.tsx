@@ -7,13 +7,17 @@ import clsx from 'clsx'
 import Image, { type StaticImageData } from 'next/image'
 import { useTranslation } from '~/internal/contexts/i18n'
 import galleryLoungeImage from '~/site/assets/images/home/nordic-gallery-lounge.png'
-import loftLivingImage from '~/site/assets/images/home/nordic-loft-living.png'
 import openLivingImage from '~/site/assets/images/home/nordic-open-living.png'
 import readingCornerImage from '~/site/assets/images/home/nordic-reading-corner.png'
 import shelfRoomImage from '~/site/assets/images/home/nordic-shelf-room.png'
 
 type ViewTransitionDocument = Document & {
     startViewTransition?: (update: () => void) => { finished?: Promise<void> }
+}
+
+interface TransitionState {
+    artworkId: string
+    direction: 'opening' | 'closing'
 }
 
 interface Artwork {
@@ -29,17 +33,33 @@ interface Artwork {
 }
 
 const rootTransitionClassName = [
-    'animation-duration:.56s::vt-group(.home-art)',
+    'view-transition-name:none',
+    'animation:none::vt-group(root)',
+    'animation:none::vt-old(root)',
+    'animation:none::vt-new(root)',
+    'animation-duration:.48s::vt-group(.home-art)',
     'animation-timing-function:smooth::vt-group(.home-art)',
+    'animation-duration:.48s::vt-group(home-art-backdrop)',
+    'animation-timing-function:smooth::vt-group(home-art-backdrop)',
+    'transform-origin:center::vt-group(.home-art)',
+    'animation:none::vt-old(.home-art)',
+    'animation:none::vt-new(.home-art)',
+    'mix-blend-mode:normal::vt-old(.home-art)',
+    'mix-blend-mode:normal::vt-new(.home-art)',
     'object-center::vt-old(.home-art)',
     'object-center::vt-new(.home-art)',
     'object-cover::vt-old(.home-art)',
     'object-cover::vt-new(.home-art)',
+    'opacity:1::vt-old(.home-art)',
+    'opacity:1::vt-new(.home-art)',
     'overflow:hidden::vt-group(.home-art)',
+    'z:2147483646::vt-group(home-art-backdrop)',
     'z:2147483647::vt-group(.home-art)'
 ].join(' ')
 
 const sharedTransitionClassName = 'view-transition-class:home-art'
+const backdropTransitionClassName = 'view-transition-name:home-art-backdrop'
+const backdropBlurTransition = 'backdrop-filter .48s ease, opacity .48s ease'
 
 const artworks = [
     {
@@ -61,17 +81,6 @@ const artworks = [
         imageTransitionName: 'view-transition-name:home-art-shelf-room-image',
         layoutClassName: 'grid-col-span:8',
         placementStyle: { gridColumnStart: 5, gridRowStart: 1 },
-        objectPositionClassName: 'object-position:center'
-    },
-    {
-        id: 'loft-living',
-        title: 'Selector Variants',
-        description: 'Attach hover, focus, media, motion, and custom selector conditions to the declaration they affect.',
-        image: loftLivingImage,
-        imageAlt: 'Tall Nordic loft living room with black-framed windows and a mezzanine',
-        imageTransitionName: 'view-transition-name:home-art-loft-living-image',
-        layoutClassName: 'grid-col-span:4 grid-row-span:2',
-        placementStyle: { gridColumnStart: 13, gridRowStart: 1 },
         objectPositionClassName: 'object-position:center'
     },
     {
@@ -102,27 +111,35 @@ function getModalImageFrameStyle(artwork: Artwork): CSSProperties {
 
     return {
         aspectRatio,
+        left: '50%',
+        position: 'fixed',
+        top: '50%',
+        transform: 'translate(-50%, -50%)',
         width: `min(${viewportWidth},calc(82dvh*${aspectRatio}))`
     }
 }
 
 export default function ArtGalleryPreview({ className }: { className?: string }) {
     const $ = useTranslation()
-    const [selectedId, setSelectedId] = useState<string>()
-    const [transitionArtworkId, setTransitionArtworkId] = useState<string>()
+    const [modalArtworkId, setModalArtworkId] = useState<string>()
+    const [modalVisible, setModalVisible] = useState(false)
+    const [transitionState, setTransitionState] = useState<TransitionState>()
+    const [hiddenGridArtworkId, setHiddenGridArtworkId] = useState<string>()
     const [portalTarget, setPortalTarget] = useState<HTMLElement | null>(null)
     const closeButtonRef = useRef<HTMLButtonElement>(null)
     const previousFocusRef = useRef<HTMLElement | null>(null)
     const restoreFocusRef = useRef(false)
-    const selectedArtwork = artworks.find((artwork) => artwork.id === selectedId)
+    const modalArtwork = artworks.find((artwork) => artwork.id === modalArtworkId)
+    const modalActive = Boolean(modalArtwork || hiddenGridArtworkId)
 
-    const transition = useCallback((artworkId: string, update: () => void) => {
+    const transition = useCallback((artworkId: string, direction: TransitionState['direction'], update: () => void, complete?: () => void) => {
         const transitionDocument = document as ViewTransitionDocument
-        flushSync(() => setTransitionArtworkId(artworkId))
+        flushSync(() => setTransitionState({ artworkId, direction }))
 
         if (!transitionDocument.startViewTransition) {
             update()
-            setTransitionArtworkId(undefined)
+            complete?.()
+            setTransitionState(undefined)
             return
         }
 
@@ -130,21 +147,40 @@ export default function ArtGalleryPreview({ className }: { className?: string })
             flushSync(update)
         })
 
-        viewTransition.finished?.finally(() => {
-            setTransitionArtworkId(undefined)
-        })
+        if (viewTransition.finished) {
+            viewTransition.finished.finally(() => {
+                flushSync(() => {
+                    complete?.()
+                    setTransitionState(undefined)
+                })
+            })
+        } else {
+            complete?.()
+            setTransitionState(undefined)
+        }
     }, [])
 
     const openArtwork = useCallback((artworkId: string) => {
         previousFocusRef.current = document.activeElement instanceof HTMLElement ? document.activeElement : null
-        transition(artworkId, () => setSelectedId(artworkId))
+        transition(artworkId, 'opening', () => {
+            setModalArtworkId(artworkId)
+            setHiddenGridArtworkId(artworkId)
+            setModalVisible(true)
+        })
     }, [transition])
 
     const closeArtwork = useCallback(() => {
-        if (!selectedId) return
+        if (!modalArtworkId) return
+        const artworkId = modalArtworkId
+
         restoreFocusRef.current = true
-        transition(selectedId, () => setSelectedId(undefined))
-    }, [selectedId, transition])
+        transition(artworkId, 'closing', () => {
+            setModalVisible(false)
+            setModalArtworkId(undefined)
+        }, () => {
+            setHiddenGridArtworkId(undefined)
+        })
+    }, [modalArtworkId, transition])
 
     useEffect(() => {
         setPortalTarget(document.body)
@@ -155,16 +191,28 @@ export default function ArtGalleryPreview({ className }: { className?: string })
     }, [])
 
     useEffect(() => {
-        if (!selectedArtwork) {
-            if (restoreFocusRef.current) {
-                restoreFocusRef.current = false
-                previousFocusRef.current?.focus()
-            }
-            return
+        if (modalArtwork || hiddenGridArtworkId) return
+
+        if (restoreFocusRef.current) {
+            restoreFocusRef.current = false
+            previousFocusRef.current?.focus()
         }
+    }, [hiddenGridArtworkId, modalArtwork])
+
+    useEffect(() => {
+        if (!modalActive) return
 
         const previousOverflow = document.body.style.overflow
         document.body.style.overflow = 'hidden'
+
+        return () => {
+            document.body.style.overflow = previousOverflow
+        }
+    }, [modalActive])
+
+    useEffect(() => {
+        if (!modalArtwork) return
+
         closeButtonRef.current?.focus()
 
         function handleKeyDown(event: KeyboardEvent) {
@@ -175,21 +223,22 @@ export default function ArtGalleryPreview({ className }: { className?: string })
 
         document.addEventListener('keydown', handleKeyDown)
         return () => {
-            document.body.style.overflow = previousOverflow
             document.removeEventListener('keydown', handleKeyDown)
         }
-    }, [closeArtwork, selectedArtwork])
+    }, [closeArtwork, modalArtwork])
 
     return (
         <div className={clsx(className, 'h:md h:lg@md')}>
             <span aria-hidden className={clsx(rootTransitionClassName, 'hidden')} />
 
             <div
-                className="grid grid-cols:16 items-stretch gap:sm h:full p:md"
+                className="grid grid-cols:12 items-stretch gap:sm h:full p:md"
                 style={{ gridTemplateRows: 'repeat(2, minmax(0, 1fr))' }}>
                 {artworks.map((artwork) => {
-                    const isTransitionArtwork = transitionArtworkId === artwork.id
-                    const imageTransitionClassName = isTransitionArtwork && selectedId !== artwork.id
+                    const isTransitionArtwork = transitionState?.artworkId === artwork.id
+                    const isClosingTransitionArtwork = isTransitionArtwork && transitionState?.direction === 'closing'
+                    const isHiddenGridArtwork = hiddenGridArtworkId === artwork.id
+                    const imageTransitionClassName = isTransitionArtwork && !modalArtworkId
                         ? clsx(sharedTransitionClassName, artwork.imageTransitionName)
                         : 'view-transition-name:none'
 
@@ -201,10 +250,10 @@ export default function ArtGalleryPreview({ className }: { className?: string })
                             onClick={() => openArtwork(artwork.id)}
                             style={artwork.placementStyle}
                             type="button">
-                            <span className="rel block overflow:hidden size:full">
+                            <span className={clsx('rel block overflow:hidden size:full', isHiddenGridArtwork && !isClosingTransitionArtwork && 'invisible')}>
                                 <Image
                                     alt={artwork.imageAlt}
-                                    className={clsx('object-center object-cover', imageTransitionClassName, artwork.objectPositionClassName)}
+                                    className={clsx('object-center object-cover', isHiddenGridArtwork && isClosingTransitionArtwork && 'opacity:.001', imageTransitionClassName, artwork.objectPositionClassName)}
                                     fill
                                     placeholder="blur"
                                     sizes="(min-width: 768px) 34vw, 50vw"
@@ -216,36 +265,71 @@ export default function ArtGalleryPreview({ className }: { className?: string })
                 })}
             </div>
 
-            {selectedArtwork && portalTarget && createPortal(
+            {portalTarget && createPortal(
                 <div
-                    aria-label={$(selectedArtwork.imageAlt)}
-                    aria-modal="true"
-                    className="fixed inset:0 z:2147483647 grid overflow:auto place-items:center p:md bg:black/.56 backdrop-filter:blur(16px)"
+                    aria-hidden={modalArtwork ? undefined : 'true'}
+                    aria-label={modalArtwork ? $(modalArtwork.imageAlt) : undefined}
+                    aria-modal={modalArtwork ? 'true' : undefined}
+                    className={clsx(
+                        'fixed inset:0 z:2147483647',
+                        modalVisible ? 'pointer-events:auto' : 'pointer-events:none'
+                    )}
                     onPointerDown={(event) => {
-                        if (event.target === event.currentTarget) closeArtwork()
+                        if (modalArtwork && event.target instanceof Element && !event.target.closest('[data-home-art-modal-content]')) closeArtwork()
                     }}
-                    role="dialog">
-                    <button
-                        aria-label={$('Close artwork')}
-                        className="abs right:md top:md z:2 grid place-content:center size:9x r:xl outline:1px|solid|subtle surface:overlay transition:background-color|normal|standard surface:raised:hover"
-                        onClick={closeArtwork}
-                        ref={closeButtonRef}
-                        type="button">
-                        <IconX aria-hidden="true" className="size:4x stroke:1.75" />
-                    </button>
-
+                    role={modalArtwork ? 'dialog' : undefined}>
                     <div
-                        className="rel overflow:hidden bg:black shadow:2xl"
-                        style={getModalImageFrameStyle(selectedArtwork)}>
-                        <Image
-                            alt={selectedArtwork.imageAlt}
-                            className={clsx('object-center object-cover', transitionArtworkId === selectedArtwork.id ? clsx(sharedTransitionClassName, selectedArtwork.imageTransitionName) : 'view-transition-name:none', selectedArtwork.objectPositionClassName)}
-                            fill
-                            placeholder="blur"
-                            sizes="92vw"
-                            src={selectedArtwork.image}
-                        />
-                    </div>
+                        aria-hidden="true"
+                        className={clsx(
+                            backdropTransitionClassName,
+                            'abs inset:0 bg:black/.56',
+                            modalVisible ? 'opacity:1' : 'opacity:0'
+                        )}
+                    />
+                    <div
+                        aria-hidden="true"
+                        className={clsx(
+                            'abs inset:0 view-transition-name:none',
+                            modalVisible ? 'opacity:1' : 'opacity:0'
+                        )}
+                        style={{
+                            backdropFilter: modalVisible ? 'blur(16px)' : 'blur(0px)',
+                            transition: backdropBlurTransition
+                        }}
+                    />
+                    {modalArtwork &&
+                        <>
+                            <button
+                                aria-label={$('Close artwork')}
+                                className="abs right:md top:md z:2 grid place-content:center size:9x r:xl outline:1px|solid|subtle surface:overlay transition:background-color|normal|standard surface:raised:hover"
+                                data-home-art-modal-content=""
+                                onClick={closeArtwork}
+                                ref={closeButtonRef}
+                                type="button">
+                                <IconX aria-hidden="true" className="size:4x stroke:1.75" />
+                            </button>
+
+                            <div
+                                className="rel overflow:hidden bg:black shadow:2xl"
+                                data-home-art-modal-content=""
+                                style={getModalImageFrameStyle(modalArtwork)}>
+                                <Image
+                                    alt={modalArtwork.imageAlt}
+                                    className={clsx(
+                                        'object-center object-cover',
+                                        transitionState?.artworkId === modalArtwork.id
+                                            ? clsx(transitionState.direction === 'opening' && 'opacity:0', sharedTransitionClassName, modalArtwork.imageTransitionName)
+                                            : 'view-transition-name:none',
+                                        modalArtwork.objectPositionClassName
+                                    )}
+                                    fill
+                                    placeholder="blur"
+                                    sizes="92vw"
+                                    src={modalArtwork.image}
+                                />
+                            </div>
+                        </>
+                    }
                 </div>,
                 portalTarget
             )}
