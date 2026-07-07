@@ -171,23 +171,23 @@ function P3PalettePreview() {
     return (
         <div
             aria-label="P3 palette tiers from 100 through 0"
-            className="rel overflow:hidden mx:calc(var(--spacing-sm)+1px) mb:calc(var(--spacing-sm)+1px) mt:auto r:xl outline:1px|solid|subtle bg:surface-muted"
+            className="rel overflow:hidden mx:calc(var(--spacing-sm)-1px) mb:calc(var(--spacing-sm)-1px) mt:auto r:xl outline:1px|solid|subtle bg:surface-muted"
             role="img">
             <div aria-hidden="true" className="abs inset:0 opacity:.8 pointer-events:none" style={p3PaletteDotGridStyle} />
 
-            <div aria-hidden="true" className="rel z:1 px:calc(var(--spacing-xl)+1px) py:calc(var(--spacing-xl)+1px) pointer-events:none" style={p3PaletteCanvasStyle}>
+            <div aria-hidden="true" className="rel z:1 p:xl pointer-events:none" style={p3PaletteCanvasStyle}>
                 <div className="grid gap:2xs" style={p3PaletteGridStyle}>
                     <span />
                     {p3PaletteColorNames.map((colorName) => (
                         <span
-                            className="flex overflow:hidden items-center justify-center min-w:0 px:1px font:2xs font:mono leading:1 text-ellipsis white-space:nowrap text:muted opacity:.72"
+                            className="flex overflow:hidden items-center justify-center min-w:0 px:1px font:2xs font:mono leading:1 text-ellipsis white-space:nowrap text:muted"
                             key={`label-${colorName}`}>
                             {colorName}
                         </span>
                     ))}
                     {p3PaletteTiers.map((tier) => (
                         <Fragment key={tier}>
-                            <div className="flex items-center tabular-nums font:2xs font:mono leading:1 text:muted opacity:.72">
+                            <div className="flex items-center tabular-nums font:2xs font:mono leading:1 text:muted">
                                 {tier}
                             </div>
                             {p3PaletteColorNames.map((colorName) => (
