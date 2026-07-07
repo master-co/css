@@ -4,7 +4,7 @@ import { heroExampleCode, type Translate } from './home-content'
 
 export default function HeroExampleStage({ t }: { t: Translate }) {
     return (
-        <div className="rel overflow:hidden b:1px|solid|subtle r:3xl surface:raised shadow:card">
+        <div className="rel overflow:hidden r:3xl outline:1px|solid|subtle surface:raised shadow:card">
             <div className="abs inset:0 z:0 pointer-events:none"
                 style={{
                     background: [
@@ -33,7 +33,7 @@ export default function HeroExampleStage({ t }: { t: Translate }) {
 
                 <div className="p:md bg:surface-muted/.24 grid-col-span:5@lg p:xl@lg bl:1px|solid|subtle@lg">
                     <div className="grid h:full min-h:2xs content:center">
-                        <article className="grid gap:lg p:lg b:1px|solid|subtle r:3xl surface:raised shadow:xs">
+                        <article className="grid gap:lg p:lg r:3xl outline:1px|solid|subtle surface:raised shadow:xs">
                             <div className="flex items-center justify-between gap:md">
                                 <p className="m:0 font:sm text:muted">{t('Design system surface')}</p>
                                 <span className="inline-flex items-center h:6x px:xs r:lg font:xs bg:yellow/.14 text:strong">{t('Preview')}</span>

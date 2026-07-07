@@ -32,7 +32,7 @@ export default function BentoSection({ t }: { t: Translate }) {
                     </p>
                 </div>
 
-                <div className="mx:-md mt:10x p:md r:3xl surface:muted">
+                <div className="mx:-md mt:10x p:md r:4xl surface:muted">
                     <div className="grid gap:md">
                         {bentoRows.map((row) => (
                             <BentoGridRow key={row.title} row={row} t={t} />
@@ -56,14 +56,14 @@ function BentoGridRow({ t, row }: { t: Translate; row: BentoRowContent }) {
     return (
         <div className={clsx('grid gap:md', row.gridClassName)}>
             {Array.from({ length: row.gridCount }, (_, index) => (
-                <article className="flex flex-col b:1px|solid|subtle r:xl surface:base" key={index}>
+                <article className="flex flex-col r:2xl outline:1px|solid|subtle surface:base" key={index}>
                     <div className="flex flex-col p:2xl">
                         <h3 className="mx:0 mb:0 font:2xl text:strong">
                             {t(row.title)}{row.gridCount > 1 && ` ${index + 1}`}
                         </h3>
                         <p className="max-w:48ch mx:0 mb:0 mt:sm text:sm text:muted">{t(row.body)}</p>
                     </div>
-                    <div className="h:28x mt:auto b:1px|solid|subtle r:lg bg:surface-muted" />
+                    <div className="h:28x mt:auto r:xl outline:1px|solid|subtle bg:surface-muted" />
                 </article>
             ))}
         </div>
@@ -72,7 +72,7 @@ function BentoGridRow({ t, row }: { t: Translate; row: BentoRowContent }) {
 
 function P3PaletteCard({ t, row }: { t: Translate; row: BentoRowContent }) {
     return (
-        <article className="flex flex-col b:1px|solid|subtle r:xl surface:base">
+        <article className="flex flex-col r:2xl outline:1px|solid|subtle surface:base">
             <div className="flex flex-col p:2xl">
                 <h3 className="mx:0 mb:0 font:2xl text:strong">
                     {t(row.title)}
@@ -89,7 +89,7 @@ function P3PalettePreview() {
     return (
         <div
             aria-label="P3 palette tiers from 100 through 0"
-            className="rel overflow:hidden mx:sm mb:sm mt:auto r:lg outline:1px|solid|subtle bg:surface-muted"
+            className="rel overflow:hidden mx:sm mb:sm mt:auto r:xl outline:1px|solid|subtle bg:surface-muted"
             role="img">
             <div aria-hidden="true" className="abs inset:0 opacity:.8 pointer-events:none" style={p3PaletteDotGridStyle} />
 
@@ -102,7 +102,7 @@ function P3PalettePreview() {
                             </div>
                             {p3PaletteColorNames.map((colorName) => (
                                 <span
-                                    className="block size:full b:1px|solid|subtle r:md"
+                                    className="block size:full r:lg outline:1px|solid|subtle"
                                     key={`${colorName}-${tier}`}
                                     style={{ backgroundColor: getColor(colorName, tier) }} />
                             ))}

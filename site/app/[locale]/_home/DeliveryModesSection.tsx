@@ -52,7 +52,7 @@ export default function DeliveryModesSection({ t }: { t: Translate }) {
 
 function DeliveryPipeline({ t }: { t: Translate }) {
     return (
-        <div className="rel overflow:hidden p:md b:1px|solid|subtle r:xl surface:raised shadow:xs">
+        <div className="rel overflow:hidden p:md r:xl outline:1px|solid|subtle surface:raised shadow:xs">
             <div className="abs inset:0 opacity:.5 pointer-events:none"
                 style={{
                     background: 'linear-gradient(135deg, rgb(59 130 246 / .12), transparent 48%)'
@@ -88,7 +88,7 @@ function DeliveryModeCard({ mode, t }: { mode: DeliveryModeContent; t: Translate
 
     return (
         <Link href={mode.href} className="block h:full r:xl outline-offset:4xs text-decoration:none outline:2px|solid|yellow:focus-visible">
-            <MotionHoverSurface className="flex flex-col h:full min-h:38x p:md b:1px|solid|subtle r:xl surface:raised shadow:xs">
+            <MotionHoverSurface className="flex flex-col h:full min-h:38x p:md r:xl outline:1px|solid|subtle surface:raised shadow:xs">
                 <div className="flex items-center justify-between gap:md">
                     <span className={clsx('grid place-content:center size:10x r:xl fg:white', mode.accent)}>
                         <Icon className="size:5x stroke:1.75" />

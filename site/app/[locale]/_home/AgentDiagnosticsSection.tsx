@@ -48,7 +48,7 @@ export default function AgentDiagnosticsSection({ t }: { t: Translate }) {
 
 function DiagnosticVisual({ t }: { t: Translate }) {
     return (
-        <div className="rel overflow:hidden b:1px|solid|subtle r:3xl surface:raised shadow:card">
+        <div className="rel overflow:hidden r:3xl outline:1px|solid|subtle surface:raised shadow:card">
             <div className="abs inset:0 opacity:.64 pointer-events:none"
                 style={{
                     background: [
@@ -88,7 +88,7 @@ function DiagnosticVisual({ t }: { t: Translate }) {
                         ))}
                     </div>
 
-                    <div className="mt:md p:sm b:1px|solid|subtle r:xl bg:surface-muted">
+                    <div className="mt:md p:sm r:xl outline:1px|solid|subtle bg:surface-muted">
                         <div className="flex items-center gap:xs">
                             <IconShieldCheck className="size:4x text:green stroke:1.75" />
                             <p className="m:0 font:sm text:strong">{t('Safe preview ready')}</p>
@@ -113,7 +113,7 @@ function DiagnosticSignal({ signal, t }: { signal: DiagnosticSignalContent; t: T
     const Icon = signal.status === 'context' ? IconZoomScan : signal.status === 'lint' ? IconCodeDots : IconShieldCheck
 
     return (
-        <MotionHoverSurface className="p:sm b:1px|solid|subtle r:xl surface:raised shadow:xs">
+        <MotionHoverSurface className="p:sm r:xl outline:1px|solid|subtle surface:raised shadow:xs">
             <div className="flex items-start gap:sm">
                 <span className={clsx('grid flex:0|0|auto place-content:center size:8x r:lg fg:white', signal.accent)}>
                     <Icon className="size:4x stroke:1.75" />

@@ -10,7 +10,7 @@ export default function CTASection({ t }: { t: Translate }) {
             id={homeSections.getStarted}
             className="py:5xl">
             <div className="app-wrapper max-w:breakpoint-2xl">
-                <div className="rel overflow:hidden p:lg b:1px|solid|subtle r:3xl surface:raised shadow:card p:xl@md">
+                <div className="rel overflow:hidden p:lg r:3xl outline:1px|solid|subtle surface:raised shadow:card p:xl@md">
                     <div className="abs inset:0 opacity:.64 pointer-events:none"
                         style={{
                             background: [
