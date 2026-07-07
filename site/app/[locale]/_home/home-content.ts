@@ -83,12 +83,25 @@ export const heroExampleCode = `
 `
 
 export const themeVariablesCode = `@theme {
-    --font-sans: "Inter";
+    --font-sans: "Inter"; /* font:sans */
+    --font-mono: "IBM Plex Mono"; /* font:mono */
+
+    --spacing-md: 1rem; /* p:md */
+    --spacing-lg: 1.5rem; /* p:lg */
+
+    --radius-lg: 0.5rem; /* r:lg */
+    --radius-xl: 0.75rem; /* r:xl */
 }
 
-@theme light {}
+@theme light {
+    --color-surface-base: $color-neutral-0; /* surface:base */
+    --color-text-body: $color-neutral-70; /* text:body */
+}
 
-@theme dark {}
+@theme dark {
+    --color-surface-base: $color-gray-95; /* surface:base */
+    --color-text-body: $color-gray-30; /* text:body */
+}
 `
 
 export const p3PaletteColorNames = [...presetColorNames].reverse()

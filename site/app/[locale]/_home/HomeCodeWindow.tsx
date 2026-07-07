@@ -34,7 +34,7 @@ export default function HomeCodeWindow({
             </div>
             <div className={clsx('rel flex:1 min-h:0 p:xs p:sm@md', bodyClassName)}>
                 <Code
-                    className={clsx('h:full {r:xl}_pre', codeClassName)}
+                    className={clsx('h:full {overflow:hidden}_pre {r:xl}_pre', codeClassName)}
                     lang={lang}>
                     {children}
                 </Code>

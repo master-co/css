@@ -59,10 +59,21 @@ test('bento content model keeps targeted layout tiles', () => {
     }
 })
 
-test('theme variables bento sample stays concise', () => {
-    assert.match(themeVariablesCode, /@theme \{\n\s+--font-sans: "Inter";\n\}/)
-    assert.match(themeVariablesCode, /@theme light \{\}/)
-    assert.match(themeVariablesCode, /@theme dark \{\}/)
+test('theme variables bento sample maps tokens to class examples', () => {
+    assert.match(themeVariablesCode, /@theme \{/)
+    assert.match(themeVariablesCode, /--font-sans: "Inter"; \/\* font:sans \*\//)
+    assert.match(themeVariablesCode, /--font-mono: "IBM Plex Mono"; \/\* font:mono \*\//)
+    assert.match(themeVariablesCode, /--font-mono: "IBM Plex Mono"; \/\* font:mono \*\/\n\n\s+--spacing-md: 1rem; \/\* p:md \*\//)
+    assert.match(themeVariablesCode, /--spacing-md: 1rem; \/\* p:md \*\//)
+    assert.match(themeVariablesCode, /--spacing-lg: 1\.5rem; \/\* p:lg \*\//)
+    assert.match(themeVariablesCode, /--spacing-lg: 1\.5rem; \/\* p:lg \*\/\n\n\s+--radius-lg: 0\.5rem; \/\* r:lg \*\//)
+    assert.match(themeVariablesCode, /--radius-lg: 0\.5rem; \/\* r:lg \*\//)
+    assert.match(themeVariablesCode, /--radius-xl: 0\.75rem; \/\* r:xl \*\//)
+    assert.match(themeVariablesCode, /@theme light \{\n\s+--color-surface-base: \$color-neutral-0; \/\* surface:base \*\//)
+    assert.match(themeVariablesCode, /--color-text-body: \$color-neutral-70; \/\* text:body \*\//)
+    assert.match(themeVariablesCode, /@theme dark \{\n\s+--color-surface-base: \$color-gray-95; \/\* surface:base \*\//)
+    assert.match(themeVariablesCode, /--color-text-body: \$color-gray-30; \/\* text:body \*\//)
+    assert.doesNotMatch(themeVariablesCode, /@keyframes/)
 })
 
 test('homepage P3 palette preview uses every guide color in reverse order', () => {
