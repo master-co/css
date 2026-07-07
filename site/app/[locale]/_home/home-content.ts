@@ -1,3 +1,5 @@
+import presetColorNames from '~/internal/data/color-names'
+
 export type Translate = (text: string) => string
 
 export type BentoAccentClassName = 'bg:blue' | 'bg:cyan' | 'bg:green' | 'bg:red' | 'bg:yellow'
@@ -72,25 +74,7 @@ export const heroExampleCode = `
 </article>
 `
 
-export const p3PaletteColorNames = [
-    'yellow',
-    'lime',
-    'green',
-    'beryl',
-    'teal',
-    'cyan',
-    'sky',
-    'blue',
-    'indigo',
-    'violet',
-    'purple',
-    'fuchsia',
-    'pink',
-    'crimson',
-    'red',
-    'orange',
-    'amber'
-] as const
+export const p3PaletteColorNames = [...presetColorNames].reverse()
 
 export const p3PaletteTiers = [100, 95, 90, 80, 70, 60, 50, 40, 30] as const
 

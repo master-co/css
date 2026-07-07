@@ -5,7 +5,7 @@ import { MotionSection } from './HomeMotion'
 import { bentoRows, homeSections, p3PaletteColorNames, p3PaletteTiers, sectionBodyClassName, sectionHeadingClassName, sectionLabelClassName, type BentoRowContent, type Translate } from './home-content'
 
 const p3PaletteGridStyle = {
-    gridTemplateColumns: `3.25rem repeat(${p3PaletteColorNames.length}, minmax(3.5rem, 1fr))`,
+    gridTemplateColumns: `3.25rem repeat(${p3PaletteColorNames.length}, minmax(2.75rem, 1fr))`,
     gridAutoRows: 'clamp(2.7rem, 4vw, 3.35rem)'
 }
 
@@ -14,7 +14,7 @@ const p3PaletteStageStyle = {
 }
 
 const p3PaletteCanvasStyle = {
-    width: 'max(100%, 78rem)'
+    width: 'max(100%, 74rem)'
 }
 
 const p3PaletteDotGridStyle = {
