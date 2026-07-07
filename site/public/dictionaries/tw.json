@@ -191,7 +191,7 @@
     "A compact placeholder grid for repeated items with equal height and consistent spacing.": "用於等高且間距一致的重複項目的精簡 placeholder grid。",
     "A three-column composition where a featured interactive tile spans two tracks beside supporting context.": "一個三欄構圖，讓重點互動 tile 橫跨兩個軌道，旁邊保留輔助內容。",
     "Grid layout, transitions, animations": "Grid 排版、轉場、動畫",
-    "Master CSS keeps modern CSS primitives close to markup: responsive CSS Grid, cascade layers, custom properties, motion tokens, and View Transition selectors share one class vocabulary.": "Master CSS 讓現代 CSS 原語貼近 markup：響應式 CSS Grid、cascade layers、custom properties、motion tokens 與 View Transition selectors 共用同一套 class vocabulary。",
+    "Master CSS keeps modern CSS primitives close to markup: responsive CSS Grid, motion tokens, and View Transition selectors share one class vocabulary.": "Master CSS 讓現代 CSS 原語貼近 markup：響應式 CSS Grid、motion tokens 與 View Transition selectors 共用同一套 class vocabulary。",
     "Native CSS primitives": "原生 CSS 原語",
     "Write real CSS declarations, selectors, media conditions, and state variants in markup while generated output stays layered and portable.": "在 markup 中撰寫真正的 CSS declarations、selectors、media conditions 與狀態 variants，同時讓產出的 CSS 維持分層且可攜。",
     "Open artwork": "開啟藝術品",

@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict'
+import { readFileSync } from 'node:fs'
 import { test } from 'node:test'
 import guideColorNames from '../../internal/data/color-names.js'
 import { COLOR_LEVELS } from '../../internal/data/color-palette.js'
@@ -65,8 +66,8 @@ test('bento content model keeps targeted layout tiles', () => {
 test('theme variables bento sample maps tokens to class examples', () => {
     assert.match(themeVariablesCode, /@theme \{/)
     assert.match(themeVariablesCode, /--font-sans: "Inter"; \/\* font:sans \*\//)
-    assert.match(themeVariablesCode, /--font-mono: "IBM Plex Mono"; \/\* font:mono \*\//)
-    assert.match(themeVariablesCode, /--font-mono: "IBM Plex Mono"; \/\* font:mono \*\/\n\n\s+--spacing-md: 1rem; \/\* p:md \*\//)
+    assert.match(themeVariablesCode, /--font-sans: "Inter"; \/\* font:sans \*\/\n\n\s+--spacing-md: 1rem; \/\* p:md \*\//)
+    assert.doesNotMatch(themeVariablesCode, /--font-mono/)
     assert.match(themeVariablesCode, /--spacing-md: 1rem; \/\* p:md \*\//)
     assert.match(themeVariablesCode, /--spacing-lg: 1\.5rem; \/\* p:lg \*\//)
     assert.match(themeVariablesCode, /--spacing-lg: 1\.5rem; \/\* p:lg \*\/\n\n\s+--radius-lg: 0\.5rem; \/\* r:lg \*\//)
@@ -80,13 +81,48 @@ test('theme variables bento sample maps tokens to class examples', () => {
 })
 
 test('native CSS primitives bento sample keeps a concise btn directive example', () => {
+    assert.match(nativeCssPrimitivesCode, /^@import '@master\/css';/)
     assert.match(nativeCssPrimitivesCode, /@components \{/)
     assert.match(nativeCssPrimitivesCode, /btn \{/)
+    assert.match(nativeCssPrimitivesCode, /btn-sm \{/)
+    assert.doesNotMatch(nativeCssPrimitivesCode, /@compose btn(?:\s|;)/)
+    assert.match(nativeCssPrimitivesCode, /btn-sm \{\n\s+@compose inline-flex items-center justify-center gap:xs;\n\s+@compose h:8x px:sm r:md font:sm;/)
     assert.match(nativeCssPrimitivesCode, /&:hover \{/)
     assert.match(nativeCssPrimitivesCode, /@dark \{/)
-    assert.match(nativeCssPrimitivesCode, /@variant @<sm \{/)
-    assert.match(nativeCssPrimitivesCode, /@compose w:full;/)
-    assert.equal(nativeCssPrimitivesCode.trim().split('\n').length <= 24, true)
+    assert.doesNotMatch(nativeCssPrimitivesCode, /@variant/)
+    assert.equal(nativeCssPrimitivesCode.trim().split('\n').length <= 26, true)
+})
+
+test('homepage code windows do not override font size or line height', () => {
+    const homeCodeWindowSources = [
+        '../app/[locale]/_home/BentoSection.tsx',
+        '../app/[locale]/_home/HeroExampleStage.tsx'
+    ].map((filePath) => readFileSync(new URL(filePath, import.meta.url), 'utf8'))
+
+    for (const source of homeCodeWindowSources) {
+        assert.doesNotMatch(source, /(?:codeClassName|preClassName)="[^"]*(?:font:|leading:)/)
+    }
+})
+
+test('native CSS primitives code window stays top-aligned in its card', () => {
+    const source = readFileSync(new URL('../app/[locale]/_home/BentoSection.tsx', import.meta.url), 'utf8')
+    const nativeCard = source.match(/function NativeCssPrimitivesCard[\s\S]+?function P3PaletteCard/)?.[0]
+
+    assert.ok(nativeCard)
+    assert.match(nativeCard, /bentoTopVisualClassName/)
+    assert.doesNotMatch(nativeCard, /bentoVisualClassName/)
+})
+
+test('homepage bento code windows keep their fixed preview height', () => {
+    const source = readFileSync(new URL('../app/[locale]/_home/BentoSection.tsx', import.meta.url), 'utf8')
+
+    for (const functionName of ['ThemeVariablesCard', 'NativeCssPrimitivesCard']) {
+        const card = source.match(new RegExp(`function ${functionName}[\\s\\S]+?(?=function )`))?.[0]
+
+        assert.ok(card)
+        assert.match(card, /'h:md'/)
+        assert.doesNotMatch(card, /flex:1|min-h:md/)
+    }
 })
 
 test('homepage P3 palette preview uses every guide color in reverse order', () => {

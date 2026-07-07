@@ -85,7 +85,6 @@ export const heroExampleCode = `
 
 export const themeVariablesCode = `@theme {
     --font-sans: "Inter"; /* font:sans */
-    --font-mono: "IBM Plex Mono"; /* font:mono */
 
     --spacing-md: 1rem; /* p:md */
     --spacing-lg: 1.5rem; /* p:lg */
@@ -105,27 +104,22 @@ export const themeVariablesCode = `@theme {
 }
 `
 
-export const nativeCssPrimitivesCode = `@components {
+export const nativeCssPrimitivesCode = `@import '@master/css';
+
+@components {
     btn {
-        @compose inline-flex items-center justify-center;
-        @compose gap:xs h:10x px:md;
-        @compose r:lg font:medium;
+        @compose inline-flex items-center justify-center gap:xs;
+        @compose h:10x px:md r:lg font:medium;
         color: white;
         background: var(--color-blue-60);
         transition: background .15s ease;
+        &:hover { background: var(--color-blue-70); }
+        @dark { color: var(--color-blue-100); background: var(--color-blue-50); }
+    }
 
-        &:hover {
-            background: var(--color-blue-70);
-        }
-
-        @dark {
-            color: var(--color-blue-100);
-            background: var(--color-blue-50);
-        }
-
-        @variant @<sm {
-            @compose w:full;
-        }
+    btn-sm {
+        @compose inline-flex items-center justify-center gap:xs;
+        @compose h:8x px:sm r:md font:sm;
     }
 }
 `
@@ -168,13 +162,13 @@ export const bentoRows = [
         tiles: [
             {
                 title: 'Grid layout, transitions, animations',
-                body: 'Master CSS keeps modern CSS primitives close to markup: responsive CSS Grid, cascade layers, custom properties, motion tokens, and View Transition selectors share one class vocabulary.',
+                body: 'Master CSS keeps modern CSS primitives close to markup: responsive CSS Grid, motion tokens, and View Transition selectors share one class vocabulary.',
                 gridColumnClassName: 'grid-col-span:2@md',
                 visual: 'art-gallery'
             },
             {
                 title: 'Native CSS primitives',
-                body: 'Author a reusable button with native declarations and selectors, then fold dark mode and responsive conditions into compiler directives.',
+                body: 'Author a reusable button with native declarations and selectors, then fold dark mode into compiler directives.',
                 visual: 'native-css-primitives'
             }
         ]

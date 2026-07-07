@@ -26,6 +26,7 @@ const bentoCardHeaderClassName = 'flex flex-col p:2xl'
 const bentoCardTitleClassName = 'mx:0 mb:0 font:2xl font:medium text:strong'
 const bentoCardBodyClassName = 'max-w:64ch mx:0 mb:0 mt:sm text:sm text:muted'
 const bentoVisualClassName = 'rel overflow:hidden mx:calc(var(--spacing-sm)-1px) mb:calc(var(--spacing-sm)-1px) mt:auto r:xl outline:1px|solid|subtle bg:surface-muted'
+const bentoTopVisualClassName = 'rel overflow:hidden mx:calc(var(--spacing-sm)-1px) mb:calc(var(--spacing-sm)-1px) mt:0 r:xl outline:1px|solid|subtle bg:surface-muted'
 
 export default function BentoSection({ t }: { t: Translate }) {
     return (
@@ -124,8 +125,8 @@ function ThemeVariablesCard({ t, tile }: { t: Translate; tile: BentoTileContent 
             </div>
 
             <HomeCodeWindow
-                className={clsx(bentoVisualClassName, 'h:md')}
-                preClassName="h:full px:sm py:lg font:11px leading:18px"
+                className={clsx(bentoTopVisualClassName, 'h:md')}
+                preClassName="h:full px:sm py:lg"
                 lang="css"
                 variant="embedded">
                 {themeVariablesCode}
@@ -160,8 +161,8 @@ function NativeCssPrimitivesCard({ t, tile }: { t: Translate; tile: BentoTileCon
             </div>
 
             <HomeCodeWindow
-                className={clsx(bentoVisualClassName, 'h:md')}
-                preClassName="h:full px:sm py:lg font:11px leading:16px"
+                className={clsx(bentoTopVisualClassName, 'h:md')}
+                preClassName="h:full px:sm py:lg"
                 lang="css"
                 variant="embedded">
                 {nativeCssPrimitivesCode}
