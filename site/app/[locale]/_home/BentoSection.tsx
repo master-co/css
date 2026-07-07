@@ -105,7 +105,7 @@ function P3PalettePreview() {
                     ))}
                     {p3PaletteTiers.map((tier) => (
                         <Fragment key={tier}>
-                            <div className="flex items-center justify-end tabular-nums font:2xs font:mono leading:1 text:muted opacity:.72">
+                            <div className="flex items-center tabular-nums font:2xs font:mono leading:1 text:muted opacity:.72">
                                 {tier}
                             </div>
                             {p3PaletteColorNames.map((colorName) => (
