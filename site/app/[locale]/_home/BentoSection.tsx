@@ -6,7 +6,7 @@ import { bentoRows, homeSections, p3PaletteColorNames, p3PaletteTiers, sectionBo
 
 const p3PaletteGridStyle = {
     gridTemplateColumns: `3.25rem repeat(${p3PaletteColorNames.length}, minmax(2.75rem, 1fr))`,
-    gridAutoRows: 'clamp(2.7rem, 4vw, 3.35rem)'
+    gridAutoRows: 'clamp(2.2rem, 3.4vw, 2.45rem)'
 }
 
 const p3PaletteStageStyle = {
