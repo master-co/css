@@ -119,9 +119,8 @@ function ThemeVariablesCard({ t, tile }: { t: Translate; tile: BentoTileContent 
             </div>
 
             <HomeCodeWindow
-                bodyClassName="p:xs"
                 className={clsx(bentoVisualClassName, 'h:md')}
-                codeClassName="{h:full}_pre {font:11px}_pre {leading:18px}_pre"
+                preClassName="h:full px:sm py:lg font:11px leading:18px"
                 lang="css"
                 variant="embedded">
                 {themeVariablesCode}

@@ -4,20 +4,20 @@ import Code, { type CodeProp } from '~/internal/components/Code'
 const mutedWindowDots = ['dot-1', 'dot-2', 'dot-3'] as const
 
 export interface HomeCodeWindowProps {
-    bodyClassName?: string
     children: string
     className?: string
     codeClassName?: string
     lang: CodeProp['lang']
+    preClassName?: CodeProp['preClassName']
     variant?: 'framed' | 'embedded'
 }
 
 export default function HomeCodeWindow({
-    bodyClassName,
     children,
     className,
     codeClassName,
     lang,
+    preClassName,
     variant = 'framed'
 }: HomeCodeWindowProps) {
     return (
@@ -32,13 +32,12 @@ export default function HomeCodeWindow({
                     <span className="block size:2.5x r:full bg:line-base opacity:.56" key={dot} />
                 ))}
             </div>
-            <div className={clsx('rel flex:1 min-h:0 p:xs p:sm@md', bodyClassName)}>
-                <Code
-                    className={clsx('h:full {overflow:hidden}_pre {r:xl}_pre', codeClassName)}
-                    lang={lang}>
-                    {children}
-                </Code>
-            </div>
+            <Code
+                className={clsx('flex:1|1|auto min-h:0', codeClassName)}
+                lang={lang}
+                preClassName={clsx('overflow:hidden p:sm r:xl', preClassName)}>
+                {children}
+            </Code>
         </div>
     )
 }

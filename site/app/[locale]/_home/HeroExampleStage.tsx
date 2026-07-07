@@ -14,8 +14,8 @@ export default function HeroExampleStage({ t }: { t: Translate }) {
             <div className="rel z:1 grid-cols:1 gap:0 grid-cols:12@lg">
                 <HomeCodeWindow
                     className="grid-col-span:7@lg"
-                    codeClassName="{min-h:76x}_pre {font:12px}_pre"
                     lang="html"
+                    preClassName="min-h:76x font:12px"
                     variant="embedded">
                     {heroExampleCode}
                 </HomeCodeWindow>
