@@ -19,6 +19,12 @@ const p3PaletteDotGridStyle = {
     backgroundSize: '14px 14px'
 }
 
+const bentoCardClassName = 'flex flex-col r:2xl outline:1px|solid|subtle surface:base'
+const bentoCardHeaderClassName = 'flex flex-col p:2xl'
+const bentoCardTitleClassName = 'mx:0 mb:0 font:2xl font:medium text:strong'
+const bentoCardBodyClassName = 'max-w:64ch mx:0 mb:0 mt:sm text:sm text:muted'
+const bentoVisualClassName = 'rel overflow:hidden mx:calc(var(--spacing-sm)-1px) mb:calc(var(--spacing-sm)-1px) mt:auto r:xl outline:1px|solid|subtle bg:surface-muted'
+
 export default function BentoSection({ t }: { t: Translate }) {
     return (
         <MotionSection homeSection={homeSections.designSystem} id={homeSections.designSystem} className="py:5xl">
@@ -72,26 +78,26 @@ function BentoGridRow({ t, row }: { t: Translate; row: BentoRowContent }) {
 
 function BentoPlaceholderCard({ t, tile }: { t: Translate; tile: BentoTileContent }) {
     return (
-        <article className="flex flex-col r:2xl outline:1px|solid|subtle surface:base">
-            <div className="flex flex-col p:2xl">
-                <h3 className="mx:0 mb:0 font:2xl text:strong">
+        <article className={bentoCardClassName}>
+            <div className={bentoCardHeaderClassName}>
+                <h3 className={bentoCardTitleClassName}>
                     {t(tile.title)}
                 </h3>
-                <p className="max-w:48ch mx:0 mb:0 mt:sm text:sm text:muted">{t(tile.body)}</p>
+                <p className={bentoCardBodyClassName}>{t(tile.body)}</p>
             </div>
-            <div className="h:28x mt:auto r:xl outline:1px|solid|subtle bg:surface-muted" />
+            <div className={clsx(bentoVisualClassName, 'h:28x')} />
         </article>
     )
 }
 
 function ThemeModesCard({ t, tile }: { t: Translate; tile: BentoTileContent }) {
     return (
-        <article className="flex flex-col r:2xl outline:1px|solid|subtle surface:base">
-            <div className="flex flex-col p:2xl">
-                <h3 className="mx:0 mb:0 font:2xl text:strong">
+        <article className={bentoCardClassName}>
+            <div className={bentoCardHeaderClassName}>
+                <h3 className={bentoCardTitleClassName}>
                     {t(tile.title)}
                 </h3>
-                <p className="max-w:48ch mx:0 mb:0 mt:sm text:sm text:muted">{t(tile.body)}</p>
+                <p className={bentoCardBodyClassName}>{t(tile.body)}</p>
             </div>
 
             <ThemeModesPreview />
@@ -101,7 +107,7 @@ function ThemeModesCard({ t, tile }: { t: Translate; tile: BentoTileContent }) {
 
 function ThemeModesPreview() {
     return (
-        <div className="rel overflow:hidden h:40x mt:auto r:xl outline:1px|solid|subtle bg:surface-muted">
+        <div className={clsx(bentoVisualClassName, 'h:40x')}>
             <div aria-hidden="true" className="abs inset:0 opacity:.8 pointer-events:none" style={p3PaletteDotGridStyle} />
             <div className="abs inset:calc(var(--spacing-sm)+1px) overflow:hidden r:xl outline:1px|solid|subtle bg:surface-base">
                 <div className="abs inset:0 grid-cols:2">
@@ -154,12 +160,12 @@ function ThemeModesPreview() {
 
 function P3PaletteCard({ t, row }: { t: Translate; row: BentoRowContent }) {
     return (
-        <article className="flex flex-col r:2xl outline:1px|solid|subtle surface:base">
-            <div className="flex flex-col p:2xl">
-                <h3 className="mx:0 mb:0 font:2xl font:medium text:strong">
+        <article className={bentoCardClassName}>
+            <div className={bentoCardHeaderClassName}>
+                <h3 className={bentoCardTitleClassName}>
                     {t(row.title)}
                 </h3>
-                <p className="max-w:64ch mx:0 mb:0 mt:sm text:sm text:muted">{t(row.body)}</p>
+                <p className={bentoCardBodyClassName}>{t(row.body)}</p>
             </div>
 
             <P3PalettePreview />
@@ -171,7 +177,7 @@ function P3PalettePreview() {
     return (
         <div
             aria-label="P3 palette tiers from 100 through 0"
-            className="rel overflow:hidden mx:calc(var(--spacing-sm)-1px) mb:calc(var(--spacing-sm)-1px) mt:auto r:xl outline:1px|solid|subtle bg:surface-muted"
+            className={bentoVisualClassName}
             role="img">
             <div aria-hidden="true" className="abs inset:0 opacity:.8 pointer-events:none" style={p3PaletteDotGridStyle} />
 
