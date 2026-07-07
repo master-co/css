@@ -156,7 +156,7 @@ function P3PaletteCard({ t, row }: { t: Translate; row: BentoRowContent }) {
     return (
         <article className="flex flex-col r:2xl outline:1px|solid|subtle surface:base">
             <div className="flex flex-col p:2xl">
-                <h3 className="mx:0 mb:0 font:2xl text:strong">
+                <h3 className="mx:0 mb:0 font:2xl font:medium text:strong">
                     {t(row.title)}
                 </h3>
                 <p className="max-w:64ch mx:0 mb:0 mt:sm text:sm text:muted">{t(row.body)}</p>
