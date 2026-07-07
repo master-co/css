@@ -48,7 +48,7 @@ export default function AgentDiagnosticsSection({ t }: { t: Translate }) {
 
 function DiagnosticVisual({ t }: { t: Translate }) {
     return (
-        <div className="rel overflow:hidden r:3xl outline:1px|solid|subtle surface:raised shadow:card">
+        <div className="rel overflow:hidden r:3xl outline:1px|solid|subtle surface:raised shadow:lg">
             <div className="abs inset:0 opacity:.64 pointer-events:none"
                 style={{
                     background: [

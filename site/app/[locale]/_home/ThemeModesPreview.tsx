@@ -127,8 +127,7 @@ function ShoppingAppMock({ mode }: { mode: 'light' | 'dark' }) {
         <div className={clsx('abs inset:0', dark ? 'dark' : 'light')}>
             <div
                 className={clsx(
-                    'abs inset:0 overflow:hidden r:3xl outline:1px|solid|subtle surface:base text:strong shadow:card',
-                    dark && 'outline:1px|solid|white/.12'
+                    'abs inset:0 overflow:hidden r:3xl surface:base text:strong shadow:2xl'
                 )}>
                 <div
                     aria-hidden="true"
