@@ -35,7 +35,7 @@ export default function BentoSection({ t }: { t: Translate }) {
                 <div className="max-w:breakpoint-md">
                     <p className={sectionLabelClassName + ' text:yellow'}>{t('Styling system')}</p>
                     <h2 className={sectionHeadingClassName}>
-                        {t('Styling modern interfaces.')}
+                        {t('Modern website design system.')}
                     </h2>
                     <p className={sectionBodyClassName}>
                         {t('Compose layout, tokens, responsive rules, and interaction states from one readable syntax.')}

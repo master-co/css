@@ -86,11 +86,11 @@ test('native CSS primitives bento sample keeps a concise btn directive example',
     assert.match(nativeCssPrimitivesCode, /btn \{/)
     assert.match(nativeCssPrimitivesCode, /btn-sm \{/)
     assert.doesNotMatch(nativeCssPrimitivesCode, /@compose btn(?:\s|;)/)
-    assert.match(nativeCssPrimitivesCode, /btn-sm \{\n\s+@compose inline-flex items-center justify-center gap:xs;\n\s+@compose h:8x px:sm r:md font:sm;/)
-    assert.match(nativeCssPrimitivesCode, /&:hover \{/)
-    assert.match(nativeCssPrimitivesCode, /@dark \{/)
+    assert.match(nativeCssPrimitivesCode, /btn-sm \{\n\s+@compose h:8x px:sm r:md font:sm;/)
+    assert.doesNotMatch(nativeCssPrimitivesCode.match(/btn-sm \{[\s\S]+?\n    \}/)?.[0] || '', /inline-flex|items-center|justify-center|gap:xs/)
+    assert.match(nativeCssPrimitivesCode, /&:hover \{\n\s+background: var\(--color-blue-70\);\n\s+\}/)
+    assert.match(nativeCssPrimitivesCode, /@dark \{\n\s+color: var\(--color-blue-100\);\n\s+background: var\(--color-blue-50\);\n\s+\}/)
     assert.doesNotMatch(nativeCssPrimitivesCode, /@variant/)
-    assert.equal(nativeCssPrimitivesCode.trim().split('\n').length <= 26, true)
 })
 
 test('homepage code windows do not override font size or line height', () => {

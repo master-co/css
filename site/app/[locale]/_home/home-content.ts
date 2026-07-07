@@ -113,12 +113,18 @@ export const nativeCssPrimitivesCode = `@import '@master/css';
         color: white;
         background: var(--color-blue-60);
         transition: background .15s ease;
-        &:hover { background: var(--color-blue-70); }
-        @dark { color: var(--color-blue-100); background: var(--color-blue-50); }
+
+        &:hover {
+            background: var(--color-blue-70);
+        }
+
+        @dark {
+            color: var(--color-blue-100);
+            background: var(--color-blue-50);
+        }
     }
 
     btn-sm {
-        @compose inline-flex items-center justify-center gap:xs;
         @compose h:8x px:sm r:md font:sm;
     }
 }
