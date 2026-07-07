@@ -48,6 +48,12 @@ const imageFrameTransition = [
     `width ${imageTransitionDuration}ms ${imageTransitionEasing}`
 ].join(',')
 
+const galleryCanvasStyle: CSSProperties = {
+    backgroundImage: 'radial-gradient(var(--color-line-muted) 1px, transparent 1px)',
+    backgroundSize: '14px 14px',
+    gridTemplateRows: 'repeat(2, minmax(0, 1fr))'
+}
+
 const artworks = [
     {
         id: 'reading-corner',
@@ -264,8 +270,8 @@ export default function ArtGalleryPreview({ className }: { className?: string })
     return (
         <div className={clsx(className, 'h:md h:lg@md')}>
             <div
-                className="grid grid-cols:12 items-stretch gap:xs h:full p:md"
-                style={{ gridTemplateRows: 'repeat(2, minmax(0, 1fr))' }}>
+                className="grid grid-cols:12 items-stretch gap:xs h:full p:lg p:xl@md"
+                style={galleryCanvasStyle}>
                 {artworks.map((artwork) => {
                     const isHiddenGridArtwork = hiddenGridArtworkId === artwork.id
 
