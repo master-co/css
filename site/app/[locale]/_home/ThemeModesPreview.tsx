@@ -111,7 +111,7 @@ export default function ThemeModesPreview({ className }: { className?: string })
                     style={{ left: `${split}%`, transform: 'translateX(-50%)' }} />
                 <span
                     aria-hidden="true"
-                    className="abs top:45x z:4 grid place-content:center size:9x r:xl bg:cyan fg:white shadow:xs"
+                    className="abs top:50% z:4 grid place-content:center size:9x r:xl bg:cyan fg:white shadow:xs"
                     style={{ left: `${split}%`, transform: 'translate(-50%, -50%)' }}>
                     <IconArrowsHorizontal className="size:4x stroke:1.75" />
                 </span>
@@ -162,12 +162,10 @@ function ShoppingAppMock({ mode }: { mode: 'light' | 'dark' }) {
                     <div className="grid grid-cols:2 gap:md mt:xl">
                         <ProductTile
                             dark={dark}
-                            kind="pack"
                             label="Day pack"
                             price="$84" />
                         <ProductTile
                             dark={dark}
-                            kind="runner"
                             label="Runner"
                             price="$128" />
                     </div>
@@ -187,12 +185,10 @@ function ShoppingAppMock({ mode }: { mode: 'light' | 'dark' }) {
                     <div className="grid grid-cols:2 gap:md mt:xl">
                         <ProductTile
                             dark={dark}
-                            kind="cup"
                             label="Cup"
                             price="$32" />
                         <ProductTile
                             dark={dark}
-                            kind="tote"
                             label="Tote bag"
                             price="$46" />
                     </div>
@@ -204,19 +200,16 @@ function ShoppingAppMock({ mode }: { mode: 'light' | 'dark' }) {
 
 function ProductTile({
     dark,
-    kind,
     label,
     price
 }: {
     dark: boolean
-    kind: ProductKind
     label: string
     price: string
 }) {
     return (
         <div className={clsx('overflow:hidden p:sm r:2xl outline:1px|solid|subtle surface:raised', dark && 'outline:1px|solid|white/.12')}>
             <div className="rel overflow:hidden h:14x r:xl surface:muted">
-                <ProductVisual dark={dark} kind={kind} />
                 <span className="abs right:xs top:xs grid place-content:center size:5x r:lg surface:overlay">
                     <IconHeart className="size:3x stroke:1.75" />
                 </span>
@@ -232,74 +225,5 @@ function ProductTile({
                 <span className="font:2xs font:mono text:strong">{price}</span>
             </div>
         </div>
-    )
-}
-
-type ProductKind = 'cup' | 'pack' | 'runner' | 'tote'
-
-function ProductVisual({ dark, kind }: { dark: boolean; kind: ProductKind }) {
-    const toneClassName = {
-        cup: dark ? 'bg:green/.24' : 'bg:green/.14',
-        pack: dark ? 'bg:slate/.34' : 'bg:slate/.18',
-        runner: dark ? 'bg:blue/.24' : 'bg:blue/.14',
-        tote: dark ? 'bg:amber/.22' : 'bg:amber/.14'
-    }[kind]
-    const surfaceClassName = dark ? 'bg:white/.08' : 'bg:white/.58'
-    const lineClassName = dark ? 'outline:1px|solid|white/.16' : 'outline:1px|solid|black/.08'
-
-    if (kind === 'runner') {
-        return (
-            <span className="abs inset:0">
-                <span
-                    className={clsx('abs left:50% top:54% h:5x w:17x r:full', toneClassName)}
-                    style={{ transform: 'translate(-50%, -50%) skewX(-14deg)' }} />
-                <span
-                    className={clsx('abs left:52% top:60% h:2x w:18x r:full', surfaceClassName)}
-                    style={{ transform: 'translate(-50%, -50%)' }} />
-                <span className={clsx('abs left:39% top:42% h:4x w:7x r:full', surfaceClassName, lineClassName)} />
-            </span>
-        )
-    }
-
-    if (kind === 'cup') {
-        return (
-            <span className="abs inset:0">
-                <span
-                    className={clsx('abs left:50% top:56% h:11x w:8x r:xl', toneClassName, lineClassName)}
-                    style={{ transform: 'translate(-50%, -50%)' }} />
-                <span
-                    className={clsx('abs left:50% top:34% h:2x w:10x r:full', surfaceClassName)}
-                    style={{ transform: 'translate(-50%, -50%)' }} />
-                <span className={clsx('abs right:32% top:48% h:5x w:3x r:full outline:1px|solid|subtle', dark && 'outline:1px|solid|white/.16')} />
-            </span>
-        )
-    }
-
-    if (kind === 'tote') {
-        return (
-            <span className="abs inset:0">
-                <span
-                    className={clsx('abs left:50% top:58% h:10x w:12x r:xl', toneClassName, lineClassName)}
-                    style={{ transform: 'translate(-50%, -50%)' }} />
-                <span
-                    className={clsx('abs left:50% top:39% h:5x w:8x r:full outline:1px|solid|subtle', dark && 'outline:1px|solid|white/.16')}
-                    style={{ transform: 'translate(-50%, -50%)' }} />
-            </span>
-        )
-    }
-
-    return (
-        <span className="abs inset:0">
-            <span
-                className={clsx('abs left:50% top:58% h:10x w:11x r:2xl', toneClassName, lineClassName)}
-                style={{ transform: 'translate(-50%, -50%)' }} />
-            <span
-                className={clsx('abs left:50% top:38% h:4x w:7x r:full outline:1px|solid|subtle', dark && 'outline:1px|solid|white/.16')}
-                style={{ transform: 'translate(-50%, -50%)' }} />
-            <span
-                className={clsx('abs left:50% top:63% h:4x w:7x r:xl', surfaceClassName)}
-                style={{ transform: 'translate(-50%, -50%)' }} />
-            <span className={clsx('abs left:50% top:52% h:1px w:8x', surfaceClassName)} style={{ transform: 'translateX(-50%)' }} />
-        </span>
     )
 }
