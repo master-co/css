@@ -22,10 +22,10 @@ test('homepage section anchors and interaction hooks stay stable', () => {
 
 test('hero example keeps a concise static Master CSS sample', () => {
     assert.deepEqual(heroExampleClassNames, [
-        'grid gap:lg p:lg r:lg surface:raised',
+        'grid gap:lg p:lg r:3xl surface:raised',
         'text:muted',
         'font:2xl text:strong',
-        'px:md py:sm r:md bg:yellow fg:yellow-95'
+        'px:md py:sm r:xl bg:yellow fg:yellow-95'
     ])
 
     for (const className of heroExampleClassNames) {

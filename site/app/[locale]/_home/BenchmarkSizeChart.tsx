@@ -54,14 +54,14 @@ export default function BenchmarkSizeChart({
     return (
         <div ref={chartRef} className="rel py:md">
             <div className="flex flex-col gap:lg">
-                <div className="flex w:fit p:3px rounded surface:muted">
+                <div className="flex w:fit p:3px r:xl surface:muted">
                     {pageCSSSize.modes.map((mode) => {
                         const active = mode.id === activeMode.id
                         return (
                             <button
                                 aria-pressed={active}
                                 className={clsx(
-                                    'h:8x px:md rounded outline-offset:2xs font:xs outline:2px|solid|yellow:focus-visible',
+                                    'h:8x px:md r:xl outline-offset:2xs font:xs outline:2px|solid|yellow:focus-visible',
                                     active ? 'surface:raised text:strong shadow:xs' : 'text:muted text:strong:hover'
                                 )}
                                 key={mode.id}
@@ -172,7 +172,7 @@ function PageCSSSizeRow({
                     <div className="rel h:11x w:full">
                     <motion.div
                         animate={{ width: reduceMotion || inView ? `${rowPercent}%` : startPercent }}
-                        className={clsx('abs inset:50%|auto|auto|0 h:12px min-w:1px r:xs transform:translateY(-50%)', colorClassName)}
+                        className={clsx('abs inset:50%|auto|auto|0 h:12px min-w:1px r:md transform:translateY(-50%)', colorClassName)}
                         data-home-bar-fill
                         initial={reduceMotion ? false : { width: startPercent }}
                         transition={{ delay: index * rowDelayStep, duration: barDuration, ease: [0.22, 1, 0.36, 1] }} />

@@ -4,7 +4,7 @@ import { heroExampleCode, type Translate } from './home-content'
 
 export default function HeroExampleStage({ t }: { t: Translate }) {
     return (
-        <div className="rel overflow:hidden b:1px|solid|subtle r:lg surface:raised shadow:card">
+        <div className="rel overflow:hidden b:1px|solid|subtle r:3xl surface:raised shadow:card">
             <div className="abs inset:0 z:0 pointer-events:none"
                 style={{
                     background: [
@@ -23,20 +23,20 @@ export default function HeroExampleStage({ t }: { t: Translate }) {
                     </div>
                     <div className="rel p:xs p:sm@md">
                         <Code
-                            className="{min-h:76x}_pre {r:md}_pre {font:12px}_pre"
+                            className="{min-h:76x}_pre {r:xl}_pre {font:12px}_pre"
                             lang="html">
                             {heroExampleCode}
                         </Code>
-                        <span className="abs bottom:lg right:lg h:4x w:2px r:xs bg:yellow animate:pulse pointer-events:none" />
+                        <span className="abs bottom:lg right:lg h:4x w:2px r:md bg:yellow animate:pulse pointer-events:none" />
                     </div>
                 </div>
 
                 <div className="p:md bg:surface-muted/.24 grid-col-span:5@lg p:xl@lg bl:1px|solid|subtle@lg">
                     <div className="grid h:full min-h:2xs content:center">
-                        <article className="grid gap:lg p:lg b:1px|solid|subtle r:lg surface:raised shadow:xs">
+                        <article className="grid gap:lg p:lg b:1px|solid|subtle r:3xl surface:raised shadow:xs">
                             <div className="flex items-center justify-between gap:md">
                                 <p className="m:0 font:sm text:muted">{t('Design system surface')}</p>
-                                <span className="inline-flex items-center h:6x px:xs r:sm font:xs bg:yellow/.14 text:strong">{t('Preview')}</span>
+                                <span className="inline-flex items-center h:6x px:xs r:lg font:xs bg:yellow/.14 text:strong">{t('Preview')}</span>
                             </div>
                             <div>
                                 <h2 className="m:0 font:2xl font:regular leading:xs text:strong">{t('Agent-ready UI')}</h2>
@@ -44,7 +44,7 @@ export default function HeroExampleStage({ t }: { t: Translate }) {
                                     {t('Semantic classes describe the interface before CSS is generated.')}
                                 </p>
                             </div>
-                            <button className="justify-self:start px:md py:sm b:0 r:md font:medium bg:yellow fg:yellow-95">
+                            <button className="justify-self:start px:md py:sm b:0 r:xl font:medium bg:yellow fg:yellow-95">
                                 {t('Ship interface')}
                             </button>
                             <div className="grid-cols:3 gap:xs pt:sm bt:1px|solid|subtle">
@@ -63,7 +63,7 @@ export default function HeroExampleStage({ t }: { t: Translate }) {
 function HeroDemoSignal({ label }: { label: string }) {
     return (
         <div className="grid gap:xs">
-            <span className="h:1.5x r:xs bg:yellow" />
+            <span className="h:1.5x r:md bg:yellow" />
             <span className="font:xs leading:1.25 text:muted">{label}</span>
         </div>
     )

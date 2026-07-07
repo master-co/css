@@ -27,11 +27,11 @@ export default function AgentDiagnosticsSection({ t }: { t: Translate }) {
                         {t('Project-aware scans, class diagnostics, generated CSS inspection, and safe fix previews make AI styling changes reviewable before they land.')}
                     </p>
                     <div className="flex flex-wrap gap:sm mt:lg">
-                        <Link href="/guide/ai-coding" className="btn btn-lg touch-yellow r:md outline-offset:2xs text-decoration:none bg:yellow fg:yellow-95 outline:2px|solid|yellow:focus-visible">
+                        <Link href="/guide/ai-coding" className="btn btn-lg touch-yellow r:xl outline-offset:2xs text-decoration:none bg:yellow fg:yellow-95 outline:2px|solid|yellow:focus-visible">
                             {t('Guide AI agents')}
                             <IconArrowRight className="size:4x ml:xs stroke:1.75" />
                         </Link>
-                        <Link href="/guide/mcp-server" className="app-object btn btn-lg app-object-interactive r:md outline-offset:2xs outline:2px|solid|yellow:focus-visible">
+                        <Link href="/guide/mcp-server" className="app-object btn btn-lg app-object-interactive r:xl outline-offset:2xs outline:2px|solid|yellow:focus-visible">
                             <IconTerminal2 className="size:4x mr:xs stroke:1.75" />
                             {t('Connect MCP')}
                         </Link>
@@ -48,7 +48,7 @@ export default function AgentDiagnosticsSection({ t }: { t: Translate }) {
 
 function DiagnosticVisual({ t }: { t: Translate }) {
     return (
-        <div className="rel overflow:hidden b:1px|solid|subtle r:lg surface:raised shadow:card">
+        <div className="rel overflow:hidden b:1px|solid|subtle r:3xl surface:raised shadow:card">
             <div className="abs inset:0 opacity:.64 pointer-events:none"
                 style={{
                     background: [
@@ -60,7 +60,7 @@ function DiagnosticVisual({ t }: { t: Translate }) {
                 <div className="p:md bb:1px|solid|subtle bg:surface-base/.72 backdrop-filter:blur(18px) grid-col-span:12@lg">
                     <div className="flex items-center justify-between gap:md">
                         <div className="flex items-center gap:sm">
-                            <span className="grid place-content:center size:9x r:md bg:green fg:white">
+                            <span className="grid place-content:center size:9x r:xl bg:green fg:white">
                                 <IconRobot className="size:5x stroke:1.75" />
                             </span>
                             <div>
@@ -68,7 +68,7 @@ function DiagnosticVisual({ t }: { t: Translate }) {
                                 <p className="m:0 font:xs text:muted">{t('Project context before writes')}</p>
                             </div>
                         </div>
-                        <code className="hidden px:xs py:2xs r:sm font:xs bg:surface-muted text:strong block@md">mastercss_lint_project</code>
+                        <code className="hidden px:xs py:2xs r:lg font:xs bg:surface-muted text:strong block@md">mastercss_lint_project</code>
                     </div>
                 </div>
 
@@ -88,7 +88,7 @@ function DiagnosticVisual({ t }: { t: Translate }) {
                         ))}
                     </div>
 
-                    <div className="mt:md p:sm b:1px|solid|subtle r:md bg:surface-muted">
+                    <div className="mt:md p:sm b:1px|solid|subtle r:xl bg:surface-muted">
                         <div className="flex items-center gap:xs">
                             <IconShieldCheck className="size:4x text:green stroke:1.75" />
                             <p className="m:0 font:sm text:strong">{t('Safe preview ready')}</p>
@@ -113,15 +113,15 @@ function DiagnosticSignal({ signal, t }: { signal: DiagnosticSignalContent; t: T
     const Icon = signal.status === 'context' ? IconZoomScan : signal.status === 'lint' ? IconCodeDots : IconShieldCheck
 
     return (
-        <MotionHoverSurface className="p:sm b:1px|solid|subtle r:md surface:raised shadow:xs">
+        <MotionHoverSurface className="p:sm b:1px|solid|subtle r:xl surface:raised shadow:xs">
             <div className="flex items-start gap:sm">
-                <span className={clsx('grid flex:0|0|auto place-content:center size:8x r:sm fg:white', signal.accent)}>
+                <span className={clsx('grid flex:0|0|auto place-content:center size:8x r:lg fg:white', signal.accent)}>
                     <Icon className="size:4x stroke:1.75" />
                 </span>
                 <div className="min-w:0">
                     <div className="flex items-center gap:xs">
                         <h3 className="m:0 font-weight:560 font:sm text:strong">{t(signal.title)}</h3>
-                        <code className="px:2xs py:1px r:xs font:2xs bg:surface-muted text:muted">{t(signal.status)}</code>
+                        <code className="px:2xs py:1px r:md font:2xs bg:surface-muted text:muted">{t(signal.status)}</code>
                     </div>
                     <p className="mx:0 mb:0 mt:xs font:xs leading:1.55 text:muted">{t(signal.body)}</p>
                 </div>

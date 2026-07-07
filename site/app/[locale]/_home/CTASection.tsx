@@ -10,7 +10,7 @@ export default function CTASection({ t }: { t: Translate }) {
             id={homeSections.getStarted}
             className="py:5xl">
             <div className="app-wrapper max-w:breakpoint-2xl">
-                <div className="rel overflow:hidden p:lg b:1px|solid|subtle r:lg surface:raised shadow:card p:xl@md">
+                <div className="rel overflow:hidden p:lg b:1px|solid|subtle r:3xl surface:raised shadow:card p:xl@md">
                     <div className="abs inset:0 opacity:.64 pointer-events:none"
                         style={{
                             background: [
@@ -29,21 +29,21 @@ export default function CTASection({ t }: { t: Translate }) {
                             <Link
                                 data-home-interaction={homeInteractions.ctaLink}
                                 href="/guide/introduction"
-                                className="btn btn-lg touch-yellow r:md outline-offset:2xs text-decoration:none bg:yellow fg:yellow-95 outline:2px|solid|yellow:focus-visible">
+                                className="btn btn-lg touch-yellow r:xl outline-offset:2xs text-decoration:none bg:yellow fg:yellow-95 outline:2px|solid|yellow:focus-visible">
                                 {t('Get started')}
                                 <IconArrowRight className="size:4x ml:xs stroke:1.75" />
                             </Link>
                             <Link
                                 data-home-interaction={homeInteractions.ctaLink}
                                 href="/play"
-                                className="app-object btn btn-lg app-object-interactive r:md outline-offset:2xs outline:2px|solid|yellow:focus-visible">
+                                className="app-object btn btn-lg app-object-interactive r:xl outline-offset:2xs outline:2px|solid|yellow:focus-visible">
                                 <IconTerminal2 className="size:4x mr:xs stroke:1.75" />
                                 {t('Open Play')}
                             </Link>
                             <Link
                                 data-home-interaction={homeInteractions.ctaLink}
                                 href="https://github.com/master-co/css"
-                                className="app-object btn btn-lg app-object-interactive r:md outline-offset:2xs outline:2px|solid|yellow:focus-visible">
+                                className="app-object btn btn-lg app-object-interactive r:xl outline-offset:2xs outline:2px|solid|yellow:focus-visible">
                                 <IconBrandGithub className="size:4x mr:xs stroke:1.75" />
                                 GitHub
                             </Link>

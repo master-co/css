@@ -52,7 +52,7 @@ export default function DeliveryModesSection({ t }: { t: Translate }) {
 
 function DeliveryPipeline({ t }: { t: Translate }) {
     return (
-        <div className="rel overflow:hidden p:md b:1px|solid|subtle r:md surface:raised shadow:xs">
+        <div className="rel overflow:hidden p:md b:1px|solid|subtle r:xl surface:raised shadow:xs">
             <div className="abs inset:0 opacity:.5 pointer-events:none"
                 style={{
                     background: 'linear-gradient(135deg, rgb(59 130 246 / .12), transparent 48%)'
@@ -60,7 +60,7 @@ function DeliveryPipeline({ t }: { t: Translate }) {
             <div className="rel grid gap:md">
                 <div className="flex items-center justify-between gap:md">
                     <p className="m:0 font:sm text:strong">{t('Class strings stay the source of truth.')}</p>
-                    <span className="px:xs py:2xs r:sm font:xs bg:yellow/.14 text:strong">{t('Portable CSS delivery')}</span>
+                    <span className="px:xs py:2xs r:lg font:xs bg:yellow/.14 text:strong">{t('Portable CSS delivery')}</span>
                 </div>
                 <div className="grid-cols:1 items-center gap:sm grid-cols:3@md">
                     {[
@@ -70,7 +70,7 @@ function DeliveryPipeline({ t }: { t: Translate }) {
                     ].map(([code, label], index) => (
                         <div className="contents" key={label}>
                             <div className="min-w:0">
-                                <div className={clsx('overflow:hidden px:sm py:xs r:sm font:xs text-ellipsis white-space:nowrap bg:surface-muted text:strong', index === 1 && 'bg:yellow fg:yellow-95')}>
+                                <div className={clsx('overflow:hidden px:sm py:xs r:lg font:xs text-ellipsis white-space:nowrap bg:surface-muted text:strong', index === 1 && 'bg:yellow fg:yellow-95')}>
                                     {code}
                                 </div>
                                 <p className="mx:0 mb:0 mt:xs font:xs text:muted">{t(label)}</p>
@@ -87,13 +87,13 @@ function DeliveryModeCard({ mode, t }: { mode: DeliveryModeContent; t: Translate
     const Icon = deliveryModeIcons[mode.icon]
 
     return (
-        <Link href={mode.href} className="block h:full r:md outline-offset:4xs text-decoration:none outline:2px|solid|yellow:focus-visible">
-            <MotionHoverSurface className="flex flex-col h:full min-h:38x p:md b:1px|solid|subtle r:md surface:raised shadow:xs">
+        <Link href={mode.href} className="block h:full r:xl outline-offset:4xs text-decoration:none outline:2px|solid|yellow:focus-visible">
+            <MotionHoverSurface className="flex flex-col h:full min-h:38x p:md b:1px|solid|subtle r:xl surface:raised shadow:xs">
                 <div className="flex items-center justify-between gap:md">
-                    <span className={clsx('grid place-content:center size:10x r:md fg:white', mode.accent)}>
+                    <span className={clsx('grid place-content:center size:10x r:xl fg:white', mode.accent)}>
                         <Icon className="size:5x stroke:1.75" />
                     </span>
-                    <code className="px:xs py:2xs r:sm font:xs bg:surface-muted text:strong">{t(mode.signal)}</code>
+                    <code className="px:xs py:2xs r:lg font:xs bg:surface-muted text:strong">{t(mode.signal)}</code>
                 </div>
                 <h3 className="mx:0 mb:0 mt:lg font-weight:560 font:xl text:strong">{t(mode.title)}</h3>
                 <p className="mx:0 mb:0 mt:sm leading:1.65 text:muted">{t(mode.body)}</p>

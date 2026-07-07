@@ -20,11 +20,11 @@ export default function HeroSection({ t }: { t: Translate }) {
                         {t('build websites that are readable by humans, reliable for AI agents, and expressive enough for modern design systems.')}
                     </p>
                     <div className="flex flex-wrap gap:sm|md w:fit mx:auto mt:2xl">
-                        <Link href="/guide/introduction" className="btn btn-lg touch-yellow r:md outline-offset:2xs text-decoration:none bg:yellow fg:yellow-95 outline:2px|solid|yellow:focus-visible">
+                        <Link href="/guide/introduction" className="btn btn-lg touch-yellow r:xl outline-offset:2xs text-decoration:none bg:yellow fg:yellow-95 outline:2px|solid|yellow:focus-visible">
                             {t('Get started')}
                             <IconArrowRight className="size:4x ml:xs stroke:1.75" />
                         </Link>
-                        <Link href="/play" className="app-object btn btn-lg app-object-interactive r:md outline-offset:2xs outline:2px|solid|yellow:focus-visible">
+                        <Link href="/play" className="app-object btn btn-lg app-object-interactive r:xl outline-offset:2xs outline:2px|solid|yellow:focus-visible">
                             <IconTerminal2 className="size:4x mr:xs stroke:1.75" />
                             {t('Open Play')}
                         </Link>

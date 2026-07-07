@@ -59,10 +59,10 @@ export const benchmarkChartColors = {
 } as const
 
 export const heroExampleClassNames = [
-    'grid gap:lg p:lg r:lg surface:raised',
+    'grid gap:lg p:lg r:3xl surface:raised',
     'text:muted',
     'font:2xl text:strong',
-    'px:md py:sm r:md bg:yellow fg:yellow-95'
+    'px:md py:sm r:xl bg:yellow fg:yellow-95'
 ] as const
 
 export const heroExampleCode = `
