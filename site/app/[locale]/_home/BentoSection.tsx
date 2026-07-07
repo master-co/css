@@ -5,7 +5,7 @@ import { MotionSection } from './HomeMotion'
 import ArtGalleryPreview from './ArtGalleryPreview'
 import HomeCodeWindow from './HomeCodeWindow'
 import ThemeModesPreview from './ThemeModesPreview'
-import { bentoRows, homeSections, p3PaletteColorNames, p3PaletteTiers, sectionBodyClassName, sectionHeadingClassName, sectionLabelClassName, themeVariablesCode, type BentoRowContent, type BentoTileContent, type Translate } from './home-content'
+import { bentoRows, homeSections, nativeCssPrimitivesCode, p3PaletteColorNames, p3PaletteTiers, sectionBodyClassName, sectionHeadingClassName, sectionLabelClassName, themeVariablesCode, type BentoRowContent, type BentoTileContent, type Translate } from './home-content'
 
 const p3PaletteGridStyle = {
     gridTemplateColumns: `3.25rem repeat(${p3PaletteColorNames.length}, minmax(2.75rem, 1fr))`,
@@ -76,7 +76,9 @@ function BentoGridRow({ t, row }: { t: Translate; row: BentoRowContent }) {
                         ? <ThemeVariablesCard key={tile.title} t={t} tile={tile} />
                         : tile.visual === 'art-gallery'
                             ? <ArtGalleryCard key={tile.title} t={t} tile={tile} />
-                            : <BentoPlaceholderCard key={tile.title} t={t} tile={tile} />
+                            : tile.visual === 'native-css-primitives'
+                                ? <NativeCssPrimitivesCard key={tile.title} t={t} tile={tile} />
+                                : <BentoPlaceholderCard key={tile.title} t={t} tile={tile} />
             ))}
         </div>
     )
@@ -143,6 +145,27 @@ function ArtGalleryCard({ t, tile }: { t: Translate; tile: BentoTileContent }) {
             </div>
 
             <ArtGalleryPreview className={bentoVisualClassName} />
+        </article>
+    )
+}
+
+function NativeCssPrimitivesCard({ t, tile }: { t: Translate; tile: BentoTileContent }) {
+    return (
+        <article className={clsx(bentoCardClassName, tile.gridColumnClassName)}>
+            <div className={bentoCardHeaderClassName}>
+                <h3 className={bentoCardTitleClassName}>
+                    {t(tile.title)}
+                </h3>
+                <p className={bentoCardBodyClassName}>{t(tile.body)}</p>
+            </div>
+
+            <HomeCodeWindow
+                className={clsx(bentoVisualClassName, 'h:md')}
+                preClassName="h:full px:sm py:lg font:11px leading:16px"
+                lang="css"
+                variant="embedded">
+                {nativeCssPrimitivesCode}
+            </HomeCodeWindow>
         </article>
     )
 }

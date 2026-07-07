@@ -2,7 +2,7 @@ import assert from 'node:assert/strict'
 import { test } from 'node:test'
 import guideColorNames from '../../internal/data/color-names.js'
 import { COLOR_LEVELS } from '../../internal/data/color-palette.js'
-import { benchmarkChartColors, bentoRows, deliveryModes, diagnosticSignals, heroExampleClassNames, heroExampleCode, homeInteractions, homeSections, p3PaletteColorNames, p3PaletteTiers, themeVariablesCode } from '../app/[locale]/_home/home-content.js'
+import { benchmarkChartColors, bentoRows, deliveryModes, diagnosticSignals, heroExampleClassNames, heroExampleCode, homeInteractions, homeSections, nativeCssPrimitivesCode, p3PaletteColorNames, p3PaletteTiers, themeVariablesCode } from '../app/[locale]/_home/home-content.js'
 
 test('homepage section anchors and interaction hooks stay stable', () => {
     assert.deepEqual(Object.values(homeSections), [
@@ -51,7 +51,7 @@ test('bento content model keeps targeted layout tiles', () => {
     assert.deepEqual(bentoRows[0].tiles?.map((tile) => tile.title), ['Theme modes', 'Theme variables'])
     assert.deepEqual(bentoRows[0].tiles?.map((tile) => tile.visual || 'placeholder'), ['theme-modes', 'theme-variables'])
     assert.deepEqual(bentoRows[2].tiles?.map((tile) => tile.title), ['Grid layout, transitions, animations', 'Native CSS primitives'])
-    assert.deepEqual(bentoRows[2].tiles?.map((tile) => tile.visual || 'placeholder'), ['art-gallery', 'placeholder'])
+    assert.deepEqual(bentoRows[2].tiles?.map((tile) => tile.visual || 'placeholder'), ['art-gallery', 'native-css-primitives'])
     assert.deepEqual(bentoRows[2].tiles?.map((tile) => 'gridColumnClassName' in tile ? tile.gridColumnClassName : 'auto'), ['grid-col-span:2@md', 'auto'])
     assert.equal(bentoRows.some((row) => row.title === 'Delivery modes'), false)
     assert.equal(bentoRows.some((row) => row.title === 'Editor and linting'), false)
@@ -77,6 +77,16 @@ test('theme variables bento sample maps tokens to class examples', () => {
     assert.match(themeVariablesCode, /@theme dark \{\n\s+--color-surface-base: \$color-gray-95; \/\* surface:base \*\//)
     assert.match(themeVariablesCode, /--color-text-body: \$color-gray-30; \/\* text:body \*\//)
     assert.doesNotMatch(themeVariablesCode, /@keyframes/)
+})
+
+test('native CSS primitives bento sample keeps a concise btn directive example', () => {
+    assert.match(nativeCssPrimitivesCode, /@components \{/)
+    assert.match(nativeCssPrimitivesCode, /btn \{/)
+    assert.match(nativeCssPrimitivesCode, /&:hover \{/)
+    assert.match(nativeCssPrimitivesCode, /@dark \{/)
+    assert.match(nativeCssPrimitivesCode, /@variant @<sm \{/)
+    assert.match(nativeCssPrimitivesCode, /@compose w:full;/)
+    assert.equal(nativeCssPrimitivesCode.trim().split('\n').length <= 24, true)
 })
 
 test('homepage P3 palette preview uses every guide color in reverse order', () => {

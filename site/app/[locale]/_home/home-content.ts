@@ -24,7 +24,7 @@ export interface BentoTileContent {
     title: string
     body: string
     gridColumnClassName?: string
-    visual?: 'theme-modes' | 'theme-variables' | 'art-gallery'
+    visual?: 'theme-modes' | 'theme-variables' | 'art-gallery' | 'native-css-primitives'
 }
 
 export interface DeliveryModeContent {
@@ -105,6 +105,31 @@ export const themeVariablesCode = `@theme {
 }
 `
 
+export const nativeCssPrimitivesCode = `@components {
+    btn {
+        @compose inline-flex items-center justify-center;
+        @compose gap:xs h:10x px:md;
+        @compose r:lg font:medium;
+        color: white;
+        background: var(--color-blue-60);
+        transition: background .15s ease;
+
+        &:hover {
+            background: var(--color-blue-70);
+        }
+
+        @dark {
+            color: var(--color-blue-100);
+            background: var(--color-blue-50);
+        }
+
+        @variant @<sm {
+            @compose w:full;
+        }
+    }
+}
+`
+
 export const p3PaletteColorNames = [...presetColorNames].reverse()
 
 export const p3PaletteTiers = [...COLOR_LEVELS].reverse()
@@ -149,7 +174,8 @@ export const bentoRows = [
             },
             {
                 title: 'Native CSS primitives',
-                body: 'Write real CSS declarations, selectors, media conditions, and state variants in markup while generated output stays layered and portable.'
+                body: 'Author a reusable button with native declarations and selectors, then fold dark mode and responsive conditions into compiler directives.',
+                visual: 'native-css-primitives'
             }
         ]
     }
