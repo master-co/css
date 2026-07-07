@@ -131,8 +131,8 @@ export default function ArtGalleryPreview({ className }: { className?: string })
     const [imageAnimation, setImageAnimation] = useState<ImageAnimation>()
     const [hiddenGridArtworkId, setHiddenGridArtworkId] = useState<string>()
     const [portalTarget, setPortalTarget] = useState<HTMLElement | null>(null)
-    const animationFrameRef = useRef<number>()
-    const animationTimeoutRef = useRef<ReturnType<typeof setTimeout>>()
+    const animationFrameRef = useRef<number | undefined>(undefined)
+    const animationTimeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
     const artworkFrameRefs = useRef<Record<string, HTMLElement | null>>({})
     const closeButtonRef = useRef<HTMLButtonElement>(null)
     const previousFocusRef = useRef<HTMLElement | null>(null)
@@ -264,7 +264,7 @@ export default function ArtGalleryPreview({ className }: { className?: string })
     return (
         <div className={clsx(className, 'h:md h:lg@md')}>
             <div
-                className="grid grid-cols:12 items-stretch gap:sm h:full p:md"
+                className="grid grid-cols:12 items-stretch gap:xs h:full p:md"
                 style={{ gridTemplateRows: 'repeat(2, minmax(0, 1fr))' }}>
                 {artworks.map((artwork) => {
                     const isHiddenGridArtwork = hiddenGridArtworkId === artwork.id
