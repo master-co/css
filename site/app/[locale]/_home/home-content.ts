@@ -23,7 +23,8 @@ export interface BentoRowContent {
 export interface BentoTileContent {
     title: string
     body: string
-    visual?: 'theme-modes' | 'theme-variables'
+    gridColumnClassName?: string
+    visual?: 'theme-modes' | 'theme-variables' | 'art-gallery'
 }
 
 export interface DeliveryModeContent {
@@ -136,9 +137,21 @@ export const bentoRows = [
     },
     {
         title: 'Three-column grid',
-        body: 'A compact placeholder grid for repeated items with equal height and consistent spacing.',
+        body: 'A three-column composition where a featured interactive tile spans two tracks beside supporting context.',
         gridClassName: 'grid-cols:1 grid-cols:3@md',
-        gridCount: 3
+        gridCount: 3,
+        tiles: [
+            {
+                title: 'Grid layout, transitions, animations',
+                body: 'Master CSS keeps modern CSS primitives close to markup: responsive CSS Grid, cascade layers, custom properties, motion tokens, and View Transition selectors share one class vocabulary.',
+                gridColumnClassName: 'grid-col-span:2@md',
+                visual: 'art-gallery'
+            },
+            {
+                title: 'Native CSS primitives',
+                body: 'Write real CSS declarations, selectors, media conditions, and state variants in markup while generated output stays layered and portable.'
+            }
+        ]
     }
 ] satisfies readonly BentoRowContent[]
 

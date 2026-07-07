@@ -2,6 +2,7 @@ import { Fragment } from 'react'
 import clsx from 'clsx'
 import { getColor } from '~/internal/data/color-palette'
 import { MotionSection } from './HomeMotion'
+import ArtGalleryPreview from './ArtGalleryPreview'
 import HomeCodeWindow from './HomeCodeWindow'
 import ThemeModesPreview from './ThemeModesPreview'
 import { bentoRows, homeSections, p3PaletteColorNames, p3PaletteTiers, sectionBodyClassName, sectionHeadingClassName, sectionLabelClassName, themeVariablesCode, type BentoRowContent, type BentoTileContent, type Translate } from './home-content'
@@ -61,7 +62,7 @@ function BentoGridRow({ t, row }: { t: Translate; row: BentoRowContent }) {
         )
     }
 
-    const tiles = row.tiles || Array.from({ length: row.gridCount }, (_, index) => ({
+    const tiles: readonly BentoTileContent[] = row.tiles || Array.from({ length: row.gridCount }, (_, index) => ({
         title: row.gridCount > 1 ? `${row.title} ${index + 1}` : row.title,
         body: row.body
     }))
@@ -73,7 +74,9 @@ function BentoGridRow({ t, row }: { t: Translate; row: BentoRowContent }) {
                     ? <ThemeModesCard key={tile.title} t={t} tile={tile} />
                     : tile.visual === 'theme-variables'
                         ? <ThemeVariablesCard key={tile.title} t={t} tile={tile} />
-                        : <BentoPlaceholderCard key={tile.title} t={t} tile={tile} />
+                        : tile.visual === 'art-gallery'
+                            ? <ArtGalleryCard key={tile.title} t={t} tile={tile} />
+                            : <BentoPlaceholderCard key={tile.title} t={t} tile={tile} />
             ))}
         </div>
     )
@@ -81,7 +84,7 @@ function BentoGridRow({ t, row }: { t: Translate; row: BentoRowContent }) {
 
 function BentoPlaceholderCard({ t, tile }: { t: Translate; tile: BentoTileContent }) {
     return (
-        <article className={bentoCardClassName}>
+        <article className={clsx(bentoCardClassName, tile.gridColumnClassName)}>
             <div className={bentoCardHeaderClassName}>
                 <h3 className={bentoCardTitleClassName}>
                     {t(tile.title)}
@@ -95,7 +98,7 @@ function BentoPlaceholderCard({ t, tile }: { t: Translate; tile: BentoTileConten
 
 function ThemeModesCard({ t, tile }: { t: Translate; tile: BentoTileContent }) {
     return (
-        <article className={bentoCardClassName}>
+        <article className={clsx(bentoCardClassName, tile.gridColumnClassName)}>
             <div className={bentoCardHeaderClassName}>
                 <h3 className={bentoCardTitleClassName}>
                     {t(tile.title)}
@@ -110,7 +113,7 @@ function ThemeModesCard({ t, tile }: { t: Translate; tile: BentoTileContent }) {
 
 function ThemeVariablesCard({ t, tile }: { t: Translate; tile: BentoTileContent }) {
     return (
-        <article className={bentoCardClassName}>
+        <article className={clsx(bentoCardClassName, tile.gridColumnClassName)}>
             <div className={bentoCardHeaderClassName}>
                 <h3 className={bentoCardTitleClassName}>
                     {t(tile.title)}
@@ -125,6 +128,21 @@ function ThemeVariablesCard({ t, tile }: { t: Translate; tile: BentoTileContent 
                 variant="embedded">
                 {themeVariablesCode}
             </HomeCodeWindow>
+        </article>
+    )
+}
+
+function ArtGalleryCard({ t, tile }: { t: Translate; tile: BentoTileContent }) {
+    return (
+        <article className={clsx(bentoCardClassName, tile.gridColumnClassName)}>
+            <div className={bentoCardHeaderClassName}>
+                <h3 className={bentoCardTitleClassName}>
+                    {t(tile.title)}
+                </h3>
+                <p className={bentoCardBodyClassName}>{t(tile.body)}</p>
+            </div>
+
+            <ArtGalleryPreview className={bentoVisualClassName} />
         </article>
     )
 }
