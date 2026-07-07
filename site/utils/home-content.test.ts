@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
-import { benchmarkChartColors, bentoRows, deliveryModes, diagnosticSignals, heroExampleClassNames, heroExampleCode, homeInteractions, homeSections } from '../app/[locale]/_home/home-content.js'
+import { benchmarkChartColors, bentoRows, deliveryModes, diagnosticSignals, heroExampleClassNames, heroExampleCode, homeInteractions, homeSections, p3PaletteColorNames, p3PaletteTiers } from '../app/[locale]/_home/home-content.js'
 
 test('homepage section anchors and interaction hooks stay stable', () => {
     assert.deepEqual(Object.values(homeSections), [
@@ -31,21 +31,54 @@ test('hero example keeps a concise static Master CSS sample', () => {
     }
 })
 
-test('bento content model keeps static placeholder layout tiles', () => {
+test('bento content model keeps targeted layout tiles', () => {
     assert.equal(bentoRows.length, 3)
     assert.equal(new Set(bentoRows.map((row) => row.title)).size, bentoRows.length)
+    assert.deepEqual(bentoRows.map((row) => row.title), [
+        'Two-column grid',
+        'High-saturation P3 colors',
+        'Three-column grid'
+    ])
     assert.deepEqual(bentoRows.map((row) => row.gridClassName), [
         'grid-cols:1 grid-cols:2@md',
         'grid-cols:1',
         'grid-cols:1 grid-cols:3@md'
     ])
     assert.deepEqual(bentoRows.map((row) => row.gridCount), [2, 1, 3])
+    assert.deepEqual(bentoRows.map((row) => row.visual || 'placeholder'), ['placeholder', 'p3-palette', 'placeholder'])
     assert.equal(bentoRows.some((row) => row.title === 'Delivery modes'), false)
     assert.equal(bentoRows.some((row) => row.title === 'Editor and linting'), false)
+    assert.equal(bentoRows.some((row) => row.title === 'Single-column grid'), false)
 
     for (const row of bentoRows) {
         assert.ok(row.body.length > row.title.length)
     }
+})
+
+test('homepage P3 palette preview uses high-saturation hues and descending tiers', () => {
+    assert.deepEqual(p3PaletteColorNames, [
+        'yellow',
+        'lime',
+        'green',
+        'beryl',
+        'teal',
+        'cyan',
+        'sky',
+        'blue',
+        'indigo',
+        'violet',
+        'purple',
+        'fuchsia',
+        'pink',
+        'crimson',
+        'red',
+        'orange',
+        'amber'
+    ])
+    assert.deepEqual(p3PaletteTiers, [100, 95, 90, 80, 70, 60, 50, 40, 30])
+    assert.equal(new Set(p3PaletteColorNames).size, p3PaletteColorNames.length)
+    assert.equal(p3PaletteColorNames.includes('gray'), false)
+    assert.equal(p3PaletteColorNames.includes('neutral'), false)
 })
 
 test('delivery modes content model links to rendering mode sections', () => {

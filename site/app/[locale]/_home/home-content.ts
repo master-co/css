@@ -13,6 +13,7 @@ export interface BentoRowContent {
     body: string
     gridClassName: string
     gridCount: number
+    visual?: 'p3-palette'
 }
 
 export interface DeliveryModeContent {
@@ -71,6 +72,28 @@ export const heroExampleCode = `
 </article>
 `
 
+export const p3PaletteColorNames = [
+    'yellow',
+    'lime',
+    'green',
+    'beryl',
+    'teal',
+    'cyan',
+    'sky',
+    'blue',
+    'indigo',
+    'violet',
+    'purple',
+    'fuchsia',
+    'pink',
+    'crimson',
+    'red',
+    'orange',
+    'amber'
+] as const
+
+export const p3PaletteTiers = [100, 95, 90, 80, 70, 60, 50, 40, 30] as const
+
 export const bentoRows = [
     {
         title: 'Two-column grid',
@@ -79,10 +102,11 @@ export const bentoRows = [
         gridCount: 2
     },
     {
-        title: 'Single-column grid',
-        body: 'A focused placeholder grid for content that should read in one steady vertical rhythm.',
+        title: 'High-saturation P3 colors',
+        body: 'Vivid preset hue families keep a consistent tier scale from deep anchors to bright interface accents.',
         gridClassName: 'grid-cols:1',
-        gridCount: 1
+        gridCount: 1,
+        visual: 'p3-palette'
     },
     {
         title: 'Three-column grid',
