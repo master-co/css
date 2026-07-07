@@ -2,7 +2,7 @@ import assert from 'node:assert/strict'
 import { test } from 'node:test'
 import guideColorNames from '../../internal/data/color-names.js'
 import { COLOR_LEVELS } from '../../internal/data/color-palette.js'
-import { benchmarkChartColors, bentoRows, deliveryModes, diagnosticSignals, heroExampleClassNames, heroExampleCode, homeInteractions, homeSections, p3PaletteColorNames, p3PaletteTiers } from '../app/[locale]/_home/home-content.js'
+import { benchmarkChartColors, bentoRows, deliveryModes, diagnosticSignals, heroExampleClassNames, heroExampleCode, homeInteractions, homeSections, p3PaletteColorNames, p3PaletteTiers, themeVariablesCode } from '../app/[locale]/_home/home-content.js'
 
 test('homepage section anchors and interaction hooks stay stable', () => {
     assert.deepEqual(Object.values(homeSections), [
@@ -48,8 +48,8 @@ test('bento content model keeps targeted layout tiles', () => {
     ])
     assert.deepEqual(bentoRows.map((row) => row.gridCount), [2, 1, 3])
     assert.deepEqual(bentoRows.map((row) => row.visual || 'placeholder'), ['placeholder', 'p3-palette', 'placeholder'])
-    assert.deepEqual(bentoRows[0].tiles?.map((tile) => tile.title), ['Theme modes', 'Two-column grid 2'])
-    assert.deepEqual(bentoRows[0].tiles?.map((tile) => tile.visual || 'placeholder'), ['theme-modes', 'placeholder'])
+    assert.deepEqual(bentoRows[0].tiles?.map((tile) => tile.title), ['Theme modes', 'Theme variables'])
+    assert.deepEqual(bentoRows[0].tiles?.map((tile) => tile.visual || 'placeholder'), ['theme-modes', 'theme-variables'])
     assert.equal(bentoRows.some((row) => row.title === 'Delivery modes'), false)
     assert.equal(bentoRows.some((row) => row.title === 'Editor and linting'), false)
     assert.equal(bentoRows.some((row) => row.title === 'Single-column grid'), false)
@@ -57,6 +57,12 @@ test('bento content model keeps targeted layout tiles', () => {
     for (const row of bentoRows) {
         assert.ok(row.body.length > row.title.length)
     }
+})
+
+test('theme variables bento sample stays concise', () => {
+    assert.match(themeVariablesCode, /@theme \{\n\s+--font-sans: "Inter";\n\}/)
+    assert.match(themeVariablesCode, /@theme light \{\}/)
+    assert.match(themeVariablesCode, /@theme dark \{\}/)
 })
 
 test('homepage P3 palette preview uses every guide color in reverse order', () => {

@@ -1,6 +1,5 @@
-import Code from '~/internal/components/Code'
-import WindowControls from '~/internal/components/WindowControls'
 import { heroExampleCode, type Translate } from './home-content'
+import HomeCodeWindow from './HomeCodeWindow'
 
 export default function HeroExampleStage({ t }: { t: Translate }) {
     return (
@@ -13,23 +12,13 @@ export default function HeroExampleStage({ t }: { t: Translate }) {
                     ].join(',')
                 }} />
             <div className="rel z:1 grid-cols:1 gap:0 grid-cols:12@lg">
-                <div className="grid-col-span:7@lg">
-                    <div className="flex items-center justify-between gap:md px:md py:sm bb:1px|solid|subtle bg:surface-base/.72 backdrop-filter:blur(18px)">
-                        <div className="flex items-center gap:sm">
-                            <WindowControls />
-                            <span className="font:xs text:muted">index.html</span>
-                        </div>
-                        <span className="font:xs text:muted">{t('Structured syntax')}</span>
-                    </div>
-                    <div className="rel p:xs p:sm@md">
-                        <Code
-                            className="{min-h:76x}_pre {r:xl}_pre {font:12px}_pre"
-                            lang="html">
-                            {heroExampleCode}
-                        </Code>
-                        <span className="abs bottom:lg right:lg h:4x w:2px r:md bg:yellow animate:pulse pointer-events:none" />
-                    </div>
-                </div>
+                <HomeCodeWindow
+                    className="grid-col-span:7@lg"
+                    codeClassName="{min-h:76x}_pre {font:12px}_pre"
+                    lang="html"
+                    variant="embedded">
+                    {heroExampleCode}
+                </HomeCodeWindow>
 
                 <div className="p:md bg:surface-muted/.24 grid-col-span:5@lg p:xl@lg bl:1px|solid|subtle@lg">
                     <div className="grid h:full min-h:2xs content:center">

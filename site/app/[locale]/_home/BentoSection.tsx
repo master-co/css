@@ -2,8 +2,9 @@ import { Fragment } from 'react'
 import clsx from 'clsx'
 import { getColor } from '~/internal/data/color-palette'
 import { MotionSection } from './HomeMotion'
+import HomeCodeWindow from './HomeCodeWindow'
 import ThemeModesPreview from './ThemeModesPreview'
-import { bentoRows, homeSections, p3PaletteColorNames, p3PaletteTiers, sectionBodyClassName, sectionHeadingClassName, sectionLabelClassName, type BentoRowContent, type BentoTileContent, type Translate } from './home-content'
+import { bentoRows, homeSections, p3PaletteColorNames, p3PaletteTiers, sectionBodyClassName, sectionHeadingClassName, sectionLabelClassName, themeVariablesCode, type BentoRowContent, type BentoTileContent, type Translate } from './home-content'
 
 const p3PaletteGridStyle = {
     gridTemplateColumns: `3.25rem repeat(${p3PaletteColorNames.length}, minmax(2.75rem, 1fr))`,
@@ -70,7 +71,9 @@ function BentoGridRow({ t, row }: { t: Translate; row: BentoRowContent }) {
             {tiles.map((tile) => (
                 tile.visual === 'theme-modes'
                     ? <ThemeModesCard key={tile.title} t={t} tile={tile} />
-                    : <BentoPlaceholderCard key={tile.title} t={t} tile={tile} />
+                    : tile.visual === 'theme-variables'
+                        ? <ThemeVariablesCard key={tile.title} t={t} tile={tile} />
+                        : <BentoPlaceholderCard key={tile.title} t={t} tile={tile} />
             ))}
         </div>
     )
@@ -101,6 +104,28 @@ function ThemeModesCard({ t, tile }: { t: Translate; tile: BentoTileContent }) {
             </div>
 
             <ThemeModesPreview className={bentoVisualClassName} />
+        </article>
+    )
+}
+
+function ThemeVariablesCard({ t, tile }: { t: Translate; tile: BentoTileContent }) {
+    return (
+        <article className={bentoCardClassName}>
+            <div className={bentoCardHeaderClassName}>
+                <h3 className={bentoCardTitleClassName}>
+                    {t(tile.title)}
+                </h3>
+                <p className={bentoCardBodyClassName}>{t(tile.body)}</p>
+            </div>
+
+            <HomeCodeWindow
+                bodyClassName="p:xs"
+                className={clsx(bentoVisualClassName, 'h:md')}
+                codeClassName="{h:full}_pre {font:11px}_pre {leading:18px}_pre"
+                lang="css"
+                variant="embedded">
+                {themeVariablesCode}
+            </HomeCodeWindow>
         </article>
     )
 }

@@ -23,7 +23,7 @@ export interface BentoRowContent {
 export interface BentoTileContent {
     title: string
     body: string
-    visual?: 'theme-modes'
+    visual?: 'theme-modes' | 'theme-variables'
 }
 
 export interface DeliveryModeContent {
@@ -82,6 +82,15 @@ export const heroExampleCode = `
 </article>
 `
 
+export const themeVariablesCode = `@theme {
+    --font-sans: "Inter";
+}
+
+@theme light {}
+
+@theme dark {}
+`
+
 export const p3PaletteColorNames = [...presetColorNames].reverse()
 
 export const p3PaletteTiers = [...COLOR_LEVELS].reverse()
@@ -99,8 +108,9 @@ export const bentoRows = [
                 visual: 'theme-modes'
             },
             {
-                title: 'Two-column grid 2',
-                body: 'A simple placeholder grid for paired content, preview panels, or side-by-side feature blocks.'
+                title: 'Theme variables',
+                body: 'Define shared tokens once, then keep light and dark mode overrides beside the same vocabulary.',
+                visual: 'theme-variables'
             }
         ]
     },
