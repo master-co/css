@@ -1,47 +1,47 @@
 <StepSection>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Create a project
-            If you don't have a Laravel project, create one first.
-        </StepL>
-        <StepR>
-            ```bash name=Terminal
-            laravel new my-app
-            cd my-app
-            ```
-        </StepR>
-    </Step>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Add Master CSS
-            Run the installer in static mode from the Laravel project root.
-        </StepL>
-        <StepR>
-            ```bash name=Terminal
-            npm create @master/css@rc -- --framework laravel --mode static --yes
-            ```
-        </StepR>
-    </Step>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Launch server
-            Run Laravel and Vite development servers.
-        </StepL>
-        <StepR>
-            ```bash name=Terminal
-            composer run dev
-            ```
-        </StepR>
-    </Step>
-    <Step>
-        ### <StepNum />Hello world
-        Now style your first Blade view using Master CSS syntax.
-    </Step>
-    <HelloWorld url="127.0.0.1:8000" />
+  <Step $row>
+    <StepL>
+      ### <StepNum />Create a project
+      If you don't have a Laravel project, create one first.
+    </StepL>
+    <StepR>
+      ```bash name=Terminal
+      laravel new my-app
+      cd my-app
+      ```
+    </StepR>
+  </Step>
+  <Step $row>
+    <StepL>
+      ### <StepNum />Add Master CSS
+      Run the installer in static mode from the Laravel project root.
+    </StepL>
+    <StepR>
+      ```bash name=Terminal
+      npm create @master/css@rc -- --framework laravel --mode static --yes
+      ```
+    </StepR>
+  </Step>
+  <Step $row>
+    <StepL>
+      ### <StepNum />Launch server
+      Run Laravel and Vite development servers.
+    </StepL>
+    <StepR>
+      ```bash name=Terminal
+      composer run dev
+      ```
+    </StepR>
+  </Step>
+  <Step>
+    ### <StepNum />Hello world
+    Now style your first Blade view using Master CSS syntax.
+  </Step>
+  <HelloWorld url="127.0.0.1:8000" />
 </StepSection>
 
 ```html name=resources/views/app.blade.php
 <h1 class="m:2xl italic font:5xl font:heavy text:neutral">
-    Hello World
+  Hello World
 </h1>
 ```

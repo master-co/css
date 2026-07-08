@@ -50,21 +50,21 @@ Move local visual declarations into markup when the class list is easier to revi
 
 ```css name=Card.module.css
 .card {
-    display: grid;
-    gap: 1rem;
-    padding: 1.5rem;
-    border-radius: .75rem;
-    background: var(--color-surface);
+  display: grid;
+  gap: 1rem;
+  padding: 1.5rem;
+  border-radius: .75rem;
+  background: var(--color-surface);
 }
 ```
 
 ```tsx name=Card.tsx
 export function Card({ children }: { children: React.ReactNode }) {
-    return (
-        <section className="grid gap:md p:lg r:lg bg:surface">
-            {children}
-        </section>
-    )
+  return (
+    <section className="grid gap:md p:lg r:lg bg:surface">
+      {children}
+    </section>
+  )
 }
 ```
 
@@ -81,11 +81,11 @@ Use `@reference` to make project tokens, components, utilities, and custom varia
 @reference "../app.css";
 
 .button {
-    @compose inline-flex items-center justify-center gap:xs h:10x px:md r:md bg:blue-60 fg:white;
+  @compose inline-flex items-center justify-center gap:xs h:10x px:md r:md bg:blue-60 fg:white;
 }
 
 .button:disabled {
-    opacity: 0.5;
+  opacity: 0.5;
 pointer-events: none;
 }
 ```
@@ -94,7 +94,7 @@ pointer-events: none;
 import styles from './Button.module.css'
 
 export function Button(props: React.ButtonHTMLAttributes<HTMLButtonElement>) {
-    return <button className={styles.button} {...props} />
+  return <button className={styles.button} {...props} />
 }
 ```
 
@@ -109,16 +109,16 @@ Project-owned custom properties usually belong in `@theme` before large-scale cl
 @import "@master/css";
 
 @theme {
-    --color-surface: #ffffff;
-    --color-body: #172033;
-    --spacing-card: 1.5rem;
-    --radius-card: .75rem;
+  --color-surface: #ffffff;
+  --color-body: #172033;
+  --spacing-card: 1.5rem;
+  --radius-card: .75rem;
 }
 ```
 
 ```html
 <article class="r:card fg:body grid-cols:3@md bg:surface p:card">
-    ...
+  ...
 </article>
 ```
 

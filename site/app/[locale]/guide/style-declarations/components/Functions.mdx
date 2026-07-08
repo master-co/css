@@ -1,20 +1,20 @@
 export const code1 = `
-    <!-- @MARK calc(100%-1rem) --><!-- @MARK var(--size-sm) --><!-- @MARK rgba(0,0,0,.5) -->
-    <div class="h:var(--size-sm) w:calc(100%-1rem) bg:rgba(0,0,0,.5)">
+  <!-- @MARK calc(100%-1rem) --><!-- @MARK var(--size-sm) --><!-- @MARK rgba(0,0,0,.5) -->
+  <div class="h:var(--size-sm) w:calc(100%-1rem) bg:rgba(0,0,0,.5)">
 `
 export const code2 = `
-    <!-- @MARK calc(100%-4x) --><!-- @MARK $size-sm --><!-- @MARK black/.5 -->
-    <div class="h:$size-sm w:calc(100%-4x) bg:black/.5">
+  <!-- @MARK calc(100%-4x) --><!-- @MARK $size-sm --><!-- @MARK black/.5 -->
+  <div class="h:$size-sm w:calc(100%-4x) bg:black/.5">
 `
 
 Write native CSS functions directly when that is the clearest expression of the value.
 <Code lang="html">
-    {code1}
+  {code1}
 </Code>
 
 (o) Combine functions with multiplier units, token shortcuts, and [variable syntax](#variable-properties). <Dropped p1={code1} p2={code2} target="class" />
 <Code lang="html">
-    {code2}
+  {code2}
 </Code>
 
 Inside functions, Master CSS still resolves the parts it understands. For example, `4x` follows the project base-unit scale, `$size-sm` references a CSS variable, and color opacity syntax like `black/.5` stays compact.

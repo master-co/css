@@ -5,23 +5,23 @@
 ### Size implicit columns
 Use `grid-auto-columns` to size columns created outside the explicit grid.
 <Demo $py={0}>
-    <DemoPanel>
-        <div className="grid overflow:auto grid-auto-columns:96px grid-auto-flow:column gap:xs">
-            <div className="min-w:0 p:sm b:1px|solid|blue-20 r:lg text-center bg:blue-5 b:blue-80@dark bg:blue-95@dark">
-                <div className="overflow:hidden font:11px font:bold text-ellipsis white-space:nowrap fg:blue-60">96px</div>
-                <div className="font-weight:560 font:sm text:neutral">A</div>
-            </div>
-            <div className="min-w:0 p:sm r:lg text-center bg:gray-5 bg:gray-90@dark">B</div>
-            <div className="min-w:0 p:sm r:lg text-center bg:gray-5 bg:gray-90@dark">C</div>
-        </div>
-    </DemoPanel>
+  <DemoPanel>
+    <div className="grid overflow:auto grid-auto-columns:96px grid-auto-flow:column gap:xs">
+      <div className="min-w:0 p:sm b:1px|solid|blue-20 r:lg text-center bg:blue-5 b:blue-80@dark bg:blue-95@dark">
+        <div className="overflow:hidden font:11px font:bold text-ellipsis white-space:nowrap fg:blue-60">96px</div>
+        <div className="font-weight:560 font:sm text:neutral">A</div>
+      </div>
+      <div className="min-w:0 p:sm r:lg text-center bg:gray-5 bg:gray-90@dark">B</div>
+      <div className="min-w:0 p:sm r:lg text-center bg:gray-5 bg:gray-90@dark">C</div>
+    </div>
+  </DemoPanel>
 </Demo>
 ```html
 <div class="grid grid-auto-flow:column">
-    <!-- @MARK grid-auto-columns:96px -->
-    <div class="grid-auto-columns:96px">A</div>
-    <div>B</div>
-    <div>C</div>
+  <!-- @MARK grid-auto-columns:96px -->
+  <div class="grid-auto-columns:96px">A</div>
+  <div>B</div>
+  <div>C</div>
 </div>
 ```
 

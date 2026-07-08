@@ -7,15 +7,15 @@ Use `list-style-image:url(*)` when each list item should use an image marker.
 ```html
 <!-- @MARK list-style-image:url(/marker.svg) -->
 <ul class="list-style-image:url(/marker.svg)">
-    <li>Custom marker</li>
+  <li>Custom marker</li>
 </ul>
 ```
 
 <details>
-    <summary>Generated CSS</summary>
-    <Class2CSS>
-        {['list-style-image:url(/marker.svg)']}
-    </Class2CSS>
+  <summary>Generated CSS</summary>
+  <Class2CSS>
+    {['list-style-image:url(/marker.svg)']}
+  </Class2CSS>
 </details>
 
 ### Use a gradient marker
@@ -23,7 +23,7 @@ Gradient functions can also be used when a generated marker is more appropriate 
 ```html
 <!-- @MARK list-style-image:linear-gradient(var(--color-blue-60)|var(--color-blue-40)) -->
 <ul class="list-style-image:linear-gradient(var(--color-blue-60)|var(--color-blue-40))">
-    <li>Gradient marker</li>
+  <li>Gradient marker</li>
 </ul>
 ```
 
@@ -31,7 +31,7 @@ Gradient functions can also be used when a generated marker is more appropriate 
 Use `list-style:disc` or another type utility when image markers are not desired in a condition.
 ```html
 <ul class="list-style-image:url(/marker.svg) list-style:disc@print">
-    <li>Printable marker</li>
+  <li>Printable marker</li>
 </ul>
 ```
 

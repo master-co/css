@@ -1,14 +1,14 @@
 export const code1 = /* eslint-disable @master/css/prefer-canonical-classes, @master/css/sort-classes -- intentional shorthand comparison source */ `
-    <!-- @MARK padding-top:1rem --><!-- @MARK padding-bottom:1rem --><!-- @MARK padding-left:2rem --><!-- @MARK padding-right:2rem --><!-- @MARK border-width:.0625rem --><!-- @MARK border-color:red --><!-- @MARK border-style:solid -->
-    <p class="padding-top:1rem padding-bottom:1rem padding-left:2rem padding-right:2rem border-width:.0625rem border-color:red border-style:solid">
+  <!-- @MARK padding-top:1rem --><!-- @MARK padding-bottom:1rem --><!-- @MARK padding-left:2rem --><!-- @MARK padding-right:2rem --><!-- @MARK border-width:.0625rem --><!-- @MARK border-color:red --><!-- @MARK border-style:solid -->
+  <p class="padding-top:1rem padding-bottom:1rem padding-left:2rem padding-right:2rem border-width:.0625rem border-color:red border-style:solid">
 `
 export const code2 = `
-    <!-- @MARK padding:4x|8x --><!-- @MARK border:1px|solid|red -->
-    <p class="padding:4x|8x border:1px|solid|red">
+  <!-- @MARK padding:4x|8x --><!-- @MARK border:1px|solid|red -->
+  <p class="padding:4x|8x border:1px|solid|red">
 `
 export const code3 = `
-    <!-- @MARK p:4x|8x --><!-- @MARK b:1px|solid|red -->
-    <p class="p:4x|8x b:1px|solid|red">
+  <!-- @MARK p:4x|8x --><!-- @MARK b:1px|solid|red -->
+  <p class="p:4x|8x b:1px|solid|red">
 `
 /* eslint-enable @master/css/prefer-canonical-classes, @master/css/sort-classes */
 
@@ -16,17 +16,17 @@ Syntax: <code><span className="language-mcss mcss token value"><span className="
 
 Use the same value order as native CSS shorthands, but replace spaces with `|` so the class attribute still contains one class name.
 <Code lang="html">
-    {code1}
+  {code1}
 </Code>
 
 (o) Use the CSS shorthand with explicit or multiplier units. <Dropped p1={code1} p2={code2} target="class" />
 <Code lang="html">
-    {code2}
+  {code2}
 </Code>
 
 (o) Even with abbreviations. <Dropped p1={code1} p2={code3} target="class" />
 <Code lang="html">
-    {code3}
+  {code3}
 </Code>
 
 Class attributes use whitespace to separate class names, so a value like `10 20 30 40` must be written with a delimiter.
@@ -40,7 +40,7 @@ Class attributes use whitespace to separate class names, so a value like `10 20 
 Review native CSS:
 ```css
 div {
-    margin: 1rem 2rem 3rem 4rem
+  margin: 1rem 2rem 3rem 4rem
 }
 ```
 The delimiter does not change the CSS shorthand rules. Keep the same top, right, bottom, and left order you would use in CSS.

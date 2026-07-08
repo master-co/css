@@ -1,55 +1,55 @@
 const units = {
-    guide: {
-        categories: [
-            'Overview',
-            'Getting Started',
-            'Integrations',
-            'Agentic Workflows',
-            'Syntax Tutorial',
-            'Fundamentals',
-            'Authoring',
-            'Design Foundations',
-            'Customization',
-            'Build & Delivery',
-        ]
-    },
-    reference: {
-        categories: [
-            'Overview',
-            'Layout',
-            'Flexbox & Grid',
-            'Spacing',
-            'Sizing',
-            'Typography',
-            'Color & Backgrounds',
-            'Borders & Outlines',
-            'Effects',
-            'Transforms',
-            'Media & SVG',
-            'Shapes & Masks',
-            'Motion',
-            'Interactivity',
-            'Accessibility'
-        ]
-    },
-    messages: {
-        categories: [
-            'Errors',
-            'Warnings',
-        ]
-    },
-    blog: {
-        categories: [
-            'Major',
-            'New Feature',
-        ]
-    },
-    examples: {},
-    play: {},
-    roadmap: {},
-    sponsor: {},
-    brand: {},
-    'design-system': {},
+  guide: {
+    categories: [
+      'Overview',
+      'Getting Started',
+      'Integrations',
+      'Agentic Workflows',
+      'Syntax Tutorial',
+      'Fundamentals',
+      'Authoring',
+      'Design Foundations',
+      'Customization',
+      'Build & Delivery',
+    ]
+  },
+  reference: {
+    categories: [
+      'Overview',
+      'Layout',
+      'Flexbox & Grid',
+      'Spacing',
+      'Sizing',
+      'Typography',
+      'Color & Backgrounds',
+      'Borders & Outlines',
+      'Effects',
+      'Transforms',
+      'Media & SVG',
+      'Shapes & Masks',
+      'Motion',
+      'Interactivity',
+      'Accessibility'
+    ]
+  },
+  messages: {
+    categories: [
+      'Errors',
+      'Warnings',
+    ]
+  },
+  blog: {
+    categories: [
+      'Major',
+      'New Feature',
+    ]
+  },
+  examples: {},
+  play: {},
+  roadmap: {},
+  sponsor: {},
+  brand: {},
+  'design-system': {},
 }
 
 export default units

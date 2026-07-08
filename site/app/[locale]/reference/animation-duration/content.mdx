@@ -7,15 +7,15 @@ Use `animation-duration:*` to define how long one cycle of the keyframes takes.
 ```html
 <!-- @MARK animation-duration:300ms -->
 <div class="animation-duration:300ms animation-fill-mode:both animation-name:fade">
-    Fades in
+  Fades in
 </div>
 ```
 
 <details>
-    <summary>Generated CSS</summary>
-    <Class2CSS>
-        {['animation-duration:300ms']}
-    </Class2CSS>
+  <summary>Generated CSS</summary>
+  <Class2CSS>
+    {['animation-duration:300ms']}
+  </Class2CSS>
 </details>
 
 ### Slow down looping motion
@@ -23,7 +23,7 @@ Looping indicators should often use a steady, readable duration so they do not d
 ```html
 <!-- @MARK animation-duration:1s -->
 <svg class="animation-duration:1s animation-name:rotate animation-timing-function:linear">
-    ...
+  ...
 </svg>
 ```
 
@@ -32,7 +32,7 @@ Use `animation-duration:0ms` when an animation should resolve immediately in pri
 ```html
 <!-- @MARK animation-duration:0ms@print -->
 <div class="animation-duration:300ms animation-duration:0ms@print">
-    Static print state
+  Static print state
 </div>
 ```
 

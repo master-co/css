@@ -1,100 +1,100 @@
 Use Vite static rendering to build a CSS asset for Shopify Liquid themes. Shopify still serves the theme; Vite only turns complete class strings from Liquid templates into `assets/master.css`.
 
 <StepSection>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Open your theme
-            Start from a local Shopify theme directory.
-        </StepL>
-        <StepR>
-            ```bash name=Terminal
-            cd my-shopify-theme
-            npm init -y
-            ```
-        </StepR>
-    </Step>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Install Vite and Master CSS
-            Install Vite and the Master CSS Vite integration.
-        </StepL>
-        <StepR>
-            ```bash name=Terminal
-            npm install -D vite @master/css.vite@rc
-            ```
-        </StepR>
-    </Step>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Configure Vite
-            Emit the compiled CSS into Shopify's `assets` directory.
-        </StepL>
-        <StepR>
-            ```ts name=vite.config.ts
-            import { defineConfig } from 'vite'
-            import masterCSS from '@master/css.vite'
+  <Step $row>
+    <StepL>
+      ### <StepNum />Open your theme
+      Start from a local Shopify theme directory.
+    </StepL>
+    <StepR>
+      ```bash name=Terminal
+      cd my-shopify-theme
+      npm init -y
+      ```
+    </StepR>
+  </Step>
+  <Step $row>
+    <StepL>
+      ### <StepNum />Install Vite and Master CSS
+      Install Vite and the Master CSS Vite integration.
+    </StepL>
+    <StepR>
+      ```bash name=Terminal
+      npm install -D vite @master/css.vite@rc
+      ```
+    </StepR>
+  </Step>
+  <Step $row>
+    <StepL>
+      ### <StepNum />Configure Vite
+      Emit the compiled CSS into Shopify's `assets` directory.
+    </StepL>
+    <StepR>
+      ```ts name=vite.config.ts
+      import { defineConfig } from 'vite'
+      import masterCSS from '@master/css.vite'
 
-            export default defineConfig({
-                plugins: [
-                    masterCSS({ mode: 'static' })
-                ],
-                build: {
-                    outDir: '.',
-                    emptyOutDir: false,
-                    rollupOptions: {
-                        input: 'src/master.ts',
-                        output: {
-                            entryFileNames: 'assets/master.js',
-                            assetFileNames: 'assets/[name][extname]'
-                        }
-                    }
-                }
-            })
-            ```
-        </StepR>
-    </Step>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Create the asset entry
-            Import Master CSS and scan Liquid theme files explicitly.
-        </StepL>
-        <StepR>
-            ```ts name=src/master.ts
-            import './master.css'
-            ```
+      export default defineConfig({
+        plugins: [
+          masterCSS({ mode: 'static' })
+        ],
+        build: {
+          outDir: '.',
+          emptyOutDir: false,
+          rollupOptions: {
+            input: 'src/master.ts',
+            output: {
+              entryFileNames: 'assets/master.js',
+              assetFileNames: 'assets/[name][extname]'
+            }
+          }
+        }
+      })
+      ```
+    </StepR>
+  </Step>
+  <Step $row>
+    <StepL>
+      ### <StepNum />Create the asset entry
+      Import Master CSS and scan Liquid theme files explicitly.
+    </StepL>
+    <StepR>
+      ```ts name=src/master.ts
+      import './master.css'
+      ```
 
-            ```css name=src/master.css
-            @import "@master/css";
+      ```css name=src/master.css
+      @import "@master/css";
 
-            @source "../layout/**/*.liquid";
-            @source "../sections/**/*.liquid";
-            @source "../snippets/**/*.liquid";
-            @source "../templates/**/*.liquid";
-            @source "../templates/**/*.json";
-            ```
-        </StepR>
-    </Step>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Load the asset
-            Reference the generated stylesheet from the theme layout.
-        </StepL>
-        <StepR>
-            ```liquid name=layout/theme.liquid
-            {{ 'master.css' | asset_url | stylesheet_tag }}
-            ```
-        </StepR>
-    </Step>
-    <Step>
-        ### <StepNum />Hello world
-        Now style your first Liquid template using Master CSS syntax.
-    </Step>
-    <HelloWorld url="localhost:9292" />
+      @source "../layout/**/*.liquid";
+      @source "../sections/**/*.liquid";
+      @source "../snippets/**/*.liquid";
+      @source "../templates/**/*.liquid";
+      @source "../templates/**/*.json";
+      ```
+    </StepR>
+  </Step>
+  <Step $row>
+    <StepL>
+      ### <StepNum />Load the asset
+      Reference the generated stylesheet from the theme layout.
+    </StepL>
+    <StepR>
+      ```liquid name=layout/theme.liquid
+      {{ 'master.css' | asset_url | stylesheet_tag }}
+      ```
+    </StepR>
+  </Step>
+  <Step>
+    ### <StepNum />Hello world
+    Now style your first Liquid template using Master CSS syntax.
+  </Step>
+  <HelloWorld url="localhost:9292" />
 </StepSection>
 
 ```html name=sections/main-page.liquid
 <h1 class="m:2xl italic font:5xl font:heavy text:neutral">
-    Hello World
+  Hello World
 </h1>
 ```
 

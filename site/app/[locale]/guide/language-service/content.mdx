@@ -11,7 +11,7 @@ Completion works inside configured class sources, including markup attributes, b
 
 ```html
 <button class="inline-flex items-center gap:xs px:md py:xs r:md bg:blue-60 fg:white">
-    Save
+  Save
 </button>
 ```
 
@@ -22,7 +22,7 @@ Hover inspection shows the generated CSS for a class at the cursor. This is usef
 
 ```html
 <button class="fg:white bg:blue-60:hover@sm">
-    Save
+  Save
 </button>
 ```
 
@@ -49,7 +49,7 @@ For class-list directives, formatting keeps important markers attached to the cl
 
 ```css
 .card {
-    @compose bg:transparent !;
+  @compose bg:transparent !;
 }
 ```
 
@@ -57,7 +57,7 @@ becomes:
 
 ```css
 .card {
-    @compose bg:transparent!;
+  @compose bg:transparent!;
 }
 ```
 
@@ -84,20 +84,20 @@ Customize the source settings when a project uses its own class helpers or namin
 
 ```json name=.vscode/settings.json
 {
-    "masterCSS.classAttributes": [
-        "class",
-        "className",
-        "ui"
-    ],
-    "masterCSS.classDeclarations": [
-        "classes",
-        "styles"
-    ],
-    "masterCSS.classFunctions": [
-        "clsx",
-        "cva",
-        "cn"
-    ]
+  "masterCSS.classAttributes": [
+    "class",
+    "className",
+    "ui"
+  ],
+  "masterCSS.classDeclarations": [
+    "classes",
+    "styles"
+  ],
+  "masterCSS.classFunctions": [
+    "clsx",
+    "cva",
+    "cn"
+  ]
 }
 ```
 
@@ -116,11 +116,11 @@ Each detected workspace gets its own language service and manifest. In a monorep
 
 ```json name=.vscode/settings.json
 {
-    "masterCSS.workspaces": [
-        "apps/admin",
-        "apps/shop",
-        "packages/design-system"
-    ]
+  "masterCSS.workspaces": [
+    "apps/admin",
+    "apps/shop",
+    "packages/design-system"
+  ]
 }
 ```
 
@@ -139,7 +139,7 @@ Embedded syntax highlighting is controlled by `masterCSS.embeddedSyntaxHighlight
 
 ```json name=.vscode/settings.json
 {
-    "masterCSS.embeddedSyntaxHighlighting": "active"
+  "masterCSS.embeddedSyntaxHighlighting": "active"
 }
 ```
 
@@ -152,14 +152,14 @@ Set options in `.vscode/settings.json` or VS Code user settings with the `master
 
 ```json name=.vscode/settings.json
 {
-    "editor.quickSuggestions": {
-        "strings": true
-    },
-    "masterCSS.suggestSyntax": true,
-    "masterCSS.inspectSyntax": true,
-    "masterCSS.renderSyntaxColors": true,
-    "masterCSS.formatDirectives": true,
-    "masterCSS.embeddedSyntaxHighlighting": "active"
+  "editor.quickSuggestions": {
+    "strings": true
+  },
+  "masterCSS.suggestSyntax": true,
+  "masterCSS.inspectSyntax": true,
+  "masterCSS.renderSyntaxColors": true,
+  "masterCSS.formatDirectives": true,
+  "masterCSS.embeddedSyntaxHighlighting": "active"
 }
 ```
 

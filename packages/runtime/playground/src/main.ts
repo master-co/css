@@ -45,8 +45,8 @@ const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
 /* iframe test */
 const iframe = document.querySelector('iframe')
 if (iframe?.contentDocument) {
-    CSSRuntime.create({
-        root: iframe.contentDocument,
-        manifest: defaultManifest
-    }).observe()
+  CSSRuntime.create({
+    root: iframe.contentDocument,
+    manifest: defaultManifest
+  }).observe()
 }

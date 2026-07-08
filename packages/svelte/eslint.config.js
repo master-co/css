@@ -9,29 +9,29 @@ import playwright from 'eslint-plugin-playwright'
 const gitignorePath = fileURLToPath(new URL("./.gitignore", import.meta.url))
 
 export default ts.config(
-    includeIgnoreFile(gitignorePath),
-    js.configs.recommended,
-    ...ts.configs.recommended,
-    ...svelte.configs["flat/recommended"],
-    {
-        languageOptions: {
-            globals: {
-                ...globals.browser,
-                ...globals.node
-            }
-        }
-    },
-    {
-        files: ["**/*.svelte"],
+  includeIgnoreFile(gitignorePath),
+  js.configs.recommended,
+  ...ts.configs.recommended,
+  ...svelte.configs["flat/recommended"],
+  {
+    languageOptions: {
+      globals: {
+        ...globals.browser,
+        ...globals.node
+      }
+    }
+  },
+  {
+    files: ["**/*.svelte"],
 
-        languageOptions: {
-            parserOptions: {
-                parser: ts.parser
-            }
-        }
-    },
-    {
-        ...playwright.configs['flat/recommended'],
-        files: ['e2e/**/*.{test,spec}.{js,ts,jsx,tsx}'],
-    },
+    languageOptions: {
+      parserOptions: {
+        parser: ts.parser
+      }
+    }
+  },
+  {
+    ...playwright.configs['flat/recommended'],
+    files: ['e2e/**/*.{test,spec}.{js,ts,jsx,tsx}'],
+  },
 )

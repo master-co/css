@@ -25,8 +25,8 @@ Start with local styling in markup. This is enough for a first screen, prototype
 
 ```html
 <section class="grid gap:md p:lg r:lg bg:blue-60 fg:white">
-    <h2 class="m:0 font:2xl font:semibold">Dashboard</h2>
-    <p class="m:0 fg:white/.8">A compact panel styled from its class list.</p>
+  <h2 class="m:0 font:2xl font:semibold">Dashboard</h2>
+  <p class="m:0 fg:white/.8">A compact panel styled from its class list.</p>
 </section>
 ```
 
@@ -42,7 +42,7 @@ A Master CSS class can carry the condition that controls when it applies.
 ```html
 <!-- @MARK :hover --><!-- @MARK @md -->
 <button class="px:md py:xs r:md bg:blue-60 fg:white bg:blue-70:hover grid-cols:2@md">
-    Save
+  Save
 </button>
 ```
 
@@ -68,14 +68,14 @@ That stylesheet becomes the project CSS entry. It can later define shared stylin
 @import "@master/css";
 
 @theme {
-    --color-brand: #4f46e5;
-    --spacing-card: 1.5rem;
+  --color-brand: #4f46e5;
+  --spacing-card: 1.5rem;
 }
 ```
 
 ```html
 <article class="fg:white bg:brand p:card">
-    ...
+  ...
 </article>
 ```
 

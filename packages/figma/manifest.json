@@ -1,32 +1,32 @@
 {
-    "name": "Master CSS",
-    "id": "1501844200903453211",
-    "api": "1.0.0",
-    "main": "./dist/plugin.min.js",
-    "enableProposedApi": false,
-    "permissions": [ "teamlibrary" ],
-    "documentAccess": "dynamic-page",
-    "editorType": [
-        "figma"
-    ],
-    "networkAccess": {
-        "allowedDomains": [
-            "https://fonts.googleapis.com",
-            "https://fonts.gstatic.com"
-        ]
+  "name": "Master CSS",
+  "id": "1501844200903453211",
+  "api": "1.0.0",
+  "main": "./dist/plugin.min.js",
+  "enableProposedApi": false,
+  "permissions": [ "teamlibrary" ],
+  "documentAccess": "dynamic-page",
+  "editorType": [
+    "figma"
+  ],
+  "networkAccess": {
+    "allowedDomains": [
+      "https://fonts.googleapis.com",
+      "https://fonts.gstatic.com"
+    ]
+  },
+  "menu": [
+    {
+      "command": "export-variables",
+      "name": "Export Variables"
     },
-    "menu": [
-        {
-            "command": "export-variables",
-            "name": "Export Variables"
-        },
-        {
-            "command": "import-variables",
-            "name": "Import Variables"
-        }
-    ],
-    "ui": {
-        "export-variables": "./out/export-variables.html",
-        "import-variables": "./out/import-variables.html"
+    {
+      "command": "import-variables",
+      "name": "Import Variables"
     }
+  ],
+  "ui": {
+    "export-variables": "./out/export-variables.html",
+    "import-variables": "./out/import-variables.html"
+  }
 }

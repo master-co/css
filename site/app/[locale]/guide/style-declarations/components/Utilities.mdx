@@ -1,10 +1,10 @@
 export const code1 = /* eslint-disable @master/css/prefer-canonical-classes, @master/css/sort-classes -- intentional utility shorthand comparison source */ `
-    <!-- @MARK text-transform:capitalize --><!-- @MARK position:absolute --><!-- @MARK display:block --><!-- @MARK border-radius:50% -->
-    <p class="text-transform:capitalize position:absolute display:block border-radius:50%">
+  <!-- @MARK text-transform:capitalize --><!-- @MARK position:absolute --><!-- @MARK display:block --><!-- @MARK border-radius:50% -->
+  <p class="text-transform:capitalize position:absolute display:block border-radius:50%">
 `
 export const code2 = `
-    <!-- @MARK capitalize --><!-- @MARK abs --><!-- @MARK block --><!-- @MARK round -->
-    <p class="capitalize abs block round">
+  <!-- @MARK capitalize --><!-- @MARK abs --><!-- @MARK block --><!-- @MARK round -->
+  <p class="capitalize abs block round">
 `
 /* eslint-enable @master/css/prefer-canonical-classes, @master/css/sort-classes */
 
@@ -12,12 +12,12 @@ Syntax: <code className="language-mcss token"><span className="mcss token"><span
 
 The most explicit form is a native property name plus a value. It is easy to understand, but it can make markup noisy when the same common properties appear everywhere.
 <Code lang="html">
-    {code1}
+  {code1}
 </Code>
 
 (o) Use built-in utility classes to simplify markup. <Dropped p1={code1} p2={code2} target="class" />
 <Code lang="html">
-    {code2}
+  {code2}
 </Code>
 
 When the meaning is still clear without the property name, Master CSS can use the value itself as a default utility. For example, `mcss display:block` becomes `mcss block`, and `mcss position:absolute` becomes `mcss abs`.

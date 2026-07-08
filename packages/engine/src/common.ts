@@ -2,10 +2,10 @@ import { MASTER_CSS_VALUE_UNIT_PATTERN, MASTER_CSS_VALUE_UNITS } from '@master/c
 import type { MasterCSSManifestAtIdentifier } from '@master/css-schema/manifest'
 
 export const VALUE_DELIMITERS = {
-    '(': ')',
-    '\'': '\'',
-    '"': '"',
-    '{': '}'
+  '(': ')',
+  '\'': '\'',
+  '"': '"',
+  '{': '}'
 }
 export const BASE_UNIT_REGEX = /^([+-]?(?:\d+(?:\.?\d+)?|\.\d+))x$/m // 1x, 1.1x, -1x, -.1x
 export const SELECTOR_SIGNS = [':', '_', '>', '+', '~']
@@ -24,14 +24,14 @@ export const CLASS_FUNCTIONS = ['clsx', 'cva', 'ctl', 'cv', 'class', 'classnames
 export const MATCH_NAME_BOUNDARY = new Set(['!', '*', '>', '+', '~', ':', '[', '@', '_', '.'])
 export const AT_COMPARISON_OPERATORS = ['>=', '<=', '>', '<', '=']
 export const AT_LOGICAL_OPERATORS = {
-    '&': 'and',
-    '!': 'not',
-    // native
-    'not': 'not',
-    'and': 'and',
-    'or': 'or',
-    'only': 'only',
-    ',': 'or',
+  '&': 'and',
+  '!': 'not',
+  // native
+  'not': 'not',
+  'and': 'and',
+  'or': 'or',
+  'only': 'only',
+  ',': 'or',
 
 }
 // the order is intentional and should not be changed
@@ -39,7 +39,7 @@ export const AT_IDENTIFIERS: MasterCSSManifestAtIdentifier[] = ['container', 'st
 export const COMPARISION_OPERATORS = ['>=', '<=', '>', '<', '=']
 export const AT_COMPARABLE_FEATURES = ['width', 'height', 'resolution']
 export const AT_FEATURE_ALIASES = {
-    w: 'width',
-    h: 'height'
+  w: 'width',
+  h: 'height'
 } as const
 export const __UNSORTED__ = '__UNSORTED__'

@@ -64,90 +64,90 @@ const KEEP_WXH = new RegExp(`^(?:calc\\(.*\\)|\\d+(?:${MASTER_CSS_VALUE_UNIT_PAT
 // Reject the token when any of these match. Listed in order of frequency in
 // real codebases, so the loop short-circuits earlier on average.
 const REJECT_PATTERNS: RegExp[] = [
-    /;$/,
-    /<\w+>|<\/\w+>/,
-    /\$\{/,
-    /\{\{/,
-    /^@(?:ts-[^\s]+|charset|import|namespace|media|supports|document|page|font-face|keyframes|counter-style|font-feature-values|property|layer|[^/]+\/.*)$/,
-    /^~\/.+.\w+$/,
-    /^\$\(.*/,
-    /^\w+:\/\//,
-    /\(\{[^}]*\}/,
-    /:\[/,
-    /\*\*/,
-    /function\(|\(.*\)=>/,
+  /;$/,
+  /<\w+>|<\/\w+>/,
+  /\$\{/,
+  /\{\{/,
+  /^@(?:ts-[^\s]+|charset|import|namespace|media|supports|document|page|font-face|keyframes|counter-style|font-feature-values|property|layer|[^/]+\/.*)$/,
+  /^~\/.+.\w+$/,
+  /^\$\(.*/,
+  /^\w+:\/\//,
+  /\(\{[^}]*\}/,
+  /:\[/,
+  /\*\*/,
+  /function\(|\(.*\)=>/,
 ]
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
 
 interface ProtectedContent {
-    content: string
-    strings: string[]
-    restoreAll: boolean
+  content: string
+  strings: string[]
+  restoreAll: boolean
 }
 
 function findCompleteString(content: string): string[] | null {
-    return content?.match(COMPLETE_STRING)
+  return content?.match(COMPLETE_STRING)
 }
 
 function replaceCompleteString(content: string, completeStrings: string[]): string {
-    for (let i = 0; i < completeStrings.length; i++) {
-        content = content.replace(completeStrings[i], SENTINEL_PREFIX + i + SENTINEL_SUFFIX)
-    }
-    return content
+  for (let i = 0; i < completeStrings.length; i++) {
+    content = content.replace(completeStrings[i], SENTINEL_PREFIX + i + SENTINEL_SUFFIX)
+  }
+  return content
 }
 
 function protectCompleteStrings(content: string): ProtectedContent | undefined {
-    const completeStrings = findCompleteString(content)
-    if (!completeStrings) return
-    if (completeStrings.length < MANY_COMPLETE_STRINGS) {
-        return {
-            content: replaceCompleteString(content, completeStrings),
-            strings: completeStrings,
-            restoreAll: false
-        }
-    }
-    let index = 0
+  const completeStrings = findCompleteString(content)
+  if (!completeStrings) return
+  if (completeStrings.length < MANY_COMPLETE_STRINGS) {
     return {
-        content: content.replace(COMPLETE_STRING, () => SENTINEL_PREFIX + index++ + SENTINEL_SUFFIX),
-        strings: completeStrings,
-        restoreAll: true
+      content: replaceCompleteString(content, completeStrings),
+      strings: completeStrings,
+      restoreAll: false
     }
+  }
+  let index = 0
+  return {
+    content: content.replace(COMPLETE_STRING, () => SENTINEL_PREFIX + index++ + SENTINEL_SUFFIX),
+    strings: completeStrings,
+    restoreAll: true
+  }
 }
 
 function restoreAllCompleteStrings(content: string, strings: string[]): string {
-    return content.replace(RESTORE_SENTINEL, (match, index: string) => strings[Number(index)] ?? match)
+  return content.replace(RESTORE_SENTINEL, (match, index: string) => strings[Number(index)] ?? match)
 }
 
 function restoreCompleteStrings(protectedContent: ProtectedContent): string {
-    if (protectedContent.restoreAll) {
-        return restoreAllCompleteStrings(protectedContent.content, protectedContent.strings)
-    }
-    let content = protectedContent.content
-    for (let i = 0; i < protectedContent.strings.length; i++) {
-        content = content.replace(SENTINEL_PREFIX + i + SENTINEL_SUFFIX, protectedContent.strings[i])
-    }
-    return content
+  if (protectedContent.restoreAll) {
+    return restoreAllCompleteStrings(protectedContent.content, protectedContent.strings)
+  }
+  let content = protectedContent.content
+  for (let i = 0; i < protectedContent.strings.length; i++) {
+    content = content.replace(SENTINEL_PREFIX + i + SENTINEL_SUFFIX, protectedContent.strings[i])
+  }
+  return content
 }
 
 function keepCompleteStringAndProcessContent(
-    content: string,
-    process: (content: string) => string
+  content: string,
+  process: (content: string) => string
 ): string {
-    const protectedContent = protectCompleteStrings(content)
-    if (!protectedContent) return process(content)
-    return restoreCompleteStrings({
-        ...protectedContent,
-        content: process(protectedContent.content)
-    })
+  const protectedContent = protectCompleteStrings(content)
+  if (!protectedContent) return process(content)
+  return restoreCompleteStrings({
+    ...protectedContent,
+    content: process(protectedContent.content)
+  })
 }
 
 function splitStringByQuotation(content: string): string[] {
-    const blocks = keepCompleteStringAndProcessContent(
-        content,
-        c => (c.match(NON_QUOTE_RUN) ?? []).join(SPLIT_SENTINEL_TEXT)
-    ).split(SPLIT_SENTINEL_TEXT)
-    return blocks
+  const blocks = keepCompleteStringAndProcessContent(
+    content,
+    c => (c.match(NON_QUOTE_RUN) ?? []).join(SPLIT_SENTINEL_TEXT)
+  ).split(SPLIT_SENTINEL_TEXT)
+  return blocks
 }
 
 /**
@@ -155,114 +155,114 @@ function splitStringByQuotation(content: string): string[] {
  * loop reaches the same fixed point without stack growth on long inputs.
  */
 function trimString(content: string): string {
-    while (true) {
-        const before = content
-        content = keepCompleteStringAndProcessContent(
-            content,
-            c => c.replace(TRIM_LEADING, '').replace(TRIM_TRAILING, '')
-        )
-        if (before === content || !content) return content
-    }
+  while (true) {
+    const before = content
+    content = keepCompleteStringAndProcessContent(
+      content,
+      c => c.replace(TRIM_LEADING, '').replace(TRIM_TRAILING, '')
+    )
+    if (before === content || !content) return content
+  }
 }
 
 function peelCompleteString(content: string): Set<string> {
-    const strings = new Set<string>()
-    // Local regex per invocation: a /g flag carries lastIndex state, and
-    // recursive calls would otherwise corrupt the outer iteration. Cheaper
-    // than save/restore because the outer instance can stay constant.
-    const stringRegex = /((?<!\\)["'`])((?:\\\1|(?:(?!\1))[\S\s])*)((?<!\\)\1)/g
-    let m: RegExpExecArray | null
-    while ((m = stringRegex.exec(content)) !== null) {
-        if (m.index === stringRegex.lastIndex) {
-            stringRegex.lastIndex++
-        }
-        const inner = m[2]
-        strings.add(inner)
-        const nested = peelCompleteString(inner)
-        for (const s of nested) strings.add(s)
+  const strings = new Set<string>()
+  // Local regex per invocation: a /g flag carries lastIndex state, and
+  // recursive calls would otherwise corrupt the outer iteration. Cheaper
+  // than save/restore because the outer instance can stay constant.
+  const stringRegex = /((?<!\\)["'`])((?:\\\1|(?:(?!\1))[\S\s])*)((?<!\\)\1)/g
+  let m: RegExpExecArray | null
+  while ((m = stringRegex.exec(content)) !== null) {
+    if (m.index === stringRegex.lastIndex) {
+      stringRegex.lastIndex++
     }
-    return strings
+    const inner = m[2]
+    strings.add(inner)
+    const nested = peelCompleteString(inner)
+    for (const s of nested) strings.add(s)
+  }
+  return strings
 }
 
 function preExclude(content: string): string {
-    return keepCompleteStringAndProcessContent(
-        content,
-        c => c
-            .replace(PRE_EXCLUDE_BLOCK_COMMENT, '')
-            .replace(PRE_EXCLUDE_HTML_COMMENT, '')
-            .replace(PRE_EXCLUDE_LINE_COMMENT, '')
-            .replace(PRE_EXCLUDE_STYLE_TAG, '')
-            .replace(PRE_EXCLUDE_IMPORT_FROM, '')
-            .replace(PRE_EXCLUDE_IMPORT, '')
-            .replace(PRE_EXCLUDE_REQUIRE, '')
-            .replace(PRE_EXCLUDE_DECORATOR, '')
-    )
+  return keepCompleteStringAndProcessContent(
+    content,
+    c => c
+      .replace(PRE_EXCLUDE_BLOCK_COMMENT, '')
+      .replace(PRE_EXCLUDE_HTML_COMMENT, '')
+      .replace(PRE_EXCLUDE_LINE_COMMENT, '')
+      .replace(PRE_EXCLUDE_STYLE_TAG, '')
+      .replace(PRE_EXCLUDE_IMPORT_FROM, '')
+      .replace(PRE_EXCLUDE_IMPORT, '')
+      .replace(PRE_EXCLUDE_REQUIRE, '')
+      .replace(PRE_EXCLUDE_DECORATOR, '')
+  )
 }
 
 function needExclude(content: string): boolean {
-    if (!content) return true
-    // Structural keep-or-reject: if neither KEEP_TOKEN nor KEEP_WXH matches,
-    // this string doesn't look like a class.
-    if (!KEEP_TOKEN.test(content) && !KEEP_WXH.test(content)) return true
-    if (SENTINEL_REGEX.test(content)) return true
-    for (let i = 0; i < REJECT_PATTERNS.length; i++) {
-        if (REJECT_PATTERNS[i].test(content)) return true
-    }
-    return false
+  if (!content) return true
+  // Structural keep-or-reject: if neither KEEP_TOKEN nor KEEP_WXH matches,
+  // this string doesn't look like a class.
+  if (!KEEP_TOKEN.test(content) && !KEEP_WXH.test(content)) return true
+  if (SENTINEL_REGEX.test(content)) return true
+  for (let i = 0; i < REJECT_PATTERNS.length; i++) {
+    if (REJECT_PATTERNS[i].test(content)) return true
+  }
+  return false
 }
 
 function checkToExclude(content: string): boolean {
-    const protectedContent = protectCompleteStrings(content)
-    const checkContent = protectedContent?.content ?? content
-    const groupMatch = GROUP_BODY.exec(checkContent)
-    if (groupMatch) {
-        return groupMatch[1].split(';').some(needExclude)
-    }
-    return needExclude(checkContent) || hasUnclosedBrackets(content)
+  const protectedContent = protectCompleteStrings(content)
+  const checkContent = protectedContent?.content ?? content
+  const groupMatch = GROUP_BODY.exec(checkContent)
+  if (groupMatch) {
+    return groupMatch[1].split(';').some(needExclude)
+  }
+  return needExclude(checkContent) || hasUnclosedBrackets(content)
 }
 
 function hasUnclosedBrackets(content: string): boolean {
-    const stack: string[] = []
-    for (let i = 0; i < content.length; i++) {
-        const ch = content[i]
-        if (ch === '(' || ch === '[' || ch === '{') {
-            stack.push(ch)
-        } else if (ch === ')' || ch === ']' || ch === '}') {
-            const left = stack.pop()
-            if (
-                ch === ')' && left !== '(' ||
-                ch === ']' && left !== '[' ||
-                ch === '}' && left !== '{'
-            ) {
-                return true
-            }
-        }
+  const stack: string[] = []
+  for (let i = 0; i < content.length; i++) {
+    const ch = content[i]
+    if (ch === '(' || ch === '[' || ch === '{') {
+      stack.push(ch)
+    } else if (ch === ')' || ch === ']' || ch === '}') {
+      const left = stack.pop()
+      if (
+        ch === ')' && left !== '(' ||
+        ch === ']' && left !== '[' ||
+        ch === '}' && left !== '{'
+      ) {
+        return true
+      }
     }
-    return stack.length > 0
+  }
+  return stack.length > 0
 }
 
 // ─── Public API ──────────────────────────────────────────────────────────────
 
 export function extractClassCandidates(content: string): string[] {
-    content = preExclude(content)
-    const blocks = content.match(NON_WHITESPACE_RUN) ?? []
-    const classCandidates = new Set<string>()
-    for (const block of blocks) {
-        for (const splitResult of splitStringByQuotation(block)) {
-            classCandidates.add(trimString(splitResult))
-        }
-        const peeled = peelCompleteString(block)
-        if (peeled.size) {
-            for (const peelResult of peeled) {
-                for (const splitResult of splitStringByQuotation(peelResult)) {
-                    classCandidates.add(trimString(splitResult))
-                }
-            }
-        }
+  content = preExclude(content)
+  const blocks = content.match(NON_WHITESPACE_RUN) ?? []
+  const classCandidates = new Set<string>()
+  for (const block of blocks) {
+    for (const splitResult of splitStringByQuotation(block)) {
+      classCandidates.add(trimString(splitResult))
     }
-    const out: string[] = []
-    for (const classCandidate of classCandidates) {
-        if (classCandidate && !checkToExclude(classCandidate)) out.push(classCandidate)
+    const peeled = peelCompleteString(block)
+    if (peeled.size) {
+      for (const peelResult of peeled) {
+        for (const splitResult of splitStringByQuotation(peelResult)) {
+          classCandidates.add(trimString(splitResult))
+        }
+      }
     }
-    return out
+  }
+  const out: string[] = []
+  for (const classCandidate of classCandidates) {
+    if (classCandidate && !checkToExclude(classCandidate)) out.push(classCandidate)
+  }
+  return out
 }

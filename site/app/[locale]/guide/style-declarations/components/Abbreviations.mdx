@@ -1,10 +1,10 @@
 export const code1 = /* eslint-disable @master/css/prefer-canonical-classes, @master/css/sort-classes -- intentional shorthand progression examples */ `
-    <!-- @MARK font-size:1rem --><!-- @MARK margin-top:32px --><!-- @MARK justify-content:center -->
-    <p class="font-size:1rem margin-top:32px justify-content:center">
+  <!-- @MARK font-size:1rem --><!-- @MARK margin-top:32px --><!-- @MARK justify-content:center -->
+  <p class="font-size:1rem margin-top:32px justify-content:center">
 `
 export const code2 = `
-    <!-- @MARK font:16px --><!-- @MARK mt:32px --><!-- @MARK justify-content:center -->
-    <p class="font:16px mt:32px justify-content:center">
+  <!-- @MARK font:16px --><!-- @MARK mt:32px --><!-- @MARK justify-content:center -->
+  <p class="font:16px mt:32px justify-content:center">
 `
 /* eslint-enable @master/css/prefer-canonical-classes, @master/css/sort-classes */
 
@@ -12,12 +12,12 @@ Syntax: <code><span className="language-mcss mcss token value"><span className="
 
 Property names can still be long after you learn the syntax. Master CSS keeps a small curated set of abbreviations for common geometry, spacing, color, and typography patterns.
 <Code lang="html">
-    {code1}
+  {code1}
 </Code>
 
 (o) Use an abbreviation only when it is part of the curated set. <Dropped p1={code1} p2={code2} target="class" />
 <Code lang="html">
-    {code2}
+  {code2}
 </Code>
 
 Use full property names for rare CSS properties. Valid native declarations can be written directly without waiting for a built-in abbreviation.
@@ -25,35 +25,35 @@ Use full property names for rare CSS properties. Valid native declarations can b
 Retained abbreviations canonicalize to full property keys, so the same token and unit behavior works whether you write `w:32px` or `width:32px`.
 
 export const code3 = /* eslint-disable @master/css/prefer-canonical-classes, @master/css/sort-classes -- intentional shorthand progression examples */ `
-    <!-- @MARK width:32px --><!-- @MARK height:32px --><!-- @MARK border-radius:5px --><!-- @MARK z-index:10 --><!-- @MARK margin-top:1px --><!-- @MARK margin-bottom:1px --><!-- @MARK padding-left:1px --><!-- @MARK padding-right:1px -->
-    <div class="width:32px height:32px border-radius:5px z-index:10 margin-top:1px margin-bottom:1px padding-left:1px padding-right:1px">
+  <!-- @MARK width:32px --><!-- @MARK height:32px --><!-- @MARK border-radius:5px --><!-- @MARK z-index:10 --><!-- @MARK margin-top:1px --><!-- @MARK margin-bottom:1px --><!-- @MARK padding-left:1px --><!-- @MARK padding-right:1px -->
+  <div class="width:32px height:32px border-radius:5px z-index:10 margin-top:1px margin-bottom:1px padding-left:1px padding-right:1px">
 `
 export const code4 = `
-    <!-- @MARK w:32px --><!-- @MARK h:32px --><!-- @MARK r:5px --><!-- @MARK z:10 --><!-- @MARK mt:1px --><!-- @MARK mb:1px --><!-- @MARK pl:1px --><!-- @MARK pr:1px -->
-    <div class="w:32px h:32px r:5px z:10 mt:1px mb:1px pl:1px pr:1px">
+  <!-- @MARK w:32px --><!-- @MARK h:32px --><!-- @MARK r:5px --><!-- @MARK z:10 --><!-- @MARK mt:1px --><!-- @MARK mb:1px --><!-- @MARK pl:1px --><!-- @MARK pr:1px -->
+  <div class="w:32px h:32px r:5px z:10 mt:1px mb:1px pl:1px pr:1px">
 `
 export const code5 = `
-    <!-- @MARK my:1px --><!-- @MARK px:1px -->
-    <div class="w:32px h:32px r:5px z:10 my:1px px:1px">
+  <!-- @MARK my:1px --><!-- @MARK px:1px -->
+  <div class="w:32px h:32px r:5px z:10 my:1px px:1px">
 `
 export const code6 = `
-    <!-- @MARK size:32px -->
-    <div class="size:32px r:5px z:10 my:1px px:1px">
+  <!-- @MARK size:32px -->
+  <div class="size:32px r:5px z:10 my:1px px:1px">
 `
 /* eslint-enable @master/css/prefer-canonical-classes, @master/css/sort-classes */
 
 <Code lang="html">
-    {code3}
+  {code3}
 </Code>
 
 (o) Use abbreviations common in geometry, coordinates, and CSS utility libraries. <Dropped p1={code3} p2={code4} target="class" />
 <Code lang="html">
-    {code4}
+  {code4}
 </Code>
 
 (o) Use logical aliases when available, and full logical properties when there is no key alias. <Dropped p1={code3} p2={code5} target="class" />
 <Code lang="html">
-    {code5}
+  {code5}
 </Code>
 
 - Geometry: `w` width, `h` height, `r` radius.
@@ -64,7 +64,7 @@ export const code6 = `
 
 (o) Use `mcss size:*` when width and height share the same value. <Dropped p1={code3} p2={code6} target="class" />
 <Code lang="html">
-    {code6}
+  {code6}
 </Code>
 
 Abbreviations reduce template size, but the goal is still readable markup. Mix explicit and abbreviated declarations as needed.

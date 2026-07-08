@@ -1,43 +1,43 @@
 <StepSection>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Create a project
-            If you don't have an Angular project, create one first.
-        </StepL>
-        <StepR>
-            ```bash name=Terminal
-            ng new my-app
-            cd my-app
-            ```
-        </StepR>
-    </Step>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Add Master CSS
-            Run the installer from the Angular project root.
-        </StepL>
-        <StepR>
-            ```bash name=Terminal
-            npm create @master/css@rc -- --framework angular --yes
-            ```
-        </StepR>
-    </Step>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Launch server
-            Run the Angular development server.
-        </StepL>
-        <StepR>
-            ```bash name=Terminal
-            npm start
-            ```
-        </StepR>
-    </Step>
-    <Step>
-        ### <StepNum />Start using Master CSS
-        Now style your first template using Master CSS syntax.
-    </Step>
-    <HelloWorld url="localhost:4200" />
+  <Step $row>
+    <StepL>
+      ### <StepNum />Create a project
+      If you don't have an Angular project, create one first.
+    </StepL>
+    <StepR>
+      ```bash name=Terminal
+      ng new my-app
+      cd my-app
+      ```
+    </StepR>
+  </Step>
+  <Step $row>
+    <StepL>
+      ### <StepNum />Add Master CSS
+      Run the installer from the Angular project root.
+    </StepL>
+    <StepR>
+      ```bash name=Terminal
+      npm create @master/css@rc -- --framework angular --yes
+      ```
+    </StepR>
+  </Step>
+  <Step $row>
+    <StepL>
+      ### <StepNum />Launch server
+      Run the Angular development server.
+    </StepL>
+    <StepR>
+      ```bash name=Terminal
+      npm start
+      ```
+    </StepR>
+  </Step>
+  <Step>
+    ### <StepNum />Start using Master CSS
+    Now style your first template using Master CSS syntax.
+  </Step>
+  <HelloWorld url="localhost:4200" />
 </StepSection>
 
 ```html name=src/app/app.component.html

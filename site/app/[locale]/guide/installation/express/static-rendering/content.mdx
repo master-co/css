@@ -1,101 +1,101 @@
 Use static rendering when Express templates contain complete class strings and you want Vite to build a generated CSS asset before the server responds.
 
 <StepSection>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Open your project
-            Start from an Express project root.
-        </StepL>
-        <StepR>
-            ```bash name=Terminal
-            cd my-express-app
-            npm init -y
-            ```
-        </StepR>
-    </Step>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Install Vite and Master CSS
-            Install Vite and the Master CSS Vite integration.
-        </StepL>
-        <StepR>
-            ```bash name=Terminal
-            npm install -D vite @master/css.vite@rc
-            ```
-        </StepR>
-    </Step>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Configure Vite
-            Build static CSS into `public/assets`.
-        </StepL>
-        <StepR>
-            ```ts name=vite.config.ts
-            import { defineConfig } from 'vite'
-            import masterCSS from '@master/css.vite'
+  <Step $row>
+    <StepL>
+      ### <StepNum />Open your project
+      Start from an Express project root.
+    </StepL>
+    <StepR>
+      ```bash name=Terminal
+      cd my-express-app
+      npm init -y
+      ```
+    </StepR>
+  </Step>
+  <Step $row>
+    <StepL>
+      ### <StepNum />Install Vite and Master CSS
+      Install Vite and the Master CSS Vite integration.
+    </StepL>
+    <StepR>
+      ```bash name=Terminal
+      npm install -D vite @master/css.vite@rc
+      ```
+    </StepR>
+  </Step>
+  <Step $row>
+    <StepL>
+      ### <StepNum />Configure Vite
+      Build static CSS into `public/assets`.
+    </StepL>
+    <StepR>
+      ```ts name=vite.config.ts
+      import { defineConfig } from 'vite'
+      import masterCSS from '@master/css.vite'
 
-            export default defineConfig({
-                plugins: [
-                    masterCSS({ mode: 'static' })
-                ],
-                build: {
-                    outDir: 'public/assets',
-                    emptyOutDir: true,
-                    rollupOptions: {
-                        input: 'src/main.ts',
-                        output: {
-                            entryFileNames: 'app.js',
-                            assetFileNames: 'app[extname]'
-                        }
-                    }
-                }
-            })
-            ```
-        </StepR>
-    </Step>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Create the asset entry
-            Import Master CSS and scan the server templates where classes are written.
-        </StepL>
-        <StepR>
-            ```ts name=src/main.ts
-            import './app.css'
-            ```
+      export default defineConfig({
+        plugins: [
+          masterCSS({ mode: 'static' })
+        ],
+        build: {
+          outDir: 'public/assets',
+          emptyOutDir: true,
+          rollupOptions: {
+            input: 'src/main.ts',
+            output: {
+              entryFileNames: 'app.js',
+              assetFileNames: 'app[extname]'
+            }
+          }
+        }
+      })
+      ```
+    </StepR>
+  </Step>
+  <Step $row>
+    <StepL>
+      ### <StepNum />Create the asset entry
+      Import Master CSS and scan the server templates where classes are written.
+    </StepL>
+    <StepR>
+      ```ts name=src/main.ts
+      import './app.css'
+      ```
 
-            ```css name=src/app.css
-            @import "@master/css";
+      ```css name=src/app.css
+      @import "@master/css";
 
-            @source "../views/**/*.{ejs,hbs,pug}";
-            @source "../public/**/*.html";
-            ```
-        </StepR>
-    </Step>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Serve the CSS
-            Serve `public` from Express and link the generated stylesheet from your layout.
-        </StepL>
-        <StepR>
-            ```js name=app.js
-            app.use(express.static('public'))
-            ```
+      @source "../views/**/*.{ejs,hbs,pug}";
+      @source "../public/**/*.html";
+      ```
+    </StepR>
+  </Step>
+  <Step $row>
+    <StepL>
+      ### <StepNum />Serve the CSS
+      Serve `public` from Express and link the generated stylesheet from your layout.
+    </StepL>
+    <StepR>
+      ```js name=app.js
+      app.use(express.static('public'))
+      ```
 
-            ```html name=views/layout.ejs
-            <link rel="stylesheet" href="/assets/app.css">
-            ```
-        </StepR>
-    </Step>
-    <Step>
-        ### <StepNum />Hello world
-        Now style your first server-rendered template using Master CSS syntax.
-    </Step>
-    <HelloWorld url="localhost:3000" />
+      ```html name=views/layout.ejs
+      <link rel="stylesheet" href="/assets/app.css">
+      ```
+    </StepR>
+  </Step>
+  <Step>
+    ### <StepNum />Hello world
+    Now style your first server-rendered template using Master CSS syntax.
+  </Step>
+  <HelloWorld url="localhost:3000" />
 </StepSection>
 
 ```html name=views/index.ejs
 <h1 class="m:2xl italic font:5xl font:heavy text:neutral">
-    Hello World
+  Hello World
 </h1>
 ```
 

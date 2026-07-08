@@ -1,60 +1,60 @@
 {
-    "name": "@master/css-language-service",
-    "type": "module",
-    "scripts": {
-        "build": "tsdown --config ../../shared/tsdown-package.config.ts",
-        "dev": "tsdown --config ../../shared/tsdown-package.config.ts --watch",
-        "type-check": "tsc -b tsconfig.typecheck.json",
-        "lint": "eslint",
-        "test": "vitest"
+  "name": "@master/css-language-service",
+  "type": "module",
+  "scripts": {
+    "build": "tsdown --config ../../shared/tsdown-package.config.ts",
+    "dev": "tsdown --config ../../shared/tsdown-package.config.ts --watch",
+    "type-check": "tsc -b tsconfig.typecheck.json",
+    "lint": "eslint",
+    "test": "vitest"
+  },
+  "description": "Master CSS Language Service",
+  "author": "Aoyue Design LLC.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/master-co/css.git",
+    "directory": "packages/language-service"
+  },
+  "dependencies": {
+    "@master/css": "workspace:^",
+    "@master/css-engine": "workspace:^",
+    "@master/css-language": "workspace:^",
+    "colorjs.io": "^0.6.1",
+    "defu": "^6.1.7",
+    "js-beautify": "^1.15.4",
+    "minimatch": "^10.2.5",
+    "vscode-languageserver-protocol": "^3.18.0",
+    "vscode-languageserver-textdocument": "^1.0.12"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.125.0",
+    "vscode-languageserver": "^10.0.0",
+    "@master/css-schema": "workspace:^"
+  },
+  "sideEffects": false,
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "jsnext:main": "./dist/index.js",
+  "esnext": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
     },
-    "description": "Master CSS Language Service",
-    "author": "Aoyue Design LLC.",
-    "license": "MIT",
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/master-co/css.git",
-        "directory": "packages/language-service"
-    },
-    "dependencies": {
-        "@master/css": "workspace:^",
-        "@master/css-engine": "workspace:^",
-        "@master/css-language": "workspace:^",
-        "colorjs.io": "^0.6.1",
-        "defu": "^6.1.7",
-        "js-beautify": "^1.15.4",
-        "minimatch": "^10.2.5",
-        "vscode-languageserver-protocol": "^3.18.0",
-        "vscode-languageserver-textdocument": "^1.0.12"
-    },
-    "devDependencies": {
-        "@types/vscode": "^1.125.0",
-        "vscode-languageserver": "^10.0.0",
-        "@master/css-schema": "workspace:^"
-    },
-    "sideEffects": false,
-    "main": "./dist/index.js",
-    "module": "./dist/index.js",
-    "jsnext:main": "./dist/index.js",
-    "esnext": "./dist/index.js",
-    "types": "./dist/index.d.ts",
-    "exports": {
-        ".": {
-            "types": "./dist/index.d.ts",
-            "import": "./dist/index.js",
-            "default": "./dist/index.js"
-        },
-        "./common": {
-            "types": "./dist/common.d.ts",
-            "import": "./dist/common.js",
-            "default": "./dist/common.js"
-        }
-    },
-    "files": [
-        "dist"
-    ],
-    "publishConfig": {
-        "access": "public",
-        "provenance": true
+    "./common": {
+      "types": "./dist/common.d.ts",
+      "import": "./dist/common.js",
+      "default": "./dist/common.js"
     }
+  },
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  }
 }

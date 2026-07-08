@@ -40,9 +40,9 @@ import { defineConfig } from 'vite'
 import masterCSS from '@master/css.vite' // [!code highlight]
 
 export default defineConfig({
-    plugins: [
-        masterCSS() // [!code highlight]
-    ]
+  plugins: [
+    masterCSS() // [!code highlight]
+  ]
 })
 ```
 
@@ -67,9 +67,9 @@ import { defineConfig } from 'vite'
 import masterCSS from '@master/css.vite'
 
 export default defineConfig({
-    plugins: [
-        masterCSS()
-    ]
+  plugins: [
+    masterCSS()
+  ]
 })
 ```
 
@@ -82,9 +82,9 @@ import { defineConfig } from 'vite'
 import masterCSS from '@master/css.vite'
 
 export default defineConfig({
-    plugins: [
-        masterCSS({ mode: 'static' })
-    ]
+  plugins: [
+    masterCSS({ mode: 'static' })
+  ]
 })
 ```
 
@@ -99,9 +99,9 @@ import { defineConfig } from 'vite'
 import masterCSS from '@master/css.vite'
 
 export default defineConfig({
-    plugins: [
-        masterCSS({ mode: 'pre-render' })
-    ]
+  plugins: [
+    masterCSS({ mode: 'pre-render' })
+  ]
 })
 ```
 
@@ -114,9 +114,9 @@ import { defineConfig } from 'vite'
 import masterCSS from '@master/css.vite'
 
 export default defineConfig({
-    plugins: [
-        masterCSS({ mode: 'progressive' })
-    ]
+  plugins: [
+    masterCSS({ mode: 'progressive' })
+  ]
 })
 ```
 
@@ -151,12 +151,12 @@ Vite is also the build foundation for many frameworks. `@master/css.vite` is the
 
 ```ts name=nuxt.config.ts
 export default defineNuxtConfig({
-    modules: [
-        '@master/css.nuxt' // progressive by default [!code highlight]
-        // ['@master/css.nuxt', { mode: 'static' }]
-        // ['@master/css.nuxt', { mode: 'runtime' }]
-        // ['@master/css.nuxt', { mode: 'pre-render' }]
-    ]
+  modules: [
+    '@master/css.nuxt' // progressive by default [!code highlight]
+    // ['@master/css.nuxt', { mode: 'static' }]
+    // ['@master/css.nuxt', { mode: 'runtime' }]
+    // ['@master/css.nuxt', { mode: 'pre-render' }]
+  ]
 })
 ```
 
@@ -166,10 +166,10 @@ export default defineNuxtConfig({
 import masterCSS from '@master/css.astro'
 
 export default defineConfig({
-    integrations: [
-        masterCSS() // 'progressive' [!code highlight]
-        // masterCSS({ mode: 'static' })
-    ]
+  integrations: [
+    masterCSS() // 'progressive' [!code highlight]
+    // masterCSS({ mode: 'static' })
+  ]
 })
 ```
 

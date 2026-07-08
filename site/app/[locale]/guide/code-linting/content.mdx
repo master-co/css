@@ -21,7 +21,7 @@ import { defineConfig } from 'eslint/config'
 import css from '@master/eslint-config-css'
 
 export default defineConfig([
-    ...css
+  ...css
 ])
 ```
 
@@ -77,14 +77,14 @@ import { defineConfig } from 'eslint/config'
 import css from '@master/eslint-config-css'
 
 export default defineConfig([
-    ...css,
-    {
-        rules: {
-            '@master/css/no-invalid-classes': ['error', {
-                disallowUnknownClass: true
-            }]
-        }
+  ...css,
+  {
+    rules: {
+      '@master/css/no-invalid-classes': ['error', {
+        disallowUnknownClass: true
+      }]
     }
+  }
 ])
 ```
 
@@ -98,9 +98,9 @@ Define project classes in the CSS entry when they are intentional:
 
 ```css name=index.css
 @components {
-    btn {
-        @compose inline-flex px:md;
-    }
+  btn {
+    @compose inline-flex px:md;
+  }
 }
 ```
 
@@ -137,10 +137,10 @@ The same fixes apply inside unquoted `@compose` class lists when ESLint is runni
 
 ```css
 .btn {
-    @compose text-align:center contain:content bg:blue-60:hover@sm; /* [!code --] */
-    @compose text-center; /* [!code ++] */
-    contain: content; /* [!code ++] */
-    @variant :hover@sm { @compose bg:blue-60; } /* [!code ++] */
+  @compose text-align:center contain:content bg:blue-60:hover@sm; /* [!code --] */
+  @compose text-center; /* [!code ++] */
+  contain: content; /* [!code ++] */
+  @variant :hover@sm { @compose bg:blue-60; } /* [!code ++] */
 }
 ```
 
@@ -151,7 +151,7 @@ import { defineConfig } from 'eslint/config'
 import css from '@master/eslint-config-css'
 
 export default defineConfig([
-    ...css
+  ...css
 ])
 ```
 
@@ -176,16 +176,16 @@ import { defineConfig } from 'eslint/config'
 import css from '@master/eslint-config-css'
 
 export default defineConfig([
-    ...css,
-    {
-        rules: {
-            '@master/css/prefer-canonical-classes': ['warn', {
-                preferStaticUtilities: true,
-                preferThemeTokens: true,
-                preferPropertyAliases: false
-            }]
-        }
+  ...css,
+  {
+    rules: {
+      '@master/css/prefer-canonical-classes': ['warn', {
+        preferStaticUtilities: true,
+        preferThemeTokens: true,
+        preferPropertyAliases: false
+      }]
     }
+  }
 ])
 ```
 
@@ -238,16 +238,16 @@ import { defineConfig } from 'eslint/config'
 import css from '@master/eslint-config-css'
 
 export default defineConfig([
-    ...css,
-    {
-        settings: {
-            '@master/css': {
-                classAttributes: ['class', 'className', 'containerClass'],
-                classFunctions: ['clsx', 'cva'],
-                classDeclarations: ['classes']
-            }
-        }
+  ...css,
+  {
+    settings: {
+      '@master/css': {
+        classAttributes: ['class', 'className', 'containerClass'],
+        classFunctions: ['clsx', 'cva'],
+        classDeclarations: ['classes']
+      }
     }
+  }
 ])
 ```
 
@@ -261,7 +261,7 @@ import { defineConfig } from 'eslint/config'
 import css from '@master/eslint-config-css'
 
 export default defineConfig([
-    ...css
+  ...css
 ])
 ```
 
@@ -272,14 +272,14 @@ import { defineConfig } from 'eslint/config'
 import css from '@master/eslint-config-css'
 
 export default defineConfig([
-    ...css,
-    {
-        rules: {
-            '@master/css/no-invalid-classes': ['error', {
-                disallowUnknownClass: true
-            }]
-        }
+  ...css,
+  {
+    rules: {
+      '@master/css/no-invalid-classes': ['error', {
+        disallowUnknownClass: true
+      }]
     }
+  }
 ])
 ```
 
@@ -290,16 +290,16 @@ import { defineConfig } from 'eslint/config'
 import css from '@master/eslint-config-css'
 
 export default defineConfig([
-    ...css,
-    {
-        rules: {
-            '@master/css/prefer-canonical-classes': ['warn', {
-                preferStaticUtilities: true,
-                preferThemeTokens: true,
-                preferPropertyAliases: false
-            }]
-        }
+  ...css,
+  {
+    rules: {
+      '@master/css/prefer-canonical-classes': ['warn', {
+        preferStaticUtilities: true,
+        preferThemeTokens: true,
+        preferPropertyAliases: false
+      }]
     }
+  }
 ])
 ```
 
@@ -310,15 +310,15 @@ import { defineConfig } from 'eslint/config'
 import css from '@master/eslint-config-css'
 
 export default defineConfig([
-    ...css,
-    {
-        rules: {
-            '@master/css/no-unapproved-raw-values': ['warn', {
-                allowProperties: ['width', 'height'],
-                allowedPatterns: ['^var\\(', '^calc\\(']
-            }]
-        }
+  ...css,
+  {
+    rules: {
+      '@master/css/no-unapproved-raw-values': ['warn', {
+        allowProperties: ['width', 'height'],
+        allowedPatterns: ['^var\\(', '^calc\\(']
+      }]
     }
+  }
 ])
 ```
 
@@ -332,9 +332,9 @@ Use editor sort-on-save for low-friction cleanup:
 
 ```json name=.vscode/settings.json
 {
-    "eslint.codeActionsOnSave.rules": [
-        "@master/css/sort-classes"
-    ]
+  "eslint.codeActionsOnSave.rules": [
+    "@master/css/sort-classes"
+  ]
 }
 ```
 

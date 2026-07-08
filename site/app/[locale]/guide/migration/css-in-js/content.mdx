@@ -40,14 +40,14 @@ Start with wrappers that only apply stable visual styles.
 import styled from 'styled-components'
 
 const Button = styled.button`
-    .5rem; })
-    => ${({
-    0 1rem;
-    2.5rem; align-items:
-    background: border-radius: center;
-    color: display:
-    gap: inline-flex; min-height: padding: theme theme.colors.primary};
-    white;
+  .5rem; })
+  => ${({
+  0 1rem;
+  2.5rem; align-items:
+  background: border-radius: center;
+  color: display:
+  gap: inline-flex; min-height: padding: theme theme.colors.primary};
+  white;
 `
 ```
 
@@ -57,18 +57,18 @@ Move the reusable value into `@theme`, then use a class string where the button 
 @import "@master/css";
 
 @theme {
-    --color-primary: #2563eb;
+  --color-primary: #2563eb;
 }
 ```
 
 ```tsx name=Button.tsx
 export function Button(props: React.ButtonHTMLAttributes<HTMLButtonElement>) {
-    return (
-        <button
-            className="inline-flex items-center gap:xs min-h:10x px:md r:md bg:primary fg:white"
-            {...props}
-        />
-    )
+  return (
+    <button
+      className="inline-flex items-center gap:xs min-h:10x px:md r:md bg:primary fg:white"
+      {...props}
+    />
+  )
 }
 ```
 
@@ -78,11 +78,11 @@ If the project needs a named component class, define it once in CSS.
 @import "@master/css";
 
 @components {
-    btn {
-        @compose inline-flex items-center justify-center gap:xs min-h:10x px:md r:md bg:primary fg:white;
-        @variant :hover { @compose bg:blue-70; }
+  btn {
+    @compose inline-flex items-center justify-center gap:xs min-h:10x px:md r:md bg:primary fg:white;
+    @variant :hover { @compose bg:blue-70; }
 @variant :disabled { opacity: 0.5; }
-    }
+  }
 }
 ```
 
@@ -97,24 +97,24 @@ Avoid building Master CSS class names from string fragments. Static rendering an
 
 ```tsx
 const toneClasses = {
-    neutral: 'bg:surface fg:body b:1px|solid|base',
-    primary: 'bg:blue-60 fg:white bg:blue-70:hover',
-    danger: 'bg:red-60 fg:white bg:red-70:hover'
+  neutral: 'bg:surface fg:body b:1px|solid|base',
+  primary: 'bg:blue-60 fg:white bg:blue-70:hover',
+  danger: 'bg:red-60 fg:white bg:red-70:hover'
 }
 
 const sizeClasses = {
-    sm: 'h:8x px:sm font:sm',
-    md: 'h:10x px:md font:sm',
-    lg: 'h:12x px:lg font:md'
+  sm: 'h:8x px:sm font:sm',
+  md: 'h:10x px:md font:sm',
+  lg: 'h:12x px:lg font:md'
 }
 
 export function Button({ tone = 'primary', size = 'md', className, ...props }: ButtonProps) {
-    return (
-        <button
-            className={`inline-flex align-items:center r:md ?? ''} ${className ${sizeClasses[size]} ${toneClasses[tone]}`}
-            {...props}
-        />
-    )
+  return (
+    <button
+      className={`inline-flex align-items:center r:md ?? ''} ${className ${sizeClasses[size]} ${toneClasses[tone]}`}
+      {...props}
+    />
+  )
 }
 ```
 
@@ -127,14 +127,14 @@ Runtime values should not become generated class names. Keep the class static an
 
 ```tsx
 export function Meter({ value }: { value: number }) {
-    return (
-        <div className="overflow:hidden h:2x r:full bg:gray-10">
-            <div
-                className="h:full w:$value bg:green-60 transition:width|fast|smooth"
-                style={{ '--value': `${value}%` } as React.CSSProperties}
-            />
-        </div>
-    )
+  return (
+    <div className="overflow:hidden h:2x r:full bg:gray-10">
+      <div
+        className="h:full w:$value bg:green-60 transition:width|fast|smooth"
+        style={{ '--value': `${value}%` } as React.CSSProperties}
+      />
+    </div>
+  )
 }
 ```
 
@@ -149,12 +149,12 @@ Global styles often contain real app infrastructure. Move them in small groups.
 import { Global, css } from '@emotion/react'
 
 export function GlobalStyles() {
-    return <Global styles={css`
-        body {
-            margin: 0;
-            background: var(--color-surface);
-        }
-    `} />
+  return <Global styles={css`
+    body {
+      margin: 0;
+      background: var(--color-surface);
+    }
+  `} />
 }
 ```
 
@@ -162,10 +162,10 @@ export function GlobalStyles() {
 @import "@master/css";
 
 @layer base {
-    body {
-        margin: 0;
-        background: var(--color-surface);
-    }
+  body {
+    margin: 0;
+    background: var(--color-surface);
+  }
 }
 ```
 

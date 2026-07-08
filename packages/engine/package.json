@@ -1,83 +1,83 @@
 {
-    "name": "@master/css-engine",
-    "type": "module",
-    "scripts": {
-        "build": "tsdown --config ../../shared/tsdown-package.config.ts",
-        "dev": "tsdown --config ../../shared/tsdown-package.config.ts --watch",
-        "test": "vitest",
-        "bench": "vitest bench",
-        "type-check": "tsc -b tsconfig.typecheck.json",
-        "lint": "eslint"
+  "name": "@master/css-engine",
+  "type": "module",
+  "scripts": {
+    "build": "tsdown --config ../../shared/tsdown-package.config.ts",
+    "dev": "tsdown --config ../../shared/tsdown-package.config.ts --watch",
+    "test": "vitest",
+    "bench": "vitest bench",
+    "type-check": "tsc -b tsconfig.typecheck.json",
+    "lint": "eslint"
+  },
+  "license": "MIT",
+  "description": "The manifest-driven Master CSS engine",
+  "author": "Aoyue Design LLC.",
+  "funding": "https://rc.css.master.co/sponsor",
+  "homepage": "https://css.master.co",
+  "bugs": {
+    "url": "https://github.com/master-co/css/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/master-co/css.git",
+    "directory": "packages/engine"
+  },
+  "keywords": [
+    "style",
+    "styles",
+    "html",
+    "variants",
+    "virtual",
+    "virtual-css",
+    "utility",
+    "css",
+    "ui",
+    "lightweight",
+    "class",
+    "webpack",
+    "plugin",
+    "integration",
+    "vite",
+    "parcel",
+    "build-tools",
+    "mastercss"
+  ],
+  "sideEffects": false,
+  "main": "./dist/index.js",
+  "jsnext:main": "./dist/index.js",
+  "esnext": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
     },
-    "license": "MIT",
-    "description": "The manifest-driven Master CSS engine",
-    "author": "Aoyue Design LLC.",
-    "funding": "https://rc.css.master.co/sponsor",
-    "homepage": "https://css.master.co",
-    "bugs": {
-        "url": "https://github.com/master-co/css/issues"
+    "./compiler": {
+      "types": "./dist/compiler.d.ts",
+      "import": "./dist/compiler.js",
+      "default": "./dist/compiler.js"
     },
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/master-co/css.git",
-        "directory": "packages/engine"
-    },
-    "keywords": [
-        "style",
-        "styles",
-        "html",
-        "variants",
-        "virtual",
-        "virtual-css",
-        "utility",
-        "css",
-        "ui",
-        "lightweight",
-        "class",
-        "webpack",
-        "plugin",
-        "integration",
-        "vite",
-        "parcel",
-        "build-tools",
-        "mastercss"
-    ],
-    "sideEffects": false,
-    "main": "./dist/index.js",
-    "jsnext:main": "./dist/index.js",
-    "esnext": "./dist/index.js",
-    "module": "./dist/index.js",
-    "types": "./dist/index.d.ts",
-    "exports": {
-        ".": {
-            "types": "./dist/index.d.ts",
-            "import": "./dist/index.js",
-            "default": "./dist/index.js"
-        },
-        "./compiler": {
-            "types": "./dist/compiler.d.ts",
-            "import": "./dist/compiler.js",
-            "default": "./dist/compiler.js"
-        },
-        "./inspect": {
-            "types": "./dist/inspect.d.ts",
-            "import": "./dist/inspect.js",
-            "default": "./dist/inspect.js"
-        }
-    },
-    "files": [
-        "dist"
-    ],
-    "publishConfig": {
-        "access": "public",
-        "provenance": true
-    },
-    "dependencies": {
-        "@master/css-lexer": "workspace:^",
-        "csstype": "^3.2.3",
-        "@master/css-schema": "workspace:^"
-    },
-    "devDependencies": {
-        "@master/css-preset": "workspace:^"
+    "./inspect": {
+      "types": "./dist/inspect.d.ts",
+      "import": "./dist/inspect.js",
+      "default": "./dist/inspect.js"
     }
+  },
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "dependencies": {
+    "@master/css-lexer": "workspace:^",
+    "csstype": "^3.2.3",
+    "@master/css-schema": "workspace:^"
+  },
+  "devDependencies": {
+    "@master/css-preset": "workspace:^"
+  }
 }

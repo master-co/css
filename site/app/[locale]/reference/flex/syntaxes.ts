@@ -1,5 +1,5 @@
 const syntaxes = [
-    ['flex:`value`']
+  ['flex:`value`']
 ]
 
 export default syntaxes

@@ -4,10 +4,10 @@ import { render } from '@master/css-server'
 import type { NextAdapter } from 'next'
 import { MASTER_CSS_RUNTIME_STYLE_ID } from '@master/css-schema/runtime-style'
 import {
-    MASTER_CSS_HYDRATION_MANIFEST_ATTR,
-    MASTER_CSS_HYDRATION_MANIFEST_FILE_BASENAME,
-    MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID,
-    serializeMasterCSSHydrationManifest
+  MASTER_CSS_HYDRATION_MANIFEST_ATTR,
+  MASTER_CSS_HYDRATION_MANIFEST_FILE_BASENAME,
+  MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID,
+  serializeMasterCSSHydrationManifest
 } from '@master/css-schema/hydration-manifest'
 import { escapeRegExp } from '@master/css-lexer'
 import { toHashedManifestAssetFileName } from '@master/css-integration/node'
@@ -20,262 +20,262 @@ type AdapterModule = NextAdapter | { default?: NextAdapter }
 type AdapterLoader = AdapterModule | (() => AdapterModule | Promise<AdapterModule>)
 
 interface HTMLBuildOutput {
-    filePath: string
-    pathname: string
-    source: 'static' | 'prerender-fallback'
+  filePath: string
+  pathname: string
+  source: 'static' | 'prerender-fallback'
 }
 
 interface RenderedHTMLBuildOutput {
-    output: HTMLBuildOutput
-    sourceHTML: string
-    rendered: ReturnType<typeof render>
-    hydrationManifestBytes: number
-    hydrationManifestFile?: string
+  output: HTMLBuildOutput
+  sourceHTML: string
+  rendered: ReturnType<typeof render>
+  hydrationManifestBytes: number
+  hydrationManifestFile?: string
 }
 
 export interface RenderedOutput {
-    file: string
-    pathname: string
-    source: HTMLBuildOutput['source']
-    classes: string[]
-    cssBytes: number
-    hydrationManifestBytes: number
-    hydrationManifestFile?: string
-    rendered: boolean
+  file: string
+  pathname: string
+  source: HTMLBuildOutput['source']
+  classes: string[]
+  cssBytes: number
+  hydrationManifestBytes: number
+  hydrationManifestFile?: string
+  rendered: boolean
 }
 
 export interface BuildReport {
-    version: 1
-    nextVersion: string
-    buildId: string
-    files: RenderedOutput[]
+  version: 1
+  nextVersion: string
+  buildId: string
+  files: RenderedOutput[]
 }
 
 export interface ComposedAdapterOptions {
-    order?: AdapterOrder
+  order?: AdapterOrder
 }
 
 function isHTMLFile(filePath: string | undefined): filePath is string {
-    if (!filePath) return false
-    return ['.html', '.htm'].includes(extname(filePath).toLowerCase())
+  if (!filePath) return false
+  return ['.html', '.htm'].includes(extname(filePath).toLowerCase())
 }
 
 function collectHTMLBuildOutputs(outputs: BuildOutputs): HTMLBuildOutput[] {
-    const htmlOutputs: HTMLBuildOutput[] = []
-    const seen = new Set<string>()
+  const htmlOutputs: HTMLBuildOutput[] = []
+  const seen = new Set<string>()
 
-    function add(output: HTMLBuildOutput) {
-        if (seen.has(output.filePath)) return
-        seen.add(output.filePath)
-        htmlOutputs.push(output)
+  function add(output: HTMLBuildOutput) {
+    if (seen.has(output.filePath)) return
+    seen.add(output.filePath)
+    htmlOutputs.push(output)
+  }
+
+  for (const output of outputs.staticFiles) {
+    if (isHTMLFile(output.filePath)) {
+      add({
+        filePath: output.filePath,
+        pathname: output.pathname,
+        source: 'static'
+      })
     }
+  }
 
-    for (const output of outputs.staticFiles) {
-        if (isHTMLFile(output.filePath)) {
-            add({
-                filePath: output.filePath,
-                pathname: output.pathname,
-                source: 'static'
-            })
-        }
+  for (const output of outputs.prerenders) {
+    if (isHTMLFile(output.fallback?.filePath)) {
+      add({
+        filePath: output.fallback.filePath,
+        pathname: output.pathname,
+        source: 'prerender-fallback'
+      })
     }
+  }
 
-    for (const output of outputs.prerenders) {
-        if (isHTMLFile(output.fallback?.filePath)) {
-            add({
-                filePath: output.fallback.filePath,
-                pathname: output.pathname,
-                source: 'prerender-fallback'
-            })
-        }
-    }
-
-    return htmlOutputs
+  return htmlOutputs
 }
 
 async function writeBuildReport(ctx: BuildCompleteContext, files: RenderedOutput[], buildReport: boolean | string) {
-    if (!buildReport) return
-    const buildReportPath = typeof buildReport === 'string'
-        ? resolve(ctx.distDir, buildReport)
-        : join(ctx.distDir, 'master-css-build-report.json')
-    const data: BuildReport = {
-        version: 1,
-        nextVersion: ctx.nextVersion,
-        buildId: ctx.buildId,
-        files
-    }
-    await mkdir(dirname(buildReportPath), { recursive: true })
-    await writeFile(buildReportPath, JSON.stringify(data, null, 2))
+  if (!buildReport) return
+  const buildReportPath = typeof buildReport === 'string'
+    ? resolve(ctx.distDir, buildReport)
+    : join(ctx.distDir, 'master-css-build-report.json')
+  const data: BuildReport = {
+    version: 1,
+    nextVersion: ctx.nextVersion,
+    buildId: ctx.buildId,
+    files
+  }
+  await mkdir(dirname(buildReportPath), { recursive: true })
+  await writeFile(buildReportPath, JSON.stringify(data, null, 2))
 }
 
 function createMasterStyleText(cssText: string) {
-    return `<style id="${MASTER_CSS_RUNTIME_STYLE_ID}">${cssText}</style>`
+  return `<style id="${MASTER_CSS_RUNTIME_STYLE_ID}">${cssText}</style>`
 }
 
 function escapeAttributeValue(value: string) {
-    return value
-        .replace(/&/g, '&amp;')
-        .replace(/"/g, '&quot;')
+  return value
+    .replace(/&/g, '&amp;')
+    .replace(/"/g, '&quot;')
 }
 
 function upsertAttribute(openingTag: string, name: string, value: string) {
-    const attributePattern = new RegExp(String.raw`\s${escapeRegExp(name)}(?:=(?:"[^"]*"|'[^']*'|[^\s>]*))?`, 'i')
-    return openingTag
-        .replace(attributePattern, '')
-        .replace(/>$/, ` ${name}="${escapeAttributeValue(value)}">`)
+  const attributePattern = new RegExp(String.raw`\s${escapeRegExp(name)}(?:=(?:"[^"]*"|'[^']*'|[^\s>]*))?`, 'i')
+  return openingTag
+    .replace(attributePattern, '')
+    .replace(/>$/, ` ${name}="${escapeAttributeValue(value)}">`)
 }
 
 function removeHydrationManifestScripts(html: string) {
-    const scriptPattern = new RegExp(
-        String.raw`<script\b(?=[^>]*\bid=(["'])${escapeRegExp(MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID)}\1)[^>]*>[\s\S]*?<\/script>`,
-        'gi'
-    )
-    return html.replace(scriptPattern, '')
+  const scriptPattern = new RegExp(
+    String.raw`<script\b(?=[^>]*\bid=(["'])${escapeRegExp(MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID)}\1)[^>]*>[\s\S]*?<\/script>`,
+    'gi'
+  )
+  return html.replace(scriptPattern, '')
 }
 
 function attachHydrationManifestSource(html: string, source: string) {
-    const stylePattern = new RegExp(
-        String.raw`<style\b(?=[^>]*\bid=(["'])${escapeRegExp(MASTER_CSS_RUNTIME_STYLE_ID)}\1)[^>]*>`,
-        'i'
-    )
-    return removeHydrationManifestScripts(html).replace(
-        stylePattern,
-        (openingTag) => upsertAttribute(openingTag, MASTER_CSS_HYDRATION_MANIFEST_ATTR, source)
-    )
+  const stylePattern = new RegExp(
+    String.raw`<style\b(?=[^>]*\bid=(["'])${escapeRegExp(MASTER_CSS_RUNTIME_STYLE_ID)}\1)[^>]*>`,
+    'i'
+  )
+  return removeHydrationManifestScripts(html).replace(
+    stylePattern,
+    (openingTag) => upsertAttribute(openingTag, MASTER_CSS_HYDRATION_MANIFEST_ATTR, source)
+  )
 }
 
 function toNextHydrationManifestPublicURL(ctx: BuildCompleteContext, fileName: string) {
-    const config = ctx.config as { assetPrefix?: string, basePath?: string }
-    const pathname = `${config.basePath || ''}/_next/static/master-css/hydration/${fileName}`
-    return config.assetPrefix
-        ? `${config.assetPrefix.replace(/\/$/, '')}${pathname.startsWith('/') ? pathname : '/' + pathname}`
-        : pathname
+  const config = ctx.config as { assetPrefix?: string, basePath?: string }
+  const pathname = `${config.basePath || ''}/_next/static/master-css/hydration/${fileName}`
+  return config.assetPrefix
+    ? `${config.assetPrefix.replace(/\/$/, '')}${pathname.startsWith('/') ? pathname : '/' + pathname}`
+    : pathname
 }
 
 function toNextHydrationManifestFilePath(ctx: BuildCompleteContext, fileName: string) {
-    return join(ctx.distDir, 'static', 'master-css', 'hydration', fileName)
+  return join(ctx.distDir, 'static', 'master-css', 'hydration', fileName)
 }
 
 function upsertMasterStyleText(html: string, cssText: string) {
-    const stylePattern = new RegExp(`(<style\\b(?=[^>]*\\bid=(["'])${escapeRegExp(MASTER_CSS_RUNTIME_STYLE_ID)}\\2)[^>]*>)([\\s\\S]*?)(<\\/style>)`)
-    if (stylePattern.test(html)) {
-        return html.replace(
-            stylePattern,
-            (_match, open: string, _quote: string, _content: string, close: string) => open + cssText + close
-        )
-    }
-    const headCloseIndex = html.search(/<\/head\s*>/i)
-    const styleText = createMasterStyleText(cssText)
-    return headCloseIndex === -1
-        ? styleText + html
-        : html.slice(0, headCloseIndex) + styleText + html.slice(headCloseIndex)
+  const stylePattern = new RegExp(`(<style\\b(?=[^>]*\\bid=(["'])${escapeRegExp(MASTER_CSS_RUNTIME_STYLE_ID)}\\2)[^>]*>)([\\s\\S]*?)(<\\/style>)`)
+  if (stylePattern.test(html)) {
+    return html.replace(
+      stylePattern,
+      (_match, open: string, _quote: string, _content: string, close: string) => open + cssText + close
+    )
+  }
+  const headCloseIndex = html.search(/<\/head\s*>/i)
+  const styleText = createMasterStyleText(cssText)
+  return headCloseIndex === -1
+    ? styleText + html
+    : html.slice(0, headCloseIndex) + styleText + html.slice(headCloseIndex)
 }
 
 export async function renderNextBuildOutputs(ctx: BuildCompleteContext, rawOptions: Options = getRegisteredOptions() ?? {}) {
-    const options = resolveOptions(rawOptions)
-    if (options.mode === null) return []
+  const options = resolveOptions(rawOptions)
+  if (options.mode === null) return []
 
-    const buildStateResolver = await createMasterCSSBuildStateResolver(ctx.projectDir)
-    const baseBuildState = await buildStateResolver.resolve()
-    const htmlOutputs = collectHTMLBuildOutputs(ctx.outputs)
-    const renderedHTMLOutputs: RenderedHTMLBuildOutput[] = []
-    const renderedOutputs: RenderedOutput[] = []
-    const hydrationManifestAssets = new Map<string, string>()
+  const buildStateResolver = await createMasterCSSBuildStateResolver(ctx.projectDir)
+  const baseBuildState = await buildStateResolver.resolve()
+  const htmlOutputs = collectHTMLBuildOutputs(ctx.outputs)
+  const renderedHTMLOutputs: RenderedHTMLBuildOutput[] = []
+  const renderedOutputs: RenderedOutput[] = []
+  const hydrationManifestAssets = new Map<string, string>()
 
-    for (const output of htmlOutputs) {
-        const sourceHTML = await readFile(output.filePath, 'utf-8')
-        let hydrationManifestFile: string | undefined
-        let hydrationManifestBytes = 0
-        const rendered = render(sourceHTML, baseBuildState.manifest)
-        if (rendered.hydrationManifest?.rules.length) {
-            const json = serializeMasterCSSHydrationManifest(rendered.hydrationManifest)
-            const fileName = toHashedManifestAssetFileName(json, MASTER_CSS_HYDRATION_MANIFEST_FILE_BASENAME)
-            hydrationManifestFile = toNextHydrationManifestFilePath(ctx, fileName)
-            hydrationManifestBytes = Buffer.byteLength(json)
-            hydrationManifestAssets.set(hydrationManifestFile, json)
-        }
-        renderedHTMLOutputs.push({ output, sourceHTML, rendered, hydrationManifestBytes, hydrationManifestFile })
+  for (const output of htmlOutputs) {
+    const sourceHTML = await readFile(output.filePath, 'utf-8')
+    let hydrationManifestFile: string | undefined
+    let hydrationManifestBytes = 0
+    const rendered = render(sourceHTML, baseBuildState.manifest)
+    if (rendered.hydrationManifest?.rules.length) {
+      const json = serializeMasterCSSHydrationManifest(rendered.hydrationManifest)
+      const fileName = toHashedManifestAssetFileName(json, MASTER_CSS_HYDRATION_MANIFEST_FILE_BASENAME)
+      hydrationManifestFile = toNextHydrationManifestFilePath(ctx, fileName)
+      hydrationManifestBytes = Buffer.byteLength(json)
+      hydrationManifestAssets.set(hydrationManifestFile, json)
+    }
+    renderedHTMLOutputs.push({ output, sourceHTML, rendered, hydrationManifestBytes, hydrationManifestFile })
+  }
+
+  for (const [filePath, source] of hydrationManifestAssets) {
+    await mkdir(dirname(filePath), { recursive: true })
+    await writeFile(filePath, source)
+  }
+
+  for (const { output, sourceHTML, rendered, hydrationManifestBytes, hydrationManifestFile } of renderedHTMLOutputs) {
+    const generatedCSS = rendered.css?.classUtilities.size ? rendered.css.text : ''
+    let renderedHTML = generatedCSS
+      ? upsertMasterStyleText(rendered.html, generatedCSS)
+      : sourceHTML
+    if (generatedCSS && hydrationManifestFile) {
+      renderedHTML = attachHydrationManifestSource(
+        renderedHTML,
+        toNextHydrationManifestPublicURL(ctx, basename(hydrationManifestFile))
+      )
+    }
+    const didRender = renderedHTML !== sourceHTML
+
+    if (didRender) {
+      await writeFile(output.filePath, renderedHTML)
     }
 
-    for (const [filePath, source] of hydrationManifestAssets) {
-        await mkdir(dirname(filePath), { recursive: true })
-        await writeFile(filePath, source)
-    }
+    renderedOutputs.push({
+      file: output.filePath,
+      pathname: output.pathname,
+      source: output.source,
+      classes: rendered.classes,
+      cssBytes: Buffer.byteLength(generatedCSS),
+      hydrationManifestBytes,
+      hydrationManifestFile,
+      rendered: didRender
+    })
+  }
 
-    for (const { output, sourceHTML, rendered, hydrationManifestBytes, hydrationManifestFile } of renderedHTMLOutputs) {
-        const generatedCSS = rendered.css?.classUtilities.size ? rendered.css.text : ''
-        let renderedHTML = generatedCSS
-            ? upsertMasterStyleText(rendered.html, generatedCSS)
-            : sourceHTML
-        if (generatedCSS && hydrationManifestFile) {
-            renderedHTML = attachHydrationManifestSource(
-                renderedHTML,
-                toNextHydrationManifestPublicURL(ctx, basename(hydrationManifestFile))
-            )
-        }
-        const didRender = renderedHTML !== sourceHTML
+  await writeBuildReport(ctx, renderedOutputs, options.buildReport)
 
-        if (didRender) {
-            await writeFile(output.filePath, renderedHTML)
-        }
+  if (options.debug) {
+    const renderedCount = renderedOutputs.filter((output) => output.rendered).length
+    console.log(`[@master/css.next] rendered ${renderedCount}/${renderedOutputs.length} HTML output(s)`)
+  }
 
-        renderedOutputs.push({
-            file: output.filePath,
-            pathname: output.pathname,
-            source: output.source,
-            classes: rendered.classes,
-            cssBytes: Buffer.byteLength(generatedCSS),
-            hydrationManifestBytes,
-            hydrationManifestFile,
-            rendered: didRender
-        })
-    }
-
-    await writeBuildReport(ctx, renderedOutputs, options.buildReport)
-
-    if (options.debug) {
-        const renderedCount = renderedOutputs.filter((output) => output.rendered).length
-        console.log(`[@master/css.next] rendered ${renderedCount}/${renderedOutputs.length} HTML output(s)`)
-    }
-
-    return renderedOutputs
+  return renderedOutputs
 }
 
 export function createAdapter(options?: Options): NextAdapter {
-    return {
-        name: '@master/css.next',
-        async onBuildComplete(ctx) {
-            await renderNextBuildOutputs(ctx, options ?? getRegisteredOptions() ?? {})
-        }
+  return {
+    name: '@master/css.next',
+    async onBuildComplete(ctx) {
+      await renderNextBuildOutputs(ctx, options ?? getRegisteredOptions() ?? {})
     }
+  }
 }
 
 async function resolveAdapter(adapter: AdapterLoader) {
-    const loadedAdapter = typeof adapter === 'function'
-        ? await adapter()
-        : adapter
-    return ('default' in loadedAdapter && loadedAdapter.default)
-        ? loadedAdapter.default
-        : loadedAdapter as NextAdapter
+  const loadedAdapter = typeof adapter === 'function'
+    ? await adapter()
+    : adapter
+  return ('default' in loadedAdapter && loadedAdapter.default)
+    ? loadedAdapter.default
+    : loadedAdapter as NextAdapter
 }
 
 export function createComposedAdapter(
-    masterAdapter: NextAdapter,
-    externalAdapter: AdapterLoader,
-    { order = 'master-first' }: ComposedAdapterOptions = {}
+  masterAdapter: NextAdapter,
+  externalAdapter: AdapterLoader,
+  { order = 'master-first' }: ComposedAdapterOptions = {}
 ): NextAdapter {
-    return {
-        name: '@master/css.next+adapter',
-        async onBuildComplete(ctx) {
-            const resolvedExternalAdapter = await resolveAdapter(externalAdapter)
-            const adapters = order === 'master-first'
-                ? [masterAdapter, resolvedExternalAdapter]
-                : [resolvedExternalAdapter, masterAdapter]
-            for (const adapter of adapters) {
-                await adapter.onBuildComplete?.(ctx)
-            }
-        }
+  return {
+    name: '@master/css.next+adapter',
+    async onBuildComplete(ctx) {
+      const resolvedExternalAdapter = await resolveAdapter(externalAdapter)
+      const adapters = order === 'master-first'
+        ? [masterAdapter, resolvedExternalAdapter]
+        : [resolvedExternalAdapter, masterAdapter]
+      for (const adapter of adapters) {
+        await adapter.onBuildComplete?.(ctx)
+      }
     }
+  }
 }
 
 export default createAdapter()

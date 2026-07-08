@@ -15,7 +15,7 @@ import { withMasterCSS } from '@master/css.next'
 
 /** @type {import('next').NextConfig} */
 const nextConfig = withMasterCSS({
-    /* your Next.js config */
+  /* your Next.js config */
 })
 
 export default nextConfig
@@ -43,11 +43,11 @@ In static mode, import the generated stylesheet from your app stylesheet:
 @import '@master/css';
 
 .main {
-    background-color: var(--color-primary);
+  background-color: var(--color-primary);
 }
 
 @theme {
-    --color-primary: #ff0000;
+  --color-primary: #ff0000;
 }
 ```
 
@@ -58,9 +58,9 @@ import { withMasterCSS } from '@master/css.next'
 
 /** @type {import('next').NextConfig} */
 const nextConfig = await withMasterCSS({
-    /* your Next.js config */
+  /* your Next.js config */
 }, {
-    mode: 'static'
+  mode: 'static'
 })
 
 export default nextConfig

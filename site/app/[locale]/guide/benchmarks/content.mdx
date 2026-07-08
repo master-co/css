@@ -1,40 +1,40 @@
 import {
-    StaticBuildChart,
-    StaticBuildTable,
-    StaticComparisonSummary,
-    StaticCSSBytesTable,
-    StaticCSSOutputChart,
-    StaticStructureChart,
-    StaticStructureTable
+  StaticBuildChart,
+  StaticBuildTable,
+  StaticComparisonSummary,
+  StaticCSSBytesTable,
+  StaticCSSOutputChart,
+  StaticStructureChart,
+  StaticStructureTable
 } from './components/StaticTailwindComparison'
 import {
-    BrowserCSSCostSummary,
-    BrowserCSSCostTables,
-    BrowserCSSVolumeTraceChart,
-    BrowserDOMScalingTraceChart
+  BrowserCSSCostSummary,
+  BrowserCSSCostTables,
+  BrowserCSSVolumeTraceChart,
+  BrowserDOMScalingTraceChart
 } from './components/BrowserCSSCostBenchmark'
 import {
-    MasterDeliveryLoadChart,
-    MasterDeliveryModesSummary,
-    MasterDeliveryModesTables,
-    MasterDeliveryPayloadChart,
-    MasterDeliveryRuntimeChart
+  MasterDeliveryLoadChart,
+  MasterDeliveryModesSummary,
+  MasterDeliveryModesTables,
+  MasterDeliveryPayloadChart,
+  MasterDeliveryRuntimeChart
 } from './components/MasterDeliveryModesBenchmark'
 import {
-    InteractionCostSummary,
-    InteractionCostTables,
-    InteractionPrimaryCharts,
-    InteractionRuntimeCharts
+  InteractionCostSummary,
+  InteractionCostTables,
+  InteractionPrimaryCharts,
+  InteractionRuntimeCharts
 } from './components/InteractionCostBenchmark'
 import {
-    BrowserLifecycleLongSessionCharts,
-    BrowserLifecycleLongSessionTable,
-    BrowserLifecycleSummary
+  BrowserLifecycleLongSessionCharts,
+  BrowserLifecycleLongSessionTable,
+  BrowserLifecycleSummary
 } from './components/BrowserLifecycleBenchmark'
 import {
-    BuildPathDiagnosticsCharts,
-    BuildPathDiagnosticsSummary,
-    BuildPathDiagnosticsTable
+  BuildPathDiagnosticsCharts,
+  BuildPathDiagnosticsSummary,
+  BuildPathDiagnosticsTable
 } from './components/BuildPathDiagnosticsBenchmark'
 
 ## Overview [sr-only]
@@ -103,44 +103,44 @@ Question answered: how do equivalent static Master CSS and Tailwind CSS v4 fixtu
 The curated snapshot combines `css-output-size`, `build-performance`, and `css-structure` results. The headline charts use the `docs` fixture and CLI variants so the first view stays focused on static artifact output.
 
 <figure>
-    <StaticComparisonSummary />
-    <figcaption>Curated static comparison snapshot across all measured fixtures.</figcaption>
+  <StaticComparisonSummary />
+  <figcaption>Curated static comparison snapshot across all measured fixtures.</figcaption>
 </figure>
 
 #### Representative fixture
 The `docs` fixture represents a dense article and documentation layout with navigation, code blocks, and tables.
 
 <figure>
-    <StaticCSSOutputChart />
-    <figcaption>Brotli-compressed CSS output for the `docs` fixture using the CLI setup.</figcaption>
+  <StaticCSSOutputChart />
+  <figcaption>Brotli-compressed CSS output for the `docs` fixture using the CLI setup.</figcaption>
 </figure>
 
 <figure>
-    <StaticBuildChart />
-    <figcaption>Cold production command median for the `docs` fixture using the CLI setup.</figcaption>
+  <StaticBuildChart />
+  <figcaption>Cold production command median for the `docs` fixture using the CLI setup.</figcaption>
 </figure>
 
 <figure>
-    <StaticStructureChart />
-    <figcaption>Generated declaration counts for the `docs` fixture from a CSS AST parse.</figcaption>
+  <StaticStructureChart />
+  <figcaption>Generated declaration counts for the `docs` fixture from a CSS AST parse.</figcaption>
 </figure>
 
 #### Complete data
 The complete tables keep every measured fixture and both CLI/Vite setup variants.
 
 <figure>
-    <StaticCSSBytesTable />
-    <figcaption>Raw, gzip, and brotli CSS byte data for every measured fixture and setup.</figcaption>
+  <StaticCSSBytesTable />
+  <figcaption>Raw, gzip, and brotli CSS byte data for every measured fixture and setup.</figcaption>
 </figure>
 
 <figure>
-    <StaticBuildTable />
-    <figcaption>Cold and repeat production command timing data for every measured fixture and setup.</figcaption>
+  <StaticBuildTable />
+  <figcaption>Cold and repeat production command timing data for every measured fixture and setup.</figcaption>
 </figure>
 
 <figure>
-    <StaticStructureTable />
-    <figcaption>Rule, selector, declaration, at-rule, layer, and selector-shape data parsed from generated CSS.</figcaption>
+  <StaticStructureTable />
+  <figcaption>Rule, selector, declaration, at-rule, layer, and selector-shape data parsed from generated CSS.</figcaption>
 </figure>
 
 Interpretation: CSS structure metrics explain why byte counts differ before browser-cost claims are introduced. Tailwind CSS and Master CSS fixtures target equivalent rendered UI intent, not identical class strings.
@@ -153,18 +153,18 @@ Question answered: which Master CSS startup, integration, extraction, and compil
 This snapshot combines `startup-diagnostics`, `build-diagnostics`, `compiler-diagnostics`, and `extraction-diagnostics`. It explains the Master CSS build path; it is not a cross-framework production benchmark.
 
 <figure>
-    <BuildPathDiagnosticsSummary />
-    <figcaption>Curated Master CSS build-path diagnostics snapshot.</figcaption>
+  <BuildPathDiagnosticsSummary />
+  <figcaption>Curated Master CSS build-path diagnostics snapshot.</figcaption>
 </figure>
 
 <figure>
-    <BuildPathDiagnosticsCharts />
-    <figcaption>Diagnostic medians for the `docs` fixture. Startup probes are directional and are not additive flamegraphs.</figcaption>
+  <BuildPathDiagnosticsCharts />
+  <figcaption>Diagnostic medians for the `docs` fixture. Startup probes are directional and are not additive flamegraphs.</figcaption>
 </figure>
 
 <figure>
-    <BuildPathDiagnosticsTable />
-    <figcaption>Complete build-path diagnostic snapshot data for every measured fixture.</figcaption>
+  <BuildPathDiagnosticsTable />
+  <figcaption>Complete build-path diagnostic snapshot data for every measured fixture.</figcaption>
 </figure>
 
 Interpretation: ordinary fixture command cost is currently dominated by cold process/module startup and integration startup overhead, while normal-fixture compiler and extraction medians are smaller.
@@ -177,23 +177,23 @@ Question answered: how does CSS rule volume affect Chromium style recalculation,
 This suite uses local fixture pages, deterministic external CSS, Playwright, and Chromium tracing. It is a browser-only calibration suite, not a Master CSS versus Tailwind CSS comparison.
 
 <figure>
-    <BrowserCSSCostSummary />
-    <figcaption>Curated browser CSS cost snapshot.</figcaption>
+  <BrowserCSSCostSummary />
+  <figcaption>Curated browser CSS cost snapshot.</figcaption>
 </figure>
 
 <figure>
-    <BrowserCSSVolumeTraceChart />
-    <figcaption>Warm-cache trace medians while CSS rule volume grows and visible DOM stays fixed.</figcaption>
+  <BrowserCSSVolumeTraceChart />
+  <figcaption>Warm-cache trace medians while CSS rule volume grows and visible DOM stays fixed.</figcaption>
 </figure>
 
 <figure>
-    <BrowserDOMScalingTraceChart />
-    <figcaption>Warm-cache trace medians while DOM volume grows and CSS stays fixed.</figcaption>
+  <BrowserDOMScalingTraceChart />
+  <figcaption>Warm-cache trace medians while DOM volume grows and CSS stays fixed.</figcaption>
 </figure>
 
 <figure>
-    <BrowserCSSCostTables />
-    <figcaption>Complete browser CSS cost data for CSS volume and DOM scaling variants.</figcaption>
+  <BrowserCSSCostTables />
+  <figcaption>Complete browser CSS cost data for CSS volume and DOM scaling variants.</figcaption>
 </figure>
 
 Interpretation: the CSS volume curve is the main input for judging how much upfront CSS a delivery mode asks Chromium to load before interaction. The DOM scaling control helps separate DOM, style, and layout scaling from CSS payload size.
@@ -206,31 +206,31 @@ Question answered: what initial payload, local Chromium load cost, runtime boots
 The suite compares Master CSS static, runtime, progressive, and Tailwind CSS static browser-control variants across the static fixture set.
 
 <figure>
-    <MasterDeliveryModesSummary />
-    <figcaption>Curated Master CSS delivery modes snapshot.</figcaption>
+  <MasterDeliveryModesSummary />
+  <figcaption>Curated Master CSS delivery modes snapshot.</figcaption>
 </figure>
 
 #### Representative fixture
 The primary charts show the `docs` fixture.
 
 <figure>
-    <MasterDeliveryPayloadChart />
-    <figcaption>Brotli-compressed initial payload composition for the `docs` fixture.</figcaption>
+  <MasterDeliveryPayloadChart />
+  <figcaption>Brotli-compressed initial payload composition for the `docs` fixture.</figcaption>
 </figure>
 
 <figure>
-    <MasterDeliveryLoadChart />
-    <figcaption>Local Chromium load timing medians for the `docs` fixture.</figcaption>
+  <MasterDeliveryLoadChart />
+  <figcaption>Local Chromium load timing medians for the `docs` fixture.</figcaption>
 </figure>
 
 <figure>
-    <MasterDeliveryRuntimeChart />
-    <figcaption>Runtime bootstrap and observe medians for Master runtime and progressive modes.</figcaption>
+  <MasterDeliveryRuntimeChart />
+  <figcaption>Runtime bootstrap and observe medians for Master runtime and progressive modes.</figcaption>
 </figure>
 
 <figure>
-    <MasterDeliveryModesTables />
-    <figcaption>Complete delivery mode snapshot data for every measured fixture and mode.</figcaption>
+  <MasterDeliveryModesTables />
+  <figcaption>Complete delivery mode snapshot data for every measured fixture and mode.</figcaption>
 </figure>
 
 Interpretation: progressive begins with server/build-time CSS in the HTML and adds a runtime handoff. Runtime mode starts smaller on CSS output but pays browser runtime and manifest costs when classes are discovered in the DOM.
@@ -243,23 +243,23 @@ Question answered: how expensive are post-load class toggles, first-time runtime
 The suite measures local Chromium interactions across `dynamic`, `dashboard`, and `stress-dom` fixtures. Tailwind CSS static variants act as browser controls for style/layout/paint work; they do not have a client-side runtime rule-generation equivalent.
 
 <figure>
-    <InteractionCostSummary />
-    <figcaption>Curated interaction cost snapshot.</figcaption>
+  <InteractionCostSummary />
+  <figcaption>Curated interaction cost snapshot.</figcaption>
 </figure>
 
 <figure>
-    <InteractionPrimaryCharts />
-    <figcaption>Mutation-ready medians for primary `dynamic` fixture scenarios.</figcaption>
+  <InteractionPrimaryCharts />
+  <figcaption>Mutation-ready medians for primary `dynamic` fixture scenarios.</figcaption>
 </figure>
 
 <figure>
-    <InteractionRuntimeCharts />
-    <figcaption>Runtime rule-update medians for Master runtime and progressive `dynamic` fixture scenarios.</figcaption>
+  <InteractionRuntimeCharts />
+  <figcaption>Runtime rule-update medians for Master runtime and progressive `dynamic` fixture scenarios.</figcaption>
 </figure>
 
 <figure>
-    <InteractionCostTables />
-    <figcaption>Complete interaction cost data for supported fixture, mode, and scenario combinations.</figcaption>
+  <InteractionCostTables />
+  <figcaption>Complete interaction cost data for supported fixture, mode, and scenario combinations.</figcaption>
 </figure>
 
 Interpretation: runtime and progressive modes should be read in two layers: user-visible mutation readiness, then runtime stylesheet work. Existing-rule toggles, first-time class generation, DOM changes, and cleanup cycles answer different performance questions.
@@ -272,18 +272,18 @@ Question answered: can small runtime/progressive work plus low CSSOM/rule volume
 The suite is the closest current test of the core hypothesis. It keeps Tailwind CSS as the zero-runtime static browser-control setup and compares it with Master CSS static, runtime, and progressive setups across lifecycle scenarios. The latency value is an INP-style local fixture measurement, not real Web Vitals INP.
 
 <figure>
-    <BrowserLifecycleSummary />
-    <figcaption>Coverage and correctness checks for browser lifecycle evidence.</figcaption>
+  <BrowserLifecycleSummary />
+  <figcaption>Coverage and correctness checks for browser lifecycle evidence.</figcaption>
 </figure>
 
 <figure>
-    <BrowserLifecycleLongSessionCharts />
-    <figcaption>Five-minute long-session medians for browser rendering and runtime work.</figcaption>
+  <BrowserLifecycleLongSessionCharts />
+  <figcaption>Five-minute long-session medians for browser rendering and runtime work.</figcaption>
 </figure>
 
 <figure>
-    <BrowserLifecycleLongSessionTable />
-    <figcaption>Complete five-minute long-session evidence for every mode.</figcaption>
+  <BrowserLifecycleLongSessionTable />
+  <figcaption>Complete five-minute long-session evidence for every mode.</figcaption>
 </figure>
 
 Interpretation: current five-minute local Chromium evidence directionally supports the hypothesis for style recalculation: Master runtime and progressive show lower style recalculation medians than the Tailwind static browser control while carrying measured runtime mutation work. Layout, paint, long-task, and INP-style latency medians remain measured data, not wins, because they do not establish the same directional advantage.

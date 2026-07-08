@@ -6,10 +6,10 @@ import manifest from 'virtual:master-css-manifest'
 import emittedGlobals from 'virtual:master-css-emitted-globals'
 
 export default defineNuxtPlugin(() => {
-    const cssRuntime = CSSRuntime.create({ manifest, emittedGlobals })
-    if (cssRuntime.needsHydrationManifest()) {
-        void cssRuntime.loadHydrationManifest().then(() => cssRuntime.observe())
-    } else {
-        cssRuntime.observe()
-    }
+  const cssRuntime = CSSRuntime.create({ manifest, emittedGlobals })
+  if (cssRuntime.needsHydrationManifest()) {
+    void cssRuntime.loadHydrationManifest().then(() => cssRuntime.observe())
+  } else {
+    cssRuntime.observe()
+  }
 })

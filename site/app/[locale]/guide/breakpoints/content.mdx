@@ -14,9 +14,9 @@ Breakpoint variables belong in your project CSS entry. Keep them product-wide an
 
 ```css name=index.css
 @theme {
-    --breakpoint-sm: 48rem;
-    --breakpoint-md: 64rem;
-    --breakpoint-lg: 80rem;
+  --breakpoint-sm: 48rem;
+  --breakpoint-md: 64rem;
+  --breakpoint-lg: 80rem;
 }
 ```
 
@@ -33,10 +33,10 @@ Append `@<breakpoint>` to a utility when that declaration should start at a view
 ```
 
 <details>
-    <summary>Generated CSS</summary>
-    <Class2CSS>
-        {['font:2xl', 'font:3xl@md']}
-    </Class2CSS>
+  <summary>Generated CSS</summary>
+  <Class2CSS>
+    {['font:2xl', 'font:3xl@md']}
+  </Class2CSS>
 </details>
 
 Unqualified classes are the base state. Breakpoint variants layer changes on top, which makes the default mental model mobile-first without forcing every product to design only for phones.
@@ -66,15 +66,15 @@ A breakpoint should exist because something meaningful changes. Avoid adding thr
 ```html
 <!-- @MARK grid-cols:4 --><!-- @MARK grid-cols:8@sm --><!-- @MARK grid-cols:12@md -->
 <section class="grid-cols:4 gap:md grid-cols:8@sm grid-cols:12@md gap:lg@md">
-    ...
+  ...
 </section>
 ```
 
 <details>
-    <summary>Generated CSS</summary>
-    <Class2CSS>
-        {['grid-cols:4', 'grid-cols:8@sm', 'grid-cols:12@md', 'gap:md', 'gap:lg@md']}
-    </Class2CSS>
+  <summary>Generated CSS</summary>
+  <Class2CSS>
+    {['grid-cols:4', 'grid-cols:8@sm', 'grid-cols:12@md', 'gap:md', 'gap:lg@md']}
+  </Class2CSS>
 </details>
 
 ---
@@ -88,10 +88,10 @@ Use [comparison](/guide/conditional-queries#comparison-operators) and [logical](
 ```
 
 <details>
-    <summary>Generated CSS</summary>
-    <Class2CSS>
-        {['hidden@sm&<=md']}
-    </Class2CSS>
+  <summary>Generated CSS</summary>
+  <Class2CSS>
+    {['hidden@sm&<=md']}
+  </Class2CSS>
 </details>
 
 Ranges should be rare. If a rule appears at one size, disappears, and returns later, check whether the component is really responding to its container or whether the layout hierarchy should change.
@@ -104,7 +104,7 @@ Viewport breakpoints decide when the page changes. Container size values decide 
 ```html
 <!-- @MARK max-w:4xl@sm --><!-- @MARK max-w:5xl@md --><!-- @MARK max-w:7xl@lg -->
 <main class="w:full mx:auto px:md max-w:4xl@sm max-w:5xl@md px:xl@md max-w:7xl@lg">
-    ...
+  ...
 </main>
 ```
 
@@ -117,8 +117,8 @@ Here `@sm`, `@md`, and `@lg` come from the breakpoint namespace. The `4xl`, `5xl
 
 ```css
 @theme {
-    --breakpoint-iphone: 24.375rem;
-    --breakpoint-ipad: 51.25rem;
+  --breakpoint-iphone: 24.375rem;
+  --breakpoint-ipad: 51.25rem;
 }
 ```
 
@@ -126,9 +126,9 @@ Here `@sm`, `@md`, and `@lg` come from the breakpoint namespace. The `4xl`, `5xl
 
 ```css
 @theme {
-    --breakpoint-xs: 40rem;
-    --breakpoint-sm: 48rem;
-    --breakpoint-md: 64rem;
+  --breakpoint-xs: 40rem;
+  --breakpoint-sm: 48rem;
+  --breakpoint-md: 64rem;
 }
 ```
 
@@ -142,9 +142,9 @@ Here `@sm`, `@md`, and `@lg` come from the breakpoint namespace. The `4xl`, `5xl
 
 ```html
 <main class="grid-cols:12@md">
-    <section class="container">
-        <article class="grid-cols:2@container(md)">...</article>
-    </section>
+  <section class="container">
+    <article class="grid-cols:2@container(md)">...</article>
+  </section>
 </main>
 ```
 

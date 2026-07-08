@@ -1,11 +1,11 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'min-size',
-    description: 'Style shorthand for setting the min-width and min-height of an element.',
-    category: 'Sizing',
-    type: 'entity',
-    fileURL: import.meta.url
+  title: 'min-size',
+  description: 'Style shorthand for setting the min-width and min-height of an element.',
+  category: 'Sizing',
+  type: 'entity',
+  fileURL: import.meta.url
 })
 
 export default metadata

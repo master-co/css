@@ -2,5 +2,5 @@ import { expect } from 'vitest'
 import { validate } from '../../src'
 
 export default function expectClassWithErrors(syntax: string) {
-    expect(validate(syntax).errors.length).toBeDefined()
+  expect(validate(syntax).errors.length).toBeDefined()
 }

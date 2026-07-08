@@ -3,7 +3,7 @@
 ## Existing Conventions
 
 - TypeScript ESM modules.
-- 4-space indentation.
+- 2-space indentation.
 - LF line endings.
 - No final newline required by `.editorconfig`.
 - Prefer existing local helpers over new dependencies.

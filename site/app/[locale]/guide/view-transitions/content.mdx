@@ -11,13 +11,13 @@ In a same-document transition, call `document.startViewTransition()` and update 
 
 ```js name=transition.js
 const update = () => {
-    document.querySelector('[data-current-view]').textContent = 'Product detail'
+  document.querySelector('[data-current-view]').textContent = 'Product detail'
 }
 
 if (!document.startViewTransition) {
-    update()
+  update()
 } else {
-    document.startViewTransition(update)
+  document.startViewTransition(update)
 }
 ```
 
@@ -25,15 +25,15 @@ The demo uses Master CSS classes to name the snapshots that should transition in
 
 ```html
 <section class="view-transition-name:panel">
-    <h3 class="view-transition-name:title">Product detail</h3>
+  <h3 class="view-transition-name:title">Product detail</h3>
 </section>
 ```
 
 <details>
-    <summary>Generated CSS</summary>
-    <Class2CSS>
-        {['view-transition-name:panel', 'view-transition-name:title']}
-    </Class2CSS>
+  <summary>Generated CSS</summary>
+  <Class2CSS>
+    {['view-transition-name:panel', 'view-transition-name:title']}
+  </Class2CSS>
 </details>
 
 Master CSS keeps the CSS side concise by expressing `view-transition-name`, `view-transition-class`, and `::vt-*` pseudo-element shorthands directly in class names:
@@ -61,17 +61,17 @@ In the list view, every article gets unique names for its shared elements:
 
 ```html
 <article>
-    <img
-        alt="A mountain ridge under soft light"
-        class="view-transition-class:article view-transition-name:article-image"
-        src="/images/article-aurora.jpg"
-    />
-    <time class="view-transition-class:article view-transition-name:article-date">May 12, 2026</time>
-    <h3 class="view-transition-class:article view-transition-name:article-title">
-        Designing transitions that preserve context
-    </h3>
-    <p>...</p>
-    <button>Read More</button>
+  <img
+    alt="A mountain ridge under soft light"
+    class="view-transition-class:article view-transition-name:article-image"
+    src="/images/article-aurora.jpg"
+  />
+  <time class="view-transition-class:article view-transition-name:article-date">May 12, 2026</time>
+  <h3 class="view-transition-class:article view-transition-name:article-title">
+    Designing transitions that preserve context
+  </h3>
+  <p>...</p>
+  <button>Read More</button>
 </article>
 ```
 
@@ -79,16 +79,16 @@ In the detail view, render the same image, date, and title with the same names:
 
 ```html
 <article>
-    <img
-        alt="A mountain ridge under soft light"
-        class="view-transition-class:article view-transition-name:article-image"
-        src="/images/article-aurora.jpg"
-    />
-    <time class="view-transition-class:article view-transition-name:article-date">May 12, 2026</time>
-    <h1 class="view-transition-class:article view-transition-name:article-title">
-        Designing transitions that preserve context
-    </h1>
-    <p>...</p>
+  <img
+    alt="A mountain ridge under soft light"
+    class="view-transition-class:article view-transition-name:article-image"
+    src="/images/article-aurora.jpg"
+  />
+  <time class="view-transition-class:article view-transition-name:article-date">May 12, 2026</time>
+  <h1 class="view-transition-class:article view-transition-name:article-title">
+    Designing transitions that preserve context
+  </h1>
+  <p>...</p>
 </article>
 ```
 
@@ -99,29 +99,29 @@ const root = document.querySelector('[data-articles]')
 const detailTemplate = document.querySelector('#article-detail')
 
 document.querySelector('[data-read-more]').addEventListener('click', () => {
-    const update = () => {
-        root.replaceChildren(detailTemplate.content.cloneNode(true))
-    }
+  const update = () => {
+    root.replaceChildren(detailTemplate.content.cloneNode(true))
+  }
 
-    if (!document.startViewTransition) {
-        update()
-    } else {
-        document.startViewTransition(update)
-    }
+  if (!document.startViewTransition) {
+    update()
+  } else {
+    document.startViewTransition(update)
+  }
 })
 ```
 
 <details>
-    <summary>Generated CSS</summary>
-    <Class2CSS>
-        {[
-            'view-transition-name:article-image',
-            'view-transition-name:article-date',
-            'view-transition-name:article-title',
-            'view-transition-class:article',
-            'animation-duration:.52s::vt-group(.article)'
-        ]}
-    </Class2CSS>
+  <summary>Generated CSS</summary>
+  <Class2CSS>
+    {[
+      'view-transition-name:article-image',
+      'view-transition-name:article-date',
+      'view-transition-name:article-title',
+      'view-transition-class:article',
+      'animation-duration:.52s::vt-group(.article)'
+    ]}
+  </Class2CSS>
 </details>
 
 (i) Only one rendered element can use the same `view-transition-name` at a time. The list uses article-specific names such as `article-aurora-image`, `article-studio-image`, and `article-coast-image` so the selected card can match the detail page without colliding with other cards.
@@ -134,7 +134,7 @@ By default, a view transition animates the `root` snapshot. Use `view-transition
 ```html
 <!-- @MARK view-transition-name:hero -->
 <article class="view-transition-name:hero">
-    ...
+  ...
 </article>
 ```
 
@@ -161,21 +161,21 @@ In Master CSS, write the pseudo-element after the declaration:
 
 ```html
 <html class="
-    animation:fade|fast|both::vt-new(hero)
-    animation:fade|fast|both|reverse::vt-old(hero)
-    animation-duration:slow::vt-group(hero)
+  animation:fade|fast|both::vt-new(hero)
+  animation:fade|fast|both|reverse::vt-old(hero)
+  animation-duration:slow::vt-group(hero)
 ">
 ```
 
 <details>
-    <summary>Generated CSS</summary>
-    <Class2CSS>
-        {[
-            'animation-duration:slow::vt-group(hero)',
-            'animation:fade|fast|both|reverse::vt-old(hero)',
-            'animation:fade|fast|both::vt-new(hero)'
-        ]}
-    </Class2CSS>
+  <summary>Generated CSS</summary>
+  <Class2CSS>
+    {[
+      'animation-duration:slow::vt-group(hero)',
+      'animation:fade|fast|both|reverse::vt-old(hero)',
+      'animation:fade|fast|both::vt-new(hero)'
+    ]}
+  </Class2CSS>
 </details>
 
 (i) Apply these classes to the `html` element when you style global view-transition pseudo-elements. The pseudo-element tree is generated from the document root, so a class on an ordinary descendant will generate CSS but will not match the root transition pseudo-elements.
@@ -184,7 +184,7 @@ You can also group related named snapshots with `view-transition-class` and then
 
 ```html
 <article class="view-transition-class:shared-card view-transition-name:product-card">
-    ...
+  ...
 </article>
 
 <html class="animation-duration:.36s::vt-group(.shared-card)">
@@ -197,7 +197,7 @@ For same-origin MPA navigation, opt in with native CSS in both the current and d
 
 ```css name=app.css
 @view-transition {
-    navigation: auto;
+  navigation: auto;
 }
 ```
 
@@ -206,7 +206,7 @@ No JavaScript is required for the navigation itself. You can still use Master CS
 ```html
 <!-- page A and page B both render one matching hero -->
 <header class="view-transition-name:product-hero">
-    ...
+  ...
 </header>
 ```
 
@@ -221,9 +221,9 @@ View transitions are progressive enhancement. Always keep the DOM update valid w
 const update = () => renderNextState()
 
 if (!document.startViewTransition) {
-    update()
+  update()
 } else {
-    document.startViewTransition(update)
+  document.startViewTransition(update)
 }
 ```
 
@@ -242,9 +242,9 @@ Or skip the transition in JavaScript for motion-sensitive users:
 const shouldReduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
 if (!document.startViewTransition || shouldReduceMotion) {
-    update()
+  update()
 } else {
-    document.startViewTransition(update)
+  document.startViewTransition(update)
 }
 ```
 

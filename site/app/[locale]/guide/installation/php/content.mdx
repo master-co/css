@@ -1,107 +1,107 @@
 Use Vite runtime rendering when PHP renders pages directly from templates. PHP serves the page, while the Vite-built Master CSS runtime generates class rules in the browser as templates render.
 
 <StepSection>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Open your project
-            Start from the PHP or CodeIgniter project root.
-        </StepL>
-        <StepR>
-            ```bash name=Terminal
-            cd my-php-app
-            npm init -y
-            ```
-        </StepR>
-    </Step>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Install Vite and Master CSS
-            Install Vite and the Master CSS Vite integration.
-        </StepL>
-        <StepR>
-            ```bash name=Terminal
-            npm install -D vite @master/css.vite@rc
-            ```
-        </StepR>
-    </Step>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Configure Vite
-            Build the runtime entry and base stylesheet into `public/assets`.
-        </StepL>
-        <StepR>
-            ```ts name=vite.config.ts
-            import { defineConfig } from 'vite'
-            import masterCSS from '@master/css.vite'
+  <Step $row>
+    <StepL>
+      ### <StepNum />Open your project
+      Start from the PHP or CodeIgniter project root.
+    </StepL>
+    <StepR>
+      ```bash name=Terminal
+      cd my-php-app
+      npm init -y
+      ```
+    </StepR>
+  </Step>
+  <Step $row>
+    <StepL>
+      ### <StepNum />Install Vite and Master CSS
+      Install Vite and the Master CSS Vite integration.
+    </StepL>
+    <StepR>
+      ```bash name=Terminal
+      npm install -D vite @master/css.vite@rc
+      ```
+    </StepR>
+  </Step>
+  <Step $row>
+    <StepL>
+      ### <StepNum />Configure Vite
+      Build the runtime entry and base stylesheet into `public/assets`.
+    </StepL>
+    <StepR>
+      ```ts name=vite.config.ts
+      import { defineConfig } from 'vite'
+      import masterCSS from '@master/css.vite'
 
-            export default defineConfig({
-                plugins: [
-                    masterCSS({ mode: 'runtime', injectRuntime: false })
-                ],
-                build: {
-                    outDir: 'public/assets',
-                    emptyOutDir: true,
-                    rollupOptions: {
-                        input: 'resources/main.ts',
-                        output: {
-                            entryFileNames: 'app.js',
-                            assetFileNames: 'app[extname]'
-                        }
-                    }
-                }
-            })
-            ```
-        </StepR>
-    </Step>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Create the asset entry
-            Import the Vite-managed runtime and the Master CSS stylesheet.
-        </StepL>
-        <StepR>
-            ```ts name=resources/main.ts
-            import '@master/css.vite/runtime'
-            import './app.css'
-            ```
-
-            ```css name=resources/app.css
-            @import "@master/css";
-            ```
-        </StepR>
-    </Step>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Add build scripts
-            Build the frontend assets before deploying, or keep Vite watching in development.
-        </StepL>
-        <StepR>
-            ```json name=package.json
-            {
-                "scripts": {
-                    "build:assets": "vite build",
-                    "watch:assets": "vite build --watch"
-                }
+      export default defineConfig({
+        plugins: [
+          masterCSS({ mode: 'runtime', injectRuntime: false })
+        ],
+        build: {
+          outDir: 'public/assets',
+          emptyOutDir: true,
+          rollupOptions: {
+            input: 'resources/main.ts',
+            output: {
+              entryFileNames: 'app.js',
+              assetFileNames: 'app[extname]'
             }
-            ```
-        </StepR>
-    </Step>
-    <Step>
-        ### <StepNum />Hello world
-        Load the Vite output and style your first PHP template.
-    </Step>
-    <HelloWorld url="localhost" />
+          }
+        }
+      })
+      ```
+    </StepR>
+  </Step>
+  <Step $row>
+    <StepL>
+      ### <StepNum />Create the asset entry
+      Import the Vite-managed runtime and the Master CSS stylesheet.
+    </StepL>
+    <StepR>
+      ```ts name=resources/main.ts
+      import '@master/css.vite/runtime'
+      import './app.css'
+      ```
+
+      ```css name=resources/app.css
+      @import "@master/css";
+      ```
+    </StepR>
+  </Step>
+  <Step $row>
+    <StepL>
+      ### <StepNum />Add build scripts
+      Build the frontend assets before deploying, or keep Vite watching in development.
+    </StepL>
+    <StepR>
+      ```json name=package.json
+      {
+        "scripts": {
+          "build:assets": "vite build",
+          "watch:assets": "vite build --watch"
+        }
+      }
+      ```
+    </StepR>
+  </Step>
+  <Step>
+    ### <StepNum />Hello world
+    Load the Vite output and style your first PHP template.
+  </Step>
+  <HelloWorld url="localhost" />
 </StepSection>
 
 ```html name=public/index.php
 <html lang="en" hidden>
 <head>
-    <link rel="stylesheet" href="/assets/app.css">
+  <link rel="stylesheet" href="/assets/app.css">
 </head>
 <body>
-    <h1 class="m:2xl italic font:5xl font:heavy text:neutral">
-        Hello World
-    </h1>
-    <script type="module" src="/assets/app.js"></script>
+  <h1 class="m:2xl italic font:5xl font:heavy text:neutral">
+    Hello World
+  </h1>
+  <script type="module" src="/assets/app.js"></script>
 </body>
 </html>
 ```

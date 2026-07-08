@@ -1,13 +1,13 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'outline-color',
-    description: 'Setting the color of an element’s outline.',
-    category: 'Borders & Outlines',
-    type: 'entity',
-    canIUseLink: 'https://caniuse.com/?search=outline-color',
-    mdnLink: 'https://developer.mozilla.org/en-US/docs/Web/CSS/outline-color',
-    fileURL: import.meta.url
+  title: 'outline-color',
+  description: 'Setting the color of an element’s outline.',
+  category: 'Borders & Outlines',
+  type: 'entity',
+  canIUseLink: 'https://caniuse.com/?search=outline-color',
+  mdnLink: 'https://developer.mozilla.org/en-US/docs/Web/CSS/outline-color',
+  fileURL: import.meta.url
 })
 
 export default metadata

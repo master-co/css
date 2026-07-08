@@ -4,14 +4,14 @@ import { manifestUtilities, utilityUsesVariableNamespace } from '~/site/utils/ma
 const utilities = manifestUtilities
 
 export default () => <>
-    {
-        utilities
-            .filter((utility) => utilityUsesVariableNamespace(utility, 'text'))
-            .map((utility, index, arr) =>
-                <Fragment key={utility.name}>
-                    <code>{utility.name}</code>
-                    {index !== arr.length - 1 && ', '}
-                </Fragment>
-            )
-    }
+  {
+    utilities
+      .filter((utility) => utilityUsesVariableNamespace(utility, 'text'))
+      .map((utility, index, arr) =>
+        <Fragment key={utility.name}>
+          <code>{utility.name}</code>
+          {index !== arr.length - 1 && ', '}
+        </Fragment>
+      )
+  }
 </>

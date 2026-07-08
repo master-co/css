@@ -1,60 +1,60 @@
 {
-    "name": "@master/css-lint",
-    "type": "module",
-    "scripts": {
-        "build": "tsdown --config ../../shared/tsdown-package.config.ts",
-        "dev": "tsdown --config ../../shared/tsdown-package.config.ts --watch",
-        "lint": "eslint",
-        "type-check": "tsc -b tsconfig.typecheck.json",
-        "test": "vitest"
-    },
-    "keywords": [
-        "mastercss",
-        "lint",
-        "classes",
-        "css"
-    ],
-    "license": "MIT",
-    "description": "Framework-neutral Master CSS lint policy helpers",
-    "author": "Aoyue Design LLC.",
-    "funding": "https://rc.css.master.co/sponsor",
-    "homepage": "https://css.master.co",
-    "bugs": {
-        "url": "https://github.com/master-co/css/issues"
-    },
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/master-co/css.git",
-        "directory": "packages/lint"
-    },
-    "sideEffects": false,
-    "main": "./dist/index.js",
-    "module": "./dist/index.js",
-    "jsnext:main": "./dist/index.js",
-    "esnext": "./dist/index.js",
-    "types": "./dist/index.d.ts",
-    "exports": {
-        ".": {
-            "types": "./dist/index.d.ts",
-            "import": "./dist/index.js",
-            "default": "./dist/index.js"
-        }
-    },
-    "files": [
-        "dist"
-    ],
-    "publishConfig": {
-        "access": "public",
-        "provenance": true
-    },
-    "dependencies": {
-        "@master/css-engine": "workspace:^",
-        "@master/css-language": "workspace:^",
-        "@master/css-lexer": "workspace:^",
-        "@master/css-schema": "workspace:^",
-        "@master/css-validator": "workspace:^"
-    },
-    "devDependencies": {
-        "@master/css-preset": "workspace:^"
+  "name": "@master/css-lint",
+  "type": "module",
+  "scripts": {
+    "build": "tsdown --config ../../shared/tsdown-package.config.ts",
+    "dev": "tsdown --config ../../shared/tsdown-package.config.ts --watch",
+    "lint": "eslint",
+    "type-check": "tsc -b tsconfig.typecheck.json",
+    "test": "vitest"
+  },
+  "keywords": [
+    "mastercss",
+    "lint",
+    "classes",
+    "css"
+  ],
+  "license": "MIT",
+  "description": "Framework-neutral Master CSS lint policy helpers",
+  "author": "Aoyue Design LLC.",
+  "funding": "https://rc.css.master.co/sponsor",
+  "homepage": "https://css.master.co",
+  "bugs": {
+    "url": "https://github.com/master-co/css/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/master-co/css.git",
+    "directory": "packages/lint"
+  },
+  "sideEffects": false,
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "jsnext:main": "./dist/index.js",
+  "esnext": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
     }
+  },
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "dependencies": {
+    "@master/css-engine": "workspace:^",
+    "@master/css-language": "workspace:^",
+    "@master/css-lexer": "workspace:^",
+    "@master/css-schema": "workspace:^",
+    "@master/css-validator": "workspace:^"
+  },
+  "devDependencies": {
+    "@master/css-preset": "workspace:^"
+  }
 }

@@ -31,7 +31,7 @@ Use `r:<token>` for all corners. The utility resolves values from `radius-*` tok
 
 <!-- @MARK r:lg -->
 <article class="r:lg">
-    ...
+  ...
 </article>
 
 <!-- @MARK r:2xl -->
@@ -39,10 +39,10 @@ Use `r:<token>` for all corners. The utility resolves values from `radius-*` tok
 ```
 
 <details>
-    <summary>Generated CSS</summary>
-    <Class2CSS>
-        {['r:md', 'r:lg', 'r:2xl']}
-    </Class2CSS>
+  <summary>Generated CSS</summary>
+  <Class2CSS>
+    {['r:md', 'r:lg', 'r:2xl']}
+  </Class2CSS>
 </details>
 
 Use `r:*` in product markup. Use the explicit `border-radius:*` form when documenting native property mapping or when surrounding code benefits from the native property name.
@@ -65,10 +65,10 @@ Use `rounded` when the element should behave like a pill, regardless of its widt
 <CreateIconButton />
 
 <details>
-    <summary>Generated CSS</summary>
-    <Class2CSS>
-        {['rounded', 'round']}
-    </Class2CSS>
+  <summary>Generated CSS</summary>
+  <Class2CSS>
+    {['rounded', 'round']}
+  </Class2CSS>
 </details>
 
 Use shape shortcuts for semantic shapes. Use `r:*` when the element should stay on the shared radius scale.
@@ -81,20 +81,20 @@ Use corner shorthands when only part of a surface should be rounded. This is use
 ```html
 <!-- @MARK rtl:lg --><!-- @MARK rtr:lg -->
 <section class="rtl:lg rtr:lg">
-    Rounded top
+  Rounded top
 </section>
 
 <!-- @MARK rtr:md --><!-- @MARK rbl:sm -->
 <div class="rbl:sm rtr:md">
-    Offset corners
+  Offset corners
 </div>
 ```
 
 <details>
-    <summary>Generated CSS</summary>
-    <Class2CSS>
-        {['rtl:lg', 'rtr:lg', 'rtr:md', 'rbl:sm']}
-    </Class2CSS>
+  <summary>Generated CSS</summary>
+  <Class2CSS>
+    {['rtl:lg', 'rtr:lg', 'rtr:md', 'rbl:sm']}
+  </Class2CSS>
 </details>
 
 Use `rtl`, `rtr`, `rbl`, and `rbr` for individual corners. Use native property names such as `border-top-left-radius:*` only when the code needs the native property spelled out.
@@ -106,9 +106,9 @@ Override radius variables when your product needs sharper controls, softer panel
 
 ```css name=index.css
 @theme {
-    --radius-crisp: 0.25rem;
-    --radius-card: 0.75rem;
-    --radius-panel: 1.25rem;
+  --radius-crisp: 0.25rem;
+  --radius-card: 0.75rem;
+  --radius-panel: 1.25rem;
 }
 ```
 
@@ -128,8 +128,8 @@ Promote repeated raw values into the radius scale. Keep one-off measured geometr
 
 ```html
 <article class="r:lg">
-    <img class="r:2xl" alt="" />
-    <button class="r:4xl">Open</button>
+  <img class="r:2xl" alt="" />
+  <button class="r:4xl">Open</button>
 </article>
 ```
 
@@ -137,8 +137,8 @@ Promote repeated raw values into the radius scale. Keep one-off measured geometr
 
 ```html
 <article class="r:lg">
-    <img class="r:lg" alt="" />
-    <button class="r:md">Open</button>
+  <img class="r:lg" alt="" />
+  <button class="r:md">Open</button>
 </article>
 ```
 
@@ -146,8 +146,8 @@ Promote repeated raw values into the radius scale. Keep one-off measured geometr
 
 ```css name=index.css
 @theme {
-    --radius-1: 0.25rem;
-    --radius-2: 0.5rem;
+  --radius-1: 0.25rem;
+  --radius-2: 0.5rem;
 }
 ```
 
@@ -155,7 +155,7 @@ Promote repeated raw values into the radius scale. Keep one-off measured geometr
 
 ```css name=index.css
 @theme {
-    --radius-sm: 0.25rem;
-    --radius-card: 0.75rem;
+  --radius-sm: 0.25rem;
+  --radius-card: 0.75rem;
 }
 ```

@@ -6,48 +6,48 @@ type VariantId = 'master-static-cli' | 'master-static-vite' | 'tailwind-cli' | '
 type PrimaryVariantId = 'master-static-cli' | 'tailwind-cli'
 
 type VariantResult = {
-    css: {
-        rawBytes: number
-        gzipBytes: number
-        brotliBytes: number
-        fileCount: number
-        sha256: string
+  css: {
+    rawBytes: number
+    gzipBytes: number
+    brotliBytes: number
+    fileCount: number
+    sha256: string
+  }
+  build: {
+    coldMedianMs: number
+    repeatMedianMs: number
+    sampleCount: number
+  }
+  structure: {
+    styleRules: number
+    selectors: number
+    declarations: number
+    customProperties: number
+    importantDeclarations: number
+    atRules: number
+    layerBlocks: number
+    mediaBlocks: number
+    supportsBlocks: number
+    containerBlocks: number
+    keyframes: number
+    unlayeredStyleRules: number
+    layerStyleRules: {
+      theme: number
+      base: number
+      defaults: number
+      components: number
+      utilities: number
+      other: number
     }
-    build: {
-        coldMedianMs: number
-        repeatMedianMs: number
-        sampleCount: number
-    }
-    structure: {
-        styleRules: number
-        selectors: number
-        declarations: number
-        customProperties: number
-        importantDeclarations: number
-        atRules: number
-        layerBlocks: number
-        mediaBlocks: number
-        supportsBlocks: number
-        containerBlocks: number
-        keyframes: number
-        unlayeredStyleRules: number
-        layerStyleRules: {
-            theme: number
-            base: number
-            defaults: number
-            components: number
-            utilities: number
-            other: number
-        }
-        selectorCombinators: number
-        maxSelectorSpecificityScore: number
-        maxSelectorComplexityScore: number
-    }
+    selectorCombinators: number
+    maxSelectorSpecificityScore: number
+    maxSelectorComplexityScore: number
+  }
 }
 
 type FixtureResult = {
-    fixtureId: string
-    variants: Record<VariantId, VariantResult>
+  fixtureId: string
+  variants: Record<VariantId, VariantResult>
 }
 
 const primaryFixtureId = 'docs'
@@ -55,281 +55,281 @@ const variants = snapshot.variants as { id: VariantId; label: string }[]
 const results = snapshot.results as FixtureResult[]
 
 const primaryVariants = [
-    {
-        id: 'master-static-cli',
-        label: 'Master CSS',
-        color: 'yellow'
-    },
-    {
-        id: 'tailwind-cli',
-        label: 'Tailwind CSS',
-        color: 'cyan'
-    }
+  {
+    id: 'master-static-cli',
+    label: 'Master CSS',
+    color: 'yellow'
+  },
+  {
+    id: 'tailwind-cli',
+    label: 'Tailwind CSS',
+    color: 'cyan'
+  }
 ] satisfies { id: PrimaryVariantId; label: string; color: BenchmarkColor }[]
 
 function getFixtureName(fixtureId: string) {
-    return snapshot.fixtures.find((fixture) => fixture.id === fixtureId)?.name ?? fixtureId
+  return snapshot.fixtures.find((fixture) => fixture.id === fixtureId)?.name ?? fixtureId
 }
 
 function getPrimaryResult() {
-    const result = results.find((candidate) => candidate.fixtureId === primaryFixtureId)
-    if (!result) throw new Error(`Missing benchmark fixture result: ${primaryFixtureId}`)
-    return result
+  const result = results.find((candidate) => candidate.fixtureId === primaryFixtureId)
+  if (!result) throw new Error(`Missing benchmark fixture result: ${primaryFixtureId}`)
+  return result
 }
 
 function formatKilobytes(bytes: number) {
-    return `${(bytes / 1000).toFixed(1)} kB`
+  return `${(bytes / 1000).toFixed(1)} kB`
 }
 
 function formatMilliseconds(value: number) {
-    return `${value.toFixed(value >= 100 ? 0 : 1)} ms`
+  return `${value.toFixed(value >= 100 ? 0 : 1)} ms`
 }
 
 function formatCount(value: number) {
-    return value.toLocaleString('en-US')
+  return value.toLocaleString('en-US')
 }
 
 function formatRatio(value: number, baseline: number) {
-    if (value <= 0 || baseline <= 0) return 'n/a'
-    return `${Number((Math.max(value, baseline) / Math.min(value, baseline)).toFixed(1)).toLocaleString('en-US')}x`
+  if (value <= 0 || baseline <= 0) return 'n/a'
+  return `${Number((Math.max(value, baseline) / Math.min(value, baseline)).toFixed(1)).toLocaleString('en-US')}x`
 }
 
 function formatLowerRatio(value: number, baseline: number, label: string) {
-    if (value >= baseline) return
-    return `${formatRatio(value, baseline)} ${label}`
+  if (value >= baseline) return
+  return `${formatRatio(value, baseline)} ${label}`
 }
 
 function createComparedLabel(label: string, ratioLabel: string | undefined) {
-    if (!ratioLabel) return label
-    return (
-        <>
-            {label}
-            <span className="ml:xs font:xs text:muted">{ratioLabel}</span>
-        </>
-    )
+  if (!ratioLabel) return label
+  return (
+    <>
+      {label}
+      <span className="ml:xs font:xs text:muted">{ratioLabel}</span>
+    </>
+  )
 }
 
 function createCssBarItems(result: FixtureResult): BenchmarkBarItem[] {
-    const baselineByVariant: Record<PrimaryVariantId, number> = {
-        'master-static-cli': result.variants['tailwind-cli'].css.brotliBytes,
-        'tailwind-cli': result.variants['master-static-cli'].css.brotliBytes
-    }
+  const baselineByVariant: Record<PrimaryVariantId, number> = {
+    'master-static-cli': result.variants['tailwind-cli'].css.brotliBytes,
+    'tailwind-cli': result.variants['master-static-cli'].css.brotliBytes
+  }
 
-    return primaryVariants.map((variant) => {
-        const value = result.variants[variant.id].css.brotliBytes
-        return {
-            id: `${result.fixtureId}-${variant.id}-css`,
-            label: createComparedLabel(variant.label, formatLowerRatio(value, baselineByVariant[variant.id], 'smaller')),
-            value: value / 1000,
-            valueLabel: formatKilobytes(value),
-            color: variant.color
-        }
-    })
+  return primaryVariants.map((variant) => {
+    const value = result.variants[variant.id].css.brotliBytes
+    return {
+      id: `${result.fixtureId}-${variant.id}-css`,
+      label: createComparedLabel(variant.label, formatLowerRatio(value, baselineByVariant[variant.id], 'smaller')),
+      value: value / 1000,
+      valueLabel: formatKilobytes(value),
+      color: variant.color
+    }
+  })
 }
 
 function createBuildBarItems(result: FixtureResult): BenchmarkBarItem[] {
-    const baselineByVariant: Record<PrimaryVariantId, number> = {
-        'master-static-cli': result.variants['tailwind-cli'].build.coldMedianMs,
-        'tailwind-cli': result.variants['master-static-cli'].build.coldMedianMs
-    }
+  const baselineByVariant: Record<PrimaryVariantId, number> = {
+    'master-static-cli': result.variants['tailwind-cli'].build.coldMedianMs,
+    'tailwind-cli': result.variants['master-static-cli'].build.coldMedianMs
+  }
 
-    return primaryVariants.map((variant) => {
-        const value = result.variants[variant.id].build.coldMedianMs
-        return {
-            id: `${result.fixtureId}-${variant.id}-build`,
-            label: createComparedLabel(variant.label, formatLowerRatio(value, baselineByVariant[variant.id], 'faster')),
-            value,
-            valueLabel: formatMilliseconds(value),
-            color: variant.color
-        }
-    })
+  return primaryVariants.map((variant) => {
+    const value = result.variants[variant.id].build.coldMedianMs
+    return {
+      id: `${result.fixtureId}-${variant.id}-build`,
+      label: createComparedLabel(variant.label, formatLowerRatio(value, baselineByVariant[variant.id], 'faster')),
+      value,
+      valueLabel: formatMilliseconds(value),
+      color: variant.color
+    }
+  })
 }
 
 function createDeclarationBarItems(result: FixtureResult): BenchmarkBarItem[] {
-    const baselineByVariant: Record<PrimaryVariantId, number> = {
-        'master-static-cli': result.variants['tailwind-cli'].structure.declarations,
-        'tailwind-cli': result.variants['master-static-cli'].structure.declarations
-    }
+  const baselineByVariant: Record<PrimaryVariantId, number> = {
+    'master-static-cli': result.variants['tailwind-cli'].structure.declarations,
+    'tailwind-cli': result.variants['master-static-cli'].structure.declarations
+  }
 
-    return primaryVariants.map((variant) => {
-        const value = result.variants[variant.id].structure.declarations
-        return {
-            id: `${result.fixtureId}-${variant.id}-declarations`,
-            label: createComparedLabel(variant.label, formatLowerRatio(value, baselineByVariant[variant.id], 'fewer')),
-            value,
-            valueLabel: formatCount(value),
-            color: variant.color
-        }
-    })
+  return primaryVariants.map((variant) => {
+    const value = result.variants[variant.id].structure.declarations
+    return {
+      id: `${result.fixtureId}-${variant.id}-declarations`,
+      label: createComparedLabel(variant.label, formatLowerRatio(value, baselineByVariant[variant.id], 'fewer')),
+      value,
+      valueLabel: formatCount(value),
+      color: variant.color
+    }
+  })
 }
 
 function createSummaryMetrics(): BenchmarkMetric[] {
-    const masterCliWins = results.filter((result) => result.variants['master-static-cli'].css.brotliBytes < result.variants['tailwind-cli'].css.brotliBytes).length
-    const tailwindCliBuildWins = results.filter((result) => result.variants['tailwind-cli'].build.coldMedianMs < result.variants['master-static-cli'].build.coldMedianMs).length
-    const sampleCount = results[0]?.variants['master-static-cli'].build.sampleCount ?? 0
+  const masterCliWins = results.filter((result) => result.variants['master-static-cli'].css.brotliBytes < result.variants['tailwind-cli'].css.brotliBytes).length
+  const tailwindCliBuildWins = results.filter((result) => result.variants['tailwind-cli'].build.coldMedianMs < result.variants['master-static-cli'].build.coldMedianMs).length
+  const sampleCount = results[0]?.variants['master-static-cli'].build.sampleCount ?? 0
 
-    return [
-        {
-            label: 'Fixtures',
-            value: results.length
-        },
-        {
-            label: 'CSS output',
-            value: `${masterCliWins}/${results.length}`,
-            detail: 'fixtures where Master CSS is smaller than Tailwind CSS by brotli bytes in the CLI setup',
-            tone: 'good'
-        },
-        {
-            label: 'Build command',
-            value: `${tailwindCliBuildWins}/${results.length}`,
-            detail: 'fixtures where Tailwind CSS has the lower cold production command median in the CLI setup',
-            tone: 'warn'
-        },
-        {
-            label: 'Build samples',
-            value: sampleCount,
-            detail: 'measured command rounds per variant',
-            tone: 'neutral'
-        },
-        {
-            label: 'CSS structure',
-            value: 'AST',
-            detail: 'rules, selectors, declarations, layers, at-rules, and selector scores are parsed from generated CSS',
-            tone: 'neutral'
-        }
-    ]
+  return [
+    {
+      label: 'Fixtures',
+      value: results.length
+    },
+    {
+      label: 'CSS output',
+      value: `${masterCliWins}/${results.length}`,
+      detail: 'fixtures where Master CSS is smaller than Tailwind CSS by brotli bytes in the CLI setup',
+      tone: 'good'
+    },
+    {
+      label: 'Build command',
+      value: `${tailwindCliBuildWins}/${results.length}`,
+      detail: 'fixtures where Tailwind CSS has the lower cold production command median in the CLI setup',
+      tone: 'warn'
+    },
+    {
+      label: 'Build samples',
+      value: sampleCount,
+      detail: 'measured command rounds per variant',
+      tone: 'neutral'
+    },
+    {
+      label: 'CSS structure',
+      value: 'AST',
+      detail: 'rules, selectors, declarations, layers, at-rules, and selector scores are parsed from generated CSS',
+      tone: 'neutral'
+    }
+  ]
 }
 
 export function StaticComparisonSummary() {
-    return <BenchmarkMetricTable metrics={createSummaryMetrics()} />
+  return <BenchmarkMetricTable metrics={createSummaryMetrics()} />
 }
 
 export function StaticCSSOutputChart() {
-    return <BenchmarkBars items={createCssBarItems(getPrimaryResult())} unit="kB" />
+  return <BenchmarkBars items={createCssBarItems(getPrimaryResult())} unit="kB" />
 }
 
 export function StaticBuildChart() {
-    return <BenchmarkBars items={createBuildBarItems(getPrimaryResult())} unit="ms" />
+  return <BenchmarkBars items={createBuildBarItems(getPrimaryResult())} unit="ms" />
 }
 
 export function StaticStructureChart() {
-    return <BenchmarkBars items={createDeclarationBarItems(getPrimaryResult())} unit="count" />
+  return <BenchmarkBars items={createDeclarationBarItems(getPrimaryResult())} unit="count" />
 }
 
 export function StaticCSSBytesTable() {
-    return (
-        <ExpandContent>
-            <div className="doc-table">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Fixture</th>
-                            <th>Variant</th>
-                            <th>Raw</th>
-                            <th>Gzip</th>
-                            <th>Brotli</th>
-                            <th>Files</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {results.flatMap((result) => variants.map((variant) => {
-                            const value = result.variants[variant.id].css
-                            return (
-                                <tr key={`${result.fixtureId}-${variant.id}-css-row`}>
-                                    <th>{getFixtureName(result.fixtureId)}</th>
-                                    <td>{variant.label}</td>
-                                    <td>{formatKilobytes(value.rawBytes)}</td>
-                                    <td>{formatKilobytes(value.gzipBytes)}</td>
-                                    <td>{formatKilobytes(value.brotliBytes)}</td>
-                                    <td>{value.fileCount}</td>
-                                </tr>
-                            )
-                        }))}
-                    </tbody>
-                </table>
-            </div>
-        </ExpandContent>
-    )
+  return (
+    <ExpandContent>
+      <div className="doc-table">
+        <table>
+          <thead>
+            <tr>
+              <th>Fixture</th>
+              <th>Variant</th>
+              <th>Raw</th>
+              <th>Gzip</th>
+              <th>Brotli</th>
+              <th>Files</th>
+            </tr>
+          </thead>
+          <tbody>
+            {results.flatMap((result) => variants.map((variant) => {
+              const value = result.variants[variant.id].css
+              return (
+                <tr key={`${result.fixtureId}-${variant.id}-css-row`}>
+                  <th>{getFixtureName(result.fixtureId)}</th>
+                  <td>{variant.label}</td>
+                  <td>{formatKilobytes(value.rawBytes)}</td>
+                  <td>{formatKilobytes(value.gzipBytes)}</td>
+                  <td>{formatKilobytes(value.brotliBytes)}</td>
+                  <td>{value.fileCount}</td>
+                </tr>
+              )
+            }))}
+          </tbody>
+        </table>
+      </div>
+    </ExpandContent>
+  )
 }
 
 export function StaticBuildTable() {
-    return (
-        <ExpandContent>
-            <div className="doc-table">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Fixture</th>
-                            <th>Variant</th>
-                            <th>Cold median</th>
-                            <th>Repeat median</th>
-                            <th>Samples</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {results.flatMap((result) => variants.map((variant) => {
-                            const value = result.variants[variant.id].build
-                            return (
-                                <tr key={`${result.fixtureId}-${variant.id}-build-row`}>
-                                    <th>{getFixtureName(result.fixtureId)}</th>
-                                    <td>{variant.label}</td>
-                                    <td>{formatMilliseconds(value.coldMedianMs)}</td>
-                                    <td>{formatMilliseconds(value.repeatMedianMs)}</td>
-                                    <td>{value.sampleCount}</td>
-                                </tr>
-                            )
-                        }))}
-                    </tbody>
-                </table>
-            </div>
-        </ExpandContent>
-    )
+  return (
+    <ExpandContent>
+      <div className="doc-table">
+        <table>
+          <thead>
+            <tr>
+              <th>Fixture</th>
+              <th>Variant</th>
+              <th>Cold median</th>
+              <th>Repeat median</th>
+              <th>Samples</th>
+            </tr>
+          </thead>
+          <tbody>
+            {results.flatMap((result) => variants.map((variant) => {
+              const value = result.variants[variant.id].build
+              return (
+                <tr key={`${result.fixtureId}-${variant.id}-build-row`}>
+                  <th>{getFixtureName(result.fixtureId)}</th>
+                  <td>{variant.label}</td>
+                  <td>{formatMilliseconds(value.coldMedianMs)}</td>
+                  <td>{formatMilliseconds(value.repeatMedianMs)}</td>
+                  <td>{value.sampleCount}</td>
+                </tr>
+              )
+            }))}
+          </tbody>
+        </table>
+      </div>
+    </ExpandContent>
+  )
 }
 
 export function StaticStructureTable() {
-    return (
-        <ExpandContent>
-            <div className="doc-table">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Fixture</th>
-                            <th>Variant</th>
-                            <th>Rules</th>
-                            <th>Selectors</th>
-                            <th>Declarations</th>
-                            <th>Custom properties</th>
-                            <th>At-rules</th>
-                            <th>Layer blocks</th>
-                            <th>Unlayered rules</th>
-                            <th>Combinators</th>
-                            <th>Max specificity</th>
-                            <th>Max complexity</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {results.flatMap((result) => variants.map((variant) => {
-                            const value = result.variants[variant.id].structure
-                            return (
-                                <tr key={`${result.fixtureId}-${variant.id}-structure-row`}>
-                                    <th>{getFixtureName(result.fixtureId)}</th>
-                                    <td>{variant.label}</td>
-                                    <td>{formatCount(value.styleRules)}</td>
-                                    <td>{formatCount(value.selectors)}</td>
-                                    <td>{formatCount(value.declarations)}</td>
-                                    <td>{formatCount(value.customProperties)}</td>
-                                    <td>{formatCount(value.atRules)}</td>
-                                    <td>{formatCount(value.layerBlocks)}</td>
-                                    <td>{formatCount(value.unlayeredStyleRules)}</td>
-                                    <td>{formatCount(value.selectorCombinators)}</td>
-                                    <td>{formatCount(value.maxSelectorSpecificityScore)}</td>
-                                    <td>{formatCount(value.maxSelectorComplexityScore)}</td>
-                                </tr>
-                            )
-                        }))}
-                    </tbody>
-                </table>
-            </div>
-        </ExpandContent>
-    )
+  return (
+    <ExpandContent>
+      <div className="doc-table">
+        <table>
+          <thead>
+            <tr>
+              <th>Fixture</th>
+              <th>Variant</th>
+              <th>Rules</th>
+              <th>Selectors</th>
+              <th>Declarations</th>
+              <th>Custom properties</th>
+              <th>At-rules</th>
+              <th>Layer blocks</th>
+              <th>Unlayered rules</th>
+              <th>Combinators</th>
+              <th>Max specificity</th>
+              <th>Max complexity</th>
+            </tr>
+          </thead>
+          <tbody>
+            {results.flatMap((result) => variants.map((variant) => {
+              const value = result.variants[variant.id].structure
+              return (
+                <tr key={`${result.fixtureId}-${variant.id}-structure-row`}>
+                  <th>{getFixtureName(result.fixtureId)}</th>
+                  <td>{variant.label}</td>
+                  <td>{formatCount(value.styleRules)}</td>
+                  <td>{formatCount(value.selectors)}</td>
+                  <td>{formatCount(value.declarations)}</td>
+                  <td>{formatCount(value.customProperties)}</td>
+                  <td>{formatCount(value.atRules)}</td>
+                  <td>{formatCount(value.layerBlocks)}</td>
+                  <td>{formatCount(value.unlayeredStyleRules)}</td>
+                  <td>{formatCount(value.selectorCombinators)}</td>
+                  <td>{formatCount(value.maxSelectorSpecificityScore)}</td>
+                  <td>{formatCount(value.maxSelectorComplexityScore)}</td>
+                </tr>
+              )
+            }))}
+          </tbody>
+        </table>
+      </div>
+    </ExpandContent>
+  )
 }

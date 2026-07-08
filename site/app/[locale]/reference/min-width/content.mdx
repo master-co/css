@@ -7,15 +7,15 @@ Use `min-w:*` to keep an element from shrinking below a usable width. It is usef
 ```html
 <!-- @MARK min-w:32x -->
 <button class="min-w:32x px:md">
-    Continue
+  Continue
 </button>
 ```
 
 <details>
-    <summary>Generated CSS</summary>
-    <Class2CSS>
-        {['min-w:32x']}
-    </Class2CSS>
+  <summary>Generated CSS</summary>
+  <Class2CSS>
+    {['min-w:32x']}
+  </Class2CSS>
 </details>
 
 ### Allow flexible children to shrink
@@ -23,10 +23,10 @@ In flex and grid layouts, `min-w:0` is often the fix for text or media that refu
 ```html
 <!-- @MARK flex --><!-- @MARK min-w:0 --><!-- @MARK overflow:hidden -->
 <article class="flex gap:md">
-    <img class="flex:0 size:12x" alt="" />
-    <div class="overflow:hidden min-w:0">
-        Long content can truncate instead of widening the row.
-    </div>
+  <img class="flex:0 size:12x" alt="" />
+  <div class="overflow:hidden min-w:0">
+    Long content can truncate instead of widening the row.
+  </div>
 </article>
 ```
 
@@ -35,7 +35,7 @@ Use `min-w:*` as a lower bound, then let `w:*` or `max-w:*` describe the preferr
 ```html
 <!-- @MARK w:50% --><!-- @MARK min-w:40x --><!-- @MARK max-w:4xl -->
 <aside class="w:50% min-w:40x max-w:4xl">
-    ...
+  ...
 </aside>
 ```
 
@@ -44,7 +44,7 @@ Use `min-w:fit`, `min-w:min`, or `min-w:max` when content sizing should drive th
 ```html
 <!-- @MARK min-w:max -->
 <nav class="min-w:max">
-    ...
+  ...
 </nav>
 ```
 

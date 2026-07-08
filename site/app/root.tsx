@@ -10,13 +10,13 @@ const localePrefixMode = process.env.NEXT_PUBLIC_SITE_LOCALE_PREFIX_MODE === 'al
 const localizablePathnameRoots = Object.keys(units)
 
 export default function RootClient(props: {
-    children: React.ReactNode,
-    locale: typeof i18n.locales[number],
-    style?: React.CSSProperties,
-    translations: any,
-    hidden?: boolean,
+  children: React.ReactNode,
+  locale: typeof i18n.locales[number],
+  style?: React.CSSProperties,
+  translations: any,
+  hidden?: boolean,
 }) {
-    return (
-        <RootLayout {...props} app={app} redirects={redirects} localePrefixMode={localePrefixMode} localizablePathnameRoots={localizablePathnameRoots} />
-    )
+  return (
+    <RootLayout {...props} app={app} redirects={redirects} localePrefixMode={localePrefixMode} localizablePathnameRoots={localizablePathnameRoots} />
+  )
 }

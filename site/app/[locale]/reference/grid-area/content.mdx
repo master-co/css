@@ -5,50 +5,50 @@
 ### Place an item by grid lines
 Use `grid-area` to place a grid item by `row-start / column-start / row-end / column-end`.
 <Demo $py={0}>
-    <DemoPanel>
-        <div className="grid grid-cols:3 grid-template-rows:64px|88px|88px gap:xs">
-            <div className="overflow:hidden grid-area:1/1/2/4 min-w:0 p:sm b:1px|solid|blue-20 r:lg bg:blue-5 b:blue-80@dark bg:blue-95@dark">
-                <div className="overflow:hidden mb:3xs font:11px font:bold text-ellipsis white-space:nowrap fg:blue-60">grid-area:1/1/2/4</div>
-                <div className="overflow:hidden font-weight:560 font:md text-ellipsis white-space:nowrap text:neutral">Header</div>
-            </div>
-            <div className="overflow:hidden grid-area:2/1/4/2 min-w:0 p:sm r:lg bg:gray-5 bg:gray-90@dark">
-                <div className="overflow:hidden mb:3xs font:11px font:bold text-ellipsis white-space:nowrap text:gray">2/1/4/2</div>
-                <div className="overflow:hidden font-weight:560 font:sm text-ellipsis white-space:nowrap text:neutral">Nav</div>
-            </div>
-            <div className="overflow:hidden grid-area:2/2/4/4 min-w:0 p:sm r:lg bg:gray-5 bg:gray-90@dark">
-                <div className="overflow:hidden mb:3xs font:11px font:bold text-ellipsis white-space:nowrap text:gray">2/2/4/4</div>
-                <div className="overflow:hidden font-weight:560 font:sm text-ellipsis white-space:nowrap text:neutral">Content</div>
-            </div>
-        </div>
-    </DemoPanel>
+  <DemoPanel>
+    <div className="grid grid-cols:3 grid-template-rows:64px|88px|88px gap:xs">
+      <div className="overflow:hidden grid-area:1/1/2/4 min-w:0 p:sm b:1px|solid|blue-20 r:lg bg:blue-5 b:blue-80@dark bg:blue-95@dark">
+        <div className="overflow:hidden mb:3xs font:11px font:bold text-ellipsis white-space:nowrap fg:blue-60">grid-area:1/1/2/4</div>
+        <div className="overflow:hidden font-weight:560 font:md text-ellipsis white-space:nowrap text:neutral">Header</div>
+      </div>
+      <div className="overflow:hidden grid-area:2/1/4/2 min-w:0 p:sm r:lg bg:gray-5 bg:gray-90@dark">
+        <div className="overflow:hidden mb:3xs font:11px font:bold text-ellipsis white-space:nowrap text:gray">2/1/4/2</div>
+        <div className="overflow:hidden font-weight:560 font:sm text-ellipsis white-space:nowrap text:neutral">Nav</div>
+      </div>
+      <div className="overflow:hidden grid-area:2/2/4/4 min-w:0 p:sm r:lg bg:gray-5 bg:gray-90@dark">
+        <div className="overflow:hidden mb:3xs font:11px font:bold text-ellipsis white-space:nowrap text:gray">2/2/4/4</div>
+        <div className="overflow:hidden font-weight:560 font:sm text-ellipsis white-space:nowrap text:neutral">Content</div>
+      </div>
+    </div>
+  </DemoPanel>
 </Demo>
 ```html
 <div class="grid grid-cols:3 grid-template-rows:64px|88px|88px">
-    <!-- @MARK grid-area:1/1/2/4 -->
-    <header class="grid-area:1/1/2/4">Header</header>
+  <!-- @MARK grid-area:1/1/2/4 -->
+  <header class="grid-area:1/1/2/4">Header</header>
 
-    <!-- @MARK grid-area:2/1/4/2 -->
-    <nav class="grid-area:2/1/4/2">Navigation</nav>
+  <!-- @MARK grid-area:2/1/4/2 -->
+  <nav class="grid-area:2/1/4/2">Navigation</nav>
 
-    <!-- @MARK grid-area:2/2/4/4 -->
-    <main class="grid-area:2/2/4/4">Content</main>
+  <!-- @MARK grid-area:2/2/4/4 -->
+  <main class="grid-area:2/2/4/4">Content</main>
 </div>
 ```
 
 ### Span tracks
 Use `span` values when the item should cover a number of rows or columns from its starting line.
 <Demo $py={0}>
-    <DemoPanel>
-        <div className="grid grid-cols:4 gap:xs grid-template-rows:64|64|64">
-            <div className="overflow:hidden grid-area:2/2/span|2/span|2 min-w:0 p:sm b:1px|solid|blue-20 r:lg bg:blue-5 b:blue-80@dark bg:blue-95@dark">
-                <div className="overflow:hidden mb:3xs font:11px font:bold text-ellipsis white-space:nowrap fg:blue-60">2/2/span 2/span 2</div>
-                <div className="overflow:hidden font-weight:560 font:sm text-ellipsis white-space:nowrap text:neutral">Featured</div>
-            </div>
-            <div className="overflow:hidden grid-area:1/1/2/5 min-w:0 p:sm r:lg font:13px text-ellipsis white-space:nowrap bg:gray-5 text:gray bg:gray-90@dark">Toolbar</div>
-            <div className="overflow:hidden grid-area:2/1/4/2 min-w:0 p:sm r:lg font:13px text-ellipsis white-space:nowrap bg:gray-5 text:gray bg:gray-90@dark">Aside</div>
-            <div className="overflow:hidden grid-area:2/4/4/5 min-w:0 p:sm r:lg font:13px text-ellipsis white-space:nowrap bg:gray-5 text:gray bg:gray-90@dark">Notes</div>
-        </div>
-    </DemoPanel>
+  <DemoPanel>
+    <div className="grid grid-cols:4 gap:xs grid-template-rows:64|64|64">
+      <div className="overflow:hidden grid-area:2/2/span|2/span|2 min-w:0 p:sm b:1px|solid|blue-20 r:lg bg:blue-5 b:blue-80@dark bg:blue-95@dark">
+        <div className="overflow:hidden mb:3xs font:11px font:bold text-ellipsis white-space:nowrap fg:blue-60">2/2/span 2/span 2</div>
+        <div className="overflow:hidden font-weight:560 font:sm text-ellipsis white-space:nowrap text:neutral">Featured</div>
+      </div>
+      <div className="overflow:hidden grid-area:1/1/2/5 min-w:0 p:sm r:lg font:13px text-ellipsis white-space:nowrap bg:gray-5 text:gray bg:gray-90@dark">Toolbar</div>
+      <div className="overflow:hidden grid-area:2/1/4/2 min-w:0 p:sm r:lg font:13px text-ellipsis white-space:nowrap bg:gray-5 text:gray bg:gray-90@dark">Aside</div>
+      <div className="overflow:hidden grid-area:2/4/4/5 min-w:0 p:sm r:lg font:13px text-ellipsis white-space:nowrap bg:gray-5 text:gray bg:gray-90@dark">Notes</div>
+    </div>
+  </DemoPanel>
 </Demo>
 ```html
 <!-- @MARK grid-area:2/2/span|2/span|2 -->

@@ -9,18 +9,18 @@ Motion explains what changed, where attention should go, and whether an action i
 Master CSS keeps those decisions close to the element with `animate:*` recipes, native `animation:*` and `transition:*` shorthands, shared `duration` tokens, shared `easing` tokens, managed `@theme` keyframes, and motion preference conditions such as `@motion` and `@reduce-motion`.
 
 <Demo>
-    <div className="container w:full">
-        <div className="grid grid-cols:1 gap:md w:full grid-cols:2@container(3xs)">
-            <div className="p:lg r:lg surface:raised shadow:xs">
-                <DemoLabel>animation:fade|slow|smooth</DemoLabel>
-                <div className="size:14x r:lg bg:blue-5 animation:fade|slow|smooth|infinite|alternate@motion"></div>
-            </div>
-            <div className="p:lg r:lg surface:raised shadow:xs">
-                <DemoLabel>animation:zoom|fast|overshoot</DemoLabel>
-                <div className="size:14x r:lg bg:green-5 animation:zoom|fast|overshoot|infinite|alternate@motion"></div>
-            </div>
-        </div>
+  <div className="container w:full">
+    <div className="grid grid-cols:1 gap:md w:full grid-cols:2@container(3xs)">
+      <div className="p:lg r:lg surface:raised shadow:xs">
+        <DemoLabel>animation:fade|slow|smooth</DemoLabel>
+        <div className="size:14x r:lg bg:blue-5 animation:fade|slow|smooth|infinite|alternate@motion"></div>
+      </div>
+      <div className="p:lg r:lg surface:raised shadow:xs">
+        <DemoLabel>animation:zoom|fast|overshoot</DemoLabel>
+        <div className="size:14x r:lg bg:green-5 animation:zoom|fast|overshoot|infinite|alternate@motion"></div>
+      </div>
     </div>
+  </div>
 </Demo>
 
 ---
@@ -68,10 +68,10 @@ Use `animate:<token>` when the full recipe should come from an `--animate-*` tok
 ```
 
 <details>
-    <summary>Generated CSS</summary>
-    <Class2CSS>
-        {['animate:fade', 'animate:zoom']}
-    </Class2CSS>
+  <summary>Generated CSS</summary>
+  <Class2CSS>
+    {['animate:fade', 'animate:zoom']}
+  </Class2CSS>
 </details>
 
 Use native `animation:*` shorthand when the animation name, duration, easing, direction, iteration count, fill mode, or delay should be visible in markup.
@@ -88,10 +88,10 @@ Use native `animation:*` shorthand when the animation name, duration, easing, di
 ```
 
 <details>
-    <summary>Generated CSS</summary>
-    <Class2CSS>
-        {['animation:fade|fast|smooth', 'animation:rotate|slowest|linear|infinite@motion', 'animation:zoom|faster|overshoot|both']}
-    </Class2CSS>
+  <summary>Generated CSS</summary>
+  <Class2CSS>
+    {['animation:fade|fast|smooth', 'animation:rotate|slowest|linear|infinite@motion', 'animation:zoom|faster|overshoot|both']}
+  </Class2CSS>
 </details>
 
 Use explicit property utilities when only one part of the motion should change.
@@ -102,10 +102,10 @@ Use explicit property utilities when only one part of the motion should change.
 ```
 
 <details>
-    <summary>Generated CSS</summary>
-    <Class2CSS>
-        {['animation-duration:fast', 'animation-timing-function:crisp']}
-    </Class2CSS>
+  <summary>Generated CSS</summary>
+  <Class2CSS>
+    {['animation-duration:fast', 'animation-timing-function:crisp']}
+  </Class2CSS>
 </details>
 
 ---
@@ -122,10 +122,10 @@ Use `transition:*` for state changes. The property, duration, easing, and delay 
 ```
 
 <details>
-    <summary>Generated CSS</summary>
-    <Class2CSS>
-        {['transition:opacity|fast|smooth', 'transition:transform|slow|overshoot|150ms']}
-    </Class2CSS>
+  <summary>Generated CSS</summary>
+  <Class2CSS>
+    {['transition:opacity|fast|smooth', 'transition:transform|slow|overshoot|150ms']}
+  </Class2CSS>
 </details>
 
 Duration and easing namespaces are shared across `animation-duration`, `animation-delay`, `transition-duration`, `transition-delay`, `animation-timing-function`, `transition-timing-function`, `animation:*`, and `transition:*`. Keep the token names readable because they appear inside shorthand class names.
@@ -148,10 +148,10 @@ Use `@reduce-motion` to replace motion-heavy effects with a simpler state.
 ```
 
 <details>
-    <summary>Generated CSS</summary>
-    <Class2CSS>
-        {['animate:pulse@motion', 'animation:zoom|fast|overshoot@motion', 'animation:none@reduce-motion', 'translate:0@reduce-motion']}
-    </Class2CSS>
+  <summary>Generated CSS</summary>
+  <Class2CSS>
+    {['animate:pulse@motion', 'animation:zoom|fast|overshoot@motion', 'animation:none@reduce-motion', 'translate:0@reduce-motion']}
+  </Class2CSS>
 </details>
 
 Treat reduced motion as a parallel state, not an afterthought. Keep essential feedback visible through opacity, color, text, layout, or an instant end state when movement is removed.
@@ -163,16 +163,16 @@ Override motion tokens in the project CSS entry when your product needs a differ
 
 ```css name=index.css
 @theme {
-    --duration-enter: 180ms;
-    --duration-exit: 120ms;
-    --easing-standard: cubic-bezier(.4, 0, .2, 1);
-    --easing-emphasized: cubic-bezier(.16, 1, .3, 1);
-    --animate-dialog-in: dialog-in var(--duration-enter) var(--easing-emphasized) both;
+  --duration-enter: 180ms;
+  --duration-exit: 120ms;
+  --easing-standard: cubic-bezier(.4, 0, .2, 1);
+  --easing-emphasized: cubic-bezier(.16, 1, .3, 1);
+  --animate-dialog-in: dialog-in var(--duration-enter) var(--easing-emphasized) both;
 
-    @keyframes dialog-in {
-        from { translate: 0 0.5rem; opacity: 0; }
-        to { translate: 0; opacity: 1; }
-    }
+  @keyframes dialog-in {
+    from { translate: 0 0.5rem; opacity: 0; }
+    to { translate: 0; opacity: 1; }
+  }
 }
 ```
 
@@ -202,8 +202,8 @@ Use named tokens for repeated motion decisions. Keep raw durations and raw curve
 
 ```css
 @theme {
-    --duration-smooth: 200ms;
-    --easing-fast: cubic-bezier(.4, 0, .2, 1);
+  --duration-smooth: 200ms;
+  --easing-fast: cubic-bezier(.4, 0, .2, 1);
 }
 ```
 
@@ -211,7 +211,7 @@ Use named tokens for repeated motion decisions. Keep raw durations and raw curve
 
 ```css
 @theme {
-    --duration-fast: 150ms;
-    --easing-smooth: cubic-bezier(.4, 0, .2, 1);
+  --duration-fast: 150ms;
+  --easing-smooth: cubic-bezier(.4, 0, .2, 1);
 }
 ```

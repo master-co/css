@@ -1,5 +1,5 @@
 import { permanentRedirect } from 'next/navigation'
 
 export default function Page() {
-    permanentRedirect('/guide/theme')
+  permanentRedirect('/guide/theme')
 }

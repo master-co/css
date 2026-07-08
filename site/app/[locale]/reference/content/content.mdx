@@ -6,14 +6,14 @@
 ### Add indicators for external links
 The most typical example is using a pseudo-element to add an indicator ` ↗` after external links.
 <Demo $py={0}>
-    <DemoPanel>
-        <p class="my:0">Discover high-quality products at XYZ Corporation. Visit [our website](https://www.example.com) for exclusive deals and unbeatable prices.</p>
-    </DemoPanel>
+  <DemoPanel>
+    <p class="my:0">Discover high-quality products at XYZ Corporation. Visit [our website](https://www.example.com) for exclusive deals and unbeatable prices.</p>
+  </DemoPanel>
 </Demo>
 ```html
 <!-- @MARK content:'\00a0↗'_:where(a[href^='http'])::after -->
 <article class="content:'\00a0↗'_:where(a[href^='http'])::after">
-    …<a target="_blank" href="https://www.example.com">our website</a>…
+  …<a target="_blank" href="https://www.example.com">our website</a>…
 </article>
 ```
 
@@ -27,7 +27,7 @@ Is it not very kind to use `\00a0` in markup?
 (o) Predefine your content [theme tokens](/guide/theme#theme-tokens) without `\00a0`.
 ```css name=index.css
 @theme {
-    --content-external: " ↗"; /* [!code ++] */
+  --content-external: " ↗"; /* [!code ++] */
 }
 ```
 Apply your custom content:

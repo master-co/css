@@ -31,7 +31,7 @@ The integration:
 
 ```astro
 <style is:global>
-    @import '@master/css';
+  @import '@master/css';
 </style>
 ```
 

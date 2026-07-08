@@ -4,15 +4,15 @@ import type { Settings } from '../../src'
 import { createPresetManifest } from '../helpers/create-preset-manifest'
 
 const settings = {
-    manifest: createPresetManifest({
-        variables: [{ namespace: 'breakpoint', key: 'sm', value: 768 }],
-        animations: {
-            fade: {
-                from: { opacity: 0 },
-                to: { opacity: 1 }
-            }
-        }
-    })
+  manifest: createPresetManifest({
+    variables: [{ namespace: 'breakpoint', key: 'sm', value: 768 }],
+    animations: {
+      fade: {
+        from: { opacity: 0 },
+        to: { opacity: 1 }
+      }
+    }
+  })
 } satisfies Settings
 
 test.concurrent('@', () => expect(hint('@', settings)?.map(({ label }) => label)).not.toContain('fade|1s'))

@@ -1,10 +1,10 @@
 export const code1 = /* eslint-disable @master/css/prefer-canonical-classes, @master/css/sort-classes -- intentional shorthand comparison source */ `
-    <!-- @MARK text-align:center --><!-- @MARK font-size:16px --><!-- @MARK font-weight:bold --><!-- @MARK border-style:solid -->
-    <p class="text-align:center font-size:16px font-weight:bold border-style:solid">
+  <!-- @MARK text-align:center --><!-- @MARK font-size:16px --><!-- @MARK font-weight:bold --><!-- @MARK border-style:solid -->
+  <p class="text-align:center font-size:16px font-weight:bold border-style:solid">
 `
 export const code2 = `
-    <!-- @MARK text-center --><!-- @MARK font:16px --><!-- @MARK font:bold --><!-- @MARK b-solid -->
-    <p class="text-center font:16px font:bold b-solid">
+  <!-- @MARK text-center --><!-- @MARK font:16px --><!-- @MARK font:bold --><!-- @MARK b-solid -->
+  <p class="text-center font:16px font:bold b-solid">
 `
 /* eslint-enable @master/css/prefer-canonical-classes, @master/css/sort-classes */
 
@@ -12,12 +12,12 @@ Syntax: <code><span className="language-mcss mcss token value"><span className="
 
 Native CSS shorthands usually combine several longhand properties. Master CSS also has shorter names for single declarations when the property and value together make the target property clear.
 <Code lang="html">
-    {code1}
+  {code1}
 </Code>
 
 (o) Use context-aware shorthands and semantic static utilities. <Dropped p1={code1} p2={code2} target="class" />
 <Code lang="html">
-    {code2}
+  {code2}
 </Code>
 
 From the example above:

@@ -1,5 +1,5 @@
 const syntaxes = [
-    ['transition:`property`|`duration`|`…`']
+  ['transition:`property`|`duration`|`…`']
 ]
 
 export default syntaxes

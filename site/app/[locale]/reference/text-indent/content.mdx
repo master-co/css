@@ -8,15 +8,15 @@ Use `text-indent:*` to offset the first formatted line of a block of text.
 ```html
 <!-- @MARK text-indent:2em -->
 <p class="text-indent:2em">
-    The first line is indented while the rest of the paragraph follows the normal inline flow.
+  The first line is indented while the rest of the paragraph follows the normal inline flow.
 </p>
 ```
 
 <details>
-    <summary>Generated CSS</summary>
-    <Class2CSS>
-        {['text-indent:2em']}
-    </Class2CSS>
+  <summary>Generated CSS</summary>
+  <Class2CSS>
+    {['text-indent:2em']}
+  </Class2CSS>
 </details>
 
 ### Use spacing values
@@ -24,7 +24,7 @@ Use a spacing or sizing value when the indent should align with the rest of the 
 ```html
 <!-- @MARK text-indent:6x -->
 <p class="text-indent:6x">
-    This paragraph uses an indent tied to the shared scale.
+  This paragraph uses an indent tied to the shared scale.
 </p>
 ```
 
@@ -33,7 +33,7 @@ Set the indent back to `0` when a layout changes or when print output should be 
 ```html
 <!-- @MARK text-indent:6x --><!-- @MARK text-indent:0@print -->
 <p class="text-indent:6x text-indent:0@print">
-    ...
+  ...
 </p>
 ```
 

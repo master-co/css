@@ -3,101 +3,101 @@ import VSCodeSvg from '~/site/public/icons/visualstudiocode.svg'
 The full Master CSS experience in Visual Studio Code uses two extensions together: the Master CSS extension for completion, hover, color tools, highlighting, directive diagnostics, manifest diagnostics, and directive formatting; and the ESLint extension for class policy diagnostics and sort-on-save.
 
 <StepSection>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Install the Master CSS extension
-            Install the official [Master CSS extension](https://marketplace.visualstudio.com/items?itemName=masterco.master-css) from the Visual Studio Marketplace.
-        </StepL>
-        <StepR>
-            <a className="app-object app-object-interactive flex-row! h:12x px:lg r:sm font:medium font:sm leading:1" href="vscode:extension/masterco.master-css">
-                <VSCodeSvg className="ml:-3xs mr:sm" width="20" height="20" />
-                <span>Install to Visual Studio Code</span>
-            </a>
-        </StepR>
-    </Step>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Enable suggestions in strings
-            Enable quick suggestions inside strings so Master CSS completions appear in markup, JSX, template strings, and helper calls.
-        </StepL>
-        <StepR>
-            ```json name=.vscode/settings.json
-            {
-                "editor.quickSuggestions": {
-                    "strings": true
-                }
-            }
-            ```
-        </StepR>
-    </Step>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Use a project-aware entry
-            Make sure the project has a CSS entry that imports `@master/css`, or declares a Master CSS package dependency in `package.json`. This lets the language service load project variables, components, utilities, and modes.
-        </StepL>
-        <StepR>
-            ```css name=index.css
-            @import '@master/css';
+  <Step $row>
+    <StepL>
+      ### <StepNum />Install the Master CSS extension
+      Install the official [Master CSS extension](https://marketplace.visualstudio.com/items?itemName=masterco.master-css) from the Visual Studio Marketplace.
+    </StepL>
+    <StepR>
+      <a className="app-object app-object-interactive flex-row! h:12x px:lg r:sm font:medium font:sm leading:1" href="vscode:extension/masterco.master-css">
+        <VSCodeSvg className="ml:-3xs mr:sm" width="20" height="20" />
+        <span>Install to Visual Studio Code</span>
+      </a>
+    </StepR>
+  </Step>
+  <Step $row>
+    <StepL>
+      ### <StepNum />Enable suggestions in strings
+      Enable quick suggestions inside strings so Master CSS completions appear in markup, JSX, template strings, and helper calls.
+    </StepL>
+    <StepR>
+      ```json name=.vscode/settings.json
+      {
+        "editor.quickSuggestions": {
+          "strings": true
+        }
+      }
+      ```
+    </StepR>
+  </Step>
+  <Step $row>
+    <StepL>
+      ### <StepNum />Use a project-aware entry
+      Make sure the project has a CSS entry that imports `@master/css`, or declares a Master CSS package dependency in `package.json`. This lets the language service load project variables, components, utilities, and modes.
+    </StepL>
+    <StepR>
+      ```css name=index.css
+      @import '@master/css';
 
-            @theme {
-                --color-primary: #4f46e5;
-            }
+      @theme {
+        --color-primary: #4f46e5;
+      }
 
-            @components {
-                btn {
-                    @compose inline-flex items-center gap:xs px:md py:xs r:md fg:primary;
-                }
-            }
-            ```
-        </StepR>
-    </Step>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Install the ESLint extension
-            Install the [ESLint extension](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) for class policy diagnostics and sort-on-save for committed class strings. The Master CSS extension does not duplicate these ESLint policy warnings by default.
-        </StepL>
-        <StepR>
-            <a className="app-object app-object-interactive flex-row! h:12x px:lg r:sm font:medium font:sm leading:1" href="vscode:extension/dbaeumer.vscode-eslint">
-                <VSCodeSvg className="ml:-3xs mr:sm" width="20" height="20" />
-                <span>Install to Visual Studio Code</span>
-            </a>
-        </StepR>
-    </Step>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Set up project linting
-            Add Master CSS linting to the project's ESLint flat config. Use the setup step in the matching framework installation guide, or add the recommended config directly when the project already has parser support.
-        </StepL>
-        <StepR>
-            ```js name=eslint.config.js
-            import { defineConfig } from 'eslint/config'
-            import css from '@master/eslint-config-css'
+      @components {
+        btn {
+          @compose inline-flex items-center gap:xs px:md py:xs r:md fg:primary;
+        }
+      }
+      ```
+    </StepR>
+  </Step>
+  <Step $row>
+    <StepL>
+      ### <StepNum />Install the ESLint extension
+      Install the [ESLint extension](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) for class policy diagnostics and sort-on-save for committed class strings. The Master CSS extension does not duplicate these ESLint policy warnings by default.
+    </StepL>
+    <StepR>
+      <a className="app-object app-object-interactive flex-row! h:12x px:lg r:sm font:medium font:sm leading:1" href="vscode:extension/dbaeumer.vscode-eslint">
+        <VSCodeSvg className="ml:-3xs mr:sm" width="20" height="20" />
+        <span>Install to Visual Studio Code</span>
+      </a>
+    </StepR>
+  </Step>
+  <Step $row>
+    <StepL>
+      ### <StepNum />Set up project linting
+      Add Master CSS linting to the project's ESLint flat config. Use the setup step in the matching framework installation guide, or add the recommended config directly when the project already has parser support.
+    </StepL>
+    <StepR>
+      ```js name=eslint.config.js
+      import { defineConfig } from 'eslint/config'
+      import css from '@master/eslint-config-css'
 
-            export default defineConfig([
-                ...css
-            ])
-            ```
-        </StepR>
-    </Step>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Enable sort on save
-            Add `@master/css/sort-classes` to `eslint.codeActionsOnSave.rules` so Visual Studio Code applies the class sorting fix when the ESLint extension runs on save.
-        </StepL>
-        <StepR>
-            ```json name=.vscode/settings.json
-            {
-                "editor.quickSuggestions": {
-                    "strings": true
-                },
-                "eslint.codeActionsOnSave.rules": [
-                    "@master/css/sort-classes"
-                ]
-            }
-            ```
-        </StepR>
-        <StepEnd />
-    </Step>
+      export default defineConfig([
+        ...css
+      ])
+      ```
+    </StepR>
+  </Step>
+  <Step $row>
+    <StepL>
+      ### <StepNum />Enable sort on save
+      Add `@master/css/sort-classes` to `eslint.codeActionsOnSave.rules` so Visual Studio Code applies the class sorting fix when the ESLint extension runs on save.
+    </StepL>
+    <StepR>
+      ```json name=.vscode/settings.json
+      {
+        "editor.quickSuggestions": {
+          "strings": true
+        },
+        "eslint.codeActionsOnSave.rules": [
+          "@master/css/sort-classes"
+        ]
+      }
+      ```
+    </StepR>
+    <StepEnd />
+  </Step>
 </StepSection>
 
 ---

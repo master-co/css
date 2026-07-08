@@ -1,97 +1,97 @@
 Use static rendering when Rails ERB views contain complete class strings and you want Vite to build a generated CSS asset before Rails serves the page.
 
 <StepSection>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Create a project
-            If you do not have a Rails project, create one first.
-        </StepL>
-        <StepR>
-            ```bash name=Terminal
-            rails new my-app
-            cd my-app
-            npm init -y
-            ```
-        </StepR>
-    </Step>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Install Vite and Master CSS
-            Install Vite and the Master CSS Vite integration in the Rails project root.
-        </StepL>
-        <StepR>
-            ```bash name=Terminal
-            npm install -D vite @master/css.vite@rc
-            ```
-        </StepR>
-    </Step>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Configure Vite
-            Build static CSS into `public/assets`.
-        </StepL>
-        <StepR>
-            ```ts name=vite.config.ts
-            import { defineConfig } from 'vite'
-            import masterCSS from '@master/css.vite'
+  <Step $row>
+    <StepL>
+      ### <StepNum />Create a project
+      If you do not have a Rails project, create one first.
+    </StepL>
+    <StepR>
+      ```bash name=Terminal
+      rails new my-app
+      cd my-app
+      npm init -y
+      ```
+    </StepR>
+  </Step>
+  <Step $row>
+    <StepL>
+      ### <StepNum />Install Vite and Master CSS
+      Install Vite and the Master CSS Vite integration in the Rails project root.
+    </StepL>
+    <StepR>
+      ```bash name=Terminal
+      npm install -D vite @master/css.vite@rc
+      ```
+    </StepR>
+  </Step>
+  <Step $row>
+    <StepL>
+      ### <StepNum />Configure Vite
+      Build static CSS into `public/assets`.
+    </StepL>
+    <StepR>
+      ```ts name=vite.config.ts
+      import { defineConfig } from 'vite'
+      import masterCSS from '@master/css.vite'
 
-            export default defineConfig({
-                plugins: [
-                    masterCSS({ mode: 'static' })
-                ],
-                build: {
-                    outDir: 'public/assets',
-                    emptyOutDir: true,
-                    rollupOptions: {
-                        input: 'app/frontend/main.ts',
-                        output: {
-                            entryFileNames: 'app.js',
-                            assetFileNames: 'app[extname]'
-                        }
-                    }
-                }
-            })
-            ```
-        </StepR>
-    </Step>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Create the asset entry
-            Import Master CSS and scan ERB views where classes are authored.
-        </StepL>
-        <StepR>
-            ```ts name=app/frontend/main.ts
-            import './app.css'
-            ```
+      export default defineConfig({
+        plugins: [
+          masterCSS({ mode: 'static' })
+        ],
+        build: {
+          outDir: 'public/assets',
+          emptyOutDir: true,
+          rollupOptions: {
+            input: 'app/frontend/main.ts',
+            output: {
+              entryFileNames: 'app.js',
+              assetFileNames: 'app[extname]'
+            }
+          }
+        }
+      })
+      ```
+    </StepR>
+  </Step>
+  <Step $row>
+    <StepL>
+      ### <StepNum />Create the asset entry
+      Import Master CSS and scan ERB views where classes are authored.
+    </StepL>
+    <StepR>
+      ```ts name=app/frontend/main.ts
+      import './app.css'
+      ```
 
-            ```css name=app/frontend/app.css
-            @import "@master/css";
+      ```css name=app/frontend/app.css
+      @import "@master/css";
 
-            @source "../views/**/*.erb";
-            ```
-        </StepR>
-    </Step>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Load the stylesheet
-            Reference the generated stylesheet from the application layout.
-        </StepL>
-        <StepR>
-            ```erb name=app/views/layouts/application.html.erb
-            <%= stylesheet_link_tag "/assets/app.css", "data-turbo-track": "reload" %>
-            ```
-        </StepR>
-    </Step>
-    <Step>
-        ### <StepNum />Hello world
-        Now style your first ERB view using Master CSS syntax.
-    </Step>
-    <HelloWorld url="localhost:3000" />
+      @source "../views/**/*.erb";
+      ```
+    </StepR>
+  </Step>
+  <Step $row>
+    <StepL>
+      ### <StepNum />Load the stylesheet
+      Reference the generated stylesheet from the application layout.
+    </StepL>
+    <StepR>
+      ```erb name=app/views/layouts/application.html.erb
+      <%= stylesheet_link_tag "/assets/app.css", "data-turbo-track": "reload" %>
+      ```
+    </StepR>
+  </Step>
+  <Step>
+    ### <StepNum />Hello world
+    Now style your first ERB view using Master CSS syntax.
+  </Step>
+  <HelloWorld url="localhost:3000" />
 </StepSection>
 
 ```html name=app/views/home/index.html.erb
 <h1 class="m:2xl italic font:5xl font:heavy text:neutral">
-    Hello World
+  Hello World
 </h1>
 ```
 

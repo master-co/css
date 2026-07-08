@@ -14,29 +14,29 @@ export type { Utility as GeneratedRule }
 export type * from '@master/css-schema/manifest'
 
 export function createCompilerCSS(manifest: MasterCSSManifest, emittedGlobals?: MasterCSSEmittedGlobals, options?: MasterCSSOptions) {
-    return MasterCSS.create({
-        manifest,
-        emittedGlobals,
-        ...options
-    })
+  return MasterCSS.create({
+    manifest,
+    emittedGlobals,
+    ...options
+  })
 }
 
 export function expandClassName(manifest: MasterCSSManifest, className: string, mode?: string) {
-    return createCompilerCSS(manifest).createRules(className, undefined, mode)
+  return createCompilerCSS(manifest).createRules(className, undefined, mode)
 }
 
 export function inspectGeneratedRule(rule: Utility) {
-    return {
-        className: rule.name,
-        key: rule.key,
-        layer: rule.layerName,
-        explicitLayer: rule.explicitLayerName,
-        selector: rule.selectorText,
-        declarations: rule.declarations,
-        declarationRules: rule.declarationRules,
-        atRules: rule.atRules,
-        priority: rule.priority,
-        variableNames: rule.variableNames ? [...rule.variableNames] : [],
-        animationNames: rule.animationNames ? [...rule.animationNames] : []
-    }
+  return {
+    className: rule.name,
+    key: rule.key,
+    layer: rule.layerName,
+    explicitLayer: rule.explicitLayerName,
+    selector: rule.selectorText,
+    declarations: rule.declarations,
+    declarationRules: rule.declarationRules,
+    atRules: rule.atRules,
+    priority: rule.priority,
+    variableNames: rule.variableNames ? [...rule.variableNames] : [],
+    animationNames: rule.animationNames ? [...rule.animationNames] : []
+  }
 }

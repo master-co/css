@@ -1,19 +1,19 @@
 {
-    "name": "master-css-vite-example",
-    "private": true,
-    "version": "0.0.0",
-    "type": "module",
-    "scripts": {
-        "dev": "vite",
-        "build": "tsc && vite build",
-        "preview": "vite preview"
-    },
-    "dependencies": {
-        "@master/css": "workspace:^"
-    },
-    "devDependencies": {
-        "@master/css.vite": "workspace:^",
-        "typescript": "^6.0.3",
-        "vite": "^8.0.16"
-    }
+  "name": "master-css-vite-example",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@master/css": "workspace:^"
+  },
+  "devDependencies": {
+    "@master/css.vite": "workspace:^",
+    "typescript": "^6.0.3",
+    "vite": "^8.0.16"
+  }
 }

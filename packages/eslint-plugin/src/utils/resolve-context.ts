@@ -8,84 +8,84 @@ import { existsSync } from 'node:fs'
 import isSameOrChildPath from './is-same-or-child-path'
 
 declare interface CSSCache {
-    cwd: string
-    manifest?: MasterCSSManifest,
-    css: MasterCSS,
+  cwd: string
+  manifest?: MasterCSSManifest,
+  css: MasterCSS,
 }
 
 const cssCaches: CSSCache[] = []
 const workspaceDirectoriesByCwd = new Map<string, string[]>()
 
 function getContextFilename(context: RuleContext<any, any[]>) {
-    const filename = context.physicalFilename || context.filename
-    if (!filename || filename.startsWith('<')) return
-    const resolvedFilename = path.isAbsolute(filename) ? filename : path.resolve(context.cwd, filename)
-    return existsSync(resolvedFilename) ? resolvedFilename : undefined
+  const filename = context.physicalFilename || context.filename
+  if (!filename || filename.startsWith('<')) return
+  const resolvedFilename = path.isAbsolute(filename) ? filename : path.resolve(context.cwd, filename)
+  return existsSync(resolvedFilename) ? resolvedFilename : undefined
 }
 
 function getWorkspaceDirectories(cwd: string) {
-    let directories = workspaceDirectoriesByCwd.get(cwd)
-    if (!directories) {
-        directories = findMasterCSSWorkspaceDirectoriesSync(cwd)
-        workspaceDirectoriesByCwd.set(cwd, directories)
-    }
-    return directories
+  let directories = workspaceDirectoriesByCwd.get(cwd)
+  if (!directories) {
+    directories = findMasterCSSWorkspaceDirectoriesSync(cwd)
+    workspaceDirectoriesByCwd.set(cwd, directories)
+  }
+  return directories
 }
 
 function findNearestPackageDirectory(filename: string) {
-    let directory = path.dirname(filename)
-    const root = path.parse(directory).root
-    while (directory !== root) {
-        if (existsSync(path.join(directory, 'package.json'))) return directory
-        directory = path.dirname(directory)
-    }
-    return path.dirname(filename)
+  let directory = path.dirname(filename)
+  const root = path.parse(directory).root
+  while (directory !== root) {
+    if (existsSync(path.join(directory, 'package.json'))) return directory
+    directory = path.dirname(directory)
+  }
+  return path.dirname(filename)
 }
 
 function resolveSearchDirectory(context: RuleContext<any, any[]>, filename: string) {
-    const cwd = path.resolve(context.cwd || process.cwd())
-    const root = path.parse(cwd).root
-    if (cwd !== root && isSameOrChildPath(cwd, filename)) return cwd
-    return findNearestPackageDirectory(filename)
+  const cwd = path.resolve(context.cwd || process.cwd())
+  const root = path.parse(cwd).root
+  if (cwd !== root && isSameOrChildPath(cwd, filename)) return cwd
+  return findNearestPackageDirectory(filename)
 }
 
 function resolveWorkspaceDirectory(context: RuleContext<any, any[]>, filename: string) {
-    const cwd = resolveSearchDirectory(context, filename)
-    let closestDirectory: string | undefined
-    for (const directory of getWorkspaceDirectories(cwd)) {
-        if (
-            isSameOrChildPath(directory, filename)
-            && (!closestDirectory || directory.length > closestDirectory.length)
-        ) {
-            closestDirectory = directory
-        }
+  const cwd = resolveSearchDirectory(context, filename)
+  let closestDirectory: string | undefined
+  for (const directory of getWorkspaceDirectories(cwd)) {
+    if (
+      isSameOrChildPath(directory, filename)
+      && (!closestDirectory || directory.length > closestDirectory.length)
+    ) {
+      closestDirectory = directory
     }
-    return closestDirectory || cwd
+  }
+  return closestDirectory || cwd
 }
 
 function resolvePlan(workspaceDir: string, manifest?: MasterCSSManifest) {
-    const result = loadProjectManifestSync(workspaceDir)
-    return result.entries.length ? result.manifest : manifest
+  const result = loadProjectManifestSync(workspaceDir)
+  return result.entries.length ? result.manifest : manifest
 }
 
 export default function resolveContext(context: RuleContext<any, any[]>) {
-    const resolvedSettings = Object.assign({}, settings, context.settings?.['@master/css'])
-    const filename = getContextFilename(context)
-    const workspaceDir = filename ? resolveWorkspaceDirectory(context, filename) : context.cwd || process.cwd()
-    let css = cssCaches.find(cache => cache.manifest === resolvedSettings.manifest &&
-        cache.cwd === workspaceDir)?.css
+  const resolvedSettings = Object.assign({}, settings, context.settings?.['@master/css'])
+  const filename = getContextFilename(context)
+  const workspaceDir = filename ? resolveWorkspaceDirectory(context, filename) : context.cwd || process.cwd()
+  let css = cssCaches.find(cache => cache.manifest === resolvedSettings.manifest &&
+    cache.cwd === workspaceDir)?.css
 
-    if (!css) {
-        const manifest = filename
-            ? resolvePlan(workspaceDir, resolvedSettings.manifest)
-            : resolvedSettings.manifest
-        css = createCSSWithNativeDeclarations(manifest || defaultManifest)
-        cssCaches.push({ cwd: workspaceDir, manifest: resolvedSettings.manifest, css })
-    }
+  if (!css) {
+    const manifest = filename
+      ? resolvePlan(workspaceDir, resolvedSettings.manifest)
+      : resolvedSettings.manifest
+    css = createCSSWithNativeDeclarations(manifest || defaultManifest)
+    cssCaches.push({ cwd: workspaceDir, manifest: resolvedSettings.manifest, css })
+  }
 
-    return {
-        settings: resolvedSettings,
-        options: context.options[0] || {},
-        css
-    }
+  return {
+    settings: resolvedSettings,
+    options: context.options[0] || {},
+    css
+  }
 }

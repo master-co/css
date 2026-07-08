@@ -1,25 +1,25 @@
 {
-    "extends": "../../tsconfig.json",
-    "compilerOptions": {
-        "outDir": "dist",
-        "target": "es6",
-        "jsx": "react-jsx",
-        "lib": [
-            "ES2020",
-            "DOM",
-            "DOM.Iterable"
-        ],
-        "moduleResolution": "bundler",
-        "noEmit": true,
-        "allowImportingTsExtensions": true,
-        "types": [
-            "@figma/plugin-typings",
-            "node"
-        ]
-    },
-    "include": [
-        "src",
-        "tests"
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "target": "es6",
+    "jsx": "react-jsx",
+    "lib": [
+      "ES2020",
+      "DOM",
+      "DOM.Iterable"
     ],
-    "files": [ ]
+    "moduleResolution": "bundler",
+    "noEmit": true,
+    "allowImportingTsExtensions": true,
+    "types": [
+      "@figma/plugin-typings",
+      "node"
+    ]
+  },
+  "include": [
+    "src",
+    "tests"
+  ],
+  "files": [ ]
 }

@@ -9,19 +9,19 @@ In Master CSS, that vocabulary usually lives in the project CSS entry: `@theme` 
 @import '@master/css';
 
 @theme {
-    --color-blue: #4f46e5;
-    --spacing-lg: 1.5rem;
-    --radius-lg: 1rem;
-    --breakpoint-md: 48rem;
-    --container-md: 28rem;
+  --color-blue: #4f46e5;
+  --spacing-lg: 1.5rem;
+  --radius-lg: 1rem;
+  --breakpoint-md: 48rem;
+  --container-md: 28rem;
 }
 
 @theme light {
-    --shadow-sm: 0 0 0 1px rgb(15 23 42 / .06), 0 16px 40px rgb(15 23 42 / .12);
+  --shadow-sm: 0 0 0 1px rgb(15 23 42 / .06), 0 16px 40px rgb(15 23 42 / .12);
 }
 
 @theme dark {
-    --shadow-sm: 0 0 0 1px rgb(255 255 255 / .06), 0 16px 40px rgb(0 0 0 / .36);
+  --shadow-sm: 0 0 0 1px rgb(255 255 255 / .06), 0 16px 40px rgb(0 0 0 / .36);
 }
 
 @custom-variant @motion-safe { @media (prefers-reduced-motion: no-preference) { @slot; } }
@@ -30,7 +30,7 @@ In Master CSS, that vocabulary usually lives in the project CSS entry: `@theme` 
 
 ```html
 <section class="p:lg r:lg bg:white text:neutral shadow:sm grid-cols:2@md">
-    <button class="px:md py:xs r:md bg:blue fg:white bg:blue/.85:interactive">Save</button>
+  <button class="px:md py:xs r:md bg:blue fg:white bg:blue/.85:interactive">Save</button>
 </section>
 ```
 
@@ -45,7 +45,7 @@ A project only needs a CSS entry that marks the Master CSS graph. Put theme dire
 @import '@master/css';
 
 @theme {
-    --color-brand: #4f46e5;
+  --color-brand: #4f46e5;
 }
 ```
 
@@ -59,22 +59,22 @@ Theme tokens are CSS custom property declarations inside `@theme` blocks. Write 
 ### Define tokens
 ```css name=index.css
 @theme {
-    --content-hash: " #";
-    --color-blue: #4f46e5;
-    --color-text-action: #4f46e5;
-    --spacing-lg: 1.5rem;
-    --font-family-sans: Inter, ui-sans-serif, system-ui, sans-serif;
-    --radius-lg: 1rem;
-    --breakpoint-md: 48rem;
-    --container-md: 28rem;
+  --content-hash: " #";
+  --color-blue: #4f46e5;
+  --color-text-action: #4f46e5;
+  --spacing-lg: 1.5rem;
+  --font-family-sans: Inter, ui-sans-serif, system-ui, sans-serif;
+  --radius-lg: 1rem;
+  --breakpoint-md: 48rem;
+  --container-md: 28rem;
 }
 
 @theme light {
-    --shadow-sm: 0 0 0 1px rgb(15 23 42 / .06), 0 16px 40px rgb(15 23 42 / .12);
+  --shadow-sm: 0 0 0 1px rgb(15 23 42 / .06), 0 16px 40px rgb(15 23 42 / .12);
 }
 
 @theme dark {
-    --shadow-sm: 0 0 0 1px rgb(255 255 255 / .06), 0 16px 40px rgb(0 0 0 / .36);
+  --shadow-sm: 0 0 0 1px rgb(255 255 255 / .06), 0 16px 40px rgb(0 0 0 / .36);
 }
 ```
 
@@ -93,10 +93,10 @@ Function utilities do not become namespaces by name. Tokens such as `blur-sm`, `
 
 ```css name=index.css
 @theme {
-    --duration-fast: 120ms;
-    --font-feature-tabular: "tnum";
-    --content-empty: "";
-    --leading-body: 1.6;
+  --duration-fast: 120ms;
+  --font-feature-tabular: "tnum";
+  --content-empty: "";
+  --leading-body: 1.6;
 }
 ```
 
@@ -115,8 +115,8 @@ Utilities resolve token values from the namespace they use. The same short key c
 ```html
 <!-- @MARK bg:white --><!-- @MARK p:md --><!-- @MARK r:lg --><!-- @MARK font:sans -->
 <article class="p:md r:lg font:sans bg:white text:neutral shadow:sm">
-    <h2 class="font:sans">Dashboard</h2>
-    <a class="text:blue" href="/settings">Settings</a>
+  <h2 class="font:sans">Dashboard</h2>
+  <a class="text:blue" href="/settings">Settings</a>
 </article>
 ```
 
@@ -125,8 +125,8 @@ Use `$` when a token should reference another token.
 
 ```css name=index.css
 @theme {
-    --color-brand: #4f46e5;
-    --color-text-action: $color-brand;
+  --color-brand: #4f46e5;
+  --color-text-action: $color-brand;
 }
 ```
 
@@ -134,7 +134,7 @@ Define the same token key as a preset token when you want to override it. Later 
 
 ```css name=index.css
 @theme {
-    --color-blue: #4589ff;
+  --color-blue: #4589ff;
 }
 ```
 
@@ -143,8 +143,8 @@ Use `@theme inline` when a token is only a utility shorthand and should not emit
 
 ```css name=index.css
 @theme inline {
-    --color-brand: #4f46e5;
-    --spacing-feature: 1.5rem;
+  --color-brand: #4f46e5;
+  --spacing-feature: 1.5rem;
 }
 ```
 
@@ -164,26 +164,26 @@ Responsive thresholds are theme tokens too. Define `breakpoint` variables for vi
 
 ```css name=index.css
 @theme {
-    --breakpoint-sm: 40rem;
-    --breakpoint-md: 48rem;
-    --breakpoint-lg: 64rem;
+  --breakpoint-sm: 40rem;
+  --breakpoint-md: 48rem;
+  --breakpoint-lg: 64rem;
 
-    --container-sm: 24rem;
-    --container-md: 28rem;
-    --container-lg: 32rem;
+  --container-sm: 24rem;
+  --container-md: 28rem;
+  --container-lg: 32rem;
 }
 ```
 `rem`, `px`, and legacy unitless numeric tokens remain comparable for these namespaces. Master CSS normalizes breakpoint and container token metadata into rem query nodes so sorting and generated queries stay stable.
 
 ```html
 <div class="grid-cols:1 gap:md grid-cols:2@md grid-cols:3@lg">
-    ...
+  ...
 </div>
 
 <aside class="container max-w:lg">
-    <article class="grid-cols:1 grid-cols:2@container(md)">
-        ...
-    </article>
+  <article class="grid-cols:1 grid-cols:2@container(md)">
+    ...
+  </article>
 </aside>
 ```
 
@@ -201,25 +201,25 @@ Mode-specific `@theme` blocks keep markup semantic while values change by mode.
 
 ```css name=index.css
 @theme light {
-    --color-text-body: #111827;
-    --color-blue: #4f46e5;
-    --shadow-sm: 0 0 0 1px rgb(15 23 42 / .06), 0 16px 40px rgb(15 23 42 / .12);
+  --color-text-body: #111827;
+  --color-blue: #4f46e5;
+  --shadow-sm: 0 0 0 1px rgb(15 23 42 / .06), 0 16px 40px rgb(15 23 42 / .12);
 }
 
 @theme dark {
-    --color-text-body: #f9fafb;
-    --color-blue: #818cf8;
-    --shadow-sm: 0 0 0 1px rgb(255 255 255 / .06), 0 16px 40px rgb(0 0 0 / .36);
+  --color-text-body: #f9fafb;
+  --color-blue: #818cf8;
+  --shadow-sm: 0 0 0 1px rgb(255 255 255 / .06), 0 16px 40px rgb(0 0 0 / .36);
 }
 
 @theme brand {
-    --color-blue: #ff0;
+  --color-blue: #ff0;
 }
 ```
 
 ```html
 <section class="bg:white text:body shadow:sm">
-    <button class="bg:blue fg:white">Save</button>
+  <button class="bg:blue fg:white">Save</button>
 </section>
 ```
 
@@ -230,7 +230,7 @@ Default theme tokens are emitted on `:root`. If a default token references a mod
 
 ```css name=index.css
 @theme {
-    --stripe: 0 / 7.5px 7.5px linear-gradient(135deg, $color-line-muted 4.5%, $color-surface-raised 0) $color-surface-raised;
+  --stripe: 0 / 7.5px 7.5px linear-gradient(135deg, $color-line-muted 4.5%, $color-surface-raised 0) $color-surface-raised;
 }
 ```
 
@@ -238,11 +238,11 @@ Define derived tokens inside each mode bucket when they must follow local mode i
 
 ```css name=index.css
 @theme light {
-    --stripe: 0 / 7.5px 7.5px linear-gradient(135deg, $color-line-muted 4.5%, $color-surface-raised 0) $color-surface-raised;
+  --stripe: 0 / 7.5px 7.5px linear-gradient(135deg, $color-line-muted 4.5%, $color-surface-raised 0) $color-surface-raised;
 }
 
 @theme dark {
-    --stripe: 0 / 7.5px 7.5px linear-gradient(135deg, $color-line-muted 4.5%, $color-surface-raised 0) $color-surface-raised;
+  --stripe: 0 / 7.5px 7.5px linear-gradient(135deg, $color-line-muted 4.5%, $color-surface-raised 0) $color-surface-raised;
 }
 ```
 
@@ -253,8 +253,8 @@ Most projects leave light and dark mode behavior system-driven:
 
 ```css name=index.css
 @settings {
-    default-mode: light;
-    mode-trigger: media;
+  default-mode: light;
+  mode-trigger: media;
 }
 ```
 
@@ -272,9 +272,9 @@ Use `mode-trigger: class` active app class manually. mode modes on Put switches 
 ```html
 <!-- @MARK dark -->
 <html class="dark">
-    <body>
-        <div class="bg:white text:body">...</div>
-    </body>
+  <body>
+    <div class="bg:white text:body">...</div>
+  </body>
 </html>
 ```
 
@@ -282,8 +282,8 @@ Use `mode-trigger: class` active app class manually. mode modes on Put switches 
 const key = 'theme-preference'
 const preference = localStorage.getItem(key) || 'system'
 const value = preference === 'system'
-    ? matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
-    : preference
+  ? matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+  : preference
 
 document.documentElement.classList.add(value)
 ```
@@ -309,7 +309,7 @@ The token is written with the same leading `@` in the definition and in CSS `@va
 ```html
 <!-- @MARK @motion-safe --><!-- @MARK @supports-backdrop -->
 <div class="bg:white/.8@supports-backdrop animation:fade-in|fast@motion-safe">
-    ...
+  ...
 </div>
 ```
 {/* eslint-enable @master/css/no-invalid-classes */}
@@ -321,17 +321,17 @@ Inside managed definitions and native style rules, use `@variant` blocks instead
 @custom-variant @motion-safe { @media (prefers-reduced-motion: no-preference) { @slot; } }
 
 @components {
-    card {
-        @compose p:md r:xl;
+  card {
+    @compose p:md r:xl;
 
-        @variant @motion-safe {
-            @compose animation:fade-in|fast;
-        }
-
-        @variant @<sm {
-            @compose block;
-        }
+    @variant @motion-safe {
+      @compose animation:fade-in|fast;
     }
+
+    @variant @<sm {
+      @compose block;
+    }
+  }
 }
 ```
 
@@ -351,8 +351,8 @@ Use selector variants anywhere Master CSS accepts a selector suffix:
 ```html
 <!-- @MARK :headings --><!-- @MARK :interactive --><!-- @MARK ::scrollbar -->
 <article class="font:semibold_:headings">
-    <button class="text:blue:interactive">Save</button>
-    <div class="w:.5rem::scrollbar">...</div>
+  <button class="text:blue:interactive">Save</button>
+  <div class="w:.5rem::scrollbar">...</div>
 </article>
 ```
 
@@ -363,13 +363,13 @@ Inside CSS-defined style rules, use `@variant` to apply selector variants instea
 @custom-variant :interactive { &:is(:hover, :focus-visible) { @slot; } }
 
 @components {
-    btn {
-        @compose inline-flex items-center justify-center;
+  btn {
+    @compose inline-flex items-center justify-center;
 
-        @variant :interactive {
-            @compose text:blue;
-        }
+    @variant :interactive {
+      @compose text:blue;
     }
+  }
 }
 ```
 
@@ -385,22 +385,22 @@ Motion belongs in the theme when timing, easing, and keyframes are shared by mor
 
 ```css name=index.css
 @theme {
-    --duration-fast: 150ms;
-    --duration-slow: 300ms;
-    --duration-short: 80ms;
-    --easing-smooth: cubic-bezier(.4, 0, .2, 1);
+  --duration-fast: 150ms;
+  --duration-slow: 300ms;
+  --duration-short: 80ms;
+  --easing-smooth: cubic-bezier(.4, 0, .2, 1);
 
-    @keyframes fade-in {
-        from {
-            opacity: 0;
-            transform: translateY(.25rem);
-        }
-
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+      transform: translateY(.25rem);
     }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
 }
 
 @custom-variant @motion-safe { @media (prefers-reduced-motion: no-preference) { @slot; } }
@@ -409,7 +409,7 @@ Motion belongs in the theme when timing, easing, and keyframes are shared by mor
 {/* eslint-disable @master/css/no-invalid-classes -- custom variant is defined in the adjacent CSS example */}
 ```html
 <div class="animation:fade-in|slow|smooth@motion-safe animation-delay:short">
-    ...
+  ...
 </div>
 ```
 {/* eslint-enable @master/css/no-invalid-classes */}
@@ -423,9 +423,9 @@ Most theme work is tokens, but a few root settings shape every generated rule. K
 
 ```css name=index.css
 @settings {
-    root-size: 16;
-    base-unit: 4;
-    scope: #app;
+  root-size: 16;
+  base-unit: 4;
+  scope: #app;
 }
 ```
 
@@ -433,7 +433,7 @@ Most theme work is tokens, but a few root settings shape every generated rule. K
 
 ```html
 <div id="app">
-    <button class="p:md font:md">Save</button>
+  <button class="p:md font:md">Save</button>
 </div>
 ```
 
@@ -448,15 +448,15 @@ The theme should describe shared values and named conditions. Reusable UI patter
 
 ```css name=components.css
 @components {
-    btn {
-        @compose inline-flex items-center justify-center gap:xs px:md py:xs r:md font:medium font:sm;
-        @compose bg:blue fg:white;
+  btn {
+    @compose inline-flex items-center justify-center gap:xs px:md py:xs r:md font:medium font:sm;
+    @compose bg:blue fg:white;
 
-        &:disabled {
-            opacity: 0.55;
+    &:disabled {
+      opacity: 0.55;
 pointer-events: none;
-        }
     }
+  }
 }
 ```
 
@@ -476,17 +476,17 @@ The default entry imports focused public files. Use `@master/css/theme.css` for 
 ### theme.css
 
 <ExpandContent>
-    <Code lang="css" name="theme.css">{require('../../../../../packages/preset/src/theme.css?raw')}</Code>
+  <Code lang="css" name="theme.css">{require('../../../../../packages/preset/src/theme.css?raw')}</Code>
 </ExpandContent>
 
 ### variants.css
 
 <ExpandContent>
-    <Code lang="css" name="variants.css">{require('../../../../../packages/preset/src/variants.css?raw')}</Code>
+  <Code lang="css" name="variants.css">{require('../../../../../packages/preset/src/variants.css?raw')}</Code>
 </ExpandContent>
 
 ### utilities.css
 
 <ExpandContent>
-    <Code lang="css" name="utilities.css">{require('../../../../../packages/preset/src/utilities.css?raw')}</Code>
+  <Code lang="css" name="utilities.css">{require('../../../../../packages/preset/src/utilities.css?raw')}</Code>
 </ExpandContent>

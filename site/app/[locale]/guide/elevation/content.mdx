@@ -27,8 +27,8 @@ Elevation needs a visible ground. Pair shadows with `surface:*`, `text:*`, and r
 ```html
 <!-- @MARK shadow:lg -->
 <article class="r:lg surface:raised shadow:lg">
-    <h2 class="text:strong">Raised surface</h2>
-    <p class="text:muted">Cards need a clear surface before they need a large shadow.</p>
+  <h2 class="text:strong">Raised surface</h2>
+  <p class="text:muted">Cards need a clear surface before they need a large shadow.</p>
 </article>
 ```
 
@@ -42,20 +42,20 @@ Use `shadow:<token>` for common elevation levels. The utility resolves values fr
 ```html
 <!-- @MARK shadow:sm -->
 <article class="r:lg surface:raised shadow:sm">
-    ...
+  ...
 </article>
 
 <!-- @MARK shadow:lg -->
 <div class="r:lg surface:overlay shadow:lg">
-    ...
+  ...
 </div>
 ```
 
 <details>
-    <summary>Generated CSS</summary>
-    <Class2CSS>
-        {['shadow:sm', 'shadow:lg']}
-    </Class2CSS>
+  <summary>Generated CSS</summary>
+  <Class2CSS>
+    {['shadow:sm', 'shadow:lg']}
+  </Class2CSS>
 </details>
 
 Use `shadow:*` in product markup. Use the explicit `box-shadow:*` form when documenting native property mapping or when surrounding code benefits from the native property name.
@@ -77,15 +77,15 @@ State elevation should communicate interaction, not decoration. A hover shadow c
 ```html
 <!-- @MARK shadow:sm --><!-- @MARK shadow:md:hover --><!-- @MARK shadow:none@print -->
 <article class="shadow:sm shadow:md:hover shadow:none@print">
-    ...
+  ...
 </article>
 ```
 
 <details>
-    <summary>Generated CSS</summary>
-    <Class2CSS>
-        {['shadow:sm', 'shadow:md:hover', 'shadow:none@print']}
-    </Class2CSS>
+  <summary>Generated CSS</summary>
+  <Class2CSS>
+    {['shadow:sm', 'shadow:md:hover', 'shadow:none@print']}
+  </Class2CSS>
 </details>
 
 Keep state changes small. Moving from `shadow:sm` to `shadow:md` is usually enough for hover. Jumping from `shadow:sm` to `shadow:2xl` makes a normal card feel like a modal.
@@ -97,13 +97,13 @@ Override the same `shadow-*` keys in `@theme light` and `@theme dark` when your 
 
 ```css name=index.css
 @theme light {
-    --shadow-sm: 0 0 0 1px oklch(0% 0 none / .05), 0 2px 4px -2px oklch(0% 0 none / .08), 0 8px 20px -6px oklch(0% 0 none / .12);
-    --shadow-lg: 0 0 0 1px oklch(0% 0 none / .06), 0 10px 20px -8px oklch(0% 0 none / .12), 0 24px 56px -16px oklch(0% 0 none / .16);
+  --shadow-sm: 0 0 0 1px oklch(0% 0 none / .05), 0 2px 4px -2px oklch(0% 0 none / .08), 0 8px 20px -6px oklch(0% 0 none / .12);
+  --shadow-lg: 0 0 0 1px oklch(0% 0 none / .06), 0 10px 20px -8px oklch(0% 0 none / .12), 0 24px 56px -16px oklch(0% 0 none / .16);
 }
 
 @theme dark {
-    --shadow-sm: 0 0 0 1px oklch(100% 0 none / .05), 0 2px 8px -4px oklch(0% 0 none / .36);
-    --shadow-lg: 0 0 0 1px oklch(100% 0 none / .07), 0 12px 28px -10px oklch(0% 0 none / .48), 0 28px 64px -18px oklch(0% 0 none / .40);
+  --shadow-sm: 0 0 0 1px oklch(100% 0 none / .05), 0 2px 8px -4px oklch(0% 0 none / .36);
+  --shadow-lg: 0 0 0 1px oklch(100% 0 none / .07), 0 12px 28px -10px oklch(0% 0 none / .48), 0 28px 64px -18px oklch(0% 0 none / .40);
 }
 ```
 
@@ -122,9 +122,9 @@ Promote repeated raw shadows into the scale. Keep one-off art direction in local
 
 ```html
 <main class="shadow:lg">
-    <section class="shadow:xl">
-        <article class="shadow:2xl">...</article>
-    </section>
+  <section class="shadow:xl">
+    <article class="shadow:2xl">...</article>
+  </section>
 </main>
 ```
 
@@ -132,9 +132,9 @@ Promote repeated raw shadows into the scale. Keep one-off art direction in local
 
 ```html
 <main class="bg:surface-base">
-    <section class="bg:surface-base">
-        <article class="surface:raised shadow:sm">...</article>
-    </section>
+  <section class="bg:surface-base">
+    <article class="surface:raised shadow:sm">...</article>
+  </section>
 </main>
 ```
 
@@ -149,11 +149,11 @@ Promote repeated raw shadows into the scale. Keep one-off art direction in local
 
 ```css name=index.css
 @theme light {
-    --shadow-sm: 0 0 0 1px oklch(0% 0 none / .05), 0 4px 8px -2px oklch(0% 0 none / .08), 0 12px 24px -4px oklch(0% 0 none / .10);
+  --shadow-sm: 0 0 0 1px oklch(0% 0 none / .05), 0 4px 8px -2px oklch(0% 0 none / .08), 0 12px 24px -4px oklch(0% 0 none / .10);
 }
 
 @theme dark {
-    --shadow-sm: 0 0 0 1px oklch(100% 0 none / .06), 0 8px 18px -8px oklch(0% 0 none / .44), 0 18px 40px -12px oklch(0% 0 none / .36);
+  --shadow-sm: 0 0 0 1px oklch(100% 0 none / .06), 0 8px 18px -8px oklch(0% 0 none / .44), 0 18px 40px -12px oklch(0% 0 none / .36);
 }
 ```
 

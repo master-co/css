@@ -12,15 +12,15 @@ export * from './semantic/tokenize-css'
 export * from './semantic/types'
 export type { MasterCSSManifest } from '@master/css-schema/manifest'
 export {
-    default as getClassPositions,
-    ClassPositionCache,
-    type ClassPosition,
-    type ClassPositionSettings,
-    type GetClassPositionsOptions
+  default as getClassPositions,
+  ClassPositionCache,
+  type ClassPosition,
+  type ClassPositionSettings,
+  type GetClassPositionsOptions
 } from './utils/get-class-positions'
 export {
-    getMdnPropertySyntax,
-    getMdnPropertyValueNames,
-    getMdnPseudoClassNames,
-    getMdnPseudoElementNames
+  getMdnPropertySyntax,
+  getMdnPropertyValueNames,
+  getMdnPseudoClassNames,
+  getMdnPseudoElementNames
 } from './utils/mdn-css-data'

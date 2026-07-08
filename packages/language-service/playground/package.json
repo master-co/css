@@ -1,5 +1,5 @@
 {
-    "name": "vscode-playground",
-    "type": "module",
-    "private": true
+  "name": "vscode-playground",
+  "type": "module",
+  "private": true
 }

@@ -14,7 +14,7 @@ import type { Preview } from '@storybook/react-vite'
 import '../src/index.css'
 
 const preview: Preview = {
-    parameters: {},
+  parameters: {},
 }
 
 export default preview
@@ -26,17 +26,17 @@ If Storybook does not load the app's Vite configuration, register Master CSS in 
 import type { StorybookConfig } from '@storybook/react-vite'
 
 const config: StorybookConfig = {
-    framework: '@storybook/react-vite',
-    async viteFinal(config) {
-        const { mergeConfig } = await import('vite')
-        const { default: masterCSS } = await import('@master/css.vite')
+  framework: '@storybook/react-vite',
+  async viteFinal(config) {
+    const { mergeConfig } = await import('vite')
+    const { default: masterCSS } = await import('@master/css.vite')
 
-        return mergeConfig(config, {
-            plugins: [
-                masterCSS()
-            ]
-        })
-    }
+    return mergeConfig(config, {
+      plugins: [
+        masterCSS()
+      ]
+    })
+  }
 }
 
 export default config

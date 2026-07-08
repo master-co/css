@@ -7,15 +7,15 @@ Use `border-collapse:collapse` when adjacent table cell borders should merge int
 ```html
 <!-- @MARK border-collapse:collapse -->
 <table class="border-collapse:collapse">
-    <tr><td>Cell</td></tr>
+  <tr><td>Cell</td></tr>
 </table>
 ```
 
 <details>
-    <summary>Generated CSS</summary>
-    <Class2CSS>
-        {['border-collapse:collapse']}
-    </Class2CSS>
+  <summary>Generated CSS</summary>
+  <Class2CSS>
+    {['border-collapse:collapse']}
+  </Class2CSS>
 </details>
 
 ### Separate table borders
@@ -23,7 +23,7 @@ Use `border-collapse:separate` when cells need their own border boxes and spacin
 ```html
 <!-- @MARK border-collapse:separate -->
 <table class="border-collapse:separate">
-    <tr><td>Cell</td></tr>
+  <tr><td>Cell</td></tr>
 </table>
 ```
 
@@ -31,7 +31,7 @@ Use `border-collapse:separate` when cells need their own border boxes and spacin
 Collapsed borders ignore `border-spacing`. Use separate borders when spacing between cells is part of the design.
 ```html
 <table class="border-collapse:separate border-spacing:xs">
-    <tr><td>Cell</td></tr>
+  <tr><td>Cell</td></tr>
 </table>
 ```
 

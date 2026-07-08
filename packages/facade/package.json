@@ -1,79 +1,79 @@
 {
-    "name": "@master/css",
-    "type": "module",
-    "scripts": {
-        "build": "tsdown --config ../../shared/tsdown-package.config.ts",
-        "dev": "tsdown --config ../../shared/tsdown-package.config.ts --watch",
-        "test": "vitest",
-        "bench": "vitest bench",
-        "type-check": "tsc -b tsconfig.typecheck.json",
-        "lint": "eslint"
+  "name": "@master/css",
+  "type": "module",
+  "scripts": {
+    "build": "tsdown --config ../../shared/tsdown-package.config.ts",
+    "dev": "tsdown --config ../../shared/tsdown-package.config.ts --watch",
+    "test": "vitest",
+    "bench": "vitest bench",
+    "type-check": "tsc -b tsconfig.typecheck.json",
+    "lint": "eslint"
+  },
+  "license": "MIT",
+  "description": "The CSS language and framework for rapidly building modern and high-performance websites",
+  "author": "Aoyue Design LLC.",
+  "funding": "https://rc.css.master.co/sponsor",
+  "homepage": "https://css.master.co",
+  "bugs": {
+    "url": "https://github.com/master-co/css/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/master-co/css.git",
+    "directory": "packages/facade"
+  },
+  "keywords": [
+    "style",
+    "styles",
+    "html",
+    "variants",
+    "virtual",
+    "virtual-css",
+    "utility",
+    "css",
+    "ui",
+    "lightweight",
+    "class",
+    "webpack",
+    "plugin",
+    "integration",
+    "vite",
+    "parcel",
+    "build-tools",
+    "mastercss"
+  ],
+  "sideEffects": [
+    "./src/*.css"
+  ],
+  "main": "./dist/index.js",
+  "jsnext:main": "./dist/index.js",
+  "esnext": "./dist/index.js",
+  "module": "./dist/index.js",
+  "style": "./src/index.css",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "style": "./src/index.css",
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
     },
-    "license": "MIT",
-    "description": "The CSS language and framework for rapidly building modern and high-performance websites",
-    "author": "Aoyue Design LLC.",
-    "funding": "https://rc.css.master.co/sponsor",
-    "homepage": "https://css.master.co",
-    "bugs": {
-        "url": "https://github.com/master-co/css/issues"
-    },
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/master-co/css.git",
-        "directory": "packages/facade"
-    },
-    "keywords": [
-        "style",
-        "styles",
-        "html",
-        "variants",
-        "virtual",
-        "virtual-css",
-        "utility",
-        "css",
-        "ui",
-        "lightweight",
-        "class",
-        "webpack",
-        "plugin",
-        "integration",
-        "vite",
-        "parcel",
-        "build-tools",
-        "mastercss"
-    ],
-    "sideEffects": [
-        "./src/*.css"
-    ],
-    "main": "./dist/index.js",
-    "jsnext:main": "./dist/index.js",
-    "esnext": "./dist/index.js",
-    "module": "./dist/index.js",
-    "style": "./src/index.css",
-    "types": "./dist/index.d.ts",
-    "exports": {
-        ".": {
-            "style": "./src/index.css",
-            "types": "./dist/index.d.ts",
-            "import": "./dist/index.js",
-            "default": "./dist/index.js"
-        },
-        "./index.css": "./src/index.css",
-        "./base.css": "./src/base.css",
-        "./theme.css": "./src/theme.css",
-        "./variants.css": "./src/variants.css",
-        "./utilities.css": "./src/utilities.css"
-    },
-    "files": [
-        "dist",
-        "src/*.css"
-    ],
-    "publishConfig": {
-        "access": "public",
-        "provenance": true
-    },
-    "dependencies": {
-        "@master/css-engine": "workspace:^",
-        "@master/css-preset": "workspace:^"
-    }
+    "./index.css": "./src/index.css",
+    "./base.css": "./src/base.css",
+    "./theme.css": "./src/theme.css",
+    "./variants.css": "./src/variants.css",
+    "./utilities.css": "./src/utilities.css"
+  },
+  "files": [
+    "dist",
+    "src/*.css"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "dependencies": {
+    "@master/css-engine": "workspace:^",
+    "@master/css-preset": "workspace:^"
+  }
 }

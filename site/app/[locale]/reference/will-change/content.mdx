@@ -7,15 +7,15 @@ Use `will-change:*` sparingly to tell the browser that a property is likely to c
 ```html
 <!-- @MARK will-change:transform -->
 <button class="transition:transform|150ms|ease-out will-change:transform transform:translateY(-2px):hover">
-    Hover
+  Hover
 </button>
 ```
 
 <details>
-    <summary>Generated CSS</summary>
-    <Class2CSS>
-        {['will-change:transform']}
-    </Class2CSS>
+  <summary>Generated CSS</summary>
+  <Class2CSS>
+    {['will-change:transform']}
+  </Class2CSS>
 </details>
 
 ### Hint opacity changes
@@ -23,7 +23,7 @@ Use `will-change:opacity` for elements that fade frequently, such as popovers or
 ```html
 <!-- @MARK will-change:opacity -->
 <div class="opacity:0 transition:opacity|150ms|ease-out will-change:opacity opacity:1:hover">
-    Preview
+  Preview
 </div>
 ```
 
@@ -32,7 +32,7 @@ Do not leave `will-change` on large parts of the page by default. Reset it with 
 ```html
 <!-- @MARK will-change:auto -->
 <div class="will-change:transform will-change:auto:active">
-    Active only when needed
+  Active only when needed
 </div>
 ```
 

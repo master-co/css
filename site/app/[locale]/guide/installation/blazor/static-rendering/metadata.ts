@@ -1,10 +1,10 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Static Rendering in Blazor',
-    description: 'Guide to setting up Master CSS static rendering in your Blazor project with Vite.',
-    category: 'Integrations',
-    fileURL: import.meta.url
+  title: 'Static Rendering in Blazor',
+  description: 'Guide to setting up Master CSS static rendering in your Blazor project with Vite.',
+  category: 'Integrations',
+  fileURL: import.meta.url
 })
 
 export default metadata

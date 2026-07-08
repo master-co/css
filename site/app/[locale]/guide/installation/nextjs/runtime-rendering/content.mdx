@@ -1,51 +1,51 @@
 <StepSection>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Create a Next.js project
-            If you don't have a Next.js project, create one first.
-        </StepL>
-        <StepR>
-            ```bash name=Terminal
-            npx create-next-app@latest my-app --ts --app --no-tailwind
-            cd my-app
-            ```
-        </StepR>
-    </Step>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Add Master CSS
-            Run the installer in runtime mode from the Next.js project root. This injects the Master CSS runtime through Next.js client instrumentation without using the build adapter to pre-render page CSS.
-        </StepL>
-        <StepR>
-            ```bash name=Terminal
-            npm create @master/css@rc -- --framework nextjs --mode runtime --yes
-            ```
-        </StepR>
-    </Step>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Launch server
-            Run the development server.
-        </StepL>
-        <StepR>
-            ```bash name=Terminal&action=run
-            dev
-            ```
-        </StepR>
-    </Step>
-    <Step>
-        ### <StepNum />Start using Master CSS
-        Now style your first page using Master CSS syntax.
-    </Step>
-    <HelloWorld url="localhost:3000" />
+  <Step $row>
+    <StepL>
+      ### <StepNum />Create a Next.js project
+      If you don't have a Next.js project, create one first.
+    </StepL>
+    <StepR>
+      ```bash name=Terminal
+      npx create-next-app@latest my-app --ts --app --no-tailwind
+      cd my-app
+      ```
+    </StepR>
+  </Step>
+  <Step $row>
+    <StepL>
+      ### <StepNum />Add Master CSS
+      Run the installer in runtime mode from the Next.js project root. This injects the Master CSS runtime through Next.js client instrumentation without using the build adapter to pre-render page CSS.
+    </StepL>
+    <StepR>
+      ```bash name=Terminal
+      npm create @master/css@rc -- --framework nextjs --mode runtime --yes
+      ```
+    </StepR>
+  </Step>
+  <Step $row>
+    <StepL>
+      ### <StepNum />Launch server
+      Run the development server.
+    </StepL>
+    <StepR>
+      ```bash name=Terminal&action=run
+      dev
+      ```
+    </StepR>
+  </Step>
+  <Step>
+    ### <StepNum />Start using Master CSS
+    Now style your first page using Master CSS syntax.
+  </Step>
+  <HelloWorld url="localhost:3000" />
 </StepSection>
 
 ```tsx name=app/page.tsx
 export default function Home() {
-    return (
-        <h1 className="m:2xl italic font:5xl font:heavy text:neutral">
-            Hello World
-        </h1>
-    )
+  return (
+    <h1 className="m:2xl italic font:5xl font:heavy text:neutral">
+      Hello World
+    </h1>
+  )
 }
 ```

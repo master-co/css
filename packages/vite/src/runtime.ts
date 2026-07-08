@@ -11,44 +11,44 @@ type RuntimeEmittedGlobalsModule = { default: typeof masterCSSEmittedGlobals }
 let masterCSSRuntime: CSSRuntime | undefined
 
 function destroyRuntime() {
-    masterCSSRuntime?.destroy()
-    masterCSSRuntime = undefined
+  masterCSSRuntime?.destroy()
+  masterCSSRuntime = undefined
 }
 
 async function startRuntime(
-    manifest = masterCSSManifest,
-    emittedGlobals = masterCSSEmittedGlobals
+  manifest = masterCSSManifest,
+  emittedGlobals = masterCSSEmittedGlobals
 ) {
-    if (typeof document === 'undefined') return
-    destroyRuntime()
-    const nextRuntime = CSSRuntime.create({
-        manifest,
-        emittedGlobals
-    })
-    if (nextRuntime.needsHydrationManifest()) {
-        await nextRuntime.loadHydrationManifest()
-    }
-    masterCSSRuntime = nextRuntime.observe()
+  if (typeof document === 'undefined') return
+  destroyRuntime()
+  const nextRuntime = CSSRuntime.create({
+    manifest,
+    emittedGlobals
+  })
+  if (nextRuntime.needsHydrationManifest()) {
+    await nextRuntime.loadHydrationManifest()
+  }
+  masterCSSRuntime = nextRuntime.observe()
 }
 
 if (typeof document !== 'undefined') {
-    void startRuntime()
+  void startRuntime()
 }
 
 if (import.meta.hot) {
-    import.meta.hot.accept(() => {})
-    import.meta.hot.accept([
-        'virtual:master-css-manifest',
-        'virtual:master-css-emitted-globals'
-    ], (modules) => {
-        const [manifestModule, emittedGlobalsModule] = modules as [
-            RuntimeManifestModule | undefined,
-            RuntimeEmittedGlobalsModule | undefined
-        ]
-        void startRuntime(
-            manifestModule?.default ?? masterCSSManifest,
-            emittedGlobalsModule?.default ?? masterCSSEmittedGlobals
-        )
-    })
-    import.meta.hot.dispose(destroyRuntime)
+  import.meta.hot.accept(() => {})
+  import.meta.hot.accept([
+    'virtual:master-css-manifest',
+    'virtual:master-css-emitted-globals'
+  ], (modules) => {
+    const [manifestModule, emittedGlobalsModule] = modules as [
+      RuntimeManifestModule | undefined,
+      RuntimeEmittedGlobalsModule | undefined
+    ]
+    void startRuntime(
+      manifestModule?.default ?? masterCSSManifest,
+      emittedGlobalsModule?.default ?? masterCSSEmittedGlobals
+    )
+  })
+  import.meta.hot.dispose(destroyRuntime)
 }

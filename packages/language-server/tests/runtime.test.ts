@@ -9,63 +9,63 @@ import createDocument from '../src/utils/create-document'
 import { withFixture } from './setup'
 
 withFixture('monorepo', async (context) => {
-    test('uses a resolved workspace Master CSS runtime when available', async () => {
-        const textDocument = context.createDocument('<div class=""></div>')
+  test('uses a resolved workspace Master CSS runtime when available', async () => {
+    const textDocument = context.createDocument('<div class=""></div>')
 
-        await context.server.onDidOpen({ document: textDocument })
+    await context.server.onDidOpen({ document: textDocument })
 
-        expect(context.rootWorkspace?.languageRuntimeSource).toBe('workspace')
-        expect(context.rootWorkspace?.languageRuntimeResolution?.css?.entry).toBeTruthy()
-        await context.server.onDidClose({ document: textDocument })
-    })
+    expect(context.rootWorkspace?.languageRuntimeSource).toBe('workspace')
+    expect(context.rootWorkspace?.languageRuntimeResolution?.css?.entry).toBeTruthy()
+    await context.server.onDidClose({ document: textDocument })
+  })
 })
 
 test('falls back to the bundled runtime when workspace packages are missing', async () => {
-    const cwd = mkdtempSync(join(tmpdir(), 'master-css-language-server-runtime-'))
+  const cwd = mkdtempSync(join(tmpdir(), 'master-css-language-server-runtime-'))
+  try {
+    writeFileSync(join(cwd, 'package.json'), JSON.stringify({ private: true }))
+    const brokenCSSPackageDir = join(cwd, 'node_modules', '@master', 'css')
+    mkdirSync(brokenCSSPackageDir, { recursive: true })
+    writeFileSync(join(brokenCSSPackageDir, 'package.json'), JSON.stringify({
+      name: '@master/css',
+      type: 'module',
+      exports: {
+        '.': './missing.js'
+      }
+    }))
+    const rootUri = URI.file(cwd).toString()
+    const { server, clientConnection } = connect()
     try {
-        writeFileSync(join(cwd, 'package.json'), JSON.stringify({ private: true }))
-        const brokenCSSPackageDir = join(cwd, 'node_modules', '@master', 'css')
-        mkdirSync(brokenCSSPackageDir, { recursive: true })
-        writeFileSync(join(brokenCSSPackageDir, 'package.json'), JSON.stringify({
-            name: '@master/css',
-            type: 'module',
-            exports: {
-                '.': './missing.js'
-            }
-        }))
-        const rootUri = URI.file(cwd).toString()
-        const { server, clientConnection } = connect()
-        try {
-            await clientConnection.sendRequest(InitializeRequest.type, {
-                rootUri,
-                capabilities: {
-                    workspace: {
-                        configuration: false,
-                        workspaceFolders: true
-                    }
-                },
-                workspaceFolders: [
-                    {
-                        uri: rootUri,
-                        name: 'fallback'
-                    }
-                ]
-            } as InitializeParams)
-            await clientConnection.sendNotification(InitializedNotification.method, {})
-            await server.init()
-            const textDocument = createDocument('<div class=""></div>', { dir: cwd })
-            const workspace = server.workspaces.get(rootUri)
+      await clientConnection.sendRequest(InitializeRequest.type, {
+        rootUri,
+        capabilities: {
+          workspace: {
+            configuration: false,
+            workspaceFolders: true
+          }
+        },
+        workspaceFolders: [
+          {
+            uri: rootUri,
+            name: 'fallback'
+          }
+        ]
+      } as InitializeParams)
+      await clientConnection.sendNotification(InitializedNotification.method, {})
+      await server.init()
+      const textDocument = createDocument('<div class=""></div>', { dir: cwd })
+      const workspace = server.workspaces.get(rootUri)
 
-            await server.onDidOpen({ document: textDocument })
+      await server.onDidOpen({ document: textDocument })
 
-            expect(workspace?.languageRuntimeSource).toBe('bundled')
-            expect(workspace?.languageService?.runtime).toBeDefined()
-            await server.onDidClose({ document: textDocument })
-        } finally {
-            server.stop()
-            clientConnection.dispose()
-        }
+      expect(workspace?.languageRuntimeSource).toBe('bundled')
+      expect(workspace?.languageService?.runtime).toBeDefined()
+      await server.onDidClose({ document: textDocument })
     } finally {
-        rmSync(cwd, { recursive: true, force: true })
+      server.stop()
+      clientConnection.dispose()
     }
+  } finally {
+    rmSync(cwd, { recursive: true, force: true })
+  }
 })

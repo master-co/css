@@ -1,74 +1,74 @@
 {
-    "name": "@master/css-mcp",
-    "type": "module",
-    "scripts": {
-        "build": "tsdown --config ../../shared/tsdown-package.config.ts",
-        "dev": "tsdown --config ../../shared/tsdown-package.config.ts --watch",
-        "lint": "eslint",
-        "type-check": "tsc -b tsconfig.typecheck.json",
-        "test": "vitest"
+  "name": "@master/css-mcp",
+  "type": "module",
+  "scripts": {
+    "build": "tsdown --config ../../shared/tsdown-package.config.ts",
+    "dev": "tsdown --config ../../shared/tsdown-package.config.ts --watch",
+    "lint": "eslint",
+    "type-check": "tsc -b tsconfig.typecheck.json",
+    "test": "vitest"
+  },
+  "license": "MIT",
+  "description": "Model Context Protocol server for Master CSS tooling.",
+  "author": "Aoyue Design LLC.",
+  "funding": "https://rc.css.master.co/sponsor",
+  "homepage": "https://css.master.co",
+  "bugs": {
+    "url": "https://github.com/master-co/css/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/master-co/css.git",
+    "directory": "packages/mcp"
+  },
+  "keywords": [
+    "mcp",
+    "ai",
+    "css",
+    "mastercss"
+  ],
+  "sideEffects": false,
+  "bin": {
+    "master-css-mcp": "./dist/bin/index.js"
+  },
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "jsnext:main": "./dist/index.js",
+  "esnext": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
     },
-    "license": "MIT",
-    "description": "Model Context Protocol server for Master CSS tooling.",
-    "author": "Aoyue Design LLC.",
-    "funding": "https://rc.css.master.co/sponsor",
-    "homepage": "https://css.master.co",
-    "bugs": {
-        "url": "https://github.com/master-co/css/issues"
-    },
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/master-co/css.git",
-        "directory": "packages/mcp"
-    },
-    "keywords": [
-        "mcp",
-        "ai",
-        "css",
-        "mastercss"
-    ],
-    "sideEffects": false,
-    "bin": {
-        "master-css-mcp": "./dist/bin/index.js"
-    },
-    "main": "./dist/index.js",
-    "module": "./dist/index.js",
-    "jsnext:main": "./dist/index.js",
-    "esnext": "./dist/index.js",
-    "types": "./dist/index.d.ts",
-    "exports": {
-        ".": {
-            "types": "./dist/index.d.ts",
-            "import": "./dist/index.js",
-            "default": "./dist/index.js"
-        },
-        "./server": {
-            "types": "./dist/server.d.ts",
-            "import": "./dist/server.js",
-            "default": "./dist/server.js"
-        }
-    },
-    "files": [
-        "dist"
-    ],
-    "publishConfig": {
-        "access": "public",
-        "provenance": true
-    },
-    "dependencies": {
-        "@master/css-compiler": "workspace:^",
-        "@master/css-engine": "workspace:^",
-        "@master/css-diagnostics": "workspace:^",
-        "@master/css-language-service": "workspace:^",
-        "@master/css-lexer": "workspace:^",
-        "@master/css-lint": "workspace:^",
-        "@master/css-preset": "workspace:^",
-        "@master/css-project": "workspace:^",
-        "@master/css-server": "workspace:^",
-        "@master/css-validator": "workspace:^",
-        "@modelcontextprotocol/sdk": "^1.29.0",
-        "fast-glob": "^3.3.3",
-        "vscode-languageserver-textdocument": "^1.0.12",
-        "zod": "^4.4.3"
+    "./server": {
+      "types": "./dist/server.d.ts",
+      "import": "./dist/server.js",
+      "default": "./dist/server.js"
     }
+  },
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "dependencies": {
+    "@master/css-compiler": "workspace:^",
+    "@master/css-engine": "workspace:^",
+    "@master/css-diagnostics": "workspace:^",
+    "@master/css-language-service": "workspace:^",
+    "@master/css-lexer": "workspace:^",
+    "@master/css-lint": "workspace:^",
+    "@master/css-preset": "workspace:^",
+    "@master/css-project": "workspace:^",
+    "@master/css-server": "workspace:^",
+    "@master/css-validator": "workspace:^",
+    "@modelcontextprotocol/sdk": "^1.29.0",
+    "fast-glob": "^3.3.3",
+    "vscode-languageserver-textdocument": "^1.0.12",
+    "zod": "^4.4.3"
+  }
 }

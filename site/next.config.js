@@ -6,30 +6,30 @@ import { shouldUseCloudflareImageLoader } from './utils/cloudflare-image-loader.
 
 const publicEnv = readPublicEnv()
 const useCloudflareImageLoader = shouldUseCloudflareImageLoader({
-    env: process.env,
-    siteUrl: publicEnv.NEXT_PUBLIC_URL
+  env: process.env,
+  siteUrl: publicEnv.NEXT_PUBLIC_URL
 })
 
 const nextConfig = withMasterCSS(await withCommonNextConfig({
-    redirects
+  redirects
 }))
 
 nextConfig.output = 'export'
 nextConfig.images = {
-    ...nextConfig.images,
-    ...(useCloudflareImageLoader
-        ? {
-            loader: 'custom',
-            loaderFile: './utils/cloudflare-image-loader.js',
-            unoptimized: false
-        }
-        : {
-            unoptimized: true
-        })
+  ...nextConfig.images,
+  ...(useCloudflareImageLoader
+    ? {
+      loader: 'custom',
+      loaderFile: './utils/cloudflare-image-loader.js',
+      unoptimized: false
+    }
+    : {
+      unoptimized: true
+    })
 }
 nextConfig.env = {
-    ...nextConfig.env,
-    ...publicEnv
+  ...nextConfig.env,
+  ...publicEnv
 }
 delete nextConfig.redirects
 delete nextConfig.rewrites

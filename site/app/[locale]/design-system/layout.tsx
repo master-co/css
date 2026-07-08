@@ -5,18 +5,18 @@ import DocSidebar from 'internal/components/DocSidebar'
 import DocWrapper from '~/internal/components/DocWrapper'
 
 export async function generateStaticParams() {
-    return i18n.locales.map((locale: any) => ({ locale }))
+  return i18n.locales.map((locale: any) => ({ locale }))
 }
 
 export default async function Layout({ children }: {
-    children: React.ReactNode
+  children: React.ReactNode
 }) {
-    return (
-        <Body className="bg:surface-base">
-            <DocHeader contained />
-            <DocWrapper>
-                {children}
-            </DocWrapper>
-        </Body>
-    )
+  return (
+    <Body className="bg:surface-base">
+      <DocHeader contained />
+      <DocWrapper>
+        {children}
+      </DocWrapper>
+    </Body>
+  )
 }

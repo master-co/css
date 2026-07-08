@@ -1,84 +1,84 @@
 {
-    "name": "@master/css.next",
-    "type": "module",
-    "scripts": {
-        "build": "tsdown --config ../../shared/tsdown-package.config.ts",
-        "dev": "tsdown --config ../../shared/tsdown-package.config.ts --watch",
-        "dev:build": "pnpm --dir playground build",
-        "e2e": "vitest run tests/*-e2e.test.ts --no-file-parallelism",
-        "lint": "eslint",
-        "type-check": "tsc -b tsconfig.typecheck.json",
-        "test": "vitest"
+  "name": "@master/css.next",
+  "type": "module",
+  "scripts": {
+    "build": "tsdown --config ../../shared/tsdown-package.config.ts",
+    "dev": "tsdown --config ../../shared/tsdown-package.config.ts --watch",
+    "dev:build": "pnpm --dir playground build",
+    "e2e": "vitest run tests/*-e2e.test.ts --no-file-parallelism",
+    "lint": "eslint",
+    "type-check": "tsc -b tsconfig.typecheck.json",
+    "test": "vitest"
+  },
+  "license": "MIT",
+  "description": "Next.js integration for Master CSS",
+  "author": "Aoyue Design LLC.",
+  "funding": "https://rc.css.master.co/sponsor",
+  "homepage": "https://css.master.co",
+  "bugs": {
+    "url": "https://github.com/master-co/css/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/master-co/css.git",
+    "directory": "packages/next"
+  },
+  "keywords": [
+    "adapter",
+    "integration",
+    "next",
+    "nextjs",
+    "build tools",
+    "static",
+    "pre-render",
+    "css",
+    "mastercss"
+  ],
+  "sideEffects": false,
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "jsnext:main": "./dist/index.js",
+  "esnext": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
     },
-    "license": "MIT",
-    "description": "Next.js integration for Master CSS",
-    "author": "Aoyue Design LLC.",
-    "funding": "https://rc.css.master.co/sponsor",
-    "homepage": "https://css.master.co",
-    "bugs": {
-        "url": "https://github.com/master-co/css/issues"
-    },
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/master-co/css.git",
-        "directory": "packages/next"
-    },
-    "keywords": [
-        "adapter",
-        "integration",
-        "next",
-        "nextjs",
-        "build tools",
-        "static",
-        "pre-render",
-        "css",
-        "mastercss"
-    ],
-    "sideEffects": false,
-    "main": "./dist/index.js",
-    "module": "./dist/index.js",
-    "jsnext:main": "./dist/index.js",
-    "esnext": "./dist/index.js",
-    "types": "./dist/index.d.ts",
-    "exports": {
-        ".": {
-            "types": "./dist/index.d.ts",
-            "import": "./dist/index.js",
-            "default": "./dist/index.js"
-        },
-        "./adapter": {
-            "types": "./dist/adapter.d.ts",
-            "import": "./dist/adapter.js",
-            "default": "./dist/adapter.js"
-        }
-    },
-    "files": [
-        "empty.css",
-        "dist"
-    ],
-    "publishConfig": {
-        "access": "public",
-        "provenance": true
-    },
-    "peerDependencies": {
-        "next": ">=16"
-    },
-    "dependencies": {
-        "@master/css": "workspace:^",
-        "@master/css-scanner": "workspace:^",
-        "@master/css-integration": "workspace:^",
-        "@master/css-project": "workspace:^",
-        "@master/css-runtime": "workspace:^",
-        "@master/css-server": "workspace:^",
-        "@master/css-stylesheet": "workspace:^",
-        "@master/css-schema": "workspace:^",
-        "@master/css-lexer": "workspace:^"
-    },
-    "devDependencies": {
-        "@types/react": "^19.2.17",
-        "@types/react-dom": "^19.2.3",
-        "next": "^16.2.9",
-        "react": "^19.2.7",
-        "react-dom": "^19.2.7"
+    "./adapter": {
+      "types": "./dist/adapter.d.ts",
+      "import": "./dist/adapter.js",
+      "default": "./dist/adapter.js"
     }
+  },
+  "files": [
+    "empty.css",
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "peerDependencies": {
+    "next": ">=16"
+  },
+  "dependencies": {
+    "@master/css": "workspace:^",
+    "@master/css-scanner": "workspace:^",
+    "@master/css-integration": "workspace:^",
+    "@master/css-project": "workspace:^",
+    "@master/css-runtime": "workspace:^",
+    "@master/css-server": "workspace:^",
+    "@master/css-stylesheet": "workspace:^",
+    "@master/css-schema": "workspace:^",
+    "@master/css-lexer": "workspace:^"
+  },
+  "devDependencies": {
+    "@types/react": "^19.2.17",
+    "@types/react-dom": "^19.2.3",
+    "next": "^16.2.9",
+    "react": "^19.2.7",
+    "react-dom": "^19.2.7"
+  }
 }

@@ -6,7 +6,7 @@ Example:
 
 ```html
 <h1 class="fg:indigo fg:red:hover font:2rem font:2.5rem@sm font:heavy text-center">
-    Hello World
+  Hello World
 </h1>
 ```
 

@@ -5,17 +5,17 @@
 ### Set the border image width
 Use `border-image-width` to control how thick the painted border image is. It can be larger than the fallback `border-width`.
 <Demo $py={0}>
-    <DemoPanel>
-        <div className="p:10x b:8px|solid|transparent r:lg border-image-slice:30 border-image-source:linear-gradient(45deg,dodgerblue,hotpink) border-image-width:16 surface:raised">
-            <div className="font-weight:560 font:lg text:neutral">Image width 16</div>
-            <p className="my:md font:sm text:gray">The painted image uses a wider border image area.</p>
-        </div>
-    </DemoPanel>
+  <DemoPanel>
+    <div className="p:10x b:8px|solid|transparent r:lg border-image-slice:30 border-image-source:linear-gradient(45deg,dodgerblue,hotpink) border-image-width:16 surface:raised">
+      <div className="font-weight:560 font:lg text:neutral">Image width 16</div>
+      <p className="my:md font:sm text:gray">The painted image uses a wider border image area.</p>
+    </div>
+  </DemoPanel>
 </Demo>
 ```html
 <!-- @MARK border-image-width:16 -->
 <div class="b:8px|solid|transparent border-image-slice:30 border-image-source:linear-gradient(45deg,dodgerblue,hotpink) border-image-width:16">
-    Image width 16
+  Image width 16
 </div>
 ```
 
@@ -24,7 +24,7 @@ Use `auto` to derive the width from the slice value when possible.
 ```html
 <!-- @MARK border-image-width:auto -->
 <div class="b:16px|solid|transparent border-image-slice:30 border-image-source:linear-gradient(45deg,dodgerblue,hotpink) border-image-width:auto">
-    Auto image width
+  Auto image width
 </div>
 ```
 

@@ -1,45 +1,45 @@
 <StepSection>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Create a project
-            If you don't have a Webpack project, create one first.
-        </StepL>
-        <StepR>
-            ```bash name=Terminal
-            mkdir my-app
-            cd my-app
-            npm init -y
-            npm install -D webpack webpack-cli webpack-dev-server
-            ```
-        </StepR>
-    </Step>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Add Master CSS
-            Run the installer in static mode from the Webpack project root. It registers the Webpack plugin and creates the Master CSS entry stylesheet.
-        </StepL>
-        <StepR>
-            ```bash name=Terminal
-            npm create @master/css@rc -- --framework webpack --mode static --yes
-            ```
-        </StepR>
-    </Step>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Launch server
-            Run your Webpack development command.
-        </StepL>
-        <StepR>
-            ```bash name=Terminal
-            npm run dev
-            ```
-        </StepR>
-    </Step>
-    <Step>
-        ### <StepNum />Hello world
-        Now style your first element using Master CSS syntax.
-    </Step>
-    <HelloWorld />
+  <Step $row>
+    <StepL>
+      ### <StepNum />Create a project
+      If you don't have a Webpack project, create one first.
+    </StepL>
+    <StepR>
+      ```bash name=Terminal
+      mkdir my-app
+      cd my-app
+      npm init -y
+      npm install -D webpack webpack-cli webpack-dev-server
+      ```
+    </StepR>
+  </Step>
+  <Step $row>
+    <StepL>
+      ### <StepNum />Add Master CSS
+      Run the installer in static mode from the Webpack project root. It registers the Webpack plugin and creates the Master CSS entry stylesheet.
+    </StepL>
+    <StepR>
+      ```bash name=Terminal
+      npm create @master/css@rc -- --framework webpack --mode static --yes
+      ```
+    </StepR>
+  </Step>
+  <Step $row>
+    <StepL>
+      ### <StepNum />Launch server
+      Run your Webpack development command.
+    </StepL>
+    <StepR>
+      ```bash name=Terminal
+      npm run dev
+      ```
+    </StepR>
+  </Step>
+  <Step>
+    ### <StepNum />Hello world
+    Now style your first element using Master CSS syntax.
+  </Step>
+  <HelloWorld />
 </StepSection>
 
 The installer registers the Webpack plugin in `webpack.config.*` and creates `src/index.css` as the Master CSS entry.
@@ -48,9 +48,9 @@ The installer registers the Webpack plugin in `webpack.config.*` and creates `sr
 import MasterCSSPlugin from '@master/css.webpack'
 
 export default {
-    plugins: [
-        new MasterCSSPlugin({ mode: 'static' })
-    ]
+  plugins: [
+    new MasterCSSPlugin({ mode: 'static' })
+  ]
 }
 ```
 
@@ -60,6 +60,6 @@ export default {
 
 ```html
 <h1 class="m:2xl italic font:5xl font:heavy text:neutral">
-    Hello World
+  Hello World
 </h1>
 ```

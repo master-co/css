@@ -1,49 +1,49 @@
 {
-    "name": "@master/css.figma",
-    "version": "1.0.0",
-    "description": "Figma plugin for Master CSS variables and modes",
-    "main": "./dist/plugin.min.js",
-    "type": "module",
-    "scripts": {
-        "build": "pnpm build:plugin & pnpm build:ui",
-        "build:plugin": "tsdown",
-        "build:ui": "concurrently \"pnpm:build:ui:*\"",
-        "build:ui:export-variables": "vite build --mode export-variables",
-        "build:ui:import-variables": "vite build --mode import-variables",
-        "lint": "eslint",
-        "type-check": "tsc -b tsconfig.typecheck.json",
-        "test": "vitest"
-    },
-    "author": "Aoyue Design LLC.",
-    "license": "MIT",
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/master-co/css.git",
-        "directory": "packages/figma"
-    },
-    "publishConfig": {
-        "access": "public",
-        "provenance": true
-    },
-    "devDependencies": {
-        "@figma/eslint-plugin-figma-plugins": "^1.0.0",
-        "@figma/plugin-typings": "^1.129.0",
-        "@master/css": "workspace:^",
-        "@types/react": "^19.2.17",
-        "@types/react-dom": "^19.2.3",
-        "@vitejs/plugin-react": "^6.0.2",
-        "colorjs.io": "^0.6.1",
-        "dot-prop": "^10.1.0",
-        "eslint-plugin-react-hooks": "^7.1.1",
-        "eslint-plugin-react-refresh": "^0.5.3",
-        "typescript": "^6.0.3",
-        "vite-plugin-singlefile": "^2.3.3"
-    },
-    "dependencies": {
-        "copy-to-clipboard": "^4.0.2",
-        "petite-vue": "^0.4.1",
-        "preact": "^10.29.2",
-        "react": "^19.2.7",
-        "react-dom": "^19.2.7"
-    }
+  "name": "@master/css.figma",
+  "version": "1.0.0",
+  "description": "Figma plugin for Master CSS variables and modes",
+  "main": "./dist/plugin.min.js",
+  "type": "module",
+  "scripts": {
+    "build": "pnpm build:plugin & pnpm build:ui",
+    "build:plugin": "tsdown",
+    "build:ui": "concurrently \"pnpm:build:ui:*\"",
+    "build:ui:export-variables": "vite build --mode export-variables",
+    "build:ui:import-variables": "vite build --mode import-variables",
+    "lint": "eslint",
+    "type-check": "tsc -b tsconfig.typecheck.json",
+    "test": "vitest"
+  },
+  "author": "Aoyue Design LLC.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/master-co/css.git",
+    "directory": "packages/figma"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "devDependencies": {
+    "@figma/eslint-plugin-figma-plugins": "^1.0.0",
+    "@figma/plugin-typings": "^1.129.0",
+    "@master/css": "workspace:^",
+    "@types/react": "^19.2.17",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^6.0.2",
+    "colorjs.io": "^0.6.1",
+    "dot-prop": "^10.1.0",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "eslint-plugin-react-refresh": "^0.5.3",
+    "typescript": "^6.0.3",
+    "vite-plugin-singlefile": "^2.3.3"
+  },
+  "dependencies": {
+    "copy-to-clipboard": "^4.0.2",
+    "petite-vue": "^0.4.1",
+    "preact": "^10.29.2",
+    "react": "^19.2.7",
+    "react-dom": "^19.2.7"
+  }
 }

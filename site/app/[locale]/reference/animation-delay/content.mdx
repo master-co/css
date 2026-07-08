@@ -7,15 +7,15 @@ Use `animation-delay:*` to wait before the first animation cycle begins.
 ```html
 <!-- @MARK animation-delay:120ms -->
 <div class="animation-delay:120ms animation-duration:300ms animation-name:fade">
-    Staggered item
+  Staggered item
 </div>
 ```
 
 <details>
-    <summary>Generated CSS</summary>
-    <Class2CSS>
-        {['animation-delay:120ms']}
-    </Class2CSS>
+  <summary>Generated CSS</summary>
+  <Class2CSS>
+    {['animation-delay:120ms']}
+  </Class2CSS>
 </details>
 
 ### Offset looping animations
@@ -23,7 +23,7 @@ Negative delays start an animation partway through its cycle. This is useful for
 ```html
 <!-- @MARK animation-delay:-120ms -->
 <svg class="animation-delay:-120ms animation-duration:1s animation-name:fade">
-    ...
+  ...
 </svg>
 ```
 
@@ -40,7 +40,7 @@ Define `duration-*` tokens when the same delay appears across several animation 
 
 ```css name=index.css
 @theme {
-    --duration-stagger: 120ms;
+  --duration-stagger: 120ms;
 }
 ```
 

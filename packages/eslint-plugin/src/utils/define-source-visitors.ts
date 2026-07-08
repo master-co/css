@@ -1,9 +1,9 @@
 import {
-    lintMasterCSSContent,
-    masterCSSLintRuleIds,
-    type MasterCSSLintContentRuleOptions,
-    type MasterCSSLintRuleId,
-    type MasterCSSLintSourceDiagnostic
+  lintMasterCSSContent,
+  masterCSSLintRuleIds,
+  type MasterCSSLintContentRuleOptions,
+  type MasterCSSLintRuleId,
+  type MasterCSSLintSourceDiagnostic
 } from '@master/css-lint'
 import type { MasterCSS } from '@master/css-engine'
 import type { RuleContext, RuleFixer, RuleListener } from '@typescript-eslint/utils/ts-eslint'
@@ -13,87 +13,87 @@ type FixRange = [number, number]
 type SourceRuleOptions = MasterCSSLintContentRuleOptions[keyof MasterCSSLintContentRuleOptions]
 
 interface DefineSourceVisitorsOptions {
-    context: RuleContext<any, any[]>
-    css: MasterCSS
-    ruleId: MasterCSSLintRuleId
-    ruleOptions?: SourceRuleOptions
+  context: RuleContext<any, any[]>
+  css: MasterCSS
+  ruleId: MasterCSSLintRuleId
+  ruleOptions?: SourceRuleOptions
 }
 
 const SOURCE_LINT_FILE_RE = /\.mdx$/i
 
 export function shouldUseSourceVisitors(context: RuleContext<any, any[]>) {
-    const filename = context.physicalFilename || context.filename
-    return typeof filename === 'string' && SOURCE_LINT_FILE_RE.test(filename)
+  const filename = context.physicalFilename || context.filename
+  return typeof filename === 'string' && SOURCE_LINT_FILE_RE.test(filename)
 }
 
 function getFilename(context: RuleContext<any, any[]>) {
-    return context.physicalFilename || context.filename || 'source.mdx'
+  return context.physicalFilename || context.filename || 'source.mdx'
 }
 
 function createSingleRuleSet(ruleId: MasterCSSLintRuleId) {
-    return Object.fromEntries(masterCSSLintRuleIds.map((eachRuleId) => [
-        eachRuleId,
-        eachRuleId === ruleId
-    ])) as Record<MasterCSSLintRuleId, boolean>
+  return Object.fromEntries(masterCSSLintRuleIds.map((eachRuleId) => [
+    eachRuleId,
+    eachRuleId === ruleId
+  ])) as Record<MasterCSSLintRuleId, boolean>
 }
 
 function createRuleOptions(ruleId: MasterCSSLintRuleId, ruleOptions: DefineSourceVisitorsOptions['ruleOptions']) {
-    return ruleOptions
-        ? { [ruleId]: ruleOptions } as MasterCSSLintContentRuleOptions
-        : undefined
+  return ruleOptions
+    ? { [ruleId]: ruleOptions } as MasterCSSLintContentRuleOptions
+    : undefined
 }
 
 function reportSourceDiagnostic(
-    context: RuleContext<any, any[]>,
-    node: any,
-    diagnostic: MasterCSSLintSourceDiagnostic
+  context: RuleContext<any, any[]>,
+  node: any,
+  diagnostic: MasterCSSLintSourceDiagnostic
 ) {
-    const { sourceCode } = context
-    const messageId = messageIdByCode[diagnostic.code]
-    const fix = diagnostic.fixes?.[0]
-    const descriptor: any = {
-        node,
-        loc: {
-            start: sourceCode.getLocFromIndex(diagnostic.range.start),
-            end: sourceCode.getLocFromIndex(diagnostic.range.end)
-        },
-        ...(messageId
-            ? {
-                messageId,
-                data: stringifyLintDiagnosticData(diagnostic.data || { message: diagnostic.message })
-            }
-            : { message: diagnostic.message })
-    }
+  const { sourceCode } = context
+  const messageId = messageIdByCode[diagnostic.code]
+  const fix = diagnostic.fixes?.[0]
+  const descriptor: any = {
+    node,
+    loc: {
+      start: sourceCode.getLocFromIndex(diagnostic.range.start),
+      end: sourceCode.getLocFromIndex(diagnostic.range.end)
+    },
+    ...(messageId
+      ? {
+        messageId,
+        data: stringifyLintDiagnosticData(diagnostic.data || { message: diagnostic.message })
+      }
+      : { message: diagnostic.message })
+  }
 
-    if (fix) {
-        descriptor.fix = (fixer: RuleFixer) => fixer.replaceTextRange(
-            [fix.range.start, fix.range.end] as FixRange,
-            fix.text
-        )
-    }
+  if (fix) {
+    descriptor.fix = (fixer: RuleFixer) => fixer.replaceTextRange(
+      [fix.range.start, fix.range.end] as FixRange,
+      fix.text
+    )
+  }
 
-    context.report(descriptor)
+  context.report(descriptor)
 }
 
 export default function defineSourceVisitors({
-    context,
-    css,
-    ruleId,
-    ruleOptions
+  context,
+  css,
+  ruleId,
+  ruleOptions
 }: DefineSourceVisitorsOptions): RuleListener {
-    return {
-        Program(node) {
-            const result = lintMasterCSSContent({
-                content: context.sourceCode.getText(),
-                filePath: getFilename(context),
-                css,
-                rules: createSingleRuleSet(ruleId),
-                ruleOptions: createRuleOptions(ruleId, ruleOptions)
-            })
-            for (const diagnostic of result.diagnostics) {
-                if (diagnostic.ruleId !== ruleId) continue
-                reportSourceDiagnostic(context, node, diagnostic)
-            }
-        }
+  return {
+    Program(node) {
+      const result = lintMasterCSSContent({
+        content: context.sourceCode.getText(),
+        filePath: getFilename(context),
+        css,
+        rules: createSingleRuleSet(ruleId),
+        ruleOptions: createRuleOptions(ruleId, ruleOptions)
+      })
+      for (const diagnostic of result.diagnostics) {
+        if (diagnostic.ruleId !== ruleId) continue
+        reportSourceDiagnostic(context, node, diagnostic)
+      }
     }
+  }
 }

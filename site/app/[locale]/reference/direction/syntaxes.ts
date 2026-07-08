@@ -1,6 +1,6 @@
 const syntaxes = [
-    'direction:ltr',
-    'direction:rtl'
+  'direction:ltr',
+  'direction:rtl'
 ]
 
 export default syntaxes

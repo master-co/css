@@ -19,8 +19,8 @@ For page-level CSS size and delivery measurements, see the [benchmarks](/guide/b
 ## Runtime Rendering
 Master CSS Runtime relies on the lifecycle of individual elements. Only the Master CSS class names connected to the DOM tree will generate corresponding CSS rules so *browsers can calculate with minimal and precise CSS rules*.
 <figure>
-    <ModeImg src="/master-css-runtime-rendering.svg" alt='Master CSS Runtime Rendering' />
-    <figcaption>The runtime lifecycle of a Master CSS class</figcaption>
+  <ModeImg src="/master-css-runtime-rendering.svg" alt='Master CSS Runtime Rendering' />
+  <figcaption>The runtime lifecycle of a Master CSS class</figcaption>
 </figure>
 The runtime engine uses the standard [Web APIs - Mutation Observer](https://developer.mozilla.org/zh-TW/docs/Web/API/MutationObserver) to observe DOM class changes at runtime. It keeps active DOM usage, generated rule cache, and retained mutation rules as separate states so the browser does not need to delete and recreate CSS rules during every interaction.
 
@@ -38,94 +38,94 @@ Direct browser delivery is also possible when a page is not bundled, but it is n
 
 ```html
 <head>
-    <link rel="stylesheet" href="/assets/master-css-base.css">
-    <script type="module" src="/assets/master-css-runtime.js"></script>
+  <link rel="stylesheet" href="/assets/master-css-base.css">
+  <script type="module" src="/assets/master-css-runtime.js"></script>
 </head>
 ```
 
 The following continuous DOM manipulation takes you to understand the behavior of the CSS runtime when the browser is running:
 <StepSection>
-    <Step>
-        #### <StepNum />Insert an element with a Master CSS class name into the DOM
-        ```js
-        const h1 = document.createElement('h1')
-        // @MARK text-center
-        h1.className = 'text-center'
-        ```
-        A new node `html <h1>` is inserted into the DOM tree:
-        ```html
-        <h1 class="text-center">Hello World</h1> <!-- [!code ++] -->
-        ```
-        The runtime engine observes a new node with the class `text-center` and ensures the corresponding CSS rule:
-        ```css
-        .text\:center { /* [!code ++] */
-            text-align: center /* [!code ++] */
-        } /* [!code ++] */
-        ```
-    </Step>
-    <Step>
-        #### <StepNum />Added Master CSS class names to elements in links
-        ```js
-        // @MARK font:6xl
-        h1.classList.add('font:6xl')
-        ```
-        Add class name `font:6xl` to `html <h1>`
-        ```html
-        <!-- @MARK font:6xl -->
-        <h1 class="font:6xl text-center">Hello World</h1>
-        ```
-        The runtime engine observes that `html <h1>` adds the new class name `font:6xl` and ensures the corresponding CSS rule:
-        ```css
-        .font\:6xl { /* [!code ++] */
-            font-size: 3rem /* [!code ++] */
-        } /* [!code ++] */
+  <Step>
+    #### <StepNum />Insert an element with a Master CSS class name into the DOM
+    ```js
+    const h1 = document.createElement('h1')
+    // @MARK text-center
+    h1.className = 'text-center'
+    ```
+    A new node `html <h1>` is inserted into the DOM tree:
+    ```html
+    <h1 class="text-center">Hello World</h1> <!-- [!code ++] -->
+    ```
+    The runtime engine observes a new node with the class `text-center` and ensures the corresponding CSS rule:
+    ```css
+    .text\:center { /* [!code ++] */
+      text-align: center /* [!code ++] */
+    } /* [!code ++] */
+    ```
+  </Step>
+  <Step>
+    #### <StepNum />Added Master CSS class names to elements in links
+    ```js
+    // @MARK font:6xl
+    h1.classList.add('font:6xl')
+    ```
+    Add class name `font:6xl` to `html <h1>`
+    ```html
+    <!-- @MARK font:6xl -->
+    <h1 class="font:6xl text-center">Hello World</h1>
+    ```
+    The runtime engine observes that `html <h1>` adds the new class name `font:6xl` and ensures the corresponding CSS rule:
+    ```css
+    .font\:6xl { /* [!code ++] */
+      font-size: 3rem /* [!code ++] */
+    } /* [!code ++] */
 
-        .text\:center {
-            text-align: center
-        }
-        ```
-    </Step>
-    <Step>
-        #### <StepNum />Remove the Master CSS class name from the connected element
-        ```js
-        // @MARK text-center
-        h1.classList.remove('text-center')
-        ```
-        Remove class name `text-center` from `html <h1>`
-        ```html
-        <h1 class="font:6xl text-center">Hello World</h1>
-        ```
-        The runtime engine observes that the class name `text-center` is removed from `html <h1>` and updates active usage immediately. Mutation-driven cleanup may retain the generated rule briefly so a fast remove/re-add does not churn the browser CSSOM. After retained-rule cleanup, the unused rule can be deleted:
-        ```css
-        .font\:6xl {
-            font-size: 3rem
-        }
+    .text\:center {
+      text-align: center
+    }
+    ```
+  </Step>
+  <Step>
+    #### <StepNum />Remove the Master CSS class name from the connected element
+    ```js
+    // @MARK text-center
+    h1.classList.remove('text-center')
+    ```
+    Remove class name `text-center` from `html <h1>`
+    ```html
+    <h1 class="font:6xl text-center">Hello World</h1>
+    ```
+    The runtime engine observes that the class name `text-center` is removed from `html <h1>` and updates active usage immediately. Mutation-driven cleanup may retain the generated rule briefly so a fast remove/re-add does not churn the browser CSSOM. After retained-rule cleanup, the unused rule can be deleted:
+    ```css
+    .font\:6xl {
+      font-size: 3rem
+    }
 
-        .text\:center { /* [!code --] */
-            text-align: center /* [!code --] */
-        } /* [!code --] */
-        ```
-    </Step>
-    <Step>
-        #### <StepNum />Removes an element with a Master CSS class from the DOM
-        ```js
-        h1.remove()
-        ```
-        Remove the `html <h1>` with class `font:6xl`
-        ```html
-        <h1 class="font:6xl">Hello World</h1> <!-- [!code ++] -->
-        ```
-        The runtime engine observes that the `html <h1>` element with the class name `font:6xl` is removed and updates active usage immediately. If no connected element still uses `font:6xl`, the generated rule can be retained until idle cleanup or an explicit forced cleanup removes it:
-        ```css
-        .font\:6xl { /* [!code --] */
-            font-size: 3rem /* [!code --] */
-        } /* [!code --] */
-        ```
-    </Step>
-    <Step>
-        #### <StepNum />All active DOM class counts have been removed
-        At this point the DOM no longer uses those Master CSS classes. Runtime CSSOM cleanup is allowed to happen later for MutationObserver-driven removals, while direct `deleteClassRules(...)` calls still remove rules synchronously.
-    </Step>
+    .text\:center { /* [!code --] */
+      text-align: center /* [!code --] */
+    } /* [!code --] */
+    ```
+  </Step>
+  <Step>
+    #### <StepNum />Removes an element with a Master CSS class from the DOM
+    ```js
+    h1.remove()
+    ```
+    Remove the `html <h1>` with class `font:6xl`
+    ```html
+    <h1 class="font:6xl">Hello World</h1> <!-- [!code ++] -->
+    ```
+    The runtime engine observes that the `html <h1>` element with the class name `font:6xl` is removed and updates active usage immediately. If no connected element still uses `font:6xl`, the generated rule can be retained until idle cleanup or an explicit forced cleanup removes it:
+    ```css
+    .font\:6xl { /* [!code --] */
+      font-size: 3rem /* [!code --] */
+    } /* [!code --] */
+    ```
+  </Step>
+  <Step>
+    #### <StepNum />All active DOM class counts have been removed
+    At this point the DOM no longer uses those Master CSS classes. Runtime CSSOM cleanup is allowed to happen later for MutationObserver-driven removals, while direct `deleteClassRules(...)` calls still remove rules synchronously.
+  </Step>
 </StepSection>
 Due to its runtime execution nature, you can modify the class name directly in the browser by inspecting the element and seeing its changes.
 
@@ -133,11 +133,11 @@ Due to its runtime execution nature, you can modify the class name directly in t
 Where are the generated CSS rules inserted? The runtime engine appends `html <style id="master-css">` in `html <head>` during initialization:
 ```html
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="/assets/master-css-base.css">
-    <script type="module" src="/main.js"></script>
-    <style id="master-css"></style> <!-- [!code highlight] -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/assets/master-css-base.css">
+  <script type="module" src="/main.js"></script>
+  <style id="master-css"></style> <!-- [!code highlight] -->
 </head>
 ```
 
@@ -201,8 +201,8 @@ This does not change generated CSS or cascade order. It only moves discovery of 
 Master CSS Progressive Rendering works by pre-rendering page CSS on the server or during a static build and injecting it into the page HTML.
 On the client, the [CSS runtime](#runtime-rendering) hydrates these rules into a virtual stylesheet, initializing a lifecycle-aware system that can respond to class name changes in real time. Progressive hydration depends on two pieces of data: `style#master-css` contains the pre-rendered CSS that can paint the first screen, and the page hydration manifest describes the generated rules that style block contains.
 <figure>
-    <ModeImg src="/master-css-progressive-rendering.svg" alt='Master CSS Progressive Rendering' />
-    <figcaption>Server-side pre-rendering and client-side hydration process</figcaption>
+  <ModeImg src="/master-css-progressive-rendering.svg" alt='Master CSS Progressive Rendering' />
+  <figcaption>Server-side pre-rendering and client-side hydration process</figcaption>
 </figure>
 Static and pre-rendered outputs use an external page hydration manifest by default:
 
@@ -225,12 +225,12 @@ For example, the following HTML:
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <script type="module" src="/main.js"></script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script type="module" src="/main.js"></script>
 </head>
 <body>
-    <h1 class="font:5xl font:heavy">Hello World</h1>
+  <h1 class="font:5xl font:heavy">Hello World</h1>
 </body>
 ```
 Render the HTML:
@@ -242,10 +242,10 @@ import manifest from 'virtual:master-css-manifest'
 const indexHTML = readFileSync('./index.html', 'utf-8')
 
 const { html, hydrationManifest } = render(indexHTML, manifest, {
-    hydrationManifest: {
-        type: 'external',
-        src: '/_master-css/hydration/master-css-hydration.<hash>.json'
-    }
+  hydrationManifest: {
+    type: 'external',
+    src: '/_master-css/hydration/master-css-hydration.<hash>.json'
+  }
 })
 ```
 The server renderer parses the HTML and generates the internal style sheet plus a page hydration manifest. Official static and pre-render integrations write `hydrationManifest` to a hashed JSON asset and attach the URL to `style#master-css`:
@@ -253,18 +253,18 @@ The server renderer parses the HTML and generates the internal style sheet plus 
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <script type="module" src="/main.js"></script>
-    <style id="master-css" data-master-css-hydration-manifest="/_master-css/hydration/master-css-hydration.<hash>.json"> /* [!code ++] */
-        .font\:5xl { /* [!code ++] */
-            font-size: 2.5rem /* [!code ++] */
-        } /* [!code ++] */
-    </style> <!-- [!code ++] -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script type="module" src="/main.js"></script>
+  <style id="master-css" data-master-css-hydration-manifest="/_master-css/hydration/master-css-hydration.<hash>.json"> /* [!code ++] */
+    .font\:5xl { /* [!code ++] */
+      font-size: 2.5rem /* [!code ++] */
+    } /* [!code ++] */
+  </style> <!-- [!code ++] -->
 </head>
 <body>
-    <!-- @MARK font:5xl -->
-    <h1 class="font:5xl">Hello World</h1>
+  <!-- @MARK font:5xl -->
+  <h1 class="font:5xl">Hello World</h1>
 </body>
 ```
 What benefits does this bring? The server renderer generates the initial page CSS (**5kB**) based on the class names used in the HTML, instead of the entire application source code (**500kB**).
@@ -274,8 +274,8 @@ This approach allows for a **minimal, deterministic CSS text** that is injected 
 ### CSS hydration
 Master CSS hydration is the process that restores the server-side or build-time rendered CSS on the client. This includes reusing the pre-rendered CSS structures, persisting the application CSS state, and reconstructing the style sheet into virtual memory.
 <figure>
-    <ModeImg src="/master-css-hydration.svg" alt='Master CSS Hydration' />
-    <figcaption>Master CSS Hydration — Creates virtual rules from DOM style sheet</figcaption>
+  <ModeImg src="/master-css-hydration.svg" alt='Master CSS Hydration' />
+  <figcaption>Master CSS Hydration — Creates virtual rules from DOM style sheet</figcaption>
 </figure>
 The runtime reads explicit `hydrationManifest` options first. Without an explicit option, `CSSRuntime.create()` reads inline `script#master-css-hydration-manifest` for compatibility. When `runtime.needsHydrationManifest()` is true, call `await runtime.loadHydrationManifest()` before `runtime.observe()` to import the URL from `style#master-css[data-master-css-hydration-manifest]`.
 
@@ -297,59 +297,59 @@ The source scanner does not observe the DOM and does not execute application cod
 The CSS entry point is explicit: import `@master/css` from the stylesheet that should receive generated Master CSS. In static mode, integrations replace that import with generated CSS and treat the same stylesheet as a native CSS pruning root.
 
 <StepSection>
-    <Step>
-        #### <StepNum />Load the scanning context
-        The integration creates a source scanner with its default source discovery, optional source directives, optional fixed classes, and the project CSS entry graph. During development, integrations use their host watch, HMR, or invalidation system to reset or update this context.
+  <Step>
+    #### <StepNum />Load the scanning context
+    The integration creates a source scanner with its default source discovery, optional source directives, optional fixed classes, and the project CSS entry graph. During development, integrations use their host watch, HMR, or invalidation system to reset or update this context.
 
-        ```css name=index.css
-        @import '@master/css';
-        ```
+    ```css name=index.css
+    @import '@master/css';
+    ```
 
-        Add `@source` only when this stylesheet must include source outside the integration's normal scan path or define a scoped native CSS pruning root.
-    </Step>
-    <Step>
-        #### <StepNum />Scan source text
-        Source files such as `.html`, `.js`, `.jsx`, `.ts`, `.tsx`, `.vue`, `.svelte`, `.astro`, `.md`, and `.mdx` are scanned as text. The scanner collects candidate class strings from markup and string literals, then filters obvious non-class tokens before validation.
+    Add `@source` only when this stylesheet must include source outside the integration's normal scan path or define a scoped native CSS pruning root.
+  </Step>
+  <Step>
+    #### <StepNum />Scan source text
+    Source files such as `.html`, `.js`, `.jsx`, `.ts`, `.tsx`, `.vue`, `.svelte`, `.astro`, `.md`, and `.mdx` are scanned as text. The scanner collects candidate class strings from markup and string literals, then filters obvious non-class tokens before validation.
 
-        ```html name=src/index.html
-        <!-- @MARK btn text-center -->
-        <button class="btn text-center">Save</button>
-        ```
-    </Step>
-    <Step>
-        #### <StepNum />Validate candidates
-        Each candidate is passed through the Master CSS engine. Valid classes insert rules into the same layers used by runtime and server rendering; invalid candidates are cached and skipped on later scans.
+    ```html name=src/index.html
+    <!-- @MARK btn text-center -->
+    <button class="btn text-center">Save</button>
+    ```
+  </Step>
+  <Step>
+    #### <StepNum />Validate candidates
+    Each candidate is passed through the Master CSS engine. Valid classes insert rules into the same layers used by runtime and server rendering; invalid candidates are cached and skipped on later scans.
 
-        ```css name=index.css
-        @components {
-            btn {
-                @compose inline-flex px:md;
-            }
-        }
-        ```
+    ```css name=index.css
+    @components {
+      btn {
+        @compose inline-flex px:md;
+      }
+    }
+    ```
 
-        With this project manifest, `btn` is valid because the project defines it, and `text-center` is valid because it is a built-in utility. Manifest-defined classes are still on-demand: defining `btn` does not emit anything until `btn` appears in scanned source or in the scanner's fixed class list.
-    </Step>
-    <Step>
-        #### <StepNum />Compose final CSS
-        The generated stylesheet contains the valid Master CSS rules, retained native CSS from managed style entries, and any referenced variables or keyframes needed by those rules.
+    With this project manifest, `btn` is valid because the project defines it, and `text-center` is valid because it is a built-in utility. Manifest-defined classes are still on-demand: defining `btn` does not emit anything until `btn` appears in scanned source or in the scanner's fixed class list.
+  </Step>
+  <Step>
+    #### <StepNum />Compose final CSS
+    The generated stylesheet contains the valid Master CSS rules, retained native CSS from managed style entries, and any referenced variables or keyframes needed by those rules.
 
-        ```css name=generated.css
-        @layer components {
-            .btn {
-                display: inline-flex;
-                padding-left: 1rem;
-                padding-right: 1rem;
-            }
-        }
+    ```css name=generated.css
+    @layer components {
+      .btn {
+        display: inline-flex;
+        padding-left: 1rem;
+        padding-right: 1rem;
+      }
+    }
 
-        @layer utilities {
-            .text\:center {
-                text-align: center;
-            }
-        }
-        ```
-    </Step>
+    @layer utilities {
+      .text\:center {
+        text-align: center;
+      }
+    }
+    ```
+  </Step>
 </StepSection>
 
 ### Generated stylesheet entry
@@ -372,11 +372,11 @@ Those native rules can also pull matching theme variables referenced by `var(--*
 @import '@master/css';
 
 .native-card {
-    border: 1px solid rgb(0 0 0 / 12%);
+  border: 1px solid rgb(0 0 0 / 12%);
 }
 
 .unused-card {
-    color: red;
+  color: red;
 }
 ```
 
@@ -414,30 +414,30 @@ Rendering modes change delivery, not the authoring model. The source of truth is
 @import '@master/css';
 
 @settings {
-    root-size: 16;
+  root-size: 16;
 }
 
 @theme {
-    --color-primary: #4f46e5;
-    --breakpoint-md: 48rem;
+  --color-primary: #4f46e5;
+  --breakpoint-md: 48rem;
 
-    @keyframes fade-in {
-        from { opacity: 0; }
-        to { opacity: 1; }
-    }
+  @keyframes fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
 }
 
 @custom-variant @motion-safe {
-    @media (prefers-reduced-motion: no-preference) {
-        @slot;
-    }
+  @media (prefers-reduced-motion: no-preference) {
+    @slot;
+  }
 }
 
 @components {
-    btn {
-        @compose inline-flex items-center px:md py:xs r:md;
-        background: var(--color-primary);
-    }
+  btn {
+    @compose inline-flex items-center px:md py:xs r:md;
+    background: var(--color-primary);
+  }
 }
 ```
 

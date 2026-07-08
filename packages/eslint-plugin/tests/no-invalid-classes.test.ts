@@ -5,106 +5,106 @@ import { createPresetManifest } from './helpers/create-preset-manifest'
 import UtilityType from '@master/css-schema/utility-type'
 
 jsxTester.run('invalid', rule, {
-    valid: [
+  valid: [
+    {
+      code: `<div class="m:2x p:2x bg:black fg:white font:1.5rem">Simple, basic</div>`,
+    },
+    {
+      code: `<div class={\`f:\${ fontSize }px\`}>TemplateLiteral</div>`,
+    },
+    {
+      code: `<div class="{content:'';block}::after@light"></div>`,
+    },
+  ],
+  invalid: [
+    {
+      code: `<div class="bg:black text-decoration:bad() rrr">Simple, basic</div>`,
+      errors: [
+        { messageId: 'invalidClass' },
+        { messageId: 'disallowUnknownClass' }
+      ],
+      options: [
         {
-            code: `<div class="m:2x p:2x bg:black fg:white font:1.5rem">Simple, basic</div>`,
-        },
+          disallowUnknownClass: true
+        }
+      ] as any
+    },
+    {
+      code: `<div class="bg:black text-decoration:bad() rrr">Simple, basic</div>`,
+      errors: [
+        { messageId: 'invalidClass' },
+      ]
+    },
+    {
+      code: `<div class="a c d hello:world text-decoration:bad() mt:0 mt:0@sm">Error class</div>`,
+      errors: [
+        { messageId: 'disallowUnknownClass' },
+        { messageId: 'disallowUnknownClass' },
+        { messageId: 'disallowUnknownClass' },
+        { messageId: 'disallowUnknownClass' },
+        { messageId: 'invalidClass' }
+      ],
+      options: [
         {
-            code: `<div class={\`f:\${ fontSize }px\`}>TemplateLiteral</div>`,
-        },
-        {
-            code: `<div class="{content:'';block}::after@light"></div>`,
-        },
-    ],
-    invalid: [
-        {
-            code: `<div class="bg:black text-decoration:bad() rrr">Simple, basic</div>`,
-            errors: [
-                { messageId: 'invalidClass' },
-                { messageId: 'disallowUnknownClass' }
-            ],
-            options: [
-                {
-                    disallowUnknownClass: true
-                }
-            ] as any
-        },
-        {
-            code: `<div class="bg:black text-decoration:bad() rrr">Simple, basic</div>`,
-            errors: [
-                { messageId: 'invalidClass' },
-            ]
-        },
-        {
-            code: `<div class="a c d hello:world text-decoration:bad() mt:0 mt:0@sm">Error class</div>`,
-            errors: [
-                { messageId: 'disallowUnknownClass' },
-                { messageId: 'disallowUnknownClass' },
-                { messageId: 'disallowUnknownClass' },
-                { messageId: 'disallowUnknownClass' },
-                { messageId: 'invalidClass' }
-            ],
-            options: [
-                {
-                    disallowUnknownClass: true
-                }
-            ] as any
-        },
-        {
-            code: `<div class="a c d hello:world text-decoration:bad() mt:0 mt:0@sm">Error class</div>`,
-            errors: [
-                { messageId: 'invalidClass' }
-            ]
-        },
-    ]
+          disallowUnknownClass: true
+        }
+      ] as any
+    },
+    {
+      code: `<div class="a c d hello:world text-decoration:bad() mt:0 mt:0@sm">Error class</div>`,
+      errors: [
+        { messageId: 'invalidClass' }
+      ]
+    },
+  ]
 })
 
 createTester({
-    settings: {
-        '@master/css': {
-            manifest: createPresetManifest({
-                utilities: [
-                    {
-                        name: 'btn',
-                        type: UtilityType.Semantic,
-                        layer: 'components',
-                        rules: [
-                            { selector: '&', declarations: { display: 'block' } }
-                        ]
-                    }
-                ]
-            })
-        }
+  settings: {
+    '@master/css': {
+      manifest: createPresetManifest({
+        utilities: [
+          {
+            name: 'btn',
+            type: UtilityType.Semantic,
+            layer: 'components',
+            rules: [
+              { selector: '&', declarations: { display: 'block' } }
+            ]
+          }
+        ]
+      })
     }
+  }
 }).run('invalid', rule, {
-    valid: [],
-    invalid: [
+  valid: [],
+  invalid: [
+    {
+      code: `<div class="btn rrr bg:black text-decoration:bad()">Simple, basic</div>`,
+      errors: [
+        { messageId: 'disallowUnknownClass' },
+        { messageId: 'invalidClass' }
+      ],
+      options: [
         {
-            code: `<div class="btn rrr bg:black text-decoration:bad()">Simple, basic</div>`,
-            errors: [
-                { messageId: 'disallowUnknownClass' },
-                { messageId: 'invalidClass' }
-            ],
-            options: [
-                {
-                    disallowUnknownClass: true
-                }
-            ] as any
-        },
+          disallowUnknownClass: true
+        }
+      ] as any
+    },
+    {
+      code: `<div class="btn a c d hello:world text-decoration:bad() mt:0 mt:0@sm">Error class</div>`,
+      errors: [
+        { messageId: 'disallowUnknownClass' },
+        { messageId: 'disallowUnknownClass' },
+        { messageId: 'disallowUnknownClass' },
+        { messageId: 'disallowUnknownClass' },
+        { messageId: 'invalidClass' }
+      ],
+      options: [
         {
-            code: `<div class="btn a c d hello:world text-decoration:bad() mt:0 mt:0@sm">Error class</div>`,
-            errors: [
-                { messageId: 'disallowUnknownClass' },
-                { messageId: 'disallowUnknownClass' },
-                { messageId: 'disallowUnknownClass' },
-                { messageId: 'disallowUnknownClass' },
-                { messageId: 'invalidClass' }
-            ],
-            options: [
-                {
-                    disallowUnknownClass: true
-                }
-            ] as any
-        },
-    ],
+          disallowUnknownClass: true
+        }
+      ] as any
+    },
+  ],
 })

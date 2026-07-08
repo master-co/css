@@ -40,10 +40,10 @@ Use `components` for project styles that carry product meaning: `.btn`, `.card`,
 
 ```css name=index.css
 @components {
-    btn {
-        @compose inline-flex;
-        background-color: var(--color-primary);
-    }
+  btn {
+    @compose inline-flex;
+    background-color: var(--color-primary);
+  }
 }
 ```
 
@@ -54,14 +54,14 @@ Use `utilities` for built-in utilities, animation utilities, and custom static u
 
 ```css name=index.css
 @utilities {
-    flow {
-        @compose grid gap:md;
-    }
+  flow {
+    @compose grid gap:md;
+  }
 
-    content-auto {
-        content-visibility: auto;
-        contain-intrinsic-size: auto 32rem;
-    }
+  content-auto {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 32rem;
+  }
 }
 ```
 
@@ -74,26 +74,26 @@ This example touches every generated layer. The project CSS entry defines theme 
 
 ```css name=index.css
 @theme light {
-    --color-primary: #000000;
+  --color-primary: #000000;
 }
 
 @theme dark {
-    --color-primary: #ffffff;
+  --color-primary: #ffffff;
 }
 
 @components {
-    btn {
-        @compose inline-flex;
-        background-color: var(--color-primary);
-    }
+  btn {
+    @compose inline-flex;
+    background-color: var(--color-primary);
+  }
 }
 ```
 
 <Code lang="html" name="hero.html">{require('./tests/overview/template.html?raw')}</Code>
 
 <details>
-    <summary>Generated CSS</summary>
-    <Code lang="css" beautify>{require('./tests/overview/generated.css?raw')}</Code>
+  <summary>Generated CSS</summary>
+  <Code lang="css" beautify>{require('./tests/overview/generated.css?raw')}</Code>
 </details>
 
 Notice the shape of the output:
@@ -113,9 +113,9 @@ Put reset-style rules in the base layer when they should sit below every design 
 
 ```css name=globals.css
 @layer base {
-    ul {
-        list-style: none;
-    }
+  ul {
+    list-style: none;
+  }
 }
 ```
 
@@ -124,8 +124,8 @@ You can also use `@base` from markup:
 <Code lang="html">{require('./tests/adding-base-styles/template.html?raw')}</Code>
 
 <details>
-    <summary>Generated CSS</summary>
-    <Code lang="css" beautify>{require('./tests/adding-base-styles/generated.css?raw')}</Code>
+  <summary>Generated CSS</summary>
+  <Code lang="css" beautify>{require('./tests/adding-base-styles/generated.css?raw')}</Code>
 </details>
 
 In most projects, import the default `@master/css` stylesheet; it includes [base styles](/guide/global-styles#base-layer) in the base layer.
@@ -138,8 +138,8 @@ Put brand or content defaults in the defaults layer when they should apply acros
 <Code lang="html">{require('./tests/adding-default-styles/template.html?raw')}</Code>
 
 <details>
-    <summary>Generated CSS</summary>
-    <Code lang="css" beautify>{require('./tests/adding-default-styles/generated.css?raw')}</Code>
+  <summary>Generated CSS</summary>
+  <Code lang="css" beautify>{require('./tests/adding-default-styles/generated.css?raw')}</Code>
 </details>
 
 (x) Do not put brand defaults into the base layer.
@@ -164,21 +164,21 @@ For example, `.btn` defines `display: inline-flex` in the components layer. Addi
 ```
 
 <details>
-    <summary>Generated CSS</summary>
-    ```css
-    @layer components {
-        .btn {
-            display: inline-flex;
-            …
-        }
+  <summary>Generated CSS</summary>
+  ```css
+  @layer components {
+    .btn {
+      display: inline-flex;
+      …
     }
+  }
 
-    @layer utilities {
-        .flex {
-            display: flex;
-        }
+  @layer utilities {
+    .flex {
+      display: flex;
     }
-    ```
+  }
+  ```
 </details>
 
 Use this as the normal override path: keep reusable product styles in `components`, then use utilities in `utilities` for local adjustments.
@@ -193,8 +193,8 @@ For example, set paragraph text to `1rem` across an article, then override one p
 <Code lang="html">{require('./tests/overriding-default-styles/template.html?raw')}</Code>
 
 <details>
-    <summary>Generated CSS</summary>
-    <Code lang="css" beautify>{require('./tests/overriding-default-styles/generated.css?raw')}</Code>
+  <summary>Generated CSS</summary>
+  <Code lang="css" beautify>{require('./tests/overriding-default-styles/generated.css?raw')}</Code>
 </details>
 
 This is the reason defaults sit before components and utilities: defaults should be broad, but final element-level decisions should stay close to the element.
@@ -206,15 +206,15 @@ Regular CSS outside `@layer` follows the native cascade outside Master CSS's lay
 
 ```css name=app.css
 @layer defaults {
-    article :is(h1, h2, h3) {
-        font-weight: 700;
-    }
+  article :is(h1, h2, h3) {
+    font-weight: 700;
+  }
 }
 
 @layer components {
-    .card {
-        border-radius: .75rem;
-    }
+  .card {
+    border-radius: .75rem;
+  }
 }
 ```
 
@@ -222,16 +222,16 @@ Native `@layer` is never compiler-managed. For on-demand managed definitions, us
 
 ```css name=index.css
 @utilities {
-    content-auto {
-        content-visibility: auto;
-    }
+  content-auto {
+    content-visibility: auto;
+  }
 }
 
 @components {
-    card {
-        @compose block;
-        border-radius: .75rem;
-    }
+  card {
+    @compose block;
+    border-radius: .75rem;
+  }
 }
 ```
 
@@ -239,11 +239,11 @@ Native style rules can still compose Master CSS utilities when the rule should r
 
 ```css name=app.css
 .card {
-    @compose block p:md;
+  @compose block p:md;
 
-    @dark {
-        @compose bg:neutral-90;
-    }
+  @dark {
+    @compose bg:neutral-90;
+  }
 }
 ```
 

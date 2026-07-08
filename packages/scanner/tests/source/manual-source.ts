@@ -1,6 +1,6 @@
 
 export default {
-    variables: [
-        { key: 'primary', value: 'var(--blue)' }
-    ]
+  variables: [
+    { key: 'primary', value: 'var(--blue)' }
+  ]
 }

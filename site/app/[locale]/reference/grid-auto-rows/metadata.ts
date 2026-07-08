@@ -1,13 +1,13 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'grid-auto-rows',
-    description: 'Setting the size of the grid rows.',
-    category: 'Flexbox & Grid',
-    type: 'entity',
-    canIUseLink: 'https://caniuse.com/?search=grid-auto-rows',
-    mdnLink: 'https://developer.mozilla.org/en-US/docs/Web/CSS/grid-auto-rows',
-    fileURL: import.meta.url
+  title: 'grid-auto-rows',
+  description: 'Setting the size of the grid rows.',
+  category: 'Flexbox & Grid',
+  type: 'entity',
+  canIUseLink: 'https://caniuse.com/?search=grid-auto-rows',
+  mdnLink: 'https://developer.mozilla.org/en-US/docs/Web/CSS/grid-auto-rows',
+  fileURL: import.meta.url
 })
 
 export default metadata

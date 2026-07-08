@@ -1,9 +1,9 @@
 @import '@master/css';
 
 @master {
-    mode-trigger: media;
+  mode-trigger: media;
 }
 
 @theme {
-    --color-primary: $color-yellow;
+  --color-primary: $color-yellow;
 }

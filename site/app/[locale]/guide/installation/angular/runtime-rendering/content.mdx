@@ -1,95 +1,95 @@
 <StepSection>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Create a project
-            If you don&#39;t have a Angular project, create one first. It&#39;s recommended to refer [Angular CLI](https://angular.io/cli).
-        </StepL>
-        <StepR>
-            <CodeTabs>
-                {[
-                    {
-                        name: 'Terminal',
-                        lang: 'bash',
-                        code: `
-                            ng new my-app
-                            cd my-app
-                        `
-                    }
-                ]}
-            </CodeTabs>
-        </StepR>
-    </Step>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Install Master CSS
-            Install Master CSS into your project via package managers.
-        </StepL>
-        <StepR>
-            ```bash action=install
-            @master/css@rc @master/css-runtime@rc
-            ```
-        </StepR>
-    </Step>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Set up CSS runtime engine
-            Initialize the runtime engine in the entry file `src/main.ts`.
-        </StepL>
-        <StepR>
-            ```ts name=src/main.ts
-               import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
-               import { AppModule } from './app/app.module';
-               import defaultManifest from '@master/css-preset/default-manifest.json' with { type: 'json' }; // [!code ++]
-               import CSSRuntime from '@master/css-runtime'; // [!code ++]
+  <Step $row>
+    <StepL>
+      ### <StepNum />Create a project
+      If you don&#39;t have a Angular project, create one first. It&#39;s recommended to refer [Angular CLI](https://angular.io/cli).
+    </StepL>
+    <StepR>
+      <CodeTabs>
+        {[
+          {
+            name: 'Terminal',
+            lang: 'bash',
+            code: `
+              ng new my-app
+              cd my-app
+            `
+          }
+        ]}
+      </CodeTabs>
+    </StepR>
+  </Step>
+  <Step $row>
+    <StepL>
+      ### <StepNum />Install Master CSS
+      Install Master CSS into your project via package managers.
+    </StepL>
+    <StepR>
+      ```bash action=install
+      @master/css@rc @master/css-runtime@rc
+      ```
+    </StepR>
+  </Step>
+  <Step $row>
+    <StepL>
+      ### <StepNum />Set up CSS runtime engine
+      Initialize the runtime engine in the entry file `src/main.ts`.
+    </StepL>
+    <StepR>
+      ```ts name=src/main.ts
+         import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
+         import { AppModule } from './app/app.module';
+         import defaultManifest from '@master/css-preset/default-manifest.json' with { type: 'json' }; // [!code ++]
+         import CSSRuntime from '@master/css-runtime'; // [!code ++]
 
-               CSSRuntime.create({ manifest: defaultManifest }).observe(); // [!code ++]
+         CSSRuntime.create({ manifest: defaultManifest }).observe(); // [!code ++]
 
-               platformBrowserDynamic().bootstrapModule(AppModule)
-                   .catch(err => console.error(err));
-            ```
-        </StepR>
-    </Step>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Import the default stylesheet
-            Import Master CSS from Angular's app stylesheet. This stylesheet is also the project CSS entry.
-        </StepL>
-        <StepR>
-            ```css name=src/styles.css
-            @import '@master/css';
-            ```
-        </StepR>
-    </Step>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Prevent flash of unstyled content
-            Add `html <html hidden>` to avoid [FOUC](https://en.wikipedia.org/wiki/Flash_of_unstyled_content) caused by the runtime engine not yet injecting CSS rules.
-        </StepL>
-        <StepR>
-            ```html name=src/index.html
-            <!doctype html>
-            <!-- @MARK hidden -->
-            <html lang="en" hidden>
-            ```
-        </StepR>
-    </Step>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Launch server
-            Run the development server.
-        </StepL>
-        <StepR>
-            ```bash name=Terminal
-            npm run start
-            ```
-        </StepR>
-    </Step>
-    <Step>
-        ### <StepNum />Start using Master CSS
-        Now style your first element using Master CSS syntax!
-        Open your browser to watch the changes.
-    </Step>
-    <HelloWorld url="localhost:3000" />
+         platformBrowserDynamic().bootstrapModule(AppModule)
+           .catch(err => console.error(err));
+      ```
+    </StepR>
+  </Step>
+  <Step $row>
+    <StepL>
+      ### <StepNum />Import the default stylesheet
+      Import Master CSS from Angular's app stylesheet. This stylesheet is also the project CSS entry.
+    </StepL>
+    <StepR>
+      ```css name=src/styles.css
+      @import '@master/css';
+      ```
+    </StepR>
+  </Step>
+  <Step $row>
+    <StepL>
+      ### <StepNum />Prevent flash of unstyled content
+      Add `html <html hidden>` to avoid [FOUC](https://en.wikipedia.org/wiki/Flash_of_unstyled_content) caused by the runtime engine not yet injecting CSS rules.
+    </StepL>
+    <StepR>
+      ```html name=src/index.html
+      <!doctype html>
+      <!-- @MARK hidden -->
+      <html lang="en" hidden>
+      ```
+    </StepR>
+  </Step>
+  <Step $row>
+    <StepL>
+      ### <StepNum />Launch server
+      Run the development server.
+    </StepL>
+    <StepR>
+      ```bash name=Terminal
+      npm run start
+      ```
+    </StepR>
+  </Step>
+  <Step>
+    ### <StepNum />Start using Master CSS
+    Now style your first element using Master CSS syntax!
+    Open your browser to watch the changes.
+  </Step>
+  <HelloWorld url="localhost:3000" />
 </StepSection>
 
 ```html name=src/app/app.component.html

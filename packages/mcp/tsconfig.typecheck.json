@@ -1,55 +1,55 @@
 {
-    "extends": "./tsconfig.json",
-    "compilerOptions": {
-        "composite": true,
-        "incremental": true,
-        "declaration": true,
-        "declarationMap": false,
-        "emitDeclarationOnly": true,
-        "noEmit": false,
-        "rootDir": ".",
-        "outDir": ".tsbuild/typecheck",
-        "tsBuildInfoFile": ".tsbuild/typecheck/tsconfig.tsbuildinfo"
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "composite": true,
+    "incremental": true,
+    "declaration": true,
+    "declarationMap": false,
+    "emitDeclarationOnly": true,
+    "noEmit": false,
+    "rootDir": ".",
+    "outDir": ".tsbuild/typecheck",
+    "tsBuildInfoFile": ".tsbuild/typecheck/tsconfig.tsbuildinfo"
+  },
+  "references": [
+    {
+      "path": "../compiler/tsconfig.typecheck.json"
     },
-    "references": [
-        {
-            "path": "../compiler/tsconfig.typecheck.json"
-        },
-        {
-            "path": "../engine/tsconfig.typecheck.json"
-        },
-        {
-            "path": "../diagnostics/tsconfig.typecheck.json"
-        },
-        {
-            "path": "../language-service/tsconfig.typecheck.json"
-        },
-        {
-            "path": "../lexer/tsconfig.typecheck.json"
-        },
-        {
-            "path": "../lint/tsconfig.typecheck.json"
-        },
-        {
-            "path": "../project/tsconfig.typecheck.json"
-        },
-        {
-            "path": "../scanner/tsconfig.typecheck.json"
-        },
-        {
-            "path": "../server/tsconfig.typecheck.json"
-        },
-        {
-            "path": "../stylesheet/tsconfig.typecheck.json"
-        },
-        {
-            "path": "../validator/tsconfig.typecheck.json"
-        }
-    ],
-    "include": [
-        "src/**/*.ts",
-        "tests/**/*.test.ts",
-        "tests/**/test.ts",
-        "package.json"
-    ]
+    {
+      "path": "../engine/tsconfig.typecheck.json"
+    },
+    {
+      "path": "../diagnostics/tsconfig.typecheck.json"
+    },
+    {
+      "path": "../language-service/tsconfig.typecheck.json"
+    },
+    {
+      "path": "../lexer/tsconfig.typecheck.json"
+    },
+    {
+      "path": "../lint/tsconfig.typecheck.json"
+    },
+    {
+      "path": "../project/tsconfig.typecheck.json"
+    },
+    {
+      "path": "../scanner/tsconfig.typecheck.json"
+    },
+    {
+      "path": "../server/tsconfig.typecheck.json"
+    },
+    {
+      "path": "../stylesheet/tsconfig.typecheck.json"
+    },
+    {
+      "path": "../validator/tsconfig.typecheck.json"
+    }
+  ],
+  "include": [
+    "src/**/*.ts",
+    "tests/**/*.test.ts",
+    "tests/**/test.ts",
+    "package.json"
+  ]
 }

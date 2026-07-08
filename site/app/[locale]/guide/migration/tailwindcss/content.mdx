@@ -73,10 +73,10 @@ Tailwind v4 `@theme` variables create utility classes and variants. Master CSS `
 @import "tailwindcss";
 
 @theme {
-    --color-brand: oklch(0.62 0.2 265);
-    --spacing-card: 1.5rem;
-    --radius-card: 1rem;
-    --breakpoint-dashboard: 72rem;
+  --color-brand: oklch(0.62 0.2 265);
+  --spacing-card: 1.5rem;
+  --radius-card: 1rem;
+  --breakpoint-dashboard: 72rem;
 }
 ```
 
@@ -84,16 +84,16 @@ Tailwind v4 `@theme` variables create utility classes and variants. Master CSS `
 @import "@master/css";
 
 @theme {
-    --color-brand: oklch(0.62 0.2 265);
-    --spacing-card: 1.5rem;
-    --radius-card: 1rem;
-    --breakpoint-dashboard: 72rem;
+  --color-brand: oklch(0.62 0.2 265);
+  --spacing-card: 1.5rem;
+  --radius-card: 1rem;
+  --breakpoint-dashboard: 72rem;
 }
 ```
 
 ```html
 <article class="r:card grid-cols:3@md bg:brand p:card">
-    ...
+  ...
 </article>
 ```
 
@@ -116,23 +116,23 @@ Use `@theme light` and `@theme dark` when token values should change by mode.
 @import "@master/css";
 
 @settings {
-    mode-trigger: class;
+  mode-trigger: class;
 }
 
 @theme light {
-    --color-panel: #fff;
-    --color-text-body: #111827;
+  --color-panel: #fff;
+  --color-text-body: #111827;
 }
 
 @theme dark {
-    --color-panel: #111827;
-    --color-text-body: #f9fafb;
+  --color-panel: #111827;
+  --color-text-body: #f9fafb;
 }
 ```
 
 ```html
 <section class="text:body bg:panel">
-    ...
+  ...
 </section>
 ```
 
@@ -161,10 +161,10 @@ Example conversion:
 
 ```html
 <section class="grid gap:lg w:full max-w:5xl mx:auto px:md py:2xl grid-cols:3@md">
-    <article class="p:lg r:lg bg:white shadow:sm">
-        <h2 class="m:0 font:2xl font:semibold text:neutral">Account</h2>
-        <p class="mt:xs text:muted">Review profile settings.</p>
-    </article>
+  <article class="p:lg r:lg bg:white shadow:sm">
+    <h2 class="m:0 font:2xl font:semibold text:neutral">Account</h2>
+    <p class="mt:xs text:muted">Review profile settings.</p>
+  </article>
 </section>
 ```
 
@@ -173,7 +173,7 @@ When a Tailwind class does not have a short Master CSS alias, use the CSS proper
 {/* eslint-disable @master/css/prefer-canonical-classes -- intentional native declaration example */}
 ```html
 <div class="scroll-margin-top:4rem text-wrap:balance">
-    ...
+  ...
 </div>
 ```
 {/* eslint-enable @master/css/prefer-canonical-classes */}
@@ -197,7 +197,7 @@ Tailwind writes variants before the utility. Master CSS appends selectors and co
 
 ```html
 <button class="inline-flex items-center h:10x px:md r:md bg:blue-60 fg:white bg:blue-70:hover opacity:.5:disabled">
-    Save
+  Save
 </button>
 ```
 
@@ -207,22 +207,22 @@ Use `@custom-variant` when a Tailwind custom variant represents shared product l
 @import "@master/css";
 
 @custom-variant @compact {
-    @media (width < 48rem) {
-        @slot;
-    }
+  @media (width < 48rem) {
+    @slot;
+  }
 }
 
 @custom-variant :interactive {
-    &:is(:hover, :focus-visible) {
-        @slot;
-    }
+  &:is(:hover, :focus-visible) {
+    @slot;
+  }
 }
 ```
 
 {/* eslint-disable @master/css/no-invalid-classes -- custom variants are defined in the adjacent CSS example */}
 ```html
 <button class="bg:blue-70:interactive px:sm@compact">
-    Save
+  Save
 </button>
 ```
 {/* eslint-enable @master/css/no-invalid-classes */}
@@ -231,7 +231,7 @@ For Tailwind `group-*` and `peer-*` patterns, prefer native selectors when possi
 
 ```html
 <article class="bg:blue-5:hover_h2">
-    <h2 class="text:neutral">Project</h2>
+  <h2 class="text:neutral">Project</h2>
 </article>
 ```
 
@@ -242,7 +242,7 @@ Tailwind `@apply` inlines Tailwind utilities into a CSS rule. Master CSS uses `@
 
 ```css name=tailwind.css
 .btn {
-    @apply inline-flex items-center gap-2 rounded-md bg-blue-600 px-4 py-2 text-white shadow-sm;
+  @apply inline-flex items-center gap-2 rounded-md bg-blue-600 px-4 py-2 text-white shadow-sm;
 }
 ```
 
@@ -250,7 +250,7 @@ Tailwind `@apply` inlines Tailwind utilities into a CSS rule. Master CSS uses `@
 @import "@master/css";
 
 .btn {
-    @compose inline-flex align-items:center gap:xs r:md bg:blue-60 px:md py:xs fg:white shadow:sm;
+  @compose inline-flex align-items:center gap:xs r:md bg:blue-60 px:md py:xs fg:white shadow:sm;
 }
 ```
 
@@ -258,8 +258,8 @@ Use native declarations when the value is clearer than a class:
 
 ```css name=app.css
 .form-panel {
-    @compose p:lg r:lg bg:white shadow:sm;
-    border: 1px solid color-mix(in oklab, currentColor 12%, transparent);
+  @compose p:lg r:lg bg:white shadow:sm;
+  border: 1px solid color-mix(in oklab, currentColor 12%, transparent);
 }
 ```
 
@@ -269,7 +269,7 @@ Use `@reference` in CSS Modules and framework style blocks when the local styles
 @reference "../app.css";
 
 .button {
-    @compose inline-flex align-items:center px:md h:10x r:md bg:blue-60 fg:white;
+  @compose inline-flex align-items:center px:md h:10x r:md bg:blue-60 fg:white;
 }
 ```
 
@@ -282,8 +282,8 @@ Tailwind `@utility` creates custom utilities that work with variants. In Master 
 
 ```css name=tailwind.css
 @utility content-auto {
-    content-visibility: auto;
-    contain-intrinsic-size: auto 32rem;
+  content-visibility: auto;
+  contain-intrinsic-size: auto 32rem;
 }
 ```
 
@@ -291,16 +291,16 @@ Tailwind `@utility` creates custom utilities that work with variants. In Master 
 @import "@master/css";
 
 @utilities {
-    content-auto {
-        content-visibility: auto;
-        contain-intrinsic-size: auto 32rem;
-    }
+  content-auto {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 32rem;
+  }
 }
 ```
 
 ```html
 <section class="content-auto">
-    ...
+  ...
 </section>
 ```
 
@@ -308,24 +308,24 @@ Use `@components` when the name describes a product UI role rather than a low-le
 
 ```css name=app.css
 @components {
-    btn {
-        @compose inline-flex align-items:center justify-content:center gap:xs px:md py:xs r:md font:sm font:medium;
-        @compose bg:blue-60 fg:white;
+  btn {
+    @compose inline-flex align-items:center justify-content:center gap:xs px:md py:xs r:md font:sm font:medium;
+    @compose bg:blue-60 fg:white;
 
-        &:disabled {
-            @compose opacity:.5 pointer-events:none;
-        }
-
-        @variant @md {
-            @compose px:lg;
-        }
+    &:disabled {
+      @compose opacity:.5 pointer-events:none;
     }
+
+    @variant @md {
+      @compose px:lg;
+    }
+  }
 }
 ```
 
 ```html
 <button class="btn">
-    Submit
+  Submit
 </button>
 ```
 
@@ -346,9 +346,9 @@ const className = 'bg:' + tone
 
 ```ts
 const toneClasses = {
-    neutral: 'bg:white text:neutral',
-    success: 'bg:green-60 fg:white',
-    danger: 'bg:red-60 fg:white'
+  neutral: 'bg:white text:neutral',
+  success: 'bg:green-60 fg:white',
+  danger: 'bg:red-60 fg:white'
 }
 ```
 
@@ -356,14 +356,14 @@ When only the value is dynamic, keep the class static and pass the runtime value
 
 ```tsx
 function Progress({ value }: { value: number }) {
-    return (
-        <div className="overflow:hidden h:4x r:full bg:gray-10">
-            <div
-                className="h:full w:$progress bg:blue-60 transition:width|fast|smooth"
-                style={{ '--progress': `${value}%` } as React.CSSProperties}
-            />
-        </div>
-    )
+  return (
+    <div className="overflow:hidden h:4x r:full bg:gray-10">
+      <div
+        className="h:full w:$progress bg:blue-60 transition:width|fast|smooth"
+        style={{ '--progress': `${value}%` } as React.CSSProperties}
+      />
+    </div>
+  )
 }
 ```
 

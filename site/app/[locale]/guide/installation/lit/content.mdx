@@ -1,71 +1,71 @@
 <StepSection>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Create a Lit project
-            If you don't have a Lit project, create one first.
-        </StepL>
-        <StepR>
-            ```bash name=Terminal
-            npm create vite@latest my-app -- --template lit-ts
-            cd my-app
-            ```
-        </StepR>
-    </Step>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Add Master CSS
-            Run the installer from the Lit project root. Lit uses the default Vite runtime mode so classes can be generated as components render.
-        </StepL>
-        <StepR>
-            ```bash name=Terminal
-            npm create @master/css@rc -- --framework lit --yes
-            ```
-        </StepR>
-    </Step>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Use the runtime decorator
-            Master CSS styles inside a Lit shadow root need a runtime attached to that root. The installer adds this to the standard `src/my-element.ts` file when it exists.
-        </StepL>
-        <StepR>
-            ```ts name=src/my-element.ts
-            import { LitElement, html } from 'lit'
-            import { customElement } from 'lit/decorators.js'
-            import { cssRuntime } from '@master/css-runtime'
-            import type CSSRuntime from '@master/css-runtime'
-            import manifest from 'virtual:master-css-manifest'
-            import emittedGlobals from 'virtual:master-css-emitted-globals'
+  <Step $row>
+    <StepL>
+      ### <StepNum />Create a Lit project
+      If you don't have a Lit project, create one first.
+    </StepL>
+    <StepR>
+      ```bash name=Terminal
+      npm create vite@latest my-app -- --template lit-ts
+      cd my-app
+      ```
+    </StepR>
+  </Step>
+  <Step $row>
+    <StepL>
+      ### <StepNum />Add Master CSS
+      Run the installer from the Lit project root. Lit uses the default Vite runtime mode so classes can be generated as components render.
+    </StepL>
+    <StepR>
+      ```bash name=Terminal
+      npm create @master/css@rc -- --framework lit --yes
+      ```
+    </StepR>
+  </Step>
+  <Step $row>
+    <StepL>
+      ### <StepNum />Use the runtime decorator
+      Master CSS styles inside a Lit shadow root need a runtime attached to that root. The installer adds this to the standard `src/my-element.ts` file when it exists.
+    </StepL>
+    <StepR>
+      ```ts name=src/my-element.ts
+      import { LitElement, html } from 'lit'
+      import { customElement } from 'lit/decorators.js'
+      import { cssRuntime } from '@master/css-runtime'
+      import type CSSRuntime from '@master/css-runtime'
+      import manifest from 'virtual:master-css-manifest'
+      import emittedGlobals from 'virtual:master-css-emitted-globals'
 
-            @customElement('my-element')
-            @cssRuntime({ manifest, emittedGlobals })
-            export class MyElement extends LitElement {
-                cssRuntime?: CSSRuntime
+      @customElement('my-element')
+      @cssRuntime({ manifest, emittedGlobals })
+      export class MyElement extends LitElement {
+        cssRuntime?: CSSRuntime
 
-                render() {
-                    return html`
-                        <button class="inline-flex items-center gap:xs px:md py:xs r:lg bg:blue fg:white">
-                            Hello Lit
-                        </button>
-                    `
-                }
-            }
-            ```
-        </StepR>
-    </Step>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Start dev server
-            Run the command to start the Vite dev server.
-        </StepL>
-        <StepR>
-            ```bash name=Terminal&action=run
-            dev
-            ```
-        </StepR>
-    </Step>
-    <Step>
-        ### <StepNum />Start using Master CSS
-        Now style elements inside your Lit templates using Master CSS syntax.
-    </Step>
-    <HelloWorld url="localhost:5173" />
+        render() {
+          return html`
+            <button class="inline-flex items-center gap:xs px:md py:xs r:lg bg:blue fg:white">
+              Hello Lit
+            </button>
+          `
+        }
+      }
+      ```
+    </StepR>
+  </Step>
+  <Step $row>
+    <StepL>
+      ### <StepNum />Start dev server
+      Run the command to start the Vite dev server.
+    </StepL>
+    <StepR>
+      ```bash name=Terminal&action=run
+      dev
+      ```
+    </StepR>
+  </Step>
+  <Step>
+    ### <StepNum />Start using Master CSS
+    Now style elements inside your Lit templates using Master CSS syntax.
+  </Step>
+  <HelloWorld url="localhost:5173" />
 </StepSection>

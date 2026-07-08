@@ -16,11 +16,11 @@ Preload the CDN runtime with `as="script"`. The CDN runtime imports its split de
 <!DOCTYPE html>
 <html lang="en" hidden>
 <head>
-    <link rel="preload" as="style" href="https://cdn.master.co/css@rc/base.css">
-    <link rel="preload" as="script" href="https://cdn.master.co/css-runtime@rc"> <!-- [!code highlight] -->
-    <link rel="modulepreload" as="json" crossorigin href="https://cdn.master.co/css-runtime@rc/default-manifest.json"> <!-- [!code highlight] -->
-    <link rel="stylesheet" href="https://cdn.master.co/css@rc/base.css">
-    <script src="https://cdn.master.co/css-runtime@rc"></script>
+  <link rel="preload" as="style" href="https://cdn.master.co/css@rc/base.css">
+  <link rel="preload" as="script" href="https://cdn.master.co/css-runtime@rc"> <!-- [!code highlight] -->
+  <link rel="modulepreload" as="json" crossorigin href="https://cdn.master.co/css-runtime@rc/default-manifest.json"> <!-- [!code highlight] -->
+  <link rel="stylesheet" href="https://cdn.master.co/css@rc/base.css">
+  <script src="https://cdn.master.co/css-runtime@rc"></script>
 </head>
 </html>
 ```
@@ -38,8 +38,8 @@ Official runtime integrations can split the project manifest into a hashed JSON 
 <!DOCTYPE html>
 <html lang="en" hidden>
 <head>
-    <link rel="modulepreload" as="json" crossorigin href="/assets/master-css-manifest.<hash>.json"> <!-- [!code highlight] -->
-    <script type="module" src="/assets/main.<hash>.js"></script>
+  <link rel="modulepreload" as="json" crossorigin href="/assets/master-css-manifest.<hash>.json"> <!-- [!code highlight] -->
+  <script type="module" src="/assets/main.<hash>.js"></script>
 </head>
 </html>
 ```
@@ -65,8 +65,8 @@ Master CSS uses different JSON files for different handoff points:
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <!-- @MARK defer -->
-    <script type="module" src="/main.js"></script>
+  <!-- @MARK defer -->
+  <script type="module" src="/main.js"></script>
 </head>
 </html>
 ```
@@ -76,7 +76,7 @@ Master CSS uses different JSON files for different handoff points:
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <link rel="modulepreload" href="/main.js"> <!-- [!code --] -->
+  <link rel="modulepreload" href="/main.js"> <!-- [!code --] -->
 </head>
 </html>
 ```

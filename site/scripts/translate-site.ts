@@ -92,7 +92,7 @@ async function main() {
         case 'submit': {
             const input = options.input || resolve(translationsRoot, `${locale}.batch.jsonl`)
             const batch = await submitBatch(input)
-            console.log(JSON.stringify(batch, null, 4))
+            console.log(JSON.stringify(batch, null, 2))
             return
         }
         case 'download': {
@@ -330,7 +330,7 @@ function applyTranslations(locale: string, responseFile: string) {
     }
 
     mkdirSync(dirname(dictionaryPath), { recursive: true })
-    writeFileSync(dictionaryPath, `${JSON.stringify(sortObject(dictionary), null, 4)}\n`)
+    writeFileSync(dictionaryPath, `${JSON.stringify(sortObject(dictionary), null, 2)}\n`)
 
     for (const [sourceFile, translatedSource] of mdxFiles) {
         const translatedPath = sourceFile.replace(/content\.mdx$/, `content.${locale}.mdx`)
@@ -339,7 +339,7 @@ function applyTranslations(locale: string, responseFile: string) {
 
     const manifestPath = resolve(translationsRoot, `${locale}.manifest.json`)
     mkdirSync(dirname(manifestPath), { recursive: true })
-    writeFileSync(manifestPath, `${JSON.stringify(sortObject(manifest), null, 4)}\n`)
+    writeFileSync(manifestPath, `${JSON.stringify(sortObject(manifest), null, 2)}\n`)
     console.log(`applied ${translationById.size} translations for ${locale}`)
 }
 

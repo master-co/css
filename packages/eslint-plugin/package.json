@@ -1,77 +1,77 @@
 {
-    "name": "@master/eslint-plugin-css",
-    "type": "module",
-    "scripts": {
-        "build": "tsdown --config ../../shared/tsdown-package.config.ts",
-        "dev": "tsdown --config ../../shared/tsdown-package.config.ts --watch",
-        "test": "vitest",
-        "type-check": "tsc -b tsconfig.typecheck.json",
-        "lint": "eslint"
+  "name": "@master/eslint-plugin-css",
+  "type": "module",
+  "scripts": {
+    "build": "tsdown --config ../../shared/tsdown-package.config.ts",
+    "dev": "tsdown --config ../../shared/tsdown-package.config.ts --watch",
+    "test": "vitest",
+    "type-check": "tsc -b tsconfig.typecheck.json",
+    "lint": "eslint"
+  },
+  "keywords": [
+    "mastercss",
+    "eslint",
+    "eslintplugin"
+  ],
+  "license": "MIT",
+  "description": "Master CSS ESLint Plugin",
+  "author": "Aoyue Design LLC.",
+  "funding": "https://rc.css.master.co/sponsor",
+  "homepage": "https://css.master.co",
+  "bugs": {
+    "url": "https://github.com/master-co/css/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/master-co/css.git",
+    "directory": "packages/eslint-plugin"
+  },
+  "sideEffects": false,
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "jsnext:main": "./dist/index.js",
+  "esnext": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
     },
-    "keywords": [
-        "mastercss",
-        "eslint",
-        "eslintplugin"
-    ],
-    "license": "MIT",
-    "description": "Master CSS ESLint Plugin",
-    "author": "Aoyue Design LLC.",
-    "funding": "https://rc.css.master.co/sponsor",
-    "homepage": "https://css.master.co",
-    "bugs": {
-        "url": "https://github.com/master-co/css/issues"
-    },
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/master-co/css.git",
-        "directory": "packages/eslint-plugin"
-    },
-    "sideEffects": false,
-    "main": "./dist/index.js",
-    "module": "./dist/index.js",
-    "jsnext:main": "./dist/index.js",
-    "esnext": "./dist/index.js",
-    "types": "./dist/index.d.ts",
-    "exports": {
-        ".": {
-            "types": "./dist/index.d.ts",
-            "import": "./dist/index.js",
-            "default": "./dist/index.js"
-        },
-        "./configs/*": {
-            "types": "./dist/configs/*.d.ts",
-            "import": "./dist/configs/*.js",
-            "default": "./dist/configs/*.js"
-        }
-    },
-    "files": [
-        "dist"
-    ],
-    "publishConfig": {
-        "access": "public",
-        "provenance": true
-    },
-    "dependencies": {
-        "@master/css": "workspace:^",
-        "@master/css-lexer": "workspace:^",
-        "@master/css-lint": "workspace:^",
-        "@master/css-project": "workspace:^",
-        "@master/css-preset": "workspace:^",
-        "@master/css-validator": "workspace:^",
-        "@typescript-eslint/utils": "^8.61.1",
-        "typescript-eslint": "^8.61.1"
-    },
-    "devDependencies": {
-        "@angular-eslint/template-parser": "^21.4.0",
-        "@master/css-schema": "workspace:^",
-        "@angular/compiler": "^21.2.17",
-        "@typescript-eslint/rule-tester": "^8.61.1",
-        "eslint": "^10.5.0",
-        "eslint-mdx": "^3.8.1",
-        "eslint-plugin-markdown": "^5.1.0",
-        "eslint-plugin-mdx": "^3.8.1",
-        "svelte-eslint-parser": "^1.8.0",
-        "ts-node": "^10.9.2",
-        "vue-eslint-parser": "^10.4.1"
+    "./configs/*": {
+      "types": "./dist/configs/*.d.ts",
+      "import": "./dist/configs/*.js",
+      "default": "./dist/configs/*.js"
     }
+  },
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "dependencies": {
+    "@master/css": "workspace:^",
+    "@master/css-lexer": "workspace:^",
+    "@master/css-lint": "workspace:^",
+    "@master/css-project": "workspace:^",
+    "@master/css-preset": "workspace:^",
+    "@master/css-validator": "workspace:^",
+    "@typescript-eslint/utils": "^8.61.1",
+    "typescript-eslint": "^8.61.1"
+  },
+  "devDependencies": {
+    "@angular-eslint/template-parser": "^21.4.0",
+    "@master/css-schema": "workspace:^",
+    "@angular/compiler": "^21.2.17",
+    "@typescript-eslint/rule-tester": "^8.61.1",
+    "eslint": "^10.5.0",
+    "eslint-mdx": "^3.8.1",
+    "eslint-plugin-markdown": "^5.1.0",
+    "eslint-plugin-mdx": "^3.8.1",
+    "svelte-eslint-parser": "^1.8.0",
+    "ts-node": "^10.9.2",
+    "vue-eslint-parser": "^10.4.1"
+  }
 }

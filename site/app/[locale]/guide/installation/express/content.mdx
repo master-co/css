@@ -1,141 +1,141 @@
 Use progressive rendering when Express owns the HTML response. Express renders the template, `@master/css-server` injects the first-response CSS, and the Vite runtime asset adopts that CSS in the browser for later dynamic classes.
 
 <StepSection>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Open your project
-            Start from an Express project root.
-        </StepL>
-        <StepR>
-            ```bash name=Terminal
-            cd my-express-app
-            npm init -y
-            ```
-        </StepR>
-    </Step>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Install Master CSS
-            Install the server renderer, Vite, and the Vite integration.
-        </StepL>
-        <StepR>
-            ```bash name=Terminal
-            npm install express ejs @master/css-server@rc
-            npm install -D vite @master/css.vite@rc
-            ```
-        </StepR>
-    </Step>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Configure Vite
-            Build the browser runtime entry and base stylesheet into `public/assets`.
-        </StepL>
-        <StepR>
-            ```ts name=vite.config.ts
-            import { defineConfig } from 'vite'
-            import masterCSS from '@master/css.vite'
+  <Step $row>
+    <StepL>
+      ### <StepNum />Open your project
+      Start from an Express project root.
+    </StepL>
+    <StepR>
+      ```bash name=Terminal
+      cd my-express-app
+      npm init -y
+      ```
+    </StepR>
+  </Step>
+  <Step $row>
+    <StepL>
+      ### <StepNum />Install Master CSS
+      Install the server renderer, Vite, and the Vite integration.
+    </StepL>
+    <StepR>
+      ```bash name=Terminal
+      npm install express ejs @master/css-server@rc
+      npm install -D vite @master/css.vite@rc
+      ```
+    </StepR>
+  </Step>
+  <Step $row>
+    <StepL>
+      ### <StepNum />Configure Vite
+      Build the browser runtime entry and base stylesheet into `public/assets`.
+    </StepL>
+    <StepR>
+      ```ts name=vite.config.ts
+      import { defineConfig } from 'vite'
+      import masterCSS from '@master/css.vite'
 
-            export default defineConfig({
-                plugins: [
-                    masterCSS({ mode: 'runtime', injectRuntime: false })
-                ],
-                build: {
-                    outDir: 'public/assets',
-                    emptyOutDir: true,
-                    rollupOptions: {
-                        input: 'src/main.ts',
-                        output: {
-                            entryFileNames: 'app.js',
-                            assetFileNames: 'app[extname]'
-                        }
-                    }
-                }
-            })
-            ```
-        </StepR>
-    </Step>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Create the browser entry
-            Import the Vite-managed runtime and the Master CSS stylesheet.
-        </StepL>
-        <StepR>
-            ```ts name=src/main.ts
-            import '@master/css.vite/runtime'
-            import './app.css'
-            ```
-
-            ```css name=src/app.css
-            @import "@master/css";
-            ```
-        </StepR>
-    </Step>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Render with Master CSS
-            Render the template first, then pass the full document to `@master/css-server`.
-        </StepL>
-        <StepR>
-            ```js name=app.js
-            import express from 'express'
-            import ejs from 'ejs'
-            import { render } from '@master/css-server'
-
-            const app = express()
-
-            app.use('/assets', express.static('public/assets'))
-
-            app.get('/', async (_request, response) => {
-                const body = await ejs.renderFile('views/index.ejs')
-                const document = `<!doctype html>
-            <html lang="en">
-            <head>
-                <meta charset="utf-8">
-                <meta name="viewport" content="width=device-width, initial-scale=1">
-                <link rel="stylesheet" href="/assets/app.css">
-            </head>
-            <body>
-                ${body}
-                <script type="module" src="/assets/app.js"></script>
-            </body>
-            </html>`
-
-                response.send(render(document, undefined, {
-                    hydrationManifest: 'inject'
-                }).html)
-            })
-
-            app.listen(3000)
-            ```
-        </StepR>
-    </Step>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Add build scripts
-            Build or watch the frontend assets beside the Express server.
-        </StepL>
-        <StepR>
-            ```json name=package.json
-            {
-                "scripts": {
-                    "build:assets": "vite build",
-                    "watch:assets": "vite build --watch",
-                    "start": "node app.js"
-                }
+      export default defineConfig({
+        plugins: [
+          masterCSS({ mode: 'runtime', injectRuntime: false })
+        ],
+        build: {
+          outDir: 'public/assets',
+          emptyOutDir: true,
+          rollupOptions: {
+            input: 'src/main.ts',
+            output: {
+              entryFileNames: 'app.js',
+              assetFileNames: 'app[extname]'
             }
-            ```
-        </StepR>
-    </Step>
-    <Step>
-        ### <StepNum />Hello world
-        Now style your first server-rendered template using Master CSS syntax.
-    </Step>
-    <HelloWorld url="localhost:3000" />
+          }
+        }
+      })
+      ```
+    </StepR>
+  </Step>
+  <Step $row>
+    <StepL>
+      ### <StepNum />Create the browser entry
+      Import the Vite-managed runtime and the Master CSS stylesheet.
+    </StepL>
+    <StepR>
+      ```ts name=src/main.ts
+      import '@master/css.vite/runtime'
+      import './app.css'
+      ```
+
+      ```css name=src/app.css
+      @import "@master/css";
+      ```
+    </StepR>
+  </Step>
+  <Step $row>
+    <StepL>
+      ### <StepNum />Render with Master CSS
+      Render the template first, then pass the full document to `@master/css-server`.
+    </StepL>
+    <StepR>
+      ```js name=app.js
+      import express from 'express'
+      import ejs from 'ejs'
+      import { render } from '@master/css-server'
+
+      const app = express()
+
+      app.use('/assets', express.static('public/assets'))
+
+      app.get('/', async (_request, response) => {
+        const body = await ejs.renderFile('views/index.ejs')
+        const document = `<!doctype html>
+      <html lang="en">
+      <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="/assets/app.css">
+      </head>
+      <body>
+        ${body}
+        <script type="module" src="/assets/app.js"></script>
+      </body>
+      </html>`
+
+        response.send(render(document, undefined, {
+          hydrationManifest: 'inject'
+        }).html)
+      })
+
+      app.listen(3000)
+      ```
+    </StepR>
+  </Step>
+  <Step $row>
+    <StepL>
+      ### <StepNum />Add build scripts
+      Build or watch the frontend assets beside the Express server.
+    </StepL>
+    <StepR>
+      ```json name=package.json
+      {
+        "scripts": {
+          "build:assets": "vite build",
+          "watch:assets": "vite build --watch",
+          "start": "node app.js"
+        }
+      }
+      ```
+    </StepR>
+  </Step>
+  <Step>
+    ### <StepNum />Hello world
+    Now style your first server-rendered template using Master CSS syntax.
+  </Step>
+  <HelloWorld url="localhost:3000" />
 </StepSection>
 
 ```html name=views/index.ejs
 <h1 class="m:2xl italic font:5xl font:heavy text:neutral">
-    Hello World
+  Hello World
 </h1>
 ```
 

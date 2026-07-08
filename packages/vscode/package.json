@@ -1,511 +1,511 @@
 {
-    "name": "master-css-vscode",
-    "type": "module",
-    "scripts": {
-        "build": "tsdown && pnpm generate",
-        "generate": "node --import tsx generate",
-        "dev": "tsdown --watch",
-        "test": "vitest",
-        "type-check": "tsc -b tsconfig.typecheck.json",
-        "lint": "eslint",
-        "vscode:package": "node scripts/package-targets.js package",
-        "vscode:publish": "node scripts/package-targets.js publish",
-        "release": "node scripts/release.js"
+  "name": "master-css-vscode",
+  "type": "module",
+  "scripts": {
+    "build": "tsdown && pnpm generate",
+    "generate": "node --import tsx generate",
+    "dev": "tsdown --watch",
+    "test": "vitest",
+    "type-check": "tsc -b tsconfig.typecheck.json",
+    "lint": "eslint",
+    "vscode:package": "node scripts/package-targets.js package",
+    "vscode:publish": "node scripts/package-targets.js publish",
+    "release": "node scripts/release.js"
+  },
+  "version": "2.0.34",
+  "description": "Master CSS for Visual Studio Code",
+  "displayName": "Master CSS",
+  "author": "Aoyue Design LLC.",
+  "funding": "https://rc.css.master.co/sponsor",
+  "homepage": "https://rc.css.master.co/guide/installation/language-service",
+  "license": "MIT",
+  "publisher": "masterco",
+  "icon": "icon.png",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/master-co/css.git",
+    "directory": "packages/vscode"
+  },
+  "engines": {
+    "vscode": "^1.120.0"
+  },
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./dist/extension.min.js",
+  "exports": {
+    ".": "./dist/extension.min.js",
+    "./server": "./dist/server.min.js"
+  },
+  "files": [
+    "dist",
+    "data",
+    "LICENSE",
+    "icon.png"
+  ],
+  "capabilities": {
+    "virtualWorkspaces": {
+      "supported": false,
+      "description": "Using Master CSS is not possible in virtual workspaces."
     },
-    "version": "2.0.34",
-    "description": "Master CSS for Visual Studio Code",
-    "displayName": "Master CSS",
-    "author": "Aoyue Design LLC.",
-    "funding": "https://rc.css.master.co/sponsor",
-    "homepage": "https://rc.css.master.co/guide/installation/language-service",
-    "license": "MIT",
-    "publisher": "masterco",
-    "icon": "icon.png",
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/master-co/css.git",
-        "directory": "packages/vscode"
-    },
-    "engines": {
-        "vscode": "^1.120.0"
-    },
-    "activationEvents": [
-        "onStartupFinished"
-    ],
-    "main": "./dist/extension.min.js",
-    "exports": {
-        ".": "./dist/extension.min.js",
-        "./server": "./dist/server.min.js"
-    },
-    "files": [
-        "dist",
-        "data",
-        "LICENSE",
-        "icon.png"
-    ],
-    "capabilities": {
-        "virtualWorkspaces": {
-            "supported": false,
-            "description": "Using Master CSS is not possible in virtual workspaces."
-        },
-        "untrustedWorkspaces": {
-            "supported": false,
-            "description": "The extension requires workspace trust because it loads configuration files and code from the workspace and executes it."
-        }
-    },
-    "contributes": {
-        "commands": [
-            {
-                "title": "Restart Language Server",
-                "command": "masterCSS.restart",
-                "category": "Master CSS"
-            }
-        ],
-        "configuration": {
-            "title": "Master CSS",
-            "properties": {
-                "masterCSS.includedLanguages": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    },
-                    "default": [
-                        "html",
-                        "php",
-                        "javascript",
-                        "typescript",
-                        "javascriptreact",
-                        "typescriptreact",
-                        "css",
-                        "scss",
-                        "less",
-                        "vue",
-                        "svelte",
-                        "rust",
-                        "astro",
-                        "markdown",
-                        "mdx",
-                        "astro"
-                    ]
-                },
-                "masterCSS.exclude": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    },
-                    "default": [
-                        "**/.git/**",
-                        "**/node_modules/**",
-                        "**/.hg/**"
-                    ],
-                    "description": "Configure glob patterns to exclude from all Master Language Service features."
-                },
-                "masterCSS.classAttributes": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    },
-                    "default": [
-                        "class",
-                        "className"
-                    ]
-                },
-                "masterCSS.classAttributeBindings": {
-                    "type": "object",
-                    "default": {
-                        "className": [
-                            "{",
-                            "}"
-                        ],
-                        "class": [
-                            "{",
-                            "}"
-                        ],
-                        "class:list": [
-                            "{",
-                            "}"
-                        ],
-                        ":class": [
-                            "\"",
-                            "\""
-                        ],
-                        "v-bind:class": [
-                            "\"",
-                            "\""
-                        ],
-                        "[class]": [
-                            "\"",
-                            "\""
-                        ],
-                        "[className]": [
-                            "\"",
-                            "\""
-                        ],
-                        "[ngClass]": [
-                            "\"",
-                            "\""
-                        ]
-                    }
-                },
-                "masterCSS.classDeclarations": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    },
-                    "default": []
-                },
-                "masterCSS.classFunctions": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    },
-                    "default": [
-                        "clsx",
-                        "cva",
-                        "ctl",
-                        "cv",
-                        "class",
-                        "classnames",
-                        "classVariant",
-                        "styled(?:\\s+)?(?:\\.\\w+)?",
-                        "classList(?:\\s+)?\\.(?:add|remove|toggle|replace)"
-                    ]
-                },
-                "masterCSS.suggestSyntax": {
-                    "type": "boolean",
-                    "default": true
-                },
-                "masterCSS.inspectSyntax": {
-                    "type": "boolean",
-                    "default": true
-                },
-                "masterCSS.renderSyntaxColors": {
-                    "type": "boolean",
-                    "default": true
-                },
-                "masterCSS.formatDirectives": {
-                    "type": "boolean",
-                    "default": true,
-                    "description": "Enables Master CSS directive formatting in CSS-family documents."
-                },
-                "masterCSS.embeddedSyntaxHighlighting": {
-                    "type": "string",
-                    "enum": [
-                        "active",
-                        "always",
-                        "off"
-                    ],
-                    "default": "active",
-                    "description": "Controls embedded Master CSS utility highlighting in markup and scripts. Active highlights the class context at the active editor selection, always highlights all discovered embedded utilities, and off disables embedded utility highlighting. Master CSS syntax inside CSS documents is always highlighted."
-                },
-                "masterCSS.workspaces": {
-                    "type": [
-                        "string",
-                        "array"
-                    ],
-                    "default": "auto",
-                    "description": "Configure Master CSS workspaces. The default auto mode detects CSS files with @master entry; or @import \"@master/css\", and package.json files that declare Master CSS package dependencies."
-                }
-            }
-        },
-        "semanticTokenModifiers": [
-            {
-                "id": "component",
-                "description": "Master CSS component semantic token modifier."
-            },
-            {
-                "id": "directive",
-                "description": "Master CSS directive semantic token modifier."
-            },
-            {
-                "id": "important",
-                "description": "Master CSS important semantic token modifier."
-            },
-            {
-                "id": "pseudoClass",
-                "description": "Master CSS pseudoClass semantic token modifier."
-            },
-            {
-                "id": "pseudoElement",
-                "description": "Master CSS pseudoElement semantic token modifier."
-            },
-            {
-                "id": "query",
-                "description": "Master CSS query semantic token modifier."
-            },
-            {
-                "id": "quoted",
-                "description": "Master CSS quoted semantic token modifier."
-            },
-            {
-                "id": "selector",
-                "description": "Master CSS selector semantic token modifier."
-            },
-            {
-                "id": "unit",
-                "description": "Master CSS unit semantic token modifier."
-            },
-            {
-                "id": "blockBrace",
-                "description": "Master CSS blockBrace semantic token modifier."
-            },
-            {
-                "id": "declarationSeparator",
-                "description": "Master CSS declarationSeparator semantic token modifier."
-            },
-            {
-                "id": "declarationTerminator",
-                "description": "Master CSS declarationTerminator semantic token modifier."
-            },
-            {
-                "id": "directiveTerminator",
-                "description": "Master CSS directiveTerminator semantic token modifier."
-            },
-            {
-                "id": "functionPunctuation",
-                "description": "Master CSS functionPunctuation semantic token modifier."
-            },
-            {
-                "id": "valueSeparator",
-                "description": "Master CSS valueSeparator semantic token modifier."
-            },
-            {
-                "id": "valueOperator",
-                "description": "Master CSS valueOperator semantic token modifier."
-            },
-            {
-                "id": "queryOperator",
-                "description": "Master CSS queryOperator semantic token modifier."
-            },
-            {
-                "id": "queryPunctuation",
-                "description": "Master CSS queryPunctuation semantic token modifier."
-            },
-            {
-                "id": "selectorCombinator",
-                "description": "Master CSS selectorCombinator semantic token modifier."
-            },
-            {
-                "id": "selectorPunctuation",
-                "description": "Master CSS selectorPunctuation semantic token modifier."
-            },
-            {
-                "id": "pseudoClassDelimiter",
-                "description": "Master CSS pseudoClassDelimiter semantic token modifier."
-            },
-            {
-                "id": "pseudoElementDelimiter",
-                "description": "Master CSS pseudoElementDelimiter semantic token modifier."
-            }
-        ],
-        "semanticTokenScopes": [
-            {
-                "scopes": {
-                    "class": [
-                        "entity.other.attribute-name.class.css"
-                    ],
-                    "class.component": [
-                        "entity.other.attribute-name.class.css"
-                    ],
-                    "class.declaration": [
-                        "entity.other.attribute-name.class.css"
-                    ],
-                    "class.selector": [
-                        "entity.other.attribute-name.class.css"
-                    ],
-                    "enumMember": [
-                        "support.constant.property-value.css"
-                    ],
-                    "enumMember.directive": [
-                        "support.constant.property-value.css"
-                    ],
-                    "enumMember.query": [
-                        "support.constant.property-value.css"
-                    ],
-                    "enumMember.unit": [
-                        "keyword.other.unit"
-                    ],
-                    "property": [
-                        "support.type.property-name.css"
-                    ],
-                    "property.directive": [
-                        "support.type.property-name.css"
-                    ],
-                    "property.query": [
-                        "support.type.property-name.css"
-                    ],
-                    "variable": [
-                        "variable.other.master-css.css",
-                        "variable.css"
-                    ],
-                    "variable.directive": [
-                        "variable.parameter.master-css.css"
-                    ],
-                    "variable.selector": [
-                        "entity.other.attribute-name.id.css"
-                    ],
-                    "function": [
-                        "support.function.misc.css"
-                    ],
-                    "number": [
-                        "constant.numeric.css"
-                    ],
-                    "number.query": [
-                        "constant.numeric.css"
-                    ],
-                    "string": [
-                        "string.quoted.css",
-                        "string.quoted.html"
-                    ],
-                    "string.quoted": [
-                        "string.quoted.css",
-                        "string.quoted.html"
-                    ],
-                    "keyword": [
-                        "keyword.control.at-rule"
-                    ],
-                    "keyword.directive": [
-                        "keyword.control.at-rule.master-css.css"
-                    ],
-                    "keyword.query": [
-                        "keyword.control.at-rule"
-                    ],
-                    "modifier": [
-                        "entity.other.attribute-name.pseudo-class.css"
-                    ],
-                    "modifier.directive": [
-                        "storage.modifier.master-css.css"
-                    ],
-                    "modifier.pseudoClass": [
-                        "entity.other.attribute-name.pseudo-class.css"
-                    ],
-                    "modifier.pseudoElement": [
-                        "entity.other.attribute-name.pseudo-element.css"
-                    ],
-                    "operator": [
-                        "keyword.operator.css"
-                    ],
-                    "operator.directive": [
-                        "punctuation.section.property-list.begin.bracket.curly.css"
-                    ],
-                    "operator.blockBrace": [
-                        "punctuation.section.property-list.begin.bracket.curly.css",
-                        "punctuation.section.property-list.end.bracket.curly.css"
-                    ],
-                    "operator.declarationSeparator": [
-                        "punctuation.separator.key-value.css"
-                    ],
-                    "operator.declarationTerminator": [
-                        "punctuation.terminator.rule.css"
-                    ],
-                    "operator.directiveTerminator": [
-                        "punctuation.terminator.rule.css"
-                    ],
-                    "operator.functionPunctuation": [
-                        "punctuation.section.function.begin.bracket.round.css",
-                        "punctuation.section.function.end.bracket.round.css"
-                    ],
-                    "operator.important": [
-                        "keyword.other.important.css",
-                        "keyword.operator.important.css"
-                    ],
-                    "operator.pseudoClass": [
-                        "entity.other.attribute-name.pseudo-class.css"
-                    ],
-                    "operator.pseudoClassDelimiter": [
-                        "punctuation.definition.entity.css"
-                    ],
-                    "operator.pseudoElement": [
-                        "entity.other.attribute-name.pseudo-element.css"
-                    ],
-                    "operator.pseudoElementDelimiter": [
-                        "punctuation.definition.entity.css"
-                    ],
-                    "operator.query": [
-                        "keyword.operator.css"
-                    ],
-                    "operator.queryOperator": [
-                        "keyword.operator.comparison.css",
-                        "keyword.operator.css"
-                    ],
-                    "operator.queryPunctuation": [
-                        "punctuation.separator.list.comma.css",
-                        "punctuation.separator.key-value.css",
-                        "punctuation.definition.parameters.begin.bracket.round.css",
-                        "punctuation.definition.parameters.end.bracket.round.css",
-                        "punctuation.section.function.begin.bracket.round.css",
-                        "punctuation.section.function.end.bracket.round.css"
-                    ],
-                    "operator.selector": [
-                        "keyword.operator.combinator.css"
-                    ],
-                    "operator.selectorCombinator": [
-                        "keyword.operator.combinator.css"
-                    ],
-                    "operator.selectorPunctuation": [
-                        "punctuation.separator.list.comma.css",
-                        "punctuation.definition.entity.css",
-                        "punctuation.section.function.begin.bracket.round.css",
-                        "punctuation.section.function.end.bracket.round.css",
-                        "punctuation.definition.entity.begin.bracket.square.css",
-                        "punctuation.definition.entity.end.bracket.square.css"
-                    ],
-                    "operator.unit": [
-                        "keyword.operator.css"
-                    ],
-                    "operator.valueOperator": [
-                        "keyword.operator.css"
-                    ],
-                    "operator.valueSeparator": [
-                        "punctuation.separator.list.comma.css"
-                    ],
-                    "type": [
-                        "entity.name.tag.css"
-                    ],
-                    "type.selector": [
-                        "entity.name.tag.css"
-                    ]
-                }
-            }
-        ],
-        "grammars": [
-            {
-                "scopeName": "master-css.directive.injection",
-                "path": "./node_modules/@master/css-language/syntaxes/master-css.tmLanguage.json",
-                "injectTo": [
-                    "source.css",
-                    "source.css.scss",
-                    "source.css.less",
-                    "source.css.postcss"
-                ]
-            }
-        ],
-        "configurationDefaults": {
-            "css.lint.unknownAtRules": "ignore",
-            "scss.lint.unknownAtRules": "ignore",
-            "less.lint.unknownAtRules": "ignore"
-        }
-    },
-    "publishConfig": {
-        "access": "public",
-        "provenance": true
-    },
-    "devDependencies": {
-        "@master/css-language": "workspace:^",
-        "@master/css-language-server": "workspace:^",
-        "@master/css-language-service": "workspace:^",
-        "@master/css-project": "workspace:^",
-        "@shikijs/langs": "4.2.0",
-        "@types/vscode": "^1.120.0",
-        "@vscode/vsce": "^3.9.2",
-        "vscode-languageclient": "^10.0.0",
-        "vscode-oniguruma": "^2.0.1",
-        "vscode-textmate": "^9.3.2"
-    },
-    "peerDependencies": {
-        "lightningcss": "^1.32.0",
-        "oxc-parser": "^0.129.0",
-        "oxc-resolver": "^11.19.1",
-        "oxc-transform": "^0.128.0"
+    "untrustedWorkspaces": {
+      "supported": false,
+      "description": "The extension requires workspace trust because it loads configuration files and code from the workspace and executes it."
     }
+  },
+  "contributes": {
+    "commands": [
+      {
+        "title": "Restart Language Server",
+        "command": "masterCSS.restart",
+        "category": "Master CSS"
+      }
+    ],
+    "configuration": {
+      "title": "Master CSS",
+      "properties": {
+        "masterCSS.includedLanguages": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [
+            "html",
+            "php",
+            "javascript",
+            "typescript",
+            "javascriptreact",
+            "typescriptreact",
+            "css",
+            "scss",
+            "less",
+            "vue",
+            "svelte",
+            "rust",
+            "astro",
+            "markdown",
+            "mdx",
+            "astro"
+          ]
+        },
+        "masterCSS.exclude": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [
+            "**/.git/**",
+            "**/node_modules/**",
+            "**/.hg/**"
+          ],
+          "description": "Configure glob patterns to exclude from all Master Language Service features."
+        },
+        "masterCSS.classAttributes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [
+            "class",
+            "className"
+          ]
+        },
+        "masterCSS.classAttributeBindings": {
+          "type": "object",
+          "default": {
+            "className": [
+              "{",
+              "}"
+            ],
+            "class": [
+              "{",
+              "}"
+            ],
+            "class:list": [
+              "{",
+              "}"
+            ],
+            ":class": [
+              "\"",
+              "\""
+            ],
+            "v-bind:class": [
+              "\"",
+              "\""
+            ],
+            "[class]": [
+              "\"",
+              "\""
+            ],
+            "[className]": [
+              "\"",
+              "\""
+            ],
+            "[ngClass]": [
+              "\"",
+              "\""
+            ]
+          }
+        },
+        "masterCSS.classDeclarations": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": []
+        },
+        "masterCSS.classFunctions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [
+            "clsx",
+            "cva",
+            "ctl",
+            "cv",
+            "class",
+            "classnames",
+            "classVariant",
+            "styled(?:\\s+)?(?:\\.\\w+)?",
+            "classList(?:\\s+)?\\.(?:add|remove|toggle|replace)"
+          ]
+        },
+        "masterCSS.suggestSyntax": {
+          "type": "boolean",
+          "default": true
+        },
+        "masterCSS.inspectSyntax": {
+          "type": "boolean",
+          "default": true
+        },
+        "masterCSS.renderSyntaxColors": {
+          "type": "boolean",
+          "default": true
+        },
+        "masterCSS.formatDirectives": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enables Master CSS directive formatting in CSS-family documents."
+        },
+        "masterCSS.embeddedSyntaxHighlighting": {
+          "type": "string",
+          "enum": [
+            "active",
+            "always",
+            "off"
+          ],
+          "default": "active",
+          "description": "Controls embedded Master CSS utility highlighting in markup and scripts. Active highlights the class context at the active editor selection, always highlights all discovered embedded utilities, and off disables embedded utility highlighting. Master CSS syntax inside CSS documents is always highlighted."
+        },
+        "masterCSS.workspaces": {
+          "type": [
+            "string",
+            "array"
+          ],
+          "default": "auto",
+          "description": "Configure Master CSS workspaces. The default auto mode detects CSS files with @master entry; or @import \"@master/css\", and package.json files that declare Master CSS package dependencies."
+        }
+      }
+    },
+    "semanticTokenModifiers": [
+      {
+        "id": "component",
+        "description": "Master CSS component semantic token modifier."
+      },
+      {
+        "id": "directive",
+        "description": "Master CSS directive semantic token modifier."
+      },
+      {
+        "id": "important",
+        "description": "Master CSS important semantic token modifier."
+      },
+      {
+        "id": "pseudoClass",
+        "description": "Master CSS pseudoClass semantic token modifier."
+      },
+      {
+        "id": "pseudoElement",
+        "description": "Master CSS pseudoElement semantic token modifier."
+      },
+      {
+        "id": "query",
+        "description": "Master CSS query semantic token modifier."
+      },
+      {
+        "id": "quoted",
+        "description": "Master CSS quoted semantic token modifier."
+      },
+      {
+        "id": "selector",
+        "description": "Master CSS selector semantic token modifier."
+      },
+      {
+        "id": "unit",
+        "description": "Master CSS unit semantic token modifier."
+      },
+      {
+        "id": "blockBrace",
+        "description": "Master CSS blockBrace semantic token modifier."
+      },
+      {
+        "id": "declarationSeparator",
+        "description": "Master CSS declarationSeparator semantic token modifier."
+      },
+      {
+        "id": "declarationTerminator",
+        "description": "Master CSS declarationTerminator semantic token modifier."
+      },
+      {
+        "id": "directiveTerminator",
+        "description": "Master CSS directiveTerminator semantic token modifier."
+      },
+      {
+        "id": "functionPunctuation",
+        "description": "Master CSS functionPunctuation semantic token modifier."
+      },
+      {
+        "id": "valueSeparator",
+        "description": "Master CSS valueSeparator semantic token modifier."
+      },
+      {
+        "id": "valueOperator",
+        "description": "Master CSS valueOperator semantic token modifier."
+      },
+      {
+        "id": "queryOperator",
+        "description": "Master CSS queryOperator semantic token modifier."
+      },
+      {
+        "id": "queryPunctuation",
+        "description": "Master CSS queryPunctuation semantic token modifier."
+      },
+      {
+        "id": "selectorCombinator",
+        "description": "Master CSS selectorCombinator semantic token modifier."
+      },
+      {
+        "id": "selectorPunctuation",
+        "description": "Master CSS selectorPunctuation semantic token modifier."
+      },
+      {
+        "id": "pseudoClassDelimiter",
+        "description": "Master CSS pseudoClassDelimiter semantic token modifier."
+      },
+      {
+        "id": "pseudoElementDelimiter",
+        "description": "Master CSS pseudoElementDelimiter semantic token modifier."
+      }
+    ],
+    "semanticTokenScopes": [
+      {
+        "scopes": {
+          "class": [
+            "entity.other.attribute-name.class.css"
+          ],
+          "class.component": [
+            "entity.other.attribute-name.class.css"
+          ],
+          "class.declaration": [
+            "entity.other.attribute-name.class.css"
+          ],
+          "class.selector": [
+            "entity.other.attribute-name.class.css"
+          ],
+          "enumMember": [
+            "support.constant.property-value.css"
+          ],
+          "enumMember.directive": [
+            "support.constant.property-value.css"
+          ],
+          "enumMember.query": [
+            "support.constant.property-value.css"
+          ],
+          "enumMember.unit": [
+            "keyword.other.unit"
+          ],
+          "property": [
+            "support.type.property-name.css"
+          ],
+          "property.directive": [
+            "support.type.property-name.css"
+          ],
+          "property.query": [
+            "support.type.property-name.css"
+          ],
+          "variable": [
+            "variable.other.master-css.css",
+            "variable.css"
+          ],
+          "variable.directive": [
+            "variable.parameter.master-css.css"
+          ],
+          "variable.selector": [
+            "entity.other.attribute-name.id.css"
+          ],
+          "function": [
+            "support.function.misc.css"
+          ],
+          "number": [
+            "constant.numeric.css"
+          ],
+          "number.query": [
+            "constant.numeric.css"
+          ],
+          "string": [
+            "string.quoted.css",
+            "string.quoted.html"
+          ],
+          "string.quoted": [
+            "string.quoted.css",
+            "string.quoted.html"
+          ],
+          "keyword": [
+            "keyword.control.at-rule"
+          ],
+          "keyword.directive": [
+            "keyword.control.at-rule.master-css.css"
+          ],
+          "keyword.query": [
+            "keyword.control.at-rule"
+          ],
+          "modifier": [
+            "entity.other.attribute-name.pseudo-class.css"
+          ],
+          "modifier.directive": [
+            "storage.modifier.master-css.css"
+          ],
+          "modifier.pseudoClass": [
+            "entity.other.attribute-name.pseudo-class.css"
+          ],
+          "modifier.pseudoElement": [
+            "entity.other.attribute-name.pseudo-element.css"
+          ],
+          "operator": [
+            "keyword.operator.css"
+          ],
+          "operator.directive": [
+            "punctuation.section.property-list.begin.bracket.curly.css"
+          ],
+          "operator.blockBrace": [
+            "punctuation.section.property-list.begin.bracket.curly.css",
+            "punctuation.section.property-list.end.bracket.curly.css"
+          ],
+          "operator.declarationSeparator": [
+            "punctuation.separator.key-value.css"
+          ],
+          "operator.declarationTerminator": [
+            "punctuation.terminator.rule.css"
+          ],
+          "operator.directiveTerminator": [
+            "punctuation.terminator.rule.css"
+          ],
+          "operator.functionPunctuation": [
+            "punctuation.section.function.begin.bracket.round.css",
+            "punctuation.section.function.end.bracket.round.css"
+          ],
+          "operator.important": [
+            "keyword.other.important.css",
+            "keyword.operator.important.css"
+          ],
+          "operator.pseudoClass": [
+            "entity.other.attribute-name.pseudo-class.css"
+          ],
+          "operator.pseudoClassDelimiter": [
+            "punctuation.definition.entity.css"
+          ],
+          "operator.pseudoElement": [
+            "entity.other.attribute-name.pseudo-element.css"
+          ],
+          "operator.pseudoElementDelimiter": [
+            "punctuation.definition.entity.css"
+          ],
+          "operator.query": [
+            "keyword.operator.css"
+          ],
+          "operator.queryOperator": [
+            "keyword.operator.comparison.css",
+            "keyword.operator.css"
+          ],
+          "operator.queryPunctuation": [
+            "punctuation.separator.list.comma.css",
+            "punctuation.separator.key-value.css",
+            "punctuation.definition.parameters.begin.bracket.round.css",
+            "punctuation.definition.parameters.end.bracket.round.css",
+            "punctuation.section.function.begin.bracket.round.css",
+            "punctuation.section.function.end.bracket.round.css"
+          ],
+          "operator.selector": [
+            "keyword.operator.combinator.css"
+          ],
+          "operator.selectorCombinator": [
+            "keyword.operator.combinator.css"
+          ],
+          "operator.selectorPunctuation": [
+            "punctuation.separator.list.comma.css",
+            "punctuation.definition.entity.css",
+            "punctuation.section.function.begin.bracket.round.css",
+            "punctuation.section.function.end.bracket.round.css",
+            "punctuation.definition.entity.begin.bracket.square.css",
+            "punctuation.definition.entity.end.bracket.square.css"
+          ],
+          "operator.unit": [
+            "keyword.operator.css"
+          ],
+          "operator.valueOperator": [
+            "keyword.operator.css"
+          ],
+          "operator.valueSeparator": [
+            "punctuation.separator.list.comma.css"
+          ],
+          "type": [
+            "entity.name.tag.css"
+          ],
+          "type.selector": [
+            "entity.name.tag.css"
+          ]
+        }
+      }
+    ],
+    "grammars": [
+      {
+        "scopeName": "master-css.directive.injection",
+        "path": "./node_modules/@master/css-language/syntaxes/master-css.tmLanguage.json",
+        "injectTo": [
+          "source.css",
+          "source.css.scss",
+          "source.css.less",
+          "source.css.postcss"
+        ]
+      }
+    ],
+    "configurationDefaults": {
+      "css.lint.unknownAtRules": "ignore",
+      "scss.lint.unknownAtRules": "ignore",
+      "less.lint.unknownAtRules": "ignore"
+    }
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "devDependencies": {
+    "@master/css-language": "workspace:^",
+    "@master/css-language-server": "workspace:^",
+    "@master/css-language-service": "workspace:^",
+    "@master/css-project": "workspace:^",
+    "@shikijs/langs": "4.2.0",
+    "@types/vscode": "^1.120.0",
+    "@vscode/vsce": "^3.9.2",
+    "vscode-languageclient": "^10.0.0",
+    "vscode-oniguruma": "^2.0.1",
+    "vscode-textmate": "^9.3.2"
+  },
+  "peerDependencies": {
+    "lightningcss": "^1.32.0",
+    "oxc-parser": "^0.129.0",
+    "oxc-resolver": "^11.19.1",
+    "oxc-transform": "^0.128.0"
+  }
 }

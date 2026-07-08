@@ -61,16 +61,16 @@ $radius-card: .75rem;
 @import "@master/css";
 
 @theme {
-    --color-primary: #2563eb;
-    --color-body: #172033;
-    --spacing-card: 1.5rem;
-    --radius-card: .75rem;
+  --color-primary: #2563eb;
+  --color-body: #172033;
+  --spacing-card: 1.5rem;
+  --radius-card: .75rem;
 }
 ```
 
 ```html
 <article class="b:1px|solid|base r:card bg:white fg:body p:card">
-    ...
+  ...
 </article>
 ```
 
@@ -83,21 +83,21 @@ Move local visual rules into markup when the style belongs to one element or one
 
 ```scss name=Card.module.scss
 .card {
-    display: grid;
-    gap: 1rem;
-    padding: 1.5rem;
-    border-radius: .75rem;
-    background: #fff;
+  display: grid;
+  gap: 1rem;
+  padding: 1.5rem;
+  border-radius: .75rem;
+  background: #fff;
 }
 ```
 
 ```tsx name=Card.tsx
 export function Card({ children }: { children: React.ReactNode }) {
-    return (
-        <section className="grid gap:md r:card bg:white p:card">
-            {children}
-        </section>
-    )
+  return (
+    <section className="grid gap:md r:card bg:white p:card">
+      {children}
+    </section>
+  )
 }
 ```
 
@@ -114,13 +114,13 @@ Use `@components` for product roles:
 @import "@master/css";
 
 @components {
-    card {
-        @compose grid gap:md b:1px|solid|base r:card bg:white shadow:sm p:card;
-    }
+  card {
+    @compose grid gap:md b:1px|solid|base r:card bg:white shadow:sm p:card;
+  }
 
-    btn {
-        @compose inline-flex items-center justify-center gap:xs h:10x px:md r:md bg:primary fg:white;
-    }
+  btn {
+    @compose inline-flex items-center justify-center gap:xs h:10x px:md r:md bg:primary fg:white;
+  }
 }
 ```
 
@@ -133,10 +133,10 @@ Use `@utilities` for reusable primitives:
 
 ```css name=app.css
 @utilities {
-    content-auto {
-        content-visibility: auto;
-        contain-intrinsic-size: auto 32rem;
-    }
+  content-auto {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 32rem;
+  }
 }
 ```
 
@@ -153,7 +153,7 @@ Nested Sass can map cleanly to Master CSS states when the target is a single ele
 
 ```html
 <button class="bg:blue-60 bg:blue-70:hover opacity:.5:disabled">
-    Save
+  Save
 </button>
 ```
 
@@ -161,13 +161,13 @@ Keep nested selectors in CSS when they express internal structure:
 
 ```css name=app.css
 .article-content {
-    h2 {
-        margin-top: 2rem;
-    }
+  h2 {
+    margin-top: 2rem;
+  }
 
-    pre code {
-        white-space: pre;
-    }
+  pre code {
+    white-space: pre;
+  }
 }
 ```
 
@@ -177,7 +177,7 @@ If that stylesheet uses `@compose`, add `@reference` instead of importing the ap
 @reference "../app.css";
 
 .article {
-    @compose grid gap:lg;
+  @compose grid gap:lg;
 }
 ```
 

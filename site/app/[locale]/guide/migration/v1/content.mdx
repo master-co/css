@@ -62,29 +62,29 @@ The current project CSS entry owns theme and manifest inputs. Move values out of
 @import "@master/css";
 
 @settings {
-    root-size: 16;
-    base-unit: 4;
+  root-size: 16;
+  base-unit: 4;
 }
 
 @theme {
-    --color-primary: #2563eb;
-    --color-body: #172033;
-    --spacing-card: 1.5rem;
-    --radius-card: .75rem;
-    --breakpoint-dashboard: 72rem;
+  --color-primary: #2563eb;
+  --color-body: #172033;
+  --spacing-card: 1.5rem;
+  --radius-card: .75rem;
+  --breakpoint-dashboard: 72rem;
 }
 
 @custom-variant @dashboard {
-    @media (width >= 72rem) {
-        @slot;
-    }
+  @media (width >= 72rem) {
+    @slot;
+  }
 }
 ```
 
 {/* eslint-disable @master/css/no-invalid-classes -- custom variant is defined in the adjacent CSS example */}
 ```html
 <section class="grid gap:lg r:card fg:body grid-cols:3@dashboard p:card">
-    ...
+  ...
 </section>
 ```
 {/* eslint-enable @master/css/no-invalid-classes */}
@@ -98,21 +98,21 @@ If the v1 project had reusable component abstractions, migrate them to `@compone
 
 ```css name=app.css
 @components {
-    card {
-        @compose grid gap:md b:1px|solid|base r:card bg:white shadow:sm p:card;
-    }
+  card {
+    @compose grid gap:md b:1px|solid|base r:card bg:white shadow:sm p:card;
+  }
 
-    btn-primary {
-        @compose inline-flex items-center justify-center gap:xs h:10x px:md r:md bg:primary fg:white;
-        @variant :hover { @compose bg:blue-70; }
+  btn-primary {
+    @compose inline-flex items-center justify-center gap:xs h:10x px:md r:md bg:primary fg:white;
+    @variant :hover { @compose bg:blue-70; }
 @variant :disabled { opacity: 0.5; }
-    }
+  }
 }
 ```
 
 ```html
 <article class="card">
-    <button class="btn-primary">Save</button>
+  <button class="btn-primary">Save</button>
 </article>
 ```
 
@@ -120,10 +120,10 @@ Use `@utilities` when the reusable name is a low-level primitive rather than a c
 
 ```css name=app.css
 @utilities {
-    content-auto {
-        content-visibility: auto;
-        contain-intrinsic-size: auto 32rem;
-    }
+  content-auto {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 32rem;
+  }
 }
 ```
 
@@ -136,20 +136,20 @@ Use current syntax for states, conditions, native declarations, and CSS variable
 
 ```html
 <button class="inline-flex items-center gap:xs h:10x px:md r:md bg:blue-60 fg:white bg:blue-70:hover opacity:.5:disabled">
-    Save
+  Save
 </button>
 ```
 
 ```tsx
 function Progress({ value }: { value: number }) {
-    return (
-        <div className="overflow:hidden h:2x r:full bg:gray-10">
-            <div
-                className="h:full w:$progress bg:blue-60 transition:width|fast|smooth"
-                style={{ '--progress': `${value}%` } as React.CSSProperties}
-            />
-        </div>
-    )
+  return (
+    <div className="overflow:hidden h:2x r:full bg:gray-10">
+      <div
+        className="h:full w:$progress bg:blue-60 transition:width|fast|smooth"
+        style={{ '--progress': `${value}%` } as React.CSSProperties}
+      />
+    </div>
+  )
 }
 ```
 

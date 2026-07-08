@@ -24,13 +24,13 @@ Master CSS is markup-driven. The class string is the styling source of truth:
 
 ```tsx
 export default function Page() {
-    return (
-        <main className="min-h:100vh p:10x bg:surface-base text:neutral">
-            <h1 className="font:6xl font:heavy tracking:tight">
-                Master CSS pre-rendered by Next.js
-            </h1>
-        </main>
-    )
+  return (
+    <main className="min-h:100vh p:10x bg:surface-base text:neutral">
+      <h1 className="font:6xl font:heavy tracking:tight">
+        Master CSS pre-rendered by Next.js
+      </h1>
+    </main>
+  )
 }
 ```
 
@@ -58,7 +58,7 @@ For a minimal page:
 
 ```tsx name=app/page.tsx
 export default function Page() {
-    return <h1 className="font:6xl">Hello</h1>
+  return <h1 className="font:6xl">Hello</h1>
 }
 ```
 
@@ -68,10 +68,10 @@ Progressive Rendering produces HTML shaped like this:
 <!doctype html>
 <html>
 <head>
-    <style id="master-css" data-master-css-hydration-manifest="/_next/static/master-css/hydration/master-css-hydration.8f3a1c2d.json">@layer utilities{.font\:48px{font-size:48px}}</style>
+  <style id="master-css" data-master-css-hydration-manifest="/_next/static/master-css/hydration/master-css-hydration.8f3a1c2d.json">@layer utilities{.font\:48px{font-size:48px}}</style>
 </head>
 <body>
-    <h1 class="font:6xl">Hello</h1>
+  <h1 class="font:6xl">Hello</h1>
 </body>
 </html>
 ```
@@ -89,7 +89,7 @@ import { withMasterCSS } from '@master/css.next'
 
 /** @type {import('next').NextConfig} */
 const nextConfig = withMasterCSS({
-    // your Next.js config
+  // your Next.js config
 })
 
 export default nextConfig
@@ -143,13 +143,13 @@ Keep the root layout focused on the global stylesheet:
 import './globals.css'
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
-    return (
-        <html lang="en">
-            <body>
-                {children}
-            </body>
-        </html>
-    )
+  return (
+    <html lang="en">
+      <body>
+        {children}
+      </body>
+    </html>
+  )
 }
 ```
 
@@ -162,7 +162,7 @@ import { withMasterCSS } from '@master/css.next'
 
 /** @type {import('next').NextConfig} */
 const nextConfig = withMasterCSS({
-    /* your Next.js config */
+  /* your Next.js config */
 })
 
 export default nextConfig
@@ -187,11 +187,11 @@ Static mode uses the same Master CSS stylesheet import model as the other build 
 @import '@master/css';
 
 .main {
-    background-color: var(--color-primary);
+  background-color: var(--color-primary);
 }
 
 @theme {
-    --color-primary: #ff0000;
+  --color-primary: #ff0000;
 }
 ```
 
@@ -202,9 +202,9 @@ import { withMasterCSS } from '@master/css.next'
 
 /** @type {import('next').NextConfig} */
 const nextConfig = await withMasterCSS({
-    // your Next.js config
+  // your Next.js config
 }, {
-    mode: 'static'
+  mode: 'static'
 })
 
 export default nextConfig
@@ -232,13 +232,13 @@ For source scanning, a dynamic class still needs to resolve to complete class st
 
 ```tsx
 export function Badge({ tone }: {
-    tone: 'blue' | 'neutral'
+  tone: 'blue' | 'neutral'
 }) {
-    return (
-        <span className={`px:xs py:3xs r:sm bg:${tone}/.1 text:${tone}`}>
-            New
-        </span>
-    )
+  return (
+    <span className={`px:xs py:3xs r:sm bg:${tone}/.1 text:${tone}`}>
+      New
+    </span>
+  )
 }
 ```
 

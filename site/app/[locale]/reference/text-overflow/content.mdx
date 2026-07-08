@@ -14,15 +14,15 @@ Use `text-ellipsis` with `overflow:hidden`, `white-space:nowrap`, and a constrai
 ```html
 <!-- @MARK w:40x --><!-- @MARK overflow:hidden --><!-- @MARK white-space:nowrap --><!-- @MARK text-ellipsis -->
 <span class="overflow:hidden w:40x text-ellipsis white-space:nowrap">
-    quarterly-roadmap-final-version.pdf
+  quarterly-roadmap-final-version.pdf
 </span>
 ```
 
 <details>
-    <summary>Generated CSS</summary>
-    <Class2CSS>
-        {['w:40x', 'overflow:hidden', 'white-space:nowrap', 'text-ellipsis']}
-    </Class2CSS>
+  <summary>Generated CSS</summary>
+  <Class2CSS>
+    {['w:40x', 'overflow:hidden', 'white-space:nowrap', 'text-ellipsis']}
+  </Class2CSS>
 </details>
 
 `text-overflow` only changes the marker at the clipped edge. It does not create clipping by itself.
@@ -32,10 +32,10 @@ In flex or grid children, add `min-w:0` to the shrinking text region so the elli
 ```html
 <!-- @MARK flex --><!-- @MARK min-w:0 --><!-- @MARK text-ellipsis -->
 <div class="flex gap:sm">
-    <span class="flex:0">File</span>
-    <span class="overflow:hidden min-w:0 text-ellipsis white-space:nowrap">
-        quarterly-roadmap-final-version.pdf
-    </span>
+  <span class="flex:0">File</span>
+  <span class="overflow:hidden min-w:0 text-ellipsis white-space:nowrap">
+    quarterly-roadmap-final-version.pdf
+  </span>
 </div>
 ```
 

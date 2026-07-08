@@ -1,64 +1,64 @@
 {
-    "name": "@master/css-preset",
-    "type": "module",
-    "scripts": {
-        "build": "pnpm generate",
-        "generate": "node --import tsx scripts/generate-default-manifest.ts",
-        "lint": "eslint",
-        "type-check": "tsc -b tsconfig.typecheck.json",
-        "test": "vitest"
+  "name": "@master/css-preset",
+  "type": "module",
+  "scripts": {
+    "build": "pnpm generate",
+    "generate": "node --import tsx scripts/generate-default-manifest.ts",
+    "lint": "eslint",
+    "type-check": "tsc -b tsconfig.typecheck.json",
+    "test": "vitest"
+  },
+  "license": "MIT",
+  "description": "The default Master CSS preset source and compiled manifest.",
+  "author": "Aoyue Design LLC.",
+  "funding": "https://rc.css.master.co/sponsor",
+  "homepage": "https://css.master.co",
+  "bugs": {
+    "url": "https://github.com/master-co/css/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/master-co/css.git",
+    "directory": "packages/preset"
+  },
+  "keywords": [
+    "preset",
+    "css",
+    "mastercss"
+  ],
+  "sideEffects": [
+    "./src/*.css"
+  ],
+  "style": "./src/index.css",
+  "exports": {
+    ".": {
+      "style": "./src/index.css",
+      "default": "./src/index.css"
     },
-    "license": "MIT",
-    "description": "The default Master CSS preset source and compiled manifest.",
-    "author": "Aoyue Design LLC.",
-    "funding": "https://rc.css.master.co/sponsor",
-    "homepage": "https://css.master.co",
-    "bugs": {
-        "url": "https://github.com/master-co/css/issues"
+    "./default-manifest.json": {
+      "types": "./src/default-manifest.json.d.ts",
+      "import": "./src/default-manifest.json",
+      "default": "./src/default-manifest.json"
     },
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/master-co/css.git",
-        "directory": "packages/preset"
-    },
-    "keywords": [
-        "preset",
-        "css",
-        "mastercss"
-    ],
-    "sideEffects": [
-        "./src/*.css"
-    ],
-    "style": "./src/index.css",
-    "exports": {
-        ".": {
-            "style": "./src/index.css",
-            "default": "./src/index.css"
-        },
-        "./default-manifest.json": {
-            "types": "./src/default-manifest.json.d.ts",
-            "import": "./src/default-manifest.json",
-            "default": "./src/default-manifest.json"
-        },
-        "./index.css": "./src/index.css",
-        "./base.css": "./src/base.css",
-        "./theme.css": "./src/theme.css",
-        "./variants.css": "./src/variants.css",
-        "./utilities.css": "./src/utilities.css"
-    },
-    "files": [
-        "src/*.css",
-        "src/default-manifest.json",
-        "src/default-manifest.json.d.ts"
-    ],
-    "publishConfig": {
-        "access": "public",
-        "provenance": true
-    },
-    "dependencies": {
-        "@master/css-schema": "workspace:^"
-    },
-    "devDependencies": {
-        "tsx": "^4.22.4"
-    }
+    "./index.css": "./src/index.css",
+    "./base.css": "./src/base.css",
+    "./theme.css": "./src/theme.css",
+    "./variants.css": "./src/variants.css",
+    "./utilities.css": "./src/utilities.css"
+  },
+  "files": [
+    "src/*.css",
+    "src/default-manifest.json",
+    "src/default-manifest.json.d.ts"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "dependencies": {
+    "@master/css-schema": "workspace:^"
+  },
+  "devDependencies": {
+    "tsx": "^4.22.4"
+  }
 }

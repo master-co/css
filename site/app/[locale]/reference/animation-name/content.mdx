@@ -7,15 +7,15 @@ Use `animation-name:*` to select a named keyframes rule while controlling the ot
 ```html
 <!-- @MARK animation-name:fade -->
 <div class="animation-duration:300ms animation-name:fade animation-timing-function:ease-out">
-    Saved
+  Saved
 </div>
 ```
 
 <details>
-    <summary>Generated CSS</summary>
-    <Class2CSS>
-        {['animation-name:fade']}
-    </Class2CSS>
+  <summary>Generated CSS</summary>
+  <Class2CSS>
+    {['animation-name:fade']}
+  </Class2CSS>
 </details>
 
 ### Disable an animation
@@ -23,7 +23,7 @@ Use `animation-name:none` when the element should keep the rest of its animation
 ```html
 <!-- @MARK animation-name:none@print -->
 <div class="animation-name:fade animation-name:none@print">
-    No animation in print
+  No animation in print
 </div>
 ```
 
@@ -31,7 +31,7 @@ Use `animation-name:none` when the element should keep the rest of its animation
 The name alone does not define how long the animation runs. Pair it with duration, timing, delay, iteration count, and fill mode as needed.
 ```html
 <span class="animation-duration:200ms animation-fill-mode:both animation-name:fade">
-    Appears once
+  Appears once
 </span>
 ```
 

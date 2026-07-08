@@ -1,13 +1,13 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'filter',
-    description: 'Applying graphic effects to an element.',
-    category: 'Effects',
-    type: 'entity',
-    canIUseLink: 'https://caniuse.com/?search=filter',
-    mdnLink: 'https://developer.mozilla.org/en-US/docs/Web/CSS/filter',
-    fileURL: import.meta.url
+  title: 'filter',
+  description: 'Applying graphic effects to an element.',
+  category: 'Effects',
+  type: 'entity',
+  canIUseLink: 'https://caniuse.com/?search=filter',
+  mdnLink: 'https://developer.mozilla.org/en-US/docs/Web/CSS/filter',
+  fileURL: import.meta.url
 })
 
 export default metadata

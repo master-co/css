@@ -1,7 +1,7 @@
 {
-    "name": "vscode-playground-package-c",
-    "private": true,
-    "devDependencies": {
-        "@master/css": "workspace:^"
-    }
+  "name": "vscode-playground-package-c",
+  "private": true,
+  "devDependencies": {
+    "@master/css": "workspace:^"
+  }
 }

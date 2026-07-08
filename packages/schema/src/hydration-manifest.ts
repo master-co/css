@@ -7,37 +7,37 @@ export const MASTER_CSS_HYDRATION_MANIFEST_ASSET_BASE = '/_master-css/hydration/
 export const MASTER_CSS_HYDRATION_MANIFEST_FILE_BASENAME = 'master-css-hydration'
 
 export interface MasterCSSRulePriorityIR {
-    features?: [string, number, number][]
-    selector: number
+  features?: [string, number, number][]
+  selector: number
 }
 
 export interface MasterCSSGeneratedRuleNodeIR {
-    text: string
+  text: string
 }
 
 export interface MasterCSSGeneratedRuleIR {
-    className: string
-    key: string
-    layer: MasterCSSManifestUtilityLayerName
-    type: UtilityType
-    sortTier: number
-    priority: MasterCSSRulePriorityIR
-    text: string
-    nodes?: MasterCSSGeneratedRuleNodeIR[]
-    selectorText?: string
-    variableNames?: string[]
-    animationNames?: string[]
+  className: string
+  key: string
+  layer: MasterCSSManifestUtilityLayerName
+  type: UtilityType
+  sortTier: number
+  priority: MasterCSSRulePriorityIR
+  text: string
+  nodes?: MasterCSSGeneratedRuleNodeIR[]
+  selectorText?: string
+  variableNames?: string[]
+  animationNames?: string[]
 }
 
 export interface MasterCSSHydrationManifest {
-    version: 1
-    rules: MasterCSSGeneratedRuleIR[]
+  version: 1
+  rules: MasterCSSGeneratedRuleIR[]
 }
 
 export function serializeMasterCSSHydrationManifest(hydrationManifest: MasterCSSHydrationManifest) {
-    return JSON.stringify(hydrationManifest).replace(/</g, '\\u003c')
+  return JSON.stringify(hydrationManifest).replace(/</g, '\\u003c')
 }
 
 export function createMasterCSSHydrationManifestScript(hydrationManifest: MasterCSSHydrationManifest) {
-    return `<script type="application/json" id="${MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID}">${serializeMasterCSSHydrationManifest(hydrationManifest)}</script>`
+  return `<script type="application/json" id="${MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID}">${serializeMasterCSSHydrationManifest(hydrationManifest)}</script>`
 }

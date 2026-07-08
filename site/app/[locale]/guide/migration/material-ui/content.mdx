@@ -51,14 +51,14 @@ Start with product-owned values that should be shared outside Material UI compon
 
 ```ts name=theme.ts
 export const theme = createTheme({
-    palette: {
-        primary: { main: '#2563eb' },
-        background: { paper: '#ffffff' },
-        text: { primary: '#172033' }
-    },
-    shape: {
-        borderRadius: 8
-    }
+  palette: {
+    primary: { main: '#2563eb' },
+    background: { paper: '#ffffff' },
+    text: { primary: '#172033' }
+  },
+  shape: {
+    borderRadius: 8
+  }
 })
 ```
 
@@ -66,16 +66,16 @@ export const theme = createTheme({
 @import "@master/css";
 
 @theme {
-    --color-primary: #2563eb;
-    --color-surface: #ffffff;
-    --color-body: #172033;
-    --radius-control: .5rem;
+  --color-primary: #2563eb;
+  --color-surface: #ffffff;
+  --color-body: #172033;
+  --radius-control: .5rem;
 }
 ```
 
 ```html
 <section class="b:1px|solid|base fg:body bg:surface r:control">
-    ...
+  ...
 </section>
 ```
 
@@ -90,27 +90,27 @@ Start with `sx` blocks that style layout wrappers, cards, sections, and simple p
 import Box from '@mui/material/Box'
 
 export function DashboardPanel({ children }: { children: React.ReactNode }) {
-    return (
-        <Box sx={{
-            display: 'grid',
-            gap: 2,
-            p: 3,
-            borderRadius: 2,
-            bgcolor: 'background.paper'
-        }}>
-            {children}
-        </Box>
-    )
+  return (
+    <Box sx={{
+      display: 'grid',
+      gap: 2,
+      p: 3,
+      borderRadius: 2,
+      bgcolor: 'background.paper'
+    }}>
+      {children}
+    </Box>
+  )
 }
 ```
 
 ```tsx name=DashboardPanel.tsx
 export function DashboardPanel({ children }: { children: React.ReactNode }) {
-    return (
-        <section className="grid gap:md p:lg bg:surface r:control">
-            {children}
-        </section>
-    )
+  return (
+    <section className="grid gap:md p:lg bg:surface r:control">
+      {children}
+    </section>
+  )
 }
 ```
 
@@ -118,7 +118,7 @@ Use Material UI components with `className` when the component still provides us
 
 ```tsx
 <Button className="min-w:0 px:md" variant="contained">
-    Save
+  Save
 </Button>
 ```
 
@@ -133,21 +133,21 @@ When many `sx` blocks encode the same product role, move that role into a Master
 @import "@master/css";
 
 @components {
-    panel {
-        @compose p:lg b:1px|solid|base r:lg fg:body shadow:sm bg:surface;
-    }
+  panel {
+    @compose p:lg b:1px|solid|base r:lg fg:body shadow:sm bg:surface;
+  }
 
-    toolbar {
-        @compose flex items-center gap:sm min-h:12x;
-    }
+  toolbar {
+    @compose flex items-center gap:sm min-h:12x;
+  }
 }
 ```
 
 ```tsx
 <section className="panel">
-    <div className="toolbar">
-        ...
-    </div>
+  <div className="toolbar">
+    ...
+  </div>
 </section>
 ```
 
@@ -164,7 +164,7 @@ Translate static responsive `sx` into Master CSS conditions.
 
 ```html
 <section class="grid grid-cols:1 gap:md grid-cols:3@md">
-    ...
+  ...
 </section>
 ```
 
@@ -172,7 +172,7 @@ For component state, prefer the native state or attribute when it belongs to you
 
 ```html
 <button class="bg:blue-60 bg:blue-70:hover opacity:.5:disabled">
-    Save
+  Save
 </button>
 ```
 

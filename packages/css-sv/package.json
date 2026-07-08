@@ -1,53 +1,53 @@
 {
-    "name": "@master/css-sv",
-    "type": "module",
-    "scripts": {
-        "build": "tsdown",
-        "dev": "tsdown --watch",
-        "lint": "eslint",
-        "test": "vitest"
-    },
-    "license": "MIT",
-    "description": "Svelte CLI add-on for Master CSS",
-    "author": "Aoyue Design LLC.",
-    "funding": "https://rc.css.master.co/sponsor",
-    "homepage": "https://css.master.co",
-    "bugs": {
-        "url": "https://github.com/master-co/css/issues"
-    },
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/master-co/css.git",
-        "directory": "packages/css-sv"
-    },
-    "keywords": [
-        "sv",
-        "sv-add",
-        "svelte",
-        "sveltekit",
-        "css",
-        "mastercss"
-    ],
-    "sideEffects": false,
-    "exports": {
-        ".": {
-            "types": "./dist/index.d.ts",
-            "default": "./dist/index.js"
-        }
-    },
-    "files": [
-        "dist"
-    ],
-    "publishConfig": {
-        "access": "public",
-        "provenance": true
-    },
-    "peerDependencies": {
-        "sv": "^0.16.1"
-    },
-    "devDependencies": {
-        "@sveltejs/sv-utils": "0.3.0",
-        "sv": "^0.16.1",
-        "svelte": "^5.56.3"
+  "name": "@master/css-sv",
+  "type": "module",
+  "scripts": {
+    "build": "tsdown",
+    "dev": "tsdown --watch",
+    "lint": "eslint",
+    "test": "vitest"
+  },
+  "license": "MIT",
+  "description": "Svelte CLI add-on for Master CSS",
+  "author": "Aoyue Design LLC.",
+  "funding": "https://rc.css.master.co/sponsor",
+  "homepage": "https://css.master.co",
+  "bugs": {
+    "url": "https://github.com/master-co/css/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/master-co/css.git",
+    "directory": "packages/css-sv"
+  },
+  "keywords": [
+    "sv",
+    "sv-add",
+    "svelte",
+    "sveltekit",
+    "css",
+    "mastercss"
+  ],
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
     }
+  },
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "peerDependencies": {
+    "sv": "^0.16.1"
+  },
+  "devDependencies": {
+    "@sveltejs/sv-utils": "0.3.0",
+    "sv": "^0.16.1",
+    "svelte": "^5.56.3"
+  }
 }

@@ -2,13 +2,13 @@ import type Core from './core'
 import startDebuggers from './debuggers'
 
 declare global {
-    var MasterCSSRuntime: typeof Core
-    var masterCSSRuntime: Core
+  var MasterCSSRuntime: typeof Core
+  var masterCSSRuntime: Core
 }
 
 export default function registerGlobal(CSSRuntime: typeof Core) {
-    if (!globalThis.MasterCSSRuntime) globalThis.MasterCSSRuntime = CSSRuntime
-    if (process.env.NODE_ENV === 'development') {
-        startDebuggers()
-    }
+  if (!globalThis.MasterCSSRuntime) globalThis.MasterCSSRuntime = CSSRuntime
+  if (process.env.NODE_ENV === 'development') {
+    startDebuggers()
+  }
 }

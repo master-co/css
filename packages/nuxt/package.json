@@ -1,81 +1,81 @@
 {
-    "name": "@master/css.nuxt",
-    "type": "module",
-    "scripts": {
-        "build": "nuxt-module-build prepare && nuxt-module-build && node scripts/normalize-module-build.js",
-        "dev": "nuxt-module-build prepare && nuxi dev playground",
-        "dev:build": "nuxi build playground",
-        "dev:prepare": "nuxt-module-build build --stub && node scripts/normalize-module-build.js && nuxt-module-build prepare && nuxi prepare playground",
-        "lint": "eslint .",
-        "test": "vitest run"
-    },
-    "license": "MIT",
-    "description": "Nuxt module for Master CSS",
-    "author": "Aoyue Design LLC.",
-    "funding": "https://rc.css.master.co/sponsor",
-    "homepage": "https://css.master.co",
-    "bugs": {
-        "url": "https://github.com/master-co/css/issues"
-    },
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/master-co/css.git",
-        "directory": "packages/nuxt"
-    },
-    "keywords": [
-        "nitro",
-        "vue",
-        "server",
-        "hooks",
-        "css",
-        "nuxt",
-        "mastercss",
-        "server-side-rendering",
-        "ssr"
-    ],
-    "sideEffects": false,
-    "exports": {
-        ".": {
-            "types": "./dist/module.d.ts",
-            "default": "./dist/module.js"
-        }
-    },
-    "main": "./dist/module.js",
-    "module": "./dist/module.js",
-    "files": [
-        "dist"
-    ],
-    "publishConfig": {
-        "access": "public",
-        "provenance": true
-    },
-    "dependencies": {
-        "@master/css-integration": "workspace:^",
-        "@master/css-project": "workspace:^",
-        "@master/css-runtime": "workspace:^",
-        "@master/css-server": "workspace:^",
-        "@master/css-stylesheet": "workspace:^",
-        "@master/css.vite": "workspace:^",
-        "@nuxt/kit": "^4.4.8"
-    },
-    "devDependencies": {
-        "@nuxt/devtools": "4.0.0-alpha.4",
-        "@nuxt/eslint": "^1.16.0",
-        "@nuxt/eslint-config": "^1.16.0",
-        "@nuxt/module-builder": "^1.0.2",
-        "@nuxt/schema": "^4.4.8",
-        "@nuxt/test-utils": "^4.0.3",
-        "@types/js-beautify": "^1.14.3",
-        "@vue/test-utils": "^2.4.11",
-        "changelogen": "^0.6.2",
-        "eslint": "^10.5.0",
-        "happy-dom": "^20.10.6",
-        "js-beautify": "^1.15.4",
-        "nuxt": "^4.4.8",
-        "playwright-core": "^1.61.0",
-        "vite": "^8.0.16",
-        "vitest": "^4.1.9",
-        "vue": "^3.5.38",
-        "@master/css-schema": "workspace:^"
+  "name": "@master/css.nuxt",
+  "type": "module",
+  "scripts": {
+    "build": "nuxt-module-build prepare && nuxt-module-build && node scripts/normalize-module-build.js",
+    "dev": "nuxt-module-build prepare && nuxi dev playground",
+    "dev:build": "nuxi build playground",
+    "dev:prepare": "nuxt-module-build build --stub && node scripts/normalize-module-build.js && nuxt-module-build prepare && nuxi prepare playground",
+    "lint": "eslint .",
+    "test": "vitest run"
+  },
+  "license": "MIT",
+  "description": "Nuxt module for Master CSS",
+  "author": "Aoyue Design LLC.",
+  "funding": "https://rc.css.master.co/sponsor",
+  "homepage": "https://css.master.co",
+  "bugs": {
+    "url": "https://github.com/master-co/css/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/master-co/css.git",
+    "directory": "packages/nuxt"
+  },
+  "keywords": [
+    "nitro",
+    "vue",
+    "server",
+    "hooks",
+    "css",
+    "nuxt",
+    "mastercss",
+    "server-side-rendering",
+    "ssr"
+  ],
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./dist/module.d.ts",
+      "default": "./dist/module.js"
     }
+  },
+  "main": "./dist/module.js",
+  "module": "./dist/module.js",
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "dependencies": {
+    "@master/css-integration": "workspace:^",
+    "@master/css-project": "workspace:^",
+    "@master/css-runtime": "workspace:^",
+    "@master/css-server": "workspace:^",
+    "@master/css-stylesheet": "workspace:^",
+    "@master/css.vite": "workspace:^",
+    "@nuxt/kit": "^4.4.8"
+  },
+  "devDependencies": {
+    "@nuxt/devtools": "4.0.0-alpha.4",
+    "@nuxt/eslint": "^1.16.0",
+    "@nuxt/eslint-config": "^1.16.0",
+    "@nuxt/module-builder": "^1.0.2",
+    "@nuxt/schema": "^4.4.8",
+    "@nuxt/test-utils": "^4.0.3",
+    "@types/js-beautify": "^1.14.3",
+    "@vue/test-utils": "^2.4.11",
+    "changelogen": "^0.6.2",
+    "eslint": "^10.5.0",
+    "happy-dom": "^20.10.6",
+    "js-beautify": "^1.15.4",
+    "nuxt": "^4.4.8",
+    "playwright-core": "^1.61.0",
+    "vite": "^8.0.16",
+    "vitest": "^4.1.9",
+    "vue": "^3.5.38",
+    "@master/css-schema": "workspace:^"
+  }
 }

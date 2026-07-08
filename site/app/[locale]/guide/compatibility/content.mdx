@@ -39,10 +39,10 @@ Write the unprefixed class:
 ```
 
 <details open>
-    <summary>Generated CSS</summary>
-    <Class2CSS>
-        {['backdrop-filter:blur(16px)']}
-    </Class2CSS>
+  <summary>Generated CSS</summary>
+  <Class2CSS>
+    {['backdrop-filter:blur(16px)']}
+  </Class2CSS>
 </details>
 
 ### CSS selectors
@@ -53,10 +53,10 @@ Use the Master CSS selector shorthand when one exists:
 ```
 
 <details open>
-    <summary>Generated CSS</summary>
-    <Class2CSS>
-        {['bg:#000::scrollbar']}
-    </Class2CSS>
+  <summary>Generated CSS</summary>
+  <Class2CSS>
+    {['bg:#000::scrollbar']}
+  </Class2CSS>
 </details>
 
 ---
@@ -73,10 +73,10 @@ Write a property-like class when the declaration is already valid CSS:
 ```
 
 <details open>
-    <summary>Generated CSS</summary>
-    <Class2CSS>
-        {['field-sizing:content', 'interpolate-size:allow-keywords', 'view-transition-name:card', 'transition-behavior:allow-discrete']}
-    </Class2CSS>
+  <summary>Generated CSS</summary>
+  <Class2CSS>
+    {['field-sizing:content', 'interpolate-size:allow-keywords', 'view-transition-name:card', 'transition-behavior:allow-discrete']}
+  </Class2CSS>
 </details>
 
 Custom properties can use the same direct declaration form:
@@ -87,10 +87,10 @@ Custom properties can use the same direct declaration form:
 ```
 
 <details>
-    <summary>Generated CSS</summary>
-    <Class2CSS>
-        {['--card-gap:1rem']}
-    </Class2CSS>
+  <summary>Generated CSS</summary>
+  <Class2CSS>
+    {['--card-gap:1rem']}
+  </Class2CSS>
 </details>
 
 ### Master CSS syntax first
@@ -104,10 +104,10 @@ Native fallback is intentionally lower priority than Master CSS semantics. Curat
 {/* eslint-enable @master/css/prefer-canonical-classes */}
 
 <details>
-    <summary>Generated CSS</summary>
-    <Class2CSS>
-        {['mt:4x', 'margin:1rem', 'bg:red-60']}
-    </Class2CSS>
+  <summary>Generated CSS</summary>
+  <Class2CSS>
+    {['mt:4x', 'margin:1rem', 'bg:red-60']}
+  </Class2CSS>
 </details>
 
 This preserves the expected syntax model:
@@ -127,10 +127,10 @@ Arbitrary properties do not need `{}`. If the declaration is valid CSS, write it
 ```
 
 <details>
-    <summary>Generated CSS</summary>
-    <Class2CSS>
-        {['interpolate-size:allow-keywords', 'scroll-timeline-name:--cards', 'paint-order:stroke|fill']}
-    </Class2CSS>
+  <summary>Generated CSS</summary>
+  <Class2CSS>
+    {['interpolate-size:allow-keywords', 'scroll-timeline-name:--cards', 'paint-order:stroke|fill']}
+  </Class2CSS>
 </details>
 
 Use `{...}` only as an explicit raw escape hatch, or when several raw declarations should share one selector or query suffix. Static tooling may reject the newest CSS grammar until its syntax data catches up, while the browser runtime follows `CSS.supports(property, value)` for direct native declarations.
@@ -144,10 +144,10 @@ Selector suffixes can use native CSS selector syntax as long as the browser supp
 ```
 
 <details>
-    <summary>Generated CSS</summary>
-    <Class2CSS>
-        {['outline:2px|solid|red:has(:checked)']}
-    </Class2CSS>
+  <summary>Generated CSS</summary>
+  <Class2CSS>
+    {['outline:2px|solid|red:has(:checked)']}
+  </Class2CSS>
 </details>
 
 ---
@@ -177,17 +177,17 @@ Then define your application overrides in the `components` layer or use utilitie
 
 ```css name=index.css
 @components {
-    swiper {
-        @compose max-w:4xl;
-    }
+  swiper {
+    @compose max-w:4xl;
+  }
 
-    swiper-wrapper {
-        @compose bg:red-60;
-    }
+  swiper-wrapper {
+    @compose bg:red-60;
+  }
 
-    swiper-slide {
-        @compose bg:blue-60;
-    }
+  swiper-slide {
+    @compose bg:blue-60;
+  }
 }
 ```
 
@@ -207,8 +207,8 @@ Use native CSS variables from your theme when module-scoped or component-scoped 
 
 ```css name=Button.module.css
 .button {
-    background-color: var(--color-primary);
-    border-radius: var(--radius-md);
+  background-color: var(--color-primary);
+  border-radius: var(--radius-md);
 }
 ```
 

@@ -5,17 +5,17 @@ import SyntaxPreview from './SyntaxPreview'
 import Bg from 'internal/components/Bg'
 
 export default () => {
-    const previewSyntax = 'bg:blue-60'
-    return (
-        <>
-            <SyntaxTable>
-                {syntaxes.map((syntax) =>
-                    <SyntaxTr value={syntax} key={syntax} previewSyntax={previewSyntax}>
-                        {typeof syntax === 'string' && <Bg className={syntax} />}
-                    </SyntaxTr>)
-                }
-            </SyntaxTable>
-            <SyntaxPreview className={previewSyntax} />
-        </>
-    )
+  const previewSyntax = 'bg:blue-60'
+  return (
+    <>
+      <SyntaxTable>
+        {syntaxes.map((syntax) =>
+          <SyntaxTr value={syntax} key={syntax} previewSyntax={previewSyntax}>
+            {typeof syntax === 'string' && <Bg className={syntax} />}
+          </SyntaxTr>)
+        }
+      </SyntaxTable>
+      <SyntaxPreview className={previewSyntax} />
+    </>
+  )
 }

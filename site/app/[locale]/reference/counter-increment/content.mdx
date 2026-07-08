@@ -5,59 +5,59 @@
 ### Number sections
 Use `counter-increment` to advance a named counter on each matching element. The counter is usually created with [`counter-reset`](/reference/counter-reset) and displayed with [`content`](/reference/content).
 <Demo $py={0}>
-    <DemoPanel>
-        <article className="flex flex-col gap:10x counter-reset:section">
-            <div className="counter-increment:section inline-flex::before items-center::before justify-center::before size:32px::before mr:md::before r:full::before font:semibold::before font:sm::before bg:blue-60::before fg:white::before content:counter(section)::before">
-                <span className="font-weight:560 font:lg text:neutral">Overview</span>
-                <p className="my:md ml:42x font:sm text:gray">Introduce the document structure and goals.</p>
-            </div>
-            <div className="counter-increment:section inline-flex::before items-center::before justify-center::before size:32px::before mr:md::before r:full::before font:semibold::before font:sm::before bg:blue-60::before fg:white::before content:counter(section)::before">
-                <span className="font-weight:560 font:lg text:neutral">Installation</span>
-                <p className="my:md ml:42x font:sm text:gray">Add the package and wire it into the build.</p>
-            </div>
-            <div className="counter-increment:section inline-flex::before items-center::before justify-center::before size:32px::before mr:md::before r:full::before font:semibold::before font:sm::before bg:blue-60::before fg:white::before content:counter(section)::before">
-                <span className="font-weight:560 font:lg text:neutral">Configuration</span>
-                <p className="my:md ml:42x font:sm text:gray">Customize counters, selectors, and content output.</p>
-            </div>
-        </article>
-    </DemoPanel>
+  <DemoPanel>
+    <article className="flex flex-col gap:10x counter-reset:section">
+      <div className="counter-increment:section inline-flex::before items-center::before justify-center::before size:32px::before mr:md::before r:full::before font:semibold::before font:sm::before bg:blue-60::before fg:white::before content:counter(section)::before">
+        <span className="font-weight:560 font:lg text:neutral">Overview</span>
+        <p className="my:md ml:42x font:sm text:gray">Introduce the document structure and goals.</p>
+      </div>
+      <div className="counter-increment:section inline-flex::before items-center::before justify-center::before size:32px::before mr:md::before r:full::before font:semibold::before font:sm::before bg:blue-60::before fg:white::before content:counter(section)::before">
+        <span className="font-weight:560 font:lg text:neutral">Installation</span>
+        <p className="my:md ml:42x font:sm text:gray">Add the package and wire it into the build.</p>
+      </div>
+      <div className="counter-increment:section inline-flex::before items-center::before justify-center::before size:32px::before mr:md::before r:full::before font:semibold::before font:sm::before bg:blue-60::before fg:white::before content:counter(section)::before">
+        <span className="font-weight:560 font:lg text:neutral">Configuration</span>
+        <p className="my:md ml:42x font:sm text:gray">Customize counters, selectors, and content output.</p>
+      </div>
+    </article>
+  </DemoPanel>
 </Demo>
 ```html
 <!-- @MARK counter-reset:section -->
 <article class="counter-reset:section">
-    <!-- @MARK counter-increment:section -->
-    <!-- @MARK content:counter(section)::before -->
-    <h2 class="counter-increment:section inline-flex::before r:full::before content:counter(section)::before">Overview</h2>
-    <h2 class="counter-increment:section inline-flex::before r:full::before content:counter(section)::before">Installation</h2>
-    <h2 class="counter-increment:section inline-flex::before r:full::before content:counter(section)::before">Configuration</h2>
+  <!-- @MARK counter-increment:section -->
+  <!-- @MARK content:counter(section)::before -->
+  <h2 class="counter-increment:section inline-flex::before r:full::before content:counter(section)::before">Overview</h2>
+  <h2 class="counter-increment:section inline-flex::before r:full::before content:counter(section)::before">Installation</h2>
+  <h2 class="counter-increment:section inline-flex::before r:full::before content:counter(section)::before">Configuration</h2>
 </article>
 ```
 
 ### Count backward
 Pass a negative integer to decrease a counter. Here the first generated value is `10` because the counter starts at `11` and decrements before it is displayed.
 <Demo $py={0}>
-    <DemoPanel>
-        <ol className="grid gap:xl m:0 p:0 list-style:none counter-reset:step|11">
-            <li className="flex items-center p:10x r:lg bg:gray-5 counter-increment:step|-1 inline-flex::before flex-shrink:0::before items-center::before justify-center::before size:7x::before mr:md::before r:full::before font:0.813rem::before font:bold::before bg:blue-60::before fg:white::before content:counter(step)::before bg:gray-90@dark">
-                <span>Prepare release notes</span>
-            </li>
-            <li className="flex items-center p:10x r:lg bg:gray-5 counter-increment:step|-1 inline-flex::before flex-shrink:0::before items-center::before justify-center::before size:7x::before mr:md::before r:full::before font:0.813rem::before font:bold::before bg:blue-60::before fg:white::before content:counter(step)::before bg:gray-90@dark">
-                <span>Run validation</span>
-            </li>
-            <li className="flex items-center p:10x r:lg bg:gray-5 counter-increment:step|-1 inline-flex::before flex-shrink:0::before items-center::before justify-center::before size:7x::before mr:md::before r:full::before font:0.813rem::before font:bold::before bg:blue-60::before fg:white::before content:counter(step)::before bg:gray-90@dark">
-                <span>Publish the build</span>
-            </li>
-        </ol>
-    </DemoPanel>
+  <DemoPanel>
+    <ol className="grid gap:xl m:0 p:0 list-style:none counter-reset:step|11">
+      <li className="flex items-center p:10x r:lg bg:gray-5 counter-increment:step|-1 inline-flex::before flex-shrink:0::before items-center::before justify-center::before size:7x::before mr:md::before r:full::before font:0.813rem::before font:bold::before bg:blue-60::before fg:white::before content:counter(step)::before bg:gray-90@dark">
+        <span>Prepare release notes</span>
+      </li>
+      <li className="flex items-center p:10x r:lg bg:gray-5 counter-increment:step|-1 inline-flex::before flex-shrink:0::before items-center::before justify-center::before size:7x::before mr:md::before r:full::before font:0.813rem::before font:bold::before bg:blue-60::before fg:white::before content:counter(step)::before bg:gray-90@dark">
+        <span>Run validation</span>
+      </li>
+      <li className="flex items-center p:10x r:lg bg:gray-5 counter-increment:step|-1 inline-flex::before flex-shrink:0::before items-center::before justify-center::before size:7x::before mr:md::before r:full::before font:0.813rem::before font:bold::before bg:blue-60::before fg:white::before content:counter(step)::before bg:gray-90@dark">
+        <span>Publish the build</span>
+      </li>
+    </ol>
+  </DemoPanel>
 </Demo>
 ```html
 <!-- @MARK counter-reset:step|11 -->
 <ol class="list-style:none counter-reset:step|11">
-    <!-- @MARK counter-increment:step|-1 -->
-    <!-- @MARK content:counter(step)::before -->
-    <li class="counter-increment:step|-1 inline-flex::before r:full::before content:counter(step)::before">Prepare release notes</li>
-    <li class="counter-increment:step|-1 inline-flex::before r:full::before content:counter(step)::before">Run validation</li>
-    <li class="counter-increment:step|-1 inline-flex::before r:full::before content:counter(step)::before">Publish the build</li>
+  <!-- @MARK counter-increment:step|-1 -->
+  <!-- @MARK content:counter(step)::before -->
+  <li class="counter-increment:step|-1 inline-flex::before r:full::before content:counter(step)::before">Prepare release notes</li>
+  <li class="counter-increment:step|-1 inline-flex::before r:full::before content:counter(step)::before">Run validation</li>
+  <li class="counter-increment:step|-1 inline-flex::before r:full::before content:counter(step)::before">Publish the build</li>
 </ol>
 ```
 

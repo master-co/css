@@ -1,13 +1,13 @@
 @import './styles/button.css';
 
 @theme {
-    --color-primary: #123;
-    --breakpoint-md: 48;
+  --color-primary: #123;
+  --breakpoint-md: 48;
 }
 
 @components {
-    btn {
-        @compose bg:primary;
-        display: inline-flex;
-    }
+  btn {
+    @compose bg:primary;
+    display: inline-flex;
+  }
 }

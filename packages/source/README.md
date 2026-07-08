@@ -18,11 +18,11 @@ It does not validate classes, generate CSS, maintain scanner state, observe file
 
 ```ts
 import {
-    extractClassCandidates,
-    extractHTMLClasses,
-    extractOxcClasses,
-    htmlAdapter,
-    oxcAdapter,
+  extractClassCandidates,
+  extractHTMLClasses,
+  extractOxcClasses,
+  htmlAdapter,
+  oxcAdapter,
 } from '@master/css-source'
 ```
 
@@ -34,7 +34,7 @@ Extract raw class-like candidates from source content.
 import { extractClassCandidates } from '@master/css-source'
 
 const candidates = extractClassCandidates(`
-    element.classList.add('transition:transform|.3s', dynamicClass)
+  element.classList.add('transition:transform|.3s', dynamicClass)
 `)
 ```
 

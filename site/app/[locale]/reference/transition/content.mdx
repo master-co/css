@@ -7,15 +7,15 @@ Use `transition:*` when the property, duration, and easing belong together. Sepa
 ```html
 <!-- @MARK transition:opacity|150ms|ease-out -->
 <button class="opacity:.72 transition:opacity|150ms|ease-out opacity:1:hover">
-    Save changes
+  Save changes
 </button>
 ```
 
 <details>
-    <summary>Generated CSS</summary>
-    <Class2CSS>
-        {['transition:opacity|150ms|ease-out']}
-    </Class2CSS>
+  <summary>Generated CSS</summary>
+  <Class2CSS>
+    {['transition:opacity|150ms|ease-out']}
+  </Class2CSS>
 </details>
 
 ### Animate transforms explicitly
@@ -23,7 +23,7 @@ Keep the transitioned property narrow. A transform transition is cheaper to reas
 ```html
 <!-- @MARK transition:transform|200ms|ease-in-out --><!-- @MARK transform:translateY(-2px):hover -->
 <a class="inline-block transition:transform|200ms|ease-in-out transform:translateY(-2px):hover">
-    View report
+  View report
 </a>
 ```
 
@@ -31,7 +31,7 @@ Keep the transitioned property narrow. A transform transition is cheaper to reas
 Use the longhand utilities when one part changes independently, such as disabling the duration for print while keeping the same property and easing.
 ```html
 <button class="transition-duration:150ms transition-property:opacity transition-timing-function:ease-out transition-duration:0ms@print">
-    Continue
+  Continue
 </button>
 ```
 

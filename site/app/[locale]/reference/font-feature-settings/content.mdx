@@ -10,10 +10,10 @@ Use `font-feature-settings:*` to pass OpenType feature tags directly to `font-fe
 ```
 
 <details>
-    <summary>Generated CSS</summary>
-    <Class2CSS>
-        {["font-feature-settings:'tnum'"]}
-    </Class2CSS>
+  <summary>Generated CSS</summary>
+  <Class2CSS>
+    {["font-feature-settings:'tnum'"]}
+  </Class2CSS>
 </details>
 
 ### Reset features
@@ -21,7 +21,7 @@ Use `font-feature-settings:normal` when a nested element should not inherit cust
 ```html
 <!-- @MARK font-feature-settings:normal -->
 <span class="font-feature-settings:'tnum'">
-    <span class="font-feature-settings:normal">Reset</span>
+  <span class="font-feature-settings:normal">Reset</span>
 </span>
 ```
 
@@ -36,7 +36,7 @@ Define `font-feature-*` tokens when a feature combination is shared across sever
 
 ```css name=index.css
 @theme {
-    --font-feature-tabular: "tnum";
+  --font-feature-tabular: "tnum";
 }
 ```
 

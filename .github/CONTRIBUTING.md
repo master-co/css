@@ -24,11 +24,11 @@ Taking the CSS project as an example, you can freely create a file like **aron.t
 import { createCSS } from '../src'
 
 it('should generated with `background-color:` instead of `background:`', () => {
-    expect(createCSS().create('bg:red')?.declarations).toStrictEqual({ 'background-color': '#d11a1e' })
+  expect(createCSS().create('bg:red')?.declarations).toStrictEqual({ 'background-color': '#d11a1e' })
 })
 
 it('should contain the `:hover` selector', () => {
-    expect(createCSS().create('fg:white:hover')?.text).toBe('.f\\:white\\:hover:hover{color:#ffffff}')
+  expect(createCSS().create('fg:white:hover')?.text).toBe('.f\\:white\\:hover:hover{color:#ffffff}')
 })
 ```
 

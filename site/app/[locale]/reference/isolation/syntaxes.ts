@@ -1,7 +1,7 @@
 const syntaxes = [
-    'isolation:auto',
-    'isolate',
-    ['isolation:`value`'],
+  'isolation:auto',
+  'isolate',
+  ['isolation:`value`'],
 ]
 
 export default syntaxes

@@ -1,20 +1,20 @@
 ---
 export interface Props {
-	title: string;
-	body: string;
-	href: string;
+  title: string;
+  body: string;
+  href: string;
 }
 
 const { href, title, body } = Astro.props;
 ---
 
 <li class="list-style:none">
-		<a class="block h:100% p:5x r:8px bg:white border:1px|solid|#e2e8f0 text-decoration:none fg:#0f172a" href={href}>
-			<h2 class="m:0 font:18px font-weight:600">
-			{title}
-		</h2>
-		<p class="mt:2x mb:0 fg:#475569 line-height:1.6">
-			{body}
-		</p>
-	</a>
+    <a class="block h:100% p:5x r:8px bg:white border:1px|solid|#e2e8f0 text-decoration:none fg:#0f172a" href={href}>
+      <h2 class="m:0 font:18px font-weight:600">
+      {title}
+    </h2>
+    <p class="mt:2x mb:0 fg:#475569 line-height:1.6">
+      {body}
+    </p>
+  </a>
 </li>

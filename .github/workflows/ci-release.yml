@@ -1,250 +1,250 @@
 name: CI & Release
 on:
-    push:
-        branches:
-            - "**"
-    pull_request:
-        types:
-            - opened
-            - reopened
-            - edited
-            - synchronize
+  push:
+    branches:
+      - "**"
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - edited
+      - synchronize
 
 permissions:
-    contents: read
+  contents: read
 
 concurrency:
-    group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
-    cancel-in-progress: true
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 
 env:
-    TRUSTED_CI: ${{ github.event_name == 'push' || (github.event.pull_request.head.repo.full_name == github.repository && github.actor != 'dependabot[bot]') }}
+  TRUSTED_CI: ${{ github.event_name == 'push' || (github.event.pull_request.head.repo.full_name == github.repository && github.actor != 'dependabot[bot]') }}
 
 jobs:
-    lint:
-        runs-on: ubuntu-latest
-        steps:
-            - if: ${{ env.TRUSTED_CI != 'true' }}
-              run: |
-                  echo "Full CI requires the private internal submodule and is not available for untrusted pull requests."
-                  exit 1
-            - if: ${{ env.TRUSTED_CI == 'true' }}
-              uses: actions/checkout@v6
-            - if: ${{ env.TRUSTED_CI == 'true' }}
-              uses: ./.github/actions/setup-pnpm
-              with:
-                  submodules-token: ${{ secrets.GH_TOKEN }}
-            - if: ${{ env.TRUSTED_CI == 'true' }}
-              run: pnpm run lint
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - if: ${{ env.TRUSTED_CI != 'true' }}
+        run: |
+          echo "Full CI requires the private internal submodule and is not available for untrusted pull requests."
+          exit 1
+      - if: ${{ env.TRUSTED_CI == 'true' }}
+        uses: actions/checkout@v6
+      - if: ${{ env.TRUSTED_CI == 'true' }}
+        uses: ./.github/actions/setup-pnpm
+        with:
+          submodules-token: ${{ secrets.GH_TOKEN }}
+      - if: ${{ env.TRUSTED_CI == 'true' }}
+        run: pnpm run lint
 
-    type-check:
-        runs-on: ubuntu-latest
-        steps:
-            - if: ${{ env.TRUSTED_CI != 'true' }}
-              run: |
-                  echo "Full CI requires the private internal submodule and is not available for untrusted pull requests."
-                  exit 1
-            - if: ${{ env.TRUSTED_CI == 'true' }}
-              uses: actions/checkout@v6
-            - if: ${{ env.TRUSTED_CI == 'true' }}
-              uses: ./.github/actions/setup-pnpm
-              with:
-                  submodules-token: ${{ secrets.GH_TOKEN }}
-            - if: ${{ env.TRUSTED_CI == 'true' }}
-              run: pnpm run type-check
+  type-check:
+    runs-on: ubuntu-latest
+    steps:
+      - if: ${{ env.TRUSTED_CI != 'true' }}
+        run: |
+          echo "Full CI requires the private internal submodule and is not available for untrusted pull requests."
+          exit 1
+      - if: ${{ env.TRUSTED_CI == 'true' }}
+        uses: actions/checkout@v6
+      - if: ${{ env.TRUSTED_CI == 'true' }}
+        uses: ./.github/actions/setup-pnpm
+        with:
+          submodules-token: ${{ secrets.GH_TOKEN }}
+      - if: ${{ env.TRUSTED_CI == 'true' }}
+        run: pnpm run type-check
 
-    audit-site-i18n:
-        runs-on: ubuntu-latest
-        steps:
-            - if: ${{ env.TRUSTED_CI != 'true' }}
-              run: |
-                  echo "Full CI requires the private internal submodule and is not available for untrusted pull requests."
-                  exit 1
-            - if: ${{ env.TRUSTED_CI == 'true' }}
-              uses: actions/checkout@v6
-            - if: ${{ env.TRUSTED_CI == 'true' }}
-              uses: ./.github/actions/setup-pnpm
-              with:
-                  submodules-token: ${{ secrets.GH_TOKEN }}
-            - if: ${{ env.TRUSTED_CI == 'true' }}
-              run: pnpm --filter site audit:i18n
+  audit-site-i18n:
+    runs-on: ubuntu-latest
+    steps:
+      - if: ${{ env.TRUSTED_CI != 'true' }}
+        run: |
+          echo "Full CI requires the private internal submodule and is not available for untrusted pull requests."
+          exit 1
+      - if: ${{ env.TRUSTED_CI == 'true' }}
+        uses: actions/checkout@v6
+      - if: ${{ env.TRUSTED_CI == 'true' }}
+        uses: ./.github/actions/setup-pnpm
+        with:
+          submodules-token: ${{ secrets.GH_TOKEN }}
+      - if: ${{ env.TRUSTED_CI == 'true' }}
+        run: pnpm --filter site audit:i18n
 
-    test:
-        runs-on: ${{ matrix.os }}
-        strategy:
-            matrix:
-                os: [ubuntu-latest, windows-latest, macos-latest]
-        steps:
-            - if: ${{ env.TRUSTED_CI != 'true' }}
-              run: |
-                  echo "Full CI requires the private internal submodule and is not available for untrusted pull requests."
-                  exit 1
-            - if: ${{ env.TRUSTED_CI == 'true' }}
-              uses: actions/checkout@v6
-            - if: ${{ env.TRUSTED_CI == 'true' }}
-              uses: ./.github/actions/setup-pnpm
-              with:
-                  submodules-token: ${{ secrets.GH_TOKEN }}
-            - if: ${{ env.TRUSTED_CI == 'true' && matrix.os == 'ubuntu-latest' }}
-              run: pnpm exec playwright install --with-deps --only-shell chromium
-            - if: ${{ env.TRUSTED_CI == 'true' && matrix.os != 'ubuntu-latest' }}
-              run: pnpm exec playwright install --only-shell chromium
-            - if: ${{ env.TRUSTED_CI == 'true' && matrix.os == 'windows-latest' }}
-              run: pnpm exec turbo run test --filter="./packages/*" --concurrency=4
-            - if: ${{ env.TRUSTED_CI == 'true' && matrix.os != 'windows-latest' }}
-              run: pnpm run test
+  test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    steps:
+      - if: ${{ env.TRUSTED_CI != 'true' }}
+        run: |
+          echo "Full CI requires the private internal submodule and is not available for untrusted pull requests."
+          exit 1
+      - if: ${{ env.TRUSTED_CI == 'true' }}
+        uses: actions/checkout@v6
+      - if: ${{ env.TRUSTED_CI == 'true' }}
+        uses: ./.github/actions/setup-pnpm
+        with:
+          submodules-token: ${{ secrets.GH_TOKEN }}
+      - if: ${{ env.TRUSTED_CI == 'true' && matrix.os == 'ubuntu-latest' }}
+        run: pnpm exec playwright install --with-deps --only-shell chromium
+      - if: ${{ env.TRUSTED_CI == 'true' && matrix.os != 'ubuntu-latest' }}
+        run: pnpm exec playwright install --only-shell chromium
+      - if: ${{ env.TRUSTED_CI == 'true' && matrix.os == 'windows-latest' }}
+        run: pnpm exec turbo run test --filter="./packages/*" --concurrency=4
+      - if: ${{ env.TRUSTED_CI == 'true' && matrix.os != 'windows-latest' }}
+        run: pnpm run test
 
-    build-examples:
-        runs-on: ${{ matrix.os }}
-        strategy:
-            matrix:
-                os: [ubuntu-latest, windows-latest, macos-latest]
-        steps:
-            - if: ${{ env.TRUSTED_CI != 'true' }}
-              run: |
-                  echo "Full CI requires the private internal submodule and is not available for untrusted pull requests."
-                  exit 1
-            - if: ${{ env.TRUSTED_CI == 'true' }}
-              uses: actions/checkout@v6
-            - if: ${{ env.TRUSTED_CI == 'true' }}
-              uses: ./.github/actions/setup-pnpm
-              with:
-                  submodules-token: ${{ secrets.GH_TOKEN }}
-            - if: ${{ env.TRUSTED_CI == 'true' }}
-              run: pnpm build
-            - if: ${{ env.TRUSTED_CI == 'true' }}
-              run: pnpm build:examples
+  build-examples:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    steps:
+      - if: ${{ env.TRUSTED_CI != 'true' }}
+        run: |
+          echo "Full CI requires the private internal submodule and is not available for untrusted pull requests."
+          exit 1
+      - if: ${{ env.TRUSTED_CI == 'true' }}
+        uses: actions/checkout@v6
+      - if: ${{ env.TRUSTED_CI == 'true' }}
+        uses: ./.github/actions/setup-pnpm
+        with:
+          submodules-token: ${{ secrets.GH_TOKEN }}
+      - if: ${{ env.TRUSTED_CI == 'true' }}
+        run: pnpm build
+      - if: ${{ env.TRUSTED_CI == 'true' }}
+        run: pnpm build:examples
 
-    e2e:
-        runs-on: ubuntu-latest
-        steps:
-            - if: ${{ env.TRUSTED_CI != 'true' }}
-              run: |
-                  echo "Full CI requires the private internal submodule and is not available for untrusted pull requests."
-                  exit 1
-            - if: ${{ env.TRUSTED_CI == 'true' }}
-              uses: actions/checkout@v6
-            - if: ${{ env.TRUSTED_CI == 'true' }}
-              uses: ./.github/actions/setup-pnpm
-              with:
-                  submodules-token: ${{ secrets.GH_TOKEN }}
-            - if: ${{ env.TRUSTED_CI == 'true' }}
-              run: pnpm exec playwright install --with-deps
-            - if: ${{ env.TRUSTED_CI == 'true' }}
-              run: pnpm e2e
+  e2e:
+    runs-on: ubuntu-latest
+    steps:
+      - if: ${{ env.TRUSTED_CI != 'true' }}
+        run: |
+          echo "Full CI requires the private internal submodule and is not available for untrusted pull requests."
+          exit 1
+      - if: ${{ env.TRUSTED_CI == 'true' }}
+        uses: actions/checkout@v6
+      - if: ${{ env.TRUSTED_CI == 'true' }}
+        uses: ./.github/actions/setup-pnpm
+        with:
+          submodules-token: ${{ secrets.GH_TOKEN }}
+      - if: ${{ env.TRUSTED_CI == 'true' }}
+        run: pnpm exec playwright install --with-deps
+      - if: ${{ env.TRUSTED_CI == 'true' }}
+        run: pnpm e2e
 
-    release:
-        needs:
-            - lint
-            - test
-            - type-check
-            - build-examples
-            - e2e
-        if: ${{ github.event_name == 'push' && contains(fromJSON('["main","alpha","beta","rc","canary"]'), github.ref_name) }}
-        runs-on: ubuntu-latest
-        permissions:
-            contents: write
-            issues: write
-            pull-requests: write
-            id-token: write
-        steps:
-            - uses: actions/checkout@v6
-            - uses: ./.github/actions/setup-pnpm
-              with:
-                  submodules-token: ${{ secrets.GH_TOKEN }}
-            - run: pnpm run build
-            - run: pnpm exec semantic-release
-              env:
-                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-                  NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+  release:
+    needs:
+      - lint
+      - test
+      - type-check
+      - build-examples
+      - e2e
+    if: ${{ github.event_name == 'push' && contains(fromJSON('["main","alpha","beta","rc","canary"]'), github.ref_name) }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+      id-token: write
+    steps:
+      - uses: actions/checkout@v6
+      - uses: ./.github/actions/setup-pnpm
+        with:
+          submodules-token: ${{ secrets.GH_TOKEN }}
+      - run: pnpm run build
+      - run: pnpm exec semantic-release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-    deploy-site:
-        needs: release
-        if: ${{ github.event_name == 'push' && github.ref_name == 'rc' }}
-        runs-on: ubuntu-latest
-        permissions: {}
-        steps:
-            - name: Trigger Cloudflare Pages site deploy
-              run: |
-                  if [ -z "$CLOUDFLARE_PAGES_RC_DEPLOY_HOOK" ]; then
-                      echo "CLOUDFLARE_PAGES_RC_DEPLOY_HOOK is required to deploy the site after release."
-                      exit 1
-                  fi
-                  curl -fsS -X POST "$CLOUDFLARE_PAGES_RC_DEPLOY_HOOK"
-              env:
-                  CLOUDFLARE_PAGES_RC_DEPLOY_HOOK: ${{ secrets.CLOUDFLARE_PAGES_RC_DEPLOY_HOOK }}
+  deploy-site:
+    needs: release
+    if: ${{ github.event_name == 'push' && github.ref_name == 'rc' }}
+    runs-on: ubuntu-latest
+    permissions: {}
+    steps:
+      - name: Trigger Cloudflare Pages site deploy
+        run: |
+          if [ -z "$CLOUDFLARE_PAGES_RC_DEPLOY_HOOK" ]; then
+            echo "CLOUDFLARE_PAGES_RC_DEPLOY_HOOK is required to deploy the site after release."
+            exit 1
+          fi
+          curl -fsS -X POST "$CLOUDFLARE_PAGES_RC_DEPLOY_HOOK"
+        env:
+          CLOUDFLARE_PAGES_RC_DEPLOY_HOOK: ${{ secrets.CLOUDFLARE_PAGES_RC_DEPLOY_HOOK }}
 
-    publish-vscode:
-        needs: release
-        if: ${{ github.event_name == 'push' && github.ref_name == 'rc' }}
-        runs-on: ubuntu-latest
-        permissions:
-            contents: write
-            id-token: write
-        steps:
-            - uses: actions/checkout@v6
-            - uses: ./.github/actions/setup-pnpm
-              with:
-                  submodules-token: ${{ secrets.GH_TOKEN }}
-            - name: Build and package VS Code extension release
-              run: pnpm release:vscode -- --patch --no-publish
-            - name: Commit VS Code extension version bump
-              run: |
-                  git config user.name "github-actions[bot]"
-                  git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-                  git add packages/vscode/package.json pnpm-lock.yaml
-                  git commit -m "Chore(VSCode): Bump extension version [skip ci]"
-                  git push origin "HEAD:${{ github.ref_name }}"
-            - name: Azure login for VSCE
-              uses: azure/login@v3
-              with:
-                  client-id: ${{ vars.AZURE_CLIENT_ID }}
-                  tenant-id: ${{ vars.AZURE_TENANT_ID }}
-                  subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
-            - name: Inspect VSCE Azure identity
-              run: |
-                  az account show --query '{tenantId:tenantId,user:user}' -o json
-                  az rest \
-                      -u https://app.vssps.visualstudio.com/_apis/profile/profiles/me \
-                      --resource 499b84ac-1321-427f-aa17-267ca6975798 \
-                      --query '{id:id,displayName:displayName,uniqueName:uniqueName}' \
-                      -o json
-            - name: Publish VS Code extension
-              run: |
-                  pnpm --filter master-css-vscode exec vsce verify-pat --azure-credential masterco
-                  pnpm --filter master-css-vscode vscode:publish -- --azure-credential
+  publish-vscode:
+    needs: release
+    if: ${{ github.event_name == 'push' && github.ref_name == 'rc' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      id-token: write
+    steps:
+      - uses: actions/checkout@v6
+      - uses: ./.github/actions/setup-pnpm
+        with:
+          submodules-token: ${{ secrets.GH_TOKEN }}
+      - name: Build and package VS Code extension release
+        run: pnpm release:vscode -- --patch --no-publish
+      - name: Commit VS Code extension version bump
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add packages/vscode/package.json pnpm-lock.yaml
+          git commit -m "Chore(VSCode): Bump extension version [skip ci]"
+          git push origin "HEAD:${{ github.ref_name }}"
+      - name: Azure login for VSCE
+        uses: azure/login@v3
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+      - name: Inspect VSCE Azure identity
+        run: |
+          az account show --query '{tenantId:tenantId,user:user}' -o json
+          az rest \
+            -u https://app.vssps.visualstudio.com/_apis/profile/profiles/me \
+            --resource 499b84ac-1321-427f-aa17-267ca6975798 \
+            --query '{id:id,displayName:displayName,uniqueName:uniqueName}' \
+            -o json
+      - name: Publish VS Code extension
+        run: |
+          pnpm --filter master-css-vscode exec vsce verify-pat --azure-credential masterco
+          pnpm --filter master-css-vscode vscode:publish -- --azure-credential
 
-    publish-open-vsx:
-        needs: release
-        if: ${{ github.event_name == 'push' && github.ref_name == 'rc' }}
-        runs-on: ubuntu-latest
-        permissions:
-            contents: read
-        steps:
-            - uses: actions/checkout@v6
-            - uses: ./.github/actions/setup-pnpm
-              with:
-                  submodules-token: ${{ secrets.GH_TOKEN }}
-            - name: Build and package Open VSX extension release
-              run: |
-                  pnpm release:vscode -- --patch --no-publish
-                  pnpm --filter master-css-vscode vscode:package -- --publisher master --out-dir open-vsx
-            - name: Publish Open VSX extension
-              run: |
-                  if [ -z "$OVSX_PAT" ]; then
-                      echo "OVSX_PAT is required to publish Open VSX extension."
-                      exit 1
-                  fi
+  publish-open-vsx:
+    needs: release
+    if: ${{ github.event_name == 'push' && github.ref_name == 'rc' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v6
+      - uses: ./.github/actions/setup-pnpm
+        with:
+          submodules-token: ${{ secrets.GH_TOKEN }}
+      - name: Build and package Open VSX extension release
+        run: |
+          pnpm release:vscode -- --patch --no-publish
+          pnpm --filter master-css-vscode vscode:package -- --publisher master --out-dir open-vsx
+      - name: Publish Open VSX extension
+        run: |
+          if [ -z "$OVSX_PAT" ]; then
+            echo "OVSX_PAT is required to publish Open VSX extension."
+            exit 1
+          fi
 
-                  shopt -s nullglob
-                  files=(packages/vscode/open-vsx/*.vsix)
-                  if [ "${#files[@]}" -eq 0 ]; then
-                      echo "No Open VSX VSIX files found in packages/vscode/open-vsx."
-                      exit 1
-                  fi
+          shopt -s nullglob
+          files=(packages/vscode/open-vsx/*.vsix)
+          if [ "${#files[@]}" -eq 0 ]; then
+            echo "No Open VSX VSIX files found in packages/vscode/open-vsx."
+            exit 1
+          fi
 
-                  for file in "${files[@]}"; do
-                      pnpm dlx ovsx publish "$file"
-                  done
-              env:
-                  OVSX_PAT: ${{ secrets.OVSX_PAT }}
+          for file in "${files[@]}"; do
+            pnpm dlx ovsx publish "$file"
+          done
+        env:
+          OVSX_PAT: ${{ secrets.OVSX_PAT }}

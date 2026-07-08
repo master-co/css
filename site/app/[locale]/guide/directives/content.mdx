@@ -7,12 +7,12 @@ Directives do not behave like normal CSS rules. Consumed directives are removed 
 @import "@master/css";
 
 @settings {
-    root-size: 16;
-    base-unit: 4;
-    default-mode: light;
-    mode-trigger: media;
-    scope: #app;
-    important: false;
+  root-size: 16;
+  base-unit: 4;
+  default-mode: light;
+  mode-trigger: media;
+  scope: #app;
+  important: false;
 }
 
 @reference "./theme.css";
@@ -54,11 +54,11 @@ Use `@reference` to load another Master CSS stylesheet as compile-time context w
 @reference "../app.css";
 
 .button {
-    @compose btn;
+  @compose btn;
 
-    @dark {
-        @compose bg:blue-60;
-    }
+  @dark {
+    @compose bg:blue-60;
+  }
 }
 ```
 
@@ -68,9 +68,9 @@ Referenced stylesheets can define `@settings`, `@theme`, `@custom-variant`, `@de
 @import "@master/css";
 
 @components {
-    btn {
-        @compose inline-flex align-items:center px:md h:10x r:lg;
-    }
+  btn {
+    @compose inline-flex align-items:center px:md h:10x r:lg;
+  }
 }
 ```
 
@@ -94,12 +94,12 @@ Use `@settings` for root engine settings that affect generated CSS.
 
 ```css
 @settings {
-    root-size: 16;
-    base-unit: 4;
-    default-mode: light;
-    mode-trigger: media;
-    scope: #app;
-    important: false;
+  root-size: 16;
+  base-unit: 4;
+  default-mode: light;
+  mode-trigger: media;
+  scope: #app;
+  important: false;
 }
 ```
 
@@ -124,13 +124,13 @@ Defines theme tokens and managed keyframes. Token names keep their leading `--`;
 
 ```css
 @theme {
-    --color-primary: #4f46e5;
-    --spacing-feature: 1.5rem;
+  --color-primary: #4f46e5;
+  --spacing-feature: 1.5rem;
 
-    @keyframes fade-in {
-        from { opacity: 0; }
-        to { opacity: 1; }
-    }
+  @keyframes fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
 }
 ```
 
@@ -139,8 +139,8 @@ Defines mode-specific token values. Mode blocks can override regular theme token
 
 ```css
 @theme dark {
-    --color-panel: #111827;
-    --shadow-feature: 0 16px 40px rgb(0 0 0 / .36);
+  --color-panel: #111827;
+  --shadow-feature: 0 16px 40px rgb(0 0 0 / .36);
 }
 ```
 
@@ -149,8 +149,8 @@ Defines utility shorthands that are written directly into generated declarations
 
 ```css
 @theme inline {
-    --color-brand: #4f46e5;
-    --spacing-feature: 1.5rem;
+  --color-brand: #4f46e5;
+  --spacing-feature: 1.5rem;
 }
 ```
 
@@ -159,11 +159,11 @@ Emits the token or managed keyframes as initial CSS resources instead of waiting
 
 ```css
 @theme static {
-    --color-primary: #4f46e5;
+  --color-primary: #4f46e5;
 
-    @keyframes fade-in {
-        to { opacity: 1; }
-    }
+  @keyframes fade-in {
+    to { opacity: 1; }
+  }
 }
 ```
 
@@ -172,15 +172,15 @@ Defines reusable condition variants and selector variants. Use condition variant
 
 ```css
 @custom-variant @motion-safe {
-    @media (prefers-reduced-motion: no-preference) {
-        @slot;
-    }
+  @media (prefers-reduced-motion: no-preference) {
+    @slot;
+  }
 }
 
 @custom-variant :interactive {
-    &:is(:hover, :focus-visible) {
-        @slot;
-    }
+  &:is(:hover, :focus-visible) {
+    @slot;
+  }
 }
 ```
 
@@ -196,9 +196,9 @@ Defines managed classes in the `defaults` layer.
 
 ```css
 @defaults {
-    prose {
-        @compose text:neutral leading:lg;
-    }
+  prose {
+    @compose text:neutral leading:lg;
+  }
 }
 ```
 
@@ -207,9 +207,9 @@ Defines managed component classes in the `components` layer.
 
 ```css
 @components {
-    btn {
-        @compose inline-flex align-items:center justify-content:center;
-    }
+  btn {
+    @compose inline-flex align-items:center justify-content:center;
+  }
 }
 ```
 
@@ -218,53 +218,53 @@ Defines managed utility classes in the `utilities` layer. Utilities still win ov
 
 ```css
 @utilities {
-    content-auto {
-        content-visibility: auto;
-    }
+  content-auto {
+    content-visibility: auto;
+  }
 
-    text-<left|center|right|start|end|justify> {
-        text-align: --value();
-    }
+  text-<left|center|right|start|end|justify> {
+    text-align: --value();
+  }
 
-    bg-<cover|contain|auto> {
-        background-size: --value();
-    }
+  bg-<cover|contain|auto> {
+    background-size: --value();
+  }
 
-    font:<~font-size|number> {
-        font-size: --value();
-    }
+  font:<~font-size|number> {
+    font-size: --value();
+  }
 
-    font:<~font-family> {
-        font-family: --value();
-    }
+  font:<~font-family> {
+    font-family: --value();
+  }
 
-    bg:<color> {
-        background-color: --value();
-    }
+  bg:<color> {
+    background-color: --value();
+  }
 
-    user-select:<auto|none|text|all> {
-        -webkit-user-select: --value();
-        user-select: --value();
-    }
+  user-select:<auto|none|text|all> {
+    -webkit-user-select: --value();
+    user-select: --value();
+  }
 
-    line-clamp:<number|none> {
-        -webkit-line-clamp: --value();
-    }
+  line-clamp:<number|none> {
+    -webkit-line-clamp: --value();
+  }
 
-    text-decoration:<~color-text|~color|*> {
-        -webkit-text-decoration: --value();
-        text-decoration: --value();
-    }
+  text-decoration:<~color-text|~color|*> {
+    -webkit-text-decoration: --value();
+    text-decoration: --value();
+  }
 
-    size:<~container|number|*> {
-        width: --value();
-        height: --value();
-    }
+  size:<~container|number|*> {
+    width: --value();
+    height: --value();
+  }
 
-    grid-cols:<number|*> {
-        display: grid;
-        grid-template-columns: repeat(--value(), minmax(0, 1fr));
-    }
+  grid-cols:<number|*> {
+    display: grid;
+    grid-template-columns: repeat(--value(), minmax(0, 1fr));
+  }
 }
 ```
 
@@ -286,26 +286,26 @@ Dynamic colon entries use `key:<source-list>` and keep the class syntax as `key:
 
 ```css
 @utilities {
-    font:<~font-size|number> {
-        font-size: --value();
-    }
+  font:<~font-size|number> {
+    font-size: --value();
+  }
 
-    bg:<color> {
-        background-color: --value();
-    }
+  bg:<color> {
+    background-color: --value();
+  }
 
-    line-clamp:<number|none> {
-        -webkit-line-clamp: --value();
-    }
+  line-clamp:<number|none> {
+    -webkit-line-clamp: --value();
+  }
 
-    text-decoration:<~color-text|~color|*> {
-        text-decoration: --value();
-    }
+  text-decoration:<~color-text|~color|*> {
+    text-decoration: --value();
+  }
 
-    size:<~container|number|*> {
-        width: --value();
-        height: --value();
-    }
+  size:<~container|number|*> {
+    width: --value();
+    height: --value();
+  }
 }
 ```
 
@@ -390,17 +390,17 @@ Use `@compose` inside a style rule to lower an unquoted Master CSS class list in
 
 ```css
 .card {
-    @compose grid gap:md p:lg r:xl shadow:md surface:raised b:1px|solid|base;
+  @compose grid gap:md p:lg r:xl shadow:md surface:raised b:1px|solid|base;
 }
 
 @components {
-    btn {
-        @compose inline-flex align-items:center justify-content:center px:md py:xs r:lg;
+  btn {
+    @compose inline-flex align-items:center justify-content:center px:md py:xs r:lg;
 
-        &:hover {
-            @compose bg:blue-60/.9;
-        }
+    &:hover {
+      @compose bg:blue-60/.9;
     }
+  }
 }
 ```
 
@@ -408,11 +408,11 @@ Use `@compose` inside a style rule to lower an unquoted Master CSS class list in
 
 ```css
 .card {
-    @compose p:md r:lg;
+  @compose p:md r:lg;
 }
 
 .overlay {
-    @compose bg:transparent! bg:blue-60!@dark;
+  @compose bg:transparent! bg:blue-60!@dark;
 }
 ```
 
@@ -422,17 +422,17 @@ Do not put quotes, grouped class syntax, or class tokens that need CSS quoted st
 
 ```css
 .empty-state::before {
-    @compose block size:12x r:full;
-    content: '';
+  @compose block size:12x r:full;
+  content: '';
 }
 
 .btn {
-    @compose text-center;
-    contain: content;
+  @compose text-center;
+  contain: content;
 
-    @variant :hover@sm {
-        @compose bg:blue-60;
-    }
+  @variant :hover@sm {
+    @compose bg:blue-60;
+  }
 }
 ```
 
@@ -457,15 +457,15 @@ Use `@variant` inside managed definitions or native style rules to share the cur
 
 ```css
 .notice {
-    @compose p:md r:lg;
+  @compose p:md r:lg;
 
-    @dark {
-        @compose bg:gray-90 fg:white;
-    }
+  @dark {
+    @compose bg:gray-90 fg:white;
+  }
 
-    @variant @<sm {
-        @compose p:sm;
-    }
+  @variant @<sm {
+    @compose p:sm;
+  }
 }
 ```
 
@@ -482,7 +482,7 @@ Use `@preserve native;` when a Master-managed stylesheet contains native CSS cla
 @preserve native;
 
 .injected-by-payment-widget {
-    color: blue;
+  color: blue;
 }
 ```
 

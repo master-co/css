@@ -19,7 +19,7 @@ Apply styles based on different states using [selectors](/guide/state-selectors)
 Add a color to the text variable namespace.
 ```css name=index.css
 @theme {
-    --color-text-primary: #000; /* [!code ++] */
+  --color-text-primary: #000; /* [!code ++] */
 }
 ```
 Apply the custom color:
@@ -31,9 +31,9 @@ Apply the defined `text-*` variables using the inherited rules <TextHeirs />.
 ```html
 <!-- @MARK text:primary -->
 <html class="light">
-    <body class="text:primary"></body> <!-- [!code highlight] -->
-    <body class="text:primary">equals</body>
-    <body class="text:$text-primary">equals</body>
+  <body class="text:primary"></body> <!-- [!code highlight] -->
+  <body class="text:primary">equals</body>
+  <body class="text:$text-primary">equals</body>
 </html>
 ```
 (x) Use `text:color` for foreground color. Use [text fill color](/reference/text-fill-color) only when you need the WebKit text fill property.

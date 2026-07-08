@@ -6,55 +6,55 @@ import SyntaxPreview from './SyntaxPreview'
 import { IconArrowBarBoth, IconArrowDownBar, IconArrowDownLeft, IconArrowDownRight, IconArrowLeftBar, IconArrowRightBar, IconArrowUpBar, IconArrowUpLeft, IconArrowUpRight, IconArrowsDiagonal, IconArrowsDiagonal2, IconArrowsHorizontal, IconArrowsMove, IconArrowsVertical, IconArticle, IconCursorText, IconHandFinger, IconHandGrab, IconHandStop, IconLoader, IconPlus, IconPointer, IconPointerCancel, IconPointerPlus, IconPointerQuestion, IconShare3, IconZoomIn, IconZoomOut } from '@tabler/icons-react'
 
 export default () => {
-    const previewSyntax = 'cursor:pointer'
-    return (
-        <>
-            <SyntaxTable>
-                {syntaxes.map((syntax) =>
-                    <SyntaxTr value={syntax} key={syntax} previewSyntax={previewSyntax}>
-                        {typeof syntax === 'string' && {
-                            'cursor:pointer': <IconHandFinger className={clsx('inline-block size:1.25em mr:xs stroke:1.5 vertical-align:middle', syntax)} />,
-                            'cursor:text': <IconCursorText className={clsx('inline-block size:1.25em mr:xs stroke:1.5 vertical-align:middle', syntax)} />,
-                            'cursor:vertical-text': <IconCursorText className={clsx('inline-block size:1.25em mr:xs stroke:1.5 vertical-align:middle rotate:90', syntax)} />,
-                            'cursor:zoom-in': <IconZoomIn className={clsx('inline-block size:1.25em mr:xs stroke:1.5 vertical-align:middle', syntax)} />,
-                            'cursor:zoom-out': <IconZoomOut className={clsx('inline-block size:1.25em mr:xs stroke:1.5 vertical-align:middle', syntax)} />,
-                            'cursor:help': <IconPointerQuestion className={clsx('inline-block size:1.25em mr:xs stroke:1.5 vertical-align:middle', syntax)} />,
-                            'cursor:not-allowed': <IconPointerQuestion className={clsx('inline-block size:1.25em mr:xs stroke:1.5 vertical-align:middle', syntax)} />,
-                            'cursor:no-drop': <IconPointerQuestion className={clsx('inline-block size:1.25em mr:xs stroke:1.5 vertical-align:middle', syntax)} />,
-                            'cursor:cancel': <IconPointerCancel className={clsx('inline-block size:1.25em mr:xs stroke:1.5 vertical-align:middle', syntax)} />,
-                            'cursor:cell': <IconPlus className={clsx('inline-block size:1.25em mr:xs stroke:1.5 vertical-align:middle', syntax)} />,
-                            'cursor:crosshair': <IconPlus className={clsx('inline-block size:1.25em mr:xs stroke:1.5 vertical-align:middle', syntax)} />,
-                            'cursor:copy': <IconPointerPlus className={clsx('inline-block size:1.25em mr:xs stroke:1.5 vertical-align:middle', syntax)} />,
-                            'cursor:context-menu': <IconArticle className={clsx('inline-block size:1.25em mr:xs stroke:1.5 vertical-align:middle', syntax)} />,
-                            'cursor:col-resize': <IconArrowBarBoth className={clsx('inline-block size:1.25em mr:xs stroke:1.5 vertical-align:middle', syntax)} />,
-                            'cursor:row-resize': <IconArrowBarBoth className={clsx('inline-block size:1.25em mr:xs stroke:1.5 vertical-align:middle rotate:90', syntax)} />,
-                            'cursor:n-resize': <IconArrowUpBar className={clsx('inline-block size:1.25em mr:xs stroke:1.5 vertical-align:middle', syntax)} />,
-                            'cursor:e-resize': <IconArrowRightBar className={clsx('inline-block size:1.25em mr:xs stroke:1.5 vertical-align:middle', syntax)} />,
-                            'cursor:s-resize': <IconArrowDownBar className={clsx('inline-block size:1.25em mr:xs stroke:1.5 vertical-align:middle', syntax)} />,
-                            'cursor:w-resize': <IconArrowLeftBar className={clsx('inline-block size:1.25em mr:xs stroke:1.5 vertical-align:middle', syntax)} />,
-                            'cursor:ne-resize': <IconArrowUpRight className={clsx('inline-block size:1.25em mr:xs stroke:1.5 vertical-align:middle', syntax)} />,
-                            'cursor:nw-resize': <IconArrowUpLeft className={clsx('inline-block size:1.25em mr:xs stroke:1.5 vertical-align:middle', syntax)} />,
-                            'cursor:se-resize': <IconArrowDownRight className={clsx('inline-block size:1.25em mr:xs stroke:1.5 vertical-align:middle', syntax)} />,
-                            'cursor:sw-resize': <IconArrowDownLeft className={clsx('inline-block size:1.25em mr:xs stroke:1.5 vertical-align:middle', syntax)} />,
-                            'cursor:ew-resize': <IconArrowsHorizontal className={clsx('inline-block size:1.25em mr:xs stroke:1.5 vertical-align:middle', syntax)} />,
-                            'cursor:ns-resize': <IconArrowsVertical className={clsx('inline-block size:1.25em mr:xs stroke:1.5 vertical-align:middle', syntax)} />,
-                            'cursor:nesw-resize': <IconArrowsHorizontal className={clsx('inline-block size:1.25em mr:xs stroke:1.5 vertical-align:middle rotate:-45', syntax)} />,
-                            'cursor:nwse-resize': <IconArrowsHorizontal className={clsx('inline-block size:1.25em mr:xs stroke:1.5 vertical-align:middle rotate:45', syntax)} />,
-                            'cursor:grab': <IconHandStop className={clsx('inline-block size:1.25em mr:xs stroke:1.5 vertical-align:middle', syntax)} />,
-                            'cursor:grabbing': <IconHandGrab className={clsx('inline-block size:1.25em mr:xs stroke:1.5 vertical-align:middle', syntax)} />,
-                            'cursor:wait': <IconLoader className={clsx('inline-block size:1.25em mr:xs stroke:1.5 vertical-align:middle', syntax)} />,
-                            'cursor:progress': <IconLoader className={clsx('inline-block size:1.25em mr:xs stroke:1.5 vertical-align:middle', syntax)} />,
-                            'cursor:default': <IconPointer className={clsx('inline-block size:1.25em mr:xs stroke:1.5 vertical-align:middle', syntax)} />,
-                            'cursor:auto': <IconPointer className={clsx('inline-block size:1.25em mr:xs stroke:1.5 vertical-align:middle', syntax)} />,
-                            'cursor:alias': <IconShare3 className={clsx('inline-block size:1.25em mr:xs stroke:1.5 vertical-align:middle', syntax)} />,
-                            'cursor:move': <IconArrowsMove className={clsx('inline-block size:1.25em mr:xs stroke:1.5 vertical-align:middle', syntax)} />,
-                            'cursor:all-scroll': <IconArrowsMove className={clsx('inline-block size:1.25em mr:xs stroke:1.5 vertical-align:middle', syntax)} />,
+  const previewSyntax = 'cursor:pointer'
+  return (
+    <>
+      <SyntaxTable>
+        {syntaxes.map((syntax) =>
+          <SyntaxTr value={syntax} key={syntax} previewSyntax={previewSyntax}>
+            {typeof syntax === 'string' && {
+              'cursor:pointer': <IconHandFinger className={clsx('inline-block size:1.25em mr:xs stroke:1.5 vertical-align:middle', syntax)} />,
+              'cursor:text': <IconCursorText className={clsx('inline-block size:1.25em mr:xs stroke:1.5 vertical-align:middle', syntax)} />,
+              'cursor:vertical-text': <IconCursorText className={clsx('inline-block size:1.25em mr:xs stroke:1.5 vertical-align:middle rotate:90', syntax)} />,
+              'cursor:zoom-in': <IconZoomIn className={clsx('inline-block size:1.25em mr:xs stroke:1.5 vertical-align:middle', syntax)} />,
+              'cursor:zoom-out': <IconZoomOut className={clsx('inline-block size:1.25em mr:xs stroke:1.5 vertical-align:middle', syntax)} />,
+              'cursor:help': <IconPointerQuestion className={clsx('inline-block size:1.25em mr:xs stroke:1.5 vertical-align:middle', syntax)} />,
+              'cursor:not-allowed': <IconPointerQuestion className={clsx('inline-block size:1.25em mr:xs stroke:1.5 vertical-align:middle', syntax)} />,
+              'cursor:no-drop': <IconPointerQuestion className={clsx('inline-block size:1.25em mr:xs stroke:1.5 vertical-align:middle', syntax)} />,
+              'cursor:cancel': <IconPointerCancel className={clsx('inline-block size:1.25em mr:xs stroke:1.5 vertical-align:middle', syntax)} />,
+              'cursor:cell': <IconPlus className={clsx('inline-block size:1.25em mr:xs stroke:1.5 vertical-align:middle', syntax)} />,
+              'cursor:crosshair': <IconPlus className={clsx('inline-block size:1.25em mr:xs stroke:1.5 vertical-align:middle', syntax)} />,
+              'cursor:copy': <IconPointerPlus className={clsx('inline-block size:1.25em mr:xs stroke:1.5 vertical-align:middle', syntax)} />,
+              'cursor:context-menu': <IconArticle className={clsx('inline-block size:1.25em mr:xs stroke:1.5 vertical-align:middle', syntax)} />,
+              'cursor:col-resize': <IconArrowBarBoth className={clsx('inline-block size:1.25em mr:xs stroke:1.5 vertical-align:middle', syntax)} />,
+              'cursor:row-resize': <IconArrowBarBoth className={clsx('inline-block size:1.25em mr:xs stroke:1.5 vertical-align:middle rotate:90', syntax)} />,
+              'cursor:n-resize': <IconArrowUpBar className={clsx('inline-block size:1.25em mr:xs stroke:1.5 vertical-align:middle', syntax)} />,
+              'cursor:e-resize': <IconArrowRightBar className={clsx('inline-block size:1.25em mr:xs stroke:1.5 vertical-align:middle', syntax)} />,
+              'cursor:s-resize': <IconArrowDownBar className={clsx('inline-block size:1.25em mr:xs stroke:1.5 vertical-align:middle', syntax)} />,
+              'cursor:w-resize': <IconArrowLeftBar className={clsx('inline-block size:1.25em mr:xs stroke:1.5 vertical-align:middle', syntax)} />,
+              'cursor:ne-resize': <IconArrowUpRight className={clsx('inline-block size:1.25em mr:xs stroke:1.5 vertical-align:middle', syntax)} />,
+              'cursor:nw-resize': <IconArrowUpLeft className={clsx('inline-block size:1.25em mr:xs stroke:1.5 vertical-align:middle', syntax)} />,
+              'cursor:se-resize': <IconArrowDownRight className={clsx('inline-block size:1.25em mr:xs stroke:1.5 vertical-align:middle', syntax)} />,
+              'cursor:sw-resize': <IconArrowDownLeft className={clsx('inline-block size:1.25em mr:xs stroke:1.5 vertical-align:middle', syntax)} />,
+              'cursor:ew-resize': <IconArrowsHorizontal className={clsx('inline-block size:1.25em mr:xs stroke:1.5 vertical-align:middle', syntax)} />,
+              'cursor:ns-resize': <IconArrowsVertical className={clsx('inline-block size:1.25em mr:xs stroke:1.5 vertical-align:middle', syntax)} />,
+              'cursor:nesw-resize': <IconArrowsHorizontal className={clsx('inline-block size:1.25em mr:xs stroke:1.5 vertical-align:middle rotate:-45', syntax)} />,
+              'cursor:nwse-resize': <IconArrowsHorizontal className={clsx('inline-block size:1.25em mr:xs stroke:1.5 vertical-align:middle rotate:45', syntax)} />,
+              'cursor:grab': <IconHandStop className={clsx('inline-block size:1.25em mr:xs stroke:1.5 vertical-align:middle', syntax)} />,
+              'cursor:grabbing': <IconHandGrab className={clsx('inline-block size:1.25em mr:xs stroke:1.5 vertical-align:middle', syntax)} />,
+              'cursor:wait': <IconLoader className={clsx('inline-block size:1.25em mr:xs stroke:1.5 vertical-align:middle', syntax)} />,
+              'cursor:progress': <IconLoader className={clsx('inline-block size:1.25em mr:xs stroke:1.5 vertical-align:middle', syntax)} />,
+              'cursor:default': <IconPointer className={clsx('inline-block size:1.25em mr:xs stroke:1.5 vertical-align:middle', syntax)} />,
+              'cursor:auto': <IconPointer className={clsx('inline-block size:1.25em mr:xs stroke:1.5 vertical-align:middle', syntax)} />,
+              'cursor:alias': <IconShare3 className={clsx('inline-block size:1.25em mr:xs stroke:1.5 vertical-align:middle', syntax)} />,
+              'cursor:move': <IconArrowsMove className={clsx('inline-block size:1.25em mr:xs stroke:1.5 vertical-align:middle', syntax)} />,
+              'cursor:all-scroll': <IconArrowsMove className={clsx('inline-block size:1.25em mr:xs stroke:1.5 vertical-align:middle', syntax)} />,
 
-                        }[syntax]}
-                    </SyntaxTr>)
-                }
-            </SyntaxTable>
-            <SyntaxPreview className={previewSyntax} />
-        </>
-    )
+            }[syntax]}
+          </SyntaxTr>)
+        }
+      </SyntaxTable>
+      <SyntaxPreview className={previewSyntax} />
+    </>
+  )
 }

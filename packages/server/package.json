@@ -1,65 +1,65 @@
 {
-    "name": "@master/css-server",
-    "type": "module",
-    "scripts": {
-        "build": "tsdown --config ../../shared/tsdown-package.config.ts && node scripts/restore-json-import-attributes.js",
-        "dev": "tsdown --config ../../shared/tsdown-package.config.ts --watch",
-        "lint": "eslint",
-        "type-check": "tsc -b tsconfig.typecheck.json",
-        "test": "vitest"
-    },
-    "license": "MIT",
-    "description": "Server-side HTML renderer for Master CSS",
-    "author": "Aoyue Design LLC.",
-    "funding": "https://rc.css.master.co/sponsor",
-    "homepage": "https://css.master.co",
-    "bugs": {
-        "url": "https://github.com/master-co/css/issues"
-    },
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/master-co/css.git",
-        "directory": "packages/server"
-    },
-    "keywords": [
-        "server",
-        "static",
-        "html",
-        "markup",
-        "dom",
-        "css",
-        "mastercss"
-    ],
-    "sideEffects": false,
-    "main": "./dist/index.js",
-    "module": "./dist/index.js",
-    "jsnext:main": "./dist/index.js",
-    "esnext": "./dist/index.js",
-    "types": "./dist/index.d.ts",
-    "exports": {
-        ".": {
-            "types": "./dist/index.d.ts",
-            "import": "./dist/index.js",
-            "default": "./dist/index.js"
-        }
-    },
-    "files": [
-        "dist"
-    ],
-    "publishConfig": {
-        "access": "public",
-        "provenance": true
-    },
-    "dependencies": {
-        "@master/css": "workspace:^",
-        "@master/css-preset": "workspace:^",
-        "@master/css-validator": "workspace:^",
-        "dom-serializer": "^3.1.1",
-        "domhandler": "^6.0.1",
-        "htmlparser2": "^12.0.0",
-        "@master/css-schema": "workspace:^"
-    },
-    "devDependencies": {
-        "@master/css-compiler": "workspace:^"
+  "name": "@master/css-server",
+  "type": "module",
+  "scripts": {
+    "build": "tsdown --config ../../shared/tsdown-package.config.ts && node scripts/restore-json-import-attributes.js",
+    "dev": "tsdown --config ../../shared/tsdown-package.config.ts --watch",
+    "lint": "eslint",
+    "type-check": "tsc -b tsconfig.typecheck.json",
+    "test": "vitest"
+  },
+  "license": "MIT",
+  "description": "Server-side HTML renderer for Master CSS",
+  "author": "Aoyue Design LLC.",
+  "funding": "https://rc.css.master.co/sponsor",
+  "homepage": "https://css.master.co",
+  "bugs": {
+    "url": "https://github.com/master-co/css/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/master-co/css.git",
+    "directory": "packages/server"
+  },
+  "keywords": [
+    "server",
+    "static",
+    "html",
+    "markup",
+    "dom",
+    "css",
+    "mastercss"
+  ],
+  "sideEffects": false,
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "jsnext:main": "./dist/index.js",
+  "esnext": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
     }
+  },
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "dependencies": {
+    "@master/css": "workspace:^",
+    "@master/css-preset": "workspace:^",
+    "@master/css-validator": "workspace:^",
+    "dom-serializer": "^3.1.1",
+    "domhandler": "^6.0.1",
+    "htmlparser2": "^12.0.0",
+    "@master/css-schema": "workspace:^"
+  },
+  "devDependencies": {
+    "@master/css-compiler": "workspace:^"
+  }
 }

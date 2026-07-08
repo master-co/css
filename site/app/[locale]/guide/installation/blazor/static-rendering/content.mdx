@@ -1,139 +1,139 @@
 Use Vite to build the browser assets for a Blazor app, then let Master CSS scan `.razor`, `.cshtml`, and host HTML files during that asset build. Vite owns the frontend asset pipeline; Blazor and .NET still own the app host page, project files, and server/runtime lifecycle.
 
 <StepSection>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Create a Blazor project
-            If you don't have a Blazor project, create one first.
-        </StepL>
-        <StepR>
-            ```bash name=Terminal
-            dotnet new blazor -o my-app
-            cd my-app
-            ```
-        </StepR>
-    </Step>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Install Vite and Master CSS
-            Install Vite and the Master CSS Vite integration in the project root.
-        </StepL>
-        <StepR>
-            ```bash name=Terminal
-            npm init -y
-            npm install -D vite @master/css.vite@rc
-            ```
-        </StepR>
-    </Step>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Configure Vite
-            Build static CSS into `wwwroot/assets` so the Blazor host page can load it as a normal static asset.
-        </StepL>
-        <StepR>
-            ```ts name=vite.config.ts
-            import { defineConfig } from 'vite'
-            import masterCSS from '@master/css.vite'
+  <Step $row>
+    <StepL>
+      ### <StepNum />Create a Blazor project
+      If you don't have a Blazor project, create one first.
+    </StepL>
+    <StepR>
+      ```bash name=Terminal
+      dotnet new blazor -o my-app
+      cd my-app
+      ```
+    </StepR>
+  </Step>
+  <Step $row>
+    <StepL>
+      ### <StepNum />Install Vite and Master CSS
+      Install Vite and the Master CSS Vite integration in the project root.
+    </StepL>
+    <StepR>
+      ```bash name=Terminal
+      npm init -y
+      npm install -D vite @master/css.vite@rc
+      ```
+    </StepR>
+  </Step>
+  <Step $row>
+    <StepL>
+      ### <StepNum />Configure Vite
+      Build static CSS into `wwwroot/assets` so the Blazor host page can load it as a normal static asset.
+    </StepL>
+    <StepR>
+      ```ts name=vite.config.ts
+      import { defineConfig } from 'vite'
+      import masterCSS from '@master/css.vite'
 
-            export default defineConfig({
-                plugins: [
-                    masterCSS({ mode: 'static' })
-                ],
-                build: {
-                    outDir: 'wwwroot/assets',
-                    emptyOutDir: true,
-                    rollupOptions: {
-                        input: 'src/main.ts',
-                        output: {
-                            entryFileNames: 'app.js',
-                            assetFileNames: 'app[extname]'
-                        }
-                    }
-                }
-            })
-            ```
-        </StepR>
-    </Step>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Create the asset entry
-            Import the Master CSS entry from the Vite stylesheet and explicitly include Blazor source files.
-        </StepL>
-        <StepR>
-            ```ts name=src/main.ts
-            import './app.css'
-            ```
-
-            ```css name=src/app.css
-            @import "@master/css";
-
-            @source "../**/*.{razor,cshtml,html}";
-            @source not "../bin/**";
-            @source not "../obj/**";
-            @source not "../node_modules/**";
-            @source not "../wwwroot/assets/**";
-            ```
-        </StepR>
-    </Step>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Add build scripts
-            Run Vite before serving the app, or keep it watching while the .NET dev server runs.
-        </StepL>
-        <StepR>
-            ```json name=package.json
-            {
-                "scripts": {
-                    "build:assets": "vite build",
-                    "watch:assets": "vite build --watch"
-                },
-                "devDependencies": {
-                    "@master/css.vite": "rc",
-                    "vite": "latest"
-                }
+      export default defineConfig({
+        plugins: [
+          masterCSS({ mode: 'static' })
+        ],
+        build: {
+          outDir: 'wwwroot/assets',
+          emptyOutDir: true,
+          rollupOptions: {
+            input: 'src/main.ts',
+            output: {
+              entryFileNames: 'app.js',
+              assetFileNames: 'app[extname]'
             }
-            ```
-        </StepR>
-    </Step>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Load the built assets
-            Reference the Vite output from the Blazor host page your project uses, such as `Components/App.razor`, `wwwroot/index.html`, or `Pages/_Host.cshtml`.
-        </StepL>
-        <StepR>
-            ```html name=Components/App.razor
-            <head>
-                <link rel="stylesheet" href="/assets/app.css">
-            </head>
-            <body>
-                <Routes />
-                <script type="module" src="/assets/app.js"></script>
-            </body>
-            ```
-        </StepR>
-    </Step>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Launch the app
-            Build or watch the frontend assets, then run the Blazor app.
-        </StepL>
-        <StepR>
-            ```bash name=Terminal
-            npm run build:assets
-            dotnet run
-            ```
-        </StepR>
-    </Step>
-    <Step>
-        ### <StepNum />Start using Master CSS
-        Now style your first Razor component using Master CSS syntax.
-    </Step>
-    <HelloWorld url="localhost:5000" />
+          }
+        }
+      })
+      ```
+    </StepR>
+  </Step>
+  <Step $row>
+    <StepL>
+      ### <StepNum />Create the asset entry
+      Import the Master CSS entry from the Vite stylesheet and explicitly include Blazor source files.
+    </StepL>
+    <StepR>
+      ```ts name=src/main.ts
+      import './app.css'
+      ```
+
+      ```css name=src/app.css
+      @import "@master/css";
+
+      @source "../**/*.{razor,cshtml,html}";
+      @source not "../bin/**";
+      @source not "../obj/**";
+      @source not "../node_modules/**";
+      @source not "../wwwroot/assets/**";
+      ```
+    </StepR>
+  </Step>
+  <Step $row>
+    <StepL>
+      ### <StepNum />Add build scripts
+      Run Vite before serving the app, or keep it watching while the .NET dev server runs.
+    </StepL>
+    <StepR>
+      ```json name=package.json
+      {
+        "scripts": {
+          "build:assets": "vite build",
+          "watch:assets": "vite build --watch"
+        },
+        "devDependencies": {
+          "@master/css.vite": "rc",
+          "vite": "latest"
+        }
+      }
+      ```
+    </StepR>
+  </Step>
+  <Step $row>
+    <StepL>
+      ### <StepNum />Load the built assets
+      Reference the Vite output from the Blazor host page your project uses, such as `Components/App.razor`, `wwwroot/index.html`, or `Pages/_Host.cshtml`.
+    </StepL>
+    <StepR>
+      ```html name=Components/App.razor
+      <head>
+        <link rel="stylesheet" href="/assets/app.css">
+      </head>
+      <body>
+        <Routes />
+        <script type="module" src="/assets/app.js"></script>
+      </body>
+      ```
+    </StepR>
+  </Step>
+  <Step $row>
+    <StepL>
+      ### <StepNum />Launch the app
+      Build or watch the frontend assets, then run the Blazor app.
+    </StepL>
+    <StepR>
+      ```bash name=Terminal
+      npm run build:assets
+      dotnet run
+      ```
+    </StepR>
+  </Step>
+  <Step>
+    ### <StepNum />Start using Master CSS
+    Now style your first Razor component using Master CSS syntax.
+  </Step>
+  <HelloWorld url="localhost:5000" />
 </StepSection>
 
 ```html name=Components/Pages/Home.razor
 <h1 class="m:2xl italic font:5xl font:heavy text:neutral">
-    Hello World
+  Hello World
 </h1>
 ```
 

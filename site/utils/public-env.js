@@ -13,216 +13,216 @@ const repoRoot = resolve(siteDir, '..')
 const generatedEnvPath = join(siteDir, '.generated/public-env.json')
 
 export function resolvePublicEnv(options = {}) {
-    const env = options.env ?? process.env
-    const cwd = options.cwd ?? repoRoot
-    const runGit = options.runGit ?? ((args) => runGitCommand(args, cwd))
+  const env = options.env ?? process.env
+  const cwd = options.cwd ?? repoRoot
+  const runGit = options.runGit ?? ((args) => runGitCommand(args, cwd))
 
-    if (options.fetchTags) {
-        tryRunGit(runGit, ['fetch', '--tags', '--force'])
-    }
+  if (options.fetchTags) {
+    tryRunGit(runGit, ['fetch', '--tags', '--force'])
+  }
 
-    const repository = options.repositoryUrl ?? readRepository(cwd)
-    const { owner, slug } = parseRepository(repository)
-    const resolvedCommitRef = env.NEXT_PUBLIC_COMMIT_REF
-        || env.CF_PAGES_BRANCH
-        || env.GITHUB_REF_NAME
-        || getGitBranch(runGit)
-    const commitRef = resolvedCommitRef || 'rc'
-    const siteUrl = resolveSiteUrl(env, commitRef)
+  const repository = options.repositoryUrl ?? readRepository(cwd)
+  const { owner, slug } = parseRepository(repository)
+  const resolvedCommitRef = env.NEXT_PUBLIC_COMMIT_REF
+    || env.CF_PAGES_BRANCH
+    || env.GITHUB_REF_NAME
+    || getGitBranch(runGit)
+  const commitRef = resolvedCommitRef || 'rc'
+  const siteUrl = resolveSiteUrl(env, commitRef)
 
-    return {
-        NEXT_PUBLIC_PROJECT: env.NEXT_PUBLIC_PROJECT || publicProjectName,
-        NEXT_PUBLIC_HOST: env.NEXT_PUBLIC_HOST || new URL(siteUrl).host,
-        NEXT_PUBLIC_URL: siteUrl,
-        NEXT_PUBLIC_PLAY_API_URL: env.NEXT_PUBLIC_PLAY_API_URL || defaultPlayApiUrl,
-        NEXT_PUBLIC_SITE_LOCALE_PREFIX_MODE: resolveLocalePrefixMode(env),
-        NEXT_PUBLIC_VERSION: env.NEXT_PUBLIC_VERSION || resolveVersion({
-            runGit,
-            repositoryUrl: repository,
-            commitRef,
-            releaseRequired: options.releaseRequired ?? isReleaseRef(resolvedCommitRef)
-        }),
-        NEXT_PUBLIC_REPO_OWNER: env.NEXT_PUBLIC_REPO_OWNER || owner,
-        NEXT_PUBLIC_REPO_SLUG: env.NEXT_PUBLIC_REPO_SLUG || slug,
-        NEXT_PUBLIC_COMMIT_REF: commitRef
-    }
+  return {
+    NEXT_PUBLIC_PROJECT: env.NEXT_PUBLIC_PROJECT || publicProjectName,
+    NEXT_PUBLIC_HOST: env.NEXT_PUBLIC_HOST || new URL(siteUrl).host,
+    NEXT_PUBLIC_URL: siteUrl,
+    NEXT_PUBLIC_PLAY_API_URL: env.NEXT_PUBLIC_PLAY_API_URL || defaultPlayApiUrl,
+    NEXT_PUBLIC_SITE_LOCALE_PREFIX_MODE: resolveLocalePrefixMode(env),
+    NEXT_PUBLIC_VERSION: env.NEXT_PUBLIC_VERSION || resolveVersion({
+      runGit,
+      repositoryUrl: repository,
+      commitRef,
+      releaseRequired: options.releaseRequired ?? isReleaseRef(resolvedCommitRef)
+    }),
+    NEXT_PUBLIC_REPO_OWNER: env.NEXT_PUBLIC_REPO_OWNER || owner,
+    NEXT_PUBLIC_REPO_SLUG: env.NEXT_PUBLIC_REPO_SLUG || slug,
+    NEXT_PUBLIC_COMMIT_REF: commitRef
+  }
 }
 
 export function resolveAndWritePublicEnv(options = {}) {
-    const output = options.output ?? generatedEnvPath
-    const publicEnv = resolvePublicEnv(options)
-    mkdirSync(dirname(output), { recursive: true })
-    writeFileSync(output, JSON.stringify(publicEnv, null, 4) + '\n')
-    return publicEnv
+  const output = options.output ?? generatedEnvPath
+  const publicEnv = resolvePublicEnv(options)
+  mkdirSync(dirname(output), { recursive: true })
+  writeFileSync(output, JSON.stringify(publicEnv, null, 2) + '\n')
+  return publicEnv
 }
 
 export function readPublicEnv(options = {}) {
-    const input = options.input ?? process.env.MASTER_CSS_PUBLIC_ENV_FILE
-    if (input) {
-        return JSON.parse(readFileSync(resolve(siteDir, input), 'utf8'))
-    }
-    return resolvePublicEnv(options)
+  const input = options.input ?? process.env.MASTER_CSS_PUBLIC_ENV_FILE
+  if (input) {
+    return JSON.parse(readFileSync(resolve(siteDir, input), 'utf8'))
+  }
+  return resolvePublicEnv(options)
 }
 
 export function resolveVersion({ runGit, repositoryUrl, commitRef, releaseRequired = false }) {
-    const selector = createVersionSelector(commitRef)
-    const headTag = firstMatchingTag(
-        tryRunGit(runGit, ['tag', '--points-at', 'HEAD', '--list', selector.tagPattern, '--sort=-v:refname']),
-        selector
-    )
-    if (headTag) {
-        return stripTagPrefix(headTag)
-    }
+  const selector = createVersionSelector(commitRef)
+  const headTag = firstMatchingTag(
+    tryRunGit(runGit, ['tag', '--points-at', 'HEAD', '--list', selector.tagPattern, '--sort=-v:refname']),
+    selector
+  )
+  if (headTag) {
+    return stripTagPrefix(headTag)
+  }
 
-    const remoteTag = repositoryUrl
-        ? firstMatchingTag(tryRunGit(runGit, ['ls-remote', '--tags', '--sort=-v:refname', repositoryUrl, selector.tagPattern]), selector)
-        : ''
-    if (remoteTag) {
-        return stripTagPrefix(remoteTag)
-    }
+  const remoteTag = repositoryUrl
+    ? firstMatchingTag(tryRunGit(runGit, ['ls-remote', '--tags', '--sort=-v:refname', repositoryUrl, selector.tagPattern]), selector)
+    : ''
+  if (remoteTag) {
+    return stripTagPrefix(remoteTag)
+  }
 
-    const latestTag = firstMatchingTag(tryRunGit(runGit, selector.describeArgs), selector)
-    if (latestTag) {
-        return stripTagPrefix(latestTag)
-    }
+  const latestTag = firstMatchingTag(tryRunGit(runGit, selector.describeArgs), selector)
+  if (latestTag) {
+    return stripTagPrefix(latestTag)
+  }
 
-    if (releaseRequired) {
-        throw new Error(`Unable to resolve Master CSS site version for "${commitRef || '(unknown ref)'}". Expected a ${selector.label} release tag matching "${selector.tagPattern}". Ensure release tags are available locally or git ls-remote can query the repository.`)
-    }
+  if (releaseRequired) {
+    throw new Error(`Unable to resolve Master CSS site version for "${commitRef || '(unknown ref)'}". Expected a ${selector.label} release tag matching "${selector.tagPattern}". Ensure release tags are available locally or git ls-remote can query the repository.`)
+  }
 
-    const shortSha = tryRunGit(runGit, ['rev-parse', '--short', 'HEAD']) || 'dev'
-    return `0.0.0-${shortSha}`
+  const shortSha = tryRunGit(runGit, ['rev-parse', '--short', 'HEAD']) || 'dev'
+  return `0.0.0-${shortSha}`
 }
 
 function resolveSiteUrl(env, commitRef) {
-    if (env.NEXT_PUBLIC_URL) return env.NEXT_PUBLIC_URL
-    const port = env.PORT || 3000
-    const localUrl = `http://localhost:${port}`
-    if (env.NODE_ENV === 'development' && !env.CF_PAGES_URL) return localUrl
-    if (isRcBranch(commitRef)) return defaultRcUrl
-    if (env.CF_PAGES_URL) return env.CF_PAGES_URL
+  if (env.NEXT_PUBLIC_URL) return env.NEXT_PUBLIC_URL
+  const port = env.PORT || 3000
+  const localUrl = `http://localhost:${port}`
+  if (env.NODE_ENV === 'development' && !env.CF_PAGES_URL) return localUrl
+  if (isRcBranch(commitRef)) return defaultRcUrl
+  if (env.CF_PAGES_URL) return env.CF_PAGES_URL
 
-    return localUrl
+  return localUrl
 }
 
 function resolveLocalePrefixMode(env) {
-    const mode = env.NEXT_PUBLIC_SITE_LOCALE_PREFIX_MODE
-    if (mode) {
-        if (!localePrefixModes.has(mode)) {
-            throw new Error(`NEXT_PUBLIC_SITE_LOCALE_PREFIX_MODE must be "always" or "canonical", got "${mode}"`)
-        }
-        return mode
+  const mode = env.NEXT_PUBLIC_SITE_LOCALE_PREFIX_MODE
+  if (mode) {
+    if (!localePrefixModes.has(mode)) {
+      throw new Error(`NEXT_PUBLIC_SITE_LOCALE_PREFIX_MODE must be "always" or "canonical", got "${mode}"`)
     }
-    return env.NODE_ENV === 'development' ? 'always' : 'canonical'
+    return mode
+  }
+  return env.NODE_ENV === 'development' ? 'always' : 'canonical'
 }
 
 function isRcBranch(commitRef) {
-    return commitRef === 'rc' || commitRef.endsWith('/rc')
+  return commitRef === 'rc' || commitRef.endsWith('/rc')
 }
 
 function isReleaseRef(commitRef) {
-    return Boolean(getReleaseChannel(commitRef))
+  return Boolean(getReleaseChannel(commitRef))
 }
 
 function createVersionSelector(commitRef) {
-    const channel = getReleaseChannel(commitRef)
-    if (channel === 'stable') {
-        return {
-            label: 'stable',
-            tagPattern: 'v*',
-            describeArgs: ['describe', '--tags', '--abbrev=0', '--match', 'v*', '--exclude', 'v*-*'],
-            matches: (tag) => /^v\d+\.\d+\.\d+$/.test(tag)
-        }
-    }
-
-    if (channel) {
-        const tagPattern = `v*-${channel}.*`
-        return {
-            label: channel,
-            tagPattern,
-            describeArgs: ['describe', '--tags', '--abbrev=0', '--match', tagPattern],
-            matches: (tag) => new RegExp(String.raw`^v\d+\.\d+\.\d+-${channel}\.\d+$`).test(tag)
-        }
-    }
-
+  const channel = getReleaseChannel(commitRef)
+  if (channel === 'stable') {
     return {
-        label: 'version',
-        tagPattern: 'v*',
-        describeArgs: ['describe', '--tags', '--abbrev=0', '--match', 'v*'],
-        matches: (tag) => tag.startsWith('v')
+      label: 'stable',
+      tagPattern: 'v*',
+      describeArgs: ['describe', '--tags', '--abbrev=0', '--match', 'v*', '--exclude', 'v*-*'],
+      matches: (tag) => /^v\d+\.\d+\.\d+$/.test(tag)
     }
+  }
+
+  if (channel) {
+    const tagPattern = `v*-${channel}.*`
+    return {
+      label: channel,
+      tagPattern,
+      describeArgs: ['describe', '--tags', '--abbrev=0', '--match', tagPattern],
+      matches: (tag) => new RegExp(String.raw`^v\d+\.\d+\.\d+-${channel}\.\d+$`).test(tag)
+    }
+  }
+
+  return {
+    label: 'version',
+    tagPattern: 'v*',
+    describeArgs: ['describe', '--tags', '--abbrev=0', '--match', 'v*'],
+    matches: (tag) => tag.startsWith('v')
+  }
 }
 
 function getReleaseChannel(commitRef = '') {
-    if (matchesCommitRef(commitRef, 'main')) return 'stable'
-    for (const channel of ['alpha', 'beta', 'rc', 'canary']) {
-        if (matchesCommitRef(commitRef, channel)) return channel
-    }
+  if (matchesCommitRef(commitRef, 'main')) return 'stable'
+  for (const channel of ['alpha', 'beta', 'rc', 'canary']) {
+    if (matchesCommitRef(commitRef, channel)) return channel
+  }
 }
 
 function matchesCommitRef(commitRef, refName) {
-    return commitRef === refName || commitRef.endsWith(`/${refName}`)
+  return commitRef === refName || commitRef.endsWith(`/${refName}`)
 }
 
 function getGitBranch(runGit) {
-    return tryRunGit(runGit, ['symbolic-ref', '--short', 'HEAD'])
+  return tryRunGit(runGit, ['symbolic-ref', '--short', 'HEAD'])
 }
 
 function runGitCommand(args, cwd) {
-    return execFileSync('git', args, {
-        cwd,
-        encoding: 'utf8',
-        stdio: ['ignore', 'pipe', 'ignore']
-    }).trim()
+  return execFileSync('git', args, {
+    cwd,
+    encoding: 'utf8',
+    stdio: ['ignore', 'pipe', 'ignore']
+  }).trim()
 }
 
 function tryRunGit(runGit, args) {
-    try {
-        return runGit(args).trim()
-    } catch {
-        return ''
-    }
+  try {
+    return runGit(args).trim()
+  } catch {
+    return ''
+  }
 }
 
 function firstLine(value) {
-    return value.split(/\r?\n/).find(Boolean) || ''
+  return value.split(/\r?\n/).find(Boolean) || ''
 }
 
 function firstMatchingTag(value, selector) {
-    for (const line of value.split(/\r?\n/)) {
-        const tag = extractTagName(line.trim())
-        if (tag && selector.matches(tag)) return tag
-    }
-    return ''
+  for (const line of value.split(/\r?\n/)) {
+    const tag = extractTagName(line.trim())
+    if (tag && selector.matches(tag)) return tag
+  }
+  return ''
 }
 
 function extractTagName(line) {
-    if (!line) return ''
-    const ref = line.includes('\t') ? line.split('\t').at(-1) : firstLine(line)
-    if (!ref?.startsWith('refs/tags/')) return ref
-    if (ref.endsWith('^{}')) return ''
-    return ref.slice('refs/tags/'.length)
+  if (!line) return ''
+  const ref = line.includes('\t') ? line.split('\t').at(-1) : firstLine(line)
+  if (!ref?.startsWith('refs/tags/')) return ref
+  if (ref.endsWith('^{}')) return ''
+  return ref.slice('refs/tags/'.length)
 }
 
 function stripTagPrefix(tag) {
-    return tag.replace(/^v/, '')
+  return tag.replace(/^v/, '')
 }
 
 function readRepository(cwd) {
-    const packageJSON = JSON.parse(readFileSync(join(cwd, 'package.json'), 'utf8'))
-    if (!packageJSON.repository?.url) {
-        throw new Error('package.json should have repository.url')
-    }
-    return packageJSON.repository.url
+  const packageJSON = JSON.parse(readFileSync(join(cwd, 'package.json'), 'utf8'))
+  if (!packageJSON.repository?.url) {
+    throw new Error('package.json should have repository.url')
+  }
+  return packageJSON.repository.url
 }
 
 function parseRepository(repositoryUrl) {
-    const match = repositoryUrl.match(/https:\/\/github\.com\/([^/]+)\/([^/]+)\.git/)
-    if (!match) {
-        throw new Error(`Unsupported repository URL: ${repositoryUrl}`)
-    }
-    return {
-        owner: match[1],
-        slug: match[2]
-    }
+  const match = repositoryUrl.match(/https:\/\/github\.com\/([^/]+)\/([^/]+)\.git/)
+  if (!match) {
+    throw new Error(`Unsupported repository URL: ${repositoryUrl}`)
+  }
+  return {
+    owner: match[1],
+    slug: match[2]
+  }
 }

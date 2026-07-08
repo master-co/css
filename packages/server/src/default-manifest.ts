@@ -4,5 +4,5 @@ import type { MasterCSSManifest } from '@master/css-schema/manifest'
 const defaultManifest = defaultManifestJSON as MasterCSSManifest
 
 export default function getDefaultManifest() {
-    return defaultManifest
+  return defaultManifest
 }

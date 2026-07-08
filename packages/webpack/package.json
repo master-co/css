@@ -1,71 +1,71 @@
 {
-    "name": "@master/css.webpack",
-    "type": "module",
-    "scripts": {
-        "build": "tsdown --config ../../shared/tsdown-package.config.ts",
-        "dev": "tsdown --config ../../shared/tsdown-package.config.ts --watch",
-        "type-check": "tsc -b tsconfig.typecheck.json",
-        "lint": "eslint",
-        "test": "vitest"
-    },
-    "license": "MIT",
-    "description": "Webpack plugin for Master CSS",
-    "author": "Aoyue Design LLC.",
-    "funding": "https://rc.css.master.co/sponsor",
-    "homepage": "https://css.master.co",
-    "bugs": {
-        "url": "https://github.com/master-co/css/issues"
-    },
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/master-co/css.git",
-        "directory": "packages/webpack"
-    },
-    "keywords": [
-        "webpack",
-        "plugin",
-        "integration",
-        "build tools",
-        "css",
-        "mastercss",
-        "webpack-plugin"
-    ],
-    "sideEffects": false,
-    "main": "./dist/index.js",
-    "module": "./dist/index.js",
-    "jsnext:main": "./dist/index.js",
-    "esnext": "./dist/index.js",
-    "types": "./dist/index.d.ts",
-    "exports": {
-        ".": {
-            "types": "./dist/index.d.ts",
-            "import": "./dist/index.js",
-            "default": "./dist/index.js"
-        }
-    },
-    "files": [
-        "dist"
-    ],
-    "publishConfig": {
-        "access": "public",
-        "provenance": true
-    },
-    "peerDependencies": {
-        "webpack": ">=5"
-    },
-    "dependencies": {
-        "@master/css": "workspace:^",
-        "@master/css-runtime": "workspace:^",
-        "@master/css-scanner": "workspace:^",
-        "@master/css-integration": "workspace:^",
-        "@master/css-project": "workspace:^",
-        "@master/css-stylesheet": "workspace:^",
-        "consola": "^3.4.2",
-        "webpack-virtual-modules": "^0.6.2"
-    },
-    "devDependencies": {
-        "@playwright/test": "1.61.0",
-        "tapable": "^2.3.3",
-        "webpack": "^5.107.2"
+  "name": "@master/css.webpack",
+  "type": "module",
+  "scripts": {
+    "build": "tsdown --config ../../shared/tsdown-package.config.ts",
+    "dev": "tsdown --config ../../shared/tsdown-package.config.ts --watch",
+    "type-check": "tsc -b tsconfig.typecheck.json",
+    "lint": "eslint",
+    "test": "vitest"
+  },
+  "license": "MIT",
+  "description": "Webpack plugin for Master CSS",
+  "author": "Aoyue Design LLC.",
+  "funding": "https://rc.css.master.co/sponsor",
+  "homepage": "https://css.master.co",
+  "bugs": {
+    "url": "https://github.com/master-co/css/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/master-co/css.git",
+    "directory": "packages/webpack"
+  },
+  "keywords": [
+    "webpack",
+    "plugin",
+    "integration",
+    "build tools",
+    "css",
+    "mastercss",
+    "webpack-plugin"
+  ],
+  "sideEffects": false,
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "jsnext:main": "./dist/index.js",
+  "esnext": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
     }
+  },
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "peerDependencies": {
+    "webpack": ">=5"
+  },
+  "dependencies": {
+    "@master/css": "workspace:^",
+    "@master/css-runtime": "workspace:^",
+    "@master/css-scanner": "workspace:^",
+    "@master/css-integration": "workspace:^",
+    "@master/css-project": "workspace:^",
+    "@master/css-stylesheet": "workspace:^",
+    "consola": "^3.4.2",
+    "webpack-virtual-modules": "^0.6.2"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.61.0",
+    "tapable": "^2.3.3",
+    "webpack": "^5.107.2"
+  }
 }

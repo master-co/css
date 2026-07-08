@@ -2,12 +2,12 @@
 <Overview />
 ```html
 <div class="transition:transform|.2s transform:scale(1.1):hover">
-    <img class="untouchable" … />
-    <div class="abs inset:0 h:fit m:auto mix-blend-mode:overlay animation:flash|3s|infinite">
-        <h1 class="font:7vw font:heavy text-center fg:white font:5xl@xs">
-            Hello, World!
-        </h1>
-    </div>
+  <img class="untouchable" … />
+  <div class="abs inset:0 h:fit m:auto mix-blend-mode:overlay animation:flash|3s|infinite">
+    <h1 class="font:7vw font:heavy text-center fg:white font:5xl@xs">
+      Hello, World!
+    </h1>
+  </div>
 </div>
 ```
 Master CSS classes are CSS declarations written directly in markup. Read each class from left to right: start with the style you want, then add optional [state selectors](/guide/state-selectors) and optional [conditional queries](/guide/conditional-queries).
@@ -61,7 +61,7 @@ The examples in this guide start with explicit CSS-like declarations, then show 
 ### Hexadecimal color
 Change the text color of an element using the hexadecimal color code.
 <Demo>
-    <div className="font:56px font:heavy fg:#175fe9">Aa</div>
+  <div className="font:56px font:heavy fg:#175fe9">Aa</div>
 </Demo>
 ```html
 <!-- @MARK fg:#175fe9 -->
@@ -93,7 +93,7 @@ Change the text color of an element using the hexadecimal color code.
 ### rgb(), hsl(), oklch(), ...
 Change the text color of an element using color functions like `rgb()`, `hsl()`, `oklch()`, and others.
 <Demo>
-    <div className="font:56px font:heavy fg:rgb(23,95,233)">Aa</div>
+  <div className="font:56px font:heavy fg:rgb(23,95,233)">Aa</div>
 </Demo>
 ```html
 <!-- @MARK fg:rgb(23,95,233) -->
@@ -108,7 +108,7 @@ After the declaration itself is clear, you can attach selectors and conditions w
 ```html
 <!-- @MARK bg:blue-60 --><!-- @MARK bg:blue-70:hover@md --><!-- @MARK transition:background-color|.2s -->
 <button class="bg:blue-60 transition:background-color|.2s bg:blue-70:hover@md">
-    Save
+  Save
 </button>
 ```
 

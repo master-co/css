@@ -1,88 +1,88 @@
 Use static rendering when PHP templates contain complete class strings and you want Vite to build a generated CSS asset before PHP serves the page.
 
 <StepSection>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Open your project
-            Start from the PHP or CodeIgniter project root.
-        </StepL>
-        <StepR>
-            ```bash name=Terminal
-            cd my-php-app
-            npm init -y
-            ```
-        </StepR>
-    </Step>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Install Vite and Master CSS
-            Install Vite and the Master CSS Vite integration.
-        </StepL>
-        <StepR>
-            ```bash name=Terminal
-            npm install -D vite @master/css.vite@rc
-            ```
-        </StepR>
-    </Step>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Configure Vite
-            Build static CSS into `public/assets`.
-        </StepL>
-        <StepR>
-            ```ts name=vite.config.ts
-            import { defineConfig } from 'vite'
-            import masterCSS from '@master/css.vite'
+  <Step $row>
+    <StepL>
+      ### <StepNum />Open your project
+      Start from the PHP or CodeIgniter project root.
+    </StepL>
+    <StepR>
+      ```bash name=Terminal
+      cd my-php-app
+      npm init -y
+      ```
+    </StepR>
+  </Step>
+  <Step $row>
+    <StepL>
+      ### <StepNum />Install Vite and Master CSS
+      Install Vite and the Master CSS Vite integration.
+    </StepL>
+    <StepR>
+      ```bash name=Terminal
+      npm install -D vite @master/css.vite@rc
+      ```
+    </StepR>
+  </Step>
+  <Step $row>
+    <StepL>
+      ### <StepNum />Configure Vite
+      Build static CSS into `public/assets`.
+    </StepL>
+    <StepR>
+      ```ts name=vite.config.ts
+      import { defineConfig } from 'vite'
+      import masterCSS from '@master/css.vite'
 
-            export default defineConfig({
-                plugins: [
-                    masterCSS({ mode: 'static' })
-                ],
-                build: {
-                    outDir: 'public/assets',
-                    emptyOutDir: true,
-                    rollupOptions: {
-                        input: 'resources/main.ts',
-                        output: {
-                            entryFileNames: 'app.js',
-                            assetFileNames: 'app[extname]'
-                        }
-                    }
-                }
-            })
-            ```
-        </StepR>
-    </Step>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Create the asset entry
-            Import Master CSS and scan PHP files where complete class strings are written.
-        </StepL>
-        <StepR>
-            ```ts name=resources/main.ts
-            import './app.css'
-            ```
+      export default defineConfig({
+        plugins: [
+          masterCSS({ mode: 'static' })
+        ],
+        build: {
+          outDir: 'public/assets',
+          emptyOutDir: true,
+          rollupOptions: {
+            input: 'resources/main.ts',
+            output: {
+              entryFileNames: 'app.js',
+              assetFileNames: 'app[extname]'
+            }
+          }
+        }
+      })
+      ```
+    </StepR>
+  </Step>
+  <Step $row>
+    <StepL>
+      ### <StepNum />Create the asset entry
+      Import Master CSS and scan PHP files where complete class strings are written.
+    </StepL>
+    <StepR>
+      ```ts name=resources/main.ts
+      import './app.css'
+      ```
 
-            ```css name=resources/app.css
-            @import "@master/css";
+      ```css name=resources/app.css
+      @import "@master/css";
 
-            @source "../app/**/*.php";
-            @source "../public/**/*.php";
-            ```
-        </StepR>
-    </Step>
-    <Step>
-        ### <StepNum />Hello world
-        Load the generated CSS and style your first PHP template.
-    </Step>
-    <HelloWorld url="localhost" />
+      @source "../app/**/*.php";
+      @source "../public/**/*.php";
+      ```
+    </StepR>
+  </Step>
+  <Step>
+    ### <StepNum />Hello world
+    Load the generated CSS and style your first PHP template.
+  </Step>
+  <HelloWorld url="localhost" />
 </StepSection>
 
 ```html name=public/index.php
 <link rel="stylesheet" href="/assets/app.css">
 
 <h1 class="m:2xl italic font:5xl font:heavy text:neutral">
-    Hello World
+  Hello World
 </h1>
 ```
 

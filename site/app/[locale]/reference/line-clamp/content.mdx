@@ -7,15 +7,15 @@ Use `line-clamp:*` to limit text to a fixed number of lines and hide the overflo
 ```html
 <!-- @MARK line-clamp:3 -->
 <p class="line-clamp:3">
-    Master CSS turns class strings into deterministic CSS rules, making it practical to keep styling close to markup without giving up cascade control.
+  Master CSS turns class strings into deterministic CSS rules, making it practical to keep styling close to markup without giving up cascade control.
 </p>
 ```
 
 <details>
-    <summary>Generated CSS</summary>
-    <Class2CSS>
-        {['line-clamp:3']}
-    </Class2CSS>
+  <summary>Generated CSS</summary>
+  <Class2CSS>
+    {['line-clamp:3']}
+  </Class2CSS>
 </details>
 
 ### Remove a clamp
@@ -23,7 +23,7 @@ Use `line-clamp:none` when a responsive layout has enough space to show the whol
 ```html
 <!-- @MARK line-clamp:none@sm -->
 <p class="line-clamp:2 line-clamp:none@sm">
-    The full description appears once the layout has enough horizontal room.
+  The full description appears once the layout has enough horizontal room.
 </p>
 ```
 
@@ -31,7 +31,7 @@ Use `line-clamp:none` when a responsive layout has enough space to show the whol
 Line clamping is visual truncation. Do not hide required legal, error, or instruction text behind a clamp without another way to read it.
 ```html
 <p class="line-clamp:2" title="Full project description">
-    Project description
+  Project description
 </p>
 ```
 
