@@ -1,9 +1,25 @@
+import { IconAlertTriangle, IconCircleX, IconInfoCircle } from '@tabler/icons-react'
+import type { ComponentType } from 'react'
 import clsx from 'clsx'
 import Code, { type CodeProp } from '~/internal/components/Code'
 
 const mutedWindowDots = ['dot-1', 'dot-2', 'dot-3'] as const
 
 export type HomeCodeWindowProblemSeverity = 'error' | 'info' | 'warning'
+
+type ProblemIcon = ComponentType<{ className?: string }>
+
+const problemIconBySeverity = {
+    error: IconCircleX,
+    info: IconInfoCircle,
+    warning: IconAlertTriangle
+} satisfies Record<HomeCodeWindowProblemSeverity, ProblemIcon>
+
+const problemIconClassNameBySeverity = {
+    error: 'text:red',
+    info: 'text:blue',
+    warning: 'text:amber'
+} satisfies Record<HomeCodeWindowProblemSeverity, string>
 
 export interface HomeCodeWindowProblem {
     code?: string
@@ -72,19 +88,15 @@ export default function HomeCodeWindow({
 }
 
 function ProblemRow({ problem }: { problem: HomeCodeWindowProblem }) {
-    const markerClassName = problem.severity === 'error'
-        ? 'bg:red'
-        : problem.severity === 'warning'
-            ? 'bg:yellow'
-            : 'bg:blue'
+    const Icon = problemIconBySeverity[problem.severity]
 
     return (
         <div className="flex items-start gap:sm p:md">
-            <span
+            <Icon
                 aria-hidden="true"
                 className={clsx(
-                    'block flex:0|0|auto size:2x mt:3xs r:full',
-                    markerClassName
+                    'flex:0|0|auto size:4x mt:1px stroke:1.75',
+                    problemIconClassNameBySeverity[problem.severity]
                 )} />
             <div className="min-w:0">
                 <p className="overflow:hidden m:0 font:sm text-ellipsis white-space:nowrap text:strong">
