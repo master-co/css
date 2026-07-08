@@ -2,59 +2,59 @@ Use the CLI as a standalone [static rendering](/guide/rendering-modes#static-ren
 
 ## Installation [sr-only]
 <StepSection>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Install Master CSS
-            Install Master CSS [CLI](https://www.npmjs.com/package/@master/css-cli) as a development dependency.
-        </StepL>
-        <StepR>
-            ```bash name=Terminal
-            npm install -D @master/css-cli@rc
-            ```
-        </StepR>
-    </Step>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Create your CSS entry
-            Create a stylesheet that imports the default Master CSS entry.
-        </StepL>
-        <StepR>
-            ```css name=main.css
-            @import "@master/css";
-            ```
-        </StepR>
-    </Step>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Run the build command
-            Run the command to scan sources and write `master.css`.
-        </StepL>
-        <StepR>
-            ```bash name=Terminal
-            npx @master/css-cli "index.html" --output master.css --watch
-            ```
-        </StepR>
-    </Step>
-    <Step>
-        ### <StepNum />Start using Master CSS
-        Master CSS scans raw sources and generates the `./master.css` file for you.
+  <Step $row>
+    <StepL>
+      ### <StepNum />Install Master CSS
+      Install Master CSS [CLI](https://www.npmjs.com/package/@master/css-cli) as a development dependency.
+    </StepL>
+    <StepR>
+      ```bash name=Terminal
+      npm install -D @master/css-cli@rc
+      ```
+    </StepR>
+  </Step>
+  <Step $row>
+    <StepL>
+      ### <StepNum />Create your CSS entry
+      Create a stylesheet that imports the default Master CSS entry.
+    </StepL>
+    <StepR>
+      ```css name=main.css
+      @import "@master/css";
+      ```
+    </StepR>
+  </Step>
+  <Step $row>
+    <StepL>
+      ### <StepNum />Run the build command
+      Run the command to scan sources and write `master.css`.
+    </StepL>
+    <StepR>
+      ```bash name=Terminal
+      npx @master/css-cli "index.html" --output master.css --watch
+      ```
+    </StepR>
+  </Step>
+  <Step>
+    ### <StepNum />Start using Master CSS
+    Master CSS scans raw sources and generates the `./master.css` file for you.
 
-        Now style your first element using Master CSS syntax!
-    </Step>
-    <HelloWorld />
+    Now style your first element using Master CSS syntax!
+  </Step>
+  <HelloWorld />
 </StepSection>
 
 ```html name=index.html
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="./master.css"> <!-- [!code highlight] -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="./master.css"> <!-- [!code highlight] -->
 </head>
 <body>
-    <!-- @MARK italic m:2xl text:neutral font:5xl font:heavy -->
-    <h1 class="m:2xl italic font:5xl font:heavy text:neutral">Hello World</h1>
+  <!-- @MARK italic m:2xl text:neutral font:5xl font:heavy -->
+  <h1 class="m:2xl italic font:5xl font:heavy text:neutral">Hello World</h1>
 </body>
 </html>
 ```

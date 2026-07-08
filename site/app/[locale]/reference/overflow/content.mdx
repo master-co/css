@@ -7,15 +7,15 @@ Use `overflow:hidden` when content should be clipped to the element box.
 ```html
 <!-- @MARK overflow:hidden --><!-- @MARK r:md -->
 <div class="overflow:hidden r:md">
-    ...
+  ...
 </div>
 ```
 
 <details>
-    <summary>Generated CSS</summary>
-    <Class2CSS>
-        {['overflow:hidden']}
-    </Class2CSS>
+  <summary>Generated CSS</summary>
+  <Class2CSS>
+    {['overflow:hidden']}
+  </Class2CSS>
 </details>
 
 ### Create a scroll container
@@ -23,12 +23,12 @@ Use `overflow:auto` when scrollbars should appear only if content overflows. Use
 ```html
 <!-- @MARK max-h:64x --><!-- @MARK overflow-y:auto -->
 <div class="overflow-y:auto max-h:3xs">
-    ...
+  ...
 </div>
 
 <!-- @MARK overflow-x:auto -->
 <div class="overflow-x:auto">
-    <table>...</table>
+  <table>...</table>
 </div>
 ```
 
@@ -37,7 +37,7 @@ Use `overflow:clip` when content should be clipped without creating a scroll con
 ```html
 <!-- @MARK overflow:clip -->
 <figure class="overflow:clip">
-    ...
+  ...
 </figure>
 ```
 
@@ -48,7 +48,7 @@ Overflow is often paired with `white-space:nowrap` and `text-overflow:ellipsis` 
 ```html
 <!-- @MARK min-w:0 --><!-- @MARK overflow:hidden --><!-- @MARK white-space:nowrap --><!-- @MARK text-overflow:ellipsis -->
 <span class="overflow:hidden min-w:0 text-ellipsis white-space:nowrap">
-    A very long file name that should not widen the toolbar
+  A very long file name that should not widen the toolbar
 </span>
 ```
 

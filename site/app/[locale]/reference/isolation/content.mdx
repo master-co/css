@@ -7,15 +7,15 @@ Use `isolate` when a component's blending, z-index, or effects should be contain
 ```html
 <!-- @MARK isolate -->
 <section class="isolate">
-    <div class="mix-blend-mode:multiply">Blend locally</div>
+  <div class="mix-blend-mode:multiply">Blend locally</div>
 </section>
 ```
 
 <details>
-    <summary>Generated CSS</summary>
-    <Class2CSS>
-        {['isolate']}
-    </Class2CSS>
+  <summary>Generated CSS</summary>
+  <Class2CSS>
+    {['isolate']}
+  </Class2CSS>
 </details>
 
 ### Return to automatic isolation
@@ -23,7 +23,7 @@ Use `isolation:auto` when a variant should let the browser use normal stacking b
 ```html
 <!-- @MARK isolation:auto -->
 <section class="isolate isolation:auto@sm">
-    Normal stacking on larger screens
+  Normal stacking on larger screens
 </section>
 ```
 
@@ -31,7 +31,7 @@ Use `isolation:auto` when a variant should let the browser use normal stacking b
 Isolation is useful for cards, modals, and previews that use blend modes or negative z-index children.
 ```html
 <article class="rel isolate">
-    <div class="abs inset:0 z:-1"></div>
+  <div class="abs inset:0 z:-1"></div>
 </article>
 ```
 

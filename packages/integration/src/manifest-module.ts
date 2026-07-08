@@ -11,41 +11,41 @@ export const VIRTUAL_MANIFEST_ASSET_FILE = MANIFEST_ASSET_FILE
 export const EMPTY_MANIFEST_JSON = '{"version":1}'
 
 export interface CSSManifestLoadResult {
-    manifest: MasterCSSManifest
-    dependencies: string[]
-    classNames?: string[]
-    nativeClassNames?: string[]
-    nativeCSS?: string
-    css?: string
-    generatedCSS?: string
-    warnings?: string[]
+  manifest: MasterCSSManifest
+  dependencies: string[]
+  classNames?: string[]
+  nativeClassNames?: string[]
+  nativeCSS?: string
+  css?: string
+  generatedCSS?: string
+  warnings?: string[]
 }
 
 export type CSSManifestJSONResult = CSSManifestLoadResult & {
-    json: string
+  json: string
 }
 
 export function isMasterCSSManifestRequest(id: string) {
-    return id.endsWith(MASTER_CSS_MANIFEST_QUERY)
+  return id.endsWith(MASTER_CSS_MANIFEST_QUERY)
 }
 
 export function stripMasterCSSManifestQuery(id: string) {
-    return isMasterCSSManifestRequest(id)
-        ? id.slice(0, -MASTER_CSS_MANIFEST_QUERY.length)
-        : id
+  return isMasterCSSManifestRequest(id)
+    ? id.slice(0, -MASTER_CSS_MANIFEST_QUERY.length)
+    : id
 }
 
 export function stripResourceQuery(resourcePath: string) {
-    return resourcePath.replace(/[?#].*$/, '')
+  return resourcePath.replace(/[?#].*$/, '')
 }
 
 export function toManifestJSON(manifest: MasterCSSManifest) {
-    return stringifyMasterCSSManifestJSON(manifest)
+  return stringifyMasterCSSManifestJSON(manifest)
 }
 
 export function toManifestJSONResult<T extends CSSManifestLoadResult>(result: T): T & { json: string } {
-    return {
-        ...result,
-        json: toManifestJSON(result.manifest)
-    }
+  return {
+    ...result,
+    json: toManifestJSON(result.manifest)
+  }
 }

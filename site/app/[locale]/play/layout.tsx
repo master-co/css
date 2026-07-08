@@ -4,15 +4,15 @@ import generate from 'internal/utils/generate-metadata'
 import dictionaries from '~/site/dictionaries'
 
 export async function generateMetadata(props: any, parent: any) {
-    return await generate(metadata, props, dictionaries, parent)
+  return await generate(metadata, props, dictionaries, parent)
 }
 
 export default async function Layout({ children }: {
-    children: React.ReactNode
+  children: React.ReactNode
 }) {
-    return (
-        <Body className="bg:surface-base">
-            {children}
-        </Body>
-    )
+  return (
+    <Body className="bg:surface-base">
+      {children}
+    </Body>
+  )
 }

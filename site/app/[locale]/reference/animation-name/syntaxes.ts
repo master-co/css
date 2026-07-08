@@ -1,5 +1,5 @@
 const syntaxes = [
-    ['animation-name:`name`,`…`']
+  ['animation-name:`name`,`…`']
 ]
 
 export default syntaxes

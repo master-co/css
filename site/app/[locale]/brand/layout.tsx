@@ -3,16 +3,16 @@ import i18n from 'internal/common/i18n.config.js'
 import DocHeader from 'internal/components/DocHeader'
 
 export async function generateStaticParams() {
-    return i18n.locales.map((locale: any) => ({ locale }))
+  return i18n.locales.map((locale: any) => ({ locale }))
 }
 
 export default async function Layout({ children }: {
-    children: React.ReactNode
+  children: React.ReactNode
 }) {
-    return (
-        <Body className="bg:surface-base">
-            <DocHeader contained />
-            {children}
-        </Body>
-    )
+  return (
+    <Body className="bg:surface-base">
+      <DocHeader contained />
+      {children}
+    </Body>
+  )
 }

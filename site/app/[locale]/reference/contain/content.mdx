@@ -7,15 +7,15 @@ Use `contain:content` for self-contained panels where layout and paint work shou
 ```html
 <!-- @MARK contain:content -->
 <section class="contain:content">
-    Feed item
+  Feed item
 </section>
 ```
 
 <details>
-    <summary>Generated CSS</summary>
-    <Class2CSS>
-        {['contain:content']}
-    </Class2CSS>
+  <summary>Generated CSS</summary>
+  <Class2CSS>
+    {['contain:content']}
+  </Class2CSS>
 </details>
 
 ### Contain painting
@@ -23,7 +23,7 @@ Use `contain:paint` when overflowing visual effects should be contained without 
 ```html
 <!-- @MARK contain:paint -->
 <div class="contain:paint">
-    Preview
+  Preview
 </div>
 ```
 
@@ -32,7 +32,7 @@ Use `contain:none` when a nested element needs to participate normally in layout
 ```html
 <!-- @MARK contain:none -->
 <div class="contain:content">
-    <div class="contain:none">Escapes containment</div>
+  <div class="contain:none">Escapes containment</div>
 </div>
 ```
 

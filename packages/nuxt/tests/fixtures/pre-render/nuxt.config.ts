@@ -1,6 +1,6 @@
 export default defineNuxtConfig({
-    css: ['~/app.css'],
-    modules: [
-        ['../../../src/module', { mode: 'pre-render' }],
-    ],
+  css: ['~/app.css'],
+  modules: [
+    ['../../../src/module', { mode: 'pre-render' }],
+  ],
 })

@@ -2,7 +2,7 @@
 <div align="center">
 
 <p align="center">
-    <img alt="Master CSS" src="https://github.com/master-co/css/assets/33840671/fabe83d3-e882-4c7b-93f1-ca06792a6fb2" width="100%">
+  <img alt="Master CSS" src="https://github.com/master-co/css/assets/33840671/fabe83d3-e882-4c7b-93f1-ca06792a6fb2" width="100%">
 </p>
 <p align="center">Master CSS for Visual Studio Code</p>
 
@@ -20,9 +20,9 @@ Enable suggestions inside strings so utility completions appear in markup, JSX, 
 
 ```json
 {
-    "editor.quickSuggestions": {
-        "strings": true
-    }
+  "editor.quickSuggestions": {
+    "strings": true
+  }
 }
 ```
 
@@ -32,11 +32,11 @@ For project-aware tokens, create a CSS entry that imports `@master/css`, or decl
 @import "@master/css";
 
 @theme {
-    --color-primary: #4f46e5;
+  --color-primary: #4f46e5;
 }
 
 .button {
-    @compose inline-flex items:center gap:2x fg:primary;
+  @compose inline-flex items:center gap:2x fg:primary;
 }
 ```
 
@@ -71,11 +71,11 @@ Use explicit workspace globs when auto detection is not the intended project sha
 
 ```json
 {
-    "masterCSS.workspaces": [
-        "apps/admin",
-        "apps/shop",
-        "packages/design-system"
-    ]
+  "masterCSS.workspaces": [
+    "apps/admin",
+    "apps/shop",
+    "packages/design-system"
+  ]
 }
 ```
 
@@ -85,9 +85,9 @@ Set options in `.vscode/settings.json` or VS Code user settings with the `master
 
 ```json
 {
-    "masterCSS.suggestSyntax": true,
-    "masterCSS.formatDirectives": true,
-    "masterCSS.embeddedSyntaxHighlighting": "active"
+  "masterCSS.suggestSyntax": true,
+  "masterCSS.formatDirectives": true,
+  "masterCSS.embeddedSyntaxHighlighting": "active"
 }
 ```
 
@@ -110,27 +110,27 @@ Default class binding and function detection:
 
 ```json
 {
-    "masterCSS.classAttributeBindings": {
-        "className": ["{", "}"],
-        "class": ["{", "}"],
-        "class:list": ["{", "}"],
-        ":class": ["\"", "\""],
-        "v-bind:class": ["\"", "\""],
-        "[class]": ["\"", "\""],
-        "[className]": ["\"", "\""],
-        "[ngClass]": ["\"", "\""]
-    },
-    "masterCSS.classFunctions": [
-        "clsx",
-        "cva",
-        "ctl",
-        "cv",
-        "class",
-        "classnames",
-        "classVariant",
-        "styled(?:\\s+)?(?:\\.\\w+)?",
-        "classList(?:\\s+)?\\.(?:add|remove|toggle|replace)"
-    ]
+  "masterCSS.classAttributeBindings": {
+    "className": ["{", "}"],
+    "class": ["{", "}"],
+    "class:list": ["{", "}"],
+    ":class": ["\"", "\""],
+    "v-bind:class": ["\"", "\""],
+    "[class]": ["\"", "\""],
+    "[className]": ["\"", "\""],
+    "[ngClass]": ["\"", "\""]
+  },
+  "masterCSS.classFunctions": [
+    "clsx",
+    "cva",
+    "ctl",
+    "cv",
+    "class",
+    "classnames",
+    "classVariant",
+    "styled(?:\\s+)?(?:\\.\\w+)?",
+    "classList(?:\\s+)?\\.(?:add|remove|toggle|replace)"
+  ]
 }
 ```
 
@@ -140,13 +140,13 @@ Add a custom language ID:
 
 ```json
 {
-    "masterCSS.includedLanguages": [
-        "html",
-        "typescriptreact",
-        "vue",
-        "astro",
-        "edge"
-    ]
+  "masterCSS.includedLanguages": [
+    "html",
+    "typescriptreact",
+    "vue",
+    "astro",
+    "edge"
+  ]
 }
 ```
 
@@ -154,21 +154,21 @@ Recognize project-specific class containers:
 
 ```json
 {
-    "masterCSS.classAttributes": [
-        "class",
-        "className",
-        "ui"
-    ],
-    "masterCSS.classDeclarations": [
-        "classes",
-        "styles"
-    ],
-    "masterCSS.classFunctions": [
-        "clsx",
-        "cva",
-        "tw",
-        "cn"
-    ]
+  "masterCSS.classAttributes": [
+    "class",
+    "className",
+    "ui"
+  ],
+  "masterCSS.classDeclarations": [
+    "classes",
+    "styles"
+  ],
+  "masterCSS.classFunctions": [
+    "clsx",
+    "cva",
+    "tw",
+    "cn"
+  ]
 }
 ```
 
@@ -176,13 +176,13 @@ Exclude generated or vendored files:
 
 ```json
 {
-    "masterCSS.exclude": [
-        "**/.git/**",
-        "**/node_modules/**",
-        "**/.hg/**",
-        "**/dist/**",
-        "**/.next/**"
-    ]
+  "masterCSS.exclude": [
+    "**/.git/**",
+    "**/node_modules/**",
+    "**/.hg/**",
+    "**/dist/**",
+    "**/.next/**"
+  ]
 }
 ```
 
@@ -190,7 +190,7 @@ Choose embedded highlighting behavior:
 
 ```json
 {
-    "masterCSS.embeddedSyntaxHighlighting": "always"
+  "masterCSS.embeddedSyntaxHighlighting": "always"
 }
 ```
 
@@ -200,7 +200,7 @@ Disable directive formatting when another formatter integration must own all dir
 
 ```json
 {
-    "masterCSS.formatDirectives": false
+  "masterCSS.formatDirectives": false
 }
 ```
 

@@ -6,27 +6,27 @@ Sizing describes the space an element should claim, the limits it should respect
 Master CSS keeps sizing decisions close to the element that owns them. Use `w:*` and `h:*` for one axis, `size:*` when both axes intentionally match, `min-*` and `max-*` for constraints, container tokens for shared layout surfaces, and responsive variants when the size changes by viewport or container.
 
 <Demo>
-    <div className="container w:full">
-        <div className="grid grid-cols:1 gap:md w:full grid-cols:2@container(2xs)">
-            <section className="min-w:0 p:lg r:lg surface:raised shadow:xs">
-                <DemoLabel>Fluid wrapper</DemoLabel>
-                <div className="w:full max-w:3xs mx:auto">
-                    <div className="h:10x r:lg bg:blue-60/.15"></div>
-                    <div className="h:4x w:75% mt:sm r:sm bg:blue-60/.1"></div>
-                </div>
-            </section>
-            <section className="min-w:0 p:lg r:lg surface:raised shadow:xs">
-                <DemoLabel>Measured object</DemoLabel>
-                <div className="flex items-center gap:md">
-                    <div className="size:12x round bg:blue-60/.15"></div>
-                    <div className="flex:1 min-w:0">
-                        <div className="h:4x w:full max-w:28x r:sm bg:blue-60/.16"></div>
-                        <div className="h:3x w:calc(100%/3*2) mt:xs r:sm bg:blue-60/.1"></div>
-                    </div>
-                </div>
-            </section>
+  <div className="container w:full">
+    <div className="grid grid-cols:1 gap:md w:full grid-cols:2@container(2xs)">
+      <section className="min-w:0 p:lg r:lg surface:raised shadow:xs">
+        <DemoLabel>Fluid wrapper</DemoLabel>
+        <div className="w:full max-w:3xs mx:auto">
+          <div className="h:10x r:lg bg:blue-60/.15"></div>
+          <div className="h:4x w:75% mt:sm r:sm bg:blue-60/.1"></div>
         </div>
+      </section>
+      <section className="min-w:0 p:lg r:lg surface:raised shadow:xs">
+        <DemoLabel>Measured object</DemoLabel>
+        <div className="flex items-center gap:md">
+          <div className="size:12x round bg:blue-60/.15"></div>
+          <div className="flex:1 min-w:0">
+            <div className="h:4x w:full max-w:28x r:sm bg:blue-60/.16"></div>
+            <div className="h:3x w:calc(100%/3*2) mt:xs r:sm bg:blue-60/.1"></div>
+          </div>
+        </div>
+      </section>
     </div>
+  </div>
 </Demo>
 
 ---
@@ -41,15 +41,15 @@ Use one-axis rules when the element is rectangular by role. Use `size:*`, `min:*
 ```html
 <!-- @MARK w:full --><!-- @MARK max-w:7xl --><!-- @MARK min-h:100dvh -->
 <main class="w:full min-h:100dvh max-w:7xl mx:auto">
-    ...
+  ...
 </main>
 ```
 
 <details>
-    <summary>Generated CSS</summary>
-    <Class2CSS>
-        {['w:full', 'max-w:7xl', 'min-h:100dvh', 'mx:auto']}
-    </Class2CSS>
+  <summary>Generated CSS</summary>
+  <Class2CSS>
+    {['w:full', 'max-w:7xl', 'min-h:100dvh', 'mx:auto']}
+  </Class2CSS>
 </details>
 
 ---
@@ -60,20 +60,20 @@ Most layout should fill the space it receives and then stop at a cap. A fluid wr
 ```html
 <!-- @MARK w:full --><!-- @MARK max-w:7xl --><!-- @MARK px:md --><!-- @MARK px:xl@md -->
 <main class="w:full max-w:7xl mx:auto px:md px:xl@md">
-    ...
+  ...
 </main>
 
 <!-- @MARK w:full --><!-- @MARK max-w:72ch -->
 <article class="w:full max-w:72ch">
-    ...
+  ...
 </article>
 ```
 
 <details>
-    <summary>Generated CSS</summary>
-    <Class2CSS>
-        {['w:full', 'max-w:7xl', 'mx:auto', 'px:md', 'px:xl@md', 'max-w:72ch']}
-    </Class2CSS>
+  <summary>Generated CSS</summary>
+  <Class2CSS>
+    {['w:full', 'max-w:7xl', 'mx:auto', 'px:md', 'px:xl@md', 'max-w:72ch']}
+  </Class2CSS>
 </details>
 
 Use `w:full` when the element should follow its parent, percentages such as `w:50%` for proportional regions, `max-w:*` for caps, and CSS functions such as `clamp()` when the bound itself should be fluid.
@@ -98,7 +98,7 @@ Sizing utilities read the `container` namespace contextually. `w:md`, `max-w:5xl
 ```html
 <!-- @MARK w:full --><!-- @MARK max-w:5xl -->
 <main class="w:full max-w:5xl mx:auto">
-    ...
+  ...
 </main>
 
 <!-- @MARK w:md --><!-- @MARK max-w:full -->
@@ -106,10 +106,10 @@ Sizing utilities read the `container` namespace contextually. `w:md`, `max-w:5xl
 ```
 
 <details>
-    <summary>Generated CSS</summary>
-    <Class2CSS>
-        {['w:full', 'max-w:5xl', 'mx:auto', 'w:md', 'max-w:full']}
-    </Class2CSS>
+  <summary>Generated CSS</summary>
+  <Class2CSS>
+    {['w:full', 'max-w:5xl', 'mx:auto', 'w:md', 'max-w:full']}
+  </Class2CSS>
 </details>
 
 Use container tokens for shared layout surfaces: page wrappers, panels, modals, sidebars, drawer widths, and component caps. Use local `ch`, `x`, or CSS functions when the dimension belongs to content measure or one component's private geometry.
@@ -132,10 +132,10 @@ Use `x` values for measured component geometry such as icons, avatars, handles, 
 ```
 
 <details>
-    <summary>Generated CSS</summary>
-    <Class2CSS>
-        {['size:10x', 'w:36x', 'h:20x']}
-    </Class2CSS>
+  <summary>Generated CSS</summary>
+  <Class2CSS>
+    {['size:10x', 'w:36x', 'h:20x']}
+  </Class2CSS>
 </details>
 
 ---
@@ -144,16 +144,16 @@ Use `x` values for measured component geometry such as icons, avatars, handles, 
 `size:*` is not a shorter way to avoid thinking about dimensions. It is the right tool when an element is square by design.
 
 <Demo>
-    <div className="flex items-center gap:lg w:full">
-        <div className="flex:0">
-            <DemoLabel>size:14x</DemoLabel>
-            <div className="grid place-content:center size:14x r:lg font:medium bg:blue-60/.15">A</div>
-        </div>
-        <div className="flex:1 min-w:0">
-            <DemoLabel>w:full h:14x</DemoLabel>
-            <div className="grid place-content:center h:14x w:full r:lg font:medium bg:blue-60/.15">Banner</div>
-        </div>
+  <div className="flex items-center gap:lg w:full">
+    <div className="flex:0">
+      <DemoLabel>size:14x</DemoLabel>
+      <div className="grid place-content:center size:14x r:lg font:medium bg:blue-60/.15">A</div>
     </div>
+    <div className="flex:1 min-w:0">
+      <DemoLabel>w:full h:14x</DemoLabel>
+      <div className="grid place-content:center h:14x w:full r:lg font:medium bg:blue-60/.15">Banner</div>
+    </div>
+  </div>
 </Demo>
 
 ```html
@@ -165,10 +165,10 @@ Use `x` values for measured component geometry such as icons, avatars, handles, 
 ```
 
 <details>
-    <summary>Generated CSS</summary>
-    <Class2CSS>
-        {['size:14x', 'w:full', 'h:14x']}
-    </Class2CSS>
+  <summary>Generated CSS</summary>
+  <Class2CSS>
+    {['size:14x', 'w:full', 'h:14x']}
+  </Class2CSS>
 </details>
 
 When an element should keep a non-square ratio, use [aspect ratio](/reference/aspect-ratio) with a width instead of locking both dimensions.
@@ -184,31 +184,31 @@ When an element should keep a non-square ratio, use [aspect ratio](/reference/as
 Min and max rules are often more stable than fixed widths. They let content, containers, and responsive variants negotiate space without overflow.
 
 <Demo>
-    <div className="w:full max-w:sm mx:auto p:lg r:lg surface:raised shadow:xs">
-        <DemoLabel>min-w:0 max-w:96x</DemoLabel>
-        <div className="flex gap:md">
-            <div className="flex:0 size:10x r:lg bg:blue-60/.15"></div>
-            <div className="flex:1 min-w:0">
-                <div className="font:medium text:strong">Shrinkable content</div>
-                <div className="overflow:hidden text:sm text-ellipsis white-space:nowrap text:muted">Long text can shrink inside the row without forcing the wrapper wider.</div>
-            </div>
-        </div>
+  <div className="w:full max-w:sm mx:auto p:lg r:lg surface:raised shadow:xs">
+    <DemoLabel>min-w:0 max-w:96x</DemoLabel>
+    <div className="flex gap:md">
+      <div className="flex:0 size:10x r:lg bg:blue-60/.15"></div>
+      <div className="flex:1 min-w:0">
+        <div className="font:medium text:strong">Shrinkable content</div>
+        <div className="overflow:hidden text:sm text-ellipsis white-space:nowrap text:muted">Long text can shrink inside the row without forcing the wrapper wider.</div>
+      </div>
     </div>
+  </div>
 </Demo>
 
 ```html
 <!-- @MARK flex --><!-- @MARK min-w:0 --><!-- @MARK max-w:96x -->
 <article class="flex gap:md max-w:sm">
-    <img class="flex:0 size:10x" alt="" />
-    <div class="min-w:0">Long content...</div>
+  <img class="flex:0 size:10x" alt="" />
+  <div class="min-w:0">Long content...</div>
 </article>
 ```
 
 <details>
-    <summary>Generated CSS</summary>
-    <Class2CSS>
-        {['flex', 'gap:md', 'max-w:96x', 'size:10x', 'flex:0', 'min-w:0']}
-    </Class2CSS>
+  <summary>Generated CSS</summary>
+  <Class2CSS>
+    {['flex', 'gap:md', 'max-w:96x', 'size:10x', 'flex:0', 'min-w:0']}
+  </Class2CSS>
 </details>
 
 In flex and grid layouts, `min-w:0` is the common fix for text or media that refuses to shrink. Without it, intrinsic content can force a row wider than its container even when the parent has a max width.
@@ -226,15 +226,15 @@ Sizing classes can use the same [breakpoints](/guide/breakpoints), [containers](
 
 <!-- @MARK container --><!-- @MARK size:10x@container(md) -->
 <article class="container">
-    <button class="size:8x size:10x@container(md)">...</button>
+  <button class="size:8x size:10x@container(md)">...</button>
 </article>
 ```
 
 <details>
-    <summary>Generated CSS</summary>
-    <Class2CSS>
-        {['w:full', 'w:50%@sm', 'max-w:7xl@lg', 'container', 'size:8x', 'size:10x@container(md)']}
-    </Class2CSS>
+  <summary>Generated CSS</summary>
+  <Class2CSS>
+    {['w:full', 'w:50%@sm', 'max-w:7xl@lg', 'container', 'size:8x', 'size:10x@container(md)']}
+  </Class2CSS>
 </details>
 
 Use viewport breakpoints when the whole page shell changes. Use container queries when a reusable component should adapt to the space it receives in a sidebar, modal, card grid, or main content column.
@@ -246,9 +246,9 @@ When a dimension becomes part of the product language, add a named container var
 
 ```css name=index.css
 @theme {
-    --container-sidebar: 17.5rem;
-    --container-measure: 72ch;
-    --container-panel: clamp(18rem, 50vw, 42rem);
+  --container-sidebar: 17.5rem;
+  --container-measure: 72ch;
+  --container-panel: clamp(18rem, 50vw, 42rem);
 }
 ```
 
@@ -292,7 +292,7 @@ Use descriptive names such as `sidebar`, `measure`, `panel`, or `media` instead 
 
 ```html
 <div class="flex">
-    <main class="max-w:5xl">Long unbroken content...</main>
+  <main class="max-w:5xl">Long unbroken content...</main>
 </div>
 ```
 
@@ -300,6 +300,6 @@ Use descriptive names such as `sidebar`, `measure`, `panel`, or `media` instead 
 
 ```html
 <div class="flex">
-    <main class="min-w:0 max-w:5xl">Long unbroken content...</main>
+  <main class="min-w:0 max-w:5xl">Long unbroken content...</main>
 </div>
 ```

@@ -7,16 +7,16 @@ Use `justify-*` utilities to distribute flex or grid items along the container m
 ```html
 <!-- @MARK flex --><!-- @MARK justify-between -->
 <nav class="flex justify-between">
-    <a href="/">Home</a>
-    <a href="/settings">Settings</a>
+  <a href="/">Home</a>
+  <a href="/settings">Settings</a>
 </nav>
 ```
 
 <details>
-    <summary>Generated CSS</summary>
-    <Class2CSS>
-        {['flex', 'justify-between']}
-    </Class2CSS>
+  <summary>Generated CSS</summary>
+  <Class2CSS>
+    {['flex', 'justify-between']}
+  </Class2CSS>
 </details>
 
 ### Start, center, or end a group
@@ -24,8 +24,8 @@ Use `justify-start`, `justify-center`, and `justify-end` for the most common pos
 ```html
 <!-- @MARK justify-center -->
 <div class="flex justify-center gap:sm">
-    <button>Cancel</button>
-    <button>Save</button>
+  <button>Cancel</button>
+  <button>Save</button>
 </div>
 ```
 
@@ -33,7 +33,7 @@ In a column flexbox, the main axis becomes vertical, so `justify-center` centers
 ```html
 <!-- @MARK flex-col --><!-- @MARK justify-center -->
 <section class="flex flex-col justify-center h:3xs">
-    ...
+  ...
 </section>
 ```
 
@@ -42,9 +42,9 @@ Use `justify-between`, `justify-around`, or `justify-evenly` when the container 
 ```html
 <!-- @MARK justify-evenly -->
 <ul class="flex justify-evenly gap:sm">
-    <li>One</li>
-    <li>Two</li>
-    <li>Three</li>
+  <li>One</li>
+  <li>Two</li>
+  <li>Three</li>
 </ul>
 ```
 
@@ -55,7 +55,7 @@ Use `justify-content:<value>` when you need a value that does not have a shortcu
 ```html
 <!-- @MARK justify-content:safe|center -->
 <div class="flex justify-content:safe|center">
-    ...
+  ...
 </div>
 ```
 

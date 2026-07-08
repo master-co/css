@@ -7,17 +7,17 @@ Use `gap:*` on flex and grid containers to set the spacing between children. Unl
 ```html
 <!-- @MARK grid-cols:3 --><!-- @MARK gap:md -->
 <div class="grid-cols:3 gap:md">
-    <article>...</article>
-    <article>...</article>
-    <article>...</article>
+  <article>...</article>
+  <article>...</article>
+  <article>...</article>
 </div>
 ```
 
 <details>
-    <summary>Generated CSS</summary>
-    <Class2CSS>
-        {['grid-cols:3', 'gap:md']}
-    </Class2CSS>
+  <summary>Generated CSS</summary>
+  <Class2CSS>
+    {['grid-cols:3', 'gap:md']}
+  </Class2CSS>
 </details>
 
 ### Set row and column gaps separately
@@ -25,7 +25,7 @@ Use `gap-y:*` for row gaps and `gap-x:*` for column gaps. This is common in card
 ```html
 <!-- @MARK gap-x:lg --><!-- @MARK gap-y:xl -->
 <section class="grid-cols:1 gap-x:lg gap-y:xl grid-cols:3@md">
-    ...
+  ...
 </section>
 ```
 
@@ -33,7 +33,7 @@ You can also set row and column values in one class with `gap:<row>|<column>`.
 ```html
 <!-- @MARK gap:xl|lg -->
 <section class="grid-cols:3 gap:xl|lg">
-    ...
+  ...
 </section>
 ```
 
@@ -42,8 +42,8 @@ Gap is usually easier to maintain than child margins for toolbars, stacks, media
 ```html
 <!-- @MARK flex --><!-- @MARK items-center --><!-- @MARK gap:sm -->
 <div class="flex items-center gap:sm">
-    <img class="size:8x round" alt="" />
-    <span>Aron</span>
+  <img class="size:8x round" alt="" />
+  <span>Aron</span>
 </div>
 ```
 

@@ -11,10 +11,10 @@ import createServerCSS from './create-server-css'
  * @returns MasterCSS
  */
 export default function renderCSS(html: string, manifest?: MasterCSSManifest): MasterCSS | undefined {
-    if (!html) return
-    const { classes } = parseHTML(html)
-    if (!classes.length) return
-    const css = createServerCSS(manifest || getDefaultManifest())
-    classes.forEach(eachClass => css.ensureClassRules(eachClass))
-    return css
+  if (!html) return
+  const { classes } = parseHTML(html)
+  if (!classes.length) return
+  const css = createServerCSS(manifest || getDefaultManifest())
+  classes.forEach(eachClass => css.ensureClassRules(eachClass))
+  return css
 }

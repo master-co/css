@@ -1,5 +1,5 @@
 const syntaxes = [
-    ['grid-cols:`integer`']
+  ['grid-cols:`integer`']
 ]
 
 export default syntaxes

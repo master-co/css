@@ -7,15 +7,15 @@ Use `snap-x` on a horizontal scroll container. Add snap alignment to the childre
 ```html
 <!-- @MARK snap-x -->
 <div class="overflow-x:auto snap-x">
-    <article class="snap-start">One</article>
+  <article class="snap-start">One</article>
 </div>
 ```
 
 <details>
-    <summary>Generated CSS</summary>
-    <Class2CSS>
-        {['snap-x']}
-    </Class2CSS>
+  <summary>Generated CSS</summary>
+  <Class2CSS>
+    {['snap-x']}
+  </Class2CSS>
 </details>
 
 ### Require a snap point
@@ -23,7 +23,7 @@ Use `scroll-snap-type:*|mandatory` when the container must settle on a snap poin
 ```html
 <!-- @MARK scroll-snap-type:y|mandatory -->
 <div class="overflow-y:auto scroll-snap-type:y|mandatory">
-    <section class="snap-start">Step</section>
+  <section class="snap-start">Step</section>
 </div>
 ```
 
@@ -32,7 +32,7 @@ Use `proximity` when snapping should help alignment without taking over every sc
 ```html
 <!-- @MARK scroll-snap-type:x|proximity -->
 <div class="overflow-x:auto scroll-snap-type:x|proximity">
-    ...
+  ...
 </div>
 ```
 

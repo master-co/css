@@ -17,20 +17,20 @@ When different applications need cleanly separated static rendering, manifest lo
 (i) This creates separate project boundaries for `projects/admin` and `projects/shop`.
 <ExplorerView>
 {[
-    { name: 'projects', children: [
-        { name: 'admin', children: [
-            { name: 'package.json' },
-            { name: 'eslint.config.js' },
-            { name: 'index.css' }
-        ]},
-        { name: 'shop', children: [
-            { name: 'package.json' },
-            { name: 'eslint.config.js' },
-            { name: 'index.css' }
-        ]}
+  { name: 'projects', children: [
+    { name: 'admin', children: [
+      { name: 'package.json' },
+      { name: 'eslint.config.js' },
+      { name: 'index.css' }
     ]},
-    { name: 'package.json' },
-    { name: 'index.css' }
+    { name: 'shop', children: [
+      { name: 'package.json' },
+      { name: 'eslint.config.js' },
+      { name: 'index.css' }
+    ]}
+  ]},
+  { name: 'package.json' },
+  { name: 'index.css' }
 ]}
 </ExplorerView>
 
@@ -43,13 +43,13 @@ In each workspace, import shared project CSS files and add workspace-specific de
 @import '../../index.css';
 
 @theme {
-    --color-primary: #4f46e5;
+  --color-primary: #4f46e5;
 }
 
 @components {
-    app-shell {
-        @compose min-h:100vh bg:surface-base;
-    }
+  app-shell {
+    @compose min-h:100vh bg:surface-base;
+  }
 }
 ```
 Later definitions in the workspace file can override root options, variables, tokens, utilities, and matching component buckets.
@@ -57,30 +57,30 @@ Later definitions in the workspace file can override root options, variables, to
 (x) Keep multiple application static rendering targets inside one package project.
 <ExplorerView>
 {[
-    { name: 'app', children: [
-        { name: 'admin.css' },
-        { name: 'shop.css' },
-        { name: 'globals.css' }
-    ]},
-    { name: 'package.json' },
-    { name: 'index.css' }
+  { name: 'app', children: [
+    { name: 'admin.css' },
+    { name: 'shop.css' },
+    { name: 'globals.css' }
+  ]},
+  { name: 'package.json' },
+  { name: 'index.css' }
 ]}
 </ExplorerView>
 
 (o) Give each application its own package project and Master CSS workspace.
 <ExplorerView>
 {[
-    { name: 'projects', children: [
-        { name: 'admin', children: [
-            { name: 'package.json' },
-            { name: 'index.css' }
-        ]},
-        { name: 'shop', children: [
-            { name: 'package.json' },
-            { name: 'index.css' }
-        ]}
+  { name: 'projects', children: [
+    { name: 'admin', children: [
+      { name: 'package.json' },
+      { name: 'index.css' }
     ]},
-    { name: 'index.css' }
+    { name: 'shop', children: [
+      { name: 'package.json' },
+      { name: 'index.css' }
+    ]}
+  ]},
+  { name: 'index.css' }
 ]}
 </ExplorerView>
 

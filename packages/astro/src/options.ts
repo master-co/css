@@ -1,8 +1,8 @@
 import { type PluginOptions, options as defaultPluginOptions } from '@master/css.vite'
 
 const options: IntegrationOptions = {
-    ...defaultPluginOptions,
-    mode: 'progressive'
+  ...defaultPluginOptions,
+  mode: 'progressive'
 }
 
 export default options

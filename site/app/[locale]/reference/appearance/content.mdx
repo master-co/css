@@ -5,24 +5,24 @@
 ### Remove default styling
 Use `appearance:none` to remove the browser's native control styling before applying your own visual treatment.
 <Demo>
-    <select className="bg:revert appearance:none">
-        <option>Yes</option>
-        <option>No</option>
-    </select>
+  <select className="bg:revert appearance:none">
+    <option>Yes</option>
+    <option>No</option>
+  </select>
 </Demo>
 ```html
 <!-- @MARK appearance:none -->
 <select class="appearance:none">
-    <option>Yes</option>
-    <option>No</option>
+  <option>Yes</option>
+  <option>No</option>
 </select>
 ```
 
 <details>
-    <summary>Generated CSS</summary>
-    <Class2CSS>
-        {['appearance:none']}
-    </Class2CSS>
+  <summary>Generated CSS</summary>
+  <Class2CSS>
+    {['appearance:none']}
+  </Class2CSS>
 </details>
 
 ### Restore native appearance
@@ -30,7 +30,7 @@ Use `appearance:auto` when a variant should return to the platform control inste
 ```html
 <!-- @MARK appearance:auto -->
 <select class="appearance:none appearance:auto@sm">
-    <option>Native on larger screens</option>
+  <option>Native on larger screens</option>
 </select>
 ```
 
@@ -38,10 +38,10 @@ Use `appearance:auto` when a variant should return to the platform control inste
 `appearance:none` only changes rendering. Keep using the correct form element and accessible label.
 ```html
 <label>
-    Sort
-    <select class="appearance:none">
-        <option>Newest</option>
-    </select>
+  Sort
+  <select class="appearance:none">
+    <option>Newest</option>
+  </select>
 </label>
 ```
 

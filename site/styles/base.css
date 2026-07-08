@@ -1,27 +1,27 @@
 @theme light {
-    --color-yellow: $color-yellow-40;
-    --color-yellow-hover: $color-yellow-50;
-    --color-on-yellow: $color-yellow-95;
-    --color-yellow-line: $color-black/.1;
+  --color-yellow: $color-yellow-40;
+  --color-yellow-hover: $color-yellow-50;
+  --color-on-yellow: $color-yellow-95;
+  --color-yellow-line: $color-black/.1;
 }
 
 @theme dark {
-    --color-yellow: $color-yellow-50;
-    --color-yellow-hover: $color-yellow-40;
-    --color-on-yellow: $color-yellow-95;
-    --color-yellow-line: $color-white/.3;
+  --color-yellow: $color-yellow-50;
+  --color-yellow-hover: $color-yellow-40;
+  --color-on-yellow: $color-yellow-95;
+  --color-yellow-line: $color-white/.3;
 }
 
 @components {
-    yellow {
-        outline: 0.0625rem var(--color-yellow-line) solid;
-        background-color: var(--color-yellow);
-        color: var(--color-on-yellow);
-    }
+  yellow {
+    outline: 0.0625rem var(--color-yellow-line) solid;
+    background-color: var(--color-yellow);
+    color: var(--color-on-yellow);
+  }
 
-    touch-yellow {
-        &:hover {
-            background-color: var(--color-yellow-hover);
-        }
+  touch-yellow {
+    &:hover {
+      background-color: var(--color-yellow-hover);
     }
+  }
 }

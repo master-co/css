@@ -7,16 +7,16 @@ Use `pointer-events:none` when an overlay is visual only and should not block th
 ```html
 <!-- @MARK pointer-events:none -->
 <div class="rel">
-    <button>Open</button>
-    <span class="abs inset:0 pointer-events:none"></span>
+  <button>Open</button>
+  <span class="abs inset:0 pointer-events:none"></span>
 </div>
 ```
 
 <details>
-    <summary>Generated CSS</summary>
-    <Class2CSS>
-        {['pointer-events:none']}
-    </Class2CSS>
+  <summary>Generated CSS</summary>
+  <Class2CSS>
+    {['pointer-events:none']}
+  </Class2CSS>
 </details>
 
 ### Use the untouchable alias
@@ -31,7 +31,7 @@ Combine a non-interactive parent with `pointer-events:auto` on a child that shou
 ```html
 <!-- @MARK pointer-events:auto -->
 <div class="pointer-events:none">
-    <button class="pointer-events:auto">Dismiss</button>
+  <button class="pointer-events:auto">Dismiss</button>
 </div>
 ```
 

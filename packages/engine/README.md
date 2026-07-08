@@ -44,9 +44,9 @@ console.log(css.text)
 
 ```ts
 import {
-    builtinKeyAliases,
-    builtinNativeValueNamespaces,
-    compareRulePriority,
+  builtinKeyAliases,
+  builtinNativeValueNamespaces,
+  compareRulePriority,
 } from '@master/css-engine/compiler'
 ```
 

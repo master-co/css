@@ -18,12 +18,12 @@ It accepts structural scanner state from callers; it does not depend on `@master
 
 ```ts
 import {
-    isStyleCSSRequest,
-    resolveMasterStyleSource,
-    transformLocalStyleCSS,
-    registerStyleCSSSource,
-    createStyleCSSManifest,
-    createExtractedCSS,
+  isStyleCSSRequest,
+  resolveMasterStyleSource,
+  transformLocalStyleCSS,
+  registerStyleCSSSource,
+  createStyleCSSManifest,
+  createExtractedCSS,
 } from '@master/css-stylesheet'
 ```
 
@@ -43,8 +43,8 @@ Extraction directive helpers are exported from `./directives`.
 
 ```ts
 import {
-    collectStylesheetDirectives,
-    createStylesheetSourceOptions,
+  collectStylesheetDirectives,
+  createStylesheetSourceOptions,
 } from '@master/css-stylesheet/directives'
 ```
 
@@ -58,9 +58,9 @@ Browser-safe CSS directive compilation and class rendering are exported from `./
 import { compileBrowserStyleCSS } from '@master/css-stylesheet/browser'
 
 const result = await compileBrowserStyleCSS('@theme { --color-brand: #ff0; }', {
-    baseManifest,
-    classNames: ['fg:brand'],
-    from: 'playground.css'
+  baseManifest,
+  classNames: ['fg:brand'],
+  from: 'playground.css'
 })
 
 console.log(result.css)

@@ -7,42 +7,42 @@ import reportLintDiagnostics from '../utils/report-lint-diagnostics'
 import defineSourceVisitors, { shouldUseSourceVisitors } from '../utils/define-source-visitors'
 
 export default createRule({
-    name: 'no-invalid-classes',
-    meta: {
-        type: 'problem',
-        docs: {
-            description: 'Disallow invalid Master CSS classes'
-        },
-        messages: {
-            invalidClass: '{{message}}',
-            disallowUnknownClass: '{{message}}',
-        },
-        fixable: null,
-        schema: [noInvalidClassesOptionsSchema]
+  name: 'no-invalid-classes',
+  meta: {
+    type: 'problem',
+    docs: {
+      description: 'Disallow invalid Master CSS classes'
     },
-    defaultOptions: [],
-    create: function (context) {
-        const { options, settings, css } = resolveContext(context)
-        if (shouldUseSourceVisitors(context)) {
-            return defineSourceVisitors({
-                context,
-                css,
-                ruleId: 'no-invalid-classes',
-                ruleOptions: {
-                    disallowUnknownClass: options.disallowUnknownClass
-                }
-            })
+    messages: {
+      invalidClass: '{{message}}',
+      disallowUnknownClass: '{{message}}',
+    },
+    fixable: null,
+    schema: [noInvalidClassesOptionsSchema]
+  },
+  defaultOptions: [],
+  create: function (context) {
+    const { options, settings, css } = resolveContext(context)
+    if (shouldUseSourceVisitors(context)) {
+      return defineSourceVisitors({
+        context,
+        css,
+        ruleId: 'no-invalid-classes',
+        ruleOptions: {
+          disallowUnknownClass: options.disallowUnknownClass
         }
-        return defineVisitors({ context, settings }, (node, resolved) => {
-            reportLintDiagnostics(
-                context,
-                node,
-                resolved,
-                createInvalidClassesReport(resolved.raw, css, {
-                    unescape: resolved.unescape,
-                    disallowUnknownClass: options.disallowUnknownClass
-                }).diagnostics
-            )
-        })
+      })
     }
+    return defineVisitors({ context, settings }, (node, resolved) => {
+      reportLintDiagnostics(
+        context,
+        node,
+        resolved,
+        createInvalidClassesReport(resolved.raw, css, {
+          unescape: resolved.unescape,
+          disallowUnknownClass: options.disallowUnknownClass
+        }).diagnostics
+      )
+    })
+  }
 })

@@ -7,15 +7,15 @@ Use `text-stroke:*|*` when the width and color should be declared as one text st
 ```html
 <!-- @MARK text-stroke:1px|blue-60 -->
 <h2 class="text-stroke:1px|blue-60">
-    Outlined title
+  Outlined title
 </h2>
 ```
 
 <details>
-    <summary>Generated CSS</summary>
-    <Class2CSS>
-        {['text-stroke:1px|blue-60']}
-    </Class2CSS>
+  <summary>Generated CSS</summary>
+  <Class2CSS>
+    {['text-stroke:1px|blue-60']}
+  </Class2CSS>
 </details>
 
 ### Combine stroke with transparent fill
@@ -23,7 +23,7 @@ Use transparent fill when the outline should be the primary visible shape.
 ```html
 <!-- @MARK text-fill-color:transparent -->
 <h2 class="text-fill-color:transparent text-stroke:1px|currentColor">
-    Outline
+  Outline
 </h2>
 ```
 
@@ -31,7 +31,7 @@ Use transparent fill when the outline should be the primary visible shape.
 Use the dedicated width or color utilities when only one part changes across a state.
 ```html
 <h2 class="text-stroke:1px text-stroke:blue-60 text-stroke:transparent:hover">
-    Interactive outline
+  Interactive outline
 </h2>
 ```
 

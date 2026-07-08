@@ -2,12 +2,12 @@ import categories from '~/site/.categories/reference.json'
 import OverviewButtons from 'internal/components/OverviewButtons'
 
 {categories
-    .filter(category => category.name !== 'Overview')
-    .map(category => (
-        <section key={category.name}>
-            <h2>{category.name}</h2>
-            <OverviewButtons>
-                {category.pages}
-            </OverviewButtons>
-        </section>
-    ))}
+  .filter(category => category.name !== 'Overview')
+  .map(category => (
+    <section key={category.name}>
+      <h2>{category.name}</h2>
+      <OverviewButtons>
+        {category.pages}
+      </OverviewButtons>
+    </section>
+  ))}

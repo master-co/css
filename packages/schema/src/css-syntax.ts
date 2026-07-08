@@ -9,44 +9,44 @@ export interface VariableValueComponent { text?: string, token: string, type: 'v
 export interface SeparatorValueComponent { text?: string, token: string, type: 'separator', value: string }
 
 export interface DefinedUtility {
-    id: string
-    key?: string
-    keys: string[]
-    matchers: {
-        key?: RegExp
-        variable?: RegExp
-        value?: RegExp
-        arbitrary?: RegExp
-    }
-    variables?: Map<string, Variable>
-    order: number
-    definition: MasterCSSManifestUtility
+  id: string
+  key?: string
+  keys: string[]
+  matchers: {
+    key?: RegExp
+    variable?: RegExp
+    value?: RegExp
+    arbitrary?: RegExp
+  }
+  variables?: Map<string, Variable>
+  order: number
+  definition: MasterCSSManifestUtility
 }
 
 export type ExplicitUtilityLayerName = MasterCSSManifestUtilityLayerName
 
 export interface MediaFeatureComponent {
-    type: string
-    tokenType?: string
-    operator?: string
-    value: number
-    unit: string
+  type: string
+  tokenType?: string
+  operator?: string
+  value: number
+  unit: string
 }
 
 export interface MediaQuery {
-    token: string;
-    features: Record<string, MediaFeatureComponent>
-    type?: string;
+  token: string;
+  features: Record<string, MediaFeatureComponent>
+  type?: string;
 }
 
 interface VariableCommon {
-    namespace?: string,
-    name: string,
-    key: string,
-    inline?: boolean,
-    static?: boolean,
-    modes?: Record<string, ResolvedVariableValue>
-    dependencies?: Set<string>
+  namespace?: string,
+  name: string,
+  key: string,
+  inline?: boolean,
+  static?: boolean,
+  modes?: Record<string, ResolvedVariableValue>
+  dependencies?: Set<string>
 }
 
 export interface StringVariable { type: 'string', value: string | number }
@@ -54,7 +54,7 @@ export interface NumberVariable { type: 'number', value: number | string, numeri
 export type ResolvedVariableValue = StringVariable | NumberVariable
 
 export type Variable = VariableCommon & {
-    type: ResolvedVariableValue['type']
-    value?: ResolvedVariableValue['value']
-    numeric?: MasterCSSManifestVariableNumericValue
+  type: ResolvedVariableValue['type']
+  value?: ResolvedVariableValue['value']
+  numeric?: MasterCSSManifestVariableNumericValue
 }

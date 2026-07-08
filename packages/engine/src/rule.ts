@@ -1,12 +1,12 @@
 export class Rule {
-    native?: CSSRule
+  native?: CSSRule
 
-    constructor(
-        public readonly name: string,
-        public readonly text: string,
-    ) { }
+  constructor(
+    public readonly name: string,
+    public readonly text: string,
+  ) { }
 
-    get key() {
-        return this.name
-    }
+  get key() {
+    return this.name
+  }
 }

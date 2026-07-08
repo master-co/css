@@ -9,45 +9,45 @@ import globals from 'globals'
 import typescript from 'typescript-eslint'
 
 export default defineConfig([
-    globalIgnores([
-        'vendor/**',
-        'node_modules/**',
-        'public/**',
-        'bootstrap/ssr/**'
-    ]),
-    {
-        files: ['resources/**/*.{js,jsx,ts,tsx}'],
-        extends: [
-            js.configs.recommended,
-            typescript.configs.recommended,
-            ...fixupConfigRules(react.configs.flat.recommended),
-            ...fixupConfigRules(react.configs.flat['jsx-runtime'])
-        ],
-        languageOptions: {
-            globals: globals.browser
-        },
-        plugins: {
-            'react-hooks': fixupPluginRules(reactHooks)
-        },
-        rules: {
-            ...reactHooks.configs.recommended.rules,
-            'react/display-name': 'off',
-            'react/prop-types': 'off',
-            'react/no-unescaped-entities': 'off',
-            'react-hooks/purity': 'off',
-            'react-hooks/set-state-in-effect': 'off'
-        },
-        settings: {
-            react: {
-                version: 'detect'
-            }
-        }
+  globalIgnores([
+    'vendor/**',
+    'node_modules/**',
+    'public/**',
+    'bootstrap/ssr/**'
+  ]),
+  {
+    files: ['resources/**/*.{js,jsx,ts,tsx}'],
+    extends: [
+      js.configs.recommended,
+      typescript.configs.recommended,
+      ...fixupConfigRules(react.configs.flat.recommended),
+      ...fixupConfigRules(react.configs.flat['jsx-runtime'])
+    ],
+    languageOptions: {
+      globals: globals.browser
     },
-    ...css,
-    {
-        rules: {
-            '@master/css/no-invalid-classes': 'warn'
-        }
+    plugins: {
+      'react-hooks': fixupPluginRules(reactHooks)
     },
-    prettier
+    rules: {
+      ...reactHooks.configs.recommended.rules,
+      'react/display-name': 'off',
+      'react/prop-types': 'off',
+      'react/no-unescaped-entities': 'off',
+      'react-hooks/purity': 'off',
+      'react-hooks/set-state-in-effect': 'off'
+    },
+    settings: {
+      react: {
+        version: 'detect'
+      }
+    }
+  },
+  ...css,
+  {
+    rules: {
+      '@master/css/no-invalid-classes': 'warn'
+    }
+  },
+  prettier
 ])

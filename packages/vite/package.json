@@ -1,81 +1,81 @@
 {
-    "name": "@master/css.vite",
-    "type": "module",
-    "scripts": {
-        "build": "tsdown --config ../../shared/tsdown-package.config.ts",
-        "dev": "tsdown --config ../../shared/tsdown-package.config.ts --watch",
-        "type-check": "tsc -b tsconfig.typecheck.json",
-        "lint": "eslint",
-        "test": "vitest"
+  "name": "@master/css.vite",
+  "type": "module",
+  "scripts": {
+    "build": "tsdown --config ../../shared/tsdown-package.config.ts",
+    "dev": "tsdown --config ../../shared/tsdown-package.config.ts --watch",
+    "type-check": "tsc -b tsconfig.typecheck.json",
+    "lint": "eslint",
+    "test": "vitest"
+  },
+  "license": "MIT",
+  "description": "Vite plugin for Master CSS",
+  "author": "Aoyue Design LLC.",
+  "funding": "https://rc.css.master.co/sponsor",
+  "homepage": "https://css.master.co",
+  "bugs": {
+    "url": "https://github.com/master-co/css/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/master-co/css.git",
+    "directory": "packages/vite"
+  },
+  "keywords": [
+    "plugin",
+    "integration",
+    "vite",
+    "build tools",
+    "static rendering",
+    "static",
+    "runtime",
+    "css runtime",
+    "css",
+    "mastercss",
+    "vite-plugin"
+  ],
+  "sideEffects": [
+    "./dist/runtime.js"
+  ],
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "jsnext:main": "./dist/index.js",
+  "esnext": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
     },
-    "license": "MIT",
-    "description": "Vite plugin for Master CSS",
-    "author": "Aoyue Design LLC.",
-    "funding": "https://rc.css.master.co/sponsor",
-    "homepage": "https://css.master.co",
-    "bugs": {
-        "url": "https://github.com/master-co/css/issues"
-    },
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/master-co/css.git",
-        "directory": "packages/vite"
-    },
-    "keywords": [
-        "plugin",
-        "integration",
-        "vite",
-        "build tools",
-        "static rendering",
-        "static",
-        "runtime",
-        "css runtime",
-        "css",
-        "mastercss",
-        "vite-plugin"
-    ],
-    "sideEffects": [
-        "./dist/runtime.js"
-    ],
-    "main": "./dist/index.js",
-    "module": "./dist/index.js",
-    "jsnext:main": "./dist/index.js",
-    "esnext": "./dist/index.js",
-    "types": "./dist/index.d.ts",
-    "exports": {
-        ".": {
-            "types": "./dist/index.d.ts",
-            "import": "./dist/index.js",
-            "default": "./dist/index.js"
-        },
-        "./runtime": {
-            "types": "./dist/runtime.d.ts",
-            "import": "./dist/runtime.js",
-            "default": "./dist/runtime.js"
-        }
-    },
-    "files": [
-        "dist"
-    ],
-    "publishConfig": {
-        "access": "public",
-        "provenance": true
-    },
-    "peerDependencies": {
-        "vite": ">=6"
-    },
-    "dependencies": {
-        "@master/css": "workspace:^",
-        "@master/css-project": "workspace:^",
-        "@master/css-scanner": "workspace:^",
-        "@master/css-integration": "workspace:^",
-        "@master/css-runtime": "workspace:^",
-        "@master/css-server": "workspace:^",
-        "@master/css-stylesheet": "workspace:^",
-        "magic-string": "^0.30.21",
-        "@master/css-schema": "workspace:^"
-    },
-    "devDependencies": {
-        "@master/css-preset": "workspace:^"
+    "./runtime": {
+      "types": "./dist/runtime.d.ts",
+      "import": "./dist/runtime.js",
+      "default": "./dist/runtime.js"
     }
+  },
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "peerDependencies": {
+    "vite": ">=6"
+  },
+  "dependencies": {
+    "@master/css": "workspace:^",
+    "@master/css-project": "workspace:^",
+    "@master/css-scanner": "workspace:^",
+    "@master/css-integration": "workspace:^",
+    "@master/css-runtime": "workspace:^",
+    "@master/css-server": "workspace:^",
+    "@master/css-stylesheet": "workspace:^",
+    "magic-string": "^0.30.21",
+    "@master/css-schema": "workspace:^"
+  },
+  "devDependencies": {
+    "@master/css-preset": "workspace:^"
+  }
 }

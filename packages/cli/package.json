@@ -1,57 +1,57 @@
 {
-    "name": "@master/css-cli",
-    "scripts": {
-        "build": "tsdown --config ../../shared/tsdown-package.config.ts",
-        "dev": "tsdown --config ../../shared/tsdown-package.config.ts --watch",
-        "lint": "eslint",
-        "type-check": "tsc -b tsconfig.typecheck.json",
-        "test": "vitest"
-    },
-    "type": "module",
-    "license": "MIT",
-    "description": "Master CSS CLI",
-    "author": "Aoyue Design LLC.",
-    "funding": "https://rc.css.master.co/sponsor",
-    "homepage": "https://css.master.co",
-    "bugs": {
-        "url": "https://github.com/master-co/css/issues"
-    },
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/master-co/css.git",
-        "directory": "packages/cli"
-    },
-    "keywords": [
-        "cli",
-        "css",
-        "mastercss"
-    ],
-    "bin": "./dist/bin/index.js",
-    "files": [
-        "dist"
-    ],
-    "publishConfig": {
-        "access": "public",
-        "provenance": true
-    },
-    "dependencies": {
-        "@master/css": "workspace:^",
-        "@master/css-diagnostics": "workspace:^",
-        "@master/css-lexer": "workspace:^",
-        "@master/css-language": "workspace:^",
-        "@master/css-lint": "workspace:^",
-        "@master/css-project": "workspace:^",
-        "@master/css-scanner": "workspace:^",
-        "@master/css-stylesheet": "workspace:^",
-        "@master/css-validator": "workspace:^",
-        "bytes": "^3.1.2",
-        "chokidar": "^5.0.0",
-        "commander": "^14.0.3",
-        "consola": "^3.4.2",
-        "fast-glob": "^3.3.3"
-    },
-    "devDependencies": {
-        "@types/bytes": "^3.1.5",
-        "upath": "^2.0.1"
-    }
+  "name": "@master/css-cli",
+  "scripts": {
+    "build": "tsdown --config ../../shared/tsdown-package.config.ts",
+    "dev": "tsdown --config ../../shared/tsdown-package.config.ts --watch",
+    "lint": "eslint",
+    "type-check": "tsc -b tsconfig.typecheck.json",
+    "test": "vitest"
+  },
+  "type": "module",
+  "license": "MIT",
+  "description": "Master CSS CLI",
+  "author": "Aoyue Design LLC.",
+  "funding": "https://rc.css.master.co/sponsor",
+  "homepage": "https://css.master.co",
+  "bugs": {
+    "url": "https://github.com/master-co/css/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/master-co/css.git",
+    "directory": "packages/cli"
+  },
+  "keywords": [
+    "cli",
+    "css",
+    "mastercss"
+  ],
+  "bin": "./dist/bin/index.js",
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "dependencies": {
+    "@master/css": "workspace:^",
+    "@master/css-diagnostics": "workspace:^",
+    "@master/css-lexer": "workspace:^",
+    "@master/css-language": "workspace:^",
+    "@master/css-lint": "workspace:^",
+    "@master/css-project": "workspace:^",
+    "@master/css-scanner": "workspace:^",
+    "@master/css-stylesheet": "workspace:^",
+    "@master/css-validator": "workspace:^",
+    "bytes": "^3.1.2",
+    "chokidar": "^5.0.0",
+    "commander": "^14.0.3",
+    "consola": "^3.4.2",
+    "fast-glob": "^3.3.3"
+  },
+  "devDependencies": {
+    "@types/bytes": "^3.1.5",
+    "upath": "^2.0.1"
+  }
 }

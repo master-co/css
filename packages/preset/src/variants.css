@@ -1,221 +1,221 @@
 @custom-variant @all {
-    @media all {
-        @slot;
-    }
+  @media all {
+    @slot;
+  }
 }
 
 @custom-variant @print {
-    @media print {
-        @slot;
-    }
+  @media print {
+    @slot;
+  }
 }
 
 @custom-variant @screen {
-    @media screen {
-        @slot;
-    }
+  @media screen {
+    @slot;
+  }
 }
 
 @custom-variant @speech {
-    @media speech {
-        @slot;
-    }
+  @media speech {
+    @slot;
+  }
 }
 
 @custom-variant @landscape {
-    @media (orientation: landscape) {
-        @slot;
-    }
+  @media (orientation: landscape) {
+    @slot;
+  }
 }
 
 @custom-variant @portrait {
-    @media (orientation: portrait) {
-        @slot;
-    }
+  @media (orientation: portrait) {
+    @slot;
+  }
 }
 
 @custom-variant @motion {
-    @media (prefers-reduced-motion: no-preference) {
-        @slot;
-    }
+  @media (prefers-reduced-motion: no-preference) {
+    @slot;
+  }
 }
 
 @custom-variant @reduce-motion {
-    @media (prefers-reduced-motion: reduce) {
-        @slot;
-    }
+  @media (prefers-reduced-motion: reduce) {
+    @slot;
+  }
 }
 
 @custom-variant @base {
-    @layer base {
-        @slot;
-    }
+  @layer base {
+    @slot;
+  }
 }
 
 @custom-variant @default {
-    @layer defaults {
-        @slot;
-    }
+  @layer defaults {
+    @slot;
+  }
 }
 
 @custom-variant @component {
-    @layer components {
-        @slot;
-    }
+  @layer components {
+    @slot;
+  }
 }
 
 @custom-variant @utility {
-    @layer utilities {
-        @slot;
-    }
+  @layer utilities {
+    @slot;
+  }
 }
 
 @custom-variant @start {
-    @starting-style {
-        @slot;
-    }
+  @starting-style {
+    @slot;
+  }
 }
 
 @custom-variant :first {
-    &:first-child {
-        @slot;
-    }
+  &:first-child {
+    @slot;
+  }
 }
 
 @custom-variant :last {
-    &:last-child {
-        @slot;
-    }
+  &:last-child {
+    @slot;
+  }
 }
 
 @custom-variant :nth-last {
-    &:nth-last-child {
-        @slot;
-    }
+  &:nth-last-child {
+    @slot;
+  }
 }
 
 @custom-variant :even {
-    &:nth-child(2n) {
-        @slot;
-    }
+  &:nth-child(2n) {
+    @slot;
+  }
 }
 
 @custom-variant :odd {
-    &:nth-child(odd) {
-        @slot;
-    }
+  &:nth-child(odd) {
+    @slot;
+  }
 }
 
 @custom-variant :nth {
-    &:nth-child {
-        @slot;
-    }
+  &:nth-child {
+    @slot;
+  }
 }
 
 @custom-variant :only {
-    &:only-child {
-        @slot;
-    }
+  &:only-child {
+    @slot;
+  }
 }
 
 @custom-variant :rtl {
-    &:dir(rtl) {
-        @slot;
-    }
+  &:dir(rtl) {
+    @slot;
+  }
 }
 
 @custom-variant :ltr {
-    &:dir(ltr) {
-        @slot;
-    }
+  &:dir(ltr) {
+    @slot;
+  }
 }
 
 @custom-variant ::scrollbar {
-    &::-webkit-scrollbar {
-        @slot;
-    }
+  &::-webkit-scrollbar {
+    @slot;
+  }
 }
 
 @custom-variant ::scrollbar-button {
-    &::-webkit-scrollbar-button {
-        @slot;
-    }
+  &::-webkit-scrollbar-button {
+    @slot;
+  }
 }
 
 @custom-variant ::scrollbar-thumb {
-    &::-webkit-scrollbar-thumb {
-        @slot;
-    }
+  &::-webkit-scrollbar-thumb {
+    @slot;
+  }
 }
 
 @custom-variant ::scrollbar-track {
-    &::-webkit-scrollbar-track {
-        @slot;
-    }
+  &::-webkit-scrollbar-track {
+    @slot;
+  }
 }
 
 @custom-variant ::scrollbar-track-piece {
-    &::-webkit-scrollbar-track-piece {
-        @slot;
-    }
+  &::-webkit-scrollbar-track-piece {
+    @slot;
+  }
 }
 
 @custom-variant ::scrollbar-corner {
-    &::-webkit-scrollbar-corner {
-        @slot;
-    }
+  &::-webkit-scrollbar-corner {
+    @slot;
+  }
 }
 
 @custom-variant ::slider-thumb {
-    &::-webkit-slider-thumb {
-        @slot;
-    }
+  &::-webkit-slider-thumb {
+    @slot;
+  }
 }
 
 @custom-variant ::slider-runnable-track {
-    &::-webkit-slider-runnable-track {
-        @slot;
-    }
+  &::-webkit-slider-runnable-track {
+    @slot;
+  }
 }
 
 @custom-variant ::resizer {
-    &::-webkit-resizer {
-        @slot;
-    }
+  &::-webkit-resizer {
+    @slot;
+  }
 }
 
 @custom-variant ::progress {
-    &::-webkit-progress {
-        @slot;
-    }
+  &::-webkit-progress {
+    @slot;
+  }
 }
 
 @custom-variant ::vt {
-    &::view-transition {
-        @slot;
-    }
+  &::view-transition {
+    @slot;
+  }
 }
 
 @custom-variant ::vt-group {
-    &::view-transition-group {
-        @slot;
-    }
+  &::view-transition-group {
+    @slot;
+  }
 }
 
 @custom-variant ::vt-image-pair {
-    &::view-transition-image-pair {
-        @slot;
-    }
+  &::view-transition-image-pair {
+    @slot;
+  }
 }
 
 @custom-variant ::vt-old {
-    &::view-transition-old {
-        @slot;
-    }
+  &::view-transition-old {
+    @slot;
+  }
 }
 
 @custom-variant ::vt-new {
-    &::view-transition-new {
-        @slot;
-    }
+  &::view-transition-new {
+    @slot;
+  }
 }

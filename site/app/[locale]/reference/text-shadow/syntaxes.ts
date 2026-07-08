@@ -1,5 +1,5 @@
 const syntaxes = [
-    ['text-shadow:`value`'],
+  ['text-shadow:`value`'],
 ]
 
 export default syntaxes

@@ -4,10 +4,10 @@ import metadata from './metadata'
 import dictionaries from '~/site/dictionaries'
 
 export const { Page, dynamic, revalidate, generateMetadata } = createPage({
-    metadata,
-    dictionaries,
-    content: import('./content.mdx'),
-    Layout,
+  metadata,
+  dictionaries,
+  content: import('./content.mdx'),
+  Layout,
 })
 
 export default Page

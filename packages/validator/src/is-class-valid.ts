@@ -8,18 +8,18 @@ import { createCSSWithNativeDeclarations } from './native-declaration'
  * @argument css a Master CSS instance
  */
 export default function isClassValid(
-    syntax: string,
-    css = createCSSWithNativeDeclarations(defaultManifest)
+  syntax: string,
+  css = createCSSWithNativeDeclarations(defaultManifest)
 ): boolean {
-    const rules = css.generate(syntax)
-    if (rules.length) {
-        for (const eachRule of rules) {
-            if (validateCSS(eachRule.text).length) {
-                return false
-            }
-        }
-        return true
-    } else {
+  const rules = css.generate(syntax)
+  if (rules.length) {
+    for (const eachRule of rules) {
+      if (validateCSS(eachRule.text).length) {
         return false
+      }
     }
+    return true
+  } else {
+    return false
+  }
 }

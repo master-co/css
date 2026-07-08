@@ -1,31 +1,31 @@
 @settings {
-    mode-trigger: media;
-    modes: light dark;
+  mode-trigger: media;
+  modes: light dark;
 }
 
 @theme {
-    --color-black: oklch(0% 0 none);
+  --color-black: oklch(0% 0 none);
 }
 
 @theme {
-    --color-white: oklch(100% 0 none);
+  --color-white: oklch(100% 0 none);
 }
 
 @theme light {
-    --color-focus: $color-black;
+  --color-focus: $color-black;
 }
 
 @theme dark {
-    --color-focus: $color-white;
+  --color-focus: $color-white;
 }
 
 @components {
-    btn {
-        &:focus {
-        outline: 0.125rem var(--color-focus) solid;
-        }
-        &:focus {
-        outline-offset: 0.125rem;
-        }
+  btn {
+    &:focus {
+    outline: 0.125rem var(--color-focus) solid;
     }
+    &:focus {
+    outline-offset: 0.125rem;
+    }
+  }
 }

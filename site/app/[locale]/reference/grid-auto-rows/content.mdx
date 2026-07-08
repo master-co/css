@@ -5,21 +5,21 @@
 ### Size implicit rows
 Use `grid-auto-rows` to size rows created outside the explicit grid.
 <Demo $py={0}>
-    <DemoPanel>
-        <div className="grid grid-cols:2 grid-auto-rows:64px gap:xs">
-            <div className="min-w:0 p:sm b:1px|solid|blue-20 r:lg bg:blue-5 b:blue-80@dark bg:blue-95@dark">
-                <div className="overflow:hidden font:11px font:bold text-ellipsis white-space:nowrap fg:blue-60">64px row</div>
-                <div className="font-weight:560 font:sm text:neutral">A</div>
-            </div>
-            <div className="min-w:0 p:sm r:lg bg:gray-5 bg:gray-90@dark">B</div>
-            <div className="min-w:0 p:sm r:lg bg:gray-5 bg:gray-90@dark">C</div>
-        </div>
-    </DemoPanel>
+  <DemoPanel>
+    <div className="grid grid-cols:2 grid-auto-rows:64px gap:xs">
+      <div className="min-w:0 p:sm b:1px|solid|blue-20 r:lg bg:blue-5 b:blue-80@dark bg:blue-95@dark">
+        <div className="overflow:hidden font:11px font:bold text-ellipsis white-space:nowrap fg:blue-60">64px row</div>
+        <div className="font-weight:560 font:sm text:neutral">A</div>
+      </div>
+      <div className="min-w:0 p:sm r:lg bg:gray-5 bg:gray-90@dark">B</div>
+      <div className="min-w:0 p:sm r:lg bg:gray-5 bg:gray-90@dark">C</div>
+    </div>
+  </DemoPanel>
 </Demo>
 ```html
 <!-- @MARK grid-auto-rows:64px -->
 <div class="grid grid-cols:2 grid-auto-rows:64px">
-    <div>A</div><div>B</div><div>C</div>
+  <div>A</div><div>B</div><div>C</div>
 </div>
 ```
 

@@ -13,17 +13,17 @@ const __dirname = dirname(__filename)
 const pkg = JSON.parse(readFileSync(resolve(__dirname, '..', 'package.json'), 'utf-8'))
 
 const plugin = {
-    meta: {
-        name: pkg.name,
-        version: pkg.version
-    },
-    rules: {
-        'no-conflicting-classes': noConflictingClasses,
-        'no-invalid-classes': noInvalidClasses,
-        'no-unapproved-raw-values': noUnapprovedRawValues,
-        'prefer-canonical-classes': preferCanonicalClasses,
-        'sort-classes': sortClasses
-    }
+  meta: {
+    name: pkg.name,
+    version: pkg.version
+  },
+  rules: {
+    'no-conflicting-classes': noConflictingClasses,
+    'no-invalid-classes': noInvalidClasses,
+    'no-unapproved-raw-values': noUnapprovedRawValues,
+    'prefer-canonical-classes': preferCanonicalClasses,
+    'sort-classes': sortClasses
+  }
 } as TSESLint.Linter.Plugin
 
 export default plugin

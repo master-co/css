@@ -2,13 +2,13 @@ import { createHash } from 'node:crypto'
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import {
-    EMPTY_MANIFEST_JSON,
-    VIRTUAL_MANIFEST_FILE
+  EMPTY_MANIFEST_JSON,
+  VIRTUAL_MANIFEST_FILE
 } from './manifest-module'
 import { toInlineManifestModule } from './manifest-facade'
 import {
-    EMPTY_EMITTED_GLOBALS_MODULE,
-    VIRTUAL_EMITTED_GLOBALS_FILE
+  EMPTY_EMITTED_GLOBALS_MODULE,
+  VIRTUAL_EMITTED_GLOBALS_FILE
 } from './emitted-globals-module'
 import { MASTER_CSS_HYDRATION_MANIFEST_FILE_BASENAME } from '@master/css-schema/hydration-manifest'
 
@@ -18,95 +18,95 @@ const VIRTUAL_MODULE_DIR_SEGMENTS = ['node_modules', '.master-css'] as const
 const VIRTUAL_MODULE_PACKAGE_JSON_SOURCE = '{\n    "type": "module"\n}\n'
 
 export function toHashedManifestAssetFileName(json: string, basename = 'master-css-manifest') {
-    const hash = createHash('sha256').update(json).digest('hex').slice(0, 8)
-    return `${basename}.${hash}.json`
+  const hash = createHash('sha256').update(json).digest('hex').slice(0, 8)
+  return `${basename}.${hash}.json`
 }
 
 export function toHashedHydrationManifestAssetFileName(json: string) {
-    return toHashedManifestAssetFileName(json, MASTER_CSS_HYDRATION_MANIFEST_FILE_BASENAME)
+  return toHashedManifestAssetFileName(json, MASTER_CSS_HYDRATION_MANIFEST_FILE_BASENAME)
 }
 
 export function toResolvedMasterCSSManifestId(file: string) {
-    return RESOLVED_MASTER_CSS_MANIFEST_QUERY_PREFIX + Buffer.from(file).toString('base64url')
+  return RESOLVED_MASTER_CSS_MANIFEST_QUERY_PREFIX + Buffer.from(file).toString('base64url')
 }
 
 export function fromResolvedMasterCSSManifestId(id: string) {
-    return id.startsWith(RESOLVED_MASTER_CSS_MANIFEST_QUERY_PREFIX)
-        ? Buffer.from(id.slice(RESOLVED_MASTER_CSS_MANIFEST_QUERY_PREFIX.length), 'base64url').toString()
-        : undefined
+  return id.startsWith(RESOLVED_MASTER_CSS_MANIFEST_QUERY_PREFIX)
+    ? Buffer.from(id.slice(RESOLVED_MASTER_CSS_MANIFEST_QUERY_PREFIX.length), 'base64url').toString()
+    : undefined
 }
 
 export function toVirtualDefaultManifestModulePath(context: string) {
-    return join(context, ...VIRTUAL_MODULE_DIR_SEGMENTS, VIRTUAL_MANIFEST_FILE)
+  return join(context, ...VIRTUAL_MODULE_DIR_SEGMENTS, VIRTUAL_MANIFEST_FILE)
 }
 
 export function toVirtualModulePackageJSONPath(context: string) {
-    return join(context, ...VIRTUAL_MODULE_DIR_SEGMENTS, 'package.json')
+  return join(context, ...VIRTUAL_MODULE_DIR_SEGMENTS, 'package.json')
 }
 
 function encodeVirtualFilename(id: string) {
-    return Buffer.from(id).toString('base64url')
+  return Buffer.from(id).toString('base64url')
 }
 
 export function toVirtualCSSManifestModulePath(context: string, file: string) {
-    return join(context, ...VIRTUAL_MODULE_DIR_SEGMENTS, `${encodeVirtualFilename(file)}.manifest.js`)
+  return join(context, ...VIRTUAL_MODULE_DIR_SEGMENTS, `${encodeVirtualFilename(file)}.manifest.js`)
 }
 
 export function toVirtualCSSManifestAssetPath(context: string, file: string) {
-    return join(context, ...VIRTUAL_MODULE_DIR_SEGMENTS, `${encodeVirtualFilename(file)}.manifest.json`)
+  return join(context, ...VIRTUAL_MODULE_DIR_SEGMENTS, `${encodeVirtualFilename(file)}.manifest.json`)
 }
 
 export function toVirtualCSSModulePath(context: string) {
-    return join(context, ...VIRTUAL_MODULE_DIR_SEGMENTS, 'master-utilities.css')
+  return join(context, ...VIRTUAL_MODULE_DIR_SEGMENTS, 'master-utilities.css')
 }
 
 export function toVirtualEmittedGlobalsModulePath(context: string) {
-    return join(context, ...VIRTUAL_MODULE_DIR_SEGMENTS, VIRTUAL_EMITTED_GLOBALS_FILE)
+  return join(context, ...VIRTUAL_MODULE_DIR_SEGMENTS, VIRTUAL_EMITTED_GLOBALS_FILE)
 }
 
 function escapeRegExp(source: string) {
-    return source.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+  return source.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 }
 
 export function createVirtualDefaultManifestModulePathPattern() {
-    const source = [...VIRTUAL_MODULE_DIR_SEGMENTS, VIRTUAL_MANIFEST_FILE]
-        .map(escapeRegExp)
-        .join(String.raw`[/\\]`)
-    return new RegExp(String.raw`(?:^|[/\\])${source}$`)
+  const source = [...VIRTUAL_MODULE_DIR_SEGMENTS, VIRTUAL_MANIFEST_FILE]
+    .map(escapeRegExp)
+    .join(String.raw`[/\\]`)
+  return new RegExp(String.raw`(?:^|[/\\])${source}$`)
 }
 
 function ensureVirtualModuleDirectory(dir: string) {
-    mkdirSync(dir, { recursive: true })
-    const packageJSONPath = join(dir, 'package.json')
-    try {
-        if (readFileSync(packageJSONPath, 'utf8') === VIRTUAL_MODULE_PACKAGE_JSON_SOURCE) return dir
-    } catch {
-        // Create the package file below when it does not exist or cannot be read.
-    }
-    writeFileSync(packageJSONPath, VIRTUAL_MODULE_PACKAGE_JSON_SOURCE)
-    return dir
+  mkdirSync(dir, { recursive: true })
+  const packageJSONPath = join(dir, 'package.json')
+  try {
+    if (readFileSync(packageJSONPath, 'utf8') === VIRTUAL_MODULE_PACKAGE_JSON_SOURCE) return dir
+  } catch {
+    // Create the package file below when it does not exist or cannot be read.
+  }
+  writeFileSync(packageJSONPath, VIRTUAL_MODULE_PACKAGE_JSON_SOURCE)
+  return dir
 }
 
 export function ensureVirtualModulePackageJSONPath(projectDir = process.cwd()) {
-    ensureVirtualModuleDirectory(join(projectDir, ...VIRTUAL_MODULE_DIR_SEGMENTS))
-    return toVirtualModulePackageJSONPath(projectDir)
+  ensureVirtualModuleDirectory(join(projectDir, ...VIRTUAL_MODULE_DIR_SEGMENTS))
+  return toVirtualModulePackageJSONPath(projectDir)
 }
 
 export function ensureVirtualModuleFile(file: string, source: string) {
-    ensureVirtualModuleDirectory(dirname(file))
-    try {
-        if (readFileSync(file, 'utf8') === source) return file
-    } catch {
-        // Create the file below when it does not exist or cannot be read.
-    }
-    writeFileSync(file, source)
-    return file
+  ensureVirtualModuleDirectory(dirname(file))
+  try {
+    if (readFileSync(file, 'utf8') === source) return file
+  } catch {
+    // Create the file below when it does not exist or cannot be read.
+  }
+  writeFileSync(file, source)
+  return file
 }
 
 export function ensureVirtualManifestModulePath(projectDir = process.cwd()) {
-    return ensureVirtualModuleFile(toVirtualDefaultManifestModulePath(projectDir), toInlineManifestModule(EMPTY_MANIFEST_JSON))
+  return ensureVirtualModuleFile(toVirtualDefaultManifestModulePath(projectDir), toInlineManifestModule(EMPTY_MANIFEST_JSON))
 }
 
 export function ensureVirtualEmittedGlobalsModulePath(projectDir = process.cwd()) {
-    return ensureVirtualModuleFile(toVirtualEmittedGlobalsModulePath(projectDir), EMPTY_EMITTED_GLOBALS_MODULE)
+  return ensureVirtualModuleFile(toVirtualEmittedGlobalsModulePath(projectDir), EMPTY_EMITTED_GLOBALS_MODULE)
 }

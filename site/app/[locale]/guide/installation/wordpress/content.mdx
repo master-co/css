@@ -1,124 +1,124 @@
 Use Vite runtime rendering when WordPress owns the PHP template lifecycle. WordPress renders the theme, while the Vite-built Master CSS runtime generates class rules in the browser for theme and plugin output.
 
 <StepSection>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Open your theme
-            Start from a theme directory inside your WordPress installation.
-        </StepL>
-        <StepR>
-            ```bash name=Terminal
-            cd wp-content/themes/my-theme
-            npm init -y
-            ```
-        </StepR>
-    </Step>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Install Vite and Master CSS
-            Install Vite and the Master CSS Vite integration in the theme.
-        </StepL>
-        <StepR>
-            ```bash name=Terminal
-            npm install -D vite @master/css.vite@rc
-            ```
-        </StepR>
-    </Step>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Configure Vite
-            Build the runtime entry and base stylesheet into the theme `assets` directory.
-        </StepL>
-        <StepR>
-            ```ts name=vite.config.ts
-            import { defineConfig } from 'vite'
-            import masterCSS from '@master/css.vite'
+  <Step $row>
+    <StepL>
+      ### <StepNum />Open your theme
+      Start from a theme directory inside your WordPress installation.
+    </StepL>
+    <StepR>
+      ```bash name=Terminal
+      cd wp-content/themes/my-theme
+      npm init -y
+      ```
+    </StepR>
+  </Step>
+  <Step $row>
+    <StepL>
+      ### <StepNum />Install Vite and Master CSS
+      Install Vite and the Master CSS Vite integration in the theme.
+    </StepL>
+    <StepR>
+      ```bash name=Terminal
+      npm install -D vite @master/css.vite@rc
+      ```
+    </StepR>
+  </Step>
+  <Step $row>
+    <StepL>
+      ### <StepNum />Configure Vite
+      Build the runtime entry and base stylesheet into the theme `assets` directory.
+    </StepL>
+    <StepR>
+      ```ts name=vite.config.ts
+      import { defineConfig } from 'vite'
+      import masterCSS from '@master/css.vite'
 
-            export default defineConfig({
-                plugins: [
-                    masterCSS({ mode: 'runtime', injectRuntime: false })
-                ],
-                build: {
-                    outDir: '.',
-                    emptyOutDir: false,
-                    rollupOptions: {
-                        input: 'resources/master.ts',
-                        output: {
-                            entryFileNames: 'assets/master.js',
-                            assetFileNames: 'assets/[name][extname]'
-                        }
-                    }
-                }
-            })
-            ```
-        </StepR>
-    </Step>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Create the asset entry
-            Import the Vite-managed runtime and the Master CSS stylesheet.
-        </StepL>
-        <StepR>
-            ```ts name=resources/master.ts
-            import '@master/css.vite/runtime'
-            import './master.css'
-            ```
+      export default defineConfig({
+        plugins: [
+          masterCSS({ mode: 'runtime', injectRuntime: false })
+        ],
+        build: {
+          outDir: '.',
+          emptyOutDir: false,
+          rollupOptions: {
+            input: 'resources/master.ts',
+            output: {
+              entryFileNames: 'assets/master.js',
+              assetFileNames: 'assets/[name][extname]'
+            }
+          }
+        }
+      })
+      ```
+    </StepR>
+  </Step>
+  <Step $row>
+    <StepL>
+      ### <StepNum />Create the asset entry
+      Import the Vite-managed runtime and the Master CSS stylesheet.
+    </StepL>
+    <StepR>
+      ```ts name=resources/master.ts
+      import '@master/css.vite/runtime'
+      import './master.css'
+      ```
 
-            ```css name=resources/master.css
-            @import "@master/css";
-            ```
-        </StepR>
-    </Step>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Enqueue the assets
-            Load the generated stylesheet and runtime script from `functions.php`.
-        </StepL>
-        <StepR>
-            ```php name=functions.php
-            add_action('wp_enqueue_scripts', function () {
-                $theme_dir = get_template_directory();
-                $theme_uri = get_template_directory_uri();
+      ```css name=resources/master.css
+      @import "@master/css";
+      ```
+    </StepR>
+  </Step>
+  <Step $row>
+    <StepL>
+      ### <StepNum />Enqueue the assets
+      Load the generated stylesheet and runtime script from `functions.php`.
+    </StepL>
+    <StepR>
+      ```php name=functions.php
+      add_action('wp_enqueue_scripts', function () {
+        $theme_dir = get_template_directory();
+        $theme_uri = get_template_directory_uri();
 
-                wp_enqueue_style(
-                    'master-css',
-                    $theme_uri . '/assets/master.css',
-                    [],
-                    filemtime($theme_dir . '/assets/master.css')
-                );
+        wp_enqueue_style(
+          'master-css',
+          $theme_uri . '/assets/master.css',
+          [],
+          filemtime($theme_dir . '/assets/master.css')
+        );
 
-                wp_enqueue_script(
-                    'master-css-runtime',
-                    $theme_uri . '/assets/master.js',
-                    [],
-                    filemtime($theme_dir . '/assets/master.js'),
-                    true
-                );
-            });
-            ```
-        </StepR>
-    </Step>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Prevent unstyled first paint
-            Add `hidden` to the root document in the theme header so the runtime can reveal the page after it starts.
-        </StepL>
-        <StepR>
-            ```php name=header.php
-            <html <?php language_attributes(); ?> hidden>
-            ```
-        </StepR>
-    </Step>
-    <Step>
-        ### <StepNum />Hello world
-        Now style your first PHP template using Master CSS syntax.
-    </Step>
-    <HelloWorld url="localhost" />
+        wp_enqueue_script(
+          'master-css-runtime',
+          $theme_uri . '/assets/master.js',
+          [],
+          filemtime($theme_dir . '/assets/master.js'),
+          true
+        );
+      });
+      ```
+    </StepR>
+  </Step>
+  <Step $row>
+    <StepL>
+      ### <StepNum />Prevent unstyled first paint
+      Add `hidden` to the root document in the theme header so the runtime can reveal the page after it starts.
+    </StepL>
+    <StepR>
+      ```php name=header.php
+      <html <?php language_attributes(); ?> hidden>
+      ```
+    </StepR>
+  </Step>
+  <Step>
+    ### <StepNum />Hello world
+    Now style your first PHP template using Master CSS syntax.
+  </Step>
+  <HelloWorld url="localhost" />
 </StepSection>
 
 ```html name=index.php
 <h1 class="m:2xl italic font:5xl font:heavy text:neutral">
-    Hello World
+  Hello World
 </h1>
 ```
 

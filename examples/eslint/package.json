@@ -1,17 +1,17 @@
 {
-    "name": "master-css-eslint-example",
-    "type": "module",
-    "scripts": {
-        "lint": "eslint"
-    },
-    "devDependencies": {
-        "@angular-eslint/template-parser": "^21.4.0",
-        "@master/eslint-config-css": "workspace:^",
-        "@master/eslint-plugin-css": "workspace:^",
-        "@master/styled.react": "^2.0.6",
-        "@typescript-eslint/parser": "^8.61.1",
-        "clsx": "^2.1.1",
-        "eslint": "^10.5.0",
-        "eslint-plugin-mdx": "^3.8.1"
-    }
+  "name": "master-css-eslint-example",
+  "type": "module",
+  "scripts": {
+    "lint": "eslint"
+  },
+  "devDependencies": {
+    "@angular-eslint/template-parser": "^21.4.0",
+    "@master/eslint-config-css": "workspace:^",
+    "@master/eslint-plugin-css": "workspace:^",
+    "@master/styled.react": "^2.0.6",
+    "@typescript-eslint/parser": "^8.61.1",
+    "clsx": "^2.1.1",
+    "eslint": "^10.5.0",
+    "eslint-plugin-mdx": "^3.8.1"
+  }
 }

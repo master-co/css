@@ -4,15 +4,15 @@ import type { ColorPresentationParams, ColorPresentation } from 'vscode-language
 import convertColorByToken from '../utils/convert-color-token'
 
 export default function editSyntaxColors(
-    this: CSSLanguageService,
-    document: TextDocument,
-    color: ColorPresentationParams['color'],
-    range: ColorPresentationParams['range']
+  this: CSSLanguageService,
+  document: TextDocument,
+  color: ColorPresentationParams['color'],
+  range: ColorPresentationParams['range']
 ) {
-    const colorPresentations: ColorPresentation[] = []
-    const selectedColorToken = document.getText(range)
-    const targetColorToken = convertColorByToken(color, selectedColorToken, this.css)
-    if (targetColorToken)
-        colorPresentations.push({ label: targetColorToken, textEdit: { range, newText: targetColorToken } })
-    return colorPresentations
+  const colorPresentations: ColorPresentation[] = []
+  const selectedColorToken = document.getText(range)
+  const targetColorToken = convertColorByToken(color, selectedColorToken, this.css)
+  if (targetColorToken)
+    colorPresentations.push({ label: targetColorToken, textEdit: { range, newText: targetColorToken } })
+  return colorPresentations
 }

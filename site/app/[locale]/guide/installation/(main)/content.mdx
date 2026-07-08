@@ -4,46 +4,46 @@ import Footer from './footer.mdx'
 Add Master CSS to an existing project with the installer. It detects common frameworks, applies the matching setup, and can install the required packages.
 
 <StepSection>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Create a project
-            Start from a Vite project when you do not have an app yet.
-        </StepL>
-        <StepR>
-            ```bash name=Terminal
-            npm create vite@latest my-app
-            cd my-app
-            ```
-        </StepR>
-    </Step>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Add Master CSS
-            Run the installer from the project root. It updates the project setup and installs the packages with the detected package manager.
-        </StepL>
-        <StepR>
-            ```bash name=Terminal
-            npm create @master/css@rc -- --yes
-            ```
-        </StepR>
-    </Step>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Run and style
-            Start the dev server, then use Master CSS classes in your markup.
-        </StepL>
-        <StepR>
-            ```bash name=Terminal&action=run
-            dev
-            ```
-        </StepR>
-    </Step>
-    <HelloWorld url="localhost:5173" />
+  <Step $row>
+    <StepL>
+      ### <StepNum />Create a project
+      Start from a Vite project when you do not have an app yet.
+    </StepL>
+    <StepR>
+      ```bash name=Terminal
+      npm create vite@latest my-app
+      cd my-app
+      ```
+    </StepR>
+  </Step>
+  <Step $row>
+    <StepL>
+      ### <StepNum />Add Master CSS
+      Run the installer from the project root. It updates the project setup and installs the packages with the detected package manager.
+    </StepL>
+    <StepR>
+      ```bash name=Terminal
+      npm create @master/css@rc -- --yes
+      ```
+    </StepR>
+  </Step>
+  <Step $row>
+    <StepL>
+      ### <StepNum />Run and style
+      Start the dev server, then use Master CSS classes in your markup.
+    </StepL>
+    <StepR>
+      ```bash name=Terminal&action=run
+      dev
+      ```
+    </StepR>
+  </Step>
+  <HelloWorld url="localhost:5173" />
 </StepSection>
 
 ```html name=index.html
 <h1 class="m:2xl italic font:5xl font:heavy text:neutral">
-    Hello World
+  Hello World
 </h1>
 ```
 

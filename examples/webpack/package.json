@@ -1,25 +1,25 @@
 {
-    "name": "master-css-webpack-example",
-    "private": true,
-    "version": "1.0.0",
-    "type": "module",
-    "description": "",
-    "main": "index.js",
-    "scripts": {
-        "dev": "webpack serve --config webpack.config.js --mode development",
-        "build": "webpack --config webpack.config.js --mode production"
-    },
-    "keywords": [],
-    "author": "",
-    "license": "ISC",
-    "devDependencies": {
-        "@master/css": "workspace:^",
-        "@master/css.webpack": "workspace:^",
-        "css-loader": "^7.1.4",
-        "html-webpack-plugin": "^5.6.7",
-        "style-loader": "^4.0.0",
-        "webpack": "^5.107.2",
-        "webpack-cli": "^7.0.3",
-        "webpack-dev-server": "^5.2.5"
-    }
+  "name": "master-css-webpack-example",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "webpack serve --config webpack.config.js --mode development",
+    "build": "webpack --config webpack.config.js --mode production"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@master/css": "workspace:^",
+    "@master/css.webpack": "workspace:^",
+    "css-loader": "^7.1.4",
+    "html-webpack-plugin": "^5.6.7",
+    "style-loader": "^4.0.0",
+    "webpack": "^5.107.2",
+    "webpack-cli": "^7.0.3",
+    "webpack-dev-server": "^5.2.5"
+  }
 }

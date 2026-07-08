@@ -1,88 +1,88 @@
 {
-    "name": "@master/css-integration",
-    "type": "module",
-    "scripts": {
-        "build": "tsdown --config ../../shared/tsdown-package.config.ts",
-        "dev": "tsdown --config ../../shared/tsdown-package.config.ts --watch",
-        "type-check": "tsc -b tsconfig.typecheck.json",
-        "lint": "eslint",
-        "test": "vitest"
+  "name": "@master/css-integration",
+  "type": "module",
+  "scripts": {
+    "build": "tsdown --config ../../shared/tsdown-package.config.ts",
+    "dev": "tsdown --config ../../shared/tsdown-package.config.ts --watch",
+    "type-check": "tsc -b tsconfig.typecheck.json",
+    "lint": "eslint",
+    "test": "vitest"
+  },
+  "license": "MIT",
+  "description": "Shared Master CSS integration contracts, virtual module protocols, and build helpers.",
+  "author": "Aoyue Design LLC.",
+  "funding": "https://rc.css.master.co/sponsor",
+  "homepage": "https://css.master.co",
+  "bugs": {
+    "url": "https://github.com/master-co/css/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/master-co/css.git",
+    "directory": "packages/integration"
+  },
+  "keywords": [
+    "integration",
+    "virtual-module",
+    "css",
+    "mastercss"
+  ],
+  "sideEffects": false,
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "jsnext:main": "./dist/index.js",
+  "esnext": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
     },
-    "license": "MIT",
-    "description": "Shared Master CSS integration contracts, virtual module protocols, and build helpers.",
-    "author": "Aoyue Design LLC.",
-    "funding": "https://rc.css.master.co/sponsor",
-    "homepage": "https://css.master.co",
-    "bugs": {
-        "url": "https://github.com/master-co/css/issues"
+    "./client": {
+      "types": "./client.d.ts"
     },
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/master-co/css.git",
-        "directory": "packages/integration"
+    "./module": {
+      "types": "./dist/module.d.ts",
+      "import": "./dist/module.js",
+      "default": "./dist/module.js"
     },
-    "keywords": [
-        "integration",
-        "virtual-module",
-        "css",
-        "mastercss"
-    ],
-    "sideEffects": false,
-    "main": "./dist/index.js",
-    "module": "./dist/index.js",
-    "jsnext:main": "./dist/index.js",
-    "esnext": "./dist/index.js",
-    "types": "./dist/index.d.ts",
-    "exports": {
-        ".": {
-            "types": "./dist/index.d.ts",
-            "import": "./dist/index.js",
-            "default": "./dist/index.js"
-        },
-        "./client": {
-            "types": "./client.d.ts"
-        },
-        "./module": {
-            "types": "./dist/module.d.ts",
-            "import": "./dist/module.js",
-            "default": "./dist/module.js"
-        },
-        "./manifest-module": {
-            "types": "./dist/manifest-module.d.ts",
-            "import": "./dist/manifest-module.js",
-            "default": "./dist/manifest-module.js"
-        },
-        "./manifest-facade": {
-            "types": "./dist/manifest-facade.d.ts",
-            "import": "./dist/manifest-facade.js",
-            "default": "./dist/manifest-facade.js"
-        },
-        "./style-module": {
-            "types": "./dist/style-module.d.ts",
-            "import": "./dist/style-module.js",
-            "default": "./dist/style-module.js"
-        },
-        "./emitted-globals-module": {
-            "types": "./dist/emitted-globals-module.d.ts",
-            "import": "./dist/emitted-globals-module.js",
-            "default": "./dist/emitted-globals-module.js"
-        },
-        "./node": {
-            "types": "./dist/node.d.ts",
-            "import": "./dist/node.js",
-            "default": "./dist/node.js"
-        }
+    "./manifest-module": {
+      "types": "./dist/manifest-module.d.ts",
+      "import": "./dist/manifest-module.js",
+      "default": "./dist/manifest-module.js"
     },
-    "files": [
-        "client.d.ts",
-        "dist"
-    ],
-    "publishConfig": {
-        "access": "public",
-        "provenance": true
+    "./manifest-facade": {
+      "types": "./dist/manifest-facade.d.ts",
+      "import": "./dist/manifest-facade.js",
+      "default": "./dist/manifest-facade.js"
     },
-    "dependencies": {
-        "@master/css-engine": "workspace:^",
-        "@master/css-schema": "workspace:^"
+    "./style-module": {
+      "types": "./dist/style-module.d.ts",
+      "import": "./dist/style-module.js",
+      "default": "./dist/style-module.js"
+    },
+    "./emitted-globals-module": {
+      "types": "./dist/emitted-globals-module.d.ts",
+      "import": "./dist/emitted-globals-module.js",
+      "default": "./dist/emitted-globals-module.js"
+    },
+    "./node": {
+      "types": "./dist/node.d.ts",
+      "import": "./dist/node.js",
+      "default": "./dist/node.js"
     }
+  },
+  "files": [
+    "client.d.ts",
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "dependencies": {
+    "@master/css-engine": "workspace:^",
+    "@master/css-schema": "workspace:^"
+  }
 }

@@ -5,20 +5,20 @@ import HTML from 'internal/layouts/html'
 import dictionaries from '~/site/dictionaries'
 
 export async function generateStaticParams() {
-    return i18n.locales.map((locale) => ({ locale }))
+  return i18n.locales.map((locale) => ({ locale }))
 }
 
 export default async function Layout({ children, params }: {
-    children: React.ReactNode,
-    params: Promise<{ locale: typeof i18n.locales[number] }>
+  children: React.ReactNode,
+  params: Promise<{ locale: typeof i18n.locales[number] }>
 }) {
-    const { locale } = await params
-    const translations = await importTranslations(locale, dictionaries)
-    return (
-        <HTML locale={locale}>
-            <RootClient locale={locale} translations={translations}>
-                {children}
-            </RootClient>
-        </HTML>
-    )
+  const { locale } = await params
+  const translations = await importTranslations(locale, dictionaries)
+  return (
+    <HTML locale={locale}>
+      <RootClient locale={locale} translations={translations}>
+        {children}
+      </RootClient>
+    </HTML>
+  )
 }

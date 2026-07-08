@@ -5,28 +5,28 @@ import tsParser from '@typescript-eslint/parser'
 import { flat } from 'eslint-plugin-mdx'
 
 export default defineConfig([
-    {
-        files: ['**/*.html'],
-        languageOptions: {
-            parser: htmlParser
-        }
-    },
-    {
-        files: ['**/*.{ts,tsx}'],
-        languageOptions: {
-            parser: tsParser
-        }
-    },
-    flat,
-    ...css,
-    {
-        rules: {
-            '@master/css/no-invalid-classes': ['error', {
-                disallowUnknownClass: true
-            }]
-        },
-        settings: {
-            'mdx/code-blocks': true
-        }
+  {
+    files: ['**/*.html'],
+    languageOptions: {
+      parser: htmlParser
     }
+  },
+  {
+    files: ['**/*.{ts,tsx}'],
+    languageOptions: {
+      parser: tsParser
+    }
+  },
+  flat,
+  ...css,
+  {
+    rules: {
+      '@master/css/no-invalid-classes': ['error', {
+        disallowUnknownClass: true
+      }]
+    },
+    settings: {
+      'mdx/code-blocks': true
+    }
+  }
 ])

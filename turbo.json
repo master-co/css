@@ -1,60 +1,60 @@
 {
-    "$schema": "https://turbo.build/schema.json",
-    "globalDependencies": [
-        "pnpm-lock.yaml",
-        "pnpm-workspace.yaml",
-        "tsconfig.json"
-    ],
-    "tasks": {
-        "build": {
-            "dependsOn": [
-                "^build"
-            ],
-            "outputLogs": "new-only",
-            "outputs": [
-                "dist/**",
-                "out/**",
-                ".next/**",
-                ".nuxt/**",
-                ".output/**",
-                ".svelte-kit/**",
-                ".vercel/**",
-                ".angular/**",
-                "data/**"
-            ]
-        },
-        "test": {
-            "dependsOn": [
-                "build",
-                "^build"
-            ],
-            "outputLogs": "new-only",
-            "outputs": []
-        },
-        "lint": {
-            "dependsOn": [
-                "build",
-                "^build"
-            ],
-            "outputLogs": "new-only",
-            "outputs": []
-        },
-        "type-check": {
-            "dependsOn": [
-                "^type-check"
-            ],
-            "outputLogs": "new-only",
-            "outputs": [
-                ".tsbuild/**"
-            ]
-        },
-        "e2e": {
-            "dependsOn": [
-                "build",
-                "^build"
-            ],
-            "outputLogs": "new-only",
-            "cache": false
-        }
+  "$schema": "https://turbo.build/schema.json",
+  "globalDependencies": [
+    "pnpm-lock.yaml",
+    "pnpm-workspace.yaml",
+    "tsconfig.json"
+  ],
+  "tasks": {
+    "build": {
+      "dependsOn": [
+        "^build"
+      ],
+      "outputLogs": "new-only",
+      "outputs": [
+        "dist/**",
+        "out/**",
+        ".next/**",
+        ".nuxt/**",
+        ".output/**",
+        ".svelte-kit/**",
+        ".vercel/**",
+        ".angular/**",
+        "data/**"
+      ]
+    },
+    "test": {
+      "dependsOn": [
+        "build",
+        "^build"
+      ],
+      "outputLogs": "new-only",
+      "outputs": []
+    },
+    "lint": {
+      "dependsOn": [
+        "build",
+        "^build"
+      ],
+      "outputLogs": "new-only",
+      "outputs": []
+    },
+    "type-check": {
+      "dependsOn": [
+        "^type-check"
+      ],
+      "outputLogs": "new-only",
+      "outputs": [
+        ".tsbuild/**"
+      ]
+    },
+    "e2e": {
+      "dependsOn": [
+        "build",
+        "^build"
+      ],
+      "outputLogs": "new-only",
+      "cache": false
     }
+  }
 }

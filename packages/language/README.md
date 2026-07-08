@@ -2,13 +2,13 @@
 <div align="center">
 
 <p align="center">
-    <a href="https://css.master.co">
-        <picture>
-            <source media="(prefers-color-scheme: dark)" srcset="https://user-images.githubusercontent.com/33840671/201701649-3bb7d698-abec-4d5f-ac30-ccc4d7bafcd4.svg">
-            <source media="(prefers-color-scheme: light)" srcset="https://user-images.githubusercontent.com/33840671/201703010-77bf2373-9899-40cc-98f5-30cf9b546941.svg">
-            <img alt="Master CSS" src="https://user-images.githubusercontent.com/33840671/201703010-77bf2373-9899-40cc-98f5-30cf9b546941.svg" width="100%">
-        </picture>
-    </a>
+  <a href="https://css.master.co">
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="https://user-images.githubusercontent.com/33840671/201701649-3bb7d698-abec-4d5f-ac30-ccc4d7bafcd4.svg">
+      <source media="(prefers-color-scheme: light)" srcset="https://user-images.githubusercontent.com/33840671/201703010-77bf2373-9899-40cc-98f5-30cf9b546941.svg">
+      <img alt="Master CSS" src="https://user-images.githubusercontent.com/33840671/201703010-77bf2373-9899-40cc-98f5-30cf9b546941.svg" width="100%">
+    </picture>
+  </a>
 </p>
 <p align="center">Language primitives for Master CSS</p>
 
@@ -36,8 +36,8 @@ Use the browser subpath when a web editor needs Master CSS semantic tokens witho
 
 ```ts
 import {
-    SEMANTIC_TOKENS_LEGEND,
-    renderBrowserSemanticTokens
+  SEMANTIC_TOKENS_LEGEND,
+  renderBrowserSemanticTokens
 } from '@master/css-language/browser'
 
 const semanticTokens = renderBrowserSemanticTokens(source, 'html', { manifest })
@@ -51,8 +51,8 @@ Use the Shiki subpath to register the shared TextMate injection grammar and deco
 
 ```ts
 import {
-    masterCSSShikiLanguage,
-    transformerMasterCSS
+  masterCSSShikiLanguage,
+  transformerMasterCSS
 } from '@master/css-language/shiki'
 ```
 
@@ -72,8 +72,8 @@ Use `formatMasterCSSDirectives()` when an editor integration needs source-offset
 
 ```ts
 import {
-    applyMasterCSSDirectiveFormatEdits,
-    formatMasterCSSDirectives
+  applyMasterCSSDirectiveFormatEdits,
+  formatMasterCSSDirectives
 } from '@master/css-language'
 
 const edits = formatMasterCSSDirectives(source)

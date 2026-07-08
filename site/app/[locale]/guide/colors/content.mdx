@@ -33,11 +33,11 @@ Start with the kind of decision you are making. Most app chrome should use roles
 ```html
 <!-- @MARK bg:surface-base --><!-- @MARK text:body --><!-- @MARK surface:raised --><!-- @MARK b:1px|solid|base --><!-- @MARK text:strong --><!-- @MARK text:muted --><!-- @MARK text:link -->
 <main class="bg:surface-base text:body">
-    <section class="b:1px|solid|base surface:raised">
-        <h2 class="text:strong">Project updates</h2>
-        <p class="text:muted">Three milestones changed this week.</p>
-        <a class="text:link" href="#">Continue</a>
-    </section>
+  <section class="b:1px|solid|base surface:raised">
+    <h2 class="text:strong">Project updates</h2>
+    <p class="text:muted">Three milestones changed this week.</p>
+    <a class="text:link" href="#">Continue</a>
+  </section>
 </main>
 ```
 
@@ -86,11 +86,11 @@ Text roles are for foreground hierarchy and interaction states. Prefer these rol
 ```html
 <!-- @MARK text:body --><!-- @MARK text:strong --><!-- @MARK text:muted --><!-- @MARK text:disabled --><!-- @MARK text:link --><!-- @MARK text:link-hover --><!-- @MARK text:inverse -->
 <article class="text:body">
-    <h2 class="text:strong">Quarterly report</h2>
-    <p class="text:muted">Updated 12 minutes ago</p>
-    <button class="text:disabled" disabled>Archive</button>
-    <a class="text:link text:link-hover:hover" href="#">Open report</a>
-    <span class="surface:inverse text:inverse">Private</span>
+  <h2 class="text:strong">Quarterly report</h2>
+  <p class="text:muted">Updated 12 minutes ago</p>
+  <button class="text:disabled" disabled>Archive</button>
+  <a class="text:link text:link-hover:hover" href="#">Open report</a>
+  <span class="surface:inverse text:inverse">Private</span>
 </article>
 ```
 
@@ -133,28 +133,28 @@ Override preset role tokens when a repeated UI decision needs product-specific c
 
 ```css name=index.css
 @theme light {
-    --color-surface-base: $color-white;
-    --color-surface-raised: $color-white;
-    --color-line-base: oklch(0% 0 none / 0.12);
-    --color-text-body: $color-neutral-70;
-    --color-text-muted: $color-neutral-60;
+  --color-surface-base: $color-white;
+  --color-surface-raised: $color-white;
+  --color-line-base: oklch(0% 0 none / 0.12);
+  --color-text-body: $color-neutral-70;
+  --color-text-muted: $color-neutral-60;
 }
 
 @theme dark {
-    --color-surface-base: $color-gray-95;
-    --color-surface-raised: $color-gray-90;
-    --color-line-base: oklch(100% 0 none / 0.12);
-    --color-text-body: $color-gray-30;
-    --color-text-muted: $color-gray-40;
+  --color-surface-base: $color-gray-95;
+  --color-surface-raised: $color-gray-90;
+  --color-line-base: oklch(100% 0 none / 0.12);
+  --color-text-body: $color-gray-30;
+  --color-text-muted: $color-gray-40;
 }
 ```
 
 ```html
 <!-- @MARK bg:surface-base --><!-- @MARK text:body --><!-- @MARK surface:raised --><!-- @MARK b:1px|solid|base --><!-- @MARK text:muted -->
 <main class="bg:surface-base text:body">
-    <section class="b:1px|solid|base surface:raised">
-        <p class="text:muted">The classes stay the same in every mode.</p>
-    </section>
+  <section class="b:1px|solid|base surface:raised">
+    <p class="text:muted">The classes stay the same in every mode.</p>
+  </section>
 </main>
 ```
 

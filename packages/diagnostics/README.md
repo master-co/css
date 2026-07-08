@@ -12,10 +12,10 @@ It does not own class lint policy. Use `@master/css-lint` for class-list diagnos
 import { createMasterCSSInspectionReport } from '@master/css-diagnostics'
 
 const report = await createMasterCSSInspectionReport({
-    cwd: process.cwd(),
-    patterns: ['src/**/*.{html,tsx}'],
-    classes: ['btn', 'card'],
-    includeCss: false
+  cwd: process.cwd(),
+  patterns: ['src/**/*.{html,tsx}'],
+  classes: ['btn', 'card'],
+  includeCss: false
 })
 ```
 

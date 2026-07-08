@@ -5,12 +5,12 @@ import dictionaries from '~/site/dictionaries'
 import categories from '~/site/.categories/reference.json'
 
 export const { Page, dynamic, revalidate, generateMetadata } = createPage({
-    metadata,
-    dictionaries,
-    categories,
-    noTOC: true,
-    content: import('./content.mdx'),
-    Layout,
+  metadata,
+  dictionaries,
+  categories,
+  noTOC: true,
+  content: import('./content.mdx'),
+  Layout,
 })
 
 export default Page

@@ -7,20 +7,20 @@ import { createCSSWithNativeDeclarations } from './native-declaration'
  * @argument css a Master CSS instance
  */
 export default function generateValidRules(
-    syntax: string,
-    css = createCSSWithNativeDeclarations(defaultManifest)
+  syntax: string,
+  css = createCSSWithNativeDeclarations(defaultManifest)
 ) {
-    const rules = css.generate(syntax)
-    if (rules.length) {
-        for (const eachRule of rules) {
-            if (validateCSS(eachRule.text).length) {
-                return []
-            } else {
-                continue
-            }
-        }
-        return rules
-    } else {
+  const rules = css.generate(syntax)
+  if (rules.length) {
+    for (const eachRule of rules) {
+      if (validateCSS(eachRule.text).length) {
         return []
+      } else {
+        continue
+      }
     }
+    return rules
+  } else {
+    return []
+  }
 }

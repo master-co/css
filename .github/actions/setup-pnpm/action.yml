@@ -1,50 +1,50 @@
 name: Setup pnpm workspace
 description: Configure pnpm and Node.js, fetch submodules, and install dependencies.
 inputs:
-    node-version:
-        description: Node.js version to install.
-        default: "24"
-    install:
-        description: Whether to run pnpm install.
-        default: "true"
-    frozen-lockfile:
-        description: Whether to install with --frozen-lockfile.
-        default: "true"
-    submodules:
-        description: Whether to fetch repository submodules.
-        default: "true"
-    submodules-token:
-        description: Token used by pnpm submodules to fetch private submodules.
-        default: ""
-    turbo-cache:
-        description: Whether to restore and save the local Turbo cache.
-        default: "true"
+  node-version:
+    description: Node.js version to install.
+    default: "24"
+  install:
+    description: Whether to run pnpm install.
+    default: "true"
+  frozen-lockfile:
+    description: Whether to install with --frozen-lockfile.
+    default: "true"
+  submodules:
+    description: Whether to fetch repository submodules.
+    default: "true"
+  submodules-token:
+    description: Token used by pnpm submodules to fetch private submodules.
+    default: ""
+  turbo-cache:
+    description: Whether to restore and save the local Turbo cache.
+    default: "true"
 runs:
-    using: composite
-    steps:
-        - uses: pnpm/action-setup@v6
-          with:
-              version: 11.9.0
-        - uses: actions/setup-node@v6
-          with:
-              node-version: ${{ inputs.node-version }}
-              cache: pnpm
-        - if: ${{ inputs.turbo-cache == 'true' }}
-          uses: actions/cache@v6
-          with:
-              path: .turbo/cache
-              key: ${{ runner.os }}-turbo-${{ github.ref_name }}-${{ github.sha }}
-              restore-keys: |
-                  ${{ runner.os }}-turbo-${{ github.ref_name }}-
-                  ${{ runner.os }}-turbo-
-        - if: ${{ inputs.submodules == 'true' }}
-          shell: bash
-          run: pnpm submodules
-          env:
-              GITHUB_TOKEN: ${{ inputs.submodules-token }}
-        - if: ${{ inputs.install == 'true' && inputs.frozen-lockfile == 'true' }}
-          shell: bash
-          run: pnpm install --frozen-lockfile
-        - if: ${{ inputs.install == 'true' && inputs.frozen-lockfile != 'true' }}
-          shell: bash
-          run: pnpm install
+  using: composite
+  steps:
+    - uses: pnpm/action-setup@v6
+      with:
+        version: 11.9.0
+    - uses: actions/setup-node@v6
+      with:
+        node-version: ${{ inputs.node-version }}
+        cache: pnpm
+    - if: ${{ inputs.turbo-cache == 'true' }}
+      uses: actions/cache@v6
+      with:
+        path: .turbo/cache
+        key: ${{ runner.os }}-turbo-${{ github.ref_name }}-${{ github.sha }}
+        restore-keys: |
+          ${{ runner.os }}-turbo-${{ github.ref_name }}-
+          ${{ runner.os }}-turbo-
+    - if: ${{ inputs.submodules == 'true' }}
+      shell: bash
+      run: pnpm submodules
+      env:
+        GITHUB_TOKEN: ${{ inputs.submodules-token }}
+    - if: ${{ inputs.install == 'true' && inputs.frozen-lockfile == 'true' }}
+      shell: bash
+      run: pnpm install --frozen-lockfile
+    - if: ${{ inputs.install == 'true' && inputs.frozen-lockfile != 'true' }}
+      shell: bash
+      run: pnpm install

@@ -5,39 +5,39 @@
 ### Block & Inline
 Use `block`, `inline`, and `inline-block` to set the flow of elements.
 <Demo $py={0}>
-    <div className='p:xl bg:float'>
-        <p>
-            Block elements start on a new line and take the available width.
-            <span className="box block! bg:slate-95!@light">
-                `display:block`
-            </span>
-            Inline elements stay in the same text flow and only occupy the space they need.
-            <span className="box inline! my:xs bg:slate-95!@light">
-                `display:inline`
-            </span>
-            Inline-block elements stay inline but can accept box dimensions.
-            <span className="box inline-block! my:xs bg:slate-95!@light">
-                `display:inline-block`
-            </span>
-            Use the display mode that matches the element's role in the flow.
-        </p>
-    </div>
+  <div className='p:xl bg:float'>
+    <p>
+      Block elements start on a new line and take the available width.
+      <span className="box block! bg:slate-95!@light">
+        `display:block`
+      </span>
+      Inline elements stay in the same text flow and only occupy the space they need.
+      <span className="box inline! my:xs bg:slate-95!@light">
+        `display:inline`
+      </span>
+      Inline-block elements stay inline but can accept box dimensions.
+      <span className="box inline-block! my:xs bg:slate-95!@light">
+        `display:inline-block`
+      </span>
+      Use the display mode that matches the element's role in the flow.
+    </p>
+  </div>
 </Demo>
 ```html
 <div>
-    Block elements start on a new line.
-    <span class="block">
-        display:block
-    </span>
-    Inline elements stay in text flow.
-    <span class="inline">
-        display:inline
-    </span>
-    Inline-block elements accept dimensions.
-    <span class="inline-block">
-        display:inline-block
-    </span>
-    Choose the display mode for the layout.
+  Block elements start on a new line.
+  <span class="block">
+    display:block
+  </span>
+  Inline elements stay in text flow.
+  <span class="inline">
+    display:inline
+  </span>
+  Inline-block elements accept dimensions.
+  <span class="inline-block">
+    display:inline-block
+  </span>
+  Choose the display mode for the layout.
 </div>
 ```
 
@@ -46,217 +46,217 @@ import aron from '~/site/public/images/authors/aron.jpg'
 ### Flex
 Use `flex` to create a block-level flex container.
 <Demo>
-    <div className="flex items-center gap:sm p:2x|5x r:10px bg:float">
-        <Image src={aron} alt="avatar" className="h:auto round object-cover" width="64" height="64" />
-        <div>
-            <div className="text:sm font:medium capitalize font:gray-88@dark">aron</div>
-            <p className="m:0 text:13px">CSS needs a revolution</p>
-        </div>
+  <div className="flex items-center gap:sm p:2x|5x r:10px bg:float">
+    <Image src={aron} alt="avatar" className="h:auto round object-cover" width="64" height="64" />
+    <div>
+      <div className="text:sm font:medium capitalize font:gray-88@dark">aron</div>
+      <p className="m:0 text:13px">CSS needs a revolution</p>
     </div>
+  </div>
 </Demo>
 ```html
 <div class="flex items-center gap:sm">
-    <img src="...">
-    <div>
-        <div>aron</div>
-        <p>CSS needs a revolution</p>
-    </div>
+  <img src="...">
+  <div>
+    <div>aron</div>
+    <p>CSS needs a revolution</p>
+  </div>
 </div>
 ```
 
 ### Inline Flex
 Use `inline-flex` to create an inline-level flex container.
 <Demo $py={0}>
-    <div className='p:xl bg:float'>
-        <p className="font:md leading:1.75rem">
-            Inline flex is useful when an inline phrase needs aligned children.
-            The element still participates in text flow while its contents use flex alignment.
-            <span className="box inline-flex! overflow:hidden items-baseline! mx:sm p:0! b:0 bg:slate-95!@light">
-                <Image src={aron} alt="avatar" className="self-end h:auto object-cover" width="24" height="24" />
-                <span className="px:0.625rem text:sm font:medium capitalize font:gray-88@dark">aron</span>
-            </span>
-            This keeps the badge baseline-aligned with the surrounding sentence.
-        </p>
-    </div>
+  <div className='p:xl bg:float'>
+    <p className="font:md leading:1.75rem">
+      Inline flex is useful when an inline phrase needs aligned children.
+      The element still participates in text flow while its contents use flex alignment.
+      <span className="box inline-flex! overflow:hidden items-baseline! mx:sm p:0! b:0 bg:slate-95!@light">
+        <Image src={aron} alt="avatar" className="self-end h:auto object-cover" width="24" height="24" />
+        <span className="px:0.625rem text:sm font:medium capitalize font:gray-88@dark">aron</span>
+      </span>
+      This keeps the badge baseline-aligned with the surrounding sentence.
+    </p>
+  </div>
 </Demo>
 ```html
 <div>
-    Inline flex keeps this badge in the text flow.
-    <div class="inline-flex items-baseline mx:sm">
-        <img src="...">
-        <div>Aron</div>
-    </div>
-    The surrounding sentence continues after it.
+  Inline flex keeps this badge in the text flow.
+  <div class="inline-flex items-baseline mx:sm">
+    <img src="...">
+    <div>Aron</div>
+  </div>
+  The surrounding sentence continues after it.
 </div>
 ```
 
 ### Grid
 Use `grid` to create a block-level grid container.
 <Demo>
-    <div className="w:full">
-        <div className="grid grid-template-columns:repeat(2,auto) gap:sm">
-            <div className="box">01</div>
-            <div className="box">02</div>
-            <div className="box">03</div>
-            <div className="box">04</div>
-        </div>
+  <div className="w:full">
+    <div className="grid grid-template-columns:repeat(2,auto) gap:sm">
+      <div className="box">01</div>
+      <div className="box">02</div>
+      <div className="box">03</div>
+      <div className="box">04</div>
     </div>
+  </div>
 </Demo>
 ```html
 <div class="grid grid-template-columns:repeat(2,auto) gap:sm">
-    <div>01</div>
-    <div>02</div>
-    <div>03</div>
-    <div>04</div>
+  <div>01</div>
+  <div>02</div>
+  <div>03</div>
+  <div>04</div>
 </div>
 ```
 
 ### Inline Grid
 Use `inline-grid` to create a inline-level grid container.
 <Demo>
-    <div className="flex gap:sm w:full">
-        <div className="inline-grid grid-template-columns:repeat(2,auto) gap:sm">
-            <div className="box">01</div>
-            <div className="box">02</div>
-            <div className="box">03</div>
-            <div className="box">04</div>
-        </div>
-        <div className="inline-grid grid-template-columns:repeat(2,auto) gap:sm">
-            <div className="box">01</div>
-            <div className="box">02</div>
-            <div className="box">03</div>
-            <div className="box">04</div>
-        </div>
+  <div className="flex gap:sm w:full">
+    <div className="inline-grid grid-template-columns:repeat(2,auto) gap:sm">
+      <div className="box">01</div>
+      <div className="box">02</div>
+      <div className="box">03</div>
+      <div className="box">04</div>
     </div>
+    <div className="inline-grid grid-template-columns:repeat(2,auto) gap:sm">
+      <div className="box">01</div>
+      <div className="box">02</div>
+      <div className="box">03</div>
+      <div className="box">04</div>
+    </div>
+  </div>
 </Demo>
 ```html
 <div class="inline-grid grid-template-columns:repeat(2,auto) gap:sm">
-    <div>01</div>
-    <div>02</div>
-    <div>03</div>
-    <div>04</div>
+  <div>01</div>
+  <div>02</div>
+  <div>03</div>
+  <div>04</div>
 </div>
 <div class="inline-grid grid-template-columns:repeat(2,auto) gap:sm">
-    <div>01</div>
-    <div>02</div>
-    <div>03</div>
-    <div>04</div>
+  <div>01</div>
+  <div>02</div>
+  <div>03</div>
+  <div>04</div>
 </div>
 ```
 
 ### Table
 Use `table`, `table-row`, `table-column`, `table-cell`, `table-caption`, `table-row-group`, `table-column-group`, `table-header-group`, and `table-footer-group` to create elements that behave like their respective table elements.
 <Demo>
-    <div className="table overflow:hidden w:80% b:1px|solid|slate-90 r:10px p:5x|1.875rem_:where(div)">
-        <div className="table-caption font:bold text-center">Orders</div>
-        <div className="table-header-group font:bold bg:gray-90">
-            <div className="table-row">
-                <div className="table-cell">Product</div>
-                <div className="table-cell text-center">Qty</div>
-                <div className="table-cell text-center">Price</div>
-            </div>
-        </div>
-        <div className="table-row-group bb:1px|solid|slate-90_:where(div) bg:slate-99">
-            <div className="table-row">
-                <div className="table-cell">Milk</div>
-                <div className="table-cell text-center">2</div>
-                <div className="table-cell text-center">10.00</div>
-            </div>
-            <div className="table-row">
-                <div className="table-cell">Cola</div>
-                <div className="table-cell text-center">3</div>
-                <div className="table-cell text-center">12.00</div>
-            </div>
-            <div className="table-row">
-                <div className="table-cell">Juice</div>
-                <div className="table-cell text-center">5</div>
-                <div className="table-cell text-center">18.00</div>
-            </div>
-        </div>
-        <div className="table-footer-group font:bold bg:gray-90">
-            <div className="table-row">
-                <div className="table-cell">Total</div>
-                <div className="table-cell text-center">10</div>
-                <div className="table-cell text-center">40.00</div>
-            </div>
-        </div>
+  <div className="table overflow:hidden w:80% b:1px|solid|slate-90 r:10px p:5x|1.875rem_:where(div)">
+    <div className="table-caption font:bold text-center">Orders</div>
+    <div className="table-header-group font:bold bg:gray-90">
+      <div className="table-row">
+        <div className="table-cell">Product</div>
+        <div className="table-cell text-center">Qty</div>
+        <div className="table-cell text-center">Price</div>
+      </div>
     </div>
+    <div className="table-row-group bb:1px|solid|slate-90_:where(div) bg:slate-99">
+      <div className="table-row">
+        <div className="table-cell">Milk</div>
+        <div className="table-cell text-center">2</div>
+        <div className="table-cell text-center">10.00</div>
+      </div>
+      <div className="table-row">
+        <div className="table-cell">Cola</div>
+        <div className="table-cell text-center">3</div>
+        <div className="table-cell text-center">12.00</div>
+      </div>
+      <div className="table-row">
+        <div className="table-cell">Juice</div>
+        <div className="table-cell text-center">5</div>
+        <div className="table-cell text-center">18.00</div>
+      </div>
+    </div>
+    <div className="table-footer-group font:bold bg:gray-90">
+      <div className="table-row">
+        <div className="table-cell">Total</div>
+        <div className="table-cell text-center">10</div>
+        <div className="table-cell text-center">40.00</div>
+      </div>
+    </div>
+  </div>
 </Demo>
 ```html
 <div class="table">
-    <div class="table-caption">Orders</div>
-    <div class="table-header-group bg:gray-90">
-        <div class="table-row">
-            <div class="table-cell">Product</div>
-            <div class="table-cell">Qty</div>
-            <div class="table-cell">Price</div>
-        </div>
+  <div class="table-caption">Orders</div>
+  <div class="table-header-group bg:gray-90">
+    <div class="table-row">
+      <div class="table-cell">Product</div>
+      <div class="table-cell">Qty</div>
+      <div class="table-cell">Price</div>
     </div>
-    <div class="table-row-group">
-        <div class="table-row">
-            <div class="table-cell">Milk</div>
-            <div class="table-cell">2</div>
-            <div class="table-cell">10.00</div>
-        </div>
-        <div class="table-row">
-            <div class="table-cell">Cola</div>
-            <div class="table-cell">3</div>
-            <div class="table-cell">12.00</div>
-        </div>
-        <div class="table-row">
-            <div class="table-cell">Juice</div>
-            <div class="table-cell">5</div>
-            <div class="table-cell">18.00</div>
-        </div>
+  </div>
+  <div class="table-row-group">
+    <div class="table-row">
+      <div class="table-cell">Milk</div>
+      <div class="table-cell">2</div>
+      <div class="table-cell">10.00</div>
     </div>
-    <div class="table-footer-group bg:gray-90">
-        <div class="table-row">
-            <div class="table-cell">Total</div>
-            <div class="table-cell text-center">10</div>
-            <div class="table-cell text-center">40.00</div>
-        </div>
+    <div class="table-row">
+      <div class="table-cell">Cola</div>
+      <div class="table-cell">3</div>
+      <div class="table-cell">12.00</div>
     </div>
+    <div class="table-row">
+      <div class="table-cell">Juice</div>
+      <div class="table-cell">5</div>
+      <div class="table-cell">18.00</div>
+    </div>
+  </div>
+  <div class="table-footer-group bg:gray-90">
+    <div class="table-row">
+      <div class="table-cell">Total</div>
+      <div class="table-cell text-center">10</div>
+      <div class="table-cell text-center">40.00</div>
+    </div>
+  </div>
 </div>
 ```
 
 ### Contents
 Use `contents` to make the element's children behave like direct children of the element's parent, ignoring the element itself.
 <Demo>
-    <div className="flex gap:5x w:full">
-        <div className="box flex:1">01</div>
-        <div className="contents">
-            <div className="box flex:1">02</div>
-            <div className="box flex:1">03</div>
-        </div>
-        <div className="box flex:1">04</div>
+  <div className="flex gap:5x w:full">
+    <div className="box flex:1">01</div>
+    <div className="contents">
+      <div className="box flex:1">02</div>
+      <div className="box flex:1">03</div>
     </div>
+    <div className="box flex:1">04</div>
+  </div>
 </Demo>
 ```html
 <div class="flex gap:5x">
-    <div class="flex:1">01</div>
-    <div class="contents">
-        <div class="flex:1">02</div>
-        <div class="flex:1">03</div>
-    </div>
-    <div class="flex:1">04</div>
+  <div class="flex:1">01</div>
+  <div class="contents">
+    <div class="flex:1">02</div>
+    <div class="flex:1">03</div>
+  </div>
+  <div class="flex:1">04</div>
 </div>
 ```
 
 ### Flow Root
 Use `flow-root` to create a block-level element that establishes a new block formatting context.
 {<Demo $py={0}>
-    <div className="w:full p:xl bg:float">
-        <div className="flow-root w:full bg:stripe-pink">
-            <Image src="/images/blur.png" className="float:left my:0 mr:1.875rem r:lg object-cover" width={160} height={90} alt="Float Image" />
-            <p className="my:0">The paragraph wraps around the floated image because the parent establishes a new formatting context.</p>
-        </div>
-        <p>Use `flow-root` to clear floats.</p>
+  <div className="w:full p:xl bg:float">
+    <div className="flow-root w:full bg:stripe-pink">
+      <Image src="/images/blur.png" className="float:left my:0 mr:1.875rem r:lg object-cover" width={160} height={90} alt="Float Image" />
+      <p className="my:0">The paragraph wraps around the floated image because the parent establishes a new formatting context.</p>
     </div>
+    <p>Use `flow-root` to clear floats.</p>
+  </div>
 </Demo>}
 ```html
 <div class="flow-root">
-    <img class="float:left" .../>
-    <p>The paragraph wraps around the floated image.</p>
+  <img class="float:left" .../>
+  <p>The paragraph wraps around the floated image.</p>
 </div>
 Use flow-root to clear floats
 ```
@@ -264,34 +264,34 @@ Use flow-root to clear floats
 ### List Item
 Use `list-item` to create a block that behave like a list item.
 <Demo>
-    <div className="my:xs_:where(div)">
-        <div className="list-item">01</div>
-        <div className="list-item">02</div>
-        <div className="list-item">03</div>
-    </div>
+  <div className="my:xs_:where(div)">
+    <div className="list-item">01</div>
+    <div className="list-item">02</div>
+    <div className="list-item">03</div>
+  </div>
 </Demo>
 ```html
 <div>
-    <div class="list-item">01</div>
-    <div class="list-item">02</div>
-    <div class="list-item">03</div>
+  <div class="list-item">01</div>
+  <div class="list-item">02</div>
+  <div class="list-item">03</div>
 </div>
 ```
 
 ### Hidden
 Use `hidden` to hide the element. The element is not rendered in the document.
 <Demo>
-    <div className="flex gap:5x w:full flex:1_:where(div)">
-        <div className="box">01</div>
-        <div className="box hidden!">02</div>
-        <div className="box">03</div>
-    </div>
+  <div className="flex gap:5x w:full flex:1_:where(div)">
+    <div className="box">01</div>
+    <div className="box hidden!">02</div>
+    <div className="box">03</div>
+  </div>
 </Demo>
 ```html
 <div class="flex gap:5x">
-    <div>01</div>
-    <div class="hidden">02</div>
-    <div>03</div>
+  <div>01</div>
+  <div class="hidden">02</div>
+  <div>03</div>
 </div>
 ```
 

@@ -5,20 +5,20 @@
 ### Name areas in a grid
 Use `grid-template-areas` to define named layout regions, then place children with [`grid-area`](/reference/grid-area).
 <Demo $py={0}>
-    <DemoPanel>
-        <div className="grid grid-template-areas:'head_head'|'nav_main' grid-template-columns:96px|1fr grid-template-rows:56px|96px gap:xs">
-            <div className="overflow:hidden grid-area:head min-w:0 p:sm b:1px|solid|blue-20 r:lg text-ellipsis white-space:nowrap bg:blue-5 b:blue-80@dark bg:blue-95@dark">Head</div>
-            <div className="overflow:hidden grid-area:nav min-w:0 p:sm r:lg text-ellipsis white-space:nowrap bg:gray-5 bg:gray-90@dark">Nav</div>
-            <div className="overflow:hidden grid-area:main min-w:0 p:sm r:lg text-ellipsis white-space:nowrap bg:gray-5 bg:gray-90@dark">Main</div>
-        </div>
-    </DemoPanel>
+  <DemoPanel>
+    <div className="grid grid-template-areas:'head_head'|'nav_main' grid-template-columns:96px|1fr grid-template-rows:56px|96px gap:xs">
+      <div className="overflow:hidden grid-area:head min-w:0 p:sm b:1px|solid|blue-20 r:lg text-ellipsis white-space:nowrap bg:blue-5 b:blue-80@dark bg:blue-95@dark">Head</div>
+      <div className="overflow:hidden grid-area:nav min-w:0 p:sm r:lg text-ellipsis white-space:nowrap bg:gray-5 bg:gray-90@dark">Nav</div>
+      <div className="overflow:hidden grid-area:main min-w:0 p:sm r:lg text-ellipsis white-space:nowrap bg:gray-5 bg:gray-90@dark">Main</div>
+    </div>
+  </DemoPanel>
 </Demo>
 ```html
 <!-- @MARK grid-template-areas:'head_head'|'nav_main' -->
 <div class="grid grid-template-areas:'head_head'|'nav_main'">
-    <header class="grid-area:head">Head</header>
-    <nav class="grid-area:nav">Nav</nav>
-    <main class="grid-area:main">Main</main>
+  <header class="grid-area:head">Head</header>
+  <nav class="grid-area:nav">Nav</nav>
+  <main class="grid-area:main">Main</main>
 </div>
 ```
 

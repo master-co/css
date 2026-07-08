@@ -1,78 +1,78 @@
 {
-    "extends": "../tsconfig.json",
-    "compilerOptions": {
-        "baseUrl": ".",
-        "target": "ESNext",
-        "lib": [
-            "dom",
-            "dom.iterable",
-            "esnext"
-        ],
-        "allowJs": true,
-        "ignoreDeprecations": "6.0",
-        "skipLibCheck": true,
-        "strict": true,
-        "forceConsistentCasingInFileNames": true,
-        "noEmit": true,
-        "esModuleInterop": true,
-        "module": "esnext",
-        "moduleResolution": "bundler",
-        "resolveJsonModule": true,
-        "isolatedModules": true,
-        "jsx": "preserve",
-        "incremental": true,
-        "downlevelIteration": true,
-        "plugins": [
-            {
-                "name": "next"
-            }
-        ],
-        "types": [
-            "mdx",
-            "node"
-        ],
-        "paths": {
-            "@master/css": [ "../node_modules/@master/css/src" ],
-            "@master/css-compiler": [ "../node_modules/@master/css-compiler/src" ],
-            "@master/css-compiler/*": [ "../node_modules/@master/css-compiler/src/*" ],
-            "@master/css-engine": [ "../node_modules/@master/css-engine/src" ],
-            "@master/css-engine/*": [ "../node_modules/@master/css-engine/src/*" ],
-            "@master/css-integration": [ "../node_modules/@master/css-integration/src" ],
-            "@master/css-integration/*": [ "../node_modules/@master/css-integration/src/*" ],
-            "@master/css-language": [ "../node_modules/@master/css-language/src" ],
-            "@master/css-language/*": [ "../node_modules/@master/css-language/src/*" ],
-            "@master/css-language-service": [ "../node_modules/@master/css-language-service/src" ],
-            "@master/css-language-service/*": [ "../node_modules/@master/css-language-service/src/*" ],
-            "@master/css-lexer": [ "../node_modules/@master/css-lexer/src" ],
-            "@master/css-lexer/*": [ "../node_modules/@master/css-lexer/src/*" ],
-            "@master/css-schema": [ "../node_modules/@master/css-schema/src" ],
-            "@master/css-schema/*": [ "../node_modules/@master/css-schema/src/*" ],
-            "@master/css-scanner": [ "../node_modules/@master/css-scanner/src" ],
-            "@master/css-scanner/*": [ "../node_modules/@master/css-scanner/src/*" ],
-            "@master/css-stylesheet": [ "../node_modules/@master/css-stylesheet/src" ],
-            "@master/css-stylesheet/*": [ "../node_modules/@master/css-stylesheet/src/*" ],
-            "@master/css-validator": [ "../node_modules/@master/css-validator/src" ],
-            "@master/css-validator/*": [ "../node_modules/@master/css-validator/src/*" ],
-            "@master/css.next": [ "../node_modules/@master/css.next/src" ],
-            "internal": [ "../internal" ],
-            "internal/*": [ "../internal/*" ],
-            "~/internal/*": [ "../internal/*" ],
-            "~/packages/*": [ "../packages/*" ],
-            "~/site/*": [ "./*" ],
-            "~/*": [ "../*" ]
-        }
-    },
-    "exclude": [
-        "node_modules"
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "target": "ESNext",
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
     ],
-    "include": [
-        "next-env.d.ts",
-        ".next/types/**/*.ts",
-        "**/*.ts",
-        "**/*.tsx",
-        "**/*.js",
-        "**/*.mdx",
-        "../internal/**/*.ts",
-        "../internal/**/*.tsx",
-    ]
+    "allowJs": true,
+    "ignoreDeprecations": "6.0",
+    "skipLibCheck": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "preserve",
+    "incremental": true,
+    "downlevelIteration": true,
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "types": [
+      "mdx",
+      "node"
+    ],
+    "paths": {
+      "@master/css": [ "../node_modules/@master/css/src" ],
+      "@master/css-compiler": [ "../node_modules/@master/css-compiler/src" ],
+      "@master/css-compiler/*": [ "../node_modules/@master/css-compiler/src/*" ],
+      "@master/css-engine": [ "../node_modules/@master/css-engine/src" ],
+      "@master/css-engine/*": [ "../node_modules/@master/css-engine/src/*" ],
+      "@master/css-integration": [ "../node_modules/@master/css-integration/src" ],
+      "@master/css-integration/*": [ "../node_modules/@master/css-integration/src/*" ],
+      "@master/css-language": [ "../node_modules/@master/css-language/src" ],
+      "@master/css-language/*": [ "../node_modules/@master/css-language/src/*" ],
+      "@master/css-language-service": [ "../node_modules/@master/css-language-service/src" ],
+      "@master/css-language-service/*": [ "../node_modules/@master/css-language-service/src/*" ],
+      "@master/css-lexer": [ "../node_modules/@master/css-lexer/src" ],
+      "@master/css-lexer/*": [ "../node_modules/@master/css-lexer/src/*" ],
+      "@master/css-schema": [ "../node_modules/@master/css-schema/src" ],
+      "@master/css-schema/*": [ "../node_modules/@master/css-schema/src/*" ],
+      "@master/css-scanner": [ "../node_modules/@master/css-scanner/src" ],
+      "@master/css-scanner/*": [ "../node_modules/@master/css-scanner/src/*" ],
+      "@master/css-stylesheet": [ "../node_modules/@master/css-stylesheet/src" ],
+      "@master/css-stylesheet/*": [ "../node_modules/@master/css-stylesheet/src/*" ],
+      "@master/css-validator": [ "../node_modules/@master/css-validator/src" ],
+      "@master/css-validator/*": [ "../node_modules/@master/css-validator/src/*" ],
+      "@master/css.next": [ "../node_modules/@master/css.next/src" ],
+      "internal": [ "../internal" ],
+      "internal/*": [ "../internal/*" ],
+      "~/internal/*": [ "../internal/*" ],
+      "~/packages/*": [ "../packages/*" ],
+      "~/site/*": [ "./*" ],
+      "~/*": [ "../*" ]
+    }
+  },
+  "exclude": [
+    "node_modules"
+  ],
+  "include": [
+    "next-env.d.ts",
+    ".next/types/**/*.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    "**/*.js",
+    "**/*.mdx",
+    "../internal/**/*.ts",
+    "../internal/**/*.tsx",
+  ]
 }

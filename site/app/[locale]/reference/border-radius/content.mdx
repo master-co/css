@@ -16,15 +16,15 @@ Use `r:*` to apply a border radius token or size directly.
 ```html
 <!-- @MARK r:md -->
 <div class="r:md">
-    Rounded panel
+  Rounded panel
 </div>
 ```
 
 <details>
-    <summary>Generated CSS</summary>
-    <Class2CSS>
-        {['r:md']}
-    </Class2CSS>
+  <summary>Generated CSS</summary>
+  <Class2CSS>
+    {['r:md']}
+  </Class2CSS>
 </details>
 
 ### Round individual corners
@@ -32,7 +32,7 @@ Use CSS corner properties or corner shorthands when only part of the element sho
 ```html
 <!-- @MARK rtl:md --><!-- @MARK rtr:md -->
 <div class="rtl:md rtr:md">
-    Rounded top
+  Rounded top
 </div>
 ```
 
@@ -40,7 +40,7 @@ Use `rtl`, `rtr`, `rbl`, and `rbr` for individual corners.
 ```html
 <!-- @MARK rtr:md --><!-- @MARK rbl:sm -->
 <div class="rbl:sm rtr:md">
-    Rounded corners
+  Rounded corners
 </div>
 ```
 
@@ -57,8 +57,8 @@ Apply styles based on different states using [selectors](/guide/state-selectors)
 Customize your border radius tokens by defining [theme tokens](/guide/theme#theme-tokens).
 ```css name=index.css
 @theme {
-    --radius-xs: 0.125rem; /* [!code ++] */
-    --radius-sm: 0.25rem; /* [!code ++] */
+  --radius-xs: 0.125rem; /* [!code ++] */
+  --radius-sm: 0.25rem; /* [!code ++] */
 }
 ```
 Apply the defined `radius` variables.

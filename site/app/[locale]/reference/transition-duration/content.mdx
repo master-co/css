@@ -7,15 +7,15 @@ Use `transition-duration:*` to control how long a property takes to move from on
 ```html
 <!-- @MARK transition-duration:150ms -->
 <button class="bg:blue-60 transition-duration:150ms transition-property:background-color bg:blue-70:hover">
-    Quick change
+  Quick change
 </button>
 ```
 
 <details>
-    <summary>Generated CSS</summary>
-    <Class2CSS>
-        {['transition-duration:150ms']}
-    </Class2CSS>
+  <summary>Generated CSS</summary>
+  <Class2CSS>
+    {['transition-duration:150ms']}
+  </Class2CSS>
 </details>
 
 ### Match duration to distance
@@ -23,7 +23,7 @@ Short hover feedback usually feels best under a few hundred milliseconds. Larger
 ```html
 <!-- @MARK transition-duration:300ms -->
 <aside class="transform:translateX(0) transition-duration:300ms transition-property:transform">
-    Panel
+  Panel
 </aside>
 ```
 
@@ -32,7 +32,7 @@ Use `transition-duration:0ms` when a state should update immediately, such as pr
 ```html
 <!-- @MARK transition-duration:0ms@print -->
 <button class="transition-duration:150ms transition-duration:0ms@print">
-    Print without motion
+  Print without motion
 </button>
 ```
 

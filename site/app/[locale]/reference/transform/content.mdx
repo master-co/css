@@ -7,15 +7,15 @@ Use `transform:*` to write a native transform function directly in the class nam
 ```html
 <!-- @MARK transform:translateY(-2px) -->
 <button class="transition:transform|150ms|ease-out transform:translateY(-2px):hover">
-    Lift
+  Lift
 </button>
 ```
 
 <details>
-    <summary>Generated CSS</summary>
-    <Class2CSS>
-        {['transform:translateY(-2px)']}
-    </Class2CSS>
+  <summary>Generated CSS</summary>
+  <Class2CSS>
+    {['transform:translateY(-2px)']}
+  </Class2CSS>
 </details>
 
 ### Scale pressed controls
@@ -23,7 +23,7 @@ Transforms are useful for small interaction feedback because they do not require
 ```html
 <!-- @MARK transform:scale(.98):active -->
 <button class="transition:transform|120ms|ease-out transform:scale(.98):active">
-    Press
+  Press
 </button>
 ```
 
@@ -32,7 +32,7 @@ Use the same property for rotate, skew, matrix, perspective, or any valid transf
 ```html
 <!-- @MARK transform:rotate(2deg) -->
 <div class="transform:rotate(2deg)">
-    Slightly rotated
+  Slightly rotated
 </div>
 ```
 
@@ -40,7 +40,7 @@ Use the same property for rotate, skew, matrix, perspective, or any valid transf
 Use [`transform-origin`](/reference/transform-origin) when the transform should rotate or scale around a specific point.
 ```html
 <div class="transform-origin:top|right transform:scale(.95):hover">
-    Scales from the top right
+  Scales from the top right
 </div>
 ```
 

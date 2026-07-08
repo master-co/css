@@ -1,100 +1,100 @@
 Use static rendering when ASP.NET Core Razor Pages or MVC views contain complete class strings and you want Vite to build a generated CSS asset before .NET serves the page.
 
 <StepSection>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Create a project
-            If you do not have an ASP.NET Core project, create one first.
-        </StepL>
-        <StepR>
-            ```bash name=Terminal
-            dotnet new webapp -o my-app
-            cd my-app
-            npm init -y
-            ```
-        </StepR>
-    </Step>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Install Vite and Master CSS
-            Install Vite and the Master CSS Vite integration in the project root.
-        </StepL>
-        <StepR>
-            ```bash name=Terminal
-            npm install -D vite @master/css.vite@rc
-            ```
-        </StepR>
-    </Step>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Configure Vite
-            Build static CSS into `wwwroot/assets`.
-        </StepL>
-        <StepR>
-            ```ts name=vite.config.ts
-            import { defineConfig } from 'vite'
-            import masterCSS from '@master/css.vite'
+  <Step $row>
+    <StepL>
+      ### <StepNum />Create a project
+      If you do not have an ASP.NET Core project, create one first.
+    </StepL>
+    <StepR>
+      ```bash name=Terminal
+      dotnet new webapp -o my-app
+      cd my-app
+      npm init -y
+      ```
+    </StepR>
+  </Step>
+  <Step $row>
+    <StepL>
+      ### <StepNum />Install Vite and Master CSS
+      Install Vite and the Master CSS Vite integration in the project root.
+    </StepL>
+    <StepR>
+      ```bash name=Terminal
+      npm install -D vite @master/css.vite@rc
+      ```
+    </StepR>
+  </Step>
+  <Step $row>
+    <StepL>
+      ### <StepNum />Configure Vite
+      Build static CSS into `wwwroot/assets`.
+    </StepL>
+    <StepR>
+      ```ts name=vite.config.ts
+      import { defineConfig } from 'vite'
+      import masterCSS from '@master/css.vite'
 
-            export default defineConfig({
-                plugins: [
-                    masterCSS({ mode: 'static' })
-                ],
-                build: {
-                    outDir: 'wwwroot/assets',
-                    emptyOutDir: true,
-                    rollupOptions: {
-                        input: 'src/main.ts',
-                        output: {
-                            entryFileNames: 'app.js',
-                            assetFileNames: 'app[extname]'
-                        }
-                    }
-                }
-            })
-            ```
-        </StepR>
-    </Step>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Create the asset entry
-            Import Master CSS and scan Razor Pages and MVC views where classes are authored.
-        </StepL>
-        <StepR>
-            ```ts name=src/main.ts
-            import './app.css'
-            ```
+      export default defineConfig({
+        plugins: [
+          masterCSS({ mode: 'static' })
+        ],
+        build: {
+          outDir: 'wwwroot/assets',
+          emptyOutDir: true,
+          rollupOptions: {
+            input: 'src/main.ts',
+            output: {
+              entryFileNames: 'app.js',
+              assetFileNames: 'app[extname]'
+            }
+          }
+        }
+      })
+      ```
+    </StepR>
+  </Step>
+  <Step $row>
+    <StepL>
+      ### <StepNum />Create the asset entry
+      Import Master CSS and scan Razor Pages and MVC views where classes are authored.
+    </StepL>
+    <StepR>
+      ```ts name=src/main.ts
+      import './app.css'
+      ```
 
-            ```css name=src/app.css
-            @import "@master/css";
+      ```css name=src/app.css
+      @import "@master/css";
 
-            @source "../Pages/**/*.cshtml";
-            @source "../Views/**/*.cshtml";
-            @source not "../bin/**";
-            @source not "../obj/**";
-            ```
-        </StepR>
-    </Step>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Load the stylesheet
-            Reference the generated CSS from your shared layout.
-        </StepL>
-        <StepR>
-            ```html name=Pages/Shared/_Layout.cshtml
-            <link rel="stylesheet" href="~/assets/app.css" asp-append-version="true">
-            ```
-        </StepR>
-    </Step>
-    <Step>
-        ### <StepNum />Hello world
-        Now style your first Razor page using Master CSS syntax.
-    </Step>
-    <HelloWorld url="localhost:5000" />
+      @source "../Pages/**/*.cshtml";
+      @source "../Views/**/*.cshtml";
+      @source not "../bin/**";
+      @source not "../obj/**";
+      ```
+    </StepR>
+  </Step>
+  <Step $row>
+    <StepL>
+      ### <StepNum />Load the stylesheet
+      Reference the generated CSS from your shared layout.
+    </StepL>
+    <StepR>
+      ```html name=Pages/Shared/_Layout.cshtml
+      <link rel="stylesheet" href="~/assets/app.css" asp-append-version="true">
+      ```
+    </StepR>
+  </Step>
+  <Step>
+    ### <StepNum />Hello world
+    Now style your first Razor page using Master CSS syntax.
+  </Step>
+  <HelloWorld url="localhost:5000" />
 </StepSection>
 
 ```html name=Pages/Index.cshtml
 <h1 class="m:2xl italic font:5xl font:heavy text:neutral">
-    Hello World
+  Hello World
 </h1>
 ```
 

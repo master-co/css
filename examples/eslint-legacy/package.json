@@ -1,11 +1,11 @@
 {
-    "name": "master-css-eslint-legacy-example",
-    "scripts": {
-        "lint": "ESLINT_USE_FLAT_CONFIG=false eslint \"*.html\""
-    },
-    "devDependencies": {
-        "@angular-eslint/template-parser": "^21.4.0",
-        "@master/eslint-config-css": "workspace:^",
-        "eslint": "^10.5.0"
-    }
+  "name": "master-css-eslint-legacy-example",
+  "scripts": {
+    "lint": "ESLINT_USE_FLAT_CONFIG=false eslint \"*.html\""
+  },
+  "devDependencies": {
+    "@angular-eslint/template-parser": "^21.4.0",
+    "@master/eslint-config-css": "workspace:^",
+    "eslint": "^10.5.0"
+  }
 }

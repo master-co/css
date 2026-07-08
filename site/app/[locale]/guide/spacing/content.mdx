@@ -12,34 +12,34 @@ Use the scale by relationship:
 * `2xl` to `5xl` for layout gutters, section spacing, and large editorial rhythm.
 
 <Demo>
-    <div className="grid-cols:2 gap:md w:full p:md r:md bg:stripe-pink grid-cols:5@sm">
-        <div className='app-box'>1</div>
-        <div className='app-box'>2</div>
-        <div className='app-box'>3</div>
-        <div className='app-box'>4</div>
-        <div className='app-box'>5</div>
-        <div className='app-box'>6</div>
-        <div className='app-box'>7</div>
-        <div className='app-box'>8</div>
-        <div className='app-box'>9</div>
-        <div className='app-box'>10</div>
-    </div>
+  <div className="grid-cols:2 gap:md w:full p:md r:md bg:stripe-pink grid-cols:5@sm">
+    <div className='app-box'>1</div>
+    <div className='app-box'>2</div>
+    <div className='app-box'>3</div>
+    <div className='app-box'>4</div>
+    <div className='app-box'>5</div>
+    <div className='app-box'>6</div>
+    <div className='app-box'>7</div>
+    <div className='app-box'>8</div>
+    <div className='app-box'>9</div>
+    <div className='app-box'>10</div>
+  </div>
 </Demo>
 
 ```html
 <!-- @MARK gap:md --><!-- @MARK p:md -->
 <div class="grid-cols:4 gap:md p:md">
-    <div>1</div>
-    <div>2</div>
-    ...
+  <div>1</div>
+  <div>2</div>
+  ...
 </div>
 ```
 
 <details>
-    <summary>Generated CSS</summary>
-    <Class2CSS>
-        {['grid-cols:4', 'gap:md', 'p:md']}
-    </Class2CSS>
+  <summary>Generated CSS</summary>
+  <Class2CSS>
+    {['grid-cols:4', 'gap:md', 'p:md']}
+  </Class2CSS>
 </details>
 
 ---
@@ -53,10 +53,10 @@ This lets spacing-related utilities use `md`, `lg`, or project token names witho
 
 ```css name=index.css
 @theme {
-    --spacing-sm: 0.75rem;
-    --spacing-md: 1rem;
-    --spacing-lg: 1.5rem;
-    --spacing-wide: 6rem;
+  --spacing-sm: 0.75rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-wide: 6rem;
 }
 ```
 
@@ -65,7 +65,7 @@ Apply the custom spacing tokens in your markup:
 ```html
 <!-- @MARK mt:md --><!-- @MARK p:sm --><!-- @MARK gap:lg --><!-- @MARK py:wide -->
 <section class="py:wide">
-    <div class="gap:lg mt:md p:sm">...</div>
+  <div class="gap:lg mt:md p:sm">...</div>
 </section>
 ```
 
@@ -113,8 +113,8 @@ Use `0` for resets, explicit `1px` for hairlines, and other `px` units when a va
 
 ```css name=index.css
 @theme {
-    --spacing-1: 0.25rem; /* [!code --] */
-    --spacing-2: 0.5rem; /* [!code --] */
+  --spacing-1: 0.25rem; /* [!code --] */
+  --spacing-2: 0.5rem; /* [!code --] */
 }
 ```
 
@@ -124,9 +124,9 @@ Numeric keys are easy to confuse with low-level CSS values. Prefer semantic toke
 
 ```css name=index.css
 @theme {
-    --spacing-sm: 0.75rem;
-    --spacing-compact: 1.25rem;
-    --spacing-relaxed: 6rem;
+  --spacing-sm: 0.75rem;
+  --spacing-compact: 1.25rem;
+  --spacing-relaxed: 6rem;
 }
 ```
 

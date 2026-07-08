@@ -18,10 +18,10 @@ Typography tokens define readable type scale, line height, letter spacing, font 
 ```
 
 <details>
-    <summary>Generated CSS</summary>
-    <Class2CSS>
-        {['text:lg', 'font:medium']}
-    </Class2CSS>
+  <summary>Generated CSS</summary>
+  <Class2CSS>
+    {['text:lg', 'font:medium']}
+  </Class2CSS>
 </details>
 
 ---
@@ -60,16 +60,16 @@ Use `font:<size>` when you only want the font-size token. Use `leading:*` and `t
 Manually configuring typography often requires juggling `font-size`, `line-height`, and `letter-spacing`. This becomes inconsistent when the same heading or paragraph style appears across components.
 
 <Demo $py={0}>
-    <DemoPanel className="flex flex-col gap:xl w:full">
-        <div className="w:full">
-            <DemoLabel className="text:red">font:5xl</DemoLabel>
-            <DemoP className="font:5xl font:regular leading:1 text-pretty">Designing for consistency across every platform.</DemoP>
-        </div>
-        <div className="w:full">
-            <DemoLabel className="text:green">text:5xl</DemoLabel>
-            <DemoP className="text:5xl font:regular text-pretty">Designing for consistency across every platform.</DemoP>
-        </div>
-    </DemoPanel>
+  <DemoPanel className="flex flex-col gap:xl w:full">
+    <div className="w:full">
+      <DemoLabel className="text:red">font:5xl</DemoLabel>
+      <DemoP className="font:5xl font:regular leading:1 text-pretty">Designing for consistency across every platform.</DemoP>
+    </div>
+    <div className="w:full">
+      <DemoLabel className="text:green">text:5xl</DemoLabel>
+      <DemoP className="text:5xl font:regular text-pretty">Designing for consistency across every platform.</DemoP>
+    </div>
+  </DemoPanel>
 </Demo>
 
 (x) The type treatment is assembled manually.

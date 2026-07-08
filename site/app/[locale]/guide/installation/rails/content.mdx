@@ -1,120 +1,120 @@
 Use Vite runtime rendering when Rails owns the page lifecycle. Rails renders ERB views, while the Vite-built Master CSS runtime generates class rules in the browser as pages and Turbo updates appear.
 
 <StepSection>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Create a project
-            If you do not have a Rails project, create one first.
-        </StepL>
-        <StepR>
-            ```bash name=Terminal
-            rails new my-app
-            cd my-app
-            npm init -y
-            ```
-        </StepR>
-    </Step>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Install Vite and Master CSS
-            Install Vite and the Master CSS Vite integration in the Rails project root.
-        </StepL>
-        <StepR>
-            ```bash name=Terminal
-            npm install -D vite @master/css.vite@rc
-            ```
-        </StepR>
-    </Step>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Configure Vite
-            Build the runtime entry and base stylesheet into `public/assets`.
-        </StepL>
-        <StepR>
-            ```ts name=vite.config.ts
-            import { defineConfig } from 'vite'
-            import masterCSS from '@master/css.vite'
+  <Step $row>
+    <StepL>
+      ### <StepNum />Create a project
+      If you do not have a Rails project, create one first.
+    </StepL>
+    <StepR>
+      ```bash name=Terminal
+      rails new my-app
+      cd my-app
+      npm init -y
+      ```
+    </StepR>
+  </Step>
+  <Step $row>
+    <StepL>
+      ### <StepNum />Install Vite and Master CSS
+      Install Vite and the Master CSS Vite integration in the Rails project root.
+    </StepL>
+    <StepR>
+      ```bash name=Terminal
+      npm install -D vite @master/css.vite@rc
+      ```
+    </StepR>
+  </Step>
+  <Step $row>
+    <StepL>
+      ### <StepNum />Configure Vite
+      Build the runtime entry and base stylesheet into `public/assets`.
+    </StepL>
+    <StepR>
+      ```ts name=vite.config.ts
+      import { defineConfig } from 'vite'
+      import masterCSS from '@master/css.vite'
 
-            export default defineConfig({
-                plugins: [
-                    masterCSS({ mode: 'runtime', injectRuntime: false })
-                ],
-                build: {
-                    outDir: 'public/assets',
-                    emptyOutDir: true,
-                    rollupOptions: {
-                        input: 'app/frontend/main.ts',
-                        output: {
-                            entryFileNames: 'app.js',
-                            assetFileNames: 'app[extname]'
-                        }
-                    }
-                }
-            })
-            ```
-        </StepR>
-    </Step>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Create the asset entry
-            Import the Vite-managed runtime and the Master CSS stylesheet.
-        </StepL>
-        <StepR>
-            ```ts name=app/frontend/main.ts
-            import '@master/css.vite/runtime'
-            import './app.css'
-            ```
-
-            ```css name=app/frontend/app.css
-            @import "@master/css";
-            ```
-        </StepR>
-    </Step>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Load the assets
-            Reference the Vite output from the Rails application layout. Add `hidden` so the runtime can avoid a flash of unstyled content before it injects class rules.
-        </StepL>
-        <StepR>
-            ```erb name=app/views/layouts/application.html.erb
-            <html lang="en" hidden>
-            <head>
-                <%= stylesheet_link_tag "/assets/app.css" %>
-            </head>
-            <body>
-                <%= yield %>
-                <%= javascript_include_tag "/assets/app.js", type: "module" %>
-            </body>
-            </html>
-            ```
-        </StepR>
-    </Step>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Add build scripts
-            Build or watch the frontend assets beside the Rails server.
-        </StepL>
-        <StepR>
-            ```json name=package.json
-            {
-                "scripts": {
-                    "build:assets": "vite build",
-                    "watch:assets": "vite build --watch"
-                }
+      export default defineConfig({
+        plugins: [
+          masterCSS({ mode: 'runtime', injectRuntime: false })
+        ],
+        build: {
+          outDir: 'public/assets',
+          emptyOutDir: true,
+          rollupOptions: {
+            input: 'app/frontend/main.ts',
+            output: {
+              entryFileNames: 'app.js',
+              assetFileNames: 'app[extname]'
             }
-            ```
-        </StepR>
-    </Step>
-    <Step>
-        ### <StepNum />Hello world
-        Now style your first ERB view using Master CSS syntax.
-    </Step>
-    <HelloWorld url="localhost:3000" />
+          }
+        }
+      })
+      ```
+    </StepR>
+  </Step>
+  <Step $row>
+    <StepL>
+      ### <StepNum />Create the asset entry
+      Import the Vite-managed runtime and the Master CSS stylesheet.
+    </StepL>
+    <StepR>
+      ```ts name=app/frontend/main.ts
+      import '@master/css.vite/runtime'
+      import './app.css'
+      ```
+
+      ```css name=app/frontend/app.css
+      @import "@master/css";
+      ```
+    </StepR>
+  </Step>
+  <Step $row>
+    <StepL>
+      ### <StepNum />Load the assets
+      Reference the Vite output from the Rails application layout. Add `hidden` so the runtime can avoid a flash of unstyled content before it injects class rules.
+    </StepL>
+    <StepR>
+      ```erb name=app/views/layouts/application.html.erb
+      <html lang="en" hidden>
+      <head>
+        <%= stylesheet_link_tag "/assets/app.css" %>
+      </head>
+      <body>
+        <%= yield %>
+        <%= javascript_include_tag "/assets/app.js", type: "module" %>
+      </body>
+      </html>
+      ```
+    </StepR>
+  </Step>
+  <Step $row>
+    <StepL>
+      ### <StepNum />Add build scripts
+      Build or watch the frontend assets beside the Rails server.
+    </StepL>
+    <StepR>
+      ```json name=package.json
+      {
+        "scripts": {
+          "build:assets": "vite build",
+          "watch:assets": "vite build --watch"
+        }
+      }
+      ```
+    </StepR>
+  </Step>
+  <Step>
+    ### <StepNum />Hello world
+    Now style your first ERB view using Master CSS syntax.
+  </Step>
+  <HelloWorld url="localhost:3000" />
 </StepSection>
 
 ```html name=app/views/home/index.html.erb
 <h1 class="m:2xl italic font:5xl font:heavy text:neutral">
-    Hello World
+  Hello World
 </h1>
 ```
 

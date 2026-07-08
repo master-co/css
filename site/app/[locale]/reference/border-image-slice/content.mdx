@@ -5,18 +5,18 @@
 ### Slice the source image
 Use `border-image-slice` to divide the source image into corners, edges, and a center region. The center is discarded unless `fill` is included.
 <Demo $py={0}>
-    <DemoPanel>
-        <div className="p:10x b:16px|solid|transparent r:lg border-image-slice:30 border-image-source:linear-gradient(45deg,dodgerblue,hotpink) surface:raised">
-            <div className="font-weight:560 font:lg text:neutral">Slice 30</div>
-            <p className="my:md font:sm text:gray">The slice value controls how the image is divided.</p>
-        </div>
-    </DemoPanel>
+  <DemoPanel>
+    <div className="p:10x b:16px|solid|transparent r:lg border-image-slice:30 border-image-source:linear-gradient(45deg,dodgerblue,hotpink) surface:raised">
+      <div className="font-weight:560 font:lg text:neutral">Slice 30</div>
+      <p className="my:md font:sm text:gray">The slice value controls how the image is divided.</p>
+    </div>
+  </DemoPanel>
 </Demo>
 ```html
 <!-- @MARK border-image-source:linear-gradient(45deg,dodgerblue,hotpink) -->
 <!-- @MARK border-image-slice:30 -->
 <div class="b:16px|solid|transparent border-image-slice:30 border-image-source:linear-gradient(45deg,dodgerblue,hotpink)">
-    Slice 30
+  Slice 30
 </div>
 ```
 
@@ -25,7 +25,7 @@ Use `fill` when the middle region of the source should be painted like a backgro
 ```html
 <!-- @MARK border-image-slice:30|fill -->
 <div class="b:16px|solid|transparent border-image-slice:30|fill border-image-source:linear-gradient(45deg,dodgerblue,hotpink)">
-    Filled center
+  Filled center
 </div>
 ```
 

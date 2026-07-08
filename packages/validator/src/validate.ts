@@ -9,34 +9,34 @@ import { createCSSWithNativeDeclarations } from './native-declaration'
  * @argument css a Master CSS instance
  */
 export default function validate(
-    syntax: string,
-    css = createCSSWithNativeDeclarations(defaultManifest)
+  syntax: string,
+  css = createCSSWithNativeDeclarations(defaultManifest)
 ): {
-    matched: boolean,
-    errors: SyntaxError[]
+  matched: boolean,
+  errors: SyntaxError[]
 } {
-    const rules = css.generate(syntax)
-    if (rules.length) {
-        const errors = []
-        for (const eachRule of rules) {
-            const syntaxErrors = validateCSS(eachRule.text)
-            for (const eachUtilityError of syntaxErrors) {
-                eachUtilityError.class = syntax
-                errors.push(eachUtilityError)
-            }
-        }
-        return {
-            matched: true,
-            errors
-        }
-    } else {
-        return {
-            matched: false,
-            errors: [{
-                class: syntax,
-                message: `'${syntax}' is not a valid Master CSS class`,
-                rawMessage: 'Mismatch'
-            }]
-        }
+  const rules = css.generate(syntax)
+  if (rules.length) {
+    const errors = []
+    for (const eachRule of rules) {
+      const syntaxErrors = validateCSS(eachRule.text)
+      for (const eachUtilityError of syntaxErrors) {
+        eachUtilityError.class = syntax
+        errors.push(eachUtilityError)
+      }
     }
+    return {
+      matched: true,
+      errors
+    }
+  } else {
+    return {
+      matched: false,
+      errors: [{
+        class: syntax,
+        message: `'${syntax}' is not a valid Master CSS class`,
+        rawMessage: 'Mismatch'
+      }]
+    }
+  }
 }

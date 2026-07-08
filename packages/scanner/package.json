@@ -1,82 +1,82 @@
 {
-    "name": "@master/css-scanner",
-    "type": "module",
-    "scripts": {
-        "build": "tsdown --config ../../shared/tsdown-package.config.ts",
-        "dev": "tsdown --config ../../shared/tsdown-package.config.ts --watch",
-        "lint": "eslint",
-        "type-check": "tsc -b tsconfig.typecheck.json",
-        "test": "vitest"
+  "name": "@master/css-scanner",
+  "type": "module",
+  "scripts": {
+    "build": "tsdown --config ../../shared/tsdown-package.config.ts",
+    "dev": "tsdown --config ../../shared/tsdown-package.config.ts --watch",
+    "lint": "eslint",
+    "type-check": "tsc -b tsconfig.typecheck.json",
+    "test": "vitest"
+  },
+  "license": "MIT",
+  "description": "Master CSS source scanner for static rendering",
+  "author": "Aoyue Design LLC.",
+  "funding": "https://rc.css.master.co/sponsor",
+  "homepage": "https://css.master.co",
+  "bugs": {
+    "url": "https://github.com/master-co/css/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/master-co/css.git",
+    "directory": "packages/scanner"
+  },
+  "keywords": [
+    "plugin",
+    "integration",
+    "scanner",
+    "static",
+    "build tools",
+    "css",
+    "mastercss"
+  ],
+  "sideEffects": false,
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "jsnext:main": "./dist/index.js",
+  "esnext": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
     },
-    "license": "MIT",
-    "description": "Master CSS source scanner for static rendering",
-    "author": "Aoyue Design LLC.",
-    "funding": "https://rc.css.master.co/sponsor",
-    "homepage": "https://css.master.co",
-    "bugs": {
-        "url": "https://github.com/master-co/css/issues"
-    },
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/master-co/css.git",
-        "directory": "packages/scanner"
-    },
-    "keywords": [
-        "plugin",
-        "integration",
-        "scanner",
-        "static",
-        "build tools",
-        "css",
-        "mastercss"
-    ],
-    "sideEffects": false,
-    "main": "./dist/index.js",
-    "module": "./dist/index.js",
-    "jsnext:main": "./dist/index.js",
-    "esnext": "./dist/index.js",
-    "types": "./dist/index.d.ts",
-    "exports": {
-        ".": {
-            "types": "./dist/index.d.ts",
-            "import": "./dist/index.js",
-            "default": "./dist/index.js"
-        },
-        "./options": {
-            "types": "./dist/options/index.d.ts",
-            "import": "./dist/options/index.js",
-            "default": "./dist/options/index.js"
-        }
-    },
-    "typesVersions": {
-        "*": {
-            ".": [
-                "./dist/index.d.ts"
-            ],
-            "./options": [
-                "./dist/options/index.d.ts"
-            ]
-        }
-    },
-    "files": [
-        "dist"
-    ],
-    "publishConfig": {
-        "access": "public",
-        "provenance": true
-    },
-    "dependencies": {
-        "@master/css": "workspace:^",
-        "@master/css-preset": "workspace:^",
-        "@master/css-source": "workspace:^",
-        "@master/css-validator": "workspace:^",
-        "consola": "^3.4.2",
-        "defu": "^6.1.7",
-        "minimatch": "^10.2.5",
-        "@master/css-schema": "workspace:^",
-        "@master/css-lexer": "workspace:^"
-    },
-    "devDependencies": {
-        "@master/css-compiler": "workspace:^"
+    "./options": {
+      "types": "./dist/options/index.d.ts",
+      "import": "./dist/options/index.js",
+      "default": "./dist/options/index.js"
     }
+  },
+  "typesVersions": {
+    "*": {
+      ".": [
+        "./dist/index.d.ts"
+      ],
+      "./options": [
+        "./dist/options/index.d.ts"
+      ]
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "dependencies": {
+    "@master/css": "workspace:^",
+    "@master/css-preset": "workspace:^",
+    "@master/css-source": "workspace:^",
+    "@master/css-validator": "workspace:^",
+    "consola": "^3.4.2",
+    "defu": "^6.1.7",
+    "minimatch": "^10.2.5",
+    "@master/css-schema": "workspace:^",
+    "@master/css-lexer": "workspace:^"
+  },
+  "devDependencies": {
+    "@master/css-compiler": "workspace:^"
+  }
 }

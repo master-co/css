@@ -23,47 +23,47 @@ Master CSS 2.0 starts from a stylesheet. Import `@master/css` from the CSS file 
 @import '@master/css';
 
 @theme {
-    --color-brand: #4f46e5;
-    --color-surface-card: #ffffff;
-    --spacing-shell: 2rem;
-    --radius-card: 1rem;
+  --color-brand: #4f46e5;
+  --color-surface-card: #ffffff;
+  --spacing-shell: 2rem;
+  --radius-card: 1rem;
 
-    @keyframes reveal {
-        from { opacity: 0; transform: translateY(.5rem); }
-        to { opacity: 1; transform: translateY(0); }
-    }
+  @keyframes reveal {
+    from { opacity: 0; transform: translateY(.5rem); }
+    to { opacity: 1; transform: translateY(0); }
+  }
 }
 
 @theme dark {
-    --color-surface-card: #111827;
+  --color-surface-card: #111827;
 }
 
 @custom-variant @motion-safe {
-    @media (prefers-reduced-motion: no-preference) {
-        @slot;
-    }
+  @media (prefers-reduced-motion: no-preference) {
+    @slot;
+  }
 }
 
 @custom-variant :interactive {
-    &:is(:hover, :focus-visible) {
-        @slot;
-    }
+  &:is(:hover, :focus-visible) {
+    @slot;
+  }
 }
 
 @components {
-    btn {
-        @compose inline-flex items-center justify-center gap:xs h:10x px:md r:md font:medium;
-    }
+  btn {
+    @compose inline-flex items-center justify-center gap:xs h:10x px:md r:md font:medium;
+  }
 }
 
 @utilities {
-    content-grid {
-        @compose grid grid-cols:1 gap:lg;
+  content-grid {
+    @compose grid grid-cols:1 gap:lg;
 
-        @variant @md {
-            @compose grid-cols:2;
-        }
+    @variant @md {
+      @compose grid-cols:2;
     }
+  }
 }
 ```
 
@@ -73,15 +73,15 @@ Markup stays direct:
 
 ```html
 <section class="content-grid p:shell">
-    <article class="p:lg r:card animation:reveal|.4s|ease@motion bg:surface-card">
-        <h2 class="font:3xl font:heavy text:brand">Stylesheet-authored design systems</h2>
-        <p class="mt:xs text:body">
-            Tokens, modes, components, utilities, variants, and keyframes all come from CSS.
-        </p>
-        <a class="btn mt:md fg:white bg:brand bg:brand/.85:interactive" href="/guide/theme">
-            Explore theme authoring
-        </a>
-    </article>
+  <article class="p:lg r:card animation:reveal|.4s|ease@motion bg:surface-card">
+    <h2 class="font:3xl font:heavy text:brand">Stylesheet-authored design systems</h2>
+    <p class="mt:xs text:body">
+      Tokens, modes, components, utilities, variants, and keyframes all come from CSS.
+    </p>
+    <a class="btn mt:md fg:white bg:brand bg:brand/.85:interactive" href="/guide/theme">
+      Explore theme authoring
+    </a>
+  </article>
 </section>
 ```
 
@@ -103,23 +103,23 @@ Generated rules are emitted into those layers. Theme variables remain CSS custom
 
 ```html
 <main class="min-h:100dvh bg:surface-base text:neutral">
-    <section class="container max-w:lg mx:auto px:md py:2xl">
-        <div class="grid grid-cols:1 gap:lg grid-cols:2@md">
-            <article class="p:lg b:1px|solid|base r:lg bg:surface-raised">
-                <p class="text:xs text:muted">Modern CSS, authored from markup</p>
-                <h1 class="mt:xs font:5xl font:heavy text:brand">
-                    One vocabulary for every surface
-                </h1>
-            </article>
+  <section class="container max-w:lg mx:auto px:md py:2xl">
+    <div class="grid grid-cols:1 gap:lg grid-cols:2@md">
+      <article class="p:lg b:1px|solid|base r:lg bg:surface-raised">
+        <p class="text:xs text:muted">Modern CSS, authored from markup</p>
+        <h1 class="mt:xs font:5xl font:heavy text:brand">
+          One vocabulary for every surface
+        </h1>
+      </article>
 
-            <aside class="container p:lg b:1px|solid|base r:lg">
-                <div class="grid grid-cols:1 gap:md grid-cols:2@container(md)">
-                    <button class="btn fg:white bg:brand bg:brand/.85:hover">Create</button>
-                    <button class="btn b:1px|solid|base bg:surface-base">Preview</button>
-                </div>
-            </aside>
+      <aside class="container p:lg b:1px|solid|base r:lg">
+        <div class="grid grid-cols:1 gap:md grid-cols:2@container(md)">
+          <button class="btn fg:white bg:brand bg:brand/.85:hover">Create</button>
+          <button class="btn b:1px|solid|base bg:surface-base">Preview</button>
         </div>
-    </section>
+      </aside>
+    </div>
+  </section>
 </main>
 ```
 
@@ -144,9 +144,9 @@ import { defineConfig } from 'vite'
 import masterCSS from '@master/css.vite'
 
 export default defineConfig({
-    plugins: [
-        masterCSS({ mode: 'progressive' })
-    ]
+  plugins: [
+    masterCSS({ mode: 'progressive' })
+  ]
 })
 ```
 
@@ -157,7 +157,7 @@ import { withMasterCSS } from '@master/css.next'
 
 /** @type {import('next').NextConfig} */
 const nextConfig = withMasterCSS({
-    // your Next.js config
+  // your Next.js config
 })
 
 export default nextConfig
@@ -167,12 +167,12 @@ Progressive Rendering is the mode that best shows where v2 is going. The first H
 
 ```html
 <head>
-    <style id="master-css" data-master-css-hydration-manifest="/_master-css/hydration/master-css-hydration.8f3a1c2d.json">
-        @layer utilities{.font\:3xl{font-size:1.875rem}}
-    </style>
+  <style id="master-css" data-master-css-hydration-manifest="/_master-css/hydration/master-css-hydration.8f3a1c2d.json">
+    @layer utilities{.font\:3xl{font-size:1.875rem}}
+  </style>
 </head>
 <body>
-    <h1 class="font:3xl">Already styled</h1>
+  <h1 class="font:3xl">Already styled</h1>
 </body>
 ```
 

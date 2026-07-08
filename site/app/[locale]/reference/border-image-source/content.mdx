@@ -5,18 +5,18 @@
 ### Set a gradient source
 Use `border-image-source` to choose the image painted into the border. Pair it with [`border-image-slice`](/reference/border-image-slice), plus a visible border width and style.
 <Demo $py={0}>
-    <DemoPanel>
-        <div className="p:10x b:16px|solid|transparent r:lg border-image-slice:30 border-image-source:linear-gradient(135deg,dodgerblue,hotpink) surface:raised">
-            <div className="font-weight:560 font:lg text:neutral">Gradient source</div>
-            <p className="my:md font:sm text:gray">The source image supplies the pixels for the border.</p>
-        </div>
-    </DemoPanel>
+  <DemoPanel>
+    <div className="p:10x b:16px|solid|transparent r:lg border-image-slice:30 border-image-source:linear-gradient(135deg,dodgerblue,hotpink) surface:raised">
+      <div className="font-weight:560 font:lg text:neutral">Gradient source</div>
+      <p className="my:md font:sm text:gray">The source image supplies the pixels for the border.</p>
+    </div>
+  </DemoPanel>
 </Demo>
 ```html
 <!-- @MARK border-image-source:linear-gradient(135deg,dodgerblue,hotpink) -->
 <!-- @MARK border-image-slice:30 -->
 <div class="b:16px|solid|transparent border-image-slice:30 border-image-source:linear-gradient(135deg,dodgerblue,hotpink)">
-    Gradient source
+  Gradient source
 </div>
 ```
 

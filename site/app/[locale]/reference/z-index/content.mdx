@@ -5,13 +5,13 @@
 ### Order positioned elements
 Use `z:*` to control the stacking order of overlapping positioned elements. Values can be positive, negative, or zero.
 <Demo className="py:0">
-    <div className="flex p:xl ml:-2x>div">
-        <div className="box z:9 b:2px fg:white bg:blue-58!">1</div>
-        <div className="box z:3 b:2px fg:white bg:blue-58!">2</div>
-        <div className="box z:1 b:2px fg:white bg:blue-58!">3</div>
-        <div className="box z:-1 b:2px fg:white bg:blue-58!">4</div>
-        <div className="box z:-9 b:2px fg:white bg:blue-58!">5</div>
-    </div>
+  <div className="flex p:xl ml:-2x>div">
+    <div className="box z:9 b:2px fg:white bg:blue-58!">1</div>
+    <div className="box z:3 b:2px fg:white bg:blue-58!">2</div>
+    <div className="box z:1 b:2px fg:white bg:blue-58!">3</div>
+    <div className="box z:-1 b:2px fg:white bg:blue-58!">4</div>
+    <div className="box z:-9 b:2px fg:white bg:blue-58!">5</div>
+  </div>
 </Demo>
 ```html
 <div class="z:9">1</div>
@@ -23,10 +23,10 @@ Use `z:*` to control the stacking order of overlapping positioned elements. Valu
 ```
 
 <details>
-    <summary>Generated CSS</summary>
-    <Class2CSS>
-        {['z:1']}
-    </Class2CSS>
+  <summary>Generated CSS</summary>
+  <Class2CSS>
+    {['z:1']}
+  </Class2CSS>
 </details>
 
 ### Use negative stacking when intentional
@@ -34,7 +34,7 @@ Negative z-index is useful for decorative layers inside an isolated component.
 ```html
 <!-- @MARK z:-1 -->
 <div class="rel isolate">
-    <div class="abs inset:0 z:-1"></div>
+  <div class="abs inset:0 z:-1"></div>
 </div>
 ```
 
@@ -42,7 +42,7 @@ Negative z-index is useful for decorative layers inside an isolated component.
 Use `isolate` or another stacking-context boundary when z-index values should not compete with the whole page.
 ```html
 <article class="rel isolate">
-    <div class="z:10">Menu</div>
+  <div class="z:10">Menu</div>
 </article>
 ```
 

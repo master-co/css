@@ -1,23 +1,23 @@
 @layer theme {
-    .light, :root {
-        --primary: 0 0 0
-    }
+  .light, :root {
+    --primary: 0 0 0
+  }
 
-    .dark {
-        --primary: 255 255 255
-    }
+  .dark {
+    --primary: 255 255 255
+  }
 }
 
 @layer utilities {
-    .fg\:primary {
-        color: rgb(var(--primary))
-    }
+  .fg\:primary {
+    color: rgb(var(--primary))
+  }
 
-    .bg\:primary {
-        background-color: rgb(var(--primary))
-    }
+  .bg\:primary {
+    background-color: rgb(var(--primary))
+  }
 
-    .fill\:primary {
-        fill: rgb(var(--primary))
-    }
+  .fill\:primary {
+    fill: rgb(var(--primary))
+  }
 }

@@ -22,11 +22,11 @@ Use the root entry in Node environments when CSS imports and filesystem dependen
 
 ```ts
 import {
-    compileCSS,
-    compileCSSFile,
-    compileCSSManifest,
-    compileCSSManifestFile,
-    compileProjectManifest,
+  compileCSS,
+  compileCSSFile,
+  compileCSSManifest,
+  compileCSSManifestFile,
+  compileProjectManifest,
 } from '@master/css-compiler'
 ```
 

@@ -7,15 +7,15 @@ Use `box-border` when an element's declared width and height should include its 
 ```html
 <!-- @MARK box-border -->
 <div class="w:40x p:md b:1px|solid|gray-20 box-border">
-    Border-box
+  Border-box
 </div>
 ```
 
 <details>
-    <summary>Generated CSS</summary>
-    <Class2CSS>
-        {['box-border']}
-    </Class2CSS>
+  <summary>Generated CSS</summary>
+  <Class2CSS>
+    {['box-border']}
+  </Class2CSS>
 </details>
 
 ### Size the content box only
@@ -23,7 +23,7 @@ Use `box-content` when the declared size should apply only to the content area a
 ```html
 <!-- @MARK box-content -->
 <div class="w:40x p:md b:1px|solid|gray-20 box-content">
-    Content-box
+  Content-box
 </div>
 ```
 
@@ -31,7 +31,7 @@ Use `box-content` when the declared size should apply only to the content area a
 Most UI components should use one sizing model consistently. Switch box sizing only at component boundaries or for compatibility with third-party content.
 ```html
 <div class="box-border">
-    <iframe class="box-content"></iframe>
+  <iframe class="box-content"></iframe>
 </div>
 ```
 

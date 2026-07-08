@@ -1,51 +1,51 @@
 @layer base {
-    .list-style\:none_ul\@base ul {
-        list-style: none
-    }
+  .list-style\:none_ul\@base ul {
+    list-style: none
+  }
 }
 
 @layer theme {
 
-    .light,
-    :root {
-        --primary: 0 0 0
-    }
+  .light,
+  :root {
+    --primary: 0 0 0
+  }
 
-    .dark {
-        --primary: 255 255 255
-    }
+  .dark {
+    --primary: 255 255 255
+  }
 }
 
 @layer defaults {
-    .text\:16_p\@default p {
-        font-size: 1rem;
-        line-height: calc(1rem + 0.875em)
-    }
+  .text\:16_p\@default p {
+    font-size: 1rem;
+    line-height: calc(1rem + 0.875em)
+  }
 }
 
 @layer components {
-    .btn {
-        display: inline-flex;
-        background-color: rgb(var(--primary))
-    }
+  .btn {
+    display: inline-flex;
+    background-color: rgb(var(--primary))
+  }
 }
 
 @layer utilities {
-    .flex {
-        display: flex
-    }
+  .flex {
+    display: flex
+  }
 
-    .animation\:fade\|1s {
-        animation: fade 1s
-    }
+  .animation\:fade\|1s {
+    animation: fade 1s
+  }
 }
 
 @keyframes fade {
-    0% {
-        opacity: 0
-    }
+  0% {
+    opacity: 0
+  }
 
-    to {
-        opacity: 1
-    }
+  to {
+    opacity: 1
+  }
 }

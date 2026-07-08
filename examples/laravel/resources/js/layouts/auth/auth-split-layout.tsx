@@ -4,42 +4,42 @@ import { Link, usePage } from '@inertiajs/react';
 import { type PropsWithChildren } from 'react';
 
 interface AuthLayoutProps {
-    title?: string;
-    description?: string;
+  title?: string;
+  description?: string;
 }
 
 export default function AuthSplitLayout({ children, title, description }: PropsWithChildren<AuthLayoutProps>) {
-    const { name, quote } = usePage<SharedData>().props;
+  const { name, quote } = usePage<SharedData>().props;
 
-    return (
-        <div className="relative grid h-dvh flex-col items-center justify-center px-8 sm:px-0 lg:max-w-none lg:grid-cols-2 lg:px-0">
-            <div className="bg-muted relative hidden h-full flex-col p-10 text-white lg:flex dark:border-r">
-                <div className="absolute inset-0 bg-zinc-900" />
-                <Link href={route('home')} className="relative z-20 flex items-center text-lg font-medium">
-                    <AppLogoIcon className="mr-2 size-8 fill-current text-white" />
-                    {name}
-                </Link>
-                {quote && (
-                    <div className="relative z-20 mt-auto">
-                        <blockquote className="space-y-2">
-                            <p className="text-lg">&ldquo;{quote.message}&rdquo;</p>
-                            <footer className="text-sm text-300">{quote.author}</footer>
-                        </blockquote>
-                    </div>
-                )}
-            </div>
-            <div className="w-full lg:p-8">
-                <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
-                    <Link href={route('home')} className="relative z-20 flex items-center justify-center lg:hidden">
-                        <AppLogoIcon className="h-10 fill-current text-black sm:h-12" />
-                    </Link>
-                    <div className="flex flex-col items-start gap-2 text-left sm:items-center sm:text-center">
-                        <h1 className="text-xl font-medium">{title}</h1>
-                        <p className="text-muted-foreground text-sm text-balance">{description}</p>
-                    </div>
-                    {children}
-                </div>
-            </div>
+  return (
+    <div className="grid flex-col items-center justify-center h-dvh lg:grid-cols-2 lg:max-w-none lg:px-0 px-8 relative sm:px-0">
+      <div className="hidden flex-col bg-muted dark:border-r h-full lg:flex p-10 relative text-white">
+        <div className="absolute bg-zinc-900 inset-0" />
+        <Link href={route('home')} className="flex items-center font-medium relative text-lg z-20">
+          <AppLogoIcon className="fill-current mr-2 size-8 text-white" />
+          {name}
+        </Link>
+        {quote && (
+          <div className="mt-auto relative z-20">
+            <blockquote className="space-y-2">
+              <p className="text-lg">&ldquo;{quote.message}&rdquo;</p>
+              <footer className="text-300 text-sm">{quote.author}</footer>
+            </blockquote>
+          </div>
+        )}
+      </div>
+      <div className="lg:p-8 w-full">
+        <div className="flex flex-col justify-center mx-auto sm:w-[350px] space-y-6 w-full">
+          <Link href={route('home')} className="flex items-center justify-center lg:hidden relative z-20">
+            <AppLogoIcon className="fill-current h-10 sm:h-12 text-black" />
+          </Link>
+          <div className="flex flex-col items-start text-left gap-2 sm:items-center sm:text-center">
+            <h1 className="font-medium text-xl">{title}</h1>
+            <p className="text-balance text-muted-foreground text-sm">{description}</p>
+          </div>
+          {children}
         </div>
-    );
+      </div>
+    </div>
+  );
 }

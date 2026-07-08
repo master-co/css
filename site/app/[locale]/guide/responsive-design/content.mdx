@@ -1,6 +1,6 @@
 ## Overview [sr-only]
 <ResizeZone width="100%" originX="center" showRuler>
-    <IFrame src="/examples/responsive-gallery" height={360} />
+  <IFrame src="/examples/responsive-gallery" height={360} />
 </ResizeZone>
 ```html
 <!-- @MARK @xs @sm @md -->
@@ -29,10 +29,10 @@ Use [comparison](/guide/conditional-queries#comparison-operators) and [logical](
 <div class="hidden@sm&<=md">…</div>
 ```
 <details>
-    <summary>Generated CSS</summary>
-    <Class2CSS>
-        {['hidden@sm&<=md']}
-    </Class2CSS>
+  <summary>Generated CSS</summary>
+  <Class2CSS>
+    {['hidden@sm&<=md']}
+  </Class2CSS>
 </details>
 
 ### Creating responsive wrappers
@@ -52,29 +52,29 @@ The `container` class is a utility class that applies the `container-type: inlin
 
 (resize) Try making the container smaller.
 <ResizeZone width="100%" originX="center" showRuler>
-    <Demo>
-        <div className="overflow:hidden container w:full b:1px|solid|base r:lg surface:raised">
-            <div className="flex flex-col@container(<=2xs)">
-                <Image src="/images/blur.png" className="w:3xs aspect-ratio:3/2 object-cover {w:full;aspect-ratio:16/9}@container(<=2xs)" width={300} height={200} alt="container left" />
-                <div className='p:lg|xl'>
-                    <div className='text:md font:medium text:neutral'>Lorem ipsum</div>
-                    <div className='mt:3xs text:sm'>It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.</div>
-                </div>
-            </div>
+  <Demo>
+    <div className="overflow:hidden container w:full b:1px|solid|base r:lg surface:raised">
+      <div className="flex flex-col@container(<=2xs)">
+        <Image src="/images/blur.png" className="w:3xs aspect-ratio:3/2 object-cover {w:full;aspect-ratio:16/9}@container(<=2xs)" width={300} height={200} alt="container left" />
+        <div className='p:lg|xl'>
+          <div className='text:md font:medium text:neutral'>Lorem ipsum</div>
+          <div className='mt:3xs text:sm'>It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.</div>
         </div>
-    </Demo>
+      </div>
+    </div>
+  </Demo>
 </ResizeZone>
 ```html
 <div class="container …">
-    <!-- @MARK @container(<=2xs) -->
-    <div class="flex flex-col@container(<=2xs)">…</div>
+  <!-- @MARK @container(<=2xs) -->
+  <div class="flex flex-col@container(<=2xs)">…</div>
 </div>
 ```
 <details>
-    <summary>Generated CSS</summary>
-    <Class2CSS>
-        {['container', 'flex-col@container(<=2xs)']}
-    </Class2CSS>
+  <summary>Generated CSS</summary>
+  <Class2CSS>
+    {['container', 'flex-col@container(<=2xs)']}
+  </Class2CSS>
 </details>
 Container queries use the [container scale](/guide/containers), which can use different values from viewport breakpoints.
 
@@ -85,10 +85,10 @@ Use [comparison](/guide/conditional-queries#comparison-operators) and [logical](
 <div class="hidden@container(sm&<=md)">…</div>
 ```
 <details>
-    <summary>Generated CSS</summary>
-    <Class2CSS>
-        {['hidden@container(sm&<=md)']}
-    </Class2CSS>
+  <summary>Generated CSS</summary>
+  <Class2CSS>
+    {['hidden@container(sm&<=md)']}
+  </Class2CSS>
 </details>
 
 ### Creating named containers
@@ -96,15 +96,15 @@ Use the `container:<name>/<type>` to create a named container with a specific ty
 ```html
 <!-- @MARK container:card/inline-size -->
 <div class="container:card/inline-size">
-    <!-- @MARK @container(card) -->
-    <div class="hidden@card(3xs)"></div>
+  <!-- @MARK @container(card) -->
+  <div class="hidden@card(3xs)"></div>
 </div>
 ```
 <details>
-    <summary>Generated CSS</summary>
-    <Class2CSS>
-        {['container:card/inline-size', 'hidden@card(3xs)']}
-    </Class2CSS>
+  <summary>Generated CSS</summary>
+  <Class2CSS>
+    {['container:card/inline-size', 'hidden@card(3xs)']}
+  </Class2CSS>
 </details>
 
 ---
@@ -133,10 +133,10 @@ Gradually adjust the UI for larger viewports.
 <p class="font:2xl font:3xl@>=md …">
 ```
 <details>
-    <summary>Generated CSS</summary>
-    <Class2CSS>
-        {['font:2xl', 'font:3xl@md']}
-    </Class2CSS>
+  <summary>Generated CSS</summary>
+  <Class2CSS>
+    {['font:2xl', 'font:3xl@md']}
+  </Class2CSS>
 </details>
 - Paragraph font size is `24/16rem` in viewport `<1024/16rem`
 - Paragraph font size is `32/16rem` in viewport `>=1024/16rem`
@@ -160,10 +160,10 @@ Gradually adjust the UI for smaller viewports.
 <p class="font:3xl font:2xl@<md …">
 ```
 <details>
-    <summary>Generated CSS</summary>
-    <Class2CSS>
-        {['font:3xl', 'font:2xl@<md']}
-    </Class2CSS>
+  <summary>Generated CSS</summary>
+  <Class2CSS>
+    {['font:3xl', 'font:2xl@<md']}
+  </Class2CSS>
 </details>
 - Paragraph font size is `24/16rem` in viewport `<1024/16rem`
 - Paragraph font size is `32/16rem` in viewport `>=1024/16rem`

@@ -1,7 +1,7 @@
 <script>
-    let isActive = true;
+  let isActive = true;
 </script>
 
 <div class={isActive ? "text-center" : ""}>
-    This element has dynamic class assignment.
+  This element has dynamic class assignment.
 </div>

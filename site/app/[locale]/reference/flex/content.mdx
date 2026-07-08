@@ -7,16 +7,16 @@ Use `flex:1` on a flex item that should grow and shrink to take the available sp
 ```html
 <!-- @MARK flex --><!-- @MARK flex:1 -->
 <div class="flex gap:md">
-    <aside class="flex:0 w:24x">...</aside>
-    <main class="flex:1 min-w:0">...</main>
+  <aside class="flex:0 w:24x">...</aside>
+  <main class="flex:1 min-w:0">...</main>
 </div>
 ```
 
 <details>
-    <summary>Generated CSS</summary>
-    <Class2CSS>
-        {['flex', 'w:24x', 'flex:0', 'flex:1', 'min-w:0']}
-    </Class2CSS>
+  <summary>Generated CSS</summary>
+  <Class2CSS>
+    {['flex', 'w:24x', 'flex:0', 'flex:1', 'min-w:0']}
+  </Class2CSS>
 </details>
 
 ### Prevent an item from flexing
@@ -24,8 +24,8 @@ Use `flex:0` for icons, fixed media, and side controls that should keep their me
 ```html
 <!-- @MARK flex:0 --><!-- @MARK size:10x -->
 <div class="flex items-center gap:sm">
-    <img class="flex:0 size:10x" src="..." alt="" />
-    <span class="min-w:0">Profile details</span>
+  <img class="flex:0 size:10x" src="..." alt="" />
+  <span class="min-w:0">Profile details</span>
 </div>
 ```
 
@@ -34,7 +34,7 @@ The `flex` property is shorthand for `flex-grow`, `flex-shrink`, and `flex-basis
 ```html
 <!-- @MARK flex:0|0|18x -->
 <aside class="flex:0|0|18x">
-    ...
+  ...
 </aside>
 ```
 
@@ -45,7 +45,7 @@ Reach for [flex-grow](/reference/flex-grow), [flex-shrink](/reference/flex-shrin
 ```html
 <!-- @MARK flex -->
 <section class="flex">
-    <div class="flex:1">...</div>
+  <div class="flex:1">...</div>
 </section>
 ```
 

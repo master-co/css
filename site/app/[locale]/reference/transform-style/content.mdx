@@ -7,15 +7,15 @@ Use `transform-style:preserve-3d` on the parent when transformed children should
 ```html
 <!-- @MARK transform-style:preserve-3d -->
 <div class="transform-style:preserve-3d">
-    <div class="transform:translateZ(24px)">Front layer</div>
+  <div class="transform:translateZ(24px)">Front layer</div>
 </div>
 ```
 
 <details>
-    <summary>Generated CSS</summary>
-    <Class2CSS>
-        {['transform-style:preserve-3d']}
-    </Class2CSS>
+  <summary>Generated CSS</summary>
+  <Class2CSS>
+    {['transform-style:preserve-3d']}
+  </Class2CSS>
 </details>
 
 ### Flatten nested transforms
@@ -23,7 +23,7 @@ Use `transform-style:flat` when children should render in the same plane as the 
 ```html
 <!-- @MARK transform-style:flat -->
 <div class="transform-style:flat">
-    <div class="transform:rotateY(20deg)">Flattened child</div>
+  <div class="transform:rotateY(20deg)">Flattened child</div>
 </div>
 ```
 
@@ -31,7 +31,7 @@ Use `transform-style:flat` when children should render in the same plane as the 
 `transform-style:*` does not add perspective by itself. Add perspective through `transform:*` or a component style when depth should be visible.
 ```html
 <div class="transform:perspective(800px) transform-style:preserve-3d">
-    3D scene
+  3D scene
 </div>
 ```
 

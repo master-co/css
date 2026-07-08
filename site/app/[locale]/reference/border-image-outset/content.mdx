@@ -5,17 +5,17 @@
 ### Extend the border image outside the box
 Use `border-image-outset` to paint the border image beyond the element's border box. The outset area does not create extra layout space.
 <Demo $py={0}>
-    <DemoPanel>
-        <div className="m:xl p:10x b:12px|solid|transparent r:lg border-image-outset:8 border-image-slice:30 border-image-source:linear-gradient(45deg,dodgerblue,hotpink) surface:raised">
-            <div className="font-weight:560 font:lg text:neutral">Outset 8</div>
-            <p className="my:md font:sm text:gray">The painted border image extends outward.</p>
-        </div>
-    </DemoPanel>
+  <DemoPanel>
+    <div className="m:xl p:10x b:12px|solid|transparent r:lg border-image-outset:8 border-image-slice:30 border-image-source:linear-gradient(45deg,dodgerblue,hotpink) surface:raised">
+      <div className="font-weight:560 font:lg text:neutral">Outset 8</div>
+      <p className="my:md font:sm text:gray">The painted border image extends outward.</p>
+    </div>
+  </DemoPanel>
 </Demo>
 ```html
 <!-- @MARK border-image-outset:8 -->
 <div class="b:12px|solid|transparent border-image-outset:8 border-image-slice:30 border-image-source:linear-gradient(45deg,dodgerblue,hotpink)">
-    Outset 8
+  Outset 8
 </div>
 ```
 
@@ -23,7 +23,7 @@ Use `border-image-outset` to paint the border image beyond the element's border 
 ```html
 <!-- @MARK border-image-outset:8|16 -->
 <div class="b:12px|solid|transparent border-image-outset:8|16 border-image-slice:30 border-image-source:linear-gradient(45deg,dodgerblue,hotpink)">
-    Vertical and horizontal outset
+  Vertical and horizontal outset
 </div>
 ```
 

@@ -5,13 +5,13 @@ import nextTs from 'eslint-config-next/typescript'
 import css from '@master/eslint-config-css'
 
 export default defineConfig([
-    ...fixupConfigRules(nextVitals),
-    ...fixupConfigRules(nextTs),
-    ...css,
-    globalIgnores([
-        '.next/**',
-        'out/**',
-        'build/**',
-        'next-env.d.ts'
-    ])
+  ...fixupConfigRules(nextVitals),
+  ...fixupConfigRules(nextTs),
+  ...css,
+  globalIgnores([
+    '.next/**',
+    'out/**',
+    'build/**',
+    'next-env.d.ts'
+  ])
 ])

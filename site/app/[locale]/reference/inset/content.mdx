@@ -5,22 +5,22 @@
 ### Pin all sides
 Use `inset:*` on positioned elements to set `top`, `right`, `bottom`, and `left` together.
 <Demo>
-    <div className="bg:stripe-pink">
-        <div className="box rel inset:20px w:180px aspect-ratio:1/1">`inset:20px`</div>
-    </div>
+  <div className="bg:stripe-pink">
+    <div className="box rel inset:20px w:180px aspect-ratio:1/1">`inset:20px`</div>
+  </div>
 </Demo>
 ```html
 <!-- @MARK inset:20px -->
 <div>
-    <div class="rel inset:20px">inset:5x</div>
+  <div class="rel inset:20px">inset:5x</div>
 </div>
 ```
 
 <details>
-    <summary>Generated CSS</summary>
-    <Class2CSS>
-        {['inset:20px']}
-    </Class2CSS>
+  <summary>Generated CSS</summary>
+  <Class2CSS>
+    {['inset:20px']}
+  </Class2CSS>
 </details>
 
 ### Pin one side
@@ -28,7 +28,7 @@ Use side utilities such as `top:*`, `right:*`, `bottom:*`, and `left:*` when onl
 ```html
 <!-- @MARK top:0 --><!-- @MARK right:0 -->
 <button class="abs right:0 top:0">
-    Close
+  Close
 </button>
 ```
 
@@ -36,7 +36,7 @@ Use side utilities such as `top:*`, `right:*`, `bottom:*`, and `left:*` when onl
 `inset:0` is useful for overlays that should cover their positioned parent.
 ```html
 <div class="rel">
-    <div class="abs inset:0"></div>
+  <div class="abs inset:0"></div>
 </div>
 ```
 

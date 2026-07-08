@@ -18,9 +18,9 @@ It does not validate classes, generate CSS, resolve manifests, compile directive
 
 ```ts
 import {
-    collectCSSDirectiveRanges,
-    findCSSManifestEntryStatements,
-    tokenizeMasterCSSClass,
+  collectCSSDirectiveRanges,
+  findCSSManifestEntryStatements,
+  tokenizeMasterCSSClass,
 } from '@master/css-lexer'
 ```
 

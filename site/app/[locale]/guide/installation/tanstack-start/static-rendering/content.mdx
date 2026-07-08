@@ -1,45 +1,45 @@
 TanStack Start supports Vite and Rsbuild. This guide uses the Vite setup path.
 
 <StepSection>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Create a project
-            If you don't have a TanStack Start project, create one first.
-        </StepL>
-        <StepR>
-            ```bash name=Terminal
-            npx @tanstack/cli@latest create
-            cd my-app
-            ```
-        </StepR>
-    </Step>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Add Master CSS
-            Run the installer in static mode from the TanStack Start project root. Static mode scans complete class strings and emits generated CSS at build time.
-        </StepL>
-        <StepR>
-            ```bash name=Terminal
-            npm create @master/css@rc -- --framework tanstack-start --mode static --yes
-            ```
-        </StepR>
-    </Step>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Start dev server
-            Run the command to start the TanStack Start dev server.
-        </StepL>
-        <StepR>
-            ```bash name=Terminal&action=run
-            dev
-            ```
-        </StepR>
-    </Step>
-    <Step>
-        ### <StepNum />Start using Master CSS
-        Now style your first route using Master CSS syntax.
-    </Step>
-    <HelloWorld url="localhost:3000" />
+  <Step $row>
+    <StepL>
+      ### <StepNum />Create a project
+      If you don't have a TanStack Start project, create one first.
+    </StepL>
+    <StepR>
+      ```bash name=Terminal
+      npx @tanstack/cli@latest create
+      cd my-app
+      ```
+    </StepR>
+  </Step>
+  <Step $row>
+    <StepL>
+      ### <StepNum />Add Master CSS
+      Run the installer in static mode from the TanStack Start project root. Static mode scans complete class strings and emits generated CSS at build time.
+    </StepL>
+    <StepR>
+      ```bash name=Terminal
+      npm create @master/css@rc -- --framework tanstack-start --mode static --yes
+      ```
+    </StepR>
+  </Step>
+  <Step $row>
+    <StepL>
+      ### <StepNum />Start dev server
+      Run the command to start the TanStack Start dev server.
+    </StepL>
+    <StepR>
+      ```bash name=Terminal&action=run
+      dev
+      ```
+    </StepR>
+  </Step>
+  <Step>
+    ### <StepNum />Start using Master CSS
+    Now style your first route using Master CSS syntax.
+  </Step>
+  <HelloWorld url="localhost:3000" />
 </StepSection>
 
 The installer registers `@master/css.vite` in static mode, creates `src/styles/app.css`, and imports it from `src/routes/__root.tsx`.
@@ -48,14 +48,14 @@ The installer registers `@master/css.vite` in static mode, creates `src/styles/a
 import { createFileRoute } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/')({
-    component: Home
+  component: Home
 })
 
 function Home() {
-    return (
-        <h1 className="m:2xl italic font:5xl font:heavy text:neutral">
-            Hello World
-        </h1>
-    )
+  return (
+    <h1 className="m:2xl italic font:5xl font:heavy text:neutral">
+      Hello World
+    </h1>
+  )
 }
 ```

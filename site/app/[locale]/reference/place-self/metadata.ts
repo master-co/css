@@ -1,13 +1,13 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'place-self',
-    description: 'Setting align-self and justify-self at the same time.',
-    category: 'Flexbox & Grid',
-    type: 'entity',
-    canIUseLink: 'https://caniuse.com/?search=place-self',
-    mdnLink: 'https://developer.mozilla.org/en-US/docs/Web/CSS/place-self',
-    fileURL: import.meta.url
+  title: 'place-self',
+  description: 'Setting align-self and justify-self at the same time.',
+  category: 'Flexbox & Grid',
+  type: 'entity',
+  canIUseLink: 'https://caniuse.com/?search=place-self',
+  mdnLink: 'https://developer.mozilla.org/en-US/docs/Web/CSS/place-self',
+  fileURL: import.meta.url
 })
 
 export default metadata

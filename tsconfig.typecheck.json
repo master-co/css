@@ -1,95 +1,95 @@
 {
-    "files": [],
-    "references": [
-        {
-            "path": "./packages/astro/tsconfig.typecheck.json"
-        },
-        {
-            "path": "./packages/cli/tsconfig.typecheck.json"
-        },
-        {
-            "path": "./packages/compiler/tsconfig.typecheck.json"
-        },
-        {
-            "path": "./packages/diagnostics/tsconfig.typecheck.json"
-        },
-        {
-            "path": "./packages/facade/tsconfig.typecheck.json"
-        },
-        {
-            "path": "./packages/engine/tsconfig.typecheck.json"
-        },
-        {
-            "path": "./packages/eslint-config/tsconfig.typecheck.json"
-        },
-        {
-            "path": "./packages/eslint-plugin/tsconfig.typecheck.json"
-        },
-        {
-            "path": "./packages/figma/tsconfig.typecheck.json"
-        },
-        {
-            "path": "./packages/integration/tsconfig.typecheck.json"
-        },
-        {
-            "path": "./packages/language/tsconfig.typecheck.json"
-        },
-        {
-            "path": "./packages/language-server/tsconfig.typecheck.json"
-        },
-        {
-            "path": "./packages/language-service/tsconfig.typecheck.json"
-        },
-        {
-            "path": "./packages/lexer/tsconfig.typecheck.json"
-        },
-        {
-            "path": "./packages/lint/tsconfig.typecheck.json"
-        },
-        {
-            "path": "./packages/mcp/tsconfig.typecheck.json"
-        },
-        {
-            "path": "./packages/next/tsconfig.typecheck.json"
-        },
-        {
-            "path": "./packages/preset/tsconfig.typecheck.json"
-        },
-        {
-            "path": "./packages/project/tsconfig.typecheck.json"
-        },
-        {
-            "path": "./packages/react/tsconfig.typecheck.json"
-        },
-        {
-            "path": "./packages/runtime/tsconfig.typecheck.json"
-        },
-        {
-            "path": "./packages/scanner/tsconfig.typecheck.json"
-        },
-        {
-            "path": "./packages/schema/tsconfig.typecheck.json"
-        },
-        {
-            "path": "./packages/server/tsconfig.typecheck.json"
-        },
-        {
-            "path": "./packages/source/tsconfig.typecheck.json"
-        },
-        {
-            "path": "./packages/stylesheet/tsconfig.typecheck.json"
-        },
-        {
-            "path": "./packages/validator/tsconfig.typecheck.json"
-        },
-        {
-            "path": "./packages/vite/tsconfig.typecheck.json"
-        },
-        {
-            "path": "./packages/vscode/tsconfig.typecheck.json"
-        },
-        {
-            "path": "./packages/webpack/tsconfig.typecheck.json"
-        }
-    ]
+  "files": [],
+  "references": [
+    {
+      "path": "./packages/astro/tsconfig.typecheck.json"
+    },
+    {
+      "path": "./packages/cli/tsconfig.typecheck.json"
+    },
+    {
+      "path": "./packages/compiler/tsconfig.typecheck.json"
+    },
+    {
+      "path": "./packages/diagnostics/tsconfig.typecheck.json"
+    },
+    {
+      "path": "./packages/facade/tsconfig.typecheck.json"
+    },
+    {
+      "path": "./packages/engine/tsconfig.typecheck.json"
+    },
+    {
+      "path": "./packages/eslint-config/tsconfig.typecheck.json"
+    },
+    {
+      "path": "./packages/eslint-plugin/tsconfig.typecheck.json"
+    },
+    {
+      "path": "./packages/figma/tsconfig.typecheck.json"
+    },
+    {
+      "path": "./packages/integration/tsconfig.typecheck.json"
+    },
+    {
+      "path": "./packages/language/tsconfig.typecheck.json"
+    },
+    {
+      "path": "./packages/language-server/tsconfig.typecheck.json"
+    },
+    {
+      "path": "./packages/language-service/tsconfig.typecheck.json"
+    },
+    {
+      "path": "./packages/lexer/tsconfig.typecheck.json"
+    },
+    {
+      "path": "./packages/lint/tsconfig.typecheck.json"
+    },
+    {
+      "path": "./packages/mcp/tsconfig.typecheck.json"
+    },
+    {
+      "path": "./packages/next/tsconfig.typecheck.json"
+    },
+    {
+      "path": "./packages/preset/tsconfig.typecheck.json"
+    },
+    {
+      "path": "./packages/project/tsconfig.typecheck.json"
+    },
+    {
+      "path": "./packages/react/tsconfig.typecheck.json"
+    },
+    {
+      "path": "./packages/runtime/tsconfig.typecheck.json"
+    },
+    {
+      "path": "./packages/scanner/tsconfig.typecheck.json"
+    },
+    {
+      "path": "./packages/schema/tsconfig.typecheck.json"
+    },
+    {
+      "path": "./packages/server/tsconfig.typecheck.json"
+    },
+    {
+      "path": "./packages/source/tsconfig.typecheck.json"
+    },
+    {
+      "path": "./packages/stylesheet/tsconfig.typecheck.json"
+    },
+    {
+      "path": "./packages/validator/tsconfig.typecheck.json"
+    },
+    {
+      "path": "./packages/vite/tsconfig.typecheck.json"
+    },
+    {
+      "path": "./packages/vscode/tsconfig.typecheck.json"
+    },
+    {
+      "path": "./packages/webpack/tsconfig.typecheck.json"
+    }
+  ]
 }

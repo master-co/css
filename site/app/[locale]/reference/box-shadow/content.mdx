@@ -9,15 +9,15 @@ Use `shadow:*` tokens for common elevation levels. Preset shadow tokens are defi
 ```html
 <!-- @MARK shadow:md -->
 <article class="shadow:md">
-    ...
+  ...
 </article>
 ```
 
 <details>
-    <summary>Generated CSS</summary>
-    <Class2CSS>
-        {['shadow:md']}
-    </Class2CSS>
+  <summary>Generated CSS</summary>
+  <Class2CSS>
+    {['shadow:md']}
+  </Class2CSS>
 </details>
 
 ### Use raw values
@@ -46,11 +46,11 @@ Override the same preset `shadow-*` key in `@theme light` and `@theme dark` when
 
 ```css name=index.css
 @theme light {
-    --shadow-sm: 0 0 0 1px oklch(0% 0 none / .05), 0 2px 4px -2px oklch(0% 0 none / .08), 0 8px 16px -4px oklch(0% 0 none / .10);
+  --shadow-sm: 0 0 0 1px oklch(0% 0 none / .05), 0 2px 4px -2px oklch(0% 0 none / .08), 0 8px 16px -4px oklch(0% 0 none / .10);
 }
 
 @theme dark {
-    --shadow-sm: 0 0 0 1px oklch(100% 0 none / .06), 0 2px 4px -2px oklch(0% 0 none / .38), 0 8px 16px -4px oklch(0% 0 none / .30);
+  --shadow-sm: 0 0 0 1px oklch(100% 0 none / .06), 0 2px 4px -2px oklch(0% 0 none / .38), 0 8px 16px -4px oklch(0% 0 none / .30);
 }
 ```
 

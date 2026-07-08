@@ -6,7 +6,7 @@ const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
 const presetCSS = createCSSWithNativeDeclarations(defaultManifest)
 
 export const createPresetCSS = () => {
-    return createCSSWithNativeDeclarations(defaultManifest)
+  return createCSSWithNativeDeclarations(defaultManifest)
 }
 
 export default presetCSS

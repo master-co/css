@@ -14,180 +14,180 @@ export const dynamic = 'force-static'
 export const revalidate = false
 
 const OPEN_COLLECTIVE_QUERY = `{
-    account(slug: "master-co") {
-        members(role: BACKER) {
-            totalCount
-            nodes {
-                updatedAt
-                role
-                tier {
-                    name
-                    slug
-                }
-                account {
-                    name
-                    slug
-                    imageUrl
-                    description
-                    website
-                    twitterHandle
-                    githubHandle
-                    legalName
-                    longDescription
-                    backgroundImageUrl
-                    currency
-                    expensePolicy
-                }
-            }
+  account(slug: "master-co") {
+    members(role: BACKER) {
+      totalCount
+      nodes {
+        updatedAt
+        role
+        tier {
+          name
+          slug
         }
+        account {
+          name
+          slug
+          imageUrl
+          description
+          website
+          twitterHandle
+          githubHandle
+          legalName
+          longDescription
+          backgroundImageUrl
+          currency
+          expensePolicy
+        }
+      }
     }
+  }
 }`
 
 const GITHUB_SPONSORS_QUERY = `{
-    organization(login: "master-co") {
-        sponsorshipsAsMaintainer(first: 100) {
-            nodes {
-                tierSelectedAt
-                tier {
-                    name
-                    description
-                }
-                sponsor {
-                    name
-                    login
-                    avatarUrl
-                    websiteUrl
-                    twitterUsername
-                    url
-                    bio
-                    company
-                    email
-                    location
-                    projectsResourcePath
-                    projectsUrl
-                    resourcePath
-                }
-            }
+  organization(login: "master-co") {
+    sponsorshipsAsMaintainer(first: 100) {
+      nodes {
+        tierSelectedAt
+        tier {
+          name
+          description
         }
+        sponsor {
+          name
+          login
+          avatarUrl
+          websiteUrl
+          twitterUsername
+          url
+          bio
+          company
+          email
+          location
+          projectsResourcePath
+          projectsUrl
+          resourcePath
+        }
+      }
     }
+  }
 }`
 
 async function readSponsorResponse(response: Response, source: string) {
-    if (response.ok) return await response.json()
-    console.error(`${source} sponsor request failed: ${response.status} ${await response.text()}`)
+  if (response.ok) return await response.json()
+  console.error(`${source} sponsor request failed: ${response.status} ${await response.text()}`)
 }
 
 async function getOpenCollectiveMembers() {
-    if (!openCollectiveToken) return []
-    try {
-        const response = await fetch(`https://api.opencollective.com/graphql/v2/${openCollectiveToken}`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ query: OPEN_COLLECTIVE_QUERY }),
-        })
-        return (await readSponsorResponse(response, 'Open Collective'))?.data?.account?.members?.nodes ?? []
-    } catch (error) {
-        console.error('Open Collective sponsor request failed:', error)
-        return []
-    }
+  if (!openCollectiveToken) return []
+  try {
+    const response = await fetch(`https://api.opencollective.com/graphql/v2/${openCollectiveToken}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ query: OPEN_COLLECTIVE_QUERY }),
+    })
+    return (await readSponsorResponse(response, 'Open Collective'))?.data?.account?.members?.nodes ?? []
+  } catch (error) {
+    console.error('Open Collective sponsor request failed:', error)
+    return []
+  }
 }
 
 async function getGitHubSponsorMembers() {
-    const githubToken = process.env.GITHUB_SPONSORS_TOKEN || process.env.GITHUB_TOKEN
-    if (!githubToken) return []
-    try {
-        const response = await fetch('https://api.github.com/graphql', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                Authorization: `bearer ${githubToken}`
-            },
-            body: JSON.stringify({ query: GITHUB_SPONSORS_QUERY })
-        })
-        return (await readSponsorResponse(response, 'GitHub'))?.data?.organization?.sponsorshipsAsMaintainer?.nodes ?? []
-    } catch (error) {
-        console.error('GitHub sponsor request failed:', error)
-        return []
-    }
+  const githubToken = process.env.GITHUB_SPONSORS_TOKEN || process.env.GITHUB_TOKEN
+  if (!githubToken) return []
+  try {
+    const response = await fetch('https://api.github.com/graphql', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `bearer ${githubToken}`
+      },
+      body: JSON.stringify({ query: GITHUB_SPONSORS_QUERY })
+    })
+    return (await readSponsorResponse(response, 'GitHub'))?.data?.organization?.sponsorshipsAsMaintainer?.nodes ?? []
+  } catch (error) {
+    console.error('GitHub sponsor request failed:', error)
+    return []
+  }
 }
 
 export async function generateMetadata(props: any, parent: any) {
-    return await generate(metadata, props, dictionaries, parent)
+  return await generate(metadata, props, dictionaries, parent)
 }
 
 export default async function Page(props: any): Promise<React.ReactNode> {
-    const getSponsor = async () => {
-        const [openCollectiveMembers, githubSponsorMembers] = await Promise.all([
-            getOpenCollectiveMembers(),
-            getGitHubSponsorMembers()
-        ])
+  const getSponsor = async () => {
+    const [openCollectiveMembers, githubSponsorMembers] = await Promise.all([
+      getOpenCollectiveMembers(),
+      getGitHubSponsorMembers()
+    ])
 
-        const sponsors: any[] = []
+    const sponsors: any[] = []
 
-        for (const sponsor of openCollectiveMembers) {
-            const tierName = sponsor.tier?.name.trim() ? sponsor.tier?.name.trim() : 'freely'
-            sponsors.push({
-                updatedAt: Math.floor(new Date(sponsor.updatedAt).getTime() / 1000),
-                tierName,
-                ...sponsor.account,
-                avatarUrl: sponsor.account.imageUrl,
-                username: sponsor.account.slug,
-                websiteUrl: sponsor.account.website,
-                twitterUrl: sponsor.account.twitterHandle ? `https://twitter.com/${sponsor.account.twitterHandle}` : null,
-                githubUrl: sponsor.account.githubHandle ? `https://github.com/${sponsor.account.githubHandle}` : null,
-                from: 'Open Collective',
-            })
-        }
-
-        for (const sponsor of githubSponsorMembers) {
-            const firstLine = sponsor.tier?.description?.split('\n')[0]
-            const tierName: string = (firstLine ? firstLine : 'freely')
-                .toLowerCase()
-                .trim()
-                .replace(/\s/g, '-')
-                .replace(
-                    /([\u2700-\u27BF]|[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2011-\u26FF]|\uD83E[\uDD10-\uDDFF])/g,
-                    ''
-                )
-                .replace(/\s+/g, ' ')
-                .trim()
-
-            sponsors.push({
-                updatedAt: Math.floor(new Date(sponsor.tierSelectedAt).getTime() / 1000),
-                tierName,
-                ...sponsor.sponsor,
-                // avatarUrl: sponsor.sponsor.avatarUrl,
-                username: sponsor.sponsor.login,
-                // websiteUrl: sponsor.sponsor.websiteUrl,
-                twitterUrl: sponsor.sponsor.twitterUsername ? `https://twitter.com/${sponsor.sponsor.twitterUsername}` : null,
-                githubUrl: sponsor.sponsor.login ? `https://github.com/${sponsor.sponsor.login}` : null,
-                from: 'Github Sponsors',
-            })
-        }
-
-        return sponsors.sort((a, b) => b.updatedAt - a.updatedAt)
+    for (const sponsor of openCollectiveMembers) {
+      const tierName = sponsor.tier?.name.trim() ? sponsor.tier?.name.trim() : 'freely'
+      sponsors.push({
+        updatedAt: Math.floor(new Date(sponsor.updatedAt).getTime() / 1000),
+        tierName,
+        ...sponsor.account,
+        avatarUrl: sponsor.account.imageUrl,
+        username: sponsor.account.slug,
+        websiteUrl: sponsor.account.website,
+        twitterUrl: sponsor.account.twitterHandle ? `https://twitter.com/${sponsor.account.twitterHandle}` : null,
+        githubUrl: sponsor.account.githubHandle ? `https://github.com/${sponsor.account.githubHandle}` : null,
+        from: 'Open Collective',
+      })
     }
 
-    const sponsorsOfLevel: Record<string, any[]> = {}
-    const sponsors: any[] = await getSponsor()
-    const sponsorTiers = getSponsorTiers('')
-    sponsorTiers.forEach((eachSponsorTier) => {
-        sponsorsOfLevel[eachSponsorTier.name] = sponsors.filter((eachSponsor) => eachSponsor.tierName === eachSponsorTier.name)
-    })
+    for (const sponsor of githubSponsorMembers) {
+      const firstLine = sponsor.tier?.description?.split('\n')[0]
+      const tierName: string = (firstLine ? firstLine : 'freely')
+        .toLowerCase()
+        .trim()
+        .replace(/\s/g, '-')
+        .replace(
+          /([\u2700-\u27BF]|[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2011-\u26FF]|\uD83E[\uDD10-\uDDFF])/g,
+          ''
+        )
+        .replace(/\s+/g, ' ')
+        .trim()
 
-    const backers = sponsors.filter(
-        (eachSponsor, index) =>
-            sponsors.findIndex(
-                (_eachSponsor) => _eachSponsor.username === eachSponsor.username && _eachSponsor.from === eachSponsor.from
-            ) === index && !sponsorTiers.map((eachSponsorTier) => eachSponsorTier.name).includes(eachSponsor.tierName)
-    )
+      sponsors.push({
+        updatedAt: Math.floor(new Date(sponsor.tierSelectedAt).getTime() / 1000),
+        tierName,
+        ...sponsor.sponsor,
+        // avatarUrl: sponsor.sponsor.avatarUrl,
+        username: sponsor.sponsor.login,
+        // websiteUrl: sponsor.sponsor.websiteUrl,
+        twitterUrl: sponsor.sponsor.twitterUsername ? `https://twitter.com/${sponsor.sponsor.twitterUsername}` : null,
+        githubUrl: sponsor.sponsor.login ? `https://github.com/${sponsor.sponsor.login}` : null,
+        from: 'Github Sponsors',
+      })
+    }
 
-    return <>
-        <Layout {...props} pageFileURL={import.meta.url} dictionaries={dictionaries} metadata={metadata} $hideLeftSide>
-            <Backers backers={backers} />
-            {/* <Donors sponsorTiers={sponsorTiers} sponsorsOfLevel={sponsorsOfLevel} /> */}
-            <DonationModal />
-            <Content />
-        </Layout >
-    </>
+    return sponsors.sort((a, b) => b.updatedAt - a.updatedAt)
+  }
+
+  const sponsorsOfLevel: Record<string, any[]> = {}
+  const sponsors: any[] = await getSponsor()
+  const sponsorTiers = getSponsorTiers('')
+  sponsorTiers.forEach((eachSponsorTier) => {
+    sponsorsOfLevel[eachSponsorTier.name] = sponsors.filter((eachSponsor) => eachSponsor.tierName === eachSponsorTier.name)
+  })
+
+  const backers = sponsors.filter(
+    (eachSponsor, index) =>
+      sponsors.findIndex(
+        (_eachSponsor) => _eachSponsor.username === eachSponsor.username && _eachSponsor.from === eachSponsor.from
+      ) === index && !sponsorTiers.map((eachSponsorTier) => eachSponsorTier.name).includes(eachSponsor.tierName)
+  )
+
+  return <>
+    <Layout {...props} pageFileURL={import.meta.url} dictionaries={dictionaries} metadata={metadata} $hideLeftSide>
+      <Backers backers={backers} />
+      {/* <Donors sponsorTiers={sponsorTiers} sponsorsOfLevel={sponsorsOfLevel} /> */}
+      <DonationModal />
+      <Content />
+    </Layout >
+  </>
 }

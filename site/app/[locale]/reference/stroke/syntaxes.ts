@@ -1,5 +1,5 @@
 const syntaxes = [
-    ['stroke:`color`']
+  ['stroke:`color`']
 ]
 
 export default syntaxes

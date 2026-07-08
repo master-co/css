@@ -1,4 +1,4 @@
 export default defineNuxtConfig({
-    css: ['~/app.css'],
-    modules: ['../../../src/module'],
+  css: ['~/app.css'],
+  modules: ['../../../src/module'],
 })

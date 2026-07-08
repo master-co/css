@@ -1,20 +1,20 @@
 {
-    "version": "0.2.0",
-    "configurations": [
-        {
-            "name": "Run Extension",
-            "type": "extensionHost",
-            "request": "launch",
-            "sourceMaps": true,
-            "autoAttachChildProcesses": true,
-            "runtimeExecutable": "${execPath}",
-            "args": [
-                "--disable-extensions",
-                "--extensionDevelopmentPath=${workspaceFolder}/packages/vscode"
-            ],
-            "outFiles": [ "${workspaceRoot}/packages/vscode/dist/**/*.cjs" ]
-            // todo: https://github.com/microsoft/vscode-eslint/blob/4d9fc40e71c403d359beaccdd4a6f8d027031513/.vscode/launch.json
-            // "preLaunchTask": "npm: watch"
-        }
-    ]
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Run Extension",
+      "type": "extensionHost",
+      "request": "launch",
+      "sourceMaps": true,
+      "autoAttachChildProcesses": true,
+      "runtimeExecutable": "${execPath}",
+      "args": [
+        "--disable-extensions",
+        "--extensionDevelopmentPath=${workspaceFolder}/packages/vscode"
+      ],
+      "outFiles": [ "${workspaceRoot}/packages/vscode/dist/**/*.cjs" ]
+      // todo: https://github.com/microsoft/vscode-eslint/blob/4d9fc40e71c403d359beaccdd4a6f8d027031513/.vscode/launch.json
+      // "preLaunchTask": "npm: watch"
+    }
+  ]
 }

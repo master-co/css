@@ -1,25 +1,25 @@
 {
-    "eslint.useFlatConfig": true,
-    "yaml.format.singleQuote": true,
-    "[yaml]": {
-        "editor.insertSpaces": true,
-        "editor.tabSize": 4
-    },
-    "eslint.codeActionsOnSave.rules": [
-        "@master/css/sort-classes"
-    ],
-    "eslint.validate": [
-        "html",
-        "php",
-        "javascript",
-        "typescript",
-        "javascriptreact",
-        "typescriptreact",
-        "vue",
-        "svelte",
-        "rust",
-        "astro",
-        "markdown",
-        "mdx"
-    ]
+  "eslint.useFlatConfig": true,
+  "yaml.format.singleQuote": true,
+  "[yaml]": {
+    "editor.insertSpaces": true,
+    "editor.tabSize": 4
+  },
+  "eslint.codeActionsOnSave.rules": [
+    "@master/css/sort-classes"
+  ],
+  "eslint.validate": [
+    "html",
+    "php",
+    "javascript",
+    "typescript",
+    "javascriptreact",
+    "typescriptreact",
+    "vue",
+    "svelte",
+    "rust",
+    "astro",
+    "markdown",
+    "mdx"
+  ]
 }

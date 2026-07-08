@@ -2,8 +2,8 @@
 @source './app.vue';
 
 @layer components {
-    .box {
-        display: flex;
-        font-size: 1em;
-    }
+  .box {
+    display: flex;
+    font-size: 1em;
+  }
 }

@@ -1,10 +1,10 @@
 @import '@master/css';
 
 @layer components {
-    .btn {
-        display: inline-flex;
-        padding-left: 1rem;
-        padding-right: 1rem;
-        background-color: error;
-    }
+  .btn {
+    display: inline-flex;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    background-color: error;
+  }
 }

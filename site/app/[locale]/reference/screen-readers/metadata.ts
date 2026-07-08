@@ -1,11 +1,11 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'screen-readers',
-    description: 'Style utility for imporving the accessibility with screen readers.',
-    category: 'Accessibility',
-    type: 'entity',
-    fileURL: import.meta.url
+  title: 'screen-readers',
+  description: 'Style utility for imporving the accessibility with screen readers.',
+  category: 'Accessibility',
+  type: 'entity',
+  fileURL: import.meta.url
 })
 
 export default metadata

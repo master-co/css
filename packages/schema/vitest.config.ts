@@ -1,13 +1,13 @@
 import { defineConfig } from 'vitest/config'
 
 export default defineConfig({
-    test: {
-        include: [
-            'tests/**/*.{test,spec}.?(c|m)[jt]s?(x)',
-            'tests/**/test.?(c|m)[jt]s?(x)'
-        ]
-    },
-    resolve: {
-        tsconfigPaths: true
-    }
+  test: {
+    include: [
+      'tests/**/*.{test,spec}.?(c|m)[jt]s?(x)',
+      'tests/**/test.?(c|m)[jt]s?(x)'
+    ]
+  },
+  resolve: {
+    tsconfigPaths: true
+  }
 })

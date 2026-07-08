@@ -18,6 +18,6 @@ test.concurrent('native value namespace property', () => expect(hint('wid')?.map
 test.concurrent('removed key alias', () => expect(hint('d')?.map(({ label }) => label)).not.toContain('d:'))
 
 describe.concurrent('ambiguous', () => {
-    test.concurrent('t', () => expect(hint('t')?.map(({ label }) => label)).toContain('text:'))
-    test.concurrent('removed t alias', () => expect(hint('t')?.map(({ label }) => label)).not.toContain('t:'))
+  test.concurrent('t', () => expect(hint('t')?.map(({ label }) => label)).toContain('text:'))
+  test.concurrent('removed t alias', () => expect(hint('t')?.map(({ label }) => label)).not.toContain('t:'))
 })

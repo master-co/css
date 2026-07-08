@@ -1,20 +1,20 @@
 export const code1 =`
-    <!-- @MARK 30deg --><!-- @MARK 200ms -->
-    <p class="rotate:30deg animation-duration:200ms">
+  <!-- @MARK 30deg --><!-- @MARK 200ms -->
+  <p class="rotate:30deg animation-duration:200ms">
 `
 export const code2 =`
-    <!-- @MARK 30deg --><!-- @MARK .2s -->
-    <p class="rotate:30deg animation-duration:.2s">
+  <!-- @MARK 30deg --><!-- @MARK .2s -->
+  <p class="rotate:30deg animation-duration:.2s">
 `
 
 Master CSS does not guess property-specific units for bare numbers. Write the unit when the CSS value needs one.
 <Code lang="html">
-    {code1}
+  {code1}
 </Code>
 
 (o) Keep angle and time units explicit. <Dropped p1={code1} p2={code2} target="class" />
 <Code lang="html">
-    {code2}
+  {code2}
 </Code>
 
 `rotate:30` emits `rotate: 30`, which is not a valid angle in normal CSS. Use `rotate:30deg`.

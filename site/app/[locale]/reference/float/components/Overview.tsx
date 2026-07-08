@@ -5,15 +5,15 @@ import SyntaxPreview from './SyntaxPreview'
 import Basic from './Basic'
 
 export default () => {
-    const previewSyntax = 'float:left'
-    return (
-        <>
-            <SyntaxTable>
-                {syntaxes.map((syntax) =>
-                    <SyntaxTr value={syntax} key={syntax} previewSyntax={previewSyntax}></SyntaxTr>)
-                }
-            </SyntaxTable>
-            <SyntaxPreview className={previewSyntax} />
-        </>
-    )
+  const previewSyntax = 'float:left'
+  return (
+    <>
+      <SyntaxTable>
+        {syntaxes.map((syntax) =>
+          <SyntaxTr value={syntax} key={syntax} previewSyntax={previewSyntax}></SyntaxTr>)
+        }
+      </SyntaxTable>
+      <SyntaxPreview className={previewSyntax} />
+    </>
+  )
 }

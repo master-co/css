@@ -1,5 +1,5 @@
 export default {
-    variables: [
-        { namespace: 'content', key: 'external', value: '" ↗"' }
-    ]
+  variables: [
+    { namespace: 'content', key: 'external', value: '" ↗"' }
+  ]
 }

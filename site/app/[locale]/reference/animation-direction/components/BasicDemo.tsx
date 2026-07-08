@@ -3,13 +3,13 @@ import clsx from 'clsx'
 import Demo from 'internal/components/Demo'
 
 export default ({ className }: any) => {
-    const iconClassName = clsx(className, 'app-icon-primary size:12x animation:rotate|1s|linear|infinite stroke:.5')
-    return (
-        <Demo>
-            {className === 'animation-direction:normal' && <IconRotateClockwise className={iconClassName} />}
-            {className === 'animation-direction:reverse' && <IconRotate className={iconClassName} />}
-            {className === 'animation-direction:alternate' && <IconRefresh className={iconClassName} />}
-            {className === 'animation-direction:alternate-reverse' && <IconRefresh className={iconClassName} />}
-        </Demo>
-    )
+  const iconClassName = clsx(className, 'app-icon-primary size:12x animation:rotate|1s|linear|infinite stroke:.5')
+  return (
+    <Demo>
+      {className === 'animation-direction:normal' && <IconRotateClockwise className={iconClassName} />}
+      {className === 'animation-direction:reverse' && <IconRotate className={iconClassName} />}
+      {className === 'animation-direction:alternate' && <IconRefresh className={iconClassName} />}
+      {className === 'animation-direction:alternate-reverse' && <IconRefresh className={iconClassName} />}
+    </Demo>
+  )
 }

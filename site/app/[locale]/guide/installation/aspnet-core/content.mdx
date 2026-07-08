@@ -1,120 +1,120 @@
 Use Vite runtime rendering when ASP.NET Core owns Razor Pages or MVC views. ASP.NET Core serves the app, while the Vite-built Master CSS runtime generates class rules in the browser as Razor output appears.
 
 <StepSection>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Create a project
-            If you do not have an ASP.NET Core project, create one first.
-        </StepL>
-        <StepR>
-            ```bash name=Terminal
-            dotnet new webapp -o my-app
-            cd my-app
-            npm init -y
-            ```
-        </StepR>
-    </Step>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Install Vite and Master CSS
-            Install Vite and the Master CSS Vite integration in the project root.
-        </StepL>
-        <StepR>
-            ```bash name=Terminal
-            npm install -D vite @master/css.vite@rc
-            ```
-        </StepR>
-    </Step>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Configure Vite
-            Build the runtime entry and base stylesheet into `wwwroot/assets`.
-        </StepL>
-        <StepR>
-            ```ts name=vite.config.ts
-            import { defineConfig } from 'vite'
-            import masterCSS from '@master/css.vite'
+  <Step $row>
+    <StepL>
+      ### <StepNum />Create a project
+      If you do not have an ASP.NET Core project, create one first.
+    </StepL>
+    <StepR>
+      ```bash name=Terminal
+      dotnet new webapp -o my-app
+      cd my-app
+      npm init -y
+      ```
+    </StepR>
+  </Step>
+  <Step $row>
+    <StepL>
+      ### <StepNum />Install Vite and Master CSS
+      Install Vite and the Master CSS Vite integration in the project root.
+    </StepL>
+    <StepR>
+      ```bash name=Terminal
+      npm install -D vite @master/css.vite@rc
+      ```
+    </StepR>
+  </Step>
+  <Step $row>
+    <StepL>
+      ### <StepNum />Configure Vite
+      Build the runtime entry and base stylesheet into `wwwroot/assets`.
+    </StepL>
+    <StepR>
+      ```ts name=vite.config.ts
+      import { defineConfig } from 'vite'
+      import masterCSS from '@master/css.vite'
 
-            export default defineConfig({
-                plugins: [
-                    masterCSS({ mode: 'runtime', injectRuntime: false })
-                ],
-                build: {
-                    outDir: 'wwwroot/assets',
-                    emptyOutDir: true,
-                    rollupOptions: {
-                        input: 'src/main.ts',
-                        output: {
-                            entryFileNames: 'app.js',
-                            assetFileNames: 'app[extname]'
-                        }
-                    }
-                }
-            })
-            ```
-        </StepR>
-    </Step>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Create the asset entry
-            Import the Vite-managed runtime and the Master CSS stylesheet.
-        </StepL>
-        <StepR>
-            ```ts name=src/main.ts
-            import '@master/css.vite/runtime'
-            import './app.css'
-            ```
-
-            ```css name=src/app.css
-            @import "@master/css";
-            ```
-        </StepR>
-    </Step>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Load the assets
-            Reference the Vite output from your shared layout. Add `hidden` so the runtime can avoid a flash of unstyled content before it injects class rules.
-        </StepL>
-        <StepR>
-            ```html name=Pages/Shared/_Layout.cshtml
-            <html lang="en" hidden>
-            <head>
-                <link rel="stylesheet" href="~/assets/app.css" asp-append-version="true">
-            </head>
-            <body>
-                @RenderBody()
-                <script type="module" src="~/assets/app.js" asp-append-version="true"></script>
-            </body>
-            </html>
-            ```
-        </StepR>
-    </Step>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Add build scripts
-            Build or watch the frontend assets beside the .NET server.
-        </StepL>
-        <StepR>
-            ```json name=package.json
-            {
-                "scripts": {
-                    "build:assets": "vite build",
-                    "watch:assets": "vite build --watch"
-                }
+      export default defineConfig({
+        plugins: [
+          masterCSS({ mode: 'runtime', injectRuntime: false })
+        ],
+        build: {
+          outDir: 'wwwroot/assets',
+          emptyOutDir: true,
+          rollupOptions: {
+            input: 'src/main.ts',
+            output: {
+              entryFileNames: 'app.js',
+              assetFileNames: 'app[extname]'
             }
-            ```
-        </StepR>
-    </Step>
-    <Step>
-        ### <StepNum />Hello world
-        Now style your first Razor page using Master CSS syntax.
-    </Step>
-    <HelloWorld url="localhost:5000" />
+          }
+        }
+      })
+      ```
+    </StepR>
+  </Step>
+  <Step $row>
+    <StepL>
+      ### <StepNum />Create the asset entry
+      Import the Vite-managed runtime and the Master CSS stylesheet.
+    </StepL>
+    <StepR>
+      ```ts name=src/main.ts
+      import '@master/css.vite/runtime'
+      import './app.css'
+      ```
+
+      ```css name=src/app.css
+      @import "@master/css";
+      ```
+    </StepR>
+  </Step>
+  <Step $row>
+    <StepL>
+      ### <StepNum />Load the assets
+      Reference the Vite output from your shared layout. Add `hidden` so the runtime can avoid a flash of unstyled content before it injects class rules.
+    </StepL>
+    <StepR>
+      ```html name=Pages/Shared/_Layout.cshtml
+      <html lang="en" hidden>
+      <head>
+        <link rel="stylesheet" href="~/assets/app.css" asp-append-version="true">
+      </head>
+      <body>
+        @RenderBody()
+        <script type="module" src="~/assets/app.js" asp-append-version="true"></script>
+      </body>
+      </html>
+      ```
+    </StepR>
+  </Step>
+  <Step $row>
+    <StepL>
+      ### <StepNum />Add build scripts
+      Build or watch the frontend assets beside the .NET server.
+    </StepL>
+    <StepR>
+      ```json name=package.json
+      {
+        "scripts": {
+          "build:assets": "vite build",
+          "watch:assets": "vite build --watch"
+        }
+      }
+      ```
+    </StepR>
+  </Step>
+  <Step>
+    ### <StepNum />Hello world
+    Now style your first Razor page using Master CSS syntax.
+  </Step>
+  <HelloWorld url="localhost:5000" />
 </StepSection>
 
 ```html name=Pages/Index.cshtml
 <h1 class="m:2xl italic font:5xl font:heavy text:neutral">
-    Hello World
+  Hello World
 </h1>
 ```
 

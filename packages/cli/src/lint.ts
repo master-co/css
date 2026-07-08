@@ -1,13 +1,13 @@
 import { createCSSWithNativeDeclarations } from '@master/css-validator'
 import {
-    fixMasterCSSContent,
-    lintMasterCSSContent,
-    resolveMasterCSSLintRules,
-    summarizeMasterCSSLintFiles,
-    type MasterCSSLintFileResult,
-    type MasterCSSLintRuleId,
-    type MasterCSSLintSourceDiagnostic,
-    type MasterCSSLintSummary
+  fixMasterCSSContent,
+  lintMasterCSSContent,
+  resolveMasterCSSLintRules,
+  summarizeMasterCSSLintFiles,
+  type MasterCSSLintFileResult,
+  type MasterCSSLintRuleId,
+  type MasterCSSLintSourceDiagnostic,
+  type MasterCSSLintSummary
 } from '@master/css-lint'
 import { loadProjectManifest } from '@master/css-project/manifest'
 import fg from 'fast-glob'
@@ -19,211 +19,211 @@ const DEFAULT_SOURCE_PATTERNS = ['**/*.{html,htm,js,jsx,cjs,ts,tsx,mts,cts,svelt
 const DEFAULT_IGNORE_PATTERNS = ['**/node_modules/**', 'node_modules']
 
 export interface LintOptions {
-    fix?: boolean
-    fixDryRun?: boolean
-    fixDirectives?: boolean
-    format?: 'stylish' | 'json'
-    maxWarnings?: string | number
-    cwd?: string
-    stdin?: boolean
-    stdinFilepath?: string
-    exitCode?: 'diagnostics' | 'never'
-    rules?: string
+  fix?: boolean
+  fixDryRun?: boolean
+  fixDirectives?: boolean
+  format?: 'stylish' | 'json'
+  maxWarnings?: string | number
+  cwd?: string
+  stdin?: boolean
+  stdinFilepath?: string
+  exitCode?: 'diagnostics' | 'never'
+  rules?: string
 }
 
 interface CLILintReport {
-    version: typeof REPORT_VERSION
-    cwd: string
-    manifest: {
-        status: 'loaded' | 'error'
-        entries: string[]
-        diagnostics: MasterCSSLintSourceDiagnostic[]
-    }
-    files: MasterCSSLintFileResult[]
-    summary: MasterCSSLintSummary
+  version: typeof REPORT_VERSION
+  cwd: string
+  manifest: {
+    status: 'loaded' | 'error'
+    entries: string[]
+    diagnostics: MasterCSSLintSourceDiagnostic[]
+  }
+  files: MasterCSSLintFileResult[]
+  summary: MasterCSSLintSummary
 }
 
 interface SourceInput {
-    filePath: string
-    content: string
-    stdin?: boolean
+  filePath: string
+  content: string
+  stdin?: boolean
 }
 
 type CSSWithNativeDeclarations = ReturnType<typeof createCSSWithNativeDeclarations>
 
 function normalizeSourcePatterns(specifiedSourcePaths?: string[]) {
-    return specifiedSourcePaths?.length ? specifiedSourcePaths : DEFAULT_SOURCE_PATTERNS
+  return specifiedSourcePaths?.length ? specifiedSourcePaths : DEFAULT_SOURCE_PATTERNS
 }
 
 function normalizeGlobPatterns(patterns: string[]) {
-    return patterns.map((pattern) => pattern.replace(/\\/g, '/'))
+  return patterns.map((pattern) => pattern.replace(/\\/g, '/'))
 }
 
 function resolveSourcePaths(cwd: string, sourcePatterns: string[], ignore: string[] = []) {
-    return fg.sync(normalizeGlobPatterns(sourcePatterns), {
-        cwd,
-        ignore: normalizeGlobPatterns(ignore),
-        onlyFiles: true
-    }).filter(Boolean)
+  return fg.sync(normalizeGlobPatterns(sourcePatterns), {
+    cwd,
+    ignore: normalizeGlobPatterns(ignore),
+    onlyFiles: true
+  }).filter(Boolean)
 }
 
 function parseMaxWarnings(value: string | number | undefined) {
-    if (value === undefined) return Number.POSITIVE_INFINITY
-    const maxWarnings = Number(value)
-    return Number.isFinite(maxWarnings) && maxWarnings >= 0 ? maxWarnings : 0
+  if (value === undefined) return Number.POSITIVE_INFINITY
+  const maxWarnings = Number(value)
+  return Number.isFinite(maxWarnings) && maxWarnings >= 0 ? maxWarnings : 0
 }
 
 function createManifestDiagnostic(cwd: string, error: unknown): MasterCSSLintSourceDiagnostic {
-    const range = { start: 0, end: 0 }
-    return {
-        ruleId: 'manifest',
-        code: 'manifest-loading-error',
-        severity: 'error',
-        message: `Failed to load Master CSS manifest: ${error instanceof Error ? error.message : String(error)}`,
-        range,
-        loc: {
-            start: { line: 1, column: 1 },
-            end: { line: 1, column: 1 }
-        },
-        source: 'Master CSS',
-        sourceKind: 'manifest',
-        data: {
-            cwd
-        }
+  const range = { start: 0, end: 0 }
+  return {
+    ruleId: 'manifest',
+    code: 'manifest-loading-error',
+    severity: 'error',
+    message: `Failed to load Master CSS manifest: ${error instanceof Error ? error.message : String(error)}`,
+    range,
+    loc: {
+      start: { line: 1, column: 1 },
+      end: { line: 1, column: 1 }
+    },
+    source: 'Master CSS',
+    sourceKind: 'manifest',
+    data: {
+      cwd
     }
+  }
 }
 
 function createManifestFileResult(cwd: string, diagnostics: MasterCSSLintSourceDiagnostic[]): MasterCSSLintFileResult {
-    return {
-        filePath: cwd,
-        languageId: 'manifest',
-        sourceKind: 'manifest',
-        diagnostics
-    }
+  return {
+    filePath: cwd,
+    languageId: 'manifest',
+    sourceKind: 'manifest',
+    diagnostics
+  }
 }
 
 function createReport(cwd: string, manifest: CLILintReport['manifest'], files: MasterCSSLintFileResult[]): CLILintReport {
-    return {
-        version: REPORT_VERSION,
-        cwd,
-        manifest,
-        files,
-        summary: summarizeMasterCSSLintFiles(files)
-    }
+  return {
+    version: REPORT_VERSION,
+    cwd,
+    manifest,
+    files,
+    summary: summarizeMasterCSSLintFiles(files)
+  }
 }
 
 function formatStylish(report: CLILintReport) {
-    const lines: string[] = []
-    for (const result of report.files) {
-        if (!result.diagnostics.length) continue
-        lines.push(result.filePath)
-        for (const diagnostic of result.diagnostics) {
-            lines.push(`  ${diagnostic.loc.start.line}:${diagnostic.loc.start.column}  ${diagnostic.severity}  ${diagnostic.message}  ${diagnostic.ruleId ? `@master/css/${diagnostic.ruleId}` : diagnostic.code}`)
-        }
+  const lines: string[] = []
+  for (const result of report.files) {
+    if (!result.diagnostics.length) continue
+    lines.push(result.filePath)
+    for (const diagnostic of result.diagnostics) {
+      lines.push(`  ${diagnostic.loc.start.line}:${diagnostic.loc.start.column}  ${diagnostic.severity}  ${diagnostic.message}  ${diagnostic.ruleId ? `@master/css/${diagnostic.ruleId}` : diagnostic.code}`)
     }
-    return lines.length ? `${lines.join('\n')}\n` : ''
+  }
+  return lines.length ? `${lines.join('\n')}\n` : ''
 }
 
 function outputReport(report: CLILintReport, format: 'stylish' | 'json') {
-    if (format === 'stylish') {
-        const output = formatStylish(report)
-        if (output) process.stdout.write(output)
-    } else {
-        console.log(JSON.stringify(report, null, 2))
-    }
+  if (format === 'stylish') {
+    const output = formatStylish(report)
+    if (output) process.stdout.write(output)
+  } else {
+    console.log(JSON.stringify(report, null, 2))
+  }
 }
 
 function resolveSourceInputs(cwd: string, specifiedSourcePaths: string[], options: LintOptions): SourceInput[] {
-    if (options.stdin) {
-        const filePath = path.resolve(cwd, options.stdinFilepath || 'stdin.html')
-        return [{
-            filePath,
-            content: fs.readFileSync(0, 'utf8'),
-            stdin: true
-        }]
+  if (options.stdin) {
+    const filePath = path.resolve(cwd, options.stdinFilepath || 'stdin.html')
+    return [{
+      filePath,
+      content: fs.readFileSync(0, 'utf8'),
+      stdin: true
+    }]
+  }
+  const sourcePatterns = normalizeSourcePatterns(specifiedSourcePaths)
+  return resolveSourcePaths(cwd, sourcePatterns, specifiedSourcePaths.length ? [] : DEFAULT_IGNORE_PATTERNS).map((source) => {
+    const filePath = path.resolve(cwd, source)
+    return {
+      filePath,
+      content: fs.readFileSync(filePath, 'utf8')
     }
-    const sourcePatterns = normalizeSourcePatterns(specifiedSourcePaths)
-    return resolveSourcePaths(cwd, sourcePatterns, specifiedSourcePaths.length ? [] : DEFAULT_IGNORE_PATTERNS).map((source) => {
-        const filePath = path.resolve(cwd, source)
-        return {
-            filePath,
-            content: fs.readFileSync(filePath, 'utf8')
-        }
-    })
+  })
 }
 
 function lintInputs(
-    inputs: SourceInput[],
-    css: CSSWithNativeDeclarations,
-    rules: Record<MasterCSSLintRuleId, boolean>
+  inputs: SourceInput[],
+  css: CSSWithNativeDeclarations,
+  rules: Record<MasterCSSLintRuleId, boolean>
 ) {
-    return inputs.map((input) => lintMasterCSSContent({
-        content: input.content,
-        filePath: input.filePath,
-        css,
-        rules
-    })).filter((result) => result.diagnostics.length)
+  return inputs.map((input) => lintMasterCSSContent({
+    content: input.content,
+    filePath: input.filePath,
+    css,
+    rules
+  })).filter((result) => result.diagnostics.length)
 }
 
 function applyFileFixes(
-    inputs: SourceInput[],
-    css: CSSWithNativeDeclarations,
-    rules: Record<MasterCSSLintRuleId, boolean>,
-    includeDirectiveFixes: boolean
+  inputs: SourceInput[],
+  css: CSSWithNativeDeclarations,
+  rules: Record<MasterCSSLintRuleId, boolean>,
+  includeDirectiveFixes: boolean
 ) {
-    for (const input of inputs) {
-        if (input.stdin) continue
-        const fixed = fixMasterCSSContent({
-            content: input.content,
-            filePath: input.filePath,
-            css,
-            rules,
-            includeDirectiveFixes
-        })
-        if (fixed !== input.content) {
-            fs.writeFileSync(input.filePath, fixed)
-            input.content = fixed
-        }
+  for (const input of inputs) {
+    if (input.stdin) continue
+    const fixed = fixMasterCSSContent({
+      content: input.content,
+      filePath: input.filePath,
+      css,
+      rules,
+      includeDirectiveFixes
+    })
+    if (fixed !== input.content) {
+      fs.writeFileSync(input.filePath, fixed)
+      input.content = fixed
     }
+  }
 }
 
 export default async function runLint(specifiedSourcePaths: string[] = [], options: LintOptions = {}) {
-    const cwd = path.resolve(options.cwd || process.cwd())
-    const format = options.format || 'json'
-    const exitCode = options.exitCode || 'diagnostics'
-    const rules = resolveMasterCSSLintRules(options.rules)
-    const inputs = resolveSourceInputs(cwd, specifiedSourcePaths, options)
-    let manifest: CLILintReport['manifest']
-    let files: MasterCSSLintFileResult[]
+  const cwd = path.resolve(options.cwd || process.cwd())
+  const format = options.format || 'json'
+  const exitCode = options.exitCode || 'diagnostics'
+  const rules = resolveMasterCSSLintRules(options.rules)
+  const inputs = resolveSourceInputs(cwd, specifiedSourcePaths, options)
+  let manifest: CLILintReport['manifest']
+  let files: MasterCSSLintFileResult[]
 
-    try {
-        const manifestResult = await loadProjectManifest(cwd)
-        const css = createCSSWithNativeDeclarations(manifestResult.manifest)
-        manifest = {
-            status: 'loaded',
-            entries: manifestResult.entries,
-            diagnostics: []
-        }
-        files = lintInputs(inputs, css, rules)
-        if (options.fix && !options.fixDryRun) {
-            applyFileFixes(inputs, css, rules, Boolean(options.fixDirectives))
-            files = lintInputs(inputs, css, rules)
-        }
-    } catch (error) {
-        const diagnostic = createManifestDiagnostic(cwd, error)
-        manifest = {
-            status: 'error',
-            entries: [],
-            diagnostics: [diagnostic]
-        }
-        files = [createManifestFileResult(cwd, [diagnostic])]
+  try {
+    const manifestResult = await loadProjectManifest(cwd)
+    const css = createCSSWithNativeDeclarations(manifestResult.manifest)
+    manifest = {
+      status: 'loaded',
+      entries: manifestResult.entries,
+      diagnostics: []
     }
-
-    const report = createReport(cwd, manifest, files)
-    outputReport(report, format)
-
-    if (exitCode !== 'never' && (report.summary.errors || report.summary.warnings > parseMaxWarnings(options.maxWarnings))) {
-        process.exitCode = 1
+    files = lintInputs(inputs, css, rules)
+    if (options.fix && !options.fixDryRun) {
+      applyFileFixes(inputs, css, rules, Boolean(options.fixDirectives))
+      files = lintInputs(inputs, css, rules)
     }
-    return report
+  } catch (error) {
+    const diagnostic = createManifestDiagnostic(cwd, error)
+    manifest = {
+      status: 'error',
+      entries: [],
+      diagnostics: [diagnostic]
+    }
+    files = [createManifestFileResult(cwd, [diagnostic])]
+  }
+
+  const report = createReport(cwd, manifest, files)
+  outputReport(report, format)
+
+  if (exitCode !== 'never' && (report.summary.errors || report.summary.warnings > parseMaxWarnings(options.maxWarnings))) {
+    process.exitCode = 1
+  }
+  return report
 }

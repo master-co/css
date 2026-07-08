@@ -1,5 +1,5 @@
 const syntaxes = [
-    ['bg:`param`,`…`'],
+  ['bg:`param`,`…`'],
 ]
 
 export default syntaxes

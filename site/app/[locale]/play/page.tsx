@@ -5,11 +5,11 @@ export const revalidate = false
 import i18n from 'internal/common/i18n.config.js'
 
 export async function generateStaticParams() {
-    return i18n.locales.map((locale: any) => ({ locale }))
+  return i18n.locales.map((locale: any) => ({ locale }))
 }
 
 export default async function Page(props: any) {
-    return (
-        <Play />
-    )
+  return (
+    <Play />
+  )
 }

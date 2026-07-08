@@ -2,14 +2,14 @@ import { settings as cssLanguageServiceSettings, type Settings as CSSLanguageSer
 import type { Pattern } from 'fast-glob'
 
 const settings: Settings = {
-    ...cssLanguageServiceSettings,
-    workspaces: 'auto',
-    verbose: false
+  ...cssLanguageServiceSettings,
+  workspaces: 'auto',
+  verbose: false
 }
 
 export default settings
 
 export declare type Settings = CSSLanguageServiceSettings & {
-    workspaces?: Pattern[] | 'auto'
-    verbose?: boolean
+  workspaces?: Pattern[] | 'auto'
+  verbose?: boolean
 }

@@ -1,6 +1,6 @@
 export default {
-    variables: [
-        { namespace: 'content', key: 'external', value: '" ↗"' }
-    ],
-    modeTrigger: 'class'
+  variables: [
+    { namespace: 'content', key: 'external', value: '" ↗"' }
+  ],
+  modeTrigger: 'class'
 }
