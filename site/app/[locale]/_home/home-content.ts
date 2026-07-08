@@ -258,14 +258,6 @@ export const languageServiceCards = [
         body: 'Highlight the current class context by default so dense markup stays calm until a human is reading it.'
     },
     {
-        title: 'Color tools',
-        body: 'Render supported Master CSS colors and manifest colors through editor decorators and color picker flows.'
-    },
-    {
-        title: 'Directive formatting',
-        body: 'Format Master CSS directives in CSS-family files and framework style blocks without changing generated CSS.'
-    },
-    {
         title: 'Workspace-aware manifests',
         body: 'Keep monorepo completions, colors, hover previews, and directive diagnostics aligned with the nearest Master CSS project.'
     }

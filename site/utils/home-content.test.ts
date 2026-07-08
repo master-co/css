@@ -261,7 +261,8 @@ test('language service section uses shared homepage bento placeholders', () => {
     assert.match(source, /languageServiceCards\.map/)
     assert.match(source, /homeSections\.languageService/)
     assert.match(source, /Readable, and still human\./)
-    assert.match(source, /grid-cols:1 grid-cols:2@md grid-cols:3@lg/)
+    assert.match(source, /grid-cols:1 grid-cols:2@md/)
+    assert.doesNotMatch(source, /grid-cols:3@lg/)
     assert.match(source, /homeBentoVisualClassName/)
     assert.match(source, /h:28x/)
     assert.doesNotMatch(source, /HomeCodeWindow/)
@@ -269,13 +270,11 @@ test('language service section uses shared homepage bento placeholders', () => {
 })
 
 test('language service card content model lists editor integration features', () => {
-    assert.equal(languageServiceCards.length, 6)
+    assert.equal(languageServiceCards.length, 4)
     assert.deepEqual(languageServiceCards.map((card) => card.title), [
         'Manifest-aware suggestions',
         'Generated CSS hover',
         'Active syntax highlighting',
-        'Color tools',
-        'Directive formatting',
         'Workspace-aware manifests'
     ])
 

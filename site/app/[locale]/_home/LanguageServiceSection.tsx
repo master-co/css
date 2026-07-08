@@ -16,12 +16,12 @@ export default function LanguageServiceSection({ t }: { t: Translate }) {
                         {t('Readable, and still human.')}
                     </h2>
                     <p className={sectionBodyClassName}>
-                        {t('Manifest-aware completions, hover previews, semantic highlighting, color tools, and directive formatting make compact class strings readable inside the editor.')}
+                        {t('Manifest-aware completions, hover previews, semantic highlighting, and workspace manifests make compact class strings readable inside the editor.')}
                     </p>
                 </div>
 
                 <HomeBentoFrame>
-                    <HomeBentoGrid className="grid-cols:1 grid-cols:2@md grid-cols:3@lg">
+                    <HomeBentoGrid className="grid-cols:1 grid-cols:2@md">
                         {languageServiceCards.map((card) => (
                             <LanguageServiceCard card={card} key={card.title} t={t} />
                         ))}
