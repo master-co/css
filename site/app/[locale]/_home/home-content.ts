@@ -45,7 +45,7 @@ export interface AgentDiagnosticCardContent {
 export interface LanguageServiceCardContent {
     title: string
     body: string
-    visual?: 'active-syntax-highlighting'
+    visual?: 'active-syntax-highlighting' | 'manifest-aware-suggestions'
 }
 
 export const homeSections = {
@@ -244,7 +244,8 @@ export const agentDiagnosticCards = [
 export const languageServiceCards = [
     {
         title: 'Manifest-aware suggestions',
-        body: 'Complete utilities, values, selectors, queries, groups, directives, and project tokens from the active workspace manifest.'
+        body: 'Complete utilities, values, selectors, queries, groups, directives, and project tokens from the active workspace manifest.',
+        visual: 'manifest-aware-suggestions'
     },
     {
         title: 'Generated CSS hover',

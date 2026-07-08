@@ -13,6 +13,50 @@ const activeSyntaxHighlightingCode = `
 </section>
 `
 
+const manifestSuggestionsCode = `
+<button class="text:amber">
+  Upgrade plan
+</button>
+`
+
+const manifestSuggestionItems = [
+    {
+        detail: '(scope) color-text-amber',
+        label: 'amber',
+        tone: 'amber'
+    },
+    {
+        detail: '(theme) color-text-blue',
+        label: 'blue',
+        tone: 'blue'
+    },
+    {
+        detail: '(theme) color-text-cyan',
+        label: 'cyan',
+        tone: 'cyan'
+    },
+    {
+        detail: '(semantic) text-body',
+        label: 'body',
+        tone: 'neutral'
+    },
+    {
+        detail: '(semantic) text-muted',
+        label: 'muted',
+        tone: 'neutral'
+    },
+    {
+        detail: '@hover selector',
+        label: 'hover',
+        tone: 'selector'
+    },
+    {
+        detail: '@sm query',
+        label: 'sm',
+        tone: 'query'
+    }
+] as const
+
 export default function LanguageServiceSection({ t }: { t: Translate }) {
     return (
         <MotionSection
@@ -44,7 +88,7 @@ export default function LanguageServiceSection({ t }: { t: Translate }) {
 
 function LanguageServiceCard({ card, t }: { card: LanguageServiceCardContent; t: Translate }) {
     return (
-        <HomeBentoCard>
+        <HomeBentoCard className={card.visual === 'manifest-aware-suggestions' ? 'grid-col-span:2@md' : undefined}>
             <div className="home-bento-card-header">
                 <h3 className="home-bento-card-title">
                     {t(card.title)}
@@ -52,12 +96,45 @@ function LanguageServiceCard({ card, t }: { card: LanguageServiceCardContent; t:
                 <p className="home-bento-card-body">{t(card.body)}</p>
             </div>
 
-            {card.visual === 'active-syntax-highlighting' ? (
+            {card.visual === 'manifest-aware-suggestions' ? (
+                <ManifestAwareSuggestionsPreview />
+            ) : card.visual === 'active-syntax-highlighting' ? (
                 <ActiveSyntaxHighlightingPreview />
             ) : (
                 <div className="home-bento-visual h:28x" />
             )}
         </HomeBentoCard>
+    )
+}
+
+function ManifestAwareSuggestionsPreview() {
+    return (
+        <div aria-hidden="true" className="home-bento-visual home-manifest-suggestions">
+            <HomeCodeWindow
+                className="home-manifest-suggestions__window"
+                lang="html"
+                preClassName="h:full"
+                variant="embedded">
+                {manifestSuggestionsCode}
+            </HomeCodeWindow>
+            <div className="home-manifest-suggestions__menu">
+                <div className="home-manifest-suggestions__menu-head">
+                    <span>Manifest suggestions</span>
+                    <span>nearest workspace</span>
+                </div>
+                <div className="home-manifest-suggestions__items">
+                    {manifestSuggestionItems.map((item, index) => (
+                        <div
+                            className={index === 0 ? 'home-manifest-suggestions__item home-manifest-suggestions__item-active' : 'home-manifest-suggestions__item'}
+                            key={item.label}>
+                            <span className={`home-manifest-suggestions__item-icon home-manifest-suggestions__item-icon-${item.tone}`} />
+                            <span className="home-manifest-suggestions__item-label">{item.label}</span>
+                            <span className="home-manifest-suggestions__item-detail">{item.detail}</span>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        </div>
     )
 }
 
