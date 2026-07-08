@@ -75,7 +75,7 @@ Good package vocabulary is stable and reusable:
 - Use `@utilities` for low-level primitives that are useful across apps.
 - Use `@components` only when the package intentionally owns semantic UI vocabulary such as `btn`, `field`, `card`, or `toolbar`.
 
-For token namespace behavior, see [Customizing your theme](/guide/theme). For directive syntax, see [CSS directives](/guide/directives). For abstraction decisions, see [Reusing styles](/guide/reusing-styles).
+For token namespace behavior, see [Customizing your theme](/guide/theme). For directive syntax, see [CSS directives](/guide/directives). For abstraction decisions, see [Global styles](/guide/global-styles#shared-vocabulary).
 
 ---
 
@@ -105,7 +105,7 @@ When a local CSS file only needs the package as compile-time context, use `@refe
 }
 ```
 
-`@reference` makes package tokens, variants, utilities, and component classes available while compiling the local stylesheet. It does not import the referenced package's output CSS by itself, so make sure the app entry that imports the package is also loaded by the page.
+`@reference` makes package tokens, variants, utilities, and component classes available while compiling the local stylesheet. It does not import the referenced package's output CSS by itself, so make sure the app entry that imports the package is also loaded by the page. See [Page-level styles](/guide/page-level-styles) for local stylesheet patterns.
 
 ---
 

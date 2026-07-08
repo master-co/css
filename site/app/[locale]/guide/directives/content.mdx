@@ -84,7 +84,7 @@ Referenced stylesheets can define `@settings`, `@theme`, `@custom-variant`, `@de
 
 Relative references resolve from the stylesheet that declares them. Package references are limited to Master CSS package stylesheet entries. `@reference` is not an entry marker, does not insert a generated CSS slot, and does not replace `@master entry;` or `@import "@master/css"` in app entry stylesheets.
 
-(!) Because `@reference` is context-only, it does not emit referenced theme variables or managed keyframes. If the current stylesheet lowers to CSS that uses `var(--*)` tokens or animation names from the referenced stylesheet, make sure the referenced app entry is also loaded by the page.
+(!) Because `@reference` is context-only, it does not copy referenced native CSS or generated class output. If the current stylesheet lowers to CSS that uses `var(--*)` tokens or animation names from the referenced context, local output includes the required theme variables or managed keyframes that the loaded global entry has not already emitted.
 
 ---
 
@@ -319,7 +319,7 @@ Literal enum values can stand alone when at least two values are provided, such 
 
 `--value()` accepts no arguments and is only valid inside managed enum pattern or dynamic colon entry declarations.
 
-For abstraction guidance, see [Reusing styles](/guide/reusing-styles).
+For abstraction guidance, see [Global styles](/guide/global-styles#shared-vocabulary).
 
 ---
 

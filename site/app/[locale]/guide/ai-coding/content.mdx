@@ -137,7 +137,7 @@ Readable Master CSS usually follows these habits:
 - Keep selector states and conditions attached to the class they affect, such as `bg:blue-70:hover` and `grid-cols:3@md`.
 - Move repeated product values into `@theme`; move repeated product patterns into `@components` only when a named abstraction improves maintainability.
 
-Use [Reusing styles](/guide/reusing-styles) for abstraction decisions and [Code linting](/guide/code-linting) for the class policy that keeps AI-generated markup reviewable.
+Use [Global styles](/guide/global-styles#shared-vocabulary) for abstraction decisions and [Code linting](/guide/code-linting) for the class policy that keeps AI-generated markup reviewable.
 
 When a class list becomes hard to scan, ask the agent whether the problem is repetition, missing tokens, or a real component abstraction.
 
@@ -244,5 +244,5 @@ Run the app, inspect the affected page in desktop and mobile widths, and compare
 - Use [Language Service](/guide/language-service) for editor intelligence and generated CSS previews.
 - Use [Code linting](/guide/code-linting) for validation and class sorting.
 - Use [Style declarations](/guide/style-declarations) when you need syntax details.
-- Use [Customizing your theme](/guide/theme) and [Reusing styles](/guide/reusing-styles) when AI suggestions reveal repeated product vocabulary.
+- Use [Customizing your theme](/guide/theme) and [Global styles](/guide/global-styles#shared-vocabulary) when AI suggestions reveal repeated product vocabulary.
 - Use [Migration](/guide/migration) when an AI coding agent is converting an existing styling system to Master CSS.

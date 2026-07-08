@@ -1,0 +1,270 @@
+## Overview [sr-only]
+Global styles are the project-level CSS that every page can depend on. They define the Master CSS entry, default layer order, base styles, shared tokens, custom variants, generated class vocabulary, and native CSS that belongs to the whole app.
+
+Most applications should have exactly one app stylesheet that starts with the default Master CSS entry:
+
+```css name=app.css
+@import "@master/css";
+```
+
+That import marks the file as a full Master CSS entry. It loads the package stylesheet graph, declares the stable layer order, includes the preset theme and base styles, and gives integrations the stylesheet that receives generated CSS.
+
+---
+
+## Entry stylesheet
+Use the app stylesheet for project-wide styling inputs:
+
+```css name=app.css
+@import "@master/css";
+
+@theme {
+    --color-brand: $color-blue-60;
+    --spacing-action-x: 1rem;
+}
+
+@custom-variant :interactive {
+    &:is(:hover, :focus-visible) {
+        @slot;
+    }
+}
+```
+
+Load this stylesheet once from the app root, framework layout, or build entry. Do not import it again from page-level CSS. A second import duplicates global native CSS and makes ownership harder to trace.
+
+Use the lightweight marker only when a stylesheet should be a generated CSS entry without loading the package defaults:
+
+```css
+@master entry;
+```
+
+Most apps should prefer `@import "@master/css";`. Use `@master entry;` for advanced split entries that already receive the package base and theme from somewhere else.
+
+---
+
+## Base layer
+The default entry includes the base layer. Base styles are normalization and document baseline rules emitted before project defaults, components, and utilities.
+
+The package base entry declares the stable layer order:
+
+```css
+@layer theme, base, defaults, components, utilities;
+```
+
+Write project-wide element defaults in native CSS and put them in `@layer base` when they should behave like document baseline styles:
+
+```css name=app.css
+@import "@master/css";
+
+@layer base {
+    html {
+        color-scheme: light dark;
+    }
+
+    body {
+        background: var(--color-surface-base);
+        color: var(--color-text-body);
+    }
+
+    :where(button, input, textarea, select) {
+        font: inherit;
+    }
+}
+```
+
+Keep base styles broad and structural. Use later layers, component classes, and utilities for product UI roles or local page decisions.
+
+Use the split base import only when a stylesheet needs the default layer order and browser normalization without the full Master CSS entry:
+
+```css
+@import "@master/css/base.css";
+```
+
+That is a specialized import. It does not replace the app entry in ordinary projects.
+
+---
+
+## Shared vocabulary
+Reusable styling is an ownership decision. Keep local choices in markup while a pattern is changing. Promote only the part that has become shared.
+
+Use this order:
+
+1. Keep one-off styling in markup utilities.
+2. Move repeated values into theme tokens.
+3. Write native global CSS for global selectors and app-wide stylesheet surfaces.
+4. Create custom utilities for reusable low-level primitives.
+5. Create component classes for repeated product UI roles.
+6. Use defaults sparingly for early-layer generated classes that intentionally sit before components.
+
+Start with utilities when the style belongs to one element or one usage site:
+
+```html
+<button class="inline-flex items-center justify-center gap:xs px:md py:xs r:lg font:medium font:sm bg:blue fg:white">
+    Save changes
+</button>
+```
+
+Do not abstract just to shorten a class list. Abstract when the name improves product vocabulary, such as `btn`, `card`, `field`, `toolbar`, or `empty-state`.
+
+When the repeated part is a value, make it a token instead of a class:
+
+```css name=app.css
+@theme {
+    --color-brand: $color-blue-60;
+    --spacing-action-x: 1rem;
+}
+```
+
+```html
+<button class="r:lg fg:white bg:brand px:action-x">
+    Submit
+</button>
+```
+
+Use [Theme](/guide/theme) for shared colors, spacing, typography, radius, shadow, motion, breakpoints, container sizes, and mode-specific values.
+
+Write native CSS when the selector itself is global output you always ship:
+
+```css name=app.css
+.skip-link {
+    @compose fixed left:0 top:0 z:1 px:md py:xs bg:blue fg:white;
+    transform: translateY(-100%);
+}
+
+.skip-link:focus {
+    transform: translateY(0);
+}
+```
+
+Native global CSS is emitted as part of the app stylesheet. It is not generated on demand, so use it for global surfaces and selectors that should always exist.
+
+---
+
+## Component classes
+Use component classes when a repeated UI role should behave like a generated Master CSS class. Define them in the global entry graph and apply them from markup:
+
+```css name=app.css
+@components {
+    btn {
+        @compose inline-flex items-center justify-center gap:xs px:md py:xs r:lg font:medium font:sm;
+        @compose bg:blue fg:white;
+    }
+}
+```
+
+```html
+<button class="btn">Save changes</button>
+```
+
+Component definitions are manifest inputs, not immediate CSS output. Defining `btn` does not generate `.btn` until the class appears in scanned source or is composed by another generated style.
+
+Keep component classes small enough to combine:
+
+```css name=app.css
+@components {
+    btn {
+        @compose inline-flex items-center justify-center font:medium;
+    }
+
+    btn-sm {
+        @compose h:8x px:sm r:md font:xs;
+    }
+
+    btn-md {
+        @compose h:10x px:md r:md font:sm;
+    }
+
+    btn-primary {
+        @compose bg:blue fg:white;
+    }
+}
+```
+
+```html
+<button class="btn btn-md btn-primary">Submit</button>
+```
+
+Put state behavior inside the component only when it belongs to every usage:
+
+```css name=app.css
+@components {
+    btn-primary {
+        @compose bg:blue fg:white;
+
+        &:hover {
+            @compose bg:blue-60;
+        }
+
+        &:focus-visible {
+            @compose outline:2px|solid|blue outline-offset:4xs;
+        }
+    }
+}
+```
+
+Use markup utilities for one-off variations at a specific call site.
+
+---
+
+## Custom utilities
+Use custom utilities for reusable primitives that are lower-level than product components. Good utility names describe a styling capability, not a UI role.
+
+```css name=app.css
+@utilities {
+    flow {
+        @compose grid gap:md;
+    }
+
+    content-auto {
+        content-visibility: auto;
+        contain-intrinsic-size: auto 32rem;
+    }
+
+    print-hidden {
+        @variant @print {
+            display: none;
+        }
+    }
+}
+```
+
+```html
+<section class="content-auto flow print-hidden">...</section>
+```
+
+Custom utilities are generated only when used. Use them for shared layout helpers, rendering hints, print behavior, or other primitives that should feel like part of the project class language.
+
+Use component classes when the name describes a UI role. Use theme tokens when the reusable part is a value.
+
+---
+
+## Organize global files
+Split global CSS files by ownership, then import them from the app entry. Imported CSS becomes one project entry graph.
+
+```txt
+styles/
+  app.css
+  theme.css
+  base.css
+  buttons.css
+```
+
+```css name=styles/app.css
+@import "@master/css";
+@import "./theme.css";
+@import "./base.css";
+@import "./buttons.css";
+```
+
+```css name=styles/buttons.css
+@components {
+    btn {
+        @compose inline-flex items-center justify-center font:medium;
+    }
+
+    btn-primary {
+        @compose bg:blue fg:white;
+    }
+}
+```
+
+Keep project-wide tokens, variants, generated vocabulary, and native global CSS in the global entry graph. Keep route-specific selectors in [Page-level styles](/guide/page-level-styles), and promote them here only after they become shared.
