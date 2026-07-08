@@ -250,6 +250,7 @@
     "Invalid value for `font` property.": "`font` property 的 value 無效。",
     "Class order": "Class 排序",
     "Sort class strings into stable generated-rule order and remove duplicates so diffs stay reviewable.": "將 class strings 排成穩定的 generated-rule 順序並移除重複項目，讓 diff 維持可審查。",
+    "No consistent class order followed.": "未遵循一致的 class 排序。",
     "Conflicting classes": "衝突 classes",
     "Find declarations and overlapping shorthands that override each other in the same condition scope.": "找出在同一 condition 範圍內互相覆蓋的 declarations 與重疊 shorthands。",
     "Canonical utilities": "標準 utilities",

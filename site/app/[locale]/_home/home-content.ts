@@ -39,7 +39,7 @@ export interface DeliveryModeContent {
 export interface AgentDiagnosticCardContent {
     title: string
     body: string
-    visual?: 'invalid-classes'
+    visual?: 'invalid-classes' | 'class-order'
 }
 
 export const sectionLabelClassName = 'font:sm tracking:widest uppercase font:semibold text:yellow'
@@ -213,7 +213,8 @@ export const agentDiagnosticCards = [
     },
     {
         title: 'Class order',
-        body: 'Sort class strings into stable generated-rule order and remove duplicates so diffs stay reviewable.'
+        body: 'Sort class strings into stable generated-rule order and remove duplicates so diffs stay reviewable.',
+        visual: 'class-order'
     },
     {
         title: 'Conflicting classes',

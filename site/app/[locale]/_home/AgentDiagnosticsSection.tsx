@@ -11,6 +11,13 @@ const invalidClassesCode = `
 </button>
 `
 
+const classOrderCode = `
+<!-- @WARN bg:white font:md flex px:4x rel -->
+<article class="bg:white font:md flex px:4x rel">
+  Preview card
+</article>
+`
+
 export default function AgentDiagnosticsSection({ t }: { t: Translate }) {
     return (
         <MotionSection
@@ -58,6 +65,8 @@ function DiagnosticCard({ card, t }: { card: AgentDiagnosticCardContent; t: Tran
 
             {card.visual === 'invalid-classes' ? (
                 <InvalidClassesCodeWindow t={t} />
+            ) : card.visual === 'class-order' ? (
+                <ClassOrderCodeWindow t={t} />
             ) : (
                 <DiagnosticPlaceholderCanvas />
             )}
@@ -82,6 +91,27 @@ function InvalidClassesCodeWindow({ t }: { t: Translate }) {
             problemsLabel={t('Problems')}
             variant="embedded">
             {invalidClassesCode}
+        </HomeCodeWindow>
+    )
+}
+
+function ClassOrderCodeWindow({ t }: { t: Translate }) {
+    const problems: HomeCodeWindowProblem[] = [{
+        code: 'invalid-class-order',
+        location: 'home.html:1:16',
+        message: t('No consistent class order followed.'),
+        severity: 'warning',
+        source: '@master/css/sort-classes'
+    }]
+
+    return (
+        <HomeCodeWindow
+            className={clsx(homeBentoVisualClassName)}
+            lang="html"
+            problems={problems}
+            problemsLabel={t('Problems')}
+            variant="embedded">
+            {classOrderCode}
         </HomeCodeWindow>
     )
 }

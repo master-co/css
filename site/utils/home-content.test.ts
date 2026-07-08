@@ -184,6 +184,8 @@ test('agent diagnostics section uses the shared homepage bento UI', () => {
     assert.match(source, /agentDiagnosticCards\.map/)
     assert.match(source, /homeBentoDotGridStyle/)
     assert.match(source, /@ERROR font:/)
+    assert.match(source, /@WARN bg:white font:md flex px:4x rel/)
+    assert.match(source, /@master\/css\/sort-classes/)
     assert.match(source, /problems=/)
     assert.doesNotMatch(source, /Array\.from\(\{ length: 6 \}/)
     assert.doesNotMatch(source, /Link/)
