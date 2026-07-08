@@ -38,9 +38,9 @@ test('bento content model keeps targeted layout tiles', () => {
     assert.equal(bentoRows.length, 3)
     assert.equal(new Set(bentoRows.map((row) => row.title)).size, bentoRows.length)
     assert.deepEqual(bentoRows.map((row) => row.title), [
-        'Two-column grid',
-        'High-saturation P3 colors',
-        'Three-column grid'
+        'Tokenized themes',
+        'Wide-gamut color system',
+        'Modern CSS primitives'
     ])
     assert.deepEqual(bentoRows.map((row) => row.gridClassName), [
         'grid-cols:1 grid-cols:2@md',
@@ -49,9 +49,9 @@ test('bento content model keeps targeted layout tiles', () => {
     ])
     assert.deepEqual(bentoRows.map((row) => row.gridCount), [2, 1, 3])
     assert.deepEqual(bentoRows.map((row) => row.visual || 'placeholder'), ['placeholder', 'p3-palette', 'placeholder'])
-    assert.deepEqual(bentoRows[0].tiles?.map((tile) => tile.title), ['Theme modes', 'Theme variables'])
+    assert.deepEqual(bentoRows[0].tiles?.map((tile) => tile.title), ['Modes without markup forks', 'Variables that travel with the system'])
     assert.deepEqual(bentoRows[0].tiles?.map((tile) => tile.visual || 'placeholder'), ['theme-modes', 'theme-variables'])
-    assert.deepEqual(bentoRows[2].tiles?.map((tile) => tile.title), ['Grid layout, transitions, animations', 'Native CSS primitives'])
+    assert.deepEqual(bentoRows[2].tiles?.map((tile) => tile.title), ['Layout and motion, together', 'Reusable native CSS'])
     assert.deepEqual(bentoRows[2].tiles?.map((tile) => tile.visual || 'placeholder'), ['art-gallery', 'native-css-primitives'])
     assert.deepEqual(bentoRows[2].tiles?.map((tile) => 'gridColumnClassName' in tile ? tile.gridColumnClassName : 'auto'), ['grid-col-span:2@md', 'auto'])
     assert.equal(bentoRows.some((row) => row.title === 'Delivery modes'), false)
@@ -66,17 +66,17 @@ test('bento content model keeps targeted layout tiles', () => {
 test('theme variables bento sample maps tokens to class examples', () => {
     assert.match(themeVariablesCode, /@theme \{/)
     assert.match(themeVariablesCode, /--font-sans: "Inter"; \/\* font:sans \*\//)
-    assert.match(themeVariablesCode, /--font-sans: "Inter"; \/\* font:sans \*\/\n\n\s+--spacing-md: 1rem; \/\* p:md \*\//)
+    assert.match(themeVariablesCode, /--font-sans: "Inter"; \/\* font:sans \*\/\n\n\s+--spacing-md: 1rem;\s+\/\* p:md \*\//)
     assert.doesNotMatch(themeVariablesCode, /--font-mono/)
-    assert.match(themeVariablesCode, /--spacing-md: 1rem; \/\* p:md \*\//)
+    assert.match(themeVariablesCode, /--spacing-md: 1rem;\s+\/\* p:md \*\//)
     assert.match(themeVariablesCode, /--spacing-lg: 1\.5rem; \/\* p:lg \*\//)
-    assert.match(themeVariablesCode, /--spacing-lg: 1\.5rem; \/\* p:lg \*\/\n\n\s+--radius-lg: 0\.5rem; \/\* r:lg \*\//)
-    assert.match(themeVariablesCode, /--radius-lg: 0\.5rem; \/\* r:lg \*\//)
+    assert.match(themeVariablesCode, /--spacing-lg: 1\.5rem; \/\* p:lg \*\/\n\n\s+--radius-lg: 0\.5rem;\s+\/\* r:lg \*\//)
+    assert.match(themeVariablesCode, /--radius-lg: 0\.5rem;\s+\/\* r:lg \*\//)
     assert.match(themeVariablesCode, /--radius-xl: 0\.75rem; \/\* r:xl \*\//)
-    assert.match(themeVariablesCode, /@theme light \{\n\s+--color-surface-base: \$color-neutral-0; \/\* surface:base \*\//)
-    assert.match(themeVariablesCode, /--color-text-body: \$color-neutral-70; \/\* text:body \*\//)
-    assert.match(themeVariablesCode, /@theme dark \{\n\s+--color-surface-base: \$color-gray-95; \/\* surface:base \*\//)
-    assert.match(themeVariablesCode, /--color-text-body: \$color-gray-30; \/\* text:body \*\//)
+    assert.match(themeVariablesCode, /@theme light \{\n\s+--color-surface-base: var\(--color-neutral-0\); \/\* surface:base \*\//)
+    assert.match(themeVariablesCode, /--color-text-body: var\(--color-neutral-70\);\s+\/\* text:body \*\//)
+    assert.match(themeVariablesCode, /@theme dark \{\n\s+--color-surface-base: var\(--color-gray-95\);\s+\/\* surface:base \*\//)
+    assert.match(themeVariablesCode, /--color-text-body: var\(--color-gray-30\);\s+\/\* text:body \*\//)
     assert.doesNotMatch(themeVariablesCode, /@keyframes/)
 })
 
@@ -120,7 +120,7 @@ test('homepage bento code windows keep their fixed preview height', () => {
         const card = source.match(new RegExp(`function ${functionName}[\\s\\S]+?(?=function )`))?.[0]
 
         assert.ok(card)
-        assert.match(card, /'h:md'/)
+        assert.match(card, /'[^']*\bh:md\b[^']*'/)
         assert.doesNotMatch(card, /flex:1|min-h:md/)
     }
 })

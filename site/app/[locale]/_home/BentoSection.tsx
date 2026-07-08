@@ -33,12 +33,12 @@ export default function BentoSection({ t }: { t: Translate }) {
         <MotionSection homeSection={homeSections.designSystem} id={homeSections.designSystem} className="py:5xl">
             <div className="app-wrapper max-w:breakpoint-2xl">
                 <div className="max-w:breakpoint-md">
-                    <p className={sectionLabelClassName + ' text:yellow'}>{t('Styling system')}</p>
+                    <p className={sectionLabelClassName + ' text:yellow'}>{t('Design system')}</p>
                     <h2 className={sectionHeadingClassName}>
-                        {t('Modern website design system.')}
+                        {t('Style modern product surfaces from one class vocabulary.')}
                     </h2>
                     <p className={sectionBodyClassName}>
-                        {t('Compose layout, tokens, responsive rules, and interaction states from one readable syntax.')}
+                        {t('Theme modes, tokens, layout, motion, and native CSS primitives stay readable in markup and predictable in generated CSS.')}
                     </p>
                 </div>
 

@@ -134,45 +134,45 @@ export const p3PaletteTiers = [...COLOR_LEVELS].reverse()
 
 export const bentoRows = [
     {
-        title: 'Two-column grid',
-        body: 'A simple placeholder grid for paired content, preview panels, or side-by-side feature blocks.',
+        title: 'Tokenized themes',
+        body: 'Bring modes and shared variables into the same design-system vocabulary.',
         gridClassName: 'grid-cols:1 grid-cols:2@md',
         gridCount: 2,
         tiles: [
             {
-                title: 'Theme modes',
-                body: 'Flip the same tokens between light, dark, and custom modes without changing the markup.',
+                title: 'Modes without markup forks',
+                body: 'Switch light, dark, and custom modes through the same tokens, so components keep their markup while brands and surfaces evolve.',
                 visual: 'theme-modes'
             },
             {
-                title: 'Theme variables',
-                body: 'Define shared tokens once, then keep light and dark mode overrides beside the same vocabulary.',
+                title: 'Variables that travel with the system',
+                body: 'Define color, spacing, radius, and type once, then reuse the same vocabulary in utilities, components, and mode overrides.',
                 visual: 'theme-variables'
             }
         ]
     },
     {
-        title: 'High-saturation P3 colors',
-        body: 'Vivid preset hue families keep a consistent tier scale from deep anchors to bright interface accents.',
+        title: 'Wide-gamut color system',
+        body: 'Use vivid P3 palettes with a predictable tier scale, from deep anchors to bright interface accents, without inventing one-off shades.',
         gridClassName: 'grid-cols:1',
         gridCount: 1,
         visual: 'p3-palette'
     },
     {
-        title: 'Three-column grid',
-        body: 'A three-column composition where a featured interactive tile spans two tracks beside supporting context.',
+        title: 'Modern CSS primitives',
+        body: 'Show layout, motion, and reusable CSS blocks as connected parts of the same interface system.',
         gridClassName: 'grid-cols:1 grid-cols:3@md',
         gridCount: 3,
         tiles: [
             {
-                title: 'Grid layout, transitions, animations',
-                body: 'Master CSS keeps modern CSS primitives close to markup: responsive CSS Grid, motion tokens, and View Transition selectors share one class vocabulary.',
+                title: 'Layout and motion, together',
+                body: 'Compose CSS Grid, responsive spans, transitions, animations, and View Transition selectors where the interface is authored.',
                 gridColumnClassName: 'grid-col-span:2@md',
                 visual: 'art-gallery'
             },
             {
-                title: 'Native CSS primitives',
-                body: 'Author a reusable button with native declarations and selectors, then fold dark mode into compiler directives.',
+                title: 'Reusable native CSS',
+                body: 'Package declarations, selectors, and modes into compact component classes.',
                 visual: 'native-css-primitives'
             }
         ]
