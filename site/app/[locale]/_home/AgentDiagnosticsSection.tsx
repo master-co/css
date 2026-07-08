@@ -1,9 +1,7 @@
 import clsx from 'clsx'
-import { HomeBentoCard, HomeBentoFrame, HomeBentoGrid, homeBentoCardHeaderClassName, homeBentoDotGridStyle, homeBentoVisualClassName } from './HomeBento'
+import { HomeBentoCard, HomeBentoFrame, HomeBentoGrid, homeBentoCardBodyClassName, homeBentoCardHeaderClassName, homeBentoCardTitleClassName, homeBentoDotGridStyle, homeBentoVisualClassName } from './HomeBento'
 import { MotionSection } from './HomeMotion'
-import { homeSections, sectionBodyClassName, sectionHeadingClassName, sectionLabelClassName, type Translate } from './home-content'
-
-const agentDiagnosticPlaceholders = Array.from({ length: 6 }, (_, index) => index)
+import { agentDiagnosticCards, homeSections, sectionBodyClassName, sectionHeadingClassName, sectionLabelClassName, type AgentDiagnosticCardContent, type Translate } from './home-content'
 
 export default function AgentDiagnosticsSection({ t }: { t: Translate }) {
     return (
@@ -22,33 +20,32 @@ export default function AgentDiagnosticsSection({ t }: { t: Translate }) {
                     </p>
                 </div>
 
-                <DiagnosticVisual />
+                <DiagnosticVisual t={t} />
             </div>
         </MotionSection>
     )
 }
 
-function DiagnosticVisual() {
+function DiagnosticVisual({ t }: { t: Translate }) {
     return (
         <HomeBentoFrame>
             <HomeBentoGrid className="grid-cols:1 grid-cols:2@md">
-                {agentDiagnosticPlaceholders.map((placeholder) => (
-                    <DiagnosticPlaceholderCard key={placeholder} />
+                {agentDiagnosticCards.map((card) => (
+                    <DiagnosticCard card={card} key={card.title} t={t} />
                 ))}
             </HomeBentoGrid>
         </HomeBentoFrame>
     )
 }
 
-function DiagnosticPlaceholderCard() {
+function DiagnosticCard({ card, t }: { card: AgentDiagnosticCardContent; t: Translate }) {
     return (
         <HomeBentoCard>
             <div className={homeBentoCardHeaderClassName}>
-                <div className="h:6x w:42% max-w:52x r:full bg:surface-muted" />
-                <div className="grid gap:2xs mt:sm">
-                    <div className="h:3x w:72% r:full bg:surface-muted" />
-                    <div className="h:3x w:54% r:full bg:surface-muted" />
-                </div>
+                <h3 className={homeBentoCardTitleClassName}>
+                    {t(card.title)}
+                </h3>
+                <p className={homeBentoCardBodyClassName}>{t(card.body)}</p>
             </div>
 
             <div className={clsx(homeBentoVisualClassName, 'h:32x')}>

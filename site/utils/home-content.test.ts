@@ -3,7 +3,7 @@ import { readFileSync } from 'node:fs'
 import { test } from 'node:test'
 import guideColorNames from '../../internal/data/color-names.js'
 import { COLOR_LEVELS } from '../../internal/data/color-palette.js'
-import { benchmarkChartColors, deliveryModes, designSystemRows, heroExampleClassNames, heroExampleCode, homeInteractions, homeSections, nativeCssPrimitivesCode, p3PaletteColorNames, p3PaletteTiers, sectionLabelClassName, themeVariablesCode } from '../app/[locale]/_home/home-content.js'
+import { agentDiagnosticCards, benchmarkChartColors, deliveryModes, designSystemRows, heroExampleClassNames, heroExampleCode, homeInteractions, homeSections, nativeCssPrimitivesCode, p3PaletteColorNames, p3PaletteTiers, sectionLabelClassName, themeVariablesCode } from '../app/[locale]/_home/home-content.js'
 
 test('homepage section anchors and interaction hooks stay stable', () => {
     assert.deepEqual(Object.values(homeSections), [
@@ -162,11 +162,28 @@ test('agent diagnostics section uses the shared homepage bento UI', () => {
     assert.match(source, /HomeBentoGrid/)
     assert.match(source, /HomeBentoCard/)
     assert.match(source, /grid-cols:1 grid-cols:2@md/)
-    assert.match(source, /Array\.from\(\{ length: 6 \}/)
+    assert.match(source, /agentDiagnosticCards\.map/)
     assert.match(source, /homeBentoDotGridStyle/)
+    assert.doesNotMatch(source, /Array\.from\(\{ length: 6 \}/)
     assert.doesNotMatch(source, /Link/)
     assert.doesNotMatch(source, /Icon[A-Z]/)
     assert.doesNotMatch(source, /diagnosticSignals/)
+})
+
+test('agent diagnostic card content model lists class diagnostic rules', () => {
+    assert.equal(agentDiagnosticCards.length, 6)
+    assert.deepEqual(agentDiagnosticCards.map((card) => card.title), [
+        'Invalid classes',
+        'Class order',
+        'Conflicting classes',
+        'Canonical utilities',
+        'Theme tokens',
+        'Safe fix preview'
+    ])
+
+    for (const card of agentDiagnosticCards) {
+        assert.ok(card.body.length > card.title.length)
+    }
 })
 
 test('homepage P3 palette preview uses every guide color in reverse order', () => {

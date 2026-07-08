@@ -36,6 +36,11 @@ export interface DeliveryModeContent {
     signal: string
 }
 
+export interface AgentDiagnosticCardContent {
+    title: string
+    body: string
+}
+
 export const sectionLabelClassName = 'font:sm tracking:widest uppercase font:semibold text:yellow'
 export const sectionHeadingClassName = 'max-w:32ch mx:0 mb:0 mt:md font:3xl font:regular leading:1.08 tracking:tight text:strong text-balance font:5xl@md'
 export const sectionBodyClassName = 'max-w:72ch mb:0 mt:lg text:lg text:muted'
@@ -198,3 +203,30 @@ export const deliveryModes = [
         signal: 'Hybrid'
     }
 ] satisfies readonly DeliveryModeContent[]
+
+export const agentDiagnosticCards = [
+    {
+        title: 'Invalid classes',
+        body: 'Catch malformed classes, invalid values, and unknown names when strict project policy is enabled.'
+    },
+    {
+        title: 'Class order',
+        body: 'Sort class strings into stable generated-rule order and remove duplicates so diffs stay reviewable.'
+    },
+    {
+        title: 'Conflicting classes',
+        body: 'Find declarations and overlapping shorthands that override each other in the same condition scope.'
+    },
+    {
+        title: 'Canonical utilities',
+        body: 'Prefer semantic utilities, property aliases, composition classes, and stable condition order.'
+    },
+    {
+        title: 'Theme tokens',
+        body: 'Suggest project tokens and enforce opt-in raw value policy for token-backed values.'
+    },
+    {
+        title: 'Safe fix preview',
+        body: 'Return fixable markup and @compose diagnostics as a reviewable preview before writes.'
+    }
+] satisfies readonly AgentDiagnosticCardContent[]
