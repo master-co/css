@@ -3,7 +3,7 @@ import clsx from 'clsx'
 import Link from '~/internal/components/Link'
 import HeroExampleStage from './HeroExampleStage'
 import { MotionDiv } from './HomeMotion'
-import { homeSections, sectionLabelClassName, type Translate } from './home-content'
+import { homeSections, type Translate } from './home-content'
 
 export default function HeroSection({ t }: { t: Translate }) {
     return (

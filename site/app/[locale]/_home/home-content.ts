@@ -3,7 +3,7 @@ import { COLOR_LEVELS } from '~/internal/data/color-palette'
 
 export type Translate = (text: string) => string
 
-export type BentoAccentClassName = 'bg:blue' | 'bg:cyan' | 'bg:green' | 'bg:red' | 'bg:yellow'
+export type HomeAccentClassName = 'bg:blue' | 'bg:cyan' | 'bg:green' | 'bg:red' | 'bg:yellow'
 
 export type DeliveryModeIconId = 'bolt' | 'fileCode' | 'stack'
 
@@ -11,16 +11,16 @@ export type HomeInteractionId = typeof homeInteractions[keyof typeof homeInterac
 
 export type HomeSectionId = typeof homeSections[keyof typeof homeSections]
 
-export interface BentoRowContent {
+export interface DesignSystemRowContent {
     title: string
     body: string
     gridClassName: string
     gridCount: number
-    tiles?: readonly BentoTileContent[]
+    tiles?: readonly DesignSystemTileContent[]
     visual?: 'p3-palette'
 }
 
-export interface BentoTileContent {
+export interface DesignSystemTileContent {
     title: string
     body: string
     gridColumnClassName?: string
@@ -32,18 +32,18 @@ export interface DeliveryModeContent {
     body: string
     href: string
     icon: DeliveryModeIconId
-    accent: BentoAccentClassName
+    accent: HomeAccentClassName
     signal: string
 }
 
 export interface DiagnosticSignalContent {
     title: string
     body: string
-    accent: BentoAccentClassName
+    accent: HomeAccentClassName
     status: string
 }
 
-export const sectionLabelClassName = 'font:sm tracking:widest uppercase font:semibold'
+export const sectionLabelClassName = 'font:sm tracking:widest uppercase font:semibold text:yellow'
 export const sectionHeadingClassName = 'max-w:32ch mx:0 mb:0 mt:md font:3xl font:regular leading:1.08 tracking:tight text:strong text-balance font:5xl@md'
 export const sectionBodyClassName = 'max-w:72ch mb:0 mt:lg text:lg text:muted'
 
@@ -132,7 +132,7 @@ export const p3PaletteColorNames = [...presetColorNames].reverse()
 
 export const p3PaletteTiers = [...COLOR_LEVELS].reverse()
 
-export const bentoRows = [
+export const designSystemRows = [
     {
         title: 'Tokenized themes',
         body: 'Bring modes and shared variables into one design-system vocabulary.',
@@ -177,7 +177,7 @@ export const bentoRows = [
             }
         ]
     }
-] satisfies readonly BentoRowContent[]
+] satisfies readonly DesignSystemRowContent[]
 
 export const deliveryModes = [
     {

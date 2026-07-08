@@ -21,7 +21,7 @@ export default function BenchmarkSection({
             className="rel py:5xl">
             <div className="app-wrapper max-w:breakpoint-2xl">
                 <div className="max-w:breakpoint-md">
-                    <p className={sectionLabelClassName + ' text:yellow'}>{t('Fastest delivery')}</p>
+                    <p className={sectionLabelClassName}>{t('Fastest delivery')}</p>
                     <h2 className={sectionHeadingClassName}>
                         {t('Ship the smallest CSS ever.')}
                     </h2>

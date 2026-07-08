@@ -3,7 +3,7 @@ import { readFileSync } from 'node:fs'
 import { test } from 'node:test'
 import guideColorNames from '../../internal/data/color-names.js'
 import { COLOR_LEVELS } from '../../internal/data/color-palette.js'
-import { benchmarkChartColors, bentoRows, deliveryModes, diagnosticSignals, heroExampleClassNames, heroExampleCode, homeInteractions, homeSections, nativeCssPrimitivesCode, p3PaletteColorNames, p3PaletteTiers, themeVariablesCode } from '../app/[locale]/_home/home-content.js'
+import { benchmarkChartColors, deliveryModes, designSystemRows, diagnosticSignals, heroExampleClassNames, heroExampleCode, homeInteractions, homeSections, nativeCssPrimitivesCode, p3PaletteColorNames, p3PaletteTiers, sectionLabelClassName, themeVariablesCode } from '../app/[locale]/_home/home-content.js'
 
 test('homepage section anchors and interaction hooks stay stable', () => {
     assert.deepEqual(Object.values(homeSections), [
@@ -34,33 +34,63 @@ test('hero example keeps a concise static Master CSS sample', () => {
     }
 })
 
-test('bento content model keeps targeted layout tiles', () => {
-    assert.equal(bentoRows.length, 3)
-    assert.equal(new Set(bentoRows.map((row) => row.title)).size, bentoRows.length)
-    assert.deepEqual(bentoRows.map((row) => row.title), [
+test('design system content model keeps targeted bento layout tiles', () => {
+    assert.equal(designSystemRows.length, 3)
+    assert.equal(new Set(designSystemRows.map((row) => row.title)).size, designSystemRows.length)
+    assert.deepEqual(designSystemRows.map((row) => row.title), [
         'Tokenized themes',
         'Wide-gamut color system',
         'Modern CSS primitives'
     ])
-    assert.deepEqual(bentoRows.map((row) => row.gridClassName), [
+    assert.deepEqual(designSystemRows.map((row) => row.gridClassName), [
         'grid-cols:1 grid-cols:2@md',
         'grid-cols:1',
         'grid-cols:1 grid-cols:3@md'
     ])
-    assert.deepEqual(bentoRows.map((row) => row.gridCount), [2, 1, 3])
-    assert.deepEqual(bentoRows.map((row) => row.visual || 'placeholder'), ['placeholder', 'p3-palette', 'placeholder'])
-    assert.deepEqual(bentoRows[0].tiles?.map((tile) => tile.title), ['Theme modes without forks', 'System-wide variables'])
-    assert.deepEqual(bentoRows[0].tiles?.map((tile) => tile.visual || 'placeholder'), ['theme-modes', 'theme-variables'])
-    assert.deepEqual(bentoRows[2].tiles?.map((tile) => tile.title), ['Layout and motion, together', 'Reusable native CSS'])
-    assert.deepEqual(bentoRows[2].tiles?.map((tile) => tile.visual || 'placeholder'), ['art-gallery', 'native-css-primitives'])
-    assert.deepEqual(bentoRows[2].tiles?.map((tile) => 'gridColumnClassName' in tile ? tile.gridColumnClassName : 'auto'), ['grid-col-span:2@md', 'auto'])
-    assert.equal(bentoRows.some((row) => row.title === 'Delivery modes'), false)
-    assert.equal(bentoRows.some((row) => row.title === 'Editor and linting'), false)
-    assert.equal(bentoRows.some((row) => row.title === 'Single-column grid'), false)
+    assert.deepEqual(designSystemRows.map((row) => row.gridCount), [2, 1, 3])
+    assert.deepEqual(designSystemRows.map((row) => row.visual || 'placeholder'), ['placeholder', 'p3-palette', 'placeholder'])
+    assert.deepEqual(designSystemRows[0].tiles?.map((tile) => tile.title), ['Theme modes without forks', 'System-wide variables'])
+    assert.deepEqual(designSystemRows[0].tiles?.map((tile) => tile.visual || 'placeholder'), ['theme-modes', 'theme-variables'])
+    assert.deepEqual(designSystemRows[2].tiles?.map((tile) => tile.title), ['Layout and motion, together', 'Reusable native CSS'])
+    assert.deepEqual(designSystemRows[2].tiles?.map((tile) => tile.visual || 'placeholder'), ['art-gallery', 'native-css-primitives'])
+    assert.deepEqual(designSystemRows[2].tiles?.map((tile) => 'gridColumnClassName' in tile ? tile.gridColumnClassName : 'auto'), ['grid-col-span:2@md', 'auto'])
+    assert.equal(designSystemRows.some((row) => row.title === 'Delivery modes'), false)
+    assert.equal(designSystemRows.some((row) => row.title === 'Editor and linting'), false)
+    assert.equal(designSystemRows.some((row) => row.title === 'Single-column grid'), false)
 
-    for (const row of bentoRows) {
+    for (const row of designSystemRows) {
         assert.ok(row.body.length > row.title.length)
     }
+})
+
+test('homepage section labels use the shared yellow treatment', () => {
+    assert.match(sectionLabelClassName, /\btext:yellow\b/)
+
+    const homeSectionSources = [
+        '../app/[locale]/_home/AgentDiagnosticsSection.tsx',
+        '../app/[locale]/_home/BenchmarkSection.tsx',
+        '../app/[locale]/_home/CTASection.tsx',
+        '../app/[locale]/_home/DeliveryModesSection.tsx',
+        '../app/[locale]/_home/DesignSystemSection.tsx'
+    ].map((filePath) => readFileSync(new URL(filePath, import.meta.url), 'utf8'))
+
+    for (const source of homeSectionSources) {
+        assert.doesNotMatch(source, /sectionLabelClassName\s*\+/)
+        assert.doesNotMatch(source, /\btext:blue\b/)
+    }
+})
+
+test('homepage places agent diagnostics immediately after CSS cost', () => {
+    const source = readFileSync(new URL('../app/[locale]/_home/HomePage.tsx', import.meta.url), 'utf8')
+    const benchmarkIndex = source.indexOf('<BenchmarkSection')
+    const diagnosticsIndex = source.indexOf('<AgentDiagnosticsSection')
+    const deliveryModesIndex = source.indexOf('<DeliveryModesSection')
+
+    assert.notEqual(benchmarkIndex, -1)
+    assert.notEqual(diagnosticsIndex, -1)
+    assert.notEqual(deliveryModesIndex, -1)
+    assert.ok(benchmarkIndex < diagnosticsIndex)
+    assert.ok(diagnosticsIndex < deliveryModesIndex)
 })
 
 test('theme variables bento sample maps tokens to class examples', () => {
@@ -95,7 +125,7 @@ test('native CSS primitives bento sample keeps a concise btn directive example',
 
 test('homepage code windows do not override font size or line height', () => {
     const homeCodeWindowSources = [
-        '../app/[locale]/_home/BentoSection.tsx',
+        '../app/[locale]/_home/DesignSystemSection.tsx',
         '../app/[locale]/_home/HeroExampleStage.tsx'
     ].map((filePath) => readFileSync(new URL(filePath, import.meta.url), 'utf8'))
 
@@ -105,16 +135,16 @@ test('homepage code windows do not override font size or line height', () => {
 })
 
 test('native CSS primitives code window stays top-aligned in its card', () => {
-    const source = readFileSync(new URL('../app/[locale]/_home/BentoSection.tsx', import.meta.url), 'utf8')
+    const source = readFileSync(new URL('../app/[locale]/_home/DesignSystemSection.tsx', import.meta.url), 'utf8')
     const nativeCard = source.match(/function NativeCssPrimitivesCard[\s\S]+?function P3PaletteCard/)?.[0]
 
     assert.ok(nativeCard)
-    assert.match(nativeCard, /bentoTopVisualClassName/)
-    assert.doesNotMatch(nativeCard, /bentoVisualClassName/)
+    assert.match(nativeCard, /homeBentoTopVisualClassName/)
+    assert.doesNotMatch(nativeCard, /homeBentoVisualClassName/)
 })
 
 test('homepage bento code windows keep their fixed preview height', () => {
-    const source = readFileSync(new URL('../app/[locale]/_home/BentoSection.tsx', import.meta.url), 'utf8')
+    const source = readFileSync(new URL('../app/[locale]/_home/DesignSystemSection.tsx', import.meta.url), 'utf8')
 
     for (const functionName of ['ThemeVariablesCard', 'NativeCssPrimitivesCard']) {
         const card = source.match(new RegExp(`function ${functionName}[\\s\\S]+?(?=function )`))?.[0]
@@ -123,6 +153,14 @@ test('homepage bento code windows keep their fixed preview height', () => {
         assert.match(card, /'[^']*\bh:md\b[^']*'/)
         assert.doesNotMatch(card, /flex:1|min-h:md/)
     }
+})
+
+test('agent diagnostics section uses the shared homepage bento UI', () => {
+    const source = readFileSync(new URL('../app/[locale]/_home/AgentDiagnosticsSection.tsx', import.meta.url), 'utf8')
+
+    assert.match(source, /HomeBentoFrame/)
+    assert.match(source, /HomeBentoGrid/)
+    assert.match(source, /HomeBentoCard/)
 })
 
 test('homepage P3 palette preview uses every guide color in reverse order', () => {
