@@ -39,6 +39,7 @@ export interface DeliveryModeContent {
 export interface AgentDiagnosticCardContent {
     title: string
     body: string
+    visual?: 'invalid-classes'
 }
 
 export const sectionLabelClassName = 'font:sm tracking:widest uppercase font:semibold text:yellow'
@@ -207,7 +208,8 @@ export const deliveryModes = [
 export const agentDiagnosticCards = [
     {
         title: 'Invalid classes',
-        body: 'Catch malformed classes, invalid values, and unknown names when strict project policy is enabled.'
+        body: 'Catch malformed classes, invalid values, and unknown names when strict project policy is enabled.',
+        visual: 'invalid-classes'
     },
     {
         title: 'Class order',

@@ -1,7 +1,15 @@
 import clsx from 'clsx'
 import { HomeBentoCard, HomeBentoFrame, HomeBentoGrid, homeBentoCardBodyClassName, homeBentoCardHeaderClassName, homeBentoCardTitleClassName, homeBentoDotGridStyle, homeBentoVisualClassName } from './HomeBento'
+import HomeCodeWindow, { type HomeCodeWindowProblem } from './HomeCodeWindow'
 import { MotionSection } from './HomeMotion'
 import { agentDiagnosticCards, homeSections, sectionBodyClassName, sectionHeadingClassName, sectionLabelClassName, type AgentDiagnosticCardContent, type Translate } from './home-content'
+
+const invalidClassesCode = `
+<!-- @ERROR font: -->
+<button class="inline-flex px:md font: bg:blue-60">
+  Save changes
+</button>
+`
 
 export default function AgentDiagnosticsSection({ t }: { t: Translate }) {
     return (
@@ -48,9 +56,40 @@ function DiagnosticCard({ card, t }: { card: AgentDiagnosticCardContent; t: Tran
                 <p className={homeBentoCardBodyClassName}>{t(card.body)}</p>
             </div>
 
-            <div className={clsx(homeBentoVisualClassName, 'h:32x')}>
-                <div aria-hidden="true" className="abs inset:0 opacity:.8 pointer-events:none" style={homeBentoDotGridStyle} />
-            </div>
+            {card.visual === 'invalid-classes' ? (
+                <InvalidClassesCodeWindow t={t} />
+            ) : (
+                <DiagnosticPlaceholderCanvas />
+            )}
         </HomeBentoCard>
+    )
+}
+
+function InvalidClassesCodeWindow({ t }: { t: Translate }) {
+    const problems: HomeCodeWindowProblem[] = [{
+        code: 'invalid-class',
+        location: 'Button.tsx:1:31',
+        message: t('Invalid value for `font` property.'),
+        severity: 'error',
+        source: '@master/css/no-invalid-classes'
+    }]
+
+    return (
+        <HomeCodeWindow
+            className={clsx(homeBentoVisualClassName, 'h:52x')}
+            lang="html"
+            problems={problems}
+            problemsLabel={t('Problems')}
+            variant="embedded">
+            {invalidClassesCode}
+        </HomeCodeWindow>
+    )
+}
+
+function DiagnosticPlaceholderCanvas() {
+    return (
+        <div className={clsx(homeBentoVisualClassName, 'h:32x')}>
+            <div aria-hidden="true" className="abs inset:0 opacity:.8 pointer-events:none" style={homeBentoDotGridStyle} />
+        </div>
     )
 }
