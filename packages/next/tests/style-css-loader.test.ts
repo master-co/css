@@ -57,6 +57,31 @@ describe('Next style CSS loader', () => {
         expect(result.dependencies).toContain(entryPath)
     })
 
+    it('preserves native CSS and keyframes from imported Master entry graphs', async () => {
+        const root = createFixture()
+        const entryPath = join(root, 'app/globals.css')
+        const homePath = join(root, 'app/home.css')
+        writeFileSync(homePath, [
+            '@theme { --color-active: #ff0000; }',
+            '@components { active-card { animation: active-spin 1s infinite; } }',
+            '@keyframes active-spin { to { opacity: .5; } }',
+            '.native-card { color: var(--color-active); }'
+        ].join('\n'))
+
+        const result = await runStyleCSSLoader(root, entryPath, [
+            '@import "@master/css";',
+            '@import "./home.css";'
+        ].join('\n'))
+
+        expect(result.content).toContain('@keyframes active-spin')
+        expect(result.content).toContain('.native-card')
+        expect(result.content).toContain('--color-active:red')
+        expect(result.content).not.toContain('@components')
+        expect(result.content).not.toContain('@import "./home.css"')
+        expect(result.dependencies).toContain(entryPath)
+        expect(result.dependencies).toContain(homePath)
+    })
+
     it('leaves ordinary CSS unchanged', async () => {
         const root = createFixture()
         const source = '.card { color: red; }'

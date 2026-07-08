@@ -12,6 +12,7 @@ import {
 import CSSScanner from '@master/css-scanner'
 import {
     compileStyleCSS,
+    compileRenderedStyleCSS,
     createStyleCSSHostSource,
     createMasterCSSPackageHostSource,
     createExtractedCSS,
@@ -71,6 +72,41 @@ describe('style CSS extraction helpers', () => {
         expect(result.code).not.toContain('@master/css')
         expect(result.code).toContain('@import url(\'master.css\') layer(master);')
         expect(result.code).toContain('@import "./other.css";')
+    })
+
+    it('renders native CSS and keyframes from expanded Master CSS entry graphs', async () => {
+        const root = createFixture()
+        const entryPath = join(root, 'app/globals.css')
+        const homePath = join(root, 'app/home.css')
+        writeFileSync(homePath, [
+            '@theme { --color-active: #ff0000; }',
+            '@components { active-card { animation: active-spin 1s infinite; } }',
+            '@keyframes active-spin { to { opacity: .5; } }',
+            '.native-card { color: var(--color-active); }'
+        ].join('\n'))
+        const source = [
+            '@import "@master/css";',
+            '@import "./home.css";'
+        ].join('\n')
+        const resolvedSource = resolveMasterStyleSource(entryPath, source, root)
+        expect(resolvedSource?.source).toContain('@keyframes active-spin')
+
+        const result = await compileRenderedStyleCSS(entryPath, resolvedSource?.source || source, {
+            projectDir: root
+        })
+
+        expect(result.css).toContain('@keyframes active-spin')
+        expect(result.css).toContain('.native-card')
+        expect(result.css).toContain('--color-active:red')
+        expect(result.css).not.toContain('@components')
+        expect(result.css).not.toContain('@import "./home.css"')
+        expect(result.generatedCSS).toContain('--color-active:red')
+        expect(result.emittedGlobals.variables).toMatchObject({
+            'color-active': 1
+        })
+        expect(result.emittedGlobals.animations).toMatchObject({
+            'active-spin': 1
+        })
     })
 
     it('detects Master CSS entrypoints and preservation directives separately', () => {
