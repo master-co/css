@@ -161,7 +161,7 @@ function NativeCssPrimitivesCard({ t, tile }: { t: Translate; tile: BentoTileCon
             </div>
 
             <HomeCodeWindow
-                className={clsx(bentoTopVisualClassName, 'h:md')}
+                className={clsx(bentoTopVisualClassName, 'h:md h:lg@md')}
                 preClassName="h:full px:sm py:lg"
                 lang="css"
                 variant="embedded">

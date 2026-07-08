@@ -86,21 +86,21 @@ export const heroExampleCode = `
 export const themeVariablesCode = `@theme {
     --font-sans: "Inter"; /* font:sans */
 
-    --spacing-md: 1rem; /* p:md */
+    --spacing-md: 1rem;   /* p:md */
     --spacing-lg: 1.5rem; /* p:lg */
 
-    --radius-lg: 0.5rem; /* r:lg */
+    --radius-lg: 0.5rem;  /* r:lg */
     --radius-xl: 0.75rem; /* r:xl */
 }
 
 @theme light {
-    --color-surface-base: $color-neutral-0; /* surface:base */
-    --color-text-body: $color-neutral-70; /* text:body */
+    --color-surface-base: var(--color-neutral-0); /* surface:base */
+    --color-text-body: var(--color-neutral-70);   /* text:body */
 }
 
 @theme dark {
-    --color-surface-base: $color-gray-95; /* surface:base */
-    --color-text-body: $color-gray-30; /* text:body */
+    --color-surface-base: var(--color-gray-95);   /* surface:base */
+    --color-text-body: var(--color-gray-30);      /* text:body */
 }
 `
 
@@ -112,14 +112,12 @@ export const nativeCssPrimitivesCode = `@import '@master/css';
         @compose h:10x px:md r:lg font:medium;
         color: white;
         background: var(--color-blue-60);
-        transition: background .15s ease;
 
         &:hover {
             background: var(--color-blue-70);
         }
 
         @dark {
-            color: var(--color-blue-100);
             background: var(--color-blue-50);
         }
     }
