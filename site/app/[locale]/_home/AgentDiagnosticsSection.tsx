@@ -18,9 +18,21 @@ const classOrderCode = `
 </article>
 `
 
+const classOrderFixPreviewCode = `
+<article class="rel flex px:4x font:md bg:white">
+  Preview card
+</article>
+`
+
 const conflictingClassesCode = `
 <!-- @WARN m:0 -->
 <section class="grid gap:md m:0 m:md">
+  Settings
+</section>
+`
+
+const conflictingClassesFixPreviewCode = `
+<section class="grid gap:md m:md">
   Settings
 </section>
 `
@@ -32,9 +44,21 @@ const canonicalUtilitiesCode = `
 </h2>
 `
 
+const canonicalUtilitiesFixPreviewCode = `
+<h2 class="text-center m:md">
+  Agent-ready UI
+</h2>
+`
+
 const themeTokensCode = `
 <!-- @WARN font:16px --><!-- @WARN fg:var(--color-red-60) -->
 <p class="font:16px fg:var(--color-red-60)">
+  Destructive action
+</p>
+`
+
+const themeTokensFixPreviewCode = `
+<p class="font:md fg:red-60">
   Destructive action
 </p>
 `
@@ -140,6 +164,7 @@ function ClassOrderCodeWindow({ t }: { t: Translate }) {
     return (
         <HomeCodeWindow
             className={clsx(homeBentoVisualClassName)}
+            fixPreviewCode={classOrderFixPreviewCode}
             lang="html"
             problems={problems}
             problemsLabel={t('Problems')}
@@ -161,6 +186,7 @@ function ConflictingClassesCodeWindow({ t }: { t: Translate }) {
     return (
         <HomeCodeWindow
             className={clsx(homeBentoVisualClassName)}
+            fixPreviewCode={conflictingClassesFixPreviewCode}
             lang="html"
             problems={problems}
             problemsLabel={t('Problems')}
@@ -182,6 +208,7 @@ function CanonicalUtilitiesCodeWindow({ t }: { t: Translate }) {
     return (
         <HomeCodeWindow
             className={clsx(homeBentoVisualClassName)}
+            fixPreviewCode={canonicalUtilitiesFixPreviewCode}
             lang="html"
             problems={problems}
             problemsLabel={t('Problems')}
@@ -203,6 +230,7 @@ function ThemeTokensCodeWindow({ t }: { t: Translate }) {
     return (
         <HomeCodeWindow
             className={clsx(homeBentoVisualClassName)}
+            fixPreviewCode={themeTokensFixPreviewCode}
             lang="html"
             problems={problems}
             problemsLabel={t('Problems')}

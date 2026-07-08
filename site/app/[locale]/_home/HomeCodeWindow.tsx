@@ -33,6 +33,7 @@ export interface HomeCodeWindowProps {
     children: string
     className?: string
     codeClassName?: string
+    fixPreviewCode?: string
     lang: CodeProp['lang']
     preClassName?: CodeProp['preClassName']
     problems?: readonly HomeCodeWindowProblem[]
@@ -44,16 +45,22 @@ export default function HomeCodeWindow({
     children,
     className,
     codeClassName,
+    fixPreviewCode,
     lang,
     preClassName,
     problems,
     problemsLabel = 'Problems',
     variant = 'framed'
 }: HomeCodeWindowProps) {
+    const codePreClassName = clsx('overflow:hidden px:sm py:lg r:xl', preClassName)
+    const hasFixPreview = Boolean(fixPreviewCode)
+    const resolvedFixPreviewCode = fixPreviewCode ?? ''
+
     return (
         <div
             className={clsx(
                 'rel flex overflow:hidden flex-col',
+                hasFixPreview && 'opacity:0:hover_.home-code-window__source opacity:1:hover_.home-code-window__fix opacity:0:active_.home-code-window__source opacity:1:active_.home-code-window__fix',
                 variant === 'framed' && 'r:3xl outline:1px|solid|subtle surface:raised shadow:lg',
                 className
             )}>
@@ -62,12 +69,27 @@ export default function HomeCodeWindow({
                     <span className="block size:2.5x r:full bg:line-base opacity:.56" key={dot} />
                 ))}
             </div>
-            <Code
-                className={clsx('flex:1|1|auto min-h:0', codeClassName)}
-                lang={lang}
-                preClassName={clsx('overflow:hidden px:sm py:lg r:xl', preClassName)}>
-                {children}
-            </Code>
+            {hasFixPreview ? (
+                <div className={clsx('grid flex:1|1|auto min-h:0', codeClassName)}>
+                    <div className="grid-area:1/1/2/2 min-w:0 transition:opacity|.2s|ease-out will-change:opacity home-code-window__source">
+                        <Code lang={lang} preClassName={codePreClassName}>
+                            {children}
+                        </Code>
+                    </div>
+                    <div aria-hidden="true" className="grid-area:1/1/2/2 min-w:0 opacity:0 transition:opacity|.2s|ease-out will-change:opacity home-code-window__fix">
+                        <Code lang={lang} preClassName={codePreClassName}>
+                            {resolvedFixPreviewCode}
+                        </Code>
+                    </div>
+                </div>
+            ) : (
+                <Code
+                    className={clsx('flex:1|1|auto min-h:0', codeClassName)}
+                    lang={lang}
+                    preClassName={codePreClassName}>
+                    {children}
+                </Code>
+            )}
             {problems?.length ? (
                 <div className="flex:0|0|auto bt:1px|solid|subtle bg:surface-base">
                     <div className="flex items-center gap:xs px:md py:sm bb:1px|dashed|subtle">
