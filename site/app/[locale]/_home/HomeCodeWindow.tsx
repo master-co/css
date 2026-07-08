@@ -3,7 +3,7 @@ import Code, { type CodeProp } from '~/internal/components/Code'
 
 const mutedWindowDots = ['dot-1', 'dot-2', 'dot-3'] as const
 
-export type HomeCodeWindowProblemSeverity = 'error' | 'warning'
+export type HomeCodeWindowProblemSeverity = 'error' | 'info' | 'warning'
 
 export interface HomeCodeWindowProblem {
     code?: string
@@ -72,7 +72,11 @@ export default function HomeCodeWindow({
 }
 
 function ProblemRow({ problem }: { problem: HomeCodeWindowProblem }) {
-    const isError = problem.severity === 'error'
+    const markerClassName = problem.severity === 'error'
+        ? 'bg:red'
+        : problem.severity === 'warning'
+            ? 'bg:yellow'
+            : 'bg:blue'
 
     return (
         <div className="flex items-start gap:sm p:md">
@@ -80,7 +84,7 @@ function ProblemRow({ problem }: { problem: HomeCodeWindowProblem }) {
                 aria-hidden="true"
                 className={clsx(
                     'block flex:0|0|auto size:2x mt:3xs r:full',
-                    isError ? 'bg:red' : 'bg:yellow'
+                    markerClassName
                 )} />
             <div className="min-w:0">
                 <p className="overflow:hidden m:0 font:sm text-ellipsis white-space:nowrap text:strong">

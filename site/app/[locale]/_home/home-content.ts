@@ -39,7 +39,7 @@ export interface DeliveryModeContent {
 export interface AgentDiagnosticCardContent {
     title: string
     body: string
-    visual?: 'invalid-classes' | 'class-order'
+    visual: 'invalid-classes' | 'class-order' | 'conflicting-classes' | 'canonical-utilities' | 'theme-tokens' | 'safe-fix-preview'
 }
 
 export const sectionLabelClassName = 'font:sm tracking:widest uppercase font:semibold text:yellow'
@@ -218,18 +218,22 @@ export const agentDiagnosticCards = [
     },
     {
         title: 'Conflicting classes',
-        body: 'Find declarations and overlapping shorthands that override each other in the same condition scope.'
+        body: 'Find declarations and overlapping shorthands that override each other in the same condition scope.',
+        visual: 'conflicting-classes'
     },
     {
         title: 'Canonical utilities',
-        body: 'Prefer semantic utilities, property aliases, composition classes, and stable condition order.'
+        body: 'Prefer semantic utilities, property aliases, composition classes, and stable condition order.',
+        visual: 'canonical-utilities'
     },
     {
         title: 'Theme tokens',
-        body: 'Suggest project tokens and enforce opt-in raw value policy for token-backed values.'
+        body: 'Suggest project tokens and enforce opt-in raw value policy for token-backed values.',
+        visual: 'theme-tokens'
     },
     {
         title: 'Safe fix preview',
-        body: 'Return fixable markup and @compose diagnostics as a reviewable preview before writes.'
+        body: 'Return fixable markup and @compose diagnostics as a reviewable preview before writes.',
+        visual: 'safe-fix-preview'
     }
 ] satisfies readonly AgentDiagnosticCardContent[]
