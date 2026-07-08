@@ -1,5 +1,5 @@
 ## Overview [sr-only]
-Page-level styles are ordinary CSS files loaded by one route, page, view, or component. They can use Master CSS as compile-time context without becoming a global entry.
+Route-level styles are ordinary CSS files loaded by one route, page, view, or component. They can use Master CSS as compile-time context without becoming a global entry.
 
 Reference the app stylesheet at the top of the local file:
 
@@ -25,18 +25,18 @@ Then write native CSS selectors. Use `@compose` when Master CSS classes are clea
 }
 ```
 
-Load the page stylesheet from the route, page module, or component entry that owns it:
+Load the route stylesheet from the route, page module, or component entry that owns it:
 
 ```ts name=app/home/page.tsx
 import "./home.css"
 ```
 
-The global stylesheet still has to be loaded by the app. `@reference` gives the page stylesheet compile-time access to project tokens, variants, and shared class vocabulary; it does not import the app CSS output again.
+The global stylesheet still has to be loaded by the app. `@reference` gives the route stylesheet compile-time access to project tokens, variants, and shared class vocabulary; it does not import the app CSS output again.
 
 ---
 
 ## Reference the app entry
-Use `@reference` when a page stylesheet needs project context but should ship as its own CSS output.
+Use `@reference` when a route stylesheet needs project context but should ship as its own CSS output.
 
 ```css name=app/home/home.css
 @reference "../globals.css";
@@ -50,14 +50,14 @@ Use `@reference` when a page stylesheet needs project context but should ship as
 }
 ```
 
-The referenced file is context-only. Native CSS from the referenced stylesheet is not copied into the page stylesheet. The page output contains only the lowered page rules plus any theme variables or managed keyframes the page actually needs and the global entry has not already emitted.
+The referenced file is context-only. Native CSS from the referenced stylesheet is not copied into the route stylesheet. The route output contains only the lowered route rules plus any theme variables or managed keyframes the route actually needs and the global entry has not already emitted.
 
 This keeps route CSS chunks self-contained without duplicating the global stylesheet.
 
 ---
 
 ## Write native selectors
-Page styles do not need on-demand generation. Treat page classes like traditional CSS that belongs to that route.
+Route styles do not need on-demand generation. Treat route classes like traditional CSS that belongs to that route.
 
 ```css name=app/home/home.css
 @reference "../globals.css";
@@ -93,7 +93,7 @@ Because these are native rules, they are emitted with the stylesheet that import
 ---
 
 ## Use variants locally
-Use rule-local variants for page states, breakpoints, and modes without moving the selector into global vocabulary.
+Use rule-local variants for route states, breakpoints, and modes without moving the selector into global vocabulary.
 
 ```css name=app/home/home.css
 @reference "../globals.css";
@@ -127,7 +127,7 @@ Native declarations and composed declarations share one rule. Put ordinary CSS w
 ---
 
 ## Use native keyframes
-Use native top-level `@keyframes` for page-only motion. Keep the animation in the page stylesheet unless it becomes a shared motion token.
+Use native top-level `@keyframes` for route-only motion. Keep the animation in the route stylesheet unless it becomes a shared motion token.
 
 ```css name=app/home/home.css
 @reference "../globals.css";
@@ -149,7 +149,7 @@ Use native top-level `@keyframes` for page-only motion. Keep the animation in th
 }
 ```
 
-Use native media queries for accessibility and page-specific fallbacks:
+Use native media queries for accessibility and route-specific fallbacks:
 
 ```css name=app/home/home.css
 @media (prefers-reduced-motion: reduce) {
@@ -162,7 +162,7 @@ Use native media queries for accessibility and page-specific fallbacks:
 ---
 
 ## Use container queries
-Container queries are often page-specific because they describe how one section responds to the space it receives.
+Container queries are often route-specific because they describe how one section responds to the space it receives.
 
 ```css name=app/home/home.css
 @reference "../globals.css";
@@ -188,11 +188,11 @@ Use viewport breakpoints when the layout depends on the page viewport. Use conta
 ---
 
 ## Promote shared patterns
-Keep page CSS local while the structure belongs to one route. Promote only the stable part:
+Keep route CSS local while the structure belongs to one route. Promote only the stable part:
 
 - Move repeated values into [Theme](/guide/theme).
 - Move repeated UI roles into [Global styles](/guide/global-styles#component-classes).
 - Move repeated low-level styling capabilities into [Global styles](/guide/global-styles#custom-utilities).
-- Keep unique layout, content structure, and page-only animation in the page stylesheet.
+- Keep unique layout, content structure, and route-only animation in the route stylesheet.
 
-This keeps global CSS small, page CSS explicit, and shared vocabulary intentional.
+This keeps global CSS small, route CSS explicit, and shared vocabulary intentional.
