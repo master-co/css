@@ -242,7 +242,7 @@
     "SSR / SSG": "SSR / SSG",
     "Hybrid": "混合",
     "Code diagnostics": "程式碼診斷",
-    "Give agents the same feedback your team trusts.": "把團隊信任的回饋交給 agents。",
+    "Team-trusted diagnostics for agents.": "給 agents 的團隊級可信診斷。",
     "Project-aware scans, class diagnostics, generated CSS inspection, and safe fix previews make AI styling changes reviewable before they land.": "具專案脈絡的掃描、class 診斷、生成 CSS 檢查與安全修復預覽，讓 AI 樣式修改在落地前就能被審查。",
     "Problems": "問題",
     "Invalid classes": "無效 classes",

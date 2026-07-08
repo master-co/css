@@ -55,7 +55,7 @@ export default function AgentDiagnosticsSection({ t }: { t: Translate }) {
                 <div className="max-w:breakpoint-md">
                     <p className={sectionLabelClassName}>{t('Code diagnostics')}</p>
                     <h2 className={sectionHeadingClassName}>
-                        {t('Give agents the same feedback your team trusts.')}
+                        {t('Team-trusted diagnostics for agents.')}
                     </h2>
                     <p className={sectionBodyClassName}>
                         {t('Project-aware scans, class diagnostics, generated CSS inspection, and safe fix previews make AI styling changes reviewable before they land.')}
