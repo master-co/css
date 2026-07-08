@@ -8,7 +8,7 @@ import type { ComponentType } from 'react'
 import clsx from 'clsx'
 import Link from '~/internal/components/Link'
 import { MotionHoverSurface, MotionSection } from './HomeMotion'
-import { deliveryModes, homeSections, sectionBodyClassName, sectionHeadingClassName, sectionLabelClassName, type DeliveryModeContent, type DeliveryModeIconId, type Translate } from './home-content'
+import { deliveryModes, homeSections, type DeliveryModeContent, type DeliveryModeIconId, type Translate } from './home-content'
 
 const deliveryModeIcons = {
     bolt: IconBolt,
@@ -21,17 +21,17 @@ export default function DeliveryModesSection({ t }: { t: Translate }) {
         <MotionSection
             homeSection={homeSections.deliveryModes}
             id={homeSections.deliveryModes}
-            className="py:5xl">
-            <div className="app-wrapper max-w:breakpoint-2xl">
-                <div className="max-w:breakpoint-md">
-                    <p className={sectionLabelClassName}>{t('Delivery modes')}</p>
-                    <h2 className={sectionHeadingClassName}>
+            className="home-section">
+            <div className="home-section-wrap">
+                <div className="home-section-copy">
+                    <p className="home-section-label">{t('Delivery modes')}</p>
+                    <h2 className="home-section-heading">
                         {t('One syntax. Every delivery path.')}
                     </h2>
-                    <p className={sectionBodyClassName}>
+                    <p className="home-section-body">
                         {t('Start in the browser, build a static CSS asset, or hydrate progressively without changing how teams write classes.')}
                     </p>
-                    <Link href="/guide/rendering-modes" className="inline-flex items-center gap:xs mt:lg text-decoration:none text:muted">
+                    <Link href="/guide/rendering-modes" className="home-section-link mt:lg">
                         {t('Compare rendering modes')}
                         <IconArrowRight className="size:4x stroke:1.75" />
                     </Link>

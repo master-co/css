@@ -3,7 +3,10 @@ import { readFileSync } from 'node:fs'
 import { test } from 'node:test'
 import guideColorNames from '../../internal/data/color-names.js'
 import { COLOR_LEVELS } from '../../internal/data/color-palette.js'
-import { agentDiagnosticCards, benchmarkChartColors, deliveryModes, designSystemRows, heroExampleClassNames, heroExampleCode, homeInteractions, homeSections, languageServiceCards, nativeCssPrimitivesCode, p3PaletteColorNames, p3PaletteTiers, sectionLabelClassName, themeVariablesCode } from '../app/[locale]/_home/home-content.js'
+import { agentDiagnosticCards, benchmarkChartColors, deliveryModes, designSystemRows, heroExampleClassNames, heroExampleCode, homeInteractions, homeSections, languageServiceCards, nativeCssPrimitivesCode, p3PaletteColorNames, p3PaletteTiers, themeVariablesCode } from '../app/[locale]/_home/home-content.js'
+
+const homeStyleSource = readFileSync(new URL('../styles/home.css', import.meta.url), 'utf8')
+const globalsSource = readFileSync(new URL('../app/globals.css', import.meta.url), 'utf8')
 
 test('homepage section anchors and interaction hooks stay stable', () => {
     assert.deepEqual(Object.values(homeSections), [
@@ -65,7 +68,10 @@ test('design system content model keeps targeted bento layout tiles', () => {
 })
 
 test('homepage section labels use the shared yellow treatment', () => {
-    assert.match(sectionLabelClassName, /\btext:yellow\b/)
+    assert.match(globalsSource, /@import '\.\.\/styles\/home\.css';/)
+    assert.match(homeStyleSource, /home-section-label\s*\{[\s\S]+?\btext:yellow\b/)
+    assert.match(homeStyleSource, /home-section-heading\s*\{[\s\S]+?\btext-balance\b/)
+    assert.match(homeStyleSource, /home-section-body\s*\{[\s\S]+?\btext:muted\b/)
 
     const homeSectionSources = [
         '../app/[locale]/_home/AgentDiagnosticsSection.tsx',
@@ -77,7 +83,8 @@ test('homepage section labels use the shared yellow treatment', () => {
     ].map((filePath) => readFileSync(new URL(filePath, import.meta.url), 'utf8'))
 
     for (const source of homeSectionSources) {
-        assert.doesNotMatch(source, /sectionLabelClassName\s*\+/)
+        assert.match(source, /home-section-label/)
+        assert.doesNotMatch(source, /sectionLabelClassName|sectionHeadingClassName|sectionBodyClassName/)
         assert.doesNotMatch(source, /\btext:blue\b/)
     }
 })
@@ -104,11 +111,13 @@ test('homepage benchmark chart uses shared segmented control', () => {
 
     assert.match(chartSource, /HomeSegmentedControl/)
     assert.doesNotMatch(chartSource, /aria-pressed=\{active\}/)
-    assert.match(segmentSource, /--home-segmented-control-padding': '3px'/)
-    assert.match(segmentSource, /--home-segmented-control-radius': 'var\(--radius-xl\)'/)
-    assert.match(segmentSource, /p:var\(--home-segmented-control-padding\)/)
-    assert.match(segmentSource, /r:max\(0px,calc\(var\(--home-segmented-control-radius\)-var\(--home-segmented-control-padding\)\)\)/)
-    assert.doesNotMatch(segmentSource, /\boutline:/)
+    assert.match(segmentSource, /home-segmented-control/)
+    assert.match(segmentSource, /home-segmented-control-option-active/)
+    assert.match(homeStyleSource, /--home-segmented-control-padding: 3px/)
+    assert.match(homeStyleSource, /--home-segmented-control-radius: var\(--radius-xl\)/)
+    assert.match(homeStyleSource, /p:var\(--home-segmented-control-padding\)/)
+    assert.match(homeStyleSource, /border-radius: max\(0px, calc\(var\(--home-segmented-control-radius\) - var\(--home-segmented-control-padding\)\)\)/)
+    assert.doesNotMatch(homeStyleSource.match(/home-segmented-control[\s\S]+?home-active-syntax/)?.[0] || '', /\boutline:/)
 })
 
 test('theme variables bento sample maps tokens to class examples', () => {
@@ -162,7 +171,8 @@ test('homepage code windows centralize code padding', () => {
         '../app/[locale]/_home/LanguageServiceSection.tsx'
     ].map((filePath) => readFileSync(new URL(filePath, import.meta.url), 'utf8'))
 
-    assert.match(codeWindowSource, /px:sm py:lg/)
+    assert.match(codeWindowSource, /home-code-window-pre/)
+    assert.match(homeStyleSource, /home-code-window-pre\s*\{[\s\S]+?\bpx:sm py:lg\b/)
     for (const source of callerSources) {
         assert.doesNotMatch(source, /preClassName="[^"]*\bpy:lg\b/)
     }
@@ -173,8 +183,8 @@ test('native CSS primitives code window stays top-aligned in its card', () => {
     const nativeCard = source.match(/function NativeCssPrimitivesCard[\s\S]+?function P3PaletteCard/)?.[0]
 
     assert.ok(nativeCard)
-    assert.match(nativeCard, /homeBentoTopVisualClassName/)
-    assert.doesNotMatch(nativeCard, /homeBentoVisualClassName/)
+    assert.match(nativeCard, /home-bento-visual-top/)
+    assert.doesNotMatch(nativeCard, /home-bento-visual h:md/)
 })
 
 test('homepage bento code windows keep their fixed preview height', () => {
@@ -184,7 +194,7 @@ test('homepage bento code windows keep their fixed preview height', () => {
         const card = source.match(new RegExp(`function ${functionName}[\\s\\S]+?(?=function )`))?.[0]
 
         assert.ok(card)
-        assert.match(card, /'[^']*\bh:md\b[^']*'/)
+        assert.match(card, /className=(?:"[^"]*\bh:md\b[^"]*"|'[^']*\bh:md\b[^']*')/)
         assert.doesNotMatch(card, /flex:1|min-h:md/)
     }
 })
@@ -198,22 +208,22 @@ test('agent diagnostics section uses the shared homepage bento UI', () => {
     assert.match(source, /HomeBentoCard/)
     assert.match(source, /HomeCodeWindow/)
     assert.doesNotMatch(source, /\bh:52x\b/)
-    assert.match(codeWindowSource, /items-center gap:xs px:md py:sm/)
+    assert.match(homeStyleSource, /home-code-window-problems-bar\s*\{[\s\S]+?items-center gap:xs px:md py:sm/)
     assert.doesNotMatch(codeWindowSource, /justify-between/)
     assert.match(codeWindowSource, /IconCircleX/)
     assert.match(codeWindowSource, /IconAlertTriangle/)
     assert.match(codeWindowSource, /IconInfoCircle/)
     assert.doesNotMatch(codeWindowSource, /size:2x mt:3xs r:full/)
     assert.match(codeWindowSource, /fixPreviewCode\?: string/)
-    assert.match(codeWindowSource, /opacity:0:hover_\.home-code-window__source/)
-    assert.match(codeWindowSource, /opacity:1:hover_\.home-code-window__fix/)
-    assert.match(codeWindowSource, /opacity:0:active_\.home-code-window__source/)
-    assert.match(codeWindowSource, /opacity:1:active_\.home-code-window__fix/)
-    assert.match(codeWindowSource, /transition:opacity\|\.16s\|ease-out/)
-    assert.doesNotMatch(codeWindowSource, /transition:opacity\|\.2s\|ease-out/)
+    assert.match(codeWindowSource, /home-code-window-has-fix/)
+    assert.match(homeStyleSource, /:where\(:hover, :active\) \.home-code-window__source \{[\s\S]+?opacity:\s*0/)
+    assert.match(homeStyleSource, /:where\(:hover, :active\) \.home-code-window__fix \{[\s\S]+?opacity:\s*1/)
+    assert.match(homeStyleSource, /transition:opacity\|\.16s\|ease-out/)
+    assert.doesNotMatch(homeStyleSource, /transition:opacity\|\.2s\|ease-out/)
     assert.match(source, /grid-cols:1 grid-cols:2@md/)
     assert.match(source, /agentDiagnosticCards\.map/)
     assert.doesNotMatch(source, /homeBentoDotGridStyle/)
+    assert.match(homeStyleSource, /home-bento-card\s*\{[\s\S]+?surface:base/)
     assert.match(source, /@ERROR font:/)
     assert.doesNotMatch(source, /invalidClassesFixPreviewCode/)
     assert.equal(source.match(/fixPreviewCode=\{/g)?.length, 4)
@@ -266,31 +276,33 @@ test('language service section uses shared homepage bento visuals', () => {
     assert.match(source, /Readable, and still human\./)
     assert.match(source, /grid-cols:1 grid-cols:2@md/)
     assert.doesNotMatch(source, /grid-cols:3@lg/)
-    assert.match(source, /homeBentoVisualClassName/)
+    assert.match(source, /home-bento-visual/)
     assert.match(source, /h:28x/)
     assert.match(source, /activeSyntaxHighlightingCode/)
     assert.match(source, /text:3xl@md/)
     assert.match(source, /fg:blue-60:hover/)
-    assert.match(source, /outline:2px\|solid\|blue-60:focus-visible/)
     assert.doesNotMatch(source, /@MARK/)
     assert.doesNotMatch(source, /\.mark/)
-    assert.match(source, /\.mcss-semantic/)
-    assert.match(source, /--home-active-syntax-cycle: 8s/)
-    assert.match(source, /steps\(1, end\)/)
-    assert.match(source, /home-active-syntax-token/)
-    assert.match(source, /25%, 100% \{\n\s+color: currentColor/)
-    assert.doesNotMatch(source, /--home-active-syntax-token-active/)
-    assert.ok((source.match(/\.line:nth-child/g)?.length || 0) >= 8)
-    assert.match(source, /\.line \.mcss-semantic::before/)
-    assert.match(source, /\.line \.mcss-semantic ~ \.mcss-semantic::before/)
-    assert.match(source, /position: absolute/)
-    assert.match(source, /--home-active-syntax-delay: -6s/)
-    assert.match(source, /--home-active-syntax-delay: -2s/)
-    assert.match(source, /home-active-syntax-caret-window/)
-    assert.match(source, /home-active-syntax-caret-blink \.48s/)
-    assert.doesNotMatch(source, /margin-right/)
-    assert.match(source, /@keyframes home-active-syntax-caret-window/)
-    assert.match(source, /@keyframes home-active-syntax-caret-blink/)
+    assert.match(source, /home-active-syntax/)
+    assert.doesNotMatch(source, /<style>/)
+    assert.match(homeStyleSource, /\.mcss-semantic/)
+    assert.match(homeStyleSource, /--home-active-syntax-cycle: 8s/)
+    assert.match(homeStyleSource, /steps\(1, end\)/)
+    assert.match(homeStyleSource, /home-active-syntax-token/)
+    assert.match(homeStyleSource, /25%, 100% \{\n\s+color: currentColor/)
+    assert.doesNotMatch(homeStyleSource, /--home-active-syntax-token-active/)
+    assert.ok((homeStyleSource.match(/\.line:nth-child/g)?.length || 0) >= 8)
+    assert.match(homeStyleSource, /\.line \.mcss-semantic::before/)
+    assert.match(homeStyleSource, /\.line \.mcss-semantic ~ \.mcss-semantic::before/)
+    assert.match(homeStyleSource, /position: relative/)
+    assert.match(homeStyleSource, /position: absolute/)
+    assert.match(homeStyleSource, /--home-active-syntax-delay: -6s/)
+    assert.match(homeStyleSource, /--home-active-syntax-delay: -2s/)
+    assert.match(homeStyleSource, /home-active-syntax-caret-window/)
+    assert.match(homeStyleSource, /home-active-syntax-caret-blink 1s/)
+    assert.doesNotMatch(homeStyleSource, /margin-right/)
+    assert.match(homeStyleSource, /@keyframes home-active-syntax-caret-window/)
+    assert.match(homeStyleSource, /@keyframes home-active-syntax-caret-blink/)
     assert.doesNotMatch(source, /Icon[A-Z]/)
 })
 

@@ -1,8 +1,7 @@
-import clsx from 'clsx'
-import { HomeBentoCard, HomeBentoFrame, HomeBentoGrid, homeBentoCardBodyClassName, homeBentoCardHeaderClassName, homeBentoCardTitleClassName, homeBentoVisualClassName } from './HomeBento'
+import { HomeBentoCard, HomeBentoFrame, HomeBentoGrid } from './HomeBento'
 import HomeCodeWindow, { type HomeCodeWindowProblem } from './HomeCodeWindow'
 import { MotionSection } from './HomeMotion'
-import { agentDiagnosticCards, homeSections, sectionBodyClassName, sectionHeadingClassName, sectionLabelClassName, type AgentDiagnosticCardContent, type Translate } from './home-content'
+import { agentDiagnosticCards, homeSections, type AgentDiagnosticCardContent, type Translate } from './home-content'
 
 const invalidClassesCode = `
 <!-- @ERROR font: -->
@@ -74,14 +73,14 @@ export default function AgentDiagnosticsSection({ t }: { t: Translate }) {
         <MotionSection
             homeSection={homeSections.codeDiagnostics}
             id={homeSections.codeDiagnostics}
-            className="py:5xl">
-            <div className="app-wrapper max-w:breakpoint-2xl">
-                <div className="max-w:breakpoint-md">
-                    <p className={sectionLabelClassName}>{t('Code diagnostics')}</p>
-                    <h2 className={sectionHeadingClassName}>
+            className="home-section">
+            <div className="home-section-wrap">
+                <div className="home-section-copy">
+                    <p className="home-section-label">{t('Code diagnostics')}</p>
+                    <h2 className="home-section-heading">
                         {t('Team-trusted diagnostics for agents.')}
                     </h2>
-                    <p className={sectionBodyClassName}>
+                    <p className="home-section-body">
                         {t('Project-aware scans, class diagnostics, generated CSS inspection, and safe fix previews make AI styling changes reviewable before they land.')}
                     </p>
                 </div>
@@ -107,11 +106,11 @@ function DiagnosticVisual({ t }: { t: Translate }) {
 function DiagnosticCard({ card, t }: { card: AgentDiagnosticCardContent; t: Translate }) {
     return (
         <HomeBentoCard>
-            <div className={homeBentoCardHeaderClassName}>
-                <h3 className={homeBentoCardTitleClassName}>
+            <div className="home-bento-card-header">
+                <h3 className="home-bento-card-title">
                     {t(card.title)}
                 </h3>
-                <p className={homeBentoCardBodyClassName}>{t(card.body)}</p>
+                <p className="home-bento-card-body">{t(card.body)}</p>
             </div>
 
             {card.visual === 'invalid-classes' ? (
@@ -142,7 +141,7 @@ function InvalidClassesCodeWindow({ t }: { t: Translate }) {
 
     return (
         <HomeCodeWindow
-            className={clsx(homeBentoVisualClassName)}
+            className="home-bento-visual"
             lang="html"
             problems={problems}
             problemsLabel={t('Problems')}
@@ -163,7 +162,7 @@ function ClassOrderCodeWindow({ t }: { t: Translate }) {
 
     return (
         <HomeCodeWindow
-            className={clsx(homeBentoVisualClassName)}
+            className="home-bento-visual"
             fixPreviewCode={classOrderFixPreviewCode}
             lang="html"
             problems={problems}
@@ -185,7 +184,7 @@ function ConflictingClassesCodeWindow({ t }: { t: Translate }) {
 
     return (
         <HomeCodeWindow
-            className={clsx(homeBentoVisualClassName)}
+            className="home-bento-visual"
             fixPreviewCode={conflictingClassesFixPreviewCode}
             lang="html"
             problems={problems}
@@ -207,7 +206,7 @@ function CanonicalUtilitiesCodeWindow({ t }: { t: Translate }) {
 
     return (
         <HomeCodeWindow
-            className={clsx(homeBentoVisualClassName)}
+            className="home-bento-visual"
             fixPreviewCode={canonicalUtilitiesFixPreviewCode}
             lang="html"
             problems={problems}
@@ -229,7 +228,7 @@ function ThemeTokensCodeWindow({ t }: { t: Translate }) {
 
     return (
         <HomeCodeWindow
-            className={clsx(homeBentoVisualClassName)}
+            className="home-bento-visual"
             fixPreviewCode={themeTokensFixPreviewCode}
             lang="html"
             problems={problems}
@@ -251,7 +250,7 @@ function SafeFixPreviewCodeWindow({ t }: { t: Translate }) {
 
     return (
         <HomeCodeWindow
-            className={clsx(homeBentoVisualClassName)}
+            className="home-bento-visual"
             lang="bash"
             problems={problems}
             problemsLabel={t('Preview')}

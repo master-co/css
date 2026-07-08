@@ -1,6 +1,6 @@
 'use client'
 
-import type { ComponentPropsWithoutRef, CSSProperties, ReactNode } from 'react'
+import type { ComponentPropsWithoutRef, ReactNode } from 'react'
 import clsx from 'clsx'
 
 export interface HomeSegmentedControlOption<Value extends string> {
@@ -14,13 +14,6 @@ export interface HomeSegmentedControlProps<Value extends string> extends Omit<Co
     value: Value
 }
 
-const homeSegmentedControlStyle = {
-    '--home-segmented-control-padding': '3px',
-    '--home-segmented-control-radius': 'var(--radius-xl)'
-} as CSSProperties
-
-const homeSegmentedControlButtonRadiusClassName = 'r:max(0px,calc(var(--home-segmented-control-radius)-var(--home-segmented-control-padding)))'
-
 export default function HomeSegmentedControl<Value extends string>({
     className,
     onValueChange,
@@ -31,12 +24,9 @@ export default function HomeSegmentedControl<Value extends string>({
 }: HomeSegmentedControlProps<Value>) {
     return (
         <div
-            className={clsx(
-                'inline-flex items-center gap:1px w:fit p:var(--home-segmented-control-padding) r:var(--home-segmented-control-radius) surface:muted',
-                className
-            )}
+            className={clsx('home-segmented-control', className)}
             role="group"
-            style={{ ...homeSegmentedControlStyle, ...style }}
+            style={style}
             {...props}>
             {options.map((option) => {
                 const active = option.value === value
@@ -44,9 +34,8 @@ export default function HomeSegmentedControl<Value extends string>({
                     <button
                         aria-pressed={active}
                         className={clsx(
-                            'inline-flex items-center justify-center h:8x min-w:14x px:md b:0 font:medium font:xs leading:1 white-space:nowrap cursor:pointer',
-                            homeSegmentedControlButtonRadiusClassName,
-                            active ? 'surface:raised text:strong shadow:xs' : 'bg:transparent text:muted text:strong:hover'
+                            'home-segmented-control-option',
+                            active ? 'home-segmented-control-option-active' : 'home-segmented-control-option-idle'
                         )}
                         key={option.value}
                         onClick={() => {

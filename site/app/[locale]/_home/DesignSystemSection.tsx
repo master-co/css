@@ -1,12 +1,11 @@
 import { Fragment } from 'react'
-import clsx from 'clsx'
 import { getColor } from '~/internal/data/color-palette'
 import { MotionSection } from './HomeMotion'
 import ArtGalleryPreview from './ArtGalleryPreview'
-import { HomeBentoCard, HomeBentoFrame, HomeBentoGrid, homeBentoCardBodyClassName, homeBentoCardHeaderClassName, homeBentoCardTitleClassName, homeBentoDotGridStyle, homeBentoTopVisualClassName, homeBentoVisualClassName } from './HomeBento'
+import { HomeBentoCard, HomeBentoFrame, HomeBentoGrid } from './HomeBento'
 import HomeCodeWindow from './HomeCodeWindow'
 import ThemeModesPreview from './ThemeModesPreview'
-import { designSystemRows, homeSections, nativeCssPrimitivesCode, p3PaletteColorNames, p3PaletteTiers, sectionBodyClassName, sectionHeadingClassName, sectionLabelClassName, themeVariablesCode, type DesignSystemRowContent, type DesignSystemTileContent, type Translate } from './home-content'
+import { designSystemRows, homeSections, nativeCssPrimitivesCode, p3PaletteColorNames, p3PaletteTiers, themeVariablesCode, type DesignSystemRowContent, type DesignSystemTileContent, type Translate } from './home-content'
 
 const p3PaletteGridStyle = {
     gridTemplateColumns: `3.25rem repeat(${p3PaletteColorNames.length}, minmax(2.75rem, 1fr))`,
@@ -19,14 +18,14 @@ const p3PaletteCanvasStyle = {
 
 export default function DesignSystemSection({ t }: { t: Translate }) {
     return (
-        <MotionSection homeSection={homeSections.designSystem} id={homeSections.designSystem} className="py:5xl">
-            <div className="app-wrapper max-w:breakpoint-2xl">
-                <div className="max-w:breakpoint-md">
-                    <p className={sectionLabelClassName}>{t('Design system')}</p>
-                    <h2 className={sectionHeadingClassName}>
+        <MotionSection homeSection={homeSections.designSystem} id={homeSections.designSystem} className="home-section">
+            <div className="home-section-wrap">
+                <div className="home-section-copy">
+                    <p className="home-section-label">{t('Design system')}</p>
+                    <h2 className="home-section-heading">
                         {t('Build modern interfaces from one class vocabulary.')}
                     </h2>
-                    <p className={sectionBodyClassName}>
+                    <p className="home-section-body">
                         {t('Keep themes, tokens, layout, motion, and native CSS primitives readable in markup, with predictable generated CSS.')}
                     </p>
                 </div>
@@ -77,13 +76,13 @@ function DesignSystemGridRow({ t, row }: { t: Translate; row: DesignSystemRowCon
 function DesignSystemPlaceholderCard({ t, tile }: { t: Translate; tile: DesignSystemTileContent }) {
     return (
         <HomeBentoCard className={tile.gridColumnClassName}>
-            <div className={homeBentoCardHeaderClassName}>
-                <h3 className={homeBentoCardTitleClassName}>
+            <div className="home-bento-card-header">
+                <h3 className="home-bento-card-title">
                     {t(tile.title)}
                 </h3>
-                <p className={homeBentoCardBodyClassName}>{t(tile.body)}</p>
+                <p className="home-bento-card-body">{t(tile.body)}</p>
             </div>
-            <div className={clsx(homeBentoVisualClassName, 'h:28x')} />
+            <div className="home-bento-visual h:28x" />
         </HomeBentoCard>
     )
 }
@@ -91,14 +90,14 @@ function DesignSystemPlaceholderCard({ t, tile }: { t: Translate; tile: DesignSy
 function ThemeModesCard({ t, tile }: { t: Translate; tile: DesignSystemTileContent }) {
     return (
         <HomeBentoCard className={tile.gridColumnClassName}>
-            <div className={homeBentoCardHeaderClassName}>
-                <h3 className={homeBentoCardTitleClassName}>
+            <div className="home-bento-card-header">
+                <h3 className="home-bento-card-title">
                     {t(tile.title)}
                 </h3>
-                <p className={homeBentoCardBodyClassName}>{t(tile.body)}</p>
+                <p className="home-bento-card-body">{t(tile.body)}</p>
             </div>
 
-            <ThemeModesPreview className={homeBentoVisualClassName} />
+            <ThemeModesPreview className="home-bento-visual" />
         </HomeBentoCard>
     )
 }
@@ -106,15 +105,15 @@ function ThemeModesCard({ t, tile }: { t: Translate; tile: DesignSystemTileConte
 function ThemeVariablesCard({ t, tile }: { t: Translate; tile: DesignSystemTileContent }) {
     return (
         <HomeBentoCard className={tile.gridColumnClassName}>
-            <div className={homeBentoCardHeaderClassName}>
-                <h3 className={homeBentoCardTitleClassName}>
+            <div className="home-bento-card-header">
+                <h3 className="home-bento-card-title">
                     {t(tile.title)}
                 </h3>
-                <p className={homeBentoCardBodyClassName}>{t(tile.body)}</p>
+                <p className="home-bento-card-body">{t(tile.body)}</p>
             </div>
 
             <HomeCodeWindow
-                className={clsx(homeBentoTopVisualClassName, 'h:md')}
+                className="home-bento-visual-top h:md"
                 preClassName="h:full"
                 lang="css"
                 variant="embedded">
@@ -127,14 +126,14 @@ function ThemeVariablesCard({ t, tile }: { t: Translate; tile: DesignSystemTileC
 function ArtGalleryCard({ t, tile }: { t: Translate; tile: DesignSystemTileContent }) {
     return (
         <HomeBentoCard className={tile.gridColumnClassName}>
-            <div className={homeBentoCardHeaderClassName}>
-                <h3 className={homeBentoCardTitleClassName}>
+            <div className="home-bento-card-header">
+                <h3 className="home-bento-card-title">
                     {t(tile.title)}
                 </h3>
-                <p className={homeBentoCardBodyClassName}>{t(tile.body)}</p>
+                <p className="home-bento-card-body">{t(tile.body)}</p>
             </div>
 
-            <ArtGalleryPreview className={homeBentoVisualClassName} />
+            <ArtGalleryPreview className="home-bento-visual" />
         </HomeBentoCard>
     )
 }
@@ -142,15 +141,15 @@ function ArtGalleryCard({ t, tile }: { t: Translate; tile: DesignSystemTileConte
 function NativeCssPrimitivesCard({ t, tile }: { t: Translate; tile: DesignSystemTileContent }) {
     return (
         <HomeBentoCard className={tile.gridColumnClassName}>
-            <div className={homeBentoCardHeaderClassName}>
-                <h3 className={homeBentoCardTitleClassName}>
+            <div className="home-bento-card-header">
+                <h3 className="home-bento-card-title">
                     {t(tile.title)}
                 </h3>
-                <p className={homeBentoCardBodyClassName}>{t(tile.body)}</p>
+                <p className="home-bento-card-body">{t(tile.body)}</p>
             </div>
 
             <HomeCodeWindow
-                className={clsx(homeBentoTopVisualClassName, 'h:md h:lg@md')}
+                className="home-bento-visual-top h:md h:lg@md"
                 preClassName="h:full"
                 lang="css"
                 variant="embedded">
@@ -163,11 +162,11 @@ function NativeCssPrimitivesCard({ t, tile }: { t: Translate; tile: DesignSystem
 function P3PaletteCard({ t, row }: { t: Translate; row: DesignSystemRowContent }) {
     return (
         <HomeBentoCard>
-            <div className={homeBentoCardHeaderClassName}>
-                <h3 className={homeBentoCardTitleClassName}>
+            <div className="home-bento-card-header">
+                <h3 className="home-bento-card-title">
                     {t(row.title)}
                 </h3>
-                <p className={homeBentoCardBodyClassName}>{t(row.body)}</p>
+                <p className="home-bento-card-body">{t(row.body)}</p>
             </div>
 
             <P3PalettePreview />
@@ -179,9 +178,9 @@ function P3PalettePreview() {
     return (
         <div
             aria-label="P3 palette tiers from 100 through 0"
-            className={homeBentoVisualClassName}
+            className="home-bento-visual"
             role="img">
-            <div aria-hidden="true" className="abs inset:0 opacity:.8 pointer-events:none" style={homeBentoDotGridStyle} />
+            <div aria-hidden="true" className="home-bento-dot-grid" />
 
             <div aria-hidden="true" className="rel z:1 p:xl pointer-events:none" style={p3PaletteCanvasStyle}>
                 <div className="grid gap:2xs" style={p3PaletteGridStyle}>

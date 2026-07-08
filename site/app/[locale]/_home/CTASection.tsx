@@ -1,15 +1,15 @@
 import { IconArrowRight, IconBrandGithub, IconTerminal2 } from '@tabler/icons-react'
 import Link from '~/internal/components/Link'
 import { MotionSection } from './HomeMotion'
-import { homeInteractions, homeSections, sectionHeadingClassName, sectionLabelClassName, type Translate } from './home-content'
+import { homeInteractions, homeSections, type Translate } from './home-content'
 
 export default function CTASection({ t }: { t: Translate }) {
     return (
         <MotionSection
             homeSection={homeSections.getStarted}
             id={homeSections.getStarted}
-            className="py:5xl">
-            <div className="app-wrapper max-w:breakpoint-2xl">
+            className="home-section">
+            <div className="home-section-wrap">
                 <div className="rel overflow:hidden p:lg r:3xl outline:1px|solid|subtle surface:raised shadow:lg p:xl@md">
                     <div className="abs inset:0 opacity:.64 pointer-events:none"
                         style={{
@@ -19,9 +19,9 @@ export default function CTASection({ t }: { t: Translate }) {
                             ].join(',')
                         }} />
                     <div className="rel z:1 grid-cols:1 items-center gap:2xl grid-cols:12@lg gap:2xl@lg">
-                        <div className="max-w:breakpoint-md grid-col-span:7@lg">
-                            <p className={sectionLabelClassName}>{t('Get started')}</p>
-                            <h2 className={sectionHeadingClassName}>
+                        <div className="home-section-copy grid-col-span:7@lg">
+                            <p className="home-section-label">{t('Get started')}</p>
+                            <h2 className="home-section-heading">
                                 {t('Start with one class string, then grow into a design system.')}
                             </h2>
                         </div>
@@ -29,21 +29,21 @@ export default function CTASection({ t }: { t: Translate }) {
                             <Link
                                 data-home-interaction={homeInteractions.ctaLink}
                                 href="/guide/introduction"
-                                className="btn btn-lg touch-yellow r:xl outline-offset:2xs text-decoration:none bg:yellow fg:yellow-95 outline:2px|solid|yellow:focus-visible">
+                                className="home-primary-action">
                                 {t('Get started')}
                                 <IconArrowRight className="size:4x ml:xs stroke:1.75" />
                             </Link>
                             <Link
                                 data-home-interaction={homeInteractions.ctaLink}
                                 href="/play"
-                                className="app-object btn btn-lg app-object-interactive r:xl outline-offset:2xs outline:2px|solid|yellow:focus-visible">
+                                className="home-secondary-action">
                                 <IconTerminal2 className="size:4x mr:xs stroke:1.75" />
                                 {t('Open Play')}
                             </Link>
                             <Link
                                 data-home-interaction={homeInteractions.ctaLink}
                                 href="https://github.com/master-co/css"
-                                className="app-object btn btn-lg app-object-interactive r:xl outline-offset:2xs outline:2px|solid|yellow:focus-visible">
+                                className="home-secondary-action">
                                 <IconBrandGithub className="size:4x mr:xs stroke:1.75" />
                                 GitHub
                             </Link>
