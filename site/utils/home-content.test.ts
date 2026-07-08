@@ -5,7 +5,7 @@ import guideColorNames from '../../internal/data/color-names.js'
 import { COLOR_LEVELS } from '../../internal/data/color-palette.js'
 import { agentDiagnosticCards, benchmarkChartColors, deliveryModes, designSystemRows, heroExampleClassNames, heroExampleCode, homeInteractions, homeSections, languageServiceCards, nativeCssPrimitivesCode, p3PaletteColorNames, p3PaletteTiers, themeVariablesCode } from '../app/[locale]/_home/home-content.js'
 
-const homeStyleSource = readFileSync(new URL('../styles/home.css', import.meta.url), 'utf8')
+const homeStyleSource = readFileSync(new URL('../app/[locale]/home.css', import.meta.url), 'utf8')
 const globalsSource = readFileSync(new URL('../app/globals.css', import.meta.url), 'utf8')
 
 test('homepage section anchors and interaction hooks stay stable', () => {
@@ -70,8 +70,8 @@ test('design system content model keeps targeted bento layout tiles', () => {
 test('homepage section labels use the shared yellow treatment', () => {
     const pageSource = readFileSync(new URL('../app/[locale]/page.tsx', import.meta.url), 'utf8')
     assert.doesNotMatch(globalsSource, /@import ['"]\.\.\/styles\/home\.css['"]/)
-    assert.match(pageSource, /import '\.\.\/\.\.\/styles\/home\.css'/)
-    assert.match(homeStyleSource, /@reference '\.\.\/app\/globals\.css';/)
+    assert.match(pageSource, /import '\.\/home\.css'/)
+    assert.match(homeStyleSource, /@reference '\.\.\/globals\.css';/)
     assert.match(homeStyleSource, /@layer components \{/)
     assert.doesNotMatch(homeStyleSource, /@components\b/)
     assert.doesNotMatch(homeStyleSource, /@theme\b/)
