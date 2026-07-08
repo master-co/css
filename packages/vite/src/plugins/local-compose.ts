@@ -3,6 +3,7 @@ import { loadProjectManifest } from '@master/css-project/manifest'
 import { findCSSManifestEntryFiles } from '@master/css-project/entries'
 import {
     collectStyleCSSDependencies,
+    createStyleEntryEmittedGlobals,
     hasLocalStyleDirectives,
     isStyleCSSRequest,
     resolveMasterStyleSource,
@@ -20,7 +21,9 @@ function invalidateModule(module: ModuleNode | undefined, server: ViteDevServer)
 
 export default function LocalComposePlugin(options: PluginOptions, context: PluginContext): Plugin {
     let projectManifest: Awaited<ReturnType<typeof loadProjectManifest>> | undefined
+    let projectManifestEntries: string[] = []
     let projectManifestDependencies: string[] = []
+    let styleEntryEmittedGlobals: Awaited<ReturnType<typeof createStyleEntryEmittedGlobals>> | undefined
     const localComposeModules = new Set<string>()
 
     const addServerAllow = (paths: string[]) => {
@@ -35,6 +38,7 @@ export default function LocalComposePlugin(options: PluginOptions, context: Plug
         if (projectManifest) return projectManifest
         const root = context.config?.root
         const entries = await findCSSManifestEntryFiles(root)
+        projectManifestEntries = entries
         const dependencies = new Set<string>()
         for (const entry of entries) {
             for (const dependency of collectStyleCSSDependencies(entry, undefined, root)) {
@@ -57,12 +61,31 @@ export default function LocalComposePlugin(options: PluginOptions, context: Plug
         return projectManifest
     }
 
+    const loadStyleEntryEmittedGlobals = async (pluginContext: { addWatchFile?: (id: string) => void }) => {
+        const manifestResult = await loadComposeContext(pluginContext)
+        if (styleEntryEmittedGlobals) return styleEntryEmittedGlobals
+        const dependencies = new Set(projectManifestDependencies)
+        styleEntryEmittedGlobals = await createStyleEntryEmittedGlobals(projectManifestEntries, {
+            baseManifest: manifestResult.manifest,
+            projectDir: context.config?.root
+        })
+        for (const dependency of styleEntryEmittedGlobals.dependencies) {
+            dependencies.add(dependency)
+            pluginContext.addWatchFile?.(dependency)
+        }
+        projectManifestDependencies = [...dependencies]
+        addServerAllow(projectManifestDependencies)
+        return styleEntryEmittedGlobals
+    }
+
     return {
         name: 'master-css:local-compose',
         enforce: 'pre',
         async buildStart() {
             projectManifest = undefined
+            projectManifestEntries = []
             projectManifestDependencies = []
+            styleEntryEmittedGlobals = undefined
         },
         async transform(code, id) {
             if (id.startsWith('\0')) return
@@ -75,9 +98,11 @@ export default function LocalComposePlugin(options: PluginOptions, context: Plug
                 this.addWatchFile?.(dependency)
             }
             const manifestResult = await loadComposeContext(this)
+            const emittedGlobalsResult = await loadStyleEntryEmittedGlobals(this)
             const result = await transformLocalStyleCSS(id, code, {
                 baseManifest: manifestResult.manifest,
-                projectDir: context.config?.root
+                projectDir: context.config?.root,
+                emittedGlobals: emittedGlobalsResult.emittedGlobals
             })
             if (!result.transformed) return
             localComposeModules.add(id)
@@ -93,7 +118,9 @@ export default function LocalComposePlugin(options: PluginOptions, context: Plug
         async handleHotUpdate({ file, server }) {
             if (!includesFile(projectManifestDependencies, file)) return
             projectManifest = undefined
+            projectManifestEntries = []
             projectManifestDependencies = []
+            styleEntryEmittedGlobals = undefined
             let handled = false
             for (const moduleId of localComposeModules) {
                 const module = server.moduleGraph.getModuleById(moduleId)

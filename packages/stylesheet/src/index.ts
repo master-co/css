@@ -78,7 +78,18 @@ export interface TransformLocalStyleCSSResult {
     result?: CompileCSSResult
 }
 
+export interface TransformLocalStyleCSSOptions extends CompileStyleCSSOptions {
+    emittedGlobals?: MasterCSSEmittedGlobals
+}
+
 export type RegisterStyleCSSSourceOptions = CompileStyleCSSOptions
+
+export type CreateStyleEntryEmittedGlobalsOptions = CompileStyleCSSOptions
+
+export interface CreateStyleEntryEmittedGlobalsResult {
+    emittedGlobals: Required<MasterCSSEmittedGlobals>
+    dependencies: string[]
+}
 
 export interface CreateExtractedCSSOptions extends CompileStyleCSSOptions {
     scanner: ScannerState
@@ -625,10 +636,67 @@ export async function compileLocalStyleCSS(
     })
 }
 
+function createEmptyStyleEntryEmittedGlobals(): Required<MasterCSSEmittedGlobals> {
+    return {
+        variables: {},
+        animations: {}
+    }
+}
+
+function hasEmittedGlobals(emittedGlobals: MasterCSSEmittedGlobals | undefined) {
+    return Boolean(
+        Object.keys(emittedGlobals?.variables || {}).length
+        || Object.keys(emittedGlobals?.animations || {}).length
+    )
+}
+
+export async function createStyleEntryEmittedGlobals(
+    entries: string[],
+    options: CreateStyleEntryEmittedGlobalsOptions = {}
+): Promise<CreateStyleEntryEmittedGlobalsResult> {
+    const dependencies = new Set<string>()
+    let baseManifest = options.baseManifest
+    let emittedGlobals = createEmptyStyleEntryEmittedGlobals()
+
+    for (const entry of [...new Set(entries)].sort()) {
+        const filename = cleanStyleRequest(entry)
+        const source = readFileSync(filename, 'utf-8')
+        const resolvedSource = resolveMasterStyleSource(filename, source, options.projectDir)
+        if (!resolvedSource) continue
+        for (const dependency of resolvedSource.dependencies) {
+            dependencies.add(cleanStyleRequest(dependency))
+        }
+
+        const { result, finalizedResult } = await compileStyleCSSResult(filename, resolvedSource.source, {
+            ...options,
+            baseManifest,
+            preserveNativeCSS: true
+        })
+        for (const dependency of finalizedResult.dependencies) {
+            dependencies.add(cleanStyleRequest(dependency))
+        }
+
+        const renderedCSS = renderCompiledManifestCSS({
+            manifest: finalizedResult.manifest,
+            nativeCSS: finalizedResult.css || result.nativeCSS,
+            emittedGlobals
+        })
+        if (hasEmittedGlobals(renderedCSS.emittedGlobals)) {
+            emittedGlobals = renderedCSS.emittedGlobals
+        }
+        baseManifest = finalizedResult.manifest
+    }
+
+    return {
+        emittedGlobals,
+        dependencies: [...dependencies]
+    }
+}
+
 export async function transformLocalStyleCSS(
     id: string,
     source: string,
-    options: CompileStyleCSSOptions = {}
+    options: TransformLocalStyleCSSOptions = {}
 ): Promise<TransformLocalStyleCSSResult> {
     if (!isStyleCSSRequest(id) || !hasLocalStyleDirectives(source)) {
         return {
@@ -637,14 +705,19 @@ export async function transformLocalStyleCSS(
             transformed: false
         }
     }
+    const {
+        emittedGlobals,
+        ...compileOptions
+    } = options
     const { result, finalizedResult } = await compileStyleCSSResult(id, source, {
-        ...options,
+        ...compileOptions,
         preserveNativeCSS: true
     })
     const renderedCSS = renderCompiledManifestCSS({
         manifest: finalizedResult.resolutionManifest,
         nativeCSS: finalizedResult.css || result.nativeCSS,
-        includeGeneratedCSS: false
+        includeGeneratedCSS: false,
+        emittedGlobals
     })
     const transformedResult = {
         ...result,

@@ -1,6 +1,7 @@
 import {
     compileRenderedStyleCSS,
     compileStyleCSS,
+    createStyleEntryEmittedGlobals,
     hasLocalStyleDirectives,
     isMasterCSSPackageStyleFile,
     removeMasterStyleDirectives,
@@ -9,6 +10,7 @@ import {
     collectStyleCSSDependencies
 } from '@master/css-stylesheet'
 import { loadProjectManifest } from '@master/css-project/manifest'
+import { findCSSManifestEntryFiles } from '@master/css-project/entries'
 import { hasMasterCSSImport } from '@master/css-lexer'
 
 interface LoaderContext {
@@ -30,6 +32,21 @@ function shouldAddStyleDependencies(resourcePath: string, source: string, projec
     } catch {
         return true
     }
+}
+
+async function createGlobalStyleEntryEmittedGlobals(
+    entries: string[],
+    baseManifest: Awaited<ReturnType<typeof loadProjectManifest>>['manifest'],
+    projectDir: string | undefined,
+    dependencies: string[]
+) {
+    if (!entries.length) return
+    const result = await createStyleEntryEmittedGlobals(entries, {
+        baseManifest,
+        projectDir
+    })
+    dependencies.push(...result.dependencies)
+    return result.emittedGlobals
 }
 
 async function transformStyleSource(resourcePath: string, source: string, projectDir?: string) {
@@ -71,10 +88,18 @@ async function transformStyleSource(resourcePath: string, source: string, projec
 
     if (!resolvedSource) {
         if (hasLocalStyleDirectives(source)) {
-            const projectManifest = await loadProjectManifest(projectDir)
+            const entries = await findCSSManifestEntryFiles(projectDir)
+            const projectManifest = await loadProjectManifest(projectDir, { entries })
+            const emittedGlobals = await createGlobalStyleEntryEmittedGlobals(
+                entries,
+                projectManifest.manifest,
+                projectDir,
+                dependencies
+            )
             const result = await transformLocalStyleCSS(resourcePath, source, {
                 baseManifest: projectManifest.manifest,
-                projectDir
+                projectDir,
+                emittedGlobals
             })
             dependencies.push(...projectManifest.dependencies, ...(result.dependencies || []))
             return {

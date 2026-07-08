@@ -1,5 +1,6 @@
 import {
     compileStyleCSS,
+    createStyleEntryEmittedGlobals,
     createStyleCSSHostSource,
     hasLocalStyleDirectives,
     isMasterCSSPackageStyleFile,
@@ -10,6 +11,7 @@ import {
 } from '@master/css-stylesheet'
 import { VIRTUAL_CSS_ID } from '@master/css-integration/style-module'
 import { loadProjectManifest } from '@master/css-project/manifest'
+import { findCSSManifestEntryFiles } from '@master/css-project/entries'
 
 interface TransformStyleSourceOptions {
     projectDir?: string
@@ -18,6 +20,21 @@ interface TransformStyleSourceOptions {
 
 function hasMasterStyleManifestDirective(source: string) {
     return source.includes('@settings') || source.includes('@theme') || source.includes('@master')
+}
+
+async function createGlobalStyleEntryEmittedGlobals(
+    entries: string[],
+    baseManifest: Awaited<ReturnType<typeof loadProjectManifest>>['manifest'],
+    projectDir: string | undefined,
+    dependencies: string[]
+) {
+    if (!entries.length) return
+    const result = await createStyleEntryEmittedGlobals(entries, {
+        baseManifest,
+        projectDir
+    })
+    dependencies.push(...result.dependencies)
+    return result.emittedGlobals
 }
 
 export async function transformStyleSource(
@@ -51,10 +68,18 @@ export async function transformStyleSource(
     const resolvedSource = resolveMasterStyleSource(resourcePath, source, projectDir)
     if (!resolvedSource) {
         if (hasLocalStyleDirectives(source)) {
-            const projectManifest = await loadProjectManifest(projectDir)
+            const entries = await findCSSManifestEntryFiles(projectDir)
+            const projectManifest = await loadProjectManifest(projectDir, { entries })
+            const emittedGlobals = await createGlobalStyleEntryEmittedGlobals(
+                entries,
+                projectManifest.manifest,
+                projectDir,
+                dependencies
+            )
             const result = await transformLocalStyleCSS(resourcePath, source, {
                 baseManifest: projectManifest.manifest,
-                projectDir
+                projectDir,
+                emittedGlobals
             })
             return {
                 code: result.code,

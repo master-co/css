@@ -355,6 +355,31 @@ describe('MasterCSSPlugin (C1 race fix)', () => {
         }
     })
 
+    test('dedupes local theme variables already emitted by global style entries', async () => {
+        const root = mkdtempSync(path.join(tmpdir(), 'master-css-webpack-local-dedupe-'))
+        const entryPath = path.join(root, 'app.css')
+        const modulePath = path.join(root, 'Home.module.css')
+        try {
+            writeFileSync(entryPath, [
+                '@import "@master/css";',
+                '.global-section { padding-block: var(--spacing-5xl); }'
+            ].join('\n'))
+
+            const result = await transformStyleSource(modulePath, '.home { @compose py:5xl; }', {
+                projectDir: root,
+                masterImport: '../node_modules/.master-css/master-utilities.css'
+            })
+
+            expect(result.code).toContain('.home{padding-block:var(--spacing-5xl)}')
+            expect(result.code).not.toContain('--spacing-5xl:')
+            expect(result.code).not.toContain('master-utilities.css')
+            expect(result.dependencies).toContain(entryPath)
+            expect(result.dependencies).toContain(modulePath)
+        } finally {
+            rmSync(root, { recursive: true, force: true })
+        }
+    })
+
     test('style loader keeps local style dependencies registered after invalid @compose', async () => {
         const root = mkdtempSync(path.join(tmpdir(), 'master-css-webpack-loader-invalid-'))
         const modulePath = path.join(root, 'Button.module.css')

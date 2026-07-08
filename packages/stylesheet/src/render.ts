@@ -68,7 +68,13 @@ function insertVariableReferences(css: StylesheetCSS, references: Set<string>) {
         visited.add(name)
         const variable = css.variables.get(name)
         if (!variable || variable.inline) return
-        css.themeLayer.insert(new VariableRule(name, variable, css))
+        if (css.themeLayer.get(name) || css.isEmittedGlobalsVariable(name)) {
+            const count = css.themeLayer.tokenCounts.get(name) || 0
+            css.themeLayer.tokenCounts.set(name, count + 1)
+        } else {
+            css.themeLayer.insert(new VariableRule(name, variable, css))
+            css.themeLayer.tokenCounts.set(name, 1)
+        }
         variable.dependencies?.forEach((dependency) => insert(dependency, visited))
     }
     const visited = new Set<string>()
@@ -108,9 +114,16 @@ function insertAnimationReferences(css: StylesheetCSS, references: Set<string>) 
     for (const name of references) {
         const keyframes = css.animations.get(name)
         if (!keyframes) continue
-        const rule = new AnimationRule(name, keyframes, css)
-        css.animationsNonLayer.insert(rule)
-        insertVariableReferences(css, rule.variableNames ?? new Set())
+        let rule = css.animationsNonLayer.rules.find((eachRule) => eachRule.name === name) as AnimationRule | undefined
+        if (rule || css.isEmittedGlobalsAnimation(name)) {
+            const count = css.animationsNonLayer.tokenCounts.get(name) || 0
+            css.animationsNonLayer.tokenCounts.set(name, count + 1)
+        } else {
+            rule = new AnimationRule(name, keyframes, css)
+            css.animationsNonLayer.insert(rule)
+            css.animationsNonLayer.tokenCounts.set(name, 1)
+        }
+        if (rule) insertVariableReferences(css, rule.variableNames ?? new Set())
     }
 }
 

@@ -13,6 +13,7 @@ import CSSScanner from '@master/css-scanner'
 import {
     compileStyleCSS,
     compileRenderedStyleCSS,
+    createStyleEntryEmittedGlobals,
     createStyleCSSHostSource,
     createMasterCSSPackageHostSource,
     createExtractedCSS,
@@ -265,6 +266,47 @@ describe('style CSS extraction helpers', () => {
         expect(result.dependencies).toContain(tokenPath)
     })
 
+    it('skips referenced theme variables and keyframes already emitted by global CSS', async () => {
+        const root = createFixture()
+        const tokenPath = join(root, 'app/tokens.css')
+        const modulePath = join(root, 'app/Button.module.css')
+        writeFileSync(tokenPath, [
+            '@theme {',
+            '  --spacing-card: 2rem;',
+            '',
+            '  @keyframes pop {',
+            '    to { opacity: 1; }',
+            '  }',
+            '}',
+            '@components {',
+            '  panel {',
+            '    padding: var(--spacing-card);',
+            '    animation: pop 1s;',
+            '  }',
+            '}'
+        ].join('\n'))
+
+        const result = await transformLocalStyleCSS(modulePath, `
+            @reference "./tokens.css";
+
+            .page-panel {
+                @compose panel;
+            }
+        `, {
+            projectDir: root,
+            emittedGlobals: {
+                variables: { 'spacing-card': 1 },
+                animations: { pop: 1 }
+            }
+        })
+
+        expect(result.transformed).toBe(true)
+        expect(result.code).toContain('.page-panel{padding:var(--spacing-card);animation:1s pop}')
+        expect(result.code).not.toContain('--spacing-card:2rem')
+        expect(result.code).not.toContain('@keyframes pop')
+        expect(result.code).not.toContain('@reference')
+    })
+
     it('emits default preset variables used by local styles referencing a globals entry', async () => {
         const root = createFixture()
         const globalsPath = join(root, 'app/globals.css')
@@ -288,6 +330,37 @@ describe('style CSS extraction helpers', () => {
         expect(result.code).not.toContain('@master/css')
         expect(result.dependencies).toContain(pagePath)
         expect(result.dependencies).toContain(globalsPath)
+    })
+
+    it('dedupes default preset variables already emitted by a globals entry snapshot', async () => {
+        const root = createFixture()
+        const globalsPath = join(root, 'app/globals.css')
+        const pagePath = join(root, 'app/page.css')
+        writeFileSync(globalsPath, [
+            '@import "@master/css";',
+            '.global-section { padding-block: var(--spacing-5xl); }'
+        ].join('\n'))
+
+        const globalResult = await createStyleEntryEmittedGlobals([globalsPath], {
+            projectDir: root
+        })
+        const result = await transformLocalStyleCSS(pagePath, `
+            @reference "./globals.css";
+
+            .home-section {
+                @compose py:5xl;
+            }
+        `, {
+            projectDir: root,
+            emittedGlobals: globalResult.emittedGlobals
+        })
+
+        expect(globalResult.emittedGlobals.variables).toHaveProperty('spacing-5xl')
+        expect(globalResult.dependencies).toContain(globalsPath)
+        expect(result.transformed).toBe(true)
+        expect(result.code).toContain('.home-section{padding-block:var(--spacing-5xl)}')
+        expect(result.code).not.toContain('--spacing-5xl:')
+        expect(result.code).not.toContain('@reference')
     })
 
     it('strips reference-only local styles and still reports dependencies', async () => {

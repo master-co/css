@@ -156,6 +156,29 @@ describe('Next style CSS loader', () => {
         expect(result.dependencies).toContain(globalsPath)
     })
 
+    it('dedupes referenced default theme variables already emitted by global CSS for page-level CSS', async () => {
+        const root = createFixture()
+        const globalsPath = join(root, 'app/globals.css')
+        const pagePath = join(root, 'app/page.css')
+        writeFileSync(globalsPath, [
+            '@import "@master/css";',
+            '.global-section { padding-block: var(--spacing-5xl); }'
+        ].join('\n'))
+
+        const result = await runStyleCSSLoader(
+            root,
+            pagePath,
+            '@reference "./globals.css"; .home-section { @compose py:5xl; }'
+        )
+
+        expect(result.content).toContain('.home-section{padding-block:var(--spacing-5xl)}')
+        expect(result.content).not.toContain('--spacing-5xl:')
+        expect(result.content).not.toContain('@reference')
+        expect(result.content).not.toContain('@master/css')
+        expect(result.dependencies).toContain(pagePath)
+        expect(result.dependencies).toContain(globalsPath)
+    })
+
     it('keeps local style dependencies registered after invalid @compose and recovers on the next run', async () => {
         const root = createFixture()
         const modulePath = join(root, 'app/Button.module.css')

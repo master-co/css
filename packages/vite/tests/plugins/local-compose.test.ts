@@ -60,6 +60,32 @@ describe('LocalComposePlugin', () => {
         }
     })
 
+    test('dedupes theme variables already emitted by global style entries', async () => {
+        const root = createFixture()
+        try {
+            writeFileSync(path.join(root, 'app.css'), [
+                '@import "@master/css";',
+                '.global-section { padding-block: var(--spacing-5xl); }'
+            ].join('\n'))
+            const context = createContext(root)
+            const plugin = LocalComposePlugin({} as any, context)
+            const addWatchFile = vi.fn()
+
+            const result = await (plugin as any).transform.call(
+                { addWatchFile },
+                '.home { @compose py:5xl; }',
+                path.join(root, 'src/Home.module.css')
+            )
+
+            expect(result.code).toContain('.home{padding-block:var(--spacing-5xl)}')
+            expect(result.code).not.toContain('--spacing-5xl:')
+            expect(result.code).not.toContain('master-css-slot')
+            expect(addWatchFile).toHaveBeenCalledWith(path.join(root, 'app.css'))
+        } finally {
+            rmSync(root, { recursive: true, force: true })
+        }
+    })
+
     test('leaves ordinary CSS and Master entries to their existing pipelines', async () => {
         const root = createFixture()
         try {
