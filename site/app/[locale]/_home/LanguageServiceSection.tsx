@@ -21,39 +21,39 @@ const manifestSuggestionsCode = `
 
 const manifestSuggestionItems = [
     {
-        detail: '(scope) color-text-amber',
-        label: 'amber',
+        detail: 'preset text color',
+        label: '--color-text-amber',
         tone: 'amber'
     },
     {
-        detail: '(theme) color-text-blue',
-        label: 'blue',
+        detail: 'preset text color',
+        label: '--color-text-blue',
         tone: 'blue'
     },
     {
-        detail: '(theme) color-text-cyan',
-        label: 'cyan',
+        detail: 'preset text color',
+        label: '--color-text-cyan',
         tone: 'cyan'
     },
     {
-        detail: '(semantic) text-body',
-        label: 'body',
-        tone: 'neutral'
+        detail: 'preset text role',
+        label: '--color-text-body',
+        tone: 'body'
     },
     {
-        detail: '(semantic) text-muted',
-        label: 'muted',
-        tone: 'neutral'
+        detail: 'preset text role',
+        label: '--color-text-muted',
+        tone: 'muted'
     },
     {
-        detail: '@hover selector',
-        label: 'hover',
-        tone: 'selector'
+        detail: 'preset text role',
+        label: '--color-text-strong',
+        tone: 'strong'
     },
     {
-        detail: '@sm query',
-        label: 'sm',
-        tone: 'query'
+        detail: 'preset text role',
+        label: '--color-text-link',
+        tone: 'link'
     }
 ] as const
 
@@ -88,7 +88,7 @@ export default function LanguageServiceSection({ t }: { t: Translate }) {
 
 function LanguageServiceCard({ card, t }: { card: LanguageServiceCardContent; t: Translate }) {
     return (
-        <HomeBentoCard className={card.visual === 'manifest-aware-suggestions' ? 'grid-col-span:2@md' : undefined}>
+        <HomeBentoCard>
             <div className="home-bento-card-header">
                 <h3 className="home-bento-card-title">
                     {t(card.title)}

@@ -1,21 +1,23 @@
-@components {
-    home-section {
+@reference '../app/globals.css';
+
+@layer components {
+    .home-section {
         @compose py:5xl;
     }
 
-    home-section-wrap {
+    .home-section-wrap {
         @compose app-wrapper max-w:breakpoint-2xl;
     }
 
-    home-section-copy {
+    .home-section-copy {
         @compose max-w:breakpoint-md;
     }
 
-    home-section-label {
+    .home-section-label {
         @compose font:sm tracking:widest uppercase font:semibold text:yellow;
     }
 
-    home-section-heading {
+    .home-section-heading {
         @compose max-w:32ch mx:0 mb:0 mt:md font:3xl font:regular leading:1.08 tracking:tight text:strong text-balance;
 
         @variant @md {
@@ -23,11 +25,11 @@
         }
     }
 
-    home-section-body {
+    .home-section-body {
         @compose max-w:72ch mb:0 mt:lg text:lg text:muted;
     }
 
-    home-primary-action {
+    .home-primary-action {
         @compose btn btn-lg touch-yellow r:xl outline-offset:2xs text-decoration:none bg:yellow fg:yellow-95;
 
         &:focus-visible {
@@ -35,7 +37,7 @@
         }
     }
 
-    home-secondary-action {
+    .home-secondary-action {
         @compose app-object btn btn-lg app-object-interactive r:xl outline-offset:2xs;
 
         &:focus-visible {
@@ -43,43 +45,43 @@
         }
     }
 
-    home-section-link {
+    .home-section-link {
         @compose inline-flex items-center gap:xs text-decoration:none text:muted;
     }
 
-    home-bento-frame {
+    .home-bento-frame {
         @compose mx:-md mt:10x p:calc(var(--spacing-md)+1px) r:4xl surface:muted;
     }
 
-    home-bento-grid {
+    .home-bento-grid {
         @compose grid gap:calc(var(--spacing-md)+1px);
     }
 
-    home-bento-card {
+    .home-bento-card {
         @compose flex flex-col r:2xl outline:1px|solid|subtle surface:base;
     }
 
-    home-bento-card-header {
+    .home-bento-card-header {
         @compose flex flex-col p:2xl;
     }
 
-    home-bento-card-title {
+    .home-bento-card-title {
         @compose mx:0 mb:0 font:2xl font:medium text:strong;
     }
 
-    home-bento-card-body {
+    .home-bento-card-body {
         @compose max-w:64ch mx:0 mb:0 mt:sm text:sm text:muted;
     }
 
-    home-bento-visual {
+    .home-bento-visual {
         @compose rel overflow:hidden mx:calc(var(--spacing-sm)-1px) mb:calc(var(--spacing-sm)-1px) mt:auto r:xl outline:1px|solid|subtle bg:surface-muted;
     }
 
-    home-bento-visual-top {
+    .home-bento-visual-top {
         @compose rel overflow:hidden mx:calc(var(--spacing-sm)-1px) mb:calc(var(--spacing-sm)-1px) mt:0 r:xl outline:1px|solid|subtle bg:surface-muted;
     }
 
-    home-bento-dot-grid {
+    .home-bento-dot-grid {
         @compose abs inset:0;
         background-image: radial-gradient(var(--color-line-muted) 1px, transparent 1px);
         background-size: 14px 14px;
@@ -87,13 +89,13 @@
         pointer-events: none;
     }
 
-    home-manifest-suggestions {
+    .home-manifest-suggestions {
         --home-manifest-suggestions-cycle: 8.8s;
         --home-manifest-suggestions-menu-base-x: 24ch;
         --home-manifest-suggestions-menu-top: 6.25rem;
         @compose rel;
         container-type: inline-size;
-        height: clamp(22rem, 34cqw, 24rem);
+        height: clamp(18rem, 32cqw, 22rem);
         isolation: isolate;
 
         .home-manifest-suggestions__window {
@@ -120,33 +122,37 @@
 
         .home-manifest-suggestions__window .line:first-child .mcss-semantic-role-value-keyword {
             animation: home-manifest-suggestions-type var(--home-manifest-suggestions-cycle) steps(5, end) infinite;
+            color: transparent !important;
             display: inline-block;
-            overflow: hidden;
             position: relative;
             vertical-align: top;
             white-space: nowrap;
             width: 0;
         }
 
+        .home-manifest-suggestions__window .line:first-child .mcss-semantic-role-value-keyword::before {
+            animation: home-manifest-suggestions-type-text var(--home-manifest-suggestions-cycle) steps(1, end) infinite;
+            color: var(--color-text-amber);
+            content: '';
+            left: 0;
+            position: absolute;
+            top: 0;
+        }
+
         .home-manifest-suggestions__window .line:first-child .mcss-semantic-role-value-keyword::after {
             animation: home-manifest-suggestions-caret var(--home-manifest-suggestions-cycle) steps(1, end) infinite, home-manifest-suggestions-caret-blink 1s steps(1, end) infinite;
             background: var(--color-yellow);
             content: '';
-            display: inline-block;
             height: 1.15em;
-            margin-left: 1px;
-            transform: translateY(0.15em);
-            vertical-align: top;
+            left: 100%;
+            position: absolute;
+            top: 0.15em;
             width: 2px;
         }
 
         .home-manifest-suggestions__menu {
+            @compose surface:overlay text:body b:1px|solid|base r:lg shadow:lg;
             animation: home-manifest-suggestions-menu var(--home-manifest-suggestions-cycle) steps(5, end) infinite;
-            background: color-mix(in oklab, var(--color-surface-overlay) 96%, var(--color-blue-60) 4%);
-            border: 1px solid var(--color-line-base);
-            border-radius: var(--radius-lg);
-            box-shadow: 0 1rem 3rem rgb(0 0 0 / 0.18);
-            color: var(--color-text-body);
             font: 13px/20px var(--font-mono);
             left: 0;
             letter-spacing: 0;
@@ -171,9 +177,8 @@
         }
 
         .home-manifest-suggestions__menu-head {
+            @compose text:muted bb:1px|solid|subtle;
             align-items: center;
-            border-bottom: 1px solid var(--color-line-subtle);
-            color: var(--color-text-muted);
             display: flex;
             font-size: 0.65rem;
             gap: 1rem;
@@ -199,12 +204,11 @@
         }
 
         .home-manifest-suggestions__item-active {
-            background: color-mix(in oklab, var(--color-blue-60) 14%, var(--color-surface-raised));
-            color: var(--color-text-strong);
+            @compose bg:blue-60/.14 text:strong;
         }
 
         .home-manifest-suggestions__item-icon {
-            border: 1px solid var(--color-line-base);
+            @compose b:1px|solid|base;
             border-radius: 999px;
             display: block;
             height: 0.88rem;
@@ -223,30 +227,31 @@
             background: var(--color-text-cyan);
         }
 
-        .home-manifest-suggestions__item-icon-neutral {
-            background: linear-gradient(135deg, var(--color-text-muted), var(--color-line-base));
+        .home-manifest-suggestions__item-icon-body {
+            background: var(--color-text-body);
         }
 
-        .home-manifest-suggestions__item-icon-selector,
-        .home-manifest-suggestions__item-icon-query {
-            background: transparent;
-            border-color: var(--color-text-amber);
-            border-radius: var(--radius-2xs);
+        .home-manifest-suggestions__item-icon-muted {
+            background: var(--color-text-muted);
         }
 
-        .home-manifest-suggestions__item-icon-query {
-            border-color: var(--color-text-blue);
+        .home-manifest-suggestions__item-icon-strong {
+            background: var(--color-text-strong);
+        }
+
+        .home-manifest-suggestions__item-icon-link {
+            background: var(--color-text-link);
         }
 
         .home-manifest-suggestions__item-label {
-            color: var(--color-text-strong);
+            @compose text:strong;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
         }
 
         .home-manifest-suggestions__item-detail {
-            color: var(--color-text-muted);
+            @compose text:muted;
             font-size: 0.76em;
             overflow: hidden;
             text-align: right;
@@ -255,16 +260,16 @@
         }
     }
 
-    home-code-window {
+    .home-code-window {
         @compose rel flex overflow:hidden flex-col;
         tab-size: 2;
     }
 
-    home-code-window-framed {
+    .home-code-window-framed {
         @compose r:3xl outline:1px|solid|subtle surface:raised shadow:lg;
     }
 
-    home-code-window-has-fix {
+    .home-code-window-has-fix {
         &:where(:hover, :active) .home-code-window__source {
             opacity: 0;
         }
@@ -274,93 +279,93 @@
         }
     }
 
-    home-code-window-chrome {
+    .home-code-window-chrome {
         @compose flex items-center gap:2xs px:md py:sm bb:1px|solid|subtle bg:surface-base/.72 backdrop-filter:blur(18px);
     }
 
-    home-code-window-dot {
+    .home-code-window-dot {
         @compose block size:2.5x r:full bg:line-base;
         opacity: 0.56;
     }
 
-    home-code-window-pre {
+    .home-code-window-pre {
         @compose overflow:hidden px:sm py:lg r:xl;
     }
 
-    home-code-window-stack {
+    .home-code-window-stack {
         @compose grid flex:1|1|auto min-h:0;
     }
 
-    home-code-window-layer {
+    .home-code-window-layer {
         @compose grid-area:1/1/2/2 min-w:0 transition:opacity|.16s|ease-out;
         will-change: opacity;
     }
 
-    home-code-window-layer-fix {
+    .home-code-window-layer-fix {
         opacity: 0;
     }
 
-    home-code-window-body {
+    .home-code-window-body {
         @compose flex:1|1|auto min-h:0;
     }
 
-    home-code-window-problems {
+    .home-code-window-problems {
         @compose flex:0|0|auto bt:1px|solid|subtle bg:surface-base;
     }
 
-    home-code-window-problems-bar {
+    .home-code-window-problems-bar {
         @compose flex items-center gap:xs px:md py:sm bb:1px|dashed|subtle;
     }
 
-    home-code-window-problems-label {
+    .home-code-window-problems-label {
         @compose m:0 font:2xs tracking:widest uppercase text:strong;
     }
 
-    home-code-window-problems-count {
+    .home-code-window-problems-count {
         @compose px:xs rounded font:2xs text-center surface:muted text:strong;
     }
 
-    home-code-window-problems-list {
+    .home-code-window-problems-list {
         @compose grid;
     }
 
-    home-code-window-problem {
+    .home-code-window-problem {
         @compose flex items-start gap:sm p:md;
     }
 
-    home-code-window-problem-icon {
+    .home-code-window-problem-icon {
         @compose flex:0|0|auto size:4x mt:1px stroke:1.75;
     }
 
-    home-code-window-problem-content {
+    .home-code-window-problem-content {
         @compose min-w:0;
     }
 
-    home-code-window-problem-message {
+    .home-code-window-problem-message {
         @compose overflow:hidden m:0 font:sm text-ellipsis white-space:nowrap text:strong;
     }
 
-    home-code-window-problem-meta {
+    .home-code-window-problem-meta {
         @compose overflow:hidden mx:0 mb:0 mt:2xs font:2xs text-ellipsis white-space:nowrap text:muted;
     }
 
-    home-segmented-control {
+    .home-segmented-control {
         --home-segmented-control-padding: 3px;
         --home-segmented-control-radius: var(--radius-xl);
         @compose inline-flex items-center gap:1px w:fit p:var(--home-segmented-control-padding) r:var(--home-segmented-control-radius) surface:muted;
     }
 
-    home-segmented-control-option {
+    .home-segmented-control-option {
         @compose inline-flex items-center justify-center h:8x min-w:14x px:md b:0 font:medium font:xs leading:1 white-space:nowrap;
         border-radius: max(0px, calc(var(--home-segmented-control-radius) - var(--home-segmented-control-padding)));
         cursor: pointer;
     }
 
-    home-segmented-control-option-active {
+    .home-segmented-control-option-active {
         @compose surface:raised text:strong shadow:xs;
     }
 
-    home-segmented-control-option-idle {
+    .home-segmented-control-option-idle {
         @compose bg:transparent text:muted;
 
         &:hover {
@@ -368,7 +373,7 @@
         }
     }
 
-    home-active-syntax {
+    .home-active-syntax {
         --home-active-syntax-cycle: 8s;
 
         .code-wrapper {
@@ -443,137 +448,165 @@
     }
 }
 
-@theme {
-    @keyframes home-manifest-suggestions-type {
-        0%, 14% {
-            width: 0;
-        }
-
-        22% {
-            width: 1ch;
-        }
-
-        30% {
-            width: 2ch;
-        }
-
-        38% {
-            width: 3ch;
-        }
-
-        46% {
-            width: 4ch;
-        }
-
-        54%, 90% {
-            width: 5ch;
-        }
-
-        100% {
-            width: 0;
-        }
+@keyframes home-manifest-suggestions-type {
+    0%, 14% {
+        width: 0;
     }
 
-    @keyframes home-manifest-suggestions-caret {
-        0%, 92% {
-            visibility: visible;
-        }
-
-        93%, 100% {
-            visibility: hidden;
-        }
+    22% {
+        width: 1ch;
     }
 
-    @keyframes home-manifest-suggestions-caret-blink {
-        0%, 49% {
-            opacity: 1;
-        }
-
-        50%, 100% {
-            opacity: 0;
-        }
+    30% {
+        width: 2ch;
     }
 
-    @keyframes home-manifest-suggestions-menu {
-        0%, 10% {
-            opacity: 0;
-            transform: translateX(var(--home-manifest-suggestions-menu-base-x));
-            translate: 0 -0.4rem;
-            visibility: hidden;
-        }
-
-        16% {
-            opacity: 1;
-            transform: translateX(var(--home-manifest-suggestions-menu-base-x));
-            translate: 0 0;
-            visibility: visible;
-        }
-
-        22% {
-            transform: translateX(calc(var(--home-manifest-suggestions-menu-base-x) + 1ch));
-        }
-
-        30% {
-            transform: translateX(calc(var(--home-manifest-suggestions-menu-base-x) + 2ch));
-        }
-
-        38% {
-            transform: translateX(calc(var(--home-manifest-suggestions-menu-base-x) + 3ch));
-        }
-
-        46% {
-            transform: translateX(calc(var(--home-manifest-suggestions-menu-base-x) + 4ch));
-        }
-
-        54%, 90% {
-            opacity: 1;
-            transform: translateX(calc(var(--home-manifest-suggestions-menu-base-x) + 5ch));
-            translate: 0 0;
-            visibility: visible;
-        }
-
-        100% {
-            opacity: 0;
-            transform: translateX(var(--home-manifest-suggestions-menu-base-x));
-            translate: 0 -0.25rem;
-            visibility: hidden;
-        }
+    38% {
+        width: 3ch;
     }
 
-    @keyframes home-manifest-suggestions-menu-pin {
-        0%, 14% {
-            opacity: 0;
-        }
-
-        16%, 100% {
-            opacity: 1;
-        }
+    46% {
+        width: 4ch;
     }
 
-    @keyframes home-active-syntax-token {
-        25%, 100% {
-            color: currentColor;
-        }
+    54%, 90% {
+        width: 5ch;
     }
 
-    @keyframes home-active-syntax-caret-window {
-        0%, 24.9% {
-            visibility: visible;
-        }
+    100% {
+        width: 0;
+    }
+}
 
-        25%, 100% {
-            visibility: hidden;
-        }
+@keyframes home-manifest-suggestions-type-text {
+    0%, 14% {
+        content: '';
     }
 
-    @keyframes home-active-syntax-caret-blink {
-        0%, 49% {
-            opacity: 1;
-        }
+    22% {
+        content: 'a';
+    }
 
-        50%, 100% {
-            opacity: 0;
-        }
+    30% {
+        content: 'am';
+    }
+
+    38% {
+        content: 'amb';
+    }
+
+    46% {
+        content: 'ambe';
+    }
+
+    54%, 90% {
+        content: 'amber';
+    }
+
+    100% {
+        content: '';
+    }
+}
+
+@keyframes home-manifest-suggestions-caret {
+    0%, 92% {
+        visibility: visible;
+    }
+
+    93%, 100% {
+        visibility: hidden;
+    }
+}
+
+@keyframes home-manifest-suggestions-caret-blink {
+    0%, 49% {
+        opacity: 1;
+    }
+
+    50%, 100% {
+        opacity: 0;
+    }
+}
+
+@keyframes home-manifest-suggestions-menu {
+    0%, 10% {
+        opacity: 0;
+        transform: translateX(var(--home-manifest-suggestions-menu-base-x));
+        translate: 0 -0.4rem;
+        visibility: hidden;
+    }
+
+    16% {
+        opacity: 1;
+        transform: translateX(var(--home-manifest-suggestions-menu-base-x));
+        translate: 0 0;
+        visibility: visible;
+    }
+
+    22% {
+        transform: translateX(calc(var(--home-manifest-suggestions-menu-base-x) + 1ch));
+    }
+
+    30% {
+        transform: translateX(calc(var(--home-manifest-suggestions-menu-base-x) + 2ch));
+    }
+
+    38% {
+        transform: translateX(calc(var(--home-manifest-suggestions-menu-base-x) + 3ch));
+    }
+
+    46% {
+        transform: translateX(calc(var(--home-manifest-suggestions-menu-base-x) + 4ch));
+    }
+
+    54%, 90% {
+        opacity: 1;
+        transform: translateX(calc(var(--home-manifest-suggestions-menu-base-x) + 5ch));
+        translate: 0 0;
+        visibility: visible;
+    }
+
+    100% {
+        opacity: 0;
+        transform: translateX(var(--home-manifest-suggestions-menu-base-x));
+        translate: 0 -0.25rem;
+        visibility: hidden;
+    }
+}
+
+@keyframes home-manifest-suggestions-menu-pin {
+    0%, 14% {
+        opacity: 0;
+    }
+
+    16%, 100% {
+        opacity: 1;
+    }
+}
+
+@keyframes home-active-syntax-token {
+    25%, 100% {
+        color: currentColor;
+    }
+}
+
+@keyframes home-active-syntax-caret-window {
+    0%, 24.9% {
+        visibility: visible;
+    }
+
+    25%, 100% {
+        visibility: hidden;
+    }
+}
+
+@keyframes home-active-syntax-caret-blink {
+    0%, 49% {
+        opacity: 1;
+    }
+
+    50%, 100% {
+        opacity: 0;
     }
 }
 
@@ -581,6 +614,11 @@
     .home-manifest-suggestions .mcss-semantic-role-value-keyword {
         animation: none;
         width: 5ch;
+    }
+
+    .home-manifest-suggestions .mcss-semantic-role-value-keyword::before {
+        animation: none;
+        content: 'amber';
     }
 
     .home-manifest-suggestions .mcss-semantic-role-value-keyword::after,
