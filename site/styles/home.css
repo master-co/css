@@ -228,7 +228,7 @@
             width: 1px;
         }
 
-        .line .mcss-semantic ~ .mcss-semantic::before {
+        .line .mcss-semantic~.mcss-semantic::before {
             content: none;
         }
 
@@ -254,28 +254,30 @@
     }
 }
 
-@keyframes home-active-syntax-token {
-    25%, 100% {
-        color: currentColor;
-    }
-}
-
-@keyframes home-active-syntax-caret-window {
-    0%, 24.9% {
-        visibility: visible;
+@theme {
+    @keyframes home-active-syntax-token {
+        25%, 100% {
+            color: currentColor;
+        }
     }
 
-    25%, 100% {
-        visibility: hidden;
-    }
-}
+    @keyframes home-active-syntax-caret-window {
+        0%, 24.9% {
+            visibility: visible;
+        }
 
-@keyframes home-active-syntax-caret-blink {
-    0%, 49% {
-        opacity: 1;
+        25%, 100% {
+            visibility: hidden;
+        }
     }
 
-    50%, 100% {
-        opacity: 0;
+    @keyframes home-active-syntax-caret-blink {
+        0%, 49% {
+            opacity: 1;
+        }
+
+        50%, 100% {
+            opacity: 0;
+        }
     }
 }
