@@ -11,6 +11,11 @@ export const homeBentoCardBodyClassName = 'max-w:64ch mx:0 mb:0 mt:sm text:sm te
 export const homeBentoVisualClassName = 'rel overflow:hidden mx:calc(var(--spacing-sm)-1px) mb:calc(var(--spacing-sm)-1px) mt:auto r:xl outline:1px|solid|subtle bg:surface-muted'
 export const homeBentoTopVisualClassName = 'rel overflow:hidden mx:calc(var(--spacing-sm)-1px) mb:calc(var(--spacing-sm)-1px) mt:0 r:xl outline:1px|solid|subtle bg:surface-muted'
 
+export const homeBentoDotGridStyle = {
+    backgroundImage: 'radial-gradient(var(--color-line-muted) 1px, transparent 1px)',
+    backgroundSize: '14px 14px'
+}
+
 export function HomeBentoFrame({ className, ...props }: HomeBentoDivProps) {
     return (
         <div

@@ -241,7 +241,7 @@
     "Build CSS": "建置 CSS",
     "SSR / SSG": "SSR / SSG",
     "Hybrid": "混合",
-    "Code diagnostics for AI agents.": "給 AI agents 的程式碼診斷。",
+    "Code diagnostics": "程式碼診斷",
     "Give agents the same feedback your team trusts.": "把團隊信任的回饋交給 agents。",
     "Project-aware scans, class diagnostics, generated CSS inspection, and safe fix previews make AI styling changes reviewable before they land.": "具專案脈絡的掃描、class 診斷、生成 CSS 檢查與安全修復預覽，讓 AI 樣式修改在落地前就能被審查。",
     "Guide AI agents": "引導 AI agents",

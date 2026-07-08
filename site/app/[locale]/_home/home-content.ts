@@ -36,13 +36,6 @@ export interface DeliveryModeContent {
     signal: string
 }
 
-export interface DiagnosticSignalContent {
-    title: string
-    body: string
-    accent: HomeAccentClassName
-    status: string
-}
-
 export const sectionLabelClassName = 'font:sm tracking:widest uppercase font:semibold text:yellow'
 export const sectionHeadingClassName = 'max-w:32ch mx:0 mb:0 mt:md font:3xl font:regular leading:1.08 tracking:tight text:strong text-balance font:5xl@md'
 export const sectionBodyClassName = 'max-w:72ch mb:0 mt:lg text:lg text:muted'
@@ -205,24 +198,3 @@ export const deliveryModes = [
         signal: 'Hybrid'
     }
 ] satisfies readonly DeliveryModeContent[]
-
-export const diagnosticSignals = [
-    {
-        title: 'Project scan',
-        body: 'Find stylesheet entries, source coverage, and missing CSS before edits start.',
-        accent: 'bg:blue',
-        status: 'context'
-    },
-    {
-        title: 'Class diagnostics',
-        body: 'Catch invalid classes, conflicts, non-canonical syntax, and unstable order.',
-        accent: 'bg:yellow',
-        status: 'lint'
-    },
-    {
-        title: 'Safe fix preview',
-        body: 'Return a reviewable diff before an agent writes fixes back to the workspace.',
-        accent: 'bg:green',
-        status: 'preview'
-    }
-] satisfies readonly DiagnosticSignalContent[]

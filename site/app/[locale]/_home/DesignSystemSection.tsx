@@ -3,7 +3,7 @@ import clsx from 'clsx'
 import { getColor } from '~/internal/data/color-palette'
 import { MotionSection } from './HomeMotion'
 import ArtGalleryPreview from './ArtGalleryPreview'
-import { HomeBentoCard, HomeBentoFrame, HomeBentoGrid, homeBentoCardBodyClassName, homeBentoCardHeaderClassName, homeBentoCardTitleClassName, homeBentoTopVisualClassName, homeBentoVisualClassName } from './HomeBento'
+import { HomeBentoCard, HomeBentoFrame, HomeBentoGrid, homeBentoCardBodyClassName, homeBentoCardHeaderClassName, homeBentoCardTitleClassName, homeBentoDotGridStyle, homeBentoTopVisualClassName, homeBentoVisualClassName } from './HomeBento'
 import HomeCodeWindow from './HomeCodeWindow'
 import ThemeModesPreview from './ThemeModesPreview'
 import { designSystemRows, homeSections, nativeCssPrimitivesCode, p3PaletteColorNames, p3PaletteTiers, sectionBodyClassName, sectionHeadingClassName, sectionLabelClassName, themeVariablesCode, type DesignSystemRowContent, type DesignSystemTileContent, type Translate } from './home-content'
@@ -15,11 +15,6 @@ const p3PaletteGridStyle = {
 
 const p3PaletteCanvasStyle = {
     width: 'max(100%, 74rem)'
-}
-
-const p3PaletteDotGridStyle = {
-    backgroundImage: 'radial-gradient(var(--color-line-muted) 1px, transparent 1px)',
-    backgroundSize: '14px 14px'
 }
 
 export default function DesignSystemSection({ t }: { t: Translate }) {
@@ -186,7 +181,7 @@ function P3PalettePreview() {
             aria-label="P3 palette tiers from 100 through 0"
             className={homeBentoVisualClassName}
             role="img">
-            <div aria-hidden="true" className="abs inset:0 opacity:.8 pointer-events:none" style={p3PaletteDotGridStyle} />
+            <div aria-hidden="true" className="abs inset:0 opacity:.8 pointer-events:none" style={homeBentoDotGridStyle} />
 
             <div aria-hidden="true" className="rel z:1 p:xl pointer-events:none" style={p3PaletteCanvasStyle}>
                 <div className="grid gap:2xs" style={p3PaletteGridStyle}>

@@ -3,7 +3,7 @@ import { readFileSync } from 'node:fs'
 import { test } from 'node:test'
 import guideColorNames from '../../internal/data/color-names.js'
 import { COLOR_LEVELS } from '../../internal/data/color-palette.js'
-import { benchmarkChartColors, deliveryModes, designSystemRows, diagnosticSignals, heroExampleClassNames, heroExampleCode, homeInteractions, homeSections, nativeCssPrimitivesCode, p3PaletteColorNames, p3PaletteTiers, sectionLabelClassName, themeVariablesCode } from '../app/[locale]/_home/home-content.js'
+import { benchmarkChartColors, deliveryModes, designSystemRows, heroExampleClassNames, heroExampleCode, homeInteractions, homeSections, nativeCssPrimitivesCode, p3PaletteColorNames, p3PaletteTiers, sectionLabelClassName, themeVariablesCode } from '../app/[locale]/_home/home-content.js'
 
 test('homepage section anchors and interaction hooks stay stable', () => {
     assert.deepEqual(Object.values(homeSections), [
@@ -161,6 +161,12 @@ test('agent diagnostics section uses the shared homepage bento UI', () => {
     assert.match(source, /HomeBentoFrame/)
     assert.match(source, /HomeBentoGrid/)
     assert.match(source, /HomeBentoCard/)
+    assert.match(source, /grid-cols:1 grid-cols:2@md/)
+    assert.match(source, /Array\.from\(\{ length: 6 \}/)
+    assert.match(source, /homeBentoDotGridStyle/)
+    assert.doesNotMatch(source, /Link/)
+    assert.doesNotMatch(source, /Icon[A-Z]/)
+    assert.doesNotMatch(source, /diagnosticSignals/)
 })
 
 test('homepage P3 palette preview uses every guide color in reverse order', () => {
@@ -185,16 +191,6 @@ test('delivery modes content model links to rendering mode sections', () => {
         assert.match(mode.accent, /^bg:/)
         assert.ok(mode.body.length > mode.title.length)
         assert.ok(mode.signal.length > 0)
-    }
-})
-
-test('diagnostic signal content model is agent-oriented and reviewable', () => {
-    assert.equal(diagnosticSignals.length, 3)
-    assert.deepEqual(diagnosticSignals.map((signal) => signal.status), ['context', 'lint', 'preview'])
-
-    for (const signal of diagnosticSignals) {
-        assert.match(signal.accent, /^bg:/)
-        assert.ok(signal.body.length > signal.title.length)
     }
 })
 
