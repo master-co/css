@@ -35,10 +35,10 @@ export default function BentoSection({ t }: { t: Translate }) {
                 <div className="max-w:breakpoint-md">
                     <p className={sectionLabelClassName + ' text:yellow'}>{t('Design system')}</p>
                     <h2 className={sectionHeadingClassName}>
-                        {t('Style modern product surfaces from one class vocabulary.')}
+                        {t('Build modern interfaces from one class vocabulary.')}
                     </h2>
                     <p className={sectionBodyClassName}>
-                        {t('Theme modes, tokens, layout, motion, and native CSS primitives stay readable in markup and predictable in generated CSS.')}
+                        {t('Keep themes, tokens, layout, motion, and native CSS primitives readable in markup, with predictable generated CSS.')}
                     </p>
                 </div>
 

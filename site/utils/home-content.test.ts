@@ -49,7 +49,7 @@ test('bento content model keeps targeted layout tiles', () => {
     ])
     assert.deepEqual(bentoRows.map((row) => row.gridCount), [2, 1, 3])
     assert.deepEqual(bentoRows.map((row) => row.visual || 'placeholder'), ['placeholder', 'p3-palette', 'placeholder'])
-    assert.deepEqual(bentoRows[0].tiles?.map((tile) => tile.title), ['Modes without markup forks', 'Variables that travel with the system'])
+    assert.deepEqual(bentoRows[0].tiles?.map((tile) => tile.title), ['Theme modes without forks', 'System-wide variables'])
     assert.deepEqual(bentoRows[0].tiles?.map((tile) => tile.visual || 'placeholder'), ['theme-modes', 'theme-variables'])
     assert.deepEqual(bentoRows[2].tiles?.map((tile) => tile.title), ['Layout and motion, together', 'Reusable native CSS'])
     assert.deepEqual(bentoRows[2].tiles?.map((tile) => tile.visual || 'placeholder'), ['art-gallery', 'native-css-primitives'])

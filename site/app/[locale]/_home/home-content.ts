@@ -135,38 +135,38 @@ export const p3PaletteTiers = [...COLOR_LEVELS].reverse()
 export const bentoRows = [
     {
         title: 'Tokenized themes',
-        body: 'Bring modes and shared variables into the same design-system vocabulary.',
+        body: 'Bring modes and shared variables into one design-system vocabulary.',
         gridClassName: 'grid-cols:1 grid-cols:2@md',
         gridCount: 2,
         tiles: [
             {
-                title: 'Modes without markup forks',
-                body: 'Switch light, dark, and custom modes through the same tokens, so components keep their markup while brands and surfaces evolve.',
+                title: 'Theme modes without forks',
+                body: 'Switch light, dark, and custom modes through the same tokens while components keep their markup.',
                 visual: 'theme-modes'
             },
             {
-                title: 'Variables that travel with the system',
-                body: 'Define color, spacing, radius, and type once, then reuse the same vocabulary in utilities, components, and mode overrides.',
+                title: 'System-wide variables',
+                body: 'Define color, spacing, radius, and type once, then reuse them across utilities, components, and modes.',
                 visual: 'theme-variables'
             }
         ]
     },
     {
         title: 'Wide-gamut color system',
-        body: 'Use vivid P3 palettes with a predictable tier scale, from deep anchors to bright interface accents, without inventing one-off shades.',
+        body: 'Use vivid P3 palettes with a predictable tier scale, from deep anchors to bright interface accents.',
         gridClassName: 'grid-cols:1',
         gridCount: 1,
         visual: 'p3-palette'
     },
     {
         title: 'Modern CSS primitives',
-        body: 'Show layout, motion, and reusable CSS blocks as connected parts of the same interface system.',
+        body: 'Connect layout, motion, and reusable CSS blocks inside the same interface system.',
         gridClassName: 'grid-cols:1 grid-cols:3@md',
         gridCount: 3,
         tiles: [
             {
                 title: 'Layout and motion, together',
-                body: 'Compose CSS Grid, responsive spans, transitions, animations, and View Transition selectors where the interface is authored.',
+                body: 'Compose CSS Grid, responsive spans, animations, and View Transition selectors right beside the UI.',
                 gridColumnClassName: 'grid-col-span:2@md',
                 visual: 'art-gallery'
             },
