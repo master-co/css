@@ -115,7 +115,7 @@ function ThemeVariablesCard({ t, tile }: { t: Translate; tile: DesignSystemTileC
 
             <HomeCodeWindow
                 className={clsx(homeBentoTopVisualClassName, 'h:md')}
-                preClassName="h:full px:sm py:lg"
+                preClassName="h:full"
                 lang="css"
                 variant="embedded">
                 {themeVariablesCode}
@@ -151,7 +151,7 @@ function NativeCssPrimitivesCard({ t, tile }: { t: Translate; tile: DesignSystem
 
             <HomeCodeWindow
                 className={clsx(homeBentoTopVisualClassName, 'h:md h:lg@md')}
-                preClassName="h:full px:sm py:lg"
+                preClassName="h:full"
                 lang="css"
                 variant="embedded">
                 {nativeCssPrimitivesCode}

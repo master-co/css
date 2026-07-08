@@ -68,7 +68,7 @@ function DiagnosticCard({ card, t }: { card: AgentDiagnosticCardContent; t: Tran
 function InvalidClassesCodeWindow({ t }: { t: Translate }) {
     const problems: HomeCodeWindowProblem[] = [{
         code: 'invalid-class',
-        location: 'Button.tsx:1:31',
+        location: 'home.html:1:31',
         message: t('Invalid value for `font` property.'),
         severity: 'error',
         source: '@master/css/no-invalid-classes'
@@ -76,7 +76,7 @@ function InvalidClassesCodeWindow({ t }: { t: Translate }) {
 
     return (
         <HomeCodeWindow
-            className={clsx(homeBentoVisualClassName, 'h:52x')}
+            className={clsx(homeBentoVisualClassName)}
             lang="html"
             problems={problems}
             problemsLabel={t('Problems')}

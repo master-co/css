@@ -49,7 +49,7 @@ export default function HomeCodeWindow({
             <Code
                 className={clsx('flex:1|1|auto min-h:0', codeClassName)}
                 lang={lang}
-                preClassName={clsx('overflow:hidden p:sm r:xl', preClassName)}>
+                preClassName={clsx('overflow:hidden px:sm py:lg r:xl', preClassName)}>
                 {children}
             </Code>
             {problems?.length ? (

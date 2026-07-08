@@ -134,6 +134,20 @@ test('homepage code windows do not override font size or line height', () => {
     }
 })
 
+test('homepage code windows centralize code padding', () => {
+    const codeWindowSource = readFileSync(new URL('../app/[locale]/_home/HomeCodeWindow.tsx', import.meta.url), 'utf8')
+    const callerSources = [
+        '../app/[locale]/_home/AgentDiagnosticsSection.tsx',
+        '../app/[locale]/_home/DesignSystemSection.tsx',
+        '../app/[locale]/_home/HeroExampleStage.tsx'
+    ].map((filePath) => readFileSync(new URL(filePath, import.meta.url), 'utf8'))
+
+    assert.match(codeWindowSource, /px:sm py:lg/)
+    for (const source of callerSources) {
+        assert.doesNotMatch(source, /preClassName="[^"]*\bpy:lg\b/)
+    }
+})
+
 test('native CSS primitives code window stays top-aligned in its card', () => {
     const source = readFileSync(new URL('../app/[locale]/_home/DesignSystemSection.tsx', import.meta.url), 'utf8')
     const nativeCard = source.match(/function NativeCssPrimitivesCard[\s\S]+?function P3PaletteCard/)?.[0]
