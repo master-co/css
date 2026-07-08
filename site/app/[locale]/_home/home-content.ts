@@ -86,47 +86,47 @@ export const heroExampleCode = `
 `
 
 export const themeVariablesCode = `@theme {
-    --font-sans: "Inter"; /* font:sans */
+  --font-sans: "Inter"; /* font:sans */
 
-    --spacing-md: 1rem;   /* p:md */
-    --spacing-lg: 1.5rem; /* p:lg */
+  --spacing-md: 1rem;   /* p:md */
+  --spacing-lg: 1.5rem; /* p:lg */
 
-    --radius-lg: 0.5rem;  /* r:lg */
-    --radius-xl: 0.75rem; /* r:xl */
+  --radius-lg: 0.5rem;  /* r:lg */
+  --radius-xl: 0.75rem; /* r:xl */
 }
 
 @theme light {
-    --color-surface-base: var(--color-neutral-0); /* surface:base */
-    --color-text-body: var(--color-neutral-70);   /* text:body */
+  --color-surface-base: var(--color-neutral-0); /* surface:base */
+  --color-text-body: var(--color-neutral-70);   /* text:body */
 }
 
 @theme dark {
-    --color-surface-base: var(--color-gray-95);   /* surface:base */
-    --color-text-body: var(--color-gray-30);      /* text:body */
+  --color-surface-base: var(--color-gray-95);   /* surface:base */
+  --color-text-body: var(--color-gray-30);      /* text:body */
 }
 `
 
 export const nativeCssPrimitivesCode = `@import '@master/css';
 
 @components {
-    btn {
-        @compose inline-flex items-center justify-center gap:xs;
-        @compose h:10x px:md r:lg font:medium;
-        color: white;
-        background: var(--color-blue-60);
+  btn {
+    @compose inline-flex items-center justify-center gap:xs;
+    @compose h:10x px:md r:lg font:medium;
+    color: white;
+    background: var(--color-blue-60);
 
-        &:hover {
-            background: var(--color-blue-70);
-        }
-
-        @dark {
-            background: var(--color-blue-50);
-        }
+    &:hover {
+      background: var(--color-blue-70);
     }
 
-    btn-sm {
-        @compose h:8x px:sm r:md font:sm;
+    @dark {
+      background: var(--color-blue-50);
     }
+  }
+
+  btn-sm {
+    @compose h:8x px:sm r:md font:sm;
+  }
 }
 `
 
