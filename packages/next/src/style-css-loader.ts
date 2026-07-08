@@ -1,7 +1,6 @@
 import {
+    compileRenderedStyleCSS,
     compileStyleCSS,
-    createMasterCSSPackageHostSource,
-    createStyleCSSHostSource,
     hasLocalStyleDirectives,
     isMasterCSSPackageStyleFile,
     removeMasterStyleDirectives,
@@ -10,6 +9,7 @@ import {
     collectStyleCSSDependencies
 } from '@master/css-stylesheet'
 import { loadProjectManifest } from '@master/css-project/manifest'
+import { hasMasterCSSImport } from '@master/css-lexer'
 
 interface LoaderContext {
     resourcePath: string
@@ -38,10 +38,19 @@ async function transformStyleSource(resourcePath: string, source: string, projec
 
     const resolvedSource = resolveMasterStyleSource(resourcePath, source, projectDir)
     if (resolvedSource) {
-        dependencies.push(...resolvedSource.dependencies)
-        const masterHostSource = await createMasterCSSPackageHostSource(projectDir, { projectDir })
-        dependencies.push(...masterHostSource.dependencies)
-        code = createStyleCSSHostSource(source, { masterSource: masterHostSource.source })
+        const renderedSource = hasMasterCSSImport(source)
+            ? resolvedSource
+            : resolveMasterStyleSource(resourcePath, `@import "@master/css";\n${source}`, projectDir) || resolvedSource
+        dependencies.push(...renderedSource.dependencies)
+        const result = await compileRenderedStyleCSS(resourcePath, renderedSource.source, {
+            projectDir,
+            preserveNativeCSS: true
+        })
+        dependencies.push(...(result.dependencies || []))
+        return {
+            code: result.css || result.nativeCSS || '',
+            dependencies
+        }
     }
 
     if (isMasterCSSPackageStyleFile(resourcePath, projectDir)) {

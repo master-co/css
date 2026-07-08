@@ -253,6 +253,55 @@ describe('MasterCSSPlugin (C1 race fix)', () => {
         }
     })
 
+    test('keeps imported native CSS and keyframes in the generated CSS virtual module', async () => {
+        const root = mkdtempSync(path.join(tmpdir(), 'master-css-webpack-native-css-'))
+        const entryPath = path.join(root, 'app.css')
+        const homePath = path.join(root, 'home.css')
+        const pagePath = path.join(root, 'page.tsx')
+        try {
+            writeFileSync(homePath, [
+                '@theme { --color-active: #ff0000; }',
+                '@components { active-card { animation: active-spin 1s infinite; } }',
+                '@keyframes active-spin { to { opacity: .5; } }',
+                '.native-card { color: var(--color-active); }'
+            ].join('\n'))
+            writeFileSync(entryPath, [
+                '@master entry;',
+                '@import "./home.css";'
+            ].join('\n'))
+
+            const transformed = await transformStyleSource(entryPath, readFileSync(entryPath, 'utf-8'), {
+                projectDir: root,
+                masterImport: '../node_modules/.master-css/master-utilities.css'
+            })
+            expect(transformed.code).toBe('@import "../node_modules/.master-css/master-utilities.css";')
+
+            const plugin = makePlugin({}, root)
+            const { compiler, compilation } = makeFakeCompiler({ context: root })
+            ;(compiler as any).webpack = { sources: { RawSource: function NoopSource(this: object) { /* stub */ } } }
+            plugin.apply(compiler as any)
+            compiler.hooks.thisCompilation.call(compilation)
+
+            compilation.hooks.succeedModule.call(makeModule(entryPath, readFileSync(entryPath, 'utf-8')))
+            compilation.hooks.succeedModule.call(makeModule(pagePath, '<div className="active-card native-card"></div>'))
+            await compilation.hooks.finishModules.promise([])
+            await compiler.hooks.beforeRun.promise(compiler)
+
+            const virtualCSS = (compiler.inputFileSystem._writeVirtualFile as any).mock.calls
+                .map((call: unknown[]) => String(call[2]))
+                .reverse()
+                .find((content: string) => content.includes('.active-card'))
+            expect(virtualCSS).toContain('@keyframes active-spin')
+            expect(virtualCSS).toContain('.native-card')
+            expect(virtualCSS).toContain('--color-active:red')
+            expect(virtualCSS).toContain('.active-card')
+            expect(virtualCSS).not.toContain('@components')
+            expect(virtualCSS).not.toContain('@import "./home.css"')
+        } finally {
+            rmSync(root, { recursive: true, force: true })
+        }
+    })
+
     test('scans modules that expose source through originalSource()', async () => {
         const root = mkdtempSync(path.join(tmpdir(), 'master-css-webpack-rspack-source-'))
         try {

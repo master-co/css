@@ -20,9 +20,6 @@ export default function UsageGraphPlugin(_options: PluginOptions, context: Plugi
                 if (server) return
                 await getScanner(context).scanModule(filename, html)
             }
-        },
-        async configureServer(server) {
-            await server.waitForRequestsIdle()
         }
     }
 }

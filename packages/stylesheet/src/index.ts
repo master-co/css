@@ -11,7 +11,7 @@ import {
 import type { MasterCSSEmittedGlobals } from '@master/css'
 import type { createCSSWithNativeDeclarations } from '@master/css-validator/native-declaration'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
-import { renderCompiledManifestCSS } from './render'
+import { renderCompiledManifestCSS, type RenderCompiledManifestCSSResult } from './render'
 import {
     findCSSImportStatements,
     collectCSSDirectiveRanges,
@@ -63,6 +63,12 @@ export interface CompileStyleCSSOptions extends CompileCSSOptions {
     baseManifest?: MasterCSSManifest
     projectDir?: string
     loadSass?: (projectDir?: string) => SassModule
+}
+
+export interface CompileRenderedStyleCSSResult extends CompileCSSResult {
+    emittedGlobals: Required<MasterCSSEmittedGlobals>
+    manifest: MasterCSSManifest
+    renderedCSS: RenderCompiledManifestCSSResult
 }
 
 export interface TransformLocalStyleCSSResult {
@@ -549,6 +555,21 @@ export async function compileStyleCSS(
     source: string,
     options: CompileStyleCSSOptions = {}
 ): Promise<CompileCSSResult> {
+    const { result, finalizedResult } = await compileStyleCSSResult(id, source, options)
+    return {
+        ...result,
+        dependencies: finalizedResult.dependencies,
+        warnings: finalizedResult.warnings,
+        css: finalizedResult.css,
+        generatedCSS: finalizedResult.generatedCSS
+    }
+}
+
+async function compileStyleCSSResult(
+    id: string,
+    source: string,
+    options: CompileStyleCSSOptions = {}
+) {
     const { projectDir, loadSass: _loadSass, baseManifest, ...compileOptions } = options
     const filename = cleanStyleRequest(id)
     const css = await preprocessStyleCSS(source, id, options)
@@ -563,11 +584,33 @@ export async function compileStyleCSS(
         from: filename
     })
     return {
+        compileOptions,
+        finalizedResult,
+        result
+    }
+}
+
+export async function compileRenderedStyleCSS(
+    id: string,
+    source: string,
+    options: CompileStyleCSSOptions = {}
+): Promise<CompileRenderedStyleCSSResult> {
+    const { compileOptions, finalizedResult, result } = await compileStyleCSSResult(id, source, options)
+    const renderedCSS = renderCompiledManifestCSS({
+        manifest: finalizedResult.manifest,
+        nativeCSS: result.nativeCSS,
+        classNames: compileOptions.classes
+    })
+    return {
         ...result,
         dependencies: finalizedResult.dependencies,
         warnings: finalizedResult.warnings,
-        css: finalizedResult.css,
-        generatedCSS: finalizedResult.generatedCSS
+        css: renderedCSS.css,
+        nativeCSS: renderedCSS.nativeCSS,
+        generatedCSS: renderedCSS.generatedCSS,
+        emittedGlobals: renderedCSS.emittedGlobals,
+        manifest: finalizedResult.manifest,
+        renderedCSS
     }
 }
 

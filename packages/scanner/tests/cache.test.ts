@@ -124,6 +124,44 @@ describe('module source matcher cache', () => {
         expect(ex.isModuleAllowed('App.svelte?svelte&type=style&lang.css')).toBe(false)
     })
 
+    test('rejects generated and cache dot directories by default', async () => {
+        const ex = await new CSSScanner({}, ROOT).init()
+
+        for (const source of [
+            'docs/.vitepress/cache/deps/vue.js?v=abc123',
+            'docs/.vitepress/dist/app.js',
+            '.vite/deps/vue.js?v=abc123',
+            '.cache/storybook/preview.js',
+            '.turbo/cache/app.ts',
+            '.parcel-cache/index.js',
+            '.nx/cache/project.ts',
+            '.astro/content-modules.mjs',
+            '.docusaurus/routes.js',
+            '.output/server/index.mjs',
+            '.vercel/output/functions/index.js',
+            '.netlify/edge-functions/entry.js',
+            '.wrangler/tmp/index.js',
+            '.serverless/function.js',
+            '.yarn/cache/package.js',
+            '.pnpm-store/v3/files/index.js',
+            '.npm/_cacache/index.js',
+            '.bun/install/cache/index.js',
+            '.git/hooks/pre-commit.js',
+            '.hg/store/data.js',
+            '.svn/tmp/index.js',
+        ]) {
+            expect(ex.isModuleAllowed(path.join(ROOT, source))).toBe(false)
+        }
+    })
+
+    test('allows framework source files in dot directories by default', async () => {
+        const ex = await new CSSScanner({}, ROOT).init()
+
+        expect(ex.isModuleAllowed(path.join(ROOT, 'docs/.vitepress/theme/index.ts'))).toBe(true)
+        expect(ex.isModuleAllowed(path.join(ROOT, 'docs/.vitepress/theme/Layout.vue'))).toBe(true)
+        expect(ex.isModuleAllowed(path.join(ROOT, '.storybook/preview.tsx'))).toBe(true)
+    })
+
     test('matches absolute module ids against relative exclude globs within cwd', async () => {
         const ex = await new CSSScanner({
             exclude: ['src/**/*.test.tsx']

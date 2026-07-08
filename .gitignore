@@ -70,13 +70,8 @@ testem.log
 .DS_Store
 Thumbs.db
 
-packages/facade/tests/**/*master.css.*
-packages/extractor/tests/**/*master.css-extractor.*
-packages/extractor/tests/**/*master.css.*
 packages/vite/tests/vite/index.html
-packages/vite/tests/vite/master.css.*
 packages/webpack/tests/webpack/src/index.html
-packages/webpack/tests/webpack/src/master.css.*
 packages/nuxt/**/.nuxt
 packages/nuxt/playground/.output
 
