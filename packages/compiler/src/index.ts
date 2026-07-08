@@ -80,6 +80,7 @@ type CompileCSSManifestInternalOptions = CompileCSSManifestSourceOptions & {
 
 export interface CompileCSSManifestResult extends Omit<CompileCSSResult, 'manifestInput'> {
     manifest: MasterCSSManifest
+    resolutionManifest: MasterCSSManifest
     directives: CompileCSSResult
 }
 
@@ -425,6 +426,7 @@ function toCompileCSSManifestResult(
         ...directiveData,
         dependencies,
         manifest: lowerResult.manifest,
+        resolutionManifest: lowerResult.resolutionManifest,
         warnings,
         generatedCSS,
         css,
@@ -520,9 +522,11 @@ export function compileProjectManifest(entries: string[], options: CompileCSSMan
         if (entryGeneratedCSS) generatedCSS.push(entryGeneratedCSS)
         if (manifestResult.css) css.push(manifestResult.css)
     }
+    const resolvedManifest = manifest || createMasterCSSManifest()
     return {
         entries,
-        manifest: manifest || createMasterCSSManifest(),
+        manifest: resolvedManifest,
+        resolutionManifest: resolvedManifest,
         dependencies,
         extractionPolicy,
         classNames,

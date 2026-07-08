@@ -383,15 +383,33 @@ describe('MasterCSSPlugin (C1 race fix)', () => {
         const modulePath = path.join(root, 'Button.module.css')
         const tokenPath = path.join(root, 'tokens.css')
         try {
-            writeFileSync(tokenPath, '@components { brand { color: #123456; } }')
+            writeFileSync(tokenPath, [
+                '@theme {',
+                '  --spacing-card: 2rem;',
+                '',
+                '  @keyframes pop {',
+                '    to { opacity: 1; }',
+                '  }',
+                '}',
+                '@components {',
+                '  brand {',
+                '    padding: var(--spacing-card);',
+                '    animation: pop 1s;',
+                '  }',
+                '}',
+                '.referenced-native { color: red; }'
+            ].join('\n'))
 
             const result = await transformStyleSource(modulePath, '@reference "./tokens.css"; .button { @compose brand; }', {
                 projectDir: root,
                 masterImport: '../node_modules/.master-css/master-utilities.css'
             })
 
-            expect(result.code).toContain('.button{color:#123456}')
+            expect(result.code).toContain('.button{padding:var(--spacing-card);animation:1s pop}')
+            expect(result.code).toContain('--spacing-card:2rem')
+            expect(result.code).toContain('@keyframes pop')
             expect(result.code).not.toContain('@reference')
+            expect(result.code).not.toContain('referenced-native')
             expect(result.code).not.toContain('master-utilities.css')
             expect(result.dependencies).toContain(modulePath)
             expect(result.dependencies).toContain(tokenPath)

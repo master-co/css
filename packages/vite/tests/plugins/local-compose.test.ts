@@ -103,7 +103,22 @@ describe('LocalComposePlugin', () => {
         const root = createFixture()
         try {
             const themePath = path.join(root, 'src/theme.css')
-            writeFileSync(themePath, '@components { brand { color: #123456; } }')
+            writeFileSync(themePath, [
+                '@theme {',
+                '  --spacing-card: 2rem;',
+                '',
+                '  @keyframes pop {',
+                '    to { opacity: 1; }',
+                '  }',
+                '}',
+                '@components {',
+                '  brand {',
+                '    padding: var(--spacing-card);',
+                '    animation: pop 1s;',
+                '  }',
+                '}',
+                '.referenced-native { color: red; }'
+            ].join('\n'))
             const context = createContext(root)
             const plugin = LocalComposePlugin({} as any, context)
             const addWatchFile = vi.fn()
@@ -114,8 +129,11 @@ describe('LocalComposePlugin', () => {
                 path.join(root, 'src/Button.module.css')
             )
 
-            expect(result.code).toContain('.button{color:#123456}')
+            expect(result.code).toContain('.button{padding:var(--spacing-card);animation:1s pop}')
+            expect(result.code).toContain('--spacing-card:2rem')
+            expect(result.code).toContain('@keyframes pop')
             expect(result.code).not.toContain('@reference')
+            expect(result.code).not.toContain('referenced-native')
             expect(result.code).not.toContain('master-css-slot')
             expect(addWatchFile).toHaveBeenCalledWith(themePath)
         } finally {

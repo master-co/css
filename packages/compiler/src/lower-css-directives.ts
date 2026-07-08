@@ -42,6 +42,7 @@ export interface LowerCSSDirectivesOptions {
 export interface LowerCSSDirectivesResult {
     input: CSSDirectiveManifestInput
     manifest: MasterCSSManifest
+    resolutionManifest: MasterCSSManifest
     warnings: string[]
     generatedCSS: string
 }
@@ -1084,6 +1085,7 @@ export default function lowerCSSDirectives(input: CSSDirectiveManifestInputSourc
     return {
         input: directiveInput,
         manifest,
+        resolutionManifest: initialRefreshManifest,
         warnings,
         generatedCSS
     }

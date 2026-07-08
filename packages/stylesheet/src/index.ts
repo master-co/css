@@ -637,12 +637,27 @@ export async function transformLocalStyleCSS(
             transformed: false
         }
     }
-    const result = await compileLocalStyleCSS(id, source, options)
+    const { result, finalizedResult } = await compileStyleCSSResult(id, source, {
+        ...options,
+        preserveNativeCSS: true
+    })
+    const renderedCSS = renderCompiledManifestCSS({
+        manifest: finalizedResult.resolutionManifest,
+        nativeCSS: finalizedResult.css || result.nativeCSS,
+        includeGeneratedCSS: false
+    })
+    const transformedResult = {
+        ...result,
+        dependencies: finalizedResult.dependencies,
+        warnings: finalizedResult.warnings,
+        css: renderedCSS.css,
+        generatedCSS: renderedCSS.generatedCSS
+    }
     return {
-        code: result.css || result.nativeCSS || '',
-        dependencies: [...new Set([cleanStyleRequest(id), ...(result.dependencies || [])])],
+        code: transformedResult.css || transformedResult.nativeCSS || '',
+        dependencies: [...new Set([cleanStyleRequest(id), ...(transformedResult.dependencies || [])])],
         transformed: true,
-        result
+        result: transformedResult
     }
 }
 
