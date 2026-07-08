@@ -3,14 +3,22 @@ Page-level styles are ordinary CSS files loaded by one route, page, view, or com
 
 Reference the app stylesheet at the top of the local file:
 
-```css name=home.css
-@reference "../app/globals.css";
+```txt
+app/
+  globals.css
+  home/
+    page.tsx
+    home.css
+```
+
+```css name=app/home/home.css
+@reference "../globals.css";
 ```
 
 Then write native CSS selectors. Use `@compose` when Master CSS classes are clearer than hand-written declarations.
 
-```css name=home.css
-@reference "../app/globals.css";
+```css name=app/home/home.css
+@reference "../globals.css";
 
 .home-section {
     @compose py:5xl;
@@ -19,8 +27,8 @@ Then write native CSS selectors. Use `@compose` when Master CSS classes are clea
 
 Load the page stylesheet from the route, page module, or component entry that owns it:
 
-```ts name=page.ts
-import "../../styles/home.css"
+```ts name=app/home/page.tsx
+import "./home.css"
 ```
 
 The global stylesheet still has to be loaded by the app. `@reference` gives the page stylesheet compile-time access to project tokens, variants, and shared class vocabulary; it does not import the app CSS output again.
@@ -30,8 +38,8 @@ The global stylesheet still has to be loaded by the app. `@reference` gives the 
 ## Reference the app entry
 Use `@reference` when a page stylesheet needs project context but should ship as its own CSS output.
 
-```css name=pricing.css
-@reference "../app/globals.css";
+```css name=app/home/home.css
+@reference "../globals.css";
 
 .pricing-hero {
     @compose grid gap:lg py:5xl;
@@ -51,8 +59,8 @@ This keeps route CSS chunks self-contained without duplicating the global styles
 ## Write native selectors
 Page styles do not need on-demand generation. Treat page classes like traditional CSS that belongs to that route.
 
-```css name=home.css
-@reference "../app/globals.css";
+```css name=app/home/home.css
+@reference "../globals.css";
 
 @layer components {
     .home-bento {
@@ -68,7 +76,7 @@ Page styles do not need on-demand generation. Treat page classes like traditiona
 
 Use classes when the selector is part of the page structure. Use native selectors when they are clearer:
 
-```css name=home.css
+```css name=app/home/home.css
 .home-bento-card > h2 {
     @compose text:lg font:medium;
     margin-block: 0 0.5rem;
@@ -87,8 +95,8 @@ Because these are native rules, they are emitted with the stylesheet that import
 ## Use variants locally
 Use rule-local variants for page states, breakpoints, and modes without moving the selector into global vocabulary.
 
-```css name=home.css
-@reference "../app/globals.css";
+```css name=app/home/home.css
+@reference "../globals.css";
 
 .home-cta {
     @compose inline-flex items-center justify-center gap:xs h:12x px:lg r:xl bg:blue fg:white;
@@ -105,7 +113,7 @@ Use rule-local variants for page states, breakpoints, and modes without moving t
 
 Native declarations and composed declarations share one rule. Put ordinary CSS where it is clearer than a class:
 
-```css name=home.css
+```css name=app/home/home.css
 .home-cta {
     @compose transition:transform|normal|standard;
     transform: translateY(0);
@@ -121,8 +129,8 @@ Native declarations and composed declarations share one rule. Put ordinary CSS w
 ## Use native keyframes
 Use native top-level `@keyframes` for page-only motion. Keep the animation in the page stylesheet unless it becomes a shared motion token.
 
-```css name=home.css
-@reference "../app/globals.css";
+```css name=app/home/home.css
+@reference "../globals.css";
 
 @keyframes home-reveal {
     from {
@@ -143,7 +151,7 @@ Use native top-level `@keyframes` for page-only motion. Keep the animation in th
 
 Use native media queries for accessibility and page-specific fallbacks:
 
-```css name=home.css
+```css name=app/home/home.css
 @media (prefers-reduced-motion: reduce) {
     .home-hero {
         animation: none;
@@ -156,8 +164,8 @@ Use native media queries for accessibility and page-specific fallbacks:
 ## Use container queries
 Container queries are often page-specific because they describe how one section responds to the space it receives.
 
-```css name=home.css
-@reference "../app/globals.css";
+```css name=app/home/home.css
+@reference "../globals.css";
 
 .home-feature-grid {
     @compose grid gap:md;
@@ -176,33 +184,6 @@ Container queries are often page-specific because they describe how one section 
 ```
 
 Use viewport breakpoints when the layout depends on the page viewport. Use container queries when the section can appear inside different shells, sidebars, or slots.
-
----
-
-## Use CSS Modules and scoped styles
-CSS Modules and framework-scoped style blocks use the same model: reference the app entry, then write native local selectors.
-
-```css name=Button.module.css
-@reference "../app/globals.css";
-
-.button {
-    @compose inline-flex items-center justify-center gap:xs h:10x px:md r:lg bg:blue fg:white;
-}
-
-.button:hover {
-    @compose bg:blue-60;
-}
-```
-
-```ts name=Button.ts
-import styles from "./Button.module.css"
-
-export function buttonLabel() {
-    return styles.button
-}
-```
-
-Master CSS lowers `@compose` before the framework rewrites selectors, so the final CSS belongs to the local stylesheet and keeps the framework's scoping behavior.
 
 ---
 
