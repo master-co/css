@@ -45,6 +45,7 @@ export interface AgentDiagnosticCardContent {
 export interface LanguageServiceCardContent {
     title: string
     body: string
+    visual?: 'active-syntax-highlighting'
 }
 
 export const sectionLabelClassName = 'font:sm tracking:widest uppercase font:semibold text:yellow'
@@ -255,7 +256,8 @@ export const languageServiceCards = [
     },
     {
         title: 'Active syntax highlighting',
-        body: 'Highlight the current class context by default so dense markup stays calm until a human is reading it.'
+        body: 'Highlight the current class context by default so dense markup stays calm until a human is reading it.',
+        visual: 'active-syntax-highlighting'
     },
     {
         title: 'Workspace-aware manifests',

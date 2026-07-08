@@ -144,7 +144,8 @@ test('native CSS primitives bento sample keeps a concise btn directive example',
 test('homepage code windows do not override font size or line height', () => {
     const homeCodeWindowSources = [
         '../app/[locale]/_home/DesignSystemSection.tsx',
-        '../app/[locale]/_home/HeroExampleStage.tsx'
+        '../app/[locale]/_home/HeroExampleStage.tsx',
+        '../app/[locale]/_home/LanguageServiceSection.tsx'
     ].map((filePath) => readFileSync(new URL(filePath, import.meta.url), 'utf8'))
 
     for (const source of homeCodeWindowSources) {
@@ -157,7 +158,8 @@ test('homepage code windows centralize code padding', () => {
     const callerSources = [
         '../app/[locale]/_home/AgentDiagnosticsSection.tsx',
         '../app/[locale]/_home/DesignSystemSection.tsx',
-        '../app/[locale]/_home/HeroExampleStage.tsx'
+        '../app/[locale]/_home/HeroExampleStage.tsx',
+        '../app/[locale]/_home/LanguageServiceSection.tsx'
     ].map((filePath) => readFileSync(new URL(filePath, import.meta.url), 'utf8'))
 
     assert.match(codeWindowSource, /px:sm py:lg/)
@@ -252,12 +254,13 @@ test('agent diagnostic card content model lists class diagnostic rules', () => {
     }
 })
 
-test('language service section uses shared homepage bento placeholders', () => {
+test('language service section uses shared homepage bento visuals', () => {
     const source = readFileSync(new URL('../app/[locale]/_home/LanguageServiceSection.tsx', import.meta.url), 'utf8')
 
     assert.match(source, /HomeBentoFrame/)
     assert.match(source, /HomeBentoGrid/)
     assert.match(source, /HomeBentoCard/)
+    assert.match(source, /HomeCodeWindow/)
     assert.match(source, /languageServiceCards\.map/)
     assert.match(source, /homeSections\.languageService/)
     assert.match(source, /Readable, and still human\./)
@@ -265,7 +268,29 @@ test('language service section uses shared homepage bento placeholders', () => {
     assert.doesNotMatch(source, /grid-cols:3@lg/)
     assert.match(source, /homeBentoVisualClassName/)
     assert.match(source, /h:28x/)
-    assert.doesNotMatch(source, /HomeCodeWindow/)
+    assert.match(source, /activeSyntaxHighlightingCode/)
+    assert.match(source, /text:3xl@md/)
+    assert.match(source, /fg:blue-60:hover/)
+    assert.match(source, /outline:2px\|solid\|blue-60:focus-visible/)
+    assert.doesNotMatch(source, /@MARK/)
+    assert.doesNotMatch(source, /\.mark/)
+    assert.match(source, /\.mcss-semantic/)
+    assert.match(source, /--home-active-syntax-cycle: 8s/)
+    assert.match(source, /steps\(1, end\)/)
+    assert.match(source, /home-active-syntax-token/)
+    assert.match(source, /25%, 100% \{\n\s+color: currentColor/)
+    assert.doesNotMatch(source, /--home-active-syntax-token-active/)
+    assert.ok((source.match(/\.line:nth-child/g)?.length || 0) >= 8)
+    assert.match(source, /\.line \.mcss-semantic::before/)
+    assert.match(source, /\.line \.mcss-semantic ~ \.mcss-semantic::before/)
+    assert.match(source, /position: absolute/)
+    assert.match(source, /--home-active-syntax-delay: -6s/)
+    assert.match(source, /--home-active-syntax-delay: -2s/)
+    assert.match(source, /home-active-syntax-caret-window/)
+    assert.match(source, /home-active-syntax-caret-blink \.48s/)
+    assert.doesNotMatch(source, /margin-right/)
+    assert.match(source, /@keyframes home-active-syntax-caret-window/)
+    assert.match(source, /@keyframes home-active-syntax-caret-blink/)
     assert.doesNotMatch(source, /Icon[A-Z]/)
 })
 
@@ -277,6 +302,8 @@ test('language service card content model lists editor integration features', ()
         'Active syntax highlighting',
         'Workspace-aware manifests'
     ])
+    assert.equal(languageServiceCards.filter((card) => card.visual).length, 1)
+    assert.equal(languageServiceCards[2].visual, 'active-syntax-highlighting')
 
     for (const card of languageServiceCards) {
         assert.ok(card.body.length > card.title.length)
