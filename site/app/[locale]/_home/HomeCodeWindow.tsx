@@ -54,9 +54,9 @@ export default function HomeCodeWindow({
             </Code>
             {problems?.length ? (
                 <div className="flex:0|0|auto bt:1px|solid|subtle bg:surface-base">
-                    <div className="flex items-center justify-between gap:sm px:sm py:xs">
-                        <p className="m:0 font:xs tracking:widest uppercase text:muted">{problemsLabel}</p>
-                        <span className="min-w:5x px:2xs py:1px r:full font:2xs bg:red/.12 text:strong text:center">
+                    <div className="flex items-center gap:xs px:md py:sm bb:1px|dashed|subtle">
+                        <p className="m:0 font:2xs tracking:widest uppercase text:strong">{problemsLabel}</p>
+                        <span className="px:xs rounded font:2xs text-center surface:muted text:strong">
                             {problems.length}
                         </span>
                     </div>
@@ -75,18 +75,18 @@ function ProblemRow({ problem }: { problem: HomeCodeWindowProblem }) {
     const isError = problem.severity === 'error'
 
     return (
-        <div className="flex items-start gap:xs px:sm py:xs bt:1px|solid|subtle">
+        <div className="flex items-start gap:sm p:md">
             <span
                 aria-hidden="true"
                 className={clsx(
-                    'block size:2x mt:3xs r:full',
+                    'block flex:0|0|auto size:2x mt:3xs r:full',
                     isError ? 'bg:red' : 'bg:yellow'
                 )} />
             <div className="min-w:0">
-                <p className="overflow:hidden m:0 font:xs text-ellipsis white-space:nowrap text:strong">
+                <p className="overflow:hidden m:0 font:sm text-ellipsis white-space:nowrap text:strong">
                     {problem.message}
                 </p>
-                <p className="overflow:hidden mx:0 mb:0 mt:1px font:2xs text-ellipsis white-space:nowrap text:muted">
+                <p className="overflow:hidden mx:0 mb:0 mt:2xs font:2xs text-ellipsis white-space:nowrap text:muted">
                     {[problem.source, problem.code, problem.location].filter(Boolean).join(' - ')}
                 </p>
             </div>

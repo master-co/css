@@ -171,11 +171,15 @@ test('homepage bento code windows keep their fixed preview height', () => {
 
 test('agent diagnostics section uses the shared homepage bento UI', () => {
     const source = readFileSync(new URL('../app/[locale]/_home/AgentDiagnosticsSection.tsx', import.meta.url), 'utf8')
+    const codeWindowSource = readFileSync(new URL('../app/[locale]/_home/HomeCodeWindow.tsx', import.meta.url), 'utf8')
 
     assert.match(source, /HomeBentoFrame/)
     assert.match(source, /HomeBentoGrid/)
     assert.match(source, /HomeBentoCard/)
     assert.match(source, /HomeCodeWindow/)
+    assert.doesNotMatch(source, /\bh:52x\b/)
+    assert.match(codeWindowSource, /items-center gap:xs px:md py:sm/)
+    assert.doesNotMatch(codeWindowSource, /justify-between/)
     assert.match(source, /grid-cols:1 grid-cols:2@md/)
     assert.match(source, /agentDiagnosticCards\.map/)
     assert.match(source, /homeBentoDotGridStyle/)
