@@ -93,6 +93,19 @@ test('homepage places agent diagnostics immediately after CSS cost', () => {
     assert.ok(diagnosticsIndex < deliveryModesIndex)
 })
 
+test('homepage benchmark chart uses shared segmented control', () => {
+    const chartSource = readFileSync(new URL('../app/[locale]/_home/BenchmarkSizeChart.tsx', import.meta.url), 'utf8')
+    const segmentSource = readFileSync(new URL('../app/[locale]/_home/HomeSegmentedControl.tsx', import.meta.url), 'utf8')
+
+    assert.match(chartSource, /HomeSegmentedControl/)
+    assert.doesNotMatch(chartSource, /aria-pressed=\{active\}/)
+    assert.match(segmentSource, /--home-segmented-control-padding': '3px'/)
+    assert.match(segmentSource, /--home-segmented-control-radius': 'var\(--radius-xl\)'/)
+    assert.match(segmentSource, /p:var\(--home-segmented-control-padding\)/)
+    assert.match(segmentSource, /r:max\(0px,calc\(var\(--home-segmented-control-radius\)-var\(--home-segmented-control-padding\)\)\)/)
+    assert.doesNotMatch(segmentSource, /\boutline:/)
+})
+
 test('theme variables bento sample maps tokens to class examples', () => {
     assert.match(themeVariablesCode, /@theme \{/)
     assert.match(themeVariablesCode, /--font-sans: "Inter"; \/\* font:sans \*\//)

@@ -4,13 +4,15 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { motion, useInView, useReducedMotion } from 'motion/react'
 import clsx from 'clsx'
 import brands from '~/internal/data/brands'
-import type { getHomePageCSSSize, HomePageCSSSizeMode, HomePageCSSSizeModeId, HomePageCSSSizeRow } from '~/site/utils/home-page-css-size'
+import type { getHomePageCSSSize, HomePageCSSSizeModeId, HomePageCSSSizeRow } from '~/site/utils/home-page-css-size'
+import HomeSegmentedControl from './HomeSegmentedControl'
 
 type PageCSSSize = ReturnType<typeof getHomePageCSSSize>
 
 type BenchmarkSizeChartLabels = {
     largerSuffix: string
     modeLabels: Record<HomePageCSSSizeModeId, string>
+    modeSelectorLabel: string
 }
 
 const chartAnimationDuration = 3
@@ -50,28 +52,22 @@ export default function BenchmarkSizeChart({
     )
     const axis = useMemo(() => createBenchmarkAxis(activeMode.maxBytes), [activeMode.maxBytes])
     const barDuration = Math.max(1.2, chartAnimationDuration - (activeMode.rows.length - 1) * rowDelayStep - ratioFadeDuration)
+    const modeOptions = useMemo(
+        () => pageCSSSize.modes.map((mode) => ({
+            label: labels.modeLabels[mode.id],
+            value: mode.id
+        })),
+        [labels.modeLabels, pageCSSSize.modes]
+    )
 
     return (
         <div ref={chartRef} className="rel py:md">
             <div className="flex flex-col gap:lg">
-                <div className="flex w:fit p:3px r:xl surface:muted">
-                    {pageCSSSize.modes.map((mode) => {
-                        const active = mode.id === activeMode.id
-                        return (
-                            <button
-                                aria-pressed={active}
-                                className={clsx(
-                                    'h:8x px:md r:xl outline-offset:2xs font:xs outline:2px|solid|yellow:focus-visible',
-                                    active ? 'surface:raised text:strong shadow:xs' : 'text:muted text:strong:hover'
-                                )}
-                                key={mode.id}
-                                onClick={() => setActiveModeId(mode.id)}
-                                type="button">
-                                {labels.modeLabels[mode.id]}
-                            </button>
-                        )
-                    })}
-                </div>
+                <HomeSegmentedControl
+                    aria-label={labels.modeSelectorLabel}
+                    onValueChange={setActiveModeId}
+                    options={modeOptions}
+                    value={activeMode.id} />
 
                 <div className="rel" key={activeMode.id}>
                     <div
@@ -170,43 +166,43 @@ function PageCSSSizeRow({
 
                 <div className="rel h:11x min-w:0">
                     <div className="rel h:11x w:full">
-                    <motion.div
-                        animate={{ width: reduceMotion || inView ? `${rowPercent}%` : startPercent }}
-                        className={clsx('abs inset:50%|auto|auto|0 h:12px min-w:1px r:md transform:translateY(-50%)', colorClassName)}
-                        data-home-bar-fill
-                        initial={reduceMotion ? false : { width: startPercent }}
-                        transition={{ delay: index * rowDelayStep, duration: barDuration, ease: [0.22, 1, 0.36, 1] }} />
-                    <motion.span
-                        animate={{ left: reduceMotion || inView ? `${markerPercent}%` : markerStartPosition }}
-                        className="abs top:50% z:1 inline-flex items-center gap:2xs white-space:nowrap pointer-events:none gap:sm@md"
-                        data-home-marker
-                        initial={reduceMotion ? false : { left: markerStartPosition }}
-                        style={{ transform: 'translate(0, -50%)' }}
-                        transition={{ delay: index * rowDelayStep, duration: barDuration, ease: [0.22, 1, 0.36, 1] }}>
-                        {BrandIcon && (
-                            <span className="inline-flex flex:0|0|auto ml:xs ml:sm@md">
-                                <BrandIcon width={28} height={28} className={clsx('flex:0|0|auto mx:0', brand?.className)} />
-                            </span>
-                        )}
-                        <span className="inline-flex items-baseline gap:2xs gap:xs@md" data-home-value>
-                            <CountdownKilobytes
-                                active={inView}
-                                barDuration={barDuration}
-                                className={clsx('tabular-nums font:lg text:strong', row.isMasterCSS && 'text:yellow')}
-                                delay={index * rowDelayStep}
-                                fromBytes={startBytes}
-                                reduceMotion={reduceMotion}
-                                toBytes={row.bytes} />
-                            {!row.isMasterCSS && (
-                                <RatioLabel
-                                    active={inView}
-                                    delay={index * rowDelayStep + barDuration}
-                                    reduceMotion={reduceMotion}>
-                                    {ratioLabel}
-                                </RatioLabel>
+                        <motion.div
+                            animate={{ width: reduceMotion || inView ? `${rowPercent}%` : startPercent }}
+                            className={clsx('abs inset:50%|auto|auto|0 h:12px min-w:1px r:md transform:translateY(-50%)', colorClassName)}
+                            data-home-bar-fill
+                            initial={reduceMotion ? false : { width: startPercent }}
+                            transition={{ delay: index * rowDelayStep, duration: barDuration, ease: [0.22, 1, 0.36, 1] }} />
+                        <motion.span
+                            animate={{ left: reduceMotion || inView ? `${markerPercent}%` : markerStartPosition }}
+                            className="abs top:50% z:1 inline-flex items-center gap:2xs white-space:nowrap pointer-events:none gap:sm@md"
+                            data-home-marker
+                            initial={reduceMotion ? false : { left: markerStartPosition }}
+                            style={{ transform: 'translate(0, -50%)' }}
+                            transition={{ delay: index * rowDelayStep, duration: barDuration, ease: [0.22, 1, 0.36, 1] }}>
+                            {BrandIcon && (
+                                <span className="inline-flex flex:0|0|auto ml:xs ml:sm@md">
+                                    <BrandIcon width={28} height={28} className={clsx('flex:0|0|auto mx:0', brand?.className)} />
+                                </span>
                             )}
-                        </span>
-                    </motion.span>
+                            <span className="inline-flex items-baseline gap:2xs gap:xs@md" data-home-value>
+                                <CountdownKilobytes
+                                    active={inView}
+                                    barDuration={barDuration}
+                                    className={clsx('tabular-nums font:lg text:strong', row.isMasterCSS && 'text:yellow')}
+                                    delay={index * rowDelayStep}
+                                    fromBytes={startBytes}
+                                    reduceMotion={reduceMotion}
+                                    toBytes={row.bytes} />
+                                {!row.isMasterCSS && (
+                                    <RatioLabel
+                                        active={inView}
+                                        delay={index * rowDelayStep + barDuration}
+                                        reduceMotion={reduceMotion}>
+                                        {ratioLabel}
+                                    </RatioLabel>
+                                )}
+                            </span>
+                        </motion.span>
                     </div>
                 </div>
             </div>

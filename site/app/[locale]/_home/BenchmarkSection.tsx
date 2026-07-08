@@ -37,7 +37,8 @@ export default function BenchmarkSection({
                             modeLabels: {
                                 brotli: t('Brotli'),
                                 raw: t('Raw')
-                            }
+                            },
+                            modeSelectorLabel: t('CSS size mode')
                         }}
                         pageCSSSize={pageCSSSize} />
                 </div>
