@@ -362,10 +362,7 @@ export class MasterCSSPlugin {
             createDefaultManifestModule: () => this.createDefaultManifestModule(),
             createEmittedGlobalsModule: () => this.createEmittedGlobalsModule(),
             createGeneratedCSSModule: async () => {
-                const result = await this.createExtractedCSSResult({
-                    includeNativeCSS: false,
-                    includeMasterBaseCSS: false
-                })
+                const result = await this.createExtractedCSSResult()
                 return result.css
             },
             processModuleContents: (entries, isGeneratedCSSModulePath) => this.processModuleContents(entries, isGeneratedCSSModulePath),
