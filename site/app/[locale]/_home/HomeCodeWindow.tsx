@@ -71,12 +71,12 @@ export default function HomeCodeWindow({
             </div>
             {hasFixPreview ? (
                 <div className={clsx('grid flex:1|1|auto min-h:0', codeClassName)}>
-                    <div className="grid-area:1/1/2/2 min-w:0 transition:opacity|.2s|ease-out will-change:opacity home-code-window__source">
+                    <div className="grid-area:1/1/2/2 min-w:0 transition:opacity|.16s|ease-out will-change:opacity home-code-window__source">
                         <Code lang={lang} preClassName={codePreClassName}>
                             {children}
                         </Code>
                     </div>
-                    <div aria-hidden="true" className="grid-area:1/1/2/2 min-w:0 opacity:0 transition:opacity|.2s|ease-out will-change:opacity home-code-window__fix">
+                    <div aria-hidden="true" className="grid-area:1/1/2/2 min-w:0 opacity:0 transition:opacity|.16s|ease-out will-change:opacity home-code-window__fix">
                         <Code lang={lang} preClassName={codePreClassName}>
                             {resolvedFixPreviewCode}
                         </Code>

@@ -7,6 +7,7 @@ import CTASection from './CTASection'
 import DesignSystemSection from './DesignSystemSection'
 import DeliveryModesSection from './DeliveryModesSection'
 import HeroSection from './HeroSection'
+import LanguageServiceSection from './LanguageServiceSection'
 import type { Translate } from './home-content'
 
 export default function HomePage({ t }: { t: Translate }) {
@@ -18,6 +19,7 @@ export default function HomePage({ t }: { t: Translate }) {
             <DesignSystemSection t={t} />
             <BenchmarkSection t={t} pageCSSSize={pageCSSSize} />
             <AgentDiagnosticsSection t={t} />
+            <LanguageServiceSection t={t} />
             <DeliveryModesSection t={t} />
             <CTASection t={t} />
             <Footer {...footerProps} className="bt:0px!" />

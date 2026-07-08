@@ -3,7 +3,7 @@ import { readFileSync } from 'node:fs'
 import { test } from 'node:test'
 import guideColorNames from '../../internal/data/color-names.js'
 import { COLOR_LEVELS } from '../../internal/data/color-palette.js'
-import { agentDiagnosticCards, benchmarkChartColors, deliveryModes, designSystemRows, heroExampleClassNames, heroExampleCode, homeInteractions, homeSections, nativeCssPrimitivesCode, p3PaletteColorNames, p3PaletteTiers, sectionLabelClassName, themeVariablesCode } from '../app/[locale]/_home/home-content.js'
+import { agentDiagnosticCards, benchmarkChartColors, deliveryModes, designSystemRows, heroExampleClassNames, heroExampleCode, homeInteractions, homeSections, languageServiceCards, nativeCssPrimitivesCode, p3PaletteColorNames, p3PaletteTiers, sectionLabelClassName, themeVariablesCode } from '../app/[locale]/_home/home-content.js'
 
 test('homepage section anchors and interaction hooks stay stable', () => {
     assert.deepEqual(Object.values(homeSections), [
@@ -12,6 +12,7 @@ test('homepage section anchors and interaction hooks stay stable', () => {
         'design-system',
         'delivery-modes',
         'code-diagnostics',
+        'language-service',
         'get-started'
     ])
 
@@ -71,7 +72,8 @@ test('homepage section labels use the shared yellow treatment', () => {
         '../app/[locale]/_home/BenchmarkSection.tsx',
         '../app/[locale]/_home/CTASection.tsx',
         '../app/[locale]/_home/DeliveryModesSection.tsx',
-        '../app/[locale]/_home/DesignSystemSection.tsx'
+        '../app/[locale]/_home/DesignSystemSection.tsx',
+        '../app/[locale]/_home/LanguageServiceSection.tsx'
     ].map((filePath) => readFileSync(new URL(filePath, import.meta.url), 'utf8'))
 
     for (const source of homeSectionSources) {
@@ -84,13 +86,16 @@ test('homepage places agent diagnostics immediately after CSS cost', () => {
     const source = readFileSync(new URL('../app/[locale]/_home/HomePage.tsx', import.meta.url), 'utf8')
     const benchmarkIndex = source.indexOf('<BenchmarkSection')
     const diagnosticsIndex = source.indexOf('<AgentDiagnosticsSection')
+    const languageServiceIndex = source.indexOf('<LanguageServiceSection')
     const deliveryModesIndex = source.indexOf('<DeliveryModesSection')
 
     assert.notEqual(benchmarkIndex, -1)
     assert.notEqual(diagnosticsIndex, -1)
+    assert.notEqual(languageServiceIndex, -1)
     assert.notEqual(deliveryModesIndex, -1)
     assert.ok(benchmarkIndex < diagnosticsIndex)
-    assert.ok(diagnosticsIndex < deliveryModesIndex)
+    assert.ok(diagnosticsIndex < languageServiceIndex)
+    assert.ok(languageServiceIndex < deliveryModesIndex)
 })
 
 test('homepage benchmark chart uses shared segmented control', () => {
@@ -202,6 +207,8 @@ test('agent diagnostics section uses the shared homepage bento UI', () => {
     assert.match(codeWindowSource, /opacity:1:hover_\.home-code-window__fix/)
     assert.match(codeWindowSource, /opacity:0:active_\.home-code-window__source/)
     assert.match(codeWindowSource, /opacity:1:active_\.home-code-window__fix/)
+    assert.match(codeWindowSource, /transition:opacity\|\.16s\|ease-out/)
+    assert.doesNotMatch(codeWindowSource, /transition:opacity\|\.2s\|ease-out/)
     assert.match(source, /grid-cols:1 grid-cols:2@md/)
     assert.match(source, /agentDiagnosticCards\.map/)
     assert.doesNotMatch(source, /homeBentoDotGridStyle/)
@@ -241,6 +248,38 @@ test('agent diagnostic card content model lists class diagnostic rules', () => {
     ])
 
     for (const card of agentDiagnosticCards) {
+        assert.ok(card.body.length > card.title.length)
+    }
+})
+
+test('language service section uses shared homepage bento placeholders', () => {
+    const source = readFileSync(new URL('../app/[locale]/_home/LanguageServiceSection.tsx', import.meta.url), 'utf8')
+
+    assert.match(source, /HomeBentoFrame/)
+    assert.match(source, /HomeBentoGrid/)
+    assert.match(source, /HomeBentoCard/)
+    assert.match(source, /languageServiceCards\.map/)
+    assert.match(source, /homeSections\.languageService/)
+    assert.match(source, /Readable, and still human\./)
+    assert.match(source, /grid-cols:1 grid-cols:2@md grid-cols:3@lg/)
+    assert.match(source, /homeBentoVisualClassName/)
+    assert.match(source, /h:28x/)
+    assert.doesNotMatch(source, /HomeCodeWindow/)
+    assert.doesNotMatch(source, /Icon[A-Z]/)
+})
+
+test('language service card content model lists editor integration features', () => {
+    assert.equal(languageServiceCards.length, 6)
+    assert.deepEqual(languageServiceCards.map((card) => card.title), [
+        'Manifest-aware suggestions',
+        'Generated CSS hover',
+        'Active syntax highlighting',
+        'Color tools',
+        'Directive formatting',
+        'Workspace-aware manifests'
+    ])
+
+    for (const card of languageServiceCards) {
         assert.ok(card.body.length > card.title.length)
     }
 })

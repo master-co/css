@@ -42,6 +42,11 @@ export interface AgentDiagnosticCardContent {
     visual: 'invalid-classes' | 'class-order' | 'conflicting-classes' | 'canonical-utilities' | 'theme-tokens' | 'safe-fix-preview'
 }
 
+export interface LanguageServiceCardContent {
+    title: string
+    body: string
+}
+
 export const sectionLabelClassName = 'font:sm tracking:widest uppercase font:semibold text:yellow'
 export const sectionHeadingClassName = 'max-w:32ch mx:0 mb:0 mt:md font:3xl font:regular leading:1.08 tracking:tight text:strong text-balance font:5xl@md'
 export const sectionBodyClassName = 'max-w:72ch mb:0 mt:lg text:lg text:muted'
@@ -52,6 +57,7 @@ export const homeSections = {
     designSystem: 'design-system',
     deliveryModes: 'delivery-modes',
     codeDiagnostics: 'code-diagnostics',
+    languageService: 'language-service',
     getStarted: 'get-started'
 } as const
 
@@ -237,3 +243,30 @@ export const agentDiagnosticCards = [
         visual: 'safe-fix-preview'
     }
 ] satisfies readonly AgentDiagnosticCardContent[]
+
+export const languageServiceCards = [
+    {
+        title: 'Manifest-aware suggestions',
+        body: 'Complete utilities, values, selectors, queries, groups, directives, and project tokens from the active workspace manifest.'
+    },
+    {
+        title: 'Generated CSS hover',
+        body: 'Inspect the CSS a class emits at the cursor, including compact state, query, declaration, and value syntax.'
+    },
+    {
+        title: 'Active syntax highlighting',
+        body: 'Highlight the current class context by default so dense markup stays calm until a human is reading it.'
+    },
+    {
+        title: 'Color tools',
+        body: 'Render supported Master CSS colors and manifest colors through editor decorators and color picker flows.'
+    },
+    {
+        title: 'Directive formatting',
+        body: 'Format Master CSS directives in CSS-family files and framework style blocks without changing generated CSS.'
+    },
+    {
+        title: 'Workspace-aware manifests',
+        body: 'Keep monorepo completions, colors, hover previews, and directive diagnostics aligned with the nearest Master CSS project.'
+    }
+] satisfies readonly LanguageServiceCardContent[]
