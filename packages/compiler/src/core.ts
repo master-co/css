@@ -14,7 +14,6 @@ import {
   type CSSDirectiveUtilityRuleDefinition,
   type CSSDirectiveVariableValue
 } from '@master/css-schema/css-directives'
-import { normalizeStylesheetValue } from '@master/css-engine'
 import type {
   CustomAtRules,
   Declaration,
@@ -50,6 +49,7 @@ import {
   type StandaloneMasterDirectiveStatement
 } from './lexer/standalone-master'
 import { combineSelectorLists } from './utils/selectors'
+import { normalizeStylesheetValue } from './stylesheet-value'
 
 type CSSDirectiveConditionPath = CSSDirectiveConditionPathEntry[]
 

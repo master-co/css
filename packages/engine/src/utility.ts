@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unsafe-declaration-merging */
 import MasterCSS from './core'
-import { cssEscape } from '@master/css-lexer'
+import { cssEscape, replaceCSSVariableReferences } from '@master/css-lexer'
 import UtilityType, { type UtilityType as UtilityTypeValue } from '@master/css-schema/utility-type'
 import { type PropertiesHyphen } from 'csstype'
 import { VALUE_DELIMITERS, BASE_UNIT_REGEX, CONDITION_IDENTIFIERS } from './common'
@@ -17,7 +17,7 @@ import generateSelector from './utils/generate-selector'
 import { calcRulePriority, RulePriority } from './utils/compare-rule-priority'
 import collectVariableNames from './utils/collect-variable-names'
 import wrapConditions from './utils/wrap-conditions'
-import { createAlphaColorValue, createCSSVariableReference, createNegativeNumberVariableReference, createNumberVariableReference, normalizeVariableValue, replaceCSSVariableReferences } from './utils/css-variables'
+import { createAlphaColorValue, createCSSVariableReference, createNegativeNumberVariableReference, createNumberVariableReference, normalizeEngineVariableValue } from './utils/css-variables'
 import collectAnimationNames from './utils/collect-animation-names'
 
 type UtilityStateBranch = {
@@ -865,7 +865,7 @@ export class Utility {
       const nextStack = [...stack, variable.name]
       const value = variable.type === 'number' && typeof variable.value === 'number' && !bypassParsing
         ? formatResolvedInlineNumber(variable.value)
-        : normalizeVariableValue(variable.value).value
+        : normalizeEngineVariableValue(variable.value)
       return replaceCSSVariableReferences(value, (variableName) => {
         const dependency = this.css.variables.get(variableName)
         if (!dependency) return
@@ -1133,7 +1133,7 @@ export class Utility {
           currentValueComponents.push(newValueComponent)
           current = ''
           i++
-          if (nestedFunctionName === '$' || nestedFunctionName === '--alpha') {
+          if (nestedFunctionName === '$') {
             this.invalidValueSyntax = true
           }
           const nestedIsVarFunction = nestedFunctionName === 'var'
@@ -1334,7 +1334,7 @@ export class Utility {
         return i
       } else if (!isString && val in VALUE_DELIMITERS) {
         const functionName = currentValue
-        if (val === '(' && (functionName === '$' || functionName === '--alpha')) {
+        if (val === '(' && functionName === '$') {
           this.invalidValueSyntax = true
           return value.length
         }

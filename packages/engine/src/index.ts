@@ -21,11 +21,6 @@ export { default as AnimationRule } from './animation-rule'
 export { default as compareRulePriority } from './utils/compare-rule-priority'
 export { default as createHydrationManifest } from './hydration-manifest'
 export { collectAnimationNamesFromDeclaration } from './utils/collect-animation-names'
-export {
-  collectCSSVariableReferences,
-  normalizeStylesheetValue,
-  normalizeVariableValue
-} from './utils/css-variables'
 export { builtinKeyAliases } from './key-aliases'
 export type { MasterCSSBuiltinKeyAliases } from './key-aliases'
 export {

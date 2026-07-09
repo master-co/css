@@ -251,8 +251,7 @@ describe.concurrent('default manifest utility parity', () => {
       'bg:neutral-30/50%',
       'bg:neutral-30/foo',
       'bg:neutral-30/1.1',
-      'm:$spacing-md/.5',
-      'bg:--alpha(var(--color-neutral-30)/.5)'
+      'm:$spacing-md/.5'
     ]) {
       expect(css.createRule(invalidAlphaClass), invalidAlphaClass).toBeUndefined()
     }

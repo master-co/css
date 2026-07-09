@@ -1,5 +1,6 @@
 import { AnimationRule, VariableRule, type MasterCSSEmittedGlobals } from '@master/css'
-import { collectAnimationNamesFromDeclaration, collectCSSVariableReferences } from '@master/css-engine'
+import { collectAnimationNamesFromDeclaration } from '@master/css-engine'
+import { collectCSSVariableReferences } from '@master/css-lexer'
 import { createCSSWithNativeDeclarations } from '@master/css-validator/native-declaration'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
 

@@ -39,8 +39,9 @@ import {
   timeCompilerDiagnostic,
   type CompilerDiagnosticRecorder
 } from './diagnostics'
-import { builtinNamespaces, normalizeVariableValue } from '@master/css-engine'
+import { builtinNamespaces } from '@master/css-engine'
 import { isNativeCSSShorthandProperty } from '@master/css-schema/native-css-shorthand'
+import { normalizeStylesheetValue } from './stylesheet-value'
 
 export type CSSDirectiveManifestInput = SharedCSSDirectiveManifestInput
 
@@ -203,7 +204,7 @@ function compileVariables(
     if (!resolved.name) continue
     const rawValue = normalizeZero(definition.value)
     const normalized = typeof rawValue === 'string' || typeof rawValue === 'number'
-      ? normalizeVariableValue(rawValue)
+      ? normalizeStylesheetValue(rawValue, { replacePipes: true })
       : { value: rawValue, dependencies: new Set<string>() }
     const value = typeof rawValue === 'number'
       ? rawValue

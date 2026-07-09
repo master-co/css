@@ -1,4 +1,5 @@
 export * from './class'
+export * from './css-value'
 export * from './css-manifest-entry'
 export * from './directive-ranges'
 export {

@@ -1148,7 +1148,7 @@ test('removes shared alias variable dependencies when classes disappear', async 
   await init(page, '', {
     variables: [
       { key: 'surface', value: '#ffffff' },
-      { key: 'brand', value: 'var(--surface)' }
+      { key: 'brand', value: 'var(--surface)', dependencies: ['surface'] }
     ]
   })
 

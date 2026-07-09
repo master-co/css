@@ -1,6 +1,6 @@
 import type { PropertiesHyphen } from 'csstype'
 import type { Variable } from '@master/css-schema/css-syntax'
-import { normalizeVariableValue } from './css-variables'
+import { normalizeEngineVariableValue } from './css-variables'
 
 export interface CollectAnimationNamesOptions {
   animationNames: Iterable<string>
@@ -23,7 +23,7 @@ export function collectAnimationNamesFromValue(value: string | number | undefine
   if (value === undefined) return references
   const names = new Set(animationNames)
   if (!names.size) return references
-  const normalizedValue = normalizeVariableValue(value).value
+  const normalizedValue = normalizeEngineVariableValue(value)
   for (const rawValue of normalizedValue.split(/[\s,]+/)) {
     addAnimationName(references, names, rawValue)
   }

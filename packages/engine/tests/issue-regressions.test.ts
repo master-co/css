@@ -154,10 +154,10 @@ describe.concurrent('migrated issue regressions', () => {
       }
     })
 
-    test('keeps alpha aliases and color-mix values executable through variable dependencies', () => {
+    test('keeps compiled alpha aliases and color-mix values executable through explicit variable dependencies', () => {
       const css = createCSSWithVariables([
         { name: 'color-primary', namespace: 'color', key: 'primary', type: 'string', value: 'oklch(0.5 0.15 240)' },
-        { name: 'color-soft', namespace: 'color', key: 'soft', type: 'string', value: '--alpha(var(--color-primary) / .3)', dependencies: ['color-primary'] },
+        { name: 'color-soft', namespace: 'color', key: 'soft', type: 'string', value: 'color-mix(in oklab,var(--color-primary) 30%,transparent)', dependencies: ['color-primary'] },
         { name: 'color-mix', namespace: 'color', key: 'mix', type: 'string', value: 'color-mix(in oklch, red, blue)' }
       ])
 
@@ -167,25 +167,27 @@ describe.concurrent('migrated issue regressions', () => {
       expect(css.themeLayer.text).toContain('--color-mix:color-mix(in oklch, red, blue)')
     })
 
-    test('collects native var dependencies from direct manifest variable values', () => {
+    test('does not lower stylesheet --alpha() or infer dependencies from direct manifest variable values', () => {
       const css = createCSSWithVariables([
         { name: 'color-primary', namespace: 'color', key: 'primary', type: 'string', value: '#123456' },
         { name: 'color-soft', namespace: 'color', key: 'soft', type: 'string', value: '--alpha(var(--color-primary) / .3)' }
       ])
 
       css.ensureClassRules('bg:soft')
-      expect(css.variables.get('color-soft')?.dependencies).toEqual(new Set(['color-primary']))
-      expect(css.themeLayer.text).toContain('--color-soft:color-mix(in oklab,var(--color-primary) 30%,transparent)')
-      expect(css.themeLayer.text).toContain('--color-primary:#123456')
+      expect(css.variables.get('color-soft')?.dependencies).toBeUndefined()
+      expect(css.themeLayer.text).toContain('--color-soft:--alpha(var(--color-primary) / .3)')
+      expect(css.themeLayer.text).not.toContain('--color-primary:#123456')
     })
 
-    test('rejects stylesheet variable alias syntax in manifest variable values', () => {
-      expect(() => {
-        createCSSWithVariables([
-          { name: 'color-primary', namespace: 'color', key: 'primary', type: 'string', value: '#123' },
-          { name: 'color-soft', namespace: 'color', key: 'soft', type: 'string', value: '$color-primary', dependencies: ['color-primary'] }
-        ])
-      }).toThrow('Replace "$color-primary" with "var(--color-primary)"')
+    test('does not validate stylesheet variable alias syntax in direct manifest variable values', () => {
+      const css = createCSSWithVariables([
+        { name: 'color-primary', namespace: 'color', key: 'primary', type: 'string', value: '#123' },
+        { name: 'color-soft', namespace: 'color', key: 'soft', type: 'string', value: '$color-primary', dependencies: ['color-primary'] }
+      ])
+
+      css.ensureClassRules('bg:soft')
+      expect(css.themeLayer.text).toContain('--color-soft:$color-primary')
+      expect(css.themeLayer.text).toContain('--color-primary:#123')
     })
   })
 
