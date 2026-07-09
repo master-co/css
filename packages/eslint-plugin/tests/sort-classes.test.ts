@@ -88,7 +88,12 @@ createTester({
     {
       code: `<div class="font:1.5rem fg:white m:2x p:2x bg:black">Classnames will be ordered</div>`,
       output: `<div class="m:2x p:2x font:1.5rem bg:black fg:white">Classnames will be ordered</div>`,
-      errors: [{ messageId: 'invalidClassOrder' }],
+      errors: [{
+        messageId: 'invalidClassOrder',
+        data: {
+          message: 'Sort classes into the expected order: "m:2x p:2x font:1.5rem bg:black fg:white".'
+        }
+      }],
     },
     {
       code: `<div class="flex uppercase m:0 m:0>li text-decoration:none>li>a px:1x>li align-items:baseline fg:gray-30>li>a gap-x:7x font:.75rem font:medium pb:0.375rem>li pt:5x pt:0.625rem>li {bb:3px|solid|black}>li:has(>.router-link-active) {fg:black}>li:has(>.router-link-active)>a fg:gray-10>li>a:hover box-shadow:none>li>a:focus">Group</div>`,

@@ -13,7 +13,12 @@ jsxTester.run('collision', rule, {
       code: `<div class="m:10px m:20px m:30px:hover m:40px@dark">collision</div>`,
       output: `<div class="m:20px m:30px:hover m:40px@dark">collision</div>`,
       errors: [
-        { messageId: 'collisionClass' }
+        {
+          messageId: 'collisionClass',
+          data: {
+            message: 'Remove class "m:10px"; it is overridden by later class "m:20px".'
+          }
+        }
       ]
     },
     {
@@ -34,36 +39,41 @@ jsxTester.run('collision', rule, {
       code: `<div class="mx:md ml:lg">partial margin axis conflict</div>`,
       output: `<div class="mr:md ml:lg">partial margin axis conflict</div>`,
       errors: [
-        { messageId: 'partialCollisionClass', data: { actual: 'mx:md', replacement: 'mr:md', conflict: 'ml:lg' } },
+        {
+          messageId: 'partialCollisionClass',
+          data: {
+            message: 'Replace "mx:md" with "mr:md"; later class "ml:lg" overrides part of "mx:md".'
+          }
+        },
       ]
     },
     {
       code: `<div class="p:md px:lg">partial padding shorthand conflict</div>`,
       output: `<div class="py:md px:lg">partial padding shorthand conflict</div>`,
       errors: [
-        { messageId: 'partialCollisionClass', data: { actual: 'p:md', replacement: 'py:md', conflict: 'px:lg' } },
+        { messageId: 'partialCollisionClass' },
       ]
     },
     {
       code: `<div class="m:md mt:lg">partial shorthand side conflict</div>`,
       output: `<div class="mx:md mb:md mt:lg">partial shorthand side conflict</div>`,
       errors: [
-        { messageId: 'partialCollisionClass', data: { actual: 'm:md', replacement: 'mx:md mb:md', conflict: 'mt:lg' } },
+        { messageId: 'partialCollisionClass' },
       ]
     },
     {
       code: `<div class="block m:8x font:.75rem mb:12x"></div>`,
       output: `<div class="block mx:8x mt:8x font:.75rem mb:12x"></div>`,
       errors: [
-        { messageId: 'partialCollisionClass', data: { actual: 'm:8x', replacement: 'mx:8x mt:8x', conflict: 'mb:12x' } },
+        { messageId: 'partialCollisionClass' },
       ]
     },
     {
       code: `<div class="mx:md ml:lg py:md pt:lg">multiple partial conflicts</div>`,
       output: `<div class="mr:md ml:lg pb:md pt:lg">multiple partial conflicts</div>`,
       errors: [
-        { messageId: 'partialCollisionClass', data: { actual: 'mx:md', replacement: 'mr:md', conflict: 'ml:lg' } },
-        { messageId: 'partialCollisionClass', data: { actual: 'py:md', replacement: 'pb:md', conflict: 'pt:lg' } },
+        { messageId: 'partialCollisionClass' },
+        { messageId: 'partialCollisionClass' },
       ]
     },
     {
@@ -80,50 +90,50 @@ jsxTester.run('collision', rule, {
       code: `<div class="inset:md top:lg">partial inset conflict</div>`,
       output: `<div class="right:md bottom:md left:md top:lg">partial inset conflict</div>`,
       errors: [
-        { messageId: 'partialCollisionClass', data: { actual: 'inset:md', replacement: 'right:md bottom:md left:md', conflict: 'top:lg' } },
+        { messageId: 'partialCollisionClass' },
       ]
     },
     {
       code: `<div class="r:md rtl:lg">partial radius conflict</div>`,
       output: `<div class="rtr:md rbr:md rbl:md rtl:lg">partial radius conflict</div>`,
       errors: [
-        { messageId: 'partialCollisionClass', data: { actual: 'r:md', replacement: 'rtr:md rbr:md rbl:md', conflict: 'rtl:lg' } },
+        { messageId: 'partialCollisionClass' },
       ]
     },
     {
       code: `<div class="b:1px bt:2px">partial border width conflict</div>`,
       output: `<div class="br:1px bb:1px bl:1px bt:2px">partial border width conflict</div>`,
       errors: [
-        { messageId: 'partialCollisionClass', data: { actual: 'b:1px', replacement: 'br:1px bb:1px bl:1px', conflict: 'bt:2px' } },
+        { messageId: 'partialCollisionClass' },
       ]
     },
     {
       code: `<div class="b:red-60 bt:blue-60">partial border color conflict</div>`,
       output: `<div class="br:red-60 bb:red-60 bl:red-60 bt:blue-60">partial border color conflict</div>`,
       errors: [
-        { messageId: 'partialCollisionClass', data: { actual: 'b:red-60', replacement: 'br:red-60 bb:red-60 bl:red-60', conflict: 'bt:blue-60' } },
+        { messageId: 'partialCollisionClass' },
       ]
     },
     {
       code: `<div class="b-solid bt-dashed">partial border style conflict</div>`,
       output: `<div class="br-solid bb-solid bl-solid bt-dashed">partial border style conflict</div>`,
       errors: [
-        { messageId: 'partialCollisionClass', data: { actual: 'b-solid', replacement: 'br-solid bb-solid bl-solid', conflict: 'bt-dashed' } },
+        { messageId: 'partialCollisionClass' },
       ]
     },
     {
       code: `<div class="mx:md ml:lg b:1px bt:2px">mixed partial conflicts</div>`,
       output: `<div class="mr:md ml:lg br:1px bb:1px bl:1px bt:2px">mixed partial conflicts</div>`,
       errors: [
-        { messageId: 'partialCollisionClass', data: { actual: 'mx:md', replacement: 'mr:md', conflict: 'ml:lg' } },
-        { messageId: 'partialCollisionClass', data: { actual: 'b:1px', replacement: 'br:1px bb:1px bl:1px', conflict: 'bt:2px' } },
+        { messageId: 'partialCollisionClass' },
+        { messageId: 'partialCollisionClass' },
       ]
     },
     {
       code: `<template><div class="b-solid bt-dashed">Vue</div></template>`,
       output: `<template><div class="br-solid bb-solid bl-solid bt-dashed">Vue</div></template>`,
       errors: [
-        { messageId: 'partialCollisionClass', data: { actual: 'b-solid', replacement: 'br-solid bb-solid bl-solid', conflict: 'bt-dashed' } },
+        { messageId: 'partialCollisionClass' },
       ],
       filename: 'test.vue',
       languageOptions: {

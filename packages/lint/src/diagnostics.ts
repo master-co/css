@@ -18,6 +18,11 @@ import { defaultCanonicalClassNameOptions } from './suggest-canonical-class-name
 import suggestCanonicalClassGroups from './suggest-canonical-class-groups'
 import suggestCanonicalClassName from './suggest-canonical-class-name'
 import suggestCanonicalComposeDirective from './suggest-canonical-compose-directive'
+import {
+  formatClassList,
+  formatClassName,
+  quoteDiagnosticValue
+} from './diagnostic-format'
 
 export type MasterCSSLintRuleId =
   | 'sort-classes'
@@ -140,13 +145,31 @@ function toRange(item: MasterCSSClassListItem | undefined, fallback: MasterCSSLi
     : fallback
 }
 
-function formatClassName(className: string) {
-  return `"${className}"`
+function formatFullConflictMessage(removedClassNames: string[], keptClassNames: string[]) {
+  const removedPlural = removedClassNames.length !== 1
+  const keptPlural = keptClassNames.length !== 1
+  return [
+    `Remove ${removedPlural ? 'classes' : 'class'} ${formatClassList(removedClassNames)}`,
+    `${removedPlural ? 'they are' : 'it is'} overridden by later ${keptPlural ? 'classes' : 'class'} ${formatClassList(keptClassNames)}.`
+  ].join('; ')
 }
 
-function formatClassList(classNames: string[]) {
-  if (classNames.length <= 2) return classNames.map(formatClassName).join(' and ')
-  return `${classNames.slice(0, -1).map(formatClassName).join(', ')}, and ${formatClassName(classNames[classNames.length - 1])}`
+function formatPartialConflictMessage(actual: string, replacement: string, conflict: string) {
+  return `Replace ${formatClassName(actual)} with ${formatClassList(replacement)}; later class ${formatClassName(conflict)} overrides part of ${formatClassName(actual)}.`
+}
+
+function formatCanonicalClassMessage(actual: string, recommended: string) {
+  return `Use canonical class ${formatClassName(recommended)} instead of ${formatClassList(actual)}.`
+}
+
+function formatCanonicalComposeMessage(actual: string, recommended: string, kind: string) {
+  if (kind === 'native-declaration') {
+    return `Use CSS declaration \`${recommended}\` instead of class ${formatClassName(actual)}.`
+  }
+  if (kind === 'variant-block') {
+    return `Move class ${formatClassName(actual)} into the canonical @compose block.`
+  }
+  return formatCanonicalClassMessage(actual, recommended)
 }
 
 export function createSortClassesReport(
@@ -161,12 +184,18 @@ export function createSortClassesReport(
   const fix = wholeClassListFix(classList, fixedText)
   if (!fix) return createReport()
 
+  const actual = classValues(items).join(' ')
+  const expected = classValues(parseClassList(fixedText, options)).join(' ')
   return createReport([{
     ruleId: 'sort-classes',
     code: 'invalid-class-order',
-    message: 'No consistent class order followed.',
+    message: `Sort classes into the expected order: ${formatClassList(expected)}.`,
     severity: resolveSeverity('sort-classes', options.severity),
     range: wholeClassListRange(classList),
+    data: {
+      actual,
+      expected
+    },
     fix
   }])
 }
@@ -181,8 +210,7 @@ export function createInvalidClassesReport(
 
   for (const item of classItems(items)) {
     const issues = getClassValidationIssues(item.token, css, {
-      disallowUnknownClass: options.disallowUnknownClass,
-      displayClassName: item.raw
+      disallowUnknownClass: options.disallowUnknownClass
     })
     for (const issue of issues) {
       diagnostics.push({
@@ -219,7 +247,7 @@ export function createConflictingClassesReport(
     const keptClassNames = [...new Set(conflicts.flatMap(({ conflicts }) => conflicts))]
     const fixedText = removeClassNamesFromClassList(classList, classNamesToRemove, options)
     const firstClassItem = findClassItem(items, classNamesToRemove[0])
-    const message = `${formatClassList(classNamesToRemove)} ${classNamesToRemove.length === 1 ? 'is' : 'are'} overridden by ${formatClassList(keptClassNames)}.`
+    const message = formatFullConflictMessage(classNamesToRemove, keptClassNames)
     return createReport([{
       ruleId: 'no-conflicting-classes',
       code: 'conflicting-class',
@@ -229,7 +257,9 @@ export function createConflictingClassesReport(
       data: {
         message,
         classNames: classNamesToRemove,
-        conflicts: keptClassNames
+        conflicts: keptClassNames,
+        removed: classNamesToRemove.join(' '),
+        kept: keptClassNames.join(' ')
       },
       fix: wholeClassListFix(classList, fixedText)
     }])
@@ -250,7 +280,7 @@ export function createConflictingClassesReport(
     diagnostics.push({
       ruleId: 'no-conflicting-classes',
       code: 'partially-conflicting-class',
-      message: `Prefer "${conflict.replacement}" over "${conflict.className}" because "${conflict.conflict}" overrides part of it.`,
+      message: formatPartialConflictMessage(conflict.className, conflict.replacement, conflict.conflict),
       severity,
       range: toRange(classItem, fallbackRange),
       data: {
@@ -289,7 +319,7 @@ export function createCanonicalClassesReport(
     diagnostics.push({
       ruleId: 'prefer-canonical-classes',
       code: 'prefer-canonical-class',
-      message: `Prefer "${suggestion.recommended}" over "${suggestion.classNames.join(' ')}".`,
+      message: formatCanonicalClassMessage(suggestion.classNames.join(' '), suggestion.recommended),
       severity,
       range: toRange(firstClassItem, fallbackRange),
       data: {
@@ -307,7 +337,7 @@ export function createCanonicalClassesReport(
     diagnostics.push({
       ruleId: 'prefer-canonical-classes',
       code: 'prefer-canonical-class',
-      message: `Prefer "${recommended}" over "${item.token}".`,
+      message: formatCanonicalClassMessage(item.token, recommended),
       severity,
       range: { start: item.start, end: item.end },
       data: {
@@ -352,7 +382,7 @@ export function createCanonicalComposeDirectiveReport(
     const diagnostic: MasterCSSLintDiagnostic = {
       ruleId: 'prefer-canonical-classes',
       code: suggestion.kind === 'class' ? 'prefer-canonical-class' : `prefer-${suggestion.kind}`,
-      message: `Prefer "${suggestion.recommended}" over "${suggestion.actual}".`,
+      message: formatCanonicalComposeMessage(suggestion.actual, suggestion.recommended, suggestion.kind),
       severity,
       range: toRange(firstClassItem, fallbackRange),
       data: {
@@ -383,7 +413,7 @@ export function createUnapprovedRawValueClassesReport(
     diagnostics.push({
       ruleId: 'no-unapproved-raw-values',
       code: 'unapproved-raw-value',
-      message: `Unexpected raw value "${issue.value}" in "${issue.className}". Use a token or allow it explicitly.`,
+      message: `Raw value ${quoteDiagnosticValue(issue.value)} is not approved for class ${formatClassName(issue.className)}. Use a token or allow the value explicitly.`,
       severity,
       range: { start: classItem.start, end: classItem.end },
       data: {

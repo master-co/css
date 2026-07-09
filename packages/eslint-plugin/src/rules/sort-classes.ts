@@ -14,7 +14,7 @@ export default createRule({
       description: 'Sort Master CSS classes'
     },
     messages: {
-      invalidClassOrder: 'No consistent class order followed.',
+      invalidClassOrder: '{{message}}',
     },
     schema: []
   },
