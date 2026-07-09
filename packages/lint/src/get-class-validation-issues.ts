@@ -25,7 +25,7 @@ export default function getClassValidationIssues(
   const displayClassName = options.displayClassName || className
   for (const error of errors) {
     if (matched) {
-      const reason = formatReason(error.message)
+      const reason = formatReason(error.message || error.rawMessage || 'CSS validation failed')
       issues.push({
         kind: 'invalid',
         className,

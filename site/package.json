@@ -71,7 +71,7 @@
     "internal": "workspace:^",
     "tsdown": "^0.22.3",
     "tsx": "^4.22.4",
-    "typescript": "^6.0.3",
+    "typescript": "^7.0.2",
     "wrangler": "4.103.0"
   }
 }

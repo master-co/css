@@ -64,7 +64,7 @@ export function readPublicEnv(options = {}) {
   return resolvePublicEnv(options)
 }
 
-export function resolveVersion({ runGit, repositoryUrl, commitRef, releaseRequired = false }) {
+export function resolveVersion({ runGit, repositoryUrl = '', commitRef, releaseRequired = false }) {
   const selector = createVersionSelector(commitRef)
   const headTag = firstMatchingTag(
     tryRunGit(runGit, ['tag', '--points-at', 'HEAD', '--list', selector.tagPattern, '--sort=-v:refname']),

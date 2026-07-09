@@ -1,7 +1,6 @@
 {
   "extends": "../tsconfig.json",
   "compilerOptions": {
-    "baseUrl": ".",
     "target": "ESNext",
     "lib": [
       "dom",
@@ -21,7 +20,6 @@
     "isolatedModules": true,
     "jsx": "preserve",
     "incremental": true,
-    "downlevelIteration": true,
     "plugins": [
       {
         "name": "next"
