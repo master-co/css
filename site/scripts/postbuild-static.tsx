@@ -214,8 +214,8 @@ async function createStaticOgImage({ title, description, category, authors }: St
         name,
         image: await readOptionalPublicDataURL(`images/authors/${authorImageFiles[name]}`)
     })))
-    const fontRegular = await readPublicAsset('fonts/Inter-Regular.ttf')
-    const fontMedium = await readPublicAsset('fonts/Inter-Medium.ttf')
+    const fontRegular = await readPublicAsset('fonts/Geist-Regular.ttf')
+    const fontMedium = await readPublicAsset('fonts/Geist-Medium.ttf')
     const titleFontSize = title.length > 72 ? 40 : title.length > 46 ? 48 : 56
     const displayDescription = truncateText(description, 150)
 
@@ -229,7 +229,7 @@ async function createStaticOgImage({ title, description, category, authors }: St
                 overflow: 'hidden',
                 backgroundColor: '#fff',
                 color: '#111827',
-                fontFamily: 'Inter Regular'
+                fontFamily: 'Geist Regular'
             }}>
                 <img src={coverBgURL} width={size.width} height={size.height} style={{
                     position: 'absolute',
@@ -257,14 +257,14 @@ async function createStaticOgImage({ title, description, category, authors }: St
                             display: 'flex',
                             color: '#64748b',
                             fontSize: 24,
-                            fontFamily: 'Inter Medium'
+                            fontFamily: 'Geist Medium'
                         }}>
                             {category}
                         </div>}
                         <div style={{
                             display: 'flex',
                             maxWidth: 900,
-                            fontFamily: 'Inter Medium',
+                            fontFamily: 'Geist Medium',
                             fontSize: titleFontSize,
                             lineHeight: 1.22
                         }}>
@@ -313,11 +313,11 @@ async function createStaticOgImage({ title, description, category, authors }: St
             ...size,
             fonts: [
                 {
-                    name: 'Inter Regular',
+                    name: 'Geist Regular',
                     data: fontRegular
                 },
                 {
-                    name: 'Inter Medium',
+                    name: 'Geist Medium',
                     data: fontMedium
                 }
             ]

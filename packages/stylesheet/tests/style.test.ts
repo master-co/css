@@ -61,6 +61,42 @@ describe('style CSS extraction helpers', () => {
     expect(result.css).toBe(result.nativeCSS)
   })
 
+  it('ignores native CSS variable references inside comments and strings while emitting real references', () => {
+    const result = renderCompiledManifestCSS({
+      manifest: defaultManifest,
+      nativeCSS: [
+        '.quoted { content: "var(--color-blue-60)"; }',
+        '/* var(--color-red-60) */',
+        '.real { color: var(--color-green-60); }'
+      ],
+      includeGeneratedCSS: false
+    })
+
+    expect(result.generatedCSS).toContain('--color-green-60')
+    expect(result.generatedCSS).not.toContain('--color-blue-60')
+    expect(result.generatedCSS).not.toContain('--color-red-60')
+  })
+
+  it('emits theme variables referenced by compiled stylesheet --alpha() values', () => {
+    const compiled = compileCSSManifest(`
+      @theme {
+        --color-primary: #ff0000;
+      }
+
+      .native {
+        color: --alpha(var(--color-primary) / 50%);
+      }
+    `, { baseManifest: defaultManifest })
+    const result = renderCompiledManifestCSS({
+      manifest: compiled.manifest,
+      nativeCSS: compiled.nativeCSS,
+      includeGeneratedCSS: false
+    })
+
+    expect(result.nativeCSS).toContain('color-mix(in oklab,var(--color-primary) 50%,transparent)')
+    expect(result.generatedCSS).toContain('--color-primary:red')
+  })
+
   it('replaces @master/css imports with CSS import modifiers', () => {
     const result = replaceStyleCSSImports([
       '@import "@master/css" layer(master);',

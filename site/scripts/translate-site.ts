@@ -1,8 +1,18 @@
-import ts from 'typescript'
 import { createHash } from 'node:crypto'
 import { existsSync, mkdirSync, readFileSync, readdirSync, statSync, writeFileSync } from 'node:fs'
 import { dirname, relative, resolve, sep } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import type { Node, PropertyName } from 'typescript/unstable/ast'
+import {
+    isIdentifier,
+    isJsxAttribute,
+    isJsxText,
+    isNumericLiteral,
+    isPropertyAssignment,
+    isStringLiteral,
+    isStringLiteralLikeNode
+} from 'typescript/unstable/ast'
+import { createTypeScriptASTHost, visit } from './ts-ast'
 
 type SegmentKind = 'dictionary' | 'metadata' | 'mdx' | 'ui'
 
@@ -38,6 +48,7 @@ const rootEnvFile = resolve(repoRoot, '.env.local')
 const appLocaleRoot = resolve(siteRoot, 'app/[locale]')
 const translationsRoot = resolve(siteRoot, '.translations')
 const defaultLocale = 'en'
+let astHost: ReturnType<typeof createTypeScriptASTHost> | undefined
 const defaultTargetLocale = 'tw'
 const defaultModel = process.env.TRANSLATE_MODEL || 'gpt-5.5'
 let rootEnvValues: Record<string, string> | undefined
@@ -138,15 +149,14 @@ function collectDictionarySegments(locale: string): TranslationSegment[] {
 
 function collectMetadataSegments(locale: string): TranslationSegment[] {
     return walk(appLocaleRoot, (file) => file.endsWith('metadata.ts')).flatMap((file) => {
-        const source = readFileSync(file, 'utf8')
-        const sourceFile = ts.createSourceFile(file, source, ts.ScriptTarget.Latest, true, ts.ScriptKind.TS)
+        const sourceFile = getSourceFile(file)
         const segments: TranslationSegment[] = []
 
         visit(sourceFile, (node) => {
-            if (!ts.isPropertyAssignment(node)) return
+            if (!isPropertyAssignment(node)) return
             const name = propertyName(node.name)
             if (!name || !translatablePropertyNames.has(name)) return
-            if (!ts.isStringLiteralLike(node.initializer)) return
+            if (!isStringLiteralLikeNode(node.initializer)) return
             const text = node.initializer.text
             if (!isTranslatableText(text)) return
             segments.push(createSegment('metadata', file, locale, text, name))
@@ -168,27 +178,26 @@ function collectMdxSegments(locale: string): TranslationSegment[] {
 function collectUiSegments(locale: string): TranslationSegment[] {
     return uiRoots.flatMap((root) =>
         walk(root, (file) => file.endsWith('.tsx') && isAuditableSourceFile(file)).flatMap((file) => {
-            const source = readFileSync(file, 'utf8')
-            const sourceFile = ts.createSourceFile(file, source, ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX)
+            const sourceFile = getSourceFile(file)
             const segments: TranslationSegment[] = []
 
             visit(sourceFile, (node) => {
-                if (ts.isJsxText(node)) {
+                if (isJsxText(node)) {
                     const text = normalizeText(node.getText(sourceFile))
                     if (isTranslatableText(text)) segments.push(createSegment('ui', file, locale, text, 'jsx'))
                     return
                 }
 
-                if (ts.isJsxAttribute(node) && translatableAttributes.has(node.name.getText(sourceFile)) && node.initializer && ts.isStringLiteral(node.initializer)) {
+                if (isJsxAttribute(node) && translatableAttributes.has(node.name.getText(sourceFile)) && node.initializer && isStringLiteral(node.initializer)) {
                     const text = node.initializer.text
                     if (isTranslatableText(text)) segments.push(createSegment('ui', file, locale, text, node.name.getText(sourceFile)))
                     return
                 }
 
-                if (!ts.isPropertyAssignment(node)) return
+                if (!isPropertyAssignment(node)) return
                 const name = propertyName(node.name)
                 if (!name || !translatablePropertyNames.has(name)) return
-                if (!ts.isStringLiteralLike(node.initializer)) return
+                if (!isStringLiteralLikeNode(node.initializer)) return
                 const text = node.initializer.text
                 if (isTranslatableText(text)) segments.push(createSegment('ui', file, locale, text, name))
             })
@@ -505,13 +514,13 @@ function normalizeText(value: string) {
     return value.replace(/\s+/g, ' ').trim()
 }
 
-function propertyName(name: ts.PropertyName) {
-    if (ts.isIdentifier(name) || ts.isStringLiteral(name) || ts.isNumericLiteral(name)) return name.text
+function propertyName(name: PropertyName) {
+    if (isIdentifier(name) || isStringLiteral(name) || isNumericLiteral(name)) return name.text
 }
 
-function visit(node: ts.Node, callback: (node: ts.Node) => void) {
-    callback(node)
-    ts.forEachChild(node, (child) => visit(child, callback))
+function getSourceFile(file: string) {
+    astHost ??= createTypeScriptASTHost(resolve(siteRoot, 'tsconfig.json'))
+    return astHost.getSourceFile(file)
 }
 
 function walk(root: string, filter: (file: string) => boolean): string[] {
@@ -593,4 +602,8 @@ function toPosix(pathname: string) {
     return pathname.split(sep).join('/')
 }
 
-await main()
+try {
+    await main()
+} finally {
+    astHost?.close()
+}

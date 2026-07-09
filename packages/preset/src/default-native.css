@@ -116,10 +116,12 @@
 
   body, :host {
     font-family: var(--font-family-sans);
+    font-feature-settings: var(--font-feature-sans, normal);
   }
 
   code, kbd, samp, pre {
     font-family: var(--font-family-mono);
+    font-feature-settings: var(--font-feature-mono, normal);
   }
 
   a {

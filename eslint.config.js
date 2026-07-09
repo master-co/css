@@ -2,15 +2,16 @@ import js from '@eslint/js'
 import { fixupPluginRules, includeIgnoreFile } from '@eslint/compat'
 import { fileURLToPath } from 'node:url'
 import globals from 'globals'
-import tseslint from 'typescript-eslint'
 import react from 'eslint-plugin-react'
 import reactHooks from 'eslint-plugin-react-hooks'
 import reactRefresh from 'eslint-plugin-react-refresh'
+import './scripts/typescript-tooling-compat.mjs'
 
 const gitignorePath = fileURLToPath(new URL('./.gitignore', import.meta.url))
-const sourceFiles = ['**/*.{js,cjs,ts,cts,mts,jsx,tsx,mtsx}']
-const typeScriptFiles = ['**/*.{ts,tsx,mts,cts}']
+const sourceFiles = ['**/*.{js,mjs,ts,mts,jsx,tsx}']
+const typeScriptFiles = ['**/*.{ts,mts,tsx}']
 const reactRecommended = react.configs.flat.recommended
+const { default: tseslint } = await import('typescript-eslint')
 
 export const reactConfig = {
   ...reactRecommended,

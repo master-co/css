@@ -5,5 +5,5 @@
 }
 
 @theme {
-  --color-primary: $color-yellow;
+  --color-primary: var(--color-yellow);
 }

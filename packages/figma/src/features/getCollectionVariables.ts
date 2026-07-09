@@ -37,9 +37,9 @@ export default async function getCollectionVariables(options: GetCollectionVaria
       if (value.type === 'VARIABLE_ALIAS') {
         const aliasVariable = await figma.variables.getVariableByIdAsync(value.id)
         newValue = aliasVariable
-          ? `$${aliasVariable.name.toLocaleLowerCase()
+          ? `var(--${aliasVariable.name.toLocaleLowerCase()
             .replace(/ /g, '-')
-            .replace(/\//g, '-')}`
+            .replace(/\//g, '-')})`
           : undefined
       } else if (variable.resolvedType === 'COLOR') {
         newValue = toColorValue(value, options.outputColorSpace)

@@ -49,6 +49,7 @@ import {
   type StandaloneMasterDirectiveStatement
 } from './lexer/standalone-master'
 import { combineSelectorLists } from './utils/selectors'
+import { normalizeStylesheetValue } from './stylesheet-value'
 
 type CSSDirectiveConditionPath = CSSDirectiveConditionPathEntry[]
 
@@ -304,7 +305,7 @@ function normalizeThemeTokenName(property: string) {
 
 function defineThemeVariable(manifestInput: CSSDirectiveManifestInput, property: string, rawValue: string, mode?: string, inline?: boolean, isStatic?: boolean) {
   const name = normalizeThemeTokenName(property)
-  const value = parseVariableValue(rawValue)
+  const value = parseVariableValue(normalizeStylesheetValue(rawValue, { replacePipes: true }).value)
   if (mode) {
     addThemeMode(manifestInput, mode)
   }
@@ -516,6 +517,10 @@ function formatDeclarationValue(declaration: Declaration) {
   }
   const colonIndex = declarationText.indexOf(':')
   return formatCSSNumberLiterals(declarationText.slice(colonIndex + 1).trim())
+}
+
+function normalizeDeclarationValue(value: string) {
+  return normalizeStylesheetValue(value).value
 }
 
 function normalizeNumberText(value: string) {
@@ -969,10 +974,10 @@ function getDeclarationName(declaration: Declaration) {
 function collectDeclarations(block: DeclarationBlock<Declaration>) {
   const declarations: Record<string, string> = {}
   for (const declaration of block.declarations || []) {
-    declarations[getDeclarationName(declaration)] = formatDeclarationValue(declaration)
+    declarations[getDeclarationName(declaration)] = normalizeDeclarationValue(formatDeclarationValue(declaration))
   }
   for (const declaration of block.importantDeclarations || []) {
-    declarations[getDeclarationName(declaration)] = `${formatDeclarationValue(declaration)} !important`
+    declarations[getDeclarationName(declaration)] = `${normalizeDeclarationValue(formatDeclarationValue(declaration))} !important`
   }
   return declarations
 }
@@ -1880,6 +1885,8 @@ function parseThemeRule(rule: any, parsed: ParsedDirectives) {
 
 const MANAGED_DYNAMIC_SOURCE_KINDS = new Set(['number', 'color', 'image'])
 const MANAGED_DYNAMIC_RAW_ANY_SOURCE = '*'
+const MANAGED_ENUM_PATTERN_TOKEN = /^-?[_a-zA-Z0-9][-_a-zA-Z0-9]*$/
+const MANAGED_ENUM_PATTERN_VALUE = /^-?[_a-zA-Z0-9][-_a-zA-Z0-9]*$/
 
 type ParsedManagedPatternName =
   | ReturnType<typeof parseManagedEnumPatternName>
@@ -1926,22 +1933,40 @@ function parseManagedEnumPatternName(source: string) {
     throw new Error('Managed enum pattern values must use "|" separators like text-<left|right>')
   }
 
-  const values = rawValues.split('|').map((value) => value.trim())
-  if (values.length < 2 || values.some((value) => !value)) {
+  const entries = rawValues.split('|').map((value) => value.trim())
+  if (entries.length < 2 || entries.some((value) => !value)) {
     throw new Error('Managed enum pattern requires at least two values separated by "|"')
   }
-  for (const value of values) {
-    if (!/^-?[_a-zA-Z0-9][-_a-zA-Z0-9]*$/.test(value)) {
-      throw new Error(`Invalid managed enum value: ${value}`)
+  const values: string[] = []
+  const valueMap: Record<string, string> = {}
+  let hasMappedValue = false
+  const canonicalValues: string[] = []
+  for (const entry of entries) {
+    const equalsIndex = entry.indexOf('=')
+    const classValue = equalsIndex === -1 ? entry : entry.slice(0, equalsIndex).trim()
+    const emittedValue = equalsIndex === -1 ? classValue : entry.slice(equalsIndex + 1).trim()
+    if (!classValue || !emittedValue || entry.indexOf('=', equalsIndex + 1) !== -1) {
+      throw new Error(`Invalid managed enum mapping: ${entry}`)
     }
+    if (!MANAGED_ENUM_PATTERN_TOKEN.test(classValue)) {
+      throw new Error(`Invalid managed enum value: ${classValue}`)
+    }
+    if (!MANAGED_ENUM_PATTERN_VALUE.test(emittedValue)) {
+      throw new Error(`Invalid managed enum mapped value: ${emittedValue}`)
+    }
+    values.push(classValue)
+    valueMap[classValue] = emittedValue
+    if (equalsIndex !== -1) hasMappedValue = true
+    canonicalValues.push(equalsIndex === -1 ? classValue : `${classValue}=${emittedValue}`)
   }
 
   return {
     kind: 'pattern' as const,
-    name: `${prefix}<${values.join('|')}>`,
+    name: `${prefix}<${canonicalValues.join('|')}>`,
     pattern: {
       prefix,
-      values
+      values,
+      ...(hasMappedValue ? { valueMap } : {})
     }
   }
 }
@@ -2505,7 +2530,7 @@ export function compileCSS(source: string, options: CompileCSSOptions = {}): Com
     const remainingCode = classFilter
       ? pruneEmptyRuleBlocks(filteredCode, filename)
       : filteredCode
-    remainingCSS = decodeCSS(remainingCode).trim()
+    remainingCSS = normalizeStylesheetValue(decodeCSS(remainingCode).trim()).value
   }
 
   return {

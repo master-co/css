@@ -142,6 +142,15 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
           margin: calc(--value() * 1px);
         }
 
+        bg-origin-<border=border-box|content=content-box> {
+          background-origin: --value();
+        }
+
+        label-<info|warn> {
+          content: "--value()";
+          color: --value();
+        }
+
         text-center {
           text-align: start;
         }
@@ -165,10 +174,24 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
         values: ['left', 'right', 'center']
       }]
     })
+    expect(manifest.utilities?.find((utility) => utility.id === 'bg-origin-<border=border-box|content=content-box>')).toMatchObject({
+      type: UtilityType.Semantic,
+      matchers: [{
+        type: 'pattern',
+        prefix: 'bg-origin-',
+        values: ['border', 'content'],
+        valueMap: {
+          border: 'border-box',
+          content: 'content-box'
+        }
+      }]
+    })
 
     const css = createTestCSS(manifest)
     expect(css.createRule('text-left')?.text).toBe('.text-left{text-align:left}')
     expect(css.createRule('n-2')?.text).toBe('.n-2{margin:calc(2 * 1px)}')
+    expect(css.createRule('bg-origin-border')?.text).toBe('.bg-origin-border{background-origin:border-box}')
+    expect(css.createRule('label-info')?.text).toBe('.label-info{content:"--value()";color:info}')
     expect(css.createRule('text-center')?.text).toBe('.text-center{text-align:start}')
     expect(css.createRule('badge-success')?.text).toBe('.badge-success{color:success}')
     expect(css.createRule('badge-success')?.type).toBe(UtilityType.Semantic)
@@ -209,6 +232,10 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
         grid-cols:<number|*> {
           display: grid;
           grid-template-columns: repeat(--value(), minmax(0, 1fr));
+        }
+
+        grid-col-span:<number|*> {
+          grid-column: span --value()/span --value();
         }
 
         size:<~container|number|*> {
@@ -359,6 +386,8 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
     expect(css.createRule('fg:red')?.text).toBe('.fg\\:red{color:var(--color-text-red)}')
     expect(css.createRule('grid-cols:3')?.text).toBe('.grid-cols\\:3{display:grid;grid-template-columns:repeat(3, minmax(0, 1fr))}')
     expect(css.createRule('grid-cols:var(--cols)')?.text).toBe('.grid-cols\\:var\\(--cols\\){display:grid;grid-template-columns:repeat(var(--cols), minmax(0, 1fr))}')
+    expect(css.createRule('grid-col-span:2')?.text).toBe('.grid-col-span\\:2{grid-column:span 2/span 2}')
+    expect(css.createRule('grid-col-span:var(--span)')?.text).toBe('.grid-col-span\\:var\\(--span\\){grid-column:span var(--span)/span var(--span)}')
     expect(css.createRule('size:4x')?.text).toBe('.size\\:4x{width:1rem;height:1rem}')
     expect(css.createRule('size:4x|8x')?.text).toBe('.size\\:4x\\|8x{width:1rem 2rem;height:1rem 2rem}')
     expect(css.createRule('gap:var(--gap)')?.text).toBe('.gap\\:var\\(--gap\\){gap:var(--gap)}')
@@ -414,11 +443,43 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
 
     expect(() => compileCSSManifest(`
       @utilities {
+        x-<a=span 1|b=b> {
+          color: --value();
+        }
+      }
+    `, { baseManifest: defaultManifest })).toThrow('Invalid managed enum mapped value')
+
+    expect(() => compileCSSManifest(`
+      @utilities {
         x-<a|b> {
           color: --value(rem);
         }
       }
     `, { baseManifest: defaultManifest })).toThrow('--value() does not accept arguments')
+
+    expect(() => compileCSSManifest(`
+      @utilities {
+        x-<a|b> {
+          color: --value()-box;
+        }
+      }
+    `, { baseManifest: defaultManifest })).toThrow('--value() must be a standalone CSS value placeholder')
+
+    expect(() => compileCSSManifest(`
+      @utilities {
+        x-<a|b> {
+          color: foo--value();
+        }
+      }
+    `, { baseManifest: defaultManifest })).toThrow('--value() must be a standalone CSS value placeholder')
+
+    expect(() => compileCSSManifest(`
+      @utilities {
+        x-<around|between> {
+          align-content: space---value();
+        }
+      }
+    `, { baseManifest: defaultManifest })).toThrow('--value() must be a standalone CSS value placeholder')
 
     expect(() => compileCSSManifest(`
       @utilities {
@@ -868,7 +929,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
       @theme {
         --color-black: #000000;
         --color-primary: #000000;
-        --color-alias: $color-primary;
+        --color-alias: var(--color-primary);
       }
 
       @theme light {
@@ -880,7 +941,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
       }
 
       @theme chrisma {
-        --color-primary: $color-black/.5;
+        --color-primary: --alpha(var(--color-black) / 50%);
       }
     `, { baseManifest: defaultManifest })
     const css = createTestCSS(manifest).ensureClassRules('bg:primary', 'bg:primary/.5', 'bg:alias')
@@ -892,6 +953,58 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
     expect(css.utilitiesLayer.text).toContain('.bg\\:primary{background-color:var(--color-primary)}')
     expect(css.utilitiesLayer.text).toContain('.bg\\:primary\\/\\.5{background-color:color-mix(in oklab,var(--color-primary) 50%,transparent)}')
     expect(css.utilitiesLayer.text).toContain('.bg\\:alias{background-color:var(--color-alias)}')
+  })
+
+  test('lowers stylesheet --alpha() in theme, managed declarations, and native CSS', () => {
+    const result = compileCSSManifest(`
+      @theme {
+        --color-primary: #123456;
+        --color-muted: --alpha(var(--color-primary) / 50%);
+      }
+
+      @components {
+        btn {
+          background-color: --alpha(var(--color-primary) / .5);
+        }
+      }
+
+      .native {
+        color: --alpha(var(--color-muted) / var(--opacity-muted));
+      }
+    `, { baseManifest: defaultManifest })
+    const css = createTestCSS(result.manifest)
+
+    css.ensureClassRules('btn', 'bg:muted')
+    expect(css.themeLayer.text).toContain('--color-muted:color-mix(in oklab,var(--color-primary) 50%,transparent)')
+    expect(css.componentsLayer.text).toContain('.btn{background-color:color-mix(in oklab,var(--color-primary) 50%,transparent)}')
+    expect(result.nativeCSS).toContain('color: color-mix(in oklab,var(--color-muted) var(--opacity-muted),transparent);')
+  })
+
+  test('rejects stylesheet token alias syntax and invalid --alpha() alpha values', () => {
+    expect(() => compileCSSManifest('@theme { --color-brand: $color-blue-60; }', { baseManifest: defaultManifest }))
+      .toThrow('Replace "$color-blue-60" with "var(--color-blue-60)"')
+    expect(() => compileCSSManifest('.native { color: $color-blue-60; }', { baseManifest: defaultManifest }))
+      .toThrow('Replace "$color-blue-60" with "var(--color-blue-60)"')
+    expect(() => compileCSSManifest('@theme { --color-brand: --alpha(var(--color-blue-60) / 50); }', { baseManifest: defaultManifest }))
+      .toThrow('numeric alpha must be between 0 and 1')
+    expect(() => compileCSSManifest('@theme { --color-brand: --alpha(var(--color-blue-60) / foo); }', { baseManifest: defaultManifest }))
+      .toThrow('unsupported alpha value "foo"')
+    expect(() => compileCSSManifest('@theme { --color-brand: --alpha(var(--color-blue-60) / 50% / 20%); }', { baseManifest: defaultManifest }))
+      .toThrow('expected "<color> / <alpha>"')
+    expect(() => compileCSSManifest('@theme { --color-brand: --alpha(var(--color-blue-60)); }', { baseManifest: defaultManifest }))
+      .toThrow('expected "<color> / <alpha>"')
+  })
+
+  test('ignores quoted variable references while collecting theme dependencies', () => {
+    const { manifest } = compileCSSManifest(`
+      @theme {
+        --content-demo: "var(--color-blue-60)";
+        --color-blue-60: #3366ff;
+      }
+    `, { baseManifest: defaultManifest })
+
+    const demo = variablesOf(manifest).find((variable) => variable.name === 'content-demo')
+    expect(demo?.dependencies).toBeUndefined()
   })
 
   test('resolves built-in and utility-owned theme namespaces before lowering composed definitions', () => {
@@ -1198,12 +1311,12 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
       @theme inline {
         --color-primary: #123;
         --spacing-card: 1rem;
-        --color-brand: $color-primary;
+        --color-brand: var(--color-primary);
       }
 
       @theme {
         --color-regular: #456;
-        --color-inline-regular: $color-regular;
+        --color-inline-regular: var(--color-regular);
       }
     `, { baseManifest: defaultManifest })
     const css = createTestCSS(manifest)
@@ -1360,7 +1473,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
         --color-display-p3: color(display-p3 0.2 0.4 0.8);
         --color-color-srgb: color(srgb 0.2 0.4 0.8);
         --color-color-rec2020: color(rec2020 0.2 0.4 0.8);
-        --color-soft: $color-oklch-primary/.3;
+        --color-soft: --alpha(var(--color-oklch-primary) / .3);
         --color-mix-demo: color-mix(in oklch, red, blue);
       }
     `, { baseManifest: defaultManifest })

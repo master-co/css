@@ -141,7 +141,11 @@ test.concurrent('defines deterministic TextMate grammar scopes for CSS directive
   ])
 
   const themeValue = grammarEntry('master-theme-value')
-  findGrammarPattern(themeValue, (pattern) => pattern.match === '\\$[_a-zA-Z-][_a-zA-Z0-9-]*' && pattern.name === 'variable.other.master-css')
+  expect(themeValue.patterns).not.toContainEqual(expect.objectContaining({
+    match: '\\$[_a-zA-Z-][_a-zA-Z0-9-]*',
+    name: 'variable.other.master-css'
+  }))
+  findGrammarPattern(themeValue, (pattern) => pattern.match === '--alpha(?=\\()' && pattern.name === 'support.function.misc.master-css')
 
   const composePrelude = grammarEntry('master-compose-prelude')
   expectGrammarIncludes(composePrelude, ['#master-string', '#master-query', '#master-selector', '#master-class-fragment'])
@@ -163,7 +167,7 @@ test('supports Shiki dynamic language imports', async () => {
   try {
     expect(highlighter.getLoadedLanguages()).toEqual(expect.arrayContaining(['css', masterCSSShikiLanguage.name]))
 
-    const code = '@theme { --color-primary: $value; }'
+    const code = '@theme { --color-primary: var(--value); }'
     const result = highlighter.codeToTokens(code, {
       lang: 'css',
       theme: shikiSmokeTheme
@@ -186,7 +190,7 @@ test('registers a real Shiki TextMate injection grammar for CSS directives', asy
 
     const code = [
       '@theme {',
-      '    --color-primary: $color-blue-60;',
+      '    --color-primary: var(--color-blue-60);',
       '}',
       '@components {',
       '    btn {',

@@ -13,7 +13,7 @@ describe.concurrent('createMasterCSSManifest', () => {
     const manifest = createMasterCSSManifest({
       variables: [
         { namespace: 'spacing', key: 'card', value: 12, static: true },
-        { namespace: 'color', key: 'brand', value: '$color-blue-50' },
+        { namespace: 'color', key: 'brand', value: 'var(--color-blue-50)' },
         { namespace: 'color', key: 'brand', value: '#123', mode: 'dark', static: true }
       ]
     })
@@ -32,7 +32,7 @@ describe.concurrent('createMasterCSSManifest', () => {
       key: 'brand',
       namespace: 'color',
       type: 'string',
-      value: '$color-blue-50',
+      value: 'var(--color-blue-50)',
       modes: {
         dark: {
           type: 'string',
@@ -42,6 +42,14 @@ describe.concurrent('createMasterCSSManifest', () => {
       dependencies: expect.arrayContaining(['color-blue-50']),
       static: true
     }))
+  })
+
+  it('rejects stylesheet token alias syntax in variable values', () => {
+    expect(() => createMasterCSSManifest({
+      variables: [
+        { namespace: 'color', key: 'brand', value: '$color-blue-50' }
+      ]
+    })).toThrow('Replace "$color-blue-50" with "var(--color-blue-50)"')
   })
 
   it('preserves explicitly authored negative variables', () => {

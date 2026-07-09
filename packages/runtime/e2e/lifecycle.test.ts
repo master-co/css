@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test'
+import { test, expect, type Page } from '@playwright/test'
 import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import UtilityType from '@master/css-schema/utility-type'
@@ -6,6 +6,14 @@ import CSSRuntime from '../src'
 import init from './init'
 
 const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
+
+async function waitForRuntimeRuleFlush(page: Page) {
+  await page.evaluate(() => new Promise<void>((resolve) => {
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => resolve())
+    })
+  }))
+}
 
 test('does not expose tooling-only engine inspection helpers', async ({ page }) => {
   await init(page)
@@ -28,6 +36,7 @@ test('destroy on progressive', async ({ page }) => {
   await page.evaluate(() => {
     document.body.classList.add('text-center')
   })
+  await waitForRuntimeRuleFlush(page)
   expect(await page.evaluate(() => globalThis.masterCSSRuntime.utilitiesLayer.rules.length)).toBe(1)
   expect(await page.evaluate(() => Array.from(globalThis.masterCSSRuntime.style?.sheet?.cssRules || [])
     .filter(cssRule => cssRule === globalThis.masterCSSRuntime.utilitiesLayer.native)
@@ -47,11 +56,7 @@ test('destroy on progressive', async ({ page }) => {
     document.body.classList.add('block')
     document.body.classList.add('font:bold')
   })
-  await page.evaluate(() => new Promise<void>((resolve) => {
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => resolve())
-    })
-  }))
+  await waitForRuntimeRuleFlush(page)
   expect(await page.evaluate(() => Array.from(globalThis.masterCSSRuntime.style?.sheet?.cssRules || []).length)).toBe(2)
 })
 
@@ -73,11 +78,7 @@ test('prevent attach layer twice', async ({ page }) => {
   await page.evaluate(() => {
     document.body.classList.add('app-wrapper')
   })
-  await page.evaluate(() => new Promise<void>((resolve) => {
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => resolve())
-    })
-  }))
+  await waitForRuntimeRuleFlush(page)
   expect(await page.evaluate(() => globalThis.masterCSSRuntime.componentsLayer.native?.cssRules?.length)).toBe(3)
 })
 
@@ -129,6 +130,7 @@ test('refresh clears stale native keyframes', async ({ page }) => {
   await page.evaluate(() => {
     document.body.classList.add('animation:fade|1s', 'animation:flash|1s')
   })
+  await waitForRuntimeRuleFlush(page)
   expect(await page.evaluate(() => Array.from(globalThis.masterCSSRuntime.style!.sheet!.cssRules)
     .filter((cssRule) => cssRule.constructor.name === 'CSSKeyframesRule')
     .map((cssRule) => (cssRule as CSSKeyframesRule).name)

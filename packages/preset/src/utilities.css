@@ -20,8 +20,8 @@
     background-clip: text;
   }
 
-  bg-origin-<border|content|padding> {
-    background-origin: --value()-box;
+  bg-origin-<border=border-box|content=content-box|padding=padding-box> {
+    background-origin: --value();
   }
 
   block {
@@ -32,8 +32,8 @@
     bottom: 0;
   }
 
-  box-<border|content> {
-    box-sizing: --value()-box;
+  box-<border=border-box|content=content-box> {
+    box-sizing: --value();
   }
 
   break-spaces {
@@ -91,8 +91,8 @@
     container-type: inline-size;
   }
 
-  content-<around|between|evenly> {
-    align-content: space---value();
+  content-<around=space-around|between=space-between|evenly=space-evenly> {
+    align-content: --value();
   }
 
   content-<baseline|center|end|flex-end|flex-start|normal|start|stretch> {
@@ -215,8 +215,8 @@
     align-items: --value();
   }
 
-  justify-<around|between|evenly> {
-    justify-content: space---value();
+  justify-<around=space-around|between=space-between|evenly=space-evenly> {
+    justify-content: --value();
   }
 
   justify-<center|end|flex-end|flex-start|left|normal|right|start|stretch> {
@@ -413,8 +413,8 @@
     top: 0;
   }
 
-  transform-<border|content|fill|stroke|view> {
-    transform-box: --value()-box;
+  transform-<border=border-box|content=content-box|fill=fill-box|stroke=stroke-box|view=view-box> {
+    transform-box: --value();
   }
 
   untouchable {

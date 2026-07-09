@@ -3,5 +3,5 @@
 }
 
 @theme {
-  --secondary: $color-white;
+  --secondary: var(--color-white);
 }

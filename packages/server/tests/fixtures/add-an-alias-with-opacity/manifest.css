@@ -3,9 +3,9 @@
 }
 
 @theme {
-  --color-primary: $color-black/.5;
+  --color-primary: --alpha(var(--color-black) / 50%);
 }
 
 @theme {
-  --color-secondary: $color-primary/.5;
+  --color-secondary: --alpha(var(--color-primary) / 50%);
 }

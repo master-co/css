@@ -61,6 +61,7 @@ test('expects the animation output', async ({ page }) => {
     p.classList.add('animation:fade|1s')
     document.body.append(p)
   })
+  await waitForRuntimeRuleFlush(page)
   expect(await page.evaluate(() => globalThis.masterCSSRuntime.text)).toContain('.animation\\:fade\\|1s{animation:fade 1s}')
   await page.evaluate(() => {
     const p = document.getElementById('mp')

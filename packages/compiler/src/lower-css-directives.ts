@@ -190,7 +190,13 @@ function cloneUtility(definition: InputUtilityDefinition): CSSDirectiveUtilityDe
   return {
     ...definition,
     type: definition.type || 'static',
-    ...(definition.pattern ? { pattern: { prefix: definition.pattern.prefix, values: [...definition.pattern.values] } } : {}),
+    ...(definition.pattern ? {
+      pattern: {
+        prefix: definition.pattern.prefix,
+        values: [...definition.pattern.values],
+        ...(definition.pattern.valueMap ? { valueMap: { ...definition.pattern.valueMap } } : {})
+      }
+    } : {}),
     ...(definition.dynamic ? {
       dynamic: {
         key: definition.dynamic.key,

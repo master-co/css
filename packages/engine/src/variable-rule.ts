@@ -1,6 +1,7 @@
 import MasterCSS from './core'
 import type { ResolvedVariableValue, Variable } from '@master/css-schema/css-syntax'
-import { normalizeVariableValue, replaceCSSVariableReferences } from './utils/css-variables'
+import { replaceCSSVariableReferences } from '@master/css-lexer'
+import { normalizeEngineVariableValue } from './utils/css-variables'
 
 export default class VariableRule {
   nodes: VariableRuleNode[] = []
@@ -73,7 +74,7 @@ export class VariableRuleNode {
 
   get declarationValue() {
     const resolveInlineReferences = (value: string | number, stack: string[]): string => {
-      return replaceCSSVariableReferences(normalizeVariableValue(value).value, (name) => {
+      return replaceCSSVariableReferences(normalizeEngineVariableValue(value), (name) => {
         const variable = this.css.variables.get(name)
         if (!variable?.inline || variable.value === undefined) return
         const stackIndex = stack.indexOf(name)

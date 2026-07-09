@@ -1,7 +1,17 @@
-import ts from 'typescript'
-import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs'
+import { existsSync, readdirSync, statSync } from 'node:fs'
 import { relative, resolve, sep } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import type { Node, PropertyName, SourceFile } from 'typescript/unstable/ast'
+import {
+  isIdentifier,
+  isJsxAttribute,
+  isJsxText,
+  isNumericLiteral,
+  isPropertyAssignment,
+  isStringLiteral,
+  isStringLiteralLikeNode
+} from 'typescript/unstable/ast'
+import { createTypeScriptASTHost, visit } from './ts-ast'
 
 interface Finding {
   file: string
@@ -36,22 +46,28 @@ const ignoredExact = new Set([
   'JS'
 ])
 
-const findings = roots.flatMap((root) => scanRoot(root))
+const astHost = createTypeScriptASTHost(resolve(siteRoot, 'tsconfig.json'))
 
-if (findings.length) {
-  console.log(`Found ${findings.length} possible untranslated site strings:`)
-  for (const finding of findings.slice(0, 200)) {
-    console.log(`${finding.file}:${finding.line} ${finding.kind} ${JSON.stringify(finding.text)}`)
-  }
-  if (findings.length > 200) {
-    console.log(`... ${findings.length - 200} more`)
-  }
-} else {
-  console.log('No obvious untranslated site strings found.')
-}
+try {
+  const findings = roots.flatMap((root) => scanRoot(root))
 
-if (process.argv.includes('--strict') && findings.length) {
-  process.exitCode = 1
+  if (findings.length) {
+    console.log(`Found ${findings.length} possible untranslated site strings:`)
+    for (const finding of findings.slice(0, 200)) {
+      console.log(`${finding.file}:${finding.line} ${finding.kind} ${JSON.stringify(finding.text)}`)
+    }
+    if (findings.length > 200) {
+      console.log(`... ${findings.length - 200} more`)
+    }
+  } else {
+    console.log('No obvious untranslated site strings found.')
+  }
+
+  if (process.argv.includes('--strict') && findings.length) {
+    process.exitCode = 1
+  }
+} finally {
+  astHost.close()
 }
 
 function scanRoot(root: string): Finding[] {
@@ -59,32 +75,31 @@ function scanRoot(root: string): Finding[] {
 }
 
 function scanFile(file: string): Finding[] {
-  const source = readFileSync(file, 'utf8')
-  const sourceFile = ts.createSourceFile(file, source, ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX)
+  const sourceFile = astHost.getSourceFile(file)
   const findings: Finding[] = []
 
   visit(sourceFile, (node) => {
-    if (ts.isJsxText(node)) {
+    if (isJsxText(node)) {
       addFinding(findings, sourceFile, file, node, 'jsx', node.getText(sourceFile))
       return
     }
 
-    if (ts.isJsxAttribute(node) && translatableAttributes.has(node.name.getText(sourceFile)) && node.initializer && ts.isStringLiteral(node.initializer)) {
+    if (isJsxAttribute(node) && translatableAttributes.has(node.name.getText(sourceFile)) && node.initializer && isStringLiteral(node.initializer)) {
       addFinding(findings, sourceFile, file, node, node.name.getText(sourceFile), node.initializer.text)
       return
     }
 
-    if (!ts.isPropertyAssignment(node)) return
+    if (!isPropertyAssignment(node)) return
     const name = propertyName(node.name)
     if (!name || !translatablePropertyNames.has(name)) return
-    if (!ts.isStringLiteralLike(node.initializer)) return
+    if (!isStringLiteralLikeNode(node.initializer)) return
     addFinding(findings, sourceFile, file, node, name, node.initializer.text)
   })
 
   return findings.filter((finding) => !isAlreadyTranslated(sourceFile, finding.line))
 }
 
-function addFinding(findings: Finding[], sourceFile: ts.SourceFile, file: string, node: ts.Node, kind: string, value: string) {
+function addFinding(findings: Finding[], sourceFile: SourceFile, file: string, node: Node, kind: string, value: string) {
   const text = normalizeText(value)
   if (!isTranslatableText(text)) return
   const { line } = sourceFile.getLineAndCharacterOfPosition(node.getStart(sourceFile))
@@ -96,7 +111,7 @@ function addFinding(findings: Finding[], sourceFile: ts.SourceFile, file: string
   })
 }
 
-function isAlreadyTranslated(sourceFile: ts.SourceFile, line: number) {
+function isAlreadyTranslated(sourceFile: SourceFile, line: number) {
   const lines = sourceFile.text.split('\n')
   const text = lines[line - 1] || ''
   return /\$\(|<Translate\b|translate=|useTranslation\(/.test(text)
@@ -117,13 +132,8 @@ function normalizeText(value: string) {
   return value.replace(/\s+/g, ' ').trim()
 }
 
-function propertyName(name: ts.PropertyName) {
-  if (ts.isIdentifier(name) || ts.isStringLiteral(name) || ts.isNumericLiteral(name)) return name.text
-}
-
-function visit(node: ts.Node, callback: (node: ts.Node) => void) {
-  callback(node)
-  ts.forEachChild(node, (child) => visit(child, callback))
+function propertyName(name: PropertyName) {
+  if (isIdentifier(name) || isStringLiteral(name) || isNumericLiteral(name)) return name.text
 }
 
 function walk(root: string, filter: (file: string) => boolean): string[] {

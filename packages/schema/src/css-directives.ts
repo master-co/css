@@ -125,6 +125,7 @@ export interface CSSDirectiveUtilityRuleDefinition {
 export interface CSSDirectiveUtilityPatternDefinition {
   prefix: string
   values: string[]
+  valueMap?: Record<string, string>
 }
 
 export interface CSSDirectiveUtilityDynamicDefinition {
