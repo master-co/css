@@ -25,7 +25,7 @@ it.concurrent('info', () => expect(hint('b', settings)?.find(({ label }) => labe
       \`\`\`css
       @layer components {
         .btn {
-        display: inline-block
+          display: inline-block
         }
       }
       \`\`\`

@@ -42,7 +42,7 @@ describe.concurrent('pseudo-class', () => {
         \`\`\`css
         @layer utilities {
           .block\\:first:first-child {
-          display: block
+            display: block
           }
         }
         \`\`\`
@@ -68,7 +68,7 @@ describe.concurrent('pseudo-element', () => {
       'value': dedent`\`\`\`css
         @layer utilities {
           .block\\:\\:placeholder::placeholder {
-          display: block
+            display: block
           }
         }
         \`\`\`

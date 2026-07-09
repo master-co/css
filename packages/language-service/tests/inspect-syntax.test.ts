@@ -23,7 +23,7 @@ test.concurrent('text-center', async () => {
       \`\`\`css
       @layer utilities {
         .text-center {
-        text-align: center
+          text-align: center
         }
       }
       \`\`\`
@@ -40,7 +40,7 @@ test.concurrent('hidden', async () => {
       \`\`\`css
       @layer utilities {
         .hidden {
-        display: none
+          display: none
         }
       }
       \`\`\`

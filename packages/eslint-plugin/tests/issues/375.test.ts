@@ -8,7 +8,7 @@ jsxTester.run('order', rule, {
       ...source('../fixtures/issues/375/1.input.tsx', import.meta.url),
       output: source('../fixtures/issues/375/1.output.tsx', import.meta.url).code,
       errors: [
-        { messageId: 'invalidClassOrder', line: 5, column: 26, endLine: 10, endColumn: 9 },
+        { messageId: 'invalidClassOrder', line: 5, column: 22, endLine: 10, endColumn: 5 },
       ]
     }
   ]

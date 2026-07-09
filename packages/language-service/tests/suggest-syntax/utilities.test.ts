@@ -25,7 +25,7 @@ test.concurrent('info', () => expect(hint('b')?.find(({ label }) => label === 'b
       \`\`\`css
       @layer utilities {
         .block {
-        display: block
+          display: block
         }
       }
       \`\`\`

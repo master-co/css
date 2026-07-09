@@ -360,11 +360,11 @@ export function addMasterCSSEslintConfig(content: string) {
   next = addImport(next, "import css from '@master/eslint-config-css'")
 
   if (/export\s+default\s+defineConfig\(\s*\[/.test(next)) {
-    return replaceFirst(next, /export\s+default\s+defineConfig\(\s*\[/, 'export default defineConfig([\n    ...css,')
+    return replaceFirst(next, /export\s+default\s+defineConfig\(\s*\[/, 'export default defineConfig([\n  ...css,')
   }
 
   if (/export\s+default\s+\[/.test(next)) {
-    next = replaceFirst(next, /export\s+default\s+\[/, 'export default defineConfig([\n    ...css,')
+    next = replaceFirst(next, /export\s+default\s+\[/, 'export default defineConfig([\n  ...css,')
     const closeIndex = next.lastIndexOf(']')
     return closeIndex === -1
       ? next
