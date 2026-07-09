@@ -325,11 +325,11 @@
 }
 
 .home-code-window-problems-list {
-  @compose grid;
+  @compose grid py:md gap:sm;
 }
 
 .home-code-window-problem {
-  @compose flex items-start gap:sm p:md;
+  @compose flex items-start gap:sm px:md;
 }
 
 .home-code-window-problem-icon {
