@@ -1,3 +1,4 @@
+import '../scripts/typescript-tooling-compat.mjs'
 import common from 'internal/eslint.config.js'
 import { includeIgnoreFile } from '@eslint/config-helpers'
 import { defineConfig } from 'eslint/config'
