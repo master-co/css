@@ -1,12 +1,10 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-  title: 'Customizing your theme',
-  description: 'Customize a Master CSS theme with @theme tokens, modes, breakpoints, container sizes, motion, and project-level CSS vocabulary.',
-  category: 'Fundamentals',
-  other: {
-    subject: 'Theme',
-  },
+  title: 'Theme Tokens',
+  description: 'Define shared design tokens with @theme for colors, spacing, typography, radius, breakpoints, containers, shadows, and motion.',
+  category: 'Authoring',
+  order: 1,
   fileURL: import.meta.url
 })
 

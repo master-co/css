@@ -1,0 +1,252 @@
+import VariableNamespaceSources from './components/VariableNamespaceSources'
+
+## Overview [sr-only]
+Variables are the bridge between project vocabulary and generated CSS. Master CSS reads `@theme` blocks as manifest input, resolves token names into namespaces, and emits CSS custom properties only when a generated rule needs them.
+
+Modes are named buckets for alternate variable values. They let the same class string adapt to light, dark, high-contrast, or product-specific themes without duplicating markup.
+
+```css name=index.css
+@import '@master/css';
+
+@theme {
+  --color-brand: #4f46e5;
+  --spacing-card: 1.5rem;
+}
+
+@theme light {
+  --color-surface-card: #ffffff;
+}
+
+@theme dark {
+  --color-surface-card: #111827;
+}
+```
+
+```html
+<!-- @MARK bg:surface-card --><!-- @MARK p:card --><!-- @MARK bg:brand -->
+<article class="bg:surface-card p:card">
+  <button class="fg:white bg:brand">Save</button>
+</article>
+```
+
+---
+
+## Variable lifecycle
+`@theme`, `@settings`, and `@custom-variant` directives are manifest inputs. Master CSS reads them before class generation, then emits only the variables, keyframes, and generated rules that the application uses.
+
+```css name=index.css
+@theme {
+  --color-brand: #4f46e5;
+}
+```
+
+```html
+<!-- @MARK bg:brand -->
+<button class="fg:white bg:brand">Save</button>
+```
+
+When `bg:brand` is generated, Master CSS resolves `brand` through the background color namespace and emits a declaration that references `--color-brand`. The variable itself is emitted in the `theme` layer.
+
+Regular CSS custom property behavior still applies. Values inherit through the DOM, cascade by selector, and compute where the browser sees the declaration.
+
+---
+
+## Namespace resolution
+A theme variable name has the shape `<namespace>-<key>`. Master CSS resolves the namespace by longest prefix, so `color-line-divider` belongs to `color-line`, not `color`.
+
+```css name=index.css
+@theme {
+  --color-brand: #4f46e5;
+  --color-text-action: $color-brand;
+  --color-line-divider: rgb(0 0 0 / 12%);
+  --spacing-card: 1.5rem;
+  --radius-card: 0.75rem;
+}
+```
+
+The utility decides which namespace it reads. The same key can mean different values in different contexts:
+
+```html
+<!-- @MARK p:card --><!-- @MARK r:card --><!-- @MARK text:action --><!-- @MARK b:1px|solid|divider -->
+<article class="r:card b:1px|solid|divider p:card">
+  <a class="text:action" href="/settings">Settings</a>
+</article>
+```
+
+Full property names do not become token namespaces automatically. A namespace is available only when the preset registers it and a utility or native value namespace references it.
+
+### Default namespace sources
+The default theme vocabulary is registry-backed. This table lists the built-in condition namespace and the namespaces currently referenced by default utilities or native value namespaces.
+
+<VariableNamespaceSources />
+
+---
+
+## Contextual token lookup
+Contextual utilities keep class strings short by searching the namespace they already understand.
+
+| Class | Namespace searched |
+| --- | --- |
+| `p:md` | `spacing-md` |
+| `r:md` | `radius-md` |
+| `max-w:md` | `container-md` |
+| `@md` | `breakpoint-md` |
+| `text:body` | `color-text-body` |
+
+This is why token keys should be named for their namespace. `md` can work across spacing, radius, container, and breakpoint scales because the utility supplies the missing context.
+
+Use `$` when a token should reference another theme token:
+
+```css name=index.css
+@theme {
+  --color-brand: #4f46e5;
+  --color-text-action: $color-brand;
+}
+```
+
+---
+
+## Inline and static variables
+Regular theme variables emit CSS custom properties when generated rules need them. Inline variables behave like utility shorthands: Master CSS resolves the value and writes it directly into generated declarations.
+
+```css name=index.css
+@theme inline {
+  --color-brand: #4f46e5;
+  --spacing-feature: 1.5rem;
+}
+```
+
+```html
+<!-- @MARK bg:brand --><!-- @MARK p:feature -->
+<article class="bg:brand p:feature">...</article>
+```
+
+```css
+.bg\:brand { background-color: #4f46e5; }
+.p\:feature { padding: 1.5rem; }
+```
+
+Inline variables can reference other inline variables. If an inline variable references a regular theme variable, Master CSS keeps the regular `var(--*)` reference and emits that dependency when needed. Inline variables cannot be mode-specific.
+
+Use `@theme static` when a variable or managed keyframes definition should be emitted as an initial CSS resource instead of waiting for a matching class.
+
+```css name=index.css
+@theme static {
+  --color-brand: #4f46e5;
+
+  @keyframes fade-in {
+    to { opacity: 1; }
+  }
+}
+```
+
+`inline` and `static` cannot be combined.
+
+---
+
+## Mode buckets
+`light` and `dark` are always available. Defining another mode adds it to the theme automatically.
+
+```css name=index.css
+@theme light {
+  --color-surface-card: #ffffff;
+  --color-text-card: #111827;
+}
+
+@theme dark {
+  --color-surface-card: #111827;
+  --color-text-card: #f9fafb;
+}
+
+@theme contrast {
+  --color-surface-card: #000000;
+  --color-text-card: #ffffff;
+}
+```
+
+```html
+<!-- @MARK bg:surface-card --><!-- @MARK text:card -->
+<article class="bg:surface-card text:card">...</article>
+```
+
+When a token has mode-specific values, generated utilities reference the same CSS custom property. The active mode changes the variable value, not the class name.
+
+### Derived mode-aware values
+Default theme variables are emitted on `:root`. If a default variable references a mode-specific variable, the browser computes the derived custom property where it is declared. A local `.dark` or `:host(.dark)` island can override the referenced token, but it does not recompute an inherited derived token.
+
+```css name=index.css
+@theme {
+  --stripe: linear-gradient(135deg, $color-line-muted 4.5%, $color-surface-raised 0);
+}
+```
+
+Define derived tokens inside each mode bucket when they must follow local mode islands:
+
+```css name=index.css
+@theme light {
+  --stripe: linear-gradient(135deg, $color-line-muted 4.5%, $color-surface-raised 0);
+}
+
+@theme dark {
+  --stripe: linear-gradient(135deg, $color-line-muted 4.5%, $color-surface-raised 0);
+}
+```
+
+This is CSS custom property computed-value behavior, not a Master CSS selector issue.
+
+---
+
+## Mode triggers
+`mode-trigger` controls how mode buckets are emitted.
+
+```css name=index.css
+@settings {
+  default-mode: light;
+  mode-trigger: media;
+}
+```
+
+| Trigger | Output behavior |
+| --- | --- |
+| `media` | Uses `@media (prefers-color-scheme: <mode>)` for light and dark modes. |
+| `class` | Uses class wrappers such as `.dark &`. Built-in `light` and `dark` mode buckets also emit native `color-scheme`. |
+| `host` | Uses shadow host wrappers such as `:host(.dark) &`. Built-in `light` and `dark` host buckets also emit native `color-scheme`. |
+
+`default-mode` controls which class-triggered or host-triggered mode also attaches to `:root` or `:host`. Set `default-mode: none;` when no mode should be applied by default. It has no effect with `mode-trigger: media`, because the browser decides the active color scheme from user or system preferences.
+
+For manual theme switches, set `mode-trigger` to `class`:
+
+```css name=index.css
+@settings {
+  mode-trigger: class;
+  default-mode: light;
+}
+```
+
+```html
+<!-- @MARK dark -->
+<html class="dark">
+  <body>
+    <div class="bg:surface-card text:card">...</div>
+  </body>
+</html>
+```
+
+Custom modes work best with `class` or `host`. Browsers only support `light` and `dark` values for `prefers-color-scheme`, so custom modes cannot work as native media-triggered color schemes.
+
+---
+
+## Project settings
+Settings are not design tokens, but a few of them shape variable and class output.
+
+```css name=index.css
+@settings {
+  root-size: 16;
+  base-unit: 4;
+  scope: #app;
+}
+```
+
+`root-size` controls numeric conversion to root-relative units such as `rem`. `base-unit` controls multiplier units such as `1x`, `2x`, and `4x`. `scope` prefixes generated selectors when Master CSS should only style a specific application root.
+
+For the complete directive syntax, see [Directives](/guide/directives). For authoring shared design vocabulary, see [Theme Tokens](/guide/theme).

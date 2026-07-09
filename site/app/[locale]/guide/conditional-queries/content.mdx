@@ -119,7 +119,7 @@ Mode names also become condition variants. `@dark` and `@light` are available by
 <div class="bg:gray-90@dark">
 ```
 
-The generated CSS depends on [`mode-trigger`](/guide/theme#choose-a-mode-trigger). A mode can become a media query, a class wrapper, or a shadow host wrapper.
+The generated CSS depends on [`mode-trigger`](/guide/variables-and-modes#mode-triggers). A mode can become a media query, a class wrapper, or a shadow host wrapper.
 
 ### `base`, `default`, `component`, `utility`
 Use `@base`, `@default`, `@component`, and `@utility` to place generated rules in those cascade layers.
@@ -141,7 +141,7 @@ By default, there are four layer shorthands: `@base`, `@default`, `@component`, 
         {['hidden@base', 'hidden@default', 'hidden@component', 'hidden@utility']}
     </Class2CSS>
 </details>
-You can [create a condition variant](/guide/theme#condition-variants) to simplify longer conditions.
+You can [create a condition variant](/guide/directives#custom-variant) to simplify longer conditions.
 
 See [cascade layers](/guide/cascade-layers) for layer order and override behavior.
 
@@ -209,7 +209,7 @@ Use `@media()` for arbitrary [CSS media queries](https://developer.mozilla.org/e
 <!-- @MARK @media(pointer:coarse) -->
 <div class="hidden@media(pointer:coarse)">
 ```
-Create a [condition variant](/guide/theme#condition-variants) if the same media query appears repeatedly.
+Create a [condition variant](/guide/directives#custom-variant) if the same media query appears repeatedly.
 
 ### `@supports(<feature>)`
 Use `@supports()` to apply a declaration only when the browser supports a feature.
@@ -217,7 +217,7 @@ Use `@supports()` to apply a declaration only when the browser supports a featur
 <!-- @MARK @supports(backdrop-filter(0px)) -->
 <div class="hidden@supports(backdrop-filter(0px))">
 ```
-Create a [condition variant](/guide/theme#condition-variants) if the same support check appears repeatedly.
+Create a [condition variant](/guide/directives#custom-variant) if the same support check appears repeatedly.
 
 ### `@layer(<name>)`
 Use `@layer()` to put a declaration in a named cascade layer.
@@ -247,7 +247,7 @@ Use `@container(<size>)` when the nearest container, not the viewport, should co
         {['container', 'hidden@container(sm)']}
     </Class2CSS>
 </details>
-Create a [condition variant](/guide/theme#condition-variants) if a longer container query appears repeatedly.
+Create a [condition variant](/guide/directives#custom-variant) if a longer container query appears repeatedly.
 
 See [container queries](/guide/responsive-design#based-on-container-sizes) for the full container workflow.
 

@@ -1,15 +1,14 @@
-import VariableNamespaceSources from './components/VariableNamespaceSources'
-
 ## Overview [sr-only]
-Your theme is the shared design vocabulary for a Master CSS project. It defines the values your markup reaches for every day: colors, spacing, type, radius, shadows, motion, breakpoints, container sizes, mode-specific values, and named conditions.
+Theme tokens are the shared design values a Master CSS project reaches for every day: colors, spacing, typography, radius, shadows, motion, breakpoints, and container sizes.
 
-In Master CSS, that vocabulary usually lives in the project CSS entry: `@theme` for tokens and modes, `@settings` for project settings, and `@custom-variant` for reusable condition variants. The file still feels like CSS, while markup keeps using short semantic classes and built-in selector aliases.
+Define tokens in the project CSS entry with `@theme`, then use short contextual classes in markup. Keep the page focused on values. Use [Global Styles](/guide/global-styles) for reusable components and utilities, [Conditional Queries](/guide/conditional-queries) for variants, and [Variables and Modes](/guide/variables-and-modes) for the underlying resolution model.
 
 ```css name=index.css
 @import '@master/css';
 
 @theme {
-  --color-blue: #4f46e5;
+  --color-brand: #4f46e5;
+  --color-text-action: $color-brand;
   --spacing-lg: 1.5rem;
   --radius-lg: 1rem;
   --breakpoint-md: 48rem;
@@ -17,28 +16,28 @@ In Master CSS, that vocabulary usually lives in the project CSS entry: `@theme` 
 }
 
 @theme light {
-  --shadow-sm: 0 0 0 1px rgb(15 23 42 / .06), 0 16px 40px rgb(15 23 42 / .12);
+  --color-surface-card: #ffffff;
 }
 
 @theme dark {
-  --shadow-sm: 0 0 0 1px rgb(255 255 255 / .06), 0 16px 40px rgb(0 0 0 / .36);
+  --color-surface-card: #111827;
 }
-
-@custom-variant motion-safe { @media (prefers-reduced-motion: no-preference) { @slot; } }
 ```
 
 ```html
-<section class="p:lg r:lg bg:white text:neutral shadow:sm grid-cols:2@md">
-  <button class="px:md py:xs r:md bg:blue fg:white bg:blue/.85:hover">Save</button>
+<!-- @MARK p:lg --><!-- @MARK r:lg --><!-- @MARK bg:surface-card --><!-- @MARK grid-cols:2@md --><!-- @MARK bg:brand --><!-- @MARK text:action -->
+<section class="p:lg r:lg grid-cols:2@md bg:surface-card">
+  <button class="px:md py:xs r:md fg:white bg:brand">Save</button>
+  <a class="text:action" href="/settings">Settings</a>
 </section>
 ```
 
-The `@theme`, `@settings`, and `@custom-variant` directives are manifest inputs, not regular stylesheet output. Master CSS resolves them first, then generates only the variables, utilities, components, and keyframes that the application actually uses.
+Master CSS resolves theme tokens before generating class rules. The generated CSS still uses normal CSS custom properties unless you intentionally define inline tokens.
 
 ---
 
 ## Project CSS entry
-A project only needs a CSS entry that marks the Master CSS graph. Put theme directives in the stylesheet that imports `@master/css`, or in CSS already imported by that entry.
+A project needs a CSS entry that marks the Master CSS graph. Put shared tokens in the stylesheet that imports `@master/css`, or in CSS already imported by that entry.
 
 ```css name=index.css
 @import '@master/css';
@@ -48,19 +47,18 @@ A project only needs a CSS entry that marks the Master CSS graph. Put theme dire
 }
 ```
 
-The important part is the graph, not a special file name. Tokens, modes, motion, and named conditions can live wherever the project CSS entry already reaches them.
+The important part is the graph, not a special file name. Theme tokens can live wherever the project CSS entry already reaches them.
 
 ---
 
-## Theme tokens
-Theme tokens are CSS custom property declarations inside `@theme` blocks. Write the full token name with the leading `--`; Master CSS uses the name after `--` for namespace resolution and emits the same custom property when generated CSS needs the token. Token name prefixes place values in the namespace that Master CSS utilities already understand.
+## Define tokens
+Theme tokens are CSS custom property declarations inside `@theme` blocks. Write the full token name with the leading `--`. The prefix places the value in a namespace that Master CSS utilities already understand.
 
-### Define tokens
 ```css name=index.css
 @theme {
   --content-hash: " #";
-  --color-blue: #4f46e5;
-  --color-text-action: #4f46e5;
+  --color-brand: #4f46e5;
+  --color-text-action: $color-brand;
   --spacing-lg: 1.5rem;
   --font-family-sans: Inter, ui-sans-serif, system-ui, sans-serif;
   --radius-lg: 1rem;
@@ -69,58 +67,37 @@ Theme tokens are CSS custom property declarations inside `@theme` blocks. Write 
 }
 
 @theme light {
-  --shadow-sm: 0 0 0 1px rgb(15 23 42 / .06), 0 16px 40px rgb(15 23 42 / .12);
+  --color-surface-card: #ffffff;
+  --shadow-card: 0 0 0 1px rgb(15 23 42 / .06), 0 16px 40px rgb(15 23 42 / .12);
 }
 
 @theme dark {
-  --shadow-sm: 0 0 0 1px rgb(255 255 255 / .06), 0 16px 40px rgb(0 0 0 / .36);
+  --color-surface-card: #111827;
+  --shadow-card: 0 0 0 1px rgb(255 255 255 / .06), 0 16px 40px rgb(0 0 0 / .36);
 }
 ```
 
-### How namespaces are resolved
-A theme token name has the shape `<namespace>-<key>`. Master CSS resolves the namespace by longest prefix, so `color-line-divider` belongs to `color-line`, not `color`.
+Use token names that describe the shared decision, not the first component that needed the value. A `brand` color, `lg` spacing step, or `card` shadow can be reused. A token named after one button or one modal usually belongs closer to that component.
 
-Namespaces come from these sources:
+---
 
-* `breakpoint` is built in because viewport query suffixes such as `@md` need to resolve `breakpoint-md`.
-* The preset declares a fixed default namespace registry. Utilities and native value namespaces can only reference those registry entries.
-* Utilities can share a registry namespace. For example, border and outline color utilities search `color-line` before `color`, while spacing utilities search `spacing`.
-* Full property names do not become token namespaces automatically. A token namespace is available only when the preset explicitly registers and references it.
-* Semantic utilities can use a clearer foundation namespace than their property name. Animation and transition durations use `duration-*`, font feature settings use `font-feature-*`, generated content uses `content-*`, and shadows use `shadow-*`.
-
-Function utilities do not become namespaces by name. Tokens such as `blur-sm`, `drop-shadow-soft`, and `perspective-near` are ordinary theme tokens unless the preset registry includes and references that namespace.
-
-```css name=index.css
-@theme {
-  --duration-fast: 120ms;
-  --font-feature-tabular: "tnum";
-  --content-empty: "";
-  --leading-body: 1.6;
-}
-```
+## Use tokens
+Utilities resolve token values from the namespace they use. The same short key can mean spacing in `p:lg`, radius in `r:lg`, a container width in `max-w:md`, or a breakpoint in `@md`.
 
 ```html
-<pre class="font-feature-settings:tabular transition-delay:fast animation-duration:fast content:empty leading:body">...</pre>
-```
-
-### Default namespace sources
-The default theme vocabulary is registry-backed. This table lists the built-in condition namespace and the namespaces currently referenced by default utilities or native value namespaces.
-
-<VariableNamespaceSources />
-
-### Use contextual tokens
-Utilities resolve token values from the namespace they use. The same short key can mean spacing in `p:md`, radius in `r:md`, a container width in `max-w:md`, or a breakpoint in `@md`.
-
-```html
-<!-- @MARK bg:white --><!-- @MARK p:md --><!-- @MARK r:lg --><!-- @MARK font:sans -->
-<article class="p:md r:lg font:sans bg:white text:neutral shadow:sm">
-  <h2 class="font:sans">Dashboard</h2>
+<!-- @MARK bg:surface-card --><!-- @MARK p:lg --><!-- @MARK r:lg --><!-- @MARK font:sans --><!-- @MARK shadow:card -->
+<article class="p:lg r:lg font:sans bg:surface-card shadow:card">
+  <h2>Dashboard</h2>
   <a class="text:blue" href="/settings">Settings</a>
 </article>
 ```
 
-### Alias and override tokens
-Use `$` when a token should reference another token.
+For a deeper explanation of namespace resolution and contextual lookup, see [Variables and Modes](/guide/variables-and-modes#namespace-resolution).
+
+---
+
+## Alias and override tokens
+Use `$` when a token should reference another token. This keeps semantic roles tied to a smaller set of foundation values.
 
 ```css name=index.css
 @theme {
@@ -134,10 +111,43 @@ Define the same token key as a preset token when you want to override it. Later 
 ```css name=index.css
 @theme {
   --color-blue: #4589ff;
+  --spacing-lg: 1.625rem;
 }
 ```
 
-### Inline tokens
+Use overrides intentionally. If the whole product should use a different `blue` or `lg`, override the preset token. If only one product role changes, create a semantic token such as `color-text-action` or `shadow-card`.
+
+---
+
+## Add mode-aware values
+Use mode-specific `@theme` blocks when the same token should resolve differently in light, dark, or custom modes.
+
+```css name=index.css
+@theme light {
+  --color-surface-card: #ffffff;
+  --color-text-card: #111827;
+  --shadow-card: 0 0 0 1px rgb(15 23 42 / .06), 0 16px 40px rgb(15 23 42 / .12);
+}
+
+@theme dark {
+  --color-surface-card: #111827;
+  --color-text-card: #f9fafb;
+  --shadow-card: 0 0 0 1px rgb(255 255 255 / .06), 0 16px 40px rgb(0 0 0 / .36);
+}
+```
+
+```html
+<!-- @MARK bg:surface-card --><!-- @MARK text:card --><!-- @MARK shadow:card -->
+<article class="bg:surface-card shadow:card text:card">...</article>
+```
+
+Keep the token name mode-neutral. Markup should say `surface-card` or `text-card`, not `dark-card`.
+
+For `mode-trigger`, `default-mode`, manual switches, and local mode islands, see [Variables and Modes](/guide/variables-and-modes#mode-triggers).
+
+---
+
+## Use inline and static tokens
 Use `@theme inline` when a token is only a utility shorthand and should not emit a CSS custom property. Master CSS still matches the token, but generated utilities write the resolved value directly.
 
 ```css name=index.css
@@ -158,7 +168,17 @@ Use `@theme inline` when a token is only a utility shorthand and should not emit
 
 Inline tokens can reference other inline tokens. If an inline token references a regular theme token, Master CSS keeps the regular `var(--*)` reference and emits that regular token when needed. Inline tokens cannot be mode-specific; use normal `@theme light` and `@theme dark` blocks when a value must change by mode.
 
-### Breakpoint and container tokens
+Use `@theme static` when a token or managed keyframes definition should be emitted as an initial CSS resource instead of waiting for a matching class.
+
+```css name=index.css
+@theme static {
+  --color-brand: #4f46e5;
+}
+```
+
+---
+
+## Define responsive tokens
 Responsive thresholds are theme tokens too. Define `breakpoint` variables for viewport condition suffixes, and define `container` variables for container query thresholds and width caps.
 
 ```css name=index.css
@@ -172,9 +192,9 @@ Responsive thresholds are theme tokens too. Define `breakpoint` variables for vi
   --container-lg: 32rem;
 }
 ```
-`rem`, `px`, and legacy unitless numeric tokens remain comparable for these namespaces. Master CSS normalizes breakpoint and container token metadata into rem query nodes so sorting and generated queries stay stable.
 
 ```html
+<!-- @MARK grid-cols:2@md --><!-- @MARK grid-cols:3@lg --><!-- @MARK max-w:lg --><!-- @MARK grid-cols:2@container(md) -->
 <div class="grid-cols:1 gap:md grid-cols:2@md grid-cols:3@lg">
   ...
 </div>
@@ -186,304 +206,43 @@ Responsive thresholds are theme tokens too. Define `breakpoint` variables for vi
 </aside>
 ```
 
-Keep breakpoint tokens broad and product-wide. Use container tokens when a reusable component should respond to the space it receives. Use raw media or container syntax only when the condition belongs to one local component. See [Breakpoints](/guide/breakpoints) and [Containers](/guide/containers) for the responsive scales.
-
-Use this page to understand theme token naming, namespace resolution, and project-level token configuration. For the exact color, spacing, typography, radius, elevation, motion, breakpoint, and container scales, continue into the foundation guides.
+Keep breakpoint tokens broad and product-wide. Use container tokens when a reusable component should respond to the space it receives. See [Breakpoints](/guide/breakpoints) and [Containers](/guide/containers) for the responsive scales.
 
 ---
 
-## Modes
-Modes let one token name adapt across light, dark, high-contrast, or product-specific themes.
-
-### Define mode values
-Mode-specific `@theme` blocks keep markup semantic while values change by mode.
-
-```css name=index.css
-@theme light {
-  --color-text-body: #111827;
-  --color-blue: #4f46e5;
-  --shadow-sm: 0 0 0 1px rgb(15 23 42 / .06), 0 16px 40px rgb(15 23 42 / .12);
-}
-
-@theme dark {
-  --color-text-body: #f9fafb;
-  --color-blue: #818cf8;
-  --shadow-sm: 0 0 0 1px rgb(255 255 255 / .06), 0 16px 40px rgb(0 0 0 / .36);
-}
-
-@theme brand {
-  --color-blue: #ff0;
-}
-```
-
-```html
-<section class="bg:white text:body shadow:sm">
-  <button class="bg:blue fg:white">Save</button>
-</section>
-```
-
-`light` and `dark` are always available. Defining another mode adds it to the theme automatically. When a token has mode-specific values, Master CSS emits a CSS custom property in the theme layer and generated utilities reference that property. This applies to colors, shadows, and any other token namespace that should adapt by mode.
-
-### Derive mode-aware tokens
-Default theme tokens are emitted on `:root`. If a default token references a mode-specific token, the browser computes the derived custom property where it is declared. A local `.dark` or `:host(.dark)` island can override the referenced token, but it does not recompute an inherited derived token.
+## Define motion tokens
+Motion values can be tokens too. Put reusable animation recipes, durations, easing curves, and managed keyframes in `@theme`.
 
 ```css name=index.css
 @theme {
-  --stripe: 0 / 7.5px 7.5px linear-gradient(135deg, $color-line-muted 4.5%, $color-surface-raised 0) $color-surface-raised;
-}
-```
+  --duration-enter: 180ms;
+  --easing-standard: cubic-bezier(.4, 0, .2, 1);
+  --animate-dialog-in: dialog-in var(--duration-enter) var(--easing-standard) both;
 
-Define derived tokens inside each mode bucket when they must follow local mode islands:
-
-```css name=index.css
-@theme light {
-  --stripe: 0 / 7.5px 7.5px linear-gradient(135deg, $color-line-muted 4.5%, $color-surface-raised 0) $color-surface-raised;
-}
-
-@theme dark {
-  --stripe: 0 / 7.5px 7.5px linear-gradient(135deg, $color-line-muted 4.5%, $color-surface-raised 0) $color-surface-raised;
-}
-```
-
-This is CSS custom property computed-value behavior, not a selector specificity or inheritance issue.
-
-### Choose a mode trigger
-Most projects leave light and dark mode behavior system-driven:
-
-```css name=index.css
-@settings {
-  default-mode: light;
-  mode-trigger: media;
-}
-```
-
-| Trigger | Output behavior |
-|---------|-----------------|
-| `media` | Uses `@media (prefers-color-scheme: <mode>)` for light and dark modes. |
-| `class` | Uses class wrappers such as `.dark &`. Built-in `light` and `dark` mode buckets also emit native `color-scheme`. |
-| `host` | Uses shadow host wrappers such as `:host(.dark) &`. Built-in `light` and `dark` host buckets also emit native `color-scheme`. |
-
-`default-mode` controls which class-triggered mode also attaches to `:root`. Set `default-mode: none;` when no mode should be applied by default. It has no effect with `mode-trigger: media`, because the browser decides the active color scheme from user or system preferences.
-
-### Switch modes manually
-Use `mode-trigger: class` active app class manually. mode modes on Put switches the when your `<html>`; Master CSS keeps native `color-scheme` in sync for the built-in `light` and `dark` modes.
-
-```html
-<!-- @MARK dark -->
-<html class="dark">
-  <body>
-    <div class="bg:white text:body">...</div>
-  </body>
-</html>
-```
-
-```js
-const key = 'theme-preference'
-const preference = localStorage.getItem(key) || 'system'
-const value = preference === 'system'
-  ? matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
-  : preference
-
-document.documentElement.classList.add(value)
-```
-
----
-
-## Named conditions and selector aliases
-Named conditions belong in the theme when they become shared product vocabulary. Built-in selector aliases stay available to markup and CSS-authored styles without adding them to the theme.
-
-### Condition variants
-Native CSS cannot store full `@media`, `@supports`, or `@container` rules in CSS variables. Master CSS uses `@custom-variant` to name those reusable conditions.
-
-```css name=index.css
-@custom-variant motion-safe { @media (prefers-reduced-motion: no-preference) { @slot; } }
-@custom-variant supports-backdrop { @supports (backdrop-filter: blur(0)) { @slot; } }
-@custom-variant card-wide { @container card (width >= 42rem) { @slot; } }
-@custom-variant start { @starting-style { @slot; } }
-```
-
-The token is written bare in the definition and in CSS `@variant` blocks. In markup, use the token name as an `@` suffix:
-
-{/* eslint-disable @master/css/no-invalid-classes -- custom variants are defined in the adjacent CSS example */}
-```html
-<!-- @MARK @motion-safe --><!-- @MARK @supports-backdrop -->
-<div class="bg:white/.8@supports-backdrop animation:fade-in|fast@motion-safe">
-  ...
-</div>
-```
-{/* eslint-enable @master/css/no-invalid-classes */}
-
-### Condition variants in CSS rules
-Inside managed definitions and native style rules, use `@variant` blocks instead of putting conditional suffixes inside `@compose`.
-
-```css name=index.css
-@custom-variant motion-safe { @media (prefers-reduced-motion: no-preference) { @slot; } }
-
-@components {
-  card {
-    @compose p:md r:xl;
-
-    @variant motion-safe {
-      @compose animation:fade-in|fast;
-    }
-
-    @variant <sm {
-      @compose block;
-    }
-  }
-}
-```
-
-`@variant` accepts custom condition variants, breakpoint tokens such as `md`, mode names such as `dark`, and raw Master CSS condition syntax such as `<sm`.
-
-### Built-in selector aliases
-Selector aliases name common selectors in class suffixes. The default set is built into the engine, so they are available without `@custom-variant`.
-
-```html
-<!-- @MARK :first --><!-- @MARK :odd --><!-- @MARK ::scrollbar-thumb -->
-<ul class="mt:0:first bg:neutral-5:odd">
-  <li class="bg:blue-60::scrollbar-thumb">...</li>
-</ul>
-```
-
-Use native selector syntax directly when a selector is not a built-in alias:
-
-```html
-<!-- @MARK :is(h1,h2,h3,h4,h5,h6) --><!-- @MARK :has(img) -->
-<article class="font:semibold_:is(h1,h2,h3,h4,h5,h6) shadow:md:has(img)">
-  ...
-</article>
-```
-
-### Selectors in CSS rules
-Inside CSS-defined style rules, write nested selectors directly. `@custom-variant` and `@variant` only name and apply condition variants.
-
-```css name=index.css
-@components {
-  btn {
-    @compose inline-flex items-center justify-center;
-
-    &:is(:hover, :focus-visible) {
-      @compose text:blue;
-    }
-  }
-}
-```
-
-### Naming rules
-Breakpoint variables automatically create condition variants such as `@md`, and modes automatically create condition variants such as `@dark`. Custom condition token names cannot start with `@`, `:`, or `::`, and cannot conflict with breakpoint or mode names.
-
-Selector aliases use `:` or `::` suffixes in class strings and nested CSS selectors. They are built into the engine, not defined with `@custom-variant`.
-
----
-
-## Motion
-Motion belongs in the theme when timing, easing, and keyframes are shared by more than one surface.
-
-```css name=index.css
-@theme {
-  --duration-fast: 150ms;
-  --duration-slow: 300ms;
-  --duration-short: 80ms;
-  --easing-smooth: cubic-bezier(.4, 0, .2, 1);
-
-  @keyframes fade-in {
-    from {
-      opacity: 0;
-      transform: translateY(.25rem);
-    }
-
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-}
-
-@custom-variant motion-safe { @media (prefers-reduced-motion: no-preference) { @slot; } }
-```
-
-{/* eslint-disable @master/css/no-invalid-classes -- custom variant is defined in the adjacent CSS example */}
-```html
-<div class="animation:fade-in|slow|smooth@motion-safe animation-delay:short">
-  ...
-</div>
-```
-{/* eslint-enable @master/css/no-invalid-classes */}
-
-Keyframes are emitted outside cascade layers, while animation utilities still generate in the utilities layer. For the complete animation syntax, see [Animation](/reference/animation).
-
----
-
-## Project settings
-Most theme work is tokens, but a few root settings shape every generated rule. Keep those settings in `@settings` and change them only when the project has a clear convention.
-
-```css name=index.css
-@settings {
-  root-size: 16;
-  base-unit: 4;
-  scope: #app;
-}
-```
-
-`root-size` controls how numeric values convert to `rem` and `em`. `base-unit` controls multiplier units such as `1x`, `2x`, and `4x`. `scope` prefixes generated selectors when Master CSS should only style a specific application root.
-
-```html
-<div id="app">
-  <button class="p:md font:md">Save</button>
-</div>
-```
-
-You do not need to set these in every project. Treat them as theme-level defaults, not a list of options to fill out.
-
-For the complete settings syntax, see [CSS directives](/guide/directives#settings).
-
----
-
-## Style patterns
-The theme should describe shared values and named conditions. Reusable UI patterns can live next to it, but they have a different job.
-
-```css name=components.css
-@components {
-  btn {
-    @compose inline-flex items-center justify-center gap:xs px:md py:xs r:md font:medium font:sm;
-    @compose bg:blue fg:white;
-
-    &:disabled {
-      opacity: 0.55;
-pointer-events: none;
-    }
+  @keyframes dialog-in {
+    from { translate: 0 0.5rem; opacity: 0; }
+    to { translate: 0; opacity: 1; }
   }
 }
 ```
 
 ```html
-<button class="btn">Save changes</button>
+<!-- @MARK animate:dialog-in -->
+<dialog class="animate:dialog-in"></dialog>
 ```
 
-Use [Global styles](/guide/global-styles#shared-vocabulary) for abstraction strategy, [component classes](/guide/global-styles#component-classes) for semantic UI classes, and [custom utilities](/guide/global-styles#custom-utilities) for low-level project primitives.
+Keyframes are emitted outside cascade layers, while animation utilities still generate in the utilities layer. For motion naming and usage, see [Motion](/guide/motion) and [Animation](/reference/animation).
 
 ---
 
-## Default source
-Master CSS ships its complete default CSS entry as `@master/css/index.css`. Read it as source, not as a required project template: copy only the tokens or settings you intentionally want to override.
+## Continue with foundation guides
+Use this page when you need to define or override project tokens. Continue into the design foundation guides for token-scale strategy:
 
-The default entry imports focused public files. Use `@master/css/theme.css` for preset theme tokens, `@master/css/variants.css` for preset variants, and `@master/css/utilities.css` for preset static utilities when you need a smaller entry.
-
-### theme.css
-
-<ExpandContent>
-  <Code lang="css" name="theme.css">{require('../../../../../packages/preset/src/theme.css?raw')}</Code>
-</ExpandContent>
-
-### variants.css
-
-<ExpandContent>
-  <Code lang="css" name="variants.css">{require('../../../../../packages/preset/src/variants.css?raw')}</Code>
-</ExpandContent>
-
-### utilities.css
-
-<ExpandContent>
-  <Code lang="css" name="utilities.css">{require('../../../../../packages/preset/src/utilities.css?raw')}</Code>
-</ExpandContent>
+* [Colors](/guide/colors)
+* [Spacing](/guide/spacing)
+* [Typography](/guide/typography)
+* [Corner Radius](/guide/corner-radius)
+* [Elevation](/guide/elevation)
+* [Motion](/guide/motion)
+* [Breakpoints](/guide/breakpoints)
+* [Containers](/guide/containers)
