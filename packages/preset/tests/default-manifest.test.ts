@@ -271,6 +271,9 @@ describe('@master/css-preset defaultManifest', () => {
     expect(nativeCSS).toContain('@layer base')
     expect(nativeCSS).toContain('text-rendering: geometricprecision')
     expect(nativeCSS).toContain('font-family: var(--font-family-sans)')
+    expect(nativeCSS).toContain('font-feature-settings: var(--font-feature-sans, normal)')
+    expect(nativeCSS).toContain('font-family: var(--font-family-mono)')
+    expect(nativeCSS).toContain('font-feature-settings: var(--font-feature-mono, normal)')
   })
 
   it('matches the CSS-authored preset manifest facets', () => {

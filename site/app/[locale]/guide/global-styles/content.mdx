@@ -83,6 +83,26 @@ That is a specialized import. It does not replace the app entry in ordinary proj
 
 ---
 
+## Site typeface
+Treat the app typeface as global vocabulary. Put reusable font families and OpenType feature sets in `@theme`; the default base layer applies them to the inherited document targets for you.
+
+```css name=globals.css
+@import "@master/css";
+
+@theme {
+  --font-sans: "Geist", "Noto Sans TC";
+  --font-mono: "IBM Plex Mono";
+  --font-feature-sans: "ss02", "ss03", "ss04", "ss06", "ss07", "ss08";
+  --font-feature-mono: "cv01", "cv02", "cv29";
+}
+```
+
+The base layer resolves `--font-sans` through `--font-family-sans` and applies it to `body` and shadow hosts. It resolves `--font-mono` through `--font-family-mono` and applies it to `code`, `kbd`, `samp`, and `pre`. Define `--font-feature-sans` and `--font-feature-mono` when those stacks need shared OpenType features; otherwise the base layer falls back to `normal`. Form controls inherit the surrounding font and feature settings.
+
+Load the matching font files with normal `@font-face` rules or a provider stylesheet before depending on those family names. Keep one-off typeface changes in markup utilities such as `font:mono`; reserve the global typeface tokens for typography that should be inherited by the whole app.
+
+---
+
 ## Shared vocabulary
 Reusable styling is an ownership decision. Keep local choices in markup while a pattern is changing. Promote only the part that has become shared.
 
