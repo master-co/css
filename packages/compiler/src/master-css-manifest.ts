@@ -416,7 +416,7 @@ function cloneDeclarations<T extends MasterCSSManifestCSSDeclarations>(declarati
 
 function assertNoValuePlaceholder(declarations: CSSDirectiveUtilityRuleDefinition['declarations']) {
   for (const property in declarations) {
-    if (declarations[property].includes('--value')) {
+    if (containsValuePlaceholderReference(declarations[property])) {
       throw new Error('--value() is only supported inside managed pattern declarations')
     }
   }
@@ -431,29 +431,101 @@ function compileUtilityRule(rule: CSSDirectiveUtilityRuleDefinition): MasterCSSM
   }
 }
 
+const VALUE_PLACEHOLDER_NAME = '--value'
 const VALUE_PLACEHOLDER_FUNCTION = '--value()'
-const VALUE_PLACEHOLDER_CALL = /--value\s*\(([^)]*)\)/g
+
+function isCSSIdentifierCharacter(value: string | undefined) {
+  return value !== undefined && /[-_a-zA-Z0-9]/.test(value)
+}
+
+function skipQuotedText(value: string, index: number) {
+  const quote = value[index]
+  index++
+  while (index < value.length) {
+    if (value[index] === '\\') {
+      index += 2
+      continue
+    }
+    if (value[index] === quote) return index + 1
+    index++
+  }
+  return index
+}
+
+function skipComment(value: string, index: number) {
+  const end = value.indexOf('*/', index + 2)
+  return end === -1 ? value.length : end + 2
+}
+
+function containsValuePlaceholderReference(value: string) {
+  if (!value.includes(VALUE_PLACEHOLDER_NAME)) return false
+  for (let index = 0; index < value.length;) {
+    const character = value[index]
+    if (character === '"' || character === "'") {
+      index = skipQuotedText(value, index)
+      continue
+    }
+    if (character === '/' && value[index + 1] === '*') {
+      index = skipComment(value, index)
+      continue
+    }
+    if (value.startsWith(VALUE_PLACEHOLDER_NAME, index)) return true
+    index++
+  }
+  return false
+}
+
+function parseValuePlaceholderCall(value: string, index: number) {
+  if (isCSSIdentifierCharacter(value[index - 1])) {
+    throw new Error('--value() must be a standalone CSS value placeholder')
+  }
+  const openParenIndex = index + VALUE_PLACEHOLDER_NAME.length
+  if (value[openParenIndex] !== '(') {
+    throw new Error('--value() must be called as --value()')
+  }
+  const closeParenIndex = value.indexOf(')', openParenIndex + 1)
+  if (closeParenIndex === -1) {
+    throw new Error('--value() must be called as --value()')
+  }
+  if (value.slice(openParenIndex + 1, closeParenIndex).trim()) {
+    throw new Error('--value() does not accept arguments')
+  }
+  const end = closeParenIndex + 1
+  if (isCSSIdentifierCharacter(value[end])) {
+    throw new Error('--value() must be a standalone CSS value placeholder')
+  }
+  return end
+}
 
 function compilePatternDeclarationValue(value: string): MasterCSSManifestCSSDeclarationPrimitive | MasterCSSManifestCSSDeclarationPrimitive[] {
-  if (!value.includes('--value')) return value
+  if (!value.includes(VALUE_PLACEHOLDER_NAME)) return value
 
   const parts: (string | null)[] = []
   let lastIndex = 0
   let matched = false
-  VALUE_PLACEHOLDER_CALL.lastIndex = 0
-  for (const match of value.matchAll(VALUE_PLACEHOLDER_CALL)) {
-    matched = true
-    if (match[1].trim()) {
-      throw new Error('--value() does not accept arguments')
+  for (let index = 0; index < value.length;) {
+    const character = value[index]
+    if (character === '"' || character === "'") {
+      index = skipQuotedText(value, index)
+      continue
     }
-    if (match.index > lastIndex) parts.push(value.slice(lastIndex, match.index))
+    if (character === '/' && value[index + 1] === '*') {
+      index = skipComment(value, index)
+      continue
+    }
+    if (!value.startsWith(VALUE_PLACEHOLDER_NAME, index)) {
+      index++
+      continue
+    }
+    const end = parseValuePlaceholderCall(value, index)
+    matched = true
+    if (index > lastIndex) parts.push(value.slice(lastIndex, index))
     parts.push(null)
-    lastIndex = match.index + match[0].length
+    lastIndex = end
+    index = end
   }
 
-  if (!matched || value.slice(lastIndex).includes('--value')) {
-    throw new Error('--value() must be called as --value()')
-  }
+  if (!matched) return value
 
   if (lastIndex < value.length) parts.push(value.slice(lastIndex))
   return value === VALUE_PLACEHOLDER_FUNCTION ? null : parts
@@ -502,7 +574,8 @@ function getPatternMatcher(pattern: CSSDirectiveUtilityPatternDefinition): Maste
   return {
     type: 'pattern',
     prefix: pattern.prefix,
-    values: [...pattern.values]
+    values: [...pattern.values],
+    ...(pattern.valueMap ? { valueMap: { ...pattern.valueMap } } : {})
   }
 }
 

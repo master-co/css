@@ -1880,6 +1880,8 @@ function parseThemeRule(rule: any, parsed: ParsedDirectives) {
 
 const MANAGED_DYNAMIC_SOURCE_KINDS = new Set(['number', 'color', 'image'])
 const MANAGED_DYNAMIC_RAW_ANY_SOURCE = '*'
+const MANAGED_ENUM_PATTERN_TOKEN = /^-?[_a-zA-Z0-9][-_a-zA-Z0-9]*$/
+const MANAGED_ENUM_PATTERN_VALUE = /^-?[_a-zA-Z0-9][-_a-zA-Z0-9]*$/
 
 type ParsedManagedPatternName =
   | ReturnType<typeof parseManagedEnumPatternName>
@@ -1926,22 +1928,40 @@ function parseManagedEnumPatternName(source: string) {
     throw new Error('Managed enum pattern values must use "|" separators like text-<left|right>')
   }
 
-  const values = rawValues.split('|').map((value) => value.trim())
-  if (values.length < 2 || values.some((value) => !value)) {
+  const entries = rawValues.split('|').map((value) => value.trim())
+  if (entries.length < 2 || entries.some((value) => !value)) {
     throw new Error('Managed enum pattern requires at least two values separated by "|"')
   }
-  for (const value of values) {
-    if (!/^-?[_a-zA-Z0-9][-_a-zA-Z0-9]*$/.test(value)) {
-      throw new Error(`Invalid managed enum value: ${value}`)
+  const values: string[] = []
+  const valueMap: Record<string, string> = {}
+  let hasMappedValue = false
+  const canonicalValues: string[] = []
+  for (const entry of entries) {
+    const equalsIndex = entry.indexOf('=')
+    const classValue = equalsIndex === -1 ? entry : entry.slice(0, equalsIndex).trim()
+    const emittedValue = equalsIndex === -1 ? classValue : entry.slice(equalsIndex + 1).trim()
+    if (!classValue || !emittedValue || entry.indexOf('=', equalsIndex + 1) !== -1) {
+      throw new Error(`Invalid managed enum mapping: ${entry}`)
     }
+    if (!MANAGED_ENUM_PATTERN_TOKEN.test(classValue)) {
+      throw new Error(`Invalid managed enum value: ${classValue}`)
+    }
+    if (!MANAGED_ENUM_PATTERN_VALUE.test(emittedValue)) {
+      throw new Error(`Invalid managed enum mapped value: ${emittedValue}`)
+    }
+    values.push(classValue)
+    valueMap[classValue] = emittedValue
+    if (equalsIndex !== -1) hasMappedValue = true
+    canonicalValues.push(equalsIndex === -1 ? classValue : `${classValue}=${emittedValue}`)
   }
 
   return {
     kind: 'pattern' as const,
-    name: `${prefix}<${values.join('|')}>`,
+    name: `${prefix}<${canonicalValues.join('|')}>`,
     pattern: {
       prefix,
-      values
+      values,
+      ...(hasMappedValue ? { valueMap } : {})
     }
   }
 }

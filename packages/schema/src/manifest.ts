@@ -119,7 +119,7 @@ export type MasterCSSManifestVariants = MasterCSSManifestVariant[]
 
 export type MasterCSSManifestUtilityMatcher =
   | { type: 'static'; name: string }
-  | { type: 'pattern'; prefix: string; values: string[] }
+  | { type: 'pattern'; prefix: string; values: string[]; valueMap?: Record<string, string> }
   | { type: 'key'; keys: string[] }
   | { type: 'variable'; keys: string[]; segments?: MasterCSSManifestUtilityMatcherValueSegments }
   | { type: 'value'; keys: string[]; segments?: MasterCSSManifestUtilityMatcherValueSegments }

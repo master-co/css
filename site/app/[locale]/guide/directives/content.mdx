@@ -230,6 +230,10 @@ Defines managed utility classes in the `utilities` layer. Utilities still win ov
     background-size: --value();
   }
 
+  bg-origin-<border=border-box|content=content-box|padding=padding-box> {
+    background-origin: --value();
+  }
+
   font:<~font-size|number> {
     font-size: --value();
   }
@@ -265,6 +269,10 @@ Defines managed utility classes in the `utilities` layer. Utilities still win ov
     display: grid;
     grid-template-columns: repeat(--value(), minmax(0, 1fr));
   }
+
+  grid-col-span:<number|*> {
+    grid-column: span --value()/span --value();
+  }
 }
 ```
 
@@ -272,7 +280,9 @@ Managed definitions accept native declarations, `@compose`, nested selectors, na
 
 Bare entries without `:` are semantic utilities, including enum patterns. Semantic enum patterns stay on the semantic priority tier and still substitute `--value()` for the matched value. Entries containing `:` are dynamic colon entries and keep shorthand or normal priority inference from their declarations.
 
-Enum patterns require exactly one `<...>` segment with at least two pipe-separated values. They do not define theme namespace patterns, so token and shorthand classes keep using the colon value pipeline:
+Enum patterns require exactly one `<...>` segment with at least two pipe-separated values. Use `token=value` when the class token should emit a different CSS value, such as `bg-origin-<border=border-box|content=content-box|padding=padding-box>`. Unmapped entries emit the class token itself, so `text-<left|right>` behaves like `text-<left=left|right=right>`.
+
+Enum patterns do not define theme namespace patterns, so token and shorthand classes keep using the colon value pipeline:
 
 ```txt
 font:sm
@@ -317,7 +327,7 @@ Literal enum values can stand alone when at least two values are provided, such 
 
 `*` is for raw-any full-value wrappers, such as paired vendor declarations or shorthand values that should accept `var(...)`. It may be used alone, with namespace refs, or with one raw kind, as in `text-decoration:<~color-text|~color|*>`, `accent:<color|*>`, or `size:<~container|number|*>`. It cannot be mixed with enum values. A standalone `*` does not imply a color namespace; include `~color` or `color` when raw-any values should also resolve color tokens.
 
-`--value()` accepts no arguments and is only valid inside managed enum pattern or dynamic colon entry declarations.
+`--value()` accepts no arguments and is only valid inside managed enum pattern or dynamic colon entry declarations. It represents a complete CSS value placeholder, so it may be reused in value slots such as `span --value()/span --value()` or inside CSS functions such as `repeat(--value(), minmax(0, 1fr))`. It cannot be joined into identifiers or function names, so forms such as `--value()-box` or `space---value()` should use enum mapping instead.
 
 For abstraction guidance, see [Global styles](/guide/global-styles#shared-vocabulary).
 

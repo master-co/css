@@ -53,7 +53,8 @@ function getPatternUtilityMatch(className: string, matcher: MasterCSSManifestUti
     const name = matcher.prefix + value
     if (matchesPatternUtilityName(className, name)) {
       return {
-        value,
+        classValue: value,
+        emittedValue: matcher.valueMap?.[value] || value,
         length: name.length
       }
     }
@@ -293,9 +294,9 @@ export class Utility {
       let valueToken: string | undefined
       const patternMatch = getUtilityPatternMatch(name, registeredUtility)
       if (patternMatch) {
-        valueToken = patternMatch.value
+        valueToken = patternMatch.emittedValue
         stateToken = name.slice(patternMatch.length)
-        this.keyToken = name.slice(0, patternMatch.length - patternMatch.value.length)
+        this.keyToken = name.slice(0, patternMatch.length - patternMatch.classValue.length)
       } else if (id.endsWith('()')) {
         valueToken = name
       } else if (id === 'group') {

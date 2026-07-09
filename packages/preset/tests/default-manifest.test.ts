@@ -365,9 +365,12 @@ describe('@master/css-preset defaultManifest', () => {
     expect(css.createRule('font-antialiased')?.text).toBe('.font-antialiased{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}')
     expect(css.createRule('text-center')?.text).toBe('.text-center{text-align:center}')
     expect(css.createRule('items-center')?.text).toBe('.items-center{align-items:center}')
+    expect(css.createRule('content-between')?.text).toBe('.content-between{align-content:space-between}')
     expect(css.createRule('justify-between')?.text).toBe('.justify-between{justify-content:space-between}')
     expect(css.createRule('self-start')?.text).toBe('.self-start{align-self:start}')
+    expect(css.createRule('bg-origin-border')?.text).toBe('.bg-origin-border{background-origin:border-box}')
     expect(css.createRule('box-border')?.text).toBe('.box-border{box-sizing:border-box}')
+    expect(css.createRule('transform-view')?.text).toBe('.transform-view{transform-box:view-box}')
     expect(css.createRule('wrap-break-word')?.text).toBe('.wrap-break-word{overflow-wrap:break-word}')
     expect(css.createRule('bg-cover')?.text).toBe('.bg-cover{background-size:cover}')
     expect(css.createRule('object-cover')?.text).toBe('.object-cover{object-fit:cover}')
@@ -417,6 +420,20 @@ describe('@master/css-preset defaultManifest', () => {
           type: 'pattern',
           prefix: 'items-',
           values: ['baseline', 'center', 'end', 'flex-end', 'flex-start', 'normal', 'self-end', 'self-start', 'start', 'stretch']
+        }]
+      })
+    expect(defaultManifest.utilities?.find((utility) => utility.id === 'bg-origin-<border=border-box|content=content-box|padding=padding-box>'))
+      .toMatchObject({
+        type: UtilityType.Semantic,
+        matchers: [{
+          type: 'pattern',
+          prefix: 'bg-origin-',
+          values: ['border', 'content', 'padding'],
+          valueMap: {
+            border: 'border-box',
+            content: 'content-box',
+            padding: 'padding-box'
+          }
         }]
       })
     expect(defaultManifest.utilities?.some((utility) => utility.id === 'text-fill-color:<~color-text|~color|color>')).toBe(false)

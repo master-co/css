@@ -1,4 +1,5 @@
 import { describe, expect, test } from 'vitest'
+import UtilityType from '@master/css-schema/utility-type'
 import { MasterCSS } from '../src'
 import { cloneManifest, createCSSWithVariables, createDefaultCSS } from './helpers/css-tester'
 
@@ -58,6 +59,39 @@ describe.concurrent('migrated complex utility parity', () => {
 
     expect(css.createRule('grid-col-span:2')?.text).toBe('.grid-col-span\\:2{grid-column:span 2/span 2}')
     expect(css.createRule('grid-column-span:2')).toBeUndefined()
+  })
+
+  test('resolves mapped enum pattern values from manifest valueMap', () => {
+    const css = MasterCSS.create({
+      manifest: {
+        version: 1,
+        utilities: [{
+          id: 'bg-origin-<border=border-box|content=content-box>',
+          name: 'bg-origin-<border=border-box|content=content-box>',
+          type: UtilityType.Semantic,
+          emit: {
+            type: 'static',
+            rules: [{
+              declarations: {
+                'background-origin': null
+              }
+            }]
+          },
+          matchers: [{
+            type: 'pattern',
+            prefix: 'bg-origin-',
+            values: ['border', 'content'],
+            valueMap: {
+              border: 'border-box',
+              content: 'content-box'
+            }
+          }]
+        }]
+      }
+    })
+
+    expect(css.createRule('bg-origin-border')?.text).toBe('.bg-origin-border{background-origin:border-box}')
+    expect(css.createRule('bg-origin-content')?.text).toBe('.bg-origin-content{background-origin:content-box}')
   })
 
   test('keeps inset utilities values and priority order', () => {

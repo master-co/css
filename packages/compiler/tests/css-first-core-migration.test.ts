@@ -142,6 +142,15 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
           margin: calc(--value() * 1px);
         }
 
+        bg-origin-<border=border-box|content=content-box> {
+          background-origin: --value();
+        }
+
+        label-<info|warn> {
+          content: "--value()";
+          color: --value();
+        }
+
         text-center {
           text-align: start;
         }
@@ -165,10 +174,24 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
         values: ['left', 'right', 'center']
       }]
     })
+    expect(manifest.utilities?.find((utility) => utility.id === 'bg-origin-<border=border-box|content=content-box>')).toMatchObject({
+      type: UtilityType.Semantic,
+      matchers: [{
+        type: 'pattern',
+        prefix: 'bg-origin-',
+        values: ['border', 'content'],
+        valueMap: {
+          border: 'border-box',
+          content: 'content-box'
+        }
+      }]
+    })
 
     const css = createTestCSS(manifest)
     expect(css.createRule('text-left')?.text).toBe('.text-left{text-align:left}')
     expect(css.createRule('n-2')?.text).toBe('.n-2{margin:calc(2 * 1px)}')
+    expect(css.createRule('bg-origin-border')?.text).toBe('.bg-origin-border{background-origin:border-box}')
+    expect(css.createRule('label-info')?.text).toBe('.label-info{content:"--value()";color:info}')
     expect(css.createRule('text-center')?.text).toBe('.text-center{text-align:start}')
     expect(css.createRule('badge-success')?.text).toBe('.badge-success{color:success}')
     expect(css.createRule('badge-success')?.type).toBe(UtilityType.Semantic)
@@ -209,6 +232,10 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
         grid-cols:<number|*> {
           display: grid;
           grid-template-columns: repeat(--value(), minmax(0, 1fr));
+        }
+
+        grid-col-span:<number|*> {
+          grid-column: span --value()/span --value();
         }
 
         size:<~container|number|*> {
@@ -359,6 +386,8 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
     expect(css.createRule('fg:red')?.text).toBe('.fg\\:red{color:var(--color-text-red)}')
     expect(css.createRule('grid-cols:3')?.text).toBe('.grid-cols\\:3{display:grid;grid-template-columns:repeat(3, minmax(0, 1fr))}')
     expect(css.createRule('grid-cols:var(--cols)')?.text).toBe('.grid-cols\\:var\\(--cols\\){display:grid;grid-template-columns:repeat(var(--cols), minmax(0, 1fr))}')
+    expect(css.createRule('grid-col-span:2')?.text).toBe('.grid-col-span\\:2{grid-column:span 2/span 2}')
+    expect(css.createRule('grid-col-span:var(--span)')?.text).toBe('.grid-col-span\\:var\\(--span\\){grid-column:span var(--span)/span var(--span)}')
     expect(css.createRule('size:4x')?.text).toBe('.size\\:4x{width:1rem;height:1rem}')
     expect(css.createRule('size:4x|8x')?.text).toBe('.size\\:4x\\|8x{width:1rem 2rem;height:1rem 2rem}')
     expect(css.createRule('gap:var(--gap)')?.text).toBe('.gap\\:var\\(--gap\\){gap:var(--gap)}')
@@ -414,11 +443,43 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
 
     expect(() => compileCSSManifest(`
       @utilities {
+        x-<a=span 1|b=b> {
+          color: --value();
+        }
+      }
+    `, { baseManifest: defaultManifest })).toThrow('Invalid managed enum mapped value')
+
+    expect(() => compileCSSManifest(`
+      @utilities {
         x-<a|b> {
           color: --value(rem);
         }
       }
     `, { baseManifest: defaultManifest })).toThrow('--value() does not accept arguments')
+
+    expect(() => compileCSSManifest(`
+      @utilities {
+        x-<a|b> {
+          color: --value()-box;
+        }
+      }
+    `, { baseManifest: defaultManifest })).toThrow('--value() must be a standalone CSS value placeholder')
+
+    expect(() => compileCSSManifest(`
+      @utilities {
+        x-<a|b> {
+          color: foo--value();
+        }
+      }
+    `, { baseManifest: defaultManifest })).toThrow('--value() must be a standalone CSS value placeholder')
+
+    expect(() => compileCSSManifest(`
+      @utilities {
+        x-<around|between> {
+          align-content: space---value();
+        }
+      }
+    `, { baseManifest: defaultManifest })).toThrow('--value() must be a standalone CSS value placeholder')
 
     expect(() => compileCSSManifest(`
       @utilities {
