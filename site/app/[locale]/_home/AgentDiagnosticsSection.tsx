@@ -5,7 +5,7 @@ import { agentDiagnosticCards, homeSections, type AgentDiagnosticCardContent, ty
 
 const invalidClassesCode = `
 <!-- @ERROR font: -->
-<button class="inline-flex px:md font: bg:blue-60">
+<button class="inline-flex px:md font:">
   Save changes
 </button>
 `
