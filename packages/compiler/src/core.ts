@@ -1055,10 +1055,16 @@ function parseThemeDeclarations(block: DeclarationBlock<Declaration>, manifestIn
 
 function parseCustomVariantPrelude(prelude: string) {
   const trimmed = prelude.trim()
-  const tokenMatch = /^(:{1,2}[-_a-zA-Z][-_a-zA-Z0-9]*|@[-_a-zA-Z][-_a-zA-Z0-9]*)$/.exec(trimmed)
+  if (trimmed.startsWith(':')) {
+    throw new Error('@custom-variant no longer defines selector variants. Use nested selectors directly.')
+  }
+  if (trimmed.startsWith('@')) {
+    throw new Error(`@custom-variant uses bare at variant names: write "@custom-variant ${trimmed.slice(1)}"`)
+  }
+  const tokenMatch = /^[-_a-zA-Z][-_a-zA-Z0-9]*$/.exec(trimmed)
   if (!tokenMatch) return
   return {
-    token: tokenMatch[1] as NonNullable<CSSDirectiveManifestInput['variants']>[number]['token']
+    token: `@${tokenMatch[0]}` as NonNullable<CSSDirectiveManifestInput['variants']>[number]['token']
   }
 }
 
@@ -1350,15 +1356,23 @@ function parseMasterVariantBlock(rule: any) {
   if (!token) {
     throw new Error('@variant requires a Master CSS variant')
   }
-  if (!/^(?::{1,2}[^\s:]\S*|@\S+)$/.test(token)) {
-    throw new Error('@variant requires a full variant token')
+  if (!shorthandToken) {
+    if (token.startsWith(':')) {
+      throw new Error('@variant no longer accepts selector variants. Use nested selectors directly.')
+    }
+    if (token.startsWith('@')) {
+      throw new Error(`@variant uses bare at variant names: write "@variant ${token.slice(1)}"`)
+    }
+    if (!/^\S+$/.test(token)) {
+      throw new Error('@variant requires a full at variant token')
+    }
   }
   const rules = rule.value.body?.value
   if (!Array.isArray(rules)) {
     throw new Error('@variant requires a style block')
   }
   return {
-    token,
+    token: shorthandToken || `@${token}`,
     rules: rules as Rule[]
   }
 }

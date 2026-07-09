@@ -29,8 +29,7 @@
   --color-ring: #31415a;
 }
 
-@custom-variant @motion-safe { @media (prefers-reduced-motion: no-preference) { @slot; } }
-@custom-variant ::scrollbar { &::-webkit-scrollbar { @slot; } }
+@custom-variant motion-safe { @media (prefers-reduced-motion: no-preference) { @slot; } }
 
 @utilities {
   content-auto {
@@ -48,7 +47,7 @@
 
   card {
     @compose grid gap:1rem p:card surface:raised r:card max-w:42rem content-auto;
-    @variant @motion-safe {
+    @variant motion-safe {
       @compose animation:demo-fade-in|.55s;
     }
     border: 1px solid var(--color-ring);
@@ -57,7 +56,7 @@
 
   live-label {
     @compose inline-flex items-center justify-center h:6x px:.75rem bg:primary r:pill font:.75rem font:semibold;
-    @variant @motion-safe {
+    @variant motion-safe {
       @compose animation:demo-pulse|1.4s|infinite;
     }
     color: white;
@@ -68,7 +67,7 @@
 
   title {
     @compose m:0 font:2.5rem leading:1 fg:ink;
-    @variant @md {
+    @variant md {
       @compose font:3.5rem;
     }
     max-width: 12ch;

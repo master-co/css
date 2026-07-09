@@ -38,11 +38,11 @@ test.concurrent('collects reference directive ranges', () => {
 })
 
 test.concurrent('collects nested Master directive ranges without treating host at-rules as directives', () => {
-  const source = '@layer components { .btn { @compose block; @variant @<sm { @compose hidden; } } }'
+  const source = '@layer components { .btn { @compose block; @variant <sm { @compose hidden; } } }'
   const ranges = collectCSSDirectiveRanges(source)
 
   expect(ranges.map((range) => range.name)).toEqual(['compose', 'variant', 'compose'])
-  expect(source.slice(ranges[1].preludeRange.start, ranges[1].preludeRange.end).trim()).toBe('@<sm')
+  expect(source.slice(ranges[1].preludeRange.start, ranges[1].preludeRange.end).trim()).toBe('<sm')
   expect(source.slice(ranges[2].preludeRange.start, ranges[2].preludeRange.end).trim()).toBe('hidden')
 })
 
@@ -57,7 +57,7 @@ test.concurrent('collects dark and light shorthand ranges as variant directives'
 })
 
 test.concurrent('collects slot directive ranges inside custom variants', () => {
-  const source = '@custom-variant @motion-safe { @media (prefers-reduced-motion: no-preference) { @slot; } }'
+  const source = '@custom-variant motion-safe { @media (prefers-reduced-motion: no-preference) { @slot; } }'
   const ranges = collectCSSDirectiveRanges(source)
 
   expect(ranges.map((range) => range.name)).toEqual(['custom-variant', 'slot'])

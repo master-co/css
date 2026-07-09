@@ -47,8 +47,8 @@ Use `master.css` for shared vocabulary that should be available to consuming pro
     --radius-action: 0.5rem;
 }
 
-@custom-variant :interactive {
-    &:is(:hover, :focus-visible) {
+@custom-variant motion-safe {
+    @media (prefers-reduced-motion: no-preference) {
         @slot;
     }
 }
@@ -63,7 +63,11 @@ Use `master.css` for shared vocabulary that should be available to consuming pro
 @components {
     btn {
         @compose inline-flex align-items:center justify-content:center gap:xs px:action-x py:xs r:action font:sm font:medium;
-        @compose bg:brand fg:white bg:brand/.85:interactive;
+        @compose bg:brand fg:white;
+
+        :is(:hover, :focus-visible) {
+            @compose bg:brand/.85;
+        }
     }
 }
 ```
@@ -71,7 +75,7 @@ Use `master.css` for shared vocabulary that should be available to consuming pro
 Good package vocabulary is stable and reusable:
 
 - Use `@theme` for shared values such as colors, spacing, radius, typography, shadow, motion, breakpoint, and container tokens.
-- Use `@custom-variant` for shared selector or condition names.
+- Use `@custom-variant` for shared condition names.
 - Use `@utilities` for low-level primitives that are useful across apps.
 - Use `@components` only when the package intentionally owns semantic UI vocabulary such as `btn`, `field`, `card`, or `toolbar`.
 

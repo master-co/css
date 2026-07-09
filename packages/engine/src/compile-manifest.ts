@@ -17,6 +17,7 @@ import UtilityType from '@master/css-schema/utility-type'
 import { MATCH_NAME_BOUNDARY } from './common'
 import builtinKeyAliases from './key-aliases'
 import builtinNativeValueNamespaces, { type MasterCSSBuiltinNativeValueNamespace } from './native-value-namespaces'
+import builtinSelectorAliases from './selector-aliases'
 import type { AtRule } from './utils/parse-at'
 import type { SelectorNode } from './utils/parse-selector'
 
@@ -283,9 +284,12 @@ function compileAtRuleMap(atRules: MasterCSSManifestAtRules | undefined) {
 
 function compileVariantAliases(manifest: MasterCSSManifest) {
   const selectors = new Map<string, SelectorNode[]>()
+  for (const [name, nodes] of Object.entries(builtinSelectorAliases)) {
+    selectors.set(name, cloneSelectorNodes(nodes))
+  }
   if (manifest.selectors) {
     for (const [name, nodes] of Object.entries(manifest.selectors)) {
-      selectors.set(name, nodes as SelectorNode[])
+      selectors.set(name, cloneSelectorNodes(nodes as SelectorNode[]))
     }
   }
 
@@ -303,6 +307,12 @@ function compileVariantAliases(manifest: MasterCSSManifest) {
   }
 
   return { selectors, variants }
+}
+
+function cloneSelectorNodes(nodes: SelectorNode[]): SelectorNode[] {
+  return nodes.map((node) => 'children' in node && node.children?.length
+    ? { ...node, children: cloneSelectorNodes(node.children) }
+    : { ...node })
 }
 
 function createVariableAliasRefResolver(variables: Map<string, Variable>) {

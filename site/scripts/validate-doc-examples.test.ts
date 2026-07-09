@@ -414,7 +414,7 @@ function isLocallyDefinedClass(candidate: string, context: string): boolean {
 
 function usesLocallyDefinedVariant(candidate: string, context: string): boolean {
   for (const eachVariant of candidate.match(/@[a-z][\w-]*/g) ?? []) {
-    if (!context.includes(`@custom-variant ${eachVariant}`)) return false
+    if (!context.includes(`@custom-variant ${eachVariant.slice(1)}`)) return false
   }
   return /@[a-z][\w-]*/.test(candidate)
 }

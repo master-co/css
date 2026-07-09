@@ -151,7 +151,7 @@ test('loads package entry preset manifest from CSS imports', async () => {
 
       @components {
         card {
-          @variant @sm {
+          @variant sm {
             color: red;
           }
         }

@@ -74,7 +74,7 @@ The current project CSS entry owns theme and manifest inputs. Move values out of
   --breakpoint-dashboard: 72rem;
 }
 
-@custom-variant @dashboard {
+@custom-variant dashboard {
   @media (width >= 72rem) {
     @slot;
   }
@@ -104,8 +104,8 @@ If the v1 project had reusable component abstractions, migrate them to `@compone
 
   btn-primary {
     @compose inline-flex items-center justify-center gap:xs h:10x px:md r:md bg:primary fg:white;
-    @variant :hover { @compose bg:blue-70; }
-@variant :disabled { opacity: 0.5; }
+    :hover { @compose bg:blue-70; }
+    :disabled { opacity: 0.5; }
   }
 }
 ```

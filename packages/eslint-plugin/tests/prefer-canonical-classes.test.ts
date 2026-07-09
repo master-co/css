@@ -491,10 +491,10 @@ createTester({
         },
         {
             code: `@components {\n    btn {\n        @compose bg:blue-60:hover@sm block@dark;\n    }\n}`,
-            output: `@components {\n    btn {\n        @variant :hover@sm { @compose bg:blue-60; }\n        @dark { @compose block; }\n    }\n}`,
+            output: `@components {\n    btn {\n        :hover { @variant sm { @compose bg:blue-60; } }\n        @dark { @compose block; }\n    }\n}`,
             filename: 'test.css',
             errors: [
-                { messageId: 'preferClass', data: { actual: 'bg:blue-60:hover@sm', recommended: '@variant :hover@sm { @compose bg:blue-60; }' } },
+                { messageId: 'preferClass', data: { actual: 'bg:blue-60:hover@sm', recommended: ':hover { @variant sm { @compose bg:blue-60; } }' } },
                 { messageId: 'preferClass', data: { actual: 'block@dark', recommended: '@dark { @compose block; }' } }
             ]
         },
@@ -572,7 +572,7 @@ jsxTester.run('prefer canonical classes compose directives', rule, {
         },
         {
             code: `.btn { @compose block@dark@sm font:16px@dark@sm; }`,
-            output: `.btn { @variant @sm@dark { @compose block font:md; } }`,
+            output: `.btn { @variant sm@dark { @compose block font:md; } }`,
             filename: 'test.css',
             languageOptions: {
                 parser: cssParser

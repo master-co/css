@@ -22,8 +22,8 @@ Use the app stylesheet for project-wide styling inputs:
     --spacing-action-x: 1rem;
 }
 
-@custom-variant :interactive {
-    &:is(:hover, :focus-visible) {
+@custom-variant motion-safe {
+    @media (prefers-reduced-motion: no-preference) {
         @slot;
     }
 }
@@ -220,7 +220,7 @@ Use custom utilities for reusable primitives that are lower-level than product c
     }
 
     print-hidden {
-        @variant @print {
+        @variant print {
             display: none;
         }
     }

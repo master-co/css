@@ -201,27 +201,22 @@ Tailwind writes variants before the utility. Master CSS appends selectors and co
 </button>
 ```
 
-Use `@custom-variant` when a Tailwind custom variant represents shared product language.
+Use `@custom-variant` when a Tailwind custom variant represents shared conditional product language. Keep selector states as selector suffixes or nested selectors.
 
 ```css name=app.css
 @import "@master/css";
 
-@custom-variant @compact {
+@custom-variant compact {
   @media (width < 48rem) {
     @slot;
   }
 }
 
-@custom-variant :interactive {
-  &:is(:hover, :focus-visible) {
-    @slot;
-  }
-}
 ```
 
 {/* eslint-disable @master/css/no-invalid-classes -- custom variants are defined in the adjacent CSS example */}
 ```html
-<button class="bg:blue-70:interactive px:sm@compact">
+<button class="bg:blue-70:hover px:sm@compact">
   Save
 </button>
 ```
@@ -316,7 +311,7 @@ Use `@components` when the name describes a product UI role rather than a low-le
       @compose opacity:.5 pointer-events:none;
     }
 
-    @variant @md {
+    @variant md {
       @compose px:lg;
     }
   }
@@ -440,4 +435,4 @@ If a third-party plugin or vendor stylesheet still supplies useful CSS, keep it 
 | Official plugin outputs such as typography or forms | Master CSS does not automatically recreate Tailwind plugin CSS. | Keep plugin CSS temporarily or author product-specific components and utilities. |
 | Tailwind `container` utility semantics | Master CSS `container` creates a container-query boundary. | Use `w:full max-w:* mx:auto px:*` for page wrappers and `container` only for container queries. |
 | Tailwind ring utility model | Master CSS does not provide the same ring utility family. | Use `outline:*`, `outline-offset:*`, `box-shadow:*`, or custom utilities. |
-| Tailwind group and peer variant syntax | Master CSS does not implement `group-*` or `peer-*` variants. | Use native selectors, `:has()`, `:of()`, combinators, or `@custom-variant`. |
+| Tailwind group and peer variant syntax | Master CSS does not implement `group-*` or `peer-*` variants. | Use native selectors, `:has()`, `:of()`, and combinators. |

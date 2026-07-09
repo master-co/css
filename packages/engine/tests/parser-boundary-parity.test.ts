@@ -11,13 +11,12 @@ describe.concurrent('migrated parser boundary parity', () => {
     expect(css.parseValue('text', '')).toEqual({ token: 'text', type: 'string', value: 'text' })
   })
 
-  test('keeps selector variant aliases, pseudos, shorthands, and descendants intact', () => {
+  test('keeps selector aliases, pseudos, shorthands, and descendants intact', () => {
     const manifest = cloneManifest()
     manifest.variants = [
       ...(manifest.variants || []),
       { token: ':custom', branches: [{ selector: '&div>:first-child+button' }] },
       { token: ':custom-1', branches: [{ selector: '&div' }] },
-      { token: '::slider-thumb', branches: [{ selector: '&::-webkit-slider-thumb' }] },
       {
         token: ':hocus',
         branches: [

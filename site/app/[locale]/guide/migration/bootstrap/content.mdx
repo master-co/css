@@ -122,8 +122,8 @@ Buttons, cards, alerts, and badges are often app-owned visual patterns. Convert 
 @components {
   btn-primary {
     @compose inline-flex items-center justify-center gap:xs h:10x px:md bg:primary fg:white r:control;
-    @variant :hover { @compose bg:blue-70; }
-@variant :disabled { opacity: 0.5; }
+    :hover { @compose bg:blue-70; }
+    :disabled { opacity: 0.5; }
   }
 
   panel {

@@ -22,7 +22,7 @@ describe('CSS @reference', () => {
           --color-brand: #123456;
         }
 
-        @custom-variant @wide {
+        @custom-variant wide {
           @media (width >= 640px) {
             @slot;
           }
@@ -44,7 +44,7 @@ describe('CSS @reference', () => {
         .button {
           @compose brand;
 
-          @variant @wide {
+          @variant wide {
             @compose brand;
           }
         }

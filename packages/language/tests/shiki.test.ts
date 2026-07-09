@@ -709,11 +709,11 @@ test.concurrent('uses semantic token scope styles for documentation Master CSS t
 
 test.concurrent('uses semantic token scope styles for CSS directive class-list tokens', () => {
   const code = [
-    '@custom-variant @motion-safe { @media (prefers-reduced-motion: no-preference) { @slot; } }',
+    '@custom-variant motion-safe { @media (prefers-reduced-motion: no-preference) { @slot; } }',
     '@components {',
     '    card {',
     '        @compose p:md r:xl;',
-    '        @variant @<sm {',
+    '        @variant <sm {',
     '            @compose block;',
     '        }',
     '    }',

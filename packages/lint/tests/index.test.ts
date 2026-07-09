@@ -905,7 +905,7 @@ describe('canonical compose directive suggestions', () => {
       suggestions: [
         {
           actual: 'bg:blue-60:hover@sm',
-          recommended: '@variant :hover@sm { @compose bg:blue-60; }',
+          recommended: ':hover { @variant sm { @compose bg:blue-60; } }',
           classNames: ['bg:blue-60:hover@sm'],
           kind: 'variant-block'
         },
@@ -917,7 +917,7 @@ describe('canonical compose directive suggestions', () => {
         }
       ],
       structuralChange: true,
-      replacement: '@variant :hover@sm { @compose bg:blue-60; }\n@dark { @compose block; }'
+      replacement: ':hover { @variant sm { @compose bg:blue-60; } }\n@dark { @compose block; }'
     })
   })
 

@@ -105,7 +105,7 @@ test('insert semantic utility with multiple native rules into existing layer', a
   expect(consoleErrors.find((message) => message.includes('insertRule'))).toBeUndefined()
 })
 
-test('inserts functional pseudo-class selector variants into native CSSOM', async ({ page }) => {
+test('inserts functional pseudo-class selector aliases into native CSSOM', async ({ page }) => {
   const consoleErrors: string[] = []
   page.on('console', (message) => {
     if (message.type() === 'error') consoleErrors.push(message.text())

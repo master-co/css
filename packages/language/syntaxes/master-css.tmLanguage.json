@@ -345,20 +345,6 @@
           "include": "#master-query"
         },
         {
-          "include": "#master-selector"
-        },
-        {
-          "match": "(:{1,2})([_a-zA-Z-][_a-zA-Z0-9-]*)",
-          "captures": {
-            "1": {
-              "name": "punctuation.definition.entity.master-css"
-            },
-            "2": {
-              "name": "entity.other.attribute-name.pseudo-class.master-css"
-            }
-          }
-        },
-        {
           "match": "(?<![:@._a-zA-Z0-9-])[_a-zA-Z-][_a-zA-Z0-9-]*(?![-_a-zA-Z0-9])",
           "name": "variable.parameter.master-css"
         },
@@ -372,12 +358,6 @@
       "patterns": [
         {
           "include": "#master-query"
-        },
-        {
-          "include": "#master-selector"
-        },
-        {
-          "include": "#master-class-fragment"
         },
         {
           "match": "[;{}]",
@@ -939,6 +919,17 @@
             },
             "2": {
               "name": "variable.other.master-css"
+            }
+          }
+        },
+        {
+          "match": "(:{1,2})([_a-zA-Z-][_a-zA-Z0-9-]*)",
+          "captures": {
+            "1": {
+              "name": "punctuation.definition.entity.master-css"
+            },
+            "2": {
+              "name": "entity.other.attribute-name.pseudo-class.master-css"
             }
           }
         }

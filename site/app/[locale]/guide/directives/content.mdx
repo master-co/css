@@ -168,17 +168,17 @@ Emits the token or managed keyframes as initial CSS resources instead of waiting
 ```
 
 ### `@custom-variant`
-Defines reusable condition variants and selector variants. Use condition variants as `@` suffixes, such as `animation:fade-in@motion-safe`, and selector variants as selector suffixes, such as `text:primary:interactive`.
+Defines reusable condition variants. Use them as `@` suffixes, such as `animation:fade-in@motion-safe`. Selector aliases are built in; use selector suffixes in markup and nested selectors in CSS rules.
 
 ```css
-@custom-variant @motion-safe {
+@custom-variant motion-safe {
   @media (prefers-reduced-motion: no-preference) {
     @slot;
   }
 }
 
-@custom-variant :interactive {
-  &:is(:hover, :focus-visible) {
+@custom-variant supports-backdrop {
+  @supports (backdrop-filter: blur(0)) {
     @slot;
   }
 }
@@ -430,8 +430,10 @@ Do not put quotes, grouped class syntax, or class tokens that need CSS quoted st
   @compose text-center;
   contain: content;
 
-  @variant :hover@sm {
-    @compose bg:blue-60;
+  :hover {
+    @variant sm {
+      @compose bg:blue-60;
+    }
   }
 }
 ```
@@ -463,13 +465,15 @@ Use `@variant` inside managed definitions or native style rules to share the cur
     @compose bg:gray-90 fg:white;
   }
 
-  @variant @<sm {
+  @variant <sm {
     @compose p:sm;
   }
 }
 ```
 
-Use `@dark` and `@light` as shorthands for the default mode conditions. Use `@variant` for custom condition variants, custom modes such as `@variant @chrisma`, breakpoint tokens, and raw Master CSS at syntax such as `<sm`. These blocks are rule-local compiler directives, not native CSS at-rules or entry markers.
+Use `@dark` and `@light` as shorthands for the default mode conditions. Use `@variant` for custom condition variants, custom modes such as `@variant chrisma`, breakpoint tokens, and raw Master CSS at syntax such as `<sm`. These blocks are rule-local compiler directives, not native CSS at-rules or entry markers.
+
+For selector states, write a nested selector directly. A selector can contain `@variant` inside it when it also needs a condition.
 
 ---
 

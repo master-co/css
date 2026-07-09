@@ -1,6 +1,6 @@
 import type { MasterCSS } from '@master/css-engine'
 import { inspectMasterCSSClass } from '@master/css-engine/inspect'
-import { parseMasterCSSClassList } from '@master/css-lexer'
+import { parseMasterCSSClassList, splitMasterCSSTopLevel } from '@master/css-lexer'
 import UtilityType from '@master/css-schema/utility-type'
 import {
   replaceClassGroupInClassList,
@@ -128,9 +128,10 @@ function isSafeVariantToken(token: string) {
   return atSegments.every((segment) => segment && !segment.includes(':'))
 }
 
-function variantKeyword(token: string) {
-  if (token === '@dark') return '@dark'
-  if (token === '@light') return '@light'
+function variantKeyword(condition: string) {
+  const token = condition.startsWith('@') ? condition.slice(1) : condition
+  if (token === 'dark') return '@dark'
+  if (token === 'light') return '@light'
   return `@variant ${token}`
 }
 
@@ -138,25 +139,45 @@ function declarationText(declaration: NativeDeclaration) {
   return `${declaration.property}: ${declaration.value}${declaration.important ? ' !important' : ''};`
 }
 
-function oneLineBucketText(bucket: ComposeBucket) {
-  const parts: string[] = []
-  if (bucket.classes.length) {
-    parts.push(`@compose ${bucket.classes.join(' ')};`)
-  }
-  parts.push(...bucket.declarations.map(declarationText))
-  return parts.join(' ')
-}
-
-function variantBlockText(token: string, bucket: ComposeBucket, indent: string) {
-  const body = serializeBucket(bucket, `${indent}    `)
+function blockText(header: string, body: string, indent: string) {
   if (!body.includes('\n')) {
-    return `${variantKeyword(token)} { ${oneLineBucketText(bucket)} }`
+    return `${header} { ${body} }`
   }
   return [
-    `${variantKeyword(token)} {`,
+    `${header} {`,
     body.split('\n').map((line) => `${indent}    ${line}`).join('\n'),
     `${indent}}`
   ].join('\n')
+}
+
+function parseVariantToken(token: string) {
+  const parts = splitMasterCSSTopLevel(token, '@')
+  const selectorPart = parts[0]
+  const selector = selectorPart ? token.slice(selectorPart.start, selectorPart.end) : ''
+  const condition = parts
+    .slice(1)
+    .map(({ start, end }) => token.slice(start, end))
+    .filter(Boolean)
+    .join('@')
+  return {
+    ...(selector ? { selector } : {}),
+    ...(condition ? { condition } : {})
+  }
+}
+
+function variantConditionBlockText(condition: string, bucket: ComposeBucket, indent: string) {
+  return blockText(variantKeyword(condition), serializeBucket(bucket, `${indent}    `), indent)
+}
+
+function variantBlockText(token: string, bucket: ComposeBucket, indent: string) {
+  const { selector, condition } = parseVariantToken(token)
+  if (selector) {
+    const body = condition
+      ? variantConditionBlockText(condition, bucket, `${indent}    `)
+      : serializeBucket(bucket, `${indent}    `)
+    return blockText(selector, body, indent)
+  }
+  return variantConditionBlockText(condition || token, bucket, indent)
 }
 
 function serializeBucket(bucket: ComposeBucket, indent = ''): string {

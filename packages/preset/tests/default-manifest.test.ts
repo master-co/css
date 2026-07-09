@@ -282,6 +282,8 @@ describe('@master/css-preset defaultManifest', () => {
     expect(compiledManifest.breakpointAtRules).toEqual(defaultManifest.breakpointAtRules)
     expect(compiledManifest.containerAtRules).toEqual(defaultManifest.containerAtRules)
     expect(compiledManifest.selectors).toEqual(defaultManifest.selectors)
+    expect(defaultManifest.selectors).toBeUndefined()
+    expect(defaultManifest.variants?.every((variant) => variant.token.startsWith('@'))).toBe(true)
   })
 
   it('does not publish the removed px inline alias', () => {
