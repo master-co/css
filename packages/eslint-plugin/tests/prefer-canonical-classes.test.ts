@@ -491,10 +491,10 @@ createTester({
         },
         {
             code: `@components {\n    btn {\n        @compose bg:blue-60:hover@sm block@dark;\n    }\n}`,
-            output: `@components {\n    btn {\n        :hover { @variant sm { @compose bg:blue-60; } }\n        @dark { @compose block; }\n    }\n}`,
+            output: `@components {\n    btn {\n        &:hover { @variant sm { @compose bg:blue-60; } }\n        @dark { @compose block; }\n    }\n}`,
             filename: 'test.css',
             errors: [
-                { messageId: 'preferClass', data: { actual: 'bg:blue-60:hover@sm', recommended: ':hover { @variant sm { @compose bg:blue-60; } }' } },
+                { messageId: 'preferClass', data: { actual: 'bg:blue-60:hover@sm', recommended: '&:hover { @variant sm { @compose bg:blue-60; } }' } },
                 { messageId: 'preferClass', data: { actual: 'block@dark', recommended: '@dark { @compose block; }' } }
             ]
         },

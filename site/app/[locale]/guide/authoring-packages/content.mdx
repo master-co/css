@@ -65,7 +65,7 @@ Use `master.css` for shared vocabulary that should be available to consuming pro
         @compose inline-flex align-items:center justify-content:center gap:xs px:action-x py:xs r:action font:sm font:medium;
         @compose bg:brand fg:white;
 
-        :is(:hover, :focus-visible) {
+        &:is(:hover, :focus-visible) {
             @compose bg:brand/.85;
         }
     }

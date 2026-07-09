@@ -140,7 +140,7 @@ The same fixes apply inside unquoted `@compose` class lists when ESLint is runni
   @compose text-align:center contain:content bg:blue-60:hover@sm; /* [!code --] */
   @compose text-center; /* [!code ++] */
   contain: content; /* [!code ++] */
-  :hover { @variant sm { @compose bg:blue-60; } } /* [!code ++] */
+  &:hover { @variant sm { @compose bg:blue-60; } } /* [!code ++] */
 }
 ```
 

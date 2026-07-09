@@ -172,10 +172,11 @@ function variantConditionBlockText(condition: string, bucket: ComposeBucket, ind
 function variantBlockText(token: string, bucket: ComposeBucket, indent: string) {
   const { selector, condition } = parseVariantToken(token)
   if (selector) {
+    const selectorHeader = selector.startsWith('&') ? selector : `&${selector}`
     const body = condition
       ? variantConditionBlockText(condition, bucket, `${indent}    `)
       : serializeBucket(bucket, `${indent}    `)
-    return blockText(selector, body, indent)
+    return blockText(selectorHeader, body, indent)
   }
   return variantConditionBlockText(condition || token, bucket, indent)
 }

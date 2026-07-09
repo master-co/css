@@ -80,8 +80,8 @@ If the project needs a named component class, define it once in CSS.
 @components {
   btn {
     @compose inline-flex items-center justify-center gap:xs min-h:10x px:md r:md bg:primary fg:white;
-    :hover { @compose bg:blue-70; }
-    :disabled { opacity: 0.5; }
+    &:hover { @compose bg:blue-70; }
+    &:disabled { opacity: 0.5; }
   }
 }
 ```

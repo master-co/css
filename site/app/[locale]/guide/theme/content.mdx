@@ -363,7 +363,7 @@ Inside CSS-defined style rules, write nested selectors directly. `@custom-varian
   btn {
     @compose inline-flex items-center justify-center;
 
-    :is(:hover, :focus-visible) {
+    &:is(:hover, :focus-visible) {
       @compose text:blue;
     }
   }

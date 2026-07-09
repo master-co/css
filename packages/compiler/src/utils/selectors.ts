@@ -56,9 +56,7 @@ export function combineSelectorLists(parentSelectors: string[], childSelectors: 
 
 function combineSelector(parent: string, child: string) {
   const trimmedChild = child.trim()
-  const normalizedChild = trimmedChild.replace(/^&\s+(:{1,2})/, '&$1')
-  if (normalizedChild.includes('&')) return normalizedChild.replace(/&/g, parent)
-  if (trimmedChild.startsWith(':')) return `${parent}${trimmedChild}`
+  if (trimmedChild.includes('&')) return trimmedChild.replace(/&/g, parent)
   return `${parent} ${child}`
 }
 

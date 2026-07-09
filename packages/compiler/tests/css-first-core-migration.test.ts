@@ -85,7 +85,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
             display: block;
           }
 
-          :even {
+          &:even {
             display: grid;
           }
         }
@@ -624,7 +624,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
           @compose text-center;
           contain: content;
 
-          :hover {
+          &:hover {
             @variant sm {
               @compose bg:blue-60;
             }
@@ -640,7 +640,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
         @compose text-center;
         contain: content;
 
-        :hover {
+        &:hover {
           @variant sm {
             @compose bg:blue-60;
           }
@@ -717,7 +717,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
     const result = compileCSSManifest(`
       @components {
         card {
-          :is(:hover, :focus-visible) {
+          &:is(:hover, :focus-visible) {
             color: blue;
           }
         }
@@ -727,6 +727,37 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
     const css = createTestCSS(result.manifest)
     css.ensureClassRules('card')
     expect(css.componentsLayer.text).toContain('.card:is(:hover,:focus-visible){color:#00f}')
+  })
+
+  test('keeps nested selectors aligned with native CSS descendant and compound behavior', () => {
+    const result = compileCSSManifest(`
+      @components {
+        card {
+          p {
+            color: red;
+          }
+
+          :is(p, li) {
+            color: blue;
+          }
+
+          & :is(code, kbd) {
+            color: green;
+          }
+
+          &:hover {
+            color: black;
+          }
+        }
+      }
+    `, { baseManifest: defaultManifest })
+
+    const css = createTestCSS(result.manifest)
+    css.ensureClassRules('card')
+    expect(css.componentsLayer.text).toContain('.card p{color:red}')
+    expect(css.componentsLayer.text).toContain('.card :is(p,li){color:#00f}')
+    expect(css.componentsLayer.text).toContain('.card :is(code,kbd){color:green}')
+    expect(css.componentsLayer.text).toContain('.card:hover{color:#000}')
   })
 
   test('replaces old JS merging intent with ordered CSS imports through baseManifest lowering', () => {
