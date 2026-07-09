@@ -69,17 +69,12 @@ describe.concurrent('migrated issue regressions', () => {
     expect(css.createRule('opacity:0.5::view-transition-old(hero)')?.text).toContain('::view-transition-old(hero)')
     expect(css.createRule('opacity:0.5::view-transition-old(hero)')?.text).not.toMatch(/[^:]:view-transition-old\(/)
     expect(css.createRule('opacity:1::view-transition-new(hero)')?.text).toContain('::view-transition-new(hero)')
-
-    const selectorCases = [
-      ['::vt', '::view-transition'],
-      ['::vt-group(hero)', '::view-transition-group(hero)'],
-      ['::vt-image-pair(hero)', '::view-transition-image-pair(hero)'],
-      ['::vt-old(hero)', '::view-transition-old(hero)'],
-      ['::vt-new(hero)', '::view-transition-new(hero)']
-    ] as const
-    for (const [selector, expectedSelector] of selectorCases) {
-      expect(css.createRule('opacity:0' + selector)?.text).toContain(expectedSelector + '{opacity:0}')
-    }
+    expect(css.createRule('opacity:0::view-transition-group(hero)')?.text)
+      .toContain('::view-transition-group(hero){opacity:0}')
+    expect(css.createRule('opacity:0::vt-group(hero)')?.text)
+      .toContain('::vt-group(hero){opacity:0}')
+    expect(css.createRule('opacity:0::vt-group(hero)')?.text)
+      .not.toContain('::view-transition-group(hero)')
   })
 
   test('issue #321: individual transforms replace legacy transform function utilities', () => {

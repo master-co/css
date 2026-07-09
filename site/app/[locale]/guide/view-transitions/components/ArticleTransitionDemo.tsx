@@ -16,8 +16,8 @@ type ViewTransitionDocument = Document & {
 }
 
 const rootTransitionClassName = [
-  'animation-duration:slower::vt-group(.article)',
-  'animation-timing-function:smooth::vt-group(.article)',
+  'animation-duration:slower::view-transition-group(.article)',
+  'animation-timing-function:smooth::view-transition-group(.article)',
 ].join(' ')
 
 const sharedTransitionClassName = 'view-transition-class:article'

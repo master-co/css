@@ -225,7 +225,7 @@ Use `:focus-visible` for keyboard focus rings when you want to avoid showing the
 ```
 
 ### `:first`, `:last`, `:odd`, `:even`
-Use structural shorthands such as `:first`, `:last`, `:odd`, `:even`, and `:nth(N)` to style list items by position.
+Use structural shorthands such as `:first`, `:last`, `:odd`, and `:even` to style list items by position. Write native selectors such as `:nth-child(N)` directly when they are clearer.
 <Demo $py={0}>
     <DemoPanel $p={0} className="w:full max-w:90x">
         <ul className="m:0 px:0 py:lg list-style:none">
@@ -363,7 +363,7 @@ Use `::before` and `::after` to style generated content attached to the element.
 ```
 
 ### `::scrollbar`
-Style scrollbars with `::scrollbar`, `::scrollbar-thumb`, `::scrollbar-track`, `::scrollbar-button`, `::scrollbar-corner`, and `::scrollbar-track-piece` shorthands.
+Style common scrollbar surfaces with `::scrollbar`, `::scrollbar-thumb`, and `::scrollbar-track` shorthands. Write native vendor selectors such as `::-webkit-scrollbar-corner` directly for less common parts.
 
 (hover) Try scrolling horizontally and interact with the scroll bar
 <Demo $py={0} $px={0}>

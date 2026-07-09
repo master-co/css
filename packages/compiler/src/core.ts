@@ -1081,10 +1081,8 @@ function parseThemeDeclarations(block: DeclarationBlock<Declaration>, manifestIn
 
 function parseCustomVariantPrelude(prelude: string) {
   const trimmed = prelude.trim()
-  if (/^:{1,2}[-_a-zA-Z][-_a-zA-Z0-9]*$/.test(trimmed)) {
-    return {
-      token: trimmed as NonNullable<CSSDirectiveManifestInput['variants']>[number]['token']
-    }
+  if (trimmed.startsWith('::') || trimmed.startsWith(':')) {
+    throw new Error('@custom-variant only defines condition variants. Use nested selectors directly for selector behavior.')
   }
   if (trimmed.startsWith('@')) {
     throw new Error(`@custom-variant uses bare condition variant names: write "@custom-variant ${trimmed.slice(1)}"`)
@@ -1387,6 +1385,9 @@ function parseMasterVariantBlock(rule: any) {
   if (!shorthandToken) {
     if (token.startsWith('@')) {
       throw new Error(`@variant uses bare condition variant names: write "@variant ${token.slice(1)}"`)
+    }
+    if (token.startsWith('::') || token.startsWith(':')) {
+      throw new Error('@variant only applies condition variants. Use nested selectors directly for selector behavior.')
     }
     if (!/^\S+$/.test(token)) {
       throw new Error('@variant requires a full condition variant token')

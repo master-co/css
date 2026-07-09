@@ -20,15 +20,17 @@ describe.concurrent('pseudo-class', () => {
       ':lang()',
       ':local-link()',
       ':not()',
-      ':nth()',
       ':nth-child()',
-      ':nth-last()',
       ':nth-last-child()',
       ':nth-last-of-type()',
       ':nth-of-type()',
       ':of()',
       ':state()',
       ':where()'
+    ]))
+    expect(labels).not.toEqual(expect.arrayContaining([
+      ':nth()',
+      ':nth-last()'
     ]))
   })
   it.concurrent('should take into account trigger character :', () => expect(hint('text-center:')?.find(({ label }) => label === ':active')).toMatchObject({ insertText: 'active' }))
@@ -59,6 +61,12 @@ describe.concurrent('pseudo-element', () => {
   test.concurrent('::', () => expect(hint('text-center::')?.map(({ label }) => label)).toContain('::after'))
   test.concurrent('two', () => expect(hint('text-center::after::')?.map(({ label }) => label)).toContain('::after'))
   test.concurrent('utility', () => expect(hint('block::')?.map(({ label }) => label)).toContain('::after'))
+  test.concurrent('removed aliases', () => {
+    expect(hint('block::')?.map(({ label }) => label)).not.toEqual(expect.arrayContaining([
+      '::scrollbar-corner',
+      '::vt-new'
+    ]))
+  })
   it.concurrent('should take into account trigger character :', () => expect(hint('text-center:')?.find(({ label }) => label === '::after')).toMatchObject({ insertText: ':after' }))
   it.concurrent('should take into account trigger character ::', () => expect(hint('text-center::')?.find(({ label }) => label === '::after')).toMatchObject({ insertText: 'after' }))
   it.concurrent('should take into account trigger character +', () => expect(hint('text-center+')?.find(({ label }) => label === '::after')?.insertText).toBeUndefined())

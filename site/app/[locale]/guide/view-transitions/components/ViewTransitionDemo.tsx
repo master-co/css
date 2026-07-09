@@ -10,8 +10,8 @@ type ViewTransitionDocument = Document & {
 }
 
 const rootTransitionClassName = [
-  'animation-duration:slow::vt-group(panel)',
-  'animation-duration:slow::vt-group(title)',
+  'animation-duration:slow::view-transition-group(panel)',
+  'animation-duration:slow::view-transition-group(title)',
 ].join(' ')
 
 const views = [

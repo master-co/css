@@ -689,7 +689,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
     expect(bareCondition.css).not.toContain('.chrisma .card')
   })
 
-  test('rejects legacy at-prefixed variant syntax and supports selector variants', () => {
+  test('rejects legacy at-prefixed and selector variant directive syntax', () => {
     expect(() => compileCSSManifest(`
       @custom-variant @print {
         @media print {
@@ -698,24 +698,35 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
       }
     `, { baseManifest: defaultManifest })).toThrow('@custom-variant uses bare condition variant names')
 
-    const result = compileCSSManifest(`
+    expect(() => compileCSSManifest(`
       @custom-variant :interactive {
         &:hover {
           @slot;
         }
       }
+    `, { baseManifest: defaultManifest })).toThrow('@custom-variant only defines condition variants')
 
+    expect(() => compileCSSManifest(`
       .card {
         @variant :interactive {
           color: blue;
         }
       }
+    `, { baseManifest: defaultManifest })).toThrow('@variant only applies condition variants')
+
+    const result = compileCSSManifest(`
+      @components {
+        card {
+          :is(:hover, :focus-visible) {
+            color: blue;
+          }
+        }
+      }
     `, { baseManifest: defaultManifest })
 
-    expect(result.manifest.variants?.find((variant) => variant.token === ':interactive')?.branches).toMatchObject([
-      { selector: '&:hover' }
-    ])
-    expect(result.css).toContain('.card:hover{color:#00f}')
+    const css = createTestCSS(result.manifest)
+    css.ensureClassRules('card')
+    expect(css.componentsLayer.text).toContain('.card:is(:hover,:focus-visible){color:#00f}')
   })
 
   test('replaces old JS merging intent with ordered CSS imports through baseManifest lowering', () => {

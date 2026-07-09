@@ -19,7 +19,6 @@ const mdnCSSData: MDNCSSData = {
 }
 
 const PAGE_PSEUDO_CLASS_NAMES = new Set([':first', ':left', ':right', ':blank'])
-const LOCAL_PSEUDO_CLASS_NAMES = [':nth']
 const REFERENCE_RE = /<('([^']+)'|([a-zA-Z][\w-]*)(?:\s+[^>]*)?)>/g
 const TOKEN_RE = /-?[a-zA-Z_][\w-]*/g
 const VENDOR_PREFIX_RE = /^-(?:webkit|moz|ms)-/
@@ -73,11 +72,8 @@ export function getMdnPropertyValueNames(name: string | undefined) {
 }
 
 export function getMdnPseudoClassNames() {
-  return unique([
-    ...Object.keys(mdnCSSData.selectors)
-      .filter((name) => name.startsWith(':') && !name.startsWith('::') && !PAGE_PSEUDO_CLASS_NAMES.has(name)),
-    ...LOCAL_PSEUDO_CLASS_NAMES
-  ])
+  return Object.keys(mdnCSSData.selectors)
+    .filter((name) => name.startsWith(':') && !name.startsWith('::') && !PAGE_PSEUDO_CLASS_NAMES.has(name))
 }
 
 export function getMdnPseudoElementNames() {
