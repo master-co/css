@@ -69,7 +69,7 @@
     "@types/react-dom": "^19.2.3",
     "eslint": "^10.5.0",
     "internal": "workspace:^",
-    "tsdown": "^0.22.3",
+    "tsdown": "^0.22.4",
     "tsx": "^4.22.4",
     "typescript": "^7.0.2",
     "wrangler": "4.103.0"

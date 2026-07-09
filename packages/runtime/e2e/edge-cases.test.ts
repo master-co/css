@@ -43,6 +43,14 @@ async function waitForRuntimeRemovalFlush(page: Page) {
   }))
 }
 
+async function waitForRuntimeRuleFlush(page: Page) {
+  await page.evaluate(() => new Promise<void>((resolve) => {
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => resolve())
+    })
+  }))
+}
+
 test('disconnect clears counts and observe rescans the current DOM', async ({ page }) => {
   await init(page)
   await page.evaluate(async () => {
@@ -85,10 +93,10 @@ test('disconnect clears counts and observe rescans the current DOM', async ({ pa
 
 test('mutation removals keep counts immediate and retain CSSOM rules after settle', async ({ page }) => {
   await init(page)
-  await page.evaluate(async () => {
+  await page.evaluate(() => {
     document.body.innerHTML = '<p id="target" class="fg:red-60"></p>'
-    await new Promise(resolve => setTimeout(resolve, 0))
   })
+  await waitForRuntimeRuleFlush(page)
 
   const duringFlushWindow = await page.evaluate(async () => {
     document.getElementById('target')?.remove()
@@ -135,13 +143,13 @@ test('mutation removals keep counts immediate and retain CSSOM rules after settl
 
 test('mutation removal flush keeps remaining native CSSOM references valid', async ({ page }) => {
   await init(page)
-  await page.evaluate(async () => {
+  await page.evaluate(() => {
     document.body.innerHTML = [
       '<p id="keep" class="fg:blue-60"></p>',
       '<p id="target" class="fg:red-60 bg:green-60 animation:fade|1s"></p>'
     ].join('')
-    await new Promise(resolve => setTimeout(resolve, 0))
   })
+  await waitForRuntimeRuleFlush(page)
 
   await page.evaluate(() => {
     document.getElementById('target')?.remove()
@@ -438,10 +446,10 @@ test('retained hard-limit cleanup returns to soft target and preserves active cl
 
 test('mutation removals are canceled when a class returns before flush', async ({ page }) => {
   await init(page)
-  await page.evaluate(async () => {
+  await page.evaluate(() => {
     document.body.innerHTML = '<p id="target" class="fg:red-60"></p>'
-    await new Promise(resolve => setTimeout(resolve, 0))
   })
+  await waitForRuntimeRuleFlush(page)
 
   const duringFlushWindow = await page.evaluate(async () => {
     const target = document.getElementById('target')!
@@ -1144,16 +1152,16 @@ test('removes shared alias variable dependencies when classes disappear', async 
     ]
   })
 
-  const initial = await page.evaluate(async () => {
+  await page.evaluate(() => {
     const el = document.createElement('p')
     el.classList.add('fg:brand', 'color:brand')
     document.body.append(el)
-    await new Promise(resolve => setTimeout(resolve, 0))
-    return {
-      text: globalThis.masterCSSRuntime.themeLayer.text,
-      counts: Object.fromEntries(globalThis.masterCSSRuntime.themeLayer.tokenCounts)
-    }
   })
+  await waitForRuntimeRuleFlush(page)
+  const initial = await page.evaluate(() => ({
+    text: globalThis.masterCSSRuntime.themeLayer.text,
+    counts: Object.fromEntries(globalThis.masterCSSRuntime.themeLayer.tokenCounts)
+  }))
   expect(initial).toEqual({
     text: '@layer theme{:root{--brand:var(--surface);--surface:#ffffff}}',
     counts: {

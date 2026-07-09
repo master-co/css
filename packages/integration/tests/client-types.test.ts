@@ -6,7 +6,7 @@ import { createRequire } from 'node:module'
 import { describe, it } from 'vitest'
 
 const require = createRequire(import.meta.url)
-const tscPath = require.resolve('typescript/bin/tsc')
+const tscPath = path.join(path.dirname(require.resolve('typescript/package.json')), 'bin', 'tsc')
 
 describe('@master/css-integration/client', () => {
   it('provides types for Master CSS integration virtual modules', () => {
