@@ -71,12 +71,12 @@ export default function HomeCodeWindow({
             </div>
             {hasFixPreview ? (
                 <div className={clsx('home-code-window-stack', codeClassName)}>
-                    <div className="home-code-window-layer home-code-window__source">
+                    <div className="home-code-window__source home-code-window-layer">
                         <Code lang={lang} preClassName={codePreClassName}>
                             {children}
                         </Code>
                     </div>
-                    <div aria-hidden="true" className="home-code-window-layer home-code-window-layer-fix home-code-window__fix">
+                    <div aria-hidden="true" className="home-code-window__fix home-code-window-layer home-code-window-layer-fix">
                         <Code lang={lang} preClassName={codePreClassName}>
                             {resolvedFixPreviewCode}
                         </Code>

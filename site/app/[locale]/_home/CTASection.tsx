@@ -19,7 +19,7 @@ export default function CTASection({ t }: { t: Translate }) {
                             ].join(',')
                         }} />
                     <div className="rel z:1 grid-cols:1 items-center gap:2xl grid-cols:12@lg gap:2xl@lg">
-                        <div className="home-section-copy grid-col-span:7@lg">
+                        <div className="grid-col-span:7@lg home-section-copy">
                             <p className="home-section-label">{t('Get started')}</p>
                             <h2 className="home-section-heading">
                                 {t('Start with one class string, then grow into a design system.')}

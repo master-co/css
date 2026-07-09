@@ -9,7 +9,7 @@ export default function HeroSection({ t }: { t: Translate }) {
         <section
             data-home-section={homeSections.hero}
             id={homeSections.hero}
-            className="home-section rel overflow:hidden isolate">
+            className="rel overflow:hidden isolate home-section">
             <div className="home-section-wrap">
                 <MotionDiv className="max-w:breakpoint-xl text-center">
                     <h1 className="mx:0 mb:0 mt:xl font:5xl font:light leading:1 tracking:tight text-balance text:strong font:9xl@md">

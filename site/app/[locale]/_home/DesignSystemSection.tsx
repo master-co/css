@@ -82,7 +82,7 @@ function DesignSystemPlaceholderCard({ t, tile }: { t: Translate; tile: DesignSy
                 </h3>
                 <p className="home-bento-card-body">{t(tile.body)}</p>
             </div>
-            <div className="home-bento-visual h:28x" />
+            <div className="h:28x home-bento-visual" />
         </HomeBentoCard>
     )
 }
@@ -113,7 +113,7 @@ function ThemeVariablesCard({ t, tile }: { t: Translate; tile: DesignSystemTileC
             </div>
 
             <HomeCodeWindow
-                className="home-bento-visual-top h:md"
+                className="h:md home-bento-visual-top"
                 preClassName="h:full"
                 lang="css"
                 variant="embedded">
@@ -149,7 +149,7 @@ function NativeCssPrimitivesCard({ t, tile }: { t: Translate; tile: DesignSystem
             </div>
 
             <HomeCodeWindow
-                className="home-bento-visual-top h:md h:lg@md"
+                className="h:md h:lg@md home-bento-visual-top"
                 preClassName="h:full"
                 lang="css"
                 variant="embedded">

@@ -101,7 +101,7 @@ function LanguageServiceCard({ card, t }: { card: LanguageServiceCardContent; t:
             ) : card.visual === 'active-syntax-highlighting' ? (
                 <ActiveSyntaxHighlightingPreview />
             ) : (
-                <div className="home-bento-visual h:28x" />
+                <div className="h:28x home-bento-visual" />
             )}
         </HomeBentoCard>
     )
@@ -141,7 +141,7 @@ function ManifestAwareSuggestionsPreview() {
 function ActiveSyntaxHighlightingPreview() {
     return (
         <HomeCodeWindow
-            className="home-active-syntax home-bento-visual h:3xs"
+            className="h:3xs home-active-syntax home-bento-visual"
             lang="html"
             preClassName="h:full"
             variant="embedded">

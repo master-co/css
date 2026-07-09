@@ -19,7 +19,7 @@
 .home-section-heading {
   @compose max-w:32ch mx:0 mb:0 mt:md font:3xl font:regular leading:1.08 tracking:tight text:strong text-balance;
 
-  @variant @md {
+  @variant md {
     @compose font:5xl;
   }
 }

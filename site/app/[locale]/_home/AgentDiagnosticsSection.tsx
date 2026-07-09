@@ -4,8 +4,8 @@ import { MotionSection } from './HomeMotion'
 import { agentDiagnosticCards, homeSections, type AgentDiagnosticCardContent, type Translate } from './home-content'
 
 const invalidClassesCode = `
-<!-- @ERROR font: -->
-<button class="inline-flex px:md font:">
+<!-- @ERROR text-decoration:bad() -->
+<button class="inline-flex px:md text-decoration:bad()">
   Save changes
 </button>
 `
@@ -134,7 +134,7 @@ function InvalidClassesCodeWindow({ t }: { t: Translate }) {
     const problems: HomeCodeWindowProblem[] = [{
         code: 'invalid-class',
         location: 'home.html:1:31',
-        message: t('Invalid value for `font` property.'),
+        message: t('Class "text-decoration:bad()" emits invalid CSS: Invalid value for `text-decoration-color` property.'),
         severity: 'error',
         source: '@master/css/no-invalid-classes'
     }]
@@ -155,7 +155,7 @@ function ClassOrderCodeWindow({ t }: { t: Translate }) {
     const problems: HomeCodeWindowProblem[] = [{
         code: 'invalid-class-order',
         location: 'home.html:1:16',
-        message: t('No consistent class order followed.'),
+        message: t('Sort classes into the expected order: "rel flex px:4x font:md bg:white".'),
         severity: 'warning',
         source: '@master/css/sort-classes'
     }]
@@ -177,7 +177,7 @@ function ConflictingClassesCodeWindow({ t }: { t: Translate }) {
     const problems: HomeCodeWindowProblem[] = [{
         code: 'conflicting-class',
         location: 'home.html:1:28',
-        message: t('"m:0" is overridden by "m:md".'),
+        message: t('Remove class "m:0"; it is overridden by later class "m:md".'),
         severity: 'warning',
         source: '@master/css/no-conflicting-classes'
     }]
@@ -196,13 +196,22 @@ function ConflictingClassesCodeWindow({ t }: { t: Translate }) {
 }
 
 function CanonicalUtilitiesCodeWindow({ t }: { t: Translate }) {
-    const problems: HomeCodeWindowProblem[] = [{
-        code: 'prefer-canonical-class',
-        location: 'home.html:1:12',
-        message: t('Prefer `text-center` and `m:md`.'),
-        severity: 'warning',
-        source: '@master/css/prefer-canonical-classes'
-    }]
+    const problems: HomeCodeWindowProblem[] = [
+        {
+            code: 'prefer-canonical-class',
+            location: 'home.html:1:12',
+            message: t('Use canonical class "text-center" instead of "text-align:center".'),
+            severity: 'warning',
+            source: '@master/css/prefer-canonical-classes'
+        },
+        {
+            code: 'prefer-canonical-class',
+            location: 'home.html:1:30',
+            message: t('Use canonical class "m:md" instead of "margin:md".'),
+            severity: 'warning',
+            source: '@master/css/prefer-canonical-classes'
+        }
+    ]
 
     return (
         <HomeCodeWindow
@@ -218,13 +227,22 @@ function CanonicalUtilitiesCodeWindow({ t }: { t: Translate }) {
 }
 
 function ThemeTokensCodeWindow({ t }: { t: Translate }) {
-    const problems: HomeCodeWindowProblem[] = [{
-        code: 'prefer-canonical-class',
-        location: 'home.html:1:10',
-        message: t('Prefer theme tokens for matching raw values.'),
-        severity: 'warning',
-        source: '@master/css/prefer-canonical-classes'
-    }]
+    const problems: HomeCodeWindowProblem[] = [
+        {
+            code: 'prefer-canonical-class',
+            location: 'home.html:1:10',
+            message: t('Use canonical class "font:md" instead of "font:16px".'),
+            severity: 'warning',
+            source: '@master/css/prefer-canonical-classes'
+        },
+        {
+            code: 'prefer-canonical-class',
+            location: 'home.html:1:20',
+            message: t('Use canonical class "fg:red-60" instead of "fg:var(--color-red-60)".'),
+            severity: 'warning',
+            source: '@master/css/prefer-canonical-classes'
+        }
+    ]
 
     return (
         <HomeCodeWindow

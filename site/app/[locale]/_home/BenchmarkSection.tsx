@@ -18,7 +18,7 @@ export default function BenchmarkSection({
         <MotionSection
             homeSection={homeSections.cssCost}
             id={homeSections.cssCost}
-            className="home-section rel">
+            className="rel home-section">
             <div className="home-section-wrap">
                 <div className="home-section-copy">
                     <p className="home-section-label">{t('Fastest delivery')}</p>

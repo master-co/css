@@ -174,7 +174,7 @@ export const designSystemRows = [
             },
             {
                 title: 'Reusable native CSS',
-                body: 'Package declarations, selectors, and modes into compact component classes.',
+                body: 'Package declarations, nested selectors, mode shorthands, and condition blocks into compact component classes.',
                 visual: 'native-css-primitives'
             }
         ]
@@ -236,7 +236,7 @@ export const agentDiagnosticCards = [
     },
     {
         title: 'Safe fix preview',
-        body: 'Return fixable markup and @compose diagnostics as a reviewable preview before writes.',
+        body: 'Return fixable class lists and @compose diagnostics as a reviewable preview before writes.',
         visual: 'safe-fix-preview'
     }
 ] satisfies readonly AgentDiagnosticCardContent[]

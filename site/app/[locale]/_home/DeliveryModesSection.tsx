@@ -31,7 +31,7 @@ export default function DeliveryModesSection({ t }: { t: Translate }) {
                     <p className="home-section-body">
                         {t('Start in the browser, build a static CSS asset, or hydrate progressively without changing how teams write classes.')}
                     </p>
-                    <Link href="/guide/rendering-modes" className="home-section-link mt:lg">
+                    <Link href="/guide/rendering-modes" className="mt:lg home-section-link">
                         {t('Compare rendering modes')}
                         <IconArrowRight className="size:4x stroke:1.75" />
                     </Link>
