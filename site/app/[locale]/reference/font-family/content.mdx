@@ -65,17 +65,17 @@ Apply your custom fonts:
 
 ## Customization
 ### Use custom fonts
-Customize your font tokens by defining [theme tokens](/guide/theme). For example, add `Inter` as the general font and `Fira Code` as the code font.
+Customize your font tokens by defining [theme tokens](/guide/theme). For example, add `Geist` as the general font and `Fira Code` as the code font.
 ```css name=index.css
 @theme {
-  --font-sans: "Inter"; /* [!code ++] */
+  --font-sans: "Geist"; /* [!code ++] */
   --font-mono: "Fira Code"; /* [!code ++] */
 }
 ```
 Apply the defined `font-family` variables. For example, presetting the global fonts in `html <body>`:
 ```html
 <!-- @MARK font:sans --><!-- @MARK font:mono_:is(code,pre) -->
-<body class="font-feature-settings:'salt' font:sans font:mono_:is(code,pre)">…</body>
+<body class="font-feature-settings:'ss01' font:sans font:mono_:is(code,pre)">…</body>
 ```
 Don't forget to add the [font faces](/guide/fonts#font-faces).
 
@@ -87,7 +87,7 @@ The fastest way to declare custom font faces is through [Google Fonts](https://f
 <head>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fira+Code&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"> <!-- [!code ++] -->
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code&family=Roboto:wght@400;500;600;700;800&display=swap" rel="stylesheet"> <!-- [!code ++] -->
 </head>
 </html>
 ```
@@ -96,10 +96,11 @@ The fastest way to declare custom font faces is through [Google Fonts](https://f
 You can also self-host the fonts via native CSS, as usual.
 ```css name=styles/fonts.css
 @font-face {
-  font-family: 'Inter';
+  font-family: 'Geist';
   font-style: normal;
-  font-weight: 400;
+  font-weight: 100 900;
   font-display: swap;
-  src: url("/fonts/Inter-Regular.woff2") format("woff2");
+  src: url("/fonts/GeistVariable.woff2") format("woff2");
 }
 ```
+Self-host the complete font build when you rely on advanced OpenType features such as `font-feature-settings:'ss01'`.

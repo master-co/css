@@ -423,8 +423,18 @@ function createPreviewHTML() {
     <head>
       <style>${require('../../../../packages/preset/src/base.css?raw')}</style>
       <style>
+        @font-face {
+          font-family: Geist;
+          font-style: normal;
+          font-optical-sizing: auto;
+          font-weight: 100 900;
+          font-display: block;
+          src: url("/fonts/GeistVariable.woff2") format("woff2");
+        }
+
         body {
-          font-family: Inter, Noto Sans TC, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+          font-family: Geist, Noto Sans TC, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+          font-feature-settings: "ss01", "ss02", "ss03", "ss04", "ss05", "ss06", "ss07", "ss08", "ss09";
         }
       </style>
       <script>${require('./preview.js?raw')}</script>

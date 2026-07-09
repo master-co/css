@@ -66,26 +66,26 @@
       <rect x="1206" y="319" width="5" height="29" rx="2" fill="#6B4F31"/>
     </g>
 
-    <text x="838" y="424" font-family="Inter, Arial, Helvetica, sans-serif" font-size="22" font-weight="800" letter-spacing="3" fill="#2563EB">BUILD BETTER</text>
+    <text x="838" y="424" font-family="Geist, Arial, Helvetica, sans-serif" font-size="22" font-weight="800" letter-spacing="3" fill="#2563EB">BUILD BETTER</text>
 
-    <text x="838" y="494" font-family="Inter, Arial, Helvetica, sans-serif" font-size="52" font-weight="800" fill="#111827">
+    <text x="838" y="494" font-family="Geist, Arial, Helvetica, sans-serif" font-size="52" font-weight="800" fill="#111827">
       <tspan x="838" dy="0">Build better</tspan>
       <tspan x="838" dy="62">experiences</tspan>
     </text>
 
-    <text x="838" y="626" font-family="Inter, Arial, Helvetica, sans-serif" font-size="23" fill="#4B5563">
+    <text x="838" y="626" font-family="Geist, Arial, Helvetica, sans-serif" font-size="23" fill="#4B5563">
       <tspan x="838" dy="0">We help teams create fast, reliable,</tspan>
       <tspan x="838" dy="34">and accessible websites for everyone.</tspan>
     </text>
 
     <g id="primary-button">
       <rect x="838" y="716" width="232" height="68" rx="14" fill="url(#blueButton)"/>
-      <text x="866" y="760" font-family="Inter, Arial, Helvetica, sans-serif" font-size="24" font-weight="700" fill="#FFFFFF">Learn more</text>
+      <text x="866" y="760" font-family="Geist, Arial, Helvetica, sans-serif" font-size="24" font-weight="700" fill="#FFFFFF">Learn more</text>
       <path d="M1029 750 H1048 M1040 740 L1050 750 L1040 760" fill="none" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
     </g>
   </g>
 
   <!-- Labels -->
-  <text x="380" y="902" text-anchor="middle" font-family="Inter, Arial, Helvetica, sans-serif" font-size="42" font-weight="800" fill="#374151">Unstyled</text>
-  <text x="1060" y="902" text-anchor="middle" font-family="Inter, Arial, Helvetica, sans-serif" font-size="42" font-weight="800" fill="#374151">Styled</text>
+  <text x="380" y="902" text-anchor="middle" font-family="Geist, Arial, Helvetica, sans-serif" font-size="42" font-weight="800" fill="#374151">Unstyled</text>
+  <text x="1060" y="902" text-anchor="middle" font-family="Geist, Arial, Helvetica, sans-serif" font-size="42" font-weight="800" fill="#374151">Styled</text>
 </svg>

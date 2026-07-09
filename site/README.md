@@ -18,7 +18,7 @@ You can start editing the page by modifying `app/page.tsx`. The page auto-update
 
 [http://localhost:3000/api/hello](http://localhost:3000/api/hello) is an endpoint that uses [Route Handlers](https://rc.nextjs.org/docs/routing/route-handlers). This endpoint can be edited in `app/api/hello/route.ts`.
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+This project self-hosts Geist through `internal/fonts` and loads it from `/fonts/*`.
 
 ## Learn More
 
