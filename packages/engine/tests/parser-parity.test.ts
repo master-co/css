@@ -1,9 +1,9 @@
 import { describe, expect, test } from 'vitest'
 import { MasterCSS } from '../src'
-import { generateAt, generateSelector, parseAt, parseSelector } from '../src/compiler'
+import { generateCondition, generateSelector, parseCondition, parseSelector } from '../src/compiler'
 import { cloneManifest, createDefaultCSS } from './helpers/css-tester'
 
-describe.concurrent('compiled at-rule parser parity', () => {
+describe.concurrent('compiled condition parser parity', () => {
   const cases = [
     ['print', '@media print'],
     ['base', '@layer base'],
@@ -34,14 +34,14 @@ describe.concurrent('compiled at-rule parser parity', () => {
   ] as const
 
   test.each(cases)('%s', (input, expected) => {
-    const atRule = parseAt(input, createDefaultCSS())
-    expect(generateAt(atRule)).toBe(expected)
+    const condition = parseCondition(input, createDefaultCSS())
+    expect(generateCondition(condition)).toBe(expected)
   })
 
   test('resolves custom at-rule and condition aliases from the compiled manifest', () => {
     const manifest = cloneManifest()
-    manifest.atRules = {
-      ...(manifest.atRules || {}),
+    manifest.conditions = {
+      ...(manifest.conditions || {}),
       'supports-backdrop': {
         id: 'supports',
         nodes: [{
@@ -52,9 +52,9 @@ describe.concurrent('compiled at-rule parser parity', () => {
     }
     const css = MasterCSS.create({ manifest: manifest })
 
-    expect(generateAt(parseAt('supports-backdrop', css))).toBe('@supports (backdrop-filter:blur(0px))')
-    expect(generateAt(parseAt('container(sm)', css))).toBe('@container (width>=24rem)')
-    expect(generateAt(parseAt('container(md)', css))).toBe('@container (width>=28rem)')
+    expect(generateCondition(parseCondition('supports-backdrop', css))).toBe('@supports (backdrop-filter:blur(0px))')
+    expect(generateCondition(parseCondition('container(sm)', css))).toBe('@container (width>=24rem)')
+    expect(generateCondition(parseCondition('container(md)', css))).toBe('@container (width>=28rem)')
   })
 })
 

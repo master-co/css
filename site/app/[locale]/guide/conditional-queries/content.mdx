@@ -61,7 +61,7 @@ This applies `bg:blue-60` only when the button matches `:hover` and the `@md` co
     }
     ```
 </details>
-Use short tokens for common cases, and use raw at-rule syntax when a condition is specific to one component. Comparison operators, logical operators, and grouped conditions let you express ranges without writing separate CSS blocks.
+Use short tokens for common cases, and use raw condition syntax when a condition is specific to one component. Comparison operators, logical operators, and grouped conditions let you express ranges without writing separate CSS blocks.
 
 The same property can have different values under different conditions.
 ```html
@@ -76,8 +76,8 @@ You can also combine a selector and a query in one class.
 
 ---
 
-## Common at variants
-At variants are named conditions. Some are built in, while breakpoint tokens and mode tokens come from your project manifest.
+## Common condition variants
+Condition variants are named conditions. Some are built in, while breakpoint tokens and mode tokens come from your project manifest.
 
 | Token                         | CSS                                                       |
 |-------------------------------|-----------------------------------------------------------|
@@ -112,7 +112,7 @@ Use `@sm`, `@md`, `@lg`, and other breakpoint tokens to apply styles based on vi
 See [responsive design](/guide/responsive-design), [breakpoints](/guide/breakpoints), and [containers](/guide/containers) for the full responsive query model.
 
 ### `light`, `dark`, and custom modes
-Mode names also become at variants. `@dark` and `@light` are available by default, and custom modes are added when you define them in the project CSS entry.
+Mode names also become condition variants. `@dark` and `@light` are available by default, and custom modes are added when you define them in the project CSS entry.
 
 ```html
 <!-- @MARK @dark -->
@@ -141,7 +141,7 @@ By default, there are four layer shorthands: `@base`, `@default`, `@component`, 
         {['hidden@base', 'hidden@default', 'hidden@component', 'hidden@utility']}
     </Class2CSS>
 </details>
-You can [create an at token](/guide/theme#at-tokens) to simplify longer conditions.
+You can [create a condition variant](/guide/theme#condition-variants) to simplify longer conditions.
 
 See [cascade layers](/guide/cascade-layers) for layer order and override behavior.
 
@@ -209,7 +209,7 @@ Use `@media()` for arbitrary [CSS media queries](https://developer.mozilla.org/e
 <!-- @MARK @media(pointer:coarse) -->
 <div class="hidden@media(pointer:coarse)">
 ```
-Create an [at token](/guide/theme#at-tokens) if the same media query appears repeatedly.
+Create a [condition variant](/guide/theme#condition-variants) if the same media query appears repeatedly.
 
 ### `@supports(<feature>)`
 Use `@supports()` to apply a declaration only when the browser supports a feature.
@@ -217,7 +217,7 @@ Use `@supports()` to apply a declaration only when the browser supports a featur
 <!-- @MARK @supports(backdrop-filter(0px)) -->
 <div class="hidden@supports(backdrop-filter(0px))">
 ```
-Create an [at token](/guide/theme#at-tokens) if the same support check appears repeatedly.
+Create a [condition variant](/guide/theme#condition-variants) if the same support check appears repeatedly.
 
 ### `@layer(<name>)`
 Use `@layer()` to put a declaration in a named cascade layer.
@@ -247,7 +247,7 @@ Use `@container(<size>)` when the nearest container, not the viewport, should co
         {['container', 'hidden@container(sm)']}
     </Class2CSS>
 </details>
-Create an [at token](/guide/theme#at-tokens) if a longer container query appears repeatedly.
+Create a [condition variant](/guide/theme#condition-variants) if a longer container query appears repeatedly.
 
 See [container queries](/guide/responsive-design#based-on-container-sizes) for the full container workflow.
 
@@ -266,7 +266,7 @@ Use `@<container>(<size>)` to target a named container.
         {['container:sidebar', 'hidden@sidebar(sm)']}
     </Class2CSS>
 </details>
-When a suffix name is not a breakpoint token, mode token, or custom at token, Master CSS treats it as a named container query.
+When a suffix name is not a breakpoint token, mode token, or custom condition variant, Master CSS treats it as a named container query.
 
 ---
 
@@ -467,7 +467,7 @@ Use parentheses to group conditions before applying a logical operator to the gr
 This applies when the target is **not** a screen with any hover capability.
 
 ### Replace whitespace with parentheses
-Class names cannot contain whitespace, so at-rule arguments that would normally contain spaces are written with parentheses.
+Class names cannot contain whitespace, so condition arguments that would normally contain spaces are written with parentheses.
 
 For example, `@layer(modifiers)` becomes `@layer modifiers`.
 ```html

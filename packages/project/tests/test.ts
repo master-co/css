@@ -174,7 +174,7 @@ test('loads package entry preset manifest from CSS imports', async () => {
       value: '52.125rem',
       numeric: { value: 52.125, unit: 'rem' }
     }))
-    expect(result.manifest.breakpointAtRules?.sm).toMatchObject({
+    expect(result.manifest.breakpointConditions?.sm).toMatchObject({
       id: 'media',
       nodes: [expect.objectContaining({ type: 'number', value: 52.125, unit: 'rem' })]
     })

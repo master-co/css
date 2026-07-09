@@ -10,7 +10,7 @@ class string
   -> create()
   -> match() against variable, value, key, arbitrary manifest matchers
   -> new Utility()
-  -> parse values, functions, variables, selectors, modes, at-rules
+  -> parse values, functions, variables, selectors, modes, conditions
   -> declaration/value opcodes
   -> calcRulePriority()
   -> UtilityLayer.insert()
@@ -23,7 +23,7 @@ Main files:
 - `packages/engine/src/core.ts`
 - `packages/engine/src/utility.ts`
 - `packages/engine/src/utils/compare-rule-priority.ts`
-- `packages/engine/src/utils/parse-at.ts`
+- `packages/engine/src/utils/parse-condition.ts`
 - `packages/engine/src/utils/parse-selector.ts`
 - `packages/engine/src/utils/generate-selector.ts`
 
@@ -32,7 +32,7 @@ Risks:
 - Class matching order changes can alter valid/invalid class behavior.
 - Value parsing changes can alter many properties.
 - Priority changes can alter cascade outcomes without changing declarations.
-- Selector/at-rule parsing changes affect runtime, server, scanner, language service, and ESLint.
+- Selector/condition parsing changes affect runtime, server, scanner, language service, and ESLint.
 
 ## CSS Authoring To Manifest
 
@@ -43,7 +43,7 @@ project CSS files containing @master entry; or @import "@master/css"
   -> compiler parses @theme token/mode/keyframe directives, @settings root options, top-level @custom-variant definitions, and @defaults/@components/@utilities managed definition directives
   -> compiler lowers directive result into MasterCSSManifest
   -> build tools / ESLint / language-server receive the same semantic project manifest
-  -> MasterCSS executes manifest variables, animations, selectors, at-rules, utilities
+  -> MasterCSS executes manifest variables, animations, selectors, conditions, utilities
 ```
 
 Main files:
@@ -131,7 +131,7 @@ TextDocument + cursor
   -> @master/css-language class-position scanner / semantic tokenizer
   -> CSSLanguageService wrapper
   -> suggestSyntax / inspectSyntax / renderSyntaxColors / editSyntaxColors
-  -> query engine utilities, variables, selectors, at-rules, generated CSS
+  -> query engine utilities, variables, selectors, conditions, generated CSS
   -> LSP response through language-server
 ```
 

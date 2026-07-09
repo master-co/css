@@ -6,7 +6,7 @@ Use this pack when a task is high-risk or when a compact task pack is not enough
 
 Read deeper references before editing when touching:
 
-- CSS output, layer order, priority, selector parsing/generation, at-rule parsing/generation, values, variables, modes, animations, manifest lowering, or utility matching.
+- CSS output, layer order, priority, selector parsing/generation, condition parsing/generation, values, variables, modes, animations, manifest lowering, or utility matching.
 - Runtime hydration, CSSOM insertion/deletion, DOM observation, class counting, or global runtime bundles.
 - Static extraction, source adapters, false positives, false negatives, fixed classes, or generated CSS scanner state.
 - Language tokenization, class positions, semantic tokens, completion, hover, color features, or LSP behavior.

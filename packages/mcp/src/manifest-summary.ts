@@ -1,6 +1,6 @@
 import type {
   MasterCSSManifest,
-  MasterCSSManifestAtRules,
+  MasterCSSManifestConditions,
   MasterCSSManifestUtility,
   MasterCSSManifestVariableEntry
 } from '@master/css-engine'
@@ -15,9 +15,9 @@ export function summarizeManifest(manifest: MasterCSSManifest) {
       variableNamespaces: Object.keys(manifest.variables || {}).length,
       utilities: manifest.utilities?.length ?? 0,
       variants: manifest.variants?.length ?? 0,
-      atRules: Object.keys(manifest.atRules || {}).length,
-      breakpointAtRules: Object.keys(manifest.breakpointAtRules || {}).length,
-      containerAtRules: Object.keys(manifest.containerAtRules || {}).length,
+      conditions: Object.keys(manifest.conditions || {}).length,
+      breakpointConditions: Object.keys(manifest.breakpointConditions || {}).length,
+      containerConditions: Object.keys(manifest.containerConditions || {}).length,
       selectors: Object.keys(manifest.selectors || {}).length,
       animations: Object.keys(manifest.animations || {}).length
     }
@@ -54,8 +54,8 @@ export function compactUtility(utility: MasterCSSManifestUtility) {
   }
 }
 
-export function compactAtRules(atRules: MasterCSSManifestAtRules | undefined) {
-  return Object.entries(atRules || {}).map(([name, rule]) => ({
+export function compactConditions(conditions: MasterCSSManifestConditions | undefined) {
+  return Object.entries(conditions || {}).map(([name, rule]) => ({
     name,
     id: rule.id,
     nodes: rule.nodes.length

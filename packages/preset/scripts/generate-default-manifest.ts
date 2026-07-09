@@ -40,9 +40,9 @@ export function createDefaultManifest(cssManifest: MasterCSSManifest): MasterCSS
     ...(cssManifest.variables ? { variables: clone(cssManifest.variables) } : {}),
     ...(cssManifest.animations ? { animations: clone(cssManifest.animations) } : {}),
     ...(cssManifest.variants ? { variants: clone(cssManifest.variants) } : {}),
-    ...(cssManifest.atRules ? { atRules: clone(cssManifest.atRules) } : {}),
-    ...(cssManifest.breakpointAtRules ? { breakpointAtRules: clone(cssManifest.breakpointAtRules) } : {}),
-    ...(cssManifest.containerAtRules ? { containerAtRules: clone(cssManifest.containerAtRules) } : {}),
+    ...(cssManifest.conditions ? { conditions: clone(cssManifest.conditions) } : {}),
+    ...(cssManifest.breakpointConditions ? { breakpointConditions: clone(cssManifest.breakpointConditions) } : {}),
+    ...(cssManifest.containerConditions ? { containerConditions: clone(cssManifest.containerConditions) } : {}),
     ...(cssManifest.selectors ? { selectors: clone(cssManifest.selectors) } : {}),
     ...(cssManifest.utilities ? { utilities: clone(cssManifest.utilities) } : {})
   })

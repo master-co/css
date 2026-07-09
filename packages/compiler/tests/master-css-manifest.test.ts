@@ -104,7 +104,7 @@ describe.concurrent('createMasterCSSManifest', () => {
     expect('nativeValueNamespaces' in manifest).toBe(false)
   })
 
-  it('lowers breakpoint and container aliases into at-rule node maps', () => {
+  it('lowers breakpoint and container aliases into condition node maps', () => {
     const manifest = createMasterCSSManifest({
       variables: [
         { namespace: 'breakpoint', key: 'card', value: 777 },
@@ -112,15 +112,15 @@ describe.concurrent('createMasterCSSManifest', () => {
       ]
     })
 
-    expect(manifest.atRules?.card).toMatchObject({
+    expect(manifest.conditions?.card).toMatchObject({
       id: 'media',
       nodes: [expect.objectContaining({ type: 'number', unit: 'rem' })]
     })
-    expect(manifest.breakpointAtRules?.card).toMatchObject({
+    expect(manifest.breakpointConditions?.card).toMatchObject({
       id: 'media',
       nodes: [expect.objectContaining({ type: 'number', unit: 'rem' })]
     })
-    expect(manifest.containerAtRules?.panel).toMatchObject({
+    expect(manifest.containerConditions?.panel).toMatchObject({
       id: 'container',
       nodes: [expect.objectContaining({ type: 'number', unit: 'rem' })]
     })
@@ -153,21 +153,21 @@ describe.concurrent('createMasterCSSManifest', () => {
       type: 'string',
       value: '1rem'
     })
-    expect(manifest.breakpointAtRules?.card).toMatchObject({
+    expect(manifest.breakpointConditions?.card).toMatchObject({
       id: 'media',
       nodes: [expect.objectContaining({ type: 'number', value: 48, unit: 'rem' })]
     })
-    expect(manifest.containerAtRules?.panel).toMatchObject({
+    expect(manifest.containerConditions?.panel).toMatchObject({
       id: 'container',
       nodes: [expect.objectContaining({ type: 'number', value: 32, unit: 'rem' })]
     })
   })
 
-  it('lowers variants into compiled selector and at-rule branches', () => {
+  it('lowers variants into compiled selector and condition branches', () => {
     const manifest = createMasterCSSManifest({
       variants: [
         { token: ':hocus', branches: [{ selector: '&:hover,&:focus' }] },
-        { token: '@motion-safe', branches: [{ atRules: ['@media (prefers-reduced-motion:no-preference)'] }] }
+        { token: '@motion-safe', branches: [{ conditions: ['@media (prefers-reduced-motion:no-preference)'] }] }
       ]
     })
 
@@ -178,7 +178,7 @@ describe.concurrent('createMasterCSSManifest', () => {
       .toEqual(expect.arrayContaining([
         expect.objectContaining({ type: 'pseudo-class', value: 'hover' })
       ]))
-    expect(manifest.variants?.find((variant) => variant.token === '@motion-safe')?.branches[0].atRuleNodes)
+    expect(manifest.variants?.find((variant) => variant.token === '@motion-safe')?.branches[0].conditionNodes)
       .toEqual([
         expect.objectContaining({
           id: 'media',

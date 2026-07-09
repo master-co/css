@@ -383,10 +383,10 @@ function registerTools(server: McpServer, context: MasterCSSMCPContext) {
     'mastercss_manifest_query',
     {
       title: 'Query Master CSS Manifest',
-      description: 'Query active manifest tokens, utilities, variants, modes, at-rules, and aliases.',
+      description: 'Query active manifest tokens, utilities, variants, modes, conditions, and aliases.',
       inputSchema: {
         query: z.string().optional(),
-        kind: z.enum(['all', 'token', 'utility', 'variant', 'mode', 'at-rule', 'alias']).optional(),
+        kind: z.enum(['all', 'token', 'utility', 'variant', 'mode', 'condition', 'alias']).optional(),
         namespace: z.string().optional(),
         limit: z.number().int().min(1).max(500).optional()
       },

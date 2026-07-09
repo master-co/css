@@ -35,7 +35,7 @@ Compared with native CSS:
 Compared with Tailwind:
 
 - Syntax is closer to CSS declarations, such as `font:1.5rem`, `fg:red`, `bg:blue:hover@sm`.
-- Selectors and at-rules are first-class syntax suffixes.
+- Selectors and conditions are first-class syntax suffixes.
 - Runtime and progressive rendering are supported in addition to static rendering.
 - CSS-first manifest entries define utilities, variables, variants, modes, and animations. Reusable component classes are static utilities in the `components` layer.
 
@@ -48,7 +48,7 @@ Compared with CSS-in-JS:
 ## Core Concepts
 
 - Rule: An emitted CSS rule-like object with text and a key.
-- Utility: A parsed Master CSS class that maps to CSS declarations, selectors, at-rules, mode, priority, and layer.
+- Utility: A parsed Master CSS class that maps to CSS declarations, selectors, conditions, mode, priority, and layer.
 - Static utility: A fixed class from the compiled manifest, such as `block` or `hidden`.
 - Variable: A manifest token that can be inlined or emitted as a CSS custom property.
 - Mode: A conditional variable/style context such as `light` or `dark`.

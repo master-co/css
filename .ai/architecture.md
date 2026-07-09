@@ -71,7 +71,7 @@ Important files:
 - `packages/engine/src/core.ts`
 - `packages/engine/src/utility.ts`
 - `packages/engine/src/utils/compare-rule-priority.ts`
-- `packages/engine/src/utils/parse-at.ts`
+- `packages/engine/src/utils/parse-condition.ts`
 - `packages/engine/src/utils/parse-selector.ts`
 - `packages/engine/src/utils/generate-selector.ts`
 - `packages/preset/src/default-manifest.json`

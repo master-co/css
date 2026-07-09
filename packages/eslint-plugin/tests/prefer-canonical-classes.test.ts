@@ -37,13 +37,13 @@ const customManifest = createPresetManifest({
         rootSize: 16,
         modes: ['dark', 'midnight']
     },
-    atRules: {
+    conditions: {
         tablet: {
             id: 'media',
             nodes: [{ type: 'number', value: 48, unit: 'rem' }]
         }
     },
-    breakpointAtRules: {
+    breakpointConditions: {
         tablet: {
             id: 'media',
             nodes: [{ type: 'number', value: 48, unit: 'rem' }]
@@ -54,7 +54,7 @@ const customManifest = createPresetManifest({
         { namespace: 'spacing', key: 'card', name: 'spacing-card', type: 'number', value: '1.25rem', numeric: { value: 1.25, unit: 'rem' } }
     ],
     variants: [
-        { token: '@wide', branches: [{ atRules: ['@media (min-width: 80rem)'] }] }
+        { token: '@wide', branches: [{ conditions: ['@media (min-width: 80rem)'] }] }
     ],
     utilities: [
         {

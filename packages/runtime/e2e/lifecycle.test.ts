@@ -96,7 +96,7 @@ test('insert semantic utility with multiple native rules into existing layer', a
         rules: [
           { selector: '&', declarations: { display: 'flex' } },
           { selector: '&:hover', declarations: { color: 'red' } },
-          { selector: '&', atRules: ['@supports (appearance:none)'], declarations: { 'scrollbar-width': 'thin' } }
+          { selector: '&', conditions: ['@supports (appearance:none)'], declarations: { 'scrollbar-width': 'thin' } }
         ]
       }
     ]

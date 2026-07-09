@@ -112,7 +112,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
       value: '1rem',
       numeric: { value: 1, unit: 'rem' }
     }))
-    expect(manifest.atRules?.print).toMatchObject({
+    expect(manifest.conditions?.print).toMatchObject({
       id: 'media',
       nodes: [expect.objectContaining({ type: 'string', value: 'print' })]
     })
@@ -672,7 +672,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
     `, { baseManifest: defaultManifest })
 
     expect(customMode.css).toContain('.chrisma .card{color:green}')
-    const bareAtRule = compileCSSManifest(`
+    const bareCondition = compileCSSManifest(`
       @settings {
         mode-trigger: class;
         modes: light dark chrisma;
@@ -685,34 +685,37 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
       }
     `, { baseManifest: defaultManifest })
 
-    expect(bareAtRule.css).toContain('@chrisma')
-    expect(bareAtRule.css).not.toContain('.chrisma .card')
+    expect(bareCondition.css).toContain('@chrisma')
+    expect(bareCondition.css).not.toContain('.chrisma .card')
   })
 
-  test('rejects legacy custom variant and selector variant directive syntax', () => {
+  test('rejects legacy at-prefixed variant syntax and supports selector variants', () => {
     expect(() => compileCSSManifest(`
       @custom-variant @print {
         @media print {
           @slot;
         }
       }
-    `, { baseManifest: defaultManifest })).toThrow('@custom-variant uses bare at variant names')
+    `, { baseManifest: defaultManifest })).toThrow('@custom-variant uses bare condition variant names')
 
-    expect(() => compileCSSManifest(`
+    const result = compileCSSManifest(`
       @custom-variant :interactive {
         &:hover {
           @slot;
         }
       }
-    `, { baseManifest: defaultManifest })).toThrow('@custom-variant no longer defines selector variants')
 
-    expect(() => compileCSSManifest(`
       .card {
-        @variant :hover {
+        @variant :interactive {
           color: blue;
         }
       }
-    `, { baseManifest: defaultManifest })).toThrow('@variant no longer accepts selector variants')
+    `, { baseManifest: defaultManifest })
+
+    expect(result.manifest.variants?.find((variant) => variant.token === ':interactive')?.branches).toMatchObject([
+      { selector: '&:hover' }
+    ])
+    expect(result.css).toContain('.card:hover{color:#00f}')
   })
 
   test('replaces old JS merging intent with ordered CSS imports through baseManifest lowering', () => {
@@ -1134,11 +1137,11 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
       type: 'string',
       value: '1rem'
     })
-    expect(manifest.breakpointAtRules?.card).toMatchObject({
+    expect(manifest.breakpointConditions?.card).toMatchObject({
       id: 'media',
       nodes: [expect.objectContaining({ value: 48, unit: 'rem' })]
     })
-    expect(manifest.containerAtRules?.panel).toMatchObject({
+    expect(manifest.containerConditions?.panel).toMatchObject({
       id: 'container',
       nodes: [expect.objectContaining({ value: 32, unit: 'rem' })]
     })

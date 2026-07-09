@@ -5,7 +5,7 @@ import {
 import type MasterCSSMCPContext from './context'
 import { loadWorkspaceManifest } from './project'
 import {
-  compactAtRules,
+  compactConditions,
   compactUtility,
   compactVariable,
   summarizeManifest
@@ -13,7 +13,7 @@ import {
 
 const MANIFEST_QUERY_VERSION = 1
 
-export type ManifestQueryKind = 'all' | 'token' | 'utility' | 'variant' | 'mode' | 'at-rule' | 'alias'
+export type ManifestQueryKind = 'all' | 'token' | 'utility' | 'variant' | 'mode' | 'condition' | 'alias'
 
 export interface ManifestQueryOptions {
   query?: string
@@ -77,7 +77,7 @@ export async function queryManifest(context: MasterCSSMCPContext, options: Manif
         utilities: [],
         variants: [],
         modes: [],
-        atRules: [],
+        conditions: [],
         aliases: []
       },
       diagnostics: [
@@ -132,10 +132,10 @@ export async function queryManifest(context: MasterCSSMCPContext, options: Manif
       trigger: activeManifest.settings?.modeTrigger
     }))
 
-  const atRules = [
-    ...compactAtRules(activeManifest.atRules),
-    ...compactAtRules(activeManifest.breakpointAtRules),
-    ...compactAtRules(activeManifest.containerAtRules)
+  const conditions = [
+    ...compactConditions(activeManifest.conditions),
+    ...compactConditions(activeManifest.breakpointConditions),
+    ...compactConditions(activeManifest.containerConditions)
   ].filter((rule) => matchesAny([rule.name, rule.id], query))
 
   const aliases = (activeManifest.utilities || [])
@@ -164,7 +164,7 @@ export async function queryManifest(context: MasterCSSMCPContext, options: Manif
     utilities: kind === 'all' || kind === 'utility' ? utilities : [],
     variants: kind === 'all' || kind === 'variant' ? variants : [],
     modes: kind === 'all' || kind === 'mode' ? modes : [],
-    atRules: kind === 'all' || kind === 'at-rule' ? atRules : [],
+    conditions: kind === 'all' || kind === 'condition' ? conditions : [],
     aliases: kind === 'all' || kind === 'alias' ? aliases : []
   }
   const limitedResults = {
@@ -172,7 +172,7 @@ export async function queryManifest(context: MasterCSSMCPContext, options: Manif
     utilities: limitResults(allResults.utilities, limit),
     variants: limitResults(allResults.variants, limit),
     modes: limitResults(allResults.modes, limit),
-    atRules: limitResults(allResults.atRules, limit),
+    conditions: limitResults(allResults.conditions, limit),
     aliases: limitResults(allResults.aliases, limit)
   }
   const total = Object.values(allResults).reduce((count, items) => count + items.length, 0)
@@ -200,7 +200,7 @@ export async function queryManifest(context: MasterCSSMCPContext, options: Manif
       utilities: utilities.length,
       variants: variants.length,
       modes: modes.length,
-      atRules: atRules.length,
+      conditions: conditions.length,
       aliases: aliases.length,
       status: 'ok'
     }

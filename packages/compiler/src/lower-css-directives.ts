@@ -1,6 +1,6 @@
 import {
   CSSDirectiveError,
-  readCSSDirectiveVariantReference,
+  type CSSDirectiveConditionPathEntry,
   type CSSDirectiveManifestInput,
   type CSSDirectiveLayerName,
   type CSSDirectiveResult,
@@ -13,16 +13,17 @@ import type { PropertiesHyphen } from 'csstype'
 import {
   compareRulePriority,
   createCompilerCSS,
-  generateAt,
+  generateCondition,
   generateSelector,
-  parseAt,
+  parseCondition,
+  parseSelector,
   type GeneratedRule,
   type MasterCSS
 } from '@master/css-engine/compiler'
 import type { MasterCSSManifest, MasterCSSManifestUtilityLayerName } from '@master/css-schema/manifest'
 import { createMasterCSSManifest, createVariableNameResolver, type CSSDirectiveVariableNameResolver } from './master-css-manifest'
 import { combineStyleSelectors } from './utils/selectors'
-import wrapAtRules from './utils/wrap-at-rules'
+import wrapConditions from './utils/wrap-conditions'
 import { cssTreeNativeDeclarationMatcher } from './native-declaration'
 import {
   addCompilerDiagnosticCount,
@@ -49,11 +50,13 @@ export interface LowerCSSDirectivesResult {
 type CSSDirectiveManifestInputSource = CSSDirectiveResult | CSSDirectiveManifestInput
 type InputUtilityDefinition = CSSDirectiveUtilityDefinition
 type InputVariableDefinition = CSSDirectiveVariableDefinition
+type CSSDirectiveConditionPath = CSSDirectiveConditionPathEntry[]
+type GeneratedCondition = Parameters<typeof generateCondition>[0]
 
 interface MergedStyleDefinition {
   selector: string
   declarations: PropertiesHyphen
-  atRules?: string[]
+  conditions?: string[]
   layer?: MasterCSSManifestUtilityLayerName
 }
 
@@ -76,15 +79,15 @@ type StyleMergeEvent =
 
 interface StyleMergeBucket {
   selector: string
-  atRules?: string[]
+  conditions?: string[]
   layer?: MasterCSSManifestUtilityLayerName
   order: number
   events: StyleMergeEvent[]
 }
 
-type StyleAtRuleFeature = [string, number, number]
+type StyleConditionFeature = [string, number, number]
 
-const STYLE_AT_FEATURE_REGEX = /\(\s*(width|height|resolution)\s*(>=|<=|>|<)\s*(-?(?:\d+(?:\.\d+)?|\.\d+))([a-z%]*)\s*\)/g
+const STYLE_CONDITION_FEATURE_REGEX = /\(\s*(width|height|resolution)\s*(>=|<=|>|<)\s*(-?(?:\d+(?:\.\d+)?|\.\d+))([a-z%]*)\s*\)/g
 const MEDIA_MODE_NAMES = new Set(['light', 'dark'])
 const DEFAULT_MODE_NONE = 'none'
 const CONDITION_VARIABLE_NAMESPACES = new Set(['breakpoint', 'container'])
@@ -108,6 +111,24 @@ function getResolutionManifest(options: LowerCSSDirectivesOptions) {
 function warn(warnings: string[], options: LowerCSSDirectivesOptions, message: string) {
   warnings.push(message)
   options.onWarning?.(message)
+}
+
+function cloneConditionPath(conditionPath: CSSDirectiveConditionPath | undefined) {
+  return conditionPath?.map((entry) => ({ ...entry }))
+}
+
+function conditionPathFromConditions(conditions: string[] | undefined): CSSDirectiveConditionPath | undefined {
+  return conditions?.length
+    ? conditions.map((value) => ({ type: 'condition', value }))
+    : undefined
+}
+
+function getConditionPath(definition: { conditions?: string[], conditionPath?: CSSDirectiveConditionPath }): CSSDirectiveConditionPath | undefined {
+  return cloneConditionPath(definition.conditionPath) || conditionPathFromConditions(definition.conditions)
+}
+
+function conditionPathHasVariants(conditionPath: CSSDirectiveConditionPath | undefined) {
+  return conditionPath?.some((entry) => entry.type === 'variant') || false
 }
 
 function isNamedDefaultMode(defaultMode: CSSDirectiveManifestInput['defaultMode']): defaultMode is string {
@@ -160,7 +181,8 @@ function cloneUtilityRule(rule: CSSDirectiveUtilityRuleDefinition): CSSDirective
   return {
     declarations: { ...rule.declarations },
     ...(rule.selector ? { selector: rule.selector } : {}),
-    ...(rule.atRules?.length ? { atRules: [...rule.atRules] } : {})
+    ...(rule.conditions?.length ? { conditions: [...rule.conditions] } : {}),
+    ...(rule.conditionPath?.length ? { conditionPath: cloneConditionPath(rule.conditionPath) } : {})
   }
 }
 
@@ -179,7 +201,8 @@ function cloneUtility(definition: InputUtilityDefinition): CSSDirectiveUtilityDe
       }
     } : {}),
     ...(definition.declarations ? { declarations: { ...definition.declarations } } : {}),
-    ...(definition.atRules?.length ? { atRules: [...definition.atRules] } : {}),
+    ...(definition.conditions?.length ? { conditions: [...definition.conditions] } : {}),
+    ...(definition.conditionPath?.length ? { conditionPath: cloneConditionPath(definition.conditionPath) } : {}),
     ...(definition.rules?.length ? { rules: definition.rules.map(cloneUtilityRule) } : {})
   }
 }
@@ -198,7 +221,7 @@ function normalizeDirectiveInput(input: CSSDirectiveManifestInputSource = {}, op
     token: variant.token,
     branches: variant.branches.map((branch) => ({
       ...branch,
-      ...(branch.atRules?.length ? { atRules: [...branch.atRules] } : {})
+      ...(branch.conditions?.length ? { conditions: [...branch.conditions] } : {})
     }))
   }))
   if (source.animations) normalized.animations = { ...source.animations }
@@ -287,17 +310,17 @@ function createDirectiveCSS(input: CSSDirectiveManifestInput, options: LowerCSSD
   }))
 }
 
-function getUtilityAtRuleDefinitions(utility: GeneratedRule) {
-  const atRules: string[] = []
-  if (utility.atRules) {
+function getUtilityConditionDefinitions(utility: GeneratedRule) {
+  const conditions: string[] = []
+  if (utility.conditions) {
     for (const id of ['container', 'starting-style', 'supports', 'media', 'layer'] as const) {
-      const nodes = utility.atRules[id]
+      const nodes = utility.conditions[id]
       if (!nodes) continue
       if (id === 'layer' && utility.explicitLayerName) continue
-      atRules.push(generateAt({ id, nodes }))
+      conditions.push(generateCondition({ id, nodes }))
     }
   }
-  return atRules
+  return conditions
 }
 
 function getComposedUtilitySelector(utility: GeneratedRule, css: MasterCSS) {
@@ -340,15 +363,15 @@ function createStyleDefinitionsFromCompose(definition: Extract<CSSDirectiveStyle
   return utilities.flatMap((utility) => {
     const selector = getComposedUtilitySelector(utility, css)
     const layer = utility.explicitLayerName
-    const utilityAtRules = getUtilityAtRuleDefinitions(utility)
+    const utilityConditions = getUtilityConditionDefinitions(utility)
     const declarationRules = utility.declarationRules || (utility.declarations ? [{ declarations: utility.declarations }] : [])
-    return declarationRules.map(({ declarations, atRules, selector: ruleSelector }) => ({
+    return declarationRules.map(({ declarations, conditions, selector: ruleSelector }) => ({
       utility,
       selector: ruleSelector ? combineStyleSelectors(selector, ruleSelector) : selector,
       declarations: cloneDeclarations(declarations, utility.important),
       ...(layer ? { layer } : {}),
-      ...([...utilityAtRules, ...(atRules || [])].length
-        ? { atRules: [...utilityAtRules, ...(atRules || [])] }
+      ...([...utilityConditions, ...(conditions || [])].length
+        ? { conditions: [...utilityConditions, ...(conditions || [])] }
         : {})
     }))
   })
@@ -421,13 +444,13 @@ function resolveSelectorAliases(selector: string, css: MasterCSS) {
 
 interface ResolvedStyleBranch {
   selector: string
-  atRules?: string[]
+  conditions?: string[]
   layer?: MasterCSSManifestUtilityLayerName
 }
 
 interface ResolvedVariantReferenceBranch {
   selector?: string
-  atRules?: string[]
+  conditions?: string[]
   layer?: MasterCSSManifestUtilityLayerName
 }
 
@@ -444,7 +467,7 @@ function mergeResolvedVariantReferenceBranch(
     selector: resolved.selector
       ? combineSelectorWrapper(branch.selector || '&', resolved.selector)
       : branch.selector,
-    atRules: [...(branch.atRules || []), ...(resolved.atRules || [])],
+    conditions: [...(branch.conditions || []), ...(resolved.conditions || [])],
     ...(nextLayer ? { layer: nextLayer } : {})
   }
 }
@@ -454,34 +477,41 @@ function cloneConfiguredVariantBranches(token: string, css: MasterCSS): Resolved
   if (configuredVariant) {
     return configuredVariant.map((branch) => ({
       ...(branch.selector ? { selector: branch.selector } : {}),
-      ...(branch.atRules?.length ? { atRules: [...branch.atRules] } : {}),
+      ...(branch.conditions?.length
+        ? { conditions: [...branch.conditions] }
+        : branch.conditionNodes?.length
+          ? { conditions: branch.conditionNodes.map((condition) => generateCondition(condition as GeneratedCondition)) }
+          : {}),
       ...(branch.layer ? { layer: branch.layer } : {})
     }))
   }
 }
 
-function resolveAtVariantReference(token: string, css: MasterCSS): ResolvedVariantReferenceBranch[] {
+function resolveSelectorVariantReference(token: string, css: MasterCSS): ResolvedVariantReferenceBranch[] {
   const configuredVariant = cloneConfiguredVariantBranches(token, css)
   if (configuredVariant) return configuredVariant
-  const atToken = token.slice(1)
-  if (css.modes.includes(atToken)) {
-    const modeSelector = css.getModeSelector(atToken)
+  return [{ selector: generateSelector(parseSelector(token, css), '&') }]
+}
+
+function resolveConditionVariantReference(token: string, css: MasterCSS): ResolvedVariantReferenceBranch[] {
+  const configuredVariant = cloneConfiguredVariantBranches(token, css)
+  if (configuredVariant) return configuredVariant
+  const conditionToken = token.slice(1)
+  if (css.modes.includes(conditionToken)) {
+    const modeSelector = css.getModeSelector(conditionToken)
     return modeSelector
       ? [{ selector: `${modeSelector} &` }]
-      : [{ atRules: [`@media (prefers-color-scheme:${atToken})`] }]
+      : [{ conditions: [`@media (prefers-color-scheme:${conditionToken})`] }]
   }
 
-  if (/^-?[_a-zA-Z][-_a-zA-Z0-9]*$/.test(atToken) && !css.atRules.has(atToken)) {
+  if (/^-?[_a-zA-Z][-_a-zA-Z0-9]*$/.test(conditionToken) && !css.conditions.has(conditionToken)) {
     throw new Error(`Unknown @variant token: ${token}`)
   }
 
-  return [{ atRules: [generateAt(parseAt(atToken, css))] }]
+  return [{ conditions: [generateCondition(parseCondition(conditionToken, css))] }]
 }
 
 function resolveMasterVariantReference(token: string, css: MasterCSS): ResolvedVariantReferenceBranch[] {
-  if (token.startsWith(':')) {
-    throw new Error('@variant no longer accepts selector variants. Use nested selectors directly.')
-  }
   if (!token.startsWith('@')) {
     throw new Error(`@variant requires a full variant token: ${token}`)
   }
@@ -491,7 +521,7 @@ function resolveMasterVariantReference(token: string, css: MasterCSS): ResolvedV
 
   for (const conditionStack of conditionStacks) {
     if (!conditionStack) continue
-    const resolvedBranches = resolveAtVariantReference(`@${conditionStack}`, css)
+    const resolvedBranches = resolveConditionVariantReference(`@${conditionStack}`, css)
     branches = branches.flatMap((branch) =>
       resolvedBranches.map((resolved) => mergeResolvedVariantReferenceBranch(branch, resolved, token))
     )
@@ -500,26 +530,28 @@ function resolveMasterVariantReference(token: string, css: MasterCSS): ResolvedV
   return branches
 }
 
-function resolveConfiguredBranches(atRules: string[] | undefined, css: MasterCSS, selector = '&', layer?: MasterCSSManifestUtilityLayerName): ResolvedStyleBranch[] {
+function resolveConfiguredBranches(conditionPath: CSSDirectiveConditionPath | undefined, css: MasterCSS, selector = '&', layer?: MasterCSSManifestUtilityLayerName): ResolvedStyleBranch[] {
   let branches: ResolvedStyleBranch[] = [{ selector, ...(layer ? { layer } : {}) }]
-  if (!atRules?.length) {
+  if (!conditionPath?.length) {
     return branches.map((branch) => ({
       ...branch,
       selector: resolveSelectorAliases(branch.selector, css)
     }))
   }
 
-  for (const atRule of atRules) {
-    const token = readCSSDirectiveVariantReference(atRule)
-    if (!token) {
+  for (const entry of conditionPath) {
+    if (entry.type === 'condition') {
       branches = branches.map((branch) => ({
         ...branch,
-        atRules: [...(branch.atRules || []), atRule]
+        conditions: [...(branch.conditions || []), entry.value]
       }))
       continue
     }
 
-    const resolvedBranches = resolveMasterVariantReference(token, css)
+    const token = entry.token
+    const resolvedBranches = token.startsWith(':')
+      ? resolveSelectorVariantReference(token, css)
+      : resolveMasterVariantReference(token, css)
     branches = branches.flatMap((branch) =>
       resolvedBranches.map((resolved) => {
         const nextLayer = resolved.layer || branch.layer
@@ -530,7 +562,7 @@ function resolveConfiguredBranches(atRules: string[] | undefined, css: MasterCSS
           selector: resolved.selector
             ? combineSelectorWrapper(branch.selector, resolved.selector)
             : branch.selector,
-          atRules: [...(branch.atRules || []), ...(resolved.atRules || [])],
+          conditions: [...(branch.conditions || []), ...(resolved.conditions || [])],
           ...(nextLayer ? { layer: nextLayer } : {})
         }
       })
@@ -539,7 +571,7 @@ function resolveConfiguredBranches(atRules: string[] | undefined, css: MasterCSS
 
   return branches.map((branch) => ({
     selector: resolveSelectorAliases(branch.selector, css),
-    ...(branch.atRules?.length ? { atRules: branch.atRules } : {}),
+    ...(branch.conditions?.length ? { conditions: branch.conditions } : {}),
     ...(branch.layer ? { layer: branch.layer } : {})
   }))
 }
@@ -548,11 +580,17 @@ function ensureUtilityRules(definition: CSSDirectiveUtilityDefinition) {
   if (!definition.declarations) return
   const declarations = definition.declarations
   delete definition.declarations
-  const atRules = definition.atRules
-  delete definition.atRules
+  const conditions = definition.conditions
+  delete definition.conditions
+  const conditionPath = definition.conditionPath
+  delete definition.conditionPath
   definition.rules ??= []
   definition.rules.push({
-    ...(atRules?.length ? { atRules: [...atRules] } : {}),
+    ...(conditionPath?.length
+      ? { conditionPath: cloneConditionPath(conditionPath) }
+      : conditions?.length
+        ? { conditions: [...conditions] }
+        : {}),
     declarations
   })
 }
@@ -564,16 +602,18 @@ function finalizeUtilityDefinitions(input: CSSDirectiveManifestInput, css: Maste
   const diagnostics = options.diagnostics
   setCompilerDiagnosticCount(diagnostics, 'lower-utility-definition-count', utilities.length)
   for (const definition of utilities) {
-    if (definition.atRules?.some(readCSSDirectiveVariantReference)) {
-      const resolvedBranches = timeCompilerDiagnostic(diagnostics, 'lower-utility-at-rule-resolution-ms', () => resolveConfiguredBranches(definition.atRules, css))
-      delete definition.atRules
+    const definitionConditionPath = getConditionPath(definition)
+    if (conditionPathHasVariants(definitionConditionPath)) {
+      const resolvedBranches = timeCompilerDiagnostic(diagnostics, 'lower-utility-condition-resolution-ms', () => resolveConfiguredBranches(definitionConditionPath, css))
+      delete definition.conditions
+      delete definition.conditionPath
       if (definition.declarations) {
         definition.rules ??= []
         for (const resolved of resolvedBranches) {
           definition.rules.push({
             declarations: definition.declarations,
             ...(resolved.selector !== '&' ? { selector: resolved.selector } : {}),
-            ...(resolved.atRules?.length ? { atRules: resolved.atRules } : {})
+            ...(resolved.conditions?.length ? { conditions: resolved.conditions } : {})
           })
         }
         delete definition.declarations
@@ -582,31 +622,31 @@ function finalizeUtilityDefinitions(input: CSSDirectiveManifestInput, css: Maste
 
     if (!definition.rules?.length) continue
     definition.rules = definition.rules.flatMap((rule) => {
-      const resolvedBranches = timeCompilerDiagnostic(diagnostics, 'lower-utility-rule-resolution-ms', () => resolveConfiguredBranches(rule.atRules, css, rule.selector || '&'))
+      const resolvedBranches = timeCompilerDiagnostic(diagnostics, 'lower-utility-rule-resolution-ms', () => resolveConfiguredBranches(getConditionPath(rule), css, rule.selector || '&'))
       return resolvedBranches.map((resolved) => ({
         declarations: rule.declarations,
         ...(resolved.selector !== '&' ? { selector: resolved.selector } : {}),
-        ...(resolved.atRules?.length ? { atRules: resolved.atRules } : {})
+        ...(resolved.conditions?.length ? { conditions: resolved.conditions } : {})
       }))
     })
   }
 }
 
-function getStyleMergeBucketKey(selector: string, atRules: string[] | undefined, layer: MasterCSSManifestUtilityLayerName | undefined) {
-  return JSON.stringify([layer || '', selector, atRules || []])
+function getStyleMergeBucketKey(selector: string, conditions: string[] | undefined, layer: MasterCSSManifestUtilityLayerName | undefined) {
+  return JSON.stringify([layer || '', selector, conditions || []])
 }
 
 function pushStyleMergeEvent(
   buckets: Map<string, StyleMergeBucket>,
   selector: string,
-  atRules: string[] | undefined,
+  conditions: string[] | undefined,
   layer: MasterCSSManifestUtilityLayerName | undefined,
   event: StyleMergeEvent
 ) {
-  const key = getStyleMergeBucketKey(selector, atRules, layer)
+  const key = getStyleMergeBucketKey(selector, conditions, layer)
   const bucket = buckets.get(key) || {
     selector,
-    ...(atRules?.length ? { atRules } : {}),
+    ...(conditions?.length ? { conditions } : {}),
     ...(layer ? { layer } : {}),
     order: event.order,
     events: []
@@ -661,22 +701,22 @@ function createMergedStyleDefinition(bucket: StyleMergeBucket): MergedStyleDefin
   return {
     selector: bucket.selector,
     declarations,
-    ...(bucket.atRules?.length ? { atRules: bucket.atRules } : {}),
+    ...(bucket.conditions?.length ? { conditions: bucket.conditions } : {}),
     ...(bucket.layer ? { layer: bucket.layer } : {})
   }
 }
 
-function normalizeStyleAtFeatureValue(value: number, unit: string, rootSize: number) {
+function normalizeStyleConditionFeatureValue(value: number, unit: string, rootSize: number) {
   if (unit === 'px') return value / rootSize
   return value
 }
 
-function getStyleAtRuleFeatures(atRules: string[] | undefined, rootSize: number) {
+function getStyleConditionFeatures(conditions: string[] | undefined, rootSize: number) {
   const featureMap = new Map<string, { min?: number, max?: number }>()
-  for (const atRule of atRules || []) {
-    for (const match of atRule.matchAll(STYLE_AT_FEATURE_REGEX)) {
+  for (const condition of conditions || []) {
+    for (const match of condition.matchAll(STYLE_CONDITION_FEATURE_REGEX)) {
       const [, name, operator, rawValue, unit] = match
-      const value = normalizeStyleAtFeatureValue(Number(rawValue), unit, rootSize)
+      const value = normalizeStyleConditionFeatureValue(Number(rawValue), unit, rootSize)
       const entry = featureMap.get(name) ?? {}
       switch (operator) {
         case '>':
@@ -700,11 +740,11 @@ function getStyleAtRuleFeatures(atRules: string[] | undefined, rootSize: number)
       name,
       entry.min ?? 0,
       entry.max ?? Number.MAX_SAFE_INTEGER
-    ] as StyleAtRuleFeature)
+    ] as StyleConditionFeature)
     .sort(([a], [b]) => a.localeCompare(b, undefined, { numeric: true }))
 }
 
-function compareStyleAtRuleFeatures(a: StyleAtRuleFeature[], b: StyleAtRuleFeature[]) {
+function compareStyleConditionFeatures(a: StyleConditionFeature[], b: StyleConditionFeature[]) {
   const len = Math.max(a.length, b.length)
   for (let index = 0; index < len; index++) {
     const left = a[index]
@@ -728,14 +768,14 @@ function compareStyleMergeBuckets(a: StyleMergeBucket, b: StyleMergeBucket, root
   const layerA = a.layer || 'components'
   const layerB = b.layer || 'components'
   if (layerA === layerB && a.selector === b.selector) {
-    const atRuleStateA = a.atRules?.length ? 1 : 0
-    const atRuleStateB = b.atRules?.length ? 1 : 0
-    if (atRuleStateA !== atRuleStateB) return atRuleStateA - atRuleStateB
-    if (atRuleStateA && atRuleStateB) {
-      const featuresA = getStyleAtRuleFeatures(a.atRules, rootSize)
-      const featuresB = getStyleAtRuleFeatures(b.atRules, rootSize)
+    const conditionStateA = a.conditions?.length ? 1 : 0
+    const conditionStateB = b.conditions?.length ? 1 : 0
+    if (conditionStateA !== conditionStateB) return conditionStateA - conditionStateB
+    if (conditionStateA && conditionStateB) {
+      const featuresA = getStyleConditionFeatures(a.conditions, rootSize)
+      const featuresB = getStyleConditionFeatures(b.conditions, rootSize)
       if (featuresA.length && featuresB.length) {
-        const featureCompare = compareStyleAtRuleFeatures(featuresA, featuresB)
+        const featureCompare = compareStyleConditionFeatures(featuresA, featuresB)
         if (featureCompare !== 0) return featureCompare
       }
     }
@@ -749,25 +789,25 @@ function createMergedStyleDefinitions(definitions: CSSDirectiveStyleDefinition[]
     if (definition.type === 'compose') {
       const composedDefinitions = createStyleDefinitionsFromCompose(definition, css)
       for (const composedDefinition of composedDefinitions) {
-        const { atRules: composedAtRules, ...composedDefinitionWithoutAtRules } = composedDefinition
+        const { conditions: composedConditions, ...composedDefinitionWithoutConditions } = composedDefinition
         const selector = combineStyleSelectors(definition.selector, composedDefinition.selector)
         const resolvedBranches = resolveConfiguredBranches([
-          ...(definition.atRules || []),
-          ...(composedAtRules || [])
-        ], css, selector, targetLayer || composedDefinitionWithoutAtRules.layer)
+          ...(getConditionPath(definition) || []),
+          ...(conditionPathFromConditions(composedConditions) || [])
+        ], css, selector, targetLayer || composedDefinitionWithoutConditions.layer)
         for (const resolved of resolvedBranches) {
-          pushStyleMergeEvent(buckets, resolved.selector, resolved.atRules, resolved.layer, {
+          pushStyleMergeEvent(buckets, resolved.selector, resolved.conditions, resolved.layer, {
             type: 'compose',
             order: definition.order,
-            utility: composedDefinitionWithoutAtRules.utility,
-            declarations: composedDefinitionWithoutAtRules.declarations
+            utility: composedDefinitionWithoutConditions.utility,
+            declarations: composedDefinitionWithoutConditions.declarations
           })
         }
       }
     } else {
-      const resolvedBranches = resolveConfiguredBranches(definition.atRules, css, definition.selector, targetLayer || definition.layer)
+      const resolvedBranches = resolveConfiguredBranches(getConditionPath(definition), css, definition.selector, targetLayer || definition.layer)
       for (const resolved of resolvedBranches) {
-        pushStyleMergeEvent(buckets, resolved.selector, resolved.atRules, resolved.layer, {
+        pushStyleMergeEvent(buckets, resolved.selector, resolved.conditions, resolved.layer, {
           type: 'native',
           order: definition.order,
           declarations: definition.declarations
@@ -900,7 +940,7 @@ function renderStyleDefinitions(definitions: MergedStyleDefinition[]) {
     const body = Object.entries(definition.declarations)
       .map(([propertyName, value]) => `${propertyName}:${value}`)
       .join(';')
-    return wrapAtRules(`${definition.selector}{${body}}`, definition.atRules)
+    return wrapConditions(`${definition.selector}{${body}}`, definition.conditions)
   }).join('')
 }
 
@@ -928,9 +968,9 @@ function pushStaticUtilityStyleRule(definition: CSSDirectiveUtilityDefinition, s
   const rule: CSSDirectiveUtilityRuleDefinition = {
     declarations: styleDefinition.declarations as Record<string, string>,
     ...(styleDefinition.selector !== '&' ? { selector: styleDefinition.selector } : {}),
-    ...(styleDefinition.atRules?.length ? { atRules: styleDefinition.atRules } : {})
+    ...(styleDefinition.conditions?.length ? { conditions: styleDefinition.conditions } : {})
   }
-  if (!definition.declarations && !definition.rules?.length && !rule.selector && !rule.atRules?.length) {
+  if (!definition.declarations && !definition.rules?.length && !rule.selector && !rule.conditions?.length) {
     definition.declarations = rule.declarations
     return
   }

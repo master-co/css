@@ -1,5 +1,5 @@
 import { Utility } from '../utility'
-import { AtRuleNode } from './parse-at'
+import { ConditionNode } from './parse-condition'
 import { SelectorNode } from './parse-selector'
 import naturalCompare from './natural-compare'
 
@@ -9,7 +9,7 @@ export type RulePriority = {
   selector: number
 }
 
-type ComparableRule = Pick<Utility, 'priority' | 'type' | 'key'> & Partial<Pick<Utility, 'atRules' | 'mode' | 'selectorNodes'>> & {
+type ComparableRule = Pick<Utility, 'priority' | 'type' | 'key'> & Partial<Pick<Utility, 'conditions' | 'mode' | 'selectorNodes'>> & {
   sortTier?: number
 }
 
@@ -42,9 +42,9 @@ const NOT_COMPARISON_OPERATORS = {
   '<': '>=',
 }
 
-function getAtRuleEntries(nestNodes?: AtRuleNode[]) {
+function getConditionEntries(nestNodes?: ConditionNode[]) {
   const featureMap = new Map<string, { min?: number; max?: number }>()
-  const walk = (list?: AtRuleNode[], isOutsideNot = false) => {
+  const walk = (list?: ConditionNode[], isOutsideNot = false) => {
     (list ?? []).forEach((node, i, arr) => {
       const prev = arr[i - 1]
       if ('operator' in node) {
@@ -82,16 +82,16 @@ function getAtRuleEntries(nestNodes?: AtRuleNode[]) {
 // ✅ Calculate RulePriority from AST
 export function calcRulePriority(rule: Utility): RulePriority {
   const features: [string, number, number][] = []
-  const extractFeatures = (nodes: AtRuleNode[]) => {
-    const featureMap = getAtRuleEntries(nodes)
+  const extractFeatures = (nodes: ConditionNode[]) => {
+    const featureMap = getConditionEntries(nodes)
     for (const [name, entry] of featureMap.entries()) {
       const max = entry.max ?? Number.MAX_SAFE_INTEGER
       const min = entry.min ?? 0
       features.push([name, min, max])
     }
   }
-  if (rule.atRules?.media) extractFeatures(rule.atRules.media)
-  if (rule.atRules?.container) extractFeatures(rule.atRules.container)
+  if (rule.conditions?.media) extractFeatures(rule.conditions.media)
+  if (rule.conditions?.container) extractFeatures(rule.conditions.container)
   features.sort(([a], [b]) => naturalCompare(a, b))
   const selector = extractSelectorPriority(rule.selectorNodes ?? [])
   return {
@@ -123,12 +123,12 @@ function compareFeatureTuples(
   return 0
 }
 
-export function getRuleSortTier(rule: Partial<Pick<Utility, 'atRules' | 'mode' | 'selectorNodes'>> & { sortTier?: number }): number {
+export function getRuleSortTier(rule: Partial<Pick<Utility, 'conditions' | 'mode' | 'selectorNodes'>> & { sortTier?: number }): number {
   if (typeof rule.sortTier === 'number') return rule.sortTier
   const hasSelector = rule.selectorNodes?.length
-  const hasAtRules = !!rule.atRules
+  const hasConditions = !!rule.conditions
   const hasMode = !!rule.mode
-  if (hasAtRules) return 3
+  if (hasConditions) return 3
   if (hasMode) return 2
   if (hasSelector) return 1
   return 0

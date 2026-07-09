@@ -159,7 +159,7 @@ Use `@theme inline` when a token is only a utility shorthand and should not emit
 Inline tokens can reference other inline tokens. If an inline token references a regular theme token, Master CSS keeps the regular `var(--*)` reference and emits that regular token when needed. Inline tokens cannot be mode-specific; use normal `@theme light` and `@theme dark` blocks when a value must change by mode.
 
 ### Breakpoint and container tokens
-Responsive thresholds are theme tokens too. Define `breakpoint` variables for viewport at-rule suffixes, and define `container` variables for container query thresholds and width caps.
+Responsive thresholds are theme tokens too. Define `breakpoint` variables for viewport condition suffixes, and define `container` variables for container query thresholds and width caps.
 
 ```css name=index.css
 @theme {
@@ -290,9 +290,9 @@ document.documentElement.classList.add(value)
 ---
 
 ## Named conditions and selectors
-Named conditions belong in the theme when they become shared product vocabulary. Built-in selector aliases stay available to markup and CSS-authored styles without adding them to the theme.
+Named conditions and selectors belong in the theme when they become shared product vocabulary. Built-in selector aliases stay available to markup and CSS-authored styles without adding them to the theme.
 
-### At variants
+### Condition variants
 Native CSS cannot store full `@media`, `@supports`, or `@container` rules in CSS variables. Master CSS uses `@custom-variant` to name those reusable conditions.
 
 ```css name=index.css
@@ -313,7 +313,7 @@ The token is written bare in the definition and in CSS `@variant` blocks. In mar
 ```
 {/* eslint-enable @master/css/no-invalid-classes */}
 
-### At variants in CSS rules
+### Condition variants in CSS rules
 Inside managed definitions and native style rules, use `@variant` blocks instead of putting conditional suffixes inside `@compose`.
 
 ```css name=index.css
@@ -334,7 +334,7 @@ Inside managed definitions and native style rules, use `@variant` blocks instead
 }
 ```
 
-`@variant` accepts custom condition variants, breakpoint tokens such as `md`, mode names such as `dark`, and raw Master CSS at syntax such as `<sm`.
+`@variant` accepts custom condition variants, breakpoint tokens such as `md`, mode names such as `dark`, and raw Master CSS condition syntax such as `<sm`.
 
 ### Built-in selector aliases
 Selector aliases name common selectors in class suffixes. The default set is built into the engine, so they are available without `@custom-variant`.
@@ -355,8 +355,34 @@ Use native selector syntax directly when a selector is not a built-in alias:
 </article>
 ```
 
+### Custom selector variants
+Use `@custom-variant` with a `:` or `::` token when a selector becomes shared vocabulary.
+
+```css name=index.css
+@custom-variant :interactive {
+  &:is(:hover, :focus-visible) {
+    @slot;
+  }
+}
+
+@components {
+  btn {
+    @variant :interactive {
+      @compose text:blue;
+    }
+  }
+}
+```
+
+The same selector variant works in class suffixes:
+
+```html
+<!-- @MARK :interactive -->
+<button class="fg:blue:interactive">...</button>
+```
+
 ### Selectors in CSS rules
-Inside CSS-defined style rules, write nested selectors directly instead of putting selector suffixes inside `@compose` or `@variant`.
+Inside CSS-defined style rules, write nested selectors directly for one-off selectors. Use `@variant` when the selector is a reusable custom variant.
 
 ```css name=index.css
 @components {
@@ -371,9 +397,9 @@ Inside CSS-defined style rules, write nested selectors directly instead of putti
 ```
 
 ### Naming rules
-Breakpoint variables automatically create at variants such as `@md`, and modes automatically create at variants such as `@dark`. Custom at token names cannot start with `@`, `:`, or `::`, and cannot conflict with breakpoint or mode names.
+Breakpoint variables automatically create condition variants such as `@md`, and modes automatically create condition variants such as `@dark`. Custom condition token names cannot start with `@`, `:`, or `::`, and cannot conflict with breakpoint or mode names.
 
-Selector suffixes use `:` or `::`, while conditional variants use `@`. `@custom-variant` only defines condition variants.
+Selector variants use `:` or `::`, while condition variants use `@`. `@custom-variant` can define either shape.
 
 ---
 

@@ -1,7 +1,7 @@
 import type { PropertiesHyphen } from 'csstype'
 import type { UtilityType } from './utility-type.js'
 
-export type MasterCSSManifestAtIdentifier = 'container' | 'starting-style' | 'supports' | 'media' | 'layer'
+export type MasterCSSManifestConditionIdentifier = 'container' | 'starting-style' | 'supports' | 'media' | 'layer'
 export type MasterCSSManifestUtilityLayerName = 'base' | 'defaults' | 'components' | 'utilities'
 export type MasterCSSManifestDefaultMode = 'light' | 'dark' | 'none' | string
 export type MasterCSSManifestModeTrigger = 'class' | 'media' | 'host'
@@ -19,27 +19,27 @@ export interface MasterCSSManifestVariableNumericValue {
   unit?: string
 }
 
-export interface MasterCSSManifestAtRuleBooleanNode { raw?: string, name: string, type: 'boolean' }
-export interface MasterCSSManifestAtRuleNumberNode { raw?: string, name?: string, type: 'number', value: number, unit?: string, operator?: string }
-export interface MasterCSSManifestAtRuleStringNode { raw?: string, name?: string, type: 'string', value: string }
-export type MasterCSSManifestAtRuleValueNode = MasterCSSManifestAtRuleNumberNode | MasterCSSManifestAtRuleStringNode
-export interface MasterCSSManifestAtRuleComparisonOperatorNode { type: 'comparison', raw?: string, value: string }
-export interface MasterCSSManifestAtRuleLogicalOperatorNode { type: 'logical', raw?: string, value: string }
-export type MasterCSSManifestAtRuleOperatorNode = MasterCSSManifestAtRuleComparisonOperatorNode | MasterCSSManifestAtRuleLogicalOperatorNode
-export interface MasterCSSManifestAtRuleGroupNode { type?: 'group', raw?: string, children: MasterCSSManifestAtRuleNode[] }
-export type MasterCSSManifestAtRuleNode =
-  | MasterCSSManifestAtRuleBooleanNode
-  | MasterCSSManifestAtRuleValueNode
-  | MasterCSSManifestAtRuleComparisonOperatorNode
-  | MasterCSSManifestAtRuleLogicalOperatorNode
-  | MasterCSSManifestAtRuleGroupNode
+export interface MasterCSSManifestConditionBooleanNode { raw?: string, name: string, type: 'boolean' }
+export interface MasterCSSManifestConditionNumberNode { raw?: string, name?: string, type: 'number', value: number, unit?: string, operator?: string }
+export interface MasterCSSManifestConditionStringNode { raw?: string, name?: string, type: 'string', value: string }
+export type MasterCSSManifestConditionValueNode = MasterCSSManifestConditionNumberNode | MasterCSSManifestConditionStringNode
+export interface MasterCSSManifestConditionComparisonOperatorNode { type: 'comparison', raw?: string, value: string }
+export interface MasterCSSManifestConditionLogicalOperatorNode { type: 'logical', raw?: string, value: string }
+export type MasterCSSManifestConditionOperatorNode = MasterCSSManifestConditionComparisonOperatorNode | MasterCSSManifestConditionLogicalOperatorNode
+export interface MasterCSSManifestConditionGroupNode { type?: 'group', raw?: string, children: MasterCSSManifestConditionNode[] }
+export type MasterCSSManifestConditionNode =
+  | MasterCSSManifestConditionBooleanNode
+  | MasterCSSManifestConditionValueNode
+  | MasterCSSManifestConditionComparisonOperatorNode
+  | MasterCSSManifestConditionLogicalOperatorNode
+  | MasterCSSManifestConditionGroupNode
 
-export interface MasterCSSManifestAtRule {
-  id: MasterCSSManifestAtIdentifier
-  nodes: MasterCSSManifestAtRuleNode[]
+export interface MasterCSSManifestCondition {
+  id: MasterCSSManifestConditionIdentifier
+  nodes: MasterCSSManifestConditionNode[]
 }
 
-export type MasterCSSManifestAtRules = Record<string, MasterCSSManifestAtRule>
+export type MasterCSSManifestConditions = Record<string, MasterCSSManifestCondition>
 
 export interface MasterCSSManifestSelectorLiteralNode {
   type?: 'attribute' | 'pseudo-class' | 'pseudo-element' | 'class' | 'universal' | 'id'
@@ -105,8 +105,8 @@ export type MasterCSSManifestAnimationOptions = Record<string, { static?: boolea
 export interface MasterCSSManifestVariantBranch {
   selector?: string
   selectorNodes?: MasterCSSManifestSelectorNode[]
-  atRules?: string[]
-  atRuleNodes?: MasterCSSManifestAtRule[]
+  conditions?: string[]
+  conditionNodes?: MasterCSSManifestCondition[]
   layer?: MasterCSSManifestUtilityLayerName
 }
 
@@ -135,7 +135,7 @@ export type MasterCSSManifestUtilityEmit =
 
 export interface MasterCSSManifestUtilityRule<TDeclarations = MasterCSSManifestCSSDeclarations> {
   declarations: TDeclarations
-  atRules?: string[]
+  conditions?: string[]
   selector?: string
 }
 
@@ -153,7 +153,7 @@ export interface MasterCSSManifestUtility {
   namespaces?: string[]
   implicitNamespace?: boolean
   separators?: string[]
-  atRules?: string[]
+  conditions?: string[]
   variableAliases?: MasterCSSManifestVariableAliasSet
   variableAliasRefs?: string[]
   emit: MasterCSSManifestUtilityEmit
@@ -175,9 +175,9 @@ export interface MasterCSSManifest {
   animations?: MasterCSSManifestAnimations
   animationOptions?: MasterCSSManifestAnimationOptions
   variants?: MasterCSSManifestVariants
-  atRules?: MasterCSSManifestAtRules
-  breakpointAtRules?: MasterCSSManifestAtRules
-  containerAtRules?: MasterCSSManifestAtRules
+  conditions?: MasterCSSManifestConditions
+  breakpointConditions?: MasterCSSManifestConditions
+  containerConditions?: MasterCSSManifestConditions
   selectors?: MasterCSSManifestSelectors
   utilities?: MasterCSSManifestUtilities
   debug?: Record<string, unknown>

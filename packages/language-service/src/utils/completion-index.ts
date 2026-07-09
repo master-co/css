@@ -1,7 +1,7 @@
 import { type CompletionItem, CompletionItemKind } from 'vscode-languageserver-protocol'
 import {
   defaultCSSLanguageRuntime,
-  type AtRule,
+  type Condition,
   type CSSLanguageRuntime,
   type MasterCSS,
   createDefaultCSS
@@ -52,7 +52,7 @@ export interface CompletionIndex {
   pseudoClassSelectors: SelectorVariantCandidate[]
   pseudoElementNames: string[]
   pseudoElementSelectors: SelectorVariantCandidate[]
-  atRules: [string, AtRule][]
+  conditions: [string, Condition][]
 }
 
 function utilityMayReferenceAnimations(utility: MasterCSS['definedUtilities'][number]) {
@@ -301,7 +301,7 @@ export function createCompletionIndex(
     pseudoClassSelectors: createPseudoClassSelectors(css),
     pseudoElementNames: getMdnPseudoElementNames(),
     pseudoElementSelectors: createPseudoElementSelectors(css),
-    atRules: Array.from(css.atRules.entries())
+    conditions: Array.from(css.conditions.entries())
   }
 }
 

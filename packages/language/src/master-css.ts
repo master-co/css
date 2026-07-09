@@ -3,7 +3,7 @@ import { builtinKeyAliases, builtinNativeValueNamespaces } from '@master/css-eng
 import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
 import UtilityType from '@master/css-schema/utility-type'
 import type { ValueComponent, Variable } from '@master/css-schema/css-syntax'
-import type { MasterCSSManifest, MasterCSSManifestAtRuleNode } from '@master/css-schema/manifest'
+import type { MasterCSSManifest, MasterCSSManifestConditionNode } from '@master/css-schema/manifest'
 import { getMdnPropertySyntax } from './utils/mdn-css-data'
 
 export type { CompiledUtility, ValueComponent, Variable }
@@ -42,9 +42,9 @@ export const CLASS_ATTRIBUTES = ['class', 'className']
 export const CLASS_DECLARATIONS: string[] = []
 export const CLASS_FUNCTIONS = ['clsx', 'cva', 'ctl', 'cv', 'class', 'classnames', 'classVariant', 'styled(?:\\s+)?(?:\\.\\w+)?', 'classList(?:\\s+)?\\.(?:add|remove|toggle|replace)']
 
-export interface AtRule {
+export interface Condition {
   id: string
-  nodes: MasterCSSManifestAtRuleNode[]
+  nodes: MasterCSSManifestConditionNode[]
 }
 
 export function createDefaultCSS(runtime: CSSLanguageRuntime = defaultCSSLanguageRuntime) {
@@ -91,7 +91,7 @@ export function getStaticUtilityDeclarations(utility: CompiledUtility) {
   }
 }
 
-function findNumberNode(nodes: MasterCSSManifestAtRuleNode[]): Extract<MasterCSSManifestAtRuleNode, { type: 'number' }> | undefined {
+function findNumberNode(nodes: MasterCSSManifestConditionNode[]): Extract<MasterCSSManifestConditionNode, { type: 'number' }> | undefined {
   for (const node of nodes) {
     if (node.type === 'number') return node
     if ('children' in node) {
@@ -101,19 +101,19 @@ function findNumberNode(nodes: MasterCSSManifestAtRuleNode[]): Extract<MasterCSS
   }
 }
 
-export function getSingleAtNumberRuleNode(nodes: MasterCSSManifestAtRuleNode[]) {
+export function getSingleConditionNumberNode(nodes: MasterCSSManifestConditionNode[]) {
   return findNumberNode(nodes)
 }
 
-export function parseAt(token: string, css: MasterCSS = createDefaultCSS()): AtRule {
+export function parseCondition(token: string, css: MasterCSS = createDefaultCSS()): Condition {
   const alias = token.replace(/^[<>=&@]+/, '')
-  return css.atRules.get(alias) || { id: 'media', nodes: [] }
+  return css.conditions.get(alias) || { id: 'media', nodes: [] }
 }
 
-export function generateAt(atRule: AtRule) {
-  const body = atRule.nodes
+export function generateCondition(condition: Condition) {
+  const body = condition.nodes
     .map((node) => node.raw || ('value' in node ? String(node.value) : 'name' in node ? node.name : ''))
     .filter(Boolean)
     .join(' ')
-  return `@${atRule.id}${body ? ` ${body}` : ''}`
+  return `@${condition.id}${body ? ` ${body}` : ''}`
 }

@@ -2,7 +2,7 @@
 
 ## Responsibility
 
-`@master/css-engine` executes `MasterCSSManifest` values. It owns class matching, value parsing, selector and at-rule parsing/generation, variable and animation insertion, cascade layers, rule priority sorting, hydration manifest generation, CSS text emission, and built-in registries.
+`@master/css-engine` executes `MasterCSSManifest` values. It owns class matching, value parsing, selector and condition parsing/generation, variable and animation insertion, cascade layers, rule priority sorting, hydration manifest generation, CSS text emission, and built-in registries.
 
 ## Owns
 
@@ -48,7 +48,7 @@
 
 - Class matching and compiled utility order.
 - `src/core.ts` and root value exports are runtime-covered because `@master/css-runtime` extends `MasterCSS`.
-- Value, selector, and at-rule parsing/generation.
+- Value, selector, and condition parsing/generation.
 - Priority sorting and cascade layer insertion.
 - Variable, animation, emittedGlobals, and hydration behavior.
 - Any CSS output or cascade order difference.

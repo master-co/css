@@ -423,22 +423,22 @@ describe.concurrent('MasterCSSManifest execution', () => {
     })).toThrow('Unsupported MasterCSSManifest utilityBuckets field. Matcher indexes are engine-derived.')
   })
 
-  it('uses compiled at-rule aliases from the manifest', () => {
-    const cardAtRule = {
+  it('uses compiled condition aliases from the manifest', () => {
+    const cardCondition = {
       id: 'media',
       nodes: [{ type: 'number', name: 'width', operator: '>=', value: 48, unit: 'rem' }]
-    } satisfies NonNullable<MasterCSSManifest['atRules']>[string]
+    } satisfies NonNullable<MasterCSSManifest['conditions']>[string]
     const manifest: MasterCSSManifest = {
       version: 1,
       settings: {
         rootSize: 16,
         modes: []
       },
-      atRules: {
-        card: cardAtRule
+      conditions: {
+        card: cardCondition
       },
-      breakpointAtRules: {
-        card: cardAtRule
+      breakpointConditions: {
+        card: cardCondition
       },
       utilities: [
         {
@@ -480,7 +480,7 @@ describe.concurrent('MasterCSSManifest execution', () => {
           to: { opacity: 1 }
         }
       },
-      atRules: {
+      conditions: {
         card: {
           id: 'media',
           nodes: [{ type: 'number', name: 'width', operator: '>=', value: 48, unit: 'rem' }]

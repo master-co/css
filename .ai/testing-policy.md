@@ -10,7 +10,7 @@ Package lint is mandatory for every changed workspace package that defines a pac
 
 Benchmarks are advisory guardrails, not exact CI pass/fail gates. Run correctness validation first, then run the relevant benchmark when a change touches an engine or runtime hot path unless the change is documentation-only or purely type-only.
 
-Engine hot paths include `packages/engine/src/core.ts`, `packages/engine/src/utility.ts`, matcher/index behavior, value parsing, selector parsing/generation, at-rule parsing/generation, priority sorting, layer insertion, and manifest compilation/cache behavior.
+Engine hot paths include `packages/engine/src/core.ts`, `packages/engine/src/utility.ts`, matcher/index behavior, value parsing, selector parsing/generation, condition parsing/generation, priority sorting, layer insertion, and manifest compilation/cache behavior.
 
 Runtime hot paths include `packages/runtime/src/core.ts`, `packages/runtime/src/class-tracker.ts`, `packages/runtime/src/layer.ts`, `packages/runtime/src/utility-layer.ts`, DOM hydration, class mutation tracking, CSSOM insertion/deletion, and the global browser bundle.
 
@@ -33,7 +33,7 @@ Do not chase benchmark wins by changing CSS output, cascade order, hydration che
 |---|---|
 | Parser/value parsing | `pnpm --filter @master/css-engine test`; add focused parser/rule tests |
 | Selector parsing/generation | Engine selector tests; generated CSS tests |
-| At-rule parsing/generation | Engine at-rule tests; ordering tests if priority changes |
+| Condition parsing/generation | Engine condition tests; ordering tests if priority changes |
 | Syntax rule definitions | Engine rule test for emitted declarations and text |
 | Rule priority/cascade | Engine priority/layer tests and fixture review |
 | Variables/tokens/modes | Compiler manifest lowering and engine variable tests; server/runtime fixtures if output or hydration changes |

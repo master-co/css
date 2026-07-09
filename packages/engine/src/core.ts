@@ -9,7 +9,7 @@ import VariableRule from './variable-rule'
 import AnimationRule from './animation-rule'
 import type { Variable } from '@master/css-schema/css-syntax'
 import UtilityType from '@master/css-schema/utility-type'
-import type { AtRule } from './utils/parse-at'
+import type { Condition } from './utils/parse-condition'
 import parseValue from './utils/parse-value'
 import type { SelectorNode } from './utils/parse-selector'
 import type { MasterCSSEmittedGlobals } from './emitted-globals'
@@ -185,10 +185,10 @@ export default class MasterCSS {
   selectors = new Map<string, SelectorNode[]>()
   variables = new Map<string, Variable>()
   modes: string[] = []
-  atRules = new Map<string, AtRule>()
+  conditions = new Map<string, Condition>()
   variants = new Map<MasterCSSManifestVariantToken, MasterCSSManifestVariantBranch[]>()
-  breakpointAtRules = new Map<string, AtRule>()
-  containerAtRules = new Map<string, AtRule>()
+  breakpointConditions = new Map<string, Condition>()
+  containerConditions = new Map<string, Condition>()
   animations = new Map<string, MasterCSSManifestAnimations[string]>()
   protected readonly staticVariableTokens = new Set<string>()
   protected readonly staticAnimationTokens = new Set<string>()
@@ -269,10 +269,10 @@ export default class MasterCSS {
     this.selectors = compiledManifest.selectors
     this.variables = compiledManifest.variables
     this.modes = [...compiledManifest.modes]
-    this.atRules = compiledManifest.atRules
+    this.conditions = compiledManifest.conditions
     this.variants = compiledManifest.variants
-    this.breakpointAtRules = compiledManifest.breakpointAtRules
-    this.containerAtRules = compiledManifest.containerAtRules
+    this.breakpointConditions = compiledManifest.breakpointConditions
+    this.containerConditions = compiledManifest.containerConditions
     this.animations = compiledManifest.animations
     this.nativeDeclarationFastPathBlockedProperties = compiledManifest.nativeDeclarationFastPathBlockedProperties
     this.nativeValueNamespaceUtilities = compiledManifest.nativeValueNamespaceUtilities

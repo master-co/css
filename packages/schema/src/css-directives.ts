@@ -111,9 +111,14 @@ export type CSSDirectiveAnimationDefinitions = Record<string, Record<string, CSS
 
 export type CSSDirectiveAnimationOptions = Record<string, { static?: boolean }>
 
+export type CSSDirectiveConditionPathEntry =
+  | { type: 'condition'; value: string }
+  | { type: 'variant'; token: string }
+
 export interface CSSDirectiveUtilityRuleDefinition {
   declarations: CSSDirectiveDeclarations
-  atRules?: string[]
+  conditions?: string[]
+  conditionPath?: CSSDirectiveConditionPathEntry[]
   selector?: string
 }
 
@@ -137,7 +142,8 @@ export interface CSSDirectiveUtilityDefinition {
   pattern?: CSSDirectiveUtilityPatternDefinition
   dynamic?: CSSDirectiveUtilityDynamicDefinition
   declarations?: CSSDirectiveDeclarations
-  atRules?: string[]
+  conditions?: string[]
+  conditionPath?: CSSDirectiveConditionPathEntry[]
   rules?: CSSDirectiveUtilityRuleDefinition[]
 }
 
@@ -177,7 +183,8 @@ export interface CSSDirectiveStyleComposeDefinition {
   source?: CSSDirectiveSourceReference
   directiveSource?: CSSDirectiveSourceReference
   selectorSource?: CSSDirectiveSourceReference
-  atRules?: string[]
+  conditions?: string[]
+  conditionPath?: CSSDirectiveConditionPathEntry[]
   layer?: CSSDirectiveLayerName
   name?: string
 }
@@ -189,7 +196,8 @@ export interface CSSDirectiveStyleNativeDefinition {
   declarations: CSSDirectiveDeclarations
   source?: CSSDirectiveSourceReference
   selectorSource?: CSSDirectiveSourceReference
-  atRules?: string[]
+  conditions?: string[]
+  conditionPath?: CSSDirectiveConditionPathEntry[]
   layer?: CSSDirectiveLayerName
   name?: string
 }
@@ -210,16 +218,4 @@ export interface CSSDirectiveResult {
   dependencies: string[]
   references?: CSSDirectiveReference[]
   styleDefinitions?: CSSDirectiveStyleDefinition[]
-}
-
-export const CSS_DIRECTIVE_VARIANT_REFERENCE_PREFIX = '__master_variant__:'
-
-export function createCSSDirectiveVariantReference(token: string) {
-  return CSS_DIRECTIVE_VARIANT_REFERENCE_PREFIX + token
-}
-
-export function readCSSDirectiveVariantReference(atRule: string) {
-  return atRule.startsWith(CSS_DIRECTIVE_VARIANT_REFERENCE_PREFIX)
-    ? atRule.slice(CSS_DIRECTIVE_VARIANT_REFERENCE_PREFIX.length)
-    : undefined
 }
