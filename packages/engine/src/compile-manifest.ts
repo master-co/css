@@ -4,7 +4,7 @@ import { isNativeCSSShorthandProperty } from '@master/css-schema/native-css-shor
 import type {
   MasterCSSManifest,
   MasterCSSManifestAnimations,
-  MasterCSSManifestAtRules,
+  MasterCSSManifestConditions,
   MasterCSSManifestSettings,
   MasterCSSManifestUtility,
   MasterCSSManifestUtilityMatcher,
@@ -17,7 +17,8 @@ import UtilityType from '@master/css-schema/utility-type'
 import { MATCH_NAME_BOUNDARY } from './common'
 import builtinKeyAliases from './key-aliases'
 import builtinNativeValueNamespaces, { type MasterCSSBuiltinNativeValueNamespace } from './native-value-namespaces'
-import type { AtRule } from './utils/parse-at'
+import builtinSelectorAliases from './selector-aliases'
+import type { Condition } from './utils/parse-condition'
 import type { SelectorNode } from './utils/parse-selector'
 
 export type CompiledUtility = Omit<MasterCSSManifestUtility, 'emit' | 'name' | 'order'> & {
@@ -60,10 +61,10 @@ export interface CompiledManifest {
   selectors: Map<string, SelectorNode[]>
   variables: Map<string, Variable>
   modes: string[]
-  atRules: Map<string, AtRule>
+  conditions: Map<string, Condition>
   variants: Map<MasterCSSManifestVariantToken, MasterCSSManifestVariantBranch[]>
-  breakpointAtRules: Map<string, AtRule>
-  containerAtRules: Map<string, AtRule>
+  breakpointConditions: Map<string, Condition>
+  containerConditions: Map<string, Condition>
   animations: Map<string, MasterCSSManifestAnimations[string]>
   nativeDeclarationFastPathBlockedProperties: Set<string>
   nativeValueNamespaceUtilities: Map<string, CompiledUtility>
@@ -117,7 +118,7 @@ export function isPureNativeDeclarationUtilityDefinition(
     && !utility.variableAliasRefs?.length
     && !utility.variableAliases?.length
     && !utility.kind
-    && !utility.atRules?.length
+    && !utility.conditions?.length
 }
 
 function getVariableKeyByNamespace(variableName: string, namespace: string) {
@@ -269,23 +270,26 @@ function compileAnimations(manifest: MasterCSSManifest) {
   return animations
 }
 
-function compileAtRuleMap(atRules: MasterCSSManifestAtRules | undefined) {
-  const target = new Map<string, AtRule>()
-  if (!atRules) return target
-  for (const [name, atRule] of Object.entries(atRules)) {
+function compileConditionMap(conditions: MasterCSSManifestConditions | undefined) {
+  const target = new Map<string, Condition>()
+  if (!conditions) return target
+  for (const [name, condition] of Object.entries(conditions)) {
     target.set(name, {
-      id: atRule.id,
-      nodes: atRule.nodes
-    } as AtRule)
+      id: condition.id,
+      nodes: condition.nodes
+    } as Condition)
   }
   return target
 }
 
 function compileVariantAliases(manifest: MasterCSSManifest) {
   const selectors = new Map<string, SelectorNode[]>()
+  for (const [name, nodes] of Object.entries(builtinSelectorAliases)) {
+    selectors.set(name, cloneSelectorNodes(nodes))
+  }
   if (manifest.selectors) {
     for (const [name, nodes] of Object.entries(manifest.selectors)) {
-      selectors.set(name, nodes as SelectorNode[])
+      selectors.set(name, cloneSelectorNodes(nodes as SelectorNode[]))
     }
   }
 
@@ -294,15 +298,21 @@ function compileVariantAliases(manifest: MasterCSSManifest) {
     variants.set(variant.token, variant.branches.map((branch) => ({
       ...branch,
       ...(branch.selectorNodes?.length ? { selectorNodes: branch.selectorNodes as SelectorNode[] } : {}),
-      ...(branch.atRules?.length ? { atRules: [...branch.atRules] } : {}),
-      ...(branch.atRuleNodes?.length ? { atRuleNodes: branch.atRuleNodes.map((atRule) => ({
-        id: atRule.id,
-        nodes: atRule.nodes
-      } as AtRule)) } : {})
+      ...(branch.conditions?.length ? { conditions: [...branch.conditions] } : {}),
+      ...(branch.conditionNodes?.length ? { conditionNodes: branch.conditionNodes.map((condition) => ({
+        id: condition.id,
+        nodes: condition.nodes
+      } as Condition)) } : {})
     })))
   }
 
   return { selectors, variants }
+}
+
+function cloneSelectorNodes(nodes: SelectorNode[]): SelectorNode[] {
+  return nodes.map((node) => 'children' in node && node.children?.length
+    ? { ...node, children: cloneSelectorNodes(node.children) }
+    : { ...node })
 }
 
 function createVariableAliasRefResolver(variables: Map<string, Variable>) {
@@ -528,10 +538,10 @@ export function compileManifest(manifest: MasterCSSManifest): CompiledManifest {
     selectors,
     variables,
     modes: [...settings.modes],
-    atRules: compileAtRuleMap(manifest.atRules),
+    conditions: compileConditionMap(manifest.conditions),
     variants,
-    breakpointAtRules: compileAtRuleMap(manifest.breakpointAtRules),
-    containerAtRules: compileAtRuleMap(manifest.containerAtRules),
+    breakpointConditions: compileConditionMap(manifest.breakpointConditions),
+    containerConditions: compileConditionMap(manifest.containerConditions),
     animations,
     nativeDeclarationFastPathBlockedProperties: utilities.nativeDeclarationFastPathBlockedProperties,
     nativeValueNamespaceUtilities,

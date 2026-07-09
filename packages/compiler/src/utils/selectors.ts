@@ -47,14 +47,17 @@ export function combineSelectorLists(parentSelectors: string[], childSelectors: 
 
   for (const child of childSelectors) {
     for (const parent of parentSelectors) {
-      selectors.push(child.includes('&')
-        ? child.replace(/&/g, parent)
-        : `${parent} ${child}`
-      )
+      selectors.push(combineSelector(parent, child))
     }
   }
 
   return selectors
+}
+
+function combineSelector(parent: string, child: string) {
+  const trimmedChild = child.trim()
+  if (trimmedChild.includes('&')) return trimmedChild.replace(/&/g, parent)
+  return `${parent} ${child}`
 }
 
 export function combineStyleSelectors(parentSelector: string, childSelector: string) {

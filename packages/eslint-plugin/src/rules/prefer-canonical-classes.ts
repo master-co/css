@@ -21,7 +21,7 @@ export default createRule({
       description: 'Prefer canonical Master CSS classes'
     },
     messages: {
-      preferClass: 'Prefer "{{recommended}}" over "{{actual}}".',
+      preferClass: '{{message}}',
     },
     fixable: 'code',
     schema: [{

@@ -124,8 +124,8 @@ jsxTester.run('mdx prefer canonical classes', PreferCanonicalRule, {
         '```'
       ].join('\n'),
       errors: [
-        { messageId: 'preferClass', data: { actual: 'align-items:center', recommended: 'items-center' } },
-        { messageId: 'preferClass', data: { actual: 'gap:2x', recommended: 'gap:xs' } },
+        { messageId: 'preferClass' },
+        { messageId: 'preferClass' },
       ],
       filename: 'test.mdx',
       languageOptions: mdxLanguageOptions

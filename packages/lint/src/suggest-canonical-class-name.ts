@@ -272,7 +272,7 @@ function getCandidateKeysForPropertySignature(index: RecommendationIndex, signat
 function hasSameRuleScope(sourceRule: GeneratedRule, candidateRule: GeneratedRule) {
   return candidateRule.layerName === sourceRule.layerName
     && candidateRule.mode === sourceRule.mode
-    && stable(candidateRule.atRules) === stable(sourceRule.atRules)
+    && stable(candidateRule.conditions) === stable(sourceRule.conditions)
     && stable(candidateRule.selectorNodes) === stable(sourceRule.selectorNodes)
 }
 
@@ -294,7 +294,7 @@ function getSafeBreakpointTokenName(token: string, css: MasterCSS) {
   const match = /^(?:[<>]=?)?([A-Za-z0-9_-]+)$/.exec(token)
   if (!match) return
   const name = match[1]
-  if (!css.breakpointAtRules.has(name)) return
+  if (!css.breakpointConditions.has(name)) return
   return name
 }
 

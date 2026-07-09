@@ -80,8 +80,8 @@ If the project needs a named component class, define it once in CSS.
 @components {
   btn {
     @compose inline-flex items-center justify-center gap:xs min-h:10x px:md r:md bg:primary fg:white;
-    @variant :hover { @compose bg:blue-70; }
-@variant :disabled { opacity: 0.5; }
+    &:hover { @compose bg:blue-70; }
+    &:disabled { opacity: 0.5; }
   }
 }
 ```
@@ -185,6 +185,6 @@ Keep CSS-in-JS global styles until the replacement CSS entry is loaded in every 
 - [Installation](/guide/installation) for adding Master CSS to a project.
 - [Rendering modes](/guide/rendering-modes) for static, runtime, and progressive rendering.
 - [Style declarations](/guide/style-declarations) for class syntax.
-- [Customizing your theme](/guide/theme) for design tokens and modes.
+- [Theme Tokens](/guide/theme) for design tokens and [Variables and Modes](/guide/variables-and-modes) for modes.
 - [Scanning latent classes](/guide/scanning-latent-classes) for class maps and static extraction.
 - [Global styles](/guide/global-styles#shared-vocabulary) for choosing markup classes, theme tokens, custom utilities, and components.

@@ -29,6 +29,13 @@ export function stringifyLintDiagnosticData(data: MasterCSSLintDiagnostic['data'
   )
 }
 
+export function stringifyLintDiagnosticMessageData(diagnostic: Pick<MasterCSSLintDiagnostic, 'data' | 'message'>) {
+  return stringifyLintDiagnosticData({
+    ...diagnostic.data,
+    message: diagnostic.message
+  })
+}
+
 function defaultFix(resolved: ResolvedClassNode, fix: MasterCSSLintFix) {
   if (fix.scope === 'directive') return
   return {
@@ -65,7 +72,7 @@ export default function reportLintDiagnostics(
       ...(messageId
         ? {
           messageId,
-          data: stringifyLintDiagnosticData(diagnostic.data || { message: diagnostic.message })
+          data: stringifyLintDiagnosticMessageData(diagnostic)
         }
         : { message: diagnostic.message })
     }

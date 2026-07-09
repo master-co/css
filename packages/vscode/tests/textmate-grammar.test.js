@@ -287,9 +287,9 @@ test('highlights every Master CSS directive keyword', () => {
     @defaults {}
     @components {}
     @utilities {}
-    @custom-variant @motion-safe {}
+    @custom-variant motion-safe {}
     @compose block;
-    @variant @sm {}
+    @variant sm {}
     @slot;
     @dark {}
     @light {}
@@ -368,8 +368,12 @@ test('highlights directive preludes, strings, class lists, and dynamic patterns'
 
 test('highlights custom variants, nested selectors, queries, and values', () => {
   const tokens = tokenize(`
-    @custom-variant @motion-safe { @media (prefers-reduced-motion: no-preference) { @slot; } }
-    @custom-variant ::scrollbar { &::-webkit-scrollbar:is(.active, #thumb) { @slot; } }
+    @custom-variant motion-safe { @media (prefers-reduced-motion: no-preference) { @slot; } }
+    @components {
+      scroll-area {
+        ::scrollbar:is(.active, #thumb) { @compose block; }
+      }
+    }
     @dark {
       color: oklch(99% 0.0033 72);
       background-color: $color-gray-100;
@@ -377,11 +381,10 @@ test('highlights custom variants, nested selectors, queries, and values', () => 
   `)
 
   expectScope(tokens, 'custom-variant', 'keyword.control.at-rule.master-css')
-  expectScope(tokens, 'motion-safe', 'keyword.control.at-rule.master-css.query')
+  expectScope(tokens, 'motion-safe', 'variable.parameter.master-css')
   expectScope(tokens, 'media', 'keyword.control.at-rule.master-css.query')
   expectScope(tokens, 'slot', 'keyword.control.at-rule.master-css')
   expectScope(tokens, '::', 'punctuation.definition.entity.master-css')
-  expectScope(tokens, '&', 'keyword.operator.selector.master-css')
   expectScope(tokens, '.', 'punctuation.definition.entity.master-css')
   expectScope(tokens, 'active', 'entity.other.attribute-name.class.master-css')
   expectScope(tokens, '#', 'punctuation.definition.entity.master-css')
@@ -405,16 +408,18 @@ test('highlights detailed Master directive syntax without misclassifying native 
     @blocklist "debug-*";
     @safelist "dialog-open bg:primary@dark {fg:red;bg:blue}";
 
-    @custom-variant :headings { &:is(h1, h2, h3, h4, h5, h6) { @slot; } }
+    @custom-variant headings { @media all { @slot; } }
 
     @components {
       btn:hover {
         @compose static native inline-flex align-items:center fg:primary:hover@md;
-        @variant @h>=sm&h<lg {
+        @variant h>=sm&h<lg {
           @compose block;
         }
-        @variant ::scrollbar-thumb:hover@dark {
-          @compose fg:primary;
+        ::scrollbar-thumb:hover {
+          @dark {
+            @compose fg:primary;
+          }
         }
       }
     }
@@ -440,9 +445,8 @@ test('highlights detailed Master directive syntax without misclassifying native 
   expectScope(tokens, 'dialog-open', 'entity.other.attribute-name.class.master-css')
   expectScope(tokens, 'bg', 'support.type.property-name.master-css')
   expectScope(tokens, 'primary', 'support.constant.property-value.master-css')
-  expectScope(tokens, 'dark', 'keyword.control.at-rule.master-css.query')
-  expectScope(tokens, 'headings', 'entity.other.attribute-name.pseudo-class.master-css')
-  expectScope(tokens, 'h1', 'entity.name.tag.master-css')
+  expectScope(tokens, '@dark', 'keyword.control.at-rule.master-css.query')
+  expectScope(tokens, 'headings', 'variable.parameter.master-css')
   expectScope(tokens, 'btn', 'entity.other.attribute-name.class.master-css')
   expectScope(tokens, 'static', 'entity.other.attribute-name.class.master-css')
   expectScope(tokens, 'native', 'entity.other.attribute-name.class.master-css')

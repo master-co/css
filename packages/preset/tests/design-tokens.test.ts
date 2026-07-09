@@ -334,11 +334,11 @@ describe.concurrent('@master/css-preset design token parity', () => {
   })
 
   test('precomputes default breakpoint and container at-rule aliases', () => {
-    expect(defaultManifest.breakpointAtRules?.sm).toMatchObject({
+    expect(defaultManifest.breakpointConditions?.sm).toMatchObject({
       id: 'media',
       nodes: [expect.objectContaining({ type: 'number', value: 52.125, unit: 'rem' })]
     })
-    expect(defaultManifest.containerAtRules?.sm).toMatchObject({
+    expect(defaultManifest.containerConditions?.sm).toMatchObject({
       id: 'container',
       nodes: [expect.objectContaining({ type: 'number', value: 24, unit: 'rem' })]
     })

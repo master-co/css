@@ -7,7 +7,7 @@ import {
 } from '@master/css-lint'
 import type { MasterCSS } from '@master/css-engine'
 import type { RuleContext, RuleFixer, RuleListener } from '@typescript-eslint/utils/ts-eslint'
-import { messageIdByCode, stringifyLintDiagnosticData } from './report-lint-diagnostics'
+import { messageIdByCode, stringifyLintDiagnosticMessageData } from './report-lint-diagnostics'
 
 type FixRange = [number, number]
 type SourceRuleOptions = MasterCSSLintContentRuleOptions[keyof MasterCSSLintContentRuleOptions]
@@ -60,7 +60,7 @@ function reportSourceDiagnostic(
     ...(messageId
       ? {
         messageId,
-        data: stringifyLintDiagnosticData(diagnostic.data || { message: diagnostic.message })
+        data: stringifyLintDiagnosticMessageData(diagnostic)
       }
       : { message: diagnostic.message })
   }

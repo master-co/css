@@ -45,12 +45,12 @@ describe.concurrent('detail and documentation', () => {
           \`\`\`css
           @layer theme {
             :root {
-            --font-family-sans: var(--font-sans, ui-sans-serif), system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"
+              --font-family-sans: var(--font-sans, ui-sans-serif), system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"
             }
           }
           @layer utilities {
             .font\\:sans {
-            font-family: var(--font-family-sans)
+              font-family: var(--font-family-sans)
             }
           }
           \`\`\`
@@ -68,7 +68,7 @@ describe.concurrent('detail and documentation', () => {
           \`\`\`css
           @layer utilities {
             .font-style\\:italic {
-            font-style: italic
+              font-style: italic
             }
           }
           \`\`\`

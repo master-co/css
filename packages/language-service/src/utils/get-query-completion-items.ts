@@ -1,4 +1,4 @@
-import { AT_SIGN, MasterCSS, createDefaultCSS, QUERY_COMPARISON_OPERATORS, QUERY_LOGICAL_OPERATORS, type AtRule, generateAt, generateCSS, getSingleAtNumberRuleNode, parseAt } from '@master/css-language'
+import { AT_SIGN, MasterCSS, createDefaultCSS, QUERY_COMPARISON_OPERATORS, QUERY_LOGICAL_OPERATORS, type Condition, generateCondition, generateCSS, getSingleConditionNumberNode, parseCondition } from '@master/css-language'
 import { CompletionItem, CompletionItemKind } from 'vscode-languageserver-protocol'
 import sortCompletionItems from './sort-completion-items'
 import createCSSMarkdownDocumentation from './create-css-markdown-documentation'
@@ -21,14 +21,14 @@ export default function getQueryCompletionItems(css: MasterCSS = createDefaultCS
       })
   }
 
-  const handleNumberNodes = (atRule: AtRule, token: string) => {
-    const numberNode = getSingleAtNumberRuleNode(atRule.nodes)
+  const handleNumberNodes = (condition: Condition, token: string) => {
+    const numberNode = getSingleConditionNumberNode(condition.nodes)
     if (numberNode) {
       const prevComparisonCharacter = syntax.charAt(syntax.length - 2)
       const comparisonCharacter = prevComparisonCharacter === '>' || prevComparisonCharacter === '<'
         ? prevComparisonCharacter + triggerCharacter
         : triggerCharacter
-      const text = generateAt(parseAt(comparisonCharacter + token, css))
+      const text = generateCondition(parseCondition(comparisonCharacter + token, css))
       completionItems.push({
         label: comparisonCharacter + token,
         sortText: CompletionItemKind.Keyword + comparisonCharacter + String(Math.round(numberNode.value)).padStart(12, '0'),
@@ -42,15 +42,15 @@ export default function getQueryCompletionItems(css: MasterCSS = createDefaultCS
     }
   }
 
-  for (const [token, atRule] of completionIndex.atRules) {
+  for (const [token, condition] of completionIndex.conditions) {
     const completionItem: Omit<CompletionItem, 'label'> = {
       filterText: token,
       insertText: token,
       documentation: createCSSMarkdownDocumentation(generateCSS([syntax + token], css, completionIndex.runtime))
     }
     if ([AT_SIGN, ...QUERY_LOGICAL_OPERATORS].includes(triggerCharacter)) {
-      if (handleNumberNodes(atRule, token)) continue
-      const text = generateAt(parseAt(triggerCharacter + token, css))
+      if (handleNumberNodes(condition, token)) continue
+      const text = generateCondition(parseCondition(triggerCharacter + token, css))
       completionItems.push(
         {
           ...completionItem,
@@ -62,7 +62,7 @@ export default function getQueryCompletionItems(css: MasterCSS = createDefaultCS
         }
       )
     } else if (QUERY_COMPARISON_OPERATORS.includes(triggerCharacter)) {
-      handleNumberNodes(atRule, token)
+      handleNumberNodes(condition, token)
     }
   }
   return sortCompletionItems(completionItems)

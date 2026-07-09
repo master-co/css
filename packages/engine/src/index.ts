@@ -37,6 +37,8 @@ export type {
   MasterCSSBuiltinNativeValueNamespace,
   MasterCSSBuiltinNativeValueNamespaces
 } from './native-value-namespaces'
+export { builtinSelectorAliases } from './selector-aliases'
+export type { MasterCSSBuiltinSelectorAliases } from './selector-aliases'
 export * from '@master/css-schema/manifest'
 export type * from './emitted-globals'
 export type { Utility as GeneratedRule } from './utility'

@@ -13,7 +13,7 @@ Use this when explaining, testing, or changing generated CSS.
 
 1. Start with the class string, manifest, and config.
 2. Identify the matching manifest utility or native namespace.
-3. Trace value parsing, variables, functions, selectors, modes, and at-rules.
+3. Trace value parsing, variables, functions, selectors, modes, and conditions.
 4. Check declarations, transforms, priority, and target layer.
 5. Check final `css.text`.
 6. If runtime, server, scanner, or language tooling is involved, trace that outer flow too.

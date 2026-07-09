@@ -359,7 +359,7 @@ describe.concurrent('default manifest utility parity', () => {
     expect(css.createRule('vt-name:hero')).toBeUndefined()
     expect(css.createRule('opacity:0.5::view-transition-old(hero)')?.text)
       .toContain('::view-transition-old(hero)')
-    expect(css.createRule('opacity:1::vt-new(hero)')?.text)
+    expect(css.createRule('opacity:1::view-transition-new(hero)')?.text)
       .toContain('::view-transition-new(hero)')
     expectClassText(css, 'translate:16px|24px', 'translate:16px 24px')
     expectClassText(css, 'scale:1.5|2', 'scale:1.5 2')

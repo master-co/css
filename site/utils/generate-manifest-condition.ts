@@ -1,9 +1,9 @@
 import type { MasterCSSManifest } from '@master/css'
 
-type ManifestAtRule = NonNullable<MasterCSSManifest['atRules']>[string]
-type ManifestAtRuleNode = ManifestAtRule['nodes'][number]
+type ManifestCondition = NonNullable<MasterCSSManifest['conditions']>[string]
+type ManifestConditionNode = ManifestCondition['nodes'][number]
 
-function generateNodes(nodes: ManifestAtRuleNode[], id: ManifestAtRule['id']): string {
+function generateNodes(nodes: ManifestConditionNode[], id: ManifestCondition['id']): string {
   return nodes.map((node) => {
     if ('children' in node) {
       const body = generateNodes(node.children, id)
@@ -26,8 +26,8 @@ function generateNodes(nodes: ManifestAtRuleNode[], id: ManifestAtRule['id']): s
   }).filter(Boolean).join(id === 'layer' ? '.' : ' ')
 }
 
-export default function generateManifestAt(atRule: ManifestAtRule | undefined) {
-  if (!atRule) return ''
-  const body = generateNodes(atRule.nodes, atRule.id)
-  return `@${atRule.id}${body ? ` ${body}` : ''}`
+export default function generateManifestCondition(condition: ManifestCondition | undefined) {
+  if (!condition) return ''
+  const body = generateNodes(condition.nodes, condition.id)
+  return `@${condition.id}${body ? ` ${body}` : ''}`
 }

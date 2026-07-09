@@ -36,17 +36,17 @@ The demo uses Master CSS classes to name the snapshots that should transition in
   </Class2CSS>
 </details>
 
-Master CSS keeps the CSS side concise by expressing `view-transition-name`, `view-transition-class`, and `::vt-*` pseudo-element shorthands directly in class names:
+Master CSS keeps the CSS side concise by expressing `view-transition-name`, `view-transition-class`, and native view-transition pseudo-elements directly in class names:
 
-| Shorthand             | Full CSS                              | Use                                                              |
-| --------------------- | ------------------------------------- | ---------------------------------------------------------------- |
-| `view-transition-name`             | `view-transition-name`                | Names an element snapshot so it can animate apart from the root. |
-| `view-transition-class`            | `view-transition-class`               | Groups named snapshots for shared pseudo-element styling.        |
-| `::vt`                | `::view-transition`                   | Targets the root view-transition pseudo-element tree.            |
-| `::vt-group()`        | `::view-transition-group()`           | Styles the group box for a named snapshot.                       |
-| `::vt-image-pair()`   | `::view-transition-image-pair()`      | Styles the wrapper around the old and new snapshot images.       |
-| `::vt-old()`          | `::view-transition-old()`             | Styles the outgoing snapshot image.                              |
-| `::vt-new()`          | `::view-transition-new()`             | Styles the incoming snapshot image.                              |
+| Class syntax          | Use                                                              |
+| --------------------- | ---------------------------------------------------------------- |
+| `view-transition-name`             | Names an element snapshot so it can animate apart from the root. |
+| `view-transition-class`            | Groups named snapshots for shared pseudo-element styling.        |
+| `::view-transition`   | Targets the root view-transition pseudo-element tree.            |
+| `::view-transition-group()`        | Styles the group box for a named snapshot.                       |
+| `::view-transition-image-pair()`   | Styles the wrapper around the old and new snapshot images.       |
+| `::view-transition-old()`          | Styles the outgoing snapshot image.                              |
+| `::view-transition-new()`          | Styles the incoming snapshot image.                              |
 
 
 ---
@@ -119,7 +119,7 @@ document.querySelector('[data-read-more]').addEventListener('click', () => {
       'view-transition-name:article-date',
       'view-transition-name:article-title',
       'view-transition-class:article',
-      'animation-duration:.52s::vt-group(.article)'
+      'animation-duration:.52s::view-transition-group(.article)'
     ]}
   </Class2CSS>
 </details>
@@ -155,15 +155,15 @@ Use `view-transition-name:none` to keep an element out of its own separate snaps
 ---
 
 ## Styling transition pseudo-elements
-The browser exposes transition snapshots through pseudo-elements such as `::vt-group()`, `::vt-old()`, and `::vt-new()`. MDN recommends styling the group when the same duration or timing should apply to both the old and new snapshots.
+The browser exposes transition snapshots through pseudo-elements such as `::view-transition-group()`, `::view-transition-old()`, and `::view-transition-new()`. MDN recommends styling the group when the same duration or timing should apply to both the old and new snapshots.
 
 In Master CSS, write the pseudo-element after the declaration:
 
 ```html
 <html class="
-  animation:fade|fast|both::vt-new(hero)
-  animation:fade|fast|both|reverse::vt-old(hero)
-  animation-duration:slow::vt-group(hero)
+  animation:fade|fast|both::view-transition-new(hero)
+  animation:fade|fast|both|reverse::view-transition-old(hero)
+  animation-duration:slow::view-transition-group(hero)
 ">
 ```
 
@@ -171,9 +171,9 @@ In Master CSS, write the pseudo-element after the declaration:
   <summary>Generated CSS</summary>
   <Class2CSS>
     {[
-      'animation-duration:slow::vt-group(hero)',
-      'animation:fade|fast|both|reverse::vt-old(hero)',
-      'animation:fade|fast|both::vt-new(hero)'
+      'animation-duration:slow::view-transition-group(hero)',
+      'animation:fade|fast|both|reverse::view-transition-old(hero)',
+      'animation:fade|fast|both::view-transition-new(hero)'
     ]}
   </Class2CSS>
 </details>
@@ -187,7 +187,7 @@ You can also group related named snapshots with `view-transition-class` and then
   ...
 </article>
 
-<html class="animation-duration:.36s::vt-group(.shared-card)">
+<html class="animation-duration:.36s::view-transition-group(.shared-card)">
 ```
 
 ---
@@ -233,7 +233,7 @@ if (!document.startViewTransition) {
 After the core transition works, add a motion preference layer. You can scope animation classes with `@motion`, which maps to `@media (prefers-reduced-motion: no-preference)`.
 
 ```html
-<html class="animation-duration:.42s::vt-group(root)@motion">
+<html class="animation-duration:.42s::view-transition-group(root)@motion">
 ```
 
 Or skip the transition in JavaScript for motion-sensitive users:

@@ -1,6 +1,6 @@
 import MasterCSS from './core'
-import parseAt from './utils/parse-at'
-import generateAt from './utils/generate-at'
+import parseCondition from './utils/parse-condition'
+import generateCondition from './utils/generate-condition'
 import parseSelector from './utils/parse-selector'
 import generateSelector from './utils/generate-selector'
 import compareRulePriority from './utils/compare-rule-priority'
@@ -9,7 +9,7 @@ import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import type { MasterCSSEmittedGlobals } from './emitted-globals'
 import type { MasterCSSOptions } from './core'
 
-export { MasterCSS, compareRulePriority, generateAt, generateSelector, parseAt, parseSelector }
+export { MasterCSS, compareRulePriority, generateCondition, generateSelector, parseCondition, parseSelector }
 export type { Utility as GeneratedRule }
 export type * from '@master/css-schema/manifest'
 
@@ -34,7 +34,7 @@ export function inspectGeneratedRule(rule: Utility) {
     selector: rule.selectorText,
     declarations: rule.declarations,
     declarationRules: rule.declarationRules,
-    atRules: rule.atRules,
+    conditions: rule.conditions,
     priority: rule.priority,
     variableNames: rule.variableNames ? [...rule.variableNames] : [],
     animationNames: rule.animationNames ? [...rule.animationNames] : []

@@ -1,8 +1,8 @@
 import {
   createCSSDirectiveSourceReference,
-  createCSSDirectiveVariantReference,
   CSSDirectiveError,
   type CSSDirectiveAnimationDefinitions,
+  type CSSDirectiveConditionPathEntry,
   type CSSDirectiveManifestInput,
   type CSSDirectiveDeclarations,
   type CSSDirectiveLayerName,
@@ -11,6 +11,7 @@ import {
   type CSSDirectiveSourceReference,
   type CSSDirectiveStyleDefinition,
   type CSSDirectiveUtilityDefinition,
+  type CSSDirectiveUtilityRuleDefinition,
   type CSSDirectiveVariableValue
 } from '@master/css-schema/css-directives'
 import type {
@@ -48,6 +49,31 @@ import {
   type StandaloneMasterDirectiveStatement
 } from './lexer/standalone-master'
 import { combineSelectorLists } from './utils/selectors'
+
+type CSSDirectiveConditionPath = CSSDirectiveConditionPathEntry[]
+
+function conditionEntry(value: string): CSSDirectiveConditionPathEntry {
+  return { type: 'condition', value }
+}
+
+function variantEntry(token: string): CSSDirectiveConditionPathEntry {
+  return { type: 'variant', token }
+}
+
+function cloneConditionPath(conditionPath: CSSDirectiveConditionPath | undefined) {
+  return conditionPath?.map((entry) => ({ ...entry }))
+}
+
+function createConditionPathProperties(conditionPath: CSSDirectiveConditionPath | undefined) {
+  if (!conditionPath?.length) return {}
+  const conditions = conditionPath.every((entry) => entry.type === 'condition')
+    ? conditionPath.map((entry) => entry.value)
+    : undefined
+  return {
+    ...(conditions?.length ? { conditions } : {}),
+    conditionPath: cloneConditionPath(conditionPath)
+  }
+}
 
 export {
   collectStandaloneCSSDirectiveExtractionPolicy,
@@ -1055,10 +1081,16 @@ function parseThemeDeclarations(block: DeclarationBlock<Declaration>, manifestIn
 
 function parseCustomVariantPrelude(prelude: string) {
   const trimmed = prelude.trim()
-  const tokenMatch = /^(:{1,2}[-_a-zA-Z][-_a-zA-Z0-9]*|@[-_a-zA-Z][-_a-zA-Z0-9]*)$/.exec(trimmed)
+  if (trimmed.startsWith('::') || trimmed.startsWith(':')) {
+    throw new Error('@custom-variant only defines condition variants. Use nested selectors directly for selector behavior.')
+  }
+  if (trimmed.startsWith('@')) {
+    throw new Error(`@custom-variant uses bare condition variant names: write "@custom-variant ${trimmed.slice(1)}"`)
+  }
+  const tokenMatch = /^[-_a-zA-Z][-_a-zA-Z0-9]*$/.exec(trimmed)
   if (!tokenMatch) return
   return {
-    token: tokenMatch[1] as NonNullable<CSSDirectiveManifestInput['variants']>[number]['token']
+    token: `@${tokenMatch[0]}` as NonNullable<CSSDirectiveManifestInput['variants']>[number]['token']
   }
 }
 
@@ -1088,13 +1120,13 @@ function assertNoVariantTemplateDeclarations(rule: any, token: string) {
 
 function createVariantTemplateBranch(path: {
   selectors: string[]
-  atRules: string[]
+  conditions: string[]
   layer?: CSSDirectiveLayerName
 }) {
   const selector = path.selectors.reduce((current, selectorTemplate) => selectorTemplate.replace(/&/g, current), '&')
   return {
     ...(selector !== '&' ? { selector } : {}),
-    ...(path.atRules.length ? { atRules: [...path.atRules] } : {}),
+    ...(path.conditions.length ? { conditions: [...path.conditions] } : {}),
     ...(path.layer ? { layer: path.layer } : {})
   }
 }
@@ -1102,7 +1134,7 @@ function createVariantTemplateBranch(path: {
 function collectVariantTemplateBranches(
   rules: Rule[],
   token: string,
-  path: { selectors: string[], atRules: string[], layer?: CSSDirectiveLayerName } = { selectors: [], atRules: [] }
+  path: { selectors: string[], conditions: string[], layer?: CSSDirectiveLayerName } = { selectors: [], conditions: [] }
 ): NonNullable<CSSDirectiveManifestInput['variants']>[number]['branches'] {
   const branches: NonNullable<CSSDirectiveManifestInput['variants']>[number]['branches'] = []
   for (const child of rules) {
@@ -1157,7 +1189,7 @@ function collectVariantTemplateBranches(
       }
       branches.push(...collectVariantTemplateBranches(nestedAtRuleChildren, token, {
         ...path,
-        atRules: [...path.atRules, atRule]
+        conditions: [...path.conditions, atRule]
       }))
       continue
     }
@@ -1350,15 +1382,23 @@ function parseMasterVariantBlock(rule: any) {
   if (!token) {
     throw new Error('@variant requires a Master CSS variant')
   }
-  if (!/^(?::{1,2}[^\s:]\S*|@\S+)$/.test(token)) {
-    throw new Error('@variant requires a full variant token')
+  if (!shorthandToken) {
+    if (token.startsWith('@')) {
+      throw new Error(`@variant uses bare condition variant names: write "@variant ${token.slice(1)}"`)
+    }
+    if (token.startsWith('::') || token.startsWith(':')) {
+      throw new Error('@variant only applies condition variants. Use nested selectors directly for selector behavior.')
+    }
+    if (!/^\S+$/.test(token)) {
+      throw new Error('@variant requires a full condition variant token')
+    }
   }
   const rules = rule.value.body?.value
   if (!Array.isArray(rules)) {
     throw new Error('@variant requires a style block')
   }
   return {
-    token,
+    token: shorthandToken || (token.startsWith(':') ? token : `@${token}`),
     rules: rules as Rule[]
   }
 }
@@ -1466,7 +1506,7 @@ function parseStyleDefinitionBody(
   parsed: ParsedDirectives,
   selectorDefinition: StyleSelectorDefinition,
   items: StyleRuleBodyItem[],
-  atRules: string[] = [],
+  conditionPath: CSSDirectiveConditionPath = [],
   layer?: CSSDirectiveLayerName,
   name = selectorDefinition.name
 ) {
@@ -1483,7 +1523,7 @@ function parseStyleDefinitionBody(
         ...(item.directiveSource ? { directiveSource: item.directiveSource } : {}),
         ...(selectorDefinition.source ? { selectorSource: selectorDefinition.source } : {}),
         ...(name ? { name } : {}),
-        ...(atRules.length ? { atRules: [...atRules] } : {}),
+        ...createConditionPathProperties(conditionPath),
         ...(layer ? { layer } : {})
       })))
       continue
@@ -1498,16 +1538,16 @@ function parseStyleDefinitionBody(
         ...(selectorDefinition.source ? { selectorSource: selectorDefinition.source } : {}),
         ...(name ? { name } : {}),
         declarations: item.declarations,
-        ...(atRules.length ? { atRules: [...atRules] } : {}),
+        ...createConditionPathProperties(conditionPath),
         ...(layer ? { layer } : {})
       })
       continue
     }
 
     if (name) {
-      parseNestedManagedStyleChildRule(item.rule, parsed, selectorDefinition as StyleSelectorDefinition & { name: string }, atRules, layer)
+      parseNestedManagedStyleChildRule(item.rule, parsed, selectorDefinition as StyleSelectorDefinition & { name: string }, conditionPath, layer)
     } else {
-      parseNestedNativeStyleChildRule(item.rule, parsed, selectorDefinition, atRules)
+      parseNestedNativeStyleChildRule(item.rule, parsed, selectorDefinition, conditionPath)
     }
   }
 
@@ -1520,14 +1560,14 @@ function parseStyleRuleBody(
   rules: Rule[],
   parsed: ParsedDirectives,
   selectorDefinition: StyleSelectorDefinition,
-  atRules: string[] = [],
+  conditionPath: CSSDirectiveConditionPath = [],
   layer?: CSSDirectiveLayerName,
   name = selectorDefinition.name
 ) {
-  parseStyleDefinitionBody(parsed, selectorDefinition, collectDirectiveStyleRuleBody(EMPTY_DECLARATION_BLOCK, rules, parsed), atRules, layer, name)
+  parseStyleDefinitionBody(parsed, selectorDefinition, collectDirectiveStyleRuleBody(EMPTY_DECLARATION_BLOCK, rules, parsed), conditionPath, layer, name)
 }
 
-function parseNestedManagedStyleChildRule(child: Rule, parsed: ParsedDirectives, parentSelectorDefinition: StyleSelectorDefinition, atRules: string[], layer?: CSSDirectiveLayerName) {
+function parseNestedManagedStyleChildRule(child: Rule, parsed: ParsedDirectives, parentSelectorDefinition: StyleSelectorDefinition, conditionPath: CSSDirectiveConditionPath, layer?: CSSDirectiveLayerName) {
   assertNotSlotRule(child)
 
   if (child.type === 'layer-block') {
@@ -1536,7 +1576,7 @@ function parseNestedManagedStyleChildRule(child: Rule, parsed: ParsedDirectives,
 
   const masterVariantBlock = parseMasterVariantBlock(child)
   if (masterVariantBlock) {
-    parseStyleRuleBody(masterVariantBlock.rules, parsed, parentSelectorDefinition, [...atRules, createCSSDirectiveVariantReference(masterVariantBlock.token)], layer)
+    parseStyleRuleBody(masterVariantBlock.rules, parsed, parentSelectorDefinition, [...conditionPath, variantEntry(masterVariantBlock.token)], layer)
     return
   }
 
@@ -1546,19 +1586,19 @@ function parseNestedManagedStyleChildRule(child: Rule, parsed: ParsedDirectives,
     if (!atRule) {
       throw new Error('Unsupported nested at-rule in @master')
     }
-    parseStyleRuleBody(nestedAtRuleChildren, parsed, parentSelectorDefinition, [...atRules, atRule], layer)
+    parseStyleRuleBody(nestedAtRuleChildren, parsed, parentSelectorDefinition, [...conditionPath, conditionEntry(atRule)], layer)
     return
   }
 
   if (child.type === 'style') {
-    parseManagedStyleRule(child, parsed, atRules, layer, parentSelectorDefinition)
+    parseManagedStyleRule(child, parsed, conditionPath, layer, parentSelectorDefinition)
     return
   }
 
   throw new Error('Style definitions only accept declarations, @compose, nested selectors, and nested at-rules')
 }
 
-function parseManagedStyleRule(rule: any, parsed: ParsedDirectives, atRules: string[] = [], layer?: CSSDirectiveLayerName, parentSelectorDefinition?: StyleSelectorDefinition) {
+function parseManagedStyleRule(rule: any, parsed: ParsedDirectives, conditionPath: CSSDirectiveConditionPath = [], layer?: CSSDirectiveLayerName, parentSelectorDefinition?: StyleSelectorDefinition) {
   const selectorDefinition = parentSelectorDefinition
     ? (() => {
       const selectors = combineStyleSelectorLists(parentSelectorDefinition.selectors, rule.value.selectors)
@@ -1574,7 +1614,7 @@ function parseManagedStyleRule(rule: any, parsed: ParsedDirectives, atRules: str
     throw new Error('Managed style definition selector must start with a single class selector')
   }
   selectorDefinition.source ||= createSelectorSourceReference(parsed, rule)
-  parseStyleDefinitionBody(parsed, selectorDefinition, collectDirectiveStyleRule(rule, parsed), atRules, layer)
+  parseStyleDefinitionBody(parsed, selectorDefinition, collectDirectiveStyleRule(rule, parsed), conditionPath, layer)
 }
 
 function parseNativeSelectorDefinition(selectors: Selector[], parentSelectorDefinition?: StyleSelectorDefinition): StyleSelectorDefinition {
@@ -1590,7 +1630,7 @@ function parseNativeSelectorDefinition(selectors: Selector[], parentSelectorDefi
 function parseNativeRuleBody(
   rules: Rule[],
   parsed: ParsedDirectives,
-  atRules: string[] = [],
+  conditionPath: CSSDirectiveConditionPath = [],
   parentSelectorDefinition?: StyleSelectorDefinition
 ) {
   for (const child of rules) {
@@ -1602,7 +1642,7 @@ function parseNativeRuleBody(
         type: 'compose',
         classNames: compose.classNames,
         ...(compose.directiveSource ? { directiveSource: compose.directiveSource } : {})
-      }], atRules, undefined, undefined)
+      }], conditionPath, undefined, undefined)
       continue
     }
 
@@ -1612,14 +1652,14 @@ function parseNativeRuleBody(
         parseStyleDefinitionBody(parsed, parentSelectorDefinition, [{
           type: 'declarations',
           declarations
-        }], atRules, undefined, undefined)
+        }], conditionPath, undefined, undefined)
       }
       continue
     }
 
     const masterVariantBlock = parseMasterVariantBlock(child)
     if (masterVariantBlock) {
-      parseNativeRuleBody(masterVariantBlock.rules, parsed, [...atRules, createCSSDirectiveVariantReference(masterVariantBlock.token)], parentSelectorDefinition)
+      parseNativeRuleBody(masterVariantBlock.rules, parsed, [...conditionPath, variantEntry(masterVariantBlock.token)], parentSelectorDefinition)
       continue
     }
 
@@ -1629,12 +1669,12 @@ function parseNativeRuleBody(
       if (!atRule) {
         throw new Error('Unsupported nested at-rule in native CSS')
       }
-      parseNativeRuleBody(nestedAtRuleChildren, parsed, [...atRules, atRule], parentSelectorDefinition)
+      parseNativeRuleBody(nestedAtRuleChildren, parsed, [...conditionPath, conditionEntry(atRule)], parentSelectorDefinition)
       continue
     }
 
     if (child.type === 'style') {
-      parseNativeStyleRule(child, parsed, atRules, parentSelectorDefinition)
+      parseNativeStyleRule(child, parsed, conditionPath, parentSelectorDefinition)
       continue
     }
 
@@ -1652,12 +1692,12 @@ function parseNativeRuleBody(
   }
 }
 
-function parseNestedNativeStyleChildRule(child: Rule, parsed: ParsedDirectives, parentSelectorDefinition: StyleSelectorDefinition, atRules: string[]) {
+function parseNestedNativeStyleChildRule(child: Rule, parsed: ParsedDirectives, parentSelectorDefinition: StyleSelectorDefinition, conditionPath: CSSDirectiveConditionPath) {
   assertNotSlotRule(child)
 
   const masterVariantBlock = parseMasterVariantBlock(child)
   if (masterVariantBlock) {
-    parseNativeRuleBody(masterVariantBlock.rules, parsed, [...atRules, createCSSDirectiveVariantReference(masterVariantBlock.token)], parentSelectorDefinition)
+    parseNativeRuleBody(masterVariantBlock.rules, parsed, [...conditionPath, variantEntry(masterVariantBlock.token)], parentSelectorDefinition)
     return
   }
 
@@ -1667,22 +1707,22 @@ function parseNestedNativeStyleChildRule(child: Rule, parsed: ParsedDirectives, 
     if (!atRule) {
       throw new Error('Unsupported nested at-rule in native CSS')
     }
-    parseNativeRuleBody(nestedAtRuleChildren, parsed, [...atRules, atRule], parentSelectorDefinition)
+    parseNativeRuleBody(nestedAtRuleChildren, parsed, [...conditionPath, conditionEntry(atRule)], parentSelectorDefinition)
     return
   }
 
   if (child.type === 'style') {
-    parseNativeStyleRule(child, parsed, atRules, parentSelectorDefinition)
+    parseNativeStyleRule(child, parsed, conditionPath, parentSelectorDefinition)
     return
   }
 
   throw new Error('Native CSS rules only accept declarations, @compose, nested selectors, and nested at-rules')
 }
 
-function parseNativeStyleRule(rule: any, parsed: ParsedDirectives, atRules: string[] = [], parentSelectorDefinition?: StyleSelectorDefinition) {
+function parseNativeStyleRule(rule: any, parsed: ParsedDirectives, conditionPath: CSSDirectiveConditionPath = [], parentSelectorDefinition?: StyleSelectorDefinition) {
   const selectorDefinition = parseNativeSelectorDefinition(rule.value.selectors, parentSelectorDefinition)
   selectorDefinition.source = createSelectorSourceReference(parsed, rule) || parentSelectorDefinition?.source
-  parseStyleDefinitionBody(parsed, selectorDefinition, collectDirectiveStyleRule(rule, parsed), atRules, undefined, undefined)
+  parseStyleDefinitionBody(parsed, selectorDefinition, collectDirectiveStyleRule(rule, parsed), conditionPath, undefined, undefined)
 }
 
 function formatKeyframeSelector(selector: KeyframeSelector) {
@@ -2018,12 +2058,18 @@ function ensureUtilityDefinitionRules(definition: CSSDirectiveUtilityDefinition)
   if (!definition.declarations) return
   const declarations = definition.declarations
   delete definition.declarations
-  const atRules = definition.atRules
-  delete definition.atRules
+  const conditions = definition.conditions
+  delete definition.conditions
+  const conditionPath = definition.conditionPath
+  delete definition.conditionPath
   definition.rules ??= []
   definition.rules.push({
     declarations,
-    ...(atRules?.length ? { atRules: [...atRules] } : {})
+    ...(conditionPath?.length
+      ? createConditionPathProperties(conditionPath)
+      : conditions?.length
+        ? { conditions: [...conditions] }
+        : {})
   })
 }
 
@@ -2031,15 +2077,15 @@ function pushUtilityDefinitionRule(
   definition: CSSDirectiveUtilityDefinition,
   declarations: Record<string, string>,
   selector = '&',
-  atRules: string[] = []
+  conditionPath: CSSDirectiveConditionPath = []
 ) {
   if (!Object.keys(declarations).length) return
-  const rule = {
+  const rule: CSSDirectiveUtilityRuleDefinition = {
     declarations,
     ...(selector !== '&' ? { selector } : {}),
-    ...(atRules.length ? { atRules: [...atRules] } : {})
+    ...createConditionPathProperties(conditionPath)
   }
-  if (!definition.declarations && !definition.rules?.length && !rule.selector && !rule.atRules) {
+  if (!definition.declarations && !definition.rules?.length && !rule.selector && !rule.conditions && !rule.conditionPath) {
     definition.declarations = declarations
     return
   }
@@ -2054,12 +2100,12 @@ function parseManagedPatternStyleDefinitionBody(
   items: StyleRuleBodyItem[],
   directiveName: ManagedDefinitionDirectiveName,
   selectors: string[] = ['&'],
-  atRules: string[] = []
+  conditionPath: CSSDirectiveConditionPath = []
 ) {
   for (const item of items) {
     if (item.type === 'declarations') {
       for (const selector of selectors) {
-        pushUtilityDefinitionRule(definition, item.declarations, selector, atRules)
+        pushUtilityDefinitionRule(definition, item.declarations, selector, conditionPath)
       }
       continue
     }
@@ -2068,7 +2114,7 @@ function parseManagedPatternStyleDefinitionBody(
       throw new CSSDirectiveError('compose-placement', `@compose is not supported inside managed pattern definitions`, item.directiveSource)
     }
 
-    parseManagedPatternChildRule(item.rule, parsed, definition, directiveName, selectors, atRules)
+    parseManagedPatternChildRule(item.rule, parsed, definition, directiveName, selectors, conditionPath)
   }
 }
 
@@ -2078,7 +2124,7 @@ function parseManagedPatternChildRule(
   definition: CSSDirectiveUtilityDefinition,
   directiveName: ManagedDefinitionDirectiveName,
   selectors: string[] = ['&'],
-  atRules: string[] = []
+  conditionPath: CSSDirectiveConditionPath = []
 ) {
   if (child.type === 'layer-block') {
     throw new Error(`Nested @layer blocks are not allowed inside @${directiveName}`)
@@ -2094,7 +2140,7 @@ function parseManagedPatternChildRule(
       collectDirectiveStyleRuleBody(EMPTY_DECLARATION_BLOCK, masterVariantBlock.rules, parsed),
       directiveName,
       selectors,
-      [...atRules, createCSSDirectiveVariantReference(masterVariantBlock.token)]
+      [...conditionPath, variantEntry(masterVariantBlock.token)]
     )
     return
   }
@@ -2111,7 +2157,7 @@ function parseManagedPatternChildRule(
       collectDirectiveStyleRuleBody(EMPTY_DECLARATION_BLOCK, nestedAtRuleChildren, parsed),
       directiveName,
       selectors,
-      [...atRules, atRule]
+      [...conditionPath, conditionEntry(atRule)]
     )
     return
   }
@@ -2123,7 +2169,7 @@ function parseManagedPatternChildRule(
       collectDirectiveStyleRule(child, parsed),
       directiveName,
       combineStyleSelectorLists(selectors, child.value.selectors),
-      atRules
+      conditionPath
     )
     return
   }
@@ -2142,7 +2188,7 @@ function parseManagedPatternDefinitionRule(
   child: any,
   parsed: ParsedDirectives,
   parsedPattern: ParsedManagedPatternName,
-  atRules: string[],
+  conditionPath: CSSDirectiveConditionPath,
   layer: CSSDirectiveLayerName,
   directiveName: ManagedDefinitionDirectiveName
 ) {
@@ -2160,7 +2206,7 @@ function parseManagedPatternDefinitionRule(
     collectDirectiveStyleRule(child, parsed),
     directiveName,
     ['&'],
-    atRules
+    conditionPath
   )
   parsed.manifestInput.utilities ??= []
   parsed.manifestInput.utilities.push(definition)
@@ -2187,7 +2233,7 @@ function createManagedDefinitionNameError(rule: any) {
 function parseManagedDefinitionDirectiveChildRule(
   child: Rule,
   parsed: ParsedDirectives,
-  atRules: string[],
+  conditionPath: CSSDirectiveConditionPath,
   layer: CSSDirectiveLayerName,
   directiveName: ManagedDefinitionDirectiveName
 ) {
@@ -2201,7 +2247,7 @@ function parseManagedDefinitionDirectiveChildRule(
       parseManagedDefinitionDirectiveChildRule(
         nestedChild,
         parsed,
-        [...atRules, createCSSDirectiveVariantReference(masterVariantBlock.token)],
+        [...conditionPath, variantEntry(masterVariantBlock.token)],
         layer,
         directiveName
       )
@@ -2216,7 +2262,7 @@ function parseManagedDefinitionDirectiveChildRule(
       throw new Error(`Unsupported nested at-rule inside @${directiveName}`)
     }
     for (const nestedChild of nestedAtRuleChildren) {
-      parseManagedDefinitionDirectiveChildRule(nestedChild, parsed, [...atRules, atRule], layer, directiveName)
+      parseManagedDefinitionDirectiveChildRule(nestedChild, parsed, [...conditionPath, conditionEntry(atRule)], layer, directiveName)
     }
     return
   }
@@ -2238,11 +2284,11 @@ function parseManagedDefinitionDirectiveChildRule(
       throw createManagedDefinitionNameError(child)
     }
     if (parsedPattern) {
-      parseManagedPatternDefinitionRule(child, parsed, parsedPattern, atRules, layer, directiveName)
+      parseManagedPatternDefinitionRule(child, parsed, parsedPattern, conditionPath, layer, directiveName)
       return
     }
     selectorDefinition.source = selectorSource
-    parseStyleDefinitionBody(parsed, selectorDefinition, collectDirectiveStyleRule(child, parsed), atRules, layer)
+    parseStyleDefinitionBody(parsed, selectorDefinition, collectDirectiveStyleRule(child, parsed), conditionPath, layer)
     return
   }
   if ((child.type === 'unknown' || child.type === 'custom') && child.value?.name === 'compose') {
@@ -2395,7 +2441,7 @@ export function compileCSS(source: string, options: CompileCSSOptions = {}): Com
           }
           const masterVariantBlock = parseMasterVariantBlock(rule)
           if (masterVariantBlock) {
-            parseNativeRuleBody(masterVariantBlock.rules, parsed, [createCSSDirectiveVariantReference(masterVariantBlock.token)])
+            parseNativeRuleBody(masterVariantBlock.rules, parsed, [variantEntry(masterVariantBlock.token)])
             return []
           }
           const nestedAtRuleChildren = getNestedAtRuleChildren(rule)
@@ -2404,7 +2450,7 @@ export function compileCSS(source: string, options: CompileCSSOptions = {}): Com
             if (!atRule) {
               throw new Error('Unsupported nested at-rule in native CSS')
             }
-            parseNativeRuleBody(nestedAtRuleChildren, parsed, [atRule])
+            parseNativeRuleBody(nestedAtRuleChildren, parsed, [conditionEntry(atRule)])
             return []
           }
           if (rule.type === 'style' && containsNativeStyleDirective(rule)) {

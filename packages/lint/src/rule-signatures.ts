@@ -15,14 +15,14 @@ export function equalDeclarations(a: unknown, b: unknown) {
 }
 
 export function equalVariants(
-  a: { selectorText?: string, atRules?: unknown, layerName?: string, variantBranchKey?: string },
-  b: { selectorText?: string, atRules?: unknown, layerName?: string, variantBranchKey?: string }
+  a: { selectorText?: string, conditions?: unknown, layerName?: string, variantBranchKey?: string },
+  b: { selectorText?: string, conditions?: unknown, layerName?: string, variantBranchKey?: string }
 ) {
   const branchA = a.variantBranchKey
   const branchB = b.variantBranchKey
   return (branchA !== undefined || branchB !== undefined ? branchA === branchB : a.selectorText === b.selectorText)
     && a.layerName === b.layerName
-    && stable(a.atRules) === stable(b.atRules)
+    && stable(a.conditions) === stable(b.conditions)
 }
 
 export function getDeclarationPropertySignature(rule: { declarations?: object }) {

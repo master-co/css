@@ -1,6 +1,5 @@
 import InlineCode from '~/internal/components/InlineCode'
-import defaultManifest from '@master/css-preset/default-manifest.json' with { type: 'json' }
-import { builtinNativeValueNamespaces, flattenMasterCSSManifestVariables } from '@master/css-engine'
+import { builtinNativeValueNamespaces } from '@master/css-engine'
 import { getUtilityVariableNamespaces, manifestUtilities } from '~/site/utils/manifest-utilities'
 
 const utilities = manifestUtilities

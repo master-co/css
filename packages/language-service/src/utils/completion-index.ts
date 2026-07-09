@@ -1,13 +1,14 @@
 import { type CompletionItem, CompletionItemKind } from 'vscode-languageserver-protocol'
 import {
   defaultCSSLanguageRuntime,
-  type AtRule,
+  type Condition,
   type CSSLanguageRuntime,
   type MasterCSS,
   createDefaultCSS
 } from '@master/css-language'
 import type { Variable } from '@master/css-language'
 import { getMdnPseudoClassNames, getMdnPseudoElementNames } from '@master/css-language'
+import { generateSelector } from '@master/css-engine/compiler'
 import getUtilityInfo from './get-utility-info'
 import sortCompletionItems from './sort-completion-items'
 
@@ -51,7 +52,7 @@ export interface CompletionIndex {
   pseudoClassSelectors: SelectorVariantCandidate[]
   pseudoElementNames: string[]
   pseudoElementSelectors: SelectorVariantCandidate[]
-  atRules: [string, AtRule][]
+  conditions: [string, Condition][]
 }
 
 function utilityMayReferenceAnimations(utility: MasterCSS['definedUtilities'][number]) {
@@ -185,10 +186,9 @@ function collectClassEntries(css: MasterCSS, runtime: CSSLanguageRuntime) {
 
 function createPseudoClassSelectors(css: MasterCSS) {
   const selectors = new Map<string, string>([[':of', ':of']])
-  for (const [token, branches] of css.variants) {
-    const selector = branches.find((branch) => branch.selector)?.selector
-    if (selector && token.startsWith(':') && !token.startsWith('::')) {
-      selectors.set(token, selector)
+  for (const [token, nodes] of css.selectors) {
+    if (token.startsWith(':') && !token.startsWith('::')) {
+      selectors.set(token, generateSelector(nodes, '&'))
     }
   }
   return Array.from(selectors, ([token, selector]) => ({ token, selector }))
@@ -196,10 +196,9 @@ function createPseudoClassSelectors(css: MasterCSS) {
 
 function createPseudoElementSelectors(css: MasterCSS) {
   const selectors: SelectorVariantCandidate[] = []
-  for (const [token, branches] of css.variants) {
-    const selector = branches.find((branch) => branch.selector)?.selector
-    if (selector && token.startsWith('::')) {
-      selectors.push({ token, selector })
+  for (const [token, nodes] of css.selectors) {
+    if (token.startsWith('::')) {
+      selectors.push({ token, selector: generateSelector(nodes, '&') })
     }
   }
   return selectors
@@ -302,7 +301,7 @@ export function createCompletionIndex(
     pseudoClassSelectors: createPseudoClassSelectors(css),
     pseudoElementNames: getMdnPseudoElementNames(),
     pseudoElementSelectors: createPseudoElementSelectors(css),
-    atRules: Array.from(css.atRules.entries())
+    conditions: Array.from(css.conditions.entries())
   }
 }
 

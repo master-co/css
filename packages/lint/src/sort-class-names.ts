@@ -26,8 +26,8 @@ function getLayerOrder(layerName?: string) {
   return index === -1 ? LAYER_ORDER.length : index
 }
 
-function getConditionGroupOrder(rule: { atRules?: unknown, mode?: unknown, selectorNodes?: unknown[] }) {
-  if (rule.atRules) return 3
+function getConditionGroupOrder(rule: { conditions?: unknown, mode?: unknown, selectorNodes?: unknown[] }) {
+  if (rule.conditions) return 3
   if (rule.mode) return 2
   if (rule.selectorNodes?.length) return 1
   return 0
@@ -41,7 +41,7 @@ function getReadableTypeOrder(rule: { fixedClass?: string, type?: number }) {
 
 function createConditionRule(rule: GeneratedRule): SortableRule {
   return {
-    atRules: rule.atRules,
+    conditions: rule.conditions,
     key: '',
     mode: rule.mode,
     priority: rule.priority,

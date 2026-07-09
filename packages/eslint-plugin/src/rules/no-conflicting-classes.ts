@@ -14,7 +14,7 @@ export default createRule({
     },
     messages: {
       collisionClass: '{{message}}',
-      partialCollisionClass: 'Prefer "{{replacement}}" over "{{actual}}" because "{{conflict}}" overrides part of it.',
+      partialCollisionClass: '{{message}}',
     },
     fixable: 'code',
     schema: []

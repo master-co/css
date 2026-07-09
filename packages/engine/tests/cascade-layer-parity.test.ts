@@ -228,7 +228,7 @@ describe.concurrent('migrated cascade and layer parity', () => {
       {
         name: 'btn',
         rules: [
-          { selector: '&', atRules: ['@layer base'], declarations: { display: 'block' } }
+          { selector: '&', conditions: ['@layer base'], declarations: { display: 'block' } }
         ]
       }
     ])
@@ -279,11 +279,11 @@ describe.concurrent('migrated cascade and layer parity', () => {
       'font:2rem@md'
     ])
 
-    const tabletAtRule = { id: 'media' as const, nodes: [{ type: 'number' as const, value: 391 / 16, unit: 'rem' }] }
-    const desktopAtRule = { id: 'media' as const, nodes: [{ type: 'number' as const, value: 1025 / 16, unit: 'rem' }] }
+    const tabletCondition = { id: 'media' as const, nodes: [{ type: 'number' as const, value: 391 / 16, unit: 'rem' }] }
+    const desktopCondition = { id: 'media' as const, nodes: [{ type: 'number' as const, value: 1025 / 16, unit: 'rem' }] }
     const manifest = cloneManifest()
-    manifest.atRules = { ...(manifest.atRules || {}), tablet: tabletAtRule, desktop: desktopAtRule }
-    manifest.breakpointAtRules = { ...(manifest.breakpointAtRules || {}), tablet: tabletAtRule, desktop: desktopAtRule }
+    manifest.conditions = { ...(manifest.conditions || {}), tablet: tabletCondition, desktop: desktopCondition }
+    manifest.breakpointConditions = { ...(manifest.breakpointConditions || {}), tablet: tabletCondition, desktop: desktopCondition }
     const mediaCSS = MasterCSS.create({
       manifest,
       nativeDeclarationMatcher: ({ property }) => property === 'justify-content' || property === 'min-width'

@@ -10,9 +10,9 @@ import type {
 import type {
   MasterCSSManifest,
   MasterCSSManifestAnimations,
-  MasterCSSManifestAtRule,
-  MasterCSSManifestAtRuleNode,
-  MasterCSSManifestAtRules,
+  MasterCSSManifestCondition,
+  MasterCSSManifestConditionNode,
+  MasterCSSManifestConditions,
   MasterCSSManifestCSSDeclarationPrimitive,
   MasterCSSManifestCSSDeclarations,
   MasterCSSManifestSelectorNode,
@@ -30,7 +30,7 @@ import type {
 import { flattenMasterCSSManifestVariables, groupMasterCSSManifestVariables } from '@master/css-schema/manifest'
 import {
   createCompilerCSS,
-  parseAt,
+  parseCondition,
   parseSelector
 } from '@master/css-engine/compiler'
 import {
@@ -263,7 +263,7 @@ function compileVariables(
   return variables.length ? variables : undefined
 }
 
-function normalizeNumericAtRuleValue(variable: MasterCSSManifestVariable, rootSize: number) {
+function normalizeNumericConditionValue(variable: MasterCSSManifestVariable, rootSize: number) {
   if (variable.key.startsWith('-')) return
   const numeric = variable.numeric || (typeof variable.value === 'number' ? { value: variable.value } : undefined)
   if (!numeric) return
@@ -279,8 +279,8 @@ function normalizeNumericAtRuleValue(variable: MasterCSSManifestVariable, rootSi
   }
 }
 
-function createVariableAtRule(variable: MasterCSSManifestVariable, id: 'media' | 'container', rootSize: number): MasterCSSManifestAtRule | undefined {
-  const value = normalizeNumericAtRuleValue(variable, rootSize)
+function createVariableCondition(variable: MasterCSSManifestVariable, id: 'media' | 'container', rootSize: number): MasterCSSManifestCondition | undefined {
+  const value = normalizeNumericConditionValue(variable, rootSize)
   if (value === undefined) return
   return {
     id,
@@ -292,43 +292,43 @@ function createVariableAtRule(variable: MasterCSSManifestVariable, id: 'media' |
   }
 }
 
-function compileAtRules(variables: MasterCSSManifestVariableDraft[] | undefined, rootSize: number) {
-  const atRules: MasterCSSManifestAtRules = {}
-  const breakpointAtRules: MasterCSSManifestAtRules = {}
-  const containerAtRules: MasterCSSManifestAtRules = {}
+function compileConditions(variables: MasterCSSManifestVariableDraft[] | undefined, rootSize: number) {
+  const conditions: MasterCSSManifestConditions = {}
+  const breakpointConditions: MasterCSSManifestConditions = {}
+  const containerConditions: MasterCSSManifestConditions = {}
 
   for (const variable of variables || []) {
     if (variable.namespace === 'breakpoint') {
-      const atRule = createVariableAtRule(variable, 'media', rootSize)
-      if (atRule) {
-        atRules[variable.key] = atRule
-        breakpointAtRules[variable.key] = atRule
+      const condition = createVariableCondition(variable, 'media', rootSize)
+      if (condition) {
+        conditions[variable.key] = condition
+        breakpointConditions[variable.key] = condition
       }
     } else if (variable.namespace === 'container') {
-      const atRule = createVariableAtRule(variable, 'container', rootSize)
-      if (atRule) {
-        containerAtRules[variable.key] = atRule
+      const condition = createVariableCondition(variable, 'container', rootSize)
+      if (condition) {
+        containerConditions[variable.key] = condition
       }
     }
   }
 
   return {
-    atRules: Object.keys(atRules).length ? atRules : undefined,
-    breakpointAtRules: Object.keys(breakpointAtRules).length ? breakpointAtRules : undefined,
-    containerAtRules: Object.keys(containerAtRules).length ? containerAtRules : undefined
+    conditions: Object.keys(conditions).length ? conditions : undefined,
+    breakpointConditions: Object.keys(breakpointConditions).length ? breakpointConditions : undefined,
+    containerConditions: Object.keys(containerConditions).length ? containerConditions : undefined
   }
 }
 
-function cloneAtRuleNode(node: MasterCSSManifestAtRuleNode): MasterCSSManifestAtRuleNode {
+function cloneConditionNode(node: MasterCSSManifestConditionNode): MasterCSSManifestConditionNode {
   return 'children' in node
-    ? { ...node, children: node.children.map(cloneAtRuleNode) }
+    ? { ...node, children: node.children.map(cloneConditionNode) }
     : { ...node }
 }
 
-function cloneAtRule(atRule: MasterCSSManifestAtRule): MasterCSSManifestAtRule {
+function cloneCondition(condition: MasterCSSManifestCondition): MasterCSSManifestCondition {
   return {
-    id: atRule.id,
-    nodes: atRule.nodes.map(cloneAtRuleNode)
+    id: condition.id,
+    nodes: condition.nodes.map(cloneConditionNode)
   }
 }
 
@@ -350,29 +350,29 @@ function compileVariantBranch(branch: MasterCSSManifestVariantBranch, css: Retur
     : bodylessSelector
       ? parseSelector(bodylessSelector, css, false).map((node) => cloneSelectorNode(node as MasterCSSManifestSelectorNode))
       : undefined
-  const atRuleNodes = branch.atRuleNodes?.length
-    ? branch.atRuleNodes.map(cloneAtRule)
-    : branch.atRules?.length
-      ? branch.atRules.map((atRule) => cloneAtRule(parseAt(atRule, css, false) as MasterCSSManifestAtRule))
+  const conditionNodes = branch.conditionNodes?.length
+    ? branch.conditionNodes.map(cloneCondition)
+    : branch.conditions?.length
+      ? branch.conditions.map((condition) => cloneCondition(parseCondition(condition, css, false) as MasterCSSManifestCondition))
       : undefined
   return {
     ...branch,
     ...(selectorNodes?.length ? { selectorNodes } : {}),
-    ...(branch.atRules?.length ? { atRules: [...branch.atRules] } : {}),
-    ...(atRuleNodes?.length ? { atRuleNodes } : {})
+    ...(branch.conditions?.length ? { conditions: [...branch.conditions] } : {}),
+    ...(conditionNodes?.length ? { conditionNodes } : {})
   }
 }
 
 function compileVariants(input: MasterCSSManifestVariants | undefined, baseManifest: MasterCSSManifest): {
   variants?: MasterCSSManifestVariants
   selectors?: MasterCSSManifestSelectors
-  atRules?: MasterCSSManifestAtRules
+  conditions?: MasterCSSManifestConditions
 } {
   if (!input?.length) return {}
   const css = createCompilerCSS(baseManifest)
   const variants: MasterCSSManifestVariant[] = []
   const selectors: MasterCSSManifestSelectors = {}
-  const atRules: MasterCSSManifestAtRules = {}
+  const conditions: MasterCSSManifestConditions = {}
   for (const variant of input) {
     const branches = variant.branches.map((branch) => compileVariantBranch(branch, css))
     variants.push({
@@ -384,13 +384,13 @@ function compileVariants(input: MasterCSSManifestVariants | undefined, baseManif
       if (firstSelectorNodes?.length) selectors[variant.token] = firstSelectorNodes.map(cloneSelectorNode)
     }
     if (variant.token.startsWith('@')) {
-      const firstAtRule = branches.find((branch) => branch.atRuleNodes?.length)?.atRuleNodes?.[0]
-      if (firstAtRule) {
-        atRules[variant.token.slice(1)] = cloneAtRule(firstAtRule)
+      const firstCondition = branches.find((branch) => branch.conditionNodes?.length)?.conditionNodes?.[0]
+      if (firstCondition) {
+        conditions[variant.token.slice(1)] = cloneCondition(firstCondition)
       } else {
         const firstLayer = branches.find((branch) => branch.layer)?.layer
         if (firstLayer) {
-          atRules[variant.token.slice(1)] = {
+          conditions[variant.token.slice(1)] = {
             id: 'layer',
             nodes: [{
               type: 'string',
@@ -404,7 +404,7 @@ function compileVariants(input: MasterCSSManifestVariants | undefined, baseManif
   return {
     variants,
     ...(Object.keys(selectors).length ? { selectors } : {}),
-    ...(Object.keys(atRules).length ? { atRules } : {})
+    ...(Object.keys(conditions).length ? { conditions } : {})
   }
 }
 
@@ -426,7 +426,7 @@ function compileUtilityRule(rule: CSSDirectiveUtilityRuleDefinition): MasterCSSM
   assertNoValuePlaceholder(rule.declarations)
   return {
     declarations: cloneDeclarations(rule.declarations),
-    ...(rule.atRules?.length ? { atRules: [...rule.atRules] } : {}),
+    ...(rule.conditions?.length ? { conditions: [...rule.conditions] } : {}),
     ...(rule.selector && rule.selector !== '&' ? { selector: rule.selector } : {})
   }
 }
@@ -470,7 +470,7 @@ function compilePatternDeclarations(declarations: CSSDirectiveUtilityRuleDefinit
 function compilePatternUtilityRule(rule: CSSDirectiveUtilityRuleDefinition): MasterCSSManifestUtilityRule {
   return {
     declarations: compilePatternDeclarations(rule.declarations),
-    ...(rule.atRules?.length ? { atRules: [...rule.atRules] } : {}),
+    ...(rule.conditions?.length ? { conditions: [...rule.conditions] } : {}),
     ...(rule.selector && rule.selector !== '&' ? { selector: rule.selector } : {})
   }
 }
@@ -548,7 +548,7 @@ function compileUtility(definition: CSSDirectiveUtilityDefinition, order: number
     if (definition.declarations) {
       rules.push({
         declarations: compilePatternDeclarations(definition.declarations),
-        ...(definition.atRules?.length ? { atRules: [...definition.atRules] } : {})
+        ...(definition.conditions?.length ? { conditions: [...definition.conditions] } : {})
       })
     }
     if (definition.rules?.length) {
@@ -576,7 +576,7 @@ function compileUtility(definition: CSSDirectiveUtilityDefinition, order: number
     if (definition.declarations) {
       rules.push({
         declarations: compilePatternDeclarations(definition.declarations),
-        ...(definition.atRules?.length ? { atRules: [...definition.atRules] } : {})
+        ...(definition.conditions?.length ? { conditions: [...definition.conditions] } : {})
       })
     }
     if (definition.rules?.length) {
@@ -606,7 +606,7 @@ function compileUtility(definition: CSSDirectiveUtilityDefinition, order: number
     assertNoValuePlaceholder(definition.declarations)
     rules.push({
       declarations: cloneDeclarations(definition.declarations),
-      ...(definition.atRules?.length ? { atRules: [...definition.atRules] } : {})
+      ...(definition.conditions?.length ? { conditions: [...definition.conditions] } : {})
     })
   }
   if (definition.rules?.length) {
@@ -701,9 +701,9 @@ function mergeManifest(baseManifest: MasterCSSManifest | undefined, fragment: Ma
     animations: mergeRecords(baseManifest.animations, fragment.animations),
     animationOptions: mergeAnimationOptions(baseManifest.animationOptions, fragment.animationOptions, fragment.animations),
     variants: mergeBy(baseManifest.variants, fragment.variants, (variant) => variant.token),
-    atRules: mergeRecords(baseManifest.atRules, fragment.atRules),
-    breakpointAtRules: mergeRecords(baseManifest.breakpointAtRules, fragment.breakpointAtRules),
-    containerAtRules: mergeRecords(baseManifest.containerAtRules, fragment.containerAtRules),
+    conditions: mergeRecords(baseManifest.conditions, fragment.conditions),
+    breakpointConditions: mergeRecords(baseManifest.breakpointConditions, fragment.breakpointConditions),
+    containerConditions: mergeRecords(baseManifest.containerConditions, fragment.containerConditions),
     selectors: mergeRecords(baseManifest.selectors, fragment.selectors),
     utilities: mergeBy(baseManifest.utilities, fragment.utilities, (utility) => `${utility.id}\0${utility.layer || ''}`),
     debug: mergeRecords(baseManifest.debug, fragment.debug)
@@ -727,7 +727,7 @@ export function createMasterCSSManifest(input: CSSDirectiveManifestInput = {}, o
   const resolveVariableName = timeCompilerDiagnostic(diagnostics, 'manifest-variable-name-resolver-ms', () => createVariableNameResolver(input, options))
   const variableDefinitions = timeCompilerDiagnostic(diagnostics, 'manifest-compile-variables-ms', () => compileVariables(input.variables, resolveVariableName))
   const variables = timeCompilerDiagnostic(diagnostics, 'manifest-group-variables-ms', () => groupMasterCSSManifestVariables(variableDefinitions))
-  const { atRules, breakpointAtRules, containerAtRules } = timeCompilerDiagnostic(diagnostics, 'manifest-compile-at-rules-ms', () => compileAtRules(variableDefinitions, rootSize))
+  const { conditions, breakpointConditions, containerConditions } = timeCompilerDiagnostic(diagnostics, 'manifest-compile-conditions-ms', () => compileConditions(variableDefinitions, rootSize))
   const settings = {
     ...(input.rootSize !== undefined ? { rootSize: input.rootSize } : {}),
     ...(input.baseUnit !== undefined ? { baseUnit: input.baseUnit } : {}),
@@ -741,11 +741,11 @@ export function createMasterCSSManifest(input: CSSDirectiveManifestInput = {}, o
     version: 1,
     ...(Object.keys(settings).length ? { settings } : {}),
     ...(variables ? { variables } : {}),
-    ...(atRules ? { atRules } : {}),
-    ...(breakpointAtRules ? { breakpointAtRules } : {}),
-    ...(containerAtRules ? { containerAtRules } : {})
+    ...(conditions ? { conditions } : {}),
+    ...(breakpointConditions ? { breakpointConditions } : {}),
+    ...(containerConditions ? { containerConditions } : {})
   }))
-  const { variants, selectors, atRules: variantAtRules } = timeCompilerDiagnostic(diagnostics, 'manifest-compile-variants-ms', () => compileVariants(input.variants as MasterCSSManifestVariants | undefined, variantBaseManifest))
+  const { variants, selectors, conditions: variantConditions } = timeCompilerDiagnostic(diagnostics, 'manifest-compile-variants-ms', () => compileVariants(input.variants as MasterCSSManifestVariants | undefined, variantBaseManifest))
   const utilities = timeCompilerDiagnostic(diagnostics, 'manifest-compile-utilities-ms', () => compileUtilities(input.utilities))
   const animations = timeCompilerDiagnostic(diagnostics, 'manifest-compile-animations-ms', () => compileAnimations(input.animations))
   const animationOptions = timeCompilerDiagnostic(diagnostics, 'manifest-compile-animation-options-ms', () => compileAnimationOptions(input.animationOptions))
@@ -756,9 +756,9 @@ export function createMasterCSSManifest(input: CSSDirectiveManifestInput = {}, o
     ...(animations ? { animations } : {}),
     ...(animationOptions ? { animationOptions } : {}),
     ...(variants?.length ? { variants } : {}),
-    ...((atRules || variantAtRules) ? { atRules: mergeRecords(atRules, variantAtRules) } : {}),
-    ...(breakpointAtRules ? { breakpointAtRules } : {}),
-    ...(containerAtRules ? { containerAtRules } : {}),
+    ...((conditions || variantConditions) ? { conditions: mergeRecords(conditions, variantConditions) } : {}),
+    ...(breakpointConditions ? { breakpointConditions } : {}),
+    ...(containerConditions ? { containerConditions } : {}),
     ...(selectors ? { selectors } : {}),
     ...(utilities?.length ? { utilities } : {})
   }
@@ -767,7 +767,7 @@ export function createMasterCSSManifest(input: CSSDirectiveManifestInput = {}, o
   setCompilerDiagnosticCount(diagnostics, 'manifest-output-utility-count', manifest.utilities?.length || 0)
   setCompilerDiagnosticCount(diagnostics, 'manifest-output-variant-count', manifest.variants?.length || 0)
   setCompilerDiagnosticCount(diagnostics, 'manifest-output-selector-count', Object.keys(manifest.selectors || {}).length)
-  setCompilerDiagnosticCount(diagnostics, 'manifest-output-at-rule-count', Object.keys(manifest.atRules || {}).length)
+  setCompilerDiagnosticCount(diagnostics, 'manifest-output-condition-count', Object.keys(manifest.conditions || {}).length)
   setCompilerDiagnosticCount(diagnostics, 'manifest-output-animation-count', Object.keys(manifest.animations || {}).length)
   return manifest
 }

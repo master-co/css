@@ -51,7 +51,7 @@ function summarizeManifestInput(input: unknown) {
       variables: countObjectKeys(manifestInput.variables),
       utilities: Array.isArray(manifestInput.utilities) ? manifestInput.utilities.length : countObjectKeys(manifestInput.utilities),
       variants: Array.isArray(manifestInput.variants) ? manifestInput.variants.length : countObjectKeys(manifestInput.variants),
-      atRules: countObjectKeys(manifestInput.atRules),
+      conditions: countObjectKeys(manifestInput.conditions),
       selectors: countObjectKeys(manifestInput.selectors),
       animations: countObjectKeys(manifestInput.animations)
     }

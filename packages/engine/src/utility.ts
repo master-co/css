@@ -3,27 +3,27 @@ import MasterCSS from './core'
 import { cssEscape } from '@master/css-lexer'
 import UtilityType, { type UtilityType as UtilityTypeValue } from '@master/css-schema/utility-type'
 import { type PropertiesHyphen } from 'csstype'
-import { VALUE_DELIMITERS, BASE_UNIT_REGEX, AT_IDENTIFIERS } from './common'
+import { VALUE_DELIMITERS, BASE_UNIT_REGEX, CONDITION_IDENTIFIERS } from './common'
 import Layer from './layer'
 import type { ValueComponent, VariableValueComponent, Variable, StringValueComponent } from '@master/css-schema/css-syntax'
-import { AtRule, AtRuleNode, AtRuleStringNode, AtRuleValueNode, } from './utils/parse-at'
+import { Condition, ConditionNode, ConditionStringNode, ConditionValueNode, } from './utils/parse-condition'
 import parseValue from './utils/parse-value'
-import parseAt from './utils/parse-at'
-import type { MasterCSSManifestAtIdentifier, MasterCSSManifestUtilityLayerName, MasterCSSManifestUtilityMatcher, MasterCSSManifestVariantBranch, MasterCSSManifestVariantToken } from '@master/css-schema/manifest'
+import parseCondition from './utils/parse-condition'
+import type { MasterCSSManifestConditionIdentifier, MasterCSSManifestUtilityLayerName, MasterCSSManifestUtilityMatcher, MasterCSSManifestVariantBranch, MasterCSSManifestVariantToken } from '@master/css-schema/manifest'
 import type { CompiledUtility } from './core'
-import generateAt from './utils/generate-at'
+import generateCondition from './utils/generate-condition'
 import parseSelector, { SelectorNode } from './utils/parse-selector'
 import generateSelector from './utils/generate-selector'
 import { calcRulePriority, RulePriority } from './utils/compare-rule-priority'
 import collectVariableNames from './utils/collect-variable-names'
-import wrapAtRules from './utils/wrap-at-rules'
+import wrapConditions from './utils/wrap-conditions'
 import { createAlphaColorValue, createCSSVariableReference, createNegativeNumberVariableReference, createNumberVariableReference, normalizeVariableValue, replaceCSSVariableReferences } from './utils/css-variables'
 import collectAnimationNames from './utils/collect-animation-names'
 
 type UtilityStateBranch = {
   selectorTemplate?: string
   selectorNodes?: SelectorNode[]
-  atRules?: Partial<Record<MasterCSSManifestAtIdentifier, AtRuleNode[]>>
+  conditions?: Partial<Record<MasterCSSManifestConditionIdentifier, ConditionNode[]>>
   layer?: MasterCSSManifestUtilityLayerName
   mode?: string
   key: string
@@ -107,34 +107,34 @@ function composeSelectorTemplate(current: string | undefined, next: string | und
   return next.replace(/&/g, current || '&')
 }
 
-function cloneAtRules(atRules?: Partial<Record<MasterCSSManifestAtIdentifier, AtRuleNode[]>>) {
-  if (!atRules) return
-  const cloned: Partial<Record<MasterCSSManifestAtIdentifier, AtRuleNode[]>> = {}
-  for (const id of AT_IDENTIFIERS) {
-    const nodes = atRules[id]
+function cloneConditions(conditions?: Partial<Record<MasterCSSManifestConditionIdentifier, ConditionNode[]>>) {
+  if (!conditions) return
+  const cloned: Partial<Record<MasterCSSManifestConditionIdentifier, ConditionNode[]>> = {}
+  for (const id of CONDITION_IDENTIFIERS) {
+    const nodes = conditions[id]
     if (nodes?.length) cloned[id] = [...nodes]
   }
   return cloned
 }
 
-function mergeAtRuleNodeMap(
-  current: Partial<Record<MasterCSSManifestAtIdentifier, AtRuleNode[]>> | undefined,
-  atRule: { id: MasterCSSManifestAtIdentifier, nodes: AtRuleNode[] }
+function mergeConditionNodeMap(
+  current: Partial<Record<MasterCSSManifestConditionIdentifier, ConditionNode[]>> | undefined,
+  condition: { id: MasterCSSManifestConditionIdentifier, nodes: ConditionNode[] }
 ) {
-  const merged = cloneAtRules(current) || {}
-  merged[atRule.id] = [...(merged[atRule.id] || []), ...atRule.nodes]
+  const merged = cloneConditions(current) || {}
+  merged[condition.id] = [...(merged[condition.id] || []), ...condition.nodes]
   return merged
 }
 
 function mergeBranch(base: UtilityStateBranch, branch: MasterCSSManifestVariantBranch, css: MasterCSS, key: string): UtilityStateBranch {
-  let atRules = cloneAtRules(base.atRules)
-  for (const atRule of branch.atRuleNodes || []) {
-    atRules = mergeAtRuleNodeMap(atRules, atRule as AtRule)
+  let conditions = cloneConditions(base.conditions)
+  for (const condition of branch.conditionNodes || []) {
+    conditions = mergeConditionNodeMap(conditions, condition as Condition)
   }
-  if (!branch.atRuleNodes?.length) {
-    for (const atRule of branch.atRules || []) {
-      const parsed = parseAt(atRule, css)
-      atRules = mergeAtRuleNodeMap(atRules, parsed as { id: MasterCSSManifestAtIdentifier, nodes: AtRuleNode[] })
+  if (!branch.conditionNodes?.length) {
+    for (const condition of branch.conditions || []) {
+      const parsed = parseCondition(condition, css)
+      conditions = mergeConditionNodeMap(conditions, parsed as { id: MasterCSSManifestConditionIdentifier, nodes: ConditionNode[] })
     }
   }
   if (branch.selectorNodes?.length && !branch.selector) {
@@ -142,7 +142,7 @@ function mergeBranch(base: UtilityStateBranch, branch: MasterCSSManifestVariantB
       ...base,
       key: base.key + key,
       selectorNodes: branch.selectorNodes as SelectorNode[],
-      ...(atRules ? { atRules } : {}),
+      ...(conditions ? { conditions } : {}),
       ...(branch.layer || base.layer ? { layer: branch.layer || base.layer } : {}),
       valid: base.valid !== false && !(base.layer && branch.layer && base.layer !== branch.layer)
     }
@@ -152,7 +152,7 @@ function mergeBranch(base: UtilityStateBranch, branch: MasterCSSManifestVariantB
     ...base,
     key: base.key + key,
     selectorTemplate: composeSelectorTemplate(base.selectorTemplate, branch.selector),
-    ...(atRules ? { atRules } : {}),
+    ...(conditions ? { conditions } : {}),
     ...(layer ? { layer } : {}),
     valid: base.valid !== false && !(base.layer && branch.layer && base.layer !== branch.layer)
   }
@@ -245,11 +245,11 @@ function wrapCalcArguments(value: string) {
 export class Utility {
   native?: CSSRule
   nodes?: UtilityRuleNode[]
-  readonly atRules?: Partial<Record<MasterCSSManifestAtIdentifier, AtRuleNode[]>>
+  readonly conditions?: Partial<Record<MasterCSSManifestConditionIdentifier, ConditionNode[]>>
   readonly priority!: RulePriority
   readonly type: UtilityTypeValue = UtilityType.Normal
   readonly declarations?: PropertiesHyphen
-  readonly declarationRules?: { declarations: PropertiesHyphen, atRules?: string[], selector?: string }[]
+  readonly declarationRules?: { declarations: PropertiesHyphen, conditions?: string[], selector?: string }[]
   readonly layer!: Layer
   readonly layerName: MasterCSSManifestUtilityLayerName
   explicitLayerName?: MasterCSSManifestUtilityLayerName
@@ -276,7 +276,7 @@ export class Utility {
       name: _registeredName,
       key: _key,
       layer: _layer,
-      atRules: _sourceAtRules,
+      conditions: _sourceConditions,
       ...runtimeUtility
     } = registeredUtility
     Object.assign(this, runtimeUtility)
@@ -339,7 +339,7 @@ export class Utility {
     if (stateBranch.mode) this.mode = stateBranch.mode
     if (stateBranch.selectorNodes?.length) this.selectorNodes = stateBranch.selectorNodes
     if (stateBranch.selectorTemplate) this.selectorTemplate = stateBranch.selectorTemplate
-    if (stateBranch.atRules) this.atRules = stateBranch.atRules
+    if (stateBranch.conditions) this.conditions = stateBranch.conditions
     if (stateBranch.valid === false) this.valid = false
     this.variantBranchKey = stateBranch.key
 
@@ -347,17 +347,17 @@ export class Utility {
       const atComp = {
         name: 'prefers-color-scheme',
         value: this.mode
-      } as AtRuleStringNode
-      if (this.atRules?.media) {
-        this.atRules.media.push(atComp)
+      } as ConditionStringNode
+      if (this.conditions?.media) {
+        this.conditions.media.push(atComp)
       } else {
-        this.atRules = {
+        this.conditions = {
           media: [atComp]
         }
       }
     }
 
-    if (this.atRules?.layer && this.atRules.layer.length > 1) {
+    if (this.conditions?.layer && this.conditions.layer.length > 1) {
       this.valid = false
     }
     if (stateBranch.layer) {
@@ -367,13 +367,13 @@ export class Utility {
       this.layerName = stateBranch.layer
       this.explicitLayerName = stateBranch.layer
     }
-    const onlyNode = this.atRules?.layer?.length === 1 && this.atRules.layer[0] as AtRuleValueNode
+    const onlyNode = this.conditions?.layer?.length === 1 && this.conditions.layer[0] as ConditionValueNode
     if (onlyNode) {
       const layerName = String(onlyNode.value)
       if (layerName === 'base' || layerName === 'defaults' || layerName === 'components' || layerName === 'utilities') {
         this.layerName = layerName
         this.explicitLayerName = layerName
-        this.atRules.layer = undefined
+        this.conditions.layer = undefined
       }
     }
     this.layer = css.getUtilityLayer(this.layerName)
@@ -391,27 +391,27 @@ export class Utility {
         this.declarations = dynamicDeclarationRules[0]?.declarations
         if (
           dynamicDeclarationRules.length > 1
-          || dynamicDeclarationRules.some(({ atRules, selector }) => atRules?.length || selector)
+          || dynamicDeclarationRules.some(({ conditions, selector }) => conditions?.length || selector)
         ) {
           this.declarationRules = dynamicDeclarationRules
         }
       } else {
         const declarations = this.emitDynamicDeclarations(newValue)
         this.declarations = declarations
-        if (declarations && registeredUtility.atRules?.length) {
-          this.declarationRules = [{ declarations, atRules: registeredUtility.atRules }]
+        if (declarations && registeredUtility.conditions?.length) {
+          this.declarationRules = [{ declarations, conditions: registeredUtility.conditions }]
         }
       }
     } else {
       const declarationRules = registeredUtility.emit.type === 'static'
-        ? registeredUtility.emit.rules.map(({ declarations, atRules, selector }) => ({
+        ? registeredUtility.emit.rules.map(({ declarations, conditions, selector }) => ({
           declarations: declarations as PropertiesHyphen,
-          atRules,
+          conditions,
           selector
         }))
         : []
       this.declarations = declarationRules[0]?.declarations
-      if (declarationRules.length > 1 || declarationRules.some(({ atRules, selector }) => atRules?.length || selector)) {
+      if (declarationRules.length > 1 || declarationRules.some(({ conditions, selector }) => conditions?.length || selector)) {
         this.declarationRules = declarationRules
       }
     }
@@ -449,8 +449,8 @@ export class Utility {
       }
       this.priority = calcRulePriority(this)
       if (declarationRules.length > 1) {
-        this.nodes = declarationRules.map(({ declarations, atRules, selector }) =>
-          new UtilityRuleNode(this, declarations, atRules, selector)
+        this.nodes = declarationRules.map(({ declarations, conditions, selector }) =>
+          new UtilityRuleNode(this, declarations, conditions, selector)
         )
       }
     }
@@ -498,9 +498,9 @@ export class Utility {
   emitDynamicDeclarationRules(newValue: string) {
     const emit = this.registeredUtility.emit
     if (emit.type !== 'static') return
-    return emit.rules.map(({ declarations, atRules, selector }) => ({
+    return emit.rules.map(({ declarations, conditions, selector }) => ({
       declarations: this.resolveDynamicDeclarations(declarations as PropertiesHyphen, newValue),
-      atRules,
+      conditions,
       selector
     }))
   }
@@ -655,7 +655,7 @@ export class Utility {
         continue
       }
 
-      this.atToken = (this.atToken || '') + '@' + conditionToken
+      this.conditionToken = (this.conditionToken || '') + '@' + conditionToken
       const variantToken = `@${conditionToken}` as MasterCSSManifestVariantToken
       const variantBranches = this.css.resolveVariant(variantToken)
       if (variantBranches) {
@@ -667,11 +667,11 @@ export class Utility {
         continue
       }
 
-      const atRule = parseAt(conditionToken, this.css)
+      const condition = parseCondition(conditionToken, this.css)
       branches = branches.map((branch) => ({
         ...branch,
         key: branch.key + '@' + conditionToken,
-        atRules: mergeAtRuleNodeMap(branch.atRules, atRule as { id: MasterCSSManifestAtIdentifier, nodes: AtRuleNode[] })
+        conditions: mergeConditionNodeMap(branch.conditions, condition as { id: MasterCSSManifestConditionIdentifier, nodes: ConditionNode[] })
       }))
     }
 
@@ -763,12 +763,12 @@ export class Utility {
       return this.nodes.map(({ text }) => text).join('')
     }
     if (this.declarationRules) {
-      return this.declarationRules.map(({ declarations, atRules, selector }) => this.createRuleText(declarations, atRules, selector)).join('')
+      return this.declarationRules.map(({ declarations, conditions, selector }) => this.createRuleText(declarations, conditions, selector)).join('')
     }
     return this.createRuleText(this.declarations!)
   }
 
-  createRuleText(declarations: PropertiesHyphen, atRules?: string[], selector?: string) {
+  createRuleText(declarations: PropertiesHyphen, conditions?: string[], selector?: string) {
     const propertiesText: string[] = []
     for (const propertyName in declarations) {
       const propertyValue = declarations[propertyName as keyof PropertiesHyphen]
@@ -778,13 +778,13 @@ export class Utility {
       )
     }
     let text = this.createSelectorText(selector) + '{' + propertiesText.join(';') + '}'
-    if (this.atRules !== undefined)
-      AT_IDENTIFIERS.forEach(id => {
-        const nodes = this.atRules?.[id]
+    if (this.conditions !== undefined)
+      CONDITION_IDENTIFIERS.forEach(id => {
+        const nodes = this.conditions?.[id]
         if (!nodes) return
-        text = generateAt({ id, nodes }) + '{' + text + '}'
+        text = generateCondition({ id, nodes }) + '{' + text + '}'
       })
-    return wrapAtRules(text, atRules)
+    return wrapConditions(text, conditions)
   }
 
   get selectorText() {
@@ -1359,16 +1359,16 @@ export class UtilityRuleNode {
   constructor(
     public readonly rule: Utility,
     public readonly declarations: PropertiesHyphen,
-    public readonly atRules?: string[],
+    public readonly conditions?: string[],
     public readonly selector?: string
   ) { }
 
   get text() {
-    return this.rule.createRuleText(this.declarations, this.atRules, this.selector)
+    return this.rule.createRuleText(this.declarations, this.conditions, this.selector)
   }
 }
 
-export interface Utility extends Omit<CompiledUtility, 'name' | 'layer' | 'atRules'> {
+export interface Utility extends Omit<CompiledUtility, 'name' | 'layer' | 'conditions'> {
   token: string
   selectorNodes?: SelectorNode[]
   important: boolean
@@ -1378,6 +1378,6 @@ export interface Utility extends Omit<CompiledUtility, 'name' | 'layer' | 'atRul
   keyToken: string
   valueToken: string
   stateToken: string
-  atToken: string
+  conditionToken: string
   valueComponents: ValueComponent[]
 }

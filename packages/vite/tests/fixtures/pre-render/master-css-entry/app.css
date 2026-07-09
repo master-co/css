@@ -8,7 +8,7 @@
 @components {
   card {
     @compose bg:brand;
-    @variant @md {
+    @variant md {
       @compose font:1.125rem;
     }
     border-color: #456;

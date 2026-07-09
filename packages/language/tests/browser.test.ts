@@ -129,7 +129,7 @@ test.concurrent('collects browser semantic tokens only for CSS directive class-l
 
 test.concurrent('does not collect browser semantic tokens for managed syntax without class-list spans', () => {
   const source = `
-    @custom-variant @motion-safe {
+    @custom-variant motion-safe {
       @media (prefers-reduced-motion: no-preference) {
         @slot;
       }

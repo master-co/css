@@ -284,8 +284,7 @@ test.concurrent('renders semantic tokens only for CSS directive class-list spans
       }
     }
 
-    @custom-variant @motion-safe { @media (prefers-reduced-motion: no-preference) { @slot; } }
-    @custom-variant :interactive { &:is(:hover, :focus-visible) { @slot; } }
+    @custom-variant motion-safe { @media (prefers-reduced-motion: no-preference) { @slot; } }
 
     @defaults {
       reset {
@@ -299,11 +298,13 @@ test.concurrent('renders semantic tokens only for CSS directive class-list spans
         @dark {
           @compose bg:blue;
         }
-        @variant @<sm {
+        @variant <sm {
           @compose block;
         }
-        @variant ::scrollbar-thumb:hover@dark {
-          @compose fg:primary;
+        ::scrollbar-thumb:hover {
+          @dark {
+            @compose fg:primary;
+          }
         }
       }
     }
@@ -336,7 +337,7 @@ test.concurrent('renders semantic tokens only for CSS directive class-list spans
       grid-cols:<number> {
         grid-template-columns: repeat(--value(), minmax(0, 1fr));
 
-        @variant @<sm {
+        @variant <sm {
           font-size: --value();
         }
 
@@ -489,7 +490,7 @@ test.concurrent('renders CSS directive ranges with quoted semicolons', () => {
       @compose fg:red;
     }
 
-    @custom-variant @quoted { @media (x: "a;b") { @slot; } }
+    @custom-variant quoted { @media (x: "a;b") { @slot; } }
   `, 'css')
 
   expectToken(tokens, 'block', 'enumMember')
@@ -517,28 +518,28 @@ test.concurrent('does not tokenize quoted compose preludes as class lists', () =
 
 test.concurrent('does not render semantic tokens for custom variant directive syntax', () => {
   const { tokens } = renderTokens(`
-    @custom-variant @supports-backdrop {
+    @custom-variant supports-backdrop {
       @supports (backdrop-filter: blur(0)) {
         @slot;
       }
     }
-    @custom-variant @card-wide {
+    @custom-variant card-wide {
       @container card (width >= 42rem) {
         @slot;
       }
     }
-    @custom-variant @component {
+    @custom-variant component {
       @layer components {
         @slot;
       }
     }
-    @custom-variant @start {
+    @custom-variant start {
       @starting-style {
         @slot;
       }
     }
-    @custom-variant ::scrollbar {
-      &::-webkit-scrollbar:is(.active, #thumb) {
+    @custom-variant scrollbars {
+      @media all {
         @slot;
       }
     }
@@ -804,18 +805,20 @@ test.concurrent('renders detailed CSS directive semantic tokens only for class-l
       --radius-card: 1rem;
     }
 
-    @custom-variant :headings { &:is(h1, h2, h3, h4, h5, h6) { @slot; } }
+    @custom-variant headings { @media all { @slot; } }
 
     @components {
       btn {
         @compose inline-flex align-items:center fg:primary:hover@md;
 
-        @variant @h>=sm&h<lg {
+        @variant h>=sm&h<lg {
           @compose block;
         }
 
-        @variant ::scrollbar-thumb:hover@dark {
-          @compose fg:primary;
+        ::scrollbar-thumb:hover {
+          @dark {
+            @compose fg:primary;
+          }
         }
       }
     }
@@ -982,13 +985,13 @@ test.concurrent('renders active semantic tokens for CSS directive class-list spa
 
 test.concurrent('does not render active semantic tokens for custom variant blocks', () => {
   const content = [
-    '@custom-variant @motion-safe {',
+    '@custom-variant motion-safe {',
     '    @media (prefers-reduced-motion: no-preference) {',
     '        @slot;',
     '    }',
     '}',
-    '@custom-variant :interactive {',
-    '    &:is(:hover, :focus-visible) {',
+    '@custom-variant print-only {',
+    '    @media print {',
     '        @slot;',
     '    }',
     '}'

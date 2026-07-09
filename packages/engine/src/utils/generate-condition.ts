@@ -1,7 +1,7 @@
-import { AtRule, AtRuleNode } from './parse-at'
+import { Condition, ConditionNode } from './parse-condition'
 
-export default function generateAt(atRule: AtRule): string {
-  const generate = (nodes: AtRuleNode[]): string => {
+export default function generateCondition(condition: Condition): string {
+  const generate = (nodes: ConditionNode[]): string => {
     let text = nodes.map((comp) => {
       let current = ''
       if ('children' in comp) {
@@ -31,11 +31,11 @@ export default function generateAt(atRule: AtRule): string {
       return current
     })
       .filter(Boolean)
-      .join(atRule.id === 'layer' ? '.' : ' ')
+      .join(condition.id === 'layer' ? '.' : ' ')
     return text
   }
-  const result = generate(atRule.nodes)
-  return '@' + atRule.id + (result
+  const result = generate(condition.nodes)
+  return '@' + condition.id + (result
     ? ' ' + result
     : '')
 }

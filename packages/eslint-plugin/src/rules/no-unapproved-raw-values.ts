@@ -16,7 +16,7 @@ export default createRule({
       description: 'Disallow unapproved raw values in token-backed Master CSS classes'
     },
     messages: {
-      unapprovedRawValue: 'Unexpected raw value "{{value}}" in "{{className}}". Use a token or allow it explicitly.',
+      unapprovedRawValue: '{{message}}',
     },
     fixable: null,
     schema: [{

@@ -66,13 +66,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
         --color-primary: #fff;
       }
 
-      @custom-variant :interactive {
-        &:is(:hover,:focus-visible) {
-          @slot;
-        }
-      }
-
-      @custom-variant @print {
+      @custom-variant print {
         @media print {
           @slot;
         }
@@ -83,12 +77,16 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
           display: inline-flex;
           color: var(--color-primary);
 
-          @variant @print {
+          @variant print {
             display: none;
           }
 
           &:disabled>span {
             display: block;
+          }
+
+          &:even {
+            display: grid;
           }
         }
       }
@@ -114,11 +112,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
       value: '1rem',
       numeric: { value: 1, unit: 'rem' }
     }))
-    expect(manifest.variants?.find((variant) => variant.token === ':interactive')?.branches[0].selectorNodes)
-      .toEqual(expect.arrayContaining([
-        expect.objectContaining({ type: 'pseudo-class', value: 'is' })
-      ]))
-    expect(manifest.atRules?.print).toMatchObject({
+    expect(manifest.conditions?.print).toMatchObject({
       id: 'media',
       nodes: [expect.objectContaining({ type: 'string', value: 'print' })]
     })
@@ -126,13 +120,13 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
     expect(manifest.utilities?.some((utility) => utility.name === 'content-auto' && utility.layer === 'utilities')).toBe(true)
 
     const css = createTestCSS(manifest)
-    css.ensureClassRules('btn', 'btn:interactive', 'content-auto', 'm:card')
+    css.ensureClassRules('btn', 'content-auto', 'm:card')
     expect(css.themeLayer.text).toContain(':root{--color-primary:#000;--spacing-card:1rem}')
     expect(css.themeLayer.text).toContain('.dark{color-scheme:dark;--color-primary:#fff}')
     expect(css.componentsLayer.text).toContain('.btn{display:inline-flex;color:var(--color-primary)}')
     expect(css.componentsLayer.text).toContain('@media print{.btn{display:none}}')
     expect(css.componentsLayer.text).toContain('.btn:disabled>span{display:block}')
-    expect(css.componentsLayer.text).toContain('.btn\\:interactive:is(:hover,:focus-visible){display:inline-flex;color:var(--color-primary)}')
+    expect(css.componentsLayer.text).toContain('.btn:nth-child(2n){display:grid}')
     expect(css.utilitiesLayer.text).toContain('.content-auto{content-visibility:auto}')
     expect(css.utilitiesLayer.text).toContain('.m\\:card{margin:var(--spacing-card)}')
   })
@@ -541,24 +535,24 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
 
       @components {
         panel {
-          @variant @dark {
+          @variant dark {
             color: white;
           }
 
-          @variant @light {
+          @variant light {
             color: black;
           }
         }
       }
 
       .card {
-        @variant @dark {
+        @variant dark {
           @compose block;
           color: white;
         }
       }
 
-      @variant @light {
+      @variant light {
         .banner {
           @compose hidden;
         }
@@ -630,8 +624,10 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
           @compose text-center;
           contain: content;
 
-          @variant :hover@sm {
-            @compose bg:blue-60;
+          &:hover {
+            @variant sm {
+              @compose bg:blue-60;
+            }
           }
 
           @dark {
@@ -644,8 +640,10 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
         @compose text-center;
         contain: content;
 
-        @variant :hover@sm {
-          @compose bg:blue-60;
+        &:hover {
+          @variant sm {
+            @compose bg:blue-60;
+          }
         }
 
         @dark {
@@ -667,14 +665,14 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
       }
 
       .card {
-        @variant @chrisma {
+        @variant chrisma {
           color: green;
         }
       }
     `, { baseManifest: defaultManifest })
 
     expect(customMode.css).toContain('.chrisma .card{color:green}')
-    const bareAtRule = compileCSSManifest(`
+    const bareCondition = compileCSSManifest(`
       @settings {
         mode-trigger: class;
         modes: light dark chrisma;
@@ -687,8 +685,79 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
       }
     `, { baseManifest: defaultManifest })
 
-    expect(bareAtRule.css).toContain('@chrisma')
-    expect(bareAtRule.css).not.toContain('.chrisma .card')
+    expect(bareCondition.css).toContain('@chrisma')
+    expect(bareCondition.css).not.toContain('.chrisma .card')
+  })
+
+  test('rejects legacy at-prefixed and selector variant directive syntax', () => {
+    expect(() => compileCSSManifest(`
+      @custom-variant @print {
+        @media print {
+          @slot;
+        }
+      }
+    `, { baseManifest: defaultManifest })).toThrow('@custom-variant uses bare condition variant names')
+
+    expect(() => compileCSSManifest(`
+      @custom-variant :interactive {
+        &:hover {
+          @slot;
+        }
+      }
+    `, { baseManifest: defaultManifest })).toThrow('@custom-variant only defines condition variants')
+
+    expect(() => compileCSSManifest(`
+      .card {
+        @variant :interactive {
+          color: blue;
+        }
+      }
+    `, { baseManifest: defaultManifest })).toThrow('@variant only applies condition variants')
+
+    const result = compileCSSManifest(`
+      @components {
+        card {
+          &:is(:hover, :focus-visible) {
+            color: blue;
+          }
+        }
+      }
+    `, { baseManifest: defaultManifest })
+
+    const css = createTestCSS(result.manifest)
+    css.ensureClassRules('card')
+    expect(css.componentsLayer.text).toContain('.card:is(:hover,:focus-visible){color:#00f}')
+  })
+
+  test('keeps nested selectors aligned with native CSS descendant and compound behavior', () => {
+    const result = compileCSSManifest(`
+      @components {
+        card {
+          p {
+            color: red;
+          }
+
+          :is(p, li) {
+            color: blue;
+          }
+
+          & :is(code, kbd) {
+            color: green;
+          }
+
+          &:hover {
+            color: black;
+          }
+        }
+      }
+    `, { baseManifest: defaultManifest })
+
+    const css = createTestCSS(result.manifest)
+    css.ensureClassRules('card')
+    expect(css.componentsLayer.text).toContain('.card p{color:red}')
+    expect(css.componentsLayer.text).toContain('.card :is(p,li){color:#00f}')
+    expect(css.componentsLayer.text).toContain('.card :is(code,kbd){color:green}')
+    expect(css.componentsLayer.text).toContain('.card:hover{color:#000}')
   })
 
   test('replaces old JS merging intent with ordered CSS imports through baseManifest lowering', () => {
@@ -1110,11 +1179,11 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
       type: 'string',
       value: '1rem'
     })
-    expect(manifest.breakpointAtRules?.card).toMatchObject({
+    expect(manifest.breakpointConditions?.card).toMatchObject({
       id: 'media',
       nodes: [expect.objectContaining({ value: 48, unit: 'rem' })]
     })
-    expect(manifest.containerAtRules?.panel).toMatchObject({
+    expect(manifest.containerConditions?.panel).toMatchObject({
       id: 'container',
       nodes: [expect.objectContaining({ value: 32, unit: 'rem' })]
     })

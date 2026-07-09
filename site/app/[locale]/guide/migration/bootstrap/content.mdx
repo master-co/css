@@ -122,8 +122,8 @@ Buttons, cards, alerts, and badges are often app-owned visual patterns. Convert 
 @components {
   btn-primary {
     @compose inline-flex items-center justify-center gap:xs h:10x px:md bg:primary fg:white r:control;
-    @variant :hover { @compose bg:blue-70; }
-@variant :disabled { opacity: 0.5; }
+    &:hover { @compose bg:blue-70; }
+    &:disabled { opacity: 0.5; }
   }
 
   panel {
@@ -192,6 +192,6 @@ Vendor CSS and third-party Bootstrap themes should remain regular CSS until the 
 - [Installation](/guide/installation) for adding Master CSS.
 - [Rendering modes](/guide/rendering-modes) for choosing static, runtime, or progressive rendering.
 - [Style declarations](/guide/style-declarations) for class syntax.
-- [Customizing your theme](/guide/theme) for tokens, modes, and custom variants.
+- [Theme Tokens](/guide/theme) for tokens, [Variables and Modes](/guide/variables-and-modes) for modes, and [Conditional Queries](/guide/conditional-queries) for custom variants.
 - [Global styles](/guide/global-styles#shared-vocabulary) for deciding between markup classes, theme tokens, custom utilities, and component classes.
 - [Code linting](/guide/code-linting) for validating class strings during migration.

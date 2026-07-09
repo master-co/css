@@ -35,7 +35,7 @@ If you also need a breakpoint, mode, or other condition, put the [conditional qu
 <button class="bg:blue-60:hover@md">Save</button>
 ```
 
-For readability, Master CSS can use [selector variants](/guide/theme#selector-variants) to name selectors that appear often.
+For readability, Master CSS includes built-in selector aliases for selectors that appear often.
 ```html
 <div class="mt:sm:first"><!-- [!code highlight] -->
 <div class="mt:sm:first-child">
@@ -44,10 +44,9 @@ For readability, Master CSS can use [selector variants](/guide/theme#selector-va
 <div class="mt:sm:rtl"><!-- [!code highlight] -->
 <div class="mt:sm:dir(rtl)">
 ```
-You can also create project-specific selector variants for longer selectors.
+Write longer project-specific selectors directly.
 ```html
-<div class="font:semibold_:headings"><!-- [!code highlight] -->
-<div class="font:semibold_:is(h1,h2,h3,h4,h5,h6)">
+<div class="font:semibold_:is(h1,h2,h3,h4,h5,h6)"><!-- [!code highlight] -->
 ```
 
 ---
@@ -70,9 +69,9 @@ Use `*` as a wildcard. In `>*`, every direct child matches.
 ```html
 <!-- @MARK * -->
 <div class="bg:blue-60>*">
-    <div>hit</div>
-    <div>hit</div>
-    ...
+  <div>hit</div>
+  <div>hit</div>
+  ...
 </div>
 ```
 
@@ -81,7 +80,7 @@ Use a type selector to target elements by tag name.
 ```html
 <!-- @MARK span -->
 <div class="bg:blue-60>span">
-    <span>hit</span>
+  <span>hit</span>
 </div>
 ```
 (i) If a raw type selector is hard to read or conflicts with nearby syntax, wrap it with `:is()` or `:where()`.
@@ -142,12 +141,12 @@ Use `_` as the descendant combinator. It stands in for the CSS space, because sp
 ```html
 <!-- @MARK _ -->
 <div class="bg:blue-60_div">
-    <div>hit</div>
+  <div>hit</div>
+  <div>hit
     <div>hit
-        <div>hit
-            <div>hit</div>
-        </div>
+      <div>hit</div>
     </div>
+  </div>
 </div>
 ```
 
@@ -156,7 +155,7 @@ Use `>` when only direct children should match.
 ```html
 <!-- @MARK >div -->
 <div class="bg:blue-60>div">
-    <div>hit</div>
+  <div>hit</div>
 </div>
 ```
 
@@ -226,7 +225,7 @@ Use `:focus-visible` for keyboard focus rings when you want to avoid showing the
 ```
 
 ### `:first`, `:last`, `:odd`, `:even`
-Use structural shorthands such as `:first`, `:last`, `:odd`, `:even`, and `:nth(N)` to style list items by position.
+Use structural shorthands such as `:first`, `:last`, `:odd`, and `:even` to style list items by position. Write native selectors such as `:nth-child(N)` directly when they are clearer.
 <Demo $py={0}>
     <DemoPanel $p={0} className="w:full max-w:90x">
         <ul className="m:0 px:0 py:lg list-style:none">
@@ -246,8 +245,8 @@ Use structural shorthands such as `:first`, `:last`, `:odd`, `:even`, and `:nth(
 </Demo>
 ```html
 <ul class="…">
-    <!-- @MARK :even --><!-- @MARK :even -->
-    <li class="bg:gray-90:even@dark bg:slate-5:even@light …">…</li>
+  <!-- @MARK :even --><!-- @MARK :even -->
+  <li class="bg:gray-90:even@dark bg:slate-5:even@light …">…</li>
 </ul>
 ```
 
@@ -292,9 +291,9 @@ Use `:has()` when the current element should change because it contains a matchi
 ```html
 <!-- @MARK :has(.active) -->
 <div class="bg:blue-60:has(.active)">
-    <div>Item 1</div>
-    <div class="active">Item 2</div>
-    <div>Item 3</div>
+  <div>Item 1</div>
+  <div class="active">Item 2</div>
+  <div>Item 3</div>
 </div>
 ```
 
@@ -312,18 +311,18 @@ Use `:not()` to exclude a selector from the match.
 ```html
 <!-- @MARK active -->
 <div class="active">
-    <div>
-        <!-- @MARK :of(.active) -->
-        <div class="hidden:of(.active)">hidden</div>
-    </div>
+  <div>
+    <!-- @MARK :of(.active) -->
+    <div class="hidden:of(.active)">hidden</div>
+  </div>
 </div>
 ```
 (i) Style the element when its parent matches.
 ```html
 <!-- @MARK active -->
 <div class="active">
-    <!-- @MARK :of(.active>) -->
-    <div class="hidden:of(.active>)">hidden</div>
+  <!-- @MARK :of(.active>) -->
+  <div class="hidden:of(.active>)">hidden</div>
 </div>
 ```
 (i) Style the element when its previous adjacent sibling matches.
@@ -359,12 +358,12 @@ Use `::before` and `::after` to style generated content attached to the element.
 ```html
 <!-- @MARK ::before --><!-- @MARK ::after -->
 <div class="content:close-quote::after content:open-quote::before …">
-    Be the change you wish to see in the world.
+  Be the change you wish to see in the world.
 </div>
 ```
 
 ### `::scrollbar`
-Style scrollbars with `::scrollbar`, `::scrollbar-thumb`, `::scrollbar-track`, `::scrollbar-button`, `::scrollbar-corner`, and `::scrollbar-track-piece` shorthands.
+Style common scrollbar surfaces with `::scrollbar`, `::scrollbar-thumb`, and `::scrollbar-track` shorthands. Write native vendor selectors such as `::-webkit-scrollbar-corner` directly for less common parts.
 
 (hover) Try scrolling horizontally and interact with the scroll bar
 <Demo $py={0} $px={0}>
@@ -391,8 +390,8 @@ Use `[open]` to style a `<details>` element while it is expanded.
 ```html
 <!-- @MARK [open] -->
 <details class="bg:white[open]" open>
-    <summary>Details</summary>
-    <p>Details content goes here.</p>
+  <summary>Details</summary>
+  <p>Details content goes here.</p>
 </details>
 ```
 
