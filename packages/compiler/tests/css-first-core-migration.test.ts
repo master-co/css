@@ -929,7 +929,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
       @theme {
         --color-black: #000000;
         --color-primary: #000000;
-        --color-alias: $color-primary;
+        --color-alias: var(--color-primary);
       }
 
       @theme light {
@@ -941,7 +941,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
       }
 
       @theme chrisma {
-        --color-primary: $color-black/.5;
+        --color-primary: --alpha(var(--color-black) / 50%);
       }
     `, { baseManifest: defaultManifest })
     const css = createTestCSS(manifest).ensureClassRules('bg:primary', 'bg:primary/.5', 'bg:alias')
@@ -953,6 +953,58 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
     expect(css.utilitiesLayer.text).toContain('.bg\\:primary{background-color:var(--color-primary)}')
     expect(css.utilitiesLayer.text).toContain('.bg\\:primary\\/\\.5{background-color:color-mix(in oklab,var(--color-primary) 50%,transparent)}')
     expect(css.utilitiesLayer.text).toContain('.bg\\:alias{background-color:var(--color-alias)}')
+  })
+
+  test('lowers stylesheet --alpha() in theme, managed declarations, and native CSS', () => {
+    const result = compileCSSManifest(`
+      @theme {
+        --color-primary: #123456;
+        --color-muted: --alpha(var(--color-primary) / 50%);
+      }
+
+      @components {
+        btn {
+          background-color: --alpha(var(--color-primary) / .5);
+        }
+      }
+
+      .native {
+        color: --alpha(var(--color-muted) / var(--opacity-muted));
+      }
+    `, { baseManifest: defaultManifest })
+    const css = createTestCSS(result.manifest)
+
+    css.ensureClassRules('btn', 'bg:muted')
+    expect(css.themeLayer.text).toContain('--color-muted:color-mix(in oklab,var(--color-primary) 50%,transparent)')
+    expect(css.componentsLayer.text).toContain('.btn{background-color:color-mix(in oklab,var(--color-primary) 50%,transparent)}')
+    expect(result.nativeCSS).toContain('color: color-mix(in oklab,var(--color-muted) var(--opacity-muted),transparent);')
+  })
+
+  test('rejects stylesheet token alias syntax and invalid --alpha() alpha values', () => {
+    expect(() => compileCSSManifest('@theme { --color-brand: $color-blue-60; }', { baseManifest: defaultManifest }))
+      .toThrow('Replace "$color-blue-60" with "var(--color-blue-60)"')
+    expect(() => compileCSSManifest('.native { color: $color-blue-60; }', { baseManifest: defaultManifest }))
+      .toThrow('Replace "$color-blue-60" with "var(--color-blue-60)"')
+    expect(() => compileCSSManifest('@theme { --color-brand: --alpha(var(--color-blue-60) / 50); }', { baseManifest: defaultManifest }))
+      .toThrow('numeric alpha must be between 0 and 1')
+    expect(() => compileCSSManifest('@theme { --color-brand: --alpha(var(--color-blue-60) / foo); }', { baseManifest: defaultManifest }))
+      .toThrow('unsupported alpha value "foo"')
+    expect(() => compileCSSManifest('@theme { --color-brand: --alpha(var(--color-blue-60) / 50% / 20%); }', { baseManifest: defaultManifest }))
+      .toThrow('expected "<color> / <alpha>"')
+    expect(() => compileCSSManifest('@theme { --color-brand: --alpha(var(--color-blue-60)); }', { baseManifest: defaultManifest }))
+      .toThrow('expected "<color> / <alpha>"')
+  })
+
+  test('ignores quoted variable references while collecting theme dependencies', () => {
+    const { manifest } = compileCSSManifest(`
+      @theme {
+        --content-demo: "var(--color-blue-60)";
+        --color-blue-60: #3366ff;
+      }
+    `, { baseManifest: defaultManifest })
+
+    const demo = variablesOf(manifest).find((variable) => variable.name === 'content-demo')
+    expect(demo?.dependencies).toBeUndefined()
   })
 
   test('resolves built-in and utility-owned theme namespaces before lowering composed definitions', () => {
@@ -1259,12 +1311,12 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
       @theme inline {
         --color-primary: #123;
         --spacing-card: 1rem;
-        --color-brand: $color-primary;
+        --color-brand: var(--color-primary);
       }
 
       @theme {
         --color-regular: #456;
-        --color-inline-regular: $color-regular;
+        --color-inline-regular: var(--color-regular);
       }
     `, { baseManifest: defaultManifest })
     const css = createTestCSS(manifest)
@@ -1421,7 +1473,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
         --color-display-p3: color(display-p3 0.2 0.4 0.8);
         --color-color-srgb: color(srgb 0.2 0.4 0.8);
         --color-color-rec2020: color(rec2020 0.2 0.4 0.8);
-        --color-soft: $color-oklch-primary/.3;
+        --color-soft: --alpha(var(--color-oklch-primary) / .3);
         --color-mix-demo: color-mix(in oklch, red, blue);
       }
     `, { baseManifest: defaultManifest })

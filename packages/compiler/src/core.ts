@@ -14,6 +14,7 @@ import {
   type CSSDirectiveUtilityRuleDefinition,
   type CSSDirectiveVariableValue
 } from '@master/css-schema/css-directives'
+import { normalizeStylesheetValue } from '@master/css-engine'
 import type {
   CustomAtRules,
   Declaration,
@@ -304,7 +305,7 @@ function normalizeThemeTokenName(property: string) {
 
 function defineThemeVariable(manifestInput: CSSDirectiveManifestInput, property: string, rawValue: string, mode?: string, inline?: boolean, isStatic?: boolean) {
   const name = normalizeThemeTokenName(property)
-  const value = parseVariableValue(rawValue)
+  const value = parseVariableValue(normalizeStylesheetValue(rawValue, { replacePipes: true }).value)
   if (mode) {
     addThemeMode(manifestInput, mode)
   }
@@ -516,6 +517,10 @@ function formatDeclarationValue(declaration: Declaration) {
   }
   const colonIndex = declarationText.indexOf(':')
   return formatCSSNumberLiterals(declarationText.slice(colonIndex + 1).trim())
+}
+
+function normalizeDeclarationValue(value: string) {
+  return normalizeStylesheetValue(value).value
 }
 
 function normalizeNumberText(value: string) {
@@ -969,10 +974,10 @@ function getDeclarationName(declaration: Declaration) {
 function collectDeclarations(block: DeclarationBlock<Declaration>) {
   const declarations: Record<string, string> = {}
   for (const declaration of block.declarations || []) {
-    declarations[getDeclarationName(declaration)] = formatDeclarationValue(declaration)
+    declarations[getDeclarationName(declaration)] = normalizeDeclarationValue(formatDeclarationValue(declaration))
   }
   for (const declaration of block.importantDeclarations || []) {
-    declarations[getDeclarationName(declaration)] = `${formatDeclarationValue(declaration)} !important`
+    declarations[getDeclarationName(declaration)] = `${normalizeDeclarationValue(formatDeclarationValue(declaration))} !important`
   }
   return declarations
 }
@@ -2525,7 +2530,7 @@ export function compileCSS(source: string, options: CompileCSSOptions = {}): Com
     const remainingCode = classFilter
       ? pruneEmptyRuleBlocks(filteredCode, filename)
       : filteredCode
-    remainingCSS = decodeCSS(remainingCode).trim()
+    remainingCSS = normalizeStylesheetValue(decodeCSS(remainingCode).trim()).value
   }
 
   return {

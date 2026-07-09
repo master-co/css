@@ -17,6 +17,10 @@ function findVariable(name: string) {
   return flattenMasterCSSManifestVariables(defaultManifest.variables).find((variable) => variable.name === name)
 }
 
+function varDependencyName(value: string) {
+  return value.match(/^var\(--([A-Za-z0-9_-]+)\)$/)?.[1]
+}
+
 const removedVariableNames = [
   'font-sans',
   'spacing-field',
@@ -59,15 +63,15 @@ const removedVariableNames = [
 ] as const
 
 const textRoleAliases = [
-  ['body', '$color-neutral-70', '$color-gray-30'],
-  ['strong', '$color-neutral-100', '$color-white'],
-  ['muted', '$color-neutral-60', '$color-gray-40'],
-  ['subtle', '$color-neutral-50', '$color-gray-50'],
-  ['disabled', '$color-neutral-40', '$color-gray-60'],
-  ['placeholder', '$color-neutral-40', '$color-gray-60'],
-  ['inverse', '$color-white', '$color-black'],
-  ['link', '$color-blue-60', '$color-blue-30'],
-  ['link-hover', '$color-blue-70', '$color-blue-20']
+  ['body', 'var(--color-neutral-70)', 'var(--color-gray-30)'],
+  ['strong', 'var(--color-neutral-100)', 'var(--color-white)'],
+  ['muted', 'var(--color-neutral-60)', 'var(--color-gray-40)'],
+  ['subtle', 'var(--color-neutral-50)', 'var(--color-gray-50)'],
+  ['disabled', 'var(--color-neutral-40)', 'var(--color-gray-60)'],
+  ['placeholder', 'var(--color-neutral-40)', 'var(--color-gray-60)'],
+  ['inverse', 'var(--color-white)', 'var(--color-black)'],
+  ['link', 'var(--color-blue-60)', 'var(--color-blue-30)'],
+  ['link-hover', 'var(--color-blue-70)', 'var(--color-blue-20)']
 ] as const
 
 const lineRoleAliases = [
@@ -96,53 +100,53 @@ const darkShadowEdges = [
 ] as const
 
 const baseHueAliases = [
-  ['stone', '$color-stone-30', '$color-stone-40'],
-  ['gray', '$color-gray-30', '$color-gray-40'],
-  ['neutral', '$color-neutral-30', '$color-neutral-40'],
-  ['slate', '$color-slate-30', '$color-slate-40'],
-  ['brown', '$color-brown-40', '$color-brown-50'],
-  ['orange', '$color-orange-40', '$color-orange-50'],
-  ['amber', '$color-amber-40', '$color-amber-50'],
-  ['yellow', '$color-yellow-40', '$color-yellow-50'],
-  ['lime', '$color-lime-40', '$color-lime-50'],
-  ['green', '$color-green-40', '$color-green-50'],
-  ['beryl', '$color-beryl-40', '$color-beryl-50'],
-  ['teal', '$color-teal-40', '$color-teal-50'],
-  ['cyan', '$color-cyan-40', '$color-cyan-50'],
-  ['sky', '$color-sky-60', '$color-sky-50'],
-  ['blue', '$color-blue-60', '$color-blue-50'],
-  ['indigo', '$color-indigo-60', '$color-indigo-50'],
-  ['violet', '$color-violet-60', '$color-violet-50'],
-  ['purple', '$color-purple-60', '$color-purple-50'],
-  ['fuchsia', '$color-fuchsia-60', '$color-fuchsia-50'],
-  ['pink', '$color-pink-60', '$color-pink-50'],
-  ['crimson', '$color-crimson-60', '$color-crimson-50'],
-  ['red', '$color-red-60', '$color-red-50']
+  ['stone', 'var(--color-stone-30)', 'var(--color-stone-40)'],
+  ['gray', 'var(--color-gray-30)', 'var(--color-gray-40)'],
+  ['neutral', 'var(--color-neutral-30)', 'var(--color-neutral-40)'],
+  ['slate', 'var(--color-slate-30)', 'var(--color-slate-40)'],
+  ['brown', 'var(--color-brown-40)', 'var(--color-brown-50)'],
+  ['orange', 'var(--color-orange-40)', 'var(--color-orange-50)'],
+  ['amber', 'var(--color-amber-40)', 'var(--color-amber-50)'],
+  ['yellow', 'var(--color-yellow-40)', 'var(--color-yellow-50)'],
+  ['lime', 'var(--color-lime-40)', 'var(--color-lime-50)'],
+  ['green', 'var(--color-green-40)', 'var(--color-green-50)'],
+  ['beryl', 'var(--color-beryl-40)', 'var(--color-beryl-50)'],
+  ['teal', 'var(--color-teal-40)', 'var(--color-teal-50)'],
+  ['cyan', 'var(--color-cyan-40)', 'var(--color-cyan-50)'],
+  ['sky', 'var(--color-sky-60)', 'var(--color-sky-50)'],
+  ['blue', 'var(--color-blue-60)', 'var(--color-blue-50)'],
+  ['indigo', 'var(--color-indigo-60)', 'var(--color-indigo-50)'],
+  ['violet', 'var(--color-violet-60)', 'var(--color-violet-50)'],
+  ['purple', 'var(--color-purple-60)', 'var(--color-purple-50)'],
+  ['fuchsia', 'var(--color-fuchsia-60)', 'var(--color-fuchsia-50)'],
+  ['pink', 'var(--color-pink-60)', 'var(--color-pink-50)'],
+  ['crimson', 'var(--color-crimson-60)', 'var(--color-crimson-50)'],
+  ['red', 'var(--color-red-60)', 'var(--color-red-50)']
 ] as const
 
 const textHueAliases = [
-  ['stone', '$color-stone-60', '$color-stone-30'],
-  ['gray', '$color-gray-60', '$color-gray-30'],
-  ['neutral', '$color-neutral-60', '$color-neutral-30'],
-  ['slate', '$color-slate-60', '$color-slate-30'],
-  ['brown', '$color-brown-60', '$color-brown-30'],
-  ['orange', '$color-orange-60', '$color-orange-30'],
-  ['amber', '$color-amber-60', '$color-amber-40'],
-  ['yellow', '$color-yellow-70', '$color-yellow-40'],
-  ['lime', '$color-lime-70', '$color-lime-40'],
-  ['green', '$color-green-70', '$color-green-40'],
-  ['beryl', '$color-beryl-70', '$color-beryl-40'],
-  ['teal', '$color-teal-70', '$color-teal-40'],
-  ['cyan', '$color-cyan-70', '$color-cyan-40'],
-  ['sky', '$color-sky-70', '$color-sky-30'],
-  ['blue', '$color-blue-60', '$color-blue-30'],
-  ['indigo', '$color-indigo-60', '$color-indigo-30'],
-  ['violet', '$color-violet-60', '$color-violet-30'],
-  ['purple', '$color-purple-60', '$color-purple-30'],
-  ['fuchsia', '$color-fuchsia-60', '$color-fuchsia-30'],
-  ['pink', '$color-pink-60', '$color-pink-30'],
-  ['crimson', '$color-crimson-60', '$color-crimson-30'],
-  ['red', '$color-red-60', '$color-red-30']
+  ['stone', 'var(--color-stone-60)', 'var(--color-stone-30)'],
+  ['gray', 'var(--color-gray-60)', 'var(--color-gray-30)'],
+  ['neutral', 'var(--color-neutral-60)', 'var(--color-neutral-30)'],
+  ['slate', 'var(--color-slate-60)', 'var(--color-slate-30)'],
+  ['brown', 'var(--color-brown-60)', 'var(--color-brown-30)'],
+  ['orange', 'var(--color-orange-60)', 'var(--color-orange-30)'],
+  ['amber', 'var(--color-amber-60)', 'var(--color-amber-40)'],
+  ['yellow', 'var(--color-yellow-70)', 'var(--color-yellow-40)'],
+  ['lime', 'var(--color-lime-70)', 'var(--color-lime-40)'],
+  ['green', 'var(--color-green-70)', 'var(--color-green-40)'],
+  ['beryl', 'var(--color-beryl-70)', 'var(--color-beryl-40)'],
+  ['teal', 'var(--color-teal-70)', 'var(--color-teal-40)'],
+  ['cyan', 'var(--color-cyan-70)', 'var(--color-cyan-40)'],
+  ['sky', 'var(--color-sky-70)', 'var(--color-sky-30)'],
+  ['blue', 'var(--color-blue-60)', 'var(--color-blue-30)'],
+  ['indigo', 'var(--color-indigo-60)', 'var(--color-indigo-30)'],
+  ['violet', 'var(--color-violet-60)', 'var(--color-violet-30)'],
+  ['purple', 'var(--color-purple-60)', 'var(--color-purple-30)'],
+  ['fuchsia', 'var(--color-fuchsia-60)', 'var(--color-fuchsia-30)'],
+  ['pink', 'var(--color-pink-60)', 'var(--color-pink-30)'],
+  ['crimson', 'var(--color-crimson-60)', 'var(--color-crimson-30)'],
+  ['red', 'var(--color-red-60)', 'var(--color-red-30)']
 ] as const
 
 describe.concurrent('@master/css-preset design token parity', () => {
@@ -231,11 +235,11 @@ describe.concurrent('@master/css-preset design token parity', () => {
 
   test('keeps surface color roles mode-specific', () => {
     const surfaceAliases = [
-      ['base', '$color-neutral-0', '$color-gray-95'],
-      ['muted', '$color-neutral-5', '$color-gray-100'],
-      ['raised', '$color-white', '$color-gray-90'],
-      ['overlay', '$color-white', '$color-gray-80'],
-      ['inverse', '$color-black', '$color-white']
+      ['base', 'var(--color-neutral-0)', 'var(--color-gray-95)'],
+      ['muted', 'var(--color-neutral-5)', 'var(--color-gray-100)'],
+      ['raised', 'var(--color-white)', 'var(--color-gray-90)'],
+      ['overlay', 'var(--color-white)', 'var(--color-gray-80)'],
+      ['inverse', 'var(--color-black)', 'var(--color-white)']
     ] as const
 
     for (const [key, lightValue, darkValue] of surfaceAliases) {
@@ -247,7 +251,7 @@ describe.concurrent('@master/css-preset design token parity', () => {
           light: { type: 'string', value: lightValue },
           dark: { type: 'string', value: darkValue }
         },
-        dependencies: [lightValue.slice(1), darkValue.slice(1)]
+        dependencies: [varDependencyName(lightValue), varDependencyName(darkValue)]
       })
     }
   })
@@ -290,7 +294,7 @@ describe.concurrent('@master/css-preset design token parity', () => {
           light: { type: 'string', value: lightValue },
           dark: { type: 'string', value: darkValue }
         },
-        dependencies: [lightValue.slice(1), darkValue.slice(1)]
+        dependencies: [varDependencyName(lightValue), varDependencyName(darkValue)]
       })
     }
 
@@ -315,7 +319,7 @@ describe.concurrent('@master/css-preset design token parity', () => {
           light: { type: 'string', value: lightValue },
           dark: { type: 'string', value: darkValue }
         },
-        dependencies: [lightValue.slice(1), darkValue.slice(1)]
+        dependencies: [varDependencyName(lightValue), varDependencyName(darkValue)]
       })
     }
 
@@ -328,7 +332,7 @@ describe.concurrent('@master/css-preset design token parity', () => {
           light: { type: 'string', value: lightValue },
           dark: { type: 'string', value: darkValue }
         },
-        dependencies: [lightValue.slice(1), darkValue.slice(1)]
+        dependencies: [varDependencyName(lightValue), varDependencyName(darkValue)]
       })
     }
   })

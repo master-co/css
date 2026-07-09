@@ -31,10 +31,10 @@ describe.concurrent('ThemeLayer', () => {
         key: 'accent',
         namespace: 'color',
         type: 'string',
-        value: '$color-blue',
+        value: 'var(--color-blue)',
         dependencies: ['color-blue', 'color-amber-10'],
         modes: {
-          dark: { type: 'string', value: '$color-amber-10' }
+          dark: { type: 'string', value: 'var(--color-amber-10)' }
         }
       },
       {

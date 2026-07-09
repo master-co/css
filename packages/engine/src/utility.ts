@@ -79,6 +79,7 @@ function getExactUtilityDefinitionMatch(className: string, utility: CompiledUtil
 }
 
 const ANIMATION_REFERENCE_PROPERTIES = new Set(['animation', 'animation-name'])
+const CLASS_ALPHA_NUMBER = /^(?:0|1|0?\.\d+|1\.0+|0\.0+)$/
 
 function utilityMayReferenceAnimations(utility: CompiledUtility) {
   const emit = utility.emit
@@ -101,6 +102,20 @@ function utilityMayReferenceAnimations(utility: CompiledUtility) {
 function formatMasterBaseUnitValue(value: number, baseUnit: number, rootSize: number) {
   const resolved = value * baseUnit / rootSize
   return String(Object.is(resolved, -0) ? 0 : resolved).replace(/^(-?)0\./, '$1.') + 'rem'
+}
+
+function parseClassAlpha(value: string) {
+  if (!CLASS_ALPHA_NUMBER.test(value)) return
+  const alpha = Number(value)
+  return alpha >= 0 && alpha <= 1 ? alpha : undefined
+}
+
+function isColorNamespace(namespace: string | undefined) {
+  return namespace === 'color' || namespace?.startsWith('color-')
+}
+
+function getVariableAliasRefNamespace(ref: string) {
+  return ref[0] === '=' || ref[0] === '~' ? ref.slice(1) : ref
 }
 
 function composeSelectorTemplate(current: string | undefined, next: string | undefined) {
@@ -261,7 +276,7 @@ export class Utility {
   readonly branchCount: number = 1
   readonly selectorTemplate?: string
   variantBranchKey?: string
-  private invalidValueSyntax = false
+  invalidValueSyntax = false
   constructor(
     public readonly name: string,
     public css: MasterCSS,
@@ -476,6 +491,13 @@ export class Utility {
       variable: positiveVariable,
       negative: true
     }
+  }
+
+  canUseAlpha(variable?: Variable) {
+    if (variable?.type === 'number' || variable?.numeric) return false
+    if (this.registeredUtility.variableAliasRefs?.some((ref) => isColorNamespace(getVariableAliasRefNamespace(ref)))) return true
+    if (variable?.namespace) return isColorNamespace(variable.namespace)
+    return false
   }
 
   resolveDynamicDeclarationValue(value: string | number | null | (string | number | null)[], newValue: string) {
@@ -1111,7 +1133,7 @@ export class Utility {
           currentValueComponents.push(newValueComponent)
           current = ''
           i++
-          if (nestedFunctionName === '$') {
+          if (nestedFunctionName === '$' || nestedFunctionName === '--alpha') {
             this.invalidValueSyntax = true
           }
           const nestedIsVarFunction = nestedFunctionName === 'var'
@@ -1210,10 +1232,17 @@ export class Utility {
     const parse = () => {
       if (currentValue) {
         let handled = false
-        if (!isVarFunction || currentValueComponents.length) {
+        if (this.registeredUtility.emit.type !== 'group' && (!isVarFunction || currentValueComponents.length)) {
           const pushVariable = (variableName: string, alpha?: string, token = currentValue, negative?: boolean) => {
             const valueComponent: VariableValueComponent = { type: 'variable', name: variableName, variable: this.css.variables.get(variableName), token }
-            if (alpha) valueComponent.alpha = Number(alpha)
+            if (alpha !== undefined) {
+              const parsedAlpha = parseClassAlpha(alpha)
+              if (parsedAlpha === undefined || !this.canUseAlpha(valueComponent.variable)) {
+                this.invalidValueSyntax = true
+                return
+              }
+              valueComponent.alpha = parsedAlpha
+            }
             if (negative) valueComponent.negative = true
             currentValueComponents.push(valueComponent)
           }
@@ -1222,6 +1251,10 @@ export class Utility {
             if (resolvedVariableAlias && (!resolvedVariableAlias.negative || alpha === undefined)) {
               const { name, negative } = resolvedVariableAlias
               if (!bypassVariableNames.includes(name)) {
+                if (alpha !== undefined && !this.canUseAlpha(resolvedVariableAlias.variable)) {
+                  this.invalidValueSyntax = true
+                  return
+                }
                 handled = true
                 pushVariable(name, alpha, currentValue, negative)
               }
@@ -1231,14 +1264,25 @@ export class Utility {
             const [raw, alpha] = currentValue.slice(1).split('/')
             handleVariable(raw, alpha)
             if (!handled && !bypassVariableNames.includes(raw)) {
+              if (alpha !== undefined && !this.canUseAlpha()) {
+                this.invalidValueSyntax = true
+                return
+              }
               handled = true
               pushVariable(raw, alpha)
             }
           } else {
             handleVariable(currentValue)
             if (!handled) {
-              const [colorName, alpha] = currentValue.split('/')
-              handleVariable(colorName, alpha)
+              const slashIndex = currentValue.indexOf('/')
+              if (slashIndex !== -1 && currentValue.indexOf('/', slashIndex + 1) !== -1) {
+                const colorName = currentValue.slice(0, slashIndex)
+                if (this.resolveVariableAlias(colorName)) this.invalidValueSyntax = true
+              } else if (slashIndex !== -1) {
+                const colorName = currentValue.slice(0, slashIndex)
+                const alpha = currentValue.slice(slashIndex + 1)
+                handleVariable(colorName, alpha)
+              }
             }
           }
         }
@@ -1290,7 +1334,7 @@ export class Utility {
         return i
       } else if (!isString && val in VALUE_DELIMITERS) {
         const functionName = currentValue
-        if (val === '(' && functionName === '$') {
+        if (val === '(' && (functionName === '$' || functionName === '--alpha')) {
           this.invalidValueSyntax = true
           return value.length
         }

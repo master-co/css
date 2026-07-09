@@ -12,11 +12,11 @@
 }
 
 @theme light {
-  --color-focus: $color-black;
+  --color-focus: var(--color-black);
 }
 
 @theme dark {
-  --color-focus: $color-white;
+  --color-focus: var(--color-white);
 }
 
 @components {

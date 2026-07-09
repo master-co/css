@@ -44,7 +44,7 @@ import {
 import { filterExcludedClasses } from './class-exclusion'
 
 export * from './directives'
-export { collectCSSVariableReferences } from './render'
+export { collectCSSVariableReferences } from '@master/css-engine'
 
 export const STYLE_CSS_REQUEST_RE = /\.(css|scss|sass)(?:[?#].*)?$/
 

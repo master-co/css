@@ -133,19 +133,19 @@ Override preset role tokens when a repeated UI decision needs product-specific c
 
 ```css name=index.css
 @theme light {
-  --color-surface-base: $color-white;
-  --color-surface-raised: $color-white;
+  --color-surface-base: var(--color-white);
+  --color-surface-raised: var(--color-white);
   --color-line-base: oklch(0% 0 none / 0.12);
-  --color-text-body: $color-neutral-70;
-  --color-text-muted: $color-neutral-60;
+  --color-text-body: var(--color-neutral-70);
+  --color-text-muted: var(--color-neutral-60);
 }
 
 @theme dark {
-  --color-surface-base: $color-gray-95;
-  --color-surface-raised: $color-gray-90;
+  --color-surface-base: var(--color-gray-95);
+  --color-surface-raised: var(--color-gray-90);
   --color-line-base: oklch(100% 0 none / 0.12);
-  --color-text-body: $color-gray-30;
-  --color-text-muted: $color-gray-40;
+  --color-text-body: var(--color-gray-30);
+  --color-text-muted: var(--color-gray-40);
 }
 ```
 

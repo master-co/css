@@ -413,7 +413,7 @@ interface ScopeStyleEntry {
 
 const SEMANTIC_SCOPE_STYLE_PROBE = [
   '@theme light inline {',
-  '  --token: $value;',
+  '  --token: var(--value);',
   '}',
   '@components {',
   '  btn { @compose block fg:red:hover@md; }',

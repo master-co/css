@@ -10,7 +10,7 @@ describe('getCollectionVariables', () => {
     expect(result).toEqual({
       variables: [
         { namespace: 'gray', key: '10', value: '#fff' },
-        { namespace: 'gray', key: '20', value: '$gray-10' },
+        { namespace: 'gray', key: '20', value: 'var(--gray-10)' },
         { namespace: 'gray', key: '10', value: '#000', mode: 'dark' },
         { namespace: 'gray', key: '20', value: '#808080', mode: 'dark' }
       ],

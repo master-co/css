@@ -1,5 +1,5 @@
 import { AnimationRule, VariableRule, type MasterCSSEmittedGlobals } from '@master/css'
-import { collectAnimationNamesFromDeclaration } from '@master/css-engine'
+import { collectAnimationNamesFromDeclaration, collectCSSVariableReferences } from '@master/css-engine'
 import { createCSSWithNativeDeclarations } from '@master/css-validator/native-declaration'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
 
@@ -24,14 +24,6 @@ function normalizeNativeCSS(nativeCSS: string | string[] | undefined) {
   return (Array.isArray(nativeCSS) ? nativeCSS : [nativeCSS])
     .filter((source): source is string => Boolean(source))
     .map((source) => source.replace(/\r\n?/g, '\n'))
-}
-
-export function collectCSSVariableReferences(source: string) {
-  const references = new Set<string>()
-  for (const match of source.matchAll(/var\(\s*--([_a-zA-Z0-9-]+)/g)) {
-    references.add(match[1])
-  }
-  return references
 }
 
 function collectStyleCSSVariableReferences(nativeCSS: string[]) {

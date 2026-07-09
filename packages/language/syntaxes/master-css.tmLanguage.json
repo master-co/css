@@ -453,8 +453,8 @@
           "name": "support.function.misc.master-css"
         },
         {
-          "match": "\\$[_a-zA-Z-][_a-zA-Z0-9-]*",
-          "name": "variable.other.master-css"
+          "match": "--alpha(?=\\()",
+          "name": "support.function.misc.master-css"
         }
       ]
     },
@@ -847,6 +847,10 @@
           "name": "entity.other.attribute-name.class.master-css"
         },
         {
+          "match": "\\$[_a-zA-Z-][_a-zA-Z0-9-]*",
+          "name": "variable.other.master-css"
+        },
+        {
           "match": "(?<=:)(?![_a-zA-Z-][_a-zA-Z0-9-]*\\s*\\{)([_a-zA-Z-][_a-zA-Z0-9-]*)(?=[:@!_\\s;'\")]|$)",
           "name": "support.constant.property-value.master-css"
         },
@@ -1090,8 +1094,8 @@
           "name": "support.function.misc.master-css"
         },
         {
-          "match": "\\$[_a-zA-Z-][_a-zA-Z0-9-]*",
-          "name": "variable.other.master-css"
+          "match": "--alpha(?=\\()",
+          "name": "support.function.misc.master-css"
         },
         {
           "match": "--[_a-zA-Z-][_a-zA-Z0-9-]*",

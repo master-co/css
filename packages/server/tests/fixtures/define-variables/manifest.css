@@ -11,5 +11,5 @@
 }
 
 @theme {
-  --color-primary: $color-black;
+  --color-primary: var(--color-black);
 }

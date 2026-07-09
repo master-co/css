@@ -376,7 +376,7 @@ test('highlights custom variants, nested selectors, queries, and values', () => 
     }
     @dark {
       color: oklch(99% 0.0033 72);
-      background-color: $color-gray-100;
+      background-color: var(--color-gray-100);
     }
   `)
 
@@ -389,7 +389,7 @@ test('highlights custom variants, nested selectors, queries, and values', () => 
   expectScope(tokens, 'active', 'entity.other.attribute-name.class.master-css')
   expectScope(tokens, '#', 'punctuation.definition.entity.master-css')
   expectScope(tokens, 'thumb', 'variable.other.master-css')
-  expectScope(tokens, '$color-gray-100', 'variable.other.master-css')
+  expectScope(tokens, '--color-gray-100', 'variable.argument.css')
   expectNoScope(tokens, 'oklch', 'support.function.misc.master-css')
   expectNoScope(tokens, '99% 0.0033 72', 'constant.numeric.master-css')
 })
@@ -398,7 +398,7 @@ test('highlights detailed Master directive syntax without misclassifying native 
   const tokens = tokenize(`
     @theme static brand {
       /* Font families */
-      --color-primary: $color-blue-60/.8;
+      --color-primary: --alpha(var(--color-blue-60) / 80%);
       --radius-card: 1rem;
       --tracking-tightest: -0.072em;
     }
@@ -412,7 +412,7 @@ test('highlights detailed Master directive syntax without misclassifying native 
 
     @components {
       btn:hover {
-        @compose static native inline-flex align-items:center fg:primary:hover@md;
+        @compose static native inline-flex align-items:center fg:primary:hover@md w:$size;
         @variant h>=sm&h<lg {
           @compose block;
         }
@@ -439,7 +439,9 @@ test('highlights detailed Master directive syntax without misclassifying native 
   expectScope(tokens, 'brand', 'support.constant.property-value.master-css')
   expectSomeScope(tokens, 'Font families', 'comment.block.css')
   expectScope(tokens, '--color-primary', 'variable.css.custom-property.master-css')
-  expectScope(tokens, '$color-blue-60', 'variable.other.master-css')
+  expectScope(tokens, '--alpha', 'support.function.misc.master-css')
+  expectScope(tokens, '--color-blue-60', 'variable.argument.css')
+  expectScope(tokens, '$size', 'variable.other.master-css')
   expectScope(tokens, '-0.072', 'constant.numeric.css')
   expectScope(tokens, 'em', 'keyword.other.unit.em.css')
   expectScope(tokens, 'dialog-open', 'entity.other.attribute-name.class.master-css')

@@ -39,7 +39,7 @@ import {
   timeCompilerDiagnostic,
   type CompilerDiagnosticRecorder
 } from './diagnostics'
-import { builtinNamespaces } from '@master/css-engine'
+import { builtinNamespaces, normalizeVariableValue } from '@master/css-engine'
 import { isNativeCSSShorthandProperty } from '@master/css-schema/native-css-shorthand'
 
 export type CSSDirectiveManifestInput = SharedCSSDirectiveManifestInput
@@ -176,17 +176,6 @@ function getVariableNumericValue(
   }
 }
 
-function collectVariableDependencies(value: unknown, dependencies = new Set<string>()) {
-  if (typeof value !== 'string') return dependencies
-  for (const match of value.matchAll(/\$(-?[_a-zA-Z0-9-]+)/g)) {
-    dependencies.add(match[1])
-  }
-  for (const match of value.matchAll(/var\(\s*--(-?[_a-zA-Z0-9-]+)/g)) {
-    dependencies.add(match[1])
-  }
-  return dependencies
-}
-
 function variableSlot(variable: Pick<MasterCSSManifestVariable, 'name' | 'namespace' | 'key'>) {
   return variable.name || `${variable.namespace || ''}\0${variable.key}`
 }
@@ -212,10 +201,16 @@ function compileVariables(
   for (const definition of input) {
     const resolved = resolveVariableName(definition)
     if (!resolved.name) continue
-    const value = normalizeZero(definition.value) as MasterCSSManifestVariable['value']
+    const rawValue = normalizeZero(definition.value)
+    const normalized = typeof rawValue === 'string' || typeof rawValue === 'number'
+      ? normalizeVariableValue(rawValue)
+      : { value: rawValue, dependencies: new Set<string>() }
+    const value = typeof rawValue === 'number'
+      ? rawValue
+      : normalized.value
     const numeric = getVariableNumericValue(value, resolved.namespace)
     const type = numeric ? 'number' : getVariableType(value)
-    const dependencies = collectVariableDependencies(value)
+    const dependencies = normalized.dependencies
 
     if (definition.mode) {
       let target = byName.get(resolved.name)

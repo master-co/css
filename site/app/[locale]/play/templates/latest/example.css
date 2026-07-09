@@ -3,9 +3,9 @@
 }
 
 @theme {
-  --color-master: $color-yellow-40;
-  --color-master-hover: $color-yellow-50;
-  --color-master-ink: $color-yellow-95;
+  --color-master: var(--color-yellow-40);
+  --color-master-hover: var(--color-yellow-50);
+  --color-master-ink: var(--color-yellow-95);
 }
 
 @components {

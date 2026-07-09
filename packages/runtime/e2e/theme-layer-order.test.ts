@@ -9,7 +9,7 @@ test('keeps default variable buckets before mode buckets when CSSOM buckets are 
     variables: [
       { namespace: 'color', key: 'blue', value: '#66f', mode: 'light' },
       { namespace: 'color', key: 'blue', value: '#44f', mode: 'dark' },
-      { namespace: 'color', key: 'accent', value: '$color-blue' },
+      { namespace: 'color', key: 'accent', value: 'var(--color-blue)' },
       { namespace: 'color', key: 'accent', value: '#fed', mode: 'dark' }
     ]
   })

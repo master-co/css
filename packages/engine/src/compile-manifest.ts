@@ -20,6 +20,7 @@ import builtinNativeValueNamespaces, { type MasterCSSBuiltinNativeValueNamespace
 import builtinSelectorAliases from './selector-aliases'
 import type { Condition } from './utils/parse-condition'
 import type { SelectorNode } from './utils/parse-selector'
+import { normalizeVariableValue } from './utils/css-variables'
 
 export type CompiledUtility = Omit<MasterCSSManifestUtility, 'emit' | 'name' | 'order'> & {
   name: string
@@ -234,17 +235,42 @@ function compileVariables(manifest: MasterCSSManifest) {
   const variables = new Map<string, Variable>()
   for (const definition of flattenMasterCSSManifestVariables(manifest.variables)) {
     if (!definition.name || !definition.type || definition.value === false) continue
+    const normalized = typeof definition.value === 'string' || typeof definition.value === 'number'
+      ? normalizeVariableValue(definition.value)
+      : undefined
+    const value = normalized
+      ? normalized.value
+      : Array.isArray(definition.value) ? definition.value.join(',') : definition.value
+    const dependencies = new Set([
+      ...(definition.dependencies || []),
+      ...(normalized?.dependencies || [])
+    ])
+    const modes = definition.modes
+      ? Object.fromEntries(Object.entries(definition.modes).map(([mode, modeValue]) => {
+        const normalizedMode = typeof modeValue.value === 'string' || typeof modeValue.value === 'number'
+          ? normalizeVariableValue(modeValue.value)
+          : undefined
+        normalizedMode?.dependencies.forEach((dependency) => dependencies.add(dependency))
+        return [
+          mode,
+          {
+            ...modeValue,
+            value: typeof modeValue.value === 'number'
+              ? modeValue.value
+              : normalizedMode?.value ?? modeValue.value
+          }
+        ]
+      }))
+      : undefined
     variables.set(definition.name, {
       name: definition.name,
       key: definition.key,
       type: definition.type,
       ...(definition.namespace ? { namespace: definition.namespace } : {}),
-      ...(definition.value !== undefined ? {
-        value: Array.isArray(definition.value) ? definition.value.join(',') : definition.value
-      } : {}),
+      ...(value !== undefined ? { value } : {}),
       ...(definition.numeric ? { numeric: { ...definition.numeric } } : {}),
-      ...(definition.modes ? { modes: { ...definition.modes } } : {}),
-      ...(definition.dependencies?.length ? { dependencies: new Set(definition.dependencies) } : {}),
+      ...(modes ? { modes } : {}),
+      ...(dependencies.size ? { dependencies } : {}),
       ...(definition.inline ? { inline: true } : {}),
       ...(definition.static ? { static: true } : {})
     } as Variable)

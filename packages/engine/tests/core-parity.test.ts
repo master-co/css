@@ -244,6 +244,18 @@ describe.concurrent('default manifest utility parity', () => {
     expectClassText(css, 'w:calc(-1*(var(--spacing-md)*2)*3-2px)', 'width:calc(-1 * (var(--spacing-md) * 2) * 3 - 2px)')
     expectClassText(css, 'font-weight:var(--font-weight-thin)', 'font-weight:var(--font-weight-thin)')
     expectClassText(css, 'fg:$color-white/.5', 'color:color-mix(in oklab,oklch(100% 0 none) 50%,transparent)')
+    expectClassText(css, 'bg:neutral-30/.5', 'background-color:color-mix(in oklab,var(--color-neutral-30) 50%,transparent)')
+    expectClassText(css, 'bg:neutral-30/0.5', 'background-color:color-mix(in oklab,var(--color-neutral-30) 50%,transparent)')
+    for (const invalidAlphaClass of [
+      'bg:neutral-30/50',
+      'bg:neutral-30/50%',
+      'bg:neutral-30/foo',
+      'bg:neutral-30/1.1',
+      'm:$spacing-md/.5',
+      'bg:--alpha(var(--color-neutral-30)/.5)'
+    ]) {
+      expect(css.createRule(invalidAlphaClass), invalidAlphaClass).toBeUndefined()
+    }
     expectClassText(css, 'grid-cols:3', 'grid-template-columns:repeat(3, minmax(0, 1fr))')
     expectClassText(css, 'line-clamp:3', '-webkit-line-clamp:3')
     expectClassText(css, 'text:2xl', 'font-size:var(--font-size-2xl)')

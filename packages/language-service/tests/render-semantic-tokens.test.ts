@@ -273,7 +273,7 @@ test.concurrent('renders semantic tokens only for CSS directive class-list spans
     }
 
     @theme dark {
-      --color-primary: $color-blue-60/.8;
+      --color-primary: --alpha(var(--color-blue-60) / 80%);
     }
 
     @theme {
@@ -364,7 +364,7 @@ test.concurrent('renders semantic tokens only for CSS directive class-list spans
   expect(tokens).not.toContainEqual({ text: '@theme', type: 'keyword', modifiers: ['directive'] })
   expect(tokens).not.toContainEqual({ text: 'dark', type: 'enumMember', modifiers: ['directive'] })
   expect(tokens).not.toContainEqual({ text: '--color-primary', type: 'variable', modifiers: [] })
-  expect(tokens).not.toContainEqual({ text: '$color-blue-60', type: 'variable', modifiers: [] })
+  expect(tokens).not.toContainEqual({ text: '--color-blue-60', type: 'variable', modifiers: [] })
   expect(tokens).not.toContainEqual({ text: '@custom-variant', type: 'keyword', modifiers: ['directive'] })
   expect(tokens).not.toContainEqual({ text: '@motion-safe', type: 'keyword', modifiers: ['query'] })
   expect(tokens).not.toContainEqual({ text: '@slot', type: 'keyword', modifiers: ['directive'] })
@@ -391,7 +391,7 @@ test.concurrent('does not render semantic tokens for theme directive declaration
       @keyframes zoom {
         0% {
           transform: scale(0);
-          color: $color-red-50;
+          color: var(--color-red-50);
         }
 
         to {
@@ -403,7 +403,7 @@ test.concurrent('does not render semantic tokens for theme directive declaration
     }
 
     @theme dark {
-      --color-surface-base: $color-gray-100;
+      --color-surface-base: var(--color-gray-100);
     }
 
     @theme inline {
@@ -698,7 +698,7 @@ test.concurrent('renders CSS document semantic tokens only inside directive clas
   ].join('\n')
   const themeDirective = [
     '@theme {',
-    '    --color-primary: $color-blue-60/.8;',
+    '    --color-primary: --alpha(var(--color-blue-60) / 80%);',
     '}'
   ].join('\n')
   const nativeBetween = [
@@ -801,7 +801,7 @@ test.concurrent('renders detailed CSS directive semantic tokens only for class-l
     @safelist "block fg:red:hover@md";
 
     @theme static brand {
-      --color-primary: $color-blue-60/.8;
+      --color-primary: --alpha(var(--color-blue-60) / 80%);
       --radius-card: 1rem;
     }
 
@@ -848,7 +848,7 @@ test.concurrent('renders detailed CSS directive semantic tokens only for class-l
   expect(tokens).not.toContainEqual({ text: 'static', type: 'modifier', modifiers: ['directive'] })
   expect(tokens).not.toContainEqual({ text: 'brand', type: 'enumMember', modifiers: ['directive'] })
   expect(tokens).not.toContainEqual({ text: '--color-primary', type: 'variable', modifiers: [] })
-  expect(tokens).not.toContainEqual({ text: '$color-blue-60', type: 'variable', modifiers: [] })
+  expect(tokens).not.toContainEqual({ text: '--color-blue-60', type: 'variable', modifiers: [] })
   expect(tokens).not.toContainEqual({ text: '@custom-variant', type: 'keyword', modifiers: ['directive'] })
   expect(tokens).not.toContainEqual({ text: 'headings', type: 'variable', modifiers: ['directive', 'query'] })
   expect(tokens).not.toContainEqual({ text: '@slot', type: 'keyword', modifiers: ['directive'] })
@@ -958,7 +958,7 @@ test.concurrent('skips full embedded semantic tokens in active mode', () => {
 })
 
 test.concurrent('does not render active semantic tokens for CSS directive syntax at a position', () => {
-  const content = '@theme dark { --color-primary: $color-blue-60/.8; }\n.btn { color: red; }'
+  const content = '@theme dark { --color-primary: --alpha(var(--color-blue-60) / 80%); }\n.btn { color: red; }'
   const doc = createDoc('css', content)
   const languageService = new CSSLanguageService()
   const semanticTokens = languageService.renderSemanticTokensAtPosition(doc, doc.positionAt(content.indexOf('dark') + 1))
@@ -1014,7 +1014,7 @@ test.concurrent('skips embedded semantic tokens when syntax highlighting is off'
 })
 
 test.concurrent('renders CSS directive class-list semantic tokens when embedded highlighting is off', () => {
-  const content = '@theme dark { --color-primary: $color-blue-60/.8; }\n@components { btn { @compose block; } }'
+  const content = '@theme dark { --color-primary: --alpha(var(--color-blue-60) / 80%); }\n@components { btn { @compose block; } }'
   const doc = createDoc('css', content)
   const languageService = new CSSLanguageService({ embeddedSyntaxHighlighting: 'off' })
   const semanticTokens = languageService.renderSemanticTokens(doc)
@@ -1024,7 +1024,7 @@ test.concurrent('renders CSS directive class-list semantic tokens when embedded 
   expect(tokens).not.toContainEqual({ text: '@theme', type: 'keyword', modifiers: ['directive'] })
   expect(tokens).not.toContainEqual({ text: 'dark', type: 'enumMember', modifiers: ['directive'] })
   expect(tokens).not.toContainEqual({ text: '--color-primary', type: 'variable', modifiers: [] })
-  expect(tokens).not.toContainEqual({ text: '$color-blue-60', type: 'variable', modifiers: [] })
+  expect(tokens).not.toContainEqual({ text: '--color-blue-60', type: 'variable', modifiers: [] })
   expect(tokens).not.toContainEqual({ text: '@components', type: 'keyword', modifiers: ['directive'] })
   expect(tokens).not.toContainEqual({ text: 'btn', type: 'class', modifiers: ['selector'] })
   expect(tokens).not.toContainEqual({ text: '@compose', type: 'keyword', modifiers: ['directive'] })

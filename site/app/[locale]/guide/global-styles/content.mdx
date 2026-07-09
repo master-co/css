@@ -18,7 +18,7 @@ Use the app stylesheet for project-wide styling inputs:
 @import "@master/css";
 
 @theme {
-  --color-brand: $color-blue-60;
+  --color-brand: var(--color-blue-60);
   --spacing-action-x: 1rem;
 }
 
@@ -109,7 +109,7 @@ When the repeated part is a value, make it a token instead of a class:
 
 ```css name=app.css
 @theme {
-  --color-brand: $color-blue-60;
+  --color-brand: var(--color-blue-60);
   --spacing-action-x: 1rem;
 }
 ```

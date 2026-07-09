@@ -57,7 +57,7 @@ A theme variable name has the shape `<namespace>-<key>`. Master CSS resolves the
 ```css name=index.css
 @theme {
   --color-brand: #4f46e5;
-  --color-text-action: $color-brand;
+  --color-text-action: var(--color-brand);
   --color-line-divider: rgb(0 0 0 / 12%);
   --spacing-card: 1.5rem;
   --radius-card: 0.75rem;
@@ -95,12 +95,12 @@ Contextual utilities keep class strings short by searching the namespace they al
 
 This is why token keys should be named for their namespace. `md` can work across spacing, radius, container, and breakpoint scales because the utility supplies the missing context.
 
-Use `$` when a token should reference another theme token:
+Use native CSS `var()` when a token should reference another theme token:
 
 ```css name=index.css
 @theme {
   --color-brand: #4f46e5;
-  --color-text-action: $color-brand;
+  --color-text-action: var(--color-brand);
 }
 ```
 
@@ -176,7 +176,7 @@ Default theme variables are emitted on `:root`. If a default variable references
 
 ```css name=index.css
 @theme {
-  --stripe: linear-gradient(135deg, $color-line-muted 4.5%, $color-surface-raised 0);
+  --stripe: linear-gradient(135deg, var(--color-line-muted) 4.5%, var(--color-surface-raised) 0);
 }
 ```
 
@@ -184,11 +184,11 @@ Define derived tokens inside each mode bucket when they must follow local mode i
 
 ```css name=index.css
 @theme light {
-  --stripe: linear-gradient(135deg, $color-line-muted 4.5%, $color-surface-raised 0);
+  --stripe: linear-gradient(135deg, var(--color-line-muted) 4.5%, var(--color-surface-raised) 0);
 }
 
 @theme dark {
-  --stripe: linear-gradient(135deg, $color-line-muted 4.5%, $color-surface-raised 0);
+  --stripe: linear-gradient(135deg, var(--color-line-muted) 4.5%, var(--color-surface-raised) 0);
 }
 ```
 

@@ -1,5 +1,6 @@
 import { Page } from '@playwright/test'
 import { MasterCSS, createHydrationManifest, type MasterCSSManifest } from '@master/css'
+import { normalizeVariableValue as normalizeEngineVariableValue } from '@master/css-engine'
 import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
 import {
   MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID,
@@ -53,16 +54,10 @@ function normalizeVariableValue(value: RuntimeManifestVariable['value'] | undefi
   if (typeof value !== 'string') {
     return { value, dependencies: undefined }
   }
-  const dependencies = new Set<string>()
-  const normalized = value
-    .replace(/\|/g, ' ')
-    .replace(/\$([-_a-zA-Z0-9]+)/g, (_text, name: string) => {
-      dependencies.add(name)
-      return `var(--${name})`
-    })
+  const normalized = normalizeEngineVariableValue(value)
   return {
-    value: normalized,
-    dependencies: dependencies.size ? [...dependencies] : undefined
+    value: normalized.value,
+    dependencies: normalized.dependencies.size ? [...normalized.dependencies] : undefined
   }
 }
 

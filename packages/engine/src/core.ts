@@ -803,6 +803,12 @@ export default class MasterCSS {
     const canonicalClass = this.canonicalizeClassName(className, fixedClass)
     className = canonicalClass.className
     fixedClass = canonicalClass.fixedClass
+    const sourceRegisteredUtility = this.matchResolvedClassName(sourceClassName)
+    if (sourceRegisteredUtility && !this.matchesExactUtilityDefinition(sourceClassName, sourceRegisteredUtility)) {
+      const sourceUtility = this.createRuleWithDefinition(sourceClassName, sourceRegisteredUtility, fixedClass, mode)
+      if (sourceUtility?.valid) return sourceUtility
+      if (sourceUtility?.invalidValueSyntax) return
+    }
     const fastPathNativeValueNamespaceUtilities = this.createNativeValueNamespaceFastPath(className, fixedClass, mode, sourceClassName)
     if (fastPathNativeValueNamespaceUtilities.length) return fastPathNativeValueNamespaceUtilities[0]
 
@@ -848,6 +854,26 @@ export default class MasterCSS {
     const canonicalClass = this.canonicalizeClassName(className, fixedClass)
     className = canonicalClass.className
     fixedClass = canonicalClass.fixedClass
+    const sourceRegisteredUtilities = this.matchAllResolvedClassName(sourceClassName)
+    if (sourceRegisteredUtilities.length && sourceRegisteredUtilities.some((utility) => !this.matchesExactUtilityDefinition(sourceClassName, utility))) {
+      const sourceUtilities: Utility[] = []
+      let hasInvalidValueSyntax = false
+      for (const registeredUtility of sourceRegisteredUtilities) {
+        if (this.matchesExactUtilityDefinition(sourceClassName, registeredUtility)) continue
+        const utility = this.createRuleWithDefinition(sourceClassName, registeredUtility, fixedClass, mode)
+        if (utility?.valid) {
+          sourceUtilities.push(utility)
+          for (let branchIndex = 1; branchIndex < utility.branchCount; branchIndex++) {
+            const branchUtility = this.createRuleWithDefinition(sourceClassName, registeredUtility, fixedClass, mode, branchIndex)
+            if (branchUtility?.valid) sourceUtilities.push(branchUtility)
+          }
+        } else if (utility?.invalidValueSyntax) {
+          hasInvalidValueSyntax = true
+        }
+      }
+      if (sourceUtilities.length) return sourceUtilities
+      if (hasInvalidValueSyntax) return []
+    }
     const fastPathNativeValueNamespaceUtilities = this.createNativeValueNamespaceFastPath(className, fixedClass, mode, sourceClassName)
     if (fastPathNativeValueNamespaceUtilities.length) return fastPathNativeValueNamespaceUtilities
 
