@@ -434,7 +434,7 @@ function createPreviewHTML() {
 
         body {
           font-family: Geist, Noto Sans TC, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
-          font-feature-settings: "ss02", "ss03", "ss04", "ss06", "ss07", "ss08", "ss09";
+          font-feature-settings: "ss02", "ss03", "ss04", "ss06", "ss07", "ss08";
         }
       </style>
       <script>${require('./preview.js?raw')}</script>
