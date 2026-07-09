@@ -13,11 +13,11 @@ A stylesheet becomes Master-managed when it imports `@master/css`. Native class 
 @import "@master/css";
 
 .card {
-    border: 1px solid rgb(0 0 0 / 12%);
+  border: 1px solid rgb(0 0 0 / 12%);
 }
 
 .unused {
-    color: red;
+  color: red;
 }
 ```
 
@@ -30,7 +30,7 @@ If source files use `card` but never use `unused`, the output keeps `.card` and 
 
 ```css name=generated.css
 .card {
-    border: 1px solid rgb(0 0 0 / 12%);
+  border: 1px solid rgb(0 0 0 / 12%);
 }
 ```
 
@@ -45,11 +45,11 @@ Import `@master/css` from the CSS entry that should receive generated Master CSS
 @import "@master/css";
 
 .app-shell {
-    min-height: 100dvh;
+  min-height: 100dvh;
 }
 
 .debug-outline {
-    outline: 1px solid red;
+  outline: 1px solid red;
 }
 ```
 
@@ -57,7 +57,7 @@ The Master import is replaced by generated CSS. It is not emitted as a browser-f
 
 ```css name=output.css
 .app-shell {
-    min-height: 100dvh;
+  min-height: 100dvh;
 }
 ```
 
@@ -68,11 +68,11 @@ Use `@preserve native;` when the stylesheet contains class names that are intent
 @preserve native;
 
 .cms-card {
-    color: red;
+  color: red;
 }
 
 .injected-by-payment-widget {
-    color: blue;
+  color: blue;
 }
 ```
 
@@ -91,39 +91,39 @@ When a Master-managed `.css` entry imports local relative `.css` files, those im
 @import "./styles/buttons.css";
 
 .page {
-    display: grid;
+  display: grid;
 }
 ```
 
 ```css name=src/styles/cards.css
 .card {
-    border: 1px solid rgb(0 0 0 / 12%);
+  border: 1px solid rgb(0 0 0 / 12%);
 }
 
 .unused-card {
-    color: red;
+  color: red;
 }
 ```
 
 ```css name=src/styles/buttons.css
 .button {
-    display: inline-flex;
+  display: inline-flex;
 }
 
 .unused-button {
-    color: blue;
+  color: blue;
 }
 ```
 
 ```tsx name=src/App.tsx
 export function App() {
-    return (
-        <main className="page">
-            <article className="card">
-                <button className="button">Save</button>
-            </article>
-        </main>
-    )
+  return (
+    <main className="page">
+      <article className="card">
+        <button className="button">Save</button>
+      </article>
+    </main>
+  )
 }
 ```
 
@@ -157,7 +157,7 @@ app/b/b.css
 @import "../shared.css";
 
 .a-page {
-    color: red;
+  color: red;
 }
 ```
 
@@ -166,17 +166,17 @@ app/b/b.css
 @import "../shared.css";
 
 .b-page {
-    color: blue;
+  color: blue;
 }
 ```
 
 ```css name=app/shared.css
 .shared-card {
-    border: 1px solid rgb(0 0 0 / 12%);
+  border: 1px solid rgb(0 0 0 / 12%);
 }
 
 .only-used-in-b {
-    color: blue;
+  color: blue;
 }
 ```
 
@@ -207,11 +207,11 @@ app/b/b.css
 @import "../shared.css";
 
 .a-card {
-    color: red;
+  color: red;
 }
 
 .b-card {
-    color: blue;
+  color: blue;
 }
 ```
 
@@ -221,11 +221,11 @@ app/b/b.css
 @import "../shared.css";
 
 .a-card {
-    color: red;
+  color: red;
 }
 
 .b-card {
-    color: blue;
+  color: blue;
 }
 ```
 
@@ -234,11 +234,11 @@ app/b/b.css
 @blocklist "debug-*";
 
 .shared-card {
-    border: 1px solid rgb(0 0 0 / 12%);
+  border: 1px solid rgb(0 0 0 / 12%);
 }
 
 .debug-outline {
-    outline: 1px solid red;
+  outline: 1px solid red;
 }
 ```
 
@@ -246,13 +246,13 @@ app/b/b.css
 
 ```tsx name=app/a/page.tsx
 export default function Page() {
-    return <article className="a-card shared-card">A</article>
+  return <article className="a-card shared-card">A</article>
 }
 ```
 
 ```tsx name=app/b/page.tsx
 export default function Page() {
-    return <article className="b-card shared-card">B</article>
+  return <article className="b-card shared-card">B</article>
 }
 ```
 
@@ -275,29 +275,29 @@ Native CSS pruning filters class selector rules by detected usage. A class rule 
 @import "@master/css";
 
 body {
-    margin: 0;
+  margin: 0;
 }
 
 .card,
 .unused:hover {
-    border: 1px solid rgb(0 0 0 / 12%);
+  border: 1px solid rgb(0 0 0 / 12%);
 }
 
 @media (width >= 48rem) {
-    .card .title {
-        font-weight: 700;
-    }
+  .card .title {
+    font-weight: 700;
+  }
 
-    .debug-card {
-        outline: 1px solid red;
-    }
+  .debug-card {
+    outline: 1px solid red;
+  }
 }
 ```
 
 ```html name=src/index.html
 <!-- @MARK card title -->
 <article class="card">
-    <h2 class="title">Card</h2>
+  <h2 class="title">Card</h2>
 </article>
 ```
 
@@ -305,17 +305,17 @@ The output keeps `body`, `.card`, and `.card .title`. It removes `.unused:hover`
 
 ```css name=output.css
 body {
-    margin: 0;
+  margin: 0;
 }
 
 .card {
-    border: 1px solid rgb(0 0 0 / 12%);
+  border: 1px solid rgb(0 0 0 / 12%);
 }
 
 @media (width >= 48rem) {
-    .card .title {
-        font-weight: 700;
-    }
+  .card .title {
+    font-weight: 700;
+  }
 }
 ```
 
@@ -328,17 +328,17 @@ Pruned native CSS can reference variables and keyframes from the project CSS ent
 
 ```css name=index.css
 @theme {
-    --color-primary: #175cff;
+  --color-primary: #175cff;
 }
 
 @keyframes fade-in {
-    from {
-        opacity: 0;
-    }
+  from {
+    opacity: 0;
+  }
 
-    to {
-        opacity: 1;
-    }
+  to {
+    opacity: 1;
+  }
 }
 ```
 
@@ -346,12 +346,12 @@ Pruned native CSS can reference variables and keyframes from the project CSS ent
 @import "@master/css";
 
 .notice {
-    color: var(--color-primary);
-    animation-name: fade-in;
+  color: var(--color-primary);
+  animation-name: fade-in;
 }
 
 .unused-notice {
-    color: var(--color-primary);
+  color: var(--color-primary);
 }
 ```
 
@@ -372,11 +372,11 @@ If a native class is used by a bounded external source, include it explicitly so
 @safelist "dialog-open dialog-closing";
 
 .dialog-open {
-    overflow: hidden;
+  overflow: hidden;
 }
 
 .dialog-closing {
-    pointer-events: none;
+  pointer-events: none;
 }
 ```
 

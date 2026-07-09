@@ -69,9 +69,9 @@ Use `*` as a wildcard. In `>*`, every direct child matches.
 ```html
 <!-- @MARK * -->
 <div class="bg:blue-60>*">
-    <div>hit</div>
-    <div>hit</div>
-    ...
+  <div>hit</div>
+  <div>hit</div>
+  ...
 </div>
 ```
 
@@ -80,7 +80,7 @@ Use a type selector to target elements by tag name.
 ```html
 <!-- @MARK span -->
 <div class="bg:blue-60>span">
-    <span>hit</span>
+  <span>hit</span>
 </div>
 ```
 (i) If a raw type selector is hard to read or conflicts with nearby syntax, wrap it with `:is()` or `:where()`.
@@ -141,12 +141,12 @@ Use `_` as the descendant combinator. It stands in for the CSS space, because sp
 ```html
 <!-- @MARK _ -->
 <div class="bg:blue-60_div">
-    <div>hit</div>
+  <div>hit</div>
+  <div>hit
     <div>hit
-        <div>hit
-            <div>hit</div>
-        </div>
+      <div>hit</div>
     </div>
+  </div>
 </div>
 ```
 
@@ -155,7 +155,7 @@ Use `>` when only direct children should match.
 ```html
 <!-- @MARK >div -->
 <div class="bg:blue-60>div">
-    <div>hit</div>
+  <div>hit</div>
 </div>
 ```
 
@@ -245,8 +245,8 @@ Use structural shorthands such as `:first`, `:last`, `:odd`, and `:even` to styl
 </Demo>
 ```html
 <ul class="…">
-    <!-- @MARK :even --><!-- @MARK :even -->
-    <li class="bg:gray-90:even@dark bg:slate-5:even@light …">…</li>
+  <!-- @MARK :even --><!-- @MARK :even -->
+  <li class="bg:gray-90:even@dark bg:slate-5:even@light …">…</li>
 </ul>
 ```
 
@@ -291,9 +291,9 @@ Use `:has()` when the current element should change because it contains a matchi
 ```html
 <!-- @MARK :has(.active) -->
 <div class="bg:blue-60:has(.active)">
-    <div>Item 1</div>
-    <div class="active">Item 2</div>
-    <div>Item 3</div>
+  <div>Item 1</div>
+  <div class="active">Item 2</div>
+  <div>Item 3</div>
 </div>
 ```
 
@@ -311,18 +311,18 @@ Use `:not()` to exclude a selector from the match.
 ```html
 <!-- @MARK active -->
 <div class="active">
-    <div>
-        <!-- @MARK :of(.active) -->
-        <div class="hidden:of(.active)">hidden</div>
-    </div>
+  <div>
+    <!-- @MARK :of(.active) -->
+    <div class="hidden:of(.active)">hidden</div>
+  </div>
 </div>
 ```
 (i) Style the element when its parent matches.
 ```html
 <!-- @MARK active -->
 <div class="active">
-    <!-- @MARK :of(.active>) -->
-    <div class="hidden:of(.active>)">hidden</div>
+  <!-- @MARK :of(.active>) -->
+  <div class="hidden:of(.active>)">hidden</div>
 </div>
 ```
 (i) Style the element when its previous adjacent sibling matches.
@@ -358,7 +358,7 @@ Use `::before` and `::after` to style generated content attached to the element.
 ```html
 <!-- @MARK ::before --><!-- @MARK ::after -->
 <div class="content:close-quote::after content:open-quote::before …">
-    Be the change you wish to see in the world.
+  Be the change you wish to see in the world.
 </div>
 ```
 
@@ -390,8 +390,8 @@ Use `[open]` to style a `<details>` element while it is expanded.
 ```html
 <!-- @MARK [open] -->
 <details class="bg:white[open]" open>
-    <summary>Details</summary>
-    <p>Details content goes here.</p>
+  <summary>Details</summary>
+  <p>Details content goes here.</p>
 </details>
 ```
 

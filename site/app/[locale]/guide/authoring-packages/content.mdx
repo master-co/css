@@ -41,34 +41,34 @@ Use `master.css` for shared vocabulary that should be available to consuming pro
 
 ```css name=master.css
 @theme {
-    --color-brand: #4f46e5;
-    --color-text-action: $color-brand;
-    --spacing-action-x: 1rem;
-    --radius-action: 0.5rem;
+  --color-brand: #4f46e5;
+  --color-text-action: $color-brand;
+  --spacing-action-x: 1rem;
+  --radius-action: 0.5rem;
 }
 
 @custom-variant motion-safe {
-    @media (prefers-reduced-motion: no-preference) {
-        @slot;
-    }
+  @media (prefers-reduced-motion: no-preference) {
+    @slot;
+  }
 }
 
 @utilities {
-    content-auto {
-        content-visibility: auto;
-        contain-intrinsic-size: auto 32rem;
-    }
+  content-auto {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 32rem;
+  }
 }
 
 @components {
-    btn {
-        @compose inline-flex align-items:center justify-content:center gap:xs px:action-x py:xs r:action font:sm font:medium;
-        @compose bg:brand fg:white;
+  btn {
+    @compose inline-flex align-items:center justify-content:center gap:xs px:action-x py:xs r:action font:sm font:medium;
+    @compose bg:brand fg:white;
 
-        &:is(:hover, :focus-visible) {
-            @compose bg:brand/.85;
-        }
+    &:is(:hover, :focus-visible) {
+      @compose bg:brand/.85;
     }
+  }
 }
 ```
 
@@ -105,7 +105,7 @@ When a local CSS file only needs the package as compile-time context, use `@refe
 @reference '<package-name>';
 
 .button {
-    @compose btn;
+  @compose btn;
 }
 ```
 
@@ -147,7 +147,7 @@ Before publishing, test the package through a small consuming project or fixture
 ```html
 <button class="btn">Save</button>
 <article class="p:lg r:lg bg:surface-raised content-auto">
-    ...
+  ...
 </article>
 ```
 

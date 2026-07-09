@@ -18,14 +18,14 @@ Use the app stylesheet for project-wide styling inputs:
 @import "@master/css";
 
 @theme {
-    --color-brand: $color-blue-60;
-    --spacing-action-x: 1rem;
+  --color-brand: $color-blue-60;
+  --spacing-action-x: 1rem;
 }
 
 @custom-variant motion-safe {
-    @media (prefers-reduced-motion: no-preference) {
-        @slot;
-    }
+  @media (prefers-reduced-motion: no-preference) {
+    @slot;
+  }
 }
 ```
 
@@ -56,18 +56,18 @@ Write project-wide element defaults in native CSS and put them in `@layer base` 
 @import "@master/css";
 
 @layer base {
-    html {
-        color-scheme: light dark;
-    }
+  html {
+    color-scheme: light dark;
+  }
 
-    body {
-        background: var(--color-surface-base);
-        color: var(--color-text-body);
-    }
+  body {
+    background: var(--color-surface-base);
+    color: var(--color-text-body);
+  }
 
-    :where(button, input, textarea, select) {
-        font: inherit;
-    }
+  :where(button, input, textarea, select) {
+    font: inherit;
+  }
 }
 ```
 
@@ -99,7 +99,7 @@ Start with utilities when the style belongs to one element or one usage site:
 
 ```html
 <button class="inline-flex items-center justify-center gap:xs px:md py:xs r:lg font:medium font:sm bg:blue fg:white">
-    Save changes
+  Save changes
 </button>
 ```
 
@@ -109,14 +109,14 @@ When the repeated part is a value, make it a token instead of a class:
 
 ```css name=app.css
 @theme {
-    --color-brand: $color-blue-60;
-    --spacing-action-x: 1rem;
+  --color-brand: $color-blue-60;
+  --spacing-action-x: 1rem;
 }
 ```
 
 ```html
 <button class="r:lg fg:white bg:brand px:action-x">
-    Submit
+  Submit
 </button>
 ```
 
@@ -126,12 +126,12 @@ Write native CSS when the selector itself is global output you always ship:
 
 ```css name=app.css
 .skip-link {
-    @compose fixed left:0 top:0 z:1 px:md py:xs bg:blue fg:white;
-    transform: translateY(-100%);
+  @compose fixed left:0 top:0 z:1 px:md py:xs bg:blue fg:white;
+  transform: translateY(-100%);
 }
 
 .skip-link:focus {
-    transform: translateY(0);
+  transform: translateY(0);
 }
 ```
 
@@ -144,10 +144,10 @@ Use component classes when a repeated UI role should behave like a generated Mas
 
 ```css name=app.css
 @components {
-    btn {
-        @compose inline-flex items-center justify-center gap:xs px:md py:xs r:lg font:medium font:sm;
-        @compose bg:blue fg:white;
-    }
+  btn {
+    @compose inline-flex items-center justify-center gap:xs px:md py:xs r:lg font:medium font:sm;
+    @compose bg:blue fg:white;
+  }
 }
 ```
 
@@ -161,21 +161,21 @@ Keep component classes small enough to combine:
 
 ```css name=app.css
 @components {
-    btn {
-        @compose inline-flex items-center justify-center font:medium;
-    }
+  btn {
+    @compose inline-flex items-center justify-center font:medium;
+  }
 
-    btn-sm {
-        @compose h:8x px:sm r:md font:xs;
-    }
+  btn-sm {
+    @compose h:8x px:sm r:md font:xs;
+  }
 
-    btn-md {
-        @compose h:10x px:md r:md font:sm;
-    }
+  btn-md {
+    @compose h:10x px:md r:md font:sm;
+  }
 
-    btn-primary {
-        @compose bg:blue fg:white;
-    }
+  btn-primary {
+    @compose bg:blue fg:white;
+  }
 }
 ```
 
@@ -187,17 +187,17 @@ Put state behavior inside the component only when it belongs to every usage:
 
 ```css name=app.css
 @components {
-    btn-primary {
-        @compose bg:blue fg:white;
+  btn-primary {
+    @compose bg:blue fg:white;
 
-        &:hover {
-            @compose bg:blue-60;
-        }
-
-        &:focus-visible {
-            @compose outline:2px|solid|blue outline-offset:4xs;
-        }
+    &:hover {
+      @compose bg:blue-60;
     }
+
+    &:focus-visible {
+      @compose outline:2px|solid|blue outline-offset:4xs;
+    }
+  }
 }
 ```
 
@@ -210,20 +210,20 @@ Use custom utilities for reusable primitives that are lower-level than product c
 
 ```css name=app.css
 @utilities {
-    flow {
-        @compose grid gap:md;
-    }
+  flow {
+    @compose grid gap:md;
+  }
 
-    content-auto {
-        content-visibility: auto;
-        contain-intrinsic-size: auto 32rem;
-    }
+  content-auto {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 32rem;
+  }
 
-    print-hidden {
-        @variant print {
-            display: none;
-        }
+  print-hidden {
+    @variant print {
+      display: none;
     }
+  }
 }
 ```
 
@@ -257,13 +257,13 @@ styles/
 
 ```css name=styles/buttons.css
 @components {
-    btn {
-        @compose inline-flex items-center justify-center font:medium;
-    }
+  btn {
+    @compose inline-flex items-center justify-center font:medium;
+  }
 
-    btn-primary {
-        @compose bg:blue fg:white;
-    }
+  btn-primary {
+    @compose bg:blue fg:white;
+  }
 }
 ```
 

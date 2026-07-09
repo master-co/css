@@ -177,8 +177,8 @@ Use `@landscape` or `@portrait` to apply styles based on device orientation.
 ```html
 <!-- @MARK transform:scale(0)@start -->
 <div id="target" popover="auto" class="transition:transform|slow|smooth transform:scale(0)@start">
-    ...
-    <button popovertarget="target" popovertargetaction="hide">Close</button>
+  ...
+  <button popovertarget="target" popovertargetaction="hide">Close</button>
 </div>
 <button popovertarget="target">Open Popover</button>
 ```
@@ -237,8 +237,8 @@ Custom layer output is still organized inside the Master CSS layer model.
 Use `@container(<size>)` when the nearest container, not the viewport, should control the style.
 ```html
 <div class="container">
-    <!-- @MARK @container(sm) -->
-    <div class="hidden@container(sm)">...</div>
+  <!-- @MARK @container(sm) -->
+  <div class="hidden@container(sm)">...</div>
 </div>
 ```
 <details>
@@ -255,9 +255,9 @@ See [container queries](/guide/responsive-design#based-on-container-sizes) for t
 Use `@<container>(<size>)` to target a named container.
 ```html
 <aside class="container:sidebar">
-    ...
-        <!-- @MARK @sidebar(sm) -->
-        <div class="hidden@sidebar(sm)">...</div>
+  ...
+    <!-- @MARK @sidebar(sm) -->
+    <div class="hidden@sidebar(sm)">...</div>
 </aside>
 ```
 <details>

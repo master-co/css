@@ -21,15 +21,15 @@ Then give the project a vocabulary the agent can reuse. Theme tokens make repeat
 @import '@master/css';
 
 @theme {
-    --color-brand: #4f46e5;
-    --spacing-card: 1.5rem;
-    --radius-card: 0.75rem;
+  --color-brand: #4f46e5;
+  --spacing-card: 1.5rem;
+  --radius-card: 0.75rem;
 }
 
 @components {
-    btn {
-        @compose inline-flex align-items:center justify-content:center gap:2x px:md h:10x r:md font:medium;
-    }
+  btn {
+    @compose inline-flex align-items:center justify-content:center gap:2x px:md h:10x r:md font:medium;
+  }
 }
 ```
 
@@ -40,7 +40,7 @@ import { defineConfig } from 'eslint/config'
 import css from '@master/eslint-config-css'
 
 export default defineConfig([
-    ...css
+  ...css
 ])
 ```
 
@@ -125,7 +125,7 @@ Ask the agent to optimize for readable markup, not the shortest possible class l
 
 ```html
 <button class="inline-flex items-center gap:xs h:10x px:md r:md fg:white bg:blue-70:hover opacity:.5:disabled bg:brand">
-    Save
+  Save
 </button>
 ```
 
@@ -200,7 +200,7 @@ For dynamic values, prefer stable classes plus CSS variables or inline styles at
 
 ```html
 <div class="opacity:var(--opacity) transform:translateX(var(--x))">
-    ...
+  ...
 </div>
 ```
 
