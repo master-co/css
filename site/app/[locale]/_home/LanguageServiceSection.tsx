@@ -2,6 +2,7 @@ import { HomeBentoCard, HomeBentoFrame, HomeBentoGrid } from './HomeBento'
 import HomeCodeWindow from './HomeCodeWindow'
 import { MotionSection } from './HomeMotion'
 import { homeSections, languageServiceCards, type LanguageServiceCardContent, type Translate } from './home-content'
+import type { MasterCSSShikiOptions } from '@master/css-language/shiki'
 
 const activeSyntaxHighlightingCode = `
 <section class="grid gap:lg p:lg r:3xl surface:raised">
@@ -56,6 +57,23 @@ const manifestSuggestionItems = [
         tone: 'link'
     }
 ] as const
+
+const manifestSuggestionsShikiOptions = {
+    classAttributeValueWrapper: {
+        properties: {
+            class: 'home-manifest-suggestions__class-value'
+        },
+        transform(element, type) {
+            if (type !== 'wrapper') return
+            const wrapper = element as { children?: unknown[] }
+            wrapper.children = [
+                ...(wrapper.children ?? []),
+                createManifestSuggestionsMenuHast()
+            ]
+            return wrapper
+        }
+    }
+} satisfies MasterCSSShikiOptions
 
 export default function LanguageServiceSection({ t }: { t: Translate }) {
     return (
@@ -113,27 +131,11 @@ function ManifestAwareSuggestionsPreview() {
             <HomeCodeWindow
                 className="home-manifest-suggestions__window"
                 lang="html"
+                masterCSS={manifestSuggestionsShikiOptions}
                 preClassName="h:full"
                 variant="embedded">
                 {manifestSuggestionsCode}
             </HomeCodeWindow>
-            <div className="home-manifest-suggestions__menu">
-                <div className="home-manifest-suggestions__menu-head">
-                    <span>Manifest suggestions</span>
-                    <span>nearest workspace</span>
-                </div>
-                <div className="home-manifest-suggestions__items">
-                    {manifestSuggestionItems.map((item, index) => (
-                        <div
-                            className={index === 0 ? 'home-manifest-suggestions__item home-manifest-suggestions__item-active' : 'home-manifest-suggestions__item'}
-                            key={item.label}>
-                            <span className={`home-manifest-suggestions__item-icon home-manifest-suggestions__item-icon-${item.tone}`} />
-                            <span className="home-manifest-suggestions__item-label">{item.label}</span>
-                            <span className="home-manifest-suggestions__item-detail">{item.detail}</span>
-                        </div>
-                    ))}
-                </div>
-            </div>
         </div>
     )
 }
@@ -148,4 +150,57 @@ function ActiveSyntaxHighlightingPreview() {
             {activeSyntaxHighlightingCode}
         </HomeCodeWindow>
     )
+}
+
+function createManifestSuggestionsMenuHast() {
+    return {
+        type: 'element',
+        tagName: 'span',
+        properties: {
+            class: 'home-manifest-suggestions__menu'
+        },
+        children: [
+            {
+                type: 'element',
+                tagName: 'span',
+                properties: {
+                    class: 'home-manifest-suggestions__menu-head'
+                },
+                children: [
+                    createManifestSuggestionsTextElement('span', undefined, 'Manifest suggestions'),
+                    createManifestSuggestionsTextElement('span', undefined, 'nearest workspace')
+                ]
+            },
+            {
+                type: 'element',
+                tagName: 'span',
+                properties: {
+                    class: 'home-manifest-suggestions__items'
+                },
+                children: manifestSuggestionItems.map((item, index) => ({
+                    type: 'element',
+                    tagName: 'span',
+                    properties: {
+                        class: index === 0
+                            ? 'home-manifest-suggestions__item home-manifest-suggestions__item-active'
+                            : 'home-manifest-suggestions__item'
+                    },
+                    children: [
+                        createManifestSuggestionsTextElement('span', `home-manifest-suggestions__item-icon home-manifest-suggestions__item-icon-${item.tone}`, ''),
+                        createManifestSuggestionsTextElement('span', 'home-manifest-suggestions__item-label', item.label),
+                        createManifestSuggestionsTextElement('span', 'home-manifest-suggestions__item-detail', item.detail)
+                    ]
+                }))
+            }
+        ]
+    }
+}
+
+function createManifestSuggestionsTextElement(tagName: string, className: string | undefined, value: string) {
+    return {
+        type: 'element',
+        tagName,
+        properties: className ? { class: className } : {},
+        children: value ? [{ type: 'text', value }] : []
+    }
 }

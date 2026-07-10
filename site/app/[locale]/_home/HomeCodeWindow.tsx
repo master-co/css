@@ -35,6 +35,7 @@ export interface HomeCodeWindowProps {
     codeClassName?: string
     fixPreviewCode?: string
     lang: CodeProp['lang']
+    masterCSS?: CodeProp['masterCSS']
     preClassName?: CodeProp['preClassName']
     problems?: readonly HomeCodeWindowProblem[]
     problemsLabel?: string
@@ -47,6 +48,7 @@ export default function HomeCodeWindow({
     codeClassName,
     fixPreviewCode,
     lang,
+    masterCSS,
     preClassName,
     problems,
     problemsLabel = 'Problems',
@@ -72,12 +74,12 @@ export default function HomeCodeWindow({
             {hasFixPreview ? (
                 <div className={clsx('home-code-window-stack', codeClassName)}>
                     <div className="home-code-window__source home-code-window-layer">
-                        <Code lang={lang} preClassName={codePreClassName}>
+                        <Code lang={lang} masterCSS={masterCSS} preClassName={codePreClassName}>
                             {children}
                         </Code>
                     </div>
                     <div aria-hidden="true" className="home-code-window__fix home-code-window-layer home-code-window-layer-fix">
-                        <Code lang={lang} preClassName={codePreClassName}>
+                        <Code lang={lang} masterCSS={masterCSS} preClassName={codePreClassName}>
                             {resolvedFixPreviewCode}
                         </Code>
                     </div>
@@ -86,6 +88,7 @@ export default function HomeCodeWindow({
                 <Code
                     className={clsx('home-code-window-body', codeClassName)}
                     lang={lang}
+                    masterCSS={masterCSS}
                     preClassName={codePreClassName}>
                     {children}
                 </Code>

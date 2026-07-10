@@ -96,6 +96,7 @@ interface ShikiTransformer {
   name: string
   enforce: 'post'
   tokens(this: ShikiTransformerContext, tokens: ShikiToken[][]): ShikiToken[][] | undefined
+  root?(this: ShikiTransformerContext, root: unknown): unknown | undefined
 }
 
 export interface MasterCSSShikiDecoration extends Omit<ShikiDecoration, 'start' | 'end'> {
@@ -104,6 +105,12 @@ export interface MasterCSSShikiDecoration extends Omit<ShikiDecoration, 'start' 
   type: SemanticTokenType
   role: HighlightTokenRole
   modifiers: SemanticTokenModifier[]
+}
+
+export interface MasterCSSShikiClassAttributeValueWrapperOptions {
+  tagName?: string
+  properties?: Record<string, unknown>
+  transform?: ShikiDecoration['transform']
 }
 
 export interface MasterCSSShikiOptions {
@@ -147,6 +154,14 @@ export interface MasterCSSShikiOptions {
    * TextMate token span when possible.
    */
   alwaysWrap?: boolean
+  /**
+   * Wrap each embedded class attribute/string value with its original host
+   * language token presentation while keeping Master CSS semantic spans nested
+   * inside it.
+   *
+   * @default true
+   */
+  classAttributeValueWrapper?: boolean | MasterCSSShikiClassAttributeValueWrapperOptions
   /**
    * Inline styles applied by semantic token type or type.modifier. These
    * styles intentionally replace the underlying TextMate token style for the
@@ -215,6 +230,8 @@ const languageServiceLanguageIds: Record<string, string> = {
   mdx: 'mdx'
 }
 const masterCSSClassListLanguageIds = new Set(['mcss', 'master-css'])
+const cssDirectiveLanguageIds = new Set(['css', 'scss', 'less', 'postcss'])
+const classAttributeValueWrappersKey = '__masterCSSClassAttributeValueWrappers'
 const masterCSSShikiSupportedLanguageIds = new Set([
   ...Object.keys(shikiLanguageIds),
   ...Object.values(shikiLanguageIds)
@@ -563,6 +580,291 @@ function createSemanticTokenDecorations(
   })
 }
 
+function getClassAttributeValueWrapperOption(options: MasterCSSShikiOptions) {
+  return options.classAttributeValueWrapper ?? true
+}
+
+function shouldCreateClassAttributeValueWrappers(options: MasterCSSShikiOptions) {
+  const option = getClassAttributeValueWrapperOption(options)
+  if (!option || options.classList) return false
+  const lang = options.lang ? languageServiceLanguageIds[options.lang] ?? options.lang : undefined
+  return Boolean(lang && !cssDirectiveLanguageIds.has(lang))
+}
+
+function getLineStartOffsets(source: string) {
+  const offsets = [0]
+  for (let i = 0; i < source.length; i++) {
+    if (source[i] === '\n') offsets.push(i + 1)
+  }
+  return offsets
+}
+
+function resolvePositionOffset(source: string, lineStartOffsets: number[], position: number | ShikiPosition) {
+  if (typeof position === 'number') {
+    return position >= 0 && position <= source.length ? position : undefined
+  }
+  const lineStart = lineStartOffsets[position.line]
+  if (lineStart === undefined) return
+  const nextLineStart = lineStartOffsets[position.line + 1]
+  const lineEnd = nextLineStart === undefined ? source.length : nextLineStart - 1
+  let character = position.character
+  if (character < 0) character = lineEnd - lineStart + character
+  if (character < 0 || lineStart + character > lineEnd) return
+  return lineStart + character
+}
+
+function resolveDecorationRange(source: string, lineStartOffsets: number[], decoration: ShikiDecoration) {
+  const start = resolvePositionOffset(source, lineStartOffsets, decoration.start)
+  const end = resolvePositionOffset(source, lineStartOffsets, decoration.end)
+  return start === undefined || end === undefined ? undefined : { start, end }
+}
+
+function decorationsPartiallyIntersect(a: { start: number, end: number }, b: { start: number, end: number }) {
+  const isAHasBStart = a.start <= b.start && b.start < a.end
+  const isAHasBEnd = a.start < b.end && b.end <= a.end
+  const isBHasAStart = b.start <= a.start && a.start < b.end
+  const isBHasAEnd = b.start < a.end && a.end <= b.end
+  if (!isAHasBStart && !isAHasBEnd && !isBHasAStart && !isBHasAEnd) return false
+  if (isAHasBStart && isAHasBEnd) return false
+  if (isBHasAStart && isBHasAEnd) return false
+  if (isBHasAStart && a.start === a.end) return false
+  if (isAHasBEnd && b.start === b.end) return false
+  return true
+}
+
+function findTokenStyleForRange(tokens: ShikiToken[][], range: { start: number, end: number }) {
+  for (const line of tokens) {
+    for (const token of line) {
+      const start = token.offset
+      const end = token.offset + token.content.length
+      if (end <= range.start || start >= range.end) continue
+      if (!token.content.trim()) continue
+      const style = getTokenStyleObject(token)
+      if (style) return stringifyStyle(style)
+    }
+  }
+}
+
+function withoutUndefinedProperties(properties: Record<string, unknown>) {
+  return Object.fromEntries(Object.entries(properties).filter(([, value]) => value !== undefined))
+}
+
+function createClassAttributeValueWrapperDecorations(
+  code: string,
+  tokens: ShikiToken[][],
+  options: MasterCSSShikiOptions,
+  existingDecorations: ShikiDecoration[] = []
+): ShikiDecoration[] {
+  if (!shouldCreateClassAttributeValueWrappers(options)) return []
+  const document = createShikiDocument(code, options.lang)
+  if (!document) return []
+  const classPositions = getClassPositions(document, createShikiSettings(options))
+  if (!classPositions.length) return []
+
+  const contextRanges = new Map<string, { start: number, end: number }>()
+  for (const { contextRange } of classPositions) {
+    if (contextRange.start >= contextRange.end) continue
+    contextRanges.set(`${contextRange.start}:${contextRange.end}`, contextRange)
+  }
+
+  const lineStartOffsets = existingDecorations.length ? getLineStartOffsets(code) : []
+  const existingRanges = existingDecorations
+    .map((decoration) => resolveDecorationRange(code, lineStartOffsets, decoration))
+    .filter((range): range is { start: number, end: number } => Boolean(range))
+  const wrapperOption = getClassAttributeValueWrapperOption(options)
+  const wrapperOptions = typeof wrapperOption === 'object' ? wrapperOption : undefined
+
+  return [...contextRanges.values()]
+    .filter((range) => !existingRanges.some((existingRange) => decorationsPartiallyIntersect(range, existingRange)))
+    .map((range) => {
+      const style = findTokenStyleForRange(tokens, range)
+      const defaultProperties = {
+        class: 'mcss-host mcss-host-role-class-attribute-value',
+        'data-master-css-host-role': 'class-attribute-value',
+        style
+      }
+      const customProperties = wrapperOptions?.properties ?? {}
+      return {
+        start: range.start,
+        end: range.end,
+        tagName: wrapperOptions?.tagName ?? 'span',
+        alwaysWrap: true,
+        transform: wrapperOptions?.transform,
+        properties: {
+          ...withoutUndefinedProperties(defaultProperties),
+          ...withoutUndefinedProperties(customProperties),
+          class: mergeClassProperty(defaultProperties.class, customProperties.class)
+        }
+      }
+    })
+}
+
+interface HastText {
+  type: 'text'
+  value: string
+}
+
+interface HastElement {
+  type: 'element'
+  tagName: string
+  properties?: Record<string, unknown>
+  children?: HastNode[]
+}
+
+type HastNode = HastElement | HastText
+
+function isHastElement(node: unknown): node is HastElement {
+  return Boolean(node && typeof node === 'object' && (node as HastElement).type === 'element')
+}
+
+function getHastText(node: unknown): string {
+  if (!node || typeof node !== 'object') return ''
+  if ((node as HastText).type === 'text') return (node as HastText).value
+  if (!isHastElement(node)) return ''
+  return (node.children ?? []).map(getHastText).join('')
+}
+
+function hasHastClass(element: HastElement, className: string) {
+  return resolveClassNames(element.properties?.class).includes(className)
+}
+
+function collectCodeElements(node: unknown, codeElements: HastElement[] = []) {
+  if (isHastElement(node) && node.tagName === 'code') codeElements.push(node)
+  const children = node && typeof node === 'object' && Array.isArray((node as { children?: unknown[] }).children)
+    ? (node as { children: unknown[] }).children
+    : []
+  for (const child of children) {
+    collectCodeElements(child, codeElements)
+  }
+  return codeElements
+}
+
+function createSourceLineRanges(source: string) {
+  const ranges: { start: number, end: number }[] = []
+  let start = 0
+  for (let i = 0; i < source.length; i++) {
+    if (source[i] !== '\n') continue
+    ranges.push({ start, end: i })
+    start = i + 1
+  }
+  ranges.push({ start, end: source.length })
+  return ranges
+}
+
+function createHastText(value: string): HastText | undefined {
+  return value ? { type: 'text', value } : undefined
+}
+
+function cloneHastElement(element: HastElement, children: HastNode[]) {
+  return {
+    ...element,
+    properties: element.properties ? { ...element.properties } : undefined,
+    children
+  }
+}
+
+function pushHastNode(target: HastNode[], node: HastNode | undefined) {
+  if (node) target.push(node)
+}
+
+function pushHastElementSlice(target: HastNode[], element: HastElement, children: HastNode[]) {
+  if (children.length) target.push(cloneHastElement(element, children))
+}
+
+function splitHastNodeByRange(node: HastNode, nodeStart: number, start: number, end: number) {
+  const before: HastNode[] = []
+  const inside: HastNode[] = []
+  const after: HastNode[] = []
+  const nodeTextLength = getHastText(node).length
+  const nodeEnd = nodeStart + nodeTextLength
+
+  if (nodeEnd <= start) {
+    before.push(node)
+    return { before, inside, after, length: nodeTextLength }
+  }
+
+  if (nodeStart >= end) {
+    after.push(node)
+    return { before, inside, after, length: nodeTextLength }
+  }
+
+  if (node.type === 'text') {
+    const localStart = Math.max(0, start - nodeStart)
+    const localEnd = Math.min(node.value.length, end - nodeStart)
+    pushHastNode(before, createHastText(node.value.slice(0, localStart)))
+    pushHastNode(inside, createHastText(node.value.slice(localStart, localEnd)))
+    pushHastNode(after, createHastText(node.value.slice(localEnd)))
+    return { before, inside, after, length: nodeTextLength }
+  }
+
+  if (start <= nodeStart && nodeEnd <= end) {
+    inside.push(node)
+    return { before, inside, after, length: nodeTextLength }
+  }
+
+  const splitChildren = splitHastNodesByRange(node.children ?? [], Math.max(0, start - nodeStart), Math.min(nodeTextLength, end - nodeStart))
+  pushHastElementSlice(before, node, splitChildren.before)
+  pushHastElementSlice(inside, node, splitChildren.inside)
+  pushHastElementSlice(after, node, splitChildren.after)
+  return { before, inside, after, length: nodeTextLength }
+}
+
+function splitHastNodesByRange(nodes: HastNode[], start: number, end: number) {
+  const before: HastNode[] = []
+  const inside: HastNode[] = []
+  const after: HastNode[] = []
+  let offset = 0
+
+  for (const node of nodes) {
+    const splitNode = splitHastNodeByRange(node, offset, start, end)
+    before.push(...splitNode.before)
+    inside.push(...splitNode.inside)
+    after.push(...splitNode.after)
+    offset += splitNode.length
+  }
+
+  return { before, inside, after }
+}
+
+function applyClassAttributeValueWrapperToLine(line: HastElement, start: number, end: number, decoration: ShikiDecoration) {
+  const children = line.children ?? []
+  const splitChildren = splitHastNodesByRange(children, start, end)
+  if (!splitChildren.inside.length) return
+  const wrapper: HastElement = {
+    type: 'element',
+    tagName: decoration.tagName ?? 'span',
+    properties: { ...(decoration.properties ?? {}) },
+    children: splitChildren.inside
+  }
+  const transformedWrapper = decoration.transform?.(wrapper, 'wrapper')
+  line.children = [
+    ...splitChildren.before,
+    isHastElement(transformedWrapper) ? transformedWrapper : wrapper,
+    ...splitChildren.after
+  ]
+}
+
+function applyClassAttributeValueWrappers(root: unknown, source: string, decorations: ShikiDecoration[]) {
+  if (!decorations.length) return
+  const sourceLineRanges = createSourceLineRanges(source)
+  const codeElements = collectCodeElements(root)
+  for (const codeElement of codeElements) {
+    const lines = (codeElement.children ?? []).filter((child): child is HastElement => isHastElement(child) && hasHastClass(child, 'line'))
+    for (const decoration of decorations) {
+      if (typeof decoration.start !== 'number' || typeof decoration.end !== 'number') continue
+      const start = decoration.start
+      const end = decoration.end
+      const startLine = sourceLineRanges.findIndex((range) => range.start <= start && start <= range.end)
+      const endLine = sourceLineRanges.findIndex((range) => range.start <= end && end <= range.end)
+      if (startLine < 0 || startLine !== endLine) continue
+      const line = lines[startLine]
+      if (!line) continue
+      const lineRange = sourceLineRanges[startLine]
+      applyClassAttributeValueWrapperToLine(line, start - lineRange.start, end - lineRange.start, decoration)
+    }
+  }
+}
+
 export function createMasterCSSShikiDecorations(
   code: string,
   options: MasterCSSShikiOptions = {}
@@ -592,6 +894,14 @@ export function transformerMasterCSS(
         lang,
         classList
       })
+      const classAttributeValueWrapperDecorations = createClassAttributeValueWrapperDecorations(this.source, tokens, {
+        ...options,
+        lang,
+        classList
+      }, this.options.decorations ?? [])
+      if (classAttributeValueWrapperDecorations.length) {
+        this.options[classAttributeValueWrappersKey] = classAttributeValueWrapperDecorations
+      }
       if (!decorations.length) return
       const tokensSplitAtSemanticBoundaries = splitTokensAtOffsets(tokens, decorations.flatMap(({ start, end }) => [start, end]))
       const resolveSyntaxStyle = createSemanticScopeStyleResolver(this, {
@@ -600,6 +910,9 @@ export function transformerMasterCSS(
         classList
       })
       return tokensSplitAtSemanticBoundaries.map((line) => line.map((token) => applySemanticDecorationToToken(token, decorations, resolveSyntaxStyle)))
+    },
+    root(this: ShikiTransformerContext, root) {
+      applyClassAttributeValueWrappers(root, this.source, (this.options[classAttributeValueWrappersKey] as ShikiDecoration[] | undefined) ?? [])
     }
   }
 }
