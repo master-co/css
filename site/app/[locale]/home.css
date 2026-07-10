@@ -140,6 +140,7 @@
 
   .home-manifest-suggestions__class-value>.mcss-semantic-role-value-keyword {
     animation: home-manifest-suggestions-type var(--home-manifest-suggestions-cycle) steps(5, end) infinite;
+    overflow: hidden;
     color: transparent !important;
     display: inline-block;
     position: relative;
