@@ -37,27 +37,27 @@ const conflictingClassesFixPreviewCode = `
 `
 
 const canonicalUtilitiesCode = `
-<!-- @WARN text-align:center --><!-- @WARN margin:md -->
-<h2 class="text-align:center margin:md">
+<!-- @WARN text-align:center -->
+<h2 class="text-align:center">
   Agent-ready UI
 </h2>
 `
 
 const canonicalUtilitiesFixPreviewCode = `
-<h2 class="text-center m:md">
+<h2 class="text-center">
   Agent-ready UI
 </h2>
 `
 
 const themeTokensCode = `
-<!-- @WARN font:16px --><!-- @WARN fg:var(--color-red-60) -->
-<p class="font:16px fg:var(--color-red-60)">
+<!-- @WARN fg:var(--color-red-60) -->
+<p class="fg:var(--color-red-60)">
   Destructive action
 </p>
 `
 
 const themeTokensFixPreviewCode = `
-<p class="font:md fg:red-60">
+<p class="fg:red-60">
   Destructive action
 </p>
 `
@@ -196,22 +196,13 @@ function ConflictingClassesCodeWindow({ t }: { t: Translate }) {
 }
 
 function CanonicalUtilitiesCodeWindow({ t }: { t: Translate }) {
-    const problems: HomeCodeWindowProblem[] = [
-        {
-            code: 'prefer-canonical-class',
-            location: 'home.html:1:12',
-            message: t('Use canonical class "text-center" instead of "text-align:center".'),
-            severity: 'warning',
-            source: '@master/css/prefer-canonical-classes'
-        },
-        {
-            code: 'prefer-canonical-class',
-            location: 'home.html:1:30',
-            message: t('Use canonical class "m:md" instead of "margin:md".'),
-            severity: 'warning',
-            source: '@master/css/prefer-canonical-classes'
-        }
-    ]
+    const problems: HomeCodeWindowProblem[] = [{
+        code: 'prefer-canonical-class',
+        location: 'home.html:1:12',
+        message: t('Use canonical class "text-center" instead of "text-align:center".'),
+        severity: 'warning',
+        source: '@master/css/prefer-canonical-classes'
+    }]
 
     return (
         <HomeCodeWindow
@@ -227,22 +218,13 @@ function CanonicalUtilitiesCodeWindow({ t }: { t: Translate }) {
 }
 
 function ThemeTokensCodeWindow({ t }: { t: Translate }) {
-    const problems: HomeCodeWindowProblem[] = [
-        {
-            code: 'prefer-canonical-class',
-            location: 'home.html:1:10',
-            message: t('Use canonical class "font:md" instead of "font:16px".'),
-            severity: 'warning',
-            source: '@master/css/prefer-canonical-classes'
-        },
-        {
-            code: 'prefer-canonical-class',
-            location: 'home.html:1:20',
-            message: t('Use canonical class "fg:red-60" instead of "fg:var(--color-red-60)".'),
-            severity: 'warning',
-            source: '@master/css/prefer-canonical-classes'
-        }
-    ]
+    const problems: HomeCodeWindowProblem[] = [{
+        code: 'prefer-canonical-class',
+        location: 'home.html:1:10',
+        message: t('Use canonical class "fg:red-60" instead of "fg:var(--color-red-60)".'),
+        severity: 'warning',
+        source: '@master/css/prefer-canonical-classes'
+    }]
 
     return (
         <HomeCodeWindow
