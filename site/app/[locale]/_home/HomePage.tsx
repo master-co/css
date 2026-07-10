@@ -5,6 +5,7 @@ import AgentDiagnosticsSection from './AgentDiagnosticsSection'
 import BenchmarkSection from './BenchmarkSection'
 import CTASection from './CTASection'
 import DesignSystemSection from './DesignSystemSection'
+import DevelopmentWorkflowSection from './DevelopmentWorkflowSection'
 import DeliveryModesSection from './DeliveryModesSection'
 import HeroSection from './HeroSection'
 import LanguageServiceSection from './LanguageServiceSection'
@@ -20,6 +21,7 @@ export default function HomePage({ t }: { t: Translate }) {
             <BenchmarkSection t={t} pageCSSSize={pageCSSSize} />
             <AgentDiagnosticsSection t={t} />
             <LanguageServiceSection t={t} />
+            <DevelopmentWorkflowSection t={t} />
             <DeliveryModesSection t={t} />
             <CTASection t={t} />
             <Footer {...footerProps} className="bt:0px!" />

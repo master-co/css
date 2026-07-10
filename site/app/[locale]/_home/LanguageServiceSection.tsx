@@ -22,41 +22,63 @@ const manifestSuggestionsCode = `
 
 const manifestSuggestionItems = [
     {
-        detail: 'preset text color',
-        label: '--color-text-amber',
-        tone: 'amber'
+        detail: '(scope) color-text-amber',
+        icon: 'scope',
+        label: 'amber'
     },
     {
-        detail: 'preset text color',
-        label: '--color-text-blue',
-        tone: 'blue'
+        icon: 'scope',
+        label: 'beryl'
     },
     {
-        detail: 'preset text color',
-        label: '--color-text-cyan',
-        tone: 'cyan'
+        icon: 'scope',
+        label: 'blue'
     },
     {
-        detail: 'preset text role',
-        label: '--color-text-body',
-        tone: 'body'
+        icon: 'scope',
+        label: 'body'
     },
     {
-        detail: 'preset text role',
-        label: '--color-text-muted',
-        tone: 'muted'
+        icon: 'scope',
+        label: 'brown'
     },
     {
-        detail: 'preset text role',
-        label: '--color-text-strong',
-        tone: 'strong'
+        icon: 'scope',
+        label: 'crimson'
     },
     {
-        detail: 'preset text role',
-        label: '--color-text-link',
-        tone: 'link'
+        icon: 'scope',
+        label: 'cyan'
+    },
+    {
+        icon: 'scope',
+        label: 'disabled'
+    },
+    {
+        icon: 'screen',
+        label: '3xs'
+    },
+    {
+        icon: 'screen',
+        label: '2xs'
+    },
+    {
+        icon: 'screen',
+        label: 'xs'
+    },
+    {
+        icon: 'screen',
+        label: 'sm'
+    },
+    {
+        icon: 'screen',
+        label: 'md'
+    },
+    {
+        icon: 'screen',
+        label: 'lg'
     }
-] as const
+] as const satisfies readonly { detail?: string; icon: 'scope' | 'screen'; label: string }[]
 
 const manifestSuggestionsShikiOptions = {
     classAttributeValueWrapper: {
@@ -116,10 +138,8 @@ function LanguageServiceCard({ card, t }: { card: LanguageServiceCardContent; t:
 
             {card.visual === 'manifest-aware-suggestions' ? (
                 <ManifestAwareSuggestionsPreview />
-            ) : card.visual === 'active-syntax-highlighting' ? (
-                <ActiveSyntaxHighlightingPreview />
             ) : (
-                <div className="h:28x home-bento-visual" />
+                <ActiveSyntaxHighlightingPreview />
             )}
         </HomeBentoCard>
     )
@@ -164,17 +184,6 @@ function createManifestSuggestionsMenuHast() {
                 type: 'element',
                 tagName: 'span',
                 properties: {
-                    class: 'home-manifest-suggestions__menu-head'
-                },
-                children: [
-                    createManifestSuggestionsTextElement('span', undefined, 'Manifest suggestions'),
-                    createManifestSuggestionsTextElement('span', undefined, 'nearest workspace')
-                ]
-            },
-            {
-                type: 'element',
-                tagName: 'span',
-                properties: {
                     class: 'home-manifest-suggestions__items'
                 },
                 children: manifestSuggestionItems.map((item, index) => ({
@@ -186,9 +195,9 @@ function createManifestSuggestionsMenuHast() {
                             : 'home-manifest-suggestions__item'
                     },
                     children: [
-                        createManifestSuggestionsTextElement('span', `home-manifest-suggestions__item-icon home-manifest-suggestions__item-icon-${item.tone}`, ''),
+                        createManifestSuggestionsTextElement('span', `home-manifest-suggestions__item-icon home-manifest-suggestions__item-icon-${item.icon}`, ''),
                         createManifestSuggestionsTextElement('span', 'home-manifest-suggestions__item-label', item.label),
-                        createManifestSuggestionsTextElement('span', 'home-manifest-suggestions__item-detail', item.detail)
+                        createManifestSuggestionsTextElement('span', 'home-manifest-suggestions__item-detail', 'detail' in item ? item.detail : '')
                     ]
                 }))
             }

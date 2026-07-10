@@ -45,7 +45,13 @@ export interface AgentDiagnosticCardContent {
 export interface LanguageServiceCardContent {
     title: string
     body: string
-    visual?: 'active-syntax-highlighting' | 'manifest-aware-suggestions'
+    visual: 'active-syntax-highlighting' | 'manifest-aware-suggestions'
+}
+
+export interface DevelopmentWorkflowCardContent {
+    title: string
+    body: string
+    signal: string
 }
 
 export const homeSections = {
@@ -55,6 +61,7 @@ export const homeSections = {
     deliveryModes: 'delivery-modes',
     codeDiagnostics: 'code-diagnostics',
     languageService: 'language-service',
+    developmentWorkflow: 'development-workflow',
     getStarted: 'get-started'
 } as const
 
@@ -248,16 +255,31 @@ export const languageServiceCards = [
         visual: 'manifest-aware-suggestions'
     },
     {
-        title: 'Generated CSS hover',
-        body: 'Inspect the CSS a class emits at the cursor, including compact state, query, declaration, and value syntax.'
-    },
-    {
         title: 'Active syntax highlighting',
         body: 'Highlight the current class context by default so dense markup stays calm until a human is reading it.',
         visual: 'active-syntax-highlighting'
-    },
-    {
-        title: 'Workspace-aware manifests',
-        body: 'Keep monorepo completions, colors, hover previews, and directive diagnostics aligned with the nearest Master CSS project.'
     }
 ] satisfies readonly LanguageServiceCardContent[]
+
+export const developmentWorkflowCards = [
+    {
+        title: 'Workspace-aware manifests',
+        body: 'Keep monorepo completions, colors, hover previews, and directive diagnostics aligned with the nearest Master CSS project.',
+        signal: 'Nearest manifest'
+    },
+    {
+        title: 'Build-tool mode integration',
+        body: 'Share the same manifest and rendering mode across Vite, Next, webpack, and CLI builds without changing authoring syntax.',
+        signal: 'Toolchain mode'
+    },
+    {
+        title: 'Route-level styles',
+        body: 'Scope scanned CSS to pages, layouts, and route groups so teams ship only the classes each surface needs.',
+        signal: 'Route boundary'
+    },
+    {
+        title: 'Project policy feedback',
+        body: 'Carry token rules, aliases, diagnostics, and fix previews into editors and automation from one workspace source.',
+        signal: 'Shared policy'
+    }
+] satisfies readonly DevelopmentWorkflowCardContent[]

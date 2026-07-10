@@ -3,7 +3,7 @@ import { readFileSync } from 'node:fs'
 import { test } from 'node:test'
 import guideColorNames from '../../internal/data/color-names.js'
 import { COLOR_LEVELS } from '../../internal/data/color-palette.js'
-import { agentDiagnosticCards, benchmarkChartColors, deliveryModes, designSystemRows, heroExampleClassNames, heroExampleCode, homeInteractions, homeSections, languageServiceCards, nativeCssPrimitivesCode, p3PaletteColorNames, p3PaletteTiers, themeVariablesCode } from '../app/[locale]/_home/home-content.js'
+import { agentDiagnosticCards, benchmarkChartColors, deliveryModes, designSystemRows, developmentWorkflowCards, heroExampleClassNames, heroExampleCode, homeInteractions, homeSections, languageServiceCards, nativeCssPrimitivesCode, p3PaletteColorNames, p3PaletteTiers, themeVariablesCode } from '../app/[locale]/_home/home-content.js'
 
 const homeStyleSource = readFileSync(new URL('../app/[locale]/home.css', import.meta.url), 'utf8')
 const globalsSource = readFileSync(new URL('../app/globals.css', import.meta.url), 'utf8')
@@ -16,6 +16,7 @@ test('homepage section anchors and interaction hooks stay stable', () => {
         'delivery-modes',
         'code-diagnostics',
         'language-service',
+        'development-workflow',
         'get-started'
     ])
 
@@ -87,6 +88,7 @@ test('homepage section labels use the shared yellow treatment', () => {
         '../app/[locale]/_home/CTASection.tsx',
         '../app/[locale]/_home/DeliveryModesSection.tsx',
         '../app/[locale]/_home/DesignSystemSection.tsx',
+        '../app/[locale]/_home/DevelopmentWorkflowSection.tsx',
         '../app/[locale]/_home/LanguageServiceSection.tsx'
     ].map((filePath) => readFileSync(new URL(filePath, import.meta.url), 'utf8'))
 
@@ -102,15 +104,18 @@ test('homepage places agent diagnostics immediately after CSS cost', () => {
     const benchmarkIndex = source.indexOf('<BenchmarkSection')
     const diagnosticsIndex = source.indexOf('<AgentDiagnosticsSection')
     const languageServiceIndex = source.indexOf('<LanguageServiceSection')
+    const workflowIndex = source.indexOf('<DevelopmentWorkflowSection')
     const deliveryModesIndex = source.indexOf('<DeliveryModesSection')
 
     assert.notEqual(benchmarkIndex, -1)
     assert.notEqual(diagnosticsIndex, -1)
     assert.notEqual(languageServiceIndex, -1)
+    assert.notEqual(workflowIndex, -1)
     assert.notEqual(deliveryModesIndex, -1)
     assert.ok(benchmarkIndex < diagnosticsIndex)
     assert.ok(diagnosticsIndex < languageServiceIndex)
-    assert.ok(languageServiceIndex < deliveryModesIndex)
+    assert.ok(languageServiceIndex < workflowIndex)
+    assert.ok(workflowIndex < deliveryModesIndex)
 })
 
 test('homepage benchmark chart uses shared segmented control', () => {
@@ -297,7 +302,7 @@ test('language service section uses shared homepage bento visuals', () => {
     assert.doesNotMatch(source, /grid-cols:3@lg/)
     assert.doesNotMatch(source, /grid-col-span:2@md/)
     assert.match(source, /home-bento-visual/)
-    assert.match(source, /h:28x/)
+    assert.doesNotMatch(source, /h:28x/)
     assert.match(source, /ManifestAwareSuggestionsPreview/)
     assert.match(source, /manifestSuggestionsCode/)
     assert.match(source, /<button class="text:amber">/)
@@ -306,10 +311,14 @@ test('language service section uses shared homepage bento visuals', () => {
     assert.match(source, /classAttributeValueWrapper/)
     assert.match(source, /createManifestSuggestionsMenuHast/)
     assert.match(source, /masterCSS={manifestSuggestionsShikiOptions}/)
-    assert.match(source, /--color-text-amber/)
-    assert.match(source, /--color-text-link/)
+    assert.match(source, /label: 'amber'/)
+    assert.match(source, /label: 'beryl'/)
+    assert.match(source, /label: '3xs'/)
+    assert.match(source, /label: 'sm'/)
+    assert.match(source, /\(scope\) color-text-amber/)
+    assert.match(source, /home-manifest-suggestions__item-icon-\$\{item\.icon\}/)
     assert.doesNotMatch(source, /label: 'hover'/)
-    assert.doesNotMatch(source, /label: 'sm'/)
+    assert.doesNotMatch(source, /--color-text-link/)
     assert.match(source, /home-manifest-suggestions/)
     assert.match(source, /home-manifest-suggestions__window/)
     assert.match(source, /home-manifest-suggestions__class-value/)
@@ -321,11 +330,15 @@ test('language service section uses shared homepage bento visuals', () => {
     assert.doesNotMatch(source, /\.mark/)
     assert.match(homeStyleSource, /--home-manifest-suggestions-cycle: 8\.8s/)
     assert.match(homeStyleSource, /home-manifest-suggestions-type/)
-    assert.match(homeStyleSource, /home-manifest-suggestions-type-text/)
+    assert.match(homeStyleSource, /home-manifest-suggestions-type var\(--home-manifest-suggestions-cycle\) steps\(1, end\) infinite/)
+    assert.doesNotMatch(homeStyleSource, /home-manifest-suggestions-type-text/)
     assert.match(homeStyleSource, /home-manifest-suggestions-caret-position/)
     assert.match(homeStyleSource, /home-manifest-suggestions-menu/)
     assert.match(homeStyleSource, /home-manifest-suggestions-menu var\(--home-manifest-suggestions-cycle\) steps\(1, end\) infinite/)
+    assert.match(homeStyleSource, /home-manifest-suggestions__item-icon-scope/)
+    assert.match(homeStyleSource, /home-manifest-suggestions__item-icon-screen/)
     assert.match(homeStyleSource, /surface:overlay text:body/)
+    assert.match(homeStyleSource, /--home-manifest-suggestions-item-bg: var\(--color-surface-overlay\)/)
     assert.match(homeStyleSource, /home-manifest-suggestions__class-value::after/)
     assert.match(homeStyleSource, /line:first-child::after/)
     assert.doesNotMatch(homeStyleSource, /home-manifest-suggestions__window \.line:first-child::before/)
@@ -333,8 +346,11 @@ test('language service section uses shared homepage bento visuals', () => {
     assert.doesNotMatch(homeStyleSource, /home-manifest-suggestions-menu-pin/)
     assert.doesNotMatch(homeStyleSource, /home-manifest-suggestions-menu-base-x/)
     assert.doesNotMatch(homeStyleSource, /home-manifest-suggestions-menu-top/)
+    assert.doesNotMatch(homeStyleSource, /home-manifest-suggestions-menu-offset-x/)
     assert.doesNotMatch(homeStyleSource, /24ch/)
     assert.doesNotMatch(homeStyleSource, /transform: translateX/)
+    assert.doesNotMatch(homeStyleSource, /translate:/)
+    assert.doesNotMatch(homeStyleSource, /steps\(5, end\)/)
     assert.match(homeStyleSource, /91%, 100% \{\n\s+left: 10ch;\n\s+opacity: 0;\n\s+visibility: hidden;/)
     assert.match(homeStyleSource, /@container \(max-width: 540px\)/)
     assert.match(source, /home-active-syntax/)
@@ -361,19 +377,44 @@ test('language service section uses shared homepage bento visuals', () => {
 })
 
 test('language service card content model lists editor integration features', () => {
-    assert.equal(languageServiceCards.length, 4)
+    assert.equal(languageServiceCards.length, 2)
     assert.deepEqual(languageServiceCards.map((card) => card.title), [
         'Manifest-aware suggestions',
-        'Generated CSS hover',
-        'Active syntax highlighting',
-        'Workspace-aware manifests'
+        'Active syntax highlighting'
     ])
     assert.equal(languageServiceCards.filter((card) => card.visual).length, 2)
     assert.equal(languageServiceCards[0].visual, 'manifest-aware-suggestions')
-    assert.equal(languageServiceCards[2].visual, 'active-syntax-highlighting')
+    assert.equal(languageServiceCards[1].visual, 'active-syntax-highlighting')
 
     for (const card of languageServiceCards) {
         assert.ok(card.body.length > card.title.length)
+    }
+})
+
+test('development workflow section promotes workspace and build workflow features', () => {
+    const source = readFileSync(new URL('../app/[locale]/_home/DevelopmentWorkflowSection.tsx', import.meta.url), 'utf8')
+
+    assert.match(source, /homeSections\.developmentWorkflow/)
+    assert.match(source, /First-class development workflow\./)
+    assert.match(source, /developmentWorkflowCards\.map/)
+    assert.match(source, /HomeBentoFrame/)
+    assert.match(source, /HomeBentoGrid/)
+    assert.match(source, /HomeBentoCard/)
+    assert.match(source, /grid-cols:1 grid-cols:2@md grid-cols:4@xl/)
+    assert.match(source, /home-workflow-signal/)
+    assert.match(homeStyleSource, /home-workflow-card/)
+    assert.match(homeStyleSource, /home-workflow-signal/)
+    assert.equal(developmentWorkflowCards.length, 4)
+    assert.deepEqual(developmentWorkflowCards.map((card) => card.title), [
+        'Workspace-aware manifests',
+        'Build-tool mode integration',
+        'Route-level styles',
+        'Project policy feedback'
+    ])
+
+    for (const card of developmentWorkflowCards) {
+        assert.ok(card.body.length > card.title.length)
+        assert.ok(card.signal.length > 0)
     }
 })
 

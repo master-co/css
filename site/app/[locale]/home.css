@@ -88,13 +88,19 @@
   pointer-events: none;
 }
 
+.home-workflow-card {
+  @compose min-h:52x;
+}
+
+.home-workflow-signal {
+  @compose w:max-content mb:lg px:xs py:2xs r:lg font:xs bg:surface-muted text:muted;
+}
+
 .home-manifest-suggestions {
   --home-manifest-suggestions-cycle: 8.8s;
-  --home-manifest-suggestions-menu-offset-x: -8rem;
-  --home-manifest-suggestions-pin-left: 8rem;
   @compose rel;
   container-type: inline-size;
-  height: clamp(18rem, 32cqw, 22rem);
+  height: 18rem;
   isolation: isolate;
 
   .home-manifest-suggestions__window {
@@ -139,26 +145,19 @@
   }
 
   .home-manifest-suggestions__class-value>.mcss-semantic-role-value-keyword {
-    animation: home-manifest-suggestions-type var(--home-manifest-suggestions-cycle) steps(5, end) infinite;
+    animation: home-manifest-suggestions-type var(--home-manifest-suggestions-cycle) steps(1, end) infinite;
+    color: var(--color-text-amber) !important;
     overflow: hidden;
-    color: transparent !important;
     display: inline-block;
+    font-variant-ligatures: none;
     position: relative;
     vertical-align: top;
     white-space: nowrap;
     width: 0;
   }
 
-  .home-manifest-suggestions__class-value>.mcss-semantic-role-value-keyword::before {
-    animation: home-manifest-suggestions-type-text var(--home-manifest-suggestions-cycle) steps(1, end) infinite;
-    color: var(--color-text-amber);
-    content: '';
-    left: 0;
-    position: absolute;
-    top: 0;
-  }
-
   .home-manifest-suggestions__menu {
+    --home-manifest-suggestions-item-bg: var(--color-surface-overlay);
     @compose surface:overlay text:body b:1px|solid|base r:lg shadow:lg;
     animation: home-manifest-suggestions-menu var(--home-manifest-suggestions-cycle) steps(1, end) infinite;
     display: block;
@@ -167,114 +166,107 @@
     letter-spacing: 0;
     overflow: hidden;
     position: absolute;
-    top: 1.65em;
-    translate: var(--home-manifest-suggestions-menu-offset-x) 0;
-    width: min(24rem, calc(100cqw - 2rem));
+    top: 1.34em;
+    width: 28rem;
+    max-height: 13.5rem;
     z-index: 5;
-  }
-
-  .home-manifest-suggestions__menu::before {
-    background: var(--color-yellow);
-    border-radius: 999px;
-    content: '';
-    height: 0.35rem;
-    left: var(--home-manifest-suggestions-pin-left);
-    position: absolute;
-    top: 0.36rem;
-    width: 0.35rem;
-  }
-
-  .home-manifest-suggestions__menu-head {
-    @compose text:muted bb:1px|solid|subtle;
-    align-items: center;
-    display: flex;
-    font-size: 0.65rem;
-    gap: 1rem;
-    justify-content: space-between;
-    min-width: 0;
-    padding: 0.62rem 0.76rem 0.56rem;
-    white-space: nowrap;
-  }
-
-  .home-manifest-suggestions__menu .home-manifest-suggestions__menu-head {
-    @compose text:muted;
   }
 
   .home-manifest-suggestions__items {
     display: grid;
-    padding: 0.32rem;
+    padding: 0;
   }
 
   .home-manifest-suggestions__item {
+    --home-manifest-suggestions-item-bg: var(--color-surface-overlay);
     align-items: center;
-    border-radius: var(--radius-md);
     display: grid;
-    gap: 0.58rem;
-    grid-template-columns: 1.15rem minmax(4rem, 1fr) auto;
-    min-height: 1.94rem;
-    padding: 0 0.48rem;
+    gap: 0.5rem;
+    grid-template-columns: 1.1rem minmax(4rem, 1fr) auto;
+    min-height: 1.78rem;
+    padding: 0 0.58rem;
   }
 
   .home-manifest-suggestions__item-active {
-    @compose bg:blue-60/.14 text:strong;
+    --home-manifest-suggestions-item-bg: color-mix(in oklab, var(--color-yellow) 16%, var(--color-surface-overlay));
+    background: var(--home-manifest-suggestions-item-bg);
   }
 
   .home-manifest-suggestions__item-icon {
-    @compose b:1px|solid|base;
-    border-radius: 999px;
+    align-self: center;
     display: block;
-    height: 0.88rem;
-    width: 0.88rem;
+    height: 0.92rem;
+    justify-self: center;
+    position: relative;
+    width: 0.92rem;
   }
 
-  .home-manifest-suggestions__item-icon-amber {
-    background: var(--color-text-amber);
+  .home-manifest-suggestions__item-icon-scope {
+    border: 2px solid currentColor;
+    border-radius: 999px;
+    color: var(--color-text-muted);
   }
 
-  .home-manifest-suggestions__item-icon-blue {
-    background: var(--color-text-blue);
+  .home-manifest-suggestions__item-icon-scope::before {
+    background: currentColor;
+    border-radius: 999px;
+    box-shadow: 0.28rem -0.02rem 0 currentColor, 0.42rem 0.22rem 0 currentColor, 0.14rem 0.44rem 0 currentColor;
+    content: '';
+    height: 0.12rem;
+    left: 0.16rem;
+    position: absolute;
+    top: 0.18rem;
+    width: 0.12rem;
   }
 
-  .home-manifest-suggestions__item-icon-cyan {
-    background: var(--color-text-cyan);
+  .home-manifest-suggestions__item-icon-scope::after {
+    background: var(--home-manifest-suggestions-item-bg);
+    border-radius: 999px;
+    content: '';
+    height: 0.3rem;
+    position: absolute;
+    right: -0.08rem;
+    bottom: 0.06rem;
+    width: 0.34rem;
   }
 
-  .home-manifest-suggestions__item-icon-body {
-    background: var(--color-text-body);
+  .home-manifest-suggestions__item-icon-screen {
+    color: var(--color-yellow);
   }
 
-  .home-manifest-suggestions__item-icon-muted {
-    background: var(--color-text-muted);
+  .home-manifest-suggestions__item-icon-screen::before,
+  .home-manifest-suggestions__item-icon-screen::after {
+    border: 2px solid currentColor;
+    border-radius: 0.14rem;
+    content: '';
+    height: 0.3rem;
+    position: absolute;
+    width: 0.5rem;
   }
 
-  .home-manifest-suggestions__item-icon-strong {
-    background: var(--color-text-strong);
+  .home-manifest-suggestions__item-icon-screen::before {
+    bottom: 0.08rem;
+    left: 0;
   }
 
-  .home-manifest-suggestions__item-icon-link {
-    background: var(--color-text-link);
+  .home-manifest-suggestions__item-icon-screen::after {
+    right: 0;
+    top: 0.04rem;
   }
 
   .home-manifest-suggestions__item-label {
+    color: var(--color-text-strong);
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
 
-  .home-manifest-suggestions__menu .home-manifest-suggestions__item-label {
-    @compose text:strong;
-  }
-
   .home-manifest-suggestions__item-detail {
-    font-size: 0.76em;
+    color: var(--color-text-muted);
     overflow: hidden;
     text-align: right;
     text-overflow: ellipsis;
     white-space: nowrap;
-  }
-
-  .home-manifest-suggestions__menu .home-manifest-suggestions__item-detail {
-    @compose text:muted;
   }
 }
 
@@ -446,11 +438,10 @@
 
 @container (max-width: 540px) {
   .home-manifest-suggestions .home-manifest-suggestions__class-value>.home-manifest-suggestions__menu {
-    --home-manifest-suggestions-menu-offset-x: -11.5rem;
-    --home-manifest-suggestions-pin-left: 11.5rem;
-    font-size: 12px;
-    line-height: 18px;
-    width: min(16.5rem, calc(100cqw - 4rem));
+    font-size: 13px;
+    line-height: 21px;
+    max-height: 12.4rem;
+    width: 18rem;
   }
 
   .home-manifest-suggestions .home-manifest-suggestions__menu .home-manifest-suggestions__item-detail {
@@ -458,12 +449,9 @@
   }
 
   .home-manifest-suggestions .home-manifest-suggestions__menu .home-manifest-suggestions__item {
-    grid-template-columns: 1.15rem minmax(0, 1fr);
-    min-height: 1.34rem;
-  }
-
-  .home-manifest-suggestions .home-manifest-suggestions__menu .home-manifest-suggestions__menu-head {
-    padding-block: 0.44rem 0.4rem;
+    grid-template-columns: 1.28rem minmax(0, 1fr);
+    min-height: 1.5rem;
+    padding-inline: 0.58rem;
   }
 }
 
@@ -494,36 +482,6 @@
 
   100% {
     width: 0;
-  }
-}
-
-@keyframes home-manifest-suggestions-type-text {
-  0%, 14% {
-    content: '';
-  }
-
-  22% {
-    content: 'a';
-  }
-
-  30% {
-    content: 'am';
-  }
-
-  38% {
-    content: 'amb';
-  }
-
-  46% {
-    content: 'ambe';
-  }
-
-  54%, 90% {
-    content: 'amber';
-  }
-
-  100% {
-    content: '';
   }
 }
 
@@ -654,11 +612,6 @@
   .home-manifest-suggestions .home-manifest-suggestions__class-value>.mcss-semantic-role-value-keyword {
     animation: none;
     width: 5ch;
-  }
-
-  .home-manifest-suggestions .home-manifest-suggestions__class-value>.mcss-semantic-role-value-keyword::before {
-    animation: none;
-    content: 'amber';
   }
 
   .home-manifest-suggestions .home-manifest-suggestions__class-value::after,
