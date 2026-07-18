@@ -135,7 +135,7 @@
 
   .home-manifest-suggestions__class-value::after {
     animation: home-manifest-suggestions-caret-position var(--home-manifest-suggestions-cycle) steps(1, end) infinite, home-manifest-suggestions-caret-blink 1s steps(1, end) infinite;
-    background: var(--color-yellow);
+    background: var(--color-text-strong);
     content: '';
     height: 1.15em;
     left: 5ch;
@@ -157,8 +157,8 @@
   }
 
   .home-manifest-suggestions__menu {
-    --home-manifest-suggestions-item-bg: var(--color-surface-overlay);
-    @compose surface:overlay text:body b:1px|solid|base r:lg shadow:lg;
+    --home-manifest-suggestions-item-bg: var(--color-surface-base);
+    @compose surface:base text:body b:1px|solid|base r:lg shadow:lg;
     animation: home-manifest-suggestions-menu var(--home-manifest-suggestions-cycle) steps(1, end) infinite;
     display: block;
     font: 13px/20px var(--font-mono);
@@ -178,7 +178,7 @@
   }
 
   .home-manifest-suggestions__item {
-    --home-manifest-suggestions-item-bg: var(--color-surface-overlay);
+    --home-manifest-suggestions-item-bg: var(--color-surface-base);
     align-items: center;
     display: grid;
     gap: 0.5rem;
@@ -188,7 +188,7 @@
   }
 
   .home-manifest-suggestions__item-active {
-    --home-manifest-suggestions-item-bg: color-mix(in oklab, var(--color-yellow) 16%, var(--color-surface-overlay));
+    --home-manifest-suggestions-item-bg: color-mix(in oklab, var(--color-yellow) 16%, var(--color-surface-base));
     background: var(--home-manifest-suggestions-item-bg);
   }
 
@@ -197,61 +197,15 @@
     display: block;
     height: 0.92rem;
     justify-self: center;
-    position: relative;
     width: 0.92rem;
   }
 
   .home-manifest-suggestions__item-icon-scope {
-    border: 2px solid currentColor;
-    border-radius: 999px;
     color: var(--color-text-muted);
-  }
-
-  .home-manifest-suggestions__item-icon-scope::before {
-    background: currentColor;
-    border-radius: 999px;
-    box-shadow: 0.28rem -0.02rem 0 currentColor, 0.42rem 0.22rem 0 currentColor, 0.14rem 0.44rem 0 currentColor;
-    content: '';
-    height: 0.12rem;
-    left: 0.16rem;
-    position: absolute;
-    top: 0.18rem;
-    width: 0.12rem;
-  }
-
-  .home-manifest-suggestions__item-icon-scope::after {
-    background: var(--home-manifest-suggestions-item-bg);
-    border-radius: 999px;
-    content: '';
-    height: 0.3rem;
-    position: absolute;
-    right: -0.08rem;
-    bottom: 0.06rem;
-    width: 0.34rem;
   }
 
   .home-manifest-suggestions__item-icon-screen {
     color: var(--color-yellow);
-  }
-
-  .home-manifest-suggestions__item-icon-screen::before,
-  .home-manifest-suggestions__item-icon-screen::after {
-    border: 2px solid currentColor;
-    border-radius: 0.14rem;
-    content: '';
-    height: 0.3rem;
-    position: absolute;
-    width: 0.5rem;
-  }
-
-  .home-manifest-suggestions__item-icon-screen::before {
-    bottom: 0.08rem;
-    left: 0;
-  }
-
-  .home-manifest-suggestions__item-icon-screen::after {
-    right: 0;
-    top: 0.04rem;
   }
 
   .home-manifest-suggestions__item-label {
@@ -390,6 +344,31 @@
     height: 100%;
   }
 
+  .line {
+    @compose rel;
+    z-index: 0;
+  }
+
+  .line::after {
+    background: color-mix(in oklab, var(--color-yellow) 10%, transparent);
+    border-block: 1px solid color-mix(in oklab, var(--color-yellow) 16%, transparent);
+    content: '';
+    inset: -0.12rem -100cqw -0.08rem;
+    opacity: 0;
+    pointer-events: none;
+    position: absolute;
+    visibility: hidden;
+    z-index: -1;
+  }
+
+  .line:nth-child(1)::after,
+  .line:nth-child(2)::after,
+  .line:nth-child(3)::after,
+  .line:nth-child(4)::after {
+    animation: home-active-syntax-line-window var(--home-active-syntax-cycle) steps(1, end) infinite;
+    animation-delay: var(--home-active-syntax-delay, 0s);
+  }
+
   .mcss-semantic {
     animation: home-active-syntax-token var(--home-active-syntax-cycle) steps(1, end) infinite;
     animation-delay: var(--home-active-syntax-delay, 0s);
@@ -399,7 +378,7 @@
   .line .mcss-semantic::before {
     animation: home-active-syntax-caret-window var(--home-active-syntax-cycle) steps(1, end) infinite, home-active-syntax-caret-blink 1s steps(1, end) infinite;
     animation-delay: var(--home-active-syntax-delay, 0s), 0s;
-    background: var(--color-yellow);
+    background: var(--color-text-strong);
     content: '';
     display: block;
     height: 1.05em;
@@ -415,21 +394,29 @@
     content: none;
   }
 
+  .line:nth-child(1),
+  .line:nth-child(1)::after,
   .line:nth-child(1) .mcss-semantic,
   .line:nth-child(1) .mcss-semantic::before {
     --home-active-syntax-delay: 0s;
   }
 
+  .line:nth-child(2),
+  .line:nth-child(2)::after,
   .line:nth-child(2) .mcss-semantic,
   .line:nth-child(2) .mcss-semantic::before {
     --home-active-syntax-delay: -6s;
   }
 
+  .line:nth-child(3),
+  .line:nth-child(3)::after,
   .line:nth-child(3) .mcss-semantic,
   .line:nth-child(3) .mcss-semantic::before {
     --home-active-syntax-delay: -4s;
   }
 
+  .line:nth-child(4),
+  .line:nth-child(4)::after,
   .line:nth-child(4) .mcss-semantic,
   .line:nth-child(4) .mcss-semantic::before {
     --home-active-syntax-delay: -2s;
@@ -585,6 +572,18 @@
 @keyframes home-active-syntax-token {
   25%, 100% {
     color: currentColor;
+  }
+}
+
+@keyframes home-active-syntax-line-window {
+  0%, 24.9% {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  25%, 100% {
+    opacity: 0;
+    visibility: hidden;
   }
 }
 

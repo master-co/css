@@ -80,6 +80,27 @@ const manifestSuggestionItems = [
     }
 ] as const satisfies readonly { detail?: string; icon: 'scope' | 'screen'; label: string }[]
 
+const manifestSuggestionIconNodes = {
+    scope: {
+        name: 'IconPalette',
+        paths: [
+            'M12 21a9 9 0 0 1 0 -18c4.97 0 9 3.582 9 8c0 1.06 -.474 2.078 -1.318 2.828c-.844 .75 -1.989 1.172 -3.182 1.172h-2.5a2 2 0 0 0 -1 3.75a1.3 1.3 0 0 1 -1 2.25',
+            'M7.5 10.5a1 1 0 1 0 2 0a1 1 0 1 0 -2 0',
+            'M11.5 7.5a1 1 0 1 0 2 0a1 1 0 1 0 -2 0',
+            'M15.5 10.5a1 1 0 1 0 2 0a1 1 0 1 0 -2 0'
+        ]
+    },
+    screen: {
+        name: 'IconDeviceDesktop',
+        paths: [
+            'M3 5a1 1 0 0 1 1 -1h16a1 1 0 0 1 1 1v10a1 1 0 0 1 -1 1h-16a1 1 0 0 1 -1 -1v-10',
+            'M7 20h10',
+            'M9 16v4',
+            'M15 16v4'
+        ]
+    }
+} as const
+
 const manifestSuggestionsShikiOptions = {
     classAttributeValueWrapper: {
         properties: {
@@ -195,13 +216,36 @@ function createManifestSuggestionsMenuHast() {
                             : 'home-manifest-suggestions__item'
                     },
                     children: [
-                        createManifestSuggestionsTextElement('span', `home-manifest-suggestions__item-icon home-manifest-suggestions__item-icon-${item.icon}`, ''),
+                        createManifestSuggestionsIconElement(item.icon),
                         createManifestSuggestionsTextElement('span', 'home-manifest-suggestions__item-label', item.label),
                         createManifestSuggestionsTextElement('span', 'home-manifest-suggestions__item-detail', 'detail' in item ? item.detail : '')
                     ]
                 }))
             }
         ]
+    }
+}
+
+function createManifestSuggestionsIconElement(iconName: keyof typeof manifestSuggestionIconNodes) {
+    return {
+        type: 'element',
+        tagName: 'svg',
+        properties: {
+            class: `home-manifest-suggestions__item-icon home-manifest-suggestions__item-icon-${iconName}`,
+            'data-tabler-icon': manifestSuggestionIconNodes[iconName].name,
+            fill: 'none',
+            stroke: 'currentColor',
+            'stroke-linecap': 'round',
+            'stroke-linejoin': 'round',
+            'stroke-width': 2,
+            viewBox: '0 0 24 24'
+        },
+        children: manifestSuggestionIconNodes[iconName].paths.map((d) => ({
+            type: 'element',
+            tagName: 'path',
+            properties: { d },
+            children: []
+        }))
     }
 }
 
