@@ -1,5 +1,5 @@
 {
-  "name": "@master/css.next-e2e-css-manifest-query",
+  "name": "@master/css.next-e2e-static-export",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -9,7 +9,7 @@
   "dependencies": {
     "@master/css-integration": "workspace:^",
     "next": "^16.2.10",
-    "react": "^19.2.5",
-    "react-dom": "^19.2.5"
+    "react": "^19.2.7",
+    "react-dom": "^19.2.7"
   }
 }

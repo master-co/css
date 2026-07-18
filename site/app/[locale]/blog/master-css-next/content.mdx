@@ -78,7 +78,7 @@ Progressive Rendering produces HTML shaped like this:
 
 The browser can paint the heading from `style#master-css` before the runtime does any work. When the runtime starts, it imports the hashed JSON manifest, maps the native CSS rule back to `font:48px`, and continues handling later dynamic classes from the same managed stylesheet. If a page has no generated Master CSS rules, the adapter does not need to attach a manifest URL.
 
-This page hydration manifest is separate from the project manifest and from the `manifest` option in `@master/css.next`. When enabled, the Next adapter option writes `.next/master-css-manifest.json` as a build report for rendered files; it is not the route-level JSON used to hydrate `style#master-css` in the browser.
+This page hydration manifest is separate from the project manifest and from the `buildReport` option in `@master/css.next`. When enabled, `buildReport` writes `.next/master-css-build-report.json` with details about rendered files; it is not the route-level JSON used to hydrate `style#master-css` in the browser.
 
 ---
 

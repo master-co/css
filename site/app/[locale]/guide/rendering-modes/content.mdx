@@ -210,6 +210,12 @@ Static and pre-rendered outputs use an external page hydration manifest by defau
 <style id="master-css" data-master-css-hydration-manifest="/_master-css/hydration/master-css-hydration.<hash>.json">...</style>
 ```
 
+The `/_master-css/hydration/` path above is the integration-neutral route. Framework adapters can place the same artifact under their own static asset namespace. In Next.js, `@master/css.next` uses:
+
+```html
+<style id="master-css" data-master-css-hydration-manifest="/_next/static/master-css/hydration/master-css-hydration.<hash>.json">...</style>
+```
+
 This keeps the first-render CSS in the HTML while moving the runtime handoff data into a cacheable route-level JSON file. The browser can paint from `style#master-css` without waiting for the manifest request. When the runtime starts, it imports the manifest as a JSON module, adopts the existing native CSS rules, and continues observing dynamic classes. If the manifest is missing, invalid, fails to import, or no longer matches `style#master-css`, the runtime safely rebuilds the stylesheet from connected DOM classes.
 
 After adoption, progressive rendering uses the same runtime state model as runtime rendering. Hydrated rules become runtime-managed rule objects, new classes can be generated later, and mutation-driven removals can enter the retained-rule cache before idle cleanup. This keeps the first paint deterministic while still avoiding repeated CSSOM insertion/deletion during interactive updates.

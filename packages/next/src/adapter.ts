@@ -20,6 +20,7 @@ type AdapterModule = NextAdapter | { default?: NextAdapter }
 type AdapterLoader = AdapterModule | (() => AdapterModule | Promise<AdapterModule>)
 
 interface HTMLBuildOutput {
+  id: string
   filePath: string
   pathname: string
   source: 'static' | 'prerender-fallback'
@@ -73,6 +74,7 @@ function collectHTMLBuildOutputs(outputs: BuildOutputs): HTMLBuildOutput[] {
   for (const output of outputs.staticFiles) {
     if (isHTMLFile(output.filePath)) {
       add({
+        id: output.id,
         filePath: output.filePath,
         pathname: output.pathname,
         source: 'static'
@@ -83,6 +85,7 @@ function collectHTMLBuildOutputs(outputs: BuildOutputs): HTMLBuildOutput[] {
   for (const output of outputs.prerenders) {
     if (isHTMLFile(output.fallback?.filePath)) {
       add({
+        id: output.id,
         filePath: output.fallback.filePath,
         pathname: output.pathname,
         source: 'prerender-fallback'
@@ -152,7 +155,34 @@ function toNextHydrationManifestPublicURL(ctx: BuildCompleteContext, fileName: s
     : pathname
 }
 
-function toNextHydrationManifestFilePath(ctx: BuildCompleteContext, fileName: string) {
+function resolveStaticExportRoot(output: HTMLBuildOutput) {
+  const normalizedID = output.id.replaceAll('\\', '/')
+  const relativeID = normalizedID.startsWith('/') ? normalizedID.slice(1) : normalizedID
+  const idSegments = relativeID.split('/').filter((segment) => segment && segment !== '.')
+  if (
+    !idSegments.length
+    || normalizedID.startsWith('//')
+    || /^[a-z]:\//i.test(relativeID)
+    || idSegments.includes('..')
+  ) {
+    throw new Error(`[@master/css.next] Cannot resolve the static export root from output id ${JSON.stringify(output.id)} and file path ${JSON.stringify(output.filePath)}.`)
+  }
+
+  let exportRoot = resolve(output.filePath)
+  for (const _segment of idSegments) exportRoot = dirname(exportRoot)
+
+  const expectedFilePath = resolve(exportRoot, ...idSegments)
+  if (dirname(exportRoot) === exportRoot || expectedFilePath !== resolve(output.filePath)) {
+    throw new Error(`[@master/css.next] Cannot resolve the static export root from output id ${JSON.stringify(output.id)} and file path ${JSON.stringify(output.filePath)}.`)
+  }
+
+  return exportRoot
+}
+
+function toNextHydrationManifestFilePath(ctx: BuildCompleteContext, output: HTMLBuildOutput, fileName: string) {
+  if (ctx.config.output === 'export') {
+    return join(resolveStaticExportRoot(output), '_next', 'static', 'master-css', 'hydration', fileName)
+  }
   return join(ctx.distDir, 'static', 'master-css', 'hydration', fileName)
 }
 
@@ -190,7 +220,7 @@ export async function renderNextBuildOutputs(ctx: BuildCompleteContext, rawOptio
     if (rendered.hydrationManifest?.rules.length) {
       const json = serializeMasterCSSHydrationManifest(rendered.hydrationManifest)
       const fileName = toHashedManifestAssetFileName(json, MASTER_CSS_HYDRATION_MANIFEST_FILE_BASENAME)
-      hydrationManifestFile = toNextHydrationManifestFilePath(ctx, fileName)
+      hydrationManifestFile = toNextHydrationManifestFilePath(ctx, output, fileName)
       hydrationManifestBytes = Buffer.byteLength(json)
       hydrationManifestAssets.set(hydrationManifestFile, json)
     }
