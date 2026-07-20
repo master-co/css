@@ -15,7 +15,7 @@
     "build": "node scripts/with-typescript-tooling-compat.mjs turbo run build --filter=\"./packages/*\"",
     "build:site": "pnpm build && pnpm --filter site build",
     "build:site:cloudflare-pages": "pnpm build && pnpm --filter site build:cloudflare-pages",
-    "build:examples": "turbo run build --filter=\"./examples/*\"",
+    "build:examples": "node scripts/with-typescript-tooling-compat.mjs turbo run build --filter=\"./examples/*\"",
     "dev:site": "pnpm build && pnpm --filter site dev",
     "dev:site:clean": "pnpm --filter site clean:next && pnpm dev:site",
     "release:vscode": "node packages/vscode/scripts/release.js",

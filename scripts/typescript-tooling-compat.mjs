@@ -6,6 +6,7 @@ const typescript6Url = pathToFileURL(require.resolve('typescript6/lib/typescript
 
 const legacyCompilerApiPackages = [
     '@angular-devkit/build-angular',
+    '@angular/build',
     '@angular/compiler-cli',
     '@ngtools/webpack',
     '@nuxt/module-builder',
