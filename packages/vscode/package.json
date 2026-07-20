@@ -12,7 +12,7 @@
     "vscode:publish": "node scripts/package-targets.js publish",
     "release": "node scripts/release.js"
   },
-  "version": "2.0.35",
+  "version": "2.0.36",
   "description": "Master CSS for Visual Studio Code",
   "displayName": "Master CSS",
   "author": "Aoyue Design LLC.",
