@@ -1,0 +1,151 @@
+name: Release
+on:
+  push:
+    branches:
+      - main
+      - alpha
+      - beta
+      - rc
+      - canary
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  validation:
+    uses: ./.github/workflows/validation.yml
+    with:
+      base_sha: ${{ github.event.before }}
+      head_sha: ${{ github.sha }}
+      full: false
+      release_build: true
+      trusted: true
+    secrets:
+      GH_TOKEN: ${{ secrets.GH_TOKEN }}
+
+  release:
+    needs: validation
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+      id-token: write
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - uses: ./.github/actions/setup-pnpm
+        with:
+          submodules-token: ${{ secrets.GH_TOKEN }}
+          turbo-cache-scope: build
+      - run: pnpm run build
+      - run: pnpm exec node scripts/with-typescript-tooling-compat.mjs pnpm exec semantic-release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+  deploy-site:
+    needs:
+      - validation
+      - release
+    if: ${{ github.ref_name == 'rc' && needs.validation.outputs.site_affected == 'true' }}
+    runs-on: ubuntu-latest
+    permissions: {}
+    steps:
+      - name: Trigger Cloudflare Pages site deploy
+        run: |
+          if [ -z "$CLOUDFLARE_PAGES_RC_DEPLOY_HOOK" ]; then
+            echo "CLOUDFLARE_PAGES_RC_DEPLOY_HOOK is required to deploy the site after release."
+            exit 1
+          fi
+          curl -fsS -X POST "$CLOUDFLARE_PAGES_RC_DEPLOY_HOOK"
+        env:
+          CLOUDFLARE_PAGES_RC_DEPLOY_HOOK: ${{ secrets.CLOUDFLARE_PAGES_RC_DEPLOY_HOOK }}
+
+  publish-editors:
+    needs:
+      - validation
+      - release
+    if: ${{ github.ref_name == 'rc' && needs.validation.outputs.vscode_affected == 'true' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      id-token: write
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - uses: ./.github/actions/setup-pnpm
+        with:
+          submodules-token: ${{ secrets.GH_TOKEN }}
+          turbo-cache-scope: build
+      - name: Validate editor publishing configuration
+        run: |
+          if [ -z "$OVSX_PAT" ]; then
+            echo "OVSX_PAT is required to publish Open VSX extension."
+            exit 1
+          fi
+        env:
+          OVSX_PAT: ${{ secrets.OVSX_PAT }}
+      - name: Build and package editor extension releases
+        run: |
+          pnpm release:vscode -- --patch --no-publish
+          pnpm --filter master-css-vscode vscode:package -- --publisher master --out-dir open-vsx
+      - name: Commit VS Code extension version bump
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add packages/vscode/package.json pnpm-lock.yaml
+          git commit -m "Chore(VSCode): Bump extension version [skip ci]"
+          git push origin "HEAD:${{ github.ref_name }}"
+      - name: Azure login for VSCE
+        uses: azure/login@v3
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+      - name: Inspect VSCE Azure identity
+        run: |
+          az account show --query '{tenantId:tenantId,user:user}' -o json
+          az rest \
+            -u https://app.vssps.visualstudio.com/_apis/profile/profiles/me \
+            --resource 499b84ac-1321-427f-aa17-267ca6975798 \
+            --query '{id:id,displayName:displayName,uniqueName:uniqueName}' \
+            -o json
+      - name: Publish VS Code Marketplace extension
+        shell: bash
+        run: |
+          set -euo pipefail
+          shopt -s nullglob
+          files=(packages/vscode/vsix/*.vsix)
+          if [ "${#files[@]}" -eq 0 ]; then
+            echo "No VS Code Marketplace VSIX files found in packages/vscode/vsix."
+            exit 1
+          fi
+
+          pnpm --filter master-css-vscode exec vsce verify-pat --azure-credential masterco
+          pnpm --filter master-css-vscode exec vsce publish \
+            --azure-credential \
+            --skip-duplicate \
+            --packagePath "${files[@]}"
+      - name: Publish Open VSX extension
+        shell: bash
+        run: |
+          set -euo pipefail
+          shopt -s nullglob
+          files=(packages/vscode/open-vsx/*.vsix)
+          if [ "${#files[@]}" -eq 0 ]; then
+            echo "No Open VSX VSIX files found in packages/vscode/open-vsx."
+            exit 1
+          fi
+
+          for file in "${files[@]}"; do
+            pnpm dlx ovsx@1.0.2 publish "$file"
+          done
+        env:
+          OVSX_PAT: ${{ secrets.OVSX_PAT }}

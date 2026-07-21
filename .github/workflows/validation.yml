@@ -1,0 +1,263 @@
+name: Validation
+on:
+  workflow_call:
+    inputs:
+      base_sha:
+        description: Git revision used as the affected comparison base.
+        type: string
+        default: ""
+      head_sha:
+        description: Git revision used as the affected comparison head.
+        type: string
+        default: ""
+      full:
+        description: Whether to run every validation task instead of affected tasks.
+        type: boolean
+        default: false
+      release_build:
+        description: Whether to build every package before validation and warm the release cache.
+        type: boolean
+        default: false
+      trusted:
+        description: Whether the caller may access the private internal submodule.
+        type: boolean
+        default: false
+    secrets:
+      GH_TOKEN:
+        required: false
+    outputs:
+      trusted:
+        description: Whether validation was allowed to access the private submodule.
+        value: ${{ jobs.preflight.outputs.trusted }}
+      site_affected:
+        description: Whether the site build is affected by this change.
+        value: ${{ jobs.quality_linux.outputs.site_affected }}
+      vscode_affected:
+        description: Whether the VS Code extension build is affected by this change.
+        value: ${{ jobs.quality_linux.outputs.vscode_affected }}
+
+permissions:
+  contents: read
+
+jobs:
+  preflight:
+    name: preflight
+    runs-on: ubuntu-latest
+    outputs:
+      trusted: ${{ steps.trust.outputs.trusted }}
+      base_sha: ${{ steps.range.outputs.base_sha }}
+      head_sha: ${{ steps.range.outputs.head_sha }}
+      full: ${{ steps.range.outputs.full }}
+      range_valid: ${{ steps.range.outputs.range_valid }}
+    steps:
+      - name: Resolve validation trust
+        id: trust
+        env:
+          TRUSTED: ${{ inputs.trusted }}
+        run: |
+          echo "trusted=$TRUSTED" >> "$GITHUB_OUTPUT"
+          if [ "$TRUSTED" != true ]; then
+            echo "Full CI requires the private internal submodule and is not available for untrusted pull requests."
+          fi
+      - if: ${{ inputs.trusted }}
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Resolve affected range
+        if: ${{ inputs.trusted }}
+        id: range
+        shell: bash
+        env:
+          REQUESTED_BASE_SHA: ${{ inputs.base_sha }}
+          REQUESTED_HEAD_SHA: ${{ inputs.head_sha }}
+          REQUESTED_FULL: ${{ inputs.full }}
+        run: |
+          set -euo pipefail
+
+          base_sha="$REQUESTED_BASE_SHA"
+          head_sha="$REQUESTED_HEAD_SHA"
+          full="$REQUESTED_FULL"
+          range_valid=true
+
+          if [ -z "$base_sha" ] \
+            || [ -z "$head_sha" ] \
+            || [[ "$base_sha" =~ ^0+$ ]] \
+            || ! git cat-file -e "${base_sha}^{commit}" 2>/dev/null \
+            || ! git cat-file -e "${head_sha}^{commit}" 2>/dev/null \
+            || ! git merge-base "$base_sha" "$head_sha" >/dev/null 2>&1; then
+            full=true
+            range_valid=false
+          fi
+
+          if [ "$range_valid" = true ] && [ "$full" != true ]; then
+            while IFS= read -r file; do
+              case "$file" in
+                .github/workflows/*|.github/actions/setup-pnpm/*|package.json|pnpm-lock.yaml|pnpm-workspace.yaml|turbo.json|.npmrc|tsconfig*.json|eslint.config.*|scripts/*|shared/*)
+                  full=true
+                  break
+                  ;;
+              esac
+            done < <(git diff --name-only "$base_sha...$head_sha")
+          fi
+
+          {
+            echo "base_sha=$base_sha"
+            echo "head_sha=$head_sha"
+            echo "full=$full"
+            echo "range_valid=$range_valid"
+          } >> "$GITHUB_OUTPUT"
+
+  quality_linux:
+    name: quality-linux
+    needs: preflight
+    if: ${{ needs.preflight.outputs.trusted == 'true' }}
+    runs-on: ubuntu-latest
+    outputs:
+      site_affected: ${{ steps.consumers.outputs.site_affected }}
+      vscode_affected: ${{ steps.consumers.outputs.vscode_affected }}
+    env:
+      TURBO_SCM_BASE: ${{ needs.preflight.outputs.base_sha }}
+      TURBO_SCM_HEAD: ${{ needs.preflight.outputs.head_sha }}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - uses: ./.github/actions/setup-pnpm
+        with:
+          submodules-token: ${{ secrets.GH_TOKEN }}
+          turbo-cache-scope: build
+      - name: Detect affected release consumers
+        id: consumers
+        shell: bash
+        env:
+          RANGE_VALID: ${{ needs.preflight.outputs.range_valid }}
+        run: |
+          set -euo pipefail
+
+          site_affected=true
+          vscode_affected=true
+
+          if [ "$RANGE_VALID" = true ]; then
+            site_affected=false
+            vscode_affected=false
+
+            if pnpm exec turbo run build --filter=site --affected --dry=json \
+              | jq -e 'any(.tasks[]; .taskId == "site#build")' >/dev/null; then
+              site_affected=true
+            fi
+
+            if pnpm exec turbo run build --filter=master-css-vscode --affected --dry=json \
+              | jq -e 'any(.tasks[]; .taskId == "master-css-vscode#build")' >/dev/null; then
+              vscode_affected=true
+            fi
+
+            if ! git diff --quiet "$TURBO_SCM_BASE...$TURBO_SCM_HEAD" -- internal; then
+              vscode_affected=true
+            fi
+          fi
+
+          {
+            echo "site_affected=$site_affected"
+            echo "vscode_affected=$vscode_affected"
+          } >> "$GITHUB_OUTPUT"
+      - name: Audit site translations
+        run: pnpm --filter site audit:i18n
+      - name: Install Chromium headless shell
+        run: pnpm exec playwright install --with-deps --only-shell chromium
+      - name: Build release packages
+        if: ${{ inputs.release_build }}
+        run: pnpm run build
+      - name: Validate packages
+        shell: bash
+        env:
+          FULL_VALIDATION: ${{ needs.preflight.outputs.full }}
+        run: |
+          set -euo pipefail
+          args=(run test lint type-check '--filter=./packages/*')
+          if [ "$FULL_VALIDATION" != true ]; then
+            args+=(--affected)
+          fi
+          pnpm exec node scripts/with-typescript-tooling-compat.mjs pnpm exec turbo "${args[@]}"
+      - name: Build examples
+        shell: bash
+        env:
+          FULL_VALIDATION: ${{ needs.preflight.outputs.full }}
+        run: |
+          set -euo pipefail
+          args=(run build '--filter=./examples/*')
+          if [ "$FULL_VALIDATION" != true ]; then
+            args+=(--affected)
+          fi
+          pnpm exec node scripts/with-typescript-tooling-compat.mjs pnpm exec turbo "${args[@]}"
+
+  e2e_linux:
+    name: e2e-linux
+    needs: preflight
+    if: ${{ needs.preflight.outputs.trusted == 'true' }}
+    runs-on: ubuntu-latest
+    env:
+      TURBO_SCM_BASE: ${{ needs.preflight.outputs.base_sha }}
+      TURBO_SCM_HEAD: ${{ needs.preflight.outputs.head_sha }}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - uses: ./.github/actions/setup-pnpm
+        with:
+          submodules-token: ${{ secrets.GH_TOKEN }}
+          turbo-cache-scope: e2e
+      - name: Install E2E browsers
+        run: pnpm exec playwright install --with-deps --only-shell chromium firefox
+      - name: Run E2E tests
+        shell: bash
+        env:
+          FULL_VALIDATION: ${{ needs.preflight.outputs.full }}
+        run: |
+          set -euo pipefail
+          args=(run e2e '--filter=./packages/*' --concurrency=1)
+          if [ "$FULL_VALIDATION" != true ]; then
+            args+=(--affected)
+          fi
+          pnpm exec node scripts/with-typescript-tooling-compat.mjs pnpm exec turbo "${args[@]}"
+
+  compat_windows:
+    name: compat-windows
+    needs: preflight
+    if: ${{ needs.preflight.outputs.trusted == 'true' }}
+    runs-on: windows-latest
+    env:
+      TURBO_SCM_BASE: ${{ needs.preflight.outputs.base_sha }}
+      TURBO_SCM_HEAD: ${{ needs.preflight.outputs.head_sha }}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - uses: ./.github/actions/setup-pnpm
+        with:
+          submodules-token: ${{ secrets.GH_TOKEN }}
+          turbo-cache-scope: compat
+      - name: Install Chromium headless shell
+        run: pnpm exec playwright install --only-shell chromium
+      - name: Test packages
+        shell: bash
+        env:
+          FULL_VALIDATION: ${{ needs.preflight.outputs.full }}
+        run: |
+          set -euo pipefail
+          args=(run test '--filter=./packages/*' --concurrency=4)
+          if [ "$FULL_VALIDATION" != true ]; then
+            args+=(--affected)
+          fi
+          pnpm exec node scripts/with-typescript-tooling-compat.mjs pnpm exec turbo "${args[@]}"
+      - name: Build examples
+        shell: bash
+        env:
+          FULL_VALIDATION: ${{ needs.preflight.outputs.full }}
+        run: |
+          set -euo pipefail
+          args=(run build '--filter=./examples/*' --concurrency=4)
+          if [ "$FULL_VALIDATION" != true ]; then
+            args+=(--affected)
+          fi
+          pnpm exec node scripts/with-typescript-tooling-compat.mjs pnpm exec turbo "${args[@]}"

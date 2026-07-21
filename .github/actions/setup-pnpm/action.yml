@@ -19,6 +19,9 @@ inputs:
   turbo-cache:
     description: Whether to restore and save the local Turbo cache.
     default: "true"
+  turbo-cache-scope:
+    description: Scope used to isolate Turbo caches by workload.
+    default: "default"
 runs:
   using: composite
   steps:
@@ -33,10 +36,10 @@ runs:
       uses: actions/cache@v6
       with:
         path: .turbo/cache
-        key: ${{ runner.os }}-turbo-${{ github.ref_name }}-${{ github.sha }}
+        key: ${{ runner.os }}-turbo-${{ inputs.turbo-cache-scope }}-${{ github.ref_name }}-${{ github.sha }}
         restore-keys: |
-          ${{ runner.os }}-turbo-${{ github.ref_name }}-
-          ${{ runner.os }}-turbo-
+          ${{ runner.os }}-turbo-${{ inputs.turbo-cache-scope }}-${{ github.ref_name }}-
+          ${{ runner.os }}-turbo-${{ inputs.turbo-cache-scope }}-
     - if: ${{ inputs.submodules == 'true' }}
       shell: bash
       run: pnpm submodules
@@ -44,7 +47,7 @@ runs:
         GITHUB_TOKEN: ${{ inputs.submodules-token }}
     - if: ${{ inputs.install == 'true' && inputs.frozen-lockfile == 'true' }}
       shell: bash
-      run: pnpm install --frozen-lockfile
+      run: pnpm install --frozen-lockfile --prefer-offline
     - if: ${{ inputs.install == 'true' && inputs.frozen-lockfile != 'true' }}
       shell: bash
-      run: pnpm install
+      run: pnpm install --prefer-offline

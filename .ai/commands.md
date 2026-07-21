@@ -82,7 +82,7 @@ Use `pnpm --filter @master/css-engine bench` for engine matching, generation, pa
 
 Use `pnpm --filter @master/css-runtime bench` for browser runtime CPU, DOM scan, mutation tracking, hydration, CSSOM insertion/deletion, or global bundle work. Run `pnpm --filter @master/css-runtime e2e` as the browser correctness check for runtime and hydration changes; add a targeted browser benchmark when CPU or CSSOM behavior is part of the change.
 
-The `Benchmark` GitHub Actions workflow runs on `main`, `alpha`, `beta`, `rc`, and `canary`, plus manual `workflow_dispatch`. It uploads package-scoped benchmark artifacts and compares against the latest 50 matching artifacts per branch and package. Do not commit benchmark history files to the repo.
+The `Benchmark` GitHub Actions workflow runs on relevant benchmark, engine, preset, runtime, schema, lexer, shared-build, and workspace configuration changes pushed to `main`, `alpha`, `beta`, `rc`, and `canary`, plus manual `workflow_dispatch`. It uploads package-scoped benchmark artifacts and compares against the latest 50 matching artifacts per branch and package. Do not commit benchmark history files to the repo.
 
 For bundle reports, build first and measure the changed artifacts on the same machine:
 
@@ -102,10 +102,8 @@ shasum -a 256 packages/engine/dist/core.js packages/runtime/dist/global.min.js p
 
 ## CI Equivalents
 
-- Test workflow: install dependencies, `pnpm run build`, then `pnpm run test`
-- Lint workflow: install dependencies, `pnpm run build`, then `pnpm run lint`
-- Type-check workflow: install dependencies, `pnpm run build`, then `pnpm run type-check`
-- E2E workflow: install dependencies, Playwright install, `pnpm run build`, then `pnpm e2e`
-- Example check: install dependencies, `pnpm build`, reinstall, then `pnpm build:examples`
-- Release workflow: wait for validation jobs, install release tooling, `pnpm run build`, then `pnpm exec semantic-release`
-- Fork and Dependabot pull requests do not receive the private submodule token; validation jobs fail before checkout with an explicit message instead of running untrusted code with secrets.
+- Linux quality: install dependencies, audit site translations, install the Chromium headless shell, run package `test`, `lint`, and `type-check` tasks together, then build examples. Pull requests use Turbo's `--affected`; scheduled and manual CI run every task.
+- Windows compatibility: install dependencies and the Chromium headless shell, then run affected package tests and example builds with concurrency limited to four. macOS does not run because Linux covers the POSIX web toolchain surface while Windows retains distinct path and process coverage.
+- E2E: install dependencies plus Chromium headless shell and Firefox, then run package E2E tasks serially through Turbo. Pull requests and releases use `--affected`; scheduled and manual CI run every E2E task.
+- Release: wait for all validation jobs, restore the Linux build cache, run `pnpm build` as an integrity check, then execute `pnpm exec semantic-release`. On `rc`, deploy the site or publish editor extensions only when their Turbo build graph is affected.
+- Fork and Dependabot pull requests do not receive the private submodule token; preflight skips the validation jobs and the single `CI / required` check fails with an explicit message.

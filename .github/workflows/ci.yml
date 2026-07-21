@@ -1,0 +1,50 @@
+name: CI
+on:
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - synchronize
+  schedule:
+    - cron: "17 3 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validation:
+    uses: ./.github/workflows/validation.yml
+    with:
+      base_sha: ${{ github.event.pull_request.base.sha || github.sha }}
+      head_sha: ${{ github.event.pull_request.head.sha || github.sha }}
+      full: ${{ github.event_name != 'pull_request' }}
+      release_build: false
+      trusted: ${{ github.event_name != 'pull_request' || (github.event.pull_request.head.repo.full_name == github.repository && github.actor != 'dependabot[bot]') }}
+    secrets:
+      GH_TOKEN: ${{ secrets.GH_TOKEN }}
+
+  required:
+    name: required
+    needs: validation
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    permissions: {}
+    steps:
+      - name: Require successful validation
+        env:
+          VALIDATION_RESULT: ${{ needs.validation.result }}
+          VALIDATION_TRUSTED: ${{ needs.validation.outputs.trusted }}
+        run: |
+          if [ "$VALIDATION_RESULT" != success ]; then
+            echo "Validation finished with result: $VALIDATION_RESULT"
+            exit 1
+          fi
+          if [ "$VALIDATION_TRUSTED" != true ]; then
+            echo "Full CI requires the private internal submodule and is not available for untrusted pull requests."
+            exit 1
+          fi

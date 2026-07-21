@@ -23,7 +23,7 @@ For performance-sensitive engine or runtime work, the final response must report
 
 Compare before/after when feasible using a temporary worktree or a documented baseline. Do not present benchmark numbers without stating the environment and limitations. If a benchmark is noisy or blocked, report the attempted command, blocker, and closest validated proxy.
 
-Benchmark history must not be committed to the repository. The benchmark workflow stores package benchmark reports as GitHub Actions artifacts for `main`, `alpha`, `beta`, `rc`, and `canary`, compares against the latest matching artifacts, and ignores artifacts beyond the latest 50 per branch and package.
+Benchmark history must not be committed to the repository. On `main`, `alpha`, `beta`, `rc`, and `canary`, the benchmark workflow runs only when benchmark inputs, schema, lexer, engine, preset, runtime, or shared workspace build configuration change; it can always be started manually. It stores package benchmark reports as GitHub Actions artifacts, compares against the latest matching artifacts, and ignores artifacts beyond the latest 50 per branch and package.
 
 Do not chase benchmark wins by changing CSS output, cascade order, hydration checks, or public behavior unless the behavior change is intentional and tested. Do not serialize compiled indexes or caches into `MasterCSSManifest` unless the manifest explicitly justifies the browser payload impact.
 

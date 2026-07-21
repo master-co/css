@@ -7,11 +7,31 @@ on:
       - beta
       - rc
       - canary
+    paths:
+      - benchmarks/**
+      - packages/schema/**
+      - packages/lexer/**
+      - packages/engine/**
+      - packages/preset/**
+      - packages/runtime/**
+      - shared/**
+      - package.json
+      - pnpm-lock.yaml
+      - pnpm-workspace.yaml
+      - turbo.json
+      - tsconfig*.json
+      - .npmrc
+      - .github/actions/setup-pnpm/action.yml
+      - .github/workflows/benchmark.yml
   workflow_dispatch:
 
 permissions:
   contents: read
   actions: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   benchmark:
@@ -20,10 +40,16 @@ jobs:
       - uses: actions/checkout@v6
       - uses: ./.github/actions/setup-pnpm
         with:
-          frozen-lockfile: "false"
           submodules-token: ${{ secrets.GH_TOKEN }}
-      - run: pnpm exec playwright install --with-deps
-      - run: pnpm run build
+          turbo-cache-scope: benchmark
+      - run: pnpm exec playwright install --with-deps --only-shell chromium
+      - name: Build benchmark packages
+        run: |
+          pnpm --filter @master/css-schema build
+          pnpm --filter @master/css-lexer build
+          pnpm --filter @master/css-engine build
+          pnpm --filter @master/css-preset build
+          pnpm --filter @master/css-runtime build
       - name: Prepare benchmark output
         shell: bash
         run: |
