@@ -12,6 +12,7 @@ const RUNTIME_WASM_URL = `${RUNTIME_ASSET_BASE_URL}/artifacts/mastercss_wasm_run
 
 type RuntimeAssetRouteOptions = {
   onDefaultManifestRequest?: () => void
+  onWasmRequest?: () => void
 }
 
 async function routeRuntimeAssets(page: Page, options: RuntimeAssetRouteOptions = {}) {
@@ -32,6 +33,7 @@ async function routeRuntimeAssets(page: Page, options: RuntimeAssetRouteOptions 
     })
   })
   await page.route(RUNTIME_WASM_URL, (route) => {
+    options.onWasmRequest?.()
     route.fulfill({
       contentType: 'application/wasm',
       headers: {
@@ -107,4 +109,48 @@ test('ignores global manifest override', async ({ page }) => {
   expect(await page.evaluate(() => globalThis.masterCSSRuntime.variables.get('primary'))).toBeUndefined()
   expect(await page.evaluate(() => globalThis.masterCSSRuntime.variables.get('font-weight-bold'))).toBeDefined()
   expect(await page.evaluate(() => globalThis.masterCSSRuntime.manifest.version)).toBe(1)
+})
+
+test('fails open when a cross-origin Wasm request is blocked', async ({ page }) => {
+  const consumerURL = 'http://master-css-consumer.test/'
+  let wasmRequests = 0
+  await routeRuntimeAssets(page)
+  await page.unroute(RUNTIME_WASM_URL)
+  await page.route(RUNTIME_WASM_URL, (route) => {
+    wasmRequests++
+    route.abort()
+  })
+  await page.route(consumerURL, route => route.fulfill({
+    contentType: 'text/html',
+    body: `<!doctype html><html hidden><head><script src="${RUNTIME_SCRIPT_URL}"></script></head><body></body></html>`
+  }))
+
+  await page.goto(consumerURL)
+  await expect.poll(() => page.evaluate(() => document.documentElement.hasAttribute('hidden'))).toBe(false)
+
+  expect(wasmRequests).toBe(1)
+  expect(await page.evaluate(() => Boolean(globalThis.masterCSSRuntime))).toBe(false)
+})
+
+test('fails open when strict CSP disallows Wasm compilation', async ({ page }) => {
+  const consumerURL = 'http://master-css-csp-consumer.test/'
+  let wasmRequests = 0
+  await routeRuntimeAssets(page, {
+    onWasmRequest: () => {
+      wasmRequests++
+    }
+  })
+  await page.route(consumerURL, route => route.fulfill({
+    contentType: 'text/html',
+    headers: {
+      'content-security-policy': `default-src 'none'; script-src ${RUNTIME_ASSET_BASE_URL}; connect-src ${RUNTIME_ASSET_BASE_URL}`
+    },
+    body: `<!doctype html><html hidden><head><script src="${RUNTIME_SCRIPT_URL}"></script></head><body></body></html>`
+  }))
+
+  await page.goto(consumerURL)
+  await expect.poll(() => page.evaluate(() => document.documentElement.hasAttribute('hidden'))).toBe(false)
+
+  expect(wasmRequests).toBe(1)
+  expect(await page.evaluate(() => Boolean(globalThis.masterCSSRuntime))).toBe(false)
 })

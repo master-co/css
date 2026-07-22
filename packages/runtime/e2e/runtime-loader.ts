@@ -1,19 +1,30 @@
 import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
-import CSSRuntime, { type MasterCSSHydrationManifest, type MasterCSSManifest } from '../src'
+import CSSRuntime, {
+  type MasterCSSHydrationManifest,
+  type MasterCSSManifest
+} from '../src'
 
 const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
 
-export async function startCSSRuntime(options: { manifest?: MasterCSSManifest, hydrationManifest?: MasterCSSHydrationManifest } = {}) {
+interface RuntimeLoaderOptions {
+  manifest?: MasterCSSManifest
+  hydrationManifest?: MasterCSSHydrationManifest
+  startupTimeoutMs?: number
+}
+
+export async function startCSSRuntime(options: RuntimeLoaderOptions = {}) {
   return (await CSSRuntime.start({
     manifest: options.manifest || defaultManifest,
-    hydrationManifest: options.hydrationManifest
+    hydrationManifest: options.hydrationManifest,
+    startupTimeoutMs: options.startupTimeoutMs
   })).observe()
 }
 
-export async function startCSSRuntimeAsync(options: { manifest?: MasterCSSManifest, hydrationManifest?: MasterCSSHydrationManifest } = {}) {
+export async function startCSSRuntimeAsync(options: RuntimeLoaderOptions = {}) {
   const cssRuntime = await CSSRuntime.start({
     manifest: options.manifest || defaultManifest,
-    hydrationManifest: options.hydrationManifest
+    hydrationManifest: options.hydrationManifest,
+    startupTimeoutMs: options.startupTimeoutMs
   })
   return cssRuntime.observe()
 }

@@ -9,6 +9,7 @@ const packageRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const distRoot = resolve(packageRoot, 'dist')
 const globalBundleFile = resolve(distRoot, 'global.min.js')
 const defaultManifestFile = resolve(distRoot, 'default-manifest.json')
+const runtimeWasmFile = resolve(packageRoot, 'artifacts/mastercss_wasm_runtime_bg.wasm')
 const args = parseArgs(process.argv.slice(2))
 const rounds = Number(process.env.MASTER_CSS_BENCH_ROUNDS || 5)
 const warmupRounds = Number(process.env.MASTER_CSS_BENCH_WARMUP_ROUNDS || 1)
@@ -33,7 +34,7 @@ const nativeProperties = [
   'left'
 ]
 
-if (!existsSync(globalBundleFile) || !existsSync(defaultManifestFile)) {
+if (!existsSync(globalBundleFile) || !existsSync(defaultManifestFile) || !existsSync(runtimeWasmFile)) {
   console.error('Runtime benchmark requires built runtime global artifacts.')
   console.error('Run `pnpm --filter @master/css-runtime build` first.')
   process.exit(1)
@@ -168,6 +169,16 @@ function startServer() {
           'access-control-allow-origin': '*'
         })
         response.end(await readFile(defaultManifestFile))
+        return
+      }
+
+      if (path === '/artifacts/mastercss_wasm_runtime_bg.wasm') {
+        response.writeHead(200, {
+          'content-type': 'application/wasm',
+          'cache-control': 'no-store',
+          'access-control-allow-origin': '*'
+        })
+        response.end(await readFile(runtimeWasmFile))
         return
       }
 
