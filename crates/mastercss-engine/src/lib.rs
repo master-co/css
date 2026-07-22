@@ -4128,7 +4128,7 @@ fn split_state_token(state_token: &str) -> (String, Vec<String>) {
         } else if matches!(character, ')' | ']' | '}') {
             depth = depth.saturating_sub(1);
         } else if character == '@' && depth == 0 {
-            if conditions.is_empty() {
+            if start == 0 {
                 selector = state_token[..index].to_owned();
             } else {
                 conditions.push(state_token[start..index].to_owned());
@@ -5314,6 +5314,29 @@ mod tests {
             engine.ensure_class_rules([class_name]).unwrap();
             assert_eq!(engine.css_text(), expected, "{class_name}");
         }
+    }
+
+    #[test]
+    fn parses_each_compound_condition_as_a_condition() {
+        for (class_name, expected) in [
+            (
+                "block@dark@sm",
+                "@layer utilities{@media (prefers-color-scheme:dark) and (width>=52.125rem){.block\\@dark\\@sm{display:block}}}",
+            ),
+            (
+                "block@sm@dark",
+                "@layer utilities{@media (width>=52.125rem) and (prefers-color-scheme:dark){.block\\@sm\\@dark{display:block}}}",
+            ),
+        ] {
+            let mut engine = EngineSession::create(MANIFEST).unwrap();
+            engine.ensure_class_rules([class_name]).unwrap();
+            assert_eq!(engine.css_text(), expected, "{class_name}");
+        }
+
+        let engine = EngineSession::create(MANIFEST).unwrap();
+        let original = engine.inspect("block@dark@sm").unwrap();
+        let canonical = engine.inspect("block@sm@dark").unwrap();
+        assert_eq!(original.rules[0].priority, canonical.rules[0].priority);
     }
 
     #[test]
