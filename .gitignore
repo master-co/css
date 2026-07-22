@@ -10,6 +10,12 @@
 /dist
 /tmp
 /out-tsc
+/target
+
+# Rust binding artifacts copied into npm packages by xtask
+/packages/native/artifacts
+/packages/wasm-*/artifacts
+/packages/runtime/artifacts
 
 # monorepo
 **/*.vscode-test

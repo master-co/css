@@ -965,7 +965,7 @@ importers:
         version: 10.5.0(jiti@2.7.0)
       eslint-config-next:
         specifier: ^16.2.10
-        version: 16.2.10(@typescript-eslint/parser@8.62.0(eslint@10.6.0(jiti@2.7.0)(supports-color@5.5.0))(supports-color@5.5.0)(typescript@7.0.2))(eslint-plugin-import-x@4.16.2(@typescript-eslint/utils@8.62.0(eslint@10.5.0(jiti@2.7.0))(typescript@7.0.2))(eslint-import-resolver-node@0.3.10)(eslint@10.5.0(jiti@2.7.0)))(eslint@10.5.0(jiti@2.7.0))(typescript@7.0.2)
+        version: 16.2.10(@typescript-eslint/parser@8.62.0(eslint@10.6.0(jiti@2.7.0)(supports-color@5.5.0))(supports-color@5.5.0)(typescript@7.0.2))(eslint-plugin-import-x@4.16.2(@typescript-eslint/utils@8.62.0(eslint@10.5.0(jiti@2.7.0))(typescript@7.0.2))(eslint-import-resolver-node@0.3.10)(eslint@10.5.0(jiti@2.7.0)))(eslint@10.5.0(jiti@2.7.0))(supports-color@5.5.0)(typescript@7.0.2)
       typescript:
         specifier: ^7.0.2
         version: 7.0.2
@@ -1580,6 +1580,9 @@ importers:
         specifier: ^1.32.0
         version: 1.32.0
     devDependencies:
+      '@master/css-native':
+        specifier: workspace:^
+        version: link:../native
       '@master/css-preset':
         specifier: workspace:^
         version: link:../preset
@@ -1625,9 +1628,15 @@ importers:
       '@master/css-lexer':
         specifier: workspace:^
         version: link:../lexer
+      '@master/css-native':
+        specifier: workspace:^
+        version: link:../native
       '@master/css-schema':
         specifier: workspace:^
         version: link:../schema
+      '@master/css-wasm-runtime':
+        specifier: workspace:^
+        version: link:../wasm-runtime
       csstype:
         specifier: ^3.2.3
         version: 3.2.3
@@ -1974,6 +1983,53 @@ importers:
         specifier: ^4.4.3
         version: 4.4.3
 
+  packages/native:
+    devDependencies:
+      '@master/css-source':
+        specifier: workspace:^
+        version: link:../source
+    optionalDependencies:
+      '@master/css-native-darwin-arm64':
+        specifier: workspace:^
+        version: link:../native-darwin-arm64
+      '@master/css-native-darwin-x64':
+        specifier: workspace:^
+        version: link:../native-darwin-x64
+      '@master/css-native-linux-arm64-gnu':
+        specifier: workspace:^
+        version: link:../native-linux-arm64-gnu
+      '@master/css-native-linux-arm64-musl':
+        specifier: workspace:^
+        version: link:../native-linux-arm64-musl
+      '@master/css-native-linux-x64-gnu':
+        specifier: workspace:^
+        version: link:../native-linux-x64-gnu
+      '@master/css-native-linux-x64-musl':
+        specifier: workspace:^
+        version: link:../native-linux-x64-musl
+      '@master/css-native-win32-arm64-msvc':
+        specifier: workspace:^
+        version: link:../native-win32-arm64-msvc
+      '@master/css-native-win32-x64-msvc':
+        specifier: workspace:^
+        version: link:../native-win32-x64-msvc
+
+  packages/native-darwin-arm64: {}
+
+  packages/native-darwin-x64: {}
+
+  packages/native-linux-arm64-gnu: {}
+
+  packages/native-linux-arm64-musl: {}
+
+  packages/native-linux-x64-gnu: {}
+
+  packages/native-linux-x64-musl: {}
+
+  packages/native-win32-arm64-msvc: {}
+
+  packages/native-win32-x64-msvc: {}
+
   packages/next:
     dependencies:
       '@master/css':
@@ -2105,6 +2161,9 @@ importers:
         specifier: workspace:^
         version: link:../schema
     devDependencies:
+      '@master/css-native':
+        specifier: workspace:^
+        version: link:../native
       tsx:
         specifier: ^4.22.4
         version: 4.22.4
@@ -2185,6 +2244,9 @@ importers:
       '@master/css-compiler':
         specifier: workspace:^
         version: link:../compiler
+      '@master/css-native':
+        specifier: workspace:^
+        version: link:../native
 
   packages/schema:
     dependencies:
@@ -2219,6 +2281,9 @@ importers:
       '@master/css-compiler':
         specifier: workspace:^
         version: link:../compiler
+      '@master/css-native':
+        specifier: workspace:^
+        version: link:../native
 
   packages/source:
     dependencies:
@@ -2462,6 +2527,16 @@ importers:
       vscode-textmate:
         specifier: ^9.3.2
         version: 9.3.2
+
+  packages/wasm-compiler: {}
+
+  packages/wasm-runtime:
+    dependencies:
+      '@master/css-schema':
+        specifier: workspace:^
+        version: link:../schema
+
+  packages/wasm-tooling: {}
 
   packages/webpack:
     dependencies:
@@ -34179,12 +34254,12 @@ snapshots:
       '@eslint/compat': 2.1.0(eslint@10.5.0(jiti@2.7.0))
       eslint: 10.5.0(jiti@2.7.0)
 
-  eslint-config-next@16.2.10(@typescript-eslint/parser@8.62.0(eslint@10.6.0(jiti@2.7.0)(supports-color@5.5.0))(supports-color@5.5.0)(typescript@7.0.2))(eslint-plugin-import-x@4.16.2(@typescript-eslint/utils@8.62.0(eslint@10.5.0(jiti@2.7.0))(typescript@7.0.2))(eslint-import-resolver-node@0.3.10)(eslint@10.5.0(jiti@2.7.0)))(eslint@10.5.0(jiti@2.7.0))(typescript@7.0.2):
+  eslint-config-next@16.2.10(@typescript-eslint/parser@8.62.0(eslint@10.6.0(jiti@2.7.0)(supports-color@5.5.0))(supports-color@5.5.0)(typescript@7.0.2))(eslint-plugin-import-x@4.16.2(@typescript-eslint/utils@8.62.0(eslint@10.5.0(jiti@2.7.0))(typescript@7.0.2))(eslint-import-resolver-node@0.3.10)(eslint@10.5.0(jiti@2.7.0)))(eslint@10.5.0(jiti@2.7.0))(supports-color@5.5.0)(typescript@7.0.2):
     dependencies:
       '@next/eslint-plugin-next': 16.2.10
       eslint: 10.5.0(jiti@2.7.0)
       eslint-import-resolver-node: 0.3.10
-      eslint-import-resolver-typescript: 3.10.1(eslint-plugin-import-x@4.16.2(@typescript-eslint/utils@8.62.0(eslint@10.5.0(jiti@2.7.0))(typescript@7.0.2))(eslint-import-resolver-node@0.3.10)(eslint@10.5.0(jiti@2.7.0)))(eslint-plugin-import@2.32.0)(eslint@10.5.0(jiti@2.7.0))
+      eslint-import-resolver-typescript: 3.10.1(eslint-plugin-import-x@4.16.2(@typescript-eslint/utils@8.62.0(eslint@10.5.0(jiti@2.7.0))(typescript@7.0.2))(eslint-import-resolver-node@0.3.10)(eslint@10.5.0(jiti@2.7.0)))(eslint-plugin-import@2.32.0)(eslint@10.5.0(jiti@2.7.0))(supports-color@5.5.0)
       eslint-plugin-import: 2.32.0(@typescript-eslint/parser@8.62.0(eslint@10.6.0(jiti@2.7.0)(supports-color@5.5.0))(supports-color@5.5.0)(typescript@7.0.2))(eslint-import-resolver-typescript@3.10.1)(eslint@10.5.0(jiti@2.7.0))
       eslint-plugin-jsx-a11y: 6.10.2(eslint@10.5.0(jiti@2.7.0))
       eslint-plugin-react: 7.37.5(eslint@10.5.0(jiti@2.7.0))
@@ -34223,7 +34298,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  eslint-import-resolver-typescript@3.10.1(eslint-plugin-import-x@4.16.2(@typescript-eslint/utils@8.62.0(eslint@10.5.0(jiti@2.7.0))(typescript@7.0.2))(eslint-import-resolver-node@0.3.10)(eslint@10.5.0(jiti@2.7.0)))(eslint-plugin-import@2.32.0)(eslint@10.5.0(jiti@2.7.0)):
+  eslint-import-resolver-typescript@3.10.1(eslint-plugin-import-x@4.16.2(@typescript-eslint/utils@8.62.0(eslint@10.5.0(jiti@2.7.0))(typescript@7.0.2))(eslint-import-resolver-node@0.3.10)(eslint@10.5.0(jiti@2.7.0)))(eslint-plugin-import@2.32.0)(eslint@10.5.0(jiti@2.7.0))(supports-color@5.5.0):
     dependencies:
       '@nolyfill/is-core-module': 1.0.39
       debug: 4.4.3(supports-color@5.5.0)
@@ -34298,7 +34373,7 @@ snapshots:
       '@typescript-eslint/parser': 8.62.0(eslint@10.6.0(jiti@2.7.0)(supports-color@5.5.0))(supports-color@5.5.0)(typescript@7.0.2)
       eslint: 10.5.0(jiti@2.7.0)
       eslint-import-resolver-node: 0.3.10
-      eslint-import-resolver-typescript: 3.10.1(eslint-plugin-import-x@4.16.2(@typescript-eslint/utils@8.62.0(eslint@10.5.0(jiti@2.7.0))(typescript@7.0.2))(eslint-import-resolver-node@0.3.10)(eslint@10.5.0(jiti@2.7.0)))(eslint-plugin-import@2.32.0)(eslint@10.5.0(jiti@2.7.0))
+      eslint-import-resolver-typescript: 3.10.1(eslint-plugin-import-x@4.16.2(@typescript-eslint/utils@8.62.0(eslint@10.5.0(jiti@2.7.0))(typescript@7.0.2))(eslint-import-resolver-node@0.3.10)(eslint@10.5.0(jiti@2.7.0)))(eslint-plugin-import@2.32.0)(eslint@10.5.0(jiti@2.7.0))(supports-color@5.5.0)
     transitivePeerDependencies:
       - supports-color
 

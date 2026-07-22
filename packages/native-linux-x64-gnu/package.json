@@ -1,0 +1,12 @@
+{
+  "name": "@master/css-native-linux-x64-gnu",
+  "type": "commonjs",
+  "license": "MIT",
+  "description": "Master CSS native binding for Linux x64 glibc.",
+  "main": "./mastercss.node",
+  "os": ["linux"],
+  "cpu": ["x64"],
+  "libc": ["glibc"],
+  "files": ["mastercss.node"],
+  "publishConfig": { "access": "public", "provenance": true }
+}

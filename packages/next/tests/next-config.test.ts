@@ -97,7 +97,8 @@ function createCSSRuntimeTestModule() {
     runtime,
     module: {
       default: {
-        create: vi.fn(() => runtime)
+        create: vi.fn(() => runtime),
+        start: vi.fn(async () => runtime)
       }
     }
   }
@@ -331,9 +332,10 @@ describe('withMasterCSS', () => {
         'virtual:master-css-emitted-globals': Promise.resolve({ default: emittedGlobals })
       })
 
-      expect(cssRuntimeModule.default.create).toHaveBeenCalledWith({
+      expect(cssRuntimeModule.default.start).toHaveBeenCalledWith({
         manifest,
-        emittedGlobals
+        emittedGlobals,
+        onError: expect.any(Function)
       })
       expect(runtime.observe).toHaveBeenCalled()
     } finally {
@@ -357,9 +359,10 @@ describe('withMasterCSS', () => {
         'virtual:master-css-emitted-globals': { default: emittedGlobals }
       })
 
-      expect(cssRuntimeModule.default.create).toHaveBeenCalledWith({
+      expect(cssRuntimeModule.default.start).toHaveBeenCalledWith({
         manifest,
-        emittedGlobals
+        emittedGlobals,
+        onError: expect.any(Function)
       })
     } finally {
       rmSync(root, { recursive: true, force: true })

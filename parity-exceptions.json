@@ -1,0 +1,4 @@
+{
+  "$schema": "./scripts/parity-exceptions.schema.json",
+  "exceptions": []
+}

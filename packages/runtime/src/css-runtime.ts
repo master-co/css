@@ -50,20 +50,21 @@ export default function cssRuntime(options: CSSRuntimeOptions): <T extends CSSRu
         if (!root) {
           throw new Error('`@cssRuntime()` requires a shadow root. Provide `options.root` or create a shadow root before `connectedCallback()` finishes.')
         }
-        const cssRuntime = CSSRuntime.create({
+        const pendingRuntime = CSSRuntime.start({
           manifest: resolveManifest(this, options.manifest),
           root,
           emittedGlobals: resolveEmittedGlobals(this, options.emittedGlobals),
-          hydrationManifest: resolveHydrationManifest(this, options.hydrationManifest)
+          hydrationManifest: resolveHydrationManifest(this, options.hydrationManifest),
+          onError: diagnostic => console.error(diagnostic)
         })
-        this.cssRuntime = cssRuntime
-        if (cssRuntime.needsHydrationManifest()) {
-          void cssRuntime.loadHydrationManifest().then(() => {
-            if (this.cssRuntime === cssRuntime) cssRuntime.observe()
-          })
-        } else {
+        void pendingRuntime.then((cssRuntime) => {
+          if (!this.isConnected) {
+            cssRuntime.destroy()
+            return
+          }
+          this.cssRuntime = cssRuntime
           cssRuntime.observe()
-        }
+        }).catch(() => {})
       }
 
       disconnectedCallback() {

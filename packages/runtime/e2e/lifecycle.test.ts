@@ -15,6 +15,11 @@ async function waitForRuntimeRuleFlush(page: Page) {
   }))
 }
 
+test('starts the browser runtime through the Wasm backend', async ({ page }) => {
+  await init(page)
+  expect(await page.evaluate(() => globalThis.masterCSSRuntime.backend)).toBe('wasm')
+})
+
 test('does not expose tooling-only engine inspection helpers', async ({ page }) => {
   await init(page)
   await expect(page.evaluate(() => ({
@@ -193,6 +198,9 @@ test('generates browser native declarations through CSS.supports fallback', asyn
       transitionBehavior: CSS.supports('transition-behavior', 'allow-discrete')
     },
     classUtilities: [...globalThis.masterCSSRuntime.classUtilities.keys()],
+    rustText: (globalThis.masterCSSRuntime as unknown as {
+      backendEngine: { text: string }
+    }).backendEngine.text,
     cssRules: Array.from(globalThis.masterCSSRuntime.utilitiesLayer.native?.cssRules || [])
       .map((cssRule) => cssRule.cssText)
   }))
@@ -203,6 +211,10 @@ test('generates browser native declarations through CSS.supports fallback', asyn
   expect(result.cssRules.some((cssRule) => cssRule.includes('float: left'))).toBe(true)
   expect(result.cssRules.some((cssRule) => cssRule.includes('display: block'))).toBe(true)
   expect(result.cssRules.some((cssRule) => cssRule.includes('oklch'))).toBe(true)
+  expect(result.rustText).toContain('.float\\:left{float:left}')
+  expect(result.rustText).toContain('.display\\:block{display:block}')
+  expect(result.rustText).not.toContain('made-up')
+  expect(result.rustText).not.toContain('banana')
 
   if (result.supports.fieldSizing) {
     expect(result.classUtilities).toContain('field-sizing:content')

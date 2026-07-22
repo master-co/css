@@ -1,0 +1,14 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "incremental": true,
+    "declaration": true,
+    "declarationMap": false,
+    "emitDeclarationOnly": true,
+    "noEmit": false,
+    "rootDir": ".",
+    "outDir": ".tsbuild/typecheck",
+    "tsBuildInfoFile": ".tsbuild/typecheck/tsconfig.tsbuildinfo"
+  },
+  "include": ["src/**/*.ts", "tests/**/*.test.ts"]
+}

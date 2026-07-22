@@ -1,0 +1,30 @@
+{
+  "name": "@master/css-wasm-tooling",
+  "type": "module",
+  "scripts": {
+    "build": "tsdown --config ../../shared/tsdown-package.config.ts",
+    "dev": "tsdown --config ../../shared/tsdown-package.config.ts --watch",
+    "test": "cargo xtask build-wasm tooling && tsdown --config ../../shared/tsdown-package.config.ts && vitest",
+    "type-check": "tsc -b tsconfig.typecheck.json",
+    "lint": "eslint"
+  },
+  "license": "MIT",
+  "description": "Internal Master CSS web tooling Wasm loader.",
+  "sideEffects": false,
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    },
+    "./wasm": "./artifacts/mastercss_wasm_tooling_bg.wasm"
+  },
+  "files": ["dist", "artifacts"],
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  }
+}

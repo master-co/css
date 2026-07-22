@@ -1,0 +1,11 @@
+{
+  "name": "@master/css-native-darwin-x64",
+  "type": "commonjs",
+  "license": "MIT",
+  "description": "Master CSS native binding for macOS x64.",
+  "main": "./mastercss.node",
+  "os": ["darwin"],
+  "cpu": ["x64"],
+  "files": ["mastercss.node"],
+  "publishConfig": { "access": "public", "provenance": true }
+}

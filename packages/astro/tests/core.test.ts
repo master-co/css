@@ -96,7 +96,11 @@ describe('@master/css.astro integration', () => {
     try {
       mkdirSync(assetsDir, { recursive: true })
       writeFileSync(join(assetsDir, 'master-css-manifest.CzuVhIZV.json'), '{"version":1}')
-      writeFileSync(join(assetsDir, 'page.C2zmEykZ.js'), 'const manifestURL = new URL("master-css-manifest.CzuVhIZV.json", import.meta.url).href;')
+      writeFileSync(join(assetsDir, 'mastercss_wasm_runtime_bg.D4cafe.wasm'), 'wasm')
+      writeFileSync(join(assetsDir, 'page.C2zmEykZ.js'), [
+        'const manifestURL = new URL("master-css-manifest.CzuVhIZV.json", import.meta.url).href;',
+        'const wasmURL = new URL("mastercss_wasm_runtime_bg.D4cafe.wasm", import.meta.url);'
+      ].join('\n'))
       writeFileSync(htmlFile, '<html><head></head><body></body></html>')
       const integration = masterCSS({ mode: 'runtime' })
 
@@ -111,6 +115,9 @@ describe('@master/css.astro integration', () => {
       )
       expect(readFileSync(htmlFile, 'utf-8')).toContain(
         '<link rel="modulepreload" as="json" crossorigin href="/docs/_astro/master-css-manifest.CzuVhIZV.json">'
+      )
+      expect(readFileSync(htmlFile, 'utf-8')).toContain(
+        '<link rel="preload" as="fetch" type="application/wasm" crossorigin href="/docs/_astro/mastercss_wasm_runtime_bg.D4cafe.wasm">'
       )
     } finally {
       rmSync(dir, { recursive: true, force: true })

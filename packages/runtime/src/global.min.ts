@@ -30,11 +30,10 @@ const currentScript = document.currentScript as HTMLScriptElement | null
 if (currentScript?.src) {
   void loadDefaultManifest(currentScript.src)
     .then((manifest) => {
-      const cssRuntime = CSSRuntime.create({ manifest })
-      if (cssRuntime.needsHydrationManifest()) {
-        return cssRuntime.loadHydrationManifest().then(() => cssRuntime.observe())
-      }
-      cssRuntime.observe()
+      return CSSRuntime.start({
+        manifest,
+        onError: diagnostic => console.error(diagnostic)
+      }).then((cssRuntime) => cssRuntime.observe())
     })
     .catch((error) => console.error(error))
 } else {

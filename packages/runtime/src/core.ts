@@ -1,6 +1,14 @@
-import { MasterCSS, VariableRule, AnimationRule } from '@master/css-engine'
+import {
+  MasterCSS,
+  VariableRule,
+  AnimationRule,
+  createEngine,
+  MasterCSSEngineError,
+  type MasterCSSEngine
+} from '@master/css-engine'
 import type { MasterCSSManifest, MasterCSSManifestUtilityLayerName } from '@master/css-schema/manifest'
 import type { MasterCSSEmittedGlobals } from '@master/css-engine'
+import type { MasterCSSBackend, MasterCSSDiagnostic, MasterCSSResolvedBackend } from '@master/css-schema'
 import {
   MASTER_CSS_HYDRATION_MANIFEST_ATTR,
   MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID,
@@ -51,6 +59,36 @@ export interface CSSRuntimeCreateOptions {
   root?: Document | ShadowRoot
   emittedGlobals?: MasterCSSEmittedGlobals
   hydrationManifest?: MasterCSSHydrationManifest
+}
+
+export interface CSSRuntimeStartOptions extends CSSRuntimeCreateOptions {
+  backend?: MasterCSSBackend
+  startupTimeoutMs?: number
+  onError?: (diagnostic: MasterCSSDiagnostic) => void
+}
+
+export const MASTER_CSS_RUNTIME_STARTUP_TIMEOUT_MS = 3000
+
+class RuntimeStartupError extends Error {
+  readonly code = 'RUNTIME_STARTUP_TIMEOUT'
+
+  constructor(timeoutMs: number) {
+    super(`Master CSS runtime did not start within ${timeoutMs}ms.`)
+    this.name = 'RuntimeStartupError'
+  }
+}
+
+function toStartupDiagnostic(error: unknown): MasterCSSDiagnostic {
+  if (error instanceof MasterCSSEngineError) {
+    return error.toDiagnostic()
+  }
+  if (error instanceof RuntimeStartupError) {
+    return { code: error.code, message: error.message }
+  }
+  return {
+    code: 'INTERNAL',
+    message: error instanceof Error ? error.message : String(error),
+  }
 }
 
 function isDocumentRoot(root: Document | ShadowRoot): root is Document {
@@ -136,6 +174,63 @@ export default class CSSRuntime extends MasterCSS {
   observer?: MutationObserver
   progressive = false
   observing = false
+  private backendEngine?: MasterCSSEngine
+
+  get backend(): MasterCSSResolvedBackend | undefined {
+    return this.backendEngine?.backend
+  }
+
+  static async start(options: CSSRuntimeStartOptions): Promise<CSSRuntime> {
+    const {
+      backend = 'auto',
+      startupTimeoutMs = MASTER_CSS_RUNTIME_STARTUP_TIMEOUT_MS,
+      onError,
+      ...createOptions
+    } = options
+    const runtime = CSSRuntime.create(createOptions)
+    if (runtime.backendEngine) {
+      if (runtime.needsHydrationManifest()) await runtime.loadHydrationManifest()
+      return runtime
+    }
+
+    let timedOut = false
+    const enginePromise = createEngine({
+      manifest: options.manifest,
+      emittedGlobals: options.emittedGlobals,
+      backend
+    }).then((engine) => {
+      if (timedOut) engine.dispose()
+      return engine
+    })
+    const hydrationPromise = runtime.needsHydrationManifest()
+      ? runtime.loadHydrationManifest()
+      : Promise.resolve(runtime)
+    const view = runtime.getAnimationFrameWindow()
+    let timeoutHandle: ReturnType<typeof globalThis.setTimeout> | undefined
+    const timeoutPromise = new Promise<never>((_, reject) => {
+      timeoutHandle = view.setTimeout(
+        () => reject(new RuntimeStartupError(startupTimeoutMs)),
+        startupTimeoutMs
+      )
+    })
+
+    try {
+      const [engine] = await Promise.race([
+        Promise.all([enginePromise, hydrationPromise]),
+        timeoutPromise
+      ])
+      if (timeoutHandle !== undefined) view.clearTimeout(timeoutHandle)
+      runtime.backendEngine = engine
+      return runtime
+    } catch (error) {
+      timedOut = true
+      if (timeoutHandle !== undefined) view.clearTimeout(timeoutHandle)
+      runtime.host.removeAttribute('hidden')
+      const diagnostic = toStartupDiagnostic(error)
+      onError?.(diagnostic)
+      throw error
+    }
+  }
 
   static create(options: CSSRuntimeCreateOptions): CSSRuntime {
     const {
@@ -595,7 +690,9 @@ export default class CSSRuntime extends MasterCSS {
     this.cancelPendingAddedClassNames(classNames)
     this.cancelPendingRemovedClassNames(classNames)
     this.cancelRetainedClassNames(classNames)
-    return super.ensureClassRules(...classNames)
+    const result = super.ensureClassRules(...classNames)
+    this.backendEngine?.ensureClassRules(classNames)
+    return result
   }
 
   deleteClassRules(...classNames: string[]) {
@@ -603,6 +700,7 @@ export default class CSSRuntime extends MasterCSS {
     this.cancelPendingRemovedClassNames(classNames)
     this.cancelRetainedClassNames(classNames)
     super.deleteClassRules(...classNames)
+    this.backendEngine?.deleteClassRules(classNames)
   }
 
   private startMutationObserver() {
@@ -999,6 +1097,7 @@ export default class CSSRuntime extends MasterCSS {
     this.clearPendingAddedClassNames()
     this.clearPendingRemovedClassNames()
     this.clearRetainedClassRules()
+    this.backendEngine?.refresh(manifest)
     if (!this.observing || !this.style!.sheet) return this
     const cssRules = this.style!.sheet.cssRules
     for (let i = cssRules.length - 1; i >= 0; i--) {
@@ -1020,6 +1119,8 @@ export default class CSSRuntime extends MasterCSS {
 
   destroy() {
     this.disconnect()
+    this.backendEngine?.dispose()
+    this.backendEngine = undefined
     this.unregister()
     if (process.env.NODE_ENV === 'development') {
       debugRuntimeDestroyed(this)

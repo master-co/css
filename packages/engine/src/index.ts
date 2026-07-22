@@ -46,3 +46,11 @@ export type {
   MasterCSSGeneratedRuleIR,
   MasterCSSHydrationManifest
 } from '@master/css-schema/hydration-manifest'
+export { default as createEngine } from './create-engine'
+export type {
+  BackendEngineSession,
+  MasterCSSEngine,
+  MasterCSSEngineErrorCode,
+  MasterCSSEngineOptions
+} from './backend'
+export { MasterCSSEngineError } from './backend'

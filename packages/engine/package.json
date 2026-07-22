@@ -4,7 +4,7 @@
   "scripts": {
     "build": "tsdown --config ../../shared/tsdown-package.config.ts",
     "dev": "tsdown --config ../../shared/tsdown-package.config.ts --watch",
-    "test": "vitest",
+    "test": "cargo xtask build-native && vitest",
     "bench": "vitest bench",
     "type-check": "tsc -b tsconfig.typecheck.json",
     "lint": "eslint"
@@ -63,6 +63,11 @@
       "types": "./dist/inspect.d.ts",
       "import": "./dist/inspect.js",
       "default": "./dist/inspect.js"
+    },
+    "./node": {
+      "types": "./dist/node.d.ts",
+      "import": "./dist/node.js",
+      "default": "./dist/node.js"
     }
   },
   "files": [
@@ -73,6 +78,8 @@
     "provenance": true
   },
   "dependencies": {
+    "@master/css-native": "workspace:^",
+    "@master/css-wasm-runtime": "workspace:^",
     "@master/css-lexer": "workspace:^",
     "csstype": "^3.2.3",
     "@master/css-schema": "workspace:^"

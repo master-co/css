@@ -1239,6 +1239,9 @@ describe('MasterCSSPlugin (C1 race fix)', () => {
     const assets = {
       'index.html': {
         source: () => '<html><head></head><body><main class="box block"></main></body></html>'
+      },
+      'assets/mastercss_wasm_runtime_bg.12345678.wasm': {
+        source: () => 'wasm'
       }
     }
     const { compiler, compilation } = makeFakeCompiler({
@@ -1254,6 +1257,7 @@ describe('MasterCSSPlugin (C1 race fix)', () => {
     const html = assets['index.html'].source()
     expect(html).toContain('<link rel="preload" as="script" href="/static/assets/master-css-runtime.js">')
     expect(html).toContain('<link rel="modulepreload" as="json" crossorigin href="/static/assets/master-css-manifest.12345678.json">')
+    expect(html).toContain('<link rel="preload" as="fetch" type="application/wasm" crossorigin href="/static/assets/mastercss_wasm_runtime_bg.12345678.wasm">')
     expect(html).toContain('<script defer src="/static/assets/master-css-runtime.js"></script></body>')
   })
 

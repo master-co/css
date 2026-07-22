@@ -12,6 +12,7 @@ import {
 import UtilityType from '@master/css-schema/utility-type'
 import {
   createDefaultManifestFromSourceFile,
+  createDefaultManifestJSONFromSourceFile,
   createDefaultNativeCSSFromSourceFile
 } from '../scripts/generate-default-manifest'
 import defaultManifestJSON from '../src/default-manifest.json' with { type: 'json' }
@@ -260,6 +261,14 @@ describe('@master/css-preset defaultManifest', () => {
     expect(hasCSSVariableAssignmentUtility(manifest)).toBe(false)
     expect(hasCSSVariableAssignmentUtility(defaultManifest)).toBe(false)
     expect(manifest).toEqual(defaultManifest)
+  })
+
+  it('reconstructs the checked-in manifest byte for byte in Rust', () => {
+    const sourceFile = resolve(__dirname, '../src/index.css')
+    const manifestFile = resolve(__dirname, '../src/default-manifest.json')
+
+    expect(createDefaultManifestJSONFromSourceFile(sourceFile))
+      .toBe(readFileSync(manifestFile, 'utf8'))
   })
 
   it('matches the readable preset native CSS', () => {

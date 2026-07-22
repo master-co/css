@@ -1,5 +1,8 @@
 export { default } from './core'
-export type { CSSRuntimeCreateOptions } from './core'
+export {
+  MASTER_CSS_RUNTIME_STARTUP_TIMEOUT_MS
+} from './core'
+export type { CSSRuntimeCreateOptions, CSSRuntimeStartOptions } from './core'
 export { default as cssRuntime } from './css-runtime'
 export { default as RuntimeUtilityLayer } from './utility-layer'
 

@@ -3,7 +3,11 @@
   "globalDependencies": [
     "pnpm-lock.yaml",
     "pnpm-workspace.yaml",
-    "tsconfig.json"
+    "tsconfig.json",
+    "Cargo.lock",
+    "Cargo.toml",
+    "rust-toolchain.toml",
+    "crates/**"
   ],
   "tasks": {
     "build": {

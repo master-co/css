@@ -90,10 +90,13 @@ describe('InjectRuntimePlugin', () => {
       const html = readFileSync(join(root, 'dist/index.html'), 'utf8')
       const assetsDir = join(root, 'dist/assets')
       const jsFiles = readdirSync(assetsDir).filter((file) => file.endsWith('.js'))
+      const wasmFiles = readdirSync(assetsDir).filter((file) => file.endsWith('.wasm'))
       const jsSources = jsFiles.map((file) => readFileSync(join(assetsDir, file), 'utf8')).join('\n')
 
       expect(html).toMatch(/<script\b[^>]*\bsrc="\/assets\/[^"]+\.js"/)
       expect(html).toMatch(/<link\b(?=[^>]*\brel="modulepreload")(?=[^>]*\bcrossorigin)(?![^>]*\bas="json")(?=[^>]*\bhref="\/assets\/[^"]+\.js")[^>]*>/)
+      expect(html).toMatch(/<link\b(?=[^>]*\brel="preload")(?=[^>]*\bas="fetch")(?=[^>]*\btype="application\/wasm")(?=[^>]*\bhref="\/assets\/[^"]+\.wasm")[^>]*>/)
+      expect(wasmFiles).toHaveLength(1)
       expect(html).not.toContain('@master/css-runtime')
       expect(html).not.toContain(RUNTIME_ENTRY_ID)
       expect(jsSources).not.toContain(`from '@master/css-runtime'`)

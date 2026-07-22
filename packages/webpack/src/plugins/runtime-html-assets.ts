@@ -69,6 +69,10 @@ function createRuntimePreloadTag(href: string, moduleScript: boolean) {
     : `<link rel="preload" as="script" href="${escapeAttributeValue(href)}">`
 }
 
+function createRuntimeWasmPreloadTag(href: string) {
+  return `<link rel="preload" as="fetch" type="application/wasm" crossorigin href="${escapeAttributeValue(href)}">`
+}
+
 function getRuntimeFiles(compilation: Compilation, entryName: string) {
   const entrypoint = compilation.entrypoints.get(entryName)
   return entrypoint
@@ -76,7 +80,18 @@ function getRuntimeFiles(compilation: Compilation, entryName: string) {
     : []
 }
 
-function transformHTML(html: string, context: MasterCSSWebpackContext, compilation: Compilation) {
+function getRuntimeWasmFiles(assets: Compilation['assets']) {
+  return Object.keys(assets).filter((fileName) =>
+    fileName.endsWith('.wasm') && fileName.includes('mastercss_wasm_runtime')
+  )
+}
+
+function transformHTML(
+  html: string,
+  context: MasterCSSWebpackContext,
+  compilation: Compilation,
+  assets: Compilation['assets']
+) {
   const moduleScript = usesModuleScript(compilation)
   let nextHTML = html
 
@@ -92,6 +107,13 @@ function transformHTML(html: string, context: MasterCSSWebpackContext, compilati
       const href = toPublicHref(compilation, assetFileName)
       if (!hasTagWithHref(nextHTML, 'link', href)) {
         nextHTML = injectBeforeHeadClose(nextHTML, toManifestPreloadLinkTag(href))
+      }
+    }
+
+    for (const wasmFile of getRuntimeWasmFiles(assets)) {
+      const href = toPublicHref(compilation, wasmFile)
+      if (!hasTagWithHref(nextHTML, 'link', href)) {
+        nextHTML = injectBeforeHeadClose(nextHTML, createRuntimeWasmPreloadTag(href))
       }
     }
   }
@@ -126,7 +148,7 @@ export default function RuntimeHTMLAssetsPlugin(context: MasterCSSWebpackContext
             for (const [fileName, asset] of Object.entries(assets)) {
               if (!fileName.endsWith('.html') && !fileName.endsWith('.htm')) continue
               const source = asset.source().toString()
-              const nextSource = transformHTML(source, context, compilation)
+              const nextSource = transformHTML(source, context, compilation, assets)
               if (nextSource === source) continue
               compilation.updateAsset(fileName, new RawSource(nextSource))
             }

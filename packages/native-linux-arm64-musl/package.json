@@ -1,0 +1,12 @@
+{
+  "name": "@master/css-native-linux-arm64-musl",
+  "type": "commonjs",
+  "license": "MIT",
+  "description": "Master CSS native binding for Linux ARM64 musl.",
+  "main": "./mastercss.node",
+  "os": ["linux"],
+  "cpu": ["arm64"],
+  "libc": ["musl"],
+  "files": ["mastercss.node"],
+  "publishConfig": { "access": "public", "provenance": true }
+}

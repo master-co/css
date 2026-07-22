@@ -1,0 +1,59 @@
+[workspace]
+resolver = "3"
+members = [
+  "crates/mastercss-schema",
+  "crates/mastercss-lexer",
+  "crates/mastercss-engine",
+  "crates/mastercss-compiler",
+  "crates/mastercss-source",
+  "crates/mastercss-scanner",
+  "crates/mastercss-render",
+  "crates/mastercss-node",
+  "crates/mastercss-wasm-runtime",
+  "crates/mastercss-wasm-compiler",
+  "crates/mastercss-wasm-tooling",
+  "crates/xtask",
+]
+
+[workspace.package]
+version = "0.0.0"
+edition = "2024"
+rust-version = "1.97"
+license = "MIT"
+repository = "https://github.com/master-co/css"
+publish = false
+
+[workspace.dependencies]
+cssparser = "0.37.0"
+napi = { version = "3.6.1", default-features = false, features = ["napi8", "serde-json"] }
+napi-build = "2.3.2"
+napi-derive = "3.4.0"
+htmlparser = "0.2.1"
+getrandom = "0.3.4"
+lightningcss = { version = "1.0.0-alpha.72", default-features = false, features = ["visitor"] }
+oxc_allocator = "0.141.0"
+oxc_ast = "0.141.0"
+oxc_ast_visit = "0.141.0"
+oxc_parser = { version = "0.141.0", default-features = false }
+oxc_span = "0.141.0"
+oxc_syntax = "0.141.0"
+serde = { version = "1.0.229", features = ["derive"] }
+serde_json = { version = "1.0.151", features = ["preserve_order"] }
+serde-wasm-bindgen = "0.6.5"
+thiserror = "2.0.19"
+wasm-bindgen = "0.2.126"
+wasm-bindgen-cli-support = "0.2.126"
+
+[profile.release]
+lto = "thin"
+codegen-units = 1
+strip = "symbols"
+
+[profile.release.package.mastercss-wasm-runtime]
+opt-level = "s"
+
+[profile.release.package.mastercss-wasm-compiler]
+opt-level = "s"
+
+[profile.release.package.mastercss-wasm-tooling]
+opt-level = "s"

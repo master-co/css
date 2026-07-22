@@ -8,6 +8,7 @@ const __dirname = dirname(__filename)
 const RUNTIME_ASSET_BASE_URL = 'http://master-css-runtime.test'
 const RUNTIME_SCRIPT_URL = `${RUNTIME_ASSET_BASE_URL}/css-runtime@rc`
 const DEFAULT_MANIFEST_URL = `${RUNTIME_ASSET_BASE_URL}/css-runtime@rc/default-manifest.json`
+const RUNTIME_WASM_URL = `${RUNTIME_ASSET_BASE_URL}/artifacts/mastercss_wasm_runtime_bg.wasm`
 
 type RuntimeAssetRouteOptions = {
   onDefaultManifestRequest?: () => void
@@ -28,6 +29,15 @@ async function routeRuntimeAssets(page: Page, options: RuntimeAssetRouteOptions 
         'access-control-allow-origin': '*'
       },
       body: readFileSync(resolve(__dirname, '../dist/default-manifest.json'), 'utf8')
+    })
+  })
+  await page.route(RUNTIME_WASM_URL, (route) => {
+    route.fulfill({
+      contentType: 'application/wasm',
+      headers: {
+        'access-control-allow-origin': '*'
+      },
+      body: readFileSync(resolve(__dirname, '../artifacts/mastercss_wasm_runtime_bg.wasm'))
     })
   })
 }

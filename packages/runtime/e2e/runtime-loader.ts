@@ -3,18 +3,17 @@ import CSSRuntime, { type MasterCSSHydrationManifest, type MasterCSSManifest } f
 
 const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
 
-export function startCSSRuntime(options: { manifest?: MasterCSSManifest, hydrationManifest?: MasterCSSHydrationManifest } = {}) {
-  return CSSRuntime.create({
+export async function startCSSRuntime(options: { manifest?: MasterCSSManifest, hydrationManifest?: MasterCSSHydrationManifest } = {}) {
+  return (await CSSRuntime.start({
     manifest: options.manifest || defaultManifest,
     hydrationManifest: options.hydrationManifest
-  }).observe()
+  })).observe()
 }
 
 export async function startCSSRuntimeAsync(options: { manifest?: MasterCSSManifest, hydrationManifest?: MasterCSSHydrationManifest } = {}) {
-  const cssRuntime = CSSRuntime.create({
+  const cssRuntime = await CSSRuntime.start({
     manifest: options.manifest || defaultManifest,
     hydrationManifest: options.hydrationManifest
   })
-  if (cssRuntime.needsHydrationManifest()) await cssRuntime.loadHydrationManifest()
   return cssRuntime.observe()
 }

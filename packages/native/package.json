@@ -1,0 +1,46 @@
+{
+  "name": "@master/css-native",
+  "type": "module",
+  "scripts": {
+    "build": "tsdown --config ../../shared/tsdown-package.config.ts",
+    "dev": "tsdown --config ../../shared/tsdown-package.config.ts --watch",
+    "test": "cargo xtask build-native && vitest",
+    "type-check": "tsc -b tsconfig.typecheck.json",
+    "lint": "eslint"
+  },
+  "license": "MIT",
+  "description": "Internal Master CSS native binding loader.",
+  "sideEffects": false,
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "browser": "./dist/browser.js",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "artifacts"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "optionalDependencies": {
+    "@master/css-native-darwin-arm64": "workspace:^",
+    "@master/css-native-darwin-x64": "workspace:^",
+    "@master/css-native-linux-arm64-gnu": "workspace:^",
+    "@master/css-native-linux-arm64-musl": "workspace:^",
+    "@master/css-native-linux-x64-gnu": "workspace:^",
+    "@master/css-native-linux-x64-musl": "workspace:^",
+    "@master/css-native-win32-arm64-msvc": "workspace:^",
+    "@master/css-native-win32-x64-msvc": "workspace:^"
+  },
+  "devDependencies": {
+    "@master/css-source": "workspace:^"
+  }
+}

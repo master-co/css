@@ -1,0 +1,26 @@
+[package]
+name = "mastercss-node"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+publish.workspace = true
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+mastercss-compiler = { path = "../mastercss-compiler" }
+mastercss-engine = { path = "../mastercss-engine" }
+mastercss-render = { path = "../mastercss-render" }
+mastercss-schema = { path = "../mastercss-schema" }
+mastercss-scanner = { path = "../mastercss-scanner" }
+mastercss-source = { path = "../mastercss-source" }
+napi.workspace = true
+napi-derive.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+
+[build-dependencies]
+napi-build.workspace = true

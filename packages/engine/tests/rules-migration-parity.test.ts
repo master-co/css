@@ -1,5 +1,36 @@
-import { describe, expect, test } from 'vitest'
-import { createDefaultCSS } from './helpers/css-tester'
+import { beforeAll, describe, expect, test } from 'vitest'
+import type { MasterCSSManifest } from '@master/css-schema/manifest'
+import defaultManifest from '@master/css-preset/default-manifest.json'
+import { loadNativeBinding } from '@master/css-native'
+import { stringifyMasterCSSManifestJSON } from '@master/css-schema/manifest-json'
+import {
+  createDefaultCSS,
+  matchesNativeFallbackProperty
+} from './helpers/css-tester'
+
+const typedDefaultManifest = defaultManifest as unknown as MasterCSSManifest
+
+function createRustTextWithNativeFallback(className: string) {
+  const binding = loadNativeBinding({ required: true })!.binding
+  const session = new binding.EngineSession(stringifyMasterCSSManifestJSON(typedDefaultManifest))
+  const candidates = JSON.parse(session.nativeDeclarationCandidates([className])) as {
+    property: string
+  }[]
+  session.ensureClassRulesWithNativeSupport(
+    [className],
+    candidates.map(({ property }) => matchesNativeFallbackProperty(property))
+  )
+  const snapshot = JSON.parse(session.snapshot()) as { text: string }
+  session.dispose()
+  return snapshot.text
+}
+
+beforeAll(() => {
+  process.env.MASTER_CSS_NATIVE_BINDING_PATH = new URL(
+    '../../native/artifacts/mastercss.node',
+    import.meta.url
+  ).pathname
+})
 
 const migratedRuleExpectations = [
   {
@@ -352,6 +383,13 @@ describe.concurrent('migrated core rule expectations', () => {
       const css = createDefaultCSS()
       for (const [className, expected] of cases) {
         expect(css.createRule(className)?.text, className).toContain(expected)
+
+        const oracle = createDefaultCSS()
+        oracle.ensureClassRules(className)
+        expect(
+          createRustTextWithNativeFallback(className),
+          `Rust differential: ${className}`
+        ).toBe(oracle.text)
       }
     })
   }

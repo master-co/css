@@ -1,0 +1,33 @@
+{
+  "name": "@master/css-wasm-runtime",
+  "type": "module",
+  "scripts": {
+    "build": "tsdown --config ../../shared/tsdown-package.config.ts",
+    "dev": "tsdown --config ../../shared/tsdown-package.config.ts --watch",
+    "test": "cargo xtask build-wasm && tsdown --config ../../shared/tsdown-package.config.ts && vitest",
+    "type-check": "tsc -b tsconfig.typecheck.json",
+    "lint": "eslint"
+  },
+  "license": "MIT",
+  "description": "Internal Master CSS browser runtime Wasm loader.",
+  "sideEffects": false,
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    },
+    "./wasm": "./artifacts/mastercss_wasm_runtime_bg.wasm"
+  },
+  "files": ["dist", "artifacts"],
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "dependencies": {
+    "@master/css-schema": "workspace:^"
+  }
+}

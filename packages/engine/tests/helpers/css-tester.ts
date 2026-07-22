@@ -160,6 +160,10 @@ for (const namespace of builtinNativeValueNamespaces) {
   }
 }
 
+export function matchesNativeFallbackProperty(property: string) {
+  return nativeFallbackProperties.has(property)
+}
+
 export type SemanticRuleInput = MasterCSSManifestUtilityRule<MasterCSSManifestCSSDeclarations>
 
 export interface SemanticUtilityInput {
@@ -175,7 +179,7 @@ export function cloneManifest(manifest: MasterCSSManifest = defaultManifest): Ma
 export function createDefaultCSS() {
   return MasterCSS.create({
     manifest: defaultManifest,
-    nativeDeclarationMatcher: ({ property }) => nativeFallbackProperties.has(property)
+    nativeDeclarationMatcher: ({ property }) => matchesNativeFallbackProperty(property)
   })
 }
 

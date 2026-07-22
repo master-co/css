@@ -9,7 +9,9 @@ export {
   VariableRule,
   AnimationRule,
   compareRulePriority,
-  createHydrationManifest
+  createHydrationManifest,
+  createEngine,
+  MasterCSSEngineError
 } from '@master/css-engine'
 export type {
   CompiledUtility,
@@ -19,6 +21,9 @@ export type {
   MasterCSSCreateOptions,
   MasterCSSInspectedClassVariable,
   MasterCSSOptions,
+  MasterCSSEngine,
+  MasterCSSEngineErrorCode,
+  MasterCSSEngineOptions,
   MasterCSSNormalizedNumericValue,
   MasterCSSManifest,
   MasterCSSManifestSettings,

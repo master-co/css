@@ -251,7 +251,7 @@ export default async function init(
   })
   await page.evaluate(async ({ loaderURL, manifest }) => {
     const { startCSSRuntime } = await import(loaderURL)
-    startCSSRuntime({ manifest })
+    await startCSSRuntime({ manifest })
   }, { loaderURL: await getRuntimeLoaderURL(), manifest })
   await page.waitForFunction(() => !!globalThis.masterCSSRuntime)
 }

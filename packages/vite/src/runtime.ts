@@ -9,8 +9,10 @@ type RuntimeManifestModule = { default: typeof masterCSSManifest }
 type RuntimeEmittedGlobalsModule = { default: typeof masterCSSEmittedGlobals }
 
 let masterCSSRuntime: CSSRuntime | undefined
+let startGeneration = 0
 
 function destroyRuntime() {
+  startGeneration++
   masterCSSRuntime?.destroy()
   masterCSSRuntime = undefined
 }
@@ -21,18 +23,21 @@ async function startRuntime(
 ) {
   if (typeof document === 'undefined') return
   destroyRuntime()
-  const nextRuntime = CSSRuntime.create({
+  const generation = startGeneration
+  const nextRuntime = await CSSRuntime.start({
     manifest,
-    emittedGlobals
+    emittedGlobals,
+    onError: diagnostic => console.error(diagnostic)
   })
-  if (nextRuntime.needsHydrationManifest()) {
-    await nextRuntime.loadHydrationManifest()
+  if (generation !== startGeneration) {
+    nextRuntime.destroy()
+    return
   }
   masterCSSRuntime = nextRuntime.observe()
 }
 
 if (typeof document !== 'undefined') {
-  void startRuntime()
+  void startRuntime().catch(() => {})
 }
 
 if (import.meta.hot) {
@@ -48,7 +53,7 @@ if (import.meta.hot) {
     void startRuntime(
       manifestModule?.default ?? masterCSSManifest,
       emittedGlobalsModule?.default ?? masterCSSEmittedGlobals
-    )
+    ).catch(() => {})
   })
   import.meta.hot.dispose(destroyRuntime)
 }

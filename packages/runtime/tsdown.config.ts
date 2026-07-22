@@ -44,6 +44,9 @@ export default defineConfig([
       'global.min': 'src/global.min.ts'
     },
     platform: 'browser',
+    define: {
+      'import.meta.url': '(document.currentScript?.src || globalThis.location.href)'
+    },
     tsconfig: './tsconfig.prod.json',
     dts: false,
     deps: {
