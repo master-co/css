@@ -12,7 +12,10 @@ crate-type = ["cdylib", "rlib"]
 
 [dependencies]
 mastercss-compiler = { path = "../mastercss-compiler" }
+mastercss-engine = { path = "../mastercss-engine" }
+mastercss-render = { path = "../mastercss-render" }
 mastercss-schema = { path = "../mastercss-schema" }
+serde.workspace = true
 serde-wasm-bindgen.workspace = true
 serde_json.workspace = true
 wasm-bindgen.workspace = true

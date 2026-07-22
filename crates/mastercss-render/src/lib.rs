@@ -3,7 +3,9 @@
 use std::collections::HashSet;
 
 use mastercss_engine::{EngineError, EngineSession};
-use mastercss_schema::{EngineSnapshotIr, HydrationManifest, NativeDeclarationCandidateIr};
+use mastercss_schema::{
+    EmittedGlobals, EngineSnapshotIr, HydrationManifest, NativeDeclarationCandidateIr,
+};
 use serde::Serialize;
 
 #[derive(Debug, Clone, PartialEq, Serialize)]
@@ -75,6 +77,15 @@ impl RenderSession {
             self.engine.ensure_class_rules(&new_classes)?;
         }
         Ok(())
+    }
+
+    pub fn ensure_stylesheet_resources(&mut self, native_css: &str) -> Result<(), EngineError> {
+        self.engine.ensure_stylesheet_resources(native_css)?;
+        Ok(())
+    }
+
+    pub fn emitted_globals(&self) -> Result<EmittedGlobals, EngineError> {
+        self.engine.emitted_globals_snapshot()
     }
 
     pub fn snapshot(&self) -> Result<ServerRenderIr, EngineError> {
@@ -185,5 +196,74 @@ mod tests {
             session.snapshot().unwrap().snapshot.text,
             "@layer utilities{.display\\:block{display:block}}"
         );
+    }
+
+    #[test]
+    fn composes_native_stylesheet_resources_without_duplicate_keyframes() {
+        let manifest = serde_json::json!({
+            "version": 1,
+            "variables": {
+                "color": [{ "key": "primary", "value": "red" }]
+            },
+            "animations": {
+                "fade": { "to": { "opacity": "1" } },
+                "native-spin": { "to": { "opacity": "0" } }
+            },
+            "utilities": []
+        })
+        .to_string();
+        let mut session = RenderSession::create(&manifest, None).unwrap();
+
+        session
+            .ensure_stylesheet_resources(
+                r#"
+                .quoted { content: "var(--color-ignored)"; }
+                /* var(--color-commented); animation: native-spin 1s; */
+                .native { color: var(--color-primary); animation: fade 1s; }
+                @keyframes native-spin { to { opacity: .5; } }
+                "#,
+            )
+            .unwrap();
+
+        let rendered = session.snapshot().unwrap();
+        assert!(rendered.snapshot.text.contains("--color-primary:red"));
+        assert!(rendered.snapshot.text.contains("@keyframes fade"));
+        assert!(!rendered.snapshot.text.contains("@keyframes native-spin"));
+        let emitted_globals = session.emitted_globals().unwrap();
+        assert_eq!(emitted_globals.variable_count("color-primary"), 1);
+        assert_eq!(emitted_globals.animation_count("fade"), 1);
+        assert_eq!(emitted_globals.animation_count("native-spin"), 1);
+        assert_eq!(emitted_globals.variable_count("color-ignored"), 0);
+        assert_eq!(emitted_globals.variable_count("color-commented"), 0);
+    }
+
+    #[test]
+    fn preserves_and_increments_host_resource_counts() {
+        let manifest = serde_json::json!({
+            "version": 1,
+            "variables": {
+                "color": [{ "key": "primary", "value": "red" }]
+            },
+            "animations": {
+                "native-spin": { "to": { "opacity": "0" } }
+            },
+            "utilities": []
+        })
+        .to_string();
+        let mut session = RenderSession::create(
+            &manifest,
+            Some(r#"{"variables":{"color-primary":2},"animations":{"native-spin":2}}"#),
+        )
+        .unwrap();
+        session
+            .ensure_stylesheet_resources(
+                ".native{color:var(--color-primary)}@keyframes native-spin{to{opacity:.5}}",
+            )
+            .unwrap();
+
+        assert_eq!(session.snapshot().unwrap().snapshot.text, "");
+        let emitted_globals = session.emitted_globals().unwrap();
+        assert_eq!(emitted_globals.variable_count("color-primary"), 2);
+        assert_eq!(emitted_globals.animation_count("native-spin"), 3);
     }
 }

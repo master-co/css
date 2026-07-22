@@ -8,8 +8,7 @@ import {
   isMasterCSSPackageStyleFile as isMasterCSSCompilerPackageStyleFile,
   resolveMasterCSSPackageImportGraph
 } from '@master/css-compiler'
-import type { MasterCSSEmittedGlobals } from '@master/css'
-import type { createCSSWithNativeDeclarations } from '@master/css-validator/native-declaration'
+import type { MasterCSSEmittedGlobals } from '@master/css-schema/emitted-globals'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import { renderCompiledManifestCSS, type RenderCompiledManifestCSSResult } from './render'
 import {
@@ -104,8 +103,6 @@ export interface CreateExtractedCSSResult {
   css: string
   emittedGlobals: Required<MasterCSSEmittedGlobals>
 }
-
-export type StylesheetCSS = ReturnType<typeof createCSSWithNativeDeclarations>
 
 export interface ScannerCSSState {
   readonly text: string

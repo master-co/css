@@ -48,6 +48,8 @@ export interface NativeScannerSession {
 export interface NativeRenderSession {
   nativeDeclarationCandidates(classNames: string[]): string
   ensureClasses(classNames: string[], nativeSupport?: boolean[]): void
+  ensureStylesheetResources(nativeCSS: string): void
+  emittedGlobals(): string
   snapshot(): string
   dispose(): void
 }

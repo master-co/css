@@ -2306,21 +2306,18 @@ importers:
 
   packages/stylesheet:
     dependencies:
-      '@master/css':
-        specifier: workspace:^
-        version: link:../facade
       '@master/css-compiler':
         specifier: workspace:^
         version: link:../compiler
-      '@master/css-engine':
-        specifier: workspace:^
-        version: link:../engine
       '@master/css-integration':
         specifier: workspace:^
         version: link:../integration
       '@master/css-lexer':
         specifier: workspace:^
         version: link:../lexer
+      '@master/css-native':
+        specifier: workspace:^
+        version: link:../native
       '@master/css-schema':
         specifier: workspace:^
         version: link:../schema
@@ -2330,6 +2327,9 @@ importers:
       '@master/css-validator':
         specifier: workspace:^
         version: link:../validator
+      '@master/css-wasm-compiler':
+        specifier: workspace:^
+        version: link:../wasm-compiler
       fast-glob:
         specifier: ^3.3.3
         version: 3.3.3

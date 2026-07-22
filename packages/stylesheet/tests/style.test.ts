@@ -77,6 +77,25 @@ describe('style CSS extraction helpers', () => {
     expect(result.generatedCSS).not.toContain('--color-red-60')
   })
 
+  it('preserves existing emitted resource counts and increments native keyframes', () => {
+    const result = renderCompiledManifestCSS({
+      manifest: defaultManifest,
+      nativeCSS: [
+        '.native { color: var(--color-green-60); }',
+        '@keyframes fade { to { opacity: .5; } }'
+      ],
+      emittedGlobals: {
+        variables: { 'color-green-60': 2 },
+        animations: { fade: 2 }
+      }
+    })
+
+    expect(result.emittedGlobals.variables['color-green-60']).toBe(2)
+    expect(result.emittedGlobals.animations.fade).toBe(3)
+    expect(result.generatedCSS).not.toContain('--color-green-60')
+    expect(result.generatedCSS).not.toContain('@keyframes fade')
+  })
+
   it('emits theme variables referenced by compiled stylesheet --alpha() values', () => {
     const compiled = compileCSSManifest(`
       @theme {

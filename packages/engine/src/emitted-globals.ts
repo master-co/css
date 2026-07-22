@@ -1,4 +1,1 @@
-export interface MasterCSSEmittedGlobals {
-  variables?: Record<string, number>
-  animations?: Record<string, number>
-}
+export type { MasterCSSEmittedGlobals } from '@master/css-schema/emitted-globals'

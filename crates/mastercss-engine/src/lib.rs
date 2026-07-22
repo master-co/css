@@ -562,6 +562,71 @@ impl EngineSession {
         self.ensure_class_rules(class_names)
     }
 
+    pub fn ensure_stylesheet_resources(
+        &mut self,
+        native_css: &str,
+    ) -> Result<EngineTransitionIr, EngineError> {
+        self.ensure_active()?;
+        let mut mutations = Vec::new();
+        let native_animation_names = collect_stylesheet_keyframe_names(native_css);
+        for name in &native_animation_names {
+            let count = self.emitted_globals.animation_count(name);
+            self.emitted_globals
+                .animations
+                .insert(name.clone(), Value::from(count.saturating_add(1)));
+            if let Some(index) = self
+                .animation_names
+                .iter()
+                .position(|animation_name| animation_name == name)
+            {
+                self.animation_names.remove(index);
+                mutations.push(RuleMutationIr::Delete {
+                    target: RuleTarget::Keyframes,
+                    index: index as u32,
+                    key: name.clone(),
+                });
+            }
+        }
+
+        let variable_names = collect_stylesheet_variable_names(native_css)
+            .into_iter()
+            .filter(|name| self.compiled.compiled_variables.contains_key(name))
+            .collect::<Vec<_>>();
+        for variable_name in &variable_names {
+            self.register_variable(variable_name, &mut mutations, &mut HashSet::new());
+        }
+
+        let animation_declarations = collect_stylesheet_animation_declarations(native_css);
+        let animation_names = collect_stylesheet_animation_names(
+            &animation_declarations,
+            &variable_names,
+            &self.compiled,
+        )
+        .into_iter()
+        .filter(|name| !native_animation_names.contains(name))
+        .collect::<Vec<_>>();
+        self.register_rule_animations(&animation_names, &mut mutations);
+        Ok(EngineTransitionIr::new(mutations))
+    }
+
+    pub fn emitted_globals_snapshot(&self) -> Result<EmittedGlobals, EngineError> {
+        self.ensure_active()?;
+        let mut emitted_globals = self.emitted_globals.clone();
+        for name in &self.theme_variable_names {
+            emitted_globals
+                .variables
+                .entry(name.clone())
+                .or_insert_with(|| Value::from(1));
+        }
+        for name in &self.animation_names {
+            emitted_globals
+                .animations
+                .entry(name.clone())
+                .or_insert_with(|| Value::from(1));
+        }
+        Ok(emitted_globals)
+    }
+
     pub fn refresh(&mut self, manifest_json: &str) -> Result<EngineTransitionIr, EngineError> {
         self.ensure_active()?;
         let manifest = MasterCssManifest::parse(manifest_json)?;
@@ -2097,6 +2162,260 @@ fn collect_css_variable_names(source: &str) -> Vec<String> {
     names
 }
 
+fn skip_stylesheet_quoted(source: &str, start: usize, quote: char) -> usize {
+    let mut index = start + quote.len_utf8();
+    while index < source.len() {
+        let character = source[index..].chars().next().unwrap_or_default();
+        index += character.len_utf8();
+        if character == '\\' {
+            if let Some(escaped) = source[index..].chars().next() {
+                index += escaped.len_utf8();
+            }
+        } else if character == quote {
+            break;
+        }
+    }
+    index
+}
+
+fn skip_stylesheet_comment(source: &str, start: usize) -> usize {
+    source[start + 2..]
+        .find("*/")
+        .map(|offset| start + 2 + offset + 2)
+        .unwrap_or(source.len())
+}
+
+fn collect_stylesheet_variable_names(source: &str) -> Vec<String> {
+    let mut names = Vec::new();
+    let mut index = 0;
+    while index < source.len() {
+        let character = source[index..].chars().next().unwrap_or_default();
+        if matches!(character, '\'' | '"') {
+            index = skip_stylesheet_quoted(source, index, character);
+            continue;
+        }
+        if source[index..].starts_with("/*") {
+            index = skip_stylesheet_comment(source, index);
+            continue;
+        }
+        let is_variable_function = source
+            .get(index..index + 4)
+            .is_some_and(|value| value.eq_ignore_ascii_case("var("))
+            && source[..index]
+                .chars()
+                .next_back()
+                .is_none_or(|character| !is_css_identifier_character(character));
+        if !is_variable_function {
+            index += character.len_utf8();
+            continue;
+        }
+        let mut cursor = index + 4;
+        while source[cursor..]
+            .chars()
+            .next()
+            .is_some_and(|character| character == ' ')
+        {
+            cursor += source[cursor..]
+                .chars()
+                .next()
+                .unwrap_or_default()
+                .len_utf8();
+        }
+        if !source[cursor..].starts_with("--") {
+            index += 4;
+            continue;
+        }
+        cursor += 2;
+        let name_start = cursor;
+        while source[cursor..]
+            .chars()
+            .next()
+            .is_some_and(is_css_identifier_character)
+        {
+            cursor += source[cursor..]
+                .chars()
+                .next()
+                .unwrap_or_default()
+                .len_utf8();
+        }
+        if cursor > name_start {
+            let name = &source[name_start..cursor];
+            if !names.iter().any(|existing| existing == name) {
+                names.push(name.to_owned());
+            }
+        }
+        index = cursor;
+    }
+    names
+}
+
+fn collect_stylesheet_keyframe_names(source: &str) -> Vec<String> {
+    let mut names = Vec::new();
+    let mut index = 0;
+    while let Some(offset) = source[index..].find("@keyframes") {
+        index += offset;
+        let mut cursor = index + "@keyframes".len();
+        let Some(whitespace) = source[cursor..]
+            .chars()
+            .next()
+            .filter(|character| character.is_whitespace())
+        else {
+            index = cursor;
+            continue;
+        };
+        cursor += whitespace.len_utf8();
+        while source[cursor..]
+            .chars()
+            .next()
+            .is_some_and(char::is_whitespace)
+        {
+            cursor += source[cursor..]
+                .chars()
+                .next()
+                .unwrap_or_default()
+                .len_utf8();
+        }
+        let name_start = cursor;
+        if source[cursor..].starts_with('-') {
+            cursor += 1;
+        }
+        let Some(first) = source[cursor..]
+            .chars()
+            .next()
+            .filter(|character| character.is_ascii_alphabetic() || *character == '_')
+        else {
+            index = cursor;
+            continue;
+        };
+        cursor += first.len_utf8();
+        while source[cursor..]
+            .chars()
+            .next()
+            .is_some_and(is_css_identifier_character)
+        {
+            cursor += source[cursor..]
+                .chars()
+                .next()
+                .unwrap_or_default()
+                .len_utf8();
+        }
+        if cursor > name_start {
+            let name = &source[name_start..cursor];
+            if !names.iter().any(|existing| existing == name) {
+                names.push(name.to_owned());
+            }
+        }
+        index = cursor;
+    }
+    names
+}
+
+fn collect_stylesheet_animation_declarations(source: &str) -> Vec<String> {
+    let mut declarations = Vec::new();
+    let mut index = 0;
+    while let Some(offset) = source[index..].find("animation") {
+        index += offset;
+        let before = source[..index].chars().next_back();
+        if before.is_some_and(|character| character.is_ascii_alphanumeric() || character == '_') {
+            index += "animation".len();
+            continue;
+        }
+        let property = if source[index..].starts_with("animation-name") {
+            "animation-name"
+        } else {
+            "animation"
+        };
+        let mut cursor = index + property.len();
+        while source[cursor..]
+            .chars()
+            .next()
+            .is_some_and(char::is_whitespace)
+        {
+            cursor += source[cursor..]
+                .chars()
+                .next()
+                .unwrap_or_default()
+                .len_utf8();
+        }
+        if !source[cursor..].starts_with(':') {
+            index += property.len();
+            continue;
+        }
+        cursor += 1;
+        while source[cursor..]
+            .chars()
+            .next()
+            .is_some_and(char::is_whitespace)
+        {
+            cursor += source[cursor..]
+                .chars()
+                .next()
+                .unwrap_or_default()
+                .len_utf8();
+        }
+        let value_start = cursor;
+        while cursor < source.len() {
+            let character = source[cursor..].chars().next().unwrap_or_default();
+            if matches!(character, ';' | '{' | '}') {
+                break;
+            }
+            cursor += character.len_utf8();
+        }
+        if cursor > value_start {
+            declarations.push(source[value_start..cursor].trim().to_owned());
+        }
+        index = cursor.max(index + property.len());
+    }
+    declarations
+}
+
+fn collect_stylesheet_animation_names(
+    declarations: &[String],
+    variable_names: &[String],
+    manifest: &ManifestProjection,
+) -> Vec<String> {
+    let mut sources = declarations.to_vec();
+    let mut visited = HashSet::new();
+    for variable_name in variable_names {
+        collect_variable_animation_sources(variable_name, manifest, &mut visited, &mut sources);
+    }
+    let known_names = manifest
+        .animations
+        .keys()
+        .map(String::as_str)
+        .collect::<HashSet<_>>();
+    let mut names = Vec::new();
+    for source in sources {
+        for token in source.split(|character: char| character.is_whitespace() || character == ',') {
+            if known_names.contains(token) && !names.iter().any(|name| name == token) {
+                names.push(token.to_owned());
+            }
+        }
+    }
+    names
+}
+
+fn collect_variable_animation_sources(
+    name: &str,
+    manifest: &ManifestProjection,
+    visited: &mut HashSet<String>,
+    sources: &mut Vec<String>,
+) {
+    if !visited.insert(name.to_owned()) {
+        return;
+    }
+    let Some(variable) = manifest.compiled_variables.get(name) else {
+        return;
+    };
+    if let Some(value) = &variable.value {
+        sources.push(value.clone());
+    }
+    sources.extend(variable.modes.iter().map(|mode| mode.value.clone()));
+    for dependency in &variable.dependencies {
+        collect_variable_animation_sources(dependency, manifest, visited, sources);
+    }
+}
+
 fn collect_animation_names(
     declarations: &str,
     variable_names: &[String],
@@ -2710,12 +3029,19 @@ fn resolve_utility_value_components(
             flush(&mut token, &mut output, &mut variable_names);
             quote = Some(character);
             output.push(character);
+        } else if character == '(' {
+            // A token immediately followed by `(` is a CSS function name, not a
+            // variable key. In particular, the inline `min`/`max` variables
+            // must not rewrite the standard min()/max() math functions.
+            output.push_str(&token);
+            token.clear();
+            output.push(character);
         } else if character == '|' {
             flush(&mut token, &mut output, &mut variable_names);
             output.push(' ');
         } else if character == '/' && !token.is_empty() {
             token.push(character);
-        } else if character.is_ascii_whitespace() || matches!(character, '(' | ')' | ',' | '/') {
+        } else if character.is_ascii_whitespace() || matches!(character, ')' | ',' | '/') {
             flush(&mut token, &mut output, &mut variable_names);
             output.push(character);
         } else {
@@ -3833,6 +4159,10 @@ mod tests {
         "sm":{"id":"media","nodes":[{"type":"number","value":52.125,"unit":"rem"}]}
       },
       "variables":{
+        "":[
+          {"key":"min","value":"min-content","inline":true},
+          {"key":"max","value":"max-content","inline":true}
+        ],
         "color":[{"key":"red-60","value":"#d00"}],
         "spacing":[{"key":"md","type":"number","value":"1rem"}]
       },
@@ -4066,6 +4396,18 @@ mod tests {
         assert_eq!(
             engine.css_text(),
             "@layer utilities{.mt\\:0\\>div>div{margin-top:0}}"
+        );
+    }
+
+    #[test]
+    fn preserves_math_function_names_that_overlap_inline_variables() {
+        let mut engine = EngineSession::create(MANIFEST).unwrap();
+        engine
+            .ensure_class_rules(["w:min(1px,max(2px,3px))"])
+            .unwrap();
+        assert_eq!(
+            engine.css_text(),
+            "@layer utilities{.w\\:min\\(1px\\,max\\(2px\\,3px\\)\\){width:min(1px,max(2px,3px))}}"
         );
     }
 }

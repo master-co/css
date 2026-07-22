@@ -212,6 +212,18 @@ impl NodeRenderSession {
     }
 
     #[napi]
+    pub fn ensure_stylesheet_resources(&mut self, native_css: String) -> Result<()> {
+        self.inner
+            .ensure_stylesheet_resources(&native_css)
+            .map_err(to_napi_error)
+    }
+
+    #[napi]
+    pub fn emitted_globals(&self) -> Result<String> {
+        to_json(&self.inner.emitted_globals().map_err(to_napi_error)?)
+    }
+
+    #[napi]
     pub fn snapshot(&self) -> Result<String> {
         to_json(&self.inner.snapshot().map_err(to_napi_error)?)
     }

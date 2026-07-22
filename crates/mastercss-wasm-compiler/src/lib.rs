@@ -4,6 +4,7 @@ use mastercss_compiler::{
     CompileDefaultPresetRequest, CompileManifestOptions, CompileNativeCssOptions, CompilerError,
     CssImportGraphRequest,
 };
+use serde::Serialize;
 use wasm_bindgen::prelude::*;
 
 fn compiler_error(error: CompilerError) -> JsValue {
@@ -14,6 +15,93 @@ fn compiler_error(error: CompilerError) -> JsValue {
 
 fn serialization_error(error: impl ToString) -> JsValue {
     JsValue::from_str(&error.to_string())
+}
+
+fn render_value<T: Serialize>(value: &T) -> Result<JsValue, JsValue> {
+    value
+        .serialize(&serde_wasm_bindgen::Serializer::new().serialize_maps_as_objects(true))
+        .map_err(serialization_error)
+}
+
+fn engine_error(error: mastercss_engine::EngineError) -> JsValue {
+    JsValue::from_str(
+        &serde_json::to_string(&error.diagnostic()).unwrap_or_else(|_| error.to_string()),
+    )
+}
+
+#[wasm_bindgen]
+pub struct CompilerRenderSession {
+    inner: mastercss_render::RenderSession,
+}
+
+#[wasm_bindgen]
+impl CompilerRenderSession {
+    #[wasm_bindgen(constructor)]
+    pub fn new(
+        manifest_json: &str,
+        emitted_globals_json: Option<String>,
+    ) -> Result<CompilerRenderSession, JsValue> {
+        Ok(Self {
+            inner: mastercss_render::RenderSession::create(
+                manifest_json,
+                emitted_globals_json.as_deref(),
+            )
+            .map_err(engine_error)?,
+        })
+    }
+
+    #[wasm_bindgen(js_name = nativeDeclarationCandidates)]
+    pub fn native_declaration_candidates(
+        &self,
+        class_names: Vec<String>,
+    ) -> Result<JsValue, JsValue> {
+        let candidates = self
+            .inner
+            .native_declaration_candidates(class_names)
+            .map_err(engine_error)?;
+        render_value(&candidates)
+    }
+
+    #[wasm_bindgen(js_name = ensureClasses)]
+    pub fn ensure_classes(
+        &mut self,
+        class_names: Vec<String>,
+        native_support: JsValue,
+    ) -> Result<(), JsValue> {
+        let native_support = if native_support.is_null() || native_support.is_undefined() {
+            None
+        } else {
+            Some(
+                serde_wasm_bindgen::from_value::<Vec<bool>>(native_support)
+                    .map_err(serialization_error)?,
+            )
+        };
+        self.inner
+            .ensure_classes(class_names, native_support.as_deref())
+            .map_err(engine_error)
+    }
+
+    #[wasm_bindgen(js_name = ensureStylesheetResources)]
+    pub fn ensure_stylesheet_resources(&mut self, native_css: &str) -> Result<(), JsValue> {
+        self.inner
+            .ensure_stylesheet_resources(native_css)
+            .map_err(engine_error)
+    }
+
+    #[wasm_bindgen(js_name = emittedGlobals)]
+    pub fn emitted_globals(&self) -> Result<JsValue, JsValue> {
+        let emitted_globals = self.inner.emitted_globals().map_err(engine_error)?;
+        render_value(&emitted_globals)
+    }
+
+    pub fn snapshot(&self) -> Result<JsValue, JsValue> {
+        let snapshot = self.inner.snapshot().map_err(engine_error)?;
+        render_value(&snapshot)
+    }
+
+    pub fn dispose(&mut self) {
+        self.inner.dispose();
+    }
 }
 
 #[wasm_bindgen(js_name = inspectCSS)]

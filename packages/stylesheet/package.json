@@ -72,13 +72,13 @@
     "provenance": true
   },
   "dependencies": {
-    "@master/css": "workspace:^",
     "@master/css-compiler": "workspace:^",
-    "@master/css-engine": "workspace:^",
     "@master/css-integration": "workspace:^",
     "@master/css-lexer": "workspace:^",
+    "@master/css-native": "workspace:^",
     "@master/css-source": "workspace:^",
     "@master/css-validator": "workspace:^",
+    "@master/css-wasm-compiler": "workspace:^",
     "fast-glob": "^3.3.3",
     "@master/css-schema": "workspace:^"
   },

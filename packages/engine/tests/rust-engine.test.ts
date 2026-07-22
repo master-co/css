@@ -169,14 +169,15 @@ describe('Rust engine differential slice', () => {
       }
     }
 
+    const rust = createEngineSync({ manifest: typedDefaultManifest })
     for (const className of classNames) {
       const oracle = MasterCSS.create({ manifest: typedDefaultManifest })
       oracle.ensureClassRules(className)
-      const rust = createEngineSync({ manifest: typedDefaultManifest })
       rust.ensureClassRules([className])
       expect(rust.text, className).toBe(oracle.text)
-      rust.dispose()
+      rust.deleteClassRules([className])
     }
+    rust.dispose()
     expect(classNames.size).toBe(133)
   })
 
@@ -224,16 +225,18 @@ describe('Rust engine differential slice', () => {
 
   it('matches every builtin key alias through native-value fallback', () => {
     const differences: { className: string, oracle: string, rust: string }[] = []
+    const rust = createEngineSync({ manifest: typedDefaultManifest })
     for (const key of Object.keys(builtinKeyAliases)) {
       const className = `${key}:10px`
       const oracle = MasterCSS.create({ manifest: typedDefaultManifest })
       oracle.ensureClassRules(className)
-      const rust = createEngineSync({ manifest: typedDefaultManifest })
       rust.ensureClassRules([className])
       if (rust.text !== oracle.text) {
         differences.push({ className, oracle: oracle.text, rust: rust.text })
       }
+      rust.deleteClassRules([className])
     }
+    rust.dispose()
     expect(differences).toEqual([])
     expect(Object.keys(builtinKeyAliases).length).toBeGreaterThan(90)
   })

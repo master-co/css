@@ -74,6 +74,11 @@
       "import": "./dist/runtime-style.js",
       "default": "./dist/runtime-style.js"
     },
+    "./emitted-globals": {
+      "types": "./dist/emitted-globals.d.ts",
+      "import": "./dist/emitted-globals.js",
+      "default": "./dist/emitted-globals.js"
+    },
     "./native-css-shorthand": {
       "types": "./dist/native-css-shorthand.d.ts",
       "import": "./dist/native-css-shorthand.js",
