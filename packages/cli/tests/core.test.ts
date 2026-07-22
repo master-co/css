@@ -78,6 +78,20 @@ describe('root command', () => {
     }
   })
 
+  it('applies stylesheet blocklists in the Rust root scan', () => {
+    const cwd = fs.mkdtempSync(resolve(os.tmpdir(), 'master-css-native-cli-blocklist-'))
+    try {
+      fs.writeFileSync(resolve(cwd, 'index.css'), '@master entry;\n@blocklist "block fg:*";')
+      fs.writeFileSync(resolve(cwd, 'index.html'), '<div class="block fg:red m:2x"></div>')
+      const output = execFileSync(nativeCLIFilepath, ['--no-export'], { cwd, encoding: 'utf8' })
+      expect(output).not.toContain('.block{')
+      expect(output).not.toContain('.fg\\:red{')
+      expect(output).toContain('.m\\:2x{margin:0.5rem}')
+    } finally {
+      fs.rmSync(cwd, { recursive: true, force: true })
+    }
+  })
+
   it('opts the package binary into the native root scan explicitly', () => {
     const cwd = fs.mkdtempSync(resolve(os.tmpdir(), 'master-css-native-cli-selector-'))
     try {

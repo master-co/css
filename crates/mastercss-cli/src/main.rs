@@ -2,7 +2,7 @@
 
 use mastercss_engine::EngineSession;
 use mastercss_project::{collect_project_files, load_project_manifest};
-use mastercss_scanner::ScannerSession;
+use mastercss_scanner::{ScannerSession, extract_source_candidates, is_class_blocklisted};
 use serde::Serialize;
 use serde_json::Value;
 use std::collections::HashSet;
@@ -278,6 +278,7 @@ fn run_scan(args: ScanArgs) -> Result<(), CliError> {
         .map_err(|error| CliError::new("CLI_SERIALIZATION_FAILED", error.to_string()))?;
     let mut scanner = ScannerSession::create(&manifest_json)
         .map_err(|error| CliError::new("CLI_SCANNER_FAILED", error.to_string()))?;
+    scanner.register_native_classes(&project.native_class_names);
     let source_files = resolve_source_files(&cwd, &args.source_patterns);
     for file in &source_files {
         let content = fs::read_to_string(file).map_err(|error| {
@@ -286,8 +287,24 @@ fn run_scan(args: ScanArgs) -> Result<(), CliError> {
                 format!("Cannot read {}: {error}", file.display()),
             )
         })?;
+        let source = normalize_path(file);
+        let candidates = extract_source_candidates(&source, &content);
+        let excluded_classes = candidates
+            .iter()
+            .filter(|class_name| {
+                is_class_blocklisted(class_name, &project.extraction_policy.blocklist)
+            })
+            .cloned()
+            .collect::<HashSet<_>>();
         scanner
-            .scan(&normalize_path(file), &content)
+            .scan_candidates(
+                &source,
+                &content,
+                candidates,
+                &excluded_classes,
+                &[],
+                &HashSet::new(),
+            )
             .map_err(|error| CliError::new("CLI_SCANNER_FAILED", error.to_string()))?;
     }
     if !project.extraction_policy.safelist.is_empty() {

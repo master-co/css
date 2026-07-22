@@ -6,6 +6,7 @@ use std::path::Path;
 use mastercss_engine::{EngineError, EngineSession};
 use mastercss_schema::{EngineSnapshotIr, EngineTransitionIr, NativeDeclarationCandidateIr};
 use serde::Serialize;
+use serde_json::Value;
 
 #[derive(Debug, Clone, PartialEq, Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -283,7 +284,7 @@ impl ScannerSession {
     }
 }
 
-fn extract_source_candidates(source: &str, content: &str) -> Vec<String> {
+pub fn extract_source_candidates(source: &str, content: &str) -> Vec<String> {
     let clean_source = source.split('?').next().unwrap_or(source);
     let extension = Path::new(clean_source)
         .extension()
@@ -298,6 +299,99 @@ fn extract_source_candidates(source: &str, content: &str) -> Vec<String> {
         }
         _ => mastercss_source::extract_class_candidates(content),
     }
+}
+
+pub fn is_class_blocklisted(class_name: &str, blocklist: &[Value]) -> bool {
+    blocklist.iter().any(|entry| match entry {
+        Value::String(value) => value == class_name,
+        Value::Object(pattern) => pattern
+            .get("source")
+            .and_then(Value::as_str)
+            .zip(pattern.get("flags").and_then(Value::as_str).or(Some("")))
+            .is_some_and(|(source, flags)| {
+                flags.is_empty() && wildcard_regex_matches(source, class_name)
+            }),
+        _ => false,
+    })
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum WildcardRegexToken {
+    Literal(u16),
+    Any,
+    Many,
+}
+
+fn wildcard_regex_matches(source: &str, value: &str) -> bool {
+    let Some(source) = source
+        .strip_prefix('^')
+        .and_then(|source| source.strip_suffix('$'))
+    else {
+        return false;
+    };
+    let mut tokens = Vec::new();
+    let mut characters = source.chars().peekable();
+    while let Some(character) = characters.next() {
+        if character == '\\' {
+            let Some(literal) = characters.next() else {
+                return false;
+            };
+            tokens.extend(
+                literal
+                    .encode_utf16(&mut [0; 2])
+                    .iter()
+                    .copied()
+                    .map(WildcardRegexToken::Literal),
+            );
+        } else if character == '.' && characters.peek() == Some(&'*') {
+            characters.next();
+            tokens.push(WildcardRegexToken::Many);
+        } else if character == '.' {
+            tokens.push(WildcardRegexToken::Any);
+        } else {
+            tokens.extend(
+                character
+                    .encode_utf16(&mut [0; 2])
+                    .iter()
+                    .copied()
+                    .map(WildcardRegexToken::Literal),
+            );
+        }
+    }
+    let value = value.encode_utf16().collect::<Vec<_>>();
+    let mut matched = vec![vec![None; value.len() + 1]; tokens.len() + 1];
+    fn matches(
+        tokens: &[WildcardRegexToken],
+        value: &[u16],
+        token_index: usize,
+        value_index: usize,
+        matched: &mut [Vec<Option<bool>>],
+    ) -> bool {
+        if let Some(result) = matched[token_index][value_index] {
+            return result;
+        }
+        let result = match tokens.get(token_index) {
+            None => value_index == value.len(),
+            Some(WildcardRegexToken::Literal(expected)) => {
+                value
+                    .get(value_index)
+                    .is_some_and(|actual| actual == expected)
+                    && matches(tokens, value, token_index + 1, value_index + 1, matched)
+            }
+            Some(WildcardRegexToken::Any) => {
+                value_index < value.len()
+                    && matches(tokens, value, token_index + 1, value_index + 1, matched)
+            }
+            Some(WildcardRegexToken::Many) => {
+                matches(tokens, value, token_index + 1, value_index, matched)
+                    || (value_index < value.len()
+                        && matches(tokens, value, token_index, value_index + 1, matched))
+            }
+        };
+        matched[token_index][value_index] = Some(result);
+        result
+    }
+    matches(&tokens, &value, 0, 0, &mut matched)
 }
 
 #[cfg(test)]
@@ -399,5 +493,20 @@ mod tests {
             scanner.state().unwrap().engine.text,
             "@layer utilities{.made-up\\:value{made-up:value}}"
         );
+    }
+
+    #[test]
+    fn matches_compiler_blocklist_values_without_changing_regex_dialects() {
+        let blocklist = vec![
+            Value::String("exact".into()),
+            serde_json::json!({ "source": "^debug\\-.*$", "flags": "" }),
+            serde_json::json!({ "source": "^icon\\-.$", "flags": "" }),
+        ];
+        assert!(is_class_blocklisted("exact", &blocklist));
+        assert!(is_class_blocklisted("debug-card", &blocklist));
+        assert!(is_class_blocklisted("icon-a", &blocklist));
+        assert!(!is_class_blocklisted("icon-😀", &blocklist));
+        assert!(!is_class_blocklisted("debug", &blocklist));
+        assert!(!is_class_blocklisted("icon-long", &blocklist));
     }
 }
