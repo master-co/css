@@ -1,8 +1,7 @@
 import { createRequire } from 'node:module'
 import CSSLanguageService from '@master/css-language-service'
 import type { MasterCSSManifest } from '@master/css-engine'
-import { createCSSWithNativeDeclarations } from '@master/css-validator/native-declaration'
-import { parseHTML } from '@master/css-server'
+import { createServerCSS, parseHTML } from '@master/css-server'
 import type MasterCSSMCPContext from './context'
 import { createMCPTextDocument } from './document'
 import { loadWorkspaceManifest } from './project'
@@ -46,20 +45,17 @@ function resolveClasses(options: CompareCSSOptions, side: 'before' | 'after', fi
 }
 
 function renderClasses(manifest: MasterCSSManifest, classes: string[]) {
-  const css = createCSSWithNativeDeclarations(manifest)
-  const invalid: string[] = []
-  for (const className of classes) {
-    const rules = css.generate(className)
-    if (rules.length) {
-      for (const rule of rules) rule.layer.insert(rule)
-    } else {
-      invalid.push(className)
+  const css = createServerCSS(manifest)
+  try {
+    css.ensureClassRules(...classes)
+    const text = css.text
+    return {
+      text,
+      bytes: text.length,
+      invalid: classes.filter((className) => !css.classUtilities.has(className))
     }
-  }
-  return {
-    text: css.text,
-    bytes: css.text.length,
-    invalid
+  } finally {
+    css.dispose()
   }
 }
 

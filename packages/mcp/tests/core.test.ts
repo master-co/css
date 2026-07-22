@@ -190,6 +190,17 @@ describe('@master/css-mcp', () => {
       }))
       expect(rendered.classes).toEqual(['block'])
       expect(rendered.css.text).toContain('display:block')
+
+      const renderedNative = parseToolJSON(await connection.client.callTool({
+        name: 'mastercss_render_css',
+        arguments: {
+          classList: 'block field-sizing:content display:banana'
+        }
+      }))
+      expect(renderedNative.invalid).toEqual(['display:banana'])
+      expect(renderedNative.css.text).toContain('.block{display:block}')
+      expect(renderedNative.css.text).toContain('.field-sizing\\:content{field-sizing:content}')
+      expect(renderedNative.css.bytes).toBe(renderedNative.css.text.length)
     } finally {
       await connection.close()
     }
@@ -330,6 +341,21 @@ describe('@master/css-mcp', () => {
       expect(compare.summary.changed).toBe(true)
       expect(compare.classes.added).toEqual(['inline'])
       expect(compare.rules.added.length).toBeGreaterThan(0)
+
+      const nativeCompare = parseToolJSON(await connection.client.callTool({
+        name: 'mastercss_css_compare',
+        arguments: {
+          beforeClassList: 'block display:banana',
+          afterClassList: 'block field-sizing:content'
+        }
+      }))
+      expect(nativeCompare.invalid).toEqual({
+        before: ['display:banana'],
+        after: [],
+        added: [],
+        removed: ['display:banana']
+      })
+      expect(nativeCompare.css.after.text).toContain('field-sizing:content')
     } finally {
       await connection.close()
     }

@@ -4,7 +4,7 @@ import fg from 'fast-glob'
 import { createMasterCSSInspectionReport } from '@master/css-diagnostics'
 import { inspectMasterCSSClass } from '@master/css-engine/inspect'
 import { createCSSWithNativeDeclarations } from '@master/css-validator/native-declaration'
-import { parseHTML } from '@master/css-server'
+import { createServerCSS, parseHTML } from '@master/css-server'
 import type MasterCSSMCPContext from './context'
 import { loadWorkspaceManifest } from './project'
 import type { MasterCSSManifest } from '@master/css-engine'
@@ -67,31 +67,28 @@ export async function scanProject(context: MasterCSSMCPContext, options: ScanPro
 
 export async function renderCSS(context: MasterCSSMCPContext, options: RenderCSSOptions) {
   const manifest = await loadWorkspaceManifest(context)
-  const css = createCSSWithNativeDeclarations(manifest.status === 'loaded' ? manifest.manifest : defaultManifest)
   const classes = options.html
     ? parseHTML(options.html).classes
     : (options.classList ?? '').split(/\s+/).map((className) => className.trim()).filter(Boolean)
-  const invalid: string[] = []
-  for (const className of classes) {
-    const rules = css.generate(className)
-    if (rules.length) {
-      for (const rule of rules) rule.layer.insert(rule)
-    } else {
-      invalid.push(className)
+  const css = createServerCSS(manifest.status === 'loaded' ? manifest.manifest : defaultManifest)
+  try {
+    css.ensureClassRules(...classes)
+    const text = css.text
+    return {
+      manifest: {
+        status: manifest.status,
+        entries: manifest.entries,
+        ...(manifest.status === 'error' ? { error: manifest.error } : {})
+      },
+      classes,
+      invalid: classes.filter((className) => !css.classUtilities.has(className)),
+      css: {
+        bytes: text.length,
+        text
+      }
     }
-  }
-  return {
-    manifest: {
-      status: manifest.status,
-      entries: manifest.entries,
-      ...(manifest.status === 'error' ? { error: manifest.error } : {})
-    },
-    classes,
-    invalid,
-    css: {
-      bytes: css.text.length,
-      text: css.text
-    }
+  } finally {
+    css.dispose()
   }
 }
 
