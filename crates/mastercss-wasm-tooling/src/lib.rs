@@ -95,6 +95,60 @@ pub fn analyze_language(
 }
 
 #[wasm_bindgen]
+pub struct ToolingLanguageSession {
+    inner: mastercss_language::LanguageSession,
+}
+
+#[wasm_bindgen]
+impl ToolingLanguageSession {
+    #[wasm_bindgen(constructor)]
+    pub fn new(manifest_json: &str) -> Result<ToolingLanguageSession, JsValue> {
+        Ok(Self {
+            inner: mastercss_language::LanguageSession::create(manifest_json)
+                .map_err(|error| JsValue::from_str(&error.to_string()))?,
+        })
+    }
+
+    #[wasm_bindgen(js_name = nativeDeclarationCandidates)]
+    pub fn native_declaration_candidates(
+        &self,
+        class_names: Vec<String>,
+    ) -> Result<JsValue, JsValue> {
+        let candidates = self
+            .inner
+            .native_declaration_candidates(class_names)
+            .map_err(|error| JsValue::from_str(&error.to_string()))?;
+        candidates
+            .serialize(&serde_wasm_bindgen::Serializer::json_compatible())
+            .map_err(|error| JsValue::from_str(&error.to_string()))
+    }
+
+    #[wasm_bindgen(js_name = classifyClassNames)]
+    pub fn classify_class_names(
+        &mut self,
+        class_names: Vec<String>,
+        native_support: JsValue,
+    ) -> Result<JsValue, JsValue> {
+        let native_support = serde_wasm_bindgen::from_value::<Vec<bool>>(native_support)
+            .map_err(|error| JsValue::from_str(&error.to_string()))?;
+        let batch = self
+            .inner
+            .classify_class_names(
+                class_names,
+                (!native_support.is_empty()).then_some(native_support.as_slice()),
+            )
+            .map_err(|error| JsValue::from_str(&error.to_string()))?;
+        batch
+            .serialize(&serde_wasm_bindgen::Serializer::json_compatible())
+            .map_err(|error| JsValue::from_str(&error.to_string()))
+    }
+
+    pub fn dispose(&mut self) {
+        self.inner.dispose();
+    }
+}
+
+#[wasm_bindgen]
 pub struct ToolingScannerSession {
     inner: mastercss_scanner::ScannerSession,
 }

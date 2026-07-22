@@ -10,6 +10,7 @@ use mastercss_schema::{
     NativeDeclarationCandidateIr, RuleMutationIr, RulePriorityIr, RuleTarget, UtilityLayerName,
 };
 use serde::Deserialize;
+use serde::Serialize;
 use serde_json::{Map, Value};
 use thiserror::Error;
 
@@ -254,6 +255,42 @@ struct UtilityMatch {
     value: Option<String>,
     state_token: String,
     variable_names: Vec<String>,
+    matcher_type: UtilityMatcherType,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize)]
+#[serde(rename_all = "lowercase")]
+pub enum ClassSemanticKind {
+    Unknown,
+    Component,
+    Semantic,
+    Pattern,
+    Declaration,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize)]
+#[serde(rename_all = "lowercase")]
+pub enum UtilityMatcherType {
+    Static,
+    Pattern,
+    Key,
+    Variable,
+    Value,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ClassSemanticInspection {
+    pub class_name: String,
+    pub kind: ClassSemanticKind,
+    pub matcher_types: Vec<UtilityMatcherType>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub key_token: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub value_token: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub state_token: Option<String>,
+    pub important: bool,
 }
 
 #[derive(Debug, Clone)]
@@ -709,6 +746,93 @@ impl EngineSession {
             class_name: class_name.to_owned(),
             valid: !rules.is_empty(),
             rules,
+        })
+    }
+
+    pub fn inspect_class_semantics(
+        &self,
+        class_name: &str,
+    ) -> Result<ClassSemanticInspection, EngineError> {
+        self.ensure_active()?;
+        let rules = self.generate_class_rules(class_name);
+        if rules.is_empty() {
+            return Ok(ClassSemanticInspection {
+                class_name: class_name.to_owned(),
+                kind: ClassSemanticKind::Unknown,
+                matcher_types: Vec::new(),
+                key_token: None,
+                value_token: None,
+                state_token: None,
+                important: false,
+            });
+        }
+
+        let (semantic_class_name, trailing_important) = class_name
+            .strip_suffix('!')
+            .map_or((class_name, false), |name| (name, true));
+        let mut matching_class_names = vec![semantic_class_name.to_owned()];
+        if let Some(canonical) = canonicalize_class_name(semantic_class_name) {
+            matching_class_names.push(canonical);
+        }
+
+        let mut matcher_types = Vec::new();
+        let mut state_token = None;
+        for matching_class_name in matching_class_names {
+            for utility in &self.compiled.utilities {
+                let Some(matched) = match_utility(&matching_class_name, utility, &self.compiled)
+                else {
+                    continue;
+                };
+                if !matcher_types.contains(&matched.matcher_type) {
+                    matcher_types.push(matched.matcher_type);
+                }
+                state_token.get_or_insert(matched.state_token);
+            }
+        }
+
+        let component = rules.iter().any(|rule| {
+            rule.ir.utility_type == -2 && rule.ir.layer == UtilityLayerName::Components
+        });
+        let kind = if component {
+            ClassSemanticKind::Component
+        } else if rules[0].ir.utility_type == -2 {
+            ClassSemanticKind::Semantic
+        } else if matcher_types.contains(&UtilityMatcherType::Pattern) {
+            ClassSemanticKind::Pattern
+        } else {
+            ClassSemanticKind::Declaration
+        };
+
+        let raw_state_token = state_token.unwrap_or_default();
+        let (state_token, state_important) = raw_state_token
+            .strip_prefix('!')
+            .map_or((raw_state_token.as_str(), false), |state| (state, true));
+        let important = trailing_important || state_important;
+        let state_token = (!state_token.is_empty()).then(|| state_token.to_owned());
+        let (key_token, value_token) = if kind == ClassSemanticKind::Declaration {
+            let value_end = semantic_class_name
+                .len()
+                .saturating_sub(raw_state_token.len());
+            semantic_class_name[..value_end]
+                .find(':')
+                .map_or((None, None), |colon| {
+                    (
+                        Some(semantic_class_name[..=colon].to_owned()),
+                        Some(semantic_class_name[colon + 1..value_end].to_owned()),
+                    )
+                })
+        } else {
+            (None, None)
+        };
+
+        Ok(ClassSemanticInspection {
+            class_name: class_name.to_owned(),
+            kind,
+            matcher_types,
+            key_token,
+            value_token,
+            state_token,
+            important,
         })
     }
 
@@ -2697,6 +2821,7 @@ fn match_utility(
                     value: None,
                     state_token: class_name[name.len()..].to_owned(),
                     variable_names: Vec::new(),
+                    matcher_type: UtilityMatcherType::Static,
                 });
             }
             UtilityMatcher::Pattern {
@@ -2724,6 +2849,7 @@ fn match_utility(
                     ),
                     state_token: state_token.to_owned(),
                     variable_names: Vec::new(),
+                    matcher_type: UtilityMatcherType::Pattern,
                 });
             }
             UtilityMatcher::Key { keys } => {
@@ -2742,6 +2868,7 @@ fn match_utility(
                             value: Some(value),
                             state_token,
                             variable_names,
+                            matcher_type: UtilityMatcherType::Key,
                         });
                     }
                 }
@@ -2770,6 +2897,7 @@ fn match_utility(
                         value: Some(value),
                         state_token,
                         variable_names,
+                        matcher_type: UtilityMatcherType::Variable,
                     });
                 }
             }
@@ -2795,6 +2923,7 @@ fn match_utility(
                         value: Some(value),
                         state_token,
                         variable_names,
+                        matcher_type: UtilityMatcherType::Value,
                     });
                 }
             }
@@ -4401,6 +4530,43 @@ mod tests {
         assert_eq!(inspection.rules.len(), 1);
         assert_eq!(inspection.rules[0].key, "block:hover\0:hover");
         assert!(inspection.rules[0].nodes.is_empty());
+        assert_eq!(engine.css_text(), "");
+    }
+
+    #[test]
+    fn exposes_manifest_driven_class_semantics_without_mutating_the_session() {
+        let engine = EngineSession::create(MANIFEST).unwrap();
+        assert_eq!(
+            engine.inspect_class_semantics("block:hover").unwrap(),
+            ClassSemanticInspection {
+                class_name: "block:hover".into(),
+                kind: ClassSemanticKind::Semantic,
+                matcher_types: vec![UtilityMatcherType::Static],
+                key_token: None,
+                value_token: None,
+                state_token: Some(":hover".into()),
+                important: false,
+            }
+        );
+        assert_eq!(
+            engine.inspect_class_semantics("w:10px!:hover").unwrap(),
+            ClassSemanticInspection {
+                class_name: "w:10px!:hover".into(),
+                kind: ClassSemanticKind::Declaration,
+                matcher_types: vec![UtilityMatcherType::Key],
+                key_token: Some("w:".into()),
+                value_token: Some("10px".into()),
+                state_token: Some(":hover".into()),
+                important: true,
+            }
+        );
+        assert_eq!(
+            engine
+                .inspect_class_semantics("bg-origin-border")
+                .unwrap()
+                .kind,
+            ClassSemanticKind::Semantic
+        );
         assert_eq!(engine.css_text(), "");
     }
 

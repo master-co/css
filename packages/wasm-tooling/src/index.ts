@@ -9,6 +9,12 @@ interface GeneratedToolingWasmModule {
   extractAstroClasses(source: string, content: string): string[]
   createInspectionReport(input: unknown): unknown
   analyzeLanguage(source: string, contexts: unknown[], semanticTokens: unknown[]): unknown
+  ToolingLanguageSession: new (manifestJSON: string) => {
+    nativeDeclarationCandidates(classNames: string[]): unknown
+    classifyClassNames(classNames: string[], nativeSupport: boolean[]): unknown
+    dispose(): void
+    free(): void
+  }
   ToolingScannerSession: new (manifestJSON: string) => {
     scan(source: string, content: string): unknown
     nativeDeclarationCandidates(candidates: string[]): unknown
@@ -135,6 +141,23 @@ export async function analyzeToolingLanguage(
 ) {
   const module = await initToolingWasm(options)
   return module.analyzeLanguage(source, contexts, semanticTokens)
+}
+
+export async function createToolingLanguageSession(
+  manifestJSON: string,
+  options: InitToolingWasmOptions = {}
+) {
+  const module = await initToolingWasm(options)
+  const session = new module.ToolingLanguageSession(manifestJSON)
+  return {
+    nativeDeclarationCandidates: (classNames: string[]) => session.nativeDeclarationCandidates(classNames),
+    classifyClassNames: (classNames: string[], nativeSupport?: boolean[]) =>
+      session.classifyClassNames(classNames, nativeSupport || []),
+    dispose() {
+      session.dispose()
+      session.free()
+    }
+  }
 }
 
 export async function createToolingLintSession(

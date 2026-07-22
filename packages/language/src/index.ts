@@ -12,6 +12,8 @@ export * from './semantic/tokenize-css'
 export * from './semantic/types'
 export type { MasterCSSManifest } from '@master/css-schema/manifest'
 export type {
+  MasterCSSLanguageClassificationsIR,
+  MasterCSSLanguageClassIR,
   RustClassListContextIR,
   RustLanguageAnalyzer,
   RustLanguageBatchIR

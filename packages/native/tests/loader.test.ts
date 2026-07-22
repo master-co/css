@@ -66,4 +66,29 @@ describe('native target resolution', () => {
       lint.dispose()
     }
   })
+
+  it('loads the manifest-driven language session', () => {
+    const loaded = loadNativeBinding({ required: true })!
+    const language = new loaded.binding.LanguageSession(JSON.stringify({
+      version: 1,
+      utilities: [{
+        id: 'display-block',
+        name: 'block',
+        type: -2,
+        emit: { type: 'static', rules: [{ declarations: { display: 'block' } }] },
+        matchers: [{ type: 'static', name: 'block' }]
+      }]
+    }))
+    try {
+      expect(JSON.parse(language.classifyClassNames(['block:hover', 'unknown']))).toMatchObject({
+        version: 1,
+        classes: [
+          { className: 'block:hover', kind: 'semantic', stateToken: ':hover' },
+          { className: 'unknown', kind: 'unknown' }
+        ]
+      })
+    } finally {
+      language.dispose()
+    }
+  })
 })

@@ -193,6 +193,26 @@ test('loads the isolated source tooling Wasm surface', async () => {
     semanticTokenData: [0, 3, 6, 2, 1]
   })
 
+  const language = new tooling.ToolingLanguageSession(JSON.stringify({
+    version: 1,
+    utilities: [{
+      id: 'display-block',
+      name: 'block',
+      type: -2,
+      emit: { type: 'static', rules: [{ declarations: { display: 'block' } }] },
+      matchers: [{ type: 'static', name: 'block' }]
+    }]
+  }))
+  expect(language.classifyClassNames(['block:hover', 'unknown'], [])).toMatchObject({
+    version: 1,
+    classes: [
+      { className: 'block:hover', kind: 'semantic', stateToken: ':hover' },
+      { className: 'unknown', kind: 'unknown' }
+    ]
+  })
+  language.dispose()
+  language.free()
+
   expect(tooling.createInspectionReport({
     version: 1,
     cwd: '/project',

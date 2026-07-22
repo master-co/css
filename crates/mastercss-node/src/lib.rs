@@ -3,6 +3,7 @@ use mastercss_compiler::{
     CssImportGraphRequest,
 };
 use mastercss_engine::{EngineError, EngineSession as RustEngineSession};
+use mastercss_language::LanguageSession as RustLanguageSession;
 use mastercss_lint::LintSession as RustLintSession;
 use mastercss_render::RenderSession as RustRenderSession;
 use mastercss_scanner::ScannerSession as RustScannerSession;
@@ -119,6 +120,51 @@ pub fn analyze_language_json(
 ) -> Result<String> {
     mastercss_language::analyze_language_json(&source, &contexts_json, &semantic_tokens_json)
         .map_err(|error| Error::new(Status::InvalidArg, error.to_string()))
+}
+
+#[napi(js_name = "LanguageSession")]
+pub struct NodeLanguageSession {
+    inner: RustLanguageSession,
+}
+
+#[napi]
+impl NodeLanguageSession {
+    #[napi(constructor)]
+    pub fn new(manifest_json: String) -> Result<Self> {
+        Ok(Self {
+            inner: RustLanguageSession::create(&manifest_json)
+                .map_err(|error| Error::new(Status::InvalidArg, error.to_string()))?,
+        })
+    }
+
+    #[napi]
+    pub fn native_declaration_candidates(&self, class_names: Vec<String>) -> Result<String> {
+        to_json(
+            &self
+                .inner
+                .native_declaration_candidates(class_names)
+                .map_err(|error| Error::new(Status::InvalidArg, error.to_string()))?,
+        )
+    }
+
+    #[napi]
+    pub fn classify_class_names(
+        &mut self,
+        class_names: Vec<String>,
+        native_support: Option<Vec<bool>>,
+    ) -> Result<String> {
+        to_json(
+            &self
+                .inner
+                .classify_class_names(class_names, native_support.as_deref())
+                .map_err(|error| Error::new(Status::InvalidArg, error.to_string()))?,
+        )
+    }
+
+    #[napi]
+    pub fn dispose(&mut self) {
+        self.inner.dispose();
+    }
 }
 
 #[napi]

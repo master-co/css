@@ -42,12 +42,20 @@ export default class CSSLanguageService extends EventEmitter {
   ) {
     super()
     this.runtime = options.runtime ?? defaultCSSLanguageRuntime
-    this.analyzer = options.analyzer
     this.settings = defu(customSettings, settings) as Settings
+    const manifest = this.settings.manifest || this.runtime.defaultManifest
+    this.analyzer = options.analyzer?.createSession?.(manifest) ?? options.analyzer
     this.css = this.runtime.MasterCSS.create({
-      manifest: this.settings.manifest || this.runtime.defaultManifest,
+      manifest,
       nativeDeclarationMatcher: this.runtime.nativeDeclarationMatcher
     })
+  }
+
+  dispose() {
+    this.analyzer?.dispose?.()
+    this.classPositionCache.clear()
+    this.completionIndex = undefined
+    this.removeAllListeners()
   }
 
   private getCompletionIndex() {

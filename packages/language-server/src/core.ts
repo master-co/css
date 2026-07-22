@@ -570,6 +570,7 @@ export default class CSSLanguageServer {
 
   destroyLanguageService(workspace: Workspace) {
     this.console.info(`Destroyed workspace ${workspace.uri}`)
+    workspace.languageService?.dispose()
     delete workspace.languageService
   }
 

@@ -79,6 +79,12 @@ export interface NativeLintSession {
   dispose(): void
 }
 
+export interface NativeLanguageSession {
+  nativeDeclarationCandidates(classNames: string[]): string
+  classifyClassNames(classNames: string[], nativeSupport?: boolean[]): string
+  dispose(): void
+}
+
 export interface NativeBinding {
   bindingInfoJson(): string
   extractAstroClasses(source: string, content: string): string[]
@@ -97,6 +103,7 @@ export interface NativeBinding {
   inspectCssJson(source: string): string
   createInspectionReportJson(inputJSON: string): string
   analyzeLanguageJson(source: string, contextsJSON: string, semanticTokensJSON: string): string
+  LanguageSession: new (manifestJSON: string) => NativeLanguageSession
   ScannerSession: new (manifestJSON: string) => NativeScannerSession
   RenderSession: new (manifestJSON: string, emittedGlobalsJSON?: string) => NativeRenderSession
   ValidatorSession: new (manifestJSON: string) => NativeValidatorSession

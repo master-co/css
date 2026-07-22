@@ -1,7 +1,8 @@
 #![forbid(unsafe_code)]
 
+use mastercss_engine::{ClassSemanticInspection, EngineError, EngineSession};
 use mastercss_lexer::{collect_class_list_token_ranges, utf16_len, utf16_to_byte_offset};
-use mastercss_schema::{LANGUAGE_BATCH_VERSION, SourceRange};
+use mastercss_schema::{LANGUAGE_BATCH_VERSION, NativeDeclarationCandidateIr, SourceRange};
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, PartialEq, Eq, Deserialize)]
@@ -41,8 +42,72 @@ pub struct LanguageBatchIr {
     pub semantic_token_data: Vec<u32>,
 }
 
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct LanguageClassificationsIr {
+    pub version: u32,
+    pub classes: Vec<ClassSemanticInspection>,
+}
+
+#[derive(Debug)]
+pub struct LanguageSession {
+    engine: EngineSession,
+}
+
+impl LanguageSession {
+    pub fn create(manifest_json: &str) -> Result<Self, LanguageError> {
+        Ok(Self {
+            engine: EngineSession::create(manifest_json)?,
+        })
+    }
+
+    pub fn native_declaration_candidates<I, S>(
+        &self,
+        class_names: I,
+    ) -> Result<Vec<NativeDeclarationCandidateIr>, LanguageError>
+    where
+        I: IntoIterator<Item = S>,
+        S: AsRef<str>,
+    {
+        Ok(self.engine.native_declaration_candidates(class_names)?)
+    }
+
+    pub fn classify_class_names<I, S>(
+        &mut self,
+        class_names: I,
+        native_support: Option<&[bool]>,
+    ) -> Result<LanguageClassificationsIr, LanguageError>
+    where
+        I: IntoIterator<Item = S>,
+        S: AsRef<str>,
+    {
+        let class_names = class_names
+            .into_iter()
+            .map(|class_name| class_name.as_ref().to_owned())
+            .collect::<Vec<_>>();
+        if let Some(native_support) = native_support {
+            self.engine
+                .ensure_class_rules_with_native_support(&class_names, native_support)?;
+        }
+        let classes = class_names
+            .iter()
+            .map(|class_name| self.engine.inspect_class_semantics(class_name))
+            .collect::<Result<Vec<_>, _>>()?;
+        Ok(LanguageClassificationsIr {
+            version: LANGUAGE_BATCH_VERSION,
+            classes,
+        })
+    }
+
+    pub fn dispose(&mut self) {
+        self.engine.dispose();
+    }
+}
+
 #[derive(Debug, thiserror::Error)]
 pub enum LanguageError {
+    #[error(transparent)]
+    Engine(#[from] EngineError),
     #[error("Language input contains a range outside the UTF-16 document boundary.")]
     InvalidRange,
     #[error("Invalid language batch JSON: {0}")]
@@ -324,6 +389,66 @@ mod tests {
                 ]
             ),
             [0, 0, 1, 0, 0, 1, 0, 1, 2, 0]
+        );
+    }
+
+    #[test]
+    fn batches_manifest_driven_class_semantics() {
+        let mut session = LanguageSession::create(
+            r#"{
+              "version":1,
+              "utilities":[
+                {
+                  "id":"card",
+                  "name":"card",
+                  "type":-2,
+                  "layer":"components",
+                  "emit":{"type":"static","rules":[{"declarations":{"display":"block"}}]},
+                  "matchers":[{"type":"static","name":"card"}]
+                },
+                {
+                  "id":"width",
+                  "type":0,
+                  "emit":{"type":"property","property":"width"},
+                  "matchers":[{"type":"key","keys":["w"]}]
+                }
+              ]
+            }"#,
+        )
+        .unwrap();
+        let batch = session
+            .classify_class_names(["card:hover", "w:10px", "unknown"], None)
+            .unwrap();
+        assert_eq!(batch.version, LANGUAGE_BATCH_VERSION);
+        assert_eq!(
+            batch.classes[0].kind,
+            mastercss_engine::ClassSemanticKind::Component
+        );
+        assert_eq!(batch.classes[0].state_token.as_deref(), Some(":hover"));
+        assert_eq!(batch.classes[1].key_token.as_deref(), Some("w:"));
+        assert_eq!(batch.classes[1].value_token.as_deref(), Some("10px"));
+        assert_eq!(
+            batch.classes[2].kind,
+            mastercss_engine::ClassSemanticKind::Unknown
+        );
+    }
+
+    #[test]
+    fn commits_only_host_supported_native_class_semantics() {
+        let mut session = LanguageSession::create(r#"{"version":1,"utilities":[]}"#).unwrap();
+        let class_names = ["display:block", "made-up:nope"];
+        let candidates = session.native_declaration_candidates(class_names).unwrap();
+        assert_eq!(candidates.len(), 2);
+        let batch = session
+            .classify_class_names(class_names, Some(&[true, false]))
+            .unwrap();
+        assert_eq!(
+            batch.classes[0].kind,
+            mastercss_engine::ClassSemanticKind::Declaration
+        );
+        assert_eq!(
+            batch.classes[1].kind,
+            mastercss_engine::ClassSemanticKind::Unknown
         );
     }
 }

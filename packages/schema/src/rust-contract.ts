@@ -122,6 +122,28 @@ export interface MasterCSSLintClassListIR {
   conflictRange?: MasterCSSSourceRange
 }
 
+export type MasterCSSLanguageClassKind =
+  | 'unknown'
+  | 'component'
+  | 'semantic'
+  | 'pattern'
+  | 'declaration'
+
+export interface MasterCSSLanguageClassIR {
+  className: string
+  kind: MasterCSSLanguageClassKind
+  matcherTypes: ('static' | 'pattern' | 'key' | 'variable' | 'value')[]
+  keyToken?: string
+  valueToken?: string
+  stateToken?: string
+  important: boolean
+}
+
+export interface MasterCSSLanguageClassificationsIR {
+  version: typeof MASTER_CSS_LANGUAGE_BATCH_VERSION
+  classes: MasterCSSLanguageClassIR[]
+}
+
 export type MasterCSSDirectiveManifestInputIR =
   import('./css-directives').CSSDirectiveManifestInput
 

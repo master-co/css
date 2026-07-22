@@ -158,6 +158,10 @@ export class ClassPositionCache {
       this.oxc.delete(oldestKey)
     }
   }
+
+  clear() {
+    this.oxc.clear()
+  }
 }
 
 function getOxcCacheKey(textDocument: TextDocument) {

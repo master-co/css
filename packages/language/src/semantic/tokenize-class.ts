@@ -9,6 +9,7 @@ import {
   type MasterCSSLexicalTokenItem
 } from '@master/css-lexer'
 import { pushHighlightToken, toSemanticTokenItems, type HighlightTokenItem } from './highlight'
+import type { MasterCSSLanguageClassIR } from '../rust-session'
 
 function toHighlightTokenItems(tokens: MasterCSSLexicalTokenItem[]): HighlightTokenItem[] {
   return tokens as HighlightTokenItem[]
@@ -37,17 +38,27 @@ function tokenizeKey(tokens: HighlightTokenItem[], token: string, offset: number
   }
 }
 
-function tokenizeGroupedClassToken(css: MasterCSS, token: string, offset: number): HighlightTokenItem[] | undefined {
+function tokenizeGroupedClassToken(
+  css: MasterCSS,
+  token: string,
+  offset: number,
+  classifications?: ReadonlyMap<string, MasterCSSLanguageClassIR>
+): HighlightTokenItem[] | undefined {
   const tokens = tokenizeMasterCSSGroupedClassToken(
     token,
     offset,
-    (partText, partOffset) => tokenizeClassToken(css, partText, partOffset) as MasterCSSLexicalTokenItem[]
+    (partText, partOffset) => tokenizeClassToken(css, partText, partOffset, classifications) as MasterCSSLexicalTokenItem[]
   )
   return tokens && toHighlightTokenItems(tokens)
 }
 
-export function tokenizeClassToken(css: MasterCSS, token: string, offset: number): HighlightTokenItem[] {
-  const groupedTokens = tokenizeGroupedClassToken(css, token, offset)
+export function tokenizeClassToken(
+  css: MasterCSS,
+  token: string,
+  offset: number,
+  classifications?: ReadonlyMap<string, MasterCSSLanguageClassIR>
+): HighlightTokenItem[] {
+  const groupedTokens = tokenizeGroupedClassToken(css, token, offset, classifications)
   if (groupedTokens) return groupedTokens
 
   if (token.startsWith('@')) {
@@ -55,6 +66,41 @@ export function tokenizeClassToken(css: MasterCSS, token: string, offset: number
   }
 
   const tokens: HighlightTokenItem[] = []
+  const classification = classifications?.get(token)
+  if (classification) {
+    if (classification.kind === 'unknown') return tokens
+    if (classification.kind === 'component') {
+      const stateStart = token.length - (classification.stateToken?.length ?? 0)
+      pushHighlightToken(tokens, offset, stateStart, 'class', 'utility.component', ['declaration', 'component'])
+      tokens.push(...tokenizeState(token, stateStart, offset))
+      return tokens
+    }
+    if (classification.kind === 'semantic' || classification.kind === 'pattern') {
+      const stateStart = token.length - (classification.stateToken?.length ?? 0)
+      pushHighlightToken(tokens, offset, stateStart, 'enumMember', 'utility.semantic')
+      tokens.push(...tokenizeState(token, stateStart, offset))
+      return tokens
+    }
+
+    tokenizeKey(tokens, token, offset, classification.keyToken)
+    const valueStart = classification.keyToken?.length
+      ?? Math.max(0, token.indexOf(classification.valueToken ?? ''))
+    if (classification.valueToken) {
+      tokens.push(...tokenizeUtilityValue(
+        token.slice(valueStart, valueStart + classification.valueToken.length),
+        offset + valueStart,
+        css
+      ))
+    }
+    let stateStart = valueStart + (classification.valueToken?.length ?? 0)
+    if (classification.important && token[stateStart] === '!') {
+      pushHighlightToken(tokens, offset + stateStart, 1, 'operator', 'value.important', ['important'])
+      stateStart++
+    }
+    tokens.push(...tokenizeState(token, stateStart, offset))
+    return tokens
+  }
+
   const inspection = inspectMasterCSSClass(css, token)
   const rules = inspection.rules
   const component = rules.find((rule) => rule.type === UtilityType.Semantic && rule.layerName === 'components')

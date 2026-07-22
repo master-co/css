@@ -2,6 +2,7 @@ import { beforeAll, expect, test } from 'vitest'
 import { TextDocument } from 'vscode-languageserver-textdocument'
 import { createRustLanguageAnalyzer } from '@master/css-language/node'
 import CSSLanguageService from '../src'
+import { createPresetManifest } from './helpers/create-preset-manifest'
 
 beforeAll(() => {
   process.env.MASTER_CSS_NATIVE_BINDING_PATH = new URL(
@@ -13,10 +14,26 @@ beforeAll(() => {
 test('uses one Rust analyzer for class positions and semantic token encoding', async () => {
   const nativeAnalyzer = await createRustLanguageAnalyzer()
   let analyzeCalls = 0
+  let classifyCalls = 0
   const analyzer = {
     analyze: (...parameters: Parameters<typeof nativeAnalyzer.analyze>) => {
       analyzeCalls++
       return nativeAnalyzer.analyze(...parameters)
+    },
+    createSession: (...parameters: Parameters<NonNullable<typeof nativeAnalyzer.createSession>>) => {
+      const session = nativeAnalyzer.createSession?.(...parameters)
+      if (!session) throw new Error('Expected the Rust language backend to create a session.')
+      return {
+        ...session,
+        analyze: (...analyzeParameters: Parameters<typeof session.analyze>) => {
+          analyzeCalls++
+          return session.analyze(...analyzeParameters)
+        },
+        classifyClassNames: (...classNames: Parameters<NonNullable<typeof session.classifyClassNames>>) => {
+          classifyCalls++
+          return session.classifyClassNames?.(...classNames) as ReturnType<NonNullable<typeof session.classifyClassNames>>
+        }
+      }
     }
   }
   const settings = {
@@ -31,4 +48,25 @@ test('uses one Rust analyzer for class positions and semantic token encoding', a
   expect(service.getClassPositions(document)).toEqual(oracle.getClassPositions(document))
   expect(service.renderSemanticTokens(document)).toEqual(oracle.renderSemanticTokens(document))
   expect(analyzeCalls).toBeGreaterThanOrEqual(2)
+  expect(classifyCalls).toBe(1)
+  service.dispose()
+})
+
+test('matches TS semantic classification for grouped, component, state, and value classes', async () => {
+  const analyzer = await createRustLanguageAnalyzer()
+  const manifest = createPresetManifest({
+    variables: [{ namespace: 'color', key: 'brand', value: '#123456' }],
+    utilities: [{ name: 'rust-card', layer: 'components', declarations: { display: 'block' } }]
+  })
+  const source = '😀 <div class="fg:brand:hover@sm block {fg:red;w:10px!}>li:hover@sm rust-card rust-card:hover -webkit-text-size-adjust:none made-up:nope"></div>'
+  const document = TextDocument.create('file:///rust-language.html', 'html', 1, source)
+  const settings = { manifest, embeddedSyntaxHighlighting: 'always' as const }
+  const oracle = new CSSLanguageService(settings)
+  const service = new CSSLanguageService(settings, { analyzer })
+  try {
+    expect(service.renderSemanticTokens(document)).toEqual(oracle.renderSemanticTokens(document))
+  } finally {
+    service.dispose()
+    oracle.dispose()
+  }
 })

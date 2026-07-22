@@ -594,6 +594,7 @@ dependencies = [
 name = "mastercss-language"
 version = "0.0.0"
 dependencies = [
+ "mastercss-engine",
  "mastercss-lexer",
  "mastercss-schema",
  "serde",

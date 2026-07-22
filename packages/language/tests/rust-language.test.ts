@@ -3,6 +3,7 @@ import { TextDocument } from 'vscode-languageserver-textdocument'
 import { encodeSemanticTokens } from '../src/semantic/encode'
 import { createRustLanguageAnalyzer } from '../src/rust-session'
 import type { SemanticTokenItem } from '../src/semantic/types'
+import { createPresetManifest } from './helpers/create-preset-manifest'
 
 beforeAll(() => {
   process.env.MASTER_CSS_NATIVE_BINDING_PATH = new URL(
@@ -41,4 +42,28 @@ test('matches UTF-16 class ranges and semantic token encoding', async () => {
     }
   ])
   expect(batch.semanticTokenData).toEqual(encodeSemanticTokens(document, tokens).data)
+})
+
+test('batches manifest-driven class semantic classification', async () => {
+  const analyzer = await createRustLanguageAnalyzer()
+  const session = analyzer.createSession?.(createPresetManifest({
+    utilities: [{ name: 'rust-card', layer: 'components', declarations: { display: 'block' } }]
+  }))
+  expect(session).toBeDefined()
+  try {
+    expect(session?.classifyClassNames?.([
+      'rust-card:hover',
+      'fg:red',
+      'unknown-class'
+    ])).toMatchObject({
+      version: 1,
+      classes: [
+        { className: 'rust-card:hover', kind: 'component', stateToken: ':hover' },
+        { className: 'fg:red', kind: 'declaration', keyToken: 'fg:', valueToken: 'red' },
+        { className: 'unknown-class', kind: 'unknown' }
+      ]
+    })
+  } finally {
+    session?.dispose?.()
+  }
 })
