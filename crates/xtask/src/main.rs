@@ -139,6 +139,21 @@ fn run_command(command: &mut Command, label: &str) -> Result<(), String> {
     }
 }
 
+fn copy_fresh(source: &Path, output: &Path) -> Result<(), String> {
+    if output.exists() {
+        fs::remove_file(output)
+            .map_err(|error| format!("Cannot replace {}: {error}", output.display()))?;
+    }
+    fs::copy(source, output).map_err(|error| {
+        format!(
+            "Cannot copy {} to {}: {error}",
+            source.display(),
+            output.display()
+        )
+    })?;
+    Ok(())
+}
+
 fn build_native(release: bool) -> Result<(), String> {
     let root = workspace_root();
     let mut command = Command::new("cargo");
@@ -170,13 +185,7 @@ fn build_native(release: bool) -> Result<(), String> {
     fs::create_dir_all(&output_dir)
         .map_err(|error| format!("Cannot create {}: {error}", output_dir.display()))?;
     let output = output_dir.join("mastercss.node");
-    fs::copy(&source, &output).map_err(|error| {
-        format!(
-            "Cannot copy {} to {}: {error}",
-            source.display(),
-            output.display()
-        )
-    })?;
+    copy_fresh(&source, &output)?;
     let executable_name = if cfg!(target_os = "windows") {
         "mcss.exe"
     } else {
@@ -184,13 +193,7 @@ fn build_native(release: bool) -> Result<(), String> {
     };
     let executable_source = root.join(format!("target/{profile}/{executable_name}"));
     let executable_output = output_dir.join(executable_name);
-    fs::copy(&executable_source, &executable_output).map_err(|error| {
-        format!(
-            "Cannot copy {} to {}: {error}",
-            executable_source.display(),
-            executable_output.display()
-        )
-    })?;
+    copy_fresh(&executable_source, &executable_output)?;
     println!("Built {}", output.display());
     println!("Built {}", executable_output.display());
     Ok(())
@@ -212,13 +215,7 @@ fn stage_native_target(package: &str, release: bool) -> Result<(), String> {
     for file in ["mastercss.node", executable_name] {
         let source = artifact_dir.join(file);
         let output = package_dir.join(file);
-        fs::copy(&source, &output).map_err(|error| {
-            format!(
-                "Cannot stage {} as {}: {error}",
-                source.display(),
-                output.display()
-            )
-        })?;
+        copy_fresh(&source, &output)?;
         println!("Staged {}", output.display());
     }
     Ok(())
@@ -357,11 +354,9 @@ fn assemble_native_release_at(
 
         if stage {
             let target = root.join("packages").join(package);
-            fs::copy(&addon_path, target.join("mastercss.node"))
-                .map_err(|error| format!("Cannot stage {}: {error}", addon_path.display()))?;
+            copy_fresh(&addon_path, &target.join("mastercss.node"))?;
             let staged_executable = target.join(executable_name);
-            fs::copy(&executable_path, &staged_executable)
-                .map_err(|error| format!("Cannot stage {}: {error}", executable_path.display()))?;
+            copy_fresh(&executable_path, &staged_executable)?;
             make_executable(&staged_executable)?;
         }
     }
