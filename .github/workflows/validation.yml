@@ -246,6 +246,17 @@ jobs:
         run: |
           npm pkg set version=0.0.0 --prefix packages/${{ matrix.package }}
           npm pack packages/${{ matrix.package }} --dry-run --json
+      - name: Upload release-native artifacts
+        if: ${{ inputs.release_build }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: mastercss-${{ matrix.package }}
+          path: |
+            packages/${{ matrix.package }}/package.json
+            packages/${{ matrix.package }}/mastercss.node
+            packages/${{ matrix.package }}/mcss*
+          if-no-files-found: error
+          retention-days: 1
 
   native_musl:
     name: native-${{ matrix.package }}
@@ -281,6 +292,17 @@ jobs:
               npm pkg set version=0.0.0 --prefix "packages/$TARGET_PACKAGE"
               npm pack "packages/$TARGET_PACKAGE" --dry-run --json
             '
+      - name: Upload release-native artifacts
+        if: ${{ inputs.release_build }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: mastercss-${{ matrix.package }}
+          path: |
+            packages/${{ matrix.package }}/package.json
+            packages/${{ matrix.package }}/mastercss.node
+            packages/${{ matrix.package }}/mcss*
+          if-no-files-found: error
+          retention-days: 1
 
   e2e_linux:
     name: e2e-linux

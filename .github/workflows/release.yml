@@ -43,7 +43,16 @@ jobs:
         with:
           submodules-token: ${{ secrets.GH_TOKEN }}
           turbo-cache-scope: build
+      - name: Download Tier-1 native artifacts
+        uses: actions/download-artifact@v7
+        with:
+          pattern: mastercss-native-*
+          path: native-artifacts
+      - name: Verify and stage Tier-1 native artifacts
+        run: cargo xtask assemble-native-release native-artifacts release-artifacts/checksums.json --stage
       - run: pnpm run build
+      - name: Finalize release checksums
+        run: cargo xtask assemble-native-release native-artifacts release-artifacts/checksums.json --require-assets
       - run: pnpm exec node scripts/with-typescript-tooling-compat.mjs pnpm exec semantic-release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

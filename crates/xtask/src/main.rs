@@ -3,12 +3,24 @@
 use std::collections::HashSet;
 use std::env;
 use std::fs;
+use std::io::Read;
 use std::path::{Path, PathBuf};
 use std::process::Command;
 
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
+use sha2::{Digest, Sha256};
 
 const GENERATED_CONTRACT_TEMPLATE: &str = include_str!("../templates/rust-contract.ts");
+const NATIVE_TARGET_PACKAGES: [&str; 8] = [
+    "native-darwin-arm64",
+    "native-darwin-x64",
+    "native-linux-arm64-gnu",
+    "native-linux-arm64-musl",
+    "native-linux-x64-gnu",
+    "native-linux-x64-musl",
+    "native-win32-arm64-msvc",
+    "native-win32-x64-msvc",
+];
 
 #[derive(Deserialize)]
 struct ParityFile {
@@ -23,6 +35,37 @@ struct ParityException {
     new: String,
     packages: Vec<String>,
     test: String,
+}
+
+#[derive(Deserialize)]
+struct NativePackageJson {
+    name: String,
+    files: Vec<String>,
+    bin: serde_json::Map<String, serde_json::Value>,
+}
+
+#[derive(Serialize)]
+#[serde(rename_all = "camelCase")]
+struct ArtifactChecksum {
+    path: String,
+    bytes: u64,
+    sha256: String,
+}
+
+#[derive(Serialize)]
+#[serde(rename_all = "camelCase")]
+struct NativeArtifactPackage {
+    package_name: String,
+    target: String,
+    addon: ArtifactChecksum,
+    executable: ArtifactChecksum,
+}
+
+#[derive(Serialize)]
+struct NativeArtifactManifest {
+    version: u32,
+    packages: Vec<NativeArtifactPackage>,
+    assets: Vec<ArtifactChecksum>,
 }
 
 fn workspace_root() -> PathBuf {
@@ -154,17 +197,7 @@ fn build_native(release: bool) -> Result<(), String> {
 }
 
 fn stage_native_target(package: &str, release: bool) -> Result<(), String> {
-    const TARGET_PACKAGES: [&str; 8] = [
-        "native-darwin-arm64",
-        "native-darwin-x64",
-        "native-linux-arm64-gnu",
-        "native-linux-arm64-musl",
-        "native-linux-x64-gnu",
-        "native-linux-x64-musl",
-        "native-win32-arm64-msvc",
-        "native-win32-x64-msvc",
-    ];
-    if !TARGET_PACKAGES.contains(&package) {
+    if !NATIVE_TARGET_PACKAGES.contains(&package) {
         return Err(format!("Unknown native target package: {package}"));
     }
     build_native(release)?;
@@ -188,6 +221,180 @@ fn stage_native_target(package: &str, release: bool) -> Result<(), String> {
         })?;
         println!("Staged {}", output.display());
     }
+    Ok(())
+}
+
+fn artifact_checksum(path: &Path, manifest_path: String) -> Result<ArtifactChecksum, String> {
+    let mut file = fs::File::open(path)
+        .map_err(|error| format!("Cannot read native artifact {}: {error}", path.display()))?;
+    let bytes = file
+        .metadata()
+        .map_err(|error| format!("Cannot inspect native artifact {}: {error}", path.display()))?
+        .len();
+    if bytes == 0 {
+        return Err(format!("Native artifact is empty: {}", path.display()));
+    }
+    let mut hasher = Sha256::new();
+    let mut buffer = [0_u8; 64 * 1024];
+    loop {
+        let read = file
+            .read(&mut buffer)
+            .map_err(|error| format!("Cannot hash native artifact {}: {error}", path.display()))?;
+        if read == 0 {
+            break;
+        }
+        hasher.update(&buffer[..read]);
+    }
+    Ok(ArtifactChecksum {
+        path: manifest_path,
+        bytes,
+        sha256: format!("{:x}", hasher.finalize()),
+    })
+}
+
+fn native_artifact_directory(artifacts_root: &Path, package: &str) -> Result<PathBuf, String> {
+    [
+        artifacts_root.join(format!("mastercss-{package}")),
+        artifacts_root.join(package),
+    ]
+    .into_iter()
+    .find(|path| path.is_dir())
+    .ok_or_else(|| format!("Missing native artifact package: {package}"))
+}
+
+#[cfg(unix)]
+fn make_executable(path: &Path) -> Result<(), String> {
+    use std::os::unix::fs::PermissionsExt;
+    let mut permissions = fs::metadata(path)
+        .map_err(|error| format!("Cannot inspect {}: {error}", path.display()))?
+        .permissions();
+    permissions.set_mode(0o755);
+    fs::set_permissions(path, permissions)
+        .map_err(|error| format!("Cannot mark {} executable: {error}", path.display()))
+}
+
+#[cfg(not(unix))]
+fn make_executable(_path: &Path) -> Result<(), String> {
+    Ok(())
+}
+
+fn assemble_native_release(
+    artifacts_root: &Path,
+    output: &Path,
+    stage: bool,
+    require_assets: bool,
+) -> Result<(), String> {
+    assemble_native_release_at(
+        &workspace_root(),
+        artifacts_root,
+        output,
+        stage,
+        require_assets,
+    )
+}
+
+fn assemble_native_release_at(
+    root: &Path,
+    artifacts_root: &Path,
+    output: &Path,
+    stage: bool,
+    require_assets: bool,
+) -> Result<(), String> {
+    let mut packages = Vec::new();
+    for package in NATIVE_TARGET_PACKAGES {
+        let artifact_dir = native_artifact_directory(artifacts_root, package)?;
+        let package_json_path = artifact_dir.join("package.json");
+        let package_json: NativePackageJson =
+            serde_json::from_str(&fs::read_to_string(&package_json_path).map_err(|error| {
+                format!("Cannot read {}: {error}", package_json_path.display())
+            })?)
+            .map_err(|error| format!("Invalid {}: {error}", package_json_path.display()))?;
+        let expected_name = format!("@master/css-{package}");
+        if package_json.name != expected_name {
+            return Err(format!(
+                "Native package name mismatch for {package}: {}",
+                package_json.name
+            ));
+        }
+        let executable_name = if package.contains("win32") {
+            "mcss.exe"
+        } else {
+            "mcss"
+        };
+        if !package_json
+            .files
+            .iter()
+            .any(|file| file == "mastercss.node")
+            || !package_json
+                .files
+                .iter()
+                .any(|file| file == executable_name)
+            || package_json
+                .bin
+                .get("mcss")
+                .and_then(serde_json::Value::as_str)
+                != Some(if package.contains("win32") {
+                    "./mcss.exe"
+                } else {
+                    "./mcss"
+                })
+        {
+            return Err(format!(
+                "Native package {expected_name} does not publish both required artifacts."
+            ));
+        }
+        let addon_path = artifact_dir.join("mastercss.node");
+        let executable_path = artifact_dir.join(executable_name);
+        packages.push(NativeArtifactPackage {
+            package_name: expected_name,
+            target: package.trim_start_matches("native-").to_owned(),
+            addon: artifact_checksum(&addon_path, format!("packages/{package}/mastercss.node"))?,
+            executable: artifact_checksum(
+                &executable_path,
+                format!("packages/{package}/{executable_name}"),
+            )?,
+        });
+
+        if stage {
+            let target = root.join("packages").join(package);
+            fs::copy(&addon_path, target.join("mastercss.node"))
+                .map_err(|error| format!("Cannot stage {}: {error}", addon_path.display()))?;
+            let staged_executable = target.join(executable_name);
+            fs::copy(&executable_path, &staged_executable)
+                .map_err(|error| format!("Cannot stage {}: {error}", executable_path.display()))?;
+            make_executable(&staged_executable)?;
+        }
+    }
+
+    let mut assets = Vec::new();
+    let public_assets = [
+        "packages/runtime/dist/global.min.js",
+        "packages/runtime/artifacts/mastercss_wasm_runtime_bg.wasm",
+        "packages/preset/dist/default-manifest.json",
+    ];
+    for relative in public_assets {
+        let path = root.join(relative);
+        if path.is_file() {
+            assets.push(artifact_checksum(&path, relative.to_owned())?);
+        } else if require_assets {
+            return Err(format!("Missing required release asset: {relative}"));
+        }
+    }
+    let manifest = NativeArtifactManifest {
+        version: 1,
+        packages,
+        assets,
+    };
+    if let Some(parent) = output.parent() {
+        fs::create_dir_all(parent)
+            .map_err(|error| format!("Cannot create {}: {error}", parent.display()))?;
+    }
+    let mut json = serde_json::to_string_pretty(&manifest)
+        .map_err(|error| format!("Cannot serialize native artifact manifest: {error}"))?;
+    json.push('\n');
+    fs::write(output, json)
+        .map_err(|error| format!("Cannot write {}: {error}", output.display()))?;
+    println!("Verified and recorded {}", output.display());
     Ok(())
 }
 
@@ -273,8 +480,30 @@ fn run() -> Result<(), String> {
         }
         [command] if command == "build-wasm" => build_wasm("runtime"),
         [command, surface] if command == "build-wasm" => build_wasm(surface),
+        [command, artifacts, output] if command == "assemble-native-release" => {
+            assemble_native_release(Path::new(artifacts), Path::new(output), false, false)
+        }
+        [command, artifacts, output, flags @ ..] if command == "assemble-native-release" => {
+            let stage = flags.iter().any(|flag| flag == "--stage");
+            let require_assets = flags.iter().any(|flag| flag == "--require-assets");
+            if flags
+                .iter()
+                .any(|flag| flag != "--stage" && flag != "--require-assets")
+            {
+                return Err(format!(
+                    "Unknown assemble-native-release option: {}",
+                    flags.join(" ")
+                ));
+            }
+            assemble_native_release(
+                Path::new(artifacts),
+                Path::new(output),
+                stage,
+                require_assets,
+            )
+        }
         _ => Err(
-            "Usage: cargo xtask codegen [--check] | parity | build-native [--release] | stage-native-target <package> [--release] | build-wasm [all|runtime|compiler|tooling]"
+            "Usage: cargo xtask codegen [--check] | parity | build-native [--release] | stage-native-target <package> [--release] | build-wasm [all|runtime|compiler|tooling] | assemble-native-release <artifacts-dir> <checksums.json> [--stage] [--require-assets]"
                 .into(),
         ),
     }
@@ -284,5 +513,60 @@ fn main() {
     if let Err(error) = run() {
         eprintln!("{error}");
         std::process::exit(1);
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::time::{SystemTime, UNIX_EPOCH};
+
+    #[test]
+    fn assembles_all_native_packages_and_writes_stable_checksums() {
+        let nonce = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .unwrap()
+            .as_nanos();
+        let root = env::temp_dir().join(format!("mastercss-native-release-{nonce}"));
+        fs::create_dir_all(&root).unwrap();
+        for package in NATIVE_TARGET_PACKAGES {
+            let directory = root.join(format!("mastercss-{package}"));
+            fs::create_dir_all(&directory).unwrap();
+            let executable = if package.contains("win32") {
+                "mcss.exe"
+            } else {
+                "mcss"
+            };
+            fs::write(directory.join("mastercss.node"), format!("addon:{package}")).unwrap();
+            fs::write(directory.join(executable), format!("cli:{package}")).unwrap();
+            fs::write(
+                directory.join("package.json"),
+                serde_json::json!({
+                    "name": format!("@master/css-{package}"),
+                    "files": ["mastercss.node", executable],
+                    "bin": { "mcss": format!("./{executable}") }
+                })
+                .to_string(),
+            )
+            .unwrap();
+        }
+        let output = root.join("checksums.json");
+        assemble_native_release_at(&root, &root, &output, false, false).unwrap();
+        let manifest: serde_json::Value =
+            serde_json::from_str(&fs::read_to_string(&output).unwrap()).unwrap();
+        assert_eq!(manifest["version"], 1);
+        assert_eq!(manifest["packages"].as_array().unwrap().len(), 8);
+        assert_eq!(manifest["assets"].as_array().unwrap().len(), 0);
+        assert!(
+            manifest["packages"][0]["addon"]["sha256"]
+                .as_str()
+                .is_some_and(|checksum| checksum.len() == 64)
+        );
+        let required_output = root.join("required-checksums.json");
+        assert_eq!(
+            assemble_native_release_at(&root, &root, &required_output, false, true).unwrap_err(),
+            "Missing required release asset: packages/runtime/dist/global.min.js"
+        );
+        fs::remove_dir_all(root).unwrap();
     }
 }

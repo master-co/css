@@ -11,4 +11,5 @@ publish.workspace = true
 mastercss-schema = { path = "../mastercss-schema" }
 serde.workspace = true
 serde_json.workspace = true
+sha2.workspace = true
 wasm-bindgen-cli-support.workspace = true
