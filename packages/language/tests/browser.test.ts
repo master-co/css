@@ -1,7 +1,9 @@
 import { expect, test } from 'vitest'
+import { readFile } from 'node:fs/promises'
 
 import {
   collectBrowserSemanticTokenItems,
+  createBrowserLanguageSession,
   renderBrowserSemanticTokens
 } from '../src/browser'
 import { SEMANTIC_TOKEN_MODIFIERS, SEMANTIC_TOKEN_TYPES } from '../src/common'
@@ -161,4 +163,28 @@ test.concurrent('encodes browser semantic tokens', () => {
   expect(data).toHaveLength(5)
   expect(data[3]).toBe(typeIndex)
   expect(data[4]).toBe((1 << declarationIndex) | (1 << componentIndex))
+})
+
+test('matches the TypeScript browser semantic token oracle through tooling Wasm', async () => {
+  const input = new Uint8Array(await readFile(new URL(
+    '../../wasm-tooling/artifacts/mastercss_wasm_tooling_bg.wasm',
+    import.meta.url
+  )))
+  const session = await createBrowserLanguageSession({ manifest, wasm: { input } })
+  try {
+    for (const [languageId, source] of [
+      ['html', '<div class="text-align:center fg:brand block btn {fg:red;block}>li:hover@sm"></div>'],
+      ['css', '@safelist "hidden fg:red"; .btn { @compose block fg:brand; }']
+    ]) {
+      expect(session.collectSemanticTokenItems(source, languageId))
+        .toEqual(collectBrowserSemanticTokenItems(source, languageId, { manifest }))
+      expect(session.renderSemanticTokens(source, languageId)?.data)
+        .toEqual(renderBrowserSemanticTokens(source, languageId, { manifest })?.data)
+    }
+  } finally {
+    session.dispose()
+  }
+
+  expect(() => session.collectSemanticTokenItems('<div class="block"></div>', 'html'))
+    .toThrow('browser language session has been disposed')
 })

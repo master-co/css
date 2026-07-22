@@ -5,10 +5,29 @@ import {
 } from './common'
 import { defaultManifest, MasterCSS, matchesLanguageServiceNativeDeclaration } from './master-css'
 import { collectClassListHighlightTokenItems } from './semantic/tokenize-class'
-import { collectCSSHighlightTokenItems, isCSSSemanticTokenDocument } from './semantic/tokenize-css'
+import {
+  collectCSSDirectiveClassNames,
+  collectCSSHighlightTokenItems,
+  isCSSSemanticTokenDocument
+} from './semantic/tokenize-css'
 import { toSemanticTokenItems, type HighlightTokenItem } from './semantic/highlight'
 import type { SemanticTokenItem, SemanticTokenModifier } from './semantic/types'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
+import { stringifyMasterCSSManifestJSON } from '@master/css-schema/manifest-json'
+import { MASTER_CSS_LANGUAGE_BATCH_VERSION } from '@master/css-schema'
+import type {
+  MasterCSSLanguageClassificationsIR,
+  MasterCSSNativeDeclarationCandidateIR
+} from '@master/css-schema/rust-contract'
+import {
+  collectMasterCSSClassListTokenRanges,
+  tokenizeMasterCSSGroupedClassToken
+} from '@master/css-lexer'
+import type { MasterCSSLanguageTokenClassification } from './semantic/tokenize-class'
+import {
+  createToolingLanguageSession,
+  type InitToolingWasmOptions
+} from '@master/css-wasm-tooling'
 
 export {
   SEMANTIC_TOKEN_MODIFIERS,
@@ -25,6 +44,34 @@ export interface BrowserSemanticTokenOptions {
 
 export interface BrowserSemanticTokens {
   data: Uint32Array
+}
+
+export interface BrowserLanguageSessionOptions {
+  manifest?: MasterCSSManifest
+  wasm?: InitToolingWasmOptions
+}
+
+export interface BrowserLanguageSourceOptions {
+  classAttributes?: string[]
+}
+
+export interface BrowserLanguageSession {
+  collectHighlightTokenItems(
+    source: string,
+    languageId: string,
+    options?: BrowserLanguageSourceOptions
+  ): HighlightTokenItem[]
+  collectSemanticTokenItems(
+    source: string,
+    languageId: string,
+    options?: BrowserLanguageSourceOptions
+  ): SemanticTokenItem[]
+  renderSemanticTokens(
+    source: string,
+    languageId: string,
+    options?: BrowserLanguageSourceOptions
+  ): BrowserSemanticTokens | undefined
+  dispose(): void
 }
 
 interface SourceRange {
@@ -73,6 +120,45 @@ function collectHTMLClassListRanges(source: string, classAttributes = DEFAULT_CL
     }
   }
   return ranges
+}
+
+function collectClassificationNamesFromToken(token: string, names: Set<string>) {
+  const grouped = tokenizeMasterCSSGroupedClassToken(token, 0, (partText) => {
+    collectClassificationNamesFromToken(partText, names)
+    return []
+  })
+  if (!grouped && !token.startsWith('@')) names.add(token)
+}
+
+function collectClassificationNames(source: string, ranges: SourceRange[]) {
+  const names = new Set<string>()
+  for (const range of ranges) {
+    for (const tokenRange of collectMasterCSSClassListTokenRanges(source.slice(range.start, range.end))) {
+      collectClassificationNamesFromToken(tokenRange.token, names)
+    }
+  }
+  return [...names]
+}
+
+function validateClassifications(
+  classifications: MasterCSSLanguageClassificationsIR
+): MasterCSSLanguageClassificationsIR {
+  if (classifications.version !== MASTER_CSS_LANGUAGE_BATCH_VERSION) {
+    throw new Error(
+      `Expected Master CSS language batch version ${MASTER_CSS_LANGUAGE_BATCH_VERSION}, received ${String(classifications.version)}.`
+    )
+  }
+  return classifications
+}
+
+function toClassificationMap(classifications: MasterCSSLanguageClassificationsIR) {
+  const variableNames = new Set(classifications.variableNames)
+  return new Map<string, MasterCSSLanguageTokenClassification>(
+    classifications.classes.map((classification) => [classification.className, {
+      ...classification,
+      variableNames
+    }])
+  )
 }
 
 export function isBrowserHTMLSemanticTokenDocument(languageId: string) {
@@ -177,4 +263,77 @@ export function renderBrowserSemanticTokens(
   const tokens = collectBrowserSemanticTokenItems(source, languageId, options)
   if (!tokens.length) return
   return encodeBrowserSemanticTokens(source, tokens)
+}
+
+export async function createBrowserLanguageSession(
+  options: BrowserLanguageSessionOptions = {}
+): Promise<BrowserLanguageSession> {
+  const session = await createToolingLanguageSession(
+    stringifyMasterCSSManifestJSON(options.manifest || defaultManifest),
+    options.wasm
+  )
+  let disposed = false
+
+  function collectHighlightTokenItems(
+    source: string,
+    languageId: string,
+    sourceOptions: BrowserLanguageSourceOptions = {}
+  ) {
+    if (disposed) throw new Error('The Master CSS browser language session has been disposed.')
+    const htmlRanges = isBrowserHTMLSemanticTokenDocument(languageId)
+      ? collectHTMLClassListRanges(source, sourceOptions.classAttributes)
+      : []
+    const classNames = [...new Set([
+      ...collectCSSDirectiveClassNames(source, languageId),
+      ...collectClassificationNames(source, htmlRanges)
+    ])]
+    let classifications = new Map<string, MasterCSSLanguageTokenClassification>()
+    if (classNames.length) {
+      const candidates = session.nativeDeclarationCandidates(
+        classNames
+      ) as MasterCSSNativeDeclarationCandidateIR[]
+      const nativeSupport = candidates.map(matchesLanguageServiceNativeDeclaration)
+      classifications = toClassificationMap(validateClassifications(
+        session.classifyClassNames(classNames, nativeSupport) as MasterCSSLanguageClassificationsIR
+      ))
+    }
+    const tokens: HighlightTokenItem[] = []
+    if (isCSSSemanticTokenDocument(languageId)) {
+      tokens.push(...collectCSSHighlightTokenItems(
+        source,
+        undefined,
+        languageId,
+        {},
+        classifications
+      ))
+    }
+    for (const range of htmlRanges) {
+      tokens.push(...collectClassListHighlightTokenItems(
+        undefined,
+        source.slice(range.start, range.end),
+        range.start,
+        classifications
+      ))
+    }
+    return tokens
+  }
+
+  return {
+    collectHighlightTokenItems,
+    collectSemanticTokenItems(source, languageId, sourceOptions) {
+      return toSemanticTokenItems(collectHighlightTokenItems(source, languageId, sourceOptions))
+    },
+    renderSemanticTokens(source, languageId, sourceOptions) {
+      const tokens = toSemanticTokenItems(
+        collectHighlightTokenItems(source, languageId, sourceOptions)
+      )
+      if (!tokens.length) return
+      return encodeBrowserSemanticTokens(source, tokens)
+    },
+    dispose() {
+      if (disposed) return
+      disposed = true
+      session.dispose()
+    }
+  }
 }

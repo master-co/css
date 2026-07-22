@@ -52,6 +52,7 @@ pub struct LanguageBatchIr {
 #[serde(rename_all = "camelCase")]
 pub struct LanguageClassificationsIr {
     pub version: u32,
+    pub variable_names: Vec<String>,
     pub classes: Vec<ClassSemanticInspection>,
 }
 
@@ -263,6 +264,7 @@ impl LanguageSession {
             .collect::<Result<Vec<_>, _>>()?;
         Ok(LanguageClassificationsIr {
             version: LANGUAGE_BATCH_VERSION,
+            variable_names: self.engine.variable_names()?,
             classes,
         })
     }
@@ -712,6 +714,7 @@ mod tests {
         let mut session = LanguageSession::create(
             r#"{
               "version":1,
+              "variables":{"spacing":[{"key":"md","type":"number","value":"1rem"}]},
               "utilities":[
                 {
                   "id":"card",
@@ -724,6 +727,7 @@ mod tests {
                 {
                   "id":"width",
                   "type":0,
+                  "variableAliasRefs":["~spacing"],
                   "emit":{"type":"property","property":"width"},
                   "matchers":[{"type":"key","keys":["w"]}]
                 }
@@ -732,7 +736,7 @@ mod tests {
         )
         .unwrap();
         let batch = session
-            .classify_class_names(["card:hover", "w:10px", "unknown"], None)
+            .classify_class_names(["card:hover", "w:10px", "w:md", "unknown"], None)
             .unwrap();
         assert_eq!(batch.version, LANGUAGE_BATCH_VERSION);
         assert_eq!(
@@ -742,8 +746,9 @@ mod tests {
         assert_eq!(batch.classes[0].state_token.as_deref(), Some(":hover"));
         assert_eq!(batch.classes[1].key_token.as_deref(), Some("w:"));
         assert_eq!(batch.classes[1].value_token.as_deref(), Some("10px"));
+        assert_eq!(batch.variable_names, ["spacing-md"]);
         assert_eq!(
-            batch.classes[2].kind,
+            batch.classes[3].kind,
             mastercss_engine::ClassSemanticKind::Unknown
         );
     }

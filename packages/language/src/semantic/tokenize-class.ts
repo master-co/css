@@ -11,13 +11,22 @@ import {
 import { pushHighlightToken, toSemanticTokenItems, type HighlightTokenItem } from './highlight'
 import type { MasterCSSLanguageClassIR } from '../rust-session'
 
+export interface MasterCSSLanguageTokenClassification extends MasterCSSLanguageClassIR {
+  variableNames?: ReadonlySet<string>
+}
+
 function toHighlightTokenItems(tokens: MasterCSSLexicalTokenItem[]): HighlightTokenItem[] {
   return tokens as HighlightTokenItem[]
 }
 
-export function tokenizeUtilityValue(valueText: string, valueStart: number, css?: MasterCSS): HighlightTokenItem[] {
+export function tokenizeUtilityValue(
+  valueText: string,
+  valueStart: number,
+  css?: MasterCSS,
+  variableNames?: ReadonlySet<string>
+): HighlightTokenItem[] {
   return toHighlightTokenItems(tokenizeMasterCSSValue(valueText, valueStart, {
-    isKnownVariable: (name) => css?.variables.has(name) ?? false
+    isKnownVariable: (name) => variableNames?.has(name) || css?.variables.has(name) || false
   }))
 }
 
@@ -39,10 +48,10 @@ function tokenizeKey(tokens: HighlightTokenItem[], token: string, offset: number
 }
 
 function tokenizeGroupedClassToken(
-  css: MasterCSS,
+  css: MasterCSS | undefined,
   token: string,
   offset: number,
-  classifications?: ReadonlyMap<string, MasterCSSLanguageClassIR>
+  classifications?: ReadonlyMap<string, MasterCSSLanguageTokenClassification>
 ): HighlightTokenItem[] | undefined {
   const tokens = tokenizeMasterCSSGroupedClassToken(
     token,
@@ -53,10 +62,10 @@ function tokenizeGroupedClassToken(
 }
 
 export function tokenizeClassToken(
-  css: MasterCSS,
+  css: MasterCSS | undefined,
   token: string,
   offset: number,
-  classifications?: ReadonlyMap<string, MasterCSSLanguageClassIR>
+  classifications?: ReadonlyMap<string, MasterCSSLanguageTokenClassification>
 ): HighlightTokenItem[] {
   const groupedTokens = tokenizeGroupedClassToken(css, token, offset, classifications)
   if (groupedTokens) return groupedTokens
@@ -89,7 +98,8 @@ export function tokenizeClassToken(
       tokens.push(...tokenizeUtilityValue(
         token.slice(valueStart, valueStart + classification.valueToken.length),
         offset + valueStart,
-        css
+        css,
+        classification.variableNames
       ))
     }
     let stateStart = valueStart + (classification.valueToken?.length ?? 0)
@@ -101,6 +111,7 @@ export function tokenizeClassToken(
     return tokens
   }
 
+  if (!css) return tokens
   const inspection = inspectMasterCSSClass(css, token)
   const rules = inspection.rules
   const component = rules.find((rule) => rule.type === UtilityType.Semantic && rule.layerName === 'components')
@@ -143,10 +154,15 @@ export function tokenizeClassToken(
   return tokens
 }
 
-export function collectClassListHighlightTokenItems(css: MasterCSS, classList: string, offset = 0): HighlightTokenItem[] {
+export function collectClassListHighlightTokenItems(
+  css: MasterCSS | undefined,
+  classList: string,
+  offset = 0,
+  classifications?: ReadonlyMap<string, MasterCSSLanguageTokenClassification>
+): HighlightTokenItem[] {
   const tokens: HighlightTokenItem[] = []
   for (const range of collectMasterCSSClassListTokenRanges(classList)) {
-    tokens.push(...tokenizeClassToken(css, range.token, offset + range.start))
+    tokens.push(...tokenizeClassToken(css, range.token, offset + range.start, classifications))
   }
   return tokens
 }

@@ -8,7 +8,7 @@ import {
 
 export function renderSemanticTokensAtPosition(this: CSSLanguageService, document: TextDocument, position: Parameters<CSSLanguageService['getClassPosition']>[1]): SemanticTokens | undefined {
   return renderLanguageSemanticTokensAtPosition(
-    this.css,
+    this.analyzer?.classifyClassNames ? undefined : this.css,
     document,
     this.getClassContextPositions(document, position),
     position,
@@ -18,7 +18,7 @@ export function renderSemanticTokensAtPosition(this: CSSLanguageService, documen
 
 export default function renderSemanticTokens(this: CSSLanguageService, document: TextDocument): SemanticTokens | undefined {
   return renderLanguageSemanticTokens(
-    this.css,
+    this.analyzer?.classifyClassNames ? undefined : this.css,
     document,
     this.getClassPositions(document),
     { ...this.settings, analyzer: this.analyzer }

@@ -1,5 +1,9 @@
 import { pushHighlightToken, type HighlightTokenItem } from '../highlight'
-import { collectClassListHighlightTokenItems, tokenizeState } from '../tokenize-class'
+import {
+  collectClassListHighlightTokenItems,
+  tokenizeState,
+  type MasterCSSLanguageTokenClassification
+} from '../tokenize-class'
 import type { MasterCSS } from '../../master-css'
 import {
   collectCSSQuotedStringRanges,
@@ -35,9 +39,21 @@ export function tokenizeSourcePrelude(source: string, start: number, end: number
   }
 }
 
-export function tokenizeClassListPrelude(source: string, start: number, end: number, tokens: HighlightTokenItem[], css: MasterCSS) {
+export function tokenizeClassListPrelude(
+  source: string,
+  start: number,
+  end: number,
+  tokens: HighlightTokenItem[],
+  css: MasterCSS | undefined,
+  classifications?: ReadonlyMap<string, MasterCSSLanguageTokenClassification>
+) {
   for (const stringRange of collectCSSQuotedStringRanges(source, start, end)) {
-    tokens.push(...collectClassListHighlightTokenItems(css, source.slice(stringRange.start + 1, stringRange.end - 1), stringRange.start + 1))
+    tokens.push(...collectClassListHighlightTokenItems(
+      css,
+      source.slice(stringRange.start + 1, stringRange.end - 1),
+      stringRange.start + 1,
+      classifications
+    ))
   }
 }
 
@@ -101,7 +117,14 @@ export function tokenizeCustomVariantPrelude(source: string, start: number, end:
   }
 }
 
-export function tokenizeComposePrelude(source: string, start: number, end: number, tokens: HighlightTokenItem[], css: MasterCSS) {
+export function tokenizeComposePrelude(
+  source: string,
+  start: number,
+  end: number,
+  tokens: HighlightTokenItem[],
+  css: MasterCSS | undefined,
+  classifications?: ReadonlyMap<string, MasterCSSLanguageTokenClassification>
+) {
   if (collectCSSQuotedStringRanges(source, start, end).length) {
     return
   }
@@ -109,7 +132,12 @@ export function tokenizeComposePrelude(source: string, start: number, end: numbe
   let classListEnd = end
   while (classListEnd > classListStart && /\s/.test(source[classListEnd - 1] || '')) classListEnd--
   if (classListEnd <= classListStart) return
-  tokens.push(...collectClassListHighlightTokenItems(css, source.slice(classListStart, classListEnd), classListStart))
+  tokens.push(...collectClassListHighlightTokenItems(
+    css,
+    source.slice(classListStart, classListEnd),
+    classListStart,
+    classifications
+  ))
 }
 
 export function tokenizeVariantPrelude(source: string, start: number, end: number, tokens: HighlightTokenItem[]) {

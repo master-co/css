@@ -3,12 +3,17 @@ import type { SemanticTokens } from 'vscode-languageserver-protocol'
 import { tokenizeMasterCSSGroupedClassToken } from '@master/css-lexer'
 import { encodeSemanticTokens } from './semantic/encode'
 import { toSemanticTokenItems, type HighlightTokenItem } from './semantic/highlight'
-import { collectCSSHighlightTokenItems, isCSSSemanticTokenDocument } from './semantic/tokenize-css'
+import {
+  collectCSSDirectiveClassNames,
+  collectCSSHighlightTokenItems,
+  isCSSSemanticTokenDocument
+} from './semantic/tokenize-css'
 import { tokenizeClassToken } from './semantic/tokenize-class'
+import type { MasterCSSLanguageTokenClassification } from './semantic/tokenize-class'
 import type { SemanticTokenItem } from './semantic/types'
 import type { MasterCSS } from './master-css'
 import type { ClassPosition } from './utils/get-class-positions'
-import type { MasterCSSLanguageClassIR, RustLanguageAnalyzer } from './rust-session'
+import type { RustLanguageAnalyzer } from './rust-session'
 
 export { encodeSemanticTokens }
 export type { HighlightTokenItem, SemanticTokenItem }
@@ -40,17 +45,23 @@ function collectClassificationNames(token: string, names: Set<string>) {
 
 function classifyClassPositions(
   classPositions: ClassPosition[],
-  analyzer?: RustLanguageAnalyzer
-): ReadonlyMap<string, MasterCSSLanguageClassIR> | undefined {
+  analyzer?: RustLanguageAnalyzer,
+  additionalNames: string[] = []
+): ReadonlyMap<string, MasterCSSLanguageTokenClassification> | undefined {
   if (!analyzer?.classifyClassNames) return
-  const names = new Set<string>()
+  const names = new Set(additionalNames)
   for (const { token } of classPositions) collectClassificationNames(token, names)
   if (!names.size) return new Map()
-  return new Map(analyzer.classifyClassNames([...names]).classes.map((item) => [item.className, item]))
+  const classifications = analyzer.classifyClassNames([...names])
+  const variableNames = new Set(classifications.variableNames)
+  return new Map(classifications.classes.map((item) => [item.className, {
+    ...item,
+    variableNames
+  }]))
 }
 
 export function collectEmbeddedHighlightTokenItems(
-  css: MasterCSS,
+  css: MasterCSS | undefined,
   classPositions: ClassPosition[],
   analyzer?: RustLanguageAnalyzer
 ): HighlightTokenItem[] {
@@ -68,18 +79,38 @@ export function collectEmbeddedHighlightTokenItems(
   return semanticTokens
 }
 
-export function collectCSSDocumentHighlightTokenItems(css: MasterCSS, document: TextDocument, options: Parameters<typeof collectCSSHighlightTokenItems>[3] = {}): HighlightTokenItem[] {
-  return collectCSSHighlightTokenItems(document.getText(), css, document.languageId, options)
+export function collectCSSDocumentHighlightTokenItems(
+  css: MasterCSS | undefined,
+  document: TextDocument,
+  options: Parameters<typeof collectCSSHighlightTokenItems>[3] = {},
+  classPositions: ClassPosition[] = [],
+  analyzer?: RustLanguageAnalyzer
+): HighlightTokenItem[] {
+  const source = document.getText()
+  const classifications = isCSSSemanticTokenDocument(document.languageId)
+    ? classifyClassPositions(
+      classPositions,
+      analyzer,
+      collectCSSDirectiveClassNames(source, document.languageId, options)
+    )
+    : undefined
+  return collectCSSHighlightTokenItems(
+    source,
+    css,
+    document.languageId,
+    options,
+    classifications
+  )
 }
 
 export function collectHighlightTokenItems(
-  css: MasterCSS,
+  css: MasterCSS | undefined,
   document: TextDocument,
   classPositions: ClassPosition[],
   analyzer?: RustLanguageAnalyzer
 ): HighlightTokenItem[] {
   if (isCSSSemanticTokenDocument(document.languageId)) {
-    return collectCSSDocumentHighlightTokenItems(css, document)
+    return collectCSSDocumentHighlightTokenItems(css, document, {}, classPositions, analyzer)
   }
 
   return [
@@ -89,7 +120,7 @@ export function collectHighlightTokenItems(
 }
 
 export function collectSemanticTokenItems(
-  css: MasterCSS,
+  css: MasterCSS | undefined,
   document: TextDocument,
   classPositions: ClassPosition[],
   analyzer?: RustLanguageAnalyzer
@@ -97,28 +128,38 @@ export function collectSemanticTokenItems(
   return toSemanticTokenItems(collectHighlightTokenItems(css, document, classPositions, analyzer))
 }
 
-export function collectDocumentHighlightTokenItems(css: MasterCSS, document: TextDocument, classPositions: ClassPosition[], options: RenderSemanticTokenOptions = {}): HighlightTokenItem[] {
-  const semanticTokens = collectCSSDocumentHighlightTokenItems(css, document)
+export function collectDocumentHighlightTokenItems(css: MasterCSS | undefined, document: TextDocument, classPositions: ClassPosition[], options: RenderSemanticTokenOptions = {}): HighlightTokenItem[] {
+  const semanticTokens = collectCSSDocumentHighlightTokenItems(
+    css,
+    document,
+    {},
+    classPositions,
+    options.analyzer
+  )
   if (options.embeddedSyntaxHighlighting === 'always' && !isCSSSemanticTokenDocument(document.languageId)) {
     semanticTokens.push(...collectEmbeddedHighlightTokenItems(css, classPositions, options.analyzer))
   }
   return semanticTokens
 }
 
-export function collectDocumentSemanticTokenItems(css: MasterCSS, document: TextDocument, classPositions: ClassPosition[], options: RenderSemanticTokenOptions = {}): SemanticTokenItem[] {
+export function collectDocumentSemanticTokenItems(css: MasterCSS | undefined, document: TextDocument, classPositions: ClassPosition[], options: RenderSemanticTokenOptions = {}): SemanticTokenItem[] {
   return toSemanticTokenItems(collectDocumentHighlightTokenItems(css, document, classPositions, options))
 }
 
-export function collectActiveHighlightTokenItems(css: MasterCSS, document: TextDocument, classPositions: ClassPosition[], position: Parameters<TextDocument['offsetAt']>[0], options: RenderSemanticTokenOptions = {}): HighlightTokenItem[] {
+export function collectActiveHighlightTokenItems(css: MasterCSS | undefined, document: TextDocument, classPositions: ClassPosition[], position: Parameters<TextDocument['offsetAt']>[0], options: RenderSemanticTokenOptions = {}): HighlightTokenItem[] {
   if (options.embeddedSyntaxHighlighting !== 'off' && !isCSSSemanticTokenDocument(document.languageId) && classPositions.length) {
     return collectEmbeddedHighlightTokenItems(css, classPositions, options.analyzer)
   }
-  return collectCSSDocumentHighlightTokenItems(css, document, {
-    positionOffset: document.offsetAt(position)
-  })
+  return collectCSSDocumentHighlightTokenItems(
+    css,
+    document,
+    { positionOffset: document.offsetAt(position) },
+    classPositions,
+    options.analyzer
+  )
 }
 
-export function renderSemanticTokensAtPosition(css: MasterCSS, document: TextDocument, classPositions: ClassPosition[], position: Parameters<TextDocument['offsetAt']>[0], options: RenderSemanticTokenOptions = {}): SemanticTokens | undefined {
+export function renderSemanticTokensAtPosition(css: MasterCSS | undefined, document: TextDocument, classPositions: ClassPosition[], position: Parameters<TextDocument['offsetAt']>[0], options: RenderSemanticTokenOptions = {}): SemanticTokens | undefined {
   return encodeHighlightTokens(
     document,
     collectActiveHighlightTokenItems(css, document, classPositions, position, options),
@@ -126,7 +167,7 @@ export function renderSemanticTokensAtPosition(css: MasterCSS, document: TextDoc
   )
 }
 
-export default function renderSemanticTokens(css: MasterCSS, document: TextDocument, classPositions: ClassPosition[], options: RenderSemanticTokenOptions = {}): SemanticTokens | undefined {
+export default function renderSemanticTokens(css: MasterCSS | undefined, document: TextDocument, classPositions: ClassPosition[], options: RenderSemanticTokenOptions = {}): SemanticTokens | undefined {
   return encodeHighlightTokens(
     document,
     collectDocumentHighlightTokenItems(css, document, classPositions, options),

@@ -6,7 +6,7 @@
     "dev": "tsdown --config ../../shared/tsdown-package.config.ts --watch",
     "type-check": "tsc -b tsconfig.typecheck.json",
     "lint": "eslint",
-    "test": "cargo xtask build-native && vitest"
+    "test": "cargo xtask build-native && cargo xtask build-wasm tooling && vitest"
   },
   "description": "Master CSS language primitives",
   "author": "Aoyue Design LLC.",

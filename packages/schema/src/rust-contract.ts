@@ -205,6 +205,7 @@ export interface MasterCSSLanguageClassIR {
 
 export interface MasterCSSLanguageClassificationsIR {
   version: typeof MASTER_CSS_LANGUAGE_BATCH_VERSION
+  variableNames: string[]
   classes: MasterCSSLanguageClassIR[]
 }
 

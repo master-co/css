@@ -949,6 +949,18 @@ impl EngineSession {
         Ok(keys)
     }
 
+    pub fn variable_names(&self) -> Result<Vec<String>, EngineError> {
+        self.ensure_active()?;
+        let mut names = self
+            .compiled
+            .compiled_variables
+            .keys()
+            .cloned()
+            .collect::<Vec<_>>();
+        names.sort();
+        Ok(names)
+    }
+
     pub fn class_variable_entries(
         &self,
         class_name: &str,

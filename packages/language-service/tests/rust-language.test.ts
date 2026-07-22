@@ -1,6 +1,7 @@
 import { beforeAll, expect, test } from 'vitest'
 import { TextDocument } from 'vscode-languageserver-textdocument'
 import { createRustLanguageAnalyzer } from '@master/css-language/node'
+import { defaultCSSLanguageRuntime } from '@master/css-language'
 import CSSLanguageService from '../src'
 import { createPresetManifest } from './helpers/create-preset-manifest'
 
@@ -43,12 +44,32 @@ test('uses one Rust analyzer for class positions and semantic token encoding', a
   const source = 'const emoji = "😀"\nconst classes = `fg:red content:\\`\\``'
   const document = TextDocument.create('file:///rust-language.ts', 'typescript', 1, source)
   const oracle = new CSSLanguageService(settings)
-  const service = new CSSLanguageService(settings, { analyzer })
+  const runtime = {
+    ...defaultCSSLanguageRuntime,
+    MasterCSS: new Proxy(defaultCSSLanguageRuntime.MasterCSS, {
+      get(target, property, receiver) {
+        if (property === 'create') {
+          return () => {
+            throw new Error('Rust semantic tokens must not initialize the TS engine.')
+          }
+        }
+        return Reflect.get(target, property, receiver)
+      }
+    })
+  }
+  const service = new CSSLanguageService(settings, { analyzer, runtime })
 
   expect(service.getClassPositions(document)).toEqual(oracle.getClassPositions(document))
   expect(service.renderSemanticTokens(document)).toEqual(oracle.renderSemanticTokens(document))
+  const cssDocument = TextDocument.create(
+    'file:///rust-language.css',
+    'css',
+    1,
+    '@safelist "block fg:red"; .btn { @compose block fg:blue; }'
+  )
+  expect(service.renderSemanticTokens(cssDocument)).toEqual(oracle.renderSemanticTokens(cssDocument))
   expect(analyzeCalls).toBeGreaterThanOrEqual(2)
-  expect(classifyCalls).toBe(1)
+  expect(classifyCalls).toBe(2)
   service.dispose()
 })
 

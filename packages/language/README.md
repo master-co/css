@@ -36,14 +36,16 @@ Use the browser subpath when a web editor needs Master CSS semantic tokens witho
 
 ```ts
 import {
+  createBrowserLanguageSession,
   SEMANTIC_TOKENS_LEGEND,
-  renderBrowserSemanticTokens
 } from '@master/css-language/browser'
 
-const semanticTokens = renderBrowserSemanticTokens(source, 'html', { manifest })
+const language = await createBrowserLanguageSession({ manifest })
+const semanticTokens = language.renderSemanticTokens(source, 'html')
+language.dispose()
 ```
 
-The browser helper supports CSS directive class-list spans in CSS documents and quoted `class` or `className` attributes in HTML.
+The browser session initializes the tooling Wasm module once per realm and supports CSS directive class-list spans in CSS documents and quoted `class` or `className` attributes in HTML.
 
 ### Shiki
 

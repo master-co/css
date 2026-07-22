@@ -28,7 +28,11 @@ import { useApp } from 'internal/contexts/app'
 import type { MasterCSSManifest } from '@master/css'
 import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
 import masterCSSTextMateGrammar from '@master/css-language/syntaxes/master-css.tmLanguage.json' with { type: 'json' }
-import { renderBrowserSemanticTokens, SEMANTIC_TOKENS_LEGEND } from '@master/css-language/browser'
+import {
+  createBrowserLanguageSession,
+  SEMANTIC_TOKENS_LEGEND,
+  type BrowserLanguageSession
+} from '@master/css-language/browser'
 
 const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
 const jsdelivrNPMBaseURL = 'https://cdn.jsdelivr.net/npm/'
@@ -579,6 +583,8 @@ export default function Play({ shareId }: PlayProps = {}) {
   const copiedTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const semanticTokenListenersRef = useRef(new Set<() => void>())
   const semanticProviderDisposablesRef = useRef<{ dispose(): void }[]>([])
+  const semanticLanguageSessionRef = useRef<BrowserLanguageSession | undefined>(undefined)
+  const semanticLanguageTicketRef = useRef(0)
   const [files, setFiles] = useState<PlayFile[]>(template.files)
   const [currentShareId, setCurrentShareId] = useState(shareId || pathShareId)
   const [baselineFilesText, setBaselineFilesText] = useState(() => stringifyFiles(template.files))
@@ -679,6 +685,25 @@ export default function Play({ shareId }: PlayProps = {}) {
     semanticTokenListenersRef.current.forEach((listener) => listener())
   }, [])
 
+  const replaceSemanticLanguageSession = useCallback(async (manifest: MasterCSSManifest) => {
+    const ticket = ++semanticLanguageTicketRef.current
+    try {
+      const session = await createBrowserLanguageSession({ manifest })
+      if (ticket !== semanticLanguageTicketRef.current) {
+        session.dispose()
+        return
+      }
+      semanticLanguageSessionRef.current?.dispose()
+      semanticLanguageSessionRef.current = session
+      emitSemanticTokenChange()
+    } catch {
+      if (ticket !== semanticLanguageTicketRef.current) return
+      semanticLanguageSessionRef.current?.dispose()
+      semanticLanguageSessionRef.current = undefined
+      emitSemanticTokenChange()
+    }
+  }, [emitSemanticTokenChange])
+
   const compileAndPreview = useCallback(async (nextFiles = filesRef.current) => {
     const ticket = ++compileTicketRef.current
     const html = getFileContent(nextFiles, 'HTML')
@@ -697,11 +722,11 @@ export default function Play({ shareId }: PlayProps = {}) {
       const compiledPreview = { html, css: cssText }
       compiledPreviewRef.current = compiledPreview
       compiledManifestRef.current = result.manifest
+      void replaceSemanticLanguageSession(result.manifest)
       setGeneratedCSSText(cssText ? beautifyCSS(cssText) : '')
       setGeneratedCSSSize(formatCSSSize(cssText))
       setCompileWarnings(result.warnings)
       setPreviewErrorEvent(null)
-      emitSemanticTokenChange()
       postPreviewUpdate(compiledPreview.html, compiledPreview.css)
     } catch (error) {
       if (ticket !== compileTicketRef.current) return
@@ -717,7 +742,7 @@ export default function Play({ shareId }: PlayProps = {}) {
         setCompiling(false)
       }
     }
-  }, [emitSemanticTokenChange, postPreviewUpdate])
+  }, [postPreviewUpdate, replaceSemanticLanguageSession])
 
   const hotUpdatePreviewByFiles = useDebouncedCallback((nextFiles: PlayFile[]) => {
     void compileAndPreview(nextFiles)
@@ -790,6 +815,8 @@ export default function Play({ shareId }: PlayProps = {}) {
   useEffect(() => {
     const semanticTokenListeners = semanticTokenListenersRef.current
     const semanticProviderDisposables = semanticProviderDisposablesRef.current
+    const semanticLanguageTicket = semanticLanguageTicketRef
+    const semanticLanguageSession = semanticLanguageSessionRef
     return () => {
       if (copiedTimeoutRef.current) {
         clearTimeout(copiedTimeoutRef.current)
@@ -797,6 +824,9 @@ export default function Play({ shareId }: PlayProps = {}) {
       semanticProviderDisposables.forEach((disposable) => disposable.dispose())
       semanticProviderDisposables.length = 0
       semanticTokenListeners.clear()
+      semanticLanguageTicket.current++
+      semanticLanguageSession.current?.dispose()
+      semanticLanguageSession.current = undefined
     }
   }, [])
 
@@ -829,9 +859,9 @@ export default function Play({ shareId }: PlayProps = {}) {
         return SEMANTIC_TOKENS_LEGEND
       },
       provideDocumentSemanticTokens(model: editor.ITextModel) {
-        return renderBrowserSemanticTokens(model.getValue(), model.getLanguageId(), {
-          manifest: compiledManifestRef.current
-        }) || { data: new Uint32Array() }
+        return semanticLanguageSessionRef.current
+          ?.renderSemanticTokens(model.getValue(), model.getLanguageId())
+          || { data: new Uint32Array() }
       },
       releaseDocumentSemanticTokens() {
         // Monaco requires this method even when no result ids are used.
@@ -846,14 +876,17 @@ export default function Play({ shareId }: PlayProps = {}) {
 
   const registerShiki = useCallback(async (monaco: Monaco) => {
     preparePlayMonaco(monaco)
-    const runtime = await registerMonacoShiki(monaco)
+    const [runtime] = await Promise.all([
+      registerMonacoShiki(monaco),
+      replaceSemanticLanguageSession(compiledManifestRef.current)
+    ])
     registerMasterCSSSemanticTokens(monaco)
     refreshMonacoHighlighting(monaco)
     scheduleMonacoShikiLanguageRefresh(runtime, monaco, getTheme)
     setTimeout(() => {
       monaco.editor.setTheme(getTheme())
     })
-  }, [getTheme, registerMasterCSSSemanticTokens])
+  }, [getTheme, registerMasterCSSSemanticTokens, replaceSemanticLanguageSession])
 
   const editorOnMount = useCallback(async (_editor: editor.IStandaloneCodeEditor, monaco: Monaco) => {
     await registerShiki(monaco)
