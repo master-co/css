@@ -6,7 +6,7 @@
     "dev": "tsdown --config ../../shared/tsdown-package.config.ts --watch",
     "lint": "eslint",
     "type-check": "tsc -b tsconfig.typecheck.json",
-    "test": "cargo xtask build-native && pnpm --filter @master/css-native build && vitest"
+    "test": "cargo xtask build-native && vitest"
   },
   "license": "MIT",
   "description": "Server-side HTML renderer for Master CSS",

@@ -902,11 +902,12 @@ describe('MasterCSSPlugin (C1 race fix)', () => {
         verbose: 0
       }, root).init()
 
-      plugin.latentClasses.add('btn')
-      plugin.latentClasses.add('native-used')
-      plugin.latentClasses.add('root-native')
-
-      await (plugin as any).processModuleContents([[entryPath, source]], () => false)
+      const modulePath = path.join(root, 'src/page.tsx')
+      const moduleSource = '<div className="btn native-used root-native" />'
+      await (plugin as any).processModuleContents([
+        [entryPath, source],
+        [modulePath, moduleSource]
+      ], () => false)
       const css = await (plugin as any).createExtractedCSS()
 
       expect(css).toContain('.native-used')

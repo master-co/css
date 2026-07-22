@@ -3,10 +3,10 @@
   "type": "module",
   "scripts": {
     "build": "pnpm generate",
-    "generate": "cargo xtask build-native && pnpm --filter @master/css-native build && node --import tsx scripts/generate-default-manifest.ts",
+    "generate": "cargo xtask build-native && node --import tsx scripts/generate-default-manifest.ts",
     "lint": "eslint",
     "type-check": "tsc -b tsconfig.typecheck.json",
-    "test": "cargo xtask build-native && pnpm --filter @master/css-native build && vitest"
+    "test": "cargo xtask build-native && vitest"
   },
   "license": "MIT",
   "description": "The default Master CSS preset source and compiled manifest.",
