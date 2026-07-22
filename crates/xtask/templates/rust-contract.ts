@@ -106,6 +106,25 @@ export interface MasterCSSLintRawValueCandidatesIR {
   candidates: MasterCSSLintRawValueCandidateIR[]
 }
 
+export interface MasterCSSLintCanonicalClassNameOptionsIR {
+  preferStaticUtilities: boolean
+  preferThemeTokens: boolean
+  preferPropertyAliases: boolean
+  preferVariableReferences: boolean
+  preferMultiValueTokens: boolean
+  preferConditionOrder: boolean
+}
+
+export interface MasterCSSLintCanonicalClassSuggestionIR {
+  className: string
+  recommended: string
+}
+
+export interface MasterCSSLintCanonicalClassSuggestionsIR {
+  version: typeof MASTER_CSS_LINT_BATCH_VERSION
+  suggestions: MasterCSSLintCanonicalClassSuggestionIR[]
+}
+
 export interface MasterCSSLintEditIR {
   range: MasterCSSSourceRange
   text: string

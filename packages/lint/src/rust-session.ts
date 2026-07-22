@@ -5,6 +5,8 @@ import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import { stringifyMasterCSSManifestJSON } from '@master/css-schema/manifest-json'
 import type {
   MasterCSSLintBatchIR,
+  MasterCSSLintCanonicalClassSuggestionIR,
+  MasterCSSLintCanonicalClassSuggestionsIR,
   MasterCSSLintClassListIR,
   MasterCSSLintClassConflictIR,
   MasterCSSLintDiagnosticIR,
@@ -18,6 +20,7 @@ import { cssTreeNativeDeclarationMatcher } from '@master/css-validator/native-de
 import validateCSS from '@master/css-validator/validate-css'
 import type { MasterCSSLintDiagnostic, MasterCSSLintDiagnosticSeverity } from './diagnostics'
 import type { RawValuePolicyOptions } from './find-unapproved-raw-value-classes'
+import type { CanonicalClassNameOptions } from './suggest-canonical-class-name'
 
 export type RustClassConflictIR = MasterCSSLintClassConflictIR
 export type RustPartialClassConflictIR = MasterCSSLintPartialClassConflictIR
@@ -25,6 +28,10 @@ export type RustLintBatchIR = MasterCSSLintBatchIR
 
 export interface RustLintSession {
   analyze(classNames: string[]): RustLintBatchIR
+  canonicalClassNames(
+    classNames: string[],
+    options?: CanonicalClassNameOptions
+  ): MasterCSSLintCanonicalClassSuggestionIR[]
   rawValueCandidates(classNames: string[]): MasterCSSLintRawValueCandidateIR[]
   analyzeClassList(
     classList: string,
@@ -106,6 +113,14 @@ function createNativeRustLintSession(manifestJSON: string): RustLintSession | un
         inputs.invalidGeneratedClasses
       )) as RustLintBatchIR
     },
+    canonicalClassNames(classNames, options) {
+      const inputs = resolveInputs(classNames)
+      return (JSON.parse(lint.canonicalClassNames(
+        classNames,
+        inputs.nativeSupport,
+        options ? JSON.stringify(options) : undefined
+      )) as MasterCSSLintCanonicalClassSuggestionsIR).suggestions
+    },
     rawValueCandidates(classNames) {
       const inputs = resolveInputs(classNames)
       return (JSON.parse(lint.rawValueCandidates(
@@ -186,6 +201,15 @@ export async function createRustLintSession(manifest: MasterCSSManifest): Promis
         nativeSupport.length ? nativeSupport : undefined,
         resolveValidation(validation).invalidGeneratedClasses
       ) as RustLintBatchIR
+    },
+    canonicalClassNames(classNames, options) {
+      const candidates = lint.nativeDeclarationCandidates(classNames) as MasterCSSNativeDeclarationCandidateIR[]
+      const nativeSupport = candidates.map(cssTreeNativeDeclarationMatcher)
+      return (lint.canonicalClassNames(
+        classNames,
+        nativeSupport.length ? nativeSupport : undefined,
+        options
+      ) as MasterCSSLintCanonicalClassSuggestionsIR).suggestions
     },
     rawValueCandidates(classNames) {
       const candidates = lint.nativeDeclarationCandidates(classNames) as MasterCSSNativeDeclarationCandidateIR[]

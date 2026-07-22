@@ -2186,6 +2186,25 @@ const BUILTIN_KEY_ALIASES: &[(&str, &str)] = &[
     ("z", "z-index"),
 ];
 
+/// Returns the canonical built-in key alias registry for Rust tooling policy.
+/// Manifest-carried registry fields are intentionally not consulted.
+pub fn builtin_key_aliases() -> &'static [(&'static str, &'static str)] {
+    BUILTIN_KEY_ALIASES
+}
+
+/// Returns the built-in properties that accept manifest variable values.
+pub fn builtin_native_value_properties() -> Vec<&'static str> {
+    let mut properties = Vec::new();
+    for (namespace_properties, _) in BUILTIN_NATIVE_VALUE_NAMESPACES {
+        for property in *namespace_properties {
+            if !properties.contains(property) {
+                properties.push(*property);
+            }
+        }
+    }
+    properties
+}
+
 fn add_unique_string(target: &mut Vec<String>, value: &str) {
     if !target.iter().any(|existing| existing == value) {
         target.push(value.to_owned());

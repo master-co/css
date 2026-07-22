@@ -68,6 +68,7 @@ export interface NativeValidatorSession {
 
 export interface NativeLintSession {
   nativeDeclarationCandidates(classNames: string[]): string
+  canonicalClassNames(classNames: string[], nativeSupport: boolean[] | undefined, optionsJSON?: string): string
   rawValueCandidates(
     classNames: string[],
     nativeSupport: boolean[] | undefined,

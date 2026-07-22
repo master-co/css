@@ -23,6 +23,7 @@ import {
   formatClassName,
   quoteDiagnosticValue
 } from './diagnostic-format'
+import type { RustLintSession } from './rust-session'
 
 export type MasterCSSLintRuleId =
   | 'sort-classes'
@@ -298,7 +299,8 @@ export function createConflictingClassesReport(
 export function createCanonicalClassesReport(
   classList: string,
   css: MasterCSS,
-  options: MasterCSSCanonicalClassesReportOptions = {}
+  options: MasterCSSCanonicalClassesReportOptions = {},
+  lintSession?: Pick<RustLintSession, 'canonicalClassNames'>
 ): MasterCSSLintReport {
   const resolvedOptions = {
     ...defaultCanonicalClassNameOptions,
@@ -310,6 +312,12 @@ export function createCanonicalClassesReport(
   const severity = resolveSeverity('prefer-canonical-classes', options.severity)
   const groupSuggestions = suggestCanonicalClassGroups(values, css, resolvedOptions)
   const coveredClassNames = new Set(groupSuggestions.flatMap((suggestion) => suggestion.classNames))
+  const rustSuggestions = lintSession
+    ? new Map(lintSession.canonicalClassNames(
+      values.filter((className) => !coveredClassNames.has(className)),
+      resolvedOptions
+    ).map(({ className, recommended }) => [className, recommended]))
+    : undefined
   const diagnostics: MasterCSSLintDiagnostic[] = []
   let fixedText = classList
 
@@ -331,7 +339,8 @@ export function createCanonicalClassesReport(
 
   for (const item of classItems(items)) {
     if (coveredClassNames.has(item.token)) continue
-    const recommended = suggestCanonicalClassName(item.token, css, resolvedOptions)
+    const recommended = rustSuggestions?.get(item.token)
+      ?? (!lintSession ? suggestCanonicalClassName(item.token, css, resolvedOptions) : undefined)
     if (!recommended) continue
     fixedText = replaceClassNameInClassList(fixedText, item.token, recommended, options)
     diagnostics.push({
@@ -357,14 +366,15 @@ export function createCanonicalClassesReport(
 export function createCanonicalComposeDirectiveReport(
   classList: string,
   css: MasterCSS,
-  options: MasterCSSCanonicalClassesReportOptions = {}
+  options: MasterCSSCanonicalClassesReportOptions = {},
+  lintSession?: Pick<RustLintSession, 'canonicalClassNames'>
 ): MasterCSSLintReport {
   const result = suggestCanonicalComposeDirective(classList, css, {
     ...defaultCanonicalClassNameOptions,
     ...options
   })
   if (!result) return createReport()
-  if (!result.structuralChange) return createCanonicalClassesReport(classList, css, options)
+  if (!result.structuralChange) return createCanonicalClassesReport(classList, css, options, lintSession)
 
   const items = parseClassList(classList, options)
   const fallbackRange = wholeClassListRange(classList)

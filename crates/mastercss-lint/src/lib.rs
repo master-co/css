@@ -2,12 +2,15 @@
 
 mod class_list;
 
-use mastercss_engine::{EngineError, EngineSession};
+use mastercss_engine::{
+    ClassSemanticInspection, EngineError, EngineSession, builtin_key_aliases,
+    builtin_native_value_properties,
+};
 use mastercss_schema::{
     GeneratedRuleIr, LINT_BATCH_VERSION, NativeDeclarationCandidateIr, SourceRange,
     UtilityLayerName,
 };
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use std::cmp::Ordering;
 use std::collections::{HashMap, HashSet};
@@ -80,6 +83,50 @@ pub struct RawValueCandidatesIr {
     pub candidates: Vec<RawValueCandidateIr>,
 }
 
+#[derive(Debug, Clone, PartialEq, Eq, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct CanonicalClassNameOptions {
+    #[serde(default = "default_true")]
+    pub prefer_static_utilities: bool,
+    #[serde(default = "default_true")]
+    pub prefer_theme_tokens: bool,
+    #[serde(default = "default_true")]
+    pub prefer_property_aliases: bool,
+    #[serde(default = "default_true")]
+    pub prefer_variable_references: bool,
+    #[serde(default = "default_true")]
+    pub prefer_multi_value_tokens: bool,
+    #[serde(default = "default_true")]
+    pub prefer_condition_order: bool,
+}
+
+impl Default for CanonicalClassNameOptions {
+    fn default() -> Self {
+        Self {
+            prefer_static_utilities: true,
+            prefer_theme_tokens: true,
+            prefer_property_aliases: true,
+            prefer_variable_references: true,
+            prefer_multi_value_tokens: true,
+            prefer_condition_order: true,
+        }
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct CanonicalClassSuggestionIr {
+    pub class_name: String,
+    pub recommended: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct CanonicalClassSuggestionsIr {
+    pub version: u32,
+    pub suggestions: Vec<CanonicalClassSuggestionIr>,
+}
+
 #[derive(Debug, Clone, Default)]
 pub struct RawValuePolicy {
     pub allow_raw_values: bool,
@@ -108,6 +155,42 @@ pub struct LintSession {
     engine: EngineSession,
     variable_keys: Vec<String>,
     variable_values: HashMap<String, String>,
+    canonical_index: CanonicalRecommendationIndex,
+}
+
+#[derive(Debug, Default)]
+struct CanonicalRecommendationIndex {
+    static_candidates_by_signature: HashMap<String, Vec<String>>,
+    preferred_aliases_by_property: HashMap<String, Vec<String>>,
+    variable_keys_by_property_signature: HashMap<String, Vec<String>>,
+    modes: HashSet<String>,
+    breakpoints: HashSet<String>,
+    root_size: f64,
+    base_unit: f64,
+}
+
+#[derive(Debug)]
+struct CanonicalClassParts {
+    base: String,
+    suffix: String,
+    key: Option<String>,
+    value: Option<String>,
+}
+
+#[derive(Debug)]
+struct CanonicalCandidate {
+    class_name: String,
+    order: u8,
+}
+
+#[derive(Debug)]
+struct MatchingVariableKeys {
+    keys: Vec<String>,
+    numeric: bool,
+}
+
+const fn default_true() -> bool {
+    true
 }
 
 #[derive(Debug, Clone)]
@@ -127,10 +210,14 @@ struct ClassDescriptor {
 impl LintSession {
     pub fn create(manifest_json: &str) -> Result<Self, EngineError> {
         let (variable_keys, variable_values) = collect_manifest_variables(manifest_json);
+        let engine = EngineSession::create(manifest_json)?;
+        let manifest = serde_json::from_str::<Value>(manifest_json).unwrap_or(Value::Null);
+        let canonical_index = build_canonical_recommendation_index(&manifest, &engine)?;
         Ok(Self {
-            engine: EngineSession::create(manifest_json)?,
+            engine,
             variable_keys,
             variable_values,
+            canonical_index,
         })
     }
 
@@ -268,6 +355,260 @@ impl LintSession {
         })
     }
 
+    pub fn canonical_class_names(
+        &mut self,
+        class_names: &[String],
+        native_support: Option<&[bool]>,
+        options: &CanonicalClassNameOptions,
+    ) -> Result<CanonicalClassSuggestionsIr, EngineError> {
+        if let Some(native_support) = native_support {
+            self.engine
+                .ensure_class_rules_with_native_support(class_names, native_support)?;
+        } else {
+            self.engine.ensure_class_rules(class_names)?;
+        }
+        let result = (|| {
+            let mut suggestions = Vec::new();
+            for class_name in class_names {
+                if let Some(recommended) = self.suggest_canonical_class_name(class_name, options)? {
+                    suggestions.push(CanonicalClassSuggestionIr {
+                        class_name: class_name.clone(),
+                        recommended,
+                    });
+                }
+            }
+            Ok(CanonicalClassSuggestionsIr {
+                version: LINT_BATCH_VERSION,
+                suggestions,
+            })
+        })();
+        let cleanup = self.engine.delete_class_rules(class_names);
+        match result {
+            Ok(result) => {
+                cleanup?;
+                Ok(result)
+            }
+            Err(error) => {
+                let _ = cleanup;
+                Err(error)
+            }
+        }
+    }
+
+    fn suggest_canonical_class_name(
+        &self,
+        class_name: &str,
+        options: &CanonicalClassNameOptions,
+    ) -> Result<Option<String>, EngineError> {
+        let source = self.engine.inspect(class_name)?;
+        if source.rules.is_empty() {
+            return Ok(None);
+        }
+        let semantics = self.engine.inspect_class_semantics(class_name)?;
+        let parts = canonical_class_parts(class_name, &semantics);
+        let canonical_suffix = canonical_condition_suffix(
+            &parts,
+            &semantics,
+            &source.rules,
+            &self.canonical_index,
+            options,
+        );
+        let mut candidates = Vec::new();
+
+        if options.prefer_static_utilities {
+            let signature = rules_declaration_signature(&source.rules);
+            for candidate_base in self
+                .canonical_index
+                .static_candidates_by_signature
+                .get(&signature)
+                .into_iter()
+                .flatten()
+            {
+                push_canonical_candidate(
+                    &mut candidates,
+                    candidate_base,
+                    &parts,
+                    &canonical_suffix,
+                    0,
+                );
+            }
+        }
+
+        if let (Some(source_key), Some(source_value)) = (&parts.key, &parts.value) {
+            if options.prefer_theme_tokens {
+                let variable_match =
+                    self.matching_multi_value_keys(source_key, source_value, options)?;
+                if let Some(variable_match) = variable_match {
+                    for source_rule in &source.rules {
+                        let signature = declaration_property_signature(source_rule);
+                        let candidate_keys = canonical_variable_candidate_keys(
+                            &self.canonical_index,
+                            &signature,
+                            source_key,
+                            &variable_match,
+                            options.prefer_property_aliases,
+                        );
+                        for candidate_key in candidate_keys {
+                            for variable_key in &variable_match.keys {
+                                push_canonical_candidate(
+                                    &mut candidates,
+                                    &format!("{candidate_key}:{variable_key}"),
+                                    &parts,
+                                    &canonical_suffix,
+                                    1,
+                                );
+                            }
+                        }
+                    }
+                }
+            }
+
+            if options.prefer_property_aliases
+                && let Some(source_rule) = source.rules.first()
+            {
+                for (property, _) in collect_rule_declarations(&source_rule.text) {
+                    if source_key != &property {
+                        continue;
+                    }
+                    for alias in self
+                        .canonical_index
+                        .preferred_aliases_by_property
+                        .get(&property)
+                        .into_iter()
+                        .flatten()
+                    {
+                        push_canonical_candidate(
+                            &mut candidates,
+                            &format!("{alias}:{source_value}"),
+                            &parts,
+                            &canonical_suffix,
+                            2,
+                        );
+                    }
+                }
+            }
+        }
+
+        push_canonical_candidate(&mut candidates, &parts.base, &parts, &canonical_suffix, 3);
+        candidates.sort_by(|left, right| {
+            left.order
+                .cmp(&right.order)
+                .then_with(|| left.class_name.len().cmp(&right.class_name.len()))
+                .then_with(|| left.class_name.cmp(&right.class_name))
+        });
+        candidates.dedup_by(|left, right| left.class_name == right.class_name);
+
+        for candidate in candidates {
+            if candidate.class_name == class_name {
+                continue;
+            }
+            let candidate_rules = self.engine.inspect(&candidate.class_name)?.rules;
+            if !candidate_rules.is_empty()
+                && has_same_canonical_rule_shape(&source.rules, &candidate_rules)
+            {
+                return Ok(Some(candidate.class_name));
+            }
+        }
+        Ok(None)
+    }
+
+    fn matching_multi_value_keys(
+        &self,
+        source_key: &str,
+        source_value: &str,
+        options: &CanonicalClassNameOptions,
+    ) -> Result<Option<MatchingVariableKeys>, EngineError> {
+        let segments = split_top_level(source_value, '|');
+        if segments.len() <= 1 {
+            return self.matching_variable_keys(source_key, source_value, options);
+        }
+        if !options.prefer_multi_value_tokens || segments.iter().any(|segment| segment.is_empty()) {
+            return Ok(None);
+        }
+        let mut keys = Vec::new();
+        let mut numeric = false;
+        for segment in segments {
+            let Some(matched) = self.matching_variable_keys(source_key, segment, options)? else {
+                return Ok(None);
+            };
+            let Some(key) = matched.keys.first() else {
+                return Ok(None);
+            };
+            keys.push(key.clone());
+            numeric |= matched.numeric;
+        }
+        Ok(Some(MatchingVariableKeys {
+            keys: vec![keys.join("|")],
+            numeric,
+        }))
+    }
+
+    fn matching_variable_keys(
+        &self,
+        source_key: &str,
+        source_value: &str,
+        options: &CanonicalClassNameOptions,
+    ) -> Result<Option<MatchingVariableKeys>, EngineError> {
+        let variable_reference = css_variable_reference_name(source_value);
+        if variable_reference.is_some() && !options.prefer_variable_references {
+            return Ok(None);
+        }
+        let source_class = format!("{source_key}:{source_value}");
+        let source_rules = self.engine.inspect(&source_class)?.rules;
+        if source_rules.is_empty() {
+            return Ok(None);
+        }
+        let mut variable_keys = self.engine.class_variable_keys(&source_class)?;
+        variable_keys
+            .sort_by(|left, right| left.len().cmp(&right.len()).then_with(|| left.cmp(right)));
+        variable_keys.dedup();
+        let mut token_keys = Vec::new();
+        let mut numeric_keys = Vec::new();
+        for variable_key in variable_keys {
+            let candidate = self
+                .engine
+                .inspect(&format!("{source_key}:{variable_key}"))?;
+            if candidate.rules.is_empty() {
+                continue;
+            }
+            if variable_key == source_value
+                || variable_reference.is_some_and(|name| {
+                    candidate
+                        .rules
+                        .iter()
+                        .any(|rule| rule.variable_names.iter().any(|variable| variable == name))
+                })
+            {
+                token_keys.push(variable_key);
+            } else if candidate.rules.iter().any(|rule| {
+                rule.variable_names.iter().any(|variable_name| {
+                    self.variable_values
+                        .get(variable_name)
+                        .is_some_and(|value| {
+                            numeric_values_match(
+                                source_value,
+                                value,
+                                self.canonical_index.root_size,
+                                self.canonical_index.base_unit,
+                            )
+                        })
+                })
+            }) || declarations_match_after_variable_resolution(
+                &source_rules,
+                &candidate.rules,
+                &self.variable_values,
+            ) {
+                numeric_keys.push(variable_key);
+            }
+        }
+        let (keys, numeric) = if token_keys.is_empty() {
+            (numeric_keys, true)
+        } else {
+            (token_keys, false)
+        };
+        Ok((!keys.is_empty()).then_some(MatchingVariableKeys { keys, numeric }))
+    }
+
     fn collect_raw_value_candidates(
         &self,
         class_names: &[String],
@@ -317,6 +658,501 @@ impl LintSession {
     pub fn dispose(&mut self) {
         self.engine.dispose();
     }
+}
+
+fn push_index_value(map: &mut HashMap<String, Vec<String>>, key: &str, value: &str) {
+    let values = map.entry(key.to_owned()).or_default();
+    if !values.iter().any(|existing| existing == value) {
+        values.push(value.to_owned());
+    }
+}
+
+fn manifest_utility_property_signatures(utility: &serde_json::Map<String, Value>) -> Vec<String> {
+    let Some(emit) = utility.get("emit").and_then(Value::as_object) else {
+        return Vec::new();
+    };
+    let mut signatures = Vec::new();
+    match emit.get("type").and_then(Value::as_str) {
+        Some("static") => {
+            for rule in emit
+                .get("rules")
+                .and_then(Value::as_array)
+                .into_iter()
+                .flatten()
+            {
+                if let Some(declarations) = rule.get("declarations").and_then(Value::as_object) {
+                    let mut properties = declarations.keys().cloned().collect::<Vec<_>>();
+                    properties.sort();
+                    let signature = properties.join("\0");
+                    if !signature.is_empty() && !signatures.contains(&signature) {
+                        signatures.push(signature);
+                    }
+                }
+            }
+        }
+        Some("property") => {
+            if let Some(property) = emit.get("property").and_then(Value::as_str) {
+                signatures.push(property.to_owned());
+            }
+        }
+        Some("template") => {
+            if let Some(declarations) = emit.get("declarations").and_then(Value::as_object) {
+                let mut properties = declarations.keys().cloned().collect::<Vec<_>>();
+                properties.sort();
+                let signature = properties.join("\0");
+                if !signature.is_empty() {
+                    signatures.push(signature);
+                }
+            }
+        }
+        _ => {}
+    }
+    signatures
+}
+
+fn build_canonical_recommendation_index(
+    manifest: &Value,
+    engine: &EngineSession,
+) -> Result<CanonicalRecommendationIndex, EngineError> {
+    let mut index = CanonicalRecommendationIndex::default();
+    for (alias, property) in builtin_key_aliases() {
+        push_index_value(&mut index.preferred_aliases_by_property, property, alias);
+    }
+    for aliases in index.preferred_aliases_by_property.values_mut() {
+        aliases.sort_by(|left, right| left.len().cmp(&right.len()).then_with(|| left.cmp(right)));
+    }
+    for property in builtin_native_value_properties() {
+        for alias in index
+            .preferred_aliases_by_property
+            .get(property)
+            .cloned()
+            .unwrap_or_default()
+        {
+            push_index_value(
+                &mut index.variable_keys_by_property_signature,
+                property,
+                &alias,
+            );
+        }
+        push_index_value(
+            &mut index.variable_keys_by_property_signature,
+            property,
+            property,
+        );
+    }
+
+    for utility in manifest
+        .get("utilities")
+        .and_then(Value::as_array)
+        .into_iter()
+        .flatten()
+        .filter_map(Value::as_object)
+    {
+        let property_signatures = manifest_utility_property_signatures(utility);
+        for matcher in utility
+            .get("matchers")
+            .and_then(Value::as_array)
+            .into_iter()
+            .flatten()
+            .filter_map(Value::as_object)
+        {
+            let matcher_type = matcher.get("type").and_then(Value::as_str);
+            if matcher_type == Some("variable") {
+                for key in matcher
+                    .get("keys")
+                    .and_then(Value::as_array)
+                    .into_iter()
+                    .flatten()
+                    .filter_map(Value::as_str)
+                {
+                    for signature in &property_signatures {
+                        push_index_value(
+                            &mut index.variable_keys_by_property_signature,
+                            signature,
+                            key,
+                        );
+                    }
+                }
+            }
+
+            if utility.get("type").and_then(Value::as_i64) != Some(-2)
+                || utility
+                    .get("layer")
+                    .and_then(Value::as_str)
+                    .is_some_and(|layer| layer != "utilities")
+            {
+                continue;
+            }
+            let mut names = Vec::new();
+            match matcher_type {
+                Some("static") => {
+                    if let Some(name) = matcher.get("name").and_then(Value::as_str) {
+                        names.push(name.to_owned());
+                    }
+                }
+                Some("pattern") => {
+                    let prefix = matcher
+                        .get("prefix")
+                        .and_then(Value::as_str)
+                        .unwrap_or_default();
+                    names.extend(
+                        matcher
+                            .get("values")
+                            .and_then(Value::as_array)
+                            .into_iter()
+                            .flatten()
+                            .filter_map(Value::as_str)
+                            .map(|value| format!("{prefix}{value}")),
+                    );
+                }
+                _ => {}
+            }
+            for name in names {
+                if name.contains(':') {
+                    continue;
+                }
+                let rules = engine.inspect(&name)?.rules;
+                if rules.is_empty()
+                    || rules
+                        .iter()
+                        .any(|rule| rule.layer != UtilityLayerName::Utilities)
+                {
+                    continue;
+                }
+                push_index_value(
+                    &mut index.static_candidates_by_signature,
+                    &rules_declaration_signature(&rules),
+                    &name,
+                );
+            }
+        }
+    }
+    for values in index.static_candidates_by_signature.values_mut() {
+        values.sort_by(|left, right| left.len().cmp(&right.len()).then_with(|| left.cmp(right)));
+    }
+    for values in index.variable_keys_by_property_signature.values_mut() {
+        values.sort_by(|left, right| left.len().cmp(&right.len()).then_with(|| left.cmp(right)));
+    }
+
+    index.root_size = manifest
+        .get("settings")
+        .and_then(|settings| settings.get("rootSize"))
+        .and_then(Value::as_f64)
+        .unwrap_or(16.0);
+    index.base_unit = manifest
+        .get("settings")
+        .and_then(|settings| settings.get("baseUnit"))
+        .and_then(Value::as_f64)
+        .unwrap_or(4.0);
+
+    index.modes.extend(
+        manifest
+            .get("settings")
+            .and_then(|settings| settings.get("modes"))
+            .and_then(Value::as_array)
+            .into_iter()
+            .flatten()
+            .filter_map(Value::as_str)
+            .map(str::to_owned),
+    );
+    if index.modes.is_empty() {
+        index.modes.extend(["light".into(), "dark".into()]);
+    }
+    index.breakpoints.extend(
+        manifest
+            .get("breakpointConditions")
+            .and_then(Value::as_object)
+            .into_iter()
+            .flat_map(|conditions| conditions.keys().cloned()),
+    );
+    Ok(index)
+}
+
+fn rules_declaration_signature(rules: &[GeneratedRuleIr]) -> String {
+    let mut signatures = rules
+        .iter()
+        .map(|rule| {
+            serde_json::to_string(&collect_rule_declarations(&rule.text)).unwrap_or_default()
+        })
+        .collect::<Vec<_>>();
+    signatures.sort();
+    signatures.join("\0")
+}
+
+fn declaration_property_signature(rule: &GeneratedRuleIr) -> String {
+    let mut properties = collect_rule_declarations(&rule.text)
+        .into_iter()
+        .map(|(property, _)| property)
+        .collect::<Vec<_>>();
+    properties.sort();
+    properties.dedup();
+    properties.join("\0")
+}
+
+fn canonical_class_parts(
+    class_name: &str,
+    semantics: &ClassSemanticInspection,
+) -> CanonicalClassParts {
+    let key = semantics
+        .key_token
+        .as_deref()
+        .map(|key| key.trim_end_matches(':').to_owned());
+    let value = semantics.value_token.clone();
+    let base_end = if let (Some(key_token), Some(value_token)) =
+        (&semantics.key_token, &semantics.value_token)
+    {
+        (key_token.len() + value_token.len()).min(class_name.len())
+    } else {
+        let semantic = class_name.strip_suffix('!').unwrap_or(class_name);
+        let mut end = semantics
+            .state_token
+            .as_deref()
+            .filter(|state| semantic.ends_with(*state))
+            .map_or(semantic.len(), |state| semantic.len() - state.len());
+        if semantic.as_bytes().get(end.wrapping_sub(1)) == Some(&b'!') {
+            end = end.saturating_sub(1);
+        }
+        end
+    };
+    CanonicalClassParts {
+        base: class_name[..base_end].to_owned(),
+        suffix: class_name[base_end..].to_owned(),
+        key,
+        value,
+    }
+}
+
+fn safe_breakpoint_name<'a>(token: &'a str, breakpoints: &HashSet<String>) -> Option<&'a str> {
+    let name = token
+        .strip_prefix(">=")
+        .or_else(|| token.strip_prefix("<="))
+        .or_else(|| token.strip_prefix('>'))
+        .or_else(|| token.strip_prefix('<'))
+        .unwrap_or(token);
+    (!name.is_empty()
+        && name
+            .chars()
+            .all(|character| character.is_ascii_alphanumeric() || matches!(character, '_' | '-'))
+        && breakpoints.contains(name))
+    .then_some(name)
+}
+
+fn canonical_condition_suffix(
+    parts: &CanonicalClassParts,
+    semantics: &ClassSemanticInspection,
+    rules: &[GeneratedRuleIr],
+    index: &CanonicalRecommendationIndex,
+    options: &CanonicalClassNameOptions,
+) -> String {
+    if !options.prefer_condition_order
+        || rules
+            .iter()
+            .any(|rule| rule.layer != UtilityLayerName::Utilities)
+    {
+        return parts.suffix.clone();
+    }
+    let Some(state_token) = semantics.state_token.as_deref() else {
+        return parts.suffix.clone();
+    };
+    if !state_token.contains('@') {
+        return parts.suffix.clone();
+    }
+    let state_parts = split_top_level(state_token, '@');
+    if state_parts.len() <= 2 || state_parts.iter().skip(1).any(|part| part.is_empty()) {
+        return parts.suffix.clone();
+    }
+    let selector_prefix = state_parts[0];
+    let mut mode = None;
+    let mut breakpoints = Vec::new();
+    for condition in state_parts.into_iter().skip(1) {
+        let is_mode = index.modes.contains(condition);
+        let is_breakpoint = safe_breakpoint_name(condition, &index.breakpoints).is_some();
+        if is_mode && is_breakpoint {
+            return parts.suffix.clone();
+        }
+        if is_mode {
+            if mode.is_some() {
+                return parts.suffix.clone();
+            }
+            mode = Some(condition);
+        } else if is_breakpoint {
+            breakpoints.push(condition);
+        } else {
+            return parts.suffix.clone();
+        }
+    }
+    let Some(mode) = mode else {
+        return parts.suffix.clone();
+    };
+    if breakpoints.is_empty() {
+        return parts.suffix.clone();
+    }
+    let canonical_state = format!(
+        "{selector_prefix}{}@{mode}",
+        breakpoints
+            .iter()
+            .map(|condition| format!("@{condition}"))
+            .collect::<String>()
+    );
+    if canonical_state == state_token {
+        return parts.suffix.clone();
+    }
+    format!(
+        "{}{canonical_state}",
+        if semantics.important { "!" } else { "" }
+    )
+}
+
+fn push_canonical_candidate(
+    candidates: &mut Vec<CanonicalCandidate>,
+    candidate_base: &str,
+    parts: &CanonicalClassParts,
+    suffix: &str,
+    order: u8,
+) {
+    if candidate_base.is_empty() || (candidate_base == parts.base && suffix == parts.suffix) {
+        return;
+    }
+    let class_name = format!("{candidate_base}{suffix}");
+    if candidates
+        .iter()
+        .any(|candidate| candidate.class_name == class_name)
+    {
+        return;
+    }
+    candidates.push(CanonicalCandidate { class_name, order });
+}
+
+fn canonical_variable_candidate_keys(
+    index: &CanonicalRecommendationIndex,
+    signature: &str,
+    source_key: &str,
+    matched: &MatchingVariableKeys,
+    prefer_property_aliases: bool,
+) -> Vec<String> {
+    let mut keys = vec![source_key.to_owned()];
+    for key in index
+        .variable_keys_by_property_signature
+        .get(signature)
+        .into_iter()
+        .flatten()
+    {
+        if !keys.contains(key) {
+            keys.push(key.clone());
+        }
+    }
+    if !prefer_property_aliases {
+        let aliases = index
+            .preferred_aliases_by_property
+            .get(signature)
+            .cloned()
+            .unwrap_or_default();
+        keys.retain(|key| key == source_key || !aliases.contains(key));
+    }
+    if !matched.numeric {
+        keys.retain(|key| key == source_key || signature == source_key);
+    }
+    keys
+}
+
+fn css_variable_reference_name(value: &str) -> Option<&str> {
+    value
+        .strip_prefix("var(--")
+        .and_then(|value| value.strip_suffix(')'))
+        .filter(|name| {
+            !name.is_empty()
+                && name.chars().all(|character| {
+                    character.is_ascii_alphanumeric() || matches!(character, '_' | '-')
+                })
+        })
+}
+
+fn normalized_numeric_value(value: &str, root_size: f64, base_unit: f64) -> Option<(bool, f64)> {
+    let split = value
+        .char_indices()
+        .find(|(_, character)| character.is_ascii_alphabetic() || *character == '%')
+        .map_or(value.len(), |(index, _)| index);
+    let number = value[..split].parse::<f64>().ok()?;
+    match value[split..].to_ascii_lowercase().as_str() {
+        "" => Some((false, number)),
+        "rem" => Some((true, number)),
+        "px" if root_size != 0.0 => Some((true, number / root_size)),
+        "x" if root_size != 0.0 => Some((true, number * base_unit / root_size)),
+        _ => None,
+    }
+}
+
+fn numeric_values_match(left: &str, right: &str, root_size: f64, base_unit: f64) -> bool {
+    let (Some(left), Some(right)) = (
+        normalized_numeric_value(left, root_size, base_unit),
+        normalized_numeric_value(right, root_size, base_unit),
+    ) else {
+        return false;
+    };
+    left.0 == right.0 && (left.1 - right.1).abs() < 0.000001
+}
+
+fn resolved_rule_declarations(
+    rule: &GeneratedRuleIr,
+    variable_values: &HashMap<String, String>,
+) -> Vec<(String, String)> {
+    collect_rule_declarations(&rule.text)
+        .into_iter()
+        .map(|(property, mut value)| {
+            for variable_name in &rule.variable_names {
+                if let Some(variable_value) = variable_values.get(variable_name) {
+                    value = value.replace(
+                        &format!("var(--{variable_name})"),
+                        &normalize_css_variable_value(variable_value),
+                    );
+                }
+            }
+            (property, normalize_css_variable_value(&value))
+        })
+        .collect()
+}
+
+fn declarations_match_after_variable_resolution(
+    source: &[GeneratedRuleIr],
+    candidate: &[GeneratedRuleIr],
+    variable_values: &HashMap<String, String>,
+) -> bool {
+    if source.len() != candidate.len() {
+        return false;
+    }
+    let mut source = source
+        .iter()
+        .map(|rule| resolved_rule_declarations(rule, variable_values))
+        .collect::<Vec<_>>();
+    let mut candidate = candidate
+        .iter()
+        .map(|rule| resolved_rule_declarations(rule, variable_values))
+        .collect::<Vec<_>>();
+    source.sort();
+    candidate.sort();
+    source == candidate
+}
+
+fn has_same_canonical_rule_shape(
+    source: &[GeneratedRuleIr],
+    candidate: &[GeneratedRuleIr],
+) -> bool {
+    if source.len() != candidate.len() {
+        return false;
+    }
+    let mut remaining = candidate.iter().collect::<Vec<_>>();
+    for source_rule in source {
+        let source_signature = declaration_property_signature(source_rule);
+        let Some(index) = remaining.iter().position(|candidate_rule| {
+            candidate_rule.layer == source_rule.layer
+                && candidate_rule.priority == source_rule.priority
+                && declaration_property_signature(candidate_rule) == source_signature
+        }) else {
+            return false;
+        };
+        remaining.remove(index);
+    }
+    true
 }
 
 impl ClassDescriptor {
@@ -1442,6 +2278,9 @@ fn natural_compare(left: &str, right: &str) -> Ordering {
 mod tests {
     use super::*;
 
+    const DEFAULT_MANIFEST: &str =
+        include_str!("../../../packages/preset/src/default-manifest.json");
+
     const MANIFEST: &str = r#"{
       "version":1,
       "variables":{
@@ -1531,5 +2370,68 @@ mod tests {
             "Raw value \"17px\" is not approved for class \"m:md|17px\". Use a token or allow the value explicitly."
         );
         assert_eq!(diagnostic.data["properties"], serde_json::json!(["margin"]));
+    }
+
+    #[test]
+    fn suggests_canonical_classes_from_engine_facts() {
+        let mut session = LintSession::create(DEFAULT_MANIFEST).unwrap();
+        let class_names = [
+            "text-align:center:hover@sm",
+            "font:16px",
+            "margin:md",
+            "position:relative",
+            "m:1rem|1.5rem",
+            "m:var(--spacing-md)",
+            "block@dark@sm",
+        ]
+        .map(str::to_owned);
+        let native_support = vec![
+            true;
+            session
+                .native_declaration_candidates(&class_names)
+                .unwrap()
+                .len()
+        ];
+        let result = session
+            .canonical_class_names(
+                &class_names,
+                Some(&native_support),
+                &CanonicalClassNameOptions::default(),
+            )
+            .unwrap();
+        assert_eq!(
+            result.suggestions,
+            [
+                CanonicalClassSuggestionIr {
+                    class_name: "text-align:center:hover@sm".into(),
+                    recommended: "text-center:hover@sm".into(),
+                },
+                CanonicalClassSuggestionIr {
+                    class_name: "font:16px".into(),
+                    recommended: "font:md".into(),
+                },
+                CanonicalClassSuggestionIr {
+                    class_name: "margin:md".into(),
+                    recommended: "m:md".into(),
+                },
+                CanonicalClassSuggestionIr {
+                    class_name: "position:relative".into(),
+                    recommended: "rel".into(),
+                },
+                CanonicalClassSuggestionIr {
+                    class_name: "m:1rem|1.5rem".into(),
+                    recommended: "m:md|lg".into(),
+                },
+                CanonicalClassSuggestionIr {
+                    class_name: "m:var(--spacing-md)".into(),
+                    recommended: "m:md".into(),
+                },
+                CanonicalClassSuggestionIr {
+                    class_name: "block@dark@sm".into(),
+                    recommended: "block@sm@dark".into(),
+                },
+            ]
+        );
+        assert_eq!(session.engine.css_text(), "");
     }
 }

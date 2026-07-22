@@ -4,7 +4,9 @@ use mastercss_compiler::{
 };
 use mastercss_engine::{EngineError, EngineSession as RustEngineSession};
 use mastercss_language::LanguageSession as RustLanguageSession;
-use mastercss_lint::{LintClassListPolicy, LintSession as RustLintSession, RawValuePolicy};
+use mastercss_lint::{
+    CanonicalClassNameOptions, LintClassListPolicy, LintSession as RustLintSession, RawValuePolicy,
+};
 use mastercss_render::RenderSession as RustRenderSession;
 use mastercss_scanner::ScannerSession as RustScannerSession;
 use mastercss_validator::ValidatorSession as RustValidatorSession;
@@ -455,6 +457,27 @@ impl NodeLintSession {
                         .into_iter()
                         .collect::<HashSet<_>>(),
                 )
+                .map_err(to_napi_error)?,
+        )
+    }
+
+    #[napi]
+    pub fn canonical_class_names(
+        &mut self,
+        class_names: Vec<String>,
+        native_support: Option<Vec<bool>>,
+        options_json: Option<String>,
+    ) -> Result<String> {
+        let options = options_json
+            .as_deref()
+            .map(serde_json::from_str::<CanonicalClassNameOptions>)
+            .transpose()
+            .map_err(|error| Error::new(Status::InvalidArg, error.to_string()))?
+            .unwrap_or_default();
+        to_json(
+            &self
+                .inner
+                .canonical_class_names(&class_names, native_support.as_deref(), &options)
                 .map_err(to_napi_error)?,
         )
     }

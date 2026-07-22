@@ -110,6 +110,7 @@ export interface MasterCSSLintContentOptions {
   ruleOptions?: MasterCSSLintContentRuleOptions
   severities?: Partial<Record<MasterCSSLintRuleId, MasterCSSLintDiagnosticSeverity>>
   lintSession?: Pick<RustLintSession, 'analyzeClassList'>
+    & Partial<Pick<RustLintSession, 'canonicalClassNames'>>
 }
 
 export interface MasterCSSFixContentOptions extends MasterCSSLintContentOptions {
@@ -329,10 +330,13 @@ function createContextLintDiagnostics(
           }
         }))
       : []
+    const canonicalLintSession = options.lintSession?.canonicalClassNames
+      ? options.lintSession as Pick<RustLintSession, 'canonicalClassNames'>
+      : undefined
     const remainingReports = [
       rules['prefer-canonical-classes'] && (context.sourceKind === 'compose-directive'
-        ? createCanonicalComposeDirectiveReport(context.text, css, withSourceRuleOptions(context, options, 'prefer-canonical-classes'))
-        : createCanonicalClassesReport(context.text, css, withSourceRuleOptions(context, options, 'prefer-canonical-classes')))
+        ? createCanonicalComposeDirectiveReport(context.text, css, withSourceRuleOptions(context, options, 'prefer-canonical-classes'), canonicalLintSession)
+        : createCanonicalClassesReport(context.text, css, withSourceRuleOptions(context, options, 'prefer-canonical-classes'), canonicalLintSession))
     ].filter((report): report is { diagnostics: MasterCSSLintDiagnostic[] } => Boolean(report))
       .flatMap((report) => report.diagnostics)
     return [

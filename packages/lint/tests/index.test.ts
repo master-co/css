@@ -517,6 +517,36 @@ describe('source content linting', () => {
     }
   })
 
+  test('routes source canonical suggestions through an injected Rust session', async () => {
+    const rust = await createRustLintSession(createPresetManifest())
+    let canonicalCalls = 0
+    const lintSession = {
+      analyzeClassList: rust.analyzeClassList,
+      canonicalClassNames(...args: Parameters<typeof rust.canonicalClassNames>) {
+        canonicalCalls++
+        return rust.canonicalClassNames(...args)
+      }
+    }
+    try {
+      expect(fixMasterCSSContent({
+        content: '<div class="font:16px block@dark@sm"></div>',
+        filePath: '/project/index.html',
+        css,
+        lintSession,
+        rules: {
+          'sort-classes': false,
+          'no-invalid-classes': false,
+          'no-conflicting-classes': false,
+          'prefer-canonical-classes': true,
+          'no-unapproved-raw-values': false
+        }
+      })).toBe('<div class="font:md block@sm@dark"></div>')
+      expect(canonicalCalls).toBeGreaterThan(0)
+    } finally {
+      rust.dispose()
+    }
+  })
+
   test('routes source raw value policy through an injected Rust session', async () => {
     const rust = await createRustLintSession(createPresetManifest())
     const content = '<div class="m:md|17px m:calc(1rem+1px)|18px w:50%"></div>'
@@ -994,6 +1024,82 @@ describe('raw value policy', () => {
 })
 
 describe('canonical class suggestions', () => {
+  test('matches the Rust batch for ordinary canonical suggestions', async () => {
+    const manifest = createPresetManifest()
+    const rust = await createRustLintSession(manifest)
+    const classNames = [
+      'text-align:center:hover@sm',
+      'font:16px',
+      'margin:md',
+      'position:relative',
+      'display:none',
+      'visibility:hidden',
+      'height:100vh',
+      'width:100vw',
+      'aspect-ratio:1/1',
+      'm:1rem|1.5rem',
+      'p:.5rem|1rem',
+      'r:.25rem|.375rem',
+      'm:var(--spacing-md)',
+      'r:var(--radius-md)',
+      'fg:var(--color-red-60)',
+      'block@dark@sm',
+      'block:hover@dark@sm',
+      'block!@dark@sm',
+      'font:16px@dark@sm',
+      'text-align:center@dark@sm',
+      'm:1rem|1.125rem',
+      'm:var(--spacing-unknown)',
+      'block@sm:hover',
+      'block:focus:hover',
+      'block@start@sm',
+      'block@print@sm',
+      'block@supports(display:grid)@sm',
+      'font:error@dark@sm',
+      'unknown-class@dark@sm'
+    ]
+    const expectedSuggestions = (
+      candidateClassNames: string[],
+      options = defaultCanonicalClassNameOptions,
+      targetCSS = css
+    ) => candidateClassNames.flatMap((className) => {
+      const recommended = suggestCanonicalClassName(className, targetCSS, options)
+      return recommended ? [{ className, recommended }] : []
+    })
+
+    try {
+      expect(rust.canonicalClassNames(classNames)).toEqual(expectedSuggestions(classNames))
+      for (const options of [
+        { ...defaultCanonicalClassNameOptions, preferStaticUtilities: false },
+        { ...defaultCanonicalClassNameOptions, preferThemeTokens: false },
+        { ...defaultCanonicalClassNameOptions, preferPropertyAliases: false },
+        { ...defaultCanonicalClassNameOptions, preferVariableReferences: false },
+        { ...defaultCanonicalClassNameOptions, preferMultiValueTokens: false },
+        { ...defaultCanonicalClassNameOptions, preferConditionOrder: false }
+      ]) {
+        expect(rust.canonicalClassNames(classNames, options))
+          .toEqual(expectedSuggestions(classNames, options))
+      }
+    } finally {
+      rust.dispose()
+    }
+
+    const customRust = await createRustLintSession(customManifest)
+    const customClassNames = [
+      'block@midnight@tablet',
+      'm:1.25rem@midnight@tablet',
+      'content-visibility:auto',
+      'block@midnight@wide',
+      'btn@midnight@tablet'
+    ]
+    try {
+      expect(customRust.canonicalClassNames(customClassNames))
+        .toEqual(expectedSuggestions(customClassNames, defaultCanonicalClassNameOptions, customCSS))
+    } finally {
+      customRust.dispose()
+    }
+  })
+
   test('suggests static utilities, theme tokens, and property aliases', () => {
     expect(suggestCanonicalClassName('text-align:center:hover@sm', css)).toBe('text-center:hover@sm')
     expect(suggestCanonicalClassName('font:16px', css)).toBe('font:md')

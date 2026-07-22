@@ -84,6 +84,10 @@ describe('native target resolution', () => {
       }]
     }))
     try {
+      expect(JSON.parse(lint.canonicalClassNames(['margin:md'], [true]))).toEqual({
+        version: 1,
+        suggestions: [{ className: 'margin:md', recommended: 'm:md' }]
+      })
       expect(JSON.parse(lint.rawValueCandidates(['m:md|17px'], undefined, []))).toEqual({
         version: 1,
         candidates: [

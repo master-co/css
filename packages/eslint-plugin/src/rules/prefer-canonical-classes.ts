@@ -62,7 +62,7 @@ export default createRule({
         context,
         node,
         { raw, start, end, unescape, classNodes, classValues, nodes: [], value: raw },
-        createCanonicalClassesReport(raw, css, { ...options, unescape }).diagnostics
+        createCanonicalClassesReport(raw, css, { ...options, unescape }, rustLint).diagnostics
       )
     }
 
@@ -71,7 +71,7 @@ export default createRule({
         context,
         node,
         classNode,
-        createCanonicalComposeDirectiveReport(classNode.raw, css, options).diagnostics,
+        createCanonicalComposeDirectiveReport(classNode.raw, css, options, rustLint).diagnostics,
         {
           getFix(_, fix) {
             if (fix.scope !== 'directive') {
