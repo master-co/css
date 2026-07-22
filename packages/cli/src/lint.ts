@@ -1,4 +1,3 @@
-import { createCSSWithNativeDeclarations } from '@master/css-validator'
 import {
   fixMasterCSSContent,
   lintMasterCSSContent,
@@ -49,8 +48,6 @@ interface SourceInput {
   content: string
   stdin?: boolean
 }
-
-type CSSWithNativeDeclarations = ReturnType<typeof createCSSWithNativeDeclarations>
 
 function normalizeSourcePatterns(specifiedSourcePaths?: string[]) {
   return specifiedSourcePaths?.length ? specifiedSourcePaths : DEFAULT_SOURCE_PATTERNS
@@ -155,14 +152,12 @@ function resolveSourceInputs(cwd: string, specifiedSourcePaths: string[], option
 
 function lintInputs(
   inputs: SourceInput[],
-  css: CSSWithNativeDeclarations,
   rules: Record<MasterCSSLintRuleId, boolean>,
   lintSession: RustLintSession
 ) {
   return inputs.map((input) => lintMasterCSSContent({
     content: input.content,
     filePath: input.filePath,
-    css,
     rules,
     lintSession
   })).filter((result) => result.diagnostics.length)
@@ -170,7 +165,6 @@ function lintInputs(
 
 function applyFileFixes(
   inputs: SourceInput[],
-  css: CSSWithNativeDeclarations,
   rules: Record<MasterCSSLintRuleId, boolean>,
   includeDirectiveFixes: boolean,
   lintSession: RustLintSession
@@ -180,7 +174,6 @@ function applyFileFixes(
     const fixed = fixMasterCSSContent({
       content: input.content,
       filePath: input.filePath,
-      css,
       rules,
       includeDirectiveFixes,
       lintSession
@@ -215,14 +208,13 @@ export default async function runLint(specifiedSourcePaths: string[] = [], optio
     return report
   }
 
-  const css = createCSSWithNativeDeclarations(manifestResult.manifest)
   const lintSession = await createRustLintSession(manifestResult.manifest)
   let files: MasterCSSLintFileResult[]
   try {
-    files = lintInputs(inputs, css, rules, lintSession)
+    files = lintInputs(inputs, rules, lintSession)
     if (options.fix && !options.fixDryRun) {
-      applyFileFixes(inputs, css, rules, Boolean(options.fixDirectives), lintSession)
-      files = lintInputs(inputs, css, rules, lintSession)
+      applyFileFixes(inputs, rules, Boolean(options.fixDirectives), lintSession)
+      files = lintInputs(inputs, rules, lintSession)
     }
   } finally {
     lintSession.dispose()

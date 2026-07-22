@@ -430,6 +430,17 @@ describe('lint diagnostics', () => {
 })
 
 describe('source content linting', () => {
+  test('requires either an oracle or Rust lint session', () => {
+    expect(() => lintMasterCSSContent({
+      content: '<div class="block"></div>',
+      filePath: '/project/index.html'
+    })).toThrow('MasterCSS instance or Rust lint session')
+    expect(() => fixMasterCSSContent({
+      content: '<div class="block"></div>',
+      filePath: '/project/index.html'
+    })).toThrow('MasterCSS instance or Rust lint session')
+  })
+
   test('resolves rule presets and explicit rule sets', () => {
     expect(resolveMasterCSSLintRules('no-invalid-classes')).toEqual({
       'sort-classes': false,
@@ -541,7 +552,6 @@ describe('source content linting', () => {
       expect(fixMasterCSSContent({
         content: '<div class="font:16px block@dark@sm mt:md mb:md"></div>',
         filePath: '/project/index.html',
-        css,
         lintSession,
         rules: {
           'sort-classes': false,
@@ -556,7 +566,6 @@ describe('source content linting', () => {
       const fixedStylesheet = fixMasterCSSContent({
         content: '.btn { @compose contain:content; }',
         filePath: '/project/index.css',
-        css,
         lintSession,
         includeDirectiveFixes: true
       })

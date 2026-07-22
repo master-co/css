@@ -105,7 +105,7 @@ export interface MasterCSSLintSummary {
 export interface MasterCSSLintContentOptions {
   content: string
   filePath: string
-  css: MasterCSS
+  css?: MasterCSS
   rules?: Partial<Record<MasterCSSLintRuleId, boolean>>
   ruleOptions?: MasterCSSLintContentRuleOptions
   severities?: Partial<Record<MasterCSSLintRuleId, MasterCSSLintDiagnosticSeverity>>
@@ -302,7 +302,7 @@ function createComposeDirectiveLintDiagnostics(
 
 function createContextLintDiagnostics(
   context: ClassListContext,
-  css: MasterCSS,
+  css: MasterCSS | undefined,
   rules: Record<MasterCSSLintRuleId, boolean>,
   options: MasterCSSLintContentOptions
 ) {
@@ -349,6 +349,9 @@ function createContextLintDiagnostics(
       ...remainingReports,
       ...rustDiagnostics.filter(({ ruleId }) => ruleId === 'no-unapproved-raw-values')
     ]
+  }
+  if (!css) {
+    throw new TypeError('A MasterCSS instance is required when a Rust lint session is not provided.')
   }
   return context.sourceKind === 'compose-directive'
     ? createComposeDirectiveLintDiagnostics(context, css, rules, options)
@@ -457,6 +460,9 @@ function toSourceDiagnostic(
 }
 
 export function lintMasterCSSContent(options: MasterCSSLintContentOptions): MasterCSSLintFileResult {
+  if (!options.css && !options.lintSession) {
+    throw new TypeError('A MasterCSS instance or Rust lint session is required.')
+  }
   const diagnostics: MasterCSSLintSourceDiagnostic[] = []
   const rules = resolveRules(options.rules)
   for (const context of collectClassListContexts(options.content, options.filePath)) {
@@ -499,7 +505,7 @@ function applyFixes(content: string, fixes: MasterCSSLintSourceFix[]) {
   return fixed
 }
 
-function fixClassListText(context: ClassListContext, css: MasterCSS, rules: Record<MasterCSSLintRuleId, boolean>, options: MasterCSSLintContentOptions) {
+function fixClassListText(context: ClassListContext, css: MasterCSS | undefined, rules: Record<MasterCSSLintRuleId, boolean>, options: MasterCSSLintContentOptions) {
   let fixed = context.text
   for (let pass = 0; pass < MAX_FIX_PASSES; pass++) {
     const nextContext: ClassListContext = {
@@ -519,7 +525,7 @@ function fixClassListText(context: ClassListContext, css: MasterCSS, rules: Reco
   return fixed
 }
 
-function fixSafeClassLists(content: string, filePath: string, css: MasterCSS, rules: Record<MasterCSSLintRuleId, boolean>, options: MasterCSSLintContentOptions) {
+function fixSafeClassLists(content: string, filePath: string, css: MasterCSS | undefined, rules: Record<MasterCSSLintRuleId, boolean>, options: MasterCSSLintContentOptions) {
   const replacements = collectClassListContexts(content, filePath)
     .map((context) => ({
       range: context.range,
@@ -539,6 +545,9 @@ function fixSafeClassLists(content: string, filePath: string, css: MasterCSS, ru
 }
 
 export function fixMasterCSSContent(options: MasterCSSFixContentOptions) {
+  if (!options.css && !options.lintSession) {
+    throw new TypeError('A MasterCSS instance or Rust lint session is required.')
+  }
   const rules = resolveRules(options.rules)
   let fixed = fixSafeClassLists(options.content, options.filePath, options.css, rules, options)
   if (!options.includeDirectiveFixes) return fixed

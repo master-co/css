@@ -1,5 +1,4 @@
 import { readFile } from 'node:fs/promises'
-import { createCSSWithNativeDeclarations } from '@master/css-validator/native-declaration'
 import {
   fixMasterCSSContent,
   lintMasterCSSContent,
@@ -9,6 +8,7 @@ import {
   type MasterCSSLintRuleId,
   type MasterCSSLintSourceDiagnostic
 } from '@master/css-lint'
+import { createRustLintSession, type RustLintSession } from '@master/css-lint/node'
 import type MasterCSSMCPContext from './context'
 import { resolveSourceFiles } from './scan'
 import { loadWorkspaceManifest } from './project'
@@ -33,8 +33,6 @@ export interface PreviewFixesOptions extends LintProjectOptions {
   ttlMs?: number
 }
 
-type CSSWithNativeDeclarations = ReturnType<typeof createCSSWithNativeDeclarations>
-
 function createManifestDiagnostic(context: MasterCSSMCPContext, message: string): MasterCSSLintSourceDiagnostic {
   const range = { start: 0, end: 0 }
   return {
@@ -58,8 +56,8 @@ function createManifestDiagnostic(context: MasterCSSMCPContext, message: string)
 async function loadLintState(context: MasterCSSMCPContext, options: LintProjectOptions = {}) {
   const rules = resolveMasterCSSLintRules(options.rules)
   const manifest = await loadWorkspaceManifest(context)
-  const css = manifest.status === 'loaded'
-    ? createCSSWithNativeDeclarations(manifest.manifest)
+  const lintSession = manifest.status === 'loaded'
+    ? await createRustLintSession(manifest.manifest)
     : undefined
   const files = await resolveSourceFiles(
     context,
@@ -70,19 +68,19 @@ async function loadLintState(context: MasterCSSMCPContext, options: LintProjectO
     filePath,
     content: await readFile(filePath, 'utf8')
   })))
-  return { rules, manifest, css, inputs }
+  return { rules, manifest, lintSession, inputs }
 }
 
 function lintInputs(
   inputs: { filePath: string, content: string }[],
-  css: CSSWithNativeDeclarations,
-  rules: Record<MasterCSSLintRuleId, boolean>
+  rules: Record<MasterCSSLintRuleId, boolean>,
+  lintSession: RustLintSession
 ) {
   return inputs.map((input) => lintMasterCSSContent({
     content: input.content,
     filePath: input.filePath,
-    css,
-    rules
+    rules,
+    lintSession
   })).filter((result) => result.diagnostics.length)
 }
 
@@ -97,20 +95,24 @@ function createManifestFileResult(context: MasterCSSMCPContext, diagnostic: Mast
 
 export async function lintProject(context: MasterCSSMCPContext, options: LintProjectOptions = {}) {
   const state = await loadLintState(context, options)
-  const files = state.manifest.status === 'error' || !state.css
-    ? [createManifestFileResult(context, createManifestDiagnostic(context, `Failed to load Master CSS manifest: ${state.manifest.error}`))]
-    : lintInputs(state.inputs, state.css, state.rules)
+  try {
+    const files = state.manifest.status === 'error' || !state.lintSession
+      ? [createManifestFileResult(context, createManifestDiagnostic(context, `Failed to load Master CSS manifest: ${state.manifest.error}`))]
+      : lintInputs(state.inputs, state.rules, state.lintSession)
 
-  return {
-    version: LINT_REPORT_VERSION,
-    root: context.root,
-    manifest: {
-      status: state.manifest.status,
-      entries: state.manifest.entries,
-      diagnostics: state.manifest.status === 'error' ? files[0].diagnostics : []
-    },
-    files,
-    summary: summarizeMasterCSSLintFiles(files)
+    return {
+      version: LINT_REPORT_VERSION,
+      root: context.root,
+      manifest: {
+        status: state.manifest.status,
+        entries: state.manifest.entries,
+        diagnostics: state.manifest.status === 'error' ? files[0].diagnostics : []
+      },
+      files,
+      summary: summarizeMasterCSSLintFiles(files)
+    }
+  } finally {
+    state.lintSession?.dispose()
   }
 }
 
@@ -118,58 +120,69 @@ export async function lintContent(context: MasterCSSMCPContext, options: LintCon
   const rules = resolveMasterCSSLintRules(options.rules)
   const filePath = context.resolveVirtualPath(options.filePath)
   const manifest = await loadWorkspaceManifest(context)
-  const files = manifest.status === 'error'
-    ? [createManifestFileResult(context, createManifestDiagnostic(context, `Failed to load Master CSS manifest: ${manifest.error}`))]
-    : [lintMasterCSSContent({
-      content: options.content,
-      filePath,
-      css: createCSSWithNativeDeclarations(manifest.manifest),
-      rules
-    })]
+  const lintSession = manifest.status === 'loaded'
+    ? await createRustLintSession(manifest.manifest)
+    : undefined
+  try {
+    const files = manifest.status === 'error' || !lintSession
+      ? [createManifestFileResult(context, createManifestDiagnostic(context, `Failed to load Master CSS manifest: ${manifest.error}`))]
+      : [lintMasterCSSContent({
+        content: options.content,
+        filePath,
+        rules,
+        lintSession
+      })]
 
-  return {
-    version: LINT_REPORT_VERSION,
-    root: context.root,
-    manifest: {
-      status: manifest.status,
-      entries: manifest.entries,
-      diagnostics: manifest.status === 'error' ? files[0].diagnostics : []
-    },
-    files,
-    summary: summarizeMasterCSSLintFiles(files)
+    return {
+      version: LINT_REPORT_VERSION,
+      root: context.root,
+      manifest: {
+        status: manifest.status,
+        entries: manifest.entries,
+        diagnostics: manifest.status === 'error' ? files[0].diagnostics : []
+      },
+      files,
+      summary: summarizeMasterCSSLintFiles(files)
+    }
+  } finally {
+    lintSession?.dispose()
   }
 }
 
 export async function previewLintFixes(context: MasterCSSMCPContext, options: PreviewFixesOptions = {}) {
   const state = await loadLintState(context, options)
-  if (state.manifest.status === 'error' || !state.css) {
+  try {
+    if (state.manifest.status === 'error' || !state.lintSession) {
+      return {
+        mode: 'lint-fixes',
+        preview: await context.createPreview([], options.ttlMs),
+        lint: await lintProject(context, options)
+      }
+    }
+    const changes = []
+    for (const input of state.inputs) {
+      const fixed = fixMasterCSSContent({
+        content: input.content,
+        filePath: input.filePath,
+        rules: state.rules,
+        lintSession: state.lintSession,
+        includeDirectiveFixes: Boolean(options.includeDirectiveFixes)
+      })
+      if (fixed !== input.content) {
+        changes.push({
+          filePath: input.filePath,
+          beforeText: input.content,
+          afterText: fixed
+        })
+      }
+    }
+    const preview = await context.createPreview(changes, options.ttlMs)
     return {
       mode: 'lint-fixes',
-      preview: await context.createPreview([], options.ttlMs),
+      preview,
       lint: await lintProject(context, options)
     }
-  }
-  const changes = []
-  for (const input of state.inputs) {
-    const fixed = fixMasterCSSContent({
-      content: input.content,
-      filePath: input.filePath,
-      css: state.css,
-      rules: state.rules,
-      includeDirectiveFixes: Boolean(options.includeDirectiveFixes)
-    })
-    if (fixed !== input.content) {
-      changes.push({
-        filePath: input.filePath,
-        beforeText: input.content,
-        afterText: fixed
-      })
-    }
-  }
-  const preview = await context.createPreview(changes, options.ttlMs)
-  return {
-    mode: 'lint-fixes',
-    preview,
-    lint: await lintProject(context, options)
+  } finally {
+    state.lintSession?.dispose()
   }
 }
