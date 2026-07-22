@@ -167,7 +167,6 @@ fn run_command(command: &mut Command, label: &str) -> Result<(), String> {
     }
 }
 
-#[cfg(windows)]
 fn files_equal(left: &Path, right: &Path) -> Result<bool, String> {
     let left_metadata = fs::metadata(left)
         .map_err(|error| format!("Cannot inspect {}: {error}", left.display()))?;
@@ -359,6 +358,7 @@ fn assemble_native_release(
     output: &Path,
     stage: bool,
     require_assets: bool,
+    verify_staged: bool,
 ) -> Result<(), String> {
     assemble_native_release_at(
         &workspace_root(),
@@ -366,6 +366,7 @@ fn assemble_native_release(
         output,
         stage,
         require_assets,
+        verify_staged,
     )
 }
 
@@ -375,6 +376,7 @@ fn assemble_native_release_at(
     output: &Path,
     stage: bool,
     require_assets: bool,
+    verify_staged: bool,
 ) -> Result<(), String> {
     let mut packages = Vec::new();
     for package in NATIVE_TARGET_PACKAGES {
@@ -431,12 +433,25 @@ fn assemble_native_release_at(
             )?,
         });
 
+        let target = root.join("packages").join(package);
+        let staged_addon = target.join("mastercss.node");
+        let staged_executable = target.join(executable_name);
         if stage {
-            let target = root.join("packages").join(package);
-            copy_fresh(&addon_path, &target.join("mastercss.node"))?;
-            let staged_executable = target.join(executable_name);
+            copy_fresh(&addon_path, &staged_addon)?;
             copy_fresh(&executable_path, &staged_executable)?;
             make_executable(&staged_executable)?;
+        }
+        if verify_staged {
+            for (source, staged, relative) in [
+                (&addon_path, &staged_addon, "mastercss.node"),
+                (&executable_path, &staged_executable, executable_name),
+            ] {
+                if !staged.is_file() || !files_equal(source, staged)? {
+                    return Err(format!(
+                        "Staged native artifact differs from release input: packages/{package}/{relative}"
+                    ));
+                }
+            }
         }
     }
 
@@ -555,14 +570,25 @@ fn run() -> Result<(), String> {
         [command] if command == "build-wasm" => build_wasm("runtime"),
         [command, surface] if command == "build-wasm" => build_wasm(surface),
         [command, artifacts, output] if command == "assemble-native-release" => {
-            assemble_native_release(Path::new(artifacts), Path::new(output), false, false)
+            assemble_native_release(
+                Path::new(artifacts),
+                Path::new(output),
+                false,
+                false,
+                false,
+            )
         }
         [command, artifacts, output, flags @ ..] if command == "assemble-native-release" => {
             let stage = flags.iter().any(|flag| flag == "--stage");
             let require_assets = flags.iter().any(|flag| flag == "--require-assets");
+            let verify_staged = flags.iter().any(|flag| flag == "--verify-staged");
             if flags
                 .iter()
-                .any(|flag| flag != "--stage" && flag != "--require-assets")
+                .any(|flag| {
+                    flag != "--stage"
+                        && flag != "--require-assets"
+                        && flag != "--verify-staged"
+                })
             {
                 return Err(format!(
                     "Unknown assemble-native-release option: {}",
@@ -574,10 +600,11 @@ fn run() -> Result<(), String> {
                 Path::new(output),
                 stage,
                 require_assets,
+                verify_staged,
             )
         }
         _ => Err(
-            "Usage: cargo xtask codegen [--check] | parity | build-native [--release] | stage-native-target <package> [--release] | build-wasm [all|runtime|compiler|tooling] | assemble-native-release <artifacts-dir> <checksums.json> [--stage] [--require-assets]"
+            "Usage: cargo xtask codegen [--check] | parity | build-native [--release] | stage-native-target <package> [--release] | build-wasm [all|runtime|compiler|tooling] | assemble-native-release <artifacts-dir> <checksums.json> [--stage] [--require-assets] [--verify-staged]"
                 .into(),
         ),
     }
@@ -626,6 +653,7 @@ mod tests {
         for package in NATIVE_TARGET_PACKAGES {
             let directory = root.join(format!("mastercss-{package}"));
             fs::create_dir_all(&directory).unwrap();
+            fs::create_dir_all(root.join("packages").join(package)).unwrap();
             let executable = if package.contains("win32") {
                 "mcss.exe"
             } else {
@@ -645,7 +673,7 @@ mod tests {
             .unwrap();
         }
         let output = root.join("checksums.json");
-        assemble_native_release_at(&root, &root, &output, false, false).unwrap();
+        assemble_native_release_at(&root, &root, &output, true, false, false).unwrap();
         let manifest: serde_json::Value =
             serde_json::from_str(&fs::read_to_string(&output).unwrap()).unwrap();
         assert_eq!(manifest["version"], 1);
@@ -656,9 +684,24 @@ mod tests {
                 .as_str()
                 .is_some_and(|checksum| checksum.len() == 64)
         );
+        let staged_addon = root.join("packages/native-darwin-arm64/mastercss.node");
+        fs::write(&staged_addon, "modified after staging").unwrap();
+        assert_eq!(
+            assemble_native_release_at(
+                &root,
+                &root,
+                &root.join("verified-checksums.json"),
+                false,
+                false,
+                true,
+            )
+            .unwrap_err(),
+            "Staged native artifact differs from release input: packages/native-darwin-arm64/mastercss.node"
+        );
         let required_output = root.join("required-checksums.json");
         assert_eq!(
-            assemble_native_release_at(&root, &root, &required_output, false, true).unwrap_err(),
+            assemble_native_release_at(&root, &root, &required_output, false, true, false)
+                .unwrap_err(),
             "Missing required release asset: packages/runtime/dist/global.min.js"
         );
         fs::remove_dir_all(root).unwrap();
