@@ -5,6 +5,7 @@ members = [
   "crates/mastercss-lexer",
   "crates/mastercss-engine",
   "crates/mastercss-compiler",
+  "crates/mastercss-diagnostics",
   "crates/mastercss-source",
   "crates/mastercss-scanner",
   "crates/mastercss-render",

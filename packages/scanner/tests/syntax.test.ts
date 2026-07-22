@@ -70,3 +70,14 @@ test('syntax', async () => {
     expect(testClasses).toContain(eachGeneratedClass)
   }
 })
+
+it('keeps CSS grammar validation in the host batch handshake', async () => {
+  const scanner = await new CSSScanner({}, __dirname).init()
+  await scanner.scan(
+    'validation.html',
+    '<div class="text-wrap:pretty text-decoration:bad()"></div>'
+  )
+
+  expect(scanner.validClasses).toContain('text-wrap:pretty')
+  expect(scanner.invalidClasses).toContain('text-decoration:bad()')
+})

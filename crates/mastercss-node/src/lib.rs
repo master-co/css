@@ -9,7 +9,7 @@ use mastercss_validator::ValidatorSession as RustValidatorSession;
 use napi::{Error, Result, Status};
 use napi_derive::napi;
 use serde::Serialize;
-use std::collections::{HashMap, HashSet};
+use std::collections::HashSet;
 
 const BINDING_ABI_VERSION: u32 = 1;
 
@@ -72,6 +72,16 @@ pub fn extract_astro_classes(source: String, content: String) -> Vec<String> {
 #[napi]
 pub fn inspect_css_json(source: String) -> Result<String> {
     to_json(&mastercss_compiler::inspect_css(&source))
+}
+
+#[napi]
+pub fn create_inspection_report_json(input_json: String) -> Result<String> {
+    mastercss_diagnostics::create_inspection_report_json(&input_json).map_err(|error| {
+        Error::new(
+            Status::InvalidArg,
+            serde_json::to_string(&error.diagnostic()).unwrap_or_else(|_| error.to_string()),
+        )
+    })
 }
 
 #[napi]
@@ -320,14 +330,9 @@ impl NodeScannerSession {
         content: String,
         candidates: Vec<String>,
         excluded_classes: Vec<String>,
-        native_support_json: Option<String>,
+        native_support: Vec<bool>,
+        invalid_generated_classes: Vec<String>,
     ) -> Result<String> {
-        let native_support = native_support_json
-            .as_deref()
-            .map(serde_json::from_str::<HashMap<String, bool>>)
-            .transpose()
-            .map_err(|error| Error::new(Status::InvalidArg, error.to_string()))?
-            .unwrap_or_default();
         to_json(
             &self
                 .inner
@@ -337,6 +342,9 @@ impl NodeScannerSession {
                     candidates,
                     &excluded_classes.into_iter().collect::<HashSet<_>>(),
                     &native_support,
+                    &invalid_generated_classes
+                        .into_iter()
+                        .collect::<HashSet<_>>(),
                 )
                 .map_err(to_napi_error)?,
         )

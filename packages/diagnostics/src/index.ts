@@ -8,8 +8,10 @@ import { findCSSManifestEntryFiles } from '@master/css-project/entries'
 import fg from 'fast-glob'
 import fs from 'node:fs'
 import path from 'node:path'
+import { MASTER_CSS_DIAGNOSTICS_REPORT_VERSION } from '@master/css-schema/rust-contract'
+import { loadRustInspectionReportCreator } from './rust-report'
 
-export const MASTER_CSS_INSPECTION_REPORT_VERSION = 1
+export const MASTER_CSS_INSPECTION_REPORT_VERSION = MASTER_CSS_DIAGNOSTICS_REPORT_VERSION
 
 const DEFAULT_SOURCE_PATTERNS = ['**/*.{html,htm,js,jsx,cjs,ts,tsx,mts,cts,svelte,astro,vue,md,mdx,pug,php}']
 const DEFAULT_IGNORE_PATTERNS = ['**/node_modules/**', 'node_modules']
@@ -155,12 +157,8 @@ function resolveSourcePaths(cwd: string, sourcePatterns: string[], ignore: strin
   }).filter(Boolean)
 }
 
-function sortedValues(values: Iterable<string>) {
-  return [...new Set(values)].sort()
-}
-
 function diffSet(after: Set<string>, before: Set<string>) {
-  return sortedValues([...after].filter((value) => !before.has(value)))
+  return [...after].filter((value) => !before.has(value))
 }
 
 function parseClassChecks(value: string[] | string | undefined) {
@@ -177,53 +175,6 @@ function isBlocklisted(className: string, blocklist: ScannerOptions['blocklist']
     pattern.lastIndex = 0
     return matched
   }) ?? false
-}
-
-function createScannerClassDiagnostics(scanner: CSSScanner, firstSourceByClass: Map<string, string>): MasterCSSInspectionDiagnostic[] {
-  return sortedValues(scanner.invalidClasses).map((className) => ({
-    code: 'invalid-scanner-class',
-    severity: 'warning',
-    message: `Scanner candidate "${className}" did not generate Master CSS rules.`,
-    source: 'Master CSS',
-    sourceKind: 'scanner',
-    filePath: firstSourceByClass.get(className),
-    data: {
-      className
-    }
-  }))
-}
-
-function classifyMissingCSS(scanner: CSSScanner, className: string): MasterCSSMissingCSSResult {
-  const safelist = scanner.options.safelist ?? []
-  if (scanner.validClasses.has(className)) {
-    return { className, status: 'present', reason: 'generated' }
-  }
-  if (scanner.usedNativeClasses.has(className)) {
-    return { className, status: 'present', reason: 'native-css' }
-  }
-  if (safelist.includes(className)) {
-    return { className, status: 'present', reason: 'safelist' }
-  }
-  if (scanner.invalidClasses.has(className)) {
-    return { className, status: 'missing', reason: 'invalid' }
-  }
-  if (isBlocklisted(className, scanner.options.blocklist)) {
-    return { className, status: 'missing', reason: 'blocklisted' }
-  }
-  return { className, status: 'missing', reason: 'not-detected' }
-}
-
-function createMissingCSSDiagnostics(results: MasterCSSMissingCSSResult[]): MasterCSSInspectionDiagnostic[] {
-  return results
-    .filter((result) => result.status === 'missing')
-    .map((result) => ({
-      code: 'missing-css',
-      severity: 'error',
-      message: `No generated CSS found for "${result.className}" (${result.reason}).`,
-      source: 'Master CSS',
-      sourceKind: 'missing-css',
-      data: result
-    }))
 }
 
 async function resolveFilePath(cwd: string, filePath: string, resolver?: CreateMasterCSSInspectionReportOptions['resolveExistingFile']) {
@@ -252,8 +203,8 @@ async function registerManagedCSSEntries(
         filePath,
         masterCSS: Boolean(styleSource?.masterCSS),
         pruneNativeCSS: Boolean(styleSource?.pruneNativeCSS),
-        dependencies: sortedValues(styleSource?.dependencies ?? []),
-        sourceDependencies: sortedValues(styleSource?.sourceDependencies ?? []),
+        dependencies: [...(styleSource?.dependencies ?? [])],
+        sourceDependencies: [...(styleSource?.sourceDependencies ?? [])],
         warnings: result.warnings ?? [],
         errors: []
       })
@@ -275,12 +226,10 @@ async function registerManagedCSSEntries(
       })
     }
   }
-  scanner.resetDependencies = sortedValues(
-    Array.from(styleCSSSources.values()).flatMap((source) => source.dependencies)
-  )
+  scanner.resetDependencies = Array.from(styleCSSSources.values()).flatMap((source) => source.dependencies)
   return {
     entries,
-    warnings: sortedValues(warnings),
+    warnings,
     errors
   }
 }
@@ -317,88 +266,17 @@ async function scanSourceFile(
   }
 }
 
-function createSummary(report: Omit<MasterCSSInspectionReport, 'summary'>): MasterCSSInspectionReport['summary'] {
-  const errors = report.diagnostics.filter((diagnostic) => diagnostic.severity === 'error').length
-  const warnings = report.diagnostics.filter((diagnostic) => diagnostic.severity === 'warning').length
-  return {
-    files: report.files.length,
-    stylesheets: report.stylesheets.entries.length,
-    diagnostics: report.diagnostics.length,
-    errors,
-    warnings,
-    missingCSS: report.missingCSS.missing.length,
-    invalidClasses: report.scanner.counts.invalid
-  }
-}
-
-function createEmptyReport(cwd: string, sourcePatterns: string[], classChecks: string[], diagnostics: MasterCSSInspectionDiagnostic[]): MasterCSSInspectionReport {
-  const baseReport: Omit<MasterCSSInspectionReport, 'summary'> = {
-    version: MASTER_CSS_INSPECTION_REPORT_VERSION,
-    cwd,
-    inputs: {
-      patterns: sourcePatterns,
-      files: [],
-      classes: classChecks
-    },
-    scanner: {
-      counts: {
-        latent: 0,
-        valid: 0,
-        invalid: 0,
-        native: 0,
-        usedNative: 0,
-        safelist: 0,
-        blocklist: 0
-      },
-      classes: {
-        latent: [],
-        valid: [],
-        invalid: [],
-        native: [],
-        usedNative: [],
-        safelist: [],
-        blocklist: []
-      },
-      resetDependencies: []
-    },
-    stylesheets: {
-      entries: [],
-      dependencies: [],
-      warnings: [],
-      errors: []
-    },
-    css: {
-      bytes: 0,
-      included: false,
-      emittedGlobals: {
-        variables: 0,
-        animations: 0
-      }
-    },
-    missingCSS: {
-      checked: classChecks,
-      present: [],
-      missing: []
-    },
-    files: [],
-    diagnostics
-  }
-  return {
-    ...baseReport,
-    summary: createSummary(baseReport)
-  }
-}
-
 export async function createMasterCSSInspectionReport(options: CreateMasterCSSInspectionReportOptions = {}): Promise<MasterCSSInspectionReport> {
   const cwd = path.resolve(options.cwd || process.cwd())
   const classChecks = parseClassChecks(options.classes)
   const specifiedPatterns = options.patterns
   const sourcePatterns = normalizeSourcePatterns(specifiedPatterns)
   options.validatePatterns?.(sourcePatterns)
+  const createReport = await loadRustInspectionReportCreator()
   const scanner = new CSSScanner({}, cwd)
   const styleCSSSources: StyleCSSSources = new Map()
   const firstSourceByClass = new Map<string, string>()
-  const diagnostics: MasterCSSInspectionDiagnostic[] = []
+  let reportInput: unknown
 
   scanner.on('init', (scannerOptions: ScannerOptions) => {
     if (!specifiedPatterns?.length) {
@@ -413,22 +291,6 @@ export async function createMasterCSSInspectionReport(options: CreateMasterCSSIn
   try {
     await scanner.init()
     const stylesheetInspection = await registerManagedCSSEntries(scanner, styleCSSSources, options.resolveExistingFile)
-    diagnostics.push(...stylesheetInspection.entries.flatMap((entry) => entry.warnings.map((warning) => ({
-      code: 'stylesheet-warning' as const,
-      severity: 'warning' as const,
-      message: warning,
-      source: 'Master CSS' as const,
-      sourceKind: 'stylesheet' as const,
-      filePath: entry.filePath
-    }))))
-    diagnostics.push(...stylesheetInspection.errors.map((error) => ({
-      code: 'stylesheet-error' as const,
-      severity: 'error' as const,
-      message: error.message,
-      source: 'Master CSS' as const,
-      sourceKind: 'stylesheet' as const,
-      filePath: error.filePath
-    })))
     const sourcePaths = resolveSourcePaths(
       cwd,
       sourcePatterns,
@@ -441,77 +303,48 @@ export async function createMasterCSSInspectionReport(options: CreateMasterCSSIn
       styleCSSSources,
       projectDir: scanner.cwd
     })
-    const missingResults = classChecks.map((className) => classifyMissingCSS(scanner, className))
-    diagnostics.push(...createScannerClassDiagnostics(scanner, firstSourceByClass))
-    diagnostics.push(...createMissingCSSDiagnostics(missingResults))
-
-    const baseReport: Omit<MasterCSSInspectionReport, 'summary'> = {
-      version: MASTER_CSS_INSPECTION_REPORT_VERSION,
+    const safelist = scanner.options.safelist ?? []
+    const blocklist = scanner.options.blocklist ?? []
+    reportInput = {
+      version: MASTER_CSS_DIAGNOSTICS_REPORT_VERSION,
       cwd,
-      inputs: {
-        patterns: sourcePatterns,
-        files: resolvedSourcePaths,
-        classes: classChecks
-      },
-      scanner: {
-        counts: {
-          latent: scanner.latentClasses.size,
-          valid: scanner.validClasses.size,
-          invalid: scanner.invalidClasses.size,
-          native: scanner.nativeClassNames.size,
-          usedNative: scanner.usedNativeClasses.size,
-          safelist: scanner.options.safelist?.length ?? 0,
-          blocklist: scanner.options.blocklist?.length ?? 0
-        },
-        classes: {
-          latent: sortedValues(scanner.latentClasses),
-          valid: sortedValues(scanner.validClasses),
-          invalid: sortedValues(scanner.invalidClasses),
-          native: sortedValues(scanner.nativeClassNames),
-          usedNative: sortedValues(scanner.usedNativeClasses),
-          safelist: sortedValues(scanner.options.safelist ?? []),
-          blocklist: (scanner.options.blocklist ?? []).map(String).sort()
-        },
-        resetDependencies: sortedValues(scanner.resetDependencies)
-      },
-      stylesheets: {
-        entries: stylesheetInspection.entries,
-        dependencies: sortedValues(stylesheetInspection.entries.flatMap((entry) => entry.dependencies)),
-        warnings: stylesheetInspection.warnings,
-        errors: stylesheetInspection.errors
-      },
-      css: {
-        bytes: cssResult.css.length,
-        included: Boolean(options.includeCss),
-        ...(options.includeCss ? { text: cssResult.css } : {}),
-        emittedGlobals: {
-          variables: Object.keys(cssResult.emittedGlobals.variables).length,
-          animations: Object.keys(cssResult.emittedGlobals.animations).length
-        }
-      },
-      missingCSS: {
-        checked: classChecks,
-        present: missingResults.filter((result) => result.status === 'present'),
-        missing: missingResults.filter((result) => result.status === 'missing')
-      },
+      patterns: sourcePatterns,
       files,
-      diagnostics
-    }
-    return {
-      ...baseReport,
-      summary: createSummary(baseReport)
+      classes: classChecks,
+      scanner: {
+        latent: [...scanner.latentClasses],
+        valid: [...scanner.validClasses],
+        invalid: [...scanner.invalidClasses],
+        native: [...scanner.nativeClassNames],
+        usedNative: [...scanner.usedNativeClasses],
+        safelist,
+        blocklist: blocklist.map(String).sort(),
+        blockedClasses: classChecks.filter((className) => isBlocklisted(className, blocklist)),
+        safelistCount: safelist.length,
+        blocklistCount: blocklist.length,
+        resetDependencies: scanner.resetDependencies
+      },
+      stylesheets: stylesheetInspection,
+      css: {
+        included: Boolean(options.includeCss),
+        text: cssResult.css,
+        variables: Object.keys(cssResult.emittedGlobals.variables),
+        animations: Object.keys(cssResult.emittedGlobals.animations)
+      },
+      firstSourceByClass: Object.fromEntries(firstSourceByClass)
     }
   } catch (error) {
-    diagnostics.push({
-      code: 'scanner-error',
-      severity: 'error',
-      message: error instanceof Error ? error.message : String(error),
-      source: 'Master CSS',
-      sourceKind: 'scanner',
-      data: {
-        cwd
-      }
-    })
-    return createEmptyReport(cwd, sourcePatterns, classChecks, diagnostics)
+    reportInput = {
+      version: MASTER_CSS_DIAGNOSTICS_REPORT_VERSION,
+      cwd,
+      patterns: sourcePatterns,
+      files: [],
+      classes: classChecks,
+      scanner: {},
+      stylesheets: {},
+      css: {},
+      fatalError: error instanceof Error ? error.message : String(error)
+    }
   }
+  return await createReport<MasterCSSInspectionReport>(reportInput)
 }

@@ -64,4 +64,22 @@ test('loads the isolated source tooling Wasm surface', async () => {
   })
   validator.dispose()
   validator.free()
+
+  expect(tooling.createInspectionReport({
+    version: 1,
+    cwd: '/project',
+    patterns: ['index.html'],
+    files: [],
+    classes: ['missing'],
+    scanner: {},
+    stylesheets: {},
+    css: { text: '😀' }
+  })).toMatchObject({
+    version: 1,
+    css: { bytes: 2, included: false },
+    missingCSS: {
+      missing: [{ className: 'missing', reason: 'not-detected' }]
+    },
+    summary: { errors: 1, missingCSS: 1 }
+  })
 })

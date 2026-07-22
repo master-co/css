@@ -7,6 +7,7 @@ interface GeneratedToolingWasmModule {
   extractOxcClasses(source: string, content: string): string[]
   extractHTMLClasses(source: string, content: string): string[]
   extractAstroClasses(source: string, content: string): string[]
+  createInspectionReport(input: unknown): unknown
   ToolingScannerSession: new (manifestJSON: string) => {
     scan(source: string, content: string): unknown
     nativeDeclarationCandidates(candidates: string[]): unknown
@@ -16,7 +17,8 @@ interface GeneratedToolingWasmModule {
       content: string,
       candidates: string[],
       excludedClasses: string[],
-      nativeSupport: Record<string, boolean>
+      nativeSupport: boolean[],
+      invalidGeneratedClasses: string[]
     ): unknown
     ensureClasses(classNames: string[]): unknown
     registerNativeClasses(classNames: string[]): boolean
@@ -73,8 +75,9 @@ export async function createToolingScannerSession(
       content: string,
       candidates: string[],
       excludedClasses: string[],
-      nativeSupport: Record<string, boolean>
-    ) => session.scanCandidates(source, content, candidates, excludedClasses, nativeSupport),
+      nativeSupport: boolean[],
+      invalidGeneratedClasses: string[]
+    ) => session.scanCandidates(source, content, candidates, excludedClasses, nativeSupport, invalidGeneratedClasses),
     ensureClasses: (classNames: string[]) => session.ensureClasses(classNames),
     registerNativeClasses: (classNames: string[]) => session.registerNativeClasses(classNames),
     reset: () => session.reset(),
@@ -100,4 +103,12 @@ export async function createToolingValidatorSession(
       session.free()
     }
   }
+}
+
+export async function createToolingInspectionReport(
+  input: unknown,
+  options: InitToolingWasmOptions = {}
+) {
+  const module = await initToolingWasm(options)
+  return module.createInspectionReport(input)
 }

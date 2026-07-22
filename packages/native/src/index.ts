@@ -36,7 +36,8 @@ export interface NativeScannerSession {
     content: string,
     candidates: string[],
     excludedClasses: string[],
-    nativeSupportJSON?: string
+    nativeSupport: boolean[],
+    invalidGeneratedClasses: string[]
   ): string
   ensureClasses(classNames: string[]): string
   registerNativeClasses(classNames: string[]): boolean
@@ -76,6 +77,7 @@ export interface NativeBinding {
   renderClassesJson(manifestJSON: string, classNames: string[], nativeSupport?: boolean[]): string
   resolveCssImportGraphJson(requestJSON: string): string
   inspectCssJson(source: string): string
+  createInspectionReportJson(inputJSON: string): string
   ScannerSession: new (manifestJSON: string) => NativeScannerSession
   RenderSession: new (manifestJSON: string, emittedGlobalsJSON?: string) => NativeRenderSession
   ValidatorSession: new (manifestJSON: string) => NativeValidatorSession

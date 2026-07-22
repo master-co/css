@@ -1610,15 +1610,24 @@ importers:
 
   packages/diagnostics:
     dependencies:
+      '@master/css-native':
+        specifier: workspace:^
+        version: link:../native
       '@master/css-project':
         specifier: workspace:^
         version: link:../project
       '@master/css-scanner':
         specifier: workspace:^
         version: link:../scanner
+      '@master/css-schema':
+        specifier: workspace:^
+        version: link:../schema
       '@master/css-stylesheet':
         specifier: workspace:^
         version: link:../stylesheet
+      '@master/css-wasm-tooling':
+        specifier: workspace:^
+        version: link:../wasm-tooling
       fast-glob:
         specifier: ^3.3.3
         version: 3.3.3

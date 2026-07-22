@@ -91,7 +91,8 @@ impl ScannerSession {
             content,
             candidates,
             &HashSet::new(),
-            &HashMap::new(),
+            &[],
+            &HashSet::new(),
         )
     }
 
@@ -112,7 +113,8 @@ impl ScannerSession {
         content: &str,
         extracted_candidates: Vec<String>,
         excluded_classes: &HashSet<String>,
-        native_support: &HashMap<String, bool>,
+        native_support: &[bool],
+        invalid_generated_classes: &HashSet<String>,
     ) -> Result<ScannerUpdateIr, EngineError> {
         if content.is_empty() {
             return Ok(ScannerUpdateIr::unchanged(false));
@@ -139,6 +141,7 @@ impl ScannerSession {
         let mut invalid_classes = Vec::new();
         let mut used_native_classes = Vec::new();
         let mut mutations = Vec::new();
+        let mut native_support_offset: usize = 0;
         for candidate in &candidates {
             if excluded_classes.contains(candidate) {
                 continue;
@@ -152,11 +155,27 @@ impl ScannerSession {
             if self.valid_index.contains(candidate) || self.invalid_index.contains(candidate) {
                 continue;
             }
-            let transition = match native_support.get(candidate) {
-                Some(supported) => self
-                    .engine
-                    .ensure_class_rules_with_native_support([candidate], &[*supported])?,
-                None => self.engine.ensure_class_rules([candidate])?,
+            let native_candidate_count = self
+                .engine
+                .native_declaration_candidates([candidate])?
+                .len();
+            let native_support_end = native_support_offset
+                .saturating_add(native_candidate_count)
+                .min(native_support.len());
+            let candidate_native_support =
+                &native_support[native_support_offset..native_support_end];
+            native_support_offset = native_support_end;
+            if invalid_generated_classes.contains(candidate) {
+                self.invalid_index.insert(candidate.clone());
+                self.invalid_classes.push(candidate.clone());
+                invalid_classes.push(candidate.clone());
+                continue;
+            }
+            let transition = if candidate_native_support.is_empty() {
+                self.engine.ensure_class_rules([candidate])?
+            } else {
+                self.engine
+                    .ensure_class_rules_with_native_support([candidate], candidate_native_support)?
             };
             let valid = self.engine.inspect(candidate)?.valid;
             if valid {
@@ -359,5 +378,26 @@ mod tests {
         assert!(state.latent_classes.is_empty());
         assert!(state.engine.rules.is_empty());
         assert_eq!(state.cached_sources, 0);
+    }
+
+    #[test]
+    fn commits_host_css_validation_and_ordered_native_support() {
+        let mut scanner = ScannerSession::create(&manifest()).unwrap();
+        let update = scanner
+            .scan_candidates(
+                "index.html",
+                "changed",
+                vec!["bad".into(), "made-up:value".into()],
+                &HashSet::new(),
+                &[true],
+                &HashSet::from(["bad".into()]),
+            )
+            .unwrap();
+        assert_eq!(update.invalid_classes, ["bad"]);
+        assert_eq!(update.valid_classes, ["made-up:value"]);
+        assert_eq!(
+            scanner.state().unwrap().engine.text,
+            "@layer utilities{.made-up\\:value{made-up:value}}"
+        );
     }
 }

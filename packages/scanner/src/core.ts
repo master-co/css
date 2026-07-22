@@ -313,13 +313,17 @@ export default class CSSScanner extends EventEmitter {
     const nativeCandidates = session.nativeDeclarationCandidates(
       extractedClasses.filter((className) => !excludedClasses.includes(className))
     )
+    const nativeSupport = resolveNativeSupport(nativeCandidates)
+    const validationCandidates = extractedClasses.filter((className) => !excludedClasses.includes(className))
+    const invalidGeneratedClasses = session.invalidGeneratedClasses(validationCandidates, nativeSupport)
     const time = process.hrtime()
     const update = session.scanCandidates(
       source,
       content,
       extractedClasses,
       excludedClasses,
-      resolveNativeSupport(nativeCandidates)
+      nativeSupport,
+      invalidGeneratedClasses
     )
     this.syncRustState()
     const changedClasses = [...update.validClasses, ...(update.usedNativeClasses || [])]

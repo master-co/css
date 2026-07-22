@@ -8,6 +8,7 @@ pub const MANIFEST_VERSION: u32 = 1;
 pub const HYDRATION_MANIFEST_VERSION: u32 = 1;
 pub const ENGINE_TRANSITION_VERSION: u32 = 1;
 pub const VALIDATOR_BATCH_VERSION: u32 = 1;
+pub const DIAGNOSTICS_REPORT_VERSION: u32 = 1;
 
 #[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]

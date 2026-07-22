@@ -1,6 +1,7 @@
 #![forbid(unsafe_code)]
 
-use std::collections::{HashMap, HashSet};
+use serde::Serialize;
+use std::collections::HashSet;
 use wasm_bindgen::prelude::*;
 
 fn scanner_error(error: mastercss_engine::EngineError) -> JsValue {
@@ -31,6 +32,21 @@ pub fn extract_html_classes(source: &str, content: &str) -> Result<JsValue, JsVa
 #[wasm_bindgen(js_name = extractAstroClasses)]
 pub fn extract_astro_classes(source: &str, content: &str) -> Result<JsValue, JsValue> {
     serialize_classes(&mastercss_source::extract_astro_classes(source, content))
+}
+
+#[wasm_bindgen(js_name = createInspectionReport)]
+pub fn create_inspection_report(input: JsValue) -> Result<JsValue, JsValue> {
+    let input = serde_wasm_bindgen::from_value(input)
+        .map_err(|error| JsValue::from_str(&error.to_string()))?;
+    let report = mastercss_diagnostics::create_inspection_report(input).map_err(|error| {
+        error
+            .diagnostic()
+            .serialize(&serde_wasm_bindgen::Serializer::json_compatible())
+            .unwrap_or_else(|_| JsValue::from_str(&error.to_string()))
+    })?;
+    report
+        .serialize(&serde_wasm_bindgen::Serializer::json_compatible())
+        .map_err(|error| JsValue::from_str(&error.to_string()))
 }
 
 #[wasm_bindgen]
@@ -133,11 +149,12 @@ impl ToolingScannerSession {
         candidates: Vec<String>,
         excluded_classes: Vec<String>,
         native_support: JsValue,
+        invalid_generated_classes: Vec<String>,
     ) -> Result<JsValue, JsValue> {
         let native_support = if native_support.is_null() || native_support.is_undefined() {
-            HashMap::new()
+            Vec::new()
         } else {
-            serde_wasm_bindgen::from_value::<HashMap<String, bool>>(native_support)
+            serde_wasm_bindgen::from_value::<Vec<bool>>(native_support)
                 .map_err(|error| JsValue::from_str(&error.to_string()))?
         };
         let update = self
@@ -148,6 +165,9 @@ impl ToolingScannerSession {
                 candidates,
                 &excluded_classes.into_iter().collect::<HashSet<_>>(),
                 &native_support,
+                &invalid_generated_classes
+                    .into_iter()
+                    .collect::<HashSet<_>>(),
             )
             .map_err(scanner_error)?;
         serde_wasm_bindgen::to_value(&update).map_err(|error| JsValue::from_str(&error.to_string()))

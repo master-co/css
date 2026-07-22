@@ -6,7 +6,7 @@
     "dev": "tsdown --config ../../shared/tsdown-package.config.ts --watch",
     "lint": "eslint",
     "type-check": "tsc -b tsconfig.typecheck.json",
-    "test": "vitest"
+    "test": "cargo xtask build-native && vitest"
   },
   "license": "MIT",
   "description": "Project inspection diagnostics for Master CSS tooling.",
@@ -48,9 +48,12 @@
     "provenance": true
   },
   "dependencies": {
+    "@master/css-native": "workspace:^",
     "@master/css-project": "workspace:^",
     "@master/css-scanner": "workspace:^",
+    "@master/css-schema": "workspace:^",
     "@master/css-stylesheet": "workspace:^",
+    "@master/css-wasm-tooling": "workspace:^",
     "fast-glob": "^3.3.3"
   }
 }

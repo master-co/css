@@ -49,6 +49,11 @@
       "types": "./dist/native-declaration-matcher.d.ts",
       "import": "./dist/native-declaration-matcher.js",
       "default": "./dist/native-declaration-matcher.js"
+    },
+    "./validate-css": {
+      "types": "./dist/validate-css.d.ts",
+      "import": "./dist/validate-css.js",
+      "default": "./dist/validate-css.js"
     }
   },
   "files": [

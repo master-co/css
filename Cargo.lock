@@ -510,6 +510,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "mastercss-diagnostics"
+version = "0.0.0"
+dependencies = [
+ "mastercss-schema",
+ "serde",
+ "serde_json",
+ "thiserror",
+]
+
+[[package]]
 name = "mastercss-engine"
 version = "0.0.0"
 dependencies = [
@@ -532,6 +542,7 @@ name = "mastercss-node"
 version = "0.0.0"
 dependencies = [
  "mastercss-compiler",
+ "mastercss-diagnostics",
  "mastercss-engine",
  "mastercss-render",
  "mastercss-scanner",
@@ -627,11 +638,13 @@ dependencies = [
 name = "mastercss-wasm-tooling"
 version = "0.0.0"
 dependencies = [
+ "mastercss-diagnostics",
  "mastercss-engine",
  "mastercss-scanner",
  "mastercss-schema",
  "mastercss-source",
  "mastercss-validator",
+ "serde",
  "serde-wasm-bindgen",
  "serde_json",
  "wasm-bindgen",
