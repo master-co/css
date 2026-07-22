@@ -65,6 +65,36 @@ test('loads the isolated source tooling Wasm surface', async () => {
   validator.dispose()
   validator.free()
 
+  const lint = new tooling.ToolingLintSession(JSON.stringify({
+    version: 1,
+    utilities: [
+      {
+        id: 'display-block',
+        name: 'block',
+        type: -2,
+        emit: {
+          type: 'static',
+          rules: [{ declarations: { display: 'block' } }]
+        },
+        matchers: [{ type: 'static', name: 'block' }]
+      },
+      {
+        id: 'margin',
+        name: 'm:',
+        type: -1,
+        emit: { type: 'property', property: 'margin' },
+        matchers: [{ type: 'key', keys: ['m'] }]
+      }
+    ]
+  }))
+  expect(lint.analyze(['block', 'm:2px', 'm:3px', 'unknown'], undefined, [])).toEqual({
+    version: 1,
+    sortedClassNames: ['block', 'm:2px', 'm:3px', 'unknown'],
+    conflicts: [{ className: 'm:2px', conflicts: ['m:3px'] }]
+  })
+  lint.dispose()
+  lint.free()
+
   expect(tooling.createInspectionReport({
     version: 1,
     cwd: '/project',

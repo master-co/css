@@ -60,6 +60,67 @@ pub struct ToolingValidatorSession {
 }
 
 #[wasm_bindgen]
+pub struct ToolingLintSession {
+    inner: mastercss_lint::LintSession,
+}
+
+#[wasm_bindgen]
+impl ToolingLintSession {
+    #[wasm_bindgen(constructor)]
+    pub fn new(manifest_json: &str) -> Result<ToolingLintSession, JsValue> {
+        Ok(Self {
+            inner: mastercss_lint::LintSession::create(manifest_json).map_err(scanner_error)?,
+        })
+    }
+
+    #[wasm_bindgen(js_name = nativeDeclarationCandidates)]
+    pub fn native_declaration_candidates(
+        &self,
+        class_names: Vec<String>,
+    ) -> Result<JsValue, JsValue> {
+        let candidates = self
+            .inner
+            .native_declaration_candidates(class_names)
+            .map_err(scanner_error)?;
+        serde_wasm_bindgen::to_value(&candidates)
+            .map_err(|error| JsValue::from_str(&error.to_string()))
+    }
+
+    pub fn analyze(
+        &mut self,
+        class_names: Vec<String>,
+        native_support: JsValue,
+        invalid_generated_classes: Vec<String>,
+    ) -> Result<JsValue, JsValue> {
+        let native_support = if native_support.is_null() || native_support.is_undefined() {
+            None
+        } else {
+            Some(
+                serde_wasm_bindgen::from_value::<Vec<bool>>(native_support)
+                    .map_err(|error| JsValue::from_str(&error.to_string()))?,
+            )
+        };
+        let batch = self
+            .inner
+            .analyze(
+                class_names,
+                native_support.as_deref(),
+                &invalid_generated_classes
+                    .into_iter()
+                    .collect::<HashSet<_>>(),
+            )
+            .map_err(scanner_error)?;
+        batch
+            .serialize(&serde_wasm_bindgen::Serializer::json_compatible())
+            .map_err(|error| JsValue::from_str(&error.to_string()))
+    }
+
+    pub fn dispose(&mut self) {
+        self.inner.dispose();
+    }
+}
+
+#[wasm_bindgen]
 impl ToolingValidatorSession {
     #[wasm_bindgen(constructor)]
     pub fn new(manifest_json: &str) -> Result<ToolingValidatorSession, JsValue> {

@@ -3,6 +3,7 @@ use mastercss_compiler::{
     CssImportGraphRequest,
 };
 use mastercss_engine::{EngineError, EngineSession as RustEngineSession};
+use mastercss_lint::LintSession as RustLintSession;
 use mastercss_render::RenderSession as RustRenderSession;
 use mastercss_scanner::ScannerSession as RustScannerSession;
 use mastercss_validator::ValidatorSession as RustValidatorSession;
@@ -189,6 +190,57 @@ pub fn resolve_css_import_graph_json(request_json: String) -> Result<String> {
 #[napi(js_name = "ValidatorSession")]
 pub struct NodeValidatorSession {
     inner: RustValidatorSession,
+}
+
+#[napi(js_name = "LintSession")]
+pub struct NodeLintSession {
+    inner: RustLintSession,
+}
+
+#[napi]
+impl NodeLintSession {
+    #[napi(constructor)]
+    pub fn new(manifest_json: String) -> Result<Self> {
+        Ok(Self {
+            inner: RustLintSession::create(&manifest_json).map_err(to_napi_error)?,
+        })
+    }
+
+    #[napi]
+    pub fn native_declaration_candidates(&self, class_names: Vec<String>) -> Result<String> {
+        to_json(
+            &self
+                .inner
+                .native_declaration_candidates(class_names)
+                .map_err(to_napi_error)?,
+        )
+    }
+
+    #[napi]
+    pub fn analyze(
+        &mut self,
+        class_names: Vec<String>,
+        native_support: Option<Vec<bool>>,
+        invalid_generated_classes: Vec<String>,
+    ) -> Result<String> {
+        to_json(
+            &self
+                .inner
+                .analyze(
+                    class_names,
+                    native_support.as_deref(),
+                    &invalid_generated_classes
+                        .into_iter()
+                        .collect::<HashSet<_>>(),
+                )
+                .map_err(to_napi_error)?,
+        )
+    }
+
+    #[napi]
+    pub fn dispose(&mut self) {
+        self.inner.dispose();
+    }
 }
 
 #[napi]

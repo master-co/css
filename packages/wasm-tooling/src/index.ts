@@ -33,6 +33,12 @@ interface GeneratedToolingWasmModule {
     dispose(): void
     free(): void
   }
+  ToolingLintSession: new (manifestJSON: string) => {
+    nativeDeclarationCandidates(classNames: string[]): unknown
+    analyze(classNames: string[], nativeSupport: boolean[] | undefined, invalidGeneratedClasses: string[]): unknown
+    dispose(): void
+    free(): void
+  }
 }
 
 let modulePromise: Promise<GeneratedToolingWasmModule> | undefined
@@ -111,4 +117,21 @@ export async function createToolingInspectionReport(
 ) {
   const module = await initToolingWasm(options)
   return module.createInspectionReport(input)
+}
+
+export async function createToolingLintSession(
+  manifestJSON: string,
+  options: InitToolingWasmOptions = {}
+) {
+  const module = await initToolingWasm(options)
+  const session = new module.ToolingLintSession(manifestJSON)
+  return {
+    nativeDeclarationCandidates: (classNames: string[]) => session.nativeDeclarationCandidates(classNames),
+    analyze: (classNames: string[], nativeSupport: boolean[] | undefined, invalidGeneratedClasses: string[]) =>
+      session.analyze(classNames, nativeSupport, invalidGeneratedClasses),
+    dispose() {
+      session.dispose()
+      session.free()
+    }
+  }
 }

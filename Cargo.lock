@@ -538,12 +538,22 @@ dependencies = [
 ]
 
 [[package]]
+name = "mastercss-lint"
+version = "0.0.0"
+dependencies = [
+ "mastercss-engine",
+ "mastercss-schema",
+ "serde",
+]
+
+[[package]]
 name = "mastercss-node"
 version = "0.0.0"
 dependencies = [
  "mastercss-compiler",
  "mastercss-diagnostics",
  "mastercss-engine",
+ "mastercss-lint",
  "mastercss-render",
  "mastercss-scanner",
  "mastercss-schema",
@@ -640,6 +650,7 @@ version = "0.0.0"
 dependencies = [
  "mastercss-diagnostics",
  "mastercss-engine",
+ "mastercss-lint",
  "mastercss-scanner",
  "mastercss-schema",
  "mastercss-source",

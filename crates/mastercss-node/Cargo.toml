@@ -14,6 +14,7 @@ crate-type = ["cdylib"]
 mastercss-compiler = { path = "../mastercss-compiler" }
 mastercss-diagnostics = { path = "../mastercss-diagnostics" }
 mastercss-engine = { path = "../mastercss-engine" }
+mastercss-lint = { path = "../mastercss-lint" }
 mastercss-render = { path = "../mastercss-render" }
 mastercss-schema = { path = "../mastercss-schema" }
 mastercss-scanner = { path = "../mastercss-scanner" }

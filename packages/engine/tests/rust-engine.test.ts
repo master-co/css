@@ -346,7 +346,14 @@ describe('Rust engine differential slice', () => {
   })
 
   it('matches default-manifest variable aliases, base units, ordering, and resource retention', () => {
-    for (const className of ['m:1x', 'm:md', 'w:md', 'fg:red-60', 'bg:red-60']) {
+    for (const className of [
+      'm:1x',
+      'm:md',
+      'w:md',
+      'fg:red-60',
+      'bg:red-60',
+      '{content:``;block;h:full;w:full;abs}::after'
+    ]) {
       const oracle = MasterCSS.create({ manifest: typedDefaultManifest })
       oracle.ensureClassRules(className)
       const rust = createEngineSync({ manifest: typedDefaultManifest })

@@ -6,7 +6,7 @@
     "dev": "tsdown --config ../../shared/tsdown-package.config.ts --watch",
     "lint": "eslint",
     "type-check": "tsc -b tsconfig.typecheck.json",
-    "test": "vitest"
+    "test": "cargo xtask build-native && vitest"
   },
   "keywords": [
     "mastercss",
@@ -51,8 +51,10 @@
     "@master/css-engine": "workspace:^",
     "@master/css-language": "workspace:^",
     "@master/css-lexer": "workspace:^",
+    "@master/css-native": "workspace:^",
     "@master/css-schema": "workspace:^",
-    "@master/css-validator": "workspace:^"
+    "@master/css-validator": "workspace:^",
+    "@master/css-wasm-tooling": "workspace:^"
   },
   "devDependencies": {
     "@master/css-preset": "workspace:^"

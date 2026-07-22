@@ -1936,12 +1936,18 @@ importers:
       '@master/css-lexer':
         specifier: workspace:^
         version: link:../lexer
+      '@master/css-native':
+        specifier: workspace:^
+        version: link:../native
       '@master/css-schema':
         specifier: workspace:^
         version: link:../schema
       '@master/css-validator':
         specifier: workspace:^
         version: link:../validator
+      '@master/css-wasm-tooling':
+        specifier: workspace:^
+        version: link:../wasm-tooling
     devDependencies:
       '@master/css-preset':
         specifier: workspace:^

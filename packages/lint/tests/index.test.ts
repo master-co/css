@@ -27,6 +27,7 @@ import {
   sortClassNames,
   suggestCanonicalClassName
 } from '../src'
+import { createRustLintSession } from '../src/rust-session'
 import { createPresetManifest } from './helpers/create-preset-manifest'
 
 const css = createCSSWithNativeDeclarations(createPresetManifest())
@@ -87,6 +88,56 @@ const registryFieldCSS = createCSSWithNativeDeclarations(createPresetManifest({
 }))
 
 describe('class sorting', () => {
+  test('matches the Rust sorting and conflict batch', async () => {
+    const manifest = createPresetManifest()
+    const rust = await createRustLintSession(manifest)
+    const classNames = [
+      'font:heavy',
+      'bg:black:hover',
+      'px:3x@sm',
+      'rel',
+      'grid-cols:2@md',
+      'opacity:.8',
+      'z:10',
+      'fg:white',
+      'hidden@<md',
+      'text-center',
+      'm:0',
+      'flex',
+      'p:4x',
+      'unknown-app-class',
+      'w:full',
+      'r:lg',
+      'bg:blue-60',
+      'gap:2x',
+      'overflow:hidden',
+      'h:full',
+      'transition:opacity|.2s',
+      'b:1px|solid|gray-30',
+      'block@dark',
+      'align-items:center',
+      'mt:2x',
+      'box-shadow:0|2px|8px|#0003',
+      'font:2.5rem@xs',
+      '{content:``;block;h:full;w:full;abs}::after',
+      'm:10px',
+      'm:20px',
+      'fg:black',
+      'font:error',
+      'display:block',
+      'm:0'
+    ]
+
+    try {
+      const batch = rust.analyze(classNames)
+      expect(batch.version).toBe(1)
+      expect(batch.sortedClassNames).toEqual(sortClassNames(classNames, css))
+      expect(batch.conflicts).toEqual(findClassConflicts(classNames, css))
+    } finally {
+      rust.dispose()
+    }
+  })
+
   test('sorts known classes and keeps unknown classes last', () => {
     expect(sortClassNames(['font:1.5rem', 'fg:white', 'm:2x', 'p:2x', 'bg:black'], css))
       .toEqual(['m:2x', 'p:2x', 'font:1.5rem', 'bg:black', 'fg:white'])

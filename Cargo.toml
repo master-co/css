@@ -3,6 +3,7 @@ resolver = "3"
 members = [
   "crates/mastercss-schema",
   "crates/mastercss-lexer",
+  "crates/mastercss-lint",
   "crates/mastercss-engine",
   "crates/mastercss-compiler",
   "crates/mastercss-diagnostics",

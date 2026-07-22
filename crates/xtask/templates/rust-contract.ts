@@ -3,6 +3,7 @@
 export const MASTER_CSS_ENGINE_TRANSITION_VERSION = 1 as const
 export const MASTER_CSS_VALIDATOR_BATCH_VERSION = 1 as const
 export const MASTER_CSS_DIAGNOSTICS_REPORT_VERSION = 1 as const
+export const MASTER_CSS_LINT_BATCH_VERSION = 1 as const
 
 export type MasterCSSBackend = 'auto' | 'native' | 'wasm'
 export type MasterCSSResolvedBackend = Exclude<MasterCSSBackend, 'auto'>
