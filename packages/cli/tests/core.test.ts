@@ -18,7 +18,7 @@ const tsconfigPath = resolve(__dirname, '../../../tsconfig.json')
 const tsxLoaderURL = pathToFileURL(createRequire(import.meta.url).resolve('tsx')).href
 const nativeCLIFilepath = resolve(__dirname, '../../native/artifacts/mcss')
 
-function runCLI(args: string[], options: { cwd?: string, input?: string } = {}) {
+function runCLI(args: string[], options: { cwd?: string, input?: string, env?: NodeJS.ProcessEnv } = {}) {
   return execFileSync(process.execPath, ['--import', tsxLoaderURL, cliFilepath, ...args], {
     encoding: 'utf8',
     input: options.input,
@@ -26,6 +26,7 @@ function runCLI(args: string[], options: { cwd?: string, input?: string } = {}) 
     cwd: options.cwd,
     env: {
       ...process.env,
+      ...options.env,
       TSX_TSCONFIG_PATH: tsconfigPath
     }
   })
@@ -52,6 +53,40 @@ describe('root command', () => {
       },
       css: '@layer utilities{.block{display:block}}'
     })
+  })
+
+  it('selects the Rust executable for migration diagnostics', () => {
+    const report = JSON.parse(runCLI(['--self-test']))
+    expect(report).toMatchObject({
+      version: 1,
+      binary: { bindingAbiVersion: 1 },
+      css: '@layer utilities{.block{display:block}}'
+    })
+  })
+
+  it('runs the root scan through the Rust executable', () => {
+    const cwd = fs.mkdtempSync(resolve(os.tmpdir(), 'master-css-native-cli-scan-'))
+    try {
+      fs.writeFileSync(resolve(cwd, 'index.css'), '@master entry;\n@theme { --color-brand: red; }')
+      fs.writeFileSync(resolve(cwd, 'index.html'), '<div class="block fg:brand"></div>')
+      const output = execFileSync(nativeCLIFilepath, ['--no-export'], { cwd, encoding: 'utf8' })
+      expect(output).toContain('.block{display:block}')
+      expect(output).toContain('.fg\\:brand{color:var(--color-brand)}')
+      expect(fs.existsSync(resolve(cwd, 'master.css'))).toBe(false)
+    } finally {
+      fs.rmSync(cwd, { recursive: true, force: true })
+    }
+  })
+
+  it('opts the package binary into the native root scan explicitly', () => {
+    const cwd = fs.mkdtempSync(resolve(os.tmpdir(), 'master-css-native-cli-selector-'))
+    try {
+      fs.writeFileSync(resolve(cwd, 'index.html'), '<div class="block"></div>')
+      const output = runCLI(['--backend', 'native', '--no-export'], { cwd })
+      expect(output).toContain('.block{display:block}')
+    } finally {
+      fs.rmSync(cwd, { recursive: true, force: true })
+    }
   })
 
   it('shows scan options and the lint subcommand', () => {

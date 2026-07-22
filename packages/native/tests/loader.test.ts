@@ -1,5 +1,13 @@
 import { describe, expect, it } from 'vitest'
-import { getNativeCLIExecutableName, nativeAddonsDisabled, resolveNativeTarget } from '../src'
+import { resolve } from 'node:path'
+import {
+  assertNativeCLIInfo,
+  getNativeCLIExecutableName,
+  NativeBindingError,
+  nativeAddonsDisabled,
+  resolveNativeCLIPath,
+  resolveNativeTarget
+} from '../src'
 
 describe('native target resolution', () => {
   it('resolves the eight Tier-1 packages', () => {
@@ -27,5 +35,20 @@ describe('native target resolution', () => {
     expect(getNativeCLIExecutableName('darwin')).toBe('mcss')
     expect(getNativeCLIExecutableName('linux')).toBe('mcss')
     expect(getNativeCLIExecutableName('win32')).toBe('mcss.exe')
+  })
+
+  it('validates native executable ABI metadata', () => {
+    const executable = resolve(__dirname, '../artifacts/mcss')
+    expect(assertNativeCLIInfo(executable)).toMatchObject({
+      bindingAbiVersion: 1,
+      packageVersion: '0.0.0',
+      manifestVersion: 1,
+      hydrationManifestVersion: 1
+    })
+  })
+
+  it('rejects a configured missing executable without falling back', () => {
+    expect(() => resolveNativeCLIPath({ executablePath: '/missing/master-css/mcss' }))
+      .toThrowError(expect.objectContaining<Partial<NativeBindingError>>({ code: 'NATIVE_LOAD_FAILED' }))
   })
 })

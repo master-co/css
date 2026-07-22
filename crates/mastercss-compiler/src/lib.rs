@@ -5,7 +5,8 @@ mod manifest;
 pub use manifest::{
     CompileDefaultPresetRequest, CompileDefaultPresetResult, CompileManifestOptions,
     CompileManifestResult, compile_default_preset_manifest, compile_manifest_input,
-    normalize_default_manifest_for_json, normalize_manifest_for_json,
+    compile_manifest_input_with_styles, normalize_default_manifest_for_json,
+    normalize_manifest_for_json,
 };
 
 use std::collections::{HashMap, HashSet};

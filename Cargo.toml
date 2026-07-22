@@ -8,6 +8,7 @@ members = [
   "crates/mastercss-cli",
   "crates/mastercss-engine",
   "crates/mastercss-compiler",
+  "crates/mastercss-project",
   "crates/mastercss-diagnostics",
   "crates/mastercss-source",
   "crates/mastercss-scanner",

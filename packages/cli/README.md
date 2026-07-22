@@ -83,6 +83,10 @@ Options:
 | `-o, --output <path>` | `string` | `master.css` | Generated CSS output path. |
 | `-v, --verbose <level>` | `number` | `1` | Logging level. Use `0` to silence terminal output. |
 | `-w, --watch` | `boolean` | `false` | Watch files and rebuild continuously. |
+| `--backend <backend>` | `auto`, `native`, or `wasm` | `auto` | Select the execution backend for diagnostics and migration testing. |
+| `--no-export` | `boolean` | `false` | Print generated CSS instead of writing a file. |
+
+`--backend native` opts a one-shot scan into the Rust `mcss` executable and verifies its package, ABI, manifest, and hydration versions before execution. Watch, lint, and inspect remain on the Node host until their native parity gates pass. `MASTER_CSS_CLI_BACKEND` provides the same selection for automation.
 
 ### `npx @master/css-cli lint [source paths]`
 

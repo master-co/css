@@ -40,6 +40,7 @@
     "@master/css-lexer": "workspace:^",
     "@master/css-language": "workspace:^",
     "@master/css-lint": "workspace:^",
+    "@master/css-native": "workspace:^",
     "@master/css-project": "workspace:^",
     "@master/css-scanner": "workspace:^",
     "@master/css-stylesheet": "workspace:^",

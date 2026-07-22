@@ -501,6 +501,8 @@ name = "mastercss-cli"
 version = "0.0.0"
 dependencies = [
  "mastercss-engine",
+ "mastercss-project",
+ "mastercss-scanner",
  "mastercss-schema",
  "serde",
  "serde_json",
@@ -588,6 +590,18 @@ dependencies = [
  "napi-derive",
  "serde",
  "serde_json",
+]
+
+[[package]]
+name = "mastercss-project"
+version = "0.0.0"
+dependencies = [
+ "mastercss-compiler",
+ "mastercss-scanner",
+ "mastercss-schema",
+ "serde",
+ "serde_json",
+ "thiserror",
 ]
 
 [[package]]

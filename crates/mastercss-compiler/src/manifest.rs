@@ -1546,12 +1546,25 @@ fn append_default_preset_styles(
     Ok(())
 }
 
+pub fn compile_manifest_input_with_styles(
+    input: &CssDirectiveManifestInput,
+    definitions: &[CssDirectiveStyleDefinition],
+    options: &CompileManifestOptions,
+) -> Result<CompileManifestResult, CompilerError> {
+    let mut input = input.clone();
+    append_default_preset_styles(&mut input, definitions)?;
+    compile_manifest_input(&input, options)
+}
+
 pub fn compile_default_preset_manifest(
     request: &CompileDefaultPresetRequest,
 ) -> Result<CompileDefaultPresetResult, CompilerError> {
-    let mut input = request.manifest_input.clone();
-    append_default_preset_styles(&mut input, &request.style_definitions)?;
-    let manifest = compile_manifest_input(&input, &CompileManifestOptions::default())?.manifest;
+    let manifest = compile_manifest_input_with_styles(
+        &request.manifest_input,
+        &request.style_definitions,
+        &CompileManifestOptions::default(),
+    )?
+    .manifest;
     let manifest = normalize_default_manifest_for_json(&manifest)?;
     let json = serde_json::to_string(&manifest)
         .map_err(|error| manifest_error(format!("Cannot serialize default manifest: {error}")))?;

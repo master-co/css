@@ -1,11 +1,16 @@
-import { existsSync } from 'node:fs'
+import { existsSync, readFileSync } from 'node:fs'
 import { createRequire } from 'node:module'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { spawnSync } from 'node:child_process'
 
 export const MASTER_CSS_BINDING_ABI_VERSION = 1
 export const MASTER_CSS_MANIFEST_VERSION = 1
 export const MASTER_CSS_HYDRATION_MANIFEST_VERSION = 1
+const nativePackageVersion = (JSON.parse(readFileSync(
+  fileURLToPath(new URL('../package.json', import.meta.url)),
+  'utf8'
+)) as { version?: string }).version || '0.0.0'
 
 export interface NativeBindingInfo {
   bindingAbiVersion: number
@@ -160,7 +165,15 @@ export function resolveNativeCLIPath(options: { required?: boolean, executablePa
   const executableName = getNativeCLIExecutableName()
   const configuredPath = options.executablePath || process.env.MASTER_CSS_NATIVE_CLI_PATH
   const developmentPath = resolve(fileURLToPath(new URL(`../artifacts/${executableName}`, import.meta.url)))
-  if (configuredPath) return configuredPath
+  if (configuredPath) {
+    if (!existsSync(configuredPath)) {
+      throw new NativeBindingError(
+        'NATIVE_LOAD_FAILED',
+        `Cannot load the configured Master CSS native executable: ${configuredPath}`
+      )
+    }
+    return configuredPath
+  }
   if (existsSync(developmentPath)) return developmentPath
 
   const target = resolveNativeTarget()
@@ -186,6 +199,41 @@ export function resolveNativeCLIPath(options: { required?: boolean, executablePa
   }
 }
 
+export function assertNativeCLIInfo(executablePath: string): NativeBindingInfo {
+  const result = spawnSync(executablePath, ['--binding-info'], {
+    encoding: 'utf8',
+    windowsHide: true
+  })
+  if (result.error || result.status !== 0) {
+    throw new NativeBindingError(
+      'NATIVE_LOAD_FAILED',
+      `Cannot execute the expected Master CSS native executable: ${executablePath}`,
+      { cause: result.error }
+    )
+  }
+  let info: NativeBindingInfo
+  try {
+    info = JSON.parse(result.stdout) as NativeBindingInfo
+  } catch (cause) {
+    throw new NativeBindingError(
+      'NATIVE_LOAD_FAILED',
+      `Master CSS native executable returned invalid metadata: ${executablePath}`,
+      { cause }
+    )
+  }
+  const mismatch = info.bindingAbiVersion !== MASTER_CSS_BINDING_ABI_VERSION
+    || info.packageVersion !== nativePackageVersion
+    || info.manifestVersion !== MASTER_CSS_MANIFEST_VERSION
+    || info.hydrationManifestVersion !== MASTER_CSS_HYDRATION_MANIFEST_VERSION
+  if (mismatch) {
+    throw new NativeBindingError(
+      'NATIVE_LOAD_FAILED',
+      `Master CSS native executable ABI mismatch: ${executablePath}`
+    )
+  }
+  return info
+}
+
 function assertBindingInfo(binding: NativeBinding, source: string): NativeBindingInfo {
   let info: NativeBindingInfo
   try {
@@ -198,6 +246,7 @@ function assertBindingInfo(binding: NativeBinding, source: string): NativeBindin
     )
   }
   const mismatch = info.bindingAbiVersion !== MASTER_CSS_BINDING_ABI_VERSION
+    || info.packageVersion !== nativePackageVersion
     || info.manifestVersion !== MASTER_CSS_MANIFEST_VERSION
     || info.hydrationManifestVersion !== MASTER_CSS_HYDRATION_MANIFEST_VERSION
   if (mismatch) {

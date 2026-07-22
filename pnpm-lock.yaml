@@ -1521,6 +1521,9 @@ importers:
       '@master/css-lint':
         specifier: workspace:^
         version: link:../lint
+      '@master/css-native':
+        specifier: workspace:^
+        version: link:../native
       '@master/css-project':
         specifier: workspace:^
         version: link:../project

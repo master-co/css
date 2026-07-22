@@ -29,6 +29,7 @@ export interface ScanOptions {
   verbose?: string | number
   export?: boolean
   cwd?: string
+  backend?: 'auto' | 'native' | 'wasm'
 }
 
 async function registerManagedCSSEntries(scanner: CSSScanner, styleCSSSources: StyleCSSSources) {
