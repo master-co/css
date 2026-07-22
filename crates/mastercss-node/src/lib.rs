@@ -176,6 +176,16 @@ impl NodeLanguageSession {
     }
 
     #[napi]
+    pub fn completion_index(&self) -> Result<String> {
+        to_json(
+            &self
+                .inner
+                .completion_index()
+                .map_err(|error| Error::new(Status::InvalidArg, error.to_string()))?,
+        )
+    }
+
+    #[napi]
     pub fn dispose(&mut self) {
         self.inner.dispose();
     }

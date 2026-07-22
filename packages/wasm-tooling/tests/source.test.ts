@@ -216,6 +216,13 @@ test('loads the isolated source tooling Wasm surface', async () => {
     kind: 'semantic',
     text: '@layer utilities{.block\\:hover:hover{display:block}}'
   })
+  expect(language.completionIndex()).toMatchObject({
+    version: 1,
+    classEntries: expect.arrayContaining([
+      expect.objectContaining({ label: 'block', kind: 'value' }),
+      expect.objectContaining({ label: 'fg:', kind: 'property', triggerSuggest: true })
+    ])
+  })
   language.dispose()
   language.free()
 

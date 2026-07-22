@@ -163,6 +163,15 @@ impl ToolingLanguageSession {
             .map_err(|error| JsValue::from_str(&error.to_string()))
     }
 
+    #[wasm_bindgen(js_name = completionIndex)]
+    pub fn completion_index(&self) -> Result<JsValue, JsValue> {
+        self.inner
+            .completion_index()
+            .map_err(|error| JsValue::from_str(&error.to_string()))?
+            .serialize(&serde_wasm_bindgen::Serializer::json_compatible())
+            .map_err(|error| JsValue::from_str(&error.to_string()))
+    }
+
     pub fn dispose(&mut self) {
         self.inner.dispose();
     }

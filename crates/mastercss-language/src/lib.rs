@@ -1,6 +1,9 @@
 #![forbid(unsafe_code)]
 
-use mastercss_engine::{ClassSemanticInspection, ClassSemanticKind, EngineError, EngineSession};
+use mastercss_engine::{
+    ClassSemanticInspection, ClassSemanticKind, EngineClassCompletionKind, EngineError,
+    EngineSession,
+};
 use mastercss_lexer::{collect_class_list_token_ranges, utf16_len, utf16_to_byte_offset};
 use mastercss_schema::{LANGUAGE_BATCH_VERSION, NativeDeclarationCandidateIr, SourceRange};
 use serde::{Deserialize, Serialize};
@@ -57,6 +60,34 @@ pub struct LanguageInspectionIr {
     pub class_name: String,
     pub kind: ClassSemanticKind,
     pub text: String,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize)]
+#[serde(rename_all = "lowercase")]
+pub enum LanguageCompletionKind {
+    Property,
+    Value,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct LanguageCompletionEntryIr {
+    pub label: String,
+    pub kind: LanguageCompletionKind,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub detail: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub documentation_text: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub sort_text: Option<String>,
+    pub trigger_suggest: bool,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct LanguageCompletionIndexIr {
+    pub version: u32,
+    pub class_entries: Vec<LanguageCompletionEntryIr>,
 }
 
 #[derive(Debug)]
@@ -147,6 +178,43 @@ impl LanguageSession {
             class_name: class_name.to_owned(),
             kind: semantics.kind,
             text: engine.snapshot()?.text,
+        })
+    }
+
+    pub fn completion_index(&self) -> Result<LanguageCompletionIndexIr, LanguageError> {
+        let candidates = self.engine.class_completion_candidates()?;
+        let documentation_class_names = candidates
+            .iter()
+            .filter_map(|candidate| candidate.documentation_class_name.clone())
+            .collect::<Vec<_>>();
+        let documentation_texts = self
+            .engine
+            .render_class_names_isolated(&documentation_class_names)?;
+        let documentation_by_class = documentation_class_names
+            .into_iter()
+            .zip(documentation_texts)
+            .collect::<HashMap<_, _>>();
+        let class_entries = candidates
+            .into_iter()
+            .map(|candidate| LanguageCompletionEntryIr {
+                label: candidate.label,
+                kind: match candidate.kind {
+                    EngineClassCompletionKind::Property => LanguageCompletionKind::Property,
+                    EngineClassCompletionKind::Value => LanguageCompletionKind::Value,
+                },
+                detail: candidate.detail,
+                documentation_text: candidate
+                    .documentation_class_name
+                    .as_deref()
+                    .and_then(|class_name| documentation_by_class.get(class_name))
+                    .cloned(),
+                sort_text: candidate.sort_text,
+                trigger_suggest: candidate.trigger_suggest,
+            })
+            .collect();
+        Ok(LanguageCompletionIndexIr {
+            version: LANGUAGE_BATCH_VERSION,
+            class_entries,
         })
     }
 
@@ -540,5 +608,20 @@ mod tests {
             inspection.text,
             "@layer components{.card\\:hover:hover{display:block}}"
         );
+        let completion_index = session.completion_index().unwrap();
+        assert_eq!(completion_index.version, LANGUAGE_BATCH_VERSION);
+        assert!(completion_index.class_entries.iter().any(|entry| {
+            entry.label == "card"
+                && entry.kind == LanguageCompletionKind::Value
+                && entry.detail.as_deref() == Some("component")
+                && entry.documentation_text.as_deref()
+                    == Some("@layer components{.card{display:block}}")
+        }));
+        assert!(completion_index.class_entries.iter().any(|entry| {
+            entry.label == "fg:"
+                && entry.kind == LanguageCompletionKind::Property
+                && entry.detail.as_deref() == Some("color")
+                && entry.trigger_suggest
+        }));
     }
 }

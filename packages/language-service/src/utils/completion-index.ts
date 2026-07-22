@@ -3,6 +3,7 @@ import {
   defaultCSSLanguageRuntime,
   type Condition,
   type CSSLanguageRuntime,
+  type MasterCSSLanguageCompletionIndexIR,
   type MasterCSS,
   createDefaultCSS
 } from '@master/css-language'
@@ -11,6 +12,7 @@ import { getMdnPseudoClassNames, getMdnPseudoElementNames } from '@master/css-la
 import { generateSelector } from '@master/css-engine/compiler'
 import getUtilityInfo from './get-utility-info'
 import sortCompletionItems from './sort-completion-items'
+import createCSSMarkdownDocumentation from './create-css-markdown-documentation'
 
 const ANIMATION_REFERENCE_PROPERTIES = new Set(['animation', 'animation-name'])
 
@@ -184,6 +186,26 @@ function collectClassEntries(css: MasterCSS, runtime: CSSLanguageRuntime) {
   return sortCompletionItems(completionItems)
 }
 
+function collectRustClassEntries(index: MasterCSSLanguageCompletionIndexIR): ClassCompletionEntry[] {
+  return sortCompletionItems(index.classEntries.map((entry) => ({
+    label: entry.label,
+    kind: entry.kind === 'property' ? CompletionItemKind.Property : CompletionItemKind.Value,
+    ...(entry.detail ? { detail: entry.detail } : {}),
+    ...(entry.sortText ? { sortText: entry.sortText } : {}),
+    ...(entry.documentationText
+      ? { documentation: createCSSMarkdownDocumentation(entry.documentationText) }
+      : {}),
+    ...(entry.triggerSuggest
+      ? {
+        command: {
+          title: 'triggerSuggest',
+          command: 'editor.action.triggerSuggest'
+        }
+      }
+      : {})
+  })))
+}
+
 function createPseudoClassSelectors(css: MasterCSS) {
   const selectors = new Map<string, string>([[':of', ':of']])
   for (const [token, nodes] of css.selectors) {
@@ -225,7 +247,8 @@ function createNativeVariableNamespacesByProperty(runtime: CSSLanguageRuntime) {
 
 export function createCompletionIndex(
   css: MasterCSS = createDefaultCSS(),
-  runtime: CSSLanguageRuntime = defaultCSSLanguageRuntime
+  runtime: CSSLanguageRuntime = defaultCSSLanguageRuntime,
+  rustIndex?: MasterCSSLanguageCompletionIndexIR
 ): CompletionIndex {
   const componentNames: string[] = []
   const utilityNames: string[] = []
@@ -288,7 +311,7 @@ export function createCompletionIndex(
   return {
     runtime,
     keyAliases: runtime.builtinKeyAliases,
-    classEntries: collectClassEntries(css, runtime),
+    classEntries: rustIndex ? collectRustClassEntries(rustIndex) : collectClassEntries(css, runtime),
     componentNames,
     utilityNames,
     nativeUtilityKeys,

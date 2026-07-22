@@ -151,6 +151,22 @@ export interface MasterCSSLanguageInspectionIR {
   text: string
 }
 
+export type MasterCSSLanguageCompletionKind = 'property' | 'value'
+
+export interface MasterCSSLanguageCompletionEntryIR {
+  label: string
+  kind: MasterCSSLanguageCompletionKind
+  detail?: string
+  documentationText?: string
+  sortText?: string
+  triggerSuggest: boolean
+}
+
+export interface MasterCSSLanguageCompletionIndexIR {
+  version: typeof MASTER_CSS_LANGUAGE_BATCH_VERSION
+  classEntries: MasterCSSLanguageCompletionEntryIR[]
+}
+
 export type MasterCSSDirectiveManifestInputIR =
   import('./css-directives').CSSDirectiveManifestInput
 

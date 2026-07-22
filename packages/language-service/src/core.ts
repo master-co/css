@@ -59,7 +59,11 @@ export default class CSSLanguageService extends EventEmitter {
   }
 
   private getCompletionIndex() {
-    this.completionIndex ??= createCompletionIndex(this.css, this.runtime)
+    this.completionIndex ??= createCompletionIndex(
+      this.css,
+      this.runtime,
+      this.analyzer?.completionIndex?.()
+    )
     return this.completionIndex
   }
 

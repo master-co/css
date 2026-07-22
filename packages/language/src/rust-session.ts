@@ -6,6 +6,7 @@ import { stringifyMasterCSSManifestJSON } from '@master/css-schema/manifest-json
 import type {
   MasterCSSLanguageClassificationsIR,
   MasterCSSLanguageClassIR,
+  MasterCSSLanguageCompletionIndexIR,
   MasterCSSLanguageInspectionIR,
   MasterCSSNativeDeclarationCandidateIR
 } from '@master/css-schema/rust-contract'
@@ -37,6 +38,7 @@ export interface RustLanguageAnalyzer {
   ): RustLanguageBatchIR
   classifyClassNames?(classNames: string[]): MasterCSSLanguageClassificationsIR
   inspectClassName?(className: string): MasterCSSLanguageInspectionIR
+  completionIndex?(): MasterCSSLanguageCompletionIndexIR
   createSession?(manifest: MasterCSSManifest): RustLanguageAnalyzer
   dispose?(): void
 }
@@ -54,6 +56,7 @@ export class RustLanguageAnalyzerError extends Error {
 export type {
   MasterCSSLanguageClassificationsIR,
   MasterCSSLanguageClassIR,
+  MasterCSSLanguageCompletionIndexIR,
   MasterCSSLanguageInspectionIR
 }
 
@@ -89,6 +92,18 @@ function validateInspection(
     )
   }
   return inspection
+}
+
+function validateCompletionIndex(
+  index: MasterCSSLanguageCompletionIndexIR
+): MasterCSSLanguageCompletionIndexIR {
+  if (index.version !== MASTER_CSS_LANGUAGE_BATCH_VERSION) {
+    throw new RustLanguageAnalyzerError(
+      'LANGUAGE_BATCH_VERSION_MISMATCH',
+      `Expected Master CSS language batch version ${MASTER_CSS_LANGUAGE_BATCH_VERSION}, received ${String(index.version)}.`
+    )
+  }
+  return index
 }
 
 function createNativeAnalyzer(): RustLanguageAnalyzer | undefined {
@@ -128,6 +143,11 @@ function createNativeAnalyzer(): RustLanguageAnalyzer | undefined {
             className,
             nativeSupport.length ? nativeSupport : undefined
           )) as MasterCSSLanguageInspectionIR)
+        },
+        completionIndex() {
+          return validateCompletionIndex(
+            JSON.parse(session.completionIndex()) as MasterCSSLanguageCompletionIndexIR
+          )
         },
         dispose() {
           session.dispose()
@@ -186,6 +206,11 @@ export async function createRustLanguageAnalyzer(): Promise<RustLanguageAnalyzer
             className,
             nativeSupport
           ) as MasterCSSLanguageInspectionIR)
+        },
+        completionIndex() {
+          return validateCompletionIndex(
+            session.completionIndex() as MasterCSSLanguageCompletionIndexIR
+          )
         },
         dispose() {
           session.dispose()

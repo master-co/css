@@ -191,6 +191,10 @@ struct UtilityDefinition {
     layer: UtilityLayerName,
     #[serde(default)]
     kind: Option<String>,
+    #[serde(default)]
+    keys: Vec<String>,
+    #[serde(default, rename = "aliasGroups")]
+    alias_groups: Vec<String>,
     #[serde(default, rename = "variableAliases")]
     variable_aliases: Vec<(String, String)>,
     #[serde(default, rename = "variableAliasRefs")]
@@ -341,6 +345,22 @@ struct ThemeBucket {
 struct NativeDeclarationCandidate {
     ir: NativeDeclarationCandidateIr,
     match_name: String,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum EngineClassCompletionKind {
+    Property,
+    Value,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct EngineClassCompletionCandidate {
+    pub label: String,
+    pub kind: EngineClassCompletionKind,
+    pub detail: Option<String>,
+    pub documentation_class_name: Option<String>,
+    pub sort_text: Option<String>,
+    pub trigger_suggest: bool,
 }
 
 #[derive(Debug)]
@@ -568,6 +588,8 @@ impl EngineSession {
                 order: Some(0),
                 layer: UtilityLayerName::Utilities,
                 kind: None,
+                keys: Vec::new(),
+                alias_groups: Vec::new(),
                 variable_aliases: Vec::new(),
                 variable_alias_refs: Vec::new(),
                 variables: HashMap::new(),
@@ -836,6 +858,33 @@ impl EngineSession {
         })
     }
 
+    pub fn class_completion_candidates(
+        &self,
+    ) -> Result<Vec<EngineClassCompletionCandidate>, EngineError> {
+        self.ensure_active()?;
+        Ok(collect_class_completion_candidates(&self.compiled))
+    }
+
+    pub fn render_class_names_isolated<I, S>(
+        &self,
+        class_names: I,
+    ) -> Result<Vec<String>, EngineError>
+    where
+        I: IntoIterator<Item = S>,
+        S: AsRef<str>,
+    {
+        self.ensure_active()?;
+        let mut isolated = self.fork_empty();
+        let mut rendered = Vec::new();
+        for class_name in class_names {
+            let class_name = class_name.as_ref();
+            isolated.ensure_class_rules([class_name])?;
+            rendered.push(isolated.snapshot()?.text);
+            isolated.delete_class_rules([class_name])?;
+        }
+        Ok(rendered)
+    }
+
     pub fn css_text(&self) -> String {
         let mut output = String::new();
         if let Some(theme) = self.theme_rule_text() {
@@ -874,6 +923,26 @@ impl EngineSession {
         self.animation_counts.clear();
         self.animation_names.clear();
         self.disposed = true;
+    }
+
+    fn fork_empty(&self) -> Self {
+        let mut session = Self {
+            manifest: self.manifest.clone(),
+            compiled: self.compiled.clone(),
+            layers: std::array::from_fn(|_| Vec::new()),
+            class_rules: HashMap::new(),
+            class_order: Vec::new(),
+            rule_counts: HashMap::new(),
+            emitted_globals: EmittedGlobals::default(),
+            variable_counts: HashMap::new(),
+            theme_variable_names: Vec::new(),
+            animation_counts: HashMap::new(),
+            animation_names: Vec::new(),
+            disposed: false,
+        };
+        session.initialize_variable_resources();
+        session.initialize_animation_resources();
+        session
     }
 
     fn ensure_active(&self) -> Result<(), EngineError> {
@@ -1936,6 +2005,302 @@ const BUILTIN_NATIVE_DECLARATION_PROPERTIES: &[&str] = &[
     "text-overflow",
 ];
 
+const BUILTIN_KEY_ALIASES: &[(&str, &str)] = &[
+    ("fg", "color"),
+    ("bg", "background"),
+    ("gap-x", "column-gap"),
+    ("gap-y", "row-gap"),
+    ("grid-col", "grid-column"),
+    ("grid-col-end", "grid-column-end"),
+    ("grid-col-start", "grid-column-start"),
+    ("b", "border"),
+    ("bb", "border-bottom"),
+    ("bl", "border-left"),
+    ("br", "border-right"),
+    ("bt", "border-top"),
+    ("bx", "border-inline"),
+    ("by", "border-block"),
+    ("h", "height"),
+    ("ix", "inset-inline"),
+    ("ixe", "inset-inline-end"),
+    ("ixs", "inset-inline-start"),
+    ("iy", "inset-block"),
+    ("iye", "inset-block-end"),
+    ("iys", "inset-block-start"),
+    ("leading", "line-height"),
+    ("m", "margin"),
+    ("max", "max-size"),
+    ("max-h", "max-height"),
+    ("max-size-x", "max-inline-size"),
+    ("max-size-y", "max-block-size"),
+    ("max-w", "max-width"),
+    ("mb", "margin-bottom"),
+    ("min", "min-size"),
+    ("min-h", "min-height"),
+    ("min-size-x", "min-inline-size"),
+    ("min-size-y", "min-block-size"),
+    ("min-w", "min-width"),
+    ("ml", "margin-left"),
+    ("mr", "margin-right"),
+    ("mt", "margin-top"),
+    ("mx", "margin-inline"),
+    ("mxe", "margin-inline-end"),
+    ("mxs", "margin-inline-start"),
+    ("my", "margin-block"),
+    ("mye", "margin-block-end"),
+    ("mys", "margin-block-start"),
+    ("p", "padding"),
+    ("pb", "padding-bottom"),
+    ("pl", "padding-left"),
+    ("pr", "padding-right"),
+    ("pt", "padding-top"),
+    ("px", "padding-inline"),
+    ("pxe", "padding-inline-end"),
+    ("pxs", "padding-inline-start"),
+    ("py", "padding-block"),
+    ("pye", "padding-block-end"),
+    ("pys", "padding-block-start"),
+    ("r", "border-radius"),
+    ("rbl", "border-bottom-left-radius"),
+    ("rbr", "border-bottom-right-radius"),
+    ("rtl", "border-top-left-radius"),
+    ("rtr", "border-top-right-radius"),
+    ("scroll-m", "scroll-margin"),
+    ("scroll-mb", "scroll-margin-bottom"),
+    ("scroll-ml", "scroll-margin-left"),
+    ("scroll-mr", "scroll-margin-right"),
+    ("scroll-mt", "scroll-margin-top"),
+    ("scroll-mx", "scroll-margin-inline"),
+    ("scroll-mxe", "scroll-margin-inline-end"),
+    ("scroll-mxs", "scroll-margin-inline-start"),
+    ("scroll-my", "scroll-margin-block"),
+    ("scroll-mye", "scroll-margin-block-end"),
+    ("scroll-mys", "scroll-margin-block-start"),
+    ("scroll-p", "scroll-padding"),
+    ("scroll-pb", "scroll-padding-bottom"),
+    ("scroll-pl", "scroll-padding-left"),
+    ("scroll-pr", "scroll-padding-right"),
+    ("scroll-pt", "scroll-padding-top"),
+    ("scroll-px", "scroll-padding-inline"),
+    ("scroll-pxe", "scroll-padding-inline-end"),
+    ("scroll-pxs", "scroll-padding-inline-start"),
+    ("scroll-py", "scroll-padding-block"),
+    ("scroll-pye", "scroll-padding-block-end"),
+    ("scroll-pys", "scroll-padding-block-start"),
+    ("shadow", "box-shadow"),
+    ("size-x", "inline-size"),
+    ("size-y", "block-size"),
+    ("line-clamp", "-webkit-line-clamp"),
+    ("text-fill-color", "-webkit-text-fill-color"),
+    ("text-stroke-color", "-webkit-text-stroke-color"),
+    ("text-stroke-width", "-webkit-text-stroke-width"),
+    ("tracking", "letter-spacing"),
+    ("w", "width"),
+    ("z", "z-index"),
+];
+
+fn add_unique_string(target: &mut Vec<String>, value: &str) {
+    if !target.iter().any(|existing| existing == value) {
+        target.push(value.to_owned());
+    }
+}
+
+fn utility_completion_metadata(utility: &UtilityDefinition) -> (Vec<String>, Vec<String>) {
+    let mut keys = utility.keys.clone();
+    let mut alias_groups = utility.alias_groups.clone();
+    for matcher in &utility.matchers {
+        match matcher {
+            UtilityMatcher::Key { keys: matcher_keys } => {
+                for key in matcher_keys {
+                    add_unique_string(&mut keys, key);
+                }
+            }
+            UtilityMatcher::Variable {
+                keys: matcher_keys, ..
+            }
+            | UtilityMatcher::Value {
+                keys: matcher_keys, ..
+            } => {
+                for key in matcher_keys {
+                    add_unique_string(&mut alias_groups, key);
+                }
+            }
+            UtilityMatcher::Static { .. } | UtilityMatcher::Pattern { .. } => {}
+        }
+    }
+    (keys, alias_groups)
+}
+
+fn javascript_string(value: &Value) -> String {
+    match value {
+        Value::Null => "null".into(),
+        Value::Bool(value) => value.to_string(),
+        Value::Number(value) => value.to_string(),
+        Value::String(value) => value.clone(),
+        Value::Array(values) => values
+            .iter()
+            .map(javascript_string)
+            .collect::<Vec<_>>()
+            .join(","),
+        Value::Object(_) => "[object Object]".into(),
+    }
+}
+
+fn static_utility_detail(utility: &UtilityDefinition) -> Option<String> {
+    let declarations = match &utility.emit {
+        UtilityEmit::Static { rules } => rules.first().map(|rule| &rule.declarations),
+        UtilityEmit::Template { declarations } => Some(declarations),
+        UtilityEmit::Property { .. } | UtilityEmit::Declarations { .. } => None,
+    }?;
+    if declarations.len() != 1 {
+        return None;
+    }
+    let (property, value) = declarations.iter().next()?;
+    Some(format!("{property}: {}", javascript_string(value)))
+}
+
+fn push_class_completion_candidate(
+    candidates: &mut Vec<EngineClassCompletionCandidate>,
+    labels: &mut HashSet<String>,
+    candidate: EngineClassCompletionCandidate,
+) {
+    if labels.insert(candidate.label.clone()) {
+        candidates.push(candidate);
+    }
+}
+
+fn push_property_completion_candidate(
+    candidates: &mut Vec<EngineClassCompletionCandidate>,
+    labels: &mut HashSet<String>,
+    key: &str,
+    detail: Option<String>,
+) {
+    push_class_completion_candidate(
+        candidates,
+        labels,
+        EngineClassCompletionCandidate {
+            label: format!("{key}:"),
+            kind: EngineClassCompletionKind::Property,
+            detail,
+            documentation_class_name: None,
+            sort_text: Some(key.to_owned()),
+            trigger_suggest: true,
+        },
+    );
+}
+
+fn push_value_completion_candidate(
+    candidates: &mut Vec<EngineClassCompletionCandidate>,
+    labels: &mut HashSet<String>,
+    label: String,
+    detail: Option<String>,
+) {
+    push_class_completion_candidate(
+        candidates,
+        labels,
+        EngineClassCompletionCandidate {
+            documentation_class_name: Some(label.clone()),
+            label,
+            kind: EngineClassCompletionKind::Value,
+            detail,
+            sort_text: None,
+            trigger_suggest: false,
+        },
+    );
+}
+
+fn collect_class_completion_candidates(
+    manifest: &ManifestProjection,
+) -> Vec<EngineClassCompletionCandidate> {
+    let mut candidates = Vec::new();
+    let mut labels = HashSet::new();
+    let mut ambiguous_keys = Vec::new();
+
+    for utility in manifest
+        .utilities
+        .iter()
+        .filter(|utility| !utility.native_fallback)
+    {
+        if utility.utility_type == -2 {
+            let is_component = utility.layer == UtilityLayerName::Components;
+            let static_detail = static_utility_detail(utility);
+            for matcher in &utility.matchers {
+                match matcher {
+                    UtilityMatcher::Static { name } => push_value_completion_candidate(
+                        &mut candidates,
+                        &mut labels,
+                        name.clone(),
+                        if is_component {
+                            Some("component".into())
+                        } else {
+                            static_detail.clone()
+                        },
+                    ),
+                    UtilityMatcher::Pattern { prefix, values, .. } => {
+                        for value in values {
+                            push_value_completion_candidate(
+                                &mut candidates,
+                                &mut labels,
+                                format!("{prefix}{value}"),
+                                is_component.then(|| "component".into()),
+                            );
+                        }
+                    }
+                    UtilityMatcher::Key { .. }
+                    | UtilityMatcher::Variable { .. }
+                    | UtilityMatcher::Value { .. } => {}
+                }
+            }
+            continue;
+        }
+
+        for matcher in &utility.matchers {
+            if let UtilityMatcher::Pattern { prefix, values, .. } = matcher {
+                for value in values {
+                    push_value_completion_candidate(
+                        &mut candidates,
+                        &mut labels,
+                        format!("{prefix}{value}"),
+                        None,
+                    );
+                }
+            }
+        }
+
+        let (keys, alias_groups) = utility_completion_metadata(utility);
+        for key in keys {
+            ambiguous_keys.retain(|ambiguous| ambiguous != &key);
+            push_property_completion_candidate(&mut candidates, &mut labels, &key, None);
+        }
+        for alias_group in alias_groups {
+            add_unique_string(&mut ambiguous_keys, &alias_group);
+        }
+    }
+
+    for (key, canonical_key) in BUILTIN_KEY_ALIASES {
+        push_property_completion_candidate(
+            &mut candidates,
+            &mut labels,
+            key,
+            Some((*canonical_key).to_owned()),
+        );
+    }
+    for (properties, _) in BUILTIN_NATIVE_VALUE_NAMESPACES {
+        for property in *properties {
+            push_property_completion_candidate(&mut candidates, &mut labels, property, None);
+        }
+    }
+    for key in ambiguous_keys {
+        push_property_completion_candidate(
+            &mut candidates,
+            &mut labels,
+            &key,
+            Some("ambiguous key".into()),
+        );
+    }
+    candidates
+}
+
 fn is_native_shorthand_property(property: &str) -> bool {
     matches!(
         property,
@@ -2617,6 +2982,8 @@ fn append_builtin_native_value_utilities(utilities: &mut Vec<UtilityDefinition>)
                 order: Some(0),
                 layer: UtilityLayerName::Utilities,
                 kind: None,
+                keys: Vec::new(),
+                alias_groups: Vec::new(),
                 variable_aliases: Vec::new(),
                 variable_alias_refs: variable_alias_refs
                     .iter()
@@ -2651,6 +3018,8 @@ fn append_builtin_native_declaration_utilities(utilities: &mut Vec<UtilityDefini
             order: Some(0),
             layer: UtilityLayerName::Utilities,
             kind: None,
+            keys: Vec::new(),
+            alias_groups: Vec::new(),
             variable_aliases: Vec::new(),
             variable_alias_refs: Vec::new(),
             variables: HashMap::new(),
@@ -2941,100 +3310,9 @@ fn canonicalize_class_name(class_name: &str) -> Option<String> {
 }
 
 fn builtin_key_alias(key: &str) -> Option<&'static str> {
-    Some(match key {
-        "fg" => "color",
-        "bg" => "background",
-        "gap-x" => "column-gap",
-        "gap-y" => "row-gap",
-        "grid-col" => "grid-column",
-        "grid-col-end" => "grid-column-end",
-        "grid-col-start" => "grid-column-start",
-        "b" => "border",
-        "bb" => "border-bottom",
-        "bl" => "border-left",
-        "br" => "border-right",
-        "bt" => "border-top",
-        "bx" => "border-inline",
-        "by" => "border-block",
-        "h" => "height",
-        "ix" => "inset-inline",
-        "ixe" => "inset-inline-end",
-        "ixs" => "inset-inline-start",
-        "iy" => "inset-block",
-        "iye" => "inset-block-end",
-        "iys" => "inset-block-start",
-        "leading" => "line-height",
-        "m" => "margin",
-        "max" => "max-size",
-        "max-h" => "max-height",
-        "max-size-x" => "max-inline-size",
-        "max-size-y" => "max-block-size",
-        "max-w" => "max-width",
-        "mb" => "margin-bottom",
-        "min" => "min-size",
-        "min-h" => "min-height",
-        "min-size-x" => "min-inline-size",
-        "min-size-y" => "min-block-size",
-        "min-w" => "min-width",
-        "ml" => "margin-left",
-        "mr" => "margin-right",
-        "mt" => "margin-top",
-        "mx" => "margin-inline",
-        "mxe" => "margin-inline-end",
-        "mxs" => "margin-inline-start",
-        "my" => "margin-block",
-        "mye" => "margin-block-end",
-        "mys" => "margin-block-start",
-        "p" => "padding",
-        "pb" => "padding-bottom",
-        "pl" => "padding-left",
-        "pr" => "padding-right",
-        "pt" => "padding-top",
-        "px" => "padding-inline",
-        "pxe" => "padding-inline-end",
-        "pxs" => "padding-inline-start",
-        "py" => "padding-block",
-        "pye" => "padding-block-end",
-        "pys" => "padding-block-start",
-        "r" => "border-radius",
-        "rbl" => "border-bottom-left-radius",
-        "rbr" => "border-bottom-right-radius",
-        "rtl" => "border-top-left-radius",
-        "rtr" => "border-top-right-radius",
-        "scroll-m" => "scroll-margin",
-        "scroll-mb" => "scroll-margin-bottom",
-        "scroll-ml" => "scroll-margin-left",
-        "scroll-mr" => "scroll-margin-right",
-        "scroll-mt" => "scroll-margin-top",
-        "scroll-mx" => "scroll-margin-inline",
-        "scroll-mxe" => "scroll-margin-inline-end",
-        "scroll-mxs" => "scroll-margin-inline-start",
-        "scroll-my" => "scroll-margin-block",
-        "scroll-mye" => "scroll-margin-block-end",
-        "scroll-mys" => "scroll-margin-block-start",
-        "scroll-p" => "scroll-padding",
-        "scroll-pb" => "scroll-padding-bottom",
-        "scroll-pl" => "scroll-padding-left",
-        "scroll-pr" => "scroll-padding-right",
-        "scroll-pt" => "scroll-padding-top",
-        "scroll-px" => "scroll-padding-inline",
-        "scroll-pxe" => "scroll-padding-inline-end",
-        "scroll-pxs" => "scroll-padding-inline-start",
-        "scroll-py" => "scroll-padding-block",
-        "scroll-pye" => "scroll-padding-block-end",
-        "scroll-pys" => "scroll-padding-block-start",
-        "shadow" => "box-shadow",
-        "size-x" => "inline-size",
-        "size-y" => "block-size",
-        "line-clamp" => "-webkit-line-clamp",
-        "text-fill-color" => "-webkit-text-fill-color",
-        "text-stroke-color" => "-webkit-text-stroke-color",
-        "text-stroke-width" => "-webkit-text-stroke-width",
-        "tracking" => "letter-spacing",
-        "w" => "width",
-        "z" => "z-index",
-        _ => return None,
-    })
+    BUILTIN_KEY_ALIASES
+        .iter()
+        .find_map(|(alias, canonical)| (*alias == key).then_some(*canonical))
 }
 
 fn resolve_utility_value(
