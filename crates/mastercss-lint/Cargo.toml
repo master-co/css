@@ -11,3 +11,4 @@ publish = false
 mastercss-engine = { path = "../mastercss-engine" }
 mastercss-schema = { path = "../mastercss-schema" }
 serde.workspace = true
+serde_json.workspace = true

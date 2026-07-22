@@ -84,13 +84,44 @@ test('loads the isolated source tooling Wasm surface', async () => {
         type: -1,
         emit: { type: 'property', property: 'margin' },
         matchers: [{ type: 'key', keys: ['m'] }]
+      },
+      {
+        id: 'margin-x',
+        name: 'mx:',
+        type: -1,
+        emit: {
+          type: 'template',
+          declarations: { 'margin-right': null, 'margin-left': null }
+        },
+        matchers: [{ type: 'key', keys: ['mx'] }]
+      },
+      {
+        id: 'margin-left',
+        name: 'ml:',
+        type: -1,
+        emit: { type: 'property', property: 'margin-left' },
+        matchers: [{ type: 'key', keys: ['ml'] }]
+      },
+      {
+        id: 'margin-right',
+        name: 'mr:',
+        type: -1,
+        emit: { type: 'property', property: 'margin-right' },
+        matchers: [{ type: 'key', keys: ['mr'] }]
       }
     ]
   }))
   expect(lint.analyze(['block', 'm:2px', 'm:3px', 'unknown'], undefined, [])).toEqual({
     version: 1,
     sortedClassNames: ['block', 'm:2px', 'm:3px', 'unknown'],
-    conflicts: [{ className: 'm:2px', conflicts: ['m:3px'] }]
+    conflicts: [{ className: 'm:2px', conflicts: ['m:3px'] }],
+    partialConflicts: []
+  })
+  expect(lint.analyze(['mx:2px', 'ml:3px'], undefined, [])).toEqual({
+    version: 1,
+    sortedClassNames: ['ml:3px', 'mx:2px'],
+    conflicts: [],
+    partialConflicts: [{ className: 'mx:2px', replacement: 'mr:2px', conflict: 'ml:3px' }]
   })
   lint.dispose()
   lint.free()

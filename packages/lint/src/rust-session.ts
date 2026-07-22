@@ -3,22 +3,18 @@ import { loadNativeBinding } from '@master/css-native'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import { stringifyMasterCSSManifestJSON } from '@master/css-schema/manifest-json'
 import type {
+  MasterCSSLintBatchIR,
+  MasterCSSLintClassConflictIR,
+  MasterCSSLintPartialClassConflictIR,
   MasterCSSNativeDeclarationCandidateIR,
   MasterCSSValidatorBatchIR
 } from '@master/css-schema/rust-contract'
 import { cssTreeNativeDeclarationMatcher } from '@master/css-validator/native-declaration-matcher'
 import validateCSS from '@master/css-validator/validate-css'
 
-export interface RustClassConflictIR {
-  className: string
-  conflicts: string[]
-}
-
-export interface RustLintBatchIR {
-  version: 1
-  sortedClassNames: string[]
-  conflicts: RustClassConflictIR[]
-}
+export type RustClassConflictIR = MasterCSSLintClassConflictIR
+export type RustPartialClassConflictIR = MasterCSSLintPartialClassConflictIR
+export type RustLintBatchIR = MasterCSSLintBatchIR
 
 export interface RustLintSession {
   analyze(classNames: string[]): RustLintBatchIR

@@ -133,6 +133,7 @@ describe('class sorting', () => {
       expect(batch.version).toBe(1)
       expect(batch.sortedClassNames).toEqual(sortClassNames(classNames, css))
       expect(batch.conflicts).toEqual(findClassConflicts(classNames, css))
+      expect(batch.partialConflicts).toEqual(findPartialClassConflicts(classNames, css))
     } finally {
       rust.dispose()
     }
@@ -573,6 +574,45 @@ describe('class conflicts', () => {
 })
 
 describe('partial class conflicts', () => {
+  test('matches the Rust partial conflict batch', async () => {
+    const manifest = createPresetManifest()
+    const rust = await createRustLintSession(manifest)
+    const cases = [
+      ['mx:md', 'ml:lg'],
+      ['mx:md', 'mr:lg'],
+      ['p:md', 'px:lg'],
+      ['p:md', 'py:lg'],
+      ['m:md', 'mt:lg'],
+      ['p:md', 'pl:lg'],
+      ['inset:md', 'top:lg'],
+      ['inset:md@sm', 'top:lg@sm'],
+      ['r:md', 'rtl:lg'],
+      ['r:md', 'rbr:lg'],
+      ['border-radius:.375rem', 'border-top-left-radius:.5rem'],
+      ['b:1px', 'bt:2px'],
+      ['b:0', 'bl:1px'],
+      ['border-width:1px', 'border-top-width:2px'],
+      ['b:red-60', 'bt:blue-60'],
+      ['border-color:red-60', 'border-left-color:blue-60'],
+      ['b-solid', 'bt-dashed'],
+      ['border-style:solid', 'border-bottom-style:dotted'],
+      ['mx:md', 'ml:lg@sm'],
+      ['mx:md', 'mx:lg'],
+      ['b:1px', 'bx:2px'],
+      ['r:md|lg', 'rtl:xl'],
+      ['unknown-class', 'btn']
+    ]
+
+    try {
+      for (const classNames of cases) {
+        expect(rust.analyze(classNames).partialConflicts, classNames.join(' '))
+          .toEqual(findPartialClassConflicts(classNames, css))
+      }
+    } finally {
+      rust.dispose()
+    }
+  })
+
   test('splits margin axis classes when a later side overrides part of them', () => {
     expect(findPartialClassConflicts(['mx:md', 'ml:lg'], css)).toEqual([
       { className: 'mx:md', replacement: 'mr:md', conflict: 'ml:lg' }

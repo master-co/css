@@ -565,6 +565,7 @@ dependencies = [
  "mastercss-engine",
  "mastercss-schema",
  "serde",
+ "serde_json",
 ]
 
 [[package]]

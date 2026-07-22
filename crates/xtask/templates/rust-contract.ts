@@ -76,6 +76,24 @@ export interface MasterCSSValidatorBatchIR {
   classes: MasterCSSValidatorClassIR[]
 }
 
+export interface MasterCSSLintClassConflictIR {
+  className: string
+  conflicts: string[]
+}
+
+export interface MasterCSSLintPartialClassConflictIR {
+  className: string
+  replacement: string
+  conflict: string
+}
+
+export interface MasterCSSLintBatchIR {
+  version: typeof MASTER_CSS_LINT_BATCH_VERSION
+  sortedClassNames: string[]
+  conflicts: MasterCSSLintClassConflictIR[]
+  partialConflicts: MasterCSSLintPartialClassConflictIR[]
+}
+
 export type MasterCSSDirectiveManifestInputIR =
   import('./css-directives').CSSDirectiveManifestInput
 
