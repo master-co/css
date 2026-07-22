@@ -210,6 +210,12 @@ test('loads the isolated source tooling Wasm surface', async () => {
       { className: 'unknown', kind: 'unknown' }
     ]
   })
+  expect(language.inspectClassName('block:hover', [])).toMatchObject({
+    version: 1,
+    className: 'block:hover',
+    kind: 'semantic',
+    text: '@layer utilities{.block\\:hover:hover{display:block}}'
+  })
   language.dispose()
   language.free()
 

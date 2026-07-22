@@ -65,6 +65,10 @@ test('matches TS semantic classification for grouped, component, state, and valu
   const service = new CSSLanguageService(settings, { analyzer })
   try {
     expect(service.renderSemanticTokens(document)).toEqual(oracle.renderSemanticTokens(document))
+    for (const token of ['fg:brand:hover@sm', 'rust-card', '-webkit-text-size-adjust:none', 'made-up:nope']) {
+      const position = document.positionAt(source.indexOf(token) + 1)
+      expect(service.inspectSyntax(document, position)).toEqual(oracle.inspectSyntax(document, position))
+    }
   } finally {
     service.dispose()
     oracle.dispose()

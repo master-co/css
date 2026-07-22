@@ -162,6 +162,20 @@ impl NodeLanguageSession {
     }
 
     #[napi]
+    pub fn inspect_class_name(
+        &self,
+        class_name: String,
+        native_support: Option<Vec<bool>>,
+    ) -> Result<String> {
+        to_json(
+            &self
+                .inner
+                .inspect_class_name(&class_name, native_support.as_deref())
+                .map_err(|error| Error::new(Status::InvalidArg, error.to_string()))?,
+        )
+    }
+
+    #[napi]
     pub fn dispose(&mut self) {
         self.inner.dispose();
     }

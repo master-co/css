@@ -144,6 +144,13 @@ export interface MasterCSSLanguageClassificationsIR {
   classes: MasterCSSLanguageClassIR[]
 }
 
+export interface MasterCSSLanguageInspectionIR {
+  version: typeof MASTER_CSS_LANGUAGE_BATCH_VERSION
+  className: string
+  kind: MasterCSSLanguageClassKind
+  text: string
+}
+
 export type MasterCSSDirectiveManifestInputIR =
   import('./css-directives').CSSDirectiveManifestInput
 

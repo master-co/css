@@ -82,6 +82,7 @@ export interface NativeLintSession {
 export interface NativeLanguageSession {
   nativeDeclarationCandidates(classNames: string[]): string
   classifyClassNames(classNames: string[], nativeSupport?: boolean[]): string
+  inspectClassName(className: string, nativeSupport?: boolean[]): string
   dispose(): void
 }
 

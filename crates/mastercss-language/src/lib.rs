@@ -1,9 +1,10 @@
 #![forbid(unsafe_code)]
 
-use mastercss_engine::{ClassSemanticInspection, EngineError, EngineSession};
+use mastercss_engine::{ClassSemanticInspection, ClassSemanticKind, EngineError, EngineSession};
 use mastercss_lexer::{collect_class_list_token_ranges, utf16_len, utf16_to_byte_offset};
 use mastercss_schema::{LANGUAGE_BATCH_VERSION, NativeDeclarationCandidateIr, SourceRange};
 use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
 
 #[derive(Debug, Clone, PartialEq, Eq, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -49,15 +50,28 @@ pub struct LanguageClassificationsIr {
     pub classes: Vec<ClassSemanticInspection>,
 }
 
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct LanguageInspectionIr {
+    pub version: u32,
+    pub class_name: String,
+    pub kind: ClassSemanticKind,
+    pub text: String,
+}
+
 #[derive(Debug)]
 pub struct LanguageSession {
     engine: EngineSession,
+    manifest_json: String,
+    native_support_by_class: HashMap<String, bool>,
 }
 
 impl LanguageSession {
     pub fn create(manifest_json: &str) -> Result<Self, LanguageError> {
         Ok(Self {
             engine: EngineSession::create(manifest_json)?,
+            manifest_json: manifest_json.to_owned(),
+            native_support_by_class: HashMap::new(),
         })
     }
 
@@ -86,6 +100,15 @@ impl LanguageSession {
             .map(|class_name| class_name.as_ref().to_owned())
             .collect::<Vec<_>>();
         if let Some(native_support) = native_support {
+            for (candidate, supported) in self
+                .engine
+                .native_declaration_candidates(&class_names)?
+                .into_iter()
+                .zip(native_support.iter().copied())
+            {
+                self.native_support_by_class
+                    .insert(candidate.class_name, supported);
+            }
             self.engine
                 .ensure_class_rules_with_native_support(&class_names, native_support)?;
         }
@@ -96,6 +119,34 @@ impl LanguageSession {
         Ok(LanguageClassificationsIr {
             version: LANGUAGE_BATCH_VERSION,
             classes,
+        })
+    }
+
+    pub fn inspect_class_name(
+        &self,
+        class_name: &str,
+        native_support: Option<&[bool]>,
+    ) -> Result<LanguageInspectionIr, LanguageError> {
+        let mut engine = EngineSession::create(&self.manifest_json)?;
+        let cached_native_support = self
+            .native_support_by_class
+            .get(class_name)
+            .copied()
+            .map(|supported| [supported]);
+        let native_support = native_support.or(cached_native_support
+            .as_ref()
+            .map(|support| support.as_slice()));
+        if let Some(native_support) = native_support {
+            engine.ensure_class_rules_with_native_support([class_name], native_support)?;
+        } else {
+            engine.ensure_class_rules([class_name])?;
+        }
+        let semantics = engine.inspect_class_semantics(class_name)?;
+        Ok(LanguageInspectionIr {
+            version: LANGUAGE_BATCH_VERSION,
+            class_name: class_name.to_owned(),
+            kind: semantics.kind,
+            text: engine.snapshot()?.text,
         })
     }
 
@@ -449,6 +500,45 @@ mod tests {
         assert_eq!(
             batch.classes[1].kind,
             mastercss_engine::ClassSemanticKind::Unknown
+        );
+        assert_eq!(
+            session
+                .inspect_class_name("display:block", None)
+                .unwrap()
+                .kind,
+            ClassSemanticKind::Declaration
+        );
+        assert_eq!(
+            session
+                .inspect_class_name("made-up:nope", None)
+                .unwrap()
+                .kind,
+            ClassSemanticKind::Unknown
+        );
+    }
+
+    #[test]
+    fn renders_isolated_hover_inspection_css() {
+        let session = LanguageSession::create(
+            r#"{
+              "version":1,
+              "utilities":[{
+                "id":"card",
+                "name":"card",
+                "type":-2,
+                "layer":"components",
+                "emit":{"type":"static","rules":[{"declarations":{"display":"block"}}]},
+                "matchers":[{"type":"static","name":"card"}]
+              }]
+            }"#,
+        )
+        .unwrap();
+        let inspection = session.inspect_class_name("card:hover", None).unwrap();
+        assert_eq!(inspection.version, LANGUAGE_BATCH_VERSION);
+        assert_eq!(inspection.kind, ClassSemanticKind::Component);
+        assert_eq!(
+            inspection.text,
+            "@layer components{.card\\:hover:hover{display:block}}"
         );
     }
 }

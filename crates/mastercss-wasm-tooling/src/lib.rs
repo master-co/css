@@ -143,6 +143,26 @@ impl ToolingLanguageSession {
             .map_err(|error| JsValue::from_str(&error.to_string()))
     }
 
+    #[wasm_bindgen(js_name = inspectClassName)]
+    pub fn inspect_class_name(
+        &self,
+        class_name: &str,
+        native_support: JsValue,
+    ) -> Result<JsValue, JsValue> {
+        let native_support = serde_wasm_bindgen::from_value::<Vec<bool>>(native_support)
+            .map_err(|error| JsValue::from_str(&error.to_string()))?;
+        let inspection = self
+            .inner
+            .inspect_class_name(
+                class_name,
+                (!native_support.is_empty()).then_some(native_support.as_slice()),
+            )
+            .map_err(|error| JsValue::from_str(&error.to_string()))?;
+        inspection
+            .serialize(&serde_wasm_bindgen::Serializer::json_compatible())
+            .map_err(|error| JsValue::from_str(&error.to_string()))
+    }
+
     pub fn dispose(&mut self) {
         self.inner.dispose();
     }

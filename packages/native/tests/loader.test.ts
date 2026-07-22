@@ -87,6 +87,12 @@ describe('native target resolution', () => {
           { className: 'unknown', kind: 'unknown' }
         ]
       })
+      expect(JSON.parse(language.inspectClassName('block:hover'))).toMatchObject({
+        version: 1,
+        className: 'block:hover',
+        kind: 'semantic',
+        text: '@layer utilities{.block\\:hover:hover{display:block}}'
+      })
     } finally {
       language.dispose()
     }

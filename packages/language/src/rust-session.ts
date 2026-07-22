@@ -6,6 +6,7 @@ import { stringifyMasterCSSManifestJSON } from '@master/css-schema/manifest-json
 import type {
   MasterCSSLanguageClassificationsIR,
   MasterCSSLanguageClassIR,
+  MasterCSSLanguageInspectionIR,
   MasterCSSNativeDeclarationCandidateIR
 } from '@master/css-schema/rust-contract'
 import type { SemanticTokenItem } from './semantic/types'
@@ -35,6 +36,7 @@ export interface RustLanguageAnalyzer {
     semanticTokens: SemanticTokenItem[]
   ): RustLanguageBatchIR
   classifyClassNames?(classNames: string[]): MasterCSSLanguageClassificationsIR
+  inspectClassName?(className: string): MasterCSSLanguageInspectionIR
   createSession?(manifest: MasterCSSManifest): RustLanguageAnalyzer
   dispose?(): void
 }
@@ -49,7 +51,11 @@ export class RustLanguageAnalyzerError extends Error {
   }
 }
 
-export type { MasterCSSLanguageClassificationsIR, MasterCSSLanguageClassIR }
+export type {
+  MasterCSSLanguageClassificationsIR,
+  MasterCSSLanguageClassIR,
+  MasterCSSLanguageInspectionIR
+}
 
 function validateLanguageBatch(batch: RustLanguageBatchIR): RustLanguageBatchIR {
   if (batch.version !== MASTER_CSS_LANGUAGE_BATCH_VERSION) {
@@ -71,6 +77,18 @@ function validateClassifications(
     )
   }
   return batch
+}
+
+function validateInspection(
+  inspection: MasterCSSLanguageInspectionIR
+): MasterCSSLanguageInspectionIR {
+  if (inspection.version !== MASTER_CSS_LANGUAGE_BATCH_VERSION) {
+    throw new RustLanguageAnalyzerError(
+      'LANGUAGE_BATCH_VERSION_MISMATCH',
+      `Expected Master CSS language batch version ${MASTER_CSS_LANGUAGE_BATCH_VERSION}, received ${String(inspection.version)}.`
+    )
+  }
+  return inspection
 }
 
 function createNativeAnalyzer(): RustLanguageAnalyzer | undefined {
@@ -100,6 +118,16 @@ function createNativeAnalyzer(): RustLanguageAnalyzer | undefined {
               nativeSupport.length ? nativeSupport : undefined
             )
           ) as MasterCSSLanguageClassificationsIR)
+        },
+        inspectClassName(className) {
+          const candidates = JSON.parse(
+            session.nativeDeclarationCandidates([className])
+          ) as MasterCSSNativeDeclarationCandidateIR[]
+          const nativeSupport = candidates.map(matchesLanguageServiceNativeDeclaration)
+          return validateInspection(JSON.parse(session.inspectClassName(
+            className,
+            nativeSupport.length ? nativeSupport : undefined
+          )) as MasterCSSLanguageInspectionIR)
         },
         dispose() {
           session.dispose()
@@ -148,6 +176,16 @@ export async function createRustLanguageAnalyzer(): Promise<RustLanguageAnalyzer
               nativeSupport
             ) as MasterCSSLanguageClassificationsIR
           )
+        },
+        inspectClassName(className) {
+          const candidates = session.nativeDeclarationCandidates(
+            [className]
+          ) as MasterCSSNativeDeclarationCandidateIR[]
+          const nativeSupport = candidates.map(matchesLanguageServiceNativeDeclaration)
+          return validateInspection(session.inspectClassName(
+            className,
+            nativeSupport
+          ) as MasterCSSLanguageInspectionIR)
         },
         dispose() {
           session.dispose()
