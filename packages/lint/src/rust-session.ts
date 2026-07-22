@@ -1,16 +1,16 @@
 import { readFile } from 'node:fs/promises'
 import { loadNativeBinding } from '@master/css-native'
+import { MASTER_CSS_LINT_BATCH_VERSION } from '@master/css-schema'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import { stringifyMasterCSSManifestJSON } from '@master/css-schema/manifest-json'
-import {
-  MASTER_CSS_LINT_BATCH_VERSION,
-  type MasterCSSLintBatchIR,
-  type MasterCSSLintClassListIR,
-  type MasterCSSLintClassConflictIR,
-  type MasterCSSLintDiagnosticIR,
-  type MasterCSSLintPartialClassConflictIR,
-  type MasterCSSNativeDeclarationCandidateIR,
-  type MasterCSSValidatorBatchIR
+import type {
+  MasterCSSLintBatchIR,
+  MasterCSSLintClassListIR,
+  MasterCSSLintClassConflictIR,
+  MasterCSSLintDiagnosticIR,
+  MasterCSSLintPartialClassConflictIR,
+  MasterCSSNativeDeclarationCandidateIR,
+  MasterCSSValidatorBatchIR
 } from '@master/css-schema/rust-contract'
 import { cssTreeNativeDeclarationMatcher } from '@master/css-validator/native-declaration-matcher'
 import validateCSS from '@master/css-validator/validate-css'

@@ -24,7 +24,7 @@ export default createRule({
   create(context) {
     const { settings, css, rustLint } = resolveContext(context)
     if (shouldUseSourceVisitors(context)) {
-      return defineSourceVisitors({ context, css, ruleId: 'no-conflicting-classes' })
+      return defineSourceVisitors({ context, css, rustLint, ruleId: 'no-conflicting-classes' })
     }
     return defineVisitors({ context, settings }, (node, resolved) => {
       const rustDiagnostics = rustLint

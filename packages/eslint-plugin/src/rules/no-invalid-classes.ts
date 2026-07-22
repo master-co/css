@@ -28,6 +28,7 @@ export default createRule({
       return defineSourceVisitors({
         context,
         css,
+        rustLint,
         ruleId: 'no-invalid-classes',
         ruleOptions: {
           disallowUnknownClass: options.disallowUnknownClass

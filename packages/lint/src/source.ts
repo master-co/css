@@ -1,6 +1,7 @@
 import type { MasterCSS } from '@master/css-engine'
 import {
   collectCSSDirectiveRanges,
+  parseMasterCSSClassList,
   type CSSDirectiveRuleRange,
   type SourceRange
 } from '@master/css-lexer'
@@ -8,6 +9,7 @@ import { getClassPositions, languageSettings } from '@master/css-language'
 import { extname } from 'node:path'
 import { pathToFileURL } from 'node:url'
 import {
+  createCanonicalClassesReport,
   createCanonicalComposeDirectiveReport,
   createClassListLintReport,
   createConflictingClassesReport,
@@ -26,6 +28,7 @@ import {
   type MasterCSSLintRuleId,
   type MasterCSSUnapprovedRawValueClassesReportOptions
 } from './diagnostics'
+import type { RustLintSession } from './rust-session'
 
 const MAX_FIX_PASSES = 10
 
@@ -106,6 +109,7 @@ export interface MasterCSSLintContentOptions {
   rules?: Partial<Record<MasterCSSLintRuleId, boolean>>
   ruleOptions?: MasterCSSLintContentRuleOptions
   severities?: Partial<Record<MasterCSSLintRuleId, MasterCSSLintDiagnosticSeverity>>
+  lintSession?: Pick<RustLintSession, 'analyzeClassList'>
 }
 
 export interface MasterCSSFixContentOptions extends MasterCSSLintContentOptions {
@@ -131,6 +135,7 @@ interface ClassListContext {
   sourceKind: Exclude<MasterCSSLintDiagnosticSourceKind, 'manifest'>
   unescape?: string | false
   directive?: CSSDirectiveRuleRange
+  classNames: string[]
 }
 
 const languageByExtension: Record<string, string> = {
@@ -229,17 +234,28 @@ function collectClassListContexts(content: string, filePath: string): ClassListC
   for (const position of positions) {
     const contextRange = position.contextRange
     const key = `${contextRange.start}:${contextRange.end}`
-    if (contexts.has(key)) continue
+    const existing = contexts.get(key)
+    if (existing) {
+      existing.classNames.push(position.token)
+      continue
+    }
     const directive = findComposeDirective(directives, contextRange)
     contexts.set(key, {
       range: contextRange,
       text: content.slice(contextRange.start, contextRange.end),
       sourceKind: directive ? 'compose-directive' : inferClassSourceKind(content, contextRange),
       unescape: detectClassListUnescape(content, contextRange),
+      classNames: [position.token],
       ...(directive ? { directive } : {})
     })
   }
   return [...contexts.values()].sort((a, b) => a.range.start - b.range.start || a.range.end - b.range.end)
+}
+
+function parseClassNames(classList: string, unescape?: string | false) {
+  return parseMasterCSSClassList(classList, { unescape })
+    .filter((item) => item.type === 'class')
+    .map((item) => item.token)
 }
 
 function offsetToLocation(content: string, offset: number): MasterCSSLintSourceLocation {
@@ -286,6 +302,38 @@ function createContextLintDiagnostics(
   rules: Record<MasterCSSLintRuleId, boolean>,
   options: MasterCSSLintContentOptions
 ) {
+  if (options.lintSession) {
+    const hasRustCoreRule = rules['sort-classes']
+      || rules['no-invalid-classes']
+      || rules['no-conflicting-classes']
+    const rustDiagnostics = hasRustCoreRule
+      ? options.lintSession.analyzeClassList(
+        context.text,
+        context.classNames,
+        {
+          disallowUnknownClass: options.ruleOptions?.['no-invalid-classes']?.disallowUnknownClass
+        }
+      ).diagnostics
+        .filter(({ ruleId }) => rules[ruleId])
+        .map((diagnostic): MasterCSSLintDiagnostic => ({
+          ...diagnostic,
+          severity: options.severities?.[diagnostic.ruleId]
+            || (diagnostic.ruleId === 'no-invalid-classes' ? 'error' : 'warning'),
+          fix: diagnostic.fix && {
+            ...diagnostic.fix,
+            scope: 'class-list'
+          }
+        }))
+      : []
+    const remainingReports = [
+      rules['prefer-canonical-classes'] && (context.sourceKind === 'compose-directive'
+        ? createCanonicalComposeDirectiveReport(context.text, css, withSourceRuleOptions(context, options, 'prefer-canonical-classes'))
+        : createCanonicalClassesReport(context.text, css, withSourceRuleOptions(context, options, 'prefer-canonical-classes'))),
+      rules['no-unapproved-raw-values'] && createUnapprovedRawValueClassesReport(context.text, css, withSourceRuleOptions(context, options, 'no-unapproved-raw-values'))
+    ].filter((report): report is { diagnostics: MasterCSSLintDiagnostic[] } => Boolean(report))
+      .flatMap((report) => report.diagnostics)
+    return [...rustDiagnostics, ...remainingReports]
+  }
   return context.sourceKind === 'compose-directive'
     ? createComposeDirectiveLintDiagnostics(context, css, rules, options)
     : createClassListLintReport(context.text, css, {
@@ -441,7 +489,8 @@ function fixClassListText(context: ClassListContext, css: MasterCSS, rules: Reco
     const nextContext: ClassListContext = {
       ...context,
       range: { start: 0, end: fixed.length },
-      text: fixed
+      text: fixed,
+      classNames: parseClassNames(fixed, context.unescape)
     }
     const fix = createContextLintDiagnostics(nextContext, css, rules, options)
       .map((diagnostic) => diagnostic.fix)

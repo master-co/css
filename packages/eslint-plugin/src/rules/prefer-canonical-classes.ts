@@ -42,7 +42,7 @@ export default createRule({
   },
   defaultOptions: [defaultCanonicalClassNameOptions],
   create(context) {
-    const { settings, css } = resolveContext(context)
+    const { settings, css, rustLint } = resolveContext(context)
     const options = {
       ...defaultCanonicalClassNameOptions,
       ...((context.options[0] || {}) as Partial<CanonicalClassNameOptions>)
@@ -51,6 +51,7 @@ export default createRule({
       return defineSourceVisitors({
         context,
         css,
+        rustLint,
         ruleId: 'prefer-canonical-classes',
         ruleOptions: options
       })

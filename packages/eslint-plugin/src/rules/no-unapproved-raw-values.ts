@@ -43,12 +43,13 @@ export default createRule({
     allowedPatterns: []
   }],
   create(context) {
-    const { settings, css } = resolveContext(context)
+    const { settings, css, rustLint } = resolveContext(context)
     const options = (context.options[0] || {}) as RawValuePolicyOptions
     if (shouldUseSourceVisitors(context)) {
       return defineSourceVisitors({
         context,
         css,
+        rustLint,
         ruleId: 'no-unapproved-raw-values',
         ruleOptions: options
       })

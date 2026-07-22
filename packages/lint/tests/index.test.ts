@@ -480,6 +480,41 @@ describe('source content linting', () => {
     })
   })
 
+  test('routes source core diagnostics through an injected Rust session', async () => {
+    const rust = await createRustLintSession(createPresetManifest())
+    let analyzeCalls = 0
+    const lintSession = {
+      analyzeClassList(...args: Parameters<typeof rust.analyzeClassList>) {
+        analyzeCalls++
+        return rust.analyzeClassList(...args)
+      }
+    }
+    try {
+      const result = lintMasterCSSContent({
+        content: '<div class="text-decoration:bad() m:2x m:3x unknown"></div>',
+        filePath: '/project/index.html',
+        css,
+        lintSession,
+        rules: {
+          'prefer-canonical-classes': false,
+          'no-unapproved-raw-values': false
+        },
+        ruleOptions: {
+          'no-invalid-classes': { disallowUnknownClass: true }
+        }
+      })
+      expect(analyzeCalls).toBe(1)
+      expect(result.diagnostics.map(({ code }) => code)).toEqual([
+        'invalid-class-order',
+        'invalid-class',
+        'unknown-class',
+        'conflicting-class'
+      ])
+    } finally {
+      rust.dispose()
+    }
+  })
+
   test('lints and fixes class lists inside mdx fenced html examples', () => {
     const content = [
       '```html',

@@ -23,7 +23,7 @@ export default createRule({
   create: function (context) {
     const { settings, css, rustLint } = resolveContext(context)
     if (shouldUseSourceVisitors(context)) {
-      return defineSourceVisitors({ context, css, ruleId: 'sort-classes' })
+      return defineSourceVisitors({ context, css, rustLint, ruleId: 'sort-classes' })
     }
     return defineVisitors({ context, settings }, (node, resolved) => {
       const { raw, start, end, nodes, unescape } = resolved
