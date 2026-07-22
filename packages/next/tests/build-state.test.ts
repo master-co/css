@@ -1,8 +1,9 @@
 import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
-import { afterEach, describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import { resolveMasterCSSBuildState } from '../src/build-state'
+import CSSScanner from '@master/css-scanner'
 
 let fixtureDir: string | undefined
 
@@ -13,6 +14,7 @@ function createFixtureDir() {
 }
 
 afterEach(() => {
+  vi.restoreAllMocks()
   if (fixtureDir) {
     rmSync(fixtureDir, { recursive: true, force: true })
     fixtureDir = undefined
@@ -21,6 +23,7 @@ afterEach(() => {
 
 describe('resolveMasterCSSBuildState', () => {
   it('resolves @compose entries against the loaded base manifest while extracting native CSS', async () => {
+    const destroy = vi.spyOn(CSSScanner.prototype, 'destroy')
     const root = createFixtureDir()
     const entry = join(root, 'app/globals.css')
     writeFileSync(entry, [
@@ -38,5 +41,6 @@ describe('resolveMasterCSSBuildState', () => {
     expect(result.nativeCSS).toContain('text-rendering: geometricprecision')
     expect(result.nativeCSS).toContain('.hidden-card')
     expect(result.nativeCSS).toContain('display:none')
+    expect(destroy).toHaveBeenCalledOnce()
   })
 })

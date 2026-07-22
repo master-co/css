@@ -1,9 +1,10 @@
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { basename, join } from 'node:path'
-import { afterEach, describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import { createComposedAdapter, renderNextBuildOutputs } from '../src/adapter'
 import type { NextAdapter } from 'next'
+import { ServerCSS } from '@master/css-server'
 import {
   MASTER_CSS_HYDRATION_MANIFEST_ATTR,
   MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID
@@ -100,6 +101,7 @@ function toPosixPath(path: string) {
 }
 
 afterEach(() => {
+  vi.restoreAllMocks()
   if (fixtureDir) {
     rmSync(fixtureDir, { recursive: true, force: true })
     fixtureDir = undefined
@@ -107,6 +109,18 @@ afterEach(() => {
 })
 
 describe('renderNextBuildOutputs', () => {
+  it('disposes each Rust render session after materializing its output', async () => {
+    const projectDir = createFixtureDir()
+    const htmlFile = join(projectDir, '.next/server/app/index.html')
+    mkdirSync(join(projectDir, '.next/server/app'), { recursive: true })
+    writeFileSync(htmlFile, '<!doctype html><html><head></head><body><h1 class="fg:red">Hello</h1></body></html>')
+    const dispose = vi.spyOn(ServerCSS.prototype, 'dispose')
+
+    await renderNextBuildOutputs(createBuildContext(projectDir, htmlFile))
+
+    expect(dispose).toHaveBeenCalledOnce()
+  })
+
   it('renders Master CSS into static HTML outputs once', async () => {
     const projectDir = createFixtureDir()
     const distDir = join(projectDir, '.next')

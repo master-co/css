@@ -18,6 +18,7 @@ export interface MasterCSSBuildState {
 
 export interface MasterCSSBuildStateResolver {
   resolve: (classes?: string[]) => Promise<MasterCSSBuildState>
+  destroy: () => Promise<void>
 }
 
 export async function createMasterCSSBuildStateResolver(projectDir: string): Promise<MasterCSSBuildStateResolver> {
@@ -26,12 +27,17 @@ export async function createMasterCSSBuildStateResolver(projectDir: string): Pro
     manifest: result.manifest
   }, projectDir)
   const styleCSSSources: StyleCSSSources = new Map()
-  await scanner.init()
-  for (const entry of await findCSSManifestEntryFiles(projectDir)) {
-    await registerStyleCSSSource(scanner, styleCSSSources, entry, await readFile(entry, 'utf8'), {
-      baseManifest: result.manifest,
-      projectDir
-    })
+  try {
+    await scanner.init()
+    for (const entry of await findCSSManifestEntryFiles(projectDir)) {
+      await registerStyleCSSSource(scanner, styleCSSSources, entry, await readFile(entry, 'utf8'), {
+        baseManifest: result.manifest,
+        projectDir
+      })
+    }
+  } catch (error) {
+    await scanner.destroy()
+    throw error
   }
 
   return {
@@ -57,6 +63,9 @@ export async function createMasterCSSBuildStateResolver(projectDir: string): Pro
         ])],
         styleSources: Array.from(styleCSSSources.keys())
       }
+    },
+    async destroy() {
+      await scanner.destroy()
     }
   }
 }
@@ -66,5 +75,9 @@ export async function resolveMasterCSSBuildState(
   classes?: string[]
 ): Promise<MasterCSSBuildState> {
   const resolver = await createMasterCSSBuildStateResolver(projectDir)
-  return resolver.resolve(classes)
+  try {
+    return await resolver.resolve(classes)
+  } finally {
+    await resolver.destroy()
+  }
 }
