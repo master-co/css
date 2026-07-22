@@ -240,12 +240,8 @@ jobs:
           turbo-cache: "false"
       - name: Build and stage native artifacts
         run: cargo xtask stage-native-target ${{ matrix.package }} --release
-      - name: Load addon and execute CLI smoke
+      - name: Pack, install, load addon, and execute CLI smoke
         run: node scripts/native-package-smoke.mjs packages/${{ matrix.package }}
-      - name: Inspect target package tarball
-        run: |
-          npm pkg set version=0.0.0 --prefix packages/${{ matrix.package }}
-          npm pack packages/${{ matrix.package }} --dry-run --json
       - name: Upload release-native artifacts
         if: ${{ inputs.release_build }}
         uses: actions/upload-artifact@v7
@@ -275,7 +271,7 @@ jobs:
       - uses: actions/checkout@v6
         with:
           fetch-depth: 0
-      - name: Build, load, and package smoke in musl
+      - name: Build, pack, install, load, and execute CLI smoke in musl
         shell: bash
         env:
           TARGET_PACKAGE: ${{ matrix.package }}
@@ -289,8 +285,6 @@ jobs:
               apk add --no-cache build-base nodejs npm
               cargo xtask stage-native-target "$TARGET_PACKAGE" --release
               node scripts/native-package-smoke.mjs "packages/$TARGET_PACKAGE"
-              npm pkg set version=0.0.0 --prefix "packages/$TARGET_PACKAGE"
-              npm pack "packages/$TARGET_PACKAGE" --dry-run --json
             '
       - name: Upload release-native artifacts
         if: ${{ inputs.release_build }}
