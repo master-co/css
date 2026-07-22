@@ -2,17 +2,15 @@ import { existsSync, readFileSync, realpathSync } from 'node:fs'
 import { createRequire } from 'node:module'
 import { dirname, extname, isAbsolute, resolve } from 'node:path'
 import { transform } from 'lightningcss'
+import { loadNativeBinding } from '@master/css-native'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import { stringifyMasterCSSManifestJSON } from '@master/css-schema/manifest-json'
 import type { CSSDirectiveReference } from '@master/css-schema/css-directives'
 import { MASTER_CSS_ENTRY_DIRECTIVE_NAME } from '@master/css-lexer'
-import { createMasterCSSManifest } from './master-css-manifest'
 import lowerCSSDirectives from './lower-css-directives'
 import type { CompilerDiagnosticRecorder } from './diagnostics'
 import {
-  compileCSS,
   createCSSDirectiveExtractionPolicy,
-  findCSSReferenceStatements,
   findStandaloneMasterDirectiveStatements,
   mergeCSSDirectiveExtractionPolicy,
   removeCSSReferenceStatements,
@@ -24,10 +22,7 @@ import {
   type ResolvedCSSImportGraph
 } from './core'
 import {
-  findCSSImportStatements,
-  removeCSSImportStatements,
-  replaceCSSImportStatements,
-  type CSSImportStatement
+  findCSSImportStatements
 } from './lexer/imports'
 
 export * from './core'
@@ -91,6 +86,63 @@ export interface CompileProjectManifestResult extends CompileCSSManifestResult {
 export type CompileCSSManifestJSONResult = CompileCSSManifestResult & {
   json: string
   directives: CompileCSSResult
+}
+
+export class CSSCompilerError extends Error {
+  readonly source?: string
+  readonly range?: { start: number, end: number }
+  readonly notes?: string[]
+
+  constructor(
+    public readonly code: string,
+    message: string,
+    diagnostic: {
+      source?: string
+      range?: { start: number, end: number }
+      notes?: string[]
+    } = {},
+    options?: ErrorOptions
+  ) {
+    super(message, options)
+    this.name = 'CSSCompilerError'
+    this.source = diagnostic.source
+    this.range = diagnostic.range
+    this.notes = diagnostic.notes
+  }
+}
+
+function throwCompilerBindingError(error: unknown): never {
+  const rawMessage = error instanceof Error ? error.message : String(error)
+  try {
+    const diagnostic = JSON.parse(rawMessage) as {
+      code?: string
+      message?: string
+      source?: string
+      range?: { start: number, end: number }
+      notes?: string[]
+    }
+    if (diagnostic && typeof diagnostic.message === 'string') {
+      const legacyCode = diagnostic.message === '@compose only accepts unquoted class lists'
+        ? 'compose-quoted-syntax'
+        : diagnostic.message === '@compose does not accept group syntax'
+          ? 'compose-group-syntax'
+          : undefined
+      throw new CSSCompilerError(legacyCode || diagnostic.code || 'CSS_COMPILER_ERROR', diagnostic.message, diagnostic, {
+        cause: error
+      })
+    }
+  } catch (parsedError) {
+    if (parsedError instanceof CSSCompilerError) throw parsedError
+  }
+  throw error
+}
+
+function callCompilerBindingJSON<T>(call: () => string): T {
+  try {
+    return JSON.parse(call()) as T
+  } catch (error) {
+    throwCompilerBindingError(error)
+  }
 }
 
 function isExpandableImportSource(source: string) {
@@ -218,72 +270,62 @@ export function inspectCSS(source: string): InspectCSSResult {
   }
 }
 
-function resolveCSSImportGraphFile(
+interface PreparedCSSImportGraph {
+  entry: string
+  files: Record<string, string>
+  edges: { from: string, specifier: string, resolved: string }[]
+}
+
+function prepareCSSImportGraphFile(
   file: string,
-  dependencies: string[],
-  dependencySet: Set<string>,
-  stack: string[],
+  graph: PreparedCSSImportGraph,
+  visited: Set<string>,
   options: ResolveCSSImportGraphOptions = {}
-): string {
+): void {
   const absoluteFile = resolve(file)
-  if (stack.includes(absoluteFile)) {
-    throw new Error(`Circular CSS import: ${[...stack, absoluteFile].join(' -> ')}`)
-  }
   if (!existsSync(absoluteFile)) {
     throw new Error(`CSS manifest entry file not found: ${absoluteFile}`)
   }
-  if (!dependencySet.has(absoluteFile)) {
-    dependencySet.add(absoluteFile)
-    dependencies.push(absoluteFile)
-  }
+  if (visited.has(absoluteFile)) return
+  visited.add(absoluteFile)
 
   const source = readFileSync(absoluteFile, 'utf-8')
-  const references = findCSSReferenceStatements(source, absoluteFile)
-  for (const reference of references) {
-    options.onReference?.(reference, absoluteFile)
-  }
+  graph.files[absoluteFile] = source
   const sourceWithoutReferences = removeCSSReferenceStatements(source, absoluteFile)
   const imports = findCSSImportStatements(sourceWithoutReferences, absoluteFile)
-  if (!imports.length) return sourceWithoutReferences
-
-  const preservedImports: string[] = []
-  const resolvedSource = replaceCSSImportStatements(sourceWithoutReferences, absoluteFile, (importStatement: CSSImportStatement): string | undefined => {
+  for (const importStatement of imports) {
     const importSource = importStatement.source
     const packageFile = options.expandPackageImports !== false
       ? resolveMasterCSSPackageEntryFile(importSource, absoluteFile, options.projectDir)
       : undefined
     if (packageFile || isExpandableImportSource(importSource)) {
       const importedFile = packageFile || resolve(dirname(absoluteFile), importSource)
-      return resolveCSSImportGraphFile(importedFile, dependencies, dependencySet, [...stack, absoluteFile], options)
+      graph.edges.push({
+        from: absoluteFile,
+        specifier: importSource,
+        resolved: importedFile
+      })
+      prepareCSSImportGraphFile(importedFile, graph, visited, options)
     }
-    preservedImports.push(importStatement.statement.trim())
-    return ''
-  })
-  if (!preservedImports.length) return resolvedSource
-
-  const firstImportStart = imports[0].start
-  const afterImports = resolvedSource.slice(firstImportStart)
-  return resolvedSource.slice(0, firstImportStart)
-    + preservedImports.join('\n')
-    + (afterImports ? '\n' : '')
-    + afterImports
+  }
 }
 
 export function resolveCSSImportGraph(file: string, options: ResolveCSSImportGraphOptions = {}): ResolvedCSSImportGraph {
-  const dependencies: string[] = []
-  const references: CSSReferenceStatement[] = []
-  const source = resolveCSSImportGraphFile(file, dependencies, new Set(), [], {
-    ...options,
-    onReference(reference, fromFile) {
-      references.push(reference)
-      options.onReference?.(reference, fromFile)
-    }
-  })
-  return {
-    source,
-    dependencies,
-    ...(references.length ? { references } : {})
+  const entry = resolve(file)
+  const graph: PreparedCSSImportGraph = {
+    entry,
+    files: {},
+    edges: []
   }
+  prepareCSSImportGraphFile(entry, graph, new Set(), options)
+  const binding = loadNativeBinding({ required: true })!.binding
+  const result = callCompilerBindingJSON<ResolvedCSSImportGraph>(() => (
+    binding.resolveCssImportGraphJson(JSON.stringify(graph))
+  ))
+  for (const reference of result.references || []) {
+    options.onReference?.(reference as CSSReferenceStatement, reference.file || entry)
+  }
+  return result
 }
 
 export function resolveMasterCSSPackageImportGraph(projectDir?: string) {
@@ -327,10 +369,7 @@ export function compileCSSFile(file: string, options: CompileCSSFileOptions = {}
   const graph = resolveCSSImportGraph(absoluteFile, {
     projectDir: root
   })
-  const source = compileOptions.preserveNativeCSS === false
-    ? removeCSSImportStatements(graph.source, absoluteFile)
-    : graph.source
-  const result = compileCSS(source, {
+  const result = compileCSS(graph.source, {
     ...compileOptions,
     from: absoluteFile
   })
@@ -339,6 +378,50 @@ export function compileCSSFile(file: string, options: CompileCSSFileOptions = {}
     dependencies: graph.dependencies,
     ...(graph.references?.length ? { references: graph.references } : {})
   }
+}
+
+export function compileCSS(source: string, options: CompileCSSOptions = {}): CompileCSSResult {
+  const binding = loadNativeBinding({ required: true })!.binding
+  const result = reviveRustCompileResult(callCompilerBindingJSON<CompileCSSResult>(() => (
+    binding.compileCssDirectivesJson(
+      source,
+      JSON.stringify({
+        from: options.from || 'master.css',
+        preserveNativeCSS: options.preserveNativeCSS !== false,
+        ...(options.classes ? { classes: options.classes } : {})
+      })
+    )
+  )))
+  for (const warning of result.warnings) options.onWarning?.(warning)
+  return result
+}
+
+function reviveRustCompileResult(result: CompileCSSResult): CompileCSSResult {
+  result.extractionPolicy.blocklist = result.extractionPolicy.blocklist.map((entry) => {
+    if (
+      entry
+      && typeof entry === 'object'
+      && 'source' in entry
+      && typeof entry.source === 'string'
+    ) {
+      return new RegExp(entry.source, 'flags' in entry && typeof entry.flags === 'string' ? entry.flags : '')
+    }
+    return entry
+  })
+  return result
+}
+
+function compileManifestInputWithRust(
+  input: CompileCSSResult['manifestInput'],
+  baseManifest: MasterCSSManifest | undefined
+) {
+  const binding = loadNativeBinding({ required: true })!.binding
+  return callCompilerBindingJSON<{ manifest: MasterCSSManifest }>(() => (
+    binding.compileManifestInputJson(
+      JSON.stringify(input),
+      baseManifest ? JSON.stringify({ baseManifest }) : undefined
+    )
+  )).manifest
 }
 
 function addUnique<T>(target: T[], values: Iterable<T> | undefined) {
@@ -425,7 +508,7 @@ function toCompileCSSManifestResult(
   return {
     ...directiveData,
     dependencies,
-    manifest: lowerResult.manifest,
+    manifest: compileManifestInputWithRust(lowerResult.input, options.baseManifest),
     resolutionManifest: lowerResult.resolutionManifest,
     warnings,
     generatedCSS,
@@ -522,7 +605,7 @@ export function compileProjectManifest(entries: string[], options: CompileCSSMan
     if (entryGeneratedCSS) generatedCSS.push(entryGeneratedCSS)
     if (manifestResult.css) css.push(manifestResult.css)
   }
-  const resolvedManifest = manifest || createMasterCSSManifest()
+  const resolvedManifest = manifest || compileManifestInputWithRust({}, undefined)
   return {
     entries,
     manifest: resolvedManifest,

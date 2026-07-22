@@ -57,6 +57,8 @@ pub struct CompileNativeCssOptions {
     pub from: String,
     #[serde(default = "default_true", rename = "preserveNativeCSS")]
     pub preserve_native_css: bool,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub classes: Option<Vec<String>>,
 }
 
 impl Default for CompileNativeCssOptions {
@@ -64,6 +66,7 @@ impl Default for CompileNativeCssOptions {
         Self {
             from: default_filename(),
             preserve_native_css: true,
+            classes: None,
         }
     }
 }
@@ -402,6 +405,74 @@ impl<'i> Visitor<'i, ThemeAtRule> for NativeClassNameCollector {
     }
 }
 
+fn selector_matches_class_filter(selector: &Selector<'_>, classes: &HashSet<String>) -> bool {
+    let mut has_class = false;
+    for component in selector.iter_raw_match_order() {
+        if let Component::Class(name) = component {
+            has_class = true;
+            if classes.contains(name.0.as_ref()) {
+                return true;
+            }
+        }
+    }
+    !has_class
+}
+
+fn filter_native_css_rules<'i, R>(
+    rules: Vec<CssRule<'i, R>>,
+    classes: &HashSet<String>,
+) -> Vec<CssRule<'i, R>> {
+    rules
+        .into_iter()
+        .filter_map(|rule| match rule {
+            CssRule::Style(mut rule) => {
+                rule.selectors
+                    .0
+                    .retain(|selector| selector_matches_class_filter(selector, classes));
+                rule.rules.0 = filter_native_css_rules(rule.rules.0, classes);
+                (!rule.selectors.0.is_empty()).then_some(CssRule::Style(rule))
+            }
+            CssRule::Media(mut rule) => {
+                rule.rules.0 = filter_native_css_rules(rule.rules.0, classes);
+                (!rule.rules.0.is_empty()).then_some(CssRule::Media(rule))
+            }
+            CssRule::Supports(mut rule) => {
+                rule.rules.0 = filter_native_css_rules(rule.rules.0, classes);
+                (!rule.rules.0.is_empty()).then_some(CssRule::Supports(rule))
+            }
+            CssRule::MozDocument(mut rule) => {
+                rule.rules.0 = filter_native_css_rules(rule.rules.0, classes);
+                (!rule.rules.0.is_empty()).then_some(CssRule::MozDocument(rule))
+            }
+            CssRule::Nesting(mut rule) => {
+                rule.style
+                    .selectors
+                    .0
+                    .retain(|selector| selector_matches_class_filter(selector, classes));
+                rule.style.rules.0 = filter_native_css_rules(rule.style.rules.0, classes);
+                (!rule.style.selectors.0.is_empty()).then_some(CssRule::Nesting(rule))
+            }
+            CssRule::LayerBlock(mut rule) => {
+                rule.rules.0 = filter_native_css_rules(rule.rules.0, classes);
+                (!rule.rules.0.is_empty()).then_some(CssRule::LayerBlock(rule))
+            }
+            CssRule::Container(mut rule) => {
+                rule.rules.0 = filter_native_css_rules(rule.rules.0, classes);
+                (!rule.rules.0.is_empty()).then_some(CssRule::Container(rule))
+            }
+            CssRule::Scope(mut rule) => {
+                rule.rules.0 = filter_native_css_rules(rule.rules.0, classes);
+                (!rule.rules.0.is_empty()).then_some(CssRule::Scope(rule))
+            }
+            CssRule::StartingStyle(mut rule) => {
+                rule.rules.0 = filter_native_css_rules(rule.rules.0, classes);
+                (!rule.rules.0.is_empty()).then_some(CssRule::StartingStyle(rule))
+            }
+            rule => Some(rule),
+        })
+        .collect()
+}
+
 fn default_filename() -> String {
     "master.css".into()
 }
@@ -632,9 +703,7 @@ pub fn resolve_prepared_css_import_graph(
     resolve_css_import_graph(&request.entry, &PreparedCssImportProvider { request })
 }
 
-/// Compiles the host CSS portion through the same Lightning CSS core used by the
-/// JavaScript compiler. Master CSS semantic directives beyond `@master entry`
-/// remain owned by the TypeScript oracle until their Rust lowering is migrated.
+/// Compiles native CSS through the shared Rust Lightning CSS pipeline.
 pub fn compile_native_css(
     source: &str,
     options: &CompileNativeCssOptions,
@@ -660,6 +729,10 @@ pub fn compile_native_css(
         filename: options.from.clone(),
         range: None,
     })?;
+    if let Some(classes) = &options.classes {
+        let classes = classes.iter().cloned().collect::<HashSet<_>>();
+        stylesheet.rules.0 = filter_native_css_rules(stylesheet.rules.0, &classes);
+    }
 
     stylesheet
         .minify(MinifyOptions::default())
@@ -676,6 +749,12 @@ pub fn compile_native_css(
         .code
         .trim()
         .to_owned();
+    let css =
+        normalize_stylesheet_value(&css, false).map_err(|message| CompilerError::Directive {
+            message,
+            filename: options.from.clone(),
+            range: None,
+        })?;
 
     Ok(CompileNativeCssResult {
         native_css: css.clone(),
@@ -984,7 +1063,7 @@ fn is_alias_character(byte: u8) -> bool {
     byte.is_ascii_alphanumeric() || matches!(byte, b'_' | b'-')
 }
 
-fn normalize_theme_stylesheet_value(value: &str) -> Result<String, String> {
+fn normalize_stylesheet_value(value: &str, replace_pipes: bool) -> Result<String, String> {
     let mut result = String::with_capacity(value.len());
     let mut index = 0;
     while index < value.len() {
@@ -1028,7 +1107,7 @@ fn normalize_theme_stylesheet_value(value: &str) -> Result<String, String> {
             index = end;
             continue;
         }
-        if character == '|' {
+        if replace_pipes && character == '|' {
             result.push(' ');
         } else {
             result.push(character);
@@ -1036,6 +1115,10 @@ fn normalize_theme_stylesheet_value(value: &str) -> Result<String, String> {
         index = next_char_end(value, index);
     }
     Ok(result)
+}
+
+fn normalize_theme_stylesheet_value(value: &str) -> Result<String, String> {
+    normalize_stylesheet_value(value, true)
 }
 
 fn define_theme_variable(
@@ -1074,6 +1157,13 @@ fn collect_declarations(
                 message: error.to_string(),
                 filename: filename.to_owned(),
             })?;
+        let value = normalize_stylesheet_value(&value, true).map_err(|message| {
+            CompilerError::Directive {
+                message,
+                filename: filename.to_owned(),
+                range: None,
+            }
+        })?;
         result.insert(name, Value::String(value));
     }
     for declaration in &declarations.important_declarations {
@@ -1087,6 +1177,13 @@ fn collect_declarations(
                 message: error.to_string(),
                 filename: filename.to_owned(),
             })?;
+        let value = normalize_stylesheet_value(&value, true).map_err(|message| {
+            CompilerError::Directive {
+                message,
+                filename: filename.to_owned(),
+                range: None,
+            }
+        })?;
         result.insert(name, Value::String(format!("{value} !important")));
     }
     Ok(result)
@@ -2086,6 +2183,137 @@ fn rewrite_managed_variant_directives(source: &str) -> (String, HashMap<usize, S
         index = next_char_end(source, index);
     }
     (rewritten, variants)
+}
+
+fn validate_condition_variant_syntax(source: &str, filename: &str) -> Result<(), CompilerError> {
+    for (directive, message_for_at, message_for_selector) in [
+        (
+            "@custom-variant",
+            "@custom-variant uses bare condition variant names",
+            "@custom-variant only defines condition variants",
+        ),
+        (
+            "@variant",
+            "@variant only applies condition variants",
+            "@variant only applies condition variants",
+        ),
+    ] {
+        let mut start = 0;
+        while start < source.len() {
+            let character = source[start..].chars().next().unwrap_or_default();
+            if matches!(character, '\'' | '"') {
+                start = css_quote_end(source, start, character);
+                continue;
+            }
+            if source[start..].starts_with("/*") {
+                start = css_comment_end(source, start);
+                continue;
+            }
+            if !source[start..].starts_with(directive) {
+                start = next_char_end(source, start);
+                continue;
+            }
+            let after_directive = start + directive.len();
+            if source
+                .as_bytes()
+                .get(after_directive)
+                .is_some_and(|byte| is_alias_character(*byte))
+            {
+                start = after_directive;
+                continue;
+            }
+            let mut token_start = after_directive;
+            while source
+                .as_bytes()
+                .get(token_start)
+                .is_some_and(u8::is_ascii_whitespace)
+            {
+                token_start += 1;
+            }
+            match source.as_bytes().get(token_start) {
+                Some(b'@') => {
+                    return Err(directive_error(source, filename, start, message_for_at));
+                }
+                Some(b':') => {
+                    return Err(directive_error(
+                        source,
+                        filename,
+                        start,
+                        message_for_selector,
+                    ));
+                }
+                _ => {}
+            }
+            start = after_directive;
+        }
+    }
+    Ok(())
+}
+
+fn validate_compose_syntax(source: &str, filename: &str) -> Result<(), CompilerError> {
+    let mut index = 0;
+    while index < source.len() {
+        let character = source[index..].chars().next().unwrap_or_default();
+        if matches!(character, '\'' | '"') {
+            index = css_quote_end(source, index, character);
+            continue;
+        }
+        if source[index..].starts_with("/*") {
+            index = css_comment_end(source, index);
+            continue;
+        }
+        if !source[index..].starts_with("@compose")
+            || source
+                .as_bytes()
+                .get(index + "@compose".len())
+                .is_some_and(|byte| is_alias_character(*byte))
+        {
+            index = next_char_end(source, index);
+            continue;
+        }
+        let directive_start = index;
+        index += "@compose".len();
+        while source
+            .as_bytes()
+            .get(index)
+            .is_some_and(u8::is_ascii_whitespace)
+        {
+            index += 1;
+        }
+        if source.as_bytes().get(index) == Some(&b'{') {
+            return Err(directive_error(
+                source,
+                filename,
+                directive_start,
+                "@compose does not accept group syntax",
+            ));
+        }
+        let mut cursor = index;
+        while cursor < source.len() {
+            let character = source[cursor..].chars().next().unwrap_or_default();
+            if matches!(character, '\'' | '"') {
+                return Err(directive_error(
+                    source,
+                    filename,
+                    directive_start,
+                    "@compose only accepts unquoted class lists",
+                ));
+            }
+            if source[cursor..].starts_with("/*") {
+                cursor = css_comment_end(source, cursor);
+                continue;
+            }
+            if character == ';' {
+                index = cursor + 1;
+                break;
+            }
+            cursor = next_char_end(source, cursor);
+        }
+        if cursor >= source.len() {
+            index = cursor;
+        }
+    }
+    Ok(())
 }
 
 #[derive(Debug, Clone)]
@@ -3238,6 +3466,375 @@ fn lower_managed_rule_list(
     Ok(())
 }
 
+#[derive(Debug, Clone)]
+struct NativeStyleContext {
+    selectors: Vec<String>,
+    selector_source: Option<CssDirectiveSourceReference>,
+}
+
+fn native_rule_list_has_directives(
+    source: &str,
+    rules: &[CssRule<'_, ThemeAtRule>],
+    variant_rule_offsets: &HashMap<usize, String>,
+) -> bool {
+    rules.iter().any(|rule| match rule {
+        CssRule::Unknown(rule) => rule.name.eq_ignore_ascii_case("compose"),
+        CssRule::Style(rule) => {
+            native_rule_list_has_directives(source, &rule.rules.0, variant_rule_offsets)
+        }
+        CssRule::Media(rule) => {
+            byte_offset_for_location(source, rule.loc.line, rule.loc.column)
+                .is_some_and(|offset| variant_rule_offsets.contains_key(&offset))
+                || native_rule_list_has_directives(source, &rule.rules.0, variant_rule_offsets)
+        }
+        CssRule::Supports(rule) => {
+            native_rule_list_has_directives(source, &rule.rules.0, variant_rule_offsets)
+        }
+        CssRule::Container(rule) => {
+            native_rule_list_has_directives(source, &rule.rules.0, variant_rule_offsets)
+        }
+        CssRule::StartingStyle(rule) => {
+            native_rule_list_has_directives(source, &rule.rules.0, variant_rule_offsets)
+        }
+        _ => false,
+    })
+}
+
+fn push_native_style_declarations(
+    declarations: serde_json::Map<String, Value>,
+    context: &NativeStyleContext,
+    condition_path: &[CssDirectiveConditionPathEntry],
+    style_definitions: &mut Vec<CssDirectiveStyleDefinition>,
+    style_order: &mut u32,
+) {
+    if declarations.is_empty() {
+        return;
+    }
+    let (conditions, condition_path) = condition_properties(condition_path);
+    *style_order += 1;
+    style_definitions.push(CssDirectiveStyleDefinition::Native {
+        order: *style_order,
+        selector: context.selectors.join(","),
+        declarations,
+        source: None,
+        selector_source: context.selector_source.clone(),
+        conditions,
+        condition_path,
+        layer: None,
+        name: None,
+    });
+}
+
+#[allow(clippy::too_many_arguments)]
+fn lower_native_compose_rule(
+    source: &str,
+    filename: &str,
+    rewritten_source: &str,
+    rule: UnknownAtRule<'_>,
+    context: &NativeStyleContext,
+    condition_path: &[CssDirectiveConditionPathEntry],
+    style_definitions: &mut Vec<CssDirectiveStyleDefinition>,
+    style_order: &mut u32,
+) -> Result<(), CompilerError> {
+    if rule.block.is_some() {
+        return Err(CompilerError::Directive {
+            message: "@compose does not accept group syntax".into(),
+            filename: filename.to_owned(),
+            range: None,
+        });
+    }
+    let local_start = byte_offset_for_location(rewritten_source, rule.loc.line, rule.loc.column)
+        .ok_or_else(|| CompilerError::Directive {
+            message: "Cannot resolve @compose source range".into(),
+            filename: filename.to_owned(),
+            range: None,
+        })?;
+    let Some((semicolon, ';')) =
+        css_statement_delimiter(rewritten_source, local_start, rewritten_source.len())
+    else {
+        return Err(CompilerError::Directive {
+            message: "@compose requires a semicolon".into(),
+            filename: filename.to_owned(),
+            range: None,
+        });
+    };
+    let directive_end = semicolon + 1;
+    let mut content_start = local_start + "@compose".len();
+    while content_start < semicolon
+        && rewritten_source[content_start..]
+            .chars()
+            .next()
+            .is_some_and(char::is_whitespace)
+    {
+        content_start = next_char_end(rewritten_source, content_start);
+    }
+    let (_, content_end) = trim_byte_range(rewritten_source, content_start, semicolon);
+    let class_list = &rewritten_source[content_start..content_end];
+    if class_list.contains(['\'', '"']) {
+        return Err(CompilerError::Directive {
+            message: "@compose only accepts unquoted class lists".into(),
+            filename: filename.to_owned(),
+            range: None,
+        });
+    }
+    let directive_source =
+        source_reference_from_bytes(source, filename, local_start, directive_end);
+    let (conditions, path) = condition_properties(condition_path);
+    for token in collect_class_list_token_ranges(class_list) {
+        if token.token.starts_with('{') {
+            return Err(CompilerError::Directive {
+                message: "@compose does not accept group syntax".into(),
+                filename: filename.to_owned(),
+                range: None,
+            });
+        }
+        let token_start = utf16_to_byte_offset(class_list, token.range.start)
+            .expect("lexer ranges are valid UTF-16 boundaries");
+        let token_end = utf16_to_byte_offset(class_list, token.range.end)
+            .expect("lexer ranges are valid UTF-16 boundaries");
+        *style_order += 1;
+        style_definitions.push(CssDirectiveStyleDefinition::Compose {
+            order: *style_order,
+            class_name: token.token,
+            selector: context.selectors.join(","),
+            source: source_reference_from_bytes(
+                source,
+                filename,
+                content_start + token_start,
+                content_start + token_end,
+            ),
+            directive_source: directive_source.clone(),
+            selector_source: context.selector_source.clone(),
+            conditions: conditions.clone(),
+            condition_path: path.clone(),
+            layer: None,
+            name: None,
+        });
+    }
+    Ok(())
+}
+
+#[allow(clippy::too_many_arguments)]
+fn lower_native_style_rule(
+    source: &str,
+    filename: &str,
+    rewritten_source: &str,
+    style: StyleRule<'_, ThemeAtRule>,
+    context: NativeStyleContext,
+    condition_path: &[CssDirectiveConditionPathEntry],
+    variant_rule_offsets: &HashMap<usize, String>,
+    style_definitions: &mut Vec<CssDirectiveStyleDefinition>,
+    style_order: &mut u32,
+) -> Result<(), CompilerError> {
+    let mut declarations = collect_declarations(&style.declarations, filename)?;
+    if let Some(start) = context
+        .selector_source
+        .as_ref()
+        .and_then(|selector| utf16_to_byte_offset(source, selector.range.end))
+    {
+        preserve_compatible_literal_spelling(source, start, &mut declarations);
+    }
+    push_native_style_declarations(
+        declarations,
+        &context,
+        condition_path,
+        style_definitions,
+        style_order,
+    );
+    lower_native_rule_list(
+        source,
+        filename,
+        rewritten_source,
+        style.rules.0,
+        Some(context),
+        condition_path,
+        variant_rule_offsets,
+        style_definitions,
+        style_order,
+    )
+}
+
+#[allow(clippy::too_many_arguments)]
+fn lower_native_rule_list(
+    source: &str,
+    filename: &str,
+    rewritten_source: &str,
+    rules: Vec<CssRule<'_, ThemeAtRule>>,
+    context: Option<NativeStyleContext>,
+    condition_path: &[CssDirectiveConditionPathEntry],
+    variant_rule_offsets: &HashMap<usize, String>,
+    style_definitions: &mut Vec<CssDirectiveStyleDefinition>,
+    style_order: &mut u32,
+) -> Result<(), CompilerError> {
+    for child in rules {
+        match child {
+            CssRule::Style(child) => {
+                let child_selectors = printed_selectors(&child.selectors.0, filename)?;
+                let selectors = context
+                    .as_ref()
+                    .map(|parent| combine_managed_selectors(&parent.selectors, &child_selectors))
+                    .unwrap_or(child_selectors);
+                let next_context = NativeStyleContext {
+                    selectors,
+                    selector_source: selector_source_reference(
+                        source,
+                        filename,
+                        rewritten_source,
+                        0,
+                        child.loc.line,
+                        child.loc.column,
+                    )
+                    .or_else(|| {
+                        context
+                            .as_ref()
+                            .and_then(|parent| parent.selector_source.clone())
+                    }),
+                };
+                lower_native_style_rule(
+                    source,
+                    filename,
+                    rewritten_source,
+                    child,
+                    next_context,
+                    condition_path,
+                    variant_rule_offsets,
+                    style_definitions,
+                    style_order,
+                )?;
+            }
+            CssRule::NestedDeclarations(child) => {
+                let Some(context) = &context else {
+                    return Err(CompilerError::Directive {
+                        message: "Native @variant blocks only accept style rules, declarations, @compose, and nested at-rules".into(),
+                        filename: filename.to_owned(),
+                        range: None,
+                    });
+                };
+                push_native_style_declarations(
+                    collect_declarations(&child.declarations, filename)?,
+                    context,
+                    condition_path,
+                    style_definitions,
+                    style_order,
+                );
+            }
+            CssRule::Media(media) => {
+                let mut path = condition_path.to_vec();
+                let local_offset =
+                    byte_offset_for_location(rewritten_source, media.loc.line, media.loc.column);
+                if let Some(token) =
+                    local_offset.and_then(|offset| variant_rule_offsets.get(&offset))
+                {
+                    path.push(CssDirectiveConditionPathEntry::Variant {
+                        token: token.clone(),
+                    });
+                } else {
+                    path.push(CssDirectiveConditionPathEntry::Condition {
+                        value: format!("@media {}", minified_css(&media.query, filename)?),
+                    });
+                }
+                lower_native_rule_list(
+                    source,
+                    filename,
+                    rewritten_source,
+                    media.rules.0,
+                    context.clone(),
+                    &path,
+                    variant_rule_offsets,
+                    style_definitions,
+                    style_order,
+                )?;
+            }
+            CssRule::Supports(supports) => {
+                let mut path = condition_path.to_vec();
+                path.push(CssDirectiveConditionPathEntry::Condition {
+                    value: format!("@supports {}", minified_css(&supports.condition, filename)?),
+                });
+                lower_native_rule_list(
+                    source,
+                    filename,
+                    rewritten_source,
+                    supports.rules.0,
+                    context.clone(),
+                    &path,
+                    variant_rule_offsets,
+                    style_definitions,
+                    style_order,
+                )?;
+            }
+            CssRule::Container(container) => {
+                let mut prelude = Vec::new();
+                if let Some(name) = &container.name {
+                    prelude.push(minified_css(name, filename)?);
+                }
+                if let Some(condition) = &container.condition {
+                    prelude.push(minified_css(condition, filename)?);
+                }
+                let mut path = condition_path.to_vec();
+                path.push(CssDirectiveConditionPathEntry::Condition {
+                    value: format!("@container {}", prelude.join(" ")),
+                });
+                lower_native_rule_list(
+                    source,
+                    filename,
+                    rewritten_source,
+                    container.rules.0,
+                    context.clone(),
+                    &path,
+                    variant_rule_offsets,
+                    style_definitions,
+                    style_order,
+                )?;
+            }
+            CssRule::StartingStyle(starting_style) => {
+                let mut path = condition_path.to_vec();
+                path.push(CssDirectiveConditionPathEntry::Condition {
+                    value: "@starting-style".into(),
+                });
+                lower_native_rule_list(
+                    source,
+                    filename,
+                    rewritten_source,
+                    starting_style.rules.0,
+                    context.clone(),
+                    &path,
+                    variant_rule_offsets,
+                    style_definitions,
+                    style_order,
+                )?;
+            }
+            CssRule::Unknown(rule) if rule.name.eq_ignore_ascii_case("compose") => {
+                let Some(context) = &context else {
+                    return Err(CompilerError::Directive {
+                        message: "@compose requires a style rule".into(),
+                        filename: filename.to_owned(),
+                        range: None,
+                    });
+                };
+                lower_native_compose_rule(
+                    source,
+                    filename,
+                    rewritten_source,
+                    rule,
+                    context,
+                    condition_path,
+                    style_definitions,
+                    style_order,
+                )?;
+            }
+            _ => {
+                return Err(CompilerError::Directive {
+                    message: "Native CSS rules only accept declarations, @compose, nested selectors, and nested at-rules".into(),
+                    filename: filename.to_owned(),
+                    range: None,
+                });
+            }
+        }
+    }
+    Ok(())
+}
+
+#[allow(clippy::too_many_arguments)]
 fn lower_managed_definition_rule(
     source: &str,
     filename: &str,
@@ -3246,6 +3843,7 @@ fn lower_managed_definition_rule(
     class_names: &mut Vec<String>,
     style_definitions: &mut Vec<CssDirectiveStyleDefinition>,
     style_order: &mut u32,
+    stylesheet_variant_rule_offsets: &HashMap<usize, String>,
 ) -> Result<(), CompilerError> {
     if !rule.prelude.parts.is_empty() {
         return Err(directive_error(
@@ -3264,9 +3862,17 @@ fn lower_managed_definition_rule(
         )
     })?;
     let body_start_byte = rule.body_start_byte.unwrap_or(rule.start_byte);
-    let (masked_body, pattern_rule_offsets) = mask_managed_pattern_names(body)
+    let (rewritten_body, pattern_rule_offsets) = mask_managed_pattern_names(body)
         .map_err(|message| directive_error(source, filename, rule.start_byte, message))?;
-    let (rewritten_body, variant_rule_offsets) = rewrite_managed_variant_directives(&masked_body);
+    let variant_rule_offsets = stylesheet_variant_rule_offsets
+        .iter()
+        .filter_map(|(offset, token)| {
+            offset
+                .checked_sub(body_start_byte)
+                .filter(|offset| *offset < body.len())
+                .map(|offset| (offset, token.clone()))
+        })
+        .collect::<HashMap<_, _>>();
     let stylesheet = StyleSheet::parse(
         &rewritten_body,
         ParserOptions {
@@ -3294,14 +3900,13 @@ fn lower_managed_definition_rule(
     )
 }
 
-/// Lowers the production CSS directive slices migrated to Rust: top-level `@settings`,
-/// `@theme`, and managed definitions plus native CSS preservation. Dynamic patterns,
-/// condition variants, and composition remain intentionally closed until covered by
-/// differential fixtures.
+/// Lowers the production Master CSS directives and preserves host-native CSS.
 pub fn compile_css_directives(
     source: &str,
     options: &CompileNativeCssOptions,
 ) -> Result<CompileThemeCssResult, CompilerError> {
+    validate_condition_variant_syntax(source, &options.from)?;
+    validate_compose_syntax(source, &options.from)?;
     let (source_without_references, reference_statements) = remove_css_reference_statements(source);
     let references = reference_statements
         .into_iter()
@@ -3316,9 +3921,11 @@ pub fn compile_css_directives(
     let (source_without_entry, standalone_directives) =
         remove_standalone_css_directives(&source_without_references);
     let extraction_policy = extraction_policy_from_statements(&standalone_directives);
+    let (rewritten_source, stylesheet_variant_rule_offsets) =
+        rewrite_managed_variant_directives(&source_without_entry);
     let mut parser = ThemeAtRuleParser::default();
     let mut stylesheet = StyleSheet::parse_with(
-        &source_without_entry,
+        &rewritten_source,
         ParserOptions {
             filename: options.from.clone(),
             ..ParserOptions::default()
@@ -3339,6 +3946,11 @@ pub fn compile_css_directives(
             format!("@{} must be top-level", name.as_str()),
         ));
     }
+
+    let mut native_class_collector = NativeClassNameCollector::default();
+    stylesheet
+        .visit(&mut native_class_collector)
+        .unwrap_or_else(|error| match error {});
 
     let mut manifest_input = CssDirectiveManifestInput::default();
     let mut class_names = Vec::new();
@@ -3369,18 +3981,74 @@ pub fn compile_css_directives(
                         &mut class_names,
                         &mut style_definitions,
                         &mut style_order,
+                        &stylesheet_variant_rule_offsets,
                     )?
                 }
             },
+            CssRule::Style(style)
+                if native_rule_list_has_directives(
+                    &rewritten_source,
+                    &style.rules.0,
+                    &stylesheet_variant_rule_offsets,
+                ) =>
+            {
+                let context = NativeStyleContext {
+                    selectors: printed_selectors(&style.selectors.0, &options.from)?,
+                    selector_source: selector_source_reference(
+                        source,
+                        &options.from,
+                        &rewritten_source,
+                        0,
+                        style.loc.line,
+                        style.loc.column,
+                    ),
+                };
+                lower_native_style_rule(
+                    source,
+                    &options.from,
+                    &rewritten_source,
+                    style,
+                    context,
+                    &[],
+                    &stylesheet_variant_rule_offsets,
+                    &mut style_definitions,
+                    &mut style_order,
+                )?;
+            }
+            CssRule::Media(media)
+                if byte_offset_for_location(
+                    &rewritten_source,
+                    media.loc.line,
+                    media.loc.column,
+                )
+                .is_some_and(|offset| stylesheet_variant_rule_offsets.contains_key(&offset)) =>
+            {
+                let offset =
+                    byte_offset_for_location(&rewritten_source, media.loc.line, media.loc.column)
+                        .expect("matched variant media rules have a source offset");
+                let path = [CssDirectiveConditionPathEntry::Variant {
+                    token: stylesheet_variant_rule_offsets[&offset].clone(),
+                }];
+                lower_native_rule_list(
+                    source,
+                    &options.from,
+                    &rewritten_source,
+                    media.rules.0,
+                    None,
+                    &path,
+                    &stylesheet_variant_rule_offsets,
+                    &mut style_definitions,
+                    &mut style_order,
+                )?;
+            }
             rule => native_rules.push(rule),
         }
     }
     stylesheet.rules.0 = native_rules;
-
-    let mut native_class_collector = NativeClassNameCollector::default();
-    stylesheet
-        .visit(&mut native_class_collector)
-        .unwrap_or_else(|error| match error {});
+    if let Some(classes) = &options.classes {
+        let classes = classes.iter().cloned().collect::<HashSet<_>>();
+        stylesheet.rules.0 = filter_native_css_rules(stylesheet.rules.0, &classes);
+    }
 
     let native_css = if options.preserve_native_css {
         stylesheet
@@ -3389,7 +4057,7 @@ pub fn compile_css_directives(
                 message: error.to_string(),
                 filename: options.from.clone(),
             })?;
-        stylesheet
+        let css = stylesheet
             .to_css(PrinterOptions::default())
             .map_err(|error| CompilerError::Print {
                 message: error.to_string(),
@@ -3397,7 +4065,12 @@ pub fn compile_css_directives(
             })?
             .code
             .trim()
-            .to_owned()
+            .to_owned();
+        normalize_stylesheet_value(&css, false).map_err(|message| CompilerError::Directive {
+            message,
+            filename: options.from.clone(),
+            range: None,
+        })?
     } else {
         String::new()
     };
@@ -3556,6 +4229,20 @@ mod tests {
         )
         .unwrap();
         assert_eq!(result.native_css, "");
+    }
+
+    #[test]
+    fn filters_native_selectors_without_losing_discovered_classes() {
+        let result = compile_css_directives(
+            ".used,.unused { color: red; }\n@media print { .unused { display: none; } }",
+            &CompileNativeCssOptions {
+                classes: Some(vec!["used".into()]),
+                ..CompileNativeCssOptions::default()
+            },
+        )
+        .unwrap();
+        assert_eq!(result.native_class_names, ["used", "unused"]);
+        assert_eq!(result.native_css, ".used {\n  color: red;\n}");
     }
 
     #[test]
@@ -3755,5 +4442,40 @@ mod tests {
                 }
             ])
         );
+    }
+
+    #[test]
+    fn lowers_native_compose_and_variant_styles() {
+        let result = compile_css_directives(
+            "@custom-variant wide { @media (width >= 640px) { @slot; } }\n\
+             @components { brand { color: red; } }\n\
+             .button { @compose brand; @variant wide { @compose brand; } }",
+            &CompileNativeCssOptions::default(),
+        )
+        .unwrap();
+        let native_composes = result
+            .style_definitions
+            .as_ref()
+            .unwrap()
+            .iter()
+            .filter_map(|definition| match definition {
+                CssDirectiveStyleDefinition::Compose {
+                    selector,
+                    condition_path,
+                    name,
+                    ..
+                } if name.is_none() => Some((selector, condition_path)),
+                _ => None,
+            })
+            .collect::<Vec<_>>();
+        assert_eq!(native_composes.len(), 2);
+        assert_eq!(native_composes[0].0, ".button");
+        assert_eq!(
+            native_composes[1].1,
+            &Some(vec![CssDirectiveConditionPathEntry::Variant {
+                token: "@wide".into()
+            }])
+        );
+        assert!(result.native_css.is_empty());
     }
 }

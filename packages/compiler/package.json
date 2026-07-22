@@ -55,6 +55,7 @@
   "dependencies": {
     "@master/css-engine": "workspace:^",
     "@master/css-lexer": "workspace:^",
+    "@master/css-native": "workspace:^",
     "css-tree": "^3.2.1",
     "csstype": "^3.2.3",
     "lightningcss": "^1.32.0",
@@ -62,7 +63,6 @@
     "@master/css-schema": "workspace:^"
   },
   "devDependencies": {
-    "@master/css-native": "workspace:^",
     "@master/css-preset": "workspace:^",
     "@types/css-tree": "^2.3.11"
   }

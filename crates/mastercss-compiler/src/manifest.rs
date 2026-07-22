@@ -247,11 +247,47 @@ fn resolved_variable_name(
     (explicit_name.to_owned(), key, namespace)
 }
 
+fn skip_quoted_value(source: &str, start: usize, quote: char) -> usize {
+    let mut index = start + quote.len_utf8();
+    while index < source.len() {
+        let character = source[index..].chars().next().unwrap_or_default();
+        index += character.len_utf8();
+        if character == '\\' {
+            if let Some(escaped) = source[index..].chars().next() {
+                index += escaped.len_utf8();
+            }
+        } else if character == quote {
+            break;
+        }
+    }
+    index
+}
+
+fn skip_value_comment(source: &str, start: usize) -> usize {
+    source[start + 2..]
+        .find("*/")
+        .map(|offset| start + 2 + offset + 2)
+        .unwrap_or(source.len())
+}
+
 fn variable_dependencies(value: &str) -> Vec<String> {
     let mut dependencies = Vec::new();
-    let mut remainder = value;
-    while let Some(start) = remainder.find("var(--") {
-        let after = &remainder[start + "var(--".len()..];
+    let mut index = 0;
+    while index < value.len() {
+        let character = value[index..].chars().next().unwrap_or_default();
+        if matches!(character, '\'' | '"') {
+            index = skip_quoted_value(value, index, character);
+            continue;
+        }
+        if value[index..].starts_with("/*") {
+            index = skip_value_comment(value, index);
+            continue;
+        }
+        if !value[index..].starts_with("var(--") {
+            index += character.len_utf8();
+            continue;
+        }
+        let after = &value[index + "var(--".len()..];
         let end = after
             .find(|character: char| {
                 !(character.is_ascii_alphanumeric() || matches!(character, '-' | '_'))
@@ -260,30 +296,72 @@ fn variable_dependencies(value: &str) -> Vec<String> {
         if end > 0 {
             push_unique(&mut dependencies, after[..end].to_owned());
         }
-        remainder = &after[end..];
+        index += "var(--".len() + end;
     }
     dependencies
+}
+
+fn unquoted_dollar_alias(value: &str) -> Option<&str> {
+    let mut index = 0;
+    while index < value.len() {
+        let character = value[index..].chars().next().unwrap_or_default();
+        if matches!(character, '\'' | '"') {
+            index = skip_quoted_value(value, index, character);
+            continue;
+        }
+        if value[index..].starts_with("/*") {
+            index = skip_value_comment(value, index);
+            continue;
+        }
+        if character == '$' {
+            let alias = value[index + 1..]
+                .split(|character: char| {
+                    !(character.is_ascii_alphanumeric() || matches!(character, '-' | '_'))
+                })
+                .next()
+                .unwrap_or_default();
+            return (!alias.is_empty()).then_some(alias);
+        }
+        index += character.len_utf8();
+    }
+    None
+}
+
+fn replace_unquoted_pipes(value: &str) -> String {
+    let mut output = String::with_capacity(value.len());
+    let mut index = 0;
+    while index < value.len() {
+        let character = value[index..].chars().next().unwrap_or_default();
+        let end = if matches!(character, '\'' | '"') {
+            skip_quoted_value(value, index, character)
+        } else if value[index..].starts_with("/*") {
+            skip_value_comment(value, index)
+        } else {
+            index + character.len_utf8()
+        };
+        if end > index + character.len_utf8() {
+            output.push_str(&value[index..end]);
+        } else if character == '|' {
+            output.push(' ');
+        } else {
+            output.push(character);
+        }
+        index = end;
+    }
+    output
 }
 
 fn normalize_variable_value(value: &Value) -> Result<(Value, Vec<String>), CompilerError> {
     let Value::String(value) = value else {
         return Ok((value.clone(), Vec::new()));
     };
-    if let Some(start) = value.find('$') {
-        let alias = value[start + 1..]
-            .split(|character: char| {
-                !(character.is_ascii_alphanumeric() || matches!(character, '-' | '_'))
-            })
-            .next()
-            .unwrap_or_default();
-        if !alias.is_empty() {
-            return Err(manifest_error(format!(
-                "Stylesheet values use native CSS variable references. Replace \"${alias}\" with \"var(--{alias})\"."
-            )));
-        }
+    if let Some(alias) = unquoted_dollar_alias(value) {
+        return Err(manifest_error(format!(
+            "Stylesheet values use native CSS variable references. Replace \"${alias}\" with \"var(--{alias})\"."
+        )));
     }
     Ok((
-        Value::String(value.replace('|', " ")),
+        Value::String(replace_unquoted_pipes(value)),
         variable_dependencies(value),
     ))
 }
@@ -712,19 +790,39 @@ fn value_placeholder_parts(value: &str) -> Result<Value, CompilerError> {
         return Ok(Value::Null);
     }
     let mut parts = Vec::new();
-    let mut remainder = value;
-    while let Some(index) = remainder.find("--value") {
-        if !remainder[index..].starts_with("--value()") {
+    let mut index = 0;
+    let mut last_index = 0;
+    let mut matched = false;
+    while index < value.len() {
+        let character = value[index..].chars().next().unwrap_or_default();
+        if matches!(character, '\'' | '"') {
+            index = skip_quoted_value(value, index, character);
+            continue;
+        }
+        if value[index..].starts_with("/*") {
+            index = skip_value_comment(value, index);
+            continue;
+        }
+        if !value[index..].starts_with("--value") {
+            index += character.len_utf8();
+            continue;
+        }
+        if !value[index..].starts_with("--value()") {
             return Err(manifest_error("--value() must be called as --value()"));
         }
-        if index > 0 {
-            parts.push(Value::String(remainder[..index].into()));
+        if index > last_index {
+            parts.push(Value::String(value[last_index..index].into()));
         }
         parts.push(Value::Null);
-        remainder = &remainder[index + "--value()".len()..];
+        matched = true;
+        index += "--value()".len();
+        last_index = index;
     }
-    if !remainder.is_empty() {
-        parts.push(Value::String(remainder.into()));
+    if !matched {
+        return Ok(Value::String(value.into()));
+    }
+    if last_index < value.len() {
+        parts.push(Value::String(value[last_index..].into()));
     }
     Ok(Value::Array(parts))
 }
@@ -1512,5 +1610,36 @@ mod tests {
             manifest["conditions"]["motion-safe"]["nodes"][0]["name"],
             "prefers-reduced-motion"
         );
+    }
+
+    #[test]
+    fn ignores_placeholders_and_dependencies_inside_quoted_values() {
+        let input: CssDirectiveManifestInput = serde_json::from_value(json!({
+            "variables": [{
+                "name": "content-demo",
+                "value": "\"var(--color-blue-60) | $quoted\""
+            }],
+            "utilities": [{
+                "name": "label-<info>",
+                "type": "pattern",
+                "pattern": { "prefix": "label-", "values": ["info"] },
+                "declarations": {
+                    "content": "\"--value()\"",
+                    "color": "--value()"
+                }
+            }]
+        }))
+        .unwrap();
+        let manifest = compile_manifest_input(&input, &CompileManifestOptions::default())
+            .unwrap()
+            .manifest;
+        assert_eq!(
+            manifest["variables"]["content"][0]["value"],
+            "\"var(--color-blue-60) | $quoted\""
+        );
+        assert!(manifest["variables"]["content"][0]["dependencies"].is_null());
+        let declarations = &manifest["utilities"][0]["emit"]["rules"][0]["declarations"];
+        assert_eq!(declarations["content"], "\"--value()\"");
+        assert!(declarations["color"].is_null());
     }
 }

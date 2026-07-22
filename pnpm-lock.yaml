@@ -1564,6 +1564,9 @@ importers:
       '@master/css-lexer':
         specifier: workspace:^
         version: link:../lexer
+      '@master/css-native':
+        specifier: workspace:^
+        version: link:../native
       '@master/css-schema':
         specifier: workspace:^
         version: link:../schema
@@ -1580,9 +1583,6 @@ importers:
         specifier: ^1.32.0
         version: 1.32.0
     devDependencies:
-      '@master/css-native':
-        specifier: workspace:^
-        version: link:../native
       '@master/css-preset':
         specifier: workspace:^
         version: link:../preset

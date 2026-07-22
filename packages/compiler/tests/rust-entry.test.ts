@@ -3,7 +3,8 @@ import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { loadNativeBinding } from '@master/css-native'
-import { compileCSS, inspectCSS, resolveCSSImportGraph } from '../src'
+import { inspectCSS, resolveCSSImportGraph } from '../src'
+import { compileCSS as compileCSSOracle } from '../src/core'
 import { createMasterCSSManifest } from '../src/master-css-manifest'
 
 function getNativeDiagnostic(source: string) {
@@ -61,7 +62,7 @@ describe('Rust native CSS compilation differential', () => {
         css: string
         nativeCSS: string
       }
-      const oracle = compileCSS(source)
+      const oracle = compileCSSOracle(source)
       expect(rust.nativeCSS).toBe(oracle.nativeCSS)
       expect(rust.css).toBe(oracle.css)
     })
@@ -73,7 +74,7 @@ describe('Rust native CSS compilation differential', () => {
     const rust = JSON.parse(binding.compileNativeCssJson(source, JSON.stringify({
       preserveNativeCSS: false
     }))) as { css: string, nativeCSS: string }
-    const oracle = compileCSS(source, { preserveNativeCSS: false })
+    const oracle = compileCSSOracle(source, { preserveNativeCSS: false })
     expect(rust.nativeCSS).toBe(oracle.nativeCSS)
     expect(rust.css).toBe(oracle.css)
   })
@@ -116,7 +117,7 @@ describe('Rust settings/theme directive lowering differential', () => {
     it(`matches theme fixture ${index + 1}`, () => {
       const binding = loadNativeBinding({ required: true })!.binding
       const rust = JSON.parse(binding.compileCssDirectivesJson(source))
-      expect(rust).toEqual(compileCSS(source))
+      expect(rust).toEqual(compileCSSOracle(source))
     })
   }
 
@@ -142,7 +143,7 @@ describe('Rust settings/theme directive lowering differential', () => {
     const diagnostic = getNativeDiagnostic(source)
     expect(diagnostic.code).toBe('CSS_DIRECTIVE_ERROR')
     expect(diagnostic.message).toContain(message)
-    expect(() => compileCSS(source)).toThrow(message)
+    expect(() => compileCSSOracle(source)).toThrow(message)
   })
 })
 
@@ -225,7 +226,7 @@ describe('Rust static managed directive lowering differential', () => {
   it.each(stylesheets)('matches static managed fixture %#', (source) => {
     const binding = loadNativeBinding({ required: true })!.binding
     const rust = JSON.parse(binding.compileCssDirectivesJson(source))
-    expect(rust).toEqual(compileCSS(source))
+    expect(rust).toEqual(compileCSSOracle(source))
   })
 
   it('matches standalone extraction policy and preserves wildcard regex wire semantics', () => {
@@ -239,7 +240,7 @@ describe('Rust static managed directive lowering differential', () => {
     `
     const binding = loadNativeBinding({ required: true })!.binding
     const rust = JSON.parse(binding.compileCssDirectivesJson(source))
-    const oracle = compileCSS(source)
+    const oracle = compileCSSOracle(source)
     expect(rust.extractionPolicy).toEqual({
       ...oracle.extractionPolicy,
       blocklist: [
@@ -290,7 +291,7 @@ describe('Rust default preset directive input differential', () => {
       .join('\n')
     const binding = loadNativeBinding({ required: true })!.binding
     const rust = JSON.parse(binding.compileCssDirectivesJson(source))
-    const oracle = compileCSS(source)
+    const oracle = compileCSSOracle(source)
 
     expect(rust.manifestInput).toEqual(oracle.manifestInput)
   })
