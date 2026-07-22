@@ -6,6 +6,7 @@ import { stringifyMasterCSSManifestJSON } from '@master/css-schema/manifest-json
 import type {
   MasterCSSLanguageClassificationsIR,
   MasterCSSLanguageClassIR,
+  MasterCSSLanguageColorPresentationIR,
   MasterCSSLanguageCompletionIndexIR,
   MasterCSSLanguageInspectionIR,
   MasterCSSNativeDeclarationCandidateIR
@@ -39,6 +40,7 @@ export interface RustLanguageAnalyzer {
   classifyClassNames?(classNames: string[]): MasterCSSLanguageClassificationsIR
   inspectClassName?(className: string): MasterCSSLanguageInspectionIR
   completionIndex?(): MasterCSSLanguageCompletionIndexIR
+  colorPresentation?(colorToken: string): MasterCSSLanguageColorPresentationIR
   createSession?(manifest: MasterCSSManifest): RustLanguageAnalyzer
   dispose?(): void
 }
@@ -56,6 +58,7 @@ export class RustLanguageAnalyzerError extends Error {
 export type {
   MasterCSSLanguageClassificationsIR,
   MasterCSSLanguageClassIR,
+  MasterCSSLanguageColorPresentationIR,
   MasterCSSLanguageCompletionIndexIR,
   MasterCSSLanguageInspectionIR
 }
@@ -106,6 +109,18 @@ function validateCompletionIndex(
   return index
 }
 
+function validateColorPresentation(
+  presentation: MasterCSSLanguageColorPresentationIR
+): MasterCSSLanguageColorPresentationIR {
+  if (presentation.version !== MASTER_CSS_LANGUAGE_BATCH_VERSION) {
+    throw new RustLanguageAnalyzerError(
+      'LANGUAGE_BATCH_VERSION_MISMATCH',
+      `Expected Master CSS language batch version ${MASTER_CSS_LANGUAGE_BATCH_VERSION}, received ${String(presentation.version)}.`
+    )
+  }
+  return presentation
+}
+
 function createNativeAnalyzer(): RustLanguageAnalyzer | undefined {
   const loaded = loadNativeBinding()
   if (!loaded) return
@@ -147,6 +162,11 @@ function createNativeAnalyzer(): RustLanguageAnalyzer | undefined {
         completionIndex() {
           return validateCompletionIndex(
             JSON.parse(session.completionIndex()) as MasterCSSLanguageCompletionIndexIR
+          )
+        },
+        colorPresentation(colorToken) {
+          return validateColorPresentation(
+            JSON.parse(session.colorPresentation(colorToken)) as MasterCSSLanguageColorPresentationIR
           )
         },
         dispose() {
@@ -210,6 +230,11 @@ export async function createRustLanguageAnalyzer(): Promise<RustLanguageAnalyzer
         completionIndex() {
           return validateCompletionIndex(
             session.completionIndex() as MasterCSSLanguageCompletionIndexIR
+          )
+        },
+        colorPresentation(colorToken) {
+          return validateColorPresentation(
+            session.colorPresentation(colorToken) as MasterCSSLanguageColorPresentationIR
           )
         },
         dispose() {

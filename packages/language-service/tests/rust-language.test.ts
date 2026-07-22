@@ -74,6 +74,55 @@ test('matches TS semantic classification for grouped, component, state, and valu
     const completionPosition = completionDocument.positionAt('<div class="'.length)
     expect(service.suggestSyntax(completionDocument, completionPosition, { triggerKind: 1 }))
       .toEqual(oracle.suggestSyntax(completionDocument, completionPosition, { triggerKind: 1 }))
+    const beforeColorDocument = TextDocument.create(
+      'file:///rust-language-color-before.html',
+      'html',
+      1,
+      '<div class="fg:white/.5"></div>'
+    )
+    const afterColorDocument = TextDocument.create(
+      'file:///rust-language-color-after.html',
+      'html',
+      1,
+      '<div class="fg:oklch(54%|0.0951|115)"></div>'
+    )
+    const beforeColor = (await service.renderSyntaxColors(beforeColorDocument))?.[0]
+    const afterColor = (await service.renderSyntaxColors(afterColorDocument))?.[0]
+    expect(beforeColor).toBeDefined()
+    expect(afterColor).toBeDefined()
+    if (beforeColor && afterColor) {
+      expect(service.editSyntaxColors(beforeColorDocument, afterColor.color, beforeColor.range))
+        .toEqual(oracle.editSyntaxColors(beforeColorDocument, afterColor.color, beforeColor.range))
+    }
+    for (const colorToken of [
+      '#333333',
+      'white/.5',
+      'rgb(0|0|0)',
+      'rgba(0|0|0/.5)',
+      'hsl(0|0%|0%)',
+      'hsla(0|0%|0%/.5)',
+      'hwb(0|0%|0%)',
+      'lab(0%|0|0)',
+      'lch(0%|0|0)',
+      'oklab(0%|0|0)',
+      'oklch(0%|0|0)'
+    ]) {
+      const colorSource = `<div class="fg:${colorToken}"></div>`
+      const colorDocument = TextDocument.create(
+        `file:///rust-language-color-${encodeURIComponent(colorToken)}.html`,
+        'html',
+        1,
+        colorSource
+      )
+      const start = colorSource.indexOf(colorToken)
+      const range = {
+        start: colorDocument.positionAt(start),
+        end: colorDocument.positionAt(start + colorToken.length)
+      }
+      const color = { red: 0.2, green: 0.4, blue: 0.6, alpha: 0.75 }
+      expect(service.editSyntaxColors(colorDocument, color, range))
+        .toEqual(oracle.editSyntaxColors(colorDocument, color, range))
+    }
     for (const token of ['fg:brand:hover@sm', 'rust-card', '-webkit-text-size-adjust:none', 'made-up:nope']) {
       const position = document.positionAt(source.indexOf(token) + 1)
       expect(service.inspectSyntax(document, position)).toEqual(oracle.inspectSyntax(document, position))

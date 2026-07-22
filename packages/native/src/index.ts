@@ -84,6 +84,7 @@ export interface NativeLanguageSession {
   classifyClassNames(classNames: string[], nativeSupport?: boolean[]): string
   inspectClassName(className: string, nativeSupport?: boolean[]): string
   completionIndex(): string
+  colorPresentation(colorToken: string): string
   dispose(): void
 }
 

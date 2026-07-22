@@ -4,6 +4,7 @@ export {
   RustLanguageAnalyzerError,
   type MasterCSSLanguageClassificationsIR,
   type MasterCSSLanguageClassIR,
+  type MasterCSSLanguageColorPresentationIR,
   type MasterCSSLanguageCompletionIndexIR,
   type MasterCSSLanguageInspectionIR,
   type RustClassListContextIR,

@@ -100,6 +100,11 @@ describe('native target resolution', () => {
           expect.objectContaining({ label: 'fg:', kind: 'property', triggerSuggest: true })
         ])
       })
+      expect(JSON.parse(language.colorPresentation('rgba(0|0|0/.5)'))).toEqual({
+        version: 1,
+        colorToken: 'rgba(0|0|0/.5)',
+        space: 'srgb'
+      })
     } finally {
       language.dispose()
     }

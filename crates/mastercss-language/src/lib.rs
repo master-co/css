@@ -90,6 +90,15 @@ pub struct LanguageCompletionIndexIr {
     pub class_entries: Vec<LanguageCompletionEntryIr>,
 }
 
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct LanguageColorPresentationIr {
+    pub version: u32,
+    pub color_token: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub space: Option<String>,
+}
+
 #[derive(Debug)]
 pub struct LanguageSession {
     engine: EngineSession,
@@ -215,6 +224,17 @@ impl LanguageSession {
         Ok(LanguageCompletionIndexIr {
             version: LANGUAGE_BATCH_VERSION,
             class_entries,
+        })
+    }
+
+    pub fn color_presentation(
+        &self,
+        color_token: &str,
+    ) -> Result<LanguageColorPresentationIr, LanguageError> {
+        Ok(LanguageColorPresentationIr {
+            version: LANGUAGE_BATCH_VERSION,
+            color_token: color_token.to_owned(),
+            space: self.engine.color_presentation_space(color_token)?,
         })
     }
 
@@ -590,6 +610,7 @@ mod tests {
         let session = LanguageSession::create(
             r#"{
               "version":1,
+              "variables":{"color":[{"key":"brand","value":"oklch(50% .1 20)"}]},
               "utilities":[{
                 "id":"card",
                 "name":"card",
@@ -617,6 +638,14 @@ mod tests {
                 && entry.documentation_text.as_deref()
                     == Some("@layer components{.card{display:block}}")
         }));
+        assert_eq!(
+            session.color_presentation("rgb(0|0|0)").unwrap().space,
+            Some("srgb".into())
+        );
+        assert_eq!(
+            session.color_presentation("brand/.5").unwrap().space,
+            Some("oklch".into())
+        );
         assert!(completion_index.class_entries.iter().any(|entry| {
             entry.label == "fg:"
                 && entry.kind == LanguageCompletionKind::Property

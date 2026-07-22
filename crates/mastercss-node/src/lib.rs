@@ -186,6 +186,16 @@ impl NodeLanguageSession {
     }
 
     #[napi]
+    pub fn color_presentation(&self, color_token: String) -> Result<String> {
+        to_json(
+            &self
+                .inner
+                .color_presentation(&color_token)
+                .map_err(|error| Error::new(Status::InvalidArg, error.to_string()))?,
+        )
+    }
+
+    #[napi]
     pub fn dispose(&mut self) {
         self.inner.dispose();
     }

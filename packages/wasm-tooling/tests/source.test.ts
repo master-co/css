@@ -223,6 +223,11 @@ test('loads the isolated source tooling Wasm surface', async () => {
       expect.objectContaining({ label: 'fg:', kind: 'property', triggerSuggest: true })
     ])
   })
+  expect(language.colorPresentation('rgba(0|0|0/.5)')).toEqual({
+    version: 1,
+    colorToken: 'rgba(0|0|0/.5)',
+    space: 'srgb'
+  })
   language.dispose()
   language.free()
 

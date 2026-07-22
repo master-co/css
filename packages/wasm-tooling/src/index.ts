@@ -14,6 +14,7 @@ interface GeneratedToolingWasmModule {
     classifyClassNames(classNames: string[], nativeSupport: boolean[]): unknown
     inspectClassName(className: string, nativeSupport: boolean[]): unknown
     completionIndex(): unknown
+    colorPresentation(colorToken: string): unknown
     dispose(): void
     free(): void
   }
@@ -158,6 +159,7 @@ export async function createToolingLanguageSession(
     inspectClassName: (className: string, nativeSupport?: boolean[]) =>
       session.inspectClassName(className, nativeSupport || []),
     completionIndex: () => session.completionIndex(),
+    colorPresentation: (colorToken: string) => session.colorPresentation(colorToken),
     dispose() {
       session.dispose()
       session.free()

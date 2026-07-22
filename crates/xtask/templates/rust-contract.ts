@@ -167,6 +167,12 @@ export interface MasterCSSLanguageCompletionIndexIR {
   classEntries: MasterCSSLanguageCompletionEntryIR[]
 }
 
+export interface MasterCSSLanguageColorPresentationIR {
+  version: typeof MASTER_CSS_LANGUAGE_BATCH_VERSION
+  colorToken: string
+  space?: string
+}
+
 export type MasterCSSDirectiveManifestInputIR =
   import('./css-directives').CSSDirectiveManifestInput
 

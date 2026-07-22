@@ -885,6 +885,14 @@ impl EngineSession {
         Ok(rendered)
     }
 
+    pub fn color_presentation_space(
+        &self,
+        color_token: &str,
+    ) -> Result<Option<String>, EngineError> {
+        self.ensure_active()?;
+        Ok(color_presentation_space(color_token, &self.compiled))
+    }
+
     pub fn css_text(&self) -> String {
         let mut output = String::new();
         if let Some(theme) = self.theme_rule_text() {
@@ -2299,6 +2307,61 @@ fn collect_class_completion_candidates(
         );
     }
     candidates
+}
+
+fn color_function_name(value: &str) -> Option<&str> {
+    let (name, _) = value.split_once('(')?;
+    (!name.is_empty()
+        && name
+            .chars()
+            .all(|character| character.is_ascii_alphanumeric() || matches!(character, '-' | '.')))
+    .then_some(name)
+}
+
+fn normalize_color_presentation_space(function_name: &str) -> Option<String> {
+    Some(
+        match function_name {
+            "rgb" | "rgba" => "srgb",
+            "hsla" => "hsl",
+            "display-p3" | "p3" => "p3",
+            "rec2020" | "rec.2020" => "rec2020",
+            "color" => return None,
+            function_name => function_name,
+        }
+        .to_owned(),
+    )
+}
+
+fn color_presentation_space(color_token: &str, manifest: &ManifestProjection) -> Option<String> {
+    if let Some(function_name) = color_function_name(color_token) {
+        return normalize_color_presentation_space(function_name);
+    }
+    let variable_token = color_token
+        .split_once('/')
+        .map_or(color_token, |(key, _)| key);
+    let variable_key = variable_token.strip_prefix('$').unwrap_or(variable_token);
+    let variable_name = manifest
+        .utilities
+        .iter()
+        .filter(|utility| {
+            utility.matchers.iter().any(|matcher| {
+                matches!(matcher, UtilityMatcher::Key { keys } if keys.iter().any(|key| key == "color"))
+            })
+        })
+        .find_map(|utility| utility.variables.get(variable_key))
+        .map(String::as_str)
+        .or_else(|| {
+            manifest
+                .compiled_variables
+                .contains_key(variable_key)
+                .then_some(variable_key)
+        });
+    if let Some(variable) = variable_name.and_then(|name| manifest.compiled_variables.get(name))
+        && let Some(function_name) = variable.value.as_deref().and_then(color_function_name)
+    {
+        return normalize_color_presentation_space(function_name);
+    }
+    Some("srgb".into())
 }
 
 fn is_native_shorthand_property(property: &str) -> bool {

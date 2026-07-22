@@ -20,6 +20,13 @@ export default function convertColorByToken(color: ColorPresentationParams['colo
   if (!outputSpace) {
     return
   }
+  return convertColorInSpace(color, outputSpace)
+}
+
+export function convertColorInSpace(
+  color: ColorPresentationParams['color'],
+  outputSpace: string
+) {
   return new Color({ space: 'srgb', coords: [color.red, color.green, color.blue], alpha: color.alpha }).to(outputSpace).toString({ format: 'css', precision: 4, inGamut: false })
     .replace(' / ', '/')
     .replaceAll(' ', '|')

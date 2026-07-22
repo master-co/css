@@ -172,6 +172,15 @@ impl ToolingLanguageSession {
             .map_err(|error| JsValue::from_str(&error.to_string()))
     }
 
+    #[wasm_bindgen(js_name = colorPresentation)]
+    pub fn color_presentation(&self, color_token: &str) -> Result<JsValue, JsValue> {
+        self.inner
+            .color_presentation(color_token)
+            .map_err(|error| JsValue::from_str(&error.to_string()))?
+            .serialize(&serde_wasm_bindgen::Serializer::json_compatible())
+            .map_err(|error| JsValue::from_str(&error.to_string()))
+    }
+
     pub fn dispose(&mut self) {
         self.inner.dispose();
     }
