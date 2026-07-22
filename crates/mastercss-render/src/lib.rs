@@ -3,7 +3,7 @@
 use std::collections::HashSet;
 
 use mastercss_engine::{EngineError, EngineSession};
-use mastercss_schema::{EngineSnapshotIr, HydrationManifest};
+use mastercss_schema::{EngineSnapshotIr, HydrationManifest, NativeDeclarationCandidateIr};
 use serde::Serialize;
 
 #[derive(Debug, Clone, PartialEq, Serialize)]
@@ -12,6 +12,86 @@ pub struct ServerRenderIr {
     pub classes: Vec<String>,
     pub snapshot: EngineSnapshotIr,
     pub hydration_manifest: HydrationManifest,
+}
+
+#[derive(Debug)]
+pub struct RenderSession {
+    engine: EngineSession,
+    classes: Vec<String>,
+    class_index: HashSet<String>,
+}
+
+impl RenderSession {
+    pub fn create(
+        manifest_json: &str,
+        emitted_globals_json: Option<&str>,
+    ) -> Result<Self, EngineError> {
+        Ok(Self {
+            engine: EngineSession::create_with_emitted_globals(
+                manifest_json,
+                emitted_globals_json,
+            )?,
+            classes: Vec::new(),
+            class_index: HashSet::new(),
+        })
+    }
+
+    pub fn native_declaration_candidates<I, S>(
+        &self,
+        class_names: I,
+    ) -> Result<Vec<NativeDeclarationCandidateIr>, EngineError>
+    where
+        I: IntoIterator<Item = S>,
+        S: AsRef<str>,
+    {
+        self.engine.native_declaration_candidates(
+            class_names
+                .into_iter()
+                .filter(|class_name| !self.class_index.contains(class_name.as_ref())),
+        )
+    }
+
+    pub fn ensure_classes<I, S>(
+        &mut self,
+        class_names: I,
+        native_support: Option<&[bool]>,
+    ) -> Result<(), EngineError>
+    where
+        I: IntoIterator<Item = S>,
+        S: AsRef<str>,
+    {
+        let mut new_classes = Vec::new();
+        for class_name in class_names {
+            let class_name = class_name.as_ref();
+            if !class_name.is_empty() && self.class_index.insert(class_name.to_owned()) {
+                self.classes.push(class_name.to_owned());
+                new_classes.push(class_name.to_owned());
+            }
+        }
+        if let Some(native_support) = native_support {
+            self.engine
+                .ensure_class_rules_with_native_support(&new_classes, native_support)?;
+        } else {
+            self.engine.ensure_class_rules(&new_classes)?;
+        }
+        Ok(())
+    }
+
+    pub fn snapshot(&self) -> Result<ServerRenderIr, EngineError> {
+        let snapshot = self.engine.snapshot()?;
+        let hydration_manifest = HydrationManifest::new(snapshot.rules.clone());
+        Ok(ServerRenderIr {
+            classes: self.classes.clone(),
+            snapshot,
+            hydration_manifest,
+        })
+    }
+
+    pub fn dispose(&mut self) {
+        self.engine.dispose();
+        self.classes.clear();
+        self.class_index.clear();
+    }
 }
 
 /// Generates the deterministic server-side stylesheet and hydration IR from an
@@ -26,28 +106,13 @@ where
     I: IntoIterator<Item = S>,
     S: AsRef<str>,
 {
-    let mut classes = Vec::new();
-    let mut class_index = HashSet::new();
-    for class_name in class_names {
-        let class_name = class_name.as_ref();
-        if !class_name.is_empty() && class_index.insert(class_name.to_owned()) {
-            classes.push(class_name.to_owned());
-        }
-    }
-
-    let mut engine = EngineSession::create(manifest_json)?;
-    if let Some(native_support) = native_support {
-        engine.ensure_class_rules_with_native_support(&classes, native_support)?;
-    } else {
-        engine.ensure_class_rules(&classes)?;
-    }
-    let snapshot = engine.snapshot()?;
-    let hydration_manifest = HydrationManifest::new(snapshot.rules.clone());
-    Ok(ServerRenderIr {
-        classes,
-        snapshot,
-        hydration_manifest,
-    })
+    let classes = class_names
+        .into_iter()
+        .map(|class_name| class_name.as_ref().to_owned())
+        .collect::<Vec<_>>();
+    let mut session = RenderSession::create(manifest_json, None)?;
+    session.ensure_classes(classes, native_support)?;
+    session.snapshot()
 }
 
 #[cfg(test)]
@@ -96,5 +161,29 @@ mod tests {
         );
         assert_eq!(rendered.hydration_manifest.version, 1);
         assert_eq!(rendered.hydration_manifest.rules, rendered.snapshot.rules);
+    }
+
+    #[test]
+    fn native_support_only_applies_to_new_classes() {
+        let mut session = RenderSession::create(r#"{"version":1,"utilities":[]}"#, None).unwrap();
+        let candidates = session
+            .native_declaration_candidates(["display:block"])
+            .unwrap();
+        assert_eq!(candidates.len(), 1);
+        session
+            .ensure_classes(["display:block"], Some(&[true]))
+            .unwrap();
+
+        assert!(
+            session
+                .native_declaration_candidates(["display:block"])
+                .unwrap()
+                .is_empty()
+        );
+        session.ensure_classes(["display:block"], None).unwrap();
+        assert_eq!(
+            session.snapshot().unwrap().snapshot.text,
+            "@layer utilities{.display\\:block{display:block}}"
+        );
     }
 }

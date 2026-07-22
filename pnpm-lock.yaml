@@ -2256,9 +2256,9 @@ importers:
 
   packages/server:
     dependencies:
-      '@master/css':
+      '@master/css-native':
         specifier: workspace:^
-        version: link:../facade
+        version: link:../native
       '@master/css-preset':
         specifier: workspace:^
         version: link:../preset
@@ -2278,12 +2278,12 @@ importers:
         specifier: ^12.0.0
         version: 12.0.0
     devDependencies:
+      '@master/css':
+        specifier: workspace:^
+        version: link:../facade
       '@master/css-compiler':
         specifier: workspace:^
         version: link:../compiler
-      '@master/css-native':
-        specifier: workspace:^
-        version: link:../native
 
   packages/source:
     dependencies:

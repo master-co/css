@@ -1,5 +1,5 @@
-import { createHydrationManifest, type MasterCSS, type MasterCSSEmittedGlobals, type MasterCSSManifest } from '@master/css'
-import { createServerCSS, parseHTML } from '@master/css-server'
+import type { MasterCSSEmittedGlobals, MasterCSSManifest } from '@master/css'
+import { createServerCSS, parseHTML, type ServerCSS } from '@master/css-server'
 import {
   MASTER_CSS_HYDRATION_MANIFEST_ASSET_BASE,
   MASTER_CSS_HYDRATION_MANIFEST_ATTR,
@@ -50,7 +50,7 @@ export interface MasterCSSSvelteChunkRendererOptions {
 }
 
 export interface MasterCSSChunkRenderer {
-  css: MasterCSS
+  css: ServerCSS
   transform(html: string, done?: boolean): string
 }
 
@@ -92,10 +92,10 @@ function toHydrationManifestAssetURL(fileName: string, base = MASTER_CSS_HYDRATI
 }
 
 function createMasterHydrationManifest(
-  css: MasterCSS,
+  css: ServerCSS,
   option: MasterCSSSvelteHydrationManifestOption = 'inline'
 ): MasterCSSHydrationManifestInjection {
-  const hydrationManifest = createHydrationManifest(css)
+  const hydrationManifest = css.hydrationManifest
   if (!hydrationManifest.rules.length || option === false) return {}
   if (typeof option === 'object' && option.type === 'external') {
     const json = serializeMasterCSSHydrationManifest(hydrationManifest)
@@ -109,7 +109,7 @@ function createMasterHydrationManifest(
   }
 }
 
-export function collectMasterCSSClasses(css: MasterCSS, html: string) {
+export function collectMasterCSSClasses(css: ServerCSS, html: string) {
   for (const className of parseHTML(html).classes) {
     css.ensureClassRules(className)
   }

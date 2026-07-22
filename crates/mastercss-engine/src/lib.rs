@@ -2891,7 +2891,7 @@ fn split_dynamic_value_state(value: &str) -> (String, String) {
             depth = depth.saturating_sub(1);
             continue;
         }
-        if depth == 0 && matches!(character, ':' | '@' | '!') {
+        if depth == 0 && matches!(character, ':' | '@' | '!' | '>') {
             return (value[..index].to_owned(), value[index..].to_owned());
         }
     }
@@ -4057,5 +4057,15 @@ mod tests {
             engine.ensure_class_rules([class_name]).unwrap();
             assert_eq!(engine.css_text(), expected, "{class_name}");
         }
+    }
+
+    #[test]
+    fn separates_child_selectors_from_dynamic_values() {
+        let mut engine = EngineSession::create(r#"{"version":1,"utilities":[]}"#).unwrap();
+        engine.ensure_class_rules(["mt:0>div"]).unwrap();
+        assert_eq!(
+            engine.css_text(),
+            "@layer utilities{.mt\\:0\\>div>div{margin-top:0}}"
+        );
     }
 }

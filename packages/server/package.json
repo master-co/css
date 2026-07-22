@@ -51,7 +51,7 @@
     "provenance": true
   },
   "dependencies": {
-    "@master/css": "workspace:^",
+    "@master/css-native": "workspace:^",
     "@master/css-preset": "workspace:^",
     "@master/css-validator": "workspace:^",
     "dom-serializer": "^3.1.1",
@@ -60,7 +60,7 @@
     "@master/css-schema": "workspace:^"
   },
   "devDependencies": {
-    "@master/css-compiler": "workspace:^",
-    "@master/css-native": "workspace:^"
+    "@master/css": "workspace:^",
+    "@master/css-compiler": "workspace:^"
   }
 }

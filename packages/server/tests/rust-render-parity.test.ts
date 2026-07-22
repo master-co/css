@@ -4,7 +4,7 @@ import defaultManifestJSON from '@master/css-preset/default-manifest.json' with 
 import type { MasterCSSServerRenderIR } from '@master/css-schema/rust-contract'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import { beforeAll, expect, it } from 'vitest'
-import createServerCSS from '../src/create-server-css'
+import { createCSSWithNativeDeclarations } from '@master/css-validator'
 import parseHTML from '../src/parse-html'
 
 beforeAll(() => {
@@ -22,7 +22,7 @@ it('matches server CSS and hydration composition', () => {
   ].join('')
   const manifest = defaultManifestJSON as unknown as MasterCSSManifest
   const { classes } = parseHTML(html)
-  const css = createServerCSS(manifest)
+  const css = createCSSWithNativeDeclarations(manifest)
   classes.forEach((className) => css.ensureClassRules(className))
 
   const binding = loadNativeBinding({ required: true })!.binding

@@ -1,8 +1,7 @@
 import parseHTML from './parse-html'
-import { MasterCSS } from '@master/css'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import getDefaultManifest from './default-manifest'
-import createServerCSS from './create-server-css'
+import createServerCSS, { type ServerCSS } from './create-server-css'
 
 /**
  * Renders the Master CSS string from HTML
@@ -10,7 +9,7 @@ import createServerCSS from './create-server-css'
  * @param manifest
  * @returns MasterCSS
  */
-export default function renderCSS(html: string, manifest?: MasterCSSManifest): MasterCSS | undefined {
+export default function renderCSS(html: string, manifest?: MasterCSSManifest): ServerCSS | undefined {
   if (!html) return
   const { classes } = parseHTML(html)
   if (!classes.length) return

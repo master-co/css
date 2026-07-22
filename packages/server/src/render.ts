@@ -1,4 +1,3 @@
-import { MasterCSS, createHydrationManifest } from '@master/css'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import {
   MASTER_CSS_HYDRATION_MANIFEST_ATTR,
@@ -9,7 +8,7 @@ import {
 import { MASTER_CSS_RUNTIME_STYLE_ID } from '@master/css-schema/runtime-style'
 import parseHTML from './parse-html'
 import getDefaultManifest from './default-manifest'
-import createServerCSS from './create-server-css'
+import createServerCSS, { type ServerCSS } from './create-server-css'
 import { Element, Text, ChildNode } from 'domhandler'
 import serialize from 'dom-serializer'
 
@@ -30,7 +29,7 @@ export interface RenderOptions {
 
 export interface RenderResult {
   html: string,
-  css?: MasterCSS,
+  css?: ServerCSS,
   classes: string[],
   nodes: ChildNode[],
   htmlElement: Element | null,
@@ -206,7 +205,7 @@ export default function render(
   classes.forEach(eachClass => css.ensureClassRules(eachClass))
   const hydrationManifest = options.hydrationManifest === false
     ? undefined
-    : createHydrationManifest(css)
+    : css.hydrationManifest
   if (!css.text) {
     if ((options.hydrationManifest === 'inject' || externalHydrationManifestOption) && styleElement) {
       removeNode(nodes, styleElement)
