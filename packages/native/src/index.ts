@@ -54,6 +54,12 @@ export interface NativeRenderSession {
   dispose(): void
 }
 
+export interface NativeValidatorSession {
+  nativeDeclarationCandidates(classNames: string[]): string
+  generateClasses(classNames: string[], nativeSupport?: boolean[]): string
+  dispose(): void
+}
+
 export interface NativeBinding {
   bindingInfoJson(): string
   extractAstroClasses(source: string, content: string): string[]
@@ -72,6 +78,7 @@ export interface NativeBinding {
   inspectCssJson(source: string): string
   ScannerSession: new (manifestJSON: string) => NativeScannerSession
   RenderSession: new (manifestJSON: string, emittedGlobalsJSON?: string) => NativeRenderSession
+  ValidatorSession: new (manifestJSON: string) => NativeValidatorSession
   EngineSession: new (manifestJSON: string, emittedGlobalsJSON?: string) => NativeEngineSession
 }
 

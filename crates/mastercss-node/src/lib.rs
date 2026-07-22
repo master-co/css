@@ -5,6 +5,7 @@ use mastercss_compiler::{
 use mastercss_engine::{EngineError, EngineSession as RustEngineSession};
 use mastercss_render::RenderSession as RustRenderSession;
 use mastercss_scanner::ScannerSession as RustScannerSession;
+use mastercss_validator::ValidatorSession as RustValidatorSession;
 use napi::{Error, Result, Status};
 use napi_derive::napi;
 use serde::Serialize;
@@ -173,6 +174,50 @@ pub fn resolve_css_import_graph_json(request_json: String) -> Result<String> {
         &mastercss_compiler::resolve_prepared_css_import_graph(&request)
             .map_err(compiler_to_napi_error)?,
     )
+}
+
+#[napi(js_name = "ValidatorSession")]
+pub struct NodeValidatorSession {
+    inner: RustValidatorSession,
+}
+
+#[napi]
+impl NodeValidatorSession {
+    #[napi(constructor)]
+    pub fn new(manifest_json: String) -> Result<Self> {
+        Ok(Self {
+            inner: RustValidatorSession::create(&manifest_json).map_err(to_napi_error)?,
+        })
+    }
+
+    #[napi]
+    pub fn native_declaration_candidates(&self, class_names: Vec<String>) -> Result<String> {
+        to_json(
+            &self
+                .inner
+                .native_declaration_candidates(class_names)
+                .map_err(to_napi_error)?,
+        )
+    }
+
+    #[napi]
+    pub fn generate_classes(
+        &mut self,
+        class_names: Vec<String>,
+        native_support: Option<Vec<bool>>,
+    ) -> Result<String> {
+        to_json(
+            &self
+                .inner
+                .generate_classes(class_names, native_support.as_deref())
+                .map_err(to_napi_error)?,
+        )
+    }
+
+    #[napi]
+    pub fn dispose(&mut self) {
+        self.inner.dispose();
+    }
 }
 
 #[napi(js_name = "RenderSession")]

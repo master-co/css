@@ -2428,6 +2428,9 @@ importers:
       '@master/css':
         specifier: workspace:^
         version: link:../facade
+      '@master/css-native':
+        specifier: workspace:^
+        version: link:../native
       '@master/css-preset':
         specifier: workspace:^
         version: link:../preset

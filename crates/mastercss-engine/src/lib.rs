@@ -476,14 +476,9 @@ impl EngineSession {
         self.ensure_active()?;
         Ok(class_names
             .into_iter()
-            .filter_map(|class_name| {
-                let class_name = class_name.as_ref();
-                if self.class_rules.contains_key(class_name)
-                    || !self.generate_class_rules(class_name).is_empty()
-                {
-                    return None;
-                }
-                self.parse_native_declaration_candidate(class_name)
+            .flat_map(|class_name| {
+                self.native_declaration_candidates_for_class(class_name.as_ref())
+                    .into_iter()
                     .map(|candidate| candidate.ir)
             })
             .collect())
@@ -505,14 +500,7 @@ impl EngineSession {
             .collect::<Vec<_>>();
         let candidates = class_names
             .iter()
-            .filter_map(|class_name| {
-                if self.class_rules.contains_key(class_name)
-                    || !self.generate_class_rules(class_name).is_empty()
-                {
-                    return None;
-                }
-                self.parse_native_declaration_candidate(class_name)
-            })
+            .flat_map(|class_name| self.native_declaration_candidates_for_class(class_name))
             .collect::<Vec<_>>();
         for (candidate, supported) in candidates.into_iter().zip(supported.iter().copied()) {
             if !supported {
@@ -972,6 +960,32 @@ impl EngineSession {
             },
             match_name: format!("{property}:{raw_value}"),
         })
+    }
+
+    fn native_declaration_candidates_for_class(
+        &self,
+        class_name: &str,
+    ) -> Vec<NativeDeclarationCandidate> {
+        if self.class_rules.contains_key(class_name) {
+            return Vec::new();
+        }
+        if let Some(body) = class_name.strip_prefix('{')
+            && let Some(close) = find_group_close(body)
+        {
+            return split_top_level(&body[..close], ';')
+                .into_iter()
+                .filter(|nested_class| !nested_class.is_empty())
+                .flat_map(|nested_class| {
+                    self.native_declaration_candidates_for_class(&nested_class)
+                })
+                .collect();
+        }
+        if !self.generate_class_rules(class_name).is_empty() {
+            return Vec::new();
+        }
+        self.parse_native_declaration_candidate(class_name)
+            .into_iter()
+            .collect()
     }
 
     fn keyframe_variable_names(&self, name: &str) -> Vec<String> {
@@ -2701,9 +2715,6 @@ fn match_utility(
                     continue;
                 };
                 let state_token = &value[candidate.len()..];
-                if state_token.starts_with(':') && !is_selector_state_start(state_token) {
-                    continue;
-                }
                 return Some(UtilityMatch {
                     value: Some(
                         value_map
@@ -3661,6 +3672,16 @@ fn render_condition_token(
     let mut bodies = Vec::new();
     let mut features = Vec::new();
     for term in terms {
+        if let Some((condition_id, body, term_features)) =
+            render_function_condition(&term, manifest)
+        {
+            id.get_or_insert(condition_id);
+            if !body.is_empty() {
+                bodies.push(body);
+            }
+            merge_condition_features(&mut features, &term_features);
+            continue;
+        }
         let (operator, name) = split_comparison_prefix(&term);
         let condition = manifest
             .conditions
@@ -3717,6 +3738,117 @@ fn render_condition_token(
     };
     features.sort_by(|left, right| natural_compare(&left.0, &right.0));
     Some((id, wrapper, features))
+}
+
+fn render_function_condition(
+    token: &str,
+    manifest: &ManifestProjection,
+) -> Option<(String, String, Vec<ConditionFeature>)> {
+    let open = token.find('(')?;
+    if !token.ends_with(')') {
+        return None;
+    }
+    let name = &token[..open];
+    if name.is_empty() {
+        return None;
+    }
+    let body = &token[open + 1..token.len() - 1];
+    let mut features = Vec::new();
+    match name {
+        "media" => Some(("media".into(), body.replace('|', " "), features)),
+        "supports" => Some((
+            "supports".into(),
+            format!("({})", body.replace('|', " ")),
+            features,
+        )),
+        "starting-style" => Some(("starting-style".into(), String::new(), features)),
+        "layer" => Some(("layer".into(), body.to_owned(), features)),
+        "container" => {
+            let body = render_named_condition_body(body, "container", manifest, &mut features);
+            Some(("container".into(), body, features))
+        }
+        _ => {
+            let query = render_named_condition_body(body, "container", manifest, &mut features);
+            Some((
+                "container".into(),
+                if query.is_empty() {
+                    name.to_owned()
+                } else {
+                    format!("{name} {query}")
+                },
+                features,
+            ))
+        }
+    }
+}
+
+fn render_named_condition_body(
+    token: &str,
+    condition_id: &str,
+    manifest: &ManifestProjection,
+    features: &mut Vec<ConditionFeature>,
+) -> String {
+    if let Some((value, rendered_value)) = resolve_condition_numeric(token, manifest) {
+        add_condition_feature(features, "width", ">=", value);
+        return format!("(width>={rendered_value})");
+    }
+    if let Some((left, operator, right)) = split_infix_comparison(token) {
+        let feature_name = match left {
+            "w" => "width",
+            "h" => "height",
+            value => value,
+        };
+        if let Some((value, rendered_value)) = resolve_condition_numeric(right, manifest) {
+            add_condition_feature(features, feature_name, operator, value);
+            return format!("({feature_name}{operator}{rendered_value})");
+        }
+    }
+    let condition = if condition_id == "container" {
+        manifest.container_conditions.get(token).or_else(|| {
+            (!manifest.breakpoint_conditions.contains_key(token))
+                .then(|| manifest.conditions.get(token))
+                .flatten()
+        })
+    } else {
+        manifest.conditions.get(token)
+    };
+    if let Some(condition) = condition {
+        add_condition_features(features, &condition.nodes, None);
+        return render_condition_nodes_body(&condition.id, &condition.nodes, None);
+    }
+    token.replace('|', " ")
+}
+
+fn split_infix_comparison(token: &str) -> Option<(&str, &str, &str)> {
+    for operator in [">=", "<=", ">", "<", "="] {
+        if let Some(index) = token.find(operator) {
+            let left = &token[..index];
+            let right = &token[index + operator.len()..];
+            if !left.is_empty() && !right.is_empty() {
+                return Some((left, operator, right));
+            }
+        }
+    }
+    None
+}
+
+fn resolve_condition_numeric(token: &str, manifest: &ManifestProjection) -> Option<(f64, String)> {
+    if let Ok(value) = token.parse::<f64>() {
+        let value = value / manifest.settings.root_size;
+        return Some((value, format!("{}rem", format_number(value))));
+    }
+    let condition = manifest
+        .conditions
+        .get(token)
+        .or_else(|| manifest.breakpoint_conditions.get(token))
+        .or_else(|| manifest.container_conditions.get(token))?;
+    let node = condition.nodes.first()?.as_object()?;
+    if node.get("type").and_then(Value::as_str) != Some("number") {
+        return None;
+    }
+    let value = node.get("value")?.as_f64()?;
+    let unit = node.get("unit").and_then(Value::as_str).unwrap_or_default();
+    Some((value, format!("{}{unit}", format_number(value))))
 }
 
 fn split_comparison_prefix(term: &str) -> (Option<&str>, &str) {
@@ -4373,6 +4505,18 @@ mod tests {
                 "@layer utilities{@media (width>=52.125rem){.block\\@sm{display:block}}}",
             ),
             (
+                "block@media(print)",
+                "@layer utilities{@media print{.block\\@media\\(print\\){display:block}}}",
+            ),
+            (
+                "block@supports(display:grid)",
+                "@layer utilities{@supports (display:grid){.block\\@supports\\(display\\:grid\\){display:block}}}",
+            ),
+            (
+                "block@container(h>160)",
+                "@layer utilities{@container (height>10rem){.block\\@container\\(h\\>160\\){display:block}}}",
+            ),
+            (
                 "w:10px:hover@sm",
                 "@layer utilities{@media (width>=52.125rem){.w\\:10px\\:hover\\@sm:hover{width:10px}}}",
             ),
@@ -4396,6 +4540,27 @@ mod tests {
         assert_eq!(
             engine.css_text(),
             "@layer utilities{.mt\\:0\\>div>div{margin-top:0}}"
+        );
+    }
+
+    #[test]
+    fn preserves_pattern_utility_precedence_inside_groups() {
+        let manifest = r#"{
+          "version":1,
+          "utilities":[{
+            "id":"text-<wrap|pretty>",
+            "type":-2,
+            "emit":{"type":"static","rules":[{"declarations":{"text-wrap":null}}]},
+            "matchers":[{"type":"pattern","prefix":"text-","values":["wrap","pretty"]}]
+          }]
+        }"#;
+        let mut engine = EngineSession::create(manifest).unwrap();
+        engine
+            .ensure_class_rules_with_native_support(["{text-wrap:pretty}"], &[true])
+            .unwrap();
+        assert_eq!(
+            engine.css_text(),
+            "@layer utilities{.\\{text-wrap\\:pretty\\}{text-wrap:wrap}}"
         );
     }
 

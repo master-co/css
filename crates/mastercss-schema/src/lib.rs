@@ -7,6 +7,7 @@ use thiserror::Error;
 pub const MANIFEST_VERSION: u32 = 1;
 pub const HYDRATION_MANIFEST_VERSION: u32 = 1;
 pub const ENGINE_TRANSITION_VERSION: u32 = 1;
+pub const VALIDATOR_BATCH_VERSION: u32 = 1;
 
 #[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -15,6 +16,21 @@ pub struct EmittedGlobals {
     pub variables: Map<String, Value>,
     #[serde(default)]
     pub animations: Map<String, Value>,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ValidatorClassIr {
+    pub class_name: String,
+    pub matched: bool,
+    pub rules: Vec<GeneratedRuleIr>,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ValidatorBatchIr {
+    pub version: u32,
+    pub classes: Vec<ValidatorClassIr>,
 }
 
 impl EmittedGlobals {

@@ -25,6 +25,12 @@ interface GeneratedToolingWasmModule {
     dispose(): void
     free(): void
   }
+  ToolingValidatorSession: new (manifestJSON: string) => {
+    nativeDeclarationCandidates(classNames: string[]): unknown
+    generateClasses(classNames: string[], nativeSupport?: boolean[]): unknown
+    dispose(): void
+    free(): void
+  }
 }
 
 let modulePromise: Promise<GeneratedToolingWasmModule> | undefined
@@ -73,6 +79,22 @@ export async function createToolingScannerSession(
     registerNativeClasses: (classNames: string[]) => session.registerNativeClasses(classNames),
     reset: () => session.reset(),
     state: () => session.state(),
+    dispose() {
+      session.dispose()
+      session.free()
+    }
+  }
+}
+
+export async function createToolingValidatorSession(
+  manifestJSON: string,
+  options: InitToolingWasmOptions = {}
+) {
+  const module = await initToolingWasm(options)
+  const session = new module.ToolingValidatorSession(manifestJSON)
+  return {
+    nativeDeclarationCandidates: (classNames: string[]) => session.nativeDeclarationCandidates(classNames),
+    generateClasses: (classNames: string[], nativeSupport?: boolean[]) => session.generateClasses(classNames, nativeSupport),
     dispose() {
       session.dispose()
       session.free()

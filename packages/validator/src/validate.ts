@@ -1,7 +1,10 @@
 import { type SyntaxError } from './types/syntax-error'
 import defaultManifest from './default-manifest'
 import validateCSS from './validate-css'
-import { createCSSWithNativeDeclarations } from './native-declaration'
+import type { MasterCSS } from '@master/css'
+import { createRustValidatorSession, generateRustRules } from './rust-session'
+
+const defaultValidator = createRustValidatorSession(defaultManifest)
 
 /**
  * @description Report errors for a given class. For pure validity, use the more performant `isClassValid()`.
@@ -10,12 +13,14 @@ import { createCSSWithNativeDeclarations } from './native-declaration'
  */
 export default function validate(
   syntax: string,
-  css = createCSSWithNativeDeclarations(defaultManifest)
+  css?: MasterCSS
 ): {
   matched: boolean,
   errors: SyntaxError[]
 } {
-  const rules = css.generate(syntax)
+  const rules = css
+    ? css.generate(syntax)
+    : generateRustRules(syntax, defaultValidator)
   if (rules.length) {
     const errors = []
     for (const eachRule of rules) {

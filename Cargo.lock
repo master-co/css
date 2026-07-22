@@ -537,6 +537,7 @@ dependencies = [
  "mastercss-scanner",
  "mastercss-schema",
  "mastercss-source",
+ "mastercss-validator",
  "napi",
  "napi-build",
  "napi-derive",
@@ -589,6 +590,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "mastercss-validator"
+version = "0.0.0"
+dependencies = [
+ "mastercss-engine",
+ "mastercss-schema",
+]
+
+[[package]]
 name = "mastercss-wasm-compiler"
 version = "0.0.0"
 dependencies = [
@@ -622,6 +631,7 @@ dependencies = [
  "mastercss-scanner",
  "mastercss-schema",
  "mastercss-source",
+ "mastercss-validator",
  "serde-wasm-bindgen",
  "serde_json",
  "wasm-bindgen",

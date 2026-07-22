@@ -5,5 +5,7 @@ export {
   createCSSWithNativeDeclarations,
   cssTreeNativeDeclarationMatcher
 } from './native-declaration'
+export { createRustValidatorSession } from './rust-session'
+export type { RustValidatorSession } from './rust-session'
 
 export * from './types/syntax-error'

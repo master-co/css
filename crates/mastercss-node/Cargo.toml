@@ -17,6 +17,7 @@ mastercss-render = { path = "../mastercss-render" }
 mastercss-schema = { path = "../mastercss-schema" }
 mastercss-scanner = { path = "../mastercss-scanner" }
 mastercss-source = { path = "../mastercss-source" }
+mastercss-validator = { path = "../mastercss-validator" }
 napi.workspace = true
 napi-derive.workspace = true
 serde.workspace = true

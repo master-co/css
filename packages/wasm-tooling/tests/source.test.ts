@@ -41,4 +41,27 @@ test('loads the isolated source tooling Wasm surface', async () => {
   })
   scanner.dispose()
   scanner.free()
+
+  const validator = new tooling.ToolingValidatorSession(JSON.stringify({
+    version: 1,
+    utilities: [{
+      id: 'display-block',
+      name: 'block',
+      type: 0,
+      emit: {
+        type: 'static',
+        rules: [{ declarations: { display: 'block' } }]
+      },
+      matchers: [{ type: 'static', name: 'block' }]
+    }]
+  }))
+  expect(validator.generateClasses(['block', 'unknown'])).toMatchObject({
+    version: 1,
+    classes: [
+      { className: 'block', matched: true, rules: [{ text: '.block{display:block}' }] },
+      { className: 'unknown', matched: false, rules: [] }
+    ]
+  })
+  validator.dispose()
+  validator.free()
 })

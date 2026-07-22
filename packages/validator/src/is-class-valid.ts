@@ -1,6 +1,9 @@
 import defaultManifest from './default-manifest'
 import validateCSS from './validate-css'
-import { createCSSWithNativeDeclarations } from './native-declaration'
+import type { MasterCSS } from '@master/css'
+import { createRustValidatorSession, generateRustRules } from './rust-session'
+
+const defaultValidator = createRustValidatorSession(defaultManifest)
 
 /**
  * Validates that the string is valid Master CSS class syntax.
@@ -9,9 +12,11 @@ import { createCSSWithNativeDeclarations } from './native-declaration'
  */
 export default function isClassValid(
   syntax: string,
-  css = createCSSWithNativeDeclarations(defaultManifest)
+  css?: MasterCSS
 ): boolean {
-  const rules = css.generate(syntax)
+  const rules = css
+    ? css.generate(syntax)
+    : generateRustRules(syntax, defaultValidator)
   if (rules.length) {
     for (const eachRule of rules) {
       if (validateCSS(eachRule.text).length) {

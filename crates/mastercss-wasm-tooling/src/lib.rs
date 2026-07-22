@@ -39,6 +39,60 @@ pub struct ToolingScannerSession {
 }
 
 #[wasm_bindgen]
+pub struct ToolingValidatorSession {
+    inner: mastercss_validator::ValidatorSession,
+}
+
+#[wasm_bindgen]
+impl ToolingValidatorSession {
+    #[wasm_bindgen(constructor)]
+    pub fn new(manifest_json: &str) -> Result<ToolingValidatorSession, JsValue> {
+        Ok(Self {
+            inner: mastercss_validator::ValidatorSession::create(manifest_json)
+                .map_err(scanner_error)?,
+        })
+    }
+
+    #[wasm_bindgen(js_name = nativeDeclarationCandidates)]
+    pub fn native_declaration_candidates(
+        &self,
+        class_names: Vec<String>,
+    ) -> Result<JsValue, JsValue> {
+        let candidates = self
+            .inner
+            .native_declaration_candidates(class_names)
+            .map_err(scanner_error)?;
+        serde_wasm_bindgen::to_value(&candidates)
+            .map_err(|error| JsValue::from_str(&error.to_string()))
+    }
+
+    #[wasm_bindgen(js_name = generateClasses)]
+    pub fn generate_classes(
+        &mut self,
+        class_names: Vec<String>,
+        native_support: JsValue,
+    ) -> Result<JsValue, JsValue> {
+        let native_support = if native_support.is_null() || native_support.is_undefined() {
+            None
+        } else {
+            Some(
+                serde_wasm_bindgen::from_value::<Vec<bool>>(native_support)
+                    .map_err(|error| JsValue::from_str(&error.to_string()))?,
+            )
+        };
+        let result = self
+            .inner
+            .generate_classes(class_names, native_support.as_deref())
+            .map_err(scanner_error)?;
+        serde_wasm_bindgen::to_value(&result).map_err(|error| JsValue::from_str(&error.to_string()))
+    }
+
+    pub fn dispose(&mut self) {
+        self.inner.dispose();
+    }
+}
+
+#[wasm_bindgen]
 impl ToolingScannerSession {
     #[wasm_bindgen(constructor)]
     pub fn new(manifest_json: &str) -> Result<ToolingScannerSession, JsValue> {

@@ -6,7 +6,7 @@
     "dev": "tsdown --config ../../shared/tsdown-package.config.ts --watch",
     "lint": "eslint",
     "type-check": "tsc -b tsconfig.typecheck.json",
-    "test": "vitest"
+    "test": "cargo xtask build-native && vitest"
   },
   "license": "MIT",
   "description": "Validate generated Master CSS classes and rules",
@@ -60,6 +60,7 @@
   },
   "dependencies": {
     "@master/css": "workspace:^",
+    "@master/css-native": "workspace:^",
     "@master/css-preset": "workspace:^",
     "css-tree": "^3.2.1",
     "@master/css-schema": "workspace:^"

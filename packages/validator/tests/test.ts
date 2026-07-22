@@ -1,5 +1,6 @@
 import { test, it, expect } from 'vitest'
-import { generateValidRules, validate } from '../src'
+import { createCSSWithNativeDeclarations, generateValidRules, validate } from '../src'
+import defaultManifest from '../src/default-manifest'
 import expectClassWithErrors from './utils/expect-class-with-errors'
 import expectClassWithoutErrors from './utils/expect-class-without-errors'
 import expectClassInvalid from './utils/expect-class-invalid'
@@ -53,4 +54,28 @@ it('validates native CSS declarations through css-tree fallback', () => {
 
 it('fairly irregular classes can be ignored very well', () => {
   expect(generateValidRules('shadow:rgba(45,43,37,0.05)|0|-1|0|0|inset,rgba(15,14,12,')).toHaveLength(0)
+})
+
+it('keeps Rust generation byte-identical to the TypeScript oracle', () => {
+  const oracle = createCSSWithNativeDeclarations(defaultManifest)
+  for (const className of [
+    'text-center',
+    'font:.75rem@media(print)',
+    'mt:var(--top)',
+    'right:max(0px,calc(50%-45.3125rem))',
+    '{text-wrap:pretty}',
+    '{content:\'\';block}::after@light',
+    'bg:light-dark(#333b3c,#efefec)',
+    'display:block',
+    'color:oklch(63.7%|0.237|25.331)',
+    'text-align:asdf',
+    'unknown-class'
+  ]) {
+    expect(
+      generateValidRules(className).map(({ text }) => text),
+      className
+    ).toEqual(
+      generateValidRules(className, oracle).map(({ text }) => text)
+    )
+  }
 })
