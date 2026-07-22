@@ -4,6 +4,7 @@ import findMatchingPairs from './find-matching-brackets'
 import escapeRegexp from 'lodash.escaperegexp'
 import { parseSync, visitorKeys } from 'oxc-parser'
 import { collectCSSDirectiveRanges, parseMasterCSSClassList } from '@master/css-lexer'
+import type { RustClassListContextIR, RustLanguageAnalyzer } from '../rust-session'
 
 export interface ClassPosition {
   range: { start: number, end: number }
@@ -27,6 +28,7 @@ export interface GetClassPositionsOptions {
   oxcMode?: OxcClassPositionMode
   positionMatch?: 'token' | 'context'
   cache?: ClassPositionCache
+  analyzer?: RustLanguageAnalyzer
 }
 
 type ClassMatcher = [string, string, string?]
@@ -266,6 +268,55 @@ function sortAndDeduplicate(classPositions: ClassPosition[]) {
       seen.add(id)
       return true
     })
+}
+
+const UNESCAPE_CANDIDATES = ['"', '\'', '`']
+
+function inferUnescapeCharacters(raw: string, token: string) {
+  for (let mask = 0; mask < (1 << UNESCAPE_CANDIDATES.length); mask++) {
+    const characters = UNESCAPE_CANDIDATES.filter((_, index) => mask & (1 << index))
+    const unescaped = characters.reduce(
+      (value, character) => value.replaceAll(`\\${character}`, character),
+      raw
+    )
+    if (unescaped === token) return characters
+  }
+  return []
+}
+
+function finalizeClassPositions(
+  source: string,
+  classPositions: ClassPosition[],
+  analyzer?: RustLanguageAnalyzer
+) {
+  const positions = sortAndDeduplicate(classPositions)
+  if (!analyzer || positions.some(({ raw }) => !raw)) return positions
+
+  const contexts = new Map<string, RustClassListContextIR>()
+  for (const position of positions) {
+    const { start, end } = position.contextRange
+    const key = `${start}:${end}`
+    const context = contexts.get(key) ?? { start, end, unescape: [] }
+    const unescape = new Set(context.unescape)
+    for (const character of inferUnescapeCharacters(position.raw, position.token)) {
+      unescape.add(character)
+    }
+    context.unescape = [...unescape]
+    contexts.set(key, context)
+  }
+
+  const allowedRanges = new Set(positions.map(({ range }) => `${range.start}:${range.end}`))
+  const analyzed = analyzer
+    .analyze(source, [...contexts.values()], [])
+    .classPositions
+    .filter(({ range }) => allowedRanges.has(`${range.start}:${range.end}`))
+  const analyzedRanges = new Set(analyzed.map(({ range }) => `${range.start}:${range.end}`))
+  if (analyzed.length !== positions.length || positions.some(({ range }) => !analyzedRanges.has(`${range.start}:${range.end}`))) {
+    const error = new Error('Rust and host class-position ranges diverged.') as Error & { code: string }
+    error.code = 'LANGUAGE_PARITY_MISMATCH'
+    throw error
+  }
+  return analyzed
 }
 
 function filterClassPositions(
@@ -661,7 +712,7 @@ export default function getClassPositions(
   if (provider !== 'regex') {
     const oxcClassPositions = getOxcClassPositions(textDocument, settings, options, text, acceptsClassRange)
     if (onlyOxc || oxcClassPositions.authoritative) {
-      return sortAndDeduplicate(oxcClassPositions.positions)
+      return finalizeClassPositions(sourceText, oxcClassPositions.positions, options.analyzer)
     }
   }
 
@@ -809,5 +860,5 @@ export default function getClassPositions(
     })
   }
 
-  return sortAndDeduplicate(classPositions)
+  return finalizeClassPositions(sourceText, classPositions, options.analyzer)
 }

@@ -1,5 +1,6 @@
 import { readFile } from 'node:fs/promises'
 import { loadNativeBinding } from '@master/css-native'
+import { MASTER_CSS_LANGUAGE_BATCH_VERSION } from '@master/css-schema/rust-contract'
 import type { SemanticTokenItem } from './semantic/types'
 
 export interface RustClassListContextIR {
@@ -27,19 +28,52 @@ export interface RustLanguageAnalyzer {
   ): RustLanguageBatchIR
 }
 
-export async function createRustLanguageAnalyzer(): Promise<RustLanguageAnalyzer> {
+export class RustLanguageAnalyzerError extends Error {
+  code: 'NATIVE_UNAVAILABLE' | 'LANGUAGE_BATCH_VERSION_MISMATCH'
+
+  constructor(code: RustLanguageAnalyzerError['code'], message: string) {
+    super(message)
+    this.name = 'RustLanguageAnalyzerError'
+    this.code = code
+  }
+}
+
+function validateLanguageBatch(batch: RustLanguageBatchIR): RustLanguageBatchIR {
+  if (batch.version !== MASTER_CSS_LANGUAGE_BATCH_VERSION) {
+    throw new RustLanguageAnalyzerError(
+      'LANGUAGE_BATCH_VERSION_MISMATCH',
+      `Expected Master CSS language batch version ${MASTER_CSS_LANGUAGE_BATCH_VERSION}, received ${String(batch.version)}.`
+    )
+  }
+  return batch
+}
+
+function createNativeAnalyzer(): RustLanguageAnalyzer | undefined {
   const loaded = loadNativeBinding()
-  if (loaded) {
-    return {
-      analyze(source, contexts, semanticTokens) {
-        return JSON.parse(loaded.binding.analyzeLanguageJson(
-          source,
-          JSON.stringify(contexts),
-          JSON.stringify(semanticTokens)
-        )) as RustLanguageBatchIR
-      }
+  if (!loaded) return
+  return {
+    analyze(source, contexts, semanticTokens) {
+      return validateLanguageBatch(JSON.parse(loaded.binding.analyzeLanguageJson(
+        source,
+        JSON.stringify(contexts),
+        JSON.stringify(semanticTokens)
+      )) as RustLanguageBatchIR)
     }
   }
+}
+
+export function createRustLanguageAnalyzerSync(): RustLanguageAnalyzer {
+  const analyzer = createNativeAnalyzer()
+  if (analyzer) return analyzer
+  throw new RustLanguageAnalyzerError(
+    'NATIVE_UNAVAILABLE',
+    'The native Master CSS language analyzer is unavailable. Use createRustLanguageAnalyzer() to allow the tooling Wasm backend.'
+  )
+}
+
+export async function createRustLanguageAnalyzer(): Promise<RustLanguageAnalyzer> {
+  const nativeAnalyzer = createNativeAnalyzer()
+  if (nativeAnalyzer) return nativeAnalyzer
 
   const [{ initToolingWasm }, wasmBytes] = await Promise.all([
     import('@master/css-wasm-tooling'),
@@ -49,7 +83,7 @@ export async function createRustLanguageAnalyzer(): Promise<RustLanguageAnalyzer
   const tooling = await initToolingWasm({ input })
   return {
     analyze(source, contexts, semanticTokens) {
-      return tooling.analyzeLanguage(source, contexts, semanticTokens) as RustLanguageBatchIR
+      return validateLanguageBatch(tooling.analyzeLanguage(source, contexts, semanticTokens) as RustLanguageBatchIR)
     }
   }
 }

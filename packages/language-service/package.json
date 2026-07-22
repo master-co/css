@@ -6,7 +6,7 @@
     "dev": "tsdown --config ../../shared/tsdown-package.config.ts --watch",
     "type-check": "tsc -b tsconfig.typecheck.json",
     "lint": "eslint",
-    "test": "vitest"
+    "test": "cargo xtask build-native && vitest"
   },
   "description": "Master CSS Language Service",
   "author": "Aoyue Design LLC.",

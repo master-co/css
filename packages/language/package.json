@@ -51,6 +51,11 @@
       "import": "./dist/browser.js",
       "default": "./dist/browser.js"
     },
+    "./node": {
+      "types": "./dist/node.d.ts",
+      "import": "./dist/node.js",
+      "default": "./dist/node.js"
+    },
     "./shiki": {
       "types": "./dist/shiki.d.ts",
       "import": "./dist/shiki.js",

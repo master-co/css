@@ -4,6 +4,7 @@ import {
   type CSSLanguageRuntime,
   type MasterCSS,
   type ClassPosition,
+  type RustLanguageAnalyzer,
   ClassPositionCache
 } from '@master/css-language'
 import { defu } from 'defu'
@@ -24,6 +25,7 @@ export type { ClassPosition }
 
 export interface CSSLanguageServiceOptions {
   runtime?: CSSLanguageRuntime
+  analyzer?: RustLanguageAnalyzer
 }
 
 export default class CSSLanguageService extends EventEmitter {
@@ -32,6 +34,7 @@ export default class CSSLanguageService extends EventEmitter {
   settings: Settings
   private completionIndex?: CompletionIndex
   private classPositionCache = new ClassPositionCache()
+  readonly analyzer?: RustLanguageAnalyzer
 
   constructor(
     public customSettings?: Settings,
@@ -39,6 +42,7 @@ export default class CSSLanguageService extends EventEmitter {
   ) {
     super()
     this.runtime = options.runtime ?? defaultCSSLanguageRuntime
+    this.analyzer = options.analyzer
     this.settings = defu(customSettings, settings) as Settings
     this.css = this.runtime.MasterCSS.create({
       manifest: this.settings.manifest || this.runtime.defaultManifest,
@@ -92,7 +96,8 @@ export default class CSSLanguageService extends EventEmitter {
 
   getClassPositions(textDocument: TextDocument): ClassPosition[] {
     return getClassPositions(textDocument, this.settings, {
-      cache: this.classPositionCache
+      cache: this.classPositionCache,
+      analyzer: this.analyzer
     })
   }
 
@@ -102,14 +107,16 @@ export default class CSSLanguageService extends EventEmitter {
       includeEmpty: true,
       provider: 'oxc',
       oxcMode: 'cache-only',
-      cache: this.classPositionCache
+      cache: this.classPositionCache,
+      analyzer: this.analyzer
     })[0]
     if (cachedOxcClassPosition) return cachedOxcClassPosition
 
     const regexClassPosition = getClassPositions(textDocument, this.settings, {
       position,
       includeEmpty: true,
-      provider: 'regex'
+      provider: 'regex',
+      analyzer: this.analyzer
     })[0]
     if (regexClassPosition && !regexClassPosition.raw.includes('${')) {
       return regexClassPosition
@@ -119,7 +126,8 @@ export default class CSSLanguageService extends EventEmitter {
       position,
       includeEmpty: true,
       provider: 'oxc',
-      cache: this.classPositionCache
+      cache: this.classPositionCache,
+      analyzer: this.analyzer
     })[0] ?? regexClassPosition
   }
 
@@ -129,14 +137,16 @@ export default class CSSLanguageService extends EventEmitter {
       provider: 'oxc',
       oxcMode: 'cache-only',
       positionMatch: 'context',
-      cache: this.classPositionCache
+      cache: this.classPositionCache,
+      analyzer: this.analyzer
     })
     if (cachedOxcClassPositions.length) return cachedOxcClassPositions
 
     const regexClassPositions = getClassPositions(textDocument, this.settings, {
       position,
       provider: 'regex',
-      positionMatch: 'context'
+      positionMatch: 'context',
+      analyzer: this.analyzer
     })
     if (regexClassPositions.length && regexClassPositions.every(({ raw }) => !raw.includes('${'))) {
       return regexClassPositions
@@ -146,7 +156,8 @@ export default class CSSLanguageService extends EventEmitter {
       position,
       provider: 'oxc',
       positionMatch: 'context',
-      cache: this.classPositionCache
+      cache: this.classPositionCache,
+      analyzer: this.analyzer
     })
     return oxcClassPositions.length ? oxcClassPositions : regexClassPositions
   }

@@ -800,6 +800,22 @@ fn directive_error(
     }
 }
 
+fn ranged_directive_error(
+    source: &str,
+    filename: &str,
+    start_byte: usize,
+    end_byte: usize,
+    message: impl Into<String>,
+) -> CompilerError {
+    CompilerError::Directive {
+        message: message.into(),
+        filename: filename.to_owned(),
+        range: byte_to_utf16_offset(source, start_byte).and_then(|start| {
+            byte_to_utf16_offset(source, end_byte).map(|end| SourceRange { start, end })
+        }),
+    }
+}
+
 fn parse_theme_prelude(
     source: &str,
     filename: &str,
@@ -2271,7 +2287,6 @@ fn validate_compose_syntax(source: &str, filename: &str) -> Result<(), CompilerE
             index = next_char_end(source, index);
             continue;
         }
-        let directive_start = index;
         index += "@compose".len();
         while source
             .as_bytes()
@@ -2281,10 +2296,14 @@ fn validate_compose_syntax(source: &str, filename: &str) -> Result<(), CompilerE
             index += 1;
         }
         if source.as_bytes().get(index) == Some(&b'{') {
-            return Err(directive_error(
+            let group_end = css_block_end(source, index, source.len())
+                .map(|end| next_char_end(source, end))
+                .unwrap_or(index + 1);
+            return Err(ranged_directive_error(
                 source,
                 filename,
-                directive_start,
+                index,
+                group_end,
                 "@compose does not accept group syntax",
             ));
         }
@@ -2292,10 +2311,12 @@ fn validate_compose_syntax(source: &str, filename: &str) -> Result<(), CompilerE
         while cursor < source.len() {
             let character = source[cursor..].chars().next().unwrap_or_default();
             if matches!(character, '\'' | '"') {
-                return Err(directive_error(
+                let quote_end = css_quote_end(source, cursor, character);
+                return Err(ranged_directive_error(
                     source,
                     filename,
-                    directive_start,
+                    cursor,
+                    quote_end,
                     "@compose only accepts unquoted class lists",
                 ));
             }

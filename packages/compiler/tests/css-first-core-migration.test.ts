@@ -1213,19 +1213,23 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
   })
 
   test('rejects quoted and grouped compose class lists', () => {
-    const expectComposeError = (source: string, code: string) => {
+    const expectComposeError = (source: string, code: string, syntax: string) => {
       let error: unknown
       try {
         compileCSSManifest(source, { baseManifest: defaultManifest })
       } catch (caught) {
         error = caught
       }
-      expect(error).toMatchObject({ code })
+      const start = source.indexOf(syntax)
+      expect(error).toMatchObject({
+        code,
+        range: { start, end: start + syntax.length }
+      })
     }
 
-    expectComposeError('.card { @compose "block"; }', 'compose-quoted-syntax')
-    expectComposeError('.card { @compose content:\'-\'; }', 'compose-quoted-syntax')
-    expectComposeError('.card { @compose {text-center;block}>li; }', 'compose-group-syntax')
+    expectComposeError('.card { @compose "block"; }', 'compose-quoted-syntax', '"block"')
+    expectComposeError('.card { @compose content:\'-\'; }', 'compose-quoted-syntax', '\'-\'')
+    expectComposeError('.card { @compose {text-center;block}>li; }', 'compose-group-syntax', '{text-center;block}')
   })
 
   test('executes CSS-first number variables and native value functions through engine semantics', () => {

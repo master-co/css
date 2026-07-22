@@ -30,6 +30,7 @@ import {
   SEMANTIC_TOKENS_LEGEND,
   type CSSLanguageRuntime
 } from '@master/css-language'
+import { createRustLanguageAnalyzer } from '@master/css-language/node'
 import glob from 'fast-glob'
 import { URI } from 'vscode-uri'
 import { CSSDirectiveError, type CSSDirectiveSourceReference } from '@master/css-schema/css-directives'
@@ -128,6 +129,30 @@ function isCSSDirectiveError(error: unknown): error is CSSDirectiveError {
     )
 }
 
+function toCSSDirectiveError(error: unknown): CSSDirectiveError | undefined {
+  if (isCSSDirectiveError(error)) return error
+  if (!error || typeof error !== 'object') return
+  const diagnostic = error as {
+    code?: unknown
+    message?: unknown
+    source?: unknown
+    range?: unknown
+  }
+  if (typeof diagnostic.code !== 'string' || typeof diagnostic.message !== 'string') return
+  const range = diagnostic.range
+  if (!range || typeof range !== 'object') return
+  const { start, end } = range as { start?: unknown, end?: unknown }
+  if (typeof start !== 'number' || typeof end !== 'number') return
+  return new CSSDirectiveError(
+    diagnostic.code,
+    diagnostic.message,
+    {
+      ...(typeof diagnostic.source === 'string' && diagnostic.source ? { file: diagnostic.source } : {}),
+      range: { start, end }
+    }
+  )
+}
+
 function getInitializationSettings(initializationOptions: unknown): Settings | undefined {
   if (!initializationOptions || typeof initializationOptions !== 'object') return
   const options = initializationOptions as { masterCSS?: Settings } & Settings
@@ -180,6 +205,7 @@ export default class CSSLanguageServer {
   settings?: Settings
   console: RemoteConsole
   private disposables: Disposable[] = []
+  private languageAnalyzerPromise?: ReturnType<typeof createRustLanguageAnalyzer>
 
   constructor(
     public connection: Connection = process.argv.includes('--stdio')
@@ -444,6 +470,7 @@ export default class CSSLanguageServer {
 
   async initWorkspaceLanguageService(workspace: Workspace) {
     workspace.languageRuntime = await this.loadWorkspaceLanguageRuntime(workspace)
+    const analyzer = await (this.languageAnalyzerPromise ??= createRustLanguageAnalyzer())
     let workspacePlan: MasterCSSManifest | undefined
     workspace.manifestErrors = []
     if (workspace !== this.globalWorkspace) {
@@ -462,7 +489,7 @@ export default class CSSLanguageServer {
     }
     workspace.languageService = new CSSLanguageService(
       { ...workspace.languageServiceSettings, manifest: workspacePlan },
-      { runtime: workspace.languageRuntime }
+      { runtime: workspace.languageRuntime, analyzer }
     )
   }
 
@@ -590,8 +617,9 @@ export default class CSSLanguageServer {
           baseManifest: (workspace.languageRuntime ?? defaultCSSLanguageRuntime).defaultManifest
         })
       } catch (error) {
-        if (!isCSSDirectiveError(error)) continue
-        const diagnostic = this.createCSSDirectiveDiagnostic(error, textDocument, documentFile, offset)
+        const directiveError = toCSSDirectiveError(error)
+        if (!directiveError) continue
+        const diagnostic = this.createCSSDirectiveDiagnostic(directiveError, textDocument, documentFile, offset)
         if (diagnostic) diagnostics.push(diagnostic)
       }
     }
@@ -602,7 +630,7 @@ export default class CSSLanguageServer {
     if (!workspace.manifestErrors?.length) return []
     const documentFile = path.resolve(URI.parse(textDocument.uri).fsPath)
     return workspace.manifestErrors.map((error) => {
-      const directiveError = isCSSDirectiveError(error) ? error : undefined
+      const directiveError = toCSSDirectiveError(error)
       const source = directiveError?.source
       return {
         range: source && (!source.file || path.resolve(source.file) === documentFile)

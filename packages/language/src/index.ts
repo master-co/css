@@ -11,6 +11,11 @@ export * from './semantic/tokenize-class'
 export * from './semantic/tokenize-css'
 export * from './semantic/types'
 export type { MasterCSSManifest } from '@master/css-schema/manifest'
+export type {
+  RustClassListContextIR,
+  RustLanguageAnalyzer,
+  RustLanguageBatchIR
+} from './rust-session'
 export {
   default as getClassPositions,
   ClassPositionCache,

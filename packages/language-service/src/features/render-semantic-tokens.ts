@@ -12,7 +12,7 @@ export function renderSemanticTokensAtPosition(this: CSSLanguageService, documen
     document,
     this.getClassContextPositions(document, position),
     position,
-    this.settings
+    { ...this.settings, analyzer: this.analyzer }
   )
 }
 
@@ -21,6 +21,6 @@ export default function renderSemanticTokens(this: CSSLanguageService, document:
     this.css,
     document,
     this.getClassPositions(document),
-    this.settings
+    { ...this.settings, analyzer: this.analyzer }
   )
 }

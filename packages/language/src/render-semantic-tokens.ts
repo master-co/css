@@ -7,17 +7,26 @@ import { tokenizeClassToken } from './semantic/tokenize-class'
 import type { SemanticTokenItem } from './semantic/types'
 import type { MasterCSS } from './master-css'
 import type { ClassPosition } from './utils/get-class-positions'
+import type { RustLanguageAnalyzer } from './rust-session'
 
 export { encodeSemanticTokens }
 export type { HighlightTokenItem, SemanticTokenItem }
 
 export interface RenderSemanticTokenOptions {
   embeddedSyntaxHighlighting?: 'active' | 'always' | 'off'
+  analyzer?: RustLanguageAnalyzer
 }
 
-function encodeHighlightTokens(document: TextDocument, highlightTokens: HighlightTokenItem[]): SemanticTokens | undefined {
+function encodeHighlightTokens(
+  document: TextDocument,
+  highlightTokens: HighlightTokenItem[],
+  analyzer?: RustLanguageAnalyzer
+): SemanticTokens | undefined {
   if (!highlightTokens.length) return
-  return encodeSemanticTokens(document, toSemanticTokenItems(highlightTokens))
+  const semanticTokens = toSemanticTokenItems(highlightTokens)
+  return analyzer
+    ? { data: analyzer.analyze(document.getText(), [], semanticTokens).semanticTokenData }
+    : encodeSemanticTokens(document, semanticTokens)
 }
 
 export function collectEmbeddedHighlightTokenItems(css: MasterCSS, classPositions: ClassPosition[]): HighlightTokenItem[] {
@@ -70,9 +79,17 @@ export function collectActiveHighlightTokenItems(css: MasterCSS, document: TextD
 }
 
 export function renderSemanticTokensAtPosition(css: MasterCSS, document: TextDocument, classPositions: ClassPosition[], position: Parameters<TextDocument['offsetAt']>[0], options: RenderSemanticTokenOptions = {}): SemanticTokens | undefined {
-  return encodeHighlightTokens(document, collectActiveHighlightTokenItems(css, document, classPositions, position, options))
+  return encodeHighlightTokens(
+    document,
+    collectActiveHighlightTokenItems(css, document, classPositions, position, options),
+    options.analyzer
+  )
 }
 
 export default function renderSemanticTokens(css: MasterCSS, document: TextDocument, classPositions: ClassPosition[], options: RenderSemanticTokenOptions = {}): SemanticTokens | undefined {
-  return encodeHighlightTokens(document, collectDocumentHighlightTokenItems(css, document, classPositions, options))
+  return encodeHighlightTokens(
+    document,
+    collectDocumentHighlightTokenItems(css, document, classPositions, options),
+    options.analyzer
+  )
 }
