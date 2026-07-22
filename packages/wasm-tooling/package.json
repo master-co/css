@@ -26,5 +26,8 @@
   "publishConfig": {
     "access": "public",
     "provenance": true
+  },
+  "dependencies": {
+    "@master/css-schema": "workspace:^"
   }
 }

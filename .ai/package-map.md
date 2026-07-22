@@ -5,11 +5,11 @@
 | Package | Entry Points | Responsibility |
 |---|---|---|
 | `@master/css` | `.`, `./index.css`, `./base.css`, `./theme.css`, `./variants.css`, `./utilities.css` | Public facade over engine API, manifest types, default preset manifest, and preset stylesheet entries |
-| `@master/css-engine` | `.`, `./compiler`, `./inspect` | Browser-safe MasterCSSManifest executor, class semantics, rule generation, layers, variable and animation lifecycle |
+| `@master/css-engine` | `.`, `./node` | Rust-backed Manifest v1 engine session, inspection/transition/snapshot IR, rule generation, layers, and resource lifecycle |
 | `@master/css-preset` | `.`, `./default-manifest.json`, `./index.css`, `./base.css`, `./theme.css`, `./variants.css`, `./utilities.css` | Default preset CSS source and generated default manifest |
-| `@master/css-lexer` | `.` | Dependency-free source ranges, directive/import scanners, lexical escaping helpers, Master class lexical tokens, and CSS unit constants |
-| `@master/css-source` | `.`, `./adapters`, `./adapters/astro`, `./adapters/svelte`, `./adapters/vue` | Source-level class candidate extraction and source-format-aware adapters, including HTML, OXC JavaScript/TypeScript, Astro, Svelte, and Vue scanners |
-| `@master/css-compiler` | `.`, `./browser` | Compile Master CSS stylesheet entries into MasterCSSManifest values, directive metadata, and native CSS |
+| `@master/css-lexer` | `.`, `./node`, `./browser`, `./shiki` | Rust-backed batched lexical analysis; generated constants/types; Shiki-only asset helpers |
+| `@master/css-source` | `.`, `./node`, `./browser`, `./adapters`, `./adapters/astro`, `./adapters/svelte`, `./adapters/vue` | Rust-backed raw/HTML/JS/TS/Astro extraction plus thin official-parser adapters for Svelte and Vue |
+| `@master/css-compiler` | `.`, `./node`, `./browser` | Rust-backed directive lowering, Manifest v1 compilation, normalization, native CSS transform, and provider-neutral graph analysis |
 | `@master/css-runtime` | `.` | Browser runtime, DOM observation, hydration |
 | `@master/css-server` | `.` | HTML render and CSS injection |
 | `@master/css-scanner` | `.`, `./options` | Static source scanning, class validation, scanner caches, and generated CSS scanner state |
@@ -21,13 +21,13 @@
 | `@master/css.nuxt` | `.` | Nuxt module |
 | `@master/css.svelte` | `./vite`, `./hooks.server` | SvelteKit hook and Vite wrapper |
 | `@master/css-sv` | `.` | Svelte CLI add-on for one-time SvelteKit project setup |
-| `@master/css-language` | `.`, `./browser`, `./shiki`, `./syntaxes/master-css.tmLanguage.json` | Editor-neutral language primitives, class-position scanning, semantic tokens, browser helpers, Shiki helpers, and shared TextMate grammar |
+| `@master/css-language` | `.`, `./node`, `./browser`, `./shiki`, `./syntaxes/master-css.tmLanguage.json` | Rust-backed document intelligence and IR plus LSP/editor adapters, Shiki helpers, and shared TextMate grammar |
 | `@master/css-language-service` | `.`, `./common` | Stateful language service wrapper for completion, hover, colors, semantic token methods, and `TextDocument` feature gating |
 | `@master/css-language-server` | `.`, `./server` | LSP wrapper and active/full semantic token request handling |
 | `master-css-vscode` | `.`, `./server` | VS Code extension |
-| `@master/css-validator` | `.`, `./native-declaration` | CSS validation for generated rules |
+| `@master/css-validator` | `.`, `./node`, `./native-declaration` | Rust-generated validation IR with a TypeScript host CSS capability oracle |
 | `@master/css-diagnostics` | `.` | Adapter-neutral project inspection reports for scanner state, stylesheet entries, generated CSS metadata, and missing CSS diagnostics |
-| `@master/css-lint` | `.` | Framework-neutral Master CSS class lint policy helpers |
+| `@master/css-lint` | `.`, `./node` | Rust-owned framework-neutral class lint policy, diagnostics, and edit plans |
 | `@master/eslint-plugin-css` | `.`, `./configs/*` | ESLint plugin |
 | `@master/eslint-config-css` | `.` | ESLint config wrapper |
 | `@master/css-cli` | package-name binary | Root scan/extract CLI |
@@ -40,7 +40,7 @@
 
 ## Dependency Direction
 
-Do not introduce reverse dependencies from engine to compiler, integration contracts, runtime, server, scanner, language packages, ESLint, examples, or site. `@master/css-schema` must stay dependency-light and free of compiler, engine, runtime, integration, filesystem, and framework behavior. `@master/css-lexer` must stay dependency-free from engine/compiler/scanner/language packages and should be consumed upward for lexical source ranges, scanners, tokens, and unit constants. `@master/css-source` may depend on `@master/css-lexer`, HTML parsing, and JavaScript/TypeScript source parsing, but must not depend on scanner, engine, compiler, runtime, server, language service, ESLint, or framework integrations. `@master/css-lint` may depend on engine/schema/validator semantics but must not depend on ESLint, project resolution, filesystem access, scanner, language service, runtime, or framework packages. `@master/css-stylesheet` may compose compiler, integration protocol, validator/native CSS helpers, and structural scanner state, but must not depend on `@master/css-scanner`. `@master/css-diagnostics` may compose project discovery, scanner state, and stylesheet report helpers for tooling reports, and must not own lint policy or adapter-specific CLI/MCP behavior. `@master/css-language` must not depend on `@master/css-language-service`, `@master/css-language-server`, or editor extensions. `@master/css-integration` may depend on `@master/css-schema` and `@master/css-engine` types, must remain below compiler/project/build integrations, and must keep browser-safe subpaths free of Node globals and `node:*` imports. The compiler may depend on the manifest-driven engine for class semantics and must not recreate a public Config contract.
+Do not introduce reverse dependencies from engine to compiler, integration contracts, runtime, server, scanner, language packages, ESLint, examples, or site. `@master/css-schema` must stay dependency-light and own versioned Rust/TypeScript wire contracts. Lexer, source, engine, compiler, project, scanner, lint, language, diagnostics, and validator semantics live in Rust crates and their split native/Wasm surfaces; TypeScript packages may adapt platform IO and host APIs but must not implement a semantic fallback. `@master/css-stylesheet` may compose compiler, integration protocol, host validation, and structural scanner state, but must not depend on `@master/css-scanner`. `@master/css-language` must not depend on language service, language server, or editor extensions. `@master/css-integration` depends on schema types, not engine implementation, and browser-safe subpaths must remain free of Node globals and `node:*` imports.
 
 ## Package Tests
 

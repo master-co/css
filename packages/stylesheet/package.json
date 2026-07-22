@@ -74,7 +74,6 @@
   "dependencies": {
     "@master/css-compiler": "workspace:^",
     "@master/css-integration": "workspace:^",
-    "@master/css-lexer": "workspace:^",
     "@master/css-native": "workspace:^",
     "@master/css-source": "workspace:^",
     "@master/css-validator": "workspace:^",

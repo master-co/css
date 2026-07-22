@@ -1,14 +1,6 @@
 import type RuntimeLayer from './layer'
 import type { MasterCSSGeneratedRuleIR } from '@master/css-schema/hydration-manifest'
 
-function collectVariableNames(text: string) {
-  const variableNames = new Set<string>()
-  for (const match of text.matchAll(/var\(\s*--([_a-zA-Z0-9-]+)/g)) {
-    variableNames.add(match[1])
-  }
-  return variableNames
-}
-
 export class HydratedGeneratedRuleNode {
   native?: CSSRule
 
@@ -48,14 +40,7 @@ export default class HydratedGeneratedRule {
     if (ir.nodes?.length) {
       this.nodes = ir.nodes.map((node) => new HydratedGeneratedRuleNode(node.text))
     }
-    const variableNames = collectVariableNames(ir.text)
-    ir.nodes?.forEach((node) => {
-      collectVariableNames(node.text).forEach((variableName) => variableNames.add(variableName))
-    })
-    ir.variableNames?.forEach((variableName) => variableNames.add(variableName))
-    if (variableNames.size) {
-      this.variableNames = variableNames
-    }
+    if (ir.variableNames?.length) this.variableNames = new Set(ir.variableNames)
     if (ir.animationNames?.length) {
       this.animationNames = new Set(ir.animationNames)
     }

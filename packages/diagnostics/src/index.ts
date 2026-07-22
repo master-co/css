@@ -1,4 +1,7 @@
-import CSSScanner, { type ScannerOptions } from '@master/css-scanner'
+import CSSScanner, {
+  serializeScannerBlocklist,
+  type ScannerOptions
+} from '@master/css-scanner'
 import {
   createExtractedCSSResult,
   registerStyleCSSSource,
@@ -9,6 +12,14 @@ import fg from 'fast-glob'
 import fs from 'node:fs'
 import path from 'node:path'
 import { MASTER_CSS_DIAGNOSTICS_REPORT_VERSION } from '@master/css-schema/rust-contract'
+import type {
+  MasterCSSInspectionDiagnosticIR,
+  MasterCSSInspectionReportIR,
+  MasterCSSMissingCSSResultIR,
+  MasterCSSSourceInspectionIR,
+  MasterCSSStylesheetErrorIR,
+  MasterCSSStylesheetInspectionIR
+} from '@master/css-schema/rust-contract'
 import { loadRustInspectionReportCreator } from './rust-report'
 
 export const MASTER_CSS_INSPECTION_REPORT_VERSION = MASTER_CSS_DIAGNOSTICS_REPORT_VERSION
@@ -16,120 +27,12 @@ export const MASTER_CSS_INSPECTION_REPORT_VERSION = MASTER_CSS_DIAGNOSTICS_REPOR
 const DEFAULT_SOURCE_PATTERNS = ['**/*.{html,htm,js,jsx,cjs,ts,tsx,mts,cts,svelte,astro,vue,md,mdx,pug,php}']
 const DEFAULT_IGNORE_PATTERNS = ['**/node_modules/**', 'node_modules']
 
-export type MasterCSSInspectionDiagnosticSeverity = 'error' | 'warning'
-export type MasterCSSInspectionDiagnosticCode =
-  | 'invalid-scanner-class'
-  | 'missing-css'
-  | 'stylesheet-error'
-  | 'stylesheet-warning'
-  | 'scanner-error'
-export type MasterCSSInspectionDiagnosticSourceKind = 'scanner' | 'stylesheet' | 'missing-css'
-
-export interface MasterCSSInspectionDiagnostic {
-  code: MasterCSSInspectionDiagnosticCode
-  severity: MasterCSSInspectionDiagnosticSeverity
-  message: string
-  source: 'Master CSS'
-  sourceKind: MasterCSSInspectionDiagnosticSourceKind
-  filePath?: string
-  data?: unknown
-}
-
-export interface MasterCSSSourceInspection {
-  filePath: string
-  source: string
-  scanned: boolean
-  changed: boolean
-  discovered: {
-    latent: string[]
-    valid: string[]
-    invalid: string[]
-    usedNative: string[]
-  }
-}
-
-export interface MasterCSSStylesheetInspection {
-  filePath: string
-  masterCSS: boolean
-  pruneNativeCSS: boolean
-  dependencies: string[]
-  sourceDependencies: string[]
-  warnings: string[]
-  errors: string[]
-}
-
-export interface MasterCSSStylesheetError {
-  filePath: string
-  message: string
-}
-
-export interface MasterCSSMissingCSSResult {
-  className: string
-  status: 'present' | 'missing'
-  reason: 'generated' | 'native-css' | 'safelist' | 'invalid' | 'blocklisted' | 'not-detected'
-}
-
-export interface MasterCSSInspectionReport {
-  version: typeof MASTER_CSS_INSPECTION_REPORT_VERSION
-  cwd: string
-  inputs: {
-    patterns: string[]
-    files: string[]
-    classes: string[]
-  }
-  scanner: {
-    counts: {
-      latent: number
-      valid: number
-      invalid: number
-      native: number
-      usedNative: number
-      safelist: number
-      blocklist: number
-    }
-    classes: {
-      latent: string[]
-      valid: string[]
-      invalid: string[]
-      native: string[]
-      usedNative: string[]
-      safelist: string[]
-      blocklist: string[]
-    }
-    resetDependencies: string[]
-  }
-  stylesheets: {
-    entries: MasterCSSStylesheetInspection[]
-    dependencies: string[]
-    warnings: string[]
-    errors: MasterCSSStylesheetError[]
-  }
-  css: {
-    bytes: number
-    included: boolean
-    text?: string
-    emittedGlobals: {
-      variables: number
-      animations: number
-    }
-  }
-  missingCSS: {
-    checked: string[]
-    present: MasterCSSMissingCSSResult[]
-    missing: MasterCSSMissingCSSResult[]
-  }
-  files: MasterCSSSourceInspection[]
-  diagnostics: MasterCSSInspectionDiagnostic[]
-  summary: {
-    files: number
-    stylesheets: number
-    diagnostics: number
-    errors: number
-    warnings: number
-    missingCSS: number
-    invalidClasses: number
-  }
-}
+export type MasterCSSInspectionDiagnostic = MasterCSSInspectionDiagnosticIR
+export type MasterCSSSourceInspection = MasterCSSSourceInspectionIR
+export type MasterCSSStylesheetInspection = MasterCSSStylesheetInspectionIR
+export type MasterCSSStylesheetError = MasterCSSStylesheetErrorIR
+export type MasterCSSMissingCSSResult = MasterCSSMissingCSSResultIR
+export type MasterCSSInspectionReport = MasterCSSInspectionReportIR
 
 export interface CreateMasterCSSInspectionReportOptions {
   cwd?: string
@@ -157,7 +60,7 @@ function resolveSourcePaths(cwd: string, sourcePatterns: string[], ignore: strin
   }).filter(Boolean)
 }
 
-function diffSet(after: Set<string>, before: Set<string>) {
+function diffSet(after: Iterable<string>, before: { has(value: string): boolean }) {
   return [...after].filter((value) => !before.has(value))
 }
 
@@ -167,20 +70,21 @@ function parseClassChecks(value: string[] | string | undefined) {
     : value?.split(/\s+/).map((item) => item.trim()).filter(Boolean) ?? []
 }
 
-function isBlocklisted(className: string, blocklist: ScannerOptions['blocklist']) {
-  return blocklist?.some((pattern) => {
-    if (typeof pattern === 'string') return pattern === className
-    pattern.lastIndex = 0
-    const matched = pattern.test(className)
-    pattern.lastIndex = 0
-    return matched
-  }) ?? false
-}
-
 async function resolveFilePath(cwd: string, filePath: string, resolver?: CreateMasterCSSInspectionReportOptions['resolveExistingFile']) {
   return resolver
     ? await resolver(filePath)
     : path.resolve(cwd, filePath)
+}
+
+function preserveWorkspacePath(cwd: string, filePath: string) {
+  let realCwd: string
+  try {
+    realCwd = fs.realpathSync.native(cwd)
+  } catch {
+    return filePath
+  }
+  if (realCwd === cwd || (filePath !== realCwd && !filePath.startsWith(`${realCwd}${path.sep}`))) return filePath
+  return path.join(cwd, path.relative(realCwd, filePath))
 }
 
 async function registerManagedCSSEntries(
@@ -193,7 +97,10 @@ async function registerManagedCSSEntries(
   const errors: MasterCSSStylesheetError[] = []
   styleCSSSources.clear()
   for (const entry of await findCSSManifestEntryFiles(scanner.cwd)) {
-    const filePath = await resolveFilePath(scanner.cwd, entry, resolveExistingFile)
+    const filePath = preserveWorkspacePath(
+      scanner.cwd,
+      await resolveFilePath(scanner.cwd, entry, resolveExistingFile)
+    )
     try {
       const result = await registerStyleCSSSource(scanner, styleCSSSources, filePath, fs.readFileSync(filePath, 'utf8'), {
         projectDir: scanner.cwd
@@ -203,8 +110,8 @@ async function registerManagedCSSEntries(
         filePath,
         masterCSS: Boolean(styleSource?.masterCSS),
         pruneNativeCSS: Boolean(styleSource?.pruneNativeCSS),
-        dependencies: [...(styleSource?.dependencies ?? [])],
-        sourceDependencies: [...(styleSource?.sourceDependencies ?? [])],
+        dependencies: [...(styleSource?.dependencies ?? [])].map((dependency) => preserveWorkspacePath(scanner.cwd, dependency)),
+        sourceDependencies: [...(styleSource?.sourceDependencies ?? [])].map((dependency) => preserveWorkspacePath(scanner.cwd, dependency)),
         warnings: result.warnings ?? [],
         errors: []
       })
@@ -318,10 +225,7 @@ export async function createMasterCSSInspectionReport(options: CreateMasterCSSIn
         native: [...scanner.nativeClassNames],
         usedNative: [...scanner.usedNativeClasses],
         safelist,
-        blocklist: blocklist.map(String).sort(),
-        blockedClasses: classChecks.filter((className) => isBlocklisted(className, blocklist)),
-        safelistCount: safelist.length,
-        blocklistCount: blocklist.length,
+        blocklist: serializeScannerBlocklist(blocklist),
         resetDependencies: scanner.resetDependencies
       },
       stylesheets: stylesheetInspection,

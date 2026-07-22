@@ -1,5 +1,5 @@
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
-import type { MasterCSSEmittedGlobals } from '@master/css-engine'
+import type { MasterCSSEmittedGlobals } from '@master/css-schema/emitted-globals'
 import type { MasterCSSHydrationManifest } from '@master/css-schema/hydration-manifest'
 import CSSRuntime from './core'
 

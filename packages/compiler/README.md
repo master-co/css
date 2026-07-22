@@ -1,6 +1,6 @@
 # @master/css-compiler
 
-Compile Master CSS stylesheet directives into manifest data, native CSS, and directive metadata.
+Rust-backed CSS directive and manifest compilation for Master CSS.
 
 ## Installation
 
@@ -10,48 +10,59 @@ npm install @master/css-compiler
 
 ## Responsibility
 
-`@master/css-compiler` is the CSS source compiler for Master CSS. It parses CSS manifest directives such as `@settings`, `@theme`, `@custom-variant`, `@defaults`, `@components`, `@utilities`, local `@compose`, top-level extraction directives, native CSS, and CSS import graphs.
+The Rust compiler owns parsing, directive lowering, manifest compilation,
+normalization, native CSS transformation, and provider-neutral import graph
+resolution. TypeScript is limited to Node filesystem/package resolution, file IO, and
+warning callbacks. Project entry discovery belongs to `@master/css-project`.
 
-The compiler delegates class semantics and rule generation to `@master/css-engine`; project entry discovery belongs to `@master/css-project`.
-
-## API
-
-### Root entry
-
-Use the root entry in Node environments when CSS imports and filesystem dependencies should be resolved.
+## Universal session
 
 ```ts
-import {
-  compileCSS,
-  compileCSSFile,
-  compileCSSManifest,
-  compileCSSManifestFile,
-  compileProjectManifest,
-} from '@master/css-compiler'
+import { createCompiler } from '@master/css-compiler'
+
+const compiler = await createCompiler()
+const result = compiler.compileCSS(source, { from: 'src/app.css' })
+compiler.dispose()
 ```
 
-Common flows:
+The universal entry prefers the native binding in Node and falls back to
+`wasm-compiler`. It never runs a TypeScript parser, lowerer, or CSS transformer.
+Session methods are synchronous after asynchronous initialization.
+
+The session exposes batched Rust operations for CSS inspection, directive compilation,
+theme compilation, dependency analysis, extraction-policy merging, manifest lowering
+and normalization, default-preset compilation, and prepared import graphs.
+
+## Native synchronous session
 
 ```ts
-const result = compileCSSManifest('@theme { --color-primary: #4f46e5; }')
-const fileResult = await compileCSSManifestFile('/project/src/index.css')
-const projectResult = await compileProjectManifest(['/project/src/index.css'])
+import { createCompilerSync } from '@master/css-compiler/node'
+
+const compiler = createCompilerSync()
 ```
 
-Compiler results include the compiled manifest, dependency paths, warnings, native CSS, and directive metadata used by build integrations.
+`createCompilerSync()` requires the native binding and throws
+`NATIVE_UNAVAILABLE` when it cannot be loaded.
 
-### Browser entry
+## Node file helpers
 
-Use `@master/css-compiler/browser` when CSS import resolution is not needed.
+The root entry also provides Node convenience functions such as `compileCSSFile`,
+`compileCSSManifestFile`, `compileProjectManifest`, and `resolveCSSImportGraph`.
+These functions supply files and Node package `exports` resolution to the Rust
+compiler; they do not contain a TypeScript semantic fallback.
+
+## Browser entry
 
 ```ts
-import { compileCSSManifest } from '@master/css-compiler/browser'
+import { createCompiler } from '@master/css-compiler/browser'
+
+const compiler = await createCompiler()
+const result = compiler.compileCSS(source)
+compiler.dispose()
 ```
 
-The browser compiler rejects `@reference` directives because they require filesystem resolution.
+The browser entry loads only `wasm-compiler`. Browser compilation cannot resolve
+filesystem `@reference` directives unless the host provides a prepared graph.
 
-## Related packages
-
-- `@master/css-engine` executes compiled manifests.
-- `@master/css-project` discovers and loads project CSS manifest entries.
-- `@master/css-stylesheet` composes stylesheet entries for static rendering.
+The former TypeScript `core`, `lowerCSSDirectives`, and
+`createMasterCSSManifest` semantic exports are removed.

@@ -2,7 +2,7 @@
 
 ## Responsibility
 
-`@master/css` is the public facade over the manifest-driven engine API and default preset CSS entrypoints.
+`@master/css` is the public facade over the Rust-backed engine session API, schema types, and default preset CSS entrypoints.
 
 ## Owns
 
@@ -20,10 +20,8 @@
 
 ## Public Surface
 
-- `MasterCSS`
-- `MasterCSS.create({ manifest, emittedGlobals })`
-- Engine inspection-related type re-exports such as `MasterCSSClassInspection` and `MasterCSSNormalizedNumericValue`; inspection value helpers stay in `@master/css-engine/inspect`
-- `MasterCSSManifest` and runtime-safe engine types
+- `createEngine({ manifest, emittedGlobals, backend? })`
+- Engine session, versioned IR, `MasterCSSManifest`, and runtime-safe schema types
 - CSS subpaths listed above
 
 Do not re-export `Config`, `UtilityDefinition`, `extendConfig`, old utility classes, or `@master/css/config` / `@master/css/utils` subpaths.
@@ -52,6 +50,7 @@ Do not re-export `Config`, `UtilityDefinition`, `extendConfig`, old utility clas
 ## Dangerous Changes
 
 - Reintroducing legacy Config APIs.
+- Reintroducing the removed `MasterCSS` object model or engine semantic helpers.
 - Adding utility or runtime implementation logic here.
 - Changing CSS output through facade-only changes.
 

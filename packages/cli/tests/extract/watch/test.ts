@@ -5,7 +5,7 @@ import os from 'node:os'
 import { createRequire } from 'module'
 import { pathToFileURL } from 'url'
 import path from 'upath'
-import { cssEscape } from '@master/css-lexer'
+import { createLexerSessionSync } from '@master/css-lexer/node'
 import waitForDataMatch from '../../helpers/wait-for-data-match'
 import dedent from 'ts-dedent'
 import { it, beforeAll, afterAll, expect } from 'vitest'
@@ -46,6 +46,11 @@ let configFilepath: string
 let virtualCSSFilepath: string
 let subprocess: ResultPromise
 let subprocessOutput = ''
+const lexer = createLexerSessionSync()
+
+function cssEscape(value: string) {
+  return lexer.analyze({ escapeIdentifiers: [value] }).escapedIdentifiers[0]
+}
 
 async function waitForCSSContent(doesMatch: (css: string) => boolean) {
   const deadline = Date.now() + 60000
@@ -128,5 +133,6 @@ it('change html file class attr and update', async () => {
 afterAll(async () => {
   subprocess.kill()
   await subprocess.catch(() => undefined)
+  lexer.dispose()
   fs.rmSync(workspacePath, { recursive: true, force: true })
 })

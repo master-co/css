@@ -6,7 +6,7 @@
     "dev": "tsdown --config ../../shared/tsdown-package.config.ts --watch",
     "lint": "eslint",
     "type-check": "tsc -b tsconfig.typecheck.json",
-    "test": "vitest"
+    "test": "cargo xtask build-native && vitest"
   },
   "license": "MIT",
   "description": "Master CSS project entry discovery and manifest loading utilities.",
@@ -61,7 +61,7 @@
   "dependencies": {
     "@master/css-compiler": "workspace:^",
     "@master/css-integration": "workspace:^",
-    "@master/css-lexer": "workspace:^",
+    "@master/css-native": "workspace:^",
     "@master/css-preset": "workspace:^",
     "@master/css-schema": "workspace:^"
   }

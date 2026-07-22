@@ -1,4 +1,4 @@
-import type { MasterCSSEmittedGlobals } from '@master/css-engine'
+import type { MasterCSSEmittedGlobals } from '@master/css-schema/emitted-globals'
 
 export type { MasterCSSEmittedGlobals }
 

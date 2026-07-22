@@ -100,7 +100,7 @@ const cssRuntime = CSSRuntime.create({ manifest })
 cssRuntime.observe()
 ```
 
-`CSSRuntime` runs in the browser and extends the manifest-driven `MasterCSS` engine. Use `CSSRuntime.create({ manifest })` when the runtime should reuse an existing runtime for the same root.
+`CSSRuntime` runs in the browser as a DOM/CSSOM host around the Rust runtime engine session. Use `CSSRuntime.create({ manifest })` when the runtime should reuse an existing runtime for the same root.
 
 | API | Type | Description |
 | --- | --- | --- |
@@ -111,7 +111,7 @@ cssRuntime.observe()
 | `cssRuntime.container` | `HTMLElement \| ShadowRoot` | Container for `style#master-css`. |
 | `cssRuntime.observing` | `boolean` | `true` after `observe()`, `false` after `disconnect()`. |
 | `cssRuntime.classCounts` | `Map<string, number>` | Active DOM class usage counts. This is the source of truth for observed DOM usage. |
-| `cssRuntime.classUtilities` | `Map<string, Utility[]>` | Generated rule cache. It can include retained mutation rules that are no longer active in the DOM. |
+| `cssRuntime.classUtilities` | `Map<string, RuntimeGeneratedRule[]>` | Generated rule IR cache. It can include retained mutation rules that are no longer active in the DOM. |
 | `cssRuntime.retainedClassNames` | `Set<string>` | Mutation-removed class names whose generated rules are temporarily retained in CSSOM. |
 | `register()` | `this` | Registers this runtime in `CSSRuntime.instances`. |
 | `unregister()` | `this` | Removes this runtime from `CSSRuntime.instances`. |

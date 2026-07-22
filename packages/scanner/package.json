@@ -42,6 +42,11 @@
       "import": "./dist/index.js",
       "default": "./dist/index.js"
     },
+    "./node": {
+      "types": "./dist/node.d.ts",
+      "import": "./dist/node.js",
+      "default": "./dist/node.js"
+    },
     "./options": {
       "types": "./dist/options/index.d.ts",
       "import": "./dist/options/index.js",
@@ -74,8 +79,7 @@
     "consola": "^3.4.2",
     "defu": "^6.1.7",
     "minimatch": "^10.2.5",
-    "@master/css-schema": "workspace:^",
-    "@master/css-lexer": "workspace:^"
+    "@master/css-schema": "workspace:^"
   },
   "devDependencies": {
     "@master/css-compiler": "workspace:^"

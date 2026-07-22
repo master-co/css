@@ -1,18 +1,6 @@
-<br>
-<div align="center">
+# @master/css-language
 
-<p align="center">
-  <a href="https://css.master.co">
-    <picture>
-      <source media="(prefers-color-scheme: dark)" srcset="https://user-images.githubusercontent.com/33840671/201701649-3bb7d698-abec-4d5f-ac30-ccc4d7bafcd4.svg">
-      <source media="(prefers-color-scheme: light)" srcset="https://user-images.githubusercontent.com/33840671/201703010-77bf2373-9899-40cc-98f5-30cf9b546941.svg">
-      <img alt="Master CSS" src="https://user-images.githubusercontent.com/33840671/201703010-77bf2373-9899-40cc-98f5-30cf9b546941.svg" width="100%">
-    </picture>
-  </a>
-</p>
-<p align="center">Language primitives for Master CSS</p>
-
-</div>
+Rust-backed document intelligence for Master CSS editors and language servers.
 
 ## Installation
 
@@ -20,66 +8,55 @@
 npm install @master/css-language
 ```
 
-## Usage
-
-`@master/css-language` provides editor-neutral Master CSS language primitives such as semantic token legends, class-list tokenizers, class-position scanning, directive formatting, browser semantic tokens, Shiki integration, and the shared TextMate grammar.
-
-### Semantic token legend
-
-```js
-import { SEMANTIC_TOKENS_LEGEND } from '@master/css-language'
-```
-
-### Browser semantic tokens
-
-Use the browser subpath when a web editor needs Master CSS semantic tokens without the stateful language service class.
+## Language session
 
 ```ts
-import {
-  createBrowserLanguageSession,
-  SEMANTIC_TOKENS_LEGEND,
-} from '@master/css-language/browser'
+import { createLanguageSession, defaultManifest } from '@master/css-language'
 
-const language = await createBrowserLanguageSession({ manifest })
-const semanticTokens = language.renderSemanticTokens(source, 'html')
+const language = await createLanguageSession(defaultManifest)
+const document = language.analyzeDocument({
+  source,
+  languageId: 'typescriptreact'
+})
+const completions = language.completionIndex()
 language.dispose()
 ```
 
-The browser session initializes the tooling Wasm module once per realm and supports CSS directive class-list spans in CSS documents and quoted `class` or `className` attributes in HTML.
+Rust owns UTF-16 class contexts, class tokenization, semantic-token data, completion
+metadata, inspection, colors, directive formatting, diagnostics, and edit IR. Hosts map
+that IR to LSP, VS Code, Markdown, cancellation, or other platform objects.
 
-### Shiki
-
-Use the Shiki subpath to register the shared TextMate injection grammar and decorate Master CSS semantic ranges.
-
-```ts
-import {
-  masterCSSShikiLanguage,
-  transformerMasterCSS
-} from '@master/css-language/shiki'
-```
-
-### Class positions
-
-Use `getClassPositions()` when a tool needs raw class spans without LSP service lifecycle.
+The universal entry prefers native in Node and falls back to `wasm-tooling`. Use the
+native-only synchronous entry when required:
 
 ```ts
-import { getClassPositions, languageSettings } from '@master/css-language'
+import { createLanguageSessionSync } from '@master/css-language/node'
 
-const positions = getClassPositions(textDocument, languageSettings)
+const language = createLanguageSessionSync(defaultManifest)
 ```
 
-### Directive formatting
-
-Use `formatMasterCSSDirectives()` when an editor integration needs source-offset edits for Master CSS directive formatting without LSP service lifecycle.
+The browser subpath loads only tooling Wasm and can receive custom Wasm initialization
+options:
 
 ```ts
-import {
-  applyMasterCSSDirectiveFormatEdits,
-  formatMasterCSSDirectives
-} from '@master/css-language'
+import { createLanguageSession } from '@master/css-language/browser'
 
-const edits = formatMasterCSSDirectives(source)
-const formatted = applyMasterCSSDirectiveFormatEdits(source, edits)
+const language = await createLanguageSession({ manifest })
 ```
 
-The helper repairs directive class-list important markers such as `bg:transparent !` to `bg:transparent!` and returns offset edits only; it does not compile CSS or change generated output.
+Vue, Svelte, and custom-language hosts may supply ranges from their official parser;
+JavaScript, TypeScript, HTML, CSS, Astro, and plain-text discovery is handled by Rust.
+
+## Host adapters and assets
+
+LSP `TextDocument` conversion belongs to `@master/css-language-service`.
+`@master/css-language/shiki` and the TextMate grammar remain asset-oriented TypeScript
+integrations; the Shiki transformer consumes Rust semantic-token IR and is not an
+alternative semantic backend.
+
+```ts
+import { masterCSSShikiLanguage, transformerMasterCSS } from '@master/css-language/shiki'
+```
+
+If the native or Wasm backend cannot initialize, the API reports a typed backend error.
+It never constructs a TypeScript engine.

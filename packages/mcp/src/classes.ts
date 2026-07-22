@@ -1,6 +1,5 @@
 import { readFile } from 'node:fs/promises'
 import { createRequire } from 'node:module'
-import { getClassPositions, languageSettings } from '@master/css-language'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import type MasterCSSMCPContext from './context'
 import { createMCPTextDocument, getLanguageId } from './document'
@@ -61,7 +60,10 @@ function extractFromContent(
   discovered?: Parameters<typeof classifyExtractedClass>[2]
 ) {
   const document = createMCPTextDocument(filePath, content)
-  return getClassPositions(document, languageSettings, { analyzer: session }).map((position) => {
+  return session.analyzeDocument({
+    source: content,
+    languageId: document.languageId
+  }).classPositions.map((position) => {
     const inspection = compactRustClassInspection(session, position.token, undefined, includeRules)
     return {
       raw: position.raw,

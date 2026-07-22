@@ -1,10 +1,12 @@
 import { RuleContext } from '@typescript-eslint/utils/ts-eslint'
 import resolveClassNode from './resolve-class-node'
 import { TSESTree } from '@typescript-eslint/utils'
+import type { LintSession } from '@master/css-lint/node'
 
 export default function withVisitClassNode(
   visit: (node: TSESTree.Node, resolved: ReturnType<typeof resolveClassNode>) => void,
-  context: RuleContext<any, any[]>
+  context: RuleContext<any, any[]>,
+  lintSession: Pick<LintSession, 'tokenizeClassList'>
 ) {
   const visitNode = (node) => {
     if (!node) return
@@ -45,7 +47,7 @@ export default function withVisitClassNode(
         }
         return
       default:
-        const resolved = resolveClassNode(node, context)
+        const resolved = resolveClassNode(node, context, lintSession)
         if (!resolved) return
         visit(node, resolved)
     }

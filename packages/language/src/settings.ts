@@ -1,6 +1,12 @@
 import { CLASS_ATTRIBUTES, CLASS_DECLARATIONS, CLASS_FUNCTIONS } from './master-css'
-import type { ClassPositionSettings } from './utils/get-class-positions'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
+
+export interface ClassPositionSettings {
+  classAttributes?: string[]
+  classFunctions?: string[]
+  classDeclarations?: string[]
+  classAttributeBindings?: Record<string, [string, string] | false>
+}
 
 const languageSettings: LanguageSettings = {
   classAttributes: CLASS_ATTRIBUTES,

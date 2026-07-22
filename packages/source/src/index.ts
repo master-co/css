@@ -1,9 +1,9 @@
-export { extractClassCandidates } from './extract-class-candidates'
-export { addClassString } from './adapters/class-string'
+export {
+  createSourceExtractor,
+  SourceExtractorError,
+  type SourceBatchIR,
+  type SourceBatchRequest,
+  type SourceExtractor,
+  type SourceExtractorKind
+} from './session'
 export type { SourceAdapter, SourceAdapterInput } from './adapters/types'
-export { matchesSourceAdapter } from './adapters/types'
-export { HTML_SOURCE_EXT, extractHTMLClasses, htmlAdapter } from './adapters/html'
-export { OXC_SOURCE_EXT, extractOxcClasses, oxcAdapter } from './adapters/oxc'
-export { ASTRO_SOURCE_EXT, extractAstroClasses, astroAdapter } from './adapters/astro'
-export { VUE_SOURCE_EXT, extractVueClasses, vueAdapter } from './adapters/vue'
-export { SVELTE_SOURCE_EXT, extractSvelteClasses, svelteAdapter } from './adapters/svelte'

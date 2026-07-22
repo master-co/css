@@ -1,11 +1,10 @@
-import { createHydrationManifest } from '@master/css'
 import { loadNativeBinding } from '@master/css-native'
 import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
 import type { MasterCSSServerRenderIR } from '@master/css-schema/rust-contract'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import { beforeAll, expect, it } from 'vitest'
-import { createCSSWithNativeDeclarations } from '@master/css-validator'
 import parseHTML from '../src/parse-html'
+import createServerCSS from '../src/create-server-css'
 
 beforeAll(() => {
   process.env.MASTER_CSS_NATIVE_BINDING_PATH = new URL(
@@ -22,7 +21,7 @@ it('matches server CSS and hydration composition', () => {
   ].join('')
   const manifest = defaultManifestJSON as unknown as MasterCSSManifest
   const { classes } = parseHTML(html)
-  const css = createCSSWithNativeDeclarations(manifest)
+  const css = createServerCSS(manifest)
   classes.forEach((className) => css.ensureClassRules(className))
 
   const binding = loadNativeBinding({ required: true })!.binding
@@ -33,5 +32,5 @@ it('matches server CSS and hydration composition', () => {
 
   expect(rust.classes).toEqual(classes)
   expect(rust.snapshot.text).toBe(css.text)
-  expect(rust.hydrationManifest).toEqual(createHydrationManifest(css))
+  expect(rust.hydrationManifest).toEqual(css.hydrationManifest)
 })

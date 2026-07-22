@@ -83,7 +83,48 @@ fn generated_contract() -> String {
         .map(|code| format!("  | '{}'", code.as_wire_code()))
         .collect::<Vec<_>>()
         .join("\n");
-    GENERATED_CONTRACT_TEMPLATE.replace("{{MASTER_CSS_ERROR_CODES}}", &error_codes)
+    GENERATED_CONTRACT_TEMPLATE
+        .replace(
+            "{{MASTER_CSS_BINDING_ABI_VERSION}}",
+            &mastercss_schema::BINDING_ABI_VERSION.to_string(),
+        )
+        .replace(
+            "{{MASTER_CSS_MANIFEST_VERSION}}",
+            &mastercss_schema::MANIFEST_VERSION.to_string(),
+        )
+        .replace(
+            "{{MASTER_CSS_HYDRATION_MANIFEST_VERSION}}",
+            &mastercss_schema::HYDRATION_MANIFEST_VERSION.to_string(),
+        )
+        .replace(
+            "{{MASTER_CSS_ENGINE_TRANSITION_VERSION}}",
+            &mastercss_schema::ENGINE_TRANSITION_VERSION.to_string(),
+        )
+        .replace(
+            "{{MASTER_CSS_VALIDATOR_BATCH_VERSION}}",
+            &mastercss_schema::VALIDATOR_BATCH_VERSION.to_string(),
+        )
+        .replace(
+            "{{MASTER_CSS_DIAGNOSTICS_REPORT_VERSION}}",
+            &mastercss_schema::DIAGNOSTICS_REPORT_VERSION.to_string(),
+        )
+        .replace(
+            "{{MASTER_CSS_LINT_BATCH_VERSION}}",
+            &mastercss_schema::LINT_BATCH_VERSION.to_string(),
+        )
+        .replace(
+            "{{MASTER_CSS_LANGUAGE_BATCH_VERSION}}",
+            &mastercss_schema::LANGUAGE_BATCH_VERSION.to_string(),
+        )
+        .replace(
+            "{{MASTER_CSS_LEXER_BATCH_VERSION}}",
+            &mastercss_schema::LEXER_BATCH_VERSION.to_string(),
+        )
+        .replace(
+            "{{MASTER_CSS_SOURCE_BATCH_VERSION}}",
+            &mastercss_schema::SOURCE_BATCH_VERSION.to_string(),
+        )
+        .replace("{{MASTER_CSS_ERROR_CODES}}", &error_codes)
 }
 
 fn generated_package_version() -> String {

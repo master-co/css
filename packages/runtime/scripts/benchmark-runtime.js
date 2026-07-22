@@ -21,13 +21,13 @@ const browserName = args.get('browser') || process.env.MASTER_CSS_BENCH_BROWSER 
 const cpuThrottleRate = Number(args.get('cpu-throttle') || process.env.MASTER_CSS_BENCH_CPU_THROTTLE || 1)
 const MASTER_CSS_RUNTIME_STYLE_ID = 'master-css'
 
-const nativeProperties = [
-  'width',
-  'height',
-  'min-width',
-  'max-width',
-  'margin',
-  'padding',
+const utilityKeys = [
+  'w',
+  'h',
+  'min-w',
+  'max-w',
+  'm',
+  'p',
   'top',
   'right',
   'bottom',
@@ -40,7 +40,7 @@ if (!existsSync(globalBundleFile) || !existsSync(defaultManifestFile) || !exists
   process.exit(1)
 }
 
-const { MasterCSS, createHydrationManifest } = await import('@master/css-engine')
+const { createEngineSync } = await import('@master/css-engine/node')
 const defaultManifest = (await import('@master/css-preset/default-manifest.json', { with: { type: 'json' } })).default
 const browserTypes = {
   chromium,
@@ -60,8 +60,8 @@ if (cpuThrottleRate !== 1 && browserName !== 'chromium') {
 
 function createClassNames(count) {
   return Array.from({ length: count }, (_, index) => {
-    const property = nativeProperties[index % nativeProperties.length]
-    return `${property}:${index + 1}px`
+    const key = utilityKeys[index % utilityKeys.length]
+    return `${key}:${index + 1}px`
   })
 }
 
@@ -100,15 +100,24 @@ async function waitForRuntimeRemovalFlush(page) {
 }
 
 function createHydrationFixture(classNames) {
-  const css = MasterCSS.create({
-    manifest: defaultManifest,
-    nativeDeclarationMatcher: () => true
-  })
-  css.ensureClassRules(...classNames)
-  return {
-    bodyMarkup: createClassMarkup(classNames),
-    hydrationManifest: createHydrationManifest(css),
-    styleText: css.text
+  const engine = createEngineSync({ manifest: defaultManifest })
+  try {
+    engine.ensureClassRules(classNames)
+    const snapshot = engine.snapshot()
+    return {
+      bodyMarkup: createClassMarkup(classNames),
+      hydrationManifest: {
+        version: 1,
+        rules: snapshot.rules,
+        resourceOrder: [
+          ...snapshot.resources.variables.map(({ name }) => name),
+          ...snapshot.resources.animations.map(({ name }) => name)
+        ]
+      },
+      styleText: snapshot.text
+    }
+  } finally {
+    engine.dispose()
   }
 }
 

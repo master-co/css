@@ -17,9 +17,8 @@
     "directory": "packages/language-service"
   },
   "dependencies": {
-    "@master/css": "workspace:^",
-    "@master/css-engine": "workspace:^",
     "@master/css-language": "workspace:^",
+    "@master/css-schema": "workspace:^",
     "colorjs.io": "^0.6.1",
     "defu": "^6.1.7",
     "js-beautify": "^1.15.4",
@@ -29,8 +28,7 @@
   },
   "devDependencies": {
     "@types/vscode": "^1.125.0",
-    "vscode-languageserver": "^10.0.0",
-    "@master/css-schema": "workspace:^"
+    "vscode-languageserver": "^10.0.0"
   },
   "sideEffects": false,
   "main": "./dist/index.js",

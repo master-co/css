@@ -1,12 +1,13 @@
 #![forbid(unsafe_code)]
 
 use std::collections::{HashMap, HashSet};
-use std::path::Path;
 
 use mastercss_engine::{EngineError, EngineSession};
-use mastercss_schema::{EngineSnapshotIr, EngineTransitionIr, NativeDeclarationCandidateIr};
+use mastercss_schema::{
+    CssDirectiveBlocklistEntry, EngineSnapshotIr, EngineTransitionIr, NativeDeclarationCandidateIr,
+    ValidatorBatchIr, filter_css_extraction_candidates, is_css_class_blocklisted,
+};
 use serde::Serialize;
-use serde_json::Value;
 
 #[derive(Debug, Clone, PartialEq, Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -87,14 +88,7 @@ impl ScannerSession {
 
     pub fn scan(&mut self, source: &str, content: &str) -> Result<ScannerUpdateIr, EngineError> {
         let candidates = extract_source_candidates(source, content);
-        self.scan_candidates(
-            source,
-            content,
-            candidates,
-            &HashSet::new(),
-            &[],
-            &HashSet::new(),
-        )
+        self.scan_candidates(source, content, candidates, &[], &[], &HashSet::new())
     }
 
     pub fn native_declaration_candidates<I, S>(
@@ -113,7 +107,7 @@ impl ScannerSession {
         source: &str,
         content: &str,
         extracted_candidates: Vec<String>,
-        excluded_classes: &HashSet<String>,
+        blocklist: &[CssDirectiveBlocklistEntry],
         native_support: &[bool],
         invalid_generated_classes: &HashSet<String>,
     ) -> Result<ScannerUpdateIr, EngineError> {
@@ -144,7 +138,7 @@ impl ScannerSession {
         let mut mutations = Vec::new();
         let mut native_support_offset: usize = 0;
         for candidate in &candidates {
-            if excluded_classes.contains(candidate) {
+            if is_css_class_blocklisted(candidate, blocklist) {
                 continue;
             }
             if self.native_index.contains(candidate)
@@ -285,113 +279,50 @@ impl ScannerSession {
 }
 
 pub fn extract_source_candidates(source: &str, content: &str) -> Vec<String> {
-    let clean_source = source.split('?').next().unwrap_or(source);
-    let extension = Path::new(clean_source)
-        .extension()
-        .and_then(|extension| extension.to_str())
-        .unwrap_or_default()
-        .to_ascii_lowercase();
-    match extension.as_str() {
-        "astro" => mastercss_source::extract_astro_classes(source, content),
-        "html" | "htm" => mastercss_source::extract_html_classes(source, content),
-        "js" | "jsx" | "cjs" | "mjs" | "ts" | "tsx" | "cts" | "mts" => {
-            mastercss_source::extract_oxc_classes(source, content)
-        }
-        _ => mastercss_source::extract_class_candidates(content),
-    }
-}
-
-pub fn is_class_blocklisted(class_name: &str, blocklist: &[Value]) -> bool {
-    blocklist.iter().any(|entry| match entry {
-        Value::String(value) => value == class_name,
-        Value::Object(pattern) => pattern
-            .get("source")
-            .and_then(Value::as_str)
-            .zip(pattern.get("flags").and_then(Value::as_str).or(Some("")))
-            .is_some_and(|(source, flags)| {
-                flags.is_empty() && wildcard_regex_matches(source, class_name)
-            }),
-        _ => false,
+    mastercss_source::extract_source(&mastercss_source::SourceExtractionInputIr {
+        source: source.into(),
+        content: content.into(),
+        kind: mastercss_source::SourceExtractorKind::Auto,
     })
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-enum WildcardRegexToken {
-    Literal(u16),
-    Any,
-    Many,
+pub fn filter_blocklisted_candidates<I, S>(
+    candidates: I,
+    blocklist: &[CssDirectiveBlocklistEntry],
+) -> Vec<String>
+where
+    I: IntoIterator<Item = S>,
+    S: AsRef<str>,
+{
+    filter_css_extraction_candidates(candidates, blocklist)
 }
 
-fn wildcard_regex_matches(source: &str, value: &str) -> bool {
-    let Some(source) = source
-        .strip_prefix('^')
-        .and_then(|source| source.strip_suffix('$'))
-    else {
-        return false;
-    };
-    let mut tokens = Vec::new();
-    let mut characters = source.chars().peekable();
-    while let Some(character) = characters.next() {
-        if character == '\\' {
-            let Some(literal) = characters.next() else {
-                return false;
-            };
-            tokens.extend(
-                literal
-                    .encode_utf16(&mut [0; 2])
-                    .iter()
-                    .copied()
-                    .map(WildcardRegexToken::Literal),
-            );
-        } else if character == '.' && characters.peek() == Some(&'*') {
-            characters.next();
-            tokens.push(WildcardRegexToken::Many);
-        } else if character == '.' {
-            tokens.push(WildcardRegexToken::Any);
-        } else {
-            tokens.extend(
-                character
-                    .encode_utf16(&mut [0; 2])
-                    .iter()
-                    .copied()
-                    .map(WildcardRegexToken::Literal),
-            );
-        }
-    }
-    let value = value.encode_utf16().collect::<Vec<_>>();
-    let mut matched = vec![vec![None; value.len() + 1]; tokens.len() + 1];
-    fn matches(
-        tokens: &[WildcardRegexToken],
-        value: &[u16],
-        token_index: usize,
-        value_index: usize,
-        matched: &mut [Vec<Option<bool>>],
-    ) -> bool {
-        if let Some(result) = matched[token_index][value_index] {
-            return result;
-        }
-        let result = match tokens.get(token_index) {
-            None => value_index == value.len(),
-            Some(WildcardRegexToken::Literal(expected)) => {
-                value
-                    .get(value_index)
-                    .is_some_and(|actual| actual == expected)
-                    && matches(tokens, value, token_index + 1, value_index + 1, matched)
+pub fn invalid_generated_classes(
+    batch: &ValidatorBatchIr,
+    rule_support: &[Vec<bool>],
+) -> Vec<String> {
+    batch
+        .classes
+        .iter()
+        .enumerate()
+        .filter_map(|(class_index, class_result)| {
+            if !class_result.matched {
+                return None;
             }
-            Some(WildcardRegexToken::Any) => {
-                value_index < value.len()
-                    && matches(tokens, value, token_index + 1, value_index + 1, matched)
-            }
-            Some(WildcardRegexToken::Many) => {
-                matches(tokens, value, token_index + 1, value_index, matched)
-                    || (value_index < value.len()
-                        && matches(tokens, value, token_index, value_index + 1, matched))
-            }
-        };
-        matched[token_index][value_index] = Some(result);
-        result
-    }
-    matches(&tokens, &value, 0, 0, &mut matched)
+            let support = rule_support.get(class_index);
+            class_result
+                .rules
+                .iter()
+                .enumerate()
+                .any(|(rule_index, _)| {
+                    !support
+                        .and_then(|values| values.get(rule_index))
+                        .copied()
+                        .unwrap_or(false)
+                })
+                .then(|| class_result.class_name.clone())
+        })
+        .collect()
 }
 
 #[cfg(test)]
@@ -482,7 +413,7 @@ mod tests {
                 "index.html",
                 "changed",
                 vec!["bad".into(), "made-up:value".into()],
-                &HashSet::new(),
+                &[],
                 &[true],
                 &HashSet::from(["bad".into()]),
             )
@@ -498,15 +429,41 @@ mod tests {
     #[test]
     fn matches_compiler_blocklist_values_without_changing_regex_dialects() {
         let blocklist = vec![
-            Value::String("exact".into()),
-            serde_json::json!({ "source": "^debug\\-.*$", "flags": "" }),
-            serde_json::json!({ "source": "^icon\\-.$", "flags": "" }),
+            CssDirectiveBlocklistEntry::Exact("exact".into()),
+            CssDirectiveBlocklistEntry::Pattern {
+                source: "^debug\\-.*$".into(),
+                flags: String::new(),
+            },
+            CssDirectiveBlocklistEntry::Pattern {
+                source: "^icon\\-.$".into(),
+                flags: String::new(),
+            },
         ];
-        assert!(is_class_blocklisted("exact", &blocklist));
-        assert!(is_class_blocklisted("debug-card", &blocklist));
-        assert!(is_class_blocklisted("icon-a", &blocklist));
-        assert!(!is_class_blocklisted("icon-😀", &blocklist));
-        assert!(!is_class_blocklisted("debug", &blocklist));
-        assert!(!is_class_blocklisted("icon-long", &blocklist));
+        assert!(is_css_class_blocklisted("exact", &blocklist));
+        assert!(is_css_class_blocklisted("debug-card", &blocklist));
+        assert!(is_css_class_blocklisted("icon-a", &blocklist));
+        assert!(!is_css_class_blocklisted("icon-😀", &blocklist));
+        assert!(!is_css_class_blocklisted("debug", &blocklist));
+        assert!(!is_css_class_blocklisted("icon-long", &blocklist));
+
+        let scanner_blocklist = vec![CssDirectiveBlocklistEntry::Pattern {
+            source: "^bg:".into(),
+            flags: "g".into(),
+        }];
+        assert!(is_css_class_blocklisted("bg:red", &scanner_blocklist));
+        assert!(!is_css_class_blocklisted("fg:red", &scanner_blocklist));
+    }
+
+    #[test]
+    fn owns_generated_rule_validation_classification() {
+        let mut validator = mastercss_validator::ValidatorSession::create(&manifest()).unwrap();
+        let batch = validator
+            .generate_classes(["block", "unknown"], None)
+            .unwrap();
+        assert_eq!(
+            invalid_generated_classes(&batch, &[vec![false], vec![]]),
+            ["block"]
+        );
+        assert!(invalid_generated_classes(&batch, &[vec![true], vec![]]).is_empty());
     }
 }

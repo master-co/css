@@ -5,8 +5,7 @@ import {
   type MasterCSSLintRuleId,
   type MasterCSSLintSourceDiagnostic
 } from '@master/css-lint'
-import type { MasterCSS } from '@master/css-engine'
-import type { RustLintSession } from '@master/css-lint/node'
+import type { LintSession } from '@master/css-lint/node'
 import type { RuleContext, RuleFixer, RuleListener } from '@typescript-eslint/utils/ts-eslint'
 import { messageIdByCode, stringifyLintDiagnosticMessageData } from './report-lint-diagnostics'
 
@@ -15,10 +14,9 @@ type SourceRuleOptions = MasterCSSLintContentRuleOptions[keyof MasterCSSLintCont
 
 interface DefineSourceVisitorsOptions {
   context: RuleContext<any, any[]>
-  css?: MasterCSS
   ruleId: MasterCSSLintRuleId
   ruleOptions?: SourceRuleOptions
-  rustLint?: RustLintSession
+  rustLint: LintSession
 }
 
 const SOURCE_LINT_FILE_RE = /\.mdx$/i
@@ -79,7 +77,6 @@ function reportSourceDiagnostic(
 
 export default function defineSourceVisitors({
   context,
-  css,
   ruleId,
   ruleOptions,
   rustLint
@@ -89,7 +86,6 @@ export default function defineSourceVisitors({
       const result = lintMasterCSSContent({
         content: context.sourceCode.getText(),
         filePath: getFilename(context),
-        css,
         rules: createSingleRuleSet(ruleId),
         ruleOptions: createRuleOptions(ruleId, ruleOptions),
         lintSession: rustLint

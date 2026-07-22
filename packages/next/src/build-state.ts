@@ -6,7 +6,7 @@ import {
   registerStyleCSSSource,
   type StyleCSSSources
 } from '@master/css-stylesheet'
-import type { MasterCSSManifest } from '@master/css'
+import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import { readFile } from 'node:fs/promises'
 
 export interface MasterCSSBuildState {

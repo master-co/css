@@ -18,7 +18,6 @@ export const TARGETS = [
   'win32-arm64',
   'linux-x64',
   'linux-arm64',
-  'linux-armhf',
   'alpine-x64',
   'alpine-arm64',
   'darwin-x64',
@@ -26,47 +25,18 @@ export const TARGETS = [
 ]
 
 const TARGET_NATIVE_PACKAGES = {
-  'win32-x64': {
-    lightningcss: 'lightningcss-win32-x64-msvc',
-    oxcParser: '@oxc-parser/binding-win32-x64-msvc'
-  },
-  'win32-arm64': {
-    lightningcss: 'lightningcss-win32-arm64-msvc',
-    oxcParser: '@oxc-parser/binding-win32-arm64-msvc'
-  },
-  'linux-x64': {
-    lightningcss: 'lightningcss-linux-x64-gnu',
-    oxcParser: '@oxc-parser/binding-linux-x64-gnu'
-  },
-  'linux-arm64': {
-    lightningcss: 'lightningcss-linux-arm64-gnu',
-    oxcParser: '@oxc-parser/binding-linux-arm64-gnu'
-  },
-  'linux-armhf': {
-    lightningcss: 'lightningcss-linux-arm-gnueabihf',
-    oxcParser: '@oxc-parser/binding-linux-arm-gnueabihf'
-  },
-  'alpine-x64': {
-    lightningcss: 'lightningcss-linux-x64-musl',
-    oxcParser: '@oxc-parser/binding-linux-x64-musl'
-  },
-  'alpine-arm64': {
-    lightningcss: 'lightningcss-linux-arm64-musl',
-    oxcParser: '@oxc-parser/binding-linux-arm64-musl'
-  },
-  'darwin-x64': {
-    lightningcss: 'lightningcss-darwin-x64',
-    oxcParser: '@oxc-parser/binding-darwin-x64'
-  },
-  'darwin-arm64': {
-    lightningcss: 'lightningcss-darwin-arm64',
-    oxcParser: '@oxc-parser/binding-darwin-arm64'
-  }
+  'win32-x64': '@master/css-native-win32-x64-msvc',
+  'win32-arm64': '@master/css-native-win32-arm64-msvc',
+  'linux-x64': '@master/css-native-linux-x64-gnu',
+  'linux-arm64': '@master/css-native-linux-arm64-gnu',
+  'alpine-x64': '@master/css-native-linux-x64-musl',
+  'alpine-arm64': '@master/css-native-linux-arm64-musl',
+  'darwin-x64': '@master/css-native-darwin-x64',
+  'darwin-arm64': '@master/css-native-darwin-arm64'
 }
 
 const STATIC_EXTENSION_PATHS = [
   'dist',
-  'data',
   'LICENSE',
   'README.md',
   'icon.png'
@@ -74,26 +44,10 @@ const STATIC_EXTENSION_PATHS = [
 const MASTER_CSS_SOURCE_GRAMMAR_PATH = './node_modules/@master/css-language/syntaxes/master-css.tmLanguage.json'
 const MASTER_CSS_STAGED_GRAMMAR_PATH = './dist/node_modules/@master/css-language/syntaxes/master-css.tmLanguage.json'
 
-const BASE_RUNTIME_PACKAGES = [
-  'lightningcss',
-  'detect-libc',
-  'oxc-parser',
-  '@oxc-project/types',
-  '@master/css-preset',
-  'mdn-data'
-]
 const RUNTIME_PACKAGE_OWNERS = [
   {
-    owner: '@master/css-language',
-    matches: (packageName) => packageName === 'mdn-data' || packageName === '@master/css-preset'
-  },
-  {
-    owner: 'oxc-parser',
-    matches: (packageName) => packageName === '@oxc-project/types' || packageName.startsWith('@oxc-parser/')
-  },
-  {
-    owner: 'lightningcss',
-    matches: (packageName) => packageName === 'detect-libc' || packageName.startsWith('lightningcss-')
+    owner: '@master/css-native',
+    matches: (packageName) => packageName.startsWith('@master/css-native-')
   }
 ]
 const packageResolverCache = new Map()
@@ -155,8 +109,6 @@ function getRuntimePackageOwner(packageName) {
 }
 
 function getRuntimePackageResolver(packageName) {
-  if (packageName === 'lightningcss') return packageRequire
-  if (packageName === 'oxc-parser') return packageRequire
   const owner = getRuntimePackageOwner(packageName)
   if (owner) return createPackageResolver(owner)
   return packageRequire
@@ -171,22 +123,13 @@ function getTargetNativePackages(target) {
 }
 
 export function getRuntimePackagesForTarget(target) {
-  const nativePackages = getTargetNativePackages(target)
-  return [
-    ...BASE_RUNTIME_PACKAGES,
-    nativePackages.lightningcss,
-    nativePackages.oxcParser
-  ]
+  return [getTargetNativePackages(target)]
 }
 
 function isCurrentLinuxMusl() {
   if (process.platform !== 'linux') return false
-  try {
-    const { MUSL, familySync } = createPackageResolver('lightningcss')('detect-libc')
-    return familySync() === MUSL
-  } catch {
-    return false
-  }
+  const report = process.report?.getReport()
+  return !report?.header?.glibcVersionRuntime
 }
 
 export function getCurrentTarget(options = {}) {
@@ -199,7 +142,6 @@ export function getCurrentTarget(options = {}) {
   if (platform === 'linux') {
     if (arch === 'x64') return isMusl ? 'alpine-x64' : 'linux-x64'
     if (arch === 'arm64') return isMusl ? 'alpine-arm64' : 'linux-arm64'
-    if (arch === 'arm') return 'linux-armhf'
   }
 
   throw new Error(`Unsupported current platform ${platform}/${arch}`)
@@ -268,7 +210,6 @@ export async function createStagedExtension(target = getCurrentTarget(), options
 
   manifest.files = [
     'dist',
-    'data',
     'LICENSE',
     'icon.png',
     textMateGrammarFile,

@@ -4,14 +4,17 @@ use mastercss_engine::{
     ClassSemanticInspection, ClassSemanticKind, EngineClassCompletionKind, EngineClassVariableIr,
     EngineError, EngineSession, UtilityMatcherType,
 };
-use mastercss_lexer::{collect_class_list_token_ranges, utf16_len, utf16_to_byte_offset};
+use mastercss_lexer::{
+    CssDirectiveRange, byte_to_utf16_offset, collect_class_list_token_ranges,
+    find_css_directive_ranges, utf16_len, utf16_to_byte_offset,
+};
 use mastercss_schema::{
     GeneratedRuleIr, LANGUAGE_BATCH_VERSION, NativeDeclarationCandidateIr, SourceRange,
 };
 use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 
-#[derive(Debug, Clone, PartialEq, Eq, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct ClassListContextIr {
     pub start: u32,
@@ -29,7 +32,7 @@ pub struct ClassPositionIr {
     pub token: String,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct SemanticTokenInputIr {
     pub start: u32,
@@ -40,12 +43,59 @@ pub struct SemanticTokenInputIr {
     pub modifiers: Vec<String>,
 }
 
+#[derive(Debug, Clone, PartialEq, Eq, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct AnalyzeDocumentRequestIr {
+    pub source: String,
+    pub language_id: String,
+    #[serde(default)]
+    pub host_ranges: Vec<ClassListContextIr>,
+    #[serde(default)]
+    pub settings: LanguageDocumentSettingsIr,
+}
+
+#[derive(Debug, Clone, Default, PartialEq, Eq, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct LanguageDocumentSettingsIr {
+    #[serde(default)]
+    pub class_attributes: Vec<String>,
+    #[serde(default)]
+    pub class_functions: Vec<String>,
+    #[serde(default)]
+    pub class_declarations: Vec<String>,
+}
+
 #[derive(Debug, Clone, PartialEq, Eq, Serialize)]
 #[serde(rename_all = "camelCase")]
-pub struct LanguageBatchIr {
+pub struct LanguageDocumentIr {
     pub version: u32,
     pub class_positions: Vec<ClassPositionIr>,
+    pub semantic_tokens: Vec<SemanticTokenInputIr>,
     pub semantic_token_data: Vec<u32>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct FormatDirectivesRequestIr {
+    pub source: String,
+    #[serde(default)]
+    pub range: Option<SourceRange>,
+    #[serde(default)]
+    pub style_ranges: Vec<SourceRange>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct LanguageFormatEditIr {
+    pub range: SourceRange,
+    pub text: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct LanguageFormatEditsIr {
+    pub version: u32,
+    pub edits: Vec<LanguageFormatEditIr>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize)]
@@ -147,6 +197,7 @@ pub struct LanguageSession {
     engine: EngineSession,
     manifest_json: String,
     native_support_by_class: HashMap<String, bool>,
+    variable_names: HashSet<String>,
 }
 
 fn inspect_class_name_parts(class_name: &str) -> (String, String, Option<String>, Option<String>) {
@@ -212,12 +263,335 @@ fn find_class_modifier_index(class_name: &str, start: usize) -> usize {
     class_name.len()
 }
 
+fn push_semantic_token(
+    tokens: &mut Vec<SemanticTokenInputIr>,
+    start: u32,
+    end: u32,
+    token_type: &str,
+    modifiers: &[&str],
+) {
+    if end <= start {
+        return;
+    }
+    tokens.push(SemanticTokenInputIr {
+        start,
+        end,
+        token_type: token_type.to_owned(),
+        modifiers: modifiers
+            .iter()
+            .map(|modifier| (*modifier).to_owned())
+            .collect(),
+    });
+}
+
+fn state_identifier_end(state: &str, start: usize, allow_star: bool) -> usize {
+    let mut end = start;
+    if allow_star && state[end..].starts_with('*') {
+        end += 1;
+    }
+    for (relative, character) in state[end..].char_indices() {
+        if character.is_alphanumeric() || matches!(character, '_' | '-') {
+            end += character.len_utf8();
+        } else {
+            let _ = relative;
+            break;
+        }
+    }
+    end
+}
+
+fn push_state_semantic_tokens(tokens: &mut Vec<SemanticTokenInputIr>, state: &str, offset: u32) {
+    let mut byte_index = 0;
+    while byte_index < state.len() {
+        let suffix = &state[byte_index..];
+        let start = offset + utf16_len(&state[..byte_index]);
+        let character = suffix.chars().next().unwrap_or_default();
+        let character_length = character.len_utf8();
+        if character == '!' {
+            push_semantic_token(tokens, start, start + 1, "operator", &["important"]);
+            byte_index += 1;
+        } else if matches!(character, '_' | '>' | '+' | '~') {
+            push_semantic_token(
+                tokens,
+                start,
+                start + 1,
+                "operator",
+                &["selector", "selectorCombinator"],
+            );
+            let name_start = byte_index + character_length;
+            let name_end = state_identifier_end(state, name_start, true);
+            push_semantic_token(
+                tokens,
+                offset + utf16_len(&state[..name_start]),
+                offset + utf16_len(&state[..name_end]),
+                "type",
+                &["selector"],
+            );
+            byte_index = name_end;
+        } else if matches!(character, '.' | '#') {
+            push_semantic_token(
+                tokens,
+                start,
+                start + 1,
+                "operator",
+                &["selector", "selectorPunctuation"],
+            );
+            let name_start = byte_index + character_length;
+            let name_end = state_identifier_end(state, name_start, false);
+            push_semantic_token(
+                tokens,
+                offset + utf16_len(&state[..name_start]),
+                offset + utf16_len(&state[..name_end]),
+                if character == '.' {
+                    "class"
+                } else {
+                    "variable"
+                },
+                &["selector"],
+            );
+            byte_index = name_end;
+        } else if matches!(character, '(' | ',') {
+            push_semantic_token(
+                tokens,
+                start,
+                start + 1,
+                "operator",
+                &["selector", "selectorPunctuation"],
+            );
+            let name_start = byte_index + character_length;
+            let name_end = state_identifier_end(state, name_start, true);
+            push_semantic_token(
+                tokens,
+                offset + utf16_len(&state[..name_start]),
+                offset + utf16_len(&state[..name_end]),
+                "type",
+                &["selector"],
+            );
+            byte_index = name_end;
+        } else if matches!(character, ')' | '[' | ']') {
+            push_semantic_token(
+                tokens,
+                start,
+                start + 1,
+                "operator",
+                &["selector", "selectorPunctuation"],
+            );
+            byte_index += character_length;
+        } else if character == '@' {
+            let end = suffix[1..]
+                .find('@')
+                .map_or(state.len(), |end| byte_index + 1 + end);
+            push_semantic_token(
+                tokens,
+                start,
+                offset + utf16_len(&state[..end]),
+                "keyword",
+                &["query"],
+            );
+            byte_index = end;
+        } else if character == ':' {
+            let delimiter_length = if suffix.starts_with("::") { 2 } else { 1 };
+            let (kind, delimiter) = if delimiter_length == 2 {
+                ("pseudoElement", "pseudoElementDelimiter")
+            } else {
+                ("pseudoClass", "pseudoClassDelimiter")
+            };
+            push_semantic_token(
+                tokens,
+                start,
+                start + delimiter_length,
+                "operator",
+                &["selector", kind, delimiter],
+            );
+            let name_start = byte_index + delimiter_length as usize;
+            let name_end = state_identifier_end(state, name_start, false);
+            push_semantic_token(
+                tokens,
+                offset + utf16_len(&state[..name_start]),
+                offset + utf16_len(&state[..name_end]),
+                "modifier",
+                &[kind],
+            );
+            byte_index = name_end;
+        } else {
+            byte_index += character_length;
+        }
+    }
+}
+
+fn find_language_group_close(token: &str) -> Option<usize> {
+    let mut quote = None;
+    let mut depth = 0_u32;
+    let mut escaped = false;
+    for (index, character) in token.char_indices().skip(1) {
+        if escaped {
+            escaped = false;
+            continue;
+        }
+        if let Some(current_quote) = quote {
+            if character == '\\' {
+                escaped = true;
+            } else if character == current_quote {
+                quote = None;
+            }
+            continue;
+        }
+        if matches!(character, '\'' | '"') {
+            quote = Some(character);
+        } else if matches!(character, '(' | '[' | '{') {
+            depth += 1;
+        } else if matches!(character, ')' | ']') {
+            depth = depth.saturating_sub(1);
+        } else if character == '}' {
+            if depth == 0 {
+                return Some(index);
+            }
+            depth -= 1;
+        }
+    }
+    None
+}
+
+fn top_level_semicolons(source: &str) -> Vec<usize> {
+    let mut semicolons = Vec::new();
+    let mut quote = None;
+    let mut depth = 0_u32;
+    let mut escaped = false;
+    for (index, character) in source.char_indices() {
+        if escaped {
+            escaped = false;
+            continue;
+        }
+        if let Some(current_quote) = quote {
+            if character == '\\' {
+                escaped = true;
+            } else if character == current_quote {
+                quote = None;
+            }
+            continue;
+        }
+        if matches!(character, '\'' | '"') {
+            quote = Some(character);
+        } else if matches!(character, '(' | '[' | '{') {
+            depth += 1;
+        } else if matches!(character, ')' | ']' | '}') {
+            depth = depth.saturating_sub(1);
+        } else if character == ';' && depth == 0 {
+            semicolons.push(index);
+        }
+    }
+    semicolons
+}
+
+fn range_within(range: &SourceRange, parent: Option<&SourceRange>) -> bool {
+    parent.is_none_or(|parent| range.start >= parent.start && range.end <= parent.end)
+}
+
+fn ranges_equal(left: &SourceRange, right: Option<&SourceRange>) -> bool {
+    right.is_some_and(|right| left.start == right.start && left.end == right.end)
+}
+
+fn format_class_list(class_list: &str) -> String {
+    let mut formatted: Vec<String> = Vec::new();
+    for token in class_list.split_whitespace() {
+        let suffix = token.strip_prefix('!').is_some_and(|suffix| {
+            suffix.is_empty()
+                || suffix
+                    .chars()
+                    .next()
+                    .is_some_and(|character| matches!(character, ':' | '@' | '_' | '>' | '+' | '~'))
+        });
+        if suffix && let Some(previous) = formatted.last_mut() {
+            previous.push_str(token);
+        } else {
+            formatted.push(token.to_owned());
+        }
+    }
+    formatted.join(" ")
+}
+
+fn source_slice<'a>(source: &'a str, range: &SourceRange) -> Option<&'a str> {
+    let start = utf16_to_byte_offset(source, range.start)?;
+    let end = utf16_to_byte_offset(source, range.end)?;
+    (start <= end).then_some(&source[start..end])
+}
+
+fn apply_relative_edits(source: &str, edits: &[LanguageFormatEditIr]) -> Option<String> {
+    let mut result = source.to_owned();
+    let mut edits = edits.to_vec();
+    edits.sort_by(|left, right| {
+        right
+            .range
+            .start
+            .cmp(&left.range.start)
+            .then_with(|| right.range.end.cmp(&left.range.end))
+    });
+    for edit in edits {
+        let start = utf16_to_byte_offset(&result, edit.range.start)?;
+        let end = utf16_to_byte_offset(&result, edit.range.end)?;
+        result.replace_range(start..end, &edit.text);
+    }
+    Some(result)
+}
+
+fn formatted_directive_prelude(source: &str, directive: &CssDirectiveRange) -> Option<String> {
+    let prelude = source_slice(source, &directive.prelude_range)?;
+    if directive.name == "compose" {
+        if directive.block_range.is_some() || !directive.quoted_string_ranges.is_empty() {
+            return None;
+        }
+        let formatted = format_class_list(prelude);
+        return Some(if formatted.is_empty() {
+            String::new()
+        } else {
+            format!(" {formatted}")
+        });
+    }
+    if directive.name == "safelist" {
+        let mut edits = Vec::new();
+        for quoted in &directive.quoted_string_ranges {
+            let content = source_slice(source, &quoted.content_range)?;
+            let text = format_class_list(content);
+            if text != content {
+                edits.push(LanguageFormatEditIr {
+                    range: SourceRange {
+                        start: quoted.content_range.start - directive.prelude_range.start,
+                        end: quoted.content_range.end - directive.prelude_range.start,
+                    },
+                    text,
+                });
+            }
+        }
+        let formatted = apply_relative_edits(prelude, &edits)?.trim().to_owned();
+        return Some(if formatted.is_empty() {
+            String::new()
+        } else {
+            format!(" {formatted}")
+        });
+    }
+    let formatted = prelude.trim();
+    Some(if directive.block_range.is_some() {
+        if formatted.is_empty() {
+            " ".to_owned()
+        } else {
+            format!(" {formatted} ")
+        }
+    } else if formatted.is_empty() {
+        String::new()
+    } else {
+        format!(" {formatted}")
+    })
+}
+
 impl LanguageSession {
     pub fn create(manifest_json: &str) -> Result<Self, LanguageError> {
+        let engine = EngineSession::create(manifest_json)?;
+        let variable_names = engine.variable_names()?.into_iter().collect();
         Ok(Self {
-            engine: EngineSession::create(manifest_json)?,
+            engine,
             manifest_json: manifest_json.to_owned(),
             native_support_by_class: HashMap::new(),
+            variable_names,
         })
     }
 
@@ -230,6 +604,248 @@ impl LanguageSession {
         S: AsRef<str>,
     {
         Ok(self.engine.native_declaration_candidates(class_names)?)
+    }
+
+    pub fn analyze_document(
+        &self,
+        request: &AnalyzeDocumentRequestIr,
+    ) -> Result<LanguageDocumentIr, LanguageError> {
+        let mut contexts =
+            collect_document_contexts(&request.source, &request.language_id, &request.settings);
+        contexts.extend(request.host_ranges.iter().cloned());
+        contexts.sort_by_key(|range| (range.start, range.end));
+        contexts.dedup_by(|left, right| left.start == right.start && left.end == right.end);
+        let class_positions = collect_class_positions(&request.source, &contexts)?;
+        let semantic_tokens = self.semantic_tokens_for_positions(&class_positions)?;
+        Ok(LanguageDocumentIr {
+            version: LANGUAGE_BATCH_VERSION,
+            class_positions,
+            semantic_token_data: encode_semantic_tokens(&request.source, &semantic_tokens),
+            semantic_tokens,
+        })
+    }
+
+    pub fn format_directives(
+        &self,
+        request: &FormatDirectivesRequestIr,
+    ) -> Result<LanguageFormatEditsIr, LanguageError> {
+        let source_length = utf16_len(&request.source);
+        let regions = if request.style_ranges.is_empty() {
+            vec![SourceRange {
+                start: 0,
+                end: source_length,
+            }]
+        } else {
+            request.style_ranges.clone()
+        };
+        let mut edits = Vec::new();
+        for region in regions {
+            let region_source =
+                source_slice(&request.source, &region).ok_or(LanguageError::InvalidRange)?;
+            for directive in find_css_directive_ranges(region_source) {
+                let directive_range = SourceRange {
+                    start: region.start + directive.range.start,
+                    end: region.start + directive.range.end,
+                };
+                let prelude_range = SourceRange {
+                    start: region.start + directive.prelude_range.start,
+                    end: region.start + directive.prelude_range.end,
+                };
+                if !range_within(&directive_range, request.range.as_ref())
+                    && !ranges_equal(&prelude_range, request.range.as_ref())
+                {
+                    continue;
+                }
+                let Some(text) = formatted_directive_prelude(region_source, &directive) else {
+                    continue;
+                };
+                if !range_within(&prelude_range, request.range.as_ref()) {
+                    continue;
+                }
+                let current = source_slice(&request.source, &prelude_range)
+                    .ok_or(LanguageError::InvalidRange)?;
+                if current != text {
+                    edits.push(LanguageFormatEditIr {
+                        range: prelude_range,
+                        text,
+                    });
+                }
+            }
+        }
+        edits.sort_by_key(|edit| (edit.range.start, edit.range.end));
+        edits.dedup_by(|left, right| left.range == right.range && left.text == right.text);
+        Ok(LanguageFormatEditsIr {
+            version: LANGUAGE_BATCH_VERSION,
+            edits,
+        })
+    }
+
+    fn push_class_semantic_tokens(
+        &self,
+        class_name: &str,
+        token_start: u32,
+        tokens: &mut Vec<SemanticTokenInputIr>,
+    ) -> Result<(), LanguageError> {
+        let starts_with_group = class_name.starts_with('{');
+        let group_close = starts_with_group
+            .then(|| find_language_group_close(class_name))
+            .flatten();
+        let body_start = usize::from(starts_with_group);
+        let body_end = group_close.unwrap_or(class_name.len());
+        let body = &class_name[body_start..body_end];
+        let semicolons = top_level_semicolons(body);
+        if starts_with_group || !semicolons.is_empty() {
+            if starts_with_group {
+                push_semantic_token(
+                    tokens,
+                    token_start,
+                    token_start + 1,
+                    "operator",
+                    &["blockBrace"],
+                );
+            }
+            let mut part_start = 0;
+            for part_end in semicolons
+                .iter()
+                .copied()
+                .chain(std::iter::once(body.len()))
+            {
+                let part = &body[part_start..part_end];
+                let trimmed = part.trim();
+                if !trimmed.is_empty() {
+                    let leading_bytes = part.len() - part.trim_start().len();
+                    self.push_class_semantic_tokens(
+                        trimmed,
+                        token_start
+                            + utf16_len(&class_name[..body_start])
+                            + utf16_len(&body[..part_start + leading_bytes]),
+                        tokens,
+                    )?;
+                }
+                if part_end < body.len() {
+                    let semicolon_start = token_start
+                        + utf16_len(&class_name[..body_start])
+                        + utf16_len(&body[..part_end]);
+                    push_semantic_token(
+                        tokens,
+                        semicolon_start,
+                        semicolon_start + 1,
+                        "operator",
+                        &["declarationTerminator"],
+                    );
+                }
+                part_start = part_end.saturating_add(1);
+            }
+            if let Some(close) = group_close {
+                let close_start = token_start + utf16_len(&class_name[..close]);
+                push_semantic_token(
+                    tokens,
+                    close_start,
+                    close_start + 1,
+                    "operator",
+                    &["blockBrace"],
+                );
+                let suffix_start = close + 1;
+                push_state_semantic_tokens(
+                    tokens,
+                    &class_name[suffix_start..],
+                    token_start + utf16_len(&class_name[..suffix_start]),
+                );
+            }
+            return Ok(());
+        }
+
+        let semantics = self.engine.inspect_class_semantics(class_name)?;
+        if semantics.kind == ClassSemanticKind::Unknown {
+            return Ok(());
+        }
+        let state_length = semantics
+            .state_token
+            .as_deref()
+            .map(utf16_len)
+            .unwrap_or_default();
+        let important_length = u32::from(semantics.important);
+        let base_end = token_start
+            .saturating_add(utf16_len(class_name))
+            .saturating_sub(state_length + important_length);
+        match semantics.kind {
+            ClassSemanticKind::Component => push_semantic_token(
+                tokens,
+                token_start,
+                base_end,
+                "class",
+                &["declaration", "component"],
+            ),
+            ClassSemanticKind::Semantic | ClassSemanticKind::Pattern => push_semantic_token(
+                tokens,
+                token_start,
+                base_end,
+                "enumMember",
+                &["declaration"],
+            ),
+            ClassSemanticKind::Declaration => {
+                if let Some(key) = semantics.key_token.as_deref() {
+                    let key_length = utf16_len(key.trim_end_matches(':'));
+                    push_semantic_token(
+                        tokens,
+                        token_start,
+                        token_start + key_length,
+                        "property",
+                        &[],
+                    );
+                    if key.ends_with(':') {
+                        push_semantic_token(
+                            tokens,
+                            token_start + key_length,
+                            token_start + key_length + 1,
+                            "operator",
+                            &["declarationSeparator"],
+                        );
+                    }
+                    if let Some(value) = semantics.value_token.as_deref() {
+                        let value_start = token_start + utf16_len(key);
+                        let token_type =
+                            if value.starts_with('$') || self.variable_names.contains(value) {
+                                "variable"
+                            } else if value.parse::<f64>().is_ok() {
+                                "number"
+                            } else {
+                                "enumMember"
+                            };
+                        push_semantic_token(
+                            tokens,
+                            value_start,
+                            value_start + utf16_len(value),
+                            token_type,
+                            &[],
+                        );
+                    }
+                }
+            }
+            ClassSemanticKind::Unknown => {}
+        }
+        if semantics.important {
+            push_semantic_token(tokens, base_end, base_end + 1, "operator", &["important"]);
+        }
+        if let Some(state) = semantics.state_token.as_deref() {
+            push_state_semantic_tokens(
+                tokens,
+                state,
+                token_start + utf16_len(class_name) - state_length,
+            );
+        }
+        Ok(())
+    }
+
+    fn semantic_tokens_for_positions(
+        &self,
+        positions: &[ClassPositionIr],
+    ) -> Result<Vec<SemanticTokenInputIr>, LanguageError> {
+        let mut tokens = Vec::new();
+        for position in positions {
+            self.push_class_semantic_tokens(&position.token, position.range.start, &mut tokens)?;
+        }
+        Ok(tokens)
     }
 
     pub fn classify_class_names<I, S>(
@@ -421,40 +1037,267 @@ impl LanguageSession {
     }
 }
 
+fn collect_document_contexts(
+    source: &str,
+    language_id: &str,
+    settings: &LanguageDocumentSettingsIr,
+) -> Vec<ClassListContextIr> {
+    let language_id = language_id.to_ascii_lowercase();
+    if matches!(
+        language_id.as_str(),
+        "master-css" | "mcss" | "text" | "plaintext"
+    ) {
+        return vec![ClassListContextIr {
+            start: 0,
+            end: utf16_len(source),
+            unescape: Vec::new(),
+        }];
+    }
+    let mut contexts = Vec::new();
+    if matches!(language_id.as_str(), "css" | "scss" | "less") {
+        collect_css_directive_contexts(source, &mut contexts);
+    }
+    if matches!(
+        language_id.as_str(),
+        "html" | "angular-html" | "vue" | "svelte" | "astro" | "markdown" | "mdx"
+    ) {
+        collect_markup_attribute_contexts(source, &mut contexts, settings);
+    }
+    if matches!(
+        language_id.as_str(),
+        "javascript"
+            | "typescript"
+            | "javascriptreact"
+            | "typescriptreact"
+            | "vue"
+            | "svelte"
+            | "astro"
+    ) {
+        collect_script_string_contexts(source, &mut contexts, settings);
+    }
+    contexts
+}
+
+fn push_byte_context(
+    source: &str,
+    contexts: &mut Vec<ClassListContextIr>,
+    start: usize,
+    end: usize,
+    unescape: Vec<String>,
+) {
+    if start > end || end > source.len() {
+        return;
+    }
+    let (Some(start), Some(end)) = (
+        byte_to_utf16_offset(source, start),
+        byte_to_utf16_offset(source, end),
+    ) else {
+        return;
+    };
+    contexts.push(ClassListContextIr {
+        start,
+        end,
+        unescape,
+    });
+}
+
+fn collect_markup_attribute_contexts(
+    source: &str,
+    contexts: &mut Vec<ClassListContextIr>,
+    settings: &LanguageDocumentSettingsIr,
+) {
+    let bytes = source.as_bytes();
+    let mut names = vec![
+        "class".to_owned(),
+        "classname".to_owned(),
+        "class:list".to_owned(),
+        ":class".to_owned(),
+        "v-bind:class".to_owned(),
+        "[class]".to_owned(),
+        "[classname]".to_owned(),
+        "[ngclass]".to_owned(),
+    ];
+    for name in &settings.class_attributes {
+        let name = name.to_ascii_lowercase();
+        if !names.contains(&name) {
+            names.push(name);
+        }
+    }
+    let mut index = 0;
+    while index < bytes.len() {
+        if bytes[index..].starts_with(b"<!--") {
+            index = source[index + "<!--".len()..]
+                .find("-->")
+                .map_or(source.len(), |end| index + "<!--".len() + end + "-->".len());
+            continue;
+        }
+        if !matches!(bytes[index], b'\'' | b'"') {
+            index += 1;
+            continue;
+        }
+        let quote = bytes[index];
+        let mut cursor = index;
+        while cursor > 0 && bytes[cursor - 1].is_ascii_whitespace() {
+            cursor -= 1;
+        }
+        if cursor == 0 || bytes[cursor - 1] != b'=' {
+            index += 1;
+            continue;
+        }
+        cursor -= 1;
+        while cursor > 0 && bytes[cursor - 1].is_ascii_whitespace() {
+            cursor -= 1;
+        }
+        let name_end = cursor;
+        while cursor > 0
+            && !bytes[cursor - 1].is_ascii_whitespace()
+            && !matches!(bytes[cursor - 1], b'<' | b'>' | b'/' | b'{' | b'}')
+        {
+            cursor -= 1;
+        }
+        let name = source[cursor..name_end].to_ascii_lowercase();
+        let mut end = index + 1;
+        let mut escaped = false;
+        while end < bytes.len() {
+            if escaped {
+                escaped = false;
+            } else if bytes[end] == b'\\' {
+                escaped = true;
+            } else if bytes[end] == quote {
+                break;
+            }
+            end += 1;
+        }
+        if names.contains(&name) && end < bytes.len() {
+            push_byte_context(
+                source,
+                contexts,
+                index + 1,
+                end,
+                vec![(quote as char).to_string()],
+            );
+        }
+        index = end.saturating_add(1);
+    }
+}
+
+fn collect_script_string_contexts(
+    source: &str,
+    contexts: &mut Vec<ClassListContextIr>,
+    settings: &LanguageDocumentSettingsIr,
+) {
+    let bytes = source.as_bytes();
+    let mut patterns = vec![
+        "class=".to_owned(),
+        "classname=".to_owned(),
+        "class:list=".to_owned(),
+        "clsx(".to_owned(),
+        "classnames(".to_owned(),
+        "cva(".to_owned(),
+        "ctl(".to_owned(),
+        "classlist.add(".to_owned(),
+        "classlist.remove(".to_owned(),
+        "classlist.toggle(".to_owned(),
+    ];
+    for function in &settings.class_functions {
+        let function = function.to_ascii_lowercase();
+        if function.chars().all(|character| {
+            character.is_ascii_alphanumeric() || matches!(character, '_' | '$' | '.')
+        }) {
+            let pattern = format!("{function}(");
+            if !patterns.contains(&pattern) {
+                patterns.push(pattern);
+            }
+        }
+    }
+    for declaration in &settings.class_declarations {
+        let declaration = declaration.trim().to_ascii_lowercase();
+        if !declaration.is_empty() {
+            patterns.push(format!("{declaration}="));
+            patterns.push(format!("{declaration} ="));
+        }
+    }
+    let mut index = 0;
+    while index < bytes.len() {
+        let quote = bytes[index];
+        if !matches!(quote, b'\'' | b'"' | b'`') {
+            index += 1;
+            continue;
+        }
+        let prefix_start = index.saturating_sub(80);
+        let prefix = source[prefix_start..index].to_ascii_lowercase();
+        let likely_class = patterns
+            .iter()
+            .any(|pattern| prefix.trim_end().ends_with(pattern));
+        let mut end = index + 1;
+        let mut escaped = false;
+        let mut interpolation = false;
+        while end < bytes.len() {
+            if escaped {
+                escaped = false;
+            } else if bytes[end] == b'\\' {
+                escaped = true;
+            } else if quote == b'`' && bytes[end] == b'$' && bytes.get(end + 1) == Some(&b'{') {
+                interpolation = true;
+            } else if bytes[end] == quote {
+                break;
+            }
+            end += 1;
+        }
+        if likely_class && !interpolation && end < bytes.len() {
+            push_byte_context(
+                source,
+                contexts,
+                index + 1,
+                end,
+                vec![(quote as char).to_string()],
+            );
+        }
+        index = end.saturating_add(1);
+    }
+}
+
+fn collect_css_directive_contexts(source: &str, contexts: &mut Vec<ClassListContextIr>) {
+    for directive in ["@compose", "@safelist"] {
+        let mut cursor = 0;
+        while let Some(relative) = source[cursor..].find(directive) {
+            let start = cursor + relative + directive.len();
+            let Some(relative_end) = source[start..].find(';') else {
+                break;
+            };
+            let end = start + relative_end;
+            let mut content_start = start;
+            let mut content_end = end;
+            while content_start < content_end
+                && source.as_bytes()[content_start].is_ascii_whitespace()
+            {
+                content_start += 1;
+            }
+            while content_end > content_start
+                && source.as_bytes()[content_end - 1].is_ascii_whitespace()
+            {
+                content_end -= 1;
+            }
+            if directive == "@safelist"
+                && content_end > content_start + 1
+                && matches!(source.as_bytes()[content_start], b'\'' | b'"')
+                && source.as_bytes()[content_end - 1] == source.as_bytes()[content_start]
+            {
+                content_start += 1;
+                content_end -= 1;
+            }
+            push_byte_context(source, contexts, content_start, content_end, Vec::new());
+            cursor = end + 1;
+        }
+    }
+}
+
 #[derive(Debug, thiserror::Error)]
 pub enum LanguageError {
     #[error(transparent)]
     Engine(#[from] EngineError),
     #[error("Language input contains a range outside the UTF-16 document boundary.")]
     InvalidRange,
-    #[error("Invalid language batch JSON: {0}")]
-    InvalidJson(#[from] serde_json::Error),
-}
-
-pub fn analyze_language_json(
-    source: &str,
-    contexts_json: &str,
-    semantic_tokens_json: &str,
-) -> Result<String, LanguageError> {
-    let contexts: Vec<ClassListContextIr> = serde_json::from_str(contexts_json)?;
-    let semantic_tokens: Vec<SemanticTokenInputIr> = serde_json::from_str(semantic_tokens_json)?;
-    Ok(serde_json::to_string(&analyze_language(
-        source,
-        &contexts,
-        &semantic_tokens,
-    )?)?)
-}
-
-pub fn analyze_language(
-    source: &str,
-    contexts: &[ClassListContextIr],
-    semantic_tokens: &[SemanticTokenInputIr],
-) -> Result<LanguageBatchIr, LanguageError> {
-    Ok(LanguageBatchIr {
-        version: LANGUAGE_BATCH_VERSION,
-        class_positions: collect_class_positions(source, contexts)?,
-        semantic_token_data: encode_semantic_tokens(source, semantic_tokens),
-    })
 }
 
 pub fn collect_class_positions(
@@ -646,13 +1489,17 @@ mod tests {
             .position(|unit| unit == 'f' as u16)
             .unwrap() as u32;
         let class_end = class_start + "fg:red  m:1x".encode_utf16().count() as u32;
-        let batch = analyze_language(
+        let class_positions = collect_class_positions(
             source,
             &[ClassListContextIr {
                 start: class_start,
                 end: class_end,
                 unescape: Vec::new(),
             }],
+        )
+        .unwrap();
+        let semantic_token_data = encode_semantic_tokens(
+            source,
             &[
                 SemanticTokenInputIr {
                     start: class_start,
@@ -667,15 +1514,139 @@ mod tests {
                     modifiers: Vec::new(),
                 },
             ],
-        )
-        .unwrap();
-        assert_eq!(batch.version, 1);
-        assert_eq!(batch.class_positions[0].token, "fg:red");
-        assert_eq!(batch.class_positions[1].token, "m:1x");
+        );
+        assert_eq!(class_positions[0].token, "fg:red");
+        assert_eq!(class_positions[1].token, "m:1x");
         assert_eq!(
-            batch.semantic_token_data,
+            semantic_token_data,
             [0, class_start, 6, 2, 1, 0, 8, 4, 3, 0]
         );
+    }
+
+    #[test]
+    fn treats_plaintext_as_a_class_list_and_skips_markup_comments() {
+        let class_list = "fg:brand:hover@sm {bg:blue;fg:white}";
+        let contexts = collect_document_contexts(
+            class_list,
+            "plaintext",
+            &LanguageDocumentSettingsIr::default(),
+        );
+        assert_eq!(
+            collect_class_positions(class_list, &contexts)
+                .unwrap()
+                .iter()
+                .map(|position| position.token.as_str())
+                .collect::<Vec<_>>(),
+            ["fg:brand:hover@sm", "{bg:blue;fg:white}"]
+        );
+
+        let html = "<!-- <div class=\"fg:red\"></div> --><div class=\"fg:blue\"></div>";
+        let contexts =
+            collect_document_contexts(html, "html", &LanguageDocumentSettingsIr::default());
+        assert_eq!(
+            collect_class_positions(html, &contexts)
+                .unwrap()
+                .iter()
+                .map(|position| position.token.as_str())
+                .collect::<Vec<_>>(),
+            ["fg:blue"]
+        );
+    }
+
+    #[test]
+    fn applies_document_context_settings_in_rust() {
+        let markup = r#"<div data-class="fg:red"></div>"#;
+        let contexts = collect_document_contexts(
+            markup,
+            "html",
+            &LanguageDocumentSettingsIr {
+                class_attributes: vec!["data-class".into()],
+                ..LanguageDocumentSettingsIr::default()
+            },
+        );
+        assert_eq!(
+            collect_class_positions(markup, &contexts)
+                .unwrap()
+                .iter()
+                .map(|position| position.token.as_str())
+                .collect::<Vec<_>>(),
+            ["fg:red"]
+        );
+
+        let script = r#"twMerge("fg:blue"); const styles = "block";"#;
+        let contexts = collect_document_contexts(
+            script,
+            "typescript",
+            &LanguageDocumentSettingsIr {
+                class_functions: vec!["twMerge".into()],
+                class_declarations: vec!["const styles".into()],
+                ..LanguageDocumentSettingsIr::default()
+            },
+        );
+        assert_eq!(
+            collect_class_positions(script, &contexts)
+                .unwrap()
+                .iter()
+                .map(|position| position.token.as_str())
+                .collect::<Vec<_>>(),
+            ["fg:blue", "block"]
+        );
+    }
+
+    #[test]
+    fn tokenizes_group_terminators_and_selector_combinators_in_rust() {
+        let session = LanguageSession::create(
+            r#"{
+              "version":1,
+              "utilities":[
+                {
+                  "id":"block",
+                  "type":-1,
+                  "emit":{"type":"static","rules":[{"declarations":{"display":"block"}}]},
+                  "matchers":[{"type":"static","name":"block"}]
+                },
+                {
+                  "id":"foreground-color",
+                  "type":0,
+                  "emit":{"type":"property","property":"color"},
+                  "matchers":[{"type":"key","keys":["fg"]}]
+                }
+              ]
+            }"#,
+        )
+        .unwrap();
+        let source = "<div class=\"{fg:red;block}>li:hover@sm\"></div>";
+        let result = session
+            .analyze_document(&AnalyzeDocumentRequestIr {
+                source: source.into(),
+                language_id: "html".into(),
+                host_ranges: Vec::new(),
+                settings: LanguageDocumentSettingsIr::default(),
+            })
+            .unwrap();
+        assert!(result.semantic_tokens.iter().any(|token| {
+            token
+                .modifiers
+                .iter()
+                .any(|modifier| modifier == "declarationTerminator")
+        }));
+        assert!(result.semantic_tokens.iter().any(|token| {
+            token
+                .modifiers
+                .iter()
+                .any(|modifier| modifier == "selectorCombinator")
+        }));
+        assert!(result.semantic_tokens.iter().any(|token| {
+            token.token_type == "property"
+                && token.modifiers.is_empty()
+                && source_slice(
+                    source,
+                    &SourceRange {
+                        start: token.start,
+                        end: token.end,
+                    },
+                ) == Some("fg")
+        }));
     }
 
     #[test]

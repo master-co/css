@@ -13,13 +13,10 @@
   },
   "references": [
     {
-      "path": "../facade/tsconfig.typecheck.json"
+      "path": "../native/tsconfig.typecheck.json"
     },
     {
       "path": "../compiler/tsconfig.typecheck.json"
-    },
-    {
-      "path": "../lexer/tsconfig.typecheck.json"
     },
     {
       "path": "../preset/tsconfig.typecheck.json"
@@ -32,6 +29,9 @@
     },
     {
       "path": "../validator/tsconfig.typecheck.json"
+    },
+    {
+      "path": "../wasm-tooling/tsconfig.typecheck.json"
     }
   ]
 }

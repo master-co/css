@@ -12,6 +12,7 @@ const packageRoot = process.cwd()
 const packageJSON = JSON.parse(readFileSync(resolve(packageRoot, 'package.json'), 'utf8')) as PackageJSON
 
 const entryByPackageName: Record<string, TsdownInputOption> = {
+  '@master/css-lexer': ['src/index.ts', 'src/node.ts', 'src/browser.ts'],
   '@master/eslint-plugin-css': ['src/**/*.{js,ts}']
 }
 
@@ -72,7 +73,7 @@ function hasExportTypes(exports: unknown): boolean {
 
 export default defineConfig({
   cwd: packageRoot,
-  entry: entryByPackageName[packageJSON.name || ''] || ['src/**/*.ts'],
+  entry: entryByPackageName[packageJSON.name || ''] || ['src/**/*.ts', '!src/**/*.d.ts'],
   unbundle: true,
   root: 'src',
   tsconfig: './tsconfig.prod.json',

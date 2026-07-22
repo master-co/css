@@ -24,6 +24,80 @@ fn serialize_classes(classes: &[String]) -> Result<JsValue, JsValue> {
     serde_wasm_bindgen::to_value(classes).map_err(|error| JsValue::from_str(&error.to_string()))
 }
 
+#[wasm_bindgen]
+pub struct ToolingLexerSession {
+    disposed: bool,
+}
+
+impl Default for ToolingLexerSession {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
+#[wasm_bindgen]
+impl ToolingLexerSession {
+    #[wasm_bindgen(constructor)]
+    pub fn new() -> ToolingLexerSession {
+        Self { disposed: false }
+    }
+
+    pub fn analyze(&self, request: JsValue) -> Result<JsValue, JsValue> {
+        if self.disposed {
+            return Err(JsValue::from_str(
+                "Master CSS lexer session has been disposed.",
+            ));
+        }
+        let request =
+            serde_wasm_bindgen::from_value::<mastercss_lexer::LexerBatchRequestIr>(request)
+                .map_err(|error| JsValue::from_str(&error.to_string()))?;
+        mastercss_lexer::analyze_lexer_batch(&request)
+            .serialize(&serde_wasm_bindgen::Serializer::json_compatible())
+            .map_err(|error| JsValue::from_str(&error.to_string()))
+    }
+
+    pub fn dispose(&mut self) {
+        self.disposed = true;
+    }
+}
+
+#[wasm_bindgen]
+pub struct ToolingSourceSession {
+    disposed: bool,
+}
+
+impl Default for ToolingSourceSession {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
+#[wasm_bindgen]
+impl ToolingSourceSession {
+    #[wasm_bindgen(constructor)]
+    pub fn new() -> ToolingSourceSession {
+        Self { disposed: false }
+    }
+
+    pub fn extract(&self, request: JsValue) -> Result<JsValue, JsValue> {
+        if self.disposed {
+            return Err(JsValue::from_str(
+                "Master CSS source session has been disposed.",
+            ));
+        }
+        let request =
+            serde_wasm_bindgen::from_value::<mastercss_source::SourceBatchRequestIr>(request)
+                .map_err(|error| JsValue::from_str(&error.to_string()))?;
+        mastercss_source::extract_source_batch(&request)
+            .serialize(&serde_wasm_bindgen::Serializer::json_compatible())
+            .map_err(|error| JsValue::from_str(&error.to_string()))
+    }
+
+    pub fn dispose(&mut self) {
+        self.disposed = true;
+    }
+}
+
 #[derive(Deserialize)]
 #[serde(rename_all = "camelCase")]
 struct LintClassListRequest {
@@ -38,6 +112,9 @@ struct LintClassListRequest {
     #[serde(default)]
     disallow_unknown_class: bool,
     raw_value_policy: Option<LintRawValuePolicyRequest>,
+    canonical_options: Option<mastercss_lint::CanonicalClassNameOptions>,
+    #[serde(default)]
+    compose_directive: bool,
 }
 
 #[derive(Deserialize)]
@@ -48,7 +125,7 @@ struct LintRawValuePolicyRequest {
     #[serde(default)]
     allow_properties: Vec<String>,
     #[serde(default)]
-    approved_segments: Vec<Vec<bool>>,
+    allowed_patterns: Vec<String>,
 }
 
 #[wasm_bindgen(js_name = extractClassCandidates)]
@@ -86,26 +163,6 @@ pub fn create_inspection_report(input: JsValue) -> Result<JsValue, JsValue> {
         .map_err(|error| JsValue::from_str(&error.to_string()))
 }
 
-#[wasm_bindgen(js_name = analyzeLanguage)]
-pub fn analyze_language(
-    source: &str,
-    contexts: JsValue,
-    semantic_tokens: JsValue,
-) -> Result<JsValue, JsValue> {
-    let contexts =
-        serde_wasm_bindgen::from_value::<Vec<mastercss_language::ClassListContextIr>>(contexts)
-            .map_err(|error| JsValue::from_str(&error.to_string()))?;
-    let semantic_tokens = serde_wasm_bindgen::from_value::<
-        Vec<mastercss_language::SemanticTokenInputIr>,
-    >(semantic_tokens)
-    .map_err(|error| JsValue::from_str(&error.to_string()))?;
-    let batch = mastercss_language::analyze_language(source, &contexts, &semantic_tokens)
-        .map_err(|error| JsValue::from_str(&error.to_string()))?;
-    batch
-        .serialize(&serde_wasm_bindgen::Serializer::json_compatible())
-        .map_err(|error| JsValue::from_str(&error.to_string()))
-}
-
 #[wasm_bindgen]
 pub struct ToolingLanguageSession {
     inner: mastercss_language::LanguageSession,
@@ -131,6 +188,32 @@ impl ToolingLanguageSession {
             .native_declaration_candidates(class_names)
             .map_err(|error| JsValue::from_str(&error.to_string()))?;
         candidates
+            .serialize(&serde_wasm_bindgen::Serializer::json_compatible())
+            .map_err(|error| JsValue::from_str(&error.to_string()))
+    }
+
+    #[wasm_bindgen(js_name = analyzeDocument)]
+    pub fn analyze_document(&self, request: JsValue) -> Result<JsValue, JsValue> {
+        let request =
+            serde_wasm_bindgen::from_value::<mastercss_language::AnalyzeDocumentRequestIr>(request)
+                .map_err(|error| JsValue::from_str(&error.to_string()))?;
+        self.inner
+            .analyze_document(&request)
+            .map_err(|error| JsValue::from_str(&error.to_string()))?
+            .serialize(&serde_wasm_bindgen::Serializer::json_compatible())
+            .map_err(|error| JsValue::from_str(&error.to_string()))
+    }
+
+    #[wasm_bindgen(js_name = formatDirectives)]
+    pub fn format_directives(&self, request: JsValue) -> Result<JsValue, JsValue> {
+        let request =
+            serde_wasm_bindgen::from_value::<mastercss_language::FormatDirectivesRequestIr>(
+                request,
+            )
+            .map_err(|error| JsValue::from_str(&error.to_string()))?;
+        self.inner
+            .format_directives(&request)
+            .map_err(|error| JsValue::from_str(&error.to_string()))?
             .serialize(&serde_wasm_bindgen::Serializer::json_compatible())
             .map_err(|error| JsValue::from_str(&error.to_string()))
     }
@@ -250,6 +333,21 @@ impl ToolingLintSession {
             .map_err(|error| JsValue::from_str(&error.to_string()))
     }
 
+    #[wasm_bindgen(js_name = resolveValidation)]
+    pub fn resolve_validation(
+        &self,
+        batch: JsValue,
+        rule_errors: JsValue,
+    ) -> Result<JsValue, JsValue> {
+        let batch = serde_wasm_bindgen::from_value::<mastercss_schema::ValidatorBatchIr>(batch)
+            .map_err(|error| invalid_lint_request(error.to_string()))?;
+        let rule_errors = serde_wasm_bindgen::from_value::<Vec<Vec<Vec<String>>>>(rule_errors)
+            .map_err(|error| invalid_lint_request(error.to_string()))?;
+        mastercss_lint::classify_host_rule_validation(&batch, &rule_errors)
+            .serialize(&serde_wasm_bindgen::Serializer::json_compatible())
+            .map_err(|error| JsValue::from_str(&error.to_string()))
+    }
+
     pub fn analyze(
         &mut self,
         class_names: Vec<String>,
@@ -321,14 +419,17 @@ impl ToolingLintSession {
                 "Unsupported lint class-list request version",
             ));
         }
-        let raw_value_policy =
-            request
-                .raw_value_policy
-                .map(|policy| mastercss_lint::RawValuePolicy {
-                    allow_raw_values: policy.allow_raw_values,
-                    allow_properties: policy.allow_properties,
-                    approved_segments: policy.approved_segments,
-                });
+        let raw_value_policy = request
+            .raw_value_policy
+            .map(|policy| {
+                mastercss_lint::RawValuePolicy::new(
+                    policy.allow_raw_values,
+                    policy.allow_properties,
+                    policy.allowed_patterns,
+                )
+            })
+            .transpose()
+            .map_err(invalid_lint_request)?;
         let batch = self
             .inner
             .analyze_class_list(
@@ -343,6 +444,8 @@ impl ToolingLintSession {
                     validation_errors: &request.validation_errors,
                     disallow_unknown_class: request.disallow_unknown_class,
                     raw_value_policy: raw_value_policy.as_ref(),
+                    canonical_options: request.canonical_options.as_ref(),
+                    compose_directive: request.compose_directive,
                 },
             )
             .map_err(scanner_error)?;
@@ -534,6 +637,11 @@ impl ToolingScannerSession {
         serde_wasm_bindgen::to_value(&update).map_err(|error| JsValue::from_str(&error.to_string()))
     }
 
+    #[wasm_bindgen(js_name = extractCandidates)]
+    pub fn extract_candidates(&self, source: &str, content: &str) -> Vec<String> {
+        mastercss_scanner::extract_source_candidates(source, content)
+    }
+
     #[wasm_bindgen(js_name = nativeDeclarationCandidates)]
     pub fn native_declaration_candidates(
         &self,
@@ -552,16 +660,51 @@ impl ToolingScannerSession {
         self.inner.collect_candidates(candidates)
     }
 
+    #[wasm_bindgen(js_name = filterCandidates)]
+    pub fn filter_candidates(
+        &self,
+        candidates: Vec<String>,
+        blocklist: JsValue,
+    ) -> Result<Vec<String>, JsValue> {
+        let blocklist = serde_wasm_bindgen::from_value::<
+            Vec<mastercss_schema::CssDirectiveBlocklistEntry>,
+        >(blocklist)
+        .map_err(|error| JsValue::from_str(&error.to_string()))?;
+        Ok(mastercss_scanner::filter_blocklisted_candidates(
+            candidates, &blocklist,
+        ))
+    }
+
+    #[wasm_bindgen(js_name = invalidGeneratedClasses)]
+    pub fn invalid_generated_classes(
+        &self,
+        batch: JsValue,
+        rule_support: JsValue,
+    ) -> Result<Vec<String>, JsValue> {
+        let batch = serde_wasm_bindgen::from_value::<mastercss_schema::ValidatorBatchIr>(batch)
+            .map_err(|error| JsValue::from_str(&error.to_string()))?;
+        let rule_support = serde_wasm_bindgen::from_value::<Vec<Vec<bool>>>(rule_support)
+            .map_err(|error| JsValue::from_str(&error.to_string()))?;
+        Ok(mastercss_scanner::invalid_generated_classes(
+            &batch,
+            &rule_support,
+        ))
+    }
+
     #[wasm_bindgen(js_name = scanCandidates)]
     pub fn scan_candidates(
         &mut self,
         source: &str,
         content: &str,
         candidates: Vec<String>,
-        excluded_classes: Vec<String>,
+        blocklist: JsValue,
         native_support: JsValue,
         invalid_generated_classes: Vec<String>,
     ) -> Result<JsValue, JsValue> {
+        let blocklist = serde_wasm_bindgen::from_value::<
+            Vec<mastercss_schema::CssDirectiveBlocklistEntry>,
+        >(blocklist)
+        .map_err(|error| JsValue::from_str(&error.to_string()))?;
         let native_support = if native_support.is_null() || native_support.is_undefined() {
             Vec::new()
         } else {
@@ -574,7 +717,7 @@ impl ToolingScannerSession {
                 source,
                 content,
                 candidates,
-                &excluded_classes.into_iter().collect::<HashSet<_>>(),
+                &blocklist,
                 &native_support,
                 &invalid_generated_classes
                     .into_iter()
@@ -615,13 +758,19 @@ impl ToolingScannerSession {
 
 #[wasm_bindgen(js_name = bindingInfo)]
 pub fn binding_info() -> Result<JsValue, JsValue> {
-    serde_wasm_bindgen::to_value(&serde_json::json!({
-        "bindingAbiVersion": 1,
-        "packageVersion": env!("CARGO_PKG_VERSION"),
-        "manifestVersion": mastercss_schema::MANIFEST_VERSION,
-        "hydrationManifestVersion": mastercss_schema::HYDRATION_MANIFEST_VERSION,
-        "target": "wasm32-unknown-unknown",
-        "surface": "tooling"
-    }))
+    serde_wasm_bindgen::to_value(&mastercss_schema::BindingInfo::new(
+        env!("CARGO_PKG_VERSION"),
+        "wasm32-unknown-unknown",
+        "tooling",
+        &[
+            "diagnostics",
+            "language",
+            "lexer",
+            "lint",
+            "scanner",
+            "source",
+            "validator",
+        ],
+    ))
     .map_err(|error| JsValue::from_str(&error.to_string()))
 }

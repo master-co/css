@@ -7,7 +7,8 @@
 ## Owns
 
 - `CSSScanner` state and options.
-- Valid, invalid, and latent class caches.
+- Rust-owned valid, invalid, latent, native, and source caches exposed through read-only views.
+- Rust-owned blocklist and generated-rule validation classification.
 - Generated CSS scanner state events.
 - Integration-facing scanner reset and insertion behavior.
 
@@ -28,7 +29,8 @@
 
 ## Key Files
 
-- `src/core.ts`
+- `src/rust-session.ts`
+- `crates/mastercss-scanner/src/lib.rs`
 - `src/options/index.ts`
 - `src/index.ts`
 

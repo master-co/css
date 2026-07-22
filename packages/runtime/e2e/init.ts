@@ -1,5 +1,6 @@
 import { Page } from '@playwright/test'
-import { MasterCSS, createHydrationManifest, type MasterCSSManifest } from '@master/css'
+import { createEngineSync } from '@master/css-engine/node'
+import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
 import {
   MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID,
@@ -189,9 +190,21 @@ async function createHydrationManifestForPage(page: Page, manifest: MasterCSSMan
     }
     return [...classNames]
   })
-  const css = MasterCSS.create({ manifest })
-  css.ensureClassRules(...classNames)
-  return createHydrationManifest(css)
+  const engine = createEngineSync({ manifest })
+  try {
+    engine.ensureClassRules(classNames)
+    const snapshot = engine.snapshot()
+    return {
+      version: 1 as const,
+      rules: snapshot.rules,
+      resourceOrder: [
+        ...snapshot.resources.variables.map(({ name }) => name),
+        ...snapshot.resources.animations.map(({ name }) => name)
+      ]
+    }
+  } finally {
+    engine.dispose()
+  }
 }
 
 export async function getRuntimeLoaderURL() {

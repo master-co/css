@@ -103,13 +103,17 @@ function run(command, args, options = {}) {
     return new Promise((resolvePromise, rejectPromise) => {
         const child = spawn(command, args, {
             cwd,
-            stdio: options.capture ? ['ignore', 'pipe', 'inherit'] : 'inherit',
+            stdio: options.capture ? ['ignore', 'pipe', 'pipe'] : 'inherit',
             env: process.env
         })
         let stdout = ''
+        let stderr = ''
 
         child.stdout?.on('data', (chunk) => {
             stdout += chunk
+        })
+        child.stderr?.on('data', (chunk) => {
+            stderr += chunk
         })
 
         child.on('error', rejectPromise)
@@ -117,7 +121,7 @@ function run(command, args, options = {}) {
             if (code === 0) {
                 resolvePromise(stdout)
             } else {
-                rejectPromise(new Error(`${label} failed with ${signal || code}`))
+                rejectPromise(new Error(`${label} failed with ${signal || code}${stderr ? `\n${stderr.trimEnd()}` : ''}`))
             }
         })
     })

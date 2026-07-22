@@ -1,17 +1,27 @@
-import { readFileSync, readdirSync } from 'node:fs'
+import { readFileSync, readdirSync, realpathSync } from 'node:fs'
 import { readFile, readdir } from 'node:fs/promises'
 import { dirname, extname, isAbsolute, join, relative, resolve, sep } from 'node:path'
 import {
   inspectCSS,
   resolveMasterCSSPackageEntryFile
 } from '@master/css-compiler'
-import {
-  createMasterCSSManifestEntryPattern,
-  hasMasterCSSManifestEntrypoint as hasMasterCSSManifestEntrypointFallback,
-  isMasterCSSModuleId,
-  normalizeMasterCSSModuleIds
-} from '@master/css-lexer'
 import { stripResourceQuery } from '@master/css-integration/manifest-module'
+import { loadNativeBinding } from '@master/css-native'
+
+const MASTER_CSS_MODULE_IDS = ['@master/css'] as const
+const MASTER_CSS_MODULE_ID_SET = new Set<string>(MASTER_CSS_MODULE_IDS)
+
+export function normalizeMasterCSSModuleIds() {
+  return new Set(MASTER_CSS_MODULE_IDS)
+}
+
+export function isMasterCSSModuleId(id: string) {
+  return MASTER_CSS_MODULE_ID_SET.has(id)
+}
+
+export function createMasterCSSManifestEntryPattern() {
+  return /(?:@master\s+entry\s*;|@import\s+(?:url\(\s*)?(['"])@master\/css\1\s*\)?[^;]*;)/
+}
 
 const CSS_MANIFEST_ENTRY_IGNORED_DIRECTORIES = new Set([
   'node_modules',
@@ -41,77 +51,29 @@ export function isCSSManifestRequest(id: string) {
   return extname(cleanCSSManifestRequest(id)) === '.css'
 }
 
-export {
-  createMasterCSSManifestEntryPattern,
-  isMasterCSSModuleId,
-  normalizeMasterCSSModuleIds,
-  resolveMasterCSSPackageEntryFile
-}
+export { resolveMasterCSSPackageEntryFile }
 
 export function hasMasterCSSManifestEntrypoint(source: string) {
-  try {
-    return inspectCSS(source).hasMasterEntry
-  } catch {
-    return hasMasterCSSManifestEntrypointFallback(source)
-  }
-}
-
-async function collectCSSManifestEntryFiles(directory: string, entries: string[]) {
-  try {
-    for (const dirent of await readdir(directory, { withFileTypes: true })) {
-      const file = join(directory, dirent.name)
-      if (dirent.isDirectory()) {
-        if (CSS_MANIFEST_ENTRY_IGNORED_DIRECTORIES.has(dirent.name)) continue
-        await collectCSSManifestEntryFiles(file, entries)
-        continue
-      }
-      if (!dirent.isFile() || extname(dirent.name) !== '.css') continue
-      try {
-        if (hasMasterCSSManifestEntrypoint(await readFile(file, 'utf8'))) {
-          entries.push(file)
-        }
-      } catch {
-        // Ignore files that disappear or become unreadable while scanning.
-      }
-    }
-  } catch {
-    // Ignore directories that disappear or are unreadable while scanning.
-  }
-}
-
-function collectCSSManifestEntryFilesSync(directory: string, entries: string[]) {
-  try {
-    for (const dirent of readdirSync(directory, { withFileTypes: true })) {
-      const file = join(directory, dirent.name)
-      if (dirent.isDirectory()) {
-        if (CSS_MANIFEST_ENTRY_IGNORED_DIRECTORIES.has(dirent.name)) continue
-        collectCSSManifestEntryFilesSync(file, entries)
-        continue
-      }
-      if (!dirent.isFile() || extname(dirent.name) !== '.css') continue
-      try {
-        if (hasMasterCSSManifestEntrypoint(readFileSync(file, 'utf8'))) {
-          entries.push(file)
-        }
-      } catch {
-        // Ignore files that disappear or become unreadable while scanning.
-      }
-    }
-  } catch {
-    // Ignore directories that disappear or are unreadable while scanning.
-  }
+  return inspectCSS(source).hasMasterEntry
 }
 
 export async function findCSSManifestEntryFiles(projectDir = process.cwd()) {
-  const entries: string[] = []
-  await collectCSSManifestEntryFiles(resolve(projectDir), entries)
-  return entries.sort()
+  return findCSSManifestEntryFilesSync(projectDir)
 }
 
 export function findCSSManifestEntryFilesSync(projectDir = process.cwd()) {
-  const entries: string[] = []
-  collectCSSManifestEntryFilesSync(resolve(projectDir), entries)
-  return entries.sort()
+  const root = resolve(projectDir)
+  let realRoot = root
+  try {
+    realRoot = realpathSync.native(root)
+  } catch {
+    // Let the native project layer report unreadable roots.
+  }
+  return loadNativeBinding({ required: true })!.binding
+    .findCssManifestEntries(root)
+    .map((entry) => realRoot !== root && (entry === realRoot || entry.startsWith(`${realRoot}${sep}`))
+      ? join(root, relative(realRoot, entry))
+      : entry)
 }
 
 export async function findCSSManifestEntryFile(projectDir = process.cwd()) {

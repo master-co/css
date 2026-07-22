@@ -1,5 +1,6 @@
 import CSSLanguageService from '@master/css-language-service'
-import { createRustLanguageAnalyzer } from '@master/css-language/node'
+import { defaultManifest } from '@master/css-language'
+import { createLanguageSessionSync } from '@master/css-language/node'
 import type MasterCSSMCPContext from './context'
 import { loadWorkspaceManifest } from './project'
 import { createMCPTextDocument } from './document'
@@ -18,10 +19,12 @@ export interface SuggestSyntaxOptions {
 export async function suggestSyntax(context: MasterCSSMCPContext, options: SuggestSyntaxOptions) {
   const filePath = context.resolveVirtualPath(options.filePath)
   const manifest = await loadWorkspaceManifest(context)
-  const analyzer = await createRustLanguageAnalyzer()
+  const session = createLanguageSessionSync(
+    manifest.status === 'loaded' ? manifest.manifest : defaultManifest
+  )
   const service = new CSSLanguageService(
     manifest.status === 'loaded' ? { manifest: manifest.manifest } : undefined,
-    { analyzer }
+    { session }
   )
   try {
     const document = createMCPTextDocument(filePath, options.content)

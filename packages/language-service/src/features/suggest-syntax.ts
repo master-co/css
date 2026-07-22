@@ -1,38 +1,38 @@
-import type { CompletionItem, CompletionParams } from 'vscode-languageserver-protocol'
+import {
+  CompletionItemKind,
+  type CompletionItem,
+  type CompletionParams
+} from 'vscode-languageserver-protocol'
 import type { TextDocument } from 'vscode-languageserver-textdocument'
-import CSSLanguageService from '../core'
-import querySyntaxCompletions from '../utils/query-syntax-completions'
-import type { CompletionIndex } from '../utils/completion-index'
+import type CSSLanguageService from '../core'
+import createCSSMarkdownDocumentation from '../utils/create-css-markdown-documentation'
 
-export default function suggestSyntax(this: CSSLanguageService,
+export default function suggestSyntax(
+  this: CSSLanguageService,
   document: TextDocument,
   position: CompletionParams['position'],
-  context: CompletionParams['context'],
-  completionIndex?: CompletionIndex
+  context: CompletionParams['context']
 ): CompletionItem[] | undefined {
   const classPosition = this.getClassPosition(document, position)
-  if (classPosition !== undefined) {
-    const q = context?.triggerCharacter === ' '
-      /**
-       * When the last trigger character is " " and classPosition exists,
-       * it means the user is preparing to enter the next class.
-       * @example <div class="class-a "></div>
-       *                              ^ cursor is here
-       * */
-      ? ''
-      /**
-       * Get the front field of the class according to the cursor.
-       * @example <div class="text-center:hover@sm"></div>
-       *                          ^ types: and cursor is here -> text:
-       * */
-      : document.getText({
-        start: document.positionAt(classPosition.range.start),
-        end: position
-      })
-    return querySyntaxCompletions(q, this.css, completionIndex)
-  }
-  // todo
-  // else if (isInstance === true && checkConfigColorsBlock(document, position) === true) {
-  //     return getColorCompletionItems(this.css)
-  // }
+  if (!classPosition) return
+  const query = context?.triggerCharacter === ' '
+    ? ''
+    : document.getText({
+      start: document.positionAt(classPosition.range.start),
+      end: position
+    })
+  return this.session.completionIndex().classEntries
+    .filter(({ label }) => !query || label.startsWith(query))
+    .map((entry) => ({
+      label: entry.label,
+      kind: entry.kind === 'property' ? CompletionItemKind.Property : CompletionItemKind.Value,
+      detail: entry.detail,
+      documentation: entry.documentationText
+        ? createCSSMarkdownDocumentation(entry.documentationText)
+        : undefined,
+      sortText: entry.sortText,
+      command: entry.triggerSuggest
+        ? { title: 'Suggest', command: 'editor.action.triggerSuggest' }
+        : undefined
+    }))
 }

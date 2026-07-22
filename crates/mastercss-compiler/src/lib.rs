@@ -1,7 +1,12 @@
 #![forbid(unsafe_code)]
 
+mod lower;
 mod manifest;
 
+pub use lower::{
+    LowerCssDirectivesOptions, LowerCssDirectivesRequest, LowerCssDirectivesResult,
+    lower_css_directives, lower_css_directives_request,
+};
 pub use manifest::{
     CompileDefaultPresetRequest, CompileDefaultPresetResult, CompileManifestOptions,
     CompileManifestResult, compile_default_preset_manifest, compile_manifest_input,
@@ -28,15 +33,15 @@ use lightningcss::visit_types;
 use lightningcss::visitor::{Visit, VisitTypes, Visitor};
 use mastercss_lexer::{
     StandaloneCssDirectiveStatement, byte_to_utf16_offset, collect_class_list_token_ranges,
-    extract_top_level_at_rule_blocks, find_css_import_statements, find_master_directive_statements,
-    parse_css_import_source, remove_css_reference_statements, remove_master_directive_statements,
-    remove_standalone_css_directives, utf16_to_byte_offset,
+    extract_top_level_at_rule_blocks, find_css_directive_ranges, find_css_import_statements,
+    find_master_directive_statements, parse_css_import_source, remove_css_reference_statements,
+    remove_master_directive_statements, remove_standalone_css_directives, utf16_to_byte_offset,
 };
 use mastercss_schema::{
-    CssDirectiveConditionPathEntry, CssDirectiveExtractionPolicy, CssDirectiveManifestInput,
-    CssDirectiveReferenceStatement, CssDirectiveSourceReference, CssDirectiveStyleDefinition,
-    CssDirectiveVariableDefinition, Diagnostic, ErrorCode, SourceLocation, SourceLocationRange,
-    SourceRange, UtilityLayerName,
+    CssDirectiveBlocklistEntry, CssDirectiveConditionPathEntry, CssDirectiveExtractionPolicy,
+    CssDirectiveManifestInput, CssDirectiveReferenceStatement, CssDirectiveSourceReference,
+    CssDirectiveStyleDefinition, CssDirectiveVariableDefinition, Diagnostic, ErrorCode,
+    SourceLocation, SourceLocationRange, SourceRange, UtilityLayerName,
 };
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
@@ -49,6 +54,17 @@ pub struct InspectCssResult {
     #[serde(rename = "hasMasterCSSImport")]
     pub has_master_css_import: bool,
     pub has_master_entry: bool,
+    pub directives: Vec<InspectCssDirective>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct InspectCssDirective {
+    pub name: String,
+    pub range: SourceRange,
+    pub prelude_range: SourceRange,
+    pub has_block: bool,
+    pub quoted_strings: u32,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Deserialize)]
@@ -108,6 +124,113 @@ pub struct ResolvedCssImportGraph {
     pub dependencies: Vec<String>,
     #[serde(skip_serializing_if = "Vec::is_empty")]
     pub references: Vec<CssDirectiveReferenceStatement>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct CssDependencyImport {
+    pub start: u32,
+    pub end: u32,
+    pub statement: String,
+    pub source: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct CssDependencyAnalysis {
+    pub source_without_references: String,
+    pub imports: Vec<CssDependencyImport>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct StandaloneDirectiveStatementIr {
+    pub start: u32,
+    pub end: u32,
+    pub at_rule_name: String,
+    pub name: String,
+    pub statement: String,
+    pub args: Vec<String>,
+    pub modifiers: Vec<String>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct StandaloneDirectiveAnalysis {
+    pub code: String,
+    pub statements: Vec<StandaloneDirectiveStatementIr>,
+    pub extraction_policy: CssDirectiveExtractionPolicy,
+}
+
+pub fn analyze_standalone_directives(source: &str) -> StandaloneDirectiveAnalysis {
+    let (code, statements) = remove_standalone_css_directives(source);
+    let extraction_policy = extraction_policy_from_statements(&statements);
+    StandaloneDirectiveAnalysis {
+        code,
+        statements: statements
+            .into_iter()
+            .map(|statement| StandaloneDirectiveStatementIr {
+                start: statement.start,
+                end: statement.end,
+                at_rule_name: statement.at_rule_name,
+                name: statement.name,
+                statement: statement.statement,
+                args: statement.args,
+                modifiers: statement.modifiers,
+            })
+            .collect(),
+        extraction_policy,
+    }
+}
+
+pub fn analyze_css_dependencies(source: &str) -> CssDependencyAnalysis {
+    let (source_without_references, _) = remove_css_reference_statements(source);
+    let imports = find_css_import_statements(&source_without_references)
+        .into_iter()
+        .filter_map(|statement| {
+            let source = parse_css_import_source(&statement.statement)?;
+            Some(CssDependencyImport {
+                start: statement.start,
+                end: statement.end,
+                statement: statement.statement,
+                source,
+            })
+        })
+        .collect();
+    CssDependencyAnalysis {
+        source_without_references,
+        imports,
+    }
+}
+
+pub fn merge_extraction_policies(
+    policies: &[CssDirectiveExtractionPolicy],
+) -> CssDirectiveExtractionPolicy {
+    let mut merged = CssDirectiveExtractionPolicy::default();
+    for policy in policies {
+        for value in &policy.include {
+            if !merged.include.contains(value) {
+                merged.include.push(value.clone());
+            }
+        }
+        for value in &policy.exclude {
+            if !merged.exclude.contains(value) {
+                merged.exclude.push(value.clone());
+            }
+        }
+        for value in &policy.safelist {
+            if !merged.safelist.contains(value) {
+                merged.safelist.push(value.clone());
+            }
+        }
+        for value in &policy.blocklist {
+            if !merged.blocklist.contains(value) {
+                merged.blocklist.push(value.clone());
+            }
+        }
+        merged.preserve_native |= policy.preserve_native;
+    }
+    merged
 }
 
 pub trait CssImportProvider {
@@ -178,6 +301,13 @@ pub enum CompilerError {
         range: Option<SourceRange>,
     },
     #[error("{message}")]
+    DirectiveDiagnostic {
+        code: ErrorCode,
+        message: String,
+        filename: String,
+        range: Option<SourceRange>,
+    },
+    #[error("{message}")]
     Import { message: String, filename: String },
 }
 
@@ -208,6 +338,18 @@ impl CompilerError {
                 range,
             } => Diagnostic {
                 code: ErrorCode::CssDirectiveError,
+                message: message.clone(),
+                source: Some(filename.clone()),
+                range: range.clone(),
+                notes: vec![],
+            },
+            Self::DirectiveDiagnostic {
+                code,
+                message,
+                filename,
+                range,
+            } => Diagnostic {
+                code: *code,
                 message: message.clone(),
                 source: Some(filename.clone()),
                 range: range.clone(),
@@ -488,7 +630,10 @@ fn add_unique_string(target: &mut Vec<String>, value: &str) {
     }
 }
 
-fn add_unique_value(target: &mut Vec<Value>, value: Value) {
+fn add_unique_blocklist_entry(
+    target: &mut Vec<CssDirectiveBlocklistEntry>,
+    value: CssDirectiveBlocklistEntry,
+) {
     if !target.contains(&value) {
         target.push(value);
     }
@@ -558,15 +703,18 @@ fn extraction_policy_from_statements(
                     .flat_map(|value| value.split_whitespace())
                 {
                     if value.contains(['*', '?']) {
-                        add_unique_value(
+                        add_unique_blocklist_entry(
                             &mut policy.blocklist,
-                            serde_json::json!({
-                                "source": wildcard_regex_source(value),
-                                "flags": ""
-                            }),
+                            CssDirectiveBlocklistEntry::Pattern {
+                                source: wildcard_regex_source(value),
+                                flags: String::new(),
+                            },
                         );
                     } else {
-                        add_unique_value(&mut policy.blocklist, Value::String(value.to_owned()));
+                        add_unique_blocklist_entry(
+                            &mut policy.blocklist,
+                            CssDirectiveBlocklistEntry::Exact(value.to_owned()),
+                        );
                     }
                 }
             }
@@ -588,6 +736,16 @@ pub fn inspect_css(source: &str) -> InspectCssResult {
         has_master_entry_directive,
         has_master_css_import,
         has_master_entry: has_master_entry_directive || has_master_css_import,
+        directives: find_css_directive_ranges(source)
+            .into_iter()
+            .map(|directive| InspectCssDirective {
+                name: directive.name,
+                range: directive.range,
+                prelude_range: directive.prelude_range,
+                has_block: directive.block_range.is_some(),
+                quoted_strings: directive.quoted_string_ranges.len() as u32,
+            })
+            .collect(),
     }
 }
 
@@ -801,14 +959,16 @@ fn directive_error(
     }
 }
 
-fn ranged_directive_error(
+fn ranged_directive_diagnostic(
     source: &str,
     filename: &str,
     start_byte: usize,
     end_byte: usize,
+    code: ErrorCode,
     message: impl Into<String>,
 ) -> CompilerError {
-    CompilerError::Directive {
+    CompilerError::DirectiveDiagnostic {
+        code,
         message: message.into(),
         filename: filename.to_owned(),
         range: byte_to_utf16_offset(source, start_byte).and_then(|start| {
@@ -2302,11 +2462,12 @@ fn validate_compose_syntax(source: &str, filename: &str) -> Result<(), CompilerE
             let group_end = css_block_end(source, index, source.len())
                 .map(|end| next_char_end(source, end))
                 .unwrap_or(index + 1);
-            return Err(ranged_directive_error(
+            return Err(ranged_directive_diagnostic(
                 source,
                 filename,
                 index,
                 group_end,
+                ErrorCode::ComposeGroupSyntax,
                 "@compose does not accept group syntax",
             ));
         }
@@ -2315,11 +2476,12 @@ fn validate_compose_syntax(source: &str, filename: &str) -> Result<(), CompilerE
             let character = source[cursor..].chars().next().unwrap_or_default();
             if matches!(character, '\'' | '"') {
                 let quote_end = css_quote_end(source, cursor, character);
-                return Err(ranged_directive_error(
+                return Err(ranged_directive_diagnostic(
                     source,
                     filename,
                     cursor,
                     quote_end,
+                    ErrorCode::ComposeQuotedSyntax,
                     "@compose only accepts unquoted class lists",
                 ));
             }
@@ -3092,7 +3254,8 @@ fn lower_compose_rule(
     style_order: &mut u32,
 ) -> Result<(), CompilerError> {
     if rule.block.is_some() {
-        return Err(CompilerError::Directive {
+        return Err(CompilerError::DirectiveDiagnostic {
+            code: ErrorCode::ComposeGroupSyntax,
             message: "@compose does not accept group syntax".into(),
             filename: filename.to_owned(),
             range: None,
@@ -3126,7 +3289,8 @@ fn lower_compose_rule(
     let (_, content_end) = trim_byte_range(body, content_start, semicolon);
     let class_list = &body[content_start..content_end];
     if class_list.contains(['\'', '"']) {
-        return Err(CompilerError::Directive {
+        return Err(CompilerError::DirectiveDiagnostic {
+            code: ErrorCode::ComposeQuotedSyntax,
             message: "@compose only accepts unquoted class lists".into(),
             filename: filename.to_owned(),
             range: None,
@@ -3142,7 +3306,8 @@ fn lower_compose_rule(
     let (conditions, path) = condition_properties(condition_path);
     for token in collect_class_list_token_ranges(class_list) {
         if token.token.starts_with('{') {
-            return Err(CompilerError::Directive {
+            return Err(CompilerError::DirectiveDiagnostic {
+                code: ErrorCode::ComposeGroupSyntax,
                 message: "@compose does not accept group syntax".into(),
                 filename: filename.to_owned(),
                 range: None,
@@ -3561,7 +3726,8 @@ fn lower_native_compose_rule(
     style_order: &mut u32,
 ) -> Result<(), CompilerError> {
     if rule.block.is_some() {
-        return Err(CompilerError::Directive {
+        return Err(CompilerError::DirectiveDiagnostic {
+            code: ErrorCode::ComposeGroupSyntax,
             message: "@compose does not accept group syntax".into(),
             filename: filename.to_owned(),
             range: None,
@@ -3595,7 +3761,8 @@ fn lower_native_compose_rule(
     let (_, content_end) = trim_byte_range(rewritten_source, content_start, semicolon);
     let class_list = &rewritten_source[content_start..content_end];
     if class_list.contains(['\'', '"']) {
-        return Err(CompilerError::Directive {
+        return Err(CompilerError::DirectiveDiagnostic {
+            code: ErrorCode::ComposeQuotedSyntax,
             message: "@compose only accepts unquoted class lists".into(),
             filename: filename.to_owned(),
             range: None,
@@ -3606,7 +3773,8 @@ fn lower_native_compose_rule(
     let (conditions, path) = condition_properties(condition_path);
     for token in collect_class_list_token_ranges(class_list) {
         if token.token.starts_with('{') {
-            return Err(CompilerError::Directive {
+            return Err(CompilerError::DirectiveDiagnostic {
+                code: ErrorCode::ComposeGroupSyntax,
                 message: "@compose does not accept group syntax".into(),
                 filename: filename.to_owned(),
                 range: None,
@@ -4149,14 +4317,11 @@ mod tests {
 
     #[test]
     fn recognizes_only_explicit_project_entry_markers() {
-        assert_eq!(
-            inspect_css("@master entry;"),
-            InspectCssResult {
-                has_master_entry_directive: true,
-                has_master_css_import: false,
-                has_master_entry: true,
-            }
-        );
+        let inspection = inspect_css("@master entry;");
+        assert!(inspection.has_master_entry_directive);
+        assert!(!inspection.has_master_css_import);
+        assert!(inspection.has_master_entry);
+        assert_eq!(inspection.directives.len(), 1);
         assert!(inspect_css("@import \"@master/css\";").has_master_entry);
         assert!(!inspect_css("@master;").has_master_entry);
         assert!(!inspect_css("@master global;").has_master_entry);
@@ -4322,6 +4487,27 @@ mod tests {
             error.diagnostic().range,
             Some(SourceRange { start: 7, end: 13 })
         );
+    }
+
+    #[test]
+    fn owns_compose_syntax_diagnostic_codes_and_utf16_ranges() {
+        let quoted = compile_css_directives(
+            "/*😀*/ .btn { @compose \"block\"; }",
+            &CompileNativeCssOptions::default(),
+        )
+        .unwrap_err()
+        .diagnostic();
+        assert_eq!(quoted.code, ErrorCode::ComposeQuotedSyntax);
+        assert_eq!(quoted.range, Some(SourceRange { start: 23, end: 30 }));
+
+        let grouped = compile_css_directives(
+            ".btn { @compose {block}; }",
+            &CompileNativeCssOptions::default(),
+        )
+        .unwrap_err()
+        .diagnostic();
+        assert_eq!(grouped.code, ErrorCode::ComposeGroupSyntax);
+        assert_eq!(grouped.range, Some(SourceRange { start: 16, end: 23 }));
     }
 
     #[test]

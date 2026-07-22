@@ -1,7 +1,6 @@
 import defineVisitors from '../utils/define-visitors'
-import resolveContext, { requireResolvedCSS } from '../utils/resolve-context'
+import resolveContext from '../utils/resolve-context'
 import createRule from '../create-rule'
-import { createSortClassesReport } from '@master/css-lint'
 import reportLintDiagnostics from '../utils/report-lint-diagnostics'
 import defineSourceVisitors, { shouldUseSourceVisitors } from '../utils/define-source-visitors'
 import { fromRustLintDiagnostics } from '@master/css-lint/node'
@@ -21,24 +20,22 @@ export default createRule({
   },
   defaultOptions: [],
   create: function (context) {
-    const { settings, css, rustLint } = resolveContext(context)
+    const { settings, rustLint } = resolveContext(context)
     if (shouldUseSourceVisitors(context)) {
-      return defineSourceVisitors({ context, css, rustLint, ruleId: 'sort-classes' })
+      return defineSourceVisitors({ context, rustLint, ruleId: 'sort-classes' })
     }
-    return defineVisitors({ context, settings }, (node, resolved) => {
+    return defineVisitors({ context, settings, rustLint }, (node, resolved) => {
       const { raw, start, end, nodes, unescape } = resolved
       if (nodes.length <= 1) return
-      const rustDiagnostics = rustLint
-        ? fromRustLintDiagnostics(
-          rustLint.analyzeClassList(raw, resolved.classValues).diagnostics
-            .filter(({ ruleId }) => ruleId === 'sort-classes')
-        )
-        : undefined
+      const rustDiagnostics = fromRustLintDiagnostics(
+        rustLint.analyzeClassList(raw, resolved.classValues).diagnostics
+          .filter(({ ruleId }) => ruleId === 'sort-classes')
+      )
       reportLintDiagnostics(
         context,
         node,
         { raw, start, end, nodes, unescape, value: raw, classNodes: [], classValues: [] },
-        rustDiagnostics || createSortClassesReport(raw, requireResolvedCSS(css), { unescape }).diagnostics
+        rustDiagnostics
       )
     })
   },

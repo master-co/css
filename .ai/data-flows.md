@@ -4,28 +4,20 @@
 
 ```txt
 class string
-  -> MasterCSS.ensureClassRules()
-  -> generate()
+  -> Rust EngineSession.ensure_class_rules(batch)
   -> match compiled utilities, including components-layer project styles
-  -> create()
-  -> match() against variable, value, key, arbitrary manifest matchers
-  -> new Utility()
   -> parse values, functions, variables, selectors, modes, conditions
   -> declaration/value opcodes
-  -> calcRulePriority()
-  -> UtilityLayer.insert()
+  -> calculate stable rule priority and layer indexes
   -> insert referenced variables and animations
-  -> css.text
+  -> transition/snapshot/resource IR
+  -> TypeScript host applies CSS text or CSSOM mutations
 ```
 
 Main files:
 
-- `packages/engine/src/core.ts`
-- `packages/engine/src/utility.ts`
-- `packages/engine/src/utils/compare-rule-priority.ts`
-- `packages/engine/src/utils/parse-condition.ts`
-- `packages/engine/src/utils/parse-selector.ts`
-- `packages/engine/src/utils/generate-selector.ts`
+- `crates/mastercss-engine/src/lib.rs`
+- `packages/engine/src/bound-engine.ts`
 
 Risks:
 
@@ -38,12 +30,12 @@ Risks:
 
 ```txt
 project CSS files containing @master entry; or @import "@master/css"
-  -> @master/css-project discovers project entry files only
-  -> @master/css-compiler resolves CSS imports and package style imports
-  -> compiler parses @theme token/mode/keyframe directives, @settings root options, top-level @custom-variant definitions, and @defaults/@components/@utilities managed definition directives
-  -> compiler lowers directive result into MasterCSSManifest
+  -> Rust project core discovers project entries and owns load/merge policy
+  -> TypeScript Node provider supplies package exports and file contents
+  -> Rust compiler parses directives/native CSS and consumes the prepared graph
+  -> Rust compiler lowers the result into MasterCSSManifest
   -> build tools / ESLint / language-server receive the same semantic project manifest
-  -> MasterCSS executes manifest variables, animations, selectors, conditions, utilities
+  -> Rust engine executes manifest variables, animations, selectors, conditions, utilities
 ```
 
 Main files:
@@ -52,9 +44,10 @@ Main files:
 - `packages/project/src/manifest.ts`
 - `packages/integration/src/manifest-module.ts`
 - `packages/compiler/src/index.ts`
-- `packages/compiler/src/master-css-manifest.ts`
-- `packages/compiler/src/lower-css-directives.ts`
-- `packages/engine/src/core.ts`
+- `crates/mastercss-project/src/lib.rs`
+- `crates/mastercss-compiler/src/lib.rs`
+- `crates/mastercss-compiler/src/lower.rs`
+- `crates/mastercss-engine/src/lib.rs`
 
 Risks:
 
@@ -70,10 +63,10 @@ Risks:
 
 ```txt
 source globs / Vite modules / Webpack modules
-  -> CSSScanner.init()
-  -> @master/css-source adapters / extractClassCandidates()
-  -> generateValidRules()
-  -> insert valid rules into layers
+  -> Rust ScannerSession
+  -> Rust built-in extractor or custom host adapter candidates
+  -> batched host CSS support oracle
+  -> Rust classification and engine transition
   -> build tool / CLI registers managed CSS entries discovered by @master/css-project with @master/css-stylesheet
   -> @master/css-stylesheet compiles stylesheet CSS through @master/css-compiler
   -> combine stylesheet manifest returned by compiler with explicit manifest options
@@ -84,9 +77,9 @@ source globs / Vite modules / Webpack modules
 Main files:
 
 - `packages/scanner/src/core.ts`
-- `packages/source/src/adapters/*`
+- `crates/mastercss-scanner/src/lib.rs`
+- `crates/mastercss-source/src/lib.rs`
 - `packages/stylesheet/src/index.ts`
-- `packages/validator/src/generate-valid-rules.ts`
 - `packages/vite/src/modes/static.ts`
 - `packages/vite/src/plugins/virtual-css-module.ts`
 - `packages/webpack/src/index.ts`
@@ -128,20 +121,19 @@ Risks:
 
 ```txt
 TextDocument + cursor
-  -> @master/css-language class-position scanner / semantic tokenizer
-  -> CSSLanguageService wrapper
-  -> suggestSyntax / inspectSyntax / renderSyntaxColors / editSyntaxColors
-  -> query engine utilities, variables, selectors, conditions, generated CSS
-  -> LSP response through language-server
+  -> Rust LanguageSession analyze/complete/inspect/format/color request
+  -> versioned UTF-16 ranges, semantic-token data, completion/inspection/color/edit IR
+  -> CSSLanguageService maps IR to TextDocument/LSP values
+  -> language-server returns the LSP response
 ```
 
 Main files:
 
 - `packages/language/src/utils/get-class-positions.ts`
-- `packages/language/src/render-semantic-tokens.ts`
+- `crates/mastercss-language/src/lib.rs`
+- `packages/language/src/rust-session.ts`
 - `packages/language-service/src/core.ts`
 - `packages/language-service/src/features/*`
-- `packages/language-service/src/utils/query-syntax-completions.ts`
 - `packages/language-server/src/core.ts`
 
 Note: syntax diagnostics are currently handled mainly by `@master/eslint-plugin-css`, not by LSP diagnostics.

@@ -1,5 +1,5 @@
 import { languageSettings, type LanguageSettings } from '@master/css-language'
-import type { MasterCSSManifest } from '@master/css'
+import type { MasterCSSManifest } from '@master/css-schema/manifest'
 
 /**
  * @example styles https://regex101.com/r/HLPdsw/1

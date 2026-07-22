@@ -13,7 +13,10 @@
   },
   "references": [
     {
-      "path": "../lexer/tsconfig.typecheck.json"
+      "path": "../native/tsconfig.typecheck.json"
+    },
+    {
+      "path": "../wasm-tooling/tsconfig.typecheck.json"
     }
   ]
 }

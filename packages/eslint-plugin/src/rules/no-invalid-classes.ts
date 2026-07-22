@@ -1,8 +1,7 @@
 import defineVisitors from '../utils/define-visitors'
-import resolveContext, { requireResolvedCSS } from '../utils/resolve-context'
+import resolveContext from '../utils/resolve-context'
 import createRule from '../create-rule'
 import { noInvalidClassesOptionsSchema } from '../settings-schema'
-import { createInvalidClassesReport } from '@master/css-lint'
 import reportLintDiagnostics from '../utils/report-lint-diagnostics'
 import defineSourceVisitors, { shouldUseSourceVisitors } from '../utils/define-source-visitors'
 import { fromRustLintDiagnostics } from '@master/css-lint/node'
@@ -23,11 +22,10 @@ export default createRule({
   },
   defaultOptions: [],
   create: function (context) {
-    const { options, settings, css, rustLint } = resolveContext(context)
+    const { options, settings, rustLint } = resolveContext(context)
     if (shouldUseSourceVisitors(context)) {
       return defineSourceVisitors({
         context,
-        css,
         rustLint,
         ruleId: 'no-invalid-classes',
         ruleOptions: {
@@ -35,23 +33,18 @@ export default createRule({
         }
       })
     }
-    return defineVisitors({ context, settings }, (node, resolved) => {
-      const rustDiagnostics = rustLint
-        ? fromRustLintDiagnostics(
-          rustLint.analyzeClassList(resolved.raw, resolved.classValues, {
-            disallowUnknownClass: options.disallowUnknownClass
-          }).diagnostics.filter(({ ruleId }) => ruleId === 'no-invalid-classes'),
-          'error'
-        )
-        : undefined
+    return defineVisitors({ context, settings, rustLint }, (node, resolved) => {
+      const rustDiagnostics = fromRustLintDiagnostics(
+        rustLint.analyzeClassList(resolved.raw, resolved.classValues, {
+          disallowUnknownClass: options.disallowUnknownClass
+        }).diagnostics.filter(({ ruleId }) => ruleId === 'no-invalid-classes'),
+        'error'
+      )
       reportLintDiagnostics(
         context,
         node,
         resolved,
-        rustDiagnostics || createInvalidClassesReport(resolved.raw, requireResolvedCSS(css), {
-          unescape: resolved.unescape,
-          disallowUnknownClass: options.disallowUnknownClass
-        }).diagnostics
+        rustDiagnostics
       )
     })
   }

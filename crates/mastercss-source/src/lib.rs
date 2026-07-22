@@ -12,6 +12,86 @@ use oxc_ast::ast::{
 use oxc_ast_visit::{Visit, walk};
 use oxc_parser::Parser;
 use oxc_span::SourceType;
+use serde::{Deserialize, Serialize};
+
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Deserialize)]
+#[serde(rename_all = "lowercase")]
+pub enum SourceExtractorKind {
+    #[default]
+    Auto,
+    Raw,
+    Oxc,
+    Html,
+    Astro,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct SourceExtractionInputIr {
+    pub source: String,
+    pub content: String,
+    #[serde(default)]
+    pub kind: SourceExtractorKind,
+}
+
+#[derive(Debug, Clone, Default, PartialEq, Eq, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct SourceBatchRequestIr {
+    pub files: Vec<SourceExtractionInputIr>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct SourceExtractionIr {
+    pub source: String,
+    pub candidates: Vec<String>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct SourceBatchIr {
+    pub version: u32,
+    pub files: Vec<SourceExtractionIr>,
+}
+
+pub fn extract_source(input: &SourceExtractionInputIr) -> Vec<String> {
+    match input.kind {
+        SourceExtractorKind::Raw => extract_class_candidates(&input.content),
+        SourceExtractorKind::Oxc => extract_oxc_classes(&input.source, &input.content),
+        SourceExtractorKind::Html => extract_html_classes(&input.source, &input.content),
+        SourceExtractorKind::Astro => extract_astro_classes(&input.source, &input.content),
+        SourceExtractorKind::Auto => {
+            let clean_source = input.source.split('?').next().unwrap_or(&input.source);
+            let extension = Path::new(clean_source)
+                .extension()
+                .and_then(|extension| extension.to_str())
+                .unwrap_or_default()
+                .to_ascii_lowercase();
+            match extension.as_str() {
+                "astro" => extract_astro_classes(&input.source, &input.content),
+                "html" | "htm" => extract_html_classes(&input.source, &input.content),
+                "js" | "jsx" | "cjs" | "mjs" | "ts" | "tsx" | "cts" | "mts" => {
+                    extract_oxc_classes(&input.source, &input.content)
+                }
+                _ => extract_class_candidates(&input.content),
+            }
+        }
+    }
+}
+
+pub fn extract_source_batch(request: &SourceBatchRequestIr) -> SourceBatchIr {
+    SourceBatchIr {
+        version: mastercss_schema::SOURCE_BATCH_VERSION,
+        files: request
+            .files
+            .iter()
+            .map(|input| SourceExtractionIr {
+                source: input.source.clone(),
+                candidates: extract_source(input),
+            })
+            .collect(),
+    }
+}
 
 /// Extracts unvalidated Master CSS class-like candidates from arbitrary source.
 /// Validation and CSS generation intentionally remain outside this crate.
@@ -484,12 +564,14 @@ fn should_exclude(candidate: &str) -> bool {
     if candidate.starts_with("${") && candidate.ends_with('}') {
         return false;
     }
+    let has_group_body = candidate.contains('{') && candidate.contains('}');
     if candidate.starts_with('$')
         || candidate.ends_with(';')
         || candidate.contains("</")
-        || candidate.contains('<')
-        || candidate.contains('>')
+        || contains_tag_like_pair(candidate)
+        || candidate.ends_with('>')
         || candidate.contains("{{")
+        || candidate.contains(":[")
         || candidate.contains("**")
         || candidate.starts_with("http://")
         || candidate.starts_with("https://")
@@ -500,8 +582,34 @@ fn should_exclude(candidate: &str) -> bool {
         return true;
     }
     candidate.chars().next().is_none_or(|character| {
-        !(character.is_alphanumeric() || matches!(character, '-' | '_' | '{'))
+        !(character.is_alphanumeric()
+            || matches!(character, '-' | '_' | '{')
+            || character == '.' && has_group_body)
     })
+}
+
+fn contains_tag_like_pair(source: &str) -> bool {
+    let characters = source.chars().collect::<Vec<_>>();
+    for (start, character) in characters.iter().enumerate() {
+        if *character != '<'
+            || characters
+                .get(start + 1)
+                .is_none_or(|next| !next.is_alphanumeric() && *next != '_')
+        {
+            continue;
+        }
+        let mut cursor = start + 1;
+        while let Some(character) = characters.get(cursor) {
+            if *character == '>' {
+                return true;
+            }
+            if !character.is_alphanumeric() && !matches!(character, '_' | '-') {
+                break;
+            }
+            cursor += 1;
+        }
+    }
+    false
 }
 
 fn balanced_brackets(source: &str) -> bool {
@@ -579,6 +687,24 @@ mod tests {
         assert_eq!(
             extract_class_candidates(r#"<div class="--token:1rem $token:1rem"></div>"#),
             vec!["--token:1rem"]
+        );
+    }
+
+    #[test]
+    fn keeps_query_and_selector_suffixes_but_rejects_bracket_values_and_markup_tails() {
+        assert_eq!(
+            extract_class_candidates(
+                r#"font:1rem@<789 font:1rem@<=789 font:1rem@>=789 font:1rem@>789 block>li:hover {fg:red;block}>li .something{bg:white} font-size:[clamp(1rem,2vw,3rem)] document.querySelector<HTMLButtonElement>('#counter') html> {data}>"#
+            ),
+            vec![
+                "font:1rem@<789",
+                "font:1rem@<=789",
+                "font:1rem@>=789",
+                "font:1rem@>789",
+                "block>li:hover",
+                "{fg:red;block}>li",
+                ".something{bg:white}",
+            ]
         );
     }
 

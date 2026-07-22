@@ -1,10 +1,10 @@
-import type { NativeCSSDeclarationMatcher } from '@master/css'
+import type { MasterCSSNativeDeclarationCandidateIR } from '@master/css-schema/rust-contract'
 import { lexer, parse, property as propertyName } from 'css-tree'
 import { isTargetError } from './validate-css'
 
 const matches = new Map<string, boolean>()
 
-export const cssTreeNativeDeclarationMatcher: NativeCSSDeclarationMatcher = ({ property, value }) => {
+export const cssTreeNativeDeclarationMatcher = ({ property, value }: MasterCSSNativeDeclarationCandidateIR) => {
   if (propertyName(property).custom) return true
 
   const cacheKey = property + '\0' + value

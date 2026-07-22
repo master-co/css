@@ -8,7 +8,7 @@ import {
   type MasterCSSLintSourceDiagnostic,
   type MasterCSSLintSummary
 } from '@master/css-lint'
-import { createRustLintSession, type RustLintSession } from '@master/css-lint/node'
+import { createLintSessionSync, type LintSession } from '@master/css-lint/node'
 import { loadProjectManifest } from '@master/css-project/manifest'
 import fg from 'fast-glob'
 import fs from 'node:fs'
@@ -153,7 +153,7 @@ function resolveSourceInputs(cwd: string, specifiedSourcePaths: string[], option
 function lintInputs(
   inputs: SourceInput[],
   rules: Record<MasterCSSLintRuleId, boolean>,
-  lintSession: RustLintSession
+  lintSession: LintSession
 ) {
   return inputs.map((input) => lintMasterCSSContent({
     content: input.content,
@@ -167,7 +167,7 @@ function applyFileFixes(
   inputs: SourceInput[],
   rules: Record<MasterCSSLintRuleId, boolean>,
   includeDirectiveFixes: boolean,
-  lintSession: RustLintSession
+  lintSession: LintSession
 ) {
   for (const input of inputs) {
     if (input.stdin) continue
@@ -208,7 +208,7 @@ export default async function runLint(specifiedSourcePaths: string[] = [], optio
     return report
   }
 
-  const lintSession = await createRustLintSession(manifestResult.manifest)
+  const lintSession = createLintSessionSync(manifestResult.manifest)
   let files: MasterCSSLintFileResult[]
   try {
     files = lintInputs(inputs, rules, lintSession)

@@ -1,21 +1,20 @@
 import type { RuleContext } from '@typescript-eslint/utils/ts-eslint'
 import settings, { Settings } from '../settings'
-import { MasterCSS, MasterCSSManifest, createCSSWithNativeDeclarations, defaultManifest } from './master-css'
+import { MasterCSSManifest, defaultManifest } from './master-css'
 import { findMasterCSSWorkspaceDirectoriesSync } from '@master/css-project/entries'
 import { loadProjectManifestSync } from '@master/css-project/manifest-sync'
 import path from 'node:path'
 import { existsSync } from 'node:fs'
 import isSameOrChildPath from './is-same-or-child-path'
 import {
-  createRustLintSessionSync,
-  type RustLintSession
+  createLintSessionSync,
+  type LintSession
 } from '@master/css-lint/node'
 
 declare interface CSSCache {
   cwd: string
   manifest?: MasterCSSManifest,
-  css?: MasterCSS,
-  rustLint?: RustLintSession
+  rustLint: LintSession
 }
 
 const cssCaches: CSSCache[] = []
@@ -85,11 +84,10 @@ export default function resolveContext(context: RuleContext<any, any[]>) {
       ? resolvePlan(workspaceDir, resolvedSettings.manifest)
       : resolvedSettings.manifest
     const resolvedManifest = manifest || defaultManifest
-    const rustLint = createRustLintSessionSync(resolvedManifest)
+    const rustLint = createLintSessionSync(resolvedManifest)
     cache = {
       cwd: workspaceDir,
       manifest: resolvedSettings.manifest,
-      css: rustLint ? undefined : createCSSWithNativeDeclarations(resolvedManifest),
       rustLint
     }
     cssCaches.push(cache)
@@ -98,12 +96,6 @@ export default function resolveContext(context: RuleContext<any, any[]>) {
   return {
     settings: resolvedSettings,
     options: context.options[0] || {},
-    css: cache.css,
     rustLint: cache.rustLint
   }
-}
-
-export function requireResolvedCSS(css: MasterCSS | undefined) {
-  if (!css) throw new Error('The TypeScript lint oracle is unavailable while the Rust lint session is active.')
-  return css
 }

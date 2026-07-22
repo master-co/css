@@ -39,7 +39,6 @@
   },
   "files": [
     "dist",
-    "data",
     "LICENSE",
     "icon.png"
   ],
@@ -494,6 +493,7 @@
     "@master/css-language": "workspace:^",
     "@master/css-language-server": "workspace:^",
     "@master/css-language-service": "workspace:^",
+    "@master/css-native": "workspace:^",
     "@master/css-project": "workspace:^",
     "@shikijs/langs": "4.2.0",
     "@types/vscode": "^1.120.0",
@@ -501,11 +501,5 @@
     "vscode-languageclient": "^10.0.0",
     "vscode-oniguruma": "^2.0.1",
     "vscode-textmate": "^9.3.2"
-  },
-  "peerDependencies": {
-    "lightningcss": "^1.32.0",
-    "oxc-parser": "^0.129.0",
-    "oxc-resolver": "^11.19.1",
-    "oxc-transform": "^0.128.0"
   }
 }

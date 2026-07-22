@@ -1,10 +1,7 @@
 import defineVisitors from '../utils/define-visitors'
-import resolveContext, { requireResolvedCSS } from '../utils/resolve-context'
+import resolveContext from '../utils/resolve-context'
 import createRule from '../create-rule'
-import {
-  createUnapprovedRawValueClassesReport,
-  type RawValuePolicyOptions
-} from '@master/css-lint'
+import type { RawValuePolicyOptions } from '@master/css-lint'
 import reportLintDiagnostics from '../utils/report-lint-diagnostics'
 import defineSourceVisitors, { shouldUseSourceVisitors } from '../utils/define-source-visitors'
 import { fromRustLintDiagnostics } from '@master/css-lint/node'
@@ -44,34 +41,28 @@ export default createRule({
     allowedPatterns: []
   }],
   create(context) {
-    const { settings, css, rustLint } = resolveContext(context)
+    const { settings, rustLint } = resolveContext(context)
     const options = (context.options[0] || {}) as RawValuePolicyOptions
     if (shouldUseSourceVisitors(context)) {
       return defineSourceVisitors({
         context,
-        css,
         rustLint,
         ruleId: 'no-unapproved-raw-values',
         ruleOptions: options
       })
     }
 
-    return defineVisitors({ context, settings }, (node, resolved) => {
-      const rustDiagnostics = rustLint
-        ? fromRustLintDiagnostics(
-          rustLint.analyzeClassList(resolved.raw, resolved.classValues, {
-            rawValuePolicy: options
-          }).diagnostics.filter(({ ruleId }) => ruleId === 'no-unapproved-raw-values')
-        )
-        : undefined
+    return defineVisitors({ context, settings, rustLint }, (node, resolved) => {
+      const rustDiagnostics = fromRustLintDiagnostics(
+        rustLint.analyzeClassList(resolved.raw, resolved.classValues, {
+          rawValuePolicy: options
+        }).diagnostics.filter(({ ruleId }) => ruleId === 'no-unapproved-raw-values')
+      )
       reportLintDiagnostics(
         context,
         node,
         resolved,
-        rustDiagnostics || createUnapprovedRawValueClassesReport(resolved.raw, requireResolvedCSS(css), {
-          ...options,
-          unescape: resolved.unescape
-        }).diagnostics
+        rustDiagnostics
       )
     })
   }

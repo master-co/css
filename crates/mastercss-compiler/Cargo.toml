@@ -10,6 +10,7 @@ publish.workspace = true
 [dependencies]
 cssparser.workspace = true
 lightningcss.workspace = true
+mastercss-engine = { path = "../mastercss-engine" }
 mastercss-lexer = { path = "../mastercss-lexer" }
 mastercss-schema = { path = "../mastercss-schema" }
 serde.workspace = true

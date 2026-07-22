@@ -58,7 +58,7 @@
 npm install @master/css-server
 ```
 
-`@master/css-server` renders required Master CSS from HTML. It parses HTML, extracts class names, creates a `MasterCSS` instance, and injects or updates `<style id="master-css">`.
+`@master/css-server` renders required Master CSS from HTML. TypeScript parses and serializes the host HTML, while a Rust render session extracts classes, generates CSS and hydration resources. The host then injects or updates `<style id="master-css">`.
 
 ## API
 

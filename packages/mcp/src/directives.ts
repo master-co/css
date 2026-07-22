@@ -1,9 +1,9 @@
 import { readFile } from 'node:fs/promises'
 import { basename } from 'node:path'
-import { collectCSSDirectiveRanges } from '@master/css-lexer'
 import {
   compileCSSManifest,
   compileCSSManifestFile,
+  inspectCSS,
   type CompileCSSManifestResult
 } from '@master/css-compiler'
 import type MasterCSSMCPContext from './context'
@@ -22,19 +22,16 @@ export interface InspectDirectivesOptions {
 
 function createDirectiveEntries(content: string, filePath: string) {
   const document = createMCPTextDocument(filePath, content)
-  return collectCSSDirectiveRanges(content).map((directive) => ({
+  return inspectCSS(content).directives.map((directive) => ({
     name: directive.name,
-    range: {
-      start: directive.start,
-      end: directive.end
-    },
+    range: directive.range,
     loc: {
-      start: document.positionAt(directive.start),
-      end: document.positionAt(directive.end)
+      start: document.positionAt(directive.range.start),
+      end: document.positionAt(directive.range.end)
     },
     prelude: content.slice(directive.preludeRange.start, directive.preludeRange.end).trim(),
-    hasBlock: Boolean(directive.blockRange),
-    quotedStrings: directive.quotedStringRanges.length
+    hasBlock: directive.hasBlock,
+    quotedStrings: directive.quotedStrings
   }))
 }
 

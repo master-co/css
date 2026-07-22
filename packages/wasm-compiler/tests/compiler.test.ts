@@ -22,7 +22,14 @@ test('loads the isolated compiler Wasm surface', async () => {
   expect(compiler.inspectCSS('@master entry;')).toEqual({
     hasMasterEntryDirective: true,
     hasMasterCSSImport: false,
-    hasMasterEntry: true
+    hasMasterEntry: true,
+    directives: [{
+      name: 'master',
+      range: { start: 0, end: 14 },
+      preludeRange: { start: 7, end: 13 },
+      hasBlock: false,
+      quotedStrings: 0
+    }]
   })
   expect(compiler.compileNativeCSS('@master entry;\n.card { color: red; }')).toMatchObject({
     css: '.card {\n  color: red;\n}',
@@ -74,6 +81,10 @@ test('loads the isolated compiler Wasm surface', async () => {
     source: '@theme{--color-brand:red}.entry{display:block}',
     dependencies: ['/entry.css', '/theme.css']
   })
+  expect(compiler.filterCSSExtractionCandidates(
+    ['bg:red', 'fg:red'],
+    [{ source: '^bg:', flags: 'g' }]
+  )).toEqual(['fg:red'])
 
   const presetSources = await Promise.all(['base.css', 'theme.css', 'variants.css', 'utilities.css']
     .map((file) => readFile(new URL(`../../preset/src/${file}`, import.meta.url), 'utf8')))

@@ -1,19 +1,15 @@
 import { describe, expect, test } from 'vitest'
-import { MasterCSS } from '@master/css-engine'
 import { compileCSS, compileCSSManifest } from '../src'
 import type { CompilerDiagnosticRecorder } from '../src/diagnostics'
 import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
 import { flattenMasterCSSManifestVariables, type MasterCSSManifest } from '@master/css-schema/manifest'
 import UtilityType from '@master/css-schema/utility-type'
+import { createTestCSS } from './helpers/rust-engine'
 
 const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
 
 function variablesOf(manifest: MasterCSSManifest) {
   return flattenMasterCSSManifestVariables(manifest.variables)
-}
-
-function createTestCSS(manifest: MasterCSSManifest) {
-  return MasterCSS.create({ manifest })
 }
 
 function normalizeDeclarationOrder(css: string) {

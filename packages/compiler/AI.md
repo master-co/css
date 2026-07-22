@@ -2,12 +2,12 @@
 
 ## Responsibility
 
-`@master/css-compiler` is the canonical CSS source compiler for Master CSS. It parses Master CSS stylesheet directives and native CSS, resolves CSS import graphs, detects project entry markers, parses standalone extraction directives, and lowers CSS-first authoring into `MasterCSSManifest` values.
+`@master/css-compiler` is the TypeScript session/provider shell for the canonical Rust CSS source compiler. Rust parses directives and native CSS, consumes provider-neutral import graphs, detects entry markers, handles extraction directives, and lowers CSS-first authoring into `MasterCSSManifest` values.
 
 ## Owns
 
 - CSS directive parsing and lowering for `@settings`, `@theme`, `@custom-variant`, managed `@defaults`, `@components`, and `@utilities`.
-- CSS import graph resolution through `compileCSSFile()`.
+- Provider-neutral CSS import graph semantics; TypeScript supplies Node package exports and file contents.
 - `compileProjectManifest()` for project entry CSS files.
 - Native CSS output with consumed Master directives removed.
 - Shared directive data and dependency reporting for lower-level consumers.
@@ -22,18 +22,19 @@
 
 ## Public Surface
 
-- Root compiler APIs.
-- `./browser` APIs.
+- Root async session and Node file/provider helpers.
+- Native-only `./node` session.
+- Compiler-Wasm-only `./browser` session.
 - Manifest APIs used by project loading and integrations.
 
 ## Key Files
 
-- `src/core.ts`
 - `src/index.ts`
-- `src/master-css-manifest.ts`
-- `src/lower-css-directives.ts`
-- `src/css-transform.ts`
-- `src/native-declaration.ts`
+- `src/session.ts`
+- `src/node.ts`
+- `src/browser.ts`
+- `crates/mastercss-compiler/src/lib.rs`
+- `crates/mastercss-compiler/src/lower.rs`
 
 ## Risk Areas
 
@@ -55,6 +56,7 @@
 - Moving engine matching or runtime behavior here.
 - Expanding directive syntax without tests and directive guide updates.
 - Scanning unrelated CSS files for class usage in this package.
+- Adding a TypeScript directive/parser/lowering/CSS transform fallback.
 
 ## Validation
 

@@ -7,7 +7,7 @@ import createServerCSS, { type ServerCSS } from './create-server-css'
  * Renders the Master CSS string from HTML
  * @param html
  * @param manifest
- * @returns MasterCSS
+ * @returns Rendered Master CSS stylesheet text.
  */
 export default function renderCSS(html: string, manifest?: MasterCSSManifest): ServerCSS | undefined {
   if (!html) return

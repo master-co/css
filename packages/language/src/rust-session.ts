@@ -1,11 +1,9 @@
-import { readFile } from 'node:fs/promises'
 import { loadNativeBinding } from '@master/css-native'
 import { MASTER_CSS_LANGUAGE_BATCH_VERSION } from '@master/css-schema'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import { stringifyMasterCSSManifestJSON } from '@master/css-schema/manifest-json'
 import type {
   MasterCSSLanguageClassificationsIR,
-  MasterCSSLanguageClassIR,
   MasterCSSLanguageColorCandidateInputIR,
   MasterCSSLanguageColorPresentationIR,
   MasterCSSLanguageColorTokensIR,
@@ -16,46 +14,155 @@ import type {
 import type { SemanticTokenItem } from './semantic/types'
 import { matchesLanguageServiceNativeDeclaration } from './master-css'
 
-export interface RustClassListContextIR {
+export interface LanguageClassListContextIR {
   start: number
   end: number
   unescape?: string[]
 }
 
-export interface RustLanguageBatchIR {
-  version: 1
-  classPositions: {
-    range: { start: number, end: number }
-    contextRange: { start: number, end: number }
-    raw: string
-    token: string
-  }[]
+export interface LanguageClassPositionIR {
+  range: { start: number, end: number }
+  contextRange: { start: number, end: number }
+  raw: string
+  token: string
+}
+
+export interface AnalyzeDocumentRequest {
+  source: string
+  languageId: string
+  hostRanges?: LanguageClassListContextIR[]
+  settings?: {
+    classAttributes?: string[]
+    classFunctions?: string[]
+    classDeclarations?: string[]
+  }
+}
+
+export interface LanguageDocumentIR {
+  version: typeof MASTER_CSS_LANGUAGE_BATCH_VERSION
+  classPositions: LanguageClassPositionIR[]
+  semanticTokens: SemanticTokenItem[]
   semanticTokenData: number[]
 }
 
-export interface RustLanguageAnalyzer {
-  analyze(
-    source: string,
-    contexts: RustClassListContextIR[],
-    semanticTokens: SemanticTokenItem[]
-  ): RustLanguageBatchIR
-  classifyClassNames?(classNames: string[]): MasterCSSLanguageClassificationsIR
-  inspectClassName?(className: string, mode?: string): MasterCSSLanguageInspectionIR
-  completionIndex?(): MasterCSSLanguageCompletionIndexIR
-  colorPresentation?(colorToken: string): MasterCSSLanguageColorPresentationIR
-  colorTokens?(candidates: MasterCSSLanguageColorCandidateInputIR[]): MasterCSSLanguageColorTokensIR
-  createSession?(manifest: MasterCSSManifest): RustLanguageAnalyzer
-  dispose?(): void
+export interface FormatDirectivesRequest {
+  source: string
+  range?: { start: number, end: number }
+  styleRanges?: { start: number, end: number }[]
 }
 
-export class RustLanguageAnalyzerError extends Error {
-  code: 'NATIVE_UNAVAILABLE' | 'LANGUAGE_BATCH_VERSION_MISMATCH'
+export interface LanguageFormatEditsIR {
+  version: typeof MASTER_CSS_LANGUAGE_BATCH_VERSION
+  edits: {
+    range: { start: number, end: number }
+    text: string
+  }[]
+}
 
-  constructor(code: RustLanguageAnalyzerError['code'], message: string) {
+interface BackendLanguageSession {
+  analyzeDocument(request: unknown): unknown
+  formatDirectives(request: unknown): unknown
+  nativeDeclarationCandidates(classNames: string[]): unknown
+  classifyClassNames(classNames: string[], nativeSupport?: boolean[]): unknown
+  inspectClassName(className: string, nativeSupport?: boolean[], mode?: string): unknown
+  completionIndex(): unknown
+  colorPresentation(colorToken: string): unknown
+  colorTokens(candidates: unknown): unknown
+  dispose(): void
+}
+
+export interface LanguageSession {
+  readonly backend: 'native' | 'wasm'
+  analyzeDocument(request: AnalyzeDocumentRequest): LanguageDocumentIR
+  formatDirectives(request: FormatDirectivesRequest): LanguageFormatEditsIR
+  classifyClassNames(classNames: readonly string[]): MasterCSSLanguageClassificationsIR
+  inspectClassName(className: string, mode?: string): MasterCSSLanguageInspectionIR
+  completionIndex(): MasterCSSLanguageCompletionIndexIR
+  colorPresentation(colorToken: string): MasterCSSLanguageColorPresentationIR
+  colorTokens(candidates: MasterCSSLanguageColorCandidateInputIR[]): MasterCSSLanguageColorTokensIR
+  dispose(): void
+}
+
+export class LanguageSessionError extends Error {
+  constructor(
+    public readonly code: 'NATIVE_UNAVAILABLE' | 'LANGUAGE_BATCH_VERSION_MISMATCH',
+    message: string
+  ) {
     super(message)
-    this.name = 'RustLanguageAnalyzerError'
-    this.code = code
+    this.name = 'LanguageSessionError'
   }
+}
+
+function parse<T>(value: unknown): T {
+  return typeof value === 'string' ? JSON.parse(value) as T : value as T
+}
+
+function validate<T extends { version: number }>(value: T): T {
+  if (value.version !== MASTER_CSS_LANGUAGE_BATCH_VERSION) {
+    throw new LanguageSessionError(
+      'LANGUAGE_BATCH_VERSION_MISMATCH',
+      `Expected Master CSS language batch version ${MASTER_CSS_LANGUAGE_BATCH_VERSION}, received ${String(value.version)}.`
+    )
+  }
+  return value
+}
+
+export function bindLanguageSession(
+  backend: LanguageSession['backend'],
+  session: BackendLanguageSession
+): LanguageSession {
+  const nativeSupport = (classNames: string[]) => parse<MasterCSSNativeDeclarationCandidateIR[]>(
+    session.nativeDeclarationCandidates(classNames)
+  ).map(matchesLanguageServiceNativeDeclaration)
+  return {
+    backend,
+    analyzeDocument(request) {
+      return validate(parse<LanguageDocumentIR>(session.analyzeDocument(
+        backend === 'native' ? JSON.stringify(request) : request
+      )))
+    },
+    formatDirectives(request) {
+      return validate(parse<LanguageFormatEditsIR>(session.formatDirectives(
+        backend === 'native' ? JSON.stringify(request) : request
+      )))
+    },
+    classifyClassNames(classNames) {
+      const values = [...classNames]
+      return validate(parse<MasterCSSLanguageClassificationsIR>(
+        session.classifyClassNames(values, nativeSupport(values))
+      ))
+    },
+    inspectClassName(className, mode) {
+      return validate(parse<MasterCSSLanguageInspectionIR>(
+        session.inspectClassName(className, nativeSupport([className]), mode)
+      ))
+    },
+    completionIndex: () => validate(parse<MasterCSSLanguageCompletionIndexIR>(session.completionIndex())),
+    colorPresentation: (token) => validate(parse<MasterCSSLanguageColorPresentationIR>(session.colorPresentation(token))),
+    colorTokens: (candidates) => validate(parse<MasterCSSLanguageColorTokensIR>(session.colorTokens(
+      backend === 'native' ? JSON.stringify(candidates) : candidates
+    ))),
+    dispose: () => session.dispose()
+  }
+}
+
+export function createNativeLanguageSession(
+  manifestJSON: string,
+  options: { required?: boolean } = {}
+): LanguageSession | undefined {
+  const loaded = loadNativeBinding({ required: options.required })
+  if (!loaded) return
+  return bindLanguageSession('native', new loaded.binding.LanguageSession(manifestJSON))
+}
+
+export async function createLanguageSession(manifest: MasterCSSManifest): Promise<LanguageSession> {
+  const manifestJSON = stringifyMasterCSSManifestJSON(manifest)
+  const native = createNativeLanguageSession(manifestJSON)
+  if (native) return native
+  const { initToolingWasm } = await import('@master/css-wasm-tooling')
+  const tooling = await initToolingWasm()
+  const session = new tooling.ToolingLanguageSession(manifestJSON)
+  return bindLanguageSession('wasm', session)
 }
 
 export type {
@@ -66,209 +173,4 @@ export type {
   MasterCSSLanguageColorTokensIR,
   MasterCSSLanguageCompletionIndexIR,
   MasterCSSLanguageInspectionIR
-}
-
-function validateLanguageBatch(batch: RustLanguageBatchIR): RustLanguageBatchIR {
-  if (batch.version !== MASTER_CSS_LANGUAGE_BATCH_VERSION) {
-    throw new RustLanguageAnalyzerError(
-      'LANGUAGE_BATCH_VERSION_MISMATCH',
-      `Expected Master CSS language batch version ${MASTER_CSS_LANGUAGE_BATCH_VERSION}, received ${String(batch.version)}.`
-    )
-  }
-  return batch
-}
-
-function validateClassifications(
-  batch: MasterCSSLanguageClassificationsIR
-): MasterCSSLanguageClassificationsIR {
-  if (batch.version !== MASTER_CSS_LANGUAGE_BATCH_VERSION) {
-    throw new RustLanguageAnalyzerError(
-      'LANGUAGE_BATCH_VERSION_MISMATCH',
-      `Expected Master CSS language batch version ${MASTER_CSS_LANGUAGE_BATCH_VERSION}, received ${String(batch.version)}.`
-    )
-  }
-  return batch
-}
-
-function validateInspection(
-  inspection: MasterCSSLanguageInspectionIR
-): MasterCSSLanguageInspectionIR {
-  if (inspection.version !== MASTER_CSS_LANGUAGE_BATCH_VERSION) {
-    throw new RustLanguageAnalyzerError(
-      'LANGUAGE_BATCH_VERSION_MISMATCH',
-      `Expected Master CSS language batch version ${MASTER_CSS_LANGUAGE_BATCH_VERSION}, received ${String(inspection.version)}.`
-    )
-  }
-  return inspection
-}
-
-function validateCompletionIndex(
-  index: MasterCSSLanguageCompletionIndexIR
-): MasterCSSLanguageCompletionIndexIR {
-  if (index.version !== MASTER_CSS_LANGUAGE_BATCH_VERSION) {
-    throw new RustLanguageAnalyzerError(
-      'LANGUAGE_BATCH_VERSION_MISMATCH',
-      `Expected Master CSS language batch version ${MASTER_CSS_LANGUAGE_BATCH_VERSION}, received ${String(index.version)}.`
-    )
-  }
-  return index
-}
-
-function validateColorPresentation(
-  presentation: MasterCSSLanguageColorPresentationIR
-): MasterCSSLanguageColorPresentationIR {
-  if (presentation.version !== MASTER_CSS_LANGUAGE_BATCH_VERSION) {
-    throw new RustLanguageAnalyzerError(
-      'LANGUAGE_BATCH_VERSION_MISMATCH',
-      `Expected Master CSS language batch version ${MASTER_CSS_LANGUAGE_BATCH_VERSION}, received ${String(presentation.version)}.`
-    )
-  }
-  return presentation
-}
-
-function validateColorTokens(tokens: MasterCSSLanguageColorTokensIR): MasterCSSLanguageColorTokensIR {
-  if (tokens.version !== MASTER_CSS_LANGUAGE_BATCH_VERSION) {
-    throw new RustLanguageAnalyzerError(
-      'LANGUAGE_BATCH_VERSION_MISMATCH',
-      `Expected Master CSS language batch version ${MASTER_CSS_LANGUAGE_BATCH_VERSION}, received ${String(tokens.version)}.`
-    )
-  }
-  return tokens
-}
-
-function createNativeAnalyzer(): RustLanguageAnalyzer | undefined {
-  const loaded = loadNativeBinding()
-  if (!loaded) return
-  const analyze: RustLanguageAnalyzer['analyze'] = (source, contexts, semanticTokens) => {
-    return validateLanguageBatch(JSON.parse(loaded.binding.analyzeLanguageJson(
-      source,
-      JSON.stringify(contexts),
-      JSON.stringify(semanticTokens)
-    )) as RustLanguageBatchIR)
-  }
-  return {
-    analyze,
-    createSession(manifest) {
-      const session = new loaded.binding.LanguageSession(stringifyMasterCSSManifestJSON(manifest))
-      return {
-        analyze,
-        classifyClassNames(classNames) {
-          const candidates = JSON.parse(
-            session.nativeDeclarationCandidates(classNames)
-          ) as MasterCSSNativeDeclarationCandidateIR[]
-          const nativeSupport = candidates.map(matchesLanguageServiceNativeDeclaration)
-          return validateClassifications(JSON.parse(
-            session.classifyClassNames(
-              classNames,
-              nativeSupport.length ? nativeSupport : undefined
-            )
-          ) as MasterCSSLanguageClassificationsIR)
-        },
-        inspectClassName(className, mode) {
-          const candidates = JSON.parse(
-            session.nativeDeclarationCandidates([className])
-          ) as MasterCSSNativeDeclarationCandidateIR[]
-          const nativeSupport = candidates.map(matchesLanguageServiceNativeDeclaration)
-          return validateInspection(JSON.parse(session.inspectClassName(
-            className,
-            nativeSupport.length ? nativeSupport : undefined,
-            mode
-          )) as MasterCSSLanguageInspectionIR)
-        },
-        completionIndex() {
-          return validateCompletionIndex(
-            JSON.parse(session.completionIndex()) as MasterCSSLanguageCompletionIndexIR
-          )
-        },
-        colorPresentation(colorToken) {
-          return validateColorPresentation(
-            JSON.parse(session.colorPresentation(colorToken)) as MasterCSSLanguageColorPresentationIR
-          )
-        },
-        colorTokens(candidates) {
-          return validateColorTokens(
-            JSON.parse(session.colorTokens(JSON.stringify(candidates))) as MasterCSSLanguageColorTokensIR
-          )
-        },
-        dispose() {
-          session.dispose()
-        }
-      }
-    }
-  }
-}
-
-export function createRustLanguageAnalyzerSync(): RustLanguageAnalyzer {
-  const analyzer = createNativeAnalyzer()
-  if (analyzer) return analyzer
-  throw new RustLanguageAnalyzerError(
-    'NATIVE_UNAVAILABLE',
-    'The native Master CSS language analyzer is unavailable. Use createRustLanguageAnalyzer() to allow the tooling Wasm backend.'
-  )
-}
-
-export async function createRustLanguageAnalyzer(): Promise<RustLanguageAnalyzer> {
-  const nativeAnalyzer = createNativeAnalyzer()
-  if (nativeAnalyzer) return nativeAnalyzer
-
-  const [{ initToolingWasm }, wasmBytes] = await Promise.all([
-    import('@master/css-wasm-tooling'),
-    readFile(new URL(import.meta.resolve('@master/css-wasm-tooling/wasm')))
-  ])
-  const input = new Uint8Array(wasmBytes)
-  const tooling = await initToolingWasm({ input })
-  const analyze: RustLanguageAnalyzer['analyze'] = (source, contexts, semanticTokens) => {
-    return validateLanguageBatch(tooling.analyzeLanguage(source, contexts, semanticTokens) as RustLanguageBatchIR)
-  }
-  return {
-    analyze,
-    createSession(manifest) {
-      const session = new tooling.ToolingLanguageSession(stringifyMasterCSSManifestJSON(manifest))
-      return {
-        analyze,
-        classifyClassNames(classNames) {
-          const candidates = session.nativeDeclarationCandidates(
-            classNames
-          ) as MasterCSSNativeDeclarationCandidateIR[]
-          const nativeSupport = candidates.map(matchesLanguageServiceNativeDeclaration)
-          return validateClassifications(
-            session.classifyClassNames(
-              classNames,
-              nativeSupport
-            ) as MasterCSSLanguageClassificationsIR
-          )
-        },
-        inspectClassName(className, mode) {
-          const candidates = session.nativeDeclarationCandidates(
-            [className]
-          ) as MasterCSSNativeDeclarationCandidateIR[]
-          const nativeSupport = candidates.map(matchesLanguageServiceNativeDeclaration)
-          return validateInspection(session.inspectClassName(
-            className,
-            nativeSupport,
-            mode
-          ) as MasterCSSLanguageInspectionIR)
-        },
-        completionIndex() {
-          return validateCompletionIndex(
-            session.completionIndex() as MasterCSSLanguageCompletionIndexIR
-          )
-        },
-        colorPresentation(colorToken) {
-          return validateColorPresentation(
-            session.colorPresentation(colorToken) as MasterCSSLanguageColorPresentationIR
-          )
-        },
-        colorTokens(candidates) {
-          return validateColorTokens(
-            session.colorTokens(candidates) as MasterCSSLanguageColorTokensIR
-          )
-        },
-        dispose() {
-          session.dispose()
-          session.free()
-        }
-      }
-    }
-  }
-}
+} from '@master/css-schema/rust-contract'

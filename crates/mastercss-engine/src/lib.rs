@@ -5,9 +5,10 @@ use std::collections::{HashMap, HashSet};
 
 use mastercss_lexer::{css_escape, utf16_len};
 use mastercss_schema::{
-    Diagnostic, EmittedGlobals, EngineInspectionIr, EngineSnapshotIr, EngineTransitionIr,
-    ErrorCode, GeneratedRuleIr, GeneratedRuleNodeIr, MasterCssManifest,
-    NativeDeclarationCandidateIr, RuleMutationIr, RulePriorityIr, RuleTarget, UtilityLayerName,
+    Diagnostic, EmittedGlobals, EngineAnimationResourceIr, EngineInspectionIr, EngineResourcesIr,
+    EngineSnapshotIr, EngineTransitionIr, EngineVariableResourceIr, ErrorCode, GeneratedRuleIr,
+    GeneratedRuleNodeIr, MasterCssManifest, NativeDeclarationCandidateIr, RuleMutationIr,
+    RulePriorityIr, RuleTarget, UtilityLayerName,
 };
 use serde::Deserialize;
 use serde::Serialize;
@@ -414,6 +415,29 @@ pub struct EngineClassVariableIr {
     pub variable: EngineVariableIr,
 }
 
+/// Compiler-facing projection of a generated class rule.
+///
+/// This deliberately exposes composition semantics without exposing the engine's
+/// mutable object model. Compiler and tooling surfaces consume the projection in
+/// batches; runtime surfaces never need to instantiate it.
+#[derive(Debug, Clone, PartialEq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct EngineCompositionRuleIr {
+    pub class_name: String,
+    pub key: String,
+    pub layer: UtilityLayerName,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub explicit_layer: Option<UtilityLayerName>,
+    #[serde(rename = "type")]
+    pub utility_type: i32,
+    pub sort_tier: i32,
+    pub priority: RulePriorityIr,
+    pub selector: String,
+    pub declarations: Map<String, Value>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub conditions: Vec<String>,
+}
+
 #[derive(Debug)]
 pub struct EngineSession {
     manifest: MasterCssManifest,
@@ -702,7 +726,7 @@ impl EngineSession {
             let count = self.emitted_globals.animation_count(name);
             self.emitted_globals
                 .animations
-                .insert(name.clone(), Value::from(count.saturating_add(1)));
+                .insert(name.clone(), count.saturating_add(1));
             if let Some(index) = self
                 .animation_names
                 .iter()
@@ -742,16 +766,10 @@ impl EngineSession {
         self.ensure_active()?;
         let mut emitted_globals = self.emitted_globals.clone();
         for name in &self.theme_variable_names {
-            emitted_globals
-                .variables
-                .entry(name.clone())
-                .or_insert_with(|| Value::from(1));
+            emitted_globals.variables.entry(name.clone()).or_insert(1);
         }
         for name in &self.animation_names {
-            emitted_globals
-                .animations
-                .entry(name.clone())
-                .or_insert_with(|| Value::from(1));
+            emitted_globals.animations.entry(name.clone()).or_insert(1);
         }
         Ok(emitted_globals)
     }
@@ -834,6 +852,7 @@ impl EngineSession {
         Ok(EngineSnapshotIr {
             version: 1,
             rules,
+            resources: self.resource_snapshot(),
             text: self.css_text(),
         })
     }
@@ -879,6 +898,19 @@ impl EngineSession {
 
     pub fn inspect(&self, class_name: &str) -> Result<EngineInspectionIr, EngineError> {
         self.inspect_with_mode(class_name, None)
+    }
+
+    pub fn composition_rules(
+        &self,
+        class_name: &str,
+    ) -> Result<Vec<EngineCompositionRuleIr>, EngineError> {
+        self.ensure_active()?;
+        Ok(self.generate_composition_rules(class_name))
+    }
+
+    pub fn resolve_style_selector(&self, selector: &str) -> Result<String, EngineError> {
+        self.ensure_active()?;
+        Ok(resolve_style_selector_aliases(selector, &self.compiled))
     }
 
     pub fn inspect_with_mode(
@@ -1311,14 +1343,44 @@ impl EngineSession {
         (!text.is_empty()).then_some(text)
     }
 
+    fn resource_snapshot(&self) -> EngineResourcesIr {
+        let variables = self
+            .theme_variable_names
+            .iter()
+            .filter_map(|name| {
+                let variable = self.compiled.compiled_variables.get(name)?;
+                Some(EngineVariableResourceIr {
+                    name: name.clone(),
+                    ref_count: self.variable_counts.get(name).copied().unwrap_or_default(),
+                    dependencies: variable.dependencies.clone(),
+                    static_resource: variable.static_resource,
+                })
+            })
+            .collect();
+        let animations = self
+            .animation_names
+            .iter()
+            .enumerate()
+            .filter_map(|(index, name)| {
+                Some(EngineAnimationResourceIr {
+                    name: name.clone(),
+                    index: index as u32,
+                    ref_count: self.animation_counts.get(name).copied().unwrap_or_default(),
+                    text: self.keyframe_text(name)?,
+                })
+            })
+            .collect();
+        EngineResourcesIr {
+            theme_text: self.theme_rule_text(),
+            variables,
+            animations,
+        }
+    }
+
     fn initialize_variable_resources(&mut self) {
         for (name, count) in &self.emitted_globals.variables {
-            let count = count
-                .as_u64()
-                .and_then(|value| u32::try_from(value).ok())
-                .unwrap_or_default();
-            if count > 0 {
-                self.variable_counts.insert(name.clone(), count);
+            if *count > 0 {
+                self.variable_counts.insert(name.clone(), *count);
             }
         }
         let static_variables = self
@@ -1345,12 +1407,8 @@ impl EngineSession {
 
     fn initialize_animation_resources(&mut self) {
         for (name, count) in &self.emitted_globals.animations {
-            let count = count
-                .as_u64()
-                .and_then(|value| u32::try_from(value).ok())
-                .unwrap_or_default();
-            if count > 0 {
-                self.animation_counts.insert(name.clone(), count);
+            if *count > 0 {
+                self.animation_counts.insert(name.clone(), *count);
             }
         }
         let static_animations = self
@@ -1663,6 +1721,105 @@ impl EngineSession {
 
     fn generate_class_rules(&self, class_name: &str) -> Vec<StoredRule> {
         self.generate_class_rules_with_mode(class_name, None)
+    }
+
+    fn generate_composition_rules(&self, class_name: &str) -> Vec<EngineCompositionRuleIr> {
+        let mut generated = Vec::new();
+        let mut seen = HashSet::new();
+        let (semantic_class_name, important) = class_name
+            .strip_suffix('!')
+            .map_or((class_name, false), |name| (name, true));
+        let mut matching_class_names = vec![semantic_class_name.to_owned()];
+        if let Some(canonical) = canonicalize_class_name(semantic_class_name) {
+            matching_class_names.push(canonical);
+        }
+        for matching_class_name in matching_class_names {
+            let generated_before_candidate = generated.len();
+            for utility in &self.compiled.utilities {
+                if utility.native_fallback && generated.len() > generated_before_candidate {
+                    break;
+                }
+                let Some(matched) = match_utility(&matching_class_name, utility, &self.compiled)
+                else {
+                    continue;
+                };
+                let resolved_value = matched
+                    .value
+                    .as_deref()
+                    .map(|value| normalize_dynamic_value(value, &self.compiled.settings));
+                for (branch_index, branch) in
+                    resolve_state_branches(&matched.state_token, important, &self.compiled)
+                        .into_iter()
+                        .enumerate()
+                {
+                    let mut emitted_rules = emit_declarations(
+                        utility,
+                        resolved_value.as_deref(),
+                        branch.important || self.compiled.settings.important,
+                    );
+                    if utility.native_fallback
+                        && let Some(support) = self.native_declaration_support.get(class_name)
+                    {
+                        emitted_rules.retain(|(_, declarations, _, _)| {
+                            single_native_declaration(declarations).is_none_or(|declaration| {
+                                support.get(&declaration).copied() != Some(false)
+                            })
+                        });
+                    }
+                    if emitted_rules.is_empty() {
+                        continue;
+                    }
+                    let key = if branch_index == 0 && branch.key.is_empty() {
+                        class_name.to_owned()
+                    } else {
+                        format!("{class_name}\0{}", branch.key)
+                    };
+                    if !seen.insert(key.clone()) {
+                        continue;
+                    }
+                    let layer = branch.layer.unwrap_or(utility.layer);
+                    let sort_tier = if !branch.condition_wrappers.is_empty() {
+                        3
+                    } else if branch.mode.is_some() {
+                        2
+                    } else if branch.selector_template.is_some() {
+                        1
+                    } else {
+                        0
+                    };
+                    let priority = RulePriorityIr {
+                        features: branch.features.clone(),
+                        selector: selector_priority(branch.selector_template.as_deref()),
+                    };
+                    let base_selector = composition_selector(&branch, &self.compiled);
+                    let branch_conditions = composition_conditions(&branch);
+                    for (_, declarations, rule_selector, rule_conditions) in emitted_rules {
+                        let selector = rule_selector
+                            .as_deref()
+                            .map(|template| template.replace('&', &base_selector))
+                            .unwrap_or_else(|| base_selector.clone());
+                        let mut conditions = branch_conditions.clone();
+                        conditions.extend(rule_conditions);
+                        generated.push(EngineCompositionRuleIr {
+                            class_name: class_name.to_owned(),
+                            key: key.clone(),
+                            layer,
+                            explicit_layer: branch.layer,
+                            utility_type: utility.utility_type,
+                            sort_tier,
+                            priority: priority.clone(),
+                            selector,
+                            declarations: parse_serialized_declarations(&declarations),
+                            conditions,
+                        });
+                    }
+                }
+            }
+            if generated.len() > generated_before_candidate {
+                break;
+            }
+        }
+        generated
     }
 
     fn generate_class_rules_with_mode(
@@ -1986,6 +2143,12 @@ fn compile_manifest(manifest: &MasterCssManifest) -> Result<ManifestProjection, 
             utility
         })
         .collect();
+    projection.utilities.sort_by_key(|utility| {
+        (!utility
+            .matchers
+            .iter()
+            .any(|matcher| matches!(matcher, UtilityMatcher::Static { .. }))) as u8
+    });
     Ok(projection)
 }
 
@@ -3879,7 +4042,7 @@ fn match_utility(
                         continue;
                     };
                     let (value, state_token) = split_dynamic_value_state(raw_value);
-                    if !value.is_empty() {
+                    if !value.is_empty() && !contains_legacy_variable_function(&value) {
                         let (value, variable_names) =
                             resolve_utility_value_components(&value, utility, manifest);
                         return Some(UtilityMatch {
@@ -3901,6 +4064,7 @@ fn match_utility(
                     };
                     let (value, state_token) = split_dynamic_value_state(raw_value);
                     if value.is_empty()
+                        || contains_legacy_variable_function(&value)
                         || (segments.as_deref() != Some("multiple")
                             && has_top_level_value_separator(&value))
                     {
@@ -3929,6 +4093,7 @@ fn match_utility(
                     };
                     let (value, state_token) = split_dynamic_value_state(raw_value);
                     if value.is_empty()
+                        || contains_legacy_variable_function(&value)
                         || (segments.as_deref() != Some("multiple")
                             && has_top_level_value_separator(&value))
                         || !matches_utility_kind(&value, utility.kind.as_deref())
@@ -3964,6 +4129,42 @@ fn builtin_key_alias(key: &str) -> Option<&'static str> {
         .find_map(|(alias, canonical)| (*alias == key).then_some(*canonical))
 }
 
+fn contains_legacy_variable_function(value: &str) -> bool {
+    value.contains("$(")
+}
+
+fn resolve_inline_variable_value(
+    variable: &CompiledVariable,
+    manifest: &ManifestProjection,
+) -> Option<String> {
+    fn resolve(
+        variable: &CompiledVariable,
+        manifest: &ManifestProjection,
+        resolving: &mut HashSet<String>,
+    ) -> Option<String> {
+        if !resolving.insert(variable.name.clone()) {
+            return variable.value.clone();
+        }
+        let mut value = variable.value.clone()?;
+        for dependency_name in collect_css_variable_names(&value) {
+            let Some(dependency) = manifest.compiled_variables.get(&dependency_name) else {
+                continue;
+            };
+            if !dependency.inline {
+                continue;
+            }
+            let Some(dependency_value) = resolve(dependency, manifest, resolving) else {
+                continue;
+            };
+            value = value.replace(&format!("var(--{dependency_name})"), &dependency_value);
+        }
+        resolving.remove(&variable.name);
+        Some(value)
+    }
+
+    resolve(variable, manifest, &mut HashSet::new())
+}
+
 fn resolve_utility_value(
     value: &str,
     utility: &UtilityDefinition,
@@ -3990,7 +4191,7 @@ fn resolve_utility_value(
             return None;
         }
         let color = if variable.inline {
-            variable.value.clone()?
+            resolve_inline_variable_value(variable, manifest)?
         } else {
             format!("var(--{})", variable.name)
         };
@@ -4019,7 +4220,7 @@ fn resolve_utility_value(
         return None;
     }
     if variable.inline {
-        let value = variable.value.clone()?;
+        let value = resolve_inline_variable_value(variable, manifest)?;
         return Some((
             if negative {
                 format!("calc({value} * -1)")
@@ -4590,6 +4791,85 @@ fn selector_token_to_template(
     }
     selector = replace_selector_underscores(&selector);
     Some(suffix_to_template(&selector))
+}
+
+fn resolve_style_selector_aliases(selector: &str, manifest: &ManifestProjection) -> String {
+    let mut tokens = manifest
+        .selectors
+        .keys()
+        .filter(|token| token.starts_with(':'))
+        .cloned()
+        .collect::<Vec<_>>();
+    tokens.sort_by(|left, right| right.len().cmp(&left.len()).then_with(|| left.cmp(right)));
+    let mut output = String::with_capacity(selector.len());
+    let mut index = 0;
+    let mut quote = None;
+    let mut attribute_depth = 0_u32;
+    while index < selector.len() {
+        let character = selector[index..].chars().next().unwrap_or_default();
+        if let Some(current_quote) = quote {
+            output.push(character);
+            index += character.len_utf8();
+            if character == '\\' {
+                if let Some(escaped) = selector[index..].chars().next() {
+                    output.push(escaped);
+                    index += escaped.len_utf8();
+                }
+            } else if character == current_quote {
+                quote = None;
+            }
+            continue;
+        }
+        if matches!(character, '\'' | '"') {
+            quote = Some(character);
+            output.push(character);
+            index += character.len_utf8();
+            continue;
+        }
+        if character == '[' {
+            attribute_depth += 1;
+        } else if character == ']' {
+            attribute_depth = attribute_depth.saturating_sub(1);
+        }
+        if attribute_depth == 0
+            && let Some(token) = tokens.iter().find(|token| {
+                if !selector[index..].starts_with(token.as_str()) {
+                    return false;
+                }
+                selector[index + token.len()..]
+                    .chars()
+                    .next()
+                    .is_none_or(|next| {
+                        next == '(' || (!next.is_ascii_alphanumeric() && !matches!(next, '-' | '_'))
+                    })
+            })
+            && let Some(nodes) = manifest.selectors.get(token)
+        {
+            output.push_str(&generate_selector_nodes(nodes));
+            index += token.len();
+            continue;
+        }
+        output.push(character);
+        index += character.len_utf8();
+    }
+    for (alias, replacement) in [
+        (":first", ":first-child"),
+        (":last", ":last-child"),
+        (":even", ":nth-child(2n)"),
+        (":odd", ":nth-child(odd)"),
+        (":only", ":only-child"),
+        (":rtl", ":dir(rtl)"),
+        (":ltr", ":dir(ltr)"),
+        ("::scrollbar-thumb", "::-webkit-scrollbar-thumb"),
+        ("::scrollbar-track", "::-webkit-scrollbar-track"),
+        ("::scrollbar", "::-webkit-scrollbar"),
+        ("::slider-thumb", "::-webkit-slider-thumb"),
+        ("::slider-runnable-track", "::-webkit-slider-runnable-track"),
+        ("::resizer", "::-webkit-resizer"),
+    ] {
+        output = replace_selector_alias(&output, alias, replacement);
+    }
+    output
 }
 
 fn replace_selector_alias(source: &str, alias: &str, replacement: &str) -> String {
@@ -5303,6 +5583,82 @@ fn create_selector_text(
     selector
 }
 
+fn composition_selector(branch: &StateBranch, manifest: &ManifestProjection) -> String {
+    let mut selector = branch
+        .selector_template
+        .clone()
+        .unwrap_or_else(|| "&".into());
+    if let Some(mode) = &branch.mode {
+        selector = match manifest.settings.mode_trigger.as_str() {
+            "class" => format!(".{mode} {selector}"),
+            "host" => format!(":host(.{mode}) {selector}"),
+            _ => selector,
+        };
+    }
+    selector
+}
+
+fn composition_conditions(branch: &StateBranch) -> Vec<String> {
+    ["container", "starting-style", "supports", "media", "layer"]
+        .into_iter()
+        .filter_map(|id| {
+            if id == "layer" && branch.layer.is_some() {
+                return None;
+            }
+            branch
+                .condition_wrappers
+                .iter()
+                .find(|(current_id, _)| current_id == id)
+                .map(|(_, wrapper)| wrapper.clone())
+        })
+        .collect()
+}
+
+fn parse_serialized_declarations(source: &str) -> Map<String, Value> {
+    let mut declarations = Map::new();
+    for declaration in split_top_level(source, ';') {
+        let mut quote = None;
+        let mut escaped = false;
+        let mut depth = 0_u32;
+        let mut separator = None;
+        for (index, character) in declaration.char_indices() {
+            if escaped {
+                escaped = false;
+                continue;
+            }
+            if character == '\\' {
+                escaped = true;
+                continue;
+            }
+            if let Some(current_quote) = quote {
+                if character == current_quote {
+                    quote = None;
+                }
+                continue;
+            }
+            if matches!(character, '\'' | '"') {
+                quote = Some(character);
+            } else if matches!(character, '(' | '[' | '{') {
+                depth += 1;
+            } else if matches!(character, ')' | ']' | '}') {
+                depth = depth.saturating_sub(1);
+            } else if character == ':' && depth == 0 {
+                separator = Some(index);
+                break;
+            }
+        }
+        let Some(separator) = separator else {
+            continue;
+        };
+        let property = declaration[..separator].trim();
+        let value = declaration[separator + 1..].trim();
+        if !property.is_empty() {
+            declarations.insert(property.into(), Value::String(value.into()));
+        }
+    }
+    declarations
+}
+
 fn wrap_raw_conditions(mut text: String, conditions: &[String]) -> String {
     for condition in conditions.iter().rev() {
         let condition = condition.trim();
@@ -5866,6 +6222,73 @@ mod tests {
         assert_eq!(
             engine.css_text(),
             "@layer utilities{.w\\:min\\(1px\\,max\\(2px\\,3px\\)\\){width:min(1px,max(2px,3px))}}"
+        );
+    }
+
+    #[test]
+    fn prefers_exact_utilities_over_patterns_and_rejects_legacy_variable_functions() {
+        let manifest = r#"{
+          "version":1,
+          "utilities":[
+            {
+              "id":"text-<left|center>",
+              "type":-2,
+              "emit":{"type":"template","declarations":{"text-align":"$value"}},
+              "matchers":[{"type":"pattern","prefix":"text-","values":["left","center"]}]
+            },
+            {
+              "id":"text-center",
+              "type":-2,
+              "emit":{"type":"static","rules":[{"declarations":{"text-align":"start"}}]},
+              "matchers":[{"type":"static","name":"text-center"}]
+            }
+          ]
+        }"#;
+        let engine = EngineSession::create(manifest).unwrap();
+        assert_eq!(
+            engine.inspect("text-center").unwrap().rules[0].text,
+            ".text-center{text-align:start}"
+        );
+
+        let engine = EngineSession::create(r#"{"version":1,"utilities":[]}"#).unwrap();
+        assert!(!engine.inspect("margin:$(spacing-x1)").unwrap().valid);
+        assert!(
+            !engine
+                .inspect("width:calc(-2px+$(spacing-x1))")
+                .unwrap()
+                .valid
+        );
+    }
+
+    #[test]
+    fn resolves_dependencies_of_inline_variables_without_emitting_resources() {
+        let manifest = r##"{
+          "version":1,
+          "variables":{"color":[
+            {"name":"color-primary","key":"primary","value":"#123","inline":true},
+            {"name":"color-brand","key":"brand","value":"var(--color-primary)","inline":true}
+          ]},
+          "utilities":[{
+            "id":"foreground",
+            "type":0,
+            "variableAliasRefs":["color"],
+            "emit":{"type":"property","property":"color"},
+            "matchers":[{"type":"variable","keys":["fg"]}]
+          }]
+        }"##;
+        let mut engine = EngineSession::create(manifest).unwrap();
+        engine.ensure_class_rules(["fg:brand"]).unwrap();
+        assert_eq!(
+            engine.css_text(),
+            "@layer utilities{.fg\\:brand{color:#123}}"
+        );
+        assert!(
+            engine
+                .snapshot()
+                .unwrap()
+                .resources
+                .theme_text
+                .is_none_or(|text| text.is_empty())
         );
     }
 }

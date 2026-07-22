@@ -2,15 +2,14 @@
 
 ## Responsibility
 
-`@master/css-source` owns source-level class candidate extraction and source adapters shared by static rendering and framework integrations.
+`@master/css-source` exposes Rust-owned source-level class candidate extraction and thin host adapters shared by static rendering and framework integrations.
 
 ## Owns
 
-- Unvalidated class-like candidate extraction from raw source text.
-- Source-format-aware HTML helpers.
-- OXC-based JavaScript/TypeScript helpers.
-- Astro, Svelte, and Vue source adapters used by scanner auto extraction.
-- Source adapter matching and registration primitives.
+- Rust raw, HTML, JavaScript/TypeScript, and Astro extraction.
+- Versioned batch request/result IR and native/tooling-Wasm sessions.
+- Svelte and Vue adapters that call official parsers and submit host ranges/content to Rust.
+- Custom source adapter contracts.
 
 ## Does Not Own
 
@@ -23,9 +22,9 @@
 - `SourceAdapter`
 - `SourceAdapterInput`
 - `matchesSourceAdapter`
-- `addClassString`
-- `extractClassCandidates`
-- HTML, OXC, Astro, Svelte, and Vue source constants and helpers
+- `createSourceExtractor`
+- `createSourceExtractorSync` under `./node`
+- Source batch request/result types
 - `./adapters`
 - `./adapters/astro`
 - `./adapters/svelte`
@@ -33,7 +32,9 @@
 
 ## Key Files
 
-- `src/extract-class-candidates.ts`
+- `src/session.ts`
+- `src/node.ts`
+- `src/browser.ts`
 - `src/adapters/*`
 - `src/index.ts`
 
@@ -42,13 +43,13 @@
 - False positives increasing generated CSS.
 - False negatives omitting required CSS.
 - Adapter matching by file id/source extension.
-- Optional Vue/Svelte parser peers must warn once and fall back to text extraction when missing.
-- OXC parsing differences across JS/TS syntax.
+- Optional Vue/Svelte parser peers must warn once and use the Rust raw extractor when missing.
+- Native/tooling-Wasm extraction parity.
 
 ## Safe Changes
 
 - Focused adapter matching fixes.
-- HTML, OXC, Astro, Svelte, or Vue extraction fixes with fixtures.
+- Rust extraction or thin Svelte/Vue adapter fixes with fixtures.
 - Candidate extraction tests that do not validate or generate CSS.
 
 ## Dangerous Changes
@@ -56,6 +57,7 @@
 - Depending on scanner, engine, compiler, validator, runtime, server, language service, integrations, examples, or site.
 - Moving validation or generated CSS insertion here.
 - Assuming dynamic string concatenation is statically knowable.
+- Adding TypeScript built-in extraction or parser fallbacks.
 
 ## Validation
 

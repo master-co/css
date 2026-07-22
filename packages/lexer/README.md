@@ -1,6 +1,6 @@
 # @master/css-lexer
 
-Dependency-free lexical source scanners for Master CSS tooling.
+Rust-backed lexical analysis for Master CSS tooling.
 
 ## Installation
 
@@ -8,30 +8,35 @@ Dependency-free lexical source scanners for Master CSS tooling.
 npm install @master/css-lexer
 ```
 
-## Responsibility
-
-`@master/css-lexer` identifies source ranges, directive boundaries, quoted strings, class lexical tokens, CSS manifest entry statements, and unit constants shared by Master CSS packages.
-
-It does not validate classes, generate CSS, resolve manifests, compile directives, or extract source-level class candidates.
-
 ## API
 
+The root exports wire types only. Lexical work is submitted as one versioned batch
+rather than one token at a time through a target-specific session.
+
 ```ts
-import {
-  collectCSSDirectiveRanges,
-  findCSSManifestEntryStatements,
-  tokenizeMasterCSSClass,
-} from '@master/css-lexer'
+import { createLexerSessionSync } from '@master/css-lexer/node'
+
+const lexer = createLexerSessionSync()
+const analysis = lexer.analyze({
+  classLists: [{ source: 'fg:red:hover font:semibold' }],
+  css: ['@import "@master/css";']
+})
+lexer.dispose()
 ```
 
-Common uses:
+The Node entry is native-only; browsers load only `wasm-tooling`. No TypeScript
+tokenizer is shipped by the package.
 
-| API area | Purpose |
-| --- | --- |
-| Source primitives | Stable offsets and source locations. |
-| Directive ranges | Locate CSS directives and quoted arguments without compiling them. |
-| Manifest entry scanners | Detect `@master entry;` and `@import '@master/css'` entry markers. |
-| Class tokenizers | Split Master CSS class strings into lexical token ranges. |
-| Unit constants | Shared lexical constants for CSS units. |
+For a browser session:
+
+```ts
+import { createLexerSession } from '@master/css-lexer/browser'
+
+const lexer = await createLexerSession()
+```
+
+`@master/css-lexer/browser` accepts tooling Wasm initialization options. The root no
+longer exports individual operational tokenizers or range scanners. Shiki and TextMate
+presentation assets live in `@master/css-language`.
 
 Use `@master/css-source` for source-format-aware class candidate extraction.

@@ -1,4 +1,5 @@
-import type { MasterCSSEmittedGlobals, MasterCSSManifest } from '@master/css'
+import type { MasterCSSEmittedGlobals } from '@master/css-schema/emitted-globals'
+import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import {
   createServerRenderer,
   parseHTML,
@@ -13,7 +14,6 @@ import {
   serializeMasterCSSHydrationManifest
 } from '@master/css-schema/hydration-manifest'
 import { MASTER_CSS_RUNTIME_STYLE_ID } from '@master/css-schema/runtime-style'
-import { escapeRegExp } from '@master/css-lexer'
 import type { Handle } from '@sveltejs/kit'
 import { toHashedManifestAssetFileName } from '@master/css-integration/node'
 import { mkdirSync, writeFileSync } from 'node:fs'
@@ -21,6 +21,7 @@ import { join } from 'node:path'
 
 const HEAD_CLOSE_TAG = '</head>'
 const HEAD_CLOSE_TAIL_LENGTH = HEAD_CLOSE_TAG.length - 1
+const escapeRegExp = (value: string) => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 const MASTER_STYLE_PATTERN = new RegExp(
   `<style\\b(?=[^>]*\\bid=(["'])${escapeRegExp(MASTER_CSS_RUNTIME_STYLE_ID)}\\1)[^>]*>[\\s\\S]*?<\\/style>`,
   'i'

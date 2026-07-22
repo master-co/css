@@ -37,7 +37,6 @@
   "dependencies": {
     "@master/css": "workspace:^",
     "@master/css-diagnostics": "workspace:^",
-    "@master/css-lexer": "workspace:^",
     "@master/css-language": "workspace:^",
     "@master/css-lint": "workspace:^",
     "@master/css-native": "workspace:^",

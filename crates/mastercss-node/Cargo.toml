@@ -16,6 +16,8 @@ mastercss-diagnostics = { path = "../mastercss-diagnostics" }
 mastercss-engine = { path = "../mastercss-engine" }
 mastercss-lint = { path = "../mastercss-lint" }
 mastercss-language = { path = "../mastercss-language" }
+mastercss-lexer = { path = "../mastercss-lexer" }
+mastercss-project = { path = "../mastercss-project" }
 mastercss-render = { path = "../mastercss-render" }
 mastercss-schema = { path = "../mastercss-schema" }
 mastercss-scanner = { path = "../mastercss-scanner" }

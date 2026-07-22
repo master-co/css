@@ -34,25 +34,11 @@ const externalVSCodeHostModule = {
   }
 } as const
 
-const externalNativePackages = {
-  name: 'external-native-packages',
+const externalNativeAddons = {
+  name: 'external-native-addons',
   resolveId: {
     order: 'pre',
     handler(source: string) {
-      if (/^(?:lightningcss(?:-.+)?|oxc-(?:parser|resolver|transform))(?:\/.*)?$/.test(source)) {
-        return {
-          id: source,
-          external: true
-        }
-      }
-
-      if (/^@oxc-(?:parser|resolver|transform)\/binding-[^/]+(?:\/package\.json)?$/.test(source)) {
-        return {
-          id: source,
-          external: true
-        }
-      }
-
       if (source.endsWith('.node')) {
         return {
           id: source,
@@ -76,7 +62,7 @@ const commonConfig = {
   plugins: [
     bundledJSONModules,
     externalVSCodeHostModule,
-    externalNativePackages
+    externalNativeAddons
   ],
   outputOptions: {
     codeSplitting: false,

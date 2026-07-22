@@ -63,9 +63,6 @@
     "@master/css-schema": "workspace:^"
   },
   "devDependencies": {
-    "@master/css": "workspace:^",
-    "@master/css-compiler": "workspace:^",
-    "@master/css-integration": "workspace:^",
     "@playwright/test": "1.61.0"
   }
 }

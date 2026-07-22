@@ -10,9 +10,9 @@ Package lint is mandatory for every changed workspace package that defines a pac
 
 Benchmarks are advisory guardrails, not exact CI pass/fail gates. Run correctness validation first, then run the relevant benchmark when a change touches an engine or runtime hot path unless the change is documentation-only or purely type-only.
 
-Engine hot paths include `packages/engine/src/core.ts`, `packages/engine/src/utility.ts`, matcher/index behavior, value parsing, selector parsing/generation, condition parsing/generation, priority sorting, layer insertion, and manifest compilation/cache behavior.
+Engine hot paths live in `crates/mastercss-engine/src/lib.rs` and include matcher/index behavior, value parsing, selector/condition generation, priority sorting, layer insertion, resource tracking, and manifest compilation/cache behavior. The TypeScript engine wrapper is startup/FFI overhead, not a semantic hot path.
 
-Runtime hot paths include `packages/runtime/src/core.ts`, `packages/runtime/src/class-tracker.ts`, `packages/runtime/src/layer.ts`, `packages/runtime/src/utility-layer.ts`, DOM hydration, class mutation tracking, CSSOM insertion/deletion, and the global browser bundle.
+Runtime hot paths include `wasm-runtime`, `packages/runtime/src/core.ts`, DOM hydration, class mutation tracking, transition mapping, CSSOM insertion/deletion, and the global browser bundle.
 
 For performance-sensitive engine or runtime work, the final response must report:
 
@@ -63,8 +63,7 @@ Only update snapshots or `generated.css` fixtures when:
 
 Prefer tests that cover the smallest behavior:
 
-- Engine syntax output: `packages/engine/tests`
-- Parser utility behavior: `packages/engine/tests`
+- Engine syntax/parser output: Rust engine tests plus `packages/engine/tests`
 - Manifest lowering behavior: `packages/compiler/tests` or `packages/preset/tests`
 - Server output: `packages/server/tests/fixtures`
 - Runtime hydration: `packages/runtime/e2e/progressive`

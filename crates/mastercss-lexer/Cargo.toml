@@ -9,3 +9,4 @@ publish.workspace = true
 
 [dependencies]
 mastercss-schema = { path = "../mastercss-schema" }
+serde.workspace = true

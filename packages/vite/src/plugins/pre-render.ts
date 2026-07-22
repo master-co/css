@@ -1,7 +1,7 @@
 import type { Plugin } from 'vite'
 import { PluginContext } from '../core'
 import { createServerRenderer } from '@master/css-server'
-import type { MasterCSSManifest } from '@master/css'
+import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import { loadProjectManifest } from '@master/css-project/manifest'
 import { findCSSManifestEntryFiles } from '@master/css-project/entries'
 import { PluginOptions } from '../options'

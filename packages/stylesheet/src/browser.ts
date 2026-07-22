@@ -44,10 +44,10 @@ export async function compileBrowserStyleCSS(source: string, options: CompileBro
     onWarning
   } = options
   const result = await compileCSSManifest(source, {
-    baseManifest,
-    from,
-    preserveNativeCSS,
-    onWarning
+    ...(baseManifest ? { baseManifest } : {}),
+    ...(from ? { from } : {}),
+    ...(preserveNativeCSS === undefined ? {} : { preserveNativeCSS }),
+    ...(onWarning ? { onWarning } : {})
   })
   const renderSession = await createCompilerRenderSession(
     stringifyMasterCSSManifestJSON(result.manifest)

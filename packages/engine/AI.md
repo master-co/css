@@ -2,16 +2,16 @@
 
 ## Responsibility
 
-`@master/css-engine` executes `MasterCSSManifest` values. It owns class matching, value parsing, selector and condition parsing/generation, variable and animation insertion, cascade layers, rule priority sorting, hydration manifest generation, CSS text emission, and built-in registries.
+`@master/css-engine` executes `MasterCSSManifest` values in Rust. It owns class matching, value parsing, selector and condition parsing/generation, variable and animation resources, cascade layers, rule priority sorting, hydration state, CSS text emission, and built-in registries. TypeScript is a session/backend shell only.
 
 ## Owns
 
-- `MasterCSS` execution and rule generation.
-- Tooling-only semantic class inspection under `./inspect`, including generated rules, class base/suffix, key/value tokens, matcher type metadata, important/state metadata, and token-backed variable metadata.
+- Rust engine-session execution and rule generation.
+- Versioned inspection, transition, snapshot, layer, and resource IR.
 - Layer state and generated CSS text.
 - Hydration manifest generation.
 - Built-in key aliases, variable namespaces, namespace refs, and native value namespaces.
-- Compiler-only parse/generate/inspection helpers under `./compiler`.
+- Native synchronous initialization under `./node` and universal native-to-runtime-Wasm initialization at the root.
 
 ## Does Not Own
 
@@ -22,32 +22,22 @@
 
 ## Public Surface
 
-- `MasterCSS`
-- `MasterCSS.create({ manifest, emittedGlobals })`
-- `compareRulePriority`
-- `createHydrationManifest`
-- Built-in registry exports
-- Runtime-safe manifest and generated-rule types
-- `./inspect` tooling helpers
-- `./compiler` helpers
+- `createEngine({ manifest, emittedGlobals, backend? })`
+- `createEngineSync({ manifest, emittedGlobals })` under `./node`
+- `MasterCSSEngine` session methods and Rust-owned IR/schema types
 
 ## Key Files
 
-- `src/core.ts`
-- `src/utility.ts`
-- `src/compile-manifest.ts`
-- `src/layer.ts`
-- `src/utility-layer.ts`
-- `src/theme-layer.ts`
-- `src/hydration-manifest.ts`
-- `src/key-aliases.ts`
-- `src/native-value-namespaces.ts`
-- `src/namespaces.ts`
+- `src/create-engine.ts`
+- `src/node.ts`
+- `src/backend.ts`
+- `src/bound-engine.ts`
+- `crates/mastercss-engine/src/lib.rs`
 
 ## Risk Areas
 
 - Class matching and compiled utility order.
-- `src/core.ts` and root value exports are runtime-covered because `@master/css-runtime` extends `MasterCSS`.
+- Runtime Wasm surface size and session initialization.
 - Value, selector, and condition parsing/generation.
 - Priority sorting and cascade layer insertion.
 - Variable, animation, emittedGlobals, and hydration behavior.
@@ -61,7 +51,7 @@
 ## Dangerous Changes
 
 - Moving compiler, runtime, scanner, language, or integration behavior into engine.
-- Adding lint, language, docs, or compiler-only helpers to `MasterCSS` or runtime-imported engine modules instead of an explicit tooling subpath.
+- Adding lint, language, docs, or compiler-only operations to the runtime engine surface.
 - Serializing compiled indexes or caches into `MasterCSSManifest` without browser payload measurement.
 - Changing CSS output without explicit tests and explanation.
 

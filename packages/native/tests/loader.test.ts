@@ -4,6 +4,7 @@ import {
   assertNativeCLIInfo,
   getNativeCLIExecutableName,
   loadNativeBinding,
+  MASTER_CSS_BINDING_ABI_VERSION,
   NativeBindingError,
   nativeAddonsDisabled,
   resolveNativeCLIPath,
@@ -41,7 +42,7 @@ describe('native target resolution', () => {
   it('validates native executable ABI metadata', () => {
     const executable = resolve(__dirname, '../artifacts/mcss')
     expect(assertNativeCLIInfo(executable)).toMatchObject({
-      bindingAbiVersion: 1,
+      bindingAbiVersion: MASTER_CSS_BINDING_ABI_VERSION,
       packageVersion: '0.0.0',
       manifestVersion: 1,
       hydrationManifestVersion: 1
@@ -98,7 +99,7 @@ describe('native target resolution', () => {
         version: 1,
         classList: 'm:md|17px',
         classNames: ['m:md|17px'],
-        rawValuePolicy: { approvedSegments: [[false]] }
+        rawValuePolicy: { allowedPatterns: [] }
       })))
       expect(result.diagnostics).toContainEqual(expect.objectContaining({
         ruleId: 'no-unapproved-raw-values',

@@ -8,7 +8,7 @@ import {
   type MasterCSSLintRuleId,
   type MasterCSSLintSourceDiagnostic
 } from '@master/css-lint'
-import { createRustLintSession, type RustLintSession } from '@master/css-lint/node'
+import { createLintSessionSync, type LintSession } from '@master/css-lint/node'
 import type MasterCSSMCPContext from './context'
 import { resolveSourceFiles } from './scan'
 import { loadWorkspaceManifest } from './project'
@@ -57,7 +57,7 @@ async function loadLintState(context: MasterCSSMCPContext, options: LintProjectO
   const rules = resolveMasterCSSLintRules(options.rules)
   const manifest = await loadWorkspaceManifest(context)
   const lintSession = manifest.status === 'loaded'
-    ? await createRustLintSession(manifest.manifest)
+    ? createLintSessionSync(manifest.manifest)
     : undefined
   const files = await resolveSourceFiles(
     context,
@@ -74,7 +74,7 @@ async function loadLintState(context: MasterCSSMCPContext, options: LintProjectO
 function lintInputs(
   inputs: { filePath: string, content: string }[],
   rules: Record<MasterCSSLintRuleId, boolean>,
-  lintSession: RustLintSession
+  lintSession: LintSession
 ) {
   return inputs.map((input) => lintMasterCSSContent({
     content: input.content,
@@ -121,7 +121,7 @@ export async function lintContent(context: MasterCSSMCPContext, options: LintCon
   const filePath = context.resolveVirtualPath(options.filePath)
   const manifest = await loadWorkspaceManifest(context)
   const lintSession = manifest.status === 'loaded'
-    ? await createRustLintSession(manifest.manifest)
+    ? createLintSessionSync(manifest.manifest)
     : undefined
   try {
     const files = manifest.status === 'error' || !lintSession

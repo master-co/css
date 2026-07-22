@@ -19,7 +19,7 @@
       "path": "../integration/tsconfig.typecheck.json"
     },
     {
-      "path": "../lexer/tsconfig.typecheck.json"
+      "path": "../compiler/tsconfig.typecheck.json"
     },
     {
       "path": "../project/tsconfig.typecheck.json"

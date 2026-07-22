@@ -5,12 +5,11 @@ use std::fs;
 use std::path::{Component, Path, PathBuf};
 
 use mastercss_compiler::{
-    CompileManifestOptions, CompileNativeCssOptions, CompilerError, CssImportProvider,
-    compile_css_directives, compile_manifest_input_with_styles, inspect_css,
-    resolve_css_import_graph,
+    CompileNativeCssOptions, CompilerError, CssImportProvider, LowerCssDirectivesOptions,
+    compile_css_directives, inspect_css, lower_css_directives, resolve_css_import_graph,
 };
 use mastercss_schema::CssDirectiveExtractionPolicy;
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use thiserror::Error;
 
@@ -52,6 +51,14 @@ pub struct ProjectManifestIr {
     pub generated_css: String,
     pub warnings: Vec<String>,
     pub source_plan: ProjectSourcePlanIr,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ProjectEntryGraphIr {
+    pub entry: String,
+    pub source: String,
+    pub dependencies: Vec<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize)]
@@ -459,6 +466,28 @@ pub fn load_project_manifest_entries_with_root(
     entries: &[PathBuf],
     base_manifest: Value,
 ) -> Result<ProjectManifestIr, ProjectError> {
+    let mut graphs = Vec::with_capacity(entries.len());
+    for entry in entries {
+        let entry = entry.canonicalize().map_err(|source| ProjectError::Io {
+            path: entry.clone(),
+            source,
+        })?;
+        let entry_text = entry.to_string_lossy().into_owned();
+        let graph = resolve_css_import_graph(&entry_text, &FilesystemCssProvider)?;
+        graphs.push(ProjectEntryGraphIr {
+            entry: entry_text,
+            source: graph.source,
+            dependencies: graph.dependencies,
+        });
+    }
+    load_project_manifest_graphs_with_root(project_dir, graphs, base_manifest)
+}
+
+pub fn load_project_manifest_graphs_with_root(
+    project_dir: &Path,
+    graphs: Vec<ProjectEntryGraphIr>,
+    base_manifest: Value,
+) -> Result<ProjectManifestIr, ProjectError> {
     let project_dir = project_dir
         .canonicalize()
         .map_err(|source| ProjectError::Io {
@@ -477,13 +506,15 @@ pub fn load_project_manifest_entries_with_root(
     let mut resolved_entries = Vec::new();
     let mut source_plan = ProjectSourcePlanIr::default();
 
-    for entry in entries {
-        let entry = entry.canonicalize().map_err(|source| ProjectError::Io {
-            path: entry.clone(),
-            source,
-        })?;
+    for graph in graphs {
+        let entry_path = PathBuf::from(&graph.entry);
+        let entry = entry_path
+            .canonicalize()
+            .map_err(|source| ProjectError::Io {
+                path: entry_path,
+                source,
+            })?;
         let entry_text = entry.to_string_lossy().into_owned();
-        let graph = resolve_css_import_graph(&entry_text, &FilesystemCssProvider)?;
         let result = compile_css_directives(
             &graph.source,
             &CompileNativeCssOptions {
@@ -492,21 +523,23 @@ pub fn load_project_manifest_entries_with_root(
                 classes: None,
             },
         )?;
-        manifest = compile_manifest_input_with_styles(
+        let lowered = lower_css_directives(
             &result.manifest_input,
             result.style_definitions.as_deref().unwrap_or_default(),
-            &CompileManifestOptions {
+            &result.warnings,
+            &LowerCssDirectivesOptions {
                 base_manifest: Some(manifest),
+                resolution_manifest: None,
             },
-        )?
-        .manifest;
+        )?;
+        manifest = lowered.manifest;
 
         resolved_entries.push(entry_text);
         push_unique(&mut dependencies, graph.dependencies);
         push_unique(&mut dependencies, result.dependencies);
         push_unique(&mut class_names, result.class_names);
         push_unique(&mut native_class_names, result.native_class_names);
-        push_unique(&mut warnings, result.warnings);
+        push_unique(&mut warnings, lowered.warnings);
         let entry_source_plan =
             resolve_source_entry_plan(&project_dir, &entry, &result.extraction_policy)?;
         push_unique(&mut source_plan.files, entry_source_plan.files.clone());
@@ -515,13 +548,19 @@ pub fn load_project_manifest_entries_with_root(
         }
         merge_extraction_policy(&mut extraction_policy, result.extraction_policy);
         if !result.native_css.is_empty() {
-            native_css.push(result.native_css);
+            native_css.push(result.native_css.clone());
         }
-        if !result.css.is_empty() {
-            css.push(result.css);
-        }
-        if !result.generated_css.is_empty() {
-            generated_css.push(result.generated_css);
+        if !lowered.generated_css.is_empty() {
+            css.push(
+                [result.native_css.as_str(), lowered.generated_css.as_str()]
+                    .into_iter()
+                    .filter(|value| !value.is_empty())
+                    .collect::<Vec<_>>()
+                    .join("\n"),
+            );
+            generated_css.push(lowered.generated_css);
+        } else if !result.native_css.is_empty() {
+            css.push(result.native_css.clone());
         }
     }
 
@@ -637,6 +676,27 @@ mod tests {
             result.manifest
         );
         assert_eq!(result.dependencies.len(), 2);
+
+        fs::remove_dir_all(project).unwrap();
+    }
+
+    #[test]
+    fn lowers_compose_definitions_against_the_base_manifest() {
+        let project = temp_project();
+        let entry = project.join("entry.css");
+        fs::write(&entry, "@master entry; .hidden-card { @compose hidden; }").unwrap();
+        let base_manifest = serde_json::from_str(include_str!(
+            "../../../packages/preset/src/default-manifest.json"
+        ))
+        .unwrap();
+
+        let result = load_project_manifest_entries(&[entry], base_manifest).unwrap();
+        assert!(
+            result.generated_css.contains(".hidden-card{display:none}"),
+            "generated CSS: {}",
+            result.generated_css
+        );
+        assert!(result.css.contains(".hidden-card{display:none}"));
 
         fs::remove_dir_all(project).unwrap();
     }

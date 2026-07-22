@@ -1,5 +1,7 @@
 import { readFile } from 'node:fs/promises'
 import CSSLanguageService from '@master/css-language-service'
+import { defaultManifest } from '@master/css-language'
+import { createLanguageSessionSync } from '@master/css-language/node'
 import type MasterCSSMCPContext from './context'
 import { applyTextEdits, createMCPTextDocument, getLanguageId, type Range, type TextEdit } from './document'
 import { resolveSourceFiles } from './scan'
@@ -31,7 +33,9 @@ function formatContent(service: CSSLanguageService, filePath: string, content: s
 }
 
 export async function previewDirectiveFormat(context: MasterCSSMCPContext, options: PreviewDirectiveFormatOptions = {}) {
-  const service = new CSSLanguageService()
+  const service = new CSSLanguageService(undefined, {
+    session: createLanguageSessionSync(defaultManifest)
+  })
   try {
     if (options.content !== undefined) {
       const filePath = context.resolveVirtualPath(options.filePath || 'master.css')

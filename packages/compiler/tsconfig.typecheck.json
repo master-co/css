@@ -23,6 +23,14 @@
     },
     {
       "path": "../schema/tsconfig.typecheck.json"
+    },
+    {
+      "path": "../wasm-compiler/tsconfig.typecheck.json"
     }
+  ],
+  "include": [
+    "src/**/*.ts",
+    "tests/**/*.test.ts",
+    "tests/helpers/**/*.ts"
   ]
 }

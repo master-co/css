@@ -1,5 +1,7 @@
 use crate::{
-    LintBatchIr, LintClassListIr, LintDiagnosticIr, LintEditIr, RawValueCandidateIr, RawValuePolicy,
+    CanonicalClassGroupSuggestionIr, CanonicalClassSuggestionIr, CanonicalComposeDirectiveIr,
+    CanonicalComposeSuggestionKind, LintBatchIr, LintClassListIr, LintDiagnosticIr, LintEditIr,
+    LintEditScope, RawValueCandidateIr, RawValuePolicy,
 };
 use mastercss_lexer::utf16_len;
 use mastercss_schema::{LINT_BATCH_VERSION, SourceRange};
@@ -44,6 +46,7 @@ pub(crate) fn create_class_list_ir(
     let sort_edit = (sorted_text != class_list).then_some(LintEditIr {
         range: range.clone(),
         text: sorted_text,
+        scope: LintEditScope::ClassList,
     });
     let conflict_names = if analysis.conflicts.is_empty() {
         analysis
@@ -69,6 +72,7 @@ pub(crate) fn create_class_list_ir(
     let conflict_edit = (conflict_text != class_list).then_some(LintEditIr {
         range,
         text: conflict_text,
+        scope: LintEditScope::ClassList,
     });
     let validation = ValidationContext {
         matches: policy.matches,
@@ -109,7 +113,7 @@ fn create_raw_value_diagnostics(
         return Vec::new();
     }
     let mut diagnostics = Vec::new();
-    for (candidate_index, candidate) in candidates.iter().enumerate() {
+    for candidate in candidates {
         if policy.allow_properties.contains(&candidate.key)
             || candidate
                 .properties
@@ -118,18 +122,16 @@ fn create_raw_value_diagnostics(
         {
             continue;
         }
-        let approved_segments = policy.approved_segments.get(candidate_index);
         let value = candidate
             .segments
             .iter()
-            .enumerate()
-            .filter(|(segment_index, _)| {
-                !approved_segments
-                    .and_then(|segments| segments.get(*segment_index))
-                    .copied()
-                    .unwrap_or(false)
+            .filter(|segment| {
+                !policy
+                    .allowed_patterns
+                    .iter()
+                    .any(|pattern| pattern.is_match(segment))
             })
-            .map(|(_, segment)| segment.as_str())
+            .map(String::as_str)
             .collect::<Vec<_>>()
             .join("|");
         if value.is_empty() {
@@ -491,6 +493,171 @@ fn find_class_range(items: &[ClassListItem], token: &str) -> Option<SourceRange>
         } if value == token => Some(range.clone()),
         _ => None,
     })
+}
+
+fn canonical_message(actual: &str, recommended: &str) -> String {
+    format!(
+        "Use canonical class \"{}\" instead of \"{}\".",
+        recommended.replace('`', "\\`"),
+        actual.replace('`', "\\`")
+    )
+}
+
+pub(crate) fn add_canonical_class_diagnostics(
+    result: &mut LintClassListIr,
+    class_list: &str,
+    class_names: &[String],
+    groups: &[CanonicalClassGroupSuggestionIr],
+    names: &[CanonicalClassSuggestionIr],
+) {
+    let original_items = parse_class_list(class_list, class_names);
+    let mut replacement_items = parse_class_list(class_list, class_names);
+    let mut diagnostics = Vec::new();
+    let mut covered = std::collections::HashSet::new();
+    for suggestion in groups {
+        let Some(first) = suggestion.class_names.first() else {
+            continue;
+        };
+        let actual = suggestion.class_names.join(" ");
+        let range = find_class_range(&original_items, first).unwrap_or(SourceRange {
+            start: 0,
+            end: utf16_len(class_list),
+        });
+        if replace_class_token(&mut replacement_items, first, &suggestion.recommended) {
+            for class_name in suggestion.class_names.iter().skip(1) {
+                remove_class_token(&mut replacement_items, class_name);
+            }
+        }
+        covered.extend(suggestion.class_names.iter().cloned());
+        diagnostics.push(LintDiagnosticIr {
+            rule_id: "prefer-canonical-classes".into(),
+            code: "prefer-canonical-class".into(),
+            message: canonical_message(&actual, &suggestion.recommended),
+            range,
+            data: serde_json::Map::from_iter([
+                ("actual".into(), serde_json::Value::String(actual)),
+                (
+                    "recommended".into(),
+                    serde_json::Value::String(suggestion.recommended.clone()),
+                ),
+            ]),
+            fix: None,
+        });
+    }
+    for suggestion in names {
+        if covered.contains(&suggestion.class_name) {
+            continue;
+        }
+        let Some(range) = find_class_range(&original_items, &suggestion.class_name) else {
+            continue;
+        };
+        replace_class_token(
+            &mut replacement_items,
+            &suggestion.class_name,
+            &suggestion.recommended,
+        );
+        diagnostics.push(LintDiagnosticIr {
+            rule_id: "prefer-canonical-classes".into(),
+            code: "prefer-canonical-class".into(),
+            message: canonical_message(&suggestion.class_name, &suggestion.recommended),
+            range,
+            data: serde_json::Map::from_iter([
+                (
+                    "actual".into(),
+                    serde_json::Value::String(suggestion.class_name.clone()),
+                ),
+                (
+                    "recommended".into(),
+                    serde_json::Value::String(suggestion.recommended.clone()),
+                ),
+            ]),
+            fix: None,
+        });
+    }
+    let replacement = build_class_list(&replacement_items);
+    if replacement != class_list {
+        let fix = LintEditIr {
+            range: SourceRange {
+                start: 0,
+                end: utf16_len(class_list),
+            },
+            text: replacement,
+            scope: LintEditScope::ClassList,
+        };
+        for diagnostic in &mut diagnostics {
+            diagnostic.fix = Some(fix.clone());
+        }
+    }
+    result.diagnostics.extend(diagnostics);
+}
+
+pub(crate) fn add_canonical_compose_diagnostics(
+    result: &mut LintClassListIr,
+    class_list: &str,
+    class_names: &[String],
+    compose: &CanonicalComposeDirectiveIr,
+) {
+    let items = parse_class_list(class_list, class_names);
+    let fix = compose.replacement.as_ref().map(|text| LintEditIr {
+        range: SourceRange {
+            start: 0,
+            end: utf16_len(class_list),
+        },
+        text: text.clone(),
+        scope: LintEditScope::Directive,
+    });
+    for suggestion in &compose.suggestions {
+        let range = suggestion
+            .class_names
+            .first()
+            .and_then(|class_name| find_class_range(&items, class_name))
+            .unwrap_or(SourceRange {
+                start: 0,
+                end: utf16_len(class_list),
+            });
+        let (code, message) = match suggestion.kind {
+            CanonicalComposeSuggestionKind::Class => (
+                "prefer-canonical-class",
+                canonical_message(&suggestion.actual, &suggestion.recommended),
+            ),
+            CanonicalComposeSuggestionKind::NativeDeclaration => (
+                "prefer-native-declaration",
+                format!(
+                    "Use CSS declaration `{}` instead of class `{}`.",
+                    suggestion.recommended.replace('`', "\\`"),
+                    suggestion.actual.replace('`', "\\`")
+                ),
+            ),
+            CanonicalComposeSuggestionKind::VariantBlock => (
+                "prefer-variant-block",
+                format!(
+                    "Move class `{}` into the canonical @compose block.",
+                    suggestion.actual.replace('`', "\\`")
+                ),
+            ),
+        };
+        result.diagnostics.push(LintDiagnosticIr {
+            rule_id: "prefer-canonical-classes".into(),
+            code: code.into(),
+            message,
+            range,
+            data: serde_json::Map::from_iter([
+                (
+                    "actual".into(),
+                    serde_json::Value::String(suggestion.actual.clone()),
+                ),
+                (
+                    "recommended".into(),
+                    serde_json::Value::String(suggestion.recommended.clone()),
+                ),
+                (
+                    "kind".into(),
+                    serde_json::to_value(suggestion.kind).unwrap_or_default(),
+                ),
+            ]),
+            fix: fix.clone(),
+        });
+    }
 }
 
 fn sort_class_list(items: &[ClassListItem], sorted_class_names: &[String]) -> String {

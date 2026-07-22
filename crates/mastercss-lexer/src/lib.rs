@@ -1,6 +1,7 @@
 #![forbid(unsafe_code)]
 
-use mastercss_schema::SourceRange;
+use mastercss_schema::{LEXER_BATCH_VERSION, SourceRange};
+use serde::{Deserialize, Serialize};
 
 const ASCII_WHITESPACE: [u16; 5] = [0x0009, 0x000a, 0x000c, 0x000d, 0x0020];
 
@@ -49,6 +50,139 @@ pub struct CssAtRuleBlock {
     pub end: u32,
     pub name: String,
     pub source: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct CssQuotedStringRange {
+    pub range: SourceRange,
+    pub content_range: SourceRange,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct CssDirectiveRange {
+    pub range: SourceRange,
+    pub name: String,
+    pub prelude_range: SourceRange,
+    pub block_range: Option<SourceRange>,
+    pub quoted_string_ranges: Vec<CssQuotedStringRange>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct LexerClassListInputIr {
+    pub source: String,
+    #[serde(default)]
+    pub unescape: Vec<String>,
+}
+
+#[derive(Debug, Clone, Default, PartialEq, Eq, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct LexerBatchRequestIr {
+    #[serde(default)]
+    pub class_lists: Vec<LexerClassListInputIr>,
+    #[serde(default)]
+    pub css_sources: Vec<String>,
+    #[serde(default)]
+    pub escape_identifiers: Vec<String>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct LexerClassListItemIr {
+    pub range: SourceRange,
+    pub raw: String,
+    pub token: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct LexerCssDirectiveIr {
+    pub name: String,
+    pub range: SourceRange,
+    pub prelude_range: SourceRange,
+    pub has_block: bool,
+    pub quoted_strings: u32,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct LexerCssImportIr {
+    pub range: SourceRange,
+    pub statement: String,
+    pub source: Option<String>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct LexerCssAnalysisIr {
+    pub directives: Vec<LexerCssDirectiveIr>,
+    pub imports: Vec<LexerCssImportIr>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct LexerBatchIr {
+    pub version: u32,
+    pub class_lists: Vec<Vec<LexerClassListItemIr>>,
+    pub css_sources: Vec<LexerCssAnalysisIr>,
+    pub escaped_identifiers: Vec<String>,
+}
+
+pub fn analyze_lexer_batch(request: &LexerBatchRequestIr) -> LexerBatchIr {
+    LexerBatchIr {
+        version: LEXER_BATCH_VERSION,
+        class_lists: request
+            .class_lists
+            .iter()
+            .map(|input| {
+                collect_class_list_token_ranges(&input.source)
+                    .into_iter()
+                    .map(|item| LexerClassListItemIr {
+                        range: item.range,
+                        token: input
+                            .unescape
+                            .iter()
+                            .fold(item.token.clone(), |token, character| {
+                                token.replace(&format!("\\{character}"), character)
+                            }),
+                        raw: item.token,
+                    })
+                    .collect()
+            })
+            .collect(),
+        css_sources: request
+            .css_sources
+            .iter()
+            .map(|source| LexerCssAnalysisIr {
+                directives: find_css_directive_ranges(source)
+                    .into_iter()
+                    .map(|directive| LexerCssDirectiveIr {
+                        name: directive.name,
+                        range: directive.range,
+                        prelude_range: directive.prelude_range,
+                        has_block: directive.block_range.is_some(),
+                        quoted_strings: directive.quoted_string_ranges.len() as u32,
+                    })
+                    .collect(),
+                imports: find_css_import_statements(source)
+                    .into_iter()
+                    .map(|statement| LexerCssImportIr {
+                        range: SourceRange {
+                            start: statement.start,
+                            end: statement.end,
+                        },
+                        source: parse_css_import_source(&statement.statement),
+                        statement: statement.statement,
+                    })
+                    .collect(),
+            })
+            .collect(),
+        escaped_identifiers: request
+            .escape_identifiers
+            .iter()
+            .map(|identifier| css_escape(identifier))
+            .collect(),
+    }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -116,6 +250,198 @@ pub fn collect_class_list_token_ranges(class_list: &str) -> Vec<ClassListTokenRa
             },
             token,
         });
+    }
+    ranges
+}
+
+pub fn find_css_directive_ranges(source: &str) -> Vec<CssDirectiveRange> {
+    const NAMES: [&str; 17] = [
+        "master",
+        "settings",
+        "source",
+        "safelist",
+        "blocklist",
+        "preserve",
+        "reference",
+        "theme",
+        "defaults",
+        "components",
+        "utilities",
+        "custom-variant",
+        "compose",
+        "variant",
+        "slot",
+        "dark",
+        "light",
+    ];
+
+    let mut ranges = Vec::new();
+    let mut index = 0;
+    let mut quote = None;
+    let mut comment = false;
+    while index < source.len() {
+        let Some(character) = source[index..].chars().next() else {
+            break;
+        };
+        let next_index = index + character.len_utf8();
+        let next = source[next_index..].chars().next();
+        if comment {
+            if character == '*' && next == Some('/') {
+                comment = false;
+                index = next_index + 1;
+            } else {
+                index = next_index;
+            }
+            continue;
+        }
+        if let Some(current_quote) = quote {
+            if character == '\\' {
+                index = next.map_or(next_index, |next| next_index + next.len_utf8());
+            } else {
+                if character == current_quote {
+                    quote = None;
+                }
+                index = next_index;
+            }
+            continue;
+        }
+        if character == '/' && next == Some('*') {
+            comment = true;
+            index = next_index + 1;
+            continue;
+        }
+        if matches!(character, '\'' | '"') {
+            quote = Some(character);
+            index = next_index;
+            continue;
+        }
+        if character != '@' {
+            index = next_index;
+            continue;
+        }
+
+        let name_start = next_index;
+        let mut name_end = name_start;
+        for (offset, name_character) in source[name_start..].char_indices() {
+            if !(name_character.is_ascii_alphanumeric() || matches!(name_character, '-' | '_')) {
+                break;
+            }
+            name_end = name_start + offset + name_character.len_utf8();
+        }
+        let raw_name = &source[name_start..name_end];
+        if !NAMES.contains(&raw_name) {
+            index = next_index;
+            continue;
+        }
+
+        let statement_end = find_css_statement_end(source, name_end);
+        let prelude_end = match statement_end.reason {
+            CssStatementEndReason::Semicolon => statement_end.end.saturating_sub(1),
+            CssStatementEndReason::Block | CssStatementEndReason::Eof => statement_end.end,
+        };
+        if raw_name == "master" && source[name_end..prelude_end].trim() != "entry" {
+            index = next_index;
+            continue;
+        }
+        let end = if statement_end.reason == CssStatementEndReason::Block {
+            find_css_block_end(source, statement_end.end).unwrap_or(source.len())
+        } else {
+            statement_end.end
+        };
+        let block_range =
+            (statement_end.reason == CssStatementEndReason::Block).then(|| SourceRange {
+                start: byte_to_utf16_offset(source, statement_end.end).unwrap_or_default(),
+                end: byte_to_utf16_offset(source, end).unwrap_or_default(),
+            });
+        ranges.push(CssDirectiveRange {
+            range: SourceRange {
+                start: byte_to_utf16_offset(source, index).unwrap_or_default(),
+                end: byte_to_utf16_offset(source, end).unwrap_or_default(),
+            },
+            name: if matches!(raw_name, "dark" | "light") {
+                "variant".to_owned()
+            } else {
+                raw_name.to_owned()
+            },
+            prelude_range: SourceRange {
+                start: byte_to_utf16_offset(source, name_end).unwrap_or_default(),
+                end: byte_to_utf16_offset(source, prelude_end).unwrap_or_default(),
+            },
+            block_range,
+            quoted_string_ranges: find_css_quoted_string_ranges(source, name_end, prelude_end),
+        });
+        if statement_end.reason == CssStatementEndReason::Semicolon {
+            index = statement_end.end;
+        } else {
+            index = next_index;
+        }
+    }
+    ranges
+}
+
+fn find_css_quoted_string_ranges(
+    source: &str,
+    start: usize,
+    end: usize,
+) -> Vec<CssQuotedStringRange> {
+    let mut ranges = Vec::new();
+    let mut index = start;
+    let mut comment = false;
+    while index < end {
+        let character = source[index..].chars().next().unwrap_or_default();
+        let next_index = index + character.len_utf8();
+        let next = source[next_index..].chars().next();
+        if comment {
+            if character == '*' && next == Some('/') {
+                comment = false;
+                index = next_index + 1;
+            } else {
+                index = next_index;
+            }
+            continue;
+        }
+        if character == '/' && next == Some('*') {
+            comment = true;
+            index = next_index + 1;
+            continue;
+        }
+        if !matches!(character, '\'' | '"') {
+            index = next_index;
+            continue;
+        }
+        let quote = character;
+        let content_start = next_index;
+        let mut close = content_start;
+        while close < end {
+            let value = source[close..].chars().next().unwrap_or_default();
+            let value_end = close + value.len_utf8();
+            if value == '\\' {
+                close = source[value_end..]
+                    .chars()
+                    .next()
+                    .map_or(value_end, |escaped| value_end + escaped.len_utf8());
+            } else if value == quote {
+                break;
+            } else {
+                close = value_end;
+            }
+        }
+        let range_end = if close < end {
+            close + quote.len_utf8()
+        } else {
+            end
+        };
+        ranges.push(CssQuotedStringRange {
+            range: SourceRange {
+                start: byte_to_utf16_offset(source, index).unwrap_or_default(),
+                end: byte_to_utf16_offset(source, range_end).unwrap_or_default(),
+            },
+            content_range: SourceRange {
+                start: byte_to_utf16_offset(source, content_start).unwrap_or_default(),
+                end: byte_to_utf16_offset(source, close.min(end)).unwrap_or_default(),
+            },
+        });
+        index = range_end;
     }
     ranges
 }

@@ -3,6 +3,7 @@ import type {
   MasterCSSEngineSnapshotIR,
   MasterCSSEngineTransitionIR
 } from '@master/css-schema'
+import { assertMasterCSSBindingInfo } from '@master/css-schema'
 
 interface GeneratedWasmSession {
   manifestJSON(): string
@@ -40,10 +41,18 @@ async function importGeneratedModule(): Promise<GeneratedWasmModule> {
 export async function initRuntimeWasm(options: InitRuntimeWasmOptions = {}) {
   if (options.module) {
     await options.module.default({ module_or_path: options.input || defaultWasmURL })
+    assertMasterCSSBindingInfo(options.module.bindingInfo(), {
+      surface: 'runtime',
+      features: ['engine']
+    })
     return options.module
   }
   modulePromise ??= importGeneratedModule().then(async (module) => {
     await module.default({ module_or_path: options.input || defaultWasmURL })
+    assertMasterCSSBindingInfo(module.bindingInfo(), {
+      surface: 'runtime',
+      features: ['engine']
+    })
     return module
   })
   return await modulePromise

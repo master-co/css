@@ -22,7 +22,7 @@
 ## Public Surface
 
 - Style request and entry helpers.
-- Local CSS directive lowering helpers.
+- Platform path/glob normalization around Rust-owned directive IR.
 - Static rendering helpers such as `createExtractedCSSResult` and `createExtractedCSS`.
 - `./browser`
 - `./directives`
@@ -33,7 +33,7 @@
 - `src/browser.ts`
 - `src/directives.ts`
 - `src/render.ts`
-- `src/class-exclusion.ts`
+- Class exclusion is delegated to the Rust extraction-policy contract.
 
 ## Risk Areas
 

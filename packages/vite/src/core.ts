@@ -1,5 +1,5 @@
 import type CSSScanner from '@master/css-scanner'
-import type { MasterCSSEmittedGlobals } from '@master/css'
+import type { MasterCSSEmittedGlobals } from '@master/css-schema/emitted-globals'
 import type { StyleCSSSources } from '@master/css-stylesheet'
 import type { Plugin, ResolvedConfig } from 'vite'
 import ManifestLoaderPlugin from './plugins/manifest-loader'

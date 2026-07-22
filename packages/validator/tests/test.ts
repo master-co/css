@@ -1,81 +1,65 @@
-import { test, it, expect } from 'vitest'
-import { createCSSWithNativeDeclarations, generateValidRules, validate } from '../src'
-import defaultManifest from '../src/default-manifest'
-import expectClassWithErrors from './utils/expect-class-with-errors'
-import expectClassWithoutErrors from './utils/expect-class-without-errors'
-import expectClassInvalid from './utils/expect-class-invalid'
-import expectClassValid from './utils/expect-class-valid'
+import { beforeAll, expect, it } from 'vitest'
+import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
+import type { MasterCSSManifest } from '@master/css-schema/manifest'
+import { createValidatorSync } from '../src/node'
+import validateCSS from '../src/validate-css'
 
-it('validate an invalid CSS property value', () => {
-  expectClassWithErrors('text-align:asdf')
-  expectClassInvalid('text-align:asdf')
+const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
+
+beforeAll(() => {
+  process.env.MASTER_CSS_NATIVE_BINDING_PATH = new URL(
+    '../../native/artifacts/mastercss.node',
+    import.meta.url
+  ).pathname
 })
 
-it('validate valid classes', () => {
-  expectClassWithoutErrors('text-center')
-  expectClassWithoutErrors('font:.75rem@media(print)')
-  expectClassWithoutErrors('mt:var(--top)')
-  expectClassWithoutErrors('right:max(0px,calc(50%-45.3125rem))')
-  expectClassWithoutErrors('{text-wrap:pretty}')
-  expectClassWithoutErrors('{content:\'\';block}::after@light')
-  expect(validate('bg:light-dark(#333b3c,#efefec)').errors).toEqual([])
-  expectClassValid('text-center')
-  expectClassValid('font:.75rem@media(print)')
-  expectClassValid('mt:var(--top)')
-  expectClassValid('right:max(0px,calc(50%-45.3125rem))')
-  expectClassValid('{text-wrap:pretty}')
-  expectClassValid('{content:\'\';block}::after@light')
+it('validates classes through a Rust session and host CSS oracle', () => {
+  const validator = createValidatorSync(defaultManifest)
+  try {
+    const classNames = [
+      'text-center',
+      'font:.75rem@media(print)',
+      'mt:var(--top)',
+      'right:max(0px,calc(50%-45.3125rem))',
+      '{text-wrap:pretty}',
+      'display:block',
+      'color:oklch(63.7%|0.237|25.331)',
+      'text-align:asdf',
+      'made-up:left'
+    ]
+    const result = validator.generate(classNames)
+    const byClass = new Map(result.classes.map((value) => [value.className, value]))
+
+    for (const className of classNames.slice(0, 7)) {
+      const generated = byClass.get(className)!
+      expect(generated.matched, className).toBe(true)
+      expect(generated.rules.flatMap(({ text }) => validateCSS(text)), className).toEqual([])
+    }
+    expect(byClass.get('text-align:asdf')?.matched).toBe(false)
+    expect(byClass.get('text-align:asdf')?.rules).toEqual([])
+    expect(byClass.get('made-up:left')?.matched).toBe(false)
+  } finally {
+    validator.dispose()
+  }
 })
 
-it('create rules by class', () => {
-  expect(generateValidRules('text-center')).toHaveLength(1)
-  expect(generateValidRules('text:cente')).toHaveLength(0)
-})
-
-it('validates native CSS declarations through css-tree fallback', () => {
-  expect(generateValidRules('float:left')[0]?.text).toBe('.float\\:left{float:left}')
-  expect(generateValidRules('display:block')[0]?.text).toBe('.display\\:block{display:block}')
-  expect(generateValidRules('field-sizing:content')[0]?.text).toBe('.field-sizing\\:content{field-sizing:content}')
-  expect(generateValidRules('transition-behavior:allow-discrete')[0]?.text)
-    .toBe('.transition-behavior\\:allow-discrete{transition-behavior:allow-discrete}')
-  expect(generateValidRules('view-transition-name:hero')[0]?.text)
-    .toBe('.view-transition-name\\:hero{view-transition-name:hero}')
-  expect(generateValidRules('color:oklch(63.7%|0.237|25.331)')[0]?.text)
-    .toBe('.color\\:oklch\\(63\\.7\\%\\|0\\.237\\|25\\.331\\){color:oklch(63.7% 0.237 25.331)}')
-  expect(generateValidRules('--foo:123')[0]?.text).toContain('{--foo:123}')
-
-  expect(generateValidRules('$foo:123')).toHaveLength(0)
-  expect(generateValidRules('mt:$(top)')).toHaveLength(0)
-  expect(generateValidRules('made-up:left')).toHaveLength(0)
-  expect(generateValidRules('float:banana')).toHaveLength(0)
-  expect(generateValidRules('display:banana')).toHaveLength(0)
-  expect(generateValidRules('d:banana')).toHaveLength(0)
-})
-
-it('fairly irregular classes can be ignored very well', () => {
-  expect(generateValidRules('shadow:rgba(45,43,37,0.05)|0|-1|0|0|inset,rgba(15,14,12,')).toHaveLength(0)
-})
-
-it('keeps Rust generation byte-identical to the TypeScript oracle', () => {
-  const oracle = createCSSWithNativeDeclarations(defaultManifest)
-  for (const className of [
-    'text-center',
-    'font:.75rem@media(print)',
-    'mt:var(--top)',
-    'right:max(0px,calc(50%-45.3125rem))',
-    '{text-wrap:pretty}',
-    '{content:\'\';block}::after@light',
-    'bg:light-dark(#333b3c,#efefec)',
-    'display:block',
-    'color:oklch(63.7%|0.237|25.331)',
-    'text-align:asdf',
-    'unknown-class'
-  ]) {
-    expect(
-      generateValidRules(className).map(({ text }) => text),
-      className
-    ).toEqual(
-      generateValidRules(className, oracle).map(({ text }) => text)
-    )
+it('keeps native declarations behind host support checks', () => {
+  const validator = createValidatorSync(defaultManifest)
+  try {
+    const result = validator.generate([
+      'float:left',
+      'view-transition-name:hero',
+      '--foo:123',
+      'float:banana',
+      'display:banana'
+    ])
+    expect(result.classes[0].rules[0]?.text).toBe('.float\\:left{float:left}')
+    expect(result.classes[1].rules[0]?.text)
+      .toBe('.view-transition-name\\:hero{view-transition-name:hero}')
+    expect(result.classes[2].rules[0]?.text).toContain('{--foo:123}')
+    expect(result.classes[3].matched).toBe(false)
+    expect(result.classes[4].matched).toBe(false)
+  } finally {
+    validator.dispose()
   }
 })

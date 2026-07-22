@@ -1,42 +1,39 @@
 import { existsSync, readFileSync, realpathSync } from 'node:fs'
 import { createRequire } from 'node:module'
 import { dirname, extname, isAbsolute, resolve } from 'node:path'
-import { transform } from 'lightningcss'
 import { loadNativeBinding } from '@master/css-native'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import { stringifyMasterCSSManifestJSON } from '@master/css-schema/manifest-json'
-import type { CSSDirectiveReference } from '@master/css-schema/css-directives'
-import { MASTER_CSS_ENTRY_DIRECTIVE_NAME } from '@master/css-lexer'
-import lowerCSSDirectives from './lower-css-directives'
-import type { CompilerDiagnosticRecorder } from './diagnostics'
+import type {
+  CSSDirectiveExtractionPolicy,
+  CSSDirectiveReference
+} from '@master/css-schema/css-directives'
 import {
-  createCSSDirectiveExtractionPolicy,
-  findStandaloneMasterDirectiveStatements,
-  mergeCSSDirectiveExtractionPolicy,
-  removeCSSReferenceStatements,
+  setCompilerDiagnosticCount,
+  type CompilerDiagnosticRecorder
+} from './diagnostics'
+import {
   type CompileCSSOptions,
-  setCSSTransform,
   type CSSReferenceStatement,
   type CompileCSSFileOptions,
   type CompileCSSResult,
-  type ResolvedCSSImportGraph
-} from './core'
-import {
-  findCSSImportStatements
-} from './lexer/imports'
+  type ResolvedCSSImportGraph,
+  emptyExtractionPolicy
+} from './contracts'
 
-export * from './core'
+export {
+  createCompiler,
+  CompilerSessionError,
+  type CompilerSession
+} from './session'
+
 export type {
   CompileCSSFileOptions,
   CompileCSSOptions,
   CompileCSSResult,
   CSSReferenceStatement,
-  ResolvedCSSImportGraph,
-  StandaloneCSSDirectiveStatement,
-  StandaloneMasterDirectiveStatement
-} from './core'
-
-setCSSTransform(transform)
+  ResolvedCSSImportGraph
+} from './contracts'
 
 const require = createRequire(import.meta.url)
 const MASTER_CSS_PACKAGE_ID = '@master/css'
@@ -48,10 +45,29 @@ interface CSSPackageJSON {
   exports?: unknown
 }
 
+export interface CSSDependencyImport {
+  start: number
+  end: number
+  statement: string
+  source: string
+}
+
+export interface CSSDependencyAnalysis {
+  sourceWithoutReferences: string
+  imports: CSSDependencyImport[]
+}
+
 export interface InspectCSSResult {
   hasMasterEntryDirective: boolean
   hasMasterCSSImport: boolean
   hasMasterEntry: boolean
+  directives: {
+    name: string
+    range: { start: number, end: number }
+    preludeRange: { start: number, end: number }
+    hasBlock: boolean
+    quotedStrings: number
+  }[]
 }
 
 export interface ResolveCSSImportGraphOptions {
@@ -122,12 +138,7 @@ function throwCompilerBindingError(error: unknown): never {
       notes?: string[]
     }
     if (diagnostic && typeof diagnostic.message === 'string') {
-      const legacyCode = diagnostic.message === '@compose only accepts unquoted class lists'
-        ? 'compose-quoted-syntax'
-        : diagnostic.message === '@compose does not accept group syntax'
-          ? 'compose-group-syntax'
-          : undefined
-      throw new CSSCompilerError(legacyCode || diagnostic.code || 'CSS_COMPILER_ERROR', diagnostic.message, diagnostic, {
+      throw new CSSCompilerError(diagnostic.code || 'CSS_COMPILER_ERROR', diagnostic.message, diagnostic, {
         cause: error
       })
     }
@@ -259,15 +270,8 @@ export function resolveMasterCSSPackageEntryFile(importSource: string, fromFile 
 }
 
 export function inspectCSS(source: string): InspectCSSResult {
-  const hasMasterEntryDirective = findStandaloneMasterDirectiveStatements(source)
-    .some((statement) => statement.name === MASTER_CSS_ENTRY_DIRECTIVE_NAME)
-  const hasMasterCSSImport = findCSSImportStatements(source)
-    .some((statement) => statement.source === MASTER_CSS_PACKAGE_ID)
-  return {
-    hasMasterEntryDirective,
-    hasMasterCSSImport,
-    hasMasterEntry: hasMasterEntryDirective || hasMasterCSSImport
-  }
+  const binding = loadNativeBinding({ required: true })!.binding
+  return callCompilerBindingJSON<InspectCSSResult>(() => binding.inspectCssJson(source))
 }
 
 interface PreparedCSSImportGraph {
@@ -280,20 +284,24 @@ function prepareCSSImportGraphFile(
   file: string,
   graph: PreparedCSSImportGraph,
   visited: Set<string>,
-  options: ResolveCSSImportGraphOptions = {}
+  options: ResolveCSSImportGraphOptions = {},
+  sourceOverride?: string
 ): void {
   const absoluteFile = resolve(file)
-  if (!existsSync(absoluteFile)) {
-    throw new Error(`CSS manifest entry file not found: ${absoluteFile}`)
+  if (sourceOverride === undefined && !existsSync(absoluteFile)) {
+    throw new Error(`CSS file not found: ${absoluteFile}`)
   }
   if (visited.has(absoluteFile)) return
   visited.add(absoluteFile)
 
-  const source = readFileSync(absoluteFile, 'utf-8')
+  const source = sourceOverride ?? readFileSync(absoluteFile, 'utf-8')
   graph.files[absoluteFile] = source
-  const sourceWithoutReferences = removeCSSReferenceStatements(source, absoluteFile)
-  const imports = findCSSImportStatements(sourceWithoutReferences, absoluteFile)
-  for (const importStatement of imports) {
+  const binding = loadNativeBinding({ required: true })!.binding
+  const analysis = callCompilerBindingJSON<{
+    sourceWithoutReferences: string
+    imports: { source: string }[]
+  }>(() => binding.analyzeCssDependenciesJson(source))
+  for (const importStatement of analysis.imports) {
     const importSource = importStatement.source
     const packageFile = options.expandPackageImports !== false
       ? resolveMasterCSSPackageEntryFile(importSource, absoluteFile, options.projectDir)
@@ -311,13 +319,21 @@ function prepareCSSImportGraphFile(
 }
 
 export function resolveCSSImportGraph(file: string, options: ResolveCSSImportGraphOptions = {}): ResolvedCSSImportGraph {
+  return resolveCSSImportGraphSource(file, undefined, options)
+}
+
+export function resolveCSSImportGraphSource(
+  file: string,
+  source: string | undefined,
+  options: ResolveCSSImportGraphOptions = {}
+): ResolvedCSSImportGraph {
   const entry = resolve(file)
   const graph: PreparedCSSImportGraph = {
     entry,
     files: {},
     edges: []
   }
-  prepareCSSImportGraphFile(entry, graph, new Set(), options)
+  prepareCSSImportGraphFile(entry, graph, new Set(), options, source)
   const binding = loadNativeBinding({ required: true })!.binding
   const result = callCompilerBindingJSON<ResolvedCSSImportGraph>(() => (
     binding.resolveCssImportGraphJson(JSON.stringify(graph))
@@ -326,6 +342,11 @@ export function resolveCSSImportGraph(file: string, options: ResolveCSSImportGra
     options.onReference?.(reference as CSSReferenceStatement, reference.file || entry)
   }
   return result
+}
+
+export function analyzeCSSDependencies(source: string): CSSDependencyAnalysis {
+  const binding = loadNativeBinding({ required: true })!.binding
+  return callCompilerBindingJSON<CSSDependencyAnalysis>(() => binding.analyzeCssDependenciesJson(source))
 }
 
 export function resolveMasterCSSPackageImportGraph(projectDir?: string) {
@@ -411,6 +432,116 @@ function reviveRustCompileResult(result: CompileCSSResult): CompileCSSResult {
   return result
 }
 
+function toWireExtractionPolicy(
+  policy: Partial<CSSDirectiveExtractionPolicy> | undefined
+) {
+  return {
+    ...emptyExtractionPolicy(),
+    ...policy,
+    include: [...(policy?.include || [])],
+    exclude: [...(policy?.exclude || [])],
+    safelist: [...(policy?.safelist || [])],
+    blocklist: toWireBlocklist(policy?.blocklist)
+  }
+}
+
+function toWireBlocklist(blocklist: Iterable<string | RegExp> | undefined) {
+  return [...(blocklist || [])].map((entry) => entry instanceof RegExp
+    ? { source: entry.source, flags: entry.flags }
+    : entry)
+}
+
+export function filterCSSExtractionCandidates(
+  candidates: string[],
+  blocklist: Iterable<string | RegExp> = []
+) {
+  const binding = loadNativeBinding({ required: true })!.binding
+  return binding.filterCssExtractionCandidates(candidates, JSON.stringify(toWireBlocklist(blocklist)))
+}
+
+function reviveExtractionPolicy(policy: CSSDirectiveExtractionPolicy): CSSDirectiveExtractionPolicy {
+  policy.blocklist = policy.blocklist.map((entry) => {
+    if (
+      entry
+      && typeof entry === 'object'
+      && 'source' in entry
+      && typeof entry.source === 'string'
+    ) {
+      return new RegExp(entry.source, 'flags' in entry && typeof entry.flags === 'string' ? entry.flags : '')
+    }
+    return entry
+  })
+  return policy
+}
+
+export function mergeCSSDirectiveExtractionPolicy(
+  ...policies: (Partial<CSSDirectiveExtractionPolicy> | undefined)[]
+) {
+  const binding = loadNativeBinding({ required: true })!.binding
+  return reviveExtractionPolicy(callCompilerBindingJSON<CSSDirectiveExtractionPolicy>(() => (
+    binding.mergeCssExtractionPoliciesJson(JSON.stringify(policies.map(toWireExtractionPolicy)))
+  )))
+}
+
+export function createCSSDirectiveExtractionPolicy() {
+  return mergeCSSDirectiveExtractionPolicy()
+}
+
+export interface StandaloneCSSDirectiveStatement {
+  start: number
+  end: number
+  atRuleName: 'master' | 'source' | 'safelist' | 'blocklist' | 'preserve'
+  name: string
+  statement: string
+  args: string[]
+  modifiers: string[]
+}
+
+export type StandaloneMasterDirectiveStatement = StandaloneCSSDirectiveStatement & {
+  atRuleName: 'master'
+}
+
+interface StandaloneDirectiveAnalysis {
+  code: string
+  statements: StandaloneCSSDirectiveStatement[]
+  extractionPolicy: CSSDirectiveExtractionPolicy
+}
+
+function analyzeStandaloneDirectives(source: string) {
+  const binding = loadNativeBinding({ required: true })!.binding
+  const result = callCompilerBindingJSON<StandaloneDirectiveAnalysis>(() => (
+    binding.analyzeStandaloneDirectivesJson(source)
+  ))
+  result.extractionPolicy = reviveExtractionPolicy(result.extractionPolicy)
+  return result
+}
+
+export function findStandaloneCSSDirectiveStatements(source: string) {
+  return analyzeStandaloneDirectives(source).statements
+}
+
+export function findStandaloneMasterDirectiveStatements(source: string) {
+  return findStandaloneCSSDirectiveStatements(source)
+    .filter((statement): statement is StandaloneMasterDirectiveStatement => statement.atRuleName === 'master')
+}
+
+export function collectStandaloneCSSDirectiveExtractionPolicy(source: string) {
+  return analyzeStandaloneDirectives(source).extractionPolicy
+}
+
+export function removeStandaloneCSSDirectives(source: string) {
+  return analyzeStandaloneDirectives(source).code
+}
+
+export function removeStandaloneMasterDirectives(source: string) {
+  const statements = findStandaloneMasterDirectiveStatements(source)
+  let output = source
+  for (const statement of statements.toReversed()) {
+    output = output.slice(0, statement.start) + output.slice(statement.end)
+  }
+  return output
+}
+
 function compileManifestInputWithRust(
   input: CompileCSSResult['manifestInput'],
   baseManifest: MasterCSSManifest | undefined
@@ -422,6 +553,45 @@ function compileManifestInputWithRust(
       baseManifest ? JSON.stringify({ baseManifest }) : undefined
     )
   )).manifest
+}
+
+interface RustLowerCSSDirectivesResult {
+  input: CompileCSSResult['manifestInput']
+  manifest: MasterCSSManifest
+  resolutionManifest: MasterCSSManifest
+  warnings: string[]
+  generatedCSS: string
+  diagnosticCounts: Record<string, number>
+}
+
+function lowerCSSDirectivesWithRust(
+  result: CompileCSSResult,
+  options: {
+    baseManifest?: MasterCSSManifest
+    resolutionManifest?: MasterCSSManifest
+    onWarning?: (warning: string) => void
+    diagnostics?: CompilerDiagnosticRecorder
+  }
+) {
+  const binding = loadNativeBinding({ required: true })!.binding
+  const lowered = callCompilerBindingJSON<RustLowerCSSDirectivesResult>(() => (
+    binding.lowerCssDirectivesJson(
+      JSON.stringify({
+        manifestInput: result.manifestInput,
+        styleDefinitions: result.styleDefinitions || [],
+        warnings: result.warnings
+      }),
+      JSON.stringify({
+        ...(options.baseManifest ? { baseManifest: options.baseManifest } : {}),
+        ...(options.resolutionManifest ? { resolutionManifest: options.resolutionManifest } : {})
+      })
+    )
+  ))
+  for (const [metricId, value] of Object.entries(lowered.diagnosticCounts)) {
+    setCompilerDiagnosticCount(options.diagnostics, metricId, value)
+  }
+  for (const warning of lowered.warnings) options.onWarning?.(warning)
+  return lowered
 }
 
 function addUnique<T>(target: T[], values: Iterable<T> | undefined) {
@@ -488,7 +658,7 @@ function toCompileCSSManifestResult(
 ): CompileCSSManifestResult {
   const { manifestInput: _directiveManifestInput, ...directiveData } = result
   const referenceContext = resolveCSSReferenceContext(result.references, options)
-  const lowerResult = lowerCSSDirectives(result, {
+  const lowerResult = lowerCSSDirectivesWithRust(result, {
     baseManifest: options.baseManifest,
     resolutionManifest: referenceContext.manifest,
     onWarning: options.onWarning,
@@ -508,7 +678,7 @@ function toCompileCSSManifestResult(
   return {
     ...directiveData,
     dependencies,
-    manifest: compileManifestInputWithRust(lowerResult.input, options.baseManifest),
+    manifest: lowerResult.manifest,
     resolutionManifest: lowerResult.resolutionManifest,
     warnings,
     generatedCSS,

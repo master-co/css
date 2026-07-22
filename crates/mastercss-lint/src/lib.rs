@@ -8,7 +8,7 @@ use mastercss_engine::{
 };
 use mastercss_schema::{
     GeneratedRuleIr, LINT_BATCH_VERSION, NativeDeclarationCandidateIr, SourceRange,
-    UtilityLayerName,
+    UtilityLayerName, ValidatorBatchIr,
 };
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
@@ -38,6 +38,14 @@ pub struct PartialClassConflictIr {
 pub struct LintEditIr {
     pub range: SourceRange,
     pub text: String,
+    pub scope: LintEditScope,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize)]
+#[serde(rename_all = "kebab-case")]
+pub enum LintEditScope {
+    ClassList,
+    Directive,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize)]
@@ -81,6 +89,54 @@ pub struct RawValueCandidateIr {
 pub struct RawValueCandidatesIr {
     pub version: u32,
     pub candidates: Vec<RawValueCandidateIr>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct LintHostValidationIr {
+    pub invalid_generated_classes: Vec<String>,
+    pub validation_errors: Vec<Vec<String>>,
+}
+
+pub fn classify_host_rule_validation(
+    batch: &ValidatorBatchIr,
+    rule_errors: &[Vec<Vec<String>>],
+) -> LintHostValidationIr {
+    let validation_errors = batch
+        .classes
+        .iter()
+        .enumerate()
+        .map(|(class_index, class_result)| {
+            if !class_result.matched {
+                return Vec::new();
+            }
+            class_result
+                .rules
+                .iter()
+                .enumerate()
+                .flat_map(|(rule_index, _)| {
+                    rule_errors
+                        .get(class_index)
+                        .and_then(|errors| errors.get(rule_index))
+                        .cloned()
+                        .unwrap_or_else(|| vec!["Host CSS validation result is missing.".into()])
+                })
+                .collect()
+        })
+        .collect::<Vec<Vec<String>>>();
+    let invalid_generated_classes = batch
+        .classes
+        .iter()
+        .enumerate()
+        .filter(|(index, class_result)| {
+            class_result.matched && !validation_errors[*index].is_empty()
+        })
+        .map(|(_, class_result)| class_result.class_name.clone())
+        .collect();
+    LintHostValidationIr {
+        invalid_generated_classes,
+        validation_errors,
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Deserialize)]
@@ -182,7 +238,28 @@ pub struct CanonicalComposeDirectiveIr {
 pub struct RawValuePolicy {
     pub allow_raw_values: bool,
     pub allow_properties: Vec<String>,
-    pub approved_segments: Vec<Vec<bool>>,
+    pub allowed_patterns: Vec<regex::Regex>,
+}
+
+impl RawValuePolicy {
+    pub fn new(
+        allow_raw_values: bool,
+        allow_properties: Vec<String>,
+        allowed_patterns: Vec<String>,
+    ) -> Result<Self, String> {
+        let allowed_patterns = allowed_patterns
+            .into_iter()
+            .map(|pattern| {
+                regex::Regex::new(&pattern)
+                    .map_err(|error| format!("Invalid lint allowed pattern {pattern:?}: {error}"))
+            })
+            .collect::<Result<Vec<_>, _>>()?;
+        Ok(Self {
+            allow_raw_values,
+            allow_properties,
+            allowed_patterns,
+        })
+    }
 }
 
 #[derive(Debug, Clone, Copy, Default)]
@@ -190,6 +267,8 @@ pub struct LintClassListPolicy<'a> {
     pub validation_errors: &'a [Vec<String>],
     pub disallow_unknown_class: bool,
     pub raw_value_policy: Option<&'a RawValuePolicy>,
+    pub canonical_options: Option<&'a CanonicalClassNameOptions>,
+    pub compose_directive: bool,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize)]
@@ -439,7 +518,7 @@ impl LintSession {
         } else {
             Vec::new()
         };
-        Ok(class_list::create_class_list_ir(
+        let mut result = class_list::create_class_list_ir(
             class_list,
             class_names,
             analysis,
@@ -450,7 +529,43 @@ impl LintSession {
                 raw_value_candidates: &raw_value_candidates,
                 raw_value_policy: policy.raw_value_policy,
             },
-        ))
+        );
+        if let Some(options) = policy.canonical_options {
+            if policy.compose_directive {
+                let compose =
+                    self.canonical_compose_directive(class_names, native_support, options)?;
+                if compose.structural_change == Some(true) {
+                    class_list::add_canonical_compose_diagnostics(
+                        &mut result,
+                        class_list,
+                        class_names,
+                        &compose,
+                    );
+                } else {
+                    let groups =
+                        self.canonical_class_groups(class_names, native_support, options)?;
+                    let names = self.canonical_class_names(class_names, native_support, options)?;
+                    class_list::add_canonical_class_diagnostics(
+                        &mut result,
+                        class_list,
+                        class_names,
+                        &groups.suggestions,
+                        &names.suggestions,
+                    );
+                }
+            } else {
+                let groups = self.canonical_class_groups(class_names, native_support, options)?;
+                let names = self.canonical_class_names(class_names, native_support, options)?;
+                class_list::add_canonical_class_diagnostics(
+                    &mut result,
+                    class_list,
+                    class_names,
+                    &groups.suggestions,
+                    &names.suggestions,
+                );
+            }
+        }
+        Ok(result)
     }
 
     pub fn raw_value_candidates(
@@ -3065,6 +3180,44 @@ mod tests {
     }"#;
 
     #[test]
+    fn classifies_host_rule_validation_results_in_rust() {
+        let mut engine = EngineSession::create(MANIFEST).unwrap();
+        engine.ensure_class_rules(["block"]).unwrap();
+        let batch = ValidatorBatchIr {
+            version: 1,
+            classes: vec![
+                mastercss_schema::ValidatorClassIr {
+                    class_name: "block".into(),
+                    matched: true,
+                    rules: engine.inspect("block").unwrap().rules,
+                },
+                mastercss_schema::ValidatorClassIr {
+                    class_name: "unknown".into(),
+                    matched: false,
+                    rules: Vec::new(),
+                },
+            ],
+        };
+
+        let classified = classify_host_rule_validation(
+            &batch,
+            &[vec![vec!["Unsupported CSS declaration.".into()]], vec![]],
+        );
+        assert_eq!(classified.invalid_generated_classes, ["block"]);
+        assert_eq!(
+            classified.validation_errors,
+            [vec!["Unsupported CSS declaration.".to_owned()], vec![]]
+        );
+
+        let missing = classify_host_rule_validation(&batch, &[vec![], vec![]]);
+        assert_eq!(missing.invalid_generated_classes, ["block"]);
+        assert_eq!(
+            missing.validation_errors[0],
+            ["Host CSS validation result is missing."]
+        );
+    }
+
+    #[test]
     fn sorts_and_finds_full_conflicts_without_retaining_rules() {
         let mut session = LintSession::create(MANIFEST).unwrap();
         let batch = session
@@ -3129,7 +3282,7 @@ mod tests {
                 &HashSet::new(),
                 LintClassListPolicy {
                     raw_value_policy: Some(&RawValuePolicy {
-                        approved_segments: vec![vec![false]],
+                        allowed_patterns: Vec::new(),
                         ..RawValuePolicy::default()
                     }),
                     ..LintClassListPolicy::default()
@@ -3147,6 +3300,28 @@ mod tests {
             "Raw value \"17px\" is not approved for class \"m:md|17px\". Use a token or allow the value explicitly."
         );
         assert_eq!(diagnostic.data["properties"], serde_json::json!(["margin"]));
+
+        let approved = session
+            .analyze_class_list(
+                "m:md|17px",
+                &["m:md|17px".into()],
+                None,
+                &HashSet::new(),
+                LintClassListPolicy {
+                    raw_value_policy: Some(
+                        &RawValuePolicy::new(false, Vec::new(), vec![r"^\d+px$".into()]).unwrap(),
+                    ),
+                    ..LintClassListPolicy::default()
+                },
+            )
+            .unwrap();
+        assert!(
+            approved
+                .diagnostics
+                .iter()
+                .all(|diagnostic| diagnostic.code != "unapproved-raw-value")
+        );
+        assert!(RawValuePolicy::new(false, Vec::new(), vec!["[".into()]).is_err());
     }
 
     #[test]

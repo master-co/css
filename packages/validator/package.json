@@ -40,10 +40,10 @@
       "import": "./dist/index.js",
       "default": "./dist/index.js"
     },
-    "./native-declaration": {
-      "types": "./dist/native-declaration.d.ts",
-      "import": "./dist/native-declaration.js",
-      "default": "./dist/native-declaration.js"
+    "./node": {
+      "types": "./dist/node.d.ts",
+      "import": "./dist/node.js",
+      "default": "./dist/node.js"
     },
     "./native-declaration-matcher": {
       "types": "./dist/native-declaration-matcher.d.ts",
@@ -64,9 +64,8 @@
     "provenance": true
   },
   "dependencies": {
-    "@master/css": "workspace:^",
     "@master/css-native": "workspace:^",
-    "@master/css-preset": "workspace:^",
+    "@master/css-wasm-tooling": "workspace:^",
     "css-tree": "^3.2.1",
     "@master/css-schema": "workspace:^"
   },

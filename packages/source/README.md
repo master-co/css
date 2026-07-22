@@ -1,6 +1,6 @@
 # @master/css-source
 
-Source class extraction helpers for Master CSS tooling.
+Rust-backed source class extraction for Master CSS tooling.
 
 ## Installation
 
@@ -8,47 +8,35 @@ Source class extraction helpers for Master CSS tooling.
 npm install @master/css-source
 ```
 
-## Responsibility
-
-`@master/css-source` extracts unvalidated Master CSS class candidates from source text and provides source-format-aware adapters for HTML and JavaScript/TypeScript syntax.
-
-It does not validate classes, generate CSS, maintain scanner state, observe file changes, or resolve manifests. Scanner state belongs to `@master/css-scanner`; file-change invalidation belongs to CLI/build/framework integrations; manifest resolution belongs to `@master/css-project`.
-
 ## API
 
 ```ts
-import {
-  extractClassCandidates,
-  extractHTMLClasses,
-  extractOxcClasses,
-  htmlAdapter,
-  oxcAdapter,
-} from '@master/css-source'
+import { createSourceExtractor } from '@master/css-source'
+
+const extractor = await createSourceExtractor()
+const result = extractor.extract({
+  files: [
+    { source: 'src/app.tsx', content: source, kind: 'oxc' },
+    { source: 'index.html', content: html, kind: 'html' }
+  ]
+})
+extractor.dispose()
 ```
 
-### `extractClassCandidates()`
+The versioned batch API owns raw, JavaScript/TypeScript, HTML, and Astro extraction in
+Rust. The universal entry prefers native in Node and falls back to `wasm-tooling`;
+`@master/css-source/browser` loads only tooling Wasm.
 
-Extract raw class-like candidates from source content.
+Use the native-only synchronous entry when startup cannot be asynchronous:
 
 ```ts
-import { extractClassCandidates } from '@master/css-source'
-
-const candidates = extractClassCandidates(`
-  element.classList.add('transition:transform|.3s', dynamicClass)
-`)
+import { createSourceExtractorSync } from '@master/css-source/node'
 ```
 
-Candidates are intentionally unvalidated. Pass them through `@master/css-validator` or the scanner before generating CSS.
+Svelte and Vue adapters remain platform shells: they invoke the official framework
+parser, then send the resulting source regions to the Rust extractor. Custom adapters
+may do the same. Candidates are intentionally unvalidated; scanner state and
+classification belong to `@master/css-scanner`.
 
-### Adapters
-
-Use `./adapters` when a caller needs source adapter contracts without the full root API.
-
-```ts
-import { htmlAdapter, oxcAdapter } from '@master/css-source/adapters'
-```
-
-| Adapter | Purpose |
-| --- | --- |
-| `htmlAdapter` | Extracts class candidates from HTML-like sources. |
-| `oxcAdapter` | Extracts class candidates from JavaScript and TypeScript sources through OXC parsing. |
+The former root extraction functions and TypeScript OXC/HTML parser implementations are
+removed.

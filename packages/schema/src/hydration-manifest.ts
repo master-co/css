@@ -32,6 +32,7 @@ export interface MasterCSSGeneratedRuleIR {
 export interface MasterCSSHydrationManifest {
   version: 1
   rules: MasterCSSGeneratedRuleIR[]
+  resourceOrder: string[]
 }
 
 export function serializeMasterCSSHydrationManifest(hydrationManifest: MasterCSSHydrationManifest) {

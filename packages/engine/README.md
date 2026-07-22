@@ -1,6 +1,6 @@
 # @master/css-engine
 
-The manifest-driven Master CSS engine.
+Rust-backed manifest execution for Master CSS.
 
 ## Installation
 
@@ -10,58 +10,61 @@ npm install @master/css-engine
 
 ## Responsibility
 
-`@master/css-engine` executes `MasterCSSManifest` values. It owns class matching, value parsing, selector and at-rule parsing/generation, variable and animation insertion, cascade layers, rule priority sorting, hydration manifest generation, CSS text emission, and built-in key/namespace registries.
+`@master/css-engine` owns class matching, parsing, rule generation, priority ordering,
+layers, variables, animations, resource identity, hydration state, and emitted CSS.
+TypeScript exposes only a session wrapper around the native or runtime Wasm backend.
 
-This package does not discover project files, resolve CSS imports, compile CSS directives, or integrate with frameworks.
+The package does not discover project files, resolve CSS imports, compile CSS
+directives, inspect the DOM, or integrate with frameworks.
 
-## API
+## Universal API
 
-### `MasterCSS`
+The universal entry creates a session asynchronously. Node prefers the native binding
+and falls back to `wasm-runtime`; browsers load `wasm-runtime` directly. It never falls
+back to a TypeScript engine.
 
 ```ts
-import { MasterCSS } from '@master/css-engine'
+import { createEngine } from '@master/css-engine'
 
-const css = MasterCSS.create({ manifest })
+const engine = await createEngine({ manifest })
+engine.ensureClassRules(['text:center', 'font:semibold'])
+console.log(engine.text)
 
-css.ensureClassRules('text:center', 'font:semibold')
-console.log(css.text)
+const snapshot = engine.snapshot()
+engine.dispose()
 ```
+
+Session operations are synchronous after initialization and accept batches to avoid
+fine-grained native/Wasm calls.
 
 | API | Description |
 | --- | --- |
-| `MasterCSS.create({ manifest, emittedGlobals })` | Creates a `MasterCSS` instance. |
-| `css.ensureClassRules(...classNames)` | Ensures class names have generated rules. |
-| `css.deleteClassRules(...classNames)` | Deletes generated rules for class names. |
-| `css.createRule(className)` | Creates one generated rule without inserting it. |
-| `css.createRules(className)` | Creates all generated rule branches without inserting them. |
-| `css.refresh(manifest?)` | Refreshes with a compiled manifest. |
-| `css.reset()` | Clears rules and state. |
-| `css.text` | Generated CSS text. |
+| `createEngine({ manifest, emittedGlobals, backend? })` | Creates a native or runtime Wasm session. |
+| `engine.ensureClassRules(classNames)` | Applies a batch of class additions and returns transition IR. |
+| `engine.deleteClassRules(classNames)` | Applies a batch of class removals and returns transition IR. |
+| `engine.refresh(manifest)` | Rebuilds the session against a complete Manifest v1 value. |
+| `engine.inspect(className)` | Returns versioned Rust inspection IR. |
+| `engine.snapshot()` | Returns generated CSS, rules, layers, and resource IR. |
+| `engine.dispose()` | Releases backend state. |
 
-### Compiler helpers
-
-`@master/css-engine/compiler` exposes parse, generate, inspect, and built-in registry helpers used by the compiler, language tooling, docs, and tests.
+## Native synchronous API
 
 ```ts
-import {
-  builtinKeyAliases,
-  builtinNativeValueNamespaces,
-  compareRulePriority,
-} from '@master/css-engine/compiler'
+import { createEngineSync } from '@master/css-engine/node'
+
+const engine = createEngineSync({ manifest })
 ```
 
-### Inspection helpers
+`createEngineSync()` supports only the native binding. If the artifact is missing or
+incompatible it throws a stable backend error; it does not load Wasm or a TypeScript
+implementation.
 
-`@master/css-engine/inspect` exposes tooling-only class inspection helpers for lint and language tooling without adding those methods to the runtime-covered `MasterCSS` prototype.
-
-```ts
-import { inspectMasterCSSClass } from '@master/css-engine/inspect'
-
-const inspection = inspectMasterCSSClass(css, 'fg:red:hover')
-```
+The former `MasterCSS`, rule/layer object model, priority helper, compiler helper, and
+inspection subpaths are no longer public. Use session IR from this package and schema
+types from `@master/css-schema`.
 
 ## Related packages
 
-- `@master/css` is the public facade over this package and the default preset.
-- `@master/css-compiler` lowers CSS directives into manifests.
-- `@master/css-runtime` runs the engine against live browser DOM roots.
+- `@master/css` is the default-preset facade.
+- `@master/css-compiler` compiles CSS directives and import graphs.
+- `@master/css-runtime` applies engine transitions to DOM and CSSOM hosts.

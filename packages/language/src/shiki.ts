@@ -1,12 +1,14 @@
-import { SEMANTIC_TOKEN_MODIFIERS } from './common'
 import masterCSSTextMateGrammar from '../syntaxes/master-css.tmLanguage.json' with { type: 'json' }
-import { TextDocument } from 'vscode-languageserver-textdocument'
-import languageSettings, { type LanguageSettings } from './settings'
-import { collectHighlightTokenItems } from './render-semantic-tokens'
-import type { HighlightTokenItem, HighlightTokenRole } from './semantic/highlight'
-import { collectClassListHighlightTokenItems } from './semantic/tokenize-class'
-import getClassPositions from './utils/get-class-positions'
-import { createLanguageCSS, defaultManifest, type MasterCSS } from './master-css'
+import type { LanguageSettings } from './settings'
+import type {
+  HighlightTokenRole,
+  SemanticTokenItem,
+  SemanticTokenModifier,
+  SemanticTokenType
+} from './semantic/types'
+import { defaultManifest } from './master-css'
+import { createLanguageSessionSync } from './node'
+import type { LanguageSession } from './rust-session'
 import {
   MASTER_CSS_SEMANTIC_TOKEN_SCOPE_MAP,
   getMasterCSSSemanticTokenScopeKeys
@@ -40,8 +42,6 @@ export function createMasterCSSShikiLanguageRegistration(): MasterCSSTextMateGra
 
 export const masterCSSShikiLanguage = createMasterCSSShikiLanguageRegistration()
 
-type SemanticTokenType = HighlightTokenItem['type']
-type SemanticTokenModifier = typeof SEMANTIC_TOKEN_MODIFIERS[number]
 export type MasterCSSShikiSemanticTokenStyleKey = SemanticTokenType | `${SemanticTokenType}.${SemanticTokenModifier}`
 export type MasterCSSShikiHighlightRoleStyleKey = HighlightTokenRole
 export type MasterCSSShikiSemanticTokenStyle = string | Record<string, string>
@@ -111,7 +111,7 @@ export interface MasterCSSShikiOptions {
    * Reuse an existing Master CSS instance when the caller already owns a
    * configured language engine.
    */
-  css?: MasterCSS
+  session?: LanguageSession
   /**
    * Class-position and manifest settings used when collecting embedded utilities.
    */
@@ -234,23 +234,15 @@ export function isMasterCSSShikiSupportedLanguage(lang?: string) {
   return Boolean(languageId && masterCSSShikiSupportedLanguageIds.has(languageId))
 }
 
-function createShikiDocument(code: string, lang?: string) {
+function getLanguageServiceLanguageId(lang?: string) {
   const languageId = lang ? languageServiceLanguageIds[lang] ?? lang : undefined
-  if (!languageId) return
-  const uriLang = lang?.replace(/[^\w.-]/g, '-') || 'txt'
-  return TextDocument.create(`file:///master-css-shiki.${uriLang}`, languageId, 0, code)
+  return languageId
 }
 
-function createShikiCSS(options: MasterCSSShikiOptions) {
-  return options.css || createLanguageCSS(options.manifest ?? options.settings?.manifest ?? defaultManifest)
-}
-
-function createShikiSettings(options: MasterCSSShikiOptions): LanguageSettings {
-  return {
-    ...languageSettings,
-    ...options.settings,
-    manifest: options.manifest ?? options.settings?.manifest
-  }
+function createShikiSession(options: MasterCSSShikiOptions) {
+  return options.session || createLanguageSessionSync(
+    options.manifest ?? options.settings?.manifest ?? defaultManifest
+  )
 }
 
 function stringifyStyle(style: MasterCSSShikiSemanticTokenStyle) {
@@ -275,7 +267,7 @@ function resolveSemanticTokenStyle(
 }
 
 function resolveHighlightTokenStyle(
-  item: Pick<HighlightTokenItem, 'role' | 'type' | 'modifiers'>,
+  item: Pick<SemanticTokenItem, 'type' | 'modifiers'> & { role: HighlightTokenRole },
   options: MasterCSSShikiOptions
 ) {
   const roleStyle = options.highlightRoleStyles?.[item.role]
@@ -528,12 +520,17 @@ function createSemanticScopeStyleResolver(
 }
 
 function createSemanticTokenDecorations(
-  tokens: HighlightTokenItem[],
+  tokens: SemanticTokenItem[],
   options: MasterCSSShikiOptions
 ): MasterCSSShikiDecoration[] {
   const classPrefix = options.classPrefix ?? 'mcss-semantic'
   const includeDataAttributes = options.dataAttributes ?? true
-  return tokens.map(({ start, end, type, role, modifiers = [] }) => {
+  return tokens.map(({ start, end, type, modifiers: semanticModifiers = [] }) => {
+    const role = resolveHighlightRole({ type, modifiers: semanticModifiers })
+    const modifiers = semanticModifiers.filter((modifier) =>
+      modifier !== ROLE_TOKEN_MODIFIERS[role]
+      && !(modifier === 'declaration' && type !== 'class')
+    )
     const classNames = [
       classPrefix,
       `${classPrefix}-${type}`,
@@ -563,19 +560,68 @@ function createSemanticTokenDecorations(
   })
 }
 
+const ROLE_TOKEN_MODIFIERS: Partial<Record<HighlightTokenRole, SemanticTokenModifier>> = {
+  'block.brace': 'blockBrace',
+  'declaration.separator': 'declarationSeparator',
+  'declaration.terminator': 'declarationTerminator',
+  'selector.combinator': 'selectorCombinator',
+  'selector.punctuation': 'selectorPunctuation',
+  'selector.pseudoClass.delimiter': 'pseudoClassDelimiter',
+  'selector.pseudoElement.delimiter': 'pseudoElementDelimiter'
+}
+
+function resolveHighlightRole({
+  type,
+  modifiers = []
+}: Pick<SemanticTokenItem, 'type' | 'modifiers'>): HighlightTokenRole {
+  const modifierSet = new Set(modifiers)
+  if (modifierSet.has('blockBrace')) return 'block.brace'
+  if (modifierSet.has('declarationSeparator')) return 'declaration.separator'
+  if (modifierSet.has('declarationTerminator')) return 'declaration.terminator'
+  if (modifierSet.has('selectorCombinator')) return 'selector.combinator'
+  if (modifierSet.has('selectorPunctuation')) return 'selector.punctuation'
+  if (modifierSet.has('pseudoClassDelimiter')) return 'selector.pseudoClass.delimiter'
+  if (modifierSet.has('pseudoElementDelimiter')) return 'selector.pseudoElement.delimiter'
+  if (modifierSet.has('pseudoClass')) return 'selector.pseudoClass.name'
+  if (modifierSet.has('pseudoElement')) return 'selector.pseudoElement.name'
+  if (modifierSet.has('important')) return 'value.important'
+  if (modifierSet.has('query')) return 'query.keyword'
+  if (type === 'property') return 'declaration.property'
+  if (type === 'type') return 'selector.type'
+  if (modifierSet.has('component')) return 'utility.component'
+  if (modifierSet.has('declaration')) return 'utility.semantic'
+  if (type === 'number') return 'value.number'
+  if (type === 'variable') return 'value.variable'
+  return 'value.keyword'
+}
+
 export function createMasterCSSShikiDecorations(
   code: string,
   options: MasterCSSShikiOptions = {}
 ): MasterCSSShikiDecoration[] {
   const classList = options.classList ?? isMasterCSSClassListLanguage(options.lang)
-  const document = createShikiDocument(code, classList ? 'plaintext' : options.lang)
-  if (!document) return []
-  const css = createShikiCSS(options)
-  const highlightTokens = classList
-    ? collectClassListHighlightTokenItems(css, code)
-    : collectHighlightTokenItems(css, document, getClassPositions(document, createShikiSettings(options)))
-  if (!highlightTokens.length) return []
-  return createSemanticTokenDecorations(highlightTokens, options)
+  const languageId = getLanguageServiceLanguageId(classList ? 'plaintext' : options.lang)
+  if (!languageId) return []
+  const session = createShikiSession(options)
+  try {
+    const semanticTokens = session.analyzeDocument({
+      source: code,
+      languageId,
+      ...(options.settings
+        ? {
+            settings: {
+              ...(options.settings.classAttributes ? { classAttributes: options.settings.classAttributes } : {}),
+              ...(options.settings.classFunctions ? { classFunctions: options.settings.classFunctions } : {}),
+              ...(options.settings.classDeclarations ? { classDeclarations: options.settings.classDeclarations } : {})
+            }
+          }
+        : {})
+    }).semanticTokens
+    if (!semanticTokens.length) return []
+    return createSemanticTokenDecorations(semanticTokens, options)
+  } finally {
+    if (!options.session) session.dispose()
+  }
 }
 
 export function transformerMasterCSS(

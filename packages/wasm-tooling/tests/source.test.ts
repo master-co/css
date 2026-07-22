@@ -167,7 +167,7 @@ test('loads the isolated source tooling Wasm surface', async () => {
         message: 'Sort classes into the expected order: "ml:3px mx:2px".',
         range: { start: 0, end: 14 },
         data: { actual: 'mx:2px ml:3px', expected: 'ml:3px mx:2px' },
-        fix: { range: { start: 0, end: 14 }, text: 'ml:3px  mx:2px' }
+        fix: { range: { start: 0, end: 14 }, text: 'ml:3px  mx:2px', scope: 'class-list' }
       },
       {
         ruleId: 'no-conflicting-classes',
@@ -175,11 +175,11 @@ test('loads the isolated source tooling Wasm surface', async () => {
         message: 'Replace "mx:2px" with "mr:2px"; later class "ml:3px" overrides part of "mx:2px".',
         range: { start: 0, end: 6 },
         data: { actual: 'mx:2px', replacement: 'mr:2px', conflict: 'ml:3px' },
-        fix: { range: { start: 0, end: 14 }, text: 'mr:2px  ml:3px' }
+        fix: { range: { start: 0, end: 14 }, text: 'mr:2px  ml:3px', scope: 'class-list' }
       }
     ],
-    sortEdit: { range: { start: 0, end: 14 }, text: 'ml:3px  mx:2px' },
-    conflictEdit: { range: { start: 0, end: 14 }, text: 'mr:2px  ml:3px' },
+    sortEdit: { range: { start: 0, end: 14 }, text: 'ml:3px  mx:2px', scope: 'class-list' },
+    conflictEdit: { range: { start: 0, end: 14 }, text: 'mr:2px  ml:3px', scope: 'class-list' },
     conflictRange: { start: 0, end: 6 }
   })
   const policy = lint.analyzeClassListPolicy(JSON.stringify({
@@ -209,7 +209,7 @@ test('loads the isolated source tooling Wasm surface', async () => {
     classList: '😀 m:md|17px',
     classNames: ['😀', 'm:md|17px'],
     rawValuePolicy: {
-      approvedSegments: [[false]]
+      allowedPatterns: []
     }
   })) as { diagnostics: unknown[] }
   expect(rawPolicy.diagnostics).toContainEqual({
@@ -226,21 +226,6 @@ test('loads the isolated source tooling Wasm surface', async () => {
   })
   lint.dispose()
   lint.free()
-
-  expect(tooling.analyzeLanguage(
-    '😀 fg:red\nnext',
-    [{ start: 3, end: 9 }],
-    [{ start: 3, end: 9, type: 'property', modifiers: ['declaration'] }]
-  )).toEqual({
-    version: 1,
-    classPositions: [{
-      range: { start: 3, end: 9 },
-      contextRange: { start: 3, end: 9 },
-      raw: 'fg:red',
-      token: 'fg:red'
-    }],
-    semanticTokenData: [0, 3, 6, 2, 1]
-  })
 
   const language = new tooling.ToolingLanguageSession(JSON.stringify({
     version: 1,

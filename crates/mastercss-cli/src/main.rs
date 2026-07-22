@@ -2,7 +2,7 @@
 
 use mastercss_engine::EngineSession;
 use mastercss_project::{collect_project_files, load_project_manifest};
-use mastercss_scanner::{ScannerSession, extract_source_candidates, is_class_blocklisted};
+use mastercss_scanner::{ScannerSession, extract_source_candidates};
 use serde::Serialize;
 use serde_json::Value;
 use std::collections::HashSet;
@@ -11,7 +11,6 @@ use std::fs;
 use std::path::{Path, PathBuf};
 use std::process::ExitCode;
 
-const BINDING_ABI_VERSION: u32 = 1;
 const DEFAULT_OUTPUT: &str = "master.css";
 const DEFAULT_MANIFEST: &str = include_str!("../../../packages/preset/src/default-manifest.json");
 const SELF_TEST_MANIFEST: &str = r#"{
@@ -54,30 +53,19 @@ struct ScanArgs {
 
 #[derive(Serialize)]
 #[serde(rename_all = "camelCase")]
-struct BinaryInfo<'a> {
-    binding_abi_version: u32,
-    package_version: &'a str,
-    manifest_version: u32,
-    hydration_manifest_version: u32,
-    target: &'a str,
-}
-
-#[derive(Serialize)]
-#[serde(rename_all = "camelCase")]
 struct SelfTest<'a> {
     version: u32,
-    binary: BinaryInfo<'a>,
+    binary: mastercss_schema::BindingInfo<'a>,
     css: String,
 }
 
-fn binary_info() -> BinaryInfo<'static> {
-    BinaryInfo {
-        binding_abi_version: BINDING_ABI_VERSION,
-        package_version: env!("CARGO_PKG_VERSION"),
-        manifest_version: mastercss_schema::MANIFEST_VERSION,
-        hydration_manifest_version: mastercss_schema::HYDRATION_MANIFEST_VERSION,
-        target: env!("MASTER_CSS_TARGET"),
-    }
+fn binary_info() -> mastercss_schema::BindingInfo<'static> {
+    mastercss_schema::BindingInfo::new(
+        env!("CARGO_PKG_VERSION"),
+        env!("MASTER_CSS_TARGET"),
+        "cli",
+        &["cli", "engine", "project", "scanner", "source"],
+    )
 }
 
 fn print_json(value: &impl Serialize) -> Result<(), CliError> {
@@ -292,19 +280,12 @@ fn run_scan(args: ScanArgs) -> Result<(), CliError> {
         })?;
         let source = normalize_path(file);
         let candidates = extract_source_candidates(&source, &content);
-        let excluded_classes = candidates
-            .iter()
-            .filter(|class_name| {
-                is_class_blocklisted(class_name, &project.extraction_policy.blocklist)
-            })
-            .cloned()
-            .collect::<HashSet<_>>();
         scanner
             .scan_candidates(
                 &source,
                 &content,
                 candidates,
-                &excluded_classes,
+                &project.extraction_policy.blocklist,
                 &[],
                 &HashSet::new(),
             )

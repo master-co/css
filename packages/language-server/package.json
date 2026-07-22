@@ -17,7 +17,6 @@
     "directory": "packages/language-server"
   },
   "dependencies": {
-    "@master/css": "workspace:^",
     "@master/css-compiler": "workspace:^",
     "@master/css-language": "workspace:^",
     "@master/css-language-service": "workspace:^",

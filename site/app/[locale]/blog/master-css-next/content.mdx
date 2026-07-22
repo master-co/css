@@ -50,7 +50,7 @@ The result is a page that can arrive from the server already carrying the CSS ne
 
 Progressive Rendering is not only a critical CSS optimization. It is also a resumable runtime handoff.
 
-`style#master-css` gives the browser the CSS it needs to paint immediately. `style#master-css[data-master-css-hydration-manifest]` points the Master CSS runtime to a compact JSON rule IR, currently `version: 1`, that describes the generated rules inside that style block. Each manifest rule can include the class name, layer, priority, selector text, generated CSS text, and any referenced variables or animations.
+`style#master-css` gives the browser the CSS it needs to paint immediately. `style#master-css[data-master-css-hydration-manifest]` points the Master CSS runtime to a compact JSON rule IR, currently `version: 1`, that describes the generated rules inside that style block. Each manifest rule can include the class name, layer, priority, selector text, generated CSS text, and any referenced variables or animations; the Rust-generated `resourceOrder` preserves their insertion order for exact runtime adoption.
 
 That distinction matters because the runtime needs to keep managing the page after hydration. A client component may mount later, a class may change in response to state, or a route transition may reveal UI that did not exist in the first HTML document. The manifest lets the runtime adopt the already-rendered rules as its starting point, then continue from there without duplicating the CSS that the build already wrote. Keeping that manifest external preserves the first-paint benefit of inline CSS while reducing HTML transfer and parse pressure on pages with many generated rules.
 

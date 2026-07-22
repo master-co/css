@@ -13,9 +13,6 @@
   },
   "references": [
     {
-      "path": "../engine/tsconfig.typecheck.json"
-    },
-    {
       "path": "../schema/tsconfig.typecheck.json"
     }
   ]

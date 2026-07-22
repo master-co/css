@@ -40,7 +40,8 @@
     "@master/css-native-win32-arm64-msvc": "workspace:^",
     "@master/css-native-win32-x64-msvc": "workspace:^"
   },
-  "devDependencies": {
-    "@master/css-source": "workspace:^"
-  }
+  "dependencies": {
+    "@master/css-schema": "workspace:^"
+  },
+  "devDependencies": {}
 }

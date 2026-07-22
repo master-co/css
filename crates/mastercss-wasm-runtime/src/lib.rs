@@ -108,12 +108,11 @@ impl WasmEngineSession {
 
 #[wasm_bindgen(js_name = bindingInfo)]
 pub fn binding_info() -> JsValue {
-    let value = serde_json::json!({
-        "bindingAbiVersion": 1,
-        "packageVersion": env!("CARGO_PKG_VERSION"),
-        "manifestVersion": mastercss_schema::MANIFEST_VERSION,
-        "hydrationManifestVersion": mastercss_schema::HYDRATION_MANIFEST_VERSION,
-        "target": "wasm32-unknown-unknown"
-    });
+    let value = mastercss_schema::BindingInfo::new(
+        env!("CARGO_PKG_VERSION"),
+        "wasm32-unknown-unknown",
+        "runtime",
+        &["engine"],
+    );
     serde_wasm_bindgen::to_value(&value).expect("binding info is serializable")
 }

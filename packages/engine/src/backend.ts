@@ -8,7 +8,7 @@ import type {
   MasterCSSErrorCode,
   MasterCSSSourceRange
 } from '@master/css-schema'
-import type { MasterCSSEmittedGlobals } from './emitted-globals'
+import type { MasterCSSEmittedGlobals } from '@master/css-schema/emitted-globals'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
 
 export interface MasterCSSEngineOptions {

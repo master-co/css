@@ -1,5 +1,5 @@
 import { RuleContext } from '@typescript-eslint/utils/ts-eslint'
-import { parseMasterCSSClassList } from '@master/css-lexer'
+import type { LintSession } from '@master/css-lint/node'
 
 export type ResolvedClassListUnescape = string | false
 
@@ -22,7 +22,11 @@ export interface ResolvedClassNode {
   classValues: string[]
 }
 
-export default function resolveClassNode(node: any, context: RuleContext<any, any[]>): ResolvedClassNode | undefined {
+export default function resolveClassNode(
+  node: any,
+  context: RuleContext<any, any[]>,
+  lintSession: Pick<LintSession, 'tokenizeClassList'>
+): ResolvedClassNode | undefined {
   const { sourceCode } = context
   let value: string = null
   let raw: string = null
@@ -82,14 +86,11 @@ export default function resolveClassNode(node: any, context: RuleContext<any, an
     end = end - 1
   }
 
-  const nodes: ResolvedClassListNode[] = parseMasterCSSClassList(raw, {
-    preserveSpaces: true,
-    unescape
-  }).map((item) => {
-    const startOffset = start + item.start
-    const endOffset = start + item.end
+  const nodes: ResolvedClassListNode[] = lintSession.tokenizeClassList(raw, unescape).map((item) => {
+    const startOffset = start + item.range.start
+    const endOffset = start + item.range.end
     return {
-      type: item.type,
+      type: 'class',
       value: item.token,
       raw: item.raw,
       range: [startOffset, endOffset],

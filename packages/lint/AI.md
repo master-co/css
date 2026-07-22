@@ -2,16 +2,13 @@
 
 ## Responsibility
 
-`@master/css-lint` owns framework-neutral Master CSS class lint policy. It sorts class names, detects conflicting classes, validates class diagnostics for lint consumers, and suggests canonical class names and class groups.
+`@master/css-lint` exposes the Rust-owned framework-neutral Master CSS lint policy through session and source-range adapters.
 
 ## Owns
 
-- Class sorting policy for lint tools.
-- Class conflict detection policy.
-- Class validation diagnostic mapping for lint tools.
-- Canonical class name suggestion policy.
-- Canonical class group suggestion policy.
-- Framework-neutral class-list edit helpers for sorting, removing, and replacing tokens while preserving source whitespace.
+- Rust-backed class sorting, conflict/partial-conflict, raw-value, validation, and canonicalization policy.
+- Rust-backed class-list diagnostics and edit plans.
+- Session lifecycle, version checks, and source-range mapping.
 - Default lint target settings shared by adapters.
 - Framework-neutral source-content lint orchestration that maps class-list diagnostics and fixes onto source ranges.
 
@@ -21,23 +18,14 @@
 - Project manifest discovery or filesystem access.
 - Source extraction adapters.
 - Engine CSS generation semantics.
-- Class-list token/range parsing; use `@master/css-lexer`.
-- Class semantic inspection; use tooling-only helpers from `@master/css-engine/inspect`.
+- Class-list token/range parsing and class semantics outside the Rust lint request.
 - Language service lifecycle, scanner, runtime, framework, or site behavior.
 
 ## Public Surface
 
-- `sortClassNames`
-- `findClassConflicts`
-- `findPartialClassConflicts`
-- `findUnapprovedRawValueClasses`
-- `getClassValidationIssues`
-- `suggestCanonicalClassGroups`
-- `suggestCanonicalClassName`
-- `sortClassList`
-- `removeClassNamesFromClassList`
-- `replaceClassNameInClassList`
-- `replaceClassGroupInClassList`
+- `createLintSession`
+- `createLintSessionSync` under `./node`
+- Rust-owned lint request, diagnostic, and edit IR types
 - `lintMasterCSSContent`
 - `fixMasterCSSContent`
 - `resolveMasterCSSLintRules`
@@ -48,21 +36,18 @@
 ## Key Files
 
 - `src/index.ts`
-- `src/sort-class-names.ts`
-- `src/find-class-conflicts.ts`
-- `src/find-partial-class-conflicts.ts`
-- `src/find-unapproved-raw-value-classes.ts`
-- `src/get-class-validation-issues.ts`
-- `src/suggest-canonical-class-groups.ts`
-- `src/suggest-canonical-class-name.ts`
-- `src/class-list-edits.ts`
+- `src/rust-session.ts`
+- `src/contracts.ts`
+- `src/source.ts`
+- `src/node.ts`
 
 ## Risk Areas
 
 - Ordering, conflict, and canonical suggestion behavior must match generated engine rules.
-- Do not duplicate class parsing, value segment splitting, numeric normalization, or generated-rule private field inspection in this package. Do not add lint-only inspection helpers to `MasterCSS`; use `@master/css-engine/inspect`.
+- Do not duplicate Rust class parsing, value normalization, rule inspection, or lint policy in TypeScript.
 - Validation diagnostics must preserve scanner and ESLint expectations.
 - This package must not import ESLint, project resolution, filesystem, scanner, language service, or framework packages.
+- Native/Wasm absence must be explicit; never build a TypeScript semantic fallback.
 
 ## Validation
 

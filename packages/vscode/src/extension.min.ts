@@ -2,11 +2,12 @@ import path from 'path'
 import { LanguageClient, LanguageClientOptions, ServerOptions, TransportKind } from 'vscode-languageclient/node'
 import { commands, Disposable, EventEmitter, ExtensionContext, languages, ProgressLocation, Range, SemanticTokens, SemanticTokensLegend, TextEdit, window, workspace, type CancellationToken, type FormattingOptions, type LogOutputChannel, type Position, type ProviderResult, type TextDocument } from 'vscode'
 import { ACTIVE_SEMANTIC_TOKENS_REQUEST, DOCUMENT_SEMANTIC_TOKENS_REQUEST, settings, type Settings } from '@master/css-language-server'
-import { applyMasterCSSDirectiveFormatEdits, formatMasterCSSDirectives, SEMANTIC_TOKENS_LEGEND } from '@master/css-language'
+import { createLanguageSession, defaultManifest, SEMANTIC_TOKENS_LEGEND, type LanguageSession } from '@master/css-language'
 import { isCompatibleMasterCSSPackageVersion, resolveMasterCSSWorkspacePackages } from '@master/css-project/workspace'
 
 let client: LanguageClient
 let outputChannel: LogOutputChannel
+let directiveLanguageSession: Promise<LanguageSession> | undefined
 
 const disposables: Disposable[] = []
 
@@ -126,11 +127,18 @@ function applyTextEdits(document: TextDocument, edits: readonly TextEdit[]) {
     }, document.getText())
 }
 
-function formatDirectiveText(text: string) {
-  return applyMasterCSSDirectiveFormatEdits(text, formatMasterCSSDirectives(text))
+function getDirectiveLanguageSession() {
+  return directiveLanguageSession ??= createLanguageSession(defaultManifest)
 }
 
-function createDirectiveTextEdits(document: TextDocument, range?: Range) {
+async function formatDirectiveText(text: string) {
+  const session = await getDirectiveLanguageSession()
+  return [...session.formatDirectives({ source: text }).edits]
+    .sort((a, b) => b.range.start - a.range.start)
+    .reduce((source, edit) => source.slice(0, edit.range.start) + edit.text + source.slice(edit.range.end), text)
+}
+
+async function createDirectiveTextEdits(document: TextDocument, range?: Range) {
   const source = document.getText()
   const offsetRange = range
     ? {
@@ -138,9 +146,10 @@ function createDirectiveTextEdits(document: TextDocument, range?: Range) {
       end: document.offsetAt(range.end)
     }
     : undefined
-  return formatMasterCSSDirectives(source, { range: offsetRange }).map((edit) => TextEdit.replace(
-    new Range(document.positionAt(edit.start), document.positionAt(edit.end)),
-    edit.newText
+  const session = await getDirectiveLanguageSession()
+  return session.formatDirectives({ source, range: offsetRange }).edits.map((edit) => TextEdit.replace(
+    new Range(document.positionAt(edit.range.start), document.positionAt(edit.range.end)),
+    edit.text
   ))
 }
 
@@ -166,7 +175,7 @@ async function provideDocumentFormattingEdits(
   const delegatedEdits = await getDelegatedDocumentFormattingEdits(document, options)
   if (token.isCancellationRequested) return []
   const nativeFormattedText = delegatedEdits.length ? applyTextEdits(document, delegatedEdits) : document.getText()
-  const formattedText = formatDirectiveText(nativeFormattedText)
+  const formattedText = await formatDirectiveText(nativeFormattedText)
   if (formattedText === document.getText()) return []
   return [TextEdit.replace(getFullDocumentRange(document), formattedText)]
 }
@@ -181,7 +190,7 @@ async function provideDocumentRangeFormattingEdits(
   if (formattingDelegationDepth) return []
   if (!getMasterCSSSettings().formatDirectives) return []
   if (!isCSSFormattingDocument(document)) return await next(document, range, options, token) ?? []
-  return createDirectiveTextEdits(document, range)
+  return await createDirectiveTextEdits(document, range)
 }
 
 function createSemanticTokensFeature(client: LanguageClient, clientStarted: Thenable<void>, documentSelector: DocumentSelector) {
@@ -370,6 +379,12 @@ export function activate(context: ExtensionContext) {
 
   context.subscriptions.push(
     semanticTokensFeature,
+    {
+      dispose() {
+        void directiveLanguageSession?.then((session) => session.dispose())
+        directiveLanguageSession = undefined
+      }
+    },
     commands.registerCommand('masterCSS.restart', restart),
     client.onRequest('masterCSS/restart', restart),
     workspace.onDidChangeConfiguration(async (event) => {

@@ -1,34 +1,47 @@
-import { expect, test } from 'vitest'
-import {
-  applyMasterCSSDirectiveFormatEdits,
-  formatMasterCSSClassList,
-  formatMasterCSSDirectives
-} from '../src'
+import { beforeAll, expect, test } from 'vitest'
+import { createLanguageSessionSync } from '../src/node'
+import { createPresetManifest } from './helpers/create-preset-manifest'
 
-function format(source: string) {
-  return applyMasterCSSDirectiveFormatEdits(source, formatMasterCSSDirectives(source))
-}
-
-test.concurrent('repairs detached important suffixes in class lists', () => {
-  expect(formatMasterCSSClassList(' bg:transparent !   fg:red !@sm  block!:hover ')).toBe('bg:transparent! fg:red!@sm block!:hover')
+beforeAll(() => {
+  process.env.MASTER_CSS_NATIVE_BINDING_PATH = new URL(
+    '../../native/artifacts/mastercss.node',
+    import.meta.url
+  ).pathname
 })
 
-test.concurrent('formats @compose class-list preludes', () => {
+function applyEdits(source: string, edits: ReturnType<ReturnType<typeof createLanguageSessionSync>['formatDirectives']>['edits']) {
+  let result = source
+  for (const edit of [...edits].sort((left, right) => right.range.start - left.range.start)) {
+    result = result.slice(0, edit.range.start) + edit.text + result.slice(edit.range.end)
+  }
+  return result
+}
+
+function format(source: string, range?: { start: number, end: number }) {
+  const session = createLanguageSessionSync(createPresetManifest())
+  try {
+    return applyEdits(source, session.formatDirectives({ source, range }).edits)
+  } finally {
+    session.dispose()
+  }
+}
+
+test('formats @compose class-list preludes', () => {
   expect(format('.btn { @compose  bg:transparent !   fg:red !@sm ; }'))
     .toBe('.btn { @compose bg:transparent! fg:red!@sm; }')
 })
 
-test.concurrent('leaves quoted and grouped @compose syntax unchanged', () => {
+test('leaves quoted and grouped @compose syntax unchanged', () => {
   expect(format('.btn { @compose "bg:transparent !"; }')).toBe('.btn { @compose "bg:transparent !"; }')
   expect(format('.btn { @compose { bg:transparent ! }; }')).toBe('.btn { @compose { bg:transparent ! }; }')
 })
 
-test.concurrent('formats @safelist quoted class lists while preserving quote style', () => {
+test('formats @safelist quoted class lists while preserving quote style', () => {
   expect(format('@safelist  \'bg:transparent !   fg:red !@sm\' ;\n@safelist "block  bg:blue !";'))
     .toBe('@safelist \'bg:transparent! fg:red!@sm\';\n@safelist "block bg:blue!";')
 })
 
-test.concurrent('leaves internal styles dogfood directives unchanged', () => {
+test('leaves internal styles dogfood directives unchanged', () => {
   const source = [
     '@components {',
     '    monaco-editor {',
@@ -40,24 +53,19 @@ test.concurrent('leaves internal styles dogfood directives unchanged', () => {
   expect(format(source)).toBe(source)
 })
 
-test.concurrent('normalizes directive spacing without changing block contents', () => {
+test('normalizes directive spacing without changing block contents', () => {
   expect(format('@theme  dark{ .x { color: red; } @slot ; }'))
     .toBe('@theme dark { .x { color: red; } @slot; }')
 })
 
-test.concurrent('ignores directives inside comments and strings', () => {
+test('ignores directives inside comments and strings', () => {
   expect(format('/* @compose bg:red !; */\n.x::before { content: "@compose bg:red !;"; @compose bg:blue !; }'))
     .toBe('/* @compose bg:red !; */\n.x::before { content: "@compose bg:red !;"; @compose bg:blue!; }')
 })
 
-test.concurrent('can limit edits to a source range', () => {
+test('can limit edits to a source range', () => {
   const source = '.a { @compose bg:red !; }\n.b { @compose bg:blue !; }'
   const start = source.indexOf('@compose bg:blue')
-  const result = applyMasterCSSDirectiveFormatEdits(source, formatMasterCSSDirectives(source, {
-    range: {
-      start,
-      end: source.length
-    }
-  }))
+  const result = format(source, { start, end: source.length })
   expect(result).toBe('.a { @compose bg:red !; }\n.b { @compose bg:blue!; }')
 })

@@ -1,12 +1,13 @@
 import {
   createEngine,
   MasterCSSEngineError,
-  type MasterCSSEmittedGlobals,
   type MasterCSSEngine
 } from '@master/css-engine'
+import type { MasterCSSEmittedGlobals } from '@master/css-schema/emitted-globals'
 import type {
   MasterCSSBackend,
   MasterCSSDiagnostic,
+  MasterCSSEngineResourcesIR,
   MasterCSSEngineSnapshotIR,
   MasterCSSEngineTransitionIR,
   MasterCSSResolvedBackend
@@ -113,6 +114,7 @@ function getRootHost(root: Document | ShadowRoot) {
 function validateHydrationManifest(hydrationManifest: unknown): MasterCSSHydrationManifest | undefined {
   return (hydrationManifest as MasterCSSHydrationManifest | undefined)?.version === 1
     && Array.isArray((hydrationManifest as MasterCSSHydrationManifest | undefined)?.rules)
+    && Array.isArray((hydrationManifest as MasterCSSHydrationManifest | undefined)?.resourceOrder)
     ? hydrationManifest as MasterCSSHydrationManifest
     : undefined
 }
@@ -192,26 +194,6 @@ function isKeyframesRule(rule: CSSRule): rule is CSSKeyframesRule {
 function getGeneratedRuleNodeTexts(rule: RuntimeLayerRule) {
   const nodes = 'nodes' in rule ? rule.nodes : undefined
   return nodes?.length ? nodes.map(({ text }) => text) : [rule.text]
-}
-
-function extractLayerBody(text: string, layerName: string) {
-  const prefix = `@layer ${layerName}{`
-  const start = text.indexOf(prefix)
-  if (start === -1) return ''
-  let depth = 1
-  let quote = ''
-  for (let index = start + prefix.length; index < text.length; index++) {
-    const char = text[index]
-    if (quote) {
-      if (char === '\\') index++
-      else if (char === quote) quote = ''
-      continue
-    }
-    if (char === '"' || char === '\'') quote = char
-    else if (char === '{') depth++
-    else if (char === '}' && --depth === 0) return text.slice(start + prefix.length, index)
-  }
-  return ''
 }
 
 function cloneEmittedGlobals(emittedGlobals?: MasterCSSEmittedGlobals): Required<MasterCSSEmittedGlobals> {
@@ -382,19 +364,18 @@ export default class CSSRuntime {
 
   registerEmittedGlobals(emittedGlobals?: MasterCSSEmittedGlobals) {
     if (!emittedGlobals) return this
+    const snapshot = this.backendEngine.snapshot()
+    this.syncResourceSnapshot(snapshot.resources)
     for (const [name, count] of Object.entries(emittedGlobals.variables || {})) {
-      if (count) this.emittedGlobals.variables[name] = (this.emittedGlobals.variables[name] || 0) + count
+      if (!count) continue
+      this.emittedGlobals.variables[name] = (this.emittedGlobals.variables[name] || 0) + count
+      this.themeLayer.tokenCounts.set(name, (this.themeLayer.tokenCounts.get(name) || 0) + count)
     }
     for (const [name, count] of Object.entries(emittedGlobals.animations || {})) {
-      if (count) this.emittedGlobals.animations[name] = (this.emittedGlobals.animations[name] || 0) + count
+      if (!count) continue
+      this.emittedGlobals.animations[name] = (this.emittedGlobals.animations[name] || 0) + count
+      this.animationsNonLayer.tokenCounts.set(name, (this.animationsNonLayer.tokenCounts.get(name) || 0) + count)
     }
-    this.resetResourceCounts()
-    for (const layer of this.getUtilityLayers()) {
-      for (const rule of layer.rules) {
-        if (rule instanceof HydratedGeneratedRule) this.updateRuleResourceCounts(rule, 1)
-      }
-    }
-    this.syncResourceRuleState()
     return this
   }
 
@@ -531,7 +512,6 @@ export default class CSSRuntime {
       const index = sheet.insertRule(`@layer theme{${text}}`, this.getLayerInsertIndex('theme'))
       this.themeLayer.native = sheet.cssRules.item(index) as CSSLayerBlockRule
     }
-    this.syncThemeRules()
   }
 
   private insertKeyframes(key: string, text: string, index: number) {
@@ -588,43 +568,18 @@ export default class CSSRuntime {
     }
   }
 
-  private updateCount(counts: Map<string, number>, name: string, delta: number) {
-    const count = (counts.get(name) || 0) + delta
-    if (count > 0) counts.set(name, count)
-    else counts.delete(name)
-  }
-
-  private updateRuleResourceCounts(rule: HydratedGeneratedRule, delta: number) {
-    const visited = new Set<string>()
-    const updateVariable = (name: string) => {
-      if (!name || !visited.add(name)) return
-      this.updateCount(this.themeLayer.tokenCounts, name, delta)
-      this.variables.get(name)?.dependencies?.forEach(updateVariable)
-    }
-    rule.variableNames?.forEach(updateVariable)
-    rule.animationNames?.forEach((name) => this.updateCount(this.animationsNonLayer.tokenCounts, name, delta))
-  }
-
-  private syncThemeRules() {
+  private syncResourceSnapshot(resources: MasterCSSEngineResourcesIR) {
+    this.themeLayer.resourceText = resources.themeText || ''
     this.themeLayer.rules.length = 0
-    const seen = new Set<string>()
-    for (const match of this.themeLayer.resourceText.matchAll(/--([-_a-zA-Z0-9]+)\s*:/g)) {
-      const name = match[1]
-      if (!seen.add(name)) continue
+    this.themeLayer.tokenCounts.clear()
+    for (const { name, refCount } of resources.variables) {
       const rule: RuntimeResourceRule = { key: name, name, text: '' }
       this.themeLayer.rules.push(rule)
-      if (this.variables.get(name)?.static && !this.themeLayer.tokenCounts.has(name)) {
-        this.themeLayer.tokenCounts.set(name, 1)
-      }
+      if (refCount) this.themeLayer.tokenCounts.set(name, refCount)
     }
-  }
-
-  private syncResourceRuleState() {
-    this.syncThemeRules()
-    for (const rule of this.animationsNonLayer.rules) {
-      if (!this.animationsNonLayer.tokenCounts.has(rule.name)) {
-        this.animationsNonLayer.tokenCounts.set(rule.name, 1)
-      }
+    this.animationsNonLayer.tokenCounts.clear()
+    for (const { name, refCount } of resources.animations) {
+      if (refCount) this.animationsNonLayer.tokenCounts.set(name, refCount)
     }
   }
 
@@ -636,7 +591,6 @@ export default class CSSRuntime {
 
   private unregisterLayerRule(rule: RuntimeLayerRule) {
     if (!(rule instanceof HydratedGeneratedRule)) return
-    this.updateRuleResourceCounts(rule, -1)
     for (const [className, rules] of this.classUtilities) {
       const next = rules.filter((candidate) => candidate !== rule)
       if (next.length) this.classUtilities.set(className, next)
@@ -662,14 +616,13 @@ export default class CSSRuntime {
         }
         const rule = new HydratedGeneratedRule(mutation.rule, layer)
         layer.insert(rule, mutation.index)
-        this.updateRuleResourceCounts(rule, 1)
         this.registerClassRule(rule)
       } else {
         const rule = layer.delete(mutation.key, mutation.index)
         if (rule) this.unregisterLayerRule(rule)
       }
     }
-    this.syncResourceRuleState()
+    this.syncResourceSnapshot(this.backendEngine.snapshot().resources)
   }
 
   private adoptSnapshot(snapshot: MasterCSSEngineSnapshotIR, preserveStyle = false) {
@@ -686,7 +639,7 @@ export default class CSSRuntime {
       else if (isKeyframesRule(rule)) nativeKeyframes.push(rule)
     }
     this.themeLayer.native = nativeLayers.get('theme') || null
-    this.themeLayer.resourceText = extractLayerBody(snapshot.text, 'theme')
+    this.themeLayer.resourceText = snapshot.resources.themeText || ''
 
     const layerNativeIndexes = new Map<string, number>()
     for (const ir of snapshot.rules) {
@@ -704,19 +657,20 @@ export default class CSSRuntime {
       }
       layerNativeIndexes.set(ir.layer, nativeIndex + (nodes?.length || 1))
       layer.rules.push(rule)
-      this.updateRuleResourceCounts(rule, 1)
       this.registerClassRule(rule)
     }
 
-    for (const native of nativeKeyframes) {
+    const nativeKeyframesByName = new Map(nativeKeyframes.map((native) => [native.name, native]))
+    for (const resource of snapshot.resources.animations) {
+      const native = nativeKeyframesByName.get(resource.name)
       this.animationsNonLayer.rules.push({
-        key: native.name,
-        name: native.name,
-        text: native.cssText,
+        key: resource.name,
+        name: resource.name,
+        text: resource.text,
         native
       })
     }
-    this.syncResourceRuleState()
+    this.syncResourceSnapshot(snapshot.resources)
   }
 
   private warnHydrationFallback(reason: string) {
@@ -783,17 +737,10 @@ export default class CSSRuntime {
     }
   }
 
-  private getHydrationClassNames(rules: MasterCSSGeneratedRuleIR[]) {
-    const resourceOrder = new Map<string, number>()
-    const source = this.style?.textContent || ''
-    for (const match of source.matchAll(/--([-_a-zA-Z0-9]+)\s*:/g)) {
-      if (!resourceOrder.has(match[1])) resourceOrder.set(match[1], match.index)
-    }
-    for (const match of source.matchAll(/@(?:-webkit-)?keyframes\s+([-_a-zA-Z0-9]+)/g)) {
-      if (!resourceOrder.has(match[1])) resourceOrder.set(match[1], match.index)
-    }
+  private getHydrationClassNames(manifest: MasterCSSHydrationManifest) {
+    const resourceOrder = new Map(manifest.resourceOrder.map((name, index) => [name, index]))
     const classResources = new Map<string, string[]>()
-    for (const rule of rules) {
+    for (const rule of manifest.rules) {
       const resources = classResources.get(rule.className) || []
       for (const name of [...(rule.variableNames || []), ...(rule.animationNames || [])]) {
         if (!resources.includes(name)) resources.push(name)
@@ -818,7 +765,7 @@ export default class CSSRuntime {
     if (!manifest.rules.length) {
       return this.failHydration(`Hydration manifest has no generated rules for ${MASTER_CSS_RUNTIME_STYLE_SELECTOR}.`)
     }
-    const classNames = this.getHydrationClassNames(manifest.rules)
+    const classNames = this.getHydrationClassNames(manifest)
     this.backendEngine.ensureClassRules(classNames)
     const snapshot = this.backendEngine.snapshot()
     if (JSON.stringify(snapshot.rules) !== JSON.stringify(manifest.rules)) {

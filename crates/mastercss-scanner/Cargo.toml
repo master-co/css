@@ -13,3 +13,6 @@ mastercss-schema = { path = "../mastercss-schema" }
 mastercss-source = { path = "../mastercss-source" }
 serde.workspace = true
 serde_json.workspace = true
+
+[dev-dependencies]
+mastercss-validator = { path = "../mastercss-validator" }

@@ -15,6 +15,7 @@
 # Rust binding artifacts copied into npm packages by xtask
 /packages/native/artifacts
 /packages/wasm-*/artifacts
+/packages/wasm-*/src/index.d.ts
 /packages/runtime/artifacts
 
 # monorepo

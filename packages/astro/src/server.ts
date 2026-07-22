@@ -1,5 +1,5 @@
 import { createServerRenderer, render } from '@master/css-server'
-import type { MasterCSSManifest } from '@master/css'
+import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import type { MiddlewareHandler } from 'astro'
 
 const BODYLESS_STATUSES = new Set([204, 205, 304])

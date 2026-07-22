@@ -1,35 +1,15 @@
-import { MasterCSS, type CompiledUtility, type NativeCSSDeclarationMatcher } from '@master/css'
-import { builtinKeyAliases, builtinNativeValueNamespaces } from '@master/css-engine'
 import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
 import UtilityType from '@master/css-schema/utility-type'
 import type { ValueComponent, Variable } from '@master/css-schema/css-syntax'
-import type { MasterCSSManifest, MasterCSSManifestConditionNode } from '@master/css-schema/manifest'
+import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import { getMdnPropertySyntax } from './utils/mdn-css-data'
 
-export type { CompiledUtility, ValueComponent, Variable }
-const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
-export { builtinKeyAliases, builtinNativeValueNamespaces, defaultManifest, MasterCSS, UtilityType }
+export type { ValueComponent, Variable }
+export const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
+export { UtilityType }
 
 export function matchesLanguageServiceNativeDeclaration({ property }: { property: string }) {
   return property.startsWith('--') || Boolean(getMdnPropertySyntax(property))
-}
-
-export interface CSSLanguageRuntime {
-  MasterCSS: typeof MasterCSS
-  UtilityType: typeof UtilityType
-  defaultManifest: MasterCSSManifest
-  builtinKeyAliases: typeof builtinKeyAliases
-  builtinNativeValueNamespaces: typeof builtinNativeValueNamespaces
-  nativeDeclarationMatcher: NativeCSSDeclarationMatcher
-}
-
-export const defaultCSSLanguageRuntime: CSSLanguageRuntime = {
-  MasterCSS,
-  UtilityType,
-  defaultManifest,
-  builtinKeyAliases,
-  builtinNativeValueNamespaces,
-  nativeDeclarationMatcher: matchesLanguageServiceNativeDeclaration
 }
 
 export const SELECTOR_SIGNS = [':', '_', '>', '+', '~']
@@ -41,79 +21,3 @@ export const AT_SIGN = '@'
 export const CLASS_ATTRIBUTES = ['class', 'className']
 export const CLASS_DECLARATIONS: string[] = []
 export const CLASS_FUNCTIONS = ['clsx', 'cva', 'ctl', 'cv', 'class', 'classnames', 'classVariant', 'styled(?:\\s+)?(?:\\.\\w+)?', 'classList(?:\\s+)?\\.(?:add|remove|toggle|replace)']
-
-export interface Condition {
-  id: string
-  nodes: MasterCSSManifestConditionNode[]
-}
-
-export function createDefaultCSS(runtime: CSSLanguageRuntime = defaultCSSLanguageRuntime) {
-  return runtime.MasterCSS.create({
-    manifest: runtime.defaultManifest,
-    nativeDeclarationMatcher: runtime.nativeDeclarationMatcher
-  })
-}
-
-export function createLanguageCSS(manifest: MasterCSSManifest = defaultManifest, runtime: CSSLanguageRuntime = defaultCSSLanguageRuntime) {
-  return runtime.MasterCSS.create({
-    manifest,
-    nativeDeclarationMatcher: runtime.nativeDeclarationMatcher
-  })
-}
-
-export function generateCSS(
-  classNames: string[],
-  css: MasterCSS = createDefaultCSS(),
-  runtime: CSSLanguageRuntime = defaultCSSLanguageRuntime
-) {
-  const MasterCSSConstructor = css.constructor as typeof MasterCSS
-  const generatedCSS = MasterCSSConstructor.create({
-    manifest: css.manifest,
-    nativeDeclarationMatcher: runtime.nativeDeclarationMatcher
-  })
-  for (const className of classNames) {
-    generatedCSS.ensureClassRules(className)
-  }
-  return generatedCSS.text
-}
-
-export function isCoreRule(id: string) {
-  return id
-}
-
-export function getStaticUtilityDeclarations(utility: CompiledUtility) {
-  const emit = utility.emit
-  if (emit.type === 'static') {
-    return emit.rules[0]?.declarations
-  }
-  if (emit.type === 'template') {
-    return emit.declarations
-  }
-}
-
-function findNumberNode(nodes: MasterCSSManifestConditionNode[]): Extract<MasterCSSManifestConditionNode, { type: 'number' }> | undefined {
-  for (const node of nodes) {
-    if (node.type === 'number') return node
-    if ('children' in node) {
-      const child = findNumberNode(node.children)
-      if (child) return child
-    }
-  }
-}
-
-export function getSingleConditionNumberNode(nodes: MasterCSSManifestConditionNode[]) {
-  return findNumberNode(nodes)
-}
-
-export function parseCondition(token: string, css: MasterCSS = createDefaultCSS()): Condition {
-  const alias = token.replace(/^[<>=&@]+/, '')
-  return css.conditions.get(alias) || { id: 'media', nodes: [] }
-}
-
-export function generateCondition(condition: Condition) {
-  const body = condition.nodes
-    .map((node) => node.raw || ('value' in node ? String(node.value) : 'name' in node ? node.name : ''))
-    .filter(Boolean)
-    .join(' ')
-  return `@${condition.id}${body ? ` ${body}` : ''}`
-}

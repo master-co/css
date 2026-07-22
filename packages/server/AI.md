@@ -7,8 +7,8 @@
 ## Owns
 
 - HTML parsing for server rendering.
-- Class extraction from HTML strings.
-- Server-side `MasterCSS` rendering orchestration.
+- HTML class collection inputs for Rust render sessions.
+- Rust render-session orchestration and hydration/resource IR mapping.
 - Injection or update of `<style id="master-css">`.
 
 ## Does Not Own

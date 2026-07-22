@@ -1,7 +1,4 @@
-import {
-  formatMasterCSSDirectives,
-  type MasterCSSDirectiveFormatEdit
-} from '@master/css-language'
+import type CSSLanguageService from '../core'
 import type { Range, TextEdit } from 'vscode-languageserver-protocol'
 import type { TextDocument } from 'vscode-languageserver-textdocument'
 
@@ -22,30 +19,22 @@ function toOffsetRange(document: TextDocument, range?: Range) {
   }
 }
 
-function intersects(a: { start: number, end: number }, b: { start: number, end: number }) {
-  return a.start < b.end && b.start < a.end
-}
-
-function toTextEdit(document: TextDocument, edit: MasterCSSDirectiveFormatEdit): TextEdit {
+function toTextEdit(
+  document: TextDocument,
+  edit: { range: { start: number, end: number }, text: string }
+): TextEdit {
   return {
     range: {
-      start: document.positionAt(edit.start),
-      end: document.positionAt(edit.end)
+      start: document.positionAt(edit.range.start),
+      end: document.positionAt(edit.range.end)
     },
-    newText: edit.newText
+    newText: edit.text
   }
 }
 
-function collectCSSDocumentFormatEdits(document: TextDocument, range?: Range) {
+function collectSFCStyleRanges(document: TextDocument) {
   const source = document.getText()
-  const offsetRange = toOffsetRange(document, range)
-  return formatMasterCSSDirectives(source, { range: offsetRange }).map(toTextEdit.bind(undefined, document))
-}
-
-function collectSFCFormatEdits(document: TextDocument, range?: Range) {
-  const source = document.getText()
-  const offsetRange = toOffsetRange(document, range)
-  const edits: MasterCSSDirectiveFormatEdit[] = []
+  const ranges: { start: number, end: number }[] = []
   STYLE_BLOCK_RE.lastIndex = 0
   for (const match of source.matchAll(STYLE_BLOCK_RE)) {
     const styleLanguage = getSFCStyleLanguage(match[1])
@@ -53,30 +42,23 @@ function collectSFCFormatEdits(document: TextDocument, range?: Range) {
     const styleText = match[2]
     const styleStart = (match.index || 0) + match[0].indexOf(styleText)
     const styleEnd = styleStart + styleText.length
-    const styleRange = { start: styleStart, end: styleEnd }
-    if (offsetRange && !intersects(offsetRange, styleRange)) continue
-    const relativeRange = offsetRange
-      ? {
-        start: Math.max(offsetRange.start, styleStart) - styleStart,
-        end: Math.min(offsetRange.end, styleEnd) - styleStart
-      }
-      : undefined
-    for (const edit of formatMasterCSSDirectives(styleText, { range: relativeRange })) {
-      edits.push({
-        start: styleStart + edit.start,
-        end: styleStart + edit.end,
-        newText: edit.newText
-      })
-    }
+    ranges.push({ start: styleStart, end: styleEnd })
   }
-  return edits.map(toTextEdit.bind(undefined, document))
+  return ranges
 }
 
-export default function formatDirectives(document: TextDocument, range?: Range): TextEdit[] | undefined {
-  if (CSS_FORMAT_LANGUAGE_IDS.has(document.languageId)) {
-    return collectCSSDocumentFormatEdits(document, range)
-  }
-  if (SFC_FORMAT_LANGUAGE_IDS.has(document.languageId)) {
-    return collectSFCFormatEdits(document, range)
-  }
+export default function formatDirectives(
+  this: CSSLanguageService,
+  document: TextDocument,
+  range?: Range
+): TextEdit[] | undefined {
+  const isCSS = CSS_FORMAT_LANGUAGE_IDS.has(document.languageId)
+  const isSFC = SFC_FORMAT_LANGUAGE_IDS.has(document.languageId)
+  if (!isCSS && !isSFC) return
+  const result = this.session.formatDirectives({
+    source: document.getText(),
+    range: toOffsetRange(document, range),
+    styleRanges: isSFC ? collectSFCStyleRanges(document) : undefined
+  })
+  return result.edits.map(toTextEdit.bind(undefined, document))
 }

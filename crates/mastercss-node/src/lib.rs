@@ -14,17 +14,94 @@ use napi::{Error, Result, Status};
 use napi_derive::napi;
 use serde::{Deserialize, Serialize};
 use std::collections::HashSet;
+use std::path::{Path, PathBuf};
 
-const BINDING_ABI_VERSION: u32 = 1;
+const NATIVE_FEATURES: &[&str] = &[
+    "compiler",
+    "diagnostics",
+    "engine",
+    "language",
+    "lexer",
+    "lint",
+    "project",
+    "render",
+    "scanner",
+    "source",
+    "validator",
+];
 
-#[derive(Serialize)]
-#[serde(rename_all = "camelCase")]
-struct BindingInfo<'a> {
-    binding_abi_version: u32,
-    package_version: &'a str,
-    manifest_version: u32,
-    hydration_manifest_version: u32,
-    target: &'a str,
+#[napi(js_name = "LexerSession")]
+pub struct NodeLexerSession {
+    disposed: bool,
+}
+
+impl Default for NodeLexerSession {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
+#[napi]
+impl NodeLexerSession {
+    #[napi(constructor)]
+    pub fn new() -> Self {
+        Self { disposed: false }
+    }
+
+    #[napi]
+    pub fn analyze(&self, request_json: String) -> Result<String> {
+        if self.disposed {
+            return Err(Error::new(
+                Status::InvalidArg,
+                "Master CSS lexer session has been disposed.",
+            ));
+        }
+        let request = serde_json::from_str::<mastercss_lexer::LexerBatchRequestIr>(&request_json)
+            .map_err(|error| Error::new(Status::InvalidArg, error.to_string()))?;
+        to_json(&mastercss_lexer::analyze_lexer_batch(&request))
+    }
+
+    #[napi]
+    pub fn dispose(&mut self) {
+        self.disposed = true;
+    }
+}
+
+#[napi(js_name = "SourceSession")]
+pub struct NodeSourceSession {
+    disposed: bool,
+}
+
+impl Default for NodeSourceSession {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
+#[napi]
+impl NodeSourceSession {
+    #[napi(constructor)]
+    pub fn new() -> Self {
+        Self { disposed: false }
+    }
+
+    #[napi]
+    pub fn extract(&self, request_json: String) -> Result<String> {
+        if self.disposed {
+            return Err(Error::new(
+                Status::InvalidArg,
+                "Master CSS source session has been disposed.",
+            ));
+        }
+        let request = serde_json::from_str::<mastercss_source::SourceBatchRequestIr>(&request_json)
+            .map_err(|error| Error::new(Status::InvalidArg, error.to_string()))?;
+        to_json(&mastercss_source::extract_source_batch(&request))
+    }
+
+    #[napi]
+    pub fn dispose(&mut self) {
+        self.disposed = true;
+    }
 }
 
 #[derive(Deserialize)]
@@ -41,6 +118,9 @@ struct LintClassListRequest {
     #[serde(default)]
     disallow_unknown_class: bool,
     raw_value_policy: Option<LintRawValuePolicyRequest>,
+    canonical_options: Option<CanonicalClassNameOptions>,
+    #[serde(default)]
+    compose_directive: bool,
 }
 
 #[derive(Deserialize)]
@@ -51,7 +131,7 @@ struct LintRawValuePolicyRequest {
     #[serde(default)]
     allow_properties: Vec<String>,
     #[serde(default)]
-    approved_segments: Vec<Vec<bool>>,
+    allowed_patterns: Vec<String>,
 }
 
 fn to_napi_error(error: EngineError) -> Error {
@@ -82,13 +162,12 @@ fn to_json<T: Serialize>(value: &T) -> Result<String> {
 
 #[napi]
 pub fn binding_info_json() -> Result<String> {
-    to_json(&BindingInfo {
-        binding_abi_version: BINDING_ABI_VERSION,
-        package_version: env!("CARGO_PKG_VERSION"),
-        manifest_version: mastercss_schema::MANIFEST_VERSION,
-        hydration_manifest_version: mastercss_schema::HYDRATION_MANIFEST_VERSION,
-        target: env!("MASTER_CSS_TARGET"),
-    })
+    to_json(&mastercss_schema::BindingInfo::new(
+        env!("CARGO_PKG_VERSION"),
+        env!("MASTER_CSS_TARGET"),
+        "native",
+        NATIVE_FEATURES,
+    ))
 }
 
 #[napi]
@@ -112,6 +191,55 @@ pub fn extract_astro_classes(source: String, content: String) -> Vec<String> {
 }
 
 #[napi]
+pub fn find_css_manifest_entries(project_dir: String) -> Vec<String> {
+    mastercss_project::find_css_manifest_entries(std::path::Path::new(&project_dir))
+        .into_iter()
+        .map(|path| path.to_string_lossy().replace('\\', "/"))
+        .collect()
+}
+
+#[napi]
+pub fn load_project_manifest_json(
+    project_dir: String,
+    base_manifest_json: String,
+    entries: Option<Vec<String>>,
+) -> Result<String> {
+    let base_manifest = serde_json::from_str(&base_manifest_json)
+        .map_err(|error| Error::new(Status::InvalidArg, error.to_string()))?;
+    let result = if let Some(entries) = entries {
+        let entries = entries.into_iter().map(PathBuf::from).collect::<Vec<_>>();
+        mastercss_project::load_project_manifest_entries_with_root(
+            Path::new(&project_dir),
+            &entries,
+            base_manifest,
+        )
+    } else {
+        mastercss_project::load_project_manifest(Path::new(&project_dir), base_manifest)
+    }
+    .map_err(|error| Error::new(Status::GenericFailure, error.to_string()))?;
+    to_json(&result)
+}
+
+#[napi]
+pub fn load_project_manifest_prepared_json(
+    project_dir: String,
+    base_manifest_json: String,
+    graphs_json: String,
+) -> Result<String> {
+    let base_manifest = serde_json::from_str(&base_manifest_json)
+        .map_err(|error| Error::new(Status::InvalidArg, error.to_string()))?;
+    let graphs = serde_json::from_str::<Vec<mastercss_project::ProjectEntryGraphIr>>(&graphs_json)
+        .map_err(|error| Error::new(Status::InvalidArg, error.to_string()))?;
+    let result = mastercss_project::load_project_manifest_graphs_with_root(
+        Path::new(&project_dir),
+        graphs,
+        base_manifest,
+    )
+    .map_err(|error| Error::new(Status::GenericFailure, error.to_string()))?;
+    to_json(&result)
+}
+
+#[napi]
 pub fn inspect_css_json(source: String) -> Result<String> {
     to_json(&mastercss_compiler::inspect_css(&source))
 }
@@ -124,16 +252,6 @@ pub fn create_inspection_report_json(input_json: String) -> Result<String> {
             serde_json::to_string(&error.diagnostic()).unwrap_or_else(|_| error.to_string()),
         )
     })
-}
-
-#[napi]
-pub fn analyze_language_json(
-    source: String,
-    contexts_json: String,
-    semantic_tokens_json: String,
-) -> Result<String> {
-    mastercss_language::analyze_language_json(&source, &contexts_json, &semantic_tokens_json)
-        .map_err(|error| Error::new(Status::InvalidArg, error.to_string()))
 }
 
 #[napi(js_name = "LanguageSession")]
@@ -157,6 +275,32 @@ impl NodeLanguageSession {
             &self
                 .inner
                 .native_declaration_candidates(class_names)
+                .map_err(|error| Error::new(Status::InvalidArg, error.to_string()))?,
+        )
+    }
+
+    #[napi]
+    pub fn analyze_document(&self, request_json: String) -> Result<String> {
+        let request =
+            serde_json::from_str::<mastercss_language::AnalyzeDocumentRequestIr>(&request_json)
+                .map_err(|error| Error::new(Status::InvalidArg, error.to_string()))?;
+        to_json(
+            &self
+                .inner
+                .analyze_document(&request)
+                .map_err(|error| Error::new(Status::InvalidArg, error.to_string()))?,
+        )
+    }
+
+    #[napi]
+    pub fn format_directives(&self, request_json: String) -> Result<String> {
+        let request =
+            serde_json::from_str::<mastercss_language::FormatDirectivesRequestIr>(&request_json)
+                .map_err(|error| Error::new(Status::InvalidArg, error.to_string()))?;
+        to_json(
+            &self
+                .inner
+                .format_directives(&request)
                 .map_err(|error| Error::new(Status::InvalidArg, error.to_string()))?,
         )
     }
@@ -264,6 +408,37 @@ pub fn compile_theme_css_json(source: String, options_json: Option<String>) -> R
 }
 
 #[napi]
+pub fn analyze_css_dependencies_json(source: String) -> Result<String> {
+    to_json(&mastercss_compiler::analyze_css_dependencies(&source))
+}
+
+#[napi]
+pub fn analyze_standalone_directives_json(source: String) -> Result<String> {
+    to_json(&mastercss_compiler::analyze_standalone_directives(&source))
+}
+
+#[napi]
+pub fn merge_css_extraction_policies_json(policies_json: String) -> Result<String> {
+    let policies =
+        serde_json::from_str::<Vec<mastercss_schema::CssDirectiveExtractionPolicy>>(&policies_json)
+            .map_err(|error| Error::new(Status::InvalidArg, error.to_string()))?;
+    to_json(&mastercss_compiler::merge_extraction_policies(&policies))
+}
+
+#[napi]
+pub fn filter_css_extraction_candidates(
+    candidates: Vec<String>,
+    blocklist_json: String,
+) -> Result<Vec<String>> {
+    let blocklist =
+        serde_json::from_str::<Vec<mastercss_schema::CssDirectiveBlocklistEntry>>(&blocklist_json)
+            .map_err(|error| Error::new(Status::InvalidArg, error.to_string()))?;
+    Ok(mastercss_schema::filter_css_extraction_candidates(
+        candidates, &blocklist,
+    ))
+}
+
+#[napi]
 pub fn compile_manifest_input_json(
     input_json: String,
     options_json: Option<String>,
@@ -278,6 +453,26 @@ pub fn compile_manifest_input_json(
         .unwrap_or_default();
     to_json(
         &mastercss_compiler::compile_manifest_input(&input, &options)
+            .map_err(compiler_to_napi_error)?,
+    )
+}
+
+#[napi]
+pub fn lower_css_directives_json(
+    request_json: String,
+    options_json: Option<String>,
+) -> Result<String> {
+    let request =
+        serde_json::from_str::<mastercss_compiler::LowerCssDirectivesRequest>(&request_json)
+            .map_err(|error| Error::new(Status::InvalidArg, error.to_string()))?;
+    let options = options_json
+        .as_deref()
+        .map(serde_json::from_str::<mastercss_compiler::LowerCssDirectivesOptions>)
+        .transpose()
+        .map_err(|error| Error::new(Status::InvalidArg, error.to_string()))?
+        .unwrap_or_default();
+    to_json(
+        &mastercss_compiler::lower_css_directives_request(&request, &options)
             .map_err(compiler_to_napi_error)?,
     )
 }
@@ -362,6 +557,22 @@ impl NodeLintSession {
     }
 
     #[napi]
+    pub fn resolve_validation(
+        &self,
+        batch_json: String,
+        rule_errors_json: String,
+    ) -> Result<String> {
+        let batch = serde_json::from_str::<mastercss_schema::ValidatorBatchIr>(&batch_json)
+            .map_err(|error| invalid_lint_request(error.to_string()))?;
+        let rule_errors = serde_json::from_str::<Vec<Vec<Vec<String>>>>(&rule_errors_json)
+            .map_err(|error| invalid_lint_request(error.to_string()))?;
+        to_json(&mastercss_lint::classify_host_rule_validation(
+            &batch,
+            &rule_errors,
+        ))
+    }
+
+    #[napi]
     pub fn analyze(
         &mut self,
         class_names: Vec<String>,
@@ -415,11 +626,17 @@ impl NodeLintSession {
                 "Unsupported lint class-list request version",
             ));
         }
-        let raw_value_policy = request.raw_value_policy.map(|policy| RawValuePolicy {
-            allow_raw_values: policy.allow_raw_values,
-            allow_properties: policy.allow_properties,
-            approved_segments: policy.approved_segments,
-        });
+        let raw_value_policy = request
+            .raw_value_policy
+            .map(|policy| {
+                RawValuePolicy::new(
+                    policy.allow_raw_values,
+                    policy.allow_properties,
+                    policy.allowed_patterns,
+                )
+            })
+            .transpose()
+            .map_err(invalid_lint_request)?;
         to_json(
             &self
                 .inner
@@ -435,6 +652,8 @@ impl NodeLintSession {
                         validation_errors: &request.validation_errors,
                         disallow_unknown_class: request.disallow_unknown_class,
                         raw_value_policy: raw_value_policy.as_ref(),
+                        canonical_options: request.canonical_options.as_ref(),
+                        compose_directive: request.compose_directive,
                     },
                 )
                 .map_err(to_napi_error)?,
@@ -659,6 +878,11 @@ impl NodeScannerSession {
     }
 
     #[napi]
+    pub fn extract_candidates(&self, source: String, content: String) -> Vec<String> {
+        mastercss_scanner::extract_source_candidates(&source, &content)
+    }
+
+    #[napi]
     pub fn native_declaration_candidates(&self, candidates: Vec<String>) -> Result<String> {
         to_json(
             &self
@@ -674,15 +898,48 @@ impl NodeScannerSession {
     }
 
     #[napi]
+    pub fn filter_candidates(
+        &self,
+        candidates: Vec<String>,
+        blocklist_json: String,
+    ) -> Result<Vec<String>> {
+        let blocklist = serde_json::from_str::<Vec<mastercss_schema::CssDirectiveBlocklistEntry>>(
+            &blocklist_json,
+        )
+        .map_err(|error| Error::new(Status::InvalidArg, error.to_string()))?;
+        Ok(mastercss_scanner::filter_blocklisted_candidates(
+            candidates, &blocklist,
+        ))
+    }
+
+    #[napi]
+    pub fn invalid_generated_classes(
+        &self,
+        batch_json: String,
+        rule_support: Vec<Vec<bool>>,
+    ) -> Result<Vec<String>> {
+        let batch = serde_json::from_str::<mastercss_schema::ValidatorBatchIr>(&batch_json)
+            .map_err(|error| Error::new(Status::InvalidArg, error.to_string()))?;
+        Ok(mastercss_scanner::invalid_generated_classes(
+            &batch,
+            &rule_support,
+        ))
+    }
+
+    #[napi]
     pub fn scan_candidates(
         &mut self,
         source: String,
         content: String,
         candidates: Vec<String>,
-        excluded_classes: Vec<String>,
+        blocklist_json: String,
         native_support: Vec<bool>,
         invalid_generated_classes: Vec<String>,
     ) -> Result<String> {
+        let blocklist = serde_json::from_str::<Vec<mastercss_schema::CssDirectiveBlocklistEntry>>(
+            &blocklist_json,
+        )
+        .map_err(|error| Error::new(Status::InvalidArg, error.to_string()))?;
         to_json(
             &self
                 .inner
@@ -690,7 +947,7 @@ impl NodeScannerSession {
                     &source,
                     &content,
                     candidates,
-                    &excluded_classes.into_iter().collect::<HashSet<_>>(),
+                    &blocklist,
                     &native_support,
                     &invalid_generated_classes
                         .into_iter()

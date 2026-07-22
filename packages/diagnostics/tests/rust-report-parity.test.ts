@@ -1,9 +1,9 @@
 import { expect, test } from 'vitest'
 import { loadRustInspectionReportCreator } from '../src/rust-report'
-import createInspectionReportOracle, { type InspectionReportOracleInput } from './inspection-report-oracle'
+import type { MasterCSSDiagnosticsReportInputIR, MasterCSSInspectionReportIR } from '@master/css-schema'
 
-test('keeps the Rust inspection report byte-shape equivalent to the TypeScript oracle', async () => {
-  const input: InspectionReportOracleInput = {
+test('lets Rust own inspection classification, counts, sorting, and report shape', async () => {
+  const input: MasterCSSDiagnosticsReportInputIR = {
     version: 1,
     cwd: '/project',
     patterns: ['src/**/*.html'],
@@ -26,10 +26,7 @@ test('keeps the Rust inspection report byte-shape equivalent to the TypeScript o
       invalid: ['bad'],
       usedNative: ['native'],
       safelist: ['safe'],
-      blocklist: ['/^blocked$/'],
-      blockedClasses: ['blocked'],
-      safelistCount: 1,
-      blocklistCount: 1,
+      blocklist: [{ source: '^blocked$', flags: '' }],
       resetDependencies: ['/project/reset.css', '/project/reset.css']
     },
     stylesheets: {
@@ -56,7 +53,44 @@ test('keeps the Rust inspection report byte-shape equivalent to the TypeScript o
     }
   }
   const createReport = await loadRustInspectionReportCreator()
-  expect(await createReport(input)).toEqual(createInspectionReportOracle(input))
+  const report = await createReport<MasterCSSInspectionReportIR>(input)
+  expect(report).toMatchObject({
+    scanner: {
+      counts: {
+        latent: 2,
+        valid: 1,
+        invalid: 1,
+        usedNative: 1,
+        safelist: 1,
+        blocklist: 1
+      },
+      classes: {
+        latent: ['bad', 'block'],
+        valid: ['block'],
+        invalid: ['bad'],
+        usedNative: ['native'],
+        safelist: ['safe'],
+        blocklist: ['/^blocked$/']
+      },
+      resetDependencies: ['/project/reset.css']
+    },
+    missingCSS: {
+      missing: expect.arrayContaining([
+        { className: 'bad', status: 'missing', reason: 'invalid' },
+        { className: 'blocked', status: 'missing', reason: 'blocklisted' },
+        { className: 'missing', status: 'missing', reason: 'not-detected' }
+      ])
+    },
+    css: {
+      bytes: 23,
+      emittedGlobals: { variables: 1, animations: 1 }
+    },
+    summary: {
+      files: 1,
+      stylesheets: 1,
+      invalidClasses: 1
+    }
+  })
 })
 
 test('uses tooling Wasm when native addons are disabled', async () => {

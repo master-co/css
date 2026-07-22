@@ -1,5 +1,6 @@
 import { test, expect, it } from 'vitest'
-import { extractClassCandidates } from '@master/css-source'
+import { createSourceExtractorSync } from '@master/css-source/node'
+const { extractClassCandidates } = createSourceExtractorSync()
 
 it('extract latent classes from js raw', () => {
     const content = `
@@ -77,7 +78,6 @@ test('=', () => {
     content:"="
     `)).toEqual([
         '{components[0]}',
-        '{data_0}>',
         'content:\'=\'',
         'content:"="'
     ])
@@ -142,7 +142,7 @@ test('import', () => {
         require('fs')
         await import('file:///')
     `))
-        .toEqual(['await'])
+        .toEqual([])
 })
 
 test('style tag', () => {

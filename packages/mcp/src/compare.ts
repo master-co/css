@@ -1,5 +1,5 @@
 import { createRequire } from 'node:module'
-import { getClassPositions, languageSettings, type RustLanguageAnalyzer } from '@master/css-language'
+import type { LanguageSession } from '@master/css-language'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import { createServerCSS, parseHTML } from '@master/css-server'
 import type MasterCSSMCPContext from './context'
@@ -32,12 +32,15 @@ function splitClassList(value: string | undefined) {
 function extractContentClasses(
   content: string | undefined,
   filePath: string,
-  analyzer: RustLanguageAnalyzer
+  session: LanguageSession
 ) {
   if (content === undefined) return []
   const document = createMCPTextDocument(filePath, content)
   return unique(
-    getClassPositions(document, languageSettings, { analyzer }).map((position) => position.token)
+    session.analyzeDocument({
+      source: content,
+      languageId: document.languageId
+    }).classPositions.map((position) => position.token)
   )
 }
 
@@ -45,14 +48,14 @@ function resolveClasses(
   options: CompareCSSOptions,
   side: 'before' | 'after',
   filePath: string,
-  analyzer: RustLanguageAnalyzer
+  session: LanguageSession
 ) {
   const classList = side === 'before' ? options.beforeClassList : options.afterClassList
   const html = side === 'before' ? options.beforeHtml : options.afterHtml
   const content = side === 'before' ? options.beforeContent : options.afterContent
   if (classList !== undefined) return splitClassList(classList)
   if (html !== undefined) return unique(parseHTML(html).classes)
-  return extractContentClasses(content, filePath, analyzer)
+  return extractContentClasses(content, filePath, session)
 }
 
 function renderClasses(manifest: MasterCSSManifest, classes: string[]) {

@@ -807,15 +807,38 @@ fn value_placeholder_parts(value: &str) -> Result<Value, CompilerError> {
             index += character.len_utf8();
             continue;
         }
-        if !value[index..].starts_with("--value()") {
+        if value[..index].chars().next_back().is_some_and(|character| {
+            character.is_ascii_alphanumeric() || matches!(character, '-' | '_')
+        }) {
+            return Err(manifest_error(
+                "--value() must be a standalone CSS value placeholder",
+            ));
+        }
+        let open = index + "--value".len();
+        if value.as_bytes().get(open) != Some(&b'(') {
             return Err(manifest_error("--value() must be called as --value()"));
+        }
+        let Some(close_offset) = value[open + 1..].find(')') else {
+            return Err(manifest_error("--value() must be called as --value()"));
+        };
+        let close = open + 1 + close_offset;
+        if !value[open + 1..close].trim().is_empty() {
+            return Err(manifest_error("--value() does not accept arguments"));
+        }
+        let end = close + 1;
+        if value[end..].chars().next().is_some_and(|character| {
+            character.is_ascii_alphanumeric() || matches!(character, '-' | '_')
+        }) {
+            return Err(manifest_error(
+                "--value() must be a standalone CSS value placeholder",
+            ));
         }
         if index > last_index {
             parts.push(Value::String(value[last_index..index].into()));
         }
         parts.push(Value::Null);
         matched = true;
-        index += "--value()".len();
+        index = end;
         last_index = index;
     }
     if !matched {

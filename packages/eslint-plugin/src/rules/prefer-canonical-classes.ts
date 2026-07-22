@@ -3,11 +3,10 @@ import resolveContext from '../utils/resolve-context'
 import resolveComposeDirectiveClassNodes from '../utils/resolve-compose-directive-class-nodes'
 import createRule from '../create-rule'
 import {
-  createCanonicalClassesReport,
-  createCanonicalComposeDirectiveReport,
   defaultCanonicalClassNameOptions,
   type CanonicalClassNameOptions
 } from '@master/css-lint'
+import { fromRustLintDiagnostics } from '@master/css-lint/node'
 import type { ResolvedClassNode } from '../utils/resolve-class-node'
 import type { ResolvedComposeDirectiveClassNode } from '../utils/resolve-compose-directive-class-nodes'
 import reportLintDiagnostics from '../utils/report-lint-diagnostics'
@@ -42,7 +41,7 @@ export default createRule({
   },
   defaultOptions: [defaultCanonicalClassNameOptions],
   create(context) {
-    const { settings, css, rustLint } = resolveContext(context)
+    const { settings, rustLint } = resolveContext(context)
     const options = {
       ...defaultCanonicalClassNameOptions,
       ...((context.options[0] || {}) as Partial<CanonicalClassNameOptions>)
@@ -50,7 +49,6 @@ export default createRule({
     if (shouldUseSourceVisitors(context)) {
       return defineSourceVisitors({
         context,
-        css,
         rustLint,
         ruleId: 'prefer-canonical-classes',
         ruleOptions: options
@@ -62,7 +60,11 @@ export default createRule({
         context,
         node,
         { raw, start, end, unescape, classNodes, classValues, nodes: [], value: raw },
-        createCanonicalClassesReport(raw, css, { ...options, unescape }, rustLint).diagnostics
+        fromRustLintDiagnostics(
+          rustLint.analyzeClassList(raw, classValues, {
+            canonicalOptions: options
+          }).diagnostics.filter(({ ruleId }) => ruleId === 'prefer-canonical-classes')
+        )
       )
     }
 
@@ -71,7 +73,12 @@ export default createRule({
         context,
         node,
         classNode,
-        createCanonicalComposeDirectiveReport(classNode.raw, css, options, rustLint).diagnostics,
+        fromRustLintDiagnostics(
+          rustLint.analyzeClassList(classNode.raw, classNode.classValues, {
+            canonicalOptions: options,
+            composeDirective: true
+          }).diagnostics.filter(({ ruleId }) => ruleId === 'prefer-canonical-classes')
+        ),
         {
           getFix(_, fix) {
             if (fix.scope !== 'directive') {
@@ -93,7 +100,7 @@ export default createRule({
       )
     }
 
-    const visitors = defineVisitors({ context, settings }, reportCanonicalClassList)
+    const visitors = defineVisitors({ context, settings, rustLint }, reportCanonicalClassList)
     const visitProgram = visitors.Program
 
     return {
@@ -102,7 +109,7 @@ export default createRule({
         if (typeof visitProgram === 'function') {
           visitProgram(node)
         }
-        for (const classNode of resolveComposeDirectiveClassNodes(context)) {
+        for (const classNode of resolveComposeDirectiveClassNodes(context, rustLint)) {
           reportCanonicalComposeDirective(node, classNode)
         }
       }

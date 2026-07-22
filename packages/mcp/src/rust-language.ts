@@ -1,24 +1,16 @@
 import {
-  createRustLanguageAnalyzer,
-  type MasterCSSLanguageInspectionIR,
-  type RustLanguageAnalyzer
-} from '@master/css-language/node'
+  type LanguageSession,
+  type MasterCSSLanguageInspectionIR
+} from '@master/css-language'
+import { createLanguageSessionSync } from '@master/css-language/node'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
 
 export async function createMCPRustLanguageSession(manifest: MasterCSSManifest) {
-  const analyzer = await createRustLanguageAnalyzer()
-  const session = analyzer.createSession?.(manifest)
-  if (!session?.inspectClassName) {
-    analyzer.dispose?.()
-    throw new Error('The Rust language backend does not provide class inspection sessions.')
-  }
-  return session as RustLanguageAnalyzer & {
-    inspectClassName(className: string, mode?: string): MasterCSSLanguageInspectionIR
-  }
+  return createLanguageSessionSync(manifest)
 }
 
 export function compactRustClassInspection(
-  session: Awaited<ReturnType<typeof createMCPRustLanguageSession>>,
+  session: LanguageSession,
   className: string,
   mode?: string,
   includeRules = false,

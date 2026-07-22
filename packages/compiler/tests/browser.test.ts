@@ -1,14 +1,10 @@
 import { expect, test } from 'vitest'
-import { MasterCSS } from '@master/css-engine'
 import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
 import { compileCSSManifest } from '../src/browser'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
+import { createTestCSS } from './helpers/rust-engine'
 
 const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
-
-function createTestCSS(manifest: MasterCSSManifest) {
-  return MasterCSS.create({ manifest })
-}
 
 test.concurrent('browser compileCSSManifest lowers directives with a base manifest', async () => {
   const result = await compileCSSManifest(`
@@ -30,6 +26,7 @@ test.concurrent('browser compileCSSManifest lowers directives with a base manife
   expect(css.text).toContain('.btn')
   expect(css.text).toContain('display:flex')
   expect(css.text).toContain('color:red')
+  css.dispose()
 })
 
 test.concurrent('browser compileCSSManifest rejects @reference directives', async () => {

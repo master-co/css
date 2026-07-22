@@ -11,7 +11,7 @@ import {
 } from '@master/css-stylesheet'
 import { loadProjectManifest } from '@master/css-project/manifest'
 import { findCSSManifestEntryFiles } from '@master/css-project/entries'
-import { hasMasterCSSImport } from '@master/css-lexer'
+import { inspectCSS } from '@master/css-compiler'
 
 interface LoaderContext {
   resourcePath: string
@@ -55,7 +55,7 @@ async function transformStyleSource(resourcePath: string, source: string, projec
 
   const resolvedSource = resolveMasterStyleSource(resourcePath, source, projectDir)
   if (resolvedSource) {
-    const renderedSource = hasMasterCSSImport(source)
+    const renderedSource = inspectCSS(source).hasMasterCSSImport
       ? resolvedSource
       : resolveMasterStyleSource(resourcePath, `@import "@master/css";\n${source}`, projectDir) || resolvedSource
     dependencies.push(...renderedSource.dependencies)

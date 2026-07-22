@@ -201,14 +201,14 @@ test('extension bundle reuses one Master CSS output channel for the language cli
   expect(languageClientConstruction).toContain('outputChannel:')
 })
 
-test('server bundle keeps expected native runtime imports external', () => {
+test('server bundle does not retain removed TypeScript semantic backends', () => {
   const source = readFileSync(serverPath, 'utf8')
   const imports = [...source.matchAll(/\bfrom\s*["']([^"']+)["']/g)].map((match) => match[1])
-  const nativeRuntimeImports = imports.filter((specifier) =>
+  const legacySemanticImports = imports.filter((specifier) =>
     /^(?:lightningcss(?:-.+)?|oxc-(?:parser|resolver|transform)|@oxc-(?:parser|resolver|transform)\/)/.test(specifier)
   )
 
-  expect(nativeRuntimeImports.sort()).toEqual(['lightningcss', 'oxc-parser'])
+  expect(legacySemanticImports).toEqual([])
 })
 
 test('staged extension includes runtime packages for the current target', async () => {

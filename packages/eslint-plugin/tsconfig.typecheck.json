@@ -16,7 +16,7 @@
       "path": "../facade/tsconfig.typecheck.json"
     },
     {
-      "path": "../lexer/tsconfig.typecheck.json"
+      "path": "../compiler/tsconfig.typecheck.json"
     },
     {
       "path": "../lint/tsconfig.typecheck.json"

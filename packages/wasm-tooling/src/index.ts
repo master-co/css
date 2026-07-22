@@ -1,3 +1,5 @@
+import { assertMasterCSSBindingInfo } from '@master/css-schema'
+
 interface GeneratedToolingWasmModule {
   default(input: {
     module_or_path: RequestInfo | URL | Response | BufferSource | WebAssembly.Module
@@ -8,8 +10,9 @@ interface GeneratedToolingWasmModule {
   extractHTMLClasses(source: string, content: string): string[]
   extractAstroClasses(source: string, content: string): string[]
   createInspectionReport(input: unknown): unknown
-  analyzeLanguage(source: string, contexts: unknown[], semanticTokens: unknown[]): unknown
   ToolingLanguageSession: new (manifestJSON: string) => {
+    analyzeDocument(request: unknown): unknown
+    formatDirectives(request: unknown): unknown
     nativeDeclarationCandidates(classNames: string[]): unknown
     classifyClassNames(classNames: string[], nativeSupport: boolean[]): unknown
     inspectClassName(className: string, nativeSupport: boolean[], mode?: string): unknown
@@ -19,15 +22,28 @@ interface GeneratedToolingWasmModule {
     dispose(): void
     free(): void
   }
+  ToolingLexerSession: new () => {
+    analyze(request: unknown): unknown
+    dispose(): void
+    free(): void
+  }
+  ToolingSourceSession: new () => {
+    extract(request: unknown): unknown
+    dispose(): void
+    free(): void
+  }
   ToolingScannerSession: new (manifestJSON: string) => {
     scan(source: string, content: string): unknown
+    extractCandidates(source: string, content: string): string[]
     nativeDeclarationCandidates(candidates: string[]): unknown
     collectCandidates(candidates: string[]): string[]
+    filterCandidates(candidates: string[], blocklist: unknown): string[]
+    invalidGeneratedClasses(batch: unknown, ruleSupport: boolean[][]): string[]
     scanCandidates(
       source: string,
       content: string,
       candidates: string[],
-      excludedClasses: string[],
+      blocklist: unknown,
       nativeSupport: boolean[],
       invalidGeneratedClasses: string[]
     ): unknown
@@ -46,6 +62,7 @@ interface GeneratedToolingWasmModule {
   }
   ToolingLintSession: new (manifestJSON: string) => {
     nativeDeclarationCandidates(classNames: string[]): unknown
+    resolveValidation(batch: unknown, ruleErrors: string[][][]): unknown
     canonicalClassNames(classNames: string[], nativeSupport: boolean[] | undefined, options: unknown): unknown
     canonicalClassGroups(classNames: string[], nativeSupport: boolean[] | undefined, options: unknown): unknown
     canonicalComposeDirective(classNames: string[], nativeSupport: boolean[] | undefined, options: unknown): unknown
@@ -82,10 +99,18 @@ async function importGeneratedModule(): Promise<GeneratedToolingWasmModule> {
 export async function initToolingWasm(options: InitToolingWasmOptions = {}) {
   if (options.module) {
     await options.module.default({ module_or_path: options.input || defaultWasmURL })
+    assertMasterCSSBindingInfo(options.module.bindingInfo(), {
+      surface: 'tooling',
+      features: ['diagnostics', 'language', 'lint', 'scanner', 'source', 'validator']
+    })
     return options.module
   }
   modulePromise ??= importGeneratedModule().then(async (module) => {
     await module.default({ module_or_path: options.input || defaultWasmURL })
+    assertMasterCSSBindingInfo(module.bindingInfo(), {
+      surface: 'tooling',
+      features: ['diagnostics', 'language', 'lint', 'scanner', 'source', 'validator']
+    })
     return module
   })
   return await modulePromise
@@ -99,16 +124,20 @@ export async function createToolingScannerSession(
   const session = new module.ToolingScannerSession(manifestJSON)
   return {
     scan: (source: string, content: string) => session.scan(source, content),
+    extractCandidates: (source: string, content: string) => session.extractCandidates(source, content),
     nativeDeclarationCandidates: (candidates: string[]) => session.nativeDeclarationCandidates(candidates),
     collectCandidates: (candidates: string[]) => session.collectCandidates(candidates),
+    filterCandidates: (candidates: string[], blocklist: unknown) => session.filterCandidates(candidates, blocklist),
+    invalidGeneratedClasses: (batch: unknown, ruleSupport: boolean[][]) =>
+      session.invalidGeneratedClasses(batch, ruleSupport),
     scanCandidates: (
       source: string,
       content: string,
       candidates: string[],
-      excludedClasses: string[],
+      blocklist: unknown,
       nativeSupport: boolean[],
       invalidGeneratedClasses: string[]
-    ) => session.scanCandidates(source, content, candidates, excludedClasses, nativeSupport, invalidGeneratedClasses),
+    ) => session.scanCandidates(source, content, candidates, blocklist, nativeSupport, invalidGeneratedClasses),
     ensureClasses: (classNames: string[]) => session.ensureClasses(classNames),
     registerNativeClasses: (classNames: string[]) => session.registerNativeClasses(classNames),
     reset: () => session.reset(),
@@ -144,16 +173,6 @@ export async function createToolingInspectionReport(
   return module.createInspectionReport(input)
 }
 
-export async function analyzeToolingLanguage(
-  source: string,
-  contexts: unknown[],
-  semanticTokens: unknown[],
-  options: InitToolingWasmOptions = {}
-) {
-  const module = await initToolingWasm(options)
-  return module.analyzeLanguage(source, contexts, semanticTokens)
-}
-
 export async function createToolingLanguageSession(
   manifestJSON: string,
   options: InitToolingWasmOptions = {}
@@ -161,6 +180,8 @@ export async function createToolingLanguageSession(
   const module = await initToolingWasm(options)
   const session = new module.ToolingLanguageSession(manifestJSON)
   return {
+    analyzeDocument: (request: unknown) => session.analyzeDocument(request),
+    formatDirectives: (request: unknown) => session.formatDirectives(request),
     nativeDeclarationCandidates: (classNames: string[]) => session.nativeDeclarationCandidates(classNames),
     classifyClassNames: (classNames: string[], nativeSupport?: boolean[]) =>
       session.classifyClassNames(classNames, nativeSupport || []),
@@ -184,6 +205,7 @@ export async function createToolingLintSession(
   const session = new module.ToolingLintSession(manifestJSON)
   return {
     nativeDeclarationCandidates: (classNames: string[]) => session.nativeDeclarationCandidates(classNames),
+    resolveValidation: (batch: unknown, ruleErrors: string[][][]) => session.resolveValidation(batch, ruleErrors),
     canonicalClassNames: (
       classNames: string[],
       nativeSupport: boolean[] | undefined,

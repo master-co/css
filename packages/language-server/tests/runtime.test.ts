@@ -9,18 +9,18 @@ import createDocument from '../src/utils/create-document'
 import { withFixture } from './setup'
 
 withFixture('monorepo', async (context) => {
-  test('uses a resolved workspace Master CSS runtime when available', async () => {
+  test('uses a resolved workspace Master CSS manifest when available', async () => {
     const textDocument = context.createDocument('<div class=""></div>')
 
     await context.server.onDidOpen({ document: textDocument })
 
-    expect(context.rootWorkspace?.languageRuntimeSource).toBe('workspace')
-    expect(context.rootWorkspace?.languageRuntimeResolution?.css?.entry).toBeTruthy()
+    expect(context.rootWorkspace?.manifestSource).toBe('workspace')
+    expect(context.rootWorkspace?.manifestResolution?.presetManifest?.entry).toBeTruthy()
     await context.server.onDidClose({ document: textDocument })
   })
 })
 
-test('falls back to the bundled runtime when workspace packages are missing', async () => {
+test('uses the bundled manifest when workspace packages are missing', async () => {
   const cwd = mkdtempSync(join(tmpdir(), 'master-css-language-server-runtime-'))
   try {
     writeFileSync(join(cwd, 'package.json'), JSON.stringify({ private: true }))
@@ -58,8 +58,8 @@ test('falls back to the bundled runtime when workspace packages are missing', as
 
       await server.onDidOpen({ document: textDocument })
 
-      expect(workspace?.languageRuntimeSource).toBe('bundled')
-      expect(workspace?.languageService?.runtime).toBeDefined()
+      expect(workspace?.manifestSource).toBe('bundled')
+      expect(workspace?.languageService?.session.backend).toMatch(/native|wasm/)
       await server.onDidClose({ document: textDocument })
     } finally {
       server.stop()

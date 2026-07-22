@@ -5,6 +5,7 @@ import os from 'node:os'
 import { resolve } from 'path'
 import { pathToFileURL } from 'url'
 import { describe, expect, it } from 'vitest'
+import { MASTER_CSS_BINDING_ABI_VERSION } from '@master/css-native'
 import pkg from '../package.json' with { type: 'json' }
 
 interface TestDiagnostic {
@@ -47,7 +48,7 @@ describe('root command', () => {
     expect(report).toMatchObject({
       version: 1,
       binary: {
-        bindingAbiVersion: 1,
+        bindingAbiVersion: MASTER_CSS_BINDING_ABI_VERSION,
         manifestVersion: 1,
         hydrationManifestVersion: 1
       },
@@ -59,7 +60,7 @@ describe('root command', () => {
     const report = JSON.parse(runCLI(['--self-test']))
     expect(report).toMatchObject({
       version: 1,
-      binary: { bindingAbiVersion: 1 },
+      binary: { bindingAbiVersion: MASTER_CSS_BINDING_ABI_VERSION },
       css: '@layer utilities{.block{display:block}}'
     })
   })

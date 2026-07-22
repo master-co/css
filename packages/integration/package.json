@@ -82,7 +82,6 @@
     "provenance": true
   },
   "dependencies": {
-    "@master/css-engine": "workspace:^",
     "@master/css-schema": "workspace:^"
   }
 }

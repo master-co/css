@@ -1,5 +1,6 @@
 import { test, expect, it } from 'vitest'
-import { extractClassCandidates } from '@master/css-source'
+import { createSourceExtractorSync } from '@master/css-source/node'
+const { extractClassCandidates } = createSourceExtractorSync()
 
 it('extract latent classes from html', () => {
   const content = `
@@ -46,7 +47,6 @@ it('extract latent classes from html', () => {
   expect(
     extractClassCandidates(content))
     .toEqual([
-      'html>',
       'en',
       'UTF-8',
       'icon',

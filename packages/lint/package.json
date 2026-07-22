@@ -40,9 +40,9 @@
       "default": "./dist/index.js"
     },
     "./node": {
-      "types": "./dist/rust-session.d.ts",
-      "import": "./dist/rust-session.js",
-      "default": "./dist/rust-session.js"
+      "types": "./dist/node.d.ts",
+      "import": "./dist/node.js",
+      "default": "./dist/node.js"
     }
   },
   "files": [
@@ -53,9 +53,6 @@
     "provenance": true
   },
   "dependencies": {
-    "@master/css-engine": "workspace:^",
-    "@master/css-language": "workspace:^",
-    "@master/css-lexer": "workspace:^",
     "@master/css-native": "workspace:^",
     "@master/css-schema": "workspace:^",
     "@master/css-validator": "workspace:^",

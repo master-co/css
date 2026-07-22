@@ -25,9 +25,6 @@
       "path": "../integration/tsconfig.typecheck.json"
     },
     {
-      "path": "../lexer/tsconfig.typecheck.json"
-    },
-    {
       "path": "../preset/tsconfig.typecheck.json"
     },
     {

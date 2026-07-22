@@ -22,6 +22,7 @@ function makeContext(command: 'serve' | 'build', css = '.fg\\:red{color:red}', i
       validClasses: new Set(),
       nativeClassNames: new Set(),
       usedNativeClasses: new Set(),
+      registerNativeClasses: vi.fn(),
       emit: () => undefined,
     },
   } as any

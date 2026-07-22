@@ -3,19 +3,22 @@ import { createRequire } from 'node:module'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { spawnSync } from 'node:child_process'
+import {
+  assertMasterCSSBindingInfo,
+  MASTER_CSS_BINDING_ABI_VERSION,
+  MASTER_CSS_HYDRATION_MANIFEST_VERSION,
+  MASTER_CSS_MANIFEST_VERSION,
+  type MasterCSSBindingInfo
+} from '@master/css-schema'
 import { MASTER_CSS_PACKAGE_VERSION } from './version'
 
-export const MASTER_CSS_BINDING_ABI_VERSION = 1
-export const MASTER_CSS_MANIFEST_VERSION = 1
-export const MASTER_CSS_HYDRATION_MANIFEST_VERSION = 1
-
-export interface NativeBindingInfo {
-  bindingAbiVersion: number
-  packageVersion: string
-  manifestVersion: number
-  hydrationManifestVersion: number
-  target: string
+export {
+  MASTER_CSS_BINDING_ABI_VERSION,
+  MASTER_CSS_HYDRATION_MANIFEST_VERSION,
+  MASTER_CSS_MANIFEST_VERSION
 }
+
+export type NativeBindingInfo = MasterCSSBindingInfo
 
 export interface NativeEngineSession {
   manifestJson(): string
@@ -31,13 +34,16 @@ export interface NativeEngineSession {
 
 export interface NativeScannerSession {
   scan(source: string, content: string): string
+  extractCandidates(source: string, content: string): string[]
   nativeDeclarationCandidates(candidates: string[]): string
   collectCandidates(candidates: string[]): string[]
+  filterCandidates(candidates: string[], blocklistJSON: string): string[]
+  invalidGeneratedClasses(batchJSON: string, ruleSupport: boolean[][]): string[]
   scanCandidates(
     source: string,
     content: string,
     candidates: string[],
-    excludedClasses: string[],
+    blocklistJSON: string,
     nativeSupport: boolean[],
     invalidGeneratedClasses: string[]
   ): string
@@ -66,6 +72,7 @@ export interface NativeValidatorSession {
 
 export interface NativeLintSession {
   nativeDeclarationCandidates(classNames: string[]): string
+  resolveValidation(batchJSON: string, ruleErrorsJSON: string): string
   canonicalClassNames(classNames: string[], nativeSupport: boolean[] | undefined, optionsJSON?: string): string
   canonicalClassGroups(classNames: string[], nativeSupport: boolean[] | undefined, optionsJSON?: string): string
   canonicalComposeDirective(classNames: string[], nativeSupport: boolean[] | undefined, optionsJSON?: string): string
@@ -86,6 +93,8 @@ export interface NativeLintSession {
 }
 
 export interface NativeLanguageSession {
+  analyzeDocument(requestJSON: string): string
+  formatDirectives(requestJSON: string): string
   nativeDeclarationCandidates(classNames: string[]): string
   classifyClassNames(classNames: string[], nativeSupport?: boolean[]): string
   inspectClassName(className: string, nativeSupport?: boolean[], mode?: string): string
@@ -95,16 +104,34 @@ export interface NativeLanguageSession {
   dispose(): void
 }
 
+export interface NativeLexerSession {
+  analyze(requestJSON: string): string
+  dispose(): void
+}
+
+export interface NativeSourceSession {
+  extract(requestJSON: string): string
+  dispose(): void
+}
+
 export interface NativeBinding {
   bindingInfoJson(): string
   extractAstroClasses(source: string, content: string): string[]
   extractClassCandidates(content: string): string[]
   extractHtmlClasses(source: string, content: string): string[]
   extractOxcClasses(source: string, content: string): string[]
+  findCssManifestEntries(projectDir: string): string[]
+  loadProjectManifestJson(projectDir: string, baseManifestJSON: string, entries?: string[]): string
+  loadProjectManifestPreparedJson(projectDir: string, baseManifestJSON: string, graphsJSON: string): string
   compileNativeCssJson(source: string, optionsJSON?: string): string
   compileCssDirectivesJson(source: string, optionsJSON?: string): string
   compileThemeCssJson(source: string, optionsJSON?: string): string
+  analyzeCssDependenciesJson(source: string): string
+  analyzeStandaloneDirectivesJson(source: string): string
+  mergeCssExtractionPoliciesJson(policiesJSON: string): string
+  filterCssExtractionCandidates(candidates: string[], blocklistJSON: string): string[]
   compileManifestInputJson(inputJSON: string, optionsJSON?: string): string
+  lowerCssDirectivesJson(requestJSON: string, optionsJSON?: string): string
   normalizeManifestJson(manifestJSON: string): string
   normalizeDefaultManifestJson(manifestJSON: string): string
   compileDefaultPresetManifestJson(requestJSON: string): string
@@ -112,8 +139,9 @@ export interface NativeBinding {
   resolveCssImportGraphJson(requestJSON: string): string
   inspectCssJson(source: string): string
   createInspectionReportJson(inputJSON: string): string
-  analyzeLanguageJson(source: string, contextsJSON: string, semanticTokensJSON: string): string
   LanguageSession: new (manifestJSON: string) => NativeLanguageSession
+  LexerSession: new () => NativeLexerSession
+  SourceSession: new () => NativeSourceSession
   ScannerSession: new (manifestJSON: string) => NativeScannerSession
   RenderSession: new (manifestJSON: string, emittedGlobalsJSON?: string) => NativeRenderSession
   ValidatorSession: new (manifestJSON: string) => NativeValidatorSession
@@ -251,17 +279,19 @@ export function assertNativeCLIInfo(executablePath: string): NativeBindingInfo {
       { cause }
     )
   }
-  const mismatch = info.bindingAbiVersion !== MASTER_CSS_BINDING_ABI_VERSION
-    || info.packageVersion !== MASTER_CSS_PACKAGE_VERSION
-    || info.manifestVersion !== MASTER_CSS_MANIFEST_VERSION
-    || info.hydrationManifestVersion !== MASTER_CSS_HYDRATION_MANIFEST_VERSION
-  if (mismatch) {
+  try {
+    return assertMasterCSSBindingInfo(info, {
+      surface: 'cli',
+      features: ['cli', 'engine', 'project', 'scanner', 'source'],
+      packageVersion: MASTER_CSS_PACKAGE_VERSION
+    })
+  } catch (cause) {
     throw new NativeBindingError(
       'NATIVE_LOAD_FAILED',
-      `Master CSS native executable ABI mismatch: ${executablePath}`
+      `Master CSS native executable ABI mismatch: ${executablePath}`,
+      { cause }
     )
   }
-  return info
 }
 
 function assertBindingInfo(binding: NativeBinding, source: string): NativeBindingInfo {
@@ -275,17 +305,19 @@ function assertBindingInfo(binding: NativeBinding, source: string): NativeBindin
       { cause }
     )
   }
-  const mismatch = info.bindingAbiVersion !== MASTER_CSS_BINDING_ABI_VERSION
-    || info.packageVersion !== MASTER_CSS_PACKAGE_VERSION
-    || info.manifestVersion !== MASTER_CSS_MANIFEST_VERSION
-    || info.hydrationManifestVersion !== MASTER_CSS_HYDRATION_MANIFEST_VERSION
-  if (mismatch) {
+  try {
+    return assertMasterCSSBindingInfo(info, {
+      surface: 'native',
+      features: ['compiler', 'diagnostics', 'engine', 'language', 'lint', 'project', 'render', 'scanner', 'source', 'validator'],
+      packageVersion: MASTER_CSS_PACKAGE_VERSION
+    })
+  } catch (cause) {
     throw new NativeBindingError(
       'NATIVE_LOAD_FAILED',
-      `Master CSS native binding ABI mismatch: ${source}`
+      `Master CSS native binding ABI mismatch: ${source}`,
+      { cause }
     )
   }
-  return info
 }
 
 export interface LoadNativeBindingOptions {

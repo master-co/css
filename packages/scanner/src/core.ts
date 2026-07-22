@@ -2,39 +2,28 @@ import scannerOptions, { type ScannerOptions } from './options'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import { createRequire } from 'node:module'
 import {
-  extractClassCandidates,
-  astroAdapter,
-  htmlAdapter,
   matchesSourceAdapter,
-  oxcAdapter,
   svelteAdapter,
   vueAdapter,
   type SourceAdapter
-} from '@master/css-source'
+} from '@master/css-source/adapters'
 import { Minimatch } from 'minimatch'
 import { createConsola } from 'consola'
 import { defu } from 'defu'
 import { EventEmitter } from 'node:events'
-import { cssEscape } from '@master/css-lexer'
 import path from 'path'
 import {
-  createClassExclusionMatcher,
-  isClassExcludedByMatcher,
-  type ClassExclusionMatcher
-} from './utils/class-exclusion'
-import {
-  createRustScannerSession,
+  createScannerSession,
+  resolveGeneratedRuleSupport,
   resolveNativeSupport,
+  serializeScannerBlocklist,
   type RustScannerSession,
   type RustScannerStateIR
 } from './rust-session'
 
 const builtInAdapters = [
   vueAdapter(),
-  svelteAdapter(),
-  astroAdapter(),
-  htmlAdapter(),
-  oxcAdapter()
+  svelteAdapter()
 ]
 
 const sourceLikeExtensions = new Set([
@@ -148,13 +137,51 @@ export class ScannerCSSView {
   }
 }
 
+export class ScannerStateSetView {
+  readonly [Symbol.toStringTag] = 'ScannerStateSetView'
+
+  constructor(private readonly readValues: () => readonly string[]) { }
+
+  get size() {
+    return this.readValues().length
+  }
+
+  has(value: string) {
+    return this.readValues().includes(value)
+  }
+
+  entries(): SetIterator<[string, string]> {
+    return new Set(this.readValues()).entries()
+  }
+
+  keys(): SetIterator<string> {
+    return this.readValues()[Symbol.iterator]() as SetIterator<string>
+  }
+
+  valuesIterator(): SetIterator<string> {
+    return this.keys()
+  }
+
+  values(): SetIterator<string> {
+    return this.keys()
+  }
+
+  forEach(callbackfn: (value: string, value2: string, set: ScannerStateSetView) => void, thisArg?: unknown) {
+    for (const value of this.values()) callbackfn.call(thisArg, value, value, this)
+  }
+
+  [Symbol.iterator](): SetIterator<string> {
+    return this.keys()
+  }
+}
+
 // eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging
 export default class CSSScanner extends EventEmitter {
-  latentClasses = new Set<string>()
-  validClasses = new Set<string>()
-  invalidClasses = new Set<string>()
-  nativeClassNames = new Set<string>()
-  usedNativeClasses = new Set<string>()
+  readonly latentClasses = new ScannerStateSetView(() => this.state.latentClasses)
+  readonly validClasses = new ScannerStateSetView(() => this.state.validClasses)
+  readonly invalidClasses = new ScannerStateSetView(() => this.state.invalidClasses)
+  readonly nativeClassNames = new ScannerStateSetView(() => this.state.nativeClasses || [])
+  readonly usedNativeClasses = new ScannerStateSetView(() => this.state.usedNativeClasses || [])
   initialized = false
   initializing?: Promise<this>
   resetDependencies: string[] = []
@@ -169,9 +196,6 @@ export default class CSSScanner extends EventEmitter {
   /** Memoized adapter list so per-file extraction does not rebuild it. */
   private sourceAdapters?: SourceAdapter[]
   private sourceAdapterOptions?: ScannerOptions['adapters']
-  /** Pre-split class exclusion matchers for `scan()` hot path. */
-  private classExclusionMatcher?: ClassExclusionMatcher
-  private classExclusionOptions?: ScannerOptions['blocklist']
 
   constructor(
     public customOptions: ScannerOptions = {},
@@ -204,11 +228,8 @@ export default class CSSScanner extends EventEmitter {
     this.sourceMatcherOptions = undefined
     this.sourceAdapters = undefined
     this.sourceAdapterOptions = undefined
-    this.classExclusionMatcher = undefined
-    this.classExclusionOptions = undefined
-    this.nativeClassNames = new Set()
     this.currentManifest = this.options.manifest || defaultManifest
-    this.rustSession = await createRustScannerSession(this.currentManifest)
+    this.rustSession = await createScannerSession(this.currentManifest)
     this.insertSafelist()
     this.emit('init', this.options, this.manifest)
     this.initialized = true
@@ -219,11 +240,6 @@ export default class CSSScanner extends EventEmitter {
     customOptions: ScannerOptions = this.customOptions,
     resetOptions: ScannerResetOptions = {}
   ) {
-    this.latentClasses.clear()
-    this.validClasses.clear()
-    this.invalidClasses.clear()
-    this.nativeClassNames.clear()
-    this.usedNativeClasses.clear()
     this.rustSession?.dispose()
     this.rustSession = undefined
     this.rustState = undefined
@@ -232,8 +248,6 @@ export default class CSSScanner extends EventEmitter {
     this.sourceMatcherOptions = undefined
     this.sourceAdapters = undefined
     this.sourceAdapterOptions = undefined
-    this.classExclusionMatcher = undefined
-    this.classExclusionOptions = undefined
     this.initialized = false
     this.initializing = undefined
     await this.init(customOptions)
@@ -244,11 +258,6 @@ export default class CSSScanner extends EventEmitter {
   }
 
   async destroy() {
-    this.latentClasses.clear()
-    this.validClasses.clear()
-    this.invalidClasses.clear()
-    this.nativeClassNames.clear()
-    this.usedNativeClasses.clear()
     this.rustSession?.dispose()
     this.rustSession = undefined
     this.rustState = undefined
@@ -257,8 +266,6 @@ export default class CSSScanner extends EventEmitter {
     this.sourceMatcherOptions = undefined
     this.sourceAdapters = undefined
     this.sourceAdapterOptions = undefined
-    this.classExclusionMatcher = undefined
-    this.classExclusionOptions = undefined
     this.removeAllListeners()
     this.emit('destroy')
     return this
@@ -287,7 +294,7 @@ export default class CSSScanner extends EventEmitter {
     const adapter = this.resolveSourceAdapter(source)
     const extractedClasses = adapter
       ? await adapter.extract({ source, content })
-      : extractClassCandidates(content)
+      : this.getRustSession().extractCandidates(source, content)
     const latentClasses = this.getRustSession().collectCandidates(extractedClasses)
     this.syncRustState()
     return latentClasses
@@ -306,22 +313,23 @@ export default class CSSScanner extends EventEmitter {
     const adapter = this.resolveSourceAdapter(source)
     const extractedClasses = adapter
       ? await adapter.extract({ source, content })
-      : extractClassCandidates(content)
-    const excludedClasses = extractedClasses.filter((className) => this.isClassExcluded(className))
+      : this.getRustSession().extractCandidates(source, content)
     const session = this.getRustSession()
-    session.registerNativeClasses([...this.nativeClassNames])
-    const nativeCandidates = session.nativeDeclarationCandidates(
-      extractedClasses.filter((className) => !excludedClasses.includes(className))
-    )
+    const blocklist = serializeScannerBlocklist(this.options.blocklist)
+    const validationCandidates = session.filterCandidates(extractedClasses, blocklist)
+    const nativeCandidates = session.nativeDeclarationCandidates(validationCandidates)
     const nativeSupport = resolveNativeSupport(nativeCandidates)
-    const validationCandidates = extractedClasses.filter((className) => !excludedClasses.includes(className))
-    const invalidGeneratedClasses = session.invalidGeneratedClasses(validationCandidates, nativeSupport)
+    const validationBatch = session.generateValidationBatch(validationCandidates, nativeSupport)
+    const invalidGeneratedClasses = session.invalidGeneratedClasses(
+      validationBatch,
+      resolveGeneratedRuleSupport(validationBatch)
+    )
     const time = process.hrtime()
     const update = session.scanCandidates(
       source,
       content,
       extractedClasses,
-      excludedClasses,
+      blocklist,
       nativeSupport,
       invalidGeneratedClasses
     )
@@ -369,18 +377,6 @@ export default class CSSScanner extends EventEmitter {
     return this.sourceMatchers
   }
 
-  private getClassExclusionMatcher(): ClassExclusionMatcher {
-    if (!this.classExclusionMatcher || this.classExclusionOptions !== this.options.blocklist) {
-      this.classExclusionOptions = this.options.blocklist
-      this.classExclusionMatcher = createClassExclusionMatcher(this.options.blocklist)
-    }
-    return this.classExclusionMatcher
-  }
-
-  private isClassExcluded(className: string) {
-    return isClassExcludedByMatcher(className, this.getClassExclusionMatcher())
-  }
-
   isModuleAllowed(source: string): boolean {
     if (!source || source.startsWith('\0')) return false
     if (isStyleModuleRequest(source)) return false
@@ -408,15 +404,6 @@ export default class CSSScanner extends EventEmitter {
   private syncRustState() {
     const state = this.getRustSession().state()
     this.rustState = state
-    const syncSet = (target: Set<string>, values: string[] | undefined) => {
-      target.clear()
-      for (const value of values || []) target.add(value)
-    }
-    syncSet(this.latentClasses, state.latentClasses)
-    syncSet(this.validClasses, state.validClasses)
-    syncSet(this.invalidClasses, state.invalidClasses)
-    syncSet(this.nativeClassNames, state.nativeClasses)
-    syncSet(this.usedNativeClasses, state.usedNativeClasses)
     return state
   }
 
@@ -431,9 +418,14 @@ export default class CSSScanner extends EventEmitter {
     return this.currentManifest
   }
 
-  get slotCSSRule(): string {
-    return '#' + cssEscape('master-css-slot') + '{--slot:0}'
-  }
+  readonly slotCSSRule = '#master-css-slot{--slot:0}'
+}
+
+export async function createScanner(
+  options: ScannerOptions = {},
+  cwd = process.cwd()
+) {
+  return await new CSSScanner(options, cwd).init()
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging

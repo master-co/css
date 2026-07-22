@@ -2,9 +2,7 @@ import { extname } from 'node:path'
 import { createRequire } from 'node:module'
 import {
   compileCSSManifestFile,
-  compileCSSManifestJSON,
-  compileProjectManifest,
-  compileProjectManifestJSON
+  compileCSSManifestJSON
 } from '@master/css-compiler'
 import {
   stripResourceQuery
@@ -16,7 +14,8 @@ import {
   type LoadProjectManifestOptions,
   type LoadProjectManifestResult
 } from './options'
-import { findCSSManifestEntryFilesSync } from './entries'
+import { resolve } from 'node:path'
+import { loadRustProjectManifest } from './rust-project'
 
 const require = createRequire(import.meta.url)
 const defaultManifest = require('@master/css-preset/default-manifest.json') as MasterCSSManifest
@@ -52,17 +51,16 @@ export function loadManifestJSONSync(path: string, options: LoadManifestOptions 
 }
 
 export function loadProjectManifestSync(projectDir = process.cwd(), options: LoadProjectManifestOptions = {}): LoadProjectManifestResult {
-  const entries = options.entries ?? findCSSManifestEntryFilesSync(projectDir)
-  return compileProjectManifest(entries, {
-    ...withDefaultManifest(options),
-    root: projectDir
-  })
+  const result = loadRustProjectManifest(
+    resolve(projectDir),
+    options.baseManifest ?? defaultManifest,
+    options.entries
+  )
+  result.warnings.forEach((warning) => options.onWarning?.(warning))
+  return result
 }
 
 export function loadProjectManifestJSONSync(projectDir = process.cwd(), options: LoadProjectManifestOptions = {}) {
-  const entries = options.entries ?? findCSSManifestEntryFilesSync(projectDir)
-  return compileProjectManifestJSON(entries, {
-    ...withDefaultManifest(options),
-    root: projectDir
-  })
+  const result = loadProjectManifestSync(projectDir, options)
+  return { ...result, json: JSON.stringify(result.manifest) }
 }

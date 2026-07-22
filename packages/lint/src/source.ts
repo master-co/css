@@ -1,25 +1,8 @@
-import type { MasterCSS } from '@master/css-engine'
-import {
-  collectCSSDirectiveRanges,
-  parseMasterCSSClassList,
-  type CSSDirectiveRuleRange,
-  type SourceRange
-} from '@master/css-lexer'
-import { getClassPositions, languageSettings } from '@master/css-language'
+import type { MasterCSSSourceRange as SourceRange } from '@master/css-schema'
 import { extname } from 'node:path'
-import { pathToFileURL } from 'node:url'
 import {
-  createCanonicalClassesReport,
-  createCanonicalComposeDirectiveReport,
-  createClassListLintReport,
-  createConflictingClassesReport,
-  createInvalidClassesReport,
-  createSortClassesReport,
-  createUnapprovedRawValueClassesReport,
   type MasterCSSCanonicalClassesReportOptions,
-  type MasterCSSClassListLintReportOptions,
   type MasterCSSInvalidClassesReportOptions,
-  type MasterCSSLintReportOptions,
   type MasterCSSLintDiagnostic,
   type MasterCSSLintDiagnosticData,
   type MasterCSSLintDiagnosticSeverity,
@@ -28,7 +11,7 @@ import {
   type MasterCSSLintRuleId,
   type MasterCSSUnapprovedRawValueClassesReportOptions
 } from './diagnostics'
-import type { RustLintSession } from './rust-session'
+import type { LintSession } from './rust-session'
 
 const MAX_FIX_PASSES = 10
 
@@ -105,15 +88,10 @@ export interface MasterCSSLintSummary {
 export interface MasterCSSLintContentOptions {
   content: string
   filePath: string
-  css?: MasterCSS
   rules?: Partial<Record<MasterCSSLintRuleId, boolean>>
   ruleOptions?: MasterCSSLintContentRuleOptions
   severities?: Partial<Record<MasterCSSLintRuleId, MasterCSSLintDiagnosticSeverity>>
-  lintSession?: Pick<RustLintSession, 'analyzeClassList'>
-    & Partial<Pick<
-      RustLintSession,
-      'canonicalClassGroups' | 'canonicalClassNames' | 'canonicalComposeDirective'
-    >>
+  lintSession: Pick<LintSession, 'analyzeClassList' | 'analyzeDocument' | 'tokenizeClassList'>
 }
 
 export interface MasterCSSFixContentOptions extends MasterCSSLintContentOptions {
@@ -126,19 +104,12 @@ export interface MasterCSSLintContentRuleOptions {
   'no-unapproved-raw-values'?: MasterCSSUnapprovedRawValueClassesReportOptions
 }
 
-interface TextDocumentLike {
-  uri: string
-  languageId: string
-  version: number
-  getText(): string
-}
-
 interface ClassListContext {
   range: SourceRange
   text: string
   sourceKind: Exclude<MasterCSSLintDiagnosticSourceKind, 'manifest'>
   unescape?: string | false
-  directive?: CSSDirectiveRuleRange
+  directive?: SourceRange
   classNames: string[]
 }
 
@@ -201,26 +172,17 @@ function getFileSourceKind(languageId: string): MasterCSSLintFileSourceKind {
   return stylesheetLanguageIds.has(languageId) ? 'stylesheet' : 'source'
 }
 
-function createTextDocument(filePath: string, content: string): TextDocumentLike {
-  return {
-    uri: pathToFileURL(filePath).href,
-    languageId: getLanguageId(filePath),
-    version: 0,
-    getText: () => content
-  }
-}
-
 function detectClassListUnescape(content: string, range: SourceRange) {
   const quote = content[range.start - 1]
   return quote === '"' || quote === '\'' || quote === '`' ? quote : false
 }
 
-function findComposeDirective(directives: CSSDirectiveRuleRange[], range: SourceRange) {
-  return directives.find((directive) => {
-    if (directive.name !== 'compose') return false
-    if (directive.blockRange || directive.quotedStringRanges.length) return false
-    return range.start >= directive.preludeRange.start && range.end <= directive.preludeRange.end
-  })
+function findComposeDirective(content: string, range: SourceRange): SourceRange | undefined {
+  const start = content.lastIndexOf('@compose', range.start)
+  if (start === -1) return
+  const semicolon = content.indexOf(';', range.end)
+  if (semicolon === -1 || content.slice(start, range.start).includes('{')) return
+  return { start, end: semicolon + 1 }
 }
 
 function inferClassSourceKind(content: string, range: SourceRange): Exclude<MasterCSSLintDiagnosticSourceKind, 'compose-directive' | 'manifest'> {
@@ -230,11 +192,13 @@ function inferClassSourceKind(content: string, range: SourceRange): Exclude<Mast
     : 'class-expression'
 }
 
-function collectClassListContexts(content: string, filePath: string): ClassListContext[] {
-  const textDocument = createTextDocument(filePath, content)
-  const positions = getClassPositions(textDocument as any, languageSettings)
+function collectClassListContexts(
+  content: string,
+  filePath: string,
+  lintSession: Pick<LintSession, 'analyzeDocument'>
+): ClassListContext[] {
+  const positions = lintSession.analyzeDocument(content, getLanguageId(filePath)).classPositions
   const contexts = new Map<string, ClassListContext>()
-  const directives = collectCSSDirectiveRanges(content)
   for (const position of positions) {
     const contextRange = position.contextRange
     const key = `${contextRange.start}:${contextRange.end}`
@@ -243,7 +207,7 @@ function collectClassListContexts(content: string, filePath: string): ClassListC
       existing.classNames.push(position.token)
       continue
     }
-    const directive = findComposeDirective(directives, contextRange)
+    const directive = findComposeDirective(content, contextRange)
     contexts.set(key, {
       range: contextRange,
       text: content.slice(contextRange.start, contextRange.end),
@@ -254,12 +218,6 @@ function collectClassListContexts(content: string, filePath: string): ClassListC
     })
   }
   return [...contexts.values()].sort((a, b) => a.range.start - b.range.start || a.range.end - b.range.end)
-}
-
-function parseClassNames(classList: string, unescape?: string | false) {
-  return parseMasterCSSClassList(classList, { unescape })
-    .filter((item) => item.type === 'class')
-    .map((item) => item.token)
 }
 
 function offsetToLocation(content: string, offset: number): MasterCSSLintSourceLocation {
@@ -284,126 +242,32 @@ function toLocationRange(content: string, range: SourceRange): MasterCSSLintSour
   }
 }
 
-function createComposeDirectiveLintDiagnostics(
-  context: ClassListContext,
-  css: MasterCSS,
-  rules: Record<MasterCSSLintRuleId, boolean>,
-  options: MasterCSSLintContentOptions
-) {
-  return [
-    rules['sort-classes'] && createSortClassesReport(context.text, css, withSourceRuleOptions(context, options, 'sort-classes')),
-    rules['no-invalid-classes'] && createInvalidClassesReport(context.text, css, withSourceRuleOptions(context, options, 'no-invalid-classes')),
-    rules['no-conflicting-classes'] && createConflictingClassesReport(context.text, css, withSourceRuleOptions(context, options, 'no-conflicting-classes')),
-    rules['prefer-canonical-classes'] && createCanonicalComposeDirectiveReport(context.text, css, withSourceRuleOptions(context, options, 'prefer-canonical-classes')),
-    rules['no-unapproved-raw-values'] && createUnapprovedRawValueClassesReport(context.text, css, withSourceRuleOptions(context, options, 'no-unapproved-raw-values'))
-  ].filter((report): report is { diagnostics: MasterCSSLintDiagnostic[] } => Boolean(report))
-    .flatMap((report) => report.diagnostics)
-}
-
 function createContextLintDiagnostics(
   context: ClassListContext,
-  css: MasterCSS | undefined,
   rules: Record<MasterCSSLintRuleId, boolean>,
   options: MasterCSSLintContentOptions
 ) {
-  if (options.lintSession) {
-    const hasRustRule = rules['sort-classes']
-      || rules['no-invalid-classes']
-      || rules['no-conflicting-classes']
-      || rules['no-unapproved-raw-values']
-    const rustDiagnostics = hasRustRule
-      ? options.lintSession.analyzeClassList(
-        context.text,
-        context.classNames,
-        {
-          disallowUnknownClass: options.ruleOptions?.['no-invalid-classes']?.disallowUnknownClass,
-          rawValuePolicy: rules['no-unapproved-raw-values']
-            ? options.ruleOptions?.['no-unapproved-raw-values'] || {}
-            : undefined
-        }
-      ).diagnostics
-        .filter(({ ruleId }) => rules[ruleId])
-        .map((diagnostic): MasterCSSLintDiagnostic => ({
-          ...diagnostic,
-          severity: options.severities?.[diagnostic.ruleId]
-            || (diagnostic.ruleId === 'no-invalid-classes' ? 'error' : 'warning'),
-          fix: diagnostic.fix && {
-            ...diagnostic.fix,
-            scope: 'class-list'
-          }
-        }))
-      : []
-    const canonicalLintSession = options.lintSession?.canonicalClassNames
-      || options.lintSession?.canonicalClassGroups
-      || options.lintSession?.canonicalComposeDirective
-      ? options.lintSession
-      : undefined
-    const remainingReports = [
-      rules['prefer-canonical-classes'] && (context.sourceKind === 'compose-directive'
-        ? createCanonicalComposeDirectiveReport(context.text, css, withSourceRuleOptions(context, options, 'prefer-canonical-classes'), canonicalLintSession)
-        : createCanonicalClassesReport(context.text, css, withSourceRuleOptions(context, options, 'prefer-canonical-classes'), canonicalLintSession))
-    ].filter((report): report is { diagnostics: MasterCSSLintDiagnostic[] } => Boolean(report))
-      .flatMap((report) => report.diagnostics)
-    return [
-      ...rustDiagnostics.filter(({ ruleId }) => ruleId !== 'no-unapproved-raw-values'),
-      ...remainingReports,
-      ...rustDiagnostics.filter(({ ruleId }) => ruleId === 'no-unapproved-raw-values')
-    ]
-  }
-  if (!css) {
-    throw new TypeError('A MasterCSS instance is required when a Rust lint session is not provided.')
-  }
-  return context.sourceKind === 'compose-directive'
-    ? createComposeDirectiveLintDiagnostics(context, css, rules, options)
-    : createClassListLintReport(context.text, css, {
-      ...createClassListLintOptions(context, options),
-      rules,
-      severities: options.severities
+  const shouldAnalyze = Object.values(rules).some(Boolean)
+  const diagnostics = shouldAnalyze
+    ? options.lintSession.analyzeClassList(context.text, context.classNames, {
+      disallowUnknownClass: options.ruleOptions?.['no-invalid-classes']?.disallowUnknownClass,
+      rawValuePolicy: rules['no-unapproved-raw-values']
+        ? options.ruleOptions?.['no-unapproved-raw-values'] || {}
+        : undefined,
+      canonicalOptions: rules['prefer-canonical-classes']
+        ? options.ruleOptions?.['prefer-canonical-classes'] || {}
+        : undefined,
+      composeDirective: context.sourceKind === 'compose-directive'
     }).diagnostics
-}
-
-function getRuleOptions(options: MasterCSSLintContentOptions): MasterCSSClassListLintReportOptions {
-  return {
-    ...options.ruleOptions?.['no-invalid-classes'],
-    ...options.ruleOptions?.['prefer-canonical-classes'],
-    ...options.ruleOptions?.['no-unapproved-raw-values']
-  }
-}
-
-function createClassListLintOptions(
-  context: ClassListContext,
-  options: MasterCSSLintContentOptions
-): MasterCSSClassListLintReportOptions {
-  return {
-    ...getRuleOptions(options),
-    unescape: context.unescape
-  }
-}
-
-function withSourceRuleOptions(
-  context: ClassListContext,
-  options: MasterCSSLintContentOptions,
-  ruleId: MasterCSSLintRuleId
-): MasterCSSLintReportOptions {
-  return {
-    ...getRuleOptions(options),
-    ...getSpecificRuleOptions(options, ruleId),
-    severity: options.severities?.[ruleId],
-    unescape: context.unescape
-  }
-}
-
-function getSpecificRuleOptions(options: MasterCSSLintContentOptions, ruleId: MasterCSSLintRuleId) {
-  switch (ruleId) {
-    case 'no-invalid-classes':
-      return options.ruleOptions?.['no-invalid-classes']
-    case 'prefer-canonical-classes':
-      return options.ruleOptions?.['prefer-canonical-classes']
-    case 'no-unapproved-raw-values':
-      return options.ruleOptions?.['no-unapproved-raw-values']
-    default:
-      return undefined
-  }
+      .filter(({ ruleId }) => rules[ruleId])
+      .map((diagnostic): MasterCSSLintDiagnostic => ({
+        ...diagnostic,
+        severity: options.severities?.[diagnostic.ruleId]
+          || (diagnostic.ruleId === 'no-invalid-classes' ? 'error' : 'warning'),
+        fix: diagnostic.fix
+      }))
+    : []
+  return diagnostics
 }
 
 function toSourceFix(context: ClassListContext, fix: MasterCSSLintFix): MasterCSSLintSourceFix | undefined {
@@ -460,13 +324,10 @@ function toSourceDiagnostic(
 }
 
 export function lintMasterCSSContent(options: MasterCSSLintContentOptions): MasterCSSLintFileResult {
-  if (!options.css && !options.lintSession) {
-    throw new TypeError('A MasterCSS instance or Rust lint session is required.')
-  }
   const diagnostics: MasterCSSLintSourceDiagnostic[] = []
   const rules = resolveRules(options.rules)
-  for (const context of collectClassListContexts(options.content, options.filePath)) {
-    diagnostics.push(...createContextLintDiagnostics(context, options.css, rules, options).map((diagnostic) => toSourceDiagnostic(options.content, context, diagnostic)))
+  for (const context of collectClassListContexts(options.content, options.filePath, options.lintSession)) {
+    diagnostics.push(...createContextLintDiagnostics(context, rules, options).map((diagnostic) => toSourceDiagnostic(options.content, context, diagnostic)))
   }
   const languageId = getLanguageId(options.filePath)
   return {
@@ -505,16 +366,16 @@ function applyFixes(content: string, fixes: MasterCSSLintSourceFix[]) {
   return fixed
 }
 
-function fixClassListText(context: ClassListContext, css: MasterCSS | undefined, rules: Record<MasterCSSLintRuleId, boolean>, options: MasterCSSLintContentOptions) {
+function fixClassListText(context: ClassListContext, rules: Record<MasterCSSLintRuleId, boolean>, options: MasterCSSLintContentOptions) {
   let fixed = context.text
   for (let pass = 0; pass < MAX_FIX_PASSES; pass++) {
     const nextContext: ClassListContext = {
       ...context,
       range: { start: 0, end: fixed.length },
       text: fixed,
-      classNames: parseClassNames(fixed, context.unescape)
+      classNames: options.lintSession.tokenizeClassList(fixed, context.unescape).map(({ token }) => token)
     }
-    const fix = createContextLintDiagnostics(nextContext, css, rules, options)
+    const fix = createContextLintDiagnostics(nextContext, rules, options)
       .map((diagnostic) => diagnostic.fix)
       .find((fix): fix is MasterCSSLintFix => Boolean(fix && fix.scope !== 'directive'))
     if (!fix) return fixed
@@ -525,11 +386,11 @@ function fixClassListText(context: ClassListContext, css: MasterCSS | undefined,
   return fixed
 }
 
-function fixSafeClassLists(content: string, filePath: string, css: MasterCSS | undefined, rules: Record<MasterCSSLintRuleId, boolean>, options: MasterCSSLintContentOptions) {
-  const replacements = collectClassListContexts(content, filePath)
+function fixSafeClassLists(content: string, filePath: string, rules: Record<MasterCSSLintRuleId, boolean>, options: MasterCSSLintContentOptions) {
+  const replacements = collectClassListContexts(content, filePath, options.lintSession)
     .map((context) => ({
       range: context.range,
-      text: fixClassListText(context, css, rules, options)
+      text: fixClassListText(context, rules, options)
     }))
     .filter((replacement) => content.slice(replacement.range.start, replacement.range.end) !== replacement.text)
     .sort((a, b) => b.range.start - a.range.start || b.range.end - a.range.end)
@@ -545,11 +406,8 @@ function fixSafeClassLists(content: string, filePath: string, css: MasterCSS | u
 }
 
 export function fixMasterCSSContent(options: MasterCSSFixContentOptions) {
-  if (!options.css && !options.lintSession) {
-    throw new TypeError('A MasterCSS instance or Rust lint session is required.')
-  }
   const rules = resolveRules(options.rules)
-  let fixed = fixSafeClassLists(options.content, options.filePath, options.css, rules, options)
+  let fixed = fixSafeClassLists(options.content, options.filePath, rules, options)
   if (!options.includeDirectiveFixes) return fixed
   const structuralFixes = collectStructuralFixes(lintMasterCSSContent({
     ...options,

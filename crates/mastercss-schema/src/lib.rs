@@ -1,24 +1,74 @@
 #![forbid(unsafe_code)]
 
+use std::collections::BTreeMap;
+
 use serde::{Deserialize, Serialize};
 use serde_json::{Map, Value};
 use thiserror::Error;
 
 pub const MANIFEST_VERSION: u32 = 1;
 pub const HYDRATION_MANIFEST_VERSION: u32 = 1;
+pub const BINDING_ABI_VERSION: u32 = 4;
 pub const ENGINE_TRANSITION_VERSION: u32 = 1;
 pub const VALIDATOR_BATCH_VERSION: u32 = 1;
 pub const DIAGNOSTICS_REPORT_VERSION: u32 = 1;
 pub const LINT_BATCH_VERSION: u32 = 1;
 pub const LANGUAGE_BATCH_VERSION: u32 = 1;
+pub const LEXER_BATCH_VERSION: u32 = 1;
+pub const SOURCE_BATCH_VERSION: u32 = 1;
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct BindingInfo<'a> {
+    pub binding_abi_version: u32,
+    pub package_version: &'a str,
+    pub manifest_version: u32,
+    pub hydration_manifest_version: u32,
+    pub engine_transition_version: u32,
+    pub validator_batch_version: u32,
+    pub diagnostics_report_version: u32,
+    pub lint_batch_version: u32,
+    pub language_batch_version: u32,
+    pub lexer_batch_version: u32,
+    pub source_batch_version: u32,
+    pub target: &'a str,
+    pub surface: &'a str,
+    pub features: &'a [&'a str],
+}
+
+impl<'a> BindingInfo<'a> {
+    pub const fn new(
+        package_version: &'a str,
+        target: &'a str,
+        surface: &'a str,
+        features: &'a [&'a str],
+    ) -> Self {
+        Self {
+            binding_abi_version: BINDING_ABI_VERSION,
+            package_version,
+            manifest_version: MANIFEST_VERSION,
+            hydration_manifest_version: HYDRATION_MANIFEST_VERSION,
+            engine_transition_version: ENGINE_TRANSITION_VERSION,
+            validator_batch_version: VALIDATOR_BATCH_VERSION,
+            diagnostics_report_version: DIAGNOSTICS_REPORT_VERSION,
+            lint_batch_version: LINT_BATCH_VERSION,
+            language_batch_version: LANGUAGE_BATCH_VERSION,
+            lexer_batch_version: LEXER_BATCH_VERSION,
+            source_batch_version: SOURCE_BATCH_VERSION,
+            target,
+            surface,
+            features,
+        }
+    }
+}
 
 #[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct EmittedGlobals {
     #[serde(default)]
-    pub variables: Map<String, Value>,
+    pub variables: BTreeMap<String, u32>,
     #[serde(default)]
-    pub animations: Map<String, Value>,
+    pub animations: BTreeMap<String, u32>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -42,19 +92,12 @@ impl EmittedGlobals {
     }
 
     pub fn variable_count(&self, name: &str) -> u32 {
-        resource_count(self.variables.get(name))
+        self.variables.get(name).copied().unwrap_or_default()
     }
 
     pub fn animation_count(&self, name: &str) -> u32 {
-        resource_count(self.animations.get(name))
+        self.animations.get(name).copied().unwrap_or_default()
     }
-}
-
-fn resource_count(value: Option<&Value>) -> u32 {
-    value
-        .and_then(Value::as_u64)
-        .and_then(|value| u32::try_from(value).ok())
-        .unwrap_or_default()
 }
 
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
@@ -196,6 +239,12 @@ pub enum ErrorCode {
     CssParseError,
     CssPrintError,
     CssDirectiveError,
+    #[serde(rename = "invalid-compose-class")]
+    InvalidComposeClass,
+    #[serde(rename = "compose-quoted-syntax")]
+    ComposeQuotedSyntax,
+    #[serde(rename = "compose-group-syntax")]
+    ComposeGroupSyntax,
     CssImportError,
     SessionDisposed,
     InvalidInput,
@@ -203,7 +252,7 @@ pub enum ErrorCode {
 }
 
 impl ErrorCode {
-    pub const ALL: [Self; 14] = [
+    pub const ALL: [Self; 17] = [
         Self::InvalidManifest,
         Self::UnsupportedManifestVersion,
         Self::InvalidHydrationManifest,
@@ -214,6 +263,9 @@ impl ErrorCode {
         Self::CssParseError,
         Self::CssPrintError,
         Self::CssDirectiveError,
+        Self::InvalidComposeClass,
+        Self::ComposeQuotedSyntax,
+        Self::ComposeGroupSyntax,
         Self::CssImportError,
         Self::SessionDisposed,
         Self::InvalidInput,
@@ -232,6 +284,9 @@ impl ErrorCode {
             Self::CssParseError => "CSS_PARSE_ERROR",
             Self::CssPrintError => "CSS_PRINT_ERROR",
             Self::CssDirectiveError => "CSS_DIRECTIVE_ERROR",
+            Self::InvalidComposeClass => "invalid-compose-class",
+            Self::ComposeQuotedSyntax => "compose-quoted-syntax",
+            Self::ComposeGroupSyntax => "compose-group-syntax",
             Self::CssImportError => "CSS_IMPORT_ERROR",
             Self::SessionDisposed => "SESSION_DISPOSED",
             Self::InvalidInput => "INVALID_INPUT",
@@ -298,8 +353,172 @@ pub struct CssDirectiveExtractionPolicy {
     pub include: Vec<String>,
     pub exclude: Vec<String>,
     pub safelist: Vec<String>,
-    pub blocklist: Vec<Value>,
+    pub blocklist: Vec<CssDirectiveBlocklistEntry>,
     pub preserve_native: bool,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum CssDirectiveBlocklistEntry {
+    Exact(String),
+    Pattern {
+        source: String,
+        #[serde(default)]
+        flags: String,
+    },
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum CssBlocklistPatternToken {
+    Literal(u16),
+    Any,
+    Many,
+}
+
+/// Applies the dependency-free extraction-policy pattern contract used by all
+/// native and Wasm semantic surfaces.
+pub fn is_css_class_blocklisted(
+    class_name: &str,
+    blocklist: &[CssDirectiveBlocklistEntry],
+) -> bool {
+    blocklist.iter().any(|entry| match entry {
+        CssDirectiveBlocklistEntry::Exact(value) => value == class_name,
+        CssDirectiveBlocklistEntry::Pattern { source, flags } => {
+            if !flags
+                .chars()
+                .all(|flag| matches!(flag, 'g' | 'i' | 'm' | 's' | 'u' | 'y'))
+            {
+                return false;
+            }
+            if flags.contains('i') {
+                css_blocklist_pattern_matches(&source.to_lowercase(), &class_name.to_lowercase())
+            } else {
+                css_blocklist_pattern_matches(source, class_name)
+            }
+        }
+    })
+}
+
+pub fn filter_css_extraction_candidates<I, S>(
+    candidates: I,
+    blocklist: &[CssDirectiveBlocklistEntry],
+) -> Vec<String>
+where
+    I: IntoIterator<Item = S>,
+    S: AsRef<str>,
+{
+    candidates
+        .into_iter()
+        .filter_map(|candidate| {
+            let candidate = candidate.as_ref();
+            (!is_css_class_blocklisted(candidate, blocklist)).then(|| candidate.to_owned())
+        })
+        .collect()
+}
+
+fn css_blocklist_pattern_matches(source: &str, value: &str) -> bool {
+    let anchored_start = source.starts_with('^');
+    let anchored_end = source.ends_with('$') && !source.ends_with("\\$");
+    let source = source.strip_prefix('^').unwrap_or(source);
+    let source = source.strip_suffix('$').unwrap_or(source);
+    let mut tokens = Vec::new();
+    let mut characters = source.chars().peekable();
+    while let Some(character) = characters.next() {
+        if character == '\\' {
+            let Some(literal) = characters.next() else {
+                return false;
+            };
+            tokens.extend(
+                literal
+                    .encode_utf16(&mut [0; 2])
+                    .iter()
+                    .copied()
+                    .map(CssBlocklistPatternToken::Literal),
+            );
+        } else if character == '.' && characters.peek() == Some(&'*') {
+            characters.next();
+            tokens.push(CssBlocklistPatternToken::Many);
+        } else if character == '.' {
+            tokens.push(CssBlocklistPatternToken::Any);
+        } else {
+            tokens.extend(
+                character
+                    .encode_utf16(&mut [0; 2])
+                    .iter()
+                    .copied()
+                    .map(CssBlocklistPatternToken::Literal),
+            );
+        }
+    }
+    let value = value.encode_utf16().collect::<Vec<_>>();
+    fn matches(
+        tokens: &[CssBlocklistPatternToken],
+        value: &[u16],
+        token_index: usize,
+        value_index: usize,
+        anchored_end: bool,
+        matched: &mut [Vec<Option<bool>>],
+    ) -> bool {
+        if let Some(result) = matched[token_index][value_index] {
+            return result;
+        }
+        let result = match tokens.get(token_index) {
+            None => !anchored_end || value_index == value.len(),
+            Some(CssBlocklistPatternToken::Literal(expected)) => {
+                value
+                    .get(value_index)
+                    .is_some_and(|actual| actual == expected)
+                    && matches(
+                        tokens,
+                        value,
+                        token_index + 1,
+                        value_index + 1,
+                        anchored_end,
+                        matched,
+                    )
+            }
+            Some(CssBlocklistPatternToken::Any) => {
+                value_index < value.len()
+                    && matches(
+                        tokens,
+                        value,
+                        token_index + 1,
+                        value_index + 1,
+                        anchored_end,
+                        matched,
+                    )
+            }
+            Some(CssBlocklistPatternToken::Many) => {
+                matches(
+                    tokens,
+                    value,
+                    token_index + 1,
+                    value_index,
+                    anchored_end,
+                    matched,
+                ) || (value_index < value.len()
+                    && matches(
+                        tokens,
+                        value,
+                        token_index,
+                        value_index + 1,
+                        anchored_end,
+                        matched,
+                    ))
+            }
+        };
+        matched[token_index][value_index] = Some(result);
+        result
+    }
+    if anchored_start {
+        let mut matched = vec![vec![None; value.len() + 1]; tokens.len() + 1];
+        matches(&tokens, &value, 0, 0, anchored_end, &mut matched)
+    } else {
+        (0..=value.len()).any(|value_index| {
+            let mut matched = vec![vec![None; value.len() + 1]; tokens.len() + 1];
+            matches(&tokens, &value, 0, value_index, anchored_end, &mut matched)
+        })
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -426,14 +645,33 @@ pub struct GeneratedRuleIr {
 pub struct HydrationManifest {
     pub version: u32,
     pub rules: Vec<GeneratedRuleIr>,
+    pub resource_order: Vec<String>,
 }
 
 impl HydrationManifest {
-    pub fn new(rules: Vec<GeneratedRuleIr>) -> Self {
+    pub fn new(rules: Vec<GeneratedRuleIr>, resource_order: Vec<String>) -> Self {
         Self {
             version: HYDRATION_MANIFEST_VERSION,
             rules,
+            resource_order,
         }
+    }
+
+    pub fn from_snapshot(snapshot: &EngineSnapshotIr) -> Self {
+        let resource_order = snapshot
+            .resources
+            .variables
+            .iter()
+            .map(|resource| resource.name.clone())
+            .chain(
+                snapshot
+                    .resources
+                    .animations
+                    .iter()
+                    .map(|resource| resource.name.clone()),
+            )
+            .collect();
+        Self::new(snapshot.rules.clone(), resource_order)
     }
 
     pub fn to_script_json(&self) -> Result<String, serde_json::Error> {
@@ -484,7 +722,37 @@ impl EngineTransitionIr {
 pub struct EngineSnapshotIr {
     pub version: u32,
     pub rules: Vec<GeneratedRuleIr>,
+    pub resources: EngineResourcesIr,
     pub text: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct EngineVariableResourceIr {
+    pub name: String,
+    pub ref_count: u32,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub dependencies: Vec<String>,
+    #[serde(rename = "static")]
+    pub static_resource: bool,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct EngineAnimationResourceIr {
+    pub name: String,
+    pub index: u32,
+    pub ref_count: u32,
+    pub text: String,
+}
+
+#[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct EngineResourcesIr {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub theme_text: Option<String>,
+    pub variables: Vec<EngineVariableResourceIr>,
+    pub animations: Vec<EngineAnimationResourceIr>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -533,19 +801,22 @@ mod tests {
 
     #[test]
     fn hydration_json_is_script_safe() {
-        let manifest = HydrationManifest::new(vec![GeneratedRuleIr {
-            class_name: "content:<".into(),
-            key: "content:<".into(),
-            layer: UtilityLayerName::Utilities,
-            utility_type: 0,
-            sort_tier: 0,
-            priority: RulePriorityIr::default(),
-            text: ".content\\:\\<{content:\"<\"}".into(),
-            nodes: Vec::new(),
-            selector_text: None,
-            variable_names: Vec::new(),
-            animation_names: Vec::new(),
-        }]);
+        let manifest = HydrationManifest::new(
+            vec![GeneratedRuleIr {
+                class_name: "content:<".into(),
+                key: "content:<".into(),
+                layer: UtilityLayerName::Utilities,
+                utility_type: 0,
+                sort_tier: 0,
+                priority: RulePriorityIr::default(),
+                text: ".content\\:\\<{content:\"<\"}".into(),
+                nodes: Vec::new(),
+                selector_text: None,
+                variable_names: Vec::new(),
+                animation_names: Vec::new(),
+            }],
+            Vec::new(),
+        );
         let json = manifest.to_script_json().unwrap();
         assert!(!json.contains('<'));
         assert!(json.contains("\\u003c"));

@@ -8,7 +8,7 @@ export { default as RuntimeUtilityLayer } from './utility-layer'
 
 export type * from './types'
 export type { CSSRuntimeDecoratorOptions, CSSRuntimeOptions } from './css-runtime'
-export type { MasterCSSEmittedGlobals } from '@master/css-engine'
+export type { MasterCSSEmittedGlobals } from '@master/css-schema/emitted-globals'
 export type { MasterCSSManifest } from '@master/css-schema/manifest'
 export type {
   MasterCSSGeneratedRuleIR,

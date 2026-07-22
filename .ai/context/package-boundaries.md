@@ -25,8 +25,8 @@ shared / external data
 - `@master/css-integration` owns adapter-neutral virtual module and integration protocol.
 - `@master/css-source` owns source-level class candidate extraction.
 - `@master/css-stylesheet` owns stylesheet entry output and generated CSS composition.
-- Class pipeline ownership: `@master/css-lexer` owns raw class-list token/range parsing, whitespace splitting, and dependency-free lexical helpers; `@master/css-engine/inspect` owns manifest-driven class semantic inspection for tooling; `@master/css-lint` owns framework-neutral lint policy and class-list edit plans; `@master/eslint-plugin-css` owns ESLint AST visitors, reports, and fixer adaptation; `@master/css-language` owns editor source-position scanning and semantic tokenization.
-- Runtime-covered value surface: `@master/css-runtime` directly extends `MasterCSS` and bundles runtime source, selected engine value exports, schema runtime constants, and default manifest loading. Classify additions as runtime core, build-time-only configuration, or tooling-only logic before adding them to any runtime-imported value module.
+- Class pipeline ownership: Rust `@master/css-lexer` sessions own raw class-list token/range parsing and lexical operations; Rust engine inspection IR owns manifest-driven class semantics; Rust `@master/css-lint` sessions own framework-neutral lint policy and edit plans; `@master/eslint-plugin-css` owns only ESLint AST visitors, reports, and fixer adaptation; Rust `@master/css-language` sessions own document contexts, tokenization, completions, colors, diagnostics, and edit IR.
+- Runtime-covered surface: `@master/css-runtime` hosts DOM/CSSOM behavior around the split `wasm-runtime` engine session. Classify additions as runtime core, build-time-only configuration, or tooling-only logic before adding them to runtime-imported modules or the runtime Wasm feature set.
 - Runtime observation: runtime must not grow global event buses or tooling observer APIs. Third-party class observation should use DOM `MutationObserver` or explicit public runtime state.
 
 ## Escalate When
@@ -34,7 +34,7 @@ shared / external data
 - A dependency edge seems necessary across layers: read `.ai/architecture.md`, `.ai/package-map.md`, and `.ai/boundaries.md`.
 - Public exports, config shapes, or virtual ids change: inspect downstream packages and add validation.
 - A cycle appears: extract dependency-light contracts into `@master/css-schema`, lexical scanners into `@master/css-lexer`, source extraction into `@master/css-source`, or adapter-neutral protocol into `@master/css-integration`.
-- A proposed helper is not required by runtime execution but would live under runtime source, `MasterCSS`, engine root value exports, schema value constants, or another runtime-imported value module: split it into an explicit tooling subpath or owning package and measure runtime bundle impact when feasible.
+- A proposed helper is not required by runtime execution but would live under runtime source, the engine session, schema value constants, or another runtime-imported value module: move it to the compiler/tooling Wasm surface or the owning package and measure runtime bundle impact when feasible.
 
 ## Do Not
 

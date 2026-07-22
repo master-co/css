@@ -2,7 +2,7 @@
 
 use mastercss_compiler::{
     CompileDefaultPresetRequest, CompileManifestOptions, CompileNativeCssOptions, CompilerError,
-    CssImportGraphRequest,
+    CssImportGraphRequest, LowerCssDirectivesOptions, LowerCssDirectivesRequest,
 };
 use serde::Serialize;
 use wasm_bindgen::prelude::*;
@@ -127,6 +127,39 @@ pub fn compile_theme_css(source: &str, options: JsValue) -> Result<JsValue, JsVa
     compile_css_directives(source, options)
 }
 
+#[wasm_bindgen(js_name = analyzeCSSDependencies)]
+pub fn analyze_css_dependencies(source: &str) -> Result<JsValue, JsValue> {
+    render_value(&mastercss_compiler::analyze_css_dependencies(source))
+}
+
+#[wasm_bindgen(js_name = analyzeStandaloneDirectives)]
+pub fn analyze_standalone_directives(source: &str) -> Result<JsValue, JsValue> {
+    render_value(&mastercss_compiler::analyze_standalone_directives(source))
+}
+
+#[wasm_bindgen(js_name = mergeCSSExtractionPolicies)]
+pub fn merge_css_extraction_policies(policies: JsValue) -> Result<JsValue, JsValue> {
+    let policies = serde_wasm_bindgen::from_value::<
+        Vec<mastercss_schema::CssDirectiveExtractionPolicy>,
+    >(policies)
+    .map_err(serialization_error)?;
+    render_value(&mastercss_compiler::merge_extraction_policies(&policies))
+}
+
+#[wasm_bindgen(js_name = filterCSSExtractionCandidates)]
+pub fn filter_css_extraction_candidates(
+    candidates: Vec<String>,
+    blocklist: JsValue,
+) -> Result<Vec<String>, JsValue> {
+    let blocklist = serde_wasm_bindgen::from_value::<
+        Vec<mastercss_schema::CssDirectiveBlocklistEntry>,
+    >(blocklist)
+    .map_err(serialization_error)?;
+    Ok(mastercss_schema::filter_css_extraction_candidates(
+        candidates, &blocklist,
+    ))
+}
+
 #[wasm_bindgen(js_name = compileCSSDirectives)]
 pub fn compile_css_directives(source: &str, options: JsValue) -> Result<JsValue, JsValue> {
     let options = if options.is_null() || options.is_undefined() {
@@ -152,6 +185,20 @@ pub fn compile_manifest_input(input: JsValue, options: JsValue) -> Result<JsValu
     let result =
         mastercss_compiler::compile_manifest_input(&input, &options).map_err(compiler_error)?;
     serde_wasm_bindgen::to_value(&result).map_err(serialization_error)
+}
+
+#[wasm_bindgen(js_name = lowerCSSDirectives)]
+pub fn lower_css_directives(request: JsValue, options: JsValue) -> Result<JsValue, JsValue> {
+    let request = serde_wasm_bindgen::from_value::<LowerCssDirectivesRequest>(request)
+        .map_err(serialization_error)?;
+    let options = if options.is_null() || options.is_undefined() {
+        LowerCssDirectivesOptions::default()
+    } else {
+        serde_wasm_bindgen::from_value(options).map_err(serialization_error)?
+    };
+    let result = mastercss_compiler::lower_css_directives_request(&request, &options)
+        .map_err(compiler_error)?;
+    render_value(&result)
 }
 
 #[wasm_bindgen(js_name = normalizeManifestForJSON)]
@@ -192,13 +239,11 @@ pub fn resolve_css_import_graph(request: JsValue) -> Result<JsValue, JsValue> {
 
 #[wasm_bindgen(js_name = bindingInfo)]
 pub fn binding_info() -> Result<JsValue, JsValue> {
-    serde_wasm_bindgen::to_value(&serde_json::json!({
-        "bindingAbiVersion": 1,
-        "packageVersion": env!("CARGO_PKG_VERSION"),
-        "manifestVersion": mastercss_schema::MANIFEST_VERSION,
-        "hydrationManifestVersion": mastercss_schema::HYDRATION_MANIFEST_VERSION,
-        "target": "wasm32-unknown-unknown",
-        "surface": "compiler"
-    }))
+    serde_wasm_bindgen::to_value(&mastercss_schema::BindingInfo::new(
+        env!("CARGO_PKG_VERSION"),
+        "wasm32-unknown-unknown",
+        "compiler",
+        &["compiler", "render"],
+    ))
     .map_err(serialization_error)
 }

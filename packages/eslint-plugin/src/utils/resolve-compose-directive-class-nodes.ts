@@ -1,10 +1,9 @@
-import {
-  collectCSSDirectiveRanges,
-  parseMasterCSSClassList,
-  type SourceRange
-} from '@master/css-lexer'
+import { inspectCSS } from '@master/css-compiler'
+import type { LintSession } from '@master/css-lint/node'
 import type { RuleContext } from '@typescript-eslint/utils/ts-eslint'
 import type { ResolvedClassListNode, ResolvedClassNode } from './resolve-class-node'
+
+interface SourceRange { start: number, end: number }
 
 interface ComposeDirectiveSourceRange extends SourceRange {
   lineComments?: boolean
@@ -131,20 +130,19 @@ function resolveComposeDirectiveClassNode(
   source: string,
   sourceCode: RuleContext<any, any[]>['sourceCode'],
   start: number,
-  end: number
+  end: number,
+  lintSession: Pick<LintSession, 'tokenizeClassList'>
 ): ResolvedClassNode | undefined {
   while (start < end && isWhitespace(source[start])) start++
   while (end > start && isWhitespace(source[end - 1])) end--
   if (start >= end) return
 
   const raw = source.slice(start, end)
-  const nodes: ResolvedClassListNode[] = parseMasterCSSClassList(raw, {
-    preserveSpaces: true
-  }).map((item) => {
-    const startOffset = start + item.start
-    const endOffset = start + item.end
+  const nodes: ResolvedClassListNode[] = lintSession.tokenizeClassList(raw).map((item) => {
+    const startOffset = start + item.range.start
+    const endOffset = start + item.range.end
     return {
-      type: item.type,
+      type: 'class',
       value: item.token,
       raw: item.raw,
       range: [startOffset, endOffset],
@@ -168,7 +166,10 @@ function resolveComposeDirectiveClassNode(
   }
 }
 
-export default function resolveComposeDirectiveClassNodes(context: RuleContext<any, any[]>): ResolvedComposeDirectiveClassNode[] {
+export default function resolveComposeDirectiveClassNodes(
+  context: RuleContext<any, any[]>,
+  lintSession: Pick<LintSession, 'tokenizeClassList'>
+): ResolvedComposeDirectiveClassNode[] {
   const filename = getFilename(context)
   const source = context.sourceCode.getText()
   const nodes: ResolvedComposeDirectiveClassNode[] = []
@@ -177,24 +178,25 @@ export default function resolveComposeDirectiveClassNodes(context: RuleContext<a
       ? collectLineCommentRanges(source, range.start, range.end)
       : []
     const rangeSource = source.slice(range.start, range.end)
-    for (const directive of collectCSSDirectiveRanges(rangeSource)) {
+    for (const directive of inspectCSS(rangeSource).directives) {
       if (directive.name !== 'compose') continue
-      if (directive.blockRange || directive.quotedStringRanges.length) continue
-      const keywordStart = range.start + directive.keywordRange.start
-      const keywordEnd = range.start + directive.keywordRange.end
+      if (directive.hasBlock || directive.quotedStrings) continue
+      const keywordStart = range.start + directive.range.start
+      const keywordEnd = range.start + directive.preludeRange.start
       if (overlapsRange(keywordStart, keywordEnd, lineCommentRanges)) continue
       const classNode = resolveComposeDirectiveClassNode(
         source,
         context.sourceCode,
         range.start + directive.preludeRange.start,
-        range.start + directive.preludeRange.end
+        range.start + directive.preludeRange.end,
+        lintSession
       )
       if (!classNode) continue
       if (overlapsRange(classNode.start, classNode.end, lineCommentRanges)) continue
       nodes.push({
         ...classNode,
-        directiveStart: range.start + directive.start,
-        directiveEnd: range.start + (directive.semicolonRange?.end ?? directive.end)
+        directiveStart: range.start + directive.range.start,
+        directiveEnd: range.start + directive.range.end
       })
     }
   }

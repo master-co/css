@@ -14,12 +14,12 @@ describe('@master/css-integration/client', () => {
 
     try {
       const cssPackageDir = path.join(root, 'node_modules', '@master', 'css')
-      const enginePackageDir = path.join(root, 'node_modules', '@master', 'css-engine')
+      const schemaPackageDir = path.join(root, 'node_modules', '@master', 'css-schema')
       const integrationPackageDir = path.join(root, 'node_modules', '@master', 'css-integration')
       const sourceDir = path.join(root, 'src')
 
       mkdirSync(cssPackageDir, { recursive: true })
-      mkdirSync(enginePackageDir, { recursive: true })
+      mkdirSync(schemaPackageDir, { recursive: true })
       mkdirSync(integrationPackageDir, { recursive: true })
       mkdirSync(sourceDir, { recursive: true })
 
@@ -47,24 +47,26 @@ describe('@master/css-integration/client', () => {
         'export interface MasterCSSEmittedGlobals { variables?: Record<string, number>; animations?: Record<string, number> }\n'
       )
       writeFileSync(
-        path.join(enginePackageDir, 'package.json'),
+        path.join(schemaPackageDir, 'package.json'),
         JSON.stringify({
-          name: '@master/css-engine',
-          types: './index.d.ts',
+          name: '@master/css-schema',
           exports: {
-            '.': {
-              types: './index.d.ts'
+            './manifest': {
+              types: './manifest.d.ts'
+            },
+            './emitted-globals': {
+              types: './emitted-globals.d.ts'
             }
           }
         })
       )
       writeFileSync(
-        path.join(enginePackageDir, 'index.d.ts'),
-        [
-          'export interface MasterCSSManifest { version: 1 }',
-          'export interface MasterCSSEmittedGlobals { variables?: Record<string, number>; animations?: Record<string, number> }',
-          ''
-        ].join('\n')
+        path.join(schemaPackageDir, 'manifest.d.ts'),
+        'export interface MasterCSSManifest { version: 1 }\n'
+      )
+      writeFileSync(
+        path.join(schemaPackageDir, 'emitted-globals.d.ts'),
+        'export interface MasterCSSEmittedGlobals { variables?: Record<string, number>; animations?: Record<string, number> }\n'
       )
       writeFileSync(
         path.join(integrationPackageDir, 'package.json'),
@@ -91,9 +93,9 @@ import virtualManifest from 'virtual:master-css-manifest'
 import virtualEmittedGlobals from 'virtual:master-css-emitted-globals'
 import localManifest from './app.css?master-css-manifest'
 
-virtualManifest satisfies import('@master/css-engine').MasterCSSManifest
+virtualManifest satisfies import('@master/css-schema/manifest').MasterCSSManifest
 virtualEmittedGlobals satisfies import('@master/css/emitted-globals').MasterCSSEmittedGlobals
-localManifest satisfies import('@master/css-engine').MasterCSSManifest
+localManifest satisfies import('@master/css-schema/manifest').MasterCSSManifest
 `.trimStart()
       )
       writeFileSync(

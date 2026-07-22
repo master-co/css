@@ -1,7 +1,6 @@
 import defineVisitors from '../utils/define-visitors'
-import resolveContext, { requireResolvedCSS } from '../utils/resolve-context'
+import resolveContext from '../utils/resolve-context'
 import createRule from '../create-rule'
-import { createConflictingClassesReport } from '@master/css-lint'
 import reportLintDiagnostics from '../utils/report-lint-diagnostics'
 import defineSourceVisitors, { shouldUseSourceVisitors } from '../utils/define-source-visitors'
 import { fromRustLintDiagnostics } from '@master/css-lint/node'
@@ -22,26 +21,20 @@ export default createRule({
   },
   defaultOptions: [],
   create(context) {
-    const { settings, css, rustLint } = resolveContext(context)
+    const { settings, rustLint } = resolveContext(context)
     if (shouldUseSourceVisitors(context)) {
-      return defineSourceVisitors({ context, css, rustLint, ruleId: 'no-conflicting-classes' })
+      return defineSourceVisitors({ context, rustLint, ruleId: 'no-conflicting-classes' })
     }
-    return defineVisitors({ context, settings }, (node, resolved) => {
-      const rustDiagnostics = rustLint
-        ? fromRustLintDiagnostics(
-          rustLint.analyzeClassList(resolved.raw, resolved.classValues).diagnostics
-            .filter(({ ruleId }) => ruleId === 'no-conflicting-classes')
-        )
-        : undefined
+    return defineVisitors({ context, settings, rustLint }, (node, resolved) => {
+      const rustDiagnostics = fromRustLintDiagnostics(
+        rustLint.analyzeClassList(resolved.raw, resolved.classValues).diagnostics
+          .filter(({ ruleId }) => ruleId === 'no-conflicting-classes')
+      )
       reportLintDiagnostics(
         context,
         node,
         resolved,
-        rustDiagnostics || createConflictingClassesReport(
-          resolved.raw,
-          requireResolvedCSS(css),
-          { unescape: resolved.unescape }
-        ).diagnostics
+        rustDiagnostics
       )
     })
   },

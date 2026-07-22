@@ -90,7 +90,7 @@ impl RenderSession {
 
     pub fn snapshot(&self) -> Result<ServerRenderIr, EngineError> {
         let snapshot = self.engine.snapshot()?;
-        let hydration_manifest = HydrationManifest::new(snapshot.rules.clone());
+        let hydration_manifest = HydrationManifest::from_snapshot(&snapshot);
         Ok(ServerRenderIr {
             classes: self.classes.clone(),
             snapshot,
@@ -112,7 +112,7 @@ impl RenderSession {
             }
         }
         let snapshot = self.engine.snapshot_for_classes(&classes)?;
-        let hydration_manifest = HydrationManifest::new(snapshot.rules.clone());
+        let hydration_manifest = HydrationManifest::from_snapshot(&snapshot);
         Ok(ServerRenderIr {
             classes,
             snapshot,
@@ -194,6 +194,7 @@ mod tests {
         );
         assert_eq!(rendered.hydration_manifest.version, 1);
         assert_eq!(rendered.hydration_manifest.rules, rendered.snapshot.rules);
+        assert!(rendered.hydration_manifest.resource_order.is_empty());
     }
 
     #[test]

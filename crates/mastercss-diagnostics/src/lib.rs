@@ -1,8 +1,10 @@
 #![forbid(unsafe_code)]
 
-use mastercss_schema::{DIAGNOSTICS_REPORT_VERSION, Diagnostic, ErrorCode};
+use mastercss_schema::{
+    CssDirectiveBlocklistEntry, DIAGNOSTICS_REPORT_VERSION, Diagnostic, ErrorCode,
+    is_css_class_blocklisted,
+};
 use serde::{Deserialize, Serialize};
-use serde_json::{Value, json};
 use std::collections::{HashMap, HashSet};
 use thiserror::Error;
 
@@ -59,13 +61,7 @@ pub struct ScannerInspectionInput {
     #[serde(default)]
     pub safelist: Vec<String>,
     #[serde(default)]
-    pub blocklist: Vec<String>,
-    #[serde(default)]
-    pub blocked_classes: Vec<String>,
-    #[serde(default)]
-    pub safelist_count: usize,
-    #[serde(default)]
-    pub blocklist_count: usize,
+    pub blocklist: Vec<CssDirectiveBlocklistEntry>,
     #[serde(default)]
     pub reset_dependencies: Vec<String>,
 }
@@ -145,23 +141,179 @@ pub struct StylesheetError {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct InspectionDiagnostic {
-    pub code: String,
-    pub severity: String,
+    pub code: InspectionDiagnosticCode,
+    pub severity: InspectionDiagnosticSeverity,
     pub message: String,
     pub source: String,
-    pub source_kind: String,
+    pub source_kind: InspectionDiagnosticSourceKind,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub file_path: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub data: Option<Value>,
+    pub data: Option<InspectionDiagnosticData>,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "kebab-case")]
+pub enum InspectionDiagnosticCode {
+    InvalidScannerClass,
+    MissingCss,
+    StylesheetError,
+    StylesheetWarning,
+    ScannerError,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "lowercase")]
+pub enum InspectionDiagnosticSeverity {
+    Error,
+    Warning,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "kebab-case")]
+pub enum InspectionDiagnosticSourceKind {
+    Scanner,
+    Stylesheet,
+    MissingCss,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum InspectionDiagnosticData {
+    Cwd {
+        cwd: String,
+    },
+    ClassName {
+        #[serde(rename = "className")]
+        class_name: String,
+    },
+    MissingCss(MissingCssResult),
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "lowercase")]
+pub enum MissingCssStatus {
+    Present,
+    Missing,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "kebab-case")]
+pub enum MissingCssReason {
+    Generated,
+    NativeCss,
+    Safelist,
+    Invalid,
+    Blocklisted,
+    NotDetected,
+}
+
+impl MissingCssReason {
+    const fn as_str(self) -> &'static str {
+        match self {
+            Self::Generated => "generated",
+            Self::NativeCss => "native-css",
+            Self::Safelist => "safelist",
+            Self::Invalid => "invalid",
+            Self::Blocklisted => "blocklisted",
+            Self::NotDetected => "not-detected",
+        }
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct MissingCssResult {
+    pub class_name: String,
+    pub status: MissingCssStatus,
+    pub reason: MissingCssReason,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
-pub struct MissingCssResult {
-    pub class_name: String,
-    pub status: String,
-    pub reason: String,
+pub struct InspectionInputs {
+    pub patterns: Vec<String>,
+    pub files: Vec<String>,
+    pub classes: Vec<String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ScannerCounts {
+    pub latent: usize,
+    pub valid: usize,
+    pub invalid: usize,
+    pub native: usize,
+    pub used_native: usize,
+    pub safelist: usize,
+    pub blocklist: usize,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ScannerClasses {
+    pub latent: Vec<String>,
+    pub valid: Vec<String>,
+    pub invalid: Vec<String>,
+    pub native: Vec<String>,
+    pub used_native: Vec<String>,
+    pub safelist: Vec<String>,
+    pub blocklist: Vec<String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ScannerInspectionReport {
+    pub counts: ScannerCounts,
+    pub classes: ScannerClasses,
+    pub reset_dependencies: Vec<String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct StylesheetInspectionReport {
+    pub entries: Vec<StylesheetInspection>,
+    pub dependencies: Vec<String>,
+    pub warnings: Vec<String>,
+    pub errors: Vec<StylesheetError>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct CssEmittedGlobalsReport {
+    pub variables: usize,
+    pub animations: usize,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct CssInspectionReport {
+    pub bytes: usize,
+    pub included: bool,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub text: Option<String>,
+    pub emitted_globals: CssEmittedGlobalsReport,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct MissingCssInspectionReport {
+    pub checked: Vec<String>,
+    pub present: Vec<MissingCssResult>,
+    pub missing: Vec<MissingCssResult>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct InspectionSummary {
+    pub files: usize,
+    pub stylesheets: usize,
+    pub diagnostics: usize,
+    pub errors: usize,
+    pub warnings: usize,
+    #[serde(rename = "missingCSS")]
+    pub missing_css: usize,
+    pub invalid_classes: usize,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -169,15 +321,15 @@ pub struct MissingCssResult {
 pub struct InspectionReport {
     pub version: u32,
     pub cwd: String,
-    pub inputs: Value,
-    pub scanner: Value,
-    pub stylesheets: Value,
-    pub css: Value,
+    pub inputs: InspectionInputs,
+    pub scanner: ScannerInspectionReport,
+    pub stylesheets: StylesheetInspectionReport,
+    pub css: CssInspectionReport,
     #[serde(rename = "missingCSS")]
-    pub missing_css: Value,
+    pub missing_css: MissingCssInspectionReport,
     pub files: Vec<SourceInspection>,
     pub diagnostics: Vec<InspectionDiagnostic>,
-    pub summary: Value,
+    pub summary: InspectionSummary,
 }
 
 pub fn create_inspection_report_json(source: &str) -> Result<String, DiagnosticsError> {
@@ -209,13 +361,17 @@ pub fn create_inspection_report(
     let native = sorted_values(&input.scanner.native);
     let used_native = sorted_values(&input.scanner.used_native);
     let safelist = sorted_values(&input.scanner.safelist);
-    let blocklist = input.scanner.blocklist.clone();
+    let blocklist = input
+        .scanner
+        .blocklist
+        .iter()
+        .map(format_blocklist_entry)
+        .collect::<Vec<_>>();
     let reset_dependencies = sorted_values(&input.scanner.reset_dependencies);
     let valid_set = value_set(&valid);
     let invalid_set = value_set(&invalid);
     let used_native_set = value_set(&used_native);
     let safelist_set = value_set(&safelist);
-    let blocked_set = value_set(&input.scanner.blocked_classes);
 
     let missing_results = input
         .classes
@@ -227,41 +383,43 @@ pub fn create_inspection_report(
                 &used_native_set,
                 &safelist_set,
                 &invalid_set,
-                &blocked_set,
+                &input.scanner.blocklist,
             )
         })
         .collect::<Vec<_>>();
     let present = missing_results
         .iter()
-        .filter(|result| result.status == "present")
+        .filter(|result| result.status == MissingCssStatus::Present)
         .cloned()
         .collect::<Vec<_>>();
     let missing = missing_results
         .iter()
-        .filter(|result| result.status == "missing")
+        .filter(|result| result.status == MissingCssStatus::Missing)
         .cloned()
         .collect::<Vec<_>>();
 
     let mut diagnostics = Vec::new();
     if let Some(message) = input.fatal_error {
         diagnostics.push(InspectionDiagnostic {
-            code: "scanner-error".into(),
-            severity: "error".into(),
+            code: InspectionDiagnosticCode::ScannerError,
+            severity: InspectionDiagnosticSeverity::Error,
             message,
             source: "Master CSS".into(),
-            source_kind: "scanner".into(),
+            source_kind: InspectionDiagnosticSourceKind::Scanner,
             file_path: None,
-            data: Some(json!({ "cwd": input.cwd })),
+            data: Some(InspectionDiagnosticData::Cwd {
+                cwd: input.cwd.clone(),
+            }),
         });
     } else {
         for entry in &input.stylesheets.entries {
             for warning in &entry.warnings {
                 diagnostics.push(InspectionDiagnostic {
-                    code: "stylesheet-warning".into(),
-                    severity: "warning".into(),
+                    code: InspectionDiagnosticCode::StylesheetWarning,
+                    severity: InspectionDiagnosticSeverity::Warning,
                     message: warning.clone(),
                     source: "Master CSS".into(),
-                    source_kind: "stylesheet".into(),
+                    source_kind: InspectionDiagnosticSourceKind::Stylesheet,
                     file_path: Some(entry.file_path.clone()),
                     data: None,
                 });
@@ -269,53 +427,56 @@ pub fn create_inspection_report(
         }
         for error in &input.stylesheets.errors {
             diagnostics.push(InspectionDiagnostic {
-                code: "stylesheet-error".into(),
-                severity: "error".into(),
+                code: InspectionDiagnosticCode::StylesheetError,
+                severity: InspectionDiagnosticSeverity::Error,
                 message: error.message.clone(),
                 source: "Master CSS".into(),
-                source_kind: "stylesheet".into(),
+                source_kind: InspectionDiagnosticSourceKind::Stylesheet,
                 file_path: Some(error.file_path.clone()),
                 data: None,
             });
         }
         for class_name in &invalid {
             diagnostics.push(InspectionDiagnostic {
-                code: "invalid-scanner-class".into(),
-                severity: "warning".into(),
+                code: InspectionDiagnosticCode::InvalidScannerClass,
+                severity: InspectionDiagnosticSeverity::Warning,
                 message: format!(
                     "Scanner candidate \"{class_name}\" did not generate Master CSS rules."
                 ),
                 source: "Master CSS".into(),
-                source_kind: "scanner".into(),
+                source_kind: InspectionDiagnosticSourceKind::Scanner,
                 file_path: input.first_source_by_class.get(class_name).cloned(),
-                data: Some(json!({ "className": class_name })),
+                data: Some(InspectionDiagnosticData::ClassName {
+                    class_name: class_name.clone(),
+                }),
             });
         }
         for result in &missing {
             diagnostics.push(InspectionDiagnostic {
-                code: "missing-css".into(),
-                severity: "error".into(),
+                code: InspectionDiagnosticCode::MissingCss,
+                severity: InspectionDiagnosticSeverity::Error,
                 message: format!(
                     "No generated CSS found for \"{}\" ({}).",
-                    result.class_name, result.reason
+                    result.class_name,
+                    result.reason.as_str()
                 ),
                 source: "Master CSS".into(),
-                source_kind: "missing-css".into(),
+                source_kind: InspectionDiagnosticSourceKind::MissingCss,
                 file_path: None,
-                data: Some(serde_json::to_value(result).expect("missing CSS result serializes")),
+                data: Some(InspectionDiagnosticData::MissingCss(result.clone())),
             });
         }
     }
 
-    let scanner_counts = json!({
-        "latent": latent.len(),
-        "valid": valid.len(),
-        "invalid": invalid.len(),
-        "native": native.len(),
-        "usedNative": used_native.len(),
-        "safelist": input.scanner.safelist_count,
-        "blocklist": input.scanner.blocklist_count
-    });
+    let scanner_counts = ScannerCounts {
+        latent: latent.len(),
+        valid: valid.len(),
+        invalid: invalid.len(),
+        native: native.len(),
+        used_native: used_native.len(),
+        safelist: safelist.len(),
+        blocklist: blocklist.len(),
+    };
     let stylesheet_warnings = sorted_values(&input.stylesheets.warnings);
     let stylesheet_dependencies = sorted_values(
         &input
@@ -328,75 +489,69 @@ pub fn create_inspection_report(
     let css_bytes = input.css.text.encode_utf16().count();
     let error_count = diagnostics
         .iter()
-        .filter(|diagnostic| diagnostic.severity == "error")
+        .filter(|diagnostic| diagnostic.severity == InspectionDiagnosticSeverity::Error)
         .count();
     let warning_count = diagnostics.len() - error_count;
     let file_count = input.files.len();
     let stylesheet_count = input.stylesheets.entries.len();
-    let css = if input.css.included {
-        json!({
-            "bytes": css_bytes,
-            "included": true,
-            "text": input.css.text,
-            "emittedGlobals": {
-                "variables": value_set(&input.css.variables).len(),
-                "animations": value_set(&input.css.animations).len()
-            }
-        })
-    } else {
-        json!({
-            "bytes": css_bytes,
-            "included": false,
-            "emittedGlobals": {
-                "variables": value_set(&input.css.variables).len(),
-                "animations": value_set(&input.css.animations).len()
-            }
-        })
+    let invalid_class_count = invalid_set.len();
+    let css = CssInspectionReport {
+        bytes: css_bytes,
+        included: input.css.included,
+        text: input.css.included.then_some(input.css.text),
+        emitted_globals: CssEmittedGlobalsReport {
+            variables: value_set(&input.css.variables).len(),
+            animations: value_set(&input.css.animations).len(),
+        },
     };
 
     Ok(InspectionReport {
         version: DIAGNOSTICS_REPORT_VERSION,
         cwd: input.cwd,
-        inputs: json!({
-            "patterns": input.patterns,
-            "files": input.files.iter().map(|file| &file.file_path).collect::<Vec<_>>(),
-            "classes": input.classes
-        }),
-        scanner: json!({
-            "counts": scanner_counts,
-            "classes": {
-                "latent": latent,
-                "valid": valid,
-                "invalid": invalid,
-                "native": native,
-                "usedNative": used_native,
-                "safelist": safelist,
-                "blocklist": blocklist
+        inputs: InspectionInputs {
+            patterns: input.patterns,
+            files: input
+                .files
+                .iter()
+                .map(|file| file.file_path.clone())
+                .collect(),
+            classes: input.classes.clone(),
+        },
+        scanner: ScannerInspectionReport {
+            counts: scanner_counts,
+            classes: ScannerClasses {
+                latent,
+                valid,
+                invalid,
+                native,
+                used_native,
+                safelist,
+                blocklist,
             },
-            "resetDependencies": reset_dependencies
-        }),
-        stylesheets: json!({
-            "entries": input.stylesheets.entries,
-            "dependencies": stylesheet_dependencies,
-            "warnings": stylesheet_warnings,
-            "errors": input.stylesheets.errors
-        }),
+            reset_dependencies,
+        },
+        stylesheets: StylesheetInspectionReport {
+            entries: input.stylesheets.entries,
+            dependencies: stylesheet_dependencies,
+            warnings: stylesheet_warnings,
+            errors: input.stylesheets.errors,
+        },
         css,
-        missing_css: json!({
-            "checked": input.classes,
-            "present": present,
-            "missing": missing
-        }),
+        missing_css: MissingCssInspectionReport {
+            checked: input.classes,
+            present,
+            missing: missing.clone(),
+        },
         files: input.files,
-        summary: json!({
-            "files": file_count,
-            "stylesheets": stylesheet_count,
-            "diagnostics": diagnostics.len(),
-            "errors": error_count,
-            "warnings": warning_count,
-            "missingCSS": missing.len(),
-            "invalidClasses": invalid_set.len()
-        }),
+        summary: InspectionSummary {
+            files: file_count,
+            stylesheets: stylesheet_count,
+            diagnostics: diagnostics.len(),
+            errors: error_count,
+            warnings: warning_count,
+            missing_css: missing.len(),
+            invalid_classes: invalid_class_count,
+        },
         diagnostics,
     })
 }
@@ -416,31 +571,40 @@ fn value_set(values: &[String]) -> HashSet<&str> {
     values.iter().map(String::as_str).collect()
 }
 
+fn format_blocklist_entry(entry: &CssDirectiveBlocklistEntry) -> String {
+    match entry {
+        CssDirectiveBlocklistEntry::Exact(value) => value.clone(),
+        CssDirectiveBlocklistEntry::Pattern { source, flags } => {
+            format!("/{source}/{flags}")
+        }
+    }
+}
+
 fn classify_missing_css(
     class_name: &str,
     valid: &HashSet<&str>,
     used_native: &HashSet<&str>,
     safelist: &HashSet<&str>,
     invalid: &HashSet<&str>,
-    blocked: &HashSet<&str>,
+    blocklist: &[CssDirectiveBlocklistEntry],
 ) -> MissingCssResult {
     let (status, reason) = if valid.contains(class_name) {
-        ("present", "generated")
+        (MissingCssStatus::Present, MissingCssReason::Generated)
     } else if used_native.contains(class_name) {
-        ("present", "native-css")
+        (MissingCssStatus::Present, MissingCssReason::NativeCss)
     } else if safelist.contains(class_name) {
-        ("present", "safelist")
+        (MissingCssStatus::Present, MissingCssReason::Safelist)
     } else if invalid.contains(class_name) {
-        ("missing", "invalid")
-    } else if blocked.contains(class_name) {
-        ("missing", "blocklisted")
+        (MissingCssStatus::Missing, MissingCssReason::Invalid)
+    } else if is_css_class_blocklisted(class_name, blocklist) {
+        (MissingCssStatus::Missing, MissingCssReason::Blocklisted)
     } else {
-        ("missing", "not-detected")
+        (MissingCssStatus::Missing, MissingCssReason::NotDetected)
     };
     MissingCssResult {
         class_name: class_name.to_owned(),
-        status: status.into(),
-        reason: reason.into(),
+        status,
+        reason,
     }
 }
 
@@ -484,14 +648,17 @@ mod tests {
     fn composes_stable_reports_and_utf16_css_sizes() {
         let report = create_inspection_report(input()).unwrap();
         assert_eq!(report.version, 1);
-        assert_eq!(report.css["bytes"], 2);
-        assert_eq!(report.summary["errors"], 1);
-        assert_eq!(report.summary["warnings"], 1);
+        assert_eq!(report.css.bytes, 2);
+        assert_eq!(report.summary.errors, 1);
+        assert_eq!(report.summary.warnings, 1);
         assert_eq!(
             report.diagnostics[0].file_path.as_deref(),
             Some("/project/index.html")
         );
-        assert_eq!(report.missing_css["missing"][0]["reason"], "not-detected");
+        assert_eq!(
+            report.missing_css.missing[0].reason,
+            MissingCssReason::NotDetected
+        );
     }
 
     #[test]
@@ -502,9 +669,12 @@ mod tests {
         input.scanner.used_native = vec!["all".into()];
         input.scanner.safelist = vec!["all".into()];
         input.scanner.invalid = vec!["all".into()];
-        input.scanner.blocked_classes = vec!["all".into()];
+        input.scanner.blocklist = vec![CssDirectiveBlocklistEntry::Exact("all".into())];
         let report = create_inspection_report(input).unwrap();
-        assert_eq!(report.missing_css["present"][0]["reason"], "generated");
+        assert_eq!(
+            report.missing_css.present[0].reason,
+            MissingCssReason::Generated
+        );
     }
 
     #[test]
@@ -516,8 +686,11 @@ mod tests {
         input.css = CssInspectionInput::default();
         input.fatal_error = Some("boom".into());
         let report = create_inspection_report(input).unwrap();
-        assert_eq!(report.diagnostics[0].code, "scanner-error");
-        assert_eq!(report.summary["errors"], 1);
+        assert_eq!(
+            report.diagnostics[0].code,
+            InspectionDiagnosticCode::ScannerError
+        );
+        assert_eq!(report.summary.errors, 1);
     }
 
     #[test]
