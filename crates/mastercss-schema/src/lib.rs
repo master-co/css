@@ -38,7 +38,7 @@ fn resource_count(value: Option<&Value>) -> u32 {
         .unwrap_or_default()
 }
 
-#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "lowercase")]
 pub enum UtilityLayerName {
     Base,

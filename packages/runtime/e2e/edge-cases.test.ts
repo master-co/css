@@ -485,7 +485,7 @@ test('mutation removals are canceled when a class returns before flush', async (
 test('direct ensureClassRules and deleteClassRules stay synchronous', async ({ page }) => {
   await init(page)
 
-  const result = await page.evaluate(() => {
+  const result = await page.evaluate(async () => {
     globalThis.masterCSSRuntime.ensureClassRules('fg:red-60')
     const added = {
       hasClassUtility: globalThis.masterCSSRuntime.classUtilities.has('fg:red-60'),
@@ -741,16 +741,17 @@ test('disconnect and destroy clear pending mutation additions and removals', asy
 test('shadow roots maintain isolated runtime state and style nodes', async ({ page }) => {
   await init(page)
 
-  const result = await page.evaluate(() => {
+  const result = await page.evaluate(async () => {
     const host = document.createElement('section')
     const shadow = host.attachShadow({ mode: 'open' })
     shadow.innerHTML = '<p class="block"></p>'
     document.body.append(host)
 
-    const shadowRuntime = globalThis.MasterCSSRuntime.create({
+    const shadowRuntime = await globalThis.MasterCSSRuntime.start({
       root: shadow,
       manifest: globalThis.masterCSSRuntime.manifest
-    }).observe()
+    })
+    shadowRuntime.observe()
 
     return {
       documentCounts: Object.fromEntries(globalThis.masterCSSRuntime.classCounts),
@@ -997,7 +998,7 @@ test('runtime start does not import a hydration manifest without a runtime style
   })
 })
 
-test('progressive hydration falls back when an external style hydration manifest import fails', async ({ page }) => {
+test('progressive hydration fails open when an external style hydration manifest import fails', async ({ page }) => {
   const loaderURL = await getRuntimeLoaderURL()
   const source = new URL('/_master-css/hydration/missing.json', loaderURL).href
 
@@ -1018,17 +1019,27 @@ test('progressive hydration falls back when an external style hydration manifest
     runtimeStyleId: MASTER_CSS_RUNTIME_STYLE_ID,
     source
   })
-  await startCSSRuntimeAsync(page, undefined, loaderURL)
+  const result = await page.evaluate(async ({ loaderURL, runtimeStyleId }) => {
+    const { startCSSRuntimeAsync } = await import(loaderURL)
+    try {
+      await startCSSRuntimeAsync()
+    } catch (error) {
+      return {
+        code: (error as { code?: string }).code,
+        hidden: document.documentElement.hasAttribute('hidden'),
+        runtimeStarted: Boolean(globalThis.masterCSSRuntime),
+        styleText: document.getElementById(runtimeStyleId)?.textContent
+      }
+    }
+    throw new Error('Expected runtime startup to fail.')
+  }, { loaderURL, runtimeStyleId: MASTER_CSS_RUNTIME_STYLE_ID })
 
-  const result = await page.evaluate(() => ({
-    progressive: globalThis.masterCSSRuntime.progressive,
-    utilityRules: globalThis.masterCSSRuntime.utilitiesLayer.rules.map(({ name }) => name),
-    text: globalThis.masterCSSRuntime.text
-  }))
-
-  expect(result.progressive).toBe(false)
-  expect(result.utilityRules).toEqual(['block'])
-  expect(result.text).toBe('@layer utilities{.block{display:block}}')
+  expect(result).toEqual({
+    code: 'INVALID_HYDRATION_MANIFEST',
+    hidden: false,
+    runtimeStarted: false,
+    styleText: '@layer utilities{.block{display:block}}'
+  })
 })
 
 test('explicit hydration manifest wins over external DOM discovery', async ({ page }) => {
@@ -1093,7 +1104,7 @@ test('progressive hydration matches bucketed theme variables', async ({ page }) 
     text: globalThis.masterCSSRuntime.text
   }))
 
-  expect(consoleWarnings.some((message) => message.includes('hydration manifest'))).toBe(false)
+  expect(consoleWarnings.filter((message) => message.includes('hydration manifest'))).toEqual([])
   expect(result.progressive).toBe(true)
   expect(result.counts).toEqual({
     'color-red-60': 1,
@@ -1134,7 +1145,7 @@ test('progressive hydration matches theme variable buckets by key', async ({ pag
     text: globalThis.masterCSSRuntime.text
   }))
 
-  expect(consoleWarnings.some((message) => message.includes('hydration manifest'))).toBe(false)
+  expect(consoleWarnings.filter((message) => message.includes('hydration manifest'))).toEqual([])
   expect(result.progressive).toBe(true)
   expect(result.counts).toEqual({
     'color-primary': 1

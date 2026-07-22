@@ -1,14 +1,22 @@
 import {
-  MasterCSS,
-  VariableRule,
-  AnimationRule,
   createEngine,
   MasterCSSEngineError,
+  type MasterCSSEmittedGlobals,
   type MasterCSSEngine
 } from '@master/css-engine'
-import type { MasterCSSManifest, MasterCSSManifestUtilityLayerName } from '@master/css-schema/manifest'
-import type { MasterCSSEmittedGlobals } from '@master/css-engine'
-import type { MasterCSSBackend, MasterCSSDiagnostic, MasterCSSResolvedBackend } from '@master/css-schema'
+import type {
+  MasterCSSBackend,
+  MasterCSSDiagnostic,
+  MasterCSSEngineSnapshotIR,
+  MasterCSSEngineTransitionIR,
+  MasterCSSResolvedBackend
+} from '@master/css-schema'
+import {
+  flattenMasterCSSManifestVariables,
+  type MasterCSSManifest,
+  type MasterCSSManifestUtilityLayerName,
+  type MasterCSSManifestVariableEntry
+} from '@master/css-schema/manifest'
 import {
   MASTER_CSS_HYDRATION_MANIFEST_ATTR,
   MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID,
@@ -16,13 +24,7 @@ import {
   type MasterCSSHydrationManifest
 } from '@master/css-schema/hydration-manifest'
 import { MASTER_CSS_RUNTIME_STYLE_ID } from '@master/css-schema/runtime-style'
-import registerGlobal from './register-global'
-import { HydrateResult } from './types'
-import RuntimeUtilityLayer, { RuntimeUtilityLayerInstance } from './utility-layer'
-import RuntimeThemeLayer from './theme-layer'
 import RuntimeClassTracker from './class-tracker'
-import HydratedGeneratedRule from './generated-rule'
-import { browserNativeDeclarationMatcher } from './native-declaration'
 import {
   debugRuntimeCreated,
   debugRuntimeDestroyed,
@@ -32,6 +34,12 @@ import {
   debugRuntimeObserved,
   debugRuntimeRefreshed
 } from './debuggers'
+import HydratedGeneratedRule from './generated-rule'
+import RuntimeLayer, { type RuntimeLayerRule, type RuntimeResourceRule } from './layer'
+import registerGlobal from './register-global'
+import RuntimeThemeLayer from './theme-layer'
+import type { HydrateResult } from './types'
+import RuntimeUtilityLayer from './utility-layer'
 
 const MASTER_CSS_RUNTIME_STYLE_SELECTOR = `style#${MASTER_CSS_RUNTIME_STYLE_ID}`
 const RETAINED_CLASS_RULE_MIN_AGE_MS = 1000
@@ -40,6 +48,7 @@ const RETAINED_CLASS_RULE_CLEANUP_BATCH_SIZE = 64
 const RETAINED_CLASS_RULE_SOFT_TARGET = 128
 const RETAINED_CLASS_RULE_HARD_LIMIT = 512
 const RETAINED_CLASS_RULE_HARD_RAW_BYTES = 256 * 1024
+const LAYER_ORDER = ['theme', 'base', 'defaults', 'components', 'utilities'] as const
 
 interface RetainedClassRule {
   retainedAt: number
@@ -52,6 +61,15 @@ interface RuntimeCleanupWindow {
   cancelIdleCallback?: (handle: number) => void
   setTimeout: typeof globalThis.setTimeout
   clearTimeout: typeof globalThis.clearTimeout
+}
+
+interface RuntimeKeyframeRule extends RuntimeResourceRule {
+  native?: CSSKeyframesRule
+}
+
+interface RuntimeNonLayer {
+  rules: RuntimeKeyframeRule[]
+  tokenCounts: Map<string, number>
 }
 
 export interface CSSRuntimeCreateOptions {
@@ -69,25 +87,11 @@ export interface CSSRuntimeStartOptions extends CSSRuntimeCreateOptions {
 
 export const MASTER_CSS_RUNTIME_STARTUP_TIMEOUT_MS = 3000
 
-class RuntimeStartupError extends Error {
-  readonly code = 'RUNTIME_STARTUP_TIMEOUT'
-
-  constructor(timeoutMs: number) {
-    super(`Master CSS runtime did not start within ${timeoutMs}ms.`)
-    this.name = 'RuntimeStartupError'
-  }
-}
-
 function toStartupDiagnostic(error: unknown): MasterCSSDiagnostic {
-  if (error instanceof MasterCSSEngineError) {
-    return error.toDiagnostic()
-  }
-  if (error instanceof RuntimeStartupError) {
-    return { code: error.code, message: error.message }
-  }
+  if (error instanceof MasterCSSEngineError) return error.toDiagnostic()
   return {
     code: 'INTERNAL',
-    message: error instanceof Error ? error.message : String(error),
+    message: error instanceof Error ? error.message : String(error)
   }
 }
 
@@ -99,9 +103,11 @@ function isDocumentRoot(root: Document | ShadowRoot): root is Document {
 function findElementById(root: Document | ShadowRoot, id: string) {
   return isDocumentRoot(root)
     ? root.getElementById(id)
-    : 'querySelector' in root
-      ? root.querySelector(`#${id}`)
-      : undefined
+    : root.querySelector(`#${id}`)
+}
+
+function getRootHost(root: Document | ShadowRoot) {
+  return isDocumentRoot(root) ? root.documentElement : root.host
 }
 
 function validateHydrationManifest(hydrationManifest: unknown): MasterCSSHydrationManifest | undefined {
@@ -111,29 +117,28 @@ function validateHydrationManifest(hydrationManifest: unknown): MasterCSSHydrati
     : undefined
 }
 
-function parseHydrationManifest(source: string): MasterCSSHydrationManifest | undefined {
+function invalidHydrationManifest(message: string, cause?: unknown) {
+  return new MasterCSSEngineError('INVALID_HYDRATION_MANIFEST', message, { cause })
+}
+
+function parseHydrationManifest(source: string): MasterCSSHydrationManifest {
   try {
-    return validateHydrationManifest(JSON.parse(source))
-  } catch (error) {
-    if (process.env.NODE_ENV === 'development') {
-      console.debug('Cannot parse Master CSS hydration manifest.', error)
-    }
+    const hydrationManifest = validateHydrationManifest(JSON.parse(source))
+    if (hydrationManifest) return hydrationManifest
+  } catch (cause) {
+    throw invalidHydrationManifest('Cannot parse the Master CSS hydration manifest.', cause)
   }
+  throw invalidHydrationManifest('Unsupported Master CSS hydration manifest. Expected version 1.')
 }
 
 function readInlineHydrationManifest(root: Document | ShadowRoot): MasterCSSHydrationManifest | undefined {
-  const element = findElementById(root, MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID)
-  const source = element?.textContent?.trim()
-  if (!source) return
-  return parseHydrationManifest(source)
+  const source = findElementById(root, MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID)?.textContent?.trim()
+  return source ? parseHydrationManifest(source) : undefined
 }
 
 function readExternalHydrationManifestSource(root: Document | ShadowRoot) {
   const styleElement = findElementById(root, MASTER_CSS_RUNTIME_STYLE_ID)
-  const HTMLStyleElementConstructor = globalThis.HTMLStyleElement
-  return HTMLStyleElementConstructor && styleElement instanceof HTMLStyleElementConstructor
-    ? styleElement.getAttribute(MASTER_CSS_HYDRATION_MANIFEST_ATTR)
-    : undefined
+  return styleElement?.getAttribute(MASTER_CSS_HYDRATION_MANIFEST_ATTR) || undefined
 }
 
 function resolveExternalHydrationManifestURL(root: Document | ShadowRoot, source: string) {
@@ -141,17 +146,85 @@ function resolveExternalHydrationManifestURL(root: Document | ShadowRoot, source
   return new URL(source, ownerDocument.baseURI).href
 }
 
-async function importHydrationManifest(url: string): Promise<MasterCSSHydrationManifest | undefined> {
-  const loadHydrationManifestModule = globalThis.Function(
-    'specifier',
-    "return import(specifier, { with: { type: 'json' } })"
-  ) as (specifier: string) => Promise<{ default: unknown }>
-  const hydrationManifestModule = await loadHydrationManifestModule(url)
-  return validateHydrationManifest(hydrationManifestModule.default)
+async function importHydrationManifest(url: string): Promise<MasterCSSHydrationManifest> {
+  try {
+    const loadHydrationManifestModule = globalThis.Function(
+      'specifier',
+      "return import(specifier, { with: { type: 'json' } })"
+    ) as (specifier: string) => Promise<{ default: unknown }>
+    const module = await loadHydrationManifestModule(url)
+    const hydrationManifest = validateHydrationManifest(module.default)
+    if (hydrationManifest) return hydrationManifest
+    throw invalidHydrationManifest(`Invalid Master CSS hydration manifest loaded from ${url}.`)
+  } catch (cause) {
+    if (cause instanceof MasterCSSEngineError) throw cause
+    throw invalidHydrationManifest(`Cannot load the Master CSS hydration manifest from ${url}.`, cause)
+  }
 }
 
-export default class CSSRuntime extends MasterCSS {
+async function resolveHydrationManifest(
+  root: Document | ShadowRoot,
+  explicit: MasterCSSHydrationManifest | undefined
+) {
+  if (explicit !== undefined) {
+    const hydrationManifest = validateHydrationManifest(explicit)
+    if (!hydrationManifest) {
+      throw invalidHydrationManifest('Unsupported Master CSS hydration manifest. Expected version 1.')
+    }
+    return hydrationManifest
+  }
+  const inline = readInlineHydrationManifest(root)
+  if (inline) return inline
+  const source = readExternalHydrationManifestSource(root)
+  return source
+    ? await importHydrationManifest(resolveExternalHydrationManifestURL(root, source))
+    : undefined
+}
+
+function isLayerBlockRule(rule: CSSRule): rule is CSSLayerBlockRule {
+  return rule.constructor.name === 'CSSLayerBlockRule'
+}
+
+function isKeyframesRule(rule: CSSRule): rule is CSSKeyframesRule {
+  return rule.constructor.name === 'CSSKeyframesRule'
+}
+
+function getGeneratedRuleNodeTexts(rule: RuntimeLayerRule) {
+  const nodes = 'nodes' in rule ? rule.nodes : undefined
+  return nodes?.length ? nodes.map(({ text }) => text) : [rule.text]
+}
+
+function extractLayerBody(text: string, layerName: string) {
+  const prefix = `@layer ${layerName}{`
+  const start = text.indexOf(prefix)
+  if (start === -1) return ''
+  let depth = 1
+  let quote = ''
+  for (let index = start + prefix.length; index < text.length; index++) {
+    const char = text[index]
+    if (quote) {
+      if (char === '\\') index++
+      else if (char === quote) quote = ''
+      continue
+    }
+    if (char === '"' || char === '\'') quote = char
+    else if (char === '{') depth++
+    else if (char === '}' && --depth === 0) return text.slice(start + prefix.length, index)
+  }
+  return ''
+}
+
+function cloneEmittedGlobals(emittedGlobals?: MasterCSSEmittedGlobals): Required<MasterCSSEmittedGlobals> {
+  return {
+    variables: { ...(emittedGlobals?.variables || {}) },
+    animations: { ...(emittedGlobals?.animations || {}) }
+  }
+}
+
+export default class CSSRuntime {
   static instances = new WeakMap<Document | ShadowRoot, CSSRuntime>()
+  private static starts = new WeakMap<Document | ShadowRoot, Promise<CSSRuntime>>()
+
   readonly host: Element
   readonly container: HTMLElement | ShadowRoot
   readonly baseLayer = new RuntimeUtilityLayer('base', this)
@@ -159,8 +232,20 @@ export default class CSSRuntime extends MasterCSS {
   readonly defaultsLayer = new RuntimeUtilityLayer('defaults', this)
   readonly componentsLayer = new RuntimeUtilityLayer('components', this)
   readonly utilitiesLayer = new RuntimeUtilityLayer('utilities', this)
+  readonly classUtilities = new Map<string, HydratedGeneratedRule[]>()
+  readonly animationsNonLayer: RuntimeNonLayer = { rules: [], tokenCounts: new Map() }
   readonly classCounts = new Map<string, number>()
   readonly retainedClassNames = new Set<string>()
+  readonly emittedGlobals: Required<MasterCSSEmittedGlobals>
+  readonly variables = new Map<string, MasterCSSManifestVariableEntry>()
+  readonly animations = new Map<string, unknown>()
+
+  manifest: MasterCSSManifest
+  style: HTMLStyleElement | null = null
+  observer?: MutationObserver
+  progressive = false
+  observing = false
+
   private readonly classTracker = new RuntimeClassTracker()
   private readonly pendingAddedClassNames = new Set<string>()
   private readonly pendingRemovedClassNames = new Set<string>()
@@ -171,124 +256,145 @@ export default class CSSRuntime extends MasterCSS {
   private retainedCleanupIdleHandle: number | undefined
   private retainedCleanupTimeoutHandle: ReturnType<typeof globalThis.setTimeout> | undefined
   private hydrationFailureReason?: string
-  observer?: MutationObserver
-  progressive = false
-  observing = false
-  private backendEngine?: MasterCSSEngine
 
-  get backend(): MasterCSSResolvedBackend | undefined {
-    return this.backendEngine?.backend
+  private constructor(
+    public readonly root: Document | ShadowRoot,
+    manifest: MasterCSSManifest,
+    emittedGlobals: MasterCSSEmittedGlobals | undefined,
+    public hydrationManifest: MasterCSSHydrationManifest | undefined,
+    readonly backendEngine: MasterCSSEngine
+  ) {
+    this.manifest = manifest
+    this.emittedGlobals = cloneEmittedGlobals(emittedGlobals)
+    this.host = getRootHost(root)
+    this.container = isDocumentRoot(root) ? root.head : root
+    this.loadManifestHostData(manifest)
+    this.resetResourceCounts()
+  }
+
+  get backend(): MasterCSSResolvedBackend {
+    return this.backendEngine.backend
+  }
+
+  get text() {
+    return this.backendEngine.text
+  }
+
+  get rules() {
+    const layers = LAYER_ORDER
+      .map((name) => this.getLayerByName(name))
+      .filter((layer): layer is RuntimeLayer => Boolean(layer?.text))
+    return [...layers, ...this.animationsNonLayer.rules]
   }
 
   static async start(options: CSSRuntimeStartOptions): Promise<CSSRuntime> {
+    const root = options.root || document
+    const current = CSSRuntime.instances.get(root)
+    if (current) {
+      current.registerEmittedGlobals(options.emittedGlobals)
+      if (options.hydrationManifest !== undefined) current.setHydrationManifest(options.hydrationManifest)
+      return current
+    }
+    const pending = CSSRuntime.starts.get(root)
+    if (pending) return await pending
+
+    const startup = CSSRuntime.startNew(root, options)
+      .finally(() => CSSRuntime.starts.delete(root))
+    CSSRuntime.starts.set(root, startup)
+    return await startup
+  }
+
+  private static async startNew(root: Document | ShadowRoot, options: CSSRuntimeStartOptions) {
     const {
       backend = 'auto',
       startupTimeoutMs = MASTER_CSS_RUNTIME_STARTUP_TIMEOUT_MS,
-      onError,
-      ...createOptions
+      onError
     } = options
-    const runtime = CSSRuntime.create(createOptions)
-    if (runtime.backendEngine) {
-      if (runtime.needsHydrationManifest()) await runtime.loadHydrationManifest()
-      return runtime
-    }
-
-    let timedOut = false
+    const ownerWindow = (isDocumentRoot(root) ? root : root.ownerDocument).defaultView || globalThis
+    let abandoned = false
+    let timeoutHandle: ReturnType<typeof globalThis.setTimeout> | undefined
     const enginePromise = createEngine({
       manifest: options.manifest,
       emittedGlobals: options.emittedGlobals,
       backend
     }).then((engine) => {
-      if (timedOut) engine.dispose()
+      if (abandoned) engine.dispose()
       return engine
     })
-    const hydrationPromise = runtime.needsHydrationManifest()
-      ? runtime.loadHydrationManifest()
-      : Promise.resolve(runtime)
-    const view = runtime.getAnimationFrameWindow()
-    let timeoutHandle: ReturnType<typeof globalThis.setTimeout> | undefined
+    const hydrationPromise = resolveHydrationManifest(root, options.hydrationManifest)
     const timeoutPromise = new Promise<never>((_, reject) => {
-      timeoutHandle = view.setTimeout(
-        () => reject(new RuntimeStartupError(startupTimeoutMs)),
-        startupTimeoutMs
-      )
+      timeoutHandle = ownerWindow.setTimeout(() => reject(new MasterCSSEngineError(
+        'RUNTIME_STARTUP_TIMEOUT',
+        `Master CSS runtime did not start within ${startupTimeoutMs}ms.`
+      )), startupTimeoutMs)
     })
 
     try {
-      const [engine] = await Promise.race([
+      const [engine, hydrationManifest] = await Promise.race([
         Promise.all([enginePromise, hydrationPromise]),
         timeoutPromise
       ])
-      if (timeoutHandle !== undefined) view.clearTimeout(timeoutHandle)
-      runtime.backendEngine = engine
-      return runtime
+      if (timeoutHandle !== undefined) ownerWindow.clearTimeout(timeoutHandle)
+      return new CSSRuntime(
+        root,
+        options.manifest,
+        options.emittedGlobals,
+        hydrationManifest,
+        engine
+      ).register()
     } catch (error) {
-      timedOut = true
-      if (timeoutHandle !== undefined) view.clearTimeout(timeoutHandle)
-      runtime.host.removeAttribute('hidden')
-      const diagnostic = toStartupDiagnostic(error)
-      onError?.(diagnostic)
+      abandoned = true
+      if (timeoutHandle !== undefined) ownerWindow.clearTimeout(timeoutHandle)
+      getRootHost(root).removeAttribute('hidden')
+      onError?.(toStartupDiagnostic(error))
       throw error
     }
   }
 
-  static create(options: CSSRuntimeCreateOptions): CSSRuntime {
-    const {
-      manifest,
-      root = document,
-      emittedGlobals,
-      hydrationManifest
-    } = options
-    const resolvedHydrationManifest = hydrationManifest === undefined
-      ? readInlineHydrationManifest(root)
-      : hydrationManifest
-    const current = globalThis.MasterCSSRuntime.instances.get(root)
-    if (current) {
-      current.registerEmittedGlobals(emittedGlobals)
-      if (resolvedHydrationManifest !== undefined) current.setHydrationManifest(resolvedHydrationManifest)
-      return current
+  private loadManifestHostData(manifest: MasterCSSManifest) {
+    this.variables.clear()
+    for (const variable of flattenMasterCSSManifestVariables(manifest.variables)) {
+      this.variables.set(variable.name, variable)
     }
-    return new CSSRuntime(root, manifest, emittedGlobals, resolvedHydrationManifest).register()
-  }
-
-  constructor(
-    public root: Document | ShadowRoot = document,
-    manifest: MasterCSSManifest,
-    emittedGlobals?: MasterCSSEmittedGlobals,
-    public hydrationManifest?: MasterCSSHydrationManifest
-  ) {
-    super(manifest, emittedGlobals, {
-      nativeDeclarationMatcher: browserNativeDeclarationMatcher
-    })
-    if (isDocumentRoot(root)) {
-      this.container = root.head
-      this.host = root.documentElement
-    } else {
-      this.container = this.root as CSSRuntime['container']
-      this.host = (this.root as ShadowRoot).host
+    this.animations.clear()
+    for (const [name, animation] of Object.entries(manifest.animations || {})) {
+      this.animations.set(name, animation)
     }
-    this.applyEmittedGlobalsCounts({
-      variables: this.emittedGlobals.variables
-    })
   }
 
   register(): this {
-    const registered = globalThis.MasterCSSRuntime.instances.get(this.root) === this
-    globalThis.MasterCSSRuntime.instances.set(this.root, this)
+    const registered = CSSRuntime.instances.get(this.root) === this
+    CSSRuntime.instances.set(this.root, this)
     if (isDocumentRoot(this.root)) {
       this.root.defaultView!.globalThis.masterCSSRuntime = this
     }
-    if (!registered && process.env.NODE_ENV === 'development') {
-      debugRuntimeCreated(this)
-    }
+    if (!registered && process.env.NODE_ENV === 'development') debugRuntimeCreated(this)
     return this
   }
 
   unregister(): this {
-    globalThis.MasterCSSRuntime.instances.delete(this.root)
+    CSSRuntime.instances.delete(this.root)
     if (isDocumentRoot(this.root) && this.root.defaultView!.globalThis.masterCSSRuntime === this) {
       this.root.defaultView!.globalThis.masterCSSRuntime = undefined as unknown as CSSRuntime
     }
+    return this
+  }
+
+  registerEmittedGlobals(emittedGlobals?: MasterCSSEmittedGlobals) {
+    if (!emittedGlobals) return this
+    for (const [name, count] of Object.entries(emittedGlobals.variables || {})) {
+      if (count) this.emittedGlobals.variables[name] = (this.emittedGlobals.variables[name] || 0) + count
+    }
+    for (const [name, count] of Object.entries(emittedGlobals.animations || {})) {
+      if (count) this.emittedGlobals.animations[name] = (this.emittedGlobals.animations[name] || 0) + count
+    }
+    this.resetResourceCounts()
+    for (const layer of this.getUtilityLayers()) {
+      for (const rule of layer.rules) {
+        if (rule instanceof HydratedGeneratedRule) this.updateRuleResourceCounts(rule, 1)
+      }
+    }
+    this.syncResourceRuleState()
     return this
   }
 
@@ -297,37 +403,320 @@ export default class CSSRuntime extends MasterCSS {
     return this
   }
 
-  needsHydrationManifest(): boolean {
+  needsHydrationManifest() {
     return this.hydrationManifest === undefined && Boolean(readExternalHydrationManifestSource(this.root))
   }
 
   async loadHydrationManifest(): Promise<this> {
-    const inlineHydrationManifest = readInlineHydrationManifest(this.root)
-    if (inlineHydrationManifest) {
-      this.setHydrationManifest(inlineHydrationManifest)
-      return this
-    }
-
-    const source = readExternalHydrationManifestSource(this.root)
-    if (!source) return this
-
-    try {
-      this.setHydrationManifest(await importHydrationManifest(resolveExternalHydrationManifestURL(this.root, source)))
-    } catch (error) {
-      if (process.env.NODE_ENV === 'development') {
-        console.debug('Cannot load Master CSS hydration manifest.', error)
-      }
-    }
-
+    this.hydrationManifest = await resolveHydrationManifest(this.root, this.hydrationManifest)
     return this
   }
 
+  private getOwnerDocument() {
+    return isDocumentRoot(this.root) ? this.root : this.root.ownerDocument
+  }
+
   private createRuntimeStyle() {
-    const ownerDocument = 'createElement' in this.root ? this.root : this.root.ownerDocument
-    this.style = ownerDocument.createElement('style')
+    this.style = this.getOwnerDocument().createElement('style')
     this.style.id = MASTER_CSS_RUNTIME_STYLE_ID
     this.style.setAttribute('blocking', 'render')
     this.container.append(this.style)
+  }
+
+  private getStyleSheet() {
+    return this.style?.sheet || undefined
+  }
+
+  private findTopLevelRuleIndex(rule: CSSRule) {
+    const sheet = this.getStyleSheet()
+    if (!sheet) return -1
+    for (let index = 0; index < sheet.cssRules.length; index++) {
+      if (sheet.cssRules.item(index) === rule) return index
+    }
+    return -1
+  }
+
+  private getLayerInsertIndex(name: string) {
+    const sheet = this.getStyleSheet()
+    if (!sheet) return 0
+    const rank = LAYER_ORDER.indexOf(name as typeof LAYER_ORDER[number])
+    for (let index = 0; index < sheet.cssRules.length; index++) {
+      const rule = sheet.cssRules.item(index)!
+      if (isKeyframesRule(rule)) return index
+      if (isLayerBlockRule(rule)) {
+        const ruleRank = LAYER_ORDER.indexOf(rule.name as typeof LAYER_ORDER[number])
+        if (ruleRank > rank) return index
+      }
+    }
+    return sheet.cssRules.length
+  }
+
+  private ensureNativeLayer(layer: RuntimeLayer) {
+    const sheet = this.getStyleSheet()
+    if (!sheet) return
+    if (layer.native?.parentStyleSheet) return layer.native
+    const insertedIndex = sheet.insertRule(
+      `@layer ${layer.name}{}`,
+      this.getLayerInsertIndex(layer.name)
+    )
+    layer.native = sheet.cssRules.item(insertedIndex) as CSSLayerBlockRule
+    return layer.native
+  }
+
+  insertLayerRule(layer: RuntimeLayer, rule: RuntimeLayerRule, index: number) {
+    const nativeLayer = this.ensureNativeLayer(layer)
+    if (!nativeLayer) return
+    let nativeIndex = 0
+    for (let previous = 0; previous < index; previous++) {
+      nativeIndex += getGeneratedRuleNodeTexts(layer.rules[previous]).length
+    }
+    const nodes = 'nodes' in rule ? rule.nodes : undefined
+    for (const [nodeIndex, text] of getGeneratedRuleNodeTexts(rule).entries()) {
+      try {
+        const insertedIndex = nativeLayer.insertRule(text, nativeIndex + nodeIndex)
+        const native = nativeLayer.cssRules.item(insertedIndex) || undefined
+        if (nodes?.[nodeIndex]) nodes[nodeIndex].native = native
+        else rule.native = native
+      } catch (error) {
+        console.error(error, rule)
+      }
+    }
+  }
+
+  deleteLayerRule(layer: RuntimeLayer, rule: RuntimeLayerRule, index: number) {
+    const nativeLayer = layer.native
+    if (!nativeLayer) return
+    let nativeIndex = 0
+    for (let previous = 0; previous < index; previous++) {
+      nativeIndex += getGeneratedRuleNodeTexts(layer.rules[previous]).length
+    }
+    for (let count = getGeneratedRuleNodeTexts(rule).length; count > 0; count--) {
+      if (nativeIndex < nativeLayer.cssRules.length) nativeLayer.deleteRule(nativeIndex)
+    }
+    if (!layer.rules.length) {
+      const sheet = this.getStyleSheet()
+      const topIndex = this.findTopLevelRuleIndex(nativeLayer)
+      if (sheet && topIndex !== -1) sheet.deleteRule(topIndex)
+      layer.native = null
+    }
+  }
+
+  private getLayerByName(name: string): RuntimeLayer | undefined {
+    switch (name) {
+      case 'theme': return this.themeLayer
+      case 'base': return this.baseLayer
+      case 'defaults': return this.defaultsLayer
+      case 'components': return this.componentsLayer
+      case 'utilities': return this.utilitiesLayer
+    }
+  }
+
+  private getUtilityLayerByName(name: MasterCSSManifestUtilityLayerName) {
+    return this.getLayerByName(name) as RuntimeUtilityLayer
+  }
+
+  private getUtilityLayers() {
+    return [this.baseLayer, this.defaultsLayer, this.componentsLayer, this.utilitiesLayer]
+  }
+
+  private setThemeResource(text: string) {
+    const sheet = this.getStyleSheet()
+    if (sheet && this.themeLayer.native) {
+      const index = this.findTopLevelRuleIndex(this.themeLayer.native)
+      if (index !== -1) sheet.deleteRule(index)
+    }
+    this.themeLayer.native = null
+    this.themeLayer.resourceText = text
+    if (sheet && text) {
+      const index = sheet.insertRule(`@layer theme{${text}}`, this.getLayerInsertIndex('theme'))
+      this.themeLayer.native = sheet.cssRules.item(index) as CSSLayerBlockRule
+    }
+    this.syncThemeRules()
+  }
+
+  private insertKeyframes(key: string, text: string, index: number) {
+    if (this.animationsNonLayer.rules.some((rule) => rule.key === key)) return
+    const rule: RuntimeKeyframeRule = { key, name: key, text }
+    const boundedIndex = Math.max(0, Math.min(index, this.animationsNonLayer.rules.length))
+    this.animationsNonLayer.rules.splice(boundedIndex, 0, rule)
+    const sheet = this.getStyleSheet()
+    if (!sheet) return
+    let keyframesStartIndex = sheet.cssRules.length
+    for (let topIndex = 0; topIndex < sheet.cssRules.length; topIndex++) {
+      if (isKeyframesRule(sheet.cssRules.item(topIndex)!)) {
+        keyframesStartIndex = topIndex
+        break
+      }
+    }
+    const topIndex = keyframesStartIndex + boundedIndex
+    const insertedIndex = sheet.insertRule(text, Math.min(topIndex, sheet.cssRules.length))
+    rule.native = sheet.cssRules.item(insertedIndex) as CSSKeyframesRule
+  }
+
+  private deleteKeyframes(key: string, index?: number) {
+    const foundIndex = index !== undefined && this.animationsNonLayer.rules[index]?.key === key
+      ? index
+      : this.animationsNonLayer.rules.findIndex((rule) => rule.key === key)
+    if (foundIndex === -1) return
+    const [rule] = this.animationsNonLayer.rules.splice(foundIndex, 1)
+    if (rule.native) {
+      const sheet = this.getStyleSheet()
+      const topIndex = this.findTopLevelRuleIndex(rule.native)
+      if (sheet && topIndex !== -1) sheet.deleteRule(topIndex)
+    }
+  }
+
+  private resetHostRuleState() {
+    this.classUtilities.clear()
+    this.baseLayer.reset()
+    this.themeLayer.reset()
+    this.defaultsLayer.reset()
+    this.componentsLayer.reset()
+    this.utilitiesLayer.reset()
+    this.animationsNonLayer.rules.length = 0
+    this.resetResourceCounts()
+  }
+
+  private resetResourceCounts() {
+    this.themeLayer.tokenCounts.clear()
+    this.animationsNonLayer.tokenCounts.clear()
+    for (const [name, count] of Object.entries(this.emittedGlobals.variables)) {
+      if (count) this.themeLayer.tokenCounts.set(name, count)
+    }
+    for (const [name, count] of Object.entries(this.emittedGlobals.animations)) {
+      if (count) this.animationsNonLayer.tokenCounts.set(name, count)
+    }
+  }
+
+  private updateCount(counts: Map<string, number>, name: string, delta: number) {
+    const count = (counts.get(name) || 0) + delta
+    if (count > 0) counts.set(name, count)
+    else counts.delete(name)
+  }
+
+  private updateRuleResourceCounts(rule: HydratedGeneratedRule, delta: number) {
+    const visited = new Set<string>()
+    const updateVariable = (name: string) => {
+      if (!name || !visited.add(name)) return
+      this.updateCount(this.themeLayer.tokenCounts, name, delta)
+      this.variables.get(name)?.dependencies?.forEach(updateVariable)
+    }
+    rule.variableNames?.forEach(updateVariable)
+    rule.animationNames?.forEach((name) => this.updateCount(this.animationsNonLayer.tokenCounts, name, delta))
+  }
+
+  private syncThemeRules() {
+    this.themeLayer.rules.length = 0
+    const seen = new Set<string>()
+    for (const match of this.themeLayer.resourceText.matchAll(/--([-_a-zA-Z0-9]+)\s*:/g)) {
+      const name = match[1]
+      if (!seen.add(name)) continue
+      const rule: RuntimeResourceRule = { key: name, name, text: '' }
+      this.themeLayer.rules.push(rule)
+      if (this.variables.get(name)?.static && !this.themeLayer.tokenCounts.has(name)) {
+        this.themeLayer.tokenCounts.set(name, 1)
+      }
+    }
+  }
+
+  private syncResourceRuleState() {
+    this.syncThemeRules()
+    for (const rule of this.animationsNonLayer.rules) {
+      if (!this.animationsNonLayer.tokenCounts.has(rule.name)) {
+        this.animationsNonLayer.tokenCounts.set(rule.name, 1)
+      }
+    }
+  }
+
+  private registerClassRule(rule: HydratedGeneratedRule) {
+    const rules = this.classUtilities.get(rule.name)
+    if (rules) rules.push(rule)
+    else this.classUtilities.set(rule.name, [rule])
+  }
+
+  private unregisterLayerRule(rule: RuntimeLayerRule) {
+    if (!(rule instanceof HydratedGeneratedRule)) return
+    this.updateRuleResourceCounts(rule, -1)
+    for (const [className, rules] of this.classUtilities) {
+      const next = rules.filter((candidate) => candidate !== rule)
+      if (next.length) this.classUtilities.set(className, next)
+      else this.classUtilities.delete(className)
+    }
+  }
+
+  private applyTransition(transition: MasterCSSEngineTransitionIR) {
+    for (const mutation of transition.mutations) {
+      if (mutation.target === 'theme') {
+        this.setThemeResource(mutation.op === 'insert' ? mutation.text : '')
+        continue
+      }
+      if (mutation.target === 'keyframes') {
+        if (mutation.op === 'insert') this.insertKeyframes(mutation.key, mutation.text, mutation.index)
+        else this.deleteKeyframes(mutation.key, mutation.index)
+        continue
+      }
+      const layer = this.getUtilityLayerByName(mutation.target)
+      if (mutation.op === 'insert') {
+        if (!mutation.rule) {
+          throw new MasterCSSEngineError('INTERNAL', `Missing generated rule IR for ${mutation.key}.`)
+        }
+        const rule = new HydratedGeneratedRule(mutation.rule, layer)
+        layer.insert(rule, mutation.index)
+        this.updateRuleResourceCounts(rule, 1)
+        this.registerClassRule(rule)
+      } else {
+        const rule = layer.delete(mutation.key, mutation.index)
+        if (rule) this.unregisterLayerRule(rule)
+      }
+    }
+    this.syncResourceRuleState()
+  }
+
+  private adoptSnapshot(snapshot: MasterCSSEngineSnapshotIR, preserveStyle = false) {
+    this.resetHostRuleState()
+    if (!this.style) return
+    if (!preserveStyle) this.style.textContent = snapshot.text
+    const sheet = this.getStyleSheet()
+    if (!sheet) return
+
+    const nativeLayers = new Map<string, CSSLayerBlockRule>()
+    const nativeKeyframes: CSSKeyframesRule[] = []
+    for (const rule of sheet.cssRules) {
+      if (isLayerBlockRule(rule)) nativeLayers.set(rule.name, rule)
+      else if (isKeyframesRule(rule)) nativeKeyframes.push(rule)
+    }
+    this.themeLayer.native = nativeLayers.get('theme') || null
+    this.themeLayer.resourceText = extractLayerBody(snapshot.text, 'theme')
+
+    const layerNativeIndexes = new Map<string, number>()
+    for (const ir of snapshot.rules) {
+      const layer = this.getUtilityLayerByName(ir.layer)
+      layer.native ||= nativeLayers.get(ir.layer) || null
+      const rule = new HydratedGeneratedRule(ir, layer)
+      const nativeIndex = layerNativeIndexes.get(ir.layer) || 0
+      const nodes = rule.nodes
+      if (nodes?.length) {
+        for (let index = 0; index < nodes.length; index++) {
+          nodes[index].native = layer.native?.cssRules.item(nativeIndex + index) || undefined
+        }
+      } else {
+        rule.native = layer.native?.cssRules.item(nativeIndex) || undefined
+      }
+      layerNativeIndexes.set(ir.layer, nativeIndex + (nodes?.length || 1))
+      layer.rules.push(rule)
+      this.updateRuleResourceCounts(rule, 1)
+      this.registerClassRule(rule)
+    }
+
+    for (const native of nativeKeyframes) {
+      this.animationsNonLayer.rules.push({
+        key: native.name,
+        name: native.name,
+        text: native.cssText,
+        native
+      })
+    }
+    this.syncResourceRuleState()
   }
 
   private warnHydrationFallback(reason: string) {
@@ -340,20 +729,15 @@ export default class CSSRuntime extends MasterCSS {
     this.style = null
     this.progressive = false
     this.createRuntimeStyle()
-    this.insertStaticResources()
-    connectedNames.forEach(cls => this.ensureClassRules(cls))
+    this.adoptSnapshot(this.backendEngine.snapshot())
+    this.ensureClassRules(...connectedNames)
   }
 
   private detectRuntimeStyle() {
-    if (this.root.styleSheets) {
-      for (const sheet of this.root.styleSheets) {
-        const { ownerNode } = sheet
-        if (ownerNode instanceof HTMLStyleElement && ownerNode.id === MASTER_CSS_RUNTIME_STYLE_ID) {
-          this.style = ownerNode
-          this.progressive = true
-          break
-        }
-      }
+    const style = findElementById(this.root, MASTER_CSS_RUNTIME_STYLE_ID)
+    if (style?.constructor.name === 'HTMLStyleElement') {
+      this.style = style as HTMLStyleElement
+      this.progressive = true
     }
   }
 
@@ -361,52 +745,136 @@ export default class CSSRuntime extends MasterCSS {
     return this.classTracker.collectConnected(this.root, this.classCounts)
   }
 
-  private hydrateRuntimeStyle(connectedNames: Set<string>) {
-    const hydrateResult = this.style?.sheet && this.hydrate(this.style.sheet.cssRules)
-    if (hydrateResult) {
-      const hydratedClassNames = new Set(hydrateResult.allUtilities.map(({ fixedClass, name }) => fixedClass || name))
-      for (const cls of connectedNames) {
-        if (!hydratedClassNames.has(cls)) {
-          this.ensureClassRules(cls)
-          if (process.env.NODE_ENV === 'development') {
-            console.debug(`Missing prerendered rule for class \`${cls}\``)
+  private failHydration(reason: string, ensuredClassNames: string[] = []) {
+    this.hydrationFailureReason = reason
+    if (ensuredClassNames.length) this.backendEngine.deleteClassRules(ensuredClassNames)
+    this.resetHostRuleState()
+    return undefined
+  }
+
+  private matchesEngineSnapshotText(snapshotText: string) {
+    const sheet = this.getStyleSheet()
+    if (!sheet) return false
+    const expectedStyle = this.getOwnerDocument().createElement('style')
+    expectedStyle.media = 'not all'
+    expectedStyle.textContent = snapshotText
+    this.container.append(expectedStyle)
+    try {
+      const expectedRules = expectedStyle.sheet?.cssRules
+      if (!expectedRules) return false
+      const actualRules = [...sheet.cssRules]
+      for (const expected of expectedRules) {
+        if (isLayerBlockRule(expected)) {
+          const actual = actualRules.find((rule) => isLayerBlockRule(rule) && rule.name === expected.name)
+          if (!actual || !isLayerBlockRule(actual)) return false
+          const actualTexts = [...actual.cssRules].map(({ cssText }) => cssText)
+          for (const { cssText } of expected.cssRules) {
+            const index = actualTexts.indexOf(cssText)
+            if (index === -1) return false
+            actualTexts.splice(index, 1)
           }
+        } else if (!actualRules.some(({ cssText }) => cssText === expected.cssText)) {
+          return false
         }
       }
-    } else {
-      this.useRuntimeStyle(connectedNames, this.hydrationFailureReason || `Cannot read ${MASTER_CSS_RUNTIME_STYLE_SELECTOR} CSS rules.`)
+      return true
+    } finally {
+      expectedStyle.remove()
     }
+  }
+
+  private getHydrationClassNames(rules: MasterCSSGeneratedRuleIR[]) {
+    const resourceOrder = new Map<string, number>()
+    const source = this.style?.textContent || ''
+    for (const match of source.matchAll(/--([-_a-zA-Z0-9]+)\s*:/g)) {
+      if (!resourceOrder.has(match[1])) resourceOrder.set(match[1], match.index)
+    }
+    for (const match of source.matchAll(/@(?:-webkit-)?keyframes\s+([-_a-zA-Z0-9]+)/g)) {
+      if (!resourceOrder.has(match[1])) resourceOrder.set(match[1], match.index)
+    }
+    const classResources = new Map<string, string[]>()
+    for (const rule of rules) {
+      const resources = classResources.get(rule.className) || []
+      for (const name of [...(rule.variableNames || []), ...(rule.animationNames || [])]) {
+        if (!resources.includes(name)) resources.push(name)
+      }
+      classResources.set(rule.className, resources)
+    }
+    return [...classResources.keys()].sort((left, right) => {
+      const getRank = (className: string) => Math.min(
+        ...(classResources.get(className) || []).map((name) => resourceOrder.get(name) ?? Number.MAX_SAFE_INTEGER),
+        Number.MAX_SAFE_INTEGER
+      )
+      return getRank(left) - getRank(right)
+    })
+  }
+
+  hydrate(nativeLayerRules: CSSRuleList): HydrateResult | undefined {
+    this.hydrationFailureReason = undefined
+    const manifest = this.hydrationManifest
+    if (manifest?.version !== 1 || !Array.isArray(manifest.rules)) {
+      return this.failHydration('Missing or invalid hydration manifest.')
+    }
+    if (!manifest.rules.length) {
+      return this.failHydration(`Hydration manifest has no generated rules for ${MASTER_CSS_RUNTIME_STYLE_SELECTOR}.`)
+    }
+    const classNames = this.getHydrationClassNames(manifest.rules)
+    this.backendEngine.ensureClassRules(classNames)
+    const snapshot = this.backendEngine.snapshot()
+    if (JSON.stringify(snapshot.rules) !== JSON.stringify(manifest.rules)) {
+      return this.failHydration('Generated rules do not match the hydration manifest.', classNames)
+    }
+    if (!this.matchesEngineSnapshotText(snapshot.text)) {
+      return this.failHydration(`${MASTER_CSS_RUNTIME_STYLE_SELECTOR} does not match the Rust engine snapshot.`, classNames)
+    }
+    if (nativeLayerRules.length !== this.style?.sheet?.cssRules.length) {
+      return this.failHydration(`Cannot read ${MASTER_CSS_RUNTIME_STYLE_SELECTOR} CSS rules.`, classNames)
+    }
+    this.adoptSnapshot(snapshot, true)
+    const result = {
+      allUtilities: this.getUtilityLayers().flatMap(({ rules }) =>
+        rules.filter((rule): rule is HydratedGeneratedRule => rule instanceof HydratedGeneratedRule)
+      )
+    }
+    if (process.env.NODE_ENV === 'development') debugRuntimeHydrated(this, result)
+    return result
+  }
+
+  private hydrateRuntimeStyle(connectedNames: Set<string>) {
+    const hydrateResult = this.style?.sheet && this.hydrate(this.style.sheet.cssRules)
+    if (!hydrateResult) {
+      this.useRuntimeStyle(
+        connectedNames,
+        this.hydrationFailureReason || `Cannot read ${MASTER_CSS_RUNTIME_STYLE_SELECTOR} CSS rules.`
+      )
+      return
+    }
+    const hydratedClassNames = new Set(hydrateResult.allUtilities.map(({ name }) => name))
+    const missing = [...connectedNames].filter((className) => !hydratedClassNames.has(className))
+    if (missing.length) this.ensureClassRules(...missing)
   }
 
   private renderRuntimeStyle(connectedNames: Set<string>) {
     this.createRuntimeStyle()
-    this.insertStaticResources()
-    connectedNames.forEach(cls => this.ensureClassRules(cls))
+    this.adoptSnapshot(this.backendEngine.snapshot())
+    this.ensureClassRules(...connectedNames)
   }
 
   private getAnimationFrameWindow() {
-    const ownerDocument = isDocumentRoot(this.root)
-      ? this.root
-      : this.root.ownerDocument
-    return ownerDocument?.defaultView || globalThis
+    return this.getOwnerDocument().defaultView || globalThis
   }
 
   private cancelPendingRemovalFrames() {
     const view = this.getAnimationFrameWindow()
-    if (this.pendingRemovalFrame !== undefined) {
-      view.cancelAnimationFrame(this.pendingRemovalFrame)
-      this.pendingRemovalFrame = undefined
-    }
-    if (this.pendingRemovalFlushFrame !== undefined) {
-      view.cancelAnimationFrame(this.pendingRemovalFlushFrame)
-      this.pendingRemovalFlushFrame = undefined
-    }
+    if (this.pendingRemovalFrame !== undefined) view.cancelAnimationFrame(this.pendingRemovalFrame)
+    if (this.pendingRemovalFlushFrame !== undefined) view.cancelAnimationFrame(this.pendingRemovalFlushFrame)
+    this.pendingRemovalFrame = undefined
+    this.pendingRemovalFlushFrame = undefined
   }
 
   private cancelPendingAdditionFrame() {
     if (this.pendingAdditionFrame === undefined) return
-    const view = this.getAnimationFrameWindow()
-    view.cancelAnimationFrame(this.pendingAdditionFrame)
+    this.getAnimationFrameWindow().cancelAnimationFrame(this.pendingAdditionFrame)
     this.pendingAdditionFrame = undefined
   }
 
@@ -443,23 +911,16 @@ export default class CSSRuntime extends MasterCSS {
   }
 
   private cancelPendingRemovedClassNames(classNames: Iterable<string>) {
-    if (!this.pendingRemovedClassNames.size) return
-    for (const className of classNames) {
-      this.pendingRemovedClassNames.delete(className)
-    }
+    for (const className of classNames) this.pendingRemovedClassNames.delete(className)
     if (!this.pendingRemovedClassNames.size) this.cancelPendingRemovalFrames()
   }
 
   private cancelPendingAddedClassNames(classNames: Iterable<string>) {
-    if (!this.pendingAddedClassNames.size) return
-    for (const className of classNames) {
-      this.pendingAddedClassNames.delete(className)
-    }
+    for (const className of classNames) this.pendingAddedClassNames.delete(className)
     if (!this.pendingAddedClassNames.size) this.cancelPendingAdditionFrame()
   }
 
   private cancelRetainedClassNames(classNames: Iterable<string>) {
-    if (!this.retainedClassNames.size) return
     for (const className of classNames) {
       this.retainedClassNames.delete(className)
       this.retainedClassRules.delete(className)
@@ -468,8 +929,9 @@ export default class CSSRuntime extends MasterCSS {
   }
 
   private schedulePendingRemovalFlush() {
-    if (!this.pendingRemovedClassNames.size) return
-    if (this.pendingRemovalFrame !== undefined || this.pendingRemovalFlushFrame !== undefined) return
+    if (!this.pendingRemovedClassNames.size
+      || this.pendingRemovalFrame !== undefined
+      || this.pendingRemovalFlushFrame !== undefined) return
     const view = this.getAnimationFrameWindow()
     this.pendingRemovalFrame = view.requestAnimationFrame(() => {
       this.pendingRemovalFrame = undefined
@@ -488,10 +950,8 @@ export default class CSSRuntime extends MasterCSS {
   }
 
   private schedulePendingAdditionFlush() {
-    if (!this.pendingAddedClassNames.size) return
-    if (this.pendingAdditionFrame !== undefined) return
-    const view = this.getAnimationFrameWindow()
-    this.pendingAdditionFrame = view.requestAnimationFrame(() => {
+    if (!this.pendingAddedClassNames.size || this.pendingAdditionFrame !== undefined) return
+    this.pendingAdditionFrame = this.getAnimationFrameWindow().requestAnimationFrame(() => {
       this.pendingAdditionFrame = undefined
       this.flushPendingAddedClassNames()
     })
@@ -510,29 +970,16 @@ export default class CSSRuntime extends MasterCSS {
     let rawBytes = 0
     let ruleCount = 0
     for (const rule of rules) {
-      const nodes = (rule as { nodes?: { text: string }[] }).nodes
-      if (nodes?.length) {
-        for (const node of nodes) {
-          rawBytes += node.text.length
-          ruleCount++
-        }
-      } else {
-        rawBytes += rule.text.length
-        ruleCount++
-      }
+      const texts = getGeneratedRuleNodeTexts(rule)
+      rawBytes += texts.reduce((length, text) => length + text.length, 0)
+      ruleCount += texts.length
     }
-    return {
-      retainedAt: Date.now(),
-      rawBytes,
-      ruleCount
-    }
+    return { retainedAt: Date.now(), rawBytes, ruleCount }
   }
 
   private getRetainedClassRuleRawBytes() {
     let rawBytes = 0
-    for (const retainedRule of this.retainedClassRules.values()) {
-      rawBytes += retainedRule.rawBytes
-    }
+    for (const retainedRule of this.retainedClassRules.values()) rawBytes += retainedRule.rawBytes
     return rawBytes
   }
 
@@ -542,16 +989,16 @@ export default class CSSRuntime extends MasterCSS {
   }
 
   private scheduleRetainedClassRuleCleanup() {
-    if (!this.retainedClassNames.size) return
-    if (this.retainedCleanupIdleHandle !== undefined || this.retainedCleanupTimeoutHandle !== undefined) return
+    if (!this.retainedClassNames.size
+      || this.retainedCleanupIdleHandle !== undefined
+      || this.retainedCleanupTimeoutHandle !== undefined) return
     const view = this.getCleanupWindow()
-    const hardLimitExceeded = this.exceedsRetainedClassRuleHardLimits()
+    const timeout = this.exceedsRetainedClassRuleHardLimits() ? 0 : RETAINED_CLASS_RULE_IDLE_TIMEOUT_MS
     const cleanup = () => {
       this.retainedCleanupIdleHandle = undefined
       this.retainedCleanupTimeoutHandle = undefined
       this.cleanupRetainedClassRules()
     }
-    const timeout = hardLimitExceeded ? 0 : RETAINED_CLASS_RULE_IDLE_TIMEOUT_MS
     if (view.requestIdleCallback) {
       this.retainedCleanupIdleHandle = view.requestIdleCallback(cleanup, { timeout })
     } else {
@@ -574,7 +1021,6 @@ export default class CSSRuntime extends MasterCSS {
     const now = Date.now()
     const hardLimitExceeded = this.exceedsRetainedClassRuleHardLimits()
     const entries: [string, RetainedClassRule][] = []
-
     for (const className of this.retainedClassNames) {
       if (this.classCounts.has(className)) {
         this.retainedClassNames.delete(className)
@@ -582,23 +1028,18 @@ export default class CSSRuntime extends MasterCSS {
         continue
       }
       const retainedRule = this.retainedClassRules.get(className)
-      if (!retainedRule) {
-        this.retainedClassNames.delete(className)
-        continue
-      }
+      if (!retainedRule) continue
       const oldEnough = now - retainedRule.retainedAt >= RETAINED_CLASS_RULE_MIN_AGE_MS
-      if (force || hardLimitExceeded || (oldEnough && this.retainedClassNames.size > RETAINED_CLASS_RULE_SOFT_TARGET)) {
+      if (force || hardLimitExceeded
+        || (oldEnough && this.retainedClassNames.size > RETAINED_CLASS_RULE_SOFT_TARGET)) {
         entries.push([className, retainedRule])
       }
     }
-
-    entries.sort(([, a], [, b]) => a.retainedAt - b.retainedAt)
+    entries.sort(([, left], [, right]) => left.retainedAt - right.retainedAt)
     const cleanupCount = hardLimitExceeded
       ? Math.max(RETAINED_CLASS_RULE_CLEANUP_BATCH_SIZE, this.retainedClassNames.size - RETAINED_CLASS_RULE_SOFT_TARGET)
       : RETAINED_CLASS_RULE_CLEANUP_BATCH_SIZE
-    return entries
-      .slice(0, force ? entries.length : cleanupCount)
-      .map(([className]) => className)
+    return entries.slice(0, force ? entries.length : cleanupCount).map(([className]) => className)
   }
 
   private removeRetainedClassRules(classNames: string[]) {
@@ -607,19 +1048,17 @@ export default class CSSRuntime extends MasterCSS {
       if (!this.retainedClassNames.has(className)) continue
       this.retainedClassNames.delete(className)
       this.retainedClassRules.delete(className)
-      if (!this.classCounts.has(className)) {
-        removedClassNames.push(className)
-      }
+      if (!this.classCounts.has(className)) removedClassNames.push(className)
     }
-    if (removedClassNames.length) super.deleteClassRules(...removedClassNames)
+    if (removedClassNames.length) this.deleteClassRules(...removedClassNames)
     return removedClassNames.length
   }
 
   private cleanupRetainedClassRules(force = false) {
     const removedCount = this.removeRetainedClassRules(this.getRetainedClassRuleCleanupCandidates(force))
-    if (this.retainedClassNames.size && (force || this.retainedClassNames.size > RETAINED_CLASS_RULE_SOFT_TARGET || this.exceedsRetainedClassRuleHardLimits())) {
-      this.scheduleRetainedClassRuleCleanup()
-    }
+    if (this.retainedClassNames.size && (force
+      || this.retainedClassNames.size > RETAINED_CLASS_RULE_SOFT_TARGET
+      || this.exceedsRetainedClassRuleHardLimits())) this.scheduleRetainedClassRuleCleanup()
     return removedCount
   }
 
@@ -631,21 +1070,15 @@ export default class CSSRuntime extends MasterCSS {
   }
 
   private flushPendingRemovedClassNames() {
-    if (!this.pendingRemovedClassNames.size) return
-    const classNames: string[] = []
-    for (const className of this.pendingRemovedClassNames) {
-      if (!this.classCounts.has(className)) classNames.push(className)
-    }
+    const classNames = [...this.pendingRemovedClassNames]
+      .filter((className) => !this.classCounts.has(className))
     this.pendingRemovedClassNames.clear()
     if (classNames.length) this.retainRemovedClassRules(classNames)
   }
 
   private flushPendingAddedClassNames() {
-    if (!this.pendingAddedClassNames.size) return
-    const classNames: string[] = []
-    for (const className of this.pendingAddedClassNames) {
-      if (this.classCounts.has(className)) classNames.push(className)
-    }
+    const classNames = [...this.pendingAddedClassNames]
+      .filter((className) => this.classCounts.has(className))
     this.pendingAddedClassNames.clear()
     if (classNames.length) this.ensureClassRules(...classNames)
   }
@@ -655,441 +1088,106 @@ export default class CSSRuntime extends MasterCSS {
     const warmClassNames: string[] = []
     const queuedClassNames: string[] = []
     const removedClassNames: string[] = []
-
-    for (const [cls, change] of deltaCounts) {
-      const current = this.classCounts.get(cls) || 0
+    for (const [className, change] of deltaCounts) {
+      const current = this.classCounts.get(className) || 0
       const next = current + change
       if (next > 0) {
-        this.classCounts.set(cls, next)
+        this.classCounts.set(className, next)
         if (current === 0) {
-          if (this.classUtilities.has(cls) || this.retainedClassNames.has(cls)) {
-            warmClassNames.push(cls)
+          if (this.classUtilities.has(className) || this.retainedClassNames.has(className)) {
+            warmClassNames.push(className)
           } else {
-            queuedClassNames.push(cls)
+            queuedClassNames.push(className)
           }
         }
       } else {
-        this.classCounts.delete(cls)
-        removedClassNames.push(cls)
+        this.classCounts.delete(className)
+        removedClassNames.push(className)
       }
     }
-
     if (warmClassNames.length) this.ensureClassRules(...warmClassNames)
     if (queuedClassNames.length) this.queueAddedClassNames(queuedClassNames)
     if (removedClassNames.length) {
       this.cancelPendingAddedClassNames(removedClassNames)
       this.queueRemovedClassNames(removedClassNames)
     }
-
-    if (process.env.NODE_ENV === 'development') {
-      debugRuntimeMutation(records, deltaCounts, this)
-    }
+    if (process.env.NODE_ENV === 'development') debugRuntimeMutation(records, deltaCounts, this)
   }
 
   ensureClassRules(...classNames: string[]) {
     this.cancelPendingAddedClassNames(classNames)
     this.cancelPendingRemovedClassNames(classNames)
     this.cancelRetainedClassNames(classNames)
-    const result = super.ensureClassRules(...classNames)
-    this.backendEngine?.ensureClassRules(classNames)
-    return result
+    const transition = this.backendEngine.ensureClassRules(classNames)
+    this.applyTransition(transition)
+    for (const className of classNames) {
+      const inspection = this.backendEngine.inspect(className)
+      if (!inspection.valid) {
+        this.classUtilities.delete(className)
+        continue
+      }
+      const rules = inspection.rules
+        .map((ir) => this.getUtilityLayerByName(ir.layer).rules
+          .find((rule): rule is HydratedGeneratedRule =>
+            rule instanceof HydratedGeneratedRule && rule.key === ir.key
+          ))
+        .filter((rule): rule is HydratedGeneratedRule => Boolean(rule))
+      if (rules.length) this.classUtilities.set(className, rules)
+    }
+    return transition
   }
 
   deleteClassRules(...classNames: string[]) {
     this.cancelPendingAddedClassNames(classNames)
     this.cancelPendingRemovedClassNames(classNames)
     this.cancelRetainedClassNames(classNames)
-    super.deleteClassRules(...classNames)
-    this.backendEngine?.deleteClassRules(classNames)
+    const transition = this.backendEngine.deleteClassRules(classNames)
+    this.applyTransition(transition)
+    for (const className of classNames) this.classUtilities.delete(className)
+    return transition
   }
 
   private startMutationObserver() {
-    this.observer = new MutationObserver(records => this.handleMutationRecords(records))
-
+    this.observer = new MutationObserver((records) => this.handleMutationRecords(records))
     this.observer.observe(this.root, {
       childList: true,
       attributes: true,
       attributeFilter: ['class'],
-      subtree: true,
+      subtree: true
     })
   }
 
-  private revealHostIfNeeded() {
-    if (!this.progressive) this.host.removeAttribute('hidden')
-  }
-
-  /**
-   * Observe the DOM for changes and update the running stylesheet. (browser only)
-   * @param options mutation observer options
-   * @returns this
-   */
   observe(): this {
     if (this.observing) return this
-
     this.detectRuntimeStyle()
     const connectedNames = this.collectConnectedClasses()
-
-    if (this.progressive) {
-      this.hydrateRuntimeStyle(connectedNames)
-    } else {
-      this.renderRuntimeStyle(connectedNames)
-    }
-
+    if (this.progressive) this.hydrateRuntimeStyle(connectedNames)
+    else this.renderRuntimeStyle(connectedNames)
     this.startMutationObserver()
-    this.revealHostIfNeeded()
+    if (!this.progressive) this.host.removeAttribute('hidden')
     this.observing = true
-    if (process.env.NODE_ENV === 'development') {
-      debugRuntimeObserved(this)
-    }
+    if (process.env.NODE_ENV === 'development') debugRuntimeObserved(this)
     return this
-  }
-
-  private failHydration(reason: string) {
-    this.hydrationFailureReason = reason
-    return undefined
-  }
-
-  private getHydrationManifestLayerRules() {
-    const layers = new Map<MasterCSSManifestUtilityLayerName, MasterCSSGeneratedRuleIR[]>()
-    if (!this.hydrationManifest?.rules?.length) return layers
-    for (const rule of this.hydrationManifest.rules) {
-      const layerRules = layers.get(rule.layer)
-      if (layerRules) {
-        layerRules.push(rule)
-      } else {
-        layers.set(rule.layer, [rule])
-      }
-    }
-    return layers
-  }
-
-  private registerHydratedClassRule(className: string, rule: HydratedGeneratedRule) {
-    const classUtilities = this.classUtilities as unknown as Map<string, HydratedGeneratedRule[]>
-    const rules = classUtilities.get(className)
-    if (rules) {
-      rules.push(rule)
-    } else {
-      classUtilities.set(className, [rule])
-    }
-  }
-
-  private getUtilityLayerByName(name: string): RuntimeUtilityLayerInstance | undefined {
-    switch (name) {
-      case 'base':
-        return this.baseLayer
-      case 'defaults':
-        return this.defaultsLayer
-      case 'components':
-        return this.componentsLayer
-      case 'utilities':
-        return this.utilitiesLayer
-    }
-  }
-
-  private collectHydrationManifestVariableNames() {
-    const variableNames = new Set<string>()
-    const collectVariableReferences = (text: string) => {
-      for (const match of text.matchAll(/var\(\s*--([_a-zA-Z0-9-]+)/g)) {
-        collectVariable(match[1])
-      }
-    }
-    const collectVariable = (variableName: string, visited = new Set<string>()) => {
-      if (visited.has(variableName)) return
-      visited.add(variableName)
-      const variable = this.variables.get(variableName)
-      if (!variable) return
-      variableNames.add(variableName)
-      variable.dependencies?.forEach((dependency) => collectVariable(dependency, visited))
-    }
-    for (const rule of this.hydrationManifest?.rules || []) {
-      rule.variableNames?.forEach((variableName) => collectVariable(variableName))
-      collectVariableReferences(rule.text)
-      rule.nodes?.forEach((node) => collectVariableReferences(node.text))
-      rule.animationNames?.forEach((animationName) => {
-        const keyframes = this.animations.get(animationName)
-        if (!keyframes) return
-        const animationRule = new AnimationRule(animationName, keyframes, this)
-        animationRule.variableNames?.forEach((variableName) => collectVariable(variableName))
-      })
-    }
-    for (const [variableName, variable] of this.variables) {
-      if (variable.static) collectVariable(variableName)
-    }
-    return variableNames
-  }
-
-  private collectHydrationManifestAnimationNames() {
-    const animationNames = new Set<string>()
-    for (const rule of this.hydrationManifest?.rules || []) {
-      rule.animationNames?.forEach((animationName) => animationNames.add(animationName))
-    }
-    for (const animationName of this.animations.keys()) {
-      if (this.manifest.animationOptions?.[animationName]?.static) animationNames.add(animationName)
-    }
-    return animationNames
-  }
-
-  private nativeThemeLayerHasOnlyEmittedGlobalsVariables(nativeThemeLayer: CSSLayerBlockRule | undefined) {
-    if (!nativeThemeLayer) return false
-    let found = false
-    for (const nativeRule of nativeThemeLayer.cssRules) {
-      const styleRule = this.themeLayer.getStyleRule(nativeRule)
-      if (!styleRule) return false
-      for (let index = 0; index < styleRule.style.length; index++) {
-        const propertyName = styleRule.style.item(index)
-        if (this.isSyntheticColorSchemeDeclaration(nativeRule, styleRule, propertyName)) continue
-        if (!propertyName.startsWith('--')) return false
-        found = true
-        if (!this.isEmittedGlobalsVariable(propertyName.slice(2))) return false
-      }
-    }
-    return found
-  }
-
-  private getVariableRuleBuckets(variableRules: VariableRule[]) {
-    const buckets = new Map<string, {
-      mediaText: string
-      mode?: string
-      selectorText: string
-      nodes: VariableRule['nodes'][number][]
-    }>()
-    for (const rule of variableRules) {
-      for (const node of rule.nodes) {
-        const key = this.themeLayer.getBucketKey(node.mediaText, node.selectorText)
-        let bucket = buckets.get(key)
-        if (!bucket) {
-          bucket = {
-            mediaText: node.mediaText,
-            mode: node.mode,
-            selectorText: node.selectorText,
-            nodes: []
-          }
-          buckets.set(key, bucket)
-        }
-        bucket.nodes.push(node)
-      }
-    }
-    return Array.from(buckets.values())
-  }
-
-  private isSyntheticColorSchemeDeclaration(nativeRule: CSSRule, styleRule: CSSStyleRule, propertyName: string) {
-    if (propertyName !== 'color-scheme') return false
-    const colorScheme = styleRule.style.getPropertyValue(propertyName).trim()
-    return colorScheme === this.themeLayer.getBucketColorScheme({
-      mediaText: nativeRule instanceof CSSMediaRule ? `@media ${nativeRule.conditionText}` : '',
-      mode: colorScheme,
-      selectorText: styleRule.selectorText
-    })
-  }
-
-  private getNativeThemeRuleBucketKey(nativeRule: CSSRule) {
-    const styleRule = this.themeLayer.getStyleRule(nativeRule)
-    if (!styleRule) return
-    const mediaText = nativeRule instanceof CSSMediaRule
-      ? `@media ${nativeRule.conditionText}`
-      : ''
-    return {
-      key: this.themeLayer.getBucketKey(mediaText, styleRule.selectorText),
-      styleRule
-    }
-  }
-
-  private hydrateHydrationManifestVariables(nativeThemeLayer: CSSLayerBlockRule | undefined) {
-    const variableRules = [...this.collectHydrationManifestVariableNames()]
-      .filter((variableName) => !this.isEmittedGlobalsVariable(variableName))
-      .map((variableName) => {
-        const variable = this.variables.get(variableName)
-        return variable && !variable.inline
-          ? new VariableRule(variableName, variable, this)
-          : undefined
-      })
-      .filter((rule): rule is VariableRule => Boolean(rule))
-    const expectedBuckets = this.getVariableRuleBuckets(variableRules)
-    const nativeRuleCount = nativeThemeLayer?.cssRules.length || 0
-    if (expectedBuckets.length !== nativeRuleCount) {
-      return !variableRules.length && this.nativeThemeLayerHasOnlyEmittedGlobalsVariables(nativeThemeLayer)
-    }
-    if (!variableRules.length) return true
-    if (!nativeThemeLayer) return false
-
-    this.themeLayer.native = nativeThemeLayer
-    const nativeBuckets = new Map<string, CSSStyleRule>()
-    for (const nativeRule of nativeThemeLayer.cssRules) {
-      const nativeBucket = this.getNativeThemeRuleBucketKey(nativeRule)
-      if (!nativeBucket || nativeBuckets.has(nativeBucket.key)) return false
-      nativeBuckets.set(nativeBucket.key, nativeBucket.styleRule)
-    }
-    for (const bucket of expectedBuckets) {
-      const nativeStyleRule = nativeBuckets.get(this.themeLayer.getBucketKey(bucket.mediaText, bucket.selectorText))
-      if (!nativeStyleRule) return false
-      for (const node of bucket.nodes) {
-        node.native = nativeStyleRule
-      }
-    }
-    this.themeLayer.rules.push(...variableRules)
-    this.themeLayer.syncNativeBuckets()
-    if (this.themeLayer.rules.length && !this.rules.includes(this.themeLayer)) {
-      this.rules.push(this.themeLayer)
-    }
-    return true
-  }
-
-  private hydrateHydrationManifestAnimations(nativeKeyframesRules: Map<string, CSSKeyframesRule>) {
-    const animationNames = this.collectHydrationManifestAnimationNames()
-    const hydratedAnimationNames = new Set<string>()
-    for (const animationName of animationNames) {
-      if (this.isEmittedGlobalsAnimation(animationName)) {
-        if (nativeKeyframesRules.has(animationName)) hydratedAnimationNames.add(animationName)
-        continue
-      }
-      const keyframes = this.animations.get(animationName)
-      if (!keyframes) continue
-      const nativeRule = nativeKeyframesRules.get(animationName)
-      if (!nativeRule) return false
-      const animationRule = new AnimationRule(animationName, keyframes, this)
-      animationRule.native = nativeRule as unknown as CSSKeyframeRule
-      this.animationsNonLayer.rules.push(animationRule)
-      this.rules.push(animationRule)
-      hydratedAnimationNames.add(animationName)
-    }
-    for (const animationName of nativeKeyframesRules.keys()) {
-      if (!hydratedAnimationNames.has(animationName)) return false
-    }
-    return true
-  }
-
-  private hydrateHydrationManifestLayer(
-    layer: RuntimeUtilityLayerInstance,
-    nativeLayerRule: CSSLayerBlockRule,
-    manifestRules: MasterCSSGeneratedRuleIR[],
-    result: HydrateResult
-  ) {
-    const expectedRuleCount = manifestRules.reduce((count, rule) => count + (rule.nodes?.length || 1), 0)
-    if (expectedRuleCount !== nativeLayerRule.cssRules.length) return false
-
-    layer.native = nativeLayerRule
-    let nativeIndex = 0
-    for (const manifestRule of manifestRules) {
-      const hydratedRule = new HydratedGeneratedRule(manifestRule, layer)
-      const nodes = hydratedRule.nodes
-      if (nodes?.length) {
-        for (const node of nodes) {
-          node.native = nativeLayerRule.cssRules.item(nativeIndex++) || undefined
-        }
-      } else {
-        hydratedRule.native = nativeLayerRule.cssRules.item(nativeIndex++) || undefined
-      }
-
-      layer.rules.push(hydratedRule)
-      layer.insertVariables(hydratedRule)
-      layer.insertAnimations(hydratedRule)
-      this.registerHydratedClassRule(manifestRule.className, hydratedRule)
-      result.allUtilities.push(hydratedRule)
-    }
-
-    if (layer.rules.length && !this.rules.includes(layer)) {
-      this.rules.push(layer)
-    }
-    return true
-  }
-
-  hydrate(nativeLayerRules: CSSRuleList) {
-    this.hydrationFailureReason = undefined
-    if (this.hydrationManifest?.version !== 1 || !Array.isArray(this.hydrationManifest.rules)) {
-      return this.failHydration('Missing or invalid hydration manifest.')
-    }
-    if (!this.hydrationManifest.rules.length) {
-      return this.failHydration(`Hydration manifest has no generated rules for ${MASTER_CSS_RUNTIME_STYLE_SELECTOR}.`)
-    }
-
-    const result: HydrateResult = {
-      allUtilities: []
-    }
-    const manifestLayerRules = this.getHydrationManifestLayerRules()
-    const nativeUtilityLayerRules = new Map<MasterCSSManifestUtilityLayerName, CSSLayerBlockRule>()
-    const nativeKeyframesRules = new Map<string, CSSKeyframesRule>()
-    let nativeThemeLayer: CSSLayerBlockRule | undefined
-
-    for (let i = 0; i < nativeLayerRules.length; i++) {
-      const eachNativeCSSRule = nativeLayerRules[i]
-      if (eachNativeCSSRule.constructor.name === 'CSSLayerBlockRule') {
-        const eachCSSLayerRule = eachNativeCSSRule as CSSLayerBlockRule
-        if (eachCSSLayerRule.name === 'theme') {
-          if (nativeThemeLayer) return this.failHydration(`Duplicate theme layer in ${MASTER_CSS_RUNTIME_STYLE_SELECTOR}.`)
-          nativeThemeLayer = eachCSSLayerRule
-          continue
-        }
-        const layer = this.getUtilityLayerByName(eachCSSLayerRule.name)
-        if (!layer) return this.failHydration(`Unknown layer \`${eachCSSLayerRule.name}\` in ${MASTER_CSS_RUNTIME_STYLE_SELECTOR}.`)
-        if (nativeUtilityLayerRules.has(layer.name as MasterCSSManifestUtilityLayerName)) {
-          return this.failHydration(`Duplicate layer \`${eachCSSLayerRule.name}\` in ${MASTER_CSS_RUNTIME_STYLE_SELECTOR}.`)
-        }
-        nativeUtilityLayerRules.set(layer.name as MasterCSSManifestUtilityLayerName, eachCSSLayerRule)
-      } else if (eachNativeCSSRule.constructor.name === 'CSSKeyframesRule') {
-        const nativeKeyframesRule = eachNativeCSSRule as CSSKeyframesRule
-        nativeKeyframesRules.set(nativeKeyframesRule.name, nativeKeyframesRule)
-      } else {
-        return this.failHydration(`Unknown top-level rule \`${eachNativeCSSRule.cssText}\` in ${MASTER_CSS_RUNTIME_STYLE_SELECTOR}.`)
-      }
-    }
-
-    for (const [layerName, manifestRules] of manifestLayerRules) {
-      const nativeLayerRule = nativeUtilityLayerRules.get(layerName)
-      if (!nativeLayerRule) return this.failHydration(`Missing layer \`${layerName}\` in ${MASTER_CSS_RUNTIME_STYLE_SELECTOR}.`)
-      const expectedRuleCount = manifestRules.reduce((count, rule) => count + (rule.nodes?.length || 1), 0)
-      if (expectedRuleCount !== nativeLayerRule.cssRules.length) {
-        return this.failHydration(`Layer \`${layerName}\` does not match the hydration manifest.`)
-      }
-    }
-
-    for (const [layerName, nativeLayerRule] of nativeUtilityLayerRules) {
-      if (!manifestLayerRules.has(layerName) && nativeLayerRule.cssRules.length) {
-        return this.failHydration(`Layer \`${layerName}\` has no hydration manifest rules.`)
-      }
-    }
-
-    if (!this.hydrateHydrationManifestVariables(nativeThemeLayer)) {
-      return this.failHydration('Theme layer does not match the hydration manifest.')
-    }
-    if (!this.hydrateHydrationManifestAnimations(nativeKeyframesRules)) {
-      return this.failHydration('Keyframes do not match the hydration manifest.')
-    }
-
-    for (const [layerName, nativeLayerRule] of nativeUtilityLayerRules) {
-      const manifestRules = manifestLayerRules.get(layerName)
-      if (!manifestRules?.length) continue
-      const layer = this.getUtilityLayerByName(layerName)!
-      this.hydrateHydrationManifestLayer(layer, nativeLayerRule, manifestRules, result)
-    }
-
-    if (process.env.NODE_ENV === 'development') {
-      debugRuntimeHydrated(this, result)
-    }
-    return result
   }
 
   disconnect() {
     this.clearPendingAddedClassNames()
     this.clearPendingRemovedClassNames()
     this.clearRetainedClassRules()
-    if (!this.observing) return
-    if (this.observer) {
-      this.observer.disconnect()
-      this.observer = undefined
-    }
-    // @ts-ignore
+    if (!this.observing) return this
+    this.observer?.disconnect()
+    this.observer = undefined
     this.observing = false
-    this.reset()
-    this.loadManifest(this.manifest)
+    const activeClassNames = [...this.classUtilities.keys()]
+    if (activeClassNames.length) this.backendEngine.deleteClassRules(activeClassNames)
     this.classCounts.clear()
     this.classTracker.reset()
+    this.resetHostRuleState()
     if (!this.progressive) {
       this.style?.remove()
       this.style = null
     }
-    if (process.env.NODE_ENV === 'development') {
-      debugRuntimeDisconnected(this)
-    }
+    if (process.env.NODE_ENV === 'development') debugRuntimeDisconnected(this)
     return this
   }
 
@@ -1097,38 +1195,32 @@ export default class CSSRuntime extends MasterCSS {
     this.clearPendingAddedClassNames()
     this.clearPendingRemovedClassNames()
     this.clearRetainedClassRules()
-    this.backendEngine?.refresh(manifest)
-    if (!this.observing || !this.style!.sheet) return this
-    const cssRules = this.style!.sheet.cssRules
-    for (let i = cssRules.length - 1; i >= 0; i--) {
-      this.style!.sheet.deleteRule(i)
+    const transition = this.backendEngine.refresh(manifest)
+    this.manifest = manifest
+    this.loadManifestHostData(manifest)
+    this.classUtilities.clear()
+    this.applyTransition(transition)
+    for (const className of this.classCounts.keys()) {
+      const inspection = this.backendEngine.inspect(className)
+      const rules = inspection.rules
+        .map((ir) => this.getUtilityLayerByName(ir.layer).rules
+          .find((rule): rule is HydratedGeneratedRule =>
+            rule instanceof HydratedGeneratedRule && rule.key === ir.key
+          ))
+        .filter((rule): rule is HydratedGeneratedRule => Boolean(rule))
+      if (rules.length) this.classUtilities.set(className, rules)
     }
-    super.refresh(manifest)
-    /**
-     * Recreate rules from the current class names against the latest manifest.
-     * 所以 refresh 過後 rules 可能會變多也可能會變少
-     */
-    this.classCounts.forEach((_, className) => {
-      this.ensureClassRules(className)
-    })
-    if (process.env.NODE_ENV === 'development') {
-      debugRuntimeRefreshed(this, manifest)
-    }
+    if (process.env.NODE_ENV === 'development') debugRuntimeRefreshed(this, manifest)
     return this
   }
 
   destroy() {
     this.disconnect()
-    this.backendEngine?.dispose()
-    this.backendEngine = undefined
+    this.backendEngine.dispose()
     this.unregister()
-    if (process.env.NODE_ENV === 'development') {
-      debugRuntimeDestroyed(this)
-    }
+    if (process.env.NODE_ENV === 'development') debugRuntimeDestroyed(this)
     return this
   }
 }
 
-(function (CSSRuntime) {
-  registerGlobal(CSSRuntime)
-})(CSSRuntime)
+registerGlobal(CSSRuntime)

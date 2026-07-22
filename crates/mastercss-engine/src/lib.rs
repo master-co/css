@@ -260,7 +260,6 @@ struct UtilityMatch {
 struct CompiledVariable {
     name: String,
     namespace: String,
-    key: String,
     value: Option<String>,
     modes: Vec<CompiledVariableMode>,
     variable_type: String,
@@ -313,6 +312,8 @@ pub struct EngineSession {
     compiled: ManifestProjection,
     layers: [Vec<StoredRule>; LAYER_COUNT],
     class_rules: HashMap<String, Vec<(UtilityLayerName, String)>>,
+    class_order: Vec<String>,
+    rule_counts: HashMap<(UtilityLayerName, String), u32>,
     emitted_globals: EmittedGlobals,
     variable_counts: HashMap<String, u32>,
     theme_variable_names: Vec<String>,
@@ -342,6 +343,8 @@ impl EngineSession {
             compiled,
             layers: std::array::from_fn(|_| Vec::new()),
             class_rules: HashMap::new(),
+            class_order: Vec::new(),
+            rule_counts: HashMap::new(),
             emitted_globals,
             variable_counts: HashMap::new(),
             theme_variable_names: Vec::new(),
@@ -381,10 +384,10 @@ impl EngineSession {
             let mut class_rule_keys = Vec::with_capacity(generated.len());
             for rule in generated {
                 let layer = rule.ir.layer;
-                if self.layers[layer_index(layer)]
-                    .iter()
-                    .any(|existing| existing.ir.key == rule.ir.key)
-                {
+                let reference = (layer, rule.ir.key.clone());
+                if let Some(count) = self.rule_counts.get_mut(&reference) {
+                    *count += 1;
+                    class_rule_keys.push(reference);
                     continue;
                 }
                 self.register_rule_variables(&rule.ir.variable_names, &mut mutations);
@@ -393,7 +396,8 @@ impl EngineSession {
                     .binary_search_by(|existing| compare_stored_rules(existing, &rule))
                     .unwrap_or_else(|index| index);
                 layer_rules.insert(index, rule.clone());
-                class_rule_keys.push((layer, rule.ir.key.clone()));
+                class_rule_keys.push(reference.clone());
+                self.rule_counts.insert(reference, 1);
                 mutations.push(RuleMutationIr::Insert {
                     target: layer.into(),
                     index: index as u32,
@@ -405,6 +409,7 @@ impl EngineSession {
                 self.register_rule_animations(&animation_names, &mut mutations);
             }
             if !class_rule_keys.is_empty() {
+                self.class_order.push(class_name.to_owned());
                 self.class_rules
                     .insert(class_name.to_owned(), class_rule_keys);
             }
@@ -423,10 +428,24 @@ impl EngineSession {
         self.ensure_active()?;
         let mut mutations = Vec::new();
         for class_name in class_names {
-            let Some(keys) = self.class_rules.remove(class_name.as_ref()) else {
+            let class_name = class_name.as_ref();
+            let Some(keys) = self.class_rules.remove(class_name) else {
                 continue;
             };
             for (layer, key) in keys.into_iter().rev() {
+                let reference = (layer, key.clone());
+                let should_remove = match self.rule_counts.get_mut(&reference) {
+                    Some(count) if *count > 1 => {
+                        *count -= 1;
+                        false
+                    }
+                    Some(_) => true,
+                    None => false,
+                };
+                if !should_remove {
+                    continue;
+                }
+                self.rule_counts.remove(&reference);
                 let rules = &mut self.layers[layer_index(layer)];
                 let Some(index) = rules.iter().position(|rule| rule.ir.key == key) else {
                     continue;
@@ -440,6 +459,8 @@ impl EngineSession {
                 self.unregister_rule_variables(&rule.ir.variable_names, &mut mutations);
                 self.unregister_rule_animations(&rule.ir.animation_names, &mut mutations);
             }
+            self.class_order
+                .retain(|connected_class_name| connected_class_name != class_name);
         }
         Ok(EngineTransitionIr::new(mutations))
     }
@@ -545,7 +566,7 @@ impl EngineSession {
         self.ensure_active()?;
         let manifest = MasterCssManifest::parse(manifest_json)?;
         let compiled = compile_manifest(&manifest)?;
-        let connected_classes: Vec<String> = self.class_rules.keys().cloned().collect();
+        let connected_classes = self.class_order.clone();
         let mut mutations = Vec::new();
         for layer in UTILITY_LAYERS.into_iter().rev() {
             let rules = &mut self.layers[layer_index(layer)];
@@ -581,6 +602,8 @@ impl EngineSession {
         self.compiled = compiled;
         self.manifest = manifest;
         self.class_rules.clear();
+        self.class_order.clear();
+        self.rule_counts.clear();
         self.initialize_variable_resources();
         self.initialize_animation_resources();
         if let Some(text) = self.theme_rule_text() {
@@ -667,6 +690,8 @@ impl EngineSession {
     pub fn dispose(&mut self) {
         self.layers.iter_mut().for_each(Vec::clear);
         self.class_rules.clear();
+        self.class_order.clear();
+        self.rule_counts.clear();
         self.variable_counts.clear();
         self.theme_variable_names.clear();
         self.animation_counts.clear();
@@ -1138,6 +1163,14 @@ impl EngineSession {
                     }
                     let text = node_texts.concat();
                     let declarations = declaration_texts.join(";");
+                    let mut variable_names = matched.variable_names.clone();
+                    for name in collect_css_variable_names(&declarations) {
+                        if self.compiled.compiled_variables.contains_key(&name)
+                            && !variable_names.contains(&name)
+                        {
+                            variable_names.push(name);
+                        }
+                    }
                     let layer = branch.layer.unwrap_or(utility.layer);
                     let sort_tier = if !branch.condition_wrappers.is_empty() {
                         3
@@ -1148,11 +1181,8 @@ impl EngineSession {
                     } else {
                         0
                     };
-                    let animation_names = collect_animation_names(
-                        &declarations,
-                        &matched.variable_names,
-                        &self.compiled,
-                    );
+                    let animation_names =
+                        collect_animation_names(&declarations, &variable_names, &self.compiled);
                     generated.push(StoredRule {
                         ir: GeneratedRuleIr {
                             class_name: class_name.to_owned(),
@@ -1174,7 +1204,7 @@ impl EngineSession {
                                 Vec::new()
                             },
                             selector_text: Some(selector_text),
-                            variable_names: matched.variable_names.clone(),
+                            variable_names,
                             animation_names,
                         },
                         manifest_order: utility.order.unwrap_or_default(),
@@ -1355,7 +1385,11 @@ fn compile_manifest(manifest: &MasterCssManifest) -> Result<ManifestProjection, 
             if utility.order.is_none() {
                 utility.order = Some(count - index as i32 - 1);
             }
-            compile_utility_variables(&mut utility, &projection.compiled_variables);
+            compile_utility_variables(
+                &mut utility,
+                &projection.compiled_variables,
+                &projection.compiled_variable_order,
+            );
             utility
         })
         .collect();
@@ -1453,7 +1487,6 @@ fn compile_variables(
                 CompiledVariable {
                     name,
                     namespace: namespace.clone(),
-                    key,
                     value,
                     modes,
                     variable_type,
@@ -2178,6 +2211,7 @@ fn append_builtin_native_declaration_utilities(utilities: &mut Vec<UtilityDefini
 fn compile_utility_variables(
     utility: &mut UtilityDefinition,
     variables: &HashMap<String, CompiledVariable>,
+    variable_order: &[String],
 ) {
     for (key, name) in &utility.variable_aliases {
         if variables.contains_key(name) {
@@ -2189,15 +2223,36 @@ fn compile_utility_variables(
             .strip_prefix('=')
             .or_else(|| reference.strip_prefix('~'))
             .unwrap_or(reference.as_str());
-        for variable in variables.values() {
-            if variable.namespace == namespace {
+        for variable_name in variable_order {
+            let Some(variable) = variables.get(variable_name) else {
+                continue;
+            };
+            if let Some(key) = get_variable_key_by_namespace(&variable.name, namespace) {
                 utility
                     .variables
-                    .entry(variable.key.clone())
+                    .entry(key)
                     .or_insert_with(|| variable.name.clone());
             }
         }
     }
+}
+
+fn get_variable_key_by_namespace(variable_name: &str, namespace: &str) -> Option<String> {
+    let (negative, positive_name) = variable_name
+        .strip_prefix('-')
+        .map_or((false, variable_name), |name| (true, name));
+    if positive_name != namespace && !positive_name.starts_with(&format!("{namespace}-")) {
+        return None;
+    }
+    let key = positive_name
+        .strip_prefix(namespace)
+        .and_then(|name| name.strip_prefix('-'))
+        .unwrap_or_default();
+    Some(if negative {
+        format!("-{key}")
+    } else {
+        key.to_owned()
+    })
 }
 
 fn layer_index(layer: UtilityLayerName) -> usize {
@@ -2533,7 +2588,13 @@ fn resolve_utility_value(
             .strip_prefix('$')
             .filter(|name| manifest.compiled_variables.contains_key(*name))
             .map(str::to_owned)
-            .or_else(|| utility.variables.get(key).cloned())?;
+            .or_else(|| utility.variables.get(key).cloned())
+            .or_else(|| {
+                manifest
+                    .compiled_variables
+                    .contains_key(key)
+                    .then(|| key.to_owned())
+            })?;
         let variable = manifest.compiled_variables.get(&variable_name)?;
         if !variable.namespace.starts_with("color") {
             return None;
@@ -2565,7 +2626,8 @@ fn resolve_utility_value(
     let variable_name = key
         .strip_prefix('$')
         .filter(|name| manifest.compiled_variables.contains_key(*name))
-        .or_else(|| utility.variables.get(key).map(String::as_str))?;
+        .or_else(|| utility.variables.get(key).map(String::as_str))
+        .or_else(|| manifest.compiled_variables.contains_key(key).then_some(key))?;
     let variable = manifest.compiled_variables.get(variable_name)?;
     if negative && variable.variable_type != "number" {
         return None;

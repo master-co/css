@@ -2,7 +2,6 @@ import { test, expect, type Page } from '@playwright/test'
 import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import UtilityType from '@master/css-schema/utility-type'
-import CSSRuntime from '../src'
 import init from './init'
 
 const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
@@ -55,9 +54,10 @@ test('destroy on progressive', async ({ page }) => {
   })
   expect(await page.evaluate(() => (globalThis as any).destroyedRuntime.utilitiesLayer.rules.length)).toBe(0)
   expect(await page.evaluate(() => Array.from((globalThis as any).destroyedRuntime.style?.sheet?.cssRules || []).length)).toBe(0)
-  await page.evaluate(() => {
+  await page.evaluate(async () => {
     const runtime = (globalThis as any).destroyedRuntime as typeof globalThis.masterCSSRuntime
-    runtime.register().observe()
+    const nextRuntime = await globalThis.MasterCSSRuntime.start({ manifest: runtime.manifest })
+    nextRuntime.observe()
     document.body.classList.add('block')
     document.body.classList.add('font:bold')
   })
@@ -268,50 +268,59 @@ test('hydrates progressive static theme variables and keyframes', async ({ page 
   expect(await page.evaluate(() => globalThis.masterCSSRuntime.animationsNonLayer.rules.map((rule) => rule.name))).toEqual(['static-fade'])
 })
 
-test('registers emittedGlobals counts on an existing runtime', () => {
-  const root = { host: {} } as unknown as ShadowRoot
-  const cssRuntime = CSSRuntime.create({ manifest: defaultManifest, root })
-  const returnedCSSRuntime = CSSRuntime.create({
-    manifest: defaultManifest,
-    root,
-    emittedGlobals: {
-      variables: {
-        'color-primary': 1
-      },
-      animations: {
-        fade: 1
+test('registers emittedGlobals counts on an existing runtime', async ({ page }) => {
+  await init(page)
+  const result = await page.evaluate(async (manifest) => {
+    const current = globalThis.masterCSSRuntime
+    const returned = await globalThis.MasterCSSRuntime.start({
+      manifest,
+      emittedGlobals: {
+        variables: { 'color-primary': 1 },
+        animations: { fade: 1 }
       }
+    })
+    return {
+      same: returned === current,
+      variables: current.emittedGlobals.variables,
+      animations: current.emittedGlobals.animations,
+      variableCounts: Object.fromEntries(current.themeLayer.tokenCounts),
+      animationCounts: Object.fromEntries(current.animationsNonLayer.tokenCounts)
     }
-  })
+  }, defaultManifest)
 
-  expect(returnedCSSRuntime).toBe(cssRuntime)
-  expect(cssRuntime.emittedGlobals.variables).toMatchObject({ 'color-primary': 1 })
-  expect(cssRuntime.emittedGlobals.animations).toMatchObject({ fade: 1 })
-  expect(Object.fromEntries(cssRuntime.themeLayer.tokenCounts)).toMatchObject({ 'color-primary': 1 })
-  expect(Object.fromEntries(cssRuntime.animationsNonLayer.tokenCounts)).toMatchObject({ fade: 1 })
-
-  cssRuntime.destroy()
+  expect(result.same).toBe(true)
+  expect(result.variables).toMatchObject({ 'color-primary': 1 })
+  expect(result.animations).toMatchObject({ fade: 1 })
+  expect(result.variableCounts).toMatchObject({ 'color-primary': 1 })
+  expect(result.animationCounts).toMatchObject({ fade: 1 })
 })
 
-test('registers emittedGlobals counts once on a new runtime', () => {
-  const root = { host: {} } as unknown as ShadowRoot
-  const cssRuntime = CSSRuntime.create({
-    manifest: defaultManifest,
-    root,
-    emittedGlobals: {
-      variables: {
-        'color-primary': 1
-      },
-      animations: {
-        fade: 1
+test('registers emittedGlobals counts once on a new runtime', async ({ page }) => {
+  await init(page)
+  const result = await page.evaluate(async (manifest) => {
+    const host = document.createElement('div')
+    document.body.append(host)
+    const root = host.attachShadow({ mode: 'open' })
+    const runtime = await globalThis.MasterCSSRuntime.start({
+      manifest,
+      root,
+      emittedGlobals: {
+        variables: { 'color-primary': 1 },
+        animations: { fade: 1 }
       }
+    })
+    const result = {
+      variables: runtime.emittedGlobals.variables,
+      animations: runtime.emittedGlobals.animations,
+      variableCounts: Object.fromEntries(runtime.themeLayer.tokenCounts),
+      animationCounts: Object.fromEntries(runtime.animationsNonLayer.tokenCounts)
     }
-  })
+    runtime.destroy()
+    return result
+  }, defaultManifest)
 
-  expect(cssRuntime.emittedGlobals.variables).toMatchObject({ 'color-primary': 1 })
-  expect(cssRuntime.emittedGlobals.animations).toMatchObject({ fade: 1 })
-  expect(Object.fromEntries(cssRuntime.themeLayer.tokenCounts)).toMatchObject({ 'color-primary': 1 })
-  expect(Object.fromEntries(cssRuntime.animationsNonLayer.tokenCounts)).toMatchObject({ fade: 1 })
-
-  cssRuntime.destroy()
+  expect(result.variables).toMatchObject({ 'color-primary': 1 })
+  expect(result.animations).toMatchObject({ fade: 1 })
+  expect(result.variableCounts).toMatchObject({ 'color-primary': 1 })
+  expect(result.animationCounts).toMatchObject({ fade: 1 })
 })

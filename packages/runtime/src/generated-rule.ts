@@ -1,4 +1,4 @@
-import type RuntimeUtilityLayer from './utility-layer'
+import type RuntimeLayer from './layer'
 import type { MasterCSSGeneratedRuleIR } from '@master/css-schema/hydration-manifest'
 
 function collectVariableNames(text: string) {
@@ -35,7 +35,7 @@ export default class HydratedGeneratedRule {
 
   constructor(
     public readonly ir: MasterCSSGeneratedRuleIR,
-    public readonly layer: RuntimeUtilityLayer
+    public readonly layer: RuntimeLayer
   ) {
     this.name = ir.className
     this.key = ir.key

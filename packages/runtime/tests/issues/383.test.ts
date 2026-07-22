@@ -44,12 +44,13 @@ test('383', async ({ page }) => {
     removedCount: 1,
     retainedClassNames: [],
     hasClassUtility: false,
-    utilitiesStyleSheet: null
+    utilitiesStyleSheet: undefined
   })
   await page.evaluate(() => {
     document.body.innerHTML = `
       <div class="font:bold fg:red"></div>
     `
   })
+  await waitForRuntimeRemovalFlush(page)
   expect(await page.evaluate(() => globalThis.masterCSSRuntime.utilitiesLayer?.native?.parentStyleSheet)).toBeDefined()
 })
