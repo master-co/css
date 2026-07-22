@@ -100,8 +100,13 @@ export interface MasterCSSLintEditIR {
 }
 
 export interface MasterCSSLintDiagnosticIR {
-  ruleId: 'sort-classes' | 'no-conflicting-classes'
-  code: 'invalid-class-order' | 'conflicting-class' | 'partially-conflicting-class'
+  ruleId: 'sort-classes' | 'no-invalid-classes' | 'no-conflicting-classes'
+  code:
+    | 'invalid-class-order'
+    | 'invalid-class'
+    | 'unknown-class'
+    | 'conflicting-class'
+    | 'partially-conflicting-class'
   message: string
   range: MasterCSSSourceRange
   data?: Record<string, string | string[]>

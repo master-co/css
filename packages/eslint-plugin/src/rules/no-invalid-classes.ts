@@ -5,6 +5,7 @@ import { noInvalidClassesOptionsSchema } from '../settings-schema'
 import { createInvalidClassesReport } from '@master/css-lint'
 import reportLintDiagnostics from '../utils/report-lint-diagnostics'
 import defineSourceVisitors, { shouldUseSourceVisitors } from '../utils/define-source-visitors'
+import { fromRustLintDiagnostics } from '@master/css-lint/node'
 
 export default createRule({
   name: 'no-invalid-classes',
@@ -22,7 +23,7 @@ export default createRule({
   },
   defaultOptions: [],
   create: function (context) {
-    const { options, settings, css } = resolveContext(context)
+    const { options, settings, css, rustLint } = resolveContext(context)
     if (shouldUseSourceVisitors(context)) {
       return defineSourceVisitors({
         context,
@@ -34,11 +35,19 @@ export default createRule({
       })
     }
     return defineVisitors({ context, settings }, (node, resolved) => {
+      const rustDiagnostics = rustLint
+        ? fromRustLintDiagnostics(
+          rustLint.analyzeClassList(resolved.raw, resolved.classValues, {
+            disallowUnknownClass: options.disallowUnknownClass
+          }).diagnostics.filter(({ ruleId }) => ruleId === 'no-invalid-classes'),
+          'error'
+        )
+        : undefined
       reportLintDiagnostics(
         context,
         node,
         resolved,
-        createInvalidClassesReport(resolved.raw, css, {
+        rustDiagnostics || createInvalidClassesReport(resolved.raw, css, {
           unescape: resolved.unescape,
           disallowUnknownClass: options.disallowUnknownClass
         }).diagnostics

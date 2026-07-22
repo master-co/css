@@ -2,14 +2,15 @@ import { readFile } from 'node:fs/promises'
 import { loadNativeBinding } from '@master/css-native'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import { stringifyMasterCSSManifestJSON } from '@master/css-schema/manifest-json'
-import type {
-  MasterCSSLintBatchIR,
-  MasterCSSLintClassListIR,
-  MasterCSSLintClassConflictIR,
-  MasterCSSLintDiagnosticIR,
-  MasterCSSLintPartialClassConflictIR,
-  MasterCSSNativeDeclarationCandidateIR,
-  MasterCSSValidatorBatchIR
+import {
+  MASTER_CSS_LINT_BATCH_VERSION,
+  type MasterCSSLintBatchIR,
+  type MasterCSSLintClassListIR,
+  type MasterCSSLintClassConflictIR,
+  type MasterCSSLintDiagnosticIR,
+  type MasterCSSLintPartialClassConflictIR,
+  type MasterCSSNativeDeclarationCandidateIR,
+  type MasterCSSValidatorBatchIR
 } from '@master/css-schema/rust-contract'
 import { cssTreeNativeDeclarationMatcher } from '@master/css-validator/native-declaration-matcher'
 import validateCSS from '@master/css-validator/validate-css'
@@ -21,14 +22,30 @@ export type RustLintBatchIR = MasterCSSLintBatchIR
 
 export interface RustLintSession {
   analyze(classNames: string[]): RustLintBatchIR
-  analyzeClassList(classList: string, classNames: string[]): MasterCSSLintClassListIR
+  analyzeClassList(
+    classList: string,
+    classNames: string[],
+    options?: RustLintClassListOptions
+  ): MasterCSSLintClassListIR
   dispose(): void
 }
 
-function invalidGeneratedClasses(batch: MasterCSSValidatorBatchIR) {
-  return batch.classes
-    .filter(({ matched, rules }) => matched && rules.some(({ text }) => validateCSS(text).length))
-    .map(({ className }) => className)
+export interface RustLintClassListOptions {
+  disallowUnknownClass?: boolean
+}
+
+function resolveValidation(batch: MasterCSSValidatorBatchIR) {
+  const validationErrors = batch.classes.map(({ matched, rules }) => matched
+    ? rules.flatMap(({ text }) => validateCSS(text).map((error) =>
+      error.message || error.rawMessage || 'CSS validation failed'
+    ))
+    : [])
+  return {
+    validationErrors,
+    invalidGeneratedClasses: batch.classes
+      .filter((_, index) => validationErrors[index].length)
+      .map(({ className }) => className)
+  }
 }
 
 function createNativeRustLintSession(manifestJSON: string): RustLintSession | undefined {
@@ -47,7 +64,7 @@ function createNativeRustLintSession(manifestJSON: string): RustLintSession | un
     )) as MasterCSSValidatorBatchIR
     return {
       nativeSupport: nativeSupport.length ? nativeSupport : undefined,
-      invalidGeneratedClasses: invalidGeneratedClasses(validation)
+      ...resolveValidation(validation)
     }
   }
   return {
@@ -59,14 +76,17 @@ function createNativeRustLintSession(manifestJSON: string): RustLintSession | un
         inputs.invalidGeneratedClasses
       )) as RustLintBatchIR
     },
-    analyzeClassList(classList, classNames) {
+    analyzeClassList(classList, classNames, options) {
       const inputs = resolveInputs(classNames)
-      return JSON.parse(lint.analyzeClassList(
+      return JSON.parse(lint.analyzeClassListPolicy(JSON.stringify({
+        version: MASTER_CSS_LINT_BATCH_VERSION,
         classList,
         classNames,
-        inputs.nativeSupport,
-        inputs.invalidGeneratedClasses
-      )) as MasterCSSLintClassListIR
+        nativeSupport: inputs.nativeSupport,
+        invalidGeneratedClasses: inputs.invalidGeneratedClasses,
+        validationErrors: inputs.validationErrors,
+        disallowUnknownClass: options?.disallowUnknownClass
+      }))) as MasterCSSLintClassListIR
     },
     dispose() {
       lint.dispose()
@@ -118,22 +138,26 @@ export async function createRustLintSession(manifest: MasterCSSManifest): Promis
       return lint.analyze(
         classNames,
         nativeSupport.length ? nativeSupport : undefined,
-        invalidGeneratedClasses(validation)
+        resolveValidation(validation).invalidGeneratedClasses
       ) as RustLintBatchIR
     },
-    analyzeClassList(classList, classNames) {
+    analyzeClassList(classList, classNames, options) {
       const candidates = lint.nativeDeclarationCandidates(classNames) as MasterCSSNativeDeclarationCandidateIR[]
       const nativeSupport = candidates.map(cssTreeNativeDeclarationMatcher)
       const validation = validator.generateClasses(
         classNames,
         nativeSupport.length ? nativeSupport : undefined
       ) as MasterCSSValidatorBatchIR
-      return lint.analyzeClassList(
+      const resolvedValidation = resolveValidation(validation)
+      return lint.analyzeClassListPolicy(JSON.stringify({
+        version: MASTER_CSS_LINT_BATCH_VERSION,
         classList,
         classNames,
-        nativeSupport.length ? nativeSupport : undefined,
-        invalidGeneratedClasses(validation)
-      ) as MasterCSSLintClassListIR
+        nativeSupport: nativeSupport.length ? nativeSupport : undefined,
+        invalidGeneratedClasses: resolvedValidation.invalidGeneratedClasses,
+        validationErrors: resolvedValidation.validationErrors,
+        disallowUnknownClass: options?.disallowUnknownClass
+      })) as MasterCSSLintClassListIR
     },
     dispose() {
       lint.dispose()

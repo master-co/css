@@ -3,6 +3,7 @@ import { resolve } from 'node:path'
 import {
   assertNativeCLIInfo,
   getNativeCLIExecutableName,
+  loadNativeBinding,
   NativeBindingError,
   nativeAddonsDisabled,
   resolveNativeCLIPath,
@@ -50,5 +51,19 @@ describe('native target resolution', () => {
   it('rejects a configured missing executable without falling back', () => {
     expect(() => resolveNativeCLIPath({ executablePath: '/missing/master-css/mcss' }))
       .toThrowError(expect.objectContaining<Partial<NativeBindingError>>({ code: 'NATIVE_LOAD_FAILED' }))
+  })
+
+  it('rejects unsupported lint request versions with a structured error', () => {
+    const loaded = loadNativeBinding({ required: true })!
+    const lint = new loaded.binding.LintSession('{"version":1,"utilities":[]}')
+    try {
+      expect(() => lint.analyzeClassListPolicy(JSON.stringify({
+        version: 0,
+        classList: 'unknown',
+        classNames: ['unknown']
+      }))).toThrow('INVALID_LINT_REQUEST')
+    } finally {
+      lint.dispose()
+    }
   })
 })

@@ -265,6 +265,23 @@ describe('class list edits', () => {
       expect(partial.diagnostics.find(({ ruleId }) => ruleId === 'no-conflicting-classes'))
         .toEqual(partialOracle && toRustDiagnostic(partialOracle))
 
+      const invalid = rust.analyzeClassList(
+        'text-decoration:bad()',
+        ['text-decoration:bad()']
+      )
+      const invalidOracle = createInvalidClassesReport('text-decoration:bad()', css).diagnostics[0]
+      expect(invalid.diagnostics.find(({ ruleId }) => ruleId === 'no-invalid-classes'))
+        .toEqual(invalidOracle && toRustDiagnostic(invalidOracle))
+
+      const unknown = rust.analyzeClassList('unknown-class', ['unknown-class'], {
+        disallowUnknownClass: true
+      })
+      const unknownOracle = createInvalidClassesReport('unknown-class', css, {
+        disallowUnknownClass: true
+      }).diagnostics[0]
+      expect(unknown.diagnostics.find(({ ruleId }) => ruleId === 'no-invalid-classes'))
+        .toEqual(unknownOracle && toRustDiagnostic(unknownOracle))
+
       expect(rust.analyzeClassList(
         'content:\\`\\` block',
         ['content:``', 'block']

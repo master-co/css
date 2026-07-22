@@ -83,6 +83,7 @@ pub struct LintSession {
 #[derive(Debug, Clone)]
 struct ClassDescriptor {
     class_name: String,
+    matched: bool,
     rule: Option<GeneratedRuleIr>,
     rule_count: usize,
     valid_for_conflicts: bool,
@@ -128,6 +129,16 @@ impl LintSession {
             .into_iter()
             .map(|class_name| class_name.as_ref().to_owned())
             .collect::<Vec<_>>();
+        self.analyze_with_matches(class_names, native_support, invalid_generated_classes)
+            .map(|(analysis, _)| analysis)
+    }
+
+    fn analyze_with_matches(
+        &mut self,
+        class_names: Vec<String>,
+        native_support: Option<&[bool]>,
+        invalid_generated_classes: &HashSet<String>,
+    ) -> Result<(LintBatchIr, Vec<bool>), EngineError> {
         if let Some(native_support) = native_support {
             self.engine
                 .ensure_class_rules_with_native_support(&class_names, native_support)?;
@@ -155,13 +166,20 @@ impl LintSession {
             &self.variable_keys,
             &self.variable_values,
         )?;
+        let matches = descriptors
+            .iter()
+            .map(|descriptor| descriptor.matched)
+            .collect();
         self.engine.delete_class_rules(&class_names)?;
-        Ok(LintBatchIr {
-            version: LINT_BATCH_VERSION,
-            sorted_class_names,
-            conflicts,
-            partial_conflicts,
-        })
+        Ok((
+            LintBatchIr {
+                version: LINT_BATCH_VERSION,
+                sorted_class_names,
+                conflicts,
+                partial_conflicts,
+            },
+            matches,
+        ))
     }
 
     pub fn analyze_class_list(
@@ -170,12 +188,21 @@ impl LintSession {
         class_names: &[String],
         native_support: Option<&[bool]>,
         invalid_generated_classes: &HashSet<String>,
+        validation_errors: &[Vec<String>],
+        disallow_unknown_class: bool,
     ) -> Result<LintClassListIr, EngineError> {
-        let analysis = self.analyze(class_names, native_support, invalid_generated_classes)?;
+        let (analysis, matches) = self.analyze_with_matches(
+            class_names.to_vec(),
+            native_support,
+            invalid_generated_classes,
+        )?;
         Ok(class_list::create_class_list_ir(
             class_list,
             class_names,
             analysis,
+            &matches,
+            validation_errors,
+            disallow_unknown_class,
         ))
     }
 
@@ -188,6 +215,7 @@ impl ClassDescriptor {
     fn unknown(class_name: &str) -> Self {
         Self {
             class_name: class_name.to_owned(),
+            matched: false,
             rule: None,
             rule_count: 0,
             valid_for_conflicts: false,
@@ -229,6 +257,7 @@ impl ClassDescriptor {
         };
         Self {
             class_name: class_name.to_owned(),
+            matched: true,
             rule: Some(rule),
             rule_count,
             valid_for_conflicts,

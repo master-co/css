@@ -1,6 +1,6 @@
 #![forbid(unsafe_code)]
 
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use std::collections::HashSet;
 use wasm_bindgen::prelude::*;
 
@@ -10,8 +10,33 @@ fn scanner_error(error: mastercss_engine::EngineError) -> JsValue {
     )
 }
 
+fn invalid_lint_request(message: impl Into<String>) -> JsValue {
+    JsValue::from_str(
+        &serde_json::json!({
+            "code": "INVALID_LINT_REQUEST",
+            "message": message.into(),
+        })
+        .to_string(),
+    )
+}
+
 fn serialize_classes(classes: &[String]) -> Result<JsValue, JsValue> {
     serde_wasm_bindgen::to_value(classes).map_err(|error| JsValue::from_str(&error.to_string()))
+}
+
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase")]
+struct LintClassListRequest {
+    version: u32,
+    class_list: String,
+    class_names: Vec<String>,
+    native_support: Option<Vec<bool>>,
+    #[serde(default)]
+    invalid_generated_classes: Vec<String>,
+    #[serde(default)]
+    validation_errors: Vec<Vec<String>>,
+    #[serde(default)]
+    disallow_unknown_class: bool,
 }
 
 #[wasm_bindgen(js_name = extractClassCandidates)]
@@ -160,6 +185,36 @@ impl ToolingLintSession {
                 &invalid_generated_classes
                     .into_iter()
                     .collect::<HashSet<_>>(),
+                &[],
+                false,
+            )
+            .map_err(scanner_error)?;
+        batch
+            .serialize(&serde_wasm_bindgen::Serializer::json_compatible())
+            .map_err(|error| JsValue::from_str(&error.to_string()))
+    }
+
+    #[wasm_bindgen(js_name = analyzeClassListPolicy)]
+    pub fn analyze_class_list_policy(&mut self, request_json: &str) -> Result<JsValue, JsValue> {
+        let request = serde_json::from_str::<LintClassListRequest>(request_json)
+            .map_err(|error| invalid_lint_request(error.to_string()))?;
+        if request.version != mastercss_schema::LINT_BATCH_VERSION {
+            return Err(invalid_lint_request(
+                "Unsupported lint class-list request version",
+            ));
+        }
+        let batch = self
+            .inner
+            .analyze_class_list(
+                &request.class_list,
+                &request.class_names,
+                request.native_support.as_deref(),
+                &request
+                    .invalid_generated_classes
+                    .into_iter()
+                    .collect::<HashSet<_>>(),
+                &request.validation_errors,
+                request.disallow_unknown_class,
             )
             .map_err(scanner_error)?;
         batch

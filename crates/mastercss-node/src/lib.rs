@@ -9,7 +9,7 @@ use mastercss_scanner::ScannerSession as RustScannerSession;
 use mastercss_validator::ValidatorSession as RustValidatorSession;
 use napi::{Error, Result, Status};
 use napi_derive::napi;
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use std::collections::HashSet;
 
 const BINDING_ABI_VERSION: u32 = 1;
@@ -24,6 +24,21 @@ struct BindingInfo<'a> {
     target: &'a str,
 }
 
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase")]
+struct LintClassListRequest {
+    version: u32,
+    class_list: String,
+    class_names: Vec<String>,
+    native_support: Option<Vec<bool>>,
+    #[serde(default)]
+    invalid_generated_classes: Vec<String>,
+    #[serde(default)]
+    validation_errors: Vec<Vec<String>>,
+    #[serde(default)]
+    disallow_unknown_class: bool,
+}
+
 fn to_napi_error(error: EngineError) -> Error {
     let reason = serde_json::to_string(&error.diagnostic()).unwrap_or_else(|_| error.to_string());
     Error::new(Status::GenericFailure, reason)
@@ -32,6 +47,17 @@ fn to_napi_error(error: EngineError) -> Error {
 fn compiler_to_napi_error(error: CompilerError) -> Error {
     let reason = serde_json::to_string(&error.diagnostic()).unwrap_or_else(|_| error.to_string());
     Error::new(Status::GenericFailure, reason)
+}
+
+fn invalid_lint_request(message: impl Into<String>) -> Error {
+    Error::new(
+        Status::InvalidArg,
+        serde_json::json!({
+            "code": "INVALID_LINT_REQUEST",
+            "message": message.into(),
+        })
+        .to_string(),
+    )
 }
 
 fn to_json<T: Serialize>(value: &T) -> Result<String> {
@@ -265,6 +291,35 @@ impl NodeLintSession {
                     &invalid_generated_classes
                         .into_iter()
                         .collect::<HashSet<_>>(),
+                    &[],
+                    false,
+                )
+                .map_err(to_napi_error)?,
+        )
+    }
+
+    #[napi]
+    pub fn analyze_class_list_policy(&mut self, request_json: String) -> Result<String> {
+        let request = serde_json::from_str::<LintClassListRequest>(&request_json)
+            .map_err(|error| invalid_lint_request(error.to_string()))?;
+        if request.version != mastercss_schema::LINT_BATCH_VERSION {
+            return Err(invalid_lint_request(
+                "Unsupported lint class-list request version",
+            ));
+        }
+        to_json(
+            &self
+                .inner
+                .analyze_class_list(
+                    &request.class_list,
+                    &request.class_names,
+                    request.native_support.as_deref(),
+                    &request
+                        .invalid_generated_classes
+                        .into_iter()
+                        .collect::<HashSet<_>>(),
+                    &request.validation_errors,
+                    request.disallow_unknown_class,
                 )
                 .map_err(to_napi_error)?,
         )

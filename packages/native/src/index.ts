@@ -75,6 +75,7 @@ export interface NativeLintSession {
     nativeSupport: boolean[] | undefined,
     invalidGeneratedClasses: string[]
   ): string
+  analyzeClassListPolicy(requestJSON: string): string
   dispose(): void
 }
 

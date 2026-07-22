@@ -153,6 +153,28 @@ test('loads the isolated source tooling Wasm surface', async () => {
     conflictEdit: { range: { start: 0, end: 14 }, text: 'mr:2px  ml:3px' },
     conflictRange: { start: 0, end: 6 }
   })
+  const policy = lint.analyzeClassListPolicy(JSON.stringify({
+    version: 1,
+    classList: 'block unknown',
+    classNames: ['block', 'unknown'],
+    validationErrors: [
+      ['Invalid value for `display` property'],
+      []
+    ],
+    disallowUnknownClass: true
+  })) as { diagnostics: unknown[] }
+  expect(policy.diagnostics).toEqual([
+    expect.objectContaining({
+      ruleId: 'no-invalid-classes',
+      code: 'invalid-class',
+      range: { start: 0, end: 5 }
+    }),
+    expect.objectContaining({
+      ruleId: 'no-invalid-classes',
+      code: 'unknown-class',
+      range: { start: 6, end: 13 }
+    })
+  ])
   lint.dispose()
   lint.free()
 
