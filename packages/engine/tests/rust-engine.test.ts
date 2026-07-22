@@ -2,6 +2,7 @@ import { beforeAll, describe, expect, it } from 'vitest'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import defaultManifest from '@master/css-preset/default-manifest.json'
 import MasterCSS from '../src/core'
+import createEngine from '../src/create-engine'
 import { createEngineSync } from '../src/node'
 import { MasterCSSEngineError } from '../src/backend'
 import builtinKeyAliases from '../src/key-aliases'
@@ -51,6 +52,39 @@ beforeAll(() => {
 })
 
 describe('Rust engine differential slice', () => {
+  it('uses Wasm for auto backend when native addons are disabled', async () => {
+    process.execArgv.push('--no-addons')
+    try {
+      const rust = await createEngine({ manifest, backend: 'auto' })
+      try {
+        expect(rust.backend).toBe('wasm')
+        rust.ensureClassRules(['block'])
+        expect(rust.text).toBe('@layer utilities{.block{display:block}}')
+      } finally {
+        rust.dispose()
+      }
+    } finally {
+      process.execArgv.splice(process.execArgv.lastIndexOf('--no-addons'), 1)
+    }
+  })
+
+  it('does not hide expected native load failures behind the auto Wasm fallback', async () => {
+    const bindingPath = process.env.MASTER_CSS_NATIVE_BINDING_PATH
+    process.env.MASTER_CSS_NATIVE_BINDING_PATH = '/missing/master-css/mastercss.node'
+    try {
+      await expect(createEngine({ manifest, backend: 'auto' })).rejects.toMatchObject({
+        name: 'MasterCSSEngineError',
+        code: 'NATIVE_LOAD_FAILED'
+      })
+    } finally {
+      if (bindingPath === undefined) {
+        delete process.env.MASTER_CSS_NATIVE_BINDING_PATH
+      } else {
+        process.env.MASTER_CSS_NATIVE_BINDING_PATH = bindingPath
+      }
+    }
+  })
+
   it('matches existing static, pattern, property, sorting, and escaping output', () => {
     const oracle = MasterCSS.create({ manifest })
     oracle.ensureClassRules('block', 'w:10px', 'bg-origin-border')

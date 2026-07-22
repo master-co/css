@@ -1,14 +1,10 @@
 import { readFile } from 'node:fs/promises'
 import { afterEach, expect, it, vi } from 'vitest'
-import { createRuntimeWasmSession } from '../src'
+import { createRuntimeWasmSession } from '../src/node'
 
 afterEach(() => vi.unstubAllGlobals())
 
-it('instantiates and executes the Rust engine through WebAssembly', async () => {
-  const input = new Uint8Array(await readFile(new URL(
-    '../artifacts/mastercss_wasm_runtime_bg.wasm',
-    import.meta.url
-  )))
+it('loads the packaged Wasm artifact in Node without fetch support for file URLs', async () => {
   const session = await createRuntimeWasmSession(JSON.stringify({
     version: 1,
     utilities: [{
@@ -18,7 +14,7 @@ it('instantiates and executes the Rust engine through WebAssembly', async () => 
       emit: { type: 'static', rules: [{ declarations: { display: 'block' } }] },
       matchers: [{ type: 'static', name: 'block' }]
     }]
-  }), { input })
+  }))
 
   expect(session.inspect('block')).toMatchObject({ valid: true, className: 'block' })
   expect(session.snapshot().text).toBe('')
