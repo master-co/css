@@ -14,6 +14,6 @@ export default function renderCSS(html: string, manifest?: MasterCSSManifest): S
   const { classes } = parseHTML(html)
   if (!classes.length) return
   const css = createServerCSS(manifest || getDefaultManifest())
-  classes.forEach(eachClass => css.ensureClassRules(eachClass))
+  css.ensureClassRules(...classes)
   return css
 }

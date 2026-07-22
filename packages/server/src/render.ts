@@ -202,7 +202,7 @@ export default function render(
     styleElement
   }
   const css = createServerCSS(manifest || getDefaultManifest())
-  classes.forEach(eachClass => css.ensureClassRules(eachClass))
+  css.ensureClassRules(...classes)
   const hydrationManifest = options.hydrationManifest === false
     ? undefined
     : css.hydrationManifest
