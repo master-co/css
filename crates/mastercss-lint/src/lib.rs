@@ -97,6 +97,8 @@ pub struct CanonicalClassNameOptions {
     #[serde(default = "default_true")]
     pub prefer_multi_value_tokens: bool,
     #[serde(default = "default_true")]
+    pub prefer_composition_utilities: bool,
+    #[serde(default = "default_true")]
     pub prefer_condition_order: bool,
 }
 
@@ -108,6 +110,7 @@ impl Default for CanonicalClassNameOptions {
             prefer_property_aliases: true,
             prefer_variable_references: true,
             prefer_multi_value_tokens: true,
+            prefer_composition_utilities: true,
             prefer_condition_order: true,
         }
     }
@@ -125,6 +128,20 @@ pub struct CanonicalClassSuggestionIr {
 pub struct CanonicalClassSuggestionsIr {
     pub version: u32,
     pub suggestions: Vec<CanonicalClassSuggestionIr>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct CanonicalClassGroupSuggestionIr {
+    pub class_names: Vec<String>,
+    pub recommended: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct CanonicalClassGroupSuggestionsIr {
+    pub version: u32,
+    pub suggestions: Vec<CanonicalClassGroupSuggestionIr>,
 }
 
 #[derive(Debug, Clone, Default)]
@@ -188,6 +205,63 @@ struct MatchingVariableKeys {
     keys: Vec<String>,
     numeric: bool,
 }
+
+#[derive(Debug)]
+struct CanonicalGroupEntry {
+    index: usize,
+    class_name: String,
+    canonical_class_name: String,
+    value: String,
+    suffix: String,
+    property: String,
+    declarations: Vec<(String, String)>,
+    rule: GeneratedRuleIr,
+}
+
+#[derive(Debug, Clone, Copy)]
+struct CompositionRecipe {
+    properties: [&'static str; 2],
+    target_key: &'static str,
+    equivalent_property: Option<(&'static str, [&'static str; 2])>,
+}
+
+const COMPOSITION_RECIPES: [CompositionRecipe; 7] = [
+    CompositionRecipe {
+        properties: ["width", "height"],
+        target_key: "size",
+        equivalent_property: None,
+    },
+    CompositionRecipe {
+        properties: ["min-width", "min-height"],
+        target_key: "min-size",
+        equivalent_property: None,
+    },
+    CompositionRecipe {
+        properties: ["max-width", "max-height"],
+        target_key: "max-size",
+        equivalent_property: None,
+    },
+    CompositionRecipe {
+        properties: ["margin-top", "margin-bottom"],
+        target_key: "my",
+        equivalent_property: Some(("margin-block", ["margin-top", "margin-bottom"])),
+    },
+    CompositionRecipe {
+        properties: ["margin-left", "margin-right"],
+        target_key: "mx",
+        equivalent_property: Some(("margin-inline", ["margin-left", "margin-right"])),
+    },
+    CompositionRecipe {
+        properties: ["padding-top", "padding-bottom"],
+        target_key: "py",
+        equivalent_property: Some(("padding-block", ["padding-top", "padding-bottom"])),
+    },
+    CompositionRecipe {
+        properties: ["padding-left", "padding-right"],
+        target_key: "px",
+        equivalent_property: Some(("padding-inline", ["padding-left", "padding-right"])),
+    },
+];
 
 const fn default_true() -> bool {
     true
@@ -393,6 +467,155 @@ impl LintSession {
                 Err(error)
             }
         }
+    }
+
+    pub fn canonical_class_groups(
+        &mut self,
+        class_names: &[String],
+        native_support: Option<&[bool]>,
+        options: &CanonicalClassNameOptions,
+    ) -> Result<CanonicalClassGroupSuggestionsIr, EngineError> {
+        if !options.prefer_composition_utilities {
+            return Ok(CanonicalClassGroupSuggestionsIr {
+                version: LINT_BATCH_VERSION,
+                suggestions: Vec::new(),
+            });
+        }
+        if let Some(native_support) = native_support {
+            self.engine
+                .ensure_class_rules_with_native_support(class_names, native_support)?;
+        } else {
+            self.engine.ensure_class_rules(class_names)?;
+        }
+        let result = self.suggest_canonical_class_groups(class_names, options);
+        let cleanup = self.engine.delete_class_rules(class_names);
+        match result {
+            Ok(suggestions) => {
+                cleanup?;
+                Ok(CanonicalClassGroupSuggestionsIr {
+                    version: LINT_BATCH_VERSION,
+                    suggestions,
+                })
+            }
+            Err(error) => {
+                let _ = cleanup;
+                Err(error)
+            }
+        }
+    }
+
+    fn suggest_canonical_class_groups(
+        &self,
+        class_names: &[String],
+        options: &CanonicalClassNameOptions,
+    ) -> Result<Vec<CanonicalClassGroupSuggestionIr>, EngineError> {
+        let mut entries = Vec::new();
+        for (index, class_name) in class_names.iter().enumerate() {
+            let canonical_class_name = self
+                .suggest_canonical_class_name(class_name, options)?
+                .unwrap_or_else(|| class_name.clone());
+            let inspection = self.engine.inspect(&canonical_class_name)?;
+            if inspection.rules.len() != 1 {
+                continue;
+            }
+            let semantics = self.engine.inspect_class_semantics(&canonical_class_name)?;
+            let parts = canonical_class_parts(&canonical_class_name, &semantics);
+            let Some(value) = parts.value else {
+                continue;
+            };
+            let declarations = collect_rule_declarations(&inspection.rules[0].text);
+            if declarations.len() != 1 {
+                continue;
+            }
+            entries.push(CanonicalGroupEntry {
+                index,
+                class_name: class_name.clone(),
+                canonical_class_name,
+                value,
+                suffix: parts.suffix,
+                property: declarations[0].0.clone(),
+                declarations,
+                rule: inspection.rules[0].clone(),
+            });
+        }
+
+        let mut suggestions = Vec::new();
+        let mut used_indexes = HashSet::new();
+        for left_index in 0..entries.len() {
+            let left = &entries[left_index];
+            if used_indexes.contains(&left.index) {
+                continue;
+            }
+            for right in entries.iter().skip(left_index + 1) {
+                if used_indexes.contains(&right.index) {
+                    continue;
+                }
+                let Some(recipe) = matching_composition_recipe(left, right) else {
+                    continue;
+                };
+                let Some(recommended) =
+                    self.composition_recommendation(left, right, recipe, options)?
+                else {
+                    continue;
+                };
+                suggestions.push(CanonicalClassGroupSuggestionIr {
+                    class_names: vec![left.class_name.clone(), right.class_name.clone()],
+                    recommended,
+                });
+                used_indexes.insert(left.index);
+                used_indexes.insert(right.index);
+                break;
+            }
+        }
+        Ok(suggestions)
+    }
+
+    fn composition_recommendation(
+        &self,
+        left: &CanonicalGroupEntry,
+        right: &CanonicalGroupEntry,
+        recipe: CompositionRecipe,
+        options: &CanonicalClassNameOptions,
+    ) -> Result<Option<String>, EngineError> {
+        if left.suffix != right.suffix || left.rule.priority != right.rule.priority {
+            return Ok(None);
+        }
+        let Some(merged_declarations) = merge_group_declarations(left, right) else {
+            return Ok(None);
+        };
+        let expected = normalize_composition_declarations(&merged_declarations, recipe);
+        let mut candidates = Vec::new();
+        for entry in [left, right] {
+            let candidate = format!("{}:{}{}", recipe.target_key, entry.value, entry.suffix);
+            let candidate = self
+                .suggest_canonical_class_name(&candidate, options)?
+                .unwrap_or(candidate);
+            if !candidates.contains(&candidate) {
+                candidates.push(candidate);
+            }
+        }
+        candidates
+            .sort_by(|left, right| left.len().cmp(&right.len()).then_with(|| left.cmp(right)));
+
+        for candidate in candidates {
+            if candidate == left.canonical_class_name || candidate == right.canonical_class_name {
+                continue;
+            }
+            let inspection = self.engine.inspect(&candidate)?;
+            if inspection.rules.len() != 1 {
+                continue;
+            }
+            let rule = &inspection.rules[0];
+            if rule.layer != UtilityLayerName::Utilities || rule.priority != left.rule.priority {
+                continue;
+            }
+            let declarations =
+                normalize_composition_declarations(&collect_rule_declarations(&rule.text), recipe);
+            if declarations == expected {
+                return Ok(Some(candidate));
+            }
+        }
+        Ok(None)
     }
 
     fn suggest_canonical_class_name(
@@ -658,6 +881,58 @@ impl LintSession {
     pub fn dispose(&mut self) {
         self.engine.dispose();
     }
+}
+
+fn matching_composition_recipe(
+    left: &CanonicalGroupEntry,
+    right: &CanonicalGroupEntry,
+) -> Option<CompositionRecipe> {
+    COMPOSITION_RECIPES.iter().copied().find(|recipe| {
+        (left.property == recipe.properties[0] && right.property == recipe.properties[1])
+            || (left.property == recipe.properties[1] && right.property == recipe.properties[0])
+    })
+}
+
+fn merge_group_declarations(
+    left: &CanonicalGroupEntry,
+    right: &CanonicalGroupEntry,
+) -> Option<Vec<(String, String)>> {
+    let mut merged = Vec::new();
+    for (property, value) in left.declarations.iter().chain(&right.declarations) {
+        if let Some((_, existing)) = merged
+            .iter()
+            .find(|(existing_property, _)| existing_property == property)
+        {
+            if existing != value {
+                return None;
+            }
+            continue;
+        }
+        merged.push((property.clone(), value.clone()));
+    }
+    Some(merged)
+}
+
+fn normalize_composition_declarations(
+    declarations: &[(String, String)],
+    recipe: CompositionRecipe,
+) -> Vec<(String, String)> {
+    let mut normalized = Vec::new();
+    for (property, value) in declarations {
+        if let Some((equivalent, properties)) = recipe.equivalent_property
+            && property == equivalent
+        {
+            normalized.extend(
+                properties
+                    .into_iter()
+                    .map(|property| (property.to_owned(), value.clone())),
+            );
+        } else {
+            normalized.push((property.clone(), value.clone()));
+        }
+    }
+    normalized.sort();
+    normalized
 }
 
 fn push_index_value(map: &mut HashMap<String, Vec<String>>, key: &str, value: &str) {
@@ -2433,5 +2708,57 @@ mod tests {
             ]
         );
         assert_eq!(session.engine.css_text(), "");
+    }
+
+    #[test]
+    fn suggests_canonical_composition_groups_from_engine_facts() {
+        let mut session = LintSession::create(DEFAULT_MANIFEST).unwrap();
+        let cases = [
+            (vec!["w:md", "h:md"], Some("size:md")),
+            (vec!["min-w:md", "min-h:md"], Some("min-size:md")),
+            (vec!["max-w:md", "max-h:md"], Some("max-size:md")),
+            (vec!["mt:md", "mb:md"], Some("my:md")),
+            (vec!["ml:md", "mr:md"], Some("mx:md")),
+            (vec!["pt:md", "pb:md"], Some("py:md")),
+            (vec!["pl:md", "pr:md"], Some("px:md")),
+            (vec!["margin-top:md", "margin-bottom:md"], Some("my:md")),
+            (
+                vec!["mt:md@dark@sm", "mb:md@dark@sm"],
+                Some("my:md@sm@dark"),
+            ),
+            (vec!["w:md", "h:lg"], None),
+            (vec!["mt:md", "mb:md@sm"], None),
+        ];
+        for (class_names, expected) in cases {
+            let class_names = class_names
+                .into_iter()
+                .map(str::to_owned)
+                .collect::<Vec<_>>();
+            let native_support = vec![
+                true;
+                session
+                    .native_declaration_candidates(&class_names)
+                    .unwrap()
+                    .len()
+            ];
+            let result = session
+                .canonical_class_groups(
+                    &class_names,
+                    Some(&native_support),
+                    &CanonicalClassNameOptions::default(),
+                )
+                .unwrap();
+            assert_eq!(
+                result.suggestions,
+                expected
+                    .map(|recommended| vec![CanonicalClassGroupSuggestionIr {
+                        class_names: class_names.clone(),
+                        recommended: recommended.into(),
+                    }])
+                    .unwrap_or_default(),
+                "{class_names:?}"
+            );
+            assert_eq!(session.engine.css_text(), "");
+        }
     }
 }

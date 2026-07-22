@@ -5,6 +5,8 @@ import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import { stringifyMasterCSSManifestJSON } from '@master/css-schema/manifest-json'
 import type {
   MasterCSSLintBatchIR,
+  MasterCSSLintCanonicalClassGroupSuggestionIR,
+  MasterCSSLintCanonicalClassGroupSuggestionsIR,
   MasterCSSLintCanonicalClassSuggestionIR,
   MasterCSSLintCanonicalClassSuggestionsIR,
   MasterCSSLintClassListIR,
@@ -28,6 +30,10 @@ export type RustLintBatchIR = MasterCSSLintBatchIR
 
 export interface RustLintSession {
   analyze(classNames: string[]): RustLintBatchIR
+  canonicalClassGroups(
+    classNames: string[],
+    options?: CanonicalClassNameOptions
+  ): MasterCSSLintCanonicalClassGroupSuggestionIR[]
   canonicalClassNames(
     classNames: string[],
     options?: CanonicalClassNameOptions
@@ -121,6 +127,14 @@ function createNativeRustLintSession(manifestJSON: string): RustLintSession | un
         options ? JSON.stringify(options) : undefined
       )) as MasterCSSLintCanonicalClassSuggestionsIR).suggestions
     },
+    canonicalClassGroups(classNames, options) {
+      const inputs = resolveInputs(classNames)
+      return (JSON.parse(lint.canonicalClassGroups(
+        classNames,
+        inputs.nativeSupport,
+        options ? JSON.stringify(options) : undefined
+      )) as MasterCSSLintCanonicalClassGroupSuggestionsIR).suggestions
+    },
     rawValueCandidates(classNames) {
       const inputs = resolveInputs(classNames)
       return (JSON.parse(lint.rawValueCandidates(
@@ -210,6 +224,15 @@ export async function createRustLintSession(manifest: MasterCSSManifest): Promis
         nativeSupport.length ? nativeSupport : undefined,
         options
       ) as MasterCSSLintCanonicalClassSuggestionsIR).suggestions
+    },
+    canonicalClassGroups(classNames, options) {
+      const candidates = lint.nativeDeclarationCandidates(classNames) as MasterCSSNativeDeclarationCandidateIR[]
+      const nativeSupport = candidates.map(cssTreeNativeDeclarationMatcher)
+      return (lint.canonicalClassGroups(
+        classNames,
+        nativeSupport.length ? nativeSupport : undefined,
+        options
+      ) as MasterCSSLintCanonicalClassGroupSuggestionsIR).suggestions
     },
     rawValueCandidates(classNames) {
       const candidates = lint.nativeDeclarationCandidates(classNames) as MasterCSSNativeDeclarationCandidateIR[]

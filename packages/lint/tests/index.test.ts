@@ -520,8 +520,13 @@ describe('source content linting', () => {
   test('routes source canonical suggestions through an injected Rust session', async () => {
     const rust = await createRustLintSession(createPresetManifest())
     let canonicalCalls = 0
+    let groupCalls = 0
     const lintSession = {
       analyzeClassList: rust.analyzeClassList,
+      canonicalClassGroups(...args: Parameters<typeof rust.canonicalClassGroups>) {
+        groupCalls++
+        return rust.canonicalClassGroups(...args)
+      },
       canonicalClassNames(...args: Parameters<typeof rust.canonicalClassNames>) {
         canonicalCalls++
         return rust.canonicalClassNames(...args)
@@ -529,7 +534,7 @@ describe('source content linting', () => {
     }
     try {
       expect(fixMasterCSSContent({
-        content: '<div class="font:16px block@dark@sm"></div>',
+        content: '<div class="font:16px block@dark@sm mt:md mb:md"></div>',
         filePath: '/project/index.html',
         css,
         lintSession,
@@ -540,8 +545,9 @@ describe('source content linting', () => {
           'prefer-canonical-classes': true,
           'no-unapproved-raw-values': false
         }
-      })).toBe('<div class="font:md block@sm@dark"></div>')
+      })).toBe('<div class="font:md block@sm@dark my:md"></div>')
       expect(canonicalCalls).toBeGreaterThan(0)
+      expect(groupCalls).toBeGreaterThan(0)
     } finally {
       rust.dispose()
     }
@@ -1239,6 +1245,45 @@ describe('canonical class suggestions', () => {
 })
 
 describe('canonical class group suggestions', () => {
+  test('matches the Rust composition group batch', async () => {
+    const rust = await createRustLintSession(createPresetManifest())
+    const cases = [
+      ['w:md', 'h:md'],
+      ['width:md', 'height:md'],
+      ['w:1rem', 'h:1rem'],
+      ['w:md:hover', 'h:md:hover'],
+      ['min-w:md', 'min-h:md'],
+      ['max-w:md', 'max-h:md'],
+      ['mt:md', 'mb:md'],
+      ['ml:md', 'mr:md'],
+      ['pt:md', 'pb:md'],
+      ['pl:md', 'pr:md'],
+      ['mt:md:hover@sm', 'mb:md:hover@sm'],
+      ['margin-top:md', 'margin-bottom:md'],
+      ['padding-left:1rem', 'padding-right:1rem'],
+      ['mt:md@dark@sm', 'mb:md@dark@sm'],
+      ['w:md', 'mt:md', 'h:md', 'mb:md'],
+      ['w:md', 'h:lg'],
+      ['w:md', 'h:md@sm'],
+      ['w:error', 'h:md'],
+      ['mt:md', 'mb:lg'],
+      ['mt:md', 'mb:md@sm'],
+      ['mt:error', 'mb:md']
+    ]
+    try {
+      for (const classNames of cases) {
+        expect(rust.canonicalClassGroups(classNames), classNames.join(' '))
+          .toEqual(suggestCanonicalClassGroups(classNames, css))
+      }
+      expect(rust.canonicalClassGroups(['w:md', 'h:md'], {
+        ...defaultCanonicalClassNameOptions,
+        preferCompositionUtilities: false
+      })).toEqual([])
+    } finally {
+      rust.dispose()
+    }
+  })
+
   test('suggests size composition utilities', () => {
     expect(suggestCanonicalClassGroups(['w:md', 'h:md'], css)).toEqual([
       { classNames: ['w:md', 'h:md'], recommended: 'size:md' }

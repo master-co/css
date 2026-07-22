@@ -131,6 +131,10 @@ test('loads the isolated source tooling Wasm surface', async () => {
     version: 1,
     suggestions: [{ className: 'margin:md', recommended: 'm:md' }]
   })
+  expect(lint.canonicalClassGroups(['ml:md', 'mr:md'], undefined, undefined)).toEqual({
+    version: 1,
+    suggestions: [{ classNames: ['ml:md', 'mr:md'], recommended: 'mx:md' }]
+  })
   expect(lint.rawValueCandidates(['m:md|17px'], undefined, [])).toEqual({
     version: 1,
     candidates: [

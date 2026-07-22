@@ -112,6 +112,7 @@ export interface MasterCSSLintCanonicalClassNameOptionsIR {
   preferPropertyAliases: boolean
   preferVariableReferences: boolean
   preferMultiValueTokens: boolean
+  preferCompositionUtilities: boolean
   preferConditionOrder: boolean
 }
 
@@ -123,6 +124,16 @@ export interface MasterCSSLintCanonicalClassSuggestionIR {
 export interface MasterCSSLintCanonicalClassSuggestionsIR {
   version: typeof MASTER_CSS_LINT_BATCH_VERSION
   suggestions: MasterCSSLintCanonicalClassSuggestionIR[]
+}
+
+export interface MasterCSSLintCanonicalClassGroupSuggestionIR {
+  classNames: string[]
+  recommended: string
+}
+
+export interface MasterCSSLintCanonicalClassGroupSuggestionsIR {
+  version: typeof MASTER_CSS_LINT_BATCH_VERSION
+  suggestions: MasterCSSLintCanonicalClassGroupSuggestionIR[]
 }
 
 export interface MasterCSSLintEditIR {

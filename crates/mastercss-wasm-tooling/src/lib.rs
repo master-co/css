@@ -407,6 +407,34 @@ impl ToolingLintSession {
             .map_err(|error| JsValue::from_str(&error.to_string()))
     }
 
+    #[wasm_bindgen(js_name = canonicalClassGroups)]
+    pub fn canonical_class_groups(
+        &mut self,
+        class_names: Vec<String>,
+        native_support: JsValue,
+        options: JsValue,
+    ) -> Result<JsValue, JsValue> {
+        let native_support = if native_support.is_null() || native_support.is_undefined() {
+            None
+        } else {
+            Some(
+                serde_wasm_bindgen::from_value::<Vec<bool>>(native_support)
+                    .map_err(|error| JsValue::from_str(&error.to_string()))?,
+            )
+        };
+        let options = if options.is_null() || options.is_undefined() {
+            mastercss_lint::CanonicalClassNameOptions::default()
+        } else {
+            serde_wasm_bindgen::from_value(options)
+                .map_err(|error| JsValue::from_str(&error.to_string()))?
+        };
+        self.inner
+            .canonical_class_groups(&class_names, native_support.as_deref(), &options)
+            .map_err(scanner_error)?
+            .serialize(&serde_wasm_bindgen::Serializer::json_compatible())
+            .map_err(|error| JsValue::from_str(&error.to_string()))
+    }
+
     pub fn dispose(&mut self) {
         self.inner.dispose();
     }

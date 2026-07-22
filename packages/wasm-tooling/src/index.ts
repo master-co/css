@@ -47,6 +47,7 @@ interface GeneratedToolingWasmModule {
   ToolingLintSession: new (manifestJSON: string) => {
     nativeDeclarationCandidates(classNames: string[]): unknown
     canonicalClassNames(classNames: string[], nativeSupport: boolean[] | undefined, options: unknown): unknown
+    canonicalClassGroups(classNames: string[], nativeSupport: boolean[] | undefined, options: unknown): unknown
     rawValueCandidates(
       classNames: string[],
       nativeSupport: boolean[] | undefined,
@@ -188,6 +189,11 @@ export async function createToolingLintSession(
       nativeSupport: boolean[] | undefined,
       options?: unknown
     ) => session.canonicalClassNames(classNames, nativeSupport, options),
+    canonicalClassGroups: (
+      classNames: string[],
+      nativeSupport: boolean[] | undefined,
+      options?: unknown
+    ) => session.canonicalClassGroups(classNames, nativeSupport, options),
     rawValueCandidates: (
       classNames: string[],
       nativeSupport: boolean[] | undefined,
