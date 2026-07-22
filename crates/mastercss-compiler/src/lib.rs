@@ -2193,6 +2193,8 @@ fn rewrite_managed_variant_directives(source: &str) -> (String, HashMap<usize, S
             if token_end > token_start {
                 variants.insert(index, format!("@{}", &source[token_start..token_end]));
                 rewritten.replace_range(index..index + "@variant".len(), "@media  ");
+                rewritten
+                    .replace_range(token_start..token_end, &"x".repeat(token_end - token_start));
             }
             index = token_end;
             continue;
@@ -4497,6 +4499,34 @@ mod tests {
             &Some(vec![CssDirectiveConditionPathEntry::Variant {
                 token: "@wide".into()
             }])
+        );
+        assert!(result.native_css.is_empty());
+    }
+
+    #[test]
+    fn lowers_numeric_leading_variant_names() {
+        let result = compile_css_directives(
+            ".button { @variant 3xs { @compose block; } }",
+            &CompileNativeCssOptions::default(),
+        )
+        .unwrap();
+        let condition_path = result
+            .style_definitions
+            .as_ref()
+            .unwrap()
+            .iter()
+            .find_map(|definition| match definition {
+                CssDirectiveStyleDefinition::Compose { condition_path, .. } => {
+                    condition_path.as_ref()
+                }
+                _ => None,
+            })
+            .unwrap();
+        assert_eq!(
+            condition_path,
+            &[CssDirectiveConditionPathEntry::Variant {
+                token: "@3xs".into()
+            }]
         );
         assert!(result.native_css.is_empty());
     }
