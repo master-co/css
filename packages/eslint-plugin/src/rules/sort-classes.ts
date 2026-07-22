@@ -4,6 +4,7 @@ import createRule from '../create-rule'
 import { createSortClassesReport } from '@master/css-lint'
 import reportLintDiagnostics from '../utils/report-lint-diagnostics'
 import defineSourceVisitors, { shouldUseSourceVisitors } from '../utils/define-source-visitors'
+import { fromRustLintDiagnostics } from '@master/css-lint/node'
 
 export default createRule({
   name: 'sort-classes',
@@ -20,17 +21,24 @@ export default createRule({
   },
   defaultOptions: [],
   create: function (context) {
-    const { settings, css } = resolveContext(context)
+    const { settings, css, rustLint } = resolveContext(context)
     if (shouldUseSourceVisitors(context)) {
       return defineSourceVisitors({ context, css, ruleId: 'sort-classes' })
     }
-    return defineVisitors({ context, settings }, (node, { raw, start, end, nodes, unescape }) => {
+    return defineVisitors({ context, settings }, (node, resolved) => {
+      const { raw, start, end, nodes, unescape } = resolved
       if (nodes.length <= 1) return
+      const rustDiagnostics = rustLint
+        ? fromRustLintDiagnostics(
+          rustLint.analyzeClassList(raw, resolved.classValues).diagnostics
+            .filter(({ ruleId }) => ruleId === 'sort-classes')
+        )
+        : undefined
       reportLintDiagnostics(
         context,
         node,
         { raw, start, end, nodes, unescape, value: raw, classNodes: [], classValues: [] },
-        createSortClassesReport(raw, css, { unescape }).diagnostics
+        rustDiagnostics || createSortClassesReport(raw, css, { unescape }).diagnostics
       )
     })
   },

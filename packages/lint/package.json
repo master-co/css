@@ -38,6 +38,11 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js",
       "default": "./dist/index.js"
+    },
+    "./node": {
+      "types": "./dist/rust-session.d.ts",
+      "import": "./dist/rust-session.js",
+      "default": "./dist/rust-session.js"
     }
   },
   "files": [

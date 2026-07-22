@@ -6,11 +6,16 @@ import { loadProjectManifestSync } from '@master/css-project/manifest-sync'
 import path from 'node:path'
 import { existsSync } from 'node:fs'
 import isSameOrChildPath from './is-same-or-child-path'
+import {
+  createRustLintSessionSync,
+  type RustLintSession
+} from '@master/css-lint/node'
 
 declare interface CSSCache {
   cwd: string
   manifest?: MasterCSSManifest,
   css: MasterCSS,
+  rustLint?: RustLintSession
 }
 
 const cssCaches: CSSCache[] = []
@@ -72,20 +77,27 @@ export default function resolveContext(context: RuleContext<any, any[]>) {
   const resolvedSettings = Object.assign({}, settings, context.settings?.['@master/css'])
   const filename = getContextFilename(context)
   const workspaceDir = filename ? resolveWorkspaceDirectory(context, filename) : context.cwd || process.cwd()
-  let css = cssCaches.find(cache => cache.manifest === resolvedSettings.manifest &&
-    cache.cwd === workspaceDir)?.css
+  let cache = cssCaches.find(cache => cache.manifest === resolvedSettings.manifest &&
+    cache.cwd === workspaceDir)
 
-  if (!css) {
+  if (!cache) {
     const manifest = filename
       ? resolvePlan(workspaceDir, resolvedSettings.manifest)
       : resolvedSettings.manifest
-    css = createCSSWithNativeDeclarations(manifest || defaultManifest)
-    cssCaches.push({ cwd: workspaceDir, manifest: resolvedSettings.manifest, css })
+    const resolvedManifest = manifest || defaultManifest
+    cache = {
+      cwd: workspaceDir,
+      manifest: resolvedSettings.manifest,
+      css: createCSSWithNativeDeclarations(resolvedManifest),
+      rustLint: createRustLintSessionSync(resolvedManifest)
+    }
+    cssCaches.push(cache)
   }
 
   return {
     settings: resolvedSettings,
     options: context.options[0] || {},
-    css
+    css: cache.css,
+    rustLint: cache.rustLint
   }
 }
