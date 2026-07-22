@@ -99,9 +99,13 @@ fn run_command(command: &mut Command, label: &str) -> Result<(), String> {
 fn build_native(release: bool) -> Result<(), String> {
     let root = workspace_root();
     let mut command = Command::new("cargo");
-    command
-        .current_dir(&root)
-        .args(["build", "--package", "mastercss-node"]);
+    command.current_dir(&root).args([
+        "build",
+        "--package",
+        "mastercss-node",
+        "--package",
+        "mastercss-cli",
+    ]);
     if release {
         command.arg("--release");
     }
@@ -130,7 +134,60 @@ fn build_native(release: bool) -> Result<(), String> {
             output.display()
         )
     })?;
+    let executable_name = if cfg!(target_os = "windows") {
+        "mcss.exe"
+    } else {
+        "mcss"
+    };
+    let executable_source = root.join(format!("target/{profile}/{executable_name}"));
+    let executable_output = output_dir.join(executable_name);
+    fs::copy(&executable_source, &executable_output).map_err(|error| {
+        format!(
+            "Cannot copy {} to {}: {error}",
+            executable_source.display(),
+            executable_output.display()
+        )
+    })?;
     println!("Built {}", output.display());
+    println!("Built {}", executable_output.display());
+    Ok(())
+}
+
+fn stage_native_target(package: &str, release: bool) -> Result<(), String> {
+    const TARGET_PACKAGES: [&str; 8] = [
+        "native-darwin-arm64",
+        "native-darwin-x64",
+        "native-linux-arm64-gnu",
+        "native-linux-arm64-musl",
+        "native-linux-x64-gnu",
+        "native-linux-x64-musl",
+        "native-win32-arm64-msvc",
+        "native-win32-x64-msvc",
+    ];
+    if !TARGET_PACKAGES.contains(&package) {
+        return Err(format!("Unknown native target package: {package}"));
+    }
+    build_native(release)?;
+    let root = workspace_root();
+    let artifact_dir = root.join("packages/native/artifacts");
+    let package_dir = root.join("packages").join(package);
+    let executable_name = if package.contains("win32") {
+        "mcss.exe"
+    } else {
+        "mcss"
+    };
+    for file in ["mastercss.node", executable_name] {
+        let source = artifact_dir.join(file);
+        let output = package_dir.join(file);
+        fs::copy(&source, &output).map_err(|error| {
+            format!(
+                "Cannot stage {} as {}: {error}",
+                source.display(),
+                output.display()
+            )
+        })?;
+        println!("Staged {}", output.display());
+    }
     Ok(())
 }
 
@@ -208,10 +265,16 @@ fn run() -> Result<(), String> {
         [command] if command == "parity" => validate_parity(),
         [command] if command == "build-native" => build_native(false),
         [command, flag] if command == "build-native" && flag == "--release" => build_native(true),
+        [command, package] if command == "stage-native-target" => {
+            stage_native_target(package, false)
+        }
+        [command, package, flag] if command == "stage-native-target" && flag == "--release" => {
+            stage_native_target(package, true)
+        }
         [command] if command == "build-wasm" => build_wasm("runtime"),
         [command, surface] if command == "build-wasm" => build_wasm(surface),
         _ => Err(
-            "Usage: cargo xtask codegen [--check] | parity | build-native [--release] | build-wasm [all|runtime|compiler|tooling]"
+            "Usage: cargo xtask codegen [--check] | parity | build-native [--release] | stage-native-target <package> [--release] | build-wasm [all|runtime|compiler|tooling]"
                 .into(),
         ),
     }

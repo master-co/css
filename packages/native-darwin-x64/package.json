@@ -6,6 +6,7 @@
   "main": "./mastercss.node",
   "os": ["darwin"],
   "cpu": ["x64"],
-  "files": ["mastercss.node"],
+  "bin": { "mcss": "./mcss" },
+  "files": ["mastercss.node", "mcss"],
   "publishConfig": { "access": "public", "provenance": true }
 }

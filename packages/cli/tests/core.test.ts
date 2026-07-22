@@ -16,6 +16,7 @@ interface TestDiagnostic {
 const cliFilepath = resolve(__dirname, '../src/bin/index.ts')
 const tsconfigPath = resolve(__dirname, '../../../tsconfig.json')
 const tsxLoaderURL = pathToFileURL(createRequire(import.meta.url).resolve('tsx')).href
+const nativeCLIFilepath = resolve(__dirname, '../../native/artifacts/mcss')
 
 function runCLI(args: string[], options: { cwd?: string, input?: string } = {}) {
   return execFileSync(process.execPath, ['--import', tsxLoaderURL, cliFilepath, ...args], {
@@ -40,6 +41,19 @@ function runFailedCLI(args: string[], options: { cwd?: string, input?: string } 
 }
 
 describe('root command', () => {
+  it('ships a Rust executable with ABI and engine smoke coverage', () => {
+    const report = JSON.parse(execFileSync(nativeCLIFilepath, ['--self-test'], { encoding: 'utf8' }))
+    expect(report).toMatchObject({
+      version: 1,
+      binary: {
+        bindingAbiVersion: 1,
+        manifestVersion: 1,
+        hydrationManifestVersion: 1
+      },
+      css: '@layer utilities{.block{display:block}}'
+    })
+  })
+
   it('shows scan options and the lint subcommand', () => {
     const output = runCLI(['--help'])
     expect(output).toContain('Usage: @master/css-cli [options] [command] [source paths...]')

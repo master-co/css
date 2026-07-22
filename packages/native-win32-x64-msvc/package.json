@@ -6,6 +6,7 @@
   "main": "./mastercss.node",
   "os": ["win32"],
   "cpu": ["x64"],
-  "files": ["mastercss.node"],
+  "bin": { "mcss": "./mcss.exe" },
+  "files": ["mastercss.node", "mcss.exe"],
   "publishConfig": { "access": "public", "provenance": true }
 }

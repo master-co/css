@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { nativeAddonsDisabled, resolveNativeTarget } from '../src'
+import { getNativeCLIExecutableName, nativeAddonsDisabled, resolveNativeTarget } from '../src'
 
 describe('native target resolution', () => {
   it('resolves the eight Tier-1 packages', () => {
@@ -21,5 +21,11 @@ describe('native target resolution', () => {
   it('recognizes the Node addon kill switch', () => {
     expect(nativeAddonsDisabled(['--no-addons'])).toBe(true)
     expect(nativeAddonsDisabled([])).toBe(false)
+  })
+
+  it('uses platform-specific native executable names', () => {
+    expect(getNativeCLIExecutableName('darwin')).toBe('mcss')
+    expect(getNativeCLIExecutableName('linux')).toBe('mcss')
+    expect(getNativeCLIExecutableName('win32')).toBe('mcss.exe')
   })
 })

@@ -1,6 +1,6 @@
 import { existsSync } from 'node:fs'
 import { createRequire } from 'node:module'
-import { resolve } from 'node:path'
+import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 export const MASTER_CSS_BINDING_ABI_VERSION = 1
@@ -138,6 +138,46 @@ export function resolveNativeTarget(
 
 export function nativeAddonsDisabled(execArgv: readonly string[] = process.execArgv): boolean {
   return execArgv.includes('--no-addons')
+}
+
+export function getNativeCLIExecutableName(platform: NodeJS.Platform = process.platform) {
+  return platform === 'win32' ? 'mcss.exe' : 'mcss'
+}
+
+export function resolveNativeCLIPath(options: { required?: boolean, executablePath?: string } = {}) {
+  if (nativeAddonsDisabled()) {
+    if (!options.required) return
+    throw new NativeBindingError('NATIVE_UNAVAILABLE', 'Native executables are disabled by --no-addons.')
+  }
+
+  const require = createRequire(import.meta.url)
+  const executableName = getNativeCLIExecutableName()
+  const configuredPath = options.executablePath || process.env.MASTER_CSS_NATIVE_CLI_PATH
+  const developmentPath = resolve(fileURLToPath(new URL(`../artifacts/${executableName}`, import.meta.url)))
+  if (configuredPath) return configuredPath
+  if (existsSync(developmentPath)) return developmentPath
+
+  const target = resolveNativeTarget()
+  if (!target) {
+    if (!options.required) return
+    throw new NativeBindingError(
+      'NATIVE_UNAVAILABLE',
+      `Master CSS has no native executable for ${process.platform}-${process.arch}.`
+    )
+  }
+  try {
+    const executablePath = resolve(dirname(require.resolve(target.packageName)), executableName)
+    if (!existsSync(executablePath)) {
+      throw new Error(`Missing ${executableName}`)
+    }
+    return executablePath
+  } catch (cause) {
+    throw new NativeBindingError(
+      'NATIVE_LOAD_FAILED',
+      `Cannot resolve the expected Master CSS native executable: ${target.packageName}`,
+      { cause }
+    )
+  }
 }
 
 function assertBindingInfo(binding: NativeBinding, source: string): NativeBindingInfo {

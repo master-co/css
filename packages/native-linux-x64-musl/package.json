@@ -7,6 +7,7 @@
   "os": ["linux"],
   "cpu": ["x64"],
   "libc": ["musl"],
-  "files": ["mastercss.node"],
+  "bin": { "mcss": "./mcss" },
+  "files": ["mastercss.node", "mcss"],
   "publishConfig": { "access": "public", "provenance": true }
 }
