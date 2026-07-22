@@ -99,6 +99,29 @@ pub struct LanguageColorPresentationIr {
     pub space: Option<String>,
 }
 
+#[derive(Debug, Clone, PartialEq, Eq, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct LanguageColorCandidateInputIr {
+    pub class_name: String,
+    pub start: u32,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct LanguageColorTokenIr {
+    pub range: SourceRange,
+    pub value: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub alpha: Option<f64>,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct LanguageColorTokensIr {
+    pub version: u32,
+    pub tokens: Vec<LanguageColorTokenIr>,
+}
+
 #[derive(Debug)]
 pub struct LanguageSession {
     engine: EngineSession,
@@ -235,6 +258,34 @@ impl LanguageSession {
             version: LANGUAGE_BATCH_VERSION,
             color_token: color_token.to_owned(),
             space: self.engine.color_presentation_space(color_token)?,
+        })
+    }
+
+    pub fn color_tokens(
+        &self,
+        candidates: &[LanguageColorCandidateInputIr],
+    ) -> Result<LanguageColorTokensIr, LanguageError> {
+        let mut tokens = Vec::new();
+        for candidate in candidates {
+            for token in self.engine.color_tokens(&candidate.class_name)? {
+                let start = candidate
+                    .start
+                    .checked_add(token.start)
+                    .ok_or(LanguageError::InvalidRange)?;
+                let end = candidate
+                    .start
+                    .checked_add(token.end)
+                    .ok_or(LanguageError::InvalidRange)?;
+                tokens.push(LanguageColorTokenIr {
+                    range: SourceRange { start, end },
+                    value: token.value,
+                    alpha: token.alpha,
+                });
+            }
+        }
+        Ok(LanguageColorTokensIr {
+            version: LANGUAGE_BATCH_VERSION,
+            tokens,
         })
     }
 
@@ -645,6 +696,39 @@ mod tests {
         assert_eq!(
             session.color_presentation("brand/.5").unwrap().space,
             Some("oklch".into())
+        );
+        let color_tokens = session
+            .color_tokens(&[
+                LanguageColorCandidateInputIr {
+                    class_name: "fg:brand/.5".into(),
+                    start: 2,
+                },
+                LanguageColorCandidateInputIr {
+                    class_name: "fg:linear-gradient(#000,brand)".into(),
+                    start: 20,
+                },
+            ])
+            .unwrap();
+        assert_eq!(color_tokens.version, LANGUAGE_BATCH_VERSION);
+        assert_eq!(
+            color_tokens.tokens,
+            vec![
+                LanguageColorTokenIr {
+                    range: SourceRange { start: 5, end: 13 },
+                    value: "oklch(50% .1 20)".into(),
+                    alpha: Some(0.5),
+                },
+                LanguageColorTokenIr {
+                    range: SourceRange { start: 39, end: 43 },
+                    value: "#000".into(),
+                    alpha: None,
+                },
+                LanguageColorTokenIr {
+                    range: SourceRange { start: 44, end: 49 },
+                    value: "oklch(50% .1 20)".into(),
+                    alpha: None,
+                },
+            ]
         );
         assert!(completion_index.class_entries.iter().any(|entry| {
             entry.label == "fg:"

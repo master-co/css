@@ -173,6 +173,22 @@ export interface MasterCSSLanguageColorPresentationIR {
   space?: string
 }
 
+export interface MasterCSSLanguageColorCandidateInputIR {
+  className: string
+  start: number
+}
+
+export interface MasterCSSLanguageColorTokenIR {
+  range: MasterCSSSourceRange
+  value: string
+  alpha?: number
+}
+
+export interface MasterCSSLanguageColorTokensIR {
+  version: typeof MASTER_CSS_LANGUAGE_BATCH_VERSION
+  tokens: MasterCSSLanguageColorTokenIR[]
+}
+
 export type MasterCSSDirectiveManifestInputIR =
   import('./css-directives').CSSDirectiveManifestInput
 

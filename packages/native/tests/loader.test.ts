@@ -105,6 +105,13 @@ describe('native target resolution', () => {
         colorToken: 'rgba(0|0|0/.5)',
         space: 'srgb'
       })
+      expect(JSON.parse(language.colorTokens(JSON.stringify([{
+        className: 'color:#123',
+        start: 2
+      }])))).toEqual({
+        version: 1,
+        tokens: [{ range: { start: 8, end: 12 }, value: '#123' }]
+      })
     } finally {
       language.dispose()
     }

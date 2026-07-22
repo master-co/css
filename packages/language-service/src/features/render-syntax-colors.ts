@@ -21,6 +21,32 @@ function resolveVariableColorValue(variable: Variable | undefined, variables: Ma
 export default async function renderSyntaxColors(this: CSSLanguageService, document: TextDocument): Promise<ColorInformation[] | undefined> {
   const text = document.getText() ?? ''
   const colorInformations: ColorInformation[] = []
+  if (this.analyzer?.colorTokens) {
+    try {
+      const candidates = Array.from(text.matchAll(instancePattern), (match) => ({
+        className: match[0],
+        start: match.index
+      }))
+      for (const token of this.analyzer.colorTokens(candidates).tokens) {
+        const color = new Color(token.value)
+        if (token.alpha !== undefined) color.alpha *= token.alpha
+        const rgbaColor = color.to('srgb')
+        colorInformations.push({
+          range: {
+            start: document.positionAt(token.range.start),
+            end: document.positionAt(token.range.end)
+          },
+          color: {
+            red: rgbaColor.r ?? 0,
+            green: rgbaColor.g ?? 0,
+            blue: rgbaColor.b ?? 0,
+            alpha: Number(rgbaColor.alpha)
+          }
+        })
+      }
+    } catch (e) { }
+    return colorInformations
+  }
   try {
     for (const instanceMatch of text.matchAll(instancePattern)) {
       if (instanceMatch.index === undefined) break

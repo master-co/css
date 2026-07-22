@@ -14,7 +14,9 @@ export type { MasterCSSManifest } from '@master/css-schema/manifest'
 export type {
   MasterCSSLanguageClassificationsIR,
   MasterCSSLanguageClassIR,
+  MasterCSSLanguageColorCandidateInputIR,
   MasterCSSLanguageColorPresentationIR,
+  MasterCSSLanguageColorTokensIR,
   MasterCSSLanguageCompletionIndexIR,
   MasterCSSLanguageInspectionIR,
   RustClassListContextIR,

@@ -228,6 +228,10 @@ test('loads the isolated source tooling Wasm surface', async () => {
     colorToken: 'rgba(0|0|0/.5)',
     space: 'srgb'
   })
+  expect(language.colorTokens([{ className: 'color:#123', start: 2 }])).toEqual({
+    version: 1,
+    tokens: [{ range: { start: 8, end: 12 }, value: '#123' }]
+  })
   language.dispose()
   language.free()
 

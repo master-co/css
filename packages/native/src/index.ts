@@ -85,6 +85,7 @@ export interface NativeLanguageSession {
   inspectClassName(className: string, nativeSupport?: boolean[]): string
   completionIndex(): string
   colorPresentation(colorToken: string): string
+  colorTokens(candidatesJSON: string): string
   dispose(): void
 }
 

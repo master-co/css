@@ -74,6 +74,14 @@ test('matches TS semantic classification for grouped, component, state, and valu
     const completionPosition = completionDocument.positionAt('<div class="'.length)
     expect(service.suggestSyntax(completionDocument, completionPosition, { triggerKind: 1 }))
       .toEqual(oracle.suggestSyntax(completionDocument, completionPosition, { triggerKind: 1 }))
+    const colorParityDocument = TextDocument.create(
+      'file:///rust-language-colors.html',
+      'html',
+      1,
+      '😀 <div class="fg:#999999 b:1px|solid|black shadow:1px|1px|2px|black,2px|2px|3px|white bg:linear-gradient(black,white) fg:brand/.5 fg:rgb(0|0|0/.5)! fg:rgb(0,0,)"></div>'
+    )
+    expect(await service.renderSyntaxColors(colorParityDocument))
+      .toEqual(await oracle.renderSyntaxColors(colorParityDocument))
     const beforeColorDocument = TextDocument.create(
       'file:///rust-language-color-before.html',
       'html',

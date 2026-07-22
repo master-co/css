@@ -181,6 +181,19 @@ impl ToolingLanguageSession {
             .map_err(|error| JsValue::from_str(&error.to_string()))
     }
 
+    #[wasm_bindgen(js_name = colorTokens)]
+    pub fn color_tokens(&self, candidates: JsValue) -> Result<JsValue, JsValue> {
+        let candidates = serde_wasm_bindgen::from_value::<
+            Vec<mastercss_language::LanguageColorCandidateInputIr>,
+        >(candidates)
+        .map_err(|error| JsValue::from_str(&error.to_string()))?;
+        self.inner
+            .color_tokens(&candidates)
+            .map_err(|error| JsValue::from_str(&error.to_string()))?
+            .serialize(&serde_wasm_bindgen::Serializer::json_compatible())
+            .map_err(|error| JsValue::from_str(&error.to_string()))
+    }
+
     pub fn dispose(&mut self) {
         self.inner.dispose();
     }

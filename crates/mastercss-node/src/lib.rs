@@ -196,6 +196,20 @@ impl NodeLanguageSession {
     }
 
     #[napi]
+    pub fn color_tokens(&self, candidates_json: String) -> Result<String> {
+        let candidates = serde_json::from_str::<
+            Vec<mastercss_language::LanguageColorCandidateInputIr>,
+        >(&candidates_json)
+        .map_err(|error| Error::new(Status::InvalidArg, error.to_string()))?;
+        to_json(
+            &self
+                .inner
+                .color_tokens(&candidates)
+                .map_err(|error| Error::new(Status::InvalidArg, error.to_string()))?,
+        )
+    }
+
+    #[napi]
     pub fn dispose(&mut self) {
         self.inner.dispose();
     }

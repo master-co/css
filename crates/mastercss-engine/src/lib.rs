@@ -3,7 +3,7 @@
 use std::cmp::Ordering;
 use std::collections::{HashMap, HashSet};
 
-use mastercss_lexer::css_escape;
+use mastercss_lexer::{css_escape, utf16_len};
 use mastercss_schema::{
     Diagnostic, EmittedGlobals, EngineInspectionIr, EngineSnapshotIr, EngineTransitionIr,
     ErrorCode, GeneratedRuleIr, GeneratedRuleNodeIr, MasterCssManifest,
@@ -361,6 +361,14 @@ pub struct EngineClassCompletionCandidate {
     pub documentation_class_name: Option<String>,
     pub sort_text: Option<String>,
     pub trigger_suggest: bool,
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub struct EngineColorToken {
+    pub start: u32,
+    pub end: u32,
+    pub value: String,
+    pub alpha: Option<f64>,
 }
 
 #[derive(Debug)]
@@ -891,6 +899,15 @@ impl EngineSession {
     ) -> Result<Option<String>, EngineError> {
         self.ensure_active()?;
         Ok(color_presentation_space(color_token, &self.compiled))
+    }
+
+    pub fn color_tokens(&self, class_name: &str) -> Result<Vec<EngineColorToken>, EngineError> {
+        self.ensure_active()?;
+        let generated = self.generate_class_rules(class_name);
+        if generated.is_empty() || generated.iter().all(|rule| rule.ir.utility_type == -2) {
+            return Ok(Vec::new());
+        }
+        Ok(collect_engine_color_tokens(class_name, &self.compiled))
     }
 
     pub fn css_text(&self) -> String {
@@ -2362,6 +2379,203 @@ fn color_presentation_space(color_token: &str, manifest: &ManifestProjection) ->
         return normalize_color_presentation_space(function_name);
     }
     Some("srgb".into())
+}
+
+fn color_function_name_is_supported(name: &str) -> bool {
+    matches!(
+        name,
+        "rgb" | "rgba" | "hsl" | "hsla" | "hwb" | "lab" | "lch" | "oklab" | "oklch" | "color"
+    )
+}
+
+fn is_color_identifier_character(character: char) -> bool {
+    character.is_ascii_alphanumeric() || matches!(character, '-' | '_' | '$')
+}
+
+fn resolve_color_variable_value(
+    token: &str,
+    class_name: &str,
+    manifest: &ManifestProjection,
+) -> Option<String> {
+    let canonical_class_name = canonicalize_class_name(class_name);
+    let variable_name = manifest
+        .utilities
+        .iter()
+        .filter(|utility| {
+            match_utility(class_name, utility, manifest).is_some()
+                || canonical_class_name.as_deref().is_some_and(|class_name| {
+                    match_utility(class_name, utility, manifest).is_some()
+                })
+        })
+        .find_map(|utility| utility.variables.get(token))?;
+    let mut variable = manifest.compiled_variables.get(variable_name)?;
+    if !variable.namespace.starts_with("color") {
+        return None;
+    }
+    for _ in 0..8 {
+        let value = variable.value.as_deref()?;
+        let alias_name = value
+            .strip_prefix('$')
+            .map(|value| value.split_once('/').map_or(value, |(name, _)| name))
+            .or_else(|| {
+                value
+                    .strip_prefix("var(--")
+                    .and_then(|value| value.strip_suffix(')'))
+            });
+        let Some(alias_name) = alias_name else {
+            return Some(value.to_owned());
+        };
+        variable = manifest.compiled_variables.get(alias_name)?;
+    }
+    None
+}
+
+fn scan_color_value(
+    value: &str,
+    value_offset: usize,
+    class_name: &str,
+    manifest: &ManifestProjection,
+    tokens: &mut Vec<EngineColorToken>,
+) {
+    let mut cursor = 0;
+    while cursor < value.len() {
+        let character = value[cursor..].chars().next().unwrap_or_default();
+        if matches!(character, '\'' | '"') {
+            let quote = character;
+            cursor += character.len_utf8();
+            let mut escaped = false;
+            while cursor < value.len() {
+                let character = value[cursor..].chars().next().unwrap_or_default();
+                cursor += character.len_utf8();
+                if escaped {
+                    escaped = false;
+                } else if character == '\\' {
+                    escaped = true;
+                } else if character == quote {
+                    break;
+                }
+            }
+            continue;
+        }
+        if character == '#' {
+            let start = cursor;
+            cursor += 1;
+            while cursor < value.len()
+                && value[cursor..]
+                    .chars()
+                    .next()
+                    .is_some_and(|character| character.is_ascii_hexdigit())
+            {
+                cursor += 1;
+            }
+            if cursor > start + 1 {
+                tokens.push(EngineColorToken {
+                    start: utf16_len(&class_name[..value_offset + start]),
+                    end: utf16_len(&class_name[..value_offset + cursor]),
+                    value: value[start..cursor].to_owned(),
+                    alpha: None,
+                });
+            }
+            continue;
+        }
+        if character.is_ascii_alphabetic() || matches!(character, '-' | '_' | '$') {
+            let start = cursor;
+            cursor += character.len_utf8();
+            while cursor < value.len()
+                && value[cursor..]
+                    .chars()
+                    .next()
+                    .is_some_and(is_color_identifier_character)
+            {
+                cursor += value[cursor..]
+                    .chars()
+                    .next()
+                    .unwrap_or_default()
+                    .len_utf8();
+            }
+            let identifier = &value[start..cursor];
+            if value[cursor..].starts_with('(') {
+                let opening = cursor;
+                let Some(closing) = find_matching_parenthesis(value, opening) else {
+                    return;
+                };
+                if color_function_name_is_supported(identifier) {
+                    let end = closing + 1;
+                    tokens.push(EngineColorToken {
+                        start: utf16_len(&class_name[..value_offset + start]),
+                        end: utf16_len(&class_name[..value_offset + end]),
+                        value: value[start..end].replace('|', " "),
+                        alpha: None,
+                    });
+                } else {
+                    scan_color_value(
+                        &value[opening + 1..closing],
+                        value_offset + opening + 1,
+                        class_name,
+                        manifest,
+                        tokens,
+                    );
+                }
+                cursor = closing + 1;
+                continue;
+            }
+
+            let variable_token = identifier.strip_prefix('$').unwrap_or(identifier);
+            let mut end = cursor;
+            let mut alpha = None;
+            if value[cursor..].starts_with('/') {
+                let alpha_start = cursor + 1;
+                let mut alpha_end = alpha_start;
+                while alpha_end < value.len()
+                    && value[alpha_end..]
+                        .chars()
+                        .next()
+                        .is_some_and(|character| character.is_ascii_digit() || character == '.')
+                {
+                    alpha_end += 1;
+                }
+                if alpha_end > alpha_start {
+                    alpha = value[alpha_start..alpha_end].parse::<f64>().ok();
+                    end = alpha_end;
+                }
+            }
+            if let Some(resolved) =
+                resolve_color_variable_value(variable_token, class_name, manifest)
+            {
+                tokens.push(EngineColorToken {
+                    start: utf16_len(&class_name[..value_offset + start]),
+                    end: utf16_len(&class_name[..value_offset + end]),
+                    value: resolved,
+                    alpha,
+                });
+            }
+            cursor = end;
+            continue;
+        }
+        cursor += character.len_utf8();
+    }
+}
+
+fn collect_engine_color_tokens(
+    class_name: &str,
+    manifest: &ManifestProjection,
+) -> Vec<EngineColorToken> {
+    let semantic_class_name = class_name.strip_suffix('!').unwrap_or(class_name);
+    let Some(colon) = semantic_class_name.find(':') else {
+        return Vec::new();
+    };
+    let raw_value = &semantic_class_name[colon + 1..];
+    let (value, _) = split_dynamic_value_state(raw_value);
+    let value_offset = colon + 1;
+    let mut tokens = Vec::new();
+    scan_color_value(
+        &value,
+        value_offset,
+        semantic_class_name,
+        manifest,
+        &mut tokens,
+    );
+    tokens
 }
 
 fn is_native_shorthand_property(property: &str) -> bool {
