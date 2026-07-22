@@ -4,7 +4,7 @@
   "scripts": {
     "build": "tsdown --config ../../shared/tsdown-package.config.ts",
     "dev": "tsdown --config ../../shared/tsdown-package.config.ts --watch",
-    "test": "cargo xtask build-wasm compiler && tsdown --config ../../shared/tsdown-package.config.ts && vitest",
+    "test": "cargo xtask build-wasm compiler && vitest",
     "type-check": "tsc -b tsconfig.typecheck.json",
     "lint": "eslint"
   },
