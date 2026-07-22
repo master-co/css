@@ -71,16 +71,20 @@ test('uses modulepreloaded default manifest', async ({ page }) => {
     }
   })
 
-  await page.setContent(`
-    <!doctype html>
-    <html hidden>
-    <head>
-      <link rel="modulepreload" as="json" crossorigin href="${DEFAULT_MANIFEST_URL}">
-      <script src="${RUNTIME_SCRIPT_URL}"></script>
-    </head>
-    <body></body>
-    </html>
-  `)
+  await page.route(`${RUNTIME_ASSET_BASE_URL}/`, (route) => route.fulfill({
+    contentType: 'text/html',
+    body: `
+      <!doctype html>
+      <html hidden>
+      <head>
+        <link rel="modulepreload" as="json" crossorigin href="${DEFAULT_MANIFEST_URL}">
+        <script src="${RUNTIME_SCRIPT_URL}"></script>
+      </head>
+      <body></body>
+      </html>
+    `
+  }))
+  await page.goto(`${RUNTIME_ASSET_BASE_URL}/`)
   await page.waitForFunction(() => !!globalThis.masterCSSRuntime?.observing)
 
   expect(defaultManifestRequests).toBe(1)

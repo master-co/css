@@ -191,6 +191,97 @@ jobs:
           fi
           pnpm exec node scripts/with-typescript-tooling-compat.mjs pnpm exec turbo "${args[@]}"
 
+  rust_quality:
+    name: rust-quality
+    needs: preflight
+    if: ${{ needs.preflight.outputs.trusted == 'true' }}
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - name: Validate Rust workspace
+        run: |
+          cargo fmt --check
+          cargo clippy --workspace --all-targets --all-features -- -D warnings
+          cargo test --workspace
+          cargo xtask codegen --check
+          cargo xtask parity
+
+  native_tier1:
+    name: native-${{ matrix.package }}
+    needs: preflight
+    if: ${{ needs.preflight.outputs.trusted == 'true' }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - package: native-darwin-arm64
+            runner: macos-15
+          - package: native-darwin-x64
+            runner: macos-15-intel
+          - package: native-linux-arm64-gnu
+            runner: ubuntu-24.04-arm
+          - package: native-linux-x64-gnu
+            runner: ubuntu-24.04
+          - package: native-win32-arm64-msvc
+            runner: windows-11-arm
+          - package: native-win32-x64-msvc
+            runner: windows-2025
+    runs-on: ${{ matrix.runner }}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - uses: ./.github/actions/setup-pnpm
+        with:
+          install: "false"
+          submodules: "false"
+          turbo-cache: "false"
+      - name: Build and stage native artifacts
+        run: cargo xtask stage-native-target ${{ matrix.package }} --release
+      - name: Load addon and execute CLI smoke
+        run: node scripts/native-package-smoke.mjs packages/${{ matrix.package }}
+      - name: Inspect target package tarball
+        run: |
+          npm pkg set version=0.0.0 --prefix packages/${{ matrix.package }}
+          npm pack packages/${{ matrix.package }} --dry-run --json
+
+  native_musl:
+    name: native-${{ matrix.package }}
+    needs: preflight
+    if: ${{ needs.preflight.outputs.trusted == 'true' }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - package: native-linux-arm64-musl
+            runner: ubuntu-24.04-arm
+          - package: native-linux-x64-musl
+            runner: ubuntu-24.04
+    runs-on: ${{ matrix.runner }}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - name: Build, load, and package smoke in musl
+        shell: bash
+        env:
+          TARGET_PACKAGE: ${{ matrix.package }}
+        run: |
+          docker run --rm \
+            -e TARGET_PACKAGE \
+            -v "$PWD:/workspace" \
+            -w /workspace \
+            rust:1.97-alpine \
+            sh -ec '
+              apk add --no-cache build-base nodejs npm
+              cargo xtask stage-native-target "$TARGET_PACKAGE" --release
+              node scripts/native-package-smoke.mjs "packages/$TARGET_PACKAGE"
+              npm pkg set version=0.0.0 --prefix "packages/$TARGET_PACKAGE"
+              npm pack "packages/$TARGET_PACKAGE" --dry-run --json
+            '
+
   e2e_linux:
     name: e2e-linux
     needs: preflight
@@ -208,7 +299,7 @@ jobs:
           submodules-token: ${{ secrets.GH_TOKEN }}
           turbo-cache-scope: e2e
       - name: Install E2E browsers
-        run: pnpm exec playwright install --with-deps --only-shell chromium firefox
+        run: pnpm exec playwright install --with-deps chromium firefox webkit
       - name: Run E2E tests
         shell: bash
         env:
