@@ -9,6 +9,7 @@ import type {
   MasterCSSLintCanonicalClassGroupSuggestionsIR,
   MasterCSSLintCanonicalClassSuggestionIR,
   MasterCSSLintCanonicalClassSuggestionsIR,
+  MasterCSSLintCanonicalComposeDirectiveIR,
   MasterCSSLintClassListIR,
   MasterCSSLintClassConflictIR,
   MasterCSSLintDiagnosticIR,
@@ -23,6 +24,7 @@ import validateCSS from '@master/css-validator/validate-css'
 import type { MasterCSSLintDiagnostic, MasterCSSLintDiagnosticSeverity } from './diagnostics'
 import type { RawValuePolicyOptions } from './find-unapproved-raw-value-classes'
 import type { CanonicalClassNameOptions } from './suggest-canonical-class-name'
+import type { CanonicalComposeDirectiveResult } from './suggest-canonical-compose-directive'
 
 export type RustClassConflictIR = MasterCSSLintClassConflictIR
 export type RustPartialClassConflictIR = MasterCSSLintPartialClassConflictIR
@@ -38,6 +40,10 @@ export interface RustLintSession {
     classNames: string[],
     options?: CanonicalClassNameOptions
   ): MasterCSSLintCanonicalClassSuggestionIR[]
+  canonicalComposeDirective(
+    classNames: string[],
+    options?: CanonicalClassNameOptions
+  ): CanonicalComposeDirectiveResult | undefined
   rawValueCandidates(classNames: string[]): MasterCSSLintRawValueCandidateIR[]
   analyzeClassList(
     classList: string,
@@ -134,6 +140,16 @@ function createNativeRustLintSession(manifestJSON: string): RustLintSession | un
         inputs.nativeSupport,
         options ? JSON.stringify(options) : undefined
       )) as MasterCSSLintCanonicalClassGroupSuggestionsIR).suggestions
+    },
+    canonicalComposeDirective(classNames, options) {
+      const inputs = resolveInputs(classNames)
+      const result = JSON.parse(lint.canonicalComposeDirective(
+        classNames,
+        inputs.nativeSupport,
+        options ? JSON.stringify(options) : undefined
+      )) as MasterCSSLintCanonicalComposeDirectiveIR
+      const { version: _, ...compose } = result
+      return compose.suggestions.length ? compose : undefined
     },
     rawValueCandidates(classNames) {
       const inputs = resolveInputs(classNames)
@@ -233,6 +249,17 @@ export async function createRustLintSession(manifest: MasterCSSManifest): Promis
         nativeSupport.length ? nativeSupport : undefined,
         options
       ) as MasterCSSLintCanonicalClassGroupSuggestionsIR).suggestions
+    },
+    canonicalComposeDirective(classNames, options) {
+      const candidates = lint.nativeDeclarationCandidates(classNames) as MasterCSSNativeDeclarationCandidateIR[]
+      const nativeSupport = candidates.map(cssTreeNativeDeclarationMatcher)
+      const result = lint.canonicalComposeDirective(
+        classNames,
+        nativeSupport.length ? nativeSupport : undefined,
+        options
+      ) as MasterCSSLintCanonicalComposeDirectiveIR
+      const { version: _, ...compose } = result
+      return compose.suggestions.length ? compose : undefined
     },
     rawValueCandidates(classNames) {
       const candidates = lint.nativeDeclarationCandidates(classNames) as MasterCSSNativeDeclarationCandidateIR[]

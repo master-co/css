@@ -114,6 +114,8 @@ export interface MasterCSSLintCanonicalClassNameOptionsIR {
   preferMultiValueTokens: boolean
   preferCompositionUtilities: boolean
   preferConditionOrder: boolean
+  preferNativeDeclarationsInCompose: boolean
+  preferVariantBlocksInCompose: boolean
 }
 
 export interface MasterCSSLintCanonicalClassSuggestionIR {
@@ -134,6 +136,25 @@ export interface MasterCSSLintCanonicalClassGroupSuggestionIR {
 export interface MasterCSSLintCanonicalClassGroupSuggestionsIR {
   version: typeof MASTER_CSS_LINT_BATCH_VERSION
   suggestions: MasterCSSLintCanonicalClassGroupSuggestionIR[]
+}
+
+export type MasterCSSLintCanonicalComposeSuggestionKind =
+  | 'class'
+  | 'native-declaration'
+  | 'variant-block'
+
+export interface MasterCSSLintCanonicalComposeSuggestionIR {
+  actual: string
+  recommended: string
+  classNames: string[]
+  kind: MasterCSSLintCanonicalComposeSuggestionKind
+}
+
+export interface MasterCSSLintCanonicalComposeDirectiveIR {
+  version: typeof MASTER_CSS_LINT_BATCH_VERSION
+  suggestions: MasterCSSLintCanonicalComposeSuggestionIR[]
+  structuralChange?: boolean
+  replacement?: string
 }
 
 export interface MasterCSSLintEditIR {

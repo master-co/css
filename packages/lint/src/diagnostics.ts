@@ -27,7 +27,7 @@ import type { RustLintSession } from './rust-session'
 
 type RustCanonicalLintSession = Partial<Pick<
   RustLintSession,
-  'canonicalClassGroups' | 'canonicalClassNames'
+  'canonicalClassGroups' | 'canonicalClassNames' | 'canonicalComposeDirective'
 >>
 
 export type MasterCSSLintRuleId =
@@ -378,14 +378,17 @@ export function createCanonicalComposeDirectiveReport(
   options: MasterCSSCanonicalClassesReportOptions = {},
   lintSession?: RustCanonicalLintSession
 ): MasterCSSLintReport {
-  const result = suggestCanonicalComposeDirective(classList, css, {
+  const resolvedOptions = {
     ...defaultCanonicalClassNameOptions,
     ...options
-  })
+  }
+  const items = parseClassList(classList, options)
+  const result = lintSession?.canonicalComposeDirective
+    ? lintSession.canonicalComposeDirective(classValues(items), resolvedOptions)
+    : suggestCanonicalComposeDirective(classList, css, resolvedOptions)
   if (!result) return createReport()
   if (!result.structuralChange) return createCanonicalClassesReport(classList, css, options, lintSession)
 
-  const items = parseClassList(classList, options)
   const fallbackRange = wholeClassListRange(classList)
   const severity = resolveSeverity('prefer-canonical-classes', options.severity)
   const fix = result.replacement

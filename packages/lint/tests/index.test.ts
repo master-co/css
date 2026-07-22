@@ -521,6 +521,7 @@ describe('source content linting', () => {
     const rust = await createRustLintSession(createPresetManifest())
     let canonicalCalls = 0
     let groupCalls = 0
+    let composeCalls = 0
     const lintSession = {
       analyzeClassList: rust.analyzeClassList,
       canonicalClassGroups(...args: Parameters<typeof rust.canonicalClassGroups>) {
@@ -530,6 +531,10 @@ describe('source content linting', () => {
       canonicalClassNames(...args: Parameters<typeof rust.canonicalClassNames>) {
         canonicalCalls++
         return rust.canonicalClassNames(...args)
+      },
+      canonicalComposeDirective(...args: Parameters<typeof rust.canonicalComposeDirective>) {
+        composeCalls++
+        return rust.canonicalComposeDirective(...args)
       }
     }
     try {
@@ -548,6 +553,15 @@ describe('source content linting', () => {
       })).toBe('<div class="font:md block@sm@dark my:md"></div>')
       expect(canonicalCalls).toBeGreaterThan(0)
       expect(groupCalls).toBeGreaterThan(0)
+      const fixedStylesheet = fixMasterCSSContent({
+        content: '.btn { @compose contain:content; }',
+        filePath: '/project/index.css',
+        css,
+        lintSession,
+        includeDirectiveFixes: true
+      })
+      expect(fixedStylesheet).toBe('.btn { contain: content; }')
+      expect(composeCalls).toBeGreaterThan(0)
     } finally {
       rust.dispose()
     }
@@ -1353,6 +1367,39 @@ describe('canonical class group suggestions', () => {
 })
 
 describe('canonical compose directive suggestions', () => {
+  test('matches the Rust structural compose batch', async () => {
+    const rust = await createRustLintSession(createPresetManifest())
+    const cases: [string, typeof defaultCanonicalClassNameOptions][] = [
+      ['text-align:center contain:content', defaultCanonicalClassNameOptions],
+      ['bg:blue-60:hover@sm block@dark', defaultCanonicalClassNameOptions],
+      ['contain:content!', defaultCanonicalClassNameOptions],
+      ['contain:content contain:none', defaultCanonicalClassNameOptions],
+      ['mt:md mb:md contain:content', defaultCanonicalClassNameOptions],
+      ['font:16px block width:10px', {
+        ...defaultCanonicalClassNameOptions,
+        preferThemeTokens: false,
+        preferStaticUtilities: false,
+        preferPropertyAliases: false
+      }],
+      ['contain:content', {
+        ...defaultCanonicalClassNameOptions,
+        preferNativeDeclarationsInCompose: false
+      }],
+      ['block@dark', {
+        ...defaultCanonicalClassNameOptions,
+        preferVariantBlocksInCompose: false
+      }]
+    ]
+    try {
+      for (const [classList, options] of cases) {
+        expect(rust.canonicalComposeDirective(classList.split(' '), options), classList)
+          .toEqual(suggestCanonicalComposeDirective(classList, css, options))
+      }
+    } finally {
+      rust.dispose()
+    }
+  })
+
   test('keeps canonical utilities and extracts native declarations', () => {
     expect(suggestCanonicalComposeDirective('text-align:center contain:content', css)).toEqual({
       suggestions: [

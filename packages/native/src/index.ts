@@ -70,6 +70,7 @@ export interface NativeLintSession {
   nativeDeclarationCandidates(classNames: string[]): string
   canonicalClassNames(classNames: string[], nativeSupport: boolean[] | undefined, optionsJSON?: string): string
   canonicalClassGroups(classNames: string[], nativeSupport: boolean[] | undefined, optionsJSON?: string): string
+  canonicalComposeDirective(classNames: string[], nativeSupport: boolean[] | undefined, optionsJSON?: string): string
   rawValueCandidates(
     classNames: string[],
     nativeSupport: boolean[] | undefined,

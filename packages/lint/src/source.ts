@@ -110,7 +110,10 @@ export interface MasterCSSLintContentOptions {
   ruleOptions?: MasterCSSLintContentRuleOptions
   severities?: Partial<Record<MasterCSSLintRuleId, MasterCSSLintDiagnosticSeverity>>
   lintSession?: Pick<RustLintSession, 'analyzeClassList'>
-    & Partial<Pick<RustLintSession, 'canonicalClassGroups' | 'canonicalClassNames'>>
+    & Partial<Pick<
+      RustLintSession,
+      'canonicalClassGroups' | 'canonicalClassNames' | 'canonicalComposeDirective'
+    >>
 }
 
 export interface MasterCSSFixContentOptions extends MasterCSSLintContentOptions {
@@ -332,6 +335,7 @@ function createContextLintDiagnostics(
       : []
     const canonicalLintSession = options.lintSession?.canonicalClassNames
       || options.lintSession?.canonicalClassGroups
+      || options.lintSession?.canonicalComposeDirective
       ? options.lintSession
       : undefined
     const remainingReports = [

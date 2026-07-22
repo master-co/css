@@ -100,6 +100,10 @@ pub struct CanonicalClassNameOptions {
     pub prefer_composition_utilities: bool,
     #[serde(default = "default_true")]
     pub prefer_condition_order: bool,
+    #[serde(default = "default_true")]
+    pub prefer_native_declarations_in_compose: bool,
+    #[serde(default = "default_true")]
+    pub prefer_variant_blocks_in_compose: bool,
 }
 
 impl Default for CanonicalClassNameOptions {
@@ -112,6 +116,8 @@ impl Default for CanonicalClassNameOptions {
             prefer_multi_value_tokens: true,
             prefer_composition_utilities: true,
             prefer_condition_order: true,
+            prefer_native_declarations_in_compose: true,
+            prefer_variant_blocks_in_compose: true,
         }
     }
 }
@@ -144,6 +150,34 @@ pub struct CanonicalClassGroupSuggestionsIr {
     pub suggestions: Vec<CanonicalClassGroupSuggestionIr>,
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize)]
+#[serde(rename_all = "kebab-case")]
+pub enum CanonicalComposeSuggestionKind {
+    Class,
+    NativeDeclaration,
+    VariantBlock,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct CanonicalComposeSuggestionIr {
+    pub actual: String,
+    pub recommended: String,
+    pub class_names: Vec<String>,
+    pub kind: CanonicalComposeSuggestionKind,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct CanonicalComposeDirectiveIr {
+    pub version: u32,
+    pub suggestions: Vec<CanonicalComposeSuggestionIr>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub structural_change: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub replacement: Option<String>,
+}
+
 #[derive(Debug, Clone, Default)]
 pub struct RawValuePolicy {
     pub allow_raw_values: bool,
@@ -173,6 +207,7 @@ pub struct LintSession {
     variable_keys: Vec<String>,
     variable_values: HashMap<String, String>,
     canonical_index: CanonicalRecommendationIndex,
+    supported_native_declarations: HashSet<(String, String)>,
 }
 
 #[derive(Debug, Default)]
@@ -263,6 +298,20 @@ const COMPOSITION_RECIPES: [CompositionRecipe; 7] = [
     },
 ];
 
+#[derive(Debug, Clone)]
+struct ComposeNativeDeclaration {
+    property: String,
+    value: String,
+    important: bool,
+}
+
+#[derive(Debug, Default)]
+struct ComposeBucket {
+    classes: Vec<String>,
+    declarations: Vec<ComposeNativeDeclaration>,
+    variants: Vec<(String, ComposeBucket)>,
+}
+
 const fn default_true() -> bool {
     true
 }
@@ -292,6 +341,7 @@ impl LintSession {
             variable_keys,
             variable_values,
             canonical_index,
+            supported_native_declarations: HashSet::new(),
         })
     }
 
@@ -330,12 +380,7 @@ impl LintSession {
         native_support: Option<&[bool]>,
         invalid_generated_classes: &HashSet<String>,
     ) -> Result<(LintBatchIr, Vec<bool>), EngineError> {
-        if let Some(native_support) = native_support {
-            self.engine
-                .ensure_class_rules_with_native_support(&class_names, native_support)?;
-        } else {
-            self.engine.ensure_class_rules(&class_names)?;
-        }
+        self.ensure_class_rules(&class_names, native_support)?;
         let descriptors = class_names
             .iter()
             .map(|class_name| {
@@ -414,12 +459,7 @@ impl LintSession {
         native_support: Option<&[bool]>,
         invalid_generated_classes: &HashSet<String>,
     ) -> Result<RawValueCandidatesIr, EngineError> {
-        if let Some(native_support) = native_support {
-            self.engine
-                .ensure_class_rules_with_native_support(class_names, native_support)?;
-        } else {
-            self.engine.ensure_class_rules(class_names)?;
-        }
+        self.ensure_class_rules(class_names, native_support)?;
         let candidates =
             self.collect_raw_value_candidates(class_names, invalid_generated_classes)?;
         self.engine.delete_class_rules(class_names)?;
@@ -435,12 +475,7 @@ impl LintSession {
         native_support: Option<&[bool]>,
         options: &CanonicalClassNameOptions,
     ) -> Result<CanonicalClassSuggestionsIr, EngineError> {
-        if let Some(native_support) = native_support {
-            self.engine
-                .ensure_class_rules_with_native_support(class_names, native_support)?;
-        } else {
-            self.engine.ensure_class_rules(class_names)?;
-        }
+        self.ensure_class_rules(class_names, native_support)?;
         let result = (|| {
             let mut suggestions = Vec::new();
             for class_name in class_names {
@@ -481,12 +516,7 @@ impl LintSession {
                 suggestions: Vec::new(),
             });
         }
-        if let Some(native_support) = native_support {
-            self.engine
-                .ensure_class_rules_with_native_support(class_names, native_support)?;
-        } else {
-            self.engine.ensure_class_rules(class_names)?;
-        }
+        self.ensure_class_rules(class_names, native_support)?;
         let result = self.suggest_canonical_class_groups(class_names, options);
         let cleanup = self.engine.delete_class_rules(class_names);
         match result {
@@ -502,6 +532,263 @@ impl LintSession {
                 Err(error)
             }
         }
+    }
+
+    pub fn canonical_compose_directive(
+        &mut self,
+        class_names: &[String],
+        native_support: Option<&[bool]>,
+        options: &CanonicalClassNameOptions,
+    ) -> Result<CanonicalComposeDirectiveIr, EngineError> {
+        let native_candidates = self.ensure_class_rules(class_names, native_support)?;
+        let mut native_declarations = HashMap::new();
+        for (index, candidate) in native_candidates.into_iter().enumerate() {
+            if native_support
+                .and_then(|support| support.get(index))
+                .copied()
+                .unwrap_or(false)
+            {
+                native_declarations.insert(candidate.class_name.clone(), candidate);
+            }
+        }
+        for class_name in class_names {
+            if !native_declarations.contains_key(class_name)
+                && let Some(candidate) = self.known_native_declaration(class_name)?
+            {
+                native_declarations.insert(class_name.clone(), candidate);
+            }
+        }
+        let result =
+            self.suggest_canonical_compose_directive(class_names, options, native_declarations);
+        let cleanup = self.engine.delete_class_rules(class_names);
+        match result {
+            Ok(result) => {
+                cleanup?;
+                Ok(result)
+            }
+            Err(error) => {
+                let _ = cleanup;
+                Err(error)
+            }
+        }
+    }
+
+    fn ensure_class_rules(
+        &mut self,
+        class_names: &[String],
+        native_support: Option<&[bool]>,
+    ) -> Result<Vec<NativeDeclarationCandidateIr>, EngineError> {
+        let Some(native_support) = native_support else {
+            self.engine.ensure_class_rules(class_names)?;
+            return Ok(Vec::new());
+        };
+        let native_candidates = self.engine.native_declaration_candidates(class_names)?;
+        for (index, candidate) in native_candidates.iter().enumerate() {
+            if native_support.get(index).copied().unwrap_or(false) {
+                self.supported_native_declarations
+                    .insert((candidate.property.clone(), candidate.value.clone()));
+            }
+        }
+        self.engine
+            .ensure_class_rules_with_native_support(class_names, native_support)?;
+        Ok(native_candidates)
+    }
+
+    fn known_native_declaration(
+        &self,
+        class_name: &str,
+    ) -> Result<Option<NativeDeclarationCandidateIr>, EngineError> {
+        let semantics = self.engine.inspect_class_semantics(class_name)?;
+        if semantics.kind != mastercss_engine::ClassSemanticKind::Declaration {
+            return Ok(None);
+        }
+        let parts = canonical_class_parts(class_name, &semantics);
+        let Some(source_key) = parts.key else {
+            return Ok(None);
+        };
+        let inspection = self.engine.inspect(class_name)?;
+        if inspection.rules.len() != 1 || !inspection.rules[0].variable_names.is_empty() {
+            return Ok(None);
+        }
+        let declarations = collect_rule_declarations(&inspection.rules[0].text);
+        let [(property, value)] = declarations.as_slice() else {
+            return Ok(None);
+        };
+        if source_key != *property
+            || !self
+                .supported_native_declarations
+                .contains(&(property.clone(), value.clone()))
+        {
+            return Ok(None);
+        }
+        Ok(Some(NativeDeclarationCandidateIr {
+            class_name: class_name.to_owned(),
+            property: property.clone(),
+            value: value.clone(),
+        }))
+    }
+
+    fn suggest_canonical_compose_directive(
+        &self,
+        class_names: &[String],
+        options: &CanonicalClassNameOptions,
+        mut native_declarations: HashMap<String, NativeDeclarationCandidateIr>,
+    ) -> Result<CanonicalComposeDirectiveIr, EngineError> {
+        let group_suggestions = self.suggest_canonical_class_groups(class_names, options)?;
+        let covered_class_names = group_suggestions
+            .iter()
+            .flat_map(|suggestion| suggestion.class_names.iter().cloned())
+            .collect::<HashSet<_>>();
+        let mut canonical_class_names = class_names.to_vec();
+        let mut suggestions = Vec::new();
+
+        for suggestion in group_suggestions {
+            replace_compose_class_group(
+                &mut canonical_class_names,
+                &suggestion.class_names,
+                &suggestion.recommended,
+            );
+            suggestions.push(CanonicalComposeSuggestionIr {
+                actual: suggestion.class_names.join(" "),
+                recommended: suggestion.recommended,
+                class_names: suggestion.class_names,
+                kind: CanonicalComposeSuggestionKind::Class,
+            });
+        }
+
+        for class_name in class_names {
+            if covered_class_names.contains(class_name) {
+                continue;
+            }
+            let Some(recommended) = self.suggest_canonical_class_name(class_name, options)? else {
+                continue;
+            };
+            replace_first_compose_class(&mut canonical_class_names, class_name, &recommended);
+            if let Some(declaration) = native_declarations.get(class_name).cloned() {
+                let source_semantics = self.engine.inspect_class_semantics(class_name)?;
+                let recommended_semantics = self.engine.inspect_class_semantics(&recommended)?;
+                let source_parts = canonical_class_parts(class_name, &source_semantics);
+                let recommended_parts = canonical_class_parts(&recommended, &recommended_semantics);
+                if source_parts.base == recommended_parts.base {
+                    native_declarations.insert(recommended.clone(), declaration);
+                }
+            }
+            suggestions.push(CanonicalComposeSuggestionIr {
+                actual: class_name.clone(),
+                recommended,
+                class_names: vec![class_name.clone()],
+                kind: CanonicalComposeSuggestionKind::Class,
+            });
+        }
+
+        let canonical_recommendations = suggestions
+            .iter()
+            .map(|suggestion| suggestion.recommended.clone())
+            .collect::<HashSet<_>>();
+        let mut bucket = ComposeBucket::default();
+        let mut structural_change = false;
+        for class_name in canonical_class_names {
+            structural_change |= self.process_compose_class(
+                &mut bucket,
+                &class_name,
+                options,
+                &native_declarations,
+                &canonical_recommendations,
+                &mut suggestions,
+            )?;
+        }
+
+        let replacement = serialize_compose_bucket(&bucket, "");
+        Ok(CanonicalComposeDirectiveIr {
+            version: LINT_BATCH_VERSION,
+            suggestions,
+            structural_change: structural_change.then_some(true),
+            replacement: (structural_change
+                && !replacement.is_empty()
+                && !has_duplicate_compose_declaration_properties(&bucket))
+            .then_some(replacement),
+        })
+    }
+
+    fn process_compose_class(
+        &self,
+        bucket: &mut ComposeBucket,
+        class_name: &str,
+        options: &CanonicalClassNameOptions,
+        native_declarations: &HashMap<String, NativeDeclarationCandidateIr>,
+        canonical_recommendations: &HashSet<String>,
+        suggestions: &mut Vec<CanonicalComposeSuggestionIr>,
+    ) -> Result<bool, EngineError> {
+        let semantics = self.engine.inspect_class_semantics(class_name)?;
+        if options.prefer_variant_blocks_in_compose
+            && let Some(state_token) = semantics.state_token.as_deref()
+            && is_safe_compose_variant_token(state_token)
+        {
+            let parts = canonical_class_parts(class_name, &semantics);
+            let base_class_name = format!(
+                "{}{}",
+                parts.base,
+                if semantics.important { "!" } else { "" }
+            );
+            let variant_index = bucket
+                .variants
+                .iter()
+                .position(|(token, _)| token == state_token)
+                .unwrap_or_else(|| {
+                    bucket
+                        .variants
+                        .push((state_token.to_owned(), ComposeBucket::default()));
+                    bucket.variants.len() - 1
+                });
+            let native_declaration =
+                native_declarations
+                    .get(class_name)
+                    .map(|candidate| ComposeNativeDeclaration {
+                        property: candidate.property.clone(),
+                        value: candidate.value.clone(),
+                        important: semantics.important,
+                    });
+            process_compose_leaf(
+                &mut bucket.variants[variant_index].1,
+                &base_class_name,
+                native_declaration,
+                false,
+                suggestions,
+            );
+            if !canonical_recommendations.contains(class_name) {
+                suggestions.push(CanonicalComposeSuggestionIr {
+                    actual: class_name.to_owned(),
+                    recommended: compose_variant_block_text(
+                        state_token,
+                        &bucket.variants[variant_index].1,
+                        "",
+                    ),
+                    class_names: vec![class_name.to_owned()],
+                    kind: CanonicalComposeSuggestionKind::VariantBlock,
+                });
+            }
+            return Ok(true);
+        }
+
+        let native_declaration =
+            if options.prefer_native_declarations_in_compose && semantics.state_token.is_none() {
+                native_declarations
+                    .get(class_name)
+                    .map(|candidate| ComposeNativeDeclaration {
+                        property: candidate.property.clone(),
+                        value: candidate.value.clone(),
+                        important: semantics.important,
+                    })
+            } else {
+                None
+            };
+        Ok(process_compose_leaf(
+            bucket,
+            class_name,
+            native_declaration,
+            true,
+            suggestions,
+        ))
     }
 
     fn suggest_canonical_class_groups(
@@ -881,6 +1168,181 @@ impl LintSession {
     pub fn dispose(&mut self) {
         self.engine.dispose();
     }
+}
+
+fn replace_first_compose_class(class_names: &mut [String], source: &str, replacement: &str) {
+    if let Some(class_name) = class_names
+        .iter_mut()
+        .find(|class_name| *class_name == source)
+    {
+        *class_name = replacement.to_owned();
+    }
+}
+
+fn remove_first_compose_class(class_names: &mut Vec<String>, source: &str) {
+    if let Some(index) = class_names
+        .iter()
+        .position(|class_name| class_name == source)
+    {
+        class_names.remove(index);
+    }
+}
+
+fn replace_compose_class_group(
+    class_names: &mut Vec<String>,
+    sources: &[String],
+    replacement: &str,
+) {
+    let Some((first, remaining)) = sources.split_first() else {
+        return;
+    };
+    replace_first_compose_class(class_names, first, replacement);
+    for source in remaining {
+        remove_first_compose_class(class_names, source);
+    }
+}
+
+fn is_safe_compose_variant_token(token: &str) -> bool {
+    if token.is_empty() || (!token.starts_with(':') && !token.starts_with('@')) {
+        return false;
+    }
+    token
+        .split('@')
+        .skip(1)
+        .all(|segment| !segment.is_empty() && !segment.contains(':'))
+}
+
+fn compose_variant_keyword(condition: &str) -> String {
+    let token = condition.strip_prefix('@').unwrap_or(condition);
+    if matches!(token, "dark" | "light") {
+        format!("@{token}")
+    } else {
+        format!("@variant {token}")
+    }
+}
+
+fn compose_declaration_text(declaration: &ComposeNativeDeclaration) -> String {
+    format!(
+        "{}: {}{};",
+        declaration.property,
+        declaration.value,
+        if declaration.important {
+            " !important"
+        } else {
+            ""
+        }
+    )
+}
+
+fn compose_block_text(header: &str, body: &str, indent: &str) -> String {
+    if !body.contains('\n') {
+        return format!("{header} {{ {body} }}");
+    }
+    format!(
+        "{header} {{\n{}\n{indent}}}",
+        body.lines()
+            .map(|line| format!("{indent}    {line}"))
+            .collect::<Vec<_>>()
+            .join("\n")
+    )
+}
+
+fn compose_variant_condition_block_text(
+    condition: &str,
+    bucket: &ComposeBucket,
+    indent: &str,
+) -> String {
+    compose_block_text(
+        &compose_variant_keyword(condition),
+        &serialize_compose_bucket(bucket, &format!("{indent}    ")),
+        indent,
+    )
+}
+
+fn compose_variant_block_text(token: &str, bucket: &ComposeBucket, indent: &str) -> String {
+    let parts = split_top_level(token, '@');
+    let selector = parts.first().copied().unwrap_or_default();
+    let condition = parts.iter().skip(1).copied().collect::<Vec<_>>().join("@");
+    if !selector.is_empty() {
+        let selector_header = if selector.starts_with('&') {
+            selector.to_owned()
+        } else {
+            format!("&{selector}")
+        };
+        let body = if condition.is_empty() {
+            serialize_compose_bucket(bucket, &format!("{indent}    "))
+        } else {
+            compose_variant_condition_block_text(&condition, bucket, &format!("{indent}    "))
+        };
+        compose_block_text(&selector_header, &body, indent)
+    } else {
+        compose_variant_condition_block_text(
+            if condition.is_empty() {
+                token
+            } else {
+                &condition
+            },
+            bucket,
+            indent,
+        )
+    }
+}
+
+fn serialize_compose_bucket(bucket: &ComposeBucket, indent: &str) -> String {
+    let mut lines = Vec::new();
+    if !bucket.classes.is_empty() {
+        lines.push(format!("@compose {};", bucket.classes.join(" ")));
+    }
+    lines.extend(bucket.declarations.iter().map(compose_declaration_text));
+    lines.extend(
+        bucket
+            .variants
+            .iter()
+            .map(|(token, bucket)| compose_variant_block_text(token, bucket, indent)),
+    );
+    lines.join("\n")
+}
+
+fn has_duplicate_compose_declaration_properties(bucket: &ComposeBucket) -> bool {
+    let mut properties = HashSet::new();
+    if bucket
+        .declarations
+        .iter()
+        .any(|declaration| !properties.insert(&declaration.property))
+    {
+        return true;
+    }
+    bucket
+        .variants
+        .iter()
+        .any(|(_, bucket)| has_duplicate_compose_declaration_properties(bucket))
+}
+
+fn process_compose_leaf(
+    bucket: &mut ComposeBucket,
+    class_name: &str,
+    declaration: Option<ComposeNativeDeclaration>,
+    report_native_declaration: bool,
+    suggestions: &mut Vec<CanonicalComposeSuggestionIr>,
+) -> bool {
+    let Some(declaration) = declaration else {
+        bucket.classes.push(class_name.to_owned());
+        return false;
+    };
+    if report_native_declaration {
+        let recommended = compose_declaration_text(&declaration)
+            .strip_suffix(';')
+            .unwrap_or_default()
+            .to_owned();
+        suggestions.push(CanonicalComposeSuggestionIr {
+            actual: class_name.to_owned(),
+            recommended,
+            class_names: vec![class_name.to_owned()],
+            kind: CanonicalComposeSuggestionKind::NativeDeclaration,
+        });
+    }
+    bucket.declarations.push(declaration);
+    true
 }
 
 fn matching_composition_recipe(
@@ -2760,5 +3222,92 @@ mod tests {
             );
             assert_eq!(session.engine.css_text(), "");
         }
+    }
+
+    #[test]
+    fn creates_structural_compose_directives_from_engine_facts() {
+        let mut session = LintSession::create(DEFAULT_MANIFEST).unwrap();
+        let class_names = ["text-align:center", "contain:content"].map(str::to_owned);
+        let native_support = vec![
+            true;
+            session
+                .native_declaration_candidates(&class_names)
+                .unwrap()
+                .len()
+        ];
+        assert_eq!(
+            session
+                .canonical_compose_directive(
+                    &class_names,
+                    Some(&native_support),
+                    &CanonicalClassNameOptions::default(),
+                )
+                .unwrap(),
+            CanonicalComposeDirectiveIr {
+                version: LINT_BATCH_VERSION,
+                suggestions: vec![
+                    CanonicalComposeSuggestionIr {
+                        actual: "text-align:center".into(),
+                        recommended: "text-center".into(),
+                        class_names: vec!["text-align:center".into()],
+                        kind: CanonicalComposeSuggestionKind::Class,
+                    },
+                    CanonicalComposeSuggestionIr {
+                        actual: "contain:content".into(),
+                        recommended: "contain: content".into(),
+                        class_names: vec!["contain:content".into()],
+                        kind: CanonicalComposeSuggestionKind::NativeDeclaration,
+                    },
+                ],
+                structural_change: Some(true),
+                replacement: Some("@compose text-center;\ncontain: content;".into()),
+            }
+        );
+
+        let class_names = ["bg:blue-60:hover@sm", "block@dark"].map(str::to_owned);
+        let native_support = vec![
+            true;
+            session
+                .native_declaration_candidates(&class_names)
+                .unwrap()
+                .len()
+        ];
+        let result = session
+            .canonical_compose_directive(
+                &class_names,
+                Some(&native_support),
+                &CanonicalClassNameOptions::default(),
+            )
+            .unwrap();
+        assert_eq!(
+            result.replacement.as_deref(),
+            Some("&:hover { @variant sm { @compose bg:blue-60; } }\n@dark { @compose block; }")
+        );
+        assert_eq!(
+            result
+                .suggestions
+                .iter()
+                .map(|suggestion| suggestion.kind)
+                .collect::<Vec<_>>(),
+            [
+                CanonicalComposeSuggestionKind::VariantBlock,
+                CanonicalComposeSuggestionKind::VariantBlock,
+            ]
+        );
+
+        let class_names = ["contain:content!"].map(str::to_owned);
+        let native_support = vec![true];
+        let result = session
+            .canonical_compose_directive(
+                &class_names,
+                Some(&native_support),
+                &CanonicalClassNameOptions::default(),
+            )
+            .unwrap();
+        assert_eq!(
+            result.replacement.as_deref(),
+            Some("contain: content !important;")
+        );
+        assert_eq!(session.engine.css_text(), "");
     }
 }

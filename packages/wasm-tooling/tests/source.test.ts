@@ -135,6 +135,17 @@ test('loads the isolated source tooling Wasm surface', async () => {
     version: 1,
     suggestions: [{ classNames: ['ml:md', 'mr:md'], recommended: 'mx:md' }]
   })
+  expect(lint.canonicalComposeDirective(['contain:content'], [true], undefined)).toEqual({
+    version: 1,
+    suggestions: [{
+      actual: 'contain:content',
+      recommended: 'contain: content',
+      classNames: ['contain:content'],
+      kind: 'native-declaration'
+    }],
+    structuralChange: true,
+    replacement: 'contain: content;'
+  })
   expect(lint.rawValueCandidates(['m:md|17px'], undefined, [])).toEqual({
     version: 1,
     candidates: [
