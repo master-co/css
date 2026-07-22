@@ -9,6 +9,7 @@ import {
   type MasterCSSLintSourceDiagnostic,
   type MasterCSSLintSummary
 } from '@master/css-lint'
+import { createRustLintSession, type RustLintSession } from '@master/css-lint/node'
 import { loadProjectManifest } from '@master/css-project/manifest'
 import fg from 'fast-glob'
 import fs from 'node:fs'
@@ -155,13 +156,15 @@ function resolveSourceInputs(cwd: string, specifiedSourcePaths: string[], option
 function lintInputs(
   inputs: SourceInput[],
   css: CSSWithNativeDeclarations,
-  rules: Record<MasterCSSLintRuleId, boolean>
+  rules: Record<MasterCSSLintRuleId, boolean>,
+  lintSession: RustLintSession
 ) {
   return inputs.map((input) => lintMasterCSSContent({
     content: input.content,
     filePath: input.filePath,
     css,
-    rules
+    rules,
+    lintSession
   })).filter((result) => result.diagnostics.length)
 }
 
@@ -169,7 +172,8 @@ function applyFileFixes(
   inputs: SourceInput[],
   css: CSSWithNativeDeclarations,
   rules: Record<MasterCSSLintRuleId, boolean>,
-  includeDirectiveFixes: boolean
+  includeDirectiveFixes: boolean,
+  lintSession: RustLintSession
 ) {
   for (const input of inputs) {
     if (input.stdin) continue
@@ -178,7 +182,8 @@ function applyFileFixes(
       filePath: input.filePath,
       css,
       rules,
-      includeDirectiveFixes
+      includeDirectiveFixes,
+      lintSession
     })
     if (fixed !== input.content) {
       fs.writeFileSync(input.filePath, fixed)
@@ -193,32 +198,41 @@ export default async function runLint(specifiedSourcePaths: string[] = [], optio
   const exitCode = options.exitCode || 'diagnostics'
   const rules = resolveMasterCSSLintRules(options.rules)
   const inputs = resolveSourceInputs(cwd, specifiedSourcePaths, options)
-  let manifest: CLILintReport['manifest']
-  let files: MasterCSSLintFileResult[]
+  let manifestResult: Awaited<ReturnType<typeof loadProjectManifest>>
 
   try {
-    const manifestResult = await loadProjectManifest(cwd)
-    const css = createCSSWithNativeDeclarations(manifestResult.manifest)
-    manifest = {
-      status: 'loaded',
-      entries: manifestResult.entries,
-      diagnostics: []
-    }
-    files = lintInputs(inputs, css, rules)
-    if (options.fix && !options.fixDryRun) {
-      applyFileFixes(inputs, css, rules, Boolean(options.fixDirectives))
-      files = lintInputs(inputs, css, rules)
-    }
+    manifestResult = await loadProjectManifest(cwd)
   } catch (error) {
     const diagnostic = createManifestDiagnostic(cwd, error)
-    manifest = {
+    const manifest: CLILintReport['manifest'] = {
       status: 'error',
       entries: [],
       diagnostics: [diagnostic]
     }
-    files = [createManifestFileResult(cwd, [diagnostic])]
+    const report = createReport(cwd, manifest, [createManifestFileResult(cwd, [diagnostic])])
+    outputReport(report, format)
+    if (exitCode !== 'never') process.exitCode = 1
+    return report
   }
 
+  const css = createCSSWithNativeDeclarations(manifestResult.manifest)
+  const lintSession = await createRustLintSession(manifestResult.manifest)
+  let files: MasterCSSLintFileResult[]
+  try {
+    files = lintInputs(inputs, css, rules, lintSession)
+    if (options.fix && !options.fixDryRun) {
+      applyFileFixes(inputs, css, rules, Boolean(options.fixDirectives), lintSession)
+      files = lintInputs(inputs, css, rules, lintSession)
+    }
+  } finally {
+    lintSession.dispose()
+  }
+
+  const manifest: CLILintReport['manifest'] = {
+    status: 'loaded',
+    entries: manifestResult.entries,
+    diagnostics: []
+  }
   const report = createReport(cwd, manifest, files)
   outputReport(report, format)
 
