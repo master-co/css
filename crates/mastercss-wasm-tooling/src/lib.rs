@@ -49,6 +49,26 @@ pub fn create_inspection_report(input: JsValue) -> Result<JsValue, JsValue> {
         .map_err(|error| JsValue::from_str(&error.to_string()))
 }
 
+#[wasm_bindgen(js_name = analyzeLanguage)]
+pub fn analyze_language(
+    source: &str,
+    contexts: JsValue,
+    semantic_tokens: JsValue,
+) -> Result<JsValue, JsValue> {
+    let contexts =
+        serde_wasm_bindgen::from_value::<Vec<mastercss_language::ClassListContextIr>>(contexts)
+            .map_err(|error| JsValue::from_str(&error.to_string()))?;
+    let semantic_tokens = serde_wasm_bindgen::from_value::<
+        Vec<mastercss_language::SemanticTokenInputIr>,
+    >(semantic_tokens)
+    .map_err(|error| JsValue::from_str(&error.to_string()))?;
+    let batch = mastercss_language::analyze_language(source, &contexts, &semantic_tokens)
+        .map_err(|error| JsValue::from_str(&error.to_string()))?;
+    batch
+        .serialize(&serde_wasm_bindgen::Serializer::json_compatible())
+        .map_err(|error| JsValue::from_str(&error.to_string()))
+}
+
 #[wasm_bindgen]
 pub struct ToolingScannerSession {
     inner: mastercss_scanner::ScannerSession,

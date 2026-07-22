@@ -6,7 +6,7 @@
     "dev": "tsdown --config ../../shared/tsdown-package.config.ts --watch",
     "type-check": "tsc -b tsconfig.typecheck.json",
     "lint": "eslint",
-    "test": "vitest"
+    "test": "cargo xtask build-native && vitest"
   },
   "description": "Master CSS language primitives",
   "author": "Aoyue Design LLC.",
@@ -20,13 +20,15 @@
     "@master/css": "workspace:^",
     "@master/css-engine": "workspace:^",
     "@master/css-lexer": "workspace:^",
+    "@master/css-native": "workspace:^",
     "@master/css-preset": "workspace:^",
     "lodash.escaperegexp": "^4.1.2",
     "mdn-data": "^2.28.1",
     "oxc-parser": "^0.137.0",
     "vscode-languageserver-protocol": "^3.18.0",
     "vscode-languageserver-textdocument": "^1.0.12",
-    "@master/css-schema": "workspace:^"
+    "@master/css-schema": "workspace:^",
+    "@master/css-wasm-tooling": "workspace:^"
   },
   "devDependencies": {
     "@types/lodash.escaperegexp": "^4.1.9",

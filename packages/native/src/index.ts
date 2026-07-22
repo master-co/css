@@ -84,6 +84,7 @@ export interface NativeBinding {
   resolveCssImportGraphJson(requestJSON: string): string
   inspectCssJson(source: string): string
   createInspectionReportJson(inputJSON: string): string
+  analyzeLanguageJson(source: string, contextsJSON: string, semanticTokensJSON: string): string
   ScannerSession: new (manifestJSON: string) => NativeScannerSession
   RenderSession: new (manifestJSON: string, emittedGlobalsJSON?: string) => NativeRenderSession
   ValidatorSession: new (manifestJSON: string) => NativeValidatorSession

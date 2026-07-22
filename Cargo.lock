@@ -531,6 +531,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "mastercss-language"
+version = "0.0.0"
+dependencies = [
+ "mastercss-lexer",
+ "mastercss-schema",
+ "serde",
+ "serde_json",
+ "thiserror",
+]
+
+[[package]]
 name = "mastercss-lexer"
 version = "0.0.0"
 dependencies = [
@@ -553,6 +564,7 @@ dependencies = [
  "mastercss-compiler",
  "mastercss-diagnostics",
  "mastercss-engine",
+ "mastercss-language",
  "mastercss-lint",
  "mastercss-render",
  "mastercss-scanner",
@@ -650,6 +662,7 @@ version = "0.0.0"
 dependencies = [
  "mastercss-diagnostics",
  "mastercss-engine",
+ "mastercss-language",
  "mastercss-lint",
  "mastercss-scanner",
  "mastercss-schema",

@@ -8,6 +8,7 @@ interface GeneratedToolingWasmModule {
   extractHTMLClasses(source: string, content: string): string[]
   extractAstroClasses(source: string, content: string): string[]
   createInspectionReport(input: unknown): unknown
+  analyzeLanguage(source: string, contexts: unknown[], semanticTokens: unknown[]): unknown
   ToolingScannerSession: new (manifestJSON: string) => {
     scan(source: string, content: string): unknown
     nativeDeclarationCandidates(candidates: string[]): unknown
@@ -117,6 +118,16 @@ export async function createToolingInspectionReport(
 ) {
   const module = await initToolingWasm(options)
   return module.createInspectionReport(input)
+}
+
+export async function analyzeToolingLanguage(
+  source: string,
+  contexts: unknown[],
+  semanticTokens: unknown[],
+  options: InitToolingWasmOptions = {}
+) {
+  const module = await initToolingWasm(options)
+  return module.analyzeLanguage(source, contexts, semanticTokens)
 }
 
 export async function createToolingLintSession(

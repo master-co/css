@@ -86,6 +86,16 @@ pub fn create_inspection_report_json(input_json: String) -> Result<String> {
 }
 
 #[napi]
+pub fn analyze_language_json(
+    source: String,
+    contexts_json: String,
+    semantic_tokens_json: String,
+) -> Result<String> {
+    mastercss_language::analyze_language_json(&source, &contexts_json, &semantic_tokens_json)
+        .map_err(|error| Error::new(Status::InvalidArg, error.to_string()))
+}
+
+#[napi]
 pub fn compile_native_css_json(source: String, options_json: Option<String>) -> Result<String> {
     let options = options_json
         .as_deref()

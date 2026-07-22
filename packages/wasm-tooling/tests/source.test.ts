@@ -95,6 +95,21 @@ test('loads the isolated source tooling Wasm surface', async () => {
   lint.dispose()
   lint.free()
 
+  expect(tooling.analyzeLanguage(
+    '😀 fg:red\nnext',
+    [{ start: 3, end: 9 }],
+    [{ start: 3, end: 9, type: 'property', modifiers: ['declaration'] }]
+  )).toEqual({
+    version: 1,
+    classPositions: [{
+      range: { start: 3, end: 9 },
+      contextRange: { start: 3, end: 9 },
+      raw: 'fg:red',
+      token: 'fg:red'
+    }],
+    semanticTokenData: [0, 3, 6, 2, 1]
+  })
+
   expect(tooling.createInspectionReport({
     version: 1,
     cwd: '/project',
