@@ -4,7 +4,7 @@ import { basename, join } from 'node:path'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { createComposedAdapter, renderNextBuildOutputs } from '../src/adapter'
 import type { NextAdapter } from 'next'
-import { ServerCSS } from '@master/css-server'
+import { ServerCSS, ServerRenderer } from '@master/css-server'
 import {
   MASTER_CSS_HYDRATION_MANIFEST_ATTR,
   MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID
@@ -117,6 +117,47 @@ describe('renderNextBuildOutputs', () => {
     const dispose = vi.spyOn(ServerCSS.prototype, 'dispose')
 
     await renderNextBuildOutputs(createBuildContext(projectDir, htmlFile))
+
+    expect(dispose).toHaveBeenCalledOnce()
+  })
+
+  it('shares one build renderer without leaking rules between HTML outputs', async () => {
+    const projectDir = createFixtureDir()
+    const distDir = join(projectDir, '.next')
+    const firstFile = join(distDir, 'server/app/first.html')
+    const secondFile = join(distDir, 'server/app/second.html')
+    mkdirSync(join(distDir, 'server/app'), { recursive: true })
+    writeFileSync(firstFile, '<!doctype html><html><head></head><body><h1 class="fg:red">First</h1></body></html>')
+    writeFileSync(secondFile, '<!doctype html><html><head></head><body><h1 class="fg:blue">Second</h1></body></html>')
+    const context = createBuildContext(projectDir, firstFile)
+    context.outputs.staticFiles.push({
+      id: 'second',
+      type: context.outputs.staticFiles[0].type,
+      filePath: secondFile,
+      pathname: '/second',
+      immutableHash: undefined
+    })
+    const dispose = vi.spyOn(ServerRenderer.prototype, 'dispose')
+
+    await renderNextBuildOutputs(context)
+
+    const firstHTML = readFileSync(firstFile, 'utf-8')
+    const secondHTML = readFileSync(secondFile, 'utf-8')
+    expect(readMasterStyle(firstHTML)).toContain('.fg\\:red')
+    expect(readMasterStyle(firstHTML)).not.toContain('.fg\\:blue')
+    expect(readMasterStyle(secondHTML)).toContain('.fg\\:blue')
+    expect(readMasterStyle(secondHTML)).not.toContain('.fg\\:red')
+    expect(dispose).toHaveBeenCalledOnce()
+  })
+
+  it('disposes the build renderer when an output fails', async () => {
+    const projectDir = createFixtureDir()
+    const missingFile = join(projectDir, '.next/server/app/missing.html')
+    const dispose = vi.spyOn(ServerRenderer.prototype, 'dispose')
+
+    await expect(renderNextBuildOutputs(
+      createBuildContext(projectDir, missingFile)
+    )).rejects.toThrow()
 
     expect(dispose).toHaveBeenCalledOnce()
   })

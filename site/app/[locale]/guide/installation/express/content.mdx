@@ -79,9 +79,10 @@ Use progressive rendering when Express owns the HTML response. Express renders t
       ```js name=app.js
       import express from 'express'
       import ejs from 'ejs'
-      import { render } from '@master/css-server'
+      import { createServerRenderer } from '@master/css-server'
 
       const app = express()
+      const renderer = createServerRenderer()
 
       app.use('/assets', express.static('public/assets'))
 
@@ -100,12 +101,18 @@ Use progressive rendering when Express owns the HTML response. Express renders t
       </body>
       </html>`
 
-        response.send(render(document, undefined, {
+        const rendered = renderer.render(document, {
           hydrationManifest: 'inject'
-        }).html)
+        })
+        try {
+          response.send(rendered.html)
+        } finally {
+          rendered.css?.dispose()
+        }
       })
 
-      app.listen(3000)
+      const server = app.listen(3000)
+      server.on('close', () => renderer.dispose())
       ```
     </StepR>
   </Step>

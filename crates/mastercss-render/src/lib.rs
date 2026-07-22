@@ -98,6 +98,28 @@ impl RenderSession {
         })
     }
 
+    pub fn snapshot_for_classes<I, S>(&self, class_names: I) -> Result<ServerRenderIr, EngineError>
+    where
+        I: IntoIterator<Item = S>,
+        S: AsRef<str>,
+    {
+        let mut classes = Vec::new();
+        let mut class_index = HashSet::new();
+        for class_name in class_names {
+            let class_name = class_name.as_ref();
+            if !class_name.is_empty() && class_index.insert(class_name.to_owned()) {
+                classes.push(class_name.to_owned());
+            }
+        }
+        let snapshot = self.engine.snapshot_for_classes(&classes)?;
+        let hydration_manifest = HydrationManifest::new(snapshot.rules.clone());
+        Ok(ServerRenderIr {
+            classes,
+            snapshot,
+            hydration_manifest,
+        })
+    }
+
     pub fn dispose(&mut self) {
         self.engine.dispose();
         self.classes.clear();
@@ -196,6 +218,87 @@ mod tests {
             session.snapshot().unwrap().snapshot.text,
             "@layer utilities{.display\\:block{display:block}}"
         );
+    }
+
+    #[test]
+    fn snapshots_cached_class_subsets_like_fresh_sessions() {
+        let manifest = manifest();
+        let mut cached = RenderSession::create(&manifest, None).unwrap();
+        cached
+            .ensure_classes(["block", "red", "unknown"], None)
+            .unwrap();
+
+        let red = cached
+            .snapshot_for_classes(["red", "unknown", "red"])
+            .unwrap();
+        let fresh_red = render_classes(&manifest, ["red", "unknown", "red"], None).unwrap();
+        assert_eq!(red, fresh_red);
+
+        let block_red = cached.snapshot_for_classes(["block", "red"]).unwrap();
+        let fresh_block_red = render_classes(&manifest, ["block", "red"], None).unwrap();
+        assert_eq!(block_red, fresh_block_red);
+    }
+
+    #[test]
+    fn cached_subset_output_does_not_depend_on_warm_up_order() {
+        let manifest = manifest();
+        let mut forward = RenderSession::create(&manifest, None).unwrap();
+        forward.ensure_classes(["block", "red"], None).unwrap();
+        let mut reverse = RenderSession::create(&manifest, None).unwrap();
+        reverse.ensure_classes(["red", "block"], None).unwrap();
+
+        assert_eq!(
+            forward.snapshot_for_classes(["red", "block"]).unwrap(),
+            reverse.snapshot_for_classes(["red", "block"]).unwrap()
+        );
+    }
+
+    #[test]
+    fn cached_subsets_preserve_page_resource_composition() {
+        let manifest = serde_json::json!({
+            "version": 1,
+            "variables": {
+                "color": [{ "key": "primary", "value": "red" }]
+            },
+            "animations": {
+                "fade": { "to": { "opacity": "1" } }
+            },
+            "utilities": [
+                {
+                    "id": ".brand",
+                    "name": "brand",
+                    "type": -2,
+                    "order": 0,
+                    "emit": {
+                        "type": "static",
+                        "rules": [{ "declarations": { "color": "var(--color-primary)" } }]
+                    },
+                    "matchers": [{ "type": "static", "name": "brand" }]
+                },
+                {
+                    "id": ".animated",
+                    "name": "animated",
+                    "type": -2,
+                    "order": 1,
+                    "emit": {
+                        "type": "static",
+                        "rules": [{ "declarations": { "animation": "fade 1s" } }]
+                    },
+                    "matchers": [{ "type": "static", "name": "animated" }]
+                }
+            ]
+        })
+        .to_string();
+        let emitted_globals = r#"{"animations":{"fade":1}}"#;
+        let mut cached = RenderSession::create(&manifest, Some(emitted_globals)).unwrap();
+        cached.ensure_classes(["animated", "brand"], None).unwrap();
+
+        for classes in [["brand"].as_slice(), ["animated", "brand"].as_slice()] {
+            let cached_snapshot = cached.snapshot_for_classes(classes).unwrap();
+            let mut fresh = RenderSession::create(&manifest, Some(emitted_globals)).unwrap();
+            fresh.ensure_classes(classes, None).unwrap();
+            assert_eq!(cached_snapshot, fresh.snapshot().unwrap());
+        }
     }
 
     #[test]

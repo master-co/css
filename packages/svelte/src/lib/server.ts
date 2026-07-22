@@ -1,5 +1,9 @@
 import type { MasterCSSEmittedGlobals, MasterCSSManifest } from '@master/css'
-import { createServerCSS, parseHTML, type ServerCSS } from '@master/css-server'
+import {
+  createServerRenderer,
+  parseHTML,
+  type ServerCSS
+} from '@master/css-server'
 import {
   MASTER_CSS_HYDRATION_MANIFEST_ASSET_BASE,
   MASTER_CSS_HYDRATION_MANIFEST_ATTR,
@@ -110,9 +114,8 @@ function createMasterHydrationManifest(
 }
 
 export function collectMasterCSSClasses(css: ServerCSS, html: string) {
-  for (const className of parseHTML(html).classes) {
-    css.ensureClassRules(className)
-  }
+  const classes = parseHTML(html).classes
+  if (classes.length) css.ensureClassRules(...classes)
 }
 
 function injectMasterHydrationManifest(html: string, scriptText: string) {
@@ -186,46 +189,76 @@ export function createMasterCSSChunkRenderer(
     ? options
     : { hydrationManifest: options }
   const hydrationManifest = rendererOptions.hydrationManifest ?? 'inline'
-  const css = createServerCSS(manifest, rendererOptions.emittedGlobals)
+  const serverRenderer = createServerRenderer(manifest, {
+    emittedGlobals: rendererOptions.emittedGlobals
+  })
+  return createMasterCSSChunkRendererFromCSS(
+    serverRenderer.createCSS(),
+    hydrationManifest,
+    () => serverRenderer.dispose()
+  )
+}
+
+function createMasterCSSChunkRendererFromCSS(
+  css: ServerCSS,
+  hydrationManifest: MasterCSSSvelteHydrationManifestOption,
+  onDone?: () => void
+): MasterCSSChunkRenderer {
   let injected = false
   let carry = ''
+  let finished = false
 
   return {
     css,
     transform(html, done = false) {
-      const nextHTML = carry + html
-      carry = ''
+      try {
+        const nextHTML = carry + html
+        carry = ''
 
-      if (injected) return nextHTML
+        if (injected) return nextHTML
 
-      collectMasterCSSClasses(css, nextHTML)
+        collectMasterCSSClasses(css, nextHTML)
 
-      const hydration = createMasterHydrationManifest(css, hydrationManifest)
-      const transformedHTML = injectMasterStyle(nextHTML, css.text, hydration.scriptText, hydration.source)
-      const hasHeadClose = findHeadCloseIndex(nextHTML) !== -1
-      if (transformedHTML !== nextHTML || hasHeadClose) {
-        injected = true
-        return transformedHTML
+        const hydration = createMasterHydrationManifest(css, hydrationManifest)
+        const transformedHTML = injectMasterStyle(nextHTML, css.text, hydration.scriptText, hydration.source)
+        const hasHeadClose = findHeadCloseIndex(nextHTML) !== -1
+        if (transformedHTML !== nextHTML || hasHeadClose) {
+          injected = true
+          return transformedHTML
+        }
+
+        if (done || nextHTML.length <= HEAD_CLOSE_TAIL_LENGTH) {
+          return nextHTML
+        }
+
+        carry = nextHTML.slice(-HEAD_CLOSE_TAIL_LENGTH)
+        return nextHTML.slice(0, -HEAD_CLOSE_TAIL_LENGTH)
+      } finally {
+        if (done && !finished) {
+          finished = true
+          css.dispose()
+          onDone?.()
+        }
       }
-
-      if (done || nextHTML.length <= HEAD_CLOSE_TAIL_LENGTH) {
-        return nextHTML
-      }
-
-      carry = nextHTML.slice(-HEAD_CLOSE_TAIL_LENGTH)
-      return nextHTML.slice(0, -HEAD_CLOSE_TAIL_LENGTH)
     }
   }
 }
 
 export function createMasterCSSHandle(options: MasterCSSSvelteHandleOptions): Handle {
+  const serverRenderer = createServerRenderer(options.manifest, {
+    emittedGlobals: options.emittedGlobals
+  })
   return async ({ event, resolve }) => {
-    const renderer = createMasterCSSChunkRenderer(options.manifest, {
-      hydrationManifest: options.hydrationManifest,
-      emittedGlobals: options.emittedGlobals
-    })
-    return await resolve(event, {
-      transformPageChunk: ({ html, done }) => renderer.transform(html, done)
-    })
+    const renderer = createMasterCSSChunkRendererFromCSS(
+      serverRenderer.createCSS(),
+      options.hydrationManifest ?? 'inline'
+    )
+    try {
+      return await resolve(event, {
+        transformPageChunk: ({ html, done }) => renderer.transform(html, done)
+      })
+    } finally {
+      renderer.css.dispose()
+    }
   }
 }

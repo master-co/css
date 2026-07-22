@@ -7,40 +7,59 @@ import type {
 } from '@master/css-schema/rust-contract'
 import { cssTreeNativeDeclarationMatcher } from '@master/css-validator/native-declaration-matcher'
 
+type RenderSnapshot = (classNames: string[]) => MasterCSSServerRenderIR
+
 export interface ServerCSSEmittedGlobals {
   variables?: Record<string, number>
   animations?: Record<string, number>
 }
 
 export class ServerCSS {
+  readonly manifest: MasterCSSManifest
   readonly classUtilities = new Map<string, MasterCSSServerRenderIR['snapshot']['rules']>()
   private readonly session
+  private readonly classNames: string[] = []
+  private readonly classIndex = new Set<string>()
+  private readonly renderSnapshot?: RenderSnapshot
   private currentSnapshot?: MasterCSSServerRenderIR
+  private disposed = false
 
+  constructor(manifest: MasterCSSManifest, emittedGlobals?: ServerCSSEmittedGlobals)
   constructor(
-    public readonly manifest: MasterCSSManifest,
-    emittedGlobals?: ServerCSSEmittedGlobals
+    manifest: MasterCSSManifest,
+    emittedGlobals?: ServerCSSEmittedGlobals,
+    renderSnapshot?: RenderSnapshot
   ) {
-    const loaded = loadNativeBinding({ required: true })!
-    this.session = new loaded.binding.RenderSession(
-      stringifyMasterCSSManifestJSON(manifest),
-      emittedGlobals ? JSON.stringify(emittedGlobals) : undefined
-    )
+    this.manifest = manifest
+    this.renderSnapshot = renderSnapshot
+    this.session = renderSnapshot ? undefined : createNativeRenderSession(manifest, emittedGlobals)
   }
 
   ensureClassRules(...classNames: string[]) {
-    const candidates = JSON.parse(
-      this.session.nativeDeclarationCandidates(classNames)
-    ) as MasterCSSNativeDeclarationCandidateIR[]
-    const support = candidates.map(cssTreeNativeDeclarationMatcher)
-    this.session.ensureClasses(classNames, support.length ? support : undefined)
-    this.currentSnapshot = undefined
+    this.assertActive()
+    if (this.renderSnapshot) {
+      for (const className of classNames) {
+        if (className && !this.classIndex.has(className)) {
+          this.classIndex.add(className)
+          this.classNames.push(className)
+        }
+      }
+      this.currentSnapshot = this.renderSnapshot(this.classNames)
+    } else {
+      ensureNativeRenderSessionClasses(this.session!, classNames)
+      this.currentSnapshot = undefined
+    }
     this.syncClassUtilities()
     return this
   }
 
   snapshot() {
-    this.currentSnapshot ||= JSON.parse(this.session.snapshot()) as MasterCSSServerRenderIR
+    if (!this.currentSnapshot) {
+      this.assertActive()
+      this.currentSnapshot = this.renderSnapshot
+        ? this.renderSnapshot(this.classNames)
+        : JSON.parse(this.session!.snapshot()) as MasterCSSServerRenderIR
+    }
     return this.currentSnapshot
   }
 
@@ -66,8 +85,53 @@ export class ServerCSS {
   }
 
   dispose() {
-    this.session.dispose()
+    if (this.disposed) return
+    this.session?.dispose()
+    this.disposed = true
   }
+
+  private assertActive() {
+    if (this.disposed) {
+      throw new Error('ServerCSS has been disposed.')
+    }
+  }
+}
+
+export function createNativeRenderSession(
+  manifest: MasterCSSManifest,
+  emittedGlobals?: ServerCSSEmittedGlobals
+) {
+  const loaded = loadNativeBinding({ required: true })!
+  return new loaded.binding.RenderSession(
+    stringifyMasterCSSManifestJSON(manifest),
+    emittedGlobals ? JSON.stringify(emittedGlobals) : undefined
+  )
+}
+
+export function ensureNativeRenderSessionClasses(
+  session: ReturnType<typeof createNativeRenderSession>,
+  classNames: string[]
+) {
+  const candidates = JSON.parse(
+    session.nativeDeclarationCandidates(classNames)
+  ) as MasterCSSNativeDeclarationCandidateIR[]
+  const support = candidates.map(cssTreeNativeDeclarationMatcher)
+  session.ensureClasses(classNames, support.length ? support : undefined)
+}
+
+type InternalServerCSSConstructor = new (
+  manifest: MasterCSSManifest,
+  emittedGlobals: ServerCSSEmittedGlobals | undefined,
+  renderSnapshot: RenderSnapshot
+) => ServerCSS
+
+export function createRendererServerCSS(
+  manifest: MasterCSSManifest,
+  emittedGlobals: ServerCSSEmittedGlobals | undefined,
+  renderSnapshot: RenderSnapshot
+) {
+  const InternalServerCSS = ServerCSS as unknown as InternalServerCSSConstructor
+  return new InternalServerCSS(manifest, emittedGlobals, renderSnapshot)
 }
 
 export default function createServerCSS(

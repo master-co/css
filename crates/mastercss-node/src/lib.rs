@@ -624,6 +624,16 @@ impl NodeRenderSession {
     }
 
     #[napi]
+    pub fn snapshot_for_classes(&self, class_names: Vec<String>) -> Result<String> {
+        to_json(
+            &self
+                .inner
+                .snapshot_for_classes(class_names)
+                .map_err(to_napi_error)?,
+        )
+    }
+
+    #[napi]
     pub fn dispose(&mut self) {
         self.inner.dispose();
     }

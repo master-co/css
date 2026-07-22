@@ -1,6 +1,6 @@
 import type { Plugin } from 'vite'
 import { PluginContext } from '../core'
-import { render } from '@master/css-server'
+import { createServerRenderer } from '@master/css-server'
 import type { MasterCSSManifest } from '@master/css'
 import { loadProjectManifest } from '@master/css-project/manifest'
 import { findCSSManifestEntryFiles } from '@master/css-project/entries'
@@ -19,6 +19,7 @@ export default function PreRenderPlugin(options: PluginOptions, context: PluginC
   let cssManifest: MasterCSSManifest | undefined = undefined
   let cssManifestDependencies: string[] = []
   let enabled = true
+  let renderer: ReturnType<typeof createServerRenderer> | undefined
   const hydrationManifestAssets = new Map<string, string>()
   const addServerAllow = (paths: string[]) => {
     const allow = context.config?.server.fs.allow
@@ -43,6 +44,11 @@ export default function PreRenderPlugin(options: PluginOptions, context: PluginC
     }
     const result = await loadProjectManifest(root, { entries })
     cssManifest = result.manifest
+    const nextRenderer = createServerRenderer(cssManifest, {
+      maxCachedClasses: context.config?.command === 'build' ? Infinity : undefined
+    })
+    renderer?.dispose()
+    renderer = nextRenderer
     for (const dependency of result.dependencies) {
       if (dependencies.has(dependency)) continue
       dependencies.add(dependency)
@@ -68,7 +74,7 @@ export default function PreRenderPlugin(options: PluginOptions, context: PluginC
       ? toBuildPublicURL(fileName)
       : `${MASTER_CSS_HYDRATION_MANIFEST_ASSET_BASE}${fileName}`
   }
-  const renderHTML = (html: string) => render(html, cssManifest, {
+  const renderHTML = (html: string) => renderer?.render(html, {
     hydrationManifest: {
       type: 'external',
       src: addHydrationManifestAsset
@@ -97,6 +103,7 @@ export default function PreRenderPlugin(options: PluginOptions, context: PluginC
       await loadCSSManifest()
     },
     configureServer(server) {
+      server.httpServer?.once('close', () => renderer?.dispose())
       server.middlewares.use((request, response, next) => {
         const requestURL = request.url ? new URL(request.url, 'http://localhost') : undefined
         if (!requestURL?.pathname.startsWith(MASTER_CSS_HYDRATION_MANIFEST_ASSET_BASE)) {
@@ -116,21 +123,31 @@ export default function PreRenderPlugin(options: PluginOptions, context: PluginC
     },
     transformIndexHtml(html) {
       if (!enabled) return
-      if (!cssManifest) return
+      if (!cssManifest || !renderer) return
       const rendered = renderHTML(html)
-      return {
-        html: rendered.html,
-        tags: [],
+      if (!rendered) return
+      try {
+        return {
+          html: rendered.html,
+          tags: [],
+        }
+      } finally {
+        rendered.css?.dispose()
       }
     },
     transform(code, id) {
       if (!enabled) return
       if (id.endsWith('.html')) {
-        if (!cssManifest) return null
+        if (!cssManifest || !renderer) return null
         const rendered = renderHTML(code)
-        return {
-          code: rendered.html,
-          map: null,
+        if (!rendered) return null
+        try {
+          return {
+            code: rendered.html,
+            map: null,
+          }
+        } finally {
+          rendered.css?.dispose()
         }
       }
       return null
@@ -145,5 +162,11 @@ export default function PreRenderPlugin(options: PluginOptions, context: PluginC
         })
       }
     },
+    buildEnd(error) {
+      if (error && context.config?.command === 'build') renderer?.dispose()
+    },
+    closeBundle() {
+      if (context.config?.command === 'build') renderer?.dispose()
+    }
   }
 }

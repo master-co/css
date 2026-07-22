@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import path from 'node:path'
 import { mkdtempSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
@@ -7,6 +7,7 @@ import {
   MASTER_CSS_HYDRATION_MANIFEST_ATTR,
   MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID
 } from '@master/css-schema/hydration-manifest'
+import { ServerCSS, ServerRenderer } from '@master/css-server'
 
 const FIXTURE_DIR = path.resolve(__dirname, '../fixtures/pre-render/master-css-entry')
 
@@ -17,6 +18,8 @@ async function resolveConfigHooks(plugins: any[], config: any) {
     }
   }
 }
+
+afterEach(() => vi.restoreAllMocks())
 
 describe('PreRenderPlugin', () => {
   it('renders HTML classes with the managed CSS manifest entry', async () => {
@@ -36,6 +39,7 @@ describe('PreRenderPlugin', () => {
     await resolveConfigHooks(plugins, viteConfig)
 
     const preRenderPlugin = plugins.find((plugin) => plugin.name === 'master-css:pre-render')
+    const disposePageCSS = vi.spyOn(ServerCSS.prototype, 'dispose')
     expect(preRenderPlugin).toBeDefined()
     const result = await (preRenderPlugin as any).transformIndexHtml.call(
       {},
@@ -52,6 +56,7 @@ describe('PreRenderPlugin', () => {
     expect(html).toContain('@layer utilities{.p\\:0\\.125rem{padding:0.125rem}}')
     expect(html).not.toContain(`id="${MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID}"`)
     expect(html).not.toContain('rel="preload"')
+    expect(disposePageCSS).toHaveBeenCalledOnce()
 
     let middleware: ((request: { url?: string }, response: { statusCode?: number, setHeader: (name: string, value: string) => void, end: (source: string) => void }, next: () => void) => void) | undefined
     const middlewares = { use: vi.fn((handler) => { middleware = handler }) }
@@ -77,10 +82,36 @@ describe('PreRenderPlugin', () => {
     expect(JSON.parse(body).rules.map((rule: { className: string }) => rule.className)).toEqual(['card', 'p:0.125rem'])
   })
 
+  it.each([
+    ['successful builds', 'closeBundle'],
+    ['failed builds', 'buildEnd']
+  ])('disposes production renderers after %s', async (_label, hook) => {
+    const plugins = masterCSS({ mode: 'pre-render' })
+    const viteConfig = {
+      command: 'build',
+      root: FIXTURE_DIR,
+      plugins,
+      build: { assetsDir: 'assets' },
+      server: { fs: { allow: [] } }
+    }
+    const dispose = vi.spyOn(ServerRenderer.prototype, 'dispose')
+    await resolveConfigHooks(plugins, viteConfig)
+
+    const preRenderPlugin = plugins.find((plugin) => plugin.name === 'master-css:pre-render') as any
+    if (hook === 'buildEnd') {
+      await preRenderPlugin.buildEnd.call({}, new Error('build failed'))
+    } else {
+      await preRenderPlugin.closeBundle.call({})
+    }
+
+    expect(dispose).toHaveBeenCalledOnce()
+  })
+
   it('reloads CSS entry dependencies for pre-rendered HTML', async () => {
     const root = mkdtempSync(path.join(tmpdir(), 'master-css-vite-pre-render-'))
     const entryPath = path.join(root, 'app.css')
     const themePath = path.join(root, 'theme.css')
+    const dispose = vi.spyOn(ServerRenderer.prototype, 'dispose')
     try {
       writeFileSync(themePath, [
         '@components {',
@@ -126,6 +157,7 @@ describe('PreRenderPlugin', () => {
         '}'
       ].join('\n'))
       await (preRenderPlugin as any).handleHotUpdate.call({}, { file: themePath })
+      expect(dispose).toHaveBeenCalledOnce()
 
       result = await (preRenderPlugin as any).transformIndexHtml.call(
         {},
@@ -134,6 +166,7 @@ describe('PreRenderPlugin', () => {
       html = typeof result === 'string' ? result : result.html
       expect(html).toContain('.card{color:#abcdef}')
     } finally {
+      vi.restoreAllMocks()
       rmSync(root, { recursive: true, force: true })
     }
   })

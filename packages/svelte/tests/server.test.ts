@@ -1,6 +1,7 @@
-import { describe, expect, test } from 'vitest'
+import { describe, expect, test, vi } from 'vitest'
 import {
   createMasterCSSChunkRenderer,
+  createMasterCSSHandle,
   createMasterCSSStaticHydrationManifestWriter,
   injectMasterStyle
 } from '../src/lib/server.js'
@@ -10,6 +11,7 @@ import {
   MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID
 } from '@master/css-schema/hydration-manifest'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
+import { ServerRenderer } from '@master/css-server'
 import { existsSync, mkdtempSync, readFileSync, rmSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
@@ -96,6 +98,41 @@ describe('Svelte server hook renderer', () => {
     expect(html).not.toContain('--color-red-60:')
     expect(html).not.toContain('--animate-fade:')
     expect(html).not.toContain('@keyframes fade')
+  })
+
+  test('disposes the standalone response renderer when the final chunk completes', () => {
+    const dispose = vi.spyOn(ServerRenderer.prototype, 'dispose')
+    const renderer = createMasterCSSChunkRenderer(defaultManifest)
+
+    try {
+      renderer.transform('<html><head></head><body class="block"></body></html>', true)
+
+      expect(dispose).toHaveBeenCalledOnce()
+      expect(renderer.css.text).toContain('.block')
+    } finally {
+      dispose.mockRestore()
+    }
+  })
+
+  test('shares a handle renderer while isolating response CSS', async () => {
+    const handle = createMasterCSSHandle({ manifest: defaultManifest })
+    const renderHTML = async (html: string) => {
+      const response = await handle({
+        event: {} as never,
+        resolve: async (_event, options) => new Response(
+          await options?.transformPageChunk?.({ html, done: true }) ?? html
+        )
+      })
+      return response.text()
+    }
+
+    const first = await renderHTML('<html><head></head><body><div class="fg:red"></div></body></html>')
+    const second = await renderHTML('<html><head></head><body><div class="fg:blue"></div></body></html>')
+
+    expect(first).toContain('.fg\\:red')
+    expect(first).not.toContain('.fg\\:blue')
+    expect(second).toContain('.fg\\:blue')
+    expect(second).not.toContain('.fg\\:red')
   })
 
   test('writes static external hydration manifests', () => {

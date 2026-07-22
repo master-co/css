@@ -54,6 +54,7 @@ export interface NativeRenderSession {
   ensureStylesheetResources(nativeCSS: string): void
   emittedGlobals(): string
   snapshot(): string
+  snapshotForClasses(classNames: string[]): string
   dispose(): void
 }
 

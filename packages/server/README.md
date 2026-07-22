@@ -85,6 +85,24 @@ import { renderCSS } from '@master/css-server'
 const css = renderCSS('<div class="text:center"></div>', manifest)
 ```
 
+### `createServerRenderer()`
+
+Create a manifest-scoped renderer when one process renders multiple pages. Generated class rules are reused while every page still receives an isolated stylesheet.
+
+```ts
+import { createServerRenderer } from '@master/css-server'
+
+const renderer = createServerRenderer(manifest)
+const first = renderer.render('<div class="text:center"></div>')
+const second = renderer.render('<div class="fg:red"></div>')
+
+first.css?.dispose()
+second.css?.dispose()
+renderer.dispose()
+```
+
+Long-lived renderers cache up to 8192 unique classes before starting a new cache generation. Finite build jobs can pass `{ maxCachedClasses: Infinity }` and dispose the renderer when the build ends. Recreate the renderer whenever its manifest changes.
+
 ### `parseHTML()`
 
 Parse HTML into the lightweight DOM representation used by the server renderer.

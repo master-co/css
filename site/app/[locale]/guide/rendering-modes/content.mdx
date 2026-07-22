@@ -242,19 +242,24 @@ For example, the following HTML:
 Render the HTML:
 ```ts name=server.ts
 import { readFileSync } from 'node:fs'
-import { render } from '@master/css-server'
+import { createServerRenderer } from '@master/css-server'
 import manifest from 'virtual:master-css-manifest'
 
 const indexHTML = readFileSync('./index.html', 'utf-8')
+const renderer = createServerRenderer(manifest, { maxCachedClasses: Infinity })
 
-const { html, hydrationManifest } = render(indexHTML, manifest, {
+const rendered = renderer.render(indexHTML, {
   hydrationManifest: {
     type: 'external',
     src: '/_master-css/hydration/master-css-hydration.<hash>.json'
   }
 })
+const { html, hydrationManifest } = rendered
+
+rendered.css?.dispose()
+renderer.dispose()
 ```
-The server renderer parses the HTML and generates the internal style sheet plus a page hydration manifest. Official static and pre-render integrations write `hydrationManifest` to a hashed JSON asset and attach the URL to `style#master-css`:
+The manifest-scoped server renderer reuses generated class rules across pages while producing an isolated style sheet and hydration manifest for each page. Recreate it when the manifest changes and dispose it when the build ends. Official static and pre-render integrations write `hydrationManifest` to a hashed JSON asset and attach the URL to `style#master-css`:
 ```html
 <!DOCTYPE html>
 <html lang="en">

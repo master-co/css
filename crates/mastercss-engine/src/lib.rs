@@ -500,43 +500,52 @@ impl EngineSession {
                 continue;
             }
             let generated = self.generate_class_rules_with_mode(class_name, mode);
-            if generated.is_empty() {
-                continue;
-            }
-            let mut class_rule_keys = Vec::with_capacity(generated.len());
-            for rule in generated {
-                let layer = rule.ir.layer;
-                let reference = (layer, rule.ir.key.clone());
-                if let Some(count) = self.rule_counts.get_mut(&reference) {
-                    *count += 1;
-                    class_rule_keys.push(reference);
-                    continue;
-                }
-                self.register_rule_variables(&rule.ir.variable_names, &mut mutations);
-                let layer_rules = &mut self.layers[layer_index(layer)];
-                let index = layer_rules
-                    .binary_search_by(|existing| compare_stored_rules(existing, &rule))
-                    .unwrap_or_else(|index| index);
-                layer_rules.insert(index, rule.clone());
-                class_rule_keys.push(reference.clone());
-                self.rule_counts.insert(reference, 1);
-                mutations.push(RuleMutationIr::Insert {
-                    target: layer.into(),
-                    index: index as u32,
-                    key: rule.ir.key.clone(),
-                    text: rule.ir.text.clone(),
-                    rule: Some(Box::new(rule.ir)),
-                });
-                let animation_names = layer_rules[index].ir.animation_names.clone();
-                self.register_rule_animations(&animation_names, &mut mutations);
-            }
-            if !class_rule_keys.is_empty() {
-                self.class_order.push(class_name.to_owned());
-                self.class_rules
-                    .insert(class_name.to_owned(), class_rule_keys);
-            }
+            self.insert_generated_class_rules(class_name, generated, &mut mutations);
         }
         Ok(EngineTransitionIr::new(mutations))
+    }
+
+    fn insert_generated_class_rules(
+        &mut self,
+        class_name: &str,
+        generated: Vec<StoredRule>,
+        mutations: &mut Vec<RuleMutationIr>,
+    ) {
+        if generated.is_empty() {
+            return;
+        }
+        let mut class_rule_keys = Vec::with_capacity(generated.len());
+        for rule in generated {
+            let layer = rule.ir.layer;
+            let reference = (layer, rule.ir.key.clone());
+            if let Some(count) = self.rule_counts.get_mut(&reference) {
+                *count += 1;
+                class_rule_keys.push(reference);
+                continue;
+            }
+            self.register_rule_variables(&rule.ir.variable_names, mutations);
+            let layer_rules = &mut self.layers[layer_index(layer)];
+            let index = layer_rules
+                .binary_search_by(|existing| compare_stored_rules(existing, &rule))
+                .unwrap_or_else(|index| index);
+            layer_rules.insert(index, rule.clone());
+            class_rule_keys.push(reference.clone());
+            self.rule_counts.insert(reference, 1);
+            mutations.push(RuleMutationIr::Insert {
+                target: layer.into(),
+                index: index as u32,
+                key: rule.ir.key.clone(),
+                text: rule.ir.text.clone(),
+                rule: Some(Box::new(rule.ir)),
+            });
+            let animation_names = layer_rules[index].ir.animation_names.clone();
+            self.register_rule_animations(&animation_names, mutations);
+        }
+        if !class_rule_keys.is_empty() {
+            self.class_order.push(class_name.to_owned());
+            self.class_rules
+                .insert(class_name.to_owned(), class_rule_keys);
+        }
     }
 
     pub fn delete_class_rules<I, S>(
@@ -827,6 +836,45 @@ impl EngineSession {
             rules,
             text: self.css_text(),
         })
+    }
+
+    pub fn snapshot_for_classes<I, S>(
+        &self,
+        class_names: I,
+    ) -> Result<EngineSnapshotIr, EngineError>
+    where
+        I: IntoIterator<Item = S>,
+        S: AsRef<str>,
+    {
+        self.ensure_active()?;
+        let mut seen = HashSet::new();
+        let mut cached_classes = Vec::new();
+        for class_name in class_names {
+            let class_name = class_name.as_ref();
+            if class_name.is_empty() || !seen.insert(class_name.to_owned()) {
+                continue;
+            }
+            let Some(references) = self.class_rules.get(class_name) else {
+                continue;
+            };
+            let generated = references
+                .iter()
+                .filter_map(|(layer, key)| {
+                    self.layers[layer_index(*layer)]
+                        .iter()
+                        .find(|rule| rule.ir.key == *key)
+                        .cloned()
+                })
+                .collect::<Vec<_>>();
+            cached_classes.push((class_name.to_owned(), generated));
+        }
+
+        let mut subset = self.fork_empty_with_emitted_globals(self.emitted_globals.clone());
+        let mut mutations = Vec::new();
+        for (class_name, generated) in cached_classes {
+            subset.insert_generated_class_rules(&class_name, generated, &mut mutations);
+        }
+        subset.snapshot()
     }
 
     pub fn inspect(&self, class_name: &str) -> Result<EngineInspectionIr, EngineError> {
@@ -1144,7 +1192,7 @@ impl EngineSession {
         self.disposed = true;
     }
 
-    fn fork_empty(&self) -> Self {
+    fn fork_empty_with_emitted_globals(&self, emitted_globals: EmittedGlobals) -> Self {
         let mut session = Self {
             manifest: self.manifest.clone(),
             compiled: self.compiled.clone(),
@@ -1152,7 +1200,7 @@ impl EngineSession {
             class_rules: HashMap::new(),
             class_order: Vec::new(),
             rule_counts: HashMap::new(),
-            emitted_globals: EmittedGlobals::default(),
+            emitted_globals,
             variable_counts: HashMap::new(),
             theme_variable_names: Vec::new(),
             animation_counts: HashMap::new(),
@@ -1163,6 +1211,10 @@ impl EngineSession {
         session.initialize_variable_resources();
         session.initialize_animation_resources();
         session
+    }
+
+    fn fork_empty(&self) -> Self {
+        self.fork_empty_with_emitted_globals(EmittedGlobals::default())
     }
 
     fn ensure_active(&self) -> Result<(), EngineError> {

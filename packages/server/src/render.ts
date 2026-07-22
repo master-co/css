@@ -168,15 +168,10 @@ function injectHydrationManifest(
   }
 }
 
-/**
- * Renders the page-required and sorted CSS text from HTML and injected it back into HTML
- * @param html
- * @param manifest
- */
-export default function render(
+export function renderWithCSS(
   html: string,
-  manifest?: MasterCSSManifest,
-  options: RenderOptions = {}
+  options: RenderOptions,
+  createCSS: () => ServerCSS
 ): RenderResult {
   const context = parseHTML(html)
   const { classes, nodes, htmlElement } = context
@@ -201,7 +196,7 @@ export default function render(
     headElement,
     styleElement
   }
-  const css = createServerCSS(manifest || getDefaultManifest())
+  const css = createCSS()
   css.ensureClassRules(...classes)
   const hydrationManifest = options.hydrationManifest === false
     ? undefined
@@ -267,4 +262,21 @@ export default function render(
     headElement,
     styleElement
   }
+}
+
+/**
+ * Renders the page-required and sorted CSS text from HTML and injected it back into HTML
+ * @param html
+ * @param manifest
+ */
+export default function render(
+  html: string,
+  manifest?: MasterCSSManifest,
+  options: RenderOptions = {}
+): RenderResult {
+  return renderWithCSS(
+    html,
+    options,
+    () => createServerCSS(manifest || getDefaultManifest())
+  )
 }

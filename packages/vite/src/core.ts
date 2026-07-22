@@ -73,6 +73,8 @@ export default function masterCSS(options?: PluginOptions): Plugin[] {
 type LazyPluginHook =
   | 'configResolved'
   | 'buildStart'
+  | 'buildEnd'
+  | 'closeBundle'
   | 'handleHotUpdate'
   | 'configureServer'
   | 'transform'
@@ -151,6 +153,8 @@ function PreRenderPlugin(options: PluginOptions, context: PluginContext): Plugin
     [
       'configResolved',
       'buildStart',
+      'buildEnd',
+      'closeBundle',
       'handleHotUpdate',
       'configureServer',
       'transformIndexHtml',

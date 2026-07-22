@@ -1,6 +1,6 @@
 import { readFile, writeFile, mkdir } from 'node:fs/promises'
 import { basename, dirname, extname, join, resolve } from 'node:path'
-import { render } from '@master/css-server'
+import { createServerRenderer } from '@master/css-server'
 import type { NextAdapter } from 'next'
 import { MASTER_CSS_RUNTIME_STYLE_ID } from '@master/css-schema/runtime-style'
 import {
@@ -208,8 +208,10 @@ export async function renderNextBuildOutputs(ctx: BuildCompleteContext, rawOptio
   if (options.mode === null) return []
 
   const buildStateResolver = await createMasterCSSBuildStateResolver(ctx.projectDir)
+  let renderer: ReturnType<typeof createServerRenderer> | undefined
   try {
     const baseBuildState = await buildStateResolver.resolve()
+    renderer = createServerRenderer(baseBuildState.manifest, { maxCachedClasses: Infinity })
     const htmlOutputs = collectHTMLBuildOutputs(ctx.outputs)
     const renderedHTMLOutputs: RenderedHTMLBuildOutput[] = []
     const renderedOutputs: RenderedOutput[] = []
@@ -219,7 +221,7 @@ export async function renderNextBuildOutputs(ctx: BuildCompleteContext, rawOptio
       const sourceHTML = await readFile(output.filePath, 'utf-8')
       let hydrationManifestFile: string | undefined
       let hydrationManifestBytes = 0
-      const rendered = render(sourceHTML, baseBuildState.manifest)
+      const rendered = renderer.render(sourceHTML)
       try {
         if (rendered.hydrationManifest?.rules.length) {
           const json = serializeMasterCSSHydrationManifest(rendered.hydrationManifest)
@@ -293,6 +295,7 @@ export async function renderNextBuildOutputs(ctx: BuildCompleteContext, rawOptio
 
     return renderedOutputs
   } finally {
+    renderer?.dispose()
     await buildStateResolver.destroy()
   }
 }
