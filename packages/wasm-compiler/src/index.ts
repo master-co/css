@@ -32,8 +32,7 @@ export interface InitCompilerWasmOptions {
 }
 
 async function importGeneratedModule(): Promise<GeneratedCompilerWasmModule> {
-  const specifier = '../artifacts/mastercss_wasm_compiler.js'
-  return await import(specifier) as GeneratedCompilerWasmModule
+  return await import('../artifacts/mastercss_wasm_compiler.js') as unknown as GeneratedCompilerWasmModule
 }
 
 async function resolveWasmInput(

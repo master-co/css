@@ -168,6 +168,9 @@ jobs:
       - name: Build release packages
         if: ${{ inputs.release_build }}
         run: pnpm run build
+      - name: Build Rust Wasm artifacts
+        if: ${{ !inputs.release_build }}
+        run: pnpm run build:rust:wasm
       - name: Validate packages
         shell: bash
         env:
@@ -283,7 +286,8 @@ jobs:
             rust:1.97-alpine \
             sh -ec '
               apk add --no-cache build-base nodejs npm
-              cargo xtask stage-native-target "$TARGET_PACKAGE" --release
+              RUSTFLAGS="-C target-feature=-crt-static" \
+                cargo xtask stage-native-target "$TARGET_PACKAGE" --release
               node scripts/native-package-smoke.mjs "packages/$TARGET_PACKAGE"
             '
       - name: Upload release-native artifacts
@@ -316,6 +320,8 @@ jobs:
           turbo-cache-scope: e2e
       - name: Install E2E browsers
         run: pnpm exec playwright install --with-deps chromium firefox webkit
+      - name: Build Rust Wasm artifacts
+        run: pnpm run build:rust:wasm
       - name: Run E2E tests
         shell: bash
         env:
@@ -346,6 +352,8 @@ jobs:
           turbo-cache-scope: compat
       - name: Install Chromium headless shell
         run: pnpm exec playwright install --only-shell chromium
+      - name: Build Rust Wasm artifacts
+        run: pnpm run build:rust:wasm
       - name: Test packages
         shell: bash
         env:

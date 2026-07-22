@@ -34,8 +34,7 @@ export interface InitRuntimeWasmOptions {
 }
 
 async function importGeneratedModule(): Promise<GeneratedWasmModule> {
-  const specifier = '../artifacts/mastercss_wasm_runtime.js'
-  return await import(specifier) as GeneratedWasmModule
+  return await import('../artifacts/mastercss_wasm_runtime.js') as unknown as GeneratedWasmModule
 }
 
 export async function initRuntimeWasm(options: InitRuntimeWasmOptions = {}) {

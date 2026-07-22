@@ -76,8 +76,7 @@ export interface InitToolingWasmOptions {
 }
 
 async function importGeneratedModule(): Promise<GeneratedToolingWasmModule> {
-  const specifier = '../artifacts/mastercss_wasm_tooling.js'
-  return await import(specifier) as GeneratedToolingWasmModule
+  return await import('../artifacts/mastercss_wasm_tooling.js') as unknown as GeneratedToolingWasmModule
 }
 
 export async function initToolingWasm(options: InitToolingWasmOptions = {}) {
