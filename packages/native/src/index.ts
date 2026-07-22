@@ -1,16 +1,13 @@
-import { existsSync, readFileSync } from 'node:fs'
+import { existsSync } from 'node:fs'
 import { createRequire } from 'node:module'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { spawnSync } from 'node:child_process'
+import { MASTER_CSS_PACKAGE_VERSION } from './version'
 
 export const MASTER_CSS_BINDING_ABI_VERSION = 1
 export const MASTER_CSS_MANIFEST_VERSION = 1
 export const MASTER_CSS_HYDRATION_MANIFEST_VERSION = 1
-const nativePackageVersion = (JSON.parse(readFileSync(
-  fileURLToPath(new URL('../package.json', import.meta.url)),
-  'utf8'
-)) as { version?: string }).version || '0.0.0'
 
 export interface NativeBindingInfo {
   bindingAbiVersion: number
@@ -175,6 +172,18 @@ export function getNativeCLIExecutableName(platform: NodeJS.Platform = process.p
   return platform === 'win32' ? 'mcss.exe' : 'mcss'
 }
 
+function resolveDevelopmentArtifact(require: NodeJS.Require, name: string) {
+  try {
+    const packageEntry = require.resolve('@master/css-native')
+    const artifact = resolve(dirname(packageEntry), '../artifacts', name)
+    if (existsSync(artifact)) return artifact
+  } catch {
+    // Source tests can execute before the package entry has been built.
+  }
+  const sourceArtifact = resolve(fileURLToPath(new URL(`../artifacts/${name}`, import.meta.url)))
+  return existsSync(sourceArtifact) ? sourceArtifact : undefined
+}
+
 export function resolveNativeCLIPath(options: { required?: boolean, executablePath?: string } = {}) {
   if (nativeAddonsDisabled()) {
     if (!options.required) return
@@ -184,7 +193,7 @@ export function resolveNativeCLIPath(options: { required?: boolean, executablePa
   const require = createRequire(import.meta.url)
   const executableName = getNativeCLIExecutableName()
   const configuredPath = options.executablePath || process.env.MASTER_CSS_NATIVE_CLI_PATH
-  const developmentPath = resolve(fileURLToPath(new URL(`../artifacts/${executableName}`, import.meta.url)))
+  const developmentPath = resolveDevelopmentArtifact(require, executableName)
   if (configuredPath) {
     if (!existsSync(configuredPath)) {
       throw new NativeBindingError(
@@ -194,7 +203,7 @@ export function resolveNativeCLIPath(options: { required?: boolean, executablePa
     }
     return configuredPath
   }
-  if (existsSync(developmentPath)) return developmentPath
+  if (developmentPath) return developmentPath
 
   const target = resolveNativeTarget()
   if (!target) {
@@ -242,7 +251,7 @@ export function assertNativeCLIInfo(executablePath: string): NativeBindingInfo {
     )
   }
   const mismatch = info.bindingAbiVersion !== MASTER_CSS_BINDING_ABI_VERSION
-    || info.packageVersion !== nativePackageVersion
+    || info.packageVersion !== MASTER_CSS_PACKAGE_VERSION
     || info.manifestVersion !== MASTER_CSS_MANIFEST_VERSION
     || info.hydrationManifestVersion !== MASTER_CSS_HYDRATION_MANIFEST_VERSION
   if (mismatch) {
@@ -266,7 +275,7 @@ function assertBindingInfo(binding: NativeBinding, source: string): NativeBindin
     )
   }
   const mismatch = info.bindingAbiVersion !== MASTER_CSS_BINDING_ABI_VERSION
-    || info.packageVersion !== nativePackageVersion
+    || info.packageVersion !== MASTER_CSS_PACKAGE_VERSION
     || info.manifestVersion !== MASTER_CSS_MANIFEST_VERSION
     || info.hydrationManifestVersion !== MASTER_CSS_HYDRATION_MANIFEST_VERSION
   if (mismatch) {
@@ -297,10 +306,11 @@ export function loadNativeBinding(options: LoadNativeBindingOptions = {}): Loade
 
   const require = createRequire(import.meta.url)
   const configuredPath = options.bindingPath || process.env.MASTER_CSS_NATIVE_BINDING_PATH
-  const developmentPath = resolve(fileURLToPath(new URL('../artifacts/mastercss.node', import.meta.url)))
+  const developmentPath = resolveDevelopmentArtifact(require, 'mastercss.node')
   const target = resolveNativeTarget()
   const source = configuredPath
-    || (existsSync(developmentPath) ? developmentPath : target?.packageName)
+    || developmentPath
+    || target?.packageName
 
   if (!source) {
     if (!options.required) return
