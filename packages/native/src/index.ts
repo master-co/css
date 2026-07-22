@@ -87,7 +87,7 @@ export interface NativeLintSession {
 export interface NativeLanguageSession {
   nativeDeclarationCandidates(classNames: string[]): string
   classifyClassNames(classNames: string[], nativeSupport?: boolean[]): string
-  inspectClassName(className: string, nativeSupport?: boolean[]): string
+  inspectClassName(className: string, nativeSupport?: boolean[], mode?: string): string
   completionIndex(): string
   colorPresentation(colorToken: string): string
   colorTokens(candidatesJSON: string): string

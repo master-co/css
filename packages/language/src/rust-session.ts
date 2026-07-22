@@ -40,7 +40,7 @@ export interface RustLanguageAnalyzer {
     semanticTokens: SemanticTokenItem[]
   ): RustLanguageBatchIR
   classifyClassNames?(classNames: string[]): MasterCSSLanguageClassificationsIR
-  inspectClassName?(className: string): MasterCSSLanguageInspectionIR
+  inspectClassName?(className: string, mode?: string): MasterCSSLanguageInspectionIR
   completionIndex?(): MasterCSSLanguageCompletionIndexIR
   colorPresentation?(colorToken: string): MasterCSSLanguageColorPresentationIR
   colorTokens?(candidates: MasterCSSLanguageColorCandidateInputIR[]): MasterCSSLanguageColorTokensIR
@@ -164,14 +164,15 @@ function createNativeAnalyzer(): RustLanguageAnalyzer | undefined {
             )
           ) as MasterCSSLanguageClassificationsIR)
         },
-        inspectClassName(className) {
+        inspectClassName(className, mode) {
           const candidates = JSON.parse(
             session.nativeDeclarationCandidates([className])
           ) as MasterCSSNativeDeclarationCandidateIR[]
           const nativeSupport = candidates.map(matchesLanguageServiceNativeDeclaration)
           return validateInspection(JSON.parse(session.inspectClassName(
             className,
-            nativeSupport.length ? nativeSupport : undefined
+            nativeSupport.length ? nativeSupport : undefined,
+            mode
           )) as MasterCSSLanguageInspectionIR)
         },
         completionIndex() {
@@ -237,14 +238,15 @@ export async function createRustLanguageAnalyzer(): Promise<RustLanguageAnalyzer
             ) as MasterCSSLanguageClassificationsIR
           )
         },
-        inspectClassName(className) {
+        inspectClassName(className, mode) {
           const candidates = session.nativeDeclarationCandidates(
             [className]
           ) as MasterCSSNativeDeclarationCandidateIR[]
           const nativeSupport = candidates.map(matchesLanguageServiceNativeDeclaration)
           return validateInspection(session.inspectClassName(
             className,
-            nativeSupport
+            nativeSupport,
+            mode
           ) as MasterCSSLanguageInspectionIR)
         },
         completionIndex() {

@@ -18,6 +18,10 @@ const LAYER_COUNT: usize = 4;
 const JS_MAX_SAFE_INTEGER: f64 = 9_007_199_254_740_991.0;
 type ConditionFeature = (String, f64, f64);
 
+fn is_false(value: &bool) -> bool {
+    !value
+}
+
 #[derive(Debug, Error)]
 pub enum EngineError {
     #[error(transparent)]
@@ -202,6 +206,8 @@ struct UtilityDefinition {
     #[serde(skip)]
     variables: HashMap<String, String>,
     #[serde(skip)]
+    variable_entries: Vec<(String, String)>,
+    #[serde(skip)]
     native_fallback: bool,
     emit: UtilityEmit,
     #[serde(default)]
@@ -300,9 +306,13 @@ pub struct ClassSemanticInspection {
 #[derive(Debug, Clone)]
 struct CompiledVariable {
     name: String,
+    key: String,
     namespace: String,
     value: Option<String>,
+    source_value: Option<Value>,
+    numeric: Option<Value>,
     modes: Vec<CompiledVariableMode>,
+    source_modes: Map<String, Value>,
     variable_type: String,
     dependencies: Vec<String>,
     inline: bool,
@@ -332,6 +342,8 @@ struct StoredRule {
     manifest_order: i32,
     declarations: String,
     native_fallback: bool,
+    matcher_type: Option<UtilityMatcherType>,
+    state_token: String,
 }
 
 #[derive(Debug)]
@@ -370,6 +382,36 @@ pub struct EngineColorToken {
     pub end: u32,
     pub value: String,
     pub alpha: Option<f64>,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct EngineVariableIr {
+    #[serde(skip_serializing_if = "String::is_empty")]
+    pub namespace: String,
+    pub name: String,
+    pub key: String,
+    #[serde(rename = "type")]
+    pub variable_type: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub value: Option<Value>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub numeric: Option<Value>,
+    #[serde(default, skip_serializing_if = "Map::is_empty")]
+    pub modes: Map<String, Value>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub dependencies: Vec<String>,
+    #[serde(default, skip_serializing_if = "is_false")]
+    pub inline: bool,
+    #[serde(default, rename = "static", skip_serializing_if = "is_false")]
+    pub static_resource: bool,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct EngineClassVariableIr {
+    pub key: String,
+    pub variable: EngineVariableIr,
 }
 
 #[derive(Debug)]
@@ -438,6 +480,18 @@ impl EngineSession {
         I: IntoIterator<Item = S>,
         S: AsRef<str>,
     {
+        self.ensure_class_rules_for_mode(class_names, None)
+    }
+
+    fn ensure_class_rules_for_mode<I, S>(
+        &mut self,
+        class_names: I,
+        mode: Option<&str>,
+    ) -> Result<EngineTransitionIr, EngineError>
+    where
+        I: IntoIterator<Item = S>,
+        S: AsRef<str>,
+    {
         self.ensure_active()?;
         let mut mutations = Vec::new();
         for class_name in class_names {
@@ -445,7 +499,7 @@ impl EngineSession {
             if class_name.is_empty() || self.class_rules.contains_key(class_name) {
                 continue;
             }
-            let generated = self.generate_class_rules(class_name);
+            let generated = self.generate_class_rules_with_mode(class_name, mode);
             if generated.is_empty() {
                 continue;
             }
@@ -611,6 +665,7 @@ impl EngineSession {
                 variable_aliases: Vec::new(),
                 variable_alias_refs: Vec::new(),
                 variables: HashMap::new(),
+                variable_entries: Vec::new(),
                 native_fallback: true,
                 emit: UtilityEmit::Static {
                     rules: vec![StaticUtilityRule {
@@ -775,9 +830,17 @@ impl EngineSession {
     }
 
     pub fn inspect(&self, class_name: &str) -> Result<EngineInspectionIr, EngineError> {
+        self.inspect_with_mode(class_name, None)
+    }
+
+    pub fn inspect_with_mode(
+        &self,
+        class_name: &str,
+        mode: Option<&str>,
+    ) -> Result<EngineInspectionIr, EngineError> {
         self.ensure_active()?;
         let rules = self
-            .generate_class_rules(class_name)
+            .generate_class_rules_with_mode(class_name, mode)
             .into_iter()
             .map(|rule| rule.ir)
             .collect::<Vec<_>>();
@@ -793,8 +856,16 @@ impl EngineSession {
         &self,
         class_name: &str,
     ) -> Result<ClassSemanticInspection, EngineError> {
+        self.inspect_class_semantics_with_mode(class_name, None)
+    }
+
+    pub fn inspect_class_semantics_with_mode(
+        &self,
+        class_name: &str,
+        mode: Option<&str>,
+    ) -> Result<ClassSemanticInspection, EngineError> {
         self.ensure_active()?;
-        let rules = self.generate_class_rules(class_name);
+        let rules = self.generate_class_rules_with_mode(class_name, mode);
         if rules.is_empty() {
             return Ok(ClassSemanticInspection {
                 class_name: class_name.to_owned(),
@@ -810,24 +881,15 @@ impl EngineSession {
         let (semantic_class_name, trailing_important) = class_name
             .strip_suffix('!')
             .map_or((class_name, false), |name| (name, true));
-        let mut matching_class_names = vec![semantic_class_name.to_owned()];
-        if let Some(canonical) = canonicalize_class_name(semantic_class_name) {
-            matching_class_names.push(canonical);
-        }
-
         let mut matcher_types = Vec::new();
         let mut state_token = None;
-        for matching_class_name in matching_class_names {
-            for utility in &self.compiled.utilities {
-                let Some(matched) = match_utility(&matching_class_name, utility, &self.compiled)
-                else {
-                    continue;
-                };
-                if !matcher_types.contains(&matched.matcher_type) {
-                    matcher_types.push(matched.matcher_type);
-                }
-                state_token.get_or_insert(matched.state_token);
+        for rule in &rules {
+            if let Some(matcher_type) = rule.matcher_type
+                && !matcher_types.contains(&matcher_type)
+            {
+                matcher_types.push(matcher_type);
             }
+            state_token.get_or_insert_with(|| rule.state_token.clone());
         }
 
         let component = rules.iter().any(|rule| {
@@ -877,6 +939,39 @@ impl EngineSession {
     }
 
     pub fn class_variable_keys(&self, class_name: &str) -> Result<Vec<String>, EngineError> {
+        let mut keys = self
+            .class_variable_aliases(class_name)?
+            .into_iter()
+            .map(|(key, _)| key)
+            .collect::<Vec<_>>();
+        keys.sort();
+        keys.dedup();
+        Ok(keys)
+    }
+
+    pub fn class_variable_entries(
+        &self,
+        class_name: &str,
+    ) -> Result<Vec<EngineClassVariableIr>, EngineError> {
+        Ok(self
+            .class_variable_aliases(class_name)?
+            .into_iter()
+            .filter_map(|(key, name)| {
+                self.compiled
+                    .compiled_variables
+                    .get(&name)
+                    .map(|variable| EngineClassVariableIr {
+                        key,
+                        variable: engine_variable_ir(variable),
+                    })
+            })
+            .collect())
+    }
+
+    fn class_variable_aliases(
+        &self,
+        class_name: &str,
+    ) -> Result<Vec<(String, String)>, EngineError> {
         self.ensure_active()?;
         let (semantic_class_name, important) = class_name
             .strip_suffix('!')
@@ -885,7 +980,8 @@ impl EngineSession {
         if let Some(canonical) = canonicalize_class_name(semantic_class_name) {
             matching_class_names.push(canonical);
         }
-        let mut variable_keys = Vec::new();
+        let mut variable_aliases = Vec::new();
+        let mut seen_aliases = HashSet::new();
         let mut seen = HashSet::new();
         for matching_class_name in matching_class_names {
             let mut generated = false;
@@ -927,15 +1023,17 @@ impl EngineSession {
                     continue;
                 }
                 generated = true;
-                variable_keys.extend(utility.variables.keys().cloned());
+                for (key, name) in &utility.variable_entries {
+                    if seen_aliases.insert(key.clone()) {
+                        variable_aliases.push((key.clone(), name.clone()));
+                    }
+                }
             }
             if generated {
                 break;
             }
         }
-        variable_keys.sort();
-        variable_keys.dedup();
-        Ok(variable_keys)
+        Ok(variable_aliases)
     }
 
     pub fn class_completion_candidates(
@@ -963,6 +1061,17 @@ impl EngineSession {
             isolated.delete_class_rules([class_name])?;
         }
         Ok(rendered)
+    }
+
+    pub fn render_class_name_isolated_with_mode(
+        &self,
+        class_name: &str,
+        mode: Option<&str>,
+    ) -> Result<String, EngineError> {
+        self.ensure_active()?;
+        let mut isolated = self.fork_empty();
+        isolated.ensure_class_rules_for_mode([class_name], mode)?;
+        Ok(isolated.snapshot()?.text)
     }
 
     pub fn color_presentation_space(
@@ -1489,7 +1598,15 @@ impl EngineSession {
     }
 
     fn generate_class_rules(&self, class_name: &str) -> Vec<StoredRule> {
-        if let Some(rules) = self.generate_group_rules(class_name) {
+        self.generate_class_rules_with_mode(class_name, None)
+    }
+
+    fn generate_class_rules_with_mode(
+        &self,
+        class_name: &str,
+        mode: Option<&str>,
+    ) -> Vec<StoredRule> {
+        if let Some(rules) = self.generate_group_rules(class_name, mode) {
             return rules;
         }
         let mut generated = Vec::new();
@@ -1511,8 +1628,9 @@ impl EngineSession {
                 else {
                     continue;
                 };
-                let state_branches =
+                let mut state_branches =
                     resolve_state_branches(&matched.state_token, important, &self.compiled);
+                apply_forced_mode(&mut state_branches, mode, &self.compiled);
                 let resolved_value = matched
                     .value
                     .as_deref()
@@ -1609,6 +1727,8 @@ impl EngineSession {
                         manifest_order: utility.order.unwrap_or_default(),
                         declarations,
                         native_fallback: utility.native_fallback,
+                        matcher_type: Some(matched.matcher_type),
+                        state_token: matched.state_token.clone(),
                     });
                 }
             }
@@ -1619,7 +1739,11 @@ impl EngineSession {
         generated
     }
 
-    fn generate_group_rules(&self, class_name: &str) -> Option<Vec<StoredRule>> {
+    fn generate_group_rules(
+        &self,
+        class_name: &str,
+        mode: Option<&str>,
+    ) -> Option<Vec<StoredRule>> {
         let body = class_name.strip_prefix('{')?;
         let close = find_group_close(body)?;
         let declarations_source = &body[..close];
@@ -1631,7 +1755,7 @@ impl EngineSession {
             if nested_class.is_empty() {
                 continue;
             }
-            for nested_rule in self.generate_class_rules(&nested_class) {
+            for nested_rule in self.generate_class_rules_with_mode(&nested_class, mode) {
                 for declaration in split_top_level(&nested_rule.declarations, ';') {
                     let Some((property, value)) = declaration.split_once(':') else {
                         continue;
@@ -1658,8 +1782,10 @@ impl EngineSession {
             .map(|(property, value)| format!("{property}:{}", value.as_str().unwrap_or_default()))
             .collect::<Vec<_>>()
             .join(";");
+        let mut branches = resolve_state_branches(state_token, false, &self.compiled);
+        apply_forced_mode(&mut branches, mode, &self.compiled);
         Some(
-            resolve_state_branches(state_token, false, &self.compiled)
+            branches
                 .into_iter()
                 .enumerate()
                 .map(|(branch_index, branch)| {
@@ -1700,6 +1826,8 @@ impl EngineSession {
                         manifest_order: 0,
                         declarations: declarations.clone(),
                         native_fallback: false,
+                        matcher_type: None,
+                        state_token: state_token.to_owned(),
                     }
                 })
                 .collect(),
@@ -1839,25 +1967,31 @@ fn compile_variables(
                 continue;
             }
             let value = object.get("value").and_then(normalize_variable_value);
-            let modes = object
+            let source_value = object
+                .get("value")
+                .and_then(normalize_variable_source_value);
+            let source_modes = object
                 .get("modes")
                 .and_then(Value::as_object)
-                .map(|modes| {
-                    modes
-                        .iter()
-                        .filter_map(|(mode, value)| {
-                            let value = value
-                                .as_object()?
-                                .get("value")
-                                .and_then(normalize_variable_value)?;
-                            Some(CompiledVariableMode {
-                                name: mode.clone(),
-                                value,
-                            })
-                        })
-                        .collect()
-                })
+                .cloned()
                 .unwrap_or_default();
+            let modes = if source_modes.is_empty() {
+                Vec::new()
+            } else {
+                source_modes
+                    .iter()
+                    .filter_map(|(mode, value)| {
+                        let value = value
+                            .as_object()?
+                            .get("value")
+                            .and_then(normalize_variable_value)?;
+                        Some(CompiledVariableMode {
+                            name: mode.clone(),
+                            value,
+                        })
+                    })
+                    .collect()
+            };
             let variable_type = object
                 .get("type")
                 .and_then(Value::as_str)
@@ -1887,9 +2021,13 @@ fn compile_variables(
                 name.clone(),
                 CompiledVariable {
                     name,
+                    key,
                     namespace: namespace.clone(),
                     value,
+                    source_value,
+                    numeric: object.get("numeric").cloned(),
                     modes,
+                    source_modes,
                     variable_type,
                     dependencies,
                     inline: object.get("inline").and_then(Value::as_bool) == Some(true),
@@ -1899,6 +2037,18 @@ fn compile_variables(
         }
     }
     Ok((variables, order))
+}
+
+fn normalize_variable_source_value(value: &Value) -> Option<Value> {
+    match value {
+        Value::String(_) | Value::Number(_) => Some(value.clone()),
+        Value::Array(values) => values
+            .iter()
+            .map(normalize_variable_value)
+            .collect::<Option<Vec<_>>>()
+            .map(|values| Value::String(values.join(","))),
+        _ => None,
+    }
 }
 
 fn normalize_variable_value(value: &Value) -> Option<String> {
@@ -1911,6 +2061,21 @@ fn normalize_variable_value(value: &Value) -> Option<String> {
             .collect::<Option<Vec<_>>>()
             .map(|values| values.join(",")),
         _ => None,
+    }
+}
+
+fn engine_variable_ir(variable: &CompiledVariable) -> EngineVariableIr {
+    EngineVariableIr {
+        namespace: variable.namespace.clone(),
+        name: variable.name.clone(),
+        key: variable.key.clone(),
+        variable_type: variable.variable_type.clone(),
+        value: variable.source_value.clone(),
+        numeric: variable.numeric.clone(),
+        modes: variable.source_modes.clone(),
+        dependencies: variable.dependencies.clone(),
+        inline: variable.inline,
+        static_resource: variable.static_resource,
     }
 }
 
@@ -3407,6 +3572,7 @@ fn append_builtin_native_value_utilities(utilities: &mut Vec<UtilityDefinition>)
                     .map(|reference| (*reference).to_owned())
                     .collect(),
                 variables: HashMap::new(),
+                variable_entries: Vec::new(),
                 native_fallback: true,
                 emit: UtilityEmit::Property {
                     property: (*property).into(),
@@ -3440,6 +3606,7 @@ fn append_builtin_native_declaration_utilities(utilities: &mut Vec<UtilityDefini
             variable_aliases: Vec::new(),
             variable_alias_refs: Vec::new(),
             variables: HashMap::new(),
+            variable_entries: Vec::new(),
             native_fallback: true,
             emit: UtilityEmit::Property {
                 property: (*property).into(),
@@ -3457,8 +3624,9 @@ fn compile_utility_variables(
     variable_order: &[String],
 ) {
     for (key, name) in &utility.variable_aliases {
-        if variables.contains_key(name) {
-            utility.variables.entry(key.clone()).or_insert(name.clone());
+        if variables.contains_key(name) && !utility.variables.contains_key(key) {
+            utility.variables.insert(key.clone(), name.clone());
+            utility.variable_entries.push((key.clone(), name.clone()));
         }
     }
     for reference in &utility.variable_alias_refs {
@@ -3470,11 +3638,11 @@ fn compile_utility_variables(
             let Some(variable) = variables.get(variable_name) else {
                 continue;
             };
-            if let Some(key) = get_variable_key_by_namespace(&variable.name, namespace) {
-                utility
-                    .variables
-                    .entry(key)
-                    .or_insert_with(|| variable.name.clone());
+            if let Some(key) = get_variable_key_by_namespace(&variable.name, namespace)
+                && !utility.variables.contains_key(&key)
+            {
+                utility.variables.insert(key.clone(), variable.name.clone());
+                utility.variable_entries.push((key, variable.name.clone()));
             }
         }
     }
@@ -4175,6 +4343,29 @@ fn resolve_state_branches(
         }
     }
     branches
+}
+
+fn apply_forced_mode(
+    branches: &mut [StateBranch],
+    mode: Option<&str>,
+    manifest: &ManifestProjection,
+) {
+    let Some(mode) = mode else {
+        return;
+    };
+    for branch in branches {
+        if branch.mode.is_some() {
+            continue;
+        }
+        branch.mode = Some(mode.to_owned());
+        if manifest.settings.mode_trigger == "media" {
+            add_condition_wrapper(
+                &mut branch.condition_wrappers,
+                "media",
+                format!("@media (prefers-color-scheme:{mode})"),
+            );
+        }
+    }
 }
 
 fn split_state_token(state_token: &str) -> (String, Vec<String>) {

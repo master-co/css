@@ -2,12 +2,11 @@ import { createRequire } from 'node:module'
 import { resolve } from 'node:path'
 import fg from 'fast-glob'
 import { createMasterCSSInspectionReport } from '@master/css-diagnostics'
-import { inspectMasterCSSClass } from '@master/css-engine/inspect'
-import { createCSSWithNativeDeclarations } from '@master/css-validator/native-declaration'
 import { createServerCSS, parseHTML } from '@master/css-server'
+import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import type MasterCSSMCPContext from './context'
 import { loadWorkspaceManifest } from './project'
-import type { MasterCSSManifest } from '@master/css-engine'
+import { compactRustClassInspection, createMCPRustLanguageSession } from './rust-language'
 
 const DEFAULT_SOURCE_PATTERNS = ['**/*.{html,htm,js,jsx,cjs,ts,tsx,mts,cts,svelte,astro,vue,md,mdx,pug,php}']
 const DEFAULT_IGNORE_PATTERNS = ['**/node_modules/**', 'node_modules']
@@ -94,35 +93,31 @@ export async function renderCSS(context: MasterCSSMCPContext, options: RenderCSS
 
 export async function inspectClass(context: MasterCSSMCPContext, options: InspectClassOptions) {
   const manifest = await loadWorkspaceManifest(context)
-  const css = createCSSWithNativeDeclarations(manifest.status === 'loaded' ? manifest.manifest : defaultManifest)
-  const inspection = inspectMasterCSSClass(css, options.className, options.mode)
-  const rules = inspection.rules.map((rule) => ({
-    className: rule.name,
-    layer: rule.layerName,
-    type: rule.type,
-    text: rule.text
-  }))
-  return {
-    manifest: {
-      status: manifest.status,
-      entries: manifest.entries,
-      ...(manifest.status === 'error' ? { error: manifest.error } : {})
-    },
-    className: options.className,
-    mode: options.mode,
-    valid: rules.length > 0,
-    base: inspection.base,
-    suffix: inspection.suffix,
-    key: inspection.key,
-    value: inspection.value,
-    keyToken: inspection.keyToken,
-    valueToken: inspection.valueToken,
-    stateToken: inspection.stateToken,
-    important: inspection.important,
-    matcherTypes: inspection.matcherTypes,
-    variables: inspection.variableEntries.map(({ key, variable }) => ({ key, variable })),
-    rules,
-    css: rules.map((rule) => rule.text).join('')
+  const session = await createMCPRustLanguageSession(
+    manifest.status === 'loaded' ? manifest.manifest : defaultManifest
+  )
+  try {
+    const inspection = session.inspectClassName(options.className, options.mode)
+    const compact = compactRustClassInspection(
+      session,
+      options.className,
+      options.mode,
+      true,
+      inspection
+    )
+    return {
+      manifest: {
+        status: manifest.status,
+        entries: manifest.entries,
+        ...(manifest.status === 'error' ? { error: manifest.error } : {})
+      },
+      className: options.className,
+      mode: options.mode,
+      ...compact,
+      css: inspection.rules.map((rule) => rule.text).join('')
+    }
+  } finally {
+    session.dispose?.()
   }
 }
 

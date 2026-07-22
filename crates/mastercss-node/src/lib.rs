@@ -180,11 +180,12 @@ impl NodeLanguageSession {
         &self,
         class_name: String,
         native_support: Option<Vec<bool>>,
+        mode: Option<String>,
     ) -> Result<String> {
         to_json(
             &self
                 .inner
-                .inspect_class_name(&class_name, native_support.as_deref())
+                .inspect_class_name(&class_name, native_support.as_deref(), mode.as_deref())
                 .map_err(|error| Error::new(Status::InvalidArg, error.to_string()))?,
         )
     }

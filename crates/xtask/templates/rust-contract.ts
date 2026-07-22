@@ -208,10 +208,40 @@ export interface MasterCSSLanguageClassificationsIR {
   classes: MasterCSSLanguageClassIR[]
 }
 
+export interface MasterCSSLanguageVariableIR {
+  namespace?: string
+  name: string
+  key: string
+  type: string
+  value?: string | number
+  numeric?: import('./manifest').MasterCSSManifestVariableNumericValue
+  modes?: import('./manifest').MasterCSSManifestVariable['modes']
+  dependencies?: string[]
+  inline?: boolean
+  static?: boolean
+}
+
+export interface MasterCSSLanguageClassVariableIR {
+  key: string
+  variable: MasterCSSLanguageVariableIR
+}
+
 export interface MasterCSSLanguageInspectionIR {
   version: typeof MASTER_CSS_LANGUAGE_BATCH_VERSION
   className: string
+  valid: boolean
   kind: MasterCSSLanguageClassKind
+  base: string
+  suffix: string
+  key?: string
+  value?: string
+  keyToken?: string
+  valueToken?: string
+  stateToken?: string
+  important: boolean
+  matcherTypes: ('static' | 'pattern' | 'key' | 'variable' | 'value')[]
+  variables: MasterCSSLanguageClassVariableIR[]
+  rules: import('./hydration-manifest').MasterCSSGeneratedRuleIR[]
   text: string
 }
 

@@ -160,6 +160,7 @@ impl ToolingLanguageSession {
         &self,
         class_name: &str,
         native_support: JsValue,
+        mode: Option<String>,
     ) -> Result<JsValue, JsValue> {
         let native_support = serde_wasm_bindgen::from_value::<Vec<bool>>(native_support)
             .map_err(|error| JsValue::from_str(&error.to_string()))?;
@@ -168,6 +169,7 @@ impl ToolingLanguageSession {
             .inspect_class_name(
                 class_name,
                 (!native_support.is_empty()).then_some(native_support.as_slice()),
+                mode.as_deref(),
             )
             .map_err(|error| JsValue::from_str(&error.to_string()))?;
         inspection

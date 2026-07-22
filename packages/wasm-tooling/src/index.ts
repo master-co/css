@@ -12,7 +12,7 @@ interface GeneratedToolingWasmModule {
   ToolingLanguageSession: new (manifestJSON: string) => {
     nativeDeclarationCandidates(classNames: string[]): unknown
     classifyClassNames(classNames: string[], nativeSupport: boolean[]): unknown
-    inspectClassName(className: string, nativeSupport: boolean[]): unknown
+    inspectClassName(className: string, nativeSupport: boolean[], mode?: string): unknown
     completionIndex(): unknown
     colorPresentation(colorToken: string): unknown
     colorTokens(candidates: unknown[]): unknown
@@ -165,8 +165,8 @@ export async function createToolingLanguageSession(
     nativeDeclarationCandidates: (classNames: string[]) => session.nativeDeclarationCandidates(classNames),
     classifyClassNames: (classNames: string[], nativeSupport?: boolean[]) =>
       session.classifyClassNames(classNames, nativeSupport || []),
-    inspectClassName: (className: string, nativeSupport?: boolean[]) =>
-      session.inspectClassName(className, nativeSupport || []),
+    inspectClassName: (className: string, nativeSupport?: boolean[], mode?: string) =>
+      session.inspectClassName(className, nativeSupport || [], mode),
     completionIndex: () => session.completionIndex(),
     colorPresentation: (colorToken: string) => session.colorPresentation(colorToken),
     colorTokens: (candidates: unknown[]) => session.colorTokens(candidates),

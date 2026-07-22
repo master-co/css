@@ -22,6 +22,9 @@
       "path": "../diagnostics/tsconfig.typecheck.json"
     },
     {
+      "path": "../language/tsconfig.typecheck.json"
+    },
+    {
       "path": "../language-service/tsconfig.typecheck.json"
     },
     {
@@ -32,6 +35,9 @@
     },
     {
       "path": "../project/tsconfig.typecheck.json"
+    },
+    {
+      "path": "../schema/tsconfig.typecheck.json"
     },
     {
       "path": "../scanner/tsconfig.typecheck.json"

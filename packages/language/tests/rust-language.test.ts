@@ -1,5 +1,7 @@
 import { beforeAll, expect, test } from 'vitest'
+import { inspectMasterCSSClass } from '@master/css-engine/inspect'
 import { TextDocument } from 'vscode-languageserver-textdocument'
+import { createLanguageCSS } from '../src/master-css'
 import { encodeSemanticTokens } from '../src/semantic/encode'
 import { createRustLanguageAnalyzer } from '../src/rust-session'
 import type { SemanticTokenItem } from '../src/semantic/types'
@@ -65,5 +67,62 @@ test('batches manifest-driven class semantic classification', async () => {
     })
   } finally {
     session?.dispose?.()
+  }
+})
+
+test('matches TS class inspection fields, variables, rules, and forced modes', async () => {
+  const analyzer = await createRustLanguageAnalyzer()
+  const manifest = createPresetManifest({
+    settings: { modeTrigger: 'class' },
+    variables: [{
+      namespace: 'color',
+      key: 'rust-brand',
+      value: '#123456',
+      dependencies: ['spacing-4']
+    }]
+  })
+  const session = analyzer.createSession?.(manifest)
+  const css = createLanguageCSS(manifest)
+  expect(session?.inspectClassName).toBeDefined()
+  try {
+    for (const [className, mode] of [
+      ['fg:rust-brand:hover', undefined],
+      ['block', 'dark'],
+      ['made-up:nope:hover', undefined]
+    ] as const) {
+      const actual = session?.inspectClassName?.(className, mode)
+      const expected = inspectMasterCSSClass(css, className, mode)
+      expect(actual).toMatchObject({
+        className,
+        valid: expected.rules.length > 0,
+        base: expected.base,
+        suffix: expected.suffix,
+        ...(expected.key !== undefined ? { key: expected.key } : {}),
+        ...(expected.value !== undefined ? { value: expected.value } : {}),
+        ...(expected.keyToken !== undefined ? { keyToken: expected.keyToken } : {}),
+        ...(expected.valueToken !== undefined ? { valueToken: expected.valueToken } : {}),
+        ...(expected.stateToken !== undefined ? { stateToken: expected.stateToken } : {}),
+        important: Boolean(expected.important),
+        matcherTypes: expected.matcherTypes,
+        variables: expected.variableEntries.map(({ key, variable }) => ({
+          key,
+          variable: {
+            ...variable,
+            ...(variable.dependencies
+              ? { dependencies: [...variable.dependencies] }
+              : {})
+          }
+        })),
+        rules: expected.rules.map((rule) => ({
+          className: rule.name,
+          layer: rule.layerName,
+          type: rule.type,
+          text: rule.text
+        }))
+      })
+    }
+  } finally {
+    session?.dispose?.()
+    css.destroy()
   }
 })

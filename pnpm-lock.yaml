@@ -1973,6 +1973,9 @@ importers:
       '@master/css-engine':
         specifier: workspace:^
         version: link:../engine
+      '@master/css-language':
+        specifier: workspace:^
+        version: link:../language
       '@master/css-language-service':
         specifier: workspace:^
         version: link:../language-service
@@ -1988,12 +1991,12 @@ importers:
       '@master/css-project':
         specifier: workspace:^
         version: link:../project
+      '@master/css-schema':
+        specifier: workspace:^
+        version: link:../schema
       '@master/css-server':
         specifier: workspace:^
         version: link:../server
-      '@master/css-validator':
-        specifier: workspace:^
-        version: link:../validator
       '@modelcontextprotocol/sdk':
         specifier: ^1.29.0
         version: 1.29.0(zod@4.4.3)

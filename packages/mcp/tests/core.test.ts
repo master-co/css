@@ -303,6 +303,25 @@ describe('@master/css-mcp', () => {
       expect(trace.detected).toBe(true)
       expect(trace.inspection.valid).toBe(true)
 
+      const inspected = parseToolJSON(await connection.client.callTool({
+        name: 'mastercss_inspect_class',
+        arguments: {
+          className: 'block',
+          mode: 'dark'
+        }
+      }))
+      expect(inspected).toMatchObject({
+        className: 'block',
+        mode: 'dark',
+        valid: true,
+        base: 'block',
+        suffix: '',
+        matcherTypes: ['static']
+      })
+      expect(inspected.rules).toHaveLength(1)
+      expect(inspected.rules[0].text).toContain('@media (prefers-color-scheme:dark)')
+      expect(inspected.css).toBe(inspected.rules.map((rule: { text: string }) => rule.text).join(''))
+
       const extracted = parseToolJSON(await connection.client.callTool({
         name: 'mastercss_extract_classes',
         arguments: {

@@ -1,11 +1,13 @@
 #![forbid(unsafe_code)]
 
 use mastercss_engine::{
-    ClassSemanticInspection, ClassSemanticKind, EngineClassCompletionKind, EngineError,
-    EngineSession,
+    ClassSemanticInspection, ClassSemanticKind, EngineClassCompletionKind, EngineClassVariableIr,
+    EngineError, EngineSession, UtilityMatcherType,
 };
 use mastercss_lexer::{collect_class_list_token_ranges, utf16_len, utf16_to_byte_offset};
-use mastercss_schema::{LANGUAGE_BATCH_VERSION, NativeDeclarationCandidateIr, SourceRange};
+use mastercss_schema::{
+    GeneratedRuleIr, LANGUAGE_BATCH_VERSION, NativeDeclarationCandidateIr, SourceRange,
+};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
@@ -53,12 +55,29 @@ pub struct LanguageClassificationsIr {
     pub classes: Vec<ClassSemanticInspection>,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+#[derive(Debug, Clone, PartialEq, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct LanguageInspectionIr {
     pub version: u32,
     pub class_name: String,
+    pub valid: bool,
     pub kind: ClassSemanticKind,
+    pub base: String,
+    pub suffix: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub key: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub value: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub key_token: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub value_token: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub state_token: Option<String>,
+    pub important: bool,
+    pub matcher_types: Vec<UtilityMatcherType>,
+    pub variables: Vec<EngineClassVariableIr>,
+    pub rules: Vec<GeneratedRuleIr>,
     pub text: String,
 }
 
@@ -129,6 +148,69 @@ pub struct LanguageSession {
     native_support_by_class: HashMap<String, bool>,
 }
 
+fn inspect_class_name_parts(class_name: &str) -> (String, String, Option<String>, Option<String>) {
+    if let Some(colon) = class_name.find(':').filter(|colon| *colon > 0) {
+        let end = find_class_modifier_index(class_name, colon + 1);
+        return (
+            class_name[..end].to_owned(),
+            class_name[end..].to_owned(),
+            Some(class_name[..colon].to_owned()),
+            Some(class_name[colon + 1..end].to_owned()),
+        );
+    }
+    let end = find_class_modifier_index(class_name, 0);
+    (
+        class_name[..end].to_owned(),
+        class_name[end..].to_owned(),
+        None,
+        None,
+    )
+}
+
+fn find_class_modifier_index(class_name: &str, start: usize) -> usize {
+    let mut quote = None;
+    let mut depth = 0_u32;
+    let mut escaped = false;
+    for (index, character) in class_name
+        .char_indices()
+        .filter(|(index, _)| *index >= start)
+    {
+        if escaped {
+            escaped = false;
+            continue;
+        }
+        if let Some(current_quote) = quote {
+            if character == '\\' {
+                escaped = true;
+            } else if character == current_quote {
+                quote = None;
+            }
+            continue;
+        }
+        if matches!(character, '"' | '\'') {
+            quote = Some(character);
+            continue;
+        }
+        if matches!(character, '(' | '[' | '{') {
+            depth += 1;
+            continue;
+        }
+        if matches!(character, ')' | ']' | '}') {
+            depth = depth.saturating_sub(1);
+            continue;
+        }
+        if depth == 0
+            && matches!(
+                character,
+                '!' | '*' | '>' | '+' | '~' | ':' | '[' | '@' | '_'
+            )
+        {
+            return index;
+        }
+    }
+    class_name.len()
+}
+
 impl LanguageSession {
     pub fn create(manifest_json: &str) -> Result<Self, LanguageError> {
         Ok(Self {
@@ -189,6 +271,7 @@ impl LanguageSession {
         &self,
         class_name: &str,
         native_support: Option<&[bool]>,
+        mode: Option<&str>,
     ) -> Result<LanguageInspectionIr, LanguageError> {
         let mut engine = EngineSession::create(&self.manifest_json)?;
         let cached_native_support = self
@@ -204,12 +287,54 @@ impl LanguageSession {
         } else {
             engine.ensure_class_rules([class_name])?;
         }
-        let semantics = engine.inspect_class_semantics(class_name)?;
+        let semantics = engine.inspect_class_semantics_with_mode(class_name, mode)?;
+        let inspection = engine.inspect_with_mode(class_name, mode)?;
+        let (fallback_base, fallback_suffix, fallback_key, fallback_value) =
+            inspect_class_name_parts(class_name);
+        let (base, suffix, key, value) = if inspection.valid {
+            let suffix = format!(
+                "{}{}",
+                if semantics.important { "!" } else { "" },
+                semantics.state_token.as_deref().unwrap_or_default()
+            );
+            let base = if suffix.is_empty() {
+                class_name.to_owned()
+            } else {
+                class_name
+                    .strip_suffix(&suffix)
+                    .unwrap_or(class_name)
+                    .to_owned()
+            };
+            let key_value = semantics
+                .key_token
+                .as_deref()
+                .and_then(|key| key.strip_suffix(':'))
+                .zip(semantics.value_token.as_deref());
+            let (key, value) = key_value
+                .map(|(key, value)| (Some(key.to_owned()), Some(value.to_owned())))
+                .unwrap_or_default();
+            (base, suffix, key, value)
+        } else {
+            (fallback_base, fallback_suffix, fallback_key, fallback_value)
+        };
+        let text = engine.render_class_name_isolated_with_mode(class_name, mode)?;
         Ok(LanguageInspectionIr {
             version: LANGUAGE_BATCH_VERSION,
             class_name: class_name.to_owned(),
+            valid: inspection.valid,
             kind: semantics.kind,
-            text: engine.snapshot()?.text,
+            base,
+            suffix,
+            key,
+            value,
+            key_token: semantics.key_token,
+            value_token: semantics.value_token,
+            state_token: semantics.state_token,
+            important: semantics.important,
+            matcher_types: semantics.matcher_types,
+            variables: engine.class_variable_entries(class_name)?,
+            rules: inspection.rules,
+            text,
         })
     }
 
@@ -642,14 +767,14 @@ mod tests {
         );
         assert_eq!(
             session
-                .inspect_class_name("display:block", None)
+                .inspect_class_name("display:block", None, None)
                 .unwrap()
                 .kind,
             ClassSemanticKind::Declaration
         );
         assert_eq!(
             session
-                .inspect_class_name("made-up:nope", None)
+                .inspect_class_name("made-up:nope", None, None)
                 .unwrap()
                 .kind,
             ClassSemanticKind::Unknown
@@ -661,24 +786,62 @@ mod tests {
         let session = LanguageSession::create(
             r#"{
               "version":1,
+              "settings":{"modeTrigger":"class"},
               "variables":{"color":[{"key":"brand","value":"oklch(50% .1 20)"}]},
-              "utilities":[{
-                "id":"card",
-                "name":"card",
-                "type":-2,
-                "layer":"components",
-                "emit":{"type":"static","rules":[{"declarations":{"display":"block"}}]},
-                "matchers":[{"type":"static","name":"card"}]
-              }]
+              "utilities":[
+                {
+                  "id":"card",
+                  "name":"card",
+                  "type":-2,
+                  "layer":"components",
+                  "emit":{"type":"static","rules":[{"declarations":{"display":"block"}}]},
+                  "matchers":[{"type":"static","name":"card"}]
+                },
+                {
+                  "id":"foreground-color",
+                  "type":0,
+                  "variableAliases":[["brand","color-brand"]],
+                  "emit":{"type":"property","property":"color"},
+                  "matchers":[{"type":"variable","keys":["fg"]}]
+                }
+              ]
             }"#,
         )
         .unwrap();
-        let inspection = session.inspect_class_name("card:hover", None).unwrap();
+        let inspection = session
+            .inspect_class_name("card:hover", None, None)
+            .unwrap();
         assert_eq!(inspection.version, LANGUAGE_BATCH_VERSION);
+        assert!(inspection.valid);
         assert_eq!(inspection.kind, ClassSemanticKind::Component);
+        assert_eq!(inspection.base, "card");
+        assert_eq!(inspection.suffix, ":hover");
+        assert_eq!(inspection.state_token.as_deref(), Some(":hover"));
+        assert_eq!(inspection.rules.len(), 1);
         assert_eq!(
             inspection.text,
             "@layer components{.card\\:hover:hover{display:block}}"
+        );
+        let forced_mode = session
+            .inspect_class_name("card", None, Some("dark"))
+            .unwrap();
+        assert_eq!(
+            forced_mode.text,
+            "@layer components{.dark .card{display:block}}"
+        );
+        let variable = session
+            .inspect_class_name("fg:brand:hover", None, None)
+            .unwrap();
+        assert_eq!(variable.base, "fg:brand");
+        assert_eq!(variable.suffix, ":hover");
+        assert_eq!(variable.key.as_deref(), Some("fg"));
+        assert_eq!(variable.value.as_deref(), Some("brand"));
+        assert_eq!(variable.variables.len(), 1);
+        assert_eq!(variable.variables[0].key, "brand");
+        assert_eq!(variable.variables[0].variable.name, "color-brand");
+        assert_eq!(
+            variable.variables[0].variable.value,
+            Some(serde_json::Value::String("oklch(50% .1 20)".into()))
         );
         let completion_index = session.completion_index().unwrap();
         assert_eq!(completion_index.version, LANGUAGE_BATCH_VERSION);
