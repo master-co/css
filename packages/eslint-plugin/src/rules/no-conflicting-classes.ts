@@ -1,5 +1,5 @@
 import defineVisitors from '../utils/define-visitors'
-import resolveContext from '../utils/resolve-context'
+import resolveContext, { requireResolvedCSS } from '../utils/resolve-context'
 import createRule from '../create-rule'
 import { createConflictingClassesReport } from '@master/css-lint'
 import reportLintDiagnostics from '../utils/report-lint-diagnostics'
@@ -37,7 +37,11 @@ export default createRule({
         context,
         node,
         resolved,
-        rustDiagnostics || createConflictingClassesReport(resolved.raw, css, { unescape: resolved.unescape }).diagnostics
+        rustDiagnostics || createConflictingClassesReport(
+          resolved.raw,
+          requireResolvedCSS(css),
+          { unescape: resolved.unescape }
+        ).diagnostics
       )
     })
   },

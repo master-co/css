@@ -1,5 +1,5 @@
 import defineVisitors from '../utils/define-visitors'
-import resolveContext from '../utils/resolve-context'
+import resolveContext, { requireResolvedCSS } from '../utils/resolve-context'
 import createRule from '../create-rule'
 import {
   createUnapprovedRawValueClassesReport,
@@ -68,7 +68,7 @@ export default createRule({
         context,
         node,
         resolved,
-        rustDiagnostics || createUnapprovedRawValueClassesReport(resolved.raw, css, {
+        rustDiagnostics || createUnapprovedRawValueClassesReport(resolved.raw, requireResolvedCSS(css), {
           ...options,
           unescape: resolved.unescape
         }).diagnostics

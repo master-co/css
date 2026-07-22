@@ -15,7 +15,7 @@ type SourceRuleOptions = MasterCSSLintContentRuleOptions[keyof MasterCSSLintCont
 
 interface DefineSourceVisitorsOptions {
   context: RuleContext<any, any[]>
-  css: MasterCSS
+  css?: MasterCSS
   ruleId: MasterCSSLintRuleId
   ruleOptions?: SourceRuleOptions
   rustLint?: RustLintSession

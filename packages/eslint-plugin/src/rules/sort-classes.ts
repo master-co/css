@@ -1,5 +1,5 @@
 import defineVisitors from '../utils/define-visitors'
-import resolveContext from '../utils/resolve-context'
+import resolveContext, { requireResolvedCSS } from '../utils/resolve-context'
 import createRule from '../create-rule'
 import { createSortClassesReport } from '@master/css-lint'
 import reportLintDiagnostics from '../utils/report-lint-diagnostics'
@@ -38,7 +38,7 @@ export default createRule({
         context,
         node,
         { raw, start, end, nodes, unescape, value: raw, classNodes: [], classValues: [] },
-        rustDiagnostics || createSortClassesReport(raw, css, { unescape }).diagnostics
+        rustDiagnostics || createSortClassesReport(raw, requireResolvedCSS(css), { unescape }).diagnostics
       )
     })
   },

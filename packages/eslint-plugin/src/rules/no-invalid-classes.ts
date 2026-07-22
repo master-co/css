@@ -1,5 +1,5 @@
 import defineVisitors from '../utils/define-visitors'
-import resolveContext from '../utils/resolve-context'
+import resolveContext, { requireResolvedCSS } from '../utils/resolve-context'
 import createRule from '../create-rule'
 import { noInvalidClassesOptionsSchema } from '../settings-schema'
 import { createInvalidClassesReport } from '@master/css-lint'
@@ -48,7 +48,7 @@ export default createRule({
         context,
         node,
         resolved,
-        rustDiagnostics || createInvalidClassesReport(resolved.raw, css, {
+        rustDiagnostics || createInvalidClassesReport(resolved.raw, requireResolvedCSS(css), {
           unescape: resolved.unescape,
           disallowUnknownClass: options.disallowUnknownClass
         }).diagnostics
