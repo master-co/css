@@ -44,6 +44,11 @@
       "types": "./dist/native-declaration.d.ts",
       "import": "./dist/native-declaration.js",
       "default": "./dist/native-declaration.js"
+    },
+    "./native-declaration-matcher": {
+      "types": "./dist/native-declaration-matcher.d.ts",
+      "import": "./dist/native-declaration-matcher.js",
+      "default": "./dist/native-declaration-matcher.js"
     }
   },
   "files": [

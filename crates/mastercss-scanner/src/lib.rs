@@ -4,7 +4,7 @@ use std::collections::{HashMap, HashSet};
 use std::path::Path;
 
 use mastercss_engine::{EngineError, EngineSession};
-use mastercss_schema::{EngineSnapshotIr, EngineTransitionIr};
+use mastercss_schema::{EngineSnapshotIr, EngineTransitionIr, NativeDeclarationCandidateIr};
 use serde::Serialize;
 
 #[derive(Debug, Clone, PartialEq, Serialize)]
@@ -15,6 +15,8 @@ pub struct ScannerUpdateIr {
     pub candidates: Vec<String>,
     pub valid_classes: Vec<String>,
     pub invalid_classes: Vec<String>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub used_native_classes: Vec<String>,
     pub transition: EngineTransitionIr,
 }
 
@@ -26,6 +28,7 @@ impl ScannerUpdateIr {
             candidates: Vec::new(),
             valid_classes: Vec::new(),
             invalid_classes: Vec::new(),
+            used_native_classes: Vec::new(),
             transition: EngineTransitionIr::empty(),
         }
     }
@@ -37,6 +40,10 @@ pub struct ScannerStateIr {
     pub latent_classes: Vec<String>,
     pub valid_classes: Vec<String>,
     pub invalid_classes: Vec<String>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub native_classes: Vec<String>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub used_native_classes: Vec<String>,
     pub cached_sources: usize,
     pub engine: EngineSnapshotIr,
 }
@@ -51,6 +58,10 @@ pub struct ScannerSession {
     valid_index: HashSet<String>,
     invalid_classes: Vec<String>,
     invalid_index: HashSet<String>,
+    native_classes: Vec<String>,
+    native_index: HashSet<String>,
+    used_native_classes: Vec<String>,
+    used_native_index: HashSet<String>,
     source_contents: HashMap<String, String>,
 }
 
@@ -65,11 +76,44 @@ impl ScannerSession {
             valid_index: HashSet::new(),
             invalid_classes: Vec::new(),
             invalid_index: HashSet::new(),
+            native_classes: Vec::new(),
+            native_index: HashSet::new(),
+            used_native_classes: Vec::new(),
+            used_native_index: HashSet::new(),
             source_contents: HashMap::new(),
         })
     }
 
     pub fn scan(&mut self, source: &str, content: &str) -> Result<ScannerUpdateIr, EngineError> {
+        let candidates = extract_source_candidates(source, content);
+        self.scan_candidates(
+            source,
+            content,
+            candidates,
+            &HashSet::new(),
+            &HashMap::new(),
+        )
+    }
+
+    pub fn native_declaration_candidates<I, S>(
+        &self,
+        candidates: I,
+    ) -> Result<Vec<NativeDeclarationCandidateIr>, EngineError>
+    where
+        I: IntoIterator<Item = S>,
+        S: AsRef<str>,
+    {
+        self.engine.native_declaration_candidates(candidates)
+    }
+
+    pub fn scan_candidates(
+        &mut self,
+        source: &str,
+        content: &str,
+        extracted_candidates: Vec<String>,
+        excluded_classes: &HashSet<String>,
+        native_support: &HashMap<String, bool>,
+    ) -> Result<ScannerUpdateIr, EngineError> {
         if content.is_empty() {
             return Ok(ScannerUpdateIr::unchanged(false));
         }
@@ -86,25 +130,34 @@ impl ScannerSession {
                 .insert(source.to_owned(), content.to_owned());
         }
 
-        let mut candidates = Vec::new();
-        for candidate in extract_source_candidates(source, content) {
-            if self.latent_index.insert(candidate.clone()) {
-                self.latent_classes.push(candidate.clone());
-                candidates.push(candidate);
-            }
-        }
+        let candidates = self.collect_candidates(extracted_candidates);
         if candidates.is_empty() {
             return Ok(ScannerUpdateIr::unchanged(false));
         }
 
         let mut valid_classes = Vec::new();
         let mut invalid_classes = Vec::new();
+        let mut used_native_classes = Vec::new();
         let mut mutations = Vec::new();
         for candidate in &candidates {
+            if excluded_classes.contains(candidate) {
+                continue;
+            }
+            if self.native_index.contains(candidate)
+                && self.used_native_index.insert(candidate.clone())
+            {
+                self.used_native_classes.push(candidate.clone());
+                used_native_classes.push(candidate.clone());
+            }
             if self.valid_index.contains(candidate) || self.invalid_index.contains(candidate) {
                 continue;
             }
-            let transition = self.engine.ensure_class_rules([candidate])?;
+            let transition = match native_support.get(candidate) {
+                Some(supported) => self
+                    .engine
+                    .ensure_class_rules_with_native_support([candidate], &[*supported])?,
+                None => self.engine.ensure_class_rules([candidate])?,
+            };
             let valid = self.engine.inspect(candidate)?.valid;
             if valid {
                 self.valid_index.insert(candidate.clone());
@@ -124,8 +177,58 @@ impl ScannerSession {
             candidates,
             valid_classes,
             invalid_classes,
+            used_native_classes,
             transition: EngineTransitionIr::new(mutations),
         })
+    }
+
+    pub fn collect_candidates<I, S>(&mut self, candidates: I) -> Vec<String>
+    where
+        I: IntoIterator<Item = S>,
+        S: AsRef<str>,
+    {
+        let mut collected = Vec::new();
+        for candidate in candidates {
+            let candidate = candidate.as_ref();
+            if self.latent_index.insert(candidate.to_owned()) {
+                self.latent_classes.push(candidate.to_owned());
+                collected.push(candidate.to_owned());
+            }
+        }
+        collected
+    }
+
+    pub fn ensure_classes<I, S>(
+        &mut self,
+        class_names: I,
+    ) -> Result<EngineTransitionIr, EngineError>
+    where
+        I: IntoIterator<Item = S>,
+        S: AsRef<str>,
+    {
+        self.engine.ensure_class_rules(class_names)
+    }
+
+    pub fn register_native_classes<I, S>(&mut self, class_names: I) -> bool
+    where
+        I: IntoIterator<Item = S>,
+        S: AsRef<str>,
+    {
+        let mut changed = false;
+        for class_name in class_names {
+            let class_name = class_name.as_ref();
+            if self.native_index.insert(class_name.to_owned()) {
+                self.native_classes.push(class_name.to_owned());
+                changed = true;
+            }
+            if self.latent_index.contains(class_name)
+                && self.used_native_index.insert(class_name.to_owned())
+            {
+                self.used_native_classes.push(class_name.to_owned());
+                changed = true;
+            }
+        }
+        changed
     }
 
     pub fn reset(&mut self) -> Result<(), EngineError> {
@@ -138,6 +241,8 @@ impl ScannerSession {
             latent_classes: self.latent_classes.clone(),
             valid_classes: self.valid_classes.clone(),
             invalid_classes: self.invalid_classes.clone(),
+            native_classes: self.native_classes.clone(),
+            used_native_classes: self.used_native_classes.clone(),
             cached_sources: self.source_contents.len(),
             engine: self.engine.snapshot()?,
         })
@@ -151,6 +256,10 @@ impl ScannerSession {
         self.valid_index.clear();
         self.invalid_classes.clear();
         self.invalid_index.clear();
+        self.native_classes.clear();
+        self.native_index.clear();
+        self.used_native_classes.clear();
+        self.used_native_index.clear();
         self.source_contents.clear();
     }
 }

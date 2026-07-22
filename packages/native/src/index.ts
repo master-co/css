@@ -29,6 +29,17 @@ export interface NativeEngineSession {
 
 export interface NativeScannerSession {
   scan(source: string, content: string): string
+  nativeDeclarationCandidates(candidates: string[]): string
+  collectCandidates(candidates: string[]): string[]
+  scanCandidates(
+    source: string,
+    content: string,
+    candidates: string[],
+    excludedClasses: string[],
+    nativeSupportJSON?: string
+  ): string
+  ensureClasses(classNames: string[]): string
+  registerNativeClasses(classNames: string[]): boolean
   reset(): void
   state(): string
   dispose(): void

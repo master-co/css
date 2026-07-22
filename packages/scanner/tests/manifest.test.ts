@@ -7,7 +7,7 @@ import { compileCSSManifest } from '@master/css-compiler'
 
 test('uses default manifest settings without implicit manifest entry discovery', async () => {
   const scanner = await new CSSScanner({}, __dirname).init()
-  expect(scanner.css.settings).toBeDefined()
+  expect(scanner.manifest.version).toBe(1)
 })
 
 test('reject string scanner options', async () => {
@@ -38,7 +38,9 @@ test('uses explicit compiled manifests', async () => {
       <button className="test btn">
     `)
   ).resolves.toEqual(['rel', 'blue-btn', 'test', 'btn'])
-  expect(scanner.css.createRule('blue-btn')?.text).toContain('background-color:oklch')
+  await scanner.reset({ manifest })
+  await scanner.scan('button.html', '<button class="blue-btn"></button>')
+  expect(scanner.css.text).toContain('background-color:oklch')
 })
 
 test('ignores native CSS classes from unmanaged CSS files', async () => {

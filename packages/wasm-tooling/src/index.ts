@@ -9,6 +9,17 @@ interface GeneratedToolingWasmModule {
   extractAstroClasses(source: string, content: string): string[]
   ToolingScannerSession: new (manifestJSON: string) => {
     scan(source: string, content: string): unknown
+    nativeDeclarationCandidates(candidates: string[]): unknown
+    collectCandidates(candidates: string[]): string[]
+    scanCandidates(
+      source: string,
+      content: string,
+      candidates: string[],
+      excludedClasses: string[],
+      nativeSupport: Record<string, boolean>
+    ): unknown
+    ensureClasses(classNames: string[]): unknown
+    registerNativeClasses(classNames: string[]): boolean
     reset(): void
     state(): unknown
     dispose(): void
@@ -39,4 +50,32 @@ export async function initToolingWasm(options: InitToolingWasmOptions = {}) {
     return module
   })
   return await modulePromise
+}
+
+export async function createToolingScannerSession(
+  manifestJSON: string,
+  options: InitToolingWasmOptions = {}
+) {
+  const module = await initToolingWasm(options)
+  const session = new module.ToolingScannerSession(manifestJSON)
+  return {
+    scan: (source: string, content: string) => session.scan(source, content),
+    nativeDeclarationCandidates: (candidates: string[]) => session.nativeDeclarationCandidates(candidates),
+    collectCandidates: (candidates: string[]) => session.collectCandidates(candidates),
+    scanCandidates: (
+      source: string,
+      content: string,
+      candidates: string[],
+      excludedClasses: string[],
+      nativeSupport: Record<string, boolean>
+    ) => session.scanCandidates(source, content, candidates, excludedClasses, nativeSupport),
+    ensureClasses: (classNames: string[]) => session.ensureClasses(classNames),
+    registerNativeClasses: (classNames: string[]) => session.registerNativeClasses(classNames),
+    reset: () => session.reset(),
+    state: () => session.state(),
+    dispose() {
+      session.dispose()
+      session.free()
+    }
+  }
 }

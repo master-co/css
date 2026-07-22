@@ -47,22 +47,16 @@ describe('content-hash cache (Phase A optimisation)', () => {
   })
 })
 
-describe('valid-rules memo (Phase A optimisation)', () => {
-  test('same class across many files is processed once', async () => {
+describe('Rust scanner validity cache', () => {
+  test('same class across many files remains a single generated rule', async () => {
     const ex = await new CSSScanner({}).init()
     // First file with the class — populates validClasses + the rules cache.
     await ex.scan('a.tsx', `<div className="bg:white">a</div>`)
     expect(ex.validClasses.has('bg:white')).toBe(true)
-    // Subsequent files with the same class — already in validClasses, so
-    // the inner generateValidRules path is skipped entirely. The
-    // assertion is structural: the rules-cache Map exists and is
-    // populated.
     await ex.scan('b.tsx', `<div className="bg:white">b</div>`)
     await ex.scan('c.tsx', `<div className="bg:white">c</div>`)
-    // @ts-expect-error access private cache for verification
-    expect(ex.validRulesCache.has('bg:white')).toBe(true)
-    // @ts-expect-error access private cache for verification
-    expect(ex.validRulesCache.size).toBe(1)
+    expect(ex.state.engine.rules.filter(({ className }) => className === 'bg:white')).toHaveLength(1)
+    expect(ex.state.cachedSources).toBe(3)
   })
 })
 

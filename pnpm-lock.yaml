@@ -2213,12 +2213,12 @@ importers:
 
   packages/scanner:
     dependencies:
-      '@master/css':
-        specifier: workspace:^
-        version: link:../facade
       '@master/css-lexer':
         specifier: workspace:^
         version: link:../lexer
+      '@master/css-native':
+        specifier: workspace:^
+        version: link:../native
       '@master/css-preset':
         specifier: workspace:^
         version: link:../preset
@@ -2231,6 +2231,9 @@ importers:
       '@master/css-validator':
         specifier: workspace:^
         version: link:../validator
+      '@master/css-wasm-tooling':
+        specifier: workspace:^
+        version: link:../wasm-tooling
       consola:
         specifier: ^3.4.2
         version: 3.4.2
@@ -2244,9 +2247,6 @@ importers:
       '@master/css-compiler':
         specifier: workspace:^
         version: link:../compiler
-      '@master/css-native':
-        specifier: workspace:^
-        version: link:../native
 
   packages/schema:
     dependencies:

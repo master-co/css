@@ -107,17 +107,23 @@ export interface CreateExtractedCSSResult {
 
 export type StylesheetCSS = ReturnType<typeof createCSSWithNativeDeclarations>
 
+export interface ScannerCSSState {
+  readonly text: string
+  readonly manifest: MasterCSSManifest
+}
+
 export interface ScannerState {
   cwd: string
   options: StylesheetSourceOptions
   customOptions?: {
     manifest?: MasterCSSManifest
   }
-  css: StylesheetCSS
+  css: ScannerCSSState
   latentClasses: Set<string>
   validClasses: Set<string>
   usedNativeClasses: Set<string>
   nativeClassNames: Set<string>
+  registerNativeClasses?: (classNames: string[]) => boolean
   emit?: (event: 'change') => unknown
 }
 
@@ -787,6 +793,10 @@ function getStyleSourceClasses(
 }
 
 export function refreshScannerNativeClasses(scanner: ScannerState, nativeClassNames: string[]) {
+  if (scanner.registerNativeClasses) {
+    scanner.registerNativeClasses(nativeClassNames)
+    return
+  }
   let changed = false
   for (const className of nativeClassNames) {
     if (!scanner.nativeClassNames.has(className)) {

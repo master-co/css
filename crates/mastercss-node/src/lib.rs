@@ -7,6 +7,7 @@ use mastercss_scanner::ScannerSession as RustScannerSession;
 use napi::{Error, Result, Status};
 use napi_derive::napi;
 use serde::Serialize;
+use std::collections::{HashMap, HashSet};
 
 const BINDING_ABI_VERSION: u32 = 1;
 
@@ -190,6 +191,65 @@ impl NodeScannerSession {
     #[napi]
     pub fn scan(&mut self, source: String, content: String) -> Result<String> {
         to_json(&self.inner.scan(&source, &content).map_err(to_napi_error)?)
+    }
+
+    #[napi]
+    pub fn native_declaration_candidates(&self, candidates: Vec<String>) -> Result<String> {
+        to_json(
+            &self
+                .inner
+                .native_declaration_candidates(candidates)
+                .map_err(to_napi_error)?,
+        )
+    }
+
+    #[napi]
+    pub fn collect_candidates(&mut self, candidates: Vec<String>) -> Vec<String> {
+        self.inner.collect_candidates(candidates)
+    }
+
+    #[napi]
+    pub fn scan_candidates(
+        &mut self,
+        source: String,
+        content: String,
+        candidates: Vec<String>,
+        excluded_classes: Vec<String>,
+        native_support_json: Option<String>,
+    ) -> Result<String> {
+        let native_support = native_support_json
+            .as_deref()
+            .map(serde_json::from_str::<HashMap<String, bool>>)
+            .transpose()
+            .map_err(|error| Error::new(Status::InvalidArg, error.to_string()))?
+            .unwrap_or_default();
+        to_json(
+            &self
+                .inner
+                .scan_candidates(
+                    &source,
+                    &content,
+                    candidates,
+                    &excluded_classes.into_iter().collect::<HashSet<_>>(),
+                    &native_support,
+                )
+                .map_err(to_napi_error)?,
+        )
+    }
+
+    #[napi]
+    pub fn ensure_classes(&mut self, class_names: Vec<String>) -> Result<String> {
+        to_json(
+            &self
+                .inner
+                .ensure_classes(class_names)
+                .map_err(to_napi_error)?,
+        )
+    }
+
+    #[napi]
+    pub fn register_native_classes(&mut self, class_names: Vec<String>) -> bool {
+        self.inner.register_native_classes(class_names)
     }
 
     #[napi]

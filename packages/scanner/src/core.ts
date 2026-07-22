@@ -1,5 +1,4 @@
 import scannerOptions, { type ScannerOptions } from './options'
-import { MasterCSS } from '@master/css'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import { createRequire } from 'node:module'
 import {
@@ -15,9 +14,7 @@ import {
 import { Minimatch } from 'minimatch'
 import { createConsola } from 'consola'
 import { defu } from 'defu'
-import { createCSSWithNativeDeclarations, generateValidRules } from '@master/css-validator'
 import { EventEmitter } from 'node:events'
-import { createHash } from 'node:crypto'
 import { cssEscape } from '@master/css-lexer'
 import path from 'path'
 import {
@@ -25,6 +22,12 @@ import {
   isClassExcludedByMatcher,
   type ClassExclusionMatcher
 } from './utils/class-exclusion'
+import {
+  createRustScannerSession,
+  resolveNativeSupport,
+  type RustScannerSession,
+  type RustScannerStateIR
+} from './rust-session'
 
 const builtInAdapters = [
   vueAdapter(),
@@ -121,6 +124,30 @@ function createSourceMatchCandidates(source: string, cwd: string) {
   return candidates
 }
 
+export class ScannerCSSView {
+  constructor(readonly scanner: CSSScanner) { }
+
+  get manifest() {
+    return this.scanner.manifest
+  }
+
+  get settings() {
+    return this.manifest.settings
+  }
+
+  get text() {
+    return this.scanner.state.engine.text
+  }
+
+  get utilitiesLayer() {
+    return {
+      rules: this.scanner.state.engine.rules
+        .filter(({ layer }) => layer === 'utilities')
+        .map((rule) => ({ ...rule, name: rule.className }))
+    }
+  }
+}
+
 // eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging
 export default class CSSScanner extends EventEmitter {
   latentClasses = new Set<string>()
@@ -131,22 +158,10 @@ export default class CSSScanner extends EventEmitter {
   initialized = false
   initializing?: Promise<this>
   resetDependencies: string[] = []
-
-  /**
-   * Per-source content-hash cache. When the same `source` arrives with the
-   * same `content` (HMR re-fires the same file unchanged, vite transform
-   * runs the same module twice), we skip re-running the regex pipeline
-   * and re-validating every class.
-   */
-  private contentHashes = new Map<string, string>()
-
-  /**
-   * Memoized result of `generateValidRules` per syntax string. The same
-   * class commonly appears in 100+ files in real codebases; without this,
-   * we re-run css.generate() + validateCSS() per occurrence. With it, the
-   * second occurrence is an O(1) Map lookup.
-   */
-  private validRulesCache = new Map<string, ReturnType<typeof generateValidRules>>()
+  readonly css = new ScannerCSSView(this)
+  private rustSession?: RustScannerSession
+  private rustState?: RustScannerStateIR
+  private currentManifest: MasterCSSManifest = defaultManifest
 
   /** Precompiled minimatch patterns for per-module allow/exclude checks. */
   private sourceMatchers?: SourceMatchers
@@ -192,7 +207,8 @@ export default class CSSScanner extends EventEmitter {
     this.classExclusionMatcher = undefined
     this.classExclusionOptions = undefined
     this.nativeClassNames = new Set()
-    this.css = createCSSWithNativeDeclarations(this.options.manifest || defaultManifest)
+    this.currentManifest = this.options.manifest || defaultManifest
+    this.rustSession = await createRustScannerSession(this.currentManifest)
     this.insertSafelist()
     this.emit('init', this.options, this.manifest)
     this.initialized = true
@@ -208,8 +224,9 @@ export default class CSSScanner extends EventEmitter {
     this.invalidClasses.clear()
     this.nativeClassNames.clear()
     this.usedNativeClasses.clear()
-    this.contentHashes.clear()
-    this.validRulesCache.clear()
+    this.rustSession?.dispose()
+    this.rustSession = undefined
+    this.rustState = undefined
     this.resetDependencies = []
     this.sourceMatchers = undefined
     this.sourceMatcherOptions = undefined
@@ -232,8 +249,9 @@ export default class CSSScanner extends EventEmitter {
     this.invalidClasses.clear()
     this.nativeClassNames.clear()
     this.usedNativeClasses.clear()
-    this.contentHashes.clear()
-    this.validRulesCache.clear()
+    this.rustSession?.dispose()
+    this.rustSession = undefined
+    this.rustState = undefined
     this.resetDependencies = []
     this.sourceMatchers = undefined
     this.sourceMatcherOptions = undefined
@@ -248,9 +266,8 @@ export default class CSSScanner extends EventEmitter {
 
   private insertSafelist() {
     if (this.options.safelist?.length) {
-      for (const eachFixedClass of this.options.safelist) {
-        this.css.ensureClassRules(eachFixedClass)
-      }
+      this.getRustSession().ensureClasses(this.options.safelist)
+      this.syncRustState()
       if (this.options.verbose) {
         logger.success(`${this.options.safelist.length} fixed classes inserted ${this.options.safelist.join(', ')}`)
       }
@@ -271,15 +288,8 @@ export default class CSSScanner extends EventEmitter {
     const extractedClasses = adapter
       ? await adapter.extract({ source, content })
       : extractClassCandidates(content)
-    const latentClasses: string[] = []
-    for (const eachLatentClasses of extractedClasses) {
-      if (this.latentClasses.has(eachLatentClasses)) {
-        continue
-      } else {
-        this.latentClasses.add(eachLatentClasses)
-        latentClasses.push(eachLatentClasses)
-      }
-    }
+    const latentClasses = this.getRustSession().collectCandidates(extractedClasses)
+    this.syncRustState()
     return latentClasses
   }
 
@@ -293,76 +303,35 @@ export default class CSSScanner extends EventEmitter {
     if (!content) {
       return false
     }
-
-    // Skip the whole pipeline when this exact (source, content) pair has
-    // already been processed. HMR commonly re-fires unchanged files; vite
-    // can also call `transform` on the same module twice. Hashing 1 KB of
-    // source via SHA-1 is ~2 µs; running scan + validate on it is ms.
-    if (source) {
-      const hash = createHash('sha1').update(content).digest('hex')
-      if (this.contentHashes.get(source) === hash) {
-        return false
-      }
-      this.contentHashes.set(source, hash)
-    }
-
-    const allLatent = await this.collectCandidates(source, content)
-    if (!allLatent.length) {
-      return false
-    }
-
-    // Single-pass filter (was three sequential `.filter` chains, each
-    // allocating a new array). Track native CSS classes separately, then
-    // skip generated-rule candidates already known invalid / already
-    // known valid / explicitly excluded by blocklist options.
-    const latentClasses: string[] = []
-    const nativeClasses: string[] = []
-    for (const eachLatentClass of allLatent) {
-      if (this.isClassExcluded(eachLatentClass)) continue
-      if (this.nativeClassNames.has(eachLatentClass) && !this.usedNativeClasses.has(eachLatentClass)) {
-        this.usedNativeClasses.add(eachLatentClass)
-        nativeClasses.push(eachLatentClass)
-      }
-      if (this.invalidClasses.has(eachLatentClass)) continue
-      if (this.validClasses.has(eachLatentClass)) continue
-      latentClasses.push(eachLatentClass)
-    }
-    if (!latentClasses.length && !nativeClasses.length) {
-      return false
-    }
-
-    let time = process.hrtime()
-    // Synchronous loop — generateValidRules is sync; the previous
-    // `Promise.all(map(async))` was just microtask overhead with no
-    // parallelism in single-threaded JS. Per-class result is also memoized
-    // so repeated occurrences across files are O(1).
-    const validClasses: string[] = []
-    for (const eachLatentClass of latentClasses) {
-      let validRules = this.validRulesCache.get(eachLatentClass)
-      if (validRules === undefined) {
-        validRules = generateValidRules(eachLatentClass, this.css)
-        this.validRulesCache.set(eachLatentClass, validRules)
-      }
-      if (validRules.length) {
-        for (const validRule of validRules) {
-          validRule.layer.insert(validRule)
-        }
-        validClasses.push(eachLatentClass)
-        this.validClasses.add(eachLatentClass)
-      } else {
-        this.invalidClasses.add(eachLatentClass)
-      }
-    }
-    if (validClasses.length || nativeClasses.length) {
+    const adapter = this.resolveSourceAdapter(source)
+    const extractedClasses = adapter
+      ? await adapter.extract({ source, content })
+      : extractClassCandidates(content)
+    const excludedClasses = extractedClasses.filter((className) => this.isClassExcluded(className))
+    const session = this.getRustSession()
+    session.registerNativeClasses([...this.nativeClassNames])
+    const nativeCandidates = session.nativeDeclarationCandidates(
+      extractedClasses.filter((className) => !excludedClasses.includes(className))
+    )
+    const time = process.hrtime()
+    const update = session.scanCandidates(
+      source,
+      content,
+      extractedClasses,
+      excludedClasses,
+      resolveNativeSupport(nativeCandidates)
+    )
+    this.syncRustState()
+    const changedClasses = [...update.validClasses, ...(update.usedNativeClasses || [])]
+    if (changedClasses.length) {
       if (this.options.verbose) {
-        time = process.hrtime(time)
-        const spent = Math.round(((time[0] * 1e9 + time[1]) / 1e6) * 10) / 10
-        const changedClasses = [...validClasses, ...nativeClasses]
+        const spentTime = process.hrtime(time)
+        const spent = Math.round(((spentTime[0] * 1e9 + spentTime[1]) / 1e6) * 10) / 10
         logger.success(`${path.relative(this.cwd, source)} ${changedClasses.length} classes inserted in ${spent}ms ${this.options.verbose > 1 ? changedClasses.join(', ') : ''}`)
       }
       this.emit('change')
     }
-    return true
+    return update.changed
   }
 
   async scanModule(source: string, content: string): Promise<boolean> {
@@ -420,11 +389,42 @@ export default class CSSScanner extends EventEmitter {
     return true
   }
 
+  registerNativeClasses(classNames: string[]) {
+    const changed = this.getRustSession().registerNativeClasses(classNames)
+    this.syncRustState()
+    if (changed) this.emit('change')
+    return changed
+  }
+
+  private getRustSession() {
+    if (!this.rustSession) throw new Error('CSSScanner must be initialized before use.')
+    return this.rustSession
+  }
+
+  private syncRustState() {
+    const state = this.getRustSession().state()
+    this.rustState = state
+    const syncSet = (target: Set<string>, values: string[] | undefined) => {
+      target.clear()
+      for (const value of values || []) target.add(value)
+    }
+    syncSet(this.latentClasses, state.latentClasses)
+    syncSet(this.validClasses, state.validClasses)
+    syncSet(this.invalidClasses, state.invalidClasses)
+    syncSet(this.nativeClassNames, state.nativeClasses)
+    syncSet(this.usedNativeClasses, state.usedNativeClasses)
+    return state
+  }
+
+  get state() {
+    return this.rustState || this.syncRustState()
+  }
+
   /**
    * computed from `options.manifest`
    */
   get manifest(): MasterCSSManifest {
-    return this.css.manifest
+    return this.currentManifest
   }
 
   get slotCSSRule(): string {
@@ -434,6 +434,5 @@ export default class CSSScanner extends EventEmitter {
 
 // eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging
 export default interface CSSScanner {
-  css: MasterCSS
   options: ScannerOptions
 }

@@ -1,5 +1,6 @@
 #![forbid(unsafe_code)]
 
+use std::collections::{HashMap, HashSet};
 use wasm_bindgen::prelude::*;
 
 fn scanner_error(error: mastercss_engine::EngineError) -> JsValue {
@@ -50,6 +51,67 @@ impl ToolingScannerSession {
     pub fn scan(&mut self, source: &str, content: &str) -> Result<JsValue, JsValue> {
         let update = self.inner.scan(source, content).map_err(scanner_error)?;
         serde_wasm_bindgen::to_value(&update).map_err(|error| JsValue::from_str(&error.to_string()))
+    }
+
+    #[wasm_bindgen(js_name = nativeDeclarationCandidates)]
+    pub fn native_declaration_candidates(
+        &self,
+        candidates: Vec<String>,
+    ) -> Result<JsValue, JsValue> {
+        let candidates = self
+            .inner
+            .native_declaration_candidates(candidates)
+            .map_err(scanner_error)?;
+        serde_wasm_bindgen::to_value(&candidates)
+            .map_err(|error| JsValue::from_str(&error.to_string()))
+    }
+
+    #[wasm_bindgen(js_name = collectCandidates)]
+    pub fn collect_candidates(&mut self, candidates: Vec<String>) -> Vec<String> {
+        self.inner.collect_candidates(candidates)
+    }
+
+    #[wasm_bindgen(js_name = scanCandidates)]
+    pub fn scan_candidates(
+        &mut self,
+        source: &str,
+        content: &str,
+        candidates: Vec<String>,
+        excluded_classes: Vec<String>,
+        native_support: JsValue,
+    ) -> Result<JsValue, JsValue> {
+        let native_support = if native_support.is_null() || native_support.is_undefined() {
+            HashMap::new()
+        } else {
+            serde_wasm_bindgen::from_value::<HashMap<String, bool>>(native_support)
+                .map_err(|error| JsValue::from_str(&error.to_string()))?
+        };
+        let update = self
+            .inner
+            .scan_candidates(
+                source,
+                content,
+                candidates,
+                &excluded_classes.into_iter().collect::<HashSet<_>>(),
+                &native_support,
+            )
+            .map_err(scanner_error)?;
+        serde_wasm_bindgen::to_value(&update).map_err(|error| JsValue::from_str(&error.to_string()))
+    }
+
+    #[wasm_bindgen(js_name = ensureClasses)]
+    pub fn ensure_classes(&mut self, class_names: Vec<String>) -> Result<JsValue, JsValue> {
+        let transition = self
+            .inner
+            .ensure_classes(class_names)
+            .map_err(scanner_error)?;
+        serde_wasm_bindgen::to_value(&transition)
+            .map_err(|error| JsValue::from_str(&error.to_string()))
+    }
+
+    #[wasm_bindgen(js_name = registerNativeClasses)]
+    pub fn register_native_classes(&mut self, class_names: Vec<String>) -> bool {
+        self.inner.register_native_classes(class_names)
     }
 
     pub fn reset(&mut self) -> Result<(), JsValue> {
