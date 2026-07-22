@@ -29,6 +29,7 @@ it('instantiates and executes the Rust engine through WebAssembly', async () => 
 })
 
 it('passes emitted globals to the Wasm-owned session', async () => {
+  vi.stubGlobal('CSS', { supports: () => true })
   const input = new Uint8Array(await readFile(new URL(
     '../artifacts/mastercss_wasm_runtime_bg.wasm',
     import.meta.url

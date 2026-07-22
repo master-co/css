@@ -10,9 +10,15 @@ import {
 
 const typedDefaultManifest = defaultManifest as unknown as MasterCSSManifest
 
-function createRustTextWithNativeFallback(className: string) {
+function createRustSession() {
   const binding = loadNativeBinding({ required: true })!.binding
-  const session = new binding.EngineSession(stringifyMasterCSSManifestJSON(typedDefaultManifest))
+  return new binding.EngineSession(stringifyMasterCSSManifestJSON(typedDefaultManifest))
+}
+
+function createRustTextWithNativeFallback(
+  session: ReturnType<typeof createRustSession>,
+  className: string
+) {
   const candidates = JSON.parse(session.nativeDeclarationCandidates([className])) as {
     property: string
   }[]
@@ -21,7 +27,7 @@ function createRustTextWithNativeFallback(className: string) {
     candidates.map(({ property }) => matchesNativeFallbackProperty(property))
   )
   const snapshot = JSON.parse(session.snapshot()) as { text: string }
-  session.dispose()
+  session.deleteClassRules([className])
   return snapshot.text
 }
 
@@ -381,15 +387,20 @@ describe.concurrent('migrated core rule expectations', () => {
   for (const { source, cases } of migratedRuleExpectations) {
     test(source, () => {
       const css = createDefaultCSS()
-      for (const [className, expected] of cases) {
-        expect(css.createRule(className)?.text, className).toContain(expected)
+      const rust = createRustSession()
+      try {
+        for (const [className, expected] of cases) {
+          expect(css.createRule(className)?.text, className).toContain(expected)
 
-        const oracle = createDefaultCSS()
-        oracle.ensureClassRules(className)
-        expect(
-          createRustTextWithNativeFallback(className),
-          `Rust differential: ${className}`
-        ).toBe(oracle.text)
+          const oracle = createDefaultCSS()
+          oracle.ensureClassRules(className)
+          expect(
+            createRustTextWithNativeFallback(rust, className),
+            `Rust differential: ${className}`
+          ).toBe(oracle.text)
+        }
+      } finally {
+        rust.dispose()
       }
     })
   }

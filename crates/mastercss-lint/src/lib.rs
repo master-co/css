@@ -4,7 +4,7 @@ mod class_list;
 
 use mastercss_engine::{
     ClassSemanticInspection, EngineError, EngineSession, builtin_key_aliases,
-    builtin_native_value_properties,
+    builtin_native_value_properties, natural_compare,
 };
 use mastercss_schema::{
     GeneratedRuleIr, LINT_BATCH_VERSION, NativeDeclarationCandidateIr, SourceRange,
@@ -547,6 +547,7 @@ impl LintSession {
                 .and_then(|support| support.get(index))
                 .copied()
                 .unwrap_or(false)
+                && self.is_compose_native_declaration(&candidate)?
             {
                 native_declarations.insert(candidate.class_name.clone(), candidate);
             }
@@ -598,8 +599,38 @@ impl LintSession {
         &self,
         class_name: &str,
     ) -> Result<Option<NativeDeclarationCandidateIr>, EngineError> {
+        let Some(candidate) = self.compose_native_declaration(class_name)? else {
+            return Ok(None);
+        };
+        if !self
+            .supported_native_declarations
+            .contains(&(candidate.property.clone(), candidate.value.clone()))
+        {
+            return Ok(None);
+        }
+        Ok(Some(candidate))
+    }
+
+    fn is_compose_native_declaration(
+        &self,
+        candidate: &NativeDeclarationCandidateIr,
+    ) -> Result<bool, EngineError> {
+        Ok(self
+            .compose_native_declaration(&candidate.class_name)?
+            .is_some_and(|declaration| {
+                declaration.property == candidate.property && declaration.value == candidate.value
+            }))
+    }
+
+    fn compose_native_declaration(
+        &self,
+        class_name: &str,
+    ) -> Result<Option<NativeDeclarationCandidateIr>, EngineError> {
         let semantics = self.engine.inspect_class_semantics(class_name)?;
-        if semantics.kind != mastercss_engine::ClassSemanticKind::Declaration {
+        if semantics.kind != mastercss_engine::ClassSemanticKind::Declaration
+            || semantics.state_token.is_some()
+            || !self.engine.class_variable_keys(class_name)?.is_empty()
+        {
             return Ok(None);
         }
         let parts = canonical_class_parts(class_name, &semantics);
@@ -607,18 +638,22 @@ impl LintSession {
             return Ok(None);
         };
         let inspection = self.engine.inspect(class_name)?;
-        if inspection.rules.len() != 1 || !inspection.rules[0].variable_names.is_empty() {
+        if inspection.rules.len() != 1 {
             return Ok(None);
         }
-        let declarations = collect_rule_declarations(&inspection.rules[0].text);
+        let rule = &inspection.rules[0];
+        if rule.utility_type != 0
+            || rule.layer != UtilityLayerName::Utilities
+            || !rule.nodes.is_empty()
+            || !rule.variable_names.is_empty()
+        {
+            return Ok(None);
+        }
+        let declarations = collect_rule_declarations(&rule.text);
         let [(property, value)] = declarations.as_slice() else {
             return Ok(None);
         };
-        if source_key != *property
-            || !self
-                .supported_native_declarations
-                .contains(&(property.clone(), value.clone()))
-        {
+        if source_key != *property {
             return Ok(None);
         }
         Ok(Some(NativeDeclarationCandidateIr {
@@ -3007,10 +3042,6 @@ fn compare_condition_features(
     Ordering::Equal
 }
 
-fn natural_compare(left: &str, right: &str) -> Ordering {
-    left.cmp(right)
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -3050,6 +3081,15 @@ mod tests {
         );
         assert_eq!(batch.conflicts[0].class_name, "m:2px");
         assert_eq!(batch.conflicts[0].conflicts, ["m:3px"]);
+
+        let mut default_session = LintSession::create(DEFAULT_MANIFEST).unwrap();
+        let conditional = default_session
+            .analyze(["m:10x@sm", "m:3.125rem@sm"], None, &HashSet::new())
+            .unwrap();
+        assert_eq!(
+            conditional.sorted_class_names,
+            ["m:3.125rem@sm", "m:10x@sm"]
+        );
 
         let partial = session
             .analyze(["mx:2px", "ml:3px"], None, &HashSet::new())

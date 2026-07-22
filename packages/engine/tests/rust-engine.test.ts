@@ -209,14 +209,18 @@ describe('Rust engine differential slice', () => {
     }
 
     const differences: { className: string, oracle: string, rust: string }[] = []
-    for (const className of classNames) {
-      const oracle = MasterCSS.create({ manifest: typedDefaultManifest })
-      oracle.ensureClassRules(className)
-      const rust = createEngineSync({ manifest: typedDefaultManifest })
-      rust.ensureClassRules([className])
-      if (rust.text !== oracle.text) {
-        differences.push({ className, oracle: oracle.text, rust: rust.text })
+    const rust = createEngineSync({ manifest: typedDefaultManifest })
+    try {
+      for (const className of classNames) {
+        const oracle = MasterCSS.create({ manifest: typedDefaultManifest })
+        oracle.ensureClassRules(className)
+        rust.ensureClassRules([className])
+        if (rust.text !== oracle.text) {
+          differences.push({ className, oracle: oracle.text, rust: rust.text })
+        }
+        rust.deleteClassRules([className])
       }
+    } finally {
       rust.dispose()
     }
     expect(differences).toEqual([])
@@ -252,14 +256,19 @@ describe('Rust engine differential slice', () => {
       'bx:1px|solid', 'by:1px|solid', 'bg:conic-gradient(current,black)'
     ]
     const differences: { className: string, oracle: string, rust: string }[] = []
-    for (const className of classNames) {
-      const oracle = MasterCSS.create({ manifest: typedDefaultManifest })
-      oracle.ensureClassRules(className)
-      const rust = createEngineSync({ manifest: typedDefaultManifest })
-      rust.ensureClassRules([className])
-      if (rust.text !== oracle.text) {
-        differences.push({ className, oracle: oracle.text, rust: rust.text })
+    const rust = createEngineSync({ manifest: typedDefaultManifest })
+    try {
+      for (const className of classNames) {
+        const oracle = MasterCSS.create({ manifest: typedDefaultManifest })
+        oracle.ensureClassRules(className)
+        rust.ensureClassRules([className])
+        if (rust.text !== oracle.text) {
+          differences.push({ className, oracle: oracle.text, rust: rust.text })
+        }
+        rust.deleteClassRules([className])
       }
+    } finally {
+      rust.dispose()
     }
     expect(differences).toEqual([])
   })
@@ -286,14 +295,19 @@ describe('Rust engine differential slice', () => {
       'filter:drop-shadow(0|2px|4px|black/.2)'
     ]
     const differences: { className: string, oracle: string, rust: string }[] = []
-    for (const className of classNames) {
-      const oracle = MasterCSS.create({ manifest: typedDefaultManifest })
-      oracle.ensureClassRules(className)
-      const rust = createEngineSync({ manifest: typedDefaultManifest })
-      rust.ensureClassRules([className])
-      if (rust.text !== oracle.text) {
-        differences.push({ className, oracle: oracle.text, rust: rust.text })
+    const rust = createEngineSync({ manifest: typedDefaultManifest })
+    try {
+      for (const className of classNames) {
+        const oracle = MasterCSS.create({ manifest: typedDefaultManifest })
+        oracle.ensureClassRules(className)
+        rust.ensureClassRules([className])
+        if (rust.text !== oracle.text) {
+          differences.push({ className, oracle: oracle.text, rust: rust.text })
+        }
+        rust.deleteClassRules([className])
       }
+    } finally {
+      rust.dispose()
     }
     expect(differences).toEqual([])
   })

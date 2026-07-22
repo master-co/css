@@ -331,6 +331,7 @@ struct StoredRule {
     ir: GeneratedRuleIr,
     manifest_order: i32,
     declarations: String,
+    native_fallback: bool,
 }
 
 #[derive(Debug)]
@@ -384,6 +385,7 @@ pub struct EngineSession {
     theme_variable_names: Vec<String>,
     animation_counts: HashMap<String, u32>,
     animation_names: Vec<String>,
+    native_declaration_support: HashMap<String, HashMap<(String, String), bool>>,
     disposed: bool,
 }
 
@@ -415,6 +417,7 @@ impl EngineSession {
             theme_variable_names: Vec::new(),
             animation_counts: HashMap::new(),
             animation_names: Vec::new(),
+            native_declaration_support: HashMap::new(),
             disposed: false,
         };
         session.initialize_variable_resources();
@@ -568,6 +571,13 @@ impl EngineSession {
             .flat_map(|class_name| self.native_declaration_candidates_for_class(class_name))
             .collect::<Vec<_>>();
         for (candidate, supported) in candidates.into_iter().zip(supported.iter().copied()) {
+            self.native_declaration_support
+                .entry(candidate.ir.class_name.clone())
+                .or_default()
+                .insert(
+                    (candidate.ir.property.clone(), candidate.ir.value.clone()),
+                    supported,
+                );
             if !supported {
                 continue;
             }
@@ -1009,6 +1019,7 @@ impl EngineSession {
         self.theme_variable_names.clear();
         self.animation_counts.clear();
         self.animation_names.clear();
+        self.native_declaration_support.clear();
         self.disposed = true;
     }
 
@@ -1025,6 +1036,7 @@ impl EngineSession {
             theme_variable_names: Vec::new(),
             animation_counts: HashMap::new(),
             animation_names: Vec::new(),
+            native_declaration_support: self.native_declaration_support.clone(),
             disposed: false,
         };
         session.initialize_variable_resources();
@@ -1260,11 +1272,30 @@ impl EngineSession {
                 })
                 .collect();
         }
-        if !self.generate_class_rules(class_name).is_empty() {
+        let source_candidate = self.parse_native_declaration_candidate(class_name);
+        let generated = self.generate_class_rules(class_name);
+        if generated.is_empty() {
+            return source_candidate.into_iter().collect();
+        }
+        if generated.iter().any(|rule| !rule.native_fallback) {
             return Vec::new();
         }
-        self.parse_native_declaration_candidate(class_name)
+        let Some(source_candidate) = source_candidate else {
+            return Vec::new();
+        };
+        let mut seen = HashSet::new();
+        generated
             .into_iter()
+            .filter_map(|rule| single_native_declaration(&rule.declarations))
+            .filter(|declaration| seen.insert(declaration.clone()))
+            .map(|(property, value)| NativeDeclarationCandidate {
+                ir: NativeDeclarationCandidateIr {
+                    class_name: class_name.to_owned(),
+                    property,
+                    value,
+                },
+                match_name: source_candidate.match_name.clone(),
+            })
             .collect()
     }
 
@@ -1487,11 +1518,20 @@ impl EngineSession {
                     .as_deref()
                     .map(|value| normalize_dynamic_value(value, &self.compiled.settings));
                 for (branch_index, branch) in state_branches.into_iter().enumerate() {
-                    let emitted_rules = emit_declarations(
+                    let mut emitted_rules = emit_declarations(
                         utility,
                         resolved_value.as_deref(),
                         branch.important || self.compiled.settings.important,
                     );
+                    if utility.native_fallback
+                        && let Some(support) = self.native_declaration_support.get(class_name)
+                    {
+                        emitted_rules.retain(|(_, declarations, _, _)| {
+                            single_native_declaration(declarations).is_none_or(|declaration| {
+                                support.get(&declaration).copied() != Some(false)
+                            })
+                        });
+                    }
                     if emitted_rules.is_empty() {
                         continue;
                     }
@@ -1568,6 +1608,7 @@ impl EngineSession {
                         },
                         manifest_order: utility.order.unwrap_or_default(),
                         declarations,
+                        native_fallback: utility.native_fallback,
                     });
                 }
             }
@@ -1658,6 +1699,7 @@ impl EngineSession {
                         },
                         manifest_order: 0,
                         declarations: declarations.clone(),
+                        native_fallback: false,
                     }
                 })
                 .collect(),
@@ -1884,6 +1926,23 @@ fn serialize_literal_value(value: &Value) -> Option<String> {
             .map(|values| values.join("")),
         _ => None,
     }
+}
+
+fn single_native_declaration(declarations: &str) -> Option<(String, String)> {
+    let declarations = split_top_level(declarations, ';')
+        .into_iter()
+        .filter(|declaration| !declaration.is_empty())
+        .collect::<Vec<_>>();
+    let [declaration] = declarations.as_slice() else {
+        return None;
+    };
+    let (property, value) = declaration.split_once(':')?;
+    let value = value
+        .trim_end()
+        .strip_suffix("!important")
+        .map(str::trim_end)
+        .unwrap_or(value);
+    Some((property.to_owned(), value.to_owned()))
 }
 
 const SPACING_PROPERTIES: &[&str] = &[
@@ -3493,7 +3552,7 @@ fn compare_condition_features(left: &[ConditionFeature], right: &[ConditionFeatu
     Ordering::Equal
 }
 
-fn natural_compare(left: &str, right: &str) -> Ordering {
+pub fn natural_compare(left: &str, right: &str) -> Ordering {
     let mut left_chars = left.chars().peekable();
     let mut right_chars = right.chars().peekable();
     loop {
@@ -5285,6 +5344,36 @@ mod tests {
             engine.css_text(),
             "@layer utilities{.display\\:block{display:block}}"
         );
+    }
+
+    #[test]
+    fn validates_native_value_namespaces_before_committing_rules() {
+        let mut engine = EngineSession::create(r#"{"version":1,"utilities":[]}"#).unwrap();
+        let candidates = engine
+            .native_declaration_candidates(["width:error", "w:10px"])
+            .unwrap();
+        assert_eq!(candidates.len(), 2);
+        assert_eq!(candidates[0].property, "width");
+        assert_eq!(candidates[0].value, "error");
+        assert_eq!(candidates[1].property, "width");
+        assert_eq!(candidates[1].value, "10px");
+
+        engine
+            .ensure_class_rules_with_native_support(["width:error", "w:10px"], &[false, true])
+            .unwrap();
+        assert_eq!(engine.css_text(), "@layer utilities{.w\\:10px{width:10px}}");
+        assert!(!engine.inspect("width:error").unwrap().valid);
+
+        let token_engine = EngineSession::create(include_str!(
+            "../../../packages/preset/src/default-manifest.json"
+        ))
+        .unwrap();
+        let token_candidates = token_engine
+            .native_declaration_candidates(["fg:red-60"])
+            .unwrap();
+        assert_eq!(token_candidates.len(), 1);
+        assert_eq!(token_candidates[0].property, "color");
+        assert_eq!(token_candidates[0].value, "var(--color-red-60)");
     }
 
     #[test]
