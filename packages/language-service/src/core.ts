@@ -29,9 +29,10 @@ export interface CSSLanguageServiceOptions {
 }
 
 export default class CSSLanguageService extends EventEmitter {
-  css: MasterCSS
   runtime: CSSLanguageRuntime
   settings: Settings
+  private cssInstance?: MasterCSS
+  private readonly manifest: CSSLanguageRuntime['defaultManifest']
   private completionIndex?: CompletionIndex
   private classPositionCache = new ClassPositionCache()
   readonly analyzer?: RustLanguageAnalyzer
@@ -43,12 +44,21 @@ export default class CSSLanguageService extends EventEmitter {
     super()
     this.runtime = options.runtime ?? defaultCSSLanguageRuntime
     this.settings = defu(customSettings, settings) as Settings
-    const manifest = this.settings.manifest || this.runtime.defaultManifest
-    this.analyzer = options.analyzer?.createSession?.(manifest) ?? options.analyzer
-    this.css = this.runtime.MasterCSS.create({
-      manifest,
+    this.manifest = this.settings.manifest || this.runtime.defaultManifest
+    this.analyzer = options.analyzer?.createSession?.(this.manifest) ?? options.analyzer
+  }
+
+  get css(): MasterCSS {
+    this.cssInstance ??= this.runtime.MasterCSS.create({
+      manifest: this.manifest,
       nativeDeclarationMatcher: this.runtime.nativeDeclarationMatcher
     })
+    return this.cssInstance
+  }
+
+  set css(css: MasterCSS) {
+    this.cssInstance = css
+    this.completionIndex = undefined
   }
 
   dispose() {

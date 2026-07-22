@@ -201,6 +201,21 @@ describe('@master/css-mcp', () => {
       expect(renderedNative.css.text).toContain('.block{display:block}')
       expect(renderedNative.css.text).toContain('.field-sizing\\:content{field-sizing:content}')
       expect(renderedNative.css.bytes).toBe(renderedNative.css.text.length)
+
+      const suggestions = parseToolJSON(await connection.client.callTool({
+        name: 'mastercss_suggest_syntax',
+        arguments: {
+          content: '<div class="block"></div>',
+          filePath: 'index.html',
+          position: { line: 0, character: 13 },
+          limit: 200
+        }
+      }))
+      expect(suggestions.total).toBeGreaterThan(0)
+      expect(suggestions.completions).toEqual(expect.arrayContaining([
+        expect.objectContaining({ label: 'block' })
+      ]))
+      expect(suggestions.hover.contents.value).toContain('display: block')
     } finally {
       await connection.close()
     }

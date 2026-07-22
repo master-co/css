@@ -2,6 +2,7 @@ import { expect, test } from 'vitest'
 import CSSLanguageService from '../src/core'
 import createDoc from '../src/utils/create-doc'
 import type { TextEdit } from 'vscode-languageserver-protocol'
+import { defaultCSSLanguageRuntime } from '@master/css-language'
 
 function applyTextEdits(source: string, edits: TextEdit[], doc = createDoc('css', source)) {
   return [...edits]
@@ -76,4 +77,27 @@ test.concurrent('respects range formatting', () => {
     end: doc.positionAt(source.length)
   }) ?? []
   expect(applyTextEdits(source, edits, doc)).toBe('.a { @compose bg:red !; }\n.b { @compose bg:blue!; }')
+})
+
+test('does not initialize the TS engine for directive formatting', () => {
+  const runtime = {
+    ...defaultCSSLanguageRuntime,
+    MasterCSS: new Proxy(defaultCSSLanguageRuntime.MasterCSS, {
+      get(target, property, receiver) {
+        if (property === 'create') {
+          return () => {
+            throw new Error('Directive formatting must not initialize the TS engine.')
+          }
+        }
+        return Reflect.get(target, property, receiver)
+      }
+    })
+  }
+  const service = new CSSLanguageService(undefined, { runtime })
+  const source = '.btn { @compose bg:transparent !; }'
+  const document = createDoc('css', source)
+
+  expect(applyTextEdits(source, service.formatDirectives(document) ?? [], document))
+    .toBe('.btn { @compose bg:transparent!; }')
+  service.dispose()
 })

@@ -32,69 +32,72 @@ function formatContent(service: CSSLanguageService, filePath: string, content: s
 
 export async function previewDirectiveFormat(context: MasterCSSMCPContext, options: PreviewDirectiveFormatOptions = {}) {
   const service = new CSSLanguageService()
+  try {
+    if (options.content !== undefined) {
+      const filePath = context.resolveVirtualPath(options.filePath || 'master.css')
+      const formatted = formatContent(service, filePath, options.content, options.range)
+      return {
+        version: DIRECTIVE_FORMAT_PREVIEW_VERSION,
+        root: context.root,
+        mode: 'content',
+        files: [
+          {
+            filePath,
+            languageId: formatted.languageId,
+            edits: formatted.edits,
+            changed: formatted.changed,
+            beforeBytes: formatted.beforeBytes,
+            afterBytes: formatted.afterBytes
+          }
+        ],
+        formatted: formatted.formatted,
+        summary: {
+          files: 1,
+          changed: formatted.changed ? 1 : 0,
+          edits: formatted.edits.length
+        }
+      }
+    }
 
-  if (options.content !== undefined) {
-    const filePath = context.resolveVirtualPath(options.filePath || 'master.css')
-    const formatted = formatContent(service, filePath, options.content, options.range)
+    const files = await resolveSourceFiles(context, options.patterns ?? DEFAULT_DIRECTIVE_FORMAT_PATTERNS)
+    const formattedFiles = await Promise.all(files.map(async (filePath) => {
+      const content = await readFile(filePath, 'utf8')
+      return formatContent(service, filePath, content, options.range)
+    }))
+    const preview = await context.createPreview(
+      formattedFiles
+        .filter((file) => file.changed)
+        .map((file) => ({
+          filePath: file.filePath,
+          beforeText: undefined,
+          afterText: file.formatted
+        })),
+      options.ttlMs
+    )
     return {
       version: DIRECTIVE_FORMAT_PREVIEW_VERSION,
       root: context.root,
-      mode: 'content',
-      files: [
-        {
-          filePath,
-          languageId: formatted.languageId,
-          edits: formatted.edits,
-          changed: formatted.changed,
-          beforeBytes: formatted.beforeBytes,
-          afterBytes: formatted.afterBytes
-        }
-      ],
-      formatted: formatted.formatted,
+      mode: 'files',
+      inputs: {
+        patterns: options.patterns ?? DEFAULT_DIRECTIVE_FORMAT_PATTERNS,
+        files
+      },
+      preview,
+      files: formattedFiles.map((file) => ({
+        filePath: file.filePath,
+        languageId: file.languageId,
+        edits: file.edits,
+        changed: file.changed,
+        beforeBytes: file.beforeBytes,
+        afterBytes: file.afterBytes
+      })),
       summary: {
-        files: 1,
-        changed: formatted.changed ? 1 : 0,
-        edits: formatted.edits.length
+        files: formattedFiles.length,
+        changed: formattedFiles.filter((file) => file.changed).length,
+        edits: formattedFiles.reduce((count, file) => count + file.edits.length, 0)
       }
     }
-  }
-
-  const files = await resolveSourceFiles(context, options.patterns ?? DEFAULT_DIRECTIVE_FORMAT_PATTERNS)
-  const formattedFiles = await Promise.all(files.map(async (filePath) => {
-    const content = await readFile(filePath, 'utf8')
-    return formatContent(service, filePath, content, options.range)
-  }))
-  const preview = await context.createPreview(
-    formattedFiles
-      .filter((file) => file.changed)
-      .map((file) => ({
-        filePath: file.filePath,
-        beforeText: undefined,
-        afterText: file.formatted
-      })),
-    options.ttlMs
-  )
-  return {
-    version: DIRECTIVE_FORMAT_PREVIEW_VERSION,
-    root: context.root,
-    mode: 'files',
-    inputs: {
-      patterns: options.patterns ?? DEFAULT_DIRECTIVE_FORMAT_PATTERNS,
-      files
-    },
-    preview,
-    files: formattedFiles.map((file) => ({
-      filePath: file.filePath,
-      languageId: file.languageId,
-      edits: file.edits,
-      changed: file.changed,
-      beforeBytes: file.beforeBytes,
-      afterBytes: file.afterBytes
-    })),
-    summary: {
-      files: formattedFiles.length,
-      changed: formattedFiles.filter((file) => file.changed).length,
-      edits: formattedFiles.reduce((count, file) => count + file.edits.length, 0)
-    }
+  } finally {
+    service.dispose()
   }
 }
