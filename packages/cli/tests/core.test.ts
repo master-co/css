@@ -92,6 +92,34 @@ describe('root command', () => {
     }
   })
 
+  it('scans provider-resolved stylesheet sources with arbitrary extensions', () => {
+    const workspace = fs.mkdtempSync(resolve(os.tmpdir(), 'master-css-native-cli-source-'))
+    const cwd = resolve(workspace, 'app')
+    try {
+      fs.mkdirSync(resolve(cwd, 'styles'), { recursive: true })
+      fs.mkdirSync(resolve(cwd, 'templates'), { recursive: true })
+      fs.mkdirSync(resolve(workspace, 'shared'), { recursive: true })
+      fs.writeFileSync(resolve(cwd, 'styles/index.css'), `
+        @master entry;
+        @source "../templates/**/*.{liquid,erb}";
+        @source not "../templates/skip.*";
+        @source "../../shared/*.cshtml";
+      `)
+      fs.writeFileSync(resolve(cwd, 'templates/product.liquid'), '<div class="block"></div>')
+      fs.writeFileSync(resolve(cwd, 'templates/detail.erb'), '<div class="m:0"></div>')
+      fs.writeFileSync(resolve(cwd, 'templates/skip.liquid'), '<div class="fg:red"></div>')
+      fs.writeFileSync(resolve(workspace, 'shared/shell.cshtml'), '<div class="text-center"></div>')
+
+      const output = execFileSync(nativeCLIFilepath, ['--no-export'], { cwd, encoding: 'utf8' })
+      expect(output).toContain('.block{display:block}')
+      expect(output).toContain('.m\\:0{margin:0}')
+      expect(output).toContain('.text-center{text-align:center}')
+      expect(output).not.toContain('.fg\\:red{')
+    } finally {
+      fs.rmSync(workspace, { recursive: true, force: true })
+    }
+  })
+
   it('opts the package binary into the native root scan explicitly', () => {
     const cwd = fs.mkdtempSync(resolve(os.tmpdir(), 'master-css-native-cli-selector-'))
     try {

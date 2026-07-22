@@ -2,7 +2,7 @@
 
 use std::collections::HashSet;
 use std::fs;
-use std::path::{Path, PathBuf};
+use std::path::{Component, Path, PathBuf};
 
 use mastercss_compiler::{
     CompileManifestOptions, CompileNativeCssOptions, CompilerError, CssImportProvider,
@@ -22,6 +22,8 @@ const IGNORED_DIRECTORIES: &[&str] = &[
     ".nuxt",
     ".svelte-kit",
 ];
+
+pub const PROJECT_SOURCE_PLAN_VERSION: u32 = 1;
 
 #[derive(Debug, Error)]
 pub enum ProjectError {
@@ -49,6 +51,34 @@ pub struct ProjectManifestIr {
     #[serde(rename = "generatedCSS")]
     pub generated_css: String,
     pub warnings: Vec<String>,
+    pub source_plan: ProjectSourcePlanIr,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ProjectSourcePlanIr {
+    pub version: u32,
+    pub entries: Vec<ProjectSourceEntryPlanIr>,
+    pub files: Vec<String>,
+}
+
+impl Default for ProjectSourcePlanIr {
+    fn default() -> Self {
+        Self {
+            version: PROJECT_SOURCE_PLAN_VERSION,
+            entries: Vec::new(),
+            files: Vec::new(),
+        }
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ProjectSourceEntryPlanIr {
+    pub entry: String,
+    pub include: Vec<String>,
+    pub exclude: Vec<String>,
+    pub files: Vec<String>,
 }
 
 struct FilesystemCssProvider;
@@ -102,6 +132,263 @@ fn merge_extraction_policy(
     target.preserve_native |= source.preserve_native;
 }
 
+fn normalize_lexical_path(path: &Path) -> PathBuf {
+    let mut normalized = PathBuf::new();
+    for component in path.components() {
+        match component {
+            Component::CurDir => {}
+            Component::ParentDir => {
+                if !normalized.pop() {
+                    normalized.push(component.as_os_str());
+                }
+            }
+            _ => normalized.push(component.as_os_str()),
+        }
+    }
+    normalized
+}
+
+fn normalize_path(path: &Path) -> String {
+    path.to_string_lossy().replace('\\', "/")
+}
+
+fn expand_braces(pattern: &str) -> Vec<String> {
+    let Some(open) = pattern.find('{') else {
+        return vec![pattern.to_owned()];
+    };
+    let Some(relative_close) = pattern[open + 1..].find('}') else {
+        return vec![pattern.to_owned()];
+    };
+    let close = open + 1 + relative_close;
+    pattern[open + 1..close]
+        .split(',')
+        .flat_map(|choice| {
+            expand_braces(&format!(
+                "{}{}{}",
+                &pattern[..open],
+                choice,
+                &pattern[close + 1..]
+            ))
+        })
+        .collect()
+}
+
+fn glob_matches(pattern: &str, path: &str) -> bool {
+    fn is_component_start(path: &[u16], index: usize) -> bool {
+        index == 0 || path.get(index.wrapping_sub(1)) == Some(&(b'/' as u16))
+    }
+
+    fn class_match(pattern: &[u16], start: usize, value: u16) -> Option<(usize, bool)> {
+        let mut index = start + 1;
+        let negated = matches!(pattern.get(index), Some(value) if *value == b'!' as u16 || *value == b'^' as u16);
+        if negated {
+            index += 1;
+        }
+        let mut matched = false;
+        let mut had_value = false;
+        while let Some(&current) = pattern.get(index) {
+            if current == b']' as u16 && had_value {
+                return Some((index + 1, if negated { !matched } else { matched }));
+            }
+            had_value = true;
+            if pattern.get(index + 1) == Some(&(b'-' as u16)) {
+                let end = *pattern.get(index + 2)?;
+                if end == b']' as u16 {
+                    return None;
+                }
+                matched |= current <= value && value <= end;
+                index += 3;
+            } else {
+                matched |= current == value;
+                index += 1;
+            }
+        }
+        None
+    }
+
+    fn matches(
+        pattern: &[u16],
+        path: &[u16],
+        pattern_index: usize,
+        path_index: usize,
+        memo: &mut std::collections::HashMap<(usize, usize), bool>,
+    ) -> bool {
+        if let Some(result) = memo.get(&(pattern_index, path_index)) {
+            return *result;
+        }
+        let result = if pattern_index == pattern.len() {
+            path_index == path.len()
+        } else if pattern.get(pattern_index..pattern_index + 2) == Some(&[b'*' as u16, b'*' as u16])
+        {
+            let mut next = pattern_index + 2;
+            while pattern.get(next) == Some(&(b'*' as u16)) {
+                next += 1;
+            }
+            if pattern.get(next) == Some(&(b'/' as u16)) {
+                next += 1;
+            }
+            matches(pattern, path, next, path_index, memo)
+                || (path_index < path.len()
+                    && !(is_component_start(path, path_index) && path[path_index] == b'.' as u16)
+                    && matches(pattern, path, pattern_index, path_index + 1, memo))
+        } else {
+            match pattern[pattern_index] {
+                value if value == b'*' as u16 => {
+                    matches(pattern, path, pattern_index + 1, path_index, memo)
+                        || (path_index < path.len()
+                            && path[path_index] != b'/' as u16
+                            && !(is_component_start(path, path_index)
+                                && path[path_index] == b'.' as u16)
+                            && matches(pattern, path, pattern_index, path_index + 1, memo))
+                }
+                value if value == b'?' as u16 => {
+                    path_index < path.len()
+                        && path[path_index] != b'/' as u16
+                        && !(is_component_start(path, path_index)
+                            && path[path_index] == b'.' as u16)
+                        && matches(pattern, path, pattern_index + 1, path_index + 1, memo)
+                }
+                value if value == b'[' as u16 => path
+                    .get(path_index)
+                    .filter(|value| **value != b'/' as u16)
+                    .and_then(|value| class_match(pattern, pattern_index, *value))
+                    .is_some_and(|(next, matched)| {
+                        matched && matches(pattern, path, next, path_index + 1, memo)
+                    }),
+                value => {
+                    path.get(path_index) == Some(&value)
+                        && matches(pattern, path, pattern_index + 1, path_index + 1, memo)
+                }
+            }
+        };
+        memo.insert((pattern_index, path_index), result);
+        result
+    }
+
+    let pattern = pattern.encode_utf16().collect::<Vec<_>>();
+    let path = path.encode_utf16().collect::<Vec<_>>();
+    matches(&pattern, &path, 0, 0, &mut std::collections::HashMap::new())
+}
+
+fn resolve_source_pattern(project_dir: &Path, entry: &Path, pattern: &str) -> String {
+    let pattern = pattern.replace('\\', "/");
+    let path = Path::new(&pattern);
+    let resolved = if path.is_absolute() {
+        path.to_path_buf()
+    } else if pattern.starts_with("./") || pattern.starts_with("../") {
+        entry.parent().unwrap_or(project_dir).join(path)
+    } else {
+        project_dir.join(path)
+    };
+    normalize_path(&normalize_lexical_path(&resolved))
+}
+
+fn source_pattern_root(pattern: &str) -> PathBuf {
+    let wildcard = pattern
+        .char_indices()
+        .find_map(|(index, character)| "*?[{".contains(character).then_some(index));
+    let prefix = wildcard.map_or(pattern, |index| &pattern[..index]);
+    let prefix = Path::new(prefix);
+    if wildcard.is_none() || prefix.to_string_lossy().ends_with(['/', '\\']) {
+        prefix.to_path_buf()
+    } else {
+        prefix
+            .parent()
+            .unwrap_or_else(|| Path::new(""))
+            .to_path_buf()
+    }
+}
+
+fn has_glob_magic(pattern: &str) -> bool {
+    pattern.chars().any(|character| "*?[{".contains(character))
+}
+
+fn collect_source_files(directory: &Path, files: &mut Vec<PathBuf>) -> Result<(), ProjectError> {
+    let children = match fs::read_dir(directory) {
+        Ok(children) => children,
+        Err(error)
+            if matches!(
+                error.kind(),
+                std::io::ErrorKind::NotFound | std::io::ErrorKind::NotADirectory
+            ) =>
+        {
+            return Ok(());
+        }
+        Err(source) => {
+            return Err(ProjectError::Io {
+                path: directory.to_path_buf(),
+                source,
+            });
+        }
+    };
+    for child in children {
+        let child = child.map_err(|source| ProjectError::Io {
+            path: directory.to_path_buf(),
+            source,
+        })?;
+        let path = child.path();
+        let file_type = child.file_type().map_err(|source| ProjectError::Io {
+            path: path.clone(),
+            source,
+        })?;
+        if file_type.is_dir() {
+            collect_source_files(&path, files)?;
+        } else if file_type.is_file() {
+            files.push(path);
+        }
+    }
+    Ok(())
+}
+
+fn resolve_source_entry_plan(
+    project_dir: &Path,
+    entry: &Path,
+    policy: &CssDirectiveExtractionPolicy,
+) -> Result<ProjectSourceEntryPlanIr, ProjectError> {
+    let include = policy
+        .include
+        .iter()
+        .map(|pattern| resolve_source_pattern(project_dir, entry, pattern))
+        .flat_map(|pattern| expand_braces(&pattern))
+        .collect::<Vec<_>>();
+    let exclude = policy
+        .exclude
+        .iter()
+        .map(|pattern| resolve_source_pattern(project_dir, entry, pattern))
+        .flat_map(|pattern| expand_braces(&pattern))
+        .collect::<Vec<_>>();
+    let mut candidates = Vec::new();
+    for pattern in &include {
+        let direct = PathBuf::from(pattern);
+        if direct.is_file() {
+            candidates.push(direct);
+            continue;
+        }
+        if !has_glob_magic(pattern) {
+            continue;
+        }
+        collect_source_files(&source_pattern_root(pattern), &mut candidates)?;
+    }
+    let mut files = candidates
+        .into_iter()
+        .filter_map(|file| {
+            let file = normalize_path(&normalize_lexical_path(&file));
+            (include.iter().any(|pattern| glob_matches(pattern, &file))
+                && !exclude.iter().any(|pattern| glob_matches(pattern, &file)))
+            .then_some(file)
+        })
+        .collect::<Vec<_>>();
+    files.sort();
+    files.dedup();
+
+    Ok(ProjectSourceEntryPlanIr {
+        entry: normalize_path(entry),
+        include,
+        exclude,
+        files,
+    })
+}
+
 fn collect_entries(directory: &Path, entries: &mut Vec<PathBuf>) {
     let Ok(children) = fs::read_dir(directory) else {
         return;
@@ -143,13 +430,41 @@ pub fn load_project_manifest(
     project_dir: &Path,
     base_manifest: Value,
 ) -> Result<ProjectManifestIr, ProjectError> {
-    load_project_manifest_entries(&find_css_manifest_entries(project_dir), base_manifest)
+    let project_dir = project_dir
+        .canonicalize()
+        .map_err(|source| ProjectError::Io {
+            path: project_dir.to_path_buf(),
+            source,
+        })?;
+    load_project_manifest_entries_with_root(
+        &project_dir,
+        &find_css_manifest_entries(&project_dir),
+        base_manifest,
+    )
 }
 
 pub fn load_project_manifest_entries(
     entries: &[PathBuf],
     base_manifest: Value,
 ) -> Result<ProjectManifestIr, ProjectError> {
+    let project_dir = entries
+        .first()
+        .and_then(|entry| entry.parent())
+        .unwrap_or_else(|| Path::new("."));
+    load_project_manifest_entries_with_root(project_dir, entries, base_manifest)
+}
+
+pub fn load_project_manifest_entries_with_root(
+    project_dir: &Path,
+    entries: &[PathBuf],
+    base_manifest: Value,
+) -> Result<ProjectManifestIr, ProjectError> {
+    let project_dir = project_dir
+        .canonicalize()
+        .map_err(|source| ProjectError::Io {
+            path: project_dir.to_path_buf(),
+            source,
+        })?;
     let mut manifest = base_manifest;
     let mut dependencies = Vec::new();
     let mut extraction_policy = CssDirectiveExtractionPolicy::default();
@@ -160,6 +475,7 @@ pub fn load_project_manifest_entries(
     let mut generated_css = Vec::new();
     let mut warnings = Vec::new();
     let mut resolved_entries = Vec::new();
+    let mut source_plan = ProjectSourcePlanIr::default();
 
     for entry in entries {
         let entry = entry.canonicalize().map_err(|source| ProjectError::Io {
@@ -191,6 +507,12 @@ pub fn load_project_manifest_entries(
         push_unique(&mut class_names, result.class_names);
         push_unique(&mut native_class_names, result.native_class_names);
         push_unique(&mut warnings, result.warnings);
+        let entry_source_plan =
+            resolve_source_entry_plan(&project_dir, &entry, &result.extraction_policy)?;
+        push_unique(&mut source_plan.files, entry_source_plan.files.clone());
+        if !entry_source_plan.include.is_empty() || !entry_source_plan.exclude.is_empty() {
+            source_plan.entries.push(entry_source_plan);
+        }
         merge_extraction_policy(&mut extraction_policy, result.extraction_policy);
         if !result.native_css.is_empty() {
             native_css.push(result.native_css);
@@ -214,6 +536,7 @@ pub fn load_project_manifest_entries(
         css: css.join("\n"),
         generated_css: generated_css.join("\n"),
         warnings,
+        source_plan,
     })
 }
 
@@ -257,14 +580,21 @@ pub fn collect_project_files(project_dir: &Path, extensions: &HashSet<&str>) -> 
 mod tests {
     use super::*;
     use mastercss_scanner::ScannerSession;
+    use std::sync::atomic::{AtomicU64, Ordering};
     use std::time::{SystemTime, UNIX_EPOCH};
+
+    static TEMP_PROJECT_COUNTER: AtomicU64 = AtomicU64::new(0);
 
     fn temp_project() -> PathBuf {
         let nonce = SystemTime::now()
             .duration_since(UNIX_EPOCH)
             .unwrap()
             .as_nanos();
-        let path = std::env::temp_dir().join(format!("mastercss-project-{nonce}"));
+        let counter = TEMP_PROJECT_COUNTER.fetch_add(1, Ordering::Relaxed);
+        let path = std::env::temp_dir().join(format!(
+            "mastercss-project-{}-{nonce}-{counter}",
+            std::process::id()
+        ));
         fs::create_dir_all(&path).unwrap();
         path
     }
@@ -309,5 +639,110 @@ mod tests {
         assert_eq!(result.dependencies.len(), 2);
 
         fs::remove_dir_all(project).unwrap();
+    }
+
+    #[test]
+    fn resolves_entry_owned_source_plans_and_arbitrary_extensions() {
+        let workspace = temp_project();
+        let project = workspace.join("app");
+        let styles = project.join("styles");
+        let templates = project.join("templates");
+        let shared = workspace.join("shared");
+        fs::create_dir_all(&styles).unwrap();
+        fs::create_dir_all(&templates).unwrap();
+        fs::create_dir_all(&shared).unwrap();
+        fs::write(
+            styles.join("entry.css"),
+            r#"@master entry;
+@source "../templates/**/*.{liquid,erb}";
+@source not "../templates/skip.*";
+@source "../../shared/*.cshtml";"#,
+        )
+        .unwrap();
+        fs::write(
+            templates.join("product.liquid"),
+            "<div class=\"block\"></div>",
+        )
+        .unwrap();
+        fs::write(templates.join("detail.erb"), "<div class=\"m:0\"></div>").unwrap();
+        fs::write(
+            templates.join("skip.liquid"),
+            "<div class=\"fg:red\"></div>",
+        )
+        .unwrap();
+        fs::write(
+            shared.join("shell.cshtml"),
+            "<div class=\"text:center\"></div>",
+        )
+        .unwrap();
+
+        let result = load_project_manifest(
+            &project,
+            serde_json::json!({ "version": 1, "utilities": [] }),
+        )
+        .unwrap();
+        let entry_plan = &result.source_plan.entries[0];
+        assert_eq!(result.source_plan.version, PROJECT_SOURCE_PLAN_VERSION);
+        assert_eq!(
+            entry_plan.entry,
+            normalize_path(&styles.join("entry.css").canonicalize().unwrap())
+        );
+        assert_eq!(entry_plan.include.len(), 3);
+        assert_eq!(entry_plan.exclude.len(), 1);
+        assert_eq!(
+            result.source_plan.files,
+            vec![
+                normalize_path(&templates.join("detail.erb").canonicalize().unwrap()),
+                normalize_path(&templates.join("product.liquid").canonicalize().unwrap()),
+                normalize_path(&shared.join("shell.cshtml").canonicalize().unwrap()),
+            ]
+        );
+
+        fs::remove_dir_all(workspace).unwrap();
+    }
+
+    #[test]
+    fn resolves_bare_source_patterns_from_the_project_root() {
+        let project = temp_project();
+        fs::create_dir_all(project.join("styles")).unwrap();
+        fs::create_dir_all(project.join("views")).unwrap();
+        fs::write(
+            project.join("styles/entry.css"),
+            "@master entry; @source \"views/*.tmpl\";",
+        )
+        .unwrap();
+        fs::write(
+            project.join("views/page.tmpl"),
+            "<div class=\"block\"></div>",
+        )
+        .unwrap();
+
+        let result = load_project_manifest(
+            &project,
+            serde_json::json!({ "version": 1, "utilities": [] }),
+        )
+        .unwrap();
+        assert_eq!(
+            result.source_plan.files,
+            vec![normalize_path(
+                &project.join("views/page.tmpl").canonicalize().unwrap()
+            )]
+        );
+
+        fs::remove_dir_all(project).unwrap();
+    }
+
+    #[test]
+    fn matches_source_globs_with_fast_glob_compatible_primitives() {
+        assert!(glob_matches("/root/**/[a-c]?.tsx", "/root/a/b2.tsx"));
+        assert!(glob_matches("/root/icon-??.svg", "/root/icon-😀.svg"));
+        assert!(!glob_matches("/root/icon-?.svg", "/root/icon-😀.svg"));
+        assert!(!glob_matches("/root/**/*.tsx", "/root/.hidden/page.tsx"));
+        assert!(glob_matches(
+            "/root/.hidden/**/*.tsx",
+            "/root/.hidden/page.tsx"
+        ));
+        assert!(glob_matches("/root/[!a]*.tsx", "/root/button.tsx"));
+        assert!(!glob_matches("/root/[!a]*.tsx", "/root/alert.tsx"));
     }
 }

@@ -279,7 +279,10 @@ fn run_scan(args: ScanArgs) -> Result<(), CliError> {
     let mut scanner = ScannerSession::create(&manifest_json)
         .map_err(|error| CliError::new("CLI_SCANNER_FAILED", error.to_string()))?;
     scanner.register_native_classes(&project.native_class_names);
-    let source_files = resolve_source_files(&cwd, &args.source_patterns);
+    let mut source_files = resolve_source_files(&cwd, &args.source_patterns);
+    source_files.extend(project.source_plan.files.iter().map(PathBuf::from));
+    source_files.sort();
+    source_files.dedup();
     for file in &source_files {
         let content = fs::read_to_string(file).map_err(|error| {
             CliError::new(
