@@ -866,6 +866,68 @@ impl EngineSession {
         })
     }
 
+    pub fn class_variable_keys(&self, class_name: &str) -> Result<Vec<String>, EngineError> {
+        self.ensure_active()?;
+        let (semantic_class_name, important) = class_name
+            .strip_suffix('!')
+            .map_or((class_name, false), |name| (name, true));
+        let mut matching_class_names = vec![semantic_class_name.to_owned()];
+        if let Some(canonical) = canonicalize_class_name(semantic_class_name) {
+            matching_class_names.push(canonical);
+        }
+        let mut variable_keys = Vec::new();
+        let mut seen = HashSet::new();
+        for matching_class_name in matching_class_names {
+            let mut generated = false;
+            for utility in &self.compiled.utilities {
+                if utility.native_fallback && generated {
+                    break;
+                }
+                let Some(matched) = match_utility(&matching_class_name, utility, &self.compiled)
+                else {
+                    continue;
+                };
+                let resolved_value = matched
+                    .value
+                    .as_deref()
+                    .map(|value| normalize_dynamic_value(value, &self.compiled.settings));
+                let mut emitted = false;
+                for (branch_index, branch) in
+                    resolve_state_branches(&matched.state_token, important, &self.compiled)
+                        .into_iter()
+                        .enumerate()
+                {
+                    if emit_declarations(
+                        utility,
+                        resolved_value.as_deref(),
+                        branch.important || self.compiled.settings.important,
+                    )
+                    .is_empty()
+                    {
+                        continue;
+                    }
+                    let key = if branch_index == 0 && branch.key.is_empty() {
+                        class_name.to_owned()
+                    } else {
+                        format!("{class_name}\0{}", branch.key)
+                    };
+                    emitted |= seen.insert(key);
+                }
+                if !emitted {
+                    continue;
+                }
+                generated = true;
+                variable_keys.extend(utility.variables.keys().cloned());
+            }
+            if generated {
+                break;
+            }
+        }
+        variable_keys.sort();
+        variable_keys.dedup();
+        Ok(variable_keys)
+    }
+
     pub fn class_completion_candidates(
         &self,
     ) -> Result<Vec<EngineClassCompletionCandidate>, EngineError> {

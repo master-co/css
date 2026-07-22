@@ -1,4 +1,6 @@
-use crate::{LintBatchIr, LintClassListIr, LintDiagnosticIr, LintEditIr};
+use crate::{
+    LintBatchIr, LintClassListIr, LintDiagnosticIr, LintEditIr, RawValueCandidateIr, RawValuePolicy,
+};
 use mastercss_lexer::utf16_len;
 use mastercss_schema::{LINT_BATCH_VERSION, SourceRange};
 use std::collections::{HashMap, VecDeque};
@@ -19,13 +21,19 @@ struct ValidationContext<'a> {
     disallow_unknown_class: bool,
 }
 
+pub(crate) struct ClassListPolicy<'a> {
+    pub matches: &'a [bool],
+    pub validation_errors: &'a [Vec<String>],
+    pub disallow_unknown_class: bool,
+    pub raw_value_candidates: &'a [RawValueCandidateIr],
+    pub raw_value_policy: Option<&'a RawValuePolicy>,
+}
+
 pub(crate) fn create_class_list_ir(
     class_list: &str,
     class_names: &[String],
     analysis: LintBatchIr,
-    matches: &[bool],
-    validation_errors: &[Vec<String>],
-    disallow_unknown_class: bool,
+    policy: ClassListPolicy<'_>,
 ) -> LintClassListIr {
     let items = parse_class_list(class_list, class_names);
     let range = SourceRange {
@@ -63,11 +71,11 @@ pub(crate) fn create_class_list_ir(
         text: conflict_text,
     });
     let validation = ValidationContext {
-        matches,
-        errors: validation_errors,
-        disallow_unknown_class,
+        matches: policy.matches,
+        errors: policy.validation_errors,
+        disallow_unknown_class: policy.disallow_unknown_class,
     };
-    let diagnostics = create_diagnostics(
+    let mut diagnostics = create_diagnostics(
         class_names,
         &items,
         &analysis,
@@ -75,6 +83,13 @@ pub(crate) fn create_class_list_ir(
         conflict_edit.as_ref(),
         &validation,
     );
+    if let Some(raw_value_policy) = policy.raw_value_policy {
+        diagnostics.extend(create_raw_value_diagnostics(
+            &items,
+            policy.raw_value_candidates,
+            raw_value_policy,
+        ));
+    }
     LintClassListIr {
         version: LINT_BATCH_VERSION,
         analysis,
@@ -83,6 +98,74 @@ pub(crate) fn create_class_list_ir(
         conflict_edit,
         conflict_range,
     }
+}
+
+fn create_raw_value_diagnostics(
+    items: &[ClassListItem],
+    candidates: &[RawValueCandidateIr],
+    policy: &RawValuePolicy,
+) -> Vec<LintDiagnosticIr> {
+    if policy.allow_raw_values {
+        return Vec::new();
+    }
+    let mut diagnostics = Vec::new();
+    for (candidate_index, candidate) in candidates.iter().enumerate() {
+        if policy.allow_properties.contains(&candidate.key)
+            || candidate
+                .properties
+                .iter()
+                .any(|property| policy.allow_properties.contains(property))
+        {
+            continue;
+        }
+        let approved_segments = policy.approved_segments.get(candidate_index);
+        let value = candidate
+            .segments
+            .iter()
+            .enumerate()
+            .filter(|(segment_index, _)| {
+                !approved_segments
+                    .and_then(|segments| segments.get(*segment_index))
+                    .copied()
+                    .unwrap_or(false)
+            })
+            .map(|(_, segment)| segment.as_str())
+            .collect::<Vec<_>>()
+            .join("|");
+        if value.is_empty() {
+            continue;
+        }
+        let Some(range) = find_class_range(items, &candidate.class_name) else {
+            continue;
+        };
+        diagnostics.push(LintDiagnosticIr {
+            rule_id: "no-unapproved-raw-values".into(),
+            code: "unapproved-raw-value".into(),
+            message: format!(
+                "Raw value {} is not approved for class {}. Use a token or allow the value explicitly.",
+                quote_diagnostic_value(&value),
+                quote_diagnostic_value(&candidate.class_name),
+            ),
+            range,
+            data: serde_json::Map::from_iter([
+                (
+                    "className".into(),
+                    serde_json::Value::String(candidate.class_name.clone()),
+                ),
+                ("value".into(), serde_json::Value::String(value)),
+                (
+                    "key".into(),
+                    serde_json::Value::String(candidate.key.clone()),
+                ),
+                (
+                    "properties".into(),
+                    serde_json::json!(candidate.properties),
+                ),
+            ]),
+            fix: None,
+        });
+    }
+    diagnostics
 }
 
 fn create_diagnostics(
@@ -487,9 +570,13 @@ mod tests {
             "fg:white  m:2x\tfg:white",
             &["fg:white".into(), "m:2x".into(), "fg:white".into()],
             analysis(),
-            &[true, true, true],
-            &[],
-            false,
+            ClassListPolicy {
+                matches: &[true, true, true],
+                validation_errors: &[],
+                disallow_unknown_class: false,
+                raw_value_candidates: &[],
+                raw_value_policy: None,
+            },
         );
         assert_eq!(ir.sort_edit.unwrap().text, "m:2x  fg:white");
     }
@@ -505,9 +592,13 @@ mod tests {
             "😀 m:1x  m:2x",
             &["😀".into(), "m:1x".into(), "m:2x".into()],
             full,
-            &[false, true, true],
-            &[],
-            false,
+            ClassListPolicy {
+                matches: &[false, true, true],
+                validation_errors: &[],
+                disallow_unknown_class: false,
+                raw_value_candidates: &[],
+                raw_value_policy: None,
+            },
         );
         assert_eq!(ir.conflict_range, Some(SourceRange { start: 3, end: 7 }));
         assert_eq!(ir.conflict_edit.unwrap().text, "😀  m:2x");
@@ -522,9 +613,13 @@ mod tests {
             "mx:md ml:lg",
             &["mx:md".into(), "ml:lg".into()],
             partial,
-            &[true, true],
-            &[],
-            false,
+            ClassListPolicy {
+                matches: &[true, true],
+                validation_errors: &[],
+                disallow_unknown_class: false,
+                raw_value_candidates: &[],
+                raw_value_policy: None,
+            },
         );
         assert_eq!(ir.conflict_edit.unwrap().text, "mr:md ml:lg");
     }
@@ -548,11 +643,15 @@ mod tests {
                 conflicts: Vec::new(),
                 partial_conflicts: Vec::new(),
             },
-            &[true, false, false],
-            &[vec![
-                "Invalid value for `text-decoration-color` property".into(),
-            ]],
-            true,
+            ClassListPolicy {
+                matches: &[true, false, false],
+                validation_errors: &[vec![
+                    "Invalid value for `text-decoration-color` property".into(),
+                ]],
+                disallow_unknown_class: true,
+                raw_value_candidates: &[],
+                raw_value_policy: None,
+            },
         );
         let invalid = ir
             .diagnostics

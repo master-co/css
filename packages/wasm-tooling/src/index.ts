@@ -46,6 +46,11 @@ interface GeneratedToolingWasmModule {
   }
   ToolingLintSession: new (manifestJSON: string) => {
     nativeDeclarationCandidates(classNames: string[]): unknown
+    rawValueCandidates(
+      classNames: string[],
+      nativeSupport: boolean[] | undefined,
+      invalidGeneratedClasses: string[]
+    ): unknown
     analyze(classNames: string[], nativeSupport: boolean[] | undefined, invalidGeneratedClasses: string[]): unknown
     analyzeClassList(
       classList: string,
@@ -177,6 +182,11 @@ export async function createToolingLintSession(
   const session = new module.ToolingLintSession(manifestJSON)
   return {
     nativeDeclarationCandidates: (classNames: string[]) => session.nativeDeclarationCandidates(classNames),
+    rawValueCandidates: (
+      classNames: string[],
+      nativeSupport: boolean[] | undefined,
+      invalidGeneratedClasses: string[]
+    ) => session.rawValueCandidates(classNames, nativeSupport, invalidGeneratedClasses),
     analyze: (classNames: string[], nativeSupport: boolean[] | undefined, invalidGeneratedClasses: string[]) =>
       session.analyze(classNames, nativeSupport, invalidGeneratedClasses),
     analyzeClassList: (

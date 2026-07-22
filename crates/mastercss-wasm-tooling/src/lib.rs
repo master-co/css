@@ -37,6 +37,18 @@ struct LintClassListRequest {
     validation_errors: Vec<Vec<String>>,
     #[serde(default)]
     disallow_unknown_class: bool,
+    raw_value_policy: Option<LintRawValuePolicyRequest>,
+}
+
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase")]
+struct LintRawValuePolicyRequest {
+    #[serde(default)]
+    allow_raw_values: bool,
+    #[serde(default)]
+    allow_properties: Vec<String>,
+    #[serde(default)]
+    approved_segments: Vec<Vec<bool>>,
 }
 
 #[wasm_bindgen(js_name = extractClassCandidates)]
@@ -290,8 +302,7 @@ impl ToolingLintSession {
                 &invalid_generated_classes
                     .into_iter()
                     .collect::<HashSet<_>>(),
-                &[],
-                false,
+                mastercss_lint::LintClassListPolicy::default(),
             )
             .map_err(scanner_error)?;
         batch
@@ -308,6 +319,14 @@ impl ToolingLintSession {
                 "Unsupported lint class-list request version",
             ));
         }
+        let raw_value_policy =
+            request
+                .raw_value_policy
+                .map(|policy| mastercss_lint::RawValuePolicy {
+                    allow_raw_values: policy.allow_raw_values,
+                    allow_properties: policy.allow_properties,
+                    approved_segments: policy.approved_segments,
+                });
         let batch = self
             .inner
             .analyze_class_list(
@@ -318,11 +337,44 @@ impl ToolingLintSession {
                     .invalid_generated_classes
                     .into_iter()
                     .collect::<HashSet<_>>(),
-                &request.validation_errors,
-                request.disallow_unknown_class,
+                mastercss_lint::LintClassListPolicy {
+                    validation_errors: &request.validation_errors,
+                    disallow_unknown_class: request.disallow_unknown_class,
+                    raw_value_policy: raw_value_policy.as_ref(),
+                },
             )
             .map_err(scanner_error)?;
         batch
+            .serialize(&serde_wasm_bindgen::Serializer::json_compatible())
+            .map_err(|error| JsValue::from_str(&error.to_string()))
+    }
+
+    #[wasm_bindgen(js_name = rawValueCandidates)]
+    pub fn raw_value_candidates(
+        &mut self,
+        class_names: Vec<String>,
+        native_support: JsValue,
+        invalid_generated_classes: Vec<String>,
+    ) -> Result<JsValue, JsValue> {
+        let native_support = if native_support.is_null() || native_support.is_undefined() {
+            None
+        } else {
+            Some(
+                serde_wasm_bindgen::from_value::<Vec<bool>>(native_support)
+                    .map_err(|error| JsValue::from_str(&error.to_string()))?,
+            )
+        };
+        let candidates = self
+            .inner
+            .raw_value_candidates(
+                &class_names,
+                native_support.as_deref(),
+                &invalid_generated_classes
+                    .into_iter()
+                    .collect::<HashSet<_>>(),
+            )
+            .map_err(scanner_error)?;
+        candidates
             .serialize(&serde_wasm_bindgen::Serializer::json_compatible())
             .map_err(|error| JsValue::from_str(&error.to_string()))
     }

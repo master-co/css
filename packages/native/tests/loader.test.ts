@@ -67,6 +67,45 @@ describe('native target resolution', () => {
     }
   })
 
+  it('loads raw value policy candidates and diagnostics', () => {
+    const loaded = loadNativeBinding({ required: true })!
+    const lint = new loaded.binding.LintSession(JSON.stringify({
+      version: 1,
+      variables: {
+        spacing: [{ key: 'md', type: 'number', value: '1rem' }]
+      },
+      utilities: [{
+        id: 'margin',
+        name: 'm:',
+        type: -1,
+        variableAliasRefs: ['~spacing'],
+        emit: { type: 'property', property: 'margin' },
+        matchers: [{ type: 'key', keys: ['m'] }]
+      }]
+    }))
+    try {
+      expect(JSON.parse(lint.rawValueCandidates(['m:md|17px'], undefined, []))).toEqual({
+        version: 1,
+        candidates: [
+          { className: 'm:md|17px', key: 'm', segments: ['17px'], properties: ['margin'] }
+        ]
+      })
+      const result = JSON.parse(lint.analyzeClassListPolicy(JSON.stringify({
+        version: 1,
+        classList: 'm:md|17px',
+        classNames: ['m:md|17px'],
+        rawValuePolicy: { approvedSegments: [[false]] }
+      })))
+      expect(result.diagnostics).toContainEqual(expect.objectContaining({
+        ruleId: 'no-unapproved-raw-values',
+        code: 'unapproved-raw-value',
+        range: { start: 0, end: 9 }
+      }))
+    } finally {
+      lint.dispose()
+    }
+  })
+
   it('loads the manifest-driven language session', () => {
     const loaded = loadNativeBinding({ required: true })!
     const language = new loaded.binding.LanguageSession(JSON.stringify({

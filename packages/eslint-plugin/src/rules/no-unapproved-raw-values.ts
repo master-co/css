@@ -7,6 +7,7 @@ import {
 } from '@master/css-lint'
 import reportLintDiagnostics from '../utils/report-lint-diagnostics'
 import defineSourceVisitors, { shouldUseSourceVisitors } from '../utils/define-source-visitors'
+import { fromRustLintDiagnostics } from '@master/css-lint/node'
 
 export default createRule({
   name: 'no-unapproved-raw-values',
@@ -56,11 +57,18 @@ export default createRule({
     }
 
     return defineVisitors({ context, settings }, (node, resolved) => {
+      const rustDiagnostics = rustLint
+        ? fromRustLintDiagnostics(
+          rustLint.analyzeClassList(resolved.raw, resolved.classValues, {
+            rawValuePolicy: options
+          }).diagnostics.filter(({ ruleId }) => ruleId === 'no-unapproved-raw-values')
+        )
+        : undefined
       reportLintDiagnostics(
         context,
         node,
         resolved,
-        createUnapprovedRawValueClassesReport(resolved.raw, css, {
+        rustDiagnostics || createUnapprovedRawValueClassesReport(resolved.raw, css, {
           ...options,
           unescape: resolved.unescape
         }).diagnostics

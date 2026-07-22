@@ -9,12 +9,15 @@ import type {
   MasterCSSLintClassConflictIR,
   MasterCSSLintDiagnosticIR,
   MasterCSSLintPartialClassConflictIR,
+  MasterCSSLintRawValueCandidateIR,
+  MasterCSSLintRawValueCandidatesIR,
   MasterCSSNativeDeclarationCandidateIR,
   MasterCSSValidatorBatchIR
 } from '@master/css-schema/rust-contract'
 import { cssTreeNativeDeclarationMatcher } from '@master/css-validator/native-declaration-matcher'
 import validateCSS from '@master/css-validator/validate-css'
 import type { MasterCSSLintDiagnostic, MasterCSSLintDiagnosticSeverity } from './diagnostics'
+import type { RawValuePolicyOptions } from './find-unapproved-raw-value-classes'
 
 export type RustClassConflictIR = MasterCSSLintClassConflictIR
 export type RustPartialClassConflictIR = MasterCSSLintPartialClassConflictIR
@@ -22,6 +25,7 @@ export type RustLintBatchIR = MasterCSSLintBatchIR
 
 export interface RustLintSession {
   analyze(classNames: string[]): RustLintBatchIR
+  rawValueCandidates(classNames: string[]): MasterCSSLintRawValueCandidateIR[]
   analyzeClassList(
     classList: string,
     classNames: string[],
@@ -32,6 +36,32 @@ export interface RustLintSession {
 
 export interface RustLintClassListOptions {
   disallowUnknownClass?: boolean
+  rawValuePolicy?: RawValuePolicyOptions
+}
+
+function resolveRawValuePolicy(
+  candidates: MasterCSSLintRawValueCandidateIR[],
+  options: RawValuePolicyOptions | undefined
+) {
+  if (!options) return
+  if (options.allowRawValues) {
+    return {
+      allowRawValues: true,
+      allowProperties: options.allowProperties || [],
+      approvedSegments: []
+    }
+  }
+  const patterns = options.allowedPatterns || []
+  const allowProperties = options.allowProperties || []
+  return {
+    allowRawValues: false,
+    allowProperties,
+    approvedSegments: candidates.map(({ key, properties, segments }) =>
+      allowProperties.includes(key) || properties.some((property) => allowProperties.includes(property))
+        ? []
+        : segments.map((segment) => patterns.some((pattern) => new RegExp(pattern).test(segment)))
+    )
+  }
 }
 
 function resolveValidation(batch: MasterCSSValidatorBatchIR) {
@@ -76,8 +106,23 @@ function createNativeRustLintSession(manifestJSON: string): RustLintSession | un
         inputs.invalidGeneratedClasses
       )) as RustLintBatchIR
     },
+    rawValueCandidates(classNames) {
+      const inputs = resolveInputs(classNames)
+      return (JSON.parse(lint.rawValueCandidates(
+        classNames,
+        inputs.nativeSupport,
+        inputs.invalidGeneratedClasses
+      )) as MasterCSSLintRawValueCandidatesIR).candidates
+    },
     analyzeClassList(classList, classNames, options) {
       const inputs = resolveInputs(classNames)
+      const rawValueCandidates = options?.rawValuePolicy && !options.rawValuePolicy.allowRawValues
+        ? (JSON.parse(lint.rawValueCandidates(
+          classNames,
+          inputs.nativeSupport,
+          inputs.invalidGeneratedClasses
+        )) as MasterCSSLintRawValueCandidatesIR).candidates
+        : []
       return JSON.parse(lint.analyzeClassListPolicy(JSON.stringify({
         version: MASTER_CSS_LINT_BATCH_VERSION,
         classList,
@@ -85,7 +130,8 @@ function createNativeRustLintSession(manifestJSON: string): RustLintSession | un
         nativeSupport: inputs.nativeSupport,
         invalidGeneratedClasses: inputs.invalidGeneratedClasses,
         validationErrors: inputs.validationErrors,
-        disallowUnknownClass: options?.disallowUnknownClass
+        disallowUnknownClass: options?.disallowUnknownClass,
+        rawValuePolicy: resolveRawValuePolicy(rawValueCandidates, options?.rawValuePolicy)
       }))) as MasterCSSLintClassListIR
     },
     dispose() {
@@ -141,6 +187,19 @@ export async function createRustLintSession(manifest: MasterCSSManifest): Promis
         resolveValidation(validation).invalidGeneratedClasses
       ) as RustLintBatchIR
     },
+    rawValueCandidates(classNames) {
+      const candidates = lint.nativeDeclarationCandidates(classNames) as MasterCSSNativeDeclarationCandidateIR[]
+      const nativeSupport = candidates.map(cssTreeNativeDeclarationMatcher)
+      const validation = validator.generateClasses(
+        classNames,
+        nativeSupport.length ? nativeSupport : undefined
+      ) as MasterCSSValidatorBatchIR
+      return (lint.rawValueCandidates(
+        classNames,
+        nativeSupport.length ? nativeSupport : undefined,
+        resolveValidation(validation).invalidGeneratedClasses
+      ) as MasterCSSLintRawValueCandidatesIR).candidates
+    },
     analyzeClassList(classList, classNames, options) {
       const candidates = lint.nativeDeclarationCandidates(classNames) as MasterCSSNativeDeclarationCandidateIR[]
       const nativeSupport = candidates.map(cssTreeNativeDeclarationMatcher)
@@ -149,6 +208,13 @@ export async function createRustLintSession(manifest: MasterCSSManifest): Promis
         nativeSupport.length ? nativeSupport : undefined
       ) as MasterCSSValidatorBatchIR
       const resolvedValidation = resolveValidation(validation)
+      const rawValueCandidates = options?.rawValuePolicy && !options.rawValuePolicy.allowRawValues
+        ? (lint.rawValueCandidates(
+          classNames,
+          nativeSupport.length ? nativeSupport : undefined,
+          resolvedValidation.invalidGeneratedClasses
+        ) as MasterCSSLintRawValueCandidatesIR).candidates
+        : []
       return lint.analyzeClassListPolicy(JSON.stringify({
         version: MASTER_CSS_LINT_BATCH_VERSION,
         classList,
@@ -156,7 +222,8 @@ export async function createRustLintSession(manifest: MasterCSSManifest): Promis
         nativeSupport: nativeSupport.length ? nativeSupport : undefined,
         invalidGeneratedClasses: resolvedValidation.invalidGeneratedClasses,
         validationErrors: resolvedValidation.validationErrors,
-        disallowUnknownClass: options?.disallowUnknownClass
+        disallowUnknownClass: options?.disallowUnknownClass,
+        rawValuePolicy: resolveRawValuePolicy(rawValueCandidates, options?.rawValuePolicy)
       })) as MasterCSSLintClassListIR
     },
     dispose() {

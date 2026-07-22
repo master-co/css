@@ -303,15 +303,19 @@ function createContextLintDiagnostics(
   options: MasterCSSLintContentOptions
 ) {
   if (options.lintSession) {
-    const hasRustCoreRule = rules['sort-classes']
+    const hasRustRule = rules['sort-classes']
       || rules['no-invalid-classes']
       || rules['no-conflicting-classes']
-    const rustDiagnostics = hasRustCoreRule
+      || rules['no-unapproved-raw-values']
+    const rustDiagnostics = hasRustRule
       ? options.lintSession.analyzeClassList(
         context.text,
         context.classNames,
         {
-          disallowUnknownClass: options.ruleOptions?.['no-invalid-classes']?.disallowUnknownClass
+          disallowUnknownClass: options.ruleOptions?.['no-invalid-classes']?.disallowUnknownClass,
+          rawValuePolicy: rules['no-unapproved-raw-values']
+            ? options.ruleOptions?.['no-unapproved-raw-values'] || {}
+            : undefined
         }
       ).diagnostics
         .filter(({ ruleId }) => rules[ruleId])
@@ -328,11 +332,14 @@ function createContextLintDiagnostics(
     const remainingReports = [
       rules['prefer-canonical-classes'] && (context.sourceKind === 'compose-directive'
         ? createCanonicalComposeDirectiveReport(context.text, css, withSourceRuleOptions(context, options, 'prefer-canonical-classes'))
-        : createCanonicalClassesReport(context.text, css, withSourceRuleOptions(context, options, 'prefer-canonical-classes'))),
-      rules['no-unapproved-raw-values'] && createUnapprovedRawValueClassesReport(context.text, css, withSourceRuleOptions(context, options, 'no-unapproved-raw-values'))
+        : createCanonicalClassesReport(context.text, css, withSourceRuleOptions(context, options, 'prefer-canonical-classes')))
     ].filter((report): report is { diagnostics: MasterCSSLintDiagnostic[] } => Boolean(report))
       .flatMap((report) => report.diagnostics)
-    return [...rustDiagnostics, ...remainingReports]
+    return [
+      ...rustDiagnostics.filter(({ ruleId }) => ruleId !== 'no-unapproved-raw-values'),
+      ...remainingReports,
+      ...rustDiagnostics.filter(({ ruleId }) => ruleId === 'no-unapproved-raw-values')
+    ]
   }
   return context.sourceKind === 'compose-directive'
     ? createComposeDirectiveLintDiagnostics(context, css, rules, options)

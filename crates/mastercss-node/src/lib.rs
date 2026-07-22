@@ -4,7 +4,7 @@ use mastercss_compiler::{
 };
 use mastercss_engine::{EngineError, EngineSession as RustEngineSession};
 use mastercss_language::LanguageSession as RustLanguageSession;
-use mastercss_lint::LintSession as RustLintSession;
+use mastercss_lint::{LintClassListPolicy, LintSession as RustLintSession, RawValuePolicy};
 use mastercss_render::RenderSession as RustRenderSession;
 use mastercss_scanner::ScannerSession as RustScannerSession;
 use mastercss_validator::ValidatorSession as RustValidatorSession;
@@ -38,6 +38,18 @@ struct LintClassListRequest {
     validation_errors: Vec<Vec<String>>,
     #[serde(default)]
     disallow_unknown_class: bool,
+    raw_value_policy: Option<LintRawValuePolicyRequest>,
+}
+
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase")]
+struct LintRawValuePolicyRequest {
+    #[serde(default)]
+    allow_raw_values: bool,
+    #[serde(default)]
+    allow_properties: Vec<String>,
+    #[serde(default)]
+    approved_segments: Vec<Vec<bool>>,
 }
 
 fn to_napi_error(error: EngineError) -> Error {
@@ -385,8 +397,7 @@ impl NodeLintSession {
                     &invalid_generated_classes
                         .into_iter()
                         .collect::<HashSet<_>>(),
-                    &[],
-                    false,
+                    LintClassListPolicy::default(),
                 )
                 .map_err(to_napi_error)?,
         )
@@ -401,6 +412,11 @@ impl NodeLintSession {
                 "Unsupported lint class-list request version",
             ));
         }
+        let raw_value_policy = request.raw_value_policy.map(|policy| RawValuePolicy {
+            allow_raw_values: policy.allow_raw_values,
+            allow_properties: policy.allow_properties,
+            approved_segments: policy.approved_segments,
+        });
         to_json(
             &self
                 .inner
@@ -412,8 +428,32 @@ impl NodeLintSession {
                         .invalid_generated_classes
                         .into_iter()
                         .collect::<HashSet<_>>(),
-                    &request.validation_errors,
-                    request.disallow_unknown_class,
+                    LintClassListPolicy {
+                        validation_errors: &request.validation_errors,
+                        disallow_unknown_class: request.disallow_unknown_class,
+                        raw_value_policy: raw_value_policy.as_ref(),
+                    },
+                )
+                .map_err(to_napi_error)?,
+        )
+    }
+
+    #[napi]
+    pub fn raw_value_candidates(
+        &mut self,
+        class_names: Vec<String>,
+        native_support: Option<Vec<bool>>,
+        invalid_generated_classes: Vec<String>,
+    ) -> Result<String> {
+        to_json(
+            &self
+                .inner
+                .raw_value_candidates(
+                    &class_names,
+                    native_support.as_deref(),
+                    &invalid_generated_classes
+                        .into_iter()
+                        .collect::<HashSet<_>>(),
                 )
                 .map_err(to_napi_error)?,
         )

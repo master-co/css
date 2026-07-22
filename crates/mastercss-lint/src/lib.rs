@@ -66,6 +66,36 @@ pub struct LintClassListIr {
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize)]
 #[serde(rename_all = "camelCase")]
+pub struct RawValueCandidateIr {
+    pub class_name: String,
+    pub key: String,
+    pub segments: Vec<String>,
+    pub properties: Vec<String>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct RawValueCandidatesIr {
+    pub version: u32,
+    pub candidates: Vec<RawValueCandidateIr>,
+}
+
+#[derive(Debug, Clone, Default)]
+pub struct RawValuePolicy {
+    pub allow_raw_values: bool,
+    pub allow_properties: Vec<String>,
+    pub approved_segments: Vec<Vec<bool>>,
+}
+
+#[derive(Debug, Clone, Copy, Default)]
+pub struct LintClassListPolicy<'a> {
+    pub validation_errors: &'a [Vec<String>],
+    pub disallow_unknown_class: bool,
+    pub raw_value_policy: Option<&'a RawValuePolicy>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct LintBatchIr {
     pub version: u32,
     pub sorted_class_names: Vec<String>,
@@ -188,22 +218,100 @@ impl LintSession {
         class_names: &[String],
         native_support: Option<&[bool]>,
         invalid_generated_classes: &HashSet<String>,
-        validation_errors: &[Vec<String>],
-        disallow_unknown_class: bool,
+        policy: LintClassListPolicy<'_>,
     ) -> Result<LintClassListIr, EngineError> {
         let (analysis, matches) = self.analyze_with_matches(
             class_names.to_vec(),
             native_support,
             invalid_generated_classes,
         )?;
+        let raw_value_candidates = if policy
+            .raw_value_policy
+            .is_some_and(|policy| !policy.allow_raw_values)
+        {
+            self.collect_raw_value_candidates(class_names, invalid_generated_classes)?
+        } else {
+            Vec::new()
+        };
         Ok(class_list::create_class_list_ir(
             class_list,
             class_names,
             analysis,
-            &matches,
-            validation_errors,
-            disallow_unknown_class,
+            class_list::ClassListPolicy {
+                matches: &matches,
+                validation_errors: policy.validation_errors,
+                disallow_unknown_class: policy.disallow_unknown_class,
+                raw_value_candidates: &raw_value_candidates,
+                raw_value_policy: policy.raw_value_policy,
+            },
         ))
+    }
+
+    pub fn raw_value_candidates(
+        &mut self,
+        class_names: &[String],
+        native_support: Option<&[bool]>,
+        invalid_generated_classes: &HashSet<String>,
+    ) -> Result<RawValueCandidatesIr, EngineError> {
+        if let Some(native_support) = native_support {
+            self.engine
+                .ensure_class_rules_with_native_support(class_names, native_support)?;
+        } else {
+            self.engine.ensure_class_rules(class_names)?;
+        }
+        let candidates =
+            self.collect_raw_value_candidates(class_names, invalid_generated_classes)?;
+        self.engine.delete_class_rules(class_names)?;
+        Ok(RawValueCandidatesIr {
+            version: LINT_BATCH_VERSION,
+            candidates,
+        })
+    }
+
+    fn collect_raw_value_candidates(
+        &self,
+        class_names: &[String],
+        invalid_generated_classes: &HashSet<String>,
+    ) -> Result<Vec<RawValueCandidateIr>, EngineError> {
+        let mut candidates = Vec::new();
+        for class_name in class_names {
+            if invalid_generated_classes.contains(class_name) {
+                continue;
+            }
+            let semantics = self.engine.inspect_class_semantics(class_name)?;
+            let (Some(key_token), Some(value)) = (semantics.key_token, semantics.value_token)
+            else {
+                continue;
+            };
+            let variable_keys = self.engine.class_variable_keys(class_name)?;
+            if variable_keys.is_empty() {
+                continue;
+            }
+            let segments = split_top_level(&value, '|')
+                .into_iter()
+                .filter(|segment| !variable_keys.iter().any(|key| key == segment))
+                .map(str::to_owned)
+                .collect::<Vec<_>>();
+            if segments.is_empty() {
+                continue;
+            }
+            let inspection = self.engine.inspect(class_name)?;
+            let mut properties = inspection
+                .rules
+                .iter()
+                .flat_map(|rule| collect_rule_declarations(&rule.text))
+                .map(|(property, _)| property)
+                .collect::<Vec<_>>();
+            properties.sort();
+            properties.dedup();
+            candidates.push(RawValueCandidateIr {
+                class_name: class_name.clone(),
+                key: key_token.trim_end_matches(':').to_owned(),
+                segments,
+                properties,
+            });
+        }
+        Ok(candidates)
     }
 
     pub fn dispose(&mut self) {
@@ -1336,9 +1444,12 @@ mod tests {
 
     const MANIFEST: &str = r#"{
       "version":1,
+      "variables":{
+        "spacing":[{"key":"md","type":"number","value":"1rem"}]
+      },
       "utilities":[
         {"id":"block","name":"block","type":-2,"emit":{"type":"static","rules":[{"declarations":{"display":"block"}}]},"matchers":[{"type":"static","name":"block"}]},
-        {"id":"m","name":"m:","type":-1,"emit":{"type":"property","property":"margin"},"matchers":[{"type":"key","keys":["m"]}]},
+        {"id":"m","name":"m:","type":-1,"variableAliasRefs":["~spacing"],"emit":{"type":"property","property":"margin"},"matchers":[{"type":"key","keys":["m"]}]},
         {"id":"mx","name":"mx:","type":-1,"emit":{"type":"template","declarations":{"margin-right":null,"margin-left":null}},"matchers":[{"type":"key","keys":["mx"]}]},
         {"id":"ml","name":"ml:","type":-1,"emit":{"type":"property","property":"margin-left"},"matchers":[{"type":"key","keys":["ml"]}]},
         {"id":"mr","name":"mr:","type":-1,"emit":{"type":"property","property":"margin-right"},"matchers":[{"type":"key","keys":["mr"]}]},
@@ -1375,5 +1486,50 @@ mod tests {
                 conflict: "ml:3px".into(),
             }]
         );
+    }
+
+    #[test]
+    fn discovers_raw_value_segments_and_creates_policy_diagnostics() {
+        let mut session = LintSession::create(MANIFEST).unwrap();
+        let class_names = vec!["m:md".into(), "m:md|17px".into(), "block".into()];
+        let candidates = session
+            .raw_value_candidates(&class_names, None, &HashSet::new())
+            .unwrap();
+        assert_eq!(
+            candidates.candidates,
+            [RawValueCandidateIr {
+                class_name: "m:md|17px".into(),
+                key: "m".into(),
+                segments: vec!["17px".into()],
+                properties: vec!["margin".into()],
+            }]
+        );
+
+        let ir = session
+            .analyze_class_list(
+                "😀 m:md|17px",
+                &["😀".into(), "m:md|17px".into()],
+                None,
+                &HashSet::new(),
+                LintClassListPolicy {
+                    raw_value_policy: Some(&RawValuePolicy {
+                        approved_segments: vec![vec![false]],
+                        ..RawValuePolicy::default()
+                    }),
+                    ..LintClassListPolicy::default()
+                },
+            )
+            .unwrap();
+        let diagnostic = ir
+            .diagnostics
+            .iter()
+            .find(|diagnostic| diagnostic.code == "unapproved-raw-value")
+            .unwrap();
+        assert_eq!(diagnostic.range, SourceRange { start: 3, end: 12 });
+        assert_eq!(
+            diagnostic.message,
+            "Raw value \"17px\" is not approved for class \"m:md|17px\". Use a token or allow the value explicitly."
+        );
+        assert_eq!(diagnostic.data["properties"], serde_json::json!(["margin"]));
     }
 }

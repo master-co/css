@@ -10,6 +10,7 @@ import {
   createConflictingClassesReport,
   createInvalidClassesReport,
   createSortClassesReport,
+  createUnapprovedRawValueClassesReport,
   fixMasterCSSContent,
   findClassConflicts,
   findPartialClassConflicts,
@@ -138,6 +139,7 @@ describe('class sorting', () => {
     } finally {
       rust.dispose()
     }
+
   })
 
   test('sorts known classes and keeps unknown classes last', () => {
@@ -515,6 +517,37 @@ describe('source content linting', () => {
     }
   })
 
+  test('routes source raw value policy through an injected Rust session', async () => {
+    const rust = await createRustLintSession(createPresetManifest())
+    const content = '<div class="m:md|17px m:calc(1rem+1px)|18px w:50%"></div>'
+    const lintOptions = {
+      content,
+      filePath: '/project/index.html',
+      css,
+      rules: {
+        'sort-classes': false,
+        'no-invalid-classes': false,
+        'no-conflicting-classes': false,
+        'prefer-canonical-classes': false,
+        'no-unapproved-raw-values': true
+      },
+      ruleOptions: {
+        'no-unapproved-raw-values': {
+          allowProperties: ['width'],
+          allowedPatterns: ['^calc\\(']
+        }
+      }
+    }
+    try {
+      const oracle = lintMasterCSSContent(lintOptions)
+      const actual = lintMasterCSSContent({ ...lintOptions, lintSession: rust })
+      expect(actual).toEqual(oracle)
+      expect(actual.diagnostics.map(({ data }) => data?.value)).toEqual(['17px', '18px'])
+    } finally {
+      rust.dispose()
+    }
+  })
+
   test('lints and fixes class lists inside mdx fenced html examples', () => {
     const content = [
       '```html',
@@ -839,6 +872,68 @@ describe('class validation issues', () => {
 })
 
 describe('raw value policy', () => {
+  test('matches Rust raw candidates, regex approvals, and diagnostics', async () => {
+    const rust = await createRustLintSession(createPresetManifest())
+    const classList = 'm:md|17px m:calc(1rem+1px)|18px w:50% fg:red-60'
+    const classNames = classList.split(' ')
+    const options = {
+      allowProperties: ['width'],
+      allowedPatterns: ['^calc\\(']
+    }
+    try {
+      expect(rust.rawValueCandidates(classNames)).toEqual([
+        { className: 'm:md|17px', key: 'm', segments: ['17px'], properties: ['margin'] },
+        { className: 'm:calc(1rem+1px)|18px', key: 'm', segments: ['calc(1rem+1px)', '18px'], properties: ['margin'] },
+        { className: 'w:50%', key: 'w', segments: ['50%'], properties: ['width'] }
+      ])
+      const actual = rust.analyzeClassList(classList, classNames, {
+        rawValuePolicy: options
+      }).diagnostics.filter(({ ruleId }) => ruleId === 'no-unapproved-raw-values')
+      const expected = createUnapprovedRawValueClassesReport(classList, css, options).diagnostics
+        .map(({ severity: _, ...diagnostic }) => diagnostic)
+      expect(actual).toEqual(expected)
+
+      const cases: [string, Parameters<typeof createUnapprovedRawValueClassesReport>[2]][] = [
+        ['font:15px m:17px fg:#123456', {}],
+        ['font:md m:md m:md|lg fg:red-60 text-center font:error unknown-class', {}],
+        ['m:md|17px m:calc(1rem+1px)|18px m:19px|20px', { allowedPatterns: ['^calc\\('] }],
+        ['w:50% m:17px', { allowProperties: ['width'] }],
+        ['font:15px', { allowRawValues: true }]
+      ]
+      for (const [eachClassList, eachOptions] of cases) {
+        const eachClassNames = eachClassList.split(' ')
+        const rustDiagnostics = rust.analyzeClassList(eachClassList, eachClassNames, {
+          rawValuePolicy: eachOptions
+        }).diagnostics.filter(({ ruleId }) => ruleId === 'no-unapproved-raw-values')
+        const oracleDiagnostics = createUnapprovedRawValueClassesReport(eachClassList, css, eachOptions).diagnostics
+          .map(({ severity: _, ...diagnostic }) => diagnostic)
+        expect(rustDiagnostics, eachClassList).toEqual(oracleDiagnostics)
+      }
+      expect(() => rust.analyzeClassList('w:50%', ['w:50%'], {
+        rawValuePolicy: { allowProperties: ['width'], allowedPatterns: ['('] }
+      })).not.toThrow()
+      expect(() => rust.analyzeClassList('m:17px', ['m:17px'], {
+        rawValuePolicy: { allowedPatterns: ['('] }
+      })).toThrow(SyntaxError)
+    } finally {
+      rust.dispose()
+    }
+
+    const customRust = await createRustLintSession(customManifest)
+    try {
+      const customClassList = 'm:card m:17px'
+      const customClassNames = customClassList.split(' ')
+      const actual = customRust.analyzeClassList(customClassList, customClassNames, {
+        rawValuePolicy: {}
+      }).diagnostics.filter(({ ruleId }) => ruleId === 'no-unapproved-raw-values')
+      const expected = createUnapprovedRawValueClassesReport(customClassList, customCSS).diagnostics
+        .map(({ severity: _, ...diagnostic }) => diagnostic)
+      expect(actual).toEqual(expected)
+    } finally {
+      customRust.dispose()
+    }
+  })
+
   test('reports raw values in token-backed utilities', () => {
     expect(findUnapprovedRawValueClasses(['font:15px', 'm:17px', 'fg:#123456'], css)).toEqual([
       { className: 'font:15px', key: 'font', value: '15px', properties: ['font-size'] },

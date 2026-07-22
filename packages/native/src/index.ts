@@ -68,6 +68,11 @@ export interface NativeValidatorSession {
 
 export interface NativeLintSession {
   nativeDeclarationCandidates(classNames: string[]): string
+  rawValueCandidates(
+    classNames: string[],
+    nativeSupport: boolean[] | undefined,
+    invalidGeneratedClasses: string[]
+  ): string
   analyze(classNames: string[], nativeSupport: boolean[] | undefined, invalidGeneratedClasses: string[]): string
   analyzeClassList(
     classList: string,

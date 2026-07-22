@@ -94,19 +94,32 @@ export interface MasterCSSLintBatchIR {
   partialConflicts: MasterCSSLintPartialClassConflictIR[]
 }
 
+export interface MasterCSSLintRawValueCandidateIR {
+  className: string
+  key: string
+  segments: string[]
+  properties: string[]
+}
+
+export interface MasterCSSLintRawValueCandidatesIR {
+  version: typeof MASTER_CSS_LINT_BATCH_VERSION
+  candidates: MasterCSSLintRawValueCandidateIR[]
+}
+
 export interface MasterCSSLintEditIR {
   range: MasterCSSSourceRange
   text: string
 }
 
 export interface MasterCSSLintDiagnosticIR {
-  ruleId: 'sort-classes' | 'no-invalid-classes' | 'no-conflicting-classes'
+  ruleId: 'sort-classes' | 'no-invalid-classes' | 'no-conflicting-classes' | 'no-unapproved-raw-values'
   code:
     | 'invalid-class-order'
     | 'invalid-class'
     | 'unknown-class'
     | 'conflicting-class'
     | 'partially-conflicting-class'
+    | 'unapproved-raw-value'
   message: string
   range: MasterCSSSourceRange
   data?: Record<string, string | string[]>

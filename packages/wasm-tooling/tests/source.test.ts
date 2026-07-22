@@ -67,6 +67,9 @@ test('loads the isolated source tooling Wasm surface', async () => {
 
   const lint = new tooling.ToolingLintSession(JSON.stringify({
     version: 1,
+    variables: {
+      spacing: [{ key: 'md', type: 'number', value: '1rem' }]
+    },
     utilities: [
       {
         id: 'display-block',
@@ -82,6 +85,7 @@ test('loads the isolated source tooling Wasm surface', async () => {
         id: 'margin',
         name: 'm:',
         type: -1,
+        variableAliasRefs: ['~spacing'],
         emit: { type: 'property', property: 'margin' },
         matchers: [{ type: 'key', keys: ['m'] }]
       },
@@ -122,6 +126,12 @@ test('loads the isolated source tooling Wasm surface', async () => {
     sortedClassNames: ['ml:3px', 'mx:2px'],
     conflicts: [],
     partialConflicts: [{ className: 'mx:2px', replacement: 'mr:2px', conflict: 'ml:3px' }]
+  })
+  expect(lint.rawValueCandidates(['m:md|17px'], undefined, [])).toEqual({
+    version: 1,
+    candidates: [
+      { className: 'm:md|17px', key: 'm', segments: ['17px'], properties: ['margin'] }
+    ]
   })
   expect(lint.analyzeClassList('mx:2px  ml:3px', ['mx:2px', 'ml:3px'], undefined, [])).toEqual({
     version: 1,
@@ -175,6 +185,26 @@ test('loads the isolated source tooling Wasm surface', async () => {
       range: { start: 6, end: 13 }
     })
   ])
+  const rawPolicy = lint.analyzeClassListPolicy(JSON.stringify({
+    version: 1,
+    classList: '😀 m:md|17px',
+    classNames: ['😀', 'm:md|17px'],
+    rawValuePolicy: {
+      approvedSegments: [[false]]
+    }
+  })) as { diagnostics: unknown[] }
+  expect(rawPolicy.diagnostics).toContainEqual({
+    ruleId: 'no-unapproved-raw-values',
+    code: 'unapproved-raw-value',
+    message: 'Raw value "17px" is not approved for class "m:md|17px". Use a token or allow the value explicitly.',
+    range: { start: 3, end: 12 },
+    data: {
+      className: 'm:md|17px',
+      value: '17px',
+      key: 'm',
+      properties: ['margin']
+    }
+  })
   lint.dispose()
   lint.free()
 
