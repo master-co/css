@@ -4,6 +4,7 @@ import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import { stringifyMasterCSSManifestJSON } from '@master/css-schema/manifest-json'
 import type {
   MasterCSSLintBatchIR,
+  MasterCSSLintClassListIR,
   MasterCSSLintClassConflictIR,
   MasterCSSLintPartialClassConflictIR,
   MasterCSSNativeDeclarationCandidateIR,
@@ -18,6 +19,7 @@ export type RustLintBatchIR = MasterCSSLintBatchIR
 
 export interface RustLintSession {
   analyze(classNames: string[]): RustLintBatchIR
+  analyzeClassList(classList: string, classNames: string[]): MasterCSSLintClassListIR
   dispose(): void
 }
 
@@ -49,6 +51,22 @@ export async function createRustLintSession(manifest: MasterCSSManifest): Promis
           invalidGeneratedClasses(validation)
         )) as RustLintBatchIR
       },
+      analyzeClassList(classList, classNames) {
+        const candidates = JSON.parse(
+          lint.nativeDeclarationCandidates(classNames)
+        ) as MasterCSSNativeDeclarationCandidateIR[]
+        const nativeSupport = candidates.map(cssTreeNativeDeclarationMatcher)
+        const validation = JSON.parse(validator.generateClasses(
+          classNames,
+          nativeSupport.length ? nativeSupport : undefined
+        )) as MasterCSSValidatorBatchIR
+        return JSON.parse(lint.analyzeClassList(
+          classList,
+          classNames,
+          nativeSupport.length ? nativeSupport : undefined,
+          invalidGeneratedClasses(validation)
+        )) as MasterCSSLintClassListIR
+      },
       dispose() {
         lint.dispose()
         validator.dispose()
@@ -78,6 +96,20 @@ export async function createRustLintSession(manifest: MasterCSSManifest): Promis
         nativeSupport.length ? nativeSupport : undefined,
         invalidGeneratedClasses(validation)
       ) as RustLintBatchIR
+    },
+    analyzeClassList(classList, classNames) {
+      const candidates = lint.nativeDeclarationCandidates(classNames) as MasterCSSNativeDeclarationCandidateIR[]
+      const nativeSupport = candidates.map(cssTreeNativeDeclarationMatcher)
+      const validation = validator.generateClasses(
+        classNames,
+        nativeSupport.length ? nativeSupport : undefined
+      ) as MasterCSSValidatorBatchIR
+      return lint.analyzeClassList(
+        classList,
+        classNames,
+        nativeSupport.length ? nativeSupport : undefined,
+        invalidGeneratedClasses(validation)
+      ) as MasterCSSLintClassListIR
     },
     dispose() {
       lint.dispose()

@@ -248,6 +248,29 @@ impl NodeLintSession {
     }
 
     #[napi]
+    pub fn analyze_class_list(
+        &mut self,
+        class_list: String,
+        class_names: Vec<String>,
+        native_support: Option<Vec<bool>>,
+        invalid_generated_classes: Vec<String>,
+    ) -> Result<String> {
+        to_json(
+            &self
+                .inner
+                .analyze_class_list(
+                    &class_list,
+                    &class_names,
+                    native_support.as_deref(),
+                    &invalid_generated_classes
+                        .into_iter()
+                        .collect::<HashSet<_>>(),
+                )
+                .map_err(to_napi_error)?,
+        )
+    }
+
+    #[napi]
     pub fn dispose(&mut self) {
         self.inner.dispose();
     }

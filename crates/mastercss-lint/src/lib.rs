@@ -1,8 +1,11 @@
 #![forbid(unsafe_code)]
 
+mod class_list;
+
 use mastercss_engine::{EngineError, EngineSession};
 use mastercss_schema::{
-    GeneratedRuleIr, LINT_BATCH_VERSION, NativeDeclarationCandidateIr, UtilityLayerName,
+    GeneratedRuleIr, LINT_BATCH_VERSION, NativeDeclarationCandidateIr, SourceRange,
+    UtilityLayerName,
 };
 use serde::Serialize;
 use serde_json::Value;
@@ -25,6 +28,40 @@ pub struct PartialClassConflictIr {
     pub class_name: String,
     pub replacement: String,
     pub conflict: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct LintEditIr {
+    pub range: SourceRange,
+    pub text: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct LintDiagnosticIr {
+    pub rule_id: String,
+    pub code: String,
+    pub message: String,
+    pub range: SourceRange,
+    #[serde(default, skip_serializing_if = "serde_json::Map::is_empty")]
+    pub data: serde_json::Map<String, Value>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub fix: Option<LintEditIr>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct LintClassListIr {
+    pub version: u32,
+    pub analysis: LintBatchIr,
+    pub diagnostics: Vec<LintDiagnosticIr>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub sort_edit: Option<LintEditIr>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub conflict_edit: Option<LintEditIr>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub conflict_range: Option<SourceRange>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize)]
@@ -125,6 +162,21 @@ impl LintSession {
             conflicts,
             partial_conflicts,
         })
+    }
+
+    pub fn analyze_class_list(
+        &mut self,
+        class_list: &str,
+        class_names: &[String],
+        native_support: Option<&[bool]>,
+        invalid_generated_classes: &HashSet<String>,
+    ) -> Result<LintClassListIr, EngineError> {
+        let analysis = self.analyze(class_names, native_support, invalid_generated_classes)?;
+        Ok(class_list::create_class_list_ir(
+            class_list,
+            class_names,
+            analysis,
+        ))
     }
 
     pub fn dispose(&mut self) {

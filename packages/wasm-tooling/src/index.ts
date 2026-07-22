@@ -37,6 +37,12 @@ interface GeneratedToolingWasmModule {
   ToolingLintSession: new (manifestJSON: string) => {
     nativeDeclarationCandidates(classNames: string[]): unknown
     analyze(classNames: string[], nativeSupport: boolean[] | undefined, invalidGeneratedClasses: string[]): unknown
+    analyzeClassList(
+      classList: string,
+      classNames: string[],
+      nativeSupport: boolean[] | undefined,
+      invalidGeneratedClasses: string[]
+    ): unknown
     dispose(): void
     free(): void
   }
@@ -140,6 +146,12 @@ export async function createToolingLintSession(
     nativeDeclarationCandidates: (classNames: string[]) => session.nativeDeclarationCandidates(classNames),
     analyze: (classNames: string[], nativeSupport: boolean[] | undefined, invalidGeneratedClasses: string[]) =>
       session.analyze(classNames, nativeSupport, invalidGeneratedClasses),
+    analyzeClassList: (
+      classList: string,
+      classNames: string[],
+      nativeSupport: boolean[] | undefined,
+      invalidGeneratedClasses: string[]
+    ) => session.analyzeClassList(classList, classNames, nativeSupport, invalidGeneratedClasses),
     dispose() {
       session.dispose()
       session.free()

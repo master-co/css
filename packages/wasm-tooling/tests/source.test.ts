@@ -123,6 +123,36 @@ test('loads the isolated source tooling Wasm surface', async () => {
     conflicts: [],
     partialConflicts: [{ className: 'mx:2px', replacement: 'mr:2px', conflict: 'ml:3px' }]
   })
+  expect(lint.analyzeClassList('mx:2px  ml:3px', ['mx:2px', 'ml:3px'], undefined, [])).toEqual({
+    version: 1,
+    analysis: {
+      version: 1,
+      sortedClassNames: ['ml:3px', 'mx:2px'],
+      conflicts: [],
+      partialConflicts: [{ className: 'mx:2px', replacement: 'mr:2px', conflict: 'ml:3px' }]
+    },
+    diagnostics: [
+      {
+        ruleId: 'sort-classes',
+        code: 'invalid-class-order',
+        message: 'Sort classes into the expected order: "ml:3px mx:2px".',
+        range: { start: 0, end: 14 },
+        data: { actual: 'mx:2px ml:3px', expected: 'ml:3px mx:2px' },
+        fix: { range: { start: 0, end: 14 }, text: 'ml:3px  mx:2px' }
+      },
+      {
+        ruleId: 'no-conflicting-classes',
+        code: 'partially-conflicting-class',
+        message: 'Replace "mx:2px" with "mr:2px"; later class "ml:3px" overrides part of "mx:2px".',
+        range: { start: 0, end: 6 },
+        data: { actual: 'mx:2px', replacement: 'mr:2px', conflict: 'ml:3px' },
+        fix: { range: { start: 0, end: 14 }, text: 'mr:2px  ml:3px' }
+      }
+    ],
+    sortEdit: { range: { start: 0, end: 14 }, text: 'ml:3px  mx:2px' },
+    conflictEdit: { range: { start: 0, end: 14 }, text: 'mr:2px  ml:3px' },
+    conflictRange: { start: 0, end: 6 }
+  })
   lint.dispose()
   lint.free()
 

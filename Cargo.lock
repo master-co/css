@@ -563,6 +563,7 @@ name = "mastercss-lint"
 version = "0.0.0"
 dependencies = [
  "mastercss-engine",
+ "mastercss-lexer",
  "mastercss-schema",
  "serde",
  "serde_json",

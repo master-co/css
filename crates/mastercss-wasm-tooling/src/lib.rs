@@ -135,6 +135,38 @@ impl ToolingLintSession {
             .map_err(|error| JsValue::from_str(&error.to_string()))
     }
 
+    #[wasm_bindgen(js_name = analyzeClassList)]
+    pub fn analyze_class_list(
+        &mut self,
+        class_list: &str,
+        class_names: Vec<String>,
+        native_support: JsValue,
+        invalid_generated_classes: Vec<String>,
+    ) -> Result<JsValue, JsValue> {
+        let native_support = if native_support.is_null() || native_support.is_undefined() {
+            None
+        } else {
+            Some(
+                serde_wasm_bindgen::from_value::<Vec<bool>>(native_support)
+                    .map_err(|error| JsValue::from_str(&error.to_string()))?,
+            )
+        };
+        let batch = self
+            .inner
+            .analyze_class_list(
+                class_list,
+                &class_names,
+                native_support.as_deref(),
+                &invalid_generated_classes
+                    .into_iter()
+                    .collect::<HashSet<_>>(),
+            )
+            .map_err(scanner_error)?;
+        batch
+            .serialize(&serde_wasm_bindgen::Serializer::json_compatible())
+            .map_err(|error| JsValue::from_str(&error.to_string()))
+    }
+
     pub fn dispose(&mut self) {
         self.inner.dispose();
     }

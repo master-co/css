@@ -25,7 +25,8 @@ import {
   suggestCanonicalComposeDirective,
   sortClassList,
   sortClassNames,
-  suggestCanonicalClassName
+  suggestCanonicalClassName,
+  type MasterCSSLintDiagnostic
 } from '../src'
 import { createRustLintSession } from '../src/rust-session'
 import { createPresetManifest } from './helpers/create-preset-manifest'
@@ -226,6 +227,53 @@ describe('class sorting', () => {
 })
 
 describe('class list edits', () => {
+  test('matches Rust UTF-16 edit plans while preserving raw whitespace', async () => {
+    const rust = await createRustLintSession(createPresetManifest())
+    const toRustDiagnostic = ({ severity: _, fix, ...diagnostic }: MasterCSSLintDiagnostic) => ({
+      ...diagnostic,
+      fix: fix && { range: fix.range, text: fix.text }
+    })
+    try {
+      const sorted = rust.analyzeClassList(
+        'fg:white  m:2x\tfg:white',
+        ['fg:white', 'm:2x', 'fg:white']
+      )
+      expect(sorted.sortEdit?.text).toBe(sortClassList('fg:white  m:2x\tfg:white', css))
+      const sortedOracle = createSortClassesReport('fg:white  m:2x\tfg:white', css).diagnostics[0]
+      expect(sorted.diagnostics[0]).toEqual(sortedOracle && toRustDiagnostic(sortedOracle))
+
+      const full = rust.analyzeClassList(
+        '😀 m:10px  m:20px m:30px',
+        ['😀', 'm:10px', 'm:20px', 'm:30px']
+      )
+      const fullOracle = createConflictingClassesReport('😀 m:10px  m:20px m:30px', css).diagnostics[0]
+      expect(full.conflictRange).toEqual(fullOracle?.range)
+      expect(full.conflictEdit).toEqual(fullOracle?.fix && {
+        range: fullOracle.fix.range,
+        text: fullOracle.fix.text
+      })
+      expect(full.diagnostics.find(({ ruleId }) => ruleId === 'no-conflicting-classes'))
+        .toEqual(fullOracle && toRustDiagnostic(fullOracle))
+
+      const partial = rust.analyzeClassList('mx:md ml:lg', ['mx:md', 'ml:lg'])
+      const partialOracle = createConflictingClassesReport('mx:md ml:lg', css).diagnostics[0]
+      expect(partial.conflictRange).toEqual(partialOracle?.range)
+      expect(partial.conflictEdit).toEqual(partialOracle?.fix && {
+        range: partialOracle.fix.range,
+        text: partialOracle.fix.text
+      })
+      expect(partial.diagnostics.find(({ ruleId }) => ruleId === 'no-conflicting-classes'))
+        .toEqual(partialOracle && toRustDiagnostic(partialOracle))
+
+      expect(rust.analyzeClassList(
+        'content:\\`\\` block',
+        ['content:``', 'block']
+      ).sortEdit?.text).toBe(sortClassList('content:\\`\\` block', css, { unescape: '`' }))
+    } finally {
+      rust.dispose()
+    }
+  })
+
   test('sorts class-list text while preserving useful whitespace and raw tokens', () => {
     expect(sortClassList('fg:white  m:2x\tfg:white', css))
       .toBe('m:2x  fg:white')

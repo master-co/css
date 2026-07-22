@@ -94,6 +94,29 @@ export interface MasterCSSLintBatchIR {
   partialConflicts: MasterCSSLintPartialClassConflictIR[]
 }
 
+export interface MasterCSSLintEditIR {
+  range: MasterCSSSourceRange
+  text: string
+}
+
+export interface MasterCSSLintDiagnosticIR {
+  ruleId: 'sort-classes' | 'no-conflicting-classes'
+  code: 'invalid-class-order' | 'conflicting-class' | 'partially-conflicting-class'
+  message: string
+  range: MasterCSSSourceRange
+  data?: Record<string, string | string[]>
+  fix?: MasterCSSLintEditIR
+}
+
+export interface MasterCSSLintClassListIR {
+  version: typeof MASTER_CSS_LINT_BATCH_VERSION
+  analysis: MasterCSSLintBatchIR
+  diagnostics: MasterCSSLintDiagnosticIR[]
+  sortEdit?: MasterCSSLintEditIR
+  conflictEdit?: MasterCSSLintEditIR
+  conflictRange?: MasterCSSSourceRange
+}
+
 export type MasterCSSDirectiveManifestInputIR =
   import('./css-directives').CSSDirectiveManifestInput
 
