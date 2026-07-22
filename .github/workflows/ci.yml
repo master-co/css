@@ -1,5 +1,8 @@
 name: CI
 on:
+  push:
+    branches:
+      - rust
   pull_request:
     types:
       - opened
