@@ -5,16 +5,16 @@ import {
   loadProjectManifest
 } from '@master/css-compiler/project'
 import { compileProjectManifestSync } from '@master/css-compiler/project/sync'
-import { toHashedManifestAssetFileName } from '@master/css-build-internal/node'
+import { toHashedManifestAssetFileName } from '@master/css-internal/node'
 import {
   defaultBuildManifest,
   isManifestStylesheetRequest
-} from '@master/css-build-internal/project'
-import { stripMasterCSSManifestQuery } from '@master/css-build-internal/manifest-module'
+} from '@master/css-internal/project'
+import { stripMasterCSSManifestQuery } from '@master/css-internal/manifest-module'
 import {
   toInlineManifestModule,
   toUniversalManifestFacadeModule
-} from '@master/css-build-internal/manifest-facade'
+} from '@master/css-internal/manifest-facade'
 import { collectStylesheetDependenciesSync } from '@master/css-compiler/node'
 import { serializeMasterCSSManifest } from '@master/css-schema/manifest'
 

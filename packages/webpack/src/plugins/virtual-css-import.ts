@@ -1,4 +1,4 @@
-import { VIRTUAL_CSS_ID } from '@master/css-build-internal/style-module'
+import { VIRTUAL_CSS_ID } from '@master/css-internal/style-module'
 import type { Compiler } from 'webpack'
 import type { MasterCSSWebpackContext, WebpackSubPlugin } from '../plugin'
 

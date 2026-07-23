@@ -613,9 +613,9 @@ importers:
         specifier: workspace:^
         version: link:../../packages/css
     devDependencies:
-      '@master/css-build-internal':
+      '@master/css-internal':
         specifier: workspace:^
-        version: link:../../packages/integration
+        version: link:../../packages/internal
       '@master/css-vite':
         specifier: workspace:^
         version: link:../../packages/vite
@@ -881,9 +881,9 @@ importers:
         specifier: ^3.3.3
         version: 3.3.3
     devDependencies:
-      '@master/css-build-internal':
+      '@master/css-internal':
         specifier: workspace:^
-        version: link:../../packages/integration
+        version: link:../../packages/internal
       '@master/css-vite':
         specifier: workspace:^
         version: link:../../packages/vite
@@ -1473,9 +1473,9 @@ importers:
         specifier: '>=6'
         version: 8.0.16(@types/node@26.0.0)(@vitejs/devtools@0.1.24)(esbuild@0.28.1)(jiti@2.7.0)(less@4.6.4)(sass@1.101.0)(terser@5.48.0)(tsx@4.22.4)(yaml@2.9.0)
     devDependencies:
-      '@master/css-build-internal':
+      '@master/css-internal':
         specifier: workspace:*
-        version: link:../integration
+        version: link:../internal
       '@master/css-preset':
         specifier: workspace:*
         version: link:../preset
@@ -1541,9 +1541,9 @@ importers:
       '@master/css':
         specifier: workspace:*
         version: link:../css
-      '@master/css-build-internal':
+      '@master/css-internal':
         specifier: workspace:*
-        version: link:../integration
+        version: link:../internal
       '@master/css-preset':
         specifier: workspace:*
         version: link:../preset
@@ -1621,9 +1621,9 @@ importers:
       '@angular/compiler':
         specifier: ^21.2.17
         version: 21.2.17
-      '@master/css-build-internal':
+      '@master/css-internal':
         specifier: workspace:*
-        version: link:../integration
+        version: link:../internal
       '@master/css-schema':
         specifier: workspace:*
         version: link:../schema
@@ -1707,7 +1707,7 @@ importers:
         specifier: ^2.3.3
         version: 2.3.3(rollup@4.62.2)(vite@8.1.3(@types/node@26.1.1)(esbuild@0.28.1)(jiti@2.7.0)(less@4.6.4)(sass@1.101.0)(terser@5.48.0)(tsx@4.22.4)(yaml@2.9.0))
 
-  packages/integration:
+  packages/internal:
     dependencies:
       '@master/css-preset':
         specifier: workspace:*
@@ -1755,9 +1755,9 @@ importers:
         specifier: ^3.1.0
         version: 3.1.0
     devDependencies:
-      '@master/css-build-internal':
+      '@master/css-internal':
         specifier: workspace:*
-        version: link:../integration
+        version: link:../internal
 
   packages/language-service:
     dependencies:
@@ -1841,9 +1841,9 @@ importers:
         specifier: ^4.4.3
         version: 4.4.3
     devDependencies:
-      '@master/css-build-internal':
+      '@master/css-internal':
         specifier: workspace:*
-        version: link:../integration
+        version: link:../internal
 
   packages/native:
     dependencies:
@@ -1913,9 +1913,9 @@ importers:
         specifier: workspace:*
         version: link:../tooling
     devDependencies:
-      '@master/css-build-internal':
+      '@master/css-internal':
         specifier: workspace:*
-        version: link:../integration
+        version: link:../internal
       '@types/react':
         specifier: ^19.2.17
         version: 19.2.17
@@ -1953,9 +1953,9 @@ importers:
         specifier: ^4.4.8
         version: 4.4.8(magicast@0.5.3)
     devDependencies:
-      '@master/css-build-internal':
+      '@master/css-internal':
         specifier: workspace:*
-        version: link:../integration
+        version: link:../internal
       '@master/css-preset':
         specifier: workspace:*
         version: link:../preset
@@ -2101,9 +2101,9 @@ importers:
       '@eslint/js':
         specifier: ^10.0.1
         version: 10.0.1(eslint@10.6.0(jiti@2.7.0))
-      '@master/css-build-internal':
+      '@master/css-internal':
         specifier: workspace:*
-        version: link:../integration
+        version: link:../internal
       '@playwright/experimental-ct-svelte':
         specifier: ^1.58.2
         version: 1.58.2(@types/node@26.1.1)(jiti@2.7.0)(less@4.6.4)(lightningcss@1.32.0)(sass@1.101.0)(supports-color@5.5.0)(svelte@5.56.3(@typescript-eslint/types@8.63.0))(terser@5.48.0)(tsx@4.22.4)(vite@8.0.16)(yaml@2.9.0)
@@ -2217,9 +2217,9 @@ importers:
         specifier: '>=6'
         version: 8.0.16(@types/node@26.0.0)(@vitejs/devtools@0.1.24)(esbuild@0.28.1)(jiti@2.7.0)(less@4.6.4)(sass@1.101.0)(terser@5.48.0)(tsx@4.22.4)(yaml@2.9.0)
     devDependencies:
-      '@master/css-build-internal':
+      '@master/css-internal':
         specifier: workspace:*
-        version: link:../integration
+        version: link:../internal
       '@master/css-preset':
         specifier: workspace:*
         version: link:../preset
@@ -2229,12 +2229,12 @@ importers:
       '@master/css-backend':
         specifier: workspace:*
         version: link:../native
-      '@master/css-build-internal':
-        specifier: workspace:*
-        version: link:../integration
       '@master/css-compiler':
         specifier: workspace:*
         version: link:../compiler
+      '@master/css-internal':
+        specifier: workspace:*
+        version: link:../internal
       '@master/css-language-server':
         specifier: workspace:*
         version: link:../language-server
@@ -2311,9 +2311,9 @@ importers:
         specifier: ^0.6.2
         version: 0.6.2
     devDependencies:
-      '@master/css-build-internal':
+      '@master/css-internal':
         specifier: workspace:*
-        version: link:../integration
+        version: link:../internal
       '@playwright/test':
         specifier: 1.61.0
         version: 1.61.0
@@ -2416,9 +2416,9 @@ importers:
       '@eslint/config-helpers':
         specifier: ^0.6.0
         version: 0.6.0
-      '@master/css-build-internal':
+      '@master/css-internal':
         specifier: workspace:^
-        version: link:../packages/integration
+        version: link:../packages/internal
       '@master/css-next':
         specifier: workspace:^
         version: link:../packages/next

@@ -103,11 +103,13 @@ Rust render sessions extract classes, generate CSS, and produce hydration/resour
 
 ## Integration Protocol And Adapters
 
-`packages/integration` is named `@master/css-build-internal`, is private, and is
-bundled into official compiler and integration artifacts. It owns virtual ids,
-manifest-module source generation, emitted-global modules, and Node path/hash helpers.
+`packages/internal` is named `@master/css-internal`, is private, and is
+bundled into official compiler, integration, editor, and tooling artifacts. It owns
+virtual ids, generated manifest/emitted-global/runtime-bootstrap modules, default
+build-manifest helpers, and Node path/hash/workspace helpers.
 It is not a supported third-party SPI and must never appear in a published package's
-dependencies or emitted import specifiers.
+dependencies or emitted import specifiers. It is not a generic destination for
+unrelated repository helpers.
 
 Official adapter package names use one normalized hyphenated family:
 

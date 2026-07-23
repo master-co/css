@@ -9,7 +9,7 @@
     "preview": "vite preview --host 127.0.0.1 --port 4174"
   },
   "devDependencies": {
-    "@master/css-build-internal": "workspace:^",
+    "@master/css-internal": "workspace:^",
     "typescript": "^7.0.2",
     "vite": "^8.0.10"
   },

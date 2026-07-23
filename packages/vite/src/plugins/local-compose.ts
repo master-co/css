@@ -3,7 +3,7 @@ import {
   discoverManifestEntries,
   loadProjectManifest
 } from '@master/css-compiler/project'
-import { defaultBuildManifest } from '@master/css-build-internal/project'
+import { defaultBuildManifest } from '@master/css-internal/project'
 import {
   collectStylesheetEmittedGlobals,
   transformStylesheet

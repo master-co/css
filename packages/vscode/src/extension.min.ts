@@ -17,7 +17,7 @@ import { SEMANTIC_TOKENS_LEGEND } from '@master/css-tooling/language'
 import {
   isCompatibleMasterCSSPackageVersion,
   resolveMasterCSSWorkspacePackages
-} from '@master/css-build-internal/workspace'
+} from '@master/css-internal/workspace'
 
 let client: LanguageClient
 let outputChannel: LogOutputChannel

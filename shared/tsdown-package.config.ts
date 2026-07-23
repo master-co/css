@@ -22,7 +22,7 @@ const rootByPackageName: Record<string, string> = {
   '@master/css-svelte': 'src/lib'
 }
 
-const internalIntegrationPattern = /^@master\/css-build-internal(?:\/|$)/
+const privateInternalPackagePattern = /^@master\/css-internal(?:\/|$)/
 
 const externalLanguageSyntaxJSON: TsdownPlugin = {
   name: 'external-language-syntax-json',
@@ -87,9 +87,9 @@ export default defineConfig({
   tsconfig: './tsconfig.prod.json',
   fixedExtension: false,
   deps: {
-    alwaysBundle: [internalIntegrationPattern],
+    alwaysBundle: [privateInternalPackagePattern],
     dts: {
-      alwaysBundle: [internalIntegrationPattern],
+      alwaysBundle: [privateInternalPackagePattern],
       neverBundle: [/^[^./]/, /^\.{1,2}\//]
     }
   },

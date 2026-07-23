@@ -5,18 +5,18 @@ import { compileProjectManifestSync } from '@master/css-compiler/project/sync'
 import {
   isMasterCSSManifestRequest,
   stripMasterCSSManifestQuery
-} from '@master/css-build-internal/manifest-module'
+} from '@master/css-internal/manifest-module'
 import {
   ensureVirtualModulePackageJSONPath,
   toVirtualCSSManifestAssetPath,
   toVirtualCSSManifestModulePath
-} from '@master/css-build-internal/node'
-import { toUniversalManifestFacadeModule } from '@master/css-build-internal/manifest-facade'
+} from '@master/css-internal/node'
+import { toUniversalManifestFacadeModule } from '@master/css-internal/manifest-facade'
 import { collectStylesheetDependenciesSync } from '@master/css-compiler/node'
 import {
   defaultBuildManifest,
   isManifestStylesheetRequest
-} from '@master/css-build-internal/project'
+} from '@master/css-internal/project'
 import { serializeMasterCSSManifest } from '@master/css-schema/manifest'
 
 const MASTER_CSS_MANIFEST_IMPORT_PATTERN = /(\bimport\s+(?:[^'"]*?\s+from\s*)?|\bexport\s+[^'"]*?\s+from\s*|\bimport\s*\(\s*)(['"])([^'"]+)\2/g

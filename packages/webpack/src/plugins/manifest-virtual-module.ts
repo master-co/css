@@ -1,5 +1,5 @@
-import { VIRTUAL_MANIFEST_ID } from '@master/css-build-internal/manifest-module'
-import { VIRTUAL_EMITTED_GLOBALS_ID } from '@master/css-build-internal/emitted-globals-module'
+import { VIRTUAL_MANIFEST_ID } from '@master/css-internal/manifest-module'
+import { VIRTUAL_EMITTED_GLOBALS_ID } from '@master/css-internal/emitted-globals-module'
 import type { Compiler } from 'webpack'
 import type { MasterCSSWebpackContext, WebpackSubPlugin } from '../plugin'
 import { addFileDependency } from '../utils/file-dependencies'

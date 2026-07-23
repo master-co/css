@@ -10,6 +10,7 @@ const retiredDirectories = [
   'diagnostics',
   'engine',
   'facade',
+  'integration',
   'language',
   'lexer',
   'lint',
@@ -20,7 +21,12 @@ const retiredDirectories = [
   'validator'
 ]
 const retiredPackageNames = new Set(retiredDirectories.map((name) => `@master/css-${name}`))
+const retiredPrivatePackageNames = new Set([
+  '@master/css-build-internal',
+  '@master/css-internal-integration'
+])
 const nativeTargetPattern = /^@master\/css-native-(?:darwin|linux|win32)-/
+const publishedDependencyFields = ['dependencies', 'optionalDependencies', 'peerDependencies']
 const hostArtifactPackages = new Set([
   '@master/css-figma',
   '@master/css-vscode'
@@ -228,7 +234,7 @@ for (const { directory, manifest } of packages) {
   for (const field of dependencyFields) {
     for (const [dependency, range] of Object.entries(manifest[field] ?? {})) {
       assert.equal(
-        retiredPackageNames.has(dependency),
+        retiredPackageNames.has(dependency) || retiredPrivatePackageNames.has(dependency),
         false,
         `${manifest.name} still depends on retired package ${dependency}.`
       )
@@ -277,16 +283,27 @@ for (const { directory, manifest } of packages) {
     )
   }
 
+  for (const field of publishedDependencyFields) {
+    assert.equal(
+      Object.hasOwn(manifest[field] ?? {}, '@master/css-internal'),
+      false,
+      `${manifest.name} must bundle the private internal package instead of publishing it in ${field}.`
+    )
+  }
+}
+
+for (const { manifest } of packages) {
   assert.equal(
-    Object.hasOwn(manifest.dependencies ?? {}, '@master/css-build-internal'),
+    retiredPrivatePackageNames.has(manifest.name),
     false,
-    `${manifest.name} must bundle the private integration module instead of publishing it as a dependency.`
+    `${manifest.name} is a retired private package identity.`
   )
 }
 
-const integration = packages.find(({ manifest }) => manifest.name === '@master/css-build-internal')?.manifest
-assert.ok(integration?.private, '@master/css-build-internal must remain repository-private.')
-assert.equal(integration.publishConfig, undefined, 'The private integration package must not have publish metadata.')
+const internalPackage = packages.find(({ manifest }) => manifest.name === '@master/css-internal')
+assert.ok(internalPackage?.manifest.private, '@master/css-internal must remain repository-private.')
+assert.equal(internalPackage.directory, 'internal', '@master/css-internal must remain in packages/internal.')
+assert.equal(internalPackage.manifest.publishConfig, undefined, 'The private internal package must not have publish metadata.')
 
 assert.equal(
   packages.some(({ manifest }) => manifest.name === '@master/eslint-config-css'),

@@ -1,5 +1,5 @@
 import { MasterCSSScanner } from '@master/css-tooling/scanner/node'
-import { defaultBuildManifest } from '@master/css-build-internal/project'
+import { defaultBuildManifest } from '@master/css-internal/project'
 import type { Plugin } from 'vite'
 import type { MasterCSSVitePluginContext } from '../core'
 import type { ResolvedMasterCSSVitePluginOptions } from '../options'

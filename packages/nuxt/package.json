@@ -60,7 +60,7 @@
     "@nuxt/kit": "^4.4.8"
   },
   "devDependencies": {
-    "@master/css-build-internal": "workspace:*",
+    "@master/css-internal": "workspace:*",
     "@master/css-preset": "workspace:*",
     "@nuxt/devtools": "4.0.0-alpha.4",
     "@nuxt/eslint": "^1.16.0",

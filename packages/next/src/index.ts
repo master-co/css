@@ -2,20 +2,20 @@ import { fileURLToPath, pathToFileURL } from 'node:url'
 import { dirname, join, relative, resolve } from 'node:path'
 import { existsSync, mkdirSync, writeFileSync } from 'node:fs'
 import type { NextConfig } from 'next'
-import { createManifestEntryPattern } from '@master/css-build-internal/project'
+import { createManifestEntryPattern } from '@master/css-internal/project'
 import {
   MASTER_CSS_MANIFEST_QUERY,
   VIRTUAL_MANIFEST_ID
-} from '@master/css-build-internal/manifest-module'
-import { VIRTUAL_CSS_ID } from '@master/css-build-internal/style-module'
-import { VIRTUAL_EMITTED_GLOBALS_ID } from '@master/css-build-internal/emitted-globals-module'
+} from '@master/css-internal/manifest-module'
+import { VIRTUAL_CSS_ID } from '@master/css-internal/style-module'
+import { VIRTUAL_EMITTED_GLOBALS_ID } from '@master/css-internal/emitted-globals-module'
 import {
   createVirtualDefaultManifestModulePathPattern,
   ensureVirtualManifestModulePath,
   ensureVirtualEmittedGlobalsModulePath,
   ensureVirtualModuleFile,
   ensureVirtualModulePackageJSONPath
-} from '@master/css-build-internal/node'
+} from '@master/css-internal/node'
 import {
   prepareNextStatic,
   resolveStaticOutputPath,

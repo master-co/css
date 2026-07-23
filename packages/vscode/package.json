@@ -491,7 +491,7 @@
     "provenance": true
   },
   "devDependencies": {
-    "@master/css-build-internal": "workspace:*",
+    "@master/css-internal": "workspace:*",
     "@master/css-tooling": "workspace:*",
     "@master/css-language-server": "workspace:*",
     "@master/css-language-service": "workspace:*",

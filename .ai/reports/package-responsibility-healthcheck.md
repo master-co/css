@@ -34,8 +34,9 @@ responsibilities moved to the owners above; their package names, directories,
 dependency edges, and compatibility exports must not return.
 
 The adapter-neutral integration implementation is now the repository-private
-`@master/css-build-internal`. Official adapters bundle it. It is not a
-published dependency and is not a third-party adapter SPI.
+`@master/css-internal`. Official build, framework, editor, and tooling hosts bundle
+it. It is not a published dependency, third-party adapter SPI, or generic shared
+utility package.
 
 ## Standardized contracts
 

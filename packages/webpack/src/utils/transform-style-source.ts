@@ -7,12 +7,12 @@ import {
   composeStylesheetHostSync,
   resolveStylesheetSync
 } from '@master/css-compiler/node'
-import { VIRTUAL_CSS_ID } from '@master/css-build-internal/style-module'
+import { VIRTUAL_CSS_ID } from '@master/css-internal/style-module'
 import {
   discoverManifestEntries,
   loadProjectManifest
 } from '@master/css-compiler/project'
-import { defaultBuildManifest } from '@master/css-build-internal/project'
+import { defaultBuildManifest } from '@master/css-internal/project'
 
 interface TransformStyleSourceOptions {
   projectDir?: string

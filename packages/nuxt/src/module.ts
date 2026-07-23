@@ -4,21 +4,21 @@ import { dirname, resolve as resolvePath } from 'node:path'
 import { pathToFileURL } from 'node:url'
 import { name } from '../package.json'
 import { createMasterCSSVitePlugin } from '@master/css-vite'
-import { VIRTUAL_MANIFEST_ID } from '@master/css-build-internal/manifest-module'
+import { VIRTUAL_MANIFEST_ID } from '@master/css-internal/manifest-module'
 import {
   EMPTY_EMITTED_GLOBALS_MODULE,
   VIRTUAL_EMITTED_GLOBALS_ID
-} from '@master/css-build-internal/emitted-globals-module'
+} from '@master/css-internal/emitted-globals-module'
 import {
   toBrowserManifestFacadeModule,
   toInlineManifestModule
-} from '@master/css-build-internal/manifest-facade'
-import { toHashedManifestAssetFileName } from '@master/css-build-internal/node'
+} from '@master/css-internal/manifest-facade'
+import { toHashedManifestAssetFileName } from '@master/css-internal/node'
 import {
   discoverManifestEntries,
   loadProjectManifest
 } from '@master/css-compiler/project'
-import { defaultBuildManifest } from '@master/css-build-internal/project'
+import { defaultBuildManifest } from '@master/css-internal/project'
 import { collectStylesheetDependenciesSync } from '@master/css-compiler/node'
 import { serializeMasterCSSManifest } from '@master/css-schema/manifest'
 import type { ModuleNode, Plugin } from 'vite'

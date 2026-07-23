@@ -20,7 +20,7 @@ does not make it a supported export.
 | `@master/css-schema` | Serializable contracts and codecs | Universal | Value | Retain; remove root wildcard and raw wire IR |
 | `@master/css-native` | Native loader and generated binding facade | Node | Process/session | Rename to `@master/css-backend`; broker native and Wasm |
 | `@master/css-wasm-runtime` | Engine Wasm artifact | Browser/Node | Module/session | Rename to `@master/css-wasm-engine` |
-| `@master/css-internal-integration` | Official adapter implementation | Node/browser build hosts | Build session | Rename to private `@master/css-build-internal` |
+| `@master/css-internal-integration` | Official adapter implementation | Node/browser build hosts | Build session | Rename to private `@master/css-internal` |
 | `@master/css-sv` | Svelte CLI add-on | Node CLI | Command | Rename to `@master/css-svelte-addon` |
 | `@master/eslint-config-css` | Thin official flat-config entrypoint | Node | Value | Retain; delegate to plugin-owned `configs.recommended` |
 | `@master/css` | Manifest execution | Universal + Node subpath | Engine/render session | Retain and strictly whitelist |

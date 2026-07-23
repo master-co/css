@@ -14,7 +14,7 @@ import {
   createMasterCSSRuntimeBootstrapSource,
   MASTER_CSS_RUNTIME_BOOTSTRAP_ID,
   RESOLVED_MASTER_CSS_RUNTIME_BOOTSTRAP_ID
-} from '@master/css-build-internal/runtime-bootstrap'
+} from '@master/css-internal/runtime-bootstrap'
 
 export const ASTRO_MIDDLEWARE_ENTRYPOINT = '@master/css-astro/middleware'
 export const ASTRO_SSR_EXTERNAL = ['@master/css-server']

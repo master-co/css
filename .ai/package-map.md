@@ -50,10 +50,11 @@ not alternative implementations of the language.
 
 | Package | Responsibility |
 |---|---|
-| `@master/css-build-internal` | Official virtual-module ids, code generation, and Node helpers bundled into published consumers |
+| `@master/css-internal` | Official virtual-module protocols, generated host modules, build defaults, and Node/workspace helpers bundled into published consumers |
 
-The private integration package is not a public extension point. Published manifests
-and built JavaScript/declarations must not reference it.
+The private internal package is an official integration kernel, not a public extension
+point or generic utility package. Published manifests and built
+JavaScript/declarations must not reference it.
 
 ## Retired Public Packages
 

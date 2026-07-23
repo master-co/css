@@ -360,7 +360,7 @@ async function runViteImportProbes(workspace: string, recorder: DiagnosticRecord
     ['vite-css-scanner-import-ms', '@master/css-tooling/scanner/node', vitePackageFile],
     ['vite-css-stylesheet-import-ms', '@master/css-compiler/stylesheet', vitePackageFile],
     ['vite-css-project-manifest-import-ms', '@master/css-compiler/project', vitePackageFile],
-    ['vite-css-integration-node-import-ms', '@master/css-build-internal/node', vitePackageFile],
+    ['vite-css-integration-node-import-ms', '@master/css-internal/node', vitePackageFile],
     ['vite-css-server-import-ms', '@master/css-server', vitePackageFile],
     ['vite-css-runtime-import-ms', '@master/css-runtime', vitePackageFile],
     ['vite-magic-string-import-ms', 'magic-string', vitePackageFile]

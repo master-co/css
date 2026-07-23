@@ -9,7 +9,7 @@
     "start": "../node_modules/.bin/next start"
   },
   "dependencies": {
-    "@master/css-build-internal": "workspace:^",
+    "@master/css-internal": "workspace:^",
     "next": "^16.2.10",
     "react": "^19.2.5",
     "react-dom": "^19.2.5"

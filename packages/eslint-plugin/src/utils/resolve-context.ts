@@ -5,7 +5,7 @@ import {
   discoverManifestEntriesSync,
   loadProjectManifestSync
 } from '@master/css-compiler/project/sync'
-import { discoverBuildWorkspaceDirectoriesSync } from '@master/css-build-internal/workspace-directories'
+import { discoverBuildWorkspaceDirectoriesSync } from '@master/css-internal/workspace-directories'
 import path from 'node:path'
 import { existsSync } from 'node:fs'
 import isSameOrChildPath from './is-same-or-child-path'

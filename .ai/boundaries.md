@@ -55,7 +55,7 @@ Those changes still sit in the caution zone. The implementation must identify th
 
 ## Cycle Handling
 
-When a change creates circular package pressure, do not patch around it with hidden runtime imports or another public wrapper. Move versioned contracts into `@master/css-schema`, semantic operations into the owning Rust crate, compiler/project/stylesheet orchestration into `@master/css-compiler`, or editor-neutral analysis into `@master/css-tooling`. Official build-protocol helpers may live in the private bundled `@master/css-build-internal` module; they are not a third-party SPI.
+When a change creates circular package pressure, do not patch around it with hidden runtime imports or another public wrapper. Move versioned contracts into `@master/css-schema`, semantic operations into the owning Rust crate, compiler/project/stylesheet orchestration into `@master/css-compiler`, or editor-neutral analysis into `@master/css-tooling`. Official adapter-neutral build/host helpers may live in the private bundled `@master/css-internal` integration kernel; it is neither a third-party SPI nor a generic shared utility package.
 
 ## CSS Output Rule
 

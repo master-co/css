@@ -9,7 +9,7 @@ import {
   MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID,
   serializeMasterCSSHydrationManifest
 } from '@master/css-schema/hydration-manifest'
-import { toHashedManifestAssetFileName } from '@master/css-build-internal/node'
+import { toHashedManifestAssetFileName } from '@master/css-internal/node'
 import { getRegisteredOptions, resolveOptions, type MasterCSSNextAdapterOrder, type MasterCSSNextOptions } from './options'
 import { createMasterCSSBuildStateResolver } from './build-state'
 

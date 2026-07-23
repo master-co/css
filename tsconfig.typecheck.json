@@ -23,7 +23,7 @@
       "path": "./packages/figma/tsconfig.typecheck.json"
     },
     {
-      "path": "./packages/integration/tsconfig.typecheck.json"
+      "path": "./packages/internal/tsconfig.typecheck.json"
     },
     {
       "path": "./packages/language-server/tsconfig.typecheck.json"

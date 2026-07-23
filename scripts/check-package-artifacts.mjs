@@ -5,7 +5,7 @@ import path from 'node:path'
 const packagesRoot = path.resolve('packages')
 const textArtifactExtensions = new Set(['.js', '.mjs', '.cjs', '.ts', '.json'])
 const nativeTargetPattern = /^@master\/css-native-(?:darwin|linux|win32)-/
-const forbiddenSpecifierPattern = /@master\/(?:css-build-internal|css-(?:diagnostics|engine|integration|language|lexer|lint|project|scanner|source|stylesheet|validator)|css\.(?:astro|figma|next|nuxt|svelte|vite|webpack)|css-vs-code)(?=$|[/'"?\s])/g
+const forbiddenSpecifierPattern = /@master\/(?:css-internal|css-build-internal|css-internal-integration|css-(?:diagnostics|engine|integration|language|lexer|lint|project|scanner|source|stylesheet|validator)|css\.(?:astro|figma|next|nuxt|svelte|vite|webpack)|css-vs-code)(?=$|[/'"?\s])/g
 const failures = []
 let artifactCount = 0
 

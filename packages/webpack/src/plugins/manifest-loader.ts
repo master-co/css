@@ -1,22 +1,22 @@
 import {
   MASTER_CSS_MANIFEST_QUERY,
   stripMasterCSSManifestQuery
-} from '@master/css-build-internal/manifest-module'
+} from '@master/css-internal/manifest-module'
 import {
   toBrowserManifestFacadeModule,
   toInlineManifestModule
-} from '@master/css-build-internal/manifest-facade'
+} from '@master/css-internal/manifest-facade'
 import {
   toHashedManifestAssetFileName,
   toVirtualCSSManifestModulePath
-} from '@master/css-build-internal/node'
+} from '@master/css-internal/node'
 import { compileProjectManifest } from '@master/css-compiler/project'
 import type { Compiler } from 'webpack'
 import type { MasterCSSWebpackContext, WebpackSubPlugin } from '../plugin'
 import {
   defaultBuildManifest,
   isManifestStylesheetRequest
-} from '@master/css-build-internal/project'
+} from '@master/css-internal/project'
 import { serializeMasterCSSManifest } from '@master/css-schema/manifest'
 import { collectStylesheetDependenciesSync } from '@master/css-compiler/node'
 import { addFileDependency } from '../utils/file-dependencies'

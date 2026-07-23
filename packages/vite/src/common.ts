@@ -1,10 +1,10 @@
 import {
   MASTER_CSS_MANIFEST_QUERY as MASTER_CSS_MANIFEST_REQUEST_QUERY,
   VIRTUAL_MANIFEST_ID as MASTER_CSS_VIRTUAL_MANIFEST_ID
-} from '@master/css-build-internal/manifest-module'
-import { RESOLVED_MASTER_CSS_MANIFEST_QUERY_PREFIX as RESOLVED_MASTER_CSS_MANIFEST_REQUEST_QUERY_PREFIX } from '@master/css-build-internal/node'
-import { VIRTUAL_EMITTED_GLOBALS_ID as MASTER_CSS_VIRTUAL_EMITTED_GLOBALS_ID } from '@master/css-build-internal/emitted-globals-module'
-import { MASTER_CSS_RUNTIME_BOOTSTRAP_ID } from '@master/css-build-internal/runtime-bootstrap'
+} from '@master/css-internal/manifest-module'
+import { RESOLVED_MASTER_CSS_MANIFEST_QUERY_PREFIX as RESOLVED_MASTER_CSS_MANIFEST_REQUEST_QUERY_PREFIX } from '@master/css-internal/node'
+import { VIRTUAL_EMITTED_GLOBALS_ID as MASTER_CSS_VIRTUAL_EMITTED_GLOBALS_ID } from '@master/css-internal/emitted-globals-module'
+import { MASTER_CSS_RUNTIME_BOOTSTRAP_ID } from '@master/css-internal/runtime-bootstrap'
 
 export const HTML_ENTRIES = [
   'src/layouts/Layout.astro', // astro

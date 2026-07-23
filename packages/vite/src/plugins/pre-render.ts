@@ -7,8 +7,8 @@ import {
   loadProjectManifest
 } from '@master/css-compiler/project'
 import { ResolvedMasterCSSVitePluginOptions } from '../options'
-import { toHashedManifestAssetFileName } from '@master/css-build-internal/node'
-import { defaultBuildManifest } from '@master/css-build-internal/project'
+import { toHashedManifestAssetFileName } from '@master/css-internal/node'
+import { defaultBuildManifest } from '@master/css-internal/project'
 import {
   MASTER_CSS_HYDRATION_MANIFEST_ASSET_BASE,
   MASTER_CSS_HYDRATION_MANIFEST_FILE_BASENAME

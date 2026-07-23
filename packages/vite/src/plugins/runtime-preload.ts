@@ -3,7 +3,7 @@ import {
   DEV_RUNTIME_ENTRY_ID,
   RUNTIME_ENTRY_ID
 } from '../common'
-import { RESOLVED_MASTER_CSS_RUNTIME_BOOTSTRAP_ID } from '@master/css-build-internal/runtime-bootstrap'
+import { RESOLVED_MASTER_CSS_RUNTIME_BOOTSTRAP_ID } from '@master/css-internal/runtime-bootstrap'
 import type { MasterCSSVitePluginContext } from '../core'
 import { hasModulePreloadLink, hasWasmPreloadLink, toAssetHref } from '../utils/html'
 

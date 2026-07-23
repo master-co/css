@@ -34,7 +34,7 @@
     "@master/css-schema": "workspace:*"
   },
   "devDependencies": {
-    "@master/css-build-internal": "workspace:*"
+    "@master/css-internal": "workspace:*"
   },
   "sideEffects": false,
   "types": "./dist/index.d.ts",

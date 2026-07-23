@@ -4,14 +4,14 @@ import {
   discoverManifestEntries,
   loadProjectManifest
 } from '@master/css-compiler/project'
-import { toManifestJSON } from '@master/css-build-internal/manifest-module'
-import { defaultBuildManifest } from '@master/css-build-internal/project'
+import { toManifestJSON } from '@master/css-internal/manifest-module'
+import { defaultBuildManifest } from '@master/css-internal/project'
 import {
   MANIFEST_ASSET_FILE,
   toBrowserManifestFacadeModule,
   toInlineManifestModule,
   toUniversalManifestFacadeModule
-} from '@master/css-build-internal/manifest-facade'
+} from '@master/css-internal/manifest-facade'
 import { RESOLVED_VIRTUAL_MANIFEST_ID, VIRTUAL_MANIFEST_ID } from '../common'
 import { ResolvedMasterCSSVitePluginOptions } from '../options'
 import { collectStylesheetDependenciesSync } from '@master/css-compiler/node'

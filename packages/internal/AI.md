@@ -1,28 +1,33 @@
-# AI Notes For `@master/css-build-internal`
+# AI Notes For `@master/css-internal`
 
 ## Responsibility
 
-`@master/css-build-internal` owns adapter-neutral contracts shared by official build and framework integrations. It is repository-private and bundled into published consumers.
+`@master/css-internal` owns adapter-neutral implementation shared by official build,
+framework, editor, and tooling hosts. It is repository-private and bundled into
+published consumers. It is not a general-purpose shared utility package.
 
 ## Owns
 
 - Virtual module ids and `?master-css-manifest` request helpers.
-- Generated manifest and emittedGlobals module source helpers.
-- Explicit Node helper subpaths.
+- Generated manifest, emittedGlobals, and runtime-bootstrap module source helpers.
+- Default build manifest and manifest-entry request helpers.
+- Explicit Node virtual-path/hash helpers.
+- Official-host workspace package and directory discovery.
 
 ## Does Not Own
 
 - Vite, Next, Webpack, Nuxt, Astro, or framework lifecycle behavior.
 - Project manifest discovery or CSS import graph resolution.
 - Extraction, runtime hydration, server rendering, scanner state, or compiler lowering.
-- Browser runtime boot code.
+- DOM runtime lifecycle or runtime semantics.
 - Public ambient module declarations; `@master/css/client` owns them.
 - Browser-safe helpers that import `node:*`, use `Buffer`, or read `process`.
 
 ## Internal Surface
 
-- Browser-safe: `.`, `./module`, `./manifest-module`, `./manifest-facade`, `./style-module`, `./emitted-globals-module`.
-- Node-only: `./node`.
+- Browser-safe: `.`, `./module`, `./manifest-module`, `./manifest-facade`,
+  `./style-module`, `./emitted-globals-module`, `./runtime-bootstrap`, `./project`.
+- Node-only: `./node`, `./workspace`, `./workspace-directories`.
 
 These subpaths exist only for repository build boundaries. Do not document them as a
 third-party API, publish this package, or leave its specifier in emitted JavaScript or
@@ -36,7 +41,11 @@ declarations.
 - `src/manifest-facade.ts`
 - `src/style-module.ts`
 - `src/emitted-globals-module.ts`
+- `src/runtime-bootstrap.ts`
+- `src/project.ts`
 - `src/node.ts`
+- `src/workspace.ts`
+- `src/workspace-directories.ts`
 
 ## Risk Areas
 
@@ -45,6 +54,7 @@ declarations.
 - Keeping the package dependency-light and adapter-neutral.
 - Shared protocol changes affecting multiple integrations.
 - Accidentally exposing the package as a published dependency or third-party SPI.
+- Turning the package into a generic home for unrelated repository helpers.
 
 ## Safe Changes
 
@@ -60,8 +70,8 @@ declarations.
 ## Validation
 
 ```sh
-pnpm --filter @master/css-build-internal test
-pnpm --filter @master/css-build-internal lint
-pnpm --filter @master/css-build-internal type-check
-pnpm --filter @master/css-build-internal build
+pnpm --filter @master/css-internal test
+pnpm --filter @master/css-internal lint
+pnpm --filter @master/css-internal type-check
+pnpm --filter @master/css-internal build
 ```

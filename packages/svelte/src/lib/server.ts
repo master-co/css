@@ -1,4 +1,4 @@
-import { toHashedManifestAssetFileName } from '@master/css-build-internal/node'
+import { toHashedManifestAssetFileName } from '@master/css-internal/node'
 import type { MasterCSSEmittedGlobals } from '@master/css-schema/emitted-globals'
 import {
   MASTER_CSS_HYDRATION_MANIFEST_FILE_BASENAME

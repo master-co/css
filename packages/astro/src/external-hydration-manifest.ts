@@ -1,7 +1,7 @@
 import { mkdir, readFile, readdir, writeFile } from 'node:fs/promises'
 import { join } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { toHashedManifestAssetFileName } from '@master/css-build-internal/node'
+import { toHashedManifestAssetFileName } from '@master/css-internal/node'
 import { MASTER_CSS_RUNTIME_STYLE_ID } from '@master/css-schema/runtime-style'
 import {
   MASTER_CSS_HYDRATION_MANIFEST_ASSET_BASE,

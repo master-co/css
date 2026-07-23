@@ -29,8 +29,9 @@ external data / shared build support
 - `@master/css-language-service` owns editor-document mapping and Shiki/TextMate assets.
 - `@master/eslint-plugin-css` owns only ESLint AST and fixer adaptation.
 - `@master/eslint-config-css` remains the deliberate thin public flat-config preset.
-- `@master/css-build-internal` is private, official-only, and bundled into its
-  published consumers.
+- `@master/css-internal` is private, official-only, and bundled into its
+  published consumers. It is an integration kernel, not a generic shared utility
+  package.
 - Official Vue/Svelte extraction adapters are private implementation details. Do not
   restore a public third-party adapter registry.
 

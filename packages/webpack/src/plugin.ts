@@ -4,22 +4,22 @@ import {
 } from '@master/css-tooling/scanner/node'
 import type { MasterCSSEmittedGlobals } from '@master/css-schema/emitted-globals'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
-import { toManifestJSON } from '@master/css-build-internal/manifest-module'
+import { toManifestJSON } from '@master/css-internal/manifest-module'
 import {
   toBrowserManifestFacadeModule,
   toInlineManifestModule
-} from '@master/css-build-internal/manifest-facade'
+} from '@master/css-internal/manifest-facade'
 import {
   toHashedManifestAssetFileName,
   toVirtualCSSModulePath,
   toVirtualDefaultManifestModulePath,
   toVirtualEmittedGlobalsModulePath
-} from '@master/css-build-internal/node'
+} from '@master/css-internal/node'
 import {
   discoverManifestEntries,
   loadProjectManifest
 } from '@master/css-compiler/project'
-import { defaultBuildManifest } from '@master/css-build-internal/project'
+import { defaultBuildManifest } from '@master/css-internal/project'
 import {
   createStylesheetCollection,
   type MasterCSSStylesheetCollection
@@ -28,11 +28,11 @@ import {
   collectStylesheetDependenciesSync,
   resolveStylesheetSync
 } from '@master/css-compiler/node'
-import { toEmittedGlobalsModule } from '@master/css-build-internal/emitted-globals-module'
+import { toEmittedGlobalsModule } from '@master/css-internal/emitted-globals-module'
 import {
   cleanStylesheetModuleRequest,
   isStylesheetModuleRequest
-} from '@master/css-build-internal/style-module'
+} from '@master/css-internal/style-module'
 import type { Compiler } from 'webpack'
 import type VirtualModulesPlugin from 'webpack-virtual-modules'
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'

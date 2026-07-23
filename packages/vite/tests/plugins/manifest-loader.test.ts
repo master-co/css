@@ -3,10 +3,10 @@ import path from 'node:path'
 import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { MasterCSSScanner } from '@master/css-tooling/scanner/node'
-import { defaultBuildManifest } from '@master/css-build-internal/project'
+import { defaultBuildManifest } from '@master/css-internal/project'
 import ManifestLoaderPlugin from '../../src/plugins/manifest-loader'
-import { MASTER_CSS_MANIFEST_QUERY } from '@master/css-build-internal/manifest-module'
-import { fromResolvedMasterCSSManifestId, toResolvedMasterCSSManifestId } from '@master/css-build-internal/node'
+import { MASTER_CSS_MANIFEST_QUERY } from '@master/css-internal/manifest-module'
+import { fromResolvedMasterCSSManifestId, toResolvedMasterCSSManifestId } from '@master/css-internal/node'
 
 const FIXTURE_DIR = path.resolve(__dirname, '../fixtures/manifest-virtual-module')
 

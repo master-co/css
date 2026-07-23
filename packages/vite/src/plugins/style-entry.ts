@@ -1,5 +1,5 @@
 import type { Plugin } from 'vite'
-import { VIRTUAL_CSS_ID } from '@master/css-build-internal/style-module'
+import { VIRTUAL_CSS_ID } from '@master/css-internal/style-module'
 import type { MasterCSSVitePluginContext } from '../core'
 import type { ResolvedMasterCSSVitePluginOptions } from '../options'
 import getExtractedCSS from '../utils/extracted-css'

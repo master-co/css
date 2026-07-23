@@ -24,7 +24,7 @@ For `packages/<name>/**`, read `packages/<name>/package.json` and `packages/<nam
 | `packages/css/**` | `@master/css` | `package-boundaries.md`, `css-output.md`, `performance.md` |
 | `packages/compiler/**` | compiler, project, stylesheet, diagnostics | `css-output.md`, `package-boundaries.md` |
 | `packages/tooling/**` | lexer, source, scanner, validator, lint, language | `package-boundaries.md`, `testing.md` |
-| `packages/integration/**` | private official integration protocol | `package-boundaries.md` |
+| `packages/internal/**` | `@master/css-internal`, the private official integration kernel | `package-boundaries.md` |
 | `packages/runtime/**` | `@master/css-runtime` | `css-output.md`, `performance.md` |
 | `packages/server/**` | `@master/css-server` | `css-output.md` |
 | `packages/language-service/**`, `packages/language-server/**`, `packages/vscode/**` | editor and LSP tooling | `testing.md` |
@@ -41,7 +41,7 @@ For `packages/<name>/**`, read `packages/<name>/package.json` and `packages/<nam
 | `site/**` | `site/package.json`, `site/AI.md`, `docs.md` | Public docs and site behavior. |
 | `examples/<framework>/**` | example `package.json`, matching integration package `AI.md` when one exists | Map `astro`, `next.js`, `nuxt.js`, `react`, `svelte`, `vite`, `webpack`, and `eslint*` to their package peers; use `docs.md` for content-only examples. |
 | `benchmarks/**` | `benchmarks/package.json`, `performance.md` | Do not commit benchmark history output. |
-| `internal/**` | `internal/package.json`, `site/AI.md` when used by site | Internal site support, not public package API. |
+| `internal/**` | `internal/package.json`, `site/AI.md` when used by site | Root site support workspace; distinct from `packages/internal`. |
 | `shared/**` | `shared/package.json`, `package-boundaries.md` | Repo-internal test/build support only. |
 | `.github/prompts/**`, `AGENTS.md`, `CLAUDE.md`, `.ai/**` | `docs.md` | AI-facing docs and prompt routing. |
 | `.github/workflows/**`, release config, lockfiles | `accuracy-guardrails.md` | Do not modify unless explicitly requested. |

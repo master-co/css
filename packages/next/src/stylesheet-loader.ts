@@ -13,7 +13,7 @@ import {
   inspectCSSSync,
   resolveStylesheetSync
 } from '@master/css-compiler/node'
-import { defaultBuildManifest } from '@master/css-build-internal/project'
+import { defaultBuildManifest } from '@master/css-internal/project'
 
 interface LoaderContext {
   resourcePath: string

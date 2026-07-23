@@ -2,7 +2,7 @@ import {
   discoverManifestEntries,
   loadProjectManifest
 } from '@master/css-compiler/project'
-import { resolveMasterCSSWorkspacePackages } from '@master/css-build-internal/workspace'
+import { resolveMasterCSSWorkspacePackages } from '@master/css-internal/workspace'
 import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import type MasterCSSMCPContext from './context'

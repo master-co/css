@@ -4,7 +4,7 @@ import {
   type MasterCSSScannerOptions,
   type MasterCSSScannerConfiguration
 } from '@master/css-tooling/scanner/node'
-import { defaultBuildManifest } from '@master/css-build-internal/project'
+import { defaultBuildManifest } from '@master/css-internal/project'
 import {
   createStylesheetCollection,
   type MasterCSSStylesheetCollection

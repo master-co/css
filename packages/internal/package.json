@@ -1,5 +1,5 @@
 {
-  "name": "@master/css-build-internal",
+  "name": "@master/css-internal",
   "private": true,
   "type": "module",
   "engines": {
@@ -13,7 +13,7 @@
     "test": "vitest"
   },
   "license": "MIT",
-  "description": "Shared Master CSS integration contracts, virtual module protocols, and build helpers.",
+  "description": "Private Master CSS integration kernel, virtual module protocols, and official host helpers.",
   "author": "Aoyue Design LLC.",
   "funding": "https://rc.css.master.co/sponsor",
   "homepage": "https://css.master.co",
@@ -23,7 +23,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/master-co/css.git",
-    "directory": "packages/integration"
+    "directory": "packages/internal"
   },
   "keywords": [
     "integration",

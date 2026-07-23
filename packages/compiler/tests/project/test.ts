@@ -16,7 +16,7 @@ import {
 import {
   isCompatibleMasterCSSPackageVersion,
   resolveMasterCSSWorkspacePackages
-} from '@master/css-build-internal/workspace'
+} from '@master/css-internal/workspace'
 import { mkdirSync, mkdtempSync, realpathSync, rmSync, writeFileSync } from 'node:fs'
 import { isAbsolute, join, relative, sep } from 'node:path'
 import { tmpdir } from 'node:os'

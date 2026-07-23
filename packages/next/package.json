@@ -71,7 +71,7 @@
     "@master/css-schema": "workspace:*"
   },
   "devDependencies": {
-    "@master/css-build-internal": "workspace:*",
+    "@master/css-internal": "workspace:*",
     "@types/react": "^19.2.17",
     "@types/react-dom": "^19.2.3",
     "next": "^16.2.10",

@@ -1,5 +1,5 @@
 import type { Plugin } from 'vite'
-import { toEmittedGlobalsModule } from '@master/css-build-internal/emitted-globals-module'
+import { toEmittedGlobalsModule } from '@master/css-internal/emitted-globals-module'
 import type { MasterCSSVitePluginContext } from '../core'
 import { RESOLVED_VIRTUAL_EMITTED_GLOBALS_ID, VIRTUAL_EMITTED_GLOBALS_ID } from '../common'
 import { getExtractedCSSResult } from '../utils/extracted-css'

@@ -3,23 +3,23 @@ import type { MasterCSSVitePluginContext } from '../core'
 import {
   fromResolvedMasterCSSManifestId,
   toResolvedMasterCSSManifestId
-} from '@master/css-build-internal/node'
+} from '@master/css-internal/node'
 import { compileProjectManifest } from '@master/css-compiler/project'
 import {
   isMasterCSSManifestRequest,
   stripMasterCSSManifestQuery
-} from '@master/css-build-internal/manifest-module'
+} from '@master/css-internal/manifest-module'
 import {
   defaultBuildManifest,
   isManifestStylesheetRequest
-} from '@master/css-build-internal/project'
+} from '@master/css-internal/project'
 import { serializeMasterCSSManifest } from '@master/css-schema/manifest'
 import {
   MANIFEST_ASSET_FILE,
   toBrowserManifestFacadeModule,
   toInlineManifestModule,
   toUniversalManifestFacadeModule
-} from '@master/css-build-internal/manifest-facade'
+} from '@master/css-internal/manifest-facade'
 import { collectStylesheetDependenciesSync } from '@master/css-compiler/node'
 import { includesFile } from '../utils/path'
 

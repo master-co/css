@@ -2,7 +2,7 @@ import {
   createMasterCSSRuntimeBootstrapSource,
   MASTER_CSS_RUNTIME_BOOTSTRAP_ID,
   RESOLVED_MASTER_CSS_RUNTIME_BOOTSTRAP_ID
-} from '@master/css-build-internal/runtime-bootstrap'
+} from '@master/css-internal/runtime-bootstrap'
 import type { Plugin } from 'vite'
 
 export default function RuntimeBootstrapPlugin(): Plugin {

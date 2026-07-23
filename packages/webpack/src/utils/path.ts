@@ -1,4 +1,4 @@
-import { VIRTUAL_MODULE_DIR } from '@master/css-build-internal/node'
+import { VIRTUAL_MODULE_DIR } from '@master/css-internal/node'
 import path from 'node:path'
 
 export function isVirtualManifestModulePath(modulePath: string) {

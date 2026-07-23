@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { DEV_RUNTIME_ENTRY_ID } from '../../src/common'
 import RuntimePreloadPlugin from '../../src/plugins/runtime-preload'
-import { RESOLVED_MASTER_CSS_RUNTIME_BOOTSTRAP_ID } from '@master/css-build-internal/runtime-bootstrap'
+import { RESOLVED_MASTER_CSS_RUNTIME_BOOTSTRAP_ID } from '@master/css-internal/runtime-bootstrap'
 
 describe('RuntimePreloadPlugin', () => {
   it('injects a dev modulepreload link for the runtime entry', () => {

@@ -9,10 +9,10 @@ import {
   discoverManifestEntries,
   loadProjectManifest
 } from '@master/css-compiler/project'
-import { discoverBuildWorkspaceDirectories } from '@master/css-build-internal/workspace-directories'
+import { discoverBuildWorkspaceDirectories } from '@master/css-internal/workspace-directories'
 import {
   resolveMasterCSSWorkspacePackages
-} from '@master/css-build-internal/workspace'
+} from '@master/css-internal/workspace'
 import { defu } from 'defu'
 import { defaultLanguageServerSettings } from './settings'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'

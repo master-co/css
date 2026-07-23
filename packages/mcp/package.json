@@ -62,6 +62,6 @@
     "zod": "^4.4.3"
   },
   "devDependencies": {
-    "@master/css-build-internal": "workspace:*"
+    "@master/css-internal": "workspace:*"
   }
 }
