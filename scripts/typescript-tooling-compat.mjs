@@ -20,7 +20,6 @@ const legacyCompilerApiPackages = [
     'svelte-check',
     'svelte2tsx',
     'ts-api-utils',
-    'ts-jest',
     'typescript-eslint',
     'unbuild',
     'vite-plugin-checker',
