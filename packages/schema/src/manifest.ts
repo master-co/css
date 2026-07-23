@@ -222,4 +222,4 @@ export function groupMasterCSSManifestVariables(
 export {
   normalizeMasterCSSManifest,
   serializeMasterCSSManifest
-} from './manifest-json.js'
+} from './manifest-json'

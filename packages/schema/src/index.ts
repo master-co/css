@@ -5,7 +5,7 @@ export {
   normalizeMasterCSSManifest,
   serializeMasterCSSManifest,
   type MasterCSSManifest
-} from './manifest.js'
+} from './manifest'
 export {
   MasterCSSError,
   MASTER_CSS_DIAGNOSTIC_VERSION,
@@ -16,11 +16,11 @@ export {
   type MasterCSSDiagnosticSeverity,
   type MasterCSSErrorOptions,
   type MasterCSSErrorPayload
-} from './diagnostics.js'
+} from './diagnostics'
 export {
   MASTER_CSS_RENDERING_MODES,
   isMasterCSSRenderingMode,
   type MasterCSSIntegrationOptions,
   type MasterCSSIntegrationRuntimeOptions,
   type MasterCSSRenderingMode
-} from './integration.js'
+} from './integration'
