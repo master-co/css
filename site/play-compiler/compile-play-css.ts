@@ -7,7 +7,7 @@ import {
 } from '@master/css-compiler/stylesheet/browser'
 
 const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
-const lightningCSSWasmURL = 'https://cdn.jsdelivr.net/npm/lightningcss-wasm@1.32.0/lightningcss_node.wasm'
+const compilerWasmURL = new URL('./mastercss_wasm_compiler_bg.wasm', import.meta.url)
 
 export interface CompilePlayCSSResult {
   css: string
@@ -19,8 +19,7 @@ export interface CompilePlayCSSResult {
 async function initPlayCompiler() {
   if (typeof window === 'undefined') return
 
-  const wasmResponse = fetch(lightningCSSWasmURL)
-  await initBrowserStyleCompiler(wasmResponse as unknown as Parameters<typeof initBrowserStyleCompiler>[0])
+  await initBrowserStyleCompiler(compilerWasmURL)
 }
 
 export async function compilePlayCSS(sourceCSS: string, classes: string[]): Promise<CompilePlayCSSResult> {

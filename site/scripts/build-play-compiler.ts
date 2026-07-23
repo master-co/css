@@ -1,10 +1,12 @@
-import { mkdir, rm, stat } from 'node:fs/promises'
+import { copyFile, mkdir, rm, stat } from 'node:fs/promises'
 import { dirname, join } from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 import { build, type TsdownPlugin } from 'tsdown'
 
 const siteDir = dirname(fileURLToPath(new URL('../package.json', import.meta.url)))
 const workspaceDistInputPattern = /(?:^|[\\/])packages[\\/][^\\/]+[\\/]dist[\\/]/
+const compilerWasmFileName = 'mastercss_wasm_compiler_bg.wasm'
+const compilerWasmSourcePath = fileURLToPath(new URL(`../../packages/wasm-compiler/artifacts/${compilerWasmFileName}`, import.meta.url))
 
 function toWorkspaceDistInputs(moduleIds: string[]) {
   return [...new Set(moduleIds.filter((input) => workspaceDistInputPattern.test(input)))]
@@ -32,6 +34,7 @@ function assertNoWorkspaceDistInputsPlugin(): TsdownPlugin {
 
 export async function buildPlayCompiler(outputDir = join(siteDir, 'public/play-compiler')) {
   const compilerOutputPath = join(outputDir, 'compiler.js')
+  const compilerWasmOutputPath = join(outputDir, compilerWasmFileName)
 
   await rm(outputDir, { recursive: true, force: true })
   await mkdir(outputDir, { recursive: true })
@@ -70,10 +73,16 @@ export async function buildPlayCompiler(outputDir = join(siteDir, 'public/play-c
       comments: false
     }
   })
+  await copyFile(compilerWasmSourcePath, compilerWasmOutputPath)
 
   const { size: compilerSize } = await stat(compilerOutputPath)
+  const { size: compilerWasmSize } = await stat(compilerWasmOutputPath)
 
-  console.log(`Built Play compiler at ${outputDir}: compiler.js ${(compilerSize / 1024).toFixed(1)} KiB`)
+  console.log([
+    `Built Play compiler at ${outputDir}:`,
+    `compiler.js ${(compilerSize / 1024).toFixed(1)} KiB,`,
+    `${compilerWasmFileName} ${(compilerWasmSize / 1024 / 1024).toFixed(1)} MiB`
+  ].join(' '))
 }
 
 if (import.meta.url === pathToFileURL(process.argv[1]).href) {
