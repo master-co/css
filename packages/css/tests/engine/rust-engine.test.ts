@@ -9,6 +9,55 @@ const typedDefaultManifest = defaultManifest as unknown as MasterCSSManifest
 const selectorVariantClassName = '{flex;rel}_:is(h4,.app-nav)@default'
 const selectorVariantSelector = '.\\{flex\\;rel\\}_\\:is\\(h4\\,\\.app-nav\\)\\@default :is(h4,.app-nav)'
 const selectorVariantRuleText = `${selectorVariantSelector}{display:flex;position:relative}`
+const inlineThemeManifest = {
+  version: 1,
+  settings: {
+    defaultMode: 'light',
+    modeTrigger: 'class',
+    modes: ['light', 'dark']
+  },
+  variables: {
+    color: [
+      {
+        name: 'color-white',
+        key: 'white',
+        value: 'oklch(100% 0 none)',
+        inline: true
+      },
+      {
+        name: 'color-gray-90',
+        key: 'gray-90',
+        value: 'oklch(23.5% 0 none)'
+      }
+    ],
+    'color-surface': [
+      {
+        name: 'color-surface-raised',
+        key: 'raised',
+        dependencies: ['color-white', 'color-gray-90'],
+        modes: {
+          light: { value: 'var(--color-white)' },
+          dark: { value: 'var(--color-gray-90)' }
+        }
+      }
+    ]
+  },
+  utilities: [{
+    id: 'surface',
+    type: 0,
+    variableAliasRefs: ['color-surface'],
+    emit: { type: 'property', property: 'background-color' },
+    matchers: [{ type: 'variable', keys: ['surface'] }]
+  }]
+} as unknown as MasterCSSManifest
+const inlineThemeCSS = [
+  '@layer theme{',
+  '.light,:root{color-scheme:light;--color-surface-raised:oklch(100% 0 none)}',
+  ':root{--color-gray-90:oklch(23.5% 0 none)}',
+  '.dark{color-scheme:dark;--color-surface-raised:var(--color-gray-90)}',
+  '}',
+  '@layer utilities{.surface\\:raised{background-color:var(--color-surface-raised)}}'
+].join('')
 
 const manifest: MasterCSSManifest = {
   version: 1,
@@ -158,6 +207,28 @@ describe('Rust engine session', () => {
       expect(native.text).toBe(`@layer defaults{${selectorVariantRuleText}}`)
       expect(wasm.text).toBe(native.text)
       expect(wasm.snapshot()).toEqual(native.snapshot())
+    } finally {
+      native.dispose()
+      wasm.dispose()
+    }
+  })
+
+  it('resolves inline dependencies in emitted mode variables in native and Wasm', async () => {
+    const native = createEngineSync({ manifest: inlineThemeManifest })
+    const wasm = await createEngine({ manifest: inlineThemeManifest, backend: 'wasm' })
+
+    try {
+      const nativeTransition = native.ensureClassRules(['surface:raised'])
+      const wasmTransition = wasm.ensureClassRules(['surface:raised'])
+
+      expect(wasmTransition).toEqual(nativeTransition)
+      expect(native.text).toBe(inlineThemeCSS)
+      expect(wasm.text).toBe(native.text)
+      expect(wasm.snapshot()).toEqual(native.snapshot())
+      expect(native.snapshot().resources.variables.map(({ name }) => name)).toEqual([
+        'color-surface-raised',
+        'color-gray-90'
+      ])
     } finally {
       native.dispose()
       wasm.dispose()

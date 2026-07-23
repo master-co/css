@@ -9,7 +9,7 @@
       "tests": [
         { "name": "keeps on-demand insertion lifecycle for utilities variables and semantic components", "coverage": ["corpus:engine-variable-lifecycle", "corpus:engine-semantic-manifest-layer", "corpus:engine-same-class-across-layers"] },
         { "name": "prevents duplicate insertion and preserves emittedGlobals variable and animation counts", "coverage": ["corpus:engine-emitted-global-variable", "test:crates/mastercss-engine/src/lib.rs#ensure_is_idempotent_and_delete_reports_exact_index"] },
-        { "name": "emits static variables, dependencies, aliases, and keyframes without class references", "coverage": ["test:crates/mastercss-engine/src/lib.rs#resolves_dependencies_of_inline_variables_without_emitting_resources"] },
+        { "name": "emits static variables, dependencies, aliases, and keyframes without class references", "coverage": ["test:crates/mastercss-engine/src/lib.rs#resolves_dependencies_of_inline_variables_without_emitting_resources", "corpus:engine-inline-theme-variable-dependencies"] },
         { "name": "does not duplicate emittedGlobals static variables and keyframes", "coverage": ["corpus:engine-emitted-global-variable", "test:crates/mastercss-engine/src/lib.rs#suppresses_variables_already_emitted_by_the_host"] },
         { "name": "emits referenced keyframes outside cascade layers", "coverage": ["test:crates/mastercss-engine/src/lib.rs#tracks_variable_resources_across_aliases_and_deletion", "corpus:engine-animation-resource-metadata"] },
         { "name": "routes explicit layer variants and rejects conflicting layer variants", "coverage": ["corpus:engine-selector-condition-layer", "test:crates/mastercss-engine/src/lib.rs#renders_selector_condition_layer_and_important_state"] },
@@ -167,7 +167,7 @@
         { "name": "matches grouped declaration lowering and nested utility resolution", "coverage": ["corpus:engine-grouped-declarations"] },
         { "name": "matches default-manifest variable aliases, base units, ordering, and resource retention", "coverage": ["corpus:engine-variable-lifecycle", "corpus:engine-functions-and-negative-values"] },
         { "name": "suppresses theme variables declared through emittedGlobals", "coverage": ["corpus:engine-emitted-global-variable"] },
-        { "name": "matches mode-variable buckets for media, class, and host triggers", "coverage": ["corpus:engine-mode-conditions"] },
+        { "name": "matches mode-variable buckets for media, class, and host triggers", "coverage": ["corpus:engine-mode-conditions", "corpus:engine-inline-theme-variable-dependencies"] },
         { "name": "matches keyframe lifecycle and emitted animation suppression", "coverage": ["test:crates/mastercss-engine/src/lib.rs#suppresses_variables_already_emitted_by_the_host", "test:crates/mastercss-engine/src/lib.rs#tracks_keyframes_only_from_animation_declarations", "corpus:engine-animation-resource-metadata"] }
       ]
     },
@@ -175,7 +175,7 @@
       "file": "packages/engine/tests/theme-layer.test.ts",
       "expectedTests": 6,
       "tests": [
-        { "name": "keeps default variable buckets before mode buckets when defaults are inserted later", "coverage": ["corpus:engine-mode-conditions", "corpus:engine-variable-lifecycle"] },
+        { "name": "keeps default variable buckets before mode buckets when defaults are inserted later", "coverage": ["corpus:engine-mode-conditions", "corpus:engine-variable-lifecycle", "corpus:engine-inline-theme-variable-dependencies"] },
         { "name": "emits color-scheme for built-in class mode buckets", "coverage": ["test:crates/mastercss-engine/src/lib.rs#renders_the_compiled_condition_grammar"] },
         { "name": "emits color-scheme for built-in host mode buckets", "coverage": ["test:crates/mastercss-engine/src/lib.rs#renders_the_compiled_condition_grammar"] },
         { "name": "does not merge the default mode selector when default-mode is none", "coverage": ["test:crates/mastercss-engine/src/lib.rs#renders_the_compiled_condition_grammar"] },

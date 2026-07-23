@@ -3,7 +3,10 @@
 use std::cmp::Ordering;
 use std::collections::{HashMap, HashSet};
 
-use mastercss_lexer::{css_escape, utf16_len};
+use mastercss_lexer::{
+    collect_css_variable_references as collect_css_variable_names, css_escape,
+    transform_css_variable_references, utf16_len,
+};
 use mastercss_schema::{
     Diagnostic, EmittedGlobals, EngineAnimationResourceIr, EngineInspectionIr, EngineResourcesIr,
     EngineSnapshotIr, EngineTransitionIr, EngineVariableResourceIr, ErrorCode, GeneratedRuleIr,
@@ -2138,6 +2141,10 @@ fn compile_manifest(manifest: &MasterCssManifest) -> Result<ManifestProjection, 
     let (compiled_variables, compiled_variable_order) = compile_variables(&projection.variables)?;
     projection.compiled_variables = compiled_variables;
     projection.compiled_variable_order = compiled_variable_order;
+    resolve_compiled_inline_variable_references(
+        &mut projection.compiled_variables,
+        &projection.compiled_variable_order,
+    )?;
     append_builtin_native_value_utilities(&mut projection.utilities);
     append_builtin_native_declaration_utilities(&mut projection.utilities);
     let count = projection.utilities.len() as i32;
@@ -2306,6 +2313,89 @@ fn normalize_variable_value(value: &Value) -> Option<String> {
             .map(|values| values.join(",")),
         _ => None,
     }
+}
+
+fn resolve_compiled_inline_variable_references(
+    variables: &mut HashMap<String, CompiledVariable>,
+    variable_order: &[String],
+) -> Result<(), EngineError> {
+    let inline_reference_needles = variables
+        .values()
+        .filter(|variable| variable.inline && variable.value.is_some())
+        .map(|variable| format!("--{}", variable.name))
+        .collect::<Vec<_>>();
+    let mut resolved_variables = Vec::new();
+    for name in variable_order {
+        let Some(variable) = variables.get(name) else {
+            continue;
+        };
+        let mut stack = vec![variable.name.clone()];
+        let value = variable
+            .value
+            .as_deref()
+            .filter(|value| contains_inline_variable_reference(value, &inline_reference_needles))
+            .map(|value| resolve_inline_references_in_value(value, variables, &mut stack))
+            .transpose()?;
+        let mut modes = Vec::new();
+        for (index, mode) in variable.modes.iter().enumerate() {
+            if contains_inline_variable_reference(&mode.value, &inline_reference_needles) {
+                modes.push((
+                    index,
+                    resolve_inline_references_in_value(&mode.value, variables, &mut stack)?,
+                ));
+            }
+        }
+        if value.is_some() || !modes.is_empty() {
+            resolved_variables.push((name.clone(), value, modes));
+        }
+    }
+    for (name, value, modes) in resolved_variables {
+        let Some(variable) = variables.get_mut(&name) else {
+            continue;
+        };
+        if let Some(value) = value {
+            variable.value = Some(value);
+        }
+        for (index, value) in modes {
+            variable.modes[index].value = value;
+        }
+    }
+    Ok(())
+}
+
+fn contains_inline_variable_reference(value: &str, needles: &[String]) -> bool {
+    needles.iter().any(|needle| value.contains(needle))
+}
+
+fn resolve_inline_references_in_value(
+    value: &str,
+    variables: &HashMap<String, CompiledVariable>,
+    stack: &mut Vec<String>,
+) -> Result<String, EngineError> {
+    transform_css_variable_references(value, |name, _text| {
+        let Some(variable) = variables
+            .get(name)
+            .filter(|variable| variable.inline && variable.value.is_some())
+        else {
+            return Ok(None);
+        };
+        if let Some(index) = stack.iter().position(|resolving| resolving == name) {
+            let mut cycle = stack[index..].to_vec();
+            cycle.push(name.to_owned());
+            return Err(EngineError::InvalidManifest(format!(
+                "Circular inline variable reference: {}",
+                cycle.join(" -> ")
+            )));
+        }
+        stack.push(name.to_owned());
+        let resolved = resolve_inline_references_in_value(
+            variable.value.as_deref().unwrap_or_default(),
+            variables,
+            stack,
+        );
+        stack.pop();
+        resolved.map(Some)
+    })
 }
 
 fn engine_variable_ir(variable: &CompiledVariable) -> EngineVariableIr {
@@ -3518,27 +3608,6 @@ fn has_top_level_binary_math_operator(source: &str) -> bool {
     false
 }
 
-fn collect_css_variable_names(source: &str) -> Vec<String> {
-    let mut names = Vec::new();
-    let mut rest = source;
-    while let Some(index) = rest.find("var(--") {
-        let after = &rest[index + 6..];
-        let end = after
-            .find(|character: char| {
-                character.is_ascii_whitespace() || matches!(character, ')' | ',')
-            })
-            .unwrap_or(after.len());
-        if end > 0 && (index == 0 || !rest[..index].ends_with('-')) {
-            let name = &after[..end];
-            if !names.iter().any(|existing| existing == name) {
-                names.push(name.to_owned());
-            }
-        }
-        rest = &after[end..];
-    }
-    names
-}
-
 fn skip_stylesheet_quoted(source: &str, start: usize, quote: char) -> usize {
     let mut index = start + quote.len_utf8();
     while index < source.len() {
@@ -4212,36 +4281,8 @@ fn contains_legacy_variable_function(value: &str) -> bool {
     value.contains("$(")
 }
 
-fn resolve_inline_variable_value(
-    variable: &CompiledVariable,
-    manifest: &ManifestProjection,
-) -> Option<String> {
-    fn resolve(
-        variable: &CompiledVariable,
-        manifest: &ManifestProjection,
-        resolving: &mut HashSet<String>,
-    ) -> Option<String> {
-        if !resolving.insert(variable.name.clone()) {
-            return variable.value.clone();
-        }
-        let mut value = variable.value.clone()?;
-        for dependency_name in collect_css_variable_names(&value) {
-            let Some(dependency) = manifest.compiled_variables.get(&dependency_name) else {
-                continue;
-            };
-            if !dependency.inline {
-                continue;
-            }
-            let Some(dependency_value) = resolve(dependency, manifest, resolving) else {
-                continue;
-            };
-            value = value.replace(&format!("var(--{dependency_name})"), &dependency_value);
-        }
-        resolving.remove(&variable.name);
-        Some(value)
-    }
-
-    resolve(variable, manifest, &mut HashSet::new())
+fn resolve_inline_variable_value(variable: &CompiledVariable) -> Option<String> {
+    variable.value.clone()
 }
 
 fn resolve_utility_value(
@@ -4278,7 +4319,7 @@ fn resolve_value(
             return None;
         }
         let color = if variable.inline {
-            resolve_inline_variable_value(variable, manifest)?
+            resolve_inline_variable_value(variable)?
         } else {
             format!("var(--{})", variable.name)
         };
@@ -4307,7 +4348,7 @@ fn resolve_value(
         return None;
     }
     if variable.inline {
-        let value = resolve_inline_variable_value(variable, manifest)?;
+        let value = resolve_inline_variable_value(variable)?;
         return Some((
             if negative {
                 format!("calc({value} * -1)")
@@ -6829,6 +6870,82 @@ mod tests {
                 .resources
                 .theme_text
                 .is_none_or(|text| text.is_empty())
+        );
+    }
+
+    #[test]
+    fn resolves_inline_dependencies_in_emitted_base_and_mode_variables() {
+        let manifest = r##"{
+          "version":1,
+          "settings":{"defaultMode":"light","modeTrigger":"class","modes":["light","dark"]},
+          "variables":{
+            "color":[
+              {"name":"color-white","key":"white","value":"oklch(100% 0 none)","inline":true},
+              {"name":"color-brand","key":"brand","value":"var(--color-white)","dependencies":["color-white"],"inline":true},
+              {"name":"color-gray-90","key":"gray-90","value":"oklch(23.5% 0 none)"}
+            ],
+            "color-surface":[
+              {
+                "name":"color-surface-raised",
+                "key":"raised",
+                "dependencies":["color-brand","color-gray-90"],
+                "modes":{
+                  "light":{"value":"VAR( --color-brand, red)"},
+                  "dark":{"value":"var(--color-gray-90)"}
+                }
+              }
+            ]
+          },
+          "utilities":[{
+            "id":"surface",
+            "type":0,
+            "variableAliasRefs":["color-surface"],
+            "emit":{"type":"property","property":"background-color"},
+            "matchers":[{"type":"variable","keys":["surface"]}]
+          }]
+        }"##;
+        let mut engine = EngineSession::create(manifest).unwrap();
+        engine.ensure_class_rules(["surface:raised"]).unwrap();
+        assert_eq!(
+            engine.css_text(),
+            "@layer theme{.light,:root{color-scheme:light;--color-surface-raised:oklch(100% 0 none)}:root{--color-gray-90:oklch(23.5% 0 none)}.dark{color-scheme:dark;--color-surface-raised:var(--color-gray-90)}}@layer utilities{.surface\\:raised{background-color:var(--color-surface-raised)}}"
+        );
+        assert_eq!(
+            engine
+                .snapshot()
+                .unwrap()
+                .resources
+                .variables
+                .iter()
+                .map(|resource| resource.name.as_str())
+                .collect::<Vec<_>>(),
+            ["color-surface-raised", "color-gray-90"]
+        );
+
+        let refreshed = manifest.replace("oklch(100% 0 none)", "#fff");
+        engine.refresh(&refreshed).unwrap();
+        assert!(engine.css_text().contains("--color-surface-raised:#fff"));
+        assert!(!engine.css_text().contains("--color-white:"));
+
+        engine.delete_class_rules(["surface:raised"]).unwrap();
+        assert_eq!(engine.css_text(), "");
+    }
+
+    #[test]
+    fn rejects_circular_inline_variable_references() {
+        let error = EngineSession::create(
+            r##"{
+              "version":1,
+              "variables":{"color":[
+                {"name":"color-a","key":"a","value":"var(--color-b)","inline":true},
+                {"name":"color-b","key":"b","value":"var(--color-a)","inline":true}
+              ]}
+            }"##,
+        )
+        .unwrap_err();
+        assert_eq!(
+            error.to_string(),
+            "Invalid MasterCSSManifest engine field: Circular inline variable reference: color-a -> color-b -> color-a"
         );
     }
 }

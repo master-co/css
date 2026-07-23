@@ -100,6 +100,103 @@
       ]
     },
     {
+      "id": "engine-inline-theme-variable-dependencies",
+      "manifest": {
+        "version": 1,
+        "settings": {
+          "defaultMode": "light",
+          "modeTrigger": "class",
+          "modes": [
+            "light",
+            "dark"
+          ]
+        },
+        "variables": {
+          "color": [
+            {
+              "name": "color-white",
+              "key": "white",
+              "value": "oklch(100% 0 none)",
+              "inline": true
+            },
+            {
+              "name": "color-brand",
+              "key": "brand",
+              "value": "var(--color-white)",
+              "dependencies": [
+                "color-white"
+              ],
+              "inline": true
+            },
+            {
+              "name": "color-gray-90",
+              "key": "gray-90",
+              "value": "oklch(23.5% 0 none)"
+            }
+          ],
+          "color-surface": [
+            {
+              "name": "color-surface-raised",
+              "key": "raised",
+              "dependencies": [
+                "color-brand",
+                "color-gray-90"
+              ],
+              "modes": {
+                "light": {
+                  "value": "var(--color-brand)"
+                },
+                "dark": {
+                  "value": "var(--color-gray-90)"
+                }
+              }
+            }
+          ]
+        },
+        "utilities": [
+          {
+            "id": "surface",
+            "type": 0,
+            "variableAliasRefs": [
+              "color-surface"
+            ],
+            "emit": {
+              "type": "property",
+              "property": "background-color"
+            },
+            "matchers": [
+              {
+                "type": "variable",
+                "keys": [
+                  "surface"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "steps": [
+        {
+          "op": "ensure",
+          "classes": [
+            "surface:raised"
+          ],
+          "expectedCss": "@layer theme{.light,:root{color-scheme:light;--color-surface-raised:oklch(100% 0 none)}:root{--color-gray-90:oklch(23.5% 0 none)}.dark{color-scheme:dark;--color-surface-raised:var(--color-gray-90)}}@layer utilities{.surface\\:raised{background-color:var(--color-surface-raised)}}",
+          "expectedResourceOrder": [
+            "color-surface-raised",
+            "color-gray-90"
+          ]
+        },
+        {
+          "op": "delete",
+          "classes": [
+            "surface:raised"
+          ],
+          "expectedCss": ""
+        }
+      ]
+    },
+    {
       "id": "engine-emitted-global-variable",
       "manifest": "default",
       "emittedGlobals": {
