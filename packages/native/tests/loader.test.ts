@@ -74,7 +74,7 @@ describe('native target resolution', () => {
         version: 0,
         classList: 'unknown',
         classNames: ['unknown']
-      })).toThrow('INVALID_LINT_REQUEST')
+      } as never)).toThrow('INVALID_LINT_REQUEST')
     } finally {
       lint.dispose()
     }

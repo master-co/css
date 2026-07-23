@@ -59,7 +59,7 @@ export interface MasterCSSSourceRange {
   end: number
 }
 
-export interface MasterCSSEngineInsertMutationIR {
+export interface MasterCSSEngineInsertMutation {
   op: 'insert'
   target: MasterCSSRuleTarget
   index: number
@@ -68,80 +68,80 @@ export interface MasterCSSEngineInsertMutationIR {
   rule?: import('@master/css-schema/hydration-manifest').MasterCSSGeneratedRuleIR
 }
 
-export interface MasterCSSEngineDeleteMutationIR {
+export interface MasterCSSEngineDeleteMutation {
   op: 'delete'
   target: MasterCSSRuleTarget
   index: number
   key: string
 }
 
-export type MasterCSSEngineMutationIR =
-  | MasterCSSEngineInsertMutationIR
-  | MasterCSSEngineDeleteMutationIR
+export type MasterCSSEngineMutation =
+  | MasterCSSEngineInsertMutation
+  | MasterCSSEngineDeleteMutation
 
-export interface MasterCSSEngineTransitionIR {
+export interface MasterCSSEngineTransition {
   version: typeof MASTER_CSS_ENGINE_TRANSITION_VERSION
-  mutations: MasterCSSEngineMutationIR[]
+  mutations: MasterCSSEngineMutation[]
 }
 
-export interface MasterCSSEngineSnapshotIR {
+export interface MasterCSSEngineSnapshot {
   version: 1
   rules: import('@master/css-schema/hydration-manifest').MasterCSSGeneratedRuleIR[]
-  resources: MasterCSSEngineResourcesIR
+  resources: MasterCSSEngineResources
   text: string
 }
 
-export interface MasterCSSEngineVariableResourceIR {
+export interface MasterCSSEngineVariableResource {
   name: string
   refCount: number
   dependencies: string[]
   static: boolean
 }
 
-export interface MasterCSSEngineAnimationResourceIR {
+export interface MasterCSSEngineAnimationResource {
   name: string
   index: number
   refCount: number
   text: string
 }
 
-export interface MasterCSSEngineResourcesIR {
+export interface MasterCSSEngineResources {
   themeText?: string
-  variables: MasterCSSEngineVariableResourceIR[]
-  animations: MasterCSSEngineAnimationResourceIR[]
+  variables: MasterCSSEngineVariableResource[]
+  animations: MasterCSSEngineAnimationResource[]
 }
 
-export interface MasterCSSEngineInspectionIR {
+export interface MasterCSSEngineInspection {
   version: 1
   className: string
   valid: boolean
   rules: import('@master/css-schema/hydration-manifest').MasterCSSGeneratedRuleIR[]
 }
 
-export interface MasterCSSNativeDeclarationCandidateIR {
+export interface MasterCSSNativeDeclarationCandidate {
   className: string
   property: string
   value: string
 }
 
-export interface MasterCSSLexerClassListInputIR {
+export interface MasterCSSLexerClassListInput {
   source: string
   unescape?: string[]
 }
 
-export interface MasterCSSLexerBatchRequestIR {
-  classLists?: MasterCSSLexerClassListInputIR[]
+export interface MasterCSSLexerBatchRequest {
+  classLists?: MasterCSSLexerClassListInput[]
   cssSources?: string[]
   escapeIdentifiers?: string[]
 }
 
-export interface MasterCSSLexerClassListItemIR {
+export interface MasterCSSLexerClassListItem {
   range: MasterCSSSourceRange
   raw: string
   token: string
 }
 
-export interface MasterCSSLexerCSSDirectiveIR {
+export interface MasterCSSLexerCSSDirective {
   name: string
   range: MasterCSSSourceRange
   preludeRange: MasterCSSSourceRange
@@ -149,44 +149,64 @@ export interface MasterCSSLexerCSSDirectiveIR {
   quotedStrings: number
 }
 
-export interface MasterCSSLexerCSSImportIR {
+export interface MasterCSSLexerCSSImport {
   range: MasterCSSSourceRange
   statement: string
   source?: string
 }
 
-export interface MasterCSSLexerCSSAnalysisIR {
-  directives: MasterCSSLexerCSSDirectiveIR[]
-  imports: MasterCSSLexerCSSImportIR[]
+export interface MasterCSSLexerCSSAnalysis {
+  directives: MasterCSSLexerCSSDirective[]
+  imports: MasterCSSLexerCSSImport[]
 }
 
-export interface MasterCSSLexerBatchIR {
+export interface MasterCSSLexerBatch {
   version: typeof MASTER_CSS_LEXER_BATCH_VERSION
-  classLists: MasterCSSLexerClassListItemIR[][]
-  cssSources: MasterCSSLexerCSSAnalysisIR[]
+  classLists: MasterCSSLexerClassListItem[][]
+  cssSources: MasterCSSLexerCSSAnalysis[]
   escapedIdentifiers: string[]
 }
 
 export type MasterCSSSourceExtractorKind = 'auto' | 'raw' | 'oxc' | 'html' | 'astro'
 
-export interface MasterCSSSourceExtractionInputIR {
+export interface MasterCSSSourceExtractionInput {
   source: string
   content: string
   kind?: MasterCSSSourceExtractorKind
 }
 
-export interface MasterCSSSourceBatchRequestIR {
-  files: MasterCSSSourceExtractionInputIR[]
+export interface MasterCSSSourceBatchRequest {
+  files: MasterCSSSourceExtractionInput[]
 }
 
-export interface MasterCSSSourceExtractionIR {
+export interface MasterCSSSourceExtraction {
   source: string
   candidates: string[]
 }
 
-export interface MasterCSSSourceBatchIR {
+export interface MasterCSSSourceBatch {
   version: typeof MASTER_CSS_SOURCE_BATCH_VERSION
-  files: MasterCSSSourceExtractionIR[]
+  files: MasterCSSSourceExtraction[]
+}
+
+export interface MasterCSSScannerUpdate {
+  changed: boolean
+  cacheHit: boolean
+  candidates: string[]
+  validClasses: string[]
+  invalidClasses: string[]
+  usedNativeClasses?: string[]
+  transition: MasterCSSEngineTransition
+}
+
+export interface MasterCSSScannerState {
+  latentClasses: string[]
+  validClasses: string[]
+  invalidClasses: string[]
+  nativeClasses?: string[]
+  usedNativeClasses?: string[]
+  cachedSources: number
+  engine: MasterCSSEngineSnapshot
 }
 
 export type MasterCSSInspectionDiagnosticSeverity = 'error' | 'warning'
@@ -206,89 +226,89 @@ export type MasterCSSMissingCSSReason =
   | 'blocklisted'
   | 'not-detected'
 
-export interface MasterCSSMissingCSSResultIR {
+export interface MasterCSSMissingCSSResult {
   className: string
   status: MasterCSSMissingCSSStatus
   reason: MasterCSSMissingCSSReason
 }
 
-export type MasterCSSInspectionDiagnosticDataIR =
+export type MasterCSSInspectionDiagnosticData =
   | { cwd: string }
   | { className: string }
-  | MasterCSSMissingCSSResultIR
+  | MasterCSSMissingCSSResult
 
-export interface MasterCSSInspectionDiagnosticIR {
+export interface MasterCSSInspectionDiagnostic {
   code: MasterCSSInspectionDiagnosticCode
   severity: MasterCSSInspectionDiagnosticSeverity
   message: string
   source: 'Master CSS'
   sourceKind: MasterCSSInspectionDiagnosticSourceKind
   filePath?: string
-  data?: MasterCSSInspectionDiagnosticDataIR
+  data?: MasterCSSInspectionDiagnosticData
 }
 
-export interface MasterCSSDiscoveredClassesIR {
-  latent: string[]
-  valid: string[]
-  invalid: string[]
-  usedNative: string[]
+export interface MasterCSSDiscoveredClasses {
+  latent: readonly string[]
+  valid: readonly string[]
+  invalid: readonly string[]
+  usedNative: readonly string[]
 }
 
-export interface MasterCSSSourceInspectionIR {
+export interface MasterCSSSourceInspection {
   filePath: string
   source: string
   scanned: boolean
   changed: boolean
-  discovered: MasterCSSDiscoveredClassesIR
+  discovered: MasterCSSDiscoveredClasses
 }
 
-export interface MasterCSSStylesheetInspectionIR {
+export interface MasterCSSStylesheetInspection {
   filePath: string
   masterCSS: boolean
   pruneNativeCSS: boolean
-  dependencies: string[]
-  sourceDependencies: string[]
-  warnings: string[]
-  errors: string[]
+  dependencies: readonly string[]
+  sourceDependencies: readonly string[]
+  warnings: readonly string[]
+  errors: readonly string[]
 }
 
-export interface MasterCSSStylesheetErrorIR {
+export interface MasterCSSStylesheetError {
   filePath: string
   message: string
 }
 
-export interface MasterCSSDiagnosticsReportInputIR {
+export interface MasterCSSDiagnosticsReportInput {
   version: typeof MASTER_CSS_DIAGNOSTICS_REPORT_VERSION
   cwd: string
-  patterns: string[]
-  files: MasterCSSSourceInspectionIR[]
-  classes: string[]
+  patterns: readonly string[]
+  files: readonly MasterCSSSourceInspection[]
+  classes: readonly string[]
   scanner: {
-    latent?: string[]
-    valid?: string[]
-    invalid?: string[]
-    native?: string[]
-    usedNative?: string[]
-    safelist?: string[]
-    blocklist?: (string | MasterCSSRegexIR)[]
-    resetDependencies?: string[]
+    latent?: readonly string[]
+    valid?: readonly string[]
+    invalid?: readonly string[]
+    native?: readonly string[]
+    usedNative?: readonly string[]
+    safelist?: readonly string[]
+    blocklist?: readonly (string | MasterCSSRegex)[]
+    resetDependencies?: readonly string[]
   }
   stylesheets: {
-    entries?: MasterCSSStylesheetInspectionIR[]
-    warnings?: string[]
-    errors?: MasterCSSStylesheetErrorIR[]
+    entries?: readonly MasterCSSStylesheetInspection[]
+    warnings?: readonly string[]
+    errors?: readonly MasterCSSStylesheetError[]
   }
   css: {
     text?: string
     included?: boolean
-    variables?: string[]
-    animations?: string[]
+    variables?: readonly string[]
+    animations?: readonly string[]
   }
   firstSourceByClass?: Record<string, string>
   fatalError?: string
 }
 
-export interface MasterCSSInspectionReportIR {
+export interface MasterCSSInspectionReport {
   version: typeof MASTER_CSS_DIAGNOSTICS_REPORT_VERSION
   cwd: string
   inputs: {
@@ -318,10 +338,10 @@ export interface MasterCSSInspectionReportIR {
     resetDependencies: string[]
   }
   stylesheets: {
-    entries: MasterCSSStylesheetInspectionIR[]
+    entries: MasterCSSStylesheetInspection[]
     dependencies: string[]
     warnings: string[]
-    errors: MasterCSSStylesheetErrorIR[]
+    errors: MasterCSSStylesheetError[]
   }
   css: {
     bytes: number
@@ -334,11 +354,11 @@ export interface MasterCSSInspectionReportIR {
   }
   missingCSS: {
     checked: string[]
-    present: MasterCSSMissingCSSResultIR[]
-    missing: MasterCSSMissingCSSResultIR[]
+    present: MasterCSSMissingCSSResult[]
+    missing: MasterCSSMissingCSSResult[]
   }
-  files: MasterCSSSourceInspectionIR[]
-  diagnostics: MasterCSSInspectionDiagnosticIR[]
+  files: MasterCSSSourceInspection[]
+  diagnostics: MasterCSSInspectionDiagnostic[]
   summary: {
     files: number
     stylesheets: number
@@ -350,48 +370,48 @@ export interface MasterCSSInspectionReportIR {
   }
 }
 
-export interface MasterCSSValidatorClassIR {
+export interface MasterCSSValidatorClass {
   className: string
   matched: boolean
   rules: import('@master/css-schema/hydration-manifest').MasterCSSGeneratedRuleIR[]
 }
 
-export interface MasterCSSValidatorBatchIR {
+export interface MasterCSSValidatorBatch {
   version: typeof MASTER_CSS_VALIDATOR_BATCH_VERSION
-  classes: MasterCSSValidatorClassIR[]
+  classes: MasterCSSValidatorClass[]
 }
 
-export interface MasterCSSLintClassConflictIR {
+export interface MasterCSSLintClassConflict {
   className: string
   conflicts: string[]
 }
 
-export interface MasterCSSLintPartialClassConflictIR {
+export interface MasterCSSLintPartialClassConflict {
   className: string
   replacement: string
   conflict: string
 }
 
-export interface MasterCSSLintBatchIR {
+export interface MasterCSSLintBatch {
   version: typeof MASTER_CSS_LINT_BATCH_VERSION
   sortedClassNames: string[]
-  conflicts: MasterCSSLintClassConflictIR[]
-  partialConflicts: MasterCSSLintPartialClassConflictIR[]
+  conflicts: MasterCSSLintClassConflict[]
+  partialConflicts: MasterCSSLintPartialClassConflict[]
 }
 
-export interface MasterCSSLintRawValueCandidateIR {
+export interface MasterCSSLintRawValueCandidate {
   className: string
   key: string
   segments: string[]
   properties: string[]
 }
 
-export interface MasterCSSLintRawValueCandidatesIR {
+export interface MasterCSSLintRawValueCandidates {
   version: typeof MASTER_CSS_LINT_BATCH_VERSION
-  candidates: MasterCSSLintRawValueCandidateIR[]
+  candidates: MasterCSSLintRawValueCandidate[]
 }
 
-export interface MasterCSSLintCanonicalClassNameOptionsIR {
+export interface MasterCSSLintCanonicalClassNameOptions {
   preferStaticUtilities: boolean
   preferThemeTokens: boolean
   preferPropertyAliases: boolean
@@ -403,24 +423,24 @@ export interface MasterCSSLintCanonicalClassNameOptionsIR {
   preferVariantBlocksInCompose: boolean
 }
 
-export interface MasterCSSLintCanonicalClassSuggestionIR {
+export interface MasterCSSLintCanonicalClassSuggestion {
   className: string
   recommended: string
 }
 
-export interface MasterCSSLintCanonicalClassSuggestionsIR {
+export interface MasterCSSLintCanonicalClassSuggestions {
   version: typeof MASTER_CSS_LINT_BATCH_VERSION
-  suggestions: MasterCSSLintCanonicalClassSuggestionIR[]
+  suggestions: MasterCSSLintCanonicalClassSuggestion[]
 }
 
-export interface MasterCSSLintCanonicalClassGroupSuggestionIR {
+export interface MasterCSSLintCanonicalClassGroupSuggestion {
   classNames: string[]
   recommended: string
 }
 
-export interface MasterCSSLintCanonicalClassGroupSuggestionsIR {
+export interface MasterCSSLintCanonicalClassGroupSuggestions {
   version: typeof MASTER_CSS_LINT_BATCH_VERSION
-  suggestions: MasterCSSLintCanonicalClassGroupSuggestionIR[]
+  suggestions: MasterCSSLintCanonicalClassGroupSuggestion[]
 }
 
 export type MasterCSSLintCanonicalComposeSuggestionKind =
@@ -428,27 +448,27 @@ export type MasterCSSLintCanonicalComposeSuggestionKind =
   | 'native-declaration'
   | 'variant-block'
 
-export interface MasterCSSLintCanonicalComposeSuggestionIR {
+export interface MasterCSSLintCanonicalComposeSuggestion {
   actual: string
   recommended: string
   classNames: string[]
   kind: MasterCSSLintCanonicalComposeSuggestionKind
 }
 
-export interface MasterCSSLintCanonicalComposeDirectiveIR {
+export interface MasterCSSLintCanonicalComposeDirective {
   version: typeof MASTER_CSS_LINT_BATCH_VERSION
-  suggestions: MasterCSSLintCanonicalComposeSuggestionIR[]
+  suggestions: MasterCSSLintCanonicalComposeSuggestion[]
   structuralChange?: boolean
   replacement?: string
 }
 
-export interface MasterCSSLintEditIR {
+export interface MasterCSSLintEdit {
   range: MasterCSSSourceRange
   text: string
   scope: 'class-list' | 'directive'
 }
 
-export interface MasterCSSLintDiagnosticIR {
+export interface MasterCSSLintDiagnostic {
   ruleId: 'sort-classes' | 'no-invalid-classes' | 'no-conflicting-classes' | 'prefer-canonical-classes' | 'no-unapproved-raw-values'
   code:
     | 'invalid-class-order'
@@ -463,16 +483,96 @@ export interface MasterCSSLintDiagnosticIR {
   message: string
   range: MasterCSSSourceRange
   data?: Record<string, string | number | boolean | string[] | null>
-  fix?: MasterCSSLintEditIR
+  fix?: MasterCSSLintEdit
 }
 
-export interface MasterCSSLintClassListIR {
+export interface MasterCSSLintClassList {
   version: typeof MASTER_CSS_LINT_BATCH_VERSION
-  analysis: MasterCSSLintBatchIR
-  diagnostics: MasterCSSLintDiagnosticIR[]
-  sortEdit?: MasterCSSLintEditIR
-  conflictEdit?: MasterCSSLintEditIR
+  analysis: MasterCSSLintBatch
+  diagnostics: MasterCSSLintDiagnostic[]
+  sortEdit?: MasterCSSLintEdit
+  conflictEdit?: MasterCSSLintEdit
   conflictRange?: MasterCSSSourceRange
+}
+
+export interface MasterCSSLintHostValidation {
+  invalidGeneratedClasses: string[]
+  validationErrors: string[][]
+}
+
+export interface MasterCSSLintRawValuePolicy {
+  allowRawValues?: boolean
+  allowProperties?: readonly string[]
+  allowedPatterns?: readonly string[]
+}
+
+export interface MasterCSSLintClassListPolicyRequest {
+  version: typeof MASTER_CSS_LINT_BATCH_VERSION
+  classList: string
+  classNames: readonly string[]
+  nativeSupport?: readonly boolean[]
+  invalidGeneratedClasses?: readonly string[]
+  validationErrors?: readonly (readonly string[])[]
+  disallowUnknownClass?: boolean
+  canonicalOptions?: Partial<MasterCSSLintCanonicalClassNameOptions>
+  composeDirective?: boolean
+  rawValuePolicy?: MasterCSSLintRawValuePolicy
+}
+
+export interface MasterCSSLanguageClassListContext {
+  start: number
+  end: number
+  unescape?: readonly string[]
+}
+
+export interface MasterCSSLanguageDocumentSettings {
+  classAttributes?: readonly string[]
+  classFunctions?: readonly string[]
+  classDeclarations?: readonly string[]
+}
+
+export interface MasterCSSLanguageDocumentRequest {
+  source: string
+  languageId: string
+  hostRanges?: readonly MasterCSSLanguageClassListContext[]
+  settings?: MasterCSSLanguageDocumentSettings
+}
+
+export interface MasterCSSLanguageClassPosition {
+  range: MasterCSSSourceRange
+  contextRange: MasterCSSSourceRange
+  raw: string
+  token: string
+}
+
+export interface MasterCSSLanguageSemanticToken {
+  start: number
+  end: number
+  type: string
+  modifiers: string[]
+}
+
+export interface MasterCSSLanguageDocument {
+  version: typeof MASTER_CSS_LANGUAGE_BATCH_VERSION
+  classPositions: MasterCSSLanguageClassPosition[]
+  semanticTokens: MasterCSSLanguageSemanticToken[]
+  semanticTokenData: number[]
+}
+
+export interface MasterCSSLanguageFormatRequest {
+  source: string
+  range?: MasterCSSSourceRange
+  styleRanges?: readonly MasterCSSSourceRange[]
+}
+
+export interface MasterCSSLanguageFormatEdit {
+  range: MasterCSSSourceRange
+  text: string
+}
+
+export interface MasterCSSLanguageFormatEdits {
+  version: typeof MASTER_CSS_LANGUAGE_BATCH_VERSION
+  edits: MasterCSSLanguageFormatEdit[]
 }
 
 export type MasterCSSLanguageClassKind =
@@ -482,7 +582,7 @@ export type MasterCSSLanguageClassKind =
   | 'pattern'
   | 'declaration'
 
-export interface MasterCSSLanguageClassIR {
+export interface MasterCSSLanguageClass {
   className: string
   kind: MasterCSSLanguageClassKind
   matcherTypes: ('static' | 'pattern' | 'key' | 'variable' | 'value')[]
@@ -492,13 +592,13 @@ export interface MasterCSSLanguageClassIR {
   important: boolean
 }
 
-export interface MasterCSSLanguageClassificationsIR {
+export interface MasterCSSLanguageClassifications {
   version: typeof MASTER_CSS_LANGUAGE_BATCH_VERSION
   variableNames: string[]
-  classes: MasterCSSLanguageClassIR[]
+  classes: MasterCSSLanguageClass[]
 }
 
-export interface MasterCSSLanguageVariableIR {
+export interface MasterCSSLanguageVariable {
   namespace?: string
   name: string
   key: string
@@ -511,12 +611,12 @@ export interface MasterCSSLanguageVariableIR {
   static?: boolean
 }
 
-export interface MasterCSSLanguageClassVariableIR {
+export interface MasterCSSLanguageClassVariable {
   key: string
-  variable: MasterCSSLanguageVariableIR
+  variable: MasterCSSLanguageVariable
 }
 
-export interface MasterCSSLanguageInspectionIR {
+export interface MasterCSSLanguageInspection {
   version: typeof MASTER_CSS_LANGUAGE_BATCH_VERSION
   className: string
   valid: boolean
@@ -530,14 +630,14 @@ export interface MasterCSSLanguageInspectionIR {
   stateToken?: string
   important: boolean
   matcherTypes: ('static' | 'pattern' | 'key' | 'variable' | 'value')[]
-  variables: MasterCSSLanguageClassVariableIR[]
+  variables: MasterCSSLanguageClassVariable[]
   rules: import('@master/css-schema/hydration-manifest').MasterCSSGeneratedRuleIR[]
   text: string
 }
 
 export type MasterCSSLanguageCompletionKind = 'property' | 'value'
 
-export interface MasterCSSLanguageCompletionEntryIR {
+export interface MasterCSSLanguageCompletionEntry {
   label: string
   kind: MasterCSSLanguageCompletionKind
   detail?: string
@@ -546,55 +646,55 @@ export interface MasterCSSLanguageCompletionEntryIR {
   triggerSuggest: boolean
 }
 
-export interface MasterCSSLanguageCompletionIndexIR {
+export interface MasterCSSLanguageCompletionIndex {
   version: typeof MASTER_CSS_LANGUAGE_BATCH_VERSION
-  classEntries: MasterCSSLanguageCompletionEntryIR[]
+  classEntries: MasterCSSLanguageCompletionEntry[]
 }
 
-export interface MasterCSSLanguageColorPresentationIR {
+export interface MasterCSSLanguageColorPresentation {
   version: typeof MASTER_CSS_LANGUAGE_BATCH_VERSION
   colorToken: string
   space?: string
 }
 
-export interface MasterCSSLanguageColorCandidateInputIR {
+export interface MasterCSSLanguageColorCandidateInput {
   className: string
   start: number
 }
 
-export interface MasterCSSLanguageColorTokenIR {
+export interface MasterCSSLanguageColorToken {
   range: MasterCSSSourceRange
   value: string
   alpha?: number
 }
 
-export interface MasterCSSLanguageColorTokensIR {
+export interface MasterCSSLanguageColorTokens {
   version: typeof MASTER_CSS_LANGUAGE_BATCH_VERSION
-  tokens: MasterCSSLanguageColorTokenIR[]
+  tokens: MasterCSSLanguageColorToken[]
 }
 
-export type MasterCSSDirectiveManifestInputIR =
+export type MasterCSSDirectiveManifestInput =
   import('@master/css-schema/css-directives').CSSDirectiveManifestInput
 
-export type MasterCSSDirectiveVariableDefinitionIR =
+export type MasterCSSDirectiveVariableDefinition =
   import('@master/css-schema/css-directives').CSSDirectiveVariableDefinition
 
-export interface MasterCSSRegexIR {
+export interface MasterCSSRegex {
   source: string
   flags: string
 }
 
-export interface MasterCSSDirectiveExtractionPolicyIR {
+export interface MasterCSSDirectiveExtractionPolicy {
   include: string[]
   exclude: string[]
   safelist: string[]
-  blocklist: (string | MasterCSSRegexIR)[]
+  blocklist: (string | MasterCSSRegex)[]
   preserveNative: boolean
 }
 
-export interface MasterCSSDirectiveCompilationIR {
-  manifestInput: MasterCSSDirectiveManifestInputIR
-  extractionPolicy: MasterCSSDirectiveExtractionPolicyIR
+export interface MasterCSSDirectiveCompilation {
+  manifestInput: MasterCSSDirectiveManifestInput
+  extractionPolicy: MasterCSSDirectiveExtractionPolicy
   classNames: string[]
   nativeClassNames: string[]
   warnings: string[]
@@ -610,46 +710,140 @@ export interface MasterCSSDirectiveCompilationIR {
   })[]
 }
 
-export interface MasterCSSCompileManifestOptionsIR {
+export interface MasterCSSCompilerInspection {
+  hasMasterEntryDirective: boolean
+  hasMasterCSSImport: boolean
+  hasMasterEntry: boolean
+  directives: MasterCSSLexerCSSDirective[]
+}
+
+export interface MasterCSSDirectiveCompileOptions {
+  from?: string
+  preserveNativeCSS?: boolean
+  classes?: readonly string[]
+}
+
+export interface MasterCSSDependencyImport {
+  start: number
+  end: number
+  statement: string
+  source: string
+}
+
+export interface MasterCSSDependencyAnalysis {
+  sourceWithoutReferences: string
+  imports: MasterCSSDependencyImport[]
+}
+
+export interface MasterCSSStandaloneDirectiveStatement {
+  start: number
+  end: number
+  atRuleName: 'master' | 'source' | 'safelist' | 'blocklist' | 'preserve'
+  name: string
+  statement: string
+  args: string[]
+  modifiers: string[]
+}
+
+export interface MasterCSSStandaloneDirectiveAnalysis {
+  code: string
+  statements: MasterCSSStandaloneDirectiveStatement[]
+  extractionPolicy: MasterCSSDirectiveExtractionPolicy
+}
+
+export interface MasterCSSCompileManifestOptions {
   baseManifest?: import('@master/css-schema/manifest').MasterCSSManifest
 }
 
-export interface MasterCSSCompileManifestResultIR {
+export interface MasterCSSCompileManifestResult {
   manifest: import('@master/css-schema/manifest').MasterCSSManifest
 }
 
-export interface MasterCSSCompileDefaultPresetRequestIR {
-  manifestInput: MasterCSSDirectiveManifestInputIR
-  styleDefinitions?: import('@master/css-schema/css-directives').CSSDirectiveStyleDefinition[]
+export interface MasterCSSCompileDefaultPresetRequest {
+  manifestInput: MasterCSSDirectiveManifestInput
+  styleDefinitions?: readonly import('@master/css-schema/css-directives').CSSDirectiveStyleDefinition[]
 }
 
-export interface MasterCSSCompileDefaultPresetResultIR {
+export interface MasterCSSCompileDefaultPresetResult {
   manifest: import('@master/css-schema/manifest').MasterCSSManifest
   json: string
 }
 
-export interface MasterCSSServerRenderIR {
+export interface MasterCSSLowerDirectivesRequest {
+  manifestInput: MasterCSSDirectiveManifestInput
+  styleDefinitions?: readonly import('@master/css-schema/css-directives').CSSDirectiveStyleDefinition[]
+  warnings?: readonly string[]
+}
+
+export interface MasterCSSLowerDirectivesOptions {
+  baseManifest?: import('@master/css-schema/manifest').MasterCSSManifest
+  resolutionManifest?: import('@master/css-schema/manifest').MasterCSSManifest
+}
+
+export interface MasterCSSLowerDirectivesResult {
+  input: MasterCSSDirectiveManifestInput
+  manifest: import('@master/css-schema/manifest').MasterCSSManifest
+  resolutionManifest: import('@master/css-schema/manifest').MasterCSSManifest
+  warnings: string[]
+  generatedCSS: string
+  diagnosticCounts: Record<string, number>
+}
+
+export interface MasterCSSServerRender {
   classes: string[]
-  snapshot: MasterCSSEngineSnapshotIR
+  snapshot: MasterCSSEngineSnapshot
   hydrationManifest: import('@master/css-schema/hydration-manifest').MasterCSSHydrationManifest
 }
 
-export interface MasterCSSImportGraphEdgeIR {
+export interface MasterCSSImportGraphEdge {
   from: string
   specifier: string
   resolved: string
 }
 
-export interface MasterCSSImportGraphRequestIR {
+export interface MasterCSSImportGraphRequest {
   entry: string
   files: Record<string, string>
-  edges: MasterCSSImportGraphEdgeIR[]
+  edges: MasterCSSImportGraphEdge[]
 }
 
-export interface MasterCSSResolvedImportGraphIR {
+export interface MasterCSSResolvedImportGraph {
   source: string
   dependencies: string[]
-  references?: MasterCSSDirectiveCompilationIR['references']
+  references?: MasterCSSDirectiveCompilation['references']
+}
+
+export interface MasterCSSProjectEntryGraph {
+  entry: string
+  source: string
+  dependencies: readonly string[]
+}
+
+export interface MasterCSSProjectSourceEntryPlan {
+  entry: string
+  include: string[]
+  exclude: string[]
+  files: string[]
+}
+
+export interface MasterCSSProjectSourcePlan {
+  version: 1
+  entries: MasterCSSProjectSourceEntryPlan[]
+  files: string[]
+}
+
+export interface MasterCSSProjectManifest {
+  entries: string[]
+  manifest: import('@master/css-schema/manifest').MasterCSSManifest
+  dependencies: string[]
+  extractionPolicy: MasterCSSDirectiveExtractionPolicy
+  classNames: string[]
+  nativeClassNames: string[]
+  nativeCSS: string
+  css: string
+  generatedCSS: string
+  warnings: string[]
+  sourcePlan: MasterCSSProjectSourcePlan
 }
 
 export type MasterCSSErrorCode =

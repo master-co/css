@@ -90,10 +90,20 @@ function parseArgs(values) {
 }
 
 async function waitForRuntimeRemovalFlush(page) {
+  await page.evaluate(() => new Promise((resolve) => {
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        requestAnimationFrame(resolve)
+      })
+    })
+  }))
   await page.waitForFunction(() => {
     const snapshot = globalThis.masterCSSRuntime.snapshot()
+    const classRules = Object.values(snapshot.classRules)
+    const rules = classRules.filter((classRule) => classRule.rules.length)
     return Object.keys(snapshot.usageCounts).length === 0
-      && Object.values(snapshot.classRules).every((classRule) => !classRule.retained)
+      && rules.length <= 128
+      && rules.every((classRule) => classRule.retained)
   })
 }
 
@@ -225,7 +235,7 @@ async function loadRuntime(page, scriptURL) {
     script.src = url
     document.head.append(script)
 
-    while (!globalThis.masterCSSRuntime?.observing) {
+    while (!globalThis.masterCSSRuntime?.snapshot().observing) {
       if (performance.now() - startedAt > 10_000) {
         throw new Error('Timed out waiting for masterCSSRuntime to observe the document.')
       }
@@ -469,8 +479,12 @@ try {
             .filter((classRule) => classRule.retained).length
         }
       })
-      if (state.classes || state.utilities || state.retained) {
-        throw new Error(`Expected mutation cleanup to empty runtime state, got ${JSON.stringify(state)}.`)
+      if (
+        state.classes
+        || state.utilities > 128
+        || state.retained !== state.utilities
+      ) {
+        throw new Error(`Expected mutation cleanup to retain at most 128 cold rules, got ${JSON.stringify(state)}.`)
       }
       return elapsed
     } finally {

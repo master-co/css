@@ -1,10 +1,22 @@
 import type { MasterCSSEmittedGlobals } from '@master/css-schema/emitted-globals'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import type {
-  MasterCSSNativeDeclarationCandidateIR,
-  MasterCSSServerRenderIR
-} from '@master/css-backend/compiler'
+  MasterCSSHydrationManifest
+} from '@master/css-schema/hydration-manifest'
+import type { MasterCSSEngineSnapshot } from '@master/css'
 import { supportsNativeDeclaration } from '@master/css-tooling/node'
+
+interface MasterCSSNativeDeclarationCandidate {
+  readonly className: string
+  readonly property: string
+  readonly value: string
+}
+
+interface MasterCSSRenderBackendResult {
+  readonly classes: string[]
+  readonly snapshot: MasterCSSEngineSnapshot
+  readonly hydrationManifest: MasterCSSHydrationManifest
+}
 
 export interface RenderCompiledManifestCSSOptions {
   manifest: MasterCSSManifest
@@ -22,11 +34,11 @@ export interface RenderCompiledManifestCSSResult {
 }
 
 export interface StylesheetRenderSession {
-  nativeDeclarationCandidates(classNames: string[]): MasterCSSNativeDeclarationCandidateIR[]
+  nativeDeclarationCandidates(classNames: string[]): readonly MasterCSSNativeDeclarationCandidate[]
   ensureClasses(classNames: string[], nativeSupport?: boolean[]): void
   ensureStylesheetResources(nativeCSS: string): void
   emittedGlobals(): Required<MasterCSSEmittedGlobals>
-  snapshot(): MasterCSSServerRenderIR
+  snapshot(): MasterCSSRenderBackendResult
   dispose(): void
 }
 

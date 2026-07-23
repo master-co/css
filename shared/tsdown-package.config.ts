@@ -12,6 +12,22 @@ const packageRoot = process.cwd()
 const packageJSON = JSON.parse(readFileSync(resolve(packageRoot, 'package.json'), 'utf8')) as PackageJSON
 
 const entryByPackageName: Record<string, TsdownInputOption> = {
+  '@master/css-backend': [
+    'src/index.ts',
+    'src/browser.ts',
+    'src/broker-engine.ts',
+    'src/broker-engine-browser.ts',
+    'src/broker-engine-node.ts',
+    'src/broker-compiler.ts',
+    'src/broker-compiler-browser.ts',
+    'src/broker-compiler-node.ts',
+    'src/broker-tooling.ts',
+    'src/broker-tooling-browser.ts',
+    'src/broker-tooling-node.ts'
+  ],
+  '@master/css-wasm-compiler': ['src/provider.ts', 'src/provider-node.ts'],
+  '@master/css-wasm-engine': ['src/provider.ts', 'src/provider-node.ts'],
+  '@master/css-wasm-tooling': ['src/provider.ts', 'src/provider-node.ts'],
   '@master/css-language-server': ['src/index.ts', 'src/server.ts'],
   '@master/css-mcp': ['src/index.ts', 'src/bin/index.ts'],
   '@master/eslint-plugin-css': ['src/**/*.{js,ts}'],

@@ -26,9 +26,6 @@
     },
     {
       "path": "../tooling/tsconfig.typecheck.json"
-    },
-    {
-      "path": "../wasm-compiler/tsconfig.typecheck.json"
     }
   ],
   "include": [

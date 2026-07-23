@@ -46,25 +46,46 @@ export interface MasterCSSErrorOptions extends ErrorOptions {
   diagnostics?: readonly MasterCSSDiagnostic[]
 }
 
+function freezeDiagnostic(diagnostic: MasterCSSDiagnostic): MasterCSSDiagnostic {
+  return Object.freeze({
+    ...diagnostic,
+    ...(diagnostic.range
+      ? {
+        range: Object.freeze({
+          start: Object.freeze({ ...diagnostic.range.start }),
+          end: Object.freeze({ ...diagnostic.range.end })
+        })
+      }
+      : {}),
+    ...(diagnostic.notes
+      ? { notes: Object.freeze([...diagnostic.notes]) }
+      : {})
+  })
+}
+
 export class MasterCSSError extends Error {
   readonly code: string
   readonly domain: MasterCSSDiagnosticDomain
   readonly diagnostics: readonly MasterCSSDiagnostic[]
+  readonly payload: MasterCSSErrorPayload
 
   constructor(payload: MasterCSSErrorPayload, options: MasterCSSErrorOptions = {}) {
     super(payload.message, options)
     this.name = 'MasterCSSError'
     this.code = payload.code
     this.domain = payload.domain
-    this.diagnostics = Object.freeze([...(options.diagnostics ?? payload.diagnostics ?? [])])
-  }
-
-  toJSON(): MasterCSSErrorPayload {
-    return {
+    this.diagnostics = Object.freeze(
+      (options.diagnostics ?? payload.diagnostics ?? []).map(freezeDiagnostic)
+    )
+    this.payload = Object.freeze({
       code: this.code,
       domain: this.domain,
       message: this.message,
       ...(this.diagnostics.length ? { diagnostics: this.diagnostics } : {})
-    }
+    })
+  }
+
+  toJSON(): MasterCSSErrorPayload {
+    return this.payload
   }
 }

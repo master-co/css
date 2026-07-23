@@ -11,7 +11,10 @@
     "outDir": ".tsbuild/typecheck",
     "tsBuildInfoFile": ".tsbuild/typecheck/tsconfig.tsbuildinfo"
   },
-  "references": [],
+  "references": [
+    { "path": "../native/tsconfig.typecheck.json" },
+    { "path": "../schema/tsconfig.typecheck.json" }
+  ],
   "include": [
     "scripts/**/*.ts",
     "src/**/*.ts",

@@ -11,8 +11,9 @@ import fg from 'fast-glob'
 import fs from 'node:fs'
 import path from 'node:path'
 import {
-  loadNativeCompilerBackend,
-  MASTER_CSS_DIAGNOSTICS_REPORT_VERSION
+  createCompilerBackendSession,
+  MASTER_CSS_DIAGNOSTICS_REPORT_VERSION,
+  type MasterCSSDiagnosticsReportInput
 } from '@master/css-backend/compiler'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import type {
@@ -53,18 +54,11 @@ export interface CreateMasterCSSInspectionReportOptions {
   validatePatterns?: (patterns: readonly string[]) => void
 }
 
-async function createBackendInspectionReport<T>(input: unknown): Promise<T> {
-  const compiler = loadNativeCompilerBackend()
-  if (compiler) return compiler.createInspectionReport(input) as T
-
-  const [{ createToolingInspectionReport }, { readFile }] = await Promise.all([
-    import('@master/css-wasm-tooling'),
-    import('node:fs/promises')
-  ])
-  const wasmBytes = await readFile(new URL(import.meta.resolve('@master/css-wasm-tooling/wasm')))
-  return await createToolingInspectionReport(input, {
-    input: new Uint8Array(wasmBytes)
-  }) as T
+async function createBackendInspectionReport(
+  input: MasterCSSDiagnosticsReportInput
+): Promise<MasterCSSInspectionReport> {
+  using compiler = await createCompilerBackendSession()
+  return await compiler.createInspectionReport(input)
 }
 
 function normalizeSourcePatterns(specifiedSourcePaths?: readonly string[]) {
@@ -215,7 +209,7 @@ export async function createMasterCSSInspectionReport(
   }, cwd)
   const stylesheetSources: StylesheetSources = new Map()
   const firstSourceByClass = new Map<string, string>()
-  let reportInput: unknown
+  let reportInput: MasterCSSDiagnosticsReportInput
 
   try {
     await scanner.init()
@@ -282,5 +276,5 @@ export async function createMasterCSSInspectionReport(
   } finally {
     await scanner.dispose()
   }
-  return await createBackendInspectionReport<MasterCSSInspectionReport>(reportInput)
+  return await createBackendInspectionReport(reportInput)
 }

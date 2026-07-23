@@ -1,5 +1,5 @@
 import { readFile } from 'node:fs/promises'
-import { expect, test } from 'vitest'
+import { expect, test, vi } from 'vitest'
 import { initCompilerWasm } from '../src'
 
 function toPlainValue(value: unknown): unknown {
@@ -12,6 +12,41 @@ function toPlainValue(value: unknown): unknown {
   }
   return value
 }
+
+test('keys explicit compiler modules by their initialization input', async () => {
+  const module = {
+    default: vi.fn(async () => ({})),
+    bindingInfo: () => ({})
+  }
+  const input = new Uint8Array([1])
+
+  await initCompilerWasm({ module, input })
+  await initCompilerWasm({ module, input })
+  expect(module.default).toHaveBeenCalledTimes(1)
+  await expect(initCompilerWasm({
+    module,
+    input: new Uint8Array([2])
+  })).rejects.toMatchObject({
+    code: 'WASM_INPUT_CONFLICT',
+    domain: 'backend'
+  })
+})
+
+test('normalizes compiler Wasm initialization failures', async () => {
+  const cause = new TypeError('fetch failed')
+  await expect(initCompilerWasm({
+    module: {
+      default: vi.fn(async () => {
+        throw cause
+      })
+    },
+    input: new Uint8Array([1])
+  })).rejects.toMatchObject({
+    code: 'WASM_LOAD_FAILED',
+    domain: 'backend',
+    cause
+  })
+})
 
 test('loads the isolated compiler Wasm surface', async () => {
   const input = new Uint8Array(await readFile(new URL(

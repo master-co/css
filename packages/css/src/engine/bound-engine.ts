@@ -10,10 +10,6 @@ import {
   type MasterCSSEngineTransition
 } from './backend'
 
-function parseResult<T>(value: T | string): T {
-  return typeof value === 'string' ? JSON.parse(value) as T : value
-}
-
 export default class BoundEngine implements MasterCSSEngine {
   private disposed = false
 
@@ -24,36 +20,36 @@ export default class BoundEngine implements MasterCSSEngine {
 
   ensureClassRules(classNames: readonly string[]) {
     this.assertActive()
-    return this.invoke(() => freezeResult(parseResult<MasterCSSEngineTransition>(
+    return this.invoke(() => freezeResult<MasterCSSEngineTransition>(
       this.session.ensureClassRules([...classNames])
-    )))
+    ))
   }
 
   deleteClassRules(classNames: readonly string[]) {
     this.assertActive()
-    return this.invoke(() => freezeResult(parseResult<MasterCSSEngineTransition>(
+    return this.invoke(() => freezeResult<MasterCSSEngineTransition>(
       this.session.deleteClassRules([...classNames])
-    )))
+    ))
   }
 
   refresh(manifest: MasterCSSManifest) {
     this.assertActive()
-    return this.invoke(() => freezeResult(parseResult<MasterCSSEngineTransition>(
+    return this.invoke(() => freezeResult<MasterCSSEngineTransition>(
       this.session.refresh(manifest)
-    )))
+    ))
   }
 
   inspect(className: string) {
     this.assertActive()
-    return this.invoke(() => freezeResult(
-      parseResult<MasterCSSEngineInspection>(this.session.inspect(className))
+    return this.invoke(() => freezeResult<MasterCSSEngineInspection>(
+      this.session.inspect(className)
     ))
   }
 
   snapshot() {
     this.assertActive()
-    return this.invoke(() => freezeResult(
-      parseResult<MasterCSSEngineSnapshot>(this.session.snapshot())
+    return this.invoke(() => freezeResult<MasterCSSEngineSnapshot>(
+      this.session.snapshot()
     ))
   }
 

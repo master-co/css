@@ -1,13 +1,12 @@
-import { loadNativeToolingBackend } from '@master/css-backend/tooling'
+import { createToolingBackend } from '@master/css-backend/tooling'
+import { createToolingBackendSync } from '@master/css-backend/tooling/node'
 import type {
-  MasterCSSEngineSnapshotIR,
-  MasterCSSEngineTransitionIR,
-  MasterCSSNativeDeclarationCandidateIR,
-  MasterCSSRegexIR,
-  MasterCSSValidatorBatchIR
+  MasterCSSEngineSnapshot,
+  MasterCSSEngineTransition,
+  MasterCSSNativeDeclarationCandidate,
+  MasterCSSValidatorBatch
 } from '@master/css-backend/tooling'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
-import { serializeMasterCSSManifest } from '@master/css-schema/manifest'
 import { supportsNativeDeclaration } from '../host'
 import { validateCSS } from '../css'
 
@@ -18,7 +17,7 @@ export interface BackendScannerUpdate {
   validClasses: string[]
   invalidClasses: string[]
   usedNativeClasses?: string[]
-  transition: MasterCSSEngineTransitionIR
+  transition: MasterCSSEngineTransition
 }
 
 export interface BackendScannerState {
@@ -28,7 +27,7 @@ export interface BackendScannerState {
   nativeClasses?: string[]
   usedNativeClasses?: string[]
   cachedSources: number
-  engine: MasterCSSEngineSnapshotIR
+  engine: MasterCSSEngineSnapshot
 }
 
 export interface BackendScannerSession {
@@ -44,9 +43,9 @@ export interface BackendScannerSession {
     nativeSupport: boolean[],
     invalidGeneratedClasses: string[]
   ): BackendScannerUpdate
-  nativeDeclarationCandidates(candidates: string[]): MasterCSSNativeDeclarationCandidateIR[]
-  generateValidationBatch(candidates: string[], nativeSupport: boolean[]): MasterCSSValidatorBatchIR
-  invalidGeneratedClasses(batch: MasterCSSValidatorBatchIR, ruleSupport: boolean[][]): string[]
+  nativeDeclarationCandidates(candidates: string[]): MasterCSSNativeDeclarationCandidate[]
+  generateValidationBatch(candidates: string[], nativeSupport: boolean[]): MasterCSSValidatorBatch
+  invalidGeneratedClasses(batch: MasterCSSValidatorBatch, ruleSupport: boolean[][]): string[]
   ensureClasses(classNames: string[]): void
   registerNativeClasses(classNames: string[]): boolean
   reset(): void
@@ -54,7 +53,10 @@ export interface BackendScannerSession {
   dispose(): void
 }
 
-export type BackendScannerBlocklist = string | MasterCSSRegexIR
+export type BackendScannerBlocklist = string | Readonly<{
+  source: string
+  flags: string
+}>
 
 export function serializeScannerBlocklist(blocklist: Iterable<string | RegExp> = []): BackendScannerBlocklist[] {
   return [...blocklist].map((entry) => typeof entry === 'string'
@@ -62,79 +64,71 @@ export function serializeScannerBlocklist(blocklist: Iterable<string | RegExp> =
     : { source: entry.source, flags: entry.flags })
 }
 
-export function createNativeScannerSession(manifest: MasterCSSManifest): BackendScannerSession | undefined {
-  const tooling = loadNativeToolingBackend()
-  if (tooling) {
-    const session = tooling.createScannerSession(manifest)
-    const validator = tooling.createValidatorSession(manifest)
-    return {
-      backend: 'native',
-      extractCandidates: (source, content) => [...session.extractCandidates(source, content)],
-      scanCandidates(source, content, candidates, blocklist, nativeSupport, invalidGeneratedClasses) {
-        return session.scanCandidates(
-          source,
-          content,
-          candidates,
-          blocklist,
-          nativeSupport,
-          invalidGeneratedClasses
-        ) as BackendScannerUpdate
-      },
-      nativeDeclarationCandidates: (candidates) =>
-        session.nativeDeclarationCandidates(candidates) as MasterCSSNativeDeclarationCandidateIR[],
-      collectCandidates: (candidates) => [...session.collectCandidates(candidates)],
-      filterCandidates: (candidates, blocklist) => [...session.filterCandidates(candidates, blocklist)],
-      generateValidationBatch: (candidates, nativeSupport) =>
-        validator.generateClassRules(
-          candidates,
-          nativeSupport.length ? nativeSupport : undefined
-        ) as MasterCSSValidatorBatchIR,
-      invalidGeneratedClasses: (batch, ruleSupport) =>
-        [...session.invalidGeneratedClasses(batch, ruleSupport)],
-      ensureClasses(classNames) {
-        session.ensureClassRules(classNames)
-      },
-      registerNativeClasses: (classNames) => session.registerNativeClassNames(classNames),
-      reset: () => session.reset(),
-      state: () => session.snapshot() as BackendScannerState,
-      dispose() {
-        session.dispose()
-        validator.dispose()
-      }
+function bindScannerSession(
+  backend: BackendScannerSession['backend'],
+  session: ReturnType<ReturnType<typeof createToolingBackendSync>['createScannerSession']>,
+  validator: ReturnType<ReturnType<typeof createToolingBackendSync>['createValidatorSession']>
+): BackendScannerSession {
+  return {
+    backend,
+    extractCandidates: (source, content) => [...session.extractCandidates(source, content)],
+    scanCandidates(source, content, candidates, blocklist, nativeSupport, invalidGeneratedClasses) {
+      return session.scanCandidates(
+        source,
+        content,
+        candidates,
+        blocklist,
+        nativeSupport,
+        invalidGeneratedClasses
+      ) as BackendScannerUpdate
+    },
+    nativeDeclarationCandidates: (candidates) =>
+      session.nativeDeclarationCandidates(candidates) as MasterCSSNativeDeclarationCandidate[],
+    collectCandidates: (candidates) => [...session.collectCandidates(candidates)],
+    filterCandidates: (candidates, blocklist) => [...session.filterCandidates(candidates, blocklist)],
+    generateValidationBatch: (candidates, nativeSupport) =>
+      validator.generateClassRules(
+        candidates,
+        nativeSupport.length ? nativeSupport : undefined
+      ) as MasterCSSValidatorBatch,
+    invalidGeneratedClasses: (batch, ruleSupport) =>
+      [...session.invalidGeneratedClasses(batch, ruleSupport)],
+    ensureClasses(classNames) {
+      session.ensureClassRules(classNames)
+    },
+    registerNativeClasses: (classNames) => session.registerNativeClassNames(classNames),
+    reset: () => session.reset(),
+    state: () => session.snapshot() as BackendScannerState,
+    dispose() {
+      session.dispose()
+      validator.dispose()
     }
   }
 }
 
-export async function createScannerSession(manifest: MasterCSSManifest): Promise<BackendScannerSession> {
-  const native = createNativeScannerSession(manifest)
-  if (native) return native
-  const { createToolingScannerSession, createToolingValidatorSession } = await import('@master/css-wasm-tooling')
-  const manifestJSON = serializeMasterCSSManifest(manifest)
-  const [scanner, validator] = await Promise.all([
-    createToolingScannerSession(manifestJSON),
-    createToolingValidatorSession(manifestJSON)
-  ])
-  return {
-    backend: 'wasm',
-    ...scanner,
-    generateValidationBatch(candidates, nativeSupport) {
-      return validator.generateClasses(
-        candidates,
-        nativeSupport.length ? nativeSupport : undefined
-      ) as MasterCSSValidatorBatchIR
-    },
-    dispose() {
-      scanner.dispose()
-      validator.dispose()
-    }
-  } as BackendScannerSession
+export function createNativeScannerSession(manifest: MasterCSSManifest): BackendScannerSession {
+  const tooling = createToolingBackendSync()
+  return bindScannerSession(
+    tooling.backend,
+    tooling.createScannerSession(manifest),
+    tooling.createValidatorSession(manifest)
+  )
 }
 
-export function resolveNativeSupport(candidates: MasterCSSNativeDeclarationCandidateIR[]) {
+export async function createScannerSession(manifest: MasterCSSManifest): Promise<BackendScannerSession> {
+  const tooling = await createToolingBackend()
+  const [scanner, validator] = await Promise.all([
+    tooling.createScannerSession(manifest),
+    tooling.createValidatorSession(manifest)
+  ])
+  return bindScannerSession(tooling.backend, scanner, validator)
+}
+
+export function resolveNativeSupport(candidates: MasterCSSNativeDeclarationCandidate[]) {
   return candidates.map(supportsNativeDeclaration)
 }
 
-export function resolveGeneratedRuleSupport(batch: MasterCSSValidatorBatchIR) {
+export function resolveGeneratedRuleSupport(batch: MasterCSSValidatorBatch) {
   return batch.classes
     .map(({ rules }) => rules.map(({ text }) => validateCSS(text).length === 0))
 }

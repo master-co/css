@@ -1,10 +1,10 @@
+import {
+  createToolingBackend
+} from '@master/css-backend/tooling'
 import type { MasterCSSBackend } from '@master/css-backend'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import {
-  createLexerSession as createWasmLexerSession
-} from './lexer/browser'
-import {
-  createNativeLexerSession,
+  bindLexerSession,
   type LexerSession
 } from './lexer/session'
 import type {
@@ -12,11 +12,11 @@ import type {
   MasterCSSClassListAnalysisRequest
 } from './lexer/contracts'
 import {
-  createLanguageSession,
+  bindLanguageSession,
   type LanguageSession
-} from './language/backend-session'
+} from './language/session'
 import {
-  createLintSession,
+  bindLintSession,
   type LintSession
 } from './lint/backend-session'
 import type {
@@ -30,7 +30,7 @@ import type {
   MasterCSSLintToken
 } from './lint/analysis'
 import {
-  createSourceExtractor,
+  bindSourceExtractor,
   type SourceExtractor
 } from './source/session'
 import type {
@@ -38,7 +38,7 @@ import type {
   MasterCSSSourceExtractionRequest
 } from './source/contracts'
 import {
-  createValidator,
+  bindValidatorSession,
   type ValidatorSession
 } from './validator/backend-session'
 import type { MasterCSSClassValidationResult } from './validator/contracts'
@@ -238,32 +238,39 @@ export class MasterCSSToolingSession implements Disposable {
   }
 }
 
-async function createLexerSession(backend: MasterCSSBackend | undefined) {
-  if (backend !== 'wasm') {
-    const native = createNativeLexerSession({ required: backend === 'native' })
-    if (native) return native
-  }
-  return createWasmLexerSession()
-}
-
 export async function createToolingSession(
   options: MasterCSSToolingSessionOptions
 ): Promise<MasterCSSToolingSession> {
-  const backend = options.backend ?? 'auto'
-  const [lexer, source, validator, lint, language] = await Promise.all([
-    createLexerSession(backend),
-    createSourceExtractor({ backend }),
-    createValidator(options.manifest, { backend }),
-    createLintSession(options.manifest, { backend }),
-    createLanguageSession(options.manifest, { backend })
-  ])
-  return bindToolingSession({
-    lexer,
-    source,
-    validator,
-    lint,
-    language
-  })
+  const backend = await createToolingBackend({ backend: options.backend })
+  const created: { dispose(): void }[] = []
+  try {
+    const lexerBackend = await backend.createLexerSession()
+    created.push(lexerBackend)
+    const sourceBackend = await backend.createSourceSession()
+    created.push(sourceBackend)
+    const validatorBackend = await backend.createValidatorSession(options.manifest)
+    created.push(validatorBackend)
+    const languageBackend = await backend.createLanguageSession(options.manifest)
+    created.push(languageBackend)
+    const lintBackend = await backend.createLintSession(options.manifest)
+    created.push(lintBackend)
+    const lintValidatorBackend = await backend.createValidatorSession(options.manifest)
+    created.push(lintValidatorBackend)
+    const lintLanguageBackend = await backend.createLanguageSession(options.manifest)
+    created.push(lintLanguageBackend)
+    const session = bindToolingSession({
+      lexer: bindLexerSession(backend.backend, lexerBackend),
+      source: bindSourceExtractor(backend.backend, sourceBackend),
+      validator: bindValidatorSession(backend.backend, validatorBackend),
+      lint: bindLintSession(lintBackend, lintValidatorBackend, lintLanguageBackend),
+      language: bindLanguageSession(backend.backend, languageBackend)
+    })
+    created.length = 0
+    return session
+  } catch (cause) {
+    for (const session of new Set(created)) session.dispose()
+    throw cause
+  }
 }
 
 /** @internal */

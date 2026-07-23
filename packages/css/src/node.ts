@@ -1,7 +1,7 @@
 import {
-  createNativeEngineSession,
-  createNativeRenderSession
-} from '@master/css-backend/engine'
+  createEngineBackendSessionSync,
+  createRenderBackendSessionSync
+} from '@master/css-backend/engine/node'
 import { MasterCSSError } from '@master/css-schema'
 import {
   MasterCSSRenderSession,
@@ -25,7 +25,7 @@ export type {
 } from './engine/backend'
 
 function createNativeEngine(options: MasterCSSEngineBackendOptions): MasterCSSEngine {
-  const session = createNativeEngineSession(options, { required: true })!
+  const session = createEngineBackendSessionSync(options)
   return new BoundEngine('native', session)
 }
 
@@ -79,7 +79,7 @@ export function createEngineSync(options: MasterCSSEngineOptions): MasterCSSEngi
 export function createRenderSessionSync(
   options: MasterCSSRenderSessionOptions
 ): MasterCSSRenderSession {
-  const native = createNativeRenderSession(options, { required: true })!
+  const native = createRenderBackendSessionSync(options)
   return bindRenderSessionInternal(
     {
       nativeDeclarationCandidates: (classNames) => native.nativeDeclarationCandidates(classNames),

@@ -1,7 +1,7 @@
-import { loadNativeToolingBackend } from '@master/css-backend/tooling'
+import { createToolingBackendSync } from '@master/css-backend/tooling/node'
 
 function binding() {
-  return loadNativeToolingBackend({ required: true })!
+  return createToolingBackendSync()
 }
 
 export function extractClassCandidatesNative(content: string): string[] {

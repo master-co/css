@@ -1,7 +1,6 @@
 import {
   MasterCSSError
 } from '@master/css-schema'
-import { assertMasterCSSBackendInfo } from '@master/css-backend'
 
 export type MasterCSSWasmInput =
   | RequestInfo
@@ -71,7 +70,7 @@ export interface MasterCSSWasmEngineInspection {
   readonly rules: readonly unknown[]
 }
 
-interface NativeDeclarationCandidate {
+export interface MasterCSSWasmNativeDeclarationCandidate {
   property: string
   value: string
 }
@@ -101,10 +100,6 @@ async function initializeModule(module: GeneratedWasmModule, input: MasterCSSWas
     return module
   }
   await module.default({ module_or_path: input })
-  assertMasterCSSBackendInfo(module.bindingInfo(), {
-    surface: 'runtime',
-    features: ['engine', 'render']
-  })
   initializedInputs.set(module, input)
   return module
 }
@@ -112,21 +107,36 @@ async function initializeModule(module: GeneratedWasmModule, input: MasterCSSWas
 export async function loadWasmEngine(
   options: MasterCSSWasmEngineLoadOptions = {}
 ): Promise<object> {
-  if (options.module) {
-    return await initializeModule(
-      options.module as GeneratedWasmModule,
-      options.input ?? defaultWasmURL
-    )
+  try {
+    if (options.module) {
+      return await initializeModule(
+        options.module as GeneratedWasmModule,
+        options.input ?? defaultWasmURL
+      )
+    }
+    if (options.input !== undefined) {
+      return await initializeModule(await importGeneratedModule(), options.input)
+    }
+    defaultModulePromise ??= importGeneratedModule()
+      .then((module) => initializeModule(module, defaultWasmURL))
+      .catch((cause) => {
+        defaultModulePromise = undefined
+        throw cause
+      })
+    return await defaultModulePromise
+  } catch (cause) {
+    if (cause instanceof MasterCSSError) throw cause
+    throw new MasterCSSError({
+      code: 'WASM_LOAD_FAILED',
+      domain: 'backend',
+      message: cause instanceof Error
+        ? cause.message
+        : 'Cannot load the Master CSS engine Wasm artifact.'
+    }, { cause })
   }
-  if (options.input !== undefined) {
-    return await initializeModule(await importGeneratedModule(), options.input)
-  }
-  defaultModulePromise ??= importGeneratedModule()
-    .then((module) => initializeModule(module, defaultWasmURL))
-  return await defaultModulePromise
 }
 
-function nativeSupport(candidates: readonly NativeDeclarationCandidate[]) {
+function nativeSupport(candidates: readonly MasterCSSWasmNativeDeclarationCandidate[]) {
   return Uint8Array.from(candidates, ({ property, value }) => {
     try {
       return globalThis.CSS?.supports(property, value) === true ? 1 : 0
@@ -166,7 +176,7 @@ export async function createWasmEngineSession(
     },
     ensureClassRules(classNames: string[]) {
       assertActive()
-      const candidates = session.nativeDeclarationCandidates(classNames) as NativeDeclarationCandidate[]
+      const candidates = session.nativeDeclarationCandidates(classNames) as MasterCSSWasmNativeDeclarationCandidate[]
       return candidates.length
         ? session.ensureClassRulesWithNativeSupport(classNames, nativeSupport(candidates))
         : session.ensureClassRules(classNames)
@@ -213,11 +223,20 @@ export async function createWasmRenderSession(
     }
   }
   return Object.freeze({
-    ensureClassRules(classNames: readonly string[]) {
+    nativeDeclarationCandidates(classNames: readonly string[]) {
+      assertActive()
+      return session.nativeDeclarationCandidates([...classNames]) as readonly MasterCSSWasmNativeDeclarationCandidate[]
+    },
+    ensureClassRules(classNames: readonly string[], supported?: readonly boolean[]) {
       assertActive()
       const classes = [...classNames]
-      const candidates = session.nativeDeclarationCandidates(classes) as NativeDeclarationCandidate[]
-      session.ensureClasses(classes, candidates.length ? nativeSupport(candidates) : undefined)
+      const candidates = session.nativeDeclarationCandidates(classes) as MasterCSSWasmNativeDeclarationCandidate[]
+      const resolvedSupport = supported
+        ? Uint8Array.from(supported, (value) => value ? 1 : 0)
+        : candidates.length
+          ? nativeSupport(candidates)
+          : undefined
+      session.ensureClasses(classes, resolvedSupport)
     },
     ensureStylesheetResources(nativeCSS: string) {
       assertActive()

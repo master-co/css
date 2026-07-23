@@ -1,34 +1,18 @@
 import { MasterCSSError } from '@master/css-schema'
+import type { MasterCSSCompilerBackendSession } from './broker-compiler-contract'
 import type { MasterCSSNativeModuleOptions } from './engine-contract'
 import { NativeBindingError } from './errors'
 import { loadNativeBinding } from './native-loader'
 
 export type { MasterCSSNativeModuleOptions } from './engine-contract'
 
-export interface MasterCSSNativeCompilerBackend {
-  findManifestEntries(projectDir: string): readonly string[]
-  loadProjectManifest(projectDir: string, baseManifest: unknown, entries?: readonly string[]): unknown
-  loadPreparedProjectManifest(projectDir: string, baseManifest: unknown, graphs: unknown): unknown
-  inspectCSS(source: string): unknown
-  compileNativeCSS(source: string, options?: unknown): unknown
-  compileCSSDirectives(source: string, options?: unknown): unknown
-  compileThemeCSS(source: string, options?: unknown): unknown
-  analyzeCSSDependencies(source: string): unknown
-  analyzeStandaloneDirectives(source: string): unknown
-  mergeCSSExtractionPolicies(policies: unknown): unknown
-  filterCSSExtractionCandidates(candidates: readonly string[], blocklist: unknown): readonly string[]
-  compileManifestInput(input: unknown, options?: unknown): unknown
-  lowerCSSDirectives(request: unknown, options?: unknown): unknown
-  normalizeManifest(manifest: unknown): unknown
-  normalizeDefaultManifest(manifest: unknown): unknown
-  compileDefaultPresetManifest(request: unknown): unknown
-  resolveCSSImportGraph(request: unknown): unknown
-  createInspectionReport(input: unknown): unknown
-  renderClassNames(manifest: unknown, classNames: readonly string[], nativeSupport?: readonly boolean[]): unknown
-}
+export type MasterCSSNativeCompilerBackend = Omit<
+  MasterCSSCompilerBackendSession,
+  'backend' | 'dispose' | typeof Symbol.dispose
+>
 
-function parse(value: string) {
-  return JSON.parse(value) as unknown
+function parse<T>(value: string): T {
+  return JSON.parse(value) as T
 }
 
 function backendError(cause: unknown): MasterCSSError {
@@ -109,32 +93,32 @@ export function loadNativeCompilerBackend(
 
 export {
   MASTER_CSS_DIAGNOSTICS_REPORT_VERSION,
-  type MasterCSSCompileDefaultPresetRequestIR,
-  type MasterCSSCompileDefaultPresetResultIR,
-  type MasterCSSCompileManifestOptionsIR,
-  type MasterCSSCompileManifestResultIR,
-  type MasterCSSDiagnosticsReportInputIR,
-  type MasterCSSDirectiveCompilationIR,
-  type MasterCSSDirectiveExtractionPolicyIR,
-  type MasterCSSDirectiveManifestInputIR,
-  type MasterCSSDirectiveVariableDefinitionIR,
-  type MasterCSSDiscoveredClassesIR,
-  type MasterCSSImportGraphEdgeIR,
-  type MasterCSSImportGraphRequestIR,
-  type MasterCSSInspectionDiagnosticDataIR,
-  type MasterCSSInspectionDiagnosticIR,
+  type MasterCSSCompileDefaultPresetRequest,
+  type MasterCSSCompileDefaultPresetResult,
+  type MasterCSSCompileManifestOptions,
+  type MasterCSSCompileManifestResult,
+  type MasterCSSDiagnosticsReportInput,
+  type MasterCSSDirectiveCompilation,
+  type MasterCSSDirectiveExtractionPolicy,
+  type MasterCSSDirectiveManifestInput,
+  type MasterCSSDirectiveVariableDefinition,
+  type MasterCSSDiscoveredClasses,
+  type MasterCSSImportGraphEdge,
+  type MasterCSSImportGraphRequest,
+  type MasterCSSInspectionDiagnosticData,
+  type MasterCSSInspectionDiagnostic,
   type MasterCSSInspectionDiagnosticCode,
   type MasterCSSInspectionDiagnosticSeverity,
   type MasterCSSInspectionDiagnosticSourceKind,
-  type MasterCSSInspectionReportIR,
+  type MasterCSSInspectionReport,
   type MasterCSSMissingCSSReason,
-  type MasterCSSMissingCSSResultIR,
+  type MasterCSSMissingCSSResult,
   type MasterCSSMissingCSSStatus,
-  type MasterCSSNativeDeclarationCandidateIR,
-  type MasterCSSRegexIR,
-  type MasterCSSResolvedImportGraphIR,
-  type MasterCSSServerRenderIR,
-  type MasterCSSSourceInspectionIR,
-  type MasterCSSStylesheetErrorIR,
-  type MasterCSSStylesheetInspectionIR
+  type MasterCSSNativeDeclarationCandidate,
+  type MasterCSSRegex,
+  type MasterCSSResolvedImportGraph,
+  type MasterCSSServerRender,
+  type MasterCSSSourceInspection,
+  type MasterCSSStylesheetError,
+  type MasterCSSStylesheetInspection
 } from './protocol'

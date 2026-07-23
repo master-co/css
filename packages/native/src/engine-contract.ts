@@ -1,11 +1,11 @@
 import type { MasterCSSEmittedGlobals } from '@master/css-schema/emitted-globals'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import type {
-  MasterCSSEngineInspectionIR,
-  MasterCSSEngineSnapshotIR,
-  MasterCSSEngineTransitionIR,
-  MasterCSSNativeDeclarationCandidateIR,
-  MasterCSSServerRenderIR
+  MasterCSSEngineInspection,
+  MasterCSSEngineSnapshot,
+  MasterCSSEngineTransition,
+  MasterCSSNativeDeclarationCandidate,
+  MasterCSSServerRender
 } from './protocol'
 
 export interface MasterCSSNativeModuleOptions {
@@ -19,22 +19,22 @@ export interface MasterCSSNativeEngineSessionOptions {
 }
 
 export interface MasterCSSNativeEngineSession extends Disposable {
-  ensureClassRules(classNames: readonly string[]): MasterCSSEngineTransitionIR
-  deleteClassRules(classNames: readonly string[]): MasterCSSEngineTransitionIR
-  refresh(manifest: MasterCSSManifest): MasterCSSEngineTransitionIR
-  inspect(className: string): MasterCSSEngineInspectionIR
-  snapshot(): MasterCSSEngineSnapshotIR
+  ensureClassRules(classNames: readonly string[]): MasterCSSEngineTransition
+  deleteClassRules(classNames: readonly string[]): MasterCSSEngineTransition
+  refresh(manifest: MasterCSSManifest): MasterCSSEngineTransition
+  inspect(className: string): MasterCSSEngineInspection
+  snapshot(): MasterCSSEngineSnapshot
   dispose(): void
 }
 
 export interface MasterCSSNativeRenderSession extends Disposable {
   nativeDeclarationCandidates(
     classNames: readonly string[]
-  ): readonly MasterCSSNativeDeclarationCandidateIR[]
+  ): readonly MasterCSSNativeDeclarationCandidate[]
   ensureClassRules(classNames: readonly string[], nativeSupport?: readonly boolean[]): void
   ensureStylesheetResources(nativeCSS: string): void
   emittedGlobals(): MasterCSSEmittedGlobals
-  snapshot(): MasterCSSServerRenderIR
-  snapshotForClassNames(classNames: readonly string[]): MasterCSSServerRenderIR
+  snapshot(): MasterCSSServerRender
+  snapshotForClassNames(classNames: readonly string[]): MasterCSSServerRender
   dispose(): void
 }

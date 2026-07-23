@@ -1,13 +1,17 @@
-import { loadNativeToolingBackend } from '@master/css-backend/tooling'
+import {
+  createToolingBackend,
+  type MasterCSSLintBackendSession,
+  type MasterCSSLanguageBackendSession,
+  type MasterCSSValidatorBackendSession
+} from '@master/css-backend/tooling'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
-import { serializeMasterCSSManifest } from '@master/css-schema/manifest'
 import type {
-  MasterCSSLintCanonicalClassGroupSuggestionsIR,
-  MasterCSSLintCanonicalClassSuggestionsIR,
-  MasterCSSLintCanonicalComposeDirectiveIR,
-  MasterCSSLintRawValueCandidatesIR,
-  MasterCSSNativeDeclarationCandidateIR,
-  MasterCSSValidatorBatchIR
+  MasterCSSLintCanonicalClassGroupSuggestions,
+  MasterCSSLintCanonicalClassSuggestions,
+  MasterCSSLintCanonicalComposeDirective,
+  MasterCSSLintRawValueCandidates,
+  MasterCSSNativeDeclarationCandidate,
+  MasterCSSValidatorBatch
 } from '@master/css-backend/tooling'
 import { MASTER_CSS_LINT_BATCH_VERSION } from '@master/css-backend/tooling'
 import { supportsNativeDeclaration } from '../host'
@@ -76,7 +80,7 @@ interface BackendLintValidation {
   validationErrors: string[][]
 }
 
-function collectHostRuleErrors(batch: MasterCSSValidatorBatchIR): string[][][] {
+function collectHostRuleErrors(batch: MasterCSSValidatorBatch): string[][][] {
   return batch.classes.map(({ rules }) => rules.map(({ text }) =>
     validateCSS(text).map((error) =>
       error.message || error.rawMessage || 'CSS validation failed'
@@ -84,24 +88,20 @@ function collectHostRuleErrors(batch: MasterCSSValidatorBatchIR): string[][][] {
   ))
 }
 
-export function createNativeLintSession(
-  manifest: MasterCSSManifest,
-  options: { required?: boolean } = {}
-): LintSession | undefined {
-  const tooling = loadNativeToolingBackend({ required: options.required })
-  if (!tooling) return
-  const lint = tooling.createLintSession(manifest)
-  const validator = tooling.createValidatorSession(manifest)
-  const language = tooling.createLanguageSession(manifest)
+export function bindLintSession(
+  lint: MasterCSSLintBackendSession,
+  validator: MasterCSSValidatorBackendSession,
+  language: MasterCSSLanguageBackendSession
+): LintSession {
   const resolveInputs = (classNames: string[]) => {
     const candidates = lint.nativeDeclarationCandidates(
       classNames
-    ) as MasterCSSNativeDeclarationCandidateIR[]
+    ) as MasterCSSNativeDeclarationCandidate[]
     const nativeSupport = candidates.map(supportsNativeDeclaration)
     const validation = validator.generateClassRules(
       classNames,
       nativeSupport.length ? nativeSupport : undefined
-    ) as MasterCSSValidatorBatchIR
+    ) as MasterCSSValidatorBatch
     const resolvedValidation = lint.resolveValidation(
       validation,
       collectHostRuleErrors(validation)
@@ -140,7 +140,7 @@ export function createNativeLintSession(
         classNames,
         inputs.nativeSupport,
         options
-      ) as MasterCSSLintCanonicalClassSuggestionsIR).suggestions
+      ) as MasterCSSLintCanonicalClassSuggestions).suggestions
     },
     canonicalClassGroups(classNames, options) {
       const inputs = resolveInputs(classNames)
@@ -148,7 +148,7 @@ export function createNativeLintSession(
         classNames,
         inputs.nativeSupport,
         options
-      ) as MasterCSSLintCanonicalClassGroupSuggestionsIR).suggestions
+      ) as MasterCSSLintCanonicalClassGroupSuggestions).suggestions
     },
     canonicalComposeDirective(classNames, options) {
       const inputs = resolveInputs(classNames)
@@ -156,7 +156,7 @@ export function createNativeLintSession(
         classNames,
         inputs.nativeSupport,
         options
-      ) as MasterCSSLintCanonicalComposeDirectiveIR
+      ) as MasterCSSLintCanonicalComposeDirective
       const { version: _, ...compose } = result
       return compose.suggestions.length ? compose : undefined
     },
@@ -166,7 +166,7 @@ export function createNativeLintSession(
         classNames,
         inputs.nativeSupport,
         inputs.invalidGeneratedClasses
-      ) as MasterCSSLintRawValueCandidatesIR).candidates
+      ) as MasterCSSLintRawValueCandidates).candidates
     },
     analyzeClassList(classList, classNames, options) {
       const inputs = resolveInputs(classNames)
@@ -195,115 +195,11 @@ export async function createLintSession(
   manifest: MasterCSSManifest,
   options: { readonly backend?: 'auto' | 'native' | 'wasm' } = {}
 ): Promise<LintSession> {
-  const manifestJSON = serializeMasterCSSManifest(manifest)
-  if (options.backend !== 'wasm') {
-    const native = createNativeLintSession(manifest, {
-      required: options.backend === 'native'
-    })
-    if (native) return native
-  }
-
-  const { createToolingLanguageSession, createToolingLintSession, createToolingValidatorSession } = await import('@master/css-wasm-tooling')
+  const tooling = await createToolingBackend({ backend: options.backend })
   const [lint, validator, language] = await Promise.all([
-    createToolingLintSession(manifestJSON),
-    createToolingValidatorSession(manifestJSON),
-    createToolingLanguageSession(manifestJSON)
+    tooling.createLintSession(manifest),
+    tooling.createValidatorSession(manifest),
+    tooling.createLanguageSession(manifest)
   ])
-  const resolveInputs = (classNames: string[]) => {
-    const candidates = lint.nativeDeclarationCandidates(classNames) as MasterCSSNativeDeclarationCandidateIR[]
-    const nativeSupport = candidates.map(supportsNativeDeclaration)
-    const validation = validator.generateClasses(
-      classNames,
-      nativeSupport.length ? nativeSupport : undefined
-    ) as MasterCSSValidatorBatchIR
-    const resolvedValidation = lint.resolveValidation(
-      validation,
-      collectHostRuleErrors(validation)
-    ) as BackendLintValidation
-    return {
-      nativeSupport: nativeSupport.length ? nativeSupport : undefined,
-      ...resolvedValidation
-    }
-  }
-  return {
-    tokenizeClassList(classList, unescape) {
-      return (language.analyzeDocument({
-        source: classList,
-        languageId: 'class-list',
-        hostRanges: [{
-          start: 0,
-          end: classList.length,
-          unescape: unescape ? [unescape] : []
-        }]
-      }) as ReturnType<LintSession['analyzeDocument']>).classPositions
-    },
-    analyzeDocument(source, languageId) {
-      return language.analyzeDocument({ source, languageId }) as ReturnType<LintSession['analyzeDocument']>
-    },
-    analyze(classNames) {
-      const inputs = resolveInputs(classNames)
-      return lint.analyze(
-        classNames,
-        inputs.nativeSupport,
-        inputs.invalidGeneratedClasses
-      ) as MasterCSSLintAnalysis
-    },
-    canonicalClassNames(classNames, options) {
-      const candidates = lint.nativeDeclarationCandidates(classNames) as MasterCSSNativeDeclarationCandidateIR[]
-      const nativeSupport = candidates.map(supportsNativeDeclaration)
-      return (lint.canonicalClassNames(
-        classNames,
-        nativeSupport.length ? nativeSupport : undefined,
-        options
-      ) as MasterCSSLintCanonicalClassSuggestionsIR).suggestions
-    },
-    canonicalClassGroups(classNames, options) {
-      const candidates = lint.nativeDeclarationCandidates(classNames) as MasterCSSNativeDeclarationCandidateIR[]
-      const nativeSupport = candidates.map(supportsNativeDeclaration)
-      return (lint.canonicalClassGroups(
-        classNames,
-        nativeSupport.length ? nativeSupport : undefined,
-        options
-      ) as MasterCSSLintCanonicalClassGroupSuggestionsIR).suggestions
-    },
-    canonicalComposeDirective(classNames, options) {
-      const candidates = lint.nativeDeclarationCandidates(classNames) as MasterCSSNativeDeclarationCandidateIR[]
-      const nativeSupport = candidates.map(supportsNativeDeclaration)
-      const result = lint.canonicalComposeDirective(
-        classNames,
-        nativeSupport.length ? nativeSupport : undefined,
-        options
-      ) as MasterCSSLintCanonicalComposeDirectiveIR
-      const { version: _, ...compose } = result
-      return compose.suggestions.length ? compose : undefined
-    },
-    rawValueCandidates(classNames) {
-      const inputs = resolveInputs(classNames)
-      return (lint.rawValueCandidates(
-        classNames,
-        inputs.nativeSupport,
-        inputs.invalidGeneratedClasses
-      ) as MasterCSSLintRawValueCandidatesIR).candidates
-    },
-    analyzeClassList(classList, classNames, options) {
-      const inputs = resolveInputs(classNames)
-      return lint.analyzeClassListPolicy(JSON.stringify({
-        version: MASTER_CSS_LINT_BATCH_VERSION,
-        classList,
-        classNames,
-        nativeSupport: inputs.nativeSupport,
-        invalidGeneratedClasses: inputs.invalidGeneratedClasses,
-        validationErrors: inputs.validationErrors,
-        disallowUnknownClass: options?.disallowUnknownClass,
-        canonicalOptions: options?.canonicalOptions,
-        composeDirective: options?.composeDirective,
-        rawValuePolicy: resolveRawValuePolicy(options?.rawValuePolicy)
-      })) as MasterCSSLintClassListAnalysis
-    },
-    dispose() {
-      lint.dispose()
-      validator.dispose()
-      language.dispose()
-    }
-  }
+  return bindLintSession(lint, validator, language)
 }

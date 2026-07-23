@@ -13,3 +13,8 @@ export {
   type MasterCSSBackendSurface,
   type MasterCSSResolvedBackend
 } from './protocol'
+export type {
+  MasterCSSBackendLoadOptions,
+  MasterCSSNativeBackendLoadOptions,
+  MasterCSSWasmBackendLoadOptions
+} from './backend-options'

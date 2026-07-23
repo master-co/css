@@ -1,14 +1,13 @@
-import { loadNativeToolingBackend } from '@master/css-backend/tooling'
-import { initToolingWasm } from '@master/css-wasm-tooling'
+import { createToolingBackend } from '@master/css-backend/tooling'
 import type {
-  MasterCSSSourceBatchIR,
-  MasterCSSSourceBatchRequestIR,
+  MasterCSSSourceBatch,
+  MasterCSSSourceBatchRequest,
   MasterCSSSourceExtractorKind
 } from '@master/css-backend/tooling'
 import { MASTER_CSS_SOURCE_BATCH_VERSION } from '@master/css-backend/tooling'
 
-export type SourceBatchRequest = MasterCSSSourceBatchRequestIR
-export type SourceBatchIR = MasterCSSSourceBatchIR
+export type SourceBatchRequest = MasterCSSSourceBatchRequest
+export type SourceBatchIR = MasterCSSSourceBatch
 export type SourceExtractorKind = MasterCSSSourceExtractorKind
 
 export interface SourceExtractor {
@@ -37,7 +36,7 @@ interface BackendSourceSession {
 }
 
 function parse(value: unknown): SourceBatchIR {
-  const result = typeof value === 'string' ? JSON.parse(value) as SourceBatchIR : value as SourceBatchIR
+  const result = value as SourceBatchIR
   if (result.version !== MASTER_CSS_SOURCE_BATCH_VERSION) {
     throw new SourceExtractorError(
       'SOURCE_BATCH_VERSION_MISMATCH',
@@ -47,10 +46,8 @@ function parse(value: unknown): SourceBatchIR {
   return result
 }
 
-function bindSourceExtractor(backend: SourceExtractor['backend'], session: BackendSourceSession): SourceExtractor {
-  const extract = (request: SourceBatchRequest) => parse(session.extract(
-    backend === 'native' ? JSON.stringify(request) : request
-  ))
+export function bindSourceExtractor(backend: SourceExtractor['backend'], session: BackendSourceSession): SourceExtractor {
+  const extract = (request: SourceBatchRequest) => parse(session.extract(request))
   const candidates = (source: string, content: string, kind: SourceExtractorKind) =>
     extract({ files: [{ source, content, kind }] }).files[0]?.candidates ?? []
   return {
@@ -64,32 +61,12 @@ function bindSourceExtractor(backend: SourceExtractor['backend'], session: Backe
   }
 }
 
-export function createNativeSourceExtractor(): SourceExtractor | undefined {
-  const tooling = loadNativeToolingBackend()
-  if (!tooling) return
-  return bindSourceExtractor('native', tooling.createSourceSession())
-}
-
 export async function createSourceExtractor(
   options: { readonly backend?: 'auto' | 'native' | 'wasm' } = {}
 ): Promise<SourceExtractor> {
-  if (options.backend !== 'wasm') {
-    const native = createNativeSourceExtractor()
-    if (native) return native
-    if (options.backend === 'native') {
-      throw new SourceExtractorError(
-        'NATIVE_UNAVAILABLE',
-        'The Master CSS native tooling backend is unavailable.'
-      )
-    }
-  }
-  const module = await initToolingWasm()
-  const raw = new module.ToolingSourceSession()
-  return bindSourceExtractor('wasm', {
-    extract: (request) => raw.extract(request),
-    dispose() {
-      raw.dispose()
-      raw.free()
-    }
-  })
+  const tooling = await createToolingBackend({ backend: options.backend })
+  return bindSourceExtractor(
+    tooling.backend,
+    await tooling.createSourceSession()
+  )
 }

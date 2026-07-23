@@ -2,11 +2,10 @@ import {
   createCompiler,
   type MasterCSSCompileManifestResult
 } from '../index'
-import { createCompilerRenderSession } from '@master/css-wasm-compiler'
+import { createRenderBackendSession } from '@master/css-backend/engine'
 import type { MasterCSSDiagnostic } from '@master/css-schema'
 import type { MasterCSSEmittedGlobals } from '@master/css-schema/emitted-globals'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
-import { serializeMasterCSSManifest } from '@master/css-schema/manifest'
 import {
   renderCompiledManifestCSSWithSession,
   type RenderCompiledManifestCSSResult,
@@ -65,11 +64,22 @@ export async function compileBrowserStylesheet(
     compiler.dispose()
   }
   signal?.throwIfAborted()
-  const renderSession = await createCompilerRenderSession(
-    serializeMasterCSSManifest(result.manifest),
-    undefined,
-    backend
-  ) as StylesheetRenderSession
+  const backendSession = await createRenderBackendSession(
+    { manifest: result.manifest },
+    { backend: 'wasm', wasm: backend }
+  )
+  const renderSession: StylesheetRenderSession = {
+    nativeDeclarationCandidates: (classNames) =>
+      backendSession.nativeDeclarationCandidates(classNames),
+    ensureClasses: (classNames, nativeSupport) =>
+      backendSession.ensureClassRules(classNames, nativeSupport),
+    ensureStylesheetResources: (nativeCSS) =>
+      backendSession.ensureStylesheetResources(nativeCSS),
+    emittedGlobals: () =>
+      backendSession.emittedGlobals() as Required<MasterCSSEmittedGlobals>,
+    snapshot: () => backendSession.snapshot(),
+    dispose: () => backendSession.dispose()
+  }
   let renderedCSS: RenderCompiledManifestCSSResult
   try {
     renderedCSS = renderCompiledManifestCSSWithSession({

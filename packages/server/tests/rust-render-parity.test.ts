@@ -1,8 +1,7 @@
-import { loadNativeCompilerBackend } from '@master/css-backend/compiler'
+import { createRenderBackendSessionSync } from '@master/css-backend/engine/node'
 import { renderClassNamesSync } from '@master/css/node'
 import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
-import type { MasterCSSServerRenderIR } from '@master/css-backend/engine'
 import { beforeAll, expect, it } from 'vitest'
 import parseHTML from '../src/parse-html'
 
@@ -23,10 +22,9 @@ it('matches the core render owner and native render protocol', () => {
   const { classes } = parseHTML(html)
   const snapshot = renderClassNamesSync(classes, { manifest })
 
-  const rust = loadNativeCompilerBackend({ required: true })!.renderClassNames(
-    manifest,
-    classes
-  ) as MasterCSSServerRenderIR
+  using session = createRenderBackendSessionSync({ manifest })
+  session.ensureClassRules(classes)
+  const rust = session.snapshotForClassNames(classes)
 
   expect(rust.classes).toEqual(classes)
   expect(rust.snapshot.text).toBe(snapshot.cssText)

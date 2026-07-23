@@ -1,4 +1,4 @@
-import { assertMasterCSSBackendInfo } from '@master/css-backend'
+import { MasterCSSError } from '@master/css-schema'
 
 interface GeneratedToolingWasmModule {
   default(input: {
@@ -85,11 +85,39 @@ interface GeneratedToolingWasmModule {
 }
 
 let modulePromise: Promise<GeneratedToolingWasmModule> | undefined
+const initializedInputs = new WeakMap<object, NonNullable<InitToolingWasmOptions['input']>>()
 const defaultWasmURL = new URL('../artifacts/mastercss_wasm_tooling_bg.wasm', import.meta.url)
 
 export interface InitToolingWasmOptions {
-  module?: GeneratedToolingWasmModule
+  module?: object
   input?: RequestInfo | URL | Response | BufferSource | WebAssembly.Module
+}
+
+function sameInput(
+  left: NonNullable<InitToolingWasmOptions['input']>,
+  right: NonNullable<InitToolingWasmOptions['input']>
+) {
+  return left === right || String(left) === String(right)
+}
+
+async function initializeModule(
+  module: GeneratedToolingWasmModule,
+  input: NonNullable<InitToolingWasmOptions['input']>
+) {
+  const initializedInput = initializedInputs.get(module)
+  if (initializedInput !== undefined) {
+    if (!sameInput(initializedInput, input)) {
+      throw new MasterCSSError({
+        code: 'WASM_INPUT_CONFLICT',
+        domain: 'backend',
+        message: 'A Master CSS tooling Wasm module cannot be initialized with two different inputs.'
+      })
+    }
+    return module
+  }
+  await module.default({ module_or_path: input })
+  initializedInputs.set(module, input)
+  return module
 }
 
 async function importGeneratedModule(): Promise<GeneratedToolingWasmModule> {
@@ -97,23 +125,31 @@ async function importGeneratedModule(): Promise<GeneratedToolingWasmModule> {
 }
 
 export async function initToolingWasm(options: InitToolingWasmOptions = {}) {
-  if (options.module) {
-    await options.module.default({ module_or_path: options.input || defaultWasmURL })
-    assertMasterCSSBackendInfo(options.module.bindingInfo(), {
-      surface: 'tooling',
-      features: ['diagnostics', 'language', 'lint', 'scanner', 'source', 'validator']
-    })
-    return options.module
+  try {
+    if (options.module) {
+      const module = options.module as GeneratedToolingWasmModule
+      return await initializeModule(module, options.input || defaultWasmURL)
+    }
+    if (options.input !== undefined) {
+      return await initializeModule(await importGeneratedModule(), options.input)
+    }
+    modulePromise ??= importGeneratedModule()
+      .then((module) => initializeModule(module, defaultWasmURL))
+      .catch((cause) => {
+        modulePromise = undefined
+        throw cause
+      })
+    return await modulePromise
+  } catch (cause) {
+    if (cause instanceof MasterCSSError) throw cause
+    throw new MasterCSSError({
+      code: 'WASM_LOAD_FAILED',
+      domain: 'backend',
+      message: cause instanceof Error
+        ? cause.message
+        : 'Cannot load the Master CSS tooling Wasm artifact.'
+    }, { cause })
   }
-  modulePromise ??= importGeneratedModule().then(async (module) => {
-    await module.default({ module_or_path: options.input || defaultWasmURL })
-    assertMasterCSSBackendInfo(module.bindingInfo(), {
-      surface: 'tooling',
-      features: ['diagnostics', 'language', 'lint', 'scanner', 'source', 'validator']
-    })
-    return module
-  })
-  return await modulePromise
 }
 
 export async function createToolingScannerSession(

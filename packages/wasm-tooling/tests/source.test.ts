@@ -1,6 +1,40 @@
 import { readFile } from 'node:fs/promises'
-import { expect, test } from 'vitest'
+import { expect, test, vi } from 'vitest'
 import { initToolingWasm } from '../src'
+
+test('keys explicit tooling modules by their initialization input', async () => {
+  const module = {
+    default: vi.fn(async () => ({}))
+  }
+  const input = new Uint8Array([1])
+
+  await initToolingWasm({ module, input })
+  await initToolingWasm({ module, input })
+  expect(module.default).toHaveBeenCalledTimes(1)
+  await expect(initToolingWasm({
+    module,
+    input: new Uint8Array([2])
+  })).rejects.toMatchObject({
+    code: 'WASM_INPUT_CONFLICT',
+    domain: 'backend'
+  })
+})
+
+test('normalizes tooling Wasm initialization failures', async () => {
+  const cause = new TypeError('fetch failed')
+  await expect(initToolingWasm({
+    module: {
+      default: vi.fn(async () => {
+        throw cause
+      })
+    },
+    input: new Uint8Array([1])
+  })).rejects.toMatchObject({
+    code: 'WASM_LOAD_FAILED',
+    domain: 'backend',
+    cause
+  })
+})
 
 test('loads the isolated source tooling Wasm surface', async () => {
   const input = new Uint8Array(await readFile(new URL(

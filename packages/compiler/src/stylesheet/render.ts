@@ -1,8 +1,4 @@
-import { createNativeRenderSession } from '@master/css-backend/engine'
-import type {
-  MasterCSSNativeDeclarationCandidateIR,
-  MasterCSSServerRenderIR
-} from '@master/css-backend/compiler'
+import { createRenderBackendSessionSync } from '@master/css-backend/engine/node'
 import {
   renderCompiledManifestCSSWithSession,
   type RenderCompiledManifestCSSOptions,
@@ -16,14 +12,14 @@ export type {
 } from './render-core'
 
 export function renderCompiledManifestCSS(options: RenderCompiledManifestCSSOptions): RenderCompiledManifestCSSResult {
-  const nativeSession = createNativeRenderSession(options, { required: true })!
+  const nativeSession = createRenderBackendSessionSync(options)
   const session: StylesheetRenderSession = {
     nativeDeclarationCandidates: (classNames) =>
-      [...nativeSession.nativeDeclarationCandidates(classNames)] as MasterCSSNativeDeclarationCandidateIR[],
+      [...nativeSession.nativeDeclarationCandidates(classNames)],
     ensureClasses: (classNames, nativeSupport) => nativeSession.ensureClassRules(classNames, nativeSupport),
     ensureStylesheetResources: (nativeCSS) => nativeSession.ensureStylesheetResources(nativeCSS),
     emittedGlobals: () => nativeSession.emittedGlobals() as Required<import('@master/css-schema/emitted-globals').MasterCSSEmittedGlobals>,
-    snapshot: () => nativeSession.snapshot() as MasterCSSServerRenderIR,
+    snapshot: () => nativeSession.snapshot(),
     dispose: () => nativeSession.dispose()
   }
 

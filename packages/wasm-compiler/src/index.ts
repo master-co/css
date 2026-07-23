@@ -1,7 +1,4 @@
-import {
-  assertMasterCSSBackendInfo,
-  type MasterCSSBackendInfo
-} from '@master/css-backend'
+import { MasterCSSError } from '@master/css-schema'
 
 interface GeneratedCompilerWasmModule {
   default(input: {
@@ -34,10 +31,11 @@ interface GeneratedCompilerWasmModule {
 }
 
 let modulePromise: Promise<GeneratedCompilerWasmModule> | undefined
+const initializedInputs = new WeakMap<object, NonNullable<InitCompilerWasmOptions['input']>>()
 const defaultWasmURL = new URL('../artifacts/mastercss_wasm_compiler_bg.wasm', import.meta.url)
 
 export interface InitCompilerWasmOptions {
-  module?: GeneratedCompilerWasmModule
+  module?: object
   input?: RequestInfo | URL | Response | BufferSource | WebAssembly.Module
 }
 
@@ -48,42 +46,76 @@ async function importGeneratedModule(): Promise<GeneratedCompilerWasmModule> {
 async function resolveWasmInput(
   input: InitCompilerWasmOptions['input']
 ): Promise<NonNullable<InitCompilerWasmOptions['input']>> {
-  const resolvedInput = input || defaultWasmURL
-  if (
-    resolvedInput instanceof URL
-    && resolvedInput.protocol === 'file:'
-    && typeof process !== 'undefined'
-    && process.versions?.node
-  ) {
-    const { readFile } = await import('node:fs/promises')
-    return new Uint8Array(await readFile(resolvedInput))
+  return input || defaultWasmURL
+}
+
+function sameInput(
+  left: NonNullable<InitCompilerWasmOptions['input']>,
+  right: NonNullable<InitCompilerWasmOptions['input']>
+) {
+  return left === right || String(left) === String(right)
+}
+
+async function initializeModule(
+  module: GeneratedCompilerWasmModule,
+  input: NonNullable<InitCompilerWasmOptions['input']>
+) {
+  const initializedInput = initializedInputs.get(module)
+  if (initializedInput !== undefined) {
+    if (!sameInput(initializedInput, input)) {
+      throw new MasterCSSError({
+        code: 'WASM_INPUT_CONFLICT',
+        domain: 'backend',
+        message: 'A Master CSS compiler Wasm module cannot be initialized with two different inputs.'
+      })
+    }
+    return module
   }
-  return resolvedInput
+  await module.default({ module_or_path: input })
+  initializedInputs.set(module, input)
+  compilerBindingInfo(module)
+  return module
 }
 
 export async function initCompilerWasm(options: InitCompilerWasmOptions = {}) {
-  if (options.module) {
-    await options.module.default({ module_or_path: await resolveWasmInput(options.input) })
-    assertCompilerBinding(options.module)
-    return options.module
+  try {
+    if (options.module) {
+      const module = options.module as GeneratedCompilerWasmModule
+      return await initializeModule(module, await resolveWasmInput(options.input))
+    }
+    if (options.input !== undefined) {
+      return await initializeModule(
+        await importGeneratedModule(),
+        await resolveWasmInput(options.input)
+      )
+    }
+    modulePromise ??= importGeneratedModule()
+      .then(async (module) =>
+        initializeModule(module, await resolveWasmInput(defaultWasmURL))
+      )
+      .catch((cause) => {
+        modulePromise = undefined
+        throw cause
+      })
+    return await modulePromise
+  } catch (cause) {
+    if (cause instanceof MasterCSSError) throw cause
+    throw new MasterCSSError({
+      code: 'WASM_LOAD_FAILED',
+      domain: 'backend',
+      message: cause instanceof Error
+        ? cause.message
+        : 'Cannot load the Master CSS compiler Wasm artifact.'
+    }, { cause })
   }
-  modulePromise ??= importGeneratedModule().then(async (module) => {
-    await module.default({ module_or_path: await resolveWasmInput(options.input) })
-    assertCompilerBinding(module)
-    return module
-  })
-  return await modulePromise
 }
 
-function assertCompilerBinding(module: GeneratedCompilerWasmModule): MasterCSSBackendInfo {
-  return assertMasterCSSBackendInfo(module.bindingInfo(), {
-    surface: 'compiler',
-    features: ['compiler', 'render']
-  })
+function compilerBindingInfo(module: GeneratedCompilerWasmModule) {
+  return module.bindingInfo()
 }
 
 export interface CompilerWasmSession {
-  readonly info: MasterCSSBackendInfo
+  readonly info: unknown
   inspectCSS<T = unknown>(source: string): T
   compileNativeCSS<T = unknown>(source: string, options?: unknown): T
   compileCSSDirectives<T = unknown>(source: string, options?: unknown): T
@@ -105,7 +137,7 @@ export async function createCompilerWasmSession(
 ): Promise<CompilerWasmSession> {
   const module = await initCompilerWasm(options)
   return {
-    info: assertCompilerBinding(module),
+    info: compilerBindingInfo(module),
     inspectCSS: <T>(source: string) => module.inspectCSS(source) as T,
     compileNativeCSS: <T>(source: string, compileOptions?: unknown) => module.compileNativeCSS(source, compileOptions) as T,
     compileCSSDirectives: <T>(source: string, compileOptions?: unknown) => module.compileCSSDirectives(source, compileOptions) as T,
@@ -131,6 +163,7 @@ export async function createCompilerRenderSession(
 ) {
   const module = await initCompilerWasm(options)
   const session = new module.CompilerRenderSession(manifestJSON, emittedGlobalsJSON)
+  let disposed = false
   return {
     nativeDeclarationCandidates: (classNames: string[]) => session.nativeDeclarationCandidates(classNames),
     ensureClasses: (classNames: string[], nativeSupport?: boolean[]) => session.ensureClasses(classNames, nativeSupport),
@@ -138,6 +171,8 @@ export async function createCompilerRenderSession(
     emittedGlobals: () => session.emittedGlobals(),
     snapshot: () => session.snapshot(),
     dispose() {
+      if (disposed) return
+      disposed = true
       session.dispose()
       session.free()
     }

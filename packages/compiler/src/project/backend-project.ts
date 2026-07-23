@@ -1,4 +1,4 @@
-import { loadNativeCompilerBackend } from '@master/css-backend/compiler'
+import { createCompilerBackendSessionSync } from '@master/css-backend/compiler/node'
 import type { CSSDirectiveExtractionPolicy } from '@master/css-schema/css-directives'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import { resolveCSSImportGraph } from '../node-compiler'
@@ -35,7 +35,7 @@ export function loadBackendProjectManifest(
   baseManifest: MasterCSSManifest,
   entries?: readonly string[]
 ): BackendProjectManifestResult {
-  const compiler = loadNativeCompilerBackend({ required: true })!
+  const compiler = createCompilerBackendSessionSync()
   const root = resolve(projectDir)
   let realRoot = root
   try {

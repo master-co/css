@@ -17,18 +17,18 @@ export type {
 } from './engine-contract'
 export {
   MASTER_CSS_ENGINE_TRANSITION_VERSION,
-  type MasterCSSEngineAnimationResourceIR,
-  type MasterCSSEngineDeleteMutationIR,
-  type MasterCSSEngineInspectionIR,
-  type MasterCSSEngineInsertMutationIR,
-  type MasterCSSEngineMutationIR,
-  type MasterCSSEngineResourcesIR,
-  type MasterCSSEngineSnapshotIR,
-  type MasterCSSEngineTransitionIR,
-  type MasterCSSEngineVariableResourceIR,
-  type MasterCSSNativeDeclarationCandidateIR,
+  type MasterCSSEngineAnimationResource,
+  type MasterCSSEngineDeleteMutation,
+  type MasterCSSEngineInspection,
+  type MasterCSSEngineInsertMutation,
+  type MasterCSSEngineMutation,
+  type MasterCSSEngineResources,
+  type MasterCSSEngineSnapshot,
+  type MasterCSSEngineTransition,
+  type MasterCSSEngineVariableResource,
+  type MasterCSSNativeDeclarationCandidate,
   type MasterCSSRuleTarget,
-  type MasterCSSServerRenderIR
+  type MasterCSSServerRender
 } from './protocol'
 
 function parse<T>(value: string): T {
@@ -37,11 +37,11 @@ function parse<T>(value: string): T {
 
 function backendError(cause: unknown): MasterCSSError {
   if (cause instanceof MasterCSSError) return cause
-  const code = cause instanceof NativeBindingError ? cause.code : 'NATIVE_LOAD_FAILED'
+  if (!(cause instanceof NativeBindingError)) throw cause
   return new MasterCSSError({
-    code,
+    code: cause.code,
     domain: 'backend',
-    message: cause instanceof Error ? cause.message : String(cause)
+    message: cause.message
   }, { cause })
 }
 

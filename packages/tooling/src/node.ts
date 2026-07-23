@@ -1,10 +1,9 @@
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
-import { MasterCSSError } from '@master/css-schema'
-import { loadNativeToolingBackend } from '@master/css-backend/tooling'
-import { createNativeLexerSession } from './lexer/session'
-import { createNativeLanguageSession } from './language/backend-session'
-import { createNativeLintSession } from './lint/backend-session'
-import { createNativeSourceExtractor } from './source/session'
+import { createToolingBackendSync } from '@master/css-backend/tooling/node'
+import { bindLexerSession } from './lexer/session'
+import { bindLanguageSession } from './language/session'
+import { bindLintSession } from './lint/backend-session'
+import { bindSourceExtractor } from './source/session'
 import {
   bindToolingSessionInternal,
   type MasterCSSToolingSession
@@ -20,30 +19,22 @@ export {
 export function createToolingSessionSync(options: {
   readonly manifest: MasterCSSManifest
 }): MasterCSSToolingSession {
-  const tooling = loadNativeToolingBackend({ required: true })!
-  const source = createNativeSourceExtractor()
-  if (!source) {
-    throw new MasterCSSError({
-      code: 'NATIVE_UNAVAILABLE',
-      domain: 'tooling',
-      message: 'createToolingSessionSync() requires the Master CSS native binding.'
-    })
-  }
+  const tooling = createToolingBackendSync()
+  const lexer = tooling.createLexerSession()
+  const source = tooling.createSourceSession()
   const validator = tooling.createValidatorSession(options.manifest)
+  const language = tooling.createLanguageSession(options.manifest)
+  const lint = tooling.createLintSession(options.manifest)
+  const lintValidator = tooling.createValidatorSession(options.manifest)
+  const lintLanguage = tooling.createLanguageSession(options.manifest)
   return bindToolingSessionInternal({
-    lexer: createNativeLexerSession({ required: true })!,
-    source,
+    lexer: bindLexerSession('native', lexer),
+    source: bindSourceExtractor('native', source),
     validator: bindValidatorSession(
       'native',
-      {
-        nativeDeclarationCandidates: (classNames) =>
-          validator.nativeDeclarationCandidates(classNames),
-        generateClasses: (classNames, nativeSupport) =>
-          validator.generateClassRules(classNames, nativeSupport),
-        dispose: () => validator.dispose()
-      }
+      validator
     ),
-    lint: createNativeLintSession(options.manifest, { required: true })!,
-    language: createNativeLanguageSession(options.manifest, { required: true })!
+    lint: bindLintSession(lint, lintValidator, lintLanguage),
+    language: bindLanguageSession('native', language)
   })
 }

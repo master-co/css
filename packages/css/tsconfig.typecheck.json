@@ -20,9 +20,6 @@
     },
     {
       "path": "../schema/tsconfig.typecheck.json"
-    },
-    {
-      "path": "../wasm-runtime/tsconfig.typecheck.json"
     }
   ]
 }

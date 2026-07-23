@@ -1,5 +1,5 @@
 import type {
-  MasterCSSNativeDeclarationCandidateIR
+  MasterCSSNativeDeclarationCandidate
 } from '@master/css-backend/tooling'
 import { MASTER_CSS_LANGUAGE_BATCH_VERSION } from '@master/css-backend/tooling'
 import { MasterCSSError } from '@master/css-schema'
@@ -42,7 +42,7 @@ export interface LanguageSession {
 }
 
 function parse<T>(value: unknown): T {
-  return typeof value === 'string' ? JSON.parse(value) as T : value as T
+  return value as T
 }
 
 function validate<T extends { version: number }>(value: T): T {
@@ -60,20 +60,16 @@ export function bindLanguageSession(
   backend: LanguageSession['backend'],
   session: BackendLanguageSession
 ): LanguageSession {
-  const nativeSupport = (classNames: string[]) => parse<MasterCSSNativeDeclarationCandidateIR[]>(
+  const nativeSupport = (classNames: string[]) => parse<MasterCSSNativeDeclarationCandidate[]>(
     session.nativeDeclarationCandidates(classNames)
   ).map(matchesLanguageServiceNativeDeclaration)
   return {
     backend,
     analyzeDocument(request) {
-      return validate(parse<MasterCSSDocumentAnalysis>(session.analyzeDocument(
-        backend === 'native' ? JSON.stringify(request) : request
-      )))
+      return validate(parse<MasterCSSDocumentAnalysis>(session.analyzeDocument(request)))
     },
     formatDirectives(request) {
-      return validate(parse<MasterCSSFormatDirectivesResult>(session.formatDirectives(
-        backend === 'native' ? JSON.stringify(request) : request
-      )))
+      return validate(parse<MasterCSSFormatDirectivesResult>(session.formatDirectives(request)))
     },
     classifyClassNames(classNames) {
       const values = [...classNames]
@@ -88,9 +84,8 @@ export function bindLanguageSession(
     },
     completionIndex: () => validate(parse<MasterCSSLanguageCompletionIndex>(session.completionIndex())),
     colorPresentation: (token) => validate(parse<MasterCSSLanguageColorPresentation>(session.colorPresentation(token))),
-    colorTokens: (candidates) => validate(parse<MasterCSSLanguageColorTokens>(session.colorTokens(
-      backend === 'native' ? JSON.stringify(candidates) : candidates
-    ))),
+    colorTokens: (candidates) =>
+      validate(parse<MasterCSSLanguageColorTokens>(session.colorTokens(candidates))),
     dispose: () => session.dispose()
   }
 }

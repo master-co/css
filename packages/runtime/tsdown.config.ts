@@ -1,4 +1,20 @@
+import { fileURLToPath } from 'node:url'
 import { defineConfig } from 'tsdown'
+
+const browserBackendBroker = {
+  name: 'browser-backend-broker',
+  resolveId: {
+    order: 'pre' as const,
+    handler(source: string) {
+      if (source === '@master/css-backend/engine') {
+        return fileURLToPath(new URL(
+          '../native/src/broker-engine-browser.ts',
+          import.meta.url
+        ))
+      }
+    }
+  }
+}
 
 export default defineConfig([
   {
@@ -9,6 +25,11 @@ export default defineConfig([
     fixedExtension: false,
     dts: {
       emitDtsOnly: true
+    },
+    deps: {
+      dts: {
+        neverBundle: [/^[^./]/, /^\.{1,2}\//]
+      }
     },
     copy: {
       from: '../preset/src/default-manifest.json',
@@ -22,6 +43,7 @@ export default defineConfig([
     platform: 'browser',
     tsconfig: './tsconfig.prod.json',
     dts: false,
+    plugins: [browserBackendBroker],
     outputOptions: {
       entryFileNames: '[name].js',
       codeSplitting: false
@@ -37,6 +59,7 @@ export default defineConfig([
     },
     tsconfig: './tsconfig.prod.json',
     dts: false,
+    plugins: [browserBackendBroker],
     deps: {
       alwaysBundle: [/^[^./]/],
       onlyBundle: false

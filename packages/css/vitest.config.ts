@@ -25,7 +25,7 @@ export default defineConfig({
   resolve: {
     alias: [{
       find: /^@master\/css-wasm-engine$/,
-      replacement: fileURLToPath(new URL('../wasm-runtime/src/node.ts', import.meta.url))
+      replacement: fileURLToPath(new URL('../wasm-runtime/src/provider-node.ts', import.meta.url))
     }],
     tsconfigPaths: true
   }

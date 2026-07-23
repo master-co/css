@@ -116,7 +116,6 @@
   "dependencies": {
     "@master/css-backend": "workspace:*",
     "@master/css-schema": "workspace:*",
-    "@master/css-wasm-tooling": "workspace:*",
     "consola": "^3.4.2",
     "css-tree": "^3.2.1",
     "defu": "^6.1.7",

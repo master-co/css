@@ -1,89 +1,33 @@
 import { MasterCSSError } from '@master/css-schema'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import { serializeMasterCSSManifest } from '@master/css-schema/manifest'
+import type {
+  MasterCSSLexerBackendSession,
+  MasterCSSLintBackendSession,
+  MasterCSSLanguageBackendSession,
+  MasterCSSScannerBackendSession,
+  MasterCSSSourceBackendSession,
+  MasterCSSToolingBackendSession,
+  MasterCSSToolingBackendSync,
+  MasterCSSValidatorBackendSession
+} from './broker-tooling-contract'
 import type { MasterCSSNativeModuleOptions } from './engine-contract'
 import { NativeBindingError } from './errors'
 import { loadNativeBinding } from './native-loader'
 
 export type { MasterCSSNativeModuleOptions } from './engine-contract'
 
-export interface MasterCSSNativeToolingSession extends Disposable {
-  dispose(): void
-}
+export type MasterCSSNativeToolingSession = MasterCSSToolingBackendSession
+export type MasterCSSNativeLexerSession = MasterCSSLexerBackendSession
+export type MasterCSSNativeSourceSession = MasterCSSSourceBackendSession
+export type MasterCSSNativeValidatorSession = MasterCSSValidatorBackendSession
+export type MasterCSSNativeLanguageSession = MasterCSSLanguageBackendSession
+export type MasterCSSNativeLintSession = MasterCSSLintBackendSession
+export type MasterCSSNativeScannerSession = MasterCSSScannerBackendSession
+export type MasterCSSNativeToolingBackend = Omit<MasterCSSToolingBackendSync, 'backend'>
 
-export interface MasterCSSNativeLexerSession extends MasterCSSNativeToolingSession {
-  analyze(request: unknown): unknown
-}
-
-export interface MasterCSSNativeSourceSession extends MasterCSSNativeToolingSession {
-  extract(request: unknown): unknown
-}
-
-export interface MasterCSSNativeValidatorSession extends MasterCSSNativeToolingSession {
-  nativeDeclarationCandidates(classNames: readonly string[]): unknown
-  generateClassRules(classNames: readonly string[], nativeSupport?: readonly boolean[]): unknown
-}
-
-export interface MasterCSSNativeLanguageSession extends MasterCSSNativeToolingSession {
-  analyzeDocument(request: unknown): unknown
-  formatDirectives(request: unknown): unknown
-  nativeDeclarationCandidates(classNames: readonly string[]): unknown
-  classifyClassNames(classNames: readonly string[], nativeSupport?: readonly boolean[]): unknown
-  inspectClassName(className: string, nativeSupport?: readonly boolean[], mode?: string): unknown
-  completionIndex(): unknown
-  colorPresentation(colorToken: string): unknown
-  colorTokens(candidates: unknown): unknown
-}
-
-export interface MasterCSSNativeLintSession extends MasterCSSNativeToolingSession {
-  nativeDeclarationCandidates(classNames: readonly string[]): unknown
-  resolveValidation(batch: unknown, ruleErrors: unknown): unknown
-  canonicalClassNames(classNames: readonly string[], nativeSupport: readonly boolean[] | undefined, options?: unknown): unknown
-  canonicalClassGroups(classNames: readonly string[], nativeSupport: readonly boolean[] | undefined, options?: unknown): unknown
-  canonicalComposeDirective(classNames: readonly string[], nativeSupport: readonly boolean[] | undefined, options?: unknown): unknown
-  rawValueCandidates(classNames: readonly string[], nativeSupport: readonly boolean[] | undefined, invalidGeneratedClasses: readonly string[]): unknown
-  analyze(classNames: readonly string[], nativeSupport: readonly boolean[] | undefined, invalidGeneratedClasses: readonly string[]): unknown
-  analyzeClassList(classList: string, classNames: readonly string[], nativeSupport: readonly boolean[] | undefined, invalidGeneratedClasses: readonly string[]): unknown
-  analyzeClassListPolicy(request: unknown): unknown
-}
-
-export interface MasterCSSNativeScannerSession extends MasterCSSNativeToolingSession {
-  scan(source: string, content: string): unknown
-  extractCandidates(source: string, content: string): readonly string[]
-  nativeDeclarationCandidates(candidates: readonly string[]): unknown
-  collectCandidates(candidates: readonly string[]): readonly string[]
-  filterCandidates(candidates: readonly string[], blocklist: unknown): readonly string[]
-  invalidGeneratedClasses(batch: unknown, ruleSupport: readonly (readonly boolean[])[]): readonly string[]
-  scanCandidates(
-    source: string,
-    content: string,
-    candidates: readonly string[],
-    blocklist: unknown,
-    nativeSupport: readonly boolean[],
-    invalidGeneratedClasses: readonly string[]
-  ): unknown
-  ensureClassRules(classNames: readonly string[]): unknown
-  registerNativeClassNames(classNames: readonly string[]): boolean
-  reset(): void
-  snapshot(): unknown
-}
-
-export interface MasterCSSNativeToolingBackend {
-  createLexerSession(): MasterCSSNativeLexerSession
-  createSourceSession(): MasterCSSNativeSourceSession
-  createValidatorSession(manifest: MasterCSSManifest): MasterCSSNativeValidatorSession
-  createLanguageSession(manifest: MasterCSSManifest): MasterCSSNativeLanguageSession
-  createLintSession(manifest: MasterCSSManifest): MasterCSSNativeLintSession
-  createScannerSession(manifest: MasterCSSManifest): MasterCSSNativeScannerSession
-  extractClassCandidates(content: string): readonly string[]
-  extractOxcClasses(source: string, content: string): readonly string[]
-  extractHTMLClasses(source: string, content: string): readonly string[]
-  extractAstroClasses(source: string, content: string): readonly string[]
-  createInspectionReport(input: unknown): unknown
-}
-
-function parse(value: string) {
-  return JSON.parse(value) as unknown
+function parse<T>(value: string): T {
+  return JSON.parse(value) as T
 }
 
 function request(value: unknown) {
@@ -286,52 +230,52 @@ export {
   MASTER_CSS_LINT_BATCH_VERSION,
   MASTER_CSS_SOURCE_BATCH_VERSION,
   MASTER_CSS_VALIDATOR_BATCH_VERSION,
-  type MasterCSSEngineSnapshotIR,
-  type MasterCSSEngineTransitionIR,
-  type MasterCSSLexerBatchIR,
-  type MasterCSSLexerBatchRequestIR,
-  type MasterCSSLexerClassListInputIR,
-  type MasterCSSLexerClassListItemIR,
-  type MasterCSSLexerCSSAnalysisIR,
-  type MasterCSSLexerCSSDirectiveIR,
-  type MasterCSSLexerCSSImportIR,
-  type MasterCSSLintBatchIR,
-  type MasterCSSLintCanonicalClassGroupSuggestionIR,
-  type MasterCSSLintCanonicalClassGroupSuggestionsIR,
-  type MasterCSSLintCanonicalClassNameOptionsIR,
-  type MasterCSSLintCanonicalClassSuggestionIR,
-  type MasterCSSLintCanonicalClassSuggestionsIR,
-  type MasterCSSLintCanonicalComposeDirectiveIR,
-  type MasterCSSLintCanonicalComposeSuggestionIR,
+  type MasterCSSEngineSnapshot,
+  type MasterCSSEngineTransition,
+  type MasterCSSLexerBatch,
+  type MasterCSSLexerBatchRequest,
+  type MasterCSSLexerClassListInput,
+  type MasterCSSLexerClassListItem,
+  type MasterCSSLexerCSSAnalysis,
+  type MasterCSSLexerCSSDirective,
+  type MasterCSSLexerCSSImport,
+  type MasterCSSLintBatch,
+  type MasterCSSLintCanonicalClassGroupSuggestion,
+  type MasterCSSLintCanonicalClassGroupSuggestions,
+  type MasterCSSLintCanonicalClassNameOptions,
+  type MasterCSSLintCanonicalClassSuggestion,
+  type MasterCSSLintCanonicalClassSuggestions,
+  type MasterCSSLintCanonicalComposeDirective,
+  type MasterCSSLintCanonicalComposeSuggestion,
   type MasterCSSLintCanonicalComposeSuggestionKind,
-  type MasterCSSLintClassConflictIR,
-  type MasterCSSLintClassListIR,
-  type MasterCSSLintDiagnosticIR,
-  type MasterCSSLintEditIR,
-  type MasterCSSLintPartialClassConflictIR,
-  type MasterCSSLintRawValueCandidateIR,
-  type MasterCSSLintRawValueCandidatesIR,
-  type MasterCSSLanguageClassificationsIR,
-  type MasterCSSLanguageClassIR,
+  type MasterCSSLintClassConflict,
+  type MasterCSSLintClassList,
+  type MasterCSSLintDiagnostic,
+  type MasterCSSLintEdit,
+  type MasterCSSLintPartialClassConflict,
+  type MasterCSSLintRawValueCandidate,
+  type MasterCSSLintRawValueCandidates,
+  type MasterCSSLanguageClassifications,
+  type MasterCSSLanguageClass,
   type MasterCSSLanguageClassKind,
-  type MasterCSSLanguageClassVariableIR,
-  type MasterCSSLanguageColorCandidateInputIR,
-  type MasterCSSLanguageColorPresentationIR,
-  type MasterCSSLanguageColorTokenIR,
-  type MasterCSSLanguageColorTokensIR,
-  type MasterCSSLanguageCompletionEntryIR,
-  type MasterCSSLanguageCompletionIndexIR,
+  type MasterCSSLanguageClassVariable,
+  type MasterCSSLanguageColorCandidateInput,
+  type MasterCSSLanguageColorPresentation,
+  type MasterCSSLanguageColorToken,
+  type MasterCSSLanguageColorTokens,
+  type MasterCSSLanguageCompletionEntry,
+  type MasterCSSLanguageCompletionIndex,
   type MasterCSSLanguageCompletionKind,
-  type MasterCSSLanguageInspectionIR,
-  type MasterCSSLanguageVariableIR,
-  type MasterCSSNativeDeclarationCandidateIR,
-  type MasterCSSRegexIR,
-  type MasterCSSSourceBatchIR,
-  type MasterCSSSourceBatchRequestIR,
-  type MasterCSSSourceExtractionInputIR,
-  type MasterCSSSourceExtractionIR,
+  type MasterCSSLanguageInspection,
+  type MasterCSSLanguageVariable,
+  type MasterCSSNativeDeclarationCandidate,
+  type MasterCSSRegex,
+  type MasterCSSSourceBatch,
+  type MasterCSSSourceBatchRequest,
+  type MasterCSSSourceExtractionInput,
+  type MasterCSSSourceExtraction,
   type MasterCSSSourceExtractorKind,
   type MasterCSSSourceRange,
-  type MasterCSSValidatorBatchIR,
-  type MasterCSSValidatorClassIR
+  type MasterCSSValidatorBatch,
+  type MasterCSSValidatorClass
 } from './protocol'

@@ -12,17 +12,18 @@
     "lint": "eslint"
   },
   "license": "MIT",
-  "description": "Internal Master CSS browser runtime Wasm loader.",
+  "description": "Internal Master CSS engine Wasm artifact provider.",
   "sideEffects": false,
-  "types": "./dist/index.d.ts",
+  "types": "./dist/provider.d.ts",
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
-      "browser": "./dist/index.js",
-      "node": "./dist/node.js",
-      "import": "./dist/index.js",
-      "default": "./dist/index.js"
-    }
+      "types": "./dist/provider.d.ts",
+      "browser": "./dist/provider.js",
+      "node": "./dist/provider-node.js",
+      "import": "./dist/provider.js",
+      "default": "./dist/provider.js"
+    },
+    "./wasm": "./artifacts/mastercss_wasm_runtime_bg.wasm"
   },
   "files": ["dist", "artifacts"],
   "publishConfig": {
@@ -30,7 +31,6 @@
     "provenance": true
   },
   "dependencies": {
-    "@master/css-backend": "workspace:*",
     "@master/css-schema": "workspace:*"
   }
 }

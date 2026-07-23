@@ -1,5 +1,5 @@
 import { beforeAll, expect, test } from 'vitest'
-import { loadNativeToolingBackend } from '@master/css-backend/tooling'
+import { createToolingBackendSync } from '@master/css-backend/tooling/node'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import { MasterCSSScanner } from './test-scanner'
 
@@ -39,8 +39,7 @@ const manifest = {
 test('Rust scanner cache/state matches the TypeScript scanner oracle slice', async () => {
   const source = 'export const App = () => <div className="block unknown fg:red" />'
   const oracle = await new MasterCSSScanner({ manifest }).init()
-  const scanner = loadNativeToolingBackend({ required: true })!
-    .createScannerSession(manifest)
+  using scanner = createToolingBackendSync().createScannerSession(manifest)
 
   expect(await oracle.scan('App.tsx', source)).toBe(true)
   const rust = scanner.scan('App.tsx', source) as {
@@ -62,6 +61,5 @@ test('Rust scanner cache/state matches the TypeScript scanner oracle slice', asy
     changed: false,
     cacheHit: true
   })
-  scanner.dispose()
   await oracle.dispose()
 })

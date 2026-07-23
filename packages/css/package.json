@@ -83,7 +83,6 @@
   "dependencies": {
     "@master/css-backend": "workspace:*",
     "@master/css-schema": "workspace:*",
-    "@master/css-wasm-engine": "workspace:*",
     "@master/css-preset": "workspace:*"
   }
 }

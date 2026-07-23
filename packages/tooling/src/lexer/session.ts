@@ -1,18 +1,17 @@
-import { loadNativeToolingBackend } from '@master/css-backend/tooling'
 import type {
-  MasterCSSLexerBatchIR,
-  MasterCSSLexerBatchRequestIR,
-  MasterCSSLexerClassListInputIR,
-  MasterCSSLexerClassListItemIR,
-  MasterCSSLexerCSSAnalysisIR
+  MasterCSSLexerBatch,
+  MasterCSSLexerBatchRequest,
+  MasterCSSLexerClassListInput,
+  MasterCSSLexerClassListItem,
+  MasterCSSLexerCSSAnalysis
 } from '@master/css-backend/tooling'
 import { MASTER_CSS_LEXER_BATCH_VERSION } from '@master/css-backend/tooling'
 
-export type LexerClassListInputIR = MasterCSSLexerClassListInputIR
-export type LexerBatchRequest = MasterCSSLexerBatchRequestIR
-export type LexerClassListItemIR = MasterCSSLexerClassListItemIR
-export type LexerCssAnalysisIR = MasterCSSLexerCSSAnalysisIR
-export type LexerBatchIR = MasterCSSLexerBatchIR
+export type LexerClassListInputIR = MasterCSSLexerClassListInput
+export type LexerBatchRequest = MasterCSSLexerBatchRequest
+export type LexerClassListItemIR = MasterCSSLexerClassListItem
+export type LexerCssAnalysisIR = MasterCSSLexerCSSAnalysis
+export type LexerBatchIR = MasterCSSLexerBatch
 
 interface BackendLexerSession {
   analyze(request: unknown): unknown
@@ -36,7 +35,7 @@ export class LexerSessionError extends Error {
 }
 
 function parse(value: unknown): LexerBatchIR {
-  const result = typeof value === 'string' ? JSON.parse(value) as LexerBatchIR : value as LexerBatchIR
+  const result = value as LexerBatchIR
   if (result.version !== MASTER_CSS_LEXER_BATCH_VERSION) {
     throw new LexerSessionError(
       'LEXER_BATCH_VERSION_MISMATCH',
@@ -53,14 +52,8 @@ export function bindLexerSession(
   return {
     backend,
     analyze(request) {
-      return parse(session.analyze(backend === 'native' ? JSON.stringify(request) : request))
+      return parse(session.analyze(request))
     },
     dispose: () => session.dispose()
   }
-}
-
-export function createNativeLexerSession(options: { required?: boolean } = {}) {
-  const tooling = loadNativeToolingBackend({ required: options.required })
-  if (!tooling) return
-  return bindLexerSession('native', tooling.createLexerSession())
 }

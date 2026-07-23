@@ -2,7 +2,7 @@
 import { existsSync, readFileSync, realpathSync } from 'node:fs'
 import { createRequire } from 'node:module'
 import { dirname, extname, isAbsolute, resolve } from 'node:path'
-import { loadNativeCompilerBackend } from '@master/css-backend/compiler'
+import { createCompilerBackendSessionSync } from '@master/css-backend/compiler/node'
 import {
   MASTER_CSS_DIAGNOSTIC_VERSION,
   MasterCSSError,
@@ -100,42 +100,10 @@ export interface CompileProjectManifestResult extends CompileCSSManifestResult {
 
 function throwCompilerBindingError(error: unknown): never {
   if (error instanceof MasterCSSError) throw error
-  const rawMessage = error instanceof Error ? error.message : String(error)
-  try {
-    const diagnostic = JSON.parse(rawMessage) as {
-      code?: string
-      message?: string
-      source?: string
-      range?: { start: number, end: number }
-      notes?: string[]
-    }
-    if (diagnostic && typeof diagnostic.message === 'string') {
-      const code = diagnostic.code || 'CSS_COMPILER_ERROR'
-      const structuredDiagnostic: MasterCSSDiagnostic = Object.freeze({
-        version: MASTER_CSS_DIAGNOSTIC_VERSION,
-        code,
-        domain: 'compiler',
-        severity: 'error',
-        message: diagnostic.message,
-        ...(diagnostic.source ? { source: diagnostic.source } : {}),
-        ...(diagnostic.notes ? { notes: Object.freeze([...diagnostic.notes]) } : {})
-      })
-      throw new MasterCSSError({
-        code,
-        domain: 'compiler',
-        message: diagnostic.message,
-        diagnostics: [structuredDiagnostic]
-      }, {
-        cause: error
-      })
-    }
-  } catch (parsedError) {
-    if (parsedError instanceof MasterCSSError) throw parsedError
-  }
   throw new MasterCSSError({
     code: 'CSS_COMPILER_ERROR',
     domain: 'compiler',
-    message: rawMessage
+    message: error instanceof Error ? error.message : String(error)
   }, {
     cause: error
   })
@@ -150,7 +118,7 @@ function callCompilerBackend<T>(call: () => unknown): T {
 }
 
 function nativeCompiler() {
-  return loadNativeCompilerBackend({ required: true })!
+  return createCompilerBackendSessionSync()
 }
 
 function isExpandableImportSource(source: string) {

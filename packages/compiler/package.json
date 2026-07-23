@@ -78,8 +78,6 @@
   },
   "dependencies": {
     "@master/css-backend": "workspace:*",
-    "@master/css-wasm-compiler": "workspace:*",
-    "@master/css-wasm-tooling": "workspace:*",
     "@master/css-schema": "workspace:*",
     "@master/css-tooling": "workspace:*",
     "fast-glob": "^3.3.3"

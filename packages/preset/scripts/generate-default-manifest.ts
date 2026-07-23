@@ -1,8 +1,10 @@
 import { existsSync, readFileSync, writeFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { loadNativeCompilerBackend } from '@master/css-backend/compiler'
-import type { MasterCSSNativeCompilerBackend } from '@master/css-backend/compiler'
+import {
+  createCompilerBackendSessionSync,
+  type MasterCSSCompilerBackendSession
+} from '@master/css-backend/compiler/node'
 import { serializeMasterCSSManifest } from '@master/css-schema/manifest'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
 
@@ -20,7 +22,7 @@ interface CompiledDefaultPresetManifest {
 
 function resolvePresetStylesheet(
   entryFile: string,
-  compiler: MasterCSSNativeCompilerBackend
+  compiler: MasterCSSCompilerBackendSession
 ) {
   const entry = resolve(entryFile)
   const files: Record<string, string> = {}
@@ -34,9 +36,7 @@ function resolvePresetStylesheet(
     visited.add(absoluteFile)
     const source = readFileSync(absoluteFile, 'utf8')
     files[absoluteFile] = source
-    const analysis = compiler.analyzeCSSDependencies(source) as {
-      imports: readonly { source: string }[]
-    }
+    const analysis = compiler.analyzeCSSDependencies(source)
     for (const statement of analysis.imports) {
       if (!statement.source.startsWith('./') && !statement.source.startsWith('../')) continue
       const importedFile = resolve(dirname(absoluteFile), statement.source)
@@ -54,24 +54,20 @@ function resolvePresetStylesheet(
     entry,
     files,
     edges
-  }) as { source: string }
+  })
 }
 
 function compileDefaultPresetManifest(file: string): CompiledDefaultPresetManifest {
-  const compiler = loadNativeCompilerBackend({ required: true })!
+  using compiler = createCompilerBackendSessionSync()
   const source = resolvePresetStylesheet(file, compiler).source
   const directives = compiler.compileCSSDirectives(source, {
     from: file,
     preserveNativeCSS: true
-  }) as {
-    manifestInput: unknown
-    styleDefinitions?: unknown[]
-    nativeCSS: string
-  }
+  })
   const compiled = compiler.compileDefaultPresetManifest({
     manifestInput: directives.manifestInput,
     styleDefinitions: directives.styleDefinitions || []
-  }) as Omit<CompiledDefaultPresetManifest, 'nativeCSS'>
+  })
   return {
     ...compiled,
     nativeCSS: directives.nativeCSS

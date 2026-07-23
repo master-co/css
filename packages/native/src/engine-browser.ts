@@ -14,18 +14,18 @@ export type {
 } from './engine-contract'
 export {
   MASTER_CSS_ENGINE_TRANSITION_VERSION,
-  type MasterCSSEngineAnimationResourceIR,
-  type MasterCSSEngineDeleteMutationIR,
-  type MasterCSSEngineInspectionIR,
-  type MasterCSSEngineInsertMutationIR,
-  type MasterCSSEngineMutationIR,
-  type MasterCSSEngineResourcesIR,
-  type MasterCSSEngineSnapshotIR,
-  type MasterCSSEngineTransitionIR,
-  type MasterCSSEngineVariableResourceIR,
-  type MasterCSSNativeDeclarationCandidateIR,
+  type MasterCSSEngineAnimationResource,
+  type MasterCSSEngineDeleteMutation,
+  type MasterCSSEngineInspection,
+  type MasterCSSEngineInsertMutation,
+  type MasterCSSEngineMutation,
+  type MasterCSSEngineResources,
+  type MasterCSSEngineSnapshot,
+  type MasterCSSEngineTransition,
+  type MasterCSSEngineVariableResource,
+  type MasterCSSNativeDeclarationCandidate,
   type MasterCSSRuleTarget,
-  type MasterCSSServerRenderIR
+  type MasterCSSServerRender
 } from './protocol'
 
 function unavailable(required: boolean | undefined) {

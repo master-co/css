@@ -11,7 +11,6 @@ import {
   MasterCSSError,
   MasterCSSDiagnostic
 } from '@master/css-schema'
-import type { MasterCSSBackend, MasterCSSResolvedBackend } from '@master/css-backend'
 import {
   flattenMasterCSSManifestVariables,
   type MasterCSSManifest,
@@ -80,8 +79,10 @@ export interface MasterCSSRuntimeOptions {
   readonly hydrationManifest?: MasterCSSHydrationManifest
 }
 
+export type MasterCSSRuntimeBackend = 'auto' | 'native' | 'wasm'
+
 export interface MasterCSSRuntimeStartOptions extends MasterCSSRuntimeOptions {
-  readonly backend?: MasterCSSBackend
+  readonly backend?: MasterCSSRuntimeBackend
   readonly startupTimeoutMs?: number
   readonly onDiagnostic?: (diagnostic: MasterCSSDiagnostic) => void
 }
@@ -105,7 +106,7 @@ export interface MasterCSSRuntimeLayerSnapshot {
 }
 
 export interface MasterCSSRuntimeSnapshot {
-  readonly backend: MasterCSSResolvedBackend
+  readonly backend: MasterCSSEngine['backend']
   readonly cssText: string
   readonly observing: boolean
   readonly classRules: Readonly<Record<string, MasterCSSRuntimeClassSnapshot>>
@@ -119,7 +120,7 @@ export interface MasterCSSRuntimeSnapshot {
 }
 
 export interface MasterCSSRuntimeFacade extends Disposable {
-  readonly backend: MasterCSSResolvedBackend
+  readonly backend: MasterCSSEngine['backend']
   observe(): this
   disconnect(): this
   refresh(manifest?: MasterCSSManifest): this
@@ -336,7 +337,7 @@ export class MasterCSSRuntime implements Disposable {
     this.resetResourceCounts()
   }
 
-  get backend(): MasterCSSResolvedBackend {
+  get backend(): MasterCSSEngine['backend'] {
     return this.backendEngine.backend
   }
 

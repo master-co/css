@@ -1528,12 +1528,6 @@ importers:
       '@master/css-tooling':
         specifier: workspace:*
         version: link:../tooling
-      '@master/css-wasm-compiler':
-        specifier: workspace:*
-        version: link:../wasm-compiler
-      '@master/css-wasm-tooling':
-        specifier: workspace:*
-        version: link:../wasm-tooling
       fast-glob:
         specifier: ^3.3.3
         version: 3.3.3
@@ -1565,9 +1559,6 @@ importers:
       '@master/css-schema':
         specifier: workspace:*
         version: link:../schema
-      '@master/css-wasm-engine':
-        specifier: workspace:*
-        version: link:../wasm-runtime
 
   packages/css-sv:
     devDependencies:
@@ -1850,6 +1841,15 @@ importers:
       '@master/css-schema':
         specifier: workspace:*
         version: link:../schema
+      '@master/css-wasm-compiler':
+        specifier: workspace:*
+        version: link:../wasm-compiler
+      '@master/css-wasm-engine':
+        specifier: workspace:*
+        version: link:../wasm-runtime
+      '@master/css-wasm-tooling':
+        specifier: workspace:*
+        version: link:../wasm-tooling
     optionalDependencies:
       '@master/css-native-darwin-arm64':
         specifier: workspace:*
@@ -2161,9 +2161,6 @@ importers:
       '@master/css-schema':
         specifier: workspace:*
         version: link:../schema
-      '@master/css-wasm-tooling':
-        specifier: workspace:*
-        version: link:../wasm-tooling
       consola:
         specifier: ^3.4.2
         version: 3.4.2
@@ -2271,24 +2268,21 @@ importers:
 
   packages/wasm-compiler:
     dependencies:
-      '@master/css-backend':
+      '@master/css-schema':
         specifier: workspace:*
-        version: link:../native
+        version: link:../schema
 
   packages/wasm-runtime:
     dependencies:
-      '@master/css-backend':
-        specifier: workspace:*
-        version: link:../native
       '@master/css-schema':
         specifier: workspace:*
         version: link:../schema
 
   packages/wasm-tooling:
     dependencies:
-      '@master/css-backend':
+      '@master/css-schema':
         specifier: workspace:*
-        version: link:../native
+        version: link:../schema
 
   packages/webpack:
     dependencies:

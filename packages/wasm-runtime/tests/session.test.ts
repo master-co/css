@@ -1,8 +1,43 @@
 import { readFile } from 'node:fs/promises'
 import { afterEach, expect, it, vi } from 'vitest'
+import { loadWasmEngine } from '../src'
 import { createWasmEngineSession } from '../src/node'
 
 afterEach(() => vi.unstubAllGlobals())
+
+it('keys explicit modules by their initialization input', async () => {
+  const module = {
+    default: vi.fn(async () => ({}))
+  }
+  const input = new Uint8Array([1])
+
+  await loadWasmEngine({ module, input })
+  await loadWasmEngine({ module, input })
+  expect(module.default).toHaveBeenCalledTimes(1)
+  await expect(loadWasmEngine({
+    module,
+    input: new Uint8Array([2])
+  })).rejects.toMatchObject({
+    code: 'WASM_INPUT_CONFLICT',
+    domain: 'backend'
+  })
+})
+
+it('normalizes Wasm initialization failures', async () => {
+  const cause = new TypeError('fetch failed')
+  await expect(loadWasmEngine({
+    module: {
+      default: vi.fn(async () => {
+        throw cause
+      })
+    },
+    input: new Uint8Array([1])
+  })).rejects.toMatchObject({
+    code: 'WASM_LOAD_FAILED',
+    domain: 'backend',
+    cause
+  })
+})
 
 it('loads the packaged Wasm artifact in Node without fetch support for file URLs', async () => {
   const session = await createWasmEngineSession(JSON.stringify({

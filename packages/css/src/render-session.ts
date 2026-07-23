@@ -46,17 +46,13 @@ interface BackendRenderResult {
 export interface BackendRenderSession {
   nativeDeclarationCandidates(
     classNames: readonly string[]
-  ): string | readonly MasterCSSNativeDeclaration[]
+  ): readonly MasterCSSNativeDeclaration[]
   ensureClasses(classNames: readonly string[], nativeSupport?: readonly boolean[]): void
   ensureStylesheetResources(nativeCSS: string): void
-  emittedGlobals(): string | MasterCSSEmittedGlobals
-  snapshot(): string | BackendRenderResult
-  snapshotForClasses(classNames: readonly string[]): string | BackendRenderResult
+  emittedGlobals(): MasterCSSEmittedGlobals
+  snapshot(): BackendRenderResult
+  snapshotForClasses(classNames: readonly string[]): BackendRenderResult
   dispose(): void
-}
-
-function parseResult<T>(value: T | string): T {
-  return typeof value === 'string' ? JSON.parse(value) as T : value
 }
 
 function freezeArray<T>(values: readonly T[]) {
@@ -106,9 +102,7 @@ export class MasterCSSRenderSession implements Disposable {
   ensureClassRules(classNames: readonly string[]) {
     this.assertActive()
     const classes = [...classNames]
-    const candidates = parseResult<readonly MasterCSSNativeDeclaration[]>(
-      this.#session.nativeDeclarationCandidates(classes)
-    )
+    const candidates = this.#session.nativeDeclarationCandidates(classes)
     const support = candidates.map((candidate) => this.#supportsNativeDeclaration(candidate))
     this.#session.ensureClasses(classes, support.length ? support : undefined)
     return this.snapshot()
@@ -123,16 +117,16 @@ export class MasterCSSRenderSession implements Disposable {
   snapshot() {
     this.assertActive()
     return toSnapshot(
-      parseResult<BackendRenderResult>(this.#session.snapshot()),
-      parseResult<MasterCSSEmittedGlobals>(this.#session.emittedGlobals())
+      this.#session.snapshot(),
+      this.#session.emittedGlobals()
     )
   }
 
   snapshotForClassNames(classNames: readonly string[]) {
     this.assertActive()
     return toSnapshot(
-      parseResult<BackendRenderResult>(this.#session.snapshotForClasses([...classNames])),
-      parseResult<MasterCSSEmittedGlobals>(this.#session.emittedGlobals())
+      this.#session.snapshotForClasses([...classNames]),
+      this.#session.emittedGlobals()
     )
   }
 
