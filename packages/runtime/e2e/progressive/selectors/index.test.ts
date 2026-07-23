@@ -26,4 +26,44 @@ test('selectors', async ({ page }) => {
     .toBe('.hidden\\:\\:slider-thumb::-webkit-slider-thumb{display:none}')
   expect(await page.evaluate(() => globalThis.masterCSSRuntime.utilitiesLayer.rules.find((rule) => rule.name === 'hidden::slider-thumb')?.native?.cssText))
     .toBe('.hidden\\:\\:slider-thumb::-webkit-slider-thumb { display: none; }')
+
+  await page.evaluate(() => {
+    const baseHost = document.createElement('div')
+    baseHost.className = 'block_button@base'
+    baseHost.innerHTML = '<button id="selectorless-base-descendant">Base descendant</button>'
+
+    const defaultsHost = document.createElement('div')
+    defaultsHost.id = 'selectorless-default-host'
+    defaultsHost.className = '{flex;rel}_:is(h4,.app-nav)@default'
+    defaultsHost.innerHTML = '<h4 id="selectorless-default-descendant">Default descendant</h4>'
+
+    document.body.append(baseHost, defaultsHost)
+  })
+
+  await expect.poll(() => page.evaluate(() => ({
+    base: globalThis.masterCSSRuntime.baseLayer.rules.find((rule) => rule.name === 'block_button@base')?.text,
+    defaults: globalThis.masterCSSRuntime.defaultsLayer.rules.find(
+      (rule) => rule.name === '{flex;rel}_:is(h4,.app-nav)@default'
+    )?.text
+  }))).toEqual({
+    base: '.block_button\\@base button{display:block}',
+    defaults: '.\\{flex\\;rel\\}_\\:is\\(h4\\,\\.app-nav\\)\\@default :is(h4,.app-nav){display:flex;position:relative}'
+  })
+
+  expect(await page.evaluate(() => {
+    const hostStyle = getComputedStyle(document.getElementById('selectorless-default-host')!)
+    const baseDescendantStyle = getComputedStyle(document.getElementById('selectorless-base-descendant')!)
+    const defaultDescendantStyle = getComputedStyle(document.getElementById('selectorless-default-descendant')!)
+    return {
+      baseDescendantDisplay: baseDescendantStyle.display,
+      defaultDescendantDisplay: defaultDescendantStyle.display,
+      defaultDescendantPosition: defaultDescendantStyle.position,
+      hostDisplay: hostStyle.display
+    }
+  })).toEqual({
+    baseDescendantDisplay: 'block',
+    defaultDescendantDisplay: 'flex',
+    defaultDescendantPosition: 'relative',
+    hostDisplay: 'block'
+  })
 })

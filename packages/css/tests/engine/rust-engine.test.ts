@@ -6,6 +6,9 @@ import { createEngineSync } from '../../src/node'
 import { MasterCSSEngineError } from '../../src/engine/backend'
 
 const typedDefaultManifest = defaultManifest as unknown as MasterCSSManifest
+const selectorVariantClassName = '{flex;rel}_:is(h4,.app-nav)@default'
+const selectorVariantSelector = '.\\{flex\\;rel\\}_\\:is\\(h4\\,\\.app-nav\\)\\@default :is(h4,.app-nav)'
+const selectorVariantRuleText = `${selectorVariantSelector}{display:flex;position:relative}`
 
 const manifest: MasterCSSManifest = {
   version: 1,
@@ -126,5 +129,38 @@ describe('Rust engine session', () => {
       '{color:black!;bb:2px|solid}'
     ]))
     engine.dispose()
+  })
+
+  it('preserves descendant selectors across condition-only variants in native and Wasm', async () => {
+    const native = createEngineSync({ manifest: typedDefaultManifest })
+    const wasm = await createEngine({ manifest: typedDefaultManifest, backend: 'wasm' })
+
+    try {
+      const nativeInspection = native.inspect(selectorVariantClassName)
+      const wasmInspection = wasm.inspect(selectorVariantClassName)
+
+      expect(nativeInspection.rules).toHaveLength(1)
+      expect(nativeInspection.rules[0]).toMatchObject({
+        layer: 'defaults',
+        priority: { selector: 0 },
+        selectorText: selectorVariantSelector,
+        sortTier: 1,
+        text: selectorVariantRuleText
+      })
+      expect(wasmInspection).toEqual(nativeInspection)
+      expect(native.text).toBe('')
+      expect(wasm.text).toBe('')
+
+      const nativeTransition = native.ensureClassRules([selectorVariantClassName])
+      const wasmTransition = wasm.ensureClassRules([selectorVariantClassName])
+
+      expect(wasmTransition).toEqual(nativeTransition)
+      expect(native.text).toBe(`@layer defaults{${selectorVariantRuleText}}`)
+      expect(wasm.text).toBe(native.text)
+      expect(wasm.snapshot()).toEqual(native.snapshot())
+    } finally {
+      native.dispose()
+      wasm.dispose()
+    }
   })
 })

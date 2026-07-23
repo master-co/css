@@ -4770,7 +4770,9 @@ fn expand_variant_branches(
 }
 
 fn compose_selector_templates(current: Option<&str>, next: Option<&str>) -> Option<String> {
-    let next = next?;
+    let Some(next) = next else {
+        return current.map(str::to_owned);
+    };
     if next == "&" {
         return current.map(str::to_owned);
     }
@@ -5920,7 +5922,10 @@ mod tests {
         "spacing":[{"key":"md","type":"number","value":"1rem"}]
       },
       "variants":[
-        {"token":"@base","branches":[{"layer":"base"}]}
+        {"token":"@base","branches":[{"layer":"base"}]},
+        {"token":"@default","branches":[{"layer":"defaults"}]},
+        {"token":"@screen","branches":[{"conditions":["@media screen"]}]},
+        {"token":"@scope","branches":[{"selector":".scope &"}]}
       ],
       "utilities":[
         {
@@ -6204,6 +6209,22 @@ mod tests {
                 "@layer utilities{.block_button button{display:block}}",
             ),
             (
+                "block_button@base",
+                "@layer base{.block_button\\@base button{display:block}}",
+            ),
+            (
+                "block_button@screen",
+                "@layer utilities{@media screen{.block_button\\@screen button{display:block}}}",
+            ),
+            (
+                "block_button@scope",
+                "@layer utilities{.scope .block_button\\@scope button{display:block}}",
+            ),
+            (
+                "{block}_:is(h4,.app-nav)@default",
+                "@layer defaults{.\\{block\\}_\\:is\\(h4\\,\\.app-nav\\)\\@default :is(h4,.app-nav){display:block}}",
+            ),
+            (
                 "block@sm",
                 "@layer utilities{@media (width>=52.125rem){.block\\@sm{display:block}}}",
             ),
@@ -6254,6 +6275,23 @@ mod tests {
             engine.ensure_class_rules([class_name]).unwrap();
             assert_eq!(engine.css_text(), expected, "{class_name}");
         }
+    }
+
+    #[test]
+    fn preserves_selector_templates_across_selectorless_variants() {
+        assert_eq!(
+            compose_selector_templates(Some("& button"), None).as_deref(),
+            Some("& button")
+        );
+        assert_eq!(
+            compose_selector_templates(Some("& button"), Some("&")).as_deref(),
+            Some("& button")
+        );
+        assert_eq!(
+            compose_selector_templates(Some("& button"), Some(".scope &")).as_deref(),
+            Some(".scope & button")
+        );
+        assert_eq!(compose_selector_templates(None, None), None);
     }
 
     #[test]
