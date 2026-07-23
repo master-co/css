@@ -1,8 +1,8 @@
 import { existsSync } from 'node:fs'
 import { readFile } from 'node:fs/promises'
 import { join } from 'node:path'
-import { findCSSManifestEntryFiles } from '@master/css-compiler/project/entries'
-import { resolveMasterCSSWorkspacePackages } from '@master/css-compiler/project/workspace'
+import { discoverManifestEntries } from '@master/css-compiler/project'
+import { resolveMasterCSSWorkspacePackages } from '@master/css-build-internal/workspace'
 import type MasterCSSMCPContext from './context'
 import { loadWorkspaceManifest } from './project'
 import { getErrorMessage } from './result'
@@ -29,8 +29,8 @@ const MASTER_CSS_PACKAGES = [
   '@master/css-nuxt',
   '@master/css-astro',
   '@master/css-svelte',
-  '@master/css-sv',
-  '@master/eslint-config-css',
+  '@master/css-svelte-addon',
+  '@master/eslint-plugin-css',
   '@master/eslint-plugin-css'
 ]
 
@@ -42,13 +42,13 @@ const INTEGRATION_PACKAGES = [
   '@master/css-nuxt',
   '@master/css-astro',
   '@master/css-svelte',
-  '@master/eslint-config-css',
+  '@master/eslint-plugin-css',
   '@master/eslint-plugin-css'
 ]
 
 const SETUP_PACKAGES = [
   '@master/create-css',
-  '@master/css-sv'
+  '@master/css-svelte-addon'
 ]
 
 interface PackageJSON {
@@ -166,7 +166,7 @@ export async function auditSetup(context: MasterCSSMCPContext) {
   const [packageJSONResult, manifest, discoveredEntries] = await Promise.all([
     readPackageJSON(context),
     loadWorkspaceManifest(context),
-    findCSSManifestEntryFiles(context.root).catch(() => [])
+    discoverManifestEntries({ root: context.root }).catch(() => [])
   ])
   const packageJSON = packageJSONResult.value
   const packageManager = detectPackageManager(context, packageJSON)

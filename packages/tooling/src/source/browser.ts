@@ -2,7 +2,7 @@ import {
   initToolingWasm,
   type InitToolingWasmOptions
 } from '@master/css-wasm-tooling'
-import { MASTER_CSS_SOURCE_BATCH_VERSION } from '@master/css-schema'
+import { MASTER_CSS_SOURCE_BATCH_VERSION } from '@master/css-backend/tooling'
 import type { SourceBatchIR, SourceBatchRequest, SourceExtractor } from './session'
 
 export type BrowserSourceExtractor = SourceExtractor & { readonly backend: 'wasm' }

@@ -1,10 +1,10 @@
 import { resolve } from 'path'
 import { withFixture } from './setup'
 import { test } from 'vitest'
-import { Settings } from '../src'
+import { MasterCSSLanguageServerSettings } from '../src'
 import { URI } from 'vscode-uri'
 
-const settings: Settings = {
+const settings: MasterCSSLanguageServerSettings = {
   workspaces: [
     './c'
   ]

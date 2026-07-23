@@ -29,7 +29,9 @@
     "css",
     "mastercss"
   ],
-  "bin": "./dist/bin/index.js",
+  "bin": {
+    "master-css": "./dist/bin/index.js"
+  },
   "exports": {},
   "sideEffects": false,
   "files": [
@@ -42,12 +44,12 @@
   "dependencies": {
     "@master/css": "workspace:*",
     "@master/css-compiler": "workspace:*",
+    "@master/css-preset": "workspace:*",
+    "@master/css-schema": "workspace:*",
     "@master/css-tooling": "workspace:*",
-    "@master/css-native": "workspace:*",
     "bytes": "^3.1.2",
     "chokidar": "^5.0.0",
     "commander": "^14.0.3",
-    "consola": "^3.4.2",
     "fast-glob": "^3.3.3"
   },
   "devDependencies": {

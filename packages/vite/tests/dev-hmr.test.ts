@@ -10,6 +10,13 @@ let browser: Browser | undefined
 let fixtureDir: string | undefined
 const fixtureRoot = path.resolve(__dirname, '../tmp')
 
+function reportBrowserErrors(page: import('@playwright/test').Page) {
+  page.on('console', (message) => {
+    if (message.type() === 'error') console.error(`[browser] ${message.text()}`)
+  })
+  page.on('pageerror', (error) => console.error('[browser]', error))
+}
+
 function writeStyle(root: string, displayClass: string) {
   writeFileSync(path.join(root, 'app.css'), [
     '@master entry;',
@@ -69,11 +76,6 @@ describe('Vite dev HMR', () => {
         host: '127.0.0.1',
         port: 0
       },
-      resolve: {
-        alias: {
-          '@master/css-vite/runtime': path.resolve(__dirname, '../src/runtime.ts')
-        }
-      },
       plugins: masterCSS({ mode: 'runtime' })
     })
     await server.listen()
@@ -82,6 +84,7 @@ describe('Vite dev HMR', () => {
 
     browser = await chromium.launch()
     const page = await browser.newPage()
+    reportBrowserErrors(page)
     await page.goto(url)
     await page.waitForFunction(() => {
       const probe = document.querySelector('#probe')
@@ -91,7 +94,7 @@ describe('Vite dev HMR', () => {
     })
 
     const state = await page.evaluate(() => {
-      const runtimeScript = document.querySelector('script[src="/@id/@master/css-vite/runtime"]')
+      const runtimeScript = document.querySelector('script[src="/@id/__x00__virtual:master-css-runtime"]')
       const sheetOwners = Array.from(document.styleSheets).map((sheet) => {
         const owner = sheet.ownerNode as Element | null
         return owner?.id
@@ -102,7 +105,7 @@ describe('Vite dev HMR', () => {
       })
       return {
         display: getComputedStyle(document.querySelector('#probe')!).display,
-        hasRuntimePreload: !!document.head.querySelector('link[rel="modulepreload"][href="/@id/@master/css-vite/runtime"]'),
+        hasRuntimePreload: !!document.head.querySelector('link[rel="modulepreload"][href="/@id/__x00__virtual:master-css-runtime"]'),
         runtimeScriptParent: runtimeScript?.parentElement?.tagName,
         runtimeScriptIsLastBodyElement: document.body.lastElementChild === runtimeScript,
         sheetOwners
@@ -139,11 +142,6 @@ describe('Vite dev HMR', () => {
         host: '127.0.0.1',
         port: 0
       },
-      resolve: {
-        alias: {
-          '@master/css-vite/runtime': path.resolve(__dirname, '../src/runtime.ts')
-        }
-      },
       plugins: masterCSS({ mode: 'runtime' })
     })
     await server.listen()
@@ -158,6 +156,7 @@ describe('Vite dev HMR', () => {
 
     browser = await chromium.launch()
     const page = await browser.newPage()
+    reportBrowserErrors(page)
     await page.goto(url)
     await page.waitForFunction(() => getComputedStyle(document.querySelector('#probe')!).display === 'inline-flex')
     await page.evaluate(() => {

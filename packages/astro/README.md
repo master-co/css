@@ -62,18 +62,18 @@ npm install @master/css-astro
 
 ```js
 import { defineConfig } from 'astro/config'
-import masterCSS from '@master/css-astro'
+import { createMasterCSSAstroIntegration } from '@master/css-astro'
 
 export default defineConfig({
   integrations: [
-    masterCSS()
+    createMasterCSSAstroIntegration()
   ]
 })
 ```
 
-`masterCSS()` uses `progressive` mode by default. It registers Astro middleware to pre-render initial CSS into `<style id="master-css">` and injects the runtime script for browser hydration. Source extraction for `.astro` files is handled automatically by `@master/css-tooling/source`.
+`createMasterCSSAstroIntegration()` uses `progressive` mode by default. It registers Astro middleware to pre-render initial CSS into `<style id="master-css">` and injects the runtime script for browser hydration. Source extraction for `.astro` files is handled automatically by `@master/css-tooling/source`.
 
-In static builds with `mode: 'runtime'`, the integration modulepreloads the emitted manifest JSON module when it also injects the runtime script. `injectRuntime: false` disables both automatic runtime injection and the manifest JSON modulepreload. SSR-only Astro output does not receive this preload because the integration cannot reliably resolve the final client manifest asset URL at build time.
+In static builds with `mode: 'runtime'`, the integration modulepreloads the emitted manifest JSON module when it also injects the runtime script. `runtime: false` disables both automatic runtime injection and the manifest JSON modulepreload. SSR-only Astro output does not receive this preload because the integration cannot reliably resolve the final client manifest asset URL at build time.
 
 ```css
 @import '@master/css';
@@ -85,11 +85,11 @@ The `options` object extends `@master/css-vite` plugin options and is passed to 
 
 ```js
 import { defineConfig } from 'astro/config'
-import masterCSS from '@master/css-astro'
+import { createMasterCSSAstroIntegration } from '@master/css-astro'
 
 export default defineConfig({
   integrations: [
-    masterCSS({
+    createMasterCSSAstroIntegration({
       mode: 'static'
     })
   ]
@@ -102,9 +102,9 @@ Default options:
 
 | Option | Default | Description |
 | --- | --- | --- |
+| `enabled` | `true` | Enables the integration. |
 | `mode` | `'progressive'` | Astro defaults to progressive rendering. |
-| `scanner` | `undefined` | Scanner options passed through to the shared Vite pipeline. |
-| `injectRuntime` | `true` | Injects the browser runtime when the selected mode needs it. |
-| `avoidFOUC` | `true` | Adds runtime-mode FOUC protection. |
+| `scanner` | `{}` | Scanner configuration passed through to the shared Vite pipeline. |
+| `runtime` | `{ enabled: true, avoidFOUC: true }` | Controls runtime injection and FOUC protection. |
 
 See the [Astro installation guide](https://rc.css.master.co/guide/installation/astro) for a full project setup.

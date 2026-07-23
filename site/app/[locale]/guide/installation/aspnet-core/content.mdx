@@ -21,6 +21,7 @@ Use Vite runtime rendering when ASP.NET Core owns Razor Pages or MVC views. ASP.
     </StepL>
     <StepR>
       ```bash name=Terminal
+      npm install @master/css@rc @master/css-runtime@rc
       npm install -D vite @master/css-vite@rc
       ```
     </StepR>
@@ -33,11 +34,11 @@ Use Vite runtime rendering when ASP.NET Core owns Razor Pages or MVC views. ASP.
     <StepR>
       ```ts name=vite.config.ts
       import { defineConfig } from 'vite'
-      import masterCSS from '@master/css-vite'
+      import { createMasterCSSVitePlugin } from '@master/css-vite'
 
       export default defineConfig({
         plugins: [
-          masterCSS({ mode: 'runtime', injectRuntime: false })
+          createMasterCSSVitePlugin({ mode: 'runtime', runtime: false })
         ],
         build: {
           outDir: 'wwwroot/assets',
@@ -61,8 +62,13 @@ Use Vite runtime rendering when ASP.NET Core owns Razor Pages or MVC views. ASP.
     </StepL>
     <StepR>
       ```ts name=src/main.ts
-      import '@master/css-vite/runtime'
+      import { MasterCSSRuntime } from '@master/css-runtime'
+      import manifest from 'virtual:master-css-manifest'
+      import emittedGlobals from 'virtual:master-css-emitted-globals'
       import './app.css'
+
+      const runtime = await MasterCSSRuntime.start({ manifest, emittedGlobals })
+      runtime.observe()
       ```
 
       ```css name=src/app.css

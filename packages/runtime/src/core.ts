@@ -1,17 +1,17 @@
 import {
   createEngine,
-  MasterCSSEngineError,
-  type MasterCSSEngine
+  type MasterCSSEngine,
+  type MasterCSSEngineResources,
+  type MasterCSSEngineSnapshot,
+  type MasterCSSEngineTransition
 } from '@master/css'
 import type { MasterCSSEmittedGlobals } from '@master/css-schema/emitted-globals'
-import type {
-  MasterCSSBackend,
-  MasterCSSDiagnostic,
-  MasterCSSEngineResourcesIR,
-  MasterCSSEngineSnapshotIR,
-  MasterCSSEngineTransitionIR,
-  MasterCSSResolvedBackend
+import {
+  MASTER_CSS_DIAGNOSTIC_VERSION,
+  MasterCSSError,
+  MasterCSSDiagnostic
 } from '@master/css-schema'
+import type { MasterCSSBackend, MasterCSSResolvedBackend } from '@master/css-backend'
 import {
   flattenMasterCSSManifestVariables,
   type MasterCSSManifest,
@@ -73,27 +73,73 @@ interface RuntimeNonLayer {
   tokenCounts: Map<string, number>
 }
 
-export interface CSSRuntimeCreateOptions {
-  manifest: MasterCSSManifest
-  root?: Document | ShadowRoot
-  emittedGlobals?: MasterCSSEmittedGlobals
-  hydrationManifest?: MasterCSSHydrationManifest
+export interface MasterCSSRuntimeOptions {
+  readonly manifest: MasterCSSManifest
+  readonly root?: Document | ShadowRoot
+  readonly emittedGlobals?: MasterCSSEmittedGlobals
+  readonly hydrationManifest?: MasterCSSHydrationManifest
 }
 
-export interface CSSRuntimeStartOptions extends CSSRuntimeCreateOptions {
-  backend?: MasterCSSBackend
-  startupTimeoutMs?: number
-  onError?: (diagnostic: MasterCSSDiagnostic) => void
+export interface MasterCSSRuntimeStartOptions extends MasterCSSRuntimeOptions {
+  readonly backend?: MasterCSSBackend
+  readonly startupTimeoutMs?: number
+  readonly onDiagnostic?: (diagnostic: MasterCSSDiagnostic) => void
+}
+
+export interface MasterCSSRuntimeRuleSnapshot {
+  readonly key: string
+  readonly layer: MasterCSSManifestUtilityLayerName
+  readonly text: string
+}
+
+export interface MasterCSSRuntimeClassSnapshot {
+  readonly usageCount: number
+  readonly retained: boolean
+  readonly rules: readonly MasterCSSRuntimeRuleSnapshot[]
+}
+
+export interface MasterCSSRuntimeLayerSnapshot {
+  readonly name: typeof LAYER_ORDER[number] | 'keyframes'
+  readonly cssText: string
+  readonly ruleCount: number
+}
+
+export interface MasterCSSRuntimeSnapshot {
+  readonly backend: MasterCSSResolvedBackend
+  readonly cssText: string
+  readonly observing: boolean
+  readonly classRules: Readonly<Record<string, MasterCSSRuntimeClassSnapshot>>
+  readonly usageCounts: Readonly<Record<string, number>>
+  readonly layers: readonly MasterCSSRuntimeLayerSnapshot[]
+  readonly hydration: {
+    readonly state: 'none' | 'runtime' | 'progressive'
+    readonly manifestLoaded: boolean
+    readonly failureReason?: string
+  }
+}
+
+export interface MasterCSSRuntimeFacade extends Disposable {
+  readonly backend: MasterCSSResolvedBackend
+  observe(): this
+  disconnect(): this
+  refresh(manifest?: MasterCSSManifest): this
+  ensureClassRules(classNames: readonly string[]): MasterCSSEngineTransition
+  deleteClassRules(classNames: readonly string[]): MasterCSSEngineTransition
+  snapshot(): MasterCSSRuntimeSnapshot
+  dispose(): void
 }
 
 export const MASTER_CSS_RUNTIME_STARTUP_TIMEOUT_MS = 3000
 
 function toStartupDiagnostic(error: unknown): MasterCSSDiagnostic {
-  if (error instanceof MasterCSSEngineError) return error.toDiagnostic()
-  return {
+  if (error instanceof MasterCSSError && error.diagnostics[0]) return error.diagnostics[0]
+  return Object.freeze({
+    version: MASTER_CSS_DIAGNOSTIC_VERSION,
     code: 'INTERNAL',
+    domain: 'runtime',
+    severity: 'error',
     message: error instanceof Error ? error.message : String(error)
-  }
+  })
 }
 
 function isDocumentRoot(root: Document | ShadowRoot): root is Document {
@@ -120,7 +166,11 @@ function validateHydrationManifest(hydrationManifest: unknown): MasterCSSHydrati
 }
 
 function invalidHydrationManifest(message: string, cause?: unknown) {
-  return new MasterCSSEngineError('INVALID_HYDRATION_MANIFEST', message, { cause })
+  return new MasterCSSError({
+    code: 'INVALID_HYDRATION_MANIFEST',
+    domain: 'runtime',
+    message
+  }, { cause })
 }
 
 function parseHydrationManifest(source: string): MasterCSSHydrationManifest {
@@ -159,7 +209,7 @@ async function importHydrationManifest(url: string): Promise<MasterCSSHydrationM
     if (hydrationManifest) return hydrationManifest
     throw invalidHydrationManifest(`Invalid Master CSS hydration manifest loaded from ${url}.`)
   } catch (cause) {
-    if (cause instanceof MasterCSSEngineError) throw cause
+    if (cause instanceof MasterCSSError) throw cause
     throw invalidHydrationManifest(`Cannot load the Master CSS hydration manifest from ${url}.`, cause)
   }
 }
@@ -203,30 +253,62 @@ function cloneEmittedGlobals(emittedGlobals?: MasterCSSEmittedGlobals): Required
   }
 }
 
-export default class CSSRuntime {
-  static instances = new WeakMap<Document | ShadowRoot, CSSRuntime>()
-  private static starts = new WeakMap<Document | ShadowRoot, Promise<CSSRuntime>>()
+export class MasterCSSRuntime implements Disposable {
+  static #instances = new WeakMap<Document | ShadowRoot, MasterCSSRuntime>()
+  static #starts = new WeakMap<Document | ShadowRoot, Promise<MasterCSSRuntime>>()
 
-  readonly host: Element
-  readonly container: HTMLElement | ShadowRoot
-  readonly baseLayer = new RuntimeUtilityLayer('base', this)
-  readonly themeLayer = new RuntimeThemeLayer('theme', this)
-  readonly defaultsLayer = new RuntimeUtilityLayer('defaults', this)
-  readonly componentsLayer = new RuntimeUtilityLayer('components', this)
-  readonly utilitiesLayer = new RuntimeUtilityLayer('utilities', this)
-  readonly classUtilities = new Map<string, HydratedGeneratedRule[]>()
-  readonly animationsNonLayer: RuntimeNonLayer = { rules: [], tokenCounts: new Map() }
-  readonly classCounts = new Map<string, number>()
-  readonly retainedClassNames = new Set<string>()
-  readonly emittedGlobals: Required<MasterCSSEmittedGlobals>
-  readonly variables = new Map<string, MasterCSSManifestVariableEntry>()
-  readonly animations = new Map<string, unknown>()
+  private readonly host: Element
+  private readonly container: HTMLElement | ShadowRoot
+  private readonly insertRuntimeLayerRule = (
+    layer: RuntimeLayer,
+    rule: RuntimeLayerRule,
+    index: number
+  ) => this.insertLayerRule(layer, rule, index)
+  private readonly deleteRuntimeLayerRule = (
+    layer: RuntimeLayer,
+    rule: RuntimeLayerRule,
+    index: number
+  ) => this.deleteLayerRule(layer, rule, index)
+  private readonly baseLayer = new RuntimeUtilityLayer(
+    'base',
+    this.insertRuntimeLayerRule,
+    this.deleteRuntimeLayerRule
+  )
+  private readonly themeLayer = new RuntimeThemeLayer(
+    'theme',
+    this.insertRuntimeLayerRule,
+    this.deleteRuntimeLayerRule
+  )
+  private readonly defaultsLayer = new RuntimeUtilityLayer(
+    'defaults',
+    this.insertRuntimeLayerRule,
+    this.deleteRuntimeLayerRule
+  )
+  private readonly componentsLayer = new RuntimeUtilityLayer(
+    'components',
+    this.insertRuntimeLayerRule,
+    this.deleteRuntimeLayerRule
+  )
+  private readonly utilitiesLayer = new RuntimeUtilityLayer(
+    'utilities',
+    this.insertRuntimeLayerRule,
+    this.deleteRuntimeLayerRule
+  )
+  private readonly classUtilities = new Map<string, HydratedGeneratedRule[]>()
+  private readonly animationsNonLayer: RuntimeNonLayer = { rules: [], tokenCounts: new Map() }
+  private readonly classCounts = new Map<string, number>()
+  private readonly retainedClassNames = new Set<string>()
+  private readonly emittedGlobals: Required<MasterCSSEmittedGlobals>
+  private readonly variables = new Map<string, MasterCSSManifestVariableEntry>()
+  private readonly animations = new Map<string, unknown>()
 
-  manifest: MasterCSSManifest
-  style: HTMLStyleElement | null = null
-  observer?: MutationObserver
-  progressive = false
-  observing = false
+  private manifest: MasterCSSManifest
+  private style: HTMLStyleElement | null = null
+  private observer?: MutationObserver
+  private progressive = false
+  private observing = false
+  private disposed = false
+  private globalFacade?: MasterCSSRuntimeFacade
 
   private readonly classTracker = new RuntimeClassTracker()
   private readonly pendingAddedClassNames = new Set<string>()
@@ -240,11 +322,11 @@ export default class CSSRuntime {
   private hydrationFailureReason?: string
 
   private constructor(
-    public readonly root: Document | ShadowRoot,
+    private readonly root: Document | ShadowRoot,
     manifest: MasterCSSManifest,
     emittedGlobals: MasterCSSEmittedGlobals | undefined,
-    public hydrationManifest: MasterCSSHydrationManifest | undefined,
-    readonly backendEngine: MasterCSSEngine
+    private hydrationManifest: MasterCSSHydrationManifest | undefined,
+    private readonly backendEngine: MasterCSSEngine
   ) {
     this.manifest = manifest
     this.emittedGlobals = cloneEmittedGlobals(emittedGlobals)
@@ -258,39 +340,35 @@ export default class CSSRuntime {
     return this.backendEngine.backend
   }
 
-  get text() {
-    return this.backendEngine.text
-  }
-
-  get rules() {
+  private get rules() {
     const layers = LAYER_ORDER
       .map((name) => this.getLayerByName(name))
       .filter((layer): layer is RuntimeLayer => Boolean(layer?.text))
     return [...layers, ...this.animationsNonLayer.rules]
   }
 
-  static async start(options: CSSRuntimeStartOptions): Promise<CSSRuntime> {
+  static async start(options: MasterCSSRuntimeStartOptions): Promise<MasterCSSRuntime> {
     const root = options.root || document
-    const current = CSSRuntime.instances.get(root)
+    const current = MasterCSSRuntime.#instances.get(root)
     if (current) {
       current.registerEmittedGlobals(options.emittedGlobals)
       if (options.hydrationManifest !== undefined) current.setHydrationManifest(options.hydrationManifest)
       return current
     }
-    const pending = CSSRuntime.starts.get(root)
+    const pending = MasterCSSRuntime.#starts.get(root)
     if (pending) return await pending
 
-    const startup = CSSRuntime.startNew(root, options)
-      .finally(() => CSSRuntime.starts.delete(root))
-    CSSRuntime.starts.set(root, startup)
+    const startup = MasterCSSRuntime.startNew(root, options)
+      .finally(() => MasterCSSRuntime.#starts.delete(root))
+    MasterCSSRuntime.#starts.set(root, startup)
     return await startup
   }
 
-  private static async startNew(root: Document | ShadowRoot, options: CSSRuntimeStartOptions) {
+  private static async startNew(root: Document | ShadowRoot, options: MasterCSSRuntimeStartOptions) {
     const {
       backend = 'auto',
       startupTimeoutMs = MASTER_CSS_RUNTIME_STARTUP_TIMEOUT_MS,
-      onError
+      onDiagnostic
     } = options
     const ownerWindow = (isDocumentRoot(root) ? root : root.ownerDocument).defaultView || globalThis
     let abandoned = false
@@ -305,10 +383,11 @@ export default class CSSRuntime {
     })
     const hydrationPromise = resolveHydrationManifest(root, options.hydrationManifest)
     const timeoutPromise = new Promise<never>((_, reject) => {
-      timeoutHandle = ownerWindow.setTimeout(() => reject(new MasterCSSEngineError(
-        'RUNTIME_STARTUP_TIMEOUT',
-        `Master CSS runtime did not start within ${startupTimeoutMs}ms.`
-      )), startupTimeoutMs)
+      timeoutHandle = ownerWindow.setTimeout(() => reject(new MasterCSSError({
+        code: 'RUNTIME_STARTUP_TIMEOUT',
+        domain: 'runtime',
+        message: `Master CSS runtime did not start within ${startupTimeoutMs}ms.`
+      })), startupTimeoutMs)
     })
 
     try {
@@ -317,7 +396,7 @@ export default class CSSRuntime {
         timeoutPromise
       ])
       if (timeoutHandle !== undefined) ownerWindow.clearTimeout(timeoutHandle)
-      return new CSSRuntime(
+      return new MasterCSSRuntime(
         root,
         options.manifest,
         options.emittedGlobals,
@@ -328,7 +407,7 @@ export default class CSSRuntime {
       abandoned = true
       if (timeoutHandle !== undefined) ownerWindow.clearTimeout(timeoutHandle)
       getRootHost(root).removeAttribute('hidden')
-      onError?.(toStartupDiagnostic(error))
+      onDiagnostic?.(toStartupDiagnostic(error))
       throw error
     }
   }
@@ -344,25 +423,68 @@ export default class CSSRuntime {
     }
   }
 
-  register(): this {
-    const registered = CSSRuntime.instances.get(this.root) === this
-    CSSRuntime.instances.set(this.root, this)
+  private register(): this {
+    const registered = MasterCSSRuntime.#instances.get(this.root) === this
+    MasterCSSRuntime.#instances.set(this.root, this)
     if (isDocumentRoot(this.root)) {
-      this.root.defaultView!.globalThis.masterCSSRuntime = this
+      this.root.defaultView!.globalThis.masterCSSRuntime = this.getGlobalFacade()
     }
     if (!registered && process.env.NODE_ENV === 'development') debugRuntimeCreated(this)
     return this
   }
 
-  unregister(): this {
-    CSSRuntime.instances.delete(this.root)
-    if (isDocumentRoot(this.root) && this.root.defaultView!.globalThis.masterCSSRuntime === this) {
-      this.root.defaultView!.globalThis.masterCSSRuntime = undefined as unknown as CSSRuntime
+  private unregister(): this {
+    MasterCSSRuntime.#instances.delete(this.root)
+    if (
+      isDocumentRoot(this.root)
+      && this.root.defaultView!.globalThis.masterCSSRuntime === this.globalFacade
+    ) {
+      this.root.defaultView!.globalThis.masterCSSRuntime = undefined
     }
     return this
   }
 
-  registerEmittedGlobals(emittedGlobals?: MasterCSSEmittedGlobals) {
+  private getGlobalFacade(): MasterCSSRuntimeFacade {
+    if (this.globalFacade) return this.globalFacade
+    let facade: MasterCSSRuntimeFacade
+    facade = Object.freeze({
+      get backend() {
+        return thisRuntime.backend
+      },
+      observe() {
+        thisRuntime.observe()
+        return facade
+      },
+      disconnect() {
+        thisRuntime.disconnect()
+        return facade
+      },
+      refresh(manifest?: MasterCSSManifest) {
+        thisRuntime.refresh(manifest)
+        return facade
+      },
+      ensureClassRules(classNames: readonly string[]) {
+        return thisRuntime.ensureClassRules(classNames)
+      },
+      deleteClassRules(classNames: readonly string[]) {
+        return thisRuntime.deleteClassRules(classNames)
+      },
+      snapshot() {
+        return thisRuntime.snapshot()
+      },
+      dispose() {
+        thisRuntime.dispose()
+      },
+      [Symbol.dispose]() {
+        thisRuntime.dispose()
+      }
+    })
+    const thisRuntime = this
+    this.globalFacade = facade
+    return facade
+  }
+
+  private registerEmittedGlobals(emittedGlobals?: MasterCSSEmittedGlobals) {
     if (!emittedGlobals) return this
     const snapshot = this.backendEngine.snapshot()
     this.syncResourceSnapshot(snapshot.resources)
@@ -379,17 +501,8 @@ export default class CSSRuntime {
     return this
   }
 
-  setHydrationManifest(hydrationManifest?: MasterCSSHydrationManifest): this {
+  private setHydrationManifest(hydrationManifest?: MasterCSSHydrationManifest): this {
     this.hydrationManifest = hydrationManifest
-    return this
-  }
-
-  needsHydrationManifest() {
-    return this.hydrationManifest === undefined && Boolean(readExternalHydrationManifestSource(this.root))
-  }
-
-  async loadHydrationManifest(): Promise<this> {
-    this.hydrationManifest = await resolveHydrationManifest(this.root, this.hydrationManifest)
     return this
   }
 
@@ -444,7 +557,7 @@ export default class CSSRuntime {
     return layer.native
   }
 
-  insertLayerRule(layer: RuntimeLayer, rule: RuntimeLayerRule, index: number) {
+  private insertLayerRule(layer: RuntimeLayer, rule: RuntimeLayerRule, index: number) {
     const nativeLayer = this.ensureNativeLayer(layer)
     if (!nativeLayer) return
     let nativeIndex = 0
@@ -464,7 +577,7 @@ export default class CSSRuntime {
     }
   }
 
-  deleteLayerRule(layer: RuntimeLayer, rule: RuntimeLayerRule, index: number) {
+  private deleteLayerRule(layer: RuntimeLayer, rule: RuntimeLayerRule, index: number) {
     const nativeLayer = layer.native
     if (!nativeLayer) return
     let nativeIndex = 0
@@ -568,7 +681,7 @@ export default class CSSRuntime {
     }
   }
 
-  private syncResourceSnapshot(resources: MasterCSSEngineResourcesIR) {
+  private syncResourceSnapshot(resources: MasterCSSEngineResources) {
     this.themeLayer.resourceText = resources.themeText || ''
     this.themeLayer.rules.length = 0
     this.themeLayer.tokenCounts.clear()
@@ -598,7 +711,7 @@ export default class CSSRuntime {
     }
   }
 
-  private applyTransition(transition: MasterCSSEngineTransitionIR) {
+  private applyTransition(transition: MasterCSSEngineTransition) {
     for (const mutation of transition.mutations) {
       if (mutation.target === 'theme') {
         this.setThemeResource(mutation.op === 'insert' ? mutation.text : '')
@@ -612,7 +725,11 @@ export default class CSSRuntime {
       const layer = this.getUtilityLayerByName(mutation.target)
       if (mutation.op === 'insert') {
         if (!mutation.rule) {
-          throw new MasterCSSEngineError('INTERNAL', `Missing generated rule IR for ${mutation.key}.`)
+          throw new MasterCSSError({
+            code: 'INTERNAL',
+            domain: 'runtime',
+            message: `Missing generated rule contract for ${mutation.key}.`
+          })
         }
         const rule = new HydratedGeneratedRule(mutation.rule, layer)
         layer.insert(rule, mutation.index)
@@ -625,7 +742,7 @@ export default class CSSRuntime {
     this.syncResourceSnapshot(this.backendEngine.snapshot().resources)
   }
 
-  private adoptSnapshot(snapshot: MasterCSSEngineSnapshotIR, preserveStyle = false) {
+  private adoptSnapshot(snapshot: MasterCSSEngineSnapshot, preserveStyle = false) {
     this.resetHostRuleState()
     if (!this.style) return
     if (!preserveStyle) this.style.textContent = snapshot.text
@@ -684,7 +801,7 @@ export default class CSSRuntime {
     this.progressive = false
     this.createRuntimeStyle()
     this.adoptSnapshot(this.backendEngine.snapshot())
-    this.ensureClassRules(...connectedNames)
+    this.ensureClassRules([...connectedNames])
   }
 
   private detectRuntimeStyle() {
@@ -756,7 +873,7 @@ export default class CSSRuntime {
     })
   }
 
-  hydrate(nativeLayerRules: CSSRuleList): HydrateResult | undefined {
+  private hydrate(nativeLayerRules: CSSRuleList): HydrateResult | undefined {
     this.hydrationFailureReason = undefined
     const manifest = this.hydrationManifest
     if (manifest?.version !== 1 || !Array.isArray(manifest.rules)) {
@@ -798,13 +915,13 @@ export default class CSSRuntime {
     }
     const hydratedClassNames = new Set(hydrateResult.allUtilities.map(({ name }) => name))
     const missing = [...connectedNames].filter((className) => !hydratedClassNames.has(className))
-    if (missing.length) this.ensureClassRules(...missing)
+    if (missing.length) this.ensureClassRules(missing)
   }
 
   private renderRuntimeStyle(connectedNames: Set<string>) {
     this.createRuntimeStyle()
     this.adoptSnapshot(this.backendEngine.snapshot())
-    this.ensureClassRules(...connectedNames)
+    this.ensureClassRules([...connectedNames])
   }
 
   private getAnimationFrameWindow() {
@@ -997,7 +1114,7 @@ export default class CSSRuntime {
       this.retainedClassRules.delete(className)
       if (!this.classCounts.has(className)) removedClassNames.push(className)
     }
-    if (removedClassNames.length) this.deleteClassRules(...removedClassNames)
+    if (removedClassNames.length) this.deleteClassRules(removedClassNames)
     return removedClassNames.length
   }
 
@@ -1006,13 +1123,6 @@ export default class CSSRuntime {
     if (this.retainedClassNames.size && (force
       || this.retainedClassNames.size > RETAINED_CLASS_RULE_SOFT_TARGET
       || this.exceedsRetainedClassRuleHardLimits())) this.scheduleRetainedClassRuleCleanup()
-    return removedCount
-  }
-
-  flushRetainedClassRules() {
-    this.cancelRetainedClassRuleCleanup()
-    const removedCount = this.cleanupRetainedClassRules(true)
-    if (this.retainedClassNames.size) this.scheduleRetainedClassRuleCleanup()
     return removedCount
   }
 
@@ -1027,7 +1137,7 @@ export default class CSSRuntime {
     const classNames = [...this.pendingAddedClassNames]
       .filter((className) => this.classCounts.has(className))
     this.pendingAddedClassNames.clear()
-    if (classNames.length) this.ensureClassRules(...classNames)
+    if (classNames.length) this.ensureClassRules(classNames)
   }
 
   private handleMutationRecords(records: MutationRecord[]) {
@@ -1052,16 +1162,18 @@ export default class CSSRuntime {
         removedClassNames.push(className)
       }
     }
-    if (warmClassNames.length) this.ensureClassRules(...warmClassNames)
+    if (warmClassNames.length) this.ensureClassRules(warmClassNames)
     if (queuedClassNames.length) this.queueAddedClassNames(queuedClassNames)
     if (removedClassNames.length) {
       this.cancelPendingAddedClassNames(removedClassNames)
       this.queueRemovedClassNames(removedClassNames)
     }
-    if (process.env.NODE_ENV === 'development') debugRuntimeMutation(records, deltaCounts, this)
+    if (process.env.NODE_ENV === 'development') {
+      debugRuntimeMutation(records, deltaCounts, this.root, this.host, this.snapshot())
+    }
   }
 
-  ensureClassRules(...classNames: string[]) {
+  ensureClassRules(classNames: readonly string[]) {
     this.cancelPendingAddedClassNames(classNames)
     this.cancelPendingRemovedClassNames(classNames)
     this.cancelRetainedClassNames(classNames)
@@ -1084,7 +1196,7 @@ export default class CSSRuntime {
     return transition
   }
 
-  deleteClassRules(...classNames: string[]) {
+  deleteClassRules(classNames: readonly string[]) {
     this.cancelPendingAddedClassNames(classNames)
     this.cancelPendingRemovedClassNames(classNames)
     this.cancelRetainedClassNames(classNames)
@@ -1161,13 +1273,74 @@ export default class CSSRuntime {
     return this
   }
 
-  destroy() {
+  snapshot(): MasterCSSRuntimeSnapshot {
+    const usageCounts = Object.freeze(Object.fromEntries(this.classCounts))
+    const classNames = new Set([
+      ...this.classUtilities.keys(),
+      ...this.classCounts.keys(),
+      ...this.retainedClassNames
+    ])
+    const classRules: Record<string, MasterCSSRuntimeClassSnapshot> = Object.create(null)
+    for (const className of [...classNames].sort()) {
+      const rules = (this.classUtilities.get(className) || []).map((rule) => Object.freeze({
+        key: rule.key,
+        layer: rule.layer.name as MasterCSSManifestUtilityLayerName,
+        text: rule.text
+      }))
+      classRules[className] = Object.freeze({
+        usageCount: this.classCounts.get(className) || 0,
+        retained: this.retainedClassNames.has(className),
+        rules: Object.freeze(rules)
+      })
+    }
+    const layers: MasterCSSRuntimeLayerSnapshot[] = [
+      ...LAYER_ORDER.map((name) => {
+        const layer = this.getLayerByName(name)!
+        return Object.freeze({
+          name,
+          cssText: layer.text,
+          ruleCount: layer.rules.length
+        })
+      }),
+      Object.freeze({
+        name: 'keyframes' as const,
+        cssText: this.animationsNonLayer.rules.map(({ text }) => text).join(''),
+        ruleCount: this.animationsNonLayer.rules.length
+      })
+    ]
+    return Object.freeze({
+      backend: this.backend,
+      cssText: this.backendEngine.snapshot().text,
+      observing: this.observing,
+      classRules: Object.freeze(classRules),
+      usageCounts,
+      layers: Object.freeze(layers),
+      hydration: Object.freeze({
+        state: this.progressive
+          ? 'progressive' as const
+          : this.style
+            ? 'runtime' as const
+            : 'none' as const,
+        manifestLoaded: this.hydrationManifest !== undefined,
+        ...(this.hydrationFailureReason
+          ? { failureReason: this.hydrationFailureReason }
+          : {})
+      })
+    })
+  }
+
+  dispose() {
+    if (this.disposed) return
     this.disconnect()
     this.backendEngine.dispose()
     this.unregister()
+    this.disposed = true
     if (process.env.NODE_ENV === 'development') debugRuntimeDestroyed(this)
-    return this
+  }
+
+  [Symbol.dispose]() {
+    this.dispose()
   }
 }
 
-registerGlobal(CSSRuntime)
+registerGlobal(MasterCSSRuntime)

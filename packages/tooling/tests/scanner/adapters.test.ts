@@ -1,9 +1,9 @@
 import { describe, expect, test } from 'vitest'
-import CSSScanner from '../../src/scanner'
+import { MasterCSSScanner } from './test-scanner'
 
 describe('scanner source adapters', () => {
   test('uses the built-in source extraction pipeline by default', async () => {
-    const scanner = await new CSSScanner({}).init()
+    const scanner = await new MasterCSSScanner({}).init()
 
     await expect(scanner.collectCandidates('index.html', `
       <div class="block mx:auto"></div>
@@ -19,7 +19,7 @@ describe('scanner source adapters', () => {
   })
 
   test('auto extracts framework source files by extension', async () => {
-    const scanner = await new CSSScanner({}).init()
+    const scanner = await new MasterCSSScanner({}).init()
 
     await expect(scanner.collectCandidates('component.vue', `
       <template><div class="block"></div></template>

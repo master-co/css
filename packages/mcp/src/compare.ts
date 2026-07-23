@@ -1,11 +1,12 @@
 import { createRequire } from 'node:module'
-import type { LanguageSession } from '@master/css-tooling/language'
+import { renderClassNamesSync } from '@master/css/node'
+import type { MasterCSSToolingSession } from '@master/css-tooling'
+import { supportsNativeDeclaration } from '@master/css-tooling/node'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
-import { createServerCSS, parseHTML } from '@master/css-server'
 import type MasterCSSMCPContext from './context'
 import { createMCPTextDocument } from './document'
 import { loadWorkspaceManifest } from './project'
-import { createMCPRustLanguageSession } from './rust-language'
+import { createMCPToolingSession } from './tooling-session'
 
 const CSS_COMPARE_VERSION = 1
 const require = createRequire(import.meta.url)
@@ -21,7 +22,7 @@ export interface CompareCSSOptions {
   filePath?: string
 }
 
-function unique(values: string[]) {
+function unique(values: readonly string[]) {
   return [...new Set(values)]
 }
 
@@ -32,7 +33,7 @@ function splitClassList(value: string | undefined) {
 function extractContentClasses(
   content: string | undefined,
   filePath: string,
-  session: LanguageSession
+  session: MasterCSSToolingSession
 ) {
   if (content === undefined) return []
   const document = createMCPTextDocument(filePath, content)
@@ -48,28 +49,29 @@ function resolveClasses(
   options: CompareCSSOptions,
   side: 'before' | 'after',
   filePath: string,
-  session: LanguageSession
+  session: MasterCSSToolingSession
 ) {
   const classList = side === 'before' ? options.beforeClassList : options.afterClassList
   const html = side === 'before' ? options.beforeHtml : options.afterHtml
   const content = side === 'before' ? options.beforeContent : options.afterContent
   if (classList !== undefined) return splitClassList(classList)
-  if (html !== undefined) return unique(parseHTML(html).classes)
+  if (html !== undefined) {
+    return unique(session.extractSource({
+      files: [{ source: filePath, content: html, kind: 'html' }]
+    }).files[0]?.candidates ?? [])
+  }
   return extractContentClasses(content, filePath, session)
 }
 
 function renderClasses(manifest: MasterCSSManifest, classes: string[]) {
-  const css = createServerCSS(manifest)
-  try {
-    css.ensureClassRules(...classes)
-    const text = css.text
-    return {
-      text,
-      bytes: text.length,
-      invalid: classes.filter((className) => !css.classUtilities.has(className))
-    }
-  } finally {
-    css.dispose()
+  const rendered = renderClassNamesSync(classes, {
+    manifest,
+    supportsNativeDeclaration: supportsNativeDeclaration
+  })
+  return {
+    text: rendered.cssText,
+    bytes: rendered.cssText.length,
+    invalid: [...rendered.invalidClassNames]
   }
 }
 
@@ -102,7 +104,7 @@ export async function compareCSS(context: MasterCSSMCPContext, options: CompareC
   const manifest = await loadWorkspaceManifest(context)
   const filePath = context.resolveVirtualPath(options.filePath || 'index.html')
   const activeManifest = manifest.status === 'loaded' ? manifest.manifest : defaultManifest
-  const session = await createMCPRustLanguageSession(activeManifest)
+  const session = createMCPToolingSession(activeManifest)
   try {
     const beforeClasses = resolveClasses(options, 'before', filePath, session)
     const afterClasses = resolveClasses(options, 'after', filePath, session)

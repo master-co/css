@@ -120,8 +120,8 @@ function assertMasterCSSSetup(projectDir: string, variant: string) {
   const packageJSON = JSON.parse(readProjectFile(projectDir, 'package.json'))
   expect(packageJSON.dependencies['@master/css']).toBe('rc')
   expect(packageJSON.dependencies['@master/css-svelte']).toBe('rc')
-  expect(packageJSON.dependencies['@master/css-sv']).toBeUndefined()
-  expect(packageJSON.devDependencies?.['@master/css-sv']).toBeUndefined()
+  expect(packageJSON.dependencies['@master/css-svelte-addon']).toBeUndefined()
+  expect(packageJSON.devDependencies?.['@master/css-svelte-addon']).toBeUndefined()
 
   const viteConfig = readProjectFile(projectDir, viteConfigPath(variant))
   expect(viteConfig).toContain("from '@master/css-svelte/vite'")

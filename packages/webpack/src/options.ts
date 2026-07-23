@@ -1,43 +1,41 @@
-import type { ScannerOptions } from '@master/css-tooling/scanner'
+import type {
+  MasterCSSIntegrationRuntimeOptions,
+  MasterCSSRenderingMode
+} from '@master/css-schema/integration'
+import type { MasterCSSScannerConfiguration } from '@master/css-tooling/scanner/node'
 
-export type Mode = 'runtime' | 'static' | 'progressive' | 'pre-render' | null
-
-export interface PluginOptions {
-  mode?: Mode
-  injectRuntime?: boolean
-  scanner?: ScannerOptions
+export interface MasterCSSWebpackPluginOptions {
+  enabled?: boolean
+  mode?: MasterCSSRenderingMode
+  runtime?: boolean | MasterCSSIntegrationRuntimeOptions
+  scanner?: MasterCSSScannerConfiguration
 }
 
-export interface ResolvedPluginOptions {
-  mode: Mode
+export interface ResolvedMasterCSSWebpackPluginOptions {
+  enabled: boolean
+  mode: MasterCSSRenderingMode
   injectRuntime: boolean
-  scanner: ScannerOptions
+  scanner: MasterCSSScannerConfiguration
 }
 
-function isPluginOptions(options: ScannerOptions | PluginOptions): options is PluginOptions {
-  return 'mode' in options || 'injectRuntime' in options || 'scanner' in options
-}
-
-export function resolvePluginOptions(options: ScannerOptions | PluginOptions = {}): ResolvedPluginOptions {
-  if (isPluginOptions(options)) {
-    return {
-      mode: options.mode === undefined ? 'runtime' : options.mode,
-      injectRuntime: options.injectRuntime ?? true,
-      scanner: options.scanner ?? {}
-    }
-  }
-
+export function resolveMasterCSSWebpackPluginOptions(
+  options: MasterCSSWebpackPluginOptions = {}
+): ResolvedMasterCSSWebpackPluginOptions {
+  const runtime = typeof options.runtime === 'object'
+    ? options.runtime
+    : { enabled: options.runtime }
   return {
-    mode: 'runtime',
-    injectRuntime: true,
-    scanner: options
+    enabled: options.enabled ?? true,
+    mode: options.mode ?? 'runtime',
+    injectRuntime: runtime.enabled ?? true,
+    scanner: options.scanner ?? {}
   }
 }
 
-export function shouldInjectRuntime(options: ResolvedPluginOptions) {
+export function shouldInjectRuntime(options: ResolvedMasterCSSWebpackPluginOptions) {
   return options.injectRuntime && (options.mode === 'runtime' || options.mode === 'progressive')
 }
 
-export function shouldPreloadRuntime(options: ResolvedPluginOptions) {
+export function shouldPreloadRuntime(options: ResolvedMasterCSSWebpackPluginOptions) {
   return options.injectRuntime && options.mode === 'runtime'
 }

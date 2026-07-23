@@ -4,7 +4,7 @@ import { basename, join } from 'node:path'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { createComposedAdapter, renderNextBuildOutputs } from '../src/adapter'
 import type { NextAdapter } from 'next'
-import { ServerCSS, ServerRenderer } from '@master/css-server'
+import { MasterCSSServerRenderer } from '@master/css-server'
 import {
   MASTER_CSS_HYDRATION_MANIFEST_ATTR,
   MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID
@@ -109,12 +109,12 @@ afterEach(() => {
 })
 
 describe('renderNextBuildOutputs', () => {
-  it('disposes each Rust render session after materializing its output', async () => {
+  it('disposes the build renderer after materializing its output', async () => {
     const projectDir = createFixtureDir()
     const htmlFile = join(projectDir, '.next/server/app/index.html')
     mkdirSync(join(projectDir, '.next/server/app'), { recursive: true })
     writeFileSync(htmlFile, '<!doctype html><html><head></head><body><h1 class="fg:red">Hello</h1></body></html>')
-    const dispose = vi.spyOn(ServerCSS.prototype, 'dispose')
+    const dispose = vi.spyOn(MasterCSSServerRenderer.prototype, 'dispose')
 
     await renderNextBuildOutputs(createBuildContext(projectDir, htmlFile))
 
@@ -137,7 +137,7 @@ describe('renderNextBuildOutputs', () => {
       pathname: '/second',
       immutableHash: undefined
     })
-    const dispose = vi.spyOn(ServerRenderer.prototype, 'dispose')
+    const dispose = vi.spyOn(MasterCSSServerRenderer.prototype, 'dispose')
 
     await renderNextBuildOutputs(context)
 
@@ -153,7 +153,7 @@ describe('renderNextBuildOutputs', () => {
   it('disposes the build renderer when an output fails', async () => {
     const projectDir = createFixtureDir()
     const missingFile = join(projectDir, '.next/server/app/missing.html')
-    const dispose = vi.spyOn(ServerRenderer.prototype, 'dispose')
+    const dispose = vi.spyOn(MasterCSSServerRenderer.prototype, 'dispose')
 
     await expect(renderNextBuildOutputs(
       createBuildContext(projectDir, missingFile)

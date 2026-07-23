@@ -3,20 +3,20 @@ import type { RuleContext, RuleListener } from '@typescript-eslint/utils/ts-esli
 import { Settings } from '../settings'
 import withVisitClassNode from './with-visit-class-node'
 import resolveClassNode from './resolve-class-node'
-import type { LintSession } from '@master/css-tooling/lint/node'
+import type { MasterCSSToolingSession } from '@master/css-tooling'
 
 export default function defineVisitors(
-  { context, settings, rustLint }: {
+  { context, settings, tooling }: {
     context: RuleContext<any, any[]>
     settings: Settings
-    rustLint: Pick<LintSession, 'tokenizeClassList'>
+    tooling: Pick<MasterCSSToolingSession, 'tokenizeClassList'>
   },
   visitNode: (node: TSESTree.Node, resolved: ReturnType<typeof resolveClassNode>) => void
 ): RuleListener {
   const classAttributeRegex = new RegExp(`^(?:${settings.classAttributes.join('|')})$`)
   const classFunctionsRegex = new RegExp(`^(?:${settings.classFunctions.join('|')})$`)
   const classDeclarationsRegex = new RegExp(`^(?:${settings.classDeclarations.join('|')})$`)
-  const visitClassNode = withVisitClassNode(visitNode, context, rustLint)
+  const visitClassNode = withVisitClassNode(visitNode, context, tooling)
 
   const getStaticName = (node: any): string | undefined => {
     if (!node) return

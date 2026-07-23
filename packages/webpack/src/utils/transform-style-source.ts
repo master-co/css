@@ -1,17 +1,20 @@
 import {
-  compileStyleCSS,
+  compileStylesheet,
   createStyleEntryEmittedGlobals,
-  createStyleCSSHostSource,
+  createStylesheetHostSource,
   hasLocalStyleDirectives,
   isMasterCSSPackageStyleFile,
-  isStyleCSSRequest,
+  isStylesheetRequest,
   removeMasterStyleDirectives,
   resolveMasterStyleSource,
-  transformLocalStyleCSS
+  transformLocalStylesheet
 } from '@master/css-compiler/stylesheet'
-import { VIRTUAL_CSS_ID } from '@master/css-internal-integration/style-module'
-import { loadProjectManifest } from '@master/css-compiler/project'
-import { findCSSManifestEntryFiles } from '@master/css-compiler/project/entries'
+import { VIRTUAL_CSS_ID } from '@master/css-build-internal/style-module'
+import {
+  discoverManifestEntries,
+  loadProjectManifest
+} from '@master/css-compiler/project'
+import { defaultBuildManifest } from '@master/css-build-internal/project'
 
 interface TransformStyleSourceOptions {
   projectDir?: string
@@ -23,13 +26,13 @@ function hasMasterStyleManifestDirective(source: string) {
 }
 
 async function createGlobalStyleEntryEmittedGlobals(
-  entries: string[],
+  entries: readonly string[],
   baseManifest: Awaited<ReturnType<typeof loadProjectManifest>>['manifest'],
   projectDir: string | undefined,
   dependencies: string[]
 ) {
   if (!entries.length) return
-  const result = await createStyleEntryEmittedGlobals(entries, {
+  const result = await createStyleEntryEmittedGlobals([...entries], {
     baseManifest,
     projectDir
   })
@@ -44,7 +47,7 @@ export async function transformStyleSource(
 ) {
   const { projectDir, masterImport = VIRTUAL_CSS_ID } = options
   const dependencies: string[] = []
-  if (!isStyleCSSRequest(resourcePath)) {
+  if (!isStylesheetRequest(resourcePath)) {
     return { code: source, dependencies }
   }
   if (isMasterCSSPackageStyleFile(resourcePath, projectDir)) {
@@ -55,7 +58,8 @@ export async function transformStyleSource(
         dependencies
       }
     }
-    const result = await compileStyleCSS(resourcePath, cleanSource, {
+    const result = await compileStylesheet(resourcePath, cleanSource, {
+      baseManifest: defaultBuildManifest,
       projectDir,
       preserveNativeCSS: true
     })
@@ -68,15 +72,19 @@ export async function transformStyleSource(
   const resolvedSource = resolveMasterStyleSource(resourcePath, source, projectDir)
   if (!resolvedSource) {
     if (hasLocalStyleDirectives(source)) {
-      const entries = await findCSSManifestEntryFiles(projectDir)
-      const projectManifest = await loadProjectManifest(projectDir, { entries })
+      const entries = await discoverManifestEntries({ root: projectDir })
+      const projectManifest = await loadProjectManifest({
+        root: projectDir,
+        entries,
+        baseManifest: defaultBuildManifest
+      })
       const emittedGlobals = await createGlobalStyleEntryEmittedGlobals(
         entries,
         projectManifest.manifest,
         projectDir,
         dependencies
       )
-      const result = await transformLocalStyleCSS(resourcePath, source, {
+      const result = await transformLocalStylesheet(resourcePath, source, {
         baseManifest: projectManifest.manifest,
         projectDir,
         emittedGlobals
@@ -94,7 +102,7 @@ export async function transformStyleSource(
 
   dependencies.push(...resolvedSource.dependencies)
   return {
-    code: createStyleCSSHostSource(source, {
+    code: createStylesheetHostSource(source, {
       masterImport
     }),
     dependencies

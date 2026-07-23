@@ -1,21 +1,24 @@
 import type { Plugin } from 'vite'
-import { PluginContext } from '../core'
+import { MasterCSSVitePluginContext } from '../core'
 import { createServerRenderer } from '@master/css-server'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
-import { loadProjectManifest } from '@master/css-compiler/project'
-import { findCSSManifestEntryFiles } from '@master/css-compiler/project/entries'
-import { PluginOptions } from '../options'
-import { toHashedManifestAssetFileName } from '@master/css-internal-integration/node'
+import {
+  discoverManifestEntries,
+  loadProjectManifest
+} from '@master/css-compiler/project'
+import { ResolvedMasterCSSVitePluginOptions } from '../options'
+import { toHashedManifestAssetFileName } from '@master/css-build-internal/node'
+import { defaultBuildManifest } from '@master/css-build-internal/project'
 import {
   MASTER_CSS_HYDRATION_MANIFEST_ASSET_BASE,
   MASTER_CSS_HYDRATION_MANIFEST_FILE_BASENAME
 } from '@master/css-schema/hydration-manifest'
-import { collectStyleCSSDependencies } from '@master/css-compiler/stylesheet'
+import { collectStylesheetDependencies } from '@master/css-compiler/stylesheet'
 import { includesFile } from '../utils/path'
 
 const HYDRATION_MANIFEST_ASSET_DIR = '_master-css/hydration'
 
-export default function PreRenderPlugin(options: PluginOptions, context: PluginContext): Plugin {
+export default function PreRenderPlugin(options: ResolvedMasterCSSVitePluginOptions, context: MasterCSSVitePluginContext): Plugin {
   let cssManifest: MasterCSSManifest | undefined = undefined
   let cssManifestDependencies: string[] = []
   let enabled = true
@@ -30,10 +33,10 @@ export default function PreRenderPlugin(options: PluginOptions, context: PluginC
   }
   const loadCSSManifest = async (pluginContext?: { addWatchFile?: (id: string) => void }) => {
     const root = context.config?.root
-    const entries = await findCSSManifestEntryFiles(root)
+    const entries = await discoverManifestEntries({ root })
     const dependencies = new Set<string>()
     for (const entry of entries) {
-      for (const dependency of collectStyleCSSDependencies(entry, undefined, root)) {
+      for (const dependency of collectStylesheetDependencies(entry, undefined, root)) {
         dependencies.add(dependency)
       }
     }
@@ -42,9 +45,14 @@ export default function PreRenderPlugin(options: PluginOptions, context: PluginC
     for (const dependency of cssManifestDependencies) {
       pluginContext?.addWatchFile?.(dependency)
     }
-    const result = await loadProjectManifest(root, { entries })
+    const result = await loadProjectManifest({
+      root,
+      entries,
+      baseManifest: defaultBuildManifest
+    })
     cssManifest = result.manifest
-    const nextRenderer = createServerRenderer(cssManifest, {
+    const nextRenderer = createServerRenderer({
+      manifest: cssManifest,
       maxCachedClasses: context.config?.command === 'build' ? Infinity : undefined
     })
     renderer?.dispose()
@@ -74,10 +82,10 @@ export default function PreRenderPlugin(options: PluginOptions, context: PluginC
       ? toBuildPublicURL(fileName)
       : `${MASTER_CSS_HYDRATION_MANIFEST_ASSET_BASE}${fileName}`
   }
-  const renderHTML = (html: string) => renderer?.render(html, {
+  const renderHTML = (html: string) => renderer?.renderHTML(html, {
     hydrationManifest: {
       type: 'external',
-      src: addHydrationManifestAsset
+      source: addHydrationManifestAsset
     }
   })
   return {
@@ -126,13 +134,9 @@ export default function PreRenderPlugin(options: PluginOptions, context: PluginC
       if (!cssManifest || !renderer) return
       const rendered = renderHTML(html)
       if (!rendered) return
-      try {
-        return {
-          html: rendered.html,
-          tags: [],
-        }
-      } finally {
-        rendered.css?.dispose()
+      return {
+        html: rendered.html,
+        tags: [],
       }
     },
     transform(code, id) {
@@ -141,13 +145,9 @@ export default function PreRenderPlugin(options: PluginOptions, context: PluginC
         if (!cssManifest || !renderer) return null
         const rendered = renderHTML(code)
         if (!rendered) return null
-        try {
-          return {
-            code: rendered.html,
-            map: null,
-          }
-        } finally {
-          rendered.css?.dispose()
+        return {
+          code: rendered.html,
+          map: null,
         }
       }
       return null

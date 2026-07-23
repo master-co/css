@@ -1,4 +1,4 @@
-import { assertMasterCSSBindingInfo } from '@master/css-schema'
+import { assertMasterCSSBackendInfo } from '@master/css-backend'
 
 interface GeneratedToolingWasmModule {
   default(input: {
@@ -99,7 +99,7 @@ async function importGeneratedModule(): Promise<GeneratedToolingWasmModule> {
 export async function initToolingWasm(options: InitToolingWasmOptions = {}) {
   if (options.module) {
     await options.module.default({ module_or_path: options.input || defaultWasmURL })
-    assertMasterCSSBindingInfo(options.module.bindingInfo(), {
+    assertMasterCSSBackendInfo(options.module.bindingInfo(), {
       surface: 'tooling',
       features: ['diagnostics', 'language', 'lint', 'scanner', 'source', 'validator']
     })
@@ -107,7 +107,7 @@ export async function initToolingWasm(options: InitToolingWasmOptions = {}) {
   }
   modulePromise ??= importGeneratedModule().then(async (module) => {
     await module.default({ module_or_path: options.input || defaultWasmURL })
-    assertMasterCSSBindingInfo(module.bindingInfo(), {
+    assertMasterCSSBackendInfo(module.bindingInfo(), {
       surface: 'tooling',
       features: ['diagnostics', 'language', 'lint', 'scanner', 'source', 'validator']
     })

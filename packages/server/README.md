@@ -58,59 +58,61 @@
 npm install @master/css-server
 ```
 
-`@master/css-server` renders required Master CSS from HTML. TypeScript parses and serializes the host HTML, while a Rust render session extracts classes, generates CSS and hydration resources. The host then injects or updates `<style id="master-css">`.
+`@master/css-server` owns HTML parsing and style/hydration injection. Every entry
+requires an explicit `MasterCSSManifest`; class-only rendering belongs to
+`@master/css/node`.
 
 ## API
 
-### `render()`
+### `renderHTML()`
 
-Render HTML and inject generated CSS.
+The one-shot API owns and releases its render session. Its result is an immutable
+snapshot and does not expose DOM nodes, bindings, or disposable CSS state.
 
 ```ts
-import { render } from '@master/css-server'
+import { renderHTML } from '@master/css-server'
 
-const result = render('<div class="text:center"></div>', manifest)
+const result = renderHTML('<div class="text:center"></div>', {
+  manifest,
+  hydrationManifest: 'inline'
+})
 
 console.log(result.html)
-console.log(result.css.text)
-```
-
-### `renderCSS()`
-
-Render only the CSS needed by an HTML string.
-
-```ts
-import { renderCSS } from '@master/css-server'
-
-const css = renderCSS('<div class="text:center"></div>', manifest)
+console.log(result.cssText)
+console.log(result.classNames)
+console.log(result.diagnostics)
 ```
 
 ### `createServerRenderer()`
 
-Create a manifest-scoped renderer when one process renders multiple pages. Generated class rules are reused while every page still receives an isolated stylesheet.
+Create a manifest-scoped renderer when one process renders multiple documents.
+Generated rules are cached across calls while every call returns an independent
+snapshot.
 
 ```ts
 import { createServerRenderer } from '@master/css-server'
 
-const renderer = createServerRenderer(manifest)
-const first = renderer.render('<div class="text:center"></div>')
-const second = renderer.render('<div class="fg:red"></div>')
+const renderer = createServerRenderer({ manifest })
+const first = renderer.renderHTML('<div class="text:center"></div>')
+const second = renderer.renderHTML('<div class="fg:red"></div>')
 
-first.css?.dispose()
-second.css?.dispose()
 renderer.dispose()
 ```
 
 Long-lived renderers cache up to 8192 unique classes before starting a new cache generation. Finite build jobs can pass `{ maxCachedClasses: Infinity }` and dispose the renderer when the build ends. Recreate the renderer whenever its manifest changes.
 
-### `parseHTML()`
+### `createHTMLRenderSession()`
 
-Parse HTML into the lightweight DOM representation used by the server renderer.
+Use one session per streaming document. `write()` accepts successive chunks and
+`end()` returns the final transformed chunk plus the complete immutable snapshot.
+The session owns its renderer and releases it after `end()`, failure, or `dispose()`.
 
 ```ts
-import { parseHTML } from '@master/css-server'
+import { createHTMLRenderSession } from '@master/css-server'
 
-const document = parseHTML('<html><head></head><body></body></html>')
+const session = createHTMLRenderSession({ manifest })
+const firstChunk = session.write('<html><head>')
+const final = session.end('</head><body class="block"></body></html>')
 ```
 
 Use official framework integrations when possible; they compose this package with manifest loading, source scanning, and runtime hydration.

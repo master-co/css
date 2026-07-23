@@ -21,10 +21,11 @@
 
 ## Public Surface
 
-- `CSSLanguageService`
-- `settings`
+- `MasterCSSLanguageService`
+- `defaultLanguageServiceSettings`
 - Feature functions and common constants
 - `./common`
+- `./shiki` and the TextMate grammar asset
 
 ## Key Files
 

@@ -1,10 +1,10 @@
 import { defineConfig } from 'eslint/config'
-import css from '@master/eslint-config-css'
+import masterCSS from '@master/eslint-plugin-css'
 import htmlParser from '@angular-eslint/template-parser'
 import tsParser from '@typescript-eslint/parser'
 
 export default defineConfig([
-  ...css,
+  ...masterCSS.configs.recommended,
   {
     files: [
       '*.html'

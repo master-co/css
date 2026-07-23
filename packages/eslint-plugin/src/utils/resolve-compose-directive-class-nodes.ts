@@ -1,5 +1,5 @@
-import { inspectCSS } from '@master/css-compiler'
-import type { LintSession } from '@master/css-tooling/lint/node'
+import { inspectCSSSync } from '@master/css-compiler/node'
+import type { MasterCSSToolingSession } from '@master/css-tooling'
 import type { RuleContext } from '@typescript-eslint/utils/ts-eslint'
 import type { ResolvedClassListNode, ResolvedClassNode } from './resolve-class-node'
 
@@ -131,7 +131,7 @@ function resolveComposeDirectiveClassNode(
   sourceCode: RuleContext<any, any[]>['sourceCode'],
   start: number,
   end: number,
-  lintSession: Pick<LintSession, 'tokenizeClassList'>
+  lintSession: Pick<MasterCSSToolingSession, 'tokenizeClassList'>
 ): ResolvedClassNode | undefined {
   while (start < end && isWhitespace(source[start])) start++
   while (end > start && isWhitespace(source[end - 1])) end--
@@ -168,7 +168,7 @@ function resolveComposeDirectiveClassNode(
 
 export default function resolveComposeDirectiveClassNodes(
   context: RuleContext<any, any[]>,
-  lintSession: Pick<LintSession, 'tokenizeClassList'>
+  lintSession: Pick<MasterCSSToolingSession, 'tokenizeClassList'>
 ): ResolvedComposeDirectiveClassNode[] {
   const filename = getFilename(context)
   const source = context.sourceCode.getText()
@@ -178,7 +178,7 @@ export default function resolveComposeDirectiveClassNodes(
       ? collectLineCommentRanges(source, range.start, range.end)
       : []
     const rangeSource = source.slice(range.start, range.end)
-    for (const directive of inspectCSS(rangeSource).directives) {
+    for (const directive of inspectCSSSync(rangeSource).directives) {
       if (directive.name !== 'compose') continue
       if (directive.hasBlock || directive.quotedStrings) continue
       const keywordStart = range.start + directive.range.start

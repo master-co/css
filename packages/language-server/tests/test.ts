@@ -1,9 +1,9 @@
 import { resolve } from 'path'
 import { withFixture } from './setup'
 import { test } from 'vitest'
-import type { Workspace } from '../src'
+import type { MasterCSSWorkspace } from '../src'
 
-function createWorkspace(uri: string): Workspace {
+function createWorkspace(uri: string): MasterCSSWorkspace {
   return {
     uri,
     openedTextDocuments: [],

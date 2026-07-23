@@ -1,20 +1,22 @@
-import { defaultManifest } from '@master/css-tooling/language'
-import { createLanguageSessionSync } from '@master/css-tooling/language/node'
+import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
+import type { MasterCSSManifest } from '@master/css-schema/manifest'
+import { createToolingSessionSync } from '@master/css-tooling/node'
 import { CompletionTriggerKind } from 'vscode-languageserver-protocol'
 import { TextDocument } from 'vscode-languageserver-textdocument'
 import { afterEach, describe, expect, test } from 'vitest'
-import CSSLanguageService from '../src/core'
+import { MasterCSSLanguageService } from '../src/core'
 
-const sessions: ReturnType<typeof createLanguageSessionSync>[] = []
+const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
+const sessions: ReturnType<typeof createToolingSessionSync>[] = []
 
 afterEach(() => {
   for (const session of sessions.splice(0)) session.dispose()
 })
 
 function createService() {
-  const session = createLanguageSessionSync(defaultManifest)
+  const session = createToolingSessionSync({ manifest: defaultManifest })
   sessions.push(session)
-  return new CSSLanguageService(undefined, { session })
+  return new MasterCSSLanguageService(undefined, { session })
 }
 
 describe('Rust-backed language service', () => {

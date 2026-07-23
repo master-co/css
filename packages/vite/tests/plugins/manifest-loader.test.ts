@@ -2,10 +2,11 @@ import { describe, expect, it, vi } from 'vitest'
 import path from 'node:path'
 import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
-import CSSScanner from '@master/css-tooling/scanner'
+import { MasterCSSScanner } from '@master/css-tooling/scanner/node'
+import { defaultBuildManifest } from '@master/css-build-internal/project'
 import ManifestLoaderPlugin from '../../src/plugins/manifest-loader'
-import { MASTER_CSS_MANIFEST_QUERY } from '@master/css-internal-integration/manifest-module'
-import { fromResolvedMasterCSSManifestId, toResolvedMasterCSSManifestId } from '@master/css-internal-integration/node'
+import { MASTER_CSS_MANIFEST_QUERY } from '@master/css-build-internal/manifest-module'
+import { fromResolvedMasterCSSManifestId, toResolvedMasterCSSManifestId } from '@master/css-build-internal/node'
 
 const FIXTURE_DIR = path.resolve(__dirname, '../fixtures/manifest-virtual-module')
 
@@ -23,7 +24,7 @@ async function createContext(root = FIXTURE_DIR) {
         }
       }
     },
-    scanner: new CSSScanner({}, root)
+    scanner: new MasterCSSScanner({ manifest: defaultBuildManifest }, root)
   } as any
   await context.scanner.init()
   return context

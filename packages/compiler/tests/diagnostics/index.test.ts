@@ -3,6 +3,10 @@ import { tmpdir } from 'node:os'
 import { join, resolve } from 'node:path'
 import { describe, expect, it } from 'vitest'
 import { createMasterCSSInspectionReport } from '../../src/diagnostics'
+import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
+import type { MasterCSSManifest } from '@master/css-schema/manifest'
+
+const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
 
 function createTempDir(prefix: string) {
   return mkdtempSync(join(tmpdir(), prefix))
@@ -14,6 +18,7 @@ describe('@master/css-compiler/diagnostics', () => {
     try {
       writeFileSync(join(cwd, 'index.html'), '<div class="block text-decoration:bad()"></div>')
       const report = await createMasterCSSInspectionReport({
+        manifest: defaultManifest,
         cwd,
         patterns: ['index.html'],
         classes: ['block', 'never-generated-class']
@@ -57,6 +62,7 @@ describe('@master/css-compiler/diagnostics', () => {
       writeFileSync(join(cwd, 'index.css'), '@master entry;')
       writeFileSync(join(cwd, 'index.html'), '<div class="block"></div>')
       const report = await createMasterCSSInspectionReport({
+        manifest: defaultManifest,
         cwd,
         patterns: ['index.html'],
         classes: 'block',
@@ -84,6 +90,7 @@ describe('@master/css-compiler/diagnostics', () => {
       writeFileSync(join(cwd, 'index.css'), '@master entry;\n@import "./missing.css";')
       writeFileSync(join(cwd, 'index.html'), '<div class="block"></div>')
       const report = await createMasterCSSInspectionReport({
+        manifest: defaultManifest,
         cwd,
         patterns: ['index.html']
       })

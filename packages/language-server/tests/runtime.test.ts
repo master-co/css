@@ -62,7 +62,7 @@ test('uses the bundled manifest when workspace packages are missing', async () =
       expect(workspace?.languageService?.session.backend).toMatch(/native|wasm/)
       await server.onDidClose({ document: textDocument })
     } finally {
-      server.stop()
+      server.dispose()
       clientConnection.dispose()
     }
   } finally {

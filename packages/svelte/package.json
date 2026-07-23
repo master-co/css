@@ -67,7 +67,7 @@
     "@master/css-schema": "workspace:*"
   },
   "devDependencies": {
-    "@master/css-internal-integration": "workspace:*",
+    "@master/css-build-internal": "workspace:*",
     "@eslint/compat": "^2.1.0",
     "@eslint/js": "^10.0.1",
     "@playwright/experimental-ct-svelte": "^1.58.2",

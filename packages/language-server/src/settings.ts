@@ -1,15 +1,16 @@
-import { settings as cssLanguageServiceSettings, type Settings as CSSLanguageServiceSettings } from '@master/css-language-service'
+import {
+  defaultLanguageServiceSettings,
+  type MasterCSSLanguageServiceSettings
+} from '@master/css-language-service'
 import type { Pattern } from 'fast-glob'
 
-const settings: Settings = {
-  ...cssLanguageServiceSettings,
+export const defaultLanguageServerSettings: Readonly<MasterCSSLanguageServerSettings> = Object.freeze({
+  ...defaultLanguageServiceSettings,
   workspaces: 'auto',
   verbose: false
-}
+})
 
-export default settings
-
-export declare type Settings = CSSLanguageServiceSettings & {
-  workspaces?: Pattern[] | 'auto'
+export type MasterCSSLanguageServerSettings = MasterCSSLanguageServiceSettings & {
+  workspaces?: readonly Pattern[] | 'auto'
   verbose?: boolean
 }

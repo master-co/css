@@ -2,7 +2,11 @@ import {
   createMasterCSSInspectionReport,
   type MasterCSSInspectionReport
 } from '@master/css-compiler/diagnostics'
+import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
+import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import path from 'node:path'
+
+const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
 
 export interface InspectOptions {
   cwd?: string
@@ -36,9 +40,9 @@ function formatStylish(report: MasterCSSInspectionReport) {
 
 function outputReport(report: MasterCSSInspectionReport, format: 'json' | 'stylish') {
   if (format === 'stylish') {
-    process.stdout.write(formatStylish(report))
+    process.stderr.write(formatStylish(report))
   } else {
-    console.log(JSON.stringify(report, null, 2))
+    process.stdout.write(`${JSON.stringify(report, null, 2)}\n`)
   }
 }
 
@@ -47,6 +51,7 @@ export default async function runInspect(specifiedSourcePaths: string[] = [], op
   const format = options.format || 'json'
   const exitCode = options.exitCode || 'diagnostics'
   const report = await createMasterCSSInspectionReport({
+    manifest: defaultManifest,
     cwd,
     patterns: specifiedSourcePaths.length ? specifiedSourcePaths : undefined,
     classes: options.classes,

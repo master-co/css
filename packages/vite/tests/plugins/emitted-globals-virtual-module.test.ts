@@ -2,8 +2,9 @@ import { mkdirSync, mkdtempSync, rmSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
-import CSSScanner from '@master/css-tooling/scanner'
-import { registerStyleCSSSource } from '@master/css-compiler/stylesheet'
+import { MasterCSSScanner } from '@master/css-tooling/scanner/node'
+import { defaultBuildManifest } from '@master/css-build-internal/project'
+import { registerStylesheetSource } from '@master/css-compiler/stylesheet'
 import EmittedGlobalsVirtualModulePlugin from '../../src/plugins/emitted-globals-virtual-module'
 import { RESOLVED_VIRTUAL_EMITTED_GLOBALS_ID, VIRTUAL_EMITTED_GLOBALS_ID } from '../../src/common'
 
@@ -16,10 +17,10 @@ describe('EmittedGlobalsVirtualModulePlugin', () => {
     const root = mkdtempSync(join(tmpdir(), 'master-css-vite-emittedGlobals-'))
     try {
       mkdirSync(join(root, 'app'), { recursive: true })
-      const scanner = new CSSScanner({}, root)
+      const scanner = new MasterCSSScanner({ manifest: defaultBuildManifest }, root)
       await scanner.init()
-      const styleCSSSources = new Map()
-      await registerStyleCSSSource(scanner, styleCSSSources, join(root, 'app/globals.css'), `
+      const stylesheetSources = new Map()
+      await registerStylesheetSource(scanner, stylesheetSources, join(root, 'app/globals.css'), `
         @theme {
           --color-primary: #ff0000;
         }
@@ -34,6 +35,7 @@ describe('EmittedGlobalsVirtualModulePlugin', () => {
           animation-name: fade;
         }
       `, {
+        baseManifest: defaultBuildManifest,
         projectDir: root
       })
       await scanner.scan(join(root, 'app/page.tsx'), '<main class="main"></main>')
@@ -41,7 +43,7 @@ describe('EmittedGlobalsVirtualModulePlugin', () => {
       const context = {
         config: { root },
         scanner,
-        styleCSSSources,
+        stylesheetSources,
         includeGeneratedCSS: false
       } as any
       const plugin = EmittedGlobalsVirtualModulePlugin(context)

@@ -9,17 +9,17 @@ import {
   resolveCSSImportGraph,
   resolveCSSImportGraphSource,
   type StandaloneCSSDirectiveStatement
-} from '@master/css-compiler'
+} from '../node-compiler'
 import type { CSSDirectiveExtractionPolicy } from '@master/css-schema/css-directives'
 
 export type StylesheetDirectives = CSSDirectiveExtractionPolicy
 export type StylesheetDirectiveStatement = StandaloneCSSDirectiveStatement
 
 export interface StylesheetSourceOptions {
-  include?: string[]
-  exclude?: string[]
-  safelist?: string[]
-  blocklist?: (string | RegExp)[]
+  include?: readonly string[]
+  exclude?: readonly string[]
+  safelist?: readonly string[]
+  blocklist?: readonly (string | RegExp)[]
 }
 
 export interface CollectedStylesheetDirectives {
@@ -114,7 +114,10 @@ export function collectStylesheetDirectivesFromCSSGraph(
 export function resolveStylesheetSourcePaths(options: StylesheetSourceOptions, cwd = process.cwd()) {
   const paths = new Set<string>()
   if (options.include?.length) {
-    for (const sourcePath of fg.sync(options.include, { cwd, ignore: options.exclude })) {
+    for (const sourcePath of fg.sync([...options.include], {
+      cwd,
+      ignore: options.exclude ? [...options.exclude] : undefined
+    })) {
       if (sourcePath) paths.add(sourcePath)
     }
   }

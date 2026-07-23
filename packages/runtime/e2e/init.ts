@@ -12,7 +12,7 @@ import {
   groupMasterCSSManifestVariables,
   type MasterCSSManifestVariable
 } from '@master/css-schema/manifest'
-import UtilityType from '@master/css-schema/utility-type'
+import { UtilityType } from '@master/css-schema/utility-type'
 import { dirname, resolve } from 'path'
 import { fileURLToPath } from 'url'
 import { createServer, type ViteDevServer } from 'vite'
@@ -266,5 +266,5 @@ export default async function init(
     const { startCSSRuntime } = await import(loaderURL)
     await startCSSRuntime({ manifest })
   }, { loaderURL: await getRuntimeLoaderURL(), manifest })
-  await page.waitForFunction(() => !!globalThis.masterCSSRuntime)
+  await page.waitForFunction(() => !!globalThis.__MASTER_CSS_RUNTIME_TEST__)
 }

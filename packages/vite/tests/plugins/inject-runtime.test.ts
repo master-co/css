@@ -1,5 +1,5 @@
 import { mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs'
-import { join, resolve } from 'node:path'
+import { join } from 'node:path'
 import { build } from 'vite'
 import { describe, expect, it } from 'vitest'
 import masterCSS from '../../src/core'
@@ -73,11 +73,6 @@ describe('InjectRuntimePlugin', () => {
       await build({
         root,
         logLevel: 'silent',
-        resolve: {
-          alias: {
-            [RUNTIME_ENTRY_ID]: resolve(process.cwd(), 'src/runtime.ts')
-          }
-        },
         plugins: [
           masterCSS({ mode: 'runtime' })
         ],

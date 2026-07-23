@@ -55,7 +55,7 @@
     "@master/css-runtime": "workspace:^",
     "@master/css-schema": "workspace:^",
     "@master/css-server": "workspace:^",
-    "@master/css-sv": "workspace:^",
+    "@master/css-svelte-addon": "workspace:^",
     "@master/css-tooling": "workspace:^",
     "@master/css-astro": "workspace:^",
     "@master/css-figma": "workspace:^",
@@ -64,7 +64,6 @@
     "@master/css-svelte": "workspace:^",
     "@master/css-vite": "workspace:^",
     "@master/css-webpack": "workspace:^",
-    "@master/eslint-config-css": "workspace:^",
     "@master/eslint-plugin-css": "workspace:^"
   },
   "devDependencies": {

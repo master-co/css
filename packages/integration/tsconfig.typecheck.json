@@ -13,6 +13,9 @@
   },
   "references": [
     {
+      "path": "../preset/tsconfig.typecheck.json"
+    },
+    {
       "path": "../schema/tsconfig.typecheck.json"
     }
   ]

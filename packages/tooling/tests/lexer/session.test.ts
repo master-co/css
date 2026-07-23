@@ -1,5 +1,5 @@
 import { beforeAll, expect, test } from 'vitest'
-import { createLexerSessionSync } from '../../src/lexer/node'
+import { createTestToolingSession } from '../helpers/create-tooling-session'
 
 beforeAll(() => {
   process.env.MASTER_CSS_NATIVE_BINDING_PATH = new URL(
@@ -9,9 +9,9 @@ beforeAll(() => {
 })
 
 test('batches class lists, CSS inspection, and identifier escaping in Rust', () => {
-  const lexer = createLexerSessionSync()
+  const lexer = createTestToolingSession()
   try {
-    const result = lexer.analyze({
+    const result = lexer.analyzeClassList({
       classLists: [{ source: '😀 fg\\:red  block', unescape: [':'] }],
       cssSources: ['@master entry; @theme dark { --x: 1 }'],
       escapeIdentifiers: ['fg:red']

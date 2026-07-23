@@ -5,7 +5,7 @@
 ```txt
 external data / repository build support
   -> @master/css-schema
-  -> @master/css-native / @master/css-wasm-{runtime,compiler,tooling}
+  -> @master/css-backend / @master/css-wasm-{runtime,compiler,tooling}
   -> @master/css-preset
   -> @master/css / @master/css-tooling
   -> @master/css-compiler
@@ -103,7 +103,7 @@ Rust render sessions extract classes, generate CSS, and produce hydration/resour
 
 ## Integration Protocol And Adapters
 
-`packages/integration` is named `@master/css-internal-integration`, is private, and is
+`packages/integration` is named `@master/css-build-internal`, is private, and is
 bundled into official compiler and integration artifacts. It owns virtual ids,
 manifest-module source generation, emitted-global modules, and Node path/hash helpers.
 It is not a supported third-party SPI and must never appear in a published package's
@@ -134,7 +134,7 @@ semantic tokens, edits, and Shiki output over editor documents.
 staged Marketplace manifest retains the historical extension id `master-css-vscode`.
 
 `packages/eslint-plugin` owns ESLint AST visitors, settings, reports, and fixer range
-adaptation over `@master/css-tooling/lint`. `@master/eslint-config-css` is deliberately
+adaptation over `@master/css-tooling/lint`. `@master/eslint-plugin-css` is deliberately
 retained as a thin public ecosystem preset and must depend on the exact matching plugin
 version.
 

@@ -14,9 +14,9 @@
 |---|---|---|
 | `@master/css-schema` | `.`, Manifest, directive, hydration, emitted-global, syntax, and runtime contract subpaths | Dependency-light versioned TypeScript/Rust wire contracts and pure codecs |
 | `@master/css-preset` | `.`, `./default-manifest.json`, CSS subpaths | Default preset source and generated Manifest v1 |
-| `@master/css-native` | `.` | Node native binding and CLI target loader with ABI validation |
-| `@master/css-native-<target>` | native addon and `mcss` binary | Platform-specific native artifacts |
-| `@master/css-wasm-runtime` | `.`, `./wasm` | Runtime Wasm artifact loader |
+| `@master/css-backend` | `.` | Node native binding and CLI target loader with ABI validation |
+| `@master/css-native-<target>` | `.` | Platform-specific native artifacts; any bundled `mcss` executable is broker-internal and is not a package binary |
+| `@master/css-wasm-engine` | `.`, `./wasm` | Runtime Wasm artifact loader |
 | `@master/css-wasm-compiler` | `.`, `./wasm` | Compiler Wasm artifact loader |
 | `@master/css-wasm-tooling` | `.`, `./wasm` | Tooling Wasm artifact loader |
 
@@ -29,20 +29,20 @@ not alternative implementations of the language.
 |---|---|---|
 | `@master/css-runtime` | `.` | Browser DOM observation, CSSOM updates, hydration, and runtime lifecycle |
 | `@master/css-server` | `.` | Server HTML rendering and CSS injection |
-| `@master/css-language-service` | `.`, `./common`, `./shiki`, TextMate grammar | Editor-document mapping plus presentation/highlighting assets |
+| `@master/css-language-service` | `.`, `./shiki`, TextMate grammar | Editor-document mapping plus presentation/highlighting assets |
 | `@master/css-language-server` | `.`, `./server` | LSP transport and workspace lifecycle |
 | `@master/eslint-plugin-css` | `.`, `./configs/*` | ESLint visitors, reports, and fixer adaptation |
-| `@master/eslint-config-css` | `.` | Deliberate thin ESLint preset over the matching plugin version |
-| `@master/css-vite` | `.`, `./runtime` | Vite rendering modes and plugin orchestration |
+| `@master/eslint-config-css` | `.` | Deliberate thin official flat-config preset over the matching plugin version |
+| `@master/css-vite` | `.` | Vite rendering modes and plugin orchestration; runtime bootstrap is private |
 | `@master/css-webpack` | `.` | Webpack static/runtime integration |
 | `@master/css-next` | `.`, `./adapter` | Next.js build and client instrumentation integration |
 | `@master/css-astro` | `.`, `./middleware` | Astro integration |
 | `@master/css-nuxt` | `.` | Nuxt module |
 | `@master/css-svelte` | `./vite`, `./hooks.server` | Svelte and SvelteKit integration |
-| `@master/css-cli` | `mcss` binary only | CLI frontend and native executable dispatch |
+| `@master/css-cli` | `master-css` binary only | CLI frontend and native executable dispatch |
 | `@master/create-css` | `.`, `create-css` binary | Project setup and dependency transforms |
-| `@master/css-mcp` | `.`, `./server` | Model Context Protocol tools and server |
-| `@master/css-sv` | `.` | Svelte CLI add-on |
+| `@master/css-mcp` | `.` | Model Context Protocol server factories |
+| `@master/css-svelte-addon` | `.` | Svelte CLI add-on |
 | `@master/css-figma` | host artifact | Figma variable import/export plugin |
 | `@master/css-vscode` | extension artifact, `./server` | VS Code extension; staged Marketplace id remains `master-css-vscode` |
 
@@ -50,7 +50,7 @@ not alternative implementations of the language.
 
 | Package | Responsibility |
 |---|---|
-| `@master/css-internal-integration` | Official virtual-module ids, code generation, and Node helpers bundled into published consumers |
+| `@master/css-build-internal` | Official virtual-module ids, code generation, and Node helpers bundled into published consumers |
 
 The private integration package is not a public extension point. Published manifests
 and built JavaScript/declarations must not reference it.

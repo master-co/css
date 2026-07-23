@@ -1,9 +1,9 @@
 import { describe, expect, test } from 'vitest'
-import CSSScanner from '../../src/scanner'
+import { MasterCSSScanner } from './test-scanner'
 
-describe('CSSScanner public API', () => {
+describe('MasterCSSScanner public API', () => {
   test('does not expose file lifecycle or export helpers', async () => {
-    const scanner = await new CSSScanner({}).init()
+    const scanner = await new MasterCSSScanner({}).init()
 
     expect('prepare' in scanner).toBe(false)
     expect('scanFile' in scanner).toBe(false)
@@ -18,7 +18,7 @@ describe('CSSScanner public API', () => {
   })
 
   test('can reset scanner state without source discovery', async () => {
-    const scanner = await new CSSScanner({}).init()
+    const scanner = await new MasterCSSScanner({}).init()
 
     await scanner.scan('index.html', '<div class="block"></div>')
     expect(scanner.validClasses.has('block')).toBe(true)
@@ -29,7 +29,7 @@ describe('CSSScanner public API', () => {
   })
 
   test('inserts safelist during init and reset', async () => {
-    const scanner = await new CSSScanner({
+    const scanner = await new MasterCSSScanner({
       safelist: ['block']
     }).init()
 

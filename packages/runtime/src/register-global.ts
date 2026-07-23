@@ -1,14 +1,13 @@
-import type Core from './core'
-import startDebuggers from './debuggers'
+import type {
+  MasterCSSRuntime as MasterCSSRuntimeClass,
+  MasterCSSRuntimeFacade
+} from './core'
 
 declare global {
-  var MasterCSSRuntime: typeof Core
-  var masterCSSRuntime: Core
+  var MasterCSSRuntime: typeof MasterCSSRuntimeClass
+  var masterCSSRuntime: MasterCSSRuntimeFacade | undefined
 }
 
-export default function registerGlobal(CSSRuntime: typeof Core) {
-  if (!globalThis.MasterCSSRuntime) globalThis.MasterCSSRuntime = CSSRuntime
-  if (process.env.NODE_ENV === 'development') {
-    startDebuggers()
-  }
+export default function registerGlobal(Runtime: typeof MasterCSSRuntimeClass) {
+  if (!globalThis.MasterCSSRuntime) globalThis.MasterCSSRuntime = Runtime
 }

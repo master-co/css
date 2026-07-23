@@ -3,7 +3,7 @@ import { defineConfig, globalIgnores } from 'eslint/config'
 import svelte from 'eslint-plugin-svelte'
 import globals from 'globals'
 import ts from 'typescript-eslint'
-import css from '@master/eslint-config-css'
+import masterCSS from '@master/eslint-plugin-css'
 
 export default defineConfig([
   globalIgnores(['.svelte-kit/**', '.vercel/**', 'build/**']),
@@ -34,5 +34,5 @@ export default defineConfig([
       'svelte/require-each-key': 'off'
     }
   },
-  ...css
+  ...masterCSS.configs.recommended
 ])

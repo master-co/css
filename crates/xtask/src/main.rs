@@ -284,7 +284,7 @@ fn codegen(check: bool) -> Result<(), String> {
     let root = workspace_root();
     let outputs = [
         (
-            root.join("packages/schema/src/rust-contract.ts"),
+            root.join("packages/native/src/protocol.ts"),
             generated_contract(),
         ),
         (

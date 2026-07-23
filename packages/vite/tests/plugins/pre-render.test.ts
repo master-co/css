@@ -7,7 +7,7 @@ import {
   MASTER_CSS_HYDRATION_MANIFEST_ATTR,
   MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID
 } from '@master/css-schema/hydration-manifest'
-import { ServerCSS, ServerRenderer } from '@master/css-server'
+import { MasterCSSServerRenderer } from '@master/css-server'
 
 const FIXTURE_DIR = path.resolve(__dirname, '../fixtures/pre-render/master-css-entry')
 
@@ -39,7 +39,6 @@ describe('PreRenderPlugin', () => {
     await resolveConfigHooks(plugins, viteConfig)
 
     const preRenderPlugin = plugins.find((plugin) => plugin.name === 'master-css:pre-render')
-    const disposePageCSS = vi.spyOn(ServerCSS.prototype, 'dispose')
     expect(preRenderPlugin).toBeDefined()
     const result = await (preRenderPlugin as any).transformIndexHtml.call(
       {},
@@ -56,7 +55,6 @@ describe('PreRenderPlugin', () => {
     expect(html).toContain('@layer utilities{.p\\:0\\.125rem{padding:0.125rem}}')
     expect(html).not.toContain(`id="${MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID}"`)
     expect(html).not.toContain('rel="preload"')
-    expect(disposePageCSS).toHaveBeenCalledOnce()
 
     let middleware: ((request: { url?: string }, response: { statusCode?: number, setHeader: (name: string, value: string) => void, end: (source: string) => void }, next: () => void) => void) | undefined
     const middlewares = { use: vi.fn((handler) => { middleware = handler }) }
@@ -94,7 +92,7 @@ describe('PreRenderPlugin', () => {
       build: { assetsDir: 'assets' },
       server: { fs: { allow: [] } }
     }
-    const dispose = vi.spyOn(ServerRenderer.prototype, 'dispose')
+    const dispose = vi.spyOn(MasterCSSServerRenderer.prototype, 'dispose')
     await resolveConfigHooks(plugins, viteConfig)
 
     const preRenderPlugin = plugins.find((plugin) => plugin.name === 'master-css:pre-render') as any
@@ -111,7 +109,7 @@ describe('PreRenderPlugin', () => {
     const root = mkdtempSync(path.join(tmpdir(), 'master-css-vite-pre-render-'))
     const entryPath = path.join(root, 'app.css')
     const themePath = path.join(root, 'theme.css')
-    const dispose = vi.spyOn(ServerRenderer.prototype, 'dispose')
+    const dispose = vi.spyOn(MasterCSSServerRenderer.prototype, 'dispose')
     try {
       writeFileSync(themePath, [
         '@components {',

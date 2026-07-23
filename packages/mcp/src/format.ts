@@ -1,12 +1,14 @@
 import { readFile } from 'node:fs/promises'
-import CSSLanguageService from '@master/css-language-service'
-import { defaultManifest } from '@master/css-tooling/language'
-import { createLanguageSessionSync } from '@master/css-tooling/language/node'
+import { MasterCSSLanguageService } from '@master/css-language-service'
+import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
+import type { MasterCSSManifest } from '@master/css-schema/manifest'
+import { createToolingSessionSync } from '@master/css-tooling/node'
 import type MasterCSSMCPContext from './context'
 import { applyTextEdits, createMCPTextDocument, getLanguageId, type Range, type TextEdit } from './document'
 import { resolveSourceFiles } from './scan'
 
 const DIRECTIVE_FORMAT_PREVIEW_VERSION = 1
+const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
 const DEFAULT_DIRECTIVE_FORMAT_PATTERNS = ['**/*.{css,scss,less,vue,svelte,astro}']
 
 export interface PreviewDirectiveFormatOptions {
@@ -17,7 +19,7 @@ export interface PreviewDirectiveFormatOptions {
   ttlMs?: number
 }
 
-function formatContent(service: CSSLanguageService, filePath: string, content: string, range?: Range) {
+function formatContent(service: MasterCSSLanguageService, filePath: string, content: string, range?: Range) {
   const document = createMCPTextDocument(filePath, content)
   const edits = (service.formatDirectives(document, range) ?? []) as TextEdit[]
   const formatted = applyTextEdits(content, document, edits)
@@ -33,8 +35,8 @@ function formatContent(service: CSSLanguageService, filePath: string, content: s
 }
 
 export async function previewDirectiveFormat(context: MasterCSSMCPContext, options: PreviewDirectiveFormatOptions = {}) {
-  const service = new CSSLanguageService(undefined, {
-    session: createLanguageSessionSync(defaultManifest)
+  const service = new MasterCSSLanguageService(undefined, {
+    session: createToolingSessionSync({ manifest: defaultManifest })
   })
   try {
     if (options.content !== undefined) {

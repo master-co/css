@@ -1,8 +1,11 @@
 import assert from 'node:assert/strict'
+import { createHash } from 'node:crypto'
 import { existsSync, readdirSync, readFileSync } from 'node:fs'
 import path from 'node:path'
+import * as ts from 'typescript6'
 
 const packagesRoot = path.resolve('packages')
+const publicAPIContractPath = path.resolve('.ai/contracts/public-api.json')
 const retiredDirectories = [
   'diagnostics',
   'engine',
@@ -30,6 +33,18 @@ const packagesWithoutTypeDeclarations = new Set([
 ])
 const legacyEntrypointFields = ['main', 'module', 'jsnext:main', 'esnext']
 const dependencyFields = ['dependencies', 'devDependencies', 'optionalDependencies', 'peerDependencies']
+const allowedDefaultExportPackages = new Set([
+  '@master/css-astro',
+  '@master/css-language-service',
+  '@master/css-next',
+  '@master/css-nuxt',
+  '@master/css-svelte',
+  '@master/css-svelte-addon',
+  '@master/css-vite',
+  '@master/css-webpack',
+  '@master/eslint-config-css',
+  '@master/eslint-plugin-css'
+])
 
 function readPackage(directory) {
   const file = path.join(packagesRoot, directory, 'package.json')
@@ -42,6 +57,116 @@ function readPackage(directory) {
 
 function hasTypeDeclarationExport(exports) {
   return JSON.stringify(exports).includes('"types"')
+}
+
+function resolveExportTarget(value) {
+  if (typeof value === 'string') return value
+  if (!value || typeof value !== 'object') return
+  return value.types || value.import || value.browser || value.node || value.default
+}
+
+function resolvePublicSource(directory, target) {
+  if (!target || !/\.(?:d\.ts|[cm]?[jt]sx?)$/.test(target)) return
+  let relativeSource
+  if (target.startsWith('./dist/')) {
+    relativeSource = target
+      .replace('./dist/', 'src/')
+      .replace(/\.d\.ts$/, '.ts')
+      .replace(/\.js$/, '.ts')
+  } else if (target.startsWith('./src/')) {
+    relativeSource = target.slice(2)
+  }
+  if (!relativeSource) return
+  for (const candidate of [
+    path.join(packagesRoot, directory, relativeSource),
+    path.join(packagesRoot, directory, relativeSource.replace(/\.ts$/, '.tsx'))
+  ]) {
+    if (existsSync(candidate)) return candidate
+  }
+}
+
+function collectPublicSymbols(file) {
+  const sourceFile = ts.createSourceFile(
+    file,
+    readFileSync(file, 'utf8'),
+    ts.ScriptTarget.Latest,
+    true
+  )
+  const symbols = new Set()
+  for (const statement of sourceFile.statements) {
+    if (ts.isExportAssignment(statement)) {
+      symbols.add('default')
+      continue
+    }
+    if (ts.isExportDeclaration(statement)) {
+      if (!statement.exportClause) {
+        symbols.add('*')
+        continue
+      }
+      if (ts.isNamedExports(statement.exportClause)) {
+        for (const element of statement.exportClause.elements) {
+          symbols.add(element.name.text)
+        }
+      } else {
+        symbols.add(statement.exportClause.name.text)
+      }
+      continue
+    }
+    const modifiers = ts.canHaveModifiers(statement)
+      ? ts.getModifiers(statement) || []
+      : []
+    if (!modifiers.some(({ kind }) => kind === ts.SyntaxKind.ExportKeyword)) continue
+    if (modifiers.some(({ kind }) => kind === ts.SyntaxKind.DefaultKeyword)) {
+      symbols.add('default')
+      continue
+    }
+    if (statement.name && ts.isIdentifier(statement.name)) {
+      symbols.add(statement.name.text)
+    }
+    if (ts.isVariableStatement(statement)) {
+      for (const declaration of statement.declarationList.declarations) {
+        if (ts.isIdentifier(declaration.name)) symbols.add(declaration.name.text)
+      }
+    }
+  }
+  return [...symbols].sort()
+}
+
+function createPublicAPIContract(packages) {
+  const contract = {}
+  for (const { directory, manifest } of packages) {
+    if (manifest.private) continue
+    const symbols = {}
+    for (const [subpath, value] of Object.entries(manifest.exports || {})) {
+      const target = resolveExportTarget(value)
+      const source = resolvePublicSource(directory, target)
+      if (!source) continue
+      const entrySymbols = collectPublicSymbols(source)
+      assert.equal(
+        entrySymbols.includes('*'),
+        false,
+        `${manifest.name}${subpath === '.' ? '' : subpath.slice(1)} must not use export *.`
+      )
+      if (
+        entrySymbols.includes('default')
+        && !allowedDefaultExportPackages.has(manifest.name)
+        && !target.endsWith('.json.d.ts')
+      ) {
+        assert.fail(`${manifest.name}${subpath === '.' ? '' : subpath.slice(1)} must use named exports.`)
+      }
+      symbols[subpath] = entrySymbols
+    }
+    contract[manifest.name] = {
+      directory,
+      exports: Object.keys(manifest.exports || {}).sort(),
+      bins: Object.keys(manifest.bin || {}).sort(),
+      surface: createHash('sha256')
+        .update(JSON.stringify(symbols))
+        .digest('hex')
+        .slice(0, 16)
+    }
+  }
+  return contract
 }
 
 for (const directory of retiredDirectories) {
@@ -117,21 +242,20 @@ for (const { directory, manifest } of packages) {
   }
 
   assert.equal(
-    Object.hasOwn(manifest.dependencies ?? {}, '@master/css-internal-integration'),
+    Object.hasOwn(manifest.dependencies ?? {}, '@master/css-build-internal'),
     false,
     `${manifest.name} must bundle the private integration module instead of publishing it as a dependency.`
   )
 }
 
-const integration = packages.find(({ manifest }) => manifest.name === '@master/css-internal-integration')?.manifest
-assert.ok(integration?.private, '@master/css-internal-integration must remain repository-private.')
+const integration = packages.find(({ manifest }) => manifest.name === '@master/css-build-internal')?.manifest
+assert.ok(integration?.private, '@master/css-build-internal must remain repository-private.')
 assert.equal(integration.publishConfig, undefined, 'The private integration package must not have publish metadata.')
 
-const eslintConfig = packages.find(({ manifest }) => manifest.name === '@master/eslint-config-css')?.manifest
 assert.equal(
-  eslintConfig?.dependencies?.['@master/eslint-plugin-css'],
-  'workspace:*',
-  '@master/eslint-config-css must remain a deliberate public preset over the matching plugin version.'
+  packages.some(({ manifest }) => manifest.name === '@master/eslint-config-css'),
+  true,
+  '@master/eslint-config-css must remain the official thin flat-config entrypoint.'
 )
 
 const expectedAdapterNames = {
@@ -147,5 +271,13 @@ const expectedAdapterNames = {
 for (const [directory, name] of Object.entries(expectedAdapterNames)) {
   assert.equal(readPackage(directory).manifest.name, name, `packages/${directory} must use the normalized package name ${name}.`)
 }
+
+const publicAPIBaseline = JSON.parse(readFileSync(publicAPIContractPath, 'utf8'))
+assert.equal(publicAPIBaseline.version, 1, 'Unsupported public API golden manifest version.')
+assert.deepEqual(
+  createPublicAPIContract(packages),
+  publicAPIBaseline.packages,
+  'Public package exports changed. Update the reviewed public API golden manifest intentionally.'
+)
 
 process.stdout.write(`Validated ${packages.length} package contract(s).\n`)

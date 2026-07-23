@@ -10,18 +10,15 @@ export const MASTER_CSS_PACKAGES = {
   nuxt: '@master/css-nuxt',
   astro: '@master/css-astro',
   svelte: '@master/css-svelte',
-  svelteAddon: '@master/css-sv',
+  svelteAddon: '@master/css-svelte-addon',
   webpack: '@master/css-webpack',
   eslintConfig: '@master/eslint-config-css',
   mcp: '@master/css-mcp'
 } as const
 
-export const CANONICAL_ESLINT_CONFIG = `import { defineConfig } from 'eslint/config'
-import css from '@master/eslint-config-css'
+export const CANONICAL_ESLINT_CONFIG = `import masterCSS from '@master/eslint-config-css'
 
-export default defineConfig([
-  ...css
-])
+export default masterCSS
 `
 
 export const AGENT_RULES_BLOCK = `## Master CSS

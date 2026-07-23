@@ -1,66 +1,75 @@
-import { extname } from 'node:path'
-import { createRequire } from 'node:module'
 import {
-  compileCSSManifestFile,
-  compileCSSManifestJSON
-} from '@master/css-compiler'
-import {
-  stripResourceQuery
-} from '@master/css-internal-integration/manifest-module'
-import type { MasterCSSManifest } from '@master/css-schema/manifest'
-import {
-  type LoadManifestOptions,
-  type LoadManifestResult,
-  type LoadProjectManifestOptions,
-  type LoadProjectManifestResult
-} from './options'
+  MASTER_CSS_DIAGNOSTIC_VERSION,
+  type MasterCSSDiagnostic
+} from '@master/css-schema'
 import { resolve } from 'node:path'
-import { loadRustProjectManifest } from './rust-project'
-
-const require = createRequire(import.meta.url)
-const defaultManifest = require('@master/css-preset/default-manifest.json') as MasterCSSManifest
+import { findCSSManifestEntryFilesSync } from './entries'
+import type {
+  MasterCSSProjectCompileOptions,
+  MasterCSSProjectDiscoveryOptions,
+  MasterCSSProjectLoadOptions,
+  MasterCSSProjectResult
+} from './options'
+import { loadBackendProjectManifest } from './backend-project'
 
 export type {
-  LoadManifestOptions,
-  LoadManifestResult,
-  LoadProjectManifestOptions,
-  LoadProjectManifestResult
+  MasterCSSProjectCompileOptions,
+  MasterCSSProjectDiscoveryOptions,
+  MasterCSSProjectLoadOptions,
+  MasterCSSProjectResult
 } from './options'
 
-export type ManifestJSONResult = ReturnType<typeof compileCSSManifestJSON>
+function warningDiagnostic(message: string): MasterCSSDiagnostic {
+  return Object.freeze({
+    version: MASTER_CSS_DIAGNOSTIC_VERSION,
+    code: 'PROJECT_WARNING',
+    domain: 'project',
+    severity: 'warning',
+    message
+  })
+}
 
-function withDefaultManifest<T extends LoadManifestOptions>(options: T): T {
-  return {
-    ...options,
-    baseManifest: options.baseManifest ?? defaultManifest
+function assertStylesheetEntries(entries: readonly string[] | undefined) {
+  for (const entry of entries ?? []) {
+    if (!entry.replace(/[?#].*$/, '').endsWith('.css')) {
+      throw new TypeError('Master CSS project entries must be CSS files.')
+    }
   }
 }
 
-export function loadManifestSync(path: string, options: LoadManifestOptions = {}): LoadManifestResult {
-  if (extname(stripResourceQuery(path)) === '.css') {
-    return compileCSSManifestFile(stripResourceQuery(path), withDefaultManifest(options))
-  }
-  throw new TypeError('Master CSS manifests can only be loaded from CSS files.')
+function immutableProjectResult(
+  result: ReturnType<typeof loadBackendProjectManifest>,
+  onDiagnostic: MasterCSSProjectLoadOptions['onDiagnostic']
+): MasterCSSProjectResult {
+  const diagnostics = Object.freeze(result.warnings.map(warningDiagnostic))
+  for (const diagnostic of diagnostics) onDiagnostic?.(diagnostic)
+  return Object.freeze({
+    manifest: Object.freeze(result.manifest),
+    entries: Object.freeze([...result.entries]),
+    dependencies: Object.freeze([...result.dependencies]),
+    diagnostics
+  })
 }
 
-export function loadManifestJSONSync(path: string, options: LoadManifestOptions = {}): ManifestJSONResult {
-  if (extname(stripResourceQuery(path)) === '.css') {
-    return compileCSSManifestJSON(stripResourceQuery(path), withDefaultManifest(options))
-  }
-  throw new TypeError('Master CSS manifest JSON can only be loaded from CSS files.')
+export function discoverManifestEntriesSync(
+  options: Omit<MasterCSSProjectDiscoveryOptions, 'signal'> = {}
+): readonly string[] {
+  return Object.freeze(findCSSManifestEntryFilesSync(resolve(options.root ?? process.cwd())))
 }
 
-export function loadProjectManifestSync(projectDir = process.cwd(), options: LoadProjectManifestOptions = {}): LoadProjectManifestResult {
-  const result = loadRustProjectManifest(
-    resolve(projectDir),
-    options.baseManifest ?? defaultManifest,
+export function loadProjectManifestSync(
+  options: Omit<MasterCSSProjectLoadOptions, 'signal'>
+): MasterCSSProjectResult {
+  assertStylesheetEntries(options.entries)
+  return immutableProjectResult(loadBackendProjectManifest(
+    resolve(options.root ?? process.cwd()),
+    options.baseManifest,
     options.entries
-  )
-  result.warnings.forEach((warning) => options.onWarning?.(warning))
-  return result
+  ), options.onDiagnostic)
 }
 
-export function loadProjectManifestJSONSync(projectDir = process.cwd(), options: LoadProjectManifestOptions = {}) {
-  const result = loadProjectManifestSync(projectDir, options)
-  return { ...result, json: JSON.stringify(result.manifest) }
+export function compileProjectManifestSync(
+  options: Omit<MasterCSSProjectCompileOptions, 'signal'>
+): MasterCSSProjectResult {
+  return loadProjectManifestSync(options)
 }

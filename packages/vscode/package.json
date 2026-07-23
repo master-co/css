@@ -491,11 +491,14 @@
     "provenance": true
   },
   "devDependencies": {
+    "@master/css-build-internal": "workspace:*",
     "@master/css-tooling": "workspace:*",
     "@master/css-language-server": "workspace:*",
     "@master/css-language-service": "workspace:*",
-    "@master/css-native": "workspace:*",
+    "@master/css-backend": "workspace:*",
     "@master/css-compiler": "workspace:*",
+    "@master/css-preset": "workspace:*",
+    "@master/css-schema": "workspace:*",
     "@shikijs/langs": "4.2.0",
     "@types/vscode": "^1.120.0",
     "@vscode/vsce": "^3.9.2",

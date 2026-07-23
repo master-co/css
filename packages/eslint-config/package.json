@@ -17,7 +17,7 @@
     "eslintconfig"
   ],
   "license": "MIT",
-  "description": "Master CSS ESLint Configuration",
+  "description": "Official Master CSS flat ESLint configuration",
   "author": "Aoyue Design LLC.",
   "funding": "https://rc.css.master.co/sponsor",
   "homepage": "https://css.master.co",

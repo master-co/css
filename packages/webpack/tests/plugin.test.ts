@@ -1,5 +1,5 @@
 /**
- * Regression tests for the C1 race in MasterCSSPlugin.
+ * Regression tests for the C1 race in MasterCSSWebpackPlugin.
  *
  * The previous implementation attached an `async` callback to
  * `compilation.hooks.succeedModule` via `.tap()`. `succeedModule` is a
@@ -17,13 +17,13 @@
  */
 import { describe, test, expect, vi } from 'vitest'
 import { SyncHook, AsyncSeriesHook } from 'tapable'
-import MasterCSSPlugin from '../src'
-import { VIRTUAL_MANIFEST_ID, MASTER_CSS_MANIFEST_QUERY } from '@master/css-internal-integration/manifest-module'
-import { VIRTUAL_CSS_ID } from '@master/css-internal-integration/style-module'
-import { VIRTUAL_EMITTED_GLOBALS_ID } from '@master/css-internal-integration/emitted-globals-module'
+import MasterCSSWebpackPlugin from '../src'
+import { VIRTUAL_MANIFEST_ID, MASTER_CSS_MANIFEST_QUERY } from '@master/css-build-internal/manifest-module'
+import { VIRTUAL_CSS_ID } from '@master/css-build-internal/style-module'
+import { VIRTUAL_EMITTED_GLOBALS_ID } from '@master/css-build-internal/emitted-globals-module'
 import { createStylesheetDirectives } from '@master/css-compiler/stylesheet'
 import { transformStyleSource } from '../src/utils/transform-style-source'
-import masterCSSStyleCSSLoader from '../src/style-css-loader'
+import masterCSSStylesheetLoader from '../src/stylesheet-loader'
 import { addFileDependency } from '../src/utils/file-dependencies'
 import path from 'node:path'
 import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
@@ -159,7 +159,7 @@ function makeModule(resourcePath: string, source: string) {
 // only want to drive the webpack hook surface. We keep the real
 // constructor + init() so `this.options` is populated correctly.
 function makePlugin(options: Record<string, unknown> = {}, cwd = process.cwd()) {
-  const plugin = new MasterCSSPlugin({
+  const plugin = new MasterCSSWebpackPlugin({
     ...options,
   } as any, cwd)
   // webpack-virtual-modules pokes at compiler.webpack internals; stub
@@ -167,10 +167,10 @@ function makePlugin(options: Record<string, unknown> = {}, cwd = process.cwd()) 
   return plugin
 }
 
-function runStyleCSSLoader(root: string, resourcePath: string, source: string) {
+function runStylesheetLoader(root: string, resourcePath: string, source: string) {
   const dependencies: string[] = []
   return new Promise<string>((resolve, reject) => {
-    masterCSSStyleCSSLoader.call({
+    masterCSSStylesheetLoader.call({
       resourcePath,
       rootContext: root,
       addDependency: (dependency) => dependencies.push(dependency),
@@ -199,9 +199,9 @@ function makeRegisteredStyleSource(dependencies: string[]) {
   }
 }
 
-describe('MasterCSSPlugin (C1 race fix)', () => {
+describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
   test('exports the plugin as the default export', () => {
-    expect(MasterCSSPlugin.name).toBe('MasterCSSPlugin')
+    expect(MasterCSSWebpackPlugin.name).toBe('MasterCSSWebpackPlugin')
   })
 
   test('installs a pre style loader for managed CSS entries', () => {
@@ -217,7 +217,7 @@ describe('MasterCSSPlugin (C1 race fix)', () => {
         enforce: 'pre',
         use: [
           expect.objectContaining({
-            loader: expect.stringContaining('style-css-loader'),
+            loader: expect.stringContaining('stylesheet-loader'),
             options: expect.objectContaining({
               virtualCSSImportModuleId: expect.stringContaining('master-utilities.css')
             })
@@ -305,7 +305,9 @@ describe('MasterCSSPlugin (C1 race fix)', () => {
   test('scans modules that expose source through originalSource()', async () => {
     const root = mkdtempSync(path.join(tmpdir(), 'master-css-webpack-rspack-source-'))
     try {
-      const plugin = await new MasterCSSPlugin({ verbose: 0 }, root).init()
+      const plugin = await new MasterCSSWebpackPlugin({
+        scanner: { verbose: 0 }
+      }, root).init()
       const { compiler, compilation } = makeFakeCompiler({ context: root })
       ;(compiler as any).webpack = { sources: { RawSource: function NoopSource(this: object) { /* stub */ } } }
 
@@ -386,7 +388,7 @@ describe('MasterCSSPlugin (C1 race fix)', () => {
     try {
       let error: Error & { dependencies?: string[] } | undefined
       try {
-        await runStyleCSSLoader(root, modulePath, '.button { @compose bg:neutral-120; }')
+        await runStylesheetLoader(root, modulePath, '.button { @compose bg:neutral-120; }')
       } catch (caught) {
         error = caught as Error & { dependencies?: string[] }
       }
@@ -395,7 +397,7 @@ describe('MasterCSSPlugin (C1 race fix)', () => {
       expect(error?.message).toContain('Invalid @compose class')
       expect(error?.dependencies).toContain(modulePath)
 
-      const result = await runStyleCSSLoader(root, modulePath, '.button { @compose block; }')
+      const result = await runStylesheetLoader(root, modulePath, '.button { @compose block; }')
       expect(result.content).toContain('.button{display:block}')
       expect(result.dependencies).toContain(modulePath)
     } finally {
@@ -475,7 +477,7 @@ describe('MasterCSSPlugin (C1 race fix)', () => {
   })
 
   test('resolves virtual:master-css-manifest to a JS facade and external JSON asset', async () => {
-    const plugin = new MasterCSSPlugin()
+    const plugin = new MasterCSSWebpackPlugin()
     const { compiler } = makeFakeCompiler()
     ;(compiler as any).webpack = { sources: { RawSource: function NoopSource(this: object) { /* stub */ } } }
     plugin.apply(compiler as any)
@@ -581,7 +583,7 @@ describe('MasterCSSPlugin (C1 race fix)', () => {
   })
 
   test('resolves virtual:master-css-emitted-globals to a JS virtual module', async () => {
-    const plugin = new MasterCSSPlugin()
+    const plugin = new MasterCSSWebpackPlugin()
     const { compiler } = makeFakeCompiler()
     ;(compiler as any).webpack = { sources: { RawSource: function NoopSource(this: object) { /* stub */ } } }
     plugin.apply(compiler as any)
@@ -898,8 +900,8 @@ describe('MasterCSSPlugin (C1 race fix)', () => {
       ].join('\n')
       writeFileSync(entryPath, source)
 
-      const plugin = await new MasterCSSPlugin({
-        verbose: 0
+      const plugin = await new MasterCSSWebpackPlugin({
+        scanner: { verbose: 0 }
       }, root).init()
 
       const modulePath = path.join(root, 'src/page.tsx')
@@ -927,8 +929,8 @@ describe('MasterCSSPlugin (C1 race fix)', () => {
     try {
       writeFileSync(entryPath, '@import "@master/css";')
 
-      const plugin = await new MasterCSSPlugin({
-        verbose: 0
+      const plugin = await new MasterCSSWebpackPlugin({
+        scanner: { verbose: 0 }
       }, root).init()
 
       await (plugin as any).processModuleContents([[entryPath, '@import "@master/css";']], () => false)
@@ -953,7 +955,9 @@ describe('MasterCSSPlugin (C1 race fix)', () => {
         '}'
       ].join('\n')
       writeFileSync(entryPath, source)
-      const plugin = await new MasterCSSPlugin({ verbose: 0 }, root).init()
+      const plugin = await new MasterCSSWebpackPlugin({
+        scanner: { verbose: 0 }
+      }, root).init()
 
       await expect((plugin as any).processModuleContents([[entryPath, source]], () => false))
         .rejects.toThrow('Invalid @compose class')
@@ -968,7 +972,7 @@ describe('MasterCSSPlugin (C1 race fix)', () => {
       ].join('\n')
       writeFileSync(entryPath, validSource)
       await (plugin as any).processModuleContents([[entryPath, validSource]], () => false)
-      expect((plugin as any).styleCSSSources.get(entryPath)?.dependencies).toContain(entryPath)
+      expect((plugin as any).stylesheetSources.get(entryPath)?.dependencies).toContain(entryPath)
     } finally {
       rmSync(root, { recursive: true, force: true })
     }
@@ -979,7 +983,7 @@ describe('MasterCSSPlugin (C1 race fix)', () => {
     const configPath = path.join(root, 'app.css')
     const plugin = makePlugin({}, root)
     ;(plugin as any).defaultManifestDependencies = [configPath]
-    const reset = vi.fn(async function (this: MasterCSSPlugin) {
+    const reset = vi.fn(async function (this: MasterCSSWebpackPlugin) {
       this.emit('reset')
       return this
     })
@@ -1007,10 +1011,10 @@ describe('MasterCSSPlugin (C1 race fix)', () => {
       writeFileSync(configPath, '@master entry;\n@import "./theme.css";')
 
       const plugin = makePlugin({}, root)
-      ;(plugin as any).styleCSSSources = new Map([
+      ;(plugin as any).stylesheetSources = new Map([
         [configPath, makeRegisteredStyleSource([configPath, tokenPath])]
       ])
-      const reset = vi.fn(async function (this: MasterCSSPlugin) {
+      const reset = vi.fn(async function (this: MasterCSSWebpackPlugin) {
         this.emit('reset')
         return this
       })
@@ -1039,7 +1043,7 @@ describe('MasterCSSPlugin (C1 race fix)', () => {
     try {
       const plugin = makePlugin({}, root)
       ;(plugin as any).defaultManifestDependencies = [configPath]
-      ;(plugin as any).styleCSSSources = new Map([
+      ;(plugin as any).stylesheetSources = new Map([
         [configPath, makeRegisteredStyleSource([configPath, tokenPath])]
       ])
       const { compiler, compilation } = makeFakeCompiler({
@@ -1061,7 +1065,7 @@ describe('MasterCSSPlugin (C1 race fix)', () => {
     const root = path.resolve(__dirname, 'fixtures/manifest-virtual-module/css-only')
     const plugin = makePlugin({}, root)
     ;(plugin as any).defaultManifestDependencies = [path.join(root, 'app.css')]
-    const reset = vi.fn(async function (this: MasterCSSPlugin) {
+    const reset = vi.fn(async function (this: MasterCSSWebpackPlugin) {
       this.emit('reset')
       return this
     })

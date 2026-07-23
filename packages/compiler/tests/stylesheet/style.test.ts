@@ -8,30 +8,30 @@ import {
   compileCSSManifest,
   createManifestFromCSSResult,
   resolveMasterCSSPackageImportGraph
-} from '@master/css-compiler'
-import CSSScanner from '@master/css-tooling/scanner'
+} from '../../src/node-compiler'
+import { MasterCSSScanner } from '../helpers/scanner'
 import {
-  compileStyleCSS,
-  compileRenderedStyleCSS,
+  compileStylesheet,
+  compileRenderedStylesheet,
   createStyleEntryEmittedGlobals,
-  createStyleCSSHostSource,
+  createStylesheetHostSource,
   createMasterCSSPackageHostSource,
   createExtractedCSS,
   createExtractedCSSResult,
-  collectStyleCSSDependencies,
+  collectStylesheetDependencies,
   getNativeCSS,
   hasPreserveNativeDirective,
   hasMasterStyleEntrypoint,
   hasLocalStyleDirectives,
   isMasterStyleSource,
-  isStyleCSSRequest,
+  isStylesheetRequest,
   removeMasterStyleDirectives,
-  removeStyleCSSImports,
-  registerStyleCSSSource,
+  removeStylesheetImports,
+  registerStylesheetSource,
   resolveMasterStyleSource,
-  resolveStyleCSSImportGraph,
-  replaceStyleCSSImports,
-  transformLocalStyleCSS
+  resolveStylesheetImportGraph,
+  replaceStylesheetImports,
+  transformLocalStylesheet
 } from '../../src/stylesheet'
 import { renderCompiledManifestCSS } from '../../src/stylesheet/render'
 
@@ -117,7 +117,7 @@ describe('style CSS extraction helpers', () => {
   })
 
   it('replaces @master/css imports with CSS import modifiers', () => {
-    const result = replaceStyleCSSImports([
+    const result = replaceStylesheetImports([
       '@import "@master/css" layer(master);',
       '@import url(\'master.css\') layer(master);',
       '@import "./other.css";'
@@ -147,7 +147,8 @@ describe('style CSS extraction helpers', () => {
     const resolvedSource = resolveMasterStyleSource(entryPath, source, root)
     expect(resolvedSource?.source).toContain('@keyframes active-spin')
 
-    const result = await compileRenderedStyleCSS(entryPath, resolvedSource?.source || source, {
+    const result = await compileRenderedStylesheet(entryPath, resolvedSource?.source || source, {
+      baseManifest: defaultManifest,
       projectDir: root
     })
 
@@ -176,7 +177,7 @@ describe('style CSS extraction helpers', () => {
     expect(hasMasterStyleEntrypoint('@import "./other.css";')).toBe(false)
     expect(isMasterStyleSource('@theme { --color-primary: red; }')).toBe(false)
     expect(isMasterStyleSource('@import "@master/css";')).toBe(true)
-    expect(isMasterStyleSource(resolveStyleCSSImportGraph(
+    expect(isMasterStyleSource(resolveStylesheetImportGraph(
       join(createFixture(), 'app/globals.css'),
       '@import "@master/css";',
       undefined,
@@ -201,8 +202,8 @@ describe('style CSS extraction helpers', () => {
     expect(hasLocalStyleDirectives('.card { @dark { color: red; } }')).toBe(true)
     expect(hasLocalStyleDirectives('.card { @slot; }')).toBe(false)
     expect(hasLocalStyleDirectives('.card { color: red; }')).toBe(false)
-    expect(isStyleCSSRequest('/project/src/Button.module.css')).toBe(true)
-    expect(isStyleCSSRequest('/project/src/Button.vue?vue&type=style&index=0&lang.css')).toBe(true)
+    expect(isStylesheetRequest('/project/src/Button.module.css')).toBe(true)
+    expect(isStylesheetRequest('/project/src/Button.vue?vue&type=style&index=0&lang.css')).toBe(true)
     expect(isMasterStyleSource('.card { @compose block; }')).toBe(false)
   })
 
@@ -213,7 +214,7 @@ describe('style CSS extraction helpers', () => {
     writeFileSync(tokenPath, '@components { card { display: block; } }')
     writeFileSync(entryPath, '@master entry;\n@import "./tokens.css";')
 
-    expect(collectStyleCSSDependencies(entryPath, undefined, root)).toEqual([
+    expect(collectStylesheetDependencies(entryPath, undefined, root)).toEqual([
       entryPath,
       tokenPath
     ])
@@ -223,10 +224,10 @@ describe('style CSS extraction helpers', () => {
     const root = createFixture()
     const entryPath = join(root, 'app/globals.css')
 
-    expect(collectStyleCSSDependencies(entryPath, '@master entry;\n@import "./missing.css";', root)).toEqual([
+    expect(collectStylesheetDependencies(entryPath, '@master entry;\n@import "./missing.css";', root)).toEqual([
       entryPath
     ])
-    expect(collectStyleCSSDependencies(join(root, 'app/missing.css'), undefined, root)).toEqual([
+    expect(collectStylesheetDependencies(join(root, 'app/missing.css'), undefined, root)).toEqual([
       join(root, 'app/missing.css')
     ])
   })
@@ -235,7 +236,7 @@ describe('style CSS extraction helpers', () => {
     const { manifest } = compileCSSManifest('@utilities { brand { color: #fff; } }', {
       baseManifest: defaultManifest
     })
-    const result = await transformLocalStyleCSS('/project/src/Button.module.css', `
+    const result = await transformLocalStylesheet('/project/src/Button.module.css', `
       .button {
         @compose inline-flex brand;
         color: white;
@@ -262,13 +263,14 @@ describe('style CSS extraction helpers', () => {
       '.referenced-native { color: red; }'
     ].join('\n'))
 
-    const result = await transformLocalStyleCSS(modulePath, `
+    const result = await transformLocalStylesheet(modulePath, `
       @reference "./tokens.css";
 
       .button {
         @compose brand;
       }
     `, {
+      baseManifest: defaultManifest,
       projectDir: root
     })
 
@@ -301,13 +303,14 @@ describe('style CSS extraction helpers', () => {
       '.referenced-native { color: red; }'
     ].join('\n'))
 
-    const result = await transformLocalStyleCSS(modulePath, `
+    const result = await transformLocalStylesheet(modulePath, `
       @reference "./tokens.css";
 
       .page-panel {
         @compose panel;
       }
     `, {
+      baseManifest: defaultManifest,
       projectDir: root
     })
 
@@ -341,13 +344,14 @@ describe('style CSS extraction helpers', () => {
       '}'
     ].join('\n'))
 
-    const result = await transformLocalStyleCSS(modulePath, `
+    const result = await transformLocalStylesheet(modulePath, `
       @reference "./tokens.css";
 
       .page-panel {
         @compose panel;
       }
     `, {
+      baseManifest: defaultManifest,
       projectDir: root,
       emittedGlobals: {
         variables: { 'spacing-card': 1 },
@@ -368,13 +372,14 @@ describe('style CSS extraction helpers', () => {
     const pagePath = join(root, 'app/page.css')
     writeFileSync(globalsPath, '@import "@master/css";')
 
-    const result = await transformLocalStyleCSS(pagePath, `
+    const result = await transformLocalStylesheet(pagePath, `
       @reference "./globals.css";
 
       .home-section {
         @compose py:5xl;
       }
     `, {
+      baseManifest: defaultManifest,
       projectDir: root
     })
 
@@ -397,15 +402,17 @@ describe('style CSS extraction helpers', () => {
     ].join('\n'))
 
     const globalResult = await createStyleEntryEmittedGlobals([globalsPath], {
+      baseManifest: defaultManifest,
       projectDir: root
     })
-    const result = await transformLocalStyleCSS(pagePath, `
+    const result = await transformLocalStylesheet(pagePath, `
       @reference "./globals.css";
 
       .home-section {
         @compose py:5xl;
       }
     `, {
+      baseManifest: defaultManifest,
       projectDir: root,
       emittedGlobals: globalResult.emittedGlobals
     })
@@ -424,7 +431,8 @@ describe('style CSS extraction helpers', () => {
     const modulePath = join(root, 'app/Empty.module.css')
     writeFileSync(tokenPath, '@components { brand { display: block; } }')
 
-    const result = await transformLocalStyleCSS(modulePath, '@reference "./tokens.css";', {
+    const result = await transformLocalStylesheet(modulePath, '@reference "./tokens.css";', {
+      baseManifest: defaultManifest,
       projectDir: root
     })
 
@@ -436,7 +444,9 @@ describe('style CSS extraction helpers', () => {
 
   it('leaves ordinary local CSS unchanged', async () => {
     const source = '.button { color: red; }'
-    const result = await transformLocalStyleCSS('/project/src/Button.module.css', source)
+    const result = await transformLocalStylesheet('/project/src/Button.module.css', source, {
+      baseManifest: defaultManifest
+    })
 
     expect(result.transformed).toBe(false)
     expect(result.code).toBe(source)
@@ -478,15 +488,18 @@ describe('style CSS extraction helpers', () => {
 
   it('derives package host CSS from the package entry graph', async () => {
     const hostSource = await createMasterCSSPackageHostSource(process.cwd(), {
+      baseManifest: defaultManifest,
       projectDir: process.cwd()
     })
     const graph = resolveMasterCSSPackageImportGraph(process.cwd())
-    const compileSource = removeMasterStyleDirectives(removeStyleCSSImports(graph.source).code).code
-    const compiledResult = await compileStyleCSS(graph.dependencies[0] || '@master/css', compileSource, {
+    const compileSource = removeMasterStyleDirectives(removeStylesheetImports(graph.source).code).code
+    const compiledResult = await compileStylesheet(graph.dependencies[0] || '@master/css', compileSource, {
+      baseManifest: defaultManifest,
       projectDir: process.cwd(),
       preserveNativeCSS: true
     })
     const finalizedResult = createManifestFromCSSResult(compiledResult, {
+      baseManifest: defaultManifest,
       root: process.cwd()
     })
     const expectedCSS = renderCompiledManifestCSS({
@@ -495,8 +508,8 @@ describe('style CSS extraction helpers', () => {
     }).css
 
     expect(hostSource.dependencies.length).toBeGreaterThan(1)
-    expect(hostSource.dependencies.some((dependency) => dependency.endsWith('default-manifest.json'))).toBe(true)
-    expect(hostSource.dependencies.some((dependency) => dependency.endsWith('default-native.css'))).toBe(true)
+    expect(hostSource.dependencies.some((dependency) => dependency.endsWith('default-manifest.json'))).toBe(false)
+    expect(hostSource.dependencies.some((dependency) => dependency.endsWith('default-native.css'))).toBe(false)
     expect(hostSource.source).toBe(expectedCSS)
     expect(hostSource.source).toContain('@layer base')
     expect(hostSource.source).toContain('text-rendering: geometricprecision')
@@ -507,16 +520,22 @@ describe('style CSS extraction helpers', () => {
     expect(hostSource.source).not.toContain('@master')
   })
 
-  it('tracks default package artifacts as style dependencies', async () => {
+  it('does not load preset artifacts implicitly while registering stylesheets', async () => {
     const root = createFixture()
-    const scanner = new CSSScanner({}, root)
+    const scanner = new MasterCSSScanner({}, root)
     await scanner.init()
 
-    const styleCSSSources = new Map()
-    const result = await registerStyleCSSSource(scanner, styleCSSSources, join(root, 'app/globals.css'), '@import "@master/css";')
+    const stylesheetSources = new Map()
+    const result = await registerStylesheetSource(
+      scanner,
+      stylesheetSources,
+      join(root, 'app/globals.css'),
+      '@import "@master/css";',
+      { baseManifest: defaultManifest }
+    )
 
-    expect(result.dependencies.some((dependency: string) => dependency.endsWith('default-manifest.json'))).toBe(true)
-    expect(result.dependencies.some((dependency: string) => dependency.endsWith('default-native.css'))).toBe(true)
+    expect(result.dependencies.some((dependency: string) => dependency.endsWith('default-manifest.json'))).toBe(false)
+    expect(result.dependencies.some((dependency: string) => dependency.endsWith('default-native.css'))).toBe(false)
   })
 
   it('removes top-level master style directives', () => {
@@ -544,7 +563,7 @@ describe('style CSS extraction helpers', () => {
   })
 
   it('treats an empty host source as an intentionally handled Master CSS import', () => {
-    const result = createStyleCSSHostSource('@import "@master/css";', {
+    const result = createStylesheetHostSource('@import "@master/css";', {
       masterSource: ''
     })
 
@@ -552,7 +571,7 @@ describe('style CSS extraction helpers', () => {
   })
 
   it('keeps native imports before generated host CSS', () => {
-    const masterFirst = createStyleCSSHostSource([
+    const masterFirst = createStylesheetHostSource([
       '@import "@master/css";',
       '@import "@fontsource/fira-mono";',
       '',
@@ -560,7 +579,7 @@ describe('style CSS extraction helpers', () => {
     ].join('\n'), {
       masterSource: '#master-css-slot{--slot:0}'
     })
-    const masterLast = createStyleCSSHostSource([
+    const masterLast = createStylesheetHostSource([
       '@import "@fontsource/fira-mono";',
       '@import "@master/css";',
       '',
@@ -574,7 +593,7 @@ describe('style CSS extraction helpers', () => {
   })
 
   it('preserves native import modifiers before generated host CSS', () => {
-    const result = createStyleCSSHostSource([
+    const result = createStylesheetHostSource([
       '@import url("@fontsource/fira-mono") layer(fonts) screen;',
       '@import "normalize.css" layer(reset);',
       '@import "@master/css";'
@@ -591,11 +610,11 @@ describe('style CSS extraction helpers', () => {
 
   it('uses the managed CSS entry config and native CSS sources', async () => {
     const root = createFixture()
-    const scanner = new CSSScanner({}, root)
+    const scanner = new MasterCSSScanner({}, root)
     await scanner.init()
 
-    const styleCSSSources = new Map()
-    await registerStyleCSSSource(scanner, styleCSSSources, join(root, 'app/globals.css'), `
+    const stylesheetSources = new Map()
+    await registerStylesheetSource(scanner, stylesheetSources, join(root, 'app/globals.css'), `
       @import "@master/css";
 
       @theme {
@@ -627,22 +646,16 @@ describe('style CSS extraction helpers', () => {
       .unused {
         color: var(--color-primary);
       }
-    `)
+    `, { baseManifest: defaultManifest })
     await scanner.scan(join(root, 'app/page.tsx'), '<main class="btn block main fg:red"></main>')
 
     const css = await createExtractedCSS({
       scanner,
-      styleCSSSources,
-      projectDir: root
-    })
-    const fallbackCSS = await createExtractedCSS({
-      scanner,
-      styleCSSSources,
+      stylesheetSources,
       baseManifest: defaultManifest,
       projectDir: root
     })
 
-    expect(css).toBe(fallbackCSS)
     expect(css).toContain('@layer base')
     expect(css).toContain('text-rendering: geometricprecision')
     expect(css).toContain('.main')
@@ -662,23 +675,24 @@ describe('style CSS extraction helpers', () => {
 
   it('keeps non-expandable native imports out of generated managed CSS', async () => {
     const root = createFixture()
-    const scanner = new CSSScanner({}, root)
+    const scanner = new MasterCSSScanner({}, root)
     await scanner.init()
 
-    const styleCSSSources = new Map()
-    await registerStyleCSSSource(scanner, styleCSSSources, join(root, 'app/globals.css'), [
+    const stylesheetSources = new Map()
+    await registerStylesheetSource(scanner, stylesheetSources, join(root, 'app/globals.css'), [
       '@import "@master/css";',
       '@import "@fontsource/fira-mono";',
       '',
       '.card {',
       '    color: red;',
       '}'
-    ].join('\n'))
+    ].join('\n'), { baseManifest: defaultManifest })
     await scanner.scan(join(root, 'app/page.html'), '<div class="card"></div>')
 
     const css = await createExtractedCSS({
       scanner,
-      styleCSSSources,
+      stylesheetSources,
+      baseManifest: defaultManifest,
       projectDir: root
     })
 
@@ -689,11 +703,11 @@ describe('style CSS extraction helpers', () => {
 
   it('reports emittedGlobals variables and animations emitted by the Master CSS entry', async () => {
     const root = createFixture()
-    const scanner = new CSSScanner({}, root)
+    const scanner = new MasterCSSScanner({}, root)
     await scanner.init()
 
-    const styleCSSSources = new Map()
-    await registerStyleCSSSource(scanner, styleCSSSources, join(root, 'app/globals.css'), `
+    const stylesheetSources = new Map()
+    await registerStylesheetSource(scanner, stylesheetSources, join(root, 'app/globals.css'), `
       @theme {
         --animation-main: scale 1s;
         --color-primary: #ff0000;
@@ -729,12 +743,13 @@ describe('style CSS extraction helpers', () => {
       .main-animated {
         animation: var(--animation-main);
       }
-    `)
+    `, { baseManifest: defaultManifest })
     await scanner.scan(join(root, 'app/page.tsx'), '<main class="main main-animated"></main>')
 
     const result = await createExtractedCSSResult({
       scanner,
-      styleCSSSources,
+      stylesheetSources,
+      baseManifest: defaultManifest,
       projectDir: root,
       includeGeneratedCSS: false
     })
@@ -757,20 +772,21 @@ describe('style CSS extraction helpers', () => {
 
   it('does not preload inline theme tokens', async () => {
     const root = createFixture()
-    const scanner = new CSSScanner({}, root)
+    const scanner = new MasterCSSScanner({}, root)
     await scanner.init()
 
-    const styleCSSSources = new Map()
-    await registerStyleCSSSource(scanner, styleCSSSources, join(root, 'app/globals.css'), `
+    const stylesheetSources = new Map()
+    await registerStylesheetSource(scanner, stylesheetSources, join(root, 'app/globals.css'), `
       @theme inline {
         --color-primary: #ff0000;
       }
-    `)
+    `, { baseManifest: defaultManifest })
     await scanner.scan(join(root, 'app/page.tsx'), '<main class="fg:primary"></main>')
 
     const result = await createExtractedCSSResult({
       scanner,
-      styleCSSSources,
+      stylesheetSources,
+      baseManifest: defaultManifest,
       projectDir: root
     })
 
@@ -781,11 +797,11 @@ describe('style CSS extraction helpers', () => {
 
   it('emits static theme tokens and keyframes without class references', async () => {
     const root = createFixture()
-    const scanner = new CSSScanner({}, root)
+    const scanner = new MasterCSSScanner({}, root)
     await scanner.init()
 
-    const styleCSSSources = new Map()
-    await registerStyleCSSSource(scanner, styleCSSSources, join(root, 'app/globals.css'), `
+    const stylesheetSources = new Map()
+    await registerStylesheetSource(scanner, stylesheetSources, join(root, 'app/globals.css'), `
       @theme static {
         --color-primary: #ff0000;
 
@@ -795,11 +811,12 @@ describe('style CSS extraction helpers', () => {
           }
         }
       }
-    `)
+    `, { baseManifest: defaultManifest })
 
     const result = await createExtractedCSSResult({
       scanner,
-      styleCSSSources,
+      stylesheetSources,
+      baseManifest: defaultManifest,
       projectDir: root,
       includeGeneratedCSS: false
     })
@@ -829,11 +846,11 @@ describe('style CSS extraction helpers', () => {
         color: blue;
       }
     `)
-    const scanner = new CSSScanner({}, root)
+    const scanner = new MasterCSSScanner({}, root)
     await scanner.init()
 
-    const styleCSSSources = new Map()
-    const result = await registerStyleCSSSource(scanner, styleCSSSources, join(root, 'app/globals.css'), `
+    const stylesheetSources = new Map()
+    const result = await registerStylesheetSource(scanner, stylesheetSources, join(root, 'app/globals.css'), `
       @import "@master/css";
       @import "./styles/btn.css";
 
@@ -844,12 +861,13 @@ describe('style CSS extraction helpers', () => {
       .unused {
         display: block;
       }
-    `)
+    `, { baseManifest: defaultManifest })
     await scanner.scan(join(root, 'app/page.html'), '<div class="card btn-native"></div>')
 
     const css = await createExtractedCSS({
       scanner,
-      styleCSSSources,
+      stylesheetSources,
+      baseManifest: defaultManifest,
       projectDir: root
     })
 
@@ -865,11 +883,11 @@ describe('style CSS extraction helpers', () => {
 
   it('preserves native CSS when a Master CSS import root opts out of pruning', async () => {
     const root = createFixture()
-    const scanner = new CSSScanner({}, root)
+    const scanner = new MasterCSSScanner({}, root)
     await scanner.init()
 
-    const styleCSSSources = new Map()
-    await registerStyleCSSSource(scanner, styleCSSSources, join(root, 'app/globals.css'), `
+    const stylesheetSources = new Map()
+    await registerStylesheetSource(scanner, stylesheetSources, join(root, 'app/globals.css'), `
       @import "@master/css";
       @preserve native;
 
@@ -880,12 +898,13 @@ describe('style CSS extraction helpers', () => {
       .unused {
         display: block;
       }
-    `)
+    `, { baseManifest: defaultManifest })
     await scanner.scan(join(root, 'app/page.html'), '<div class="card"></div>')
 
     const css = await createExtractedCSS({
       scanner,
-      styleCSSSources,
+      stylesheetSources,
+      baseManifest: defaultManifest,
       projectDir: root
     })
 
@@ -908,20 +927,21 @@ describe('style CSS extraction helpers', () => {
         color: blue;
       }
     `)
-    const scanner = new CSSScanner({}, root)
+    const scanner = new MasterCSSScanner({}, root)
     await scanner.init()
 
-    const styleCSSSources = new Map()
-    await registerStyleCSSSource(scanner, styleCSSSources, join(root, 'app/globals.css'), `
+    const stylesheetSources = new Map()
+    await registerStylesheetSource(scanner, stylesheetSources, join(root, 'app/globals.css'), `
       @import "@master/css";
       @preserve native;
       @import "./styles/btn.css";
-    `)
+    `, { baseManifest: defaultManifest })
     await scanner.scan(join(root, 'app/page.html'), '<div class="btn-native"></div>')
 
     const css = await createExtractedCSS({
       scanner,
-      styleCSSSources,
+      stylesheetSources,
+      baseManifest: defaultManifest,
       projectDir: root
     })
 
@@ -933,22 +953,23 @@ describe('style CSS extraction helpers', () => {
 
   it('can emit pruned native CSS without generated Master CSS', async () => {
     const root = createFixture()
-    const scanner = new CSSScanner({}, root)
+    const scanner = new MasterCSSScanner({}, root)
     await scanner.init()
 
-    const styleCSSSources = new Map()
-    await registerStyleCSSSource(scanner, styleCSSSources, join(root, 'app/globals.css'), `
+    const stylesheetSources = new Map()
+    await registerStylesheetSource(scanner, stylesheetSources, join(root, 'app/globals.css'), `
       @master entry;
 
       .card {
         display: grid;
       }
-    `)
+    `, { baseManifest: defaultManifest })
     await scanner.scan(join(root, 'app/page.html'), '<div class="card block"></div>')
 
     const css = await createExtractedCSS({
       scanner,
-      styleCSSSources,
+      stylesheetSources,
+      baseManifest: defaultManifest,
       projectDir: root,
       includeGeneratedCSS: false
     })
@@ -961,16 +982,23 @@ describe('style CSS extraction helpers', () => {
 
   it('keeps package base CSS without generated utilities for Master CSS imports', async () => {
     const root = createFixture()
-    const scanner = new CSSScanner({}, root)
+    const scanner = new MasterCSSScanner({}, root)
     await scanner.init()
 
-    const styleCSSSources = new Map()
-    await registerStyleCSSSource(scanner, styleCSSSources, join(root, 'app/globals.css'), '@import "@master/css";')
+    const stylesheetSources = new Map()
+    await registerStylesheetSource(
+      scanner,
+      stylesheetSources,
+      join(root, 'app/globals.css'),
+      '@import "@master/css";',
+      { baseManifest: defaultManifest }
+    )
     await scanner.scan(join(root, 'app/page.html'), '<div class="block"></div>')
 
     const css = await createExtractedCSS({
       scanner,
-      styleCSSSources,
+      stylesheetSources,
+      baseManifest: defaultManifest,
       projectDir: root,
       includeGeneratedCSS: false
     })
@@ -984,12 +1012,13 @@ describe('style CSS extraction helpers', () => {
 
   it('returns empty CSS when generated output is disabled without style sources', async () => {
     const root = createFixture()
-    const scanner = new CSSScanner({}, root)
+    const scanner = new MasterCSSScanner({}, root)
     await scanner.init()
     await scanner.scan(join(root, 'app/page.html'), '<div class="block"></div>')
 
     const css = await createExtractedCSS({
       scanner,
+      baseManifest: defaultManifest,
       includeGeneratedCSS: false
     })
 

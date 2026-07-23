@@ -1,18 +1,15 @@
-import type {
-  LoadedNativeBinding,
-  LoadNativeBindingOptions
-} from './index'
-import { NativeBindingError } from './errors'
-
-export { NativeBindingError, type NativeLoadFailureCode } from './errors'
-
-/** Browser-safe resolution target for universal engine bundles. */
-export function loadNativeBinding(
-  options: LoadNativeBindingOptions = {}
-): LoadedNativeBinding | undefined {
-  if (!options.required) return
-  throw new NativeBindingError(
-    'NATIVE_UNAVAILABLE',
-    'Master CSS native bindings are unavailable in browsers.'
-  )
-}
+export {
+  MasterCSSBackendContractError,
+  assertMasterCSSBackendInfo,
+  type MasterCSSBackendRequirements
+} from './binding'
+export {
+  MASTER_CSS_BINDING_ABI_VERSION,
+  MASTER_CSS_HYDRATION_MANIFEST_VERSION,
+  MASTER_CSS_MANIFEST_VERSION,
+  type MasterCSSBackend,
+  type MasterCSSBackendFeature,
+  type MasterCSSBackendInfo,
+  type MasterCSSBackendSurface,
+  type MasterCSSResolvedBackend
+} from './protocol'

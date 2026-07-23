@@ -1,10 +1,12 @@
-import { registerStyleCSSSource as registerStylesheetCSSSource } from '@master/css-compiler/stylesheet'
-import type { PluginContext } from '../core'
+import { registerStylesheetSource as registerStylesheetCSSSource } from '@master/css-compiler/stylesheet'
+import type { MasterCSSVitePluginContext } from '../core'
 import { getScanner } from './scanner-context'
 
-export async function registerStyleCSSSource(context: PluginContext, id: string, source: string) {
-  context.styleCSSSources ??= new Map()
-  return registerStylesheetCSSSource(getScanner(context), context.styleCSSSources, id, source, {
+export async function registerStylesheetSource(context: MasterCSSVitePluginContext, id: string, source: string) {
+  context.stylesheetSources ??= new Map()
+  const scanner = getScanner(context)
+  return registerStylesheetCSSSource(scanner, context.stylesheetSources, id, source, {
+    baseManifest: scanner.css.manifest,
     projectDir: context.config?.root
   })
 }

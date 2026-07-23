@@ -47,15 +47,15 @@ async function routeRuntimeAssets(page: Page, options: RuntimeAssetRouteOptions 
 async function startGlobalRuntime(page: Page) {
   await routeRuntimeAssets(page)
   await page.addScriptTag({ url: RUNTIME_SCRIPT_URL })
-  await page.waitForFunction(() => !!globalThis.masterCSSRuntime?.observing)
+  await page.waitForFunction(() => !!globalThis.__MASTER_CSS_RUNTIME_TEST__?.observing)
 }
 
 test('uses split bundled preset manifest', async ({ page }) => {
   await startGlobalRuntime(page)
 
-  expect(await page.evaluate(() => globalThis.masterCSSRuntime.variables.get('font-weight-bold'))).toBeDefined()
-  expect(await page.evaluate(() => globalThis.masterCSSRuntime.variables.get('color-white'))).toBeDefined()
-  expect(await page.evaluate(() => globalThis.masterCSSRuntime.manifest.version)).toBe(1)
+  expect(await page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.variables.get('font-weight-bold'))).toBeDefined()
+  expect(await page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.variables.get('color-white'))).toBeDefined()
+  expect(await page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.manifest.version)).toBe(1)
 })
 
 test('uses modulepreloaded default manifest', async ({ page }) => {
@@ -87,11 +87,11 @@ test('uses modulepreloaded default manifest', async ({ page }) => {
     `
   }))
   await page.goto(`${RUNTIME_ASSET_BASE_URL}/`)
-  await page.waitForFunction(() => !!globalThis.masterCSSRuntime?.observing)
+  await page.waitForFunction(() => !!globalThis.__MASTER_CSS_RUNTIME_TEST__?.observing)
 
   expect(defaultManifestRequests).toBe(1)
   expect(consoleMessages).toEqual([])
-  expect(await page.evaluate(() => globalThis.masterCSSRuntime.manifest.version)).toBe(1)
+  expect(await page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.manifest.version)).toBe(1)
 })
 
 test('ignores global manifest override', async ({ page }) => {
@@ -106,9 +106,9 @@ test('ignores global manifest override', async ({ page }) => {
   }, { manifest })
   await startGlobalRuntime(page)
 
-  expect(await page.evaluate(() => globalThis.masterCSSRuntime.variables.get('primary'))).toBeUndefined()
-  expect(await page.evaluate(() => globalThis.masterCSSRuntime.variables.get('font-weight-bold'))).toBeDefined()
-  expect(await page.evaluate(() => globalThis.masterCSSRuntime.manifest.version)).toBe(1)
+  expect(await page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.variables.get('primary'))).toBeUndefined()
+  expect(await page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.variables.get('font-weight-bold'))).toBeDefined()
+  expect(await page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.manifest.version)).toBe(1)
 })
 
 test('fails open when a cross-origin Wasm request is blocked', async ({ page }) => {
@@ -129,7 +129,7 @@ test('fails open when a cross-origin Wasm request is blocked', async ({ page }) 
   await expect.poll(() => page.evaluate(() => document.documentElement.hasAttribute('hidden'))).toBe(false)
 
   expect(wasmRequests).toBe(1)
-  expect(await page.evaluate(() => Boolean(globalThis.masterCSSRuntime))).toBe(false)
+  expect(await page.evaluate(() => Boolean(globalThis.__MASTER_CSS_RUNTIME_TEST__))).toBe(false)
 })
 
 test('fails open when strict CSP disallows Wasm compilation', async ({ page }) => {
@@ -152,5 +152,5 @@ test('fails open when strict CSP disallows Wasm compilation', async ({ page }) =
   await expect.poll(() => page.evaluate(() => document.documentElement.hasAttribute('hidden'))).toBe(false)
 
   expect(wasmRequests).toBe(1)
-  expect(await page.evaluate(() => Boolean(globalThis.masterCSSRuntime))).toBe(false)
+  expect(await page.evaluate(() => Boolean(globalThis.__MASTER_CSS_RUNTIME_TEST__))).toBe(false)
 })

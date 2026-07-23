@@ -1,17 +1,20 @@
 import { readFile } from 'node:fs/promises'
 import { basename } from 'node:path'
 import {
-  compileCSSManifest,
-  compileCSSManifestFile,
-  inspectCSS,
-  type CompileCSSManifestResult
-} from '@master/css-compiler'
+  compileManifestFileSync,
+  compileManifestSync,
+  inspectCSSSync,
+  type MasterCSSCompileManifestResult
+} from '@master/css-compiler/node'
+import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
+import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import type MasterCSSMCPContext from './context'
 import { createMCPTextDocument } from './document'
 import { summarizeManifest } from './manifest-summary'
 import { getErrorMessage } from './result'
 
 const DIRECTIVE_INSPECTION_VERSION = 1
+const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
 
 export interface InspectDirectivesOptions {
   content?: string
@@ -22,7 +25,7 @@ export interface InspectDirectivesOptions {
 
 function createDirectiveEntries(content: string, filePath: string) {
   const document = createMCPTextDocument(filePath, content)
-  return inspectCSS(content).directives.map((directive) => ({
+  return inspectCSSSync(content).directives.map((directive) => ({
     name: directive.name,
     range: directive.range,
     loc: {
@@ -35,36 +38,18 @@ function createDirectiveEntries(content: string, filePath: string) {
   }))
 }
 
-function countObjectKeys(value: unknown) {
-  return value && typeof value === 'object' ? Object.keys(value).length : 0
-}
-
-function summarizeManifestInput(input: unknown) {
-  const manifestInput = input && typeof input === 'object' ? input as Record<string, unknown> : {}
-  return {
-    keys: Object.keys(manifestInput),
-    counts: {
-      settings: countObjectKeys(manifestInput.settings),
-      variables: countObjectKeys(manifestInput.variables),
-      utilities: Array.isArray(manifestInput.utilities) ? manifestInput.utilities.length : countObjectKeys(manifestInput.utilities),
-      variants: Array.isArray(manifestInput.variants) ? manifestInput.variants.length : countObjectKeys(manifestInput.variants),
-      conditions: countObjectKeys(manifestInput.conditions),
-      selectors: countObjectKeys(manifestInput.selectors),
-      animations: countObjectKeys(manifestInput.animations)
-    }
-  }
-}
-
-function summarizeCompileResult(result: CompileCSSManifestResult) {
-  const styleDefinitions = (result.directives as { styleDefinitions?: unknown[] }).styleDefinitions ?? []
+function summarizeCompileResult(result: MasterCSSCompileManifestResult) {
+  const warnings = result.diagnostics
+    .filter((diagnostic) => diagnostic.severity === 'warning')
+    .map((diagnostic) => diagnostic.message)
   return {
     manifest: summarizeManifest(result.manifest),
     directives: {
-      manifestInput: summarizeManifestInput(result.directives.manifestInput),
+      manifestInput: result.directiveSummary.manifestInput,
       classNames: result.classNames,
       nativeClassNames: result.nativeClassNames,
-      styleDefinitions: styleDefinitions.length,
-      extractionPolicy: result.extractionPolicy
+      styleDefinitions: result.directiveSummary.styleDefinitions,
+      extractionPolicy: result.directiveSummary.extractionPolicy
     },
     css: {
       bytes: result.css.length,
@@ -72,7 +57,7 @@ function summarizeCompileResult(result: CompileCSSManifestResult) {
       generatedBytes: result.generatedCSS.length
     },
     dependencies: result.dependencies,
-    warnings: result.warnings
+    warnings
   }
 }
 
@@ -81,8 +66,9 @@ async function compileDirectives(context: MasterCSSMCPContext, options: InspectD
     const filePath = await context.resolveExistingFile(options.entryPath)
     const [content, result] = await Promise.all([
       readFile(filePath, 'utf8'),
-      Promise.resolve(compileCSSManifestFile(filePath, {
+      Promise.resolve(compileManifestFileSync(filePath, {
         root: context.root,
+        baseManifest: defaultManifest,
         preserveNativeCSS: options.preserveNativeCSS
       }))
     ])
@@ -94,8 +80,8 @@ async function compileDirectives(context: MasterCSSMCPContext, options: InspectD
   }
 
   const filePath = context.resolveVirtualPath(options.filePath || 'master.css')
-  const result = compileCSSManifest(options.content, {
-    root: context.root,
+  const result = compileManifestSync(options.content, {
+    baseManifest: defaultManifest,
     from: filePath,
     preserveNativeCSS: options.preserveNativeCSS
   })

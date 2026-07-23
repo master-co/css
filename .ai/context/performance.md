@@ -15,7 +15,7 @@ Use this for performance investigation, benchmark work, or hot path changes.
 - Identify a concrete hot path before changing code.
 - Validate correctness before benchmark reporting.
 - Do not trade CSS output, cascade order, hydration correctness, or public behavior for speed unless the behavior change is intentional and tested.
-- Treat runtime source, the `wasm-runtime` feature set, schema runtime constants, and preset manifest loading as browser runtime bundle inputs. Keep compiler/tooling features in `wasm-compiler` or `wasm-tooling` and measure split artifact impact.
+- Treat runtime source, the `@master/css-wasm-engine` feature set, schema runtime constants, and preset manifest loading as browser runtime bundle inputs. Keep compiler/tooling features in `@master/css-wasm-compiler` or `@master/css-wasm-tooling` and measure split artifact impact.
 - Do not add global event buses or tooling observer APIs to runtime as a shortcut for diagnostics. Third-party class observation should use DOM `MutationObserver` or explicit public runtime state.
 - Avoid new dependencies unless the existing toolchain cannot reasonably solve the performance problem.
 

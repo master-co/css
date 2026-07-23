@@ -1,19 +1,22 @@
 import masterCSSTextMateGrammar from '../syntaxes/master-css.tmLanguage.json' with { type: 'json' }
 import type {
   HighlightTokenRole,
-  LanguageClassPositionIR,
-  LanguageSession,
-  LanguageSettings,
+  MasterCSSLanguageClassPosition,
   SemanticTokenItem,
   SemanticTokenModifier,
   SemanticTokenType
 } from '@master/css-tooling/language'
 import {
-  defaultManifest,
   getMasterCSSSemanticTokenScopeKeys,
   MASTER_CSS_SEMANTIC_TOKEN_SCOPE_MAP
 } from '@master/css-tooling/language'
-import { createLanguageSessionSync } from '@master/css-tooling/language/node'
+import type { MasterCSSToolingSession } from '@master/css-tooling'
+import { createToolingSessionSync } from '@master/css-tooling/node'
+import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
+import type { MasterCSSManifest } from '@master/css-schema/manifest'
+import type { MasterCSSLanguageServiceSettings } from './settings'
+
+const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
 
 export const MASTER_CSS_SHIKI_SCOPE_NAME = 'master-css.directive.injection'
 export const MASTER_CSS_SHIKI_INJECT_TO = [
@@ -119,15 +122,15 @@ export interface MasterCSSShikiOptions {
    * Reuse an existing Master CSS instance when the caller already owns a
    * configured language engine.
    */
-  session?: LanguageSession
+  session?: MasterCSSToolingSession
   /**
    * Class-position and manifest settings used when collecting embedded utilities.
    */
-  settings?: LanguageSettings
+  settings?: MasterCSSLanguageServiceSettings
   /**
    * Convenience shortcut for `settings.manifest`.
    */
-  manifest?: LanguageSettings['manifest']
+  manifest?: MasterCSSManifest
   /**
    * Shiki language id. Defaults to the `lang` passed to Shiki.
    */
@@ -258,9 +261,9 @@ function getLanguageServiceLanguageId(lang?: string) {
 }
 
 function createShikiSession(options: MasterCSSShikiOptions) {
-  return options.session || createLanguageSessionSync(
-    options.manifest ?? options.settings?.manifest ?? defaultManifest
-  )
+  return options.session || createToolingSessionSync({
+    manifest: options.manifest ?? options.settings?.manifest ?? defaultManifest
+  })
 }
 
 function stringifyStyle(style: MasterCSSShikiSemanticTokenStyle) {
@@ -649,7 +652,7 @@ function withoutUndefinedProperties(properties: Record<string, unknown>) {
 
 function createClassAttributeValueWrapperDecorations(
   source: string,
-  classPositions: LanguageClassPositionIR[],
+  classPositions: readonly MasterCSSLanguageClassPosition[],
   tokens: ShikiToken[][],
   options: MasterCSSShikiOptions,
   existingDecorations: ShikiDecoration[] = []
@@ -911,7 +914,7 @@ export function createMasterCSSShikiDecorations(
 function analyzeMasterCSSShikiDocument(
   code: string,
   options: MasterCSSShikiOptions
-): { classPositions: LanguageClassPositionIR[], semanticTokens: SemanticTokenItem[] } | undefined {
+): { classPositions: readonly MasterCSSLanguageClassPosition[], semanticTokens: SemanticTokenItem[] } | undefined {
   const classList = options.classList ?? isMasterCSSClassListLanguage(options.lang)
   const languageId = getLanguageServiceLanguageId(classList ? 'plaintext' : options.lang)
   if (!languageId) return
@@ -930,7 +933,10 @@ function analyzeMasterCSSShikiDocument(
           }
         : {})
     })
-    return { classPositions, semanticTokens }
+    return {
+      classPositions: [...classPositions],
+      semanticTokens: [...semanticTokens]
+    }
   } finally {
     if (!options.session) session.dispose()
   }

@@ -1,1 +1,1 @@
-export { default as handle } from '@master/css-svelte/hooks.server'
+export { handle } from '@master/css-svelte/hooks.server'

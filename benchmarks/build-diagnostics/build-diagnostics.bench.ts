@@ -194,7 +194,7 @@ async function createBuildDiagnosticsReport(): Promise<BenchmarkReport> {
       '@master/css',
       '@master/css-cli',
       '@master/css-compiler',
-      '@master/css-tooling/scanner',
+      '@master/css-tooling/scanner/node',
       '@master/css-compiler/stylesheet',
       '@master/css-vite',
       'fast-glob',

@@ -6,19 +6,16 @@ import {
   inspectCSS,
   resolveCSSImportGraphSource,
   type CompileCSSOptions,
-  type CompileCSSResult
-} from '@master/css-compiler'
-import {
+  type CompileCSSResult,
   isMasterCSSPackageStyleFile as isMasterCSSCompilerPackageStyleFile,
   resolveMasterCSSPackageImportGraph
-} from '@master/css-compiler'
+} from '../node-compiler'
 import type { MasterCSSEmittedGlobals } from '@master/css-schema/emitted-globals'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import { renderCompiledManifestCSS, type RenderCompiledManifestCSSResult } from './render'
-import { createSourceExtractorSync } from '@master/css-tooling/source/node'
-import { VIRTUAL_CSS_ID } from '@master/css-internal-integration/style-module'
+import { createToolingSessionSync } from '@master/css-tooling/node'
 import { createRequire } from 'node:module'
-import { dirname, extname, join, resolve } from 'node:path'
+import { extname, join, resolve } from 'node:path'
 import { pathToFileURL } from 'node:url'
 import { existsSync, readFileSync } from 'node:fs'
 import {
@@ -34,15 +31,29 @@ import {
   type StylesheetSourceOptions
 } from './directives'
 
-export * from './directives'
+export {
+  collectStylesheetDirectives,
+  collectStylesheetDirectivesFromCSSGraph,
+  createStylesheetDirectives,
+  findStylesheetDirectiveStatements,
+  hasStylesheetDirectives,
+  hasStylesheetSourceDirectives,
+  mergeStylesheetDirectives,
+  mergeStylesheetSourceOptions,
+  removeStylesheetDirectiveStatements,
+  resolveStylesheetSourcePaths,
+  type CollectedStylesheetDirectives,
+  type StylesheetDirectiveStatement,
+  type StylesheetDirectives,
+  type StylesheetSourceOptions
+} from './directives'
 
-export const STYLE_CSS_REQUEST_RE = /\.(css|scss|sass)(?:[?#].*)?$/
+const STYLESHEET_REQUEST_RE = /\.(css|scss|sass)(?:[?#].*)?$/
 const MASTER_CSS_ENTRY_DIRECTIVE_NAME = 'entry'
+const VIRTUAL_CSS_ID = 'virtual:master-utilities.css'
 const MASTER_CSS_MODULE_IDS = ['@master/css'] as const
 
 const require = createRequire(import.meta.url)
-const sourceExtractor = createSourceExtractorSync()
-
 export interface SassModule {
   compileStringAsync(source: string, options: {
     url: URL
@@ -51,41 +62,41 @@ export interface SassModule {
   }): Promise<{ css: string }>
 }
 
-export interface CompileStyleCSSOptions extends CompileCSSOptions {
-  baseManifest?: MasterCSSManifest
+export interface CompileStylesheetOptions extends CompileCSSOptions {
+  readonly baseManifest: MasterCSSManifest
   projectDir?: string
   loadSass?: (projectDir?: string) => SassModule
 }
 
-export interface CompileRenderedStyleCSSResult extends CompileCSSResult {
+export interface CompileRenderedStylesheetResult extends CompileCSSResult {
   emittedGlobals: Required<MasterCSSEmittedGlobals>
   manifest: MasterCSSManifest
   renderedCSS: RenderCompiledManifestCSSResult
 }
 
-export interface TransformLocalStyleCSSResult {
+export interface TransformLocalStylesheetResult {
   code: string
   dependencies: string[]
   transformed: boolean
   result?: CompileCSSResult
 }
 
-export interface TransformLocalStyleCSSOptions extends CompileStyleCSSOptions {
+export interface TransformLocalStylesheetOptions extends CompileStylesheetOptions {
   emittedGlobals?: MasterCSSEmittedGlobals
 }
 
-export type RegisterStyleCSSSourceOptions = CompileStyleCSSOptions
+export type RegisterStylesheetSourceOptions = CompileStylesheetOptions
 
-export type CreateStyleEntryEmittedGlobalsOptions = CompileStyleCSSOptions
+export type CreateStyleEntryEmittedGlobalsOptions = CompileStylesheetOptions
 
 export interface CreateStyleEntryEmittedGlobalsResult {
   emittedGlobals: Required<MasterCSSEmittedGlobals>
   dependencies: string[]
 }
 
-export interface CreateExtractedCSSOptions extends CompileStyleCSSOptions {
+export interface CreateExtractedCSSOptions extends CompileStylesheetOptions {
   scanner: ScannerState
-  styleCSSSources?: StyleCSSSources
+  stylesheetSources?: StylesheetSources
   manifest?: MasterCSSManifest
   includeGeneratedCSS?: boolean
   includeNativeCSS?: boolean
@@ -103,6 +114,7 @@ export interface ScannerCSSState {
 }
 
 export interface ScannerClassState extends Iterable<string> {
+  readonly size: number
   has(className: string): boolean
 }
 
@@ -121,7 +133,7 @@ export interface ScannerState {
   emit?: (event: 'change') => unknown
 }
 
-export interface StyleCSSSource {
+export interface StylesheetSource {
   source: string
   pruneNativeCSS: boolean
   masterCSS: boolean
@@ -130,35 +142,21 @@ export interface StyleCSSSource {
   sourceDependencies: string[]
 }
 
-export type StyleCSSSources = Map<string, StyleCSSSource>
+export type StylesheetSources = Map<string, StylesheetSource>
 
-export interface ResolvedStyleCSSSource {
+export interface ResolvedStylesheetSource {
   source: string
   dependencies: string[]
 }
 
-export interface ResolveStyleCSSImportGraphOptions {
+export interface ResolveStylesheetImportGraphOptions {
   expandMasterCSSPackage?: boolean
 }
 
-export interface CreateStyleCSSHostSourceOptions {
+export interface CreateStylesheetHostSourceOptions {
   masterImport?: string
   masterSource?: string
 }
-
-interface DefaultMasterCSSPackageArtifact {
-  manifest: MasterCSSManifest
-  nativeCSS: string
-  dependencies: string[]
-}
-
-const DEFAULT_PRESET_SOURCE_FILES = [
-  'index.css',
-  'base.css',
-  'theme.css',
-  'variants.css',
-  'utilities.css'
-]
 
 function defaultLoadSass(projectDir?: string): SassModule {
   if (projectDir) {
@@ -171,16 +169,12 @@ function defaultLoadSass(projectDir?: string): SassModule {
   return require('sass') as SassModule
 }
 
-export function normalizeStyleCSSModuleIds() {
+function normalizeStylesheetModuleIds() {
   return new Set<string>(MASTER_CSS_MODULE_IDS)
 }
 
-export function createStyleCSSImportPattern() {
+function createStylesheetImportPattern() {
   return /(?:@master\s+entry\s*;|@import\s+(?:url\(\s*)?(['"])@master\/css\1\s*\)?[^;]*;)/
-}
-
-export function createMasterStyleCSSPattern() {
-  return createStyleCSSImportPattern()
 }
 
 export function cleanStyleRequest(id: string) {
@@ -208,13 +202,13 @@ function isStyleModuleRequest(source: string) {
   return getStyleRequestSearchParams(source).get('type') === 'style'
 }
 
-export function isStyleCSSRequest(id: string) {
-  return STYLE_CSS_REQUEST_RE.test(id) || (isStyleModuleRequest(id) && ['.css', '.scss', '.sass'].includes(getStyleRequestExtension(id)))
+export function isStylesheetRequest(id: string) {
+  return STYLESHEET_REQUEST_RE.test(id) || (isStyleModuleRequest(id) && ['.css', '.scss', '.sass'].includes(getStyleRequestExtension(id)))
 }
 
-export function replaceStyleCSSImports(source: string, replacement: string) {
+export function replaceStylesheetImports(source: string, replacement: string) {
   const ids = new Set([
-    ...normalizeStyleCSSModuleIds(),
+    ...normalizeStylesheetModuleIds(),
     VIRTUAL_CSS_ID
   ])
   const imports = analyzeCSSDependencies(source).imports
@@ -236,13 +230,13 @@ function findImportStatements(source: string) {
   return analyzeCSSDependencies(source).imports
 }
 
-export function resolveStyleCSSImportGraph(
+export function resolveStylesheetImportGraph(
   file: string,
   source: string,
   projectDir?: string,
-  options: ResolveStyleCSSImportGraphOptions = {}
-): ResolvedStyleCSSSource {
-  if (!STYLE_CSS_REQUEST_RE.test(cleanStyleRequest(file))) {
+  options: ResolveStylesheetImportGraphOptions = {}
+): ResolvedStylesheetSource {
+  if (!STYLESHEET_REQUEST_RE.test(cleanStyleRequest(file))) {
     return {
       source,
       dependencies: [cleanStyleRequest(file)]
@@ -254,7 +248,7 @@ export function resolveStyleCSSImportGraph(
   })
 }
 
-export function collectStyleCSSDependencies(
+export function collectStylesheetDependencies(
   file: string,
   source?: string,
   projectDir?: string
@@ -273,7 +267,7 @@ export function collectStyleCSSDependencies(
   }
 
   try {
-    const graph = resolveStyleCSSImportGraph(filename, resolvedSource, projectDir, {
+    const graph = resolveStylesheetImportGraph(filename, resolvedSource, projectDir, {
       expandMasterCSSPackage: false
     })
     for (const dependency of graph.dependencies) {
@@ -286,8 +280,8 @@ export function collectStyleCSSDependencies(
   return [...dependencies]
 }
 
-export function removeStyleCSSImports(source: string) {
-  return replaceStyleCSSImports(source, '')
+export function removeStylesheetImports(source: string) {
+  return replaceStylesheetImports(source, '')
 }
 
 function removeCSSImportStatements(source: string) {
@@ -302,12 +296,8 @@ function removeCSSImportStatements(source: string) {
   return code + source.slice(index)
 }
 
-export function hasStyleCSSImport(source: string) {
-  return removeStyleCSSImports(source).replaced
-}
-
-export function hasDefaultStyleCSSImport(source: string) {
-  return hasStyleCSSImport(source)
+export function hasStylesheetImport(source: string) {
+  return removeStylesheetImports(source).replaced
 }
 
 export function hasMasterStyleEntrypoint(source: string) {
@@ -319,11 +309,11 @@ export function resolveMasterStyleSource(
   source: string,
   projectDir?: string
 ) {
-  if (!isStyleCSSRequest(file)) return
+  if (!isStylesheetRequest(file)) return
   const sourceHasMasterEntry = hasMasterStyleEntrypoint(source)
-  let unresolvedPackageSource: ResolvedStyleCSSSource
+  let unresolvedPackageSource: ResolvedStylesheetSource
   try {
-    unresolvedPackageSource = resolveStyleCSSImportGraph(file, source, projectDir, {
+    unresolvedPackageSource = resolveStylesheetImportGraph(file, source, projectDir, {
       expandMasterCSSPackage: false
     })
   } catch (error) {
@@ -331,11 +321,11 @@ export function resolveMasterStyleSource(
     throw error
   }
   if (!isMasterStyleSource(unresolvedPackageSource.source)) return
-  return resolveStyleCSSImportGraph(file, source, projectDir)
+  return resolveStylesheetImportGraph(file, source, projectDir)
 }
 
 export function isMasterCSSModuleId(id: string) {
-  return normalizeStyleCSSModuleIds().has(id)
+  return normalizeStylesheetModuleIds().has(id)
 }
 
 export function isMasterCSSPackageStyleFile(id: string, projectDir?: string) {
@@ -351,11 +341,11 @@ export function hasLocalStyleDirectives(source: string) {
   return Boolean(result.generatedCSS || result.styleDefinitions?.length || result.references?.length)
 }
 
-function isStyleCSSHostImport(importSource: string, masterImport: string) {
-  return importSource === masterImport || (masterImport === '@master/css' && normalizeStyleCSSModuleIds().has(importSource))
+function isStylesheetHostImport(importSource: string, masterImport: string) {
+  return importSource === masterImport || (masterImport === '@master/css' && normalizeStylesheetModuleIds().has(importSource))
 }
 
-export function createStyleCSSHostSource(source: string, options: CreateStyleCSSHostSourceOptions = {}) {
+export function createStylesheetHostSource(source: string, options: CreateStylesheetHostSourceOptions = {}) {
   const masterImport = options.masterImport || '@master/css'
   const masterSource = options.masterSource
   const hasMasterSource = Object.prototype.hasOwnProperty.call(options, 'masterSource')
@@ -365,8 +355,8 @@ export function createStyleCSSHostSource(source: string, options: CreateStyleCSS
   for (const importStatement of imports) {
     const importSource = importStatement.source
     if (!importSource) continue
-    if (importSource === VIRTUAL_CSS_ID || normalizeStyleCSSModuleIds().has(importSource)) {
-      if (!hasMasterSource && isStyleCSSHostImport(importSource, masterImport)) {
+    if (importSource === VIRTUAL_CSS_ID || normalizeStylesheetModuleIds().has(importSource)) {
+      if (!hasMasterSource && isStylesheetHostImport(importSource, masterImport)) {
         preservedImports.push(importStatement.statement.trim())
       }
       continue
@@ -381,87 +371,27 @@ export function createStyleCSSHostSource(source: string, options: CreateStyleCSS
     }
   } else if (!preservedImports.some((statement) => {
     const importSource = findImportStatements(statement)[0]?.source
-    return importSource && isStyleCSSHostImport(importSource, masterImport)
+    return importSource && isStylesheetHostImport(importSource, masterImport)
   })) {
     preservedImports.unshift(`@import "${masterImport}";`)
   }
   return preservedImports.join('\n')
 }
 
-function canUseDefaultMasterCSSPackageArtifact(options: CompileStyleCSSOptions = {}) {
-  return !options.baseManifest
-    && !options.classes?.length
-    && !options.loadSass
-    && !options.onWarning
-    && options.preserveNativeCSS !== false
-}
-
-function resolveComparablePath(file: string) {
-  return resolve(file)
-}
-
-function findDefaultPresetArtifactFiles(dependencies: string[]) {
-  if (dependencies.length !== DEFAULT_PRESET_SOURCE_FILES.length + 1) return
-  const dependencySet = new Set(dependencies.map(resolveComparablePath))
-  for (const dependency of dependencies) {
-    const directory = dirname(dependency)
-    const sourceFiles = DEFAULT_PRESET_SOURCE_FILES.map((file) => resolveComparablePath(join(directory, file)))
-    if (!sourceFiles.every((file) => dependencySet.has(file))) continue
-
-    const manifestFile = join(directory, 'default-manifest.json')
-    const nativeCSSFile = join(directory, 'default-native.css')
-    if (!existsSync(manifestFile) || !existsSync(nativeCSSFile)) return
-    return {
-      manifestFile,
-      nativeCSSFile
-    }
-  }
-}
-
-function readDefaultMasterCSSPackageArtifact(projectDir: string | undefined, options: CompileStyleCSSOptions = {}): DefaultMasterCSSPackageArtifact | undefined {
-  if (!canUseDefaultMasterCSSPackageArtifact(options)) return
-
-  const graph = resolveMasterCSSPackageImportGraph(projectDir)
-  const artifactFiles = findDefaultPresetArtifactFiles(graph.dependencies)
-  if (!artifactFiles) return
-
-  return {
-    manifest: JSON.parse(readFileSync(artifactFiles.manifestFile, 'utf8')) as MasterCSSManifest,
-    nativeCSS: readFileSync(artifactFiles.nativeCSSFile, 'utf8'),
-    dependencies: [...new Set([
-      ...graph.dependencies,
-      artifactFiles.manifestFile,
-      artifactFiles.nativeCSSFile
-    ])]
-  }
-}
-
 function resolveMasterCSSPackageCompileSource(projectDir?: string) {
   const graph = resolveMasterCSSPackageImportGraph(projectDir)
   return {
-    source: removeMasterStyleDirectives(removeStyleCSSImports(graph.source).code).code,
+    source: removeMasterStyleDirectives(removeStylesheetImports(graph.source).code).code,
     dependencies: graph.dependencies
   }
 }
 
 export async function createMasterCSSPackageHostSource(
   projectDir: string | undefined,
-  options: CompileStyleCSSOptions = {}
+  options: CompileStylesheetOptions
 ) {
-  const defaultArtifact = readDefaultMasterCSSPackageArtifact(options.projectDir ?? projectDir, options)
-  if (defaultArtifact) {
-    const renderedCSS = renderCompiledManifestCSS({
-      manifest: defaultArtifact.manifest,
-      nativeCSS: defaultArtifact.nativeCSS
-    })
-    return {
-      source: renderedCSS.css,
-      dependencies: defaultArtifact.dependencies
-    }
-  }
-
   const graph = resolveMasterCSSPackageCompileSource(projectDir)
-  const result = await compileStyleCSS(graph.dependencies[0] || '@master/css', graph.source, {
+  const result = await compileStylesheet(graph.dependencies[0] || '@master/css', graph.source, {
     ...options,
     preserveNativeCSS: true
   })
@@ -489,7 +419,7 @@ export function isMasterStyleSource(source: string) {
   return hasMasterStyleEntrypoint(source)
 }
 
-export async function preprocessStyleCSS(source: string, id: string, options: CompileStyleCSSOptions = {}) {
+async function preprocessStylesheet(source: string, id: string, options: CompileStylesheetOptions) {
   const filename = cleanStyleRequest(id)
   const extension = getStyleRequestExtension(id)
   if (extension !== '.scss' && extension !== '.sass') return source
@@ -503,12 +433,12 @@ export async function preprocessStyleCSS(source: string, id: string, options: Co
   return result.css
 }
 
-export async function compileStyleCSS(
+export async function compileStylesheet(
   id: string,
   source: string,
-  options: CompileStyleCSSOptions = {}
+  options: CompileStylesheetOptions
 ): Promise<CompileCSSResult> {
-  const { result, finalizedResult } = await compileStyleCSSResult(id, source, options)
+  const { result, finalizedResult } = await compileStylesheetResult(id, source, options)
   return {
     ...result,
     dependencies: finalizedResult.dependencies,
@@ -518,14 +448,14 @@ export async function compileStyleCSS(
   }
 }
 
-async function compileStyleCSSResult(
+async function compileStylesheetResult(
   id: string,
   source: string,
-  options: CompileStyleCSSOptions = {}
+  options: CompileStylesheetOptions
 ) {
   const { projectDir, loadSass: _loadSass, baseManifest, ...compileOptions } = options
   const filename = cleanStyleRequest(id)
-  const css = await preprocessStyleCSS(source, id, options)
+  const css = await preprocessStylesheet(source, id, options)
   const result = compileCSS(css, {
     ...compileOptions,
     from: filename
@@ -543,12 +473,12 @@ async function compileStyleCSSResult(
   }
 }
 
-export async function compileRenderedStyleCSS(
+export async function compileRenderedStylesheet(
   id: string,
   source: string,
-  options: CompileStyleCSSOptions = {}
-): Promise<CompileRenderedStyleCSSResult> {
-  const { compileOptions, finalizedResult, result } = await compileStyleCSSResult(id, source, options)
+  options: CompileStylesheetOptions
+): Promise<CompileRenderedStylesheetResult> {
+  const { compileOptions, finalizedResult, result } = await compileStylesheetResult(id, source, options)
   const renderedCSS = renderCompiledManifestCSS({
     manifest: finalizedResult.manifest,
     nativeCSS: result.nativeCSS,
@@ -567,17 +497,6 @@ export async function compileRenderedStyleCSS(
   }
 }
 
-export async function compileLocalStyleCSS(
-  id: string,
-  source: string,
-  options: CompileStyleCSSOptions = {}
-): Promise<CompileCSSResult> {
-  return compileStyleCSS(id, source, {
-    ...options,
-    preserveNativeCSS: true
-  })
-}
-
 function createEmptyStyleEntryEmittedGlobals(): Required<MasterCSSEmittedGlobals> {
   return {
     variables: {},
@@ -594,7 +513,7 @@ function hasEmittedGlobals(emittedGlobals: MasterCSSEmittedGlobals | undefined) 
 
 export async function createStyleEntryEmittedGlobals(
   entries: string[],
-  options: CreateStyleEntryEmittedGlobalsOptions = {}
+  options: CreateStyleEntryEmittedGlobalsOptions
 ): Promise<CreateStyleEntryEmittedGlobalsResult> {
   const dependencies = new Set<string>()
   let baseManifest = options.baseManifest
@@ -609,7 +528,7 @@ export async function createStyleEntryEmittedGlobals(
       dependencies.add(cleanStyleRequest(dependency))
     }
 
-    const { result, finalizedResult } = await compileStyleCSSResult(filename, resolvedSource.source, {
+    const { result, finalizedResult } = await compileStylesheetResult(filename, resolvedSource.source, {
       ...options,
       baseManifest,
       preserveNativeCSS: true
@@ -635,12 +554,12 @@ export async function createStyleEntryEmittedGlobals(
   }
 }
 
-export async function transformLocalStyleCSS(
+export async function transformLocalStylesheet(
   id: string,
   source: string,
-  options: TransformLocalStyleCSSOptions = {}
-): Promise<TransformLocalStyleCSSResult> {
-  if (!isStyleCSSRequest(id) || !hasLocalStyleDirectives(source)) {
+  options: TransformLocalStylesheetOptions
+): Promise<TransformLocalStylesheetResult> {
+  if (!isStylesheetRequest(id) || !hasLocalStyleDirectives(source)) {
     return {
       code: source,
       dependencies: [],
@@ -651,7 +570,7 @@ export async function transformLocalStyleCSS(
     emittedGlobals,
     ...compileOptions
   } = options
-  const { result, finalizedResult } = await compileStyleCSSResult(id, source, {
+  const { result, finalizedResult } = await compileStylesheetResult(id, source, {
     ...compileOptions,
     preserveNativeCSS: true
   })
@@ -699,28 +618,37 @@ export function getScannerClasses(scanner: ScannerState) {
   ])], scanner.options.blocklist)
 }
 
-function getStylesheetOptionClasses(options: StylesheetSourceOptions, projectDir = process.cwd()) {
+function getStylesheetOptionClasses(
+  options: StylesheetSourceOptions,
+  manifest: MasterCSSManifest,
+  projectDir = process.cwd()
+) {
   const classes = new Set<string>(options.safelist || [])
-  for (const sourcePath of resolveStylesheetSourcePaths(options, projectDir)) {
-    const absolutePath = resolve(projectDir, sourcePath)
-    if (!existsSync(absolutePath)) continue
-    for (const className of sourceExtractor.extractClassCandidates(readFileSync(absolutePath, 'utf-8'))) {
-      classes.add(className)
+  const tooling = createToolingSessionSync({ manifest })
+  try {
+    for (const sourcePath of resolveStylesheetSourcePaths(options, projectDir)) {
+      const absolutePath = resolve(projectDir, sourcePath)
+      if (!existsSync(absolutePath)) continue
+      for (const className of tooling.extractClassCandidates(readFileSync(absolutePath, 'utf-8'))) {
+        classes.add(className)
+      }
     }
+  } finally {
+    tooling.dispose()
   }
   return filterCSSExtractionCandidates([...classes], options.blocklist)
 }
 
 function getStyleSourceClasses(
   scanner: ScannerState,
-  styleSource: StyleCSSSource,
-  baseClasses: string[],
+  styleSource: StylesheetSource,
+  baseClasses: readonly string[],
   projectDir?: string
 ) {
   if (!hasStylesheetDirectives(styleSource.directives)) return baseClasses
   const scopedOptions = mergeStylesheetSourceOptions(scanner.options, styleSource.directives)
   const classes = hasStylesheetSourceDirectives(styleSource.directives)
-    ? getStylesheetOptionClasses(scopedOptions, projectDir)
+    ? getStylesheetOptionClasses(scopedOptions, scanner.css.manifest, projectDir)
     : [
       ...baseClasses,
       ...(styleSource.directives.safelist || [])
@@ -728,23 +656,23 @@ function getStyleSourceClasses(
   return filterCSSExtractionCandidates([...new Set(classes)], scopedOptions.blocklist)
 }
 
-export function refreshScannerNativeClasses(scanner: ScannerState, nativeClassNames: string[]) {
+function refreshScannerNativeClasses(scanner: ScannerState, nativeClassNames: string[]) {
   if (!scanner.registerNativeClasses) {
     throw new TypeError('Stylesheet scanner integrations require registerNativeClasses().')
   }
   scanner.registerNativeClasses(nativeClassNames)
 }
 
-export async function registerStyleCSSSource(
+export async function registerStylesheetSource(
   scanner: ScannerState,
-  styleCSSSources: StyleCSSSources,
+  stylesheetSources: StylesheetSources,
   id: string,
   source: string,
-  options: RegisterStyleCSSSourceOptions = {}
+  options: RegisterStylesheetSourceOptions
 ) {
   const filename = cleanStyleRequest(id)
-  const detectionSource = resolveStyleCSSImportGraph(filename, source, options.projectDir ?? scanner.cwd)
-  const resolvedSource = resolveStyleCSSImportGraph(filename, source, options.projectDir ?? scanner.cwd, {
+  const detectionSource = resolveStylesheetImportGraph(filename, source, options.projectDir ?? scanner.cwd)
+  const resolvedSource = resolveStylesheetImportGraph(filename, source, options.projectDir ?? scanner.cwd, {
     expandMasterCSSPackage: false
   })
   const collectedDirectives = extname(filename) === '.css'
@@ -758,10 +686,7 @@ export async function registerStyleCSSSource(
   const sourceWithoutImports = removeCSSImportStatements(resolvedSource.source)
   const cleanSource = removeMasterStyleDirectives(sourceWithoutImports).code
   const compileOptions = options
-  const result = await compileStyleCSS(filename, cleanSource, compileOptions)
-  const defaultArtifact = masterCSS
-    ? readDefaultMasterCSSPackageArtifact(options.projectDir ?? scanner.cwd, options)
-    : undefined
+  const result = await compileStylesheet(filename, cleanSource, compileOptions)
   const scopedOptions = mergeStylesheetSourceOptions(scanner.options, collectedDirectives.directives)
   const sourceDependencies = hasStylesheetSourceDirectives(collectedDirectives.directives)
     ? resolveStylesheetSourcePaths(scopedOptions, scanner.cwd).map((sourcePath) => resolve(scanner.cwd, sourcePath))
@@ -772,9 +697,8 @@ export async function registerStyleCSSSource(
     ...(result.dependencies || []),
     ...collectedDirectives.dependencies,
     ...sourceDependencies,
-    ...(defaultArtifact?.dependencies || [])
   ])]
-  styleCSSSources.set(filename, {
+  stylesheetSources.set(filename, {
     source: cleanSource,
     pruneNativeCSS,
     masterCSS,
@@ -788,58 +712,16 @@ export async function registerStyleCSSSource(
   return result
 }
 
-export interface CreateStyleCSSManifestOptions extends CompileStyleCSSOptions {
-  styleCSSSources?: StyleCSSSources
+function hasMasterCSSPackageSource(stylesheetSources?: StylesheetSources) {
+  return Array.from(stylesheetSources?.values() || []).some((styleSource) => styleSource.masterCSS)
 }
 
-function hasMasterCSSPackageSource(styleCSSSources?: StyleCSSSources) {
-  return Array.from(styleCSSSources?.values() || []).some((styleSource) => styleSource.masterCSS)
-}
-
-async function compileMasterCSSPackage(projectDir: string | undefined, options: CompileStyleCSSOptions) {
+async function compileMasterCSSPackage(projectDir: string | undefined, options: CompileStylesheetOptions) {
   const graph = resolveMasterCSSPackageCompileSource(projectDir)
-  const result = await compileStyleCSS(graph.dependencies[0] || '@master/css', graph.source, options)
+  const result = await compileStylesheet(graph.dependencies[0] || '@master/css', graph.source, options)
   return {
     ...result,
     dependencies: graph.dependencies
-  }
-}
-
-export async function createStyleCSSManifest(options: CreateStyleCSSManifestOptions = {}) {
-  const {
-    styleCSSSources,
-    ...compileOptions
-  } = options
-  const entries = Array.from(styleCSSSources || [])
-  const hasMasterCSS = hasMasterCSSPackageSource(styleCSSSources)
-  const defaultArtifact = hasMasterCSS
-    ? readDefaultMasterCSSPackageArtifact(compileOptions.projectDir, compileOptions)
-    : undefined
-  const styleResults = await Promise.all([
-    ...(hasMasterCSS && !defaultArtifact
-      ? [compileMasterCSSPackage(compileOptions.projectDir, compileOptions)]
-      : []),
-    ...entries.map(([id, styleSource]) => compileStyleCSS(id, styleSource.source, compileOptions))
-  ])
-  const dependencies = [
-    ...(defaultArtifact?.dependencies || []),
-    ...entries.flatMap(([, styleSource]) => styleSource.dependencies),
-    ...styleResults.flatMap((result: CompileCSSResult) => result.dependencies || [])
-  ]
-  let manifest: MasterCSSManifest | undefined = defaultArtifact?.manifest ?? compileOptions.baseManifest
-  let hasStyleManifest = Boolean(defaultArtifact)
-  for (const result of styleResults) {
-    if (!hasCompiledStyleManifestInput(result)) continue
-    const finalizedResult = createManifestFromCSSResult(result, {
-      ...compileOptions,
-      baseManifest: manifest
-    })
-    manifest = finalizedResult.manifest
-    hasStyleManifest = true
-  }
-  return {
-    manifest: hasStyleManifest ? manifest : undefined,
-    dependencies: [...new Set(dependencies)]
   }
 }
 
@@ -856,7 +738,7 @@ function createEmptyExtractedCSSResult(css = ''): CreateExtractedCSSResult {
 export async function createExtractedCSSResult(options: CreateExtractedCSSOptions): Promise<CreateExtractedCSSResult> {
   const {
     scanner,
-    styleCSSSources,
+    stylesheetSources,
     manifest: planOption,
     includeGeneratedCSS = true,
     includeNativeCSS = true,
@@ -865,21 +747,18 @@ export async function createExtractedCSSResult(options: CreateExtractedCSSOption
   } = options
   const classes = compileOptions.classes ?? getScannerClasses(scanner)
 
-  if (!planOption && !compileOptions.classes && !styleCSSSources?.size) {
+  if (!planOption && !compileOptions.classes && !stylesheetSources?.size) {
     return createEmptyExtractedCSSResult(includeGeneratedCSS ? scanner.css.text : '')
   }
 
-  const hasMasterCSS = hasMasterCSSPackageSource(styleCSSSources)
-  const explicitPlan = planOption ?? scanner.customOptions?.manifest
-  const defaultArtifact = hasMasterCSS && !explicitPlan
-    ? readDefaultMasterCSSPackageArtifact(compileOptions.projectDir ?? scanner.cwd, compileOptions)
-    : undefined
-  const masterCSSResult = hasMasterCSS && !defaultArtifact
+  const hasMasterCSS = hasMasterCSSPackageSource(stylesheetSources)
+  const explicitPlan = planOption
+  const masterCSSResult = hasMasterCSS
     ? await compileMasterCSSPackage(compileOptions.projectDir, compileOptions)
     : undefined
   const entryStyleResults = await Promise.all(
-    Array.from(styleCSSSources || [])
-      .map(([id, styleSource]) => compileStyleCSS(id, styleSource.source, {
+    Array.from(stylesheetSources || [])
+      .map(([id, styleSource]) => compileStylesheet(id, styleSource.source, {
         ...compileOptions,
         classes: styleSource.pruneNativeCSS
           ? getStyleSourceClasses(scanner, styleSource, classes, compileOptions.projectDir ?? scanner.cwd)
@@ -890,7 +769,7 @@ export async function createExtractedCSSResult(options: CreateExtractedCSSOption
     ...(masterCSSResult ? [masterCSSResult] : []),
     ...entryStyleResults
   ]
-  let mergedPlan = defaultArtifact?.manifest ?? compileOptions.baseManifest ?? explicitPlan ?? scanner.css.manifest
+  let mergedPlan = explicitPlan ?? compileOptions.baseManifest
   const finalizedStyleResults = new Map<CompileCSSResult, ReturnType<typeof createManifestFromCSSResult>>()
   for (const result of styleResults) {
     if (!hasCompiledStyleManifestInput(result)) continue
@@ -904,7 +783,6 @@ export async function createExtractedCSSResult(options: CreateExtractedCSSOption
   const nativeCSS = [
     ...(includeMasterBaseCSS
       ? [
-        ...(defaultArtifact ? [defaultArtifact.nativeCSS] : []),
         ...(masterCSSResult ? [getNativeCSS(finalizedStyleResults.get(masterCSSResult) || masterCSSResult)] : [])
       ]
       : []),
@@ -916,7 +794,7 @@ export async function createExtractedCSSResult(options: CreateExtractedCSSOption
   ]
   const generatedClasses = new Set(classes)
   if (includeGeneratedCSS) {
-    for (const styleSource of styleCSSSources?.values() || []) {
+    for (const styleSource of stylesheetSources?.values() || []) {
       if (!hasStylesheetDirectives(styleSource.directives)) continue
       for (const className of getStyleSourceClasses(scanner, styleSource, classes, compileOptions.projectDir ?? scanner.cwd)) {
         generatedClasses.add(className)

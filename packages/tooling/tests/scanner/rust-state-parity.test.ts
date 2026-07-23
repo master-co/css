@@ -1,7 +1,7 @@
 import { beforeAll, expect, test } from 'vitest'
-import { loadNativeBinding } from '@master/css-native'
+import { loadNativeToolingBackend } from '@master/css-backend/tooling'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
-import CSSScanner from '../../src/scanner'
+import { MasterCSSScanner } from './test-scanner'
 
 beforeAll(() => {
   process.env.MASTER_CSS_NATIVE_BINDING_PATH = new URL(
@@ -38,12 +38,12 @@ const manifest = {
 
 test('Rust scanner cache/state matches the TypeScript scanner oracle slice', async () => {
   const source = 'export const App = () => <div className="block unknown fg:red" />'
-  const oracle = await new CSSScanner({ manifest }).init()
-  const binding = loadNativeBinding({ required: true })!.binding
-  const scanner = new binding.ScannerSession(JSON.stringify(manifest))
+  const oracle = await new MasterCSSScanner({ manifest }).init()
+  const scanner = loadNativeToolingBackend({ required: true })!
+    .createScannerSession(manifest)
 
   expect(await oracle.scan('App.tsx', source)).toBe(true)
-  const rust = JSON.parse(scanner.scan('App.tsx', source)) as {
+  const rust = scanner.scan('App.tsx', source) as {
     changed: boolean
     candidates: string[]
     validClasses: string[]
@@ -55,11 +55,13 @@ test('Rust scanner cache/state matches the TypeScript scanner oracle slice', asy
     validClasses: [...oracle.validClasses],
     invalidClasses: [...oracle.invalidClasses]
   })
-  expect(JSON.parse(scanner.state()).engine.text).toBe(oracle.css.text)
+  expect((scanner.snapshot() as { engine: { text: string } }).engine.text).toBe(oracle.css.text)
 
   expect(await oracle.scan('App.tsx', source)).toBe(false)
-  expect(JSON.parse(scanner.scan('App.tsx', source))).toMatchObject({
+  expect(scanner.scan('App.tsx', source)).toMatchObject({
     changed: false,
     cacheHit: true
   })
+  scanner.dispose()
+  await oracle.dispose()
 })

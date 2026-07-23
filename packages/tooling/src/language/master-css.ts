@@ -1,12 +1,4 @@
-import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
-import UtilityType from '@master/css-schema/utility-type'
-import type { ValueComponent, Variable } from '@master/css-schema/css-syntax'
-import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import { getMdnPropertySyntax } from './utils/mdn-css-data'
-
-export type { ValueComponent, Variable }
-export const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
-export { UtilityType }
 
 export function matchesLanguageServiceNativeDeclaration({ property }: { property: string }) {
   return property.startsWith('--') || Boolean(getMdnPropertySyntax(property))

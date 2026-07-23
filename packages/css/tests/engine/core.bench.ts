@@ -1,7 +1,7 @@
 import { afterAll, bench, describe } from 'vitest'
 import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
-import UtilityType from '@master/css-schema/utility-type'
+import { UtilityType } from '@master/css-schema/utility-type'
 import { createEngineSync } from '../../src/node'
 
 const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest

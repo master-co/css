@@ -7,7 +7,6 @@
   "exports": { ".": "./mastercss.node" },
   "os": ["darwin"],
   "cpu": ["x64"],
-  "bin": { "mcss": "./mcss" },
   "files": ["mastercss.node", "mcss"],
   "publishConfig": { "access": "public", "provenance": true }
 }

@@ -87,7 +87,7 @@ function stripStringAndCommentContent(source: string) {
   return result
 }
 
-describe('@master/css-internal-integration browser-safe sources', () => {
+describe('@master/css-build-internal browser-safe sources', () => {
   it('keeps browser-safe subpaths free of static Node dependencies', () => {
     for (const file of BROWSER_SAFE_SOURCES) {
       const source = readFileSync(path.resolve(__dirname, '../src', file), 'utf8')

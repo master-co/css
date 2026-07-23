@@ -1,13 +1,12 @@
 import assert from 'node:assert/strict'
 import { readdir, readFile } from 'node:fs/promises'
 import path from 'node:path'
-import { test } from 'node:test'
+import { after, test } from 'node:test'
 import { fileURLToPath } from 'node:url'
 import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
-import { createSourceExtractorSync } from '@master/css-tooling/source/node'
-import { createValidatorSync } from '@master/css-tooling/validator/node'
-import validateCSS from '@master/css-tooling/validator/validate-css'
+import { createToolingSessionSync } from '@master/css-tooling/node'
+import { validateCSS } from '@master/css-tooling/css'
 
 const siteRoot = fileURLToPath(new URL('../', import.meta.url))
 const appRoot = path.join(siteRoot, 'app/[locale]')
@@ -16,15 +15,16 @@ const visibleSourceFiles = [
   'app/examples/layout-system/page.tsx'
 ]
 const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
-const sourceExtractor = createSourceExtractorSync()
-const validator = createValidatorSync(defaultManifest)
+const tooling = createToolingSessionSync({ manifest: defaultManifest })
+
+after(() => tooling.dispose())
 
 function extractClassCandidates(content: string) {
-  return sourceExtractor.extractClassCandidates(content)
+  return tooling.extractClassCandidates(content)
 }
 
 function validate(className: string) {
-  const generated = validator.generate([className]).classes[0]
+  const generated = tooling.validateClassNames([className]).classes[0]
   if (!generated?.matched) {
     return {
       matched: false,

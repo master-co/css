@@ -12,7 +12,7 @@ Benchmarks are advisory guardrails, not exact CI pass/fail gates. Run correctnes
 
 Engine hot paths live in `crates/mastercss-engine/src/lib.rs` and include matcher/index behavior, value parsing, selector/condition generation, priority sorting, layer insertion, resource tracking, and manifest compilation/cache behavior. The TypeScript engine wrapper is startup/FFI overhead, not a semantic hot path.
 
-Runtime hot paths include `wasm-runtime`, `packages/runtime/src/core.ts`, DOM hydration, class mutation tracking, transition mapping, CSSOM insertion/deletion, and the global browser bundle.
+Runtime hot paths include `@master/css-wasm-engine`, `packages/runtime/src/core.ts`, DOM hydration, class mutation tracking, transition mapping, CSSOM insertion/deletion, and the global browser bundle.
 
 For performance-sensitive engine or runtime work, the final response must report:
 

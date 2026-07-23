@@ -1,6 +1,6 @@
 /// <reference types="@master/css/client" />
 
-import CSSRuntime from '@master/css-runtime'
+import { MasterCSSRuntime } from '@master/css-runtime'
 import masterCSSManifest from 'virtual:master-css-manifest'
 import masterCSSEmittedGlobals from 'virtual:master-css-emitted-globals'
 
@@ -14,7 +14,7 @@ interface HotModule {
 declare const module: HotModule | undefined
 
 type RuntimeState = {
-  runtime?: CSSRuntime
+  runtime?: MasterCSSRuntime
   generation?: number
 }
 
@@ -22,7 +22,7 @@ const state = ((globalThis as typeof globalThis & { __MASTER_CSS_WEBPACK_RUNTIME
 
 function destroyRuntime() {
   state.generation = (state.generation || 0) + 1
-  state.runtime?.destroy()
+  state.runtime?.dispose()
   state.runtime = undefined
 }
 
@@ -33,13 +33,13 @@ async function startRuntime(
   if (typeof document === 'undefined') return
   destroyRuntime()
   const generation = state.generation
-  const nextRuntime = await CSSRuntime.start({
+  const nextRuntime = await MasterCSSRuntime.start({
     manifest,
     emittedGlobals,
-    onError: diagnostic => console.error(diagnostic)
+    onDiagnostic: diagnostic => console.error(diagnostic)
   })
   if (generation !== state.generation) {
-    nextRuntime.destroy()
+    nextRuntime.dispose()
     return
   }
   state.runtime = nextRuntime.observe()

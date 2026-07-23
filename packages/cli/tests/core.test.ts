@@ -5,7 +5,6 @@ import os from 'node:os'
 import { resolve } from 'path'
 import { pathToFileURL } from 'url'
 import { describe, expect, it } from 'vitest'
-import { MASTER_CSS_BINDING_ABI_VERSION } from '@master/css-native'
 import pkg from '../package.json' with { type: 'json' }
 
 interface TestDiagnostic {
@@ -17,7 +16,6 @@ interface TestDiagnostic {
 const cliFilepath = resolve(__dirname, '../src/bin/index.ts')
 const tsconfigPath = resolve(__dirname, '../../../tsconfig.json')
 const tsxLoaderURL = pathToFileURL(createRequire(import.meta.url).resolve('tsx')).href
-const nativeCLIFilepath = resolve(__dirname, '../../native/artifacts/mcss')
 
 function runCLI(args: string[], options: { cwd?: string, input?: string, env?: NodeJS.ProcessEnv } = {}) {
   return execFileSync(process.execPath, ['--import', tsxLoaderURL, cliFilepath, ...args], {
@@ -43,34 +41,12 @@ function runFailedCLI(args: string[], options: { cwd?: string, input?: string } 
 }
 
 describe('root command', () => {
-  it('ships a Rust executable with ABI and engine smoke coverage', () => {
-    const report = JSON.parse(execFileSync(nativeCLIFilepath, ['--self-test'], { encoding: 'utf8' }))
-    expect(report).toMatchObject({
-      version: 1,
-      binary: {
-        bindingAbiVersion: MASTER_CSS_BINDING_ABI_VERSION,
-        manifestVersion: 1,
-        hydrationManifestVersion: 1
-      },
-      css: '@layer utilities{.block{display:block}}'
-    })
-  })
-
-  it('selects the Rust executable for migration diagnostics', () => {
-    const report = JSON.parse(runCLI(['--self-test']))
-    expect(report).toMatchObject({
-      version: 1,
-      binary: { bindingAbiVersion: MASTER_CSS_BINDING_ABI_VERSION },
-      css: '@layer utilities{.block{display:block}}'
-    })
-  })
-
-  it('runs the root scan through the Rust executable', () => {
-    const cwd = fs.mkdtempSync(resolve(os.tmpdir(), 'master-css-native-cli-scan-'))
+  it('generates CSS only through the explicit generate command', () => {
+    const cwd = fs.mkdtempSync(resolve(os.tmpdir(), 'master-css-cli-generate-'))
     try {
       fs.writeFileSync(resolve(cwd, 'index.css'), '@master entry;\n@theme { --color-brand: red; }')
       fs.writeFileSync(resolve(cwd, 'index.html'), '<div class="block fg:brand"></div>')
-      const output = execFileSync(nativeCLIFilepath, ['--no-export'], { cwd, encoding: 'utf8' })
+      const output = runCLI(['generate', '--no-export'], { cwd })
       expect(output).toContain('.block{display:block}')
       expect(output).toContain('.fg\\:brand{color:var(--color-brand)}')
       expect(fs.existsSync(resolve(cwd, 'master.css'))).toBe(false)
@@ -79,79 +55,29 @@ describe('root command', () => {
     }
   })
 
-  it('applies stylesheet blocklists in the Rust root scan', () => {
-    const cwd = fs.mkdtempSync(resolve(os.tmpdir(), 'master-css-native-cli-blocklist-'))
-    try {
-      fs.writeFileSync(resolve(cwd, 'index.css'), '@master entry;\n@blocklist "block fg:*";')
-      fs.writeFileSync(resolve(cwd, 'index.html'), '<div class="block fg:red m:2x"></div>')
-      const output = execFileSync(nativeCLIFilepath, ['--no-export'], { cwd, encoding: 'utf8' })
-      expect(output).not.toContain('.block{')
-      expect(output).not.toContain('.fg\\:red{')
-      expect(output).toContain('.m\\:2x{margin:0.5rem}')
-    } finally {
-      fs.rmSync(cwd, { recursive: true, force: true })
-    }
-  })
-
-  it('scans provider-resolved stylesheet sources with arbitrary extensions', () => {
-    const workspace = fs.mkdtempSync(resolve(os.tmpdir(), 'master-css-native-cli-source-'))
-    const cwd = resolve(workspace, 'app')
-    try {
-      fs.mkdirSync(resolve(cwd, 'styles'), { recursive: true })
-      fs.mkdirSync(resolve(cwd, 'templates'), { recursive: true })
-      fs.mkdirSync(resolve(workspace, 'shared'), { recursive: true })
-      fs.writeFileSync(resolve(cwd, 'styles/index.css'), `
-        @master entry;
-        @source "../templates/**/*.{liquid,erb}";
-        @source not "../templates/skip.*";
-        @source "../../shared/*.cshtml";
-      `)
-      fs.writeFileSync(resolve(cwd, 'templates/product.liquid'), '<div class="block"></div>')
-      fs.writeFileSync(resolve(cwd, 'templates/detail.erb'), '<div class="m:0"></div>')
-      fs.writeFileSync(resolve(cwd, 'templates/skip.liquid'), '<div class="fg:red"></div>')
-      fs.writeFileSync(resolve(workspace, 'shared/shell.cshtml'), '<div class="text-center"></div>')
-
-      const output = execFileSync(nativeCLIFilepath, ['--no-export'], { cwd, encoding: 'utf8' })
-      expect(output).toContain('.block{display:block}')
-      expect(output).toContain('.m\\:0{margin:0}')
-      expect(output).toContain('.text-center{text-align:center}')
-      expect(output).not.toContain('.fg\\:red{')
-    } finally {
-      fs.rmSync(workspace, { recursive: true, force: true })
-    }
-  })
-
-  it('opts the package binary into the native root scan explicitly', () => {
-    const cwd = fs.mkdtempSync(resolve(os.tmpdir(), 'master-css-native-cli-selector-'))
-    try {
-      fs.writeFileSync(resolve(cwd, 'index.html'), '<div class="block"></div>')
-      const output = runCLI(['--backend', 'native', '--no-export'], { cwd })
-      expect(output).toContain('.block{display:block}')
-    } finally {
-      fs.rmSync(cwd, { recursive: true, force: true })
-    }
-  })
-
-  it('shows scan options and the lint subcommand', () => {
+  it('shows only the three explicit commands', () => {
     const output = runCLI(['--help'])
-    expect(output).toContain('Usage: @master/css-cli [options] [command] [source paths...]')
-    expect(output).toContain('-w, --watch')
-    expect(output).toContain('--no-export')
+    expect(output).toContain('Usage: master-css [options] [command]')
     expect(output).toContain('Commands:')
+    expect(output).toContain('generate')
     expect(output).toContain('lint')
     expect(output).toContain('inspect')
-    expect(output).not.toContain('extract [options]')
-    expect(output).not.toContain('render [options]')
+    const generateHelp = runCLI(['generate', '--help'])
+    expect(generateHelp).toContain('-w, --watch')
+    expect(generateHelp).toContain('--no-export')
   })
 
-  it.each(['extract', 'render', 'scan'])('rejects removed %s command', (command) => {
+  it.each(['extract', 'render', 'scan'])('has no compatibility command for %s', (command) => {
     const error = runFailedCLI([command])
     expect(error.status).toBe(1)
-    expect(String(error.stderr)).toContain(`The "${command}" command was removed.`)
+    expect(String(error.stderr)).toContain(`unknown command '${command}'`)
+    expect(String(error.stderr)).not.toContain('was removed')
   })
 
-  it('publishes only the package-name binary', () => {
-    expect(pkg.bin).toBe('./dist/bin/index.js')
+  it('publishes only the master-css binary', () => {
+    expect(pkg.bin).toEqual({
+      'master-css': './dist/bin/index.js'
+    })
   })
 })
 

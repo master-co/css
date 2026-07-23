@@ -1,6 +1,7 @@
-import CSSLanguageService from '@master/css-language-service'
-import { defaultManifest } from '@master/css-tooling/language'
-import { createLanguageSessionSync } from '@master/css-tooling/language/node'
+import { MasterCSSLanguageService } from '@master/css-language-service'
+import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
+import type { MasterCSSManifest } from '@master/css-schema/manifest'
+import { createToolingSessionSync } from '@master/css-tooling/node'
 import type MasterCSSMCPContext from './context'
 import { loadWorkspaceManifest } from './project'
 import { createMCPTextDocument } from './document'
@@ -16,13 +17,15 @@ export interface SuggestSyntaxOptions {
   limit?: number
 }
 
+const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
+
 export async function suggestSyntax(context: MasterCSSMCPContext, options: SuggestSyntaxOptions) {
   const filePath = context.resolveVirtualPath(options.filePath)
   const manifest = await loadWorkspaceManifest(context)
-  const session = createLanguageSessionSync(
-    manifest.status === 'loaded' ? manifest.manifest : defaultManifest
-  )
-  const service = new CSSLanguageService(
+  const session = createToolingSessionSync({
+    manifest: manifest.status === 'loaded' ? manifest.manifest : defaultManifest
+  })
+  const service = new MasterCSSLanguageService(
     manifest.status === 'loaded' ? { manifest: manifest.manifest } : undefined,
     { session }
   )

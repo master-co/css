@@ -7,7 +7,7 @@ import masterCSS, {
   ASTRO_RUNTIME_INJECTION,
   ASTRO_SSR_EXTERNAL
 } from '../src/core'
-import defaultOptions from '../src/options'
+import { resolveMasterCSSAstroIntegrationOptions } from '../src/options'
 import { externalizeAstroHydrationManifests } from '../src/external-hydration-manifest'
 import {
   MASTER_CSS_HYDRATION_MANIFEST_ATTR,
@@ -45,7 +45,7 @@ async function setup(options?: Parameters<typeof masterCSS>[0]) {
 
 describe('@master/css-astro integration', () => {
   it('defaults to progressive mode', () => {
-    expect(defaultOptions.mode).toBe('progressive')
+    expect(resolveMasterCSSAstroIntegrationOptions().mode).toBe('progressive')
   })
 
   it('adds Astro middleware and runtime script in progressive mode', async () => {
@@ -82,8 +82,8 @@ describe('@master/css-astro integration', () => {
     expect(result.pluginNames).not.toContain('master-css:inject-runtime')
   })
 
-  it('honors injectRuntime=false in progressive mode', async () => {
-    const result = await setup({ mode: 'progressive', injectRuntime: false })
+  it('honors runtime=false in progressive mode', async () => {
+    const result = await setup({ mode: 'progressive', runtime: false })
 
     expect(result.addMiddleware).toHaveBeenCalled()
     expect(result.injectScript).not.toHaveBeenCalled()
@@ -126,7 +126,7 @@ describe('@master/css-astro integration', () => {
 
   it('does not preload the runtime manifest outside runtime injection static builds', async () => {
     for (const scenario of [
-      { integrationOptions: { mode: 'runtime', injectRuntime: false }, buildOutput: 'static' },
+      { integrationOptions: { mode: 'runtime', runtime: false }, buildOutput: 'static' },
       { integrationOptions: { mode: 'progressive' }, buildOutput: 'static' },
       { integrationOptions: { mode: 'pre-render' }, buildOutput: 'static' },
       { integrationOptions: { mode: 'runtime' }, buildOutput: 'server' }

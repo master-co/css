@@ -1,6 +1,9 @@
-import scannerOptions, { type ScannerOptions } from './options'
+import {
+  defaultScannerOptions,
+  type MasterCSSScannerOptions,
+  type MasterCSSScannerConfiguration
+} from './options'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
-import { createRequire } from 'node:module'
 import {
   matchesSourceAdapter,
   type SourceAdapter
@@ -17,9 +20,9 @@ import {
   resolveGeneratedRuleSupport,
   resolveNativeSupport,
   serializeScannerBlocklist,
-  type RustScannerSession,
-  type RustScannerStateIR
-} from './rust-session'
+  type BackendScannerSession,
+  type BackendScannerState
+} from './backend-session'
 
 const builtInAdapters = [
   vueAdapter(),
@@ -46,8 +49,6 @@ const sourceLikeExtensions = new Set([
 ])
 
 const sourceMatchOptions = { dot: true }
-const require = createRequire(import.meta.url)
-const defaultManifest = require('@master/css-preset/default-manifest.json') as MasterCSSManifest
 const logger = createConsola({ level: 3 })
 
 interface SourceMatchers {
@@ -58,7 +59,7 @@ interface ScannerResetOptions {
   emit?: boolean
 }
 
-function createSourceMatchers(patterns?: ScannerOptions['exclude']) {
+function createSourceMatchers(patterns?: MasterCSSScannerConfiguration['exclude']) {
   return (patterns || []).map((pattern) => new Minimatch(String(pattern), sourceMatchOptions))
 }
 
@@ -114,7 +115,7 @@ function createSourceMatchCandidates(source: string, cwd: string) {
 }
 
 export class ScannerCSSView {
-  constructor(readonly scanner: CSSScanner) { }
+  constructor(readonly scanner: MasterCSSScanner) { }
 
   get manifest() {
     return this.scanner.manifest
@@ -176,7 +177,7 @@ export class ScannerStateSetView {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging
-export default class CSSScanner extends EventEmitter {
+export class MasterCSSScanner extends EventEmitter implements AsyncDisposable {
   readonly latentClasses = new ScannerStateSetView(() => this.state.latentClasses)
   readonly validClasses = new ScannerStateSetView(() => this.state.validClasses)
   readonly invalidClasses = new ScannerStateSetView(() => this.state.invalidClasses)
@@ -186,22 +187,23 @@ export default class CSSScanner extends EventEmitter {
   initializing?: Promise<this>
   resetDependencies: string[] = []
   readonly css = new ScannerCSSView(this)
-  private rustSession?: RustScannerSession
-  private rustState?: RustScannerStateIR
-  private currentManifest: MasterCSSManifest = defaultManifest
+  private backendSession?: BackendScannerSession
+  private backendState?: BackendScannerState
+  private currentManifest: MasterCSSManifest
 
   /** Precompiled minimatch patterns for per-module allow/exclude checks. */
   private sourceMatchers?: SourceMatchers
-  private sourceMatcherOptions?: Pick<ScannerOptions, 'exclude'>
+  private sourceMatcherOptions?: Pick<MasterCSSScannerConfiguration, 'exclude'>
 
   constructor(
-    public customOptions: ScannerOptions = {},
+    public customOptions: MasterCSSScannerOptions,
     public cwd = process.cwd()
   ) {
     super()
+    this.currentManifest = customOptions.manifest
   }
 
-  init(customOptions: ScannerOptions = this.customOptions) {
+  init(customOptions: MasterCSSScannerOptions = this.customOptions) {
     if (this.initialized) return Promise.resolve(this)
     if (this.initializing) return this.initializing
     return this.initializing = this.initInternal(customOptions)
@@ -210,11 +212,11 @@ export default class CSSScanner extends EventEmitter {
       })
   }
 
-  private async initInternal(customOptions: ScannerOptions = this.customOptions) {
+  private async initInternal(customOptions: MasterCSSScannerOptions = this.customOptions) {
     if (typeof customOptions !== 'object' || customOptions === null || Array.isArray(customOptions)) {
-      throw new TypeError('CSSScanner options must be an object.')
+      throw new TypeError('MasterCSSScanner options must be an object.')
     }
-    this.options = defu(customOptions, scannerOptions) as ScannerOptions
+    this.options = defu(customOptions, defaultScannerOptions) as MasterCSSScannerOptions
     if (this.options.verbose && this.options.verbose > 1) {
       logger.success('options')
       logger.log(this.options)
@@ -223,8 +225,8 @@ export default class CSSScanner extends EventEmitter {
     this.resetDependencies = []
     this.sourceMatchers = undefined
     this.sourceMatcherOptions = undefined
-    this.currentManifest = this.options.manifest || defaultManifest
-    this.rustSession = await createScannerSession(this.currentManifest)
+    this.currentManifest = this.options.manifest
+    this.backendSession = await createScannerSession(this.currentManifest)
     this.insertSafelist()
     this.emit('init', this.options, this.manifest)
     this.initialized = true
@@ -232,12 +234,12 @@ export default class CSSScanner extends EventEmitter {
   }
 
   async reset(
-    customOptions: ScannerOptions = this.customOptions,
+    customOptions: MasterCSSScannerOptions = this.customOptions,
     resetOptions: ScannerResetOptions = {}
   ) {
-    this.rustSession?.dispose()
-    this.rustSession = undefined
-    this.rustState = undefined
+    this.backendSession?.dispose()
+    this.backendSession = undefined
+    this.backendState = undefined
     this.resetDependencies = []
     this.sourceMatchers = undefined
     this.sourceMatcherOptions = undefined
@@ -250,22 +252,26 @@ export default class CSSScanner extends EventEmitter {
     return this
   }
 
-  async destroy() {
-    this.rustSession?.dispose()
-    this.rustSession = undefined
-    this.rustState = undefined
+  async dispose() {
+    this.backendSession?.dispose()
+    this.backendSession = undefined
+    this.backendState = undefined
     this.resetDependencies = []
     this.sourceMatchers = undefined
     this.sourceMatcherOptions = undefined
     this.removeAllListeners()
-    this.emit('destroy')
+    this.emit('dispose')
     return this
+  }
+
+  async [Symbol.asyncDispose]() {
+    await this.dispose()
   }
 
   private insertSafelist() {
     if (this.options.safelist?.length) {
-      this.getRustSession().ensureClasses(this.options.safelist)
-      this.syncRustState()
+      this.getBackendSession().ensureClasses([...this.options.safelist])
+      this.syncBackendState()
       if (this.options.verbose) {
         logger.success(`${this.options.safelist.length} fixed classes inserted ${this.options.safelist.join(', ')}`)
       }
@@ -285,9 +291,9 @@ export default class CSSScanner extends EventEmitter {
     const adapter = this.resolveSourceAdapter(source)
     const extractedClasses = adapter
       ? await adapter.extract({ source, content })
-      : this.getRustSession().extractCandidates(source, content)
-    const latentClasses = this.getRustSession().collectCandidates(extractedClasses)
-    this.syncRustState()
+      : this.getBackendSession().extractCandidates(source, content)
+    const latentClasses = this.getBackendSession().collectCandidates(extractedClasses)
+    this.syncBackendState()
     return latentClasses
   }
 
@@ -304,8 +310,8 @@ export default class CSSScanner extends EventEmitter {
     const adapter = this.resolveSourceAdapter(source)
     const extractedClasses = adapter
       ? await adapter.extract({ source, content })
-      : this.getRustSession().extractCandidates(source, content)
-    const session = this.getRustSession()
+      : this.getBackendSession().extractCandidates(source, content)
+    const session = this.getBackendSession()
     const blocklist = serializeScannerBlocklist(this.options.blocklist)
     const validationCandidates = session.filterCandidates(extractedClasses, blocklist)
     const nativeCandidates = session.nativeDeclarationCandidates(validationCandidates)
@@ -324,7 +330,7 @@ export default class CSSScanner extends EventEmitter {
       nativeSupport,
       invalidGeneratedClasses
     )
-    this.syncRustState()
+    this.syncBackendState()
     const changedClasses = [...update.validClasses, ...(update.usedNativeClasses || [])]
     if (changedClasses.length) {
       if (this.options.verbose) {
@@ -373,25 +379,25 @@ export default class CSSScanner extends EventEmitter {
   }
 
   registerNativeClasses(classNames: string[]) {
-    const changed = this.getRustSession().registerNativeClasses(classNames)
-    this.syncRustState()
+    const changed = this.getBackendSession().registerNativeClasses(classNames)
+    this.syncBackendState()
     if (changed) this.emit('change')
     return changed
   }
 
-  private getRustSession() {
-    if (!this.rustSession) throw new Error('CSSScanner must be initialized before use.')
-    return this.rustSession
+  private getBackendSession() {
+    if (!this.backendSession) throw new Error('MasterCSSScanner must be initialized before use.')
+    return this.backendSession
   }
 
-  private syncRustState() {
-    const state = this.getRustSession().state()
-    this.rustState = state
+  private syncBackendState() {
+    const state = this.getBackendSession().state()
+    this.backendState = state
     return state
   }
 
   get state() {
-    return this.rustState || this.syncRustState()
+    return this.backendState || this.syncBackendState()
   }
 
   /**
@@ -405,13 +411,13 @@ export default class CSSScanner extends EventEmitter {
 }
 
 export async function createScanner(
-  options: ScannerOptions = {},
+  options: MasterCSSScannerOptions,
   cwd = process.cwd()
 ) {
-  return await new CSSScanner(options, cwd).init()
+  return await new MasterCSSScanner(options, cwd).init()
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging
-export default interface CSSScanner {
-  options: ScannerOptions
+export interface MasterCSSScanner {
+  options: MasterCSSScannerOptions
 }

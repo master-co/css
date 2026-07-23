@@ -20,7 +20,7 @@ Use progressive rendering when Express owns the HTML response. Express renders t
     </StepL>
     <StepR>
       ```bash name=Terminal
-      npm install express ejs @master/css-server@rc
+      npm install express ejs @master/css@rc @master/css-runtime@rc @master/css-server@rc @master/css-preset@rc
       npm install -D vite @master/css-vite@rc
       ```
     </StepR>
@@ -33,11 +33,11 @@ Use progressive rendering when Express owns the HTML response. Express renders t
     <StepR>
       ```ts name=vite.config.ts
       import { defineConfig } from 'vite'
-      import masterCSS from '@master/css-vite'
+      import { createMasterCSSVitePlugin } from '@master/css-vite'
 
       export default defineConfig({
         plugins: [
-          masterCSS({ mode: 'runtime', injectRuntime: false })
+          createMasterCSSVitePlugin({ mode: 'runtime', runtime: false })
         ],
         build: {
           outDir: 'public/assets',
@@ -61,8 +61,13 @@ Use progressive rendering when Express owns the HTML response. Express renders t
     </StepL>
     <StepR>
       ```ts name=src/main.ts
-      import '@master/css-vite/runtime'
+      import { MasterCSSRuntime } from '@master/css-runtime'
+      import manifest from 'virtual:master-css-manifest'
+      import emittedGlobals from 'virtual:master-css-emitted-globals'
       import './app.css'
+
+      const runtime = await MasterCSSRuntime.start({ manifest, emittedGlobals })
+      runtime.observe()
       ```
 
       ```css name=src/app.css
@@ -80,9 +85,10 @@ Use progressive rendering when Express owns the HTML response. Express renders t
       import express from 'express'
       import ejs from 'ejs'
       import { createServerRenderer } from '@master/css-server'
+      import manifest from '@master/css-preset/default-manifest.json' with { type: 'json' }
 
       const app = express()
-      const renderer = createServerRenderer()
+      const renderer = createServerRenderer({ manifest })
 
       app.use('/assets', express.static('public/assets'))
 
@@ -101,14 +107,10 @@ Use progressive rendering when Express owns the HTML response. Express renders t
       </body>
       </html>`
 
-        const rendered = renderer.render(document, {
+        const rendered = renderer.renderHTML(document, {
           hydrationManifest: 'inject'
         })
-        try {
-          response.send(rendered.html)
-        } finally {
-          rendered.css?.dispose()
-        }
+        response.send(rendered.html)
       })
 
       const server = app.listen(3000)

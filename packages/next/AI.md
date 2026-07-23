@@ -17,7 +17,7 @@
 
 - Dynamic SSR response transformation.
 - App Router request-time class collection.
-- Static extraction semantics; `CSSScanner` remains the source of static behavior.
+- Static extraction semantics; `MasterCSSScanner` remains the source of static behavior.
 - Webpack-specific extraction internals.
 - React component registry/provider APIs.
 

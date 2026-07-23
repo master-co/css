@@ -51,7 +51,7 @@ export default function reportLintDiagnostics(
   context: RuleContext<any, any[]>,
   node: TSESTree.Node,
   resolved: ResolvedClassNode,
-  diagnostics: MasterCSSLintDiagnostic[],
+  diagnostics: readonly MasterCSSLintDiagnostic[],
   options: ReportLintDiagnosticsOptions = {}
 ) {
   const { sourceCode } = context

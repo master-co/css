@@ -3,7 +3,7 @@ import {
   fixMasterCSSContent,
   lintMasterCSSContent
 } from '../../src/lint'
-import { createLintSessionSync } from '../../src/lint/node'
+import { createTestToolingSession } from '../helpers/create-tooling-session'
 import { createPresetManifest } from './helpers/create-preset-manifest'
 
 beforeAll(() => {
@@ -15,9 +15,9 @@ beforeAll(() => {
 
 describe('Rust lint session', () => {
   it('owns sort, conflict, validation, and edit policy', () => {
-    const lint = createLintSessionSync(createPresetManifest())
+    const lint = createTestToolingSession(createPresetManifest())
     try {
-      const result = lint.analyzeClassList('fg:red block fg:blue unknown', [
+      const result = lint.analyzeLintClassList('fg:red block fg:blue unknown', [
         'fg:red', 'block', 'fg:blue', 'unknown'
       ], { disallowUnknownClass: true })
       expect(result.diagnostics.map(({ ruleId }) => ruleId)).toEqual(expect.arrayContaining([
@@ -33,11 +33,11 @@ describe('Rust lint session', () => {
   })
 
   it('owns canonical recommendations while the wrapper only maps host diagnostics', () => {
-    const lint = createLintSessionSync(createPresetManifest())
+    const lint = createTestToolingSession(createPresetManifest())
     try {
       const classList = 'font:16px w:md h:md'
       const classNames = lint.tokenizeClassList(classList).map(({ token }) => token)
-      const result = lint.analyzeClassList(classList, classNames, { canonicalOptions: {} })
+      const result = lint.analyzeLintClassList(classList, classNames, { canonicalOptions: {} })
       const diagnostics = result.diagnostics.filter(({ ruleId }) => ruleId === 'prefer-canonical-classes')
       expect(diagnostics.length).toBeGreaterThan(0)
       expect(diagnostics.every(({ fix }) => fix?.scope === 'class-list')).toBe(true)
@@ -47,7 +47,7 @@ describe('Rust lint session', () => {
   })
 
   it('lints and fixes source files without a TypeScript engine', () => {
-    const lintSession = createLintSessionSync(createPresetManifest())
+    const lintSession = createTestToolingSession(createPresetManifest())
     const options = {
       content: '<div class="fg:red block fg:blue"></div>',
       filePath: '/workspace/index.html',

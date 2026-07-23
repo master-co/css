@@ -1,15 +1,22 @@
 import { readFile } from 'node:fs/promises'
 import {
-  createRuntimeWasmSession as createRuntimeWasmSessionBase,
-  initRuntimeWasm as initRuntimeWasmBase,
-  type InitRuntimeWasmOptions
+  createWasmEngineSession as createWasmEngineSessionBase,
+  createWasmRenderSession as createWasmRenderSessionBase,
+  loadWasmEngine as loadWasmEngineBase,
+  type MasterCSSWasmEngineLoadOptions,
+  type MasterCSSWasmEngineSessionOptions
 } from './index'
 
-export type { InitRuntimeWasmOptions } from './index'
+export type {
+  MasterCSSWasmEngineLoadOptions,
+  MasterCSSWasmEngineSessionOptions
+} from './index'
 
 const defaultWasmURL = new URL('../artifacts/mastercss_wasm_runtime_bg.wasm', import.meta.url)
 
-async function withNodeWasmInput(options: InitRuntimeWasmOptions): Promise<InitRuntimeWasmOptions> {
+async function withNodeWasmInput(
+  options: MasterCSSWasmEngineLoadOptions
+): Promise<MasterCSSWasmEngineLoadOptions> {
   if (options.input) return options
   return {
     ...options,
@@ -17,15 +24,30 @@ async function withNodeWasmInput(options: InitRuntimeWasmOptions): Promise<InitR
   }
 }
 
-export function initRuntimeWasm(
-  options: InitRuntimeWasmOptions = {}
-): ReturnType<typeof initRuntimeWasmBase> {
-  return withNodeWasmInput(options).then(initRuntimeWasmBase)
+export async function loadWasmEngine(options: MasterCSSWasmEngineLoadOptions = {}) {
+  return await loadWasmEngineBase(await withNodeWasmInput(options))
 }
 
-export async function createRuntimeWasmSession(
+export async function createWasmEngineSession(
   manifestJSON: string,
-  options: InitRuntimeWasmOptions = {}
+  sessionOptions: MasterCSSWasmEngineSessionOptions = {},
+  loadOptions: MasterCSSWasmEngineLoadOptions = {}
 ) {
-  return await createRuntimeWasmSessionBase(manifestJSON, await withNodeWasmInput(options))
+  return await createWasmEngineSessionBase(
+    manifestJSON,
+    sessionOptions,
+    await withNodeWasmInput(loadOptions)
+  )
+}
+
+export async function createWasmRenderSession(
+  manifestJSON: string,
+  sessionOptions: MasterCSSWasmEngineSessionOptions = {},
+  loadOptions: MasterCSSWasmEngineLoadOptions = {}
+) {
+  return await createWasmRenderSessionBase(
+    manifestJSON,
+    sessionOptions,
+    await withNodeWasmInput(loadOptions)
+  )
 }

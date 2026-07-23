@@ -6,7 +6,6 @@
   },
   "devDependencies": {
     "@angular-eslint/template-parser": "^21.4.0",
-    "@master/eslint-config-css": "workspace:^",
     "@master/eslint-plugin-css": "workspace:^",
     "@master/styled.react": "^2.0.6",
     "@typescript-eslint/parser": "^8.61.1",

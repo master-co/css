@@ -55,10 +55,11 @@
   },
   "dependencies": {
     "@master/css": "workspace:*",
-    "@master/css-preset": "workspace:*",
+    "@master/css-backend": "workspace:*",
     "@master/css-schema": "workspace:*"
   },
   "devDependencies": {
+    "@master/css-preset": "workspace:*",
     "@playwright/test": "1.61.0"
   }
 }

@@ -1545,13 +1545,30 @@ impl EngineSession {
     }
 
     fn keyframe_variable_names(&self, name: &str) -> Vec<String> {
-        let Some(keyframes) = self.compiled.animations.get(name) else {
+        let Some(frames) = self
+            .compiled
+            .animations
+            .get(name)
+            .and_then(Value::as_object)
+        else {
             return Vec::new();
         };
-        collect_css_variable_names(&keyframes.to_string())
-            .into_iter()
-            .filter(|name| self.compiled.compiled_variables.contains_key(name))
-            .collect()
+        let mut names = Vec::new();
+        for declarations in frames.values().filter_map(Value::as_object) {
+            for value in declarations.values().filter_map(serialize_literal_value) {
+                for variable_name in collect_css_variable_names(&value) {
+                    if self
+                        .compiled
+                        .compiled_variables
+                        .contains_key(&variable_name)
+                        && !names.contains(&variable_name)
+                    {
+                        names.push(variable_name);
+                    }
+                }
+            }
+        }
+        names
     }
 
     fn register_rule_animations(
@@ -6592,6 +6609,39 @@ mod tests {
             engine.inspect("animation:float|1s").unwrap().rules[0].animation_names,
             ["float"]
         );
+    }
+
+    #[test]
+    fn tracks_theme_variables_referenced_by_keyframes() {
+        let manifest = r##"{
+          "version":1,
+          "variables":{"color":[{"name":"color-primary","key":"primary","value":"#ff0"}]},
+          "animations":{"fade":{"to":{"background":"var(--color-primary)"}}},
+          "utilities":[{
+            "id":".btn",
+            "name":"btn",
+            "type":-2,
+            "layer":"components",
+            "emit":{"type":"static","rules":[{"declarations":{"animation":"1s fade"}}]},
+            "matchers":[{"type":"static","name":"btn"}]
+          }]
+        }"##;
+        let mut engine = EngineSession::create(manifest).unwrap();
+
+        engine.ensure_class_rules(["btn"]).unwrap();
+        assert_eq!(
+            engine.resource_snapshot().theme_text.as_deref(),
+            Some(":root{--color-primary:#ff0}")
+        );
+        assert!(
+            engine
+                .css_text()
+                .contains("@keyframes fade{to{background:var(--color-primary)}}")
+        );
+
+        engine.delete_class_rules(["btn"]).unwrap();
+        assert!(engine.resource_snapshot().theme_text.is_none());
+        assert!(!engine.css_text().contains("@keyframes fade"));
     }
 
     #[test]

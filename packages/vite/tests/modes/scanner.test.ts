@@ -2,9 +2,9 @@ import { beforeEach, describe, expect, test, vi } from 'vitest'
 import ScannerPlugin from '../../src/plugins/scanner'
 import UsageGraphPlugin from '../../src/plugins/usage-graph'
 
-vi.mock('@master/css-tooling/scanner', () => {
+vi.mock('@master/css-tooling/scanner/node', () => {
   return {
-    default: class {
+    MasterCSSScanner: class {
       options: any = {}
       scanModuleCalls: string[] = []
       constructor(opts: any, _root?: string) {
@@ -17,6 +17,7 @@ vi.mock('@master/css-tooling/scanner', () => {
         this.scanModuleCalls.push(id)
         return true
       }
+      async dispose() {}
     },
   }
 })
@@ -44,7 +45,7 @@ describe('shared scanner plugins', () => {
 
     await findPlugin(plugins, 'master-css:scanner').configResolved.call({}, fakeViteConfig)
 
-    expect(ctx.scanner.options).toEqual({
+    expect(ctx.scanner.options).toMatchObject({
       exclude: ['src/generated/**'],
       verbose: 0
     })

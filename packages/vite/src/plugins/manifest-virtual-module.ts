@@ -1,17 +1,20 @@
 import type { ModuleNode, Plugin, ViteDevServer } from 'vite'
-import { PluginContext } from '../core'
-import { loadProjectManifest } from '@master/css-compiler/project'
-import { findCSSManifestEntryFiles } from '@master/css-compiler/project/entries'
-import { toManifestJSON } from '@master/css-internal-integration/manifest-module'
+import { MasterCSSVitePluginContext } from '../core'
+import {
+  discoverManifestEntries,
+  loadProjectManifest
+} from '@master/css-compiler/project'
+import { toManifestJSON } from '@master/css-build-internal/manifest-module'
+import { defaultBuildManifest } from '@master/css-build-internal/project'
 import {
   MANIFEST_ASSET_FILE,
   toBrowserManifestFacadeModule,
   toInlineManifestModule,
   toUniversalManifestFacadeModule
-} from '@master/css-internal-integration/manifest-facade'
+} from '@master/css-build-internal/manifest-facade'
 import { RESOLVED_VIRTUAL_MANIFEST_ID, VIRTUAL_MANIFEST_ID } from '../common'
-import { PluginOptions } from '../options'
-import { collectStyleCSSDependencies } from '@master/css-compiler/stylesheet'
+import { ResolvedMasterCSSVitePluginOptions } from '../options'
+import { collectStylesheetDependencies } from '@master/css-compiler/stylesheet'
 import { includesFile } from '../utils/path'
 
 function invalidateManifestModule(module: ModuleNode | undefined, server: ViteDevServer): ModuleNode[] {
@@ -20,16 +23,16 @@ function invalidateManifestModule(module: ModuleNode | undefined, server: ViteDe
   return [module]
 }
 
-function isProductionBuild(context: PluginContext) {
+function isProductionBuild(context: MasterCSSVitePluginContext) {
   return context.config?.command === 'build'
 }
 
-function isServerBuild(context: PluginContext) {
+function isServerBuild(context: MasterCSSVitePluginContext) {
   return Boolean(context.config?.build.ssr)
 }
 
 function createManifestModule(
-  context: PluginContext,
+  context: MasterCSSVitePluginContext,
   pluginContext: { emitFile?: (asset: { type: 'asset', name: string, source: string }) => string },
   json: string
 ) {
@@ -52,8 +55,8 @@ function createManifestModule(
 }
 
 export default function ManifestVirtualModulePlugin(
-  options: PluginOptions,
-  context: PluginContext
+  options: ResolvedMasterCSSVitePluginOptions,
+  context: MasterCSSVitePluginContext
 ): Plugin {
   let cssManifestDependencies: string[] = []
   const addServerAllow = (paths: string[]) => {
@@ -65,10 +68,10 @@ export default function ManifestVirtualModulePlugin(
   }
   const loadDefaultManifest = async (pluginContext: { addWatchFile?: (id: string) => void }) => {
     const root = context.config?.root
-    const entries = await findCSSManifestEntryFiles(root)
+    const entries = await discoverManifestEntries({ root })
     const dependencies = new Set<string>()
     for (const entry of entries) {
-      for (const dependency of collectStyleCSSDependencies(entry, undefined, root)) {
+      for (const dependency of collectStylesheetDependencies(entry, undefined, root)) {
         dependencies.add(dependency)
       }
     }
@@ -77,7 +80,11 @@ export default function ManifestVirtualModulePlugin(
     for (const dependency of cssManifestDependencies) {
       pluginContext.addWatchFile?.(dependency)
     }
-    const result = await loadProjectManifest(root, { entries })
+    const result = await loadProjectManifest({
+      root,
+      entries,
+      baseManifest: defaultBuildManifest
+    })
     for (const dependency of result.dependencies) {
       dependencies.add(dependency)
       pluginContext.addWatchFile?.(dependency)

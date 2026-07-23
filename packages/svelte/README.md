@@ -55,7 +55,7 @@
 ## Installation
 
 ```bash
-npx sv add @master/css-sv
+npx sv add @master/css-svelte-addon
 ```
 
 The Svelte CLI add-on installs `@master/css-svelte`, wires Vite, creates the stylesheet entry, imports it from the root layout, and composes the SvelteKit server hook.
@@ -75,12 +75,12 @@ npm install @master/css @master/css-svelte
 ```ts
 import { sveltekit } from '@sveltejs/kit/vite'
 import { defineConfig } from 'vite'
-import masterCSS from '@master/css-svelte/vite'
+import { createMasterCSSVitePlugin } from '@master/css-svelte/vite'
 
 export default defineConfig({
   plugins: [
     sveltekit(),
-    masterCSS()
+    createMasterCSSVitePlugin()
   ]
 })
 ```
@@ -90,7 +90,7 @@ export default defineConfig({
 Export the server handle to inject streamed CSS before `</head>`.
 
 ```ts
-export { default as handle } from '@master/css-svelte/hooks.server'
+export { handle } from '@master/css-svelte/hooks.server'
 ```
 
 If the project already has a server `handle`, compose it with SvelteKit's `sequence()`.

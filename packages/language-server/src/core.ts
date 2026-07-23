@@ -1,19 +1,23 @@
-import { createConnection, TextDocuments, InitializeParams, InitializeResult, WorkspaceFolder, Disposable, Connection, ClientCapabilities, TextDocumentChangeEvent, DidChangeConfigurationParams, HoverParams, CompletionParams, DocumentColorParams, ColorPresentationParams, DocumentFormattingParams, DocumentRangeFormattingParams, RemoteConsole, SemanticTokensParams, TextDocumentPositionParams, DiagnosticSeverity, TextDocumentSyncKind, type Diagnostic, type DiagnosticRelatedInformation, type Range, type ServerCapabilities, type TextEdit } from 'vscode-languageserver/node'
+import { createConnection, TextDocuments, InitializeParams, InitializeResult, WorkspaceFolder, Connection, ClientCapabilities, TextDocumentChangeEvent, DidChangeConfigurationParams, HoverParams, CompletionParams, DocumentColorParams, ColorPresentationParams, DocumentFormattingParams, DocumentRangeFormattingParams, RemoteConsole, SemanticTokensParams, TextDocumentPositionParams, DiagnosticSeverity, TextDocumentSyncKind, type Disposable as LSPDisposable, type Diagnostic, type DiagnosticRelatedInformation, type Range, type ServerCapabilities, type TextEdit } from 'vscode-languageserver/node'
 import { TextDocument } from 'vscode-languageserver-textdocument'
 import path from 'node:path'
 import { readFile } from 'node:fs/promises'
-import CSSLanguageService from '@master/css-language-service'
-import { compileCSSManifest } from '@master/css-compiler'
-import { Settings } from './settings'
+import { MasterCSSLanguageService } from '@master/css-language-service'
+import { compileManifestSync } from '@master/css-compiler/node'
+import type { MasterCSSLanguageServerSettings } from './settings'
 import {
-  findCSSManifestEntryFiles,
-  findMasterCSSWorkspaceDirectories
-} from '@master/css-compiler/project/entries'
-import { loadProjectManifest } from '@master/css-compiler/project'
-import { resolveMasterCSSWorkspacePackages, type MasterCSSWorkspacePackageResolution } from '@master/css-compiler/project/workspace'
+  discoverManifestEntries,
+  loadProjectManifest
+} from '@master/css-compiler/project'
+import { discoverBuildWorkspaceDirectories } from '@master/css-build-internal/workspace-directories'
+import {
+  resolveMasterCSSWorkspacePackages,
+  type MasterCSSWorkspacePackageResolution
+} from '@master/css-build-internal/workspace'
 import { defu } from 'defu'
-import settings from './settings'
+import { defaultLanguageServerSettings } from './settings'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
+import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
 import {
   AT_TRIGGER_CHARACTER,
   DECLARATION_SEPARATOR_TRIGGER_CHARACTER,
@@ -23,20 +27,19 @@ import {
   SELECTOR_TRIGGER_CHARACTERS,
   VALUE_TRIGGER_CHARACTERS
 } from '@master/css-language-service/common'
-import {
-  createLanguageSession,
-  defaultManifest,
-  SEMANTIC_TOKENS_LEGEND,
-} from '@master/css-tooling/language'
+import { createToolingSession } from '@master/css-tooling'
+import { SEMANTIC_TOKENS_LEGEND } from '@master/css-tooling/language'
 import glob from 'fast-glob'
 import { URI } from 'vscode-uri'
 import { CSSDirectiveError, type CSSDirectiveSourceReference } from '@master/css-schema/css-directives'
 
-export declare interface Workspace {
+const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
+
+export declare interface MasterCSSWorkspace {
   uri: string
   openedTextDocuments: TextDocument[]
-  languageService?: CSSLanguageService
-  languageServiceSettings: Settings
+  languageService?: MasterCSSLanguageService
+  languageServiceSettings: MasterCSSLanguageServerSettings
   baseManifest?: MasterCSSManifest
   manifestResolution?: MasterCSSWorkspacePackageResolution
   manifestSource?: 'workspace' | 'bundled'
@@ -150,9 +153,9 @@ function toCSSDirectiveError(error: unknown): CSSDirectiveError | undefined {
   )
 }
 
-function getInitializationSettings(initializationOptions: unknown): Settings | undefined {
+function getInitializationSettings(initializationOptions: unknown): MasterCSSLanguageServerSettings | undefined {
   if (!initializationOptions || typeof initializationOptions !== 'object') return
-  const options = initializationOptions as { masterCSS?: Settings } & Settings
+  const options = initializationOptions as { masterCSS?: MasterCSSLanguageServerSettings } & MasterCSSLanguageServerSettings
   return options.masterCSS ?? options
 }
 
@@ -186,32 +189,36 @@ function containsFilePath(parentPath: string, childPath: string) {
     )
 }
 
-export default class CSSLanguageServer {
+export class MasterCSSLanguageServer implements Disposable {
   workspaceFolders: WorkspaceFolder[] = []
-  workspaces = new Map<string, Workspace>()
-  globalWorkspace: Workspace = {
+  workspaces = new Map<string, MasterCSSWorkspace>()
+  globalWorkspace: MasterCSSWorkspace = {
     uri: '',
     openedTextDocuments: [],
-    languageServiceSettings: this.settings as Settings,
+    languageServiceSettings: this.settings as MasterCSSLanguageServerSettings,
     baseManifest: defaultManifest,
     manifestSource: 'bundled'
   }
   documents: TextDocuments<TextDocument>
   initializing?: Promise<void>
   clientCapabilities: ClientCapabilities = {}
-  settings?: Settings
+  settings?: MasterCSSLanguageServerSettings
   console: RemoteConsole
-  private disposables: Disposable[] = []
+  private disposables: LSPDisposable[] = []
+  private disposed = false
 
   constructor(
     public connection: Connection = process.argv.includes('--stdio')
       ? createConnection(process.stdin, process.stdout)
       : createConnection(),
-    public customSettings?: Settings
+    public customSettings?: MasterCSSLanguageServerSettings
   ) {
     this.documents = new TextDocuments(TextDocument)
-    this.settings = defu(this.customSettings, settings) as Settings
-    this.globalWorkspace.languageServiceSettings = this.settings as Settings
+    this.settings = defu(
+      this.customSettings,
+      defaultLanguageServerSettings
+    ) as MasterCSSLanguageServerSettings
+    this.globalWorkspace.languageServiceSettings = this.settings as MasterCSSLanguageServerSettings
     this.console = new Proxy(this.connection.console, {
       get: (target, prop: keyof RemoteConsole) => {
         if (!this.settings?.verbose) return () => { }
@@ -255,9 +262,12 @@ export default class CSSLanguageServer {
     this.clientCapabilities = params.capabilities
     const initializationSettings = getInitializationSettings(params.initializationOptions)
     if (initializationSettings) {
-      this.customSettings = defu(initializationSettings, this.customSettings) as Settings
-      this.settings = defu(this.customSettings, settings) as Settings
-      this.globalWorkspace.languageServiceSettings = this.settings as Settings
+      this.customSettings = defu(initializationSettings, this.customSettings) as MasterCSSLanguageServerSettings
+      this.settings = defu(
+        this.customSettings,
+        defaultLanguageServerSettings
+      ) as MasterCSSLanguageServerSettings
+      this.globalWorkspace.languageServiceSettings = this.settings as MasterCSSLanguageServerSettings
     }
     if (params.workspaceFolders?.length) {
       this.workspaceFolders = params.workspaceFolders
@@ -409,8 +419,11 @@ export default class CSSLanguageServer {
     if (changedSettings?.masterCSS) {
       this.connection.sendNotification('masterCSS/globalSettingsChanged', changedSettings.masterCSS)
       this.customSettings = changedSettings.masterCSS
-      this.settings = defu(this.customSettings, settings) as Settings
-      this.globalWorkspace.languageServiceSettings = this.settings as Settings
+      this.settings = defu(
+        this.customSettings,
+        defaultLanguageServerSettings
+      ) as MasterCSSLanguageServerSettings
+      this.globalWorkspace.languageServiceSettings = this.settings as MasterCSSLanguageServerSettings
       this.refreshSemanticTokens()
       this.connection.sendRequest('masterCSS/restart', {
         title: 'Updating Master CSS settings',
@@ -425,14 +438,18 @@ export default class CSSLanguageServer {
 
   private async initWorkspaceFolder(workspaceFolderURI: string) {
     const workspaceFolderCWD = URI.parse(workspaceFolderURI).fsPath
-    let customWorkspaceFolderSettings: Settings | undefined
+    let customWorkspaceFolderSettings: MasterCSSLanguageServerSettings | undefined
     if (this.clientCapabilities.workspace?.configuration) {
       customWorkspaceFolderSettings = await this.connection.workspace.getConfiguration({
         scopeUri: workspaceFolderURI,
         section: 'masterCSS'
-      }) as Settings
+      }) as MasterCSSLanguageServerSettings
     }
-    const { workspaces, ...languageServiceSettings } = defu(customWorkspaceFolderSettings, this.customSettings, settings) as Settings
+    const { workspaces, ...languageServiceSettings } = defu(
+      customWorkspaceFolderSettings,
+      this.customSettings,
+      defaultLanguageServerSettings
+    ) as MasterCSSLanguageServerSettings
     const resolvedWorkspaceDirectories = new Set<string>([workspaceFolderCWD])
     if (workspaceFolderCWD) {
       this.console.info(`Registered workspace folder ${workspaceFolderURI}`)
@@ -440,11 +457,15 @@ export default class CSSLanguageServer {
       this.console.info(`Registered global workspace folder`)
     }
     if (workspaces === 'auto') {
-      for (const workspaceDir of await findMasterCSSWorkspaceDirectories(workspaceFolderCWD)) {
+      const manifestEntries = await discoverManifestEntries({ root: workspaceFolderCWD })
+      for (const workspaceDir of await discoverBuildWorkspaceDirectories(
+        workspaceFolderCWD,
+        manifestEntries
+      )) {
         resolvedWorkspaceDirectories.add(workspaceDir)
       }
     } else if (workspaces?.length) {
-      (await glob(workspaces, {
+      (await glob([...workspaces], {
         cwd: workspaceFolderCWD,
         absolute: true,
         onlyDirectories: true,
@@ -459,12 +480,12 @@ export default class CSSLanguageServer {
         uri: workspaceURI,
         openedTextDocuments: [],
         languageServiceSettings,
-        planEntries: await findCSSManifestEntryFiles(workspaceDir)
+        planEntries: [...await discoverManifestEntries({ root: workspaceDir })]
       })
     }
   }
 
-  async initWorkspaceLanguageService(workspace: Workspace) {
+  async initWorkspaceLanguageService(workspace: MasterCSSWorkspace) {
     workspace.baseManifest = await this.loadWorkspaceBaseManifest(workspace)
     let workspacePlan: MasterCSSManifest | undefined
     workspace.manifestErrors = []
@@ -485,21 +506,22 @@ export default class CSSLanguageServer {
     const manifest = workspacePlan
       ?? workspace.languageServiceSettings.manifest
       ?? workspace.baseManifest
-    workspace.languageService = new CSSLanguageService(
+    workspace.languageService = new MasterCSSLanguageService(
       { ...workspace.languageServiceSettings, manifest },
-      { session: await createLanguageSession(manifest) }
+      { session: await createToolingSession({ manifest }) }
     )
   }
 
-  private async loadWorkspacePlan(workspace: Workspace, baseManifest: MasterCSSManifest) {
+  private async loadWorkspacePlan(workspace: MasterCSSWorkspace, baseManifest: MasterCSSManifest) {
     const cwd = workspace.uri ? URI.parse(workspace.uri).fsPath : process.cwd()
-    const result = await loadProjectManifest(cwd, {
+    const result = await loadProjectManifest({
+      root: cwd,
       baseManifest
     })
     return result.entries.length ? result.manifest : workspace.languageServiceSettings.manifest
   }
 
-  private async loadWorkspaceBaseManifest(workspace: Workspace): Promise<MasterCSSManifest> {
+  private async loadWorkspaceBaseManifest(workspace: MasterCSSWorkspace): Promise<MasterCSSManifest> {
     if (workspace === this.globalWorkspace || !workspace.uri) {
       workspace.manifestSource = 'bundled'
       return defaultManifest
@@ -519,21 +541,21 @@ export default class CSSLanguageServer {
       workspace.manifestSource = 'workspace'
       this.console.info(`Using workspace Master CSS manifest ${presetManifestPackage.version ?? '(unknown version)'} from ${presetManifestPackage.directory}`)
       if (resolution.errors.length) {
-        this.console.info(`Workspace Master CSS manifest optional resolution warnings: ${resolution.errors.map(({ name, message }) => `${name}: ${message}`).join('; ')}`)
+        this.console.info(`MasterCSSWorkspace Master CSS manifest optional resolution warnings: ${resolution.errors.map(({ name, message }) => `${name}: ${message}`).join('; ')}`)
       }
       return manifest
     } catch (error) {
       workspace.manifestSource = 'bundled'
       this.console.info(`Using bundled Master CSS manifest for ${workspace.uri}`)
       if (resolution?.errors.length) {
-        this.console.info(`Workspace Master CSS package resolution errors: ${resolution.errors.map(({ name, message }) => `${name}: ${message}`).join('; ')}`)
+        this.console.info(`MasterCSSWorkspace Master CSS package resolution errors: ${resolution.errors.map(({ name, message }) => `${name}: ${message}`).join('; ')}`)
       }
       this.console.error(error instanceof Error ? error.stack || error.message : String(error))
       return defaultManifest
     }
   }
 
-  destroyLanguageService(workspace: Workspace) {
+  destroyLanguageService(workspace: MasterCSSWorkspace) {
     this.console.info(`Destroyed workspace ${workspace.uri}`)
     workspace.languageService?.dispose()
     delete workspace.languageService
@@ -545,7 +567,7 @@ export default class CSSLanguageServer {
       this.console.info(`This is an external document ${textDocumentURI} with the global workspace`)
       return this.globalWorkspace
     }
-    let foundWorkspace: Workspace | undefined
+    let foundWorkspace: MasterCSSWorkspace | undefined
     let foundWorkspacePath = ''
     for (const [uri, workspace] of this.workspaces) {
       if (!uri) continue
@@ -561,7 +583,7 @@ export default class CSSLanguageServer {
     return this.globalWorkspace
   }
 
-  private publishDiagnostics(textDocument: TextDocument, workspace: Workspace) {
+  private publishDiagnostics(textDocument: TextDocument, workspace: MasterCSSWorkspace) {
     const diagnostics: Diagnostic[] = []
     diagnostics.push(...this.createManifestLoadingDiagnostics(textDocument, workspace))
     diagnostics.push(...this.createCSSDirectiveDiagnostics(textDocument, workspace))
@@ -572,13 +594,13 @@ export default class CSSLanguageServer {
     })
   }
 
-  private createCSSDirectiveDiagnostics(textDocument: TextDocument, workspace: Workspace) {
+  private createCSSDirectiveDiagnostics(textDocument: TextDocument, workspace: MasterCSSWorkspace) {
     if (!isCSSDiagnosticDocument(textDocument)) return []
     const diagnostics: Diagnostic[] = []
     const documentFile = path.resolve(URI.parse(textDocument.uri).fsPath)
     for (const { source, offset } of getCSSDiagnosticSources(textDocument)) {
       try {
-        compileCSSManifest(source, {
+        compileManifestSync(source, {
           from: documentFile,
           baseManifest: workspace.baseManifest ?? defaultManifest
         })
@@ -592,7 +614,7 @@ export default class CSSLanguageServer {
     return diagnostics
   }
 
-  private createManifestLoadingDiagnostics(textDocument: TextDocument, workspace: Workspace): Diagnostic[] {
+  private createManifestLoadingDiagnostics(textDocument: TextDocument, workspace: MasterCSSWorkspace): Diagnostic[] {
     if (!workspace.manifestErrors?.length) return []
     const documentFile = path.resolve(URI.parse(textDocument.uri).fsPath)
     return workspace.manifestErrors.map((error) => {
@@ -687,11 +709,20 @@ export default class CSSLanguageServer {
     this.connection.languages.semanticTokens.refresh()
   }
 
-  stop(): void {
+  dispose(): void {
+    if (this.disposed) return
+    this.disposed = true
     this.connection.sendNotification('masterCSS/dispose')
+    for (const workspace of [this.globalWorkspace, ...this.workspaces.values()]) {
+      this.destroyLanguageService(workspace)
+    }
     this.disposables.forEach((disposable) => disposable.dispose())
     this.disposables.length = 0
     this.connection.dispose()
     this.initializing = undefined
+  }
+
+  [Symbol.dispose]() {
+    this.dispose()
   }
 }

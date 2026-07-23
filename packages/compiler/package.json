@@ -38,11 +38,6 @@
       "import": "./dist/index.js",
       "default": "./dist/index.js"
     },
-    "./browser": {
-      "types": "./dist/browser.d.ts",
-      "import": "./dist/browser.js",
-      "default": "./dist/browser.js"
-    },
     "./node": {
       "types": "./dist/node.d.ts",
       "import": "./dist/node.js",
@@ -58,16 +53,6 @@
       "import": "./dist/project/manifest-sync.js",
       "default": "./dist/project/manifest-sync.js"
     },
-    "./project/entries": {
-      "types": "./dist/project/entries.d.ts",
-      "import": "./dist/project/entries.js",
-      "default": "./dist/project/entries.js"
-    },
-    "./project/workspace": {
-      "types": "./dist/project/workspace.d.ts",
-      "import": "./dist/project/workspace.js",
-      "default": "./dist/project/workspace.js"
-    },
     "./stylesheet": {
       "types": "./dist/stylesheet/index.d.ts",
       "import": "./dist/stylesheet/index.js",
@@ -77,11 +62,6 @@
       "types": "./dist/stylesheet/browser.d.ts",
       "import": "./dist/stylesheet/browser.js",
       "default": "./dist/stylesheet/browser.js"
-    },
-    "./stylesheet/directives": {
-      "types": "./dist/stylesheet/directives.d.ts",
-      "import": "./dist/stylesheet/directives.js",
-      "default": "./dist/stylesheet/directives.js"
     },
     "./diagnostics": {
       "types": "./dist/diagnostics/index.d.ts",
@@ -97,15 +77,16 @@
     "provenance": true
   },
   "dependencies": {
-    "@master/css-native": "workspace:*",
-    "@master/css-preset": "workspace:*",
+    "@master/css-backend": "workspace:*",
     "@master/css-wasm-compiler": "workspace:*",
+    "@master/css-wasm-tooling": "workspace:*",
     "@master/css-schema": "workspace:*",
     "@master/css-tooling": "workspace:*",
     "fast-glob": "^3.3.3"
   },
   "devDependencies": {
     "@master/css": "workspace:*",
-    "@master/css-internal-integration": "workspace:*"
+    "@master/css-build-internal": "workspace:*",
+    "@master/css-preset": "workspace:*"
   }
 }

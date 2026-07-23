@@ -1,10 +1,10 @@
-import { loadNativeBinding } from '@master/css-native'
+import { loadNativeCompilerBackend } from '@master/css-backend/compiler'
+import { renderClassNamesSync } from '@master/css/node'
 import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
-import type { MasterCSSServerRenderIR } from '@master/css-schema/rust-contract'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
+import type { MasterCSSServerRenderIR } from '@master/css-backend/engine'
 import { beforeAll, expect, it } from 'vitest'
 import parseHTML from '../src/parse-html'
-import createServerCSS from '../src/create-server-css'
 
 beforeAll(() => {
   process.env.MASTER_CSS_NATIVE_BINDING_PATH = new URL(
@@ -13,7 +13,7 @@ beforeAll(() => {
   ).pathname
 })
 
-it('matches server CSS and hydration composition', () => {
+it('matches the core render owner and native render protocol', () => {
   const html = [
     '<html class="bg:white">',
     '<body><div class="text-center block:hover@sm text-center"></div></body>',
@@ -21,16 +21,14 @@ it('matches server CSS and hydration composition', () => {
   ].join('')
   const manifest = defaultManifestJSON as unknown as MasterCSSManifest
   const { classes } = parseHTML(html)
-  const css = createServerCSS(manifest)
-  classes.forEach((className) => css.ensureClassRules(className))
+  const snapshot = renderClassNamesSync(classes, { manifest })
 
-  const binding = loadNativeBinding({ required: true })!.binding
-  const rust = JSON.parse(binding.renderClassesJson(
-    JSON.stringify(manifest),
+  const rust = loadNativeCompilerBackend({ required: true })!.renderClassNames(
+    manifest,
     classes
-  )) as MasterCSSServerRenderIR
+  ) as MasterCSSServerRenderIR
 
   expect(rust.classes).toEqual(classes)
-  expect(rust.snapshot.text).toBe(css.text)
-  expect(rust.hydrationManifest).toEqual(css.hydrationManifest)
+  expect(rust.snapshot.text).toBe(snapshot.cssText)
+  expect(rust.hydrationManifest).toEqual(snapshot.hydrationManifest)
 })

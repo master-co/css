@@ -1,58 +1,81 @@
-import CSSScanner, {
-  serializeScannerBlocklist,
-  type ScannerOptions
-} from '@master/css-tooling/scanner'
+import {
+  MasterCSSScanner
+} from '@master/css-tooling/scanner/node'
 import {
   createExtractedCSSResult,
-  registerStyleCSSSource,
-  type StyleCSSSources
-} from '@master/css-compiler/stylesheet'
-import { findCSSManifestEntryFiles } from '@master/css-compiler/project/entries'
+  registerStylesheetSource,
+  type StylesheetSources
+} from '../stylesheet'
+import { discoverManifestEntries } from '../project/manifest'
 import fg from 'fast-glob'
 import fs from 'node:fs'
 import path from 'node:path'
-import { MASTER_CSS_DIAGNOSTICS_REPORT_VERSION } from '@master/css-schema/rust-contract'
+import {
+  loadNativeCompilerBackend,
+  MASTER_CSS_DIAGNOSTICS_REPORT_VERSION
+} from '@master/css-backend/compiler'
+import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import type {
-  MasterCSSInspectionDiagnosticIR,
-  MasterCSSInspectionReportIR,
-  MasterCSSMissingCSSResultIR,
-  MasterCSSSourceInspectionIR,
-  MasterCSSStylesheetErrorIR,
-  MasterCSSStylesheetInspectionIR
-} from '@master/css-schema/rust-contract'
-import { loadRustInspectionReportCreator } from '@master/css-tooling/diagnostics'
+  MasterCSSInspectionReport,
+  MasterCSSSourceInspection,
+  MasterCSSStylesheetError,
+  MasterCSSStylesheetInspection
+} from './contracts'
+
+export type {
+  MasterCSSDiscoveredClasses,
+  MasterCSSInspectionDiagnostic,
+  MasterCSSInspectionDiagnosticCode,
+  MasterCSSInspectionDiagnosticSeverity,
+  MasterCSSInspectionDiagnosticSourceKind,
+  MasterCSSInspectionReport,
+  MasterCSSMissingCSSReason,
+  MasterCSSMissingCSSResult,
+  MasterCSSMissingCSSStatus,
+  MasterCSSSourceInspection,
+  MasterCSSStylesheetError,
+  MasterCSSStylesheetInspection
+} from './contracts'
 
 export const MASTER_CSS_INSPECTION_REPORT_VERSION = MASTER_CSS_DIAGNOSTICS_REPORT_VERSION
 
 const DEFAULT_SOURCE_PATTERNS = ['**/*.{html,htm,js,jsx,cjs,ts,tsx,mts,cts,svelte,astro,vue,md,mdx,pug,php}']
 const DEFAULT_IGNORE_PATTERNS = ['**/node_modules/**', 'node_modules']
 
-export type MasterCSSInspectionDiagnostic = MasterCSSInspectionDiagnosticIR
-export type MasterCSSSourceInspection = MasterCSSSourceInspectionIR
-export type MasterCSSStylesheetInspection = MasterCSSStylesheetInspectionIR
-export type MasterCSSStylesheetError = MasterCSSStylesheetErrorIR
-export type MasterCSSMissingCSSResult = MasterCSSMissingCSSResultIR
-export type MasterCSSInspectionReport = MasterCSSInspectionReportIR
-
 export interface CreateMasterCSSInspectionReportOptions {
+  manifest: MasterCSSManifest
   cwd?: string
-  patterns?: string[]
-  classes?: string[] | string
+  patterns?: readonly string[]
+  classes?: readonly string[] | string
   includeCss?: boolean
-  ignore?: string[]
+  ignore?: readonly string[]
   resolveExistingFile?: (filePath: string) => string | Promise<string>
-  validatePatterns?: (patterns: string[]) => void
+  validatePatterns?: (patterns: readonly string[]) => void
 }
 
-function normalizeSourcePatterns(specifiedSourcePaths?: string[]) {
+async function createBackendInspectionReport<T>(input: unknown): Promise<T> {
+  const compiler = loadNativeCompilerBackend()
+  if (compiler) return compiler.createInspectionReport(input) as T
+
+  const [{ createToolingInspectionReport }, { readFile }] = await Promise.all([
+    import('@master/css-wasm-tooling'),
+    import('node:fs/promises')
+  ])
+  const wasmBytes = await readFile(new URL(import.meta.resolve('@master/css-wasm-tooling/wasm')))
+  return await createToolingInspectionReport(input, {
+    input: new Uint8Array(wasmBytes)
+  }) as T
+}
+
+function normalizeSourcePatterns(specifiedSourcePaths?: readonly string[]) {
   return specifiedSourcePaths?.length ? specifiedSourcePaths : DEFAULT_SOURCE_PATTERNS
 }
 
-function normalizeGlobPatterns(patterns: string[]) {
+function normalizeGlobPatterns(patterns: readonly string[]) {
   return patterns.map((pattern) => pattern.replace(/\\/g, '/'))
 }
 
-function resolveSourcePaths(cwd: string, sourcePatterns: string[], ignore: string[] = []) {
+function resolveSourcePaths(cwd: string, sourcePatterns: readonly string[], ignore: readonly string[] = []) {
   return fg.sync(normalizeGlobPatterns(sourcePatterns), {
     cwd,
     ignore: normalizeGlobPatterns(ignore),
@@ -64,10 +87,10 @@ function diffSet(after: Iterable<string>, before: { has(value: string): boolean 
   return [...after].filter((value) => !before.has(value))
 }
 
-function parseClassChecks(value: string[] | string | undefined) {
-  return Array.isArray(value)
-    ? value.map((item) => item.trim()).filter(Boolean)
-    : value?.split(/\s+/).map((item) => item.trim()).filter(Boolean) ?? []
+function parseClassChecks(value: readonly string[] | string | undefined) {
+  return typeof value === 'string'
+    ? value.split(/\s+/).map((item) => item.trim()).filter(Boolean)
+    : (value ?? []).map((item) => item.trim()).filter(Boolean)
 }
 
 async function resolveFilePath(cwd: string, filePath: string, resolver?: CreateMasterCSSInspectionReportOptions['resolveExistingFile']) {
@@ -88,24 +111,26 @@ function preserveWorkspacePath(cwd: string, filePath: string) {
 }
 
 async function registerManagedCSSEntries(
-  scanner: CSSScanner,
-  styleCSSSources: StyleCSSSources,
+  scanner: MasterCSSScanner,
+  stylesheetSources: StylesheetSources,
+  baseManifest: MasterCSSManifest,
   resolveExistingFile?: CreateMasterCSSInspectionReportOptions['resolveExistingFile']
 ) {
   const entries: MasterCSSStylesheetInspection[] = []
   const warnings: string[] = []
   const errors: MasterCSSStylesheetError[] = []
-  styleCSSSources.clear()
-  for (const entry of await findCSSManifestEntryFiles(scanner.cwd)) {
+  stylesheetSources.clear()
+  for (const entry of await discoverManifestEntries({ root: scanner.cwd })) {
     const filePath = preserveWorkspacePath(
       scanner.cwd,
       await resolveFilePath(scanner.cwd, entry, resolveExistingFile)
     )
     try {
-      const result = await registerStyleCSSSource(scanner, styleCSSSources, filePath, fs.readFileSync(filePath, 'utf8'), {
+      const result = await registerStylesheetSource(scanner, stylesheetSources, filePath, fs.readFileSync(filePath, 'utf8'), {
+        baseManifest,
         projectDir: scanner.cwd
       })
-      const styleSource = styleCSSSources.get(filePath)
+      const styleSource = stylesheetSources.get(filePath)
       entries.push({
         filePath,
         masterCSS: Boolean(styleSource?.masterCSS),
@@ -133,7 +158,7 @@ async function registerManagedCSSEntries(
       })
     }
   }
-  scanner.resetDependencies = Array.from(styleCSSSources.values()).flatMap((source) => source.dependencies)
+  scanner.resetDependencies = Array.from(stylesheetSources.values()).flatMap((source) => source.dependencies)
   return {
     entries,
     warnings,
@@ -142,7 +167,7 @@ async function registerManagedCSSEntries(
 }
 
 async function scanSourceFile(
-  scanner: CSSScanner,
+  scanner: MasterCSSScanner,
   source: string,
   filePath: string,
   firstSourceByClass: Map<string, string>
@@ -173,31 +198,33 @@ async function scanSourceFile(
   }
 }
 
-export async function createMasterCSSInspectionReport(options: CreateMasterCSSInspectionReportOptions = {}): Promise<MasterCSSInspectionReport> {
+export async function createMasterCSSInspectionReport(
+  options: CreateMasterCSSInspectionReportOptions
+): Promise<MasterCSSInspectionReport> {
   const cwd = path.resolve(options.cwd || process.cwd())
   const classChecks = parseClassChecks(options.classes)
   const specifiedPatterns = options.patterns
   const sourcePatterns = normalizeSourcePatterns(specifiedPatterns)
   options.validatePatterns?.(sourcePatterns)
-  const createReport = await loadRustInspectionReportCreator()
-  const scanner = new CSSScanner({}, cwd)
-  const styleCSSSources: StyleCSSSources = new Map()
+  const scanner = new MasterCSSScanner({
+    manifest: options.manifest,
+    exclude: specifiedPatterns?.length
+      ? undefined
+      : DEFAULT_IGNORE_PATTERNS,
+    verbose: 0
+  }, cwd)
+  const stylesheetSources: StylesheetSources = new Map()
   const firstSourceByClass = new Map<string, string>()
   let reportInput: unknown
 
-  scanner.on('init', (scannerOptions: ScannerOptions) => {
-    if (!specifiedPatterns?.length) {
-      scannerOptions.exclude ??= []
-      for (const pattern of DEFAULT_IGNORE_PATTERNS) {
-        if (!scannerOptions.exclude.includes(pattern)) scannerOptions.exclude.push(pattern)
-      }
-    }
-    scannerOptions.verbose = 0
-  })
-
   try {
     await scanner.init()
-    const stylesheetInspection = await registerManagedCSSEntries(scanner, styleCSSSources, options.resolveExistingFile)
+    const stylesheetInspection = await registerManagedCSSEntries(
+      scanner,
+      stylesheetSources,
+      options.manifest,
+      options.resolveExistingFile
+    )
     const sourcePaths = resolveSourcePaths(
       cwd,
       sourcePatterns,
@@ -207,7 +234,8 @@ export async function createMasterCSSInspectionReport(options: CreateMasterCSSIn
     const files = await Promise.all(sourcePaths.map((source, index) => scanSourceFile(scanner, source, resolvedSourcePaths[index], firstSourceByClass)))
     const cssResult = await createExtractedCSSResult({
       scanner,
-      styleCSSSources,
+      stylesheetSources,
+      baseManifest: options.manifest,
       projectDir: scanner.cwd
     })
     const safelist = scanner.options.safelist ?? []
@@ -225,7 +253,9 @@ export async function createMasterCSSInspectionReport(options: CreateMasterCSSIn
         native: [...scanner.nativeClassNames],
         usedNative: [...scanner.usedNativeClasses],
         safelist,
-        blocklist: serializeScannerBlocklist(blocklist),
+        blocklist: blocklist.map((entry) => entry instanceof RegExp
+          ? { source: entry.source, flags: entry.flags }
+          : entry),
         resetDependencies: scanner.resetDependencies
       },
       stylesheets: stylesheetInspection,
@@ -249,6 +279,8 @@ export async function createMasterCSSInspectionReport(options: CreateMasterCSSIn
       css: {},
       fatalError: error instanceof Error ? error.message : String(error)
     }
+  } finally {
+    await scanner.dispose()
   }
-  return await createReport<MasterCSSInspectionReport>(reportInput)
+  return await createBackendInspectionReport<MasterCSSInspectionReport>(reportInput)
 }

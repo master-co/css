@@ -61,12 +61,12 @@ npm install @master/css-vite
 ## Usage
 
 ```js
-import masterCSS from '@master/css-vite'
+import { createMasterCSSVitePlugin } from '@master/css-vite'
 
 /** @type {import('vite').UserConfig} */
 const config = {
   plugins: [
-    masterCSS()
+    createMasterCSSVitePlugin()
   ]
 }
 
@@ -108,19 +108,17 @@ import emittedGlobals from 'virtual:master-css-emitted-globals'
 
 Use these virtual modules when application code should receive the same manifest graph and emittedGlobals global CSS state that the plugin discovered from the project CSS entry.
 
-In production `runtime` mode, the plugin modulepreloads the emitted manifest JSON module when it also injects the runtime script. `injectRuntime: false` disables both automatic runtime injection and the manifest JSON modulepreload.
-
-The browser runtime entry is available as `@master/css-vite/runtime` for official integrations that need to inject the same Vite-managed runtime startup module.
+In production `runtime` mode, the plugin modulepreloads the emitted manifest JSON module when it injects its private runtime bootstrap. Applications that need manual startup should import `MasterCSSRuntime` from `@master/css-runtime` and use these virtual inputs; the bootstrap itself is intentionally not a public subpath.
 
 ## Options
 
-The `options` object is passed to `masterCSS(options)`.
+The `options` object is passed to `createMasterCSSVitePlugin(options)`.
 
 | Option | Type | Default | Description |
 | --- | --- | --- | --- |
-| `mode` | `'runtime' \| 'static' \| 'progressive' \| 'pre-render' \| null` | `'runtime'` | Integration mode. Use `null` to disable automatic integration. |
-| `scanner` | `ScannerOptions` | `undefined` | Class usage scanning options. |
-| `injectRuntime` | `boolean` | `true` | Includes the runtime through Vite's HTML transform. |
-| `avoidFOUC` | `boolean` | `true` | Prevents flash of unstyled content during runtime rendering. |
+| `enabled` | `boolean` | `true` | Enables the integration. Use `false` to disable it. |
+| `mode` | `'runtime' \| 'static' \| 'progressive' \| 'pre-render'` | `'runtime'` | Integration rendering mode. |
+| `scanner` | `MasterCSSScannerConfiguration` | `{}` | Class usage scanning configuration. |
+| `runtime` | `boolean \| { enabled?: boolean; avoidFOUC?: boolean }` | `{ enabled: true, avoidFOUC: true }` | Runtime injection and FOUC behavior. |
 
 See the [Vite installation guide](https://rc.css.master.co/guide/installation/vite) for a full project setup.

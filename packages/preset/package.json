@@ -62,7 +62,7 @@
     "@master/css-schema": "workspace:*"
   },
   "devDependencies": {
-    "@master/css-native": "workspace:*",
+    "@master/css-backend": "workspace:*",
     "tsx": "^4.22.4"
   }
 }

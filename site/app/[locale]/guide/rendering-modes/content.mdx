@@ -3,7 +3,7 @@ Master CSS integrations choose how generated rules reach the browser. The same p
 
 | Mode                      | Description                                                                                                                                           |
 |---------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `'runtime'`               | Starts `CSSRuntime` in the browser, loads the project manifest, observes connected elements, and ensures generated rules as class names appear. |
+| `'runtime'`               | Starts `MasterCSSRuntime` in the browser, loads the project manifest, observes connected elements, and ensures generated rules as class names appear. |
 | `'static'`                | Scans source files, replaces `@import '@master/css'` in managed CSS entries, prunes native CSS, and generates CSS from the project CSS entry graph. |
 | `'pre-render'`            | Renders HTML output and injects the CSS required by the rendered class names. This mode is usually owned by SSR/SSG integrations. |
 | `'progressive'`           | Combines server-rendered first-page CSS, a hydration manifest, and client-side runtime adoption for classes that appear after the initial HTML. |
@@ -27,11 +27,11 @@ The runtime engine uses the standard [Web APIs - Mutation Observer](https://deve
 It is packaged as [`@master/css-runtime`](https://www.npmjs.com/package/@master/css-runtime). Most applications start it through a framework integration or a bundler entry:
 
 ```ts name=src/main.ts
-import CSSRuntime from '@master/css-runtime'
+import { MasterCSSRuntime } from '@master/css-runtime'
 import manifest from 'virtual:master-css-manifest'
 import emittedGlobals from 'virtual:master-css-emitted-globals'
 
-const cssRuntime = await CSSRuntime.start({ manifest, emittedGlobals })
+const cssRuntime = await MasterCSSRuntime.start({ manifest, emittedGlobals })
 cssRuntime.observe()
 ```
 
@@ -153,11 +153,11 @@ console.log(sheet.cssRules)
 When runtime code needs project tokens, modes, or component definitions, load the compiled runtime inputs from the integration. `virtual:master-css-manifest` resolves the canonical project-level manifest discovered from the CSS entry, and `virtual:master-css-emitted-globals` records variables and keyframes that the entry already emitted.
 
 ```js
-import CSSRuntime from '@master/css-runtime'
+import { MasterCSSRuntime } from '@master/css-runtime'
 import manifest from 'virtual:master-css-manifest'
 import emittedGlobals from 'virtual:master-css-emitted-globals'
 
-const cssRuntime = await CSSRuntime.start({ manifest, emittedGlobals })
+const cssRuntime = await MasterCSSRuntime.start({ manifest, emittedGlobals })
 cssRuntime.observe()
 ```
 
@@ -248,17 +248,16 @@ import { createServerRenderer } from '@master/css-server'
 import manifest from 'virtual:master-css-manifest'
 
 const indexHTML = readFileSync('./index.html', 'utf-8')
-const renderer = createServerRenderer(manifest, { maxCachedClasses: Infinity })
+const renderer = createServerRenderer({ manifest, maxCachedClasses: Infinity })
 
-const rendered = renderer.render(indexHTML, {
+const rendered = renderer.renderHTML(indexHTML, {
   hydrationManifest: {
     type: 'external',
-    src: '/_master-css/hydration/master-css-hydration.<hash>.json'
+    source: '/_master-css/hydration/master-css-hydration.<hash>.json'
   }
 })
 const { html, hydrationManifest } = rendered
 
-rendered.css?.dispose()
 renderer.dispose()
 ```
 The manifest-scoped server renderer reuses generated class rules across pages while producing an isolated style sheet and hydration manifest for each page. Recreate it when the manifest changes and dispose it when the build ends. Official static and pre-render integrations write `hydrationManifest` to a hashed JSON asset and attach the URL to `style#master-css`:
@@ -290,7 +289,7 @@ Master CSS hydration is the process that restores the server-side or build-time 
   <ModeImg src="/master-css-hydration.svg" alt='Master CSS Hydration' />
   <figcaption>Master CSS Hydration — Creates virtual rules from DOM style sheet</figcaption>
 </figure>
-The runtime reads explicit `hydrationManifest` options first. Without an explicit option, `CSSRuntime.start()` reads inline `script#master-css-hydration-manifest` or imports the URL from `style#master-css[data-master-css-hydration-manifest]` before it returns. Call `runtime.observe()` after startup completes.
+The runtime reads explicit `hydrationManifest` options first. Without an explicit option, `MasterCSSRuntime.start()` reads inline `script#master-css-hydration-manifest` or imports the URL from `style#master-css[data-master-css-hydration-manifest]` before it returns. Call `runtime.observe()` after startup completes.
 
 Each manifest rule stores the class name, layer, priority, selector text, generated CSS text, and any referenced variables or animations. The manifest's `resourceOrder` preserves the variable and animation insertion order needed to reproduce the exact resource buckets without parsing CSS text. During hydration, the runtime compares that IR with the native rules already present in `style#master-css`. When they match, it attaches those native CSS rules to runtime-managed rule objects instead of regenerating them.
 

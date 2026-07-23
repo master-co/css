@@ -8,7 +8,6 @@
   "os": ["linux"],
   "cpu": ["x64"],
   "libc": ["glibc"],
-  "bin": { "mcss": "./mcss" },
   "files": ["mastercss.node", "mcss"],
   "publishConfig": { "access": "public", "provenance": true }
 }

@@ -45,12 +45,6 @@
       "import": "./dist/node.js",
       "default": "./dist/node.js"
     },
-    "./browser": {
-      "types": "./dist/browser.d.ts",
-      "browser": "./dist/browser.js",
-      "import": "./dist/browser.js",
-      "default": "./dist/browser.js"
-    },
     "./builtins": {
       "types": "./dist/builtins.d.ts",
       "import": "./dist/builtins.js",
@@ -66,12 +60,6 @@
       "import": "./dist/lexer/node.js",
       "default": "./dist/lexer/node.js"
     },
-    "./lexer/browser": {
-      "types": "./dist/lexer/browser.d.ts",
-      "browser": "./dist/lexer/browser.js",
-      "import": "./dist/lexer/browser.js",
-      "default": "./dist/lexer/browser.js"
-    },
     "./source": {
       "types": "./dist/source/index.d.ts",
       "import": "./dist/source/index.js",
@@ -82,26 +70,10 @@
       "import": "./dist/source/node.js",
       "default": "./dist/source/node.js"
     },
-    "./source/browser": {
-      "types": "./dist/source/browser.d.ts",
-      "browser": "./dist/source/browser.js",
-      "import": "./dist/source/browser.js",
-      "default": "./dist/source/browser.js"
-    },
-    "./scanner": {
-      "types": "./dist/scanner/index.d.ts",
-      "import": "./dist/scanner/index.js",
-      "default": "./dist/scanner/index.js"
-    },
     "./scanner/node": {
       "types": "./dist/scanner/node.d.ts",
       "import": "./dist/scanner/node.js",
       "default": "./dist/scanner/node.js"
-    },
-    "./scanner/options": {
-      "types": "./dist/scanner/options/index.d.ts",
-      "import": "./dist/scanner/options/index.js",
-      "default": "./dist/scanner/options/index.js"
     },
     "./validator": {
       "types": "./dist/validator/index.d.ts",
@@ -112,16 +84,6 @@
       "types": "./dist/validator/node.d.ts",
       "import": "./dist/validator/node.js",
       "default": "./dist/validator/node.js"
-    },
-    "./validator/native-declaration-matcher": {
-      "types": "./dist/validator/native-declaration-matcher.d.ts",
-      "import": "./dist/validator/native-declaration-matcher.js",
-      "default": "./dist/validator/native-declaration-matcher.js"
-    },
-    "./validator/validate-css": {
-      "types": "./dist/validator/validate-css.d.ts",
-      "import": "./dist/validator/validate-css.js",
-      "default": "./dist/validator/validate-css.js"
     },
     "./lint": {
       "types": "./dist/lint/index.d.ts",
@@ -142,17 +104,6 @@
       "types": "./dist/language/node.d.ts",
       "import": "./dist/language/node.js",
       "default": "./dist/language/node.js"
-    },
-    "./language/browser": {
-      "types": "./dist/language/browser.d.ts",
-      "browser": "./dist/language/browser.js",
-      "import": "./dist/language/browser.js",
-      "default": "./dist/language/browser.js"
-    },
-    "./diagnostics": {
-      "types": "./dist/diagnostics/index.d.ts",
-      "import": "./dist/diagnostics/index.js",
-      "default": "./dist/diagnostics/index.js"
     }
   },
   "files": [
@@ -163,8 +114,7 @@
     "provenance": true
   },
   "dependencies": {
-    "@master/css-native": "workspace:*",
-    "@master/css-preset": "workspace:*",
+    "@master/css-backend": "workspace:*",
     "@master/css-schema": "workspace:*",
     "@master/css-wasm-tooling": "workspace:*",
     "consola": "^3.4.2",

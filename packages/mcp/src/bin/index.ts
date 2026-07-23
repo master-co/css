@@ -3,7 +3,7 @@
 import { readFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { startStdioServer } from '../server'
+import { startMasterCSSMCPStdioServer } from '../server'
 
 function readPackageVersion() {
     const directory = dirname(fileURLToPath(import.meta.url))
@@ -57,7 +57,7 @@ function parseArgs(argv: string[]) {
 }
 
 try {
-    await startStdioServer(parseArgs(process.argv.slice(2)))
+    await startMasterCSSMCPStdioServer(parseArgs(process.argv.slice(2)))
 } catch (error) {
     console.error(error instanceof Error ? error.message : String(error))
     process.exit(1)

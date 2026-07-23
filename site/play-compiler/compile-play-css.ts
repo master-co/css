@@ -1,9 +1,9 @@
 import type { MasterCSSManifest } from '@master/css'
 import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
 import {
-  compileBrowserStyleCSS,
+  compileBrowserStylesheet,
   initBrowserStyleCompiler,
-  type CompileBrowserStyleCSSResult
+  type CompileBrowserStylesheetResult
 } from '@master/css-compiler/stylesheet/browser'
 
 const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
@@ -13,7 +13,7 @@ export interface CompilePlayCSSResult {
   css: string
   manifest: MasterCSSManifest
   warnings: string[]
-  result: CompileBrowserStyleCSSResult['result']
+  result: CompileBrowserStylesheetResult['result']
 }
 
 async function initPlayCompiler() {
@@ -25,7 +25,7 @@ async function initPlayCompiler() {
 export async function compilePlayCSS(sourceCSS: string, classes: string[]): Promise<CompilePlayCSSResult> {
   await initPlayCompiler()
 
-  const result = await compileBrowserStyleCSS(sourceCSS, {
+  const result = await compileBrowserStylesheet(sourceCSS, {
     baseManifest: defaultManifest,
     classNames: classes,
     from: 'playground.css'

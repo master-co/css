@@ -44,7 +44,7 @@ shared / external data
 
 Rust is the single semantic source. `@master/css` owns the public Manifest v1 execution surface, `@master/css-compiler` owns compiler/project/stylesheet/inspection orchestration, and `@master/css-tooling` owns lexer/source/scanner/validator/lint/language sessions. TypeScript supplies platform loading, filesystem and package resolution, editor adaptation, and host capability callbacks; it must not implement semantic fallbacks.
 
-Do not make `@master/css` depend on compiler, tooling, integrations, runtime, server, language service, ESLint, examples, or site. Do not make tooling depend on compiler, language service, build adapters, or editor hosts. When cycle pressure appears, move dependency-light contracts into `@master/css-schema`, semantic operations into the owning Rust crate, compiler orchestration into `@master/css-compiler`, or editor-neutral operations into `@master/css-tooling`. `@master/css-internal-integration` is repository-private, bundled into official consumers, and is not a public third-party adapter SPI.
+Do not make `@master/css` depend on compiler, tooling, integrations, runtime, server, language service, ESLint, examples, or site. Do not make tooling depend on compiler, language service, build adapters, or editor hosts. When cycle pressure appears, move dependency-light contracts into `@master/css-schema`, semantic operations into the owning Rust crate, compiler orchestration into `@master/css-compiler`, or editor-neutral operations into `@master/css-tooling`. `@master/css-build-internal` is repository-private, bundled into official consumers, and is not a public third-party adapter SPI.
 
 ## Before Editing
 

@@ -39,7 +39,7 @@ export function createTestCSS(manifest: MasterCSSManifest) {
       return api
     },
     get text() {
-      return engine.text
+      return engine.snapshot().text
     },
     themeLayer: resource('theme'),
     defaultsLayer: layer('defaults'),

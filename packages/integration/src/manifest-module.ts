@@ -1,5 +1,5 @@
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
-import { stringifyMasterCSSManifestJSON } from '@master/css-schema/manifest-json'
+import { serializeMasterCSSManifest } from '@master/css-schema/manifest'
 import { MANIFEST_ASSET_FILE, MANIFEST_MODULE_FILE } from './manifest-facade'
 
 export type { MasterCSSManifest }
@@ -40,7 +40,7 @@ export function stripResourceQuery(resourcePath: string) {
 }
 
 export function toManifestJSON(manifest: MasterCSSManifest) {
-  return stringifyMasterCSSManifestJSON(manifest)
+  return serializeMasterCSSManifest(manifest)
 }
 
 export function toManifestJSONResult<T extends CSSManifestLoadResult>(result: T): T & { json: string } {

@@ -5,7 +5,7 @@
   },
   "devDependencies": {
     "@angular-eslint/template-parser": "^21.4.0",
-    "@master/eslint-config-css": "workspace:^",
-    "eslint": "^10.5.0"
+    "eslint": "^10.5.0",
+    "@master/eslint-plugin-css": "workspace:^"
   }
 }

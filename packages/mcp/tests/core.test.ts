@@ -83,14 +83,14 @@ function createContributorFixture() {
   })
   writeFileSync(join(root, 'packages/create/AI.md'), '# AI Notes For `@master/create-css`')
   writeJSON(join(root, 'packages/css-sv/package.json'), {
-    name: '@master/css-sv',
+    name: '@master/css-svelte-addon',
     scripts: {
       build: 'tsdown',
       lint: 'eslint',
       test: 'vitest'
     }
   })
-  writeFileSync(join(root, 'packages/css-sv/AI.md'), '# AI Notes For `@master/css-sv`')
+  writeFileSync(join(root, 'packages/css-sv/AI.md'), '# AI Notes For `@master/css-svelte-addon`')
   writeJSON(join(root, 'site/package.json'), {
     name: 'site',
     private: true,
@@ -107,7 +107,7 @@ async function connect(root: string) {
   const client = new Client({ name: 'master-css-mcp-test', version: '0.0.0' }, { capabilities: {} })
   const [clientTransport, serverTransport] = InMemoryTransport.createLinkedPair()
   await Promise.all([
-    instance.server.connect(serverTransport),
+    instance.connect(serverTransport),
     client.connect(clientTransport)
   ])
   return {
@@ -115,7 +115,7 @@ async function connect(root: string) {
     instance,
     async close() {
       await client.close()
-      await instance.server.close()
+      await instance.dispose()
     }
   }
 }
@@ -229,8 +229,8 @@ describe('@master/css-mcp', () => {
         '@master/css': 'workspace:^',
         '@master/css-cli': 'workspace:^',
         '@master/create-css': 'workspace:^',
-        '@master/css-sv': 'workspace:^',
-        '@master/eslint-config-css': 'workspace:^'
+        '@master/css-svelte-addon': 'workspace:^',
+        '@master/eslint-plugin-css': 'workspace:^'
       },
       scripts: {
         build: 'master-css src/index.html -o master.css'
@@ -259,12 +259,12 @@ describe('@master/css-mcp', () => {
       }))
       expect(audit.packages.declared).toEqual(expect.arrayContaining([
         expect.objectContaining({ name: '@master/create-css' }),
-        expect.objectContaining({ name: '@master/css-sv' }),
-        expect.objectContaining({ name: '@master/eslint-config-css' })
+        expect.objectContaining({ name: '@master/css-svelte-addon' }),
+        expect.objectContaining({ name: '@master/eslint-plugin-css' })
       ]))
       expect(audit.packages.setup).toEqual(expect.arrayContaining([
         expect.objectContaining({ name: '@master/create-css' }),
-        expect.objectContaining({ name: '@master/css-sv' })
+        expect.objectContaining({ name: '@master/css-svelte-addon' })
       ]))
       expect(audit.summary.setupPackages).toBe(2)
       expect(audit.integrations).toEqual(expect.arrayContaining([
@@ -272,14 +272,14 @@ describe('@master/css-mcp', () => {
           name: '@master/css-cli'
         }),
         expect.objectContaining({
-          name: '@master/eslint-config-css'
+          name: '@master/eslint-plugin-css'
         })
       ]))
       const integrationPackageNames = audit.integrations
         .filter((integration: { type: string }) => integration.type === 'package')
         .map((integration: { name: string }) => integration.name)
       expect(integrationPackageNames).not.toContain('@master/create-css')
-      expect(integrationPackageNames).not.toContain('@master/css-sv')
+      expect(integrationPackageNames).not.toContain('@master/css-svelte-addon')
 
       const directives = parseToolJSON(await connection.client.callTool({
         name: 'mastercss_inspect_directives',
@@ -555,7 +555,7 @@ describe('@master/css-mcp', () => {
           aiNotes: 'packages/create/AI.md'
         }),
         expect.objectContaining({
-          name: '@master/css-sv',
+          name: '@master/css-svelte-addon',
           path: 'packages/css-sv',
           aiNotes: 'packages/css-sv/AI.md'
         })
@@ -576,10 +576,10 @@ describe('@master/css-mcp', () => {
           command: 'pnpm --filter @master/create-css lint'
         }),
         expect.objectContaining({
-          command: 'pnpm --filter @master/css-sv test'
+          command: 'pnpm --filter @master/css-svelte-addon test'
         }),
         expect.objectContaining({
-          command: 'pnpm --filter @master/css-sv lint'
+          command: 'pnpm --filter @master/css-svelte-addon lint'
         })
       ]))
     } finally {
@@ -779,7 +779,7 @@ describe('@master/css-mcp', () => {
       }))
 
       expect(report.version).toBe(1)
-      expect(report.root).toBe(connection.instance.context.root)
+      expect(report.root).toBe(root)
       expect(report.files[0].discovered.valid).toContain('block')
       expect(report.files[0].discovered.invalid).toContain('text-decoration:bad()')
       expect(report.missingCSS.present).toContainEqual(expect.objectContaining({
@@ -809,9 +809,9 @@ describe('@master/css-mcp', () => {
       }))
 
       expect(report.version).toBe(1)
-      expect(report.root).toBe(connection.instance.context.root)
+      expect(report.root).toBe(root)
       expect(report.files).toHaveLength(1)
-      expect(report.files[0].filePath).toBe(resolve(connection.instance.context.root, 'src/Component.tsx'))
+      expect(report.files[0].filePath).toBe(resolve(root, 'src/Component.tsx'))
       expect(report.files[0].languageId).toBe('typescriptreact')
       expect(report.files[0].diagnostics).toContainEqual(expect.objectContaining({
         code: 'invalid-class-order'

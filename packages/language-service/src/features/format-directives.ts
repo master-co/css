@@ -1,4 +1,4 @@
-import type CSSLanguageService from '../core'
+import type { MasterCSSLanguageService } from '../core'
 import type { Range, TextEdit } from 'vscode-languageserver-protocol'
 import type { TextDocument } from 'vscode-languageserver-textdocument'
 
@@ -48,7 +48,7 @@ function collectSFCStyleRanges(document: TextDocument) {
 }
 
 export default function formatDirectives(
-  this: CSSLanguageService,
+  this: MasterCSSLanguageService,
   document: TextDocument,
   range?: Range
 ): TextEdit[] | undefined {

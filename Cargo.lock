@@ -742,7 +742,9 @@ name = "mastercss-wasm-runtime"
 version = "0.0.0"
 dependencies = [
  "mastercss-engine",
+ "mastercss-render",
  "mastercss-schema",
+ "serde",
  "serde-wasm-bindgen",
  "serde_json",
  "wasm-bindgen",

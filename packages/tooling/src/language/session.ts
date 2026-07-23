@@ -1,60 +1,21 @@
-import { MASTER_CSS_LANGUAGE_BATCH_VERSION } from '@master/css-schema'
 import type {
-  MasterCSSLanguageClassificationsIR,
-  MasterCSSLanguageColorCandidateInputIR,
-  MasterCSSLanguageColorPresentationIR,
-  MasterCSSLanguageColorTokensIR,
-  MasterCSSLanguageCompletionIndexIR,
-  MasterCSSLanguageInspectionIR,
   MasterCSSNativeDeclarationCandidateIR
-} from '@master/css-schema/rust-contract'
-import type { SemanticTokenItem } from './semantic/types'
+} from '@master/css-backend/tooling'
+import { MASTER_CSS_LANGUAGE_BATCH_VERSION } from '@master/css-backend/tooling'
+import { MasterCSSError } from '@master/css-schema'
 import { matchesLanguageServiceNativeDeclaration } from './master-css'
-
-export interface LanguageClassListContextIR {
-  start: number
-  end: number
-  unescape?: string[]
-}
-
-export interface LanguageClassPositionIR {
-  range: { start: number, end: number }
-  contextRange: { start: number, end: number }
-  raw: string
-  token: string
-}
-
-export interface AnalyzeDocumentRequest {
-  source: string
-  languageId: string
-  hostRanges?: LanguageClassListContextIR[]
-  settings?: {
-    classAttributes?: string[]
-    classFunctions?: string[]
-    classDeclarations?: string[]
-  }
-}
-
-export interface LanguageDocumentIR {
-  version: typeof MASTER_CSS_LANGUAGE_BATCH_VERSION
-  classPositions: LanguageClassPositionIR[]
-  semanticTokens: SemanticTokenItem[]
-  semanticTokenData: number[]
-}
-
-export interface FormatDirectivesRequest {
-  source: string
-  range?: { start: number, end: number }
-  styleRanges?: { start: number, end: number }[]
-}
-
-export interface LanguageFormatEditsIR {
-  version: typeof MASTER_CSS_LANGUAGE_BATCH_VERSION
-  edits: {
-    range: { start: number, end: number }
-    text: string
-  }[]
-}
+import type {
+  MasterCSSDocumentAnalysis,
+  MasterCSSDocumentAnalysisRequest,
+  MasterCSSFormatDirectivesRequest,
+  MasterCSSFormatDirectivesResult,
+  MasterCSSLanguageClassifications,
+  MasterCSSLanguageColorCandidate,
+  MasterCSSLanguageColorPresentation,
+  MasterCSSLanguageColorTokens,
+  MasterCSSLanguageCompletionIndex,
+  MasterCSSLanguageInspection
+} from './contracts'
 
 interface BackendLanguageSession {
   analyzeDocument(request: unknown): unknown
@@ -70,24 +31,14 @@ interface BackendLanguageSession {
 
 export interface LanguageSession {
   readonly backend: 'native' | 'wasm'
-  analyzeDocument(request: AnalyzeDocumentRequest): LanguageDocumentIR
-  formatDirectives(request: FormatDirectivesRequest): LanguageFormatEditsIR
-  classifyClassNames(classNames: readonly string[]): MasterCSSLanguageClassificationsIR
-  inspectClassName(className: string, mode?: string): MasterCSSLanguageInspectionIR
-  completionIndex(): MasterCSSLanguageCompletionIndexIR
-  colorPresentation(colorToken: string): MasterCSSLanguageColorPresentationIR
-  colorTokens(candidates: MasterCSSLanguageColorCandidateInputIR[]): MasterCSSLanguageColorTokensIR
+  analyzeDocument(request: MasterCSSDocumentAnalysisRequest): MasterCSSDocumentAnalysis
+  formatDirectives(request: MasterCSSFormatDirectivesRequest): MasterCSSFormatDirectivesResult
+  classifyClassNames(classNames: readonly string[]): MasterCSSLanguageClassifications
+  inspectClassName(className: string, mode?: string): MasterCSSLanguageInspection
+  completionIndex(): MasterCSSLanguageCompletionIndex
+  colorPresentation(colorToken: string): MasterCSSLanguageColorPresentation
+  colorTokens(candidates: readonly MasterCSSLanguageColorCandidate[]): MasterCSSLanguageColorTokens
   dispose(): void
-}
-
-export class LanguageSessionError extends Error {
-  constructor(
-    public readonly code: 'NATIVE_UNAVAILABLE' | 'LANGUAGE_BATCH_VERSION_MISMATCH',
-    message: string
-  ) {
-    super(message)
-    this.name = 'LanguageSessionError'
-  }
 }
 
 function parse<T>(value: unknown): T {
@@ -96,10 +47,11 @@ function parse<T>(value: unknown): T {
 
 function validate<T extends { version: number }>(value: T): T {
   if (value.version !== MASTER_CSS_LANGUAGE_BATCH_VERSION) {
-    throw new LanguageSessionError(
-      'LANGUAGE_BATCH_VERSION_MISMATCH',
-      `Expected Master CSS language batch version ${MASTER_CSS_LANGUAGE_BATCH_VERSION}, received ${String(value.version)}.`
-    )
+    throw new MasterCSSError({
+      code: 'LANGUAGE_BATCH_VERSION_MISMATCH',
+      domain: 'tooling',
+      message: `Expected Master CSS language batch version ${MASTER_CSS_LANGUAGE_BATCH_VERSION}, received ${String(value.version)}.`
+    })
   }
   return value
 }
@@ -114,41 +66,31 @@ export function bindLanguageSession(
   return {
     backend,
     analyzeDocument(request) {
-      return validate(parse<LanguageDocumentIR>(session.analyzeDocument(
+      return validate(parse<MasterCSSDocumentAnalysis>(session.analyzeDocument(
         backend === 'native' ? JSON.stringify(request) : request
       )))
     },
     formatDirectives(request) {
-      return validate(parse<LanguageFormatEditsIR>(session.formatDirectives(
+      return validate(parse<MasterCSSFormatDirectivesResult>(session.formatDirectives(
         backend === 'native' ? JSON.stringify(request) : request
       )))
     },
     classifyClassNames(classNames) {
       const values = [...classNames]
-      return validate(parse<MasterCSSLanguageClassificationsIR>(
+      return validate(parse<MasterCSSLanguageClassifications>(
         session.classifyClassNames(values, nativeSupport(values))
       ))
     },
     inspectClassName(className, mode) {
-      return validate(parse<MasterCSSLanguageInspectionIR>(
+      return validate(parse<MasterCSSLanguageInspection>(
         session.inspectClassName(className, nativeSupport([className]), mode)
       ))
     },
-    completionIndex: () => validate(parse<MasterCSSLanguageCompletionIndexIR>(session.completionIndex())),
-    colorPresentation: (token) => validate(parse<MasterCSSLanguageColorPresentationIR>(session.colorPresentation(token))),
-    colorTokens: (candidates) => validate(parse<MasterCSSLanguageColorTokensIR>(session.colorTokens(
+    completionIndex: () => validate(parse<MasterCSSLanguageCompletionIndex>(session.completionIndex())),
+    colorPresentation: (token) => validate(parse<MasterCSSLanguageColorPresentation>(session.colorPresentation(token))),
+    colorTokens: (candidates) => validate(parse<MasterCSSLanguageColorTokens>(session.colorTokens(
       backend === 'native' ? JSON.stringify(candidates) : candidates
     ))),
     dispose: () => session.dispose()
   }
 }
-
-export type {
-  MasterCSSLanguageClassificationsIR,
-  MasterCSSLanguageClassIR,
-  MasterCSSLanguageColorCandidateInputIR,
-  MasterCSSLanguageColorPresentationIR,
-  MasterCSSLanguageColorTokensIR,
-  MasterCSSLanguageCompletionIndexIR,
-  MasterCSSLanguageInspectionIR
-} from '@master/css-schema/rust-contract'

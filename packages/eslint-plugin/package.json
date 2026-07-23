@@ -36,11 +36,6 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js",
       "default": "./dist/index.js"
-    },
-    "./configs/*": {
-      "types": "./dist/configs/*.d.ts",
-      "import": "./dist/configs/*.js",
-      "default": "./dist/configs/*.js"
     }
   },
   "files": [
@@ -60,6 +55,7 @@
   },
   "devDependencies": {
     "@angular-eslint/template-parser": "^21.4.0",
+    "@master/css-build-internal": "workspace:*",
     "@master/css-schema": "workspace:*",
     "@angular/compiler": "^21.2.17",
     "@typescript-eslint/rule-tester": "^8.61.1",

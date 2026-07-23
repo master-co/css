@@ -1,7 +1,12 @@
 import { expect, test } from 'vitest'
-import { loadManifest, loadManifestJSON, loadProjectManifest } from '../../src/project/manifest'
-import { loadManifestJSONSync, loadManifestSync, loadProjectManifestSync } from '../../src/project/manifest-sync'
-import { MASTER_CSS_MANIFEST_QUERY } from '@master/css-internal-integration/manifest-module'
+import {
+  compileProjectManifest,
+  loadProjectManifest
+} from '../../src/project/manifest'
+import {
+  compileProjectManifestSync,
+  loadProjectManifestSync
+} from '../../src/project/manifest-sync'
 import {
   findCSSManifestEntryFiles,
   findMasterCSSWorkspaceDirectories,
@@ -11,11 +16,18 @@ import {
 import {
   isCompatibleMasterCSSPackageVersion,
   resolveMasterCSSWorkspacePackages
-} from '../../src/project/workspace'
+} from '@master/css-build-internal/workspace'
 import { mkdirSync, mkdtempSync, realpathSync, rmSync, writeFileSync } from 'node:fs'
 import { isAbsolute, join, relative, sep } from 'node:path'
 import { tmpdir } from 'node:os'
-import { flattenMasterCSSManifestVariables } from '@master/css-schema/manifest'
+import {
+  flattenMasterCSSManifestVariables,
+  serializeMasterCSSManifest,
+  type MasterCSSManifest
+} from '@master/css-schema/manifest'
+import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
+
+const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
 
 function createFixture() {
   return mkdtempSync(join(tmpdir(), 'master-css-manifester-'))
@@ -86,21 +98,21 @@ function writeNodePackage(
   return packageDir
 }
 
-test('loads CSS manifest resources', async () => {
+test('compiles explicit CSS project entries', async () => {
   const cwd = createFixture()
   try {
     const { entry, tokens } = writeCSSFixture(cwd)
 
-    const result = await loadManifest(entry)
+    const result = await compileProjectManifest({
+      root: cwd,
+      entries: [entry],
+      baseManifest: defaultManifest
+    })
     expect(result).toMatchObject({
       dependencies: [
         entry,
         tokens
-      ],
-      nativeClassNames: [],
-      nativeCSS: '',
-      css: '',
-      generatedCSS: ''
+      ]
     })
     expect(result.manifest.version).toBe(1)
     expect(flattenMasterCSSManifestVariables(result.manifest.variables)).toContainEqual(expect.objectContaining({
@@ -118,12 +130,16 @@ test('loads CSS manifest resources', async () => {
   }
 })
 
-test('loads CSS manifest resources synchronously', () => {
+test('compiles explicit CSS project entries synchronously', () => {
   const cwd = createFixture()
   try {
     const { entry, tokens } = writeCSSFixture(cwd)
 
-    const result = loadManifestSync(entry)
+    const result = compileProjectManifestSync({
+      root: cwd,
+      entries: [entry],
+      baseManifest: defaultManifest
+    })
     expect(result).toMatchObject({
       dependencies: [
         entry,
@@ -158,7 +174,11 @@ test('loads package entry preset manifest from CSS imports', async () => {
       }
     `)
 
-    const result = await loadManifest(entry)
+    const result = await compileProjectManifest({
+      root: cwd,
+      entries: [entry],
+      baseManifest: defaultManifest
+    })
     const packageEntry = resolveMasterCSSPackageEntryFile('@master/css', entry, cwd)
     expect(packageEntry).toBeTruthy()
     if (!packageEntry) throw new Error('Expected Master CSS package entry')
@@ -206,8 +226,14 @@ test('loads project-level CSS manifest entries', async () => {
     expect(hasMasterCSSManifestEntrypoint('@import "@master/css/index.css";')).toBe(false)
     await expect(findCSSManifestEntryFiles(cwd)).resolves.toStrictEqual([entry])
 
-    const result = await loadProjectManifest(cwd)
-    const syncResult = loadProjectManifestSync(cwd)
+    const result = await loadProjectManifest({
+      root: cwd,
+      baseManifest: defaultManifest
+    })
+    const syncResult = loadProjectManifestSync({
+      root: cwd,
+      baseManifest: defaultManifest
+    })
 
     expect(result.entries).toStrictEqual([entry])
     expect(syncResult.manifest).toStrictEqual(result.manifest)
@@ -368,16 +394,26 @@ test('checks compatible package majors when versions are known', () => {
   expect(isCompatibleMasterCSSPackageVersion('3.0.0', undefined)).toBe(true)
 })
 
-test('turns CSS manifest results into JSON sources', async () => {
+test('serializes project manifests through the schema codec', async () => {
   const cwd = createFixture()
   try {
     const { entry } = writeCSSFixture(cwd)
-    const result = await loadManifestJSON(entry)
-    const syncResult = loadManifestJSONSync(entry + MASTER_CSS_MANIFEST_QUERY)
+    const result = await compileProjectManifest({
+      root: cwd,
+      entries: [entry],
+      baseManifest: defaultManifest
+    })
+    const syncResult = compileProjectManifestSync({
+      root: cwd,
+      entries: [entry],
+      baseManifest: defaultManifest
+    })
+    const json = serializeMasterCSSManifest(result.manifest)
+    const syncJSON = serializeMasterCSSManifest(syncResult.manifest)
 
-    expect(result.json).toContain('"version":1')
-    expect(JSON.parse(result.json).version).toBe(1)
-    expect(syncResult.json).toBe(result.json)
+    expect(json).toContain('"version":1')
+    expect(JSON.parse(json).version).toBe(1)
+    expect(syncJSON).toBe(json)
   } finally {
     rmSync(cwd, { recursive: true, force: true })
   }
@@ -389,8 +425,16 @@ test('rejects script config paths', async () => {
     const script = join(cwd, 'config.ts')
     writeFileSync(script, 'export default {}')
 
-    await expect(loadManifest(script)).rejects.toThrow('CSS files')
-    expect(() => loadManifestSync(script)).toThrow('CSS files')
+    await expect(compileProjectManifest({
+      root: cwd,
+      entries: [script],
+      baseManifest: defaultManifest
+    })).rejects.toThrow('CSS files')
+    expect(() => compileProjectManifestSync({
+      root: cwd,
+      entries: [script],
+      baseManifest: defaultManifest
+    })).toThrow('CSS files')
   } finally {
     rmSync(cwd, { recursive: true, force: true })
   }

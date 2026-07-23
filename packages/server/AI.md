@@ -20,17 +20,21 @@
 
 ## Public Surface
 
-- `render`
-- `renderCSS`
-- `parseHTML`
+- `renderHTML`
+- `createServerRenderer` / `MasterCSSServerRenderer`
+- `createHTMLRenderSession` / `MasterCSSHTMLRenderSession`
+
+Results are immutable snapshots. The HTML parser, DOM representation, native render
+session, and live CSS state are internal.
 
 ## Key Files
 
 - `src/render.ts`
-- `src/render-css.ts`
-- `src/parse-html.ts`
-- `src/decode-html.ts`
-- `src/create-server-css.ts`
+- `src/render-html.ts`
+- `src/render.ts`
+- `src/html-render-session.ts`
+- `src/create-server-renderer.ts`
+- `src/parse-html.ts` (internal)
 
 ## Risk Areas
 

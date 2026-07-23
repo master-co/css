@@ -1,42 +1,24 @@
-import type { CompileCSSManifestResult } from '@master/css-compiler'
-import type { CSSDirectiveExtractionPolicy } from '@master/css-schema/css-directives'
+import type { MasterCSSDiagnostic } from '@master/css-schema'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
 
-export interface LoadManifestOptions {
-  baseManifest?: MasterCSSManifest
-  classes?: string[]
-  onWarning?: (warning: string) => void
+export interface MasterCSSProjectDiscoveryOptions {
+  readonly root?: string
+  readonly signal?: AbortSignal
 }
 
-export type LoadManifestResult = CompileCSSManifestResult
-
-export interface LoadProjectManifestOptions extends LoadManifestOptions {
-  entries?: string[]
+export interface MasterCSSProjectLoadOptions extends MasterCSSProjectDiscoveryOptions {
+  readonly baseManifest: MasterCSSManifest
+  readonly entries?: readonly string[]
+  readonly onDiagnostic?: (diagnostic: MasterCSSDiagnostic) => void
 }
 
-export interface ProjectSourceEntryPlan {
-  entry: string
-  include: string[]
-  exclude: string[]
-  files: string[]
+export interface MasterCSSProjectCompileOptions extends MasterCSSProjectLoadOptions {
+  readonly entries: readonly string[]
 }
 
-export interface ProjectSourcePlan {
-  version: 1
-  entries: ProjectSourceEntryPlan[]
-  files: string[]
-}
-
-export interface LoadProjectManifestResult {
-  entries: string[]
-  manifest: MasterCSSManifest
-  dependencies: string[]
-  extractionPolicy: CSSDirectiveExtractionPolicy
-  classNames: string[]
-  nativeClassNames: string[]
-  nativeCSS: string
-  css: string
-  generatedCSS: string
-  warnings: string[]
-  sourcePlan: ProjectSourcePlan
+export interface MasterCSSProjectResult {
+  readonly manifest: MasterCSSManifest
+  readonly entries: readonly string[]
+  readonly dependencies: readonly string[]
+  readonly diagnostics: readonly MasterCSSDiagnostic[]
 }

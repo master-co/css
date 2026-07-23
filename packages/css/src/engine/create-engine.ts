@@ -1,9 +1,8 @@
-import type * as NativeModule from '@master/css-native'
-import { createRuntimeWasmSession } from '@master/css-wasm-runtime'
-import { stringifyMasterCSSManifestJSON } from '@master/css-schema/manifest-json'
+import type * as NativeModule from '@master/css-backend/engine'
+import { createWasmEngineSession } from '@master/css-wasm-engine'
+import { serializeMasterCSSManifest } from '@master/css-schema/manifest'
 import BoundEngine from './bound-engine'
 import {
-  MasterCSSEngineError,
   normalizeEngineError,
   type MasterCSSEngine,
   type MasterCSSEngineOptions
@@ -11,15 +10,13 @@ import {
 
 async function createWasmEngine(options: MasterCSSEngineOptions): Promise<MasterCSSEngine> {
   try {
-    const session = await createRuntimeWasmSession(
-      stringifyMasterCSSManifestJSON(options.manifest),
+    const session = await createWasmEngineSession(
+      serializeMasterCSSManifest(options.manifest),
       {
-        emittedGlobalsJSON: options.emittedGlobals
-          ? JSON.stringify(options.emittedGlobals)
-          : undefined
+        emittedGlobals: options.emittedGlobals
       }
     )
-    return new BoundEngine('wasm', session)
+    return new BoundEngine('wasm', session as never)
   } catch (cause) {
     throw normalizeEngineError(
       cause,
@@ -30,33 +27,42 @@ async function createWasmEngine(options: MasterCSSEngineOptions): Promise<Master
 }
 
 async function importNativeModule(): Promise<typeof NativeModule> {
-  // @master/css-native provides a browser condition without node:* imports, so this
+  // @master/css-backend provides a browser condition without node:* imports, so this
   // remains safe for universal bundles while still working in VM-backed test runners.
-  return await import('@master/css-native')
+  return await import('@master/css-backend/engine')
 }
 
 export default async function createEngine(
   options: MasterCSSEngineOptions
 ): Promise<MasterCSSEngine> {
+  if (options.backend && typeof options.backend === 'object') {
+    return await options.backend.createEngine({
+      manifest: options.manifest,
+      emittedGlobals: options.emittedGlobals
+    })
+  }
   if (options.backend === 'wasm' || typeof process === 'undefined') {
     return await createWasmEngine(options)
   }
 
   try {
-    const { loadNativeBinding } = await importNativeModule()
-    const loaded = loadNativeBinding({ required: options.backend === 'native' })
-    if (!loaded) return await createWasmEngine(options)
+    const { createNativeEngineSession } = await importNativeModule()
+    const session = createNativeEngineSession(options, {
+      required: options.backend === 'native'
+    })
+    if (!session) return await createWasmEngine(options)
     return new BoundEngine(
       'native',
-      new loaded.binding.EngineSession(
-        stringifyMasterCSSManifestJSON(options.manifest),
-        options.emittedGlobals ? JSON.stringify(options.emittedGlobals) : undefined
-      )
+      session
     )
   } catch (cause) {
     if (cause && typeof cause === 'object' && 'code' in cause
       && (cause.code === 'NATIVE_UNAVAILABLE' || cause.code === 'NATIVE_LOAD_FAILED')) {
-      throw new MasterCSSEngineError(cause.code, String('message' in cause ? cause.message : cause), { cause })
+      throw normalizeEngineError(
+        cause,
+        String(cause.code),
+        String('message' in cause ? cause.message : cause)
+      )
     }
     throw normalizeEngineError(cause)
   }

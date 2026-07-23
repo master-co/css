@@ -4,8 +4,8 @@ import { copyFile, mkdir, readFile, writeFile } from 'node:fs/promises'
 import { extname, isAbsolute, relative, resolve } from 'node:path'
 import { performance } from 'node:perf_hooks'
 import { chromium, type Browser, type BrowserContext, type CDPSession, type Page } from '@playwright/test'
-import { render } from '@master/css-server'
-import type { MasterCSSManifest } from '@master/css'
+import { renderHTML } from '@master/css-server'
+import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import { benchmarkAdapters, benchmarkFixtures } from '../fixtures/manifest'
 import { summarizeBytes } from './bytes'
 import { analyzeCSSStructure } from './css-structure'
@@ -864,10 +864,11 @@ async function createBrowserLifecyclePage(variant: BrowserLifecycleVariant): Pro
     })
   }
 
-  const result = render(sourceHtml, await readDefaultManifest(), {
+  const result = renderHTML(sourceHtml, {
+    manifest: await readDefaultManifest(),
     hydrationManifest: 'inject'
   })
-  const inlineCSS = result.css?.text || ''
+  const inlineCSS = result.cssText
   const hydrationManifestJSON = result.hydrationManifest
     ? JSON.stringify(result.hydrationManifest)
     : ''
@@ -906,6 +907,7 @@ async function buildLifecycleStaticCSS(options: {
       process.execPath,
       [
         resolveBenchmarkPackageFile('@master/css-cli', 'dist/bin/index.js'),
+        'generate',
         'index.html',
         '-o',
         'dist/output.css',

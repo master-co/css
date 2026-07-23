@@ -4,7 +4,7 @@ import createRule from '../create-rule'
 import type { RawValuePolicyOptions } from '@master/css-tooling/lint'
 import reportLintDiagnostics from '../utils/report-lint-diagnostics'
 import defineSourceVisitors, { shouldUseSourceVisitors } from '../utils/define-source-visitors'
-import { fromRustLintDiagnostics } from '@master/css-tooling/lint/node'
+import { createMasterCSSLintDiagnostics } from '@master/css-tooling/lint'
 
 export default createRule({
   name: 'no-unapproved-raw-values',
@@ -41,20 +41,20 @@ export default createRule({
     allowedPatterns: []
   }],
   create(context) {
-    const { settings, rustLint } = resolveContext(context)
+    const { settings, tooling } = resolveContext(context)
     const options = (context.options[0] || {}) as RawValuePolicyOptions
     if (shouldUseSourceVisitors(context)) {
       return defineSourceVisitors({
         context,
-        rustLint,
+        tooling,
         ruleId: 'no-unapproved-raw-values',
         ruleOptions: options
       })
     }
 
-    return defineVisitors({ context, settings, rustLint }, (node, resolved) => {
-      const rustDiagnostics = fromRustLintDiagnostics(
-        rustLint.analyzeClassList(resolved.raw, resolved.classValues, {
+    return defineVisitors({ context, settings, tooling }, (node, resolved) => {
+      const diagnostics = createMasterCSSLintDiagnostics(
+        tooling.analyzeLintClassList(resolved.raw, resolved.classValues, {
           rawValuePolicy: options
         }).diagnostics.filter(({ ruleId }) => ruleId === 'no-unapproved-raw-values')
       )
@@ -62,7 +62,7 @@ export default createRule({
         context,
         node,
         resolved,
-        rustDiagnostics
+        diagnostics
       )
     })
   }

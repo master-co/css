@@ -1,12 +1,11 @@
 import { beforeAll, describe, expect, it } from 'vitest'
 import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
-import { loadNativeBinding } from '@master/css-native'
+import { createNativeEngineSession } from '@master/css-backend/engine'
 import {
   flattenMasterCSSManifestVariables,
   type MasterCSSManifest
 } from '@master/css-schema/manifest'
-import { stringifyMasterCSSManifestJSON } from '@master/css-schema/manifest-json'
 import defaultManifestJSON from '../src/default-manifest.json' with { type: 'json' }
 import {
   createDefaultManifestFromSourceFile,
@@ -39,8 +38,9 @@ describe('Rust-owned default preset', () => {
   })
 
   it('renders representative classes through the native Rust engine', () => {
-    const binding = loadNativeBinding({ required: true })!.binding
-    const engine = new binding.EngineSession(stringifyMasterCSSManifestJSON(defaultManifest))
+    const engine = createNativeEngineSession({
+      manifest: defaultManifest
+    }, { required: true })!
     try {
       engine.ensureClassRules([
         'block',
@@ -49,7 +49,7 @@ describe('Rust-owned default preset', () => {
         'grid-cols:3',
         'text:2xl'
       ])
-      const snapshot = JSON.parse(engine.snapshot()) as { text: string }
+      const snapshot = engine.snapshot()
       expect(snapshot.text).toContain('display:block')
       expect(snapshot.text).toContain('color:var(--color-red-60)')
       expect(snapshot.text).toContain('background-color:var(--color-surface-base)')

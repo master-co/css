@@ -1,5 +1,5 @@
 {
-  "name": "@master/css-sv",
+  "name": "@master/css-svelte-addon",
   "type": "module",
   "engines": {
     "node": "^24"

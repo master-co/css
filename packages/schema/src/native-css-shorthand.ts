@@ -82,5 +82,3 @@ const nativeCSSShorthandProperties = new Set([
 export function isNativeCSSShorthandProperty(property: string) {
   return nativeCSSShorthandProperties.has(property)
 }
-
-export default nativeCSSShorthandProperties

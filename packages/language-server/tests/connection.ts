@@ -1,8 +1,8 @@
 import { Duplex, DuplexOptions } from 'stream'
 import { createConnection, createProtocolConnection } from 'vscode-languageserver/node'
-import CSSLanguageServer, { Settings } from '../src'
+import { MasterCSSLanguageServer, type MasterCSSLanguageServerSettings } from '../src'
 
-export function connect(settings?: Settings) {
+export function connect(settings?: MasterCSSLanguageServerSettings) {
   const duplexOptions = {
     write(chunk, encoding, callback) {
       this.emit('data', chunk)
@@ -15,7 +15,7 @@ export function connect(settings?: Settings) {
   const output = new Duplex(duplexOptions)
   const serverConnection = createConnection(input, output)
   const clientConnection = createProtocolConnection(output, input)
-  const server = new CSSLanguageServer(serverConnection, settings)
+  const server = new MasterCSSLanguageServer(serverConnection, settings)
   server.start()
   clientConnection.listen()
   return {

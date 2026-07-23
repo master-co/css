@@ -1,10 +1,13 @@
-import CSSScanner from '@master/css-tooling/scanner'
-import { loadProjectManifest } from '@master/css-compiler/project'
-import { findCSSManifestEntryFiles } from '@master/css-compiler/project/entries'
+import { MasterCSSScanner } from '@master/css-tooling/scanner/node'
+import {
+  discoverManifestEntries,
+  loadProjectManifest
+} from '@master/css-compiler/project'
+import { defaultBuildManifest } from '@master/css-build-internal/project'
 import {
   createExtractedCSS,
-  registerStyleCSSSource,
-  type StyleCSSSources
+  registerStylesheetSource,
+  type StylesheetSources
 } from '@master/css-compiler/stylesheet'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import { readFile } from 'node:fs/promises'
@@ -22,21 +25,24 @@ export interface MasterCSSBuildStateResolver {
 }
 
 export async function createMasterCSSBuildStateResolver(projectDir: string): Promise<MasterCSSBuildStateResolver> {
-  const result = await loadProjectManifest(projectDir)
-  const scanner = new CSSScanner({
+  const result = await loadProjectManifest({
+    root: projectDir,
+    baseManifest: defaultBuildManifest
+  })
+  const scanner = new MasterCSSScanner({
     manifest: result.manifest
   }, projectDir)
-  const styleCSSSources: StyleCSSSources = new Map()
+  const stylesheetSources: StylesheetSources = new Map()
   try {
     await scanner.init()
-    for (const entry of await findCSSManifestEntryFiles(projectDir)) {
-      await registerStyleCSSSource(scanner, styleCSSSources, entry, await readFile(entry, 'utf8'), {
+    for (const entry of await discoverManifestEntries({ root: projectDir })) {
+      await registerStylesheetSource(scanner, stylesheetSources, entry, await readFile(entry, 'utf8'), {
         baseManifest: result.manifest,
         projectDir
       })
     }
   } catch (error) {
-    await scanner.destroy()
+    await scanner.dispose()
     throw error
   }
 
@@ -45,7 +51,7 @@ export async function createMasterCSSBuildStateResolver(projectDir: string): Pro
       const nativeCSS = classes?.length
         ? await createExtractedCSS({
           scanner,
-          styleCSSSources,
+          stylesheetSources,
           baseManifest: result.manifest,
           manifest: result.manifest,
           projectDir,
@@ -59,13 +65,13 @@ export async function createMasterCSSBuildStateResolver(projectDir: string): Pro
         nativeCSS,
         dependencies: [...new Set([
           ...result.dependencies,
-          ...Array.from(styleCSSSources.values()).flatMap((source) => source.dependencies)
+          ...Array.from(stylesheetSources.values()).flatMap((source) => source.dependencies)
         ])],
-        styleSources: Array.from(styleCSSSources.keys())
+        styleSources: Array.from(stylesheetSources.keys())
       }
     },
     async destroy() {
-      await scanner.destroy()
+      await scanner.dispose()
     }
   }
 }

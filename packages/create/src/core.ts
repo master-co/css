@@ -3,7 +3,7 @@ import { dirname, join, resolve } from 'node:path'
 import { createInterface } from 'node:readline/promises'
 import { fileURLToPath } from 'node:url'
 import { Command, InvalidArgumentError } from 'commander'
-import { applySetupPlan, createSetupPlan } from '.'
+import { applyMasterCSSSetupPlan, planMasterCSSSetup } from '.'
 import { formatRenderingModes, isRenderingMode, type RenderingMode } from './modes'
 
 const __filename = fileURLToPath(import.meta.url)
@@ -115,7 +115,7 @@ async function runAdd(options: CommandOptions) {
     return
   }
 
-  applySetupPlan(plan, {
+  applyMasterCSSSetupPlan(plan, {
     install: resolvedOptions.install === 'detected' ? plan.packageManager : resolvedOptions.install
   })
 
@@ -124,9 +124,9 @@ async function runAdd(options: CommandOptions) {
   }
 }
 
-function createCommandSetupPlan(options: Parameters<typeof createSetupPlan>[0]): ReturnType<typeof createSetupPlan> | undefined {
+function createCommandSetupPlan(options: Parameters<typeof planMasterCSSSetup>[0]): ReturnType<typeof planMasterCSSSetup> | undefined {
   try {
-    return createSetupPlan(options)
+    return planMasterCSSSetup(options)
   } catch (error) {
     if (error instanceof Error) {
       process.stderr.write(`${error.message}\n`)
@@ -200,7 +200,7 @@ function formatNewProjectCommands() {
   return newProjectCommands.map((command) => `  ${command}`).join('\n')
 }
 
-function printSummary(plan: ReturnType<typeof createSetupPlan>) {
+function printSummary(plan: ReturnType<typeof planMasterCSSSetup>) {
   process.stdout.write(`Master CSS setup complete for ${plan.framework}.\n`)
   process.stdout.write(`Dependencies planned: ${plan.summary.dependencies}\n`)
   process.stdout.write(`Files created: ${plan.summary.filesToCreate}\n`)
@@ -209,6 +209,6 @@ function printSummary(plan: ReturnType<typeof createSetupPlan>) {
     process.stdout.write(`Warning: ${warning}\n`)
   }
   for (const command of plan.commands) {
-    process.stdout.write(`Next: ${command.command}\n`)
+    process.stdout.write(`Next: ${[command.executable, ...command.args].join(' ')}\n`)
   }
 }

@@ -1,5 +1,5 @@
 import { test, it, expect } from 'vitest'
-import validateCSS from '../../src/validator/validate-css'
+import { validateCSS } from '../../src/css'
 
 it('selector', () => {
   expect(validateCSS('.foo:fuck { font-size: 1rem }')).toEqual([])

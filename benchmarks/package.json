@@ -36,6 +36,7 @@
     "@master/css-compiler": "workspace:^",
     "@master/css-preset": "workspace:^",
     "@master/css-runtime": "workspace:^",
+    "@master/css-schema": "workspace:^",
     "@master/css-tooling": "workspace:^",
     "@master/css-server": "workspace:^",
     "@master/css-vite": "workspace:^",

@@ -1,6 +1,6 @@
 import { describe, expect, test, vi } from 'vitest'
 import StyleEntryPlugin from '../../src/plugins/style-entry'
-import { VIRTUAL_CSS_ID } from '@master/css-internal-integration/style-module'
+import { VIRTUAL_CSS_ID } from '@master/css-build-internal/style-module'
 import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
 
@@ -63,11 +63,11 @@ describe('StyleEntryPlugin', () => {
     )
 
     expect(result.code).toBe(SLOT)
-    expect(context.styleCSSSources.get('/project/src/style.css')).toMatchObject({
+    expect(context.stylesheetSources.get('/project/src/style.css')).toMatchObject({
       pruneNativeCSS: true,
       source: expect.stringContaining('.card')
     })
-    expect(context.styleCSSSources.get('/project/src/style.css').source).not.toContain('@master/css')
+    expect(context.stylesheetSources.get('/project/src/style.css').source).not.toContain('@master/css')
     expect(context.virtualCSSImporters).toBeUndefined()
     expect(context.virtualCSSPlaceholderEmitted).toBe(true)
   })
@@ -83,11 +83,11 @@ describe('StyleEntryPlugin', () => {
     )
 
     expect(result.code).toBe('@import "@fontsource/fira-mono";\n' + SLOT)
-    expect(context.styleCSSSources.get('/project/src/style.css')).toMatchObject({
+    expect(context.stylesheetSources.get('/project/src/style.css')).toMatchObject({
       pruneNativeCSS: true,
       source: expect.stringContaining('.card')
     })
-    expect(context.styleCSSSources.get('/project/src/style.css').source).not.toContain('@master/css')
+    expect(context.stylesheetSources.get('/project/src/style.css').source).not.toContain('@master/css')
     expect(context.virtualCSSPlaceholderEmitted).toBe(true)
   })
 
@@ -160,7 +160,7 @@ describe('StyleEntryPlugin', () => {
     expect(result.code).not.toContain('@master/css')
     expect(result.code).not.toContain(SLOT)
     expect(result.code).not.toContain('.fg\\:red')
-    expect(context.styleCSSSources.get('/project/src/style.css')).toMatchObject({
+    expect(context.stylesheetSources.get('/project/src/style.css')).toMatchObject({
       pruneNativeCSS: true
     })
     expect(context.virtualCSSImporters).toEqual(new Set(['/project/src/style.css']))
@@ -195,11 +195,11 @@ describe('StyleEntryPlugin', () => {
     )
 
     expect(result.code).toBe(SLOT)
-    expect(context.styleCSSSources.get('/project/src/style.css')).toMatchObject({
+    expect(context.stylesheetSources.get('/project/src/style.css')).toMatchObject({
       pruneNativeCSS: true,
       source: expect.stringContaining('.card')
     })
-    expect(context.styleCSSSources.get('/project/src/style.css').source).not.toContain('@master entry;')
+    expect(context.stylesheetSources.get('/project/src/style.css').source).not.toContain('@master entry;')
     expect(context.virtualCSSPlaceholderEmitted).toBe(true)
   })
 

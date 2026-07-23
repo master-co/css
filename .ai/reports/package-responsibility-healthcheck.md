@@ -21,10 +21,10 @@ that the automated package checks enforce.
 | Server rendering | `@master/css-server` |
 | Editor features and Shiki/TextMate presentation | `@master/css-language-service` |
 | LSP transport and workspace lifecycle | `@master/css-language-server` |
-| ESLint rules and retained preset | `@master/eslint-plugin-css`, `@master/eslint-config-css` |
+| ESLint rules and flat config | `@master/eslint-plugin-css` |
 | Official build/framework adapters | `@master/css-vite`, `@master/css-webpack`, `@master/css-next`, `@master/css-nuxt`, `@master/css-astro`, `@master/css-svelte` |
 | Host applications | `@master/css-cli`, `@master/css-mcp`, `@master/create-css`, `@master/css-figma`, `@master/css-vscode` |
-| Wire contracts, native loader, Wasm loaders | `@master/css-schema`, `@master/css-native`, `@master/css-wasm-*` |
+| Public contracts, backend broker, native/Wasm artifacts | `@master/css-schema`, `@master/css-backend`, `@master/css-wasm-*` |
 
 ## Retired boundaries
 
@@ -34,7 +34,7 @@ responsibilities moved to the owners above; their package names, directories,
 dependency edges, and compatibility exports must not return.
 
 The adapter-neutral integration implementation is now the repository-private
-`@master/css-internal-integration`. Official adapters bundle it. It is not a
+`@master/css-build-internal`. Official adapters bundle it. It is not a
 published dependency and is not a third-party adapter SPI.
 
 ## Standardized contracts
@@ -55,8 +55,8 @@ published dependency and is not a third-party adapter SPI.
 ## Enforcement
 
 - `pnpm check:packages` validates package identities, retired directories,
-  lockstep dependency ranges, module/engine/export metadata, the retained ESLint
-  preset, and private integration bundling.
+  lockstep dependency ranges, module/engine/export metadata, the consolidated
+  ESLint config, and private integration bundling.
 - `pnpm check:boundaries` validates the Rust semantic core and package dependency
   direction.
 - `pnpm build` materializes public artifacts.

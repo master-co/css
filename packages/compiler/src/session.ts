@@ -1,34 +1,24 @@
-import { loadNativeBinding, NativeBindingError } from '@master/css-native'
+import { loadNativeCompilerBackend } from '@master/css-backend/compiler'
+import { MasterCSSError } from '@master/css-schema'
 import { createCompilerWasmSession, type CompilerWasmSession } from '@master/css-wasm-compiler'
 import type { CompileCSSOptions, CompileCSSResult } from './contracts'
 
-export interface CompilerSession {
+export interface BackendCompilerSession {
   readonly backend: 'native' | 'wasm'
-  inspectCSS<T = unknown>(source: string): T
+  inspectCSS(source: string): unknown
   compileCSS(source: string, options?: CompileCSSOptions): CompileCSSResult
-  compileThemeCSS<T = unknown>(source: string, options?: unknown): T
-  analyzeCSSDependencies<T = unknown>(source: string): T
-  analyzeStandaloneDirectives<T = unknown>(source: string): T
-  mergeCSSExtractionPolicies<T = unknown>(policies: unknown): T
+  compileThemeCSS(source: string, options?: unknown): unknown
+  analyzeCSSDependencies(source: string): unknown
+  analyzeStandaloneDirectives(source: string): unknown
+  mergeCSSExtractionPolicies(policies: unknown): unknown
   filterCSSExtractionCandidates(candidates: string[], blocklist: unknown): string[]
-  compileManifestInput<T = unknown>(input: unknown, options?: unknown): T
-  lowerCSSDirectives<T = unknown>(request: unknown, options?: unknown): T
-  normalizeManifest<T = unknown>(manifest: unknown): T
-  normalizeDefaultManifest<T = unknown>(manifest: unknown): T
-  compileDefaultPresetManifest<T = unknown>(request: unknown): T
-  resolveCSSImportGraph<T = unknown>(request: unknown): T
+  compileManifestInput(input: unknown, options?: unknown): unknown
+  lowerCSSDirectives(request: unknown, options?: unknown): unknown
+  normalizeManifest(manifest: unknown): unknown
+  normalizeDefaultManifest(manifest: unknown): unknown
+  compileDefaultPresetManifest(request: unknown): unknown
+  resolveCSSImportGraph(request: unknown): unknown
   dispose(): void
-}
-
-export class CompilerSessionError extends Error {
-  constructor(
-    public readonly code: 'NATIVE_UNAVAILABLE' | 'SESSION_DISPOSED',
-    message: string,
-    options?: ErrorOptions
-  ) {
-    super(message, options)
-    this.name = 'CompilerSessionError'
-  }
 }
 
 function reviveCompileResult(result: CompileCSSResult) {
@@ -41,14 +31,19 @@ function reviveCompileResult(result: CompileCSSResult) {
   return result
 }
 
-function nativeJSON<T>(call: () => string): T {
-  return JSON.parse(call()) as T
-}
-
-function withLifecycle(backend: CompilerSession['backend'], operations: Omit<CompilerSession, 'backend' | 'dispose'>): CompilerSession {
+function withLifecycle(
+  backend: BackendCompilerSession['backend'],
+  operations: Omit<BackendCompilerSession, 'backend' | 'dispose'>
+): BackendCompilerSession {
   let disposed = false
   const call = <T>(operation: () => T) => {
-    if (disposed) throw new CompilerSessionError('SESSION_DISPOSED', 'Master CSS compiler session has been disposed.')
+    if (disposed) {
+      throw new MasterCSSError({
+        code: 'SESSION_DISPOSED',
+        domain: 'compiler',
+        message: 'The Master CSS compiler has been disposed.'
+      })
+    }
     return operation()
   }
   return {
@@ -73,42 +68,39 @@ function withLifecycle(backend: CompilerSession['backend'], operations: Omit<Com
   }
 }
 
-export function createNativeCompilerSession(): CompilerSession | undefined {
-  const loaded = loadNativeBinding()
-  if (!loaded) return
-  const binding = loaded.binding
+export function createNativeCompilerSession(): BackendCompilerSession | undefined {
+  const compiler = loadNativeCompilerBackend()
+  if (!compiler) return
   return withLifecycle('native', {
-    inspectCSS: (source) => nativeJSON(() => binding.inspectCssJson(source)),
+    inspectCSS: (source) => compiler.inspectCSS(source),
     compileCSS(source, options = {}) {
-      const result = nativeJSON<CompileCSSResult>(() => binding.compileCssDirectivesJson(source, JSON.stringify({
+      const result = compiler.compileCSSDirectives(source, {
         from: options.from || 'master.css',
         preserveNativeCSS: options.preserveNativeCSS !== false,
         ...(options.classes ? { classes: options.classes } : {})
-      })))
-      for (const warning of result.warnings) options.onWarning?.(warning)
-      return reviveCompileResult(result)
+      }) as CompileCSSResult
+      return reviveCompileResult(result as CompileCSSResult)
     },
-    compileThemeCSS: (source, options) => nativeJSON(() => binding.compileThemeCssJson(source, options === undefined ? undefined : JSON.stringify(options))),
-    analyzeCSSDependencies: (source) => nativeJSON(() => binding.analyzeCssDependenciesJson(source)),
-    analyzeStandaloneDirectives: (source) => nativeJSON(() => binding.analyzeStandaloneDirectivesJson(source)),
-    mergeCSSExtractionPolicies: (policies) => nativeJSON(() => binding.mergeCssExtractionPoliciesJson(JSON.stringify(policies))),
+    compileThemeCSS: (source, options) => compiler.compileThemeCSS(source, options),
+    analyzeCSSDependencies: (source) => compiler.analyzeCSSDependencies(source),
+    analyzeStandaloneDirectives: (source) => compiler.analyzeStandaloneDirectives(source),
+    mergeCSSExtractionPolicies: (policies) => compiler.mergeCSSExtractionPolicies(policies),
     filterCSSExtractionCandidates: (candidates, blocklist) =>
-      binding.filterCssExtractionCandidates(candidates, JSON.stringify(blocklist)),
-    compileManifestInput: (input, options) => nativeJSON(() => binding.compileManifestInputJson(JSON.stringify(input), options === undefined ? undefined : JSON.stringify(options))),
-    lowerCSSDirectives: (request, options) => nativeJSON(() => binding.lowerCssDirectivesJson(JSON.stringify(request), options === undefined ? undefined : JSON.stringify(options))),
-    normalizeManifest: (manifest) => nativeJSON(() => binding.normalizeManifestJson(JSON.stringify(manifest))),
-    normalizeDefaultManifest: (manifest) => nativeJSON(() => binding.normalizeDefaultManifestJson(JSON.stringify(manifest))),
-    compileDefaultPresetManifest: (request) => nativeJSON(() => binding.compileDefaultPresetManifestJson(JSON.stringify(request))),
-    resolveCSSImportGraph: (request) => nativeJSON(() => binding.resolveCssImportGraphJson(JSON.stringify(request)))
+      [...compiler.filterCSSExtractionCandidates(candidates, blocklist)],
+    compileManifestInput: (input, options) => compiler.compileManifestInput(input, options),
+    lowerCSSDirectives: (request, options) => compiler.lowerCSSDirectives(request, options),
+    normalizeManifest: (manifest) => compiler.normalizeManifest(manifest),
+    normalizeDefaultManifest: (manifest) => compiler.normalizeDefaultManifest(manifest),
+    compileDefaultPresetManifest: (request) => compiler.compileDefaultPresetManifest(request),
+    resolveCSSImportGraph: (request) => compiler.resolveCSSImportGraph(request)
   })
 }
 
-export function bindWasmCompilerSession(session: CompilerWasmSession): CompilerSession {
+export function bindWasmCompilerSession(session: CompilerWasmSession): BackendCompilerSession {
   return withLifecycle('wasm', {
     inspectCSS: (source) => session.inspectCSS(source),
     compileCSS(source, options = {}) {
       const result = reviveCompileResult(session.compileCSSDirectives<CompileCSSResult>(source, options))
-      for (const warning of result.warnings) options.onWarning?.(warning)
       return result
     },
     compileThemeCSS: (source, options) => session.compileThemeCSS(source, options),
@@ -126,24 +118,29 @@ export function bindWasmCompilerSession(session: CompilerWasmSession): CompilerS
   })
 }
 
-export async function createCompiler(): Promise<CompilerSession> {
+export async function createCompilerBackendSession(): Promise<BackendCompilerSession> {
   const native = createNativeCompilerSession()
   if (native) return native
   return bindWasmCompilerSession(await createCompilerWasmSession())
 }
 
-export function createCompilerSync(): CompilerSession {
+export function createCompilerBackendSessionSync(): BackendCompilerSession {
   try {
     const compiler = createNativeCompilerSession()
     if (compiler) return compiler
   } catch (cause) {
-    if (cause instanceof NativeBindingError) {
-      throw new CompilerSessionError('NATIVE_UNAVAILABLE', cause.message, { cause })
+    if (cause instanceof MasterCSSError && cause.domain === 'backend') {
+      throw new MasterCSSError({
+        code: 'NATIVE_UNAVAILABLE',
+        domain: 'compiler',
+        message: cause.message
+      }, { cause })
     }
     throw cause
   }
-  throw new CompilerSessionError(
-    'NATIVE_UNAVAILABLE',
-    'createCompilerSync() requires the Master CSS native binding.'
-  )
+  throw new MasterCSSError({
+    code: 'NATIVE_UNAVAILABLE',
+    domain: 'compiler',
+    message: 'Synchronous compiler creation requires the Master CSS native backend.'
+  })
 }

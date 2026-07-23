@@ -11,19 +11,22 @@ npm install @master/css-tooling
 The package groups related tooling responsibilities behind explicit subpaths:
 
 ```ts
-import { createLexerSessionSync } from '@master/css-tooling/lexer/node'
-import { createSourceExtractor } from '@master/css-tooling/source'
-import CSSScanner from '@master/css-tooling/scanner'
-import { createValidator } from '@master/css-tooling/validator'
-import { createLintSession } from '@master/css-tooling/lint'
-import { createLanguageSession } from '@master/css-tooling/language'
+import { createToolingSession } from '@master/css-tooling'
+import { analyzeClassList } from '@master/css-tooling/lexer'
+import { extractSource } from '@master/css-tooling/source'
+import { validateClassNames } from '@master/css-tooling/validator'
+import { lintClassNames } from '@master/css-tooling/lint'
+import { analyzeDocument } from '@master/css-tooling/language'
+import { MasterCSSScanner } from '@master/css-tooling/scanner/node'
 import { builtinKeyAliases } from '@master/css-tooling/builtins'
 ```
 
-Use each feature's `./node` entry for synchronous native-only sessions and its
-`./browser` entry when a tooling-Wasm browser loader is provided. Rust owns parsing,
-classification, extraction, validation, lint policy, and language analysis; the
-TypeScript modules only load bindings and adapt host capabilities.
+Every semantic operation requires an explicit manifest. Use
+`createToolingSession({ manifest })` to share one backend/cache across validator,
+lint, and language operations. Feature subpaths provide async one-shot APIs; their
+`./node` entries provide native synchronous counterparts with a `Sync` suffix.
+`MasterCSSScanner` is available only from `./scanner/node` and owns filesystem/watch
+graph lifecycle.
 
 Scanner source adapters are first-party implementation details. The package does not
 provide a public third-party adapter registry.

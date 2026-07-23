@@ -8,13 +8,17 @@ import {
   type MasterCSSLintSourceDiagnostic,
   type MasterCSSLintSummary
 } from '@master/css-tooling/lint'
-import { createLintSessionSync, type LintSession } from '@master/css-tooling/lint/node'
+import type { MasterCSSToolingSession } from '@master/css-tooling'
+import { createToolingSessionSync } from '@master/css-tooling/node'
 import { loadProjectManifest } from '@master/css-compiler/project'
+import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
+import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import fg from 'fast-glob'
 import fs from 'node:fs'
 import path from 'node:path'
 
 const REPORT_VERSION = 1
+const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
 const DEFAULT_SOURCE_PATTERNS = ['**/*.{html,htm,js,jsx,cjs,ts,tsx,mts,cts,svelte,astro,vue,md,mdx,pug,php,css,scss,less}']
 const DEFAULT_IGNORE_PATTERNS = ['**/node_modules/**', 'node_modules']
 
@@ -125,9 +129,9 @@ function formatStylish(report: CLILintReport) {
 function outputReport(report: CLILintReport, format: 'stylish' | 'json') {
   if (format === 'stylish') {
     const output = formatStylish(report)
-    if (output) process.stdout.write(output)
+    if (output) process.stderr.write(output)
   } else {
-    console.log(JSON.stringify(report, null, 2))
+    process.stdout.write(`${JSON.stringify(report, null, 2)}\n`)
   }
 }
 
@@ -153,7 +157,7 @@ function resolveSourceInputs(cwd: string, specifiedSourcePaths: string[], option
 function lintInputs(
   inputs: SourceInput[],
   rules: Record<MasterCSSLintRuleId, boolean>,
-  lintSession: LintSession
+  lintSession: MasterCSSToolingSession
 ) {
   return inputs.map((input) => lintMasterCSSContent({
     content: input.content,
@@ -167,7 +171,7 @@ function applyFileFixes(
   inputs: SourceInput[],
   rules: Record<MasterCSSLintRuleId, boolean>,
   includeDirectiveFixes: boolean,
-  lintSession: LintSession
+  lintSession: MasterCSSToolingSession
 ) {
   for (const input of inputs) {
     if (input.stdin) continue
@@ -194,7 +198,10 @@ export default async function runLint(specifiedSourcePaths: string[] = [], optio
   let manifestResult: Awaited<ReturnType<typeof loadProjectManifest>>
 
   try {
-    manifestResult = await loadProjectManifest(cwd)
+    manifestResult = await loadProjectManifest({
+      root: cwd,
+      baseManifest: defaultManifest
+    })
   } catch (error) {
     const diagnostic = createManifestDiagnostic(cwd, error)
     const manifest: CLILintReport['manifest'] = {
@@ -208,7 +215,9 @@ export default async function runLint(specifiedSourcePaths: string[] = [], optio
     return report
   }
 
-  const lintSession = createLintSessionSync(manifestResult.manifest)
+  const lintSession = createToolingSessionSync({
+    manifest: manifestResult.manifest
+  })
   let files: MasterCSSLintFileResult[]
   try {
     files = lintInputs(inputs, rules, lintSession)
@@ -222,7 +231,7 @@ export default async function runLint(specifiedSourcePaths: string[] = [], optio
 
   const manifest: CLILintReport['manifest'] = {
     status: 'loaded',
-    entries: manifestResult.entries,
+    entries: [...manifestResult.entries],
     diagnostics: []
   }
   const report = createReport(cwd, manifest, files)

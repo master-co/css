@@ -1,22 +1,22 @@
 import type { Plugin } from 'vite'
-import { VIRTUAL_CSS_ID } from '@master/css-internal-integration/style-module'
-import type { PluginContext } from '../core'
-import type { PluginOptions } from '../options'
+import { VIRTUAL_CSS_ID } from '@master/css-build-internal/style-module'
+import type { MasterCSSVitePluginContext } from '../core'
+import type { ResolvedMasterCSSVitePluginOptions } from '../options'
 import getExtractedCSS from '../utils/extracted-css'
 import {
-  collectStyleCSSDependencies,
-  createStyleCSSHostSource,
+  collectStylesheetDependencies,
+  createStylesheetHostSource,
   isMasterCSSPackageStyleFile,
-  isStyleCSSRequest,
+  isStylesheetRequest,
   removeMasterStyleDirectives,
   resolveMasterStyleSource
 } from '@master/css-compiler/stylesheet'
-import { registerStyleCSSSource } from '../utils/register-style-source'
+import { registerStylesheetSource } from '../utils/register-style-source'
 import { getScanner } from '../utils/scanner-context'
 
 const RESOLVED_VIRTUAL_CSS_ID = '\0' + VIRTUAL_CSS_ID
 
-export default function StyleEntryPlugin(_options: PluginOptions, context: PluginContext): Plugin {
+export default function StyleEntryPlugin(_options: ResolvedMasterCSSVitePluginOptions, context: MasterCSSVitePluginContext): Plugin {
   return {
     name: 'master-css:style-entry',
     enforce: 'pre',
@@ -40,13 +40,13 @@ export default function StyleEntryPlugin(_options: PluginOptions, context: Plugi
     },
     async transform(code, id) {
       if (id.startsWith('\0')) return
-      if (!isStyleCSSRequest(id)) return
+      if (!isStylesheetRequest(id)) return
       const dependencies = new Set<string>()
       let resolvedStyleSource: ReturnType<typeof resolveMasterStyleSource>
       try {
         resolvedStyleSource = resolveMasterStyleSource(id, code, context.config?.root)
       } catch (error) {
-        for (const dependency of collectStyleCSSDependencies(id, code, context.config?.root)) {
+        for (const dependency of collectStylesheetDependencies(id, code, context.config?.root)) {
           dependencies.add(dependency)
           this.addWatchFile?.(dependency)
         }
@@ -54,7 +54,7 @@ export default function StyleEntryPlugin(_options: PluginOptions, context: Plugi
       }
       if (!resolvedStyleSource) return
 
-      for (const dependency of collectStyleCSSDependencies(id, code, context.config?.root)) {
+      for (const dependency of collectStylesheetDependencies(id, code, context.config?.root)) {
         dependencies.add(dependency)
         this.addWatchFile?.(dependency)
       }
@@ -66,7 +66,7 @@ export default function StyleEntryPlugin(_options: PluginOptions, context: Plugi
         }
       }
 
-      const result = await registerStyleCSSSource(context, id, code)
+      const result = await registerStylesheetSource(context, id, code)
       for (const dependency of result.dependencies) {
         if (dependencies.has(dependency)) continue
         this.addWatchFile?.(dependency)
@@ -84,7 +84,7 @@ export default function StyleEntryPlugin(_options: PluginOptions, context: Plugi
       }
 
       return {
-        code: createStyleCSSHostSource(code, { masterSource }),
+        code: createStylesheetHostSource(code, { masterSource }),
         map: null
       }
     }

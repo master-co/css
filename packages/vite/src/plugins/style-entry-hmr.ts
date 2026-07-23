@@ -1,14 +1,14 @@
 import type { Plugin, ViteDevServer } from 'vite'
 import { existsSync, readFileSync } from 'fs'
-import type { PluginContext } from '../core'
-import type { PluginOptions } from '../options'
+import type { MasterCSSVitePluginContext } from '../core'
+import type { ResolvedMasterCSSVitePluginOptions } from '../options'
 import { getScanner } from '../utils/scanner-context'
 
 /** HMR when the config and source files changed */
-export default function StyleEntryHMRPlugin(_options: PluginOptions, context: PluginContext): Plugin {
+export default function StyleEntryHMRPlugin(_options: ResolvedMasterCSSVitePluginOptions, context: MasterCSSVitePluginContext): Plugin {
   let transformedIndexHTMLModule: { id: string, code: string }
   const servers: ViteDevServer[] = []
-  const updateStyleCSSImporters = async ({ server }: { server: ViteDevServer }) => {
+  const updateStylesheetImporters = async ({ server }: { server: ViteDevServer }) => {
     if (!server) return
     const virtualCSSImporters = Array.from(context.virtualCSSImporters || [])
     await Promise.all(virtualCSSImporters.map(async (eachModuleId) => {
@@ -40,7 +40,7 @@ export default function StyleEntryHMRPlugin(_options: PluginOptions, context: Pl
         })
     )
     await Promise.all(tasks)
-    await updateStyleCSSImporters({ server })
+    await updateStylesheetImporters({ server })
   }
   return {
     name: 'master-css:style-entry:hmr',
@@ -60,7 +60,7 @@ export default function StyleEntryHMRPlugin(_options: PluginOptions, context: Pl
         })
         .on('change', () => {
           updateChain = updateChain
-            .then(() => Promise.all(servers.map((eachServer) => updateStyleCSSImporters({ server: eachServer }))))
+            .then(() => Promise.all(servers.map((eachServer) => updateStylesheetImporters({ server: eachServer }))))
             .catch(onError('hmr update'))
         })
     },

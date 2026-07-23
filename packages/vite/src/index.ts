@@ -1,3 +1,5 @@
-export { default } from './core'
-export type { PluginContext } from './core'
-export { default as options, type PluginOptions } from './options'
+export {
+  createMasterCSSVitePlugin,
+  createMasterCSSVitePlugin as default
+} from './core'
+export type { MasterCSSVitePluginOptions } from './options'

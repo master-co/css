@@ -48,11 +48,14 @@ function isIdentifier(value: unknown, name?: string): value is Identifier {
     && (name === undefined || (value as { name?: unknown }).name === name)
 }
 
-function findDefaultImportName(ast: { body: unknown[] }, from: string) {
+function findNamedImportName(ast: { body: unknown[] }, from: string, importedName: string) {
   for (const node of ast.body) {
     if (!isImportDeclaration(node) || node.source.value !== from) continue
-    const defaultSpecifier = node.specifiers?.find((specifier) => specifier.type === 'ImportDefaultSpecifier')
-    if (defaultSpecifier?.local?.name) return defaultSpecifier.local.name
+    const namedSpecifier = node.specifiers?.find((specifier) => (
+      specifier.type === 'ImportSpecifier'
+      && (specifier as { imported?: { name?: string } }).imported?.name === importedName
+    ))
+    if (namedSpecifier?.local?.name) return namedSpecifier.local.name
   }
 }
 
@@ -73,10 +76,16 @@ function moveSequenceHandleFirst(ast: unknown, handleName: string) {
 
 export function addMasterCSSVitePlugin(content: string) {
   return transforms.script(({ ast, js }) => {
-    const pluginName = findDefaultImportName(ast, MASTER_CSS_SVELTE_VITE_IMPORT) ?? MASTER_CSS_VITE_PLUGIN_NAME
-    js.imports.addDefault(ast, {
+    const pluginName = findNamedImportName(
+      ast,
+      MASTER_CSS_SVELTE_VITE_IMPORT,
+      'createMasterCSSVitePlugin'
+    ) ?? MASTER_CSS_VITE_PLUGIN_NAME
+    js.imports.addNamed(ast, {
       from: MASTER_CSS_SVELTE_VITE_IMPORT,
-      as: pluginName
+      imports: {
+        createMasterCSSVitePlugin: pluginName
+      }
     })
     js.vite.addPlugin(ast, {
       code: `${pluginName}()`
@@ -120,9 +129,11 @@ export function addMasterCSSServerHook(content: string, language: Language) {
       comments
     })
     moveSequenceHandleFirst(ast, MASTER_CSS_HANDLE_NAME)
-    js.imports.addDefault(ast, {
+    js.imports.addNamed(ast, {
       from: MASTER_CSS_SVELTE_HOOK_IMPORT,
-      as: MASTER_CSS_IMPORTED_HANDLE_NAME
+      imports: {
+        handle: MASTER_CSS_IMPORTED_HANDLE_NAME
+      }
     })
   })(content)
 }

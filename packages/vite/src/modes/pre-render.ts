@@ -1,9 +1,9 @@
 import type { Plugin } from 'vite'
-import { PluginContext } from '../core'
+import { MasterCSSVitePluginContext } from '../core'
 import PreRenderPlugin from '../plugins/pre-render'
-import { PluginOptions } from '../options'
+import { ResolvedMasterCSSVitePluginOptions } from '../options'
 
-export default function PreRenderMode(options: PluginOptions, context: PluginContext): Plugin[] {
+export default function PreRenderMode(options: ResolvedMasterCSSVitePluginOptions, context: MasterCSSVitePluginContext): Plugin[] {
   const plugins: Plugin[] = [
     PreRenderPlugin(options, context),
   ]

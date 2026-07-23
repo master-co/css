@@ -1,10 +1,10 @@
 import type { TextDocument } from 'vscode-languageserver-textdocument'
-import CSSLanguageService from '../core'
+import { MasterCSSLanguageService } from '../core'
 import type { ColorPresentationParams, ColorPresentation } from 'vscode-languageserver-protocol'
 import { convertColorInSpace } from '../utils/convert-color-token'
 
 export default function editSyntaxColors(
-  this: CSSLanguageService,
+  this: MasterCSSLanguageService,
   document: TextDocument,
   color: ColorPresentationParams['color'],
   range: ColorPresentationParams['range']

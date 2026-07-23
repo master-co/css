@@ -3,12 +3,13 @@ import type {
   CSSDirectiveReference,
   CSSDirectiveResult
 } from '@master/css-schema/css-directives'
+import type { MasterCSSDiagnostic } from '@master/css-schema'
 
 export interface CompileCSSOptions {
-  classes?: string[]
-  from?: string
-  preserveNativeCSS?: boolean
-  onWarning?: (warning: string) => void
+  readonly classes?: readonly string[]
+  readonly from?: string
+  readonly preserveNativeCSS?: boolean
+  readonly onDiagnostic?: (diagnostic: MasterCSSDiagnostic) => void
 }
 
 export interface CompileCSSFileOptions extends CompileCSSOptions {

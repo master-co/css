@@ -81,9 +81,9 @@
     "provenance": true
   },
   "dependencies": {
-    "@master/css-native": "workspace:*",
+    "@master/css-backend": "workspace:*",
     "@master/css-schema": "workspace:*",
-    "@master/css-wasm-runtime": "workspace:*",
+    "@master/css-wasm-engine": "workspace:*",
     "@master/css-preset": "workspace:*"
   }
 }

@@ -63,7 +63,7 @@
   "devDependencies": {
     "@eslint/compat": "^2.1.0",
     "@eslint/config-helpers": "^0.6.0",
-    "@master/css-internal-integration": "workspace:^",
+    "@master/css-build-internal": "workspace:^",
     "@master/css-next": "workspace:^",
     "@types/mdx": "^2.0.14",
     "@types/react": "^19.2.17",

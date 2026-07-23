@@ -1,10 +1,10 @@
-import type { MasterCSSManifest } from '@master/css'
 import { createEngineSync } from '@master/css/node'
 import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
-import { createValidatorSync } from '@master/css-tooling/validator/node'
+import type { MasterCSSManifest } from '@master/css-schema/manifest'
+import { createToolingSessionSync } from '@master/css-tooling/node'
 
 const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
-const presetValidator = createValidatorSync(defaultManifest)
+const presetTooling = createToolingSessionSync({ manifest: defaultManifest })
 
 export const presetBreakpointConditions = defaultManifest.breakpointConditions || {}
 export const presetContainerConditions = defaultManifest.containerConditions || {}
@@ -14,5 +14,5 @@ export const createPresetEngine = () => {
 }
 
 export const generatePresetClasses = (classNames: readonly string[]) => {
-  return presetValidator.generate(classNames)
+  return presetTooling.validateClassNames(classNames)
 }

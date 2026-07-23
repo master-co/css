@@ -1,7 +1,18 @@
-import { createNativeLexerSession, type LexerSession } from './session'
+import type { MasterCSSManifest } from '@master/css-schema/manifest'
+import { createToolingSessionSync } from '../node'
+import type {
+  MasterCSSClassListAnalysis,
+  MasterCSSClassListAnalysisRequest
+} from './index'
 
-export { LexerSessionError, type LexerSession } from './session'
-
-export function createLexerSessionSync(): LexerSession {
-  return createNativeLexerSession({ required: true })!
+export function analyzeClassListSync(
+  request: MasterCSSClassListAnalysisRequest,
+  options: { readonly manifest: MasterCSSManifest }
+): MasterCSSClassListAnalysis {
+  const session = createToolingSessionSync(options)
+  try {
+    return session.analyzeClassList(request)
+  } finally {
+    session.dispose()
+  }
 }

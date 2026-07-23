@@ -15,6 +15,6 @@ test('prerender', async ({ page }) => {
     ],
     modes: ['light', 'dark']
   }, 'auto')
-  expect(await page.evaluate(() => globalThis.masterCSSRuntime.text)).toEqual(text)
-  expect(await page.evaluate(() => globalThis.masterCSSRuntime.progressive)).toBe(true)
+  expect(await page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.text)).toEqual(text)
+  expect(await page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.progressive)).toBe(true)
 })

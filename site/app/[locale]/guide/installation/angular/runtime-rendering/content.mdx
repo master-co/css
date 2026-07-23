@@ -40,9 +40,9 @@
          import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
          import { AppModule } from './app/app.module';
          import defaultManifest from '@master/css-preset/default-manifest.json' with { type: 'json' }; // [!code ++]
-         import CSSRuntime from '@master/css-runtime'; // [!code ++]
+         import { MasterCSSRuntime } from '@master/css-runtime'; // [!code ++]
 
-         const cssRuntime = await CSSRuntime.start({ manifest: defaultManifest }); // [!code ++]
+         const cssRuntime = await MasterCSSRuntime.start({ manifest: defaultManifest }); // [!code ++]
          cssRuntime.observe(); // [!code ++]
 
          platformBrowserDynamic().bootstrapModule(AppModule)

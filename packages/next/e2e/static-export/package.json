@@ -7,7 +7,7 @@
     "build": "pnpm --dir ../.. build && next build --turbo"
   },
   "dependencies": {
-    "@master/css-internal-integration": "workspace:^",
+    "@master/css-build-internal": "workspace:^",
     "next": "^16.2.10",
     "react": "^19.2.7",
     "react-dom": "^19.2.7"

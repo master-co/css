@@ -1,4 +1,4 @@
-import CSSRuntime from './core'
+import { MasterCSSRuntime } from './core'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
 
 function resolveDefaultManifestURL(scriptURL: string) {
@@ -30,10 +30,10 @@ const currentScript = document.currentScript as HTMLScriptElement | null
 if (currentScript?.src) {
   void loadDefaultManifest(currentScript.src)
     .then((manifest) => {
-      return CSSRuntime.start({
+      return MasterCSSRuntime.start({
         manifest,
-        onError: diagnostic => console.error(diagnostic)
-      }).then((cssRuntime) => cssRuntime.observe())
+        onDiagnostic: diagnostic => console.error(diagnostic)
+      }).then((runtime) => runtime.observe())
     })
     .catch((error) => console.error(error))
 } else {

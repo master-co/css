@@ -1,7 +1,7 @@
 import settings from './settings'
 import legacy from './configs/legacy'
 import base from './configs/base'
-import recommended from './configs/recommended'
+import recommendedSource from './configs/recommended'
 import stylesheet from './configs/stylesheet'
 import plugin from './plugin'
 import type { Linter } from 'eslint'
@@ -11,7 +11,8 @@ const masterCSSPlugin: Omit<TSESLint.Linter.Plugin, 'configs'> & {
   configs: {
     legacy: unknown
     base: Linter.Config
-    recommended: Linter.Config
+    recommended: Linter.Config[]
+    source: Linter.Config
     stylesheet: Linter.Config
   }
   settings: typeof settings
@@ -20,10 +21,12 @@ const masterCSSPlugin: Omit<TSESLint.Linter.Plugin, 'configs'> & {
   configs: {
     legacy,
     base,
-    recommended,
+    recommended: [recommendedSource, stylesheet],
+    source: recommendedSource,
     stylesheet
   },
   settings
 }
 
+export { masterCSSPlugin as masterCSS }
 export default masterCSSPlugin

@@ -1,6 +1,5 @@
 import { test, expect } from 'vitest'
-import { createSourceExtractorSync } from '@master/css-tooling/source/node'
-const { extractClassCandidates } = createSourceExtractorSync()
+import { extractClassCandidates } from '../extract-class-candidates'
 
 test('issue #337: extracts --name:var(--custom-var) class from source', () => {
   const content = `<div class="--test:var(--test-color) bg:white">x</div>`

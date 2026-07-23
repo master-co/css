@@ -14,7 +14,7 @@
     "lit": "^3.3.3"
   },
   "devDependencies": {
-    "@master/css-internal-integration": "workspace:^",
+    "@master/css-build-internal": "workspace:^",
     "@master/css-vite": "workspace:^",
     "typescript": "^7.0.2",
     "vite": "^8.0.16"

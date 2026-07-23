@@ -2,8 +2,8 @@ import type { Plugin } from 'vite'
 import {
   MANIFEST_ASSET_FILE,
   toManifestPreloadLinkAttrs
-} from '@master/css-internal-integration/manifest-facade'
-import type { PluginContext } from '../core'
+} from '@master/css-build-internal/manifest-facade'
+import type { MasterCSSVitePluginContext } from '../core'
 import { hasModulePreloadLink, toAssetHref } from '../utils/html'
 
 interface OutputAssetLike {
@@ -14,7 +14,7 @@ interface OutputAssetLike {
   source?: unknown
 }
 
-function findDefaultManifestAssetFileName(context: PluginContext, bundle: Record<string, OutputAssetLike>) {
+function findDefaultManifestAssetFileName(context: MasterCSSVitePluginContext, bundle: Record<string, OutputAssetLike>) {
   const source = context.defaultManifestAssetSource
   if (!source) return
   for (const output of Object.values(bundle)) {
@@ -28,7 +28,7 @@ function findDefaultManifestAssetFileName(context: PluginContext, bundle: Record
   }
 }
 
-export default function ManifestPreloadPlugin(context: PluginContext): Plugin {
+export default function ManifestPreloadPlugin(context: MasterCSSVitePluginContext): Plugin {
   return {
     name: 'master-css:manifest-preload',
     apply: 'build',

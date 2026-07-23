@@ -1,17 +1,25 @@
-import CSSScanner from '@master/css-tooling/scanner'
+import { MasterCSSScanner } from '@master/css-tooling/scanner/node'
+import { defaultBuildManifest } from '@master/css-build-internal/project'
 import type { Plugin } from 'vite'
-import type { PluginContext } from '../core'
-import type { PluginOptions } from '../options'
+import type { MasterCSSVitePluginContext } from '../core'
+import type { ResolvedMasterCSSVitePluginOptions } from '../options'
 
-export default function ScannerPlugin(options: PluginOptions, context: PluginContext): Plugin {
+export default function ScannerPlugin(options: ResolvedMasterCSSVitePluginOptions, context: MasterCSSVitePluginContext): Plugin {
   return {
     name: 'master-css:scanner',
     enforce: 'pre',
     async configResolved(config) {
-      const scanner = new CSSScanner(options.scanner, config.root)
+      const scanner = new MasterCSSScanner({
+        manifest: defaultBuildManifest,
+        ...options.scanner
+      }, config.root)
       context.scanner = scanner
       await scanner.init()
       scanner.options.verbose = 0
     },
+    async closeBundle() {
+      await context.scanner?.dispose()
+      context.scanner = undefined
+    }
   }
 }

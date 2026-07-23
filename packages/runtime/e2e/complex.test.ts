@@ -20,7 +20,7 @@ test('complex', async ({ page }) => {
     p1.classList.add('italic')
   })
 
-  expect(await page.evaluate(() => Object.fromEntries(globalThis.masterCSSRuntime.classCounts))).toEqual({
+  expect(await page.evaluate(() => Object.fromEntries(globalThis.__MASTER_CSS_RUNTIME_TEST__.classCounts))).toEqual({
     'block': 1,
     'font:bold': 1,
     'italic': 1
@@ -29,7 +29,7 @@ test('complex', async ({ page }) => {
   expect(
     await page.evaluate((complexHTML) => {
       document.body.innerHTML = complexHTML
-      return globalThis.masterCSSRuntime.classCounts.size
+      return globalThis.__MASTER_CSS_RUNTIME_TEST__.classCounts.size
     }, readFileSync(resolve(__dirname, './complex.html'), 'utf-8').toString())
   ).toBeTruthy()
 
@@ -37,7 +37,7 @@ test('complex', async ({ page }) => {
     await page.evaluate(async () => {
       document.body.innerHTML = ''
       await new Promise(resolve => setTimeout(resolve, 100))
-      return Object.fromEntries(globalThis.masterCSSRuntime.classCounts)
+      return Object.fromEntries(globalThis.__MASTER_CSS_RUNTIME_TEST__.classCounts)
     })
   ).toEqual({})
 })

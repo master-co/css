@@ -1,8 +1,8 @@
-# AI Notes For `@master/css-internal-integration`
+# AI Notes For `@master/css-build-internal`
 
 ## Responsibility
 
-`@master/css-internal-integration` owns adapter-neutral contracts shared by official build and framework integrations. It is repository-private and bundled into published consumers.
+`@master/css-build-internal` owns adapter-neutral contracts shared by official build and framework integrations. It is repository-private and bundled into published consumers.
 
 ## Owns
 
@@ -60,8 +60,8 @@ declarations.
 ## Validation
 
 ```sh
-pnpm --filter @master/css-internal-integration test
-pnpm --filter @master/css-internal-integration lint
-pnpm --filter @master/css-internal-integration type-check
-pnpm --filter @master/css-internal-integration build
+pnpm --filter @master/css-build-internal test
+pnpm --filter @master/css-build-internal lint
+pnpm --filter @master/css-build-internal type-check
+pnpm --filter @master/css-build-internal build
 ```

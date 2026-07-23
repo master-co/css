@@ -1,9 +1,9 @@
 import { describe, expect, test } from 'vitest'
-import { compileCSS, compileCSSManifest } from '../src'
+import { compileCSS, compileCSSManifest } from '../src/node-compiler'
 import type { CompilerDiagnosticRecorder } from '../src/compiler-diagnostics'
 import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
 import { flattenMasterCSSManifestVariables, type MasterCSSManifest } from '@master/css-schema/manifest'
-import UtilityType from '@master/css-schema/utility-type'
+import { UtilityType } from '@master/css-schema/utility-type'
 import { createTestCSS } from './helpers/rust-engine'
 
 const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
@@ -1240,11 +1240,19 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
       } catch (caught) {
         error = caught
       }
-      const start = source.indexOf(syntax)
       expect(error).toMatchObject({
         code,
-        range: { start, end: start + syntax.length }
+        domain: 'compiler',
+        diagnostics: [
+          expect.objectContaining({
+            code,
+            domain: 'compiler',
+            severity: 'error'
+          })
+        ]
       })
+      expect(error).not.toHaveProperty('range')
+      expect(source).toContain(syntax)
     }
 
     expectComposeError('.card { @compose "block"; }', 'compose-quoted-syntax', '"block"')

@@ -1,12 +1,12 @@
 import { RuleContext } from '@typescript-eslint/utils/ts-eslint'
 import resolveClassNode from './resolve-class-node'
 import { TSESTree } from '@typescript-eslint/utils'
-import type { LintSession } from '@master/css-tooling/lint/node'
+import type { MasterCSSToolingSession } from '@master/css-tooling'
 
 export default function withVisitClassNode(
   visit: (node: TSESTree.Node, resolved: ReturnType<typeof resolveClassNode>) => void,
   context: RuleContext<any, any[]>,
-  lintSession: Pick<LintSession, 'tokenizeClassList'>
+  lintSession: Pick<MasterCSSToolingSession, 'tokenizeClassList'>
 ) {
   const visitNode = (node) => {
     if (!node) return

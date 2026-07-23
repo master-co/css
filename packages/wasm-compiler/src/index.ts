@@ -1,7 +1,7 @@
 import {
-  assertMasterCSSBindingInfo,
-  type MasterCSSBindingInfo
-} from '@master/css-schema'
+  assertMasterCSSBackendInfo,
+  type MasterCSSBackendInfo
+} from '@master/css-backend'
 
 interface GeneratedCompilerWasmModule {
   default(input: {
@@ -75,15 +75,15 @@ export async function initCompilerWasm(options: InitCompilerWasmOptions = {}) {
   return await modulePromise
 }
 
-function assertCompilerBinding(module: GeneratedCompilerWasmModule): MasterCSSBindingInfo {
-  return assertMasterCSSBindingInfo(module.bindingInfo(), {
+function assertCompilerBinding(module: GeneratedCompilerWasmModule): MasterCSSBackendInfo {
+  return assertMasterCSSBackendInfo(module.bindingInfo(), {
     surface: 'compiler',
     features: ['compiler', 'render']
   })
 }
 
 export interface CompilerWasmSession {
-  readonly info: MasterCSSBindingInfo
+  readonly info: MasterCSSBackendInfo
   inspectCSS<T = unknown>(source: string): T
   compileNativeCSS<T = unknown>(source: string, options?: unknown): T
   compileCSSDirectives<T = unknown>(source: string, options?: unknown): T

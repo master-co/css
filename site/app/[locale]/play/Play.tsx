@@ -25,14 +25,14 @@ import DocMenuButton from 'internal/components/DocMenuButton'
 import { useTranslation } from 'internal/contexts/i18n'
 import HeaderContent from 'internal/components/HeaderContent'
 import { useApp } from 'internal/contexts/app'
-import type { MasterCSSManifest } from '@master/css'
+import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
 import masterCSSTextMateGrammar from '@master/css-language-service/syntaxes/master-css.tmLanguage.json' with { type: 'json' }
 import {
-  createLanguageSession,
-  SEMANTIC_TOKENS_LEGEND,
-  type LanguageSession
-} from '@master/css-tooling/language/browser'
+  createToolingSession,
+  type MasterCSSToolingSession
+} from '@master/css-tooling'
+import { SEMANTIC_TOKENS_LEGEND } from '@master/css-tooling/language'
 
 const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
 const jsdelivrNPMBaseURL = 'https://cdn.jsdelivr.net/npm/'
@@ -583,7 +583,7 @@ export default function Play({ shareId }: PlayProps = {}) {
   const copiedTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const semanticTokenListenersRef = useRef(new Set<() => void>())
   const semanticProviderDisposablesRef = useRef<{ dispose(): void }[]>([])
-  const semanticLanguageSessionRef = useRef<LanguageSession | undefined>(undefined)
+  const semanticLanguageSessionRef = useRef<MasterCSSToolingSession | undefined>(undefined)
   const semanticLanguageTicketRef = useRef(0)
   const [files, setFiles] = useState<PlayFile[]>(template.files)
   const [currentShareId, setCurrentShareId] = useState(shareId || pathShareId)
@@ -688,7 +688,7 @@ export default function Play({ shareId }: PlayProps = {}) {
   const replaceSemanticLanguageSession = useCallback(async (manifest: MasterCSSManifest) => {
     const ticket = ++semanticLanguageTicketRef.current
     try {
-      const session = await createLanguageSession({ manifest })
+      const session = await createToolingSession({ manifest })
       if (ticket !== semanticLanguageTicketRef.current) {
         session.dispose()
         return

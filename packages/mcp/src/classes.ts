@@ -4,7 +4,7 @@ import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import type MasterCSSMCPContext from './context'
 import { createMCPTextDocument, getLanguageId } from './document'
 import { loadWorkspaceManifest } from './project'
-import { compactRustClassInspection, createMCPRustLanguageSession } from './rust-language'
+import { compactClassInspection, createMCPToolingSession } from './tooling-session'
 import { resolveSourceFiles, scanProject } from './scan'
 
 const CLASS_EXTRACTION_VERSION = 1
@@ -31,18 +31,18 @@ async function createClassInspectionState(context: MasterCSSMCPContext) {
   const activeManifest = manifest.status === 'loaded' ? manifest.manifest : defaultManifest
   return {
     manifest,
-    session: await createMCPRustLanguageSession(activeManifest)
+    session: await createMCPToolingSession(activeManifest)
   }
 }
 
 function classifyExtractedClass(
   token: string,
-  inspection: ReturnType<typeof compactRustClassInspection>,
+  inspection: ReturnType<typeof compactClassInspection>,
   discovered?: {
-    latent: string[]
-    valid: string[]
-    invalid: string[]
-    usedNative: string[]
+    readonly latent: readonly string[]
+    readonly valid: readonly string[]
+    readonly invalid: readonly string[]
+    readonly usedNative: readonly string[]
   }
 ) {
   if (discovered?.valid.includes(token)) return 'generated'
@@ -53,7 +53,7 @@ function classifyExtractedClass(
 }
 
 function extractFromContent(
-  session: Awaited<ReturnType<typeof createMCPRustLanguageSession>>,
+  session: Awaited<ReturnType<typeof createMCPToolingSession>>,
   filePath: string,
   content: string,
   includeRules: boolean,
@@ -64,7 +64,7 @@ function extractFromContent(
     source: content,
     languageId: document.languageId
   }).classPositions.map((position) => {
-    const inspection = compactRustClassInspection(session, position.token, undefined, includeRules)
+    const inspection = compactClassInspection(session, position.token, undefined, includeRules)
     return {
       raw: position.raw,
       token: position.token,
@@ -197,7 +197,7 @@ export async function traceClass(context: MasterCSSMCPContext, options: TraceCla
     createClassInspectionState(context)
   ])
   try {
-    const inspection = compactRustClassInspection(state.session, options.className, options.mode, true)
+    const inspection = compactClassInspection(state.session, options.className, options.mode, true)
     const missingResult = [...scan.missingCSS.present, ...scan.missingCSS.missing]
       .find((result) => result.className === options.className)
     const occurrences = findClassOccurrences(scan, options.className)

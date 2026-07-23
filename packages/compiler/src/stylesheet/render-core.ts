@@ -3,8 +3,8 @@ import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import type {
   MasterCSSNativeDeclarationCandidateIR,
   MasterCSSServerRenderIR
-} from '@master/css-schema/rust-contract'
-import { cssTreeNativeDeclarationMatcher } from '@master/css-tooling/validator/native-declaration-matcher'
+} from '@master/css-backend/compiler'
+import { supportsNativeDeclaration } from '@master/css-tooling/node'
 
 export interface RenderCompiledManifestCSSOptions {
   manifest: MasterCSSManifest
@@ -45,7 +45,7 @@ export function renderCompiledManifestCSSWithSession(
   if (options.includeGeneratedCSS !== false) {
     const classNames = [...(options.classNames || [])]
     const candidates = session.nativeDeclarationCandidates(classNames)
-    const support = candidates.map(cssTreeNativeDeclarationMatcher)
+    const support = candidates.map(supportsNativeDeclaration)
     session.ensureClasses(classNames, support.length ? support : undefined)
   }
   session.ensureStylesheetResources(nativeCSSText)

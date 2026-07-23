@@ -1,6 +1,5 @@
 import { describe, test, expect } from 'vitest'
-import { createSourceExtractorSync } from '@master/css-tooling/source/node'
-const { extractClassCandidates } = createSourceExtractorSync()
+import { extractClassCandidates } from './extract-class-candidates'
 import fs from 'node:fs'
 import path from 'node:path'
 import { glob } from 'fast-glob'

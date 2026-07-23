@@ -1,5 +1,3 @@
-import type { MasterCSSLintCanonicalComposeSuggestionKind } from '@master/css-schema/rust-contract'
-
 export interface RawValuePolicyOptions {
   allowRawValues?: boolean
   allowProperties?: string[]
@@ -34,7 +32,7 @@ export interface CanonicalComposeDirectiveSuggestion {
   actual: string
   recommended: string
   classNames: string[]
-  kind: MasterCSSLintCanonicalComposeSuggestionKind
+  kind: 'class' | 'native-declaration' | 'variant-block'
 }
 
 export interface CanonicalComposeDirectiveResult {

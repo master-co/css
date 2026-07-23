@@ -13,18 +13,18 @@ test('selectors', async ({ page }) => {
   const prerenderHTML = readFileSync(resolve(__dirname, 'prerender.html'), 'utf-8')
   await page.evaluate((html) => document.body.innerHTML = html, prerenderHTML)
   await init(page, generatedCSS, manifest, 'auto')
-  expect((await page.evaluate(() => globalThis.masterCSSRuntime.rules)).map(({ name }) => name)).toEqual(['theme', 'utilities'])
-  expect(await page.evaluate(() => globalThis.masterCSSRuntime.utilitiesLayer.rules.find((rule) => rule.name === 'block::before,::after')?.selectorText))
+  expect((await page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.rules)).map(({ name }) => name)).toEqual(['theme', 'utilities'])
+  expect(await page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.utilitiesLayer.rules.find((rule) => rule.name === 'block::before,::after')?.selectorText))
     .toBe('.block\\:\\:before\\,\\:\\:after::before,.block\\:\\:before\\,\\:\\:after::after')
 
-  expect(await page.evaluate(() => globalThis.masterCSSRuntime.utilitiesLayer.rules.find((rule) => rule.name === 'block::before,::after')?.text))
+  expect(await page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.utilitiesLayer.rules.find((rule) => rule.name === 'block::before,::after')?.text))
     .toBe('.block\\:\\:before\\,\\:\\:after::before,.block\\:\\:before\\,\\:\\:after::after{display:block}')
-  expect(await page.evaluate(() => globalThis.masterCSSRuntime.utilitiesLayer.rules.find((rule) => rule.name === 'block::before,::after')?.native?.cssText))
+  expect(await page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.utilitiesLayer.rules.find((rule) => rule.name === 'block::before,::after')?.native?.cssText))
     .toBe('.block\\:\\:before\\,\\:\\:after::before, .block\\:\\:before\\,\\:\\:after::after { display: block; }')
 
-  expect(await page.evaluate(() => globalThis.masterCSSRuntime.utilitiesLayer.rules.find((rule) => rule.name === 'hidden::slider-thumb')?.text))
+  expect(await page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.utilitiesLayer.rules.find((rule) => rule.name === 'hidden::slider-thumb')?.text))
     .toBe('.hidden\\:\\:slider-thumb::-webkit-slider-thumb{display:none}')
-  expect(await page.evaluate(() => globalThis.masterCSSRuntime.utilitiesLayer.rules.find((rule) => rule.name === 'hidden::slider-thumb')?.native?.cssText))
+  expect(await page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.utilitiesLayer.rules.find((rule) => rule.name === 'hidden::slider-thumb')?.native?.cssText))
     .toBe('.hidden\\:\\:slider-thumb::-webkit-slider-thumb { display: none; }')
 
   await page.evaluate(() => {
@@ -41,8 +41,8 @@ test('selectors', async ({ page }) => {
   })
 
   await expect.poll(() => page.evaluate(() => ({
-    base: globalThis.masterCSSRuntime.baseLayer.rules.find((rule) => rule.name === 'block_button@base')?.text,
-    defaults: globalThis.masterCSSRuntime.defaultsLayer.rules.find(
+    base: globalThis.__MASTER_CSS_RUNTIME_TEST__.baseLayer.rules.find((rule) => rule.name === 'block_button@base')?.text,
+    defaults: globalThis.__MASTER_CSS_RUNTIME_TEST__.defaultsLayer.rules.find(
       (rule) => rule.name === '{flex;rel}_:is(h4,.app-nav)@default'
     )?.text
   }))).toEqual({

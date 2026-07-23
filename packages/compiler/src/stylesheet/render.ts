@@ -1,9 +1,8 @@
-import { loadNativeBinding } from '@master/css-native'
-import { stringifyMasterCSSManifestJSON } from '@master/css-schema/manifest-json'
+import { createNativeRenderSession } from '@master/css-backend/engine'
 import type {
   MasterCSSNativeDeclarationCandidateIR,
   MasterCSSServerRenderIR
-} from '@master/css-schema/rust-contract'
+} from '@master/css-backend/compiler'
 import {
   renderCompiledManifestCSSWithSession,
   type RenderCompiledManifestCSSOptions,
@@ -17,18 +16,14 @@ export type {
 } from './render-core'
 
 export function renderCompiledManifestCSS(options: RenderCompiledManifestCSSOptions): RenderCompiledManifestCSSResult {
-  const loaded = loadNativeBinding({ required: true })!
-  const nativeSession = new loaded.binding.RenderSession(
-    stringifyMasterCSSManifestJSON(options.manifest),
-    options.emittedGlobals ? JSON.stringify(options.emittedGlobals) : undefined
-  )
+  const nativeSession = createNativeRenderSession(options, { required: true })!
   const session: StylesheetRenderSession = {
     nativeDeclarationCandidates: (classNames) =>
-      JSON.parse(nativeSession.nativeDeclarationCandidates(classNames)) as MasterCSSNativeDeclarationCandidateIR[],
-    ensureClasses: (classNames, nativeSupport) => nativeSession.ensureClasses(classNames, nativeSupport),
+      [...nativeSession.nativeDeclarationCandidates(classNames)] as MasterCSSNativeDeclarationCandidateIR[],
+    ensureClasses: (classNames, nativeSupport) => nativeSession.ensureClassRules(classNames, nativeSupport),
     ensureStylesheetResources: (nativeCSS) => nativeSession.ensureStylesheetResources(nativeCSS),
-    emittedGlobals: () => JSON.parse(nativeSession.emittedGlobals()),
-    snapshot: () => JSON.parse(nativeSession.snapshot()) as MasterCSSServerRenderIR,
+    emittedGlobals: () => nativeSession.emittedGlobals() as Required<import('@master/css-schema/emitted-globals').MasterCSSEmittedGlobals>,
+    snapshot: () => nativeSession.snapshot() as MasterCSSServerRenderIR,
     dispose: () => nativeSession.dispose()
   }
 

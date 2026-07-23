@@ -1,10 +1,12 @@
 import log from './log'
-import type CSSRuntime from '../core'
+import type { MasterCSSRuntimeSnapshot } from '../core'
 
 export default function debugRuntimeMutation(
   records: MutationRecord[],
   classCounts: Map<string, number>,
-  cssRuntime: CSSRuntime
+  root: Document | ShadowRoot,
+  host: Element,
+  snapshot: MasterCSSRuntimeSnapshot
 ) {
   const actualClassCounts: any = {}
   let errored = false
@@ -15,16 +17,16 @@ export default function debugRuntimeMutation(
       actualClassCounts[className] = 1
     }
   }
-  ((cssRuntime.root.constructor.name === 'HTMLDocument') ? cssRuntime.host : cssRuntime.container)
+  (root.constructor.name === 'HTMLDocument' ? host : root)
     .querySelectorAll('[class]')
     .forEach((element) => {
       element.classList.forEach(resolveClass)
     })
 
-  cssRuntime.host.classList.forEach(resolveClass)
+  host.classList.forEach(resolveClass)
 
   for (const className in actualClassCounts) {
-    const eachCount = cssRuntime.classCounts.get(className)
+    const eachCount = snapshot.usageCounts[className]
     const eachActualCount = actualClassCounts[className]
     if (eachCount !== eachActualCount) {
       log.error(`Class count mismatch for \`${className}\` (expected ${eachActualCount}) (received ${eachCount})`)
@@ -32,12 +34,12 @@ export default function debugRuntimeMutation(
     }
   }
 
-  cssRuntime.classCounts.forEach((eachCount, className) => {
+  for (const [className, eachCount] of Object.entries(snapshot.usageCounts)) {
     if (!Object.prototype.hasOwnProperty.call(actualClassCounts, className)) {
       log.error(`Class count mismatch for \`${className}\` (expected ${0}) (received ${eachCount})`)
       errored = true
     }
-  })
+  }
 
   if (errored) {
     log.debug('Records:', records)

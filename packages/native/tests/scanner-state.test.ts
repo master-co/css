@@ -1,5 +1,5 @@
 import { beforeAll, describe, expect, test } from 'vitest'
-import { loadNativeBinding } from '../src'
+import { loadNativeToolingBackend } from '../src/tooling'
 
 beforeAll(() => {
   process.env.MASTER_CSS_NATIVE_BINDING_PATH = new URL(
@@ -36,11 +36,11 @@ const manifest = {
 
 describe('Rust scanner state session', () => {
   test('keeps source cache and valid/invalid class state behind an opaque handle', () => {
-    const binding = loadNativeBinding({ required: true })!.binding
-    const scanner = new binding.ScannerSession(JSON.stringify(manifest))
+    const scanner = loadNativeToolingBackend({ required: true })!
+      .createScannerSession(manifest as never)
     const source = 'export const App = () => <div className="block unknown fg:red" />'
 
-    expect(JSON.parse(scanner.scan('App.tsx', source))).toMatchObject({
+    expect(scanner.scan('App.tsx', source)).toMatchObject({
       changed: true,
       cacheHit: false,
       candidates: ['block', 'unknown', 'fg:red'],
@@ -48,7 +48,7 @@ describe('Rust scanner state session', () => {
       invalidClasses: ['unknown'],
       transition: { version: 1 }
     })
-    expect(JSON.parse(scanner.scan('App.tsx', source))).toEqual({
+    expect(scanner.scan('App.tsx', source)).toEqual({
       changed: false,
       cacheHit: true,
       candidates: [],
@@ -57,7 +57,7 @@ describe('Rust scanner state session', () => {
       transition: { version: 1, mutations: [] }
     })
 
-    expect(JSON.parse(scanner.state())).toMatchObject({
+    expect(scanner.snapshot()).toMatchObject({
       latentClasses: ['block', 'unknown', 'fg:red'],
       validClasses: ['block', 'fg:red'],
       invalidClasses: ['unknown'],
@@ -66,7 +66,7 @@ describe('Rust scanner state session', () => {
     })
 
     scanner.reset()
-    expect(JSON.parse(scanner.state())).toMatchObject({
+    expect(scanner.snapshot()).toMatchObject({
       latentClasses: [],
       validClasses: [],
       invalidClasses: [],

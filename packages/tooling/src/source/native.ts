@@ -1,21 +1,21 @@
-import { loadNativeBinding } from '@master/css-native'
+import { loadNativeToolingBackend } from '@master/css-backend/tooling'
 
 function binding() {
-  return loadNativeBinding({ required: true })!.binding
+  return loadNativeToolingBackend({ required: true })!
 }
 
 export function extractClassCandidatesNative(content: string): string[] {
-  return binding().extractClassCandidates(content)
+  return [...binding().extractClassCandidates(content)]
 }
 
 export function extractOxcClassesNative(source: string, content: string): string[] {
-  return binding().extractOxcClasses(source, content)
+  return [...binding().extractOxcClasses(source, content)]
 }
 
 export function extractHTMLClassesNative(source: string, content: string): string[] {
-  return binding().extractHtmlClasses(source, content)
+  return [...binding().extractHTMLClasses(source, content)]
 }
 
 export function extractAstroClassesNative(source: string, content: string): string[] {
-  return binding().extractAstroClasses(source, content)
+  return [...binding().extractAstroClasses(source, content)]
 }

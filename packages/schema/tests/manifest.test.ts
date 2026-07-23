@@ -4,7 +4,7 @@ import {
   groupMasterCSSManifestVariables,
   type MasterCSSManifest
 } from '../src/manifest'
-import { stringifyMasterCSSManifestJSON } from '../src/manifest-json'
+import { serializeMasterCSSManifest } from '../src/manifest'
 
 describe('@master/css-schema manifest helpers', () => {
   it('groups and flattens manifest variables', () => {
@@ -43,7 +43,7 @@ describe('@master/css-schema manifest helpers', () => {
       }]
     }
 
-    expect(stringifyMasterCSSManifestJSON(manifest)).toBe(
+    expect(serializeMasterCSSManifest(manifest)).toBe(
       '{"version":1,"variables":{"color":[{"key":"brand","value":"#123"}]},"utilities":[{"id":"block","type":-2,"emit":{"type":"static","rules":[{"declarations":{"display":"block"}}]},"matchers":[{"type":"static","name":"block"}]}]}'
     )
   })

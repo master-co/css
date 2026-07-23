@@ -3,10 +3,10 @@ import {
   DEV_RUNTIME_ENTRY_ID,
   RUNTIME_ENTRY_ID
 } from '../common'
-import { PluginOptions } from '../options'
+import { ResolvedMasterCSSVitePluginOptions } from '../options'
 
 export default function InjectRuntimePlugin(
-  _options: PluginOptions
+  _options: ResolvedMasterCSSVitePluginOptions
 ): Plugin {
   return {
     name: 'master-css:inject-runtime',
@@ -40,7 +40,7 @@ export default function InjectRuntimePlugin(
 }
 
 export function InjectRuntimeServePlugin(
-  _options: PluginOptions
+  _options: ResolvedMasterCSSVitePluginOptions
 ): Plugin {
   return {
     name: 'master-css:inject-runtime:serve',

@@ -1,13 +1,13 @@
 import { describe, expect, test } from 'vitest'
 import masterCSS from '../src/core'
-import type { PluginOptions } from '../src/options'
+import type { MasterCSSVitePluginOptions } from '../src/options'
 
-function pluginNames(options: PluginOptions = {}) {
+function pluginNames(options: MasterCSSVitePluginOptions = {}) {
   return masterCSS(options).map((plugin) => plugin.name)
 }
 
 describe('masterCSS plugin composition', () => {
-  test.each(['runtime', 'static', 'pre-render', 'progressive', null] as const)('%s mode registers the shared scanner and style entry pipeline', (mode) => {
+  test.each(['runtime', 'static', 'pre-render', 'progressive'] as const)('%s mode registers the shared scanner and style entry pipeline', (mode) => {
     const names = pluginNames({ mode })
 
     expect(names.filter((name) => name === 'master-css:scanner')).toHaveLength(1)
@@ -27,15 +27,17 @@ describe('masterCSS plugin composition', () => {
   test('runtime mode registers runtime preloads only with runtime injection', () => {
     expect(pluginNames({ mode: 'runtime' })).toContain('master-css:manifest-preload')
     expect(pluginNames({ mode: 'runtime' })).toContain('master-css:runtime-preload')
-    expect(pluginNames({ mode: 'runtime', injectRuntime: false })).not.toContain('master-css:manifest-preload')
-    expect(pluginNames({ mode: 'runtime', injectRuntime: false })).not.toContain('master-css:runtime-preload')
+    expect(pluginNames({ mode: 'runtime', runtime: false })).not.toContain('master-css:manifest-preload')
+    expect(pluginNames({ mode: 'runtime', runtime: false })).not.toContain('master-css:runtime-preload')
     expect(pluginNames({ mode: 'progressive' })).not.toContain('master-css:manifest-preload')
     expect(pluginNames({ mode: 'progressive' })).not.toContain('master-css:runtime-preload')
     expect(pluginNames({ mode: 'static' })).not.toContain('master-css:manifest-preload')
     expect(pluginNames({ mode: 'static' })).not.toContain('master-css:runtime-preload')
     expect(pluginNames({ mode: 'pre-render' })).not.toContain('master-css:manifest-preload')
     expect(pluginNames({ mode: 'pre-render' })).not.toContain('master-css:runtime-preload')
-    expect(pluginNames({ mode: null })).not.toContain('master-css:manifest-preload')
-    expect(pluginNames({ mode: null })).not.toContain('master-css:runtime-preload')
+  })
+
+  test('enabled false disables the integration', () => {
+    expect(pluginNames({ enabled: false })).toEqual([])
   })
 })

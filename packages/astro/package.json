@@ -70,6 +70,6 @@
   },
   "devDependencies": {
     "@master/css-preset": "workspace:*",
-    "@master/css-internal-integration": "workspace:*"
+    "@master/css-build-internal": "workspace:*"
   }
 }

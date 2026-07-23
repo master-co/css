@@ -1,6 +1,6 @@
-import CSSLanguageServer from './core'
+import { MasterCSSLanguageServer } from './core'
 
-const server = new CSSLanguageServer(undefined, { verbose: true })
+const server = new MasterCSSLanguageServer(undefined, { verbose: true })
 
 server.start()
 

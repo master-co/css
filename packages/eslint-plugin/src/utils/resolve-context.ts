@@ -1,20 +1,21 @@
 import type { RuleContext } from '@typescript-eslint/utils/ts-eslint'
 import settings, { Settings } from '../settings'
 import { MasterCSSManifest, defaultManifest } from './master-css'
-import { findMasterCSSWorkspaceDirectoriesSync } from '@master/css-compiler/project/entries'
-import { loadProjectManifestSync } from '@master/css-compiler/project/sync'
+import {
+  discoverManifestEntriesSync,
+  loadProjectManifestSync
+} from '@master/css-compiler/project/sync'
+import { discoverBuildWorkspaceDirectoriesSync } from '@master/css-build-internal/workspace-directories'
 import path from 'node:path'
 import { existsSync } from 'node:fs'
 import isSameOrChildPath from './is-same-or-child-path'
-import {
-  createLintSessionSync,
-  type LintSession
-} from '@master/css-tooling/lint/node'
+import type { MasterCSSToolingSession } from '@master/css-tooling'
+import { createToolingSessionSync } from '@master/css-tooling/node'
 
 declare interface CSSCache {
   cwd: string
   manifest?: MasterCSSManifest,
-  rustLint: LintSession
+  tooling: MasterCSSToolingSession
 }
 
 const cssCaches: CSSCache[] = []
@@ -30,7 +31,10 @@ function getContextFilename(context: RuleContext<any, any[]>) {
 function getWorkspaceDirectories(cwd: string) {
   let directories = workspaceDirectoriesByCwd.get(cwd)
   if (!directories) {
-    directories = findMasterCSSWorkspaceDirectoriesSync(cwd)
+    directories = [...discoverBuildWorkspaceDirectoriesSync(
+      cwd,
+      discoverManifestEntriesSync({ root: cwd })
+    )]
     workspaceDirectoriesByCwd.set(cwd, directories)
   }
   return directories
@@ -68,7 +72,10 @@ function resolveWorkspaceDirectory(context: RuleContext<any, any[]>, filename: s
 }
 
 function resolvePlan(workspaceDir: string, manifest?: MasterCSSManifest) {
-  const result = loadProjectManifestSync(workspaceDir)
+  const result = loadProjectManifestSync({
+    root: workspaceDir,
+    baseManifest: manifest ?? defaultManifest
+  })
   return result.entries.length ? result.manifest : manifest
 }
 
@@ -84,11 +91,11 @@ export default function resolveContext(context: RuleContext<any, any[]>) {
       ? resolvePlan(workspaceDir, resolvedSettings.manifest)
       : resolvedSettings.manifest
     const resolvedManifest = manifest || defaultManifest
-    const rustLint = createLintSessionSync(resolvedManifest)
+    const tooling = createToolingSessionSync({ manifest: resolvedManifest })
     cache = {
       cwd: workspaceDir,
       manifest: resolvedSettings.manifest,
-      rustLint
+      tooling
     }
     cssCaches.push(cache)
   }
@@ -96,6 +103,6 @@ export default function resolveContext(context: RuleContext<any, any[]>) {
   return {
     settings: resolvedSettings,
     options: context.options[0] || {},
-    rustLint: cache.rustLint
+    tooling: cache.tooling
   }
 }

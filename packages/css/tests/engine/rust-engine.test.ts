@@ -1,9 +1,9 @@
 import { beforeAll, describe, expect, it } from 'vitest'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
+import { MasterCSSError } from '@master/css-schema'
 import defaultManifest from '@master/css-preset/default-manifest.json'
 import createEngine from '../../src/engine/create-engine'
 import { createEngineSync } from '../../src/node'
-import { MasterCSSEngineError } from '../../src/engine/backend'
 
 const typedDefaultManifest = defaultManifest as unknown as MasterCSSManifest
 const selectorVariantClassName = '{flex;rel}_:is(h4,.app-nav)@default'
@@ -98,7 +98,7 @@ describe('Rust engine session', () => {
       try {
         expect(engine.backend).toBe('wasm')
         engine.ensureClassRules(['block'])
-        expect(engine.text).toBe('@layer utilities{.block{display:block}}')
+        expect(engine.snapshot().text).toBe('@layer utilities{.block{display:block}}')
       } finally {
         engine.dispose()
       }
@@ -112,7 +112,7 @@ describe('Rust engine session', () => {
     process.env.MASTER_CSS_NATIVE_BINDING_PATH = '/missing/master-css/mastercss.node'
     try {
       await expect(createEngine({ manifest, backend: 'auto' })).rejects.toMatchObject({
-        name: 'MasterCSSEngineError',
+        name: 'MasterCSSError',
         code: 'NATIVE_LOAD_FAILED'
       })
     } finally {
@@ -124,10 +124,10 @@ describe('Rust engine session', () => {
   it('keeps transitions synchronous after session creation', () => {
     const engine = createEngineSync({ manifest })
     expect(engine.ensureClassRules(['block', 'w:10px']).mutations).toHaveLength(2)
-    expect(engine.text).toBe('@layer utilities{.block{display:block}.w\\:10px{width:10px}}')
+    expect(engine.snapshot().text).toBe('@layer utilities{.block{display:block}.w\\:10px{width:10px}}')
     expect(engine.ensureClassRules(['block']).mutations).toEqual([])
     expect(engine.deleteClassRules(['block']).mutations).toHaveLength(1)
-    expect(engine.text).toBe('@layer utilities{.w\\:10px{width:10px}}')
+    expect(engine.snapshot().text).toBe('@layer utilities{.w\\:10px{width:10px}}')
     engine.dispose()
   })
 
@@ -138,7 +138,7 @@ describe('Rust engine session', () => {
       className: 'block:hover',
       valid: true
     })
-    expect(engine.text).toBe('')
+    expect(engine.snapshot().text).toBe('')
     engine.dispose()
     expect(() => engine.snapshot()).toThrow('has been disposed')
   })
@@ -147,16 +147,16 @@ describe('Rust engine session', () => {
     expect(() => createEngineSync({
       manifest: { version: 2 } as unknown as MasterCSSManifest
     })).toThrowError(expect.objectContaining({
-      name: 'MasterCSSEngineError',
+      name: 'MasterCSSError',
       code: 'UNSUPPORTED_MANIFEST_VERSION'
     }))
 
     const engine = createEngineSync({ manifest })
     engine.ensureClassRules(['block'])
-    const before = engine.text
+    const before = engine.snapshot().text
     expect(() => engine.refresh({ version: 2 } as unknown as MasterCSSManifest))
-      .toThrow(MasterCSSEngineError)
-    expect(engine.text).toBe(before)
+      .toThrow(MasterCSSError)
+    expect(engine.snapshot().text).toBe(before)
     engine.dispose()
   })
 
@@ -197,15 +197,15 @@ describe('Rust engine session', () => {
         text: selectorVariantRuleText
       })
       expect(wasmInspection).toEqual(nativeInspection)
-      expect(native.text).toBe('')
-      expect(wasm.text).toBe('')
+      expect(native.snapshot().text).toBe('')
+      expect(wasm.snapshot().text).toBe('')
 
       const nativeTransition = native.ensureClassRules([selectorVariantClassName])
       const wasmTransition = wasm.ensureClassRules([selectorVariantClassName])
 
       expect(wasmTransition).toEqual(nativeTransition)
-      expect(native.text).toBe(`@layer defaults{${selectorVariantRuleText}}`)
-      expect(wasm.text).toBe(native.text)
+      expect(native.snapshot().text).toBe(`@layer defaults{${selectorVariantRuleText}}`)
+      expect(wasm.snapshot().text).toBe(native.snapshot().text)
       expect(wasm.snapshot()).toEqual(native.snapshot())
     } finally {
       native.dispose()
@@ -222,8 +222,8 @@ describe('Rust engine session', () => {
       const wasmTransition = wasm.ensureClassRules(['surface:raised'])
 
       expect(wasmTransition).toEqual(nativeTransition)
-      expect(native.text).toBe(inlineThemeCSS)
-      expect(wasm.text).toBe(native.text)
+      expect(native.snapshot().text).toBe(inlineThemeCSS)
+      expect(wasm.snapshot().text).toBe(native.snapshot().text)
       expect(wasm.snapshot()).toEqual(native.snapshot())
       expect(native.snapshot().resources.variables.map(({ name }) => name)).toEqual([
         'color-surface-raised',

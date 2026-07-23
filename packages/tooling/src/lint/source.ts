@@ -1,4 +1,4 @@
-import type { MasterCSSSourceRange as SourceRange } from '@master/css-schema'
+import type { MasterCSSSourceRange as SourceRange } from '@master/css-backend/tooling'
 import { extname } from 'node:path'
 import {
   type MasterCSSCanonicalClassesReportOptions,
@@ -11,7 +11,7 @@ import {
   type MasterCSSLintRuleId,
   type MasterCSSUnapprovedRawValueClassesReportOptions
 } from './diagnostics'
-import type { LintSession } from './rust-session'
+import type { MasterCSSToolingSession } from '../tooling-session'
 
 const MAX_FIX_PASSES = 10
 
@@ -91,7 +91,10 @@ export interface MasterCSSLintContentOptions {
   rules?: Partial<Record<MasterCSSLintRuleId, boolean>>
   ruleOptions?: MasterCSSLintContentRuleOptions
   severities?: Partial<Record<MasterCSSLintRuleId, MasterCSSLintDiagnosticSeverity>>
-  lintSession: Pick<LintSession, 'analyzeClassList' | 'analyzeDocument' | 'tokenizeClassList'>
+  lintSession: Pick<
+    MasterCSSToolingSession,
+    'analyzeLintClassList' | 'analyzeLintDocument' | 'tokenizeClassList'
+  >
 }
 
 export interface MasterCSSFixContentOptions extends MasterCSSLintContentOptions {
@@ -195,9 +198,11 @@ function inferClassSourceKind(content: string, range: SourceRange): Exclude<Mast
 function collectClassListContexts(
   content: string,
   filePath: string,
-  lintSession: Pick<LintSession, 'analyzeDocument'>
+  lintSession: Pick<MasterCSSToolingSession, 'analyzeLintDocument'>
 ): ClassListContext[] {
-  const positions = lintSession.analyzeDocument(content, getLanguageId(filePath)).classPositions
+  const positions = lintSession
+    .analyzeLintDocument(content, getLanguageId(filePath))
+    .classPositions
   const contexts = new Map<string, ClassListContext>()
   for (const position of positions) {
     const contextRange = position.contextRange
@@ -249,7 +254,7 @@ function createContextLintDiagnostics(
 ) {
   const shouldAnalyze = Object.values(rules).some(Boolean)
   const diagnostics = shouldAnalyze
-    ? options.lintSession.analyzeClassList(context.text, context.classNames, {
+    ? options.lintSession.analyzeLintClassList(context.text, context.classNames, {
       disallowUnknownClass: options.ruleOptions?.['no-invalid-classes']?.disallowUnknownClass,
       rawValuePolicy: rules['no-unapproved-raw-values']
         ? options.ruleOptions?.['no-unapproved-raw-values'] || {}

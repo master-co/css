@@ -1,6 +1,6 @@
 import { beforeAll, describe, expect, it } from 'vitest'
-import { createLanguageSessionSync } from '../../src/language/node'
 import { createPresetManifest } from './helpers/create-preset-manifest'
+import { createTestToolingSession } from '../helpers/create-tooling-session'
 
 beforeAll(() => {
   process.env.MASTER_CSS_NATIVE_BINDING_PATH = new URL(
@@ -11,7 +11,7 @@ beforeAll(() => {
 
 describe('Rust language session', () => {
   it('discovers UTF-16 class contexts for markup, script, and CSS', () => {
-    const session = createLanguageSessionSync(createPresetManifest())
+    const session = createTestToolingSession(createPresetManifest())
     try {
       const html = session.analyzeDocument({
         source: '😀 <div class="fg:red block"></div>',
@@ -37,7 +37,7 @@ describe('Rust language session', () => {
   })
 
   it('owns classification, inspection, completion metadata, and colors', () => {
-    const session = createLanguageSessionSync(createPresetManifest())
+    const session = createTestToolingSession(createPresetManifest())
     try {
       const classifications = session.classifyClassNames(['block', 'fg:red', 'unknown'])
       expect(classifications.classes.map(({ kind }) => kind)).toEqual(['semantic', 'declaration', 'unknown'])

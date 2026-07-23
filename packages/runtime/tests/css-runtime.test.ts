@@ -1,20 +1,19 @@
-import { cssRuntime } from '../src'
-import type CSSRuntime from '../src'
+import { withMasterCSSRuntime, type MasterCSSRuntime } from '../src'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
 
 const manifest = { version: 1 } satisfies MasterCSSManifest
 
 class RuntimeElement extends HTMLElement {
-  cssRuntime?: CSSRuntime
+  masterCSSRuntime?: MasterCSSRuntime
 
   connectedCallback() {
-    const runtime: CSSRuntime | undefined = this.cssRuntime
+    const runtime = this.masterCSSRuntime
     runtime?.refresh(manifest)
   }
 }
 
-cssRuntime({ manifest })(RuntimeElement)
-cssRuntime({
+withMasterCSSRuntime({ manifest })(RuntimeElement)
+withMasterCSSRuntime({
   manifest,
   root: (host) => host.shadowRoot,
   emittedGlobals: {

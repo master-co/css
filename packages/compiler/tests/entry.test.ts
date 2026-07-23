@@ -9,7 +9,7 @@ import {
   findStandaloneMasterDirectiveStatements,
   inspectCSS,
   resolveMasterCSSPackageEntryFile
-} from '../src'
+} from '../src/node-compiler'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const repoRoot = resolve(__dirname, '../../..')

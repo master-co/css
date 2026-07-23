@@ -5,7 +5,7 @@ import { join } from 'node:path'
 import { expect, test } from 'vitest'
 import plugin from '../src'
 import { createPresetManifest } from './helpers/create-preset-manifest'
-import UtilityType from '@master/css-schema/utility-type'
+import { UtilityType } from '@master/css-schema/utility-type'
 import isSameOrChildPath from '../src/utils/is-same-or-child-path'
 
 test('uses explicit Master CSS manifest objects from ESLint settings', async () => {

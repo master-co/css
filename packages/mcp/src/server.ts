@@ -18,9 +18,30 @@ import { previewDirectiveFormat } from './format'
 import { compareCSS } from './compare'
 import { jsonResourceResult, jsonToolResult } from './result'
 
-export interface MasterCSSMCPServerInstance {
-  server: McpServer
-  context: MasterCSSMCPContext
+class MasterCSSMCPServer {
+  readonly #server: McpServer
+  readonly #context: MasterCSSMCPContext
+  #disposed = false
+
+  constructor(server: McpServer, context: MasterCSSMCPContext) {
+    this.#server = server
+    this.#context = context
+  }
+
+  connect(transport: Parameters<McpServer['connect']>[0]) {
+    return this.#server.connect(transport)
+  }
+
+  async dispose() {
+    if (this.#disposed) return
+    this.#disposed = true
+    this.#context.dispose()
+    await this.#server.close()
+  }
+
+  [Symbol.asyncDispose]() {
+    return this.dispose()
+  }
 }
 
 function readPackageVersion() {
@@ -563,7 +584,7 @@ function registerTools(server: McpServer, context: MasterCSSMCPContext) {
   )
 }
 
-export function createMasterCSSMCPServer(options: MasterCSSMCPContextOptions = {}): MasterCSSMCPServerInstance {
+export function createMasterCSSMCPServer(options: MasterCSSMCPContextOptions = {}) {
   const context = new MasterCSSMCPContext(options)
   const server = new McpServer({
     name: '@master/css-mcp',
@@ -572,11 +593,11 @@ export function createMasterCSSMCPServer(options: MasterCSSMCPContextOptions = {
   registerResources(server, context)
   registerPrompts(server)
   registerTools(server, context)
-  return { server, context }
+  return new MasterCSSMCPServer(server, context)
 }
 
-export async function startStdioServer(options: MasterCSSMCPContextOptions = {}) {
-  const { server } = createMasterCSSMCPServer(options)
+export async function startMasterCSSMCPStdioServer(options: MasterCSSMCPContextOptions = {}) {
+  const server = createMasterCSSMCPServer(options)
   const transport = new StdioServerTransport()
   await server.connect(transport)
   return server

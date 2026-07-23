@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { DEV_RUNTIME_ENTRY_ID } from '../../src/common'
 import RuntimePreloadPlugin from '../../src/plugins/runtime-preload'
+import { RESOLVED_MASTER_CSS_RUNTIME_BOOTSTRAP_ID } from '@master/css-build-internal/runtime-bootstrap'
 
 describe('RuntimePreloadPlugin', () => {
   it('injects a dev modulepreload link for the runtime entry', () => {
@@ -41,7 +42,7 @@ describe('RuntimePreloadPlugin', () => {
             fileName: 'assets/index.C2zmEykZ.js',
             moduleIds: [
               '/repo/app/src/main.ts',
-              '/repo/packages/vite/src/runtime.ts'
+              RESOLVED_MASTER_CSS_RUNTIME_BOOTSTRAP_ID
             ]
           },
           'assets/mastercss_wasm_runtime_bg.D4cafe.wasm': {
@@ -94,7 +95,7 @@ describe('RuntimePreloadPlugin', () => {
             type: 'chunk',
             fileName: 'assets/index.C2zmEykZ.js',
             moduleIds: [
-              '/repo/packages/vite/src/runtime.ts'
+              RESOLVED_MASTER_CSS_RUNTIME_BOOTSTRAP_ID
             ]
           }
         }

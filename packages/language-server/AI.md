@@ -20,9 +20,9 @@
 
 ## Public Surface
 
-- `CSSLanguageServer`
-- `settings`
-- `Workspace` type
+- `MasterCSSLanguageServer`
+- `defaultLanguageServerSettings`
+- `MasterCSSWorkspace` type
 
 ## Key Files
 

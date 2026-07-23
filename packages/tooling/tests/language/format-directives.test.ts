@@ -1,6 +1,7 @@
 import { beforeAll, expect, test } from 'vitest'
-import { createLanguageSessionSync } from '../../src/language/node'
 import { createPresetManifest } from './helpers/create-preset-manifest'
+import type { MasterCSSToolingSession } from '../../src'
+import { createTestToolingSession } from '../helpers/create-tooling-session'
 
 beforeAll(() => {
   process.env.MASTER_CSS_NATIVE_BINDING_PATH = new URL(
@@ -9,7 +10,10 @@ beforeAll(() => {
   ).pathname
 })
 
-function applyEdits(source: string, edits: ReturnType<ReturnType<typeof createLanguageSessionSync>['formatDirectives']>['edits']) {
+function applyEdits(
+  source: string,
+  edits: ReturnType<MasterCSSToolingSession['formatDirectives']>['edits']
+) {
   let result = source
   for (const edit of [...edits].sort((left, right) => right.range.start - left.range.start)) {
     result = result.slice(0, edit.range.start) + edit.text + result.slice(edit.range.end)
@@ -18,7 +22,7 @@ function applyEdits(source: string, edits: ReturnType<ReturnType<typeof createLa
 }
 
 function format(source: string, range?: { start: number, end: number }) {
-  const session = createLanguageSessionSync(createPresetManifest())
+  const session = createTestToolingSession(createPresetManifest())
   try {
     return applyEdits(source, session.formatDirectives({ source, range }).edits)
   } finally {

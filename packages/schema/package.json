@@ -43,11 +43,6 @@
       "import": "./dist/manifest.js",
       "default": "./dist/manifest.js"
     },
-    "./manifest-json": {
-      "types": "./dist/manifest-json.d.ts",
-      "import": "./dist/manifest-json.js",
-      "default": "./dist/manifest-json.js"
-    },
     "./hydration-manifest": {
       "types": "./dist/hydration-manifest.d.ts",
       "import": "./dist/hydration-manifest.js",
@@ -87,6 +82,16 @@
       "types": "./dist/css-common.d.ts",
       "import": "./dist/css-common.js",
       "default": "./dist/css-common.js"
+    },
+    "./diagnostics": {
+      "types": "./dist/diagnostics.d.ts",
+      "import": "./dist/diagnostics.js",
+      "default": "./dist/diagnostics.js"
+    },
+    "./integration": {
+      "types": "./dist/integration.d.ts",
+      "import": "./dist/integration.js",
+      "default": "./dist/integration.js"
     }
   },
   "files": [

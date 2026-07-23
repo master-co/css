@@ -3,7 +3,7 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { resolveMasterCSSBuildState } from '../src/build-state'
-import CSSScanner from '@master/css-tooling/scanner'
+import { MasterCSSScanner } from '@master/css-tooling/scanner/node'
 
 let fixtureDir: string | undefined
 
@@ -23,7 +23,7 @@ afterEach(() => {
 
 describe('resolveMasterCSSBuildState', () => {
   it('resolves @compose entries against the loaded base manifest while extracting native CSS', async () => {
-    const destroy = vi.spyOn(CSSScanner.prototype, 'destroy')
+    const dispose = vi.spyOn(MasterCSSScanner.prototype, 'dispose')
     const root = createFixtureDir()
     const entry = join(root, 'app/globals.css')
     writeFileSync(entry, [
@@ -41,6 +41,6 @@ describe('resolveMasterCSSBuildState', () => {
     expect(result.nativeCSS).toContain('text-rendering: geometricprecision')
     expect(result.nativeCSS).toContain('.hidden-card')
     expect(result.nativeCSS).toContain('display:none')
-    expect(destroy).toHaveBeenCalledOnce()
+    expect(dispose).toHaveBeenCalledOnce()
   })
 })

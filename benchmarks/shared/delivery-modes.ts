@@ -4,8 +4,8 @@ import { readFile, writeFile } from 'node:fs/promises'
 import { extname, isAbsolute, relative, resolve } from 'node:path'
 import { performance } from 'node:perf_hooks'
 import type { Browser, Page } from '@playwright/test'
-import { render } from '@master/css-server'
-import type { MasterCSSManifest } from '@master/css'
+import { renderHTML } from '@master/css-server'
+import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import { benchmarkAdapters } from '../fixtures/manifest'
 import { getStaticFixtureSource, staticFixtureIds } from '../fixtures/static'
 import { summarizeBytes } from './bytes'
@@ -559,13 +559,14 @@ async function createProgressiveDeliveryModePage(options: {
   const fixture = getStaticFixtureSource(options.fixtureId)
   const sourceHtml = addStyleProbe(fixture.masterHtml)
   const manifest = await readDefaultManifest()
-  const result = render(sourceHtml, manifest, {
+  const result = renderHTML(sourceHtml, {
+    manifest,
     hydrationManifest: 'inject'
   })
   const hydrationManifestJSON = result.hydrationManifest
     ? JSON.stringify(result.hydrationManifest)
     : ''
-  const inlineCSS = result.css?.text || ''
+  const inlineCSS = result.cssText
   const html = addRuntimeHarness(result.html, {
     hideUntilRuntime: false,
     hasStyleProbe: true

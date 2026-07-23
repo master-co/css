@@ -48,10 +48,10 @@ Ordinary CSS outside Master CSS directives stays native CSS and follows the inte
 If runtime code should intentionally use one CSS resource instead of the discovered project-level entry, import that resource with `?master-css-manifest`.
 
 ```ts name=src/main.ts
-import CSSRuntime from '@master/css-runtime'
+import { MasterCSSRuntime } from '@master/css-runtime'
 import manifest from './theme.css?master-css-manifest'
 
-const cssRuntime = await CSSRuntime.start({ manifest })
+const cssRuntime = await MasterCSSRuntime.start({ manifest })
 cssRuntime.observe()
 ```
 

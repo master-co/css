@@ -90,13 +90,11 @@ function parseArgs(values) {
 }
 
 async function waitForRuntimeRemovalFlush(page) {
-  await page.evaluate(() => new Promise((resolve) => {
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => resolve())
-      })
-    })
-  }))
+  await page.waitForFunction(() => {
+    const snapshot = globalThis.masterCSSRuntime.snapshot()
+    return Object.keys(snapshot.usageCounts).length === 0
+      && Object.values(snapshot.classRules).every((classRule) => !classRule.retained)
+  })
 }
 
 function createHydrationFixture(classNames) {
@@ -419,7 +417,9 @@ try {
     const page = await createPage(browser, server.url, scanMarkup)
     try {
       const elapsed = await loadRuntime(page, scriptURL)
-      const generatedCount = await page.evaluate(() => globalThis.masterCSSRuntime.classUtilities.size)
+      const generatedCount = await page.evaluate(
+        () => Object.keys(globalThis.masterCSSRuntime.snapshot().classRules).length
+      )
       if (generatedCount !== scanClasses.length) {
         throw new Error(`Expected ${scanClasses.length} generated classes, got ${generatedCount}.`)
       }
@@ -433,7 +433,9 @@ try {
     const page = await createPage(browser, server.url, scanMarkup, { preloadManifest: true })
     try {
       const elapsed = await loadRuntime(page, scriptURL)
-      const generatedCount = await page.evaluate(() => globalThis.masterCSSRuntime.classUtilities.size)
+      const generatedCount = await page.evaluate(
+        () => Object.keys(globalThis.masterCSSRuntime.snapshot().classRules).length
+      )
       if (generatedCount !== scanClasses.length) {
         throw new Error(`Expected ${scanClasses.length} generated classes, got ${generatedCount}.`)
       }
@@ -457,12 +459,16 @@ try {
         return performance.now() - startedAt
       }, { html: mutationMarkup })
       await waitForRuntimeRemovalFlush(page)
-      await page.evaluate(() => globalThis.masterCSSRuntime.flushRetainedClassRules())
-      const state = await page.evaluate(() => ({
-        classes: globalThis.masterCSSRuntime.classCounts.size,
-        utilities: globalThis.masterCSSRuntime.classUtilities.size,
-        retained: globalThis.masterCSSRuntime.retainedClassNames.size
-      }))
+      const state = await page.evaluate(() => {
+        const snapshot = globalThis.masterCSSRuntime.snapshot()
+        return {
+          classes: Object.keys(snapshot.usageCounts).length,
+          utilities: Object.values(snapshot.classRules)
+            .filter((classRule) => classRule.rules.length).length,
+          retained: Object.values(snapshot.classRules)
+            .filter((classRule) => classRule.retained).length
+        }
+      })
       if (state.classes || state.utilities || state.retained) {
         throw new Error(`Expected mutation cleanup to empty runtime state, got ${JSON.stringify(state)}.`)
       }
@@ -477,11 +483,14 @@ try {
     try {
       const elapsed = await page.evaluate((classes) => {
         const startedAt = performance.now()
-        globalThis.masterCSSRuntime.ensureClassRules(...classes)
-        globalThis.masterCSSRuntime.deleteClassRules(...classes)
+        globalThis.masterCSSRuntime.ensureClassRules(classes)
+        globalThis.masterCSSRuntime.deleteClassRules(classes)
         return performance.now() - startedAt
       }, mutationClasses)
-      const generatedCount = await page.evaluate(() => globalThis.masterCSSRuntime.classUtilities.size)
+      const generatedCount = await page.evaluate(
+        () => Object.values(globalThis.masterCSSRuntime.snapshot().classRules)
+          .filter((classRule) => classRule.rules.length).length
+      )
       if (generatedCount) {
         throw new Error(`Expected direct ensure/delete cleanup to empty classUtilities, got ${generatedCount}.`)
       }
@@ -495,11 +504,14 @@ try {
     const page = await createProgressivePage(browser, server.url, hydrationFixture, true, { preloadManifest: true })
     try {
       const elapsed = await loadRuntime(page, scriptURL)
-      const state = await page.evaluate(() => ({
-        failure: globalThis.masterCSSRuntime.hydrationFailureReason,
-        progressive: globalThis.masterCSSRuntime.progressive,
-        utilities: globalThis.masterCSSRuntime.classUtilities.size
-      }))
+      const state = await page.evaluate(() => {
+        const snapshot = globalThis.masterCSSRuntime.snapshot()
+        return {
+          failure: snapshot.hydration.failureReason,
+          progressive: snapshot.hydration.state === 'progressive',
+          utilities: Object.keys(snapshot.classRules).length
+        }
+      })
       if (!state.progressive || state.failure || state.utilities !== hydrationClasses.length) {
         throw new Error(`Expected successful hydration, got ${JSON.stringify(state)}.`)
       }
@@ -513,11 +525,14 @@ try {
     const page = await createProgressivePage(browser, server.url, hydrationFixture, false, { preloadManifest: true })
     try {
       const elapsed = await loadRuntime(page, scriptURL)
-      const state = await page.evaluate(() => ({
-        failure: globalThis.masterCSSRuntime.hydrationFailureReason,
-        progressive: globalThis.masterCSSRuntime.progressive,
-        utilities: globalThis.masterCSSRuntime.classUtilities.size
-      }))
+      const state = await page.evaluate(() => {
+        const snapshot = globalThis.masterCSSRuntime.snapshot()
+        return {
+          failure: snapshot.hydration.failureReason,
+          progressive: snapshot.hydration.state === 'progressive',
+          utilities: Object.keys(snapshot.classRules).length
+        }
+      })
       if (state.progressive || state.utilities !== hydrationClasses.length) {
         throw new Error(`Expected fallback hydration, got ${JSON.stringify(state)}.`)
       }

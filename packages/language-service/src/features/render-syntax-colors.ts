@@ -1,10 +1,10 @@
 import Color from 'colorjs.io'
 import type { ColorInformation } from 'vscode-languageserver-protocol'
 import type { TextDocument } from 'vscode-languageserver-textdocument'
-import type CSSLanguageService from '../core'
+import type { MasterCSSLanguageService } from '../core'
 
 export default async function renderSyntaxColors(
-  this: CSSLanguageService,
+  this: MasterCSSLanguageService,
   document: TextDocument
 ): Promise<ColorInformation[]> {
   const candidates = this.getClassPositions(document).map(({ token, range }) => ({

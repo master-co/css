@@ -1,8 +1,8 @@
 import type { Plugin } from 'vite'
 import MagicString from 'magic-string'
-import { PluginContext } from '../core'
+import { MasterCSSVitePluginContext } from '../core'
 import { HTML_ENTRIES } from '../common'
-import { PluginOptions } from '../options'
+import { ResolvedMasterCSSVitePluginOptions } from '../options'
 
 const HTML_OPEN_TAG_RE = /<html(\s[^>]*)?>/ig
 const HIDDEN_ATTR_RE = /(?:^|\s)hidden(?:[\s=]|$)/i
@@ -27,7 +27,7 @@ const replace = (html: string) => {
   return html
 }
 
-export default function AvoidFOUCPlugin(options?: PluginOptions, context?: PluginContext): Plugin {
+export default function AvoidFOUCPlugin(options?: ResolvedMasterCSSVitePluginOptions, context?: MasterCSSVitePluginContext): Plugin {
   return {
     name: 'master-css:avoid-fouc',
     enforce: 'pre',

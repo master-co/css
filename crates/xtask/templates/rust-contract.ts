@@ -11,9 +11,9 @@ export const MASTER_CSS_LANGUAGE_BATCH_VERSION = {{MASTER_CSS_LANGUAGE_BATCH_VER
 export const MASTER_CSS_LEXER_BATCH_VERSION = {{MASTER_CSS_LEXER_BATCH_VERSION}} as const
 export const MASTER_CSS_SOURCE_BATCH_VERSION = {{MASTER_CSS_SOURCE_BATCH_VERSION}} as const
 
-export type MasterCSSBindingSurface = 'native' | 'runtime' | 'compiler' | 'tooling' | 'cli'
+export type MasterCSSBackendSurface = 'native' | 'runtime' | 'compiler' | 'tooling' | 'cli'
 
-export type MasterCSSBindingFeature =
+export type MasterCSSBackendFeature =
   | 'cli'
   | 'compiler'
   | 'diagnostics'
@@ -27,7 +27,7 @@ export type MasterCSSBindingFeature =
   | 'source'
   | 'validator'
 
-export interface MasterCSSBindingInfo {
+export interface MasterCSSBackendInfo {
   bindingAbiVersion: typeof MASTER_CSS_BINDING_ABI_VERSION
   packageVersion: string
   manifestVersion: typeof MASTER_CSS_MANIFEST_VERSION
@@ -40,8 +40,8 @@ export interface MasterCSSBindingInfo {
   lexerBatchVersion: typeof MASTER_CSS_LEXER_BATCH_VERSION
   sourceBatchVersion: typeof MASTER_CSS_SOURCE_BATCH_VERSION
   target: string
-  surface: MasterCSSBindingSurface
-  features: MasterCSSBindingFeature[]
+  surface: MasterCSSBackendSurface
+  features: MasterCSSBackendFeature[]
 }
 
 export type MasterCSSBackend = 'auto' | 'native' | 'wasm'
@@ -65,7 +65,7 @@ export interface MasterCSSEngineInsertMutationIR {
   index: number
   key: string
   text: string
-  rule?: import('./hydration-manifest').MasterCSSGeneratedRuleIR
+  rule?: import('@master/css-schema/hydration-manifest').MasterCSSGeneratedRuleIR
 }
 
 export interface MasterCSSEngineDeleteMutationIR {
@@ -86,7 +86,7 @@ export interface MasterCSSEngineTransitionIR {
 
 export interface MasterCSSEngineSnapshotIR {
   version: 1
-  rules: import('./hydration-manifest').MasterCSSGeneratedRuleIR[]
+  rules: import('@master/css-schema/hydration-manifest').MasterCSSGeneratedRuleIR[]
   resources: MasterCSSEngineResourcesIR
   text: string
 }
@@ -115,7 +115,7 @@ export interface MasterCSSEngineInspectionIR {
   version: 1
   className: string
   valid: boolean
-  rules: import('./hydration-manifest').MasterCSSGeneratedRuleIR[]
+  rules: import('@master/css-schema/hydration-manifest').MasterCSSGeneratedRuleIR[]
 }
 
 export interface MasterCSSNativeDeclarationCandidateIR {
@@ -353,7 +353,7 @@ export interface MasterCSSInspectionReportIR {
 export interface MasterCSSValidatorClassIR {
   className: string
   matched: boolean
-  rules: import('./hydration-manifest').MasterCSSGeneratedRuleIR[]
+  rules: import('@master/css-schema/hydration-manifest').MasterCSSGeneratedRuleIR[]
 }
 
 export interface MasterCSSValidatorBatchIR {
@@ -504,8 +504,8 @@ export interface MasterCSSLanguageVariableIR {
   key: string
   type: string
   value?: string | number
-  numeric?: import('./manifest').MasterCSSManifestVariableNumericValue
-  modes?: import('./manifest').MasterCSSManifestVariable['modes']
+  numeric?: import('@master/css-schema/manifest').MasterCSSManifestVariableNumericValue
+  modes?: import('@master/css-schema/manifest').MasterCSSManifestVariable['modes']
   dependencies?: string[]
   inline?: boolean
   static?: boolean
@@ -531,7 +531,7 @@ export interface MasterCSSLanguageInspectionIR {
   important: boolean
   matcherTypes: ('static' | 'pattern' | 'key' | 'variable' | 'value')[]
   variables: MasterCSSLanguageClassVariableIR[]
-  rules: import('./hydration-manifest').MasterCSSGeneratedRuleIR[]
+  rules: import('@master/css-schema/hydration-manifest').MasterCSSGeneratedRuleIR[]
   text: string
 }
 
@@ -574,10 +574,10 @@ export interface MasterCSSLanguageColorTokensIR {
 }
 
 export type MasterCSSDirectiveManifestInputIR =
-  import('./css-directives').CSSDirectiveManifestInput
+  import('@master/css-schema/css-directives').CSSDirectiveManifestInput
 
 export type MasterCSSDirectiveVariableDefinitionIR =
-  import('./css-directives').CSSDirectiveVariableDefinition
+  import('@master/css-schema/css-directives').CSSDirectiveVariableDefinition
 
 export interface MasterCSSRegexIR {
   source: string
@@ -602,8 +602,8 @@ export interface MasterCSSDirectiveCompilationIR {
   css: string
   generatedCSS: string
   dependencies: string[]
-  styleDefinitions?: import('./css-directives').CSSDirectiveStyleDefinition[]
-  references?: (import('./css-directives').CSSDirectiveReference & {
+  styleDefinitions?: import('@master/css-schema/css-directives').CSSDirectiveStyleDefinition[]
+  references?: (import('@master/css-schema/css-directives').CSSDirectiveReference & {
     start: number
     end: number
     statement: string
@@ -611,27 +611,27 @@ export interface MasterCSSDirectiveCompilationIR {
 }
 
 export interface MasterCSSCompileManifestOptionsIR {
-  baseManifest?: import('./manifest').MasterCSSManifest
+  baseManifest?: import('@master/css-schema/manifest').MasterCSSManifest
 }
 
 export interface MasterCSSCompileManifestResultIR {
-  manifest: import('./manifest').MasterCSSManifest
+  manifest: import('@master/css-schema/manifest').MasterCSSManifest
 }
 
 export interface MasterCSSCompileDefaultPresetRequestIR {
   manifestInput: MasterCSSDirectiveManifestInputIR
-  styleDefinitions?: import('./css-directives').CSSDirectiveStyleDefinition[]
+  styleDefinitions?: import('@master/css-schema/css-directives').CSSDirectiveStyleDefinition[]
 }
 
 export interface MasterCSSCompileDefaultPresetResultIR {
-  manifest: import('./manifest').MasterCSSManifest
+  manifest: import('@master/css-schema/manifest').MasterCSSManifest
   json: string
 }
 
 export interface MasterCSSServerRenderIR {
   classes: string[]
   snapshot: MasterCSSEngineSnapshotIR
-  hydrationManifest: import('./hydration-manifest').MasterCSSHydrationManifest
+  hydrationManifest: import('@master/css-schema/hydration-manifest').MasterCSSHydrationManifest
 }
 
 export interface MasterCSSImportGraphEdgeIR {

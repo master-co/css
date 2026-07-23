@@ -1,6 +1,7 @@
 #![forbid(unsafe_code)]
 
 use mastercss_engine::{EngineError, EngineSession as RustEngineSession};
+use serde::Serialize;
 use wasm_bindgen::prelude::*;
 
 fn js_error(error: EngineError) -> JsValue {
@@ -11,6 +12,16 @@ fn js_error(error: EngineError) -> JsValue {
 
 fn serialization_error(error: impl ToString) -> JsValue {
     JsValue::from_str(&error.to_string())
+}
+
+fn render_value<T: Serialize>(value: &T) -> Result<JsValue, JsValue> {
+    value
+        .serialize(
+            &serde_wasm_bindgen::Serializer::new()
+                .serialize_maps_as_objects(true)
+                .serialize_missing_as_null(true),
+        )
+        .map_err(serialization_error)
 }
 
 #[wasm_bindgen(js_name = EngineSession)]
@@ -106,13 +117,97 @@ impl WasmEngineSession {
     }
 }
 
+#[wasm_bindgen(js_name = RenderSession)]
+pub struct WasmRenderSession {
+    inner: mastercss_render::RenderSession,
+}
+
+#[wasm_bindgen(js_class = RenderSession)]
+impl WasmRenderSession {
+    #[wasm_bindgen(constructor)]
+    pub fn new(
+        manifest_json: &str,
+        emitted_globals_json: Option<String>,
+    ) -> Result<WasmRenderSession, JsValue> {
+        Ok(Self {
+            inner: mastercss_render::RenderSession::create(
+                manifest_json,
+                emitted_globals_json.as_deref(),
+            )
+            .map_err(js_error)?,
+        })
+    }
+
+    #[wasm_bindgen(js_name = nativeDeclarationCandidates)]
+    pub fn native_declaration_candidates(
+        &self,
+        class_names: Vec<String>,
+    ) -> Result<JsValue, JsValue> {
+        render_value(
+            &self
+                .inner
+                .native_declaration_candidates(class_names)
+                .map_err(js_error)?,
+        )
+    }
+
+    #[wasm_bindgen(js_name = ensureClasses)]
+    pub fn ensure_classes(
+        &mut self,
+        class_names: Vec<String>,
+        native_support: JsValue,
+    ) -> Result<(), JsValue> {
+        let native_support = if native_support.is_null() || native_support.is_undefined() {
+            None
+        } else {
+            Some(
+                serde_wasm_bindgen::from_value::<Vec<bool>>(native_support)
+                    .map_err(serialization_error)?,
+            )
+        };
+        self.inner
+            .ensure_classes(class_names, native_support.as_deref())
+            .map_err(js_error)
+    }
+
+    #[wasm_bindgen(js_name = ensureStylesheetResources)]
+    pub fn ensure_stylesheet_resources(&mut self, native_css: &str) -> Result<(), JsValue> {
+        self.inner
+            .ensure_stylesheet_resources(native_css)
+            .map_err(js_error)
+    }
+
+    #[wasm_bindgen(js_name = emittedGlobals)]
+    pub fn emitted_globals(&self) -> Result<JsValue, JsValue> {
+        render_value(&self.inner.emitted_globals().map_err(js_error)?)
+    }
+
+    pub fn snapshot(&self) -> Result<JsValue, JsValue> {
+        render_value(&self.inner.snapshot().map_err(js_error)?)
+    }
+
+    #[wasm_bindgen(js_name = snapshotForClasses)]
+    pub fn snapshot_for_classes(&self, class_names: Vec<String>) -> Result<JsValue, JsValue> {
+        render_value(
+            &self
+                .inner
+                .snapshot_for_classes(class_names)
+                .map_err(js_error)?,
+        )
+    }
+
+    pub fn dispose(&mut self) {
+        self.inner.dispose();
+    }
+}
+
 #[wasm_bindgen(js_name = bindingInfo)]
 pub fn binding_info() -> JsValue {
     let value = mastercss_schema::BindingInfo::new(
         env!("CARGO_PKG_VERSION"),
         "wasm32-unknown-unknown",
         "runtime",
-        &["engine"],
+        &["engine", "render"],
     );
     serde_wasm_bindgen::to_value(&value).expect("binding info is serializable")
 }

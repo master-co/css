@@ -16,7 +16,7 @@ npx @master/create-css@rc add --yes
 
 The recommended workflow adds Master CSS to the detected framework and includes the development guardrails Master CSS expects by default:
 
-- `@master/eslint-config-css` and `eslint.config.js`
+- `@master/eslint-plugin-css` and `eslint.config.js`
 - `@master/css-mcp` with the stdio registration command in the summary
 - Master CSS guidance in `AGENTS.md`
 
@@ -77,5 +77,5 @@ auto, vite, react, react-router, tanstack-start, vue, nextjs, svelte, nuxt, astr
 SvelteKit setup is delegated to the Svelte CLI add-on:
 
 ```bash
-npx sv add @master/css-sv
+npx sv add @master/css-svelte-addon
 ```

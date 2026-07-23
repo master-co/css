@@ -260,7 +260,7 @@ async function createExtractionDiagnosticsReport(): Promise<BenchmarkReport> {
       '@master/css-compiler',
       '@master/css',
       '@master/css-compiler',
-      '@master/css-tooling/scanner',
+      '@master/css-tooling/scanner/node',
       '@master/css-tooling/source',
       '@master/css-compiler/stylesheet',
       '@master/css-tooling/validator',

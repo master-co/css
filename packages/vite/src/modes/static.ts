@@ -1,7 +1,7 @@
 import { type Plugin } from 'vite'
-import type { PluginContext } from '../core'
-import type { PluginOptions } from '../options'
+import type { MasterCSSVitePluginContext } from '../core'
+import type { ResolvedMasterCSSVitePluginOptions } from '../options'
 
-export default function StaticMode(_options: PluginOptions, _context: PluginContext): Plugin[] {
+export default function StaticMode(_options: ResolvedMasterCSSVitePluginOptions, _context: MasterCSSVitePluginContext): Plugin[] {
   return []
 }

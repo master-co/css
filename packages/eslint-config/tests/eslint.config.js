@@ -1,9 +1,9 @@
 import { defineConfig } from 'eslint/config'
-import css from '@master/eslint-config-css'
+import masterCSS from '@master/eslint-config-css'
 import htmlParser from '@angular-eslint/template-parser'
 
 export default defineConfig([
-  ...css,
+  ...masterCSS,
   {
     files: [
       '*.html'

@@ -61,11 +61,11 @@ npm install @master/css-webpack
 ## Usage
 
 ```js
-import MasterCSSPlugin from '@master/css-webpack'
+import { MasterCSSWebpackPlugin } from '@master/css-webpack'
 
 export default {
   plugins: [
-    new MasterCSSPlugin()
+    new MasterCSSWebpackPlugin()
   ]
 }
 ```
@@ -85,6 +85,6 @@ Import the default stylesheet from your application CSS so the plugin can replac
 @import '@master/css';
 ```
 
-The Webpack plugin uses `@master/css-tooling/scanner` for source scanning and writes generated CSS through virtual modules.
+The Webpack plugin uses `MasterCSSScanner` from `@master/css-tooling/scanner/node` for source scanning and writes generated CSS through virtual modules.
 
 See the [Webpack installation guide](https://rc.css.master.co/guide/installation/webpack) for a complete project setup.

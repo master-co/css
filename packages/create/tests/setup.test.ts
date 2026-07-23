@@ -5,7 +5,21 @@ import { tmpdir } from 'node:os'
 import { delimiter, dirname, join, resolve } from 'node:path'
 import { pathToFileURL } from 'node:url'
 import { describe, expect, test } from 'vitest'
-import { applySetup, createSetupPlan } from '../src'
+import {
+  applyMasterCSSSetupPlan,
+  planMasterCSSSetup,
+  type MasterCSSSetupOptions
+} from '../src'
+
+function applySetup(options: MasterCSSSetupOptions = {}) {
+  const plan = planMasterCSSSetup(options)
+  applyMasterCSSSetupPlan(plan, options)
+  return plan
+}
+
+function formatPlannedCommand(command: { executable: string, args: readonly string[] }) {
+  return [command.executable, ...command.args].join(' ')
+}
 import { resolveCommandOptions } from '../src/core'
 import { addMasterCSSEslintConfig } from '../src/transforms'
 
@@ -78,12 +92,9 @@ function pathEnvKey() {
 
 describe('@master/create-css setup planner', () => {
   test('creates a modern ESLint flat config', () => {
-    expect(addMasterCSSEslintConfig('')).toBe(`import { defineConfig } from 'eslint/config'
-import css from '@master/eslint-config-css'
+    expect(addMasterCSSEslintConfig('')).toBe(`import masterCSS from '@master/eslint-config-css'
 
-export default defineConfig([
-  ...css
-])
+export default masterCSS
 `)
   })
 
@@ -96,10 +107,10 @@ export default defineConfig([
 ])
 `)).toBe(`import { defineConfig } from 'eslint/config'
 import js from '@eslint/js'
-import css from '@master/eslint-config-css'
+import masterCSS from '@master/eslint-config-css'
 
 export default defineConfig([
-  ...css,
+  ...masterCSS,
   js.configs.recommended
 ])
 `)
@@ -113,10 +124,10 @@ export default [
 ]
 `)).toBe(`import js from '@eslint/js'
 import { defineConfig } from 'eslint/config'
-import css from '@master/eslint-config-css'
+import masterCSS from '@master/eslint-config-css'
 
 export default defineConfig([
-  ...css,
+  ...masterCSS,
   js.configs.recommended
 ])
 `)
@@ -124,10 +135,10 @@ export default defineConfig([
 
   test('keeps existing Master CSS ESLint config unchanged', () => {
     const content = `import { defineConfig } from 'eslint/config'
-import css from '@master/eslint-config-css'
+import masterCSS from '@master/eslint-config-css'
 
 export default defineConfig([
-  ...css
+  ...masterCSS
 ])
 `
 
@@ -141,7 +152,7 @@ export default defineConfig([
       }
     })
 
-    const plan = createSetupPlan({
+    const plan = planMasterCSSSetup({
       root,
       framework: 'auto'
     })
@@ -160,7 +171,7 @@ export default defineConfig([
       ['eslint.config.js', 'create'],
       ['AGENTS.md', 'create']
     ])
-    expect(plan.commands[0].command).toContain('@master/css-mcp@rc')
+    expect(formatPlannedCommand(plan.commands[0])).toContain('@master/css-mcp@rc')
   })
 
   test('plans minimal Vite setup without recommended integrations', () => {
@@ -170,7 +181,7 @@ export default defineConfig([
       }
     })
 
-    const plan = createSetupPlan({
+    const plan = planMasterCSSSetup({
       root,
       minimal: true
     })
@@ -193,7 +204,7 @@ export default defineConfig([
       }
     })
 
-    const plan = createSetupPlan({
+    const plan = planMasterCSSSetup({
       root,
       minimal: true,
       eslint: true
@@ -220,7 +231,7 @@ export default defineConfig([
       }
     })
 
-    const plan = createSetupPlan({
+    const plan = planMasterCSSSetup({
       root,
       eslint: false,
       mcp: false,
@@ -501,6 +512,23 @@ export default defineConfig([
     }).toEqual(once)
   })
 
+  test('rejects a stale setup plan before writing any file', () => {
+    const root = createTempProject('master-css-create-stale-plan-', {
+      dependencies: {
+        vite: '^8.0.0'
+      }
+    })
+    writeProjectFile(root, 'vite.config.ts', 'export default { plugins: [] }\n')
+    const plan = planMasterCSSSetup({ root, minimal: true })
+    writeProjectFile(root, 'vite.config.ts', 'export default { plugins: [externalChange()] }\n')
+
+    expect(() => applyMasterCSSSetupPlan(plan, { install: false })).toThrow(
+      'Setup plan is stale because vite.config.ts changed after planning.'
+    )
+    expect(readProjectFile(root, 'package.json')).not.toContain('@master/css')
+    expect(readProjectFile(root, 'vite.config.ts')).toContain('externalChange()')
+  })
+
   test('plans React projects with the Vite plugin and index CSS entry', () => {
     const root = createTempProject('master-css-create-react-', {
       dependencies: {
@@ -517,7 +545,7 @@ export default defineConfig({
 `)
     writeProjectFile(root, 'src/index.css', 'body { margin: 0; }\n')
 
-    const plan = createSetupPlan({ root })
+    const plan = planMasterCSSSetup({ root })
 
     expect(plan.framework).toBe('react')
     expect(plan.dependencies.map((dependency) => dependency.name)).toEqual([
@@ -578,7 +606,7 @@ export default defineConfig({
     writeProjectFile(root, 'src/assets/main.css', 'body { margin: 0; }\n')
     writeProjectFile(root, 'src/App.vue', '<template><h1 class="block">Hello</h1></template>\n')
 
-    const plan = createSetupPlan({ root })
+    const plan = planMasterCSSSetup({ root })
 
     expect(plan.framework).toBe('vue')
     expect(plan.dependencies.map((dependency) => dependency.name)).toEqual([
@@ -605,7 +633,7 @@ export default defineConfig({
   test('honors explicit Vue setup without framework auto detection', () => {
     const root = createTempProject('master-css-create-vue-explicit-')
 
-    const plan = createSetupPlan({
+    const plan = planMasterCSSSetup({
       root,
       framework: 'vue',
       minimal: true
@@ -649,7 +677,7 @@ export default function App() {
 }
 `)
 
-    const plan = createSetupPlan({ root })
+    const plan = planMasterCSSSetup({ root })
 
     expect(plan.framework).toBe('react-router')
     expect(plan.dependencies.map((dependency) => dependency.name)).toEqual([
@@ -739,7 +767,7 @@ function RootComponent() {
 }
 `)
 
-    const plan = createSetupPlan({ root })
+    const plan = planMasterCSSSetup({ root })
 
     expect(plan.framework).toBe('tanstack-start')
     expect(plan.dependencies.map((dependency) => dependency.name)).toEqual([
@@ -806,7 +834,7 @@ export default defineConfig({
   test('allows explicit TanStack Start setup without framework auto detection', () => {
     const root = createTempProject('master-css-create-tanstack-start-explicit-')
 
-    const plan = createSetupPlan({
+    const plan = planMasterCSSSetup({
       root,
       framework: 'tanstack-start',
       minimal: true
@@ -871,7 +899,7 @@ export default function Root() {
 `)
     writeProjectFile(root, 'src/index.css', 'body { margin: 0; }\n')
 
-    const plan = createSetupPlan({ root })
+    const plan = planMasterCSSSetup({ root })
 
     expect(plan.framework).toBe('rspack')
     expect(plan.dependencies.map((dependency) => dependency.name)).toEqual([
@@ -940,7 +968,7 @@ export default defineConfig({
 })
 `)
 
-    const plan = createSetupPlan({ root })
+    const plan = planMasterCSSSetup({ root })
 
     expect(plan.framework).toBe('rsbuild')
     expect(plan.dependencies.map((dependency) => dependency.name)).toEqual([
@@ -1009,7 +1037,7 @@ export default defineConfig({
 }
 `)
 
-    const plan = createSetupPlan({ root })
+    const plan = planMasterCSSSetup({ root })
 
     expect(plan.framework).toBe('webpack')
     expect(plan.dependencies.map((dependency) => dependency.name)).toEqual([
@@ -1115,7 +1143,7 @@ export default defineConfig({
 })
 `)
 
-    const staticPlan = createSetupPlan({
+    const staticPlan = planMasterCSSSetup({
       root,
       framework: 'laravel',
       mode: 'static',
@@ -1124,7 +1152,7 @@ export default defineConfig({
 
     expect(staticPlan.mode).toBe('static')
     expect(staticPlan.files.find((file) => file.path === 'vite.config.ts')?.content).toContain("masterCSS({ mode: 'static' })")
-    expect(() => createSetupPlan({
+    expect(() => planMasterCSSSetup({
       root,
       framework: 'laravel',
       mode: 'runtime',
@@ -1157,8 +1185,8 @@ export class MyElement extends LitElement {
     applySetup({ root, install: false })
 
     expect(readProjectFile(root, 'src/vite-env.d.ts')).toContain('@master/css/client')
-    expect(readProjectFile(root, 'src/my-element.ts')).toContain('@cssRuntime({ manifest, emittedGlobals })')
-    expect(readProjectFile(root, 'src/my-element.ts')).toContain('cssRuntime?: CSSRuntime')
+    expect(readProjectFile(root, 'src/my-element.ts')).toContain('@withMasterCSSRuntime({ manifest, emittedGlobals })')
+    expect(readProjectFile(root, 'src/my-element.ts')).toContain('masterCSSRuntime?: MasterCSSRuntime')
   })
 
   test('plans Angular projects with runtime setup', () => {
@@ -1174,7 +1202,7 @@ import { AppComponent } from './app/app.component'
 bootstrapApplication(AppComponent)
 `)
 
-    const plan = createSetupPlan({ root })
+    const plan = planMasterCSSSetup({ root })
 
     expect(plan.framework).toBe('angular')
     expect(plan.dependencies.map((dependency) => dependency.name)).toEqual([
@@ -1188,8 +1216,8 @@ bootstrapApplication(AppComponent)
 
     applySetup({ root, install: false })
 
-    expect(readProjectFile(root, 'src/main.ts')).toContain("import CSSRuntime from '@master/css-runtime'")
-    expect(readProjectFile(root, 'src/main.ts')).toContain('CSSRuntime.start({ manifest: defaultManifest })')
+    expect(readProjectFile(root, 'src/main.ts')).toContain("import { MasterCSSRuntime } from '@master/css-runtime'")
+    expect(readProjectFile(root, 'src/main.ts')).toContain('MasterCSSRuntime.start({ manifest: defaultManifest })')
     expect(readProjectFile(root, 'src/main.ts')).toContain('.then((cssRuntime) => cssRuntime.observe())')
     expect(readProjectFile(root, 'src/styles.css')).toBe("@import '@master/css';\n")
   })
@@ -1308,7 +1336,7 @@ export default nextConfig;
     const root = createTempProject('master-css-create-unsupported-mode-')
 
     for (const framework of ['angular', 'svelte', 'none'] as const) {
-      expect(() => createSetupPlan({
+      expect(() => planMasterCSSSetup({
         root,
         framework,
         mode: 'static',
@@ -1317,14 +1345,14 @@ export default nextConfig;
     }
   })
 
-  test('delegates SvelteKit setup to @master/css-sv', () => {
+  test('delegates SvelteKit setup to @master/css-svelte-addon', () => {
     const root = createTempProject('master-css-create-svelte-', {
       dependencies: {
         '@sveltejs/kit': '^2.0.0'
       }
     })
 
-    const plan = createSetupPlan({ root })
+    const plan = planMasterCSSSetup({ root })
 
     expect(plan.framework).toBe('svelte')
     expect(plan.dependencies.map((dependency) => dependency.name)).toEqual([
@@ -1336,7 +1364,7 @@ export default nextConfig;
       'eslint.config.js',
       'AGENTS.md'
     ])
-    expect(plan.commands[0].command).toContain('sv add @master/css-sv')
-    expect(plan.commands[1].command).toContain('@master/css-mcp@rc')
+    expect(formatPlannedCommand(plan.commands[0])).toContain('sv add @master/css-svelte-addon')
+    expect(formatPlannedCommand(plan.commands[1])).toContain('@master/css-mcp@rc')
   })
 })

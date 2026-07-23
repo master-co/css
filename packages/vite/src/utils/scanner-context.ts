@@ -1,7 +1,7 @@
-import type CSSScanner from '@master/css-tooling/scanner'
-import type { PluginContext } from '../core'
+import type { MasterCSSScanner } from '@master/css-tooling/scanner/node'
+import type { MasterCSSVitePluginContext } from '../core'
 
-export function getScanner(context: PluginContext): CSSScanner {
+export function getScanner(context: MasterCSSVitePluginContext): MasterCSSScanner {
   if (!context.scanner) {
     throw new Error('[@master/css-vite] Scanner context was not initialized.')
   }

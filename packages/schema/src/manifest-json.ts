@@ -54,7 +54,7 @@ function normalizeUtilityForJSON(utility: ManifestUtility): ManifestUtility {
   }
 }
 
-export function normalizeMasterCSSManifestForJSON(manifest: MasterCSSManifest): MasterCSSManifest {
+export function normalizeMasterCSSManifest(manifest: MasterCSSManifest): MasterCSSManifest {
   return {
     ...manifest,
     ...(manifest.variables ? { variables: normalizeVariablesForJSON(manifest.variables) } : {}),
@@ -62,6 +62,6 @@ export function normalizeMasterCSSManifestForJSON(manifest: MasterCSSManifest): 
   }
 }
 
-export function stringifyMasterCSSManifestJSON(manifest: MasterCSSManifest): string {
-  return JSON.stringify(normalizeMasterCSSManifestForJSON(manifest))
+export function serializeMasterCSSManifest(manifest: MasterCSSManifest): string {
+  return JSON.stringify(normalizeMasterCSSManifest(manifest))
 }

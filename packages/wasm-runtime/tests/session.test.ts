@@ -1,11 +1,11 @@
 import { readFile } from 'node:fs/promises'
 import { afterEach, expect, it, vi } from 'vitest'
-import { createRuntimeWasmSession } from '../src/node'
+import { createWasmEngineSession } from '../src/node'
 
 afterEach(() => vi.unstubAllGlobals())
 
 it('loads the packaged Wasm artifact in Node without fetch support for file URLs', async () => {
-  const session = await createRuntimeWasmSession(JSON.stringify({
+  const session = await createWasmEngineSession(JSON.stringify({
     version: 1,
     utilities: [{
       id: 'display-block',
@@ -30,16 +30,15 @@ it('passes emitted globals to the Wasm-owned session', async () => {
     '../artifacts/mastercss_wasm_runtime_bg.wasm',
     import.meta.url
   )))
-  const session = await createRuntimeWasmSession(JSON.stringify({
+  const session = await createWasmEngineSession(JSON.stringify({
     version: 1,
     variables: {
       color: [{ key: 'red-60', value: '#d00' }]
     },
     utilities: []
   }), {
-    input,
-    emittedGlobalsJSON: JSON.stringify({ variables: { 'color-red-60': 1 } })
-  })
+    emittedGlobals: { variables: { 'color-red-60': 1 } }
+  }, { input })
 
   session.ensureClassRules(['fg:red-60'])
   expect(session.snapshot().text).toBe(
@@ -56,8 +55,9 @@ it('uses a batched CSS.supports handshake for browser-native declarations', asyn
     '../artifacts/mastercss_wasm_runtime_bg.wasm',
     import.meta.url
   )))
-  const session = await createRuntimeWasmSession(
+  const session = await createWasmEngineSession(
     JSON.stringify({ version: 1, utilities: [] }),
+    {},
     { input }
   )
 

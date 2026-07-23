@@ -1,5 +1,5 @@
 {
-  "name": "@master/css-native",
+  "name": "@master/css-backend",
   "type": "module",
   "engines": {
     "node": "^24"
@@ -21,6 +21,24 @@
       "browser": "./dist/browser.js",
       "import": "./dist/index.js",
       "default": "./dist/index.js"
+    },
+    "./engine": {
+      "types": "./dist/engine.d.ts",
+      "browser": "./dist/engine-browser.js",
+      "import": "./dist/engine.js",
+      "default": "./dist/engine.js"
+    },
+    "./compiler": {
+      "types": "./dist/compiler.d.ts",
+      "browser": "./dist/compiler-browser.js",
+      "import": "./dist/compiler.js",
+      "default": "./dist/compiler.js"
+    },
+    "./tooling": {
+      "types": "./dist/tooling.d.ts",
+      "browser": "./dist/tooling-browser.js",
+      "import": "./dist/tooling.js",
+      "default": "./dist/tooling.js"
     }
   },
   "files": [

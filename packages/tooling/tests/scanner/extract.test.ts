@@ -1,6 +1,5 @@
 import { test, expect, it } from 'vitest'
-import { createSourceExtractorSync } from '@master/css-tooling/source/node'
-const { extractClassCandidates } = createSourceExtractorSync()
+import { extractClassCandidates } from './extract-class-candidates'
 
 it('extract latent classes from js raw', () => {
     const content = `

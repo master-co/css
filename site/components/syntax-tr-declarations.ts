@@ -1,4 +1,4 @@
-import { parseCSSDeclarations } from '@master/css-tooling/validator/validate-css'
+import { parseCSSDeclarations } from '@master/css-tooling/css'
 import { generatePresetClasses } from '../common/preset-css'
 
 export function generateSyntaxTrDeclarations(proxyCode: string, previewSyntax?: string) {

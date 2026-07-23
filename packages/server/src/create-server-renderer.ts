@@ -1,37 +1,42 @@
-import type { MasterCSSManifest } from '@master/css-schema/manifest'
-import type { MasterCSSServerRenderIR } from '@master/css-schema/rust-contract'
-import createServerCSS, {
-  createNativeRenderSession,
-  createRendererServerCSS,
-  ensureNativeRenderSessionClasses,
-  ServerCSS,
-  type ServerCSSEmittedGlobals
-} from './create-server-css'
-import getDefaultManifest from './default-manifest'
+import {
+  createRenderSessionSync,
+  renderClassNamesSync,
+  type MasterCSSRenderSession,
+  type MasterCSSRenderSessionOptions,
+  type MasterCSSRenderSnapshot
+} from '@master/css/node'
+import { MasterCSSError } from '@master/css-schema'
+import { supportsNativeDeclaration } from '@master/css-tooling/node'
+import {
+  bindHTMLRenderSessionInternal
+} from './html-render-session'
 import parseHTML from './parse-html'
-import { renderWithCSS, type RenderOptions, type RenderResult } from './render'
+import {
+  renderHTMLWithSnapshot,
+  type MasterCSSHTMLDocumentOptions,
+  type MasterCSSHTMLRenderResult
+} from './render'
 
 const DEFAULT_MAX_CACHED_CLASSES = 8192
 
-export interface ServerRendererOptions {
-  emittedGlobals?: ServerCSSEmittedGlobals
-  maxCachedClasses?: number
+export interface MasterCSSServerRendererOptions extends Omit<
+  MasterCSSRenderSessionOptions,
+  'supportsNativeDeclaration'
+> {
+  readonly maxCachedClasses?: number
 }
 
-export class ServerRenderer {
-  readonly manifest: MasterCSSManifest
+let bindServerRenderer: (
+  options: MasterCSSServerRendererOptions
+) => MasterCSSServerRenderer
+
+export class MasterCSSServerRenderer implements Disposable {
   readonly maxCachedClasses: number
-  private readonly emittedGlobals?: ServerCSSEmittedGlobals
-  private readonly cachedClasses = new Set<string>()
-  private session
+  private readonly cachedClassNames = new Set<string>()
+  private renderSession: MasterCSSRenderSession
   private disposed = false
 
-  constructor(
-    manifest: MasterCSSManifest = getDefaultManifest(),
-    options: ServerRendererOptions = {}
-  ) {
-    this.manifest = manifest
-    this.emittedGlobals = options.emittedGlobals
+  private constructor(private readonly options: MasterCSSServerRendererOptions) {
     this.maxCachedClasses = options.maxCachedClasses ?? DEFAULT_MAX_CACHED_CLASSES
     if (
       this.maxCachedClasses !== Infinity
@@ -39,79 +44,84 @@ export class ServerRenderer {
     ) {
       throw new TypeError('maxCachedClasses must be a positive integer or Infinity.')
     }
-    this.session = createNativeRenderSession(this.manifest, this.emittedGlobals)
+    this.renderSession = this.createRenderSession()
   }
 
-  render(html: string, options: RenderOptions = {}): RenderResult {
+  renderHTML(
+    html: string,
+    options: MasterCSSHTMLDocumentOptions = {}
+  ): MasterCSSHTMLRenderResult {
     this.assertActive()
-    return renderWithCSS(html, options, () => this.createCSS())
+    const classNames = parseHTML(html).classes
+    const snapshot = classNames.length ? this.renderClassNames(classNames) : undefined
+    return renderHTMLWithSnapshot(html, classNames, snapshot, options)
   }
 
-  renderCSS(html: string): ServerCSS | undefined {
+  createHTMLRenderSession(options: MasterCSSHTMLDocumentOptions = {}) {
     this.assertActive()
-    if (!html) return
-    const { classes } = parseHTML(html)
-    if (!classes.length) return
-    const css = this.createCSS()
-    css.ensureClassRules(...classes)
-    return css
-  }
-
-  createCSS() {
-    this.assertActive()
-    return createRendererServerCSS(
-      this.manifest,
-      this.emittedGlobals,
-      (classNames) => this.snapshotForClasses(classNames)
-    )
+    return bindHTMLRenderSessionInternal(this, options)
   }
 
   dispose() {
     if (this.disposed) return
-    this.session.dispose()
-    this.cachedClasses.clear()
+    this.renderSession.dispose()
+    this.cachedClassNames.clear()
     this.disposed = true
   }
 
-  private snapshotForClasses(classNames: string[]): MasterCSSServerRenderIR {
-    this.assertActive()
+  [Symbol.dispose]() {
+    this.dispose()
+  }
+
+  private renderClassNames(classNames: readonly string[]): MasterCSSRenderSnapshot {
     const classes = [...new Set(classNames.filter(Boolean))]
     if (classes.length > this.maxCachedClasses) {
-      const css = createServerCSS(this.manifest, this.emittedGlobals)
-      try {
-        css.ensureClassRules(...classes)
-        return css.snapshot()
-      } finally {
-        css.dispose()
-      }
+      return renderClassNamesSync(classes, this.renderOptions())
     }
 
-    const newClasses = classes.filter(className => !this.cachedClasses.has(className))
-    let classesToEnsure = newClasses
-    if (this.cachedClasses.size + newClasses.length > this.maxCachedClasses) {
-      this.session.dispose()
-      this.session = createNativeRenderSession(this.manifest, this.emittedGlobals)
-      this.cachedClasses.clear()
+    const newClassNames = classes.filter((className) => !this.cachedClassNames.has(className))
+    let classesToEnsure = newClassNames
+    if (this.cachedClassNames.size + newClassNames.length > this.maxCachedClasses) {
+      this.renderSession.dispose()
+      this.renderSession = this.createRenderSession()
+      this.cachedClassNames.clear()
       classesToEnsure = classes
     }
 
-    if (classesToEnsure.length) {
-      ensureNativeRenderSessionClasses(this.session, classesToEnsure)
+    if (classesToEnsure.length) this.renderSession.ensureClassRules(classesToEnsure)
+    for (const className of classes) this.cachedClassNames.add(className)
+    return this.renderSession.snapshotForClassNames(classes)
+  }
+
+  private renderOptions(): MasterCSSRenderSessionOptions {
+    return {
+      manifest: this.options.manifest,
+      emittedGlobals: this.options.emittedGlobals,
+      supportsNativeDeclaration: supportsNativeDeclaration
     }
-    for (const className of classes) this.cachedClasses.add(className)
-    return JSON.parse(this.session.snapshotForClasses(classes)) as MasterCSSServerRenderIR
+  }
+
+  private createRenderSession() {
+    return createRenderSessionSync(this.renderOptions())
   }
 
   private assertActive() {
     if (this.disposed) {
-      throw new Error('ServerRenderer has been disposed.')
+      throw new MasterCSSError({
+        code: 'SESSION_DISPOSED',
+        domain: 'server',
+        message: 'The Master CSS server renderer has been disposed.'
+      })
     }
+  }
+
+  static {
+    bindServerRenderer = (options) => new MasterCSSServerRenderer(options)
   }
 }
 
-export default function createServerRenderer(
-  manifest: MasterCSSManifest = getDefaultManifest(),
-  options: ServerRendererOptions = {}
-) {
-  return new ServerRenderer(manifest, options)
+export function createServerRenderer(
+  options: MasterCSSServerRendererOptions
+): MasterCSSServerRenderer {
+  return bindServerRenderer(options)
 }

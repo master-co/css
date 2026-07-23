@@ -1,4 +1,4 @@
-import CSSScanner from '../../src/scanner'
+import { MasterCSSScanner } from './test-scanner'
 import { mkdtempSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
@@ -6,14 +6,14 @@ import { test, expect } from 'vitest'
 import { createPresetManifest } from '../language/helpers/create-preset-manifest'
 
 test('uses default manifest settings without implicit manifest entry discovery', async () => {
-  const scanner = await new CSSScanner({}, __dirname).init()
+  const scanner = await new MasterCSSScanner({}, __dirname).init()
   expect(scanner.manifest.version).toBe(1)
 })
 
 test('reject string scanner options', async () => {
-  await expect(new CSSScanner('options' as any, __dirname).init())
+  await expect(new MasterCSSScanner('options' as any, __dirname).init())
     .rejects
-    .toThrow('CSSScanner options must be an object.')
+    .toThrow('MasterCSSScanner options must be an object.')
 })
 
 test('uses explicit compiled manifests', async () => {
@@ -31,7 +31,7 @@ test('uses explicit compiled manifests', async () => {
       }
     ]
   })
-  const scanner = await new CSSScanner({
+  const scanner = await new MasterCSSScanner({
     manifest
   }, __dirname).init()
   await expect(
@@ -62,7 +62,7 @@ test('ignores native CSS classes from unmanaged CSS files', async () => {
       }
     `)
 
-    const scanner = await new CSSScanner({}, cwd).init()
+    const scanner = await new MasterCSSScanner({}, cwd).init()
     const changes: string[][] = []
     scanner.on('change', () => {
       changes.push([...scanner.usedNativeClasses])

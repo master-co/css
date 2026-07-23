@@ -1,4 +1,3 @@
-import type CSSRuntime from './core'
 import type HydratedGeneratedRule from './generated-rule'
 
 export interface RuntimeResourceRule {
@@ -17,7 +16,16 @@ export default class RuntimeLayer {
 
   constructor(
     public readonly name: string,
-    public readonly cssRuntime: CSSRuntime
+    private readonly insertRule: (
+      layer: RuntimeLayer,
+      rule: RuntimeLayerRule,
+      index: number
+    ) => void,
+    private readonly deleteRule: (
+      layer: RuntimeLayer,
+      rule: RuntimeLayerRule,
+      index: number
+    ) => void
   ) { }
 
   get text() {
@@ -30,7 +38,7 @@ export default class RuntimeLayer {
     if (this.rules.some(({ key }) => key === rule.key)) return
     const boundedIndex = Math.max(0, Math.min(index, this.rules.length))
     this.rules.splice(boundedIndex, 0, rule)
-    this.cssRuntime.insertLayerRule(this, rule, boundedIndex)
+    this.insertRule(this, rule, boundedIndex)
     return boundedIndex
   }
 
@@ -40,7 +48,7 @@ export default class RuntimeLayer {
       : this.rules.findIndex((rule) => rule.key === key)
     if (foundIndex === -1) return
     const [rule] = this.rules.splice(foundIndex, 1)
-    this.cssRuntime.deleteLayerRule(this, rule, foundIndex)
+    this.deleteRule(this, rule, foundIndex)
     return rule
   }
 

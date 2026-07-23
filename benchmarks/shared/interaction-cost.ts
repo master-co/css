@@ -4,8 +4,8 @@ import { readFile, writeFile } from 'node:fs/promises'
 import { extname, isAbsolute, relative, resolve } from 'node:path'
 import { performance } from 'node:perf_hooks'
 import { chromium, type Browser, type Page } from '@playwright/test'
-import { render } from '@master/css-server'
-import type { MasterCSSManifest } from '@master/css'
+import { renderHTML } from '@master/css-server'
+import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import { benchmarkAdapters, benchmarkFixtures } from '../fixtures/manifest'
 import { summarizeBytes } from './bytes'
 import { collectEnvironment, collectPackageVersions } from './environment'
@@ -547,10 +547,11 @@ export async function createInteractionPage(options: {
     })
   }
 
-  const result = render(sourceHtml, await readDefaultManifest(), {
+  const result = renderHTML(sourceHtml, {
+    manifest: await readDefaultManifest(),
     hydrationManifest: 'inject'
   })
-  const inlineCSS = result.css?.text || ''
+  const inlineCSS = result.cssText
   const hydrationManifestJSON = result.hydrationManifest
     ? JSON.stringify(result.hydrationManifest)
     : ''
@@ -1288,10 +1289,11 @@ async function readMasterStaticCSS(fixtureId: BenchmarkFixtureId) {
         classes: masterClasses,
         includeStaticClassSource: true
       })
-      const result = render(sourceHtml, await readDefaultManifest(), {
+      const result = renderHTML(sourceHtml, {
+        manifest: await readDefaultManifest(),
         hydrationManifest: false
       })
-      return result.css?.text || ''
+      return result.cssText
     })()
     masterStaticCSSCache.set(fixtureId, promise)
   }

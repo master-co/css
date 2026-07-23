@@ -1,13 +1,28 @@
 import path from 'path'
 import { LanguageClient, LanguageClientOptions, ServerOptions, TransportKind } from 'vscode-languageclient/node'
 import { commands, Disposable, EventEmitter, ExtensionContext, languages, ProgressLocation, Range, SemanticTokens, SemanticTokensLegend, TextEdit, window, workspace, type CancellationToken, type FormattingOptions, type LogOutputChannel, type Position, type ProviderResult, type TextDocument } from 'vscode'
-import { ACTIVE_SEMANTIC_TOKENS_REQUEST, DOCUMENT_SEMANTIC_TOKENS_REQUEST, settings, type Settings } from '@master/css-language-server'
-import { createLanguageSession, defaultManifest, SEMANTIC_TOKENS_LEGEND, type LanguageSession } from '@master/css-tooling/language'
-import { isCompatibleMasterCSSPackageVersion, resolveMasterCSSWorkspacePackages } from '@master/css-compiler/project/workspace'
+import {
+  ACTIVE_SEMANTIC_TOKENS_REQUEST,
+  DOCUMENT_SEMANTIC_TOKENS_REQUEST,
+  defaultLanguageServerSettings,
+  type MasterCSSLanguageServerSettings
+} from '@master/css-language-server'
+import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
+import type { MasterCSSManifest } from '@master/css-schema/manifest'
+import {
+  createToolingSession,
+  type MasterCSSToolingSession
+} from '@master/css-tooling'
+import { SEMANTIC_TOKENS_LEGEND } from '@master/css-tooling/language'
+import {
+  isCompatibleMasterCSSPackageVersion,
+  resolveMasterCSSWorkspacePackages
+} from '@master/css-build-internal/workspace'
 
 let client: LanguageClient
 let outputChannel: LogOutputChannel
-let directiveLanguageSession: Promise<LanguageSession> | undefined
+const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
+let directiveLanguageSession: Promise<MasterCSSToolingSession> | undefined
 
 const disposables: Disposable[] = []
 
@@ -20,11 +35,11 @@ const CSS_SEMANTIC_TOKEN_LANGUAGE_IDS = new Set(['css', 'scss', 'less'])
 const CSS_FORMAT_LANGUAGE_IDS = new Set(['css', 'scss', 'less'])
 let formattingDelegationDepth = 0
 
-function getMasterCSSSettings(): Partial<Settings> {
+function getMasterCSSSettings(): Partial<MasterCSSLanguageServerSettings> {
   const configuration = workspace.getConfiguration('masterCSS')
-  const result: Partial<Settings> = {}
+  const result: Partial<MasterCSSLanguageServerSettings> = {}
   const writableResult = result as Record<string, unknown>
-  for (const optionName in settings) {
+  for (const optionName in defaultLanguageServerSettings) {
     const value = configuration.get(optionName)
     if (value !== undefined) {
       writableResult[optionName] = value
@@ -34,7 +49,9 @@ function getMasterCSSSettings(): Partial<Settings> {
 }
 
 function getIncludedLanguages() {
-  return getMasterCSSSettings().includedLanguages ?? settings.includedLanguages ?? []
+  return getMasterCSSSettings().includedLanguages
+    ?? defaultLanguageServerSettings.includedLanguages
+    ?? []
 }
 
 function log(message: string) {
@@ -67,7 +84,7 @@ function resolveWorkspaceServerModule(context: ExtensionContext, bundledServerMo
     const languageServer = resolution.languageServer
     if (!languageServer) {
       log(`Using bundled language server because ${workspaceFolder.uri.fsPath} does not resolve @master/css-language-server/server.`)
-      resolution.errors.forEach(({ name, message }) => log(`Workspace package resolution warning for ${name}: ${message}`))
+      resolution.errors.forEach(({ name, message }) => log(`MasterCSSWorkspace package resolution warning for ${name}: ${message}`))
       return bundledServerModule
     }
     if (!isCompatibleMasterCSSPackageVersion(languageServer.version, bundledVersion)) {
@@ -88,7 +105,7 @@ function resolveWorkspaceServerModule(context: ExtensionContext, bundledServerMo
   return bundledServerModule
 }
 
-function getEmbeddedSyntaxHighlighting(): NonNullable<Settings['embeddedSyntaxHighlighting']> {
+function getEmbeddedSyntaxHighlighting(): NonNullable<MasterCSSLanguageServerSettings['embeddedSyntaxHighlighting']> {
   const mode = getMasterCSSSettings().embeddedSyntaxHighlighting
   return mode === 'always' || mode === 'off' ? mode : 'active'
 }
@@ -128,7 +145,7 @@ function applyTextEdits(document: TextDocument, edits: readonly TextEdit[]) {
 }
 
 function getDirectiveLanguageSession() {
-  return directiveLanguageSession ??= createLanguageSession(defaultManifest)
+  return directiveLanguageSession ??= createToolingSession({ manifest: defaultManifest })
 }
 
 async function formatDirectiveText(text: string) {
@@ -390,7 +407,7 @@ export function activate(context: ExtensionContext) {
     workspace.onDidChangeConfiguration(async (event) => {
       const affectedProperties: string[] = []
       let shouldRestart = false
-      for (const optionName in settings) {
+      for (const optionName in defaultLanguageServerSettings) {
         const property = `masterCSS.${optionName}`
         if (event.affectsConfiguration(property)) {
           affectedProperties.push(property)

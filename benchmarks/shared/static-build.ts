@@ -242,6 +242,7 @@ function resolveBuildArgs(tool: StaticBuildTool) {
   if (tool.command === 'master-cli') {
     return [
       resolveBenchmarkPackageFile('@master/css-cli', 'dist/bin/index.js'),
+      'generate',
       'index.html',
       '-o',
       'dist/output.css',

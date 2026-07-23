@@ -26,7 +26,7 @@ async function startAndCaptureFailure(page: Page, loaderURL: string, startupTime
       return {
         code: (error as { code?: string }).code,
         hidden: document.documentElement.hasAttribute('hidden'),
-        runtimeStarted: Boolean(globalThis.masterCSSRuntime)
+        runtimeStarted: Boolean(globalThis.__MASTER_CSS_RUNTIME_TEST__)
       }
     }
     throw new Error('Expected runtime startup to fail.')
@@ -101,5 +101,5 @@ test('fails open when Wasm startup exceeds the configured timeout', async ({ pag
     runtimeStarted: false
   })
   await page.waitForTimeout(175)
-  expect(await page.evaluate(() => Boolean(globalThis.masterCSSRuntime))).toBe(false)
+  expect(await page.evaluate(() => Boolean(globalThis.__MASTER_CSS_RUNTIME_TEST__))).toBe(false)
 })

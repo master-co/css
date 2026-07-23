@@ -1,4 +1,4 @@
-import CSSScanner from '../../src/scanner'
+import { MasterCSSScanner } from './test-scanner'
 import { describe, test, expect } from 'vitest'
 import path from 'node:path'
 
@@ -8,7 +8,7 @@ const ROOT = path.join(path.parse(process.cwd()).root, 'project')
 
 describe('content-hash cache (Phase A optimisation)', () => {
   test('scan(source, content) returns false on identical re-call', async () => {
-    const ex = await new CSSScanner({}).init()
+    const ex = await new MasterCSSScanner({}).init()
     const first = await ex.scan(SOURCE, CONTENT)
     const second = await ex.scan(SOURCE, CONTENT)
     expect(first).toBe(true)
@@ -16,7 +16,7 @@ describe('content-hash cache (Phase A optimisation)', () => {
   })
 
   test('cache key is per-source — same content from a different source still inserts', async () => {
-    const ex = await new CSSScanner({}).init()
+    const ex = await new MasterCSSScanner({}).init()
     const a = await ex.scan('a.tsx', CONTENT)
     const b = await ex.scan('b.tsx', CONTENT)
     expect(a).toBe(true)
@@ -29,7 +29,7 @@ describe('content-hash cache (Phase A optimisation)', () => {
   })
 
   test('cache invalidates on content change', async () => {
-    const ex = await new CSSScanner({}).init()
+    const ex = await new MasterCSSScanner({}).init()
     const v1 = await ex.scan(SOURCE, `<div class="bg:red">a</div>`)
     const v2 = await ex.scan(SOURCE, `<div class="bg:blue">b</div>`)
     expect(v1).toBe(true)
@@ -37,7 +37,7 @@ describe('content-hash cache (Phase A optimisation)', () => {
   })
 
   test('reset() clears the content-hash cache', async () => {
-    const ex = await new CSSScanner({}).init()
+    const ex = await new MasterCSSScanner({}).init()
     await ex.scan(SOURCE, CONTENT)
     await ex.reset()
     // After reset, the hash for SOURCE is gone, so the same content
@@ -49,7 +49,7 @@ describe('content-hash cache (Phase A optimisation)', () => {
 
 describe('Rust scanner validity cache', () => {
   test('same class across many files remains a single generated rule', async () => {
-    const ex = await new CSSScanner({}).init()
+    const ex = await new MasterCSSScanner({}).init()
     // First file with the class — populates validClasses + the rules cache.
     await ex.scan('a.tsx', `<div className="bg:white">a</div>`)
     expect(ex.validClasses.has('bg:white')).toBe(true)
@@ -62,7 +62,7 @@ describe('Rust scanner validity cache', () => {
 
 describe('class exclusion matcher', () => {
   test('resets stateful regular expressions while filtering repeated classes', async () => {
-    const ex = await new CSSScanner({
+    const ex = await new MasterCSSScanner({
       blocklist: [/^bg:/g]
     }).init()
 
@@ -74,7 +74,7 @@ describe('class exclusion matcher', () => {
   })
 
   test('rebuilds when blocklist is reassigned', async () => {
-    const ex = await new CSSScanner({
+    const ex = await new MasterCSSScanner({
       blocklist: [/^bg:/]
     }).init()
 
@@ -89,21 +89,21 @@ describe('class exclusion matcher', () => {
 
 describe('module source matcher cache', () => {
   test('scan() accepts trusted content without module filtering', async () => {
-    const ex = await new CSSScanner({ exclude: ['**/*.tsx'] }).init()
+    const ex = await new MasterCSSScanner({ exclude: ['**/*.tsx'] }).init()
 
     expect(await ex.scan('component.tsx', `<div className="block">hi</div>`)).toBe(true)
     expect(ex.validClasses.has('block')).toBe(true)
   })
 
   test('normalizes query suffixes before matching module paths', async () => {
-    const ex = await new CSSScanner({}).init()
+    const ex = await new MasterCSSScanner({}).init()
 
     expect(ex.isModuleAllowed('component.tsx?import')).toBe(true)
     expect(ex.isModuleAllowed('content.md?raw')).toBe(true)
   })
 
   test('rejects non-source extensions with Vite query suffixes', async () => {
-    const ex = await new CSSScanner({}).init()
+    const ex = await new MasterCSSScanner({}).init()
 
     expect(ex.isModuleAllowed('data.json?import')).toBe(false)
     expect(ex.isModuleAllowed('icon.svg?url')).toBe(false)
@@ -111,7 +111,7 @@ describe('module source matcher cache', () => {
   })
 
   test('rejects framework style module requests', async () => {
-    const ex = await new CSSScanner({}).init()
+    const ex = await new MasterCSSScanner({}).init()
 
     expect(ex.isModuleAllowed('App.vue?vue&type=script')).toBe(true)
     expect(ex.isModuleAllowed('App.vue?vue&type=style&index=0&lang.css')).toBe(false)
@@ -119,7 +119,7 @@ describe('module source matcher cache', () => {
   })
 
   test('rejects generated and cache dot directories by default', async () => {
-    const ex = await new CSSScanner({}, ROOT).init()
+    const ex = await new MasterCSSScanner({}, ROOT).init()
 
     for (const source of [
       'docs/.vitepress/cache/deps/vue.js?v=abc123',
@@ -149,7 +149,7 @@ describe('module source matcher cache', () => {
   })
 
   test('allows framework source files in dot directories by default', async () => {
-    const ex = await new CSSScanner({}, ROOT).init()
+    const ex = await new MasterCSSScanner({}, ROOT).init()
 
     expect(ex.isModuleAllowed(path.join(ROOT, 'docs/.vitepress/theme/index.ts'))).toBe(true)
     expect(ex.isModuleAllowed(path.join(ROOT, 'docs/.vitepress/theme/Layout.vue'))).toBe(true)
@@ -157,7 +157,7 @@ describe('module source matcher cache', () => {
   })
 
   test('matches absolute module ids against relative exclude globs within cwd', async () => {
-    const ex = await new CSSScanner({
+    const ex = await new MasterCSSScanner({
       exclude: ['src/**/*.test.tsx']
     }, ROOT).init()
 
@@ -166,7 +166,7 @@ describe('module source matcher cache', () => {
   })
 
   test('rebuilds module excludes when exclude is reassigned', async () => {
-    const ex = await new CSSScanner({
+    const ex = await new MasterCSSScanner({
       exclude: ['src/**/*.test.tsx']
     }, ROOT).init()
 
@@ -177,7 +177,7 @@ describe('module source matcher cache', () => {
   })
 
   test('strips query suffixes before matching absolute module ids against relative excludes', async () => {
-    const ex = await new CSSScanner({
+    const ex = await new MasterCSSScanner({
       exclude: ['src/**/*.test.tsx']
     }, ROOT).init()
 
@@ -185,7 +185,7 @@ describe('module source matcher cache', () => {
   })
 
   test('rejects absolute framework style module requests before exclude matching', async () => {
-    const ex = await new CSSScanner({
+    const ex = await new MasterCSSScanner({
       exclude: []
     }, ROOT).init()
 
@@ -194,7 +194,7 @@ describe('module source matcher cache', () => {
   })
 
   test('scanModule() scans source-like allowed modules only', async () => {
-    const ex = await new CSSScanner({
+    const ex = await new MasterCSSScanner({
       exclude: ['src/skip.tsx']
     }, ROOT).init()
 

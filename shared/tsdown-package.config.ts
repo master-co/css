@@ -20,7 +20,7 @@ const rootByPackageName: Record<string, string> = {
   '@master/css-svelte': 'src/lib'
 }
 
-const internalIntegrationPattern = /^@master\/css-internal-integration(?:\/|$)/
+const internalIntegrationPattern = /^@master\/css-build-internal(?:\/|$)/
 
 const externalLanguageSyntaxJSON: TsdownPlugin = {
   name: 'external-language-syntax-json',

@@ -32,14 +32,14 @@
       import { LitElement, html } from 'lit'
       import { customElement } from 'lit/decorators.js'
       import { cssRuntime } from '@master/css-runtime'
-      import type CSSRuntime from '@master/css-runtime'
+      import type { MasterCSSRuntime } from '@master/css-runtime'
       import manifest from 'virtual:master-css-manifest'
       import emittedGlobals from 'virtual:master-css-emitted-globals'
 
       @customElement('my-element')
       @cssRuntime({ manifest, emittedGlobals })
       export class MyElement extends LitElement {
-        cssRuntime?: CSSRuntime
+        cssRuntime?: MasterCSSRuntime
 
         render() {
           return html`

@@ -1,13 +1,13 @@
 import { describe, expect, it } from 'vitest'
 import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
-import { compileBrowserStyleCSS } from '../../src/stylesheet/browser'
+import { compileBrowserStylesheet } from '../../src/stylesheet/browser'
 
 const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
 
 describe('@master/css-compiler/stylesheet/browser', () => {
   it('renders class names with the compiled manifest', async () => {
-    const result = await compileBrowserStyleCSS(`
+    const result = await compileBrowserStylesheet(`
       @components {
         btn {
           @compose flex;
@@ -27,7 +27,7 @@ describe('@master/css-compiler/stylesheet/browser', () => {
   })
 
   it('preserves native CSS while rendering class names', async () => {
-    const result = await compileBrowserStyleCSS(`
+    const result = await compileBrowserStylesheet(`
       @theme {
         --color-card: #ffffff;
       }
@@ -46,7 +46,7 @@ describe('@master/css-compiler/stylesheet/browser', () => {
   })
 
   it('emits variables referenced by native CSS without class names', async () => {
-    const result = await compileBrowserStyleCSS(`
+    const result = await compileBrowserStylesheet(`
       @theme {
         --color-card: #ffffff;
       }
@@ -66,7 +66,7 @@ describe('@master/css-compiler/stylesheet/browser', () => {
   })
 
   it('emits generated keyframes referenced by native CSS', async () => {
-    const result = await compileBrowserStyleCSS('.native { animation: fade 1s; }', {
+    const result = await compileBrowserStylesheet('.native { animation: fade 1s; }', {
       baseManifest: defaultManifest
     })
 
@@ -78,7 +78,7 @@ describe('@master/css-compiler/stylesheet/browser', () => {
   })
 
   it('does not duplicate generated keyframes defined by native CSS', async () => {
-    const result = await compileBrowserStyleCSS([
+    const result = await compileBrowserStylesheet([
       '@keyframes fade { to { opacity: .5; } }',
       '.native { animation-name: fade; animation-duration: 1s; }'
     ].join('\n'), {
@@ -91,7 +91,7 @@ describe('@master/css-compiler/stylesheet/browser', () => {
   })
 
   it('propagates directive warnings', async () => {
-    const result = await compileBrowserStyleCSS(`
+    const result = await compileBrowserStylesheet(`
       @settings {
         mode-trigger: media;
       }
@@ -103,8 +103,11 @@ describe('@master/css-compiler/stylesheet/browser', () => {
       baseManifest: defaultManifest
     })
 
-    expect(result.warnings).toEqual([
-      'Custom mode "custom" will not work with mode-trigger: media. Browsers only support light and dark prefers-color-scheme values; use mode-trigger: class or host for custom modes.'
+    expect(result.diagnostics).toEqual([
+      expect.objectContaining({
+        severity: 'warning',
+        message: 'Custom mode "custom" will not work with mode-trigger: media. Browsers only support light and dark prefers-color-scheme values; use mode-trigger: class or host for custom modes.'
+      })
     ])
   })
 })

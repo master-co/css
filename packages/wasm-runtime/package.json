@@ -1,5 +1,5 @@
 {
-  "name": "@master/css-wasm-runtime",
+  "name": "@master/css-wasm-engine",
   "type": "module",
   "engines": {
     "node": "^24"
@@ -22,8 +22,7 @@
       "node": "./dist/node.js",
       "import": "./dist/index.js",
       "default": "./dist/index.js"
-    },
-    "./wasm": "./artifacts/mastercss_wasm_runtime_bg.wasm"
+    }
   },
   "files": ["dist", "artifacts"],
   "publishConfig": {
@@ -31,6 +30,7 @@
     "provenance": true
   },
   "dependencies": {
+    "@master/css-backend": "workspace:*",
     "@master/css-schema": "workspace:*"
   }
 }

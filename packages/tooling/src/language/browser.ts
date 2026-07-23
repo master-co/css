@@ -1,4 +1,4 @@
-import { stringifyMasterCSSManifestJSON } from '@master/css-schema/manifest-json'
+import { serializeMasterCSSManifest } from '@master/css-schema/manifest'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import {
   initToolingWasm,
@@ -8,7 +8,6 @@ import {
   bindLanguageSession,
   type LanguageSession
 } from './session'
-import { defaultManifest } from './master-css'
 import {
   SEMANTIC_TOKEN_MODIFIERS,
   SEMANTIC_TOKEN_TYPES,
@@ -19,16 +18,16 @@ export { SEMANTIC_TOKEN_MODIFIERS, SEMANTIC_TOKEN_TYPES, SEMANTIC_TOKENS_LEGEND 
 export type { LanguageSession }
 
 export interface BrowserLanguageSessionOptions {
-  manifest?: MasterCSSManifest
+  manifest: MasterCSSManifest
   wasm?: InitToolingWasmOptions
 }
 
 export async function createLanguageSession(
-  options: BrowserLanguageSessionOptions = {}
+  options: BrowserLanguageSessionOptions
 ): Promise<LanguageSession> {
   const tooling = await initToolingWasm(options.wasm)
   const raw = new tooling.ToolingLanguageSession(
-    stringifyMasterCSSManifestJSON(options.manifest || defaultManifest)
+    serializeMasterCSSManifest(options.manifest)
   )
   const backend = {
     analyzeDocument: (request: unknown) => raw.analyzeDocument(request),

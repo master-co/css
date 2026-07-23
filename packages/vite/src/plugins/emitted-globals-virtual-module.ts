@@ -1,11 +1,11 @@
 import type { Plugin } from 'vite'
-import { toEmittedGlobalsModule } from '@master/css-internal-integration/emitted-globals-module'
-import type { PluginContext } from '../core'
+import { toEmittedGlobalsModule } from '@master/css-build-internal/emitted-globals-module'
+import type { MasterCSSVitePluginContext } from '../core'
 import { RESOLVED_VIRTUAL_EMITTED_GLOBALS_ID, VIRTUAL_EMITTED_GLOBALS_ID } from '../common'
 import { getExtractedCSSResult } from '../utils/extracted-css'
 
 export default function EmittedGlobalsVirtualModulePlugin(
-  context: PluginContext
+  context: MasterCSSVitePluginContext
 ): Plugin {
   return {
     name: 'master-css:virtual-module:emitted-globals',

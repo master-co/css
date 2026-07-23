@@ -1,15 +1,14 @@
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
-import { stringifyMasterCSSManifestJSON } from '@master/css-schema/manifest-json'
-import {
-  createNativeLintSession,
-  fromRustLintDiagnostics,
-  type LintSession,
-  type RustLintClassListOptions
-} from './rust-session'
+import { createToolingSessionSync } from '../node'
 
-export type { LintSession, RustLintClassListOptions }
-export { fromRustLintDiagnostics }
-
-export function createLintSessionSync(manifest: MasterCSSManifest): LintSession {
-  return createNativeLintSession(stringifyMasterCSSManifestJSON(manifest), { required: true })!
+export function lintClassNamesSync(
+  classNames: readonly string[],
+  options: { readonly manifest: MasterCSSManifest }
+) {
+  const session = createToolingSessionSync(options)
+  try {
+    return session.lintClassNames(classNames)
+  } finally {
+    session.dispose()
+  }
 }

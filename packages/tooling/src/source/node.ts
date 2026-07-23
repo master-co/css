@@ -1,13 +1,18 @@
-import { NativeBindingError } from '@master/css-native'
-import { createNativeSourceExtractor, type SourceExtractor } from './session'
+import type { MasterCSSManifest } from '@master/css-schema/manifest'
+import { createToolingSessionSync } from '../node'
+import type {
+  MasterCSSSourceExtraction,
+  MasterCSSSourceExtractionRequest
+} from './index'
 
-export type { SourceExtractor } from './session'
-
-export function createSourceExtractorSync(): SourceExtractor {
-  const extractor = createNativeSourceExtractor()
-  if (extractor) return extractor
-  throw new NativeBindingError(
-    'NATIVE_UNAVAILABLE',
-    'createSourceExtractorSync() requires the Master CSS native binding.'
-  )
+export function extractSourceSync(
+  request: MasterCSSSourceExtractionRequest,
+  options: { readonly manifest: MasterCSSManifest }
+): MasterCSSSourceExtraction {
+  const session = createToolingSessionSync(options)
+  try {
+    return session.extractSource(request)
+  } finally {
+    session.dispose()
+  }
 }

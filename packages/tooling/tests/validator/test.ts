@@ -1,8 +1,8 @@
 import { beforeAll, expect, it } from 'vitest'
 import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
-import { createValidatorSync } from '../../src/validator/node'
-import validateCSS from '../../src/validator/validate-css'
+import { validateCSS } from '../../src/css'
+import { createTestToolingSession } from '../helpers/create-tooling-session'
 
 const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
 
@@ -14,7 +14,7 @@ beforeAll(() => {
 })
 
 it('validates classes through a Rust session and host CSS oracle', () => {
-  const validator = createValidatorSync(defaultManifest)
+  const validator = createTestToolingSession(defaultManifest)
   try {
     const classNames = [
       'text-center',
@@ -27,7 +27,7 @@ it('validates classes through a Rust session and host CSS oracle', () => {
       'text-align:asdf',
       'made-up:left'
     ]
-    const result = validator.generate(classNames)
+    const result = validator.validateClassNames(classNames)
     const byClass = new Map(result.classes.map((value) => [value.className, value]))
 
     for (const className of classNames.slice(0, 7)) {
@@ -44,9 +44,9 @@ it('validates classes through a Rust session and host CSS oracle', () => {
 })
 
 it('keeps native declarations behind host support checks', () => {
-  const validator = createValidatorSync(defaultManifest)
+  const validator = createTestToolingSession(defaultManifest)
   try {
-    const result = validator.generate([
+    const result = validator.validateClassNames([
       'float:left',
       'view-transition-name:hero',
       '--foo:123',

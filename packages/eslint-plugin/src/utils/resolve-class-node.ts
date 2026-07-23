@@ -1,5 +1,5 @@
 import { RuleContext } from '@typescript-eslint/utils/ts-eslint'
-import type { LintSession } from '@master/css-tooling/lint/node'
+import type { MasterCSSToolingSession } from '@master/css-tooling'
 
 export type ResolvedClassListUnescape = string | false
 
@@ -25,7 +25,7 @@ export interface ResolvedClassNode {
 export default function resolveClassNode(
   node: any,
   context: RuleContext<any, any[]>,
-  lintSession: Pick<LintSession, 'tokenizeClassList'>
+  lintSession: Pick<MasterCSSToolingSession, 'tokenizeClassList'>
 ): ResolvedClassNode | undefined {
   const { sourceCode } = context
   let value: string = null

@@ -1,10 +1,10 @@
 import { test, expect, it } from 'vitest'
-import CSSScanner from '../../src/scanner'
+import { MasterCSSScanner } from './test-scanner'
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 
 test('syntax', async () => {
-  const scanner = await new CSSScanner({}, __dirname).init()
+  const scanner = await new MasterCSSScanner({}, __dirname).init()
   const testClasses = [
     '{fg:blue-40/.5;font:2rem;p:4x;w:full;text-center}>li:hover@md',
     'w:calc(+100%-1.25rem)',
@@ -72,7 +72,7 @@ test('syntax', async () => {
 })
 
 it('keeps CSS grammar validation in the host batch handshake', async () => {
-  const scanner = await new CSSScanner({}, __dirname).init()
+  const scanner = await new MasterCSSScanner({}, __dirname).init()
   await scanner.scan(
     'validation.html',
     '<div class="text-wrap:pretty text-decoration:bad()"></div>'

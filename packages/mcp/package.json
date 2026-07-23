@@ -40,11 +40,6 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js",
       "default": "./dist/index.js"
-    },
-    "./server": {
-      "types": "./dist/server.d.ts",
-      "import": "./dist/server.js",
-      "default": "./dist/server.js"
     }
   },
   "files": [
@@ -55,15 +50,18 @@
     "provenance": true
   },
   "dependencies": {
+    "@master/css": "workspace:*",
     "@master/css-compiler": "workspace:*",
     "@master/css-language-service": "workspace:*",
     "@master/css-tooling": "workspace:*",
     "@master/css-preset": "workspace:*",
     "@master/css-schema": "workspace:*",
-    "@master/css-server": "workspace:*",
     "@modelcontextprotocol/sdk": "^1.29.0",
     "fast-glob": "^3.3.3",
     "vscode-languageserver-textdocument": "^1.0.12",
     "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@master/css-build-internal": "workspace:*"
   }
 }

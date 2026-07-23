@@ -1,4 +1,5 @@
 import { spawnSync } from 'node:child_process'
+import { createHash } from 'node:crypto'
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { dirname, join, resolve } from 'node:path'
 import { AGENT_RULES_BLOCK, CANONICAL_ESLINT_CONFIG, MASTER_CSS_PACKAGES, MASTER_CSS_VERSION } from './constants'
@@ -31,52 +32,60 @@ import {
   createWebpackConfig
 } from './transforms'
 
-export type Framework = 'none' | 'vite' | 'react' | 'react-router' | 'tanstack-start' | 'vue' | 'nextjs' | 'svelte' | 'nuxt' | 'astro' | 'webpack' | 'rspack' | 'rsbuild' | 'laravel' | 'lit' | 'angular'
-export type FrameworkOption = Framework | 'auto'
-export type PackageManager = 'npm' | 'pnpm' | 'yarn' | 'bun'
-export type FileAction = 'create' | 'update' | 'skip'
+export type MasterCSSSetupFramework = 'none' | 'vite' | 'react' | 'react-router' | 'tanstack-start' | 'vue' | 'nextjs' | 'svelte' | 'nuxt' | 'astro' | 'webpack' | 'rspack' | 'rsbuild' | 'laravel' | 'lit' | 'angular'
+export type MasterCSSSetupFrameworkOption = MasterCSSSetupFramework | 'auto'
+export type MasterCSSSetupPackageManager = 'npm' | 'pnpm' | 'yarn' | 'bun'
+export type MasterCSSSetupFileAction = 'create' | 'update' | 'skip'
 export type { RenderingMode }
 
-export interface SetupOptions {
+export interface MasterCSSSetupOptions {
   root?: string
-  framework?: FrameworkOption
+  framework?: MasterCSSSetupFrameworkOption
   eslint?: boolean
   mcp?: boolean
   ai?: boolean
   minimal?: boolean
-  install?: PackageManager | false
+  install?: MasterCSSSetupPackageManager | false
   yes?: boolean
   packageTag?: string
   mode?: RenderingMode
 }
 
-export interface PlannedDependency {
+export interface MasterCSSSetupDependency {
   name: string
   version: string
   dev: boolean
 }
 
-export interface PlannedFileChange {
+export interface MasterCSSSetupFilePrecondition {
+  exists: boolean
+  digest: string | null
+}
+
+export interface MasterCSSSetupFileChange {
   path: string
-  action: FileAction
+  action: MasterCSSSetupFileAction
   content?: string
   reason: string
+  precondition: MasterCSSSetupFilePrecondition
 }
 
-export interface PlannedCommand {
-  command: string
+export interface MasterCSSSetupCommand {
+  executable: string
+  args: readonly string[]
   reason: string
 }
 
-export interface SetupPlan {
+export interface MasterCSSSetupPlan {
   version: 1
   root: string
-  framework: Framework
-  packageManager: PackageManager
-  dependencies: PlannedDependency[]
-  files: PlannedFileChange[]
-  commands: PlannedCommand[]
-  warnings: string[]
+  framework: MasterCSSSetupFramework
+  packageManager: MasterCSSSetupPackageManager
+  packageJSONPrecondition: MasterCSSSetupFilePrecondition
+  dependencies: readonly MasterCSSSetupDependency[]
+  files: readonly MasterCSSSetupFileChange[]
+  commands: readonly MasterCSSSetupCommand[]
+  warnings: readonly string[]
   mode?: RenderingMode
   summary: {
     dependencies: number
@@ -94,14 +103,14 @@ interface PackageJSON {
   scripts?: Record<string, string>
 }
 
-const lockfiles: Record<PackageManager, string> = {
+const lockfiles: Record<MasterCSSSetupPackageManager, string> = {
   pnpm: 'pnpm-lock.yaml',
   npm: 'package-lock.json',
   yarn: 'yarn.lock',
   bun: 'bun.lockb'
 }
 
-export function createSetupPlan(options: SetupOptions = {}): SetupPlan {
+export function planMasterCSSSetup(options: MasterCSSSetupOptions = {}): MasterCSSSetupPlan {
   const root = resolve(options.root || process.cwd())
   const packageJSON = readPackageJSON(root)
   const packageManager = resolvePackageManager(root, packageJSON, options.install || undefined)
@@ -112,20 +121,23 @@ export function createSetupPlan(options: SetupOptions = {}): SetupPlan {
   const eslint = resolveRecommendedOption(options.eslint, options.minimal)
   const mcp = resolveRecommendedOption(options.mcp, options.minimal)
   const ai = resolveRecommendedOption(options.ai, options.minimal)
-  const dependencies: PlannedDependency[] = []
-  const files: PlannedFileChange[] = []
-  const commands: PlannedCommand[] = []
+  const dependencies: MasterCSSSetupDependency[] = []
+  const files: MasterCSSSetupFileChange[] = []
+  const commands: MasterCSSSetupCommand[] = []
   const warnings: string[] = []
 
   if (framework === 'svelte') {
     commands.push({
-      command: packageManager === 'pnpm'
-        ? 'pnpm dlx sv add @master/css-sv'
+      executable: packageManager === 'pnpm'
+        ? 'pnpm'
         : packageManager === 'yarn'
-          ? 'yarn dlx sv add @master/css-sv'
+          ? 'yarn'
           : packageManager === 'bun'
-            ? 'bunx sv add @master/css-sv'
-            : 'npx sv add @master/css-sv',
+            ? 'bunx'
+            : 'npx',
+      args: packageManager === 'pnpm' || packageManager === 'yarn'
+        ? ['dlx', 'sv', 'add', '@master/css-svelte-addon']
+        : ['sv', 'add', '@master/css-svelte-addon'],
       reason: 'SvelteKit file setup is delegated to the official Svelte CLI add-on.'
     })
   } else {
@@ -144,7 +156,8 @@ export function createSetupPlan(options: SetupOptions = {}): SetupPlan {
   if (mcp) {
     pushDependency(dependencies, MASTER_CSS_PACKAGES.mcp, true, version)
     commands.push({
-      command: `npx -y @master/css-mcp@${version} --root ${root}`,
+      executable: 'npx',
+      args: ['-y', `@master/css-mcp@${version}`, '--root', root],
       reason: 'Use this stdio command when registering the Master CSS MCP server in an MCP client.'
     })
   }
@@ -166,6 +179,7 @@ export function createSetupPlan(options: SetupOptions = {}): SetupPlan {
     root,
     framework,
     packageManager,
+    packageJSONPrecondition: createFilePrecondition(join(root, 'package.json')),
     dependencies,
     files,
     commands,
@@ -181,7 +195,8 @@ export function createSetupPlan(options: SetupOptions = {}): SetupPlan {
   }
 }
 
-export function applySetupPlan(plan: SetupPlan, options: SetupOptions = {}) {
+export function applyMasterCSSSetupPlan(plan: MasterCSSSetupPlan, options: MasterCSSSetupOptions = {}) {
+  assertPlanPreconditions(plan)
   applyDependencyChanges(plan.root, plan.dependencies)
   for (const file of plan.files) {
     if (file.action === 'skip' || file.content === undefined) continue
@@ -203,13 +218,7 @@ export function applySetupPlan(plan: SetupPlan, options: SetupOptions = {}) {
   }
 }
 
-export function applySetup(options: SetupOptions = {}) {
-  const plan = createSetupPlan(options)
-  applySetupPlan(plan, options)
-  return plan
-}
-
-function filesForFramework(root: string, framework: Framework, warnings: string[], mode?: RenderingMode): PlannedFileChange[] {
+function filesForFramework(root: string, framework: MasterCSSSetupFramework, warnings: string[], mode?: RenderingMode): MasterCSSSetupFileChange[] {
   switch (framework) {
     case 'vite':
       return [
@@ -222,7 +231,7 @@ function filesForFramework(root: string, framework: Framework, warnings: string[
         planTextFile(root, firstExistingPath(root, ['src/index.css', 'src/style.css'], 'src/index.css'), addMasterCSSImportToStylesheet, createMasterCSSStylesheet(), 'Create or update the React project CSS entry.')
       ]
     case 'react-router': {
-      const files: PlannedFileChange[] = [
+      const files: MasterCSSSetupFileChange[] = [
         planTextFile(root, firstExistingPath(root, ['vite.config.ts', 'vite.config.js', 'vite.config.mjs'], 'vite.config.ts'), (content) => addMasterCSSVitePlugin(content, mode), createViteConfig(mode), 'Register the Master CSS Vite plugin.'),
         planTextFile(root, 'app/app.css', addMasterCSSImportToStylesheet, createMasterCSSStylesheet(), 'Create or update the React Router app stylesheet entry.')
       ]
@@ -236,7 +245,7 @@ function filesForFramework(root: string, framework: Framework, warnings: string[
     }
     case 'tanstack-start': {
       const pluginMode = mode ?? 'runtime'
-      const files: PlannedFileChange[] = [
+      const files: MasterCSSSetupFileChange[] = [
         planTextFile(root, firstExistingPath(root, ['vite.config.ts', 'vite.config.js', 'vite.config.mjs'], 'vite.config.ts'), (content) => addMasterCSSTanStackStartVitePlugin(content, pluginMode), createViteConfig(pluginMode), `Register the Master CSS Vite plugin in ${pluginMode} mode.`),
         planTextFile(root, 'src/styles/app.css', addMasterCSSImportToStylesheet, createMasterCSSStylesheet(), 'Create or update the TanStack Start stylesheet entry.')
       ]
@@ -270,7 +279,7 @@ function filesForFramework(root: string, framework: Framework, warnings: string[
       ]
     case 'laravel': {
       const viteConfigPath = findExistingPath(root, ['vite.config.ts', 'vite.config.js'])
-      const files: PlannedFileChange[] = [
+      const files: MasterCSSSetupFileChange[] = [
         planTextFile(root, 'resources/css/app.css', addMasterCSSImportToStylesheet, createMasterCSSStylesheet(), 'Create or update the Laravel Vite CSS entry.')
       ]
       if (viteConfigPath) {
@@ -292,7 +301,7 @@ function filesForFramework(root: string, framework: Framework, warnings: string[
       if (elementPath) {
         files.push(planTextFile(root, elementPath, addLitShadowRuntime, '', 'Initialize Master CSS Runtime for the Lit shadow root.'))
       } else {
-        warnings.push('No standard src/my-element.ts or src/my-element.js file was found. Add @cssRuntime to Lit elements that render Master CSS classes inside shadow roots.')
+        warnings.push('No standard src/my-element.ts or src/my-element.js file was found. Add @withMasterCSSRuntime to Lit elements that render Master CSS classes inside shadow roots.')
       }
       return files
     }
@@ -304,7 +313,7 @@ function filesForFramework(root: string, framework: Framework, warnings: string[
       if (mainPath) {
         files.unshift(planTextFile(root, mainPath, addAngularRuntimeSetup, '', 'Initialize Master CSS Runtime in the Angular browser entry.'))
       } else {
-        warnings.push('No src/main.ts file was found. Initialize CSSRuntime manually in the Angular browser entry after setup.')
+        warnings.push('No src/main.ts file was found. Initialize MasterCSSRuntime manually in the Angular browser entry after setup.')
       }
       return files
     }
@@ -331,7 +340,7 @@ function filesForFramework(root: string, framework: Framework, warnings: string[
   }
 }
 
-function assertFrameworkSupportsMode(framework: Framework, mode: RenderingMode | undefined) {
+function assertFrameworkSupportsMode(framework: MasterCSSSetupFramework, mode: RenderingMode | undefined) {
   if (!mode) return
   if (framework === 'laravel') {
     if (mode === 'static') return
@@ -342,7 +351,7 @@ function assertFrameworkSupportsMode(framework: Framework, mode: RenderingMode |
   }
 }
 
-function dependenciesForFramework(framework: Framework, version: string): PlannedDependency[] {
+function dependenciesForFramework(framework: MasterCSSSetupFramework, version: string): MasterCSSSetupDependency[] {
   const dependencies = [{ name: MASTER_CSS_PACKAGES.css, version, dev: false }]
   if (framework === 'vite' || framework === 'react' || framework === 'react-router' || framework === 'tanstack-start' || framework === 'vue' || framework === 'laravel' || framework === 'lit') dependencies.push({ name: MASTER_CSS_PACKAGES.vite, version, dev: false })
   if (framework === 'nextjs') dependencies.push({ name: MASTER_CSS_PACKAGES.next, version, dev: false })
@@ -360,14 +369,15 @@ function planTextFile(
   transform: (content: string) => string,
   createContent: string,
   reason: string
-): PlannedFileChange {
+): MasterCSSSetupFileChange {
   const filePath = join(root, path)
   if (!existsSync(filePath)) {
     return {
       path,
       action: 'create',
       content: createContent,
-      reason
+      reason,
+      precondition: createFilePrecondition(filePath)
     }
   }
   const content = readFileSync(filePath, 'utf8')
@@ -376,11 +386,12 @@ function planTextFile(
     path,
     action: nextContent === content ? 'skip' : 'update',
     ...(nextContent === content ? {} : { content: nextContent }),
-    reason
+    reason,
+    precondition: createFilePrecondition(filePath)
   }
 }
 
-function applyDependencyChanges(root: string, dependencies: PlannedDependency[]) {
+function applyDependencyChanges(root: string, dependencies: readonly MasterCSSSetupDependency[]) {
   if (!dependencies.length) return
   const packageJSONPath = join(root, 'package.json')
   if (!existsSync(packageJSONPath)) return
@@ -400,7 +411,7 @@ function applyDependencyChanges(root: string, dependencies: PlannedDependency[])
   writeFileSync(packageJSONPath, `${JSON.stringify(packageJSON, null, 2)}\n`, 'utf8')
 }
 
-function pushDependency(dependencies: PlannedDependency[], name: string, dev: boolean, version: string) {
+function pushDependency(dependencies: MasterCSSSetupDependency[], name: string, dev: boolean, version: string) {
   if (dependencies.some((dependency) => dependency.name === name)) return
   dependencies.push({ name, dev, version })
 }
@@ -421,17 +432,17 @@ function readPackageJSON(root: string): PackageJSON | undefined {
   }
 }
 
-function resolvePackageManager(root: string, packageJSON: PackageJSON | undefined, explicit?: string): PackageManager {
+function resolvePackageManager(root: string, packageJSON: PackageJSON | undefined, explicit?: string): MasterCSSSetupPackageManager {
   if (isPackageManager(explicit)) return explicit
   const declared = packageJSON?.packageManager?.split('@')[0]
   if (isPackageManager(declared)) return declared
-  for (const [name, lockfile] of Object.entries(lockfiles) as [PackageManager, string][]) {
+  for (const [name, lockfile] of Object.entries(lockfiles) as [MasterCSSSetupPackageManager, string][]) {
     if (existsSync(join(root, lockfile))) return name
   }
   return 'npm'
 }
 
-function resolveFramework(root: string, packageJSON: PackageJSON | undefined, framework: FrameworkOption): Framework {
+function resolveFramework(root: string, packageJSON: PackageJSON | undefined, framework: MasterCSSSetupFrameworkOption): MasterCSSSetupFramework {
   if (framework !== 'auto') return framework
   const dependencies = {
     ...packageJSON?.dependencies,
@@ -457,7 +468,7 @@ function resolveFramework(root: string, packageJSON: PackageJSON | undefined, fr
   return 'none'
 }
 
-function isPackageManager(value: unknown): value is PackageManager {
+function isPackageManager(value: unknown): value is MasterCSSSetupPackageManager {
   return value === 'npm' || value === 'pnpm' || value === 'yarn' || value === 'bun'
 }
 
@@ -469,4 +480,40 @@ function resolveRecommendedOption(value: boolean | undefined, minimal: boolean |
 function appendAgentRules(content: string) {
   if (content.includes('## Master CSS')) return content
   return `${content.trimEnd()}${content.trim() ? '\n\n' : ''}${AGENT_RULES_BLOCK}`
+}
+
+function digest(content: string) {
+  return createHash('sha256').update(content).digest('hex')
+}
+
+function createFilePrecondition(filePath: string): MasterCSSSetupFilePrecondition {
+  if (!existsSync(filePath)) {
+    return {
+      exists: false,
+      digest: null
+    }
+  }
+  return {
+    exists: true,
+    digest: digest(readFileSync(filePath, 'utf8'))
+  }
+}
+
+function assertFilePrecondition(root: string, path: string, precondition: MasterCSSSetupFilePrecondition) {
+  const filePath = join(root, path)
+  const current = createFilePrecondition(filePath)
+  if (current.exists !== precondition.exists || current.digest !== precondition.digest) {
+    throw new Error(`Setup plan is stale because ${path} changed after planning.`)
+  }
+}
+
+function assertPlanPreconditions(plan: MasterCSSSetupPlan) {
+  if (plan.dependencies.length) {
+    assertFilePrecondition(plan.root, 'package.json', plan.packageJSONPrecondition)
+  }
+  for (const file of plan.files) {
+    if (file.action !== 'skip') {
+      assertFilePrecondition(plan.root, file.path, file.precondition)
+    }
+  }
 }

@@ -1,12 +1,12 @@
-import { loadNativeBinding } from '@master/css-native'
-import { MASTER_CSS_LEXER_BATCH_VERSION } from '@master/css-schema'
+import { loadNativeToolingBackend } from '@master/css-backend/tooling'
 import type {
   MasterCSSLexerBatchIR,
   MasterCSSLexerBatchRequestIR,
   MasterCSSLexerClassListInputIR,
   MasterCSSLexerClassListItemIR,
   MasterCSSLexerCSSAnalysisIR
-} from '@master/css-schema/rust-contract'
+} from '@master/css-backend/tooling'
+import { MASTER_CSS_LEXER_BATCH_VERSION } from '@master/css-backend/tooling'
 
 export type LexerClassListInputIR = MasterCSSLexerClassListInputIR
 export type LexerBatchRequest = MasterCSSLexerBatchRequestIR
@@ -60,7 +60,7 @@ export function bindLexerSession(
 }
 
 export function createNativeLexerSession(options: { required?: boolean } = {}) {
-  const loaded = loadNativeBinding({ required: options.required })
-  if (!loaded) return
-  return bindLexerSession('native', new loaded.binding.LexerSession())
+  const tooling = loadNativeToolingBackend({ required: options.required })
+  if (!tooling) return
+  return bindLexerSession('native', tooling.createLexerSession())
 }

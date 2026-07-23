@@ -19,8 +19,8 @@
 
 ## Public Surface
 
-- `./vite`
-- `./hooks.server`
+- `./vite`: named `createMasterCSSVitePlugin`
+- `./hooks.server`: named `handle` and `createMasterCSSHandle`
 
 ## Key Files
 

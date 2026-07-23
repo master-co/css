@@ -1,22 +1,26 @@
 import type { ModuleNode, Plugin, ViteDevServer } from 'vite'
-import type { PluginContext } from '../core'
+import type { MasterCSSVitePluginContext } from '../core'
 import {
   fromResolvedMasterCSSManifestId,
   toResolvedMasterCSSManifestId
-} from '@master/css-internal-integration/node'
-import { loadManifestJSON } from '@master/css-compiler/project'
-import { isCSSManifestRequest } from '@master/css-compiler/project/entries'
+} from '@master/css-build-internal/node'
+import { compileProjectManifest } from '@master/css-compiler/project'
 import {
   isMasterCSSManifestRequest,
   stripMasterCSSManifestQuery
-} from '@master/css-internal-integration/manifest-module'
+} from '@master/css-build-internal/manifest-module'
+import {
+  defaultBuildManifest,
+  isManifestStylesheetRequest
+} from '@master/css-build-internal/project'
+import { serializeMasterCSSManifest } from '@master/css-schema/manifest'
 import {
   MANIFEST_ASSET_FILE,
   toBrowserManifestFacadeModule,
   toInlineManifestModule,
   toUniversalManifestFacadeModule
-} from '@master/css-internal-integration/manifest-facade'
-import { collectStyleCSSDependencies } from '@master/css-compiler/stylesheet'
+} from '@master/css-build-internal/manifest-facade'
+import { collectStylesheetDependencies } from '@master/css-compiler/stylesheet'
 import { includesFile } from '../utils/path'
 
 function invalidateManifestModule(module: ModuleNode | undefined, server: ViteDevServer): ModuleNode[] {
@@ -25,16 +29,16 @@ function invalidateManifestModule(module: ModuleNode | undefined, server: ViteDe
   return [module]
 }
 
-function isProductionBuild(context: PluginContext) {
+function isProductionBuild(context: MasterCSSVitePluginContext) {
   return context.config?.command === 'build'
 }
 
-function isServerBuild(context: PluginContext) {
+function isServerBuild(context: MasterCSSVitePluginContext) {
   return Boolean(context.config?.build.ssr)
 }
 
 function createManifestModule(
-  context: PluginContext,
+  context: MasterCSSVitePluginContext,
   pluginContext: { emitFile?: (asset: { type: 'asset', name: string, source: string }) => string },
   json: string
 ) {
@@ -50,7 +54,7 @@ function createManifestModule(
     : toBrowserManifestFacadeModule(urlExpression)
 }
 
-export default function ManifestLoaderPlugin(context: PluginContext): Plugin {
+export default function ManifestLoaderPlugin(context: MasterCSSVitePluginContext): Plugin {
   const cssManifestDependencies = new Map<string, string[]>()
   const addServerAllow = (paths: string[]) => {
     const allow = context.config?.server.fs.allow
@@ -75,22 +79,26 @@ export default function ManifestLoaderPlugin(context: PluginContext): Plugin {
     async load(id) {
       const manifestPath = fromResolvedMasterCSSManifestId(id)
       if (!manifestPath) return
-      if (!isCSSManifestRequest(manifestPath)) {
+      if (!isManifestStylesheetRequest(manifestPath)) {
         throw new TypeError('Master CSS manifest queries only support CSS entry files.')
       }
-      const dependencies = new Set(collectStyleCSSDependencies(manifestPath, undefined, context.config?.root))
+      const dependencies = new Set(collectStylesheetDependencies(manifestPath, undefined, context.config?.root))
       for (const dependency of dependencies) {
         this.addWatchFile(dependency)
       }
       watchManifestDependencies(manifestPath, [...dependencies])
-      const result = await loadManifestJSON(manifestPath)
+      const result = await compileProjectManifest({
+        root: context.config?.root,
+        entries: [manifestPath],
+        baseManifest: defaultBuildManifest
+      })
       for (const dependency of result.dependencies) {
         if (dependencies.has(dependency)) continue
         dependencies.add(dependency)
         this.addWatchFile(dependency)
       }
       watchManifestDependencies(manifestPath, [...dependencies])
-      return createManifestModule(context, this, result.json)
+      return createManifestModule(context, this, serializeMasterCSSManifest(result.manifest))
     },
     async handleHotUpdate({ file, server }) {
       let handled = false

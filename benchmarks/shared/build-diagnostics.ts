@@ -1,13 +1,15 @@
 import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import { dirname, resolve } from 'node:path'
 import { performance } from 'node:perf_hooks'
-import CSSScanner from '@master/css-tooling/scanner'
+import { MasterCSSScanner } from '@master/css-tooling/scanner/node'
+import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
+import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import {
   createExtractedCSS,
-  registerStyleCSSSource,
-  type StyleCSSSources
+  registerStylesheetSource,
+  type StylesheetSources
 } from '@master/css-compiler/stylesheet'
-import { findCSSManifestEntryFiles } from '@master/css-compiler/project/entries'
+import { discoverManifestEntries } from '@master/css-compiler/project'
 import fg from 'fast-glob'
 import { getStaticFixtureSource } from '../fixtures/static'
 import { summarizeBytes } from './bytes'
@@ -30,6 +32,8 @@ import type {
   BenchmarkVariant,
   ByteSummary
 } from './types'
+
+const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
 
 export type DiagnosticToolId = 'master-cli-diagnostic' | 'master-vite-diagnostic'
 type VitePlugin = {
@@ -156,8 +160,8 @@ async function runMasterCLIDiagnostic(workspace: string, fixtureId: BenchmarkFix
 
   const recorder = new DiagnosticRecorder()
   const totalStartedAt = performance.now()
-  const styleCSSSources: StyleCSSSources = new Map()
-  const scanner = new CSSScanner({}, workspace)
+  const stylesheetSources: StylesheetSources = new Map()
+  const scanner = new MasterCSSScanner({ manifest: defaultManifest }, workspace)
 
   await recorder.time('cli-scanner-init-ms', async () => {
     await scanner.init()
@@ -165,16 +169,16 @@ async function runMasterCLIDiagnostic(workspace: string, fixtureId: BenchmarkFix
   })
 
   await recorder.time('cli-css-entry-register-ms', async () => {
-    styleCSSSources.clear()
-    const entries = await findCSSManifestEntryFiles(scanner.cwd)
+    stylesheetSources.clear()
+    const entries = await discoverManifestEntries({ root: scanner.cwd })
     recorder.setCount('css-entry-count', entries.length)
     for (const entry of entries) {
-      await registerStyleCSSSource(scanner, styleCSSSources, entry, await readFile(entry, 'utf8'), {
+      await registerStylesheetSource(scanner, stylesheetSources, entry, await readFile(entry, 'utf8'), {
         projectDir: scanner.cwd
       })
     }
     scanner.resetDependencies = [...new Set(
-      Array.from(styleCSSSources.values()).flatMap((source) => source.dependencies)
+      Array.from(stylesheetSources.values()).flatMap((source) => source.dependencies)
     )]
   })
 
@@ -192,7 +196,7 @@ async function runMasterCLIDiagnostic(workspace: string, fixtureId: BenchmarkFix
 
   const css = await recorder.time('cli-css-extraction-ms', () => createExtractedCSS({
     scanner,
-    styleCSSSources,
+    stylesheetSources,
     projectDir: scanner.cwd
   }))
 

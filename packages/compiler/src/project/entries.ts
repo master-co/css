@@ -4,9 +4,8 @@ import { dirname, extname, isAbsolute, join, relative, resolve, sep } from 'node
 import {
   inspectCSS,
   resolveMasterCSSPackageEntryFile
-} from '@master/css-compiler'
-import { stripResourceQuery } from '@master/css-internal-integration/manifest-module'
-import { loadNativeBinding } from '@master/css-native'
+} from '../node-compiler'
+import { loadNativeCompilerBackend } from '@master/css-backend/compiler'
 
 const MASTER_CSS_MODULE_IDS = ['@master/css'] as const
 const MASTER_CSS_MODULE_ID_SET = new Set<string>(MASTER_CSS_MODULE_IDS)
@@ -44,7 +43,7 @@ const PACKAGE_JSON_DEPENDENCY_FIELDS = [
 type PackageJSON = Partial<Record<typeof PACKAGE_JSON_DEPENDENCY_FIELDS[number], unknown>>
 
 export function cleanCSSManifestRequest(id: string) {
-  return stripResourceQuery(id)
+  return id.replace(/[?#].*$/, '')
 }
 
 export function isCSSManifestRequest(id: string) {
@@ -69,8 +68,8 @@ export function findCSSManifestEntryFilesSync(projectDir = process.cwd()) {
   } catch {
     // Let the native project layer report unreadable roots.
   }
-  return loadNativeBinding({ required: true })!.binding
-    .findCssManifestEntries(root)
+  return loadNativeCompilerBackend({ required: true })!
+    .findManifestEntries(root)
     .map((entry) => realRoot !== root && (entry === realRoot || entry.startsWith(`${realRoot}${sep}`))
       ? join(root, relative(realRoot, entry))
       : entry)

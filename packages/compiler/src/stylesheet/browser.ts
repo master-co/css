@@ -1,56 +1,55 @@
 import {
-  compileCSSManifest,
-  initCSSCompiler,
-  type CompileCSSManifestResult
-} from '@master/css-compiler/browser'
+  compileManifest,
+  type MasterCSSCompileManifestResult
+} from '../index'
 import { createCompilerRenderSession } from '@master/css-wasm-compiler'
+import type { MasterCSSDiagnostic } from '@master/css-schema'
 import type { MasterCSSEmittedGlobals } from '@master/css-schema/emitted-globals'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
-import { stringifyMasterCSSManifestJSON } from '@master/css-schema/manifest-json'
+import { serializeMasterCSSManifest } from '@master/css-schema/manifest'
 import {
   renderCompiledManifestCSSWithSession,
   type RenderCompiledManifestCSSResult,
   type StylesheetRenderSession
 } from './render-core'
 
-export interface CompileBrowserStyleCSSOptions {
-  baseManifest?: MasterCSSManifest
-  classNames?: Iterable<string>
-  from?: string
-  preserveNativeCSS?: boolean
-  onWarning?: (warning: string) => void
+export interface CompileBrowserStylesheetOptions {
+  readonly baseManifest: MasterCSSManifest
+  readonly classNames?: Iterable<string>
+  readonly from?: string
+  readonly preserveNativeCSS?: boolean
+  readonly onDiagnostic?: (diagnostic: import('@master/css-schema').MasterCSSDiagnostic) => void
 }
 
-export interface CompileBrowserStyleCSSResult {
-  css: string
-  nativeCSS: string
-  generatedCSS: string
-  manifest: MasterCSSManifest
-  warnings: string[]
-  emittedGlobals: Required<MasterCSSEmittedGlobals>
-  result: CompileCSSManifestResult
+export interface CompileBrowserStylesheetResult {
+  readonly css: string
+  readonly nativeCSS: string
+  readonly generatedCSS: string
+  readonly manifest: MasterCSSManifest
+  readonly diagnostics: readonly MasterCSSDiagnostic[]
+  readonly emittedGlobals: Required<MasterCSSEmittedGlobals>
+  readonly result: MasterCSSCompileManifestResult
 }
 
-export async function initBrowserStyleCompiler(input?: Parameters<typeof initCSSCompiler>[0]) {
-  await initCSSCompiler(input)
-}
-
-export async function compileBrowserStyleCSS(source: string, options: CompileBrowserStyleCSSOptions = {}): Promise<CompileBrowserStyleCSSResult> {
+export async function compileBrowserStylesheet(
+  source: string,
+  options: CompileBrowserStylesheetOptions
+): Promise<CompileBrowserStylesheetResult> {
   const {
     baseManifest,
     classNames,
     from,
     preserveNativeCSS,
-    onWarning
+    onDiagnostic
   } = options
-  const result = await compileCSSManifest(source, {
-    ...(baseManifest ? { baseManifest } : {}),
+  const result = await compileManifest(source, {
+    baseManifest,
     ...(from ? { from } : {}),
     ...(preserveNativeCSS === undefined ? {} : { preserveNativeCSS }),
-    ...(onWarning ? { onWarning } : {})
+    ...(onDiagnostic ? { onDiagnostic } : {})
   })
   const renderSession = await createCompilerRenderSession(
-    stringifyMasterCSSManifestJSON(result.manifest)
+    serializeMasterCSSManifest(result.manifest)
   ) as StylesheetRenderSession
   let renderedCSS: RenderCompiledManifestCSSResult
   try {
@@ -68,10 +67,10 @@ export async function compileBrowserStyleCSS(source: string, options: CompileBro
     nativeCSS: renderedCSS.nativeCSS,
     generatedCSS: renderedCSS.generatedCSS,
     manifest: result.manifest,
-    warnings: result.warnings,
+    diagnostics: result.diagnostics,
     emittedGlobals: renderedCSS.emittedGlobals,
     result
   }
 }
 
-export type { CompileCSSManifestResult }
+export type { MasterCSSCompileManifestResult }

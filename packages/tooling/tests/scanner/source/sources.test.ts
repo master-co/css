@@ -1,8 +1,8 @@
 import { expect, it } from 'vitest'
-import CSSScanner from '../../../src/scanner'
+import { MasterCSSScanner } from '../test-scanner'
 
 it('rejects excluded modules', async () => {
-  const scanner = await new CSSScanner({
+  const scanner = await new MasterCSSScanner({
     exclude: ['manual-source.ts']
   }, __dirname).init()
 
@@ -10,7 +10,7 @@ it('rejects excluded modules', async () => {
 })
 
 it('accepts source-like modules that are not excluded', async () => {
-  const scanner = await new CSSScanner({
+  const scanner = await new MasterCSSScanner({
     exclude: []
   }, __dirname).init()
 

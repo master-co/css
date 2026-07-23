@@ -46,7 +46,7 @@ const MASTER_CSS_STAGED_GRAMMAR_PATH = './dist/node_modules/@master/css-language
 
 const RUNTIME_PACKAGE_OWNERS = [
   {
-    owner: '@master/css-native',
+    owner: '@master/css-backend',
     matches: (packageName) => packageName.startsWith('@master/css-native-')
   }
 ]
@@ -171,7 +171,7 @@ async function copyPath(source, destination) {
 
 async function copyDevelopmentNativeArtifacts(destinationDir, packageName, target) {
   if (target !== getCurrentTarget() || packageName !== getTargetNativePackages(target)) return
-  const nativePackageDir = resolvePackageDir('@master/css-native', packageRequire)
+  const nativePackageDir = resolvePackageDir('@master/css-backend', packageRequire)
   const executableName = target.startsWith('win32-') ? 'mcss.exe' : 'mcss'
   for (const file of ['mastercss.node', executableName]) {
     const destination = join(destinationDir, file)

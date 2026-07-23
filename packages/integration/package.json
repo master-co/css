@@ -1,5 +1,5 @@
 {
-  "name": "@master/css-internal-integration",
+  "name": "@master/css-build-internal",
   "private": true,
   "type": "module",
   "engines": {
@@ -64,16 +64,37 @@
       "import": "./dist/emitted-globals-module.js",
       "default": "./dist/emitted-globals-module.js"
     },
+    "./runtime-bootstrap": {
+      "types": "./dist/runtime-bootstrap.d.ts",
+      "import": "./dist/runtime-bootstrap.js",
+      "default": "./dist/runtime-bootstrap.js"
+    },
     "./node": {
       "types": "./dist/node.d.ts",
       "import": "./dist/node.js",
       "default": "./dist/node.js"
+    },
+    "./project": {
+      "types": "./dist/project.d.ts",
+      "import": "./dist/project.js",
+      "default": "./dist/project.js"
+    },
+    "./workspace": {
+      "types": "./dist/workspace.d.ts",
+      "import": "./dist/workspace.js",
+      "default": "./dist/workspace.js"
+    },
+    "./workspace-directories": {
+      "types": "./dist/workspace-directories.d.ts",
+      "import": "./dist/workspace-directories.js",
+      "default": "./dist/workspace-directories.js"
     }
   },
   "files": [
     "dist"
   ],
   "dependencies": {
+    "@master/css-preset": "workspace:*",
     "@master/css-schema": "workspace:*"
   }
 }

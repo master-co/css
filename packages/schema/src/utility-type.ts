@@ -17,5 +17,3 @@ export const UtilityType = {
 } as const
 
 export type UtilityType = typeof UtilityType[keyof typeof UtilityType]
-
-export default UtilityType

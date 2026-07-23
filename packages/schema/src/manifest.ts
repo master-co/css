@@ -218,3 +218,8 @@ export function groupMasterCSSManifestVariables(
   }
   return Object.keys(grouped).length ? grouped : undefined
 }
+
+export {
+  normalizeMasterCSSManifest,
+  serializeMasterCSSManifest
+} from './manifest-json.js'

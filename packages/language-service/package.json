@@ -20,6 +20,7 @@
     "directory": "packages/language-service"
   },
   "dependencies": {
+    "@master/css-preset": "workspace:*",
     "@master/css-schema": "workspace:*",
     "@master/css-tooling": "workspace:*",
     "colorjs.io": "^0.6.1",

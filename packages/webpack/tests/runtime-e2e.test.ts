@@ -138,7 +138,7 @@ describe('Webpack runtime mode', () => {
     const root = mkdtempSync(join(tmpdir(), 'master-css-webpack-runtime-'))
     const dist = join(root, 'dist')
     const fixture = createFixture(root)
-    const MasterCSSPlugin = (await import(`${pathToFileURL(join(packageDir, 'dist/index.js')).href}?${Date.now()}`)).default
+    const MasterCSSWebpackPlugin = (await import(`${pathToFileURL(join(packageDir, 'dist/index.js')).href}?${Date.now()}`)).default
     let browser: Browser | undefined
     let server: Server | undefined
 
@@ -154,7 +154,7 @@ describe('Webpack runtime mode', () => {
           publicPath: './'
         },
         plugins: [
-          new MasterCSSPlugin({ mode: 'runtime' }, root),
+          new MasterCSSWebpackPlugin({ mode: 'runtime' }, root),
           new EmitFixtureAssetsPlugin(fixture.html, fixture.css)
         ]
       })

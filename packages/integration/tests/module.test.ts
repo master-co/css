@@ -19,7 +19,7 @@ import {
   toUniversalManifestFacadeModule
 } from '../src/module'
 
-describe('@master/css-internal-integration module helpers', () => {
+describe('@master/css-build-internal module helpers', () => {
   it('defines Master CSS virtual module ids', () => {
     expect(VIRTUAL_MANIFEST_ID).toBe('virtual:master-css-manifest')
     expect(VIRTUAL_CSS_ID).toBe('virtual:master-utilities.css')

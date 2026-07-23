@@ -4,9 +4,9 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import withMasterCSS from '../src'
 import { getRegisteredOptions } from '../src/options'
-import { VIRTUAL_MANIFEST_ID } from '@master/css-internal-integration/manifest-module'
-import { VIRTUAL_CSS_ID } from '@master/css-internal-integration/style-module'
-import { VIRTUAL_EMITTED_GLOBALS_ID } from '@master/css-internal-integration/emitted-globals-module'
+import { VIRTUAL_MANIFEST_ID } from '@master/css-build-internal/manifest-module'
+import { VIRTUAL_CSS_ID } from '@master/css-build-internal/style-module'
+import { VIRTUAL_EMITTED_GLOBALS_ID } from '@master/css-build-internal/emitted-globals-module'
 
 const toPosixPath = (value: string) => value.replace(/\\/g, '/')
 const virtualManifestProjectPath = 'node_modules/.master-css/master-css-manifest.js'
@@ -33,7 +33,7 @@ const AsyncFunction = async function () { }.constructor as new (...args: string[
 function toRunnableInstrumentationClientSource(source: string) {
   return source
     .replace(`import 'private-next-master-css-user-instrumentation-client'`, `await importModule('private-next-master-css-user-instrumentation-client')`)
-    .replace(`import CSSRuntime from '@master/css-runtime'`, `const CSSRuntime = await importDefault('@master/css-runtime')`)
+    .replace(`import { MasterCSSRuntime } from '@master/css-runtime'`, `const { MasterCSSRuntime } = await importModule('@master/css-runtime')`)
     .replace(`import masterCSSManifest from 'virtual:master-css-manifest'`, `const masterCSSManifest = await importDefault('virtual:master-css-manifest')`)
     .replace(`import masterCSSEmittedGlobals from 'virtual:master-css-emitted-globals'`, `const masterCSSEmittedGlobals = await importDefault('virtual:master-css-emitted-globals')`)
     .replaceAll(`import('virtual:master-css-manifest')`, `importModule('virtual:master-css-manifest')`)
@@ -84,9 +84,9 @@ async function runInstrumentationClient(source: string, modules: Record<string, 
   return { importModule }
 }
 
-function createCSSRuntimeTestModule() {
+function createMasterCSSRuntimeTestModule() {
   const runtime = {
-    destroy: vi.fn(),
+    dispose: vi.fn(),
     needsHydrationManifest: vi.fn(() => false),
     loadHydrationManifest: vi.fn(),
     observe: vi.fn()
@@ -96,7 +96,7 @@ function createCSSRuntimeTestModule() {
   return {
     runtime,
     module: {
-      default: {
+      MasterCSSRuntime: {
         create: vi.fn(() => runtime),
         start: vi.fn(async () => runtime)
       }
@@ -304,7 +304,7 @@ describe('withMasterCSS', () => {
     try {
       const source = readGeneratedInstrumentationClientSource(root)
 
-      expect(source).toContain(`import CSSRuntime from '@master/css-runtime'`)
+      expect(source).toContain(`import { MasterCSSRuntime } from '@master/css-runtime'`)
       expect(source).toContain(`import masterCSSManifest from 'virtual:master-css-manifest'`)
       expect(source).toContain('import.meta.turbopackHot')
       expect(source).toContain('import.meta.webpackHot')
@@ -320,22 +320,22 @@ describe('withMasterCSS', () => {
     const root = mkdtempSync(join(tmpdir(), 'master-css-next-async-runtime-'))
     const manifest = { version: 1, marker: 'async-manifest' }
     const emittedGlobals = { variables: { primary: 1 }, animations: {} }
-    const { module: cssRuntimeModule, runtime } = createCSSRuntimeTestModule()
+    const { module: runtimeModule, runtime } = createMasterCSSRuntimeTestModule()
 
     try {
       const source = readGeneratedInstrumentationClientSource(root)
 
       await runInstrumentationClient(source, {
         'private-next-master-css-user-instrumentation-client': {},
-        '@master/css-runtime': cssRuntimeModule,
+        '@master/css-runtime': runtimeModule,
         'virtual:master-css-manifest': Promise.resolve({ default: manifest }),
         'virtual:master-css-emitted-globals': Promise.resolve({ default: emittedGlobals })
       })
 
-      expect(cssRuntimeModule.default.start).toHaveBeenCalledWith({
+      expect(runtimeModule.MasterCSSRuntime.start).toHaveBeenCalledWith({
         manifest,
         emittedGlobals,
-        onError: expect.any(Function)
+        onDiagnostic: expect.any(Function)
       })
       expect(runtime.observe).toHaveBeenCalled()
     } finally {
@@ -347,111 +347,33 @@ describe('withMasterCSS', () => {
     const root = mkdtempSync(join(tmpdir(), 'master-css-next-sync-runtime-'))
     const manifest = { version: 1, marker: 'sync-manifest' }
     const emittedGlobals = { variables: {}, animations: {} }
-    const { module: cssRuntimeModule } = createCSSRuntimeTestModule()
+    const { module: runtimeModule } = createMasterCSSRuntimeTestModule()
 
     try {
       const source = readGeneratedInstrumentationClientSource(root)
 
       await runInstrumentationClient(source, {
         'private-next-master-css-user-instrumentation-client': {},
-        '@master/css-runtime': cssRuntimeModule,
+        '@master/css-runtime': runtimeModule,
         'virtual:master-css-manifest': { default: manifest },
         'virtual:master-css-emitted-globals': { default: emittedGlobals }
       })
 
-      expect(cssRuntimeModule.default.start).toHaveBeenCalledWith({
+      expect(runtimeModule.MasterCSSRuntime.start).toHaveBeenCalledWith({
         manifest,
         emittedGlobals,
-        onError: expect.any(Function)
+        onDiagnostic: expect.any(Function)
       })
     } finally {
       rmSync(root, { recursive: true, force: true })
     }
   })
 
-  it('adds CSS manifest loaders without runtime aliases or the adapter when mode is null', () => {
+  it('returns the original config when disabled', () => {
     const nextConfig = { reactStrictMode: true }
-    const resolvedConfig = withMasterCSS(nextConfig, { mode: null }) as any
+    const resolvedConfig = withMasterCSS(nextConfig, { enabled: false }) as any
 
-    expect(resolvedConfig.reactStrictMode).toBe(true)
-    expect(resolvedConfig.adapterPath).toBeUndefined()
-    expect(resolvedConfig.turbopack.rules).toEqual({
-      '*': expect.arrayContaining([
-        expect.objectContaining({
-          condition: {
-            path: expect.any(RegExp)
-          },
-          type: 'ecmascript'
-        }),
-        expect.objectContaining({
-          condition: {
-            all: [
-              { path: /\.css$/ },
-              { query: /master-css-manifest/ }
-            ]
-          },
-          type: 'ecmascript',
-          as: '*.js'
-        }),
-        expect.objectContaining({
-          condition: {
-            all: [
-              { path: /\.(css|scss|sass)$/ },
-              { content: expect.any(RegExp) },
-              { not: { query: /master-css-manifest/ } }
-            ]
-          },
-          type: 'css',
-          as: '*.css'
-        })
-      ]),
-      '*.js': [
-        expect.objectContaining({
-          condition: {
-            all: [
-              { not: 'foreign' },
-              { content: expect.any(RegExp) }
-            ]
-          },
-          type: 'ecmascript'
-        })
-      ],
-      '*.cjs': [
-        expect.objectContaining({
-          condition: {
-            all: [
-              { not: 'foreign' },
-              { content: expect.any(RegExp) }
-            ]
-          },
-          type: 'ecmascript'
-        })
-      ],
-      '*.ts': [
-        expect.objectContaining({
-          condition: {
-            all: [
-              { not: 'foreign' },
-              { content: expect.any(RegExp) }
-            ]
-          },
-          type: 'typescript'
-        })
-      ]
-    })
-    expect(resolvedConfig.webpack({ module: { rules: [] } }, {}).module.rules).toEqual(expect.arrayContaining([
-      expect.objectContaining({
-        test: expect.any(RegExp)
-      }),
-      expect.objectContaining({
-        resourceQuery: /master-css-manifest/
-      }),
-      expect.objectContaining({
-        test: /\.(css|scss|sass)$/
-      })
-    ]))
-    expect(resolvedConfig.turbopack.resolveAlias[nextInstrumentationClientId]).toBeUndefined()
-    expect(resolvedConfig.turbopack.resolveAlias[masterCSSUserInstrumentationClientId]).toBeUndefined()
+    expect(resolvedConfig).toBe(nextConfig)
   })
 
   it('composes an existing Next adapter path with the Master CSS adapter', () => {

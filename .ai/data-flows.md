@@ -93,7 +93,8 @@ Risks:
 
 ```txt
 document or shadow root
-  -> initCSSRuntime({ manifest, emittedGlobals, root, autoObserve })
+  -> MasterCSSRuntime.start({ manifest, emittedGlobals, root, hydrationManifest })
+  -> runtime.observe()
   -> register emitted variable/keyframe counts
   -> find or create style#master-css
   -> hydrate pre-rendered rules or connect current classes

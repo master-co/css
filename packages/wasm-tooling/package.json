@@ -29,6 +29,6 @@
     "provenance": true
   },
   "dependencies": {
-    "@master/css-schema": "workspace:*"
+    "@master/css-backend": "workspace:*"
   }
 }

@@ -68,12 +68,12 @@ npm install @master/css-language-server
 ## Usage
 
 ```js
-import CSSLanguageServer from '@master/css-language-server'
+import { MasterCSSLanguageServer } from '@master/css-language-server'
 
-const languageServer = new CSSLanguageServer(connection, customSettings)
+const languageServer = new MasterCSSLanguageServer(connection, customSettings)
 ```
 
-`CSSLanguageServer` wraps `@master/css-language-service` with LSP workspace lifecycle, completion, hover, document color, color presentation, semantic token, and directive formatting handlers.
+`MasterCSSLanguageServer` wraps `@master/css-language-service` with LSP workspace lifecycle, completion, hover, document color, color presentation, semantic token, and directive formatting handlers. Call `dispose()` when the transport shuts down.
 
 Diagnostics are intentionally limited to language-server-owned behavior: CSS directive diagnostics and project manifest loading diagnostics. Class syntax and policy rules such as sorting, canonical class preference, conflict detection, invalid classes, and raw-value approval are owned by `@master/eslint-plugin-css`.
 
@@ -98,7 +98,7 @@ Directive formatting normalizes safe directive spacing and repairs class-list im
 ## Settings
 
 ```js
-import { settings } from '@master/css-language-server'
+import { defaultLanguageServerSettings } from '@master/css-language-server'
 ```
 
 | Setting | Type | Default | Description |

@@ -2,11 +2,11 @@ import { mkdirSync, mkdtempSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
-import CSSScanner from '@master/css-tooling/scanner'
+import { MasterCSSScanner } from '../helpers/scanner'
 import { collectStylesheetDirectives, removeStylesheetDirectiveStatements } from '../../src/stylesheet/directives'
 import {
   createExtractedCSS,
-  registerStyleCSSSource
+  registerStylesheetSource
 } from '../../src/stylesheet'
 
 function createFixture() {
@@ -66,19 +66,20 @@ describe('stylesheet CSS directives', () => {
     writeFileSync(join(root, 'app/skip.test.tsx'), '<div class="text-center"></div>')
     writeFileSync(join(root, 'app/forced.test.tsx'), '<div class="fg:red"></div>')
 
-    const scanner = new CSSScanner({}, root)
+    const scanner = new MasterCSSScanner({}, root)
     await scanner.init()
-    const styleCSSSources = new Map()
-    await registerStyleCSSSource(scanner, styleCSSSources, join(root, 'app/entry.css'), `
+    const stylesheetSources = new Map()
+    await registerStylesheetSource(scanner, stylesheetSources, join(root, 'app/entry.css'), `
       @master entry;
       @source './**/*.tsx';
       @source not './**/*.test.tsx';
       @safelist 'font:semibold legacy-token';
       @blocklist 'legacy-*';
-    `)
+    `, { baseManifest: scanner.css.manifest })
     const css = await createExtractedCSS({
       scanner,
-      styleCSSSources,
+      stylesheetSources,
+      baseManifest: scanner.css.manifest,
       projectDir: root
     })
 
@@ -96,16 +97,17 @@ describe('stylesheet CSS directives', () => {
     writeFileSync(join(root, 'app/templates/index.cshtml'), '<h1 class="m:0"></h1>')
     writeFileSync(join(root, 'app/templates/show.erb'), '<h1 class="font:semibold"></h1>')
 
-    const scanner = new CSSScanner({}, root)
+    const scanner = new MasterCSSScanner({}, root)
     await scanner.init()
-    const styleCSSSources = new Map()
-    await registerStyleCSSSource(scanner, styleCSSSources, join(root, 'app/entry.css'), `
+    const stylesheetSources = new Map()
+    await registerStylesheetSource(scanner, stylesheetSources, join(root, 'app/entry.css'), `
       @master entry;
       @source './templates/**/*.{liquid,cshtml,erb}';
-    `)
+    `, { baseManifest: scanner.css.manifest })
     const css = await createExtractedCSS({
       scanner,
-      styleCSSSources,
+      stylesheetSources,
+      baseManifest: scanner.css.manifest,
       projectDir: root
     })
 
@@ -121,19 +123,20 @@ describe('stylesheet CSS directives', () => {
     writeFileSync(join(root, 'app/a/skip.tsx'), '<div class="fg:red"></div>')
     writeFileSync(join(root, 'app/b/skip.tsx'), '<div class="text:center"></div>')
 
-    const scanner = new CSSScanner({}, root)
+    const scanner = new MasterCSSScanner({}, root)
     await scanner.init()
-    const styleCSSSources = new Map()
-    await registerStyleCSSSource(scanner, styleCSSSources, join(root, 'app/entry.css'), `
+    const stylesheetSources = new Map()
+    await registerStylesheetSource(scanner, stylesheetSources, join(root, 'app/entry.css'), `
       @master entry;
       @source './a/*.tsx';
       @source './b/*.tsx';
       @source not './a/skip.tsx';
       @source not './b/skip.tsx';
-    `)
+    `, { baseManifest: scanner.css.manifest })
     const css = await createExtractedCSS({
       scanner,
-      styleCSSSources,
+      stylesheetSources,
+      baseManifest: scanner.css.manifest,
       projectDir: root
     })
 
@@ -147,11 +150,11 @@ describe('stylesheet CSS directives', () => {
     const root = createFixture()
     writeFileSync(join(root, 'app/a/page.tsx'), '<div class="card"></div>')
     writeFileSync(join(root, 'app/b/page.tsx'), '<div class="unused"></div>')
-    const scanner = new CSSScanner({}, root)
+    const scanner = new MasterCSSScanner({}, root)
     await scanner.init()
 
-    const styleCSSSources = new Map()
-    const result = await registerStyleCSSSource(scanner, styleCSSSources, join(root, 'app/a/a.css'), `
+    const stylesheetSources = new Map()
+    const result = await registerStylesheetSource(scanner, stylesheetSources, join(root, 'app/a/a.css'), `
       @import "@master/css";
       @source './*.tsx';
 
@@ -162,11 +165,12 @@ describe('stylesheet CSS directives', () => {
       .unused {
         color: blue;
       }
-    `)
+    `, { baseManifest: scanner.css.manifest })
 
     const css = await createExtractedCSS({
       scanner,
-      styleCSSSources,
+      stylesheetSources,
+      baseManifest: scanner.css.manifest,
       includeGeneratedCSS: false,
       projectDir: root
     })
@@ -190,18 +194,19 @@ describe('stylesheet CSS directives', () => {
         color: blue;
       }
     `)
-    const scanner = new CSSScanner({}, root)
+    const scanner = new MasterCSSScanner({}, root)
     await scanner.init()
 
-    const styleCSSSources = new Map()
-    await registerStyleCSSSource(scanner, styleCSSSources, join(root, 'app/a/a.css'), `
+    const stylesheetSources = new Map()
+    await registerStylesheetSource(scanner, stylesheetSources, join(root, 'app/a/a.css'), `
       @import "@master/css";
       @import '../shared.css';
-    `)
+    `, { baseManifest: scanner.css.manifest })
 
     const css = await createExtractedCSS({
       scanner,
-      styleCSSSources,
+      stylesheetSources,
+      baseManifest: scanner.css.manifest,
       includeGeneratedCSS: false,
       projectDir: root
     })

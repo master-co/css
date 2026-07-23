@@ -37,20 +37,13 @@
     "mastercss",
     "vite-plugin"
   ],
-  "sideEffects": [
-    "./dist/runtime.js"
-  ],
+  "sideEffects": false,
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js",
       "default": "./dist/index.js"
-    },
-    "./runtime": {
-      "types": "./dist/runtime.d.ts",
-      "import": "./dist/runtime.js",
-      "default": "./dist/runtime.js"
     }
   },
   "files": [
@@ -73,7 +66,7 @@
     "@master/css-schema": "workspace:*"
   },
   "devDependencies": {
-    "@master/css-internal-integration": "workspace:*",
+    "@master/css-build-internal": "workspace:*",
     "@master/css-preset": "workspace:*"
   }
 }

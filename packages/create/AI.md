@@ -15,7 +15,7 @@
 
 - Runtime, server, scanner, engine, compiler, or CSS output behavior.
 - Framework integration internals owned by `@master/css-vite`, `@master/css-next`, `@master/css-nuxt`, `@master/css-astro`, `@master/css-svelte`, or `@master/css-webpack`.
-- SvelteKit file mutation internals owned by `@master/css-sv`.
+- SvelteKit file mutation internals owned by `@master/css-svelte-addon`.
 - ESLint rule behavior owned by `@master/css-tooling/lint` and `@master/eslint-plugin-css`.
 
 ## Public Surface
@@ -36,7 +36,7 @@
 - Overwriting existing project config files.
 - Running package manager installs unexpectedly.
 - Producing stale ESLint flat config examples.
-- Treating SvelteKit setup as generic Vite setup instead of delegating to `@master/css-sv`.
+- Treating SvelteKit setup as generic Vite setup instead of delegating to `@master/css-svelte-addon`.
 
 ## Validation
 

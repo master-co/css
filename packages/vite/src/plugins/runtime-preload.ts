@@ -3,7 +3,8 @@ import {
   DEV_RUNTIME_ENTRY_ID,
   RUNTIME_ENTRY_ID
 } from '../common'
-import type { PluginContext } from '../core'
+import { RESOLVED_MASTER_CSS_RUNTIME_BOOTSTRAP_ID } from '@master/css-build-internal/runtime-bootstrap'
+import type { MasterCSSVitePluginContext } from '../core'
 import { hasModulePreloadLink, hasWasmPreloadLink, toAssetHref } from '../utils/html'
 
 interface OutputChunkLike {
@@ -30,9 +31,7 @@ function findRuntimeWasmFileName(bundle: Record<string, OutputChunkLike>) {
 function isRuntimeModuleId(id: string) {
   const normalized = id.replace(/\\/g, '/')
   return normalized === RUNTIME_ENTRY_ID
-    || normalized.endsWith('/@master/css-vite/dist/runtime.js')
-    || normalized.endsWith('/packages/vite/dist/runtime.js')
-    || normalized.endsWith('/packages/vite/src/runtime.ts')
+    || normalized === RESOLVED_MASTER_CSS_RUNTIME_BOOTSTRAP_ID
 }
 
 function findRuntimeChunkFileName(bundle: Record<string, OutputChunkLike>) {
@@ -47,7 +46,7 @@ function findRuntimeChunkFileName(bundle: Record<string, OutputChunkLike>) {
   }
 }
 
-export default function RuntimePreloadPlugin(context: PluginContext): Plugin {
+export default function RuntimePreloadPlugin(context: MasterCSSVitePluginContext): Plugin {
   return {
     name: 'master-css:runtime-preload',
     transformIndexHtml: {

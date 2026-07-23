@@ -28,8 +28,8 @@ external data / shared build support
 - `@master/css-runtime` owns DOM/CSSOM behavior around runtime Wasm.
 - `@master/css-language-service` owns editor-document mapping and Shiki/TextMate assets.
 - `@master/eslint-plugin-css` owns only ESLint AST and fixer adaptation.
-- `@master/eslint-config-css` remains a deliberate thin public preset.
-- `@master/css-internal-integration` is private, official-only, and bundled into its
+- `@master/eslint-plugin-css` remains a deliberate thin public preset.
+- `@master/css-build-internal` is private, official-only, and bundled into its
   published consumers.
 - Official Vue/Svelte extraction adapters are private implementation details. Do not
   restore a public third-party adapter registry.
