@@ -178,7 +178,7 @@ export class MasterCSSCompiler implements Disposable {
       warnings: rawDirectives.warnings
     }, {
       baseManifest: options.baseManifest
-    }) as {
+    }, source) as {
       manifest: MasterCSSManifest
       warnings: string[]
       generatedCSS: string

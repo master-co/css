@@ -85,8 +85,8 @@ export function bindCompilerBackendSession(
       invoke('compiler', () => operations.filterCSSExtractionCandidates(candidates, blocklist)),
     compileManifestInput: (input, options) =>
       invoke('compiler', () => operations.compileManifestInput(input, options)),
-    lowerCSSDirectives: (request, options) =>
-      invoke('compiler', () => operations.lowerCSSDirectives(request, options)),
+    lowerCSSDirectives: (request, options, sourceText) =>
+      invoke('compiler', () => operations.lowerCSSDirectives(request, options), sourceText),
     normalizeManifest: (manifest) =>
       invoke('compiler', () => operations.normalizeManifest(manifest)),
     normalizeDefaultManifest: (manifest) =>

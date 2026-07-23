@@ -54,7 +54,8 @@ function bindCompilerSession(session: MasterCSSCompilerBackendSession): BackendC
     filterCSSExtractionCandidates: (candidates, blocklist) =>
       session.filterCSSExtractionCandidates(candidates, blocklist),
     compileManifestInput: (input, options) => session.compileManifestInput(input, options),
-    lowerCSSDirectives: (request, options) => session.lowerCSSDirectives(request, options),
+    lowerCSSDirectives: (request, options, sourceText) =>
+      session.lowerCSSDirectives(request, options, sourceText),
     normalizeManifest: (manifest) => session.normalizeManifest(manifest),
     normalizeDefaultManifest: (manifest) => session.normalizeDefaultManifest(manifest),
     compileDefaultPresetManifest: (request) => session.compileDefaultPresetManifest(request),

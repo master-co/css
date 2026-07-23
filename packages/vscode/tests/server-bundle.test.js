@@ -34,6 +34,10 @@ function encode(message) {
 function createLanguageServer(options = {}) {
   const child = spawn(process.execPath, [options.serverPath ?? serverPath, '--stdio'], {
     cwd: options.cwd ?? packageDir,
+    env: {
+      ...process.env,
+      NODE_PATH: ''
+    },
     stdio: ['pipe', 'pipe', 'pipe']
   })
   let closed = false
@@ -219,6 +223,17 @@ test('server bundle does not retain removed TypeScript semantic backends', () =>
   expect(legacySemanticImports).toEqual([])
 })
 
+test('server bundle embeds referenced MDN JSON modules', () => {
+  const source = readFileSync(serverPath, 'utf8')
+  const imports = [...source.matchAll(/\bfrom\s*["']([^"']+)["']/g)].map((match) => match[1])
+
+  expect(imports.filter((specifier) => specifier.startsWith('mdn-data/'))).toEqual([])
+  expect(source).not.toContain('../data/patch.json')
+  expect(source).not.toContain('mdn-data/css/')
+  expect(source).toContain('repeating-linear-gradient()')
+  expect(source).toContain(':first-child')
+})
+
 test('staged extension includes runtime packages for the current target', async () => {
   await withStagedExtension(({ stagingDir, files, target }, { getCurrentTarget, getRuntimePackagesForTarget }) => {
     expectStagedRuntimePackages({ stagingDir, files }, getRuntimePackagesForTarget(getCurrentTarget()))
@@ -314,7 +329,7 @@ test('staged extension includes shared TextMate grammar asset', async () => {
   })
 })
 
-test('staged language server starts and shuts down', async () => {
+test('staged language server starts without workspace node_modules and shuts down', async () => {
   await withStagedExtension(async ({ stagingDir }) => {
     const server = createLanguageServer({
       cwd: stagingDir,

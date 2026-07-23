@@ -31,6 +31,10 @@ import { SEMANTIC_TOKENS_LEGEND } from '@master/css-tooling/language'
 import glob from 'fast-glob'
 import { URI } from 'vscode-uri'
 import { CSSDirectiveError, type CSSDirectiveSourceReference } from '@master/css-schema/css-directives'
+import {
+  MasterCSSError,
+  type MasterCSSDiagnostic
+} from '@master/css-schema'
 
 const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
 
@@ -107,6 +111,29 @@ const STYLE_BLOCK_RE = /<style\b([^>]*)>([\s\S]*?)<\/style>/gi
 interface CSSDiagnosticSource {
   source: string
   offset: number
+}
+
+function getMasterCSSDiagnostics(error: unknown): readonly MasterCSSDiagnostic[] | undefined {
+  if (error instanceof MasterCSSError) return error.diagnostics
+  if (
+    !error
+    || typeof error !== 'object'
+    || (error as { name?: unknown }).name !== 'MasterCSSError'
+  ) return
+  const diagnostics = (error as { diagnostics?: unknown }).diagnostics
+  if (!Array.isArray(diagnostics)) return
+  return diagnostics as readonly MasterCSSDiagnostic[]
+}
+
+function toLSPDiagnosticSeverity(severity: MasterCSSDiagnostic['severity']) {
+  switch (severity) {
+    case 'warning':
+      return DiagnosticSeverity.Warning
+    case 'information':
+      return DiagnosticSeverity.Information
+    default:
+      return DiagnosticSeverity.Error
+  }
 }
 
 function isCSSDiagnosticDocument(textDocument: TextDocument) {
@@ -623,6 +650,20 @@ export class MasterCSSLanguageServer implements Disposable {
           baseManifest: workspace.baseManifest ?? defaultManifest
         })
       } catch (error) {
+        const structuredDiagnostics = getMasterCSSDiagnostics(error)
+        if (structuredDiagnostics?.length) {
+          for (const structuredDiagnostic of structuredDiagnostics) {
+            const diagnostic = this.createMasterCSSDiagnostic(
+              structuredDiagnostic,
+              textDocument,
+              documentFile,
+              source,
+              offset
+            )
+            if (diagnostic) diagnostics.push(diagnostic)
+          }
+          continue
+        }
         const directiveError = toCSSDirectiveError(error)
         if (!directiveError) continue
         const diagnostic = this.createCSSDirectiveDiagnostic(directiveError, textDocument, documentFile, offset)
@@ -635,10 +676,24 @@ export class MasterCSSLanguageServer implements Disposable {
   private createManifestLoadingDiagnostics(textDocument: TextDocument, workspace: MasterCSSWorkspace): Diagnostic[] {
     if (!workspace.manifestErrors?.length) return []
     const documentFile = path.resolve(URI.parse(textDocument.uri).fsPath)
-    return workspace.manifestErrors.map((error) => {
+    return workspace.manifestErrors.flatMap((error) => {
+      const structuredDiagnostics = getMasterCSSDiagnostics(error)
+      if (structuredDiagnostics?.length) {
+        return structuredDiagnostics.map((diagnostic) => this.createMasterCSSDiagnostic(
+          diagnostic,
+          textDocument,
+          documentFile,
+          textDocument.getText(),
+          0,
+          {
+            allowExternalSource: true,
+            messagePrefix: 'Failed to load Master CSS manifest: '
+          }
+        )).filter((diagnostic): diagnostic is Diagnostic => !!diagnostic)
+      }
       const directiveError = toCSSDirectiveError(error)
       const source = directiveError?.source
-      return {
+      return [{
         range: source && (!source.file || path.resolve(source.file) === documentFile)
           ? this.createCSSDirectiveRange(source, textDocument, documentFile, 0)
           : {
@@ -652,8 +707,58 @@ export class MasterCSSLanguageServer implements Disposable {
         relatedInformation: directiveError
           ? this.createCSSDirectiveRelatedInformation(directiveError.related, textDocument, documentFile, 0)
           : undefined
-      }
+      }]
     })
+  }
+
+  private createMasterCSSDiagnostic(
+    diagnostic: MasterCSSDiagnostic,
+    textDocument: TextDocument,
+    documentFile: string,
+    sourceText: string,
+    sourceOffset: number,
+    options: {
+      allowExternalSource?: boolean
+      messagePrefix?: string
+    } = {}
+  ): Diagnostic | undefined {
+    const externalSource = !!diagnostic.source && path.resolve(diagnostic.source) !== documentFile
+    if (externalSource && !options.allowExternalSource) return
+    const sourceDocument = TextDocument.create(
+      'inmemory://master-css/diagnostic.css',
+      'css',
+      0,
+      sourceText
+    )
+    const range = diagnostic.range && !externalSource
+      ? {
+        start: textDocument.positionAt(sourceOffset + sourceDocument.offsetAt(diagnostic.range.start)),
+        end: textDocument.positionAt(sourceOffset + sourceDocument.offsetAt(diagnostic.range.end))
+      }
+      : {
+        start: textDocument.positionAt(sourceOffset),
+        end: textDocument.positionAt(sourceOffset)
+      }
+    const relatedMessages = [
+      ...(diagnostic.notes ?? []),
+      ...(diagnostic.help ? [diagnostic.help] : [])
+    ]
+    return {
+      range,
+      severity: toLSPDiagnosticSeverity(diagnostic.severity),
+      code: diagnostic.code,
+      source: 'Master CSS',
+      message: `${options.messagePrefix ?? ''}${diagnostic.message}`,
+      relatedInformation: relatedMessages.length
+        ? relatedMessages.map((message) => ({
+          message,
+          location: {
+            uri: textDocument.uri,
+            range
+          }
+        }))
+        : undefined
+    }
   }
 
   private createCSSDirectiveDiagnostic(

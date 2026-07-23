@@ -79,7 +79,8 @@ export interface MasterCSSCompilerBackendSession extends Disposable {
   ): MasterCSSCompileManifestResult
   lowerCSSDirectives(
     request: MasterCSSLowerDirectivesRequest,
-    options?: MasterCSSLowerDirectivesOptions
+    options?: MasterCSSLowerDirectivesOptions,
+    sourceText?: string
   ): MasterCSSLowerDirectivesResult
   normalizeManifest(manifest: MasterCSSManifest): MasterCSSManifest
   normalizeDefaultManifest(manifest: MasterCSSManifest): MasterCSSManifest

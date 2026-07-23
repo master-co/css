@@ -86,6 +86,7 @@ export type CompileCSSManifestSourceOptions = CompileCSSOptions & {
 type CompileCSSManifestInternalOptions = CompileCSSManifestSourceOptions & {
   referenceStack?: string[]
   diagnostics?: CompilerDiagnosticRecorder
+  sourceText?: string
 }
 
 export interface CompileCSSManifestResult extends Omit<CompileCSSResult, 'manifestInput'> {
@@ -539,6 +540,7 @@ function lowerCSSDirectivesWithBackend(
     resolutionManifest?: MasterCSSManifest
     onDiagnostic?: (diagnostic: MasterCSSDiagnostic) => void
     diagnostics?: CompilerDiagnosticRecorder
+    sourceText?: string
   }
 ) {
   const lowered = callCompilerBackend<BackendLowerCSSDirectivesResult>(() => (
@@ -551,7 +553,8 @@ function lowerCSSDirectivesWithBackend(
       {
         ...(options.baseManifest ? { baseManifest: options.baseManifest } : {}),
         ...(options.resolutionManifest ? { resolutionManifest: options.resolutionManifest } : {})
-      }
+      },
+      options.sourceText
     )
   ))
   for (const [metricId, value] of Object.entries(lowered.diagnosticCounts)) {
@@ -631,7 +634,8 @@ function toCompileCSSManifestResult(
     baseManifest: options.baseManifest,
     resolutionManifest: referenceContext.manifest,
     onDiagnostic: options.onDiagnostic,
-    diagnostics: options.diagnostics
+    diagnostics: options.diagnostics,
+    sourceText: options.sourceText
   })
   const dependencies: string[] = []
   const warnings: string[] = []
@@ -672,6 +676,7 @@ export function compileCSSManifest(source: string, options: CompileCSSManifestSo
   })
   return toCompileCSSManifestResult(result, {
     ...options,
+    sourceText: source,
     ...(fromFile
       ? {
         from: fromFile,
@@ -690,6 +695,7 @@ function compileCSSManifestFileInternal(file: string, options: CompileCSSManifes
   return toCompileCSSManifestResult(result, {
     ...options,
     from: absoluteFile,
+    sourceText: readFileSync(stripRequest(absoluteFile), 'utf8'),
     referenceStack: [...(options.referenceStack || []), absoluteFile]
   })
 }
@@ -734,6 +740,10 @@ export function compileProjectManifest(entries: string[], options: CompileCSSMan
       ...options,
       baseManifest: manifest,
       from: entry,
+      sourceText: readFileSync(
+        stripRequest(isAbsolute(entry) ? entry : resolve(options.root || '', entry)),
+        'utf8'
+      ),
       referenceStack: [isAbsolute(entry) ? entry : resolve(options.root || '', entry)]
     })
     manifest = manifestResult.manifest
