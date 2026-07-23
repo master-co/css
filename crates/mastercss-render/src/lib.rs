@@ -255,6 +255,36 @@ mod tests {
     }
 
     #[test]
+    fn cached_native_declarations_preserve_later_alias_matchers() {
+        let manifest = serde_json::json!({
+            "version": 1,
+            "variables": {
+                "": [{
+                    "name": "stripe",
+                    "key": "stripe",
+                    "type": "string",
+                    "value": "linear-gradient(red,blue)"
+                }]
+            },
+            "utilities": []
+        })
+        .to_string();
+        let mut cached = RenderSession::create(&manifest, None).unwrap();
+        cached
+            .ensure_classes(["background:var(--stripe)"], Some(&[true]))
+            .unwrap();
+        cached.ensure_classes(["bg:stripe"], Some(&[true])).unwrap();
+
+        let cached_snapshot = cached.snapshot_for_classes(["bg:stripe"]).unwrap();
+        let fresh_snapshot = render_classes(&manifest, ["bg:stripe"], Some(&[true])).unwrap();
+        assert_eq!(cached_snapshot, fresh_snapshot);
+        assert_eq!(
+            cached_snapshot.snapshot.text,
+            "@layer theme{:root{--stripe:linear-gradient(red,blue)}}@layer utilities{.bg\\:stripe{background:var(--stripe)}}"
+        );
+    }
+
+    #[test]
     fn cached_subsets_preserve_page_resource_composition() {
         let manifest = serde_json::json!({
             "version": 1,

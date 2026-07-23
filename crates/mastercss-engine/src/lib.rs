@@ -264,6 +264,7 @@ struct StaticUtilityRule {
 #[derive(Debug, Clone)]
 struct UtilityMatch {
     value: Option<String>,
+    value_normalized: bool,
     state_token: String,
     variable_names: Vec<String>,
     matcher_type: UtilityMatcherType,
@@ -669,12 +670,19 @@ impl EngineSession {
                 continue;
             }
             let id = format!("native:{}\0{}", candidate.ir.property, candidate.ir.value);
-            if self
+            if let Some(utility) = self
                 .compiled
                 .utilities
-                .iter()
-                .any(|utility| utility.id == id)
+                .iter_mut()
+                .find(|utility| utility.id == id)
             {
+                if !utility.matchers.iter().any(
+                    |matcher| matches!(matcher, UtilityMatcher::Static { name } if name == &candidate.match_name),
+                ) {
+                    utility.matchers.push(UtilityMatcher::Static {
+                        name: candidate.match_name,
+                    });
+                }
                 continue;
             }
             let mut declarations = Map::new();
@@ -1085,10 +1093,13 @@ impl EngineSession {
                 else {
                     continue;
                 };
-                let resolved_value = matched
-                    .value
-                    .as_deref()
-                    .map(|value| normalize_dynamic_value(value, &self.compiled.settings));
+                let resolved_value = matched.value.as_deref().map(|value| {
+                    if matched.value_normalized {
+                        value.to_owned()
+                    } else {
+                        normalize_dynamic_value(value, &self.compiled.settings)
+                    }
+                });
                 let mut emitted = false;
                 for (branch_index, branch) in
                     resolve_state_branches(&matched.state_token, important, &self.compiled)
@@ -1109,7 +1120,7 @@ impl EngineSession {
                     } else {
                         format!("{class_name}\0{}", branch.key)
                     };
-                    emitted |= seen.insert(key);
+                    emitted |= seen.insert((key, branch.layer.unwrap_or(utility.layer)));
                 }
                 if !emitted {
                     continue;
@@ -1474,7 +1485,7 @@ impl EngineSession {
         if raw_value.is_empty() {
             return None;
         }
-        let value = normalize_unmanaged_value(&raw_value, &self.compiled.settings);
+        let (value, _) = resolve_value_components(&raw_value, None, &self.compiled);
         Some(NativeDeclarationCandidate {
             ir: NativeDeclarationCandidateIr {
                 class_name: class_name.to_owned(),
@@ -1743,10 +1754,13 @@ impl EngineSession {
                 else {
                     continue;
                 };
-                let resolved_value = matched
-                    .value
-                    .as_deref()
-                    .map(|value| normalize_dynamic_value(value, &self.compiled.settings));
+                let resolved_value = matched.value.as_deref().map(|value| {
+                    if matched.value_normalized {
+                        value.to_owned()
+                    } else {
+                        normalize_dynamic_value(value, &self.compiled.settings)
+                    }
+                });
                 for (branch_index, branch) in
                     resolve_state_branches(&matched.state_token, important, &self.compiled)
                         .into_iter()
@@ -1774,10 +1788,10 @@ impl EngineSession {
                     } else {
                         format!("{class_name}\0{}", branch.key)
                     };
-                    if !seen.insert(key.clone()) {
+                    let layer = branch.layer.unwrap_or(utility.layer);
+                    if !seen.insert((key.clone(), layer)) {
                         continue;
                     }
-                    let layer = branch.layer.unwrap_or(utility.layer);
                     let sort_tier = if !branch.condition_wrappers.is_empty() {
                         3
                     } else if branch.mode.is_some() {
@@ -1852,10 +1866,13 @@ impl EngineSession {
                 let mut state_branches =
                     resolve_state_branches(&matched.state_token, important, &self.compiled);
                 apply_forced_mode(&mut state_branches, mode, &self.compiled);
-                let resolved_value = matched
-                    .value
-                    .as_deref()
-                    .map(|value| normalize_dynamic_value(value, &self.compiled.settings));
+                let resolved_value = matched.value.as_deref().map(|value| {
+                    if matched.value_normalized {
+                        value.to_owned()
+                    } else {
+                        normalize_dynamic_value(value, &self.compiled.settings)
+                    }
+                });
                 for (branch_index, branch) in state_branches.into_iter().enumerate() {
                     let mut emitted_rules = emit_declarations(
                         utility,
@@ -1879,7 +1896,8 @@ impl EngineSession {
                     } else {
                         format!("{class_name}\0{}", branch.key)
                     };
-                    if !seen.insert(key.clone()) {
+                    let layer = branch.layer.unwrap_or(utility.layer);
+                    if !seen.insert((key.clone(), layer)) {
                         continue;
                     }
                     let selector_text =
@@ -1909,7 +1927,6 @@ impl EngineSession {
                             variable_names.push(name);
                         }
                     }
-                    let layer = branch.layer.unwrap_or(utility.layer);
                     let sort_tier = if !branch.condition_wrappers.is_empty() {
                         3
                     } else if branch.mode.is_some() {
@@ -3369,6 +3386,45 @@ fn normalize_math_expression(source: &str, settings: &EngineSettings) -> String 
     let mut output = String::with_capacity(source.len() + 8);
     let mut index = 0;
     while index < characters.len() {
+        if characters[index..].starts_with(&['v', 'a', 'r', '('])
+            || characters[index..].starts_with(&['e', 'n', 'v', '('])
+        {
+            let mut cursor = index;
+            let mut depth = 0_u32;
+            let mut quote = None;
+            let mut escaped = false;
+            while cursor < characters.len() {
+                let current = characters[cursor];
+                output.push(current);
+                cursor += 1;
+                if escaped {
+                    escaped = false;
+                    continue;
+                }
+                if current == '\\' {
+                    escaped = true;
+                    continue;
+                }
+                if let Some(current_quote) = quote {
+                    if current == current_quote {
+                        quote = None;
+                    }
+                    continue;
+                }
+                if matches!(current, '\'' | '"') {
+                    quote = Some(current);
+                } else if current == '(' {
+                    depth += 1;
+                } else if current == ')' {
+                    depth = depth.saturating_sub(1);
+                    if depth == 0 {
+                        break;
+                    }
+                }
+            }
+            index = cursor;
+            continue;
+        }
         let character = characters[index];
         let previous = characters[..index]
             .iter()
@@ -3742,7 +3798,16 @@ fn collect_animation_names(
     variable_names: &[String],
     manifest: &ManifestProjection,
 ) -> Vec<String> {
-    let mut sources = vec![declarations.to_owned()];
+    let mut sources = split_top_level(declarations, ';')
+        .into_iter()
+        .filter_map(|declaration| {
+            let (property, value) = declaration.split_once(':')?;
+            matches!(property, "animation" | "animation-name").then(|| value.to_owned())
+        })
+        .collect::<Vec<_>>();
+    if sources.is_empty() {
+        return Vec::new();
+    }
     let mut visited = HashSet::new();
     let mut pending = variable_names.to_vec();
     while let Some(name) = pending.pop() {
@@ -4009,6 +4074,7 @@ fn match_utility(
             {
                 return Some(UtilityMatch {
                     value: None,
+                    value_normalized: true,
                     state_token: class_name[name.len()..].to_owned(),
                     variable_names: Vec::new(),
                     matcher_type: UtilityMatcherType::Static,
@@ -4037,6 +4103,7 @@ fn match_utility(
                             .cloned()
                             .unwrap_or_else(|| candidate.to_string()),
                     ),
+                    value_normalized: false,
                     state_token: state_token.to_owned(),
                     variable_names: Vec::new(),
                     matcher_type: UtilityMatcherType::Pattern,
@@ -4053,9 +4120,10 @@ fn match_utility(
                     let (value, state_token) = split_dynamic_value_state(raw_value);
                     if !value.is_empty() && !contains_legacy_variable_function(&value) {
                         let (value, variable_names) =
-                            resolve_utility_value_components(&value, utility, manifest);
+                            resolve_value_components(&value, Some(utility), manifest);
                         return Some(UtilityMatch {
                             value: Some(value),
+                            value_normalized: true,
                             state_token,
                             variable_names,
                             matcher_type: UtilityMatcherType::Key,
@@ -4080,12 +4148,13 @@ fn match_utility(
                         continue;
                     }
                     let Some((value, variable_names)) =
-                        resolve_utility_value(&value, utility, manifest)
+                        resolve_utility_alias_value(&value, utility, manifest)
                     else {
                         continue;
                     };
                     return Some(UtilityMatch {
                         value: Some(value),
+                        value_normalized: false,
                         state_token,
                         variable_names,
                         matcher_type: UtilityMatcherType::Variable,
@@ -4110,9 +4179,10 @@ fn match_utility(
                         continue;
                     }
                     let (value, variable_names) =
-                        resolve_utility_value_components(&value, utility, manifest);
+                        resolve_value_components(&value, Some(utility), manifest);
                     return Some(UtilityMatch {
                         value: Some(value),
+                        value_normalized: true,
                         state_token,
                         variable_names,
                         matcher_type: UtilityMatcherType::Value,
@@ -4179,12 +4249,20 @@ fn resolve_utility_value(
     utility: &UtilityDefinition,
     manifest: &ManifestProjection,
 ) -> Option<(String, Vec<String>)> {
+    resolve_value(value, Some(utility), manifest)
+}
+
+fn resolve_value(
+    value: &str,
+    utility: Option<&UtilityDefinition>,
+    manifest: &ManifestProjection,
+) -> Option<(String, Vec<String>)> {
     if let Some((key, alpha)) = value.split_once('/') {
         let variable_name = key
             .strip_prefix('$')
             .filter(|name| manifest.compiled_variables.contains_key(*name))
             .map(str::to_owned)
-            .or_else(|| utility.variables.get(key).cloned())
+            .or_else(|| utility.and_then(|utility| utility.variables.get(key).cloned()))
             .or_else(|| {
                 manifest
                     .compiled_variables
@@ -4222,7 +4300,7 @@ fn resolve_utility_value(
     let variable_name = key
         .strip_prefix('$')
         .filter(|name| manifest.compiled_variables.contains_key(*name))
-        .or_else(|| utility.variables.get(key).map(String::as_str))
+        .or_else(|| utility.and_then(|utility| utility.variables.get(key).map(String::as_str)))
         .or_else(|| manifest.compiled_variables.contains_key(key).then_some(key))?;
     let variable = manifest.compiled_variables.get(variable_name)?;
     if negative && variable.variable_type != "number" {
@@ -4250,9 +4328,20 @@ fn resolve_utility_value(
     ))
 }
 
-fn resolve_utility_value_components(
+fn resolve_utility_alias_value(
     value: &str,
     utility: &UtilityDefinition,
+    manifest: &ManifestProjection,
+) -> Option<(String, Vec<String>)> {
+    let key = value.split_once('/').map_or(value, |(key, _)| key);
+    let key = key.strip_prefix('-').unwrap_or(key);
+    utility.variables.contains_key(key).then_some(())?;
+    resolve_utility_value(value, utility, manifest)
+}
+
+fn resolve_value_components(
+    value: &str,
+    utility: Option<&UtilityDefinition>,
     manifest: &ManifestProjection,
 ) -> (String, Vec<String>) {
     let mut output = String::with_capacity(value.len());
@@ -4264,7 +4353,7 @@ fn resolve_utility_value_components(
         if token.is_empty() {
             return;
         }
-        if let Some((resolved, names)) = resolve_utility_value(token, utility, manifest) {
+        if let Some((resolved, names)) = resolve_value(token, utility, manifest) {
             output.push_str(&resolved);
             for name in names {
                 if !variable_names.contains(&name) {
@@ -4397,7 +4486,9 @@ fn is_selector_state_start(rest: &str) -> bool {
         name,
         "active"
             | "any-link"
+            | "after"
             | "autofill"
+            | "before"
             | "blank"
             | "checked"
             | "current"
@@ -4408,6 +4499,8 @@ fn is_selector_state_start(rest: &str) -> bool {
             | "enabled"
             | "first"
             | "first-child"
+            | "first-letter"
+            | "first-line"
             | "first-of-type"
             | "focus"
             | "focus-visible"
@@ -4790,6 +4883,7 @@ fn selector_token_to_template(
         return Some(suffix_to_template(&generate_selector_nodes(nodes)));
     }
     let mut selector = selector_token.to_owned();
+    selector = replace_legacy_pseudo_elements(&selector);
     for (alias, replacement) in [
         (":first", ":first-child"),
         (":last", ":last-child"),
@@ -4962,6 +5056,7 @@ fn resolve_style_selector_aliases(selector: &str, manifest: &ManifestProjection)
         output.push(character);
         index += character.len_utf8();
     }
+    output = replace_legacy_pseudo_elements(&output);
     for (alias, replacement) in [
         (":first", ":first-child"),
         (":last", ":last-child"),
@@ -4978,6 +5073,34 @@ fn resolve_style_selector_aliases(selector: &str, manifest: &ManifestProjection)
         ("::resizer", "::-webkit-resizer"),
     ] {
         output = replace_selector_alias(&output, alias, replacement);
+    }
+    output
+}
+
+fn replace_legacy_pseudo_elements(source: &str) -> String {
+    let mut output = source.to_owned();
+    for pseudo_element in ["first-letter", "first-line", "before", "after"] {
+        let alias = format!(":{pseudo_element}");
+        let replacement = format!("::{pseudo_element}");
+        let mut normalized = String::with_capacity(output.len() + 1);
+        let mut rest = output.as_str();
+        while let Some(index) = rest.find(&alias) {
+            normalized.push_str(&rest[..index]);
+            let before = rest[..index].chars().next_back();
+            let after = &rest[index + alias.len()..];
+            if before != Some(':')
+                && after.chars().next().is_none_or(|character| {
+                    !character.is_ascii_alphanumeric() && character != '-' && character != '_'
+                })
+            {
+                normalized.push_str(&replacement);
+            } else {
+                normalized.push_str(&alias);
+            }
+            rest = after;
+        }
+        normalized.push_str(rest);
+        output = normalized;
     }
     output
 }
@@ -5623,9 +5746,12 @@ fn normalize_dynamic_value(value: &str, settings: &EngineSettings) -> String {
     number
         .parse::<f64>()
         .map(|number| {
+            let value = format_standard_number(number * settings.base_unit / settings.root_size);
             format!(
                 "{}rem",
-                format_standard_number(number * settings.base_unit / settings.root_size)
+                value
+                    .strip_prefix("-0.")
+                    .map_or(value.clone(), |fraction| { format!("-.{fraction}") })
             )
         })
         .unwrap_or_else(|_| value.to_owned())
@@ -5792,16 +5918,61 @@ fn selector_priority(selector: Option<&str>) -> i32 {
     let Some(selector) = selector else {
         return 0;
     };
-    [
-        (":hover", 1),
-        (":focus-visible", 2),
-        (":focus", 2),
-        (":active", 3),
-        (":disabled", 4),
-    ]
-    .into_iter()
-    .map(|(token, priority)| selector.matches(token).count() as i32 * priority)
-    .sum()
+    let priority = |token: &str| match token {
+        "hover" => 1,
+        "focus" | "focus-visible" => 2,
+        "active" => 3,
+        "disabled" => 4,
+        _ => 0,
+    };
+    let mut total = 0;
+    let mut index = 0;
+    let mut quote = None;
+    while index < selector.len() {
+        let character = selector[index..].chars().next().unwrap_or_default();
+        if let Some(current_quote) = quote {
+            index += character.len_utf8();
+            if character == '\\' {
+                if let Some(escaped) = selector[index..].chars().next() {
+                    index += escaped.len_utf8();
+                }
+            } else if character == current_quote {
+                quote = None;
+            }
+            continue;
+        }
+        if matches!(character, '\'' | '"') {
+            quote = Some(character);
+            index += character.len_utf8();
+            continue;
+        }
+        if character == '['
+            && let Some(close) = selector[index + 1..].find(']')
+        {
+            total += priority(selector[index + 1..index + 1 + close].trim());
+            index += close + 2;
+            continue;
+        }
+        if character.is_ascii_alphanumeric() || character == '-' || character == '_' {
+            let start = index;
+            index += character.len_utf8();
+            while selector[index..]
+                .chars()
+                .next()
+                .is_some_and(is_css_identifier_character)
+            {
+                index += selector[index..]
+                    .chars()
+                    .next()
+                    .unwrap_or_default()
+                    .len_utf8();
+            }
+            total += priority(&selector[start..index]);
+            continue;
+        }
+        index += character.len_utf8();
+    }
+    total
 }
 
 fn emit_declarations(
@@ -5919,7 +6090,10 @@ mod tests {
           {"key":"max","value":"max-content","inline":true}
         ],
         "color":[{"key":"red-60","value":"#d00"}],
-        "spacing":[{"key":"md","type":"number","value":"1rem"}]
+        "spacing":[
+          {"key":"3xs","type":"number","value":".25rem"},
+          {"key":"md","type":"number","value":"1rem"}
+        ]
       },
       "variants":[
         {"token":"@base","branches":[{"layer":"base"}]},
@@ -6031,6 +6205,24 @@ mod tests {
     }
 
     #[test]
+    fn preserves_selector_priority_for_class_pseudo_and_attribute_states() {
+        let engine = EngineSession::create(MANIFEST).unwrap();
+        for (class_name, expected) in [
+            ("block.active", 3),
+            ("block:hover:not(.disabled)", 5),
+            ("block[disabled]", 4),
+        ] {
+            assert_eq!(
+                engine.inspect(class_name).unwrap().rules[0]
+                    .priority
+                    .selector,
+                expected,
+                "{class_name}"
+            );
+        }
+    }
+
+    #[test]
     fn exposes_manifest_driven_class_semantics_without_mutating_the_session() {
         let engine = EngineSession::create(MANIFEST).unwrap();
         assert_eq!(
@@ -6110,6 +6302,16 @@ mod tests {
         assert!(!engine.css_text().contains("--color-red-60:#d00"));
         engine.delete_class_rules(["m:md"]).unwrap();
         assert!(!engine.css_text().contains("@layer theme"));
+    }
+
+    #[test]
+    fn preserves_custom_property_names_inside_generated_math() {
+        let mut engine = EngineSession::create(MANIFEST).unwrap();
+        engine.ensure_class_rules(["m:-3xs"]).unwrap();
+        assert_eq!(
+            engine.css_text(),
+            "@layer theme{:root{--spacing-3xs:.25rem}}@layer utilities{.m\\:-3xs{margin:calc(var(--spacing-3xs) * -1)}}"
+        );
     }
 
     #[test]
@@ -6270,6 +6472,27 @@ mod tests {
                 "@layer utilities{.block\\!{display:block!important}}",
             ),
             ("w:1x", "@layer utilities{.w\\:1x{width:0.25rem}}"),
+            ("m:-1x", "@layer utilities{.m\\:-1x{margin:-.25rem}}"),
+            (
+                "block:before",
+                "@layer utilities{.block\\:before::before{display:block}}",
+            ),
+            (
+                "block::before",
+                "@layer utilities{.block\\:\\:before::before{display:block}}",
+            ),
+            (
+                "block:after",
+                "@layer utilities{.block\\:after::after{display:block}}",
+            ),
+            (
+                "block:first-letter",
+                "@layer utilities{.block\\:first-letter::first-letter{display:block}}",
+            ),
+            (
+                "block:first-line",
+                "@layer utilities{.block\\:first-line::first-line{display:block}}",
+            ),
         ] {
             let mut engine = EngineSession::create(MANIFEST).unwrap();
             engine.ensure_class_rules([class_name]).unwrap();
@@ -6292,6 +6515,42 @@ mod tests {
             Some(".scope & button")
         );
         assert_eq!(compose_selector_templates(None, None), None);
+    }
+
+    #[test]
+    fn resolves_legacy_pseudo_elements_without_rewriting_explicit_double_colons() {
+        let engine = EngineSession::create(MANIFEST).unwrap();
+        assert_eq!(
+            engine
+                .resolve_style_selector(".card:before,.card:first-line,.card::after")
+                .unwrap(),
+            ".card::before,.card::first-line,.card::after"
+        );
+    }
+
+    #[test]
+    fn tracks_keyframes_only_from_animation_declarations() {
+        let manifest = include_str!("../../../packages/preset/src/default-manifest.json");
+        let mut engine = EngineSession::create(manifest).unwrap();
+        engine
+            .ensure_class_rules(["float:left", "rotate:180deg"])
+            .unwrap();
+        assert!(!engine.css_text().contains("@keyframes"));
+        assert!(
+            engine
+                .inspect("float:left")
+                .unwrap()
+                .rules
+                .iter()
+                .all(|rule| rule.animation_names.is_empty())
+        );
+
+        engine.ensure_class_rules(["animation:float|1s"]).unwrap();
+        assert!(engine.css_text().contains("@keyframes float{"));
+        assert_eq!(
+            engine.inspect("animation:float|1s").unwrap().rules[0].animation_names,
+            ["float"]
+        );
     }
 
     #[test]
@@ -6438,6 +6697,106 @@ mod tests {
                 .inspect("width:calc(-2px+$(spacing-x1))")
                 .unwrap()
                 .valid
+        );
+    }
+
+    #[test]
+    fn preserves_all_static_rules_for_the_same_class_across_layers() {
+        let manifest = r#"{
+          "version":1,
+          "utilities":[
+            {
+              "id":"demo-defaults",
+              "type":-2,
+              "layer":"defaults",
+              "emit":{"type":"static","rules":[{"declarations":{"background":"var(--stripe)"}}]},
+              "matchers":[{"type":"static","name":"demo"}]
+            },
+            {
+              "id":"demo-components",
+              "type":-2,
+              "layer":"components",
+              "emit":{"type":"static","rules":[{"declarations":{"display":"flex"}}]},
+              "matchers":[{"type":"static","name":"demo"}]
+            }
+          ]
+        }"#;
+        let mut engine = EngineSession::create(manifest).unwrap();
+        engine.ensure_class_rules(["demo"]).unwrap();
+        assert_eq!(
+            engine.css_text(),
+            "@layer defaults{.demo{background:var(--stripe)}}@layer components{.demo{display:flex}}"
+        );
+    }
+
+    #[test]
+    fn lets_native_key_aliases_handle_variables_outside_managed_namespaces() {
+        let manifest = r#"{
+          "version":1,
+          "variables":{"":[
+            {
+              "name":"stripe",
+              "key":"stripe",
+              "type":"string",
+              "value":"0 / 7.5px 7.5px linear-gradient(red,blue) transparent"
+            }
+          ]},
+          "utilities":[{
+            "id":"bg:<~color|color>",
+            "type":0,
+            "kind":"color",
+            "variableAliasRefs":["~color"],
+            "emit":{"type":"static","rules":[{"declarations":{"background-color":null}}]},
+            "matchers":[
+              {"type":"variable","keys":["bg"]},
+              {"type":"value","keys":["bg"]}
+            ]
+          }]
+        }"#;
+        let mut engine = EngineSession::create(manifest).unwrap();
+        assert_eq!(
+            engine.native_declaration_candidates(["bg:stripe"]).unwrap(),
+            vec![NativeDeclarationCandidateIr {
+                class_name: "bg:stripe".into(),
+                property: "background".into(),
+                value: "var(--stripe)".into(),
+            }]
+        );
+        engine
+            .ensure_class_rules_with_native_support(["bg:stripe"], &[true])
+            .unwrap();
+        assert_eq!(
+            engine.css_text(),
+            "@layer theme{:root{--stripe:0 / 7.5px 7.5px linear-gradient(red,blue) transparent}}@layer utilities{.bg\\:stripe{background:var(--stripe)}}"
+        );
+    }
+
+    #[test]
+    fn preserves_native_alias_matchers_for_shared_declarations() {
+        let manifest = r#"{
+          "version":1,
+          "variables":{"":[
+            {
+              "name":"stripe",
+              "key":"stripe",
+              "type":"string",
+              "value":"linear-gradient(red,blue)"
+            }
+          ]},
+          "utilities":[]
+        }"#;
+        let mut engine = EngineSession::create(manifest).unwrap();
+        engine
+            .ensure_class_rules_with_native_support(["background:var(--stripe)"], &[true])
+            .unwrap();
+        engine
+            .ensure_class_rules_with_native_support(["bg:stripe"], &[true])
+            .unwrap();
+
+        assert!(engine.inspect("bg:stripe").unwrap().valid);
+        assert_eq!(
+            engine.css_text(),
+            "@layer theme{:root{--stripe:linear-gradient(red,blue)}}@layer utilities{.background\\:var\\(--stripe\\){background:var(--stripe)}.bg\\:stripe{background:var(--stripe)}}"
         );
     }
 

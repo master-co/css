@@ -42,6 +42,35 @@ test('reuses a manifest renderer without leaking rules between pages', () => {
   }
 })
 
+test('preserves native aliases that share a declaration across cached pages', () => {
+  const manifest = {
+    version: 1,
+    variables: {
+      '': [{
+        name: 'stripe',
+        key: 'stripe',
+        type: 'string',
+        value: 'linear-gradient(red,blue)'
+      }]
+    },
+    utilities: []
+  } as unknown as MasterCSSManifest
+  const renderer = createServerRenderer(manifest, { maxCachedClasses: Infinity })
+  const first = renderer.render('<div class="background:var(--stripe)"></div>')
+  const second = renderer.render('<div class="bg:stripe"></div>')
+  const expectedSecond = render('<div class="bg:stripe"></div>', manifest)
+
+  try {
+    expectCSSParity(second, expectedSecond)
+    expect(second.css?.text).toContain('.bg\\:stripe{background:var(--stripe)}')
+  } finally {
+    first.css?.dispose()
+    second.css?.dispose()
+    expectedSecond.css?.dispose()
+    renderer.dispose()
+  }
+})
+
 test('creates page-local CSS views that accumulate classes progressively', () => {
   const renderer = createServerRenderer(defaultManifest)
   const css = renderer.createCSS()
