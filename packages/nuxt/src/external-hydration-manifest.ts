@@ -24,6 +24,15 @@ interface NitroPrerenderContext {
   }
 }
 
+interface NitroPrerenderHookContext extends NitroPrerenderContext {
+  hooks: {
+    hook(
+      name: 'prerender:generate',
+      handler: (route: NitroPrerenderRoute) => void
+    ): void
+  }
+}
+
 function isHTMLPrerenderRoute(route: NitroPrerenderRoute) {
   return route.contentType?.includes('html') || route.fileName?.endsWith('.html')
 }
@@ -105,4 +114,12 @@ export function externalizeNitroPrerenderHydrationManifest(
     route.contents,
     toHydrationManifestAssetURL(fileName, toPublicAssetBase(nitro.options.baseURL))
   )
+}
+
+export function registerNitroPrerenderHydrationManifest(
+  nitro: NitroPrerenderHookContext
+) {
+  nitro.hooks.hook('prerender:generate', (route) => {
+    externalizeNitroPrerenderHydrationManifest(route, nitro)
+  })
 }

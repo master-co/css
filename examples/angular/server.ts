@@ -4,7 +4,7 @@ import express from 'express';
 import { fileURLToPath } from 'node:url';
 import { dirname, join, resolve } from 'node:path';
 import bootstrap from './src/main.server';
-import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' };
+import defaultManifestJSON from '@master/css-preset/default-manifest.json';
 import type { MasterCSSManifest } from '@master/css-schema/manifest';
 import { renderHTML } from '@master/css-server';
 

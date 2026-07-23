@@ -58,6 +58,9 @@ describe('@master/css-astro integration', () => {
     expect(result.injectScript).toHaveBeenCalledWith('page', ASTRO_RUNTIME_INJECTION)
     expect(result.pluginNames).not.toContain('master-css:pre-render')
     expect(result.pluginNames).not.toContain('master-css:inject-runtime')
+    expect(result.pluginNames.filter((name) => name === 'master-css:virtual-module:manifest')).toHaveLength(1)
+    expect(result.pluginNames).not.toContain('master-css:scanner')
+    expect(result.pluginNames).not.toContain('master-css:style-entry')
     expect(result.viteConfig?.ssr?.external).toEqual(ASTRO_SSR_EXTERNAL)
     expect(result.viteConfig?.build?.rollupOptions?.external).toEqual(ASTRO_SSR_EXTERNAL)
   })
@@ -71,6 +74,7 @@ describe('@master/css-astro integration', () => {
     })
     expect(result.injectScript).not.toHaveBeenCalled()
     expect(result.pluginNames).not.toContain('master-css:pre-render')
+    expect(result.pluginNames.filter((name) => name === 'master-css:virtual-module:manifest')).toHaveLength(1)
   })
 
   it('injects runtime script without Astro middleware in runtime mode', async () => {

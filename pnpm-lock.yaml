@@ -1457,6 +1457,9 @@ importers:
       '@master/css':
         specifier: workspace:*
         version: link:../css
+      '@master/css-compiler':
+        specifier: workspace:*
+        version: link:../compiler
       '@master/css-schema':
         specifier: workspace:*
         version: link:../schema

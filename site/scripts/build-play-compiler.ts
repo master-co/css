@@ -8,7 +8,8 @@ const workspaceDistInputPattern = /(?:^|[\\/])packages[\\/][^\\/]+[\\/]dist[\\/]
 const compilerWasmFileName = 'mastercss_wasm_compiler_bg.wasm'
 const compilerWasmSourcePath = fileURLToPath(new URL(`../../packages/wasm-compiler/artifacts/${compilerWasmFileName}`, import.meta.url))
 const backendSourcePath = fileURLToPath(new URL('../../packages/native/src/browser.ts', import.meta.url))
-const compilerBackendSourcePath = fileURLToPath(new URL('../../packages/native/src/compiler-browser.ts', import.meta.url))
+const compilerBackendSourcePath = fileURLToPath(new URL('../../packages/native/src/broker-compiler-browser.ts', import.meta.url))
+const engineBackendSourcePath = fileURLToPath(new URL('../../packages/native/src/broker-engine-browser.ts', import.meta.url))
 
 function toWorkspaceDistInputs(moduleIds: string[]) {
   return [...new Set(moduleIds.filter((input) => workspaceDistInputPattern.test(input)))]
@@ -58,6 +59,7 @@ export async function buildPlayCompiler(outputDir = join(siteDir, 'public/play-c
       resolve: {
         alias: {
           '@master/css-backend/compiler': compilerBackendSourcePath,
+          '@master/css-backend/engine': engineBackendSourcePath,
           '@master/css-backend': backendSourcePath
         },
         conditionNames: ['browser', 'default', 'import']

@@ -132,8 +132,12 @@ export class ScannerCSSView {
   get utilitiesLayer() {
     return {
       rules: this.scanner.state.engine.rules
-        .filter(({ layer }) => layer === 'utilities')
-        .map((rule) => ({ ...rule, name: rule.className }))
+        .filter((
+          { layer }: BackendScannerState['engine']['rules'][number]
+        ) => layer === 'utilities')
+        .map((
+          rule: BackendScannerState['engine']['rules'][number]
+        ) => ({ ...rule, name: rule.className }))
     }
   }
 }

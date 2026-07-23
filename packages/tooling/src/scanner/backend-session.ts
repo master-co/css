@@ -130,5 +130,9 @@ export function resolveNativeSupport(candidates: MasterCSSNativeDeclarationCandi
 
 export function resolveGeneratedRuleSupport(batch: MasterCSSValidatorBatch) {
   return batch.classes
-    .map(({ rules }) => rules.map(({ text }) => validateCSS(text).length === 0))
+    .map((
+      { rules }: MasterCSSValidatorBatch['classes'][number]
+    ) => rules.map((
+      { text }: MasterCSSValidatorBatch['classes'][number]['rules'][number]
+    ) => validateCSS(text).length === 0))
 }

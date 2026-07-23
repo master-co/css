@@ -1,11 +1,20 @@
 import {
   createCompilerBackendSession as createBackendSession,
   type MasterCSSBackendLoadOptions,
-  type MasterCSSCompilerBackendSession
+  type MasterCSSCompileDefaultPresetRequest,
+  type MasterCSSCompileManifestOptions,
+  type MasterCSSCompilerBackendSession,
+  type MasterCSSDirectiveCompileOptions,
+  type MasterCSSDirectiveExtractionPolicy,
+  type MasterCSSDirectiveManifestInput,
+  type MasterCSSImportGraphRequest,
+  type MasterCSSLowerDirectivesOptions,
+  type MasterCSSLowerDirectivesRequest
 } from '@master/css-backend/compiler'
 import {
   createCompilerBackendSessionSync as createBackendSessionSync
 } from '@master/css-backend/compiler/node'
+import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import type { CompileCSSOptions, CompileCSSResult } from './contracts'
 
 export interface BackendCompilerSession {
@@ -39,7 +48,7 @@ function reviveCompileResult(result: CompileCSSResult) {
 function bindCompilerSession(session: MasterCSSCompilerBackendSession): BackendCompilerSession {
   return {
     backend: session.backend,
-    inspectCSS: (source) => session.inspectCSS(source),
+    inspectCSS: (source: string) => session.inspectCSS(source),
     compileCSS(source, options = {}) {
       return reviveCompileResult(session.compileCSSDirectives(source, {
         from: options.from || 'master.css',
@@ -47,19 +56,37 @@ function bindCompilerSession(session: MasterCSSCompilerBackendSession): BackendC
         ...(options.classes ? { classes: options.classes } : {})
       }) as CompileCSSResult)
     },
-    compileThemeCSS: (source, options) => session.compileThemeCSS(source, options),
-    analyzeCSSDependencies: (source) => session.analyzeCSSDependencies(source),
-    analyzeStandaloneDirectives: (source) => session.analyzeStandaloneDirectives(source),
-    mergeCSSExtractionPolicies: (policies) => session.mergeCSSExtractionPolicies(policies),
-    filterCSSExtractionCandidates: (candidates, blocklist) =>
+    compileThemeCSS: (source: string, options?: MasterCSSDirectiveCompileOptions) =>
+      session.compileThemeCSS(source, options),
+    analyzeCSSDependencies: (source: string) => session.analyzeCSSDependencies(source),
+    analyzeStandaloneDirectives: (source: string) => session.analyzeStandaloneDirectives(source),
+    mergeCSSExtractionPolicies: (
+      policies: readonly Partial<MasterCSSDirectiveExtractionPolicy>[]
+    ) => session.mergeCSSExtractionPolicies(policies),
+    filterCSSExtractionCandidates: (
+      candidates: readonly string[],
+      blocklist: Parameters<
+        MasterCSSCompilerBackendSession['filterCSSExtractionCandidates']
+      >[1]
+    ) =>
       session.filterCSSExtractionCandidates(candidates, blocklist),
-    compileManifestInput: (input, options) => session.compileManifestInput(input, options),
-    lowerCSSDirectives: (request, options, sourceText) =>
+    compileManifestInput: (
+      input: MasterCSSDirectiveManifestInput,
+      options?: MasterCSSCompileManifestOptions
+    ) => session.compileManifestInput(input, options),
+    lowerCSSDirectives: (
+      request: MasterCSSLowerDirectivesRequest,
+      options?: MasterCSSLowerDirectivesOptions,
+      sourceText?: string
+    ) =>
       session.lowerCSSDirectives(request, options, sourceText),
-    normalizeManifest: (manifest) => session.normalizeManifest(manifest),
-    normalizeDefaultManifest: (manifest) => session.normalizeDefaultManifest(manifest),
-    compileDefaultPresetManifest: (request) => session.compileDefaultPresetManifest(request),
-    resolveCSSImportGraph: (request) => session.resolveCSSImportGraph(request),
+    normalizeManifest: (manifest: MasterCSSManifest) => session.normalizeManifest(manifest),
+    normalizeDefaultManifest: (manifest: MasterCSSManifest) =>
+      session.normalizeDefaultManifest(manifest),
+    compileDefaultPresetManifest: (request: MasterCSSCompileDefaultPresetRequest) =>
+      session.compileDefaultPresetManifest(request),
+    resolveCSSImportGraph: (request: MasterCSSImportGraphRequest) =>
+      session.resolveCSSImportGraph(request),
     dispose: () => session.dispose()
   }
 }

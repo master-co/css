@@ -10,6 +10,7 @@ published consumers. It is not a general-purpose shared utility package.
 
 - Virtual module ids and `?master-css-manifest` request helpers.
 - Generated manifest, emittedGlobals, and runtime-bootstrap module source helpers.
+- Shared default project-manifest loading and the narrow manifest virtual-module plugin.
 - Default build manifest and manifest-entry request helpers.
 - Explicit Node virtual-path/hash helpers.
 - Official-host workspace package and directory discovery.
@@ -17,7 +18,7 @@ published consumers. It is not a general-purpose shared utility package.
 ## Does Not Own
 
 - Vite, Next, Webpack, Nuxt, Astro, or framework lifecycle behavior.
-- Project manifest discovery or CSS import graph resolution.
+- Compiler-owned project discovery or CSS import graph semantics.
 - Extraction, runtime hydration, server rendering, scanner state, or compiler lowering.
 - DOM runtime lifecycle or runtime semantics.
 - Public ambient module declarations; `@master/css/client` owns them.
@@ -27,7 +28,8 @@ published consumers. It is not a general-purpose shared utility package.
 
 - Browser-safe: `.`, `./module`, `./manifest-module`, `./manifest-facade`,
   `./style-module`, `./emitted-globals-module`, `./runtime-bootstrap`, `./project`.
-- Node-only: `./node`, `./workspace`, `./workspace-directories`.
+- Node-only: `./node`, `./manifest-loader`, `./manifest-virtual-module`,
+  `./workspace`, `./workspace-directories`.
 
 These subpaths exist only for repository build boundaries. Do not document them as a
 third-party API, publish this package, or leave its specifier in emitted JavaScript or
@@ -53,6 +55,7 @@ declarations.
 - Virtual id and generated import specifier compatibility.
 - Keeping the package dependency-light and adapter-neutral.
 - Shared protocol changes affecting multiple integrations.
+- Dependency/watch registration remaining stable when manifest compilation fails.
 - Accidentally exposing the package as a published dependency or third-party SPI.
 - Turning the package into a generic home for unrelated repository helpers.
 
@@ -64,7 +67,7 @@ declarations.
 ## Dangerous Changes
 
 - Depending on scanner, compiler, runtime, server, build adapters, or frameworks.
-- Moving project discovery or import graph behavior here.
+- Reimplementing compiler-owned project discovery or import graph semantics here.
 - Adding Node globals to browser-safe subpaths.
 
 ## Validation

@@ -81,11 +81,13 @@ interface BackendLintValidation {
 }
 
 function collectHostRuleErrors(batch: MasterCSSValidatorBatch): string[][][] {
-  return batch.classes.map(({ rules }) => rules.map(({ text }) =>
-    validateCSS(text).map((error) =>
-      error.message || error.rawMessage || 'CSS validation failed'
-    )
-  ))
+  return batch.classes.map((
+    { rules }: MasterCSSValidatorBatch['classes'][number]
+  ) => rules.map((
+    { text }: MasterCSSValidatorBatch['classes'][number]['rules'][number]
+  ) => validateCSS(text).map((error) =>
+    error.message || error.rawMessage || 'CSS validation failed'
+  )))
 }
 
 export function bindLintSession(

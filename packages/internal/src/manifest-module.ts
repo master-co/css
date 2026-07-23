@@ -5,6 +5,7 @@ import { MANIFEST_ASSET_FILE, MANIFEST_MODULE_FILE } from './manifest-facade'
 export type { MasterCSSManifest }
 
 export const VIRTUAL_MANIFEST_ID = 'virtual:master-css-manifest'
+export const RESOLVED_VIRTUAL_MANIFEST_ID = `\0${VIRTUAL_MANIFEST_ID}`
 export const MASTER_CSS_MANIFEST_QUERY = '?master-css-manifest'
 export const VIRTUAL_MANIFEST_FILE = MANIFEST_MODULE_FILE
 export const VIRTUAL_MANIFEST_ASSET_FILE = MANIFEST_ASSET_FILE

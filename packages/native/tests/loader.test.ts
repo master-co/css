@@ -8,6 +8,7 @@ import {
   getNativeCLIExecutableName,
   NativeBindingError,
   nativeAddonsDisabled,
+  loadNativeBinding,
   resolveNativeCLIPath,
   resolveNativeTarget
 } from '../src/native-loader'
@@ -59,6 +60,13 @@ describe('native target resolution', () => {
       manifestVersion: 1,
       hydrationManifestVersion: 1
     })
+  })
+
+  it('reuses the loaded native binding for the same resolved artifact', () => {
+    const first = loadNativeBinding({ required: true })
+    const second = loadNativeBinding({ required: true })
+
+    expect(first).toBe(second)
   })
 
   it('rejects a configured missing executable without falling back', () => {

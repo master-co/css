@@ -54,6 +54,16 @@
       "import": "./dist/manifest-facade.js",
       "default": "./dist/manifest-facade.js"
     },
+    "./manifest-loader": {
+      "types": "./dist/manifest-loader.d.ts",
+      "import": "./dist/manifest-loader.js",
+      "default": "./dist/manifest-loader.js"
+    },
+    "./manifest-virtual-module": {
+      "types": "./dist/manifest-virtual-module.d.ts",
+      "import": "./dist/manifest-virtual-module.js",
+      "default": "./dist/manifest-virtual-module.js"
+    },
     "./style-module": {
       "types": "./dist/style-module.d.ts",
       "import": "./dist/style-module.js",

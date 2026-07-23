@@ -64,6 +64,7 @@
   },
   "dependencies": {
     "@master/css": "workspace:*",
+    "@master/css-compiler": "workspace:*",
     "@master/css-server": "workspace:*",
     "@master/css-vite": "workspace:*",
     "@master/css-schema": "workspace:*"

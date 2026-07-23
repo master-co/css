@@ -372,6 +372,8 @@ export interface LoadedNativeBinding {
   source: string
 }
 
+const loadedNativeBindings = new Map<string, LoadedNativeBinding>()
+
 export function loadNativeBinding(options: LoadNativeBindingOptions = {}): LoadedNativeBinding | undefined {
   if (nativeAddonsDisabled()) {
     if (!options.required) return
@@ -400,9 +402,18 @@ export function loadNativeBinding(options: LoadNativeBindingOptions = {}): Loade
     )
   }
 
+  const cached = loadedNativeBindings.get(source)
+  if (cached) return cached
+
   try {
     const binding = loadNativeAddon(source)
-    return { binding, info: assertBindingInfo(binding, source), source }
+    const loaded = Object.freeze({
+      binding,
+      info: assertBindingInfo(binding, source),
+      source
+    })
+    loadedNativeBindings.set(source, loaded)
+    return loaded
   } catch (cause) {
     if (cause instanceof NativeBindingError) throw cause
     throw new NativeBindingError(

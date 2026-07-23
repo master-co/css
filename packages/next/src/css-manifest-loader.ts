@@ -1,10 +1,11 @@
 import { mkdirSync, writeFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
+import { compileProjectManifestSync } from '@master/css-compiler/project/sync'
 import {
   discoverManifestEntries,
   loadProjectManifest
 } from '@master/css-compiler/project'
-import { compileProjectManifestSync } from '@master/css-compiler/project/sync'
+import { loadMasterCSSVirtualManifest } from '@master/css-internal/manifest-loader'
 import { toHashedManifestAssetFileName } from '@master/css-internal/node'
 import {
   defaultBuildManifest,
@@ -30,6 +31,16 @@ interface MasterCSSManifestLoaderOptions {
   virtual?: boolean
   module?: boolean
   external?: boolean
+}
+
+const manifestHost = {
+  discoverManifestEntries,
+  loadProjectManifest,
+  collectStylesheetDependencies(entry: string, options: { root?: string }) {
+    return collectStylesheetDependenciesSync(entry, undefined, {
+      projectDir: options.root
+    })
+  }
 }
 
 function writeExternalManifestAssets(projectDir: string, json: string) {
@@ -60,23 +71,13 @@ function toLoaderResult(context: LoaderContext, json: string, options: MasterCSS
 
 async function loadVirtualManifestJSON(context: LoaderContext) {
   const projectDir = context.rootContext || process.cwd()
-  const entries = await discoverManifestEntries({ root: projectDir })
-  const dependencies = new Set<string>()
-  for (const entry of entries) {
-    for (const dependency of collectStylesheetDependenciesSync(entry, undefined, { projectDir })) {
-      dependencies.add(dependency)
+  const result = await loadMasterCSSVirtualManifest({
+    host: manifestHost,
+    root: projectDir,
+    onDependency(dependency) {
       context.addDependency?.(dependency)
     }
-  }
-  const result = await loadProjectManifest({
-    root: projectDir,
-    entries,
-    baseManifest: defaultBuildManifest
   })
-  for (const dependency of result.dependencies) {
-    if (dependencies.has(dependency)) continue
-    context.addDependency?.(dependency)
-  }
   return serializeMasterCSSManifest(result.manifest)
 }
 

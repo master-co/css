@@ -15,6 +15,7 @@ import {
   toVirtualDefaultManifestModulePath,
   toVirtualEmittedGlobalsModulePath
 } from '@master/css-internal/node'
+import { loadMasterCSSVirtualManifest } from '@master/css-internal/manifest-loader'
 import {
   discoverManifestEntries,
   loadProjectManifest
@@ -59,6 +60,15 @@ import {
 
 const NAME = 'MasterCSSWebpackPlugin'
 const RUNTIME_ENTRY_NAME = 'master-css-runtime'
+const manifestHost = {
+  discoverManifestEntries,
+  loadProjectManifest,
+  collectStylesheetDependencies(entry: string, options: { root?: string }) {
+    return collectStylesheetDependenciesSync(entry, undefined, {
+      projectDir: options.root
+    })
+  }
+}
 
 export interface WebpackSubPlugin {
   apply(compiler: Compiler): void
@@ -208,30 +218,20 @@ export class MasterCSSWebpackPlugin {
   }
 
   private async createDefaultManifestModule() {
-    const entries = await discoverManifestEntries({ root: this.cwd })
     const dependencies = new Set<string>()
-    for (const entry of entries) {
-      for (const dependency of collectStylesheetDependenciesSync(entry, undefined, {
-        projectDir: this.cwd
-      })) {
-        dependencies.add(dependency)
-      }
-    }
-    this.defaultManifestDependencies = [...dependencies]
-
-    const result = await loadProjectManifest({
+    const result = await loadMasterCSSVirtualManifest({
+      host: manifestHost,
       root: this.cwd,
-      entries,
-      baseManifest: defaultBuildManifest
+      onDependency: (dependency) => {
+        dependencies.add(dependency)
+        this.defaultManifestDependencies = [...dependencies]
+      }
     })
     this.scanner.customOptions = {
       ...this.scanner.customOptions,
       manifest: result.manifest
     }
-    for (const dependency of result.dependencies) {
-      dependencies.add(dependency)
-    }
-    this.defaultManifestDependencies = [...dependencies]
+    this.defaultManifestDependencies = [...result.dependencies]
     const json = toManifestJSON(result.manifest)
     if (this.development) return toInlineManifestModule(json)
 

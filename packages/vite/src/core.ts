@@ -43,7 +43,7 @@ export function createMasterCSSVitePlugin(
   const plugins: Plugin[] = [
     runtimeBootstrap,
     ContextPlugin(options, context),
-    ManifestVirtualModulePlugin(options, context),
+    ManifestVirtualModulePlugin(context),
     EmittedGlobalsVirtualModulePlugin(context),
     ManifestLoaderPlugin(context),
     ScannerPlugin(options, context),
