@@ -182,6 +182,22 @@ jobs:
             args+=(--affected)
           fi
           pnpm exec node scripts/with-typescript-tooling-compat.mjs pnpm exec turbo "${args[@]}"
+      - name: Build and verify site CSS dogfood
+        if: ${{ steps.consumers.outputs.site_affected == 'true' }}
+        shell: bash
+        env:
+          RELEASE_BUILD: ${{ inputs.release_build }}
+        run: |
+          set -euo pipefail
+          if [ "$RELEASE_BUILD" != true ]; then
+            pnpm run build
+          fi
+          pnpm --filter site build
+          pnpm --filter site test:css-contract
+          pnpm --filter site test:dogfood
+          pnpm --filter site test:play
+          pnpm --filter site lint
+          pnpm --filter site type-check
       - name: Build examples
         shell: bash
         env:
