@@ -8,7 +8,13 @@ use std::path::{Path, PathBuf};
 use std::process::Command;
 use std::sync::atomic::{AtomicU64, Ordering};
 
+use mastercss_compiler::{
+    CompileNativeCssOptions, LowerCssDirectivesOptions, compile_css_directives,
+    lower_css_directives,
+};
+use mastercss_engine::EngineSession;
 use serde::{Deserialize, Serialize};
+use serde_json::Value;
 use sha2::{Digest, Sha256};
 
 const GENERATED_CONTRACT_TEMPLATE: &str = include_str!("../templates/rust-contract.ts");
@@ -37,6 +43,92 @@ struct ParityException {
     new: String,
     packages: Vec<String>,
     test: String,
+}
+
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase")]
+struct SemanticParityCorpus {
+    version: u32,
+    semantic_baseline: String,
+    public_baseline: String,
+    engine_cases: Vec<EngineParityCase>,
+    compiler_cases: Vec<CompilerParityCase>,
+}
+
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase")]
+struct EngineParityCase {
+    id: String,
+    manifest: Value,
+    #[serde(default)]
+    emitted_globals: Option<Value>,
+    steps: Vec<EngineParityStep>,
+}
+
+#[derive(Deserialize)]
+#[serde(tag = "op", rename_all = "camelCase", rename_all_fields = "camelCase")]
+enum EngineParityStep {
+    Ensure {
+        classes: Vec<String>,
+        expected_css: String,
+        #[serde(default)]
+        expected_resource_order: Option<Vec<String>>,
+    },
+    Delete {
+        classes: Vec<String>,
+        expected_css: String,
+    },
+    Inspect {
+        class_name: String,
+        expected_valid: bool,
+        #[serde(default)]
+        expected_rule_texts: Vec<String>,
+        #[serde(default)]
+        expected_selector_texts: Vec<Option<String>>,
+        #[serde(default)]
+        expected_layers: Vec<String>,
+        #[serde(default)]
+        expected_priorities: Vec<Value>,
+        #[serde(default)]
+        expected_variable_names: Vec<Vec<String>>,
+        #[serde(default)]
+        expected_animation_names: Vec<Vec<String>>,
+    },
+}
+
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase")]
+struct CompilerParityCase {
+    id: String,
+    source: String,
+    base_manifest: Value,
+    expected_generated_css: String,
+    #[serde(default)]
+    expected_utilities: Vec<Value>,
+}
+
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase")]
+struct RustTakeoverLedger {
+    version: u32,
+    semantic_baseline: String,
+    expected_legacy_tests: usize,
+    suites: Vec<RustTakeoverLedgerSuite>,
+}
+
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase")]
+struct RustTakeoverLedgerSuite {
+    file: String,
+    expected_tests: usize,
+    tests: Vec<RustTakeoverLedgerEntry>,
+}
+
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase")]
+struct RustTakeoverLedgerEntry {
+    name: String,
+    coverage: Vec<String>,
 }
 
 #[derive(Deserialize)]
@@ -217,12 +309,393 @@ fn codegen(check: bool) -> Result<(), String> {
     Ok(())
 }
 
-fn validate_parity() -> Result<(), String> {
-    let path = workspace_root().join("parity-exceptions.json");
-    let source = fs::read_to_string(&path)
+fn read_json<T: for<'de> Deserialize<'de>>(path: &Path) -> Result<T, String> {
+    let source = fs::read_to_string(path)
         .map_err(|error| format!("Cannot read {}: {error}", path.display()))?;
-    let parity: ParityFile = serde_json::from_str(&source)
-        .map_err(|error| format!("Invalid {}: {error}", path.display()))?;
+    serde_json::from_str(&source).map_err(|error| format!("Invalid {}: {error}", path.display()))
+}
+
+fn manifest_json(root: &Path, value: &Value) -> Result<String, String> {
+    if value.as_str() == Some("default") {
+        let path = root.join("packages/preset/src/default-manifest.json");
+        return fs::read_to_string(&path)
+            .map_err(|error| format!("Cannot read {}: {error}", path.display()));
+    }
+    serde_json::to_string(value)
+        .map_err(|error| format!("Cannot serialize parity manifest: {error}"))
+}
+
+fn validate_semantic_parity_corpus(
+    root: &Path,
+    corpus: &SemanticParityCorpus,
+) -> Result<HashSet<String>, String> {
+    if corpus.version != 1
+        || corpus.semantic_baseline != "ef1a7c851"
+        || corpus.public_baseline != "v2.0.0-rc.87"
+    {
+        return Err("Semantic parity corpus has an unsupported version or baseline.".into());
+    }
+    let mut ids = HashSet::new();
+    for case in &corpus.engine_cases {
+        if case.id.is_empty() || !ids.insert(case.id.clone()) {
+            return Err(format!(
+                "Duplicate or empty semantic parity case id: {}",
+                case.id
+            ));
+        }
+        let manifest = manifest_json(root, &case.manifest)?;
+        let emitted_globals = case
+            .emitted_globals
+            .as_ref()
+            .map(serde_json::to_string)
+            .transpose()
+            .map_err(|error| {
+                format!(
+                    "Cannot serialize emitted globals for parity case {}: {error}",
+                    case.id
+                )
+            })?;
+        let mut engine =
+            EngineSession::create_with_emitted_globals(&manifest, emitted_globals.as_deref())
+                .map_err(|error| {
+                    format!("Parity case {} cannot create engine: {error}", case.id)
+                })?;
+        for (step_index, step) in case.steps.iter().enumerate() {
+            match step {
+                EngineParityStep::Ensure {
+                    classes,
+                    expected_css,
+                    expected_resource_order,
+                } => {
+                    let candidate_count = engine
+                        .native_declaration_candidates(classes)
+                        .map_err(|error| {
+                            format!(
+                                "Parity case {} step {} cannot inspect native declarations: {error}",
+                                case.id, step_index
+                            )
+                        })?
+                        .len();
+                    engine
+                        .ensure_class_rules_with_native_support(
+                            classes,
+                            &vec![true; candidate_count],
+                        )
+                        .map_err(|error| {
+                            format!(
+                                "Parity case {} step {} cannot ensure classes: {error}",
+                                case.id, step_index
+                            )
+                        })?;
+                    if engine.css_text() != *expected_css {
+                        return Err(format!(
+                            "Parity case {} step {} CSS mismatch.\nexpected: {}\nactual:   {}",
+                            case.id,
+                            step_index,
+                            expected_css,
+                            engine.css_text()
+                        ));
+                    }
+                    if let Some(expected_resource_order) = expected_resource_order {
+                        let snapshot = engine.snapshot().map_err(|error| {
+                            format!(
+                                "Parity case {} step {} cannot snapshot resources: {error}",
+                                case.id, step_index
+                            )
+                        })?;
+                        let resource_order = snapshot
+                            .resources
+                            .variables
+                            .into_iter()
+                            .map(|resource| resource.name)
+                            .chain(
+                                snapshot
+                                    .resources
+                                    .animations
+                                    .into_iter()
+                                    .map(|resource| resource.name),
+                            )
+                            .collect::<Vec<_>>();
+                        if resource_order != *expected_resource_order {
+                            return Err(format!(
+                                "Parity case {} step {} resource order mismatch.",
+                                case.id, step_index
+                            ));
+                        }
+                    }
+                }
+                EngineParityStep::Delete {
+                    classes,
+                    expected_css,
+                } => {
+                    engine.delete_class_rules(classes).map_err(|error| {
+                        format!(
+                            "Parity case {} step {} cannot delete classes: {error}",
+                            case.id, step_index
+                        )
+                    })?;
+                    if engine.css_text() != *expected_css {
+                        return Err(format!(
+                            "Parity case {} step {} CSS mismatch after delete.\nexpected: {}\nactual:   {}",
+                            case.id,
+                            step_index,
+                            expected_css,
+                            engine.css_text()
+                        ));
+                    }
+                }
+                EngineParityStep::Inspect {
+                    class_name,
+                    expected_valid,
+                    expected_rule_texts,
+                    expected_selector_texts,
+                    expected_layers,
+                    expected_priorities,
+                    expected_variable_names,
+                    expected_animation_names,
+                } => {
+                    let inspection = engine.inspect(class_name).map_err(|error| {
+                        format!(
+                            "Parity case {} step {} cannot inspect {class_name}: {error}",
+                            case.id, step_index
+                        )
+                    })?;
+                    if inspection.valid != *expected_valid {
+                        return Err(format!(
+                            "Parity case {} step {} validity mismatch for {class_name}.",
+                            case.id, step_index
+                        ));
+                    }
+                    let rule_texts = inspection
+                        .rules
+                        .iter()
+                        .map(|rule| rule.text.clone())
+                        .collect::<Vec<_>>();
+                    if !expected_rule_texts.is_empty() && rule_texts != *expected_rule_texts {
+                        return Err(format!(
+                            "Parity case {} step {} rule text mismatch for {class_name}.",
+                            case.id, step_index
+                        ));
+                    }
+                    let selector_texts = inspection
+                        .rules
+                        .iter()
+                        .map(|rule| rule.selector_text.clone())
+                        .collect::<Vec<_>>();
+                    if !expected_selector_texts.is_empty()
+                        && selector_texts != *expected_selector_texts
+                    {
+                        return Err(format!(
+                            "Parity case {} step {} selector metadata mismatch for {class_name}.",
+                            case.id, step_index
+                        ));
+                    }
+                    let layers = inspection
+                        .rules
+                        .iter()
+                        .map(|rule| {
+                            serde_json::to_value(rule.layer)
+                                .expect("utility layer serializes")
+                                .as_str()
+                                .expect("utility layer is a string")
+                                .to_owned()
+                        })
+                        .collect::<Vec<_>>();
+                    if !expected_layers.is_empty() && layers != *expected_layers {
+                        return Err(format!(
+                            "Parity case {} step {} layer metadata mismatch for {class_name}.",
+                            case.id, step_index
+                        ));
+                    }
+                    let priorities = inspection
+                        .rules
+                        .iter()
+                        .map(|rule| {
+                            serde_json::to_value(&rule.priority).expect("rule priority serializes")
+                        })
+                        .collect::<Vec<_>>();
+                    if !expected_priorities.is_empty() && priorities != *expected_priorities {
+                        return Err(format!(
+                            "Parity case {} step {} priority metadata mismatch for {class_name}.",
+                            case.id, step_index
+                        ));
+                    }
+                    let variable_names = inspection
+                        .rules
+                        .iter()
+                        .map(|rule| rule.variable_names.clone())
+                        .collect::<Vec<_>>();
+                    if !expected_variable_names.is_empty()
+                        && variable_names != *expected_variable_names
+                    {
+                        return Err(format!(
+                            "Parity case {} step {} variable metadata mismatch for {class_name}.",
+                            case.id, step_index
+                        ));
+                    }
+                    let animation_names = inspection
+                        .rules
+                        .iter()
+                        .map(|rule| rule.animation_names.clone())
+                        .collect::<Vec<_>>();
+                    if !expected_animation_names.is_empty()
+                        && animation_names != *expected_animation_names
+                    {
+                        return Err(format!(
+                            "Parity case {} step {} animation metadata mismatch for {class_name}.",
+                            case.id, step_index
+                        ));
+                    }
+                }
+            }
+        }
+    }
+    for case in &corpus.compiler_cases {
+        if case.id.is_empty() || !ids.insert(case.id.clone()) {
+            return Err(format!(
+                "Duplicate or empty semantic parity case id: {}",
+                case.id
+            ));
+        }
+        let base_manifest = serde_json::from_str(&manifest_json(root, &case.base_manifest)?)
+            .map_err(|error| {
+                format!(
+                    "Parity case {} has an invalid compiler base manifest: {error}",
+                    case.id
+                )
+            })?;
+        let compiled = compile_css_directives(
+            &case.source,
+            &CompileNativeCssOptions {
+                from: format!("parity/{}.css", case.id),
+                ..Default::default()
+            },
+        )
+        .map_err(|error| format!("Parity case {} cannot compile CSS: {error}", case.id))?;
+        let lowered = lower_css_directives(
+            &compiled.manifest_input,
+            compiled.style_definitions.as_deref().unwrap_or_default(),
+            &compiled.warnings,
+            &LowerCssDirectivesOptions {
+                base_manifest: Some(base_manifest),
+                resolution_manifest: None,
+            },
+        )
+        .map_err(|error| format!("Parity case {} cannot lower CSS: {error}", case.id))?;
+        if lowered.generated_css != case.expected_generated_css {
+            return Err(format!(
+                "Parity case {} generated CSS mismatch.\nexpected: {}\nactual:   {}",
+                case.id, case.expected_generated_css, lowered.generated_css
+            ));
+        }
+        for expected in &case.expected_utilities {
+            let name = expected
+                .get("name")
+                .and_then(Value::as_str)
+                .ok_or_else(|| format!("Parity case {} expected utility has no name.", case.id))?;
+            let actual = lowered
+                .manifest
+                .get("utilities")
+                .and_then(Value::as_array)
+                .and_then(|utilities| {
+                    utilities
+                        .iter()
+                        .find(|utility| utility.get("name").and_then(Value::as_str) == Some(name))
+                });
+            if actual != Some(expected) {
+                return Err(format!(
+                    "Parity case {} utility {name} mismatch.\nexpected: {}\nactual:   {}",
+                    case.id,
+                    expected,
+                    actual.map_or_else(|| "<missing>".into(), Value::to_string)
+                ));
+            }
+        }
+    }
+    Ok(ids)
+}
+
+fn validate_rust_takeover_ledger(
+    root: &Path,
+    ledger: &RustTakeoverLedger,
+    corpus_ids: &HashSet<String>,
+    exception_ids: &HashSet<String>,
+) -> Result<(), String> {
+    if ledger.version != 1 || ledger.semantic_baseline != "ef1a7c851" {
+        return Err("Rust takeover ledger has an unsupported version or baseline.".into());
+    }
+    let mut entries = HashSet::new();
+    let mut total = 0;
+    for suite in &ledger.suites {
+        if suite.tests.len() != suite.expected_tests {
+            return Err(format!(
+                "Rust takeover ledger suite {} expected {} tests but lists {}.",
+                suite.file,
+                suite.expected_tests,
+                suite.tests.len()
+            ));
+        }
+        for test in &suite.tests {
+            total += 1;
+            let id = format!("{}#{}", suite.file, test.name);
+            if test.name.is_empty() || !entries.insert(id.clone()) {
+                return Err(format!(
+                    "Duplicate or empty Rust takeover ledger entry: {id}"
+                ));
+            }
+            if test.coverage.is_empty() {
+                return Err(format!("Rust takeover ledger entry {id} has no coverage."));
+            }
+            for coverage in &test.coverage {
+                if let Some(case_id) = coverage.strip_prefix("corpus:") {
+                    if !corpus_ids.contains(case_id) {
+                        return Err(format!(
+                            "Rust takeover ledger entry {id} references unknown corpus case {case_id}."
+                        ));
+                    }
+                } else if let Some(exception_id) = coverage.strip_prefix("exception:") {
+                    if !exception_ids.contains(exception_id) {
+                        return Err(format!(
+                            "Rust takeover ledger entry {id} references unknown exception {exception_id}."
+                        ));
+                    }
+                } else if let Some(test_reference) = coverage.strip_prefix("test:") {
+                    let (path, needle) = test_reference.split_once('#').ok_or_else(|| {
+                        format!("Rust takeover ledger entry {id} has invalid test reference.")
+                    })?;
+                    let source_path = root.join(path);
+                    let source = fs::read_to_string(&source_path).map_err(|error| {
+                        format!(
+                            "Cannot read coverage test {}: {error}",
+                            source_path.display()
+                        )
+                    })?;
+                    if needle.is_empty() || !source.contains(needle) {
+                        return Err(format!(
+                            "Rust takeover ledger entry {id} references missing test marker {coverage}."
+                        ));
+                    }
+                } else {
+                    return Err(format!(
+                        "Rust takeover ledger entry {id} has unsupported coverage {coverage}."
+                    ));
+                }
+            }
+        }
+    }
+    if total != ledger.expected_legacy_tests {
+        return Err(format!(
+            "Rust takeover ledger expected {} legacy tests but lists {total}.",
+            ledger.expected_legacy_tests
+        ));
+    }
+    Ok(())
+}
+
+fn validate_parity() -> Result<(), String> {
+    let root = workspace_root();
+    let path = root.join("parity-exceptions.json");
+    let parity: ParityFile = read_json(&path)?;
     let mut ids = HashSet::new();
     for exception in parity.exceptions {
         if !ids.insert(exception.id.clone()) {
@@ -240,7 +713,10 @@ fn validate_parity() -> Result<(), String> {
         }
         let _ = (exception.old, exception.new);
     }
-    Ok(())
+    let corpus: SemanticParityCorpus = read_json(&root.join("parity/rust-semantic-corpus.json"))?;
+    let corpus_ids = validate_semantic_parity_corpus(&root, &corpus)?;
+    let ledger: RustTakeoverLedger = read_json(&root.join("parity/rust-takeover-ledger.json"))?;
+    validate_rust_takeover_ledger(&root, &ledger, &corpus_ids, &ids)
 }
 
 fn run_command(command: &mut Command, label: &str) -> Result<(), String> {

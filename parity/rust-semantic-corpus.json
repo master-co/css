@@ -1,0 +1,734 @@
+{
+  "version": 1,
+  "semanticBaseline": "ef1a7c851",
+  "publicBaseline": "v2.0.0-rc.87",
+  "engineCases": [
+    {
+      "id": "engine-basic-order",
+      "manifest": "default",
+      "steps": [
+        {
+          "op": "ensure",
+          "classes": ["block", "w:10px", "bg-origin-border"],
+          "expectedCss": "@layer utilities{.bg-origin-border{background-origin:border-box}.block{display:block}.w\\:10px{width:10px}}"
+        }
+      ]
+    },
+    {
+      "id": "engine-basic-order-reversed",
+      "manifest": "default",
+      "steps": [
+        {
+          "op": "ensure",
+          "classes": ["w:10px", "block", "bg-origin-border"],
+          "expectedCss": "@layer utilities{.bg-origin-border{background-origin:border-box}.block{display:block}.w\\:10px{width:10px}}"
+        }
+      ]
+    },
+    {
+      "id": "engine-grouped-declarations",
+      "manifest": "default",
+      "steps": [
+        {
+          "op": "ensure",
+          "classes": [
+            "{color:black!;bb:2px|solid}",
+            "{pt:calc(2.5em+3.75rem);mt:-3.75rem}_:where(h1,h2,h3,h4,h5,h6)"
+          ],
+          "expectedCss": "@layer utilities{.\\{color\\:black\\!\\;bb\\:2px\\|solid\\}{color:oklch(0% 0 none)!important;border-bottom:2px solid}.\\{pt\\:calc\\(2\\.5em\\+3\\.75rem\\)\\;mt\\:-3\\.75rem\\}_\\:where\\(h1\\,h2\\,h3\\,h4\\,h5\\,h6\\) :where(h1,h2,h3,h4,h5,h6){padding-top:calc(2.5em + 3.75rem);margin-top:-3.75rem}}"
+        }
+      ]
+    },
+    {
+      "id": "engine-selector-condition-layer",
+      "manifest": "default",
+      "steps": [
+        {
+          "op": "ensure",
+          "classes": [
+            "block:hover",
+            "block_button@base",
+            "{flex;rel}_:is(h4,.app-nav)@default",
+            "block@starting-style"
+          ],
+          "expectedCss": "@layer base{.block_button\\@base button{display:block}}@layer defaults{.\\{flex\\;rel\\}_\\:is\\(h4\\,\\.app-nav\\)\\@default :is(h4,.app-nav){display:flex;position:relative}}@layer utilities{.block\\:hover:hover{display:block}@starting-style{.block\\@starting-style{display:block}}}"
+        }
+      ]
+    },
+    {
+      "id": "engine-selector-condition-metadata",
+      "manifest": "default",
+      "steps": [
+        {
+          "op": "inspect",
+          "className": "{flex;rel}_:is(h4,.app-nav)@default",
+          "expectedValid": true,
+          "expectedRuleTexts": [
+            ".\\{flex\\;rel\\}_\\:is\\(h4\\,\\.app-nav\\)\\@default :is(h4,.app-nav){display:flex;position:relative}"
+          ],
+          "expectedSelectorTexts": [
+            ".\\{flex\\;rel\\}_\\:is\\(h4\\,\\.app-nav\\)\\@default :is(h4,.app-nav)"
+          ],
+          "expectedLayers": ["defaults"]
+        }
+      ]
+    },
+    {
+      "id": "engine-variable-lifecycle",
+      "manifest": "default",
+      "steps": [
+        {
+          "op": "ensure",
+          "classes": ["fg:red-60", "bg:red-60", "m:md"],
+          "expectedCss": "@layer theme{:root{--color-red-60:oklch(60.94% .2501 29.2);--spacing-md:1rem}}@layer utilities{.m\\:md{margin:var(--spacing-md)}.bg\\:red-60{background-color:var(--color-red-60)}.fg\\:red-60{color:var(--color-red-60)}}"
+        },
+        {
+          "op": "delete",
+          "classes": ["fg:red-60"],
+          "expectedCss": "@layer theme{:root{--color-red-60:oklch(60.94% .2501 29.2);--spacing-md:1rem}}@layer utilities{.m\\:md{margin:var(--spacing-md)}.bg\\:red-60{background-color:var(--color-red-60)}}"
+        },
+        {
+          "op": "delete",
+          "classes": ["bg:red-60"],
+          "expectedCss": "@layer theme{:root{--spacing-md:1rem}}@layer utilities{.m\\:md{margin:var(--spacing-md)}}"
+        },
+        {
+          "op": "delete",
+          "classes": ["m:md"],
+          "expectedCss": ""
+        }
+      ]
+    },
+    {
+      "id": "engine-emitted-global-variable",
+      "manifest": "default",
+      "emittedGlobals": {
+        "variables": {
+          "color-red-60": 1
+        }
+      },
+      "steps": [
+        {
+          "op": "ensure",
+          "classes": ["fg:red-60"],
+          "expectedCss": "@layer utilities{.fg\\:red-60{color:var(--color-red-60)}}"
+        },
+        {
+          "op": "delete",
+          "classes": ["fg:red-60"],
+          "expectedCss": ""
+        }
+      ]
+    },
+    {
+      "id": "engine-mode-conditions",
+      "manifest": "default",
+      "steps": [
+        {
+          "op": "ensure",
+          "classes": ["fg:blue-60@dark", "bg:white@light"],
+          "expectedCss": "@layer theme{:root{--color-blue-60:oklch(51.83% .2687 266.1)}}@layer utilities{@media (prefers-color-scheme:light){.bg\\:white\\@light{background-color:oklch(100% 0 none)}}@media (prefers-color-scheme:dark){.fg\\:blue-60\\@dark{color:var(--color-blue-60)}}}"
+        }
+      ]
+    },
+    {
+      "id": "engine-functions-and-negative-values",
+      "manifest": "default",
+      "steps": [
+        {
+          "op": "ensure",
+          "classes": [
+            "w:calc(100%-2rem)",
+            "bg:oklch(60%|.2|240/.5)",
+            "m:-md"
+          ],
+          "expectedCss": "@layer theme{:root{--spacing-md:1rem}}@layer utilities{.m\\:-md{margin:calc(var(--spacing-md) * -1)}.bg\\:oklch\\(60\\%\\|\\.2\\|240\\/\\.5\\){background-color:oklch(60% 0.2 240/.5)}.w\\:calc\\(100\\%-2rem\\){width:calc(100% - 2rem)}}"
+        }
+      ]
+    },
+    {
+      "id": "engine-negative-base-unit-bytes",
+      "manifest": "default",
+      "steps": [
+        {
+          "op": "ensure",
+          "classes": [
+            "m:1x",
+            "m:-1x",
+            "m:.25rem",
+            "m:-.25rem"
+          ],
+          "expectedCss": "@layer utilities{.m\\:-\\.25rem{margin:-0.25rem}.m\\:-1x{margin:-.25rem}.m\\:\\.25rem{margin:0.25rem}.m\\:1x{margin:0.25rem}}"
+        }
+      ]
+    },
+    {
+      "id": "engine-negative-variable-identifier-bytes",
+      "manifest": "default",
+      "steps": [
+        {
+          "op": "ensure",
+          "classes": [
+            "m:-3xs",
+            "ml:-3xs"
+          ],
+          "expectedCss": "@layer theme{:root{--spacing-3xs:.25rem}}@layer utilities{.m\\:-3xs{margin:calc(var(--spacing-3xs) * -1)}.ml\\:-3xs{margin-left:calc(var(--spacing-3xs) * -1)}}"
+        }
+      ]
+    },
+    {
+      "id": "engine-legacy-pseudo-element-bytes",
+      "manifest": "default",
+      "steps": [
+        {
+          "op": "ensure",
+          "classes": [
+            "block:before",
+            "block::before",
+            "block:after",
+            "block::after",
+            "block:first-letter",
+            "block::first-letter",
+            "block:first-line",
+            "block::first-line"
+          ],
+          "expectedCss": "@layer utilities{.block\\:\\:after::after{display:block}.block\\:\\:before::before{display:block}.block\\:\\:first-letter::first-letter{display:block}.block\\:\\:first-line::first-line{display:block}.block\\:after::after{display:block}.block\\:before::before{display:block}.block\\:first-letter::first-letter{display:block}.block\\:first-line::first-line{display:block}}"
+        }
+      ]
+    },
+    {
+      "id": "engine-selector-priority-metadata",
+      "manifest": "default",
+      "steps": [
+        {
+          "op": "inspect",
+          "className": "block.active",
+          "expectedValid": true,
+          "expectedPriorities": [
+            {
+              "selector": 3
+            }
+          ]
+        },
+        {
+          "op": "inspect",
+          "className": "block:hover:not(.disabled)",
+          "expectedValid": true,
+          "expectedPriorities": [
+            {
+              "selector": 5
+            }
+          ]
+        },
+        {
+          "op": "inspect",
+          "className": "block[disabled]",
+          "expectedValid": true,
+          "expectedPriorities": [
+            {
+              "selector": 4
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "engine-animation-resource-metadata",
+      "manifest": {
+        "version": 1,
+        "animations": {
+          "float": {
+            "to": {
+              "opacity": "1"
+            }
+          },
+          "rotate": {
+            "to": {
+              "transform": "none"
+            }
+          }
+        },
+        "utilities": [
+          {
+            "id": ".float-left",
+            "name": "float-left",
+            "type": -2,
+            "emit": {
+              "type": "static",
+              "rules": [
+                {
+                  "declarations": {
+                    "float": "left"
+                  }
+                }
+              ]
+            },
+            "matchers": [
+              {
+                "type": "static",
+                "name": "float-left"
+              }
+            ]
+          },
+          {
+            "id": ".rotate-180",
+            "name": "rotate-180",
+            "type": -2,
+            "emit": {
+              "type": "static",
+              "rules": [
+                {
+                  "declarations": {
+                    "rotate": "180deg"
+                  }
+                }
+              ]
+            },
+            "matchers": [
+              {
+                "type": "static",
+                "name": "rotate-180"
+              }
+            ]
+          },
+          {
+            "id": ".animated",
+            "name": "animated",
+            "type": -2,
+            "emit": {
+              "type": "static",
+              "rules": [
+                {
+                  "declarations": {
+                    "animation": "float 1s"
+                  }
+                }
+              ]
+            },
+            "matchers": [
+              {
+                "type": "static",
+                "name": "animated"
+              }
+            ]
+          }
+        ]
+      },
+      "steps": [
+        {
+          "op": "inspect",
+          "className": "float-left",
+          "expectedValid": true,
+          "expectedAnimationNames": [
+            []
+          ]
+        },
+        {
+          "op": "inspect",
+          "className": "rotate-180",
+          "expectedValid": true,
+          "expectedAnimationNames": [
+            []
+          ]
+        },
+        {
+          "op": "inspect",
+          "className": "animated",
+          "expectedValid": true,
+          "expectedAnimationNames": [
+            [
+              "float"
+            ]
+          ]
+        },
+        {
+          "op": "ensure",
+          "classes": [
+            "float-left",
+            "rotate-180"
+          ],
+          "expectedCss": "@layer utilities{.float-left{float:left}.rotate-180{rotate:180deg}}",
+          "expectedResourceOrder": []
+        },
+        {
+          "op": "ensure",
+          "classes": [
+            "animated"
+          ],
+          "expectedCss": "@layer utilities{.animated{animation:float 1s}.float-left{float:left}.rotate-180{rotate:180deg}}@keyframes float{to{opacity:1}}",
+          "expectedResourceOrder": [
+            "float"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "engine-border-radius-aliases",
+      "manifest": "default",
+      "steps": [
+        {
+          "op": "ensure",
+          "classes": [
+            "b:2px|solid|red-60",
+            "bt:1px|solid|blue-60",
+            "r:md",
+            "rtl:lg"
+          ],
+          "expectedCss": "@layer theme{:root{--color-red-60:oklch(60.94% .2501 29.2);--color-blue-60:oklch(51.83% .2687 266.1);--radius-md:.375rem;--radius-lg:.5rem}}@layer utilities{.b\\:2px\\|solid\\|red-60{border:2px solid var(--color-red-60)}.bt\\:1px\\|solid\\|blue-60{border-top:1px solid var(--color-blue-60)}.r\\:md{border-radius:var(--radius-md)}.rtl\\:lg{border-top-left-radius:var(--radius-lg)}}"
+        }
+      ]
+    },
+    {
+      "id": "engine-pseudo-and-responsive-selectors",
+      "manifest": "default",
+      "steps": [
+        {
+          "op": "ensure",
+          "classes": [
+            "block:of(.active>)",
+            "block:nth-child(2n+1)",
+            "bg:red-60:hover@sm"
+          ],
+          "expectedCss": "@layer theme{:root{--color-red-60:oklch(60.94% .2501 29.2)}}@layer utilities{.block\\:nth-child\\(2n\\+1\\):nth-child(2n+1){display:block}.active>.block\\:of\\(\\.active\\>\\){display:block}@media (width>=52.125rem){.bg\\:red-60\\:hover\\@sm:hover{background-color:var(--color-red-60)}}}"
+        }
+      ]
+    },
+    {
+      "id": "engine-complex-utility-values",
+      "manifest": "default",
+      "steps": [
+        {
+          "op": "ensure",
+          "classes": [
+            "grid-col-span:2",
+            "max-w:max",
+            "min-h:min",
+            "transition:opacity|300ms|ease|100ms",
+            "font-feature-settings:\"kern\""
+          ],
+          "expectedCss": "@layer utilities{.grid-col-span\\:2{grid-column:span 2/span 2}.transition\\:opacity\\|300ms\\|ease\\|100ms{transition:opacity 300ms ease 100ms}.font-feature-settings\\:\\\"kern\\\"{font-feature-settings:\"kern\"}.max-w\\:max{max-width:max-content}.min-h\\:min{min-height:min-content}}"
+        }
+      ]
+    },
+    {
+      "id": "engine-responsive-priority",
+      "manifest": "default",
+      "steps": [
+        {
+          "op": "ensure",
+          "classes": ["mt:0", "mt:2", "mt:1@sm", "mt:3@lg"],
+          "expectedCss": "@layer utilities{.mt\\:0{margin-top:0}.mt\\:2{margin-top:2}@media (width>=52.125rem){.mt\\:1\\@sm{margin-top:1}}@media (width>=80rem){.mt\\:3\\@lg{margin-top:3}}}"
+        }
+      ]
+    },
+    {
+      "id": "engine-rejects-retired-syntax",
+      "manifest": "default",
+      "steps": [
+        {
+          "op": "inspect",
+          "className": "margin:$(spacing-md)",
+          "expectedValid": false
+        },
+        {
+          "op": "inspect",
+          "className": "width:calc(-2px+$(spacing-md))",
+          "expectedValid": false
+        },
+        {
+          "op": "inspect",
+          "className": "max(1rem)",
+          "expectedValid": false
+        }
+      ]
+    },
+    {
+      "id": "engine-semantic-manifest-layer",
+      "manifest": {
+        "version": 1,
+        "utilities": [
+          {
+            "id": ".card",
+            "name": "card",
+            "type": -2,
+            "layer": "components",
+            "emit": {
+              "type": "static",
+              "rules": [
+                {
+                  "declarations": {
+                    "display": "grid"
+                  }
+                },
+                {
+                  "selector": "&:hover",
+                  "declarations": {
+                    "color": "red"
+                  }
+                }
+              ]
+            },
+            "matchers": [
+              {
+                "type": "static",
+                "name": "card"
+              }
+            ]
+          }
+        ]
+      },
+      "steps": [
+        {
+          "op": "inspect",
+          "className": "card",
+          "expectedValid": true,
+          "expectedRuleTexts": [
+            ".card{display:grid}.card:hover{color:red}"
+          ],
+          "expectedSelectorTexts": [
+            ".card"
+          ],
+          "expectedLayers": ["components"]
+        },
+        {
+          "op": "ensure",
+          "classes": ["card"],
+          "expectedCss": "@layer components{.card{display:grid}.card:hover{color:red}}"
+        }
+      ]
+    },
+    {
+      "id": "engine-same-class-across-layers",
+      "manifest": {
+        "version": 1,
+        "utilities": [
+          {
+            "id": "demo-defaults",
+            "type": -2,
+            "layer": "defaults",
+            "emit": {
+              "type": "static",
+              "rules": [
+                {
+                  "declarations": {
+                    "background": "var(--stripe)"
+                  }
+                }
+              ]
+            },
+            "matchers": [
+              {
+                "type": "static",
+                "name": "demo"
+              }
+            ]
+          },
+          {
+            "id": "demo-components",
+            "type": -2,
+            "layer": "components",
+            "emit": {
+              "type": "static",
+              "rules": [
+                {
+                  "declarations": {
+                    "display": "flex"
+                  }
+                }
+              ]
+            },
+            "matchers": [
+              {
+                "type": "static",
+                "name": "demo"
+              }
+            ]
+          }
+        ]
+      },
+      "steps": [
+        {
+          "op": "ensure",
+          "classes": ["demo"],
+          "expectedCss": "@layer defaults{.demo{background:var(--stripe)}}@layer components{.demo{display:flex}}"
+        }
+      ]
+    },
+    {
+      "id": "engine-native-alias-global-variable",
+      "manifest": {
+        "version": 1,
+        "variables": {
+          "": [
+            {
+              "name": "stripe",
+              "key": "stripe",
+              "type": "string",
+              "value": "0 / 7.5px 7.5px linear-gradient(red,blue) transparent"
+            }
+          ]
+        },
+        "utilities": [
+          {
+            "id": "bg:<~color|color>",
+            "type": 0,
+            "kind": "color",
+            "variableAliasRefs": ["~color"],
+            "emit": {
+              "type": "static",
+              "rules": [
+                {
+                  "declarations": {
+                    "background-color": null
+                  }
+                }
+              ]
+            },
+            "matchers": [
+              {
+                "type": "variable",
+                "keys": ["bg"]
+              },
+              {
+                "type": "value",
+                "keys": ["bg"]
+              }
+            ]
+          }
+        ]
+      },
+      "steps": [
+        {
+          "op": "ensure",
+          "classes": ["bg:stripe"],
+          "expectedCss": "@layer theme{:root{--stripe:0 / 7.5px 7.5px linear-gradient(red,blue) transparent}}@layer utilities{.bg\\:stripe{background:var(--stripe)}}"
+        }
+      ]
+    },
+    {
+      "id": "engine-native-alias-warm-session",
+      "manifest": {
+        "version": 1,
+        "variables": {
+          "": [
+            {
+              "name": "stripe",
+              "key": "stripe",
+              "type": "string",
+              "value": "linear-gradient(red,blue)"
+            }
+          ]
+        },
+        "utilities": []
+      },
+      "steps": [
+        {
+          "op": "ensure",
+          "classes": [
+            "background:var(--stripe)"
+          ],
+          "expectedCss": "@layer theme{:root{--stripe:linear-gradient(red,blue)}}@layer utilities{.background\\:var\\(--stripe\\){background:var(--stripe)}}"
+        },
+        {
+          "op": "ensure",
+          "classes": [
+            "bg:stripe"
+          ],
+          "expectedCss": "@layer theme{:root{--stripe:linear-gradient(red,blue)}}@layer utilities{.background\\:var\\(--stripe\\){background:var(--stripe)}.bg\\:stripe{background:var(--stripe)}}"
+        }
+      ]
+    }
+  ],
+  "compilerCases": [
+    {
+      "id": "compiler-prose-base-responsive-order",
+      "source": "@defaults { prose { @variant sm { :is(h1,h2) { @compose mt:2xl scroll-mt:100px; } } :is(h1,h2) { @compose mt:lg scroll-mt:60px; } } }",
+      "baseManifest": "default",
+      "expectedGeneratedCss": "",
+      "expectedUtilities": [
+        {
+          "id": ".prose",
+          "name": "prose",
+          "type": -2,
+          "order": 0,
+          "layer": "defaults",
+          "emit": {
+            "type": "static",
+            "rules": [
+              {
+                "declarations": {
+                  "margin-top": "var(--spacing-lg)",
+                  "scroll-margin-top": "60px"
+                },
+                "selector": "& :is(h1,h2)"
+              },
+              {
+                "declarations": {
+                  "margin-top": "var(--spacing-2xl)",
+                  "scroll-margin-top": "100px"
+                },
+                "conditions": ["@media (width>=52.125rem)"],
+                "selector": "& :is(h1,h2)"
+              }
+            ]
+          },
+          "matchers": [
+            {
+              "type": "static",
+              "name": "prose"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "compiler-native-condition-order",
+      "source": ".card { @media (width>=40rem) { @compose grid; } @compose block; @container panel (inline-size>30rem) { @compose flex; } @starting-style { @compose hidden; } }",
+      "baseManifest": "default",
+      "expectedGeneratedCss": ".card{display:block}@media (width>=40rem){.card{display:grid}}@container panel (inline-size>30rem){.card{display:flex}}@starting-style{.card{display:none}}"
+    },
+    {
+      "id": "compiler-managed-compose-order",
+      "source": "@components { btn { @variant sm { @compose grid; } @compose block; } }",
+      "baseManifest": "default",
+      "expectedGeneratedCss": "",
+      "expectedUtilities": [
+        {
+          "id": ".btn",
+          "name": "btn",
+          "type": -2,
+          "order": 0,
+          "layer": "components",
+          "emit": {
+            "type": "static",
+            "rules": [
+              {
+                "declarations": {
+                  "display": "block"
+                }
+              },
+              {
+                "declarations": {
+                  "display": "grid"
+                },
+                "conditions": ["@media (width>=52.125rem)"]
+              }
+            ]
+          },
+          "matchers": [
+            {
+              "type": "static",
+              "name": "btn"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "compiler-root-size-condition-order",
+      "source": "@settings { root-size:20; } .card { @media (width>=42rem) { @compose grid; } @media (width>=800px) { @compose flex; } }",
+      "baseManifest": "default",
+      "expectedGeneratedCss": "@media (width>=800px){.card{display:flex}}@media (width>=42rem){.card{display:grid}}"
+    }
+  ]
+}
