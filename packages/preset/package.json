@@ -1,6 +1,9 @@
 {
   "name": "@master/css-preset",
   "type": "module",
+  "engines": {
+    "node": "^24"
+  },
   "scripts": {
     "build": "pnpm generate",
     "generate": "cargo xtask build-native && node --import tsx scripts/generate-default-manifest.ts",
@@ -56,10 +59,10 @@
     "provenance": true
   },
   "dependencies": {
-    "@master/css-schema": "workspace:^"
+    "@master/css-schema": "workspace:*"
   },
   "devDependencies": {
-    "@master/css-native": "workspace:^",
+    "@master/css-native": "workspace:*",
     "tsx": "^4.22.4"
   }
 }

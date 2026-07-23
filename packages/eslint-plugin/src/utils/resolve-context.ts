@@ -1,15 +1,15 @@
 import type { RuleContext } from '@typescript-eslint/utils/ts-eslint'
 import settings, { Settings } from '../settings'
 import { MasterCSSManifest, defaultManifest } from './master-css'
-import { findMasterCSSWorkspaceDirectoriesSync } from '@master/css-project/entries'
-import { loadProjectManifestSync } from '@master/css-project/manifest-sync'
+import { findMasterCSSWorkspaceDirectoriesSync } from '@master/css-compiler/project/entries'
+import { loadProjectManifestSync } from '@master/css-compiler/project/sync'
 import path from 'node:path'
 import { existsSync } from 'node:fs'
 import isSameOrChildPath from './is-same-or-child-path'
 import {
   createLintSessionSync,
   type LintSession
-} from '@master/css-lint/node'
+} from '@master/css-tooling/lint/node'
 
 declare interface CSSCache {
   cwd: string

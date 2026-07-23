@@ -1,5 +1,12 @@
 # Core Test Migration Ledger
 
+> Historical ledger: source paths under `packages/facade` and destination paths
+> under `packages/engine` describe earlier migration stages. Executable semantic
+> coverage now lives primarily in the Rust crate tests, with TypeScript binding
+> coverage under `packages/css/tests/engine`. Paths in the table are historical
+> evidence, not current package boundaries; the retired identities must not be
+> restored.
+
 This ledger tracks every test file that existed under `packages/facade/tests` before `@master/css` became a facade. A deleted core test is only acceptable when its intent has an owner, a coverage status, and a concrete next action or executable replacement.
 
 Status values:
@@ -14,12 +21,11 @@ Status values:
 
 Current executable coverage anchors:
 
-- Engine exact rule parity: `packages/engine/tests/rules-migration-parity.test.ts` migrates the mechanically portable default-rule assertions from old `packages/facade/tests/rules/**`.
-- Engine focused exact parity: `packages/engine/tests/parser-boundary-parity.test.ts`, `packages/engine/tests/cascade-layer-parity.test.ts`, `packages/engine/tests/issue-regressions.test.ts`, and `packages/engine/tests/complex-utilities-parity.test.ts`.
-- Engine representative parity: `packages/engine/tests/core-parity.test.ts`, `packages/engine/tests/master-css-manifest.test.ts`, and `packages/engine/tests/parser-parity.test.ts`.
-- Compiler CSS-first lowering: `packages/compiler/tests/master-css-manifest.test.ts` and `packages/compiler/tests/css-first-core-migration.test.ts`.
-- Preset source/default manifest: `packages/preset/tests/default-manifest.test.ts` and `packages/preset/tests/design-tokens.test.ts`.
-- Facade smoke: `packages/facade/tests/facade.test.ts`.
+- Engine semantics and exact CSS output: the test module in `crates/mastercss-engine/src/lib.rs`.
+- Engine/public binding lifecycle: `packages/css/tests/engine/rust-engine.test.ts`.
+- Compiler CSS-first lowering and stylesheet behavior: `packages/compiler/tests/css-first-core-migration.test.ts` and `packages/compiler/tests/stylesheet`.
+- Preset source/default manifest: `packages/preset/tests/rust-preset.test.ts`.
+- Public facade smoke: `packages/css/tests/facade.test.ts`.
 
 Current audit summary:
 

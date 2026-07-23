@@ -1,6 +1,6 @@
 import type { RuleContext, RuleFixer } from '@typescript-eslint/utils/ts-eslint'
 import type { TSESTree } from '@typescript-eslint/utils'
-import type { MasterCSSLintDiagnostic, MasterCSSLintFix } from '@master/css-lint'
+import type { MasterCSSLintDiagnostic, MasterCSSLintFix } from '@master/css-tooling/lint'
 import type { ResolvedClassNode } from './resolve-class-node'
 
 type FixRange = [number, number]

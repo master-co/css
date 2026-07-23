@@ -1,5 +1,5 @@
 {
-  "name": "@master/css.next-playground",
+  "name": "@master/css-next-playground",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -9,7 +9,7 @@
     "start": "next start"
   },
   "dependencies": {
-    "@master/css-integration": "workspace:^",
+    "@master/css-internal-integration": "workspace:^",
     "next": "^16.2.10",
     "react": "^19.2.5",
     "react-dom": "^19.2.5"

@@ -34,11 +34,11 @@ Do not bundle compiler or tooling Wasm into a runtime-only application.
 ## Replace the engine object
 
 Remove imports of `MasterCSS`, `Rule`, `Layer`, `UtilityLayer`, `ThemeLayer`,
-`VariableRule`, `AnimationRule`, `compareRulePriority`, `@master/css-engine/inspect`,
-and `@master/css-engine/compiler`.
+`VariableRule`, `AnimationRule`, `compareRulePriority`, `@master/css/inspect`,
+and `@master/css/compiler`.
 
 ```ts
-import { createEngine } from '@master/css-engine'
+import { createEngine } from '@master/css'
 
 const engine = await createEngine({ manifest })
 const transition = engine.ensureClassRules([
@@ -54,7 +54,7 @@ engine.dispose()
 Node code that must initialize synchronously uses the native entry:
 
 ```ts
-import { createEngineSync } from '@master/css-engine/node'
+import { createEngineSync } from '@master/css/node'
 
 const engine = createEngineSync({ manifest })
 ```
@@ -95,10 +95,10 @@ resolve filesystem references unless the host supplies a prepared graph.
 Individual TypeScript tokenizer and scanner exports are replaced by versioned batches.
 
 ```ts
-import { createLexerSession } from '@master/css-lexer'
-import { createSourceExtractor } from '@master/css-source'
+import { createLexerSessionSync } from '@master/css-tooling/lexer/node'
+import { createSourceExtractor } from '@master/css-tooling/source'
 
-const lexer = await createLexerSession()
+const lexer = createLexerSessionSync()
 const lexical = lexer.analyze({
   classLists: [{ source: 'fg:red:hover font:semibold' }]
 })
@@ -112,9 +112,9 @@ lexer.dispose()
 source.dispose()
 ```
 
-Svelte, Vue, and custom adapters should use their host parser only to identify relevant
-source regions. Send those regions to the Rust extractor instead of implementing a
-second class candidate parser.
+Official Svelte and Vue handling is built into the scanner pipeline. There is no public
+custom adapter registry; feed other supported source text to the Rust extractor rather
+than implementing a second class candidate parser.
 
 ---
 
@@ -124,9 +124,9 @@ Lint and language APIs require a Manifest v1 value and a Rust session. They no l
 accept a legacy engine instance.
 
 ```ts
-import { createLintSession } from '@master/css-lint'
-import { createLanguageSession } from '@master/css-language'
-import { createValidator } from '@master/css-validator'
+import { createLintSession } from '@master/css-tooling/lint'
+import { createLanguageSession } from '@master/css-tooling/language'
+import { createValidator } from '@master/css-tooling/validator'
 
 const lint = await createLintSession(manifest)
 const language = await createLanguageSession(manifest)

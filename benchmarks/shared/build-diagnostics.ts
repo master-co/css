@@ -1,13 +1,13 @@
 import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import { dirname, resolve } from 'node:path'
 import { performance } from 'node:perf_hooks'
-import CSSScanner from '@master/css-scanner'
+import CSSScanner from '@master/css-tooling/scanner'
 import {
   createExtractedCSS,
   registerStyleCSSSource,
   type StyleCSSSources
-} from '@master/css-stylesheet'
-import { findCSSManifestEntryFiles } from '@master/css-project/entries'
+} from '@master/css-compiler/stylesheet'
+import { findCSSManifestEntryFiles } from '@master/css-compiler/project/entries'
 import fg from 'fast-glob'
 import { getStaticFixtureSource } from '../fixtures/static'
 import { summarizeBytes } from './bytes'
@@ -380,6 +380,6 @@ async function loadViteBuild(): Promise<ViteBuild> {
 }
 
 async function loadMasterCSSVite(): Promise<MasterCSSVite> {
-  const mod = await dynamicImport<{ default: MasterCSSVite }>('@master/css.vite')
+  const mod = await dynamicImport<{ default: MasterCSSVite }>('@master/css-vite')
   return mod.default
 }

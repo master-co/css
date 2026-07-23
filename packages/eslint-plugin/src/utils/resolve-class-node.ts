@@ -1,5 +1,5 @@
 import { RuleContext } from '@typescript-eslint/utils/ts-eslint'
-import type { LintSession } from '@master/css-lint/node'
+import type { LintSession } from '@master/css-tooling/lint/node'
 
 export type ResolvedClassListUnescape = string | false
 

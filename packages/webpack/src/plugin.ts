@@ -1,18 +1,19 @@
-import { CSSScanner, type ScannerOptions } from '@master/css-scanner'
+import { CSSScanner, type ScannerOptions } from '@master/css-tooling/scanner'
 import type { MasterCSSEmittedGlobals } from '@master/css-schema/emitted-globals'
-import { toManifestJSON } from '@master/css-integration/manifest-module'
+import type { MasterCSSManifest } from '@master/css-schema/manifest'
+import { toManifestJSON } from '@master/css-internal-integration/manifest-module'
 import {
   toBrowserManifestFacadeModule,
   toInlineManifestModule
-} from '@master/css-integration/manifest-facade'
+} from '@master/css-internal-integration/manifest-facade'
 import {
   toHashedManifestAssetFileName,
   toVirtualCSSModulePath,
   toVirtualDefaultManifestModulePath,
   toVirtualEmittedGlobalsModulePath
-} from '@master/css-integration/node'
-import { loadProjectManifest } from '@master/css-project/manifest'
-import { findCSSManifestEntryFiles } from '@master/css-project/entries'
+} from '@master/css-internal-integration/node'
+import { loadProjectManifest } from '@master/css-compiler/project'
+import { findCSSManifestEntryFiles } from '@master/css-compiler/project/entries'
 import {
   cleanStyleRequest,
   collectStyleCSSDependencies,
@@ -21,8 +22,8 @@ import {
   registerStyleCSSSource as registerStylesheetCSSSource,
   resolveMasterStyleSource,
   type StyleCSSSources
-} from '@master/css-stylesheet'
-import { toEmittedGlobalsModule } from '@master/css-integration/emitted-globals-module'
+} from '@master/css-compiler/stylesheet'
+import { toEmittedGlobalsModule } from '@master/css-internal-integration/emitted-globals-module'
 import type { Compiler } from 'webpack'
 import type VirtualModulesPlugin from 'webpack-virtual-modules'
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
@@ -135,7 +136,7 @@ export class MasterCSSPlugin {
     return this.scanner.css
   }
 
-  get manifest() {
+  get manifest(): MasterCSSManifest {
     return this.scanner.manifest
   }
 

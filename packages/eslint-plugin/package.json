@@ -1,6 +1,9 @@
 {
   "name": "@master/eslint-plugin-css",
   "type": "module",
+  "engines": {
+    "node": "^24"
+  },
   "scripts": {
     "build": "tsdown --config ../../shared/tsdown-package.config.ts",
     "dev": "tsdown --config ../../shared/tsdown-package.config.ts --watch",
@@ -27,10 +30,6 @@
     "directory": "packages/eslint-plugin"
   },
   "sideEffects": false,
-  "main": "./dist/index.js",
-  "module": "./dist/index.js",
-  "jsnext:main": "./dist/index.js",
-  "esnext": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
@@ -52,18 +51,16 @@
     "provenance": true
   },
   "dependencies": {
-    "@master/css": "workspace:^",
-    "@master/css-compiler": "workspace:^",
-    "@master/css-lint": "workspace:^",
-    "@master/css-project": "workspace:^",
-    "@master/css-preset": "workspace:^",
-    "@master/css-validator": "workspace:^",
+    "@master/css": "workspace:*",
+    "@master/css-compiler": "workspace:*",
+    "@master/css-tooling": "workspace:*",
+    "@master/css-preset": "workspace:*",
     "@typescript-eslint/utils": "^8.61.1",
     "typescript-eslint": "^8.61.1"
   },
   "devDependencies": {
     "@angular-eslint/template-parser": "^21.4.0",
-    "@master/css-schema": "workspace:^",
+    "@master/css-schema": "workspace:*",
     "@angular/compiler": "^21.2.17",
     "@typescript-eslint/rule-tester": "^8.61.1",
     "eslint": "^10.5.0",

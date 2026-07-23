@@ -193,10 +193,10 @@ async function createBuildDiagnosticsReport(): Promise<BenchmarkReport> {
     packages: await collectPackageVersions([
       '@master/css',
       '@master/css-cli',
-      '@master/css-project',
-      '@master/css-scanner',
-      '@master/css-stylesheet',
-      '@master/css.vite',
+      '@master/css-compiler',
+      '@master/css-tooling/scanner',
+      '@master/css-compiler/stylesheet',
+      '@master/css-vite',
       'fast-glob',
       'vite'
     ]),

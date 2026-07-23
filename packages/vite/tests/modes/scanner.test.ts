@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, test, vi } from 'vitest'
 import ScannerPlugin from '../../src/plugins/scanner'
 import UsageGraphPlugin from '../../src/plugins/usage-graph'
 
-vi.mock('@master/css-scanner', () => {
+vi.mock('@master/css-tooling/scanner', () => {
   return {
     default: class {
       options: any = {}

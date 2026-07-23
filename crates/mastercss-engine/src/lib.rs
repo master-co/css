@@ -2643,6 +2643,15 @@ pub fn builtin_key_aliases() -> &'static [(&'static str, &'static str)] {
     BUILTIN_KEY_ALIASES
 }
 
+/// Returns the canonical built-in native-value namespace registry.
+///
+/// Build tooling uses this read-only projection to generate TypeScript tooling data
+/// without introducing a second semantic source of truth.
+pub fn builtin_native_value_namespaces()
+-> &'static [(&'static [&'static str], &'static [&'static str])] {
+    BUILTIN_NATIVE_VALUE_NAMESPACES
+}
+
 /// Returns the built-in properties that accept manifest variable values.
 pub fn builtin_native_value_properties() -> Vec<&'static str> {
     let mut properties = Vec::new();
@@ -3272,7 +3281,7 @@ fn normalize_unmanaged_value(value: &str, settings: &EngineSettings) -> String {
     output
 }
 
-fn normalize_css_math_functions(source: &str) -> String {
+fn normalize_css_math_functions(source: &str, settings: &EngineSettings) -> String {
     let mut output = String::with_capacity(source.len());
     let mut index = 0;
     while index < source.len() {
@@ -3289,9 +3298,9 @@ fn normalize_css_math_functions(source: &str) -> String {
                 && source[name_end..].starts_with('(')
                 && let Some(close) = find_matching_parenthesis(source, name_end)
             {
-                let inner = normalize_css_math_functions(&source[name_end + 1..close]);
+                let inner = normalize_css_math_functions(&source[name_end + 1..close], settings);
                 let inner = match name {
-                    "calc" => normalize_math_expression(&inner),
+                    "calc" => normalize_math_expression(&inner, settings),
                     "clamp" => split_top_level(&inner, ',')
                         .into_iter()
                         .map(|argument| {
@@ -3299,7 +3308,7 @@ fn normalize_css_math_functions(source: &str) -> String {
                             if has_top_level_binary_math_operator(argument)
                                 && !argument.starts_with("calc(")
                             {
-                                format!("calc({})", normalize_math_expression(argument))
+                                format!("calc({})", normalize_math_expression(argument, settings))
                             } else {
                                 argument.to_owned()
                             }
@@ -3355,7 +3364,7 @@ fn find_matching_parenthesis(source: &str, open: usize) -> Option<usize> {
     None
 }
 
-fn normalize_math_expression(source: &str) -> String {
+fn normalize_math_expression(source: &str, settings: &EngineSettings) -> String {
     let characters = source.chars().collect::<Vec<_>>();
     let mut output = String::with_capacity(source.len() + 8);
     let mut index = 0;
@@ -3391,7 +3400,7 @@ fn normalize_math_expression(source: &str) -> String {
         output.push(character);
         index += 1;
     }
-    normalize_leading_decimal_sequences(&output)
+    normalize_unmanaged_value(&normalize_leading_decimal_sequences(&output), settings)
 }
 
 fn normalize_leading_decimal_sequences(source: &str) -> String {
@@ -4322,7 +4331,10 @@ fn resolve_utility_value_components(
             variable_names.push(name);
         }
     }
-    (normalize_css_math_functions(&output), variable_names)
+    (
+        normalize_css_math_functions(&output, &manifest.settings),
+        variable_names,
+    )
 }
 
 fn matches_utility_kind(value: &str, kind: Option<&str>) -> bool {
@@ -4428,6 +4440,7 @@ fn is_selector_state_start(rest: &str) -> bool {
             | "only"
             | "only-child"
             | "only-of-type"
+            | "of"
             | "optional"
             | "out-of-range"
             | "past"
@@ -4476,6 +4489,9 @@ fn split_dynamic_value_state(value: &str) -> (String, String) {
         if character == '\'' || character == '"' {
             quote = Some(character);
             continue;
+        }
+        if character == '[' && depth == 0 {
+            return (value[..index].to_owned(), value[index..].to_owned());
         }
         if matches!(character, '(' | '[' | '{') {
             depth += 1;
@@ -4790,7 +4806,99 @@ fn selector_token_to_template(
         selector = replace_selector_alias(&selector, alias, replacement);
     }
     selector = replace_selector_underscores(&selector);
+    if let Some((before, context, after)) = split_top_level_of_selector(&selector) {
+        let suffix = format!("{before}{after}");
+        let separator = if context.chars().next_back().is_some_and(|character| {
+            !character.is_whitespace() && !matches!(character, '>' | '+' | '~')
+        }) {
+            " "
+        } else {
+            ""
+        };
+        return Some(format!(
+            "{context}{separator}{}",
+            suffix_to_template(&suffix)
+        ));
+    }
     Some(suffix_to_template(&selector))
+}
+
+fn split_top_level_of_selector(selector: &str) -> Option<(&str, &str, &str)> {
+    let mut depth = 0_u32;
+    let mut quote = None;
+    let mut escaped = false;
+    let mut index = 0;
+    while index < selector.len() {
+        let character = selector[index..].chars().next()?;
+        if escaped {
+            escaped = false;
+            index += character.len_utf8();
+            continue;
+        }
+        if character == '\\' {
+            escaped = true;
+            index += character.len_utf8();
+            continue;
+        }
+        if let Some(current_quote) = quote {
+            if character == current_quote {
+                quote = None;
+            }
+            index += character.len_utf8();
+            continue;
+        }
+        if character == '\'' || character == '"' {
+            quote = Some(character);
+            index += character.len_utf8();
+            continue;
+        }
+        if depth == 0 && selector[index..].starts_with(":of(") {
+            let body_start = index + ":of(".len();
+            let mut body_depth = 1_u32;
+            let mut body_quote = None;
+            let mut body_escaped = false;
+            for (offset, body_character) in selector[body_start..].char_indices() {
+                if body_escaped {
+                    body_escaped = false;
+                    continue;
+                }
+                if body_character == '\\' {
+                    body_escaped = true;
+                    continue;
+                }
+                if let Some(current_quote) = body_quote {
+                    if body_character == current_quote {
+                        body_quote = None;
+                    }
+                    continue;
+                }
+                if body_character == '\'' || body_character == '"' {
+                    body_quote = Some(body_character);
+                } else if body_character == '(' {
+                    body_depth += 1;
+                } else if body_character == ')' {
+                    body_depth -= 1;
+                    if body_depth == 0 {
+                        let body_end = body_start + offset;
+                        let after_start = body_end + body_character.len_utf8();
+                        return Some((
+                            &selector[..index],
+                            &selector[body_start..body_end],
+                            &selector[after_start..],
+                        ));
+                    }
+                }
+            }
+            return None;
+        }
+        if matches!(character, '(' | '[' | '{') {
+            depth += 1;
+        } else if matches!(character, ')' | ']' | '}') {
+            depth = depth.saturating_sub(1);
+        }
+        index += character.len_utf8();
+    }
+    None
 }
 
 fn resolve_style_selector_aliases(selector: &str, manifest: &ManifestProjection) -> String {
@@ -6066,6 +6174,21 @@ mod tests {
     }
 
     #[test]
+    fn normalizes_base_units_inside_css_math_functions() {
+        let engine = EngineSession::create(r#"{"version":1,"utilities":[]}"#).unwrap();
+        let candidates = engine
+            .native_declaration_candidates(["pl:calc(5x-2px)"])
+            .unwrap();
+        assert_eq!(candidates.len(), 1);
+        assert_eq!(candidates[0].property, "padding-left");
+        assert_eq!(candidates[0].value, "calc(1.25rem - 2px)");
+        assert_eq!(
+            engine.inspect("pl:calc(5x-2px)").unwrap().rules[0].text,
+            ".pl\\:calc\\(5x-2px\\){padding-left:calc(1.25rem - 2px)}"
+        );
+    }
+
+    #[test]
     fn renders_selector_condition_layer_and_important_state() {
         for (class_name, expected) in [
             (
@@ -6099,6 +6222,26 @@ mod tests {
             (
                 "w:10px:hover@sm",
                 "@layer utilities{@media (width>=52.125rem){.w\\:10px\\:hover\\@sm:hover{width:10px}}}",
+            ),
+            (
+                "w:10px[open]",
+                "@layer utilities{.w\\:10px\\[open\\][open]{width:10px}}",
+            ),
+            (
+                "block:of(.active)",
+                "@layer utilities{.active .block\\:of\\(\\.active\\){display:block}}",
+            ),
+            (
+                "block:of(.active>)",
+                "@layer utilities{.active>.block\\:of\\(\\.active\\>\\){display:block}}",
+            ),
+            (
+                "block:of(.active+)",
+                "@layer utilities{.active+.block\\:of\\(\\.active\\+\\){display:block}}",
+            ),
+            (
+                "block:of(.active~)",
+                "@layer utilities{.active~.block\\:of\\(\\.active\\~\\){display:block}}",
             ),
             ("block@base", "@layer base{.block\\@base{display:block}}"),
             (

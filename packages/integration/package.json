@@ -1,6 +1,10 @@
 {
-  "name": "@master/css-integration",
+  "name": "@master/css-internal-integration",
+  "private": true,
   "type": "module",
+  "engines": {
+    "node": "^24"
+  },
   "scripts": {
     "build": "tsdown --config ../../shared/tsdown-package.config.ts",
     "dev": "tsdown --config ../../shared/tsdown-package.config.ts --watch",
@@ -28,19 +32,12 @@
     "mastercss"
   ],
   "sideEffects": false,
-  "main": "./dist/index.js",
-  "module": "./dist/index.js",
-  "jsnext:main": "./dist/index.js",
-  "esnext": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js",
       "default": "./dist/index.js"
-    },
-    "./client": {
-      "types": "./client.d.ts"
     },
     "./module": {
       "types": "./dist/module.d.ts",
@@ -74,14 +71,9 @@
     }
   },
   "files": [
-    "client.d.ts",
     "dist"
   ],
-  "publishConfig": {
-    "access": "public",
-    "provenance": true
-  },
   "dependencies": {
-    "@master/css-schema": "workspace:^"
+    "@master/css-schema": "workspace:*"
   }
 }

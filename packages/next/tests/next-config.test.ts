@@ -4,9 +4,9 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import withMasterCSS from '../src'
 import { getRegisteredOptions } from '../src/options'
-import { VIRTUAL_MANIFEST_ID } from '@master/css-integration/manifest-module'
-import { VIRTUAL_CSS_ID } from '@master/css-integration/style-module'
-import { VIRTUAL_EMITTED_GLOBALS_ID } from '@master/css-integration/emitted-globals-module'
+import { VIRTUAL_MANIFEST_ID } from '@master/css-internal-integration/manifest-module'
+import { VIRTUAL_CSS_ID } from '@master/css-internal-integration/style-module'
+import { VIRTUAL_EMITTED_GLOBALS_ID } from '@master/css-internal-integration/emitted-globals-module'
 
 const toPosixPath = (value: string) => value.replace(/\\/g, '/')
 const virtualManifestProjectPath = 'node_modules/.master-css/master-css-manifest.js'

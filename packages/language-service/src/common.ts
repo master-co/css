@@ -6,4 +6,4 @@ export {
   QUERY_TRIGGER_CHARACTERS,
   SELECTOR_TRIGGER_CHARACTERS,
   VALUE_TRIGGER_CHARACTERS
-} from '@master/css-language'
+} from '@master/css-tooling/language'

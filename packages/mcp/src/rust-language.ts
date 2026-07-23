@@ -1,8 +1,8 @@
 import {
   type LanguageSession,
   type MasterCSSLanguageInspectionIR
-} from '@master/css-language'
-import { createLanguageSessionSync } from '@master/css-language/node'
+} from '@master/css-tooling/language'
+import { createLanguageSessionSync } from '@master/css-tooling/language/node'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
 
 export async function createMCPRustLanguageSession(manifest: MasterCSSManifest) {

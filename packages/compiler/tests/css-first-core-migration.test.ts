@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'vitest'
 import { compileCSS, compileCSSManifest } from '../src'
-import type { CompilerDiagnosticRecorder } from '../src/diagnostics'
+import type { CompilerDiagnosticRecorder } from '../src/compiler-diagnostics'
 import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
 import { flattenMasterCSSManifestVariables, type MasterCSSManifest } from '@master/css-schema/manifest'
 import UtilityType from '@master/css-schema/utility-type'

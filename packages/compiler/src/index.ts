@@ -11,7 +11,7 @@ import type {
 import {
   setCompilerDiagnosticCount,
   type CompilerDiagnosticRecorder
-} from './diagnostics'
+} from './compiler-diagnostics'
 import {
   type CompileCSSOptions,
   type CSSReferenceStatement,

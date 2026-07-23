@@ -1,6 +1,6 @@
 import CSSLanguageService from '@master/css-language-service'
-import { defaultManifest } from '@master/css-language'
-import { createLanguageSessionSync } from '@master/css-language/node'
+import { defaultManifest } from '@master/css-tooling/language'
+import { createLanguageSessionSync } from '@master/css-tooling/language/node'
 import type MasterCSSMCPContext from './context'
 import { loadWorkspaceManifest } from './project'
 import { createMCPTextDocument } from './document'

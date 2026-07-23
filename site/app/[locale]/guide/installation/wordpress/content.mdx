@@ -20,7 +20,7 @@ Use Vite runtime rendering when WordPress owns the PHP template lifecycle. WordP
     </StepL>
     <StepR>
       ```bash name=Terminal
-      npm install -D vite @master/css.vite@rc
+      npm install -D vite @master/css-vite@rc
       ```
     </StepR>
   </Step>
@@ -32,7 +32,7 @@ Use Vite runtime rendering when WordPress owns the PHP template lifecycle. WordP
     <StepR>
       ```ts name=vite.config.ts
       import { defineConfig } from 'vite'
-      import masterCSS from '@master/css.vite'
+      import masterCSS from '@master/css-vite'
 
       export default defineConfig({
         plugins: [
@@ -60,7 +60,7 @@ Use Vite runtime rendering when WordPress owns the PHP template lifecycle. WordP
     </StepL>
     <StepR>
       ```ts name=resources/master.ts
-      import '@master/css.vite/runtime'
+      import '@master/css-vite/runtime'
       import './master.css'
       ```
 

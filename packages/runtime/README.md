@@ -72,7 +72,8 @@ import CSSRuntime from '@master/css-runtime'
 import manifest from 'virtual:master-css-manifest'
 import emittedGlobals from 'virtual:master-css-emitted-globals'
 
-CSSRuntime.create({ manifest, emittedGlobals }).observe()
+const cssRuntime = await CSSRuntime.start({ manifest, emittedGlobals })
+cssRuntime.observe()
 ```
 
 ## CDN IIFE
@@ -86,7 +87,7 @@ Use the CDN runtime when a page only needs the default preset and zero configura
 <script src="https://cdn.master.co/css-runtime@rc"></script>
 ```
 
-The IIFE imports `default-manifest.json` next to the runtime script as a JSON module, starts automatically, and registers the document runtime as `globalThis.masterCSSRuntime`. The CDN must serve the manifest with `application/json`, and the browser must support JSON modules and import attributes. It does not read global options or custom manifests. Use ESM `CSSRuntime.create({ manifest, emittedGlobals }).observe()` for custom theme tokens, utilities, modes, emitted globals, or hydration inputs.
+The IIFE imports `default-manifest.json` next to the runtime script as a JSON module, starts automatically, and registers the document runtime as `globalThis.masterCSSRuntime`. The CDN must serve the manifest with `application/json`, and the browser must support JSON modules and import attributes. It does not read global options or custom manifests. Use ESM `await CSSRuntime.start({ manifest, emittedGlobals })` for custom theme tokens, utilities, modes, emitted globals, or hydration inputs.
 
 ## API
 
@@ -96,16 +97,16 @@ The IIFE imports `default-manifest.json` next to the runtime script as a JSON mo
 import CSSRuntime from '@master/css-runtime'
 import manifest from 'virtual:master-css-manifest'
 
-const cssRuntime = CSSRuntime.create({ manifest })
+const cssRuntime = await CSSRuntime.start({ manifest })
 cssRuntime.observe()
 ```
 
-`CSSRuntime` runs in the browser as a DOM/CSSOM host around the Rust runtime engine session. Use `CSSRuntime.create({ manifest })` when the runtime should reuse an existing runtime for the same root.
+`CSSRuntime` runs in the browser as a DOM/CSSOM host around the Rust runtime engine session. Use `CSSRuntime.start({ manifest })` to asynchronously initialize or reuse the runtime for the same root.
 
 | API | Type | Description |
 | --- | --- | --- |
 | `CSSRuntime.instances` | `WeakMap<Document \| ShadowRoot, CSSRuntime>` | Runtime instances keyed by root. |
-| `CSSRuntime.create(options)` | `CSSRuntime` | Creates or reuses a registered runtime for `options.root`. |
+| `CSSRuntime.start(options)` | `Promise<CSSRuntime>` | Initializes or reuses a registered runtime for `options.root`. |
 | `cssRuntime.root` | `Document \| ShadowRoot` | Observed root. |
 | `cssRuntime.host` | `Element` | Root host, usually `root.host` or `document.documentElement`. |
 | `cssRuntime.container` | `HTMLElement \| ShadowRoot` | Container for `style#master-css`. |
@@ -136,17 +137,14 @@ import CSSRuntime from '@master/css-runtime'
 import manifest from 'virtual:master-css-manifest'
 import emittedGlobals from 'virtual:master-css-emitted-globals'
 
-const cssRuntime = CSSRuntime.create({
+const cssRuntime = await CSSRuntime.start({
   manifest,
   emittedGlobals,
 })
-if (cssRuntime.needsHydrationManifest()) {
-  await cssRuntime.loadHydrationManifest()
-}
 cssRuntime.observe()
 ```
 
-`emittedGlobals` tells the runtime which variables and keyframes were already emitted by the project CSS entry, so future dynamic classes can reuse them without inserting duplicate global CSS.
+`start()` resolves explicit, inline, or external hydration data before returning. `emittedGlobals` tells the runtime which variables and keyframes were already emitted by the project CSS entry, so future dynamic classes can reuse them without inserting duplicate global CSS.
 
 ## Related docs
 

@@ -15,7 +15,7 @@ import {
 } from '@master/css-schema/hydration-manifest'
 import { MASTER_CSS_RUNTIME_STYLE_ID } from '@master/css-schema/runtime-style'
 import type { Handle } from '@sveltejs/kit'
-import { toHashedManifestAssetFileName } from '@master/css-integration/node'
+import { toHashedManifestAssetFileName } from '@master/css-internal-integration/node'
 import { mkdirSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 

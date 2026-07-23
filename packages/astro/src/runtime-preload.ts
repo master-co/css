@@ -1,7 +1,7 @@
 import { readFile, readdir, stat, writeFile } from 'node:fs/promises'
 import { basename, dirname, join, relative, sep } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { toManifestPreloadLinkTag } from '@master/css-integration/manifest-facade'
+import { toManifestPreloadLinkTag } from '@master/css-internal-integration/manifest-facade'
 
 const RUNTIME_MANIFEST_REFERENCE_PATTERN = /new URL\((["'])([^"']*master-css-manifest[^"']*\.json)\1\s*,\s*import\.meta\.url\)\.href/g
 const RUNTIME_WASM_REFERENCE_PATTERN = /new URL\((["'])([^"']*mastercss_wasm_runtime[^"']*\.wasm)\1\s*,\s*import\.meta\.url\)/g

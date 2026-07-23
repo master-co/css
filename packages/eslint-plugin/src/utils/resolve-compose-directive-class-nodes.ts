@@ -1,5 +1,5 @@
 import { inspectCSS } from '@master/css-compiler'
-import type { LintSession } from '@master/css-lint/node'
+import type { LintSession } from '@master/css-tooling/lint/node'
 import type { RuleContext } from '@typescript-eslint/utils/ts-eslint'
 import type { ResolvedClassListNode, ResolvedClassNode } from './resolve-class-node'
 

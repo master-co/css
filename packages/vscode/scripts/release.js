@@ -258,24 +258,24 @@ async function main() {
     const bumpedManifest = await readPackageJson()
     validateVSCodeTypesCompatibility(bumpedManifest)
 
-    await run(corepackCommand(), ['pnpm', '--filter', 'master-css-vscode', 'build'])
-    await run(corepackCommand(), ['pnpm', '--filter', 'master-css-vscode', 'type-check'])
+    await run(corepackCommand(), ['pnpm', '--filter', '@master/css-vscode', 'build'])
+    await run(corepackCommand(), ['pnpm', '--filter', '@master/css-vscode', 'type-check'])
     await assertOnlyExpectedChanges(initialStatusLines)
 
     if (options.noPublish) {
-        await run(corepackCommand(), ['pnpm', '--filter', 'master-css-vscode', 'vscode:package', ...targetArgs(options.targets)])
+        await run(corepackCommand(), ['pnpm', '--filter', '@master/css-vscode', 'vscode:package', ...targetArgs(options.targets)])
     } else {
         await run(corepackCommand(), [
             'pnpm',
             '--filter',
-            'master-css-vscode',
+            '@master/css-vscode',
             'exec',
             'vsce',
             'verify-pat',
             ...(options.azureCredential ? ['--azure-credential'] : []),
             bumpedManifest.publisher
         ])
-        await run(corepackCommand(), ['pnpm', '--filter', 'master-css-vscode', 'vscode:publish', ...publishArgs(options)])
+        await run(corepackCommand(), ['pnpm', '--filter', '@master/css-vscode', 'vscode:publish', ...publishArgs(options)])
     }
 
     console.log('\nVS Code extension release complete')

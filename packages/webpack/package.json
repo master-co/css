@@ -1,6 +1,9 @@
 {
-  "name": "@master/css.webpack",
+  "name": "@master/css-webpack",
   "type": "module",
+  "engines": {
+    "node": "^24"
+  },
   "scripts": {
     "build": "tsdown --config ../../shared/tsdown-package.config.ts",
     "dev": "tsdown --config ../../shared/tsdown-package.config.ts --watch",
@@ -31,10 +34,6 @@
     "webpack-plugin"
   ],
   "sideEffects": false,
-  "main": "./dist/index.js",
-  "module": "./dist/index.js",
-  "jsnext:main": "./dist/index.js",
-  "esnext": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
@@ -54,16 +53,15 @@
     "webpack": ">=5"
   },
   "dependencies": {
-    "@master/css": "workspace:^",
-    "@master/css-runtime": "workspace:^",
-    "@master/css-scanner": "workspace:^",
-    "@master/css-integration": "workspace:^",
-    "@master/css-project": "workspace:^",
-    "@master/css-stylesheet": "workspace:^",
+    "@master/css": "workspace:*",
+    "@master/css-runtime": "workspace:*",
+    "@master/css-compiler": "workspace:*",
+    "@master/css-tooling": "workspace:*",
     "consola": "^3.4.2",
     "webpack-virtual-modules": "^0.6.2"
   },
   "devDependencies": {
+    "@master/css-internal-integration": "workspace:*",
     "@playwright/test": "1.61.0",
     "tapable": "^2.3.3",
     "webpack": "^5.107.2"

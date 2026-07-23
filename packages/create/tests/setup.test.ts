@@ -149,7 +149,7 @@ export default defineConfig([
     expect(plan.framework).toBe('vite')
     expect(plan.dependencies.map((dependency) => dependency.name)).toEqual([
       '@master/css',
-      '@master/css.vite',
+      '@master/css-vite',
       '@master/eslint-config-css',
       'eslint',
       '@master/css-mcp'
@@ -177,7 +177,7 @@ export default defineConfig([
 
     expect(plan.dependencies.map((dependency) => dependency.name)).toEqual([
       '@master/css',
-      '@master/css.vite'
+      '@master/css-vite'
     ])
     expect(plan.files.map((file) => file.path)).toEqual([
       'vite.config.js',
@@ -201,7 +201,7 @@ export default defineConfig([
 
     expect(plan.dependencies.map((dependency) => dependency.name)).toEqual([
       '@master/css',
-      '@master/css.vite',
+      '@master/css-vite',
       '@master/eslint-config-css',
       'eslint'
     ])
@@ -229,7 +229,7 @@ export default defineConfig([
 
     expect(plan.dependencies.map((dependency) => dependency.name)).toEqual([
       '@master/css',
-      '@master/css.vite'
+      '@master/css-vite'
     ])
     expect(plan.files.map((file) => file.path)).toEqual([
       'vite.config.js',
@@ -368,7 +368,7 @@ export default defineConfig([
     expect(result.status).toBe(0)
     expect(plan.dependencies.map((dependency: { name: string }) => dependency.name)).toEqual([
       '@master/css',
-      '@master/css.vite'
+      '@master/css-vite'
     ])
     expect(plan.files.map((file: { path: string }) => file.path)).toEqual([
       'vite.config.js',
@@ -390,7 +390,7 @@ export default defineConfig([
     expect(result.status).toBe(0)
     expect(plan.dependencies.map((dependency: { name: string }) => dependency.name)).toEqual([
       '@master/css',
-      '@master/css.vite',
+      '@master/css-vite',
       '@master/eslint-config-css',
       'eslint'
     ])
@@ -415,7 +415,7 @@ export default defineConfig([
     expect(result.status).toBe(0)
     expect(plan.dependencies.map((dependency: { name: string }) => dependency.name)).toEqual([
       '@master/css',
-      '@master/css.vite'
+      '@master/css-vite'
     ])
     expect(plan.files.map((file: { path: string }) => file.path)).toEqual([
       'vite.config.js',
@@ -522,7 +522,7 @@ export default defineConfig({
     expect(plan.framework).toBe('react')
     expect(plan.dependencies.map((dependency) => dependency.name)).toEqual([
       '@master/css',
-      '@master/css.vite',
+      '@master/css-vite',
       '@master/eslint-config-css',
       'eslint',
       '@master/css-mcp'
@@ -583,7 +583,7 @@ export default defineConfig({
     expect(plan.framework).toBe('vue')
     expect(plan.dependencies.map((dependency) => dependency.name)).toEqual([
       '@master/css',
-      '@master/css.vite',
+      '@master/css-vite',
       '@master/eslint-config-css',
       'eslint',
       '@master/css-mcp'
@@ -597,7 +597,7 @@ export default defineConfig({
 
     applySetup({ root, install: false })
 
-    expect(readProjectFile(root, 'vite.config.ts')).toContain("import masterCSS from '@master/css.vite'")
+    expect(readProjectFile(root, 'vite.config.ts')).toContain("import masterCSS from '@master/css-vite'")
     expect(readProjectFile(root, 'vite.config.ts')).toContain('masterCSS()')
     expect(readProjectFile(root, 'src/assets/main.css')).toContain("@import '@master/css';")
   })
@@ -614,7 +614,7 @@ export default defineConfig({
     expect(plan.framework).toBe('vue')
     expect(plan.dependencies.map((dependency) => dependency.name)).toEqual([
       '@master/css',
-      '@master/css.vite'
+      '@master/css-vite'
     ])
     expect(plan.files.map((file) => [file.path, file.action])).toEqual([
       ['vite.config.ts', 'create'],
@@ -654,7 +654,7 @@ export default function App() {
     expect(plan.framework).toBe('react-router')
     expect(plan.dependencies.map((dependency) => dependency.name)).toEqual([
       '@master/css',
-      '@master/css.vite',
+      '@master/css-vite',
       '@master/eslint-config-css',
       'eslint',
       '@master/css-mcp'
@@ -669,7 +669,7 @@ export default function App() {
 
     applySetup({ root, install: false })
 
-    expect(readProjectFile(root, 'vite.config.ts')).toContain("import masterCSS from '@master/css.vite'")
+    expect(readProjectFile(root, 'vite.config.ts')).toContain("import masterCSS from '@master/css-vite'")
     expect(readProjectFile(root, 'app/app.css')).toBe("@import '@master/css';\n")
     expect(readProjectFile(root, 'app/root.tsx')).toContain("import './app.css'")
   })
@@ -744,7 +744,7 @@ function RootComponent() {
     expect(plan.framework).toBe('tanstack-start')
     expect(plan.dependencies.map((dependency) => dependency.name)).toEqual([
       '@master/css',
-      '@master/css.vite',
+      '@master/css-vite',
       '@master/eslint-config-css',
       'eslint',
       '@master/css-mcp'
@@ -760,7 +760,7 @@ function RootComponent() {
     applySetup({ root, install: false })
 
     const viteConfig = readProjectFile(root, 'vite.config.ts')
-    expect(viteConfig).toContain("import masterCSS from '@master/css.vite'")
+    expect(viteConfig).toContain("import masterCSS from '@master/css-vite'")
     expect(viteConfig).toContain("masterCSS({ mode: 'runtime' })")
     expect(viteConfig.indexOf('tanstackStart()')).toBeLessThan(viteConfig.indexOf("masterCSS({ mode: 'runtime' })"))
     expect(viteConfig.indexOf("masterCSS({ mode: 'runtime' })")).toBeLessThan(viteConfig.indexOf('react()'))
@@ -815,7 +815,7 @@ export default defineConfig({
     expect(plan.framework).toBe('tanstack-start')
     expect(plan.dependencies.map((dependency) => dependency.name)).toEqual([
       '@master/css',
-      '@master/css.vite'
+      '@master/css-vite'
     ])
     expect(plan.files.map((file) => [file.path, file.action])).toEqual([
       ['vite.config.ts', 'create'],
@@ -876,7 +876,7 @@ export default function Root() {
     expect(plan.framework).toBe('rspack')
     expect(plan.dependencies.map((dependency) => dependency.name)).toEqual([
       '@master/css',
-      '@master/css.webpack',
+      '@master/css-webpack',
       '@master/eslint-config-css',
       'eslint',
       '@master/css-mcp'
@@ -891,7 +891,7 @@ export default function Root() {
 
     applySetup({ root, install: false })
 
-    expect(readProjectFile(root, 'rspack.config.mjs')).toContain("import MasterCSSPlugin from '@master/css.webpack'")
+    expect(readProjectFile(root, 'rspack.config.mjs')).toContain("import MasterCSSPlugin from '@master/css-webpack'")
     expect(readProjectFile(root, 'rspack.config.mjs')).toContain('new MasterCSSPlugin()')
     expect(readProjectFile(root, 'src/index.css')).toContain("@import '@master/css';")
   })
@@ -945,7 +945,7 @@ export default defineConfig({
     expect(plan.framework).toBe('rsbuild')
     expect(plan.dependencies.map((dependency) => dependency.name)).toEqual([
       '@master/css',
-      '@master/css.webpack',
+      '@master/css-webpack',
       '@master/eslint-config-css',
       'eslint',
       '@master/css-mcp'
@@ -960,7 +960,7 @@ export default defineConfig({
 
     applySetup({ root, install: false })
 
-    expect(readProjectFile(root, 'rsbuild.config.ts')).toContain("import MasterCSSPlugin from '@master/css.webpack'")
+    expect(readProjectFile(root, 'rsbuild.config.ts')).toContain("import MasterCSSPlugin from '@master/css-webpack'")
     expect(readProjectFile(root, 'rsbuild.config.ts')).toContain('tools: {')
     expect(readProjectFile(root, 'rsbuild.config.ts')).toContain('rspack(config)')
     expect(readProjectFile(root, 'rsbuild.config.ts')).toContain('config.plugins.push(new MasterCSSPlugin())')
@@ -1014,7 +1014,7 @@ export default defineConfig({
     expect(plan.framework).toBe('webpack')
     expect(plan.dependencies.map((dependency) => dependency.name)).toEqual([
       '@master/css',
-      '@master/css.webpack',
+      '@master/css-webpack',
       '@master/eslint-config-css',
       'eslint',
       '@master/css-mcp'
@@ -1029,7 +1029,7 @@ export default defineConfig({
 
     applySetup({ root, install: false })
 
-    expect(readProjectFile(root, 'webpack.config.mjs')).toContain("import MasterCSSPlugin from '@master/css.webpack'")
+    expect(readProjectFile(root, 'webpack.config.mjs')).toContain("import MasterCSSPlugin from '@master/css-webpack'")
     expect(readProjectFile(root, 'webpack.config.mjs')).toContain('new MasterCSSPlugin()')
     expect(readProjectFile(root, 'src/index.css')).toBe("@import '@master/css';\n")
   })
@@ -1156,7 +1156,7 @@ export class MyElement extends LitElement {
 
     applySetup({ root, install: false })
 
-    expect(readProjectFile(root, 'src/vite-env.d.ts')).toContain('@master/css-integration/client')
+    expect(readProjectFile(root, 'src/vite-env.d.ts')).toContain('@master/css/client')
     expect(readProjectFile(root, 'src/my-element.ts')).toContain('@cssRuntime({ manifest, emittedGlobals })')
     expect(readProjectFile(root, 'src/my-element.ts')).toContain('cssRuntime?: CSSRuntime')
   })
@@ -1189,7 +1189,8 @@ bootstrapApplication(AppComponent)
     applySetup({ root, install: false })
 
     expect(readProjectFile(root, 'src/main.ts')).toContain("import CSSRuntime from '@master/css-runtime'")
-    expect(readProjectFile(root, 'src/main.ts')).toContain('CSSRuntime.create({ manifest: defaultManifest }).observe()')
+    expect(readProjectFile(root, 'src/main.ts')).toContain('CSSRuntime.start({ manifest: defaultManifest })')
+    expect(readProjectFile(root, 'src/main.ts')).toContain('.then((cssRuntime) => cssRuntime.observe())')
     expect(readProjectFile(root, 'src/styles.css')).toBe("@import '@master/css';\n")
   })
 
@@ -1208,7 +1209,7 @@ export default nextConfig;
 
     applySetup({ root, install: false })
 
-    expect(readProjectFile(root, 'next.config.mjs')).toContain("import { withMasterCSS } from '@master/css.next'")
+    expect(readProjectFile(root, 'next.config.mjs')).toContain("import { withMasterCSS } from '@master/css-next'")
     expect(readProjectFile(root, 'next.config.mjs')).toContain('export default withMasterCSS(nextConfig);')
   })
 
@@ -1260,7 +1261,7 @@ export default nextConfig;
       {
         framework: 'nuxt' as const,
         file: 'nuxt.config.ts',
-        expected: "['@master/css.nuxt', { mode: 'runtime' }]",
+        expected: "['@master/css-nuxt', { mode: 'runtime' }]",
         mode: 'runtime' as const
       },
       {

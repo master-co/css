@@ -5,7 +5,7 @@ import {
   hasLocalStyleDirectives,
   isMasterCSSPackageStyleFile,
   resolveMasterStyleSource
-} from '@master/css-stylesheet'
+} from '@master/css-compiler/stylesheet'
 
 interface StyleCSSLoaderOptions {
   virtualCSSImportModuleId?: string
@@ -41,7 +41,7 @@ function shouldAddStyleDependencies(resourcePath: string, source: string, projec
 export default function masterCSSStyleCSSLoader(this: LoaderContext, source: string) {
   const callback = this.async?.()
   if (!callback) {
-    throw new Error('[@master/css.webpack] Style CSS loader requires an async loader context.')
+    throw new Error('[@master/css-webpack] Style CSS loader requires an async loader context.')
   }
   const options = this.getOptions?.() || {}
   const dependencies = shouldAddStyleDependencies(this.resourcePath, source, this.rootContext)

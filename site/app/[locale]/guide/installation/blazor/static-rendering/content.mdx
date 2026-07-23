@@ -21,7 +21,7 @@ Use Vite to build the browser assets for a Blazor app, then let Master CSS scan 
     <StepR>
       ```bash name=Terminal
       npm init -y
-      npm install -D vite @master/css.vite@rc
+      npm install -D vite @master/css-vite@rc
       ```
     </StepR>
   </Step>
@@ -33,7 +33,7 @@ Use Vite to build the browser assets for a Blazor app, then let Master CSS scan 
     <StepR>
       ```ts name=vite.config.ts
       import { defineConfig } from 'vite'
-      import masterCSS from '@master/css.vite'
+      import masterCSS from '@master/css-vite'
 
       export default defineConfig({
         plugins: [
@@ -88,7 +88,7 @@ Use Vite to build the browser assets for a Blazor app, then let Master CSS scan 
           "watch:assets": "vite build --watch"
         },
         "devDependencies": {
-          "@master/css.vite": "rc",
+          "@master/css-vite": "rc",
           "vite": "latest"
         }
       }

@@ -18,7 +18,7 @@ const replace = (html: string) => {
     const attrs = match[1] || ''
     if (HIDDEN_ATTR_RE.test(attrs)) return html
     if (process.env.DEBUG) {
-      console.log(`[@master/css.vite] Avoid FOUC by adding hidden attribute to <html>`)
+      console.log(`[@master/css-vite] Avoid FOUC by adding hidden attribute to <html>`)
     }
     const start = match.index
     const end = start + match[0].length

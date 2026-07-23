@@ -71,7 +71,7 @@ describe('Vite dev HMR', () => {
       },
       resolve: {
         alias: {
-          '@master/css.vite/runtime': path.resolve(__dirname, '../src/runtime.ts')
+          '@master/css-vite/runtime': path.resolve(__dirname, '../src/runtime.ts')
         }
       },
       plugins: masterCSS({ mode: 'runtime' })
@@ -91,7 +91,7 @@ describe('Vite dev HMR', () => {
     })
 
     const state = await page.evaluate(() => {
-      const runtimeScript = document.querySelector('script[src="/@id/@master/css.vite/runtime"]')
+      const runtimeScript = document.querySelector('script[src="/@id/@master/css-vite/runtime"]')
       const sheetOwners = Array.from(document.styleSheets).map((sheet) => {
         const owner = sheet.ownerNode as Element | null
         return owner?.id
@@ -102,7 +102,7 @@ describe('Vite dev HMR', () => {
       })
       return {
         display: getComputedStyle(document.querySelector('#probe')!).display,
-        hasRuntimePreload: !!document.head.querySelector('link[rel="modulepreload"][href="/@id/@master/css.vite/runtime"]'),
+        hasRuntimePreload: !!document.head.querySelector('link[rel="modulepreload"][href="/@id/@master/css-vite/runtime"]'),
         runtimeScriptParent: runtimeScript?.parentElement?.tagName,
         runtimeScriptIsLastBodyElement: document.body.lastElementChild === runtimeScript,
         sheetOwners
@@ -141,7 +141,7 @@ describe('Vite dev HMR', () => {
       },
       resolve: {
         alias: {
-          '@master/css.vite/runtime': path.resolve(__dirname, '../src/runtime.ts')
+          '@master/css-vite/runtime': path.resolve(__dirname, '../src/runtime.ts')
         }
       },
       plugins: masterCSS({ mode: 'runtime' })

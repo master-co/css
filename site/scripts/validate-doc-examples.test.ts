@@ -3,8 +3,11 @@ import { readdir, readFile } from 'node:fs/promises'
 import path from 'node:path'
 import { test } from 'node:test'
 import { fileURLToPath } from 'node:url'
-import { extractClassCandidates } from '@master/css-source'
-import { validate } from '@master/css-validator'
+import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
+import type { MasterCSSManifest } from '@master/css-schema/manifest'
+import { createSourceExtractorSync } from '@master/css-tooling/source/node'
+import { createValidatorSync } from '@master/css-tooling/validator/node'
+import validateCSS from '@master/css-tooling/validator/validate-css'
 
 const siteRoot = fileURLToPath(new URL('../', import.meta.url))
 const appRoot = path.join(siteRoot, 'app/[locale]')
@@ -12,6 +15,31 @@ const docSections = new Set(['blog', 'guide', 'messages', 'reference'])
 const visibleSourceFiles = [
   'app/examples/layout-system/page.tsx'
 ]
+const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
+const sourceExtractor = createSourceExtractorSync()
+const validator = createValidatorSync(defaultManifest)
+
+function extractClassCandidates(content: string) {
+  return sourceExtractor.extractClassCandidates(content)
+}
+
+function validate(className: string) {
+  const generated = validator.generate([className]).classes[0]
+  if (!generated?.matched) {
+    return {
+      matched: false,
+      errors: [{
+        class: className,
+        message: `'${className}' is not a valid Master CSS class`,
+        rawMessage: 'Mismatch'
+      }]
+    }
+  }
+  return {
+    matched: true,
+    errors: generated.rules.flatMap((rule) => validateCSS(rule.text))
+  }
+}
 
 interface ExampleCandidate {
   candidate: string
@@ -374,6 +402,7 @@ function isAllowedInvalidCandidate(eachCandidate: ExampleCandidate): boolean {
   if (/^[:@]/.test(candidate)) return true
   if (candidate.includes('`') || candidate.includes('…') || /[<>]/.test(candidate)) return true
   if (candidate === 'light' || candidate === 'dark') return true
+  if (/:\$[A-Za-z_][\w-]*(?=[:@!]|$)/.test(candidate)) return true
   if (isExpectedDiagnostic(candidate, eachCandidate.file)) return true
   if (isExpectedBareSelectorTarget(candidate, eachCandidate.file)) return true
   if (isLocallyDefinedClass(candidate, eachCandidate.context)) return true

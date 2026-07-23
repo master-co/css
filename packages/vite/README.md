@@ -20,11 +20,11 @@
       <img alt="NPM Version" src="https://img.shields.io/github/v/release/master-co/css?include_prereleases&color=f6f7f8&label=&style=for-the-badge&logo=github">
     </picture>
   </a>
-  <a aria-label="NPM Package" href="https://www.npmjs.com/package/@master/css.vite">
+  <a aria-label="NPM Package" href="https://www.npmjs.com/package/@master/css-vite">
     <picture>
-      <source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/npm/dm/@master/css.vite?color=212022&label=%20&logo=npm&style=for-the-badge">
-      <source media="(prefers-color-scheme: light)" srcset="https://img.shields.io/npm/dm/@master/css.vite?color=f6f7f8&label=%20&logo=npm&style=for-the-badge">
-      <img alt="NPM package ( download / month )" src="https://img.shields.io/npm/dm/@master/css.vite?color=f6f7f8&label=%20&logo=npm&style=for-the-badge">
+      <source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/npm/dm/@master/css-vite?color=212022&label=%20&logo=npm&style=for-the-badge">
+      <source media="(prefers-color-scheme: light)" srcset="https://img.shields.io/npm/dm/@master/css-vite?color=f6f7f8&label=%20&logo=npm&style=for-the-badge">
+      <img alt="NPM package ( download / month )" src="https://img.shields.io/npm/dm/@master/css-vite?color=f6f7f8&label=%20&logo=npm&style=for-the-badge">
     </picture>
   </a>
   <a aria-label="Discord Community" href="https://discord.gg/sZNKpAAAw6">
@@ -55,13 +55,13 @@
 ## Installation
 
 ```bash
-npm install @master/css.vite
+npm install @master/css-vite
 ```
 
 ## Usage
 
 ```js
-import masterCSS from '@master/css.vite'
+import masterCSS from '@master/css-vite'
 
 /** @type {import('vite').UserConfig} */
 const config = {
@@ -84,7 +84,7 @@ Add the client type reference when TypeScript source files import Master CSS vir
 
 ```ts
 /// <reference types="vite/client" />
-/// <reference types="@master/css-integration/client" />
+/// <reference types="@master/css/client" />
 ```
 
 ## Master CSS imports
@@ -110,7 +110,7 @@ Use these virtual modules when application code should receive the same manifest
 
 In production `runtime` mode, the plugin modulepreloads the emitted manifest JSON module when it also injects the runtime script. `injectRuntime: false` disables both automatic runtime injection and the manifest JSON modulepreload.
 
-The browser runtime entry is available as `@master/css.vite/runtime` for official integrations that need to inject the same Vite-managed runtime startup module.
+The browser runtime entry is available as `@master/css-vite/runtime` for official integrations that need to inject the same Vite-managed runtime startup module.
 
 ## Options
 

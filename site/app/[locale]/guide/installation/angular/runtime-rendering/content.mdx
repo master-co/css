@@ -42,7 +42,8 @@
          import defaultManifest from '@master/css-preset/default-manifest.json' with { type: 'json' }; // [!code ++]
          import CSSRuntime from '@master/css-runtime'; // [!code ++]
 
-         CSSRuntime.create({ manifest: defaultManifest }).observe(); // [!code ++]
+         const cssRuntime = await CSSRuntime.start({ manifest: defaultManifest }); // [!code ++]
+         cssRuntime.observe(); // [!code ++]
 
          platformBrowserDynamic().bootstrapModule(AppModule)
            .catch(err => console.error(err));

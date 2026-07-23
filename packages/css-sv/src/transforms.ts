@@ -3,10 +3,10 @@ import type { Workspace } from 'sv'
 
 export const MASTER_CSS_PACKAGE = '@master/css'
 export const MASTER_CSS_VERSION = 'rc'
-export const MASTER_CSS_SVELTE_PACKAGE = '@master/css.svelte'
+export const MASTER_CSS_SVELTE_PACKAGE = '@master/css-svelte'
 export const MASTER_CSS_SVELTE_VERSION = 'rc'
-export const MASTER_CSS_SVELTE_VITE_IMPORT = '@master/css.svelte/vite'
-export const MASTER_CSS_SVELTE_HOOK_IMPORT = '@master/css.svelte/hooks.server'
+export const MASTER_CSS_SVELTE_VITE_IMPORT = '@master/css-svelte/vite'
+export const MASTER_CSS_SVELTE_HOOK_IMPORT = '@master/css-svelte/hooks.server'
 
 const MASTER_CSS_VITE_PLUGIN_NAME = 'masterCSS'
 const MASTER_CSS_IMPORTED_HANDLE_NAME = 'masterCSSSvelteHandle'

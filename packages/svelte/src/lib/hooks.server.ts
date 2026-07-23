@@ -1,4 +1,4 @@
-/// <reference types="@master/css-integration/client" />
+/// <reference types="@master/css/client" />
 
 import manifest from 'virtual:master-css-manifest'
 import emittedGlobals from 'virtual:master-css-emitted-globals'

@@ -4,7 +4,7 @@
 An integration started without finding a project CSS entry in the current project directory.
 
 ```txt
-[@master/css.vite] Master CSS entry was not found in /path/to/project.
+[@master/css-vite] Master CSS entry was not found in /path/to/project.
 Create /path/to/project/index.css and mark it as the project entry, for example:
   @import "@master/css";
   @import "./src/globals.css";
@@ -51,7 +51,8 @@ If runtime code should intentionally use one CSS resource instead of the discove
 import CSSRuntime from '@master/css-runtime'
 import manifest from './theme.css?master-css-manifest'
 
-CSSRuntime.create({ manifest }).observe()
+const cssRuntime = await CSSRuntime.start({ manifest })
+cssRuntime.observe()
 ```
 
 For lower-level APIs that accept a compiled manifest directly, pass a `MasterCSSManifest` through their `manifest` option.

@@ -6,7 +6,7 @@ export type { CSSRuntimeCreateOptions, CSSRuntimeStartOptions } from './core'
 export { default as cssRuntime } from './css-runtime'
 export { default as RuntimeUtilityLayer } from './utility-layer'
 
-export type * from './types'
+export type { HydrateResult } from './types/hydrate-result'
 export type { CSSRuntimeDecoratorOptions, CSSRuntimeOptions } from './css-runtime'
 export type { MasterCSSEmittedGlobals } from '@master/css-schema/emitted-globals'
 export type { MasterCSSManifest } from '@master/css-schema/manifest'

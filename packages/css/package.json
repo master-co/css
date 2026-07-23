@@ -1,0 +1,89 @@
+{
+  "name": "@master/css",
+  "type": "module",
+  "engines": {
+    "node": "^24"
+  },
+  "scripts": {
+    "build": "tsdown --config ../../shared/tsdown-package.config.ts",
+    "dev": "tsdown --config ../../shared/tsdown-package.config.ts --watch",
+    "test": "cargo xtask build-native && vitest",
+    "bench": "vitest bench",
+    "type-check": "tsc -b tsconfig.typecheck.json",
+    "lint": "eslint"
+  },
+  "license": "MIT",
+  "description": "The CSS language and framework for rapidly building modern and high-performance websites",
+  "author": "Aoyue Design LLC.",
+  "funding": "https://rc.css.master.co/sponsor",
+  "homepage": "https://css.master.co",
+  "bugs": {
+    "url": "https://github.com/master-co/css/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/master-co/css.git",
+    "directory": "packages/css"
+  },
+  "keywords": [
+    "style",
+    "styles",
+    "html",
+    "variants",
+    "virtual",
+    "virtual-css",
+    "utility",
+    "css",
+    "ui",
+    "lightweight",
+    "class",
+    "webpack",
+    "plugin",
+    "integration",
+    "vite",
+    "parcel",
+    "build-tools",
+    "mastercss"
+  ],
+  "sideEffects": [
+    "./src/*.css"
+  ],
+  "style": "./src/index.css",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "style": "./src/index.css",
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    },
+    "./node": {
+      "types": "./dist/node.d.ts",
+      "import": "./dist/node.js",
+      "default": "./dist/node.js"
+    },
+    "./client": {
+      "types": "./client.d.ts"
+    },
+    "./index.css": "./src/index.css",
+    "./base.css": "./src/base.css",
+    "./theme.css": "./src/theme.css",
+    "./variants.css": "./src/variants.css",
+    "./utilities.css": "./src/utilities.css"
+  },
+  "files": [
+    "client.d.ts",
+    "dist",
+    "src/*.css"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "dependencies": {
+    "@master/css-native": "workspace:*",
+    "@master/css-schema": "workspace:*",
+    "@master/css-wasm-runtime": "workspace:*",
+    "@master/css-preset": "workspace:*"
+  }
+}

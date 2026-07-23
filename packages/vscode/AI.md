@@ -14,7 +14,7 @@
 ## Does Not Own
 
 - Language server feature semantics.
-- TextMate grammar source; it comes from `@master/css-language/syntaxes/master-css.tmLanguage.json`.
+- TextMate grammar source; it comes from `@master/css-language-service/syntaxes/master-css.tmLanguage.json`.
 - CSS custom-data or proposed API contribution flows.
 - Native runtime package implementation.
 
@@ -58,10 +58,10 @@
 ## Validation
 
 ```sh
-pnpm --filter master-css-vscode test
-pnpm --filter master-css-vscode lint
-pnpm --filter master-css-vscode type-check
-pnpm --filter master-css-vscode build
+pnpm --filter @master/css-vscode test
+pnpm --filter @master/css-vscode lint
+pnpm --filter @master/css-vscode type-check
+pnpm --filter @master/css-vscode build
 ```
 
-Run `pnpm --filter master-css-vscode vscode:package -- --target darwin-arm64` for packaging changes.
+Run `pnpm --filter @master/css-vscode vscode:package -- --target darwin-arm64` for packaging changes.

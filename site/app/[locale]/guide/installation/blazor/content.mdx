@@ -21,7 +21,7 @@ Use Vite to build the browser runtime entry for a Blazor app. Vite owns the fron
     <StepR>
       ```bash name=Terminal
       npm init -y
-      npm install -D vite @master/css.vite@rc
+      npm install -D vite @master/css-vite@rc
       ```
     </StepR>
   </Step>
@@ -33,7 +33,7 @@ Use Vite to build the browser runtime entry for a Blazor app. Vite owns the fron
     <StepR>
       ```ts name=vite.config.ts
       import { defineConfig } from 'vite'
-      import masterCSS from '@master/css.vite'
+      import masterCSS from '@master/css-vite'
 
       export default defineConfig({
         plugins: [
@@ -61,7 +61,7 @@ Use Vite to build the browser runtime entry for a Blazor app. Vite owns the fron
     </StepL>
     <StepR>
       ```ts name=src/main.ts
-      import '@master/css.vite/runtime'
+      import '@master/css-vite/runtime'
       import './app.css'
       ```
 
@@ -83,7 +83,7 @@ Use Vite to build the browser runtime entry for a Blazor app. Vite owns the fron
           "watch:assets": "vite build --watch"
         },
         "devDependencies": {
-          "@master/css.vite": "rc",
+          "@master/css-vite": "rc",
           "vite": "latest"
         }
       }

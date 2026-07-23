@@ -1,7 +1,7 @@
 import { test } from 'vitest'
 import { withFixture } from './setup'
 import { ACTIVE_SEMANTIC_TOKENS_REQUEST, DOCUMENT_SEMANTIC_TOKENS_REQUEST } from '../src'
-import { SEMANTIC_TOKEN_MODIFIERS, SEMANTIC_TOKEN_TYPES } from '@master/css-language'
+import { SEMANTIC_TOKEN_MODIFIERS, SEMANTIC_TOKEN_TYPES } from '@master/css-tooling/language'
 
 function hasTokenType(data: number[], type: string) {
   return data.some((_, index) =>

@@ -19,6 +19,12 @@ function removeNormalizedPackageFileWarning(ctx: BuildContext) {
 }
 
 export default defineBuildConfig({
+  rollup: {
+    inlineDependencies: [
+      /^@master\/css-internal-integration(?:\/|$)/,
+      /^@master\/css-schema\//
+    ]
+  },
   hooks: {
     async 'build:done'(ctx) {
       await normalizeNuxtModuleBuild(ctx.options.rootDir)

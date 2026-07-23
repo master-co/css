@@ -1,6 +1,6 @@
 # Master CSS Astro example
 
-This example uses `@master/css.astro` with its default `progressive` mode.
+This example uses `@master/css-astro` with its default `progressive` mode.
 
 The integration:
 

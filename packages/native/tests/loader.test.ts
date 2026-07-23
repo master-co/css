@@ -10,6 +10,10 @@ import {
   resolveNativeCLIPath,
   resolveNativeTarget
 } from '../src'
+import {
+  loadNativeBinding as loadBrowserNativeBinding,
+  NativeBindingError as BrowserNativeBindingError
+} from '../src/browser'
 
 describe('native target resolution', () => {
   it('resolves the eight Tier-1 packages', () => {
@@ -31,6 +35,13 @@ describe('native target resolution', () => {
   it('recognizes the Node addon kill switch', () => {
     expect(nativeAddonsDisabled(['--no-addons'])).toBe(true)
     expect(nativeAddonsDisabled([])).toBe(false)
+  })
+
+  it('keeps the browser loader error contract aligned with the Node entry', () => {
+    expect(() => loadBrowserNativeBinding({ required: true }))
+      .toThrowError(expect.objectContaining<Partial<BrowserNativeBindingError>>({
+        code: 'NATIVE_UNAVAILABLE'
+      }))
   })
 
   it('uses platform-specific native executable names', () => {

@@ -1,6 +1,9 @@
 {
   "name": "@master/css-wasm-runtime",
   "type": "module",
+  "engines": {
+    "node": "^24"
+  },
   "scripts": {
     "build": "tsdown --config ../../shared/tsdown-package.config.ts",
     "dev": "tsdown --config ../../shared/tsdown-package.config.ts --watch",
@@ -11,8 +14,6 @@
   "license": "MIT",
   "description": "Internal Master CSS browser runtime Wasm loader.",
   "sideEffects": false,
-  "main": "./dist/index.js",
-  "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
@@ -30,6 +31,6 @@
     "provenance": true
   },
   "dependencies": {
-    "@master/css-schema": "workspace:^"
+    "@master/css-schema": "workspace:*"
   }
 }

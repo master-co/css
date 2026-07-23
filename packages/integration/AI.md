@@ -1,14 +1,13 @@
-# AI Notes For `@master/css-integration`
+# AI Notes For `@master/css-internal-integration`
 
 ## Responsibility
 
-`@master/css-integration` owns adapter-neutral contracts shared by official build and framework integrations.
+`@master/css-internal-integration` owns adapter-neutral contracts shared by official build and framework integrations. It is repository-private and bundled into published consumers.
 
 ## Owns
 
 - Virtual module ids and `?master-css-manifest` request helpers.
 - Generated manifest and emittedGlobals module source helpers.
-- Ambient client module declarations.
 - Explicit Node helper subpaths.
 
 ## Does Not Own
@@ -17,12 +16,17 @@
 - Project manifest discovery or CSS import graph resolution.
 - Extraction, runtime hydration, server rendering, scanner state, or compiler lowering.
 - Browser runtime boot code.
+- Public ambient module declarations; `@master/css/client` owns them.
 - Browser-safe helpers that import `node:*`, use `Buffer`, or read `process`.
 
-## Public Surface
+## Internal Surface
 
-- Browser-safe: `.`, `./client`, `./module`, `./manifest-module`, `./manifest-facade`, `./style-module`, `./emitted-globals-module`.
+- Browser-safe: `.`, `./module`, `./manifest-module`, `./manifest-facade`, `./style-module`, `./emitted-globals-module`.
 - Node-only: `./node`.
+
+These subpaths exist only for repository build boundaries. Do not document them as a
+third-party API, publish this package, or leave its specifier in emitted JavaScript or
+declarations.
 
 ## Key Files
 
@@ -40,6 +44,7 @@
 - Virtual id and generated import specifier compatibility.
 - Keeping the package dependency-light and adapter-neutral.
 - Shared protocol changes affecting multiple integrations.
+- Accidentally exposing the package as a published dependency or third-party SPI.
 
 ## Safe Changes
 
@@ -55,8 +60,8 @@
 ## Validation
 
 ```sh
-pnpm --filter @master/css-integration test
-pnpm --filter @master/css-integration lint
-pnpm --filter @master/css-integration type-check
-pnpm --filter @master/css-integration build
+pnpm --filter @master/css-internal-integration test
+pnpm --filter @master/css-internal-integration lint
+pnpm --filter @master/css-internal-integration type-check
+pnpm --filter @master/css-internal-integration build
 ```

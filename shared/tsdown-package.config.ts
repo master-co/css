@@ -12,9 +12,15 @@ const packageRoot = process.cwd()
 const packageJSON = JSON.parse(readFileSync(resolve(packageRoot, 'package.json'), 'utf8')) as PackageJSON
 
 const entryByPackageName: Record<string, TsdownInputOption> = {
-  '@master/css-lexer': ['src/index.ts', 'src/node.ts', 'src/browser.ts'],
-  '@master/eslint-plugin-css': ['src/**/*.{js,ts}']
+  '@master/eslint-plugin-css': ['src/**/*.{js,ts}'],
+  '@master/css-svelte': ['src/lib/*.ts']
 }
+
+const rootByPackageName: Record<string, string> = {
+  '@master/css-svelte': 'src/lib'
+}
+
+const internalIntegrationPattern = /^@master\/css-internal-integration(?:\/|$)/
 
 const externalLanguageSyntaxJSON: TsdownPlugin = {
   name: 'external-language-syntax-json',
@@ -75,19 +81,20 @@ export default defineConfig({
   cwd: packageRoot,
   entry: entryByPackageName[packageJSON.name || ''] || ['src/**/*.ts', '!src/**/*.d.ts'],
   unbundle: true,
-  root: 'src',
+  root: rootByPackageName[packageJSON.name || ''] || 'src',
   tsconfig: './tsconfig.prod.json',
   fixedExtension: false,
   deps: {
-    skipNodeModulesBundle: true,
+    alwaysBundle: [internalIntegrationPattern],
     dts: {
+      alwaysBundle: [internalIntegrationPattern],
       neverBundle: [/^[^./]/, /^\.{1,2}\//]
     }
   },
   plugins: [
     preserveDeclarationRelativeImports,
     externalVirtualModules,
-    ...(packageJSON.name === '@master/css-language' ? [externalLanguageSyntaxJSON] : [])
+    ...(packageJSON.name === '@master/css-language-service' ? [externalLanguageSyntaxJSON] : [])
   ],
   dts: Boolean(packageJSON.types || hasExportTypes(packageJSON.exports))
 })

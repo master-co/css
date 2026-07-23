@@ -70,6 +70,30 @@ test('loads the isolated compiler Wasm surface', async () => {
       }]
     }
   })
+  expect(toPlainValue(compiler.compileManifestInput({
+    utilities: [{
+      name: 'text-<size>',
+      type: 'pattern',
+      pattern: { prefix: 'text-', values: ['sm'] },
+      declarations: {
+        'font-size': '--value()',
+        'line-height': 'calc(--value() * 1.5)'
+      }
+    }]
+  }))).toMatchObject({
+    manifest: {
+      utilities: [{
+        emit: {
+          rules: [{
+            declarations: {
+              'font-size': null,
+              'line-height': ['calc(', null, ' * 1.5)']
+            }
+          }]
+        }
+      }]
+    }
+  })
   expect(compiler.resolveCSSImportGraph({
     entry: '/entry.css',
     files: {

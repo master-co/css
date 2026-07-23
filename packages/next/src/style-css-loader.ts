@@ -8,9 +8,9 @@ import {
   resolveMasterStyleSource,
   transformLocalStyleCSS,
   collectStyleCSSDependencies
-} from '@master/css-stylesheet'
-import { loadProjectManifest } from '@master/css-project/manifest'
-import { findCSSManifestEntryFiles } from '@master/css-project/entries'
+} from '@master/css-compiler/stylesheet'
+import { loadProjectManifest } from '@master/css-compiler/project'
+import { findCSSManifestEntryFiles } from '@master/css-compiler/project/entries'
 import { inspectCSS } from '@master/css-compiler'
 
 interface LoaderContext {
@@ -124,7 +124,7 @@ async function transformStyleSource(resourcePath: string, source: string, projec
 export default function masterCSSStyleCSSLoader(this: LoaderContext, source: string) {
   const callback = this.async?.()
   if (!callback) {
-    throw new Error('[@master/css.next] Style CSS loader requires an async loader context.')
+    throw new Error('[@master/css-next] Style CSS loader requires an async loader context.')
   }
   const dependencies = shouldAddStyleDependencies(this.resourcePath, source, this.rootContext)
     ? new Set(collectStyleCSSDependencies(this.resourcePath, source, this.rootContext))

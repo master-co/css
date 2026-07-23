@@ -15,7 +15,7 @@ corepack pnpm --version
 - Verify VSCE can publish with Microsoft Entra ID after Azure login:
 
 ```sh
-corepack pnpm --filter master-css-vscode exec vsce verify-pat --azure-credential masterco
+corepack pnpm --filter @master/css-vscode exec vsce verify-pat --azure-credential masterco
 ```
 
 If the publisher has not authorized the managed identity, Marketplace returns `InvalidAccessException: The requested operation is not allowed.`

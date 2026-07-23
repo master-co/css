@@ -1,6 +1,6 @@
 Vite is one of the best foundations for modern frontend work: fast startup, predictable module graph, first-class plugins, and a build pipeline that is easy to extend without making the application feel heavy.
 
-`@master/css.vite` brings Master CSS into that pipeline as a first-class Vite integration. Instead of choosing between several setup guides, manual runtime imports, scanning scripts, and HTML post-processing steps, you install one plugin and choose the rendering model that matches your application.
+`@master/css-vite` brings Master CSS into that pipeline as a first-class Vite integration. Instead of choosing between several setup guides, manual runtime imports, scanning scripts, and HTML post-processing steps, you install one plugin and choose the rendering model that matches your application.
 
 The goal is simple: keep Master CSS authoring as direct as markup, while letting Vite own the integration work.
 
@@ -12,7 +12,7 @@ The goal is simple: keep Master CSS authoring as direct as markup, while letting
 
 The original Vite integration focused on Static Rendering. It worked well for projects that wanted a compiled stylesheet, but the rest of the Master CSS rendering story still required manual setup.
 
-The new `@master/css.vite` plugin unifies the modes behind one entry point:
+The new `@master/css-vite` plugin unifies the modes behind one entry point:
 
 - `runtime`: injects the Master CSS runtime and config so styles can be generated in the browser.
 - `static`: wires Master CSS stylesheet imports into the static rendering workflow.
@@ -30,14 +30,14 @@ Master CSS now lets the Vite project choose.
 If you don't have a project yet, create one using `npm create vite@latest my-app`.
 
 ```bash action=install
-@master/css.vite@rc
+@master/css-vite@rc
 ```
 
 Then register the plugin:
 
 ```js name=vite.config.js
 import { defineConfig } from 'vite'
-import masterCSS from '@master/css.vite' // [!code highlight]
+import masterCSS from '@master/css-vite' // [!code highlight]
 
 export default defineConfig({
   plugins: [
@@ -64,7 +64,7 @@ Use runtime mode when you want the simplest integration and maximum flexibility.
 
 ```js name=vite.config.js
 import { defineConfig } from 'vite'
-import masterCSS from '@master/css.vite'
+import masterCSS from '@master/css-vite'
 
 export default defineConfig({
   plugins: [
@@ -79,7 +79,7 @@ Use static mode when your classes are visible in source and you want a compiled 
 
 ```js name=vite.config.js
 import { defineConfig } from 'vite'
-import masterCSS from '@master/css.vite'
+import masterCSS from '@master/css-vite'
 
 export default defineConfig({
   plugins: [
@@ -96,7 +96,7 @@ For rendered pages, the critical CSS stays inline in `style#master-css`. The pag
 
 ```js name=vite.config.js
 import { defineConfig } from 'vite'
-import masterCSS from '@master/css.vite'
+import masterCSS from '@master/css-vite'
 
 export default defineConfig({
   plugins: [
@@ -111,7 +111,7 @@ Use progressive mode when you want the first HTML response to carry the CSS it n
 
 ```js name=vite.config.js
 import { defineConfig } from 'vite'
-import masterCSS from '@master/css.vite'
+import masterCSS from '@master/css-vite'
 
 export default defineConfig({
   plugins: [
@@ -128,7 +128,7 @@ In progressive mode, the runtime imports the page hydration manifest as a JSON m
 
 ## What the plugin handles
 
-`@master/css.vite` is not just a wrapper around an import. It participates in the Vite pipeline:
+`@master/css-vite` is not just a wrapper around an import. It participates in the Vite pipeline:
 
 - resolves the compiled MasterCSSManifest as a virtual module;
 - detects common Vite entry modules;
@@ -145,17 +145,17 @@ That is the difference between "Master CSS works in a Vite app" and "Master CSS 
 
 ## Built for Vite-powered frameworks
 
-Vite is also the build foundation for many frameworks. `@master/css.vite` is the lower-level integration that makes the core Vite workflow work well, while framework packages can provide a more native setup when the framework has its own conventions.
+Vite is also the build foundation for many frameworks. `@master/css-vite` is the lower-level integration that makes the core Vite workflow work well, while framework packages can provide a more native setup when the framework has its own conventions.
 
 [Nuxt](/guide/installation/nuxtjs) uses a module:
 
 ```ts name=nuxt.config.ts
 export default defineNuxtConfig({
   modules: [
-    '@master/css.nuxt' // progressive by default [!code highlight]
-    // ['@master/css.nuxt', { mode: 'static' }]
-    // ['@master/css.nuxt', { mode: 'runtime' }]
-    // ['@master/css.nuxt', { mode: 'pre-render' }]
+    '@master/css-nuxt' // progressive by default [!code highlight]
+    // ['@master/css-nuxt', { mode: 'static' }]
+    // ['@master/css-nuxt', { mode: 'runtime' }]
+    // ['@master/css-nuxt', { mode: 'pre-render' }]
   ]
 })
 ```
@@ -163,7 +163,7 @@ export default defineNuxtConfig({
 [Astro](/guide/installation/astro) uses an integration:
 
 ```ts name=astro.config.ts
-import masterCSS from '@master/css.astro'
+import masterCSS from '@master/css-astro'
 
 export default defineConfig({
   integrations: [

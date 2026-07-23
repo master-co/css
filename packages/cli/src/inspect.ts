@@ -1,7 +1,7 @@
 import {
   createMasterCSSInspectionReport,
   type MasterCSSInspectionReport
-} from '@master/css-diagnostics'
+} from '@master/css-compiler/diagnostics'
 import path from 'node:path'
 
 export interface InspectOptions {

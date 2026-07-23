@@ -73,7 +73,7 @@ import CSSLanguageService from '@master/css-language-service'
 const languageService = new CSSLanguageService(customSettings)
 ```
 
-`CSSLanguageService` provides stateful completion, hover, color, color presentation, and semantic token features around the editor-neutral primitives in `@master/css-language`.
+`CSSLanguageService` provides stateful completion, hover, color, color presentation, and semantic token features around the editor-neutral primitives in `@master/css-tooling/language`.
 
 ### Semantic tokens
 
@@ -126,4 +126,4 @@ import { settings } from '@master/css-language-service'
 | `formatDirectives` | `boolean` | `true` | Enables Master CSS directive formatting. |
 | `embeddedSyntaxHighlighting` | `'active' \| 'always' \| 'off'` | `'active'` | Controls embedded semantic token highlighting. |
 
-Use `@master/css-language` directly for browser helpers, Shiki integration, TextMate grammar assets, and raw class-position scanning.
+Use `@master/css-tooling/language` directly for browser helpers, Shiki integration, TextMate grammar assets, and raw class-position scanning.

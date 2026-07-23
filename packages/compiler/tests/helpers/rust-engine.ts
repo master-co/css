@@ -1,4 +1,4 @@
-import { createEngineSync } from '@master/css-engine/node'
+import { createEngineSync } from '@master/css/node'
 import type { MasterCSSManifest, MasterCSSManifestUtilityLayerName } from '@master/css-schema/manifest'
 
 export function createTestCSS(manifest: MasterCSSManifest) {

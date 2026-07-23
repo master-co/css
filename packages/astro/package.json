@@ -1,6 +1,9 @@
 {
-  "name": "@master/css.astro",
+  "name": "@master/css-astro",
   "type": "module",
+  "engines": {
+    "node": "^24"
+  },
   "scripts": {
     "build": "tsdown --config ../../shared/tsdown-package.config.ts",
     "dev": "tsdown --config ../../shared/tsdown-package.config.ts --watch",
@@ -35,10 +38,6 @@
     "astro-plugin"
   ],
   "sideEffects": false,
-  "main": "./dist/index.js",
-  "module": "./dist/index.js",
-  "jsnext:main": "./dist/index.js",
-  "esnext": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
@@ -64,13 +63,13 @@
     "vite": ">=6"
   },
   "dependencies": {
-    "@master/css": "workspace:^",
-    "@master/css-integration": "workspace:^",
-    "@master/css-server": "workspace:^",
-    "@master/css.vite": "workspace:^",
-    "@master/css-schema": "workspace:^"
+    "@master/css": "workspace:*",
+    "@master/css-server": "workspace:*",
+    "@master/css-vite": "workspace:*",
+    "@master/css-schema": "workspace:*"
   },
   "devDependencies": {
-    "@master/css-preset": "workspace:^"
+    "@master/css-preset": "workspace:*",
+    "@master/css-internal-integration": "workspace:*"
   }
 }

@@ -20,7 +20,7 @@ export default defineConfig({
     const twice = addMasterCSSVitePlugin(once)
 
     expect(twice).toBe(once)
-    expect(once).toContain(`import masterCSS from '@master/css.svelte/vite';`)
+    expect(once).toContain(`import masterCSS from '@master/css-svelte/vite';`)
     expect(once).toContain('plugins: [sveltekit(), masterCSS()]')
   })
 
@@ -44,7 +44,7 @@ export default defineConfig({
   test('creates a server hook when none exists', () => {
     const output = addMasterCSSServerHook('', 'ts')
 
-    expect(output).toContain(`import masterCSSSvelteHandle from '@master/css.svelte/hooks.server';`)
+    expect(output).toContain(`import masterCSSSvelteHandle from '@master/css-svelte/hooks.server';`)
     expect(output).toContain(`import type { Handle } from '@sveltejs/kit';`)
     expect(output).toContain('const masterCSSHandle: Handle = masterCSSSvelteHandle;')
     expect(output).toContain('export const handle')

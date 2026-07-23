@@ -3,7 +3,7 @@ import CSSRuntime, { type MasterCSSManifest } from '../../src'
 
 const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
 
-// CSSRuntime.create({
+// const cssRuntime = await CSSRuntime.start({
 //     manifest: {
 //         version: 1,
 //         utilities: [
@@ -17,7 +17,8 @@ const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
 //         }
 //         ]
 //     }
-// }).observe()
+// })
+// cssRuntime.observe()
 
 // const createElement = (name: string) => {
 //     const el = document.createElement('div')
@@ -45,8 +46,9 @@ const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
 /* iframe test */
 const iframe = document.querySelector('iframe')
 if (iframe?.contentDocument) {
-  CSSRuntime.create({
+  const cssRuntime = await CSSRuntime.start({
     root: iframe.contentDocument,
     manifest: defaultManifest
-  }).observe()
+  })
+  cssRuntime.observe()
 }

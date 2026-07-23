@@ -1,7 +1,7 @@
 import { existsSync } from 'node:fs'
-import { createRequire } from 'node:module'
-import { dirname, resolve } from 'node:path'
-import { fileURLToPath } from 'node:url'
+import { findPackageJSON } from 'node:module'
+import { dirname, parse, resolve } from 'node:path'
+import { fileURLToPath, pathToFileURL } from 'node:url'
 import { spawnSync } from 'node:child_process'
 import {
   assertMasterCSSBindingInfo,
@@ -10,7 +10,10 @@ import {
   MASTER_CSS_MANIFEST_VERSION,
   type MasterCSSBindingInfo
 } from '@master/css-schema'
+import { NativeBindingError } from './errors'
 import { MASTER_CSS_PACKAGE_VERSION } from './version'
+
+export { NativeBindingError, type NativeLoadFailureCode } from './errors'
 
 export {
   MASTER_CSS_BINDING_ABI_VERSION,
@@ -149,19 +152,6 @@ export interface NativeBinding {
   EngineSession: new (manifestJSON: string, emittedGlobalsJSON?: string) => NativeEngineSession
 }
 
-export type NativeLoadFailureCode = 'NATIVE_UNAVAILABLE' | 'NATIVE_LOAD_FAILED'
-
-export class NativeBindingError extends Error {
-  constructor(
-    public readonly code: NativeLoadFailureCode,
-    message: string,
-    options?: ErrorOptions
-  ) {
-    super(message, options)
-    this.name = 'NativeBindingError'
-  }
-}
-
 export type NativeLibc = 'glibc' | 'musl'
 
 export interface NativeTarget {
@@ -201,16 +191,56 @@ export function getNativeCLIExecutableName(platform: NodeJS.Platform = process.p
   return platform === 'win32' ? 'mcss.exe' : 'mcss'
 }
 
-function resolveDevelopmentArtifact(require: NodeJS.Require, name: string) {
+function runtimeResolutionBases() {
+  const bases = [import.meta.url]
+  if (process.argv[1]) bases.push(pathToFileURL(resolve(process.argv[1])).href)
+  bases.push(pathToFileURL(resolve(process.cwd(), 'package.json')).href)
+  return [...new Set(bases)]
+}
+
+function resolveDevelopmentArtifact(name: string) {
   try {
-    const packageEntry = require.resolve('@master/css-native')
-    const artifact = resolve(dirname(packageEntry), '../artifacts', name)
-    if (existsSync(artifact)) return artifact
+    const packageArtifact = resolve(dirname(fileURLToPath(import.meta.url)), '../artifacts', name)
+    if (existsSync(packageArtifact)) return packageArtifact
   } catch {
-    // Source tests can execute before the package entry has been built.
+    // A server bundler may replace import.meta.url with a non-file module identifier.
   }
-  const sourceArtifact = resolve(fileURLToPath(new URL(`../artifacts/${name}`, import.meta.url)))
-  return existsSync(sourceArtifact) ? sourceArtifact : undefined
+
+  const startDirectories = [process.cwd()]
+  if (process.argv[1]) startDirectories.push(dirname(resolve(process.argv[1])))
+  for (const startDirectory of new Set(startDirectories)) {
+    let directory = startDirectory
+    const root = parse(directory).root
+    while (true) {
+      for (const artifact of [
+        resolve(directory, 'node_modules/@master/css-native/artifacts', name),
+        resolve(directory, 'packages/native/artifacts', name)
+      ]) {
+        if (existsSync(artifact)) return artifact
+      }
+      if (directory === root) break
+      directory = dirname(directory)
+    }
+  }
+}
+
+function resolveTargetArtifact(packageName: string, name: string) {
+  for (const base of runtimeResolutionBases()) {
+    try {
+      const packageJSON = findPackageJSON(packageName, base)
+      if (!packageJSON) continue
+      const artifact = resolve(dirname(packageJSON), name)
+      if (existsSync(artifact)) return artifact
+    } catch {
+      // Try the next real runtime base when a bundler replaced import.meta.url.
+    }
+  }
+}
+
+function loadNativeAddon(source: string): NativeBinding {
+  const nativeModule = { exports: {} } as NodeModule
+  process.dlopen(nativeModule, source)
+  return nativeModule.exports as NativeBinding
 }
 
 export function resolveNativeCLIPath(options: { required?: boolean, executablePath?: string } = {}) {
@@ -219,10 +249,9 @@ export function resolveNativeCLIPath(options: { required?: boolean, executablePa
     throw new NativeBindingError('NATIVE_UNAVAILABLE', 'Native executables are disabled by --no-addons.')
   }
 
-  const require = createRequire(import.meta.url)
   const executableName = getNativeCLIExecutableName()
   const configuredPath = options.executablePath || process.env.MASTER_CSS_NATIVE_CLI_PATH
-  const developmentPath = resolveDevelopmentArtifact(require, executableName)
+  const developmentPath = resolveDevelopmentArtifact(executableName)
   if (configuredPath) {
     if (!existsSync(configuredPath)) {
       throw new NativeBindingError(
@@ -243,8 +272,8 @@ export function resolveNativeCLIPath(options: { required?: boolean, executablePa
     )
   }
   try {
-    const executablePath = resolve(dirname(require.resolve(target.packageName)), executableName)
-    if (!existsSync(executablePath)) {
+    const executablePath = resolveTargetArtifact(target.packageName, executableName)
+    if (!executablePath) {
       throw new Error(`Missing ${executableName}`)
     }
     return executablePath
@@ -337,15 +366,21 @@ export function loadNativeBinding(options: LoadNativeBindingOptions = {}): Loade
     throw new NativeBindingError('NATIVE_UNAVAILABLE', 'Native addons are disabled by --no-addons.')
   }
 
-  const require = createRequire(import.meta.url)
   const configuredPath = options.bindingPath || process.env.MASTER_CSS_NATIVE_BINDING_PATH
-  const developmentPath = resolveDevelopmentArtifact(require, 'mastercss.node')
+  const developmentPath = resolveDevelopmentArtifact('mastercss.node')
   const target = resolveNativeTarget()
+  const targetPath = target && resolveTargetArtifact(target.packageName, 'mastercss.node')
   const source = configuredPath
     || developmentPath
-    || target?.packageName
+    || targetPath
 
   if (!source) {
+    if (target) {
+      throw new NativeBindingError(
+        'NATIVE_LOAD_FAILED',
+        `Cannot resolve the expected Master CSS native binding: ${target.packageName}`
+      )
+    }
     if (!options.required) return
     throw new NativeBindingError(
       'NATIVE_UNAVAILABLE',
@@ -354,7 +389,7 @@ export function loadNativeBinding(options: LoadNativeBindingOptions = {}): Loade
   }
 
   try {
-    const binding = require(source) as NativeBinding
+    const binding = loadNativeAddon(source)
     return { binding, info: assertBindingInfo(binding, source), source }
   } catch (cause) {
     if (cause instanceof NativeBindingError) throw cause

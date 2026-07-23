@@ -276,7 +276,7 @@ function filesForFramework(root: string, framework: Framework, warnings: string[
       if (viteConfigPath) {
         files.unshift(planTextFile(root, viteConfigPath, addMasterCSSStaticVitePlugin, createStaticViteConfig(), 'Register the Master CSS Vite plugin in static mode.'))
       } else {
-        warnings.push('No vite.config.ts or vite.config.js was found. Add @master/css.vite to the Laravel Vite config manually after setup.')
+        warnings.push('No vite.config.ts or vite.config.js was found. Add @master/css-vite to the Laravel Vite config manually after setup.')
       }
       return files
     }
@@ -285,7 +285,7 @@ function filesForFramework(root: string, framework: Framework, warnings: string[
         planTextFile(root, firstExistingPath(root, ['vite.config.ts', 'vite.config.js', 'vite.config.mjs'], 'vite.config.ts'), (content) => addMasterCSSVitePlugin(content, mode), createViteConfig(mode), 'Register the Master CSS Vite plugin.'),
         planTextFile(root, 'src/index.css', addMasterCSSImportToStylesheet, createMasterCSSStylesheet(), 'Create or update the Lit project CSS entry.'),
         planTextFile(root, 'src/vite-env.d.ts', addViteClientTypes, `/// <reference types="vite/client" />
-/// <reference types="@master/css-integration/client" />
+/// <reference types="@master/css/client" />
 `, 'Add Vite and Master CSS integration client types.')
       ]
       const elementPath = findExistingPath(root, ['src/my-element.ts', 'src/my-element.js'])

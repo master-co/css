@@ -19,7 +19,11 @@ fn serialization_error(error: impl ToString) -> JsValue {
 
 fn render_value<T: Serialize>(value: &T) -> Result<JsValue, JsValue> {
     value
-        .serialize(&serde_wasm_bindgen::Serializer::new().serialize_maps_as_objects(true))
+        .serialize(
+            &serde_wasm_bindgen::Serializer::new()
+                .serialize_maps_as_objects(true)
+                .serialize_missing_as_null(true),
+        )
         .map_err(serialization_error)
 }
 
@@ -106,8 +110,7 @@ impl CompilerRenderSession {
 
 #[wasm_bindgen(js_name = inspectCSS)]
 pub fn inspect_css(source: &str) -> Result<JsValue, JsValue> {
-    serde_wasm_bindgen::to_value(&mastercss_compiler::inspect_css(source))
-        .map_err(serialization_error)
+    render_value(&mastercss_compiler::inspect_css(source))
 }
 
 #[wasm_bindgen(js_name = compileNativeCSS)]
@@ -119,7 +122,7 @@ pub fn compile_native_css(source: &str, options: JsValue) -> Result<JsValue, JsV
     };
     let result =
         mastercss_compiler::compile_native_css(source, &options).map_err(compiler_error)?;
-    serde_wasm_bindgen::to_value(&result).map_err(serialization_error)
+    render_value(&result)
 }
 
 #[wasm_bindgen(js_name = compileThemeCSS)]
@@ -169,7 +172,7 @@ pub fn compile_css_directives(source: &str, options: JsValue) -> Result<JsValue,
     };
     let result =
         mastercss_compiler::compile_css_directives(source, &options).map_err(compiler_error)?;
-    serde_wasm_bindgen::to_value(&result).map_err(serialization_error)
+    render_value(&result)
 }
 
 #[wasm_bindgen(js_name = compileManifestInput)]
@@ -184,7 +187,7 @@ pub fn compile_manifest_input(input: JsValue, options: JsValue) -> Result<JsValu
     };
     let result =
         mastercss_compiler::compile_manifest_input(&input, &options).map_err(compiler_error)?;
-    serde_wasm_bindgen::to_value(&result).map_err(serialization_error)
+    render_value(&result)
 }
 
 #[wasm_bindgen(js_name = lowerCSSDirectives)]
@@ -207,7 +210,7 @@ pub fn normalize_manifest_for_json(manifest: JsValue) -> Result<JsValue, JsValue
         .map_err(serialization_error)?;
     let normalized =
         mastercss_compiler::normalize_manifest_for_json(&manifest).map_err(compiler_error)?;
-    serde_wasm_bindgen::to_value(&normalized).map_err(serialization_error)
+    render_value(&normalized)
 }
 
 #[wasm_bindgen(js_name = normalizeDefaultManifestForJSON)]
@@ -216,7 +219,7 @@ pub fn normalize_default_manifest_for_json(manifest: JsValue) -> Result<JsValue,
         .map_err(serialization_error)?;
     let normalized = mastercss_compiler::normalize_default_manifest_for_json(&manifest)
         .map_err(compiler_error)?;
-    serde_wasm_bindgen::to_value(&normalized).map_err(serialization_error)
+    render_value(&normalized)
 }
 
 #[wasm_bindgen(js_name = compileDefaultPresetManifest)]
@@ -225,7 +228,7 @@ pub fn compile_default_preset_manifest(request: JsValue) -> Result<JsValue, JsVa
         .map_err(serialization_error)?;
     let result =
         mastercss_compiler::compile_default_preset_manifest(&request).map_err(compiler_error)?;
-    serde_wasm_bindgen::to_value(&result).map_err(serialization_error)
+    render_value(&result)
 }
 
 #[wasm_bindgen(js_name = resolveCSSImportGraph)]
@@ -234,7 +237,7 @@ pub fn resolve_css_import_graph(request: JsValue) -> Result<JsValue, JsValue> {
         .map_err(serialization_error)?;
     let result =
         mastercss_compiler::resolve_prepared_css_import_graph(&request).map_err(compiler_error)?;
-    serde_wasm_bindgen::to_value(&result).map_err(serialization_error)
+    render_value(&result)
 }
 
 #[wasm_bindgen(js_name = bindingInfo)]

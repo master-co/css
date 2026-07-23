@@ -34,18 +34,17 @@ Preserve dependency direction:
 
 ```txt
 shared / external data
-  -> @master/css-schema / @master/css-lexer
-  -> @master/css-source
-  -> @master/css-engine / @master/css-preset / @master/css-integration
-  -> @master/css-compiler / @master/css-project
-  -> validator / server / scanner / runtime / language / language-service / stylesheet
+  -> @master/css-schema / native and Wasm artifact loaders / @master/css-preset
+  -> @master/css / @master/css-tooling
+  -> @master/css-compiler
+  -> server / runtime / language-service
   -> build plugins / CLI / ESLint / language-server
   -> framework integrations / VS Code / examples / site
 ```
 
-Do not make engine depend on compiler, integrations, runtime, server, scanner, language service, ESLint, examples, or site. `@master/css` is a public facade over engine and preset exports; keep behavior in the owning lower package.
+Rust is the single semantic source. `@master/css` owns the public Manifest v1 execution surface, `@master/css-compiler` owns compiler/project/stylesheet/inspection orchestration, and `@master/css-tooling` owns lexer/source/scanner/validator/lint/language sessions. TypeScript supplies platform loading, filesystem and package resolution, editor adaptation, and host capability callbacks; it must not implement semantic fallbacks.
 
-When cycle pressure appears, extract dependency-light contracts into `@master/css-schema`, dependency-free lexical scanners into `@master/css-lexer`, source class candidate extraction into `@master/css-source`, or adapter-neutral integration protocol into `@master/css-integration`.
+Do not make `@master/css` depend on compiler, tooling, integrations, runtime, server, language service, ESLint, examples, or site. Do not make tooling depend on compiler, language service, build adapters, or editor hosts. When cycle pressure appears, move dependency-light contracts into `@master/css-schema`, semantic operations into the owning Rust crate, compiler orchestration into `@master/css-compiler`, or editor-neutral operations into `@master/css-tooling`. `@master/css-internal-integration` is repository-private, bundled into official consumers, and is not a public third-party adapter SPI.
 
 ## Before Editing
 

@@ -2,15 +2,15 @@ import type { Plugin } from 'vite'
 import { PluginContext } from '../core'
 import { createServerRenderer } from '@master/css-server'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
-import { loadProjectManifest } from '@master/css-project/manifest'
-import { findCSSManifestEntryFiles } from '@master/css-project/entries'
+import { loadProjectManifest } from '@master/css-compiler/project'
+import { findCSSManifestEntryFiles } from '@master/css-compiler/project/entries'
 import { PluginOptions } from '../options'
-import { toHashedManifestAssetFileName } from '@master/css-integration/node'
+import { toHashedManifestAssetFileName } from '@master/css-internal-integration/node'
 import {
   MASTER_CSS_HYDRATION_MANIFEST_ASSET_BASE,
   MASTER_CSS_HYDRATION_MANIFEST_FILE_BASENAME
 } from '@master/css-schema/hydration-manifest'
-import { collectStyleCSSDependencies } from '@master/css-stylesheet'
+import { collectStyleCSSDependencies } from '@master/css-compiler/stylesheet'
 import { includesFile } from '../utils/path'
 
 const HYDRATION_MANIFEST_ASSET_DIR = '_master-css/hydration'
@@ -88,7 +88,7 @@ export default function PreRenderPlugin(options: PluginOptions, context: PluginC
       if (isSvelte) {
         enabled = false
         if (process.env.DEBUG) {
-          console.log('[@master/css.vite] SvelteKit detected, skipping pre-render plugin')
+          console.log('[@master/css-vite] SvelteKit detected, skipping pre-render plugin')
         }
         return
       }

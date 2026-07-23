@@ -61,43 +61,42 @@ pnpm --filter site type-check
 pnpm --filter @master/css test
 pnpm --filter @master/css-runtime e2e
 pnpm --filter @master/css-server test
-pnpm --filter @master/css-scanner test
-pnpm --filter @master/css.vite test
-pnpm --filter @master/css-language test
+pnpm --filter @master/css-tooling test
+pnpm --filter @master/css-compiler test
+pnpm --filter @master/css-vite test
 pnpm --filter @master/css-language-service test
 pnpm --filter @master/css-language-server test
 pnpm --filter @master/eslint-plugin-css test
-pnpm --filter @master/css-validator test
 pnpm --filter @master/css-cli test
 ```
 
 ## Benchmark Commands
 
 ```sh
-pnpm --filter @master/css-engine bench
+pnpm --filter @master/css bench
 pnpm --filter @master/css-runtime bench
 ```
 
-Use `pnpm --filter @master/css-engine bench` for engine matching, generation, parsing, priority, layer insertion, and manifest compilation/cache work.
+Use `pnpm --filter @master/css bench` for engine session startup and execution. Rust engine benchmarks remain authoritative for matching, parsing, priority, layer insertion, and resource behavior.
 
 Use `pnpm --filter @master/css-runtime bench` for browser runtime CPU, DOM scan, mutation tracking, hydration, CSSOM insertion/deletion, or global bundle work. Run `pnpm --filter @master/css-runtime e2e` as the browser correctness check for runtime and hydration changes; add a targeted browser benchmark when CPU or CSSOM behavior is part of the change.
 
-The `Benchmark` GitHub Actions workflow runs on relevant benchmark, engine, preset, runtime, schema, lexer, shared-build, and workspace configuration changes pushed to `main`, `alpha`, `beta`, `rc`, and `canary`, plus manual `workflow_dispatch`. It uploads package-scoped benchmark artifacts and compares against the latest 50 matching artifacts per branch and package. Do not commit benchmark history files to the repo.
+The `Benchmark` GitHub Actions workflow runs on relevant benchmark, Rust core, CSS execution, tooling, preset, runtime, schema, shared-build, and workspace configuration changes pushed to `main`, `alpha`, `beta`, `rc`, and `canary`, plus manual `workflow_dispatch`. It uploads package-scoped benchmark artifacts and compares against the latest 50 matching artifacts per branch and package. Do not commit benchmark history files to the repo.
 
 For bundle reports, build first and measure the changed artifacts on the same machine:
 
 ```sh
-pnpm --filter @master/css-engine build
+pnpm --filter @master/css build
 pnpm --filter @master/css-runtime build
-wc -c packages/engine/dist/core.js packages/runtime/dist/global.min.js
+wc -c packages/css/dist/engine/bound-engine.js packages/runtime/dist/global.min.js
 wc -c packages/runtime/dist/default-manifest.json
-gzip -c packages/engine/dist/core.js | wc -c
-brotli -c packages/engine/dist/core.js | wc -c
+gzip -c packages/css/dist/engine/bound-engine.js | wc -c
+brotli -c packages/css/dist/engine/bound-engine.js | wc -c
 gzip -c packages/runtime/dist/global.min.js | wc -c
 brotli -c packages/runtime/dist/global.min.js | wc -c
 gzip -c packages/runtime/dist/default-manifest.json | wc -c
 brotli -c packages/runtime/dist/default-manifest.json | wc -c
-shasum -a 256 packages/engine/dist/core.js packages/runtime/dist/global.min.js packages/runtime/dist/default-manifest.json
+shasum -a 256 packages/css/dist/engine/bound-engine.js packages/runtime/dist/global.min.js packages/runtime/dist/default-manifest.json
 ```
 
 ## CI Equivalents

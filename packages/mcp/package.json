@@ -1,6 +1,9 @@
 {
   "name": "@master/css-mcp",
   "type": "module",
+  "engines": {
+    "node": "^24"
+  },
   "scripts": {
     "build": "tsdown --config ../../shared/tsdown-package.config.ts",
     "dev": "tsdown --config ../../shared/tsdown-package.config.ts --watch",
@@ -31,10 +34,6 @@
   "bin": {
     "master-css-mcp": "./dist/bin/index.js"
   },
-  "main": "./dist/index.js",
-  "module": "./dist/index.js",
-  "jsnext:main": "./dist/index.js",
-  "esnext": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
@@ -56,15 +55,12 @@
     "provenance": true
   },
   "dependencies": {
-    "@master/css-compiler": "workspace:^",
-    "@master/css-diagnostics": "workspace:^",
-    "@master/css-language": "workspace:^",
-    "@master/css-language-service": "workspace:^",
-    "@master/css-lint": "workspace:^",
-    "@master/css-preset": "workspace:^",
-    "@master/css-project": "workspace:^",
-    "@master/css-schema": "workspace:^",
-    "@master/css-server": "workspace:^",
+    "@master/css-compiler": "workspace:*",
+    "@master/css-language-service": "workspace:*",
+    "@master/css-tooling": "workspace:*",
+    "@master/css-preset": "workspace:*",
+    "@master/css-schema": "workspace:*",
+    "@master/css-server": "workspace:*",
     "@modelcontextprotocol/sdk": "^1.29.0",
     "fast-glob": "^3.3.3",
     "vscode-languageserver-textdocument": "^1.0.12",

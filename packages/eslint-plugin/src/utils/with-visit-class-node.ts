@@ -1,7 +1,7 @@
 import { RuleContext } from '@typescript-eslint/utils/ts-eslint'
 import resolveClassNode from './resolve-class-node'
 import { TSESTree } from '@typescript-eslint/utils'
-import type { LintSession } from '@master/css-lint/node'
+import type { LintSession } from '@master/css-tooling/lint/node'
 
 export default function withVisitClassNode(
   visit: (node: TSESTree.Node, resolved: ReturnType<typeof resolveClassNode>) => void,

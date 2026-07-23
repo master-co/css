@@ -1,6 +1,6 @@
 import type { MasterCSSManifestUtility } from '@master/css'
 import defaultManifest from '@master/css-preset/default-manifest.json' with { type: 'json' }
-import { builtinKeyAliases, builtinNativeValueNamespaces } from '@master/css-engine'
+import { builtinKeyAliases, builtinNativeValueNamespaces } from '@master/css-tooling/builtins'
 
 export const manifestUtilities = defaultManifest.utilities || []
 

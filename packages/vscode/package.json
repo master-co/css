@@ -1,11 +1,11 @@
 {
-  "name": "master-css-vscode",
+  "name": "@master/css-vscode",
   "type": "module",
   "scripts": {
     "build": "tsdown && pnpm generate",
     "generate": "node --import tsx generate",
     "dev": "tsdown --watch",
-    "test": "vitest",
+    "test": "cargo xtask build-native && vitest",
     "type-check": "tsc -b tsconfig.typecheck.json",
     "lint": "eslint",
     "vscode:package": "node scripts/package-targets.js package",
@@ -27,6 +27,7 @@
     "directory": "packages/vscode"
   },
   "engines": {
+    "node": "^24",
     "vscode": "^1.120.0"
   },
   "activationEvents": [
@@ -470,7 +471,7 @@
     "grammars": [
       {
         "scopeName": "master-css.directive.injection",
-        "path": "./node_modules/@master/css-language/syntaxes/master-css.tmLanguage.json",
+        "path": "./node_modules/@master/css-language-service/syntaxes/master-css.tmLanguage.json",
         "injectTo": [
           "source.css",
           "source.css.scss",
@@ -490,11 +491,11 @@
     "provenance": true
   },
   "devDependencies": {
-    "@master/css-language": "workspace:^",
-    "@master/css-language-server": "workspace:^",
-    "@master/css-language-service": "workspace:^",
-    "@master/css-native": "workspace:^",
-    "@master/css-project": "workspace:^",
+    "@master/css-tooling": "workspace:*",
+    "@master/css-language-server": "workspace:*",
+    "@master/css-language-service": "workspace:*",
+    "@master/css-native": "workspace:*",
+    "@master/css-compiler": "workspace:*",
     "@shikijs/langs": "4.2.0",
     "@types/vscode": "^1.120.0",
     "@vscode/vsce": "^3.9.2",

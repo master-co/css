@@ -1,8 +1,8 @@
 import { existsSync } from 'node:fs'
 import { readFile } from 'node:fs/promises'
 import { join } from 'node:path'
-import { findCSSManifestEntryFiles } from '@master/css-project/entries'
-import { resolveMasterCSSWorkspacePackages } from '@master/css-project/workspace'
+import { findCSSManifestEntryFiles } from '@master/css-compiler/project/entries'
+import { resolveMasterCSSWorkspacePackages } from '@master/css-compiler/project/workspace'
 import type MasterCSSMCPContext from './context'
 import { loadWorkspaceManifest } from './project'
 import { getErrorMessage } from './result'
@@ -23,12 +23,12 @@ const MASTER_CSS_PACKAGES = [
   '@master/create-css',
   '@master/css-runtime',
   '@master/css-language-server',
-  '@master/css.vite',
-  '@master/css.webpack',
-  '@master/css.next',
-  '@master/css.nuxt',
-  '@master/css.astro',
-  '@master/css.svelte',
+  '@master/css-vite',
+  '@master/css-webpack',
+  '@master/css-next',
+  '@master/css-nuxt',
+  '@master/css-astro',
+  '@master/css-svelte',
   '@master/css-sv',
   '@master/eslint-config-css',
   '@master/eslint-plugin-css'
@@ -36,12 +36,12 @@ const MASTER_CSS_PACKAGES = [
 
 const INTEGRATION_PACKAGES = [
   '@master/css-cli',
-  '@master/css.vite',
-  '@master/css.webpack',
-  '@master/css.next',
-  '@master/css.nuxt',
-  '@master/css.astro',
-  '@master/css.svelte',
+  '@master/css-vite',
+  '@master/css-webpack',
+  '@master/css-next',
+  '@master/css-nuxt',
+  '@master/css-astro',
+  '@master/css-svelte',
   '@master/eslint-config-css',
   '@master/eslint-plugin-css'
 ]

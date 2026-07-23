@@ -67,16 +67,16 @@ function normalizeEngineReport(raw, baseMetadata) {
   }
 
   const assets = [
-    measureAsset('packages/engine/dist/core.js')
+    measureAsset('packages/css/dist/index.js')
   ]
 
   return {
     ...baseMetadata,
-    package: '@master/css-engine',
+    package: '@master/css',
     packageSlug: 'engine',
     tool: 'vitest bench',
     config: {
-      source: 'packages/engine/tests/core.bench.ts'
+      source: 'packages/css/tests/engine/core.bench.ts'
     },
     benchmarks,
     bundle: assets[0],

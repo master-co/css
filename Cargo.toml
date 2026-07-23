@@ -14,7 +14,7 @@ members = [
   "crates/mastercss-scanner",
   "crates/mastercss-render",
   "crates/mastercss-validator",
-  "crates/mastercss-node",
+  "crates/mastercss-napi",
   "crates/mastercss-wasm-runtime",
   "crates/mastercss-wasm-compiler",
   "crates/mastercss-wasm-tooling",

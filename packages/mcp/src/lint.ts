@@ -7,8 +7,8 @@ import {
   type MasterCSSLintFileResult,
   type MasterCSSLintRuleId,
   type MasterCSSLintSourceDiagnostic
-} from '@master/css-lint'
-import { createLintSessionSync, type LintSession } from '@master/css-lint/node'
+} from '@master/css-tooling/lint'
+import { createLintSessionSync, type LintSession } from '@master/css-tooling/lint/node'
 import type MasterCSSMCPContext from './context'
 import { resolveSourceFiles } from './scan'
 import { loadWorkspaceManifest } from './project'

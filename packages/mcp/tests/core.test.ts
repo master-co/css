@@ -23,7 +23,7 @@ function createContributorFixture() {
   const root = createTempDir('master-css-mcp-contributor-')
   mkdirSync(join(root, '.ai/context'), { recursive: true })
   mkdirSync(join(root, '.github/prompts'), { recursive: true })
-  mkdirSync(join(root, 'packages/engine'), { recursive: true })
+  mkdirSync(join(root, 'packages/css'), { recursive: true })
   mkdirSync(join(root, 'packages/runtime'), { recursive: true })
   mkdirSync(join(root, 'packages/mcp'), { recursive: true })
   mkdirSync(join(root, 'packages/create'), { recursive: true })
@@ -41,8 +41,8 @@ function createContributorFixture() {
       'test:docs-consistency': 'node --test .ai/scripts/validate-doc-consistency.test.js'
     }
   })
-  writeJSON(join(root, 'packages/engine/package.json'), {
-    name: '@master/css-engine',
+  writeJSON(join(root, 'packages/css/package.json'), {
+    name: '@master/css',
     scripts: {
       build: 'tsdown',
       lint: 'eslint',
@@ -50,7 +50,7 @@ function createContributorFixture() {
       'type-check': 'tsc -b tsconfig.typecheck.json'
     }
   })
-  writeFileSync(join(root, 'packages/engine/AI.md'), '# AI Notes For `@master/css-engine`')
+  writeFileSync(join(root, 'packages/css/AI.md'), '# AI Notes For `@master/css`')
   writeJSON(join(root, 'packages/runtime/package.json'), {
     name: '@master/css-runtime',
     scripts: {
@@ -59,7 +59,7 @@ function createContributorFixture() {
       test: 'vitest'
     },
     dependencies: {
-      '@master/css-engine': 'workspace:^'
+      '@master/css': 'workspace:^'
     }
   })
   writeFileSync(join(root, 'packages/runtime/AI.md'), '# AI Notes For `@master/css-runtime`')
@@ -445,8 +445,8 @@ describe('@master/css-mcp', () => {
         arguments: {
           task: 'fix generated css output regression',
           paths: [
-            'packages/engine/src/core.ts',
-            'packages/engine/tests/core.test.ts'
+            'packages/css/src/engine/bound-engine.ts',
+            'packages/css/tests/engine/rust-engine.test.ts'
           ]
         }
       }))
@@ -455,9 +455,9 @@ describe('@master/css-mcp', () => {
       expect(report.audience).toBe('master-css-repository-contributors')
       expect(report.status).toBe('loaded')
       expect(report.affectedPackages).toContainEqual(expect.objectContaining({
-        name: '@master/css-engine',
-        path: 'packages/engine',
-        aiNotes: 'packages/engine/AI.md'
+        name: '@master/css',
+        path: 'packages/css',
+        aiNotes: 'packages/css/AI.md'
       }))
       expect(report.context.files).toEqual(expect.arrayContaining([
         'AGENTS.md',
@@ -466,18 +466,18 @@ describe('@master/css-mcp', () => {
         '.ai/context/css-output.md',
         '.ai/context/testing.md',
         '.ai/context/accuracy-guardrails.md',
-        'packages/engine/package.json',
-        'packages/engine/AI.md'
+        'packages/css/package.json',
+        'packages/css/AI.md'
       ]))
       expect(report.risks).toContainEqual(expect.objectContaining({
         id: 'css-output',
         severity: 'high'
       }))
       expect(report.validation.commands).toContainEqual(expect.objectContaining({
-        command: 'pnpm --filter @master/css-engine test'
+        command: 'pnpm --filter @master/css test'
       }))
       expect(report.validation.commands).toContainEqual(expect.objectContaining({
-        command: 'pnpm --filter @master/css-engine lint'
+        command: 'pnpm --filter @master/css lint'
       }))
     } finally {
       await connection.close()
@@ -519,12 +519,12 @@ describe('@master/css-mcp', () => {
       const graph = parseToolJSON(await connection.client.callTool({
         name: 'mastercss_package_graph',
         arguments: {
-          packageName: '@master/css-engine'
+          packageName: '@master/css'
         }
       }))
       expect(graph.packages).toEqual([
         expect.objectContaining({
-          name: '@master/css-engine',
+          name: '@master/css',
           dependents: ['@master/css-runtime']
         })
       ])

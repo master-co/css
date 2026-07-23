@@ -10,9 +10,9 @@ import {
   type CompileCSSOptions,
   type CompileCSSResult
 } from '@master/css-compiler'
-import { findCSSManifestEntryFiles } from '@master/css-project/entries'
-import CSSScanner from '@master/css-scanner'
-import { extractClassCandidates } from '@master/css-source'
+import { findCSSManifestEntryFiles } from '@master/css-compiler/project/entries'
+import CSSScanner from '@master/css-tooling/scanner'
+import { extractClassCandidates } from '@master/css-tooling/source'
 import {
   cleanStyleRequest,
   collectCSSVariableReferences,
@@ -26,17 +26,17 @@ import {
   type ScannerState,
   type StyleCSSSource,
   type StyleCSSSources
-} from '@master/css-stylesheet'
+} from '@master/css-compiler/stylesheet'
 import {
   hasStylesheetDirectives,
   hasStylesheetSourceDirectives,
   mergeStylesheetSourceOptions,
   resolveStylesheetSourcePaths,
   type StylesheetSourceOptions
-} from '@master/css-stylesheet/directives'
+} from '@master/css-compiler/stylesheet/directives'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
-import type { CompilerDiagnosticRecorder } from '../../packages/compiler/src/diagnostics'
-import { renderCompiledManifestCSS } from '../../packages/stylesheet/src/render'
+import type { CompilerDiagnosticRecorder } from '../../packages/compiler/src/compiler-diagnostics'
+import { renderCompiledManifestCSS } from '../../packages/compiler/src/stylesheet/render'
 import fg from 'fast-glob'
 import { getStaticFixtureSource } from '../fixtures/static'
 import { hashBytes, summarizeBytes } from './bytes'

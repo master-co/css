@@ -1,4 +1,4 @@
-import { createExtractedCSSResult } from '@master/css-stylesheet'
+import { createExtractedCSSResult } from '@master/css-compiler/stylesheet'
 import type { PluginContext } from '../core'
 import { getScanner } from './scanner-context'
 

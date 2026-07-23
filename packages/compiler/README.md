@@ -10,10 +10,10 @@ npm install @master/css-compiler
 
 ## Responsibility
 
-The Rust compiler owns parsing, directive lowering, manifest compilation,
-normalization, native CSS transformation, and provider-neutral import graph
-resolution. TypeScript is limited to Node filesystem/package resolution, file IO, and
-warning callbacks. Project entry discovery belongs to `@master/css-project`.
+The Rust compiler and project crates own parsing, directive lowering, manifest
+compilation, normalization, native CSS transformation, graph policy, and project
+merge policy. TypeScript is limited to platform loading, filesystem/package
+resolution, file IO, host CSS capability checks, and orchestration.
 
 ## Universal session
 
@@ -66,3 +66,15 @@ filesystem `@reference` directives unless the host provides a prepared graph.
 
 The former TypeScript `core`, `lowerCSSDirectives`, and
 `createMasterCSSManifest` semantic exports are removed.
+
+## Project, stylesheet, and inspection APIs
+
+Project entry discovery and manifest loading are available from
+`@master/css-compiler/project` and its `sync`, `entries`, and `workspace` subpaths.
+Managed stylesheet composition is available from
+`@master/css-compiler/stylesheet`; browser-safe compilation and directive helpers use
+its explicit subpaths. Complete project inspection reports are exposed from
+`@master/css-compiler/diagnostics`.
+
+These are cohesive compiler host responsibilities. The former project, stylesheet,
+and diagnostics package identities are retired.

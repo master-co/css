@@ -8,9 +8,9 @@ import { Settings } from './settings'
 import {
   findCSSManifestEntryFiles,
   findMasterCSSWorkspaceDirectories
-} from '@master/css-project/entries'
-import { loadProjectManifest } from '@master/css-project/manifest'
-import { resolveMasterCSSWorkspacePackages, type MasterCSSWorkspacePackageResolution } from '@master/css-project/workspace'
+} from '@master/css-compiler/project/entries'
+import { loadProjectManifest } from '@master/css-compiler/project'
+import { resolveMasterCSSWorkspacePackages, type MasterCSSWorkspacePackageResolution } from '@master/css-compiler/project/workspace'
 import { defu } from 'defu'
 import settings from './settings'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
@@ -27,7 +27,7 @@ import {
   createLanguageSession,
   defaultManifest,
   SEMANTIC_TOKENS_LEGEND,
-} from '@master/css-language'
+} from '@master/css-tooling/language'
 import glob from 'fast-glob'
 import { URI } from 'vscode-uri'
 import { CSSDirectiveError, type CSSDirectiveSourceReference } from '@master/css-schema/css-directives'

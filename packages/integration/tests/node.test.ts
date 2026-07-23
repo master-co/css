@@ -34,7 +34,7 @@ afterEach(() => {
   }
 })
 
-describe('@master/css-integration/node', () => {
+describe('@master/css-internal-integration/node', () => {
   it('encodes resolved and filesystem virtual module paths', () => {
     const root = path.resolve('/project')
     const file = path.join(root, 'src', 'theme.css')

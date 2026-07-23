@@ -10,7 +10,7 @@ function formatWebpackPluginCall(mode?: RenderingMode) {
 }
 
 function formatNuxtModule(mode?: RenderingMode) {
-  return mode ? `['@master/css.nuxt', { mode: '${mode}' }]` : "'@master/css.nuxt'"
+  return mode ? `['@master/css-nuxt', { mode: '${mode}' }]` : "'@master/css-nuxt'"
 }
 
 function formatNextCall(target: string, mode?: RenderingMode) {
@@ -68,8 +68,8 @@ export function addMasterCSSStaticVitePlugin(content: string) {
 
 export function addMasterCSSTanStackStartVitePlugin(content: string, mode: RenderingMode = 'static') {
   const pluginCall = formatMasterCSSCall(mode)
-  if (content.includes('@master/css.vite')) return content
-  let next = addImport(content, "import masterCSS from '@master/css.vite'")
+  if (content.includes('@master/css-vite')) return content
+  let next = addImport(content, "import masterCSS from '@master/css-vite'")
   const tanStackStartPluginPattern = /^(\s*)tanstackStart\([^)]*\),?/m
   if (tanStackStartPluginPattern.test(next)) {
     return next.replace(tanStackStartPluginPattern, (match, indent: string) => {
@@ -86,9 +86,9 @@ export function addMasterCSSTanStackStartVitePlugin(content: string, mode: Rende
 }
 
 export function addMasterCSSRspackPlugin(content: string, mode?: RenderingMode) {
-  if (content.includes('@master/css.webpack')) return content
+  if (content.includes('@master/css-webpack')) return content
   const pluginCall = formatWebpackPluginCall(mode)
-  let next = addImport(content, "import MasterCSSPlugin from '@master/css.webpack'")
+  let next = addImport(content, "import MasterCSSPlugin from '@master/css-webpack'")
   if (/plugins\s*:\s*\[/.test(next)) {
     return replaceFirst(next, /plugins\s*:\s*\[/, `plugins: [\n        ${pluginCall},`)
   }
@@ -99,9 +99,9 @@ export function addMasterCSSRspackPlugin(content: string, mode?: RenderingMode) 
 }
 
 export function addMasterCSSWebpackPlugin(content: string, mode?: RenderingMode) {
-  if (content.includes('@master/css.webpack')) return content
+  if (content.includes('@master/css-webpack')) return content
   const pluginCall = formatWebpackPluginCall(mode)
-  let next = addImport(content, "import MasterCSSPlugin from '@master/css.webpack'")
+  let next = addImport(content, "import MasterCSSPlugin from '@master/css-webpack'")
   if (/plugins\s*:\s*\[/.test(next)) {
     return replaceFirst(next, /plugins\s*:\s*\[/, `plugins: [\n        ${pluginCall},`)
   }
@@ -112,8 +112,8 @@ export function addMasterCSSWebpackPlugin(content: string, mode?: RenderingMode)
 }
 
 export function addMasterCSSRsbuildPlugin(content: string, mode?: RenderingMode) {
-  if (content.includes('@master/css.webpack')) return content
-  let next = addImport(content, "import MasterCSSPlugin from '@master/css.webpack'")
+  if (content.includes('@master/css-webpack')) return content
+  let next = addImport(content, "import MasterCSSPlugin from '@master/css-webpack'")
   const pluginCall = formatWebpackPluginCall(mode)
   const rspackSetupBody = `            config.plugins ||= []
       config.plugins.push(${pluginCall})
@@ -146,8 +146,8 @@ ${rspackSetupBody}`)
 }
 
 function addMasterCSSVitePluginCall(content: string, pluginCall: string) {
-  if (content.includes('@master/css.vite')) return content
-  let next = addImport(content, "import masterCSS from '@master/css.vite'")
+  if (content.includes('@master/css-vite')) return content
+  let next = addImport(content, "import masterCSS from '@master/css-vite'")
   if (/plugins\s*:\s*\[/.test(next)) {
     return replaceFirst(next, /plugins\s*:\s*\[/, `plugins: [\n            ${pluginCall},`)
   }
@@ -159,7 +159,7 @@ function addMasterCSSVitePluginCall(content: string, pluginCall: string) {
 
 export function createViteConfig(mode?: RenderingMode) {
   return `import { defineConfig } from 'vite'
-import masterCSS from '@master/css.vite'
+import masterCSS from '@master/css-vite'
 
 export default defineConfig({
   plugins: [
@@ -174,7 +174,7 @@ export function createStaticViteConfig() {
 }
 
 export function createRspackConfig(mode?: RenderingMode) {
-  return `import MasterCSSPlugin from '@master/css.webpack'
+  return `import MasterCSSPlugin from '@master/css-webpack'
 
 export default {
   module: {
@@ -193,7 +193,7 @@ export default {
 }
 
 export function createWebpackConfig(mode?: RenderingMode) {
-  return `import MasterCSSPlugin from '@master/css.webpack'
+  return `import MasterCSSPlugin from '@master/css-webpack'
 
 export default {
   plugins: [
@@ -205,7 +205,7 @@ export default {
 
 export function createRsbuildConfig(mode?: RenderingMode) {
   return `import { defineConfig } from '@rsbuild/core'
-import MasterCSSPlugin from '@master/css.webpack'
+import MasterCSSPlugin from '@master/css-webpack'
 
 export default defineConfig({
   tools: {
@@ -220,7 +220,7 @@ export default defineConfig({
 }
 
 export function createNextConfig(mode?: RenderingMode) {
-  return `import { withMasterCSS } from '@master/css.next'
+  return `import { withMasterCSS } from '@master/css-next'
 
 const nextConfig = ${formatNextCall('{}', mode)}
 
@@ -229,8 +229,8 @@ export default nextConfig
 }
 
 export function addMasterCSSNextConfig(content: string, mode?: RenderingMode) {
-  if (content.includes('@master/css.next')) return mode ? addMasterCSSNextMode(content, mode) : content
-  const next = addImport(content, "import { withMasterCSS } from '@master/css.next'")
+  if (content.includes('@master/css-next')) return mode ? addMasterCSSNextMode(content, mode) : content
+  const next = addImport(content, "import { withMasterCSS } from '@master/css-next'")
   if (/export\s+default\s+/.test(next)) {
     return next.replace(/export\s+default\s+([^;\n]+)(;?)(\n|$)/, `export default ${formatNextCall('$1', mode)}$2$3`)
   }
@@ -246,7 +246,7 @@ function addMasterCSSNextMode(content: string, mode: RenderingMode) {
 }
 
 export function addMasterCSSNuxtModule(content: string, mode?: RenderingMode) {
-  if (content.includes('@master/css.nuxt')) return content
+  if (content.includes('@master/css-nuxt')) return content
   const moduleEntry = formatNuxtModule(mode)
   if (/modules\s*:\s*\[/.test(content)) {
     return replaceFirst(content, /modules\s*:\s*\[/, `modules: [\n        ${moduleEntry},`)
@@ -266,9 +266,9 @@ export function createNuxtConfig(mode?: RenderingMode) {
 }
 
 export function addMasterCSSAstroIntegration(content: string, mode?: RenderingMode) {
-  if (content.includes('@master/css.astro')) return content
+  if (content.includes('@master/css-astro')) return content
   const pluginCall = formatMasterCSSCall(mode)
-  let next = addImport(content, "import masterCSS from '@master/css.astro'")
+  let next = addImport(content, "import masterCSS from '@master/css-astro'")
   if (/integrations\s*:\s*\[/.test(next)) {
     return replaceFirst(next, /integrations\s*:\s*\[/, `integrations: [\n        ${pluginCall},`)
   }
@@ -280,7 +280,7 @@ export function addMasterCSSAstroIntegration(content: string, mode?: RenderingMo
 
 export function createAstroConfig(mode?: RenderingMode) {
   return `import { defineConfig } from 'astro/config'
-import masterCSS from '@master/css.astro'
+import masterCSS from '@master/css-astro'
 
 export default defineConfig({
   integrations: [
@@ -295,10 +295,10 @@ export function addViteClientTypes(content: string) {
   if (!next.includes('/// <reference types="vite/client" />')) {
     next = `/// <reference types="vite/client" />\n${next}`
   }
-  if (!next.includes('/// <reference types="@master/css-integration/client" />')) {
+  if (!next.includes('/// <reference types="@master/css/client" />')) {
     const lines = next.split('\n')
     const viteReferenceIndex = lines.findIndex((line) => line.includes('/// <reference types="vite/client" />'))
-    lines.splice(viteReferenceIndex + 1, 0, '/// <reference types="@master/css-integration/client" />')
+    lines.splice(viteReferenceIndex + 1, 0, '/// <reference types="@master/css/client" />')
     next = lines.join('\n')
   }
   return next
@@ -338,7 +338,9 @@ export function addAngularRuntimeSetup(content: string) {
   next = addImport(next, "import type { MasterCSSManifest } from '@master/css-runtime'")
   const setup = `const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
 
-CSSRuntime.create({ manifest: defaultManifest }).observe()
+void CSSRuntime.start({ manifest: defaultManifest })
+  .then((cssRuntime) => cssRuntime.observe())
+  .catch((error) => console.error(error))
 
 `
   if (/bootstrapApplication\s*\(/.test(next)) {

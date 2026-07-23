@@ -5,103 +5,102 @@
 ```txt
 class string
   -> Rust EngineSession.ensure_class_rules(batch)
-  -> match compiled utilities, including components-layer project styles
-  -> parse values, functions, variables, selectors, modes, conditions
-  -> declaration/value opcodes
-  -> calculate stable rule priority and layer indexes
+  -> match Manifest v1 utilities
+  -> parse values, variables, selectors, modes, and conditions
+  -> calculate stable priority and layer indexes
   -> insert referenced variables and animations
-  -> transition/snapshot/resource IR
-  -> TypeScript host applies CSS text or CSSOM mutations
+  -> transition / snapshot / resource IR
+  -> @master/css TypeScript host applies CSS text or CSSOM mutations
 ```
 
 Main files:
 
 - `crates/mastercss-engine/src/lib.rs`
-- `packages/engine/src/bound-engine.ts`
+- `packages/css/src/engine/bound-engine.ts`
+- `packages/css/src/engine/create-engine.ts`
 
 Risks:
 
-- Class matching order changes can alter valid/invalid class behavior.
-- Value parsing changes can alter many properties.
-- Priority changes can alter cascade outcomes without changing declarations.
-- Selector/condition parsing changes affect runtime, server, scanner, language service, and ESLint.
+- Matching changes alter valid/invalid class behavior.
+- Priority changes alter cascade outcomes without changing declarations.
+- Selector or condition changes affect runtime, server, scanning, language tooling,
+  and ESLint.
+- CSS bytes, layer order, and keyframe placement are behavioral contracts.
 
 ## CSS Authoring To Manifest
 
 ```txt
-project CSS files containing @master entry; or @import "@master/css"
-  -> Rust project core discovers project entries and owns load/merge policy
-  -> TypeScript Node provider supplies package exports and file contents
-  -> Rust compiler parses directives/native CSS and consumes the prepared graph
-  -> Rust compiler lowers the result into MasterCSSManifest
-  -> build tools / ESLint / language-server receive the same semantic project manifest
-  -> Rust engine executes manifest variables, animations, selectors, conditions, utilities
+project CSS containing @master entry; or @import "@master/css"
+  -> Rust project policy discovers and merges entries
+  -> @master/css-compiler/project supplies filesystem and package resolution
+  -> Rust compiler parses directives and native CSS
+  -> Rust compiler lowers Manifest v1 plus native CSS results
+  -> compiler / integrations / ESLint / language-server share that manifest
+  -> Rust engine executes the manifest
 ```
 
 Main files:
 
-- `packages/project/src/entries.ts`
-- `packages/project/src/manifest.ts`
-- `packages/integration/src/manifest-module.ts`
+- `packages/compiler/src/project/entries.ts`
+- `packages/compiler/src/project/manifest.ts`
 - `packages/compiler/src/index.ts`
 - `crates/mastercss-project/src/lib.rs`
 - `crates/mastercss-compiler/src/lib.rs`
 - `crates/mastercss-compiler/src/lower.rs`
-- `crates/mastercss-engine/src/lib.rs`
 
 Risks:
 
-- Entry detection must only use project-level markers: `@master entry;` and `@import "@master/css"`.
-- Package CSS such as `@master/css/index.css` must not contain or imply a project entry marker.
-- `@master/css-project` must not implement CSS import graph, CSS manifest directive parsing, or manifest ABI schema.
-- Manifest lowering order affects all manifest consumers.
-- Variable aliases and modes affect inlining vs CSS custom property output.
-- Static utility layer assignment affects semantic class output and cascade behavior.
-- `?master-css-manifest` query ids, virtual module ids, and generated JavaScript module source helpers are integration protocol and belong in `@master/css-integration`, not `@master/css-project`.
+- Only `@master entry;` and `@import "@master/css"` identify project entries.
+- Package CSS entrypoints must not accidentally identify themselves as project roots.
+- Import-graph order and manifest merge order affect every consumer.
+- Static utility layers affect semantic class output and cascade behavior.
+- Virtual ids and generated JavaScript module source are private official-integration
+  protocol, not project semantics.
 
-## Build-Time Scanning
+## Build-Time Scanning And Stylesheets
 
 ```txt
-source globs / Vite modules / Webpack modules
-  -> Rust ScannerSession
-  -> Rust built-in extractor or custom host adapter candidates
-  -> batched host CSS support oracle
+source files or build-tool modules
+  -> @master/css-tooling/scanner
+  -> Rust built-in extraction plus private official Vue/Svelte adapters
+  -> host native-CSS capability oracle
   -> Rust classification and engine transition
-  -> build tool / CLI registers managed CSS entries discovered by @master/css-project with @master/css-stylesheet
-  -> @master/css-stylesheet compiles stylesheet CSS through @master/css-compiler
-  -> combine stylesheet manifest returned by compiler with explicit manifest options
-  -> export css.text / virtual CSS module through @master/css-stylesheet
-  -> export emittedGlobals counts for generated variables and keyframes
+  -> @master/css-compiler/project discovers managed CSS entries
+  -> @master/css-compiler/stylesheet compiles directives and native CSS
+  -> combine manifest, native CSS, generated CSS, and emitted-global metadata
+  -> official adapter publishes virtual CSS and manifest assets
 ```
 
 Main files:
 
-- `packages/scanner/src/core.ts`
+- `packages/tooling/src/scanner/core.ts`
+- `packages/tooling/src/source/session.ts`
+- `packages/compiler/src/stylesheet/index.ts`
+- `packages/vite/src/modes/static.ts`
+- `packages/webpack/src/plugin.ts`
+- `packages/next/src/build-state.ts`
 - `crates/mastercss-scanner/src/lib.rs`
 - `crates/mastercss-source/src/lib.rs`
-- `packages/stylesheet/src/index.ts`
-- `packages/vite/src/modes/static.ts`
-- `packages/vite/src/plugins/virtual-css-module.ts`
-- `packages/webpack/src/index.ts`
 
 Risks:
 
-- False positives increase CSS output.
-- False negatives omit required CSS.
-- Static rendering cannot infer truncated dynamic strings.
+- False positives increase CSS output; false negatives omit required CSS.
+- Static rendering cannot infer arbitrary truncated dynamic strings.
+- Source adapters are first-party implementation details, not a public registration API.
+- Stylesheet import order, extraction directives, and native CSS pruning affect exact bytes.
 
 ## Runtime
 
 ```txt
 document or shadow root
   -> initCSSRuntime({ manifest, emittedGlobals, root, autoObserve })
-  -> CSSRuntime.observe()
-  -> register emittedGlobals variable/keyframe counts
+  -> register emitted variable/keyframe counts
   -> find or create style#master-css
-  -> hydrate pre-rendered layers or add connected classes
-  -> MutationObserver detects class and child changes
-  -> classCounts increments/decrements
-  -> add/remove rules in native stylesheet
+  -> hydrate pre-rendered rules or connect current classes
+  -> MutationObserver detects class and subtree changes
+  -> class reference counts change
+  -> runtime-Wasm engine transition
+  -> add/remove native CSS rules in stable order
 ```
 
 Main files:
@@ -109,31 +108,46 @@ Main files:
 - `packages/runtime/src/core.ts`
 - `packages/runtime/src/layer.ts`
 - `packages/runtime/src/utility-layer.ts`
-- `packages/runtime/src/init.ts`
+- `packages/runtime/src/class-tracker.ts`
 
 Risks:
 
-- Hydration must reconstruct virtual rules from native CSS rules.
-- Native CSSRule order must match engine layer priority.
-- Class count bugs can leak or remove active rules.
+- Hydration must reconstruct the same virtual state as fresh execution.
+- Native CSSRule order must match Rust priority and stable layer order.
+- Reference-count errors can leak rules or remove active rules.
 
 ## Language Tooling
 
 ```txt
-TextDocument + cursor
-  -> Rust LanguageSession analyze/complete/inspect/format/color request
-  -> versioned UTF-16 ranges, semantic-token data, completion/inspection/color/edit IR
-  -> CSSLanguageService maps IR to TextDocument/LSP values
-  -> language-server returns the LSP response
+document text + cursor / requested range
+  -> @master/css-tooling/language Rust session
+  -> versioned UTF-16 analysis, completion, inspection, color, formatting, and edit IR
+  -> @master/css-language-service maps IR to editor document values
+  -> @master/css-language-server maps service results to LSP
+  -> @master/css-vscode supplies extension lifecycle and active highlighting
 ```
 
 Main files:
 
-- `packages/language/src/utils/get-class-positions.ts`
+- `packages/tooling/src/language/rust-session.ts`
 - `crates/mastercss-language/src/lib.rs`
-- `packages/language/src/rust-session.ts`
 - `packages/language-service/src/core.ts`
-- `packages/language-service/src/features/*`
+- `packages/language-service/src/shiki.ts`
 - `packages/language-server/src/core.ts`
 
-Note: syntax diagnostics are currently handled mainly by `@master/eslint-plugin-css`, not by LSP diagnostics.
+TextMate and Shiki presentation assets live in language-service. Framework-neutral
+class policy and source ranges stay in Rust tooling sessions.
+
+## Lint And Diagnostics
+
+```txt
+class list or project inputs
+  -> Rust lint / scanner / report sessions in @master/css-tooling
+  -> TypeScript host supplies source locations and CSS capability results
+  -> @master/eslint-plugin-css adapts diagnostics and edit plans to ESLint
+  -> @master/css-compiler/diagnostics orchestrates complete project inspection
+  -> CLI and MCP format or transport the report
+```
+
+Policy, sorting, classification, and report shape stay in Rust. ESLint visitors, CLI
+output, and MCP transport must not reproduce those semantics.

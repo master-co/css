@@ -4,7 +4,7 @@ import {
   compileBrowserStyleCSS,
   initBrowserStyleCompiler,
   type CompileBrowserStyleCSSResult
-} from '@master/css-stylesheet/browser'
+} from '@master/css-compiler/stylesheet/browser'
 
 const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
 const lightningCSSWasmURL = 'https://cdn.jsdelivr.net/npm/lightningcss-wasm@1.32.0/lightningcss_node.wasm'

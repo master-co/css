@@ -4,8 +4,8 @@ import {
   type MasterCSSLintContentRuleOptions,
   type MasterCSSLintRuleId,
   type MasterCSSLintSourceDiagnostic
-} from '@master/css-lint'
-import type { LintSession } from '@master/css-lint/node'
+} from '@master/css-tooling/lint'
+import type { LintSession } from '@master/css-tooling/lint/node'
 import type { RuleContext, RuleFixer, RuleListener } from '@typescript-eslint/utils/ts-eslint'
 import { messageIdByCode, stringifyLintDiagnosticMessageData } from './report-lint-diagnostics'
 

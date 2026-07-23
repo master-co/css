@@ -1,5 +1,5 @@
-import { defaultManifest } from '@master/css-language'
-import { createLanguageSessionSync } from '@master/css-language/node'
+import { defaultManifest } from '@master/css-tooling/language'
+import { createLanguageSessionSync } from '@master/css-tooling/language/node'
 import { CompletionTriggerKind } from 'vscode-languageserver-protocol'
 import { TextDocument } from 'vscode-languageserver-textdocument'
 import { afterEach, describe, expect, test } from 'vitest'

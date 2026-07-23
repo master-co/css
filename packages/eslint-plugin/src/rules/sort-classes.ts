@@ -3,7 +3,7 @@ import resolveContext from '../utils/resolve-context'
 import createRule from '../create-rule'
 import reportLintDiagnostics from '../utils/report-lint-diagnostics'
 import defineSourceVisitors, { shouldUseSourceVisitors } from '../utils/define-source-visitors'
-import { fromRustLintDiagnostics } from '@master/css-lint/node'
+import { fromRustLintDiagnostics } from '@master/css-tooling/lint/node'
 
 export default createRule({
   name: 'sort-classes',

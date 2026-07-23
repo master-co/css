@@ -26,7 +26,7 @@
     </StepL>
     <StepR>
       ```bash action=install
-      @master/css.webpack@rc @angular-builders/custom-webpack
+      @master/css-webpack@rc @angular-builders/custom-webpack
       ```
     </StepR>
   </Step>
@@ -38,7 +38,7 @@
     </StepL>
     <StepR>
       ```js name=webpack.config.js
-      import MasterCSSPlugin from '@master/css.webpack' // [!code ++]
+      import MasterCSSPlugin from '@master/css-webpack' // [!code ++]
 
       export default (config) => { // [!code ++]
         config.plugins.push( // [!code ++]

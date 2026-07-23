@@ -119,28 +119,28 @@ test('marks non-SvelteKit projects unsupported', () => {
 function assertMasterCSSSetup(projectDir: string, variant: string) {
   const packageJSON = JSON.parse(readProjectFile(projectDir, 'package.json'))
   expect(packageJSON.dependencies['@master/css']).toBe('rc')
-  expect(packageJSON.dependencies['@master/css.svelte']).toBe('rc')
+  expect(packageJSON.dependencies['@master/css-svelte']).toBe('rc')
   expect(packageJSON.dependencies['@master/css-sv']).toBeUndefined()
   expect(packageJSON.devDependencies?.['@master/css-sv']).toBeUndefined()
 
   const viteConfig = readProjectFile(projectDir, viteConfigPath(variant))
-  expect(viteConfig).toContain("from '@master/css.svelte/vite'")
+  expect(viteConfig).toContain("from '@master/css-svelte/vite'")
   expect(viteConfig).toContain('masterCSS()')
 
   expect(readProjectFile(projectDir, 'src/routes/layout.css')).toContain("@import '@master/css';")
   expect(readProjectFile(projectDir, 'src/routes/+layout.svelte')).toContain("import './layout.css';")
 
   const hooksServer = readProjectFile(projectDir, hookPath(variant))
-  expect(hooksServer).toContain("from '@master/css.svelte/hooks.server'")
+  expect(hooksServer).toContain("from '@master/css-svelte/hooks.server'")
   expect(hooksServer).toContain('masterCSSHandle')
   expect(hooksServer).toMatch(/export[\s\S]*const handle/)
 }
 
 function ensureLocalDependencyOverrides(cwd: string) {
   const workspaceRoot = dirname(cwd)
-  const packageJSONPath = resolve(workspaceRoot, 'package.json')
-  const packageJSON = JSON.parse(readFileSync(packageJSONPath, 'utf8'))
-  if (packageJSON.pnpm?.overrides?.['@master/css']) return
+  const workspaceConfigPath = resolve(workspaceRoot, 'pnpm-workspace.yaml')
+  const workspaceConfig = readFileSync(workspaceConfigPath, 'utf8')
+  if (workspaceConfig.includes("'@master/css-svelte':")) return
 
   writeStubPackage(
     workspaceRoot,
@@ -158,7 +158,7 @@ function ensureLocalDependencyOverrides(cwd: string) {
     workspaceRoot,
     'stubs/master-css-svelte',
     {
-      name: '@master/css.svelte',
+      name: '@master/css-svelte',
       version: '0.0.0-rc.0',
       exports: {
         './vite': './vite.js',
@@ -171,15 +171,11 @@ function ensureLocalDependencyOverrides(cwd: string) {
     }
   )
 
-  packageJSON.pnpm = {
-    ...packageJSON.pnpm,
-    overrides: {
-      ...packageJSON.pnpm?.overrides,
-      '@master/css': 'file:./stubs/master-css',
-      '@master/css.svelte': 'file:./stubs/master-css-svelte'
-    }
-  }
-  writeFileSync(packageJSONPath, JSON.stringify(packageJSON, null, 2), 'utf8')
+  writeFileSync(
+    workspaceConfigPath,
+    `${workspaceConfig.trimEnd()}\noverrides:\n  '@master/css': file:./stubs/master-css\n  '@master/css-svelte': file:./stubs/master-css-svelte\n`,
+    'utf8'
+  )
 }
 
 function writeStubPackage(

@@ -3,16 +3,16 @@ import { mkdirSync, realpathSync, writeFileSync } from 'node:fs'
 import { dirname, resolve as resolvePath } from 'node:path'
 import { pathToFileURL } from 'node:url'
 import { name } from '../package.json'
-import masterCSS from '@master/css.vite'
-import { VIRTUAL_MANIFEST_ID } from '@master/css-integration/manifest-module'
+import masterCSS from '@master/css-vite'
+import { VIRTUAL_MANIFEST_ID } from '@master/css-internal-integration/manifest-module'
 import {
   toBrowserManifestFacadeModule,
   toInlineManifestModule
-} from '@master/css-integration/manifest-facade'
-import { toHashedManifestAssetFileName } from '@master/css-integration/node'
-import { loadProjectManifestJSON } from '@master/css-project/manifest'
-import { findCSSManifestEntryFiles } from '@master/css-project/entries'
-import { collectStyleCSSDependencies } from '@master/css-stylesheet'
+} from '@master/css-internal-integration/manifest-facade'
+import { toHashedManifestAssetFileName } from '@master/css-internal-integration/node'
+import { loadProjectManifestJSON } from '@master/css-compiler/project'
+import { findCSSManifestEntryFiles } from '@master/css-compiler/project/entries'
+import { collectStyleCSSDependencies } from '@master/css-compiler/stylesheet'
 import type { ModuleNode, Plugin } from 'vite'
 import defaultOptions, { type ModuleOptions } from './options'
 
@@ -53,6 +53,22 @@ function addNitroPublicAsset(config: { publicAssets?: { dir: string, baseURL: st
   config.publicAssets ??= []
   if (config.publicAssets.some((asset) => asset.dir === dir && asset.baseURL === baseURL)) return
   config.publicAssets.push({ dir, baseURL })
+}
+
+function externalizeNitroServerRenderer(config: {
+  noExternals?: boolean
+  externals?: {
+    external?: (string | RegExp | ((id: string) => boolean))[]
+  }
+}) {
+  config.noExternals = false
+  config.externals ??= {}
+  config.externals.external ??= []
+  for (const packageName of ['@master/css-server', '@master/css-native']) {
+    if (!config.externals.external.includes(packageName)) {
+      config.externals.external.push(packageName)
+    }
+  }
 }
 
 function isHTMLPrerenderRoute(route: NitroPrerenderRoute) {
@@ -306,6 +322,9 @@ export default defineNuxtModule<ModuleOptions>({
     switch (options.mode) {
       case 'pre-render':
       case 'progressive':
+        nuxt.hook('nitro:config', (config) => {
+          externalizeNitroServerRenderer(config)
+        })
         // Fix: Package import specifier "virtual:master-css-manifest" is not defined in package
         nuxt.options.build.transpile.push(resolve('./runtime/css-server'))
         addServerPlugin(resolve('./runtime/css-server'))

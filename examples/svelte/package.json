@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "@master/css": "workspace:^",
-    "@master/css.svelte": "workspace:^"
+    "@master/css-svelte": "workspace:^"
   },
   "devDependencies": {
     "@fontsource/fira-mono": "^5.2.7",

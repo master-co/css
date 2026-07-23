@@ -27,12 +27,12 @@ import HeaderContent from 'internal/components/HeaderContent'
 import { useApp } from 'internal/contexts/app'
 import type { MasterCSSManifest } from '@master/css'
 import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
-import masterCSSTextMateGrammar from '@master/css-language/syntaxes/master-css.tmLanguage.json' with { type: 'json' }
+import masterCSSTextMateGrammar from '@master/css-language-service/syntaxes/master-css.tmLanguage.json' with { type: 'json' }
 import {
-  createBrowserLanguageSession,
+  createLanguageSession,
   SEMANTIC_TOKENS_LEGEND,
-  type BrowserLanguageSession
-} from '@master/css-language/browser'
+  type LanguageSession
+} from '@master/css-tooling/language/browser'
 
 const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
 const jsdelivrNPMBaseURL = 'https://cdn.jsdelivr.net/npm/'
@@ -583,7 +583,7 @@ export default function Play({ shareId }: PlayProps = {}) {
   const copiedTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const semanticTokenListenersRef = useRef(new Set<() => void>())
   const semanticProviderDisposablesRef = useRef<{ dispose(): void }[]>([])
-  const semanticLanguageSessionRef = useRef<BrowserLanguageSession | undefined>(undefined)
+  const semanticLanguageSessionRef = useRef<LanguageSession | undefined>(undefined)
   const semanticLanguageTicketRef = useRef(0)
   const [files, setFiles] = useState<PlayFile[]>(template.files)
   const [currentShareId, setCurrentShareId] = useState(shareId || pathShareId)
@@ -688,7 +688,7 @@ export default function Play({ shareId }: PlayProps = {}) {
   const replaceSemanticLanguageSession = useCallback(async (manifest: MasterCSSManifest) => {
     const ticket = ++semanticLanguageTicketRef.current
     try {
-      const session = await createBrowserLanguageSession({ manifest })
+      const session = await createLanguageSession({ manifest })
       if (ticket !== semanticLanguageTicketRef.current) {
         session.dispose()
         return
@@ -859,9 +859,13 @@ export default function Play({ shareId }: PlayProps = {}) {
         return SEMANTIC_TOKENS_LEGEND
       },
       provideDocumentSemanticTokens(model: editor.ITextModel) {
-        return semanticLanguageSessionRef.current
-          ?.renderSemanticTokens(model.getValue(), model.getLanguageId())
-          || { data: new Uint32Array() }
+        const session = semanticLanguageSessionRef.current
+        if (!session) return { data: new Uint32Array() }
+        const document = session.analyzeDocument({
+          source: model.getValue(),
+          languageId: model.getLanguageId()
+        })
+        return { data: Uint32Array.from(document.semanticTokenData) }
       },
       releaseDocumentSemanticTokens() {
         // Monaco requires this method even when no result ids are used.

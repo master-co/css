@@ -1,11 +1,11 @@
-import CSSScanner from '@master/css-scanner'
-import { loadProjectManifest } from '@master/css-project/manifest'
-import { findCSSManifestEntryFiles } from '@master/css-project/entries'
+import CSSScanner from '@master/css-tooling/scanner'
+import { loadProjectManifest } from '@master/css-compiler/project'
+import { findCSSManifestEntryFiles } from '@master/css-compiler/project/entries'
 import {
   createExtractedCSS,
   registerStyleCSSSource,
   type StyleCSSSources
-} from '@master/css-stylesheet'
+} from '@master/css-compiler/stylesheet'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import { readFile } from 'node:fs/promises'
 

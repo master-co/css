@@ -1,8 +1,8 @@
-# AI Notes For `@master/css.figma`
+# AI Notes For `@master/css-figma`
 
 ## Responsibility
 
-`@master/css.figma` implements the Figma plugin for importing and exporting Master CSS variables and modes.
+`@master/css-figma` implements the Figma plugin for importing and exporting Master CSS variables and modes.
 
 ## Owns
 
@@ -52,8 +52,8 @@
 ## Validation
 
 ```sh
-pnpm --filter @master/css.figma test
-pnpm --filter @master/css.figma lint
-pnpm --filter @master/css.figma type-check
-pnpm --filter @master/css.figma build
+pnpm --filter @master/css-figma test
+pnpm --filter @master/css-figma lint
+pnpm --filter @master/css-figma type-check
+pnpm --filter @master/css-figma build
 ```

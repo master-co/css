@@ -1,5 +1,5 @@
 {
-  "name": "@master/css.next-e2e-css-manifest-query",
+  "name": "@master/css-next-e2e-css-manifest-query",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -7,7 +7,7 @@
     "build": "pnpm --dir ../.. build && next build --turbo"
   },
   "dependencies": {
-    "@master/css-integration": "workspace:^",
+    "@master/css-internal-integration": "workspace:^",
     "next": "^16.2.10",
     "react": "^19.2.5",
     "react-dom": "^19.2.5"

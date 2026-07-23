@@ -17,7 +17,7 @@
   "devDependencies": {
     "@eslint/compat": "^2.1.0",
     "@master/css-cli": "workspace:^",
-    "@master/css.next": "workspace:^",
+    "@master/css-next": "workspace:^",
     "@master/eslint-config-css": "workspace:^",
     "@types/node": "^25.9.4",
     "@types/react": "^19.2.17",

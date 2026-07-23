@@ -9,7 +9,7 @@
   },
   "dependencies": {
     "@master/css": "workspace:^",
-    "@master/css.nuxt": "workspace:^"
+    "@master/css-nuxt": "workspace:^"
   },
   "devDependencies": {
     "@types/node": "^25.9.4",

@@ -9,7 +9,7 @@ export default function ContextPlugin(options: PluginOptions, context: PluginCon
     configResolved(config) {
       context.config = config
       if (process.env.DEBUG) {
-        console.log(`[@master/css.vite] mode: ${options.mode}`)
+        console.log(`[@master/css-vite] mode: ${options.mode}`)
       }
     }
   }

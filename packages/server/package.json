@@ -1,6 +1,9 @@
 {
   "name": "@master/css-server",
   "type": "module",
+  "engines": {
+    "node": "^24"
+  },
   "scripts": {
     "build": "tsdown --config ../../shared/tsdown-package.config.ts && node scripts/restore-json-import-attributes.js",
     "dev": "tsdown --config ../../shared/tsdown-package.config.ts --watch",
@@ -31,10 +34,6 @@
     "mastercss"
   ],
   "sideEffects": false,
-  "main": "./dist/index.js",
-  "module": "./dist/index.js",
-  "jsnext:main": "./dist/index.js",
-  "esnext": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
@@ -51,16 +50,16 @@
     "provenance": true
   },
   "dependencies": {
-    "@master/css-native": "workspace:^",
-    "@master/css-preset": "workspace:^",
-    "@master/css-validator": "workspace:^",
+    "@master/css-native": "workspace:*",
+    "@master/css-preset": "workspace:*",
+    "@master/css-tooling": "workspace:*",
     "dom-serializer": "^3.1.1",
     "domhandler": "^6.0.1",
     "htmlparser2": "^12.0.0",
-    "@master/css-schema": "workspace:^"
+    "@master/css-schema": "workspace:*"
   },
   "devDependencies": {
-    "@master/css": "workspace:^",
-    "@master/css-compiler": "workspace:^"
+    "@master/css": "workspace:*",
+    "@master/css-compiler": "workspace:*"
   }
 }

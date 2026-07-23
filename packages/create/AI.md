@@ -14,9 +14,9 @@
 ## Does Not Own
 
 - Runtime, server, scanner, engine, compiler, or CSS output behavior.
-- Framework integration internals owned by `@master/css.vite`, `@master/css.next`, `@master/css.nuxt`, `@master/css.astro`, `@master/css.svelte`, or `@master/css.webpack`.
+- Framework integration internals owned by `@master/css-vite`, `@master/css-next`, `@master/css-nuxt`, `@master/css-astro`, `@master/css-svelte`, or `@master/css-webpack`.
 - SvelteKit file mutation internals owned by `@master/css-sv`.
-- ESLint rule behavior owned by `@master/css-lint` and `@master/eslint-plugin-css`.
+- ESLint rule behavior owned by `@master/css-tooling/lint` and `@master/eslint-plugin-css`.
 
 ## Public Surface
 

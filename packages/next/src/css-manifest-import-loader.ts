@@ -1,19 +1,19 @@
 import { mkdirSync, writeFileSync } from 'node:fs'
 import { createRequire } from 'node:module'
 import { dirname, isAbsolute, relative, resolve } from 'node:path'
-import { isCSSManifestRequest } from '@master/css-project/entries'
-import { loadManifestJSONSync } from '@master/css-project/manifest-sync'
+import { isCSSManifestRequest } from '@master/css-compiler/project/entries'
+import { loadManifestJSONSync } from '@master/css-compiler/project/sync'
 import {
   isMasterCSSManifestRequest,
   stripMasterCSSManifestQuery
-} from '@master/css-integration/manifest-module'
+} from '@master/css-internal-integration/manifest-module'
 import {
   ensureVirtualModulePackageJSONPath,
   toVirtualCSSManifestAssetPath,
   toVirtualCSSManifestModulePath
-} from '@master/css-integration/node'
-import { toUniversalManifestFacadeModule } from '@master/css-integration/manifest-facade'
-import { collectStyleCSSDependencies } from '@master/css-stylesheet'
+} from '@master/css-internal-integration/node'
+import { toUniversalManifestFacadeModule } from '@master/css-internal-integration/manifest-facade'
+import { collectStyleCSSDependencies } from '@master/css-compiler/stylesheet'
 
 const MASTER_CSS_MANIFEST_IMPORT_PATTERN = /(\bimport\s+(?:[^'"]*?\s+from\s*)?|\bexport\s+[^'"]*?\s+from\s*|\bimport\s*\(\s*)(['"])([^'"]+)\2/g
 
@@ -118,7 +118,7 @@ async function transformManifestImports(context: LoaderContext, source: string) 
 export default function masterCSSManifestImportLoader(this: LoaderContext, source: string) {
   const callback = this.async?.()
   if (!callback) {
-    throw new Error('[@master/css.next] CSS manifest import loader requires an async loader context.')
+    throw new Error('[@master/css-next] CSS manifest import loader requires an async loader context.')
   }
 
   transformManifestImports(this, source)

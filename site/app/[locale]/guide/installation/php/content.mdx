@@ -20,7 +20,7 @@ Use Vite runtime rendering when PHP renders pages directly from templates. PHP s
     </StepL>
     <StepR>
       ```bash name=Terminal
-      npm install -D vite @master/css.vite@rc
+      npm install -D vite @master/css-vite@rc
       ```
     </StepR>
   </Step>
@@ -32,7 +32,7 @@ Use Vite runtime rendering when PHP renders pages directly from templates. PHP s
     <StepR>
       ```ts name=vite.config.ts
       import { defineConfig } from 'vite'
-      import masterCSS from '@master/css.vite'
+      import masterCSS from '@master/css-vite'
 
       export default defineConfig({
         plugins: [
@@ -60,7 +60,7 @@ Use Vite runtime rendering when PHP renders pages directly from templates. PHP s
     </StepL>
     <StepR>
       ```ts name=resources/main.ts
-      import '@master/css.vite/runtime'
+      import '@master/css-vite/runtime'
       import './app.css'
       ```
 

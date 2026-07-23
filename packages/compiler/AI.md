@@ -2,7 +2,7 @@
 
 ## Responsibility
 
-`@master/css-compiler` is the TypeScript session/provider shell for the canonical Rust CSS source compiler. Rust parses directives and native CSS, consumes provider-neutral import graphs, detects entry markers, handles extraction directives, and lowers CSS-first authoring into `MasterCSSManifest` values.
+`@master/css-compiler` is the consolidated TypeScript host for the canonical Rust compiler and project crates. It owns compiler sessions, project resolution, managed stylesheet composition, and complete project inspection orchestration.
 
 ## Owns
 
@@ -11,11 +11,13 @@
 - `compileProjectManifest()` for project entry CSS files.
 - Native CSS output with consumed Master directives removed.
 - Shared directive data and dependency reporting for lower-level consumers.
+- Project entry discovery, manifest loading, sync loading, and workspace package resolution under `./project`.
+- Managed stylesheet registration, extraction policy, native CSS pruning, and generated CSS composition under `./stylesheet`.
+- Complete project inspection reports under `./diagnostics`.
 
 ## Does Not Own
 
 - Runtime class execution; use the manifest-driven engine.
-- Project entry discovery; use `@master/css-project`.
 - Build or framework lifecycle behavior.
 - PostCSS reintroduction.
 - Unrelated `.css` source scanning for class usage.
@@ -26,6 +28,7 @@
 - Native-only `./node` session.
 - Compiler-Wasm-only `./browser` session.
 - Manifest APIs used by project loading and integrations.
+- Project, stylesheet, and diagnostics subpaths documented in `package.json`.
 
 ## Key Files
 
@@ -33,6 +36,9 @@
 - `src/session.ts`
 - `src/node.ts`
 - `src/browser.ts`
+- `src/project/*`
+- `src/stylesheet/*`
+- `src/diagnostics/index.ts`
 - `crates/mastercss-compiler/src/lib.rs`
 - `crates/mastercss-compiler/src/lower.rs`
 
@@ -57,6 +63,7 @@
 - Expanding directive syntax without tests and directive guide updates.
 - Scanning unrelated CSS files for class usage in this package.
 - Adding a TypeScript directive/parser/lowering/CSS transform fallback.
+- Reintroducing separate public project, stylesheet, or diagnostics packages.
 
 ## Validation
 

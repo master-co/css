@@ -1,4 +1,4 @@
-import { registerStyleCSSSource as registerStylesheetCSSSource } from '@master/css-stylesheet'
+import { registerStyleCSSSource as registerStylesheetCSSSource } from '@master/css-compiler/stylesheet'
 import type { PluginContext } from '../core'
 import { getScanner } from './scanner-context'
 

@@ -9,7 +9,7 @@ import {
   MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID,
   serializeMasterCSSHydrationManifest
 } from '@master/css-schema/hydration-manifest'
-import { toHashedManifestAssetFileName } from '@master/css-integration/node'
+import { toHashedManifestAssetFileName } from '@master/css-internal-integration/node'
 import { getRegisteredOptions, resolveOptions, type AdapterOrder, type Options } from './options'
 import { createMasterCSSBuildStateResolver } from './build-state'
 
@@ -170,7 +170,7 @@ function resolveStaticExportRoot(output: HTMLBuildOutput) {
     || /^[a-z]:\//i.test(relativeID)
     || idSegments.includes('..')
   ) {
-    throw new Error(`[@master/css.next] Cannot resolve the static export root from output id ${JSON.stringify(output.id)} and file path ${JSON.stringify(output.filePath)}.`)
+    throw new Error(`[@master/css-next] Cannot resolve the static export root from output id ${JSON.stringify(output.id)} and file path ${JSON.stringify(output.filePath)}.`)
   }
 
   let exportRoot = resolve(output.filePath)
@@ -178,7 +178,7 @@ function resolveStaticExportRoot(output: HTMLBuildOutput) {
 
   const expectedFilePath = resolve(exportRoot, ...idSegments)
   if (dirname(exportRoot) === exportRoot || expectedFilePath !== resolve(output.filePath)) {
-    throw new Error(`[@master/css.next] Cannot resolve the static export root from output id ${JSON.stringify(output.id)} and file path ${JSON.stringify(output.filePath)}.`)
+    throw new Error(`[@master/css-next] Cannot resolve the static export root from output id ${JSON.stringify(output.id)} and file path ${JSON.stringify(output.filePath)}.`)
   }
 
   return exportRoot
@@ -293,7 +293,7 @@ export async function renderNextBuildOutputs(ctx: BuildCompleteContext, rawOptio
 
     if (options.debug) {
       const renderedCount = renderedOutputs.filter((output) => output.rendered).length
-      console.log(`[@master/css.next] rendered ${renderedCount}/${renderedOutputs.length} HTML output(s)`)
+      console.log(`[@master/css-next] rendered ${renderedCount}/${renderedOutputs.length} HTML output(s)`)
     }
 
     return renderedOutputs
@@ -305,7 +305,7 @@ export async function renderNextBuildOutputs(ctx: BuildCompleteContext, rawOptio
 
 export function createAdapter(options?: Options): NextAdapter {
   return {
-    name: '@master/css.next',
+    name: '@master/css-next',
     async onBuildComplete(ctx) {
       await renderNextBuildOutputs(ctx, options ?? getRegisteredOptions() ?? {})
     }
@@ -327,7 +327,7 @@ export function createComposedAdapter(
   { order = 'master-first' }: ComposedAdapterOptions = {}
 ): NextAdapter {
   return {
-    name: '@master/css.next+adapter',
+    name: '@master/css-next+adapter',
     async onBuildComplete(ctx) {
       const resolvedExternalAdapter = await resolveAdapter(externalAdapter)
       const adapters = order === 'master-first'

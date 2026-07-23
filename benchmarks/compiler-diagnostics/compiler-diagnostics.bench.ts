@@ -90,11 +90,11 @@ async function createCompilerDiagnosticsReport(): Promise<BenchmarkReport> {
     packages: await collectPackageVersions([
       '@master/css',
       '@master/css-compiler',
-      '@master/css-engine',
-      '@master/css-project',
-      '@master/css-scanner',
-      '@master/css-source',
-      '@master/css-stylesheet',
+      '@master/css',
+      '@master/css-compiler',
+      '@master/css-tooling/scanner',
+      '@master/css-tooling/source',
+      '@master/css-compiler/stylesheet',
       'fast-glob'
     ]),
     fixtures: getStaticBenchmarkFixtures(benchmarkFixtures),

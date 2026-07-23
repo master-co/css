@@ -1,8 +1,8 @@
 // import type * as monaco from 'monaco-editor/esm/vs/editor/editor.api'
 
 // import { getPosition, getColorPresentation, getDocumentColors, getCompletionItem, getLastInstance, getReturnItem, doHover, settings }
-//     // from '../../../../../../css/packages/language/src' // dev
-//     from '@master/css-language'
+//     // from '../../../../../../css/packages/tooling/src/language' // dev
+//     from '@master/css-tooling/language'
 
 // export function CompletionItemProvider(document: monaco.editor.ITextModel, position: monaco.Position, language: string = 'html') {
 

@@ -16,8 +16,8 @@ const packageDir = resolve(here, '..')
 const distDir = resolve(packageDir, 'dist')
 const serverPath = resolve(distDir, 'server.min.js')
 const extensionPath = resolve(distDir, 'extension.min.js')
-const sourceGrammarPath = './node_modules/@master/css-language/syntaxes/master-css.tmLanguage.json'
-const stagedGrammarPath = './dist/node_modules/@master/css-language/syntaxes/master-css.tmLanguage.json'
+const sourceGrammarPath = './node_modules/@master/css-language-service/syntaxes/master-css.tmLanguage.json'
+const stagedGrammarPath = './dist/node_modules/@master/css-language-service/syntaxes/master-css.tmLanguage.json'
 
 function readPackageJSON(path = resolve(packageDir, 'package.json')) {
   return JSON.parse(readFileSync(path, 'utf8'))
@@ -169,6 +169,14 @@ function expectStagedRuntimePackages({ stagingDir, files }, runtimePackages) {
   }
 }
 
+function expectCurrentNativeArtifacts(stagingDir, target) {
+  const packageName = getRuntimePackagesForTarget(target)[0]
+  const packagePath = join(stagingDir, 'dist', 'node_modules', ...packageName.split('/'))
+  const executableName = target.startsWith('win32-') ? 'mcss.exe' : 'mcss'
+  expect(statSync(join(packagePath, 'mastercss.node')).isFile()).toBe(true)
+  expect(statSync(join(packagePath, executableName)).isFile()).toBe(true)
+}
+
 test('build emits the server bundle', () => {
   expect(statSync(serverPath).isFile()).toBe(true)
 })
@@ -212,8 +220,9 @@ test('server bundle does not retain removed TypeScript semantic backends', () =>
 })
 
 test('staged extension includes runtime packages for the current target', async () => {
-  await withStagedExtension(({ stagingDir, files }, { getCurrentTarget, getRuntimePackagesForTarget }) => {
+  await withStagedExtension(({ stagingDir, files, target }, { getCurrentTarget, getRuntimePackagesForTarget }) => {
     expectStagedRuntimePackages({ stagingDir, files }, getRuntimePackagesForTarget(getCurrentTarget()))
+    expectCurrentNativeArtifacts(stagingDir, target)
   })
 })
 

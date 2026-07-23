@@ -1,6 +1,9 @@
 {
-  "name": "@master/css.nuxt",
+  "name": "@master/css-nuxt",
   "type": "module",
+  "engines": {
+    "node": "^24"
+  },
   "scripts": {
     "build": "nuxt-module-build prepare && nuxt-module-build && node scripts/normalize-module-build.js",
     "dev": "nuxt-module-build prepare && nuxi dev playground",
@@ -37,11 +40,10 @@
   "exports": {
     ".": {
       "types": "./dist/module.d.ts",
+      "import": "./dist/module.js",
       "default": "./dist/module.js"
     }
   },
-  "main": "./dist/module.js",
-  "module": "./dist/module.js",
   "files": [
     "dist"
   ],
@@ -50,15 +52,14 @@
     "provenance": true
   },
   "dependencies": {
-    "@master/css-integration": "workspace:^",
-    "@master/css-project": "workspace:^",
-    "@master/css-runtime": "workspace:^",
-    "@master/css-server": "workspace:^",
-    "@master/css-stylesheet": "workspace:^",
-    "@master/css.vite": "workspace:^",
+    "@master/css-compiler": "workspace:*",
+    "@master/css-runtime": "workspace:*",
+    "@master/css-server": "workspace:*",
+    "@master/css-vite": "workspace:*",
     "@nuxt/kit": "^4.4.8"
   },
   "devDependencies": {
+    "@master/css-internal-integration": "workspace:*",
     "@nuxt/devtools": "4.0.0-alpha.4",
     "@nuxt/eslint": "^1.16.0",
     "@nuxt/eslint-config": "^1.16.0",
@@ -76,6 +77,6 @@
     "vite": "^8.0.16",
     "vitest": "^4.1.9",
     "vue": "^3.5.38",
-    "@master/css-schema": "workspace:^"
+    "@master/css-schema": "workspace:*"
   }
 }

@@ -4,6 +4,8 @@ use std::collections::{HashMap, HashSet};
 use lightningcss::declaration::DeclarationBlock;
 use lightningcss::properties::Property;
 use lightningcss::stylesheet::ParserOptions;
+use lightningcss::traits::Parse;
+use lightningcss::values::length::{Length, LengthPercentageOrAuto};
 use mastercss_engine::{EngineCompositionRuleIr, EngineSession, natural_compare};
 use mastercss_schema::{
     CssDirectiveConditionPathEntry, CssDirectiveManifestInput, CssDirectiveSourceReference,
@@ -223,11 +225,19 @@ fn composition_rules(
                 }
                 let accepts_unparsed = || {
                     let value = candidate.value.trim();
-                    ["var(", "env(", "attr("]
+                    matches!(
+                        value,
+                        "initial" | "inherit" | "unset" | "revert" | "revert-layer"
+                    ) || ["var(", "env(", "attr("]
                         .iter()
                         .any(|function| value.contains(function))
                         || ((value.starts_with('\'') && value.ends_with('\''))
                             || (value.starts_with('"') && value.ends_with('"')))
+                        || (candidate.property == "content" && matches!(value, "normal" | "none"))
+                        || (candidate.property == "text-underline-offset"
+                            && LengthPercentageOrAuto::parse_string(value).is_ok())
+                        || (candidate.property == "outline-offset"
+                            && Length::parse_string(value).is_ok())
                         || (candidate.property == "contain"
                             && value.split_whitespace().all(|keyword| {
                                 matches!(
@@ -1059,6 +1069,30 @@ mod tests {
                 "order": 2,
                 "className": "content:'stripe'",
                 "selector": ".card"
+            },
+            {
+                "type": "compose",
+                "order": 3,
+                "className": "fg:inherit!",
+                "selector": ".card"
+            },
+            {
+                "type": "compose",
+                "order": 4,
+                "className": "content:none",
+                "selector": ".card::before"
+            },
+            {
+                "type": "compose",
+                "order": 5,
+                "className": "text-underline-offset:2px",
+                "selector": ".card"
+            },
+            {
+                "type": "compose",
+                "order": 6,
+                "className": "outline-offset:0",
+                "selector": ".card"
             }
         ]))
         .unwrap();
@@ -1074,5 +1108,9 @@ mod tests {
         .unwrap();
         assert!(result.generated_css.contains("contain:content"));
         assert!(result.generated_css.contains("content:'stripe'"));
+        assert!(result.generated_css.contains("color:inherit!important"));
+        assert!(result.generated_css.contains("content:none"));
+        assert!(result.generated_css.contains("text-underline-offset:2px"));
+        assert!(result.generated_css.contains("outline-offset:0"));
     }
 }

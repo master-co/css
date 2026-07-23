@@ -12,9 +12,9 @@ import {
   resolveMasterCSSPackageImportGraph,
   type CompileCSSResult
 } from '@master/css-compiler'
-import { collectAnimationNamesFromDeclaration } from '@master/css-engine'
-import { findCSSManifestEntryFiles } from '@master/css-project/entries'
-import CSSScanner from '@master/css-scanner'
+import { collectAnimationNamesFromDeclaration } from '@master/css'
+import { findCSSManifestEntryFiles } from '@master/css-compiler/project/entries'
+import CSSScanner from '@master/css-tooling/scanner'
 import {
   collectCSSVariableReferences,
   compileStyleCSS,
@@ -26,16 +26,16 @@ import {
   type ScannerState,
   type StyleCSSSource,
   type StyleCSSSources
-} from '@master/css-stylesheet'
-import { extractClassCandidates } from '@master/css-source'
+} from '@master/css-compiler/stylesheet'
+import { extractClassCandidates } from '@master/css-tooling/source'
 import {
   hasStylesheetDirectives,
   hasStylesheetSourceDirectives,
   mergeStylesheetSourceOptions,
   resolveStylesheetSourcePaths,
   type StylesheetSourceOptions
-} from '@master/css-stylesheet/directives'
-import { createCSSWithNativeDeclarations } from '@master/css-validator/native-declaration'
+} from '@master/css-compiler/stylesheet/directives'
+import { createCSSWithNativeDeclarations } from '@master/css-tooling/validator/native-declaration'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import fg from 'fast-glob'
 import { getStaticFixtureSource } from '../fixtures/static'

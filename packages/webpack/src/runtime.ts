@@ -1,4 +1,4 @@
-/// <reference types="@master/css-integration/client" />
+/// <reference types="@master/css/client" />
 
 import CSSRuntime from '@master/css-runtime'
 import masterCSSManifest from 'virtual:master-css-manifest'

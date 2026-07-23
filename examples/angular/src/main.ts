@@ -7,7 +7,9 @@ import type { MasterCSSManifest } from '@master/css-runtime';
 
 const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest;
 
-CSSRuntime.create({ manifest: defaultManifest }).observe();
+void CSSRuntime.start({ manifest: defaultManifest })
+  .then((cssRuntime) => cssRuntime.observe())
+  .catch((error) => console.error(error));
 
 bootstrapApplication(AppComponent, appConfig)
   .catch((err) => console.error(err));

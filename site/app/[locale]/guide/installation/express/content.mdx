@@ -21,7 +21,7 @@ Use progressive rendering when Express owns the HTML response. Express renders t
     <StepR>
       ```bash name=Terminal
       npm install express ejs @master/css-server@rc
-      npm install -D vite @master/css.vite@rc
+      npm install -D vite @master/css-vite@rc
       ```
     </StepR>
   </Step>
@@ -33,7 +33,7 @@ Use progressive rendering when Express owns the HTML response. Express renders t
     <StepR>
       ```ts name=vite.config.ts
       import { defineConfig } from 'vite'
-      import masterCSS from '@master/css.vite'
+      import masterCSS from '@master/css-vite'
 
       export default defineConfig({
         plugins: [
@@ -61,7 +61,7 @@ Use progressive rendering when Express owns the HTML response. Express renders t
     </StepL>
     <StepR>
       ```ts name=src/main.ts
-      import '@master/css.vite/runtime'
+      import '@master/css-vite/runtime'
       import './app.css'
       ```
 

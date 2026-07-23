@@ -5,8 +5,8 @@ import createRule from '../create-rule'
 import {
   defaultCanonicalClassNameOptions,
   type CanonicalClassNameOptions
-} from '@master/css-lint'
-import { fromRustLintDiagnostics } from '@master/css-lint/node'
+} from '@master/css-tooling/lint'
+import { fromRustLintDiagnostics } from '@master/css-tooling/lint/node'
 import type { ResolvedClassNode } from '../utils/resolve-class-node'
 import type { ResolvedComposeDirectiveClassNode } from '../utils/resolve-compose-directive-class-nodes'
 import reportLintDiagnostics from '../utils/report-lint-diagnostics'

@@ -258,12 +258,12 @@ async function createExtractionDiagnosticsReport(): Promise<BenchmarkReport> {
     packages: await collectPackageVersions([
       '@master/css',
       '@master/css-compiler',
-      '@master/css-engine',
-      '@master/css-project',
-      '@master/css-scanner',
-      '@master/css-source',
-      '@master/css-stylesheet',
-      '@master/css-validator',
+      '@master/css',
+      '@master/css-compiler',
+      '@master/css-tooling/scanner',
+      '@master/css-tooling/source',
+      '@master/css-compiler/stylesheet',
+      '@master/css-tooling/validator',
       'fast-glob'
     ]),
     fixtures: getStaticBenchmarkFixtures(benchmarkFixtures),

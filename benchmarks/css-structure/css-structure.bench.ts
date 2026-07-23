@@ -78,7 +78,7 @@ async function createCSSStructureReport(): Promise<BenchmarkReport> {
     packages: await collectPackageVersions([
       '@master/css',
       '@master/css-cli',
-      '@master/css.vite',
+      '@master/css-vite',
       'tailwindcss',
       '@tailwindcss/cli',
       '@tailwindcss/vite',

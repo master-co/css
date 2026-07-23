@@ -29,18 +29,6 @@ export default defineConfig([
   },
   {
     entry: {
-      'index.development': 'src/index.development.ts'
-    },
-    platform: 'browser',
-    tsconfig: './tsconfig.prod.json',
-    dts: false,
-    outputOptions: {
-      entryFileNames: '[name].js',
-      codeSplitting: false
-    }
-  },
-  {
-    entry: {
       'global.min': 'src/global.min.ts'
     },
     platform: 'browser',

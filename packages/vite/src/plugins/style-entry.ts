@@ -1,5 +1,5 @@
 import type { Plugin } from 'vite'
-import { VIRTUAL_CSS_ID } from '@master/css-integration/style-module'
+import { VIRTUAL_CSS_ID } from '@master/css-internal-integration/style-module'
 import type { PluginContext } from '../core'
 import type { PluginOptions } from '../options'
 import getExtractedCSS from '../utils/extracted-css'
@@ -10,7 +10,7 @@ import {
   isStyleCSSRequest,
   removeMasterStyleDirectives,
   resolveMasterStyleSource
-} from '@master/css-stylesheet'
+} from '@master/css-compiler/stylesheet'
 import { registerStyleCSSSource } from '../utils/register-style-source'
 import { getScanner } from '../utils/scanner-context'
 

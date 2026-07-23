@@ -1,7 +1,7 @@
 import log from './log'
 import type CSSRuntime from '../core'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
-import type { HydrateResult } from '../types'
+import type { HydrateResult } from '../types/hydrate-result'
 
 export function debugRuntimeCreated(cssRuntime: CSSRuntime) {
   log.debug('created', cssRuntime)

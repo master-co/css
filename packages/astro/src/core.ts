@@ -1,12 +1,12 @@
 import { AstroIntegration } from 'astro'
-import vitePlugin from '@master/css.vite'
+import vitePlugin from '@master/css-vite'
 import defaultOptions, { type IntegrationOptions } from './options'
 import { externalizeAstroHydrationManifests } from './external-hydration-manifest'
 import { preloadAstroRuntimeAssets } from './runtime-preload'
 
-export const ASTRO_MIDDLEWARE_ENTRYPOINT = '@master/css.astro/middleware'
+export const ASTRO_MIDDLEWARE_ENTRYPOINT = '@master/css-astro/middleware'
 export const ASTRO_SSR_EXTERNAL = ['@master/css-server']
-export const ASTRO_RUNTIME_INJECTION = 'import "@master/css.vite/runtime";'
+export const ASTRO_RUNTIME_INJECTION = 'import "@master/css-vite/runtime";'
 
 function getViteOptions(options: IntegrationOptions): IntegrationOptions {
   switch (options.mode) {
@@ -31,7 +31,7 @@ export default function masterCSS(options?: IntegrationOptions): AstroIntegratio
   let astroBase: string | undefined
   let buildOutput: 'static' | 'server' | undefined
   return {
-    name: '@master/css.astro',
+    name: '@master/css-astro',
     hooks: {
       'astro:config:setup': async ({ addMiddleware, injectScript, updateConfig }) => {
         switch (options.mode) {

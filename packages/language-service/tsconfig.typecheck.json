@@ -13,14 +13,15 @@
   },
   "references": [
     {
-      "path": "../language/tsconfig.typecheck.json"
+      "path": "../schema/tsconfig.typecheck.json"
     },
     {
-      "path": "../schema/tsconfig.typecheck.json"
+      "path": "../tooling/tsconfig.typecheck.json"
     }
   ],
   "include": [
     "src/**/*.ts",
+    "syntaxes/**/*.json",
     "tests/**/*.test.ts",
     "tests/**/test.ts",
     "tests/helpers/**/*.ts",

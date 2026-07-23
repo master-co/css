@@ -20,11 +20,11 @@
       <img alt="NPM Version" src="https://img.shields.io/github/v/release/master-co/css?include_prereleases&color=f6f7f8&label=&style=for-the-badge&logo=github">
     </picture>
   </a>
-  <a aria-label="NPM Package" href="https://www.npmjs.com/package/@master/css.svelte">
+  <a aria-label="NPM Package" href="https://www.npmjs.com/package/@master/css-svelte">
     <picture>
-      <source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/npm/dm/@master/css.svelte?color=212022&label=%20&logo=npm&style=for-the-badge">
-      <source media="(prefers-color-scheme: light)" srcset="https://img.shields.io/npm/dm/@master/css.svelte?color=f6f7f8&label=%20&logo=npm&style=for-the-badge">
-      <img alt="NPM package ( download / month )" src="https://img.shields.io/npm/dm/@master/css.svelte?color=f6f7f8&label=%20&logo=npm&style=for-the-badge">
+      <source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/npm/dm/@master/css-svelte?color=212022&label=%20&logo=npm&style=for-the-badge">
+      <source media="(prefers-color-scheme: light)" srcset="https://img.shields.io/npm/dm/@master/css-svelte?color=f6f7f8&label=%20&logo=npm&style=for-the-badge">
+      <img alt="NPM package ( download / month )" src="https://img.shields.io/npm/dm/@master/css-svelte?color=f6f7f8&label=%20&logo=npm&style=for-the-badge">
     </picture>
   </a>
   <a aria-label="Discord Community" href="https://discord.gg/sZNKpAAAw6">
@@ -58,16 +58,16 @@
 npx sv add @master/css-sv
 ```
 
-The Svelte CLI add-on installs `@master/css.svelte`, wires Vite, creates the stylesheet entry, imports it from the root layout, and composes the SvelteKit server hook.
+The Svelte CLI add-on installs `@master/css-svelte`, wires Vite, creates the stylesheet entry, imports it from the root layout, and composes the SvelteKit server hook.
 
-`@master/css.svelte` provides the SvelteKit Vite integration and server hook used at dev, build, and SSR time. Source extraction for `.svelte` files is handled automatically by `@master/css-source`.
+`@master/css-svelte` provides the SvelteKit Vite integration and server hook used at dev, build, and SSR time. Source extraction for `.svelte` files is handled automatically by `@master/css-tooling/source`.
 
 ## Manual setup
 
 Use this path when `sv add` is not available for the project.
 
 ```bash
-npm install @master/css @master/css.svelte
+npm install @master/css @master/css-svelte
 ```
 
 ### Vite plugin
@@ -75,7 +75,7 @@ npm install @master/css @master/css.svelte
 ```ts
 import { sveltekit } from '@sveltejs/kit/vite'
 import { defineConfig } from 'vite'
-import masterCSS from '@master/css.svelte/vite'
+import masterCSS from '@master/css-svelte/vite'
 
 export default defineConfig({
   plugins: [
@@ -90,7 +90,7 @@ export default defineConfig({
 Export the server handle to inject streamed CSS before `</head>`.
 
 ```ts
-export { default as handle } from '@master/css.svelte/hooks.server'
+export { default as handle } from '@master/css-svelte/hooks.server'
 ```
 
 If the project already has a server `handle`, compose it with SvelteKit's `sequence()`.

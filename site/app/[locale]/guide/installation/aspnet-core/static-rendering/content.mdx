@@ -21,7 +21,7 @@ Use static rendering when ASP.NET Core Razor Pages or MVC views contain complete
     </StepL>
     <StepR>
       ```bash name=Terminal
-      npm install -D vite @master/css.vite@rc
+      npm install -D vite @master/css-vite@rc
       ```
     </StepR>
   </Step>
@@ -33,7 +33,7 @@ Use static rendering when ASP.NET Core Razor Pages or MVC views contain complete
     <StepR>
       ```ts name=vite.config.ts
       import { defineConfig } from 'vite'
-      import masterCSS from '@master/css.vite'
+      import masterCSS from '@master/css-vite'
 
       export default defineConfig({
         plugins: [

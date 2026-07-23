@@ -7,9 +7,9 @@ import {
   type MasterCSSLintRuleId,
   type MasterCSSLintSourceDiagnostic,
   type MasterCSSLintSummary
-} from '@master/css-lint'
-import { createLintSessionSync, type LintSession } from '@master/css-lint/node'
-import { loadProjectManifest } from '@master/css-project/manifest'
+} from '@master/css-tooling/lint'
+import { createLintSessionSync, type LintSession } from '@master/css-tooling/lint/node'
+import { loadProjectManifest } from '@master/css-compiler/project'
 import fg from 'fast-glob'
 import fs from 'node:fs'
 import path from 'node:path'

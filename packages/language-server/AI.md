@@ -13,7 +13,7 @@
 
 ## Does Not Own
 
-- Editor-neutral class scanning or semantic token primitives; use `@master/css-language`.
+- Editor-neutral class scanning or semantic token primitives; use `@master/css-tooling/language`.
 - Stateful feature implementation; use `@master/css-language-service`.
 - VS Code extension activation or packaging.
 - CSS directive lexical highlighting, which is TextMate-first.
@@ -35,7 +35,7 @@
 
 - `workspaces: 'auto'` discovery from manifest entry files and package dependencies.
 - Closest workspace selection for monorepos.
-- Manifest loading through `@master/css-project`.
+- Manifest loading through `@master/css-compiler/project`.
 - Restart behavior after manifest or settings saves.
 - Advertising LSP capabilities that are not implemented and tested.
 

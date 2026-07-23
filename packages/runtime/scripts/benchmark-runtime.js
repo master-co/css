@@ -40,7 +40,7 @@ if (!existsSync(globalBundleFile) || !existsSync(defaultManifestFile) || !exists
   process.exit(1)
 }
 
-const { createEngineSync } = await import('@master/css-engine/node')
+const { createEngineSync } = await import('@master/css/node')
 const defaultManifest = (await import('@master/css-preset/default-manifest.json', { with: { type: 'json' } })).default
 const browserTypes = {
   chromium,

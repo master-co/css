@@ -1,45 +1,74 @@
 # Package Responsibility Healthcheck
 
-Date: 2026-07-01
+Date: 2026-07-23
 
-## Summary
+## Outcome
 
-This pass checked every package under `packages/*` that has a `package.json` against the package responsibility docs, package-local `AI.md` files, public exports, production dependencies, and source-level workspace imports.
+The post-Rust package graph has one public owner for each responsibility and no
+published compatibility packages for the retired TypeScript boundaries. The
+canonical package map is `.ai/package-map.md`; this report records the decisions
+that the automated package checks enforce.
 
-The current production dependency graph has no workspace package cycles. This report records the package responsibility review and the stale AI-facing package-map corrections from that pass.
+## Public ownership
 
-## Changes Landed
+| Responsibility | Owner |
+| --- | --- |
+| Runtime class-to-CSS engine and public CSS facade | `@master/css` |
+| Default CSS source and compiled preset manifest | `@master/css-preset` |
+| Directives, stylesheet rendering, project/workspace compilation, compiler diagnostics | `@master/css-compiler` |
+| Lexing, source extraction, scanning, validation, lint primitives, language IR, tooling diagnostics | `@master/css-tooling` |
+| Browser runtime | `@master/css-runtime` |
+| Server rendering | `@master/css-server` |
+| Editor features and Shiki/TextMate presentation | `@master/css-language-service` |
+| LSP transport and workspace lifecycle | `@master/css-language-server` |
+| ESLint rules and retained preset | `@master/eslint-plugin-css`, `@master/eslint-config-css` |
+| Official build/framework adapters | `@master/css-vite`, `@master/css-webpack`, `@master/css-next`, `@master/css-nuxt`, `@master/css-astro`, `@master/css-svelte` |
+| Host applications | `@master/css-cli`, `@master/css-mcp`, `@master/create-css`, `@master/css-figma`, `@master/css-vscode` |
+| Wire contracts, native loader, Wasm loaders | `@master/css-schema`, `@master/css-native`, `@master/css-wasm-*` |
 
-- Updated `.ai/package-map.md` so public entry points match package `exports`, including `@master/css.next`, `@master/css-mcp`, `@master/css-engine/inspect`, `@master/css-project/workspace`, browser/service subpaths, and removal of the obsolete `@master/css-integration/runtime` entry.
-- Updated `packages/project/AI.md` to list `./workspace` as an explicit public subpath.
+## Retired boundaries
 
-## Findings
+The former diagnostics, engine, facade, language, lexer, lint, project, scanner,
+source, stylesheet, and validator package directories are retired. Their public
+responsibilities moved to the owners above; their package names, directories,
+dependency edges, and compatibility exports must not return.
 
-- Source-of-truth drift existed in `.ai/package-map.md`.
-  Public entry points were missing or stale for `@master/css-engine`, `@master/css-preset`, `@master/css-compiler`, `@master/css-stylesheet`, `@master/css.vite`, `@master/css.next`, `@master/css.astro`, `@master/css-language-service`, `@master/css-language-server`, `@master/css-validator`, `@master/css-project`, and `@master/css-mcp`. `@master/css-integration` also documented an obsolete `./runtime` export.
+The adapter-neutral integration implementation is now the repository-private
+`@master/css-internal-integration`. Official adapters bundle it. It is not a
+published dependency and is not a third-party adapter SPI.
 
-- `@master/css-project/workspace` was a real public API but missing from the package-local public-surface notes.
-  It is consumed by MCP, language-server, and VS Code packages. `packages/project/AI.md` now documents the subpath and key file.
+## Standardized contracts
 
-- No hard production dependency direction violations were found after normalizing the docs.
+- Official adapters use hyphenated npm names; dotted package identities are retired.
+- The npm package is `@master/css-vscode`; the VS Code Marketplace extension ID
+  remains `master-css-vscode` because that ID is controlled by the marketplace.
+- First-party workspace dependencies use `workspace:*`, producing exact lockstep
+  published versions.
+- Public JavaScript packages are ESM with the Node 24 baseline. Native target
+  artifacts remain CommonJS because they are platform loader payloads.
+- Every public package declares explicit `exports`, a publish allowlist,
+  provenance, side-effect metadata where applicable, and TypeScript declarations
+  where the surface has a TypeScript API.
+- Pure re-export modules are limited to intentional facades, public subpaths,
+  generated loaders, CSS entrypoints, and configuration presets.
 
-- No production workspace dependency cycles were found.
-  The review covered `dependencies` and `peerDependencies`, while ignoring `devDependencies`.
+## Enforcement
+
+- `pnpm check:packages` validates package identities, retired directories,
+  lockstep dependency ranges, module/engine/export metadata, the retained ESLint
+  preset, and private integration bundling.
+- `pnpm check:boundaries` validates the Rust semantic core and package dependency
+  direction.
+- `pnpm build` materializes public artifacts.
+- `pnpm check:artifacts` verifies every concrete export target and scans publish
+  allowlists for private or retired package specifiers.
 
 ## Watchlist
 
-- `@master/css-stylesheet` still has a `devDependency` on `@master/css-scanner`.
-  This is acceptable for tests, but production code must continue to accept structural scanner state instead of importing scanner state directly.
-
-- `@master/css-runtime` has dev-only links to compiler and integration packages.
-  Current runtime source value imports stay on engine, preset, and schema. Future runtime changes should keep compiler/integration/tooling helpers out of runtime-covered source.
-
-- `@master/css-integration/src/manifest-facade.ts` generates strings that contain Node imports for Node/universal facade modules.
-  The browser-safe package code itself must not import `node:*`, use `Buffer`, or read `process`; generated strings should be reviewed separately from actual browser-safe subpath code.
-
-- `@master/css.figma` and `master-css-vscode` are bundled app/plugin surfaces.
-  Their source imports workspace packages through dev-time bundling, so the source-import dependency check explicitly exempts them. If either package stops bundling these imports, move the needed workspace packages to production dependencies and remove the exemption.
-
-## Coverage Note
-
-This report is historical. CI no longer runs the AI governance checks described in the original review; package ownership expectations remain documented in `AGENTS.md`, `.ai/context/package-boundaries.md`, and package-local `AI.md` files.
+- Syntax, directive, and emitted CSS bytes remain compatibility constraints even
+  though JavaScript APIs may break.
+- Browser/runtime entrypoints must not absorb build-only or editor-only helpers.
+- New shared behavior belongs in the lowest dependency-light owner rather than a
+  new one-function package.
+- New framework adapters are first-party products; do not expose a public generic
+  adapter registration protocol.

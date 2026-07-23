@@ -1,8 +1,8 @@
-# AI Notes For `@master/css.webpack`
+# AI Notes For `@master/css-webpack`
 
 ## Responsibility
 
-`@master/css.webpack` provides a Webpack integration plugin based on `CSSScanner`, `webpack-virtual-modules`, and build-tool runtime injection.
+`@master/css-webpack` provides a Webpack integration plugin based on `CSSScanner`, `webpack-virtual-modules`, and build-tool runtime injection.
 
 ## Owns
 
@@ -57,10 +57,10 @@
 ## Validation
 
 ```sh
-pnpm --filter @master/css.webpack test
-pnpm --filter @master/css.webpack lint
-pnpm --filter @master/css.webpack type-check
-pnpm --filter @master/css.webpack build
+pnpm --filter @master/css-webpack test
+pnpm --filter @master/css-webpack lint
+pnpm --filter @master/css-webpack type-check
+pnpm --filter @master/css-webpack build
 ```
 
 Run the Webpack example build when plugin behavior changes.

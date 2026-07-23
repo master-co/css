@@ -2,6 +2,6 @@
   "name": "vscode-playground-package-d",
   "private": true,
   "devDependencies": {
-    "@master/css.vite": "workspace:^"
+    "@master/css-vite": "workspace:^"
   }
 }

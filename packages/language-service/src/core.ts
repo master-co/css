@@ -1,7 +1,7 @@
 import {
   type LanguageClassPositionIR as ClassPosition,
   type LanguageSession
-} from '@master/css-language'
+} from '@master/css-tooling/language'
 import { defu } from 'defu'
 import EventEmitter from 'node:events'
 import { minimatch } from 'minimatch'

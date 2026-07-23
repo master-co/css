@@ -1,4 +1,4 @@
-import CSSScanner from '@master/css-scanner'
+import CSSScanner from '@master/css-tooling/scanner'
 import type { Plugin } from 'vite'
 import type { PluginContext } from '../core'
 import type { PluginOptions } from '../options'

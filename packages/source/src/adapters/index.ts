@@ -1,8 +1,0 @@
-export { addClassString } from './class-string'
-export type { SourceAdapter, SourceAdapterInput } from './types'
-export { matchesSourceAdapter } from './types'
-export { HTML_SOURCE_EXT, extractHTMLClasses, htmlAdapter } from './html'
-export { OXC_SOURCE_EXT, extractOxcClasses, oxcAdapter } from './oxc'
-export { ASTRO_SOURCE_EXT, extractAstroClasses, astroAdapter } from './astro'
-export { VUE_SOURCE_EXT, extractVueClasses, vueAdapter } from './vue'
-export { SVELTE_SOURCE_EXT, extractSvelteClasses, svelteAdapter } from './svelte'

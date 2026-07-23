@@ -1,5 +1,5 @@
 import InlineCode from '~/internal/components/InlineCode'
-import { builtinNativeValueNamespaces } from '@master/css-engine'
+import { builtinNativeValueNamespaces } from '@master/css-tooling/builtins'
 import { getUtilityVariableNamespaces, manifestUtilities } from '~/site/utils/manifest-utilities'
 
 const utilities = manifestUtilities

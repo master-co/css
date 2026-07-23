@@ -1,7 +1,6 @@
 import assert from 'node:assert/strict'
 import { access, readdir } from 'node:fs/promises'
 import { test } from 'node:test'
-import css from '../common/preset-css'
 import { generateSyntaxTrDeclarations } from './syntax-tr-declarations'
 import { createSyntaxTrPlaceholderContext, type SyntaxTrHastNode } from './syntax-tr-placeholders'
 
@@ -239,9 +238,7 @@ test('all reference syntaxes place nested rows after plain rows', async () => {
 })
 
 function generateDeclarations(className: string) {
-  const rule = css.generate(className)[0]
-  assert.ok(rule)
-  return rule.declarations as Record<string, string>
+  return generateSyntaxTrDeclarations(className) as Record<string, string>
 }
 
 function convertDeclarationsToCSS(obj: Record<string, string>) {

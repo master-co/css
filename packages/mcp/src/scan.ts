@@ -1,7 +1,7 @@
 import { createRequire } from 'node:module'
 import { resolve } from 'node:path'
 import fg from 'fast-glob'
-import { createMasterCSSInspectionReport } from '@master/css-diagnostics'
+import { createMasterCSSInspectionReport } from '@master/css-compiler/diagnostics'
 import { createServerCSS, parseHTML } from '@master/css-server'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import type MasterCSSMCPContext from './context'

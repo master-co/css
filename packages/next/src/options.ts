@@ -1,4 +1,4 @@
-import type { ScannerOptions } from '@master/css-scanner'
+import type { ScannerOptions } from '@master/css-tooling/scanner'
 
 export type Mode = 'runtime' | 'pre-render' | 'static' | 'progressive' | null
 export type AdapterOrder = 'master-first' | 'external-first'

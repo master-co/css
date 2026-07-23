@@ -8,6 +8,9 @@
     "test": "cargo xtask build-native && vitest"
   },
   "type": "module",
+  "engines": {
+    "node": "^24"
+  },
   "license": "MIT",
   "description": "Master CSS CLI",
   "author": "Aoyue Design LLC.",
@@ -27,6 +30,8 @@
     "mastercss"
   ],
   "bin": "./dist/bin/index.js",
+  "exports": {},
+  "sideEffects": false,
   "files": [
     "dist"
   ],
@@ -35,15 +40,10 @@
     "provenance": true
   },
   "dependencies": {
-    "@master/css": "workspace:^",
-    "@master/css-diagnostics": "workspace:^",
-    "@master/css-language": "workspace:^",
-    "@master/css-lint": "workspace:^",
-    "@master/css-native": "workspace:^",
-    "@master/css-project": "workspace:^",
-    "@master/css-scanner": "workspace:^",
-    "@master/css-stylesheet": "workspace:^",
-    "@master/css-validator": "workspace:^",
+    "@master/css": "workspace:*",
+    "@master/css-compiler": "workspace:*",
+    "@master/css-tooling": "workspace:*",
+    "@master/css-native": "workspace:*",
     "bytes": "^3.1.2",
     "chokidar": "^5.0.0",
     "commander": "^14.0.3",

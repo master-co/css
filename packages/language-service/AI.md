@@ -8,7 +8,7 @@
 
 - Language service settings and feature gating.
 - Completion, hover/generated CSS previews, colors, and color presentations.
-- `TextDocument` methods that delegate class-position and semantic token primitives to `@master/css-language`.
+- `TextDocument` methods that delegate class-position and semantic token primitives to `@master/css-tooling/language`.
 - Thin wrappers around editor-neutral language primitives.
 
 ## Does Not Own
@@ -16,7 +16,7 @@
 - Engine syntax behavior.
 - LSP capabilities and workspace lifecycle.
 - Browser helpers, Shiki helpers, TextMate grammar ownership, semantic tokenizer ownership, or class-position scanner ownership.
-- Raw class-list parsing and unescape behavior; that flows through `@master/css-language` from `@master/css-lexer`.
+- Raw class-list parsing and unescape behavior; that flows through `@master/css-tooling/language` from `@master/css-tooling/lexer`.
 - Diagnostics without language-server coordination.
 
 ## Public Surface

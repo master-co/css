@@ -43,7 +43,7 @@ async function setup(options?: Parameters<typeof masterCSS>[0]) {
   }
 }
 
-describe('@master/css.astro integration', () => {
+describe('@master/css-astro integration', () => {
   it('defaults to progressive mode', () => {
     expect(defaultOptions.mode).toBe('progressive')
   })

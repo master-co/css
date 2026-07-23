@@ -28,7 +28,7 @@ Runtime does not expose a global event bus or tooling observer API. Third-party 
 ## Public Surface
 
 - `CSSRuntime`
-- `CSSRuntime.create({ manifest, root, emittedGlobals, hydrationManifest })`
+- `CSSRuntime.start({ manifest, root, emittedGlobals, hydrationManifest })`
 - `CSSRuntime#loadHydrationManifest()`
 - `CSSRuntime#observe()`
 - `RuntimeUtilityLayer`

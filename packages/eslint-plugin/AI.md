@@ -14,9 +14,9 @@
 ## Does Not Own
 
 - Engine CSS generation semantics.
-- Class lint policy owned by `@master/css-lint`.
-- Class-list token/range parsing owned by `@master/css-lexer`.
-- Framework-neutral class-list edit text owned by `@master/css-lint`.
+- Class lint policy owned by `@master/css-tooling/lint`.
+- Class-list token/range parsing owned by `@master/css-tooling/lexer`.
+- Framework-neutral class-list edit text owned by `@master/css-tooling/lint`.
 - Source extraction adapters outside ESLint visitors.
 - Language service or LSP behavior.
 
@@ -43,7 +43,7 @@
 - Autofix whitespace, quote, and range preservation.
 - Keep AST/report/fixer orchestration here, but delegate token/range parsing and class-list replacement text to lower packages.
 - Manifest cache scoping by cwd/settings.
-- Adapter drift from `@master/css-lint` policy helpers.
+- Adapter drift from `@master/css-tooling/lint` policy helpers.
 
 ## Safe Changes
 

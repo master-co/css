@@ -5,7 +5,7 @@ import type {
   MasterCSSNativeDeclarationCandidateIR,
   MasterCSSServerRenderIR
 } from '@master/css-schema/rust-contract'
-import { cssTreeNativeDeclarationMatcher } from '@master/css-validator/native-declaration-matcher'
+import { cssTreeNativeDeclarationMatcher } from '@master/css-tooling/validator/native-declaration-matcher'
 
 type RenderSnapshot = (classNames: string[]) => MasterCSSServerRenderIR
 

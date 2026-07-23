@@ -20,11 +20,11 @@
       <img alt="NPM Version" src="https://img.shields.io/github/v/release/master-co/css?include_prereleases&color=f6f7f8&label=&style=for-the-badge&logo=github">
     </picture>
   </a>
-  <a aria-label="NPM Package" href="https://www.npmjs.com/package/@master/css.webpack">
+  <a aria-label="NPM Package" href="https://www.npmjs.com/package/@master/css-webpack">
     <picture>
-      <source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/npm/dm/@master/css.webpack?color=212022&label=%20&logo=npm&style=for-the-badge">
-      <source media="(prefers-color-scheme: light)" srcset="https://img.shields.io/npm/dm/@master/css.webpack?color=f6f7f8&label=%20&logo=npm&style=for-the-badge">
-      <img alt="NPM package ( download / month )" src="https://img.shields.io/npm/dm/@master/css.webpack?color=f6f7f8&label=%20&logo=npm&style=for-the-badge">
+      <source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/npm/dm/@master/css-webpack?color=212022&label=%20&logo=npm&style=for-the-badge">
+      <source media="(prefers-color-scheme: light)" srcset="https://img.shields.io/npm/dm/@master/css-webpack?color=f6f7f8&label=%20&logo=npm&style=for-the-badge">
+      <img alt="NPM package ( download / month )" src="https://img.shields.io/npm/dm/@master/css-webpack?color=f6f7f8&label=%20&logo=npm&style=for-the-badge">
     </picture>
   </a>
   <a aria-label="Discord Community" href="https://discord.gg/sZNKpAAAw6">
@@ -55,13 +55,13 @@
 ## Installation
 
 ```bash
-npm install @master/css.webpack
+npm install @master/css-webpack
 ```
 
 ## Usage
 
 ```js
-import MasterCSSPlugin from '@master/css.webpack'
+import MasterCSSPlugin from '@master/css-webpack'
 
 export default {
   plugins: [
@@ -74,7 +74,7 @@ export default {
 Add the client type reference when TypeScript source files import `virtual:master-utilities.css`, `virtual:master-css-manifest`, `virtual:master-css-emitted-globals`, or `?master-css-manifest` modules:
 
 ```ts
-/// <reference types="@master/css-integration/client" />
+/// <reference types="@master/css/client" />
 ```
 
 ## Stylesheet entry
@@ -85,6 +85,6 @@ Import the default stylesheet from your application CSS so the plugin can replac
 @import '@master/css';
 ```
 
-The Webpack plugin uses `@master/css-scanner` for source scanning and writes generated CSS through virtual modules.
+The Webpack plugin uses `@master/css-tooling/scanner` for source scanning and writes generated CSS through virtual modules.
 
 See the [Webpack installation guide](https://rc.css.master.co/guide/installation/webpack) for a complete project setup.

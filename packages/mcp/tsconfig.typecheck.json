@@ -16,37 +16,16 @@
       "path": "../compiler/tsconfig.typecheck.json"
     },
     {
-      "path": "../engine/tsconfig.typecheck.json"
-    },
-    {
-      "path": "../diagnostics/tsconfig.typecheck.json"
-    },
-    {
-      "path": "../language/tsconfig.typecheck.json"
-    },
-    {
       "path": "../language-service/tsconfig.typecheck.json"
     },
     {
-      "path": "../lint/tsconfig.typecheck.json"
-    },
-    {
-      "path": "../project/tsconfig.typecheck.json"
+      "path": "../tooling/tsconfig.typecheck.json"
     },
     {
       "path": "../schema/tsconfig.typecheck.json"
     },
     {
-      "path": "../scanner/tsconfig.typecheck.json"
-    },
-    {
       "path": "../server/tsconfig.typecheck.json"
-    },
-    {
-      "path": "../stylesheet/tsconfig.typecheck.json"
-    },
-    {
-      "path": "../validator/tsconfig.typecheck.json"
     }
   ],
   "include": [

@@ -1,8 +1,8 @@
-# AI Notes For `@master/css.vite`
+# AI Notes For `@master/css-vite`
 
 ## Responsibility
 
-`@master/css.vite` integrates Master CSS into Vite. It supports `runtime`, `static`, `pre-render`, and `progressive` modes.
+`@master/css-vite` integrates Master CSS into Vite. It supports `runtime`, `static`, `pre-render`, and `progressive` modes.
 
 ## Owns
 
@@ -22,7 +22,7 @@
 ## Public Surface
 
 - Default `masterCSS()` plugin factory.
-- `@master/css.vite/runtime` browser runtime entry.
+- `@master/css-vite/runtime` browser runtime entry.
 - `options`
 - `PluginOptions`
 - `PluginContext`
@@ -63,10 +63,10 @@
 ## Validation
 
 ```sh
-pnpm --filter @master/css.vite test
-pnpm --filter @master/css.vite lint
-pnpm --filter @master/css.vite type-check
-pnpm --filter @master/css.vite build
+pnpm --filter @master/css-vite test
+pnpm --filter @master/css-vite lint
+pnpm --filter @master/css-vite type-check
+pnpm --filter @master/css-vite build
 ```
 
 Run affected example builds for integration-level changes when practical.

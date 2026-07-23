@@ -2,7 +2,7 @@ import {
   createEngine,
   MasterCSSEngineError,
   type MasterCSSEngine
-} from '@master/css-engine'
+} from '@master/css'
 import type { MasterCSSEmittedGlobals } from '@master/css-schema/emitted-globals'
 import type {
   MasterCSSBackend,
@@ -39,7 +39,7 @@ import HydratedGeneratedRule from './generated-rule'
 import RuntimeLayer, { type RuntimeLayerRule, type RuntimeResourceRule } from './layer'
 import registerGlobal from './register-global'
 import RuntimeThemeLayer from './theme-layer'
-import type { HydrateResult } from './types'
+import type { HydrateResult } from './types/hydrate-result'
 import RuntimeUtilityLayer from './utility-layer'
 
 const MASTER_CSS_RUNTIME_STYLE_SELECTOR = `style#${MASTER_CSS_RUNTIME_STYLE_ID}`

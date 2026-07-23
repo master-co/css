@@ -1,7 +1,7 @@
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import HtmlWebpackPlugin from 'html-webpack-plugin'
-import MasterCSSPlugin from '@master/css.webpack'
+import MasterCSSPlugin from '@master/css-webpack'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 

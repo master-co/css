@@ -1,5 +1,5 @@
 import { createRequire } from 'node:module'
-import type { LanguageSession } from '@master/css-language'
+import type { LanguageSession } from '@master/css-tooling/language'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import { createServerCSS, parseHTML } from '@master/css-server'
 import type MasterCSSMCPContext from './context'

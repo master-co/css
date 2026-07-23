@@ -1,5 +1,5 @@
 import { test, expect, type Page } from '@playwright/test'
-import { createEngineSync } from '@master/css-engine/node'
+import { createEngineSync } from '@master/css/node'
 import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import {

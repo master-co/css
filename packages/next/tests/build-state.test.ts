@@ -3,7 +3,7 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { resolveMasterCSSBuildState } from '../src/build-state'
-import CSSScanner from '@master/css-scanner'
+import CSSScanner from '@master/css-tooling/scanner'
 
 let fixtureDir: string | undefined
 

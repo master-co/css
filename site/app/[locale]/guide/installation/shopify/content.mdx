@@ -20,7 +20,7 @@ Use Vite static rendering to build a CSS asset for Shopify Liquid themes. Shopif
     </StepL>
     <StepR>
       ```bash name=Terminal
-      npm install -D vite @master/css.vite@rc
+      npm install -D vite @master/css-vite@rc
       ```
     </StepR>
   </Step>
@@ -32,7 +32,7 @@ Use Vite static rendering to build a CSS asset for Shopify Liquid themes. Shopif
     <StepR>
       ```ts name=vite.config.ts
       import { defineConfig } from 'vite'
-      import masterCSS from '@master/css.vite'
+      import masterCSS from '@master/css-vite'
 
       export default defineConfig({
         plugins: [

@@ -1,4 +1,4 @@
-import { options as defaultPluginOptions, type PluginOptions } from '@master/css.vite'
+import { options as defaultPluginOptions, type PluginOptions } from '@master/css-vite'
 
 const options: ModuleOptions = {
   ...defaultPluginOptions,

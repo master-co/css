@@ -1,4 +1,4 @@
-/// <reference types="@master/css-integration/client" />
+/// <reference types="@master/css/client" />
 /// <reference types="vite/client" />
 
 import CSSRuntime from '@master/css-runtime'

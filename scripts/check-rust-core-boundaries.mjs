@@ -4,7 +4,18 @@ import { extname, join, relative, resolve } from 'node:path'
 const root = resolve(import.meta.dirname, '..')
 const packagesDirectory = join(root, 'packages')
 const sourceExtensions = new Set(['.js', '.mjs', '.cjs', '.ts', '.tsx'])
-const ignoredDirectories = new Set(['dist', 'e2e', 'node_modules', 'tests', '.tsbuild'])
+const ignoredDirectories = new Set([
+  'dist',
+  'e2e',
+  'node_modules',
+  'out',
+  'tests',
+  '.next',
+  '.nuxt',
+  '.output',
+  '.svelte-kit',
+  '.tsbuild'
+])
 const failures = []
 
 async function collectSourceFiles(directory) {
@@ -23,6 +34,7 @@ const forbiddenSourcePatterns = [
   [/\bMasterCSS\.create\s*\(/g, 'legacy MasterCSS factory'],
   [/@master\/css-engine\/(?:compiler|core|inspect|layer|rule|utility)/g, 'legacy engine implementation import'],
   [/@master\/css-compiler\/(?:core|lower-css-directives|master-css-manifest)/g, 'legacy compiler implementation import'],
+  [/@master\/css-(?:engine|project|stylesheet|lexer|source|scanner|validator|diagnostics|lint|language|integration)(?:\/|['"])/g, 'retired package import'],
   [/(?:fallback|fall back).{0,48}(?:TypeScript|TS semantic)/gi, 'TypeScript semantic fallback']
 ]
 
@@ -32,27 +44,18 @@ for (const file of await collectSourceFiles(packagesDirectory)) {
     pattern.lastIndex = 0
     if (pattern.test(source)) failures.push(`${relative(root, file)}: ${description}`)
   }
-
-  if (!file.includes(`${join('packages', 'language')}/`)) {
-    const lexerImports = [...source.matchAll(/from\s+['"](@master\/css-lexer(?:\/[^'"]+)?)['"]/g)]
-    for (const [, specifier] of lexerImports) {
-      if (specifier === '@master/css-lexer/shiki') {
-        failures.push(`${relative(root, file)}: Shiki-only TypeScript lexer imported outside @master/css-language`)
-      }
-    }
-  }
 }
 
 const removedSemanticFiles = [
-  'packages/engine/src/core.ts',
-  'packages/engine/src/compiler.ts',
-  'packages/engine/src/inspect.ts',
+  'packages/css/src/engine/core.ts',
+  'packages/css/src/engine/compiler.ts',
+  'packages/css/src/engine/inspect.ts',
   'packages/compiler/src/core.ts',
   'packages/compiler/src/lower-css-directives.ts',
   'packages/compiler/src/master-css-manifest.ts',
-  'packages/lint/src/find-class-conflicts.ts',
-  'packages/lint/src/sort-class-names.ts',
-  'packages/language/src/format-directives.ts'
+  'packages/tooling/src/lint/find-class-conflicts.ts',
+  'packages/tooling/src/lint/sort-class-names.ts',
+  'packages/tooling/src/language/format-directives.ts'
 ]
 
 const existingFiles = new Set(await collectSourceFiles(packagesDirectory))
@@ -62,8 +65,7 @@ for (const path of removedSemanticFiles) {
 
 const forbiddenDependencies = new Map([
   ['packages/compiler/package.json', new Set(['lightningcss', 'lightningcss-wasm', 'css-tree'])],
-  ['packages/source/package.json', new Set(['oxc-parser', 'htmlparser2'])],
-  ['packages/language/package.json', new Set(['oxc-parser'])],
+  ['packages/tooling/package.json', new Set(['oxc-parser', 'htmlparser2'])],
   ['packages/vscode/package.json', new Set(['lightningcss', 'lightningcss-wasm', 'oxc-parser'])]
 ])
 

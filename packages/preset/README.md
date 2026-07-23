@@ -48,5 +48,5 @@ The generated manifest is derived from the preset CSS source. Do not edit genera
 ## Related packages
 
 - `@master/css` re-exports the preset CSS entries for application use.
-- `@master/css-engine` owns built-in key aliases and native value namespaces.
+- `@master/css` owns built-in key aliases and native value namespaces.
 - `@master/css-compiler` compiles preset CSS source into manifest data.

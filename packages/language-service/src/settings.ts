@@ -1,4 +1,4 @@
-import { languageSettings, type LanguageSettings } from '@master/css-language'
+import { languageSettings, type LanguageSettings } from '@master/css-tooling/language'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
 
 /**

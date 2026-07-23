@@ -55,6 +55,8 @@ interface Risk {
   paths: string[]
 }
 
+type PackageRisk = Omit<Risk, 'paths'>
+
 const REPORT_VERSION = 1
 const AUDIENCE = 'master-css-repository-contributors'
 const MASTER_REPO_MARKERS = [
@@ -84,42 +86,50 @@ const PACKAGE_JSON_IGNORE = [
   '**/playwright/.cache/**'
 ]
 
-const HIGH_RISK_PACKAGES: Record<string, string> = {
-  engine: 'CSS output and class generation',
-  preset: 'default preset and generated manifest output',
-  compiler: 'CSS-first manifest lowering',
-  runtime: 'runtime hydration, CSSOM insertion, and DOM observation',
-  scanner: 'static extraction and generated CSS scanner state',
-  source: 'source class candidate extraction',
-  language: 'language tokenization and source positions',
-  'language-service': 'completion, hover, colors, and semantic token features',
-  'language-server': 'LSP behavior',
-  lint: 'framework-neutral class lint policy',
-  'eslint-plugin': 'ESLint parser support, diagnostics, and autofix ranges'
+const HIGH_RISK_PACKAGES: Record<string, PackageRisk> = {
+  css: { id: 'css-output', severity: 'high', reason: 'Rust-backed class execution and generated CSS output' },
+  preset: { id: 'css-output', severity: 'warning', reason: 'default preset and generated manifest output' },
+  compiler: { id: 'css-output', severity: 'high', reason: 'CSS-first lowering, project loading, and stylesheet composition' },
+  tooling: { id: 'tooling', severity: 'high', reason: 'extraction, scanning, validation, lint, and language analysis' },
+  runtime: { id: 'runtime', severity: 'high', reason: 'runtime hydration, CSSOM insertion, and DOM observation' },
+  server: { id: 'server', severity: 'warning', reason: 'server rendering and generated CSS injection' },
+  'language-service': { id: 'language-service', severity: 'warning', reason: 'completion, hover, colors, and semantic token features' },
+  'language-server': { id: 'language-server', severity: 'warning', reason: 'LSP behavior' },
+  'eslint-plugin': { id: 'eslint-plugin', severity: 'warning', reason: 'ESLint parser support, diagnostics, and autofix ranges' },
+  native: { id: 'native', severity: 'high', reason: 'native ABI loading and target artifact delivery' },
+  'wasm-compiler': { id: 'wasm', severity: 'high', reason: 'compiler Wasm ABI and browser delivery' },
+  'wasm-runtime': { id: 'wasm', severity: 'high', reason: 'runtime Wasm ABI and browser delivery' },
+  'wasm-tooling': { id: 'wasm', severity: 'high', reason: 'tooling Wasm ABI and browser delivery' }
 }
 
 const PACKAGE_COMMON_PACKS: Record<string, string[]> = {
   schema: ['.ai/context/package-boundaries.md'],
-  lexer: ['.ai/context/package-boundaries.md'],
-  source: ['.ai/context/package-boundaries.md', '.ai/context/testing.md'],
-  engine: ['.ai/context/css-output.md', '.ai/context/performance.md'],
+  css: ['.ai/context/package-boundaries.md', '.ai/context/css-output.md', '.ai/context/performance.md'],
   preset: ['.ai/context/css-output.md'],
-  facade: ['.ai/context/package-boundaries.md', '.ai/context/css-output.md'],
   compiler: ['.ai/context/css-output.md', '.ai/context/package-boundaries.md'],
-  project: ['.ai/context/package-boundaries.md'],
+  tooling: ['.ai/context/package-boundaries.md', '.ai/context/testing.md', '.ai/context/css-output.md'],
   integration: ['.ai/context/package-boundaries.md'],
-  stylesheet: ['.ai/context/css-output.md', '.ai/context/package-boundaries.md'],
   runtime: ['.ai/context/css-output.md', '.ai/context/performance.md'],
   server: ['.ai/context/css-output.md'],
-  scanner: ['.ai/context/testing.md', '.ai/context/css-output.md'],
-  validator: ['.ai/context/testing.md', '.ai/context/css-output.md'],
-  diagnostics: ['.ai/context/testing.md', '.ai/context/package-boundaries.md'],
-  lint: ['.ai/context/testing.md', '.ai/context/package-boundaries.md'],
+  native: ['.ai/context/package-boundaries.md', '.ai/context/testing.md'],
+  'wasm-compiler': ['.ai/context/package-boundaries.md', '.ai/context/testing.md'],
+  'wasm-runtime': ['.ai/context/package-boundaries.md', '.ai/context/testing.md'],
+  'wasm-tooling': ['.ai/context/package-boundaries.md', '.ai/context/testing.md'],
+  'language-service': ['.ai/context/testing.md'],
+  'language-server': ['.ai/context/testing.md'],
+  'eslint-plugin': ['.ai/context/testing.md'],
+  'eslint-config': ['.ai/context/testing.md'],
   create: ['.ai/context/testing.md', '.ai/context/package-boundaries.md'],
   'css-sv': ['.ai/context/testing.md', '.ai/context/package-boundaries.md'],
   vite: ['.ai/context/package-boundaries.md', '.ai/context/css-output.md'],
   webpack: ['.ai/context/package-boundaries.md', '.ai/context/css-output.md'],
   next: ['.ai/context/package-boundaries.md', '.ai/context/css-output.md'],
+  astro: ['.ai/context/testing.md', '.ai/context/css-output.md'],
+  nuxt: ['.ai/context/testing.md', '.ai/context/css-output.md'],
+  svelte: ['.ai/context/testing.md', '.ai/context/css-output.md'],
+  vscode: ['.ai/context/testing.md', '.ai/context/package-boundaries.md'],
+  mcp: ['.ai/context/testing.md', '.ai/context/package-boundaries.md'],
+  figma: ['.ai/context/testing.md'],
   cli: ['.ai/context/testing.md', '.ai/context/package-boundaries.md']
 }
 
@@ -410,13 +420,10 @@ function detectRisks(paths: string[], routes: RoutedPackage[]) {
   for (const route of routes) {
     const packageMatch = route.path.match(/^packages\/([^/]+)$/)
     const packageName = packageMatch?.[1]
-    if (packageName && HIGH_RISK_PACKAGES[packageName]) {
+    const packageRisk = packageName ? HIGH_RISK_PACKAGES[packageName] : undefined
+    if (packageRisk) {
       pushRisk(risks, {
-        id: packageName === 'engine' || packageName === 'preset' || packageName === 'compiler'
-          ? 'css-output'
-          : packageName,
-        severity: packageName === 'engine' || packageName === 'runtime' || packageName === 'compiler' ? 'high' : 'warning',
-        reason: HIGH_RISK_PACKAGES[packageName],
+        ...packageRisk,
         paths: route.matchedPaths
       })
     }
@@ -483,9 +490,7 @@ function contextFiles(paths: string[], routes: RoutedPackage[], risks: Risk[], t
     'public-api-or-package-boundary',
     'multi-package',
     'runtime',
-    'scanner',
-    'source',
-    'language',
+    'tooling',
     'language-service',
     'language-server',
     'lint',

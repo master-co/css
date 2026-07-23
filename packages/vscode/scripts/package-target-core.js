@@ -41,8 +41,8 @@ const STATIC_EXTENSION_PATHS = [
   'README.md',
   'icon.png'
 ]
-const MASTER_CSS_SOURCE_GRAMMAR_PATH = './node_modules/@master/css-language/syntaxes/master-css.tmLanguage.json'
-const MASTER_CSS_STAGED_GRAMMAR_PATH = './dist/node_modules/@master/css-language/syntaxes/master-css.tmLanguage.json'
+const MASTER_CSS_SOURCE_GRAMMAR_PATH = './node_modules/@master/css-language-service/syntaxes/master-css.tmLanguage.json'
+const MASTER_CSS_STAGED_GRAMMAR_PATH = './dist/node_modules/@master/css-language-service/syntaxes/master-css.tmLanguage.json'
 
 const RUNTIME_PACKAGE_OWNERS = [
   {
@@ -77,10 +77,19 @@ function findPackageDir(entry) {
   throw new Error(`Unable to find package.json for ${entry}`)
 }
 
+function findPackageDirInSearchPaths(packageName, resolver) {
+  for (const nodeModulesDir of resolver.resolve.paths(packageName) ?? []) {
+    const candidate = join(nodeModulesDir, toPackagePath(packageName))
+    if (existsSync(join(candidate, 'package.json'))) return candidate
+  }
+}
+
 function resolvePackageDir(packageName, resolver, resolverName = 'master-css-vscode') {
   try {
     return dirname(resolver.resolve(`${packageName}/package.json`))
   } catch (manifestError) {
+    const searchPathPackageDir = findPackageDirInSearchPaths(packageName, resolver)
+    if (searchPathPackageDir) return searchPathPackageDir
     try {
       return findPackageDir(resolver.resolve(packageName))
     } catch (entryError) {
@@ -160,16 +169,32 @@ async function copyPath(source, destination) {
   })
 }
 
-async function copyRuntimePackage(stagingDir, packageName) {
+async function copyDevelopmentNativeArtifacts(destinationDir, packageName, target) {
+  if (target !== getCurrentTarget() || packageName !== getTargetNativePackages(target)) return
+  const nativePackageDir = resolvePackageDir('@master/css-native', packageRequire)
+  const executableName = target.startsWith('win32-') ? 'mcss.exe' : 'mcss'
+  for (const file of ['mastercss.node', executableName]) {
+    const destination = join(destinationDir, file)
+    if (existsSync(destination)) continue
+    const source = join(nativePackageDir, 'artifacts', file)
+    if (!existsSync(source)) {
+      throw new Error(`Missing local native artifact ${source}. Run cargo xtask build-native.`)
+    }
+    await cp(source, destination, { force: true })
+  }
+}
+
+async function copyRuntimePackage(stagingDir, packageName, target) {
   const resolver = getRuntimePackageResolver(packageName)
   const sourceDir = resolvePackageDir(packageName, resolver, getRuntimePackageOwner(packageName) ?? 'master-css-vscode')
   const destinationDir = join(stagingDir, 'dist', 'node_modules', toPackagePath(packageName))
   await copyPath(sourceDir, destinationDir)
+  await copyDevelopmentNativeArtifacts(destinationDir, packageName, target)
   return toNodeModulesPath(packageName)
 }
 
 async function copyTextMateGrammar(stagingDir) {
-  const sourcePath = packageRequire.resolve('@master/css-language/syntaxes/master-css.tmLanguage.json')
+  const sourcePath = packageRequire.resolve('@master/css-language-service/syntaxes/master-css.tmLanguage.json')
   const destinationPath = join(stagingDir, MASTER_CSS_STAGED_GRAMMAR_PATH)
   await mkdir(dirname(destinationPath), { recursive: true })
   await cp(sourcePath, destinationPath, { force: true })
@@ -194,7 +219,7 @@ export async function createStagedExtension(target = getCurrentTarget(), options
   const runtimeFiles = []
   const textMateGrammarFile = await copyTextMateGrammar(stagingDir)
   for (const runtimePackage of runtimePackages) {
-    await copyRuntimePackage(stagingDir, runtimePackage)
+    await copyRuntimePackage(stagingDir, runtimePackage, target)
     runtimeFiles.push(toPackageFilesPattern(runtimePackage))
   }
 
@@ -207,6 +232,10 @@ export async function createStagedExtension(target = getCurrentTarget(), options
   if (options.publisher) {
     manifest.publisher = options.publisher
   }
+
+  // npm uses the scoped package identity while VS Code Marketplace keeps its
+  // established unscoped extension identifier.
+  manifest.name = 'master-css-vscode'
 
   manifest.files = [
     'dist',

@@ -1,6 +1,9 @@
 {
   "name": "@master/css-language-server",
   "type": "module",
+  "engines": {
+    "node": "^24"
+  },
   "scripts": {
     "build": "tsdown --config ../../shared/tsdown-package.config.ts",
     "dev": "tsdown --config ../../shared/tsdown-package.config.ts --watch",
@@ -17,10 +20,9 @@
     "directory": "packages/language-server"
   },
   "dependencies": {
-    "@master/css-compiler": "workspace:^",
-    "@master/css-language": "workspace:^",
-    "@master/css-language-service": "workspace:^",
-    "@master/css-project": "workspace:^",
+    "@master/css-compiler": "workspace:*",
+    "@master/css-language-service": "workspace:*",
+    "@master/css-tooling": "workspace:*",
     "defu": "^6.1.7",
     "fast-glob": "^3.3.3",
     "js-beautify": "^1.15.4",
@@ -28,13 +30,9 @@
     "vscode-languageserver": "^10.0.0",
     "vscode-languageserver-textdocument": "^1.0.12",
     "vscode-uri": "^3.1.0",
-    "@master/css-schema": "workspace:^"
+    "@master/css-schema": "workspace:*"
   },
   "sideEffects": false,
-  "main": "./dist/index.js",
-  "module": "./dist/index.js",
-  "jsnext:main": "./dist/index.js",
-  "esnext": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {

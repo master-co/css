@@ -1,4 +1,4 @@
-import css from '~/site/common/preset-css'
+import { presetBreakpointConditions } from '~/site/common/preset-css'
 import InlineCode from '~/internal/components/InlineCode'
 import { getThemeNumericVariableEntries, type ThemeNumericVariableEntry } from '~/site/utils/theme-variables'
 import generateManifestCondition from '~/site/utils/generate-manifest-condition'
@@ -24,7 +24,7 @@ export default () => {
               <tr key={entry.key}>
                 <th className="white-space:nowrap"><InlineCode>{`@${entry.key}`}</InlineCode></th>
                 <td className="white-space:nowrap"><InlineCode>{formatValue(entry)}</InlineCode></td>
-                <td><InlineCode lang="css">{generateManifestCondition(css.breakpointConditions.get(entry.key))}</InlineCode></td>
+                <td><InlineCode lang="css">{generateManifestCondition(presetBreakpointConditions[entry.key])}</InlineCode></td>
               </tr>
             ))
           }

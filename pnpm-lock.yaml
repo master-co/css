@@ -212,86 +212,59 @@ importers:
     dependencies:
       '@master/css':
         specifier: workspace:^
-        version: link:packages/facade
+        version: link:packages/css
+      '@master/css-astro':
+        specifier: workspace:^
+        version: link:packages/astro
       '@master/css-cli':
         specifier: workspace:^
         version: link:packages/cli
       '@master/css-compiler':
         specifier: workspace:^
         version: link:packages/compiler
-      '@master/css-diagnostics':
+      '@master/css-figma':
         specifier: workspace:^
-        version: link:packages/diagnostics
-      '@master/css-engine':
-        specifier: workspace:^
-        version: link:packages/engine
-      '@master/css-integration':
-        specifier: workspace:^
-        version: link:packages/integration
-      '@master/css-language':
-        specifier: workspace:^
-        version: link:packages/language
+        version: link:packages/figma
       '@master/css-language-server':
         specifier: workspace:^
         version: link:packages/language-server
       '@master/css-language-service':
         specifier: workspace:^
         version: link:packages/language-service
-      '@master/css-lexer':
-        specifier: workspace:^
-        version: link:packages/lexer
-      '@master/css-lint':
-        specifier: workspace:^
-        version: link:packages/lint
       '@master/css-mcp':
         specifier: workspace:^
         version: link:packages/mcp
+      '@master/css-next':
+        specifier: workspace:^
+        version: link:packages/next
+      '@master/css-nuxt':
+        specifier: workspace:^
+        version: link:packages/nuxt
       '@master/css-preset':
         specifier: workspace:^
         version: link:packages/preset
-      '@master/css-project':
-        specifier: workspace:^
-        version: link:packages/project
       '@master/css-runtime':
         specifier: workspace:^
         version: link:packages/runtime
-      '@master/css-scanner':
-        specifier: workspace:^
-        version: link:packages/scanner
       '@master/css-schema':
         specifier: workspace:^
         version: link:packages/schema
       '@master/css-server':
         specifier: workspace:^
         version: link:packages/server
-      '@master/css-source':
-        specifier: workspace:^
-        version: link:packages/source
-      '@master/css-stylesheet':
-        specifier: workspace:^
-        version: link:packages/stylesheet
       '@master/css-sv':
         specifier: workspace:^
         version: link:packages/css-sv
-      '@master/css-validator':
-        specifier: workspace:^
-        version: link:packages/validator
-      '@master/css.figma':
-        specifier: workspace:^
-        version: link:packages/figma
-      '@master/css.next':
-        specifier: workspace:^
-        version: link:packages/next
-      '@master/css.nuxt':
-        specifier: workspace:^
-        version: link:packages/nuxt
-      '@master/css.svelte':
+      '@master/css-svelte':
         specifier: workspace:^
         version: link:packages/svelte
-      '@master/css.vite':
+      '@master/css-tooling':
+        specifier: workspace:^
+        version: link:packages/tooling
+      '@master/css-vite':
         specifier: workspace:^
         version: link:packages/vite
-      '@master/css.webpack':
+      '@master/css-webpack':
         specifier: workspace:^
         version: link:packages/webpack
       '@master/eslint-config-css':
@@ -325,6 +298,9 @@ importers:
       '@eslint/js':
         specifier: ^10.0.1
         version: 10.0.1(eslint@10.6.0(jiti@2.7.0)(supports-color@5.5.0))
+      '@master/css-vscode':
+        specifier: workspace:^
+        version: link:packages/vscode
       '@playwright/test':
         specifier: 1.61.0
         version: 1.61.0
@@ -409,9 +385,6 @@ importers:
       js-beautify:
         specifier: ^1.15.4
         version: 1.15.4
-      master-css-vscode:
-        specifier: workspace:^
-        version: link:packages/vscode
       nanoid:
         specifier: ^5.1.16
         version: 5.1.16
@@ -469,29 +442,26 @@ importers:
     devDependencies:
       '@master/css':
         specifier: workspace:^
-        version: link:../packages/facade
+        version: link:../packages/css
       '@master/css-cli':
         specifier: workspace:^
         version: link:../packages/cli
+      '@master/css-compiler':
+        specifier: workspace:^
+        version: link:../packages/compiler
       '@master/css-preset':
         specifier: workspace:^
         version: link:../packages/preset
-      '@master/css-project':
-        specifier: workspace:^
-        version: link:../packages/project
       '@master/css-runtime':
         specifier: workspace:^
         version: link:../packages/runtime
-      '@master/css-scanner':
-        specifier: workspace:^
-        version: link:../packages/scanner
       '@master/css-server':
         specifier: workspace:^
         version: link:../packages/server
-      '@master/css-stylesheet':
+      '@master/css-tooling':
         specifier: workspace:^
-        version: link:../packages/stylesheet
-      '@master/css.vite':
+        version: link:../packages/tooling
+      '@master/css-vite':
         specifier: workspace:^
         version: link:../packages/vite
       '@playwright/test':
@@ -556,7 +526,7 @@ importers:
         version: 22.0.3(62607e610fa15a49be9c0d87b9313b54)
       '@master/css':
         specifier: workspace:^
-        version: link:../../packages/facade
+        version: link:../../packages/css
       '@master/css-preset':
         specifier: workspace:^
         version: link:../../packages/preset
@@ -581,13 +551,13 @@ importers:
     devDependencies:
       '@angular-devkit/build-angular':
         specifier: ^22.0.3
-        version: 22.0.3(961225228805c208d2cf0589c398dfad)
+        version: 22.0.3(0c0bb806343515a393133031c05ef19b)
       '@angular/cli':
         specifier: ^22.0.3
         version: 22.0.3(@types/node@26.0.0)(chokidar@5.0.0)(supports-color@5.5.0)
       '@angular/compiler-cli':
         specifier: ^22.0.2
-        version: 22.0.2(@angular/compiler@22.0.2)(typescript@7.0.2)
+        version: 22.0.2(@angular/compiler@22.0.2)(typescript@6.0.3)
       '@types/express':
         specifier: ^5.0.6
         version: 5.0.6
@@ -616,8 +586,8 @@ importers:
         specifier: ~2.2.0
         version: 2.2.0(jasmine-core@6.3.0)(karma-jasmine@5.1.0(karma@6.4.4(supports-color@5.5.0)))(karma@6.4.4(supports-color@5.5.0))
       typescript:
-        specifier: ^7.0.2
-        version: 7.0.2
+        specifier: ^6.0.3
+        version: 6.0.3
 
   examples/astro:
     dependencies:
@@ -626,8 +596,8 @@ importers:
         version: 3.7.3
       '@master/css':
         specifier: workspace:^
-        version: link:../../packages/facade
-      '@master/css.astro':
+        version: link:../../packages/css
+      '@master/css-astro':
         specifier: workspace:^
         version: link:../../packages/astro
       astro:
@@ -638,12 +608,12 @@ importers:
     dependencies:
       '@master/css':
         specifier: workspace:^
-        version: link:../../packages/facade
+        version: link:../../packages/css
     devDependencies:
-      '@master/css-integration':
+      '@master/css-internal-integration':
         specifier: workspace:^
         version: link:../../packages/integration
-      '@master/css.vite':
+      '@master/css-vite':
         specifier: workspace:^
         version: link:../../packages/vite
       typescript:
@@ -696,11 +666,11 @@ importers:
     dependencies:
       '@master/css':
         specifier: workspace:^
-        version: link:../../packages/facade
-      '@master/css.vite':
+        version: link:../../packages/css
+      '@master/css-vite':
         specifier: workspace:^
         version: link:../../packages/vite
-      '@master/css.webpack':
+      '@master/css-webpack':
         specifier: workspace:^
         version: link:../../packages/webpack
       '@tanstack/react-router':
@@ -757,8 +727,8 @@ importers:
         version: 3.4.0(axios@1.18.0)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
       '@master/css':
         specifier: workspace:^
-        version: link:../../packages/facade
-      '@master/css.vite':
+        version: link:../../packages/css
+      '@master/css-vite':
         specifier: workspace:^
         version: link:../../packages/vite
       '@radix-ui/react-avatar':
@@ -903,7 +873,7 @@ importers:
     dependencies:
       '@master/css':
         specifier: workspace:^
-        version: link:../../packages/facade
+        version: link:../../packages/css
       '@master/css-runtime':
         specifier: workspace:^
         version: link:../../packages/runtime
@@ -911,10 +881,10 @@ importers:
         specifier: ^3.3.3
         version: 3.3.3
     devDependencies:
-      '@master/css-integration':
+      '@master/css-internal-integration':
         specifier: workspace:^
         version: link:../../packages/integration
-      '@master/css.vite':
+      '@master/css-vite':
         specifier: workspace:^
         version: link:../../packages/vite
       typescript:
@@ -928,7 +898,7 @@ importers:
     dependencies:
       '@master/css':
         specifier: workspace:^
-        version: link:../../packages/facade
+        version: link:../../packages/css
       next:
         specifier: ^16.2.10
         version: 16.2.10(@babel/core@7.29.7)(@opentelemetry/api@1.9.1)(@playwright/test@1.61.0)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(sass@1.101.0)
@@ -945,7 +915,7 @@ importers:
       '@master/css-cli':
         specifier: workspace:^
         version: link:../../packages/cli
-      '@master/css.next':
+      '@master/css-next':
         specifier: workspace:^
         version: link:../../packages/next
       '@master/eslint-config-css':
@@ -974,8 +944,8 @@ importers:
     dependencies:
       '@master/css':
         specifier: workspace:^
-        version: link:../../packages/facade
-      '@master/css.nuxt':
+        version: link:../../packages/css
+      '@master/css-nuxt':
         specifier: workspace:^
         version: link:../../packages/nuxt
     devDependencies:
@@ -996,8 +966,8 @@ importers:
     dependencies:
       '@master/css':
         specifier: workspace:^
-        version: link:../../packages/facade
-      '@master/css.vite':
+        version: link:../../packages/css
+      '@master/css-vite':
         specifier: workspace:^
         version: link:../../packages/vite
       react:
@@ -1054,8 +1024,8 @@ importers:
     dependencies:
       '@master/css':
         specifier: workspace:^
-        version: link:../../packages/facade
-      '@master/css.svelte':
+        version: link:../../packages/css
+      '@master/css-svelte':
         specifier: workspace:^
         version: link:../../packages/svelte
     devDependencies:
@@ -1103,9 +1073,9 @@ importers:
     dependencies:
       '@master/css':
         specifier: workspace:^
-        version: link:../../packages/facade
+        version: link:../../packages/css
     devDependencies:
-      '@master/css.vite':
+      '@master/css-vite':
         specifier: workspace:^
         version: link:../../packages/vite
       typescript:
@@ -1119,8 +1089,8 @@ importers:
     devDependencies:
       '@master/css':
         specifier: workspace:^
-        version: link:../../packages/facade
-      '@master/css.webpack':
+        version: link:../../packages/css
+      '@master/css-webpack':
         specifier: workspace:^
         version: link:../../packages/webpack
       css-loader:
@@ -1155,16 +1125,16 @@ importers:
         version: 0.27.19(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
       '@master/css':
         specifier: workspace:^
-        version: link:../packages/facade
-      '@master/css-engine':
+        version: link:../packages/css
+      '@master/css-language-service':
         specifier: workspace:^
-        version: link:../packages/engine
-      '@master/css-language':
-        specifier: workspace:^
-        version: link:../packages/language
+        version: link:../packages/language-service
       '@master/css-preset':
         specifier: workspace:^
         version: link:../packages/preset
+      '@master/css-schema':
+        specifier: workspace:^
+        version: link:../packages/schema
       '@master/styled.react':
         specifier: ^2.0.6
         version: 2.0.6(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
@@ -1479,19 +1449,16 @@ importers:
   packages/astro:
     dependencies:
       '@master/css':
-        specifier: workspace:^
-        version: link:../facade
-      '@master/css-integration':
-        specifier: workspace:^
-        version: link:../integration
+        specifier: workspace:*
+        version: link:../css
       '@master/css-schema':
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:../schema
       '@master/css-server':
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:../server
-      '@master/css.vite':
-        specifier: workspace:^
+      '@master/css-vite':
+        specifier: workspace:*
         version: link:../vite
       astro:
         specifier: '>=5'
@@ -1500,39 +1467,27 @@ importers:
         specifier: '>=6'
         version: 8.0.16(@types/node@26.0.0)(@vitejs/devtools@0.1.24)(esbuild@0.28.1)(jiti@2.7.0)(less@4.6.4)(sass@1.101.0)(terser@5.48.0)(tsx@4.22.4)(yaml@2.9.0)
     devDependencies:
+      '@master/css-internal-integration':
+        specifier: workspace:*
+        version: link:../integration
       '@master/css-preset':
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:../preset
 
   packages/cli:
     dependencies:
       '@master/css':
-        specifier: workspace:^
-        version: link:../facade
-      '@master/css-diagnostics':
-        specifier: workspace:^
-        version: link:../diagnostics
-      '@master/css-language':
-        specifier: workspace:^
-        version: link:../language
-      '@master/css-lint':
-        specifier: workspace:^
-        version: link:../lint
+        specifier: workspace:*
+        version: link:../css
+      '@master/css-compiler':
+        specifier: workspace:*
+        version: link:../compiler
       '@master/css-native':
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:../native
-      '@master/css-project':
-        specifier: workspace:^
-        version: link:../project
-      '@master/css-scanner':
-        specifier: workspace:^
-        version: link:../scanner
-      '@master/css-stylesheet':
-        specifier: workspace:^
-        version: link:../stylesheet
-      '@master/css-validator':
-        specifier: workspace:^
-        version: link:../validator
+      '@master/css-tooling':
+        specifier: workspace:*
+        version: link:../tooling
       bytes:
         specifier: ^3.1.2
         version: 3.1.2
@@ -1559,27 +1514,51 @@ importers:
   packages/compiler:
     dependencies:
       '@master/css-native':
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:../native
-      '@master/css-schema':
-        specifier: workspace:^
-        version: link:../schema
-      '@master/css-wasm-compiler':
-        specifier: workspace:^
-        version: link:../wasm-compiler
-    devDependencies:
-      '@master/css-engine':
-        specifier: workspace:^
-        version: link:../engine
       '@master/css-preset':
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:../preset
+      '@master/css-schema':
+        specifier: workspace:*
+        version: link:../schema
+      '@master/css-tooling':
+        specifier: workspace:*
+        version: link:../tooling
+      '@master/css-wasm-compiler':
+        specifier: workspace:*
+        version: link:../wasm-compiler
+      fast-glob:
+        specifier: ^3.3.3
+        version: 3.3.3
+    devDependencies:
+      '@master/css':
+        specifier: workspace:*
+        version: link:../css
+      '@master/css-internal-integration':
+        specifier: workspace:*
+        version: link:../integration
 
   packages/create:
     dependencies:
       commander:
         specifier: ^14.0.3
         version: 14.0.3
+
+  packages/css:
+    dependencies:
+      '@master/css-native':
+        specifier: workspace:*
+        version: link:../native
+      '@master/css-preset':
+        specifier: workspace:*
+        version: link:../preset
+      '@master/css-schema':
+        specifier: workspace:*
+        version: link:../schema
+      '@master/css-wasm-runtime':
+        specifier: workspace:*
+        version: link:../wasm-runtime
 
   packages/css-sv:
     devDependencies:
@@ -1593,50 +1572,10 @@ importers:
         specifier: ^5.56.3
         version: 5.56.3(@typescript-eslint/types@8.63.0)
 
-  packages/diagnostics:
-    dependencies:
-      '@master/css-native':
-        specifier: workspace:^
-        version: link:../native
-      '@master/css-project':
-        specifier: workspace:^
-        version: link:../project
-      '@master/css-scanner':
-        specifier: workspace:^
-        version: link:../scanner
-      '@master/css-schema':
-        specifier: workspace:^
-        version: link:../schema
-      '@master/css-stylesheet':
-        specifier: workspace:^
-        version: link:../stylesheet
-      '@master/css-wasm-tooling':
-        specifier: workspace:^
-        version: link:../wasm-tooling
-      fast-glob:
-        specifier: ^3.3.3
-        version: 3.3.3
-
-  packages/engine:
-    dependencies:
-      '@master/css-native':
-        specifier: workspace:^
-        version: link:../native
-      '@master/css-schema':
-        specifier: workspace:^
-        version: link:../schema
-      '@master/css-wasm-runtime':
-        specifier: workspace:^
-        version: link:../wasm-runtime
-    devDependencies:
-      '@master/css-preset':
-        specifier: workspace:^
-        version: link:../preset
-
   packages/eslint-config:
     dependencies:
       '@master/eslint-plugin-css':
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:../eslint-plugin
     devDependencies:
       '@angular-eslint/template-parser':
@@ -1649,23 +1588,17 @@ importers:
   packages/eslint-plugin:
     dependencies:
       '@master/css':
-        specifier: workspace:^
-        version: link:../facade
+        specifier: workspace:*
+        version: link:../css
       '@master/css-compiler':
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:../compiler
-      '@master/css-lint':
-        specifier: workspace:^
-        version: link:../lint
       '@master/css-preset':
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:../preset
-      '@master/css-project':
-        specifier: workspace:^
-        version: link:../project
-      '@master/css-validator':
-        specifier: workspace:^
-        version: link:../validator
+      '@master/css-tooling':
+        specifier: workspace:*
+        version: link:../tooling
       '@typescript-eslint/utils':
         specifier: ^8.61.1
         version: 8.61.1(eslint@10.5.0(jiti@2.7.0))(typescript@7.0.2)
@@ -1680,7 +1613,7 @@ importers:
         specifier: ^21.2.17
         version: 21.2.17
       '@master/css-schema':
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:../schema
       '@typescript-eslint/rule-tester':
         specifier: ^8.61.1
@@ -1707,18 +1640,6 @@ importers:
         specifier: ^10.4.1
         version: 10.4.1(eslint@10.5.0(jiti@2.7.0))(supports-color@5.5.0)
 
-  packages/facade:
-    dependencies:
-      '@master/css-engine':
-        specifier: workspace:^
-        version: link:../engine
-      '@master/css-preset':
-        specifier: workspace:^
-        version: link:../preset
-      '@master/css-schema':
-        specifier: workspace:^
-        version: link:../schema
-
   packages/figma:
     dependencies:
       copy-to-clipboard:
@@ -1744,8 +1665,8 @@ importers:
         specifier: ^1.129.0
         version: 1.129.0
       '@master/css':
-        specifier: workspace:^
-        version: link:../facade
+        specifier: workspace:*
+        version: link:../css
       '@types/react':
         specifier: ^19.2.17
         version: 19.2.17
@@ -1777,48 +1698,23 @@ importers:
   packages/integration:
     dependencies:
       '@master/css-schema':
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:../schema
-
-  packages/language:
-    dependencies:
-      '@master/css-native':
-        specifier: workspace:^
-        version: link:../native
-      '@master/css-preset':
-        specifier: workspace:^
-        version: link:../preset
-      '@master/css-schema':
-        specifier: workspace:^
-        version: link:../schema
-      '@master/css-wasm-tooling':
-        specifier: workspace:^
-        version: link:../wasm-tooling
-      mdn-data:
-        specifier: ^2.28.1
-        version: 2.28.1
-    devDependencies:
-      shiki:
-        specifier: ^4.2.0
-        version: 4.2.0
 
   packages/language-server:
     dependencies:
       '@master/css-compiler':
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:../compiler
-      '@master/css-language':
-        specifier: workspace:^
-        version: link:../language
       '@master/css-language-service':
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:../language-service
-      '@master/css-project':
-        specifier: workspace:^
-        version: link:../project
       '@master/css-schema':
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:../schema
+      '@master/css-tooling':
+        specifier: workspace:*
+        version: link:../tooling
       defu:
         specifier: ^6.1.7
         version: 6.1.7
@@ -1843,12 +1739,12 @@ importers:
 
   packages/language-service:
     dependencies:
-      '@master/css-language':
-        specifier: workspace:^
-        version: link:../language
       '@master/css-schema':
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:../schema
+      '@master/css-tooling':
+        specifier: workspace:*
+        version: link:../tooling
       colorjs.io:
         specifier: ^0.6.1
         version: 0.6.1
@@ -1871,70 +1767,33 @@ importers:
       '@types/vscode':
         specifier: ^1.125.0
         version: 1.125.0
+      shiki:
+        specifier: ^4.2.0
+        version: 4.2.0
       vscode-languageserver:
         specifier: ^10.0.0
         version: 10.0.0
 
-  packages/lexer:
-    dependencies:
-      '@master/css-native':
-        specifier: workspace:^
-        version: link:../native
-      '@master/css-schema':
-        specifier: workspace:^
-        version: link:../schema
-      '@master/css-wasm-tooling':
-        specifier: workspace:^
-        version: link:../wasm-tooling
-
-  packages/lint:
-    dependencies:
-      '@master/css-native':
-        specifier: workspace:^
-        version: link:../native
-      '@master/css-schema':
-        specifier: workspace:^
-        version: link:../schema
-      '@master/css-validator':
-        specifier: workspace:^
-        version: link:../validator
-      '@master/css-wasm-tooling':
-        specifier: workspace:^
-        version: link:../wasm-tooling
-    devDependencies:
-      '@master/css-preset':
-        specifier: workspace:^
-        version: link:../preset
-
   packages/mcp:
     dependencies:
       '@master/css-compiler':
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:../compiler
-      '@master/css-diagnostics':
-        specifier: workspace:^
-        version: link:../diagnostics
-      '@master/css-language':
-        specifier: workspace:^
-        version: link:../language
       '@master/css-language-service':
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:../language-service
-      '@master/css-lint':
-        specifier: workspace:^
-        version: link:../lint
       '@master/css-preset':
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:../preset
-      '@master/css-project':
-        specifier: workspace:^
-        version: link:../project
       '@master/css-schema':
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:../schema
       '@master/css-server':
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:../server
+      '@master/css-tooling':
+        specifier: workspace:*
+        version: link:../tooling
       '@modelcontextprotocol/sdk':
         specifier: ^1.29.0
         version: 1.29.0(zod@4.4.3)
@@ -1951,32 +1810,32 @@ importers:
   packages/native:
     dependencies:
       '@master/css-schema':
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:../schema
     optionalDependencies:
       '@master/css-native-darwin-arm64':
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:../native-darwin-arm64
       '@master/css-native-darwin-x64':
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:../native-darwin-x64
       '@master/css-native-linux-arm64-gnu':
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:../native-linux-arm64-gnu
       '@master/css-native-linux-arm64-musl':
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:../native-linux-arm64-musl
       '@master/css-native-linux-x64-gnu':
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:../native-linux-x64-gnu
       '@master/css-native-linux-x64-musl':
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:../native-linux-x64-musl
       '@master/css-native-win32-arm64-msvc':
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:../native-win32-arm64-msvc
       '@master/css-native-win32-x64-msvc':
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:../native-win32-x64-msvc
 
   packages/native-darwin-arm64: {}
@@ -1998,33 +1857,27 @@ importers:
   packages/next:
     dependencies:
       '@master/css':
-        specifier: workspace:^
-        version: link:../facade
+        specifier: workspace:*
+        version: link:../css
       '@master/css-compiler':
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:../compiler
-      '@master/css-integration':
-        specifier: workspace:^
-        version: link:../integration
-      '@master/css-project':
-        specifier: workspace:^
-        version: link:../project
       '@master/css-runtime':
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:../runtime
-      '@master/css-scanner':
-        specifier: workspace:^
-        version: link:../scanner
       '@master/css-schema':
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:../schema
       '@master/css-server':
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:../server
-      '@master/css-stylesheet':
-        specifier: workspace:^
-        version: link:../stylesheet
+      '@master/css-tooling':
+        specifier: workspace:*
+        version: link:../tooling
     devDependencies:
+      '@master/css-internal-integration':
+        specifier: workspace:*
+        version: link:../integration
       '@types/react':
         specifier: ^19.2.17
         version: 19.2.17
@@ -2043,30 +1896,27 @@ importers:
 
   packages/nuxt:
     dependencies:
-      '@master/css-integration':
-        specifier: workspace:^
-        version: link:../integration
-      '@master/css-project':
-        specifier: workspace:^
-        version: link:../project
+      '@master/css-compiler':
+        specifier: workspace:*
+        version: link:../compiler
       '@master/css-runtime':
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:../runtime
       '@master/css-server':
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:../server
-      '@master/css-stylesheet':
-        specifier: workspace:^
-        version: link:../stylesheet
-      '@master/css.vite':
-        specifier: workspace:^
+      '@master/css-vite':
+        specifier: workspace:*
         version: link:../vite
       '@nuxt/kit':
         specifier: ^4.4.8
         version: 4.4.8(magicast@0.5.3)
     devDependencies:
+      '@master/css-internal-integration':
+        specifier: workspace:*
+        version: link:../integration
       '@master/css-schema':
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:../schema
       '@nuxt/devtools':
         specifier: 4.0.0-alpha.4
@@ -2123,83 +1973,31 @@ importers:
   packages/preset:
     dependencies:
       '@master/css-schema':
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:../schema
     devDependencies:
       '@master/css-native':
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:../native
       tsx:
         specifier: ^4.22.4
         version: 4.22.4
 
-  packages/project:
-    dependencies:
-      '@master/css-compiler':
-        specifier: workspace:^
-        version: link:../compiler
-      '@master/css-integration':
-        specifier: workspace:^
-        version: link:../integration
-      '@master/css-native':
-        specifier: workspace:^
-        version: link:../native
-      '@master/css-preset':
-        specifier: workspace:^
-        version: link:../preset
-      '@master/css-schema':
-        specifier: workspace:^
-        version: link:../schema
-
   packages/runtime:
     dependencies:
-      '@master/css-engine':
-        specifier: workspace:^
-        version: link:../engine
+      '@master/css':
+        specifier: workspace:*
+        version: link:../css
       '@master/css-preset':
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:../preset
       '@master/css-schema':
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:../schema
     devDependencies:
       '@playwright/test':
         specifier: 1.61.0
         version: 1.61.0
-
-  packages/scanner:
-    dependencies:
-      '@master/css-native':
-        specifier: workspace:^
-        version: link:../native
-      '@master/css-preset':
-        specifier: workspace:^
-        version: link:../preset
-      '@master/css-schema':
-        specifier: workspace:^
-        version: link:../schema
-      '@master/css-source':
-        specifier: workspace:^
-        version: link:../source
-      '@master/css-validator':
-        specifier: workspace:^
-        version: link:../validator
-      '@master/css-wasm-tooling':
-        specifier: workspace:^
-        version: link:../wasm-tooling
-      consola:
-        specifier: ^3.4.2
-        version: 3.4.2
-      defu:
-        specifier: ^6.1.7
-        version: 6.1.7
-      minimatch:
-        specifier: ^10.2.5
-        version: 10.2.5
-    devDependencies:
-      '@master/css-compiler':
-        specifier: workspace:^
-        version: link:../compiler
 
   packages/schema:
     dependencies:
@@ -2210,17 +2008,17 @@ importers:
   packages/server:
     dependencies:
       '@master/css-native':
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:../native
       '@master/css-preset':
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:../preset
       '@master/css-schema':
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:../schema
-      '@master/css-validator':
-        specifier: workspace:^
-        version: link:../validator
+      '@master/css-tooling':
+        specifier: workspace:*
+        version: link:../tooling
       dom-serializer:
         specifier: ^3.1.1
         version: 3.1.1
@@ -2232,81 +2030,28 @@ importers:
         version: 12.0.0
     devDependencies:
       '@master/css':
-        specifier: workspace:^
-        version: link:../facade
+        specifier: workspace:*
+        version: link:../css
       '@master/css-compiler':
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:../compiler
-
-  packages/source:
-    dependencies:
-      '@master/css-native':
-        specifier: workspace:^
-        version: link:../native
-      '@master/css-wasm-tooling':
-        specifier: workspace:^
-        version: link:../wasm-tooling
-    devDependencies:
-      svelte:
-        specifier: ^5.56.3
-        version: 5.56.3(@typescript-eslint/types@8.63.0)
-      vue:
-        specifier: ^3.5.38
-        version: 3.5.39(typescript@7.0.2)
-
-  packages/stylesheet:
-    dependencies:
-      '@master/css-compiler':
-        specifier: workspace:^
-        version: link:../compiler
-      '@master/css-integration':
-        specifier: workspace:^
-        version: link:../integration
-      '@master/css-native':
-        specifier: workspace:^
-        version: link:../native
-      '@master/css-schema':
-        specifier: workspace:^
-        version: link:../schema
-      '@master/css-source':
-        specifier: workspace:^
-        version: link:../source
-      '@master/css-validator':
-        specifier: workspace:^
-        version: link:../validator
-      '@master/css-wasm-compiler':
-        specifier: workspace:^
-        version: link:../wasm-compiler
-      fast-glob:
-        specifier: ^3.3.3
-        version: 3.3.3
-    devDependencies:
-      '@master/css-preset':
-        specifier: workspace:^
-        version: link:../preset
-      '@master/css-scanner':
-        specifier: workspace:^
-        version: link:../scanner
 
   packages/svelte:
     dependencies:
       '@master/css':
-        specifier: workspace:^
-        version: link:../facade
-      '@master/css-integration':
-        specifier: workspace:^
-        version: link:../integration
+        specifier: workspace:*
+        version: link:../css
       '@master/css-preset':
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:../preset
       '@master/css-schema':
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:../schema
       '@master/css-server':
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:../server
-      '@master/css.vite':
-        specifier: workspace:^
+      '@master/css-vite':
+        specifier: workspace:*
         version: link:../vite
     devDependencies:
       '@eslint/compat':
@@ -2315,6 +2060,9 @@ importers:
       '@eslint/js':
         specifier: ^10.0.1
         version: 10.0.1(eslint@10.6.0(jiti@2.7.0))
+      '@master/css-internal-integration':
+        specifier: workspace:*
+        version: link:../integration
       '@playwright/experimental-ct-svelte':
         specifier: ^1.58.2
         version: 1.58.2(@types/node@26.1.1)(jiti@2.7.0)(less@4.6.4)(lightningcss@1.32.0)(sass@1.101.0)(supports-color@5.5.0)(svelte@5.56.3(@typescript-eslint/types@8.63.0))(terser@5.48.0)(tsx@4.22.4)(vite@8.0.16)(yaml@2.9.0)
@@ -2327,9 +2075,6 @@ importers:
       '@sveltejs/kit':
         specifier: ^2.66.0
         version: 2.66.0(@opentelemetry/api@1.9.1)(@sveltejs/vite-plugin-svelte@7.1.2(svelte@5.56.3(@typescript-eslint/types@8.63.0))(vite@8.0.16))(svelte@5.56.3(@typescript-eslint/types@8.63.0))(typescript@7.0.2)(vite@8.0.16)
-      '@sveltejs/package':
-        specifier: ^2.5.8
-        version: 2.5.8(svelte@5.56.3(@typescript-eslint/types@8.63.0))(typescript@7.0.2)
       '@sveltejs/vite-plugin-svelte':
         specifier: ^7.1.2
         version: 7.1.2(svelte@5.56.3(@typescript-eslint/types@8.63.0))(vite@8.0.16)
@@ -2367,54 +2112,66 @@ importers:
         specifier: ^4.1.9
         version: 4.1.9(@opentelemetry/api@1.9.1)(@types/node@26.0.0)(happy-dom@20.10.6)(jsdom@26.1.0)(vite@8.0.16)
 
-  packages/validator:
+  packages/tooling:
     dependencies:
       '@master/css-native':
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:../native
+      '@master/css-preset':
+        specifier: workspace:*
+        version: link:../preset
       '@master/css-schema':
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:../schema
       '@master/css-wasm-tooling':
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:../wasm-tooling
+      consola:
+        specifier: ^3.4.2
+        version: 3.4.2
       css-tree:
         specifier: ^3.2.1
         version: 3.2.1
+      defu:
+        specifier: ^6.1.7
+        version: 6.1.7
+      mdn-data:
+        specifier: ^2.28.1
+        version: 2.28.1
+      minimatch:
+        specifier: ^10.2.5
+        version: 10.2.5
     devDependencies:
       '@types/css-tree':
         specifier: ^2.3.11
         version: 2.3.11
-      ts-jest:
-        specifier: ^29.4.11
-        version: 29.4.11(@babel/core@7.29.7)(@jest/transform@30.4.1)(@jest/types@30.4.1)(babel-jest@30.4.1(@babel/core@7.29.7))(esbuild@0.28.1)(jest-util@30.4.1)(jest@30.4.2(@types/node@25.9.5)(ts-node@10.9.2(@swc/core@1.15.41(@swc/helpers@0.5.23))(@types/node@25.9.5)(typescript@7.0.2)))(typescript@7.0.2)
+      svelte:
+        specifier: ^5.56.3
+        version: 5.56.3(@typescript-eslint/types@8.63.0)
+      vue:
+        specifier: ^3.5.38
+        version: 3.5.39(typescript@7.0.2)
 
   packages/vite:
     dependencies:
       '@master/css':
-        specifier: workspace:^
-        version: link:../facade
-      '@master/css-integration':
-        specifier: workspace:^
-        version: link:../integration
-      '@master/css-project':
-        specifier: workspace:^
-        version: link:../project
+        specifier: workspace:*
+        version: link:../css
+      '@master/css-compiler':
+        specifier: workspace:*
+        version: link:../compiler
       '@master/css-runtime':
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:../runtime
-      '@master/css-scanner':
-        specifier: workspace:^
-        version: link:../scanner
       '@master/css-schema':
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:../schema
       '@master/css-server':
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:../server
-      '@master/css-stylesheet':
-        specifier: workspace:^
-        version: link:../stylesheet
+      '@master/css-tooling':
+        specifier: workspace:*
+        version: link:../tooling
       magic-string:
         specifier: ^0.30.21
         version: 0.30.21
@@ -2422,27 +2179,30 @@ importers:
         specifier: '>=6'
         version: 8.0.16(@types/node@26.0.0)(@vitejs/devtools@0.1.24)(esbuild@0.28.1)(jiti@2.7.0)(less@4.6.4)(sass@1.101.0)(terser@5.48.0)(tsx@4.22.4)(yaml@2.9.0)
     devDependencies:
+      '@master/css-internal-integration':
+        specifier: workspace:*
+        version: link:../integration
       '@master/css-preset':
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:../preset
 
   packages/vscode:
     devDependencies:
-      '@master/css-language':
-        specifier: workspace:^
-        version: link:../language
+      '@master/css-compiler':
+        specifier: workspace:*
+        version: link:../compiler
       '@master/css-language-server':
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:../language-server
       '@master/css-language-service':
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:../language-service
       '@master/css-native':
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:../native
-      '@master/css-project':
-        specifier: workspace:^
-        version: link:../project
+      '@master/css-tooling':
+        specifier: workspace:*
+        version: link:../tooling
       '@shikijs/langs':
         specifier: 4.2.0
         version: 4.2.0
@@ -2465,41 +2225,35 @@ importers:
   packages/wasm-compiler:
     dependencies:
       '@master/css-schema':
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:../schema
 
   packages/wasm-runtime:
     dependencies:
       '@master/css-schema':
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:../schema
 
   packages/wasm-tooling:
     dependencies:
       '@master/css-schema':
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:../schema
 
   packages/webpack:
     dependencies:
       '@master/css':
-        specifier: workspace:^
-        version: link:../facade
-      '@master/css-integration':
-        specifier: workspace:^
-        version: link:../integration
-      '@master/css-project':
-        specifier: workspace:^
-        version: link:../project
+        specifier: workspace:*
+        version: link:../css
+      '@master/css-compiler':
+        specifier: workspace:*
+        version: link:../compiler
       '@master/css-runtime':
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:../runtime
-      '@master/css-scanner':
-        specifier: workspace:^
-        version: link:../scanner
-      '@master/css-stylesheet':
-        specifier: workspace:^
-        version: link:../stylesheet
+      '@master/css-tooling':
+        specifier: workspace:*
+        version: link:../tooling
       consola:
         specifier: ^3.4.2
         version: 3.4.2
@@ -2507,6 +2261,9 @@ importers:
         specifier: ^0.6.2
         version: 0.6.2
     devDependencies:
+      '@master/css-internal-integration':
+        specifier: workspace:*
+        version: link:../integration
       '@playwright/test':
         specifier: 1.61.0
         version: 1.61.0
@@ -2523,25 +2280,19 @@ importers:
     dependencies:
       '@master/css':
         specifier: workspace:^
-        version: link:../packages/facade
+        version: link:../packages/css
       '@master/css-compiler':
         specifier: workspace:^
         version: link:../packages/compiler
-      '@master/css-engine':
-        specifier: workspace:^
-        version: link:../packages/engine
-      '@master/css-language':
-        specifier: workspace:^
-        version: link:../packages/language
       '@master/css-preset':
         specifier: workspace:^
         version: link:../packages/preset
-      '@master/css-stylesheet':
+      '@master/css-schema':
         specifier: workspace:^
-        version: link:../packages/stylesheet
-      '@master/css-validator':
+        version: link:../packages/schema
+      '@master/css-tooling':
         specifier: workspace:^
-        version: link:../packages/validator
+        version: link:../packages/tooling
       '@master/theme-mode.react':
         specifier: ^1.1.1
         version: 1.1.1(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
@@ -2615,13 +2366,10 @@ importers:
       '@eslint/config-helpers':
         specifier: ^0.6.0
         version: 0.6.0
-      '@master/css-integration':
+      '@master/css-internal-integration':
         specifier: workspace:^
         version: link:../packages/integration
-      '@master/css-source':
-        specifier: workspace:^
-        version: link:../packages/source
-      '@master/css.next':
+      '@master/css-next':
         specifier: workspace:^
         version: link:../packages/next
       '@types/mdx':
@@ -9164,13 +8912,6 @@ packages:
     resolution: {integrity: sha512-BXXm+VOH/9X4N7Dd1iZ2MqA1h7M+9i2noI8QYuLDY8QcN2WHYn7D/VK/+IJNfcAmRw7ACNJ538UT9GXIhnBTiA==}
     engines: {node: '>= 18.0.0'}
 
-  '@sveltejs/package@2.5.8':
-    resolution: {integrity: sha512-zeBbsXYvHiBu56v4gJaGQoEHzg96w0E1j3dOMX8vo56s6vI5eQ57ZEZhudjwjnegnVitRRu5MrmhO0eNvaonIw==}
-    engines: {node: ^16.14 || >=18}
-    hasBin: true
-    peerDependencies:
-      svelte: ^3.44.0 || ^4.0.0 || ^5.0.0-next.1
-
   '@sveltejs/sv-utils@0.3.0':
     resolution: {integrity: sha512-TBQDbHEUy3sFGxhj9LcjyPVF8yM0kIgZG4hCbSYuf67XBoYbg7QpRVkyvEnAR+YqofXzOtOX+qPB9mRPj0eg7A==}
 
@@ -9918,9 +9659,6 @@ packages:
 
   '@types/node@25.9.4':
     resolution: {integrity: sha512-dszCsrKb5U7ZsVZBWiHFklTloVl0mSEnWH/iZXfZUlI4rzCUnsvGmgqfuVRHL54ugE7/wRuxEIXRa2iMZ+BG6g==}
-
-  '@types/node@25.9.5':
-    resolution: {integrity: sha512-OScDchr2fwuUmWdf4kZ9h7PcJiYDVInhJizG/biAq3cAvqwYktuy/TYGGdZNMtNTFUP7rnb0NU4TUdm82kt4Rg==}
 
   '@types/node@26.0.0':
     resolution: {integrity: sha512-vf2YFi1iY9lHGwNJMs01biZFbKJkrZR1T6/MlzjhJLPdntOHLhTrDSnSVcdtvjihi4VQNlrFRIxLsDBlQpAipA==}
@@ -12399,9 +12137,6 @@ packages:
   decompress-response@6.0.0:
     resolution: {integrity: sha512-aW35yZM6Bb/4oJlZncMH2LCoZtJXTRxES17vE3hoRiowU2kWHaJKFkSBDnDR+cm9J+9QhXmREyIfv0pji9ejCQ==}
     engines: {node: '>=10'}
-
-  dedent-js@1.0.1:
-    resolution: {integrity: sha512-OUepMozQULMLUmhxS95Vudo0jb0UchLimi3+pQ2plj61Fcy8axbP9hbiD4Sz6DPqn6XG3kfmziVfQ1rSys5AJQ==}
 
   dedent@1.7.2:
     resolution: {integrity: sha512-WzMx3mW98SN+zn3hgemf4OzdmyNhhhKz5Ay0pUfQiMQ3e1g+xmTJWp/pKdwKVXhdSkAEGIIzqeuWrL3mV/AXbA==}
@@ -19004,12 +18739,6 @@ packages:
       svelte:
         optional: true
 
-  svelte2tsx@0.7.56:
-    resolution: {integrity: sha512-NTvqqL+goYlW8gWNajk81L07+uu7jw5V2m1Az5MZbYm3GEydcHXh+uTrLHM9SuGuaqCtF90vlMXkOVBotfH94g==}
-    peerDependencies:
-      svelte: ^3.55 || ^4.0.0-next.0 || ^4.0 || ^5.0.0-next.0
-      typescript: ^4.9.4 || ^5.0.0 || ^6.0.0
-
   svelte@5.56.3:
     resolution: {integrity: sha512-w7JvrM5IFl5cmfbY0TLik9o7mjRUJmRMhOR51tBPu708Gr/MjbGs7VnJnr/B0CaXeI4vtnOh7RKxDr0cwhMdDA==}
     engines: {node: '>=18'}
@@ -21154,14 +20883,14 @@ snapshots:
     transitivePeerDependencies:
       - chokidar
 
-  '@angular-devkit/build-angular@22.0.3(961225228805c208d2cf0589c398dfad)':
+  '@angular-devkit/build-angular@22.0.3(0c0bb806343515a393133031c05ef19b)':
     dependencies:
       '@ampproject/remapping': 2.3.0
       '@angular-devkit/architect': 0.2200.3(chokidar@5.0.0)
       '@angular-devkit/build-webpack': 0.2200.3(chokidar@5.0.0)(webpack-dev-server@5.2.3(tslib@2.8.1)(webpack@5.106.2(@swc/core@1.15.41(@swc/helpers@0.5.23))(esbuild@0.28.1)(lightningcss@1.32.0)(postcss@8.5.13)))(webpack@5.106.2(@swc/core@1.15.41(@swc/helpers@0.5.23))(esbuild@0.28.1)(lightningcss@1.32.0)(postcss@8.5.13))
       '@angular-devkit/core': 22.0.3(chokidar@5.0.0)
-      '@angular/build': 22.0.3(3db3bc5d7c875b1bd9cf9d25f4bc4d23)
-      '@angular/compiler-cli': 22.0.2(@angular/compiler@22.0.2)(typescript@7.0.2)
+      '@angular/build': 22.0.3(faad9a112ecfc0937dc6596228d15641)
+      '@angular/compiler-cli': 22.0.2(@angular/compiler@22.0.2)(typescript@6.0.3)
       '@babel/core': 7.29.0
       '@babel/generator': 7.29.1
       '@babel/helper-annotate-as-pure': 7.27.3
@@ -21172,7 +20901,7 @@ snapshots:
       '@babel/preset-env': 7.29.3(@babel/core@7.29.0)
       '@babel/runtime': 7.29.2
       '@discoveryjs/json-ext': 1.1.0
-      '@ngtools/webpack': 22.0.3(@angular/compiler-cli@22.0.2(@angular/compiler@22.0.2)(typescript@7.0.2))(typescript@7.0.2)(webpack@5.106.2(@swc/core@1.15.41(@swc/helpers@0.5.23))(esbuild@0.28.1)(lightningcss@1.32.0)(postcss@8.5.13))
+      '@ngtools/webpack': 22.0.3(@angular/compiler-cli@22.0.2(@angular/compiler@22.0.2)(typescript@6.0.3))(typescript@6.0.3)(webpack@5.106.2(@swc/core@1.15.41(@swc/helpers@0.5.23))(esbuild@0.28.1)(lightningcss@1.32.0)(postcss@8.5.13))
       ansi-colors: 4.1.3
       autoprefixer: 10.5.0(postcss@8.5.13)
       babel-loader: 10.1.1(@babel/core@7.29.0)(@rspack/core@2.1.2(@swc/helpers@0.5.23))(webpack@5.106.2(@swc/core@1.15.41(@swc/helpers@0.5.23))(esbuild@0.28.1)(lightningcss@1.32.0)(postcss@8.5.13))
@@ -21194,7 +20923,7 @@ snapshots:
       picomatch: 4.0.4
       piscina: 5.1.4
       postcss: 8.5.13
-      postcss-loader: 8.2.1(@rspack/core@2.1.2(@swc/helpers@0.5.23))(postcss@8.5.13)(typescript@7.0.2)(webpack@5.106.2(@swc/core@1.15.41(@swc/helpers@0.5.23))(esbuild@0.28.1)(lightningcss@1.32.0)(postcss@8.5.13))
+      postcss-loader: 8.2.1(@rspack/core@2.1.2(@swc/helpers@0.5.23))(postcss@8.5.13)(typescript@6.0.3)(webpack@5.106.2(@swc/core@1.15.41(@swc/helpers@0.5.23))(esbuild@0.28.1)(lightningcss@1.32.0)(postcss@8.5.13))
       resolve-url-loader: 5.0.0
       rxjs: 7.8.2
       sass: 1.99.0
@@ -21205,7 +20934,7 @@ snapshots:
       terser: 5.46.2
       tinyglobby: 0.2.16
       tslib: 2.8.1
-      typescript: 7.0.2
+      typescript: 6.0.3
       webpack: 5.106.2(@swc/core@1.15.41(@swc/helpers@0.5.23))(esbuild@0.28.1)(lightningcss@1.32.0)(postcss@8.5.13)
       webpack-dev-middleware: 8.0.3(tslib@2.8.1)(webpack@5.106.2(@swc/core@1.15.41(@swc/helpers@0.5.23))(esbuild@0.28.1)(lightningcss@1.32.0)(postcss@8.5.13))
       webpack-dev-server: 5.2.3(tslib@2.8.1)(webpack@5.106.2(@swc/core@1.15.41(@swc/helpers@0.5.23))(esbuild@0.28.1)(lightningcss@1.32.0)(postcss@8.5.13))
@@ -21300,12 +21029,12 @@ snapshots:
       '@angular/core': 22.0.2(@angular/compiler@22.0.2)(rxjs@7.8.2)(zone.js@0.16.2)
       tslib: 2.8.1
 
-  '@angular/build@22.0.3(3db3bc5d7c875b1bd9cf9d25f4bc4d23)':
+  '@angular/build@22.0.3(faad9a112ecfc0937dc6596228d15641)':
     dependencies:
       '@ampproject/remapping': 2.3.0
       '@angular-devkit/architect': 0.2200.3(chokidar@5.0.0)
       '@angular/compiler': 22.0.2
-      '@angular/compiler-cli': 22.0.2(@angular/compiler@22.0.2)(typescript@7.0.2)
+      '@angular/compiler-cli': 22.0.2(@angular/compiler@22.0.2)(typescript@6.0.3)
       '@babel/core': 7.29.0
       '@babel/helper-annotate-as-pure': 7.27.3
       '@babel/helper-split-export-declaration': 7.24.7
@@ -21328,7 +21057,7 @@ snapshots:
       source-map-support: 0.5.21
       tinyglobby: 0.2.16
       tslib: 2.8.1
-      typescript: 7.0.2
+      typescript: 6.0.3
       vite: 7.3.5(@types/node@26.0.0)(jiti@2.7.0)(less@4.6.4)(lightningcss@1.32.0)(sass@1.99.0)(terser@5.46.2)(tsx@4.22.4)(yaml@2.9.0)
       watchpack: 2.5.1
     optionalDependencies:
@@ -21388,7 +21117,7 @@ snapshots:
       rxjs: 7.8.2
       tslib: 2.8.1
 
-  '@angular/compiler-cli@22.0.2(@angular/compiler@22.0.2)(typescript@7.0.2)':
+  '@angular/compiler-cli@22.0.2(@angular/compiler@22.0.2)(typescript@6.0.3)':
     dependencies:
       '@angular/compiler': 22.0.2
       '@babel/core': 7.29.0
@@ -21400,7 +21129,7 @@ snapshots:
       tslib: 2.8.1
       yargs: 18.0.0
     optionalDependencies:
-      typescript: 7.0.2
+      typescript: 6.0.3
     transitivePeerDependencies:
       - supports-color
 
@@ -24860,42 +24589,6 @@ snapshots:
       - supports-color
       - ts-node
 
-  '@jest/core@30.4.2(ts-node@10.9.2(@swc/core@1.15.41(@swc/helpers@0.5.23))(@types/node@25.9.5)(typescript@7.0.2))':
-    dependencies:
-      '@jest/console': 30.4.1
-      '@jest/pattern': 30.4.0
-      '@jest/reporters': 30.4.1
-      '@jest/test-result': 30.4.1
-      '@jest/transform': 30.4.1
-      '@jest/types': 30.4.1
-      '@types/node': 26.1.1
-      ansi-escapes: 4.3.2
-      chalk: 4.1.2
-      ci-info: 4.4.0
-      exit-x: 0.2.2
-      fast-json-stable-stringify: 2.1.0
-      graceful-fs: 4.2.11
-      jest-changed-files: 30.4.1
-      jest-config: 30.4.2(@types/node@26.1.1)(ts-node@10.9.2(@swc/core@1.15.41(@swc/helpers@0.5.23))(@types/node@25.9.5)(typescript@7.0.2))
-      jest-haste-map: 30.4.1
-      jest-message-util: 30.4.1
-      jest-regex-util: 30.4.0
-      jest-resolve: 30.4.1
-      jest-resolve-dependencies: 30.4.2
-      jest-runner: 30.4.2
-      jest-runtime: 30.4.2
-      jest-snapshot: 30.4.1
-      jest-util: 30.4.1
-      jest-validate: 30.4.1
-      jest-watcher: 30.4.1
-      pretty-format: 30.4.1
-      slash: 3.0.0
-    transitivePeerDependencies:
-      - babel-plugin-macros
-      - esbuild-register
-      - supports-color
-      - ts-node
-
   '@jest/diff-sequences@30.4.0': {}
 
   '@jest/environment@30.4.1':
@@ -25580,10 +25273,10 @@ snapshots:
   '@next/swc-win32-x64-msvc@16.2.9':
     optional: true
 
-  '@ngtools/webpack@22.0.3(@angular/compiler-cli@22.0.2(@angular/compiler@22.0.2)(typescript@7.0.2))(typescript@7.0.2)(webpack@5.106.2(@swc/core@1.15.41(@swc/helpers@0.5.23))(esbuild@0.28.1)(lightningcss@1.32.0)(postcss@8.5.13))':
+  '@ngtools/webpack@22.0.3(@angular/compiler-cli@22.0.2(@angular/compiler@22.0.2)(typescript@6.0.3))(typescript@6.0.3)(webpack@5.106.2(@swc/core@1.15.41(@swc/helpers@0.5.23))(esbuild@0.28.1)(lightningcss@1.32.0)(postcss@8.5.13))':
     dependencies:
-      '@angular/compiler-cli': 22.0.2(@angular/compiler@22.0.2)(typescript@7.0.2)
-      typescript: 7.0.2
+      '@angular/compiler-cli': 22.0.2(@angular/compiler@22.0.2)(typescript@6.0.3)
+      typescript: 6.0.3
       webpack: 5.106.2(@swc/core@1.15.41(@swc/helpers@0.5.23))(esbuild@0.28.1)(lightningcss@1.32.0)(postcss@8.5.13)
 
   '@noble/hashes@1.4.0': {}
@@ -28678,17 +28371,6 @@ snapshots:
 
   '@sveltejs/load-config@0.1.1': {}
 
-  '@sveltejs/package@2.5.8(svelte@5.56.3(@typescript-eslint/types@8.63.0))(typescript@7.0.2)':
-    dependencies:
-      chokidar: 5.0.0
-      kleur: 4.1.5
-      sade: 1.8.1
-      semver: 7.8.5
-      svelte: 5.56.3(@typescript-eslint/types@8.63.0)
-      svelte2tsx: 0.7.56(svelte@5.56.3(@typescript-eslint/types@8.63.0))(typescript@7.0.2)
-    transitivePeerDependencies:
-      - typescript
-
   '@sveltejs/sv-utils@0.3.0': {}
 
   '@sveltejs/vite-plugin-svelte-inspector@4.0.1(@sveltejs/vite-plugin-svelte@5.1.1(supports-color@5.5.0)(svelte@5.56.3(@typescript-eslint/types@8.63.0))(vite@8.0.16))(supports-color@5.5.0)(svelte@5.56.3(@typescript-eslint/types@8.63.0))(vite@8.0.16)':
@@ -29559,11 +29241,6 @@ snapshots:
   '@types/node@25.9.4':
     dependencies:
       undici-types: 7.24.6
-
-  '@types/node@25.9.5':
-    dependencies:
-      undici-types: 7.24.6
-    optional: true
 
   '@types/node@26.0.0':
     dependencies:
@@ -32679,6 +32356,15 @@ snapshots:
     optionalDependencies:
       typescript: 7.0.2
 
+  cosmiconfig@9.0.2(typescript@6.0.3):
+    dependencies:
+      env-paths: 2.2.1
+      import-fresh: 3.3.1
+      js-yaml: 4.3.0
+      parse-json: 5.2.0
+    optionalDependencies:
+      typescript: 6.0.3
+
   cosmiconfig@9.0.2(typescript@7.0.2):
     dependencies:
       env-paths: 2.2.1
@@ -33035,8 +32721,6 @@ snapshots:
     dependencies:
       mimic-response: 3.1.0
     optional: true
-
-  dedent-js@1.0.1: {}
 
   dedent@1.7.2: {}
 
@@ -36576,25 +36260,6 @@ snapshots:
       - supports-color
       - ts-node
 
-  jest-cli@30.4.2(@types/node@25.9.5)(ts-node@10.9.2(@swc/core@1.15.41(@swc/helpers@0.5.23))(@types/node@25.9.5)(typescript@7.0.2)):
-    dependencies:
-      '@jest/core': 30.4.2(ts-node@10.9.2(@swc/core@1.15.41(@swc/helpers@0.5.23))(@types/node@25.9.5)(typescript@7.0.2))
-      '@jest/test-result': 30.4.1
-      '@jest/types': 30.4.1
-      chalk: 4.1.2
-      exit-x: 0.2.2
-      import-local: 3.2.0
-      jest-config: 30.4.2(@types/node@25.9.5)(ts-node@10.9.2(@swc/core@1.15.41(@swc/helpers@0.5.23))(@types/node@25.9.5)(typescript@7.0.2))
-      jest-util: 30.4.1
-      jest-validate: 30.4.1
-      yargs: 17.7.3
-    transitivePeerDependencies:
-      - '@types/node'
-      - babel-plugin-macros
-      - esbuild-register
-      - supports-color
-      - ts-node
-
   jest-config@30.4.2(@types/node@25.9.4)(ts-node@10.9.2(@swc/core@1.15.41(@swc/helpers@0.5.23))(@types/node@25.9.4)(typescript@7.0.2)):
     dependencies:
       '@babel/core': 7.29.7
@@ -36627,38 +36292,6 @@ snapshots:
       - babel-plugin-macros
       - supports-color
 
-  jest-config@30.4.2(@types/node@25.9.5)(ts-node@10.9.2(@swc/core@1.15.41(@swc/helpers@0.5.23))(@types/node@25.9.5)(typescript@7.0.2)):
-    dependencies:
-      '@babel/core': 7.29.7
-      '@jest/get-type': 30.1.0
-      '@jest/pattern': 30.4.0
-      '@jest/test-sequencer': 30.4.1
-      '@jest/types': 30.4.1
-      babel-jest: 30.4.1(@babel/core@7.29.7)
-      chalk: 4.1.2
-      ci-info: 4.4.0
-      deepmerge: 4.3.1
-      glob: 10.5.0
-      graceful-fs: 4.2.11
-      jest-circus: 30.4.2
-      jest-docblock: 30.4.0
-      jest-environment-node: 30.4.1
-      jest-regex-util: 30.4.0
-      jest-resolve: 30.4.1
-      jest-runner: 30.4.2
-      jest-util: 30.4.1
-      jest-validate: 30.4.1
-      parse-json: 5.2.0
-      pretty-format: 30.4.1
-      slash: 3.0.0
-      strip-json-comments: 3.1.1
-    optionalDependencies:
-      '@types/node': 25.9.5
-      ts-node: 10.9.2(@swc/core@1.15.41(@swc/helpers@0.5.23))(@types/node@25.9.5)(typescript@7.0.2)
-    transitivePeerDependencies:
-      - babel-plugin-macros
-      - supports-color
-
   jest-config@30.4.2(@types/node@26.1.1)(ts-node@10.9.2(@swc/core@1.15.41(@swc/helpers@0.5.23))(@types/node@25.9.4)(typescript@7.0.2)):
     dependencies:
       '@babel/core': 7.29.7
@@ -36687,38 +36320,6 @@ snapshots:
     optionalDependencies:
       '@types/node': 26.1.1
       ts-node: 10.9.2(@swc/core@1.15.41(@swc/helpers@0.5.23))(@types/node@25.9.4)(typescript@7.0.2)
-    transitivePeerDependencies:
-      - babel-plugin-macros
-      - supports-color
-
-  jest-config@30.4.2(@types/node@26.1.1)(ts-node@10.9.2(@swc/core@1.15.41(@swc/helpers@0.5.23))(@types/node@25.9.5)(typescript@7.0.2)):
-    dependencies:
-      '@babel/core': 7.29.7
-      '@jest/get-type': 30.1.0
-      '@jest/pattern': 30.4.0
-      '@jest/test-sequencer': 30.4.1
-      '@jest/types': 30.4.1
-      babel-jest: 30.4.1(@babel/core@7.29.7)
-      chalk: 4.1.2
-      ci-info: 4.4.0
-      deepmerge: 4.3.1
-      glob: 10.5.0
-      graceful-fs: 4.2.11
-      jest-circus: 30.4.2
-      jest-docblock: 30.4.0
-      jest-environment-node: 30.4.1
-      jest-regex-util: 30.4.0
-      jest-resolve: 30.4.1
-      jest-runner: 30.4.2
-      jest-util: 30.4.1
-      jest-validate: 30.4.1
-      parse-json: 5.2.0
-      pretty-format: 30.4.1
-      slash: 3.0.0
-      strip-json-comments: 3.1.1
-    optionalDependencies:
-      '@types/node': 26.1.1
-      ts-node: 10.9.2(@swc/core@1.15.41(@swc/helpers@0.5.23))(@types/node@25.9.5)(typescript@7.0.2)
     transitivePeerDependencies:
       - babel-plugin-macros
       - supports-color
@@ -36962,19 +36563,6 @@ snapshots:
       '@jest/types': 30.4.1
       import-local: 3.2.0
       jest-cli: 30.4.2(@types/node@25.9.4)(ts-node@10.9.2(@swc/core@1.15.41(@swc/helpers@0.5.23))(@types/node@25.9.4)(typescript@7.0.2))
-    transitivePeerDependencies:
-      - '@types/node'
-      - babel-plugin-macros
-      - esbuild-register
-      - supports-color
-      - ts-node
-
-  jest@30.4.2(@types/node@25.9.5)(ts-node@10.9.2(@swc/core@1.15.41(@swc/helpers@0.5.23))(@types/node@25.9.5)(typescript@7.0.2)):
-    dependencies:
-      '@jest/core': 30.4.2(ts-node@10.9.2(@swc/core@1.15.41(@swc/helpers@0.5.23))(@types/node@25.9.5)(typescript@7.0.2))
-      '@jest/types': 30.4.1
-      import-local: 3.2.0
-      jest-cli: 30.4.2(@types/node@25.9.5)(ts-node@10.9.2(@swc/core@1.15.41(@swc/helpers@0.5.23))(@types/node@25.9.5)(typescript@7.0.2))
     transitivePeerDependencies:
       - '@types/node'
       - babel-plugin-macros
@@ -40051,9 +39639,9 @@ snapshots:
       postcss: 8.5.15
       ts-node: 10.9.2(@swc/core@1.15.41(@swc/helpers@0.5.23))(@types/node@26.1.1)(typescript@7.0.2)
 
-  postcss-loader@8.2.1(@rspack/core@2.1.2(@swc/helpers@0.5.23))(postcss@8.5.13)(typescript@7.0.2)(webpack@5.106.2(@swc/core@1.15.41(@swc/helpers@0.5.23))(esbuild@0.28.1)(lightningcss@1.32.0)(postcss@8.5.13)):
+  postcss-loader@8.2.1(@rspack/core@2.1.2(@swc/helpers@0.5.23))(postcss@8.5.13)(typescript@6.0.3)(webpack@5.106.2(@swc/core@1.15.41(@swc/helpers@0.5.23))(esbuild@0.28.1)(lightningcss@1.32.0)(postcss@8.5.13)):
     dependencies:
-      cosmiconfig: 9.0.2(typescript@7.0.2)
+      cosmiconfig: 9.0.2(typescript@6.0.3)
       jiti: 2.7.0
       postcss: 8.5.13
       semver: 7.7.4
@@ -42261,13 +41849,6 @@ snapshots:
     optionalDependencies:
       svelte: 5.56.3(@typescript-eslint/types@8.63.0)
 
-  svelte2tsx@0.7.56(svelte@5.56.3(@typescript-eslint/types@8.63.0))(typescript@7.0.2):
-    dependencies:
-      dedent-js: 1.0.1
-      scule: 1.3.0
-      svelte: 5.56.3(@typescript-eslint/types@8.63.0)
-      typescript: 7.0.2
-
   svelte@5.56.3(@typescript-eslint/types@8.63.0):
     dependencies:
       '@jridgewell/remapping': 2.3.5
@@ -42676,27 +42257,6 @@ snapshots:
       esbuild: 0.28.1
       jest-util: 30.4.1
 
-  ts-jest@29.4.11(@babel/core@7.29.7)(@jest/transform@30.4.1)(@jest/types@30.4.1)(babel-jest@30.4.1(@babel/core@7.29.7))(esbuild@0.28.1)(jest-util@30.4.1)(jest@30.4.2(@types/node@25.9.5)(ts-node@10.9.2(@swc/core@1.15.41(@swc/helpers@0.5.23))(@types/node@25.9.5)(typescript@7.0.2)))(typescript@7.0.2):
-    dependencies:
-      bs-logger: 0.2.6
-      fast-json-stable-stringify: 2.1.0
-      handlebars: 4.7.9
-      jest: 30.4.2(@types/node@25.9.5)(ts-node@10.9.2(@swc/core@1.15.41(@swc/helpers@0.5.23))(@types/node@25.9.5)(typescript@7.0.2))
-      json5: 2.2.3
-      lodash.memoize: 4.1.2
-      make-error: 1.3.6
-      semver: 7.8.5
-      type-fest: 4.41.0
-      typescript: 7.0.2
-      yargs-parser: 21.1.1
-    optionalDependencies:
-      '@babel/core': 7.29.7
-      '@jest/transform': 30.4.1
-      '@jest/types': 30.4.1
-      babel-jest: 30.4.1(@babel/core@7.29.7)
-      esbuild: 0.28.1
-      jest-util: 30.4.1
-
   ts-macro@0.3.7:
     dependencies:
       muggle-string: 0.4.1
@@ -42720,27 +42280,6 @@ snapshots:
       yn: 3.1.1
     optionalDependencies:
       '@swc/core': 1.15.41(@swc/helpers@0.5.23)
-
-  ts-node@10.9.2(@swc/core@1.15.41(@swc/helpers@0.5.23))(@types/node@25.9.5)(typescript@7.0.2):
-    dependencies:
-      '@cspotcode/source-map-support': 0.8.1
-      '@tsconfig/node10': 1.0.12
-      '@tsconfig/node12': 1.0.11
-      '@tsconfig/node14': 1.0.3
-      '@tsconfig/node16': 1.0.4
-      '@types/node': 25.9.5
-      acorn: 8.17.0
-      acorn-walk: 8.3.5
-      arg: 4.1.3
-      create-require: 1.1.1
-      diff: 4.0.4
-      make-error: 1.3.6
-      typescript: 7.0.2
-      v8-compile-cache-lib: 3.0.1
-      yn: 3.1.1
-    optionalDependencies:
-      '@swc/core': 1.15.41(@swc/helpers@0.5.23)
-    optional: true
 
   ts-node@10.9.2(@swc/core@1.15.41(@swc/helpers@0.5.23))(@types/node@26.1.1)(typescript@7.0.2):
     dependencies:

@@ -19,27 +19,20 @@ For `packages/<name>/**`, read `packages/<name>/package.json` and `packages/<nam
 | Path | Package | Common extra pack |
 |---|---|---|
 | `packages/schema/**` | `@master/css-schema` | `package-boundaries.md` |
-| `packages/lexer/**` | `@master/css-lexer` | `package-boundaries.md` |
-| `packages/source/**` | `@master/css-source` | `package-boundaries.md`, `testing.md` |
-| `packages/engine/**` | `@master/css-engine` | `css-output.md`, `performance.md` |
 | `packages/preset/**` | `@master/css-preset` | `css-output.md` |
-| `packages/facade/**` | `@master/css` | `package-boundaries.md`, `css-output.md` |
-| `packages/compiler/**` | `@master/css-compiler` | `css-output.md`, `package-boundaries.md` |
-| `packages/project/**` | `@master/css-project` | `package-boundaries.md` |
-| `packages/integration/**` | `@master/css-integration` | `package-boundaries.md` |
-| `packages/stylesheet/**` | `@master/css-stylesheet` | `css-output.md`, `package-boundaries.md` |
+| `packages/native*/**`, `packages/wasm-*/**` | native/Wasm artifact delivery | `package-boundaries.md`, `testing.md` |
+| `packages/css/**` | `@master/css` | `package-boundaries.md`, `css-output.md`, `performance.md` |
+| `packages/compiler/**` | compiler, project, stylesheet, diagnostics | `css-output.md`, `package-boundaries.md` |
+| `packages/tooling/**` | lexer, source, scanner, validator, lint, language | `package-boundaries.md`, `testing.md` |
+| `packages/integration/**` | private official integration protocol | `package-boundaries.md` |
 | `packages/runtime/**` | `@master/css-runtime` | `css-output.md`, `performance.md` |
 | `packages/server/**` | `@master/css-server` | `css-output.md` |
-| `packages/scanner/**` | `@master/css-scanner` | `testing.md`, `css-output.md` |
-| `packages/validator/**` | `@master/css-validator` | `testing.md`, `css-output.md` |
-| `packages/diagnostics/**` | `@master/css-diagnostics` | `testing.md`, `package-boundaries.md` |
-| `packages/lint/**` | `@master/css-lint` | `testing.md`, `package-boundaries.md` |
-| `packages/language*/**`, `packages/vscode/**` | language tooling | `testing.md` |
+| `packages/language-service/**`, `packages/language-server/**`, `packages/vscode/**` | editor and LSP tooling | `testing.md` |
 | `packages/eslint-*/**` | ESLint tooling | `testing.md` |
 | `packages/vite/**`, `packages/webpack/**`, `packages/next/**` | build integrations | `package-boundaries.md`, `css-output.md` |
 | `packages/astro/**`, `packages/nuxt/**`, `packages/svelte/**` | framework integrations | `testing.md`, `css-output.md` |
 | `packages/cli/**` | CLI | `testing.md`, `package-boundaries.md` |
-| `packages/devtools-hook/**`, `packages/figma/**` | app/plugin surfaces | `testing.md` |
+| `packages/figma/**` | app/plugin surface | `testing.md` |
 
 ## Root And Workspace Paths
 

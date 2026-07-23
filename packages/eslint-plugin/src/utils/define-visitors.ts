@@ -3,7 +3,7 @@ import type { RuleContext, RuleListener } from '@typescript-eslint/utils/ts-esli
 import { Settings } from '../settings'
 import withVisitClassNode from './with-visit-class-node'
 import resolveClassNode from './resolve-class-node'
-import type { LintSession } from '@master/css-lint/node'
+import type { LintSession } from '@master/css-tooling/lint/node'
 
 export default function defineVisitors(
   { context, settings, rustLint }: {

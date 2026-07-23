@@ -1,17 +1,19 @@
 import editJsonFile from 'edit-json-file'
 import settings from '../language-server/src/settings'
-import { SEMANTIC_TOKEN_MODIFIERS } from '../language/src/common'
-import { MASTER_CSS_SEMANTIC_TOKEN_SCOPE_MAP } from '../language/src/semantic/scopes'
+import {
+  MASTER_CSS_SEMANTIC_TOKEN_SCOPE_MAP,
+  SEMANTIC_TOKEN_MODIFIERS
+} from '@master/css-tooling/language'
 import {
   MASTER_CSS_SHIKI_INJECT_TO,
   MASTER_CSS_SHIKI_SCOPE_NAME
-} from '../language/src/shiki'
+} from '@master/css-language-service/shiki'
 import { fileURLToPath } from 'node:url'
 import { readFileSync, writeFileSync } from 'node:fs'
 
 const packageJSONPath = fileURLToPath(new URL('./package.json', import.meta.url))
 const pkg = editJsonFile(packageJSONPath, { stringify_width: 2 })
-const MASTER_CSS_GRAMMAR_PATH = './node_modules/@master/css-language/syntaxes/master-css.tmLanguage.json'
+const MASTER_CSS_GRAMMAR_PATH = './node_modules/@master/css-language-service/syntaxes/master-css.tmLanguage.json'
 
 pkg.unset('contributes.languages')
 pkg.unset('contributes.css')

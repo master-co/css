@@ -56,7 +56,7 @@ test('release dry run reports Azure credential authentication', () => {
 
 test('release status guard ignores pre-existing dirty paths', () => {
   const baseline = [
-    ' M packages/language/package.json',
+    ' M packages/tooling/package.json',
     '?? local-notes.md'
   ]
   const current = [
@@ -74,7 +74,7 @@ test('release status guard ignores pre-existing dirty paths', () => {
 
 test('release status guard rejects newly dirty unexpected paths', () => {
   const baseline = [
-    ' M packages/language/package.json'
+    ' M packages/tooling/package.json'
   ]
   const current = [
     ...baseline,
