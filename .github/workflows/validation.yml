@@ -195,6 +195,7 @@ jobs:
           pnpm --filter site build
           pnpm --filter site test:css-contract
           pnpm --filter site test:dogfood
+          pnpm --filter site test:dogfood:dev
           pnpm --filter site test:play
           pnpm --filter site lint
           pnpm --filter site type-check

@@ -2,6 +2,7 @@ import { createHash } from 'node:crypto'
 import { readFile, readdir, stat, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { collectCSSVariableReferences } from './css-variable-references'
 
 type JSONValue = null | boolean | number | string | JSONValue[] | { [key: string]: JSONValue }
 
@@ -114,6 +115,8 @@ async function createSiteCSSContractSnapshot(): Promise<SiteCSSContractSnapshot>
     }
 
     const globalManifestText = await readFile(manifestFiles[0], 'utf8')
+    const globalManifest = JSON.parse(globalManifestText) as JSONValue
+    const inlineVariableNames = collectInlineVariableNames(globalManifest)
     const cssSegments: Record<string, string> = {}
     const rules: Record<string, HydrationRule> = {}
     const contracts: Record<string, CSSContract> = {}
@@ -127,6 +130,7 @@ async function createSiteCSSContractSnapshot(): Promise<SiteCSSContractSnapshot>
             routes[route] = null
             continue
         }
+        assertNoInlineVariableReferences(route, 'generated CSS', style.css, inlineVariableNames)
 
         const hydrationReference = attributeValue(
             style.attributes,
@@ -144,6 +148,14 @@ async function createSiteCSSContractSnapshot(): Promise<SiteCSSContractSnapshot>
             || !Array.isArray(hydration.resourceOrder)
         ) {
             throw new Error(`${route} references an invalid Master CSS hydration manifest.`)
+        }
+        for (const rule of hydration.rules) {
+            assertNoInlineVariableReferences(
+                route,
+                `hydration rule ${rule.className}`,
+                rule.text,
+                inlineVariableNames
+            )
         }
 
         let segments: string[]
@@ -180,13 +192,52 @@ async function createSiteCSSContractSnapshot(): Promise<SiteCSSContractSnapshot>
         globalManifest: {
             bytes: Buffer.byteLength(globalManifestText),
             sha256: sha256(globalManifestText),
-            value: JSON.parse(globalManifestText) as JSONValue
+            value: globalManifest
         },
         cssSegments: sortRecord(cssSegments),
         rules: sortRecord(rules),
         contracts: sortRecord(contracts),
         routes: sortRecord(routes)
     }
+}
+
+function collectInlineVariableNames(manifest: JSONValue) {
+    const names = new Set<string>()
+    if (!isJSONObject(manifest) || !isJSONObject(manifest.variables)) return names
+    for (const [namespace, definitions] of Object.entries(manifest.variables)) {
+        if (!Array.isArray(definitions)) continue
+        for (const definition of definitions) {
+            if (!isJSONObject(definition) || definition.inline !== true) continue
+            const key = typeof definition.key === 'string' ? definition.key : ''
+            const name = typeof definition.name === 'string'
+                ? definition.name
+                : namespace && key
+                    ? `${namespace}-${key}`
+                    : namespace || key
+            if (name) names.add(name)
+        }
+    }
+    return names
+}
+
+function assertNoInlineVariableReferences(
+    route: string,
+    sourceName: string,
+    source: string,
+    inlineVariableNames: Set<string>
+) {
+    const reference = collectCSSVariableReferences(source)
+        .find((name) => inlineVariableNames.has(name))
+    if (reference) {
+        throw new Error(
+            `${route} ${sourceName} references inline variable --${reference}; `
+            + 'inline variables must be resolved before CSS emission.'
+        )
+    }
+}
+
+function isJSONObject(value: JSONValue): value is { [key: string]: JSONValue } {
+    return Boolean(value && typeof value === 'object' && !Array.isArray(value))
 }
 
 async function readExpectedSnapshot() {

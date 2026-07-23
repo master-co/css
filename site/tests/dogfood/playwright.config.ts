@@ -4,7 +4,7 @@ const port = Number(process.env.MASTER_CSS_DOGFOOD_PORT || 4173)
 
 export default defineConfig({
   testDir: '.',
-  testMatch: 'site-css.spec.ts',
+  testMatch: ['site-css.spec.ts', 'inline-theme.spec.ts'],
   fullyParallel: false,
   forbidOnly: true,
   retries: process.env.CI ? 1 : 0,
