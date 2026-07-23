@@ -45,7 +45,6 @@
     },
     "type-check": {
       "dependsOn": [
-        "^build",
         "^type-check"
       ],
       "outputLogs": "new-only",
