@@ -982,5 +982,3 @@ export function transformerMasterCSS(
     }
   }
 }
-
-export default [masterCSSShikiLanguage]

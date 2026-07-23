@@ -59,6 +59,16 @@ function findNamedImportName(ast: { body: unknown[] }, from: string, importedNam
   }
 }
 
+function findDefaultImportName(ast: { body: unknown[] }, from: string) {
+  for (const node of ast.body) {
+    if (!isImportDeclaration(node) || node.source.value !== from) continue
+    const defaultSpecifier = node.specifiers?.find((specifier) => (
+      specifier.type === 'ImportDefaultSpecifier'
+    ))
+    if (defaultSpecifier?.local?.name) return defaultSpecifier.local.name
+  }
+}
+
 function moveSequenceHandleFirst(ast: unknown, handleName: string) {
   Walker.walk(ast as { type: string }, null, {
     CallExpression(node: CallExpression, { next }: { next: () => void }) {
@@ -76,17 +86,24 @@ function moveSequenceHandleFirst(ast: unknown, handleName: string) {
 
 export function addMasterCSSVitePlugin(content: string) {
   return transforms.script(({ ast, js }) => {
-    const pluginName = findNamedImportName(
+    const defaultPluginName = findDefaultImportName(
+      ast,
+      MASTER_CSS_SVELTE_VITE_IMPORT
+    )
+    const namedPluginName = findNamedImportName(
       ast,
       MASTER_CSS_SVELTE_VITE_IMPORT,
       'createMasterCSSVitePlugin'
-    ) ?? MASTER_CSS_VITE_PLUGIN_NAME
-    js.imports.addNamed(ast, {
-      from: MASTER_CSS_SVELTE_VITE_IMPORT,
-      imports: {
-        createMasterCSSVitePlugin: pluginName
-      }
-    })
+    )
+    const pluginName = defaultPluginName
+      ?? namedPluginName
+      ?? MASTER_CSS_VITE_PLUGIN_NAME
+    if (!defaultPluginName && !namedPluginName) {
+      js.imports.addDefault(ast, {
+        from: MASTER_CSS_SVELTE_VITE_IMPORT,
+        as: pluginName
+      })
+    }
     js.vite.addPlugin(ast, {
       code: `${pluginName}()`
     })

@@ -61,12 +61,12 @@ npm install @master/css-vite
 ## Usage
 
 ```js
-import { createMasterCSSVitePlugin } from '@master/css-vite'
+import masterCSS from '@master/css-vite'
 
 /** @type {import('vite').UserConfig} */
 const config = {
   plugins: [
-    createMasterCSSVitePlugin()
+    masterCSS()
   ]
 }
 
@@ -112,7 +112,7 @@ In production `runtime` mode, the plugin modulepreloads the emitted manifest JSO
 
 ## Options
 
-The `options` object is passed to `createMasterCSSVitePlugin(options)`.
+Pass the `options` object to `masterCSS(options)`.
 
 | Option | Type | Default | Description |
 | --- | --- | --- | --- |

@@ -19,7 +19,7 @@
 
 ## Public Surface
 
-- `./vite`: named `createMasterCSSVitePlugin`
+- `./vite`: ecosystem default export and named `createMasterCSSVitePlugin`
 - `./hooks.server`: named `handle` and `createMasterCSSHandle`
 
 ## Key Files

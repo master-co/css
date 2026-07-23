@@ -75,12 +75,12 @@ npm install @master/css @master/css-svelte
 ```ts
 import { sveltekit } from '@sveltejs/kit/vite'
 import { defineConfig } from 'vite'
-import { createMasterCSSVitePlugin } from '@master/css-svelte/vite'
+import masterCSS from '@master/css-svelte/vite'
 
 export default defineConfig({
   plugins: [
     sveltekit(),
-    createMasterCSSVitePlugin()
+    masterCSS()
   ]
 })
 ```

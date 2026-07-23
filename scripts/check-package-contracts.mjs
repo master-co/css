@@ -33,17 +33,20 @@ const packagesWithoutTypeDeclarations = new Set([
 ])
 const legacyEntrypointFields = ['main', 'module', 'jsnext:main', 'esnext']
 const dependencyFields = ['dependencies', 'devDependencies', 'optionalDependencies', 'peerDependencies']
-const allowedDefaultExportPackages = new Set([
-  '@master/css-astro',
-  '@master/css-language-service',
-  '@master/css-next',
-  '@master/css-nuxt',
-  '@master/css-svelte',
-  '@master/css-svelte-addon',
-  '@master/css-vite',
-  '@master/css-webpack',
-  '@master/eslint-config-css',
-  '@master/eslint-plugin-css'
+const requiredDefaultExportEntrypoints = new Set([
+  '@master/css-astro:.',
+  '@master/css-next:.',
+  '@master/css-next:./adapter',
+  '@master/css-nuxt:.',
+  '@master/css-svelte:./vite',
+  '@master/css-svelte-addon:.',
+  '@master/css-vite:.',
+  '@master/css-webpack:.',
+  '@master/eslint-config-css:.',
+  '@master/eslint-plugin-css:.'
+])
+const publicSourceRootByPackageName = new Map([
+  ['@master/css-svelte', 'src/lib']
 ])
 
 function readPackage(directory) {
@@ -65,15 +68,18 @@ function resolveExportTarget(value) {
   return value.types || value.import || value.browser || value.node || value.default
 }
 
-function resolvePublicSource(directory, target) {
+function resolvePublicSource(directory, packageName, target) {
   if (!target || !/\.(?:d\.ts|[cm]?[jt]sx?)$/.test(target)) return
   let relativeSource
   if (target.startsWith('./dist/')) {
+    const sourceRoot = publicSourceRootByPackageName.get(packageName) || 'src'
     relativeSource = target
-      .replace('./dist/', 'src/')
+      .replace('./dist/', `${sourceRoot}/`)
       .replace(/\.d\.ts$/, '.ts')
       .replace(/\.js$/, '.ts')
   } else if (target.startsWith('./src/')) {
+    relativeSource = target.slice(2)
+  } else if (target.startsWith('./')) {
     relativeSource = target.slice(2)
   }
   if (!relativeSource) return
@@ -134,13 +140,21 @@ function collectPublicSymbols(file) {
 
 function createPublicAPIContract(packages) {
   const contract = {}
+  const observedDefaultExportEntrypoints = new Set()
   for (const { directory, manifest } of packages) {
     if (manifest.private) continue
     const symbols = {}
     for (const [subpath, value] of Object.entries(manifest.exports || {})) {
       const target = resolveExportTarget(value)
-      const source = resolvePublicSource(directory, target)
-      if (!source) continue
+      const source = resolvePublicSource(directory, manifest.name, target)
+      if (!source) {
+        assert.equal(
+          Boolean(target && /\.(?:d\.ts|[cm]?[jt]sx?)$/.test(target)),
+          false,
+          `${manifest.name}${subpath === '.' ? '' : subpath.slice(1)} does not resolve to a public source file.`
+        )
+        continue
+      }
       const entrySymbols = collectPublicSymbols(source)
       assert.equal(
         entrySymbols.includes('*'),
@@ -158,11 +172,16 @@ function createPublicAPIContract(packages) {
           `${manifest.name}${subpath === '.' ? '' : subpath.slice(1)} must expose ${symbol} from a Node sync entrypoint.`
         )
       }
-      if (
-        entrySymbols.includes('default')
-        && !allowedDefaultExportPackages.has(manifest.name)
-        && !target.endsWith('.json.d.ts')
-      ) {
+      const entrypoint = `${manifest.name}:${subpath}`
+      const hasDefaultExport = entrySymbols.includes('default')
+      if (requiredDefaultExportEntrypoints.has(entrypoint)) {
+        assert.equal(
+          hasDefaultExport,
+          true,
+          `${manifest.name}${subpath === '.' ? '' : subpath.slice(1)} must expose its ecosystem default export.`
+        )
+        observedDefaultExportEntrypoints.add(entrypoint)
+      } else if (hasDefaultExport && !target.endsWith('.json.d.ts')) {
         assert.fail(`${manifest.name}${subpath === '.' ? '' : subpath.slice(1)} must use named exports.`)
       }
       symbols[subpath] = entrySymbols
@@ -178,6 +197,11 @@ function createPublicAPIContract(packages) {
         .slice(0, 16)
     }
   }
+  assert.deepEqual(
+    [...observedDefaultExportEntrypoints].sort(),
+    [...requiredDefaultExportEntrypoints].sort(),
+    'The required ecosystem default export entrypoints are incomplete.'
+  )
   return contract
 }
 

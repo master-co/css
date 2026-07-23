@@ -1,5 +1,5 @@
 import editJsonFile from 'edit-json-file'
-import settings from '../language-server/src/settings'
+import { defaultLanguageServerSettings as settings } from '@master/css-language-server'
 import {
   MASTER_CSS_SEMANTIC_TOKEN_SCOPE_MAP,
   SEMANTIC_TOKEN_MODIFIERS

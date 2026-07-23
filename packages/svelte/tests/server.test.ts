@@ -88,7 +88,9 @@ describe('Svelte server hook renderer', () => {
     expect(html).toContain(
       `${MASTER_CSS_HYDRATION_MANIFEST_ATTR}="/hydration/${manifestHash}.json"`
     )
-    expect(html).not.toContain(MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID)
+    expect(html).not.toMatch(
+      new RegExp(`<script\\b[^>]*\\bid=["']${MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID}["']`, 'i')
+    )
   })
 
   test('honors emitted globals and disabled hydration', async () => {
@@ -113,6 +115,8 @@ describe('Svelte server hook renderer', () => {
     expect(html).toContain('.animate\\:fade{animation:var(--animate-fade)}')
     expect(html).not.toContain('--color-red-60:')
     expect(html).not.toContain('@keyframes fade')
-    expect(html).not.toContain(MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID)
+    expect(html).not.toMatch(
+      new RegExp(`<script\\b[^>]*\\bid=["']${MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID}["']`, 'i')
+    )
   })
 })

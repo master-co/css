@@ -24,5 +24,9 @@
     {
       "path": "../compiler/tsconfig.typecheck.json"
     }
+  ],
+  "include": [
+    "generate.ts",
+    "src/**/*.ts"
   ]
 }

@@ -20,7 +20,7 @@ export default defineConfig({
     const twice = addMasterCSSVitePlugin(once)
 
     expect(twice).toBe(once)
-    expect(once).toContain(`import { createMasterCSSVitePlugin as masterCSS } from '@master/css-svelte/vite';`)
+    expect(once).toContain(`import masterCSS from '@master/css-svelte/vite';`)
     expect(once).toContain('plugins: [sveltekit(), masterCSS()]')
   })
 

@@ -85,7 +85,7 @@ This page hydration manifest is separate from the project manifest and from the 
 ## Adapter integration
 The new adapter is registered in `next.config.js`, and Next.js calls it when the full build output is available:
 ```js name=next.config.js
-import { withMasterCSS } from '@master/css-next'
+import withMasterCSS from '@master/css-next'
 
 /** @type {import('next').NextConfig} */
 const nextConfig = withMasterCSS({
@@ -158,7 +158,7 @@ The Next.js adapter injects the runtime through the build tool and loads the can
 Then register the adapter:
 
 ```js name=next.config.js
-import { withMasterCSS } from '@master/css-next'
+import withMasterCSS from '@master/css-next'
 
 /** @type {import('next').NextConfig} */
 const nextConfig = withMasterCSS({
@@ -198,7 +198,7 @@ Static mode uses the same Master CSS stylesheet import model as the other build 
 Then enable static mode in `next.config.js`:
 
 ```js name=next.config.js
-import { withMasterCSS } from '@master/css-next'
+import withMasterCSS from '@master/css-next'
 
 /** @type {import('next').NextConfig} */
 const nextConfig = await withMasterCSS({

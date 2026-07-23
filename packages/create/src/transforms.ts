@@ -220,7 +220,7 @@ export default defineConfig({
 }
 
 export function createNextConfig(mode?: RenderingMode) {
-  return `import { withMasterCSS } from '@master/css-next'
+  return `import withMasterCSS from '@master/css-next'
 
 const nextConfig = ${formatNextCall('{}', mode)}
 
@@ -230,7 +230,7 @@ export default nextConfig
 
 export function addMasterCSSNextConfig(content: string, mode?: RenderingMode) {
   if (content.includes('@master/css-next')) return mode ? addMasterCSSNextMode(content, mode) : content
-  const next = addImport(content, "import { withMasterCSS } from '@master/css-next'")
+  const next = addImport(content, "import withMasterCSS from '@master/css-next'")
   if (/export\s+default\s+/.test(next)) {
     return next.replace(/export\s+default\s+([^;\n]+)(;?)(\n|$)/, `export default ${formatNextCall('$1', mode)}$2$3`)
   }

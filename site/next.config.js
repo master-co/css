@@ -1,6 +1,6 @@
 import redirects from './redirects.js'
 import withCommonNextConfig from 'internal/common/with-next-config.js'
-import { withMasterCSS } from '@master/css-next'
+import withMasterCSS from '@master/css-next'
 import { readPublicEnv } from './utils/public-env.js'
 import { shouldUseCloudflareImageLoader } from './utils/cloudflare-image-loader.js'
 

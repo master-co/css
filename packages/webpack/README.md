@@ -61,11 +61,11 @@ npm install @master/css-webpack
 ## Usage
 
 ```js
-import { MasterCSSWebpackPlugin } from '@master/css-webpack'
+import MasterCSSPlugin from '@master/css-webpack'
 
 export default {
   plugins: [
-    new MasterCSSWebpackPlugin()
+    new MasterCSSPlugin()
   ]
 }
 ```

@@ -33,11 +33,11 @@ Use Vite runtime rendering when PHP renders pages directly from templates. PHP s
     <StepR>
       ```ts name=vite.config.ts
       import { defineConfig } from 'vite'
-      import { createMasterCSSVitePlugin } from '@master/css-vite'
+      import masterCSS from '@master/css-vite'
 
       export default defineConfig({
         plugins: [
-          createMasterCSSVitePlugin({ mode: 'runtime', runtime: false })
+          masterCSS({ mode: 'runtime', runtime: false })
         ],
         build: {
           outDir: 'public/assets',

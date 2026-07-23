@@ -221,9 +221,10 @@
           "createNativeEngineBackend",
           "createRenderSessionSync",
           "renderClassNamesSync"
-        ]
+        ],
+        "./client": []
       },
-      "surface": "16a70b76078d611d"
+      "surface": "c864a39808c8fe20"
     },
     "@master/css-svelte-addon": {
       "directory": "css-sv",
@@ -344,7 +345,6 @@
           "MasterCSSTextMateGrammar",
           "createMasterCSSShikiDecorations",
           "createMasterCSSShikiLanguageRegistration",
-          "default",
           "getMasterCSSShikiLanguageId",
           "isMasterCSSClassListLanguage",
           "isMasterCSSShikiSupportedLanguage",
@@ -352,7 +352,7 @@
           "transformerMasterCSS"
         ]
       },
-      "surface": "ef714c8af769af4d"
+      "surface": "b2f4194481ddca97"
     },
     "@master/css-mcp": {
       "directory": "mcp",
@@ -888,11 +888,18 @@
       ],
       "bins": [],
       "entrypoints": {
+        "./vite": [
+          "createMasterCSSVitePlugin",
+          "default"
+        ],
         "./hooks.server": [
+          "MasterCSSSvelteHandleOptions",
+          "MasterCSSSvelteHydrationManifestOption",
+          "createMasterCSSHandle",
           "handle"
         ]
       },
-      "surface": "e322a4c3aba73846"
+      "surface": "7a59bed93be8be85"
     },
     "@master/css-tooling": {
       "directory": "tooling",

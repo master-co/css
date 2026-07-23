@@ -11,7 +11,7 @@ npm install @master/css-next
 ## Usage
 
 ```js
-import { withMasterCSS } from '@master/css-next'
+import withMasterCSS from '@master/css-next'
 
 /** @type {import('next').NextConfig} */
 const nextConfig = withMasterCSS({
@@ -52,7 +52,7 @@ In static mode, import the generated stylesheet from your app stylesheet:
 Then enable static mode:
 
 ```js
-import { withMasterCSS } from '@master/css-next'
+import withMasterCSS from '@master/css-next'
 
 /** @type {import('next').NextConfig} */
 const nextConfig = await withMasterCSS({

@@ -120,6 +120,13 @@ Official adapter package names use one normalized hyphenated family:
 @master/css-svelte
 ```
 
+User-facing framework configuration uses each adapter's ecosystem default export,
+while the same entrypoint retains its branded named export for programmatic
+composition. General library entrypoints remain named-only. SvelteKit server hooks
+follow the framework's named `handle` contract instead of adding a default export.
+The exact default-export entrypoints are enforced by
+`scripts/check-package-contracts.mjs`.
+
 Vite coordinates runtime, static, pre-render, and progressive modes. Webpack owns its
 module lifecycle. Next owns Next-specific build and instrumentation behavior. Astro,
 Nuxt, and Svelte wrap the official lower adapters without reimplementing CSS semantics.

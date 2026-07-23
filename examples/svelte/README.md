@@ -16,4 +16,4 @@
 ## Documentation
 Check out the official [documentation](https://rc.css.master.co/guide/installation/svelte).
 
-This example uses the named `createMasterCSSVitePlugin` factory from `@master/css-svelte/vite` with the default `progressive` mode and re-exports the named SvelteKit server `handle` from `@master/css-svelte/hooks.server`.
+This example uses the default integration from `@master/css-svelte/vite` with the default `progressive` mode and re-exports the named SvelteKit server `handle` from `@master/css-svelte/hooks.server`.

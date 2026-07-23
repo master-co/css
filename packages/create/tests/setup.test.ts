@@ -1237,7 +1237,7 @@ export default nextConfig;
 
     applySetup({ root, install: false })
 
-    expect(readProjectFile(root, 'next.config.mjs')).toContain("import { withMasterCSS } from '@master/css-next'")
+    expect(readProjectFile(root, 'next.config.mjs')).toContain("import withMasterCSS from '@master/css-next'")
     expect(readProjectFile(root, 'next.config.mjs')).toContain('export default withMasterCSS(nextConfig);')
   })
 

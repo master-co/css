@@ -58,7 +58,7 @@ export function createMasterCSSHandle(
       emittedGlobals: options.emittedGlobals
     })
     using session = renderer.createHTMLRenderSession({ hydrationManifest })
-    return resolve(event, {
+    return await resolve(event, {
       transformPageChunk({ html, done }) {
         return done ? session.end(html).chunk : session.write(html)
       }
