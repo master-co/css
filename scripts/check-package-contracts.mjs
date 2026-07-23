@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import { createHash } from 'node:crypto'
-import { existsSync, readdirSync, readFileSync } from 'node:fs'
+import { existsSync, readdirSync, readFileSync, writeFileSync } from 'node:fs'
 import path from 'node:path'
 import * as ts from 'typescript6'
 
@@ -147,6 +147,17 @@ function createPublicAPIContract(packages) {
         false,
         `${manifest.name}${subpath === '.' ? '' : subpath.slice(1)} must not use export *.`
       )
+      const syncEntrypoint = subpath === './node'
+        || subpath.endsWith('/node')
+        || subpath.endsWith('/sync')
+      for (const symbol of entrySymbols) {
+        if (!symbol.endsWith('Sync')) continue
+        assert.equal(
+          syncEntrypoint,
+          true,
+          `${manifest.name}${subpath === '.' ? '' : subpath.slice(1)} must expose ${symbol} from a Node sync entrypoint.`
+        )
+      }
       if (
         entrySymbols.includes('default')
         && !allowedDefaultExportPackages.has(manifest.name)
@@ -160,6 +171,7 @@ function createPublicAPIContract(packages) {
       directory,
       exports: Object.keys(manifest.exports || {}).sort(),
       bins: Object.keys(manifest.bin || {}).sort(),
+      entrypoints: symbols,
       surface: createHash('sha256')
         .update(JSON.stringify(symbols))
         .digest('hex')
@@ -274,10 +286,19 @@ for (const [directory, name] of Object.entries(expectedAdapterNames)) {
 
 const publicAPIBaseline = JSON.parse(readFileSync(publicAPIContractPath, 'utf8'))
 assert.equal(publicAPIBaseline.version, 1, 'Unsupported public API golden manifest version.')
-assert.deepEqual(
-  createPublicAPIContract(packages),
-  publicAPIBaseline.packages,
-  'Public package exports changed. Update the reviewed public API golden manifest intentionally.'
-)
+const publicAPIContract = createPublicAPIContract(packages)
+if (process.argv.includes('--write')) {
+  writeFileSync(publicAPIContractPath, JSON.stringify({
+    version: 1,
+    packages: publicAPIContract
+  }, null, 2) + '\n')
+  process.stdout.write(`Updated ${publicAPIContractPath}.\n`)
+} else {
+  assert.deepEqual(
+    publicAPIContract,
+    publicAPIBaseline.packages,
+    'Public package exports changed. Run "pnpm run check:packages:update" and review the golden manifest intentionally.'
+  )
+}
 
 process.stdout.write(`Validated ${packages.length} package contract(s).\n`)

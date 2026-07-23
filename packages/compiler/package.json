@@ -54,9 +54,9 @@
       "default": "./dist/project/manifest-sync.js"
     },
     "./stylesheet": {
-      "types": "./dist/stylesheet/index.d.ts",
-      "import": "./dist/stylesheet/index.js",
-      "default": "./dist/stylesheet/index.js"
+      "types": "./dist/stylesheet/index-public.d.ts",
+      "import": "./dist/stylesheet/index-public.js",
+      "default": "./dist/stylesheet/index-public.js"
     },
     "./stylesheet/browser": {
       "types": "./dist/stylesheet/browser.d.ts",

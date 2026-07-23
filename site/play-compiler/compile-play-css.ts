@@ -1,9 +1,9 @@
-import type { MasterCSSManifest } from '@master/css'
+import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
 import {
   compileBrowserStylesheet,
-  initBrowserStyleCompiler,
-  type CompileBrowserStylesheetResult
+  type MasterCSSBrowserStylesheetCompileOptions,
+  type MasterCSSBrowserStylesheetCompileResult
 } from '@master/css-compiler/stylesheet/browser'
 
 const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
@@ -13,27 +13,26 @@ export interface CompilePlayCSSResult {
   css: string
   manifest: MasterCSSManifest
   warnings: string[]
-  result: CompileBrowserStylesheetResult['result']
+  result: MasterCSSBrowserStylesheetCompileResult['result']
 }
 
-async function initPlayCompiler() {
-  if (typeof window === 'undefined') return
-
-  await initBrowserStyleCompiler(compilerWasmURL)
-}
-
-export async function compilePlayCSS(sourceCSS: string, classes: string[]): Promise<CompilePlayCSSResult> {
-  await initPlayCompiler()
-
+export async function compilePlayCSS(
+  sourceCSS: string,
+  classes: string[],
+  backend: NonNullable<MasterCSSBrowserStylesheetCompileOptions['backend']> = {
+    input: compilerWasmURL
+  }
+): Promise<CompilePlayCSSResult> {
   const result = await compileBrowserStylesheet(sourceCSS, {
     baseManifest: defaultManifest,
     classNames: classes,
-    from: 'playground.css'
+    from: 'playground.css',
+    backend
   })
   return {
     css: result.css,
     manifest: result.manifest,
-    warnings: result.warnings,
+    warnings: result.diagnostics.map(({ message }) => message),
     result: result.result
   }
 }

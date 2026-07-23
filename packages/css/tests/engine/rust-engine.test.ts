@@ -160,6 +160,23 @@ describe('Rust engine session', () => {
     engine.dispose()
   })
 
+  it('serializes manifests when refreshing a Wasm engine', async () => {
+    const engine = await createEngine({ manifest, backend: 'wasm' })
+    try {
+      engine.ensureClassRules(['block'])
+      expect(engine.refresh(manifest)).toMatchObject({
+        version: 1,
+        mutations: [
+          { op: 'delete', key: 'block' },
+          { op: 'insert', key: 'block' }
+        ]
+      })
+      expect(engine.snapshot().text).toBe('@layer utilities{.block{display:block}}')
+    } finally {
+      engine.dispose()
+    }
+  })
+
   it('renders representative default-manifest classes without a TypeScript oracle', () => {
     const engine = createEngineSync({ manifest: typedDefaultManifest })
     const transition = engine.ensureClassRules([

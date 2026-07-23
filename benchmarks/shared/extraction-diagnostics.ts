@@ -6,12 +6,8 @@ import { MasterCSSScanner } from '@master/css-tooling/scanner/node'
 import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import {
-  createExtractedCSS,
-  createExtractedCSSResult,
-  getScannerClasses,
-  registerStylesheetSource,
-  type ScannerState,
-  type StylesheetSources
+  createStylesheetCollection,
+  type MasterCSSStylesheetCollection
 } from '@master/css-compiler/stylesheet'
 import fg from 'fast-glob'
 import { getStaticFixtureSource } from '../fixtures/static'
@@ -164,16 +160,16 @@ async function runMasterExtractionDiagnostic(workspace: string, fixtureId: Bench
   const recorder = new DiagnosticRecorder()
   recorder.setCount('css-entry-count', setup.cssEntryCount)
   recorder.setCount('source-file-count', setup.sourceFileCount)
-  const productionCSS = await recorder.time('production-create-extracted-css-ms', () => createExtractedCSS({
+  const productionCSS = await recorder.time('production-create-extracted-css-ms', async () => (await setup.stylesheets.compose({
     scanner: setup.scanner,
-    stylesheetSources: setup.stylesheetSources,
+    baseManifest: defaultManifest,
     projectDir: setup.scanner.cwd
-  }))
+  })).css)
   const productionHash = hashBytes(productionCSS)
 
   const diagnosticCSS = await recorder.time('diagnostic-extraction-total-ms', () => createDiagnosticExtractedCSS({
     scanner: setup.scanner,
-    stylesheetSources: setup.stylesheetSources,
+    stylesheets: setup.stylesheets,
     projectDir: setup.scanner.cwd,
     recorder
   }))
@@ -202,20 +198,19 @@ async function runMasterExtractionDiagnostic(workspace: string, fixtureId: Bench
 }
 
 async function prepareScannerWorkspace(workspace: string) {
-  const stylesheetSources: StylesheetSources = new Map()
+  const stylesheets = createStylesheetCollection()
   const scanner = new MasterCSSScanner({ manifest: defaultManifest }, workspace)
   await scanner.init()
   scanner.options.verbose = 0
 
   const entries = await discoverManifestEntries({ root: scanner.cwd })
   for (const entry of entries) {
-    await registerStylesheetSource(scanner, stylesheetSources, entry, await readFile(entry, 'utf8'), {
+    await stylesheets.register(scanner, entry, await readFile(entry, 'utf8'), {
+      baseManifest: defaultManifest,
       projectDir: scanner.cwd
     })
   }
-  scanner.resetDependencies = [...new Set(
-    Array.from(stylesheetSources.values()).flatMap((source) => source.dependencies)
-  )]
+  scanner.resetDependencies = [...stylesheets.snapshot().dependencies]
 
   const sourcePaths = await fg(['index.html'], {
     cwd: scanner.cwd
@@ -227,43 +222,48 @@ async function prepareScannerWorkspace(workspace: string) {
 
   return {
     scanner,
-    stylesheetSources,
+    stylesheets,
     sourceFileCount: sourcePaths.length,
     cssEntryCount: entries.length
   }
 }
 
 async function createDiagnosticExtractedCSS(options: {
-  scanner: ScannerState
-  stylesheetSources: StylesheetSources
+  scanner: MasterCSSScanner
+  stylesheets: MasterCSSStylesheetCollection
   projectDir: string
   recorder: DiagnosticRecorder
 }): Promise<RenderDiagnosticResult> {
   const {
     scanner,
-    stylesheetSources,
+    stylesheets,
     projectDir,
     recorder
   } = options
-  const classes = getScannerClasses(scanner)
+  const classes = [...new Set([
+    ...scanner.latentClasses,
+    ...scanner.validClasses,
+    ...scanner.usedNativeClasses,
+    ...(scanner.options.safelist || [])
+  ])]
   recorder.setCount('latent-class-count', scanner.latentClasses.size)
   recorder.setCount('valid-class-count', scanner.validClasses.size)
   recorder.setCount('native-class-name-count', scanner.nativeClassNames.size)
   recorder.setCount('used-native-class-count', scanner.usedNativeClasses.size)
   recorder.setCount('generated-class-count', classes.length)
-  recorder.setCount('native-css-source-count', stylesheetSources.size)
+  recorder.setCount('native-css-source-count', stylesheets.size)
 
   const rendered = await recorder.time('engine-css-creation-ms', () =>
-    createExtractedCSSResult({
+    stylesheets.compose({
       scanner,
-      stylesheetSources,
+      baseManifest: defaultManifest,
       projectDir
     })
   )
   const generated = await recorder.time('engine-rule-generation-ms', () =>
-    createExtractedCSSResult({
+    stylesheets.compose({
       scanner,
-      stylesheetSources,
+      baseManifest: defaultManifest,
       projectDir,
       includeMasterBaseCSS: false,
       includeNativeCSS: false

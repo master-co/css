@@ -3,7 +3,7 @@ import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import { createToolingSession } from '../tooling-session'
 import type {
   MasterCSSLintAnalysis,
-  MasterCSSLintBackendDiagnostic
+  MasterCSSLintDiagnosticInput
 } from './analysis'
 import type {
   MasterCSSLintDiagnostic,
@@ -36,7 +36,7 @@ export type {
 } from './diagnostics'
 export type {
   MasterCSSLintAnalysis,
-  MasterCSSLintBackendDiagnostic,
+  MasterCSSLintDiagnosticInput,
   MasterCSSLintCanonicalClassGroupSuggestion,
   MasterCSSLintCanonicalClassSuggestion,
   MasterCSSLintClassConflict,
@@ -46,7 +46,6 @@ export type {
   MasterCSSLintEdit,
   MasterCSSLintPartialClassConflict,
   MasterCSSLintRawValueCandidate,
-  MasterCSSLintSessionContract,
   MasterCSSLintToken
 } from './analysis'
 export {
@@ -90,7 +89,7 @@ export async function lintClassNames(
 }
 
 export function createMasterCSSLintDiagnostics(
-  diagnostics: readonly MasterCSSLintBackendDiagnostic[],
+  diagnostics: readonly MasterCSSLintDiagnosticInput[],
   severity: MasterCSSLintDiagnosticSeverity = 'warning'
 ): readonly MasterCSSLintDiagnostic[] {
   return Object.freeze(diagnostics.map((diagnostic) => Object.freeze({

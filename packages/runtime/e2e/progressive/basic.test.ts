@@ -8,7 +8,7 @@ test('progressive', async ({ page }) => {
     runtime.dispose()
     runtime.dispose()
     return {
-      globalCleared: globalThis.__MASTER_CSS_RUNTIME_TEST__ === undefined,
+      globalCleared: globalThis.masterCSSRuntime === undefined,
       styleRemoved: !document.getElementById('master-css')
     }
   })).toEqual({

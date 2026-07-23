@@ -6,7 +6,7 @@ import react from 'eslint-plugin-react'
 import reactHooks from 'eslint-plugin-react-hooks'
 import reactRefresh from 'eslint-plugin-react-refresh'
 import tseslint from 'typescript-eslint'
-import masterCSS from '@master/eslint-plugin-css'
+import masterCSS from '@master/eslint-config-css'
 
 export default defineConfig([
   globalIgnores(['dist/**']),
@@ -37,5 +37,5 @@ export default defineConfig([
       }
     }
   },
-  ...masterCSS.configs.recommended
+  ...masterCSS
 ])

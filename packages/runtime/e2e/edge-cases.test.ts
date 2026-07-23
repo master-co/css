@@ -710,7 +710,7 @@ test('observer queued cold classes removed before flush are skipped', async ({ p
   })
 })
 
-test('disconnect and destroy clear pending mutation additions and removals', async ({ page }) => {
+test('disconnect and dispose clear pending mutation additions and removals', async ({ page }) => {
   await init(page)
   const disconnected = await page.evaluate(async () => {
     document.body.innerHTML = '<p id="target" class="fg:red-60"></p><p class="z:1234"></p>'
@@ -718,44 +718,42 @@ test('disconnect and destroy clear pending mutation additions and removals', asy
     document.getElementById('target')?.remove()
     await new Promise(resolve => setTimeout(resolve, 0))
     globalThis.__MASTER_CSS_RUNTIME_TEST__.disconnect()
+    const snapshot = globalThis.__MASTER_CSS_RUNTIME_TEST__.snapshot()
     return {
-      counts: Object.fromEntries(globalThis.__MASTER_CSS_RUNTIME_TEST__.classCounts),
-      retainedClassNames: [...globalThis.__MASTER_CSS_RUNTIME_TEST__.retainedClassNames],
-      utilities: globalThis.__MASTER_CSS_RUNTIME_TEST__.classUtilities.size,
+      counts: snapshot.usageCounts,
+      classRules: snapshot.classRules,
       hasStyle: !!document.head.querySelector('style#master-css')
     }
   })
   expect(disconnected).toEqual({
     counts: {},
-    retainedClassNames: [],
-    utilities: 0,
+    classRules: {},
     hasStyle: false
   })
   await waitForRuntimeRemovalFlush(page)
-  expect(await page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.classUtilities.size)).toBe(0)
+  expect(await page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.snapshot().classRules)).toEqual({})
 
   await page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.observe())
-  const destroyed = await page.evaluate(async () => {
+  const disposed = await page.evaluate(async (manifest) => {
     document.body.innerHTML = '<p id="target" class="fg:red-60"></p><p class="z:1234"></p>'
     await new Promise(resolve => setTimeout(resolve, 0))
     document.getElementById('target')?.remove()
     await new Promise(resolve => setTimeout(resolve, 0))
     const runtime = globalThis.__MASTER_CSS_RUNTIME_TEST__
     runtime.dispose()
+    const replacement = await globalThis.MasterCSSRuntime.start({ manifest })
+    const replaced = replacement !== runtime
+    replacement.dispose()
     return {
-      registered: globalThis.MasterCSSRuntime.instances.get(document) === runtime,
-      globalRuntime: globalThis.__MASTER_CSS_RUNTIME_TEST__,
-      counts: Object.fromEntries(runtime.classCounts),
-      retainedClassNames: [...runtime.retainedClassNames],
-      utilities: runtime.classUtilities.size
+      replaced,
+      globalRuntime: globalThis.masterCSSRuntime,
+      hasStyle: !!document.head.querySelector('style#master-css')
     }
-  })
-  expect(destroyed).toEqual({
-    registered: false,
+  }, defaultManifest)
+  expect(disposed).toEqual({
+    replaced: true,
     globalRuntime: undefined,
-    counts: {},
-    retainedClassNames: [],
-    utilities: 0
+    hasStyle: false
   })
   await waitForRuntimeRemovalFlush(page)
 })
@@ -763,7 +761,7 @@ test('disconnect and destroy clear pending mutation additions and removals', asy
 test('shadow roots maintain isolated runtime state and style nodes', async ({ page }) => {
   await init(page)
 
-  const result = await page.evaluate(async () => {
+  const result = await page.evaluate(async (manifest) => {
     const host = document.createElement('section')
     const shadow = host.attachShadow({ mode: 'open' })
     shadow.innerHTML = '<p class="block"></p>'
@@ -771,25 +769,35 @@ test('shadow roots maintain isolated runtime state and style nodes', async ({ pa
 
     const shadowRuntime = await globalThis.MasterCSSRuntime.start({
       root: shadow,
-      manifest: globalThis.__MASTER_CSS_RUNTIME_TEST__.manifest
+      manifest
     })
     shadowRuntime.observe()
+    const shadowSnapshot = shadowRuntime.snapshot()
+    const documentSnapshot = globalThis.__MASTER_CSS_RUNTIME_TEST__.snapshot()
+    const instanceRegistered = await globalThis.MasterCSSRuntime.start({
+      root: shadow,
+      manifest
+    }) === shadowRuntime
+    const shadowHasStyle = !!shadow.querySelector('style#master-css')
+    shadowRuntime.dispose()
 
     return {
-      documentCounts: Object.fromEntries(globalThis.__MASTER_CSS_RUNTIME_TEST__.classCounts),
-      documentHasBlockRule: globalThis.__MASTER_CSS_RUNTIME_TEST__.text.includes('.block{display:block}'),
-      shadowCounts: Object.fromEntries(shadowRuntime.classCounts),
-      shadowHasStyle: !!shadow.querySelector('style#master-css'),
-      shadowText: shadowRuntime.text,
-      instanceRegistered: globalThis.MasterCSSRuntime.instances.get(shadow) === shadowRuntime
+      documentCounts: documentSnapshot.usageCounts,
+      documentHasBlockRule: documentSnapshot.cssText.includes('.block{display:block}'),
+      shadowCounts: shadowSnapshot.usageCounts,
+      shadowHasStyle,
+      shadowStyleRemoved: !shadow.querySelector('style#master-css'),
+      shadowText: shadowSnapshot.cssText,
+      instanceRegistered
     }
-  })
+  }, defaultManifest)
 
   expect(result).toEqual({
     documentCounts: {},
     documentHasBlockRule: false,
     shadowCounts: { block: 1 },
     shadowHasStyle: true,
+    shadowStyleRemoved: true,
     shadowText: '@layer utilities{.block{display:block}}',
     instanceRegistered: true
   })

@@ -21,7 +21,6 @@ import MasterCSSWebpackPlugin from '../src'
 import { VIRTUAL_MANIFEST_ID, MASTER_CSS_MANIFEST_QUERY } from '@master/css-build-internal/manifest-module'
 import { VIRTUAL_CSS_ID } from '@master/css-build-internal/style-module'
 import { VIRTUAL_EMITTED_GLOBALS_ID } from '@master/css-build-internal/emitted-globals-module'
-import { createStylesheetDirectives } from '@master/css-compiler/stylesheet'
 import { transformStyleSource } from '../src/utils/transform-style-source'
 import masterCSSStylesheetLoader from '../src/stylesheet-loader'
 import { addFileDependency } from '../src/utils/file-dependencies'
@@ -188,14 +187,12 @@ function runStylesheetLoader(root: string, resourcePath: string, source: string)
   }).then((content) => ({ content, dependencies }))
 }
 
-function makeRegisteredStyleSource(dependencies: string[]) {
+function makeStylesheetCollection(dependencies: string[]) {
   return {
-    source: '',
-    pruneNativeCSS: false,
-    masterCSS: false,
-    directives: createStylesheetDirectives(),
-    dependencies,
-    sourceDependencies: []
+    snapshot: () => ({
+      dependencies,
+      sources: []
+    })
   }
 }
 
@@ -972,7 +969,7 @@ describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
       ].join('\n')
       writeFileSync(entryPath, validSource)
       await (plugin as any).processModuleContents([[entryPath, validSource]], () => false)
-      expect((plugin as any).stylesheetSources.get(entryPath)?.dependencies).toContain(entryPath)
+      expect((plugin as any).stylesheets.snapshot().dependencies).toContain(entryPath)
     } finally {
       rmSync(root, { recursive: true, force: true })
     }
@@ -1011,9 +1008,7 @@ describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
       writeFileSync(configPath, '@master entry;\n@import "./theme.css";')
 
       const plugin = makePlugin({}, root)
-      ;(plugin as any).stylesheetSources = new Map([
-        [configPath, makeRegisteredStyleSource([configPath, tokenPath])]
-      ])
+      ;(plugin as any).stylesheets = makeStylesheetCollection([configPath, tokenPath])
       const reset = vi.fn(async function (this: MasterCSSWebpackPlugin) {
         this.emit('reset')
         return this
@@ -1043,9 +1038,7 @@ describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
     try {
       const plugin = makePlugin({}, root)
       ;(plugin as any).defaultManifestDependencies = [configPath]
-      ;(plugin as any).stylesheetSources = new Map([
-        [configPath, makeRegisteredStyleSource([configPath, tokenPath])]
-      ])
+      ;(plugin as any).stylesheets = makeStylesheetCollection([configPath, tokenPath])
       const { compiler, compilation } = makeFakeCompiler({
         context: root
       })

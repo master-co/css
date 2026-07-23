@@ -30,7 +30,7 @@ const MASTER_CSS_PACKAGES = [
   '@master/css-astro',
   '@master/css-svelte',
   '@master/css-svelte-addon',
-  '@master/eslint-plugin-css',
+  '@master/eslint-config-css',
   '@master/eslint-plugin-css'
 ]
 
@@ -42,8 +42,7 @@ const INTEGRATION_PACKAGES = [
   '@master/css-nuxt',
   '@master/css-astro',
   '@master/css-svelte',
-  '@master/eslint-plugin-css',
-  '@master/eslint-plugin-css'
+  '@master/eslint-config-css'
 ]
 
 const SETUP_PACKAGES = [

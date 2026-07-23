@@ -12,7 +12,7 @@ const Class2CSS = (props: any) => {
   let generatedCSS: string
   try {
     css.ensureClassRules(normalizeClasses(classes))
-    generatedCSS = css.text
+    generatedCSS = css.snapshot().text
   } finally {
     css.dispose()
   }

@@ -3,7 +3,7 @@ import type {
 } from '@master/css-tooling/scanner/node'
 import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
-import type { StylesheetSources } from '@master/css-compiler/stylesheet'
+import type { MasterCSSStylesheetCollection } from '@master/css-compiler/stylesheet'
 import type { FSWatcher } from 'chokidar'
 import fs from 'node:fs'
 import path from 'node:path'
@@ -36,24 +36,25 @@ export interface GenerateOptions {
 
 const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
 
-async function registerManagedCSSEntries(scanner: MasterCSSScanner, stylesheetSources: StylesheetSources) {
+async function registerManagedCSSEntries(
+  scanner: MasterCSSScanner,
+  stylesheets: MasterCSSStylesheetCollection
+) {
   const [
-    { registerStylesheetSource },
+    _stylesheet,
     { discoverManifestEntries }
   ] = await Promise.all([
     loadStylesheetModule(),
     loadProjectModule()
   ])
-  stylesheetSources.clear()
+  stylesheets.clear()
   for (const entry of await discoverManifestEntries({ root: scanner.cwd })) {
-    await registerStylesheetSource(scanner, stylesheetSources, entry, fs.readFileSync(entry, 'utf8'), {
+    await stylesheets.register(scanner, entry, fs.readFileSync(entry, 'utf8'), {
       baseManifest: defaultManifest,
       projectDir: scanner.cwd
     })
   }
-  scanner.resetDependencies = [...new Set(
-    Array.from(stylesheetSources.values()).flatMap((source) => source.dependencies)
-  )]
+  scanner.resetDependencies = [...stylesheets.snapshot().dependencies]
 }
 
 function normalizeSourcePatterns(specifiedSourcePaths?: string[]) {
@@ -86,8 +87,12 @@ async function scanSourceFiles(scanner: MasterCSSScanner, sourcePaths: string[])
   await Promise.all(sourcePaths.map((source) => scanSourceFile(scanner, source)))
 }
 
-async function prepareScanner(scanner: MasterCSSScanner, stylesheetSources: StylesheetSources, sourcePaths: string[]) {
-  await registerManagedCSSEntries(scanner, stylesheetSources)
+async function prepareScanner(
+  scanner: MasterCSSScanner,
+  stylesheets: MasterCSSStylesheetCollection,
+  sourcePaths: string[]
+) {
+  await registerManagedCSSEntries(scanner, stylesheets)
   await scanSourceFiles(scanner, sourcePaths)
 }
 
@@ -135,13 +140,12 @@ export default async function runGenerate(specifiedSourcePaths: string[] = [], o
       : ['**/node_modules/**', 'node_modules'],
     verbose: verbose ? +verbose : undefined
   }, cwd)
-  const stylesheetSources: StylesheetSources = new Map()
+  const { createStylesheetCollection } = await loadStylesheetModule()
+  const stylesheets = createStylesheetCollection()
   const sourcePatterns = normalizeSourcePatterns(specifiedSourcePaths)
   const writeOutput = async () => {
-    const { createExtractedCSS } = await loadStylesheetModule()
-    const css = await createExtractedCSS({
+    const { css } = await stylesheets.compose({
       scanner,
-      stylesheetSources,
       baseManifest: defaultManifest,
       projectDir: scanner.cwd
     })
@@ -173,6 +177,7 @@ export default async function runGenerate(specifiedSourcePaths: string[] = [], o
     const shutdown = async () => {
       await closeWatchers()
       await scanner.dispose()
+      stylesheets.dispose()
     }
     const startWatchers = async () => {
       const sourcePaths = scanPaths()
@@ -203,7 +208,7 @@ export default async function runGenerate(specifiedSourcePaths: string[] = [], o
             }
             await closeWatchers()
             await scanner.reset(scanner.customOptions, { emit: false })
-            await prepareScanner(scanner, stylesheetSources, scanPaths())
+            await prepareScanner(scanner, stylesheets, scanPaths())
             await queueWrite()
             await startWatchers()
             process.stderr.write('\nRestart watching source changes\n')
@@ -233,7 +238,7 @@ export default async function runGenerate(specifiedSourcePaths: string[] = [], o
     })
     try {
       await pipelineModules
-      await prepareScanner(scanner, stylesheetSources, scanPaths())
+      await prepareScanner(scanner, stylesheets, scanPaths())
       await queueWrite()
       await startWatchers()
       process.stderr.write('\nStart watching source changes\n')
@@ -244,10 +249,11 @@ export default async function runGenerate(specifiedSourcePaths: string[] = [], o
   } else {
     try {
       await pipelineModules
-      await prepareScanner(scanner, stylesheetSources, scanPaths())
+      await prepareScanner(scanner, stylesheets, scanPaths())
       await writeOutput()
     } finally {
       await scanner.dispose()
+      stylesheets.dispose()
     }
   }
 }

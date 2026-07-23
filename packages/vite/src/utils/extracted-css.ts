@@ -1,12 +1,14 @@
-import { createExtractedCSSResult } from '@master/css-compiler/stylesheet'
 import type { MasterCSSVitePluginContext } from '../core'
 import { getScanner } from './scanner-context'
 
 export async function getExtractedCSSResult(context: MasterCSSVitePluginContext) {
   const scanner = getScanner(context)
-  const result = await createExtractedCSSResult({
+  if (!context.stylesheets) {
+    const { createStylesheetCollection } = await import('@master/css-compiler/stylesheet')
+    context.stylesheets = createStylesheetCollection()
+  }
+  const result = await context.stylesheets.compose({
     scanner,
-    stylesheetSources: context.stylesheetSources,
     baseManifest: scanner.css.manifest,
     projectDir: context.config?.root,
     includeGeneratedCSS: context.includeGeneratedCSS

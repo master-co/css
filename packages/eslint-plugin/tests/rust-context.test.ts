@@ -2,7 +2,7 @@ import { expect, test } from 'vitest'
 import type { RuleContext } from '@typescript-eslint/utils/ts-eslint'
 import resolveContext from '../src/utils/resolve-context'
 
-test('does not construct the TypeScript oracle when the Rust lint session is available', () => {
+test('uses the shared Rust-backed tooling session', () => {
   const context = {
     cwd: process.cwd(),
     filename: '<input>',
@@ -13,6 +13,6 @@ test('does not construct the TypeScript oracle when the Rust lint session is ava
 
   const resolved = resolveContext(context)
 
-  expect(resolved.rustLint).toBeDefined()
-  expect(resolved.css).toBeUndefined()
+  expect(resolved.tooling).toBeDefined()
+  expect(resolved.tooling.backend).toBe('native')
 })

@@ -4,13 +4,10 @@ import type { MasterCSSVitePluginContext } from '../core'
 import type { ResolvedMasterCSSVitePluginOptions } from '../options'
 import getExtractedCSS from '../utils/extracted-css'
 import {
-  collectStylesheetDependencies,
-  createStylesheetHostSource,
-  isMasterCSSPackageStyleFile,
-  isStylesheetRequest,
-  removeMasterStyleDirectives,
-  resolveMasterStyleSource
-} from '@master/css-compiler/stylesheet'
+  collectStylesheetDependenciesSync,
+  composeStylesheetHostSync,
+  resolveStylesheetSync
+} from '@master/css-compiler/node'
 import { registerStylesheetSource } from '../utils/register-style-source'
 import { getScanner } from '../utils/scanner-context'
 
@@ -40,28 +37,31 @@ export default function StyleEntryPlugin(_options: ResolvedMasterCSSVitePluginOp
     },
     async transform(code, id) {
       if (id.startsWith('\0')) return
-      if (!isStylesheetRequest(id)) return
       const dependencies = new Set<string>()
-      let resolvedStyleSource: ReturnType<typeof resolveMasterStyleSource>
+      let resolution: ReturnType<typeof resolveStylesheetSync>
       try {
-        resolvedStyleSource = resolveMasterStyleSource(id, code, context.config?.root)
+        resolution = resolveStylesheetSync(id, code, {
+          projectDir: context.config?.root
+        })
       } catch (error) {
-        for (const dependency of collectStylesheetDependencies(id, code, context.config?.root)) {
+        for (const dependency of collectStylesheetDependenciesSync(id, code, {
+          projectDir: context.config?.root
+        })) {
           dependencies.add(dependency)
           this.addWatchFile?.(dependency)
         }
         throw error
       }
-      if (!resolvedStyleSource) return
+      if (!resolution || (resolution.kind !== 'entry' && resolution.kind !== 'master-package-entry')) return
 
-      for (const dependency of collectStylesheetDependencies(id, code, context.config?.root)) {
+      for (const dependency of resolution.dependencies) {
         dependencies.add(dependency)
         this.addWatchFile?.(dependency)
       }
 
-      if (isMasterCSSPackageStyleFile(id, context.config?.root)) {
+      if (resolution.kind === 'master-package-entry') {
         return {
-          code: removeMasterStyleDirectives(code).code,
+          code: resolution.outputSource,
           map: null
         }
       }
@@ -84,7 +84,7 @@ export default function StyleEntryPlugin(_options: ResolvedMasterCSSVitePluginOp
       }
 
       return {
-        code: createStylesheetHostSource(code, { masterSource }),
+        code: composeStylesheetHostSync(code, { masterSource }),
         map: null
       }
     }

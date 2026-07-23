@@ -1,9 +1,11 @@
 import { ESLint } from 'eslint'
 import { expect, test } from 'vitest'
+import { masterCSS } from '@master/eslint-plugin-css'
 import config, { recommended } from '../src/index'
 
 test('exports the plugin-owned recommended flat config', () => {
   expect(config).toBe(recommended)
+  expect(config).toBe(masterCSS.configs.recommended)
   expect(config).toHaveLength(2)
 })
 

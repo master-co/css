@@ -12,7 +12,7 @@ import {
   toVirtualCSSManifestModulePath
 } from '@master/css-build-internal/node'
 import { toUniversalManifestFacadeModule } from '@master/css-build-internal/manifest-facade'
-import { collectStylesheetDependencies } from '@master/css-compiler/stylesheet'
+import { collectStylesheetDependenciesSync } from '@master/css-compiler/node'
 import {
   defaultBuildManifest,
   isManifestStylesheetRequest
@@ -76,7 +76,7 @@ function writeCSSManifestModule(context: LoaderContext, manifestPath: string) {
   const projectDir = context.getOptions?.().projectDir || context.rootContext || process.cwd()
   const virtualManifestPath = toVirtualCSSManifestModulePath(projectDir, manifestPath)
   const virtualManifestAssetPath = toVirtualCSSManifestAssetPath(projectDir, manifestPath)
-  const dependencies = new Set(collectStylesheetDependencies(manifestPath, undefined, projectDir))
+  const dependencies = new Set(collectStylesheetDependenciesSync(manifestPath, undefined, { projectDir }))
   for (const dependency of dependencies) {
     context.addDependency?.(dependency)
   }

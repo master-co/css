@@ -355,7 +355,7 @@ ${setup}`
 }
 
 export function addMasterCSSEslintConfig(content: string) {
-  if (content.includes('@master/eslint-config-css') || content.includes('@master/eslint-plugin-css')) return content
+  if (content.includes('@master/eslint-config-css')) return content
   if (!content.trim()) return CANONICAL_ESLINT_CONFIG
 
   let next = addImport(content, "import { defineConfig } from 'eslint/config'")
@@ -377,7 +377,7 @@ export function addMasterCSSEslintConfig(content: string) {
 
 // Master CSS recommended config:
 // export default defineConfig([
-//     ...masterCSS.configs.recommended
+//     ...masterCSS
 // ])
 `
 }

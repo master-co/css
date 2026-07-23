@@ -31,7 +31,7 @@ not alternative implementations of the language.
 | `@master/css-server` | `.` | Server HTML rendering and CSS injection |
 | `@master/css-language-service` | `.`, `./shiki`, TextMate grammar | Editor-document mapping plus presentation/highlighting assets |
 | `@master/css-language-server` | `.`, `./server` | LSP transport and workspace lifecycle |
-| `@master/eslint-plugin-css` | `.`, `./configs/*` | ESLint visitors, reports, and fixer adaptation |
+| `@master/eslint-plugin-css` | `.` | ESLint visitors, reports, fixer adaptation, and config implementation |
 | `@master/eslint-config-css` | `.` | Deliberate thin official flat-config preset over the matching plugin version |
 | `@master/css-vite` | `.` | Vite rendering modes and plugin orchestration; runtime bootstrap is private |
 | `@master/css-webpack` | `.` | Webpack static/runtime integration |

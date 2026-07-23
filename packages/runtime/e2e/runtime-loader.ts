@@ -12,7 +12,25 @@ interface RuntimeLoaderOptions {
 }
 
 declare global {
-  var __MASTER_CSS_RUNTIME_TEST__: MasterCSSRuntime
+  var __MASTER_CSS_RUNTIME_TEST__: MasterCSSRuntime & {
+    readonly text: string
+    flushRetainedClassRules(): number
+  }
+}
+
+function exposeRuntimeTestInternals(runtime: MasterCSSRuntime) {
+  const target = runtime as MasterCSSRuntime & {
+    cleanupRetainedClassRules(force?: boolean): number
+  }
+  return new Proxy(target, {
+    get(target, property, receiver) {
+      if (property === 'text') return target.snapshot().cssText
+      if (property === 'flushRetainedClassRules') {
+        return () => target.cleanupRetainedClassRules(true)
+      }
+      return Reflect.get(target, property, receiver)
+    }
+  }) as typeof globalThis.__MASTER_CSS_RUNTIME_TEST__
 }
 
 export async function startCSSRuntime(options: RuntimeLoaderOptions = {}) {
@@ -21,7 +39,7 @@ export async function startCSSRuntime(options: RuntimeLoaderOptions = {}) {
     hydrationManifest: options.hydrationManifest,
     startupTimeoutMs: options.startupTimeoutMs
   })
-  globalThis.__MASTER_CSS_RUNTIME_TEST__ = runtime
+  globalThis.__MASTER_CSS_RUNTIME_TEST__ = exposeRuntimeTestInternals(runtime)
   return runtime.observe()
 }
 
@@ -31,6 +49,6 @@ export async function startCSSRuntimeAsync(options: RuntimeLoaderOptions = {}) {
     hydrationManifest: options.hydrationManifest,
     startupTimeoutMs: options.startupTimeoutMs
   })
-  globalThis.__MASTER_CSS_RUNTIME_TEST__ = cssRuntime
+  globalThis.__MASTER_CSS_RUNTIME_TEST__ = exposeRuntimeTestInternals(cssRuntime)
   return cssRuntime.observe()
 }

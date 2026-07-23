@@ -1,4 +1,4 @@
-import type { MasterCSSManifestUtility } from '@master/css'
+import type { MasterCSSManifestUtility } from '@master/css-schema/manifest'
 import defaultManifest from '@master/css-preset/default-manifest.json' with { type: 'json' }
 import { builtinKeyAliases, builtinNativeValueNamespaces } from '@master/css-tooling/builtins'
 

@@ -1,0 +1,25 @@
+export {
+  collectStylesheetDependencies,
+  collectStylesheetEmittedGlobals,
+  compileRenderedStylesheet,
+  compileStylesheet,
+  composeStylesheetHost,
+  createStylesheetCollection,
+  resolveStylesheet,
+  transformStylesheet,
+  type MasterCSSCompiledStylesheet,
+  type MasterCSSSassCompiler,
+  type MasterCSSStylesheetCollectionSnapshot,
+  type MasterCSSStylesheetCompileOptions,
+  type MasterCSSStylesheetComposition,
+  type MasterCSSStylesheetCompositionOptions,
+  type MasterCSSStylesheetDependencyOptions,
+  type MasterCSSStylesheetHostOptions,
+  type MasterCSSStylesheetKind,
+  type MasterCSSStylesheetResolution,
+  type MasterCSSStylesheetResolutionOptions,
+  type MasterCSSStylesheetSourceSnapshot,
+  type MasterCSSStylesheetTransformOptions,
+  type MasterCSSStylesheetTransformResult
+} from './public'
+export { MasterCSSStylesheetCollection } from './public'

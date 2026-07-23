@@ -12,6 +12,8 @@ const packageRoot = process.cwd()
 const packageJSON = JSON.parse(readFileSync(resolve(packageRoot, 'package.json'), 'utf8')) as PackageJSON
 
 const entryByPackageName: Record<string, TsdownInputOption> = {
+  '@master/css-language-server': ['src/index.ts', 'src/server.ts'],
+  '@master/css-mcp': ['src/index.ts', 'src/bin/index.ts'],
   '@master/eslint-plugin-css': ['src/**/*.{js,ts}'],
   '@master/css-svelte': ['src/lib/*.ts']
 }

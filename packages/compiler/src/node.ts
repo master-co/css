@@ -16,6 +16,15 @@ export {
   type MasterCSSCompileResult,
   type MasterCSSCompilerInspection
 } from './index'
+export {
+  collectStylesheetDependenciesSync,
+  composeStylesheetHostSync,
+  resolveStylesheetSync,
+  type MasterCSSStylesheetDependencyOptions,
+  type MasterCSSStylesheetHostOptions,
+  type MasterCSSStylesheetResolution,
+  type MasterCSSStylesheetResolutionOptions
+} from './stylesheet/public'
 
 export interface MasterCSSCompileManifestFileOptions
   extends MasterCSSCompileManifestOptions {

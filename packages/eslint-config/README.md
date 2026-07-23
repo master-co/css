@@ -15,6 +15,5 @@ export default defineConfig([
 ])
 ```
 
-The package is a thin entrypoint over
-`@master/eslint-plugin-css/configs.recommended`; rules and config policy remain
-owned by the plugin.
+The package delegates to the matching `@master/eslint-plugin-css` implementation;
+rules and config policy remain owned by the plugin.

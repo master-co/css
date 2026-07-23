@@ -1,11 +1,11 @@
-import { registerStylesheetSource as registerStylesheetCSSSource } from '@master/css-compiler/stylesheet'
+import { createStylesheetCollection } from '@master/css-compiler/stylesheet'
 import type { MasterCSSVitePluginContext } from '../core'
 import { getScanner } from './scanner-context'
 
 export async function registerStylesheetSource(context: MasterCSSVitePluginContext, id: string, source: string) {
-  context.stylesheetSources ??= new Map()
+  context.stylesheets ??= createStylesheetCollection()
   const scanner = getScanner(context)
-  return registerStylesheetCSSSource(scanner, context.stylesheetSources, id, source, {
+  return context.stylesheets.register(scanner, id, source, {
     baseManifest: scanner.css.manifest,
     projectDir: context.config?.root
   })

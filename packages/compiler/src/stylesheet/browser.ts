@@ -1,5 +1,5 @@
 import {
-  compileManifest,
+  createCompiler,
   type MasterCSSCompileManifestResult
 } from '../index'
 import { createCompilerRenderSession } from '@master/css-wasm-compiler'
@@ -13,15 +13,19 @@ import {
   type StylesheetRenderSession
 } from './render-core'
 
-export interface CompileBrowserStylesheetOptions {
+export interface MasterCSSBrowserStylesheetCompileOptions {
   readonly baseManifest: MasterCSSManifest
-  readonly classNames?: Iterable<string>
+  readonly classNames?: readonly string[]
   readonly from?: string
   readonly preserveNativeCSS?: boolean
+  readonly backend?: Readonly<{
+    input?: RequestInfo | URL | Response | BufferSource | WebAssembly.Module
+  }>
+  readonly signal?: AbortSignal
   readonly onDiagnostic?: (diagnostic: import('@master/css-schema').MasterCSSDiagnostic) => void
 }
 
-export interface CompileBrowserStylesheetResult {
+export interface MasterCSSBrowserStylesheetCompileResult {
   readonly css: string
   readonly nativeCSS: string
   readonly generatedCSS: string
@@ -33,23 +37,38 @@ export interface CompileBrowserStylesheetResult {
 
 export async function compileBrowserStylesheet(
   source: string,
-  options: CompileBrowserStylesheetOptions
-): Promise<CompileBrowserStylesheetResult> {
+  options: MasterCSSBrowserStylesheetCompileOptions
+): Promise<MasterCSSBrowserStylesheetCompileResult> {
   const {
     baseManifest,
     classNames,
     from,
     preserveNativeCSS,
+    backend,
+    signal,
     onDiagnostic
   } = options
-  const result = await compileManifest(source, {
-    baseManifest,
-    ...(from ? { from } : {}),
-    ...(preserveNativeCSS === undefined ? {} : { preserveNativeCSS }),
-    ...(onDiagnostic ? { onDiagnostic } : {})
+  signal?.throwIfAborted()
+  const compiler = await createCompiler({
+    backend: 'wasm',
+    ...(backend ? { wasm: backend } : {})
   })
+  let result: MasterCSSCompileManifestResult
+  try {
+    result = compiler.compileManifest(source, {
+      baseManifest,
+      ...(from ? { from } : {}),
+      ...(preserveNativeCSS === undefined ? {} : { preserveNativeCSS }),
+      ...(onDiagnostic ? { onDiagnostic } : {})
+    })
+  } finally {
+    compiler.dispose()
+  }
+  signal?.throwIfAborted()
   const renderSession = await createCompilerRenderSession(
-    serializeMasterCSSManifest(result.manifest)
+    serializeMasterCSSManifest(result.manifest),
+    undefined,
+    backend
   ) as StylesheetRenderSession
   let renderedCSS: RenderCompiledManifestCSSResult
   try {
@@ -61,16 +80,20 @@ export async function compileBrowserStylesheet(
   } finally {
     renderSession.dispose()
   }
+  signal?.throwIfAborted()
 
-  return {
+  return Object.freeze({
     css: renderedCSS.css,
     nativeCSS: renderedCSS.nativeCSS,
     generatedCSS: renderedCSS.generatedCSS,
     manifest: result.manifest,
     diagnostics: result.diagnostics,
-    emittedGlobals: renderedCSS.emittedGlobals,
+    emittedGlobals: Object.freeze({
+      variables: Object.freeze({ ...renderedCSS.emittedGlobals.variables }),
+      animations: Object.freeze({ ...renderedCSS.emittedGlobals.animations })
+    }),
     result
-  }
+  })
 }
 
 export type { MasterCSSCompileManifestResult }

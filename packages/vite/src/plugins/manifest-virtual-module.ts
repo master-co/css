@@ -14,7 +14,7 @@ import {
 } from '@master/css-build-internal/manifest-facade'
 import { RESOLVED_VIRTUAL_MANIFEST_ID, VIRTUAL_MANIFEST_ID } from '../common'
 import { ResolvedMasterCSSVitePluginOptions } from '../options'
-import { collectStylesheetDependencies } from '@master/css-compiler/stylesheet'
+import { collectStylesheetDependenciesSync } from '@master/css-compiler/node'
 import { includesFile } from '../utils/path'
 
 function invalidateManifestModule(module: ModuleNode | undefined, server: ViteDevServer): ModuleNode[] {
@@ -71,7 +71,7 @@ export default function ManifestVirtualModulePlugin(
     const entries = await discoverManifestEntries({ root })
     const dependencies = new Set<string>()
     for (const entry of entries) {
-      for (const dependency of collectStylesheetDependencies(entry, undefined, root)) {
+      for (const dependency of collectStylesheetDependenciesSync(entry, undefined, { projectDir: root })) {
         dependencies.add(dependency)
       }
     }

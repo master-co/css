@@ -4,6 +4,7 @@
     "paths": {
       "@master/css-cli": [ "./node_modules/@master/css-cli/src" ],
       "@master/css-compiler": [ "./node_modules/@master/css-compiler/src" ],
+      "@master/css-compiler/stylesheet": [ "./node_modules/@master/css-compiler/src/stylesheet/index-public.ts" ],
       "@master/css-compiler/*": [ "./node_modules/@master/css-compiler/src/*" ],
       "@master/css-preset": [ "./node_modules/@master/css-preset/src" ],
       "@master/css-preset/*": [ "./node_modules/@master/css-preset/src/*" ],

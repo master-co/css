@@ -1,4 +1,5 @@
 import { MasterCSSScanner } from './test-scanner'
+import { MasterCSSScanner as PublicMasterCSSScanner } from '../../src/scanner'
 import { mkdtempSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
@@ -11,7 +12,7 @@ test('uses default manifest settings without implicit manifest entry discovery',
 })
 
 test('reject string scanner options', async () => {
-  await expect(new MasterCSSScanner('options' as any, __dirname).init())
+  await expect(new PublicMasterCSSScanner('options' as any, __dirname).init())
     .rejects
     .toThrow('MasterCSSScanner options must be an object.')
 })

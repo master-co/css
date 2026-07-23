@@ -16,7 +16,7 @@ npx @master/create-css@rc add --yes
 
 The recommended workflow adds Master CSS to the detected framework and includes the development guardrails Master CSS expects by default:
 
-- `@master/eslint-plugin-css` and `eslint.config.js`
+- `@master/eslint-config-css` and `eslint.config.js`
 - `@master/css-mcp` with the stdio registration command in the summary
 - Master CSS guidance in `AGENTS.md`
 

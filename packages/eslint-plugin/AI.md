@@ -23,7 +23,8 @@
 ## Public Surface
 
 - Default plugin object.
-- Configs under `./configs/*`.
+- Config data consumed by `@master/eslint-config-css`; application configuration
+  imports use the config package.
 - Rules: `sort-classes`, `no-invalid-classes`, `no-conflicting-classes`, `prefer-canonical-classes`, and `no-unapproved-raw-values`.
 
 ## Key Files

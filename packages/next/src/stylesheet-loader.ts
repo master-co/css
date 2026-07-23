@@ -1,19 +1,18 @@
 import {
   compileRenderedStylesheet,
   compileStylesheet,
-  createStyleEntryEmittedGlobals,
-  hasLocalStyleDirectives,
-  isMasterCSSPackageStyleFile,
-  removeMasterStyleDirectives,
-  resolveMasterStyleSource,
-  transformLocalStylesheet,
-  collectStylesheetDependencies
+  collectStylesheetEmittedGlobals,
+  transformStylesheet
 } from '@master/css-compiler/stylesheet'
 import {
   discoverManifestEntries,
   loadProjectManifest
 } from '@master/css-compiler/project'
-import { inspectCSSSync } from '@master/css-compiler/node'
+import {
+  collectStylesheetDependenciesSync,
+  inspectCSSSync,
+  resolveStylesheetSync
+} from '@master/css-compiler/node'
 import { defaultBuildManifest } from '@master/css-build-internal/project'
 
 interface LoaderContext {
@@ -28,10 +27,9 @@ function hasMasterStyleDirective(source: string) {
 }
 
 function shouldAddStyleDependencies(resourcePath: string, source: string, projectDir?: string) {
-  if (hasLocalStyleDirectives(source)) return true
-  if (isMasterCSSPackageStyleFile(resourcePath, projectDir)) return true
   try {
-    return Boolean(resolveMasterStyleSource(resourcePath, source, projectDir))
+    const resolution = resolveStylesheetSync(resourcePath, source, { projectDir })
+    return Boolean(resolution && resolution.kind !== 'plain')
   } catch {
     return true
   }
@@ -44,7 +42,7 @@ async function createGlobalStyleEntryEmittedGlobals(
   dependencies: string[]
 ) {
   if (!entries.length) return
-  const result = await createStyleEntryEmittedGlobals([...entries], {
+  const result = await collectStylesheetEmittedGlobals(entries, {
     baseManifest,
     projectDir
   })
@@ -54,15 +52,18 @@ async function createGlobalStyleEntryEmittedGlobals(
 
 async function transformStyleSource(resourcePath: string, source: string, projectDir?: string) {
   const dependencies: string[] = []
-  let code = source
-
-  const resolvedSource = resolveMasterStyleSource(resourcePath, source, projectDir)
-  if (resolvedSource) {
+  const resolution = resolveStylesheetSync(resourcePath, source, { projectDir })
+  if (!resolution) return { code: source, dependencies }
+  if (resolution.kind === 'entry' || resolution.kind === 'master-package-entry') {
     const renderedSource = inspectCSSSync(source).hasMasterCSSImport
-      ? resolvedSource
-      : resolveMasterStyleSource(resourcePath, `@import "@master/css";\n${source}`, projectDir) || resolvedSource
+      ? resolution
+      : resolveStylesheetSync(
+        resourcePath,
+        `@import "@master/css";\n${source}`,
+        { projectDir }
+      ) ?? resolution
     dependencies.push(...renderedSource.dependencies)
-    const result = await compileRenderedStylesheet(resourcePath, renderedSource.source, {
+    const result = await compileRenderedStylesheet(resourcePath, renderedSource.compilationSource, {
       baseManifest: defaultBuildManifest,
       projectDir,
       preserveNativeCSS: true
@@ -74,8 +75,8 @@ async function transformStyleSource(resourcePath: string, source: string, projec
     }
   }
 
-  if (isMasterCSSPackageStyleFile(resourcePath, projectDir)) {
-    code = removeMasterStyleDirectives(code).code
+  if (resolution.kind === 'master-package') {
+    const code = resolution.outputSource
     if (!hasMasterStyleDirective(code)) {
       return { code, dependencies }
     }
@@ -91,8 +92,7 @@ async function transformStyleSource(resourcePath: string, source: string, projec
     }
   }
 
-  if (!resolvedSource) {
-    if (hasLocalStyleDirectives(source)) {
+  if (resolution.kind === 'local') {
       const entries = await discoverManifestEntries({ root: projectDir })
       const projectManifest = await loadProjectManifest({
         root: projectDir,
@@ -105,7 +105,7 @@ async function transformStyleSource(resourcePath: string, source: string, projec
         projectDir,
         dependencies
       )
-      const result = await transformLocalStylesheet(resourcePath, source, {
+      const result = await transformStylesheet(resourcePath, source, {
         baseManifest: projectManifest.manifest,
         projectDir,
         emittedGlobals
@@ -115,20 +115,12 @@ async function transformStyleSource(resourcePath: string, source: string, projec
         code: result.code,
         dependencies
       }
-    }
-    return { code, dependencies }
+  }
+  if (resolution.kind === 'plain') {
+    return { code: source, dependencies }
   }
 
-  const result = await compileStylesheet(resourcePath, code, {
-    baseManifest: defaultBuildManifest,
-    projectDir,
-    preserveNativeCSS: true
-  })
-  dependencies.push(...(result.dependencies || []))
-  return {
-    code: result.css || result.nativeCSS || '',
-    dependencies
-  }
+  return { code: source, dependencies }
 }
 
 export default function masterCSSStylesheetLoader(this: LoaderContext, source: string) {
@@ -137,7 +129,9 @@ export default function masterCSSStylesheetLoader(this: LoaderContext, source: s
     throw new Error('[@master/css-next] Stylesheet loader requires an async loader context.')
   }
   const dependencies = shouldAddStyleDependencies(this.resourcePath, source, this.rootContext)
-    ? new Set(collectStylesheetDependencies(this.resourcePath, source, this.rootContext))
+    ? new Set(collectStylesheetDependenciesSync(this.resourcePath, source, {
+      projectDir: this.rootContext
+    }))
     : new Set<string>()
   for (const dependency of dependencies) {
     this.addDependency?.(dependency)

@@ -526,8 +526,10 @@ function createNextConfigWithCSSManifestLoader<T extends NextConfig>(
   } as T
 }
 
-export function withMasterCSS<T extends NextConfig>(nextConfig: T, options: MasterCSSNextOptions & { enabled: false }): T
-export function withMasterCSS<T extends NextConfig>(nextConfig: T, options: MasterCSSNextOptions & { mode: 'runtime' }): T
+export function withMasterCSS<T extends NextConfig>(
+  nextConfig: T,
+  options: MasterCSSNextOptions & ({ enabled: false } | { mode: 'runtime' })
+): T
 export function withMasterCSS<T extends NextConfig>(nextConfig: T, options: MasterCSSNextOptions & { mode: 'static' }): Promise<T>
 export function withMasterCSS<T extends NextConfig>(nextConfig?: T, options?: MasterCSSNextOptions): WithAdapterPath<T>
 export function withMasterCSS<T extends NextConfig>(nextConfig: T = {} as T, options: MasterCSSNextOptions = {}): T | WithAdapterPath<T> | Promise<T> {

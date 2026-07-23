@@ -1,5 +1,8 @@
 import { beforeAll, describe, expect, it } from 'vitest'
 import {
+  defaultCanonicalClassNameOptions,
+  defaultClassLintSettings,
+  defaultMasterCSSLintRules,
   fixMasterCSSContent,
   lintMasterCSSContent
 } from '../../src/lint'
@@ -14,6 +17,13 @@ beforeAll(() => {
 })
 
 describe('Rust lint session', () => {
+  it('publishes frozen default settings', () => {
+    expect(Object.isFrozen(defaultClassLintSettings)).toBe(true)
+    expect(Object.isFrozen(defaultClassLintSettings.classAttributes)).toBe(true)
+    expect(Object.isFrozen(defaultCanonicalClassNameOptions)).toBe(true)
+    expect(Object.isFrozen(defaultMasterCSSLintRules)).toBe(true)
+  })
+
   it('owns sort, conflict, validation, and edit policy', () => {
     const lint = createTestToolingSession(createPresetManifest())
     try {
@@ -27,6 +37,9 @@ describe('Rust lint session', () => {
       ]))
       expect(result.diagnostics.find(({ ruleId }) => ruleId === 'sort-classes')?.fix?.text)
         .not.toBe('fg:red block fg:blue unknown')
+      expect(Object.isFrozen(result)).toBe(true)
+      expect(Object.isFrozen(result.diagnostics)).toBe(true)
+      expect(Object.isFrozen(result.diagnostics[0].range)).toBe(true)
     } finally {
       lint.dispose()
     }

@@ -61,6 +61,7 @@
   },
   "devDependencies": {
     "@master/css-build-internal": "workspace:*",
+    "@master/css-preset": "workspace:*",
     "@nuxt/devtools": "4.0.0-alpha.4",
     "@nuxt/eslint": "^1.16.0",
     "@nuxt/eslint-config": "^1.16.0",

@@ -1,6 +1,6 @@
 import type { MasterCSSScanner } from '@master/css-tooling/scanner/node'
 import type { MasterCSSEmittedGlobals } from '@master/css-schema/emitted-globals'
-import type { StylesheetSources } from '@master/css-compiler/stylesheet'
+import type { MasterCSSStylesheetCollection } from '@master/css-compiler/stylesheet'
 import type { Plugin, ResolvedConfig } from 'vite'
 import ManifestLoaderPlugin from './plugins/manifest-loader'
 import ManifestVirtualModulePlugin from './plugins/manifest-virtual-module'
@@ -24,7 +24,7 @@ export interface MasterCSSVitePluginContext {
   scanner?: MasterCSSScanner
   virtualCSSImporters?: Set<string>
   virtualCSSPlaceholderEmitted?: boolean
-  stylesheetSources?: StylesheetSources
+  stylesheets?: MasterCSSStylesheetCollection
   includeGeneratedCSS?: boolean
   emittedGlobals?: MasterCSSEmittedGlobals
   defaultManifestAssetReferenceId?: string

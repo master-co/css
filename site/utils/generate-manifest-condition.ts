@@ -1,4 +1,4 @@
-import type { MasterCSSManifest } from '@master/css'
+import type { MasterCSSManifest } from '@master/css-schema/manifest'
 
 type ManifestCondition = NonNullable<MasterCSSManifest['conditions']>[string]
 type ManifestConditionNode = ManifestCondition['nodes'][number]

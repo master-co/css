@@ -1,7 +1,4 @@
-export {
-  MASTER_CSS_RUNTIME_STARTUP_TIMEOUT_MS,
-  MasterCSSRuntime
-} from './core'
+export { MasterCSSRuntime } from './core'
 export type {
   MasterCSSRuntimeClassSnapshot,
   MasterCSSRuntimeLayerSnapshot,

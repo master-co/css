@@ -4,7 +4,7 @@ import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
 import { MasterCSSScanner } from '@master/css-tooling/scanner/node'
 import { defaultBuildManifest } from '@master/css-build-internal/project'
-import { registerStylesheetSource } from '@master/css-compiler/stylesheet'
+import { createStylesheetCollection } from '@master/css-compiler/stylesheet'
 import EmittedGlobalsVirtualModulePlugin from '../../src/plugins/emitted-globals-virtual-module'
 import { RESOLVED_VIRTUAL_EMITTED_GLOBALS_ID, VIRTUAL_EMITTED_GLOBALS_ID } from '../../src/common'
 
@@ -19,8 +19,8 @@ describe('EmittedGlobalsVirtualModulePlugin', () => {
       mkdirSync(join(root, 'app'), { recursive: true })
       const scanner = new MasterCSSScanner({ manifest: defaultBuildManifest }, root)
       await scanner.init()
-      const stylesheetSources = new Map()
-      await registerStylesheetSource(scanner, stylesheetSources, join(root, 'app/globals.css'), `
+      const stylesheets = createStylesheetCollection()
+      await stylesheets.register(scanner, join(root, 'app/globals.css'), `
         @theme {
           --color-primary: #ff0000;
         }
@@ -43,7 +43,7 @@ describe('EmittedGlobalsVirtualModulePlugin', () => {
       const context = {
         config: { root },
         scanner,
-        stylesheetSources,
+        stylesheets,
         includeGeneratedCSS: false
       } as any
       const plugin = EmittedGlobalsVirtualModulePlugin(context)

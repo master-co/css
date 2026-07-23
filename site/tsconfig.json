@@ -31,9 +31,12 @@
     ],
     "paths": {
       "@master/css-compiler": [ "../node_modules/@master/css-compiler/src" ],
+      "@master/css-compiler/stylesheet": [ "../node_modules/@master/css-compiler/src/stylesheet/index-public.ts" ],
       "@master/css-compiler/*": [ "../node_modules/@master/css-compiler/src/*" ],
       "@master/css": [ "../node_modules/@master/css/src" ],
       "@master/css/*": [ "../node_modules/@master/css/src/*" ],
+      "@master/css-backend": [ "../node_modules/@master/css-backend/src" ],
+      "@master/css-backend/*": [ "../node_modules/@master/css-backend/src/*" ],
       "@master/css-build-internal": [ "../node_modules/@master/css-build-internal/src" ],
       "@master/css-build-internal/*": [ "../node_modules/@master/css-build-internal/src/*" ],
       "@master/css-tooling": [ "../node_modules/@master/css-tooling/src" ],

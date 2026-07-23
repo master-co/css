@@ -13,7 +13,7 @@ import {
   MASTER_CSS_HYDRATION_MANIFEST_ASSET_BASE,
   MASTER_CSS_HYDRATION_MANIFEST_FILE_BASENAME
 } from '@master/css-schema/hydration-manifest'
-import { collectStylesheetDependencies } from '@master/css-compiler/stylesheet'
+import { collectStylesheetDependenciesSync } from '@master/css-compiler/node'
 import { includesFile } from '../utils/path'
 
 const HYDRATION_MANIFEST_ASSET_DIR = '_master-css/hydration'
@@ -36,7 +36,7 @@ export default function PreRenderPlugin(options: ResolvedMasterCSSVitePluginOpti
     const entries = await discoverManifestEntries({ root })
     const dependencies = new Set<string>()
     for (const entry of entries) {
-      for (const dependency of collectStylesheetDependencies(entry, undefined, root)) {
+      for (const dependency of collectStylesheetDependenciesSync(entry, undefined, { projectDir: root })) {
         dependencies.add(dependency)
       }
     }

@@ -37,10 +37,10 @@ Use [Language Service](/guide/language-service) for completions, syntax highligh
 
 ```js name=eslint.config.js
 import { defineConfig } from 'eslint/config'
-import masterCSS from '@master/eslint-plugin-css'
+import masterCSS from '@master/eslint-config-css'
 
 export default defineConfig([
-  ...masterCSS.configs.recommended
+  ...masterCSS
 ])
 ```
 

@@ -20,7 +20,7 @@ import {
   toInlineManifestModule,
   toUniversalManifestFacadeModule
 } from '@master/css-build-internal/manifest-facade'
-import { collectStylesheetDependencies } from '@master/css-compiler/stylesheet'
+import { collectStylesheetDependenciesSync } from '@master/css-compiler/node'
 import { includesFile } from '../utils/path'
 
 function invalidateManifestModule(module: ModuleNode | undefined, server: ViteDevServer): ModuleNode[] {
@@ -82,7 +82,9 @@ export default function ManifestLoaderPlugin(context: MasterCSSVitePluginContext
       if (!isManifestStylesheetRequest(manifestPath)) {
         throw new TypeError('Master CSS manifest queries only support CSS entry files.')
       }
-      const dependencies = new Set(collectStylesheetDependencies(manifestPath, undefined, context.config?.root))
+      const dependencies = new Set(collectStylesheetDependenciesSync(manifestPath, undefined, {
+        projectDir: context.config?.root
+      }))
       for (const dependency of dependencies) {
         this.addWatchFile(dependency)
       }

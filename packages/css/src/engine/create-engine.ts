@@ -4,6 +4,7 @@ import { serializeMasterCSSManifest } from '@master/css-schema/manifest'
 import BoundEngine from './bound-engine'
 import {
   normalizeEngineError,
+  type BackendEngineSession,
   type MasterCSSEngine,
   type MasterCSSEngineOptions
 } from './backend'
@@ -16,7 +17,14 @@ async function createWasmEngine(options: MasterCSSEngineOptions): Promise<Master
         emittedGlobals: options.emittedGlobals
       }
     )
-    return new BoundEngine('wasm', session as never)
+    return new BoundEngine('wasm', {
+      ensureClassRules: (classNames) => session.ensureClassRules([...classNames]),
+      deleteClassRules: (classNames) => session.deleteClassRules([...classNames]),
+      refresh: (manifest) => session.refresh(serializeMasterCSSManifest(manifest)),
+      inspect: (className) => session.inspect(className),
+      snapshot: () => session.snapshot(),
+      dispose: () => session.dispose()
+    } as BackendEngineSession)
   } catch (cause) {
     throw normalizeEngineError(
       cause,

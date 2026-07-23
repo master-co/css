@@ -10,11 +10,12 @@ import {
   defaultBuildManifest,
   isManifestStylesheetRequest
 } from '@master/css-build-internal/project'
+import { stripMasterCSSManifestQuery } from '@master/css-build-internal/manifest-module'
 import {
   toInlineManifestModule,
   toUniversalManifestFacadeModule
 } from '@master/css-build-internal/manifest-facade'
-import { collectStylesheetDependencies } from '@master/css-compiler/stylesheet'
+import { collectStylesheetDependenciesSync } from '@master/css-compiler/node'
 import { serializeMasterCSSManifest } from '@master/css-schema/manifest'
 
 interface LoaderContext {
@@ -62,7 +63,7 @@ async function loadVirtualManifestJSON(context: LoaderContext) {
   const entries = await discoverManifestEntries({ root: projectDir })
   const dependencies = new Set<string>()
   for (const entry of entries) {
-    for (const dependency of collectStylesheetDependencies(entry, undefined, projectDir)) {
+    for (const dependency of collectStylesheetDependenciesSync(entry, undefined, { projectDir })) {
       dependencies.add(dependency)
       context.addDependency?.(dependency)
     }
@@ -80,11 +81,13 @@ async function loadVirtualManifestJSON(context: LoaderContext) {
 }
 
 function loadCSSManifestJSON(context: LoaderContext) {
-  const resourcePath = context.resourcePath
+  const resourcePath = stripMasterCSSManifestQuery(context.resourcePath)
   if (!isManifestStylesheetRequest(resourcePath)) {
     throw new TypeError('Master CSS manifest queries only support CSS entry files.')
   }
-  const dependencies = new Set(collectStylesheetDependencies(resourcePath, undefined, context.rootContext))
+  const dependencies = new Set(collectStylesheetDependenciesSync(resourcePath, undefined, {
+    projectDir: context.rootContext
+  }))
   for (const dependency of dependencies) {
     context.addDependency?.(dependency)
   }

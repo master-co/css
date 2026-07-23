@@ -55,7 +55,7 @@ test('falls back to ArrayBuffer instantiation for an incorrect Wasm MIME type', 
     return {
       backend: runtime.backend,
       hidden: document.documentElement.hasAttribute('hidden'),
-      text: runtime.text
+      text: runtime.snapshot().cssText
     }
   }, { loaderURL })
 

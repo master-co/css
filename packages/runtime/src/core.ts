@@ -447,39 +447,31 @@ export class MasterCSSRuntime implements Disposable {
   private getGlobalFacade(): MasterCSSRuntimeFacade {
     if (this.globalFacade) return this.globalFacade
     let facade: MasterCSSRuntimeFacade
+    const getBackend = () => this.backend
     facade = Object.freeze({
       get backend() {
-        return thisRuntime.backend
+        return getBackend()
       },
-      observe() {
-        thisRuntime.observe()
+      observe: () => {
+        this.observe()
         return facade
       },
-      disconnect() {
-        thisRuntime.disconnect()
+      disconnect: () => {
+        this.disconnect()
         return facade
       },
-      refresh(manifest?: MasterCSSManifest) {
-        thisRuntime.refresh(manifest)
+      refresh: (manifest?: MasterCSSManifest) => {
+        this.refresh(manifest)
         return facade
       },
-      ensureClassRules(classNames: readonly string[]) {
-        return thisRuntime.ensureClassRules(classNames)
-      },
-      deleteClassRules(classNames: readonly string[]) {
-        return thisRuntime.deleteClassRules(classNames)
-      },
-      snapshot() {
-        return thisRuntime.snapshot()
-      },
-      dispose() {
-        thisRuntime.dispose()
-      },
-      [Symbol.dispose]() {
-        thisRuntime.dispose()
-      }
+      ensureClassRules: (classNames: readonly string[]) =>
+        this.ensureClassRules(classNames),
+      deleteClassRules: (classNames: readonly string[]) =>
+        this.deleteClassRules(classNames),
+      snapshot: () => this.snapshot(),
+      dispose: () => this.dispose(),
+      [Symbol.dispose]: () => this.dispose()
     })
-    const thisRuntime = this
     this.globalFacade = facade
     return facade
   }

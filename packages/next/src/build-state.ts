@@ -5,9 +5,7 @@ import {
 } from '@master/css-compiler/project'
 import { defaultBuildManifest } from '@master/css-build-internal/project'
 import {
-  createExtractedCSS,
-  registerStylesheetSource,
-  type StylesheetSources
+  createStylesheetCollection
 } from '@master/css-compiler/stylesheet'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import { readFile } from 'node:fs/promises'
@@ -21,7 +19,7 @@ export interface MasterCSSBuildState {
 
 export interface MasterCSSBuildStateResolver {
   resolve: (classes?: string[]) => Promise<MasterCSSBuildState>
-  destroy: () => Promise<void>
+  dispose: () => Promise<void>
 }
 
 export async function createMasterCSSBuildStateResolver(projectDir: string): Promise<MasterCSSBuildStateResolver> {
@@ -32,46 +30,48 @@ export async function createMasterCSSBuildStateResolver(projectDir: string): Pro
   const scanner = new MasterCSSScanner({
     manifest: result.manifest
   }, projectDir)
-  const stylesheetSources: StylesheetSources = new Map()
+  const stylesheets = createStylesheetCollection()
   try {
     await scanner.init()
     for (const entry of await discoverManifestEntries({ root: projectDir })) {
-      await registerStylesheetSource(scanner, stylesheetSources, entry, await readFile(entry, 'utf8'), {
+      await stylesheets.register(scanner, entry, await readFile(entry, 'utf8'), {
         baseManifest: result.manifest,
         projectDir
       })
     }
   } catch (error) {
     await scanner.dispose()
+    stylesheets.dispose()
     throw error
   }
 
   return {
     async resolve(classes?: string[]) {
       const nativeCSS = classes?.length
-        ? await createExtractedCSS({
+        ? (await stylesheets.compose({
           scanner,
-          stylesheetSources,
           baseManifest: result.manifest,
           manifest: result.manifest,
           projectDir,
           classes,
           includeGeneratedCSS: false
-        })
+        })).css
         : ''
 
+      const stylesheetSnapshot = stylesheets.snapshot()
       return {
         manifest: result.manifest,
         nativeCSS,
         dependencies: [...new Set([
           ...result.dependencies,
-          ...Array.from(stylesheetSources.values()).flatMap((source) => source.dependencies)
+          ...stylesheetSnapshot.dependencies
         ])],
-        styleSources: Array.from(stylesheetSources.keys())
+        styleSources: [...stylesheetSnapshot.sourceIds]
       }
     },
-    async destroy() {
+    async dispose() {
       await scanner.dispose()
+      stylesheets.dispose()
     }
   }
 }
@@ -84,6 +84,6 @@ export async function resolveMasterCSSBuildState(
   try {
     return await resolver.resolve(classes)
   } finally {
-    await resolver.destroy()
+    await resolver.dispose()
   }
 }

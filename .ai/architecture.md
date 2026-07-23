@@ -134,9 +134,9 @@ semantic tokens, edits, and Shiki output over editor documents.
 staged Marketplace manifest retains the historical extension id `master-css-vscode`.
 
 `packages/eslint-plugin` owns ESLint AST visitors, settings, reports, and fixer range
-adaptation over `@master/css-tooling/lint`. `@master/eslint-plugin-css` is deliberately
-retained as a thin public ecosystem preset and must depend on the exact matching plugin
-version.
+adaptation over `@master/css-tooling/lint`. `@master/eslint-config-css` is deliberately
+retained as the thin public ecosystem preset and delegates to the matching plugin
+version without duplicating rules or configuration policy.
 
 ## Cycles And New Responsibilities
 

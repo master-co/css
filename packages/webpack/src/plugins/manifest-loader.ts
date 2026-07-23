@@ -18,7 +18,7 @@ import {
   isManifestStylesheetRequest
 } from '@master/css-build-internal/project'
 import { serializeMasterCSSManifest } from '@master/css-schema/manifest'
-import { collectStylesheetDependencies } from '@master/css-compiler/stylesheet'
+import { collectStylesheetDependenciesSync } from '@master/css-compiler/node'
 import { addFileDependency } from '../utils/file-dependencies'
 
 export default function ManifestLoaderPlugin(context: MasterCSSWebpackContext): WebpackSubPlugin {
@@ -54,7 +54,9 @@ export default function ManifestLoaderPlugin(context: MasterCSSWebpackContext): 
                   callback(new TypeError('Master CSS manifest queries only support CSS entry files.'))
                   return
                 }
-                const dependencies = new Set(collectStylesheetDependencies(resolvedPath, undefined, context.cwd))
+                const dependencies = new Set(collectStylesheetDependenciesSync(resolvedPath, undefined, {
+                  projectDir: context.cwd
+                }))
                 for (const dependency of dependencies) {
                   addFileDependency(resolveData.fileDependencies, dependency)
                 }

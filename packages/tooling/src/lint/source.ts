@@ -15,21 +15,21 @@ import type { MasterCSSToolingSession } from '../tooling-session'
 
 const MAX_FIX_PASSES = 10
 
-export const masterCSSLintRuleIds: MasterCSSLintRuleId[] = [
+export const masterCSSLintRuleIds: readonly MasterCSSLintRuleId[] = Object.freeze([
   'sort-classes',
   'no-invalid-classes',
   'no-conflicting-classes',
   'prefer-canonical-classes',
   'no-unapproved-raw-values'
-]
+])
 
-export const defaultMasterCSSLintRules: Record<MasterCSSLintRuleId, boolean> = {
+export const defaultMasterCSSLintRules: Readonly<Record<MasterCSSLintRuleId, boolean>> = Object.freeze({
   'sort-classes': true,
   'no-invalid-classes': true,
   'no-conflicting-classes': true,
   'prefer-canonical-classes': true,
   'no-unapproved-raw-values': false
-}
+})
 
 export type MasterCSSLintFileSourceKind = 'source' | 'stylesheet' | 'manifest'
 export type MasterCSSLintDiagnosticSourceKind = 'class-attribute' | 'class-expression' | 'compose-directive' | 'manifest'

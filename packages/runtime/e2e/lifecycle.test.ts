@@ -45,34 +45,41 @@ test('does not install the removed devtools hook global', async ({ page }) => {
   await expect(page.evaluate(() => ['__MASTER', 'CSS', 'DEVTOOLS', 'HOOK__'].join('_') in globalThis)).resolves.toBe(false)
 })
 
-test('destroy on progressive', async ({ page }) => {
+test('dispose on progressive', async ({ page }) => {
   await init(page, '@layer utilities{}')
   await page.evaluate(() => {
     document.body.classList.add('text-center')
   })
   await waitForRuntimeRuleFlush(page)
-  expect(await page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.utilitiesLayer.rules.length)).toBe(1)
-  expect(await page.evaluate(() => Array.from(globalThis.__MASTER_CSS_RUNTIME_TEST__.style?.sheet?.cssRules || [])
-    .filter(cssRule => cssRule === globalThis.__MASTER_CSS_RUNTIME_TEST__.utilitiesLayer.native)
-    .length
+  expect(await page.evaluate(() =>
+    globalThis.__MASTER_CSS_RUNTIME_TEST__.snapshot().layers
+      .find(({ name }) => name === 'utilities')?.ruleCount
   )).toBe(1)
-  expect(await page.evaluate(() => Array.from(globalThis.__MASTER_CSS_RUNTIME_TEST__.style?.sheet?.cssRules || []).length)).toBe(1)
   await page.evaluate(() => {
-    const runtime = globalThis.__MASTER_CSS_RUNTIME_TEST__
-    runtime.dispose()
-    ;(globalThis as any).destroyedRuntime = runtime
+    globalThis.__MASTER_CSS_RUNTIME_TEST__.dispose()
   })
-  expect(await page.evaluate(() => (globalThis as any).destroyedRuntime.utilitiesLayer.rules.length)).toBe(0)
-  expect(await page.evaluate(() => Array.from((globalThis as any).destroyedRuntime.style?.sheet?.cssRules || []).length)).toBe(0)
-  await page.evaluate(async () => {
-    const runtime = (globalThis as any).destroyedRuntime as typeof globalThis.__MASTER_CSS_RUNTIME_TEST__
-    const nextRuntime = await globalThis.MasterCSSRuntime.start({ manifest: runtime.manifest })
+  expect(await page.evaluate(() => ({
+    globalCleared: globalThis.masterCSSRuntime === undefined,
+    styleRemoved: !document.getElementById('master-css')
+  }))).toEqual({
+    globalCleared: true,
+    styleRemoved: true
+  })
+  await page.evaluate(async (manifest) => {
+    const nextRuntime = await globalThis.MasterCSSRuntime.start({ manifest })
     nextRuntime.observe()
     document.body.classList.add('block')
     document.body.classList.add('font:bold')
-  })
+  }, defaultManifest)
   await waitForRuntimeRuleFlush(page)
-  expect(await page.evaluate(() => Array.from(globalThis.__MASTER_CSS_RUNTIME_TEST__.style?.sheet?.cssRules || []).length)).toBe(2)
+  expect(await page.evaluate(() => {
+    const classRules = globalThis.masterCSSRuntime?.snapshot().classRules
+    return Object.fromEntries(Object.entries(classRules || {})
+      .map(([className, snapshot]) => [className, snapshot.rules.length]))
+  })).toMatchObject({
+    block: 1,
+    'font:bold': 1
+  })
 })
 
 test('prevent attach layer twice', async ({ page }) => {
@@ -207,10 +214,10 @@ test('generates browser native declarations through CSS.supports fallback', asyn
       fieldSizing: CSS.supports('field-sizing', 'content'),
       transitionBehavior: CSS.supports('transition-behavior', 'allow-discrete')
     },
-    classUtilities: [...globalThis.__MASTER_CSS_RUNTIME_TEST__.classUtilities.keys()],
-    rustText: (globalThis.__MASTER_CSS_RUNTIME_TEST__ as unknown as {
-      backendEngine: { text: string }
-    }).backendEngine.text,
+    classUtilities: Object.entries(globalThis.__MASTER_CSS_RUNTIME_TEST__.snapshot().classRules)
+      .filter(([, { rules }]) => rules.length)
+      .map(([className]) => className),
+    rustText: globalThis.__MASTER_CSS_RUNTIME_TEST__.snapshot().cssText,
     cssRules: Array.from(globalThis.__MASTER_CSS_RUNTIME_TEST__.utilitiesLayer.native?.cssRules || [])
       .map((cssRule) => cssRule.cssText)
   }))
@@ -289,8 +296,9 @@ test('registers emittedGlobals counts on an existing runtime', async ({ page }) 
         animations: { fade: 1 }
       }
     })
+    const returnedAgain = await globalThis.MasterCSSRuntime.start({ manifest })
     return {
-      same: returned === current,
+      same: returned === returnedAgain,
       variables: current.emittedGlobals.variables,
       animations: current.emittedGlobals.animations,
       variableCounts: Object.fromEntries(current.themeLayer.tokenCounts),

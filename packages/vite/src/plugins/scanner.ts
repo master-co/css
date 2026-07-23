@@ -20,6 +20,8 @@ export default function ScannerPlugin(options: ResolvedMasterCSSVitePluginOption
     async closeBundle() {
       await context.scanner?.dispose()
       context.scanner = undefined
+      context.stylesheets?.dispose()
+      context.stylesheets = undefined
     }
   }
 }

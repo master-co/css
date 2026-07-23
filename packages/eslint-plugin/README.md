@@ -55,10 +55,11 @@
 ## Installation
 
 ```bash
-npm install -D @master/eslint-plugin-css
+npm install -D @master/eslint-config-css
 ```
 
-The recommended config is also available through `@master/eslint-plugin-css`.
+The config package installs the matching plugin implementation and exposes the
+complete recommended flat config.
 
 In Visual Studio Code, install the VS Code ESLint extension to surface these diagnostics and run sort-on-save. The Master CSS extension provides completion, hover, colors, highlighting, directive diagnostics, manifest diagnostics, and directive formatting; it does not duplicate class policy warnings by default.
 
@@ -68,7 +69,7 @@ Use ESLint flat configuration:
 
 ```js
 import { defineConfig } from 'eslint/config'
-import masterCSS from '@master/eslint-plugin-css'
+import masterCSS from '@master/eslint-config-css'
 import htmlParser from '@angular-eslint/template-parser'
 import tsParser from '@typescript-eslint/parser'
 
@@ -85,7 +86,7 @@ export default defineConfig([
       parser: tsParser
     }
   },
-  ...masterCSS.configs.recommended,
+  ...masterCSS,
   {
     rules: {
       '@master/css/no-invalid-classes': ['error', {
@@ -166,18 +167,16 @@ For example, this rule can fix `text-align:center` to `text-center`, `font:16px`
 
 The same canonicalization applies to unquoted `@compose` class lists. In CSS, declaration-like classes are moved to native declarations and suffixes are moved to `@variant`, `@dark`, or `@light` blocks when the rewrite is safe.
 
-Standalone CSS files are included by default when using `@master/eslint-plugin-css`:
+Standalone CSS files are included by default when using `@master/eslint-config-css`:
 
 ```js
 import { defineConfig } from 'eslint/config'
-import masterCSS from '@master/eslint-plugin-css'
+import masterCSS from '@master/eslint-config-css'
 
 export default defineConfig([
-  ...masterCSS.configs.recommended
+  ...masterCSS
 ])
 ```
-
-Direct plugin users can add `css.configs.stylesheet` from `@master/eslint-plugin-css` alongside the recommended config.
 
 You can disable specific canonicalization families:
 

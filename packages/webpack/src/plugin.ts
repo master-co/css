@@ -21,15 +21,18 @@ import {
 } from '@master/css-compiler/project'
 import { defaultBuildManifest } from '@master/css-build-internal/project'
 import {
-  cleanStyleRequest,
-  collectStylesheetDependencies,
-  createExtractedCSSResult,
-  isStylesheetRequest,
-  registerStylesheetSource as registerStylesheetCSSSource,
-  resolveMasterStyleSource,
-  type StylesheetSources
+  createStylesheetCollection,
+  type MasterCSSStylesheetCollection
 } from '@master/css-compiler/stylesheet'
+import {
+  collectStylesheetDependenciesSync,
+  resolveStylesheetSync
+} from '@master/css-compiler/node'
 import { toEmittedGlobalsModule } from '@master/css-build-internal/emitted-globals-module'
+import {
+  cleanStylesheetModuleRequest,
+  isStylesheetModuleRequest
+} from '@master/css-build-internal/style-module'
 import type { Compiler } from 'webpack'
 import type VirtualModulesPlugin from 'webpack-virtual-modules'
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
@@ -112,7 +115,7 @@ export class MasterCSSWebpackPlugin {
   defaultManifestDependencies: string[] = []
   emittedGlobals: MasterCSSEmittedGlobals = {}
   resetReplayChain: Promise<unknown> = Promise.resolve()
-  stylesheetSources: StylesheetSources = new Map()
+  stylesheets: MasterCSSStylesheetCollection = createStylesheetCollection()
   stylesheetDependencyFallbacks = new Map<string, string[]>()
   development = false
 
@@ -208,7 +211,9 @@ export class MasterCSSWebpackPlugin {
     const entries = await discoverManifestEntries({ root: this.cwd })
     const dependencies = new Set<string>()
     for (const entry of entries) {
-      for (const dependency of collectStylesheetDependencies(entry, undefined, this.cwd)) {
+      for (const dependency of collectStylesheetDependenciesSync(entry, undefined, {
+        projectDir: this.cwd
+      })) {
         dependencies.add(dependency)
       }
     }
@@ -242,7 +247,7 @@ export class MasterCSSWebpackPlugin {
   private getResetDependencyPaths() {
     return [...new Set([
       ...this.defaultManifestDependencies,
-      ...Array.from(this.stylesheetSources.values()).flatMap((source) => source.dependencies),
+      ...this.stylesheets.snapshot().dependencies,
       ...Array.from(this.stylesheetDependencyFallbacks.values()).flat(),
       ...this.scanner.resetDependencies
     ])]
@@ -258,9 +263,8 @@ export class MasterCSSWebpackPlugin {
   }
 
   private async createExtractedCSSResult(options: { includeNativeCSS?: boolean, includeMasterBaseCSS?: boolean } = {}) {
-    const result = await createExtractedCSSResult({
+    const result = await this.stylesheets.compose({
       scanner: this.scanner,
-      stylesheetSources: this.stylesheetSources,
       baseManifest: this.scanner.css.manifest,
       classes: this.getScannerClasses(),
       projectDir: this.cwd,
@@ -284,16 +288,16 @@ export class MasterCSSWebpackPlugin {
   }
 
   private async registerStylesheetSource(modulePath: string, source: string) {
-    await registerStylesheetCSSSource(this.scanner, this.stylesheetSources, modulePath, source, {
+    await this.stylesheets.register(this.scanner, modulePath, source, {
       baseManifest: this.scanner.css.manifest,
       projectDir: this.cwd
     })
   }
 
   private readOriginalStyleSource(modulePath: string, fallback: string) {
-    if (!isStylesheetRequest(modulePath)) return fallback
+    if (!isStylesheetModuleRequest(modulePath)) return fallback
     try {
-      return readFileSync(cleanStyleRequest(modulePath), 'utf-8')
+      return readFileSync(cleanStylesheetModuleRequest(modulePath), 'utf-8')
     } catch {
       return fallback
     }
@@ -306,26 +310,30 @@ export class MasterCSSWebpackPlugin {
     for (const [modulePath, content] of entries) {
       if (isGeneratedCSSModulePath(modulePath)) continue
       const source = this.readOriginalStyleSource(modulePath, content)
-      if (isStylesheetRequest(modulePath)) {
-        let resolvedStyleSource: ReturnType<typeof resolveMasterStyleSource>
+      if (isStylesheetModuleRequest(modulePath)) {
+        let resolution: ReturnType<typeof resolveStylesheetSync>
         try {
-          resolvedStyleSource = resolveMasterStyleSource(modulePath, source, this.cwd)
+          resolution = resolveStylesheetSync(modulePath, source, {
+            projectDir: this.cwd
+          })
         } catch (error) {
           this.stylesheetDependencyFallbacks.set(
-            cleanStyleRequest(modulePath),
-            collectStylesheetDependencies(modulePath, source, this.cwd)
+            cleanStylesheetModuleRequest(modulePath),
+            [...collectStylesheetDependenciesSync(modulePath, source, {
+              projectDir: this.cwd
+            })]
           )
           throw error
         }
-        if (resolvedStyleSource) {
+        if (resolution?.kind === 'entry' || resolution?.kind === 'master-package-entry') {
           this.stylesheetDependencyFallbacks.set(
-            cleanStyleRequest(modulePath),
-            collectStylesheetDependencies(modulePath, source, this.cwd)
+            resolution.id,
+            [...resolution.dependencies]
           )
           styleEntries.push([modulePath, source])
         } else {
-          this.stylesheetSources.delete(cleanStyleRequest(modulePath))
-          this.stylesheetDependencyFallbacks.delete(cleanStyleRequest(modulePath))
+          this.stylesheets.delete(modulePath)
+          this.stylesheetDependencyFallbacks.delete(cleanStylesheetModuleRequest(modulePath))
         }
         continue
       }

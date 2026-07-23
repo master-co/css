@@ -1,5 +1,4 @@
 import settings from './settings'
-import legacy from './configs/legacy'
 import base from './configs/base'
 import recommendedSource from './configs/recommended'
 import stylesheet from './configs/stylesheet'
@@ -9,7 +8,6 @@ import type { TSESLint } from '@typescript-eslint/utils'
 
 const masterCSSPlugin: Omit<TSESLint.Linter.Plugin, 'configs'> & {
   configs: {
-    legacy: unknown
     base: Linter.Config
     recommended: Linter.Config[]
     source: Linter.Config
@@ -19,7 +17,6 @@ const masterCSSPlugin: Omit<TSESLint.Linter.Plugin, 'configs'> & {
 } = {
   ...plugin,
   configs: {
-    legacy,
     base,
     recommended: [recommendedSource, stylesheet],
     source: recommendedSource,

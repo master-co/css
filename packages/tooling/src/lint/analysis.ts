@@ -39,7 +39,7 @@ export interface MasterCSSLintEdit {
   readonly scope: 'class-list' | 'directive'
 }
 
-export interface MasterCSSLintBackendDiagnostic {
+export interface MasterCSSLintDiagnosticInput {
   readonly ruleId: MasterCSSLintRuleId
   readonly code: string
   readonly message: string
@@ -51,7 +51,7 @@ export interface MasterCSSLintBackendDiagnostic {
 export interface MasterCSSLintClassListAnalysis {
   readonly version: 1
   readonly analysis: MasterCSSLintAnalysis
-  readonly diagnostics: readonly MasterCSSLintBackendDiagnostic[]
+  readonly diagnostics: readonly MasterCSSLintDiagnosticInput[]
   readonly sortEdit?: MasterCSSLintEdit
   readonly conflictEdit?: MasterCSSLintEdit
   readonly conflictRange?: Readonly<{ start: number, end: number }>
@@ -87,28 +87,4 @@ export interface MasterCSSLintToken {
   readonly range: Readonly<{ start: number, end: number }>
   readonly raw: string
   readonly token: string
-}
-
-export interface MasterCSSLintSessionContract {
-  tokenizeClassList(classList: string, unescape?: string | false): readonly MasterCSSLintToken[]
-  analyzeDocument(source: string, languageId: string): MasterCSSLintDocumentAnalysis
-  analyze(classNames: readonly string[]): MasterCSSLintAnalysis
-  canonicalClassGroups(
-    classNames: readonly string[],
-    options?: CanonicalClassNameOptions
-  ): readonly MasterCSSLintCanonicalClassGroupSuggestion[]
-  canonicalClassNames(
-    classNames: readonly string[],
-    options?: CanonicalClassNameOptions
-  ): readonly MasterCSSLintCanonicalClassSuggestion[]
-  canonicalComposeDirective(
-    classNames: readonly string[],
-    options?: CanonicalClassNameOptions
-  ): CanonicalComposeDirectiveResult | undefined
-  rawValueCandidates(classNames: readonly string[]): readonly MasterCSSLintRawValueCandidate[]
-  analyzeClassList(
-    classList: string,
-    classNames: readonly string[],
-    options?: MasterCSSLintClassListOptions
-  ): MasterCSSLintClassListAnalysis
 }

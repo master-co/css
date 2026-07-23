@@ -55,6 +55,7 @@ import type {
   MasterCSSLanguageCompletionIndex,
   MasterCSSLanguageInspection
 } from './language/contracts'
+import { freezeToolingResult } from './immutable'
 
 export interface ToolingSessionParts {
   readonly lexer: LexerSession
@@ -83,21 +84,21 @@ export class MasterCSSToolingSession implements Disposable {
 
   analyzeClassList(request: MasterCSSClassListAnalysisRequest): MasterCSSClassListAnalysis {
     this.assertActive()
-    return this.parts.lexer.analyze({
+    return freezeToolingResult(this.parts.lexer.analyze({
       classLists: request.classLists?.map((input) => ({
         source: input.source,
         ...(input.unescape ? { unescape: [...input.unescape] } : {})
       })),
       cssSources: request.cssSources ? [...request.cssSources] : undefined,
       escapeIdentifiers: request.escapeIdentifiers ? [...request.escapeIdentifiers] : undefined
-    })
+    }))
   }
 
   extractSource(request: MasterCSSSourceExtractionRequest): MasterCSSSourceExtraction {
     this.assertActive()
-    return this.parts.source.extract({
+    return freezeToolingResult(this.parts.source.extract({
       files: request.files.map((file) => ({ ...file }))
-    })
+    }))
   }
 
   extractClassCandidates(content: string) {
@@ -107,12 +108,12 @@ export class MasterCSSToolingSession implements Disposable {
 
   validateClassNames(classNames: readonly string[]): MasterCSSClassValidationResult {
     this.assertActive()
-    return this.parts.validator.generate(classNames)
+    return freezeToolingResult(this.parts.validator.generate(classNames))
   }
 
   lintClassNames(classNames: readonly string[]): MasterCSSLintAnalysis {
     this.assertActive()
-    return this.parts.lint.analyze([...classNames])
+    return freezeToolingResult(this.parts.lint.analyze([...classNames]))
   }
 
   tokenizeClassList(
@@ -120,12 +121,12 @@ export class MasterCSSToolingSession implements Disposable {
     unescape?: string | false
   ): readonly MasterCSSLintToken[] {
     this.assertActive()
-    return this.parts.lint.tokenizeClassList(classList, unescape)
+    return freezeToolingResult(this.parts.lint.tokenizeClassList(classList, unescape))
   }
 
   analyzeLintDocument(source: string, languageId: string): MasterCSSLintDocumentAnalysis {
     this.assertActive()
-    return this.parts.lint.analyzeDocument(source, languageId)
+    return freezeToolingResult(this.parts.lint.analyzeDocument(source, languageId))
   }
 
   analyzeLintClassList(
@@ -134,7 +135,9 @@ export class MasterCSSToolingSession implements Disposable {
     options?: MasterCSSLintClassListOptions
   ): MasterCSSLintClassListAnalysis {
     this.assertActive()
-    return this.parts.lint.analyzeClassList(classList, [...classNames], options)
+    return freezeToolingResult(
+      this.parts.lint.analyzeClassList(classList, [...classNames], options)
+    )
   }
 
   canonicalClassNames(
@@ -142,7 +145,9 @@ export class MasterCSSToolingSession implements Disposable {
     options?: CanonicalClassNameOptions
   ): readonly MasterCSSLintCanonicalClassSuggestion[] {
     this.assertActive()
-    return this.parts.lint.canonicalClassNames([...classNames], options)
+    return freezeToolingResult(
+      this.parts.lint.canonicalClassNames([...classNames], options)
+    )
   }
 
   canonicalClassGroups(
@@ -150,7 +155,9 @@ export class MasterCSSToolingSession implements Disposable {
     options?: CanonicalClassNameOptions
   ): readonly MasterCSSLintCanonicalClassGroupSuggestion[] {
     this.assertActive()
-    return this.parts.lint.canonicalClassGroups([...classNames], options)
+    return freezeToolingResult(
+      this.parts.lint.canonicalClassGroups([...classNames], options)
+    )
   }
 
   canonicalComposeDirective(
@@ -158,47 +165,49 @@ export class MasterCSSToolingSession implements Disposable {
     options?: CanonicalClassNameOptions
   ) {
     this.assertActive()
-    return this.parts.lint.canonicalComposeDirective([...classNames], options)
+    return freezeToolingResult(
+      this.parts.lint.canonicalComposeDirective([...classNames], options)
+    )
   }
 
   rawValueCandidates(classNames: readonly string[]): readonly MasterCSSLintRawValueCandidate[] {
     this.assertActive()
-    return this.parts.lint.rawValueCandidates([...classNames])
+    return freezeToolingResult(this.parts.lint.rawValueCandidates([...classNames]))
   }
 
   analyzeDocument(request: MasterCSSDocumentAnalysisRequest): MasterCSSDocumentAnalysis {
     this.assertActive()
-    return this.parts.language.analyzeDocument(request)
+    return freezeToolingResult(this.parts.language.analyzeDocument(request))
   }
 
   formatDirectives(request: MasterCSSFormatDirectivesRequest): MasterCSSFormatDirectivesResult {
     this.assertActive()
-    return this.parts.language.formatDirectives(request)
+    return freezeToolingResult(this.parts.language.formatDirectives(request))
   }
 
   classifyClassNames(classNames: readonly string[]): MasterCSSLanguageClassifications {
     this.assertActive()
-    return this.parts.language.classifyClassNames(classNames)
+    return freezeToolingResult(this.parts.language.classifyClassNames(classNames))
   }
 
   inspectClassName(className: string, mode?: string): MasterCSSLanguageInspection {
     this.assertActive()
-    return this.parts.language.inspectClassName(className, mode)
+    return freezeToolingResult(this.parts.language.inspectClassName(className, mode))
   }
 
   completionIndex(): MasterCSSLanguageCompletionIndex {
     this.assertActive()
-    return this.parts.language.completionIndex()
+    return freezeToolingResult(this.parts.language.completionIndex())
   }
 
   colorPresentation(colorToken: string): MasterCSSLanguageColorPresentation {
     this.assertActive()
-    return this.parts.language.colorPresentation(colorToken)
+    return freezeToolingResult(this.parts.language.colorPresentation(colorToken))
   }
 
   colorTokens(candidates: readonly MasterCSSLanguageColorCandidate[]): MasterCSSLanguageColorTokens {
     this.assertActive()
-    return this.parts.language.colorTokens(candidates)
+    return freezeToolingResult(this.parts.language.colorTokens(candidates))
   }
 
   dispose() {

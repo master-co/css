@@ -21,7 +21,8 @@ function removeNormalizedPackageFileWarning(ctx: BuildContext) {
 export default defineBuildConfig({
   rollup: {
     inlineDependencies: [
-      /^@master\/css-internal-integration(?:\/|$)/,
+      /^@master\/css-build-internal(?:\/|$)/,
+      /^@master\/css-preset(?:\/|$)/,
       /^@master\/css-schema\//
     ]
   },

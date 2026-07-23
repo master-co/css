@@ -298,7 +298,7 @@ export async function renderNextBuildOutputs(ctx: BuildCompleteContext, rawOptio
     return renderedOutputs
   } finally {
     renderer?.dispose()
-    await buildStateResolver.destroy()
+    await buildStateResolver.dispose()
   }
 }
 

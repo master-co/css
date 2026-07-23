@@ -267,9 +267,9 @@ importers:
       '@master/css-webpack':
         specifier: workspace:^
         version: link:packages/webpack
-      '@master/eslint-plugin-css':
+      '@master/eslint-config-css':
         specifier: workspace:^
-        version: link:packages/eslint-plugin
+        version: link:packages/eslint-config
     devDependencies:
       '@aronrepo/commitlint-config':
         specifier: ^2.2.0
@@ -452,6 +452,9 @@ importers:
       '@master/css-runtime':
         specifier: workspace:^
         version: link:../packages/runtime
+      '@master/css-schema':
+        specifier: workspace:^
+        version: link:../packages/schema
       '@master/css-server':
         specifier: workspace:^
         version: link:../packages/server
@@ -628,9 +631,9 @@ importers:
       '@angular-eslint/template-parser':
         specifier: ^21.4.0
         version: 21.4.0(eslint@10.5.0(jiti@2.7.0)(supports-color@5.5.0))(typescript@7.0.2)
-      '@master/eslint-plugin-css':
+      '@master/eslint-config-css':
         specifier: workspace:^
-        version: link:../../packages/eslint-plugin
+        version: link:../../packages/eslint-config
       '@master/styled.react':
         specifier: ^2.0.6
         version: 2.0.6(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
@@ -652,9 +655,9 @@ importers:
       '@angular-eslint/template-parser':
         specifier: ^21.4.0
         version: 21.4.0(eslint@10.5.0(jiti@2.7.0))(typescript@7.0.2)
-      '@master/eslint-plugin-css':
+      '@master/eslint-config-css':
         specifier: workspace:^
-        version: link:../../packages/eslint-plugin
+        version: link:../../packages/eslint-config
       eslint:
         specifier: ^10.5.0
         version: 10.5.0(jiti@2.7.0)
@@ -825,9 +828,9 @@ importers:
       '@eslint/js':
         specifier: ^10.0.1
         version: 10.0.1(eslint@10.5.0(jiti@2.7.0))
-      '@master/eslint-plugin-css':
+      '@master/eslint-config-css':
         specifier: workspace:^
-        version: link:../../packages/eslint-plugin
+        version: link:../../packages/eslint-config
       '@types/node':
         specifier: ^25.9.4
         version: 25.9.4
@@ -915,9 +918,9 @@ importers:
       '@master/css-next':
         specifier: workspace:^
         version: link:../../packages/next
-      '@master/eslint-plugin-css':
+      '@master/eslint-config-css':
         specifier: workspace:^
-        version: link:../../packages/eslint-plugin
+        version: link:../../packages/eslint-config
       '@types/node':
         specifier: ^25.9.4
         version: 25.9.4
@@ -977,6 +980,9 @@ importers:
       '@eslint/compat':
         specifier: ^2.1.0
         version: 2.1.0(eslint@10.5.0(jiti@2.7.0))
+      '@master/eslint-config-css':
+        specifier: workspace:^
+        version: link:../../packages/eslint-config
       '@types/react':
         specifier: ^19.2.17
         version: 19.2.17
@@ -1029,6 +1035,9 @@ importers:
       '@fontsource/fira-mono':
         specifier: ^5.2.7
         version: 5.2.7
+      '@master/eslint-config-css':
+        specifier: workspace:^
+        version: link:../../packages/eslint-config
       '@neoconfetti/svelte':
         specifier: ^2.2.2
         version: 2.2.2(svelte@5.56.3(@typescript-eslint/types@8.63.0))
@@ -1513,9 +1522,6 @@ importers:
       '@master/css-backend':
         specifier: workspace:*
         version: link:../native
-      '@master/css-preset':
-        specifier: workspace:*
-        version: link:../preset
       '@master/css-schema':
         specifier: workspace:*
         version: link:../schema
@@ -1525,6 +1531,9 @@ importers:
       '@master/css-wasm-compiler':
         specifier: workspace:*
         version: link:../wasm-compiler
+      '@master/css-wasm-tooling':
+        specifier: workspace:*
+        version: link:../wasm-tooling
       fast-glob:
         specifier: ^3.3.3
         version: 3.3.3
@@ -1535,6 +1544,9 @@ importers:
       '@master/css-build-internal':
         specifier: workspace:*
         version: link:../integration
+      '@master/css-preset':
+        specifier: workspace:*
+        version: link:../preset
 
   packages/create:
     dependencies:
@@ -1587,9 +1599,6 @@ importers:
       '@master/css':
         specifier: workspace:*
         version: link:../css
-      '@master/css-build-internal':
-        specifier: workspace:*
-        version: link:../integration
       '@master/css-compiler':
         specifier: workspace:*
         version: link:../compiler
@@ -1612,6 +1621,9 @@ importers:
       '@angular/compiler':
         specifier: ^21.2.17
         version: 21.2.17
+      '@master/css-build-internal':
+        specifier: workspace:*
+        version: link:../integration
       '@master/css-schema':
         specifier: workspace:*
         version: link:../schema
@@ -1706,9 +1718,6 @@ importers:
 
   packages/language-server:
     dependencies:
-      '@master/css-build-internal':
-        specifier: workspace:*
-        version: link:../integration
       '@master/css-compiler':
         specifier: workspace:*
         version: link:../compiler
@@ -1745,6 +1754,10 @@ importers:
       vscode-uri:
         specifier: ^3.1.0
         version: 3.1.0
+    devDependencies:
+      '@master/css-build-internal':
+        specifier: workspace:*
+        version: link:../integration
 
   packages/language-service:
     dependencies:
@@ -1776,9 +1789,18 @@ importers:
         specifier: ^1.0.12
         version: 1.0.12
     devDependencies:
+      '@angular-eslint/template-parser':
+        specifier: ^21.4.0
+        version: 21.4.0(eslint@10.6.0(jiti@2.7.0))(typescript@7.0.2)
+      '@master/eslint-config-css':
+        specifier: workspace:*
+        version: link:../eslint-config
       '@types/vscode':
         specifier: ^1.125.0
         version: 1.125.0
+      '@typescript-eslint/parser':
+        specifier: ^8.61.1
+        version: 8.61.1(eslint@10.6.0(jiti@2.7.0))(typescript@7.0.2)
       shiki:
         specifier: ^4.2.0
         version: 4.2.0
@@ -1791,9 +1813,6 @@ importers:
       '@master/css':
         specifier: workspace:*
         version: link:../css
-      '@master/css-build-internal':
-        specifier: workspace:*
-        version: link:../integration
       '@master/css-compiler':
         specifier: workspace:*
         version: link:../compiler
@@ -1821,6 +1840,10 @@ importers:
       zod:
         specifier: ^4.4.3
         version: 4.4.3
+    devDependencies:
+      '@master/css-build-internal':
+        specifier: workspace:*
+        version: link:../integration
 
   packages/native:
     dependencies:
@@ -1933,6 +1956,9 @@ importers:
       '@master/css-build-internal':
         specifier: workspace:*
         version: link:../integration
+      '@master/css-preset':
+        specifier: workspace:*
+        version: link:../preset
       '@nuxt/devtools':
         specifier: 4.0.0-alpha.4
         version: 4.0.0-alpha.4(@azure/identity@4.13.1)(@modelcontextprotocol/sdk@1.29.0(zod@4.4.3))(@pnpm/logger@1001.0.1)(@rspack/core@2.1.2(@swc/helpers@0.5.23))(aws4fetch@1.0.20)(crossws@0.4.9(srvx@0.11.21))(db0@0.3.4)(esbuild@0.28.1)(ioredis@5.11.1)(rolldown@1.1.5)(rollup@4.62.2)(typescript@7.0.2)(vite@8.0.16)(vue@3.5.38(typescript@7.0.2))(webpack@5.107.2(@swc/core@1.15.41(@swc/helpers@0.5.23))(esbuild@0.28.1)(lightningcss@1.32.0)(postcss@8.5.16))
@@ -2006,13 +2032,13 @@ importers:
       '@master/css-backend':
         specifier: workspace:*
         version: link:../native
-      '@master/css-preset':
-        specifier: workspace:*
-        version: link:../preset
       '@master/css-schema':
         specifier: workspace:*
         version: link:../schema
     devDependencies:
+      '@master/css-preset':
+        specifier: workspace:*
+        version: link:../preset
       '@playwright/test':
         specifier: 1.61.0
         version: 1.61.0

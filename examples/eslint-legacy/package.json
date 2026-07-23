@@ -1,11 +1,12 @@
 {
   "name": "master-css-eslint-legacy-example",
+  "type": "module",
   "scripts": {
-    "lint": "ESLINT_USE_FLAT_CONFIG=false eslint \"*.html\""
+    "lint": "eslint \"*.html\""
   },
   "devDependencies": {
     "@angular-eslint/template-parser": "^21.4.0",
     "eslint": "^10.5.0",
-    "@master/eslint-plugin-css": "workspace:^"
+    "@master/eslint-config-css": "workspace:^"
   }
 }

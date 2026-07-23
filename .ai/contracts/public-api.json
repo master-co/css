@@ -1,40 +1,1202 @@
 {
   "version": 1,
   "packages": {
-    "@master/css-astro": {"directory":"astro","exports":[".","./middleware"],"bins":[],"surface":"4f7c2385c5cca319"},
-    "@master/css-cli": {"directory":"cli","exports":[],"bins":["master-css"],"surface":"44136fa355b3678a"},
-    "@master/css-compiler": {"directory":"compiler","exports":[".","./diagnostics","./node","./project","./project/sync","./stylesheet","./stylesheet/browser"],"bins":[],"surface":"ee56f606c24a1907"},
-    "@master/create-css": {"directory":"create","exports":["."],"bins":["create-css"],"surface":"04f604d71e037981"},
-    "@master/css": {"directory":"css","exports":[".","./base.css","./client","./index.css","./node","./theme.css","./utilities.css","./variants.css"],"bins":[],"surface":"16a70b76078d611d"},
-    "@master/css-svelte-addon": {"directory":"css-sv","exports":["."],"bins":[],"surface":"51f4c2c1203fcffd"},
-    "@master/eslint-config-css": {"directory":"eslint-config","exports":["."],"bins":[],"surface":"54a91594c07b1c37"},
-    "@master/eslint-plugin-css": {"directory":"eslint-plugin","exports":["."],"bins":[],"surface":"6b3d5374138558a9"},
-    "@master/css-figma": {"directory":"figma","exports":[],"bins":[],"surface":"44136fa355b3678a"},
-    "@master/css-language-server": {"directory":"language-server","exports":[".","./server"],"bins":[],"surface":"c9b515c204c51746"},
-    "@master/css-language-service": {"directory":"language-service","exports":[".","./common","./shiki","./syntaxes/master-css.tmLanguage.json"],"bins":[],"surface":"ef714c8af769af4d"},
-    "@master/css-mcp": {"directory":"mcp","exports":["."],"bins":["master-css-mcp"],"surface":"94b13c4c9467ac72"},
-    "@master/css-backend": {"directory":"native","exports":[".","./compiler","./engine","./tooling"],"bins":[],"surface":"c6766e5291a3aad8"},
-    "@master/css-native-darwin-arm64": {"directory":"native-darwin-arm64","exports":["."],"bins":[],"surface":"44136fa355b3678a"},
-    "@master/css-native-darwin-x64": {"directory":"native-darwin-x64","exports":["."],"bins":[],"surface":"44136fa355b3678a"},
-    "@master/css-native-linux-arm64-gnu": {"directory":"native-linux-arm64-gnu","exports":["."],"bins":[],"surface":"44136fa355b3678a"},
-    "@master/css-native-linux-arm64-musl": {"directory":"native-linux-arm64-musl","exports":["."],"bins":[],"surface":"44136fa355b3678a"},
-    "@master/css-native-linux-x64-gnu": {"directory":"native-linux-x64-gnu","exports":["."],"bins":[],"surface":"44136fa355b3678a"},
-    "@master/css-native-linux-x64-musl": {"directory":"native-linux-x64-musl","exports":["."],"bins":[],"surface":"44136fa355b3678a"},
-    "@master/css-native-win32-arm64-msvc": {"directory":"native-win32-arm64-msvc","exports":["."],"bins":[],"surface":"44136fa355b3678a"},
-    "@master/css-native-win32-x64-msvc": {"directory":"native-win32-x64-msvc","exports":["."],"bins":[],"surface":"44136fa355b3678a"},
-    "@master/css-next": {"directory":"next","exports":[".","./adapter"],"bins":[],"surface":"90b35e5d1a22de32"},
-    "@master/css-nuxt": {"directory":"nuxt","exports":["."],"bins":[],"surface":"672beb9aeac69a75"},
-    "@master/css-preset": {"directory":"preset","exports":[".","./base.css","./default-manifest.json","./index.css","./theme.css","./utilities.css","./variants.css"],"bins":[],"surface":"0b1638ef3809832e"},
-    "@master/css-runtime": {"directory":"runtime","exports":["."],"bins":[],"surface":"6da1150ad38b62dc"},
-    "@master/css-schema": {"directory":"schema","exports":[".","./css-common","./css-directives","./css-syntax","./diagnostics","./emitted-globals","./hydration-manifest","./integration","./manifest","./native-css-shorthand","./runtime-style","./utility-type"],"bins":[],"surface":"8b0427dc2adafb63"},
-    "@master/css-server": {"directory":"server","exports":["."],"bins":[],"surface":"c2f7f61e6352aed8"},
-    "@master/css-svelte": {"directory":"svelte","exports":["./hooks.server","./vite"],"bins":[],"surface":"e322a4c3aba73846"},
-    "@master/css-tooling": {"directory":"tooling","exports":[".","./builtins","./css","./language","./language/node","./lexer","./lexer/node","./lint","./lint/node","./node","./scanner/node","./source","./source/node","./validator","./validator/node"],"bins":[],"surface":"152bb3f07e4676ca"},
-    "@master/css-vite": {"directory":"vite","exports":["."],"bins":[],"surface":"c0e27c44ee29de6f"},
-    "@master/css-vscode": {"directory":"vscode","exports":[".","./server"],"bins":[],"surface":"046692038653e688"},
-    "@master/css-wasm-compiler": {"directory":"wasm-compiler","exports":[".","./wasm"],"bins":[],"surface":"7021ba277f435f16"},
-    "@master/css-wasm-engine": {"directory":"wasm-runtime","exports":["."],"bins":[],"surface":"54b4e42b1e763617"},
-    "@master/css-wasm-tooling": {"directory":"wasm-tooling","exports":[".","./wasm"],"bins":[],"surface":"e682b7bd194e224a"},
-    "@master/css-webpack": {"directory":"webpack","exports":["."],"bins":[],"surface":"fe142bec05acb0d6"}
+    "@master/css-astro": {
+      "directory": "astro",
+      "exports": [
+        ".",
+        "./middleware"
+      ],
+      "bins": [],
+      "entrypoints": {
+        ".": [
+          "MasterCSSAstroIntegrationOptions",
+          "createMasterCSSAstroIntegration",
+          "default"
+        ],
+        "./middleware": [
+          "onRequest"
+        ]
+      },
+      "surface": "4f7c2385c5cca319"
+    },
+    "@master/css-cli": {
+      "directory": "cli",
+      "exports": [],
+      "bins": [
+        "master-css"
+      ],
+      "entrypoints": {},
+      "surface": "44136fa355b3678a"
+    },
+    "@master/css-compiler": {
+      "directory": "compiler",
+      "exports": [
+        ".",
+        "./diagnostics",
+        "./node",
+        "./project",
+        "./project/sync",
+        "./stylesheet",
+        "./stylesheet/browser"
+      ],
+      "bins": [],
+      "entrypoints": {
+        ".": [
+          "MasterCSSCompileManifestOptions",
+          "MasterCSSCompileManifestResult",
+          "MasterCSSCompileOptions",
+          "MasterCSSCompileResult",
+          "MasterCSSCompiler",
+          "MasterCSSCompilerInspection",
+          "MasterCSSCompilerOptions",
+          "compileCSS",
+          "compileManifest",
+          "createCompiler",
+          "inspectCSS"
+        ],
+        "./node": [
+          "MasterCSSCompileManifestFileOptions",
+          "MasterCSSCompileManifestOptions",
+          "MasterCSSCompileManifestResult",
+          "MasterCSSCompileOptions",
+          "MasterCSSCompileResult",
+          "MasterCSSCompilerInspection",
+          "MasterCSSStylesheetDependencyOptions",
+          "MasterCSSStylesheetHostOptions",
+          "MasterCSSStylesheetResolution",
+          "MasterCSSStylesheetResolutionOptions",
+          "collectStylesheetDependenciesSync",
+          "compileCSSSync",
+          "compileManifestFileSync",
+          "compileManifestSync",
+          "composeStylesheetHostSync",
+          "createCompilerSync",
+          "inspectCSSSync",
+          "resolveStylesheetSync"
+        ],
+        "./project": [
+          "MasterCSSProjectCompileOptions",
+          "MasterCSSProjectDiscoveryOptions",
+          "MasterCSSProjectLoadOptions",
+          "MasterCSSProjectResult",
+          "compileProjectManifest",
+          "discoverManifestEntries",
+          "loadProjectManifest"
+        ],
+        "./project/sync": [
+          "MasterCSSProjectCompileOptions",
+          "MasterCSSProjectDiscoveryOptions",
+          "MasterCSSProjectLoadOptions",
+          "MasterCSSProjectResult",
+          "compileProjectManifestSync",
+          "discoverManifestEntriesSync",
+          "loadProjectManifestSync"
+        ],
+        "./stylesheet": [
+          "MasterCSSCompiledStylesheet",
+          "MasterCSSSassCompiler",
+          "MasterCSSStylesheetCollection",
+          "MasterCSSStylesheetCollectionSnapshot",
+          "MasterCSSStylesheetCompileOptions",
+          "MasterCSSStylesheetComposition",
+          "MasterCSSStylesheetCompositionOptions",
+          "MasterCSSStylesheetDependencyOptions",
+          "MasterCSSStylesheetHostOptions",
+          "MasterCSSStylesheetKind",
+          "MasterCSSStylesheetResolution",
+          "MasterCSSStylesheetResolutionOptions",
+          "MasterCSSStylesheetSourceSnapshot",
+          "MasterCSSStylesheetTransformOptions",
+          "MasterCSSStylesheetTransformResult",
+          "collectStylesheetDependencies",
+          "collectStylesheetEmittedGlobals",
+          "compileRenderedStylesheet",
+          "compileStylesheet",
+          "composeStylesheetHost",
+          "createStylesheetCollection",
+          "resolveStylesheet",
+          "transformStylesheet"
+        ],
+        "./stylesheet/browser": [
+          "MasterCSSBrowserStylesheetCompileOptions",
+          "MasterCSSBrowserStylesheetCompileResult",
+          "MasterCSSCompileManifestResult",
+          "compileBrowserStylesheet"
+        ],
+        "./diagnostics": [
+          "CreateMasterCSSInspectionReportOptions",
+          "MASTER_CSS_INSPECTION_REPORT_VERSION",
+          "MasterCSSDiscoveredClasses",
+          "MasterCSSInspectionDiagnostic",
+          "MasterCSSInspectionDiagnosticCode",
+          "MasterCSSInspectionDiagnosticSeverity",
+          "MasterCSSInspectionDiagnosticSourceKind",
+          "MasterCSSInspectionReport",
+          "MasterCSSMissingCSSReason",
+          "MasterCSSMissingCSSResult",
+          "MasterCSSMissingCSSStatus",
+          "MasterCSSSourceInspection",
+          "MasterCSSStylesheetError",
+          "MasterCSSStylesheetInspection",
+          "createMasterCSSInspectionReport"
+        ]
+      },
+      "surface": "b0b4668861b0c300"
+    },
+    "@master/create-css": {
+      "directory": "create",
+      "exports": [
+        "."
+      ],
+      "bins": [
+        "create-css"
+      ],
+      "entrypoints": {
+        ".": [
+          "MasterCSSSetupCommand",
+          "MasterCSSSetupDependency",
+          "MasterCSSSetupFileAction",
+          "MasterCSSSetupFileChange",
+          "MasterCSSSetupFilePrecondition",
+          "MasterCSSSetupFramework",
+          "MasterCSSSetupFrameworkOption",
+          "MasterCSSSetupOptions",
+          "MasterCSSSetupPackageManager",
+          "MasterCSSSetupPlan",
+          "RenderingMode",
+          "applyMasterCSSSetupPlan",
+          "planMasterCSSSetup"
+        ]
+      },
+      "surface": "04f604d71e037981"
+    },
+    "@master/css": {
+      "directory": "css",
+      "exports": [
+        ".",
+        "./base.css",
+        "./client",
+        "./index.css",
+        "./node",
+        "./theme.css",
+        "./utilities.css",
+        "./variants.css"
+      ],
+      "bins": [],
+      "entrypoints": {
+        ".": [
+          "MasterCSSEngine",
+          "MasterCSSEngineAnimationResource",
+          "MasterCSSEngineBackend",
+          "MasterCSSEngineBackendOptions",
+          "MasterCSSEngineDeleteMutation",
+          "MasterCSSEngineInsertMutation",
+          "MasterCSSEngineInspection",
+          "MasterCSSEngineMutation",
+          "MasterCSSEngineOptions",
+          "MasterCSSEngineResources",
+          "MasterCSSEngineSnapshot",
+          "MasterCSSEngineTransition",
+          "MasterCSSEngineVariableResource",
+          "MasterCSSNativeDeclaration",
+          "MasterCSSNativeDeclarationSupport",
+          "MasterCSSRenderSessionOptions",
+          "MasterCSSRenderSnapshot",
+          "MasterCSSRuleTarget",
+          "createEngine",
+          "renderClassNames"
+        ],
+        "./node": [
+          "MasterCSSEngine",
+          "MasterCSSEngineBackend",
+          "MasterCSSEngineBackendOptions",
+          "MasterCSSEngineOptions",
+          "MasterCSSNativeDeclaration",
+          "MasterCSSNativeDeclarationSupport",
+          "MasterCSSRenderSession",
+          "MasterCSSRenderSessionOptions",
+          "MasterCSSRenderSnapshot",
+          "createEngineSync",
+          "createNativeEngineBackend",
+          "createRenderSessionSync",
+          "renderClassNamesSync"
+        ]
+      },
+      "surface": "16a70b76078d611d"
+    },
+    "@master/css-svelte-addon": {
+      "directory": "css-sv",
+      "exports": [
+        "."
+      ],
+      "bins": [],
+      "entrypoints": {
+        ".": [
+          "default"
+        ]
+      },
+      "surface": "51f4c2c1203fcffd"
+    },
+    "@master/eslint-config-css": {
+      "directory": "eslint-config",
+      "exports": [
+        "."
+      ],
+      "bins": [],
+      "entrypoints": {
+        ".": [
+          "default",
+          "recommended"
+        ]
+      },
+      "surface": "54a91594c07b1c37"
+    },
+    "@master/eslint-plugin-css": {
+      "directory": "eslint-plugin",
+      "exports": [
+        "."
+      ],
+      "bins": [],
+      "entrypoints": {
+        ".": [
+          "default",
+          "masterCSS"
+        ]
+      },
+      "surface": "6b3d5374138558a9"
+    },
+    "@master/css-figma": {
+      "directory": "figma",
+      "exports": [],
+      "bins": [],
+      "entrypoints": {},
+      "surface": "44136fa355b3678a"
+    },
+    "@master/css-language-server": {
+      "directory": "language-server",
+      "exports": [
+        ".",
+        "./server"
+      ],
+      "bins": [],
+      "entrypoints": {
+        ".": [
+          "ACTIVE_SEMANTIC_TOKENS_REQUEST",
+          "DOCUMENT_SEMANTIC_TOKENS_REQUEST",
+          "MasterCSSLanguageServer",
+          "MasterCSSLanguageServerSettings",
+          "MasterCSSWorkspace",
+          "defaultLanguageServerSettings"
+        ],
+        "./server": []
+      },
+      "surface": "c9b515c204c51746"
+    },
+    "@master/css-language-service": {
+      "directory": "language-service",
+      "exports": [
+        ".",
+        "./common",
+        "./shiki",
+        "./syntaxes/master-css.tmLanguage.json"
+      ],
+      "bins": [],
+      "entrypoints": {
+        ".": [
+          "AT_TRIGGER_CHARACTER",
+          "DECLARATION_SEPARATOR_TRIGGER_CHARACTER",
+          "GROUP_TRIGGER_CHARACTER",
+          "INVOKED_TRIGGER_CHARACTERS",
+          "MasterCSSLanguageService",
+          "MasterCSSLanguageServiceOptions",
+          "MasterCSSLanguageServiceSettings",
+          "QUERY_TRIGGER_CHARACTERS",
+          "SELECTOR_TRIGGER_CHARACTERS",
+          "VALUE_TRIGGER_CHARACTERS",
+          "defaultLanguageServiceSettings",
+          "editSyntaxColors",
+          "inspectSyntax",
+          "renderSyntaxColors",
+          "suggestSyntax"
+        ],
+        "./common": [
+          "AT_TRIGGER_CHARACTER",
+          "DECLARATION_SEPARATOR_TRIGGER_CHARACTER",
+          "GROUP_TRIGGER_CHARACTER",
+          "INVOKED_TRIGGER_CHARACTERS",
+          "QUERY_TRIGGER_CHARACTERS",
+          "SELECTOR_TRIGGER_CHARACTERS",
+          "VALUE_TRIGGER_CHARACTERS"
+        ],
+        "./shiki": [
+          "MASTER_CSS_SHIKI_INJECT_TO",
+          "MASTER_CSS_SHIKI_SCOPE_NAME",
+          "MASTER_CSS_TEXTMATE_GRAMMAR",
+          "MasterCSSShikiClassAttributeValueWrapperOptions",
+          "MasterCSSShikiDecoration",
+          "MasterCSSShikiHighlightRoleStyleKey",
+          "MasterCSSShikiHighlightRoleStyles",
+          "MasterCSSShikiOptions",
+          "MasterCSSShikiSemanticTokenStyle",
+          "MasterCSSShikiSemanticTokenStyleKey",
+          "MasterCSSShikiSemanticTokenStyles",
+          "MasterCSSTextMateGrammar",
+          "createMasterCSSShikiDecorations",
+          "createMasterCSSShikiLanguageRegistration",
+          "default",
+          "getMasterCSSShikiLanguageId",
+          "isMasterCSSClassListLanguage",
+          "isMasterCSSShikiSupportedLanguage",
+          "masterCSSShikiLanguage",
+          "transformerMasterCSS"
+        ]
+      },
+      "surface": "ef714c8af769af4d"
+    },
+    "@master/css-mcp": {
+      "directory": "mcp",
+      "exports": [
+        "."
+      ],
+      "bins": [
+        "master-css-mcp"
+      ],
+      "entrypoints": {
+        ".": [
+          "createMasterCSSMCPServer",
+          "startMasterCSSMCPStdioServer"
+        ]
+      },
+      "surface": "94b13c4c9467ac72"
+    },
+    "@master/css-backend": {
+      "directory": "native",
+      "exports": [
+        ".",
+        "./compiler",
+        "./engine",
+        "./tooling"
+      ],
+      "bins": [],
+      "entrypoints": {
+        ".": [
+          "MASTER_CSS_BINDING_ABI_VERSION",
+          "MASTER_CSS_HYDRATION_MANIFEST_VERSION",
+          "MASTER_CSS_MANIFEST_VERSION",
+          "MasterCSSBackend",
+          "MasterCSSBackendContractError",
+          "MasterCSSBackendFeature",
+          "MasterCSSBackendInfo",
+          "MasterCSSBackendRequirements",
+          "MasterCSSBackendSurface",
+          "MasterCSSResolvedBackend",
+          "assertMasterCSSBackendInfo"
+        ],
+        "./engine": [
+          "MASTER_CSS_ENGINE_TRANSITION_VERSION",
+          "MasterCSSEngineAnimationResourceIR",
+          "MasterCSSEngineDeleteMutationIR",
+          "MasterCSSEngineInsertMutationIR",
+          "MasterCSSEngineInspectionIR",
+          "MasterCSSEngineMutationIR",
+          "MasterCSSEngineResourcesIR",
+          "MasterCSSEngineSnapshotIR",
+          "MasterCSSEngineTransitionIR",
+          "MasterCSSEngineVariableResourceIR",
+          "MasterCSSNativeDeclarationCandidateIR",
+          "MasterCSSNativeEngineSession",
+          "MasterCSSNativeEngineSessionOptions",
+          "MasterCSSNativeModuleOptions",
+          "MasterCSSNativeRenderSession",
+          "MasterCSSRuleTarget",
+          "MasterCSSServerRenderIR",
+          "createNativeEngineSession",
+          "createNativeRenderSession"
+        ],
+        "./compiler": [
+          "MASTER_CSS_DIAGNOSTICS_REPORT_VERSION",
+          "MasterCSSCompileDefaultPresetRequestIR",
+          "MasterCSSCompileDefaultPresetResultIR",
+          "MasterCSSCompileManifestOptionsIR",
+          "MasterCSSCompileManifestResultIR",
+          "MasterCSSDiagnosticsReportInputIR",
+          "MasterCSSDirectiveCompilationIR",
+          "MasterCSSDirectiveExtractionPolicyIR",
+          "MasterCSSDirectiveManifestInputIR",
+          "MasterCSSDirectiveVariableDefinitionIR",
+          "MasterCSSDiscoveredClassesIR",
+          "MasterCSSImportGraphEdgeIR",
+          "MasterCSSImportGraphRequestIR",
+          "MasterCSSInspectionDiagnosticCode",
+          "MasterCSSInspectionDiagnosticDataIR",
+          "MasterCSSInspectionDiagnosticIR",
+          "MasterCSSInspectionDiagnosticSeverity",
+          "MasterCSSInspectionDiagnosticSourceKind",
+          "MasterCSSInspectionReportIR",
+          "MasterCSSMissingCSSReason",
+          "MasterCSSMissingCSSResultIR",
+          "MasterCSSMissingCSSStatus",
+          "MasterCSSNativeCompilerBackend",
+          "MasterCSSNativeDeclarationCandidateIR",
+          "MasterCSSNativeModuleOptions",
+          "MasterCSSRegexIR",
+          "MasterCSSResolvedImportGraphIR",
+          "MasterCSSServerRenderIR",
+          "MasterCSSSourceInspectionIR",
+          "MasterCSSStylesheetErrorIR",
+          "MasterCSSStylesheetInspectionIR",
+          "loadNativeCompilerBackend"
+        ],
+        "./tooling": [
+          "MASTER_CSS_LANGUAGE_BATCH_VERSION",
+          "MASTER_CSS_LEXER_BATCH_VERSION",
+          "MASTER_CSS_LINT_BATCH_VERSION",
+          "MASTER_CSS_SOURCE_BATCH_VERSION",
+          "MASTER_CSS_VALIDATOR_BATCH_VERSION",
+          "MasterCSSEngineSnapshotIR",
+          "MasterCSSEngineTransitionIR",
+          "MasterCSSLanguageClassIR",
+          "MasterCSSLanguageClassKind",
+          "MasterCSSLanguageClassVariableIR",
+          "MasterCSSLanguageClassificationsIR",
+          "MasterCSSLanguageColorCandidateInputIR",
+          "MasterCSSLanguageColorPresentationIR",
+          "MasterCSSLanguageColorTokenIR",
+          "MasterCSSLanguageColorTokensIR",
+          "MasterCSSLanguageCompletionEntryIR",
+          "MasterCSSLanguageCompletionIndexIR",
+          "MasterCSSLanguageCompletionKind",
+          "MasterCSSLanguageInspectionIR",
+          "MasterCSSLanguageVariableIR",
+          "MasterCSSLexerBatchIR",
+          "MasterCSSLexerBatchRequestIR",
+          "MasterCSSLexerCSSAnalysisIR",
+          "MasterCSSLexerCSSDirectiveIR",
+          "MasterCSSLexerCSSImportIR",
+          "MasterCSSLexerClassListInputIR",
+          "MasterCSSLexerClassListItemIR",
+          "MasterCSSLintBatchIR",
+          "MasterCSSLintCanonicalClassGroupSuggestionIR",
+          "MasterCSSLintCanonicalClassGroupSuggestionsIR",
+          "MasterCSSLintCanonicalClassNameOptionsIR",
+          "MasterCSSLintCanonicalClassSuggestionIR",
+          "MasterCSSLintCanonicalClassSuggestionsIR",
+          "MasterCSSLintCanonicalComposeDirectiveIR",
+          "MasterCSSLintCanonicalComposeSuggestionIR",
+          "MasterCSSLintCanonicalComposeSuggestionKind",
+          "MasterCSSLintClassConflictIR",
+          "MasterCSSLintClassListIR",
+          "MasterCSSLintDiagnosticIR",
+          "MasterCSSLintEditIR",
+          "MasterCSSLintPartialClassConflictIR",
+          "MasterCSSLintRawValueCandidateIR",
+          "MasterCSSLintRawValueCandidatesIR",
+          "MasterCSSNativeDeclarationCandidateIR",
+          "MasterCSSNativeLanguageSession",
+          "MasterCSSNativeLexerSession",
+          "MasterCSSNativeLintSession",
+          "MasterCSSNativeModuleOptions",
+          "MasterCSSNativeScannerSession",
+          "MasterCSSNativeSourceSession",
+          "MasterCSSNativeToolingBackend",
+          "MasterCSSNativeToolingSession",
+          "MasterCSSNativeValidatorSession",
+          "MasterCSSRegexIR",
+          "MasterCSSSourceBatchIR",
+          "MasterCSSSourceBatchRequestIR",
+          "MasterCSSSourceExtractionIR",
+          "MasterCSSSourceExtractionInputIR",
+          "MasterCSSSourceExtractorKind",
+          "MasterCSSSourceRange",
+          "MasterCSSValidatorBatchIR",
+          "MasterCSSValidatorClassIR",
+          "loadNativeToolingBackend"
+        ]
+      },
+      "surface": "c6766e5291a3aad8"
+    },
+    "@master/css-native-darwin-arm64": {
+      "directory": "native-darwin-arm64",
+      "exports": [
+        "."
+      ],
+      "bins": [],
+      "entrypoints": {},
+      "surface": "44136fa355b3678a"
+    },
+    "@master/css-native-darwin-x64": {
+      "directory": "native-darwin-x64",
+      "exports": [
+        "."
+      ],
+      "bins": [],
+      "entrypoints": {},
+      "surface": "44136fa355b3678a"
+    },
+    "@master/css-native-linux-arm64-gnu": {
+      "directory": "native-linux-arm64-gnu",
+      "exports": [
+        "."
+      ],
+      "bins": [],
+      "entrypoints": {},
+      "surface": "44136fa355b3678a"
+    },
+    "@master/css-native-linux-arm64-musl": {
+      "directory": "native-linux-arm64-musl",
+      "exports": [
+        "."
+      ],
+      "bins": [],
+      "entrypoints": {},
+      "surface": "44136fa355b3678a"
+    },
+    "@master/css-native-linux-x64-gnu": {
+      "directory": "native-linux-x64-gnu",
+      "exports": [
+        "."
+      ],
+      "bins": [],
+      "entrypoints": {},
+      "surface": "44136fa355b3678a"
+    },
+    "@master/css-native-linux-x64-musl": {
+      "directory": "native-linux-x64-musl",
+      "exports": [
+        "."
+      ],
+      "bins": [],
+      "entrypoints": {},
+      "surface": "44136fa355b3678a"
+    },
+    "@master/css-native-win32-arm64-msvc": {
+      "directory": "native-win32-arm64-msvc",
+      "exports": [
+        "."
+      ],
+      "bins": [],
+      "entrypoints": {},
+      "surface": "44136fa355b3678a"
+    },
+    "@master/css-native-win32-x64-msvc": {
+      "directory": "native-win32-x64-msvc",
+      "exports": [
+        "."
+      ],
+      "bins": [],
+      "entrypoints": {},
+      "surface": "44136fa355b3678a"
+    },
+    "@master/css-next": {
+      "directory": "next",
+      "exports": [
+        ".",
+        "./adapter"
+      ],
+      "bins": [],
+      "entrypoints": {
+        ".": [
+          "MasterCSSNextOptions",
+          "default",
+          "withMasterCSS"
+        ],
+        "./adapter": [
+          "BuildReport",
+          "ComposedAdapterOptions",
+          "RenderedOutput",
+          "createAdapter",
+          "createComposedAdapter",
+          "default",
+          "renderNextBuildOutputs"
+        ]
+      },
+      "surface": "90b35e5d1a22de32"
+    },
+    "@master/css-nuxt": {
+      "directory": "nuxt",
+      "exports": [
+        "."
+      ],
+      "bins": [],
+      "entrypoints": {
+        ".": [
+          "default",
+          "externalizeNitroPrerenderHydrationManifest",
+          "masterCSSNuxtModule"
+        ]
+      },
+      "surface": "672beb9aeac69a75"
+    },
+    "@master/css-preset": {
+      "directory": "preset",
+      "exports": [
+        ".",
+        "./base.css",
+        "./default-manifest.json",
+        "./index.css",
+        "./theme.css",
+        "./utilities.css",
+        "./variants.css"
+      ],
+      "bins": [],
+      "entrypoints": {
+        "./default-manifest.json": [
+          "default"
+        ]
+      },
+      "surface": "0b1638ef3809832e"
+    },
+    "@master/css-runtime": {
+      "directory": "runtime",
+      "exports": [
+        "."
+      ],
+      "bins": [],
+      "entrypoints": {
+        ".": [
+          "MasterCSSRuntime",
+          "MasterCSSRuntimeClassSnapshot",
+          "MasterCSSRuntimeFacade",
+          "MasterCSSRuntimeLayerSnapshot",
+          "MasterCSSRuntimeOptions",
+          "MasterCSSRuntimeRuleSnapshot",
+          "MasterCSSRuntimeSnapshot",
+          "MasterCSSRuntimeStartOptions",
+          "WithMasterCSSRuntimeOptions",
+          "withMasterCSSRuntime"
+        ]
+      },
+      "surface": "1b2c7ed4c0c0e62c"
+    },
+    "@master/css-schema": {
+      "directory": "schema",
+      "exports": [
+        ".",
+        "./css-common",
+        "./css-directives",
+        "./css-syntax",
+        "./diagnostics",
+        "./emitted-globals",
+        "./hydration-manifest",
+        "./integration",
+        "./manifest",
+        "./native-css-shorthand",
+        "./runtime-style",
+        "./utility-type"
+      ],
+      "bins": [],
+      "entrypoints": {
+        ".": [
+          "MASTER_CSS_DIAGNOSTIC_VERSION",
+          "MASTER_CSS_RENDERING_MODES",
+          "MasterCSSDiagnostic",
+          "MasterCSSDiagnosticDomain",
+          "MasterCSSDiagnosticPosition",
+          "MasterCSSDiagnosticRange",
+          "MasterCSSDiagnosticSeverity",
+          "MasterCSSError",
+          "MasterCSSErrorOptions",
+          "MasterCSSErrorPayload",
+          "MasterCSSIntegrationOptions",
+          "MasterCSSIntegrationRuntimeOptions",
+          "MasterCSSManifest",
+          "MasterCSSRenderingMode",
+          "flattenMasterCSSManifestVariables",
+          "getMasterCSSManifestVariableName",
+          "groupMasterCSSManifestVariables",
+          "isMasterCSSRenderingMode",
+          "normalizeMasterCSSManifest",
+          "serializeMasterCSSManifest"
+        ],
+        "./manifest": [
+          "MasterCSSManifest",
+          "MasterCSSManifestAnimationOptions",
+          "MasterCSSManifestAnimations",
+          "MasterCSSManifestCSSDeclarationPrimitive",
+          "MasterCSSManifestCSSDeclarations",
+          "MasterCSSManifestCondition",
+          "MasterCSSManifestConditionBooleanNode",
+          "MasterCSSManifestConditionComparisonOperatorNode",
+          "MasterCSSManifestConditionGroupNode",
+          "MasterCSSManifestConditionIdentifier",
+          "MasterCSSManifestConditionLogicalOperatorNode",
+          "MasterCSSManifestConditionNode",
+          "MasterCSSManifestConditionNumberNode",
+          "MasterCSSManifestConditionOperatorNode",
+          "MasterCSSManifestConditionStringNode",
+          "MasterCSSManifestConditionValueNode",
+          "MasterCSSManifestConditions",
+          "MasterCSSManifestDefaultMode",
+          "MasterCSSManifestKeyframes",
+          "MasterCSSManifestModeTrigger",
+          "MasterCSSManifestSelectorCombinatorNode",
+          "MasterCSSManifestSelectorLiteralNode",
+          "MasterCSSManifestSelectorNode",
+          "MasterCSSManifestSelectorSeparatorNode",
+          "MasterCSSManifestSelectors",
+          "MasterCSSManifestSettings",
+          "MasterCSSManifestUtilities",
+          "MasterCSSManifestUtility",
+          "MasterCSSManifestUtilityEmit",
+          "MasterCSSManifestUtilityKind",
+          "MasterCSSManifestUtilityLayerName",
+          "MasterCSSManifestUtilityMatcher",
+          "MasterCSSManifestUtilityMatcherValueSegments",
+          "MasterCSSManifestUtilityRule",
+          "MasterCSSManifestVariable",
+          "MasterCSSManifestVariableAlias",
+          "MasterCSSManifestVariableAliasSet",
+          "MasterCSSManifestVariableEntry",
+          "MasterCSSManifestVariableNumericValue",
+          "MasterCSSManifestVariableType",
+          "MasterCSSManifestVariableValue",
+          "MasterCSSManifestVariables",
+          "MasterCSSManifestVariant",
+          "MasterCSSManifestVariantBranch",
+          "MasterCSSManifestVariantToken",
+          "MasterCSSManifestVariants",
+          "flattenMasterCSSManifestVariables",
+          "getMasterCSSManifestVariableName",
+          "groupMasterCSSManifestVariables",
+          "normalizeMasterCSSManifest",
+          "serializeMasterCSSManifest"
+        ],
+        "./hydration-manifest": [
+          "MASTER_CSS_HYDRATION_MANIFEST_ASSET_BASE",
+          "MASTER_CSS_HYDRATION_MANIFEST_ATTR",
+          "MASTER_CSS_HYDRATION_MANIFEST_FILE_BASENAME",
+          "MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID",
+          "MasterCSSGeneratedRuleIR",
+          "MasterCSSGeneratedRuleNodeIR",
+          "MasterCSSHydrationManifest",
+          "MasterCSSRulePriorityIR",
+          "createMasterCSSHydrationManifestScript",
+          "serializeMasterCSSHydrationManifest"
+        ],
+        "./css-directives": [
+          "CSSDirectiveAnimationDefinitions",
+          "CSSDirectiveAnimationOptions",
+          "CSSDirectiveConditionPathEntry",
+          "CSSDirectiveDeclarations",
+          "CSSDirectiveDefaultMode",
+          "CSSDirectiveError",
+          "CSSDirectiveExtractionPolicy",
+          "CSSDirectiveLayerName",
+          "CSSDirectiveManifestInput",
+          "CSSDirectiveModeTrigger",
+          "CSSDirectiveReference",
+          "CSSDirectiveRelatedInformation",
+          "CSSDirectiveResult",
+          "CSSDirectiveSourceLocation",
+          "CSSDirectiveSourceRange",
+          "CSSDirectiveSourceReference",
+          "CSSDirectiveStyleComposeDefinition",
+          "CSSDirectiveStyleDefinition",
+          "CSSDirectiveStyleNativeDefinition",
+          "CSSDirectiveUtilityDefinition",
+          "CSSDirectiveUtilityDynamicDefinition",
+          "CSSDirectiveUtilityPatternDefinition",
+          "CSSDirectiveUtilityRuleDefinition",
+          "CSSDirectiveVariableDefinition",
+          "CSSDirectiveVariableValue",
+          "CSSDirectiveVariantDefinitions",
+          "createCSSDirectiveSourceReference"
+        ],
+        "./css-syntax": [
+          "DefinedUtility",
+          "ExplicitUtilityLayerName",
+          "FunctionValueComponent",
+          "MediaFeatureComponent",
+          "MediaQuery",
+          "NumberValueComponent",
+          "NumberVariable",
+          "ResolvedVariableValue",
+          "SeparatorValueComponent",
+          "StringValueComponent",
+          "StringVariable",
+          "ValueComponent",
+          "Variable",
+          "VariableValueComponent"
+        ],
+        "./utility-type": [
+          "UtilityType"
+        ],
+        "./runtime-style": [
+          "MASTER_CSS_RUNTIME_STYLE_ID"
+        ],
+        "./emitted-globals": [
+          "MasterCSSEmittedGlobals"
+        ],
+        "./native-css-shorthand": [
+          "isNativeCSSShorthandProperty"
+        ],
+        "./css-common": [
+          "Vendors"
+        ],
+        "./diagnostics": [
+          "MASTER_CSS_DIAGNOSTIC_VERSION",
+          "MasterCSSDiagnostic",
+          "MasterCSSDiagnosticDomain",
+          "MasterCSSDiagnosticPosition",
+          "MasterCSSDiagnosticRange",
+          "MasterCSSDiagnosticSeverity",
+          "MasterCSSError",
+          "MasterCSSErrorOptions",
+          "MasterCSSErrorPayload"
+        ],
+        "./integration": [
+          "MASTER_CSS_RENDERING_MODES",
+          "MasterCSSIntegrationOptions",
+          "MasterCSSIntegrationRuntimeOptions",
+          "MasterCSSRenderingMode",
+          "isMasterCSSRenderingMode"
+        ]
+      },
+      "surface": "8b0427dc2adafb63"
+    },
+    "@master/css-server": {
+      "directory": "server",
+      "exports": [
+        "."
+      ],
+      "bins": [],
+      "entrypoints": {
+        ".": [
+          "MasterCSSExternalHydrationManifestOptions",
+          "MasterCSSExternalHydrationManifestSource",
+          "MasterCSSHTMLDocumentOptions",
+          "MasterCSSHTMLRenderOptions",
+          "MasterCSSHTMLRenderResult",
+          "MasterCSSHTMLRenderSession",
+          "MasterCSSHTMLStreamEndResult",
+          "MasterCSSHydrationManifestRenderMode",
+          "MasterCSSServerRenderer",
+          "MasterCSSServerRendererOptions",
+          "createHTMLRenderSession",
+          "createServerRenderer",
+          "renderHTML"
+        ]
+      },
+      "surface": "c2f7f61e6352aed8"
+    },
+    "@master/css-svelte": {
+      "directory": "svelte",
+      "exports": [
+        "./hooks.server",
+        "./vite"
+      ],
+      "bins": [],
+      "entrypoints": {
+        "./hooks.server": [
+          "handle"
+        ]
+      },
+      "surface": "e322a4c3aba73846"
+    },
+    "@master/css-tooling": {
+      "directory": "tooling",
+      "exports": [
+        ".",
+        "./builtins",
+        "./language",
+        "./language/node",
+        "./lexer",
+        "./lexer/node",
+        "./lint",
+        "./lint/node",
+        "./node",
+        "./scanner/node",
+        "./source",
+        "./source/node",
+        "./validator",
+        "./validator/node"
+      ],
+      "bins": [],
+      "entrypoints": {
+        ".": [
+          "MasterCSSDocumentAnalysis",
+          "MasterCSSDocumentAnalysisRequest",
+          "MasterCSSFormatDirectivesRequest",
+          "MasterCSSFormatDirectivesResult",
+          "MasterCSSLanguageClassListContext",
+          "MasterCSSLanguageClassPosition",
+          "MasterCSSToolingSession",
+          "MasterCSSToolingSessionOptions",
+          "createToolingSession"
+        ],
+        "./node": [
+          "MasterCSSNativeDeclarationCandidate",
+          "MasterCSSToolingSession",
+          "createToolingSessionSync",
+          "supportsNativeDeclaration"
+        ],
+        "./builtins": [
+          "MasterCSSBuiltinKeyAliases",
+          "MasterCSSBuiltinNativeValueNamespace",
+          "MasterCSSBuiltinNativeValueNamespaces",
+          "builtinKeyAliases",
+          "builtinNativeValueNamespaces"
+        ],
+        "./lexer": [
+          "MasterCSSCSSAnalysis",
+          "MasterCSSCSSDirectiveAnalysis",
+          "MasterCSSCSSImportAnalysis",
+          "MasterCSSClassListAnalysis",
+          "MasterCSSClassListAnalysisRequest",
+          "MasterCSSClassListInput",
+          "MasterCSSClassListItem",
+          "MasterCSSSourceRange",
+          "analyzeClassList"
+        ],
+        "./lexer/node": [
+          "analyzeClassListSync"
+        ],
+        "./source": [
+          "MasterCSSExtractedSource",
+          "MasterCSSSourceExtraction",
+          "MasterCSSSourceExtractionInput",
+          "MasterCSSSourceExtractionRequest",
+          "MasterCSSSourceKind",
+          "extractSource"
+        ],
+        "./source/node": [
+          "extractSourceSync"
+        ],
+        "./scanner/node": [
+          "MasterCSSScanner",
+          "MasterCSSScannerConfiguration",
+          "MasterCSSScannerOptions",
+          "createScanner",
+          "defaultScannerOptions"
+        ],
+        "./validator": [
+          "MasterCSSClassValidation",
+          "MasterCSSClassValidationResult",
+          "validateClassNames"
+        ],
+        "./validator/node": [
+          "validateClassNamesSync"
+        ],
+        "./lint": [
+          "CanonicalClassNameOptions",
+          "CanonicalComposeDirectiveResult",
+          "CanonicalComposeDirectiveSuggestion",
+          "MasterCSSCanonicalClassesReportOptions",
+          "MasterCSSClassListEditOptions",
+          "MasterCSSClassListLintReportOptions",
+          "MasterCSSFixContentOptions",
+          "MasterCSSInvalidClassesReportOptions",
+          "MasterCSSLintAnalysis",
+          "MasterCSSLintCanonicalClassGroupSuggestion",
+          "MasterCSSLintCanonicalClassSuggestion",
+          "MasterCSSLintClassConflict",
+          "MasterCSSLintClassListAnalysis",
+          "MasterCSSLintClassListOptions",
+          "MasterCSSLintContentOptions",
+          "MasterCSSLintContentRuleOptions",
+          "MasterCSSLintDiagnostic",
+          "MasterCSSLintDiagnosticData",
+          "MasterCSSLintDiagnosticInput",
+          "MasterCSSLintDiagnosticSeverity",
+          "MasterCSSLintDiagnosticSourceKind",
+          "MasterCSSLintDocumentAnalysis",
+          "MasterCSSLintEdit",
+          "MasterCSSLintFileResult",
+          "MasterCSSLintFileSourceKind",
+          "MasterCSSLintFix",
+          "MasterCSSLintPartialClassConflict",
+          "MasterCSSLintRange",
+          "MasterCSSLintRawValueCandidate",
+          "MasterCSSLintReport",
+          "MasterCSSLintReportOptions",
+          "MasterCSSLintRuleId",
+          "MasterCSSLintSourceDiagnostic",
+          "MasterCSSLintSourceFix",
+          "MasterCSSLintSourceFixKind",
+          "MasterCSSLintSourceFixSafety",
+          "MasterCSSLintSourceLocation",
+          "MasterCSSLintSourceLocationRange",
+          "MasterCSSLintSummary",
+          "MasterCSSLintToken",
+          "MasterCSSUnapprovedRawValueClassesReportOptions",
+          "RawValuePolicyOptions",
+          "createMasterCSSLintDiagnostics",
+          "defaultCanonicalClassNameOptions",
+          "defaultClassLintSettings",
+          "defaultMasterCSSLintRules",
+          "fixMasterCSSContent",
+          "lintClassNames",
+          "lintMasterCSSContent",
+          "masterCSSLintRuleIds",
+          "resolveMasterCSSLintRules",
+          "summarizeMasterCSSLintFiles"
+        ],
+        "./lint/node": [
+          "lintClassNamesSync"
+        ],
+        "./language": [
+          "AT_SIGN",
+          "AT_TRIGGER_CHARACTER",
+          "CLASS_ATTRIBUTES",
+          "CLASS_DECLARATIONS",
+          "CLASS_FUNCTIONS",
+          "DECLARATION_SEPARATOR_TRIGGER_CHARACTER",
+          "DELIMITER_SIGN",
+          "GROUP_TRIGGER_CHARACTER",
+          "HighlightTokenRole",
+          "INVOKED_TRIGGER_CHARACTERS",
+          "MASTER_CSS_SEMANTIC_TOKEN_SCOPE_MAP",
+          "MasterCSSDocumentAnalysis",
+          "MasterCSSDocumentAnalysisRequest",
+          "MasterCSSFormatDirectivesRequest",
+          "MasterCSSFormatDirectivesResult",
+          "MasterCSSLanguageClass",
+          "MasterCSSLanguageClassKind",
+          "MasterCSSLanguageClassListContext",
+          "MasterCSSLanguageClassPosition",
+          "MasterCSSLanguageClassVariable",
+          "MasterCSSLanguageClassifications",
+          "MasterCSSLanguageColorCandidate",
+          "MasterCSSLanguageColorPresentation",
+          "MasterCSSLanguageColorToken",
+          "MasterCSSLanguageColorTokens",
+          "MasterCSSLanguageCompletionEntry",
+          "MasterCSSLanguageCompletionIndex",
+          "MasterCSSLanguageCompletionKind",
+          "MasterCSSLanguageInspection",
+          "MasterCSSLanguageVariable",
+          "QUERY_COMPARISON_OPERATORS",
+          "QUERY_LOGICAL_OPERATORS",
+          "QUERY_TRIGGER_CHARACTERS",
+          "SELECTOR_SIGNS",
+          "SELECTOR_TRIGGER_CHARACTERS",
+          "SEMANTIC_TOKENS_LEGEND",
+          "SEMANTIC_TOKEN_MODIFIERS",
+          "SEMANTIC_TOKEN_TYPES",
+          "SEPARATOR_SIGN",
+          "SemanticTokenItem",
+          "SemanticTokenModifier",
+          "SemanticTokenType",
+          "VALUE_TRIGGER_CHARACTERS",
+          "analyzeDocument",
+          "formatDirectives",
+          "getMasterCSSSemanticTokenScopeKeys",
+          "inspectClassName",
+          "matchesLanguageServiceNativeDeclaration"
+        ],
+        "./language/node": [
+          "analyzeDocumentSync",
+          "formatDirectivesSync",
+          "inspectClassNameSync"
+        ]
+      },
+      "surface": "660a84d330363dd5"
+    },
+    "@master/css-vite": {
+      "directory": "vite",
+      "exports": [
+        "."
+      ],
+      "bins": [],
+      "entrypoints": {
+        ".": [
+          "MasterCSSVitePluginOptions",
+          "createMasterCSSVitePlugin",
+          "default"
+        ]
+      },
+      "surface": "c0e27c44ee29de6f"
+    },
+    "@master/css-vscode": {
+      "directory": "vscode",
+      "exports": [
+        ".",
+        "./server"
+      ],
+      "bins": [],
+      "entrypoints": {
+        ".": [
+          "activate",
+          "deactivate"
+        ],
+        "./server": []
+      },
+      "surface": "046692038653e688"
+    },
+    "@master/css-wasm-compiler": {
+      "directory": "wasm-compiler",
+      "exports": [
+        ".",
+        "./wasm"
+      ],
+      "bins": [],
+      "entrypoints": {
+        ".": [
+          "CompilerWasmSession",
+          "InitCompilerWasmOptions",
+          "createCompilerRenderSession",
+          "createCompilerWasmSession",
+          "initCompilerWasm"
+        ]
+      },
+      "surface": "7021ba277f435f16"
+    },
+    "@master/css-wasm-engine": {
+      "directory": "wasm-runtime",
+      "exports": [
+        "."
+      ],
+      "bins": [],
+      "entrypoints": {
+        ".": [
+          "MasterCSSWasmEngineInspection",
+          "MasterCSSWasmEngineLoadOptions",
+          "MasterCSSWasmEngineSessionOptions",
+          "MasterCSSWasmEngineSnapshot",
+          "MasterCSSWasmEngineTransition",
+          "MasterCSSWasmInput",
+          "createWasmEngineSession",
+          "createWasmRenderSession",
+          "loadWasmEngine"
+        ]
+      },
+      "surface": "54b4e42b1e763617"
+    },
+    "@master/css-wasm-tooling": {
+      "directory": "wasm-tooling",
+      "exports": [
+        ".",
+        "./wasm"
+      ],
+      "bins": [],
+      "entrypoints": {
+        ".": [
+          "InitToolingWasmOptions",
+          "createToolingInspectionReport",
+          "createToolingLanguageSession",
+          "createToolingLintSession",
+          "createToolingScannerSession",
+          "createToolingValidatorSession",
+          "initToolingWasm"
+        ]
+      },
+      "surface": "e682b7bd194e224a"
+    },
+    "@master/css-webpack": {
+      "directory": "webpack",
+      "exports": [
+        "."
+      ],
+      "bins": [],
+      "entrypoints": {
+        ".": [
+          "MasterCSSWebpackPlugin",
+          "MasterCSSWebpackPluginOptions",
+          "default"
+        ]
+      },
+      "surface": "fe142bec05acb0d6"
+    }
   }
 }

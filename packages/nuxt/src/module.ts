@@ -6,6 +6,10 @@ import { name } from '../package.json'
 import { createMasterCSSVitePlugin } from '@master/css-vite'
 import { VIRTUAL_MANIFEST_ID } from '@master/css-build-internal/manifest-module'
 import {
+  EMPTY_EMITTED_GLOBALS_MODULE,
+  VIRTUAL_EMITTED_GLOBALS_ID
+} from '@master/css-build-internal/emitted-globals-module'
+import {
   toBrowserManifestFacadeModule,
   toInlineManifestModule
 } from '@master/css-build-internal/manifest-facade'
@@ -15,7 +19,7 @@ import {
   loadProjectManifest
 } from '@master/css-compiler/project'
 import { defaultBuildManifest } from '@master/css-build-internal/project'
-import { collectStylesheetDependencies } from '@master/css-compiler/stylesheet'
+import { collectStylesheetDependenciesSync } from '@master/css-compiler/node'
 import { serializeMasterCSSManifest } from '@master/css-schema/manifest'
 import type { ModuleNode, Plugin } from 'vite'
 import {
@@ -176,15 +180,16 @@ function invalidateManifestModule(module: ModuleNode | undefined, server: { modu
   return [module]
 }
 
-function RuntimeManifestVirtualModulePlugin(publicManifestHref: string, projectDir: string): Plugin {
+function RuntimeVirtualModulesPlugin(publicManifestHref: string, projectDir: string): Plugin {
   const resolvedManifestId = `\0${VIRTUAL_MANIFEST_ID}`
+  const resolvedEmittedGlobalsId = `\0${VIRTUAL_EMITTED_GLOBALS_ID}`
   let command: string | undefined
   let cssManifestDependencies: string[] = []
   const loadInlineManifest = async (pluginContext?: { addWatchFile?: (id: string) => void }) => {
     const entries = await discoverManifestEntries({ root: projectDir })
     const dependencies = new Set<string>()
     for (const entry of entries) {
-      for (const dependency of collectStylesheetDependencies(entry, undefined, projectDir)) {
+      for (const dependency of collectStylesheetDependenciesSync(entry, undefined, { projectDir })) {
         dependencies.add(dependency)
       }
     }
@@ -213,8 +218,10 @@ function RuntimeManifestVirtualModulePlugin(publicManifestHref: string, projectD
     },
     resolveId(id) {
       if (id === VIRTUAL_MANIFEST_ID) return resolvedManifestId
+      if (id === VIRTUAL_EMITTED_GLOBALS_ID) return resolvedEmittedGlobalsId
     },
     async load(id) {
+      if (id === resolvedEmittedGlobalsId) return EMPTY_EMITTED_GLOBALS_MODULE
       if (id === resolvedManifestId) {
         if (command === 'serve') {
           return toInlineManifestModule(await loadInlineManifest(this))
@@ -261,7 +268,9 @@ export const masterCSSNuxtModule = defineNuxtModule<MasterCSSNuxtModuleOptions>(
     const { resolve } = createResolver(import.meta.url)
     const manifestEntries = await discoverManifestEntries({ root: nuxt.options.rootDir })
     let manifestDependencies = [...new Set(manifestEntries.flatMap((entry) =>
-      collectStylesheetDependencies(entry, undefined, nuxt.options.rootDir)
+      collectStylesheetDependenciesSync(entry, undefined, {
+        projectDir: nuxt.options.rootDir
+      })
     ))]
     nuxt.hook('nitro:config', async (config) => {
       addNitroWatchDependencies(config, manifestDependencies)
@@ -314,11 +323,11 @@ export const masterCSSNuxtModule = defineNuxtModule<MasterCSSNuxtModuleOptions>(
       nuxt.hook('vite:extendConfig', (viteConfig) => {
         viteConfig.plugins = viteConfig.plugins || []
         if (
-          options.mode === 'runtime'
+          (options.mode === 'runtime' || options.mode === 'progressive')
           && options.injectRuntime
           && viteOptions.enabled === false
         ) {
-          viteConfig.plugins.push(RuntimeManifestVirtualModulePlugin(publicManifestHref, nuxt.options.rootDir))
+          viteConfig.plugins.push(RuntimeVirtualModulesPlugin(publicManifestHref, nuxt.options.rootDir))
         }
         viteConfig.plugins.push(createMasterCSSVitePlugin({
           enabled: viteOptions.enabled,

@@ -11,8 +11,7 @@ import {
 } from '@master/css-compiler/project'
 import { discoverBuildWorkspaceDirectories } from '@master/css-build-internal/workspace-directories'
 import {
-  resolveMasterCSSWorkspacePackages,
-  type MasterCSSWorkspacePackageResolution
+  resolveMasterCSSWorkspacePackages
 } from '@master/css-build-internal/workspace'
 import { defu } from 'defu'
 import { defaultLanguageServerSettings } from './settings'
@@ -34,6 +33,25 @@ import { URI } from 'vscode-uri'
 import { CSSDirectiveError, type CSSDirectiveSourceReference } from '@master/css-schema/css-directives'
 
 const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
+
+interface MasterCSSResolvedWorkspacePackage {
+  readonly name: string
+  readonly entry: string
+  readonly directory: string
+  readonly packageJSON?: string
+  readonly version?: string
+}
+
+interface MasterCSSWorkspacePackageResolution {
+  readonly workspaceDir: string
+  readonly css?: MasterCSSResolvedWorkspacePackage
+  readonly presetManifest?: MasterCSSResolvedWorkspacePackage
+  readonly languageServer?: MasterCSSResolvedWorkspacePackage
+  readonly errors: readonly {
+    readonly name: string
+    readonly message: string
+  }[]
+}
 
 export declare interface MasterCSSWorkspace {
   uri: string

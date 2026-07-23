@@ -26,6 +26,7 @@
     "check:artifacts": "node scripts/check-package-artifacts.mjs",
     "check:boundaries": "node scripts/check-rust-core-boundaries.mjs",
     "check:packages": "node scripts/check-package-contracts.mjs",
+    "check:packages:update": "node scripts/check-package-contracts.mjs --write",
     "check:rust": "cargo fmt --check && cargo clippy --workspace --all-targets --all-features -- -D warnings && cargo test --workspace && cargo xtask codegen --check && cargo xtask parity",
     "check:release": "node scripts/release-config-check.mjs",
     "test": "node scripts/with-typescript-tooling-compat.mjs turbo run test --filter=\"./packages/*\"",
@@ -64,7 +65,7 @@
     "@master/css-svelte": "workspace:^",
     "@master/css-vite": "workspace:^",
     "@master/css-webpack": "workspace:^",
-    "@master/eslint-plugin-css": "workspace:^"
+    "@master/eslint-config-css": "workspace:^"
   },
   "devDependencies": {
     "@aronrepo/commitlint-config": "^2.2.0",

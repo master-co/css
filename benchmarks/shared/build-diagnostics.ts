@@ -5,9 +5,7 @@ import { MasterCSSScanner } from '@master/css-tooling/scanner/node'
 import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import {
-  createExtractedCSS,
-  registerStylesheetSource,
-  type StylesheetSources
+  createStylesheetCollection
 } from '@master/css-compiler/stylesheet'
 import { discoverManifestEntries } from '@master/css-compiler/project'
 import fg from 'fast-glob'
@@ -160,7 +158,7 @@ async function runMasterCLIDiagnostic(workspace: string, fixtureId: BenchmarkFix
 
   const recorder = new DiagnosticRecorder()
   const totalStartedAt = performance.now()
-  const stylesheetSources: StylesheetSources = new Map()
+  const stylesheets = createStylesheetCollection()
   const scanner = new MasterCSSScanner({ manifest: defaultManifest }, workspace)
 
   await recorder.time('cli-scanner-init-ms', async () => {
@@ -169,17 +167,16 @@ async function runMasterCLIDiagnostic(workspace: string, fixtureId: BenchmarkFix
   })
 
   await recorder.time('cli-css-entry-register-ms', async () => {
-    stylesheetSources.clear()
+    stylesheets.clear()
     const entries = await discoverManifestEntries({ root: scanner.cwd })
     recorder.setCount('css-entry-count', entries.length)
     for (const entry of entries) {
-      await registerStylesheetSource(scanner, stylesheetSources, entry, await readFile(entry, 'utf8'), {
+      await stylesheets.register(scanner, entry, await readFile(entry, 'utf8'), {
+        baseManifest: defaultManifest,
         projectDir: scanner.cwd
       })
     }
-    scanner.resetDependencies = [...new Set(
-      Array.from(stylesheetSources.values()).flatMap((source) => source.dependencies)
-    )]
+    scanner.resetDependencies = [...stylesheets.snapshot().dependencies]
   })
 
   const sourcePaths = await recorder.time('cli-source-glob-ms', () => fg(['index.html'], {
@@ -194,11 +191,11 @@ async function runMasterCLIDiagnostic(workspace: string, fixtureId: BenchmarkFix
     }))
   })
 
-  const css = await recorder.time('cli-css-extraction-ms', () => createExtractedCSS({
+  const css = await recorder.time('cli-css-extraction-ms', async () => (await stylesheets.compose({
     scanner,
-    stylesheetSources,
+    baseManifest: defaultManifest,
     projectDir: scanner.cwd
-  }))
+  })).css)
 
   await recorder.time('cli-file-write-ms', async () => {
     const output = resolve(workspace, 'dist/output.css')

@@ -1,7 +1,7 @@
 export interface RawValuePolicyOptions {
   allowRawValues?: boolean
-  allowProperties?: string[]
-  allowedPatterns?: string[]
+  allowProperties?: readonly string[]
+  allowedPatterns?: readonly string[]
 }
 
 export interface CanonicalClassNameOptions {
@@ -16,7 +16,7 @@ export interface CanonicalClassNameOptions {
   preferVariantBlocksInCompose?: boolean
 }
 
-export const defaultCanonicalClassNameOptions: Required<CanonicalClassNameOptions> = {
+export const defaultCanonicalClassNameOptions: Readonly<Required<CanonicalClassNameOptions>> = Object.freeze({
   preferStaticUtilities: true,
   preferThemeTokens: true,
   preferPropertyAliases: true,
@@ -26,17 +26,17 @@ export const defaultCanonicalClassNameOptions: Required<CanonicalClassNameOption
   preferConditionOrder: true,
   preferNativeDeclarationsInCompose: true,
   preferVariantBlocksInCompose: true
-}
+})
 
 export interface CanonicalComposeDirectiveSuggestion {
-  actual: string
-  recommended: string
-  classNames: string[]
-  kind: 'class' | 'native-declaration' | 'variant-block'
+  readonly actual: string
+  readonly recommended: string
+  readonly classNames: readonly string[]
+  readonly kind: 'class' | 'native-declaration' | 'variant-block'
 }
 
 export interface CanonicalComposeDirectiveResult {
-  suggestions: CanonicalComposeDirectiveSuggestion[]
-  structuralChange?: boolean
-  replacement?: string
+  readonly suggestions: readonly CanonicalComposeDirectiveSuggestion[]
+  readonly structuralChange?: boolean
+  readonly replacement?: string
 }

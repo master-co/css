@@ -1,11 +1,9 @@
 import { dirname, relative } from 'node:path'
 import { transformStyleSource } from './utils/transform-style-source'
 import {
-  collectStylesheetDependencies,
-  hasLocalStyleDirectives,
-  isMasterCSSPackageStyleFile,
-  resolveMasterStyleSource
-} from '@master/css-compiler/stylesheet'
+  collectStylesheetDependenciesSync,
+  resolveStylesheetSync
+} from '@master/css-compiler/node'
 
 interface StylesheetLoaderOptions {
   virtualCSSImportModuleId?: string
@@ -29,10 +27,9 @@ function toCSSImportPath(fromFile: string, toFile?: string) {
 }
 
 function shouldAddStyleDependencies(resourcePath: string, source: string, projectDir?: string) {
-  if (hasLocalStyleDirectives(source)) return true
-  if (isMasterCSSPackageStyleFile(resourcePath, projectDir)) return true
   try {
-    return Boolean(resolveMasterStyleSource(resourcePath, source, projectDir))
+    const resolution = resolveStylesheetSync(resourcePath, source, { projectDir })
+    return Boolean(resolution && resolution.kind !== 'plain')
   } catch {
     return true
   }
@@ -45,7 +42,9 @@ export default function masterCSSStylesheetLoader(this: LoaderContext, source: s
   }
   const options = this.getOptions?.() || {}
   const dependencies = shouldAddStyleDependencies(this.resourcePath, source, this.rootContext)
-    ? new Set(collectStylesheetDependencies(this.resourcePath, source, this.rootContext))
+    ? new Set(collectStylesheetDependenciesSync(this.resourcePath, source, {
+      projectDir: this.rootContext
+    }))
     : new Set<string>()
   for (const dependency of dependencies) {
     this.addDependency?.(dependency)

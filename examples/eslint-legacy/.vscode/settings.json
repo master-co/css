@@ -1,5 +1,5 @@
 {
-  "eslint.useFlatConfig": false,
+  "eslint.useFlatConfig": true,
   "eslint.validate": [
     "html",
     "php",

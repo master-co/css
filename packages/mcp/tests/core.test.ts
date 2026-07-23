@@ -1,4 +1,4 @@
-import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
+import { mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join, resolve } from 'node:path'
 import { Client } from '@modelcontextprotocol/sdk/client/index.js'
@@ -10,7 +10,7 @@ import { createMasterCSSMCPServer } from '../src/server'
 const tempDirs: string[] = []
 
 function createTempDir(prefix: string) {
-  const dir = mkdtempSync(join(tmpdir(), prefix))
+  const dir = realpathSync(mkdtempSync(join(tmpdir(), prefix)))
   tempDirs.push(dir)
   return dir
 }
@@ -230,7 +230,7 @@ describe('@master/css-mcp', () => {
         '@master/css-cli': 'workspace:^',
         '@master/create-css': 'workspace:^',
         '@master/css-svelte-addon': 'workspace:^',
-        '@master/eslint-plugin-css': 'workspace:^'
+        '@master/eslint-config-css': 'workspace:^'
       },
       scripts: {
         build: 'master-css src/index.html -o master.css'
@@ -260,7 +260,7 @@ describe('@master/css-mcp', () => {
       expect(audit.packages.declared).toEqual(expect.arrayContaining([
         expect.objectContaining({ name: '@master/create-css' }),
         expect.objectContaining({ name: '@master/css-svelte-addon' }),
-        expect.objectContaining({ name: '@master/eslint-plugin-css' })
+        expect.objectContaining({ name: '@master/eslint-config-css' })
       ]))
       expect(audit.packages.setup).toEqual(expect.arrayContaining([
         expect.objectContaining({ name: '@master/create-css' }),
@@ -272,7 +272,7 @@ describe('@master/css-mcp', () => {
           name: '@master/css-cli'
         }),
         expect.objectContaining({
-          name: '@master/eslint-plugin-css'
+          name: '@master/eslint-config-css'
         })
       ]))
       const integrationPackageNames = audit.integrations
