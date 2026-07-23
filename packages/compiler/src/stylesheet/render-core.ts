@@ -4,7 +4,6 @@ import type {
   MasterCSSHydrationManifest
 } from '@master/css-schema/hydration-manifest'
 import type { MasterCSSEngineSnapshot } from '@master/css'
-import { supportsNativeDeclaration } from '@master/css-tooling/node'
 
 interface MasterCSSNativeDeclarationCandidate {
   readonly className: string
@@ -50,15 +49,22 @@ export function normalizeNativeCSS(nativeCSS: string | string[] | undefined) {
 
 export function renderCompiledManifestCSSWithSession(
   options: RenderCompiledManifestCSSOptions,
-  session: StylesheetRenderSession
+  session: StylesheetRenderSession,
+  supportsNativeDeclaration?: (
+    candidate: MasterCSSNativeDeclarationCandidate
+  ) => boolean
 ): RenderCompiledManifestCSSResult {
   const nativeCSS = normalizeNativeCSS(options.nativeCSS)
   const nativeCSSText = nativeCSS.join('\n\n')
   if (options.includeGeneratedCSS !== false) {
     const classNames = [...(options.classNames || [])]
-    const candidates = session.nativeDeclarationCandidates(classNames)
-    const support = candidates.map(supportsNativeDeclaration)
-    session.ensureClasses(classNames, support.length ? support : undefined)
+    if (supportsNativeDeclaration) {
+      const candidates = session.nativeDeclarationCandidates(classNames)
+      const support = candidates.map(supportsNativeDeclaration)
+      session.ensureClasses(classNames, support.length ? support : undefined)
+    } else {
+      session.ensureClasses(classNames)
+    }
   }
   session.ensureStylesheetResources(nativeCSSText)
   const generatedCSS = session.snapshot().snapshot.text

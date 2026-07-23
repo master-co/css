@@ -1,5 +1,4 @@
 import type { MasterCSSSourceRange as SourceRange } from '@master/css-backend/tooling'
-import { extname } from 'node:path'
 import {
   type MasterCSSCanonicalClassesReportOptions,
   type MasterCSSInvalidClassesReportOptions,
@@ -168,7 +167,10 @@ function resolveRules(rules: Partial<Record<MasterCSSLintRuleId, boolean>> | und
 }
 
 function getLanguageId(filePath: string) {
-  return languageByExtension[extname(filePath).toLowerCase()] || 'html'
+  const separator = Math.max(filePath.lastIndexOf('/'), filePath.lastIndexOf('\\'))
+  const dot = filePath.lastIndexOf('.')
+  const extension = dot > separator ? filePath.slice(dot).toLowerCase() : ''
+  return languageByExtension[extension] || 'html'
 }
 
 function getFileSourceKind(languageId: string): MasterCSSLintFileSourceKind {

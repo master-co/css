@@ -14,7 +14,7 @@
 |---|---|---|
 | `@master/css-schema` | `.`, Manifest, directive, hydration, emitted-global, syntax, and runtime contract subpaths | Dependency-light versioned TypeScript/Rust wire contracts and pure codecs |
 | `@master/css-preset` | `.`, `./default-manifest.json`, CSS subpaths | Default preset source and generated Manifest v1 |
-| `@master/css-backend` | `.` | Node native binding and CLI target loader with ABI validation |
+| `@master/css-backend` | `.`, `./engine*`, `./compiler*`, `./tooling*` | Conditional native/Wasm broker, typed feature sessions, and ABI validation |
 | `@master/css-native-<target>` | `.` | Platform-specific native artifacts; any bundled `mcss` executable is broker-internal and is not a package binary |
 | `@master/css-wasm-engine` | `.`, `./wasm` | Runtime Wasm artifact loader |
 | `@master/css-wasm-compiler` | `.`, `./wasm` | Compiler Wasm artifact loader |

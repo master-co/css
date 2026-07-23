@@ -1,4 +1,5 @@
 import { createRenderBackendSessionSync } from '@master/css-backend/engine/node'
+import { supportsNativeDeclaration } from '@master/css-tooling/node'
 import {
   renderCompiledManifestCSSWithSession,
   type RenderCompiledManifestCSSOptions,
@@ -24,7 +25,11 @@ export function renderCompiledManifestCSS(options: RenderCompiledManifestCSSOpti
   }
 
   try {
-    return renderCompiledManifestCSSWithSession(options, session)
+    return renderCompiledManifestCSSWithSession(
+      options,
+      session,
+      supportsNativeDeclaration
+    )
   } finally {
     session.dispose()
   }

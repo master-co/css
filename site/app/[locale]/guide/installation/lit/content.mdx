@@ -31,15 +31,15 @@
       ```ts name=src/my-element.ts
       import { LitElement, html } from 'lit'
       import { customElement } from 'lit/decorators.js'
-      import { cssRuntime } from '@master/css-runtime'
+      import { withMasterCSSRuntime } from '@master/css-runtime'
       import type { MasterCSSRuntime } from '@master/css-runtime'
       import manifest from 'virtual:master-css-manifest'
       import emittedGlobals from 'virtual:master-css-emitted-globals'
 
       @customElement('my-element')
-      @cssRuntime({ manifest, emittedGlobals })
+      @withMasterCSSRuntime({ manifest, emittedGlobals })
       export class MyElement extends LitElement {
-        cssRuntime?: MasterCSSRuntime
+        masterCSSRuntime?: MasterCSSRuntime
 
         render() {
           return html`

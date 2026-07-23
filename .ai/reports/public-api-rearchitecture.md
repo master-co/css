@@ -1,7 +1,7 @@
 # Public API Rearchitecture
 
-Date: 2026-07-23
-Status: implementation contract
+Date: 2026-07-24
+Status: complete
 
 ## Decision
 
@@ -65,7 +65,7 @@ are not renamed.
 | CLI | Implicit root scan and two user-visible executables | One `master-css` binary with explicit commands |
 | Installer | Plan-and-write convenience and shell command strings | Preconditioned plan followed by explicit apply |
 
-## Migration order
+## Implementation order
 
 1. Schema diagnostics/integration contracts and backend ABI.
 2. Backend broker and artifact identities.
@@ -75,3 +75,33 @@ are not renamed.
 6. CLI, MCP, installer, applications, documentation, and removal checks.
 
 Each slice updates all direct consumers before deleting its former exports.
+
+## Completion contract
+
+The machine-readable baseline is split into two coordinated contracts:
+
+- `.ai/contracts/public-api.json` records every published package, subpath, bin,
+  and source-level export symbol.
+- `.ai/contracts/api-census.json` expands that baseline with ownership,
+  responsibility, consumers, platform, lifecycle, visibility, disposition, CLI
+  commands, MCP tools/resources/prompts, and versioned wire contracts.
+
+`pnpm check:packages` regenerates the actual view from package manifests and the
+CLI/MCP/wire registries, then fails if either checked-in contract differs. The same
+gate rejects wildcard exports, retired compatibility symbols, public binding IR,
+raw native/Wasm session symbols, misplaced sync APIs, and untyped backend feature
+contracts.
+
+`pnpm check:artifacts` validates built publish allowlists and declaration references,
+then walks every universal, browser, and conditional-browser artifact graph. Those
+graphs may not reach Node built-ins, native loaders, `.node` artifacts, Node
+subpaths, private integration specifiers, retired packages, binding IR, or generated
+binding declarations.
+
+`pnpm check:runtime-size` compares `packages/runtime/dist/global.min.js` against the
+checked-in raw, gzip, and brotli baseline. Each format may grow by at most the larger
+of 1 KiB or 1%.
+
+No public migration guide or deprecated mapping is part of this reconstruction.
+Manifest v1, hydration v1, binding ABI 5, layer order, and generated CSS bytes remain
+the compatibility invariants.

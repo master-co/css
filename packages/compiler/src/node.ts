@@ -5,8 +5,11 @@ import {
 } from './compiler'
 import type { MasterCSSCompileManifestOptions } from './index'
 import {
-  createCompilerBackendSessionSync
+  bindCompilerBackendSessionInternal
 } from './session'
+import {
+  createCompilerBackendSessionSync as createBackendSessionSync
+} from '@master/css-backend/compiler/node'
 import { compileCSSManifestFile } from './node-compiler'
 
 export {
@@ -32,7 +35,9 @@ export interface MasterCSSCompileManifestFileOptions
 }
 
 export function createCompilerSync() {
-  return bindCompilerSessionInternal(createCompilerBackendSessionSync())
+  return bindCompilerSessionInternal(
+    bindCompilerBackendSessionInternal(createBackendSessionSync())
+  )
 }
 
 export function inspectCSSSync(source: string) {

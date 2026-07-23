@@ -22,8 +22,8 @@
 ## Public Surface
 
 - Binary: `master-css-mcp`.
-- Root export for server creation helpers.
-- `./server` subpath for MCP server construction and stdio startup.
+- Root exports `createMasterCSSMCPServer` and
+  `startMasterCSSMCPStdioServer`.
 
 ## Risk Areas
 

@@ -27,12 +27,11 @@ analysis, and the dependency-light diagnostics bridge.
 
 ## Public Surface
 
-- `./lexer`, `./source`, `./scanner`, `./validator`, `./lint`, and `./language`, with
-  explicit `./node` or `./browser` entries where the backend differs.
-- `./scanner/options` for scanner configuration without custom adapters.
+- Universal root semantic session.
+- `./lexer`, `./source`, `./validator`, `./lint`, and `./language`, with explicit
+  `./node` entries for native sync execution.
+- Node filesystem scanner under `./scanner/node`.
 - `./builtins` for Rust-generated key-alias and native-value namespace registries.
-- `./diagnostics` for the Rust inspection-report creator consumed by compiler
-  orchestration.
 
 Subpaths are responsibility boundaries inside one package, not independent packages.
 Avoid adding convenience re-export files unless they define a deliberate documented

@@ -12,9 +12,8 @@ import {
   type MasterCSSLowerDirectivesRequest
 } from '@master/css-backend/compiler'
 import {
-  createCompilerBackendSessionSync as createBackendSessionSync
-} from '@master/css-backend/compiler/node'
-import type { MasterCSSManifest } from '@master/css-schema/manifest'
+  type MasterCSSManifest
+} from '@master/css-schema/manifest'
 import type { CompileCSSOptions, CompileCSSResult } from './contracts'
 
 export interface BackendCompilerSession {
@@ -97,6 +96,9 @@ export async function createCompilerBackendSession(
   return bindCompilerSession(await createBackendSession(options))
 }
 
-export function createCompilerBackendSessionSync(): BackendCompilerSession {
-  return bindCompilerSession(createBackendSessionSync())
+/** @internal */
+export function bindCompilerBackendSessionInternal(
+  session: MasterCSSCompilerBackendSession
+): BackendCompilerSession {
+  return bindCompilerSession(session)
 }

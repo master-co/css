@@ -24,11 +24,12 @@
 
 ## Public Surface
 
-- Root async session and Node file/provider helpers.
-- Native-only `./node` session.
-- Compiler-Wasm-only `./browser` session.
-- Manifest APIs used by project loading and integrations.
-- Project, stylesheet, and diagnostics subpaths documented in `package.json`.
+- Universal root async compiler sessions.
+- Native-only `./node` sync session.
+- Async Node project APIs under `./project` and sync variants under `./project/sync`.
+- Node stylesheet orchestration under `./stylesheet`.
+- Wasm-only stylesheet compilation under `./stylesheet/browser`.
+- Node project inspection under `./diagnostics`.
 
 ## Key Files
 

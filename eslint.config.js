@@ -39,6 +39,9 @@ export const reactConfig = {
 export default tseslint.config(
   includeIgnoreFile(gitignorePath),
   {
+    ignores: ['**/src/**/*.d.ts']
+  },
+  {
     linterOptions: {
       reportUnusedDisableDirectives: 'off'
     }

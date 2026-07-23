@@ -3,7 +3,6 @@ import {
   type MasterCSSToolingSession
 } from '@master/css-tooling'
 import { defu } from 'defu'
-import EventEmitter from 'node:events'
 import { minimatch } from 'minimatch'
 import type { Position } from 'vscode-languageserver-protocol'
 import type { TextDocument } from 'vscode-languageserver-textdocument'
@@ -22,7 +21,7 @@ export interface MasterCSSLanguageServiceOptions {
   session: MasterCSSToolingSession
 }
 
-export class MasterCSSLanguageService extends EventEmitter implements Disposable {
+export class MasterCSSLanguageService implements Disposable {
   readonly settings: MasterCSSLanguageServiceSettings
   readonly session: MasterCSSToolingSession
 
@@ -30,7 +29,6 @@ export class MasterCSSLanguageService extends EventEmitter implements Disposable
     public customSettings: MasterCSSLanguageServiceSettings | undefined,
     options: MasterCSSLanguageServiceOptions
   ) {
-    super()
     if (!options?.session) {
       throw new TypeError('MasterCSSLanguageService requires a MasterCSSToolingSession.')
     }
@@ -43,7 +41,6 @@ export class MasterCSSLanguageService extends EventEmitter implements Disposable
 
   dispose() {
     this.session.dispose()
-    this.removeAllListeners()
   }
 
   [Symbol.dispose]() {

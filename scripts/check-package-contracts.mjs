@@ -3,6 +3,7 @@ import { createHash } from 'node:crypto'
 import { existsSync, readdirSync, readFileSync, writeFileSync } from 'node:fs'
 import path from 'node:path'
 import * as ts from 'typescript6'
+import { checkAPICensus } from './api-census.mjs'
 
 const packagesRoot = path.resolve('packages')
 const publicAPIContractPath = path.resolve('.ai/contracts/public-api.json')
@@ -54,6 +55,31 @@ const requiredDefaultExportEntrypoints = new Set([
 const publicSourceRootByPackageName = new Map([
   ['@master/css-svelte', 'src/lib']
 ])
+const retiredPublicSymbols = new Set([
+  'CSSLanguageServer',
+  'CSSLanguageService',
+  'CSSRuntime',
+  'CSSScanner',
+  'CompilerSessionError',
+  'RenderingMode',
+  'ServerCSS',
+  'ServerCSSEmittedGlobals',
+  'ServerRenderer',
+  'StyleCSS',
+  'Workspace',
+  'applySetup',
+  'createServerCSS',
+  'cssRuntime',
+  'parseHTML',
+  'renderCSS',
+  'renderWithCSS',
+  'scannerOptions'
+])
+const backendContractFiles = [
+  'packages/native/src/engine-contract.ts',
+  'packages/native/src/broker-compiler-contract.ts',
+  'packages/native/src/broker-tooling-contract.ts'
+]
 
 function readPackage(directory) {
   const file = path.join(packagesRoot, directory, 'package.json')
@@ -144,6 +170,53 @@ function collectPublicSymbols(file) {
   return [...symbols].sort()
 }
 
+function validatePublicSymbol(packageName, subpath, symbol) {
+  const entrypoint = `${packageName}${subpath === '.' ? '' : subpath.slice(1)}`
+  assert.equal(
+    retiredPublicSymbols.has(symbol),
+    false,
+    `${entrypoint} must not restore retired public symbol ${symbol}.`
+  )
+  assert.equal(
+    /(?:IR|Ir)$/.test(symbol),
+    false,
+    `${entrypoint} must not expose Rust or binding IR symbol ${symbol}.`
+  )
+  assert.equal(
+    /^Rust/.test(symbol)
+      || /^Generated(?:Binding|Module|Session)/.test(symbol)
+      || /^Raw(?:Native|Wasm|Backend|Binding|Session)/.test(symbol)
+      || /(?:Native|Wasm).*(?:Binding|Session)$/.test(symbol)
+      || symbol === 'callJSON',
+    false,
+    `${entrypoint} must not expose raw backend symbol ${symbol}.`
+  )
+}
+
+function validateBackendFeatureContracts() {
+  for (const file of backendContractFiles) {
+    const sourceFile = ts.createSourceFile(
+      file,
+      readFileSync(file, 'utf8'),
+      ts.ScriptTarget.Latest,
+      true
+    )
+    const unknownNodes = []
+    const visit = (node) => {
+      if (node.kind === ts.SyntaxKind.UnknownKeyword) {
+        unknownNodes.push(sourceFile.getLineAndCharacterOfPosition(node.getStart()).line + 1)
+      }
+      ts.forEachChild(node, visit)
+    }
+    visit(sourceFile)
+    assert.deepEqual(
+      unknownNodes,
+      [],
+      `${file} must use typed backend feature requests and results instead of unknown.`
+    )
+  }
+}
+
 function createPublicAPIContract(packages) {
   const contract = {}
   const observedDefaultExportEntrypoints = new Set()
@@ -171,6 +244,7 @@ function createPublicAPIContract(packages) {
         || subpath.endsWith('/node')
         || subpath.endsWith('/sync')
       for (const symbol of entrySymbols) {
+        validatePublicSymbol(manifest.name, subpath, symbol)
         if (!symbol.endsWith('Sync')) continue
         assert.equal(
           syncEntrypoint,
@@ -210,6 +284,8 @@ function createPublicAPIContract(packages) {
   )
   return contract
 }
+
+validateBackendFeatureContracts()
 
 for (const directory of retiredDirectories) {
   assert.equal(
@@ -341,5 +417,10 @@ if (process.argv.includes('--write')) {
     'Public package exports changed. Run "pnpm run check:packages:update" and review the golden manifest intentionally.'
   )
 }
+
+checkAPICensus({
+  publicAPIContract,
+  write: process.argv.includes('--write')
+})
 
 process.stdout.write(`Validated ${packages.length} package contract(s).\n`)
