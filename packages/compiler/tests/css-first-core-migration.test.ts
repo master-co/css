@@ -714,6 +714,30 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
       .toBe(normalizeDeclarationOrder(createTestCSS(before.manifest).ensureClassRules('btn').componentsLayer.text))
   })
 
+  test('keeps base declarations before matching responsive declarations', () => {
+    const { manifest } = compileCSSManifest(`
+      @defaults {
+        prose {
+          @variant sm {
+            :is(h1, h2, h3, h4, h5, h6) {
+              @compose mt:2xl scroll-mt:100px;
+            }
+          }
+
+          :is(h1, h2, h3, h4, h5, h6) {
+            @compose mt:lg scroll-mt:60px;
+          }
+        }
+      }
+    `, { baseManifest: defaultManifest })
+    const css = createTestCSS(manifest).ensureClassRules('prose')
+
+    expect(css.defaultsLayer.text).toContain(
+      '.prose :is(h1,h2,h3,h4,h5,h6){margin-top:var(--spacing-lg);scroll-margin-top:60px}'
+      + '@media (width>=52.125rem){.prose :is(h1,h2,h3,h4,h5,h6){margin-top:var(--spacing-2xl);scroll-margin-top:100px}}'
+    )
+  })
+
   test('keeps custom modes explicit behind @variant', () => {
     const customMode = compileCSSManifest(`
       @settings {

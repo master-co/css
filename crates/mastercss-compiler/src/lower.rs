@@ -86,9 +86,12 @@ impl StyleMergeEvent {
 struct StyleMergeBucket {
     selector: String,
     conditions: Vec<String>,
+    layer: Option<UtilityLayerName>,
     order: u32,
     events: Vec<StyleMergeEvent>,
 }
+
+type StyleConditionFeature = (String, f64, f64);
 
 fn directive_error(message: impl Into<String>) -> CompilerError {
     CompilerError::Directive {
@@ -442,6 +445,7 @@ fn push_style_event(
         StyleMergeBucket {
             selector: branch.selector,
             conditions: branch.conditions,
+            layer: branch.layer,
             order: event.order(),
             events: vec![event],
         },
@@ -499,6 +503,167 @@ fn compare_features(left: &RulePriorityIr, right: &RulePriorityIr) -> Ordering {
     Ordering::Equal
 }
 
+fn style_condition_features(conditions: &[String], root_size: f64) -> Vec<StyleConditionFeature> {
+    let mut features: HashMap<String, (Option<f64>, Option<f64>)> = HashMap::new();
+    for condition in conditions {
+        for (name, operator, mut value, unit) in parse_style_condition_features(condition) {
+            if unit == "px" {
+                value /= root_size;
+            }
+            let entry = features.entry(name.to_owned()).or_default();
+            match operator {
+                ">" => entry.0 = Some(value + 0.02),
+                ">=" => entry.0 = Some(value),
+                "<" => entry.1 = Some(value - 0.02),
+                "<=" => entry.1 = Some(value),
+                _ => {}
+            }
+        }
+    }
+    let mut features = features
+        .into_iter()
+        .map(|(name, (min, max))| {
+            (
+                name,
+                min.unwrap_or(0.0),
+                max.unwrap_or(9_007_199_254_740_991.0),
+            )
+        })
+        .collect::<Vec<_>>();
+    features.sort_by(|left, right| natural_compare(&left.0, &right.0));
+    features
+}
+
+fn parse_style_condition_features(condition: &str) -> Vec<(&str, &str, f64, &str)> {
+    let bytes = condition.as_bytes();
+    let mut features = Vec::new();
+    let mut search_start = 0;
+    while let Some(relative_start) = condition[search_start..].find('(') {
+        let start = search_start + relative_start;
+        let mut index = start + 1;
+        skip_ascii_whitespace(bytes, &mut index);
+        let Some(name) = ["width", "height", "resolution"]
+            .into_iter()
+            .find(|name| condition[index..].starts_with(name))
+        else {
+            search_start = start + 1;
+            continue;
+        };
+        index += name.len();
+        skip_ascii_whitespace(bytes, &mut index);
+        let Some(operator) = [">=", "<=", ">", "<"]
+            .into_iter()
+            .find(|operator| condition[index..].starts_with(operator))
+        else {
+            search_start = start + 1;
+            continue;
+        };
+        index += operator.len();
+        skip_ascii_whitespace(bytes, &mut index);
+        let number_start = index;
+        if bytes.get(index) == Some(&b'-') {
+            index += 1;
+        }
+        let integer_start = index;
+        while bytes.get(index).is_some_and(u8::is_ascii_digit) {
+            index += 1;
+        }
+        let integer_digits = index - integer_start;
+        let mut fraction_digits = 0;
+        if bytes.get(index) == Some(&b'.') {
+            index += 1;
+            let fraction_start = index;
+            while bytes.get(index).is_some_and(u8::is_ascii_digit) {
+                index += 1;
+            }
+            fraction_digits = index - fraction_start;
+        }
+        if integer_digits == 0 && fraction_digits == 0 {
+            search_start = start + 1;
+            continue;
+        }
+        let Ok(value) = condition[number_start..index].parse::<f64>() else {
+            search_start = start + 1;
+            continue;
+        };
+        let unit_start = index;
+        while bytes
+            .get(index)
+            .is_some_and(|byte| byte.is_ascii_lowercase() || *byte == b'%')
+        {
+            index += 1;
+        }
+        let unit = &condition[unit_start..index];
+        skip_ascii_whitespace(bytes, &mut index);
+        if bytes.get(index) != Some(&b')') {
+            search_start = start + 1;
+            continue;
+        }
+        features.push((name, operator, value, unit));
+        search_start = index + 1;
+    }
+    features
+}
+
+fn skip_ascii_whitespace(bytes: &[u8], index: &mut usize) {
+    while bytes.get(*index).is_some_and(u8::is_ascii_whitespace) {
+        *index += 1;
+    }
+}
+
+fn compare_style_condition_features(
+    left: &[StyleConditionFeature],
+    right: &[StyleConditionFeature],
+) -> Ordering {
+    for index in 0..left.len().max(right.len()) {
+        let Some(left) = left.get(index) else {
+            return Ordering::Less;
+        };
+        let Some(right) = right.get(index) else {
+            return Ordering::Greater;
+        };
+        let order = natural_compare(&left.0, &right.0)
+            .then_with(|| {
+                (right.2 - right.1)
+                    .partial_cmp(&(left.2 - left.1))
+                    .unwrap_or(Ordering::Equal)
+            })
+            .then_with(|| right.1.partial_cmp(&left.1).unwrap_or(Ordering::Equal))
+            .then_with(|| right.2.partial_cmp(&left.2).unwrap_or(Ordering::Equal));
+        if order != Ordering::Equal {
+            return order;
+        }
+    }
+    Ordering::Equal
+}
+
+fn compare_style_merge_buckets(
+    left: &StyleMergeBucket,
+    right: &StyleMergeBucket,
+    root_size: f64,
+) -> Ordering {
+    let left_layer = left.layer.unwrap_or(UtilityLayerName::Components);
+    let right_layer = right.layer.unwrap_or(UtilityLayerName::Components);
+    if left_layer == right_layer && left.selector == right.selector {
+        let left_conditioned = !left.conditions.is_empty();
+        let right_conditioned = !right.conditions.is_empty();
+        if left_conditioned != right_conditioned {
+            return left_conditioned.cmp(&right_conditioned);
+        }
+        if left_conditioned {
+            let left_features = style_condition_features(&left.conditions, root_size);
+            let right_features = style_condition_features(&right.conditions, root_size);
+            if !left_features.is_empty() && !right_features.is_empty() {
+                let order = compare_style_condition_features(&left_features, &right_features);
+                if order != Ordering::Equal {
+                    return order;
+                }
+            }
+        }
+    }
+    left.order.cmp(&right.order)
+}
+
 fn merged_bucket(bucket: StyleMergeBucket) -> Option<MergedStyleDefinition> {
     let mut declarations = Map::new();
     let mut compose_batch: Vec<(u32, EngineCompositionRuleIr)> = Vec::new();
@@ -537,6 +702,7 @@ fn create_merged_style_definitions(
     definitions: &[CssDirectiveStyleDefinition],
     engine: &mut EngineSession,
     target_layer: Option<UtilityLayerName>,
+    root_size: f64,
 ) -> Result<Vec<MergedStyleDefinition>, CompilerError> {
     let mut buckets = Vec::new();
     for definition in definitions {
@@ -624,7 +790,7 @@ fn create_merged_style_definitions(
             }
         }
     }
-    buckets.sort_by_key(|(_, bucket)| bucket.order);
+    buckets.sort_by(|(_, left), (_, right)| compare_style_merge_buckets(left, right, root_size));
     Ok(buckets
         .into_iter()
         .filter_map(|(_, bucket)| merged_bucket(bucket))
@@ -927,6 +1093,11 @@ pub fn lower_css_directives(
         });
     }
     let initial_manifest = compile_with_base(&input, resolution_base.clone())?;
+    let root_size = initial_manifest
+        .get("settings")
+        .and_then(|settings| settings.get("rootSize"))
+        .and_then(Value::as_f64)
+        .unwrap_or(16.0);
     let mut engine = engine_for_manifest(&initial_manifest)?;
     let unfinalized_input = input.clone();
     finalize_utility_definitions(&mut input, &mut engine)?;
@@ -955,7 +1126,9 @@ pub fn lower_css_directives(
             unrefreshed.clear();
         }
         let ((name, layer), definitions) = &groups[*index];
-        for definition in create_merged_style_definitions(definitions, &mut engine, Some(*layer))? {
+        for definition in
+            create_merged_style_definitions(definitions, &mut engine, Some(*layer), root_size)?
+        {
             push_static_utility_rule(&mut input, name, *layer, definition)?;
         }
         unrefreshed.insert(*index);
@@ -986,6 +1159,7 @@ pub fn lower_css_directives(
             &native_definitions,
             &mut engine,
             None,
+            root_size,
         )?)
     };
     let manifest = compile_with_base(&input, options.base_manifest.clone())?;
@@ -1029,6 +1203,24 @@ pub fn lower_css_directives_request(
 mod tests {
     use super::*;
     use serde_json::json;
+
+    fn lower_for_test(
+        manifest_input: CssDirectiveManifestInput,
+        definitions: Value,
+    ) -> LowerCssDirectivesResult {
+        let definitions: Vec<CssDirectiveStyleDefinition> =
+            serde_json::from_value(definitions).unwrap();
+        lower_css_directives(
+            &manifest_input,
+            &definitions,
+            &[],
+            &LowerCssDirectivesOptions {
+                base_manifest: Some(json!({ "version": 1, "utilities": [] })),
+                resolution_manifest: None,
+            },
+        )
+        .unwrap()
+    }
 
     #[test]
     fn rejects_invalid_native_declarations_in_compose() {
@@ -1112,5 +1304,188 @@ mod tests {
         assert!(result.generated_css.contains("content:none"));
         assert!(result.generated_css.contains("text-underline-offset:2px"));
         assert!(result.generated_css.contains("outline-offset:0"));
+    }
+
+    #[test]
+    fn orders_unconditioned_native_styles_before_matching_responsive_styles() {
+        let result = lower_for_test(
+            CssDirectiveManifestInput::default(),
+            json!([
+                {
+                    "type": "native",
+                    "order": 1,
+                    "selector": ".prose :is(h1,h2,h3,h4,h5,h6)",
+                    "declarations": {
+                        "margin-top": "var(--spacing-2xl)",
+                        "scroll-margin-top": "100px"
+                    },
+                    "conditions": ["@media (width>=52.125rem)"]
+                },
+                {
+                    "type": "native",
+                    "order": 2,
+                    "selector": ".prose :is(h1,h2,h3,h4,h5,h6)",
+                    "declarations": {
+                        "margin-top": "var(--spacing-lg)",
+                        "scroll-margin-top": "60px"
+                    }
+                }
+            ]),
+        );
+        assert_eq!(
+            result.generated_css,
+            ".prose :is(h1,h2,h3,h4,h5,h6){margin-top:var(--spacing-lg);scroll-margin-top:60px}@media (width>=52.125rem){.prose :is(h1,h2,h3,h4,h5,h6){margin-top:var(--spacing-2xl);scroll-margin-top:100px}}"
+        );
+    }
+
+    #[test]
+    fn orders_unconditioned_compositions_before_matching_responsive_compositions() {
+        let result = lower_for_test(
+            CssDirectiveManifestInput::default(),
+            json!([
+                {
+                    "type": "compose",
+                    "order": 1,
+                    "className": "display:grid",
+                    "selector": ".card",
+                    "conditions": ["@media (width>=48rem)"]
+                },
+                {
+                    "type": "compose",
+                    "order": 2,
+                    "className": "display:block",
+                    "selector": ".card"
+                }
+            ]),
+        );
+        assert_eq!(
+            result.generated_css,
+            ".card{display:block}@media (width>=48rem){.card{display:grid}}"
+        );
+    }
+
+    #[test]
+    fn normalizes_root_size_when_ordering_numeric_conditions() {
+        let result = lower_for_test(
+            CssDirectiveManifestInput {
+                root_size: Some(20.0),
+                ..Default::default()
+            },
+            json!([
+                {
+                    "type": "native",
+                    "order": 1,
+                    "selector": ".card",
+                    "declarations": { "color": "red" },
+                    "conditions": ["@media (width>=42rem)"]
+                },
+                {
+                    "type": "native",
+                    "order": 2,
+                    "selector": ".card",
+                    "declarations": { "color": "blue" },
+                    "conditions": ["@media (width>=800px)"]
+                }
+            ]),
+        );
+        assert_eq!(
+            result.generated_css,
+            "@media (width>=800px){.card{color:blue}}@media (width>=42rem){.card{color:red}}"
+        );
+    }
+
+    #[test]
+    fn keeps_source_order_for_non_numeric_conditions_and_distinct_targets() {
+        let result = lower_for_test(
+            CssDirectiveManifestInput::default(),
+            json!([
+                {
+                    "type": "native",
+                    "order": 1,
+                    "selector": ".same",
+                    "declarations": { "opacity": "0" },
+                    "conditions": ["@starting-style"]
+                },
+                {
+                    "type": "native",
+                    "order": 2,
+                    "selector": ".same",
+                    "declarations": { "opacity": "1" },
+                    "conditions": ["@container card (inline-size>30rem)"]
+                },
+                {
+                    "type": "native",
+                    "order": 3,
+                    "selector": ".other",
+                    "declarations": { "color": "red" },
+                    "conditions": ["@media (prefers-color-scheme:dark)"]
+                },
+                {
+                    "type": "native",
+                    "order": 4,
+                    "selector": ".base-layer",
+                    "layer": "base",
+                    "declarations": { "display": "grid" },
+                    "conditions": ["@media (width>=40rem)"]
+                },
+                {
+                    "type": "native",
+                    "order": 5,
+                    "selector": ".base-layer",
+                    "layer": "components",
+                    "declarations": { "display": "block" }
+                }
+            ]),
+        );
+        assert_eq!(
+            result.generated_css,
+            "@starting-style{.same{opacity:0}}@container card (inline-size>30rem){.same{opacity:1}}@media (prefers-color-scheme:dark){.other{color:red}}@media (width>=40rem){.base-layer{display:grid}}.base-layer{display:block}"
+        );
+    }
+
+    #[test]
+    fn orders_matching_managed_utility_rules_without_moving_layers() {
+        let result = lower_for_test(
+            CssDirectiveManifestInput::default(),
+            json!([
+                {
+                    "type": "native",
+                    "order": 1,
+                    "name": "prose",
+                    "layer": "defaults",
+                    "selector": "& :is(h1,h2)",
+                    "declarations": { "margin-top": "2rem" },
+                    "conditions": ["@media (width>=52rem)"]
+                },
+                {
+                    "type": "native",
+                    "order": 2,
+                    "name": "prose",
+                    "layer": "defaults",
+                    "selector": "& :is(h1,h2)",
+                    "declarations": { "margin-top": "1rem" }
+                }
+            ]),
+        );
+        let utility = &result.input.utilities.unwrap()[0];
+        assert_eq!(
+            utility,
+            &json!({
+                "name": "prose",
+                "type": "static",
+                "layer": "defaults",
+                "rules": [
+                    {
+                        "declarations": { "margin-top": "1rem" },
+                        "selector": "& :is(h1,h2)"
+                    },
+                    {
+                        "declarations": { "margin-top": "2rem" },
+                        "selector": "& :is(h1,h2)",
+                        "conditions": ["@media (width>=52rem)"]
+                    }
+                ]
+            })
+        );
     }
 }
