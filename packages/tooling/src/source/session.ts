@@ -7,12 +7,11 @@ import type {
 import { MASTER_CSS_SOURCE_BATCH_VERSION } from '@master/css-backend/tooling'
 
 export type SourceBatchRequest = MasterCSSSourceBatchRequest
-export type SourceBatchIR = MasterCSSSourceBatch
 export type SourceExtractorKind = MasterCSSSourceExtractorKind
 
 export interface SourceExtractor {
   readonly backend: 'native' | 'wasm'
-  extract(request: SourceBatchRequest): SourceBatchIR
+  extract(request: SourceBatchRequest): MasterCSSSourceBatch
   extractClassCandidates(content: string): string[]
   extractOxcClasses(source: string, content: string): string[]
   extractHTMLClasses(source: string, content: string): string[]
@@ -35,8 +34,8 @@ interface BackendSourceSession {
   dispose(): void
 }
 
-function parse(value: unknown): SourceBatchIR {
-  const result = value as SourceBatchIR
+function parse(value: unknown): MasterCSSSourceBatch {
+  const result = value as MasterCSSSourceBatch
   if (result.version !== MASTER_CSS_SOURCE_BATCH_VERSION) {
     throw new SourceExtractorError(
       'SOURCE_BATCH_VERSION_MISMATCH',

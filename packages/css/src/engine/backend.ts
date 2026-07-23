@@ -3,7 +3,7 @@ import {
 } from '@master/css-schema'
 import type { MasterCSSBackend, MasterCSSResolvedBackend } from '@master/css-backend'
 import type { MasterCSSEmittedGlobals } from '@master/css-schema/emitted-globals'
-import type { MasterCSSGeneratedRuleIR } from '@master/css-schema/hydration-manifest'
+import type { MasterCSSHydrationRule } from '@master/css-schema/hydration-manifest'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
 
 export type MasterCSSRuleTarget =
@@ -20,7 +20,7 @@ export interface MasterCSSEngineInsertMutation {
   readonly index: number
   readonly key: string
   readonly text: string
-  readonly rule?: MasterCSSGeneratedRuleIR
+  readonly rule?: MasterCSSHydrationRule
 }
 
 export interface MasterCSSEngineDeleteMutation {
@@ -61,7 +61,7 @@ export interface MasterCSSEngineResources {
 
 export interface MasterCSSEngineSnapshot {
   readonly version: 1
-  readonly rules: readonly MasterCSSGeneratedRuleIR[]
+  readonly rules: readonly MasterCSSHydrationRule[]
   readonly resources: MasterCSSEngineResources
   readonly text: string
 }
@@ -70,7 +70,7 @@ export interface MasterCSSEngineInspection {
   readonly version: 1
   readonly className: string
   readonly valid: boolean
-  readonly rules: readonly MasterCSSGeneratedRuleIR[]
+  readonly rules: readonly MasterCSSHydrationRule[]
 }
 
 export interface MasterCSSEngineBackendOptions {

@@ -1,17 +1,10 @@
 import type {
   MasterCSSLexerBatch,
-  MasterCSSLexerBatchRequest,
-  MasterCSSLexerClassListInput,
-  MasterCSSLexerClassListItem,
-  MasterCSSLexerCSSAnalysis
+  MasterCSSLexerBatchRequest
 } from '@master/css-backend/tooling'
 import { MASTER_CSS_LEXER_BATCH_VERSION } from '@master/css-backend/tooling'
 
-export type LexerClassListInputIR = MasterCSSLexerClassListInput
 export type LexerBatchRequest = MasterCSSLexerBatchRequest
-export type LexerClassListItemIR = MasterCSSLexerClassListItem
-export type LexerCssAnalysisIR = MasterCSSLexerCSSAnalysis
-export type LexerBatchIR = MasterCSSLexerBatch
 
 interface BackendLexerSession {
   analyze(request: unknown): unknown
@@ -20,7 +13,7 @@ interface BackendLexerSession {
 
 export interface LexerSession {
   readonly backend: 'native' | 'wasm'
-  analyze(request: LexerBatchRequest): LexerBatchIR
+  analyze(request: LexerBatchRequest): MasterCSSLexerBatch
   dispose(): void
 }
 
@@ -34,8 +27,8 @@ export class LexerSessionError extends Error {
   }
 }
 
-function parse(value: unknown): LexerBatchIR {
-  const result = value as LexerBatchIR
+function parse(value: unknown): MasterCSSLexerBatch {
+  const result = value as MasterCSSLexerBatch
   if (result.version !== MASTER_CSS_LEXER_BATCH_VERSION) {
     throw new LexerSessionError(
       'LEXER_BATCH_VERSION_MISMATCH',

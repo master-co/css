@@ -164,12 +164,11 @@
           "MasterCSSSetupOptions",
           "MasterCSSSetupPackageManager",
           "MasterCSSSetupPlan",
-          "RenderingMode",
           "applyMasterCSSSetupPlan",
           "planMasterCSSSetup"
         ]
       },
-      "surface": "04f604d71e037981"
+      "surface": "99bf9bfc7c901401"
     },
     "@master/css": {
       "directory": "css",
@@ -375,8 +374,11 @@
       "exports": [
         ".",
         "./compiler",
+        "./compiler/node",
         "./engine",
-        "./tooling"
+        "./engine/node",
+        "./tooling",
+        "./tooling/node"
       ],
       "bins": [],
       "entrypoints": {
@@ -388,65 +390,86 @@
           "MasterCSSBackendContractError",
           "MasterCSSBackendFeature",
           "MasterCSSBackendInfo",
+          "MasterCSSBackendLoadOptions",
           "MasterCSSBackendRequirements",
           "MasterCSSBackendSurface",
+          "MasterCSSNativeBackendLoadOptions",
           "MasterCSSResolvedBackend",
+          "MasterCSSWasmBackendLoadOptions",
           "assertMasterCSSBackendInfo"
         ],
         "./engine": [
-          "MASTER_CSS_ENGINE_TRANSITION_VERSION",
-          "MasterCSSEngineAnimationResourceIR",
-          "MasterCSSEngineDeleteMutationIR",
-          "MasterCSSEngineInsertMutationIR",
-          "MasterCSSEngineInspectionIR",
-          "MasterCSSEngineMutationIR",
-          "MasterCSSEngineResourcesIR",
-          "MasterCSSEngineSnapshotIR",
-          "MasterCSSEngineTransitionIR",
-          "MasterCSSEngineVariableResourceIR",
-          "MasterCSSNativeDeclarationCandidateIR",
-          "MasterCSSNativeEngineSession",
-          "MasterCSSNativeEngineSessionOptions",
-          "MasterCSSNativeModuleOptions",
-          "MasterCSSNativeRenderSession",
-          "MasterCSSRuleTarget",
-          "MasterCSSServerRenderIR",
-          "createNativeEngineSession",
-          "createNativeRenderSession"
+          "MasterCSSBackendLoadOptions",
+          "MasterCSSEngineBackendSession",
+          "MasterCSSEngineBackendSessionOptions",
+          "MasterCSSNativeBackendLoadOptions",
+          "MasterCSSRenderBackendSession",
+          "MasterCSSWasmBackendLoadOptions",
+          "createEngineBackendSession",
+          "createRenderBackendSession"
+        ],
+        "./engine/node": [
+          "MasterCSSEngineBackendSession",
+          "MasterCSSEngineBackendSessionOptions",
+          "MasterCSSNativeBackendLoadOptions",
+          "MasterCSSRenderBackendSession",
+          "createEngineBackendSessionSync",
+          "createRenderBackendSessionSync"
         ],
         "./compiler": [
           "MASTER_CSS_DIAGNOSTICS_REPORT_VERSION",
-          "MasterCSSCompileDefaultPresetRequestIR",
-          "MasterCSSCompileDefaultPresetResultIR",
-          "MasterCSSCompileManifestOptionsIR",
-          "MasterCSSCompileManifestResultIR",
-          "MasterCSSDiagnosticsReportInputIR",
-          "MasterCSSDirectiveCompilationIR",
-          "MasterCSSDirectiveExtractionPolicyIR",
-          "MasterCSSDirectiveManifestInputIR",
-          "MasterCSSDirectiveVariableDefinitionIR",
-          "MasterCSSDiscoveredClassesIR",
-          "MasterCSSImportGraphEdgeIR",
-          "MasterCSSImportGraphRequestIR",
-          "MasterCSSInspectionDiagnosticCode",
-          "MasterCSSInspectionDiagnosticDataIR",
-          "MasterCSSInspectionDiagnosticIR",
-          "MasterCSSInspectionDiagnosticSeverity",
-          "MasterCSSInspectionDiagnosticSourceKind",
-          "MasterCSSInspectionReportIR",
-          "MasterCSSMissingCSSReason",
-          "MasterCSSMissingCSSResultIR",
-          "MasterCSSMissingCSSStatus",
-          "MasterCSSNativeCompilerBackend",
-          "MasterCSSNativeDeclarationCandidateIR",
-          "MasterCSSNativeModuleOptions",
-          "MasterCSSRegexIR",
-          "MasterCSSResolvedImportGraphIR",
-          "MasterCSSServerRenderIR",
-          "MasterCSSSourceInspectionIR",
-          "MasterCSSStylesheetErrorIR",
-          "MasterCSSStylesheetInspectionIR",
-          "loadNativeCompilerBackend"
+          "MasterCSSBackendLoadOptions",
+          "MasterCSSCompileDefaultPresetRequest",
+          "MasterCSSCompileDefaultPresetResult",
+          "MasterCSSCompileManifestOptions",
+          "MasterCSSCompileManifestResult",
+          "MasterCSSCompilerBackendSession",
+          "MasterCSSCompilerInspection",
+          "MasterCSSCompilerRenderBackendSession",
+          "MasterCSSDependencyAnalysis",
+          "MasterCSSDiagnosticsReportInput",
+          "MasterCSSDirectiveCompilation",
+          "MasterCSSDirectiveCompileOptions",
+          "MasterCSSDirectiveExtractionPolicy",
+          "MasterCSSDirectiveManifestInput",
+          "MasterCSSImportGraphRequest",
+          "MasterCSSInspectionReport",
+          "MasterCSSLowerDirectivesOptions",
+          "MasterCSSLowerDirectivesRequest",
+          "MasterCSSLowerDirectivesResult",
+          "MasterCSSNativeBackendLoadOptions",
+          "MasterCSSProjectEntryGraph",
+          "MasterCSSProjectManifest",
+          "MasterCSSResolvedImportGraph",
+          "MasterCSSStandaloneDirectiveAnalysis",
+          "MasterCSSWasmBackendLoadOptions",
+          "createCompilerBackendSession"
+        ],
+        "./compiler/node": [
+          "MASTER_CSS_DIAGNOSTICS_REPORT_VERSION",
+          "MasterCSSCompileDefaultPresetRequest",
+          "MasterCSSCompileDefaultPresetResult",
+          "MasterCSSCompileManifestOptions",
+          "MasterCSSCompileManifestResult",
+          "MasterCSSCompilerBackendSession",
+          "MasterCSSCompilerInspection",
+          "MasterCSSDependencyAnalysis",
+          "MasterCSSDiagnosticsReportInput",
+          "MasterCSSDirectiveCompilation",
+          "MasterCSSDirectiveCompileOptions",
+          "MasterCSSDirectiveExtractionPolicy",
+          "MasterCSSDirectiveManifestInput",
+          "MasterCSSImportGraphRequest",
+          "MasterCSSInspectionReport",
+          "MasterCSSLowerDirectivesOptions",
+          "MasterCSSLowerDirectivesRequest",
+          "MasterCSSLowerDirectivesResult",
+          "MasterCSSNativeBackendLoadOptions",
+          "MasterCSSProjectEntryGraph",
+          "MasterCSSProjectManifest",
+          "MasterCSSResolvedImportGraph",
+          "MasterCSSStandaloneDirectiveAnalysis",
+          "createCompilerBackendSessionSync"
         ],
         "./tooling": [
           "MASTER_CSS_LANGUAGE_BATCH_VERSION",
@@ -454,67 +477,53 @@
           "MASTER_CSS_LINT_BATCH_VERSION",
           "MASTER_CSS_SOURCE_BATCH_VERSION",
           "MASTER_CSS_VALIDATOR_BATCH_VERSION",
-          "MasterCSSEngineSnapshotIR",
-          "MasterCSSEngineTransitionIR",
-          "MasterCSSLanguageClassIR",
-          "MasterCSSLanguageClassKind",
-          "MasterCSSLanguageClassVariableIR",
-          "MasterCSSLanguageClassificationsIR",
-          "MasterCSSLanguageColorCandidateInputIR",
-          "MasterCSSLanguageColorPresentationIR",
-          "MasterCSSLanguageColorTokenIR",
-          "MasterCSSLanguageColorTokensIR",
-          "MasterCSSLanguageCompletionEntryIR",
-          "MasterCSSLanguageCompletionIndexIR",
-          "MasterCSSLanguageCompletionKind",
-          "MasterCSSLanguageInspectionIR",
-          "MasterCSSLanguageVariableIR",
-          "MasterCSSLexerBatchIR",
-          "MasterCSSLexerBatchRequestIR",
-          "MasterCSSLexerCSSAnalysisIR",
-          "MasterCSSLexerCSSDirectiveIR",
-          "MasterCSSLexerCSSImportIR",
-          "MasterCSSLexerClassListInputIR",
-          "MasterCSSLexerClassListItemIR",
-          "MasterCSSLintBatchIR",
-          "MasterCSSLintCanonicalClassGroupSuggestionIR",
-          "MasterCSSLintCanonicalClassGroupSuggestionsIR",
-          "MasterCSSLintCanonicalClassNameOptionsIR",
-          "MasterCSSLintCanonicalClassSuggestionIR",
-          "MasterCSSLintCanonicalClassSuggestionsIR",
-          "MasterCSSLintCanonicalComposeDirectiveIR",
-          "MasterCSSLintCanonicalComposeSuggestionIR",
-          "MasterCSSLintCanonicalComposeSuggestionKind",
-          "MasterCSSLintClassConflictIR",
-          "MasterCSSLintClassListIR",
-          "MasterCSSLintDiagnosticIR",
-          "MasterCSSLintEditIR",
-          "MasterCSSLintPartialClassConflictIR",
-          "MasterCSSLintRawValueCandidateIR",
-          "MasterCSSLintRawValueCandidatesIR",
-          "MasterCSSNativeDeclarationCandidateIR",
-          "MasterCSSNativeLanguageSession",
-          "MasterCSSNativeLexerSession",
-          "MasterCSSNativeLintSession",
-          "MasterCSSNativeModuleOptions",
-          "MasterCSSNativeScannerSession",
-          "MasterCSSNativeSourceSession",
-          "MasterCSSNativeToolingBackend",
-          "MasterCSSNativeToolingSession",
-          "MasterCSSNativeValidatorSession",
-          "MasterCSSRegexIR",
-          "MasterCSSSourceBatchIR",
-          "MasterCSSSourceBatchRequestIR",
-          "MasterCSSSourceExtractionIR",
-          "MasterCSSSourceExtractionInputIR",
+          "MasterCSSBackendLoadOptions",
+          "MasterCSSEngineSnapshot",
+          "MasterCSSEngineTransition",
+          "MasterCSSLanguageBackendSession",
+          "MasterCSSLanguageClassifications",
+          "MasterCSSLanguageInspection",
+          "MasterCSSLexerBackendSession",
+          "MasterCSSLexerBatch",
+          "MasterCSSLexerBatchRequest",
+          "MasterCSSLexerCSSAnalysis",
+          "MasterCSSLexerClassListInput",
+          "MasterCSSLexerClassListItem",
+          "MasterCSSLintBackendSession",
+          "MasterCSSLintBatch",
+          "MasterCSSLintCanonicalClassGroupSuggestions",
+          "MasterCSSLintCanonicalClassSuggestions",
+          "MasterCSSLintCanonicalComposeDirective",
+          "MasterCSSLintRawValueCandidates",
+          "MasterCSSNativeBackendLoadOptions",
+          "MasterCSSNativeDeclarationCandidate",
+          "MasterCSSScannerBackendSession",
+          "MasterCSSSourceBackendSession",
+          "MasterCSSSourceBatch",
+          "MasterCSSSourceBatchRequest",
           "MasterCSSSourceExtractorKind",
           "MasterCSSSourceRange",
-          "MasterCSSValidatorBatchIR",
-          "MasterCSSValidatorClassIR",
-          "loadNativeToolingBackend"
+          "MasterCSSToolingBackend",
+          "MasterCSSToolingBackendSession",
+          "MasterCSSValidatorBackendSession",
+          "MasterCSSValidatorBatch",
+          "MasterCSSWasmBackendLoadOptions",
+          "createToolingBackend"
+        ],
+        "./tooling/node": [
+          "MasterCSSLanguageBackendSession",
+          "MasterCSSLexerBackendSession",
+          "MasterCSSLintBackendSession",
+          "MasterCSSNativeBackendLoadOptions",
+          "MasterCSSScannerBackendSession",
+          "MasterCSSSourceBackendSession",
+          "MasterCSSToolingBackendSession",
+          "MasterCSSToolingBackendSync",
+          "MasterCSSValidatorBackendSession",
+          "createToolingBackendSync"
         ]
       },
-      "surface": "c6766e5291a3aad8"
+      "surface": "6bf1b40ac1dd80c8"
     },
     "@master/css-native-darwin-arm64": {
       "directory": "native-darwin-arm64",
@@ -622,11 +631,10 @@
       "entrypoints": {
         ".": [
           "default",
-          "externalizeNitroPrerenderHydrationManifest",
           "masterCSSNuxtModule"
         ]
       },
-      "surface": "672beb9aeac69a75"
+      "surface": "617905512e07f4a8"
     },
     "@master/css-preset": {
       "directory": "preset",
@@ -656,6 +664,7 @@
       "entrypoints": {
         ".": [
           "MasterCSSRuntime",
+          "MasterCSSRuntimeBackend",
           "MasterCSSRuntimeClassSnapshot",
           "MasterCSSRuntimeFacade",
           "MasterCSSRuntimeLayerSnapshot",
@@ -667,7 +676,7 @@
           "withMasterCSSRuntime"
         ]
       },
-      "surface": "1b2c7ed4c0c0e62c"
+      "surface": "2f526d6472f2cf65"
     },
     "@master/css-schema": {
       "directory": "schema",
@@ -767,10 +776,10 @@
           "MASTER_CSS_HYDRATION_MANIFEST_ATTR",
           "MASTER_CSS_HYDRATION_MANIFEST_FILE_BASENAME",
           "MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID",
-          "MasterCSSGeneratedRuleIR",
-          "MasterCSSGeneratedRuleNodeIR",
           "MasterCSSHydrationManifest",
-          "MasterCSSRulePriorityIR",
+          "MasterCSSHydrationRule",
+          "MasterCSSHydrationRuleNode",
+          "MasterCSSRulePriority",
           "createMasterCSSHydrationManifestScript",
           "serializeMasterCSSHydrationManifest"
         ],
@@ -853,7 +862,7 @@
           "isMasterCSSRenderingMode"
         ]
       },
-      "surface": "8b0427dc2adafb63"
+      "surface": "2d023af5840dfd9e"
     },
     "@master/css-server": {
       "directory": "server",
@@ -1140,35 +1149,28 @@
       "bins": [],
       "entrypoints": {
         ".": [
-          "CompilerWasmSession",
-          "InitCompilerWasmOptions",
-          "createCompilerRenderSession",
-          "createCompilerWasmSession",
-          "initCompilerWasm"
+          "MasterCSSWasmCompilerInput",
+          "MasterCSSWasmCompilerLoadOptions",
+          "createMasterCSSCompilerWasmProvider"
         ]
       },
-      "surface": "7021ba277f435f16"
+      "surface": "a8b32774670d1eda"
     },
     "@master/css-wasm-engine": {
       "directory": "wasm-runtime",
       "exports": [
-        "."
+        ".",
+        "./wasm"
       ],
       "bins": [],
       "entrypoints": {
         ".": [
-          "MasterCSSWasmEngineInspection",
+          "MasterCSSWasmEngineInput",
           "MasterCSSWasmEngineLoadOptions",
-          "MasterCSSWasmEngineSessionOptions",
-          "MasterCSSWasmEngineSnapshot",
-          "MasterCSSWasmEngineTransition",
-          "MasterCSSWasmInput",
-          "createWasmEngineSession",
-          "createWasmRenderSession",
-          "loadWasmEngine"
+          "createMasterCSSEngineWasmProvider"
         ]
       },
-      "surface": "54b4e42b1e763617"
+      "surface": "df4ef2957b6c7686"
     },
     "@master/css-wasm-tooling": {
       "directory": "wasm-tooling",
@@ -1179,16 +1181,12 @@
       "bins": [],
       "entrypoints": {
         ".": [
-          "InitToolingWasmOptions",
-          "createToolingInspectionReport",
-          "createToolingLanguageSession",
-          "createToolingLintSession",
-          "createToolingScannerSession",
-          "createToolingValidatorSession",
-          "initToolingWasm"
+          "MasterCSSWasmToolingInput",
+          "MasterCSSWasmToolingLoadOptions",
+          "createMasterCSSToolingWasmProvider"
         ]
       },
-      "surface": "e682b7bd194e224a"
+      "surface": "9961d74bc7c2758b"
     },
     "@master/css-webpack": {
       "directory": "webpack",

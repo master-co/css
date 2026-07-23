@@ -65,7 +65,7 @@ export interface MasterCSSEngineInsertMutation {
   index: number
   key: string
   text: string
-  rule?: import('@master/css-schema/hydration-manifest').MasterCSSGeneratedRuleIR
+  rule?: import('@master/css-schema/hydration-manifest').MasterCSSHydrationRule
 }
 
 export interface MasterCSSEngineDeleteMutation {
@@ -86,7 +86,7 @@ export interface MasterCSSEngineTransition {
 
 export interface MasterCSSEngineSnapshot {
   version: 1
-  rules: import('@master/css-schema/hydration-manifest').MasterCSSGeneratedRuleIR[]
+  rules: import('@master/css-schema/hydration-manifest').MasterCSSHydrationRule[]
   resources: MasterCSSEngineResources
   text: string
 }
@@ -115,7 +115,7 @@ export interface MasterCSSEngineInspection {
   version: 1
   className: string
   valid: boolean
-  rules: import('@master/css-schema/hydration-manifest').MasterCSSGeneratedRuleIR[]
+  rules: import('@master/css-schema/hydration-manifest').MasterCSSHydrationRule[]
 }
 
 export interface MasterCSSNativeDeclarationCandidate {
@@ -373,7 +373,7 @@ export interface MasterCSSInspectionReport {
 export interface MasterCSSValidatorClass {
   className: string
   matched: boolean
-  rules: import('@master/css-schema/hydration-manifest').MasterCSSGeneratedRuleIR[]
+  rules: import('@master/css-schema/hydration-manifest').MasterCSSHydrationRule[]
 }
 
 export interface MasterCSSValidatorBatch {
@@ -631,7 +631,7 @@ export interface MasterCSSLanguageInspection {
   important: boolean
   matcherTypes: ('static' | 'pattern' | 'key' | 'variable' | 'value')[]
   variables: MasterCSSLanguageClassVariable[]
-  rules: import('@master/css-schema/hydration-manifest').MasterCSSGeneratedRuleIR[]
+  rules: import('@master/css-schema/hydration-manifest').MasterCSSHydrationRule[]
   text: string
 }
 

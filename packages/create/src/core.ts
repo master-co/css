@@ -4,7 +4,8 @@ import { createInterface } from 'node:readline/promises'
 import { fileURLToPath } from 'node:url'
 import { Command, InvalidArgumentError } from 'commander'
 import { applyMasterCSSSetupPlan, planMasterCSSSetup } from '.'
-import { formatRenderingModes, isRenderingMode, type RenderingMode } from './modes'
+import type { MasterCSSRenderingMode } from '@master/css-schema/integration'
+import { formatRenderingModes, isRenderingMode } from './modes'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
@@ -31,7 +32,7 @@ export interface CommandOptions {
   dryRun?: boolean
   json?: boolean
   yes?: boolean
-  mode?: RenderingMode
+  mode?: MasterCSSRenderingMode
 }
 
 export type InstallResolution = CommandPackageManager | false | 'detected' | undefined
@@ -174,7 +175,7 @@ function shouldPrompt(options: CommandOptions) {
   return !options.yes && !options.json && !options.dryRun && Boolean(process.stdin.isTTY) && Boolean(process.stdout.isTTY)
 }
 
-function parseRenderingModeOption(value: string): RenderingMode {
+function parseRenderingModeOption(value: string): MasterCSSRenderingMode {
   if (isRenderingMode(value)) return value
   throw new InvalidArgumentError(`Invalid rendering mode "${value}". Supported modes: ${formatRenderingModes()}.`)
 }

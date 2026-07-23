@@ -9,7 +9,7 @@ import {
   MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID
 } from '@master/css-schema/hydration-manifest'
 import { setupNuxtTest } from './setup-test'
-import { externalizeNitroPrerenderHydrationManifest } from '../src/module'
+import { externalizeNitroPrerenderHydrationManifest } from '../src/external-hydration-manifest'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)

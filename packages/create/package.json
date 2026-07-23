@@ -49,6 +49,7 @@
     "provenance": true
   },
   "dependencies": {
+    "@master/css-schema": "workspace:*",
     "commander": "^14.0.3"
   }
 }

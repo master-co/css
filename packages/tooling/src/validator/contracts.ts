@@ -1,9 +1,9 @@
-import type { MasterCSSGeneratedRuleIR } from '@master/css-schema/hydration-manifest'
+import type { MasterCSSHydrationRule } from '@master/css-schema/hydration-manifest'
 
 export interface MasterCSSClassValidation {
   readonly className: string
   readonly matched: boolean
-  readonly rules: readonly MasterCSSGeneratedRuleIR[]
+  readonly rules: readonly MasterCSSHydrationRule[]
 }
 
 export interface MasterCSSClassValidationResult {

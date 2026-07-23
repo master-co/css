@@ -3,7 +3,8 @@ import { createHash } from 'node:crypto'
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { dirname, join, resolve } from 'node:path'
 import { AGENT_RULES_BLOCK, CANONICAL_ESLINT_CONFIG, MASTER_CSS_PACKAGES, MASTER_CSS_VERSION } from './constants'
-import { resolveRenderingMode, type RenderingMode } from './modes'
+import type { MasterCSSRenderingMode } from '@master/css-schema/integration'
+import { resolveRenderingMode } from './modes'
 import {
   addAngularRuntimeSetup,
   addMasterCSSAstroIntegration,
@@ -36,8 +37,6 @@ export type MasterCSSSetupFramework = 'none' | 'vite' | 'react' | 'react-router'
 export type MasterCSSSetupFrameworkOption = MasterCSSSetupFramework | 'auto'
 export type MasterCSSSetupPackageManager = 'npm' | 'pnpm' | 'yarn' | 'bun'
 export type MasterCSSSetupFileAction = 'create' | 'update' | 'skip'
-export type { RenderingMode }
-
 export interface MasterCSSSetupOptions {
   root?: string
   framework?: MasterCSSSetupFrameworkOption
@@ -48,7 +47,7 @@ export interface MasterCSSSetupOptions {
   install?: MasterCSSSetupPackageManager | false
   yes?: boolean
   packageTag?: string
-  mode?: RenderingMode
+  mode?: MasterCSSRenderingMode
 }
 
 export interface MasterCSSSetupDependency {
@@ -86,7 +85,7 @@ export interface MasterCSSSetupPlan {
   files: readonly MasterCSSSetupFileChange[]
   commands: readonly MasterCSSSetupCommand[]
   warnings: readonly string[]
-  mode?: RenderingMode
+  mode?: MasterCSSRenderingMode
   summary: {
     dependencies: number
     filesToCreate: number
@@ -218,7 +217,7 @@ export function applyMasterCSSSetupPlan(plan: MasterCSSSetupPlan, options: Maste
   }
 }
 
-function filesForFramework(root: string, framework: MasterCSSSetupFramework, warnings: string[], mode?: RenderingMode): MasterCSSSetupFileChange[] {
+function filesForFramework(root: string, framework: MasterCSSSetupFramework, warnings: string[], mode?: MasterCSSRenderingMode): MasterCSSSetupFileChange[] {
   switch (framework) {
     case 'vite':
       return [
@@ -340,7 +339,7 @@ function filesForFramework(root: string, framework: MasterCSSSetupFramework, war
   }
 }
 
-function assertFrameworkSupportsMode(framework: MasterCSSSetupFramework, mode: RenderingMode | undefined) {
+function assertFrameworkSupportsMode(framework: MasterCSSSetupFramework, mode: MasterCSSRenderingMode | undefined) {
   if (!mode) return
   if (framework === 'laravel') {
     if (mode === 'static') return

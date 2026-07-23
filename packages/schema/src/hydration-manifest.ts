@@ -6,33 +6,33 @@ export const MASTER_CSS_HYDRATION_MANIFEST_ATTR = 'data-master-css-hydration-man
 export const MASTER_CSS_HYDRATION_MANIFEST_ASSET_BASE = '/_master-css/hydration/'
 export const MASTER_CSS_HYDRATION_MANIFEST_FILE_BASENAME = 'master-css-hydration'
 
-export interface MasterCSSRulePriorityIR {
-  features?: [string, number, number][]
-  selector: number
+export interface MasterCSSRulePriority {
+  readonly features?: readonly (readonly [string, number, number])[]
+  readonly selector: number
 }
 
-export interface MasterCSSGeneratedRuleNodeIR {
-  text: string
+export interface MasterCSSHydrationRuleNode {
+  readonly text: string
 }
 
-export interface MasterCSSGeneratedRuleIR {
-  className: string
-  key: string
-  layer: MasterCSSManifestUtilityLayerName
-  type: UtilityType
-  sortTier: number
-  priority: MasterCSSRulePriorityIR
-  text: string
-  nodes?: MasterCSSGeneratedRuleNodeIR[]
-  selectorText?: string
-  variableNames?: string[]
-  animationNames?: string[]
+export interface MasterCSSHydrationRule {
+  readonly className: string
+  readonly key: string
+  readonly layer: MasterCSSManifestUtilityLayerName
+  readonly type: UtilityType
+  readonly sortTier: number
+  readonly priority: MasterCSSRulePriority
+  readonly text: string
+  readonly nodes?: readonly MasterCSSHydrationRuleNode[]
+  readonly selectorText?: string
+  readonly variableNames?: readonly string[]
+  readonly animationNames?: readonly string[]
 }
 
 export interface MasterCSSHydrationManifest {
-  version: 1
-  rules: MasterCSSGeneratedRuleIR[]
-  resourceOrder: string[]
+  readonly version: 1
+  readonly rules: readonly MasterCSSHydrationRule[]
+  readonly resourceOrder: readonly string[]
 }
 
 export function serializeMasterCSSHydrationManifest(hydrationManifest: MasterCSSHydrationManifest) {

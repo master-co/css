@@ -1442,9 +1442,9 @@ importers:
         specifier: ^1.6.3
         version: 1.6.3
     devDependencies:
-      '@master/eslint-plugin-css':
+      '@master/eslint-config-css':
         specifier: workspace:^
-        version: link:../packages/eslint-plugin
+        version: link:../packages/eslint-config
       '@types/hast':
         specifier: ^3.0.4
         version: 3.0.4
@@ -1544,6 +1544,9 @@ importers:
 
   packages/create:
     dependencies:
+      '@master/css-schema':
+        specifier: workspace:*
+        version: link:../schema
       commander:
         specifier: ^14.0.3
         version: 14.0.3

@@ -1,19 +1,19 @@
 import { CANONICAL_ESLINT_CONFIG } from './constants'
-import type { RenderingMode } from './modes'
+import type { MasterCSSRenderingMode } from '@master/css-schema/integration'
 
-function formatMasterCSSCall(mode?: RenderingMode) {
+function formatMasterCSSCall(mode?: MasterCSSRenderingMode) {
   return mode ? `masterCSS({ mode: '${mode}' })` : 'masterCSS()'
 }
 
-function formatWebpackPluginCall(mode?: RenderingMode) {
+function formatWebpackPluginCall(mode?: MasterCSSRenderingMode) {
   return mode ? `new MasterCSSPlugin({ mode: '${mode}' })` : 'new MasterCSSPlugin()'
 }
 
-function formatNuxtModule(mode?: RenderingMode) {
+function formatNuxtModule(mode?: MasterCSSRenderingMode) {
   return mode ? `['@master/css-nuxt', { mode: '${mode}' }]` : "'@master/css-nuxt'"
 }
 
-function formatNextCall(target: string, mode?: RenderingMode) {
+function formatNextCall(target: string, mode?: MasterCSSRenderingMode) {
   const awaited = mode === 'static' ? 'await ' : ''
   return mode
     ? `${awaited}withMasterCSS(${target}, { mode: '${mode}' })`
@@ -48,7 +48,7 @@ export function createMasterCSSStylesheet() {
   return "@import '@master/css';\n"
 }
 
-export function addMasterCSSVitePlugin(content: string, mode?: RenderingMode) {
+export function addMasterCSSVitePlugin(content: string, mode?: MasterCSSRenderingMode) {
   return addMasterCSSVitePluginCall(content, formatMasterCSSCall(mode))
 }
 
@@ -66,7 +66,7 @@ export function addMasterCSSStaticVitePlugin(content: string) {
   return addMasterCSSVitePlugin(content, 'static')
 }
 
-export function addMasterCSSTanStackStartVitePlugin(content: string, mode: RenderingMode = 'static') {
+export function addMasterCSSTanStackStartVitePlugin(content: string, mode: MasterCSSRenderingMode = 'static') {
   const pluginCall = formatMasterCSSCall(mode)
   if (content.includes('@master/css-vite')) return content
   let next = addImport(content, "import masterCSS from '@master/css-vite'")
@@ -85,7 +85,7 @@ export function addMasterCSSTanStackStartVitePlugin(content: string, mode: Rende
   return next
 }
 
-export function addMasterCSSRspackPlugin(content: string, mode?: RenderingMode) {
+export function addMasterCSSRspackPlugin(content: string, mode?: MasterCSSRenderingMode) {
   if (content.includes('@master/css-webpack')) return content
   const pluginCall = formatWebpackPluginCall(mode)
   let next = addImport(content, "import MasterCSSPlugin from '@master/css-webpack'")
@@ -98,7 +98,7 @@ export function addMasterCSSRspackPlugin(content: string, mode?: RenderingMode) 
   return next
 }
 
-export function addMasterCSSWebpackPlugin(content: string, mode?: RenderingMode) {
+export function addMasterCSSWebpackPlugin(content: string, mode?: MasterCSSRenderingMode) {
   if (content.includes('@master/css-webpack')) return content
   const pluginCall = formatWebpackPluginCall(mode)
   let next = addImport(content, "import MasterCSSPlugin from '@master/css-webpack'")
@@ -111,7 +111,7 @@ export function addMasterCSSWebpackPlugin(content: string, mode?: RenderingMode)
   return next
 }
 
-export function addMasterCSSRsbuildPlugin(content: string, mode?: RenderingMode) {
+export function addMasterCSSRsbuildPlugin(content: string, mode?: MasterCSSRenderingMode) {
   if (content.includes('@master/css-webpack')) return content
   let next = addImport(content, "import MasterCSSPlugin from '@master/css-webpack'")
   const pluginCall = formatWebpackPluginCall(mode)
@@ -157,7 +157,7 @@ function addMasterCSSVitePluginCall(content: string, pluginCall: string) {
   return next
 }
 
-export function createViteConfig(mode?: RenderingMode) {
+export function createViteConfig(mode?: MasterCSSRenderingMode) {
   return `import { defineConfig } from 'vite'
 import masterCSS from '@master/css-vite'
 
@@ -173,7 +173,7 @@ export function createStaticViteConfig() {
   return createViteConfig('static')
 }
 
-export function createRspackConfig(mode?: RenderingMode) {
+export function createRspackConfig(mode?: MasterCSSRenderingMode) {
   return `import MasterCSSPlugin from '@master/css-webpack'
 
 export default {
@@ -192,7 +192,7 @@ export default {
 `
 }
 
-export function createWebpackConfig(mode?: RenderingMode) {
+export function createWebpackConfig(mode?: MasterCSSRenderingMode) {
   return `import MasterCSSPlugin from '@master/css-webpack'
 
 export default {
@@ -203,7 +203,7 @@ export default {
 `
 }
 
-export function createRsbuildConfig(mode?: RenderingMode) {
+export function createRsbuildConfig(mode?: MasterCSSRenderingMode) {
   return `import { defineConfig } from '@rsbuild/core'
 import MasterCSSPlugin from '@master/css-webpack'
 
@@ -219,7 +219,7 @@ export default defineConfig({
 `
 }
 
-export function createNextConfig(mode?: RenderingMode) {
+export function createNextConfig(mode?: MasterCSSRenderingMode) {
   return `import withMasterCSS from '@master/css-next'
 
 const nextConfig = ${formatNextCall('{}', mode)}
@@ -228,7 +228,7 @@ export default nextConfig
 `
 }
 
-export function addMasterCSSNextConfig(content: string, mode?: RenderingMode) {
+export function addMasterCSSNextConfig(content: string, mode?: MasterCSSRenderingMode) {
   if (content.includes('@master/css-next')) return mode ? addMasterCSSNextMode(content, mode) : content
   const next = addImport(content, "import withMasterCSS from '@master/css-next'")
   if (/export\s+default\s+/.test(next)) {
@@ -240,12 +240,12 @@ export default ${formatNextCall('{}', mode)}
 `
 }
 
-function addMasterCSSNextMode(content: string, mode: RenderingMode) {
+function addMasterCSSNextMode(content: string, mode: MasterCSSRenderingMode) {
   const callPattern = /(?:await\s+)?withMasterCSS\(\s*(\{\s*\}|[A-Za-z_$][\w$]*)\s*(?:,\s*\{[^)]*\})?\s*\)/g
   return content.replace(callPattern, (_match, target: string) => formatNextCall(target, mode))
 }
 
-export function addMasterCSSNuxtModule(content: string, mode?: RenderingMode) {
+export function addMasterCSSNuxtModule(content: string, mode?: MasterCSSRenderingMode) {
   if (content.includes('@master/css-nuxt')) return content
   const moduleEntry = formatNuxtModule(mode)
   if (/modules\s*:\s*\[/.test(content)) {
@@ -257,7 +257,7 @@ export function addMasterCSSNuxtModule(content: string, mode?: RenderingMode) {
   return content
 }
 
-export function createNuxtConfig(mode?: RenderingMode) {
+export function createNuxtConfig(mode?: MasterCSSRenderingMode) {
   return `export default defineNuxtConfig({
   modules: [${formatNuxtModule(mode)}],
   css: ['~/assets/css/master.css']
@@ -265,7 +265,7 @@ export function createNuxtConfig(mode?: RenderingMode) {
 `
 }
 
-export function addMasterCSSAstroIntegration(content: string, mode?: RenderingMode) {
+export function addMasterCSSAstroIntegration(content: string, mode?: MasterCSSRenderingMode) {
   if (content.includes('@master/css-astro')) return content
   const pluginCall = formatMasterCSSCall(mode)
   let next = addImport(content, "import masterCSS from '@master/css-astro'")
@@ -278,7 +278,7 @@ export function addMasterCSSAstroIntegration(content: string, mode?: RenderingMo
   return next
 }
 
-export function createAstroConfig(mode?: RenderingMode) {
+export function createAstroConfig(mode?: MasterCSSRenderingMode) {
   return `import { defineConfig } from 'astro/config'
 import masterCSS from '@master/css-astro'
 

@@ -1,7 +1,7 @@
 import { MasterCSSError } from '@master/css-schema'
 import type { MasterCSSEmittedGlobals } from '@master/css-schema/emitted-globals'
 import type {
-  MasterCSSGeneratedRuleIR,
+  MasterCSSHydrationRule,
   MasterCSSHydrationManifest
 } from '@master/css-schema/hydration-manifest'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
@@ -27,12 +27,12 @@ export interface MasterCSSRenderSnapshot {
   readonly classNames: readonly string[]
   readonly invalidClassNames: readonly string[]
   readonly cssText: string
-  readonly rules: readonly MasterCSSGeneratedRuleIR[]
-  readonly classRules: Readonly<Record<string, readonly MasterCSSGeneratedRuleIR[]>>
+  readonly rules: readonly MasterCSSHydrationRule[]
+  readonly classRules: Readonly<Record<string, readonly MasterCSSHydrationRule[]>>
   readonly engine: MasterCSSEngineSnapshot
   readonly emittedGlobals: MasterCSSEmittedGlobals
   readonly hydrationManifest: Readonly<Omit<MasterCSSHydrationManifest, 'rules' | 'resourceOrder'>> & {
-    readonly rules: readonly MasterCSSGeneratedRuleIR[]
+    readonly rules: readonly MasterCSSHydrationRule[]
     readonly resourceOrder: readonly string[]
   }
 }
@@ -63,7 +63,7 @@ function toSnapshot(
   rendered: BackendRenderResult,
   emittedGlobals: MasterCSSEmittedGlobals
 ): MasterCSSRenderSnapshot {
-  const classRules: Record<string, MasterCSSGeneratedRuleIR[]> = Object.create(null)
+  const classRules: Record<string, MasterCSSHydrationRule[]> = Object.create(null)
   for (const rule of rendered.snapshot.rules) {
     ;(classRules[rule.className] ||= []).push(rule)
   }

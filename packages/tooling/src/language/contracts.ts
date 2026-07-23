@@ -1,4 +1,4 @@
-import type { MasterCSSGeneratedRuleIR } from '@master/css-schema/hydration-manifest'
+import type { MasterCSSHydrationRule } from '@master/css-schema/hydration-manifest'
 import type {
   MasterCSSManifestVariable,
   MasterCSSManifestVariableNumericValue
@@ -106,7 +106,7 @@ export interface MasterCSSLanguageInspection {
   readonly important: boolean
   readonly matcherTypes: readonly ('static' | 'pattern' | 'key' | 'variable' | 'value')[]
   readonly variables: readonly MasterCSSLanguageClassVariable[]
-  readonly rules: readonly MasterCSSGeneratedRuleIR[]
+  readonly rules: readonly MasterCSSHydrationRule[]
   readonly text: string
 }
 

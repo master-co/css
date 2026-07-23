@@ -1,5 +1,5 @@
 import type RuntimeLayer from './layer'
-import type { MasterCSSGeneratedRuleIR } from '@master/css-schema/hydration-manifest'
+import type { MasterCSSHydrationRule } from '@master/css-schema/hydration-manifest'
 
 export class HydratedGeneratedRuleNode {
   native?: CSSRule
@@ -13,10 +13,10 @@ export default class HydratedGeneratedRule {
   native?: CSSRule
   readonly name: string
   readonly key: string
-  readonly layerName: MasterCSSGeneratedRuleIR['layer']
-  readonly type: MasterCSSGeneratedRuleIR['type']
-  readonly sortTier: MasterCSSGeneratedRuleIR['sortTier']
-  readonly priority: MasterCSSGeneratedRuleIR['priority']
+  readonly layerName: MasterCSSHydrationRule['layer']
+  readonly type: MasterCSSHydrationRule['type']
+  readonly sortTier: MasterCSSHydrationRule['sortTier']
+  readonly priority: MasterCSSHydrationRule['priority']
   readonly text: string
   readonly valid = true
   readonly fixedClass?: string
@@ -26,7 +26,7 @@ export default class HydratedGeneratedRule {
   readonly selectorText?: string
 
   constructor(
-    public readonly ir: MasterCSSGeneratedRuleIR,
+    public readonly ir: MasterCSSHydrationRule,
     public readonly layer: RuntimeLayer
   ) {
     this.name = ir.className
