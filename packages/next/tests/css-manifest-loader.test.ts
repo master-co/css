@@ -90,7 +90,8 @@ describe('css manifest loader', () => {
 
     expect(source).toContain('/_next/static/media/master-css-manifest.')
     expect(source).toContain('loadMasterCSSManifestFromFetch')
-    expect(source).toContain('const masterCSSManifestResponse = await fetch(specifier);')
+    expect(source).toContain('async function loadMasterCSSManifestFromFetch(url)')
+    expect(source).toContain('const response = await fetch(specifier);')
     expect(source).toContain('export default await loadMasterCSSManifestFromFetch(masterCSSManifestURL);')
     expect(source).toContain(`with: { type: 'json' }`)
     expect(source).toContain('fetch(')
