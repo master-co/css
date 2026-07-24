@@ -15,6 +15,7 @@ import {
   toManifestJSON,
   toManifestPreloadLinkAttrs,
   toManifestPreloadLinkTag,
+  toBrowserManifestFacadeModule,
   toEmittedGlobalsModule,
   toUniversalManifestFacadeModule
 } from '../src/module'
@@ -69,9 +70,24 @@ describe('@master/css-integration module helpers', () => {
     expect(source).toContain(`join(process.cwd(), '.next', value.slice('/_next/'.length))`)
     expect(source).toContain(`join(process.cwd(), '.next', 'dev', value.slice('/_next/'.length))`)
     expect(source).toContain('for (const file of files)')
+    // Node branch keeps the JSON import attribute (Node supports it).
     expect(source).toContain(`return import(specifier, options)`)
     expect(source).toContain(`with: { type: 'json' }`)
-    expect(source).not.toContain('fetch(')
+    // Browser branch loads via fetch; import attributes break Safari < 17.2 (iOS 15/16).
+    expect(source).toContain('await fetch(specifier)')
+    expect(source).toContain(': await loadMasterCSSManifestFromFetch(masterCSSManifestURL)')
     expect(source).not.toContain('readFile')
+  })
+
+  it('builds a browser manifest facade that avoids import attributes', () => {
+    const source = toBrowserManifestFacadeModule('new URL("./master-css-manifest.json", import.meta.url)')
+
+    // Must load the manifest with fetch, never `import(url, { with: { type: 'json' } })`.
+    // Import attributes are a SyntaxError on Safari < 17.2 (all iOS 15/16), and evaluating
+    // them — even inside `new Function` — breaks the entire app at bootstrap with a blank page.
+    expect(source).toContain('await fetch(')
+    expect(source).toContain('.json()')
+    expect(source).not.toContain('with: { type:')
+    expect(source).not.toContain('new Function')
   })
 })
