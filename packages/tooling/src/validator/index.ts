@@ -1,4 +1,4 @@
-import type { MasterCSSBackend } from '@master/css-backend'
+import type { MasterCSSBinding } from '@master/css-binding'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import { createToolingSession } from '../tooling-session'
 import type { MasterCSSClassValidationResult } from './contracts'
@@ -12,7 +12,7 @@ export async function validateClassNames(
   classNames: readonly string[],
   options: {
     readonly manifest: MasterCSSManifest
-    readonly backend?: MasterCSSBackend
+    readonly binding?: MasterCSSBinding
   }
 ): Promise<MasterCSSClassValidationResult> {
   const session = await createToolingSession(options)

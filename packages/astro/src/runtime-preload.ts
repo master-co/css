@@ -4,7 +4,7 @@ import { fileURLToPath } from 'node:url'
 import { toManifestPreloadLinkTag } from '@master/css-internal/manifest-facade'
 
 const RUNTIME_MANIFEST_REFERENCE_PATTERN = /new URL\((["'])([^"']*master-css-manifest[^"']*\.json)\1\s*,\s*import\.meta\.url\)\.href/g
-const RUNTIME_WASM_REFERENCE_PATTERN = /new URL\((["'])([^"']*mastercss_wasm_runtime[^"']*\.wasm)\1\s*,\s*import\.meta\.url\)/g
+const RUNTIME_WASM_REFERENCE_PATTERN = /new URL\((["'])([^"']*mastercss_binding_wasm_engine[^"']*\.wasm)\1\s*,\s*import\.meta\.url\)/g
 
 function escapeRegExp(source: string) {
   return source.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
@@ -136,7 +136,7 @@ async function findRuntimePreloadAssets(files: string[]) {
   }
   const manifestFile = files.find(isManifestAssetFile)
   if (!manifestFile) return
-  const wasmFile = files.find((file) => basename(file).includes('mastercss_wasm_runtime') && file.endsWith('.wasm'))
+  const wasmFile = files.find((file) => basename(file).includes('mastercss_binding_wasm_engine') && file.endsWith('.wasm'))
   return { manifestFile, wasmFile }
 }
 

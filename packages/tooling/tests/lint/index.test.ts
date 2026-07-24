@@ -11,7 +11,7 @@ import { createPresetManifest } from './helpers/create-preset-manifest'
 
 beforeAll(() => {
   process.env.MASTER_CSS_NATIVE_BINDING_PATH = new URL(
-    '../../../native/artifacts/mastercss.node',
+    '../../../binding/artifacts/mastercss.node',
     import.meta.url
   ).pathname
 })

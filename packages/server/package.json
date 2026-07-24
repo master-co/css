@@ -58,7 +58,7 @@
     "@master/css-schema": "workspace:*"
   },
   "devDependencies": {
-    "@master/css-backend": "workspace:*",
+    "@master/css-binding": "workspace:*",
     "@master/css": "workspace:*",
     "@master/css-compiler": "workspace:*"
   }

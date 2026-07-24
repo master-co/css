@@ -26,7 +26,7 @@ compiler.dispose()
 ```
 
 The universal entry prefers the native binding in Node and falls back to
-`wasm-compiler`. It never runs a TypeScript parser, lowerer, or CSS transformer.
+`binding-wasm-compiler`. It never runs a TypeScript parser, lowerer, or CSS transformer.
 Session methods are synchronous after asynchronous initialization.
 
 The session exposes batched Rust operations for CSS inspection, directive compilation,
@@ -61,7 +61,7 @@ const result = compiler.compileCSS(source)
 compiler.dispose()
 ```
 
-The browser entry loads only `wasm-compiler`. Browser compilation cannot resolve
+The browser entry loads only `binding-wasm-compiler`. Browser compilation cannot resolve
 filesystem `@reference` directives unless the host provides a prepared graph.
 
 The former TypeScript `core`, `lowerCSSDirectives`, and

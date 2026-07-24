@@ -1,10 +1,10 @@
 import type { MasterCSSDiagnostic } from '@master/css-schema'
 import type {
-  MasterCSSBackend,
-  MasterCSSWasmBackendLoadOptions
-} from '@master/css-backend'
+  MasterCSSBinding,
+  MasterCSSWasmBindingLoadOptions
+} from '@master/css-binding'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
-import { createCompilerBackendSession } from './session'
+import { createCompilerBindingSession } from './session'
 import {
   MasterCSSCompiler,
   bindCompilerSessionInternal
@@ -13,8 +13,8 @@ import {
 export { MasterCSSCompiler } from './compiler'
 
 export interface MasterCSSCompilerOptions {
-  readonly backend?: MasterCSSBackend
-  readonly wasm?: MasterCSSWasmBackendLoadOptions
+  readonly binding?: MasterCSSBinding
+  readonly wasm?: MasterCSSWasmBindingLoadOptions
 }
 
 export interface MasterCSSCompileOptions {
@@ -73,8 +73,8 @@ export interface MasterCSSCompilerInspection {
 export async function createCompiler(
   options: MasterCSSCompilerOptions = {}
 ): Promise<MasterCSSCompiler> {
-  return bindCompilerSessionInternal(await createCompilerBackendSession({
-    backend: options.backend,
+  return bindCompilerSessionInternal(await createCompilerBindingSession({
+    binding: options.binding,
     wasm: options.wasm
   }))
 }

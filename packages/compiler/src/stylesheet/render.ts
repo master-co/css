@@ -1,4 +1,4 @@
-import { createRenderBackendSessionSync } from '@master/css-backend/engine/node'
+import { createRenderBindingSessionSync } from '@master/css-binding/engine/node'
 import { supportsNativeDeclaration } from '@master/css-tooling/node'
 import {
   renderCompiledManifestCSSWithSession,
@@ -13,7 +13,7 @@ export type {
 } from './render-core'
 
 export function renderCompiledManifestCSS(options: RenderCompiledManifestCSSOptions): RenderCompiledManifestCSSResult {
-  const nativeSession = createRenderBackendSessionSync(options)
+  const nativeSession = createRenderBindingSessionSync(options)
   const session: StylesheetRenderSession = {
     nativeDeclarationCandidates: (classNames) =>
       [...nativeSession.nativeDeclarationCandidates(classNames)],

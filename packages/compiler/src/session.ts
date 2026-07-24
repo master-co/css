@@ -1,36 +1,36 @@
 import {
-  createCompilerBackendSession as createBackendSession,
-  type MasterCSSBackendLoadOptions,
+  createCompilerBindingSession as createBindingSession,
+  type MasterCSSBindingLoadOptions,
   type MasterCSSCompileDefaultPresetRequest,
   type MasterCSSCompileManifestOptions,
-  type MasterCSSCompilerBackendSession,
+  type MasterCSSCompilerBindingSession,
   type MasterCSSDirectiveCompileOptions,
   type MasterCSSDirectiveExtractionPolicy,
   type MasterCSSDirectiveManifestInput,
   type MasterCSSImportGraphRequest,
   type MasterCSSLowerDirectivesOptions,
   type MasterCSSLowerDirectivesRequest
-} from '@master/css-backend/compiler'
+} from '@master/css-binding/compiler'
 import {
   type MasterCSSManifest
 } from '@master/css-schema/manifest'
 import type { CompileCSSOptions, CompileCSSResult } from './contracts'
 
-export interface BackendCompilerSession {
-  readonly backend: MasterCSSCompilerBackendSession['backend']
-  inspectCSS: MasterCSSCompilerBackendSession['inspectCSS']
+export interface BindingCompilerSession {
+  readonly binding: MasterCSSCompilerBindingSession['binding']
+  inspectCSS: MasterCSSCompilerBindingSession['inspectCSS']
   compileCSS(source: string, options?: CompileCSSOptions): CompileCSSResult
-  compileThemeCSS: MasterCSSCompilerBackendSession['compileThemeCSS']
-  analyzeCSSDependencies: MasterCSSCompilerBackendSession['analyzeCSSDependencies']
-  analyzeStandaloneDirectives: MasterCSSCompilerBackendSession['analyzeStandaloneDirectives']
-  mergeCSSExtractionPolicies: MasterCSSCompilerBackendSession['mergeCSSExtractionPolicies']
-  filterCSSExtractionCandidates: MasterCSSCompilerBackendSession['filterCSSExtractionCandidates']
-  compileManifestInput: MasterCSSCompilerBackendSession['compileManifestInput']
-  lowerCSSDirectives: MasterCSSCompilerBackendSession['lowerCSSDirectives']
-  normalizeManifest: MasterCSSCompilerBackendSession['normalizeManifest']
-  normalizeDefaultManifest: MasterCSSCompilerBackendSession['normalizeDefaultManifest']
-  compileDefaultPresetManifest: MasterCSSCompilerBackendSession['compileDefaultPresetManifest']
-  resolveCSSImportGraph: MasterCSSCompilerBackendSession['resolveCSSImportGraph']
+  compileThemeCSS: MasterCSSCompilerBindingSession['compileThemeCSS']
+  analyzeCSSDependencies: MasterCSSCompilerBindingSession['analyzeCSSDependencies']
+  analyzeStandaloneDirectives: MasterCSSCompilerBindingSession['analyzeStandaloneDirectives']
+  mergeCSSExtractionPolicies: MasterCSSCompilerBindingSession['mergeCSSExtractionPolicies']
+  filterCSSExtractionCandidates: MasterCSSCompilerBindingSession['filterCSSExtractionCandidates']
+  compileManifestInput: MasterCSSCompilerBindingSession['compileManifestInput']
+  lowerCSSDirectives: MasterCSSCompilerBindingSession['lowerCSSDirectives']
+  normalizeManifest: MasterCSSCompilerBindingSession['normalizeManifest']
+  normalizeDefaultManifest: MasterCSSCompilerBindingSession['normalizeDefaultManifest']
+  compileDefaultPresetManifest: MasterCSSCompilerBindingSession['compileDefaultPresetManifest']
+  resolveCSSImportGraph: MasterCSSCompilerBindingSession['resolveCSSImportGraph']
   dispose(): void
 }
 
@@ -44,9 +44,9 @@ function reviveCompileResult(result: CompileCSSResult) {
   return result
 }
 
-function bindCompilerSession(session: MasterCSSCompilerBackendSession): BackendCompilerSession {
+function bindCompilerSession(session: MasterCSSCompilerBindingSession): BindingCompilerSession {
   return {
-    backend: session.backend,
+    binding: session.binding,
     inspectCSS: (source: string) => session.inspectCSS(source),
     compileCSS(source, options = {}) {
       return reviveCompileResult(session.compileCSSDirectives(source, {
@@ -65,7 +65,7 @@ function bindCompilerSession(session: MasterCSSCompilerBackendSession): BackendC
     filterCSSExtractionCandidates: (
       candidates: readonly string[],
       blocklist: Parameters<
-        MasterCSSCompilerBackendSession['filterCSSExtractionCandidates']
+        MasterCSSCompilerBindingSession['filterCSSExtractionCandidates']
       >[1]
     ) =>
       session.filterCSSExtractionCandidates(candidates, blocklist),
@@ -90,15 +90,15 @@ function bindCompilerSession(session: MasterCSSCompilerBackendSession): BackendC
   }
 }
 
-export async function createCompilerBackendSession(
-  options: MasterCSSBackendLoadOptions = {}
-): Promise<BackendCompilerSession> {
-  return bindCompilerSession(await createBackendSession(options))
+export async function createCompilerBindingSession(
+  options: MasterCSSBindingLoadOptions = {}
+): Promise<BindingCompilerSession> {
+  return bindCompilerSession(await createBindingSession(options))
 }
 
 /** @internal */
-export function bindCompilerBackendSessionInternal(
-  session: MasterCSSCompilerBackendSession
-): BackendCompilerSession {
+export function bindCompilerBindingSessionInternal(
+  session: MasterCSSCompilerBindingSession
+): BindingCompilerSession {
   return bindCompilerSession(session)
 }

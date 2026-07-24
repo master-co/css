@@ -1,4 +1,4 @@
-import type { MasterCSSBackend } from '@master/css-backend'
+import type { MasterCSSBinding } from '@master/css-binding'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import { createToolingSession } from '../tooling-session'
 import type {
@@ -21,7 +21,7 @@ export async function analyzeClassList(
   request: MasterCSSClassListAnalysisRequest,
   options: {
     readonly manifest: MasterCSSManifest
-    readonly backend?: MasterCSSBackend
+    readonly binding?: MasterCSSBinding
   }
 ): Promise<MasterCSSClassListAnalysis> {
   const session = await createToolingSession(options)

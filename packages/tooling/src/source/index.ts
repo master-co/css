@@ -1,4 +1,4 @@
-import type { MasterCSSBackend } from '@master/css-backend'
+import type { MasterCSSBinding } from '@master/css-binding'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import { createToolingSession } from '../tooling-session'
 import type {
@@ -18,7 +18,7 @@ export async function extractSource(
   request: MasterCSSSourceExtractionRequest,
   options: {
     readonly manifest: MasterCSSManifest
-    readonly backend?: MasterCSSBackend
+    readonly binding?: MasterCSSBinding
   }
 ): Promise<MasterCSSSourceExtraction> {
   const session = await createToolingSession(options)

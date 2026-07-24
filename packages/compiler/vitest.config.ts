@@ -7,16 +7,16 @@ export default defineConfig({
   resolve: {
     alias: [
       {
-        find: /^@master\/css-wasm-compiler$/,
+        find: /^@master\/css-binding-wasm-compiler$/,
         replacement: fileURLToPath(new URL(
-          '../wasm-compiler/src/provider-node.ts',
+          '../binding-wasm-compiler/src/provider-node.ts',
           import.meta.url
         ))
       },
       {
-        find: /^@master\/css-wasm-engine$/,
+        find: /^@master\/css-binding-wasm-engine$/,
         replacement: fileURLToPath(new URL(
-          '../wasm-runtime/src/provider-node.ts',
+          '../binding-wasm-engine/src/provider-node.ts',
           import.meta.url
         ))
       }

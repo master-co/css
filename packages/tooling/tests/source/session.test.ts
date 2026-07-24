@@ -4,7 +4,7 @@ import { createTestToolingSession } from '../helpers/create-tooling-session'
 test('extracts built-in source formats through the native Rust session', () => {
   const extractor = createTestToolingSession()
 
-  expect(extractor.backend).toBe('native')
+  expect(extractor.binding).toBe('native')
   expect(extractor.extractSource({
     files: [{
       source: 'index.html',

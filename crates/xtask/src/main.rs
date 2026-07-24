@@ -19,15 +19,15 @@ use sha2::{Digest, Sha256};
 
 const GENERATED_CONTRACT_TEMPLATE: &str = include_str!("../templates/rust-contract.ts");
 static COPY_NONCE: AtomicU64 = AtomicU64::new(0);
-const NATIVE_TARGET_PACKAGES: [&str; 8] = [
-    "native-darwin-arm64",
-    "native-darwin-x64",
-    "native-linux-arm64-gnu",
-    "native-linux-arm64-musl",
-    "native-linux-x64-gnu",
-    "native-linux-x64-musl",
-    "native-win32-arm64-msvc",
-    "native-win32-x64-msvc",
+const BINDING_TARGET_PACKAGES: [&str; 8] = [
+    "binding-darwin-arm64",
+    "binding-darwin-x64",
+    "binding-linux-arm64-gnu",
+    "binding-linux-arm64-musl",
+    "binding-linux-x64-gnu",
+    "binding-linux-x64-musl",
+    "binding-win32-arm64-msvc",
+    "binding-win32-x64-msvc",
 ];
 
 #[derive(Deserialize)]
@@ -284,11 +284,11 @@ fn codegen(check: bool) -> Result<(), String> {
     let root = workspace_root();
     let outputs = [
         (
-            root.join("packages/native/src/protocol.ts"),
+            root.join("packages/binding/src/protocol.ts"),
             generated_contract(),
         ),
         (
-            root.join("packages/native/src/version.ts"),
+            root.join("packages/binding/src/version.ts"),
             generated_package_version(),
         ),
         (
@@ -801,7 +801,7 @@ fn build_native(release: bool) -> Result<(), String> {
     command.current_dir(&root).args([
         "build",
         "--package",
-        "mastercss-napi",
+        "mastercss-binding-native",
         "--package",
         "mastercss-cli",
     ]);
@@ -812,17 +812,19 @@ fn build_native(release: bool) -> Result<(), String> {
 
     let profile = if release { "release" } else { "debug" };
     let candidates = if cfg!(target_os = "macos") {
-        vec![root.join(format!("target/{profile}/libmastercss_napi.dylib"))]
+        vec![root.join(format!(
+            "target/{profile}/libmastercss_binding_native.dylib"
+        ))]
     } else if cfg!(target_os = "windows") {
-        vec![root.join(format!("target/{profile}/mastercss_napi.dll"))]
+        vec![root.join(format!("target/{profile}/mastercss_binding_native.dll"))]
     } else {
-        vec![root.join(format!("target/{profile}/libmastercss_napi.so"))]
+        vec![root.join(format!("target/{profile}/libmastercss_binding_native.so"))]
     };
     let source = candidates
         .into_iter()
         .find(|path| path.exists())
         .ok_or_else(|| "Cargo did not produce the expected native binding artifact.".to_string())?;
-    let output_dir = root.join("packages/native/artifacts");
+    let output_dir = root.join("packages/binding/artifacts");
     fs::create_dir_all(&output_dir)
         .map_err(|error| format!("Cannot create {}: {error}", output_dir.display()))?;
     let output = output_dir.join("mastercss.node");
@@ -841,12 +843,12 @@ fn build_native(release: bool) -> Result<(), String> {
 }
 
 fn stage_native_target(package: &str, release: bool) -> Result<(), String> {
-    if !NATIVE_TARGET_PACKAGES.contains(&package) {
+    if !BINDING_TARGET_PACKAGES.contains(&package) {
         return Err(format!("Unknown native target package: {package}"));
     }
     build_native(release)?;
     let root = workspace_root();
-    let artifact_dir = root.join("packages/native/artifacts");
+    let artifact_dir = root.join("packages/binding/artifacts");
     let package_dir = root.join("packages").join(package);
     let executable_name = if package.contains("win32") {
         "mcss.exe"
@@ -942,7 +944,7 @@ fn assemble_native_release_at(
     verify_staged: bool,
 ) -> Result<(), String> {
     let mut packages = Vec::new();
-    for package in NATIVE_TARGET_PACKAGES {
+    for package in BINDING_TARGET_PACKAGES {
         let artifact_dir = native_artifact_directory(artifacts_root, package)?;
         let package_json_path = artifact_dir.join("package.json");
         let package_json: NativePackageJson =
@@ -988,7 +990,7 @@ fn assemble_native_release_at(
         let executable_path = artifact_dir.join(executable_name);
         packages.push(NativeArtifactPackage {
             package_name: expected_name,
-            target: package.trim_start_matches("native-").to_owned(),
+            target: package.trim_start_matches("binding-").to_owned(),
             addon: artifact_checksum(&addon_path, format!("packages/{package}/mastercss.node"))?,
             executable: artifact_checksum(
                 &executable_path,
@@ -1021,7 +1023,7 @@ fn assemble_native_release_at(
     let mut assets = Vec::new();
     let public_assets = [
         "packages/runtime/dist/global.min.js",
-        "packages/runtime/artifacts/mastercss_wasm_runtime_bg.wasm",
+        "packages/runtime/artifacts/mastercss_binding_wasm_engine_bg.wasm",
         "packages/preset/dist/default-manifest.json",
     ];
     for relative in public_assets {
@@ -1060,19 +1062,19 @@ fn build_wasm(surface: &str) -> Result<(), String> {
     let root = workspace_root();
     let (package, crate_name, artifact_name) = match surface {
         "runtime" => (
-            "wasm-runtime",
-            "mastercss-wasm-runtime",
-            "mastercss_wasm_runtime",
+            "binding-wasm-engine",
+            "mastercss-binding-wasm-engine",
+            "mastercss_binding_wasm_engine",
         ),
         "compiler" => (
-            "wasm-compiler",
-            "mastercss-wasm-compiler",
-            "mastercss_wasm_compiler",
+            "binding-wasm-compiler",
+            "mastercss-binding-wasm-compiler",
+            "mastercss_binding_wasm_compiler",
         ),
         "tooling" => (
-            "wasm-tooling",
-            "mastercss-wasm-tooling",
-            "mastercss_wasm_tooling",
+            "binding-wasm-tooling",
+            "mastercss-binding-wasm-tooling",
+            "mastercss_binding_wasm_tooling",
         ),
         _ => return Err(format!("Unknown Wasm surface: {surface}")),
     };
@@ -1107,8 +1109,8 @@ fn build_wasm(surface: &str) -> Result<(), String> {
         fs::create_dir_all(&runtime_output)
             .map_err(|error| format!("Cannot create {}: {error}", runtime_output.display()))?;
         fs::copy(
-            output.join("mastercss_wasm_runtime_bg.wasm"),
-            runtime_output.join("mastercss_wasm_runtime_bg.wasm"),
+            output.join("mastercss_binding_wasm_engine_bg.wasm"),
+            runtime_output.join("mastercss_binding_wasm_engine_bg.wasm"),
         )
         .map_err(|error| format!("Cannot stage runtime Wasm asset: {error}"))?;
     }
@@ -1213,7 +1215,7 @@ mod tests {
     fn assembles_all_native_packages_and_writes_stable_checksums() {
         let root = temporary_directory("native-release");
         fs::create_dir_all(&root).unwrap();
-        for package in NATIVE_TARGET_PACKAGES {
+        for package in BINDING_TARGET_PACKAGES {
             let directory = root.join(format!("mastercss-{package}"));
             fs::create_dir_all(&directory).unwrap();
             fs::create_dir_all(root.join("packages").join(package)).unwrap();
@@ -1247,7 +1249,7 @@ mod tests {
                 .as_str()
                 .is_some_and(|checksum| checksum.len() == 64)
         );
-        let staged_addon = root.join("packages/native-darwin-arm64/mastercss.node");
+        let staged_addon = root.join("packages/binding-darwin-arm64/mastercss.node");
         fs::write(&staged_addon, "modified after staging").unwrap();
         assert_eq!(
             assemble_native_release_at(
@@ -1259,7 +1261,7 @@ mod tests {
                 true,
             )
             .unwrap_err(),
-            "Staged native artifact differs from release input: packages/native-darwin-arm64/mastercss.node"
+            "Staged native artifact differs from release input: packages/binding-darwin-arm64/mastercss.node"
         );
         let required_output = root.join("required-checksums.json");
         assert_eq!(

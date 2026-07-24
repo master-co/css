@@ -1,7 +1,7 @@
-export const MASTER_CSS_DIAGNOSTIC_VERSION = 1 as const
+export const MASTER_CSS_DIAGNOSTIC_VERSION = 2 as const
 
 export type MasterCSSDiagnosticDomain =
-  | 'backend'
+  | 'binding'
   | 'compiler'
   | 'engine'
   | 'integration'

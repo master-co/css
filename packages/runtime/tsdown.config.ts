@@ -1,14 +1,14 @@
 import { fileURLToPath } from 'node:url'
 import { defineConfig } from 'tsdown'
 
-const browserBackendBroker = {
-  name: 'browser-backend-broker',
+const browserBindingLoader = {
+  name: 'browser-binding-loader',
   resolveId: {
     order: 'pre' as const,
     handler(source: string) {
-      if (source === '@master/css-backend/engine') {
+      if (source === '@master/css-binding/engine') {
         return fileURLToPath(new URL(
-          '../native/src/broker-engine-browser.ts',
+          '../binding/src/engine-binding-browser.ts',
           import.meta.url
         ))
       }
@@ -43,7 +43,7 @@ export default defineConfig([
     platform: 'browser',
     tsconfig: './tsconfig.prod.json',
     dts: false,
-    plugins: [browserBackendBroker],
+    plugins: [browserBindingLoader],
     outputOptions: {
       entryFileNames: '[name].js',
       codeSplitting: false
@@ -59,7 +59,7 @@ export default defineConfig([
     },
     tsconfig: './tsconfig.prod.json',
     dts: false,
-    plugins: [browserBackendBroker],
+    plugins: [browserBindingLoader],
     deps: {
       alwaysBundle: [/^[^./]/],
       onlyBundle: false

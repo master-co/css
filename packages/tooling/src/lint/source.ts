@@ -1,4 +1,4 @@
-import type { MasterCSSSourceRange as SourceRange } from '@master/css-backend/tooling'
+import type { MasterCSSSourceRange as SourceRange } from '@master/css-binding/tooling'
 import {
   type MasterCSSCanonicalClassesReportOptions,
   type MasterCSSInvalidClassesReportOptions,

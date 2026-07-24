@@ -14,10 +14,10 @@ members = [
   "crates/mastercss-scanner",
   "crates/mastercss-render",
   "crates/mastercss-validator",
-  "crates/mastercss-napi",
-  "crates/mastercss-wasm-runtime",
-  "crates/mastercss-wasm-compiler",
-  "crates/mastercss-wasm-tooling",
+  "crates/mastercss-binding-native",
+  "crates/mastercss-binding-wasm-engine",
+  "crates/mastercss-binding-wasm-compiler",
+  "crates/mastercss-binding-wasm-tooling",
   "crates/xtask",
 ]
 
@@ -57,11 +57,11 @@ lto = "thin"
 codegen-units = 1
 strip = "symbols"
 
-[profile.release.package.mastercss-wasm-runtime]
+[profile.release.package.mastercss-binding-wasm-engine]
 opt-level = "s"
 
-[profile.release.package.mastercss-wasm-compiler]
+[profile.release.package.mastercss-binding-wasm-compiler]
 opt-level = "s"
 
-[profile.release.package.mastercss-wasm-tooling]
+[profile.release.package.mastercss-binding-wasm-tooling]
 opt-level = "s"

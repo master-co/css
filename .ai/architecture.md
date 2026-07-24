@@ -5,7 +5,7 @@
 ```txt
 external data / repository build support
   -> @master/css-schema
-  -> @master/css-backend / @master/css-wasm-{engine,compiler,tooling}
+  -> @master/css-binding / @master/css-binding-wasm-{engine,compiler,tooling}
   -> @master/css-preset
   -> @master/css / @master/css-tooling
   -> @master/css-compiler

@@ -82,7 +82,7 @@ function getRuntimeFiles(compilation: Compilation, entryName: string) {
 
 function getRuntimeWasmFiles(assets: Compilation['assets']) {
   return Object.keys(assets).filter((fileName) =>
-    fileName.endsWith('.wasm') && fileName.includes('mastercss_wasm_runtime')
+    fileName.endsWith('.wasm') && fileName.includes('mastercss_binding_wasm_engine')
   )
 }
 

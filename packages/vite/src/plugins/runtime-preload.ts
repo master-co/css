@@ -20,8 +20,8 @@ function findRuntimeWasmFileName(bundle: Record<string, OutputChunkLike>) {
     if (output.type !== 'asset' || !output.fileName?.endsWith('.wasm')) continue
     const names = [output.name, ...(output.originalFileNames || [])].filter(Boolean)
     if (
-      output.fileName.includes('mastercss_wasm_runtime')
-      || names.some((name) => name?.includes('mastercss_wasm_runtime'))
+      output.fileName.includes('mastercss_binding_wasm_engine')
+      || names.some((name) => name?.includes('mastercss_binding_wasm_engine'))
     ) {
       return output.fileName
     }

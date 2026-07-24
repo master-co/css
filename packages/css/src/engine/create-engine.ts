@@ -1,21 +1,21 @@
-import { createEngineBackendSession } from '@master/css-backend/engine'
+import { createEngineBindingSession } from '@master/css-binding/engine'
 import BoundEngine from './bound-engine'
 import {
   type MasterCSSEngine,
   type MasterCSSEngineOptions
-} from './backend'
+} from './binding'
 
 export default async function createEngine(
   options: MasterCSSEngineOptions
 ): Promise<MasterCSSEngine> {
-  if (options.backend && typeof options.backend === 'object') {
-    return await options.backend.createEngine({
+  if (options.binding && typeof options.binding === 'object') {
+    return await options.binding.createEngine({
       manifest: options.manifest,
       emittedGlobals: options.emittedGlobals
     })
   }
-  const session = await createEngineBackendSession(options, {
-    backend: options.backend
+  const session = await createEngineBindingSession(options, {
+    binding: options.binding
   })
-  return new BoundEngine(session.backend, session)
+  return new BoundEngine(session.binding, session)
 }

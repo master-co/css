@@ -1,7 +1,7 @@
 import type {
   MasterCSSNativeDeclarationCandidate
-} from '@master/css-backend/tooling'
-import { MASTER_CSS_LANGUAGE_BATCH_VERSION } from '@master/css-backend/tooling'
+} from '@master/css-binding/tooling'
+import { MASTER_CSS_LANGUAGE_BATCH_VERSION } from '@master/css-binding/tooling'
 import { MasterCSSError } from '@master/css-schema'
 import { matchesLanguageServiceNativeDeclaration } from './master-css'
 import type {
@@ -17,7 +17,7 @@ import type {
   MasterCSSLanguageInspection
 } from './contracts'
 
-interface BackendLanguageSession {
+interface BindingLanguageSession {
   analyzeDocument(request: unknown): unknown
   formatDirectives(request: unknown): unknown
   nativeDeclarationCandidates(classNames: string[]): unknown
@@ -30,7 +30,7 @@ interface BackendLanguageSession {
 }
 
 export interface LanguageSession {
-  readonly backend: 'native' | 'wasm'
+  readonly binding: 'native' | 'wasm'
   analyzeDocument(request: MasterCSSDocumentAnalysisRequest): MasterCSSDocumentAnalysis
   formatDirectives(request: MasterCSSFormatDirectivesRequest): MasterCSSFormatDirectivesResult
   classifyClassNames(classNames: readonly string[]): MasterCSSLanguageClassifications
@@ -57,14 +57,14 @@ function validate<T extends { version: number }>(value: T): T {
 }
 
 export function bindLanguageSession(
-  backend: LanguageSession['backend'],
-  session: BackendLanguageSession
+  binding: LanguageSession['binding'],
+  session: BindingLanguageSession
 ): LanguageSession {
   const nativeSupport = (classNames: string[]) => parse<MasterCSSNativeDeclarationCandidate[]>(
     session.nativeDeclarationCandidates(classNames)
   ).map(matchesLanguageServiceNativeDeclaration)
   return {
-    backend,
+    binding,
     analyzeDocument(request) {
       return validate(parse<MasterCSSDocumentAnalysis>(session.analyzeDocument(request)))
     },

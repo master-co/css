@@ -1,0 +1,12 @@
+{
+  "name": "@master/css-binding-win32-arm64-msvc",
+  "type": "commonjs",
+  "engines": { "node": "^24" },
+  "license": "MIT",
+  "description": "Master CSS native binding for Windows ARM64.",
+  "exports": { ".": "./mastercss.node" },
+  "os": ["win32"],
+  "cpu": ["arm64"],
+  "files": ["mastercss.node", "mcss.exe"],
+  "publishConfig": { "access": "public", "provenance": true }
+}

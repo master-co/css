@@ -1,11 +1,11 @@
 import { beforeAll, expect, test } from 'vitest'
-import { createToolingBackendSync } from '@master/css-backend/tooling/node'
+import { createToolingBindingSync } from '@master/css-binding/tooling/node'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import { MasterCSSScanner } from './test-scanner'
 
 beforeAll(() => {
   process.env.MASTER_CSS_NATIVE_BINDING_PATH = new URL(
-    '../../../native/artifacts/mastercss.node',
+    '../../../binding/artifacts/mastercss.node',
     import.meta.url
   ).pathname
 })
@@ -39,7 +39,7 @@ const manifest = {
 test('Rust scanner cache/state matches the TypeScript scanner oracle slice', async () => {
   const source = 'export const App = () => <div className="block unknown fg:red" />'
   const oracle = await new MasterCSSScanner({ manifest }).init()
-  using scanner = createToolingBackendSync().createScannerSession(manifest)
+  using scanner = createToolingBindingSync().createScannerSession(manifest)
 
   expect(await oracle.scan('App.tsx', source)).toBe(true)
   const rust = scanner.scan('App.tsx', source) as {

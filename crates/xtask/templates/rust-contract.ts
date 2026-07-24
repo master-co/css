@@ -11,9 +11,9 @@ export const MASTER_CSS_LANGUAGE_BATCH_VERSION = {{MASTER_CSS_LANGUAGE_BATCH_VER
 export const MASTER_CSS_LEXER_BATCH_VERSION = {{MASTER_CSS_LEXER_BATCH_VERSION}} as const
 export const MASTER_CSS_SOURCE_BATCH_VERSION = {{MASTER_CSS_SOURCE_BATCH_VERSION}} as const
 
-export type MasterCSSBackendSurface = 'native' | 'runtime' | 'compiler' | 'tooling' | 'cli'
+export type MasterCSSBindingSurface = 'native' | 'runtime' | 'compiler' | 'tooling' | 'cli'
 
-export type MasterCSSBackendFeature =
+export type MasterCSSBindingFeature =
   | 'cli'
   | 'compiler'
   | 'diagnostics'
@@ -27,7 +27,7 @@ export type MasterCSSBackendFeature =
   | 'source'
   | 'validator'
 
-export interface MasterCSSBackendInfo {
+export interface MasterCSSBindingInfo {
   bindingAbiVersion: typeof MASTER_CSS_BINDING_ABI_VERSION
   packageVersion: string
   manifestVersion: typeof MASTER_CSS_MANIFEST_VERSION
@@ -40,12 +40,12 @@ export interface MasterCSSBackendInfo {
   lexerBatchVersion: typeof MASTER_CSS_LEXER_BATCH_VERSION
   sourceBatchVersion: typeof MASTER_CSS_SOURCE_BATCH_VERSION
   target: string
-  surface: MasterCSSBackendSurface
-  features: MasterCSSBackendFeature[]
+  surface: MasterCSSBindingSurface
+  features: MasterCSSBindingFeature[]
 }
 
-export type MasterCSSBackend = 'auto' | 'native' | 'wasm'
-export type MasterCSSResolvedBackend = Exclude<MasterCSSBackend, 'auto'>
+export type MasterCSSBinding = 'auto' | 'native' | 'wasm'
+export type MasterCSSResolvedBinding = Exclude<MasterCSSBinding, 'auto'>
 export type MasterCSSRuleTarget =
   | 'theme'
   | 'base'

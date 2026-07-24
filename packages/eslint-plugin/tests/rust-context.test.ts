@@ -14,5 +14,5 @@ test('uses the shared Rust-backed tooling session', () => {
   const resolved = resolveContext(context)
 
   expect(resolved.tooling).toBeDefined()
-  expect(resolved.tooling.backend).toBe('native')
+  expect(resolved.tooling.binding).toBe('native')
 })

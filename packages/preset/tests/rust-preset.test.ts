@@ -1,7 +1,7 @@
 import { beforeAll, describe, expect, it } from 'vitest'
 import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
-import { createEngineBackendSessionSync } from '@master/css-backend/engine/node'
+import { createEngineBindingSessionSync } from '@master/css-binding/engine/node'
 import {
   flattenMasterCSSManifestVariables,
   type MasterCSSManifest
@@ -16,7 +16,7 @@ const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
 
 beforeAll(() => {
   process.env.MASTER_CSS_NATIVE_BINDING_PATH = new URL(
-    '../../native/artifacts/mastercss.node',
+    '../../binding/artifacts/mastercss.node',
     import.meta.url
   ).pathname
 })
@@ -38,7 +38,7 @@ describe('Rust-owned default preset', () => {
   })
 
   it('renders representative classes through the native Rust engine', () => {
-    const engine = createEngineBackendSessionSync({
+    const engine = createEngineBindingSessionSync({
       manifest: defaultManifest
     })
     try {

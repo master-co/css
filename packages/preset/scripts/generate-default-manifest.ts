@@ -2,9 +2,9 @@ import { existsSync, readFileSync, writeFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import {
-  createCompilerBackendSessionSync,
-  type MasterCSSCompilerBackendSession
-} from '@master/css-backend/compiler/node'
+  createCompilerBindingSessionSync,
+  type MasterCSSCompilerBindingSession
+} from '@master/css-binding/compiler/node'
 import { serializeMasterCSSManifest } from '@master/css-schema/manifest'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
 
@@ -22,7 +22,7 @@ interface CompiledDefaultPresetManifest {
 
 function resolvePresetStylesheet(
   entryFile: string,
-  compiler: MasterCSSCompilerBackendSession
+  compiler: MasterCSSCompilerBindingSession
 ) {
   const entry = resolve(entryFile)
   const files: Record<string, string> = {}
@@ -58,7 +58,7 @@ function resolvePresetStylesheet(
 }
 
 function compileDefaultPresetManifest(file: string): CompiledDefaultPresetManifest {
-  using compiler = createCompilerBackendSessionSync()
+  using compiler = createCompilerBindingSessionSync()
   const source = resolvePresetStylesheet(file, compiler).source
   const directives = compiler.compileCSSDirectives(source, {
     from: file,

@@ -3,7 +3,7 @@ import { readFileSync } from 'node:fs'
 import { test } from 'node:test'
 import { compilePlayCSS } from '../../../../play-compiler/compile-play-css'
 
-const compilerWasmURL = new URL('../../../../../packages/wasm-compiler/artifacts/mastercss_wasm_compiler_bg.wasm', import.meta.url)
+const compilerWasmURL = new URL('../../../../../packages/binding-wasm-compiler/artifacts/mastercss_binding_wasm_compiler_bg.wasm', import.meta.url)
 
 function readFixture(path: string) {
   return readFileSync(new URL(path, import.meta.url), 'utf-8')

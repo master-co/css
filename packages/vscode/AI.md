@@ -39,7 +39,7 @@
 - Setting defaults must stay in sync with `@master/css-language-server`.
 - Extension package changes affect published VS Code behavior.
 - The Rust native loader is bundled, while target-specific native packages stay external at runtime.
-- Target-specific VSIX files must stage the matching `@master/css-native-*` package under `dist/node_modules`.
+- Target-specific VSIX files must stage the matching `@master/css-binding-*` package under `dist/node_modules`.
 - Generic VSIX packages without `node_modules` can fail because the server imports native runtime packages at startup.
 
 ## Safe Changes

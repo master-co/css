@@ -1,4 +1,4 @@
-import type { MasterCSSBackend } from '@master/css-backend'
+import type { MasterCSSBinding } from '@master/css-binding'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import { createToolingSession } from '../tooling-session'
 import type {
@@ -68,7 +68,7 @@ export async function analyzeDocument(
   request: MasterCSSDocumentAnalysisRequest,
   options: {
     readonly manifest: MasterCSSManifest
-    readonly backend?: MasterCSSBackend
+    readonly binding?: MasterCSSBinding
   }
 ): Promise<MasterCSSDocumentAnalysis> {
   const session = await createToolingSession(options)
@@ -83,7 +83,7 @@ export async function inspectClassName(
   className: string,
   options: {
     readonly manifest: MasterCSSManifest
-    readonly backend?: MasterCSSBackend
+    readonly binding?: MasterCSSBinding
     readonly mode?: string
   }
 ) {
@@ -99,7 +99,7 @@ export async function formatDirectives(
   request: MasterCSSFormatDirectivesRequest,
   options: {
     readonly manifest: MasterCSSManifest
-    readonly backend?: MasterCSSBackend
+    readonly binding?: MasterCSSBinding
   }
 ): Promise<MasterCSSFormatDirectivesResult> {
   const session = await createToolingSession(options)

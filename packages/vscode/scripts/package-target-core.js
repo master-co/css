@@ -24,15 +24,15 @@ export const TARGETS = [
   'darwin-arm64'
 ]
 
-const TARGET_NATIVE_PACKAGES = {
-  'win32-x64': '@master/css-native-win32-x64-msvc',
-  'win32-arm64': '@master/css-native-win32-arm64-msvc',
-  'linux-x64': '@master/css-native-linux-x64-gnu',
-  'linux-arm64': '@master/css-native-linux-arm64-gnu',
-  'alpine-x64': '@master/css-native-linux-x64-musl',
-  'alpine-arm64': '@master/css-native-linux-arm64-musl',
-  'darwin-x64': '@master/css-native-darwin-x64',
-  'darwin-arm64': '@master/css-native-darwin-arm64'
+const TARGET_BINDING_PACKAGES = {
+  'win32-x64': '@master/css-binding-win32-x64-msvc',
+  'win32-arm64': '@master/css-binding-win32-arm64-msvc',
+  'linux-x64': '@master/css-binding-linux-x64-gnu',
+  'linux-arm64': '@master/css-binding-linux-arm64-gnu',
+  'alpine-x64': '@master/css-binding-linux-x64-musl',
+  'alpine-arm64': '@master/css-binding-linux-arm64-musl',
+  'darwin-x64': '@master/css-binding-darwin-x64',
+  'darwin-arm64': '@master/css-binding-darwin-arm64'
 }
 
 const STATIC_EXTENSION_PATHS = [
@@ -46,8 +46,8 @@ const MASTER_CSS_STAGED_GRAMMAR_PATH = './dist/node_modules/@master/css-language
 
 const RUNTIME_PACKAGE_OWNERS = [
   {
-    owner: '@master/css-backend',
-    matches: (packageName) => packageName.startsWith('@master/css-native-')
+    owner: '@master/css-binding',
+    matches: (packageName) => packageName.startsWith('@master/css-binding-')
   }
 ]
 const packageResolverCache = new Map()
@@ -123,16 +123,16 @@ function getRuntimePackageResolver(packageName) {
   return packageRequire
 }
 
-function getTargetNativePackages(target) {
-  const nativePackages = TARGET_NATIVE_PACKAGES[target]
-  if (!nativePackages) {
+function getTargetBindingPackage(target) {
+  const bindingPackage = TARGET_BINDING_PACKAGES[target]
+  if (!bindingPackage) {
     throw new Error(`Unsupported VS Code target "${target}". Expected one of: ${TARGETS.join(', ')}`)
   }
-  return nativePackages
+  return bindingPackage
 }
 
 export function getRuntimePackagesForTarget(target) {
-  return [getTargetNativePackages(target)]
+  return [getTargetBindingPackage(target)]
 }
 
 function isCurrentLinuxMusl() {
@@ -170,8 +170,8 @@ async function copyPath(source, destination) {
 }
 
 async function copyDevelopmentNativeArtifacts(destinationDir, packageName, target) {
-  if (target !== getCurrentTarget() || packageName !== getTargetNativePackages(target)) return
-  const nativePackageDir = resolvePackageDir('@master/css-backend', packageRequire)
+  if (target !== getCurrentTarget() || packageName !== getTargetBindingPackage(target)) return
+  const nativePackageDir = resolvePackageDir('@master/css-binding', packageRequire)
   const executableName = target.startsWith('win32-') ? 'mcss.exe' : 'mcss'
   for (const file of ['mastercss.node', executableName]) {
     const destination = join(destinationDir, file)
@@ -202,7 +202,7 @@ async function copyTextMateGrammar(stagingDir) {
 }
 
 export async function createStagedExtension(target = getCurrentTarget(), options = {}) {
-  getTargetNativePackages(target)
+  getTargetBindingPackage(target)
 
   const stagingRoot = options.stagingRoot ?? await mkdtemp(join(tmpdir(), 'master-css-vscode-'))
   const stagingDir = options.stagingDir ?? join(stagingRoot, target)

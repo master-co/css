@@ -22,7 +22,7 @@ import { builtinKeyAliases } from '@master/css-tooling/builtins'
 ```
 
 Every semantic operation requires an explicit manifest. Use
-`createToolingSession({ manifest })` to share one backend/cache across validator,
+`createToolingSession({ manifest })` to share one binding/cache across validator,
 lint, and language operations. Feature subpaths provide async one-shot APIs; their
 `./node` entries provide native synchronous counterparts with a `Sync` suffix.
 `MasterCSSScanner` is available only from `./scanner/node` and owns filesystem/watch

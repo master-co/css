@@ -31,7 +31,7 @@ export interface GenerateOptions {
   verbose?: string | number
   export?: boolean
   cwd?: string
-  backend?: 'auto' | 'native' | 'wasm'
+  binding?: 'auto' | 'native' | 'wasm'
 }
 
 const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest

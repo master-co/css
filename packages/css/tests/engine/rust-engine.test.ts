@@ -85,18 +85,18 @@ const manifest: MasterCSSManifest = {
 
 beforeAll(() => {
   process.env.MASTER_CSS_NATIVE_BINDING_PATH = new URL(
-    '../../../native/artifacts/mastercss.node',
+    '../../../binding/artifacts/mastercss.node',
     import.meta.url
   ).pathname
 })
 
 describe('Rust engine session', () => {
-  it('uses Wasm for auto backend when native addons are disabled', async () => {
+  it('uses Wasm for auto binding when native addons are disabled', async () => {
     process.execArgv.push('--no-addons')
     try {
-      const engine = await createEngine({ manifest, backend: 'auto' })
+      const engine = await createEngine({ manifest, binding: 'auto' })
       try {
-        expect(engine.backend).toBe('wasm')
+        expect(engine.binding).toBe('wasm')
         engine.ensureClassRules(['block'])
         expect(engine.snapshot().text).toBe('@layer utilities{.block{display:block}}')
       } finally {
@@ -111,7 +111,7 @@ describe('Rust engine session', () => {
     const bindingPath = process.env.MASTER_CSS_NATIVE_BINDING_PATH
     process.env.MASTER_CSS_NATIVE_BINDING_PATH = '/missing/master-css/mastercss.node'
     try {
-      await expect(createEngine({ manifest, backend: 'auto' })).rejects.toMatchObject({
+      await expect(createEngine({ manifest, binding: 'auto' })).rejects.toMatchObject({
         name: 'MasterCSSError',
         code: 'NATIVE_LOAD_FAILED'
       })
@@ -161,7 +161,7 @@ describe('Rust engine session', () => {
   })
 
   it('serializes manifests when refreshing a Wasm engine', async () => {
-    const engine = await createEngine({ manifest, backend: 'wasm' })
+    const engine = await createEngine({ manifest, binding: 'wasm' })
     try {
       engine.ensureClassRules(['block'])
       expect(engine.refresh(manifest)).toMatchObject({
@@ -199,7 +199,7 @@ describe('Rust engine session', () => {
 
   it('preserves descendant selectors across condition-only variants in native and Wasm', async () => {
     const native = createEngineSync({ manifest: typedDefaultManifest })
-    const wasm = await createEngine({ manifest: typedDefaultManifest, backend: 'wasm' })
+    const wasm = await createEngine({ manifest: typedDefaultManifest, binding: 'wasm' })
 
     try {
       const nativeInspection = native.inspect(selectorVariantClassName)
@@ -232,7 +232,7 @@ describe('Rust engine session', () => {
 
   it('resolves inline dependencies in emitted mode variables in native and Wasm', async () => {
     const native = createEngineSync({ manifest: inlineThemeManifest })
-    const wasm = await createEngine({ manifest: inlineThemeManifest, backend: 'wasm' })
+    const wasm = await createEngine({ manifest: inlineThemeManifest, binding: 'wasm' })
 
     try {
       const nativeTransition = native.ensureClassRules(['surface:raised'])

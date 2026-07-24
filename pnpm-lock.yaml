@@ -1468,6 +1468,80 @@ importers:
         specifier: workspace:*
         version: link:../preset
 
+  packages/binding:
+    dependencies:
+      '@master/css-binding-wasm-compiler':
+        specifier: workspace:*
+        version: link:../binding-wasm-compiler
+      '@master/css-binding-wasm-engine':
+        specifier: workspace:*
+        version: link:../binding-wasm-engine
+      '@master/css-binding-wasm-tooling':
+        specifier: workspace:*
+        version: link:../binding-wasm-tooling
+      '@master/css-schema':
+        specifier: workspace:*
+        version: link:../schema
+    optionalDependencies:
+      '@master/css-binding-darwin-arm64':
+        specifier: workspace:*
+        version: link:../binding-darwin-arm64
+      '@master/css-binding-darwin-x64':
+        specifier: workspace:*
+        version: link:../binding-darwin-x64
+      '@master/css-binding-linux-arm64-gnu':
+        specifier: workspace:*
+        version: link:../binding-linux-arm64-gnu
+      '@master/css-binding-linux-arm64-musl':
+        specifier: workspace:*
+        version: link:../binding-linux-arm64-musl
+      '@master/css-binding-linux-x64-gnu':
+        specifier: workspace:*
+        version: link:../binding-linux-x64-gnu
+      '@master/css-binding-linux-x64-musl':
+        specifier: workspace:*
+        version: link:../binding-linux-x64-musl
+      '@master/css-binding-win32-arm64-msvc':
+        specifier: workspace:*
+        version: link:../binding-win32-arm64-msvc
+      '@master/css-binding-win32-x64-msvc':
+        specifier: workspace:*
+        version: link:../binding-win32-x64-msvc
+
+  packages/binding-darwin-arm64: {}
+
+  packages/binding-darwin-x64: {}
+
+  packages/binding-linux-arm64-gnu: {}
+
+  packages/binding-linux-arm64-musl: {}
+
+  packages/binding-linux-x64-gnu: {}
+
+  packages/binding-linux-x64-musl: {}
+
+  packages/binding-wasm-compiler:
+    dependencies:
+      '@master/css-schema':
+        specifier: workspace:*
+        version: link:../schema
+
+  packages/binding-wasm-engine:
+    dependencies:
+      '@master/css-schema':
+        specifier: workspace:*
+        version: link:../schema
+
+  packages/binding-wasm-tooling:
+    dependencies:
+      '@master/css-schema':
+        specifier: workspace:*
+        version: link:../schema
+
+  packages/binding-win32-arm64-msvc: {}
+
+  packages/binding-win32-x64-msvc: {}
+
   packages/cli:
     dependencies:
       '@master/css':
@@ -1507,9 +1581,9 @@ importers:
 
   packages/compiler:
     dependencies:
-      '@master/css-backend':
+      '@master/css-binding':
         specifier: workspace:*
-        version: link:../native
+        version: link:../binding
       '@master/css-schema':
         specifier: workspace:*
         version: link:../schema
@@ -1541,9 +1615,9 @@ importers:
 
   packages/css:
     dependencies:
-      '@master/css-backend':
+      '@master/css-binding':
         specifier: workspace:*
-        version: link:../native
+        version: link:../binding
       '@master/css-preset':
         specifier: workspace:*
         version: link:../preset
@@ -1827,62 +1901,6 @@ importers:
         specifier: workspace:*
         version: link:../internal
 
-  packages/native:
-    dependencies:
-      '@master/css-schema':
-        specifier: workspace:*
-        version: link:../schema
-      '@master/css-wasm-compiler':
-        specifier: workspace:*
-        version: link:../wasm-compiler
-      '@master/css-wasm-engine':
-        specifier: workspace:*
-        version: link:../wasm-runtime
-      '@master/css-wasm-tooling':
-        specifier: workspace:*
-        version: link:../wasm-tooling
-    optionalDependencies:
-      '@master/css-native-darwin-arm64':
-        specifier: workspace:*
-        version: link:../native-darwin-arm64
-      '@master/css-native-darwin-x64':
-        specifier: workspace:*
-        version: link:../native-darwin-x64
-      '@master/css-native-linux-arm64-gnu':
-        specifier: workspace:*
-        version: link:../native-linux-arm64-gnu
-      '@master/css-native-linux-arm64-musl':
-        specifier: workspace:*
-        version: link:../native-linux-arm64-musl
-      '@master/css-native-linux-x64-gnu':
-        specifier: workspace:*
-        version: link:../native-linux-x64-gnu
-      '@master/css-native-linux-x64-musl':
-        specifier: workspace:*
-        version: link:../native-linux-x64-musl
-      '@master/css-native-win32-arm64-msvc':
-        specifier: workspace:*
-        version: link:../native-win32-arm64-msvc
-      '@master/css-native-win32-x64-msvc':
-        specifier: workspace:*
-        version: link:../native-win32-x64-msvc
-
-  packages/native-darwin-arm64: {}
-
-  packages/native-darwin-x64: {}
-
-  packages/native-linux-arm64-gnu: {}
-
-  packages/native-linux-arm64-musl: {}
-
-  packages/native-linux-x64-gnu: {}
-
-  packages/native-linux-x64-musl: {}
-
-  packages/native-win32-arm64-msvc: {}
-
-  packages/native-win32-x64-msvc: {}
-
   packages/next:
     dependencies:
       '@master/css':
@@ -2008,9 +2026,9 @@ importers:
         specifier: workspace:*
         version: link:../schema
     devDependencies:
-      '@master/css-backend':
+      '@master/css-binding':
         specifier: workspace:*
-        version: link:../native
+        version: link:../binding
       tsx:
         specifier: ^4.22.4
         version: 4.22.4
@@ -2020,9 +2038,9 @@ importers:
       '@master/css':
         specifier: workspace:*
         version: link:../css
-      '@master/css-backend':
+      '@master/css-binding':
         specifier: workspace:*
-        version: link:../native
+        version: link:../binding
       '@master/css-schema':
         specifier: workspace:*
         version: link:../schema
@@ -2061,9 +2079,9 @@ importers:
         specifier: ^12.0.0
         version: 12.0.0
     devDependencies:
-      '@master/css-backend':
+      '@master/css-binding':
         specifier: workspace:*
-        version: link:../native
+        version: link:../binding
       '@master/css-compiler':
         specifier: workspace:*
         version: link:../compiler
@@ -2146,9 +2164,9 @@ importers:
 
   packages/tooling:
     dependencies:
-      '@master/css-backend':
+      '@master/css-binding':
         specifier: workspace:*
-        version: link:../native
+        version: link:../binding
       '@master/css-schema':
         specifier: workspace:*
         version: link:../schema
@@ -2214,9 +2232,9 @@ importers:
 
   packages/vscode:
     devDependencies:
-      '@master/css-backend':
+      '@master/css-binding':
         specifier: workspace:*
-        version: link:../native
+        version: link:../binding
       '@master/css-compiler':
         specifier: workspace:*
         version: link:../compiler
@@ -2257,24 +2275,6 @@ importers:
         specifier: ^9.3.2
         version: 9.3.2
 
-  packages/wasm-compiler:
-    dependencies:
-      '@master/css-schema':
-        specifier: workspace:*
-        version: link:../schema
-
-  packages/wasm-runtime:
-    dependencies:
-      '@master/css-schema':
-        specifier: workspace:*
-        version: link:../schema
-
-  packages/wasm-tooling:
-    dependencies:
-      '@master/css-schema':
-        specifier: workspace:*
-        version: link:../schema
-
   packages/webpack:
     dependencies:
       '@master/css':
@@ -2308,8 +2308,6 @@ importers:
       webpack:
         specifier: ^5.107.2
         version: 5.107.2(esbuild@0.28.1)
-
-  shared: {}
 
   site:
     dependencies:

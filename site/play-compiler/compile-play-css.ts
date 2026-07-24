@@ -7,7 +7,7 @@ import {
 } from '@master/css-compiler/stylesheet/browser'
 
 const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
-const compilerWasmURL = new URL('./mastercss_wasm_compiler_bg.wasm', import.meta.url)
+const compilerWasmURL = new URL('./mastercss_binding_wasm_compiler_bg.wasm', import.meta.url)
 
 export interface CompilePlayCSSResult {
   css: string
@@ -19,7 +19,7 @@ export interface CompilePlayCSSResult {
 export async function compilePlayCSS(
   sourceCSS: string,
   classes: string[],
-  backend: NonNullable<MasterCSSBrowserStylesheetCompileOptions['backend']> = {
+  binding: NonNullable<MasterCSSBrowserStylesheetCompileOptions['binding']> = {
     input: compilerWasmURL
   }
 ): Promise<CompilePlayCSSResult> {
@@ -27,7 +27,7 @@ export async function compilePlayCSS(
     baseManifest: defaultManifest,
     classNames: classes,
     from: 'playground.css',
-    backend
+    binding
   })
   return {
     css: result.css,

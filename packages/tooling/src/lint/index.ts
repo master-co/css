@@ -1,4 +1,4 @@
-import type { MasterCSSBackend } from '@master/css-backend'
+import type { MasterCSSBinding } from '@master/css-binding'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import { createToolingSession } from '../tooling-session'
 import type {
@@ -77,7 +77,7 @@ export async function lintClassNames(
   classNames: readonly string[],
   options: {
     readonly manifest: MasterCSSManifest
-    readonly backend?: MasterCSSBackend
+    readonly binding?: MasterCSSBinding
   }
 ): Promise<MasterCSSLintAnalysis> {
   const session = await createToolingSession(options)

@@ -1,22 +1,22 @@
 import {
-  createToolingBackend,
-  type MasterCSSWasmBackendLoadOptions
-} from '@master/css-backend/tooling'
+  createToolingBinding,
+  type MasterCSSWasmBindingLoadOptions
+} from '@master/css-binding/tooling'
 import {
   bindSourceExtractor,
   type SourceExtractor
 } from './session'
 
-export type BrowserSourceExtractor = SourceExtractor & { readonly backend: 'wasm' }
+export type BrowserSourceExtractor = SourceExtractor & { readonly binding: 'wasm' }
 
 export async function createSourceExtractor(
-  options: MasterCSSWasmBackendLoadOptions = {}
+  options: MasterCSSWasmBindingLoadOptions = {}
 ): Promise<BrowserSourceExtractor> {
-  const tooling = await createToolingBackend({ backend: 'wasm', wasm: options })
+  const tooling = await createToolingBinding({ binding: 'wasm', wasm: options })
   return bindSourceExtractor(
-    tooling.backend,
+    tooling.binding,
     await tooling.createSourceSession()
   ) as BrowserSourceExtractor
 }
 
-export type { MasterCSSWasmBackendLoadOptions }
+export type { MasterCSSWasmBindingLoadOptions }

@@ -77,7 +77,7 @@
     "provenance": true
   },
   "dependencies": {
-    "@master/css-backend": "workspace:*",
+    "@master/css-binding": "workspace:*",
     "@master/css-schema": "workspace:*",
     "@master/css-tooling": "workspace:*",
     "fast-glob": "^3.3.3"

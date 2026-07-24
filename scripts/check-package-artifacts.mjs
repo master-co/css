@@ -6,7 +6,7 @@ import path from 'node:path'
 const packagesRoot = path.resolve('packages')
 const apiCensusPath = path.resolve('.ai/contracts/api-census.json')
 const textArtifactExtensions = new Set(['.js', '.mjs', '.cjs', '.ts', '.json'])
-const nativeTargetPattern = /^@master\/css-native-(?:darwin|linux|win32)-/
+const bindingTargetPattern = /^@master\/css-binding-(?:darwin|linux|win32)-/
 const forbiddenSpecifierPattern = /@master\/(?:css-internal|css-build-internal|css-internal-integration|css-(?:diagnostics|engine|integration|language|lexer|lint|project|scanner|source|stylesheet|validator)|css\.(?:astro|figma|next|nuxt|svelte|vite|webpack)|css-vs-code)(?=$|[/'"?\s])/g
 const forbiddenDeclarationPattern = /\b(?:[A-Za-z_$][\w$]*(?:IR|Ir)|Generated(?:Binding|Module|Session)[A-Za-z_$\d]*)\b/g
 const moduleSpecifierPattern = /(?:\bfrom\s*|\bimport\s*(?:\(\s*)?|\brequire\s*\(\s*)['"]([^'"]+)['"]/g
@@ -173,7 +173,7 @@ for (const directory of readdirSync(packagesRoot)) {
   ].filter((target) => typeof target === 'string' && target.startsWith('./') && !target.includes('*'))
 
   for (const target of new Set(exportTargets)) {
-    if (nativeTargetPattern.test(manifest.name)) continue
+    if (bindingTargetPattern.test(manifest.name)) continue
     if (!existsSync(path.resolve(packageRoot, target))) {
       failures.push(`${manifest.name}: exported artifact ${target} does not exist`)
     }

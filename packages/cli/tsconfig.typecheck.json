@@ -22,7 +22,7 @@
       "path": "../tooling/tsconfig.typecheck.json"
     },
     {
-      "path": "../native/tsconfig.typecheck.json"
+      "path": "../binding/tsconfig.typecheck.json"
     }
   ],
   "include": [

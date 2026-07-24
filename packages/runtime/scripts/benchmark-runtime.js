@@ -9,7 +9,7 @@ const packageRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const distRoot = resolve(packageRoot, 'dist')
 const globalBundleFile = resolve(distRoot, 'global.min.js')
 const defaultManifestFile = resolve(distRoot, 'default-manifest.json')
-const runtimeWasmFile = resolve(packageRoot, 'artifacts/mastercss_wasm_runtime_bg.wasm')
+const runtimeWasmFile = resolve(packageRoot, 'artifacts/mastercss_binding_wasm_engine_bg.wasm')
 const args = parseArgs(process.argv.slice(2))
 const rounds = Number(process.env.MASTER_CSS_BENCH_ROUNDS || 5)
 const warmupRounds = Number(process.env.MASTER_CSS_BENCH_WARMUP_ROUNDS || 1)
@@ -189,7 +189,7 @@ function startServer() {
         return
       }
 
-      if (path === '/artifacts/mastercss_wasm_runtime_bg.wasm') {
+      if (path === '/artifacts/mastercss_binding_wasm_engine_bg.wasm') {
         response.writeHead(200, {
           'content-type': 'application/wasm',
           'cache-control': 'no-store',

@@ -213,7 +213,7 @@ test('extension bundle reuses one Master CSS output channel for the language cli
   expect(languageClientConstruction).toContain('outputChannel:')
 })
 
-test('server bundle does not retain removed TypeScript semantic backends', () => {
+test('server bundle does not retain removed TypeScript semantic bindings', () => {
   const source = readFileSync(serverPath, 'utf8')
   const imports = [...source.matchAll(/\bfrom\s*["']([^"']+)["']/g)].map((match) => match[1])
   const legacySemanticImports = imports.filter((specifier) =>

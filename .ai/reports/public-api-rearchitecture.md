@@ -7,7 +7,7 @@ Status: complete
 
 Master CSS will ship one breaking major across every published package. The
 refactor changes JavaScript, TypeScript, CLI, MCP, package, subpath, lifecycle,
-and backend contracts. It does not change class syntax, directive semantics,
+and binding contracts. It does not change class syntax, directive semantics,
 Manifest v1, hydration semantics, cascade layers, or generated CSS bytes.
 
 Public APIs are allowlists. A source file being reusable inside the repository
@@ -15,11 +15,11 @@ does not make it a supported export.
 
 ## Package disposition
 
-| Current identity | Owner | Platform | Lifetime | Disposition |
+| Former identity | Owner | Platform | Lifetime | Disposition |
 | --- | --- | --- | --- | --- |
 | `@master/css-schema` | Serializable contracts and codecs | Universal | Value | Retain; remove root wildcard and raw wire IR |
-| `@master/css-native` | Native loader and generated binding facade | Node | Process/session | Rename to `@master/css-backend`; broker native and Wasm |
-| `@master/css-wasm-runtime` | Engine Wasm artifact | Browser/Node | Module/session | Rename to `@master/css-wasm-engine` |
+| `@master/css-native` → `@master/css-backend` | Native loader and generated binding facade | Node | Process/session | Consolidate as `@master/css-binding`; load native and Wasm bindings |
+| `@master/css-wasm-runtime` → `@master/css-wasm-engine` | Engine Wasm artifact | Browser/Node | Module/session | Consolidate as `@master/css-binding-wasm-engine` |
 | `@master/css-internal-integration` | Official adapter implementation | Node/browser build hosts | Build session | Rename to private `@master/css-internal` |
 | `@master/css-sv` | Svelte CLI add-on | Node CLI | Command | Rename to `@master/css-svelte-addon` |
 | `@master/eslint-config-css` | Thin official flat-config entrypoint | Node | Value | Retain; delegate to plugin-owned `configs.recommended` |
@@ -32,8 +32,8 @@ does not make it a supported export.
 | framework packages | Ecosystem lifecycle adapters | Framework-defined | Build/server lifecycle | Retain; use the private build kernel |
 | CLI/MCP/create | User-facing hosts | Node | Command/server/plan | Retain; version their result contracts |
 
-Native target packages remain artifact packages. Their platform-specific names
-are not renamed.
+Native target packages remain artifact packages and adopt the
+`@master/css-binding-<target>` family name.
 
 ## Public contract rules
 
@@ -54,7 +54,7 @@ are not renamed.
 
 | Surface | Existing problem | Replacement |
 | --- | --- | --- |
-| Schema root | Re-exports compiler, tooling, lint, language, and binding IR | Manifest, diagnostics, integration, and backend metadata allowlist |
+| Schema root | Re-exports compiler, tooling, lint, language, and binding IR | Manifest, diagnostics, integration, and binding metadata allowlist |
 | CSS root | Re-exports all schema types | Engine-owned values only |
 | Compiler root | Statically imports filesystem and package resolution | Universal compiler root; Node project/provider subpaths |
 | Tooling root | Exports filesystem scanner and preset-backed defaults | Universal tooling session; scanner under `scanner/node` |
@@ -67,8 +67,8 @@ are not renamed.
 
 ## Implementation order
 
-1. Schema diagnostics/integration contracts and backend ABI.
-2. Backend broker and artifact identities.
+1. Schema diagnostics/integration contracts and binding ABI.
+2. Binding loader and artifact identities.
 3. Engine/render, compiler, and tooling ownership.
 4. Runtime, server, language, and ESLint public surfaces.
 5. Private build kernel and official adapters.
@@ -89,7 +89,7 @@ The machine-readable baseline is split into two coordinated contracts:
 `pnpm check:packages` regenerates the actual view from package manifests and the
 CLI/MCP/wire registries, then fails if either checked-in contract differs. The same
 gate rejects wildcard exports, retired compatibility symbols, public binding IR,
-raw native/Wasm session symbols, misplaced sync APIs, and untyped backend feature
+raw native/Wasm session symbols, misplaced sync APIs, and untyped binding feature
 contracts.
 
 `pnpm check:artifacts` validates built publish allowlists and declaration references,

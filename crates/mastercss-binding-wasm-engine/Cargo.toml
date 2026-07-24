@@ -1,0 +1,20 @@
+[package]
+name = "mastercss-binding-wasm-engine"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+publish.workspace = true
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+mastercss-engine = { path = "../mastercss-engine" }
+mastercss-render = { path = "../mastercss-render" }
+mastercss-schema = { path = "../mastercss-schema" }
+serde.workspace = true
+serde_json.workspace = true
+serde-wasm-bindgen.workspace = true
+wasm-bindgen.workspace = true

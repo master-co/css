@@ -61,7 +61,7 @@ describe('@master/css-compiler/stylesheet public contract', () => {
     expect(() => stylesheets.snapshot()).toThrow('disposed')
   })
 
-  test('honors an aborted compile request before creating backend work', async () => {
+  test('honors an aborted compile request before creating binding work', async () => {
     const controller = new AbortController()
     controller.abort(new Error('cancelled'))
     await expect(compileStylesheet('/project/app.css', '', {

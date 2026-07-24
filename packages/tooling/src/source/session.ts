@@ -1,16 +1,16 @@
-import { createToolingBackend } from '@master/css-backend/tooling'
+import { createToolingBinding } from '@master/css-binding/tooling'
 import type {
   MasterCSSSourceBatch,
   MasterCSSSourceBatchRequest,
   MasterCSSSourceExtractorKind
-} from '@master/css-backend/tooling'
-import { MASTER_CSS_SOURCE_BATCH_VERSION } from '@master/css-backend/tooling'
+} from '@master/css-binding/tooling'
+import { MASTER_CSS_SOURCE_BATCH_VERSION } from '@master/css-binding/tooling'
 
 export type SourceBatchRequest = MasterCSSSourceBatchRequest
 export type SourceExtractorKind = MasterCSSSourceExtractorKind
 
 export interface SourceExtractor {
-  readonly backend: 'native' | 'wasm'
+  readonly binding: 'native' | 'wasm'
   extract(request: SourceBatchRequest): MasterCSSSourceBatch
   extractClassCandidates(content: string): string[]
   extractOxcClasses(source: string, content: string): string[]
@@ -29,7 +29,7 @@ export class SourceExtractorError extends Error {
   }
 }
 
-interface BackendSourceSession {
+interface BindingSourceSession {
   extract(request: unknown): unknown
   dispose(): void
 }
@@ -45,12 +45,12 @@ function parse(value: unknown): MasterCSSSourceBatch {
   return result
 }
 
-export function bindSourceExtractor(backend: SourceExtractor['backend'], session: BackendSourceSession): SourceExtractor {
+export function bindSourceExtractor(binding: SourceExtractor['binding'], session: BindingSourceSession): SourceExtractor {
   const extract = (request: SourceBatchRequest) => parse(session.extract(request))
   const candidates = (source: string, content: string, kind: SourceExtractorKind) =>
     extract({ files: [{ source, content, kind }] }).files[0]?.candidates ?? []
   return {
-    backend,
+    binding,
     extract,
     extractClassCandidates: (content) => candidates('', content, 'raw'),
     extractOxcClasses: (source, content) => candidates(source, content, 'oxc'),
@@ -61,11 +61,11 @@ export function bindSourceExtractor(backend: SourceExtractor['backend'], session
 }
 
 export async function createSourceExtractor(
-  options: { readonly backend?: 'auto' | 'native' | 'wasm' } = {}
+  options: { readonly binding?: 'auto' | 'native' | 'wasm' } = {}
 ): Promise<SourceExtractor> {
-  const tooling = await createToolingBackend({ backend: options.backend })
+  const tooling = await createToolingBinding({ binding: options.binding })
   return bindSourceExtractor(
-    tooling.backend,
+    tooling.binding,
     await tooling.createSourceSession()
   )
 }

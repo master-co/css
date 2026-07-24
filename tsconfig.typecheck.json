@@ -35,7 +35,7 @@
       "path": "./packages/mcp/tsconfig.typecheck.json"
     },
     {
-      "path": "./packages/native/tsconfig.typecheck.json"
+      "path": "./packages/binding/tsconfig.typecheck.json"
     },
     {
       "path": "./packages/next/tsconfig.typecheck.json"
@@ -62,13 +62,13 @@
       "path": "./packages/vscode/tsconfig.typecheck.json"
     },
     {
-      "path": "./packages/wasm-compiler/tsconfig.typecheck.json"
+      "path": "./packages/binding-wasm-compiler/tsconfig.typecheck.json"
     },
     {
-      "path": "./packages/wasm-runtime/tsconfig.typecheck.json"
+      "path": "./packages/binding-wasm-engine/tsconfig.typecheck.json"
     },
     {
-      "path": "./packages/wasm-tooling/tsconfig.typecheck.json"
+      "path": "./packages/binding-wasm-tooling/tsconfig.typecheck.json"
     },
     {
       "path": "./packages/webpack/tsconfig.typecheck.json"

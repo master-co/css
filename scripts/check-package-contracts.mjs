@@ -15,18 +15,29 @@ const retiredDirectories = [
   'language',
   'lexer',
   'lint',
+  'native',
   'project',
   'scanner',
   'source',
   'stylesheet',
-  'validator'
+  'validator',
+  'wasm-compiler',
+  'wasm-runtime',
+  'wasm-tooling'
 ]
-const retiredPackageNames = new Set(retiredDirectories.map((name) => `@master/css-${name}`))
+const retiredPackageNames = new Set([
+  ...retiredDirectories.map((name) => `@master/css-${name}`),
+  '@master/css-backend',
+  '@master/css-wasm-engine'
+])
+const retiredPackageNamePatterns = [
+  /^@master\/css-native-(?:darwin|linux|win32)-/
+]
 const retiredPrivatePackageNames = new Set([
   '@master/css-build-internal',
   '@master/css-internal-integration'
 ])
-const nativeTargetPattern = /^@master\/css-native-(?:darwin|linux|win32)-/
+const bindingTargetPattern = /^@master\/css-binding-(?:darwin|linux|win32)-/
 const publishedDependencyFields = ['dependencies', 'optionalDependencies', 'peerDependencies']
 const hostArtifactPackages = new Set([
   '@master/css-figma',
@@ -75,10 +86,10 @@ const retiredPublicSymbols = new Set([
   'renderWithCSS',
   'scannerOptions'
 ])
-const backendContractFiles = [
-  'packages/native/src/engine-contract.ts',
-  'packages/native/src/broker-compiler-contract.ts',
-  'packages/native/src/broker-tooling-contract.ts'
+const bindingContractFiles = [
+  'packages/binding/src/engine-contract.ts',
+  'packages/binding/src/compiler-binding-contract.ts',
+  'packages/binding/src/tooling-binding-contract.ts'
 ]
 
 function readPackage(directory) {
@@ -185,16 +196,16 @@ function validatePublicSymbol(packageName, subpath, symbol) {
   assert.equal(
     /^Rust/.test(symbol)
       || /^Generated(?:Binding|Module|Session)/.test(symbol)
-      || /^Raw(?:Native|Wasm|Backend|Binding|Session)/.test(symbol)
-      || /(?:Native|Wasm).*(?:Binding|Session)$/.test(symbol)
+      || /^Raw(?:Native|Wasm|Binding|Session)/.test(symbol)
+      || /^(?:Native|Wasm).*(?:Binding|Session)$/.test(symbol)
       || symbol === 'callJSON',
     false,
-    `${entrypoint} must not expose raw backend symbol ${symbol}.`
+    `${entrypoint} must not expose raw binding symbol ${symbol}.`
   )
 }
 
-function validateBackendFeatureContracts() {
-  for (const file of backendContractFiles) {
+function validateBindingFeatureContracts() {
+  for (const file of bindingContractFiles) {
     const sourceFile = ts.createSourceFile(
       file,
       readFileSync(file, 'utf8'),
@@ -212,7 +223,7 @@ function validateBackendFeatureContracts() {
     assert.deepEqual(
       unknownNodes,
       [],
-      `${file} must use typed backend feature requests and results instead of unknown.`
+      `${file} must use typed binding feature requests and results instead of unknown.`
     )
   }
 }
@@ -285,7 +296,7 @@ function createPublicAPIContract(packages) {
   return contract
 }
 
-validateBackendFeatureContracts()
+validateBindingFeatureContracts()
 
 for (const directory of retiredDirectories) {
   assert.equal(
@@ -299,10 +310,23 @@ const packages = readdirSync(packagesRoot)
   .filter((directory) => existsSync(path.join(packagesRoot, directory, 'package.json')))
   .map(readPackage)
 
+function isRetiredPackageName(packageName) {
+  return retiredPackageNames.has(packageName)
+    || retiredPackageNamePatterns.some((pattern) => pattern.test(packageName))
+}
+
+for (const { directory } of packages) {
+  assert.equal(
+    /^native-(?:darwin|linux|win32)-/.test(directory),
+    false,
+    `Retired native target directory packages/${directory} must not be restored.`
+  )
+}
+
 for (const { directory, manifest } of packages) {
   assert.ok(manifest.name, `packages/${directory} must declare a package name.`)
   assert.equal(
-    retiredPackageNames.has(manifest.name),
+    isRetiredPackageName(manifest.name),
     false,
     `${manifest.name} is retired and must not be published.`
   )
@@ -310,7 +334,7 @@ for (const { directory, manifest } of packages) {
   for (const field of dependencyFields) {
     for (const [dependency, range] of Object.entries(manifest[field] ?? {})) {
       assert.equal(
-        retiredPackageNames.has(dependency) || retiredPrivatePackageNames.has(dependency),
+        isRetiredPackageName(dependency) || retiredPrivatePackageNames.has(dependency),
         false,
         `${manifest.name} still depends on retired package ${dependency}.`
       )
@@ -335,10 +359,10 @@ for (const { directory, manifest } of packages) {
   assert.ok(Array.isArray(manifest.files) && manifest.files.length, `${manifest.name} must define a publish allowlist.`)
   assert.notEqual(manifest.exports, undefined, `${manifest.name} must define an explicit exports boundary.`)
 
-  const isNativeTarget = nativeTargetPattern.test(manifest.name)
+  const isBindingTarget = bindingTargetPattern.test(manifest.name)
   assert.equal(
     manifest.type,
-    isNativeTarget ? 'commonjs' : 'module',
+    isBindingTarget ? 'commonjs' : 'module',
     `${manifest.name} has an unexpected module type.`
   )
 
@@ -348,11 +372,11 @@ for (const { directory, manifest } of packages) {
     }
   }
 
-  if (!isNativeTarget && !hostArtifactPackages.has(manifest.name)) {
+  if (!isBindingTarget && !hostArtifactPackages.has(manifest.name)) {
     assert.notEqual(manifest.sideEffects, undefined, `${manifest.name} must declare its side-effect contract.`)
   }
 
-  if (!isNativeTarget && !packagesWithoutTypeDeclarations.has(manifest.name)) {
+  if (!isBindingTarget && !packagesWithoutTypeDeclarations.has(manifest.name)) {
     assert.ok(
       manifest.types || hasTypeDeclarationExport(manifest.exports),
       `${manifest.name} must expose TypeScript declarations through exports.`

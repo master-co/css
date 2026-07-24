@@ -3,12 +3,12 @@
 ## Responsibility
 
 `@master/css` is the public Manifest v1 execution surface. It binds the canonical Rust
-engine through native or runtime-Wasm backends and exposes the stable preset CSS
+engine through native or runtime-Wasm bindings and exposes the stable preset CSS
 entrypoints.
 
 ## Owns
 
-- Public engine session creation and backend selection.
+- Public engine session creation and binding selection.
 - Bound engine state and transition application.
 - Public schema/type exports required by engine consumers.
 - Ambient virtual-module declarations exposed through `./client`.
@@ -40,7 +40,7 @@ or compatibility subpaths.
 
 - `src/index.ts`
 - `src/node.ts`
-- `src/engine/backend.ts`
+- `src/engine/binding.ts`
 - `src/engine/bound-engine.ts`
 - `src/engine/create-engine.ts`
 - `src/*.css`

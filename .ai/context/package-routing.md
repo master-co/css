@@ -20,7 +20,7 @@ For `packages/<name>/**`, read `packages/<name>/package.json` and `packages/<nam
 |---|---|---|
 | `packages/schema/**` | `@master/css-schema` | `package-boundaries.md` |
 | `packages/preset/**` | `@master/css-preset` | `css-output.md` |
-| `packages/native*/**`, `packages/wasm-*/**` | native/Wasm artifact delivery | `package-boundaries.md`, `testing.md` |
+| `packages/binding*/**` | native/Wasm binding delivery | `package-boundaries.md`, `testing.md` |
 | `packages/css/**` | `@master/css` | `package-boundaries.md`, `css-output.md`, `performance.md` |
 | `packages/compiler/**` | compiler, project, stylesheet, diagnostics | `css-output.md`, `package-boundaries.md` |
 | `packages/tooling/**` | lexer, source, scanner, validator, lint, language | `package-boundaries.md`, `testing.md` |

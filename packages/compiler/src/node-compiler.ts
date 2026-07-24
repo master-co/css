@@ -2,7 +2,7 @@
 import { existsSync, readFileSync, realpathSync } from 'node:fs'
 import { createRequire } from 'node:module'
 import { dirname, extname, isAbsolute, resolve } from 'node:path'
-import { createCompilerBackendSessionSync } from '@master/css-backend/compiler/node'
+import { createCompilerBindingSessionSync } from '@master/css-binding/compiler/node'
 import {
   MASTER_CSS_DIAGNOSTIC_VERSION,
   MasterCSSError,
@@ -110,7 +110,7 @@ function throwCompilerBindingError(error: unknown): never {
   })
 }
 
-function callCompilerBackend<T>(call: () => unknown): T {
+function callCompilerBinding<T>(call: () => unknown): T {
   try {
     return call() as T
   } catch (error) {
@@ -119,7 +119,7 @@ function callCompilerBackend<T>(call: () => unknown): T {
 }
 
 function nativeCompiler() {
-  return createCompilerBackendSessionSync()
+  return createCompilerBindingSessionSync()
 }
 
 function isExpandableImportSource(source: string) {
@@ -236,7 +236,7 @@ export function resolveMasterCSSPackageEntryFile(importSource: string, fromFile 
 }
 
 export function inspectCSS(source: string): InspectCSSResult {
-  return callCompilerBackend<InspectCSSResult>(() => nativeCompiler().inspectCSS(source))
+  return callCompilerBinding<InspectCSSResult>(() => nativeCompiler().inspectCSS(source))
 }
 
 interface PreparedCSSImportGraph {
@@ -261,7 +261,7 @@ function prepareCSSImportGraphFile(
 
   const source = sourceOverride ?? readFileSync(absoluteFile, 'utf-8')
   graph.files[absoluteFile] = source
-  const analysis = callCompilerBackend<{
+  const analysis = callCompilerBinding<{
     sourceWithoutReferences: string
     imports: { source: string }[]
   }>(() => nativeCompiler().analyzeCSSDependencies(source))
@@ -298,7 +298,7 @@ export function resolveCSSImportGraphSource(
     edges: []
   }
   prepareCSSImportGraphFile(entry, graph, new Set(), options, source)
-  const result = callCompilerBackend<ResolvedCSSImportGraph>(() => (
+  const result = callCompilerBinding<ResolvedCSSImportGraph>(() => (
     nativeCompiler().resolveCSSImportGraph(graph)
   ))
   for (const reference of result.references || []) {
@@ -308,7 +308,7 @@ export function resolveCSSImportGraphSource(
 }
 
 export function analyzeCSSDependencies(source: string): CSSDependencyAnalysis {
-  return callCompilerBackend<CSSDependencyAnalysis>(() => nativeCompiler().analyzeCSSDependencies(source))
+  return callCompilerBinding<CSSDependencyAnalysis>(() => nativeCompiler().analyzeCSSDependencies(source))
 }
 
 export function resolveMasterCSSPackageImportGraph(projectDir?: string) {
@@ -364,7 +364,7 @@ export function compileCSSFile(file: string, options: CompileCSSFileOptions = {}
 }
 
 export function compileCSS(source: string, options: CompileCSSOptions = {}): CompileCSSResult {
-  const result = reviveBackendCompileResult(callCompilerBackend<CompileCSSResult>(() => (
+  const result = reviveBindingCompileResult(callCompilerBinding<CompileCSSResult>(() => (
     nativeCompiler().compileCSSDirectives(
       source,
       {
@@ -380,7 +380,7 @@ export function compileCSS(source: string, options: CompileCSSOptions = {}): Com
   return result
 }
 
-function reviveBackendCompileResult(result: CompileCSSResult): CompileCSSResult {
+function reviveBindingCompileResult(result: CompileCSSResult): CompileCSSResult {
   result.extractionPolicy.blocklist = result.extractionPolicy.blocklist.map((entry) => {
     if (
       entry
@@ -449,7 +449,7 @@ function reviveExtractionPolicy(policy: CSSDirectiveExtractionPolicy): CSSDirect
 export function mergeCSSDirectiveExtractionPolicy(
   ...policies: (Partial<CSSDirectiveExtractionPolicy> | undefined)[]
 ) {
-  return reviveExtractionPolicy(callCompilerBackend<CSSDirectiveExtractionPolicy>(() => (
+  return reviveExtractionPolicy(callCompilerBinding<CSSDirectiveExtractionPolicy>(() => (
     nativeCompiler().mergeCSSExtractionPolicies(policies.map(toWireExtractionPolicy))
   )))
 }
@@ -479,7 +479,7 @@ interface StandaloneDirectiveAnalysis {
 }
 
 function analyzeStandaloneDirectives(source: string) {
-  const result = callCompilerBackend<StandaloneDirectiveAnalysis>(() => (
+  const result = callCompilerBinding<StandaloneDirectiveAnalysis>(() => (
     nativeCompiler().analyzeStandaloneDirectives(source)
   ))
   result.extractionPolicy = reviveExtractionPolicy(result.extractionPolicy)
@@ -512,11 +512,11 @@ export function removeStandaloneMasterDirectives(source: string) {
   return output
 }
 
-function compileManifestInputWithBackend(
+function compileManifestInputWithBinding(
   input: CompileCSSResult['manifestInput'],
   baseManifest: MasterCSSManifest | undefined
 ) {
-  return callCompilerBackend<{ manifest: MasterCSSManifest }>(() => (
+  return callCompilerBinding<{ manifest: MasterCSSManifest }>(() => (
     nativeCompiler().compileManifestInput(
       input,
       baseManifest ? { baseManifest } : undefined
@@ -524,7 +524,7 @@ function compileManifestInputWithBackend(
   )).manifest
 }
 
-interface BackendLowerCSSDirectivesResult {
+interface BindingLowerCSSDirectivesResult {
   input: CompileCSSResult['manifestInput']
   manifest: MasterCSSManifest
   resolutionManifest: MasterCSSManifest
@@ -533,7 +533,7 @@ interface BackendLowerCSSDirectivesResult {
   diagnosticCounts: Record<string, number>
 }
 
-function lowerCSSDirectivesWithBackend(
+function lowerCSSDirectivesWithBinding(
   result: CompileCSSResult,
   options: {
     baseManifest?: MasterCSSManifest
@@ -543,7 +543,7 @@ function lowerCSSDirectivesWithBackend(
     sourceText?: string
   }
 ) {
-  const lowered = callCompilerBackend<BackendLowerCSSDirectivesResult>(() => (
+  const lowered = callCompilerBinding<BindingLowerCSSDirectivesResult>(() => (
     nativeCompiler().lowerCSSDirectives(
       {
         manifestInput: result.manifestInput,
@@ -630,7 +630,7 @@ function toCompileCSSManifestResult(
 ): CompileCSSManifestResult {
   const { manifestInput: _directiveManifestInput, ...directiveData } = result
   const referenceContext = resolveCSSReferenceContext(result.references, options)
-  const lowerResult = lowerCSSDirectivesWithBackend(result, {
+  const lowerResult = lowerCSSDirectivesWithBinding(result, {
     baseManifest: options.baseManifest,
     resolutionManifest: referenceContext.manifest,
     onDiagnostic: options.onDiagnostic,
@@ -754,7 +754,7 @@ export function compileProjectManifest(entries: string[], options: CompileCSSMan
     if (entryGeneratedCSS) generatedCSS.push(entryGeneratedCSS)
     if (manifestResult.css) css.push(manifestResult.css)
   }
-  const resolvedManifest = manifest || compileManifestInputWithBackend({}, undefined)
+  const resolvedManifest = manifest || compileManifestInputWithBinding({}, undefined)
   return {
     entries,
     manifest: resolvedManifest,

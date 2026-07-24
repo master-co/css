@@ -1,0 +1,26 @@
+[package]
+name = "mastercss-binding-wasm-tooling"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+publish.workspace = true
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+mastercss-engine = { path = "../mastercss-engine" }
+mastercss-lint = { path = "../mastercss-lint" }
+mastercss-language = { path = "../mastercss-language" }
+mastercss-lexer = { path = "../mastercss-lexer" }
+mastercss-diagnostics = { path = "../mastercss-diagnostics" }
+mastercss-scanner = { path = "../mastercss-scanner" }
+mastercss-schema = { path = "../mastercss-schema" }
+mastercss-source = { path = "../mastercss-source" }
+mastercss-validator = { path = "../mastercss-validator" }
+serde.workspace = true
+serde-wasm-bindgen.workspace = true
+serde_json.workspace = true
+wasm-bindgen.workspace = true

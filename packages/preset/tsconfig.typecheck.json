@@ -12,7 +12,7 @@
     "tsBuildInfoFile": ".tsbuild/typecheck/tsconfig.tsbuildinfo"
   },
   "references": [
-    { "path": "../native/tsconfig.typecheck.json" },
+    { "path": "../binding/tsconfig.typecheck.json" },
     { "path": "../schema/tsconfig.typecheck.json" }
   ],
   "include": [

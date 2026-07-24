@@ -1,4 +1,4 @@
-import { createRenderBackendSessionSync } from '@master/css-backend/engine/node'
+import { createRenderBindingSessionSync } from '@master/css-binding/engine/node'
 import { renderClassNamesSync } from '@master/css/node'
 import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
@@ -7,7 +7,7 @@ import parseHTML from '../src/parse-html'
 
 beforeAll(() => {
   process.env.MASTER_CSS_NATIVE_BINDING_PATH = new URL(
-    '../../native/artifacts/mastercss.node',
+    '../../binding/artifacts/mastercss.node',
     import.meta.url
   ).pathname
 })
@@ -22,7 +22,7 @@ it('matches the core render owner and native render protocol', () => {
   const { classes } = parseHTML(html)
   const snapshot = renderClassNamesSync(classes, { manifest })
 
-  using session = createRenderBackendSessionSync({ manifest })
+  using session = createRenderBindingSessionSync({ manifest })
   session.ensureClassRules(classes)
   const rust = session.snapshotForClassNames(classes)
 

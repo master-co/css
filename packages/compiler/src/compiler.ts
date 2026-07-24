@@ -12,7 +12,7 @@ import type {
   MasterCSSCompilerInspection
 } from './index'
 import type { CompileCSSResult } from './contracts'
-import type { BackendCompilerSession } from './session'
+import type { BindingCompilerSession } from './session'
 
 function warningDiagnostic(message: string): MasterCSSDiagnostic {
   return Object.freeze({
@@ -122,16 +122,16 @@ export function toMasterCSSCompileManifestResultInternal(
   })
 }
 
-let bindCompilerSession: (session: BackendCompilerSession) => MasterCSSCompiler
+let bindCompilerSession: (session: BindingCompilerSession) => MasterCSSCompiler
 
 export class MasterCSSCompiler implements Disposable {
-  #session!: BackendCompilerSession
+  #session!: BindingCompilerSession
   #disposed = false
 
   private constructor() { }
 
-  get backend() {
-    return this.#session.backend
+  get binding() {
+    return this.#session.binding
   }
 
   inspectCSS(source: string): MasterCSSCompilerInspection {
@@ -230,6 +230,6 @@ export class MasterCSSCompiler implements Disposable {
 }
 
 /** @internal */
-export function bindCompilerSessionInternal(session: BackendCompilerSession) {
+export function bindCompilerSessionInternal(session: BindingCompilerSession) {
   return bindCompilerSession(session)
 }

@@ -150,7 +150,7 @@
       "file": "packages/engine/tests/rust-engine.test.ts",
       "expectedTests": 19,
       "tests": [
-        { "name": "uses Wasm for auto backend when native addons are disabled", "coverage": ["test:packages/css/tests/engine/rust-engine.test.ts#uses Wasm for auto backend when native addons are disabled"] },
+        { "name": "uses Wasm for auto binding when native addons are disabled", "coverage": ["test:packages/css/tests/engine/rust-engine.test.ts#uses Wasm for auto binding when native addons are disabled"] },
         { "name": "does not hide expected native load failures behind the auto Wasm fallback", "coverage": ["test:packages/css/tests/engine/rust-engine.test.ts#does not hide an invalid native binding behind Wasm fallback"] },
         { "name": "matches existing static, pattern, property, sorting, and escaping output", "coverage": ["corpus:engine-basic-order", "corpus:engine-complex-utility-values"] },
         { "name": "keeps ensure idempotent and delete synchronous", "coverage": ["test:packages/css/tests/engine/rust-engine.test.ts#keeps transitions synchronous after session creation"] },

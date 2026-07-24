@@ -10,7 +10,7 @@ import type {
   MasterCSSProjectLoadOptions,
   MasterCSSProjectResult
 } from './options'
-import { loadBackendProjectManifest } from './backend-project'
+import { loadBindingProjectManifest } from './binding-project'
 
 export type {
   MasterCSSProjectCompileOptions,
@@ -38,7 +38,7 @@ function assertStylesheetEntries(entries: readonly string[] | undefined) {
 }
 
 function immutableProjectResult(
-  result: ReturnType<typeof loadBackendProjectManifest>,
+  result: ReturnType<typeof loadBindingProjectManifest>,
   onDiagnostic: MasterCSSProjectLoadOptions['onDiagnostic']
 ): MasterCSSProjectResult {
   const diagnostics = Object.freeze(result.warnings.map(warningDiagnostic))
@@ -61,7 +61,7 @@ export function loadProjectManifestSync(
   options: Omit<MasterCSSProjectLoadOptions, 'signal'>
 ): MasterCSSProjectResult {
   assertStylesheetEntries(options.entries)
-  return immutableProjectResult(loadBackendProjectManifest(
+  return immutableProjectResult(loadBindingProjectManifest(
     resolve(options.root ?? process.cwd()),
     options.baseManifest,
     options.entries

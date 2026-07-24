@@ -1,7 +1,7 @@
 import {
-  createToolingBackend
-} from '@master/css-backend/tooling'
-import type { MasterCSSBackend } from '@master/css-backend'
+  createToolingBinding
+} from '@master/css-binding/tooling'
+import type { MasterCSSBinding } from '@master/css-binding'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import {
   bindLexerSession,
@@ -18,7 +18,7 @@ import {
 import {
   bindLintSession,
   type LintSession
-} from './lint/backend-session'
+} from './lint/binding-session'
 import type {
   MasterCSSLintAnalysis,
   MasterCSSLintCanonicalClassGroupSuggestion,
@@ -40,7 +40,7 @@ import type {
 import {
   bindValidatorSession,
   type ValidatorSession
-} from './validator/backend-session'
+} from './validator/binding-session'
 import type { MasterCSSClassValidationResult } from './validator/contracts'
 import type { CanonicalClassNameOptions } from './lint/contracts'
 import type {
@@ -69,7 +69,7 @@ let bindToolingSession: (parts: ToolingSessionParts) => MasterCSSToolingSession
 
 export interface MasterCSSToolingSessionOptions {
   readonly manifest: MasterCSSManifest
-  readonly backend?: MasterCSSBackend
+  readonly binding?: MasterCSSBinding
 }
 
 export class MasterCSSToolingSession implements Disposable {
@@ -77,9 +77,9 @@ export class MasterCSSToolingSession implements Disposable {
 
   private constructor(private readonly parts: ToolingSessionParts) { }
 
-  get backend(): 'native' | 'wasm' {
+  get binding(): 'native' | 'wasm' {
     this.assertActive()
-    return this.parts.language.backend
+    return this.parts.language.binding
   }
 
   analyzeClassList(request: MasterCSSClassListAnalysisRequest): MasterCSSClassListAnalysis {
@@ -241,29 +241,29 @@ export class MasterCSSToolingSession implements Disposable {
 export async function createToolingSession(
   options: MasterCSSToolingSessionOptions
 ): Promise<MasterCSSToolingSession> {
-  const backend = await createToolingBackend({ backend: options.backend })
+  const binding = await createToolingBinding({ binding: options.binding })
   const created: { dispose(): void }[] = []
   try {
-    const lexerBackend = await backend.createLexerSession()
-    created.push(lexerBackend)
-    const sourceBackend = await backend.createSourceSession()
-    created.push(sourceBackend)
-    const validatorBackend = await backend.createValidatorSession(options.manifest)
-    created.push(validatorBackend)
-    const languageBackend = await backend.createLanguageSession(options.manifest)
-    created.push(languageBackend)
-    const lintBackend = await backend.createLintSession(options.manifest)
-    created.push(lintBackend)
-    const lintValidatorBackend = await backend.createValidatorSession(options.manifest)
-    created.push(lintValidatorBackend)
-    const lintLanguageBackend = await backend.createLanguageSession(options.manifest)
-    created.push(lintLanguageBackend)
+    const lexerBinding = await binding.createLexerSession()
+    created.push(lexerBinding)
+    const sourceBinding = await binding.createSourceSession()
+    created.push(sourceBinding)
+    const validatorBinding = await binding.createValidatorSession(options.manifest)
+    created.push(validatorBinding)
+    const languageBinding = await binding.createLanguageSession(options.manifest)
+    created.push(languageBinding)
+    const lintBinding = await binding.createLintSession(options.manifest)
+    created.push(lintBinding)
+    const lintValidatorBinding = await binding.createValidatorSession(options.manifest)
+    created.push(lintValidatorBinding)
+    const lintLanguageBinding = await binding.createLanguageSession(options.manifest)
+    created.push(lintLanguageBinding)
     const session = bindToolingSession({
-      lexer: bindLexerSession(backend.backend, lexerBackend),
-      source: bindSourceExtractor(backend.backend, sourceBackend),
-      validator: bindValidatorSession(backend.backend, validatorBackend),
-      lint: bindLintSession(lintBackend, lintValidatorBackend, lintLanguageBackend),
-      language: bindLanguageSession(backend.backend, languageBackend)
+      lexer: bindLexerSession(binding.binding, lexerBinding),
+      source: bindSourceExtractor(binding.binding, sourceBinding),
+      validator: bindValidatorSession(binding.binding, validatorBinding),
+      lint: bindLintSession(lintBinding, lintValidatorBinding, lintLanguageBinding),
+      language: bindLanguageSession(binding.binding, languageBinding)
     })
     created.length = 0
     return session

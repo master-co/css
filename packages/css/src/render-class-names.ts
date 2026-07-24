@@ -1,4 +1,4 @@
-import { createRenderBackendSession } from '@master/css-backend/engine'
+import { createRenderBindingSession } from '@master/css-binding/engine'
 import {
   bindRenderSessionInternal,
   type MasterCSSRenderSessionOptions
@@ -8,17 +8,17 @@ export async function renderClassNames(
   classNames: readonly string[],
   options: MasterCSSRenderSessionOptions
 ) {
-  const backend = await createRenderBackendSession(options)
+  const binding = await createRenderBindingSession(options)
   const session = bindRenderSessionInternal(
     {
-      nativeDeclarationCandidates: (classNames) => backend.nativeDeclarationCandidates(classNames),
+      nativeDeclarationCandidates: (classNames) => binding.nativeDeclarationCandidates(classNames),
       ensureClasses: (classNames, nativeSupport) =>
-        backend.ensureClassRules(classNames, nativeSupport),
-      ensureStylesheetResources: (nativeCSS) => backend.ensureStylesheetResources(nativeCSS),
-      emittedGlobals: () => backend.emittedGlobals(),
-      snapshot: () => backend.snapshot(),
-      snapshotForClasses: (classNames) => backend.snapshotForClassNames(classNames),
-      dispose: () => backend.dispose()
+        binding.ensureClassRules(classNames, nativeSupport),
+      ensureStylesheetResources: (nativeCSS) => binding.ensureStylesheetResources(nativeCSS),
+      emittedGlobals: () => binding.emittedGlobals(),
+      snapshot: () => binding.snapshot(),
+      snapshotForClasses: (classNames) => binding.snapshotForClassNames(classNames),
+      dispose: () => binding.dispose()
     },
     options.supportsNativeDeclaration
   )

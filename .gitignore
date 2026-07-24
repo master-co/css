@@ -13,9 +13,9 @@
 /target
 
 # Rust binding artifacts copied into npm packages by xtask
-/packages/native/artifacts
-/packages/wasm-*/artifacts
-/packages/wasm-*/src/index.d.ts
+/packages/binding/artifacts
+/packages/binding-wasm-*/artifacts
+/packages/binding-wasm-*/src/*.d.ts
 /packages/runtime/artifacts
 
 # monorepo

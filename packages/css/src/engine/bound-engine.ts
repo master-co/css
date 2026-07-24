@@ -1,21 +1,21 @@
 import { MasterCSSError } from '@master/css-schema'
-import type { MasterCSSResolvedBackend } from '@master/css-backend'
+import type { MasterCSSResolvedBinding } from '@master/css-binding'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import {
   normalizeEngineError,
-  type BackendEngineSession,
+  type BindingEngineSession,
   type MasterCSSEngine,
   type MasterCSSEngineInspection,
   type MasterCSSEngineSnapshot,
   type MasterCSSEngineTransition
-} from './backend'
+} from './binding'
 
 export default class BoundEngine implements MasterCSSEngine {
   private disposed = false
 
   constructor(
-    public readonly backend: MasterCSSResolvedBackend,
-    private readonly session: BackendEngineSession
+    public readonly binding: MasterCSSResolvedBinding,
+    private readonly session: BindingEngineSession
   ) { }
 
   ensureClassRules(classNames: readonly string[]) {

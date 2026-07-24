@@ -24,7 +24,7 @@ that the automated package checks enforce.
 | ESLint rules and flat config | `@master/eslint-plugin-css` |
 | Official build/framework adapters | `@master/css-vite`, `@master/css-webpack`, `@master/css-next`, `@master/css-nuxt`, `@master/css-astro`, `@master/css-svelte` |
 | Host applications | `@master/css-cli`, `@master/css-mcp`, `@master/create-css`, `@master/css-figma`, `@master/css-vscode` |
-| Public contracts, backend broker, native/Wasm artifacts | `@master/css-schema`, `@master/css-backend`, `@master/css-wasm-*` |
+| Public contracts, binding loader, native/Wasm artifacts | `@master/css-schema`, `@master/css-binding`, `@master/css-binding-wasm-*` |
 
 ## Retired boundaries
 

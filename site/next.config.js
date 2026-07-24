@@ -19,14 +19,14 @@ nextConfig.staticPageGenerationTimeout = 180
 nextConfig.turbopack ??= {}
 nextConfig.turbopack.resolveAlias = {
   ...nextConfig.turbopack.resolveAlias,
-  '@master/css-backend/compiler': {
-    browser: '../packages/native/src/broker-compiler-browser.ts'
+  '@master/css-binding/compiler': {
+    browser: '../packages/binding/src/compiler-binding-browser.ts'
   },
-  '@master/css-backend/engine': {
-    browser: '../packages/native/src/broker-engine-browser.ts'
+  '@master/css-binding/engine': {
+    browser: '../packages/binding/src/engine-binding-browser.ts'
   },
-  '@master/css-backend/tooling': {
-    browser: '../packages/native/src/broker-tooling-browser.ts'
+  '@master/css-binding/tooling': {
+    browser: '../packages/binding/src/tooling-binding-browser.ts'
   }
 }
 nextConfig.experimental = {

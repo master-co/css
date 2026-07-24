@@ -97,9 +97,9 @@ const HIGH_RISK_PACKAGES: Record<string, PackageRisk> = {
   'language-server': { id: 'language-server', severity: 'warning', reason: 'LSP behavior' },
   'eslint-plugin': { id: 'eslint-plugin', severity: 'warning', reason: 'ESLint parser support, diagnostics, and autofix ranges' },
   native: { id: 'native', severity: 'high', reason: 'native ABI loading and target artifact delivery' },
-  'wasm-compiler': { id: 'wasm', severity: 'high', reason: 'compiler Wasm ABI and browser delivery' },
-  'wasm-runtime': { id: 'wasm', severity: 'high', reason: 'runtime Wasm ABI and browser delivery' },
-  'wasm-tooling': { id: 'wasm', severity: 'high', reason: 'tooling Wasm ABI and browser delivery' }
+  'binding-wasm-compiler': { id: 'wasm', severity: 'high', reason: 'compiler Wasm ABI and browser delivery' },
+  'binding-wasm-engine': { id: 'wasm', severity: 'high', reason: 'runtime Wasm ABI and browser delivery' },
+  'binding-wasm-tooling': { id: 'wasm', severity: 'high', reason: 'tooling Wasm ABI and browser delivery' }
 }
 
 const PACKAGE_COMMON_PACKS: Record<string, string[]> = {
@@ -112,9 +112,9 @@ const PACKAGE_COMMON_PACKS: Record<string, string[]> = {
   runtime: ['.ai/context/css-output.md', '.ai/context/performance.md'],
   server: ['.ai/context/css-output.md'],
   native: ['.ai/context/package-boundaries.md', '.ai/context/testing.md'],
-  'wasm-compiler': ['.ai/context/package-boundaries.md', '.ai/context/testing.md'],
-  'wasm-runtime': ['.ai/context/package-boundaries.md', '.ai/context/testing.md'],
-  'wasm-tooling': ['.ai/context/package-boundaries.md', '.ai/context/testing.md'],
+  'binding-wasm-compiler': ['.ai/context/package-boundaries.md', '.ai/context/testing.md'],
+  'binding-wasm-engine': ['.ai/context/package-boundaries.md', '.ai/context/testing.md'],
+  'binding-wasm-tooling': ['.ai/context/package-boundaries.md', '.ai/context/testing.md'],
   'language-service': ['.ai/context/testing.md'],
   'language-server': ['.ai/context/testing.md'],
   'eslint-plugin': ['.ai/context/testing.md'],

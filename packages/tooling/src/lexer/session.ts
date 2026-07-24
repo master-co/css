@@ -1,18 +1,18 @@
 import type {
   MasterCSSLexerBatch,
   MasterCSSLexerBatchRequest
-} from '@master/css-backend/tooling'
-import { MASTER_CSS_LEXER_BATCH_VERSION } from '@master/css-backend/tooling'
+} from '@master/css-binding/tooling'
+import { MASTER_CSS_LEXER_BATCH_VERSION } from '@master/css-binding/tooling'
 
 export type LexerBatchRequest = MasterCSSLexerBatchRequest
 
-interface BackendLexerSession {
+interface BindingLexerSession {
   analyze(request: unknown): unknown
   dispose(): void
 }
 
 export interface LexerSession {
-  readonly backend: 'native' | 'wasm'
+  readonly binding: 'native' | 'wasm'
   analyze(request: LexerBatchRequest): MasterCSSLexerBatch
   dispose(): void
 }
@@ -39,11 +39,11 @@ function parse(value: unknown): MasterCSSLexerBatch {
 }
 
 export function bindLexerSession(
-  backend: LexerSession['backend'],
-  session: BackendLexerSession
+  binding: LexerSession['binding'],
+  session: BindingLexerSession
 ): LexerSession {
   return {
-    backend,
+    binding,
     analyze(request) {
       return parse(session.analyze(request))
     },

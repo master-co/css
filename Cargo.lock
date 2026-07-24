@@ -554,6 +554,76 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "0ceec5bc11778974d1bcb055b18002eba7f4b3518b6a0081b3af5f21666da9ad"
 
 [[package]]
+name = "mastercss-binding-native"
+version = "0.0.0"
+dependencies = [
+ "mastercss-compiler",
+ "mastercss-diagnostics",
+ "mastercss-engine",
+ "mastercss-language",
+ "mastercss-lexer",
+ "mastercss-lint",
+ "mastercss-project",
+ "mastercss-render",
+ "mastercss-scanner",
+ "mastercss-schema",
+ "mastercss-source",
+ "mastercss-validator",
+ "napi",
+ "napi-build",
+ "napi-derive",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
+name = "mastercss-binding-wasm-compiler"
+version = "0.0.0"
+dependencies = [
+ "getrandom",
+ "mastercss-compiler",
+ "mastercss-engine",
+ "mastercss-render",
+ "mastercss-schema",
+ "serde",
+ "serde-wasm-bindgen",
+ "serde_json",
+ "wasm-bindgen",
+]
+
+[[package]]
+name = "mastercss-binding-wasm-engine"
+version = "0.0.0"
+dependencies = [
+ "mastercss-engine",
+ "mastercss-render",
+ "mastercss-schema",
+ "serde",
+ "serde-wasm-bindgen",
+ "serde_json",
+ "wasm-bindgen",
+]
+
+[[package]]
+name = "mastercss-binding-wasm-tooling"
+version = "0.0.0"
+dependencies = [
+ "mastercss-diagnostics",
+ "mastercss-engine",
+ "mastercss-language",
+ "mastercss-lexer",
+ "mastercss-lint",
+ "mastercss-scanner",
+ "mastercss-schema",
+ "mastercss-source",
+ "mastercss-validator",
+ "serde",
+ "serde-wasm-bindgen",
+ "serde_json",
+ "wasm-bindgen",
+]
+
+[[package]]
 name = "mastercss-cli"
 version = "0.0.0"
 dependencies = [
@@ -633,29 +703,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "mastercss-napi"
-version = "0.0.0"
-dependencies = [
- "mastercss-compiler",
- "mastercss-diagnostics",
- "mastercss-engine",
- "mastercss-language",
- "mastercss-lexer",
- "mastercss-lint",
- "mastercss-project",
- "mastercss-render",
- "mastercss-scanner",
- "mastercss-schema",
- "mastercss-source",
- "mastercss-validator",
- "napi",
- "napi-build",
- "napi-derive",
- "serde",
- "serde_json",
-]
-
-[[package]]
 name = "mastercss-project"
 version = "0.0.0"
 dependencies = [
@@ -720,53 +767,6 @@ version = "0.0.0"
 dependencies = [
  "mastercss-engine",
  "mastercss-schema",
-]
-
-[[package]]
-name = "mastercss-wasm-compiler"
-version = "0.0.0"
-dependencies = [
- "getrandom",
- "mastercss-compiler",
- "mastercss-engine",
- "mastercss-render",
- "mastercss-schema",
- "serde",
- "serde-wasm-bindgen",
- "serde_json",
- "wasm-bindgen",
-]
-
-[[package]]
-name = "mastercss-wasm-runtime"
-version = "0.0.0"
-dependencies = [
- "mastercss-engine",
- "mastercss-render",
- "mastercss-schema",
- "serde",
- "serde-wasm-bindgen",
- "serde_json",
- "wasm-bindgen",
-]
-
-[[package]]
-name = "mastercss-wasm-tooling"
-version = "0.0.0"
-dependencies = [
- "mastercss-diagnostics",
- "mastercss-engine",
- "mastercss-language",
- "mastercss-lexer",
- "mastercss-lint",
- "mastercss-scanner",
- "mastercss-schema",
- "mastercss-source",
- "mastercss-validator",
- "serde",
- "serde-wasm-bindgen",
- "serde_json",
- "wasm-bindgen",
 ]
 
 [[package]]

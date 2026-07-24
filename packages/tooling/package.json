@@ -114,7 +114,7 @@
     "provenance": true
   },
   "dependencies": {
-    "@master/css-backend": "workspace:*",
+    "@master/css-binding": "workspace:*",
     "@master/css-schema": "workspace:*",
     "consola": "^3.4.2",
     "css-tree": "^3.2.1",

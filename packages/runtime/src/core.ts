@@ -79,10 +79,10 @@ export interface MasterCSSRuntimeOptions {
   readonly hydrationManifest?: MasterCSSHydrationManifest
 }
 
-export type MasterCSSRuntimeBackend = 'auto' | 'native' | 'wasm'
+export type MasterCSSRuntimeBinding = 'auto' | 'native' | 'wasm'
 
 export interface MasterCSSRuntimeStartOptions extends MasterCSSRuntimeOptions {
-  readonly backend?: MasterCSSRuntimeBackend
+  readonly binding?: MasterCSSRuntimeBinding
   readonly startupTimeoutMs?: number
   readonly onDiagnostic?: (diagnostic: MasterCSSDiagnostic) => void
 }
@@ -106,7 +106,7 @@ export interface MasterCSSRuntimeLayerSnapshot {
 }
 
 export interface MasterCSSRuntimeSnapshot {
-  readonly backend: MasterCSSEngine['backend']
+  readonly binding: MasterCSSEngine['binding']
   readonly cssText: string
   readonly observing: boolean
   readonly classRules: Readonly<Record<string, MasterCSSRuntimeClassSnapshot>>
@@ -120,7 +120,7 @@ export interface MasterCSSRuntimeSnapshot {
 }
 
 export interface MasterCSSRuntimeFacade extends Disposable {
-  readonly backend: MasterCSSEngine['backend']
+  readonly binding: MasterCSSEngine['binding']
   observe(): this
   disconnect(): this
   refresh(manifest?: MasterCSSManifest): this
@@ -327,7 +327,7 @@ export class MasterCSSRuntime implements Disposable {
     manifest: MasterCSSManifest,
     emittedGlobals: MasterCSSEmittedGlobals | undefined,
     private hydrationManifest: MasterCSSHydrationManifest | undefined,
-    private readonly backendEngine: MasterCSSEngine
+    private readonly bindingEngine: MasterCSSEngine
   ) {
     this.manifest = manifest
     this.emittedGlobals = cloneEmittedGlobals(emittedGlobals)
@@ -337,8 +337,8 @@ export class MasterCSSRuntime implements Disposable {
     this.resetResourceCounts()
   }
 
-  get backend(): MasterCSSEngine['backend'] {
-    return this.backendEngine.backend
+  get binding(): MasterCSSEngine['binding'] {
+    return this.bindingEngine.binding
   }
 
   private get rules() {
@@ -367,7 +367,7 @@ export class MasterCSSRuntime implements Disposable {
 
   private static async startNew(root: Document | ShadowRoot, options: MasterCSSRuntimeStartOptions) {
     const {
-      backend = 'auto',
+      binding = 'auto',
       startupTimeoutMs = MASTER_CSS_RUNTIME_STARTUP_TIMEOUT_MS,
       onDiagnostic
     } = options
@@ -377,7 +377,7 @@ export class MasterCSSRuntime implements Disposable {
     const enginePromise = createEngine({
       manifest: options.manifest,
       emittedGlobals: options.emittedGlobals,
-      backend
+      binding
     }).then((engine) => {
       if (abandoned) engine.dispose()
       return engine
@@ -448,10 +448,10 @@ export class MasterCSSRuntime implements Disposable {
   private getGlobalFacade(): MasterCSSRuntimeFacade {
     if (this.globalFacade) return this.globalFacade
     let facade: MasterCSSRuntimeFacade
-    const getBackend = () => this.backend
+    const getBinding = () => this.binding
     facade = Object.freeze({
-      get backend() {
-        return getBackend()
+      get binding() {
+        return getBinding()
       },
       observe: () => {
         this.observe()
@@ -479,7 +479,7 @@ export class MasterCSSRuntime implements Disposable {
 
   private registerEmittedGlobals(emittedGlobals?: MasterCSSEmittedGlobals) {
     if (!emittedGlobals) return this
-    const snapshot = this.backendEngine.snapshot()
+    const snapshot = this.bindingEngine.snapshot()
     this.syncResourceSnapshot(snapshot.resources)
     for (const [name, count] of Object.entries(emittedGlobals.variables || {})) {
       if (!count) continue
@@ -732,7 +732,7 @@ export class MasterCSSRuntime implements Disposable {
         if (rule) this.unregisterLayerRule(rule)
       }
     }
-    this.syncResourceSnapshot(this.backendEngine.snapshot().resources)
+    this.syncResourceSnapshot(this.bindingEngine.snapshot().resources)
   }
 
   private adoptSnapshot(snapshot: MasterCSSEngineSnapshot, preserveStyle = false) {
@@ -793,7 +793,7 @@ export class MasterCSSRuntime implements Disposable {
     this.style = null
     this.progressive = false
     this.createRuntimeStyle()
-    this.adoptSnapshot(this.backendEngine.snapshot())
+    this.adoptSnapshot(this.bindingEngine.snapshot())
     this.ensureClassRules([...connectedNames])
   }
 
@@ -811,7 +811,7 @@ export class MasterCSSRuntime implements Disposable {
 
   private failHydration(reason: string, ensuredClassNames: string[] = []) {
     this.hydrationFailureReason = reason
-    if (ensuredClassNames.length) this.backendEngine.deleteClassRules(ensuredClassNames)
+    if (ensuredClassNames.length) this.bindingEngine.deleteClassRules(ensuredClassNames)
     this.resetHostRuleState()
     return undefined
   }
@@ -876,8 +876,8 @@ export class MasterCSSRuntime implements Disposable {
       return this.failHydration(`Hydration manifest has no generated rules for ${MASTER_CSS_RUNTIME_STYLE_SELECTOR}.`)
     }
     const classNames = this.getHydrationClassNames(manifest)
-    this.backendEngine.ensureClassRules(classNames)
-    const snapshot = this.backendEngine.snapshot()
+    this.bindingEngine.ensureClassRules(classNames)
+    const snapshot = this.bindingEngine.snapshot()
     if (JSON.stringify(snapshot.rules) !== JSON.stringify(manifest.rules)) {
       return this.failHydration('Generated rules do not match the hydration manifest.', classNames)
     }
@@ -913,7 +913,7 @@ export class MasterCSSRuntime implements Disposable {
 
   private renderRuntimeStyle(connectedNames: Set<string>) {
     this.createRuntimeStyle()
-    this.adoptSnapshot(this.backendEngine.snapshot())
+    this.adoptSnapshot(this.bindingEngine.snapshot())
     this.ensureClassRules([...connectedNames])
   }
 
@@ -1170,10 +1170,10 @@ export class MasterCSSRuntime implements Disposable {
     this.cancelPendingAddedClassNames(classNames)
     this.cancelPendingRemovedClassNames(classNames)
     this.cancelRetainedClassNames(classNames)
-    const transition = this.backendEngine.ensureClassRules(classNames)
+    const transition = this.bindingEngine.ensureClassRules(classNames)
     this.applyTransition(transition)
     for (const className of classNames) {
-      const inspection = this.backendEngine.inspect(className)
+      const inspection = this.bindingEngine.inspect(className)
       if (!inspection.valid) {
         this.classUtilities.delete(className)
         continue
@@ -1193,7 +1193,7 @@ export class MasterCSSRuntime implements Disposable {
     this.cancelPendingAddedClassNames(classNames)
     this.cancelPendingRemovedClassNames(classNames)
     this.cancelRetainedClassNames(classNames)
-    const transition = this.backendEngine.deleteClassRules(classNames)
+    const transition = this.bindingEngine.deleteClassRules(classNames)
     this.applyTransition(transition)
     for (const className of classNames) this.classUtilities.delete(className)
     return transition
@@ -1231,7 +1231,7 @@ export class MasterCSSRuntime implements Disposable {
     this.observer = undefined
     this.observing = false
     const activeClassNames = [...this.classUtilities.keys()]
-    if (activeClassNames.length) this.backendEngine.deleteClassRules(activeClassNames)
+    if (activeClassNames.length) this.bindingEngine.deleteClassRules(activeClassNames)
     this.classCounts.clear()
     this.classTracker.reset()
     this.resetHostRuleState()
@@ -1247,13 +1247,13 @@ export class MasterCSSRuntime implements Disposable {
     this.clearPendingAddedClassNames()
     this.clearPendingRemovedClassNames()
     this.clearRetainedClassRules()
-    const transition = this.backendEngine.refresh(manifest)
+    const transition = this.bindingEngine.refresh(manifest)
     this.manifest = manifest
     this.loadManifestHostData(manifest)
     this.classUtilities.clear()
     this.applyTransition(transition)
     for (const className of this.classCounts.keys()) {
-      const inspection = this.backendEngine.inspect(className)
+      const inspection = this.bindingEngine.inspect(className)
       const rules = inspection.rules
         .map((ir) => this.getUtilityLayerByName(ir.layer).rules
           .find((rule): rule is HydratedGeneratedRule =>
@@ -1302,8 +1302,8 @@ export class MasterCSSRuntime implements Disposable {
       })
     ]
     return Object.freeze({
-      backend: this.backend,
-      cssText: this.backendEngine.snapshot().text,
+      binding: this.binding,
+      cssText: this.bindingEngine.snapshot().text,
       observing: this.observing,
       classRules: Object.freeze(classRules),
       usageCounts,
@@ -1325,7 +1325,7 @@ export class MasterCSSRuntime implements Disposable {
   dispose() {
     if (this.disposed) return
     this.disconnect()
-    this.backendEngine.dispose()
+    this.bindingEngine.dispose()
     this.unregister()
     this.disposed = true
     if (process.env.NODE_ENV === 'development') debugRuntimeDestroyed(this)

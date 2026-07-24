@@ -14,11 +14,11 @@
 |---|---|---|
 | `@master/css-schema` | `.`, Manifest, directive, hydration, emitted-global, syntax, and runtime contract subpaths | Dependency-light versioned TypeScript/Rust wire contracts and pure codecs |
 | `@master/css-preset` | `.`, `./default-manifest.json`, CSS subpaths | Default preset source and generated Manifest v1 |
-| `@master/css-backend` | `.`, `./engine*`, `./compiler*`, `./tooling*` | Conditional native/Wasm broker, typed feature sessions, and ABI validation |
-| `@master/css-native-<target>` | `.` | Platform-specific native artifacts; any bundled `mcss` executable is broker-internal and is not a package binary |
-| `@master/css-wasm-engine` | `.`, `./wasm` | Runtime Wasm artifact loader |
-| `@master/css-wasm-compiler` | `.`, `./wasm` | Compiler Wasm artifact loader |
-| `@master/css-wasm-tooling` | `.`, `./wasm` | Tooling Wasm artifact loader |
+| `@master/css-binding` | `.`, `./engine*`, `./compiler*`, `./tooling*` | Conditional native/Wasm loader, typed feature sessions, and ABI validation |
+| `@master/css-binding-<target>` | `.` | Platform-specific native artifacts; any bundled `mcss` executable is loader-internal and is not a package binary |
+| `@master/css-binding-wasm-engine` | `.`, `./wasm` | Runtime Wasm artifact loader |
+| `@master/css-binding-wasm-compiler` | `.`, `./wasm` | Compiler Wasm artifact loader |
+| `@master/css-binding-wasm-tooling` | `.`, `./wasm` | Tooling Wasm artifact loader |
 
 Native, Wasm, schema, preset, and their consumers publish in exact lockstep. They are
 not alternative implementations of the language.

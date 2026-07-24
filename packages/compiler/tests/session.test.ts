@@ -6,7 +6,7 @@ test('native compiler sessions batch semantic operations and reject use after di
   const inspected = compiler.inspectCSS('@master entry;')
   const compiled = compiler.compileCSS('@master entry;\n@utilities { btn { display: block; } }')
 
-  expect(compiler.backend).toBe('native')
+  expect(compiler.binding).toBe('native')
   expect(inspected.hasMasterEntry).toBe(true)
   expect(compiled.diagnostics).toEqual([])
   expect(Object.keys(compiled)).not.toContain('styleDefinitions')

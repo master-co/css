@@ -236,17 +236,17 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - package: native-darwin-arm64
+          - package: binding-darwin-arm64
             runner: macos-15
-          - package: native-darwin-x64
+          - package: binding-darwin-x64
             runner: macos-15-intel
-          - package: native-linux-arm64-gnu
+          - package: binding-linux-arm64-gnu
             runner: ubuntu-24.04-arm
-          - package: native-linux-x64-gnu
+          - package: binding-linux-x64-gnu
             runner: ubuntu-24.04
-          - package: native-win32-arm64-msvc
+          - package: binding-win32-arm64-msvc
             runner: windows-11-arm
-          - package: native-win32-x64-msvc
+          - package: binding-win32-x64-msvc
             runner: windows-2025
     runs-on: ${{ matrix.runner }}
     steps:
@@ -261,8 +261,8 @@ jobs:
       - name: Build and stage native artifacts
         run: cargo xtask stage-native-target ${{ matrix.package }} --release
       - name: Pack, install, load addon, and execute CLI smoke
-        run: node scripts/native-package-smoke.mjs packages/${{ matrix.package }}
-      - name: Upload release-native artifacts
+        run: node scripts/binding-package-smoke.mjs packages/${{ matrix.package }}
+      - name: Upload release-binding artifacts
         if: ${{ inputs.release_build }}
         uses: actions/upload-artifact@v7
         with:
@@ -282,9 +282,9 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - package: native-linux-arm64-musl
+          - package: binding-linux-arm64-musl
             runner: ubuntu-24.04-arm
-          - package: native-linux-x64-musl
+          - package: binding-linux-x64-musl
             runner: ubuntu-24.04
     runs-on: ${{ matrix.runner }}
     steps:
@@ -305,9 +305,9 @@ jobs:
               apk add --no-cache build-base nodejs npm
               RUSTFLAGS="-C target-feature=-crt-static" \
                 cargo xtask stage-native-target "$TARGET_PACKAGE" --release
-              node scripts/native-package-smoke.mjs "packages/$TARGET_PACKAGE"
+              node scripts/binding-package-smoke.mjs "packages/$TARGET_PACKAGE"
             '
-      - name: Upload release-native artifacts
+      - name: Upload release-binding artifacts
         if: ${{ inputs.release_build }}
         uses: actions/upload-artifact@v7
         with:

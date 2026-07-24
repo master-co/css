@@ -3,8 +3,8 @@ export { renderClassNames } from './render-class-names'
 export type {
   MasterCSSEngine,
   MasterCSSEngineAnimationResource,
-  MasterCSSEngineBackend,
-  MasterCSSEngineBackendOptions,
+  MasterCSSEngineBinding,
+  MasterCSSEngineBindingOptions,
   MasterCSSEngineDeleteMutation,
   MasterCSSEngineInspection,
   MasterCSSEngineInsertMutation,
@@ -15,7 +15,7 @@ export type {
   MasterCSSEngineTransition,
   MasterCSSEngineVariableResource,
   MasterCSSRuleTarget
-} from './engine/backend'
+} from './engine/binding'
 export type {
   MasterCSSNativeDeclaration,
   MasterCSSNativeDeclarationSupport,

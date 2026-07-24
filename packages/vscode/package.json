@@ -495,7 +495,7 @@
     "@master/css-tooling": "workspace:*",
     "@master/css-language-server": "workspace:*",
     "@master/css-language-service": "workspace:*",
-    "@master/css-backend": "workspace:*",
+    "@master/css-binding": "workspace:*",
     "@master/css-compiler": "workspace:*",
     "@master/css-preset": "workspace:*",
     "@master/css-schema": "workspace:*",

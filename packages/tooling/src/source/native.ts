@@ -1,7 +1,7 @@
-import { createToolingBackendSync } from '@master/css-backend/tooling/node'
+import { createToolingBindingSync } from '@master/css-binding/tooling/node'
 
 function binding() {
-  return createToolingBackendSync()
+  return createToolingBindingSync()
 }
 
 export function extractClassCandidatesNative(content: string): string[] {

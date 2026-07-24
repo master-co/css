@@ -3,17 +3,17 @@ import config from '../release.config.js'
 
 const PNPM_RELEASE_PLUGIN = '@aronrepo/semantic-release-pnpm'
 const expectedFirstPackages = [
-  'packages/native-darwin-arm64',
-  'packages/native-darwin-x64',
-  'packages/native-linux-arm64-gnu',
-  'packages/native-linux-arm64-musl',
-  'packages/native-linux-x64-gnu',
-  'packages/native-linux-x64-musl',
-  'packages/native-win32-arm64-msvc',
-  'packages/native-win32-x64-msvc',
-  'packages/wasm-compiler',
-  'packages/wasm-runtime',
-  'packages/wasm-tooling'
+  'packages/binding-darwin-arm64',
+  'packages/binding-darwin-x64',
+  'packages/binding-linux-arm64-gnu',
+  'packages/binding-linux-arm64-musl',
+  'packages/binding-linux-x64-gnu',
+  'packages/binding-linux-x64-musl',
+  'packages/binding-win32-arm64-msvc',
+  'packages/binding-win32-x64-msvc',
+  'packages/binding-wasm-compiler',
+  'packages/binding-wasm-engine',
+  'packages/binding-wasm-tooling'
 ]
 
 const packageRoots = config.plugins

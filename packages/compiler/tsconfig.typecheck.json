@@ -16,7 +16,7 @@
       "path": "../internal/tsconfig.typecheck.json"
     },
     {
-      "path": "../native/tsconfig.typecheck.json"
+      "path": "../binding/tsconfig.typecheck.json"
     },
     {
       "path": "../preset/tsconfig.typecheck.json"

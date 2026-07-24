@@ -2,7 +2,7 @@ import {
   createCompiler,
   type MasterCSSCompileManifestResult
 } from '../index'
-import { createRenderBackendSession } from '@master/css-backend/engine'
+import { createRenderBindingSession } from '@master/css-binding/engine'
 import type { MasterCSSDiagnostic } from '@master/css-schema'
 import type { MasterCSSEmittedGlobals } from '@master/css-schema/emitted-globals'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
@@ -17,7 +17,7 @@ export interface MasterCSSBrowserStylesheetCompileOptions {
   readonly classNames?: readonly string[]
   readonly from?: string
   readonly preserveNativeCSS?: boolean
-  readonly backend?: Readonly<{
+  readonly binding?: Readonly<{
     input?: RequestInfo | URL | Response | BufferSource | WebAssembly.Module
   }>
   readonly signal?: AbortSignal
@@ -43,14 +43,14 @@ export async function compileBrowserStylesheet(
     classNames,
     from,
     preserveNativeCSS,
-    backend,
+    binding,
     signal,
     onDiagnostic
   } = options
   signal?.throwIfAborted()
   const compiler = await createCompiler({
-    backend: 'wasm',
-    ...(backend ? { wasm: backend } : {})
+    binding: 'wasm',
+    ...(binding ? { wasm: binding } : {})
   })
   let result: MasterCSSCompileManifestResult
   try {
@@ -64,21 +64,21 @@ export async function compileBrowserStylesheet(
     compiler.dispose()
   }
   signal?.throwIfAborted()
-  const backendSession = await createRenderBackendSession(
+  const bindingSession = await createRenderBindingSession(
     { manifest: result.manifest },
-    { backend: 'wasm', wasm: backend }
+    { binding: 'wasm', wasm: binding }
   )
   const renderSession: StylesheetRenderSession = {
     nativeDeclarationCandidates: (classNames) =>
-      backendSession.nativeDeclarationCandidates(classNames),
+      bindingSession.nativeDeclarationCandidates(classNames),
     ensureClasses: (classNames, nativeSupport) =>
-      backendSession.ensureClassRules(classNames, nativeSupport),
+      bindingSession.ensureClassRules(classNames, nativeSupport),
     ensureStylesheetResources: (nativeCSS) =>
-      backendSession.ensureStylesheetResources(nativeCSS),
+      bindingSession.ensureStylesheetResources(nativeCSS),
     emittedGlobals: () =>
-      backendSession.emittedGlobals() as Required<MasterCSSEmittedGlobals>,
-    snapshot: () => backendSession.snapshot(),
-    dispose: () => backendSession.dispose()
+      bindingSession.emittedGlobals() as Required<MasterCSSEmittedGlobals>,
+    snapshot: () => bindingSession.snapshot(),
+    dispose: () => bindingSession.dispose()
   }
   let renderedCSS: RenderCompiledManifestCSSResult
   try {

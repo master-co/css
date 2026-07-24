@@ -8,7 +8,7 @@ const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
 
 beforeAll(() => {
   process.env.MASTER_CSS_NATIVE_BINDING_PATH = new URL(
-    '../../../native/artifacts/mastercss.node',
+    '../../../binding/artifacts/mastercss.node',
     import.meta.url
   ).pathname
 })

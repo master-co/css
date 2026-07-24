@@ -1,14 +1,14 @@
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
-import { createToolingBackendSync } from '@master/css-backend/tooling/node'
+import { createToolingBindingSync } from '@master/css-binding/tooling/node'
 import { bindLexerSession } from './lexer/session'
 import { bindLanguageSession } from './language/session'
-import { bindLintSession } from './lint/backend-session'
+import { bindLintSession } from './lint/binding-session'
 import { bindSourceExtractor } from './source/session'
 import {
   bindToolingSessionInternal,
   type MasterCSSToolingSession
 } from './tooling-session'
-import { bindValidatorSession } from './validator/backend-session'
+import { bindValidatorSession } from './validator/binding-session'
 
 export type { MasterCSSToolingSession } from './tooling-session'
 export {
@@ -19,7 +19,7 @@ export {
 export function createToolingSessionSync(options: {
   readonly manifest: MasterCSSManifest
 }): MasterCSSToolingSession {
-  const tooling = createToolingBackendSync()
+  const tooling = createToolingBindingSync()
   const lexer = tooling.createLexerSession()
   const source = tooling.createSourceSession()
   const validator = tooling.createValidatorSession(options.manifest)

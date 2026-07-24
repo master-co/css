@@ -1,7 +1,7 @@
 import {
-  createEngineBackendSessionSync,
-  createRenderBackendSessionSync
-} from '@master/css-backend/engine/node'
+  createEngineBindingSessionSync,
+  createRenderBindingSessionSync
+} from '@master/css-binding/engine/node'
 import { MasterCSSError } from '@master/css-schema'
 import {
   MasterCSSRenderSession,
@@ -12,60 +12,60 @@ import BoundEngine from './engine/bound-engine'
 import {
   normalizeEngineError,
   type MasterCSSEngine,
-  type MasterCSSEngineBackend,
-  type MasterCSSEngineBackendOptions,
+  type MasterCSSEngineBinding,
+  type MasterCSSEngineBindingOptions,
   type MasterCSSEngineOptions
-} from './engine/backend'
+} from './engine/binding'
 
 export type {
   MasterCSSEngine,
-  MasterCSSEngineBackend,
-  MasterCSSEngineBackendOptions,
+  MasterCSSEngineBinding,
+  MasterCSSEngineBindingOptions,
   MasterCSSEngineOptions
-} from './engine/backend'
+} from './engine/binding'
 
-function createNativeEngine(options: MasterCSSEngineBackendOptions): MasterCSSEngine {
-  const session = createEngineBackendSessionSync(options)
+function createNativeEngine(options: MasterCSSEngineBindingOptions): MasterCSSEngine {
+  const session = createEngineBindingSessionSync(options)
   return new BoundEngine('native', session)
 }
 
-export function createNativeEngineBackend(): MasterCSSEngineBackend {
+export function createNativeEngineBinding(): MasterCSSEngineBinding {
   return Object.freeze({
     kind: 'native',
-    async createEngine(options: MasterCSSEngineBackendOptions) {
+    async createEngine(options: MasterCSSEngineBindingOptions) {
       return createNativeEngine(options)
     },
-    createEngineSync(options: MasterCSSEngineBackendOptions) {
+    createEngineSync(options: MasterCSSEngineBindingOptions) {
       return createNativeEngine(options)
     }
   })
 }
 
 export function createEngineSync(options: MasterCSSEngineOptions): MasterCSSEngine {
-  if (options.backend && typeof options.backend === 'object') {
-    if (!options.backend.createEngineSync) {
+  if (options.binding && typeof options.binding === 'object') {
+    if (!options.binding.createEngineSync) {
       throw new MasterCSSError({
         code: 'NATIVE_UNAVAILABLE',
         domain: 'engine',
-        message: 'The injected Master CSS backend does not support synchronous engine creation.'
+        message: 'The injected Master CSS binding does not support synchronous engine creation.'
       })
     }
-    return options.backend.createEngineSync({
+    return options.binding.createEngineSync({
       manifest: options.manifest,
       emittedGlobals: options.emittedGlobals
     })
   }
-  if (options.backend === 'wasm') {
+  if (options.binding === 'wasm') {
     throw new MasterCSSError({
       code: 'NATIVE_UNAVAILABLE',
       domain: 'engine',
-      message: 'createEngineSync() only supports the native backend. Use createEngine() for Wasm.'
+      message: 'createEngineSync() only supports the native binding. Use createEngine() for Wasm.'
     })
   }
   try {
     return createNativeEngine(options)
   } catch (cause) {
-    if (cause instanceof MasterCSSError && cause.domain === 'backend') {
+    if (cause instanceof MasterCSSError && cause.domain === 'binding') {
       throw new MasterCSSError({
         code: cause.code,
         domain: 'engine',
@@ -79,7 +79,7 @@ export function createEngineSync(options: MasterCSSEngineOptions): MasterCSSEngi
 export function createRenderSessionSync(
   options: MasterCSSRenderSessionOptions
 ): MasterCSSRenderSession {
-  const native = createRenderBackendSessionSync(options)
+  const native = createRenderBindingSessionSync(options)
   return bindRenderSessionInternal(
     {
       nativeDeclarationCandidates: (classNames) => native.nativeDeclarationCandidates(classNames),

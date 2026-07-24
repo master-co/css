@@ -4,7 +4,7 @@
 
 `@master/css-runtime` runs Master CSS in the browser. It observes DOM class changes, creates or hydrates `style#master-css`, tracks class usage counts, registers emittedGlobals global CSS counts, and inserts/removes native CSS rules.
 
-`MasterCSSRuntime` hosts a Rust `@master/css-wasm-engine` session. Any feature added to the runtime Wasm surface, runtime source, schema value constants, preset manifest loading, or other runtime-imported modules can enter the browser runtime bundle.
+`MasterCSSRuntime` hosts a Rust `@master/css-binding-wasm-engine` session. Any feature added to the runtime Wasm surface, runtime source, schema value constants, preset manifest loading, or other runtime-imported modules can enter the browser runtime bundle.
 
 Runtime does not expose a global event bus or tooling observer API. Third-party class observation should use DOM `MutationObserver` or explicit public runtime state. Development debug helpers are internal and must remain development-only.
 
@@ -35,7 +35,7 @@ Runtime does not expose a global event bus or tooling observer API. Third-party 
 - `withMasterCSSRuntime`
 - readonly global `MasterCSSRuntime` and `masterCSSRuntime` facades
 
-Mutable registries, DOM nodes, layers, and backend sessions are internal.
+Mutable registries, DOM nodes, layers, and binding sessions are internal.
 
 ## Key Files
 

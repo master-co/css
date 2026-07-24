@@ -28,12 +28,12 @@ const packagePolicies = new Map(Object.entries({
     visibility: 'public',
     disposition: 'retain'
   },
-  '@master/css-backend': {
-    owner: 'native and Wasm backend brokering',
+  '@master/css-binding': {
+    owner: 'native and Wasm binding loading',
     platform: 'conditional',
-    lifecycle: 'backend-session',
+    lifecycle: 'binding-session',
     visibility: 'published-internal',
-    disposition: 'broker'
+    disposition: 'loader'
   },
   '@master/css-cli': {
     owner: 'command-line host',
@@ -154,21 +154,21 @@ const packagePolicies = new Map(Object.entries({
     visibility: 'host-artifact',
     disposition: 'retain'
   },
-  '@master/css-wasm-compiler': {
+  '@master/css-binding-wasm-compiler': {
     owner: 'compiler Wasm artifact delivery',
     platform: 'conditional',
     lifecycle: 'module',
     visibility: 'artifact',
     disposition: 'artifact-only'
   },
-  '@master/css-wasm-engine': {
+  '@master/css-binding-wasm-engine': {
     owner: 'engine Wasm artifact delivery',
     platform: 'conditional',
     lifecycle: 'module',
     visibility: 'artifact',
     disposition: 'artifact-only'
   },
-  '@master/css-wasm-tooling': {
+  '@master/css-binding-wasm-tooling': {
     owner: 'tooling Wasm artifact delivery',
     platform: 'conditional',
     lifecycle: 'module',
@@ -198,7 +198,7 @@ const packagePolicies = new Map(Object.entries({
   }
 }))
 
-const nativeTargetPattern = /^@master\/css-native-(?:darwin|linux|win32)-/
+const bindingTargetPattern = /^@master\/css-binding-(?:darwin|linux|win32)-/
 const dependencyFields = [
   'dependencies',
   'devDependencies',
@@ -211,7 +211,7 @@ const registrySources = {
 }
 const wireSourcePatterns = [
   'packages/schema/src/**/*.ts',
-  'packages/native/src/protocol.ts',
+  'packages/binding/src/protocol.ts',
   'packages/cli/src/**/*.ts',
   'packages/mcp/src/**/*.ts'
 ]
@@ -230,7 +230,7 @@ function readSource(file) {
 }
 
 function policyFor(packageName) {
-  if (nativeTargetPattern.test(packageName)) {
+  if (bindingTargetPattern.test(packageName)) {
     return {
       owner: 'platform-specific native artifacts',
       platform: 'node',
@@ -418,7 +418,7 @@ function collectWireContracts() {
 
 function wireOwner(source) {
   if (source.startsWith('packages/schema/')) return '@master/css-schema'
-  if (source.startsWith('packages/native/')) return '@master/css-backend'
+  if (source.startsWith('packages/binding/')) return '@master/css-binding'
   if (source.startsWith('packages/cli/')) return '@master/css-cli'
   return '@master/css-mcp'
 }

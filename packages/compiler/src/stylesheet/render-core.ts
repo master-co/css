@@ -11,7 +11,7 @@ interface MasterCSSNativeDeclarationCandidate {
   readonly value: string
 }
 
-interface MasterCSSRenderBackendResult {
+interface MasterCSSRenderBindingResult {
   readonly classes: string[]
   readonly snapshot: MasterCSSEngineSnapshot
   readonly hydrationManifest: MasterCSSHydrationManifest
@@ -37,7 +37,7 @@ export interface StylesheetRenderSession {
   ensureClasses(classNames: string[], nativeSupport?: boolean[]): void
   ensureStylesheetResources(nativeCSS: string): void
   emittedGlobals(): Required<MasterCSSEmittedGlobals>
-  snapshot(): MasterCSSRenderBackendResult
+  snapshot(): MasterCSSRenderBindingResult
   dispose(): void
 }
 

@@ -1,6 +1,6 @@
 export { MasterCSSRuntime } from './core'
 export type {
-  MasterCSSRuntimeBackend,
+  MasterCSSRuntimeBinding,
   MasterCSSRuntimeClassSnapshot,
   MasterCSSRuntimeLayerSnapshot,
   MasterCSSRuntimeOptions,

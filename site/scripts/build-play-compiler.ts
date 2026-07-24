@@ -5,11 +5,11 @@ import { build, type TsdownPlugin } from 'tsdown'
 
 const siteDir = dirname(fileURLToPath(new URL('../package.json', import.meta.url)))
 const workspaceDistInputPattern = /(?:^|[\\/])packages[\\/][^\\/]+[\\/]dist[\\/]/
-const compilerWasmFileName = 'mastercss_wasm_compiler_bg.wasm'
-const compilerWasmSourcePath = fileURLToPath(new URL(`../../packages/wasm-compiler/artifacts/${compilerWasmFileName}`, import.meta.url))
-const backendSourcePath = fileURLToPath(new URL('../../packages/native/src/browser.ts', import.meta.url))
-const compilerBackendSourcePath = fileURLToPath(new URL('../../packages/native/src/broker-compiler-browser.ts', import.meta.url))
-const engineBackendSourcePath = fileURLToPath(new URL('../../packages/native/src/broker-engine-browser.ts', import.meta.url))
+const compilerWasmFileName = 'mastercss_binding_wasm_compiler_bg.wasm'
+const compilerWasmSourcePath = fileURLToPath(new URL(`../../packages/binding-wasm-compiler/artifacts/${compilerWasmFileName}`, import.meta.url))
+const bindingSourcePath = fileURLToPath(new URL('../../packages/binding/src/browser.ts', import.meta.url))
+const compilerBindingSourcePath = fileURLToPath(new URL('../../packages/binding/src/compiler-binding-browser.ts', import.meta.url))
+const engineBindingSourcePath = fileURLToPath(new URL('../../packages/binding/src/engine-binding-browser.ts', import.meta.url))
 
 function toWorkspaceDistInputs(moduleIds: string[]) {
   return [...new Set(moduleIds.filter((input) => workspaceDistInputPattern.test(input)))]
@@ -58,9 +58,9 @@ export async function buildPlayCompiler(outputDir = join(siteDir, 'public/play-c
     inputOptions: {
       resolve: {
         alias: {
-          '@master/css-backend/compiler': compilerBackendSourcePath,
-          '@master/css-backend/engine': engineBackendSourcePath,
-          '@master/css-backend': backendSourcePath
+          '@master/css-binding/compiler': compilerBindingSourcePath,
+          '@master/css-binding/engine': engineBindingSourcePath,
+          '@master/css-binding': bindingSourcePath
         },
         conditionNames: ['browser', 'default', 'import']
       }

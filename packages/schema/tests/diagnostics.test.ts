@@ -7,7 +7,7 @@ import {
 describe('MasterCSSError', () => {
   it('exposes one immutable structured payload', () => {
     const diagnostics: readonly MasterCSSDiagnostic[] = Object.freeze([Object.freeze({
-      version: 1,
+      version: 2,
       code: 'INVALID_CLASS',
       domain: 'engine',
       severity: 'error',

@@ -111,8 +111,8 @@ cssRuntime.observe()
 | `refresh(manifest)` | `this` | Replaces the complete manifest. |
 | `ensureClassRules(classNames)` | `MasterCSSEngineTransition` | Ensures rules for a readonly class-name collection. |
 | `deleteClassRules(classNames)` | `MasterCSSEngineTransition` | Deletes rules for a readonly class-name collection. |
-| `snapshot()` | `MasterCSSRuntimeSnapshot` | Returns frozen class rules, usage counts, layers, CSS text, backend, and hydration state. |
-| `dispose()` | `void` | Idempotently releases observation, CSSOM state, and the backend session. |
+| `snapshot()` | `MasterCSSRuntimeSnapshot` | Returns frozen class rules, usage counts, layers, CSS text, binding, and hydration state. |
+| `dispose()` | `void` | Idempotently releases observation, CSSOM state, and the binding session. |
 
 ### Progressive Hydration
 

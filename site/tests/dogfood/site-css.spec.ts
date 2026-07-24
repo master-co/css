@@ -172,7 +172,7 @@ test('Play loads the bundled Rust compiler Wasm and renders selector classes', a
   const failures = capturePageFailures(page)
   const wasmResponses: number[] = []
   page.on('response', (response) => {
-    if (response.url().endsWith('mastercss_wasm_compiler_bg.wasm')) {
+    if (response.url().endsWith('mastercss_binding_wasm_compiler_bg.wasm')) {
       wasmResponses.push(response.status())
     }
   })

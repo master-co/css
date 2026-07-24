@@ -11,10 +11,10 @@ import fg from 'fast-glob'
 import fs from 'node:fs'
 import path from 'node:path'
 import {
-  createCompilerBackendSession,
+  createCompilerBindingSession,
   MASTER_CSS_DIAGNOSTICS_REPORT_VERSION,
   type MasterCSSDiagnosticsReportInput
-} from '@master/css-backend/compiler'
+} from '@master/css-binding/compiler'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import type {
   MasterCSSInspectionReport,
@@ -54,10 +54,10 @@ export interface CreateMasterCSSInspectionReportOptions {
   validatePatterns?: (patterns: readonly string[]) => void
 }
 
-async function createBackendInspectionReport(
+async function createBindingInspectionReport(
   input: MasterCSSDiagnosticsReportInput
 ): Promise<MasterCSSInspectionReport> {
-  using compiler = await createCompilerBackendSession()
+  using compiler = await createCompilerBindingSession()
   return await compiler.createInspectionReport(input)
 }
 
@@ -276,5 +276,5 @@ export async function createMasterCSSInspectionReport(
   } finally {
     await scanner.dispose()
   }
-  return await createBackendInspectionReport(reportInput)
+  return await createBindingInspectionReport(reportInput)
 }

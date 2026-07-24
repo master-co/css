@@ -20,9 +20,9 @@ import {
   resolveGeneratedRuleSupport,
   resolveNativeSupport,
   serializeScannerBlocklist,
-  type BackendScannerSession,
-  type BackendScannerState
-} from './backend-session'
+  type BindingScannerSession,
+  type BindingScannerState
+} from './binding-session'
 
 const builtInAdapters = [
   vueAdapter(),
@@ -133,10 +133,10 @@ export class ScannerCSSView {
     return {
       rules: this.scanner.state.engine.rules
         .filter((
-          { layer }: BackendScannerState['engine']['rules'][number]
+          { layer }: BindingScannerState['engine']['rules'][number]
         ) => layer === 'utilities')
         .map((
-          rule: BackendScannerState['engine']['rules'][number]
+          rule: BindingScannerState['engine']['rules'][number]
         ) => ({ ...rule, name: rule.className }))
     }
   }
@@ -191,8 +191,8 @@ export class MasterCSSScanner extends EventEmitter implements AsyncDisposable {
   initializing?: Promise<this>
   resetDependencies: string[] = []
   readonly css = new ScannerCSSView(this)
-  private backendSession?: BackendScannerSession
-  private backendState?: BackendScannerState
+  private bindingSession?: BindingScannerSession
+  private bindingState?: BindingScannerState
   private currentManifest: MasterCSSManifest
 
   /** Precompiled minimatch patterns for per-module allow/exclude checks. */
@@ -230,7 +230,7 @@ export class MasterCSSScanner extends EventEmitter implements AsyncDisposable {
     this.sourceMatchers = undefined
     this.sourceMatcherOptions = undefined
     this.currentManifest = this.options.manifest
-    this.backendSession = await createScannerSession(this.currentManifest)
+    this.bindingSession = await createScannerSession(this.currentManifest)
     this.insertSafelist()
     this.emit('init', this.options, this.manifest)
     this.initialized = true
@@ -241,9 +241,9 @@ export class MasterCSSScanner extends EventEmitter implements AsyncDisposable {
     customOptions: MasterCSSScannerOptions = this.customOptions,
     resetOptions: ScannerResetOptions = {}
   ) {
-    this.backendSession?.dispose()
-    this.backendSession = undefined
-    this.backendState = undefined
+    this.bindingSession?.dispose()
+    this.bindingSession = undefined
+    this.bindingState = undefined
     this.resetDependencies = []
     this.sourceMatchers = undefined
     this.sourceMatcherOptions = undefined
@@ -257,9 +257,9 @@ export class MasterCSSScanner extends EventEmitter implements AsyncDisposable {
   }
 
   async dispose() {
-    this.backendSession?.dispose()
-    this.backendSession = undefined
-    this.backendState = undefined
+    this.bindingSession?.dispose()
+    this.bindingSession = undefined
+    this.bindingState = undefined
     this.resetDependencies = []
     this.sourceMatchers = undefined
     this.sourceMatcherOptions = undefined
@@ -274,8 +274,8 @@ export class MasterCSSScanner extends EventEmitter implements AsyncDisposable {
 
   private insertSafelist() {
     if (this.options.safelist?.length) {
-      this.getBackendSession().ensureClasses([...this.options.safelist])
-      this.syncBackendState()
+      this.getBindingSession().ensureClasses([...this.options.safelist])
+      this.syncBindingState()
       if (this.options.verbose) {
         logger.success(`${this.options.safelist.length} fixed classes inserted ${this.options.safelist.join(', ')}`)
       }
@@ -295,9 +295,9 @@ export class MasterCSSScanner extends EventEmitter implements AsyncDisposable {
     const adapter = this.resolveSourceAdapter(source)
     const extractedClasses = adapter
       ? await adapter.extract({ source, content })
-      : this.getBackendSession().extractCandidates(source, content)
-    const latentClasses = this.getBackendSession().collectCandidates(extractedClasses)
-    this.syncBackendState()
+      : this.getBindingSession().extractCandidates(source, content)
+    const latentClasses = this.getBindingSession().collectCandidates(extractedClasses)
+    this.syncBindingState()
     return latentClasses
   }
 
@@ -314,8 +314,8 @@ export class MasterCSSScanner extends EventEmitter implements AsyncDisposable {
     const adapter = this.resolveSourceAdapter(source)
     const extractedClasses = adapter
       ? await adapter.extract({ source, content })
-      : this.getBackendSession().extractCandidates(source, content)
-    const session = this.getBackendSession()
+      : this.getBindingSession().extractCandidates(source, content)
+    const session = this.getBindingSession()
     const blocklist = serializeScannerBlocklist(this.options.blocklist)
     const validationCandidates = session.filterCandidates(extractedClasses, blocklist)
     const nativeCandidates = session.nativeDeclarationCandidates(validationCandidates)
@@ -334,7 +334,7 @@ export class MasterCSSScanner extends EventEmitter implements AsyncDisposable {
       nativeSupport,
       invalidGeneratedClasses
     )
-    this.syncBackendState()
+    this.syncBindingState()
     const changedClasses = [...update.validClasses, ...(update.usedNativeClasses || [])]
     if (changedClasses.length) {
       if (this.options.verbose) {
@@ -383,25 +383,25 @@ export class MasterCSSScanner extends EventEmitter implements AsyncDisposable {
   }
 
   registerNativeClasses(classNames: string[]) {
-    const changed = this.getBackendSession().registerNativeClasses(classNames)
-    this.syncBackendState()
+    const changed = this.getBindingSession().registerNativeClasses(classNames)
+    this.syncBindingState()
     if (changed) this.emit('change')
     return changed
   }
 
-  private getBackendSession() {
-    if (!this.backendSession) throw new Error('MasterCSSScanner must be initialized before use.')
-    return this.backendSession
+  private getBindingSession() {
+    if (!this.bindingSession) throw new Error('MasterCSSScanner must be initialized before use.')
+    return this.bindingSession
   }
 
-  private syncBackendState() {
-    const state = this.getBackendSession().state()
-    this.backendState = state
+  private syncBindingState() {
+    const state = this.getBindingSession().state()
+    this.bindingState = state
     return state
   }
 
   get state() {
-    return this.backendState || this.syncBackendState()
+    return this.bindingState || this.syncBindingState()
   }
 
   /**

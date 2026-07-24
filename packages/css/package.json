@@ -81,7 +81,7 @@
     "provenance": true
   },
   "dependencies": {
-    "@master/css-backend": "workspace:*",
+    "@master/css-binding": "workspace:*",
     "@master/css-schema": "workspace:*",
     "@master/css-preset": "workspace:*"
   }

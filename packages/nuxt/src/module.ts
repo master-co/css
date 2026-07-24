@@ -69,7 +69,7 @@ function externalizeNitroServerRenderer(config: {
   config.noExternals = false
   config.externals ??= {}
   config.externals.external ??= []
-  for (const packageName of ['@master/css-server', '@master/css-backend']) {
+  for (const packageName of ['@master/css-server', '@master/css-binding']) {
     if (!config.externals.external.includes(packageName)) {
       config.externals.external.push(packageName)
     }

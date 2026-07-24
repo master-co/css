@@ -5,7 +5,7 @@ import {
   inspectCSS,
   resolveMasterCSSPackageEntryFile
 } from '../node-compiler'
-import { createCompilerBackendSessionSync } from '@master/css-backend/compiler/node'
+import { createCompilerBindingSessionSync } from '@master/css-binding/compiler/node'
 
 const MASTER_CSS_MODULE_IDS = ['@master/css'] as const
 const MASTER_CSS_MODULE_ID_SET = new Set<string>(MASTER_CSS_MODULE_IDS)
@@ -68,7 +68,7 @@ export function findCSSManifestEntryFilesSync(projectDir = process.cwd()) {
   } catch {
     // Let the native project layer report unreadable roots.
   }
-  return createCompilerBackendSessionSync()
+  return createCompilerBindingSessionSync()
     .findManifestEntries(root)
     .map((entry) => realRoot !== root && (entry === realRoot || entry.startsWith(`${realRoot}${sep}`))
       ? join(root, relative(realRoot, entry))

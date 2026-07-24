@@ -1,8 +1,8 @@
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import {
-  createToolingBackend,
-  type MasterCSSWasmBackendLoadOptions
-} from '@master/css-backend/tooling'
+  createToolingBinding,
+  type MasterCSSWasmBindingLoadOptions
+} from '@master/css-binding/tooling'
 import {
   bindLanguageSession,
   type LanguageSession
@@ -18,20 +18,20 @@ export type { LanguageSession }
 
 export interface BrowserLanguageSessionOptions {
   manifest: MasterCSSManifest
-  wasm?: MasterCSSWasmBackendLoadOptions
+  wasm?: MasterCSSWasmBindingLoadOptions
 }
 
 export async function createLanguageSession(
   options: BrowserLanguageSessionOptions
 ): Promise<LanguageSession> {
-  const tooling = await createToolingBackend({
-    backend: 'wasm',
+  const tooling = await createToolingBinding({
+    binding: 'wasm',
     wasm: options.wasm
   })
   return bindLanguageSession(
-    tooling.backend,
+    tooling.binding,
     await tooling.createLanguageSession(options.manifest)
   )
 }
 
-export { type MasterCSSWasmBackendLoadOptions }
+export { type MasterCSSWasmBindingLoadOptions }

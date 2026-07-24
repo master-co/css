@@ -46,13 +46,13 @@ jobs:
       - name: Download Tier-1 native artifacts
         uses: actions/download-artifact@v7
         with:
-          pattern: mastercss-native-*
-          path: native-artifacts
+          pattern: mastercss-binding-*
+          path: binding-artifacts
       - name: Verify and stage Tier-1 native artifacts
-        run: cargo xtask assemble-native-release native-artifacts release-artifacts/checksums.json --stage
+        run: cargo xtask assemble-native-release binding-artifacts release-artifacts/checksums.json --stage
       - run: pnpm run build
       - name: Finalize release checksums
-        run: cargo xtask assemble-native-release native-artifacts release-artifacts/checksums.json --require-assets --verify-staged
+        run: cargo xtask assemble-native-release binding-artifacts release-artifacts/checksums.json --require-assets --verify-staged
       - name: Verify package publication order
         run: pnpm run check:release
       - run: pnpm exec node scripts/with-typescript-tooling-compat.mjs pnpm exec semantic-release

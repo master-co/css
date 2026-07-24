@@ -5,8 +5,8 @@ import { fileURLToPath } from 'node:url'
 import { getRuntimeLoaderURL } from './init'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
-const wasm = readFileSync(resolve(__dirname, '../artifacts/mastercss_wasm_runtime_bg.wasm'))
-const wasmRequest = /mastercss_wasm_runtime_bg\.wasm(?:\?.*)?$/
+const wasm = readFileSync(resolve(__dirname, '../artifacts/mastercss_binding_wasm_engine_bg.wasm'))
+const wasmRequest = /mastercss_binding_wasm_engine_bg\.wasm(?:\?.*)?$/
 
 async function gotoRuntimeOrigin(page: Page, loaderURL: string) {
   const blankURL = new URL('/__master-css-runtime-wasm-startup.html', loaderURL).href
@@ -53,7 +53,7 @@ test('falls back to ArrayBuffer instantiation for an incorrect Wasm MIME type', 
     const { startCSSRuntimeAsync } = await import(loaderURL)
     const runtime = await startCSSRuntimeAsync()
     return {
-      backend: runtime.backend,
+      binding: runtime.binding,
       hidden: document.documentElement.hasAttribute('hidden'),
       text: runtime.snapshot().cssText
     }
@@ -62,7 +62,7 @@ test('falls back to ArrayBuffer instantiation for an incorrect Wasm MIME type', 
   expect(wasmRequests).toBe(1)
   expect(warnings.some(message => message.includes('Falling back to `WebAssembly.instantiate`'))).toBe(true)
   expect(result).toEqual({
-    backend: 'wasm',
+    binding: 'wasm',
     hidden: false,
     text: '@layer utilities{.block{display:block}}'
   })

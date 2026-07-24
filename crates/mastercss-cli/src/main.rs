@@ -135,18 +135,18 @@ fn parse_scan_args(args: &[String]) -> Result<ScanArgs, CliError> {
                     CliError::new("CLI_INVALID_ARGUMENT", "--verbose must be a number.")
                 })?;
             }
-            "--backend" => {
+            "--binding" => {
                 index += 1;
                 let Some(value) = args.get(index) else {
                     return Err(CliError::new(
                         "CLI_INVALID_ARGUMENT",
-                        "--backend requires auto or native.",
+                        "--binding requires auto or native.",
                     ));
                 };
                 if value != "auto" && value != "native" {
                     return Err(CliError::new(
                         "CLI_INVALID_ARGUMENT",
-                        "The native mcss executable accepts only auto or native backends.",
+                        "The native mcss executable accepts only auto or native bindings.",
                     ));
                 }
             }

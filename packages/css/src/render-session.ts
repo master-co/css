@@ -5,7 +5,7 @@ import type {
   MasterCSSHydrationManifest
 } from '@master/css-schema/hydration-manifest'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
-import type { MasterCSSEngineSnapshot } from './engine/backend'
+import type { MasterCSSEngineSnapshot } from './engine/binding'
 
 export interface MasterCSSNativeDeclaration {
   readonly className: string
@@ -37,21 +37,21 @@ export interface MasterCSSRenderSnapshot {
   }
 }
 
-interface BackendRenderResult {
+interface BindingRenderResult {
   classes: string[]
   snapshot: MasterCSSEngineSnapshot
   hydrationManifest: MasterCSSHydrationManifest
 }
 
-export interface BackendRenderSession {
+export interface BindingRenderSession {
   nativeDeclarationCandidates(
     classNames: readonly string[]
   ): readonly MasterCSSNativeDeclaration[]
   ensureClasses(classNames: readonly string[], nativeSupport?: readonly boolean[]): void
   ensureStylesheetResources(nativeCSS: string): void
   emittedGlobals(): MasterCSSEmittedGlobals
-  snapshot(): BackendRenderResult
-  snapshotForClasses(classNames: readonly string[]): BackendRenderResult
+  snapshot(): BindingRenderResult
+  snapshotForClasses(classNames: readonly string[]): BindingRenderResult
   dispose(): void
 }
 
@@ -60,7 +60,7 @@ function freezeArray<T>(values: readonly T[]) {
 }
 
 function toSnapshot(
-  rendered: BackendRenderResult,
+  rendered: BindingRenderResult,
   emittedGlobals: MasterCSSEmittedGlobals
 ): MasterCSSRenderSnapshot {
   const classRules: Record<string, MasterCSSHydrationRule[]> = Object.create(null)
@@ -88,12 +88,12 @@ function toSnapshot(
 }
 
 let bindRenderSession: (
-  session: BackendRenderSession,
+  session: BindingRenderSession,
   supportsNativeDeclaration?: MasterCSSNativeDeclarationSupport
 ) => MasterCSSRenderSession
 
 export class MasterCSSRenderSession implements Disposable {
-  #session!: BackendRenderSession
+  #session!: BindingRenderSession
   #supportsNativeDeclaration: MasterCSSNativeDeclarationSupport = () => false
   #disposed = false
 
@@ -162,7 +162,7 @@ export class MasterCSSRenderSession implements Disposable {
 
 /** @internal */
 export function bindRenderSessionInternal(
-  session: BackendRenderSession,
+  session: BindingRenderSession,
   supportsNativeDeclaration?: MasterCSSNativeDeclarationSupport
 ) {
   return bindRenderSession(session, supportsNativeDeclaration)
