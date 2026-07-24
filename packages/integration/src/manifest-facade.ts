@@ -41,11 +41,18 @@ export function toManifestPreloadLinkTag(href: string) {
 }
 
 export function toBrowserManifestFacadeModule(urlExpression: string) {
+  // Load the manifest with `fetch` rather than a JSON import attribute
+  // (`import(url, { with: { type: 'json' } })`). Import attributes are only
+  // supported in Safari 17.2+, Chrome 123+, and Firefox 130+; on older engines
+  // — notably all iOS 15/16 (Safari < 17.2) — evaluating that dynamic import,
+  // even inside `new Function`, throws `SyntaxError: import call expects exactly
+  // one argument` while the entry module is being evaluated, so the whole app
+  // fails to bootstrap and renders blank with no obvious console error. `fetch`
+  // is universally supported and needs no bundler-hiding indirection.
   return [
     `const masterCSSManifestURL = ${urlExpression};`,
-    `const loadMasterCSSManifestModule = new Function('specifier', "return import(specifier, { with: { type: 'json' } })");`,
-    `const masterCSSManifestModule = await loadMasterCSSManifestModule(typeof masterCSSManifestURL === 'string' ? masterCSSManifestURL : masterCSSManifestURL.href);`,
-    `export default masterCSSManifestModule.default;`,
+    `const masterCSSManifestResponse = await fetch(typeof masterCSSManifestURL === 'string' ? masterCSSManifestURL : masterCSSManifestURL.href);`,
+    `export default await masterCSSManifestResponse.json();`,
     ``
   ].join('\n')
 }
@@ -89,16 +96,18 @@ export function toUniversalManifestFacadeModule(urlExpression: string) {
     `    throw lastError;`,
     `}`,
     ``,
-    `async function loadMasterCSSManifestFromImport(url) {`,
+    `async function loadMasterCSSManifestFromFetch(url) {`,
     `    const specifier = typeof url === 'string' ? url : url.href;`,
-    `    const load = new Function('specifier', "return import(specifier, { with: { type: 'json' } })");`,
-    `    const manifestModule = await load(specifier);`,
-    `    return manifestModule.default;`,
+    `    const response = await fetch(specifier);`,
+    `    return response.json();`,
     `}`,
     ``,
+    // Browsers use `fetch`; only the Node branch keeps the JSON import attribute.
+    // See `toBrowserManifestFacadeModule` for why import attributes cannot be used
+    // on the browser (they break Safari < 17.2 / iOS 15-16 at parse time).
     `export default typeof window === 'undefined'`,
     `    ? await loadMasterCSSManifestFromFile(masterCSSManifestURL)`,
-    `    : await loadMasterCSSManifestFromImport(masterCSSManifestURL);`,
+    `    : await loadMasterCSSManifestFromFetch(masterCSSManifestURL);`,
     ``
   ].join('\n')
 }
