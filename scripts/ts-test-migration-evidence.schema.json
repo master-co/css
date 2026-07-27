@@ -1,0 +1,70 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "baseline", "records"],
+  "properties": {
+    "$schema": { "type": "string" },
+    "version": { "const": 1 },
+    "baseline": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["ref", "commit"],
+      "properties": {
+        "ref": { "const": "v2.0.0-rc.87" },
+        "commit": { "const": "9cc3e8b5f2e34d5220f10f27ed5ce8186fbcb524" }
+      }
+    },
+    "records": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["sourceId", "sourceDigest", "proof", "targets"],
+        "properties": {
+          "sourceId": {
+            "type": "string",
+            "pattern": "^rc87-[a-f0-9]{16}$"
+          },
+          "sourceDigest": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "proof": {
+            "enum": ["exact-source", "rc87-golden", "approved-divergence"]
+          },
+          "targets": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["caseId", "runner", "digest"],
+              "properties": {
+                "caseId": {
+                  "type": "string",
+                  "pattern": "^rc87-[a-f0-9]{16}$"
+                },
+                "runner": { "type": "string", "minLength": 1 },
+                "digest": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                }
+              }
+            }
+          },
+          "exceptionId": { "type": "string", "minLength": 1 }
+        },
+        "allOf": [
+          {
+            "if": {
+              "properties": { "proof": { "const": "approved-divergence" } }
+            },
+            "then": { "required": ["exceptionId"] },
+            "else": { "not": { "required": ["exceptionId"] } }
+          }
+        ]
+      }
+    }
+  }
+}

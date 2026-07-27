@@ -1,0 +1,46 @@
+{
+  "$schema": "../scripts/ts-test-migration-evidence.schema.json",
+  "version": 1,
+  "baseline": {
+    "ref": "v2.0.0-rc.87",
+    "commit": "9cc3e8b5f2e34d5220f10f27ed5ce8186fbcb524"
+  },
+  "records": [
+    {
+      "sourceId": "rc87-b9fac627672faee3",
+      "sourceDigest": "90874cee220dbf365745dae6ab3a138beee1c7067126ef0caeb0d5047899faa0",
+      "proof": "rc87-golden",
+      "targets": [
+        {
+          "caseId": "rc87-e50653c6de99eab0",
+          "runner": "eslint-rule-tester",
+          "digest": "fbd581bd73b9c2e01fcd8f5517023d1d13782556d0d3133ba15ede8dcc069f72"
+        }
+      ]
+    },
+    {
+      "sourceId": "rc87-0e0183b8b0089277",
+      "sourceDigest": "90874cee220dbf365745dae6ab3a138beee1c7067126ef0caeb0d5047899faa0",
+      "proof": "rc87-golden",
+      "targets": [
+        {
+          "caseId": "rc87-5a3c3af7a51b73f5",
+          "runner": "eslint-rule-tester",
+          "digest": "fbd581bd73b9c2e01fcd8f5517023d1d13782556d0d3133ba15ede8dcc069f72"
+        }
+      ]
+    },
+    {
+      "sourceId": "rc87-d7ce699e717cd052",
+      "sourceDigest": "90874cee220dbf365745dae6ab3a138beee1c7067126ef0caeb0d5047899faa0",
+      "proof": "rc87-golden",
+      "targets": [
+        {
+          "caseId": "rc87-7c24715cbf9d20d7",
+          "runner": "eslint-rule-tester",
+          "digest": "fbd581bd73b9c2e01fcd8f5517023d1d13782556d0d3133ba15ede8dcc069f72"
+        }
+      ]
+    }
+  ]
+}

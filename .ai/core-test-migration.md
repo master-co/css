@@ -5,7 +5,11 @@
 > coverage now lives primarily in the Rust crate tests, with TypeScript binding
 > coverage under `packages/css/tests/engine`. Paths in the table are historical
 > evidence, not current package boundaries; the retired identities must not be
-> restored.
+> restored. This file is not the rc.87 completion denominator; use
+> `parity/ts-test-migration-ledger.json` and
+> `parity/ts-test-migration-evidence.json` together with
+> `.ai/reports/rust-test-migration.md` for the complete `packages/*` inventory and
+> proof state.
 
 This ledger tracks every test file that existed under `packages/facade/tests` before `@master/css` became a facade. A deleted core test is only acceptable when its intent has an owner, a coverage status, and a concrete next action or executable replacement.
 
@@ -36,6 +40,9 @@ Current audit summary:
 - `covered-representative` rows are deliberately scoped to legacy files whose exact assertions are either covered by the generated rule parity suite or whose former helper/API surface is no longer public.
 - `dropped-removed-api` rows must stay documented because the old JS Config runtime API is intentionally gone.
 - Inline-alias audit: 55 mechanically discovered old assertions still expect `var(...)` for `@theme inline` aliases such as `black`, `white`, `current`, `full`, `fit`, `max`, and `min`; these are documented behavior divergences, not exact migrations.
+- The rc.87 package-wide ledger currently auto-verifies 593 uniquely source-identical
+  cases and explicitly maps the three rewritten ESLint `UtilityType` import cases;
+  historical `covered-*` labels below do not promote any other case by themselves.
 
 Manifest IR behavior findings:
 

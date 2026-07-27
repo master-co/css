@@ -1,0 +1,161 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "version",
+    "policy",
+    "baseline",
+    "target",
+    "existingParity",
+    "evidence",
+    "summary",
+    "postBaselineOverlay",
+    "entries",
+    "targetOnly"
+  ],
+  "properties": {
+    "$schema": { "type": "string" },
+    "version": { "const": 2 },
+    "policy": { "type": "object" },
+    "baseline": {
+      "type": "object",
+      "required": ["ref", "commit", "packageCount", "testFiles", "e2eFiles", "cases", "files"],
+      "properties": {
+        "ref": { "const": "v2.0.0-rc.87" },
+        "commit": { "const": "9cc3e8b5f2e34d5220f10f27ed5ce8186fbcb524" },
+        "packageCount": { "type": "integer", "minimum": 1 },
+        "testFiles": { "type": "integer", "minimum": 180 },
+        "e2eFiles": { "type": "integer", "minimum": 20 },
+        "cases": { "type": "integer", "minimum": 1 },
+        "files": { "type": "array" }
+      }
+    },
+    "target": { "type": "object" },
+    "existingParity": { "type": "object" },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "version", "records", "proofs"],
+      "properties": {
+        "path": { "const": "parity/ts-test-migration-evidence.json" },
+        "version": { "const": 1 },
+        "records": { "type": "integer", "minimum": 0 },
+        "proofs": { "type": "object" }
+      }
+    },
+    "summary": { "type": "object" },
+    "postBaselineOverlay": { "type": ["object", "null"] },
+    "entries": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "priority", "domains", "source", "ownership", "migration", "divergence"],
+        "properties": {
+          "id": { "$ref": "#/$defs/sourceId" },
+          "priority": { "enum": ["P0", "P1", "P2", "P3"] },
+          "domains": {
+            "type": "array",
+            "minItems": 1,
+            "items": { "type": "string" },
+            "uniqueItems": true
+          },
+          "source": {
+            "type": "object",
+            "required": ["package", "file", "line", "suites", "title", "runner", "kind", "state", "sourceKind", "sourceDigest"]
+          },
+          "ownership": {
+            "type": "object",
+            "required": ["targetPackage"]
+          },
+          "migration": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["status", "coverage", "targets", "sourceIdenticalTargetIds", "takeoverCoverage", "proof"],
+            "properties": {
+              "status": {
+                "enum": ["mapped-unverified", "gap", "source-inactive", "verified-exact", "approved-divergence"]
+              },
+              "coverage": {
+                "enum": ["none", "candidate-all", "ambiguous", "exact-source", "evidence"]
+              },
+              "targets": {
+                "type": "array",
+                "items": { "$ref": "#/$defs/target" }
+              },
+              "sourceIdenticalTargetIds": {
+                "type": "array",
+                "items": { "$ref": "#/$defs/sourceId" },
+                "uniqueItems": true
+              },
+              "takeoverCoverage": { "type": "array" },
+              "proof": {
+                "oneOf": [
+                  { "type": "null" },
+                  { "$ref": "#/$defs/proof" }
+                ]
+              }
+            }
+          },
+          "divergence": { "type": ["object", "null"] }
+        }
+      }
+    },
+    "targetOnly": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/target" }
+    }
+  },
+  "$defs": {
+    "sourceId": {
+      "type": "string",
+      "pattern": "^rc87-[a-f0-9]{16}$"
+    },
+    "digest": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "target": {
+      "type": "object",
+      "required": ["id", "package", "file", "line", "title", "runner", "kind", "sourceDigest"],
+      "properties": {
+        "id": { "$ref": "#/$defs/sourceId" },
+        "package": { "type": "string" },
+        "file": { "type": "string" },
+        "line": { "type": "integer", "minimum": 1 },
+        "title": { "type": "string" },
+        "runner": { "type": "string" },
+        "kind": { "enum": ["test", "e2e"] },
+        "sourceDigest": { "$ref": "#/$defs/digest" },
+        "matrix": { "type": "object" }
+      }
+    },
+    "proofTarget": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["caseId", "runner", "digest"],
+      "properties": {
+        "caseId": { "$ref": "#/$defs/sourceId" },
+        "runner": { "type": "string" },
+        "digest": { "$ref": "#/$defs/digest" }
+      }
+    },
+    "proof": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "sourceDigest", "targets"],
+      "properties": {
+        "kind": { "enum": ["exact-source", "rc87-golden", "approved-divergence"] },
+        "sourceDigest": { "$ref": "#/$defs/digest" },
+        "targets": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/proofTarget" },
+          "uniqueItems": true
+        },
+        "exceptionId": { "type": "string", "minLength": 1 }
+      }
+    }
+  }
+}
