@@ -48,6 +48,17 @@ describe('content-hash cache (Phase A optimisation)', () => {
 })
 
 describe('Rust scanner validity cache', () => {
+  test('same class across many files remains a single generated rule', async () => {
+    const ex = await new MasterCSSScanner({}).init()
+    // First file with the class — populates validClasses + the rules cache.
+    await ex.scan('a.tsx', `<div className="bg:white">a</div>`)
+    expect(ex.validClasses.has('bg:white')).toBe(true)
+    await ex.scan('b.tsx', `<div className="bg:white">b</div>`)
+    await ex.scan('c.tsx', `<div className="bg:white">c</div>`)
+    expect(ex.state.engine.rules.filter(({ className }) => className === 'bg:white')).toHaveLength(1)
+    expect(ex.state.cachedSources).toBe(3)
+  })
+
   test('same class across many files is processed once', async () => {
     const ex = await new MasterCSSScanner({}).init()
     // First file with the class — populates validClasses + the rules cache.
