@@ -13,7 +13,7 @@
   },
   "target": {
     "ref": "latest-target-change",
-    "commit": "439004460f725b0ee789c6677c6e17e181a805a1",
+    "commit": "884d19a7606fefaf0754df6b4ebf3d9dd9b0eb35",
     "cases": 1431
   },
   "evidence": {
@@ -29,7 +29,7 @@
     },
     "surfaceByStatus": {
       "approved-contract-change": 1,
-      "preserved-exact": 5
+      "preserved-exact": 6
     },
     "addedCases": 398
   },
@@ -94,6 +94,21 @@
       ],
       "digest": "1b3028403047459c52dc0b7778109b719db01e02e2700bcc6c7f6d23133c0560",
       "targetDigest": "1b3028403047459c52dc0b7778109b719db01e02e2700bcc6c7f6d23133c0560",
+      "status": "preserved-exact",
+      "proof": "exact-source"
+    },
+    {
+      "id": "integration-rendering-options-contract",
+      "files": [
+        "packages/schema/src/integration.ts",
+        "packages/vite/src/options.ts",
+        "packages/webpack/src/options.ts",
+        "packages/next/src/options.ts",
+        "packages/astro/src/options.ts",
+        "packages/nuxt/src/options.ts"
+      ],
+      "digest": "2a3221834490cd8fddc853aff2bb1bdea0c3f30fa9083512961c2ef3fb5e61ef",
+      "targetDigest": "2a3221834490cd8fddc853aff2bb1bdea0c3f30fa9083512961c2ef3fb5e61ef",
       "status": "preserved-exact",
       "proof": "exact-source"
     }

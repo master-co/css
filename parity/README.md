@@ -14,6 +14,12 @@ over from TypeScript.
   case id. It pins target case ids, runners, and source digests for rewritten golden
   tests and approved divergences. Identical source cases are proved automatically by
   the generator only when exactly one target has the same normalized case digest.
+- `rust-refactor-contract-ledger.json` independently pins the completed Rust refactor
+  at `bd164e4b5`. It prevents rc.87 migration work from restoring removed APIs,
+  exports, binding or language wire contracts, or retired rendering-mode options.
+- `rust-refactor-contract-evidence.json` records reviewed supersets and explicit
+  contract-surface changes. Unapproved case removal, digest drift, or surface drift
+  makes the generator fail.
 - `rust-semantic-corpus.json` records exact CSS bytes and selected rule metadata from
   `ef1a7c851`, with `v2.0.0-rc.87` recorded as the public baseline.
 - `rust-takeover-ledger.json` accounts for all 114 test declarations in the 11 engine

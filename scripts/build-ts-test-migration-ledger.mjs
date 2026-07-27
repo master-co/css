@@ -1597,7 +1597,7 @@ function buildPostRc87Delta(baselineCommit, preferredRef) {
   }
 }
 
-function buildReport(ledger, postRc87Delta) {
+function buildReport(ledger, rustRefactorContractLedger, postRc87Delta) {
   const gaps = ledger.entries.filter((entry) => entry.migration.status === 'gap')
   const p0Gaps = gaps.filter((entry) => entry.priority === 'P0')
   const active = ledger.entries.filter((entry) => entry.source.state === 'active' || entry.source.state === 'only')
@@ -1612,6 +1612,9 @@ function buildReport(ledger, postRc87Delta) {
   const overlayRows = postRc87Delta.files
     .map((entry) => `| ${entry.priority} | \`${entry.file}\` | ${entry.decision} | ${entry.behavior} |`)
     .join('\n') || '| — | None | — | — |'
+  const contractSurfaceRows = rustRefactorContractLedger.surfaces
+    .map((surface) => `| \`${surface.id}\` | ${surface.status} | ${surface.proof} |`)
+    .join('\n')
 
   return `# Rust test migration from v2.0.0-rc.87
 
@@ -1694,6 +1697,29 @@ ${p0GapRows}
 ${unresolvedMatrices.length
     ? unresolvedMatrices.map((entry) => `- \`${entry.source.file}:${entry.source.line}\` — ${entry.source.title}`).join('\n')
     : 'All statically discoverable parameter matrices were expanded.'}
+
+## Rust refactor contract audit
+
+The completed Rust refactor at
+\`${rustRefactorContractLedger.baseline.ref}@${rustRefactorContractLedger.baseline.commit}\`
+is an independent non-regression authority. An rc.87 expectation cannot restore an
+older API, export, binding ABI, language wire shape, or rendering-mode option contract.
+
+| Measure | Count |
+|---|---:|
+| Baseline contract cases | ${rustRefactorContractLedger.baseline.cases} |
+| Preserved exact cases | ${rustRefactorContractLedger.summary.byStatus['preserved-exact'] ?? 0} |
+| Verified supersets | ${rustRefactorContractLedger.summary.byStatus['verified-superset'] ?? 0} |
+| Regressed or removed cases | ${(rustRefactorContractLedger.summary.byStatus.regressed ?? 0) + (rustRefactorContractLedger.summary.byStatus['removed-unapproved'] ?? 0)} |
+| Target-added supplemental cases | ${rustRefactorContractLedger.summary.addedCases} |
+
+| Contract surface | Status | Proof |
+|---|---|---|
+${contractSurfaceRows}
+
+The rendering-mode surface preserves the current distinction between disabling an
+integration with \`enabled: false\` and retaining host loaders without runtime injection
+using \`mode: 'runtime', runtime: false\`. Retired null-mode behavior is not restored.
 
 ## Post-rc.87 overlay
 
@@ -1844,6 +1870,14 @@ function contractSurfaceSources(commit) {
   const nativeLoader = sourceAtCommit(commit, 'packages/binding/src/native-loader.ts')
   const wasmEngine = sourceAtCommit(commit, 'packages/binding-wasm-engine/src/index.ts')
   const language = sourceAtCommit(commit, 'crates/mastercss-language/src/lib.rs')
+  const renderingOptionFiles = [
+    'packages/schema/src/integration.ts',
+    'packages/vite/src/options.ts',
+    'packages/webpack/src/options.ts',
+    'packages/next/src/options.ts',
+    'packages/astro/src/options.ts',
+    'packages/nuxt/src/options.ts'
+  ]
   const versions = protocol
     .split('\n')
     .filter((line) => /^export const MASTER_CSS_.+_VERSION =/u.test(line))
@@ -1885,6 +1919,11 @@ function contractSurfaceSources(commit) {
       source: extractContractBlock(protocol, 'export interface MasterCSSLanguageSemanticToken')
         + extractContractBlock(protocol, 'export interface MasterCSSLanguageDocument')
         + extractContractBlock(language, 'pub struct SemanticTokenInputIr')
+    },
+    {
+      id: 'integration-rendering-options-contract',
+      files: renderingOptionFiles,
+      source: renderingOptionFiles.map((file) => sourceAtCommit(commit, file)).join('\n')
     }
   ]
   return surfaces.map(({ source, ...surface }) => ({
@@ -2201,7 +2240,7 @@ validatePostRc87Delta(postRc87Delta)
 const json = `${JSON.stringify(ledger, null, 2)}\n`
 const rustRefactorContractJson = `${JSON.stringify(rustRefactorContractLedger, null, 2)}\n`
 const postRc87DeltaJson = `${JSON.stringify(postRc87Delta, null, 2)}\n`
-const report = buildReport(ledger, postRc87Delta)
+const report = buildReport(ledger, rustRefactorContractLedger, postRc87Delta)
 writeOrCheck(ledgerPath, json, check)
 writeOrCheck(rustRefactorContractLedgerPath, rustRefactorContractJson, check)
 writeOrCheck(postRc87DeltaPath, postRc87DeltaJson, check)

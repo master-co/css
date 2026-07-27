@@ -7,7 +7,7 @@ is isolated in `parity/post-rc87-delta-ledger.json`.
 ## Frozen baseline
 
 - Public and semantic source baseline: `v2.0.0-rc.87@9cc3e8b5f2e34d5220f10f27ed5ce8186fbcb524`.
-- Rust target candidate: `latest-target-change@439004460f725b0ee789c6677c6e17e181a805a1`.
+- Rust target candidate: `latest-target-change@884d19a7606fefaf0754df6b4ebf3d9dd9b0eb35`.
 - Scope: executable tests and E2E cases under `packages/*`; examples, site, and benchmarks are not migration denominators.
 - Newer rc changes are an overlay only and never replace rc.87 expectations.
 
@@ -118,6 +118,35 @@ The full list is in the JSON ledger; the first 0 are shown here.
 ## Dynamic matrices requiring runtime collection
 
 All statically discoverable parameter matrices were expanded.
+
+## Rust refactor contract audit
+
+The completed Rust refactor at
+`bd164e4b5@bd164e4b5ae3a713940913d745183e9ab6b54263`
+is an independent non-regression authority. An rc.87 expectation cannot restore an
+older API, export, binding ABI, language wire shape, or rendering-mode option contract.
+
+| Measure | Count |
+|---|---:|
+| Baseline contract cases | 1033 |
+| Preserved exact cases | 1027 |
+| Verified supersets | 6 |
+| Regressed or removed cases | 0 |
+| Target-added supplemental cases | 398 |
+
+| Contract surface | Status | Proof |
+|---|---|---|
+| `published-package-exports` | preserved-exact | exact-source |
+| `public-api-contract` | preserved-exact | exact-source |
+| `binding-version-contract` | preserved-exact | exact-source |
+| `native-engine-raw-surface` | preserved-exact | exact-source |
+| `wasm-engine-raw-surface` | approved-contract-change | approved-contract-change |
+| `language-wire-contract` | preserved-exact | exact-source |
+| `integration-rendering-options-contract` | preserved-exact | exact-source |
+
+The rendering-mode surface preserves the current distinction between disabling an
+integration with `enabled: false` and retaining host loaders without runtime injection
+using `mode: 'runtime', runtime: false`. Retired null-mode behavior is not restored.
 
 ## Post-rc.87 overlay
 
