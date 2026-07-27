@@ -4,11 +4,6 @@ import type {
 import { MASTER_CSS_LANGUAGE_BATCH_VERSION } from '@master/css-binding/tooling'
 import { MasterCSSError } from '@master/css-schema'
 import { matchesLanguageServiceNativeDeclaration } from './master-css'
-import {
-  getMdnPropertyValueNames,
-  getMdnPseudoClassNames,
-  getMdnPseudoElementNames
-} from './utils/mdn-css-data'
 import type {
   MasterCSSDocumentAnalysis,
   MasterCSSDocumentAnalysisRequest,
@@ -61,59 +56,6 @@ function validate<T extends { version: number }>(value: T): T {
   return value
 }
 
-function augmentCompletionIndex(
-  index: MasterCSSLanguageCompletionIndex
-): MasterCSSLanguageCompletionIndex {
-  const classEntries = index.classEntries.map((entry) => ({ ...entry }))
-  const labels = new Set(classEntries.map(({ label }) => label))
-  const addValue = (
-    label: string,
-    detail?: string,
-    sortText?: string
-  ) => {
-    if (labels.has(label)) return
-    labels.add(label)
-    classEntries.push({
-      label,
-      kind: 'value',
-      detail,
-      sortText,
-      triggerSuggest: false
-    })
-  }
-
-  for (const label of [...getMdnPseudoClassNames(), ...getMdnPseudoElementNames()]) {
-    addValue(label)
-  }
-
-  const properties = classEntries
-    .filter(({ kind, label }) => kind === 'property' && label.endsWith(':'))
-    .map((entry) => ({
-      key: entry.label.slice(0, -1),
-      property: entry.detail && entry.detail !== 'ambiguous key'
-        ? entry.detail
-        : entry.label.slice(0, -1)
-    }))
-  properties.push(
-    { key: 'display', property: 'display' },
-    { key: 'font-style', property: 'font-style' },
-    { key: 'line-clamp', property: 'line-clamp' },
-    { key: 'text-align', property: 'text-align' },
-    { key: 'user-select', property: 'user-select' },
-    { key: '-webkit-text-size-adjust', property: 'text-size-adjust' },
-    { key: '-moz-text-size-adjust', property: 'text-size-adjust' },
-    { key: '-ms-text-size-adjust', property: 'text-size-adjust' }
-  )
-  for (const { key, property } of properties) {
-    for (const value of getMdnPropertyValueNames(property)) {
-      if (value.includes(' ')) continue
-      addValue(`${key}:${value}`, `${property}: ${value}`, `ccccc${value}`)
-    }
-  }
-
-  return { ...index, classEntries }
-}
-
 export function bindLanguageSession(
   binding: LanguageSession['binding'],
   session: BindingLanguageSession
@@ -157,9 +99,8 @@ export function bindLanguageSession(
         session.inspectClassName(className, support, mode)
       ))
     },
-    completionIndex: () => completionIndexCache ||= augmentCompletionIndex(
-      validate(parse<MasterCSSLanguageCompletionIndex>(session.completionIndex()))
-    ),
+    completionIndex: () => completionIndexCache ||=
+      validate(parse<MasterCSSLanguageCompletionIndex>(session.completionIndex())),
     colorPresentation: (token) => validate(parse<MasterCSSLanguageColorPresentation>(session.colorPresentation(token))),
     colorTokens: (candidates) =>
       validate(parse<MasterCSSLanguageColorTokens>(session.colorTokens(candidates))),

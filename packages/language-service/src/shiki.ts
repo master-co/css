@@ -934,9 +934,19 @@ function analyzeMasterCSSShikiDocument(
           }
         : {})
     })
+    const semanticUtilityStarts = new Set(classPositions
+      .filter(({ token }) => {
+        const kind = session.inspectClassName(token).kind
+        return kind === 'semantic' || kind === 'pattern'
+      })
+      .map(({ range }) => range.start))
     return {
       classPositions: [...classPositions],
-      semanticTokens: [...semanticTokens]
+      semanticTokens: semanticTokens.map((token) =>
+        token.type === 'enumMember' && semanticUtilityStarts.has(token.start)
+          ? { ...token, role: 'utility.semantic' }
+          : token
+      )
     }
   } finally {
     if (!options.session) session.dispose()

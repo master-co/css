@@ -13,6 +13,7 @@ use mastercss_schema::{
 };
 use serde::{Deserialize, Serialize};
 use std::collections::{HashMap, HashSet};
+use std::sync::OnceLock;
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -41,8 +42,6 @@ pub struct SemanticTokenInputIr {
     pub token_type: String,
     #[serde(default)]
     pub modifiers: Vec<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub role: Option<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Deserialize)]
@@ -162,6 +161,167 @@ pub struct LanguageCompletionIndexIr {
     pub class_entries: Vec<LanguageCompletionEntryIr>,
 }
 
+#[derive(Debug, Deserialize)]
+struct MdnCompletionRegistry {
+    pseudos: Vec<String>,
+    properties: HashMap<String, Vec<String>>,
+}
+
+fn mdn_completion_registry() -> &'static MdnCompletionRegistry {
+    static REGISTRY: OnceLock<MdnCompletionRegistry> = OnceLock::new();
+    REGISTRY.get_or_init(|| {
+        serde_json::from_str(include_str!("mdn-completion-registry.json"))
+            .expect("generated MDN completion registry must be valid JSON")
+    })
+}
+
+fn pseudo_completion_sort_text(label: &str) -> String {
+    if label.starts_with("::") {
+        let mut sort_text = if let Some(name) = label.strip_prefix("::-") {
+            format!("zzzz{name}")
+        } else {
+            format!("zz{}", label.strip_prefix("::").unwrap_or(label))
+        };
+        if sort_text.ends_with("()") {
+            sort_text.insert(0, 'z');
+        }
+        return sort_text;
+    }
+    let mut sort_text = if let Some(name) = label.strip_prefix(":-") {
+        format!("yyyy{name}")
+    } else {
+        format!("yy{}", label.strip_prefix(':').unwrap_or(label))
+    };
+    if sort_text.ends_with("()") {
+        sort_text.insert(0, 'y');
+    }
+    sort_text
+}
+
+fn canonical_mdn_property(name: &str) -> &str {
+    for prefix in ["-webkit-", "-moz-", "-ms-"] {
+        if let Some(unprefixed) = name.strip_prefix(prefix) {
+            return unprefixed;
+        }
+    }
+    name
+}
+
+fn augment_completion_entries(entries: &mut Vec<LanguageCompletionEntryIr>) {
+    let registry = mdn_completion_registry();
+    let pseudo_labels = registry.pseudos.iter().collect::<HashSet<_>>();
+    for entry in entries
+        .iter_mut()
+        .filter(|entry| entry.label.starts_with(':'))
+    {
+        let functional_label = format!("{}()", entry.label);
+        if pseudo_labels.contains(&functional_label) {
+            entry.label = functional_label;
+        }
+        entry.sort_text = Some(pseudo_completion_sort_text(&entry.label));
+    }
+    let mut by_label = entries
+        .iter()
+        .enumerate()
+        .map(|(index, entry)| (entry.label.clone(), index))
+        .collect::<HashMap<_, _>>();
+
+    for label in &registry.pseudos {
+        let sort_text = pseudo_completion_sort_text(label);
+        if let Some(index) = by_label.get(label).copied() {
+            entries[index].sort_text = Some(sort_text);
+        } else {
+            by_label.insert(label.clone(), entries.len());
+            entries.push(LanguageCompletionEntryIr {
+                label: label.clone(),
+                kind: LanguageCompletionKind::Value,
+                detail: None,
+                documentation_text: None,
+                sort_text: Some(sort_text),
+                trigger_suggest: false,
+            });
+        }
+    }
+
+    let mut properties = entries
+        .iter()
+        .filter(|entry| entry.kind == LanguageCompletionKind::Property)
+        .filter_map(|entry| {
+            let key = entry.label.strip_suffix(':')?;
+            let property = entry
+                .detail
+                .as_deref()
+                .filter(|detail| *detail != "ambiguous key")
+                .unwrap_or(key);
+            Some((key.to_owned(), property.to_owned()))
+        })
+        .collect::<Vec<_>>();
+    properties.extend([
+        ("display".into(), "display".into()),
+        ("font-style".into(), "font-style".into()),
+        ("line-clamp".into(), "line-clamp".into()),
+        ("text-align".into(), "text-align".into()),
+        ("user-select".into(), "user-select".into()),
+        ("-webkit-text-size-adjust".into(), "text-size-adjust".into()),
+        ("-moz-text-size-adjust".into(), "text-size-adjust".into()),
+        ("-ms-text-size-adjust".into(), "text-size-adjust".into()),
+    ]);
+
+    for (key, property) in properties {
+        let property_values = registry
+            .properties
+            .get(&property)
+            .or_else(|| registry.properties.get(canonical_mdn_property(&property)));
+        let Some(property_values) = property_values else {
+            continue;
+        };
+        for value in property_values {
+            let label = format!("{key}:{value}");
+            let detail = format!("{property}: {value}");
+            let sort_text = format!("ccccc{value}");
+            if let Some(index) = by_label.get(&label).copied() {
+                entries[index].detail.get_or_insert(detail);
+                entries[index].sort_text = Some(sort_text);
+            } else {
+                by_label.insert(label.clone(), entries.len());
+                entries.push(LanguageCompletionEntryIr {
+                    label,
+                    kind: LanguageCompletionKind::Value,
+                    detail: Some(detail),
+                    documentation_text: None,
+                    sort_text: Some(sort_text),
+                    trigger_suggest: false,
+                });
+            }
+        }
+    }
+
+    let positive_entries = entries.clone();
+    for entry in positive_entries {
+        if entry.kind != LanguageCompletionKind::Value
+            || !entry.sort_text.as_deref().is_some_and(|sort_text| {
+                sort_text.starts_with("aaaa-") && !sort_text.starts_with("aaaa-color-")
+            })
+        {
+            continue;
+        }
+        let Some((key, value)) = entry.label.split_once(':') else {
+            continue;
+        };
+        if value.starts_with('-') {
+            continue;
+        }
+        let label = format!("{key}:-{value}");
+        if by_label.contains_key(&label) {
+            continue;
+        }
+        by_label.insert(label.clone(), entries.len());
+        entries.push(LanguageCompletionEntryIr { label, ..entry });
+    }
+
+    entries.retain(|entry| !matches!(entry.label.as_str(), "text:capitalize" | "text:center"));
+}
+
 #[derive(Debug, Clone, PartialEq, Eq, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct LanguageColorPresentationIr {
@@ -272,17 +432,6 @@ fn push_semantic_token(
     token_type: &str,
     modifiers: &[&str],
 ) {
-    push_semantic_token_with_role(tokens, start, end, token_type, modifiers, None);
-}
-
-fn push_semantic_token_with_role(
-    tokens: &mut Vec<SemanticTokenInputIr>,
-    start: u32,
-    end: u32,
-    token_type: &str,
-    modifiers: &[&str],
-    role: Option<&str>,
-) {
     if end <= start {
         return;
     }
@@ -294,7 +443,6 @@ fn push_semantic_token_with_role(
             .iter()
             .map(|modifier| (*modifier).to_owned())
             .collect(),
-        role: role.map(str::to_owned),
     });
 }
 
@@ -1124,14 +1272,7 @@ impl LanguageSession {
                 &["declaration", "component"],
             ),
             ClassSemanticKind::Semantic | ClassSemanticKind::Pattern => {
-                push_semantic_token_with_role(
-                    tokens,
-                    token_start,
-                    base_end,
-                    "enumMember",
-                    &[],
-                    Some("utility.semantic"),
-                )
+                push_semantic_token(tokens, token_start, base_end, "enumMember", &[])
             }
             ClassSemanticKind::Declaration => {
                 if let Some(key) = semantics.key_token.as_deref() {
@@ -1310,7 +1451,7 @@ impl LanguageSession {
             .into_iter()
             .zip(documentation_texts)
             .collect::<HashMap<_, _>>();
-        let class_entries = candidates
+        let mut class_entries = candidates
             .into_iter()
             .map(|candidate| LanguageCompletionEntryIr {
                 label: candidate.label,
@@ -1328,6 +1469,7 @@ impl LanguageSession {
                 trigger_suggest: candidate.trigger_suggest,
             })
             .collect();
+        augment_completion_entries(&mut class_entries);
         Ok(LanguageCompletionIndexIr {
             version: LANGUAGE_BATCH_VERSION,
             class_entries,
@@ -2350,14 +2492,12 @@ mod tests {
                     end: class_start + 6,
                     token_type: "property".into(),
                     modifiers: vec!["declaration".into()],
-                    role: None,
                 },
                 SemanticTokenInputIr {
                     start: class_start + 8,
                     end: class_end,
                     token_type: "variable".into(),
                     modifiers: Vec::new(),
-                    role: None,
                 },
             ],
         );
@@ -2507,21 +2647,18 @@ mod tests {
                         end: 1,
                         token_type: "class".into(),
                         modifiers: Vec::new(),
-                        role: None,
                     },
                     SemanticTokenInputIr {
                         start: 0,
                         end: 2,
                         token_type: "enumMember".into(),
                         modifiers: Vec::new(),
-                        role: None,
                     },
                     SemanticTokenInputIr {
                         start: 2,
                         end: 3,
                         token_type: "property".into(),
                         modifiers: Vec::new(),
-                        role: None,
                     },
                 ]
             ),
@@ -2534,7 +2671,7 @@ mod tests {
         let mut session = LanguageSession::create(
             r#"{
               "version":1,
-              "variables":{"spacing":[{"key":"md","type":"number","value":"1rem"}]},
+              "variables":{"spacing":[{"key":"md","type":"number","value":"1rem","numeric":{"value":1,"unit":"rem"}}]},
               "utilities":[
                 {
                   "id":"card",
@@ -2571,6 +2708,37 @@ mod tests {
             batch.classes[3].kind,
             mastercss_engine::ClassSemanticKind::Unknown
         );
+    }
+
+    #[test]
+    fn owns_mdn_and_negative_completion_candidates_in_rust() {
+        let session = LanguageSession::create(
+            r#"{
+              "version":1,
+              "variables":{"spacing":[{"key":"md","type":"number","value":"1rem","numeric":{"value":1,"unit":"rem"}}]},
+              "utilities":[
+                {
+                  "id":"width",
+                  "type":0,
+                  "variableAliasRefs":["~spacing"],
+                  "emit":{"type":"property","property":"width"},
+                  "matchers":[{"type":"key","keys":["w"]}]
+                }
+              ]
+            }"#,
+        )
+        .unwrap();
+        let entries = session.completion_index().unwrap().class_entries;
+
+        assert!(entries.iter().any(|entry| {
+            entry.label == ":has()" && entry.sort_text.as_deref() == Some("yyyhas()")
+        }));
+        assert!(entries.iter().any(|entry| {
+            entry.label == "display:block"
+                && entry.detail.as_deref() == Some("display: block")
+                && entry.sort_text.as_deref() == Some("cccccblock")
+        }));
+        assert!(entries.iter().any(|entry| entry.label == "w:-md"));
     }
 
     #[test]

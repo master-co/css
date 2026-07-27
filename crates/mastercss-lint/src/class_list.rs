@@ -623,16 +623,16 @@ pub(crate) fn add_canonical_compose_diagnostics(
             CanonicalComposeSuggestionKind::NativeDeclaration => (
                 "prefer-native-declaration",
                 format!(
-                    "Use CSS declaration `{}` instead of class \"{}\".",
+                    "Use CSS declaration `{}` instead of class `{}`.",
                     suggestion.recommended.replace('`', "\\`"),
-                    suggestion.actual.replace('"', "\\\"")
+                    suggestion.actual.replace('`', "\\`")
                 ),
             ),
             CanonicalComposeSuggestionKind::VariantBlock => (
                 "prefer-variant-block",
                 format!(
-                    "Move class \"{}\" into the canonical @compose block.",
-                    suggestion.actual.replace('"', "\\\"")
+                    "Move class `{}` into the canonical @compose block.",
+                    suggestion.actual.replace('`', "\\`")
                 ),
             ),
         };
@@ -720,7 +720,7 @@ fn replace_partial_conflicts(items: &[ClassListItem], analysis: &LintBatchIr) ->
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{ClassConflictIr, PartialClassConflictIr};
+    use crate::{CanonicalComposeSuggestionIr, ClassConflictIr, PartialClassConflictIr};
 
     fn analysis() -> LintBatchIr {
         LintBatchIr {
@@ -838,5 +838,53 @@ mod tests {
         assert_eq!(unknown.len(), 2);
         assert_eq!(unknown[0].range, SourceRange { start: 22, end: 24 });
         assert_eq!(unknown[1].range, SourceRange { start: 25, end: 32 });
+    }
+
+    #[test]
+    fn formats_canonical_compose_class_names_as_code_spans() {
+        let mut result = LintClassListIr {
+            version: LINT_BATCH_VERSION,
+            analysis: analysis(),
+            diagnostics: Vec::new(),
+            sort_edit: None,
+            conflict_range: None,
+            conflict_edit: None,
+        };
+        add_canonical_compose_diagnostics(
+            &mut result,
+            "contain:content bg:blue-60:hover@sm",
+            &["contain:content".into(), "bg:blue-60:hover@sm".into()],
+            &CanonicalComposeDirectiveIr {
+                version: LINT_BATCH_VERSION,
+                suggestions: vec![
+                    CanonicalComposeSuggestionIr {
+                        actual: "contain:content".into(),
+                        recommended: "contain: content".into(),
+                        class_names: vec!["contain:content".into()],
+                        kind: CanonicalComposeSuggestionKind::NativeDeclaration,
+                    },
+                    CanonicalComposeSuggestionIr {
+                        actual: "bg:blue-60:hover@sm".into(),
+                        recommended: "&:hover { @variant sm { @compose bg:blue-60; } }".into(),
+                        class_names: vec!["bg:blue-60:hover@sm".into()],
+                        kind: CanonicalComposeSuggestionKind::VariantBlock,
+                    },
+                ],
+                structural_change: Some(true),
+                replacement: None,
+            },
+        );
+
+        assert_eq!(
+            result
+                .diagnostics
+                .iter()
+                .map(|diagnostic| diagnostic.message.as_str())
+                .collect::<Vec<_>>(),
+            [
+                "Use CSS declaration `contain: content` instead of class `contain:content`.",
+                "Move class `bg:blue-60:hover@sm` into the canonical @compose block.",
+            ]
+        );
     }
 }

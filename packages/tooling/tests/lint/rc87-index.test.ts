@@ -301,11 +301,11 @@ describe('lint diagnostics', () => {
     }))
     expect(report.diagnostics).toContainEqual(expect.objectContaining({
       code: 'prefer-native-declaration',
-      message: 'Use CSS declaration `contain: content` instead of class "contain:content".'
+      message: 'Use CSS declaration `contain: content` instead of class `contain:content`.'
     }))
     expect(report.diagnostics).toContainEqual(expect.objectContaining({
       code: 'prefer-variant-block',
-      message: 'Move class "bg:blue-60:hover@sm" into the canonical @compose block.'
+      message: 'Move class `bg:blue-60:hover@sm` into the canonical @compose block.'
     }))
   })
 })

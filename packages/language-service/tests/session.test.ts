@@ -32,12 +32,14 @@ describe('Rust-backed language service', () => {
 
   test('uses the Rust completion index', () => {
     const service = createService()
+    expect(service.session.completionIndex().classEntries.some(({ label }) => label === 'fg:')).toBe(true)
+
     const document = TextDocument.create('file:///index.html', 'html', 1, '<div class="fg:"></div>')
     const items = service.suggestSyntax(document, document.positionAt(15), {
       triggerKind: CompletionTriggerKind.Invoked
     })
 
-    expect(items?.some(({ label }) => label.startsWith('fg:'))).toBe(true)
+    expect(items?.some(({ label }) => label === 'red')).toBe(true)
   })
 
   test('does not render static theme modifier semantic tokens', () => {

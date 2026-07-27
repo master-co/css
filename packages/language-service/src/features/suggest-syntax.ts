@@ -8,28 +8,6 @@ import type { MasterCSSLanguageCompletionEntry } from '@master/css-tooling/langu
 import type { MasterCSSLanguageService } from '../core'
 import createCSSMarkdownDocumentation from '../utils/create-css-markdown-documentation'
 
-const FUNCTIONAL_PSEUDO_CLASSES = new Set([
-  ':current',
-  ':dir',
-  ':has',
-  ':has-slotted',
-  ':host',
-  ':host-context',
-  ':is',
-  ':lang',
-  ':local-link',
-  ':not',
-  ':nth-child',
-  ':nth-col',
-  ':nth-last-child',
-  ':nth-last-col',
-  ':nth-last-of-type',
-  ':nth-of-type',
-  ':of',
-  ':state',
-  ':where'
-])
-
 function sortCompletionItems(items: CompletionItem[]) {
   return items.sort((left, right) =>
     (left.sortText || left.label).localeCompare(
@@ -91,47 +69,16 @@ function valueCompletionItems(
   valuePrefix = ''
 ) {
   const prefix = `${key}:`
-  const candidates = entries
+  return sortCompletionItems(entries
     .filter(({ kind, label }) => kind === 'value' && label.startsWith(prefix))
-    .filter(({ label }) => key !== 'text' || !['capitalize', 'center'].includes(label.slice(prefix.length)))
-  if (valuePrefix.startsWith('-')) {
-    candidates.push(...candidates
-      .filter(({ label, sortText }) =>
-        !label.slice(prefix.length).startsWith('-')
-        && sortText?.startsWith('aaaa-')
-        && !sortText.startsWith('aaaa-color-')
-      )
-      .map((entry) => ({ ...entry, label: `${prefix}-${entry.label.slice(prefix.length)}` })))
-  }
-  return sortCompletionItems(candidates.map((entry) => classCompletionItem(
+    .filter(({ label }) => valuePrefix.startsWith('-') || !label.slice(prefix.length).startsWith('-'))
+    .map((entry) => classCompletionItem(
       service,
       entry,
       entry.label.slice(prefix.length),
       entry.label,
       entry.label === 'font-style:italic'
     )))
-}
-
-function normalizePseudoLabel(label: string) {
-  if (label.startsWith('::')) {
-    return /::(?:part|slotted)$/u.test(label) ? `${label}()` : label
-  }
-  return FUNCTIONAL_PSEUDO_CLASSES.has(label) ? `${label}()` : label
-}
-
-function pseudoSortText(label: string) {
-  if (label.startsWith('::')) {
-    let sortText = label.startsWith('::-')
-      ? `zzzz${label.slice(3)}`
-      : `zz${label.slice(2)}`
-    if (sortText.endsWith('()')) sortText = `z${sortText}`
-    return sortText
-  }
-  let sortText = label.startsWith(':-')
-    ? `yyyy${label.slice(2)}`
-    : `yy${label.slice(1)}`
-  if (sortText.endsWith('()')) sortText = `y${sortText}`
-  return sortText
 }
 
 function selectorCompletionItems(
@@ -145,7 +92,7 @@ function selectorCompletionItems(
   for (const entry of entries) {
     if (!entry.label.startsWith(':')) continue
     if (elementOnly && !entry.label.startsWith('::')) continue
-    const label = normalizePseudoLabel(entry.label)
+    const label = entry.label
     if (byLabel.has(label)) continue
     const insertText = triggerLength
       ? label.slice(triggerLength)
@@ -160,7 +107,7 @@ function selectorCompletionItems(
       documentation: entry.documentationText || includeDocumentation
         ? documentation(service, entry, className)
         : undefined,
-      sortText: pseudoSortText(label)
+      sortText: entry.sortText
     })
   }
   return sortCompletionItems([...byLabel.values()])
