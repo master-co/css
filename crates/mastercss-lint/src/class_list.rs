@@ -623,16 +623,16 @@ pub(crate) fn add_canonical_compose_diagnostics(
             CanonicalComposeSuggestionKind::NativeDeclaration => (
                 "prefer-native-declaration",
                 format!(
-                    "Use CSS declaration `{}` instead of class `{}`.",
+                    "Use CSS declaration `{}` instead of class \"{}\".",
                     suggestion.recommended.replace('`', "\\`"),
-                    suggestion.actual.replace('`', "\\`")
+                    suggestion.actual.replace('"', "\\\"")
                 ),
             ),
             CanonicalComposeSuggestionKind::VariantBlock => (
                 "prefer-variant-block",
                 format!(
-                    "Move class `{}` into the canonical @compose block.",
-                    suggestion.actual.replace('`', "\\`")
+                    "Move class \"{}\" into the canonical @compose block.",
+                    suggestion.actual.replace('"', "\\\"")
                 ),
             ),
         };
