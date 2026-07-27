@@ -59,6 +59,66 @@ describe('Rust lint session', () => {
     }
   })
 
+  it('ignores token, static, invalid, unknown, and component classes', () => {
+    const lint = createTestToolingSession(createPresetManifest({
+      utilities: [{ name: 'btn', layer: 'components', declarations: { display: 'block' } }]
+    }))
+    try {
+      expect(lint.rawValueCandidates([
+        'font:md',
+        'm:md',
+        'm:md|lg',
+        'fg:red-60',
+        'text-center',
+        'font:error',
+        'unknown-class',
+        'btn'
+      ])).toEqual([])
+    } finally {
+      lint.dispose()
+    }
+  })
+
+  it('suggests static utilities, theme tokens, and property aliases', () => {
+    const lint = createTestToolingSession(createPresetManifest())
+    try {
+      expect(lint.canonicalClassNames([
+        'text-align:center:hover@sm',
+        'font:16px',
+        'margin:md'
+      ])).toEqual([
+        { className: 'text-align:center:hover@sm', recommended: 'text-center:hover@sm' },
+        { className: 'font:16px', recommended: 'font:md' },
+        { className: 'margin:md', recommended: 'm:md' }
+      ])
+    } finally {
+      lint.dispose()
+    }
+  })
+
+  it('suggests static utility aliases from generated declarations', () => {
+    const lint = createTestToolingSession(createPresetManifest())
+    try {
+      expect(lint.canonicalClassNames([
+        'position:relative',
+        'display:none',
+        'visibility:hidden',
+        'height:100vh',
+        'width:100vw',
+        'aspect-ratio:1/1'
+      ])).toEqual([
+        { className: 'position:relative', recommended: 'rel' },
+        { className: 'display:none', recommended: 'hidden' },
+        { className: 'visibility:hidden', recommended: 'invisible' },
+        { className: 'height:100vh', recommended: 'vh' },
+        { className: 'width:100vw', recommended: 'vw' },
+        { className: 'aspect-ratio:1/1', recommended: 'square' }
+      ])
+    } finally {
+      lint.dispose()
+    }
+  })
+
   it('lints and fixes source files without a TypeScript engine', () => {
     const lintSession = createTestToolingSession(createPresetManifest())
     const options = {

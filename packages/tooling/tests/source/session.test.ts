@@ -30,3 +30,33 @@ test('extracts built-in source formats through the native Rust session', () => {
   extractor.dispose()
   expect(() => extractor.extractSource({ files: [] })).toThrow('disposed')
 })
+
+test('extracts static classes from JavaScript and TypeScript syntax with Oxc', () => {
+  const extractor = createTestToolingSession()
+  try {
+    expect(extractor.extractSource({
+      files: [{
+        source: 'component.tsx',
+        kind: 'oxc',
+        content: `
+          const classes = 'block mx:auto'
+          const active = clsx('fg:red', { 'p:4x': ok })
+          element.classList.add('flex')
+          export function App() {
+            return <div className="hidden m:2x" />
+          }
+        `
+      }]
+    }).files[0].candidates).toEqual([
+      'block',
+      'mx:auto',
+      'fg:red',
+      'p:4x',
+      'flex',
+      'hidden',
+      'm:2x'
+    ])
+  } finally {
+    extractor.dispose()
+  }
+})

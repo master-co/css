@@ -9,7 +9,7 @@ import createDocument from '../src/utils/create-document'
 import { withFixture } from './setup'
 
 withFixture('monorepo', async (context) => {
-  test('uses a resolved workspace Master CSS manifest when available', async () => {
+  test('uses a resolved workspace Master CSS runtime when available', async () => {
     const textDocument = context.createDocument('<div class=""></div>')
 
     await context.server.onDidOpen({ document: textDocument })
@@ -20,7 +20,7 @@ withFixture('monorepo', async (context) => {
   })
 })
 
-test('uses the bundled manifest when workspace packages are missing', async () => {
+test('falls back to the bundled runtime when workspace packages are missing', async () => {
   const cwd = mkdtempSync(join(tmpdir(), 'master-css-language-server-runtime-'))
   try {
     writeFileSync(join(cwd, 'package.json'), JSON.stringify({ private: true }))
