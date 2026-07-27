@@ -1381,20 +1381,20 @@
   "evidence": {
     "path": "parity/ts-test-migration-evidence.json",
     "version": 1,
-    "records": 528,
+    "records": 537,
     "proofs": {
       "approved-divergence": 3,
       "exact-source": 953,
-      "rc87-golden": 525
+      "rc87-golden": 534
     }
   },
   "summary": {
     "byStatus": {
       "approved-divergence": 3,
       "gap": 8,
-      "mapped-unverified": 47,
+      "mapped-unverified": 38,
       "source-inactive": 10,
-      "verified-exact": 1478
+      "verified-exact": 1487
     },
     "byPriority": {
       "P0": 676,
@@ -1402,15 +1402,15 @@
       "P2": 138
     },
     "byCoverage": {
-      "candidate-all": 57,
-      "evidence": 528,
+      "candidate-all": 48,
+      "evidence": 537,
       "exact-source": 953,
       "none": 8
     },
     "byProof": {
       "approved-divergence": 3,
       "exact-source": 953,
-      "rc87-golden": 525
+      "rc87-golden": 534
     },
     "byPackage": {
       "astro": {
@@ -9044,8 +9044,8 @@
         "targetPackage": "compiler"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-8e2904c1ab58a0dc",
@@ -9060,7 +9060,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "060dd02a0d58f08a136c773dc7fa5772d68273ac6a0eef5f1df5516f818bf0f9",
+          "targets": [
+            {
+              "caseId": "rc87-8e2904c1ab58a0dc",
+              "runner": "vitest",
+              "digest": "06ce23c4763d25a1e9aa51483b38bdb3d6e94d5d01e5381410921c497607abe1"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -9088,8 +9098,8 @@
         "targetPackage": "compiler"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-3516c9bb81d10ca0",
@@ -9104,7 +9114,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "bbcb428d33dba60d0a5dea2ca3958dfc4b451e3c8e61880abf27eebe0cb6f0e4",
+          "targets": [
+            {
+              "caseId": "rc87-3516c9bb81d10ca0",
+              "runner": "vitest",
+              "digest": "46c59a9a55806bdd3df4c2c0c538abbe92fcae8ea12479d1c575a4032b56b0df"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -9132,8 +9152,8 @@
         "targetPackage": "compiler"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-6e81d63acffb4178",
@@ -9148,7 +9168,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "dd218aae41476bd0bd75c3e22b225b4ed00250fb53c6ae9a133d1e95df7211fa",
+          "targets": [
+            {
+              "caseId": "rc87-6e81d63acffb4178",
+              "runner": "vitest",
+              "digest": "5efa36bf57511763088a265c0a53af2c9cb078c3d4cf95585796bc406ea92324"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -30394,8 +30424,8 @@
         "targetPackage": "eslint-plugin"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-d1902226d6ba1a66",
@@ -30410,7 +30440,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "f75839ff86079dc819aa6c3178249bc79b14499a4507050aa956b74ba472a1ed",
+          "targets": [
+            {
+              "caseId": "rc87-d1902226d6ba1a66",
+              "runner": "vitest",
+              "digest": "c70fc1fafe42788b8dabd0e60b5429a3f9bc25e2f41391c66c6d8f437a79351f"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -30436,8 +30476,8 @@
         "targetPackage": "eslint-plugin"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-ff2d555affd59529",
@@ -30452,7 +30492,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "1ebdd26455a74a38f3b3f6a0408352f3d98d168ca06f3e60967db8f61b7946b7",
+          "targets": [
+            {
+              "caseId": "rc87-ff2d555affd59529",
+              "runner": "vitest",
+              "digest": "9fd81305b5110aa606eaa6d7fe85538c9d8e11938b9072522e32edd4238363e1"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -34025,8 +34075,8 @@
         "targetPackage": "eslint-plugin"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-30f5dd4a175fce37",
@@ -34046,7 +34096,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "90874cee220dbf365745dae6ab3a138beee1c7067126ef0caeb0d5047899faa0",
+          "targets": [
+            {
+              "caseId": "rc87-30f5dd4a175fce37",
+              "runner": "eslint-rule-tester",
+              "digest": "fbd581bd73b9c2e01fcd8f5517023d1d13782556d0d3133ba15ede8dcc069f72"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -34081,8 +34141,8 @@
         "targetPackage": "eslint-plugin"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-ba03d9ed18eba206",
@@ -34102,7 +34162,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "90874cee220dbf365745dae6ab3a138beee1c7067126ef0caeb0d5047899faa0",
+          "targets": [
+            {
+              "caseId": "rc87-ba03d9ed18eba206",
+              "runner": "eslint-rule-tester",
+              "digest": "fbd581bd73b9c2e01fcd8f5517023d1d13782556d0d3133ba15ede8dcc069f72"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -45016,8 +45086,8 @@
         "targetPackage": "language-service"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-c75732260c7ffaac",
@@ -45032,7 +45102,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "717c51c35fa05ceaec381c72b5bb5d62b95fad2e68b58c88aab8ad940379b6ca",
+          "targets": [
+            {
+              "caseId": "rc87-c75732260c7ffaac",
+              "runner": "vitest",
+              "digest": "ad2db45ba9b0b5c58951c1e2b151bb17aa4958109394db9c68d5af3a51cab3ff"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -75046,8 +75126,8 @@
         "targetPackage": "schema"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-d1e28f5ab29e6c3e",
@@ -75062,7 +75142,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "978064027501b5da9887d1c9a2aec01160ab37a24a25a86eb2ba0a6e8ca2217d",
+          "targets": [
+            {
+              "caseId": "rc87-d1e28f5ab29e6c3e",
+              "runner": "vitest",
+              "digest": "b029c2ed64c92c643305f5633fa2ea507a7c5f2fcd281706a4ab91cfe493f976"
+            }
+          ]
+        }
       },
       "divergence": null
     },

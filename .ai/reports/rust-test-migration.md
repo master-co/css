@@ -32,14 +32,14 @@ capture commit `ef1a7c851` is not substituted for rc.87.
 |---|---:|
 | approved-divergence | 3 |
 | gap | 8 |
-| mapped-unverified | 47 |
+| mapped-unverified | 38 |
 | source-inactive | 10 |
-| verified-exact | 1478 |
+| verified-exact | 1487 |
 
 | Candidate coverage | Count |
 |---|---:|
-| candidate-all | 57 |
-| evidence | 528 |
+| candidate-all | 48 |
+| evidence | 537 |
 | exact-source | 953 |
 | none | 8 |
 
@@ -47,7 +47,7 @@ capture commit `ef1a7c851` is not substituted for rc.87.
 |---|---:|
 | approved-divergence | 3 |
 | exact-source | 953 |
-| rc87-golden | 525 |
+| rc87-golden | 534 |
 
 | Priority | Cases | Gaps |
 |---|---:|---:|
@@ -55,7 +55,7 @@ capture commit `ef1a7c851` is not substituted for rc.87.
 | P1 | 732 | 0 |
 | P2 | 138 | 7 |
 | P3 | 0 | 0 |
-Verified active cases: 1481/1536.
+Verified active cases: 1490/1536.
 
 `mapped-unverified` means that an executable target candidate or takeover reference
 exists. It does not claim parity. `exact-source` requires one identical executable

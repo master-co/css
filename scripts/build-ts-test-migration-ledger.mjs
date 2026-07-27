@@ -12,6 +12,7 @@ const RC87_RENDERING_TARGET_COMMIT = 'b242a52a0fcb43b1b506d9fa1e010d0c85621d13'
 const RC87_AUTHORING_TARGET_COMMIT = '7ac3c1a63a7af8c8c927a869fa3e4d531261cec6'
 const RC87_LANGUAGE_TARGET_COMMIT = '61b9def159eeb78cfe67a70e96cb3dc148088952'
 const RC87_SCANNER_TARGET_COMMIT = 'ee78ca31a85d39fa5eaded9fc2e912b6bd8698d6'
+const RC87_P1_TARGET_COMMIT = RC87_SCANNER_TARGET_COMMIT
 const ledgerPath = path.resolve('parity/ts-test-migration-ledger.json')
 const evidencePath = path.resolve('parity/ts-test-migration-evidence.json')
 const exceptionsPath = path.resolve('parity-exceptions.json')
@@ -1165,6 +1166,45 @@ function seedScannerEvidence(legacyInventory, targetInventory) {
   writeFileSync(evidencePath, `${JSON.stringify(evidence, null, 2)}\n`)
 }
 
+function seedP1Evidence(legacyInventory, targetInventory) {
+  assert.equal(
+    targetInventory.commit,
+    RC87_P1_TARGET_COMMIT,
+    'P1 evidence must be audited against the pinned milestone 3 target.'
+  )
+  const evidence = JSON.parse(readFileSync(evidencePath, 'utf8'))
+  const legacyById = new Map(legacyInventory.cases.map((testCase) => [testCase.id, testCase]))
+  const targetById = new Map(targetInventory.cases.map((testCase) => [testCase.id, testCase]))
+  const recordsBySourceId = new Map(evidence.records.map((record) => [record.sourceId, record]))
+  const currentLedger = JSON.parse(readFileSync(ledgerPath, 'utf8'))
+  assert.equal(
+    currentLedger.target.commit,
+    RC87_P1_TARGET_COMMIT,
+    'The current ledger does not describe the pinned milestone 3 target.'
+  )
+  const auditedPackages = new Set(['diagnostics', 'eslint-plugin', 'language-service', 'schema'])
+
+  for (const entry of currentLedger.entries) {
+    if (entry.priority !== 'P1' || entry.migration.status !== 'mapped-unverified') continue
+    assert.ok(auditedPackages.has(entry.source.package), `Unaudited P1 package for ${entry.id}.`)
+    assert.equal(entry.migration.targets.length, 1, `P1 evidence target is ambiguous for ${entry.id}.`)
+    const source = legacyById.get(entry.id)
+    const target = targetById.get(entry.migration.targets[0].id)
+    assert.ok(source, `Cannot seed audited P1 source ${entry.id}.`)
+    assert.ok(target, `Cannot seed audited P1 target for ${entry.id}.`)
+    recordsBySourceId.set(entry.id, {
+      sourceId: entry.id,
+      sourceDigest: source.sourceDigest,
+      proof: 'rc87-golden',
+      targets: [proofTargetReference(target)]
+    })
+  }
+
+  evidence.records = [...recordsBySourceId.values()]
+    .sort((left, right) => left.sourceId.localeCompare(right.sourceId))
+  writeFileSync(evidencePath, `${JSON.stringify(evidence, null, 2)}\n`)
+}
+
 function loadParityExceptions() {
   const registry = JSON.parse(readFileSync(exceptionsPath, 'utf8'))
   assert.ok(Array.isArray(registry.exceptions), 'Parity exceptions must be an array.')
@@ -1620,6 +1660,9 @@ if (process.argv.includes('--seed-language-evidence')) {
 }
 if (process.argv.includes('--seed-scanner-evidence')) {
   seedScannerEvidence(legacyInventory, targetInventory)
+}
+if (process.argv.includes('--seed-p1-evidence')) {
+  seedP1Evidence(legacyInventory, targetInventory)
 }
 const migrationEvidence = loadMigrationEvidence()
 const exceptions = loadParityExceptions()
