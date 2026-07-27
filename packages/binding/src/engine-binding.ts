@@ -26,7 +26,11 @@ import {
 
 async function loadNativeEngineFactories() {
   const nodeEngineModule = import.meta.url.endsWith('.ts') ? './engine.ts' : './engine.js'
-  return await import(/* @vite-ignore */ nodeEngineModule) as typeof import('./engine')
+  return await import(
+    /* @vite-ignore */
+    /* turbopackIgnore: true */
+    nodeEngineModule
+  ) as typeof import('./engine')
 }
 
 export type {
