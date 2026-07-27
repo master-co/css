@@ -10,7 +10,7 @@
     "existingParity",
     "evidence",
     "summary",
-    "postBaselineOverlay",
+    "postBaselineDelta",
     "entries",
     "targetOnly"
   ],
@@ -45,7 +45,17 @@
       }
     },
     "summary": { "type": "object" },
-    "postBaselineOverlay": { "type": ["object", "null"] },
+    "postBaselineDelta": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "version", "ref", "commit"],
+      "properties": {
+        "path": { "const": "parity/post-rc87-delta-ledger.json" },
+        "version": { "const": 1 },
+        "ref": { "const": "origin/rc" },
+        "commit": { "const": "a71c23a2680fc49fc12724e47db5b2d88bdf229d" }
+      }
+    },
     "entries": {
       "type": "array",
       "items": {

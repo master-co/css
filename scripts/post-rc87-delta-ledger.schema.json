@@ -1,0 +1,69 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "policy", "baseline", "delta", "summary", "files", "commits"],
+  "properties": {
+    "$schema": { "type": "string" },
+    "version": { "const": 1 },
+    "policy": { "type": "object" },
+    "baseline": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["ref", "commit"],
+      "properties": {
+        "ref": { "const": "v2.0.0-rc.87" },
+        "commit": { "const": "9cc3e8b5f2e34d5220f10f27ed5ce8186fbcb524" }
+      }
+    },
+    "delta": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["ref", "commit"],
+      "properties": {
+        "ref": { "const": "origin/rc" },
+        "commit": { "const": "a71c23a2680fc49fc12724e47db5b2d88bdf229d" }
+      }
+    },
+    "summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["files", "behaviorFiles", "metadataFiles", "byDecision"],
+      "properties": {
+        "files": { "const": 7 },
+        "behaviorFiles": { "const": 6 },
+        "metadataFiles": { "const": 1 },
+        "byDecision": { "type": "object" }
+      }
+    },
+    "files": {
+      "type": "array",
+      "minItems": 7,
+      "maxItems": 7,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["file", "gitStatus", "priority", "decision", "behavior"],
+        "properties": {
+          "file": { "type": "string", "pattern": "^packages/" },
+          "gitStatus": { "type": "string", "minLength": 1 },
+          "priority": { "enum": ["P0", "P2"] },
+          "decision": { "enum": ["pending-decision", "outside-semantic-parity"] },
+          "behavior": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "commits": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["commit", "summary"],
+        "properties": {
+          "commit": { "type": "string", "pattern": "^[a-f0-9]{40}$" },
+          "summary": { "type": "string", "minLength": 1 }
+        }
+      }
+    }
+  }
+}

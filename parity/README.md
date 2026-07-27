@@ -6,7 +6,10 @@ over from TypeScript.
 - `ts-test-migration-ledger.json` is the complete `packages/*` migration inventory
   rooted at `v2.0.0-rc.87`. It expands Vitest tests, parameter matrices, generic
   `tests/test.ts` suites, package E2E suites, and ESLint RuleTester valid/invalid
-  cases. Newer `rc` changes are recorded only in its post-baseline overlay.
+  cases. It references, but never absorbs, the separate post-rc.87 delta ledger.
+- `post-rc87-delta-ledger.json` freezes the six behavior files and one VS Code
+  metadata file between rc.87 and `origin/rc@a71c23a`. Its pending browser manifest
+  behavior cannot close or redefine an rc.87 case.
 - `ts-test-migration-evidence.json` is the reviewed evidence source keyed by rc.87
   case id. It pins target case ids, runners, and source digests for rewritten golden
   tests and approved divergences. Identical source cases are proved automatically by
