@@ -662,68 +662,43 @@ impl EngineSession {
             .flat_map(|class_name| self.native_declaration_candidates_for_class(class_name))
             .collect::<Vec<_>>();
         for (candidate, supported) in candidates.into_iter().zip(supported.iter().copied()) {
-            self.native_declaration_support
-                .entry(candidate.ir.class_name.clone())
-                .or_default()
-                .insert(
-                    (candidate.ir.property.clone(), candidate.ir.value.clone()),
-                    supported,
-                );
-            if !supported {
-                continue;
-            }
-            let id = format!("native:{}\0{}", candidate.ir.property, candidate.ir.value);
-            if let Some(utility) = self
-                .compiled
-                .utilities
-                .iter_mut()
-                .find(|utility| utility.id == id)
-            {
-                if !utility.matchers.iter().any(
-                    |matcher| matches!(matcher, UtilityMatcher::Static { name } if name == &candidate.match_name),
-                ) {
-                    utility.matchers.push(UtilityMatcher::Static {
-                        name: candidate.match_name,
-                    });
-                }
-                continue;
-            }
-            let mut declarations = Map::new();
-            declarations.insert(
-                candidate.ir.property.clone(),
-                Value::String(candidate.ir.value),
-            );
-            self.compiled.utilities.push(UtilityDefinition {
-                id,
-                name: Some(candidate.match_name.clone()),
-                utility_type: if is_native_shorthand_property(&candidate.ir.property) {
-                    -1
-                } else {
-                    0
-                },
-                order: Some(0),
-                layer: UtilityLayerName::Utilities,
-                kind: None,
-                keys: Vec::new(),
-                alias_groups: Vec::new(),
-                variable_aliases: Vec::new(),
-                variable_alias_refs: Vec::new(),
-                variables: HashMap::new(),
-                variable_entries: Vec::new(),
-                native_fallback: true,
-                emit: UtilityEmit::Static {
-                    rules: vec![StaticUtilityRule {
-                        declarations,
-                        selector: None,
-                        conditions: Vec::new(),
-                    }],
-                },
-                matchers: vec![UtilityMatcher::Static {
-                    name: candidate.match_name,
-                }],
-            });
+            self.register_native_declaration_candidate(candidate, supported);
         }
         self.ensure_class_rules(class_names)
+    }
+
+    pub fn ensure_class_rules_assuming_native_support<I, S>(
+        &mut self,
+        class_names: I,
+    ) -> Result<EngineTransitionIr, EngineError>
+    where
+        I: IntoIterator<Item = S>,
+        S: AsRef<str>,
+    {
+        self.ensure_active()?;
+        let mut mutations = Vec::new();
+        for class_name in class_names {
+            let class_name = class_name.as_ref();
+            if class_name.is_empty() || self.class_rules.contains_key(class_name) {
+                continue;
+            }
+            let mut generated = self.generate_class_rules(class_name);
+            if generated.is_empty() || class_name.starts_with('{') {
+                let candidates = if class_name.starts_with('{') {
+                    self.native_declaration_candidates_for_class(class_name)
+                } else {
+                    self.parse_native_declaration_candidate(class_name)
+                        .into_iter()
+                        .collect()
+                };
+                for candidate in candidates {
+                    self.register_native_declaration_candidate(candidate, true);
+                }
+                generated = self.generate_class_rules(class_name);
+            }
+            self.insert_generated_class_rules(class_name, generated, &mut mutations);
+        }
+        Ok(EngineTransitionIr::new(mutations))
     }
 
     pub fn ensure_stylesheet_resources(
@@ -1497,6 +1472,73 @@ impl EngineSession {
             },
             match_name: format!("{property}:{raw_value}"),
         })
+    }
+
+    fn register_native_declaration_candidate(
+        &mut self,
+        candidate: NativeDeclarationCandidate,
+        supported: bool,
+    ) {
+        self.native_declaration_support
+            .entry(candidate.ir.class_name.clone())
+            .or_default()
+            .insert(
+                (candidate.ir.property.clone(), candidate.ir.value.clone()),
+                supported,
+            );
+        if !supported {
+            return;
+        }
+        let id = format!("native:{}\0{}", candidate.ir.property, candidate.ir.value);
+        if let Some(utility) = self
+            .compiled
+            .utilities
+            .iter_mut()
+            .find(|utility| utility.id == id)
+        {
+            if !utility.matchers.iter().any(
+                |matcher| matches!(matcher, UtilityMatcher::Static { name } if name == &candidate.match_name),
+            ) {
+                utility.matchers.push(UtilityMatcher::Static {
+                    name: candidate.match_name,
+                });
+            }
+            return;
+        }
+        let mut declarations = Map::new();
+        declarations.insert(
+            candidate.ir.property.clone(),
+            Value::String(candidate.ir.value),
+        );
+        self.compiled.utilities.push(UtilityDefinition {
+            id,
+            name: Some(candidate.match_name.clone()),
+            utility_type: if is_native_shorthand_property(&candidate.ir.property) {
+                -1
+            } else {
+                0
+            },
+            order: Some(0),
+            layer: UtilityLayerName::Utilities,
+            kind: None,
+            keys: Vec::new(),
+            alias_groups: Vec::new(),
+            variable_aliases: Vec::new(),
+            variable_alias_refs: Vec::new(),
+            variables: HashMap::new(),
+            variable_entries: Vec::new(),
+            native_fallback: true,
+            emit: UtilityEmit::Static {
+                rules: vec![StaticUtilityRule {
+                    declarations,
+                    selector: None,
+                    conditions: Vec::new(),
+                }],
+            },
+            matchers: vec![UtilityMatcher::Static {
+                name: candidate.match_name,
+            }],
+        });
     }
 
     fn native_declaration_candidates_for_class(
@@ -6137,6 +6179,23 @@ fn format_declaration(property: &str, value: &str, important: bool) -> String {
 mod tests {
     use super::*;
 
+    #[derive(Deserialize)]
+    #[serde(rename_all = "camelCase")]
+    struct ParserParityCorpus {
+        version: u32,
+        parser_cases: Vec<ParserParityCorpusCase>,
+    }
+
+    #[derive(Deserialize)]
+    #[serde(rename_all = "camelCase")]
+    struct ParserParityCorpusCase {
+        id: String,
+        source_id: String,
+        kind: String,
+        input: String,
+        expected_canonical: String,
+    }
+
     const MANIFEST: &str = r##"{
       "version":1,
       "conditions":{
@@ -6198,6 +6257,32 @@ mod tests {
         }
       ]
     }"##;
+
+    #[test]
+    fn executes_rc87_parser_parity_corpus() {
+        let corpus: ParserParityCorpus =
+            serde_json::from_str(include_str!("../../../parity/rust-semantic-corpus.json"))
+                .expect("semantic parity corpus parses");
+        assert_eq!(corpus.version, 2);
+        assert!(!corpus.parser_cases.is_empty());
+
+        let engine = EngineSession::create(include_str!(
+            "../../../packages/preset/src/default-manifest.json"
+        ))
+        .unwrap();
+        for case in corpus.parser_cases {
+            assert!(!case.source_id.is_empty(), "{}", case.id);
+            let actual = match case.kind.as_str() {
+                "condition" => render_condition_token(&case.input, &engine.compiled)
+                    .map(|(_, wrapper, _)| wrapper)
+                    .expect("condition parity case renders"),
+                "selector" => selector_token_to_template(&case.input, &engine.compiled)
+                    .expect("selector parity case renders"),
+                kind => panic!("unsupported parser parity kind {kind}"),
+            };
+            assert_eq!(actual, case.expected_canonical, "{}", case.id);
+        }
+    }
 
     #[test]
     fn creates_sorted_rule_transitions_and_css() {

@@ -19,6 +19,7 @@
     "scripts/**/*.ts",
     "src/**/*.ts",
     "tests/**/*.test.ts",
+    "tests/helpers/**/*.ts",
     "src/**/*.json"
   ]
 }

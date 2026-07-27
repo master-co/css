@@ -43,6 +43,30 @@ describe('binding loader', () => {
         domain: 'engine'
       })
     }))
+
+    const nativeDeclarationSession = await createEngineBindingSession({
+      manifest: {
+        version: 1,
+        variables: {
+          '': [{
+            name: 'stripe',
+            key: 'stripe',
+            type: 'string',
+            value: 'linear-gradient(red,blue)'
+          }]
+        },
+        utilities: []
+      }
+    }, { binding: 'native' })
+    try {
+      nativeDeclarationSession.ensureClassRules(['bg:stripe'])
+      expect(nativeDeclarationSession.snapshot().text).toBe(
+        '@layer theme{:root{--stripe:linear-gradient(red,blue)}}'
+        + '@layer utilities{.bg\\:stripe{background:var(--stripe)}}'
+      )
+    } finally {
+      nativeDeclarationSession.dispose()
+    }
   })
 
   it('disposes render sessions idempotently', async () => {

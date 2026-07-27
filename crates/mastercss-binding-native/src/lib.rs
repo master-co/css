@@ -1022,6 +1022,19 @@ impl NodeEngineSession {
     }
 
     #[napi]
+    pub fn ensure_class_rules_assuming_native_support(
+        &mut self,
+        class_names: Vec<String>,
+    ) -> Result<String> {
+        to_json(
+            &self
+                .inner
+                .ensure_class_rules_assuming_native_support(class_names)
+                .map_err(to_napi_error)?,
+        )
+    }
+
+    #[napi]
     pub fn delete_class_rules(&mut self, class_names: Vec<String>) -> Result<String> {
         to_json(
             &self

@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "semanticBaseline": "ef1a7c851",
   "publicBaseline": "v2.0.0-rc.87",
   "engineCases": [
@@ -9,7 +9,11 @@
       "steps": [
         {
           "op": "ensure",
-          "classes": ["block", "w:10px", "bg-origin-border"],
+          "classes": [
+            "block",
+            "w:10px",
+            "bg-origin-border"
+          ],
           "expectedCss": "@layer utilities{.bg-origin-border{background-origin:border-box}.block{display:block}.w\\:10px{width:10px}}"
         }
       ]
@@ -20,7 +24,11 @@
       "steps": [
         {
           "op": "ensure",
-          "classes": ["w:10px", "block", "bg-origin-border"],
+          "classes": [
+            "w:10px",
+            "block",
+            "bg-origin-border"
+          ],
           "expectedCss": "@layer utilities{.bg-origin-border{background-origin:border-box}.block{display:block}.w\\:10px{width:10px}}"
         }
       ]
@@ -69,7 +77,9 @@
           "expectedSelectorTexts": [
             ".\\{flex\\;rel\\}_\\:is\\(h4\\,\\.app-nav\\)\\@default :is(h4,.app-nav)"
           ],
-          "expectedLayers": ["defaults"]
+          "expectedLayers": [
+            "defaults"
+          ]
         }
       ]
     },
@@ -79,22 +89,32 @@
       "steps": [
         {
           "op": "ensure",
-          "classes": ["fg:red-60", "bg:red-60", "m:md"],
+          "classes": [
+            "fg:red-60",
+            "bg:red-60",
+            "m:md"
+          ],
           "expectedCss": "@layer theme{:root{--color-red-60:oklch(60.94% .2501 29.2);--spacing-md:1rem}}@layer utilities{.m\\:md{margin:var(--spacing-md)}.bg\\:red-60{background-color:var(--color-red-60)}.fg\\:red-60{color:var(--color-red-60)}}"
         },
         {
           "op": "delete",
-          "classes": ["fg:red-60"],
+          "classes": [
+            "fg:red-60"
+          ],
           "expectedCss": "@layer theme{:root{--color-red-60:oklch(60.94% .2501 29.2);--spacing-md:1rem}}@layer utilities{.m\\:md{margin:var(--spacing-md)}.bg\\:red-60{background-color:var(--color-red-60)}}"
         },
         {
           "op": "delete",
-          "classes": ["bg:red-60"],
+          "classes": [
+            "bg:red-60"
+          ],
           "expectedCss": "@layer theme{:root{--spacing-md:1rem}}@layer utilities{.m\\:md{margin:var(--spacing-md)}}"
         },
         {
           "op": "delete",
-          "classes": ["m:md"],
+          "classes": [
+            "m:md"
+          ],
           "expectedCss": ""
         }
       ]
@@ -207,12 +227,16 @@
       "steps": [
         {
           "op": "ensure",
-          "classes": ["fg:red-60"],
+          "classes": [
+            "fg:red-60"
+          ],
           "expectedCss": "@layer utilities{.fg\\:red-60{color:var(--color-red-60)}}"
         },
         {
           "op": "delete",
-          "classes": ["fg:red-60"],
+          "classes": [
+            "fg:red-60"
+          ],
           "expectedCss": ""
         }
       ]
@@ -223,7 +247,10 @@
       "steps": [
         {
           "op": "ensure",
-          "classes": ["fg:blue-60@dark", "bg:white@light"],
+          "classes": [
+            "fg:blue-60@dark",
+            "bg:white@light"
+          ],
           "expectedCss": "@layer theme{:root{--color-blue-60:oklch(51.83% .2687 266.1)}}@layer utilities{@media (prefers-color-scheme:light){.bg\\:white\\@light{background-color:oklch(100% 0 none)}}@media (prefers-color-scheme:dark){.fg\\:blue-60\\@dark{color:var(--color-blue-60)}}}"
         }
       ]
@@ -513,7 +540,12 @@
       "steps": [
         {
           "op": "ensure",
-          "classes": ["mt:0", "mt:2", "mt:1@sm", "mt:3@lg"],
+          "classes": [
+            "mt:0",
+            "mt:2",
+            "mt:1@sm",
+            "mt:3@lg"
+          ],
           "expectedCss": "@layer utilities{.mt\\:0{margin-top:0}.mt\\:2{margin-top:2}@media (width>=52.125rem){.mt\\:1\\@sm{margin-top:1}}@media (width>=80rem){.mt\\:3\\@lg{margin-top:3}}}"
         }
       ]
@@ -585,11 +617,15 @@
           "expectedSelectorTexts": [
             ".card"
           ],
-          "expectedLayers": ["components"]
+          "expectedLayers": [
+            "components"
+          ]
         },
         {
           "op": "ensure",
-          "classes": ["card"],
+          "classes": [
+            "card"
+          ],
           "expectedCss": "@layer components{.card{display:grid}.card:hover{color:red}}"
         }
       ]
@@ -646,7 +682,9 @@
       "steps": [
         {
           "op": "ensure",
-          "classes": ["demo"],
+          "classes": [
+            "demo"
+          ],
           "expectedCss": "@layer defaults{.demo{background:var(--stripe)}}@layer components{.demo{display:flex}}"
         }
       ]
@@ -670,7 +708,9 @@
             "id": "bg:<~color|color>",
             "type": 0,
             "kind": "color",
-            "variableAliasRefs": ["~color"],
+            "variableAliasRefs": [
+              "~color"
+            ],
             "emit": {
               "type": "static",
               "rules": [
@@ -684,11 +724,15 @@
             "matchers": [
               {
                 "type": "variable",
-                "keys": ["bg"]
+                "keys": [
+                  "bg"
+                ]
               },
               {
                 "type": "value",
-                "keys": ["bg"]
+                "keys": [
+                  "bg"
+                ]
               }
             ]
           }
@@ -697,7 +741,9 @@
       "steps": [
         {
           "op": "ensure",
-          "classes": ["bg:stripe"],
+          "classes": [
+            "bg:stripe"
+          ],
           "expectedCss": "@layer theme{:root{--stripe:0 / 7.5px 7.5px linear-gradient(red,blue) transparent}}@layer utilities{.bg\\:stripe{background:var(--stripe)}}"
         }
       ]
@@ -734,6 +780,1118 @@
           "expectedCss": "@layer theme{:root{--stripe:linear-gradient(red,blue)}}@layer utilities{.background\\:var\\(--stripe\\){background:var(--stripe)}.bg\\:stripe{background:var(--stripe)}}"
         }
       ]
+    },
+    {
+      "id": "rc87-rule-b34b6305ef89bb24",
+      "sourceId": "rc87-b34b6305ef89bb24",
+      "manifest": "default",
+      "steps": [
+        {
+          "op": "inspectContains",
+          "className": "accent-color:transparent",
+          "expectedRuleContains": "accent-color:transparent"
+        }
+      ]
+    },
+    {
+      "id": "rc87-rule-7a36e09838ade737",
+      "sourceId": "rc87-7a36e09838ade737",
+      "manifest": "default",
+      "steps": [
+        {
+          "op": "inspectContains",
+          "className": "full",
+          "expectedRuleContains": "width:100%;height:100%"
+        }
+      ]
+    },
+    {
+      "id": "rc87-rule-c04505259861369b",
+      "sourceId": "rc87-c04505259861369b",
+      "manifest": "default",
+      "steps": []
+    },
+    {
+      "id": "rc87-rule-3f25eb2d165c2792",
+      "sourceId": "rc87-3f25eb2d165c2792",
+      "manifest": "default",
+      "steps": [
+        {
+          "op": "inspectContains",
+          "className": "bg:light-dark(#000,#fff)",
+          "expectedRuleContains": "background-color:light-dark(#000,#fff)"
+        },
+        {
+          "op": "inspectContains",
+          "className": "bg:#fff",
+          "expectedRuleContains": "background-color:#fff"
+        },
+        {
+          "op": "inspectContains",
+          "className": "bg:transparent",
+          "expectedRuleContains": "background-color:transparent"
+        },
+        {
+          "op": "inspectContains",
+          "className": "bg:blue",
+          "expectedRuleContains": "background-color:var(--color-blue)"
+        },
+        {
+          "op": "inspectContains",
+          "className": "bg-clip-border",
+          "expectedRuleContains": "background-clip:border-box"
+        },
+        {
+          "op": "inspectContains",
+          "className": "bg:url('#test')",
+          "expectedRuleContains": "background-image:url('#test')"
+        },
+        {
+          "op": "inspectContains",
+          "className": "bg:linear-gradient(45deg,#f3ec78,#af4261)",
+          "expectedRuleContains": "background-image:linear-gradient(45deg,#f3ec78,#af4261)"
+        }
+      ]
+    },
+    {
+      "id": "rc87-rule-6d53dce3a8f4a608",
+      "sourceId": "rc87-6d53dce3a8f4a608",
+      "manifest": "default",
+      "steps": [
+        {
+          "op": "inspectContains",
+          "className": "b:blue-50",
+          "expectedRuleContains": "border-color:var(--color-blue-50)"
+        },
+        {
+          "op": "inspectContains",
+          "className": "b:rgb(0,0,0,0.75)",
+          "expectedRuleContains": "border-color:rgb(0,0,0,0.75)"
+        },
+        {
+          "op": "inspectContains",
+          "className": "bb:rgb(0,0,0,0.75)",
+          "expectedRuleContains": "border-bottom-color:rgb(0,0,0,0.75)"
+        },
+        {
+          "op": "inspectContains",
+          "className": "bt:rgb(0,0,0,0.75)",
+          "expectedRuleContains": "border-top-color:rgb(0,0,0,0.75)"
+        },
+        {
+          "op": "inspectContains",
+          "className": "bl:blue-50",
+          "expectedRuleContains": "border-left-color:var(--color-blue-50)"
+        },
+        {
+          "op": "inspectContains",
+          "className": "bl:rgb(0,0,0,0.75)",
+          "expectedRuleContains": "border-left-color:rgb(0,0,0,0.75)"
+        },
+        {
+          "op": "inspectContains",
+          "className": "br:rgb(0,0,0,0.75)",
+          "expectedRuleContains": "border-right-color:rgb(0,0,0,0.75)"
+        }
+      ]
+    },
+    {
+      "id": "rc87-rule-59505396e17bdf8e",
+      "sourceId": "rc87-59505396e17bdf8e",
+      "manifest": "default",
+      "steps": [
+        {
+          "op": "inspectContains",
+          "className": "r:4x",
+          "expectedRuleContains": "border-radius:1rem"
+        },
+        {
+          "op": "inspectContains",
+          "className": "border-radius:1rem",
+          "expectedRuleContains": "border-radius:1rem"
+        },
+        {
+          "op": "inspectContains",
+          "className": "border-top-left-radius:4x",
+          "expectedRuleContains": "border-top-left-radius:1rem"
+        },
+        {
+          "op": "inspectContains",
+          "className": "border-top-right-radius:4x",
+          "expectedRuleContains": "border-top-right-radius:1rem"
+        },
+        {
+          "op": "inspectContains",
+          "className": "border-bottom-left-radius:4x",
+          "expectedRuleContains": "border-bottom-left-radius:1rem"
+        },
+        {
+          "op": "inspectContains",
+          "className": "border-bottom-right-radius:4x",
+          "expectedRuleContains": "border-bottom-right-radius:1rem"
+        }
+      ]
+    },
+    {
+      "id": "rc87-rule-5230468339100f6c",
+      "sourceId": "rc87-5230468339100f6c",
+      "manifest": "default",
+      "steps": [
+        {
+          "op": "inspectContains",
+          "className": "b-solid",
+          "expectedRuleContains": "border-style:solid"
+        },
+        {
+          "op": "inspectContains",
+          "className": "border-style:solid",
+          "expectedRuleContains": "border-style:solid"
+        },
+        {
+          "op": "inspectContains",
+          "className": "bb-solid",
+          "expectedRuleContains": "border-bottom-style:solid"
+        },
+        {
+          "op": "inspectContains",
+          "className": "border-bottom-style:solid",
+          "expectedRuleContains": "border-bottom-style:solid"
+        },
+        {
+          "op": "inspectContains",
+          "className": "bt-solid",
+          "expectedRuleContains": "border-top-style:solid"
+        },
+        {
+          "op": "inspectContains",
+          "className": "border-top-style:solid",
+          "expectedRuleContains": "border-top-style:solid"
+        },
+        {
+          "op": "inspectContains",
+          "className": "bl-solid",
+          "expectedRuleContains": "border-left-style:solid"
+        },
+        {
+          "op": "inspectContains",
+          "className": "border-left-style:solid",
+          "expectedRuleContains": "border-left-style:solid"
+        },
+        {
+          "op": "inspectContains",
+          "className": "br-solid",
+          "expectedRuleContains": "border-right-style:solid"
+        },
+        {
+          "op": "inspectContains",
+          "className": "border-right-style:solid",
+          "expectedRuleContains": "border-right-style:solid"
+        },
+        {
+          "op": "inspectContains",
+          "className": "border:solid|1px",
+          "expectedRuleContains": "border:solid 1px"
+        }
+      ]
+    },
+    {
+      "id": "rc87-rule-f491aa129b9a3a74",
+      "sourceId": "rc87-f491aa129b9a3a74",
+      "manifest": "default",
+      "steps": [
+        {
+          "op": "inspectContains",
+          "className": "border-width:1px",
+          "expectedRuleContains": "border-width:1px"
+        },
+        {
+          "op": "inspectContains",
+          "className": "border-bottom-width:1px",
+          "expectedRuleContains": "border-bottom-width:1px"
+        },
+        {
+          "op": "inspectContains",
+          "className": "border-top-width:1px",
+          "expectedRuleContains": "border-top-width:1px"
+        },
+        {
+          "op": "inspectContains",
+          "className": "border-left-width:1px",
+          "expectedRuleContains": "border-left-width:1px"
+        },
+        {
+          "op": "inspectContains",
+          "className": "border-right-width:1px",
+          "expectedRuleContains": "border-right-width:1px"
+        },
+        {
+          "op": "inspectContains",
+          "className": "border:2px|solid",
+          "expectedRuleContains": "border:2px solid"
+        }
+      ]
+    },
+    {
+      "id": "rc87-rule-d289666fcc196b64",
+      "sourceId": "rc87-d289666fcc196b64",
+      "manifest": "default",
+      "steps": [
+        {
+          "op": "inspectContains",
+          "className": "border:transparent",
+          "expectedRuleContains": "border:transparent"
+        },
+        {
+          "op": "inspectContains",
+          "className": "border:1px|solid",
+          "expectedRuleContains": "border:1px solid"
+        },
+        {
+          "op": "inspectContains",
+          "className": "b-solid",
+          "expectedRuleContains": "border-style:solid"
+        },
+        {
+          "op": "inspectContains",
+          "className": "border:1rem|solid",
+          "expectedRuleContains": "border:1rem solid"
+        },
+        {
+          "op": "inspectContains",
+          "className": "b-none",
+          "expectedRuleContains": "border-style:none"
+        },
+        {
+          "op": "inspectContains",
+          "className": "border:unset",
+          "expectedRuleContains": "border:unset"
+        },
+        {
+          "op": "inspectContains",
+          "className": "border:inherit",
+          "expectedRuleContains": "border:inherit"
+        },
+        {
+          "op": "inspectContains",
+          "className": "border:initial",
+          "expectedRuleContains": "border:initial"
+        },
+        {
+          "op": "inspectContains",
+          "className": "border:revert",
+          "expectedRuleContains": "border:revert"
+        },
+        {
+          "op": "inspectContains",
+          "className": "border:revert-layer",
+          "expectedRuleContains": "border:revert-layer"
+        },
+        {
+          "op": "inspectContains",
+          "className": "border:calc(100%-1.25rem)|solid",
+          "expectedRuleContains": "border:calc(100% - 1.25rem) solid"
+        },
+        {
+          "op": "inspectContains",
+          "className": "b:1px",
+          "expectedRuleContains": "border-width:1px"
+        },
+        {
+          "op": "inspectContains",
+          "className": "bt:1px",
+          "expectedRuleContains": "border-top-width:1px"
+        },
+        {
+          "op": "inspectContains",
+          "className": "bx:1px",
+          "expectedRuleContains": "border-inline-width:1px"
+        },
+        {
+          "op": "inspectContains",
+          "className": "by:1px",
+          "expectedRuleContains": "border-block-width:1px"
+        },
+        {
+          "op": "inspectContains",
+          "className": "b:gray-20",
+          "expectedRuleContains": "border-color:var(--color-gray-20)"
+        },
+        {
+          "op": "inspectContains",
+          "className": "bx:gray-20",
+          "expectedRuleContains": "border-inline-color:var(--color-gray-20)"
+        },
+        {
+          "op": "inspectContains",
+          "className": "by:gray-20",
+          "expectedRuleContains": "border-block-color:var(--color-gray-20)"
+        },
+        {
+          "op": "inspectContains",
+          "className": "b:1px|solid",
+          "expectedRuleContains": "border:1px solid"
+        },
+        {
+          "op": "inspectContains",
+          "className": "border:1px|solid",
+          "expectedRuleContains": "border:1px solid"
+        },
+        {
+          "op": "inspectContains",
+          "className": "bt:1px|solid",
+          "expectedRuleContains": "border-top:1px solid"
+        },
+        {
+          "op": "inspectContains",
+          "className": "border-top:1px|solid",
+          "expectedRuleContains": "border-top:1px solid"
+        },
+        {
+          "op": "inspectContains",
+          "className": "bb:1px|solid",
+          "expectedRuleContains": "border-bottom:1px solid"
+        },
+        {
+          "op": "inspectContains",
+          "className": "border-bottom:1px|solid",
+          "expectedRuleContains": "border-bottom:1px solid"
+        },
+        {
+          "op": "inspectContains",
+          "className": "bl:1px|solid",
+          "expectedRuleContains": "border-left:1px solid"
+        },
+        {
+          "op": "inspectContains",
+          "className": "border-left:1px|solid",
+          "expectedRuleContains": "border-left:1px solid"
+        },
+        {
+          "op": "inspectContains",
+          "className": "br:1px|solid",
+          "expectedRuleContains": "border-right:1px solid"
+        },
+        {
+          "op": "inspectContains",
+          "className": "border-right:1px|solid",
+          "expectedRuleContains": "border-right:1px solid"
+        }
+      ]
+    },
+    {
+      "id": "rc87-rule-8d2ee1e868c38dd6",
+      "sourceId": "rc87-8d2ee1e868c38dd6",
+      "manifest": "default",
+      "steps": [
+        {
+          "op": "inspectContains",
+          "className": "box-shadow:8px|8px|10px|#00b0de",
+          "expectedRuleContains": "box-shadow:8px 8px 10px #00b0de"
+        },
+        {
+          "op": "inspectContains",
+          "className": "box-shadow:8px|8px|10px|var(--my-shadow,#00b0de)",
+          "expectedRuleContains": "box-shadow:8px 8px 10px var(--my-shadow,#00b0de)"
+        },
+        {
+          "op": "inspectContains",
+          "className": "box-shadow:2xl",
+          "expectedRuleContains": "box-shadow:var(--shadow-2xl)"
+        }
+      ]
+    },
+    {
+      "id": "rc87-rule-fb85c91f2d14846a",
+      "sourceId": "rc87-fb85c91f2d14846a",
+      "manifest": "default",
+      "steps": [
+        {
+          "op": "inspectContains",
+          "className": "box-content",
+          "expectedRuleContains": "box-sizing:content-box"
+        }
+      ]
+    },
+    {
+      "id": "rc87-rule-afba0d33467fc574",
+      "sourceId": "rc87-afba0d33467fc574",
+      "manifest": "default",
+      "steps": [
+        {
+          "op": "inspectContains",
+          "className": "caret-color:transparent",
+          "expectedRuleContains": "caret-color:transparent"
+        }
+      ]
+    },
+    {
+      "id": "rc87-rule-4d6d766d11fd57af",
+      "sourceId": "rc87-4d6d766d11fd57af",
+      "manifest": "default",
+      "steps": [
+        {
+          "op": "inspectContains",
+          "className": "color:rgb(255,255,255)",
+          "expectedRuleContains": "color:rgb(255,255,255)"
+        },
+        {
+          "op": "inspectContains",
+          "className": "fg:#fff",
+          "expectedRuleContains": "color:#fff"
+        },
+        {
+          "op": "inspectContains",
+          "className": "fg:blue-50",
+          "expectedRuleContains": "color:var(--color-blue-50)"
+        },
+        {
+          "op": "inspectContains",
+          "className": "fg:transparent",
+          "expectedRuleContains": "color:transparent"
+        },
+        {
+          "op": "inspectContains",
+          "className": "fg:inherit",
+          "expectedRuleContains": "color:inherit"
+        },
+        {
+          "op": "inspectContains",
+          "className": "color:light-dark(#000,#fff)",
+          "expectedRuleContains": "color:light-dark(#000,#fff)"
+        }
+      ]
+    },
+    {
+      "id": "rc87-rule-743a5f3fb61f7d88",
+      "sourceId": "rc87-743a5f3fb61f7d88",
+      "manifest": "default",
+      "steps": []
+    },
+    {
+      "id": "rc87-rule-5e304b15af0d12dd",
+      "sourceId": "rc87-5e304b15af0d12dd",
+      "manifest": "default",
+      "steps": []
+    },
+    {
+      "id": "rc87-rule-22b7c994c8342eaa",
+      "sourceId": "rc87-22b7c994c8342eaa",
+      "manifest": "default",
+      "steps": [
+        {
+          "op": "inspectContains",
+          "className": "font:1rem",
+          "expectedRuleContains": "font-size:1rem"
+        },
+        {
+          "op": "inspectContains",
+          "className": "font:.5rem",
+          "expectedRuleContains": "font-size:0.5rem"
+        },
+        {
+          "op": "inspectContains",
+          "className": "font:min(.625rem,calc(1.5625rem-.625rem))",
+          "expectedRuleContains": "font-size:min(0.625rem,calc(1.5625rem - 0.625rem))"
+        }
+      ]
+    },
+    {
+      "id": "rc87-rule-3054317e5047ac84",
+      "sourceId": "rc87-3054317e5047ac84",
+      "manifest": "default",
+      "steps": [
+        {
+          "op": "inspectContains",
+          "className": "gap:4x",
+          "expectedRuleContains": "gap:1rem"
+        }
+      ]
+    },
+    {
+      "id": "rc87-rule-afbc5c93d6ab3dc2",
+      "sourceId": "rc87-afbc5c93d6ab3dc2",
+      "manifest": "default",
+      "steps": [
+        {
+          "op": "inspectContains",
+          "className": "mys:4x",
+          "expectedRuleContains": "margin-block-start:1rem"
+        },
+        {
+          "op": "inspectContains",
+          "className": "mye:4x",
+          "expectedRuleContains": "margin-block-end:1rem"
+        },
+        {
+          "op": "inspectContains",
+          "className": "margin-block:4x",
+          "expectedRuleContains": "margin-block:1rem"
+        },
+        {
+          "op": "inspectContains",
+          "className": "pys:4x",
+          "expectedRuleContains": "padding-block-start:1rem"
+        },
+        {
+          "op": "inspectContains",
+          "className": "pye:4x",
+          "expectedRuleContains": "padding-block-end:1rem"
+        },
+        {
+          "op": "inspectContains",
+          "className": "padding-block:4x",
+          "expectedRuleContains": "padding-block:1rem"
+        },
+        {
+          "op": "inspectContains",
+          "className": "ixs:4x",
+          "expectedRuleContains": "inset-inline-start:1rem"
+        },
+        {
+          "op": "inspectContains",
+          "className": "ixe:4x",
+          "expectedRuleContains": "inset-inline-end:1rem"
+        },
+        {
+          "op": "inspectContains",
+          "className": "ix:4x",
+          "expectedRuleContains": "inset-inline:1rem"
+        },
+        {
+          "op": "inspectContains",
+          "className": "iys:4x",
+          "expectedRuleContains": "inset-block-start:1rem"
+        },
+        {
+          "op": "inspectContains",
+          "className": "iye:4x",
+          "expectedRuleContains": "inset-block-end:1rem"
+        },
+        {
+          "op": "inspectContains",
+          "className": "iy:4x",
+          "expectedRuleContains": "inset-block:1rem"
+        },
+        {
+          "op": "inspectContains",
+          "className": "contain-intrinsic-inline-size:4x",
+          "expectedRuleContains": "contain-intrinsic-inline-size:1rem"
+        },
+        {
+          "op": "inspectContains",
+          "className": "contain-intrinsic-block-size:4x",
+          "expectedRuleContains": "contain-intrinsic-block-size:1rem"
+        }
+      ]
+    },
+    {
+      "id": "rc87-rule-9c9ee122cd4a3bd3",
+      "sourceId": "rc87-9c9ee122cd4a3bd3",
+      "manifest": "default",
+      "steps": [
+        {
+          "op": "inspectContains",
+          "className": "ml:4x",
+          "expectedRuleContains": "margin-left:1rem"
+        },
+        {
+          "op": "inspectContains",
+          "className": "mr:4x",
+          "expectedRuleContains": "margin-right:1rem"
+        },
+        {
+          "op": "inspectContains",
+          "className": "mt:4x",
+          "expectedRuleContains": "margin-top:1rem"
+        },
+        {
+          "op": "inspectContains",
+          "className": "mb:4x",
+          "expectedRuleContains": "margin-bottom:1rem"
+        },
+        {
+          "op": "inspectContains",
+          "className": "m:4x",
+          "expectedRuleContains": "margin:1rem"
+        },
+        {
+          "op": "inspectContains",
+          "className": "m:1px",
+          "expectedRuleContains": "margin:1px"
+        },
+        {
+          "op": "inspectContains",
+          "className": "mxs:4x",
+          "expectedRuleContains": "margin-inline-start:1rem"
+        },
+        {
+          "op": "inspectContains",
+          "className": "mxe:4x",
+          "expectedRuleContains": "margin-inline-end:1rem"
+        },
+        {
+          "op": "inspectContains",
+          "className": "mx:4x",
+          "expectedRuleContains": "margin-inline:1rem"
+        }
+      ]
+    },
+    {
+      "id": "rc87-rule-8a293bcf0d290eb7",
+      "sourceId": "rc87-8a293bcf0d290eb7",
+      "manifest": "default",
+      "steps": [
+        {
+          "op": "inspectContains",
+          "className": "outline:transparent",
+          "expectedRuleContains": "outline-color:transparent"
+        },
+        {
+          "op": "inspectContains",
+          "className": "outline:gray-20",
+          "expectedRuleContains": "outline-color:var(--color-gray-20)"
+        },
+        {
+          "op": "inspectContains",
+          "className": "outline:1px|solid",
+          "expectedRuleContains": "outline:1px solid"
+        },
+        {
+          "op": "inspectContains",
+          "className": "outline-solid",
+          "expectedRuleContains": "outline-style:solid"
+        },
+        {
+          "op": "inspectContains",
+          "className": "outline-medium",
+          "expectedRuleContains": "outline-width:medium"
+        },
+        {
+          "op": "inspectContains",
+          "className": "outline-thick",
+          "expectedRuleContains": "outline-width:thick"
+        },
+        {
+          "op": "inspectContains",
+          "className": "outline-thin",
+          "expectedRuleContains": "outline-width:thin"
+        },
+        {
+          "op": "inspectContains",
+          "className": "outline:1rem|solid",
+          "expectedRuleContains": "outline:1rem solid"
+        },
+        {
+          "op": "inspectContains",
+          "className": "outline-none",
+          "expectedRuleContains": "outline-style:none"
+        },
+        {
+          "op": "inspectContains",
+          "className": "outline-auto",
+          "expectedRuleContains": "outline-style:auto"
+        },
+        {
+          "op": "inspectContains",
+          "className": "outline:medium",
+          "expectedRuleContains": "outline:medium"
+        },
+        {
+          "op": "inspectContains",
+          "className": "outline:unset",
+          "expectedRuleContains": "outline:unset"
+        },
+        {
+          "op": "inspectContains",
+          "className": "outline:inherit",
+          "expectedRuleContains": "outline:inherit"
+        },
+        {
+          "op": "inspectContains",
+          "className": "outline:initial",
+          "expectedRuleContains": "outline:initial"
+        },
+        {
+          "op": "inspectContains",
+          "className": "outline:revert",
+          "expectedRuleContains": "outline:revert"
+        },
+        {
+          "op": "inspectContains",
+          "className": "outline:revert-layer",
+          "expectedRuleContains": "outline:revert-layer"
+        },
+        {
+          "op": "inspectContains",
+          "className": "outline:auto|1px",
+          "expectedRuleContains": "outline:auto 1px"
+        }
+      ]
+    },
+    {
+      "id": "rc87-rule-acdce9660356cb28",
+      "sourceId": "rc87-acdce9660356cb28",
+      "manifest": "default",
+      "steps": [
+        {
+          "op": "inspectContains",
+          "className": "overflow",
+          "expectedRuleContains": "overflow:visible"
+        },
+        {
+          "op": "inspectContains",
+          "className": "overflow:hidden",
+          "expectedRuleContains": "overflow:hidden"
+        },
+        {
+          "op": "inspectContains",
+          "className": "overflow:overlay",
+          "expectedRuleContains": "overflow:overlay"
+        }
+      ]
+    },
+    {
+      "id": "rc87-rule-9895f7ecdc656497",
+      "sourceId": "rc87-9895f7ecdc656497",
+      "manifest": "default",
+      "steps": [
+        {
+          "op": "inspectContains",
+          "className": "pl:4x",
+          "expectedRuleContains": "padding-left:1rem"
+        },
+        {
+          "op": "inspectContains",
+          "className": "pr:4x",
+          "expectedRuleContains": "padding-right:1rem"
+        },
+        {
+          "op": "inspectContains",
+          "className": "pt:4x",
+          "expectedRuleContains": "padding-top:1rem"
+        },
+        {
+          "op": "inspectContains",
+          "className": "pb:4x",
+          "expectedRuleContains": "padding-bottom:1rem"
+        },
+        {
+          "op": "inspectContains",
+          "className": "p:4x",
+          "expectedRuleContains": "padding:1rem"
+        },
+        {
+          "op": "inspectContains",
+          "className": "pxs:4x",
+          "expectedRuleContains": "padding-inline-start:1rem"
+        },
+        {
+          "op": "inspectContains",
+          "className": "pxe:4x",
+          "expectedRuleContains": "padding-inline-end:1rem"
+        },
+        {
+          "op": "inspectContains",
+          "className": "px:4x",
+          "expectedRuleContains": "padding-inline:1rem"
+        }
+      ]
+    },
+    {
+      "id": "rc87-rule-4a94dd75caf59534",
+      "sourceId": "rc87-4a94dd75caf59534",
+      "manifest": "default",
+      "steps": [
+        {
+          "op": "inspectContains",
+          "className": "scroll-ml:4x",
+          "expectedRuleContains": "scroll-margin-left:1rem"
+        },
+        {
+          "op": "inspectContains",
+          "className": "scroll-mr:4x",
+          "expectedRuleContains": "scroll-margin-right:1rem"
+        },
+        {
+          "op": "inspectContains",
+          "className": "scroll-mt:4x",
+          "expectedRuleContains": "scroll-margin-top:1rem"
+        },
+        {
+          "op": "inspectContains",
+          "className": "scroll-mb:4x",
+          "expectedRuleContains": "scroll-margin-bottom:1rem"
+        },
+        {
+          "op": "inspectContains",
+          "className": "scroll-m:4x",
+          "expectedRuleContains": "scroll-margin:1rem"
+        }
+      ]
+    },
+    {
+      "id": "rc87-rule-2f0ff0b730818d53",
+      "sourceId": "rc87-2f0ff0b730818d53",
+      "manifest": "default",
+      "steps": [
+        {
+          "op": "inspectContains",
+          "className": "scroll-pl:4x",
+          "expectedRuleContains": "scroll-padding-left:1rem"
+        },
+        {
+          "op": "inspectContains",
+          "className": "scroll-pr:4x",
+          "expectedRuleContains": "scroll-padding-right:1rem"
+        },
+        {
+          "op": "inspectContains",
+          "className": "scroll-pt:4x",
+          "expectedRuleContains": "scroll-padding-top:1rem"
+        },
+        {
+          "op": "inspectContains",
+          "className": "scroll-pb:4x",
+          "expectedRuleContains": "scroll-padding-bottom:1rem"
+        },
+        {
+          "op": "inspectContains",
+          "className": "scroll-p:4x",
+          "expectedRuleContains": "scroll-padding:1rem"
+        }
+      ]
+    },
+    {
+      "id": "rc87-rule-2f7b1c97993db611",
+      "sourceId": "rc87-2f7b1c97993db611",
+      "manifest": "default",
+      "steps": [
+        {
+          "op": "inspectContains",
+          "className": "snap-x",
+          "expectedRuleContains": "scroll-snap-type:x"
+        },
+        {
+          "op": "inspectContains",
+          "className": "scroll-snap-type:x",
+          "expectedRuleContains": "scroll-snap-type:x"
+        },
+        {
+          "op": "inspectContains",
+          "className": "scroll-snap-type:x|mandatory",
+          "expectedRuleContains": "scroll-snap-type:x mandatory"
+        }
+      ]
+    },
+    {
+      "id": "rc87-rule-5169d112e4169271",
+      "sourceId": "rc87-5169d112e4169271",
+      "manifest": "default",
+      "steps": [
+        {
+          "op": "inspectContains",
+          "className": "stroke:.75!",
+          "expectedRuleContains": "stroke-width:0.75!important"
+        }
+      ]
+    },
+    {
+      "id": "rc87-rule-ff4cac57b6cc0943",
+      "sourceId": "rc87-ff4cac57b6cc0943",
+      "manifest": "default",
+      "steps": [
+        {
+          "op": "inspectContains",
+          "className": "text-clip",
+          "expectedRuleContains": "text-overflow:clip"
+        },
+        {
+          "op": "inspectContains",
+          "className": "text-overflow:clip",
+          "expectedRuleContains": "text-overflow:clip"
+        },
+        {
+          "op": "inspectContains",
+          "className": "text-ellipsis",
+          "expectedRuleContains": "text-overflow:ellipsis"
+        },
+        {
+          "op": "inspectContains",
+          "className": "text-overflow:ellipsis",
+          "expectedRuleContains": "text-overflow:ellipsis"
+        }
+      ]
+    },
+    {
+      "id": "rc87-rule-bc7c658b17e46149",
+      "sourceId": "rc87-bc7c658b17e46149",
+      "manifest": "default",
+      "steps": [
+        {
+          "op": "inspectContains",
+          "className": "text-stroke-width:thin",
+          "expectedRuleContains": "-webkit-text-stroke-width:thin"
+        }
+      ]
+    },
+    {
+      "id": "rc87-rule-081769c168f88151",
+      "sourceId": "rc87-081769c168f88151",
+      "manifest": "default",
+      "steps": [
+        {
+          "op": "inspectContains",
+          "className": "text-wrap",
+          "expectedRuleContains": "text-wrap:wrap"
+        },
+        {
+          "op": "inspectContains",
+          "className": "text-nowrap",
+          "expectedRuleContains": "text-wrap:nowrap"
+        },
+        {
+          "op": "inspectContains",
+          "className": "text-balance",
+          "expectedRuleContains": "text-wrap:balance"
+        },
+        {
+          "op": "inspectContains",
+          "className": "text-pretty",
+          "expectedRuleContains": "text-wrap:pretty"
+        }
+      ]
+    },
+    {
+      "id": "rc87-rule-cb69eb9c0c7aad3d",
+      "sourceId": "rc87-cb69eb9c0c7aad3d",
+      "manifest": "default",
+      "steps": [
+        {
+          "op": "inspectContains",
+          "className": "text:1.25rem",
+          "expectedRuleContains": "font-size:1.25rem;line-height:max(1.8em - max(0rem, 1.25rem - 1rem) * 1.12, 1.25rem);letter-spacing:clamp(-.072em, calc((1.25rem - 1rem) * -.048), 0em)"
+        },
+        {
+          "op": "inspectContains",
+          "className": "text:50%",
+          "expectedRuleContains": "font-size:50%;line-height:max(1.8em - max(0rem, 50% - 1rem) * 1.12, 50%);letter-spacing:clamp(-.072em, calc((50% - 1rem) * -.048), 0em)"
+        },
+        {
+          "op": "inspectContains",
+          "className": "text:blue",
+          "expectedRuleContains": "color:var(--color-text-blue)"
+        },
+        {
+          "op": "inspectContains",
+          "className": "text-stroke:#fff",
+          "expectedRuleContains": "-webkit-text-stroke-color:#fff"
+        },
+        {
+          "op": "inspectContains",
+          "className": "text-stroke:transparent",
+          "expectedRuleContains": "-webkit-text-stroke-color:transparent"
+        }
+      ]
+    },
+    {
+      "id": "rc87-rule-9e6b271a6d859a81",
+      "sourceId": "rc87-9e6b271a6d859a81",
+      "manifest": "default",
+      "steps": [
+        {
+          "op": "inspectContains",
+          "className": "transform-content",
+          "expectedRuleContains": "transform-box:content-box"
+        }
+      ]
+    },
+    {
+      "id": "rc87-rule-067aa7686b1c6ef6",
+      "sourceId": "rc87-067aa7686b1c6ef6",
+      "manifest": "default",
+      "steps": [
+        {
+          "op": "inspectContains",
+          "className": "w:sm",
+          "expectedRuleContains": "width:var(--container-sm)"
+        },
+        {
+          "op": "inspectContains",
+          "className": "w:25%",
+          "expectedRuleContains": "width:25%"
+        },
+        {
+          "op": "inspectContains",
+          "className": "w:3xs",
+          "expectedRuleContains": "width:var(--container-3xs)"
+        },
+        {
+          "op": "inspectContains",
+          "className": "w:2xs",
+          "expectedRuleContains": "width:var(--container-2xs)"
+        },
+        {
+          "op": "inspectContains",
+          "className": "w:xs",
+          "expectedRuleContains": "width:var(--container-xs)"
+        },
+        {
+          "op": "inspectContains",
+          "className": "w:sm",
+          "expectedRuleContains": "width:var(--container-sm)"
+        },
+        {
+          "op": "inspectContains",
+          "className": "w:md",
+          "expectedRuleContains": "width:var(--container-md)"
+        },
+        {
+          "op": "inspectContains",
+          "className": "w:lg",
+          "expectedRuleContains": "width:var(--container-lg)"
+        },
+        {
+          "op": "inspectContains",
+          "className": "w:xl",
+          "expectedRuleContains": "width:var(--container-xl)"
+        },
+        {
+          "op": "inspectContains",
+          "className": "w:2xl",
+          "expectedRuleContains": "width:var(--container-2xl)"
+        },
+        {
+          "op": "inspectContains",
+          "className": "w:3xl",
+          "expectedRuleContains": "width:var(--container-3xl)"
+        },
+        {
+          "op": "inspectContains",
+          "className": "w:4xl",
+          "expectedRuleContains": "width:var(--container-4xl)"
+        },
+        {
+          "op": "inspectContains",
+          "className": "w:5xl",
+          "expectedRuleContains": "width:var(--container-5xl)"
+        },
+        {
+          "op": "inspectContains",
+          "className": "w:6xl",
+          "expectedRuleContains": "width:var(--container-6xl)"
+        },
+        {
+          "op": "inspectContains",
+          "className": "w:7xl",
+          "expectedRuleContains": "width:var(--container-7xl)"
+        }
+      ]
+    },
+    {
+      "id": "rc87-rule-81dae146767af74c",
+      "sourceId": "rc87-81dae146767af74c",
+      "manifest": "default",
+      "steps": []
     }
   ],
   "compilerCases": [
@@ -764,7 +1922,9 @@
                   "margin-top": "var(--spacing-2xl)",
                   "scroll-margin-top": "100px"
                 },
-                "conditions": ["@media (width>=52.125rem)"],
+                "conditions": [
+                  "@media (width>=52.125rem)"
+                ],
                 "selector": "& :is(h1,h2)"
               }
             ]
@@ -808,7 +1968,9 @@
                 "declarations": {
                   "display": "grid"
                 },
-                "conditions": ["@media (width>=52.125rem)"]
+                "conditions": [
+                  "@media (width>=52.125rem)"
+                ]
               }
             ]
           },
@@ -826,6 +1988,878 @@
       "source": "@settings { root-size:20; } .card { @media (width>=42rem) { @compose grid; } @media (width>=800px) { @compose flex; } }",
       "baseManifest": "default",
       "expectedGeneratedCss": "@media (width>=800px){.card{display:flex}}@media (width>=42rem){.card{display:grid}}"
+    },
+    {
+      "id": "rc87-compiler-variables-modes-dependencies",
+      "sourceId": "rc87-5ae87bddfc5f375d",
+      "source": "@settings { mode-trigger: class; modes: light dark; } @theme static { --spacing-card: 12; --color-blue-50: #369; --color-brand: var(--color-blue-50); } @theme dark static { --color-brand: #123; }",
+      "baseManifest": {
+        "version": 1
+      },
+      "expectedManifest": {
+        "version": 1,
+        "settings": {
+          "modeTrigger": "class",
+          "modes": [
+            "light",
+            "dark"
+          ]
+        },
+        "variables": {
+          "spacing": [
+            {
+              "name": "spacing-card",
+              "key": "card",
+              "type": "number",
+              "value": 12,
+              "numeric": {
+                "value": 12
+              },
+              "static": true
+            }
+          ],
+          "color": [
+            {
+              "name": "color-blue-50",
+              "key": "blue-50",
+              "type": "string",
+              "value": "#369",
+              "static": true
+            },
+            {
+              "name": "color-brand",
+              "key": "brand",
+              "type": "string",
+              "value": "var(--color-blue-50)",
+              "dependencies": [
+                "color-blue-50"
+              ],
+              "static": true,
+              "modes": {
+                "dark": {
+                  "type": "string",
+                  "value": "#123"
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "rc87-compiler-reject-token-alias",
+      "sourceId": "rc87-1ef0184cc6a4bd8e",
+      "source": "@theme { --color-brand: $color-blue-50; }",
+      "baseManifest": {
+        "version": 1
+      },
+      "expectedError": "Stylesheet values use native CSS variable references. Replace \"$color-blue-50\" with \"var(--color-blue-50)\"."
+    },
+    {
+      "id": "rc87-compiler-explicit-negative-variable",
+      "sourceId": "rc87-58a8b9e387f59ddb",
+      "source": "@theme static { --spacing--card: -12; }",
+      "baseManifest": {
+        "version": 1
+      },
+      "expectedManifest": {
+        "version": 1,
+        "variables": {
+          "spacing": [
+            {
+              "name": "spacing--card",
+              "key": "-card",
+              "type": "number",
+              "value": -12,
+              "numeric": {
+                "value": -12
+              },
+              "static": true
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "rc87-compiler-static-animation",
+      "sourceId": "rc87-7d6ba9d28d83415c",
+      "source": "@theme static { @keyframes fade { to { opacity: 1; } } }",
+      "baseManifest": {
+        "version": 1
+      },
+      "expectedManifest": {
+        "version": 1,
+        "animations": {
+          "fade": {
+            "to": {
+              "opacity": "1"
+            }
+          }
+        },
+        "animationOptions": {
+          "fade": {
+            "static": true
+          }
+        }
+      }
+    },
+    {
+      "id": "rc87-compiler-omits-registry-input",
+      "sourceId": "rc87-da6ec108d6e14a3a",
+      "source": "",
+      "baseManifest": {
+        "version": 1,
+        "keyAliases": {
+          "w": "inline-size"
+        },
+        "nativeValueNamespaces": [
+          {
+            "properties": [
+              "width"
+            ],
+            "variableAliasRefs": [
+              "~spacing"
+            ]
+          }
+        ]
+      },
+      "expectedManifest": {
+        "version": 1
+      }
+    },
+    {
+      "id": "rc87-compiler-breakpoint-container-conditions",
+      "sourceId": "rc87-e793d99a43aa91ea",
+      "source": "@theme { --breakpoint-card: 777px; --container-panel: 333px; }",
+      "baseManifest": {
+        "version": 1
+      },
+      "expectedManifest": {
+        "version": 1,
+        "variables": {
+          "breakpoint": [
+            {
+              "name": "breakpoint-card",
+              "key": "card",
+              "type": "number",
+              "value": "777px",
+              "numeric": {
+                "value": 777,
+                "unit": "px"
+              }
+            }
+          ],
+          "container": [
+            {
+              "name": "container-panel",
+              "key": "panel",
+              "type": "number",
+              "value": "333px",
+              "numeric": {
+                "value": 333,
+                "unit": "px"
+              }
+            }
+          ]
+        },
+        "conditions": {
+          "card": {
+            "id": "media",
+            "nodes": [
+              {
+                "type": "number",
+                "value": 48.5625,
+                "unit": "rem"
+              }
+            ]
+          }
+        },
+        "breakpointConditions": {
+          "card": {
+            "id": "media",
+            "nodes": [
+              {
+                "type": "number",
+                "value": 48.5625,
+                "unit": "rem"
+              }
+            ]
+          }
+        },
+        "containerConditions": {
+          "panel": {
+            "id": "container",
+            "nodes": [
+              {
+                "type": "number",
+                "value": 20.8125,
+                "unit": "rem"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "rc87-compiler-unitful-numeric-tokens",
+      "sourceId": "rc87-bce3dcbace35c62f",
+      "source": "@theme { --spacing-card: 1.5rem; --radius-card: 8px; --breakpoint-card: 48rem; --container-panel: 512px; --shadow-card: 1rem; }",
+      "baseManifest": {
+        "version": 1
+      },
+      "expectedManifest": {
+        "version": 1,
+        "variables": {
+          "spacing": [
+            {
+              "name": "spacing-card",
+              "key": "card",
+              "type": "number",
+              "value": "1.5rem",
+              "numeric": {
+                "value": 1.5,
+                "unit": "rem"
+              }
+            }
+          ],
+          "radius": [
+            {
+              "name": "radius-card",
+              "key": "card",
+              "type": "number",
+              "value": "8px",
+              "numeric": {
+                "value": 8,
+                "unit": "px"
+              }
+            }
+          ],
+          "breakpoint": [
+            {
+              "name": "breakpoint-card",
+              "key": "card",
+              "type": "number",
+              "value": "48rem",
+              "numeric": {
+                "value": 48,
+                "unit": "rem"
+              }
+            }
+          ],
+          "container": [
+            {
+              "name": "container-panel",
+              "key": "panel",
+              "type": "number",
+              "value": "512px",
+              "numeric": {
+                "value": 512,
+                "unit": "px"
+              }
+            }
+          ],
+          "shadow": [
+            {
+              "name": "shadow-card",
+              "key": "card",
+              "type": "string",
+              "value": "1rem"
+            }
+          ]
+        },
+        "conditions": {
+          "card": {
+            "id": "media",
+            "nodes": [
+              {
+                "type": "number",
+                "value": 48,
+                "unit": "rem"
+              }
+            ]
+          }
+        },
+        "breakpointConditions": {
+          "card": {
+            "id": "media",
+            "nodes": [
+              {
+                "type": "number",
+                "value": 48,
+                "unit": "rem"
+              }
+            ]
+          }
+        },
+        "containerConditions": {
+          "panel": {
+            "id": "container",
+            "nodes": [
+              {
+                "type": "number",
+                "value": 32,
+                "unit": "rem"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "rc87-compiler-variant-branches",
+      "sourceId": "rc87-2763794c2aab6ae8",
+      "source": "@custom-variant motion-safe { @media (prefers-reduced-motion:no-preference) { @slot; } } @components { hocus { &:is(:hover,:focus) { display: block; } @variant motion-safe { display: grid; } } }",
+      "baseManifest": {
+        "version": 1
+      },
+      "expectedManifest": {
+        "version": 1,
+        "variants": [
+          {
+            "token": "@motion-safe",
+            "branches": [
+              {
+                "conditions": [
+                  "@media (prefers-reduced-motion:no-preference)"
+                ],
+                "conditionNodes": [
+                  {
+                    "id": "media",
+                    "nodes": [
+                      {
+                        "type": "string",
+                        "name": "prefers-reduced-motion",
+                        "value": "no-preference"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "conditions": {
+          "motion-safe": {
+            "id": "media",
+            "nodes": [
+              {
+                "type": "string",
+                "name": "prefers-reduced-motion",
+                "value": "no-preference"
+              }
+            ]
+          }
+        },
+        "utilities": [
+          {
+            "id": ".hocus",
+            "name": "hocus",
+            "type": -2,
+            "order": 0,
+            "layer": "components",
+            "emit": {
+              "type": "static",
+              "rules": [
+                {
+                  "declarations": {
+                    "display": "block"
+                  },
+                  "selector": "&:is(:hover,:focus)"
+                },
+                {
+                  "declarations": {
+                    "display": "grid"
+                  },
+                  "conditions": [
+                    "@media (prefers-reduced-motion:no-preference)"
+                  ]
+                }
+              ]
+            },
+            "matchers": [
+              {
+                "type": "static",
+                "name": "hocus"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "rc87-compiler-semantic-utility",
+      "sourceId": "rc87-e9991ac8889c54d6",
+      "source": "@components { card { display: grid; color: var(--color-primary); } }",
+      "baseManifest": {
+        "version": 1
+      },
+      "expectedManifest": {
+        "version": 1,
+        "utilities": [
+          {
+            "id": ".card",
+            "name": "card",
+            "type": -2,
+            "order": 0,
+            "layer": "components",
+            "emit": {
+              "type": "static",
+              "rules": [
+                {
+                  "declarations": {
+                    "display": "grid",
+                    "color": "var(--color-primary)"
+                  }
+                }
+              ]
+            },
+            "matchers": [
+              {
+                "type": "static",
+                "name": "card"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "rc87-compiler-browser-manifest",
+      "sourceId": "rc87-229f90c18e0fc001",
+      "source": "@components { btn { display: flex; color: red; } }",
+      "baseManifest": {
+        "version": 1
+      },
+      "expectedManifest": {
+        "version": 1,
+        "utilities": [
+          {
+            "id": ".btn",
+            "name": "btn",
+            "type": -2,
+            "order": 0,
+            "layer": "components",
+            "emit": {
+              "type": "static",
+              "rules": [
+                {
+                  "declarations": {
+                    "display": "flex",
+                    "color": "red"
+                  }
+                }
+              ]
+            },
+            "matchers": [
+              {
+                "type": "static",
+                "name": "btn"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "parserCases": [
+    {
+      "id": "rc87-condition-885ce94a18bfa418",
+      "sourceId": "rc87-885ce94a18bfa418",
+      "kind": "condition",
+      "input": "print",
+      "expectedCanonical": "@media print"
+    },
+    {
+      "id": "rc87-condition-cc61ba98b35b45c8",
+      "sourceId": "rc87-cc61ba98b35b45c8",
+      "kind": "condition",
+      "input": "base",
+      "expectedCanonical": "@layer base"
+    },
+    {
+      "id": "rc87-condition-1734f5d7bb822911",
+      "sourceId": "rc87-1734f5d7bb822911",
+      "kind": "condition",
+      "input": "default",
+      "expectedCanonical": "@layer defaults"
+    },
+    {
+      "id": "rc87-condition-28504c7efc2294a1",
+      "sourceId": "rc87-28504c7efc2294a1",
+      "kind": "condition",
+      "input": "!print",
+      "expectedCanonical": "@media not print"
+    },
+    {
+      "id": "rc87-condition-c9332509fb0a43c3",
+      "sourceId": "rc87-c9332509fb0a43c3",
+      "kind": "condition",
+      "input": "start",
+      "expectedCanonical": "@starting-style"
+    },
+    {
+      "id": "rc87-condition-8def2a63c36141bf",
+      "sourceId": "rc87-8def2a63c36141bf",
+      "kind": "condition",
+      "input": "and()",
+      "expectedCanonical": "@media and"
+    },
+    {
+      "id": "rc87-condition-09cc8b7b4334f1dc",
+      "sourceId": "rc87-09cc8b7b4334f1dc",
+      "kind": "condition",
+      "input": "or",
+      "expectedCanonical": "@media or"
+    },
+    {
+      "id": "rc87-condition-76514e9a4f1efaf8",
+      "sourceId": "rc87-76514e9a4f1efaf8",
+      "kind": "condition",
+      "input": "not",
+      "expectedCanonical": "@media not"
+    },
+    {
+      "id": "rc87-condition-d0cbb50965f0cc3d",
+      "sourceId": "rc87-d0cbb50965f0cc3d",
+      "kind": "condition",
+      "input": ",",
+      "expectedCanonical": "@media or"
+    },
+    {
+      "id": "rc87-condition-76bbc72ab3707d91",
+      "sourceId": "rc87-76bbc72ab3707d91",
+      "kind": "condition",
+      "input": "!",
+      "expectedCanonical": "@media not"
+    },
+    {
+      "id": "rc87-condition-2df2f09622f07b54",
+      "sourceId": "rc87-2df2f09622f07b54",
+      "kind": "condition",
+      "input": "&",
+      "expectedCanonical": "@media and"
+    },
+    {
+      "id": "rc87-condition-20df4f7a223926ef",
+      "sourceId": "rc87-20df4f7a223926ef",
+      "kind": "condition",
+      "input": ">=sm",
+      "expectedCanonical": "@media (width>=52.125rem)"
+    },
+    {
+      "id": "rc87-condition-993d9a7e0530a526",
+      "sourceId": "rc87-993d9a7e0530a526",
+      "kind": "condition",
+      "input": "<=sm",
+      "expectedCanonical": "@media (width<=52.125rem)"
+    },
+    {
+      "id": "rc87-condition-ebba0d9a797a9ff3",
+      "sourceId": "rc87-ebba0d9a797a9ff3",
+      "kind": "condition",
+      "input": ">sm",
+      "expectedCanonical": "@media (width>52.125rem)"
+    },
+    {
+      "id": "rc87-condition-4803e1bddcdd0be1",
+      "sourceId": "rc87-4803e1bddcdd0be1",
+      "kind": "condition",
+      "input": "<sm",
+      "expectedCanonical": "@media (width<52.125rem)"
+    },
+    {
+      "id": "rc87-condition-d92b086d04d17b4e",
+      "sourceId": "rc87-d92b086d04d17b4e",
+      "kind": "condition",
+      "input": "=sm",
+      "expectedCanonical": "@media (width=52.125rem)"
+    },
+    {
+      "id": "rc87-condition-dc9516907f133ebe",
+      "sourceId": "rc87-dc9516907f133ebe",
+      "kind": "condition",
+      "input": "height>=sm",
+      "expectedCanonical": "@media (height>=52.125rem)"
+    },
+    {
+      "id": "rc87-condition-6ad929666b6b9cca",
+      "sourceId": "rc87-6ad929666b6b9cca",
+      "kind": "condition",
+      "input": "w>=sm",
+      "expectedCanonical": "@media (width>=52.125rem)"
+    },
+    {
+      "id": "rc87-condition-18fefe8d6af39855",
+      "sourceId": "rc87-18fefe8d6af39855",
+      "kind": "condition",
+      "input": "h>=sm",
+      "expectedCanonical": "@media (height>=52.125rem)"
+    },
+    {
+      "id": "rc87-condition-ac827a631d0bfdea",
+      "sourceId": "rc87-ac827a631d0bfdea",
+      "kind": "condition",
+      "input": "container(h>160)",
+      "expectedCanonical": "@container (height>10rem)"
+    },
+    {
+      "id": "rc87-condition-2a8c45db27ac6165",
+      "sourceId": "rc87-2a8c45db27ac6165",
+      "kind": "condition",
+      "input": "sidebar(sm)",
+      "expectedCanonical": "@container sidebar (width>=24rem)"
+    },
+    {
+      "id": "rc87-condition-c38ee72bdf82e32f",
+      "sourceId": "rc87-c38ee72bdf82e32f",
+      "kind": "condition",
+      "input": "screen&print",
+      "expectedCanonical": "@media screen and print"
+    },
+    {
+      "id": "rc87-condition-8bf1d207e6ee449d",
+      "sourceId": "rc87-8bf1d207e6ee449d",
+      "kind": "condition",
+      "input": "screen,print",
+      "expectedCanonical": "@media screen or print"
+    },
+    {
+      "id": "rc87-condition-72d0a2a759b0467c",
+      "sourceId": "rc87-72d0a2a759b0467c",
+      "kind": "condition",
+      "input": "!screen",
+      "expectedCanonical": "@media not screen"
+    },
+    {
+      "id": "rc87-condition-197914ffe79e30b8",
+      "sourceId": "rc87-197914ffe79e30b8",
+      "kind": "condition",
+      "input": "sm&<=lg",
+      "expectedCanonical": "@media (width>=52.125rem) and (width<=80rem)"
+    },
+    {
+      "id": "rc87-condition-7ce311ee0f038ad0",
+      "sourceId": "rc87-7ce311ee0f038ad0",
+      "kind": "condition",
+      "input": "@media",
+      "expectedCanonical": "@media"
+    },
+    {
+      "id": "rc87-selector-7672156d45b19824",
+      "sourceId": "rc87-7672156d45b19824",
+      "kind": "selector",
+      "input": ".class",
+      "expectedCanonical": "&.class"
+    },
+    {
+      "id": "rc87-selector-b60dd80a8d04ba94",
+      "sourceId": "rc87-b60dd80a8d04ba94",
+      "kind": "selector",
+      "input": ":hover",
+      "expectedCanonical": "&:hover"
+    },
+    {
+      "id": "rc87-selector-56c9ec5b998ed407",
+      "sourceId": "rc87-56c9ec5b998ed407",
+      "kind": "selector",
+      "input": ":first",
+      "expectedCanonical": "&:first-child"
+    },
+    {
+      "id": "rc87-selector-359d5de5eb9aface",
+      "sourceId": "rc87-359d5de5eb9aface",
+      "kind": "selector",
+      "input": ":last",
+      "expectedCanonical": "&:last-child"
+    },
+    {
+      "id": "rc87-selector-e8b333d9e0703577",
+      "sourceId": "rc87-e8b333d9e0703577",
+      "kind": "selector",
+      "input": ":even",
+      "expectedCanonical": "&:nth-child(2n)"
+    },
+    {
+      "id": "rc87-selector-be833c156b48227f",
+      "sourceId": "rc87-be833c156b48227f",
+      "kind": "selector",
+      "input": ":odd",
+      "expectedCanonical": "&:nth-child(odd)"
+    },
+    {
+      "id": "rc87-selector-522d69740a4af27e",
+      "sourceId": "rc87-522d69740a4af27e",
+      "kind": "selector",
+      "input": ":nth-child(2)",
+      "expectedCanonical": "&:nth-child(2)"
+    },
+    {
+      "id": "rc87-selector-f10371238c9efe81",
+      "sourceId": "rc87-f10371238c9efe81",
+      "kind": "selector",
+      "input": ":nth(2)",
+      "expectedCanonical": "&:nth(2)"
+    },
+    {
+      "id": "rc87-selector-c38bc18f349f1945",
+      "sourceId": "rc87-c38bc18f349f1945",
+      "kind": "selector",
+      "input": ":nth-last(2)",
+      "expectedCanonical": "&:nth-last(2)"
+    },
+    {
+      "id": "rc87-selector-49b911c28bcb9bd8",
+      "sourceId": "rc87-49b911c28bcb9bd8",
+      "kind": "selector",
+      "input": "::scrollbar-thumb",
+      "expectedCanonical": "&::-webkit-scrollbar-thumb"
+    },
+    {
+      "id": "rc87-selector-00adc47b4fde6037",
+      "sourceId": "rc87-00adc47b4fde6037",
+      "kind": "selector",
+      "input": "::scrollbar-corner",
+      "expectedCanonical": "&::scrollbar-corner"
+    },
+    {
+      "id": "rc87-selector-139cfa16f8dd5610",
+      "sourceId": "rc87-139cfa16f8dd5610",
+      "kind": "selector",
+      "input": "::view-transition-new(root)",
+      "expectedCanonical": "&::view-transition-new(root)"
+    },
+    {
+      "id": "rc87-selector-1b996087ea8109f5",
+      "sourceId": "rc87-1b996087ea8109f5",
+      "kind": "selector",
+      "input": "::vt-new(root)",
+      "expectedCanonical": "&::vt-new(root)"
+    },
+    {
+      "id": "rc87-selector-bd5d33a12de469be",
+      "sourceId": "rc87-bd5d33a12de469be",
+      "kind": "selector",
+      "input": "[open]",
+      "expectedCanonical": "&[open]"
+    },
+    {
+      "id": "rc87-selector-ec79a41cf8a0524c",
+      "sourceId": "rc87-ec79a41cf8a0524c",
+      "kind": "selector",
+      "input": ":has(.active)",
+      "expectedCanonical": "&:has(.active)"
+    },
+    {
+      "id": "rc87-selector-15b32890c36a85e9",
+      "sourceId": "rc87-15b32890c36a85e9",
+      "kind": "selector",
+      "input": ":of(.active)",
+      "expectedCanonical": ".active &"
+    },
+    {
+      "id": "rc87-selector-32a046dabc542c75",
+      "sourceId": "rc87-32a046dabc542c75",
+      "kind": "selector",
+      "input": ":of(#active)",
+      "expectedCanonical": "#active &"
+    },
+    {
+      "id": "rc87-selector-162ff02b6632f8d4",
+      "sourceId": "rc87-162ff02b6632f8d4",
+      "kind": "selector",
+      "input": ":of(active)",
+      "expectedCanonical": "active &"
+    },
+    {
+      "id": "rc87-selector-607cf543e3bdec74",
+      "sourceId": "rc87-607cf543e3bdec74",
+      "kind": "selector",
+      "input": ":of(.active_)",
+      "expectedCanonical": ".active &"
+    },
+    {
+      "id": "rc87-selector-2da2114031098406",
+      "sourceId": "rc87-2da2114031098406",
+      "kind": "selector",
+      "input": ":of(.active>)",
+      "expectedCanonical": ".active>&"
+    },
+    {
+      "id": "rc87-selector-a7caf8516afa1558",
+      "sourceId": "rc87-a7caf8516afa1558",
+      "kind": "selector",
+      "input": ":first:focus:disabled",
+      "expectedCanonical": "&:first-child:focus:disabled"
+    },
+    {
+      "id": "rc87-selector-de38516129dd991d",
+      "sourceId": "rc87-de38516129dd991d",
+      "kind": "selector",
+      "input": ":not(:last)",
+      "expectedCanonical": "&:not(:last-child)"
+    },
+    {
+      "id": "rc87-selector-50e5b69d383fa53c",
+      "sourceId": "rc87-50e5b69d383fa53c",
+      "kind": "selector",
+      "input": ":has(:first)",
+      "expectedCanonical": "&:has(:first-child)"
+    },
+    {
+      "id": "rc87-selector-4b5ab83b1729ab93",
+      "sourceId": "rc87-4b5ab83b1729ab93",
+      "kind": "selector",
+      "input": ":before",
+      "expectedCanonical": "&::before"
+    },
+    {
+      "id": "rc87-selector-dbf9b9b2b8a7031b",
+      "sourceId": "rc87-dbf9b9b2b8a7031b",
+      "kind": "selector",
+      "input": "::first-letter",
+      "expectedCanonical": "&::first-letter"
+    },
+    {
+      "id": "rc87-selector-e28dbc847daa1817",
+      "sourceId": "rc87-e28dbc847daa1817",
+      "kind": "selector",
+      "input": ">.title",
+      "expectedCanonical": "&>.title"
+    },
+    {
+      "id": "rc87-selector-8cb307639b25de69",
+      "sourceId": "rc87-8cb307639b25de69",
+      "kind": "selector",
+      "input": "*",
+      "expectedCanonical": "&*"
+    },
+    {
+      "id": "rc87-selector-57a76e2ef2de6ae4",
+      "sourceId": "rc87-57a76e2ef2de6ae4",
+      "kind": "selector",
+      "input": "_hr+*",
+      "expectedCanonical": "& hr+*"
+    },
+    {
+      "id": "rc87-selector-ab231dfc9b4427f6",
+      "sourceId": "rc87-ab231dfc9b4427f6",
+      "kind": "selector",
+      "input": ":hover+div:has(:active)",
+      "expectedCanonical": "&:hover+div:has(:active)"
+    },
+    {
+      "id": "rc87-selector-37cd5d624475d02e",
+      "sourceId": "rc87-37cd5d624475d02e",
+      "kind": "selector",
+      "input": ">li::before,>li::after",
+      "expectedCanonical": "&>li::before,&>li::after"
+    },
+    {
+      "id": "rc87-selector-a9439c2e913bf21b",
+      "sourceId": "rc87-a9439c2e913bf21b",
+      "kind": "selector",
+      "input": "_.feature__tab-title",
+      "expectedCanonical": "& .feature__tab-title"
     }
   ]
 }

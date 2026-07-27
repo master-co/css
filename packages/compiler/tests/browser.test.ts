@@ -36,3 +36,11 @@ test.concurrent('universal compileManifest rejects @reference directives', async
     'Universal manifest compilation cannot resolve @reference directives'
   )
 })
+
+test.concurrent('browser compileCSSManifest rejects @reference directives', async () => {
+  await expect(compileManifest('@reference "./tokens.css";', {
+    baseManifest: defaultManifest
+  })).rejects.toThrow(
+    'Universal manifest compilation cannot resolve @reference directives'
+  )
+})

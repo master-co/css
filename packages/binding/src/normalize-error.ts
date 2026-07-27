@@ -18,8 +18,11 @@ interface BindingDiagnosticPayload {
 }
 
 function parseBindingDiagnostic(cause: unknown): BindingDiagnosticPayload | undefined {
-  if (!cause || typeof cause !== 'object') return
-  const message = 'message' in cause ? cause.message : undefined
+  const message = typeof cause === 'string'
+    ? cause
+    : cause && typeof cause === 'object' && 'message' in cause
+      ? cause.message
+      : undefined
   if (typeof message !== 'string') return
   const start = message.indexOf('{')
   if (start === -1) return

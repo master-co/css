@@ -23,7 +23,7 @@ interface GeneratedEngineSession {
 
 interface GeneratedRenderSession {
   nativeDeclarationCandidates(classNames: string[]): unknown
-  ensureClasses(classNames: string[], supported?: Uint8Array): void
+  ensureClasses(classNames: string[], supported?: readonly boolean[]): void
   ensureStylesheetResources(nativeCSS: string): void
   emittedGlobals(): unknown
   snapshot(): unknown
@@ -138,8 +138,9 @@ export async function loadWasmEngine(
 
 function nativeSupport(candidates: readonly MasterCSSWasmNativeDeclarationCandidate[]) {
   return Uint8Array.from(candidates, ({ property, value }) => {
+    if (typeof globalThis.CSS?.supports !== 'function') return 1
     try {
-      return globalThis.CSS?.supports(property, value) === true ? 1 : 0
+      return globalThis.CSS.supports(property, value) === true ? 1 : 0
     } catch {
       return 0
     }
@@ -232,9 +233,9 @@ export async function createWasmRenderSession(
       const classes = [...classNames]
       const candidates = session.nativeDeclarationCandidates(classes) as MasterCSSWasmNativeDeclarationCandidate[]
       const resolvedSupport = supported
-        ? Uint8Array.from(supported, (value) => value ? 1 : 0)
+        ? [...supported]
         : candidates.length
-          ? nativeSupport(candidates)
+          ? Array.from(nativeSupport(candidates), Boolean)
           : undefined
       session.ensureClasses(classes, resolvedSupport)
     },

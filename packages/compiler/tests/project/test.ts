@@ -130,7 +130,67 @@ test('compiles explicit CSS project entries', async () => {
   }
 })
 
+test('loads CSS manifest resources', async () => {
+  const cwd = createFixture()
+  try {
+    const { entry, tokens } = writeCSSFixture(cwd)
+
+    const result = await compileProjectManifest({
+      root: cwd,
+      entries: [entry],
+      baseManifest: defaultManifest
+    })
+    expect(result).toMatchObject({
+      dependencies: [
+        entry,
+        tokens
+      ]
+    })
+    expect(result.manifest.version).toBe(1)
+    expect(flattenMasterCSSManifestVariables(result.manifest.variables)).toContainEqual(expect.objectContaining({
+      name: 'color-primary',
+      namespace: 'color',
+      key: 'primary',
+      value: '#123'
+    }))
+    expect(result.manifest.utilities).toContainEqual(expect.objectContaining({
+      name: 'btn',
+      layer: 'components',
+    }))
+  } finally {
+    rmSync(cwd, { recursive: true, force: true })
+  }
+})
+
 test('compiles explicit CSS project entries synchronously', () => {
+  const cwd = createFixture()
+  try {
+    const { entry, tokens } = writeCSSFixture(cwd)
+
+    const result = compileProjectManifestSync({
+      root: cwd,
+      entries: [entry],
+      baseManifest: defaultManifest
+    })
+    expect(result).toMatchObject({
+      dependencies: [
+        entry,
+        tokens
+      ]
+    })
+    expect(result.manifest.version).toBe(1)
+    expect(flattenMasterCSSManifestVariables(result.manifest.variables)).toContainEqual(expect.objectContaining({
+      name: 'color-primary',
+      namespace: 'color',
+      key: 'primary',
+      value: '#123'
+    }))
+  } finally {
+    rmSync(cwd, { recursive: true, force: true })
+  }
+})
+
+test('loads CSS manifest resources synchronously', () => {
   const cwd = createFixture()
   try {
     const { entry, tokens } = writeCSSFixture(cwd)
@@ -362,6 +422,33 @@ test('reports a missing workspace preset without throwing', () => {
   }
 })
 
+test('reports missing workspace runtime packages without throwing', () => {
+  const cwd = createFixture()
+  try {
+    writeJSON(join(cwd, 'package.json'), {
+      dependencies: {
+        '@master/css': '^1.2.3'
+      }
+    })
+    const cssDir = writeNodePackage(cwd, '@master/css', {})
+    writeNodePackage(cssDir, '@master/css-preset', {
+      exports: {
+        './default-manifest.json': './missing.json'
+      }
+    }, {})
+
+    const resolution = resolveMasterCSSWorkspacePackages(cwd)
+
+    expect(realpathSync(resolution.css?.directory || '')).toBe(realpathSync(cssDir))
+    expect(resolution.presetManifest).toBeUndefined()
+    expect(resolution.errors.map(({ name }) => name)).toEqual([
+      '@master/css-preset/default-manifest.json'
+    ])
+  } finally {
+    rmSync(cwd, { recursive: true, force: true })
+  }
+})
+
 test('reports invalid package exports as resolution errors', () => {
   const cwd = createFixture()
   try {
@@ -395,6 +482,31 @@ test('checks compatible package majors when versions are known', () => {
 })
 
 test('serializes project manifests through the schema codec', async () => {
+  const cwd = createFixture()
+  try {
+    const { entry } = writeCSSFixture(cwd)
+    const result = await compileProjectManifest({
+      root: cwd,
+      entries: [entry],
+      baseManifest: defaultManifest
+    })
+    const syncResult = compileProjectManifestSync({
+      root: cwd,
+      entries: [entry],
+      baseManifest: defaultManifest
+    })
+    const json = serializeMasterCSSManifest(result.manifest)
+    const syncJSON = serializeMasterCSSManifest(syncResult.manifest)
+
+    expect(json).toContain('"version":1')
+    expect(JSON.parse(json).version).toBe(1)
+    expect(syncJSON).toBe(json)
+  } finally {
+    rmSync(cwd, { recursive: true, force: true })
+  }
+})
+
+test('turns CSS manifest results into JSON sources', async () => {
   const cwd = createFixture()
   try {
     const { entry } = writeCSSFixture(cwd)

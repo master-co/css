@@ -1,11 +1,59 @@
 import { beforeAll, describe, expect, it } from 'vitest'
+import { readFileSync } from 'node:fs'
+import { createRenderBindingSession } from '@master/css-binding/engine'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
+import type { MasterCSSEmittedGlobals } from '@master/css-schema/emitted-globals'
 import { MasterCSSError } from '@master/css-schema'
 import defaultManifest from '@master/css-preset/default-manifest.json'
 import createEngine from '../../src/engine/create-engine'
 import { createEngineSync } from '../../src/node'
 
 const typedDefaultManifest = defaultManifest as unknown as MasterCSSManifest
+type EngineParityStep =
+  | {
+    op: 'ensure'
+    classes: string[]
+    expectedCss: string
+    expectedResourceOrder?: string[]
+  }
+  | {
+    op: 'delete'
+    classes: string[]
+    expectedCss: string
+  }
+  | {
+    op: 'inspect'
+    className: string
+    expectedValid: boolean
+    expectedRuleTexts?: string[]
+    expectedSelectorTexts?: (string | null)[]
+    expectedLayers?: string[]
+    expectedPriorities?: unknown[]
+    expectedVariableNames?: string[][]
+    expectedAnimationNames?: string[][]
+  }
+  | {
+    op: 'inspectContains'
+    className: string
+    expectedRuleContains: string
+  }
+
+interface EngineParityCase {
+  id: string
+  manifest: 'default' | MasterCSSManifest
+  emittedGlobals?: MasterCSSEmittedGlobals
+  steps: EngineParityStep[]
+}
+
+interface SemanticParityCorpus {
+  version: 2
+  engineCases: EngineParityCase[]
+}
+
+const semanticParityCorpus = JSON.parse(readFileSync(
+  new URL('../../../../parity/rust-semantic-corpus.json', import.meta.url),
+  'utf8'
+)) as SemanticParityCorpus
 const selectorVariantClassName = '{flex;rel}_:is(h4,.app-nav)@default'
 const selectorVariantSelector = '.\\{flex\\;rel\\}_\\:is\\(h4\\,\\.app-nav\\)\\@default :is(h4,.app-nav)'
 const selectorVariantRuleText = `${selectorVariantSelector}{display:flex;position:relative}`
@@ -91,6 +139,137 @@ beforeAll(() => {
 })
 
 describe('Rust engine session', () => {
+  it('executes the semantic engine corpus through native and Wasm sessions', async () => {
+    expect(semanticParityCorpus.version).toBe(2)
+    const originalCSS = Object.getOwnPropertyDescriptor(globalThis, 'CSS')
+    Object.defineProperty(globalThis, 'CSS', {
+      configurable: true,
+      value: { supports: () => true }
+    })
+
+    try {
+      for (const parityCase of semanticParityCorpus.engineCases) {
+        const caseManifest = parityCase.manifest === 'default'
+          ? typedDefaultManifest
+          : parityCase.manifest
+        const native = createEngineSync({
+          manifest: caseManifest,
+          emittedGlobals: parityCase.emittedGlobals
+        })
+        const wasm = await createEngine({
+          manifest: caseManifest,
+          emittedGlobals: parityCase.emittedGlobals,
+          binding: 'wasm'
+        })
+        const nativeRender = await createRenderBindingSession({
+          manifest: caseManifest,
+          emittedGlobals: parityCase.emittedGlobals
+        }, { binding: 'native' })
+        const wasmRender = await createRenderBindingSession({
+          manifest: caseManifest,
+          emittedGlobals: parityCase.emittedGlobals
+        }, { binding: 'wasm' })
+
+        let operation = 'create sessions'
+        try {
+          for (const step of parityCase.steps) {
+            if (step.op === 'inspectContains') {
+              operation = `native candidates for ${step.className}`
+              const nativeCandidates = nativeRender.nativeDeclarationCandidates([step.className])
+              operation = `Wasm candidates for ${step.className}`
+              const wasmCandidates = wasmRender.nativeDeclarationCandidates([step.className])
+              expect(wasmCandidates, `${parityCase.id}: native candidates`).toEqual(nativeCandidates)
+              operation = `native ensure for ${step.className}`
+              nativeRender.ensureClassRules([step.className], nativeCandidates.map(() => true))
+              operation = `Wasm ensure for ${step.className}`
+              wasmRender.ensureClassRules([step.className], wasmCandidates.map(() => true))
+              operation = `native snapshot for ${step.className}`
+              const nativeSnapshot = nativeRender.snapshot()
+              operation = `Wasm snapshot for ${step.className}`
+              const wasmSnapshot = wasmRender.snapshot()
+              expect(wasmSnapshot, `${parityCase.id}: render snapshot`).toEqual(nativeSnapshot)
+              expect(
+                nativeSnapshot.snapshot.rules.some((rule) =>
+                  rule.className === step.className
+                  && rule.text.includes(step.expectedRuleContains)
+                ),
+                `${parityCase.id}: ${step.className} contains ${step.expectedRuleContains}`
+              ).toBe(true)
+              continue
+            }
+
+            if (step.op === 'ensure') {
+              const nativeTransition = native.ensureClassRules(step.classes)
+              const wasmTransition = wasm.ensureClassRules(step.classes)
+              expect(wasmTransition, `${parityCase.id}: ensure transition`).toEqual(nativeTransition)
+              const nativeSnapshot = native.snapshot()
+              expect(wasm.snapshot(), `${parityCase.id}: ensure snapshot`).toEqual(nativeSnapshot)
+              expect(nativeSnapshot.text, parityCase.id).toBe(step.expectedCss)
+              if (step.expectedResourceOrder) {
+                expect([
+                  ...nativeSnapshot.resources.variables.map(({ name }) => name),
+                  ...nativeSnapshot.resources.animations.map(({ name }) => name)
+                ], `${parityCase.id}: resource order`).toEqual(step.expectedResourceOrder)
+              }
+              continue
+            }
+
+            if (step.op === 'delete') {
+              const nativeTransition = native.deleteClassRules(step.classes)
+              const wasmTransition = wasm.deleteClassRules(step.classes)
+              expect(wasmTransition, `${parityCase.id}: delete transition`).toEqual(nativeTransition)
+              const nativeSnapshot = native.snapshot()
+              expect(wasm.snapshot(), `${parityCase.id}: delete snapshot`).toEqual(nativeSnapshot)
+              expect(nativeSnapshot.text, parityCase.id).toBe(step.expectedCss)
+              continue
+            }
+
+            const nativeInspection = native.inspect(step.className)
+            const wasmInspection = wasm.inspect(step.className)
+            expect(wasmInspection, `${parityCase.id}: inspection`).toEqual(nativeInspection)
+            expect(nativeInspection.valid, parityCase.id).toBe(step.expectedValid)
+            if (step.expectedRuleTexts?.length) {
+              expect(nativeInspection.rules.map(({ text }) => text), parityCase.id)
+                .toEqual(step.expectedRuleTexts)
+            }
+            if (step.expectedSelectorTexts?.length) {
+              expect(nativeInspection.rules.map(({ selectorText }) => selectorText ?? null), parityCase.id)
+                .toEqual(step.expectedSelectorTexts)
+            }
+            if (step.expectedLayers?.length) {
+              expect(nativeInspection.rules.map(({ layer }) => layer), parityCase.id)
+                .toEqual(step.expectedLayers)
+            }
+            if (step.expectedPriorities?.length) {
+              expect(nativeInspection.rules.map(({ priority }) => priority), parityCase.id)
+                .toEqual(step.expectedPriorities)
+            }
+            if (step.expectedVariableNames?.length) {
+              expect(nativeInspection.rules.map(({ variableNames }) => variableNames ?? []), parityCase.id)
+                .toEqual(step.expectedVariableNames)
+            }
+            if (step.expectedAnimationNames?.length) {
+              expect(nativeInspection.rules.map(({ animationNames }) => animationNames ?? []), parityCase.id)
+                .toEqual(step.expectedAnimationNames)
+            }
+          }
+        } catch (cause) {
+          throw new Error(`${parityCase.id} ${operation}: ${cause instanceof Error ? cause.message : String(cause)}`, {
+            cause
+          })
+        } finally {
+          native.dispose()
+          wasm.dispose()
+          nativeRender.dispose()
+          wasmRender.dispose()
+        }
+      }
+    } finally {
+      if (originalCSS) Object.defineProperty(globalThis, 'CSS', originalCSS)
+      else delete (globalThis as { CSS?: unknown }).CSS
+    }
+  })
+
   it('uses Wasm for auto binding when native addons are disabled', async () => {
     process.execArgv.push('--no-addons')
     try {

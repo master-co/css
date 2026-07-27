@@ -64,9 +64,9 @@ describe('Rust engine session hot paths', () => {
   })
 
   bench('batch ensure and delete representative runtime classes', () => {
-    sink = engine.ensureClassRules(runtimeClassNames).added.length
+    sink = engine.ensureClassRules(runtimeClassNames).mutations.length
     sink += engine.snapshot().text.length
-    sink += engine.deleteClassRules(runtimeClassNames).removed.length
+    sink += engine.deleteClassRules(runtimeClassNames).mutations.length
   }, benchOptions)
 
   bench('inspect representative runtime classes', () => {
@@ -88,12 +88,12 @@ describe('Rust engine session hot paths', () => {
   }, benchOptions)
 
   bench('match indexed pattern utilities in one FFI batch', () => {
-    sink = indexed.ensureClassRules(indexedClassNames).added.length
+    sink = indexed.ensureClassRules(indexedClassNames).mutations.length
     indexed.deleteClassRules(indexedClassNames)
   }, benchOptions)
 
   bench('match fallback pattern utilities in one FFI batch', () => {
-    sink = fallback.ensureClassRules(fallbackClassNames).added.length
+    sink = fallback.ensureClassRules(fallbackClassNames).mutations.length
     fallback.deleteClassRules(fallbackClassNames)
   }, benchOptions)
 })

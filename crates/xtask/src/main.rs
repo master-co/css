@@ -51,14 +51,28 @@ struct SemanticParityCorpus {
     version: u32,
     semantic_baseline: String,
     public_baseline: String,
+    #[serde(default)]
+    parser_cases: Vec<ParserParityCase>,
     engine_cases: Vec<EngineParityCase>,
     compiler_cases: Vec<CompilerParityCase>,
 }
 
 #[derive(Deserialize)]
 #[serde(rename_all = "camelCase")]
+struct ParserParityCase {
+    id: String,
+    source_id: String,
+    kind: String,
+    input: String,
+    expected_canonical: String,
+}
+
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase")]
 struct EngineParityCase {
     id: String,
+    #[serde(default)]
+    source_id: Option<String>,
     manifest: Value,
     #[serde(default)]
     emitted_globals: Option<Value>,
@@ -94,15 +108,26 @@ enum EngineParityStep {
         #[serde(default)]
         expected_animation_names: Vec<Vec<String>>,
     },
+    InspectContains {
+        class_name: String,
+        expected_rule_contains: String,
+    },
 }
 
 #[derive(Deserialize)]
 #[serde(rename_all = "camelCase")]
 struct CompilerParityCase {
     id: String,
+    #[serde(default)]
+    source_id: Option<String>,
     source: String,
     base_manifest: Value,
-    expected_generated_css: String,
+    #[serde(default)]
+    expected_generated_css: Option<String>,
+    #[serde(default)]
+    expected_manifest: Option<Value>,
+    #[serde(default)]
+    expected_error: Option<String>,
     #[serde(default)]
     expected_utilities: Vec<Value>,
 }
@@ -329,19 +354,37 @@ fn validate_semantic_parity_corpus(
     root: &Path,
     corpus: &SemanticParityCorpus,
 ) -> Result<HashSet<String>, String> {
-    if corpus.version != 1
+    if corpus.version != 2
         || corpus.semantic_baseline != "ef1a7c851"
         || corpus.public_baseline != "v2.0.0-rc.87"
     {
         return Err("Semantic parity corpus has an unsupported version or baseline.".into());
     }
     let mut ids = HashSet::new();
+    for case in &corpus.parser_cases {
+        if case.id.is_empty() || !ids.insert(case.id.clone()) {
+            return Err(format!(
+                "Duplicate or empty semantic parity case id: {}",
+                case.id
+            ));
+        }
+        if case.source_id.is_empty()
+            || !matches!(case.kind.as_str(), "condition" | "selector")
+            || case.input.is_empty()
+            || case.expected_canonical.is_empty()
+        {
+            return Err(format!("Invalid parser parity case: {}", case.id));
+        }
+    }
     for case in &corpus.engine_cases {
         if case.id.is_empty() || !ids.insert(case.id.clone()) {
             return Err(format!(
                 "Duplicate or empty semantic parity case id: {}",
                 case.id
             ));
+        }
+        if case.source_id.as_deref().is_some_and(str::is_empty) {
+            return Err(format!("Parity case {} has an empty source id.", case.id));
         }
         let manifest = manifest_json(root, &case.manifest)?;
         let emitted_globals = case
@@ -547,6 +590,48 @@ fn validate_semantic_parity_corpus(
                         ));
                     }
                 }
+                EngineParityStep::InspectContains {
+                    class_name,
+                    expected_rule_contains,
+                } => {
+                    let candidate_count = engine
+                        .native_declaration_candidates(std::slice::from_ref(class_name))
+                        .map_err(|error| {
+                            format!(
+                                "Parity case {} step {} cannot inspect native declarations for {class_name}: {error}",
+                                case.id, step_index
+                            )
+                        })?
+                        .len();
+                    engine
+                        .ensure_class_rules_with_native_support(
+                            std::slice::from_ref(class_name),
+                            &vec![true; candidate_count],
+                        )
+                        .map_err(|error| {
+                            format!(
+                                "Parity case {} step {} cannot ensure {class_name}: {error}",
+                                case.id, step_index
+                            )
+                        })?;
+                    let inspection = engine.inspect(class_name).map_err(|error| {
+                        format!(
+                            "Parity case {} step {} cannot inspect {class_name}: {error}",
+                            case.id, step_index
+                        )
+                    })?;
+                    if !inspection.valid
+                        || !inspection
+                            .rules
+                            .iter()
+                            .any(|rule| rule.text.contains(expected_rule_contains))
+                    {
+                        return Err(format!(
+                            "Parity case {} step {} has no rule for {class_name} containing {expected_rule_contains}.",
+                            case.id, step_index
+                        ));
+                    }
+                }
             }
         }
     }
@@ -557,6 +642,9 @@ fn validate_semantic_parity_corpus(
                 case.id
             ));
         }
+        if case.source_id.as_deref().is_some_and(str::is_empty) {
+            return Err(format!("Parity case {} has an empty source id.", case.id));
+        }
         let base_manifest = serde_json::from_str(&manifest_json(root, &case.base_manifest)?)
             .map_err(|error| {
                 format!(
@@ -564,28 +652,53 @@ fn validate_semantic_parity_corpus(
                     case.id
                 )
             })?;
-        let compiled = compile_css_directives(
+        let result = compile_css_directives(
             &case.source,
             &CompileNativeCssOptions {
                 from: format!("parity/{}.css", case.id),
                 ..Default::default()
             },
         )
-        .map_err(|error| format!("Parity case {} cannot compile CSS: {error}", case.id))?;
-        let lowered = lower_css_directives(
-            &compiled.manifest_input,
-            compiled.style_definitions.as_deref().unwrap_or_default(),
-            &compiled.warnings,
-            &LowerCssDirectivesOptions {
-                base_manifest: Some(base_manifest),
-                resolution_manifest: None,
-            },
-        )
-        .map_err(|error| format!("Parity case {} cannot lower CSS: {error}", case.id))?;
-        if lowered.generated_css != case.expected_generated_css {
+        .map_err(|error| error.to_string())
+        .and_then(|compiled| {
+            lower_css_directives(
+                &compiled.manifest_input,
+                compiled.style_definitions.as_deref().unwrap_or_default(),
+                &compiled.warnings,
+                &LowerCssDirectivesOptions {
+                    base_manifest: Some(base_manifest),
+                    resolution_manifest: None,
+                },
+            )
+            .map_err(|error| error.to_string())
+        });
+        if let Some(expected_error) = &case.expected_error {
+            let error =
+                result.expect_err(&format!("Parity case {} unexpectedly compiled.", case.id));
+            if !error.contains(expected_error) {
+                return Err(format!(
+                    "Parity case {} error mismatch.\nexpected to contain: {}\nactual:              {}",
+                    case.id, expected_error, error
+                ));
+            }
+            continue;
+        }
+        let lowered = result
+            .map_err(|error| format!("Parity case {} cannot compile CSS: {error}", case.id))?;
+        if let Some(expected_generated_css) = &case.expected_generated_css
+            && lowered.generated_css != *expected_generated_css
+        {
             return Err(format!(
                 "Parity case {} generated CSS mismatch.\nexpected: {}\nactual:   {}",
-                case.id, case.expected_generated_css, lowered.generated_css
+                case.id, expected_generated_css, lowered.generated_css
+            ));
+        }
+        if let Some(expected_manifest) = &case.expected_manifest
+            && lowered.manifest != *expected_manifest
+        {
+            return Err(format!(
+                "Parity case {} manifest mismatch.\nexpected: {}\nactual:   {}",
+                case.id, expected_manifest, lowered.manifest
             ));
         }
         for expected in &case.expected_utilities {

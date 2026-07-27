@@ -1,6 +1,6 @@
 import { readFile } from 'node:fs/promises'
 import { afterEach, expect, it, vi } from 'vitest'
-import { loadWasmEngine } from '../src'
+import { createWasmRenderSession, loadWasmEngine } from '../src'
 import { createWasmEngineSession } from '../src/node'
 
 afterEach(() => vi.unstubAllGlobals())
@@ -57,6 +57,25 @@ it('loads the packaged Wasm artifact in Node without fetch support for file URLs
   expect(transition.mutations).toHaveLength(1)
   expect(session.snapshot().text).toBe('@layer utilities{.block{display:block}}')
   session.dispose()
+
+  const nativeDeclarationSession = await createWasmEngineSession(JSON.stringify({
+    version: 1,
+    variables: {
+      '': [{
+        name: 'stripe',
+        key: 'stripe',
+        type: 'string',
+        value: 'linear-gradient(red,blue)'
+      }]
+    },
+    utilities: []
+  }))
+  nativeDeclarationSession.ensureClassRules(['bg:stripe'])
+  expect(nativeDeclarationSession.snapshot().text).toBe(
+    '@layer theme{:root{--stripe:linear-gradient(red,blue)}}'
+    + '@layer utilities{.bg\\:stripe{background:var(--stripe)}}'
+  )
+  nativeDeclarationSession.dispose()
 })
 
 it('passes emitted globals to the Wasm-owned session', async () => {
@@ -102,4 +121,18 @@ it('uses a batched CSS.supports handshake for browser-native declarations', asyn
     '@layer utilities{.display\\:block{display:block}}'
   )
   session.dispose()
+
+  const renderSession = await createWasmRenderSession(
+    JSON.stringify({ version: 1, utilities: [] }),
+    {},
+    { input }
+  )
+
+  expect(renderSession.nativeDeclarationCandidates(['accent-color:transparent'])).toHaveLength(1)
+  renderSession.ensureClassRules(['accent-color:transparent'], [true])
+  const snapshot = renderSession.snapshot() as { snapshot: { text: string } }
+  expect(snapshot.snapshot.text).toBe(
+    '@layer utilities{.accent-color\\:transparent{accent-color:transparent}}'
+  )
+  renderSession.dispose()
 })
