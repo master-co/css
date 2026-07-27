@@ -1366,7 +1366,7 @@
   },
   "target": {
     "ref": "latest-target-change",
-    "commit": "9caecbd2e0a449f71ec896e437ff0ab787c7470d",
+    "commit": "f9aa00be94ac4e40c92dd9050e46e282b4a7855d",
     "packageCount": 36,
     "testFiles": 194,
     "e2eFiles": 24,
@@ -1381,18 +1381,18 @@
   "evidence": {
     "path": "parity/ts-test-migration-evidence.json",
     "version": 1,
-    "records": 583,
+    "records": 584,
     "proofs": {
-      "approved-divergence": 10,
-      "exact-source": 953,
+      "approved-divergence": 11,
+      "exact-source": 952,
       "rc87-golden": 573
     }
   },
   "summary": {
     "byStatus": {
-      "approved-divergence": 10,
+      "approved-divergence": 11,
       "source-inactive": 10,
-      "verified-exact": 1526
+      "verified-exact": 1525
     },
     "byPriority": {
       "P0": 676,
@@ -1401,12 +1401,12 @@
     },
     "byCoverage": {
       "candidate-all": 10,
-      "evidence": 583,
-      "exact-source": 953
+      "evidence": 584,
+      "exact-source": 952
     },
     "byProof": {
-      "approved-divergence": 10,
-      "exact-source": 953,
+      "approved-divergence": 11,
+      "exact-source": 952,
       "rc87-golden": 573
     },
     "byPackage": {
@@ -53340,37 +53340,45 @@
         "targetPackage": "language-service"
       },
       "migration": {
-        "status": "verified-exact",
-        "coverage": "exact-source",
+        "status": "approved-divergence",
+        "coverage": "evidence",
         "targets": [
           {
-            "id": "rc87-16d28158c200f1ff",
+            "id": "rc87-58c0f707895ac675",
             "package": "language-service",
             "file": "packages/language-service/tests/rc87-shiki.test.ts",
             "line": 109,
-            "title": "exports Shiki language registrations as a default array",
+            "title": "does not restore the rc.87 Shiki default array export",
             "runner": "vitest",
             "kind": "test",
-            "sourceDigest": "f9c7bb75b9f6309414ecb28da6e6877b5aeff8796b846bc86012faebeba97692"
+            "sourceDigest": "58d1408ad681113fd30002667d2179c905b0a696f66a6fa30873968549162aef"
           }
         ],
-        "sourceIdenticalTargetIds": [
-          "rc87-16d28158c200f1ff"
-        ],
+        "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
         "proof": {
-          "kind": "exact-source",
+          "kind": "approved-divergence",
           "sourceDigest": "f9c7bb75b9f6309414ecb28da6e6877b5aeff8796b846bc86012faebeba97692",
           "targets": [
             {
-              "caseId": "rc87-16d28158c200f1ff",
+              "caseId": "rc87-58c0f707895ac675",
               "runner": "vitest",
-              "digest": "f9c7bb75b9f6309414ecb28da6e6877b5aeff8796b846bc86012faebeba97692"
+              "digest": "58d1408ad681113fd30002667d2179c905b0a696f66a6fa30873968549162aef"
             }
-          ]
+          ],
+          "exceptionId": "rc87-language-service-shiki-named-export"
         }
       },
-      "divergence": null
+      "divergence": {
+        "id": "rc87-language-service-shiki-named-export",
+        "reason": "Published package entrypoints use named exports unless an ecosystem default is explicitly required. The Shiki subpath keeps the named language registration and does not restore the rc.87 default array export.",
+        "old": "@master/css-language-service/shiki exports an array containing masterCSSShikiLanguage as its default value.",
+        "new": "@master/css-language-service/shiki exports masterCSSShikiLanguage by name and has no default export.",
+        "packages": [
+          "language-service"
+        ],
+        "test": "packages/language-service/tests/rc87-shiki.test.ts"
+      }
     },
     {
       "id": "rc87-89767ac8158d7c51",
@@ -53456,11 +53464,11 @@
             "id": "rc87-44dfe92e02a0a784",
             "package": "language-service",
             "file": "packages/language-service/tests/rc87-shiki.test.ts",
-            "line": 161,
+            "line": 162,
             "title": "supports Shiki dynamic language imports",
             "runner": "vitest",
             "kind": "test",
-            "sourceDigest": "563df45cf2c27d2690e4b60cfb2e81488db891d4c1ba66a9d8a8ee92c4867082"
+            "sourceDigest": "80754bd9b7409c8d204ee51a6dc90a93e9e69b95e6decf54757576867e7a5561"
           }
         ],
         "sourceIdenticalTargetIds": [],
@@ -53472,7 +53480,7 @@
             {
               "caseId": "rc87-44dfe92e02a0a784",
               "runner": "vitest",
-              "digest": "563df45cf2c27d2690e4b60cfb2e81488db891d4c1ba66a9d8a8ee92c4867082"
+              "digest": "80754bd9b7409c8d204ee51a6dc90a93e9e69b95e6decf54757576867e7a5561"
             }
           ]
         }
@@ -92217,7 +92225,7 @@
       "id": "rc87-26a0fc70a4fe84a2",
       "package": "language-service",
       "file": "packages/language-service/tests/rc87-shiki.test.ts",
-      "line": 114,
+      "line": 115,
       "title": "defines deterministic TextMate grammar scopes for CSS directives",
       "runner": "vitest",
       "kind": "test",
@@ -92227,7 +92235,7 @@
       "id": "rc87-75bb3596f5f148b0",
       "package": "language-service",
       "file": "packages/language-service/tests/rc87-shiki.test.ts",
-      "line": 182,
+      "line": 186,
       "title": "registers a real Shiki TextMate injection grammar for CSS directives",
       "runner": "vitest",
       "kind": "test",
@@ -92237,7 +92245,7 @@
       "id": "rc87-3b1814f38ddb99eb",
       "package": "language-service",
       "file": "packages/language-service/tests/rc87-shiki.test.ts",
-      "line": 216,
+      "line": 220,
       "title": "keeps guide theme snippets correct with TextMate only",
       "runner": "vitest",
       "kind": "test",
@@ -92247,7 +92255,7 @@
       "id": "rc87-54d1064138cdfa5d",
       "package": "language-service",
       "file": "packages/language-service/tests/rc87-shiki.test.ts",
-      "line": 240,
+      "line": 244,
       "title": "does not attach semantic metadata to guide theme CSS directive syntax",
       "runner": "vitest",
       "kind": "test",
@@ -92257,7 +92265,7 @@
       "id": "rc87-8d392a681c27d0c2",
       "package": "language-service",
       "file": "packages/language-service/tests/rc87-shiki.test.ts",
-      "line": 257,
+      "line": 261,
       "title": "does not resolve guide theme CSS directive syntax through semantic scope styles",
       "runner": "vitest",
       "kind": "test",
@@ -92267,7 +92275,7 @@
       "id": "rc87-e2c56dc4d369487d",
       "package": "language-service",
       "file": "packages/language-service/tests/rc87-shiki.test.ts",
-      "line": 275,
+      "line": 279,
       "title": "does not create Master Shiki decorations for native-only CSS",
       "runner": "vitest",
       "kind": "test",
@@ -92277,7 +92285,7 @@
       "id": "rc87-5a8efc063385b50d",
       "package": "language-service",
       "file": "packages/language-service/tests/rc87-shiki.test.ts",
-      "line": 290,
+      "line": 294,
       "title": "normalizes Shiki language ids separately from class-list languages",
       "runner": "vitest",
       "kind": "test",
@@ -92287,7 +92295,7 @@
       "id": "rc87-6e434d9c797e0734",
       "package": "language-service",
       "file": "packages/language-service/tests/rc87-shiki.test.ts",
-      "line": 302,
+      "line": 306,
       "title": "creates Shiki decorations from Master CSS semantic tokens",
       "runner": "vitest",
       "kind": "test",
@@ -92297,7 +92305,7 @@
       "id": "rc87-d3e9f43a5067d475",
       "package": "language-service",
       "file": "packages/language-service/tests/rc87-shiki.test.ts",
-      "line": 362,
+      "line": 366,
       "title": "creates Shiki decorations for CSS directive class-list spans",
       "runner": "vitest",
       "kind": "test",
@@ -92307,7 +92315,7 @@
       "id": "rc87-2abd2947ac845e54",
       "package": "language-service",
       "file": "packages/language-service/tests/rc87-shiki.test.ts",
-      "line": 447,
+      "line": 451,
       "title": "creates Shiki decorations for raw Master CSS class lists",
       "runner": "vitest",
       "kind": "test",
@@ -92317,7 +92325,7 @@
       "id": "rc87-62f117700b2c33ab",
       "package": "language-service",
       "file": "packages/language-service/tests/rc87-shiki.test.ts",
-      "line": 471,
+      "line": 475,
       "title": "skips semantic token decorations inside host comments",
       "runner": "vitest",
       "kind": "test",
@@ -92327,7 +92335,7 @@
       "id": "rc87-efe4aaa7bc884241",
       "package": "language-service",
       "file": "packages/language-service/tests/rc87-shiki.test.ts",
-      "line": 482,
+      "line": 486,
       "title": "applies semantic token styles by type and modifier",
       "runner": "vitest",
       "kind": "test",
@@ -92337,7 +92345,7 @@
       "id": "rc87-ecd2faed97890caf",
       "package": "language-service",
       "file": "packages/language-service/tests/rc87-shiki.test.ts",
-      "line": 515,
+      "line": 519,
       "title": "applies semantic decorations in the Shiki tokens hook",
       "runner": "vitest",
       "kind": "test",
@@ -92347,7 +92355,7 @@
       "id": "rc87-6eb87719e89fec81",
       "package": "language-service",
       "file": "packages/language-service/tests/rc87-shiki.test.ts",
-      "line": 559,
+      "line": 563,
       "title": "uses semantic token scope styles for selector semantic tokens",
       "runner": "vitest",
       "kind": "test",
@@ -92357,7 +92365,7 @@
       "id": "rc87-99b555d4fc57840e",
       "package": "language-service",
       "file": "packages/language-service/tests/rc87-shiki.test.ts",
-      "line": 607,
+      "line": 611,
       "title": "uses semantic token scope styles for documentation Master CSS tokens",
       "runner": "vitest",
       "kind": "test",
@@ -92367,7 +92375,7 @@
       "id": "rc87-5e4c77dcbbfd1c7c",
       "package": "language-service",
       "file": "packages/language-service/tests/rc87-shiki.test.ts",
-      "line": 714,
+      "line": 718,
       "title": "uses semantic token scope styles for CSS directive class-list tokens",
       "runner": "vitest",
       "kind": "test",
@@ -92401,7 +92409,7 @@
       "title": "exports the Shiki language registration as a named value",
       "runner": "vitest",
       "kind": "test",
-      "sourceDigest": "1a4cc9128306e2ce28d0103d2662290936dc21b8c0541a60cd60547f38d14dc0"
+      "sourceDigest": "80259524ec27e63357a83b72caee72379b3fe1190e13a0d35b3ce894d3069bf7"
     },
     {
       "id": "rc87-4a7a42b87983cb2d",

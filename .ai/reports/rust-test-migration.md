@@ -6,7 +6,7 @@ The machine-readable source of truth is `parity/ts-test-migration-ledger.json`.
 ## Frozen baseline
 
 - Public and semantic source baseline: `v2.0.0-rc.87@9cc3e8b5f2e34d5220f10f27ed5ce8186fbcb524`.
-- Rust target candidate: `latest-target-change@9caecbd2e0a449f71ec896e437ff0ab787c7470d`.
+- Rust target candidate: `latest-target-change@f9aa00be94ac4e40c92dd9050e46e282b4a7855d`.
 - Scope: executable tests and E2E cases under `packages/*`; examples, site, and benchmarks are not migration denominators.
 - Newer rc changes are an overlay only and never replace rc.87 expectations.
 
@@ -30,20 +30,20 @@ capture commit `ef1a7c851` is not substituted for rc.87.
 
 | Status | Count |
 |---|---:|
-| approved-divergence | 10 |
+| approved-divergence | 11 |
 | source-inactive | 10 |
-| verified-exact | 1526 |
+| verified-exact | 1525 |
 
 | Candidate coverage | Count |
 |---|---:|
 | candidate-all | 10 |
-| evidence | 583 |
-| exact-source | 953 |
+| evidence | 584 |
+| exact-source | 952 |
 
 | Verification proof | Count |
 |---|---:|
-| approved-divergence | 10 |
-| exact-source | 953 |
+| approved-divergence | 11 |
+| exact-source | 952 |
 | rc87-golden | 573 |
 
 | Priority | Cases | Gaps |

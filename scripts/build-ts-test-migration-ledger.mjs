@@ -14,6 +14,7 @@ const RC87_LANGUAGE_TARGET_COMMIT = '61b9def159eeb78cfe67a70e96cb3dc148088952'
 const RC87_SCANNER_TARGET_COMMIT = 'ee78ca31a85d39fa5eaded9fc2e912b6bd8698d6'
 const RC87_P1_TARGET_COMMIT = RC87_SCANNER_TARGET_COMMIT
 const RC87_P2_TARGET_COMMIT = '9caecbd2e0a449f71ec896e437ff0ab787c7470d'
+const RC87_FINAL_LANGUAGE_TARGET_COMMIT = 'f9aa00be94ac4e40c92dd9050e46e282b4a7855d'
 const ledgerPath = path.resolve('parity/ts-test-migration-ledger.json')
 const evidencePath = path.resolve('parity/ts-test-migration-evidence.json')
 const exceptionsPath = path.resolve('parity-exceptions.json')
@@ -1268,6 +1269,49 @@ function seedP2Evidence(legacyInventory, targetInventory) {
   writeFileSync(evidencePath, `${JSON.stringify(evidence, null, 2)}\n`)
 }
 
+function seedFinalLanguageEvidence(legacyInventory, targetInventory) {
+  assert.equal(
+    targetInventory.commit,
+    RC87_FINAL_LANGUAGE_TARGET_COMMIT,
+    'Final language evidence must be audited against the named-export target.'
+  )
+  const evidence = JSON.parse(readFileSync(evidencePath, 'utf8'))
+  const legacyById = new Map(legacyInventory.cases.map((testCase) => [testCase.id, testCase]))
+  const recordsBySourceId = new Map(evidence.records.map((record) => [record.sourceId, record]))
+  const add = (sourceId, title, proof, exceptionId) => {
+    const source = legacyById.get(sourceId)
+    const target = targetInventory.cases.find((candidate) => (
+      candidate.file === 'packages/language-service/tests/rc87-shiki.test.ts'
+      && candidate.title === title
+    ))
+    assert.ok(source, `Cannot seed final language source ${sourceId}.`)
+    assert.ok(target, `Cannot seed final language target ${sourceId}/${title}.`)
+    recordsBySourceId.set(sourceId, {
+      sourceId,
+      sourceDigest: source.sourceDigest,
+      proof,
+      targets: [proofTargetReference(target)],
+      ...(exceptionId ? { exceptionId } : {})
+    })
+  }
+
+  add(
+    'rc87-dbd7e09c6df8d73c',
+    'does not restore the rc.87 Shiki default array export',
+    'approved-divergence',
+    'rc87-language-service-shiki-named-export'
+  )
+  add(
+    'rc87-f7ae069d57b1d29c',
+    'supports Shiki dynamic language imports',
+    'rc87-golden'
+  )
+
+  evidence.records = [...recordsBySourceId.values()]
+    .sort((left, right) => left.sourceId.localeCompare(right.sourceId))
+  writeFileSync(evidencePath, `${JSON.stringify(evidence, null, 2)}\n`)
+}
+
 function loadParityExceptions() {
   const registry = JSON.parse(readFileSync(exceptionsPath, 'utf8'))
   assert.ok(Array.isArray(registry.exceptions), 'Parity exceptions must be an array.')
@@ -1729,6 +1773,9 @@ if (process.argv.includes('--seed-p1-evidence')) {
 }
 if (process.argv.includes('--seed-p2-evidence')) {
   seedP2Evidence(legacyInventory, targetInventory)
+}
+if (process.argv.includes('--seed-final-language-evidence')) {
+  seedFinalLanguageEvidence(legacyInventory, targetInventory)
 }
 const migrationEvidence = loadMigrationEvidence()
 const exceptions = loadParityExceptions()

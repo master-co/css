@@ -6002,6 +6002,19 @@
       ]
     },
     {
+      "sourceId": "rc87-dbd7e09c6df8d73c",
+      "sourceDigest": "f9c7bb75b9f6309414ecb28da6e6877b5aeff8796b846bc86012faebeba97692",
+      "proof": "approved-divergence",
+      "targets": [
+        {
+          "caseId": "rc87-58c0f707895ac675",
+          "runner": "vitest",
+          "digest": "58d1408ad681113fd30002667d2179c905b0a696f66a6fa30873968549162aef"
+        }
+      ],
+      "exceptionId": "rc87-language-service-shiki-named-export"
+    },
+    {
       "sourceId": "rc87-dbd8be6394127373",
       "sourceDigest": "5506d47e3ef116c1d67047f34185ddfc030129ac3274277ff8118f8dd36cbde1",
       "proof": "rc87-golden",
@@ -6695,7 +6708,7 @@
         {
           "caseId": "rc87-44dfe92e02a0a784",
           "runner": "vitest",
-          "digest": "563df45cf2c27d2690e4b60cfb2e81488db891d4c1ba66a9d8a8ee92c4867082"
+          "digest": "80754bd9b7409c8d204ee51a6dc90a93e9e69b95e6decf54757576867e7a5561"
         }
       ]
     },
