@@ -6,7 +6,7 @@ The machine-readable source of truth is `parity/ts-test-migration-ledger.json`.
 ## Frozen baseline
 
 - Public and semantic source baseline: `v2.0.0-rc.87@9cc3e8b5f2e34d5220f10f27ed5ce8186fbcb524`.
-- Rust target candidate: `latest-target-change@ee78ca31a85d39fa5eaded9fc2e912b6bd8698d6`.
+- Rust target candidate: `latest-target-change@9caecbd2e0a449f71ec896e437ff0ab787c7470d`.
 - Scope: executable tests and E2E cases under `packages/*`; examples, site, and benchmarks are not migration denominators.
 - Newer rc changes are an overlay only and never replace rc.87 expectations.
 
@@ -20,7 +20,7 @@ The machine-readable source of truth is `parity/ts-test-migration-ledger.json`.
 | rc.87 expanded cases | 1546 |
 | Expanded parameter and RuleTester cases | 349 |
 | Unresolved runtime matrices | 0 |
-| Rust target cases collected | 1669 |
+| Rust target cases collected | 1677 |
 | Target-only cases | 156 |
 
 The old 114-test takeover ledger is an engine-only historical subset. Its semantic
@@ -30,32 +30,29 @@ capture commit `ef1a7c851` is not substituted for rc.87.
 
 | Status | Count |
 |---|---:|
-| approved-divergence | 3 |
-| gap | 8 |
-| mapped-unverified | 38 |
+| approved-divergence | 10 |
 | source-inactive | 10 |
-| verified-exact | 1487 |
+| verified-exact | 1526 |
 
 | Candidate coverage | Count |
 |---|---:|
-| candidate-all | 48 |
-| evidence | 537 |
+| candidate-all | 10 |
+| evidence | 583 |
 | exact-source | 953 |
-| none | 8 |
 
 | Verification proof | Count |
 |---|---:|
-| approved-divergence | 3 |
+| approved-divergence | 10 |
 | exact-source | 953 |
-| rc87-golden | 534 |
+| rc87-golden | 573 |
 
 | Priority | Cases | Gaps |
 |---|---:|---:|
-| P0 | 676 | 1 |
+| P0 | 676 | 0 |
 | P1 | 732 | 0 |
-| P2 | 138 | 7 |
+| P2 | 138 | 0 |
 | P3 | 0 | 0 |
-Verified active cases: 1490/1536.
+Verified active cases: 1536/1536.
 
 `mapped-unverified` means that an executable target candidate or takeover reference
 exists. It does not claim parity. `exact-source` requires one identical executable
@@ -67,9 +64,9 @@ Ambiguous candidates remain incomplete until evidence selects a target explicitl
 | Legacy package | Cases | P0 | P1 | P2 | Mapped/inactive | Gaps |
 |---|---:|---:|---:|---:|---:|---:|
 | `astro` | 11 | 11 | 0 | 0 | 11 | 0 |
-| `cli` | 19 | 0 | 0 | 19 | 14 | 5 |
+| `cli` | 19 | 0 | 0 | 19 | 19 | 0 |
 | `compiler` | 52 | 52 | 0 | 0 | 52 | 0 |
-| `create` | 48 | 7 | 0 | 41 | 47 | 1 |
+| `create` | 48 | 7 | 0 | 41 | 48 | 0 |
 | `css-sv` | 7 | 0 | 0 | 7 | 7 | 0 |
 | `diagnostics` | 3 | 0 | 3 | 0 | 3 | 0 |
 | `engine` | 184 | 184 | 0 | 0 | 184 | 0 |
@@ -97,7 +94,7 @@ Ambiguous candidates remain incomplete until evidence selects a target explicitl
 | `svelte` | 9 | 9 | 0 | 0 | 9 | 0 |
 | `validator` | 8 | 0 | 8 | 0 | 8 | 0 |
 | `vite` | 92 | 92 | 0 | 0 | 92 | 0 |
-| `vscode` | 28 | 3 | 0 | 25 | 26 | 2 |
+| `vscode` | 28 | 3 | 0 | 25 | 28 | 0 |
 | `webpack` | 43 | 43 | 0 | 0 | 43 | 0 |
 
 ## P0 behavior gates
@@ -111,11 +108,11 @@ Ambiguous candidates remain incomplete until evidence selects a target explicitl
 
 ## P0 gaps
 
-The full list is in the JSON ledger; the first 1 are shown here.
+The full list is in the JSON ledger; the first 0 are shown here.
 
 | Source | rc.87 case | Domains |
 |---|---|---|
-| `packages/vscode/tests/server-bundle.test.js:204` | server bundle keeps expected native runtime imports external | language-authoring, rendering-modes |
+| — | None | — |
 
 ## Dynamic matrices requiring runtime collection
 

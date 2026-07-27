@@ -13,6 +13,7 @@ const RC87_AUTHORING_TARGET_COMMIT = '7ac3c1a63a7af8c8c927a869fa3e4d531261cec6'
 const RC87_LANGUAGE_TARGET_COMMIT = '61b9def159eeb78cfe67a70e96cb3dc148088952'
 const RC87_SCANNER_TARGET_COMMIT = 'ee78ca31a85d39fa5eaded9fc2e912b6bd8698d6'
 const RC87_P1_TARGET_COMMIT = RC87_SCANNER_TARGET_COMMIT
+const RC87_P2_TARGET_COMMIT = '9caecbd2e0a449f71ec896e437ff0ab787c7470d'
 const ledgerPath = path.resolve('parity/ts-test-migration-ledger.json')
 const evidencePath = path.resolve('parity/ts-test-migration-evidence.json')
 const exceptionsPath = path.resolve('parity-exceptions.json')
@@ -1205,6 +1206,68 @@ function seedP1Evidence(legacyInventory, targetInventory) {
   writeFileSync(evidencePath, `${JSON.stringify(evidence, null, 2)}\n`)
 }
 
+function seedP2Evidence(legacyInventory, targetInventory) {
+  assert.equal(
+    targetInventory.commit,
+    RC87_P2_TARGET_COMMIT,
+    'P2 evidence must be audited against the pinned milestone 4 target.'
+  )
+  const evidence = JSON.parse(readFileSync(evidencePath, 'utf8'))
+  const legacyById = new Map(legacyInventory.cases.map((testCase) => [testCase.id, testCase]))
+  const targetById = new Map(targetInventory.cases.map((testCase) => [testCase.id, testCase]))
+  const recordsBySourceId = new Map(evidence.records.map((record) => [record.sourceId, record]))
+  const currentLedger = JSON.parse(readFileSync(ledgerPath, 'utf8'))
+  assert.equal(
+    currentLedger.target.commit,
+    RC87_P2_TARGET_COMMIT,
+    'The current ledger does not describe the pinned milestone 4 target.'
+  )
+  const auditedPackages = new Set(['cli', 'create', 'css-sv', 'language-server', 'mcp', 'vscode'])
+
+  for (const entry of currentLedger.entries) {
+    if (entry.priority !== 'P2' || entry.migration.status !== 'mapped-unverified') continue
+    assert.ok(auditedPackages.has(entry.source.package), `Unaudited P2 package for ${entry.id}.`)
+    assert.equal(entry.migration.targets.length, 1, `P2 evidence target is ambiguous for ${entry.id}.`)
+    const source = legacyById.get(entry.id)
+    const target = targetById.get(entry.migration.targets[0].id)
+    assert.ok(source, `Cannot seed audited P2 source ${entry.id}.`)
+    assert.ok(target, `Cannot seed audited P2 target for ${entry.id}.`)
+    recordsBySourceId.set(entry.id, {
+      sourceId: entry.id,
+      sourceDigest: source.sourceDigest,
+      proof: 'rc87-golden',
+      targets: [proofTargetReference(target)]
+    })
+  }
+
+  for (const [sourceId, targetId, exceptionId] of [
+    ['rc87-020cb2849514556c', 'rc87-5afff731b12da503', 'rc87-cli-explicit-generate-command'],
+    ['rc87-1fc20aa6a8bdba65', 'rc87-4b144ace73024a4e', 'rc87-cli-removed-command-shims'],
+    ['rc87-d770516f41616299', 'rc87-6dbaed8ad2db027d', 'rc87-cli-removed-command-shims'],
+    ['rc87-79afa858624c3b81', 'rc87-4df6ca0358c81014', 'rc87-cli-removed-command-shims'],
+    ['rc87-1fd50671fc535704', 'rc87-25b0e10bf66ab41a', 'rc87-cli-master-css-binary-name'],
+    ['rc87-3115beeb6e85ca7f', 'rc87-6db9abcf55ac44c6', 'rc87-create-svelte-addon-package-rename'],
+    ['rc87-619282be04e91f81', 'rc87-69e7b6412f26781a', 'rc87-vscode-rust-native-runtime-externalization'],
+    ['rc87-97511bf86497a765', 'rc87-d534af146eb72292', undefined]
+  ]) {
+    const source = legacyById.get(sourceId)
+    const target = targetById.get(targetId)
+    assert.ok(source, `Cannot seed P2 gap source ${sourceId}.`)
+    assert.ok(target, `Cannot seed P2 gap target ${sourceId}/${targetId}.`)
+    recordsBySourceId.set(sourceId, {
+      sourceId,
+      sourceDigest: source.sourceDigest,
+      proof: exceptionId ? 'approved-divergence' : 'rc87-golden',
+      targets: [proofTargetReference(target)],
+      ...(exceptionId ? { exceptionId } : {})
+    })
+  }
+
+  evidence.records = [...recordsBySourceId.values()]
+    .sort((left, right) => left.sourceId.localeCompare(right.sourceId))
+  writeFileSync(evidencePath, `${JSON.stringify(evidence, null, 2)}\n`)
+}
+
 function loadParityExceptions() {
   const registry = JSON.parse(readFileSync(exceptionsPath, 'utf8'))
   assert.ok(Array.isArray(registry.exceptions), 'Parity exceptions must be an array.')
@@ -1663,6 +1726,9 @@ if (process.argv.includes('--seed-scanner-evidence')) {
 }
 if (process.argv.includes('--seed-p1-evidence')) {
   seedP1Evidence(legacyInventory, targetInventory)
+}
+if (process.argv.includes('--seed-p2-evidence')) {
+  seedP2Evidence(legacyInventory, targetInventory)
 }
 const migrationEvidence = loadMigrationEvidence()
 const exceptions = loadParityExceptions()

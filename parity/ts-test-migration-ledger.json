@@ -1366,11 +1366,11 @@
   },
   "target": {
     "ref": "latest-target-change",
-    "commit": "ee78ca31a85d39fa5eaded9fc2e912b6bd8698d6",
+    "commit": "9caecbd2e0a449f71ec896e437ff0ab787c7470d",
     "packageCount": 36,
-    "testFiles": 193,
+    "testFiles": 194,
     "e2eFiles": 24,
-    "cases": 1669
+    "cases": 1677
   },
   "existingParity": {
     "semanticBaseline": "ef1a7c851",
@@ -1381,20 +1381,18 @@
   "evidence": {
     "path": "parity/ts-test-migration-evidence.json",
     "version": 1,
-    "records": 537,
+    "records": 583,
     "proofs": {
-      "approved-divergence": 3,
+      "approved-divergence": 10,
       "exact-source": 953,
-      "rc87-golden": 534
+      "rc87-golden": 573
     }
   },
   "summary": {
     "byStatus": {
-      "approved-divergence": 3,
-      "gap": 8,
-      "mapped-unverified": 38,
+      "approved-divergence": 10,
       "source-inactive": 10,
-      "verified-exact": 1487
+      "verified-exact": 1526
     },
     "byPriority": {
       "P0": 676,
@@ -1402,15 +1400,14 @@
       "P2": 138
     },
     "byCoverage": {
-      "candidate-all": 48,
-      "evidence": 537,
-      "exact-source": 953,
-      "none": 8
+      "candidate-all": 10,
+      "evidence": 583,
+      "exact-source": 953
     },
     "byProof": {
-      "approved-divergence": 3,
+      "approved-divergence": 10,
       "exact-source": 953,
-      "rc87-golden": 534
+      "rc87-golden": 573
     },
     "byPackage": {
       "astro": {
@@ -1426,8 +1423,8 @@
         "P0": 0,
         "P1": 0,
         "P2": 19,
-        "mapped": 14,
-        "gap": 5
+        "mapped": 19,
+        "gap": 0
       },
       "compiler": {
         "total": 52,
@@ -1442,8 +1439,8 @@
         "P0": 7,
         "P1": 0,
         "P2": 41,
-        "mapped": 47,
-        "gap": 1
+        "mapped": 48,
+        "gap": 0
       },
       "css-sv": {
         "total": 7,
@@ -1666,8 +1663,8 @@
         "P0": 3,
         "P1": 0,
         "P2": 25,
-        "mapped": 26,
-        "gap": 2
+        "mapped": 28,
+        "gap": 0
       },
       "webpack": {
         "total": 43,
@@ -2408,14 +2405,45 @@
         "targetPackage": "cli"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "approved-divergence",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-5afff731b12da503",
+            "package": "cli",
+            "file": "packages/cli/tests/rc87-core.test.ts",
+            "line": 33,
+            "title": "uses the explicit generate command instead of rc.87 root scan options",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "09feedea3689547173230bf101b59a128fafe5467d72d2ce8ca5c2f77b294155"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "approved-divergence",
+          "sourceDigest": "5b5869980a661f084d737ffbfca5ab6efa2047ddb44464b00dda0c4c61c6ab1c",
+          "targets": [
+            {
+              "caseId": "rc87-5afff731b12da503",
+              "runner": "vitest",
+              "digest": "09feedea3689547173230bf101b59a128fafe5467d72d2ce8ca5c2f77b294155"
+            }
+          ],
+          "exceptionId": "rc87-cli-explicit-generate-command"
+        }
       },
-      "divergence": null
+      "divergence": {
+        "id": "rc87-cli-explicit-generate-command",
+        "reason": "The refactored CLI exposes generation as an explicit command and does not preserve the rc.87 root scanning command shape.",
+        "old": "Root help advertises source paths, watch, and no-export options directly on @master/css-cli.",
+        "new": "Root help advertises the master-css binary with explicit generate, lint, and inspect commands; generation options belong to generate.",
+        "packages": [
+          "cli"
+        ],
+        "test": "packages/cli/tests/rc87-core.test.ts"
+      }
     },
     {
       "id": "rc87-1fc20aa6a8bdba65",
@@ -2446,14 +2474,50 @@
         "targetPackage": "cli"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "approved-divergence",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-4b144ace73024a4e",
+            "package": "cli",
+            "file": "packages/cli/tests/rc87-core.test.ts",
+            "line": 42,
+            "title": "does not restore the removed rc.87 extract command shim",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "36db4d9fa6ca195b9bbe8b190ee8c5d72b0687acfeedb0e35936d30ac69c3bda",
+            "matrix": {
+              "index": 0,
+              "resolved": true,
+              "value": "extract"
+            }
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "approved-divergence",
+          "sourceDigest": "a53e438743bb2dbbe81b8c6d07dac021a6181492c3e74c0acc79059c4ec98199",
+          "targets": [
+            {
+              "caseId": "rc87-4b144ace73024a4e",
+              "runner": "vitest",
+              "digest": "36db4d9fa6ca195b9bbe8b190ee8c5d72b0687acfeedb0e35936d30ac69c3bda"
+            }
+          ],
+          "exceptionId": "rc87-cli-removed-command-shims"
+        }
       },
-      "divergence": null
+      "divergence": {
+        "id": "rc87-cli-removed-command-shims",
+        "reason": "The CLI refactor removes obsolete extract, render, and scan compatibility shims instead of retaining legacy command-specific errors.",
+        "old": "Invoking extract, render, or scan reports that the named command was removed.",
+        "new": "Invoking extract, render, or scan follows Commander's ordinary unknown-command failure path.",
+        "packages": [
+          "cli"
+        ],
+        "test": "packages/cli/tests/rc87-core.test.ts"
+      }
     },
     {
       "id": "rc87-d770516f41616299",
@@ -2484,14 +2548,50 @@
         "targetPackage": "cli"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "approved-divergence",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-6dbaed8ad2db027d",
+            "package": "cli",
+            "file": "packages/cli/tests/rc87-core.test.ts",
+            "line": 42,
+            "title": "does not restore the removed rc.87 render command shim",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "36db4d9fa6ca195b9bbe8b190ee8c5d72b0687acfeedb0e35936d30ac69c3bda",
+            "matrix": {
+              "index": 1,
+              "resolved": true,
+              "value": "render"
+            }
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "approved-divergence",
+          "sourceDigest": "a53e438743bb2dbbe81b8c6d07dac021a6181492c3e74c0acc79059c4ec98199",
+          "targets": [
+            {
+              "caseId": "rc87-6dbaed8ad2db027d",
+              "runner": "vitest",
+              "digest": "36db4d9fa6ca195b9bbe8b190ee8c5d72b0687acfeedb0e35936d30ac69c3bda"
+            }
+          ],
+          "exceptionId": "rc87-cli-removed-command-shims"
+        }
       },
-      "divergence": null
+      "divergence": {
+        "id": "rc87-cli-removed-command-shims",
+        "reason": "The CLI refactor removes obsolete extract, render, and scan compatibility shims instead of retaining legacy command-specific errors.",
+        "old": "Invoking extract, render, or scan reports that the named command was removed.",
+        "new": "Invoking extract, render, or scan follows Commander's ordinary unknown-command failure path.",
+        "packages": [
+          "cli"
+        ],
+        "test": "packages/cli/tests/rc87-core.test.ts"
+      }
     },
     {
       "id": "rc87-79afa858624c3b81",
@@ -2522,14 +2622,50 @@
         "targetPackage": "cli"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "approved-divergence",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-4df6ca0358c81014",
+            "package": "cli",
+            "file": "packages/cli/tests/rc87-core.test.ts",
+            "line": 42,
+            "title": "does not restore the removed rc.87 scan command shim",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "36db4d9fa6ca195b9bbe8b190ee8c5d72b0687acfeedb0e35936d30ac69c3bda",
+            "matrix": {
+              "index": 2,
+              "resolved": true,
+              "value": "scan"
+            }
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "approved-divergence",
+          "sourceDigest": "a53e438743bb2dbbe81b8c6d07dac021a6181492c3e74c0acc79059c4ec98199",
+          "targets": [
+            {
+              "caseId": "rc87-4df6ca0358c81014",
+              "runner": "vitest",
+              "digest": "36db4d9fa6ca195b9bbe8b190ee8c5d72b0687acfeedb0e35936d30ac69c3bda"
+            }
+          ],
+          "exceptionId": "rc87-cli-removed-command-shims"
+        }
       },
-      "divergence": null
+      "divergence": {
+        "id": "rc87-cli-removed-command-shims",
+        "reason": "The CLI refactor removes obsolete extract, render, and scan compatibility shims instead of retaining legacy command-specific errors.",
+        "old": "Invoking extract, render, or scan reports that the named command was removed.",
+        "new": "Invoking extract, render, or scan follows Commander's ordinary unknown-command failure path.",
+        "packages": [
+          "cli"
+        ],
+        "test": "packages/cli/tests/rc87-core.test.ts"
+      }
     },
     {
       "id": "rc87-1fd50671fc535704",
@@ -2555,14 +2691,45 @@
         "targetPackage": "cli"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "approved-divergence",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-25b0e10bf66ab41a",
+            "package": "cli",
+            "file": "packages/cli/tests/rc87-core.test.ts",
+            "line": 49,
+            "title": "publishes only the master-css binary",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "444d23b6d6ccc56c226f0b42297031ad894ddaa2d5ca99a535db00d87c4d325b"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "approved-divergence",
+          "sourceDigest": "b0b4757df19901d38de940a41fc09eec617d86b65bd39519c50423ced436dd1e",
+          "targets": [
+            {
+              "caseId": "rc87-25b0e10bf66ab41a",
+              "runner": "vitest",
+              "digest": "444d23b6d6ccc56c226f0b42297031ad894ddaa2d5ca99a535db00d87c4d325b"
+            }
+          ],
+          "exceptionId": "rc87-cli-master-css-binary-name"
+        }
       },
-      "divergence": null
+      "divergence": {
+        "id": "rc87-cli-master-css-binary-name",
+        "reason": "The published CLI has one deliberate binary name and does not restore the retired package-name binary representation.",
+        "old": "The package metadata represents the binary as the package-name string form expected by rc.87.",
+        "new": "The package metadata exposes only the master-css binary mapped to dist/bin/index.js.",
+        "packages": [
+          "cli"
+        ],
+        "test": "packages/cli/tests/rc87-core.test.ts"
+      }
     },
     {
       "id": "rc87-7f3c754a921a8dcf",
@@ -3090,8 +3257,8 @@
         "targetPackage": "cli"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-09e2f62fb4ee5891",
@@ -3106,7 +3273,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "347b731565aed2b0c9721a95183122559ce79a75e1ba10873619b3edfdc3fae3",
+          "targets": [
+            {
+              "caseId": "rc87-09e2f62fb4ee5891",
+              "runner": "vitest",
+              "digest": "972bcddf2e19b9dd209c3a18f2afd9da3cd63fd940f349487afaa21cb8c5935b"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -3132,8 +3309,8 @@
         "targetPackage": "cli"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-fead2e0081aac350",
@@ -3148,7 +3325,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "7b789853cb320a8afde444ea81666f3d0ce561cefbbce9152c791fcf3bb0ae56",
+          "targets": [
+            {
+              "caseId": "rc87-fead2e0081aac350",
+              "runner": "vitest",
+              "digest": "04510b27650c93c7798bd04d42904a144faa03df7df59277158fcfc0ceb31aed"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -6295,8 +6482,8 @@
         "targetPackage": "create"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-cf1379e7a042982b",
@@ -6311,7 +6498,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "556305aab1b7734435f11775770fba0fa69f9d91a04cd43eedb108f58b7c8e07",
+          "targets": [
+            {
+              "caseId": "rc87-cf1379e7a042982b",
+              "runner": "vitest",
+              "digest": "8ceae562d2d5daa1e510ccfb06a50d2b6e9f5a65bbb06bc0b700912b464023bf"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -6339,8 +6536,8 @@
         "targetPackage": "create"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-c2ad250d9ba8e2dc",
@@ -6355,7 +6552,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "0b57b9a86402de72c420009e6a0fdff2a7529c326487f6482afd6a08a1e4a5a6",
+          "targets": [
+            {
+              "caseId": "rc87-c2ad250d9ba8e2dc",
+              "runner": "vitest",
+              "digest": "2d9d8e6d40dbaacd3efd0f4e3a6e566a6469bec02b7ac87c52dc9b45c69a1268"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -6383,8 +6590,8 @@
         "targetPackage": "create"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-14206a2def078222",
@@ -6399,7 +6606,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "9dea92b653b9bbdb009be1a12a1e891b0fa59aa64c8af15f44b4ef40d017b92f",
+          "targets": [
+            {
+              "caseId": "rc87-14206a2def078222",
+              "runner": "vitest",
+              "digest": "c92f32c27056cd91a96138738c233aee49ca8f55387cab012d80e58d124bb645"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -6427,8 +6644,8 @@
         "targetPackage": "create"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-390f73eac2528e91",
@@ -6443,7 +6660,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "c36cc931fe06e3e80dda1fdf32e4481c740f05a25164c113667e2d11a1ba7b25",
+          "targets": [
+            {
+              "caseId": "rc87-390f73eac2528e91",
+              "runner": "vitest",
+              "digest": "94d48ce62b27d328ad4ae8a9d75a5eb5884671eeedf544b2e4252c7ce504f555"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -6471,8 +6698,8 @@
         "targetPackage": "create"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-c665902402b95248",
@@ -6487,7 +6714,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "b0a832b1f7a7883d6ebdd1aabb8ef36ccd4803e19bd83945b03c7ca510cbfe1a",
+          "targets": [
+            {
+              "caseId": "rc87-c665902402b95248",
+              "runner": "vitest",
+              "digest": "2c72d8597eaf6194a9e186b12ed3bf4d3b542c70112c1971da62ece70af602e1"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -6515,8 +6752,8 @@
         "targetPackage": "create"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-fcffa4f85dd3aed7",
@@ -6531,7 +6768,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "86730d867dd66214d36e823fa8a9eea5d71706dad79944e4399f67c85ca49990",
+          "targets": [
+            {
+              "caseId": "rc87-fcffa4f85dd3aed7",
+              "runner": "vitest",
+              "digest": "8373410cff8a0d4ed727e6e9b6e9b43c442b506ef63779b0c99dcd947858778a"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -6559,8 +6806,8 @@
         "targetPackage": "create"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-00e5c8e4fbb05018",
@@ -6575,7 +6822,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "dc5e6d58ddc308dfd440faa213a0162ea696f73ae1ca8f8d4eaad563a51900af",
+          "targets": [
+            {
+              "caseId": "rc87-00e5c8e4fbb05018",
+              "runner": "vitest",
+              "digest": "52c535afa4cf44d7d5f8917fbeb086545d3341a866de77460588309ac65eb704"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -6603,8 +6860,8 @@
         "targetPackage": "create"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-b4b0881679e99973",
@@ -6619,7 +6876,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "e37d3aeaa78008cb2151f2672701489729cd2490568d445d72a3e5c19d739eaf",
+          "targets": [
+            {
+              "caseId": "rc87-b4b0881679e99973",
+              "runner": "vitest",
+              "digest": "171c2ac629f0487054b14b0a1810c9b75bcd7a363a201f74ee0f38d4c069a6b5"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -7095,8 +7362,8 @@
         "targetPackage": "create"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-2b679e21c6029365",
@@ -7111,7 +7378,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "44327f8ac967e6f3d4dd62bc7988e3e72b9c057d644e7e53b35f01cbd19eec8d",
+          "targets": [
+            {
+              "caseId": "rc87-2b679e21c6029365",
+              "runner": "vitest",
+              "digest": "550dc5d8905d907f9b58978358aff4346216a839efa2da6708853c68f1331c48"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -7139,8 +7416,8 @@
         "targetPackage": "create"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-5f7aa93e5b855c4c",
@@ -7155,7 +7432,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "5e64608d2bfd8071cc9a1c650d3b8d28f45514941c117b8bc6d32fd47854f686",
+          "targets": [
+            {
+              "caseId": "rc87-5f7aa93e5b855c4c",
+              "runner": "vitest",
+              "digest": "e16443f00b92aa89831043d3d70200cbdd7a5f256eedfb1a6c33cd8298811d27"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -7183,8 +7470,8 @@
         "targetPackage": "create"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-5b4371e481a014bc",
@@ -7199,7 +7486,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "fb95f5e9535a6f1fe6dd8ed8e1e7b9833afaf94de52b304f87ad0835c4a25ef1",
+          "targets": [
+            {
+              "caseId": "rc87-5b4371e481a014bc",
+              "runner": "vitest",
+              "digest": "c103fd1140fff7a0d6019b6be4e9b532f9397f04a5722b29486e0ce461e6e497"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -7395,8 +7692,8 @@
         "targetPackage": "create"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-8338bb9e3843dd07",
@@ -7411,7 +7708,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "1dcdc1b370e02171697234e06886f31f83cc7fe23438efbe8a7b8e16e7f1f9e0",
+          "targets": [
+            {
+              "caseId": "rc87-8338bb9e3843dd07",
+              "runner": "vitest",
+              "digest": "a6a01cb31f8a65e1a9751b05ceafded2d4c8af7bf2984afacfde55eb4ce1a16e"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -7495,8 +7802,8 @@
         "targetPackage": "create"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-3ecaef07be6aeb14",
@@ -7511,7 +7818,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "0d08d03c17dd3ef4b6c3d04ec15ebc0e4a0285bc233d2119d3a05d838b79eee1",
+          "targets": [
+            {
+              "caseId": "rc87-3ecaef07be6aeb14",
+              "runner": "vitest",
+              "digest": "fbb3c883000bf1997931f5d1f4c3f00a365688ab0bb43ac8a7800b20a9f9677f"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -7539,8 +7856,8 @@
         "targetPackage": "create"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-b48842a390299e26",
@@ -7555,7 +7872,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "44f1042d6f94091452a23c7a1560aecae4aab27e859b87eed9fc9c53f0968d2c",
+          "targets": [
+            {
+              "caseId": "rc87-b48842a390299e26",
+              "runner": "vitest",
+              "digest": "88328c8c2f2f7102d17109bea455d44fa94b319ff89f5f5f1f8e0f7be87c8659"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -7583,8 +7910,8 @@
         "targetPackage": "create"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-979f925cecdedae1",
@@ -7599,7 +7926,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "2abd7ea5abecd518eeaf8720f5ea2d6563642755d3fe5f271d7a3dea1ee2c47b",
+          "targets": [
+            {
+              "caseId": "rc87-979f925cecdedae1",
+              "runner": "vitest",
+              "digest": "4c2f80ceb1ef7f56a0763ecee2433a226448ddda21a8c0ed1fa820edab69d338"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -7683,8 +8020,8 @@
         "targetPackage": "create"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-f411802a6c7a48b8",
@@ -7699,7 +8036,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "ef49ff44df9cb77d225142b8f6a8f3eae4719c34897013f211ec8e11c13de1ce",
+          "targets": [
+            {
+              "caseId": "rc87-f411802a6c7a48b8",
+              "runner": "vitest",
+              "digest": "f3b5a27854985a602a278394fa7b6375c6d41f86537a6731359702066dbba5bb"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -7783,8 +8130,8 @@
         "targetPackage": "create"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-0174197b466f568c",
@@ -7799,7 +8146,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "f2d5bb9de83a66484336522f07c56be4695b8f5cf633fcdf4113f8fa27acb963",
+          "targets": [
+            {
+              "caseId": "rc87-0174197b466f568c",
+              "runner": "vitest",
+              "digest": "b01673dfa60546b68372eac3821fa527bbe1906027dcaab9f9a9100d2389e06c"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -7883,8 +8240,8 @@
         "targetPackage": "create"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-b3e503020f8bfd8d",
@@ -7899,7 +8256,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "b8a4453448af2b40c070fb6339af8740f84eea717df93a4a1a45a30b13fd5333",
+          "targets": [
+            {
+              "caseId": "rc87-b3e503020f8bfd8d",
+              "runner": "vitest",
+              "digest": "9268c57955f3b5f947346712b3c30526768f9882679fbfdf6f1fbdd568c1e14b"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -7983,8 +8350,8 @@
         "targetPackage": "create"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-4094f801ebe304f3",
@@ -7999,7 +8366,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "b30b1d716d3b2979a5b3cef83a547bd61b4cdc7f4a47a2bb6b7ec588ac59ac79",
+          "targets": [
+            {
+              "caseId": "rc87-4094f801ebe304f3",
+              "runner": "vitest",
+              "digest": "051708b73cbf80ab1a24d51b738362a1dba382eeca574a86b05ea2d0ec9c5044"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -8083,8 +8460,8 @@
         "targetPackage": "create"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-b6a15d4e4c7e531e",
@@ -8099,7 +8476,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "6215092ebf0fa08c8632c5b62c2b3a567246f23ab6cc8d24da00fb1fd9268c75",
+          "targets": [
+            {
+              "caseId": "rc87-b6a15d4e4c7e531e",
+              "runner": "vitest",
+              "digest": "e8c394dd84fc143887e80d5a99d9f96bb342fc742b04cd71f505230d326ddadf"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -8401,8 +8788,8 @@
         "targetPackage": "create"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-12e7c854b56d72b1",
@@ -8417,7 +8804,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "0deb64bcb9e8847cd5aa2bbe8f8d89f90bfebf29795fe43ac404cfcb3a99d842",
+          "targets": [
+            {
+              "caseId": "rc87-12e7c854b56d72b1",
+              "runner": "vitest",
+              "digest": "7f35e07e299dd9e2205d9ef8e953da3d4da6054812033dcf2291eccb22b5dba5"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -8557,8 +8954,8 @@
         "targetPackage": "create"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-2e4c968188432948",
@@ -8573,7 +8970,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "8d325f324bcffa873fc2e27f187421ee46d456395793c48ec17023bbf03ce0ce",
+          "targets": [
+            {
+              "caseId": "rc87-2e4c968188432948",
+              "runner": "vitest",
+              "digest": "72b26dc2baa5359047bedd6e72f264788d4017196e1e0bd99fd75360ef365894"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -8601,8 +9008,8 @@
         "targetPackage": "create"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-45a00cfd1a5d7148",
@@ -8617,7 +9024,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "2a176d7ce06d8b46785de0f947bc7b432ce81f91fd789296a216fba1f37782b9",
+          "targets": [
+            {
+              "caseId": "rc87-45a00cfd1a5d7148",
+              "runner": "vitest",
+              "digest": "72892b67e97140b070ccbcf5b67c90a762e1b37fb93f4f2e5fe1151de6a1ed70"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -8645,14 +9062,45 @@
         "targetPackage": "create"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "approved-divergence",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-6db9abcf55ac44c6",
+            "package": "create",
+            "file": "packages/create/tests/setup.test.ts",
+            "line": 1371,
+            "title": "does not restore the retired rc.87 @master/css-sv package name",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "7a3a53eedf2c34299082bf2e1983714916041593798f6f066a597e55d6ac8504"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "approved-divergence",
+          "sourceDigest": "cd9143b184c96dbea7cb8710f36613e796e6d122b21ddb85a91880790c815ae0",
+          "targets": [
+            {
+              "caseId": "rc87-6db9abcf55ac44c6",
+              "runner": "vitest",
+              "digest": "7a3a53eedf2c34299082bf2e1983714916041593798f6f066a597e55d6ac8504"
+            }
+          ],
+          "exceptionId": "rc87-create-svelte-addon-package-rename"
+        }
       },
-      "divergence": null
+      "divergence": {
+        "id": "rc87-create-svelte-addon-package-rename",
+        "reason": "SvelteKit setup delegates to the current canonical addon package and must not restore the retired @master/css-sv package name.",
+        "old": "The generated SvelteKit setup command runs sv add @master/css-sv.",
+        "new": "The generated SvelteKit setup command runs sv add @master/css-svelte-addon.",
+        "packages": [
+          "create"
+        ],
+        "test": "packages/create/tests/setup.test.ts"
+      }
     },
     {
       "id": "rc87-34960369c3c5016e",
@@ -8732,8 +9180,8 @@
         "targetPackage": "css-sv"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-be89cf4877a33a0f",
@@ -8748,7 +9196,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "2d7d4d79f65b72721bcb8670c243cd5e517a949152c571efd6f4eb4ce6eb48e3",
+          "targets": [
+            {
+              "caseId": "rc87-be89cf4877a33a0f",
+              "runner": "vitest",
+              "digest": "a0b73b48c7f1af12a169bf7ce6616d68e4b11a3c90cee6e53dd056d310380987"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -8888,8 +9346,8 @@
         "targetPackage": "css-sv"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-8d05a4f10bd8fd7d",
@@ -8904,7 +9362,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "dbb0e5de60212dba7e3f149fa7950810e48bdca8a01094d1ace74d20e66c7b2c",
+          "targets": [
+            {
+              "caseId": "rc87-8d05a4f10bd8fd7d",
+              "runner": "vitest",
+              "digest": "672778044c7fecfa552302f156de40689982044da1456d0920ae1951757debc4"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -36074,8 +36542,8 @@
         "targetPackage": "language-server"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-057f64e6f899063a",
@@ -36090,7 +36558,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "c50cee65b36e988e086d420eae7ba054a0a9b8aa3a606a920c6915c7d4fcecfb",
+          "targets": [
+            {
+              "caseId": "rc87-057f64e6f899063a",
+              "runner": "vitest",
+              "digest": "24e1c8cebce31d502263084fd59eff6228173cdc825d5cf4a0a1d8c20f0a680e"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -59352,8 +59830,8 @@
         "targetPackage": "mcp"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-8f864fb0ea35d7ce",
@@ -59368,7 +59846,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "483c056820424430e358aa4b08946504035fa21271fb374db2b02de0d5a95788",
+          "targets": [
+            {
+              "caseId": "rc87-8f864fb0ea35d7ce",
+              "runner": "vitest",
+              "digest": "8f9861cd4e3caeafe27980503717a433cc12a1e531266810d338f9c077ae5c44"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -59396,8 +59884,8 @@
         "targetPackage": "mcp"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-70467a45db659966",
@@ -59412,7 +59900,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "2adefef38a45800e0d0d2fbc96e1412a9301717b0ceb99dd3c7e7698d02f0313",
+          "targets": [
+            {
+              "caseId": "rc87-70467a45db659966",
+              "runner": "vitest",
+              "digest": "914ea051ddf78805466bfad3a89e9da758e3b9a19862e42d4f77001f20d04807"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -59440,8 +59938,8 @@
         "targetPackage": "mcp"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-5ee3dd7b8dcf6086",
@@ -59456,7 +59954,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "c0757762cc6980fa0d6b9d9877fe90413431a95013ca0d66bee7dbbdbf915ec7",
+          "targets": [
+            {
+              "caseId": "rc87-5ee3dd7b8dcf6086",
+              "runner": "vitest",
+              "digest": "c7c4369973523018c30e6ccc36b0749c9bbb6bdd9fb85ea33714009d504f7bca"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -59540,8 +60048,8 @@
         "targetPackage": "mcp"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-abd3cb056fd81dd0",
@@ -59556,7 +60064,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "23aff1b39a0ad768992a0b5a5bdc8915930ebcf73503dd882d851a46e7557c56",
+          "targets": [
+            {
+              "caseId": "rc87-abd3cb056fd81dd0",
+              "runner": "vitest",
+              "digest": "951792a5d0ae2352cc36dd25cba8706ed4850c518d21fdaba54fcb94ff56e073"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -59584,8 +60102,8 @@
         "targetPackage": "mcp"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-54b2504377febf1c",
@@ -59600,7 +60118,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "97e506db21237950e904d4b6325813593d44f5b8e971fc21b5dec826b221c9c0",
+          "targets": [
+            {
+              "caseId": "rc87-54b2504377febf1c",
+              "runner": "vitest",
+              "digest": "7ba0d719592cd9238d9a78e1ec8c5625f8df7ecbcc79ec05f0b698c69307c72c"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -59628,8 +60156,8 @@
         "targetPackage": "mcp"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-0b352572aedcb25f",
@@ -59644,7 +60172,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "0e3130078df78e88dacf7c7bc553e5be9cb0c1e165f79d88bb470e0a8888e9b0",
+          "targets": [
+            {
+              "caseId": "rc87-0b352572aedcb25f",
+              "runner": "vitest",
+              "digest": "11036a0d8efbbcd1c6041eb4b2b066acd6757a59e38fac82210926e90945b235"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -59952,8 +60490,8 @@
         "targetPackage": "mcp"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-bda5260bf5403fa5",
@@ -59968,7 +60506,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "1a42298389c1c365e9dff81b52589c2339177acfa5c442ceb061c00431ee928f",
+          "targets": [
+            {
+              "caseId": "rc87-bda5260bf5403fa5",
+              "runner": "vitest",
+              "digest": "3022a67f57969e21cc64cb77710322247730777a0bc4f342594cb3ddf0e5761d"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -59996,8 +60544,8 @@
         "targetPackage": "mcp"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-6c45d1556603cf91",
@@ -60012,7 +60560,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "d55a7a43676368408852cb9996a5890deb4a501446889b3d378c140b8d2e6d21",
+          "targets": [
+            {
+              "caseId": "rc87-6c45d1556603cf91",
+              "runner": "vitest",
+              "digest": "290a7c54010649eb030770bdb7cd1e1389f1325770a8dfe0ad475f75f3dd9252"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -87230,8 +87788,8 @@
         "targetPackage": "vscode"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-71170c6d20bb3285",
@@ -87246,7 +87804,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "83b8355cc3473773ffa682043cacb923c18827f0a7e4262127969aa2238a57c9",
+          "targets": [
+            {
+              "caseId": "rc87-71170c6d20bb3285",
+              "runner": "vitest",
+              "digest": "05a4e1182edcbc1b0084d6677aa62357514110788bf80319b5024ef020b0e1d4"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -87272,8 +87840,8 @@
         "targetPackage": "vscode"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-9df55c9d5f6c4414",
@@ -87288,7 +87856,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "fd3d5a0d5cc3e802dd9dffccce18a281aae8dc8fea634048db1f56924e28ffb0",
+          "targets": [
+            {
+              "caseId": "rc87-9df55c9d5f6c4414",
+              "runner": "vitest",
+              "digest": "59d71387ace9f967402311620e72e72e7a68a8895209b01e9fd50fd415f9bd4a"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -87531,14 +88109,45 @@
         "targetPackage": "vscode"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "approved-divergence",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-69e7b6412f26781a",
+            "package": "vscode",
+            "file": "packages/vscode/tests/server-bundle.test.js",
+            "line": 226,
+            "title": "records the rc.87 native semantic import externalization divergence",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "e9cce201c7703532fd59cadd9f0604d62c072caff2c0d105fa24da8de19039ff"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "approved-divergence",
+          "sourceDigest": "eec2e8e69374614eaba2b2e73a9619a1f091f7b184f1b07e123e5d924cd191e2",
+          "targets": [
+            {
+              "caseId": "rc87-69e7b6412f26781a",
+              "runner": "vitest",
+              "digest": "e9cce201c7703532fd59cadd9f0604d62c072caff2c0d105fa24da8de19039ff"
+            }
+          ],
+          "exceptionId": "rc87-vscode-rust-native-runtime-externalization"
+        }
       },
-      "divergence": null
+      "divergence": {
+        "id": "rc87-vscode-rust-native-runtime-externalization",
+        "reason": "The VS Code server now bundles Rust-backed semantic hosts and externalizes only the target-specific native binding packages. Restoring retired TypeScript semantic dependencies would violate the Rust ownership boundary.",
+        "old": "The server bundle leaves lightningcss and oxc-parser as native runtime imports.",
+        "new": "The server bundle contains no lightningcss or oxc semantic imports; target-specific @master/css-binding packages remain the staged native runtime boundary.",
+        "packages": [
+          "vscode"
+        ],
+        "test": "packages/vscode/tests/server-bundle.test.js"
+      }
     },
     {
       "id": "rc87-5f8e7047f4a4566e",
@@ -87570,7 +88179,7 @@
             "id": "rc87-5f8e7047f4a4566e",
             "package": "vscode",
             "file": "packages/vscode/tests/server-bundle.test.js",
-            "line": 237,
+            "line": 247,
             "title": "staged extension includes runtime packages for the current target",
             "runner": "vitest",
             "kind": "test",
@@ -87623,7 +88232,7 @@
             "id": "rc87-b9356db2170186e5",
             "package": "vscode",
             "file": "packages/vscode/tests/server-bundle.test.js",
-            "line": 244,
+            "line": 254,
             "title": "staged extension includes runtime packages for win32-x64",
             "runner": "vitest",
             "kind": "test",
@@ -87677,7 +88286,7 @@
             "id": "rc87-43ccec6b0379bfc5",
             "package": "vscode",
             "file": "packages/vscode/tests/server-bundle.test.js",
-            "line": 250,
+            "line": 260,
             "title": "staged extension preserves the Marketplace publisher by default",
             "runner": "vitest",
             "kind": "test",
@@ -87731,7 +88340,7 @@
             "id": "rc87-3ab79834c8a53cc9",
             "package": "vscode",
             "file": "packages/vscode/tests/server-bundle.test.js",
-            "line": 257,
+            "line": 267,
             "title": "staged extension supports an Open VSX publisher override",
             "runner": "vitest",
             "kind": "test",
@@ -87785,7 +88394,7 @@
             "id": "rc87-e98877e0f4b081bc",
             "package": "vscode",
             "file": "packages/vscode/tests/server-bundle.test.js",
-            "line": 264,
+            "line": 274,
             "title": "staged extension rejects unsupported targets",
             "runner": "vitest",
             "kind": "test",
@@ -87840,7 +88449,7 @@
             "id": "rc87-9384b2b1423bc060",
             "package": "vscode",
             "file": "packages/vscode/tests/server-bundle.test.js",
-            "line": 270,
+            "line": 280,
             "title": "manifest contributes TextMate grammar, semantic token scopes, and CSS diagnostic defaults",
             "runner": "vitest",
             "kind": "test",
@@ -87894,7 +88503,7 @@
             "id": "rc87-247a9f4efc2fc08a",
             "package": "vscode",
             "file": "packages/vscode/tests/server-bundle.test.js",
-            "line": 321,
+            "line": 331,
             "title": "staged extension includes shared TextMate grammar asset",
             "runner": "vitest",
             "kind": "test",
@@ -87941,12 +88550,33 @@
         "targetPackage": "vscode"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-d534af146eb72292",
+            "package": "vscode",
+            "file": "packages/vscode/tests/server-bundle.test.js",
+            "line": 376,
+            "title": "proves the rc.87 staged language server lifecycle without workspace node_modules",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "7ea71446b5ca07d00c63563c346ebd647b255ff7fb4e0ac63b304b539ee44481"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "299f2290a2a03c3861991d6b6f8f594b17f0704c715e7e831d21e77a358372ba",
+          "targets": [
+            {
+              "caseId": "rc87-d534af146eb72292",
+              "runner": "vitest",
+              "digest": "7ea71446b5ca07d00c63563c346ebd647b255ff7fb4e0ac63b304b539ee44481"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -92457,7 +93087,7 @@
       "id": "rc87-9b67d767485c6314",
       "package": "vscode",
       "file": "packages/vscode/tests/server-bundle.test.js",
-      "line": 226,
+      "line": 236,
       "title": "server bundle embeds referenced MDN JSON modules",
       "runner": "vitest",
       "kind": "test",
@@ -92467,7 +93097,7 @@
       "id": "rc87-e28158711048da1b",
       "package": "vscode",
       "file": "packages/vscode/tests/server-bundle.test.js",
-      "line": 332,
+      "line": 342,
       "title": "staged language server starts without workspace node_modules and shuts down",
       "runner": "vitest",
       "kind": "test",
