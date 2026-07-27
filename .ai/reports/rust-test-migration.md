@@ -6,7 +6,7 @@ The machine-readable source of truth is `parity/ts-test-migration-ledger.json`.
 ## Frozen baseline
 
 - Public and semantic source baseline: `v2.0.0-rc.87@9cc3e8b5f2e34d5220f10f27ed5ce8186fbcb524`.
-- Rust target candidate: `latest-target-change@7ac3c1a63a7af8c8c927a869fa3e4d531261cec6`.
+- Rust target candidate: `latest-target-change@5c4997b9003813b47d3d30fff442b27095157589`.
 - Scope: executable tests and E2E cases under `packages/*`; examples, site, and benchmarks are not migration denominators.
 - Newer rc changes are an overlay only and never replace rc.87 expectations.
 
@@ -20,7 +20,7 @@ The machine-readable source of truth is `parity/ts-test-migration-ledger.json`.
 | rc.87 expanded cases | 1546 |
 | Expanded parameter and RuleTester cases | 349 |
 | Unresolved runtime matrices | 0 |
-| Rust target cases collected | 1313 |
+| Rust target cases collected | 1579 |
 | Target-only cases | 156 |
 
 The old 114-test takeover ledger is an engine-only historical subset. Its semantic
@@ -31,31 +31,31 @@ capture commit `ef1a7c851` is not substituted for rc.87.
 | Status | Count |
 |---|---:|
 | approved-divergence | 2 |
-| gap | 398 |
-| mapped-unverified | 85 |
+| gap | 142 |
+| mapped-unverified | 86 |
 | source-inactive | 10 |
-| verified-exact | 1051 |
+| verified-exact | 1306 |
 
 | Candidate coverage | Count |
 |---|---:|
-| candidate-all | 85 |
-| evidence | 446 |
-| exact-source | 607 |
-| none | 408 |
+| candidate-all | 96 |
+| evidence | 480 |
+| exact-source | 828 |
+| none | 142 |
 
 | Verification proof | Count |
 |---|---:|
 | approved-divergence | 2 |
-| exact-source | 607 |
-| rc87-golden | 444 |
+| exact-source | 828 |
+| rc87-golden | 478 |
 
 | Priority | Cases | Gaps |
 |---|---:|---:|
 | P0 | 676 | 1 |
-| P1 | 732 | 390 |
+| P1 | 732 | 134 |
 | P2 | 138 | 7 |
 | P3 | 0 | 0 |
-Verified active cases: 1053/1536.
+Verified active cases: 1308/1536.
 
 `mapped-unverified` means that an executable target candidate or takeover reference
 exists. It does not claim parity. `exact-source` requires one identical executable
@@ -73,15 +73,15 @@ Ambiguous candidates remain incomplete until evidence selects a target explicitl
 | `css-sv` | 7 | 0 | 0 | 7 | 7 | 0 |
 | `diagnostics` | 3 | 0 | 3 | 0 | 3 | 0 |
 | `engine` | 184 | 184 | 0 | 0 | 184 | 0 |
-| `eslint-config` | 2 | 0 | 2 | 0 | 0 | 2 |
+| `eslint-config` | 2 | 0 | 2 | 0 | 2 | 0 |
 | `eslint-plugin` | 226 | 4 | 222 | 0 | 226 | 0 |
 | `facade` | 1 | 1 | 0 | 0 | 1 | 0 |
 | `figma` | 1 | 0 | 0 | 1 | 1 | 0 |
 | `integration` | 11 | 11 | 0 | 0 | 11 | 0 |
 | `language` | 78 | 0 | 78 | 0 | 9 | 69 |
 | `language-server` | 31 | 2 | 0 | 29 | 31 | 0 |
-| `language-service` | 217 | 4 | 213 | 0 | 14 | 203 |
-| `lexer` | 34 | 0 | 34 | 0 | 0 | 34 |
+| `language-service` | 217 | 4 | 213 | 0 | 217 | 0 |
+| `lexer` | 34 | 0 | 34 | 0 | 34 | 0 |
 | `lint` | 65 | 3 | 62 | 0 | 3 | 62 |
 | `mcp` | 16 | 0 | 0 | 16 | 16 | 0 |
 | `next` | 54 | 54 | 0 | 0 | 54 | 0 |
@@ -92,10 +92,10 @@ Ambiguous candidates remain incomplete until evidence selects a target explicitl
 | `scanner` | 96 | 0 | 96 | 0 | 93 | 3 |
 | `schema` | 2 | 0 | 2 | 0 | 2 | 0 |
 | `server` | 36 | 36 | 0 | 0 | 36 | 0 |
-| `source` | 13 | 1 | 12 | 0 | 1 | 12 |
+| `source` | 13 | 1 | 12 | 0 | 13 | 0 |
 | `stylesheet` | 48 | 48 | 0 | 0 | 48 | 0 |
 | `svelte` | 9 | 9 | 0 | 0 | 9 | 0 |
-| `validator` | 8 | 0 | 8 | 0 | 3 | 5 |
+| `validator` | 8 | 0 | 8 | 0 | 8 | 0 |
 | `vite` | 92 | 92 | 0 | 0 | 92 | 0 |
 | `vscode` | 28 | 3 | 0 | 25 | 26 | 2 |
 | `webpack` | 43 | 43 | 0 | 0 | 43 | 0 |
