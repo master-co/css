@@ -6,7 +6,7 @@ The machine-readable source of truth is `parity/ts-test-migration-ledger.json`.
 ## Frozen baseline
 
 - Public and semantic source baseline: `v2.0.0-rc.87@9cc3e8b5f2e34d5220f10f27ed5ce8186fbcb524`.
-- Rust target candidate: `latest-target-change@223d6c3e01397f7e97dfa89a8ead84a9eefe98d1`.
+- Rust target candidate: `latest-target-change@61b9def159eeb78cfe67a70e96cb3dc148088952`.
 - Scope: executable tests and E2E cases under `packages/*`; examples, site, and benchmarks are not migration denominators.
 - Newer rc changes are an overlay only and never replace rc.87 expectations.
 
@@ -20,7 +20,7 @@ The machine-readable source of truth is `parity/ts-test-migration-ledger.json`.
 | rc.87 expanded cases | 1546 |
 | Expanded parameter and RuleTester cases | 349 |
 | Unresolved runtime matrices | 0 |
-| Rust target cases collected | 1641 |
+| Rust target cases collected | 1666 |
 | Target-only cases | 156 |
 
 The old 114-test takeover ledger is an engine-only historical subset. Its semantic
@@ -31,31 +31,31 @@ capture commit `ef1a7c851` is not substituted for rc.87.
 | Status | Count |
 |---|---:|
 | approved-divergence | 2 |
-| gap | 80 |
-| mapped-unverified | 86 |
+| gap | 11 |
+| mapped-unverified | 78 |
 | source-inactive | 10 |
-| verified-exact | 1368 |
+| verified-exact | 1445 |
 
 | Candidate coverage | Count |
 |---|---:|
-| candidate-all | 96 |
-| evidence | 480 |
-| exact-source | 890 |
-| none | 80 |
+| candidate-all | 88 |
+| evidence | 495 |
+| exact-source | 952 |
+| none | 11 |
 
 | Verification proof | Count |
 |---|---:|
 | approved-divergence | 2 |
-| exact-source | 890 |
-| rc87-golden | 478 |
+| exact-source | 952 |
+| rc87-golden | 493 |
 
 | Priority | Cases | Gaps |
 |---|---:|---:|
 | P0 | 676 | 1 |
-| P1 | 732 | 72 |
+| P1 | 732 | 3 |
 | P2 | 138 | 7 |
 | P3 | 0 | 0 |
-Verified active cases: 1370/1536.
+Verified active cases: 1447/1536.
 
 `mapped-unverified` means that an executable target candidate or takeover reference
 exists. It does not claim parity. `exact-source` requires one identical executable
@@ -78,7 +78,7 @@ Ambiguous candidates remain incomplete until evidence selects a target explicitl
 | `facade` | 1 | 1 | 0 | 0 | 1 | 0 |
 | `figma` | 1 | 0 | 0 | 1 | 1 | 0 |
 | `integration` | 11 | 11 | 0 | 0 | 11 | 0 |
-| `language` | 78 | 0 | 78 | 0 | 9 | 69 |
+| `language` | 78 | 0 | 78 | 0 | 78 | 0 |
 | `language-server` | 31 | 2 | 0 | 29 | 31 | 0 |
 | `language-service` | 217 | 4 | 213 | 0 | 217 | 0 |
 | `lexer` | 34 | 0 | 34 | 0 | 34 | 0 |

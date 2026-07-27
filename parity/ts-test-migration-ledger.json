@@ -1366,11 +1366,11 @@
   },
   "target": {
     "ref": "latest-target-change",
-    "commit": "223d6c3e01397f7e97dfa89a8ead84a9eefe98d1",
+    "commit": "61b9def159eeb78cfe67a70e96cb3dc148088952",
     "packageCount": 36,
-    "testFiles": 190,
+    "testFiles": 193,
     "e2eFiles": 24,
-    "cases": 1641
+    "cases": 1666
   },
   "existingParity": {
     "semanticBaseline": "ef1a7c851",
@@ -1381,20 +1381,20 @@
   "evidence": {
     "path": "parity/ts-test-migration-evidence.json",
     "version": 1,
-    "records": 480,
+    "records": 495,
     "proofs": {
       "approved-divergence": 2,
-      "exact-source": 890,
-      "rc87-golden": 478
+      "exact-source": 952,
+      "rc87-golden": 493
     }
   },
   "summary": {
     "byStatus": {
       "approved-divergence": 2,
-      "gap": 80,
-      "mapped-unverified": 86,
+      "gap": 11,
+      "mapped-unverified": 78,
       "source-inactive": 10,
-      "verified-exact": 1368
+      "verified-exact": 1445
     },
     "byPriority": {
       "P0": 676,
@@ -1402,15 +1402,15 @@
       "P2": 138
     },
     "byCoverage": {
-      "candidate-all": 96,
-      "evidence": 480,
-      "exact-source": 890,
-      "none": 80
+      "candidate-all": 88,
+      "evidence": 495,
+      "exact-source": 952,
+      "none": 11
     },
     "byProof": {
       "approved-divergence": 2,
-      "exact-source": 890,
-      "rc87-golden": 478
+      "exact-source": 952,
+      "rc87-golden": 493
     },
     "byPackage": {
       "astro": {
@@ -1514,8 +1514,8 @@
         "P0": 0,
         "P1": 78,
         "P2": 0,
-        "mapped": 9,
-        "gap": 69
+        "mapped": 78,
+        "gap": 0
       },
       "language-server": {
         "total": 31,
@@ -49495,15 +49495,38 @@
         "sourceDigest": "2a6b1d1a7ea15554c3289e33ebd856ef6eda2ee8cd00ffc5800eb3d1d106da3a"
       },
       "ownership": {
-        "targetPackage": "tooling"
+        "targetPackage": "language-service"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
-        "sourceIdenticalTargetIds": [],
+        "status": "verified-exact",
+        "coverage": "exact-source",
+        "targets": [
+          {
+            "id": "rc87-747d664e812fd1fe",
+            "package": "language-service",
+            "file": "packages/language-service/tests/rc87-browser.test.ts",
+            "line": 46,
+            "title": "collects browser semantic tokens for HTML class attributes",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "2a6b1d1a7ea15554c3289e33ebd856ef6eda2ee8cd00ffc5800eb3d1d106da3a"
+          }
+        ],
+        "sourceIdenticalTargetIds": [
+          "rc87-747d664e812fd1fe"
+        ],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "exact-source",
+          "sourceDigest": "2a6b1d1a7ea15554c3289e33ebd856ef6eda2ee8cd00ffc5800eb3d1d106da3a",
+          "targets": [
+            {
+              "caseId": "rc87-747d664e812fd1fe",
+              "runner": "vitest",
+              "digest": "2a6b1d1a7ea15554c3289e33ebd856ef6eda2ee8cd00ffc5800eb3d1d106da3a"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -49526,15 +49549,38 @@
         "sourceDigest": "038cc253949d37e1e51c5bc23e37af25c98059d1c4c8dd4944932761930f9bd0"
       },
       "ownership": {
-        "targetPackage": "tooling"
+        "targetPackage": "language-service"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
-        "sourceIdenticalTargetIds": [],
+        "status": "verified-exact",
+        "coverage": "exact-source",
+        "targets": [
+          {
+            "id": "rc87-5e294afb68e500f9",
+            "package": "language-service",
+            "file": "packages/language-service/tests/rc87-browser.test.ts",
+            "line": 65,
+            "title": "encodes browser role-derived semantic token modifiers",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "038cc253949d37e1e51c5bc23e37af25c98059d1c4c8dd4944932761930f9bd0"
+          }
+        ],
+        "sourceIdenticalTargetIds": [
+          "rc87-5e294afb68e500f9"
+        ],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "exact-source",
+          "sourceDigest": "038cc253949d37e1e51c5bc23e37af25c98059d1c4c8dd4944932761930f9bd0",
+          "targets": [
+            {
+              "caseId": "rc87-5e294afb68e500f9",
+              "runner": "vitest",
+              "digest": "038cc253949d37e1e51c5bc23e37af25c98059d1c4c8dd4944932761930f9bd0"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -49559,15 +49605,38 @@
         "sourceDigest": "012c1e652a243c92a7b358ba9c01fc98de6f2dc9b6602808133d5f0959351d63"
       },
       "ownership": {
-        "targetPackage": "tooling"
+        "targetPackage": "language-service"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
-        "sourceIdenticalTargetIds": [],
+        "status": "verified-exact",
+        "coverage": "exact-source",
+        "targets": [
+          {
+            "id": "rc87-a1f11a440101fcd3",
+            "package": "language-service",
+            "file": "packages/language-service/tests/rc87-browser.test.ts",
+            "line": 84,
+            "title": "collects browser semantic tokens only for CSS directive class-list spans",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "012c1e652a243c92a7b358ba9c01fc98de6f2dc9b6602808133d5f0959351d63"
+          }
+        ],
+        "sourceIdenticalTargetIds": [
+          "rc87-a1f11a440101fcd3"
+        ],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "exact-source",
+          "sourceDigest": "012c1e652a243c92a7b358ba9c01fc98de6f2dc9b6602808133d5f0959351d63",
+          "targets": [
+            {
+              "caseId": "rc87-a1f11a440101fcd3",
+              "runner": "vitest",
+              "digest": "012c1e652a243c92a7b358ba9c01fc98de6f2dc9b6602808133d5f0959351d63"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -49591,15 +49660,38 @@
         "sourceDigest": "1a6d6d6842ef1fd1cdf967c624e3845e5ff3457c2623b9c964866fcf507afdd4"
       },
       "ownership": {
-        "targetPackage": "tooling"
+        "targetPackage": "language-service"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
-        "sourceIdenticalTargetIds": [],
+        "status": "verified-exact",
+        "coverage": "exact-source",
+        "targets": [
+          {
+            "id": "rc87-96e5da5533a2f2f2",
+            "package": "language-service",
+            "file": "packages/language-service/tests/rc87-browser.test.ts",
+            "line": 130,
+            "title": "does not collect browser semantic tokens for managed syntax without class-list spans",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "1a6d6d6842ef1fd1cdf967c624e3845e5ff3457c2623b9c964866fcf507afdd4"
+          }
+        ],
+        "sourceIdenticalTargetIds": [
+          "rc87-96e5da5533a2f2f2"
+        ],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "exact-source",
+          "sourceDigest": "1a6d6d6842ef1fd1cdf967c624e3845e5ff3457c2623b9c964866fcf507afdd4",
+          "targets": [
+            {
+              "caseId": "rc87-96e5da5533a2f2f2",
+              "runner": "vitest",
+              "digest": "1a6d6d6842ef1fd1cdf967c624e3845e5ff3457c2623b9c964866fcf507afdd4"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -49622,15 +49714,38 @@
         "sourceDigest": "a1829f7038201b39610af926056ebc1f26f566999e06b39ade3085e73b3d4ad5"
       },
       "ownership": {
-        "targetPackage": "tooling"
+        "targetPackage": "language-service"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
-        "sourceIdenticalTargetIds": [],
+        "status": "verified-exact",
+        "coverage": "exact-source",
+        "targets": [
+          {
+            "id": "rc87-f924916010f30181",
+            "package": "language-service",
+            "file": "packages/language-service/tests/rc87-browser.test.ts",
+            "line": 153,
+            "title": "encodes browser semantic tokens",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "a1829f7038201b39610af926056ebc1f26f566999e06b39ade3085e73b3d4ad5"
+          }
+        ],
+        "sourceIdenticalTargetIds": [
+          "rc87-f924916010f30181"
+        ],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "exact-source",
+          "sourceDigest": "a1829f7038201b39610af926056ebc1f26f566999e06b39ade3085e73b3d4ad5",
+          "targets": [
+            {
+              "caseId": "rc87-f924916010f30181",
+              "runner": "vitest",
+              "digest": "a1829f7038201b39610af926056ebc1f26f566999e06b39ade3085e73b3d4ad5"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -49658,12 +49773,35 @@
         "targetPackage": "tooling"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
-        "sourceIdenticalTargetIds": [],
+        "status": "verified-exact",
+        "coverage": "exact-source",
+        "targets": [
+          {
+            "id": "rc87-12848f2a85402625",
+            "package": "tooling",
+            "file": "packages/tooling/tests/language/format-directives.test.ts",
+            "line": 39,
+            "title": "repairs detached important suffixes in class lists",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "2380979a97653620692b639320698da49030420bc023a3ab6dad349330a65c57"
+          }
+        ],
+        "sourceIdenticalTargetIds": [
+          "rc87-12848f2a85402625"
+        ],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "exact-source",
+          "sourceDigest": "2380979a97653620692b639320698da49030420bc023a3ab6dad349330a65c57",
+          "targets": [
+            {
+              "caseId": "rc87-12848f2a85402625",
+              "runner": "vitest",
+              "digest": "2380979a97653620692b639320698da49030420bc023a3ab6dad349330a65c57"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -49691,14 +49829,14 @@
         "targetPackage": "tooling"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-b161e2fcad643e62",
             "package": "tooling",
             "file": "packages/tooling/tests/language/format-directives.test.ts",
-            "line": 33,
+            "line": 43,
             "title": "formats @compose class-list preludes",
             "runner": "vitest",
             "kind": "test",
@@ -49707,7 +49845,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "42f56d0a6557c3f3e8675e837a21fea590547aba7576543bd6c2611d1836e962",
+          "targets": [
+            {
+              "caseId": "rc87-b161e2fcad643e62",
+              "runner": "vitest",
+              "digest": "b3687d2ae4f53502564dbfe1fd2a8e2cbd5c86c74e94a5ec0d36f8e77d785f6a"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -49735,14 +49883,14 @@
         "targetPackage": "tooling"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-8af187233ba94d35",
             "package": "tooling",
             "file": "packages/tooling/tests/language/format-directives.test.ts",
-            "line": 38,
+            "line": 48,
             "title": "leaves quoted and grouped @compose syntax unchanged",
             "runner": "vitest",
             "kind": "test",
@@ -49751,7 +49899,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "7cb742806da593d78e409b933dd36c1204d7d4c4c592aea807329233c2abcfaa",
+          "targets": [
+            {
+              "caseId": "rc87-8af187233ba94d35",
+              "runner": "vitest",
+              "digest": "5514b1fac745e8eb079448ba66f86051670cc72e9eda08c5fc51024246554d15"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -49779,14 +49937,14 @@
         "targetPackage": "tooling"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-0fab234554e87fd8",
             "package": "tooling",
             "file": "packages/tooling/tests/language/format-directives.test.ts",
-            "line": 43,
+            "line": 53,
             "title": "formats @safelist quoted class lists while preserving quote style",
             "runner": "vitest",
             "kind": "test",
@@ -49795,7 +49953,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "914295b559e1f6aaa48037839e2d9a6da7d9e5f4038152db9adcdab1ffb1a656",
+          "targets": [
+            {
+              "caseId": "rc87-0fab234554e87fd8",
+              "runner": "vitest",
+              "digest": "7e9f2e59ef4b6143d038cc2096fb0c221e63382e08cd574d5ea986609fd2224d"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -49822,14 +49990,14 @@
         "targetPackage": "tooling"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-e825fd439c22cdf5",
             "package": "tooling",
             "file": "packages/tooling/tests/language/format-directives.test.ts",
-            "line": 48,
+            "line": 58,
             "title": "leaves internal styles dogfood directives unchanged",
             "runner": "vitest",
             "kind": "test",
@@ -49838,7 +50006,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "9c4ab491cf18f49919cb7e64a56fe215c36637e733d0497428f922c47978a861",
+          "targets": [
+            {
+              "caseId": "rc87-e825fd439c22cdf5",
+              "runner": "vitest",
+              "digest": "5eec81b3d1ae2c7ebf91b2ea1546ebd9eba4434e84af1d6258173dab48c20e8d"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -49865,14 +50043,14 @@
         "targetPackage": "tooling"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-4a1cc3f5e4e55c59",
             "package": "tooling",
             "file": "packages/tooling/tests/language/format-directives.test.ts",
-            "line": 60,
+            "line": 70,
             "title": "normalizes directive spacing without changing block contents",
             "runner": "vitest",
             "kind": "test",
@@ -49881,7 +50059,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "a3fa16472dc016cd2f123e30a4b4ff8847e792246fdecf65d63b09c7b1afb91b",
+          "targets": [
+            {
+              "caseId": "rc87-4a1cc3f5e4e55c59",
+              "runner": "vitest",
+              "digest": "ff71c42b686b077bbabfcd2df36bcff3d631ed6cb699a1a7453ee2e10daa6d18"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -49908,14 +50096,14 @@
         "targetPackage": "tooling"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-2b946a760e1253bc",
             "package": "tooling",
             "file": "packages/tooling/tests/language/format-directives.test.ts",
-            "line": 65,
+            "line": 75,
             "title": "ignores directives inside comments and strings",
             "runner": "vitest",
             "kind": "test",
@@ -49924,7 +50112,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "74f133576e0dd67a9fc6bddab1ffffe93b12aa5544c027490a09e9a43c90d712",
+          "targets": [
+            {
+              "caseId": "rc87-2b946a760e1253bc",
+              "runner": "vitest",
+              "digest": "a6069e1837cfd4ffa47c22b0d9bbfbd6b19131b1584e6aa5ce99c4abab500db4"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -49951,14 +50149,14 @@
         "targetPackage": "tooling"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-a0e40cebddb38394",
             "package": "tooling",
             "file": "packages/tooling/tests/language/format-directives.test.ts",
-            "line": 70,
+            "line": 80,
             "title": "can limit edits to a source range",
             "runner": "vitest",
             "kind": "test",
@@ -49967,7 +50165,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "072906742cb927607b4bbbb8f9f9ff2342603f3eacd9ac5344292b8657c5562d",
+          "targets": [
+            {
+              "caseId": "rc87-a0e40cebddb38394",
+              "runner": "vitest",
+              "digest": "09e0865ea6a199708131fcea551f5608e9229961b70bc03077fe14ca4607e85b"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -49991,15 +50199,38 @@
         "sourceDigest": "4883c76ce3a91792220c6443d04f927d9f04dd44d9da0771e04b918bd7a8ac10"
       },
       "ownership": {
-        "targetPackage": "tooling"
+        "targetPackage": "language-service"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
-        "sourceIdenticalTargetIds": [],
+        "status": "verified-exact",
+        "coverage": "exact-source",
+        "targets": [
+          {
+            "id": "rc87-4e00ddecaff40266",
+            "package": "language-service",
+            "file": "packages/language-service/tests/get-class-position/assignments.test.ts",
+            "line": 4,
+            "title": "clsx",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "4883c76ce3a91792220c6443d04f927d9f04dd44d9da0771e04b918bd7a8ac10"
+          }
+        ],
+        "sourceIdenticalTargetIds": [
+          "rc87-4e00ddecaff40266"
+        ],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "exact-source",
+          "sourceDigest": "4883c76ce3a91792220c6443d04f927d9f04dd44d9da0771e04b918bd7a8ac10",
+          "targets": [
+            {
+              "caseId": "rc87-4e00ddecaff40266",
+              "runner": "vitest",
+              "digest": "4883c76ce3a91792220c6443d04f927d9f04dd44d9da0771e04b918bd7a8ac10"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -50023,15 +50254,38 @@
         "sourceDigest": "a74a8b45b2e5280f8aae6380947262f7f724c5079c6c32b41d0a88d90cd0dcc0"
       },
       "ownership": {
-        "targetPackage": "tooling"
+        "targetPackage": "language-service"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
-        "sourceIdenticalTargetIds": [],
+        "status": "verified-exact",
+        "coverage": "exact-source",
+        "targets": [
+          {
+            "id": "rc87-ac9e5f01adc580d7",
+            "package": "language-service",
+            "file": "packages/language-service/tests/get-class-position/assignments.test.ts",
+            "line": 10,
+            "title": "styled",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "a74a8b45b2e5280f8aae6380947262f7f724c5079c6c32b41d0a88d90cd0dcc0"
+          }
+        ],
+        "sourceIdenticalTargetIds": [
+          "rc87-ac9e5f01adc580d7"
+        ],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "exact-source",
+          "sourceDigest": "a74a8b45b2e5280f8aae6380947262f7f724c5079c6c32b41d0a88d90cd0dcc0",
+          "targets": [
+            {
+              "caseId": "rc87-ac9e5f01adc580d7",
+              "runner": "vitest",
+              "digest": "a74a8b45b2e5280f8aae6380947262f7f724c5079c6c32b41d0a88d90cd0dcc0"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -50055,15 +50309,38 @@
         "sourceDigest": "860efa29263c4eafa69d287622184e76036a3add4435ef9b4cb1bf9f4e1a0c63"
       },
       "ownership": {
-        "targetPackage": "tooling"
+        "targetPackage": "language-service"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
-        "sourceIdenticalTargetIds": [],
+        "status": "verified-exact",
+        "coverage": "exact-source",
+        "targets": [
+          {
+            "id": "rc87-548b7db2949d68c9",
+            "package": "language-service",
+            "file": "packages/language-service/tests/get-class-position/assignments.test.ts",
+            "line": 16,
+            "title": "escaped single quotes",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "860efa29263c4eafa69d287622184e76036a3add4435ef9b4cb1bf9f4e1a0c63"
+          }
+        ],
+        "sourceIdenticalTargetIds": [
+          "rc87-548b7db2949d68c9"
+        ],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "exact-source",
+          "sourceDigest": "860efa29263c4eafa69d287622184e76036a3add4435ef9b4cb1bf9f4e1a0c63",
+          "targets": [
+            {
+              "caseId": "rc87-548b7db2949d68c9",
+              "runner": "vitest",
+              "digest": "860efa29263c4eafa69d287622184e76036a3add4435ef9b4cb1bf9f4e1a0c63"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -50087,15 +50364,38 @@
         "sourceDigest": "608d5e744b2fbed8954f648e92b57f22d6ad3c61f147dd64efc63ec5554923f2"
       },
       "ownership": {
-        "targetPackage": "tooling"
+        "targetPackage": "language-service"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
-        "sourceIdenticalTargetIds": [],
+        "status": "verified-exact",
+        "coverage": "exact-source",
+        "targets": [
+          {
+            "id": "rc87-d651874f65b76aeb",
+            "package": "language-service",
+            "file": "packages/language-service/tests/get-class-position/astro.test.ts",
+            "line": 5,
+            "title": "class in ternary operator",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "608d5e744b2fbed8954f648e92b57f22d6ad3c61f147dd64efc63ec5554923f2"
+          }
+        ],
+        "sourceIdenticalTargetIds": [
+          "rc87-d651874f65b76aeb"
+        ],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "exact-source",
+          "sourceDigest": "608d5e744b2fbed8954f648e92b57f22d6ad3c61f147dd64efc63ec5554923f2",
+          "targets": [
+            {
+              "caseId": "rc87-d651874f65b76aeb",
+              "runner": "vitest",
+              "digest": "608d5e744b2fbed8954f648e92b57f22d6ad3c61f147dd64efc63ec5554923f2"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -50119,15 +50419,38 @@
         "sourceDigest": "b78a4df10ea2681d6be2814700924006fd2ae774e73adaa58c418e7b3cb47f75"
       },
       "ownership": {
-        "targetPackage": "tooling"
+        "targetPackage": "language-service"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
-        "sourceIdenticalTargetIds": [],
+        "status": "verified-exact",
+        "coverage": "exact-source",
+        "targets": [
+          {
+            "id": "rc87-0ae369e0e22fad63",
+            "package": "language-service",
+            "file": "packages/language-service/tests/get-class-position/astro.test.ts",
+            "line": 11,
+            "title": "mixed class assignment formats",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "b78a4df10ea2681d6be2814700924006fd2ae774e73adaa58c418e7b3cb47f75"
+          }
+        ],
+        "sourceIdenticalTargetIds": [
+          "rc87-0ae369e0e22fad63"
+        ],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "exact-source",
+          "sourceDigest": "b78a4df10ea2681d6be2814700924006fd2ae774e73adaa58c418e7b3cb47f75",
+          "targets": [
+            {
+              "caseId": "rc87-0ae369e0e22fad63",
+              "runner": "vitest",
+              "digest": "b78a4df10ea2681d6be2814700924006fd2ae774e73adaa58c418e7b3cb47f75"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -50151,15 +50474,38 @@
         "sourceDigest": "1e50a6555085317c8d0dbf996afb79761f2f8bfa2a6412a1370a725871bfc6bf"
       },
       "ownership": {
-        "targetPackage": "tooling"
+        "targetPackage": "language-service"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
-        "sourceIdenticalTargetIds": [],
+        "status": "verified-exact",
+        "coverage": "exact-source",
+        "targets": [
+          {
+            "id": "rc87-5ee5e860ddbceefa",
+            "package": "language-service",
+            "file": "packages/language-service/tests/get-class-position/react.test.ts",
+            "line": 6,
+            "title": "empty string with single quote",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "1e50a6555085317c8d0dbf996afb79761f2f8bfa2a6412a1370a725871bfc6bf"
+          }
+        ],
+        "sourceIdenticalTargetIds": [
+          "rc87-5ee5e860ddbceefa"
+        ],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "exact-source",
+          "sourceDigest": "1e50a6555085317c8d0dbf996afb79761f2f8bfa2a6412a1370a725871bfc6bf",
+          "targets": [
+            {
+              "caseId": "rc87-5ee5e860ddbceefa",
+              "runner": "vitest",
+              "digest": "1e50a6555085317c8d0dbf996afb79761f2f8bfa2a6412a1370a725871bfc6bf"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -50183,15 +50529,38 @@
         "sourceDigest": "347418737ccd907598ac887b2abb84cc087662e27435093cb37db46a709ed5ae"
       },
       "ownership": {
-        "targetPackage": "tooling"
+        "targetPackage": "language-service"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
-        "sourceIdenticalTargetIds": [],
+        "status": "verified-exact",
+        "coverage": "exact-source",
+        "targets": [
+          {
+            "id": "rc87-2303a483ad98fab9",
+            "package": "language-service",
+            "file": "packages/language-service/tests/get-class-position/react.test.ts",
+            "line": 12,
+            "title": "empty string with double quote",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "347418737ccd907598ac887b2abb84cc087662e27435093cb37db46a709ed5ae"
+          }
+        ],
+        "sourceIdenticalTargetIds": [
+          "rc87-2303a483ad98fab9"
+        ],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "exact-source",
+          "sourceDigest": "347418737ccd907598ac887b2abb84cc087662e27435093cb37db46a709ed5ae",
+          "targets": [
+            {
+              "caseId": "rc87-2303a483ad98fab9",
+              "runner": "vitest",
+              "digest": "347418737ccd907598ac887b2abb84cc087662e27435093cb37db46a709ed5ae"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -50215,15 +50584,38 @@
         "sourceDigest": "854eb4006a25acc1dd1ff5139756084cf7fd3f43e29de48b666f37a9ddc25ff9"
       },
       "ownership": {
-        "targetPackage": "tooling"
+        "targetPackage": "language-service"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
-        "sourceIdenticalTargetIds": [],
+        "status": "verified-exact",
+        "coverage": "exact-source",
+        "targets": [
+          {
+            "id": "rc87-7bb9256533d8f04d",
+            "package": "language-service",
+            "file": "packages/language-service/tests/get-class-position/react.test.ts",
+            "line": 18,
+            "title": "spaced jsx attribute assignment",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "854eb4006a25acc1dd1ff5139756084cf7fd3f43e29de48b666f37a9ddc25ff9"
+          }
+        ],
+        "sourceIdenticalTargetIds": [
+          "rc87-7bb9256533d8f04d"
+        ],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "exact-source",
+          "sourceDigest": "854eb4006a25acc1dd1ff5139756084cf7fd3f43e29de48b666f37a9ddc25ff9",
+          "targets": [
+            {
+              "caseId": "rc87-7bb9256533d8f04d",
+              "runner": "vitest",
+              "digest": "854eb4006a25acc1dd1ff5139756084cf7fd3f43e29de48b666f37a9ddc25ff9"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -50247,15 +50639,36 @@
         "sourceDigest": "add13e17dd280b0e6cf07bad73edaf95c888a36680112e8d296915b35753af60"
       },
       "ownership": {
-        "targetPackage": "tooling"
+        "targetPackage": "language-service"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-873ff344e7f0fe38",
+            "package": "language-service",
+            "file": "packages/language-service/tests/get-class-position/react.test.ts",
+            "line": 24,
+            "title": "empty binding",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "32ff3a2b200739093858d0bd74a2bf53aa9fa88b71cb39ed469e604b329cddcc"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "add13e17dd280b0e6cf07bad73edaf95c888a36680112e8d296915b35753af60",
+          "targets": [
+            {
+              "caseId": "rc87-873ff344e7f0fe38",
+              "runner": "vitest",
+              "digest": "32ff3a2b200739093858d0bd74a2bf53aa9fa88b71cb39ed469e604b329cddcc"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -50279,15 +50692,38 @@
         "sourceDigest": "f968971ba31f3f45ef2c35a71af3d0db4e3044b24055508f611dadbcd1355101"
       },
       "ownership": {
-        "targetPackage": "tooling"
+        "targetPackage": "language-service"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
-        "sourceIdenticalTargetIds": [],
+        "status": "verified-exact",
+        "coverage": "exact-source",
+        "targets": [
+          {
+            "id": "rc87-eff14c30b758e0ca",
+            "package": "language-service",
+            "file": "packages/language-service/tests/get-class-position/react.test.ts",
+            "line": 31,
+            "title": "empty string binding with double quote",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "f968971ba31f3f45ef2c35a71af3d0db4e3044b24055508f611dadbcd1355101"
+          }
+        ],
+        "sourceIdenticalTargetIds": [
+          "rc87-eff14c30b758e0ca"
+        ],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "exact-source",
+          "sourceDigest": "f968971ba31f3f45ef2c35a71af3d0db4e3044b24055508f611dadbcd1355101",
+          "targets": [
+            {
+              "caseId": "rc87-eff14c30b758e0ca",
+              "runner": "vitest",
+              "digest": "f968971ba31f3f45ef2c35a71af3d0db4e3044b24055508f611dadbcd1355101"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -50311,15 +50747,36 @@
         "sourceDigest": "89229c7a1b3a3465a7a54862f215e9dd43bcf4ff628c6596b6b85b3e914d8096"
       },
       "ownership": {
-        "targetPackage": "tooling"
+        "targetPackage": "language-service"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-fcb06b3020cbf213",
+            "package": "language-service",
+            "file": "packages/language-service/tests/get-class-position/react.test.ts",
+            "line": 37,
+            "title": "empty clsx",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "e09df084eab54c4860914cab969da361c4c2eae0aa6abd761403e9ee31e05e10"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "89229c7a1b3a3465a7a54862f215e9dd43bcf4ff628c6596b6b85b3e914d8096",
+          "targets": [
+            {
+              "caseId": "rc87-fcb06b3020cbf213",
+              "runner": "vitest",
+              "digest": "e09df084eab54c4860914cab969da361c4c2eae0aa6abd761403e9ee31e05e10"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -50343,15 +50800,38 @@
         "sourceDigest": "9c5b060361f2df5ec2771a910d741d1c3af3b483d2e131cfbcd36adf30bc92b0"
       },
       "ownership": {
-        "targetPackage": "tooling"
+        "targetPackage": "language-service"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
-        "sourceIdenticalTargetIds": [],
+        "status": "verified-exact",
+        "coverage": "exact-source",
+        "targets": [
+          {
+            "id": "rc87-bec8eb17001594ce",
+            "package": "language-service",
+            "file": "packages/language-service/tests/get-class-position/react.test.ts",
+            "line": 44,
+            "title": "two classes in clsx fn",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "9c5b060361f2df5ec2771a910d741d1c3af3b483d2e131cfbcd36adf30bc92b0"
+          }
+        ],
+        "sourceIdenticalTargetIds": [
+          "rc87-bec8eb17001594ce"
+        ],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "exact-source",
+          "sourceDigest": "9c5b060361f2df5ec2771a910d741d1c3af3b483d2e131cfbcd36adf30bc92b0",
+          "targets": [
+            {
+              "caseId": "rc87-bec8eb17001594ce",
+              "runner": "vitest",
+              "digest": "9c5b060361f2df5ec2771a910d741d1c3af3b483d2e131cfbcd36adf30bc92b0"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -50375,15 +50855,38 @@
         "sourceDigest": "317573fe944888ee1a1960248adefb712c42ab06b34edcee7abc0e5497087591"
       },
       "ownership": {
-        "targetPackage": "tooling"
+        "targetPackage": "language-service"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
-        "sourceIdenticalTargetIds": [],
+        "status": "verified-exact",
+        "coverage": "exact-source",
+        "targets": [
+          {
+            "id": "rc87-f0a0bb64be303c30",
+            "package": "language-service",
+            "file": "packages/language-service/tests/get-class-position/react.test.ts",
+            "line": 50,
+            "title": "quote in clsx fn",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "317573fe944888ee1a1960248adefb712c42ab06b34edcee7abc0e5497087591"
+          }
+        ],
+        "sourceIdenticalTargetIds": [
+          "rc87-f0a0bb64be303c30"
+        ],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "exact-source",
+          "sourceDigest": "317573fe944888ee1a1960248adefb712c42ab06b34edcee7abc0e5497087591",
+          "targets": [
+            {
+              "caseId": "rc87-f0a0bb64be303c30",
+              "runner": "vitest",
+              "digest": "317573fe944888ee1a1960248adefb712c42ab06b34edcee7abc0e5497087591"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -50407,15 +50910,38 @@
         "sourceDigest": "c0bf4b0967d5145652d781d5d52e35983e85717c725d84a431c199b07eefe47d"
       },
       "ownership": {
-        "targetPackage": "tooling"
+        "targetPackage": "language-service"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
-        "sourceIdenticalTargetIds": [],
+        "status": "verified-exact",
+        "coverage": "exact-source",
+        "targets": [
+          {
+            "id": "rc87-9f6878b96b346044",
+            "package": "language-service",
+            "file": "packages/language-service/tests/get-class-position/react.test.ts",
+            "line": 56,
+            "title": "template literal and newlines",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "c0bf4b0967d5145652d781d5d52e35983e85717c725d84a431c199b07eefe47d"
+          }
+        ],
+        "sourceIdenticalTargetIds": [
+          "rc87-9f6878b96b346044"
+        ],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "exact-source",
+          "sourceDigest": "c0bf4b0967d5145652d781d5d52e35983e85717c725d84a431c199b07eefe47d",
+          "targets": [
+            {
+              "caseId": "rc87-9f6878b96b346044",
+              "runner": "vitest",
+              "digest": "c0bf4b0967d5145652d781d5d52e35983e85717c725d84a431c199b07eefe47d"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -50439,15 +50965,36 @@
         "sourceDigest": "b1d5b5538e01ca99ef2249ea24b267a2b1fae9adcfccee9727dae0b53305c0b0"
       },
       "ownership": {
-        "targetPackage": "tooling"
+        "targetPackage": "language-service"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-230c08cef98620be",
+            "package": "language-service",
+            "file": "packages/language-service/tests/get-class-position/react.test.ts",
+            "line": 62,
+            "title": "template literal expressions use quasi ranges",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "cfaa775f7b16c01f91608ec6885f6c75c8814b5cf71a9ea479ae5aefef23cabd"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "b1d5b5538e01ca99ef2249ea24b267a2b1fae9adcfccee9727dae0b53305c0b0",
+          "targets": [
+            {
+              "caseId": "rc87-230c08cef98620be",
+              "runner": "vitest",
+              "digest": "cfaa775f7b16c01f91608ec6885f6c75c8814b5cf71a9ea479ae5aefef23cabd"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -50471,15 +51018,36 @@
         "sourceDigest": "a386f5ee799025ce18ee7269a3d7bb5e64f02166c5b5a393f38caabd7520e5c3"
       },
       "ownership": {
-        "targetPackage": "tooling"
+        "targetPackage": "language-service"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-ee27a4845f2b275c",
+            "package": "language-service",
+            "file": "packages/language-service/tests/get-class-position/react.test.ts",
+            "line": 73,
+            "title": "parse failure falls back to regex positions",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "0b0122e0bbb58b7941bd6e1c0387582449b699e928f15e44765c578b6b1f3391"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "a386f5ee799025ce18ee7269a3d7bb5e64f02166c5b5a393f38caabd7520e5c3",
+          "targets": [
+            {
+              "caseId": "rc87-ee27a4845f2b275c",
+              "runner": "vitest",
+              "digest": "0b0122e0bbb58b7941bd6e1c0387582449b699e928f15e44765c578b6b1f3391"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -50503,15 +51071,36 @@
         "sourceDigest": "778fe99c24c680c0fa4a771d0c7aa038e71e21790c2cb7ab10e3aeb92eb0bd03"
       },
       "ownership": {
-        "targetPackage": "tooling"
+        "targetPackage": "language-service"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-1310d5e947961c12",
+            "package": "language-service",
+            "file": "packages/language-service/tests/get-class-position/react.test.ts",
+            "line": 81,
+            "title": "regex fallback ignores class attributes inside JS comments",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "96babe94ebfe49e0af02a7677a836491950a35883a0f3dbc933509bb9bda95c8"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "778fe99c24c680c0fa4a771d0c7aa038e71e21790c2cb7ab10e3aeb92eb0bd03",
+          "targets": [
+            {
+              "caseId": "rc87-1310d5e947961c12",
+              "runner": "vitest",
+              "digest": "96babe94ebfe49e0af02a7677a836491950a35883a0f3dbc933509bb9bda95c8"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -50537,15 +51126,38 @@
         "sourceDigest": "64cac7b5073c6d28ceee33ea9acc7e07fda6e8d08f889f0e602b602ac91cad00"
       },
       "ownership": {
-        "targetPackage": "tooling"
+        "targetPackage": "language-service"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
-        "sourceIdenticalTargetIds": [],
+        "status": "verified-exact",
+        "coverage": "exact-source",
+        "targets": [
+          {
+            "id": "rc87-66e7496975afe936",
+            "package": "language-service",
+            "file": "packages/language-service/tests/get-class-position/strings.test.ts",
+            "line": 5,
+            "title": "configured class declaration with double quotes",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "64cac7b5073c6d28ceee33ea9acc7e07fda6e8d08f889f0e602b602ac91cad00"
+          }
+        ],
+        "sourceIdenticalTargetIds": [
+          "rc87-66e7496975afe936"
+        ],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "exact-source",
+          "sourceDigest": "64cac7b5073c6d28ceee33ea9acc7e07fda6e8d08f889f0e602b602ac91cad00",
+          "targets": [
+            {
+              "caseId": "rc87-66e7496975afe936",
+              "runner": "vitest",
+              "digest": "64cac7b5073c6d28ceee33ea9acc7e07fda6e8d08f889f0e602b602ac91cad00"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -50571,15 +51183,38 @@
         "sourceDigest": "ecabd619f046f6e9297fa63c5e8ea1e1765e997a8e323d0293f95930cdc8e869"
       },
       "ownership": {
-        "targetPackage": "tooling"
+        "targetPackage": "language-service"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
-        "sourceIdenticalTargetIds": [],
+        "status": "verified-exact",
+        "coverage": "exact-source",
+        "targets": [
+          {
+            "id": "rc87-eb7047a6b4027077",
+            "package": "language-service",
+            "file": "packages/language-service/tests/get-class-position/strings.test.ts",
+            "line": 11,
+            "title": "configured class declaration with single quotes",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "ecabd619f046f6e9297fa63c5e8ea1e1765e997a8e323d0293f95930cdc8e869"
+          }
+        ],
+        "sourceIdenticalTargetIds": [
+          "rc87-eb7047a6b4027077"
+        ],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "exact-source",
+          "sourceDigest": "ecabd619f046f6e9297fa63c5e8ea1e1765e997a8e323d0293f95930cdc8e869",
+          "targets": [
+            {
+              "caseId": "rc87-eb7047a6b4027077",
+              "runner": "vitest",
+              "digest": "ecabd619f046f6e9297fa63c5e8ea1e1765e997a8e323d0293f95930cdc8e869"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -50605,15 +51240,38 @@
         "sourceDigest": "a1a05b88fd2766abe5a85d5b8c03f705076724bb9f1a5947ee2689743d5e14ee"
       },
       "ownership": {
-        "targetPackage": "tooling"
+        "targetPackage": "language-service"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
-        "sourceIdenticalTargetIds": [],
+        "status": "verified-exact",
+        "coverage": "exact-source",
+        "targets": [
+          {
+            "id": "rc87-cf541289d590529b",
+            "package": "language-service",
+            "file": "packages/language-service/tests/get-class-position/strings.test.ts",
+            "line": 17,
+            "title": "configured class declaration with literals",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "a1a05b88fd2766abe5a85d5b8c03f705076724bb9f1a5947ee2689743d5e14ee"
+          }
+        ],
+        "sourceIdenticalTargetIds": [
+          "rc87-cf541289d590529b"
+        ],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "exact-source",
+          "sourceDigest": "a1a05b88fd2766abe5a85d5b8c03f705076724bb9f1a5947ee2689743d5e14ee",
+          "targets": [
+            {
+              "caseId": "rc87-cf541289d590529b",
+              "runner": "vitest",
+              "digest": "a1a05b88fd2766abe5a85d5b8c03f705076724bb9f1a5947ee2689743d5e14ee"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -50639,15 +51297,38 @@
         "sourceDigest": "f8201002948138d7db94a2158be02289782ebce14be632e043f9426da127ac89"
       },
       "ownership": {
-        "targetPackage": "tooling"
+        "targetPackage": "language-service"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
-        "sourceIdenticalTargetIds": [],
+        "status": "verified-exact",
+        "coverage": "exact-source",
+        "targets": [
+          {
+            "id": "rc87-73b074f4a5461373",
+            "package": "language-service",
+            "file": "packages/language-service/tests/get-class-position/strings.test.ts",
+            "line": 25,
+            "title": "configured class declaration property with double quotes",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "f8201002948138d7db94a2158be02289782ebce14be632e043f9426da127ac89"
+          }
+        ],
+        "sourceIdenticalTargetIds": [
+          "rc87-73b074f4a5461373"
+        ],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "exact-source",
+          "sourceDigest": "f8201002948138d7db94a2158be02289782ebce14be632e043f9426da127ac89",
+          "targets": [
+            {
+              "caseId": "rc87-73b074f4a5461373",
+              "runner": "vitest",
+              "digest": "f8201002948138d7db94a2158be02289782ebce14be632e043f9426da127ac89"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -50671,15 +51352,38 @@
         "sourceDigest": "765a461ecad52d3bcb542e2749968012442c25bd6e5d5dbac5ea383945d9c38d"
       },
       "ownership": {
-        "targetPackage": "tooling"
+        "targetPackage": "language-service"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
-        "sourceIdenticalTargetIds": [],
+        "status": "verified-exact",
+        "coverage": "exact-source",
+        "targets": [
+          {
+            "id": "rc87-84b6f9c93fa6929a",
+            "package": "language-service",
+            "file": "packages/language-service/tests/get-class-position/styled.test.ts",
+            "line": 5,
+            "title": "styled template literal",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "765a461ecad52d3bcb542e2749968012442c25bd6e5d5dbac5ea383945d9c38d"
+          }
+        ],
+        "sourceIdenticalTargetIds": [
+          "rc87-84b6f9c93fa6929a"
+        ],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "exact-source",
+          "sourceDigest": "765a461ecad52d3bcb542e2749968012442c25bd6e5d5dbac5ea383945d9c38d",
+          "targets": [
+            {
+              "caseId": "rc87-84b6f9c93fa6929a",
+              "runner": "vitest",
+              "digest": "765a461ecad52d3bcb542e2749968012442c25bd6e5d5dbac5ea383945d9c38d"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -50703,15 +51407,38 @@
         "sourceDigest": "6484a8dc242633f61205f0ca1e747d8803cc718265290aa636eeb6f7ea7ece5b"
       },
       "ownership": {
-        "targetPackage": "tooling"
+        "targetPackage": "language-service"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
-        "sourceIdenticalTargetIds": [],
+        "status": "verified-exact",
+        "coverage": "exact-source",
+        "targets": [
+          {
+            "id": "rc87-630dbdbaf7c38227",
+            "package": "language-service",
+            "file": "packages/language-service/tests/get-class-position/styled.test.ts",
+            "line": 11,
+            "title": "styled template literal and new lines",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "6484a8dc242633f61205f0ca1e747d8803cc718265290aa636eeb6f7ea7ece5b"
+          }
+        ],
+        "sourceIdenticalTargetIds": [
+          "rc87-630dbdbaf7c38227"
+        ],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "exact-source",
+          "sourceDigest": "6484a8dc242633f61205f0ca1e747d8803cc718265290aa636eeb6f7ea7ece5b",
+          "targets": [
+            {
+              "caseId": "rc87-630dbdbaf7c38227",
+              "runner": "vitest",
+              "digest": "6484a8dc242633f61205f0ca1e747d8803cc718265290aa636eeb6f7ea7ece5b"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -50735,15 +51462,38 @@
         "sourceDigest": "66ed59fc8db69c74c9b9fb333b7e60ac93e6bba3cb89d4f146549624db7c4df1"
       },
       "ownership": {
-        "targetPackage": "tooling"
+        "targetPackage": "language-service"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
-        "sourceIdenticalTargetIds": [],
+        "status": "verified-exact",
+        "coverage": "exact-source",
+        "targets": [
+          {
+            "id": "rc87-2d8df08b8ca97ddb",
+            "package": "language-service",
+            "file": "packages/language-service/tests/get-class-position/styled.test.ts",
+            "line": 19,
+            "title": "styled invoked",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "66ed59fc8db69c74c9b9fb333b7e60ac93e6bba3cb89d4f146549624db7c4df1"
+          }
+        ],
+        "sourceIdenticalTargetIds": [
+          "rc87-2d8df08b8ca97ddb"
+        ],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "exact-source",
+          "sourceDigest": "66ed59fc8db69c74c9b9fb333b7e60ac93e6bba3cb89d4f146549624db7c4df1",
+          "targets": [
+            {
+              "caseId": "rc87-2d8df08b8ca97ddb",
+              "runner": "vitest",
+              "digest": "66ed59fc8db69c74c9b9fb333b7e60ac93e6bba3cb89d4f146549624db7c4df1"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -50767,15 +51517,38 @@
         "sourceDigest": "3e0ea73aaac4127a3e393dce6dc1393a06d723d8c638dba8c669a1f9bff93549"
       },
       "ownership": {
-        "targetPackage": "tooling"
+        "targetPackage": "language-service"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
-        "sourceIdenticalTargetIds": [],
+        "status": "verified-exact",
+        "coverage": "exact-source",
+        "targets": [
+          {
+            "id": "rc87-6d6efe76f1a32212",
+            "package": "language-service",
+            "file": "packages/language-service/tests/get-class-position/svelte.test.ts",
+            "line": 4,
+            "title": "class in ternary operator",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "3e0ea73aaac4127a3e393dce6dc1393a06d723d8c638dba8c669a1f9bff93549"
+          }
+        ],
+        "sourceIdenticalTargetIds": [
+          "rc87-6d6efe76f1a32212"
+        ],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "exact-source",
+          "sourceDigest": "3e0ea73aaac4127a3e393dce6dc1393a06d723d8c638dba8c669a1f9bff93549",
+          "targets": [
+            {
+              "caseId": "rc87-6d6efe76f1a32212",
+              "runner": "vitest",
+              "digest": "3e0ea73aaac4127a3e393dce6dc1393a06d723d8c638dba8c669a1f9bff93549"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -50799,15 +51572,38 @@
         "sourceDigest": "cfc701bbb37b5f7042e6a7d8b291f10f3e5e633bd7b5354ac8c5ab468f1097ee"
       },
       "ownership": {
-        "targetPackage": "tooling"
+        "targetPackage": "language-service"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
-        "sourceIdenticalTargetIds": [],
+        "status": "verified-exact",
+        "coverage": "exact-source",
+        "targets": [
+          {
+            "id": "rc87-9a7717460f9c181d",
+            "package": "language-service",
+            "file": "packages/language-service/tests/get-class-position/test.ts",
+            "line": 26,
+            "title": "empty class with single quotes",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "cfc701bbb37b5f7042e6a7d8b291f10f3e5e633bd7b5354ac8c5ab468f1097ee"
+          }
+        ],
+        "sourceIdenticalTargetIds": [
+          "rc87-9a7717460f9c181d"
+        ],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "exact-source",
+          "sourceDigest": "cfc701bbb37b5f7042e6a7d8b291f10f3e5e633bd7b5354ac8c5ab468f1097ee",
+          "targets": [
+            {
+              "caseId": "rc87-9a7717460f9c181d",
+              "runner": "vitest",
+              "digest": "cfc701bbb37b5f7042e6a7d8b291f10f3e5e633bd7b5354ac8c5ab468f1097ee"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -50831,15 +51627,38 @@
         "sourceDigest": "83c8ae78ad0c5448a7e7d65b3a9d5f3734dc6a4cae40fee9dc7c25028a23c325"
       },
       "ownership": {
-        "targetPackage": "tooling"
+        "targetPackage": "language-service"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
-        "sourceIdenticalTargetIds": [],
+        "status": "verified-exact",
+        "coverage": "exact-source",
+        "targets": [
+          {
+            "id": "rc87-061192d8223cb847",
+            "package": "language-service",
+            "file": "packages/language-service/tests/get-class-position/test.ts",
+            "line": 32,
+            "title": "empty class with double quotes",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "83c8ae78ad0c5448a7e7d65b3a9d5f3734dc6a4cae40fee9dc7c25028a23c325"
+          }
+        ],
+        "sourceIdenticalTargetIds": [
+          "rc87-061192d8223cb847"
+        ],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "exact-source",
+          "sourceDigest": "83c8ae78ad0c5448a7e7d65b3a9d5f3734dc6a4cae40fee9dc7c25028a23c325",
+          "targets": [
+            {
+              "caseId": "rc87-061192d8223cb847",
+              "runner": "vitest",
+              "digest": "83c8ae78ad0c5448a7e7d65b3a9d5f3734dc6a4cae40fee9dc7c25028a23c325"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -50863,15 +51682,38 @@
         "sourceDigest": "05e223d143eff06b9d932622493a637a6f48a80f5ef1428da848cf6277b01204"
       },
       "ownership": {
-        "targetPackage": "tooling"
+        "targetPackage": "language-service"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
-        "sourceIdenticalTargetIds": [],
+        "status": "verified-exact",
+        "coverage": "exact-source",
+        "targets": [
+          {
+            "id": "rc87-1dee97a2bcd457ab",
+            "package": "language-service",
+            "file": "packages/language-service/tests/get-class-position/test.ts",
+            "line": 38,
+            "title": "one class",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "05e223d143eff06b9d932622493a637a6f48a80f5ef1428da848cf6277b01204"
+          }
+        ],
+        "sourceIdenticalTargetIds": [
+          "rc87-1dee97a2bcd457ab"
+        ],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "exact-source",
+          "sourceDigest": "05e223d143eff06b9d932622493a637a6f48a80f5ef1428da848cf6277b01204",
+          "targets": [
+            {
+              "caseId": "rc87-1dee97a2bcd457ab",
+              "runner": "vitest",
+              "digest": "05e223d143eff06b9d932622493a637a6f48a80f5ef1428da848cf6277b01204"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -50895,15 +51737,38 @@
         "sourceDigest": "62b390824f25381aaf54362aac332c7f7f9c740bbe2cef1726a6af72ab012967"
       },
       "ownership": {
-        "targetPackage": "tooling"
+        "targetPackage": "language-service"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
-        "sourceIdenticalTargetIds": [],
+        "status": "verified-exact",
+        "coverage": "exact-source",
+        "targets": [
+          {
+            "id": "rc87-513f18187520d4ff",
+            "package": "language-service",
+            "file": "packages/language-service/tests/get-class-position/test.ts",
+            "line": 44,
+            "title": "two classes",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "62b390824f25381aaf54362aac332c7f7f9c740bbe2cef1726a6af72ab012967"
+          }
+        ],
+        "sourceIdenticalTargetIds": [
+          "rc87-513f18187520d4ff"
+        ],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "exact-source",
+          "sourceDigest": "62b390824f25381aaf54362aac332c7f7f9c740bbe2cef1726a6af72ab012967",
+          "targets": [
+            {
+              "caseId": "rc87-513f18187520d4ff",
+              "runner": "vitest",
+              "digest": "62b390824f25381aaf54362aac332c7f7f9c740bbe2cef1726a6af72ab012967"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -50927,15 +51792,38 @@
         "sourceDigest": "972e4cdc6608e49a45f47e72ffe74e6c4ec66239dc801e9b2704fd51b482babf"
       },
       "ownership": {
-        "targetPackage": "tooling"
+        "targetPackage": "language-service"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
-        "sourceIdenticalTargetIds": [],
+        "status": "verified-exact",
+        "coverage": "exact-source",
+        "targets": [
+          {
+            "id": "rc87-9259c47e692948f0",
+            "package": "language-service",
+            "file": "packages/language-service/tests/get-class-position/test.ts",
+            "line": 50,
+            "title": "full-width spaces are part of the class token",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "972e4cdc6608e49a45f47e72ffe74e6c4ec66239dc801e9b2704fd51b482babf"
+          }
+        ],
+        "sourceIdenticalTargetIds": [
+          "rc87-9259c47e692948f0"
+        ],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "exact-source",
+          "sourceDigest": "972e4cdc6608e49a45f47e72ffe74e6c4ec66239dc801e9b2704fd51b482babf",
+          "targets": [
+            {
+              "caseId": "rc87-9259c47e692948f0",
+              "runner": "vitest",
+              "digest": "972e4cdc6608e49a45f47e72ffe74e6c4ec66239dc801e9b2704fd51b482babf"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -50959,15 +51847,38 @@
         "sourceDigest": "8e95382a781d1c42d0c96e2e31f049bb2baef5e7f86d4772384a64737ecafd28"
       },
       "ownership": {
-        "targetPackage": "tooling"
+        "targetPackage": "language-service"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
-        "sourceIdenticalTargetIds": [],
+        "status": "verified-exact",
+        "coverage": "exact-source",
+        "targets": [
+          {
+            "id": "rc87-2fbabc433dfd0402",
+            "package": "language-service",
+            "file": "packages/language-service/tests/get-class-position/test.ts",
+            "line": 56,
+            "title": "valid classes",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "8e95382a781d1c42d0c96e2e31f049bb2baef5e7f86d4772384a64737ecafd28"
+          }
+        ],
+        "sourceIdenticalTargetIds": [
+          "rc87-2fbabc433dfd0402"
+        ],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "exact-source",
+          "sourceDigest": "8e95382a781d1c42d0c96e2e31f049bb2baef5e7f86d4772384a64737ecafd28",
+          "targets": [
+            {
+              "caseId": "rc87-2fbabc433dfd0402",
+              "runner": "vitest",
+              "digest": "8e95382a781d1c42d0c96e2e31f049bb2baef5e7f86d4772384a64737ecafd28"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -50992,15 +51903,38 @@
         "sourceDigest": "a30825d6e1158020ffe9a1369e02a5dba24d3d1238a5c7a732d7cfb68c055833"
       },
       "ownership": {
-        "targetPackage": "tooling"
+        "targetPackage": "language-service"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
-        "sourceIdenticalTargetIds": [],
+        "status": "verified-exact",
+        "coverage": "exact-source",
+        "targets": [
+          {
+            "id": "rc87-8cc074908a8ea696",
+            "package": "language-service",
+            "file": "packages/language-service/tests/get-class-position/test.ts",
+            "line": 62,
+            "title": "class in CSS @compose",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "a30825d6e1158020ffe9a1369e02a5dba24d3d1238a5c7a732d7cfb68c055833"
+          }
+        ],
+        "sourceIdenticalTargetIds": [
+          "rc87-8cc074908a8ea696"
+        ],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "exact-source",
+          "sourceDigest": "a30825d6e1158020ffe9a1369e02a5dba24d3d1238a5c7a732d7cfb68c055833",
+          "targets": [
+            {
+              "caseId": "rc87-8cc074908a8ea696",
+              "runner": "vitest",
+              "digest": "a30825d6e1158020ffe9a1369e02a5dba24d3d1238a5c7a732d7cfb68c055833"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -51025,15 +51959,38 @@
         "sourceDigest": "cf03e058706f5e014c56b7b9be7515cc0fd08b0c4ad7de6a23b17a7c23d67372"
       },
       "ownership": {
-        "targetPackage": "tooling"
+        "targetPackage": "language-service"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
-        "sourceIdenticalTargetIds": [],
+        "status": "verified-exact",
+        "coverage": "exact-source",
+        "targets": [
+          {
+            "id": "rc87-fb1520c947353b6e",
+            "package": "language-service",
+            "file": "packages/language-service/tests/get-class-position/test.ts",
+            "line": 68,
+            "title": "class in Vue style @compose",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "cf03e058706f5e014c56b7b9be7515cc0fd08b0c4ad7de6a23b17a7c23d67372"
+          }
+        ],
+        "sourceIdenticalTargetIds": [
+          "rc87-fb1520c947353b6e"
+        ],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "exact-source",
+          "sourceDigest": "cf03e058706f5e014c56b7b9be7515cc0fd08b0c4ad7de6a23b17a7c23d67372",
+          "targets": [
+            {
+              "caseId": "rc87-fb1520c947353b6e",
+              "runner": "vitest",
+              "digest": "cf03e058706f5e014c56b7b9be7515cc0fd08b0c4ad7de6a23b17a7c23d67372"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -51058,15 +52015,36 @@
         "sourceDigest": "9c5ad105833f4b9d386dd7c3846b2f769d95dc6a7d92b11872877d8d940e159d"
       },
       "ownership": {
-        "targetPackage": "tooling"
+        "targetPackage": "language-service"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-d177ab2a1a81605c",
+            "package": "language-service",
+            "file": "packages/language-service/tests/get-class-position/test.ts",
+            "line": 74,
+            "title": "ignores quoted CSS @compose classes",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "2462e76384982a818bb27cfaa8f8730ac7c20d8cf6890051d0d25b5b1ec36ff1"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "9c5ad105833f4b9d386dd7c3846b2f769d95dc6a7d92b11872877d8d940e159d",
+          "targets": [
+            {
+              "caseId": "rc87-d177ab2a1a81605c",
+              "runner": "vitest",
+              "digest": "2462e76384982a818bb27cfaa8f8730ac7c20d8cf6890051d0d25b5b1ec36ff1"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -51090,15 +52068,38 @@
         "sourceDigest": "094e059ddf0ff10728085c50e30bf4086e30d9a1e1890076a25112ef44fe6eaa"
       },
       "ownership": {
-        "targetPackage": "tooling"
+        "targetPackage": "language-service"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
-        "sourceIdenticalTargetIds": [],
+        "status": "verified-exact",
+        "coverage": "exact-source",
+        "targets": [
+          {
+            "id": "rc87-d1f8d1aef8c3f395",
+            "package": "language-service",
+            "file": "packages/language-service/tests/get-class-position/test.ts",
+            "line": 81,
+            "title": "quote in class",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "094e059ddf0ff10728085c50e30bf4086e30d9a1e1890076a25112ef44fe6eaa"
+          }
+        ],
+        "sourceIdenticalTargetIds": [
+          "rc87-d1f8d1aef8c3f395"
+        ],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "exact-source",
+          "sourceDigest": "094e059ddf0ff10728085c50e30bf4086e30d9a1e1890076a25112ef44fe6eaa",
+          "targets": [
+            {
+              "caseId": "rc87-d1f8d1aef8c3f395",
+              "runner": "vitest",
+              "digest": "094e059ddf0ff10728085c50e30bf4086e30d9a1e1890076a25112ef44fe6eaa"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -51122,31 +52123,38 @@
         "sourceDigest": "c69d612a26a7d074e92d756062a343f0e8144f42176b89994eeed1b2e5527292"
       },
       "ownership": {
-        "targetPackage": "tooling"
+        "targetPackage": "language-service"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "exact-source",
         "targets": [
           {
-            "id": "rc87-7d80e9a1adc74896",
-            "package": "tooling",
-            "file": "packages/tooling/tests/scanner/diff.test.ts",
-            "line": 24,
+            "id": "rc87-eb444fdf76aaa863",
+            "package": "language-service",
+            "file": "packages/language-service/tests/get-class-position/test.ts",
+            "line": 87,
             "title": "group syntax",
             "runner": "vitest",
             "kind": "test",
-            "sourceDigest": "f62bcd66318a3fec8c3c34488ee5e324a2b387714e138c3e4e33bb174351b362",
-            "matrix": {
-              "index": 8,
-              "resolved": true,
-              "value": "group syntax | <div class=\"{bg:white;fg:black}\">x</div> | {bg:white;fg:black}"
-            }
+            "sourceDigest": "c69d612a26a7d074e92d756062a343f0e8144f42176b89994eeed1b2e5527292"
           }
         ],
-        "sourceIdenticalTargetIds": [],
+        "sourceIdenticalTargetIds": [
+          "rc87-eb444fdf76aaa863"
+        ],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "exact-source",
+          "sourceDigest": "c69d612a26a7d074e92d756062a343f0e8144f42176b89994eeed1b2e5527292",
+          "targets": [
+            {
+              "caseId": "rc87-eb444fdf76aaa863",
+              "runner": "vitest",
+              "digest": "c69d612a26a7d074e92d756062a343f0e8144f42176b89994eeed1b2e5527292"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -51170,15 +52178,36 @@
         "sourceDigest": "dd5cd54cd2c1679d04a865336fc547c6212c6697d8889fc9b666e4e03f32d7c3"
       },
       "ownership": {
-        "targetPackage": "tooling"
+        "targetPackage": "language-service"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-a8114aeb398ca2a2",
+            "package": "language-service",
+            "file": "packages/language-service/tests/get-class-position/test.ts",
+            "line": 93,
+            "title": "ignores class attributes inside HTML comments",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "ac12f8cb5ecce6e50b9c4cf717e8a8cc597a47d091b2cc59a40474f3a06a0da4"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "dd5cd54cd2c1679d04a865336fc547c6212c6697d8889fc9b666e4e03f32d7c3",
+          "targets": [
+            {
+              "caseId": "rc87-a8114aeb398ca2a2",
+              "runner": "vitest",
+              "digest": "ac12f8cb5ecce6e50b9c4cf717e8a8cc597a47d091b2cc59a40474f3a06a0da4"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -51202,15 +52231,38 @@
         "sourceDigest": "77b0fd7185ea336ef5a26c078a9613ae26e1d39be49ccc65c239c232e1e98718"
       },
       "ownership": {
-        "targetPackage": "tooling"
+        "targetPackage": "language-service"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
-        "sourceIdenticalTargetIds": [],
+        "status": "verified-exact",
+        "coverage": "exact-source",
+        "targets": [
+          {
+            "id": "rc87-948ab1cf0ee72463",
+            "package": "language-service",
+            "file": "packages/language-service/tests/get-class-position/test.ts",
+            "line": 103,
+            "title": "nested strings and literals",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "77b0fd7185ea336ef5a26c078a9613ae26e1d39be49ccc65c239c232e1e98718"
+          }
+        ],
+        "sourceIdenticalTargetIds": [
+          "rc87-948ab1cf0ee72463"
+        ],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "exact-source",
+          "sourceDigest": "77b0fd7185ea336ef5a26c078a9613ae26e1d39be49ccc65c239c232e1e98718",
+          "targets": [
+            {
+              "caseId": "rc87-948ab1cf0ee72463",
+              "runner": "vitest",
+              "digest": "77b0fd7185ea336ef5a26c078a9613ae26e1d39be49ccc65c239c232e1e98718"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -51234,15 +52286,38 @@
         "sourceDigest": "bf48b71d759c114450530285744bba83afd4fba510075d0596e4b276ba5042c4"
       },
       "ownership": {
-        "targetPackage": "tooling"
+        "targetPackage": "language-service"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
-        "sourceIdenticalTargetIds": [],
+        "status": "verified-exact",
+        "coverage": "exact-source",
+        "targets": [
+          {
+            "id": "rc87-ed2df73b97d5a5cd",
+            "package": "language-service",
+            "file": "packages/language-service/tests/get-class-position/unescape.test.ts",
+            "line": 4,
+            "title": "single quote",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "bf48b71d759c114450530285744bba83afd4fba510075d0596e4b276ba5042c4"
+          }
+        ],
+        "sourceIdenticalTargetIds": [
+          "rc87-ed2df73b97d5a5cd"
+        ],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "exact-source",
+          "sourceDigest": "bf48b71d759c114450530285744bba83afd4fba510075d0596e4b276ba5042c4",
+          "targets": [
+            {
+              "caseId": "rc87-ed2df73b97d5a5cd",
+              "runner": "vitest",
+              "digest": "bf48b71d759c114450530285744bba83afd4fba510075d0596e4b276ba5042c4"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -51266,15 +52341,38 @@
         "sourceDigest": "e2f616fdfc1a1b5aded88069984bd23f9916601cd8a9884d434b12b21d95b841"
       },
       "ownership": {
-        "targetPackage": "tooling"
+        "targetPackage": "language-service"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
-        "sourceIdenticalTargetIds": [],
+        "status": "verified-exact",
+        "coverage": "exact-source",
+        "targets": [
+          {
+            "id": "rc87-af57d2105f9df063",
+            "package": "language-service",
+            "file": "packages/language-service/tests/get-class-position/unescape.test.ts",
+            "line": 10,
+            "title": "escaped backticks",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "e2f616fdfc1a1b5aded88069984bd23f9916601cd8a9884d434b12b21d95b841"
+          }
+        ],
+        "sourceIdenticalTargetIds": [
+          "rc87-af57d2105f9df063"
+        ],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "exact-source",
+          "sourceDigest": "e2f616fdfc1a1b5aded88069984bd23f9916601cd8a9884d434b12b21d95b841",
+          "targets": [
+            {
+              "caseId": "rc87-af57d2105f9df063",
+              "runner": "vitest",
+              "digest": "e2f616fdfc1a1b5aded88069984bd23f9916601cd8a9884d434b12b21d95b841"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -51298,15 +52396,38 @@
         "sourceDigest": "b45056eaa490164c649aa81fdd53c2931826d1da97ff96a8abf77f4fcbca51ae"
       },
       "ownership": {
-        "targetPackage": "tooling"
+        "targetPackage": "language-service"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
-        "sourceIdenticalTargetIds": [],
+        "status": "verified-exact",
+        "coverage": "exact-source",
+        "targets": [
+          {
+            "id": "rc87-072c4bf5b8171e66",
+            "package": "language-service",
+            "file": "packages/language-service/tests/get-class-position/vue.test.ts",
+            "line": 5,
+            "title": "class in class array",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "b45056eaa490164c649aa81fdd53c2931826d1da97ff96a8abf77f4fcbca51ae"
+          }
+        ],
+        "sourceIdenticalTargetIds": [
+          "rc87-072c4bf5b8171e66"
+        ],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "exact-source",
+          "sourceDigest": "b45056eaa490164c649aa81fdd53c2931826d1da97ff96a8abf77f4fcbca51ae",
+          "targets": [
+            {
+              "caseId": "rc87-072c4bf5b8171e66",
+              "runner": "vitest",
+              "digest": "b45056eaa490164c649aa81fdd53c2931826d1da97ff96a8abf77f4fcbca51ae"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -51330,15 +52451,38 @@
         "sourceDigest": "c9e7bb07c277b871e83bef7f8dee7db52b064f45d2da0f4f14ab2a23d8acb63b"
       },
       "ownership": {
-        "targetPackage": "tooling"
+        "targetPackage": "language-service"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
-        "sourceIdenticalTargetIds": [],
+        "status": "verified-exact",
+        "coverage": "exact-source",
+        "targets": [
+          {
+            "id": "rc87-5d4c9fcd06d50646",
+            "package": "language-service",
+            "file": "packages/language-service/tests/get-class-position/vue.test.ts",
+            "line": 11,
+            "title": "class in object syntax",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "c9e7bb07c277b871e83bef7f8dee7db52b064f45d2da0f4f14ab2a23d8acb63b"
+          }
+        ],
+        "sourceIdenticalTargetIds": [
+          "rc87-5d4c9fcd06d50646"
+        ],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "exact-source",
+          "sourceDigest": "c9e7bb07c277b871e83bef7f8dee7db52b064f45d2da0f4f14ab2a23d8acb63b",
+          "targets": [
+            {
+              "caseId": "rc87-5d4c9fcd06d50646",
+              "runner": "vitest",
+              "digest": "c9e7bb07c277b871e83bef7f8dee7db52b064f45d2da0f4f14ab2a23d8acb63b"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -51362,15 +52506,38 @@
         "sourceDigest": "383d123583052f62b845ea4d69d3d460e539ffb2bede2cee279f2a45eecafa84"
       },
       "ownership": {
-        "targetPackage": "tooling"
+        "targetPackage": "language-service"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
-        "sourceIdenticalTargetIds": [],
+        "status": "verified-exact",
+        "coverage": "exact-source",
+        "targets": [
+          {
+            "id": "rc87-ced2120c695078d5",
+            "package": "language-service",
+            "file": "packages/language-service/tests/get-class-position/vue.test.ts",
+            "line": 17,
+            "title": "class in ternary operator",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "383d123583052f62b845ea4d69d3d460e539ffb2bede2cee279f2a45eecafa84"
+          }
+        ],
+        "sourceIdenticalTargetIds": [
+          "rc87-ced2120c695078d5"
+        ],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "exact-source",
+          "sourceDigest": "383d123583052f62b845ea4d69d3d460e539ffb2bede2cee279f2a45eecafa84",
+          "targets": [
+            {
+              "caseId": "rc87-ced2120c695078d5",
+              "runner": "vitest",
+              "digest": "383d123583052f62b845ea4d69d3d460e539ffb2bede2cee279f2a45eecafa84"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -51394,15 +52561,38 @@
         "sourceDigest": "14a2feb7f4e2fc2f3e0e1a65de54215dab715054f082f28a25e883013c51853e"
       },
       "ownership": {
-        "targetPackage": "tooling"
+        "targetPackage": "language-service"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
-        "sourceIdenticalTargetIds": [],
+        "status": "verified-exact",
+        "coverage": "exact-source",
+        "targets": [
+          {
+            "id": "rc87-57068fdc046aae51",
+            "package": "language-service",
+            "file": "packages/language-service/tests/get-class-position/vue.test.ts",
+            "line": 23,
+            "title": "class in v-bind",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "14a2feb7f4e2fc2f3e0e1a65de54215dab715054f082f28a25e883013c51853e"
+          }
+        ],
+        "sourceIdenticalTargetIds": [
+          "rc87-57068fdc046aae51"
+        ],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "exact-source",
+          "sourceDigest": "14a2feb7f4e2fc2f3e0e1a65de54215dab715054f082f28a25e883013c51853e",
+          "targets": [
+            {
+              "caseId": "rc87-57068fdc046aae51",
+              "runner": "vitest",
+              "digest": "14a2feb7f4e2fc2f3e0e1a65de54215dab715054f082f28a25e883013c51853e"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -51426,15 +52616,38 @@
         "sourceDigest": "28761ff998a5e4ef642c7930a68147d8cef15757feff2f9f09cb5f8226b3715d"
       },
       "ownership": {
-        "targetPackage": "tooling"
+        "targetPackage": "language-service"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
-        "sourceIdenticalTargetIds": [],
+        "status": "verified-exact",
+        "coverage": "exact-source",
+        "targets": [
+          {
+            "id": "rc87-67cbbbe94506619c",
+            "package": "language-service",
+            "file": "packages/language-service/tests/get-class-position/vue.test.ts",
+            "line": 29,
+            "title": "multiple :class assignments",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "28761ff998a5e4ef642c7930a68147d8cef15757feff2f9f09cb5f8226b3715d"
+          }
+        ],
+        "sourceIdenticalTargetIds": [
+          "rc87-67cbbbe94506619c"
+        ],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "exact-source",
+          "sourceDigest": "28761ff998a5e4ef642c7930a68147d8cef15757feff2f9f09cb5f8226b3715d",
+          "targets": [
+            {
+              "caseId": "rc87-67cbbbe94506619c",
+              "runner": "vitest",
+              "digest": "28761ff998a5e4ef642c7930a68147d8cef15757feff2f9f09cb5f8226b3715d"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -51461,12 +52674,35 @@
         "targetPackage": "tooling"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
-        "sourceIdenticalTargetIds": [],
+        "status": "verified-exact",
+        "coverage": "exact-source",
+        "targets": [
+          {
+            "id": "rc87-7f25c87667836705",
+            "package": "tooling",
+            "file": "packages/tooling/tests/language/rc87-mdn-css-data.test.ts",
+            "line": 7,
+            "title": "uses unprefixed MDN syntax for vendor-prefixed properties",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "6851aa3fc7cd1ba1af3b043766db309ef96d6080a8f164dc42ef8c0374c8b14d"
+          }
+        ],
+        "sourceIdenticalTargetIds": [
+          "rc87-7f25c87667836705"
+        ],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "exact-source",
+          "sourceDigest": "6851aa3fc7cd1ba1af3b043766db309ef96d6080a8f164dc42ef8c0374c8b14d",
+          "targets": [
+            {
+              "caseId": "rc87-7f25c87667836705",
+              "runner": "vitest",
+              "digest": "6851aa3fc7cd1ba1af3b043766db309ef96d6080a8f164dc42ef8c0374c8b14d"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -51543,15 +52779,38 @@
         "sourceDigest": "f9c7bb75b9f6309414ecb28da6e6877b5aeff8796b846bc86012faebeba97692"
       },
       "ownership": {
-        "targetPackage": "tooling"
+        "targetPackage": "language-service"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
-        "sourceIdenticalTargetIds": [],
+        "status": "verified-exact",
+        "coverage": "exact-source",
+        "targets": [
+          {
+            "id": "rc87-16d28158c200f1ff",
+            "package": "language-service",
+            "file": "packages/language-service/tests/rc87-shiki.test.ts",
+            "line": 109,
+            "title": "exports Shiki language registrations as a default array",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "f9c7bb75b9f6309414ecb28da6e6877b5aeff8796b846bc86012faebeba97692"
+          }
+        ],
+        "sourceIdenticalTargetIds": [
+          "rc87-16d28158c200f1ff"
+        ],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "exact-source",
+          "sourceDigest": "f9c7bb75b9f6309414ecb28da6e6877b5aeff8796b846bc86012faebeba97692",
+          "targets": [
+            {
+              "caseId": "rc87-16d28158c200f1ff",
+              "runner": "vitest",
+              "digest": "f9c7bb75b9f6309414ecb28da6e6877b5aeff8796b846bc86012faebeba97692"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -51575,15 +52834,38 @@
         "sourceDigest": "e7187843a68de3bad508bda887d786c23559a288711c97587ff1fdf2f700b18e"
       },
       "ownership": {
-        "targetPackage": "tooling"
+        "targetPackage": "language-service"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
-        "sourceIdenticalTargetIds": [],
+        "status": "verified-exact",
+        "coverage": "exact-source",
+        "targets": [
+          {
+            "id": "rc87-2fa1682486ebcf8c",
+            "package": "language-service",
+            "file": "packages/language-service/tests/shiki.test.ts",
+            "line": 143,
+            "title": "defines deterministic TextMate grammar scopes for CSS directives",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "e7187843a68de3bad508bda887d786c23559a288711c97587ff1fdf2f700b18e"
+          }
+        ],
+        "sourceIdenticalTargetIds": [
+          "rc87-2fa1682486ebcf8c"
+        ],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "exact-source",
+          "sourceDigest": "e7187843a68de3bad508bda887d786c23559a288711c97587ff1fdf2f700b18e",
+          "targets": [
+            {
+              "caseId": "rc87-2fa1682486ebcf8c",
+              "runner": "vitest",
+              "digest": "e7187843a68de3bad508bda887d786c23559a288711c97587ff1fdf2f700b18e"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -51606,15 +52888,36 @@
         "sourceDigest": "563df45cf2c27d2690e4b60cfb2e81488db891d4c1ba66a9d8a8ee92c4867082"
       },
       "ownership": {
-        "targetPackage": "tooling"
+        "targetPackage": "language-service"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-44dfe92e02a0a784",
+            "package": "language-service",
+            "file": "packages/language-service/tests/rc87-shiki.test.ts",
+            "line": 161,
+            "title": "supports Shiki dynamic language imports",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "563df45cf2c27d2690e4b60cfb2e81488db891d4c1ba66a9d8a8ee92c4867082"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "563df45cf2c27d2690e4b60cfb2e81488db891d4c1ba66a9d8a8ee92c4867082",
+          "targets": [
+            {
+              "caseId": "rc87-44dfe92e02a0a784",
+              "runner": "vitest",
+              "digest": "563df45cf2c27d2690e4b60cfb2e81488db891d4c1ba66a9d8a8ee92c4867082"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -51638,15 +52941,38 @@
         "sourceDigest": "4b7b0d0733dcf636f9e7d33646649a0d0ddb2abe549652b5428104a9dccb962b"
       },
       "ownership": {
-        "targetPackage": "tooling"
+        "targetPackage": "language-service"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
-        "sourceIdenticalTargetIds": [],
+        "status": "verified-exact",
+        "coverage": "exact-source",
+        "targets": [
+          {
+            "id": "rc87-50a6d8ef235beb32",
+            "package": "language-service",
+            "file": "packages/language-service/tests/shiki.test.ts",
+            "line": 214,
+            "title": "registers a real Shiki TextMate injection grammar for CSS directives",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "4b7b0d0733dcf636f9e7d33646649a0d0ddb2abe549652b5428104a9dccb962b"
+          }
+        ],
+        "sourceIdenticalTargetIds": [
+          "rc87-50a6d8ef235beb32"
+        ],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "exact-source",
+          "sourceDigest": "4b7b0d0733dcf636f9e7d33646649a0d0ddb2abe549652b5428104a9dccb962b",
+          "targets": [
+            {
+              "caseId": "rc87-50a6d8ef235beb32",
+              "runner": "vitest",
+              "digest": "4b7b0d0733dcf636f9e7d33646649a0d0ddb2abe549652b5428104a9dccb962b"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -51670,15 +52996,38 @@
         "sourceDigest": "988048db90a1f3ac536b0cebba0ca2849d19372174b423e5b9f392228a4fc798"
       },
       "ownership": {
-        "targetPackage": "tooling"
+        "targetPackage": "language-service"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
-        "sourceIdenticalTargetIds": [],
+        "status": "verified-exact",
+        "coverage": "exact-source",
+        "targets": [
+          {
+            "id": "rc87-11ce58a03cdb4b00",
+            "package": "language-service",
+            "file": "packages/language-service/tests/shiki.test.ts",
+            "line": 248,
+            "title": "keeps guide theme snippets correct with TextMate only",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "988048db90a1f3ac536b0cebba0ca2849d19372174b423e5b9f392228a4fc798"
+          }
+        ],
+        "sourceIdenticalTargetIds": [
+          "rc87-11ce58a03cdb4b00"
+        ],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "exact-source",
+          "sourceDigest": "988048db90a1f3ac536b0cebba0ca2849d19372174b423e5b9f392228a4fc798",
+          "targets": [
+            {
+              "caseId": "rc87-11ce58a03cdb4b00",
+              "runner": "vitest",
+              "digest": "988048db90a1f3ac536b0cebba0ca2849d19372174b423e5b9f392228a4fc798"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -51703,15 +53052,38 @@
         "sourceDigest": "89728b8e1a7a930f6fe80cbf8f59fc966e7434577cf7c62b418313c91929ef8f"
       },
       "ownership": {
-        "targetPackage": "tooling"
+        "targetPackage": "language-service"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
-        "sourceIdenticalTargetIds": [],
+        "status": "verified-exact",
+        "coverage": "exact-source",
+        "targets": [
+          {
+            "id": "rc87-3ed933e5fedf10aa",
+            "package": "language-service",
+            "file": "packages/language-service/tests/shiki.test.ts",
+            "line": 272,
+            "title": "does not attach semantic metadata to guide theme CSS directive syntax",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "89728b8e1a7a930f6fe80cbf8f59fc966e7434577cf7c62b418313c91929ef8f"
+          }
+        ],
+        "sourceIdenticalTargetIds": [
+          "rc87-3ed933e5fedf10aa"
+        ],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "exact-source",
+          "sourceDigest": "89728b8e1a7a930f6fe80cbf8f59fc966e7434577cf7c62b418313c91929ef8f",
+          "targets": [
+            {
+              "caseId": "rc87-3ed933e5fedf10aa",
+              "runner": "vitest",
+              "digest": "89728b8e1a7a930f6fe80cbf8f59fc966e7434577cf7c62b418313c91929ef8f"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -51736,15 +53108,38 @@
         "sourceDigest": "12042c691c7703f79e9c056b63e239446d527ec9215f8ea7e316a94ba0337219"
       },
       "ownership": {
-        "targetPackage": "tooling"
+        "targetPackage": "language-service"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
-        "sourceIdenticalTargetIds": [],
+        "status": "verified-exact",
+        "coverage": "exact-source",
+        "targets": [
+          {
+            "id": "rc87-614eb1632af3733f",
+            "package": "language-service",
+            "file": "packages/language-service/tests/shiki.test.ts",
+            "line": 289,
+            "title": "does not resolve guide theme CSS directive syntax through semantic scope styles",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "12042c691c7703f79e9c056b63e239446d527ec9215f8ea7e316a94ba0337219"
+          }
+        ],
+        "sourceIdenticalTargetIds": [
+          "rc87-614eb1632af3733f"
+        ],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "exact-source",
+          "sourceDigest": "12042c691c7703f79e9c056b63e239446d527ec9215f8ea7e316a94ba0337219",
+          "targets": [
+            {
+              "caseId": "rc87-614eb1632af3733f",
+              "runner": "vitest",
+              "digest": "12042c691c7703f79e9c056b63e239446d527ec9215f8ea7e316a94ba0337219"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -51767,15 +53162,38 @@
         "sourceDigest": "57dfd17109ec873a93d8095ac457ce735f256e2147f657012e9fe30c12c9e4c2"
       },
       "ownership": {
-        "targetPackage": "tooling"
+        "targetPackage": "language-service"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
-        "sourceIdenticalTargetIds": [],
+        "status": "verified-exact",
+        "coverage": "exact-source",
+        "targets": [
+          {
+            "id": "rc87-671b393d7ed4aef8",
+            "package": "language-service",
+            "file": "packages/language-service/tests/shiki.test.ts",
+            "line": 307,
+            "title": "does not create Master Shiki decorations for native-only CSS",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "57dfd17109ec873a93d8095ac457ce735f256e2147f657012e9fe30c12c9e4c2"
+          }
+        ],
+        "sourceIdenticalTargetIds": [
+          "rc87-671b393d7ed4aef8"
+        ],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "exact-source",
+          "sourceDigest": "57dfd17109ec873a93d8095ac457ce735f256e2147f657012e9fe30c12c9e4c2",
+          "targets": [
+            {
+              "caseId": "rc87-671b393d7ed4aef8",
+              "runner": "vitest",
+              "digest": "57dfd17109ec873a93d8095ac457ce735f256e2147f657012e9fe30c12c9e4c2"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -51799,15 +53217,38 @@
         "sourceDigest": "c14a718d5e8b344083c31b9aef627175386a2cfb3bcc61bc788f9357aceac03a"
       },
       "ownership": {
-        "targetPackage": "tooling"
+        "targetPackage": "language-service"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
-        "sourceIdenticalTargetIds": [],
+        "status": "verified-exact",
+        "coverage": "exact-source",
+        "targets": [
+          {
+            "id": "rc87-9f5ae22425b343d8",
+            "package": "language-service",
+            "file": "packages/language-service/tests/shiki.test.ts",
+            "line": 322,
+            "title": "normalizes Shiki language ids separately from class-list languages",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "c14a718d5e8b344083c31b9aef627175386a2cfb3bcc61bc788f9357aceac03a"
+          }
+        ],
+        "sourceIdenticalTargetIds": [
+          "rc87-9f5ae22425b343d8"
+        ],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "exact-source",
+          "sourceDigest": "c14a718d5e8b344083c31b9aef627175386a2cfb3bcc61bc788f9357aceac03a",
+          "targets": [
+            {
+              "caseId": "rc87-9f5ae22425b343d8",
+              "runner": "vitest",
+              "digest": "c14a718d5e8b344083c31b9aef627175386a2cfb3bcc61bc788f9357aceac03a"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -51830,15 +53271,38 @@
         "sourceDigest": "d3eaea3bbbcff8731825bf214123f891dc44e6e1f4c8d0decfa8bee3508a9849"
       },
       "ownership": {
-        "targetPackage": "tooling"
+        "targetPackage": "language-service"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
-        "sourceIdenticalTargetIds": [],
+        "status": "verified-exact",
+        "coverage": "exact-source",
+        "targets": [
+          {
+            "id": "rc87-2c5a5b24e801cfff",
+            "package": "language-service",
+            "file": "packages/language-service/tests/shiki.test.ts",
+            "line": 334,
+            "title": "creates Shiki decorations from Master CSS semantic tokens",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "d3eaea3bbbcff8731825bf214123f891dc44e6e1f4c8d0decfa8bee3508a9849"
+          }
+        ],
+        "sourceIdenticalTargetIds": [
+          "rc87-2c5a5b24e801cfff"
+        ],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "exact-source",
+          "sourceDigest": "d3eaea3bbbcff8731825bf214123f891dc44e6e1f4c8d0decfa8bee3508a9849",
+          "targets": [
+            {
+              "caseId": "rc87-2c5a5b24e801cfff",
+              "runner": "vitest",
+              "digest": "d3eaea3bbbcff8731825bf214123f891dc44e6e1f4c8d0decfa8bee3508a9849"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -51863,15 +53327,38 @@
         "sourceDigest": "495258ab526e870f3f031ee20752c85bbd5e0262245774d14bfb8973e9cd0b6d"
       },
       "ownership": {
-        "targetPackage": "tooling"
+        "targetPackage": "language-service"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
-        "sourceIdenticalTargetIds": [],
+        "status": "verified-exact",
+        "coverage": "exact-source",
+        "targets": [
+          {
+            "id": "rc87-12186aa5abf43d09",
+            "package": "language-service",
+            "file": "packages/language-service/tests/shiki.test.ts",
+            "line": 394,
+            "title": "creates Shiki decorations for CSS directive class-list spans",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "495258ab526e870f3f031ee20752c85bbd5e0262245774d14bfb8973e9cd0b6d"
+          }
+        ],
+        "sourceIdenticalTargetIds": [
+          "rc87-12186aa5abf43d09"
+        ],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "exact-source",
+          "sourceDigest": "495258ab526e870f3f031ee20752c85bbd5e0262245774d14bfb8973e9cd0b6d",
+          "targets": [
+            {
+              "caseId": "rc87-12186aa5abf43d09",
+              "runner": "vitest",
+              "digest": "495258ab526e870f3f031ee20752c85bbd5e0262245774d14bfb8973e9cd0b6d"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -51895,15 +53382,38 @@
         "sourceDigest": "23618e63a338083833f901301ff8bb462a1bf048ba3610152fe992f6730f5ead"
       },
       "ownership": {
-        "targetPackage": "tooling"
+        "targetPackage": "language-service"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
-        "sourceIdenticalTargetIds": [],
+        "status": "verified-exact",
+        "coverage": "exact-source",
+        "targets": [
+          {
+            "id": "rc87-dd8bb950e0e1689f",
+            "package": "language-service",
+            "file": "packages/language-service/tests/shiki.test.ts",
+            "line": 479,
+            "title": "creates Shiki decorations for raw Master CSS class lists",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "23618e63a338083833f901301ff8bb462a1bf048ba3610152fe992f6730f5ead"
+          }
+        ],
+        "sourceIdenticalTargetIds": [
+          "rc87-dd8bb950e0e1689f"
+        ],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "exact-source",
+          "sourceDigest": "23618e63a338083833f901301ff8bb462a1bf048ba3610152fe992f6730f5ead",
+          "targets": [
+            {
+              "caseId": "rc87-dd8bb950e0e1689f",
+              "runner": "vitest",
+              "digest": "23618e63a338083833f901301ff8bb462a1bf048ba3610152fe992f6730f5ead"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -51926,15 +53436,38 @@
         "sourceDigest": "7bd31e18c36c85efcfd5834854c1613fefe53f59d57997a6c031dd9f20ce05a3"
       },
       "ownership": {
-        "targetPackage": "tooling"
+        "targetPackage": "language-service"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
-        "sourceIdenticalTargetIds": [],
+        "status": "verified-exact",
+        "coverage": "exact-source",
+        "targets": [
+          {
+            "id": "rc87-048c5fec4032b5c6",
+            "package": "language-service",
+            "file": "packages/language-service/tests/shiki.test.ts",
+            "line": 503,
+            "title": "skips semantic token decorations inside host comments",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "7bd31e18c36c85efcfd5834854c1613fefe53f59d57997a6c031dd9f20ce05a3"
+          }
+        ],
+        "sourceIdenticalTargetIds": [
+          "rc87-048c5fec4032b5c6"
+        ],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "exact-source",
+          "sourceDigest": "7bd31e18c36c85efcfd5834854c1613fefe53f59d57997a6c031dd9f20ce05a3",
+          "targets": [
+            {
+              "caseId": "rc87-048c5fec4032b5c6",
+              "runner": "vitest",
+              "digest": "7bd31e18c36c85efcfd5834854c1613fefe53f59d57997a6c031dd9f20ce05a3"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -51957,15 +53490,38 @@
         "sourceDigest": "796b91a605afcaa326e393c89a33a741b8475db8b948486b385f11bae3ce325e"
       },
       "ownership": {
-        "targetPackage": "tooling"
+        "targetPackage": "language-service"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
-        "sourceIdenticalTargetIds": [],
+        "status": "verified-exact",
+        "coverage": "exact-source",
+        "targets": [
+          {
+            "id": "rc87-a5e7df0a818329f3",
+            "package": "language-service",
+            "file": "packages/language-service/tests/shiki.test.ts",
+            "line": 514,
+            "title": "applies semantic token styles by type and modifier",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "796b91a605afcaa326e393c89a33a741b8475db8b948486b385f11bae3ce325e"
+          }
+        ],
+        "sourceIdenticalTargetIds": [
+          "rc87-a5e7df0a818329f3"
+        ],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "exact-source",
+          "sourceDigest": "796b91a605afcaa326e393c89a33a741b8475db8b948486b385f11bae3ce325e",
+          "targets": [
+            {
+              "caseId": "rc87-a5e7df0a818329f3",
+              "runner": "vitest",
+              "digest": "796b91a605afcaa326e393c89a33a741b8475db8b948486b385f11bae3ce325e"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -51988,15 +53544,38 @@
         "sourceDigest": "7f181eed07de7eebb5e8acec7db516a62373df2bdf61dc061bd41f90dd8a8fc8"
       },
       "ownership": {
-        "targetPackage": "tooling"
+        "targetPackage": "language-service"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
-        "sourceIdenticalTargetIds": [],
+        "status": "verified-exact",
+        "coverage": "exact-source",
+        "targets": [
+          {
+            "id": "rc87-b65ebde91c14e95b",
+            "package": "language-service",
+            "file": "packages/language-service/tests/shiki.test.ts",
+            "line": 664,
+            "title": "applies semantic decorations in the Shiki tokens hook",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "7f181eed07de7eebb5e8acec7db516a62373df2bdf61dc061bd41f90dd8a8fc8"
+          }
+        ],
+        "sourceIdenticalTargetIds": [
+          "rc87-b65ebde91c14e95b"
+        ],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "exact-source",
+          "sourceDigest": "7f181eed07de7eebb5e8acec7db516a62373df2bdf61dc061bd41f90dd8a8fc8",
+          "targets": [
+            {
+              "caseId": "rc87-b65ebde91c14e95b",
+              "runner": "vitest",
+              "digest": "7f181eed07de7eebb5e8acec7db516a62373df2bdf61dc061bd41f90dd8a8fc8"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -52020,15 +53599,38 @@
         "sourceDigest": "d59beb2ed6a54c71706ba706327cae66fc7da0d151d73931c37d14300df09544"
       },
       "ownership": {
-        "targetPackage": "tooling"
+        "targetPackage": "language-service"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
-        "sourceIdenticalTargetIds": [],
+        "status": "verified-exact",
+        "coverage": "exact-source",
+        "targets": [
+          {
+            "id": "rc87-5079a76d5cefd655",
+            "package": "language-service",
+            "file": "packages/language-service/tests/shiki.test.ts",
+            "line": 708,
+            "title": "uses semantic token scope styles for selector semantic tokens",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "d59beb2ed6a54c71706ba706327cae66fc7da0d151d73931c37d14300df09544"
+          }
+        ],
+        "sourceIdenticalTargetIds": [
+          "rc87-5079a76d5cefd655"
+        ],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "exact-source",
+          "sourceDigest": "d59beb2ed6a54c71706ba706327cae66fc7da0d151d73931c37d14300df09544",
+          "targets": [
+            {
+              "caseId": "rc87-5079a76d5cefd655",
+              "runner": "vitest",
+              "digest": "d59beb2ed6a54c71706ba706327cae66fc7da0d151d73931c37d14300df09544"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -52051,15 +53653,38 @@
         "sourceDigest": "31518d64a8b7020b90db1956b106bcf004d3faaefcde762251e955e72234ec8e"
       },
       "ownership": {
-        "targetPackage": "tooling"
+        "targetPackage": "language-service"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
-        "sourceIdenticalTargetIds": [],
+        "status": "verified-exact",
+        "coverage": "exact-source",
+        "targets": [
+          {
+            "id": "rc87-45de05367dfbdb24",
+            "package": "language-service",
+            "file": "packages/language-service/tests/shiki.test.ts",
+            "line": 756,
+            "title": "uses semantic token scope styles for documentation Master CSS tokens",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "31518d64a8b7020b90db1956b106bcf004d3faaefcde762251e955e72234ec8e"
+          }
+        ],
+        "sourceIdenticalTargetIds": [
+          "rc87-45de05367dfbdb24"
+        ],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "exact-source",
+          "sourceDigest": "31518d64a8b7020b90db1956b106bcf004d3faaefcde762251e955e72234ec8e",
+          "targets": [
+            {
+              "caseId": "rc87-45de05367dfbdb24",
+              "runner": "vitest",
+              "digest": "31518d64a8b7020b90db1956b106bcf004d3faaefcde762251e955e72234ec8e"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -52084,15 +53709,38 @@
         "sourceDigest": "5252878a3d8ab8c74835d088e3204acdad15889c1a632e42c1690a47bbad121c"
       },
       "ownership": {
-        "targetPackage": "tooling"
+        "targetPackage": "language-service"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
-        "sourceIdenticalTargetIds": [],
+        "status": "verified-exact",
+        "coverage": "exact-source",
+        "targets": [
+          {
+            "id": "rc87-49294136507486df",
+            "package": "language-service",
+            "file": "packages/language-service/tests/shiki.test.ts",
+            "line": 863,
+            "title": "uses semantic token scope styles for CSS directive class-list tokens",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "5252878a3d8ab8c74835d088e3204acdad15889c1a632e42c1690a47bbad121c"
+          }
+        ],
+        "sourceIdenticalTargetIds": [
+          "rc87-49294136507486df"
+        ],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "exact-source",
+          "sourceDigest": "5252878a3d8ab8c74835d088e3204acdad15889c1a632e42c1690a47bbad121c",
+          "targets": [
+            {
+              "caseId": "rc87-49294136507486df",
+              "runner": "vitest",
+              "digest": "5252878a3d8ab8c74835d088e3204acdad15889c1a632e42c1690a47bbad121c"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -89461,6 +91109,166 @@
       "sourceDigest": "951a346b0d78d53445d9f081701543a7db9e901469b951fdd5f43048a10db4e5"
     },
     {
+      "id": "rc87-26a0fc70a4fe84a2",
+      "package": "language-service",
+      "file": "packages/language-service/tests/rc87-shiki.test.ts",
+      "line": 114,
+      "title": "defines deterministic TextMate grammar scopes for CSS directives",
+      "runner": "vitest",
+      "kind": "test",
+      "sourceDigest": "e7187843a68de3bad508bda887d786c23559a288711c97587ff1fdf2f700b18e"
+    },
+    {
+      "id": "rc87-75bb3596f5f148b0",
+      "package": "language-service",
+      "file": "packages/language-service/tests/rc87-shiki.test.ts",
+      "line": 182,
+      "title": "registers a real Shiki TextMate injection grammar for CSS directives",
+      "runner": "vitest",
+      "kind": "test",
+      "sourceDigest": "4b7b0d0733dcf636f9e7d33646649a0d0ddb2abe549652b5428104a9dccb962b"
+    },
+    {
+      "id": "rc87-3b1814f38ddb99eb",
+      "package": "language-service",
+      "file": "packages/language-service/tests/rc87-shiki.test.ts",
+      "line": 216,
+      "title": "keeps guide theme snippets correct with TextMate only",
+      "runner": "vitest",
+      "kind": "test",
+      "sourceDigest": "988048db90a1f3ac536b0cebba0ca2849d19372174b423e5b9f392228a4fc798"
+    },
+    {
+      "id": "rc87-54d1064138cdfa5d",
+      "package": "language-service",
+      "file": "packages/language-service/tests/rc87-shiki.test.ts",
+      "line": 240,
+      "title": "does not attach semantic metadata to guide theme CSS directive syntax",
+      "runner": "vitest",
+      "kind": "test",
+      "sourceDigest": "89728b8e1a7a930f6fe80cbf8f59fc966e7434577cf7c62b418313c91929ef8f"
+    },
+    {
+      "id": "rc87-8d392a681c27d0c2",
+      "package": "language-service",
+      "file": "packages/language-service/tests/rc87-shiki.test.ts",
+      "line": 257,
+      "title": "does not resolve guide theme CSS directive syntax through semantic scope styles",
+      "runner": "vitest",
+      "kind": "test",
+      "sourceDigest": "12042c691c7703f79e9c056b63e239446d527ec9215f8ea7e316a94ba0337219"
+    },
+    {
+      "id": "rc87-e2c56dc4d369487d",
+      "package": "language-service",
+      "file": "packages/language-service/tests/rc87-shiki.test.ts",
+      "line": 275,
+      "title": "does not create Master Shiki decorations for native-only CSS",
+      "runner": "vitest",
+      "kind": "test",
+      "sourceDigest": "57dfd17109ec873a93d8095ac457ce735f256e2147f657012e9fe30c12c9e4c2"
+    },
+    {
+      "id": "rc87-5a8efc063385b50d",
+      "package": "language-service",
+      "file": "packages/language-service/tests/rc87-shiki.test.ts",
+      "line": 290,
+      "title": "normalizes Shiki language ids separately from class-list languages",
+      "runner": "vitest",
+      "kind": "test",
+      "sourceDigest": "c14a718d5e8b344083c31b9aef627175386a2cfb3bcc61bc788f9357aceac03a"
+    },
+    {
+      "id": "rc87-6e434d9c797e0734",
+      "package": "language-service",
+      "file": "packages/language-service/tests/rc87-shiki.test.ts",
+      "line": 302,
+      "title": "creates Shiki decorations from Master CSS semantic tokens",
+      "runner": "vitest",
+      "kind": "test",
+      "sourceDigest": "d3eaea3bbbcff8731825bf214123f891dc44e6e1f4c8d0decfa8bee3508a9849"
+    },
+    {
+      "id": "rc87-d3e9f43a5067d475",
+      "package": "language-service",
+      "file": "packages/language-service/tests/rc87-shiki.test.ts",
+      "line": 362,
+      "title": "creates Shiki decorations for CSS directive class-list spans",
+      "runner": "vitest",
+      "kind": "test",
+      "sourceDigest": "495258ab526e870f3f031ee20752c85bbd5e0262245774d14bfb8973e9cd0b6d"
+    },
+    {
+      "id": "rc87-2abd2947ac845e54",
+      "package": "language-service",
+      "file": "packages/language-service/tests/rc87-shiki.test.ts",
+      "line": 447,
+      "title": "creates Shiki decorations for raw Master CSS class lists",
+      "runner": "vitest",
+      "kind": "test",
+      "sourceDigest": "23618e63a338083833f901301ff8bb462a1bf048ba3610152fe992f6730f5ead"
+    },
+    {
+      "id": "rc87-62f117700b2c33ab",
+      "package": "language-service",
+      "file": "packages/language-service/tests/rc87-shiki.test.ts",
+      "line": 471,
+      "title": "skips semantic token decorations inside host comments",
+      "runner": "vitest",
+      "kind": "test",
+      "sourceDigest": "7bd31e18c36c85efcfd5834854c1613fefe53f59d57997a6c031dd9f20ce05a3"
+    },
+    {
+      "id": "rc87-efe4aaa7bc884241",
+      "package": "language-service",
+      "file": "packages/language-service/tests/rc87-shiki.test.ts",
+      "line": 482,
+      "title": "applies semantic token styles by type and modifier",
+      "runner": "vitest",
+      "kind": "test",
+      "sourceDigest": "796b91a605afcaa326e393c89a33a741b8475db8b948486b385f11bae3ce325e"
+    },
+    {
+      "id": "rc87-ecd2faed97890caf",
+      "package": "language-service",
+      "file": "packages/language-service/tests/rc87-shiki.test.ts",
+      "line": 515,
+      "title": "applies semantic decorations in the Shiki tokens hook",
+      "runner": "vitest",
+      "kind": "test",
+      "sourceDigest": "7f181eed07de7eebb5e8acec7db516a62373df2bdf61dc061bd41f90dd8a8fc8"
+    },
+    {
+      "id": "rc87-6eb87719e89fec81",
+      "package": "language-service",
+      "file": "packages/language-service/tests/rc87-shiki.test.ts",
+      "line": 559,
+      "title": "uses semantic token scope styles for selector semantic tokens",
+      "runner": "vitest",
+      "kind": "test",
+      "sourceDigest": "d59beb2ed6a54c71706ba706327cae66fc7da0d151d73931c37d14300df09544"
+    },
+    {
+      "id": "rc87-99b555d4fc57840e",
+      "package": "language-service",
+      "file": "packages/language-service/tests/rc87-shiki.test.ts",
+      "line": 607,
+      "title": "uses semantic token scope styles for documentation Master CSS tokens",
+      "runner": "vitest",
+      "kind": "test",
+      "sourceDigest": "31518d64a8b7020b90db1956b106bcf004d3faaefcde762251e955e72234ec8e"
+    },
+    {
+      "id": "rc87-5e4c77dcbbfd1c7c",
+      "package": "language-service",
+      "file": "packages/language-service/tests/rc87-shiki.test.ts",
+      "line": 714,
+      "title": "uses semantic token scope styles for CSS directive class-list tokens",
+      "runner": "vitest",
+      "kind": "test",
+      "sourceDigest": "5252878a3d8ab8c74835d088e3204acdad15889c1a632e42c1690a47bbad121c"
+    },
+    {
       "id": "rc87-3fac9efeebd10f88",
       "package": "language-service",
       "file": "packages/language-service/tests/session.test.ts",
@@ -89488,17 +91296,7 @@
       "title": "exports the Shiki language registration as a named value",
       "runner": "vitest",
       "kind": "test",
-      "sourceDigest": "80259524ec27e63357a83b72caee72379b3fe1190e13a0d35b3ce894d3069bf7"
-    },
-    {
-      "id": "rc87-2fa1682486ebcf8c",
-      "package": "language-service",
-      "file": "packages/language-service/tests/shiki.test.ts",
-      "line": 143,
-      "title": "defines deterministic TextMate grammar scopes for CSS directives",
-      "runner": "vitest",
-      "kind": "test",
-      "sourceDigest": "e7187843a68de3bad508bda887d786c23559a288711c97587ff1fdf2f700b18e"
+      "sourceDigest": "1a4cc9128306e2ce28d0103d2662290936dc21b8c0541a60cd60547f38d14dc0"
     },
     {
       "id": "rc87-4a7a42b87983cb2d",
@@ -89509,116 +91307,6 @@
       "runner": "vitest",
       "kind": "test",
       "sourceDigest": "80754bd9b7409c8d204ee51a6dc90a93e9e69b95e6decf54757576867e7a5561"
-    },
-    {
-      "id": "rc87-50a6d8ef235beb32",
-      "package": "language-service",
-      "file": "packages/language-service/tests/shiki.test.ts",
-      "line": 214,
-      "title": "registers a real Shiki TextMate injection grammar for CSS directives",
-      "runner": "vitest",
-      "kind": "test",
-      "sourceDigest": "4b7b0d0733dcf636f9e7d33646649a0d0ddb2abe549652b5428104a9dccb962b"
-    },
-    {
-      "id": "rc87-11ce58a03cdb4b00",
-      "package": "language-service",
-      "file": "packages/language-service/tests/shiki.test.ts",
-      "line": 248,
-      "title": "keeps guide theme snippets correct with TextMate only",
-      "runner": "vitest",
-      "kind": "test",
-      "sourceDigest": "988048db90a1f3ac536b0cebba0ca2849d19372174b423e5b9f392228a4fc798"
-    },
-    {
-      "id": "rc87-3ed933e5fedf10aa",
-      "package": "language-service",
-      "file": "packages/language-service/tests/shiki.test.ts",
-      "line": 272,
-      "title": "does not attach semantic metadata to guide theme CSS directive syntax",
-      "runner": "vitest",
-      "kind": "test",
-      "sourceDigest": "89728b8e1a7a930f6fe80cbf8f59fc966e7434577cf7c62b418313c91929ef8f"
-    },
-    {
-      "id": "rc87-614eb1632af3733f",
-      "package": "language-service",
-      "file": "packages/language-service/tests/shiki.test.ts",
-      "line": 289,
-      "title": "does not resolve guide theme CSS directive syntax through semantic scope styles",
-      "runner": "vitest",
-      "kind": "test",
-      "sourceDigest": "12042c691c7703f79e9c056b63e239446d527ec9215f8ea7e316a94ba0337219"
-    },
-    {
-      "id": "rc87-671b393d7ed4aef8",
-      "package": "language-service",
-      "file": "packages/language-service/tests/shiki.test.ts",
-      "line": 307,
-      "title": "does not create Master Shiki decorations for native-only CSS",
-      "runner": "vitest",
-      "kind": "test",
-      "sourceDigest": "57dfd17109ec873a93d8095ac457ce735f256e2147f657012e9fe30c12c9e4c2"
-    },
-    {
-      "id": "rc87-9f5ae22425b343d8",
-      "package": "language-service",
-      "file": "packages/language-service/tests/shiki.test.ts",
-      "line": 322,
-      "title": "normalizes Shiki language ids separately from class-list languages",
-      "runner": "vitest",
-      "kind": "test",
-      "sourceDigest": "c14a718d5e8b344083c31b9aef627175386a2cfb3bcc61bc788f9357aceac03a"
-    },
-    {
-      "id": "rc87-2c5a5b24e801cfff",
-      "package": "language-service",
-      "file": "packages/language-service/tests/shiki.test.ts",
-      "line": 334,
-      "title": "creates Shiki decorations from Master CSS semantic tokens",
-      "runner": "vitest",
-      "kind": "test",
-      "sourceDigest": "d3eaea3bbbcff8731825bf214123f891dc44e6e1f4c8d0decfa8bee3508a9849"
-    },
-    {
-      "id": "rc87-12186aa5abf43d09",
-      "package": "language-service",
-      "file": "packages/language-service/tests/shiki.test.ts",
-      "line": 394,
-      "title": "creates Shiki decorations for CSS directive class-list spans",
-      "runner": "vitest",
-      "kind": "test",
-      "sourceDigest": "495258ab526e870f3f031ee20752c85bbd5e0262245774d14bfb8973e9cd0b6d"
-    },
-    {
-      "id": "rc87-dd8bb950e0e1689f",
-      "package": "language-service",
-      "file": "packages/language-service/tests/shiki.test.ts",
-      "line": 479,
-      "title": "creates Shiki decorations for raw Master CSS class lists",
-      "runner": "vitest",
-      "kind": "test",
-      "sourceDigest": "23618e63a338083833f901301ff8bb462a1bf048ba3610152fe992f6730f5ead"
-    },
-    {
-      "id": "rc87-048c5fec4032b5c6",
-      "package": "language-service",
-      "file": "packages/language-service/tests/shiki.test.ts",
-      "line": 503,
-      "title": "skips semantic token decorations inside host comments",
-      "runner": "vitest",
-      "kind": "test",
-      "sourceDigest": "7bd31e18c36c85efcfd5834854c1613fefe53f59d57997a6c031dd9f20ce05a3"
-    },
-    {
-      "id": "rc87-a5e7df0a818329f3",
-      "package": "language-service",
-      "file": "packages/language-service/tests/shiki.test.ts",
-      "line": 514,
-      "title": "applies semantic token styles by type and modifier",
-      "runner": "vitest",
-      "kind": "test",
-      "sourceDigest": "796b91a605afcaa326e393c89a33a741b8475db8b948486b385f11bae3ce325e"
     },
     {
       "id": "rc87-b1ef4609b9c3a1a7",
@@ -89659,46 +91347,6 @@
       "runner": "vitest",
       "kind": "test",
       "sourceDigest": "941f3ace18a98df984b80d5aeb5c8f0d5a8e7b50edf0b93b7104dbfc7ae25d6a"
-    },
-    {
-      "id": "rc87-b65ebde91c14e95b",
-      "package": "language-service",
-      "file": "packages/language-service/tests/shiki.test.ts",
-      "line": 664,
-      "title": "applies semantic decorations in the Shiki tokens hook",
-      "runner": "vitest",
-      "kind": "test",
-      "sourceDigest": "7f181eed07de7eebb5e8acec7db516a62373df2bdf61dc061bd41f90dd8a8fc8"
-    },
-    {
-      "id": "rc87-5079a76d5cefd655",
-      "package": "language-service",
-      "file": "packages/language-service/tests/shiki.test.ts",
-      "line": 708,
-      "title": "uses semantic token scope styles for selector semantic tokens",
-      "runner": "vitest",
-      "kind": "test",
-      "sourceDigest": "d59beb2ed6a54c71706ba706327cae66fc7da0d151d73931c37d14300df09544"
-    },
-    {
-      "id": "rc87-45de05367dfbdb24",
-      "package": "language-service",
-      "file": "packages/language-service/tests/shiki.test.ts",
-      "line": 756,
-      "title": "uses semantic token scope styles for documentation Master CSS tokens",
-      "runner": "vitest",
-      "kind": "test",
-      "sourceDigest": "31518d64a8b7020b90db1956b106bcf004d3faaefcde762251e955e72234ec8e"
-    },
-    {
-      "id": "rc87-49294136507486df",
-      "package": "language-service",
-      "file": "packages/language-service/tests/shiki.test.ts",
-      "line": 863,
-      "title": "uses semantic token scope styles for CSS directive class-list tokens",
-      "runner": "vitest",
-      "kind": "test",
-      "sourceDigest": "5252878a3d8ab8c74835d088e3204acdad15889c1a632e42c1690a47bbad121c"
     },
     {
       "id": "rc87-340707601e1b0a28",

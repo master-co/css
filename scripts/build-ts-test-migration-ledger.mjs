@@ -10,6 +10,7 @@ const DEFAULT_POST_BASELINE_REF = 'origin/rc'
 const RC87_COMMIT = '9cc3e8b5f2e34d5220f10f27ed5ce8186fbcb524'
 const RC87_RENDERING_TARGET_COMMIT = 'b242a52a0fcb43b1b506d9fa1e010d0c85621d13'
 const RC87_AUTHORING_TARGET_COMMIT = '7ac3c1a63a7af8c8c927a869fa3e4d531261cec6'
+const RC87_LANGUAGE_TARGET_COMMIT = '61b9def159eeb78cfe67a70e96cb3dc148088952'
 const ledgerPath = path.resolve('parity/ts-test-migration-ledger.json')
 const evidencePath = path.resolve('parity/ts-test-migration-evidence.json')
 const exceptionsPath = path.resolve('parity-exceptions.json')
@@ -1065,6 +1066,51 @@ function seedAuthoringEvidence(legacyInventory, targetInventory) {
   writeFileSync(evidencePath, `${JSON.stringify(evidence, null, 2)}\n`)
 }
 
+function seedLanguageEvidence(legacyInventory, targetInventory) {
+  assert.equal(
+    targetInventory.commit,
+    RC87_LANGUAGE_TARGET_COMMIT,
+    'Language evidence must be audited against the pinned language target.'
+  )
+  const evidence = JSON.parse(readFileSync(evidencePath, 'utf8'))
+  const legacyById = new Map(legacyInventory.cases.map((testCase) => [testCase.id, testCase]))
+  const targetById = new Map(targetInventory.cases.map((testCase) => [testCase.id, testCase]))
+  const recordsBySourceId = new Map(evidence.records.map((record) => [record.sourceId, record]))
+  const currentLedger = JSON.parse(readFileSync(ledgerPath, 'utf8'))
+  assert.equal(
+    currentLedger.target.commit,
+    RC87_LANGUAGE_TARGET_COMMIT,
+    'The current ledger does not describe the pinned language target.'
+  )
+
+  for (const entry of currentLedger.entries) {
+    if (entry.source.package !== 'language' || entry.migration.status !== 'mapped-unverified') continue
+    const source = legacyById.get(entry.id)
+    assert.ok(source, `Cannot seed audited language source ${entry.id}.`)
+    let target
+    if (entry.source.file === 'packages/language/tests/shiki.test.ts') {
+      target = targetInventory.cases.find((candidate) => (
+        candidate.file === 'packages/language-service/tests/rc87-shiki.test.ts'
+        && candidate.title === entry.source.title
+      ))
+    } else {
+      assert.equal(entry.migration.targets.length, 1, `Language evidence target is ambiguous for ${entry.id}.`)
+      target = targetById.get(entry.migration.targets[0].id)
+    }
+    assert.ok(target, `Cannot seed audited language target for ${entry.id}.`)
+    recordsBySourceId.set(entry.id, {
+      sourceId: entry.id,
+      sourceDigest: source.sourceDigest,
+      proof: 'rc87-golden',
+      targets: [proofTargetReference(target)]
+    })
+  }
+
+  evidence.records = [...recordsBySourceId.values()]
+    .sort((left, right) => left.sourceId.localeCompare(right.sourceId))
+  writeFileSync(evidencePath, `${JSON.stringify(evidence, null, 2)}\n`)
+}
+
 function loadParityExceptions() {
   const registry = JSON.parse(readFileSync(exceptionsPath, 'utf8'))
   assert.ok(Array.isArray(registry.exceptions), 'Parity exceptions must be an array.')
@@ -1514,6 +1560,9 @@ if (process.argv.includes('--seed-rendering-evidence')) {
 }
 if (process.argv.includes('--seed-authoring-evidence')) {
   seedAuthoringEvidence(legacyInventory, targetInventory)
+}
+if (process.argv.includes('--seed-language-evidence')) {
+  seedLanguageEvidence(legacyInventory, targetInventory)
 }
 const migrationEvidence = loadMigrationEvidence()
 const exceptions = loadParityExceptions()
