@@ -40,7 +40,22 @@
       "targetDigest": "951a346b0d78d53445d9f081701543a7db9e901469b951fdd5f43048a10db4e5",
       "proof": "verified-superset",
       "reason": "The bundled manifest fallback assertions were extracted into a shared helper and are executed by both the manifest and runtime compatibility cases."
+    },
+    {
+      "sourceId": "rc87-2d55aa74f4d93510",
+      "sourceDigest": "c1ae579d278253410909689c5bc6ad9ecfbf9665dec7a9393f2f54729be8d64f",
+      "targetDigest": "3a769593af36fcfaffb10cbd2ee4d319f443b4953e8ffd8a3d02c51db2f889f0",
+      "proof": "verified-superset",
+      "reason": "The target checks the Rust completion index directly for the fg property and separately verifies that the language-service presentation returns the concrete red value, replacing an indirect UI-label assertion with evidence at both contract layers."
     }
   ],
-  "surfaces": []
+  "surfaces": [
+    {
+      "surfaceId": "wasm-engine-raw-surface",
+      "baselineDigest": "da686c4f607ed538a4e61f3a15ed0bd559cf18e320f8c6a28b47d58eb187e012",
+      "targetDigest": "d85e9791a68f93c5e4b67fb55c8145d77d72808b9cff0f84e75781cec8c8770a",
+      "proof": "approved-contract-change",
+      "reason": "The private generated Wasm render-session declaration now matches wasm-bindgen's Vec<bool> JavaScript ABI. The published createWasmRenderSession wrapper continues to accept readonly boolean arrays, so no package export or public API is restored or removed."
+    }
+  ]
 }

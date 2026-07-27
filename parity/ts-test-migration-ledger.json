@@ -1366,11 +1366,11 @@
   },
   "target": {
     "ref": "latest-target-change",
-    "commit": "40cb01c8db70fbaba07b22bb68283fbb7cbb776f",
+    "commit": "439004460f725b0ee789c6677c6e17e181a805a1",
     "packageCount": 36,
     "testFiles": 194,
     "e2eFiles": 24,
-    "cases": 1677
+    "cases": 1679
   },
   "existingParity": {
     "semanticBaseline": "ef1a7c851",
@@ -1381,18 +1381,18 @@
   "evidence": {
     "path": "parity/ts-test-migration-evidence.json",
     "version": 1,
-    "records": 584,
+    "records": 585,
     "proofs": {
-      "approved-divergence": 11,
-      "exact-source": 952,
-      "rc87-golden": 573
+      "approved-divergence": 14,
+      "exact-source": 951,
+      "rc87-golden": 571
     }
   },
   "summary": {
     "byStatus": {
-      "approved-divergence": 11,
+      "approved-divergence": 14,
       "source-inactive": 10,
-      "verified-exact": 1525
+      "verified-exact": 1522
     },
     "byPriority": {
       "P0": 676,
@@ -1401,13 +1401,13 @@
     },
     "byCoverage": {
       "candidate-all": 10,
-      "evidence": 584,
-      "exact-source": 952
+      "evidence": 585,
+      "exact-source": 951
     },
     "byProof": {
-      "approved-divergence": 11,
-      "exact-source": 952,
-      "rc87-golden": 573
+      "approved-divergence": 14,
+      "exact-source": 951,
+      "rc87-golden": 571
     },
     "byPackage": {
       "astro": {
@@ -1675,7 +1675,7 @@
         "gap": 0
       }
     },
-    "targetOnlyCases": 156
+    "targetOnlyCases": 158
   },
   "postBaselineDelta": {
     "path": "parity/post-rc87-delta-ledger.json",
@@ -42463,7 +42463,7 @@
             "id": "rc87-3950d765ff8c7858",
             "package": "language-service",
             "file": "packages/language-service/tests/session.test.ts",
-            "line": 43,
+            "line": 45,
             "title": "does not render static theme modifier semantic tokens",
             "runner": "vitest",
             "kind": "test",
@@ -44533,7 +44533,7 @@
             "id": "rc87-09bfa63fa238afeb",
             "package": "language-service",
             "file": "packages/language-service/tests/session.test.ts",
-            "line": 55,
+            "line": 57,
             "title": "uses the injected runtime default manifest for completions",
             "runner": "vitest",
             "kind": "test",
@@ -44588,7 +44588,7 @@
             "id": "rc87-42028ac139836835",
             "package": "language-service",
             "file": "packages/language-service/tests/session.test.ts",
-            "line": 67,
+            "line": 69,
             "title": "uses the injected runtime for hover CSS previews",
             "runner": "vitest",
             "kind": "test",
@@ -44644,7 +44644,7 @@
             "id": "rc87-f8e97d7288ed2ca0",
             "package": "language-service",
             "file": "packages/language-service/tests/session.test.ts",
-            "line": 83,
+            "line": 85,
             "title": "uses the injected runtime variables for document colors",
             "runner": "vitest",
             "kind": "test",
@@ -56742,8 +56742,8 @@
         "targetPackage": "tooling"
       },
       "migration": {
-        "status": "verified-exact",
-        "coverage": "exact-source",
+        "status": "approved-divergence",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-1453f1fd3ba1676d",
@@ -56753,26 +56753,34 @@
             "title": "reports structural compose fixes with directive scope",
             "runner": "vitest",
             "kind": "test",
-            "sourceDigest": "b66d32851ef9ba9267ee0aee91cf299ea61655c14522b63999527644484c541f"
+            "sourceDigest": "f59b0e550a161dff9cf919b3934c39b46ac589b14a1277ce411566dc3757a9da"
           }
         ],
-        "sourceIdenticalTargetIds": [
-          "rc87-1453f1fd3ba1676d"
-        ],
+        "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
         "proof": {
-          "kind": "exact-source",
+          "kind": "approved-divergence",
           "sourceDigest": "b66d32851ef9ba9267ee0aee91cf299ea61655c14522b63999527644484c541f",
           "targets": [
             {
               "caseId": "rc87-1453f1fd3ba1676d",
               "runner": "vitest",
-              "digest": "b66d32851ef9ba9267ee0aee91cf299ea61655c14522b63999527644484c541f"
+              "digest": "f59b0e550a161dff9cf919b3934c39b46ac589b14a1277ce411566dc3757a9da"
             }
-          ]
+          ],
+          "exceptionId": "rc87-lint-rust-diagnostic-delimiters"
         }
       },
-      "divergence": null
+      "divergence": {
+        "id": "rc87-lint-rust-diagnostic-delimiters",
+        "reason": "Rust-owned lint diagnostics consistently render CSS declarations and class names as Markdown code spans. Restoring mixed double-quote delimiters would regress the normalized diagnostic presentation contract.",
+        "old": "Canonical compose diagnostics wrap declarations in backticks but class names in double quotes.",
+        "new": "Canonical compose diagnostics wrap both declarations and class names in escaped backtick code spans.",
+        "packages": [
+          "tooling"
+        ],
+        "test": "packages/tooling/tests/lint/rc87-index.test.ts"
+      }
     },
     {
       "id": "rc87-8beacd6f070ab2f9",
@@ -67582,35 +67590,45 @@
         "targetPackage": "runtime"
       },
       "migration": {
-        "status": "verified-exact",
+        "status": "approved-divergence",
         "coverage": "evidence",
         "targets": [
           {
-            "id": "rc87-bb70569b1ed54bb8",
+            "id": "rc87-f67818a2528723e4",
             "package": "runtime",
             "file": "packages/runtime/e2e/rc87-rendering.test.ts",
             "line": 133,
-            "title": "progressive hydration falls back when an external style hydration manifest import fails",
+            "title": "preserves the strict Rust contract when an external hydration manifest import fails",
             "runner": "playwright-or-vitest-e2e",
             "kind": "e2e",
-            "sourceDigest": "5c8022dd71113467f55ce0537cf139d49237108643143a994962a068cd752c83"
+            "sourceDigest": "d3e6830e3c6022e1d1d24eb297159eae4d437c9a5341840468445532ef932026"
           }
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
         "proof": {
-          "kind": "rc87-golden",
+          "kind": "approved-divergence",
           "sourceDigest": "cff2a4782e93c4319597db9e6b78364ee497831e71d0f36d7f8bd472277baea8",
           "targets": [
             {
-              "caseId": "rc87-bb70569b1ed54bb8",
+              "caseId": "rc87-f67818a2528723e4",
               "runner": "playwright-or-vitest-e2e",
-              "digest": "5c8022dd71113467f55ce0537cf139d49237108643143a994962a068cd752c83"
+              "digest": "d3e6830e3c6022e1d1d24eb297159eae4d437c9a5341840468445532ef932026"
             }
-          ]
+          ],
+          "exceptionId": "rc87-runtime-strict-external-hydration"
         }
       },
-      "divergence": null
+      "divergence": {
+        "id": "rc87-runtime-strict-external-hydration",
+        "reason": "The Rust runtime contract treats an explicitly configured external hydration manifest as authoritative input. Silently falling back after an import or payload failure would conceal deployment corruption and undo the refactored error boundary.",
+        "old": "Progressive hydration catches a failed external manifest import and continues with DOM fallback hydration.",
+        "new": "Progressive hydration reports INVALID_HYDRATION_MANIFEST for failed imports or invalid external manifest payloads.",
+        "packages": [
+          "runtime"
+        ],
+        "test": "packages/runtime/e2e/rc87-rendering.test.ts"
+      }
     },
     {
       "id": "rc87-e9921559bcdcc602",
@@ -67644,7 +67662,7 @@
             "id": "rc87-e9921559bcdcc602",
             "package": "runtime",
             "file": "packages/runtime/e2e/edge-cases.test.ts",
-            "line": 1064,
+            "line": 1114,
             "title": "explicit hydration manifest wins over external DOM discovery",
             "runner": "playwright-or-vitest-e2e",
             "kind": "e2e",
@@ -67700,7 +67718,7 @@
             "id": "rc87-3f337089de44b759",
             "package": "runtime",
             "file": "packages/runtime/e2e/edge-cases.test.ts",
-            "line": 1103,
+            "line": 1153,
             "title": "progressive hydration matches bucketed theme variables",
             "runner": "playwright-or-vitest-e2e",
             "kind": "e2e",
@@ -67756,7 +67774,7 @@
             "id": "rc87-069973df7e52b6a3",
             "package": "runtime",
             "file": "packages/runtime/e2e/edge-cases.test.ts",
-            "line": 1133,
+            "line": 1183,
             "title": "progressive hydration matches theme variable buckets by key",
             "runner": "playwright-or-vitest-e2e",
             "kind": "e2e",
@@ -67811,7 +67829,7 @@
             "id": "rc87-2ae476ee747fc6d7",
             "package": "runtime",
             "file": "packages/runtime/e2e/edge-cases.test.ts",
-            "line": 1173,
+            "line": 1223,
             "title": "removes shared alias variable dependencies when classes disappear",
             "runner": "playwright-or-vitest-e2e",
             "kind": "e2e",
@@ -67867,7 +67885,7 @@
             "id": "rc87-6224a90501ed606d",
             "package": "runtime",
             "file": "packages/runtime/e2e/edge-cases.test.ts",
-            "line": 1253,
+            "line": 1303,
             "title": "inlines variables without runtime theme counts",
             "runner": "playwright-or-vitest-e2e",
             "kind": "e2e",
@@ -81270,35 +81288,46 @@
         "targetPackage": "svelte"
       },
       "migration": {
-        "status": "verified-exact",
+        "status": "approved-divergence",
         "coverage": "evidence",
         "targets": [
           {
-            "id": "rc87-5ac35fa4acb8eccb",
+            "id": "rc87-c4d831fe47eaca8d",
             "package": "svelte",
             "file": "packages/svelte/tests/rc87-rendering.test.ts",
             "line": 61,
-            "title": "keeps streaming after early injection and leaves later classes to hydration",
+            "title": "preserves complete Rust stream results when later chunks add classes",
             "runner": "vitest",
             "kind": "test",
-            "sourceDigest": "2b7407d42b72ccf4967122971f24a2f2fa7782fc27306bcca12b01a90359363a"
+            "sourceDigest": "dd9f8c7f17a608076d7391494c6e1c2f9150a5e6d3823277bdd66b049c0f4112"
           }
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
         "proof": {
-          "kind": "rc87-golden",
+          "kind": "approved-divergence",
           "sourceDigest": "fbfdef00057f18fe363c92df4bd1cfe76f64789e751c010550a168ad12c524d1",
           "targets": [
             {
-              "caseId": "rc87-5ac35fa4acb8eccb",
+              "caseId": "rc87-c4d831fe47eaca8d",
               "runner": "vitest",
-              "digest": "2b7407d42b72ccf4967122971f24a2f2fa7782fc27306bcca12b01a90359363a"
+              "digest": "dd9f8c7f17a608076d7391494c6e1c2f9150a5e6d3823277bdd66b049c0f4112"
             }
-          ]
+          ],
+          "exceptionId": "rc87-svelte-complete-stream-result"
         }
       },
-      "divergence": null
+      "divergence": {
+        "id": "rc87-svelte-complete-stream-result",
+        "reason": "The refactored server renderer produces one immutable result from the complete HTML source. Keeping the rc.87 early CSS snapshot would make the final result depend on stream chunk boundaries and omit classes discovered in later chunks.",
+        "old": "The Svelte server hook injects the first safe streaming CSS snapshot and leaves classes from later chunks to client hydration.",
+        "new": "The streaming transform remains incremental, while the final immutable render result includes CSS for classes from every chunk.",
+        "packages": [
+          "server",
+          "svelte"
+        ],
+        "test": "packages/svelte/tests/rc87-rendering.test.ts"
+      }
     },
     {
       "id": "rc87-8896fbca801ba254",
@@ -92320,7 +92349,7 @@
       "title": "uses the Rust completion index",
       "runner": "vitest",
       "kind": "test",
-      "sourceDigest": "c1ae579d278253410909689c5bc6ad9ecfbf9665dec7a9393f2f54729be8d64f"
+      "sourceDigest": "3a769593af36fcfaffb10cbd2ee4d319f443b4953e8ffd8a3d02c51db2f889f0"
     },
     {
       "id": "rc87-2372d116de8c5692",
@@ -92473,14 +92502,24 @@
       "sourceDigest": "62fbb0e23662318005f0cb45f1dbfd0f0cbf8331b14e34adff2865f3dcbed051"
     },
     {
-      "id": "rc87-fc1f23fdc550d5de",
+      "id": "rc87-d5af64a61d41263a",
       "package": "runtime",
       "file": "packages/runtime/e2e/edge-cases.test.ts",
       "line": 1028,
-      "title": "progressive hydration falls back when an external manifest payload is invalid",
+      "title": "progressive hydration fails open when an external style hydration manifest import fails",
       "runner": "playwright-or-vitest-e2e",
       "kind": "e2e",
-      "sourceDigest": "7687d8a006431aeba6d4b5367b6b3c57ec63e7a3896d90b19d6ba75522a28055"
+      "sourceDigest": "40a006b28f9041aaae0c22aeb52bee0d291ba4d7320d7d125acb335a038ce3e8"
+    },
+    {
+      "id": "rc87-140cb995e4c0676b",
+      "package": "runtime",
+      "file": "packages/runtime/e2e/edge-cases.test.ts",
+      "line": 1072,
+      "title": "progressive hydration rejects an invalid external hydration manifest payload",
+      "runner": "playwright-or-vitest-e2e",
+      "kind": "e2e",
+      "sourceDigest": "e256ef002195234e20283909b0510b38c017c5c846346a5db1db75a8eb91c3e5"
     },
     {
       "id": "rc87-0d66ad72af4fd052",
@@ -92753,10 +92792,20 @@
       "sourceDigest": "e99561d70f546955cd2b1f16ef5557154593c167bff981ea0bf43c663a8f39a9"
     },
     {
-      "id": "rc87-f90c557a6b616597",
+      "id": "rc87-3f34357167b3a060",
       "package": "server",
       "file": "packages/server/tests/server-renderer.test.ts",
       "line": 129,
+      "title": "keeps streamed HTML and the final immutable result on the same complete snapshot",
+      "runner": "vitest",
+      "kind": "test",
+      "sourceDigest": "69b5c9086121e4d8c22e079924245c27b0aac174d5381a4fc231f364cbe98dbf"
+    },
+    {
+      "id": "rc87-f90c557a6b616597",
+      "package": "server",
+      "file": "packages/server/tests/server-renderer.test.ts",
+      "line": 148,
       "title": "returns a complete final chunk when no prefix can be emitted safely",
       "runner": "vitest",
       "kind": "test",
@@ -92770,13 +92819,13 @@
       "title": "renders a complete response across arbitrary chunks",
       "runner": "vitest",
       "kind": "test",
-      "sourceDigest": "525526146ccfd174f9fcdcd06ce6da5e9eb485ef34970f4bf5da236c06b64dbd"
+      "sourceDigest": "5318cfa69fbf65cc01fc5b5f4657ace33dba6caf1a20c05c5309fcfc063e132e"
     },
     {
       "id": "rc87-9890adf43c5e0dfb",
       "package": "svelte",
       "file": "packages/svelte/tests/server.test.ts",
-      "line": 52,
+      "line": 51,
       "title": "isolates render state between responses",
       "runner": "vitest",
       "kind": "test",
@@ -92786,7 +92835,7 @@
       "id": "rc87-76c94fdbffd25fe6",
       "package": "svelte",
       "file": "packages/svelte/tests/server.test.ts",
-      "line": 67,
+      "line": 66,
       "title": "supports external hydration manifest storage",
       "runner": "vitest",
       "kind": "test",
@@ -92796,7 +92845,7 @@
       "id": "rc87-9fb06cb439f3854e",
       "package": "svelte",
       "file": "packages/svelte/tests/server.test.ts",
-      "line": 97,
+      "line": 96,
       "title": "honors emitted globals and disabled hydration",
       "runner": "vitest",
       "kind": "test",

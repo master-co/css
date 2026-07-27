@@ -1523,6 +1523,19 @@
       ]
     },
     {
+      "sourceId": "rc87-32ae1cd797a696d7",
+      "sourceDigest": "b66d32851ef9ba9267ee0aee91cf299ea61655c14522b63999527644484c541f",
+      "proof": "approved-divergence",
+      "targets": [
+        {
+          "caseId": "rc87-1453f1fd3ba1676d",
+          "runner": "vitest",
+          "digest": "f59b0e550a161dff9cf919b3934c39b46ac589b14a1277ce411566dc3757a9da"
+        }
+      ],
+      "exceptionId": "rc87-lint-rust-diagnostic-delimiters"
+    },
+    {
       "sourceId": "rc87-33078529268a4394",
       "sourceDigest": "964d6ea662ea505bfe84ba24decefff9527f3fb268f3f2d355d9feb4deaf1381",
       "proof": "rc87-golden",
@@ -2485,14 +2498,15 @@
     {
       "sourceId": "rc87-57602588c78ae709",
       "sourceDigest": "cff2a4782e93c4319597db9e6b78364ee497831e71d0f36d7f8bd472277baea8",
-      "proof": "rc87-golden",
+      "proof": "approved-divergence",
       "targets": [
         {
-          "caseId": "rc87-bb70569b1ed54bb8",
+          "caseId": "rc87-f67818a2528723e4",
           "runner": "playwright-or-vitest-e2e",
-          "digest": "5c8022dd71113467f55ce0537cf139d49237108643143a994962a068cd752c83"
+          "digest": "d3e6830e3c6022e1d1d24eb297159eae4d437c9a5341840468445532ef932026"
         }
-      ]
+      ],
+      "exceptionId": "rc87-runtime-strict-external-hydration"
     },
     {
       "sourceId": "rc87-57a76e2ef2de6ae4",
@@ -4083,14 +4097,15 @@
     {
       "sourceId": "rc87-8fdccb91ecc7d385",
       "sourceDigest": "fbfdef00057f18fe363c92df4bd1cfe76f64789e751c010550a168ad12c524d1",
-      "proof": "rc87-golden",
+      "proof": "approved-divergence",
       "targets": [
         {
-          "caseId": "rc87-5ac35fa4acb8eccb",
+          "caseId": "rc87-c4d831fe47eaca8d",
           "runner": "vitest",
-          "digest": "2b7407d42b72ccf4967122971f24a2f2fa7782fc27306bcca12b01a90359363a"
+          "digest": "dd9f8c7f17a608076d7391494c6e1c2f9150a5e6d3823277bdd66b049c0f4112"
         }
-      ]
+      ],
+      "exceptionId": "rc87-svelte-complete-stream-result"
     },
     {
       "sourceId": "rc87-9146f7d6148c605f",

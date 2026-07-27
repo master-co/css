@@ -1755,6 +1755,18 @@ function validateLedger(ledger) {
       assert.equal(entry.divergence, null, `Incomplete entry ${entry.id} cannot carry a divergence.`)
     }
   }
+  const active = ledger.entries.filter((entry) => entry.source.state === 'active')
+  const inactive = ledger.entries.filter((entry) => entry.source.state !== 'active')
+  assert.equal(active.length, 1536, 'The rc.87 active-case denominator drifted.')
+  assert.equal(inactive.length, 10, 'The rc.87 inactive-case denominator drifted.')
+  assert.ok(
+    active.every((entry) => ['verified-exact', 'approved-divergence'].includes(entry.migration.status)),
+    'Every active rc.87 case must have exact or approved-divergence proof.'
+  )
+  assert.ok(
+    inactive.every((entry) => entry.migration.status === 'source-inactive'),
+    'Inactive rc.87 cases must remain source-inactive.'
+  )
 }
 
 function loadRustRefactorContractEvidence() {
@@ -2027,6 +2039,14 @@ function validateRustRefactorContractLedger(ledger) {
       `Invalid Rust contract status for ${entry.source.id}.`
     )
   }
+  assert.ok(
+    ledger.entries.every(({ status }) => !['regressed', 'removed-unapproved'].includes(status)),
+    'Rust refactor contract cases contain an unapproved regression or removal.'
+  )
+  assert.ok(
+    ledger.surfaces.every(({ status }) => status !== 'regressed'),
+    'Rust refactor contract surfaces contain an unapproved regression.'
+  )
 }
 
 function validatePostRc87Delta(delta) {

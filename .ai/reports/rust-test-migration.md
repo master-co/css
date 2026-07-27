@@ -7,7 +7,7 @@ is isolated in `parity/post-rc87-delta-ledger.json`.
 ## Frozen baseline
 
 - Public and semantic source baseline: `v2.0.0-rc.87@9cc3e8b5f2e34d5220f10f27ed5ce8186fbcb524`.
-- Rust target candidate: `latest-target-change@40cb01c8db70fbaba07b22bb68283fbb7cbb776f`.
+- Rust target candidate: `latest-target-change@439004460f725b0ee789c6677c6e17e181a805a1`.
 - Scope: executable tests and E2E cases under `packages/*`; examples, site, and benchmarks are not migration denominators.
 - Newer rc changes are an overlay only and never replace rc.87 expectations.
 
@@ -21,8 +21,8 @@ is isolated in `parity/post-rc87-delta-ledger.json`.
 | rc.87 expanded cases | 1546 |
 | Expanded parameter and RuleTester cases | 349 |
 | Unresolved runtime matrices | 0 |
-| Rust target cases collected | 1677 |
-| Target-only cases | 156 |
+| Rust target cases collected | 1679 |
+| Target-only cases | 158 |
 
 The old 114-test takeover ledger is an engine-only historical subset. Its semantic
 capture commit `ef1a7c851` is not substituted for rc.87.
@@ -31,21 +31,21 @@ capture commit `ef1a7c851` is not substituted for rc.87.
 
 | Status | Count |
 |---|---:|
-| approved-divergence | 11 |
+| approved-divergence | 14 |
 | source-inactive | 10 |
-| verified-exact | 1525 |
+| verified-exact | 1522 |
 
 | Candidate coverage | Count |
 |---|---:|
 | candidate-all | 10 |
-| evidence | 584 |
-| exact-source | 952 |
+| evidence | 585 |
+| exact-source | 951 |
 
 | Verification proof | Count |
 |---|---:|
-| approved-divergence | 11 |
-| exact-source | 952 |
-| rc87-golden | 573 |
+| approved-divergence | 14 |
+| exact-source | 951 |
+| rc87-golden | 571 |
 
 | Priority | Cases | Gaps |
 |---|---:|---:|

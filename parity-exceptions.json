@@ -90,6 +90,37 @@
         "language-service"
       ],
       "test": "packages/language-service/tests/rc87-shiki.test.ts"
+    },
+    {
+      "id": "rc87-runtime-strict-external-hydration",
+      "reason": "The Rust runtime contract treats an explicitly configured external hydration manifest as authoritative input. Silently falling back after an import or payload failure would conceal deployment corruption and undo the refactored error boundary.",
+      "old": "Progressive hydration catches a failed external manifest import and continues with DOM fallback hydration.",
+      "new": "Progressive hydration reports INVALID_HYDRATION_MANIFEST for failed imports or invalid external manifest payloads.",
+      "packages": [
+        "runtime"
+      ],
+      "test": "packages/runtime/e2e/rc87-rendering.test.ts"
+    },
+    {
+      "id": "rc87-svelte-complete-stream-result",
+      "reason": "The refactored server renderer produces one immutable result from the complete HTML source. Keeping the rc.87 early CSS snapshot would make the final result depend on stream chunk boundaries and omit classes discovered in later chunks.",
+      "old": "The Svelte server hook injects the first safe streaming CSS snapshot and leaves classes from later chunks to client hydration.",
+      "new": "The streaming transform remains incremental, while the final immutable render result includes CSS for classes from every chunk.",
+      "packages": [
+        "server",
+        "svelte"
+      ],
+      "test": "packages/svelte/tests/rc87-rendering.test.ts"
+    },
+    {
+      "id": "rc87-lint-rust-diagnostic-delimiters",
+      "reason": "Rust-owned lint diagnostics consistently render CSS declarations and class names as Markdown code spans. Restoring mixed double-quote delimiters would regress the normalized diagnostic presentation contract.",
+      "old": "Canonical compose diagnostics wrap declarations in backticks but class names in double quotes.",
+      "new": "Canonical compose diagnostics wrap both declarations and class names in escaped backtick code spans.",
+      "packages": [
+        "tooling"
+      ],
+      "test": "packages/tooling/tests/lint/rc87-index.test.ts"
     }
   ]
 }
