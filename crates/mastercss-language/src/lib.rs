@@ -361,11 +361,6 @@ fn push_value_semantic_tokens(
                 && suffix
                     .chars()
                     .nth(1)
-                    .is_some_and(|next| next.is_ascii_digit()))
-            || (character == '-'
-                && suffix
-                    .chars()
-                    .nth(1)
                     .is_some_and(|next| next.is_ascii_digit()));
         if number_start {
             let mut end = byte_index + character.len_utf8();
@@ -396,7 +391,14 @@ fn push_value_semantic_tokens(
             byte_index = unit_end;
             continue;
         }
-        if character.is_alphabetic() || matches!(character, '_' | '-') {
+        if character.is_alphabetic()
+            || character == '_'
+            || (character == '-'
+                && !suffix
+                    .chars()
+                    .nth(1)
+                    .is_some_and(|next| next.is_ascii_digit()))
+        {
             let end = value_identifier_end(value, byte_index);
             let name = &value[byte_index..end];
             if value[end..].starts_with('(') {
@@ -414,13 +416,23 @@ fn push_value_semantic_tokens(
                     let content_end = value[content_start..]
                         .find(')')
                         .map_or(value.len(), |close| content_start + close);
-                    push_semantic_token(
-                        tokens,
-                        offset + utf16_len(&value[..content_start]),
-                        offset + utf16_len(&value[..content_end]),
-                        "string",
-                        &[],
-                    );
+                    let content = &value[content_start..content_end];
+                    if content.starts_with(['\'', '"']) {
+                        push_value_semantic_tokens(
+                            tokens,
+                            content,
+                            offset + utf16_len(&value[..content_start]),
+                            variable_names,
+                        );
+                    } else {
+                        push_semantic_token(
+                            tokens,
+                            offset + utf16_len(&value[..content_start]),
+                            offset + utf16_len(&value[..content_end]),
+                            "string",
+                            &[],
+                        );
+                    }
                     if content_end < value.len() {
                         let close = offset + utf16_len(&value[..content_end]);
                         push_semantic_token(
@@ -455,6 +467,10 @@ fn push_value_semantic_tokens(
         }
         if matches!(character, '|' | '/' | ',') {
             push_semantic_token(tokens, start, start + 1, "operator", &["valueSeparator"]);
+        } else if character == '!' {
+            push_semantic_token(tokens, start, start + 1, "operator", &["important"]);
+        } else if matches!(character, '*' | '-') {
+            push_semantic_token(tokens, start, start + 1, "operator", &["valueOperator"]);
         } else if matches!(character, '(' | ')') {
             push_semantic_token(
                 tokens,
@@ -534,20 +550,31 @@ fn push_query_semantic_tokens(tokens: &mut Vec<SemanticTokenInputIr>, query: &st
         );
         return;
     }
-    push_semantic_token(
-        tokens,
-        offset,
-        offset + utf16_len(&query[..keyword_end]),
-        "keyword",
-        &["query"],
-    );
+    if query[keyword_end..].starts_with('&') {
+        push_semantic_token(tokens, offset, offset + 1, "keyword", &["query"]);
+        push_semantic_token(
+            tokens,
+            offset + 1,
+            offset + utf16_len(&query[..keyword_end]),
+            "enumMember",
+            &["query"],
+        );
+    } else {
+        push_semantic_token(
+            tokens,
+            offset,
+            offset + utf16_len(&query[..keyword_end]),
+            "keyword",
+            &["query"],
+        );
+    }
     let mut byte_index = keyword_end;
     let mut expect_property = false;
     while byte_index < query.len() {
         let suffix = &query[byte_index..];
         let character = suffix.chars().next().unwrap_or_default();
         let start = offset + utf16_len(&query[..byte_index]);
-        if matches!(character, '(' | ')' | ':') {
+        if matches!(character, '(' | ')' | ':' | ',') {
             push_semantic_token(
                 tokens,
                 start,
@@ -2028,6 +2055,254 @@ fn position_at(source: &str, offset: u32) -> Option<(u32, u32)> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use mastercss_lexer::collect_class_list_cursor_ranges;
+
+    #[derive(Deserialize)]
+    #[serde(rename_all = "camelCase")]
+    struct LexerParityCorpus {
+        parser_cases: Vec<LexerParityCase>,
+    }
+
+    #[derive(Deserialize)]
+    #[serde(rename_all = "camelCase")]
+    struct LexerParityCase {
+        source_id: String,
+        kind: String,
+        input: String,
+    }
+
+    fn token_views(
+        source: &str,
+        tokens: &[SemanticTokenInputIr],
+    ) -> Vec<(String, String, Vec<String>)> {
+        tokens
+            .iter()
+            .map(|token| {
+                (
+                    source_slice(
+                        source,
+                        &SourceRange {
+                            start: token.start,
+                            end: token.end,
+                        },
+                    )
+                    .unwrap()
+                    .to_owned(),
+                    token.token_type.clone(),
+                    token.modifiers.clone(),
+                )
+            })
+            .collect()
+    }
+
+    #[test]
+    fn executes_rc87_language_lexer_parity_corpus() {
+        let corpus: LexerParityCorpus =
+            serde_json::from_str(include_str!("../../../parity/rust-semantic-corpus.json"))
+                .unwrap();
+        let source_ids = [
+            "rc87-56bd470c266dafff",
+            "rc87-51f771f5b7ef1697",
+            "rc87-1e55f6831835ae55",
+            "rc87-3b3607e8b4b583a3",
+            "rc87-58dfe44e344938aa",
+            "rc87-116f378a8315c994",
+            "rc87-377b579d44d48303",
+            "rc87-26f2db55b217f0d5",
+            "rc87-bcbede53a81f0bc5",
+            "rc87-eb118a232c54e6de",
+            "rc87-af4d2924300d54db",
+        ];
+        let session = LanguageSession::create(include_str!(
+            "../../../packages/preset/src/default-manifest.json"
+        ))
+        .unwrap();
+        let mut executed = 0;
+        for case in corpus
+            .parser_cases
+            .into_iter()
+            .filter(|case| case.kind == "lexer" && source_ids.contains(&case.source_id.as_str()))
+        {
+            executed += 1;
+            match case.source_id.as_str() {
+                "rc87-56bd470c266dafff" => assert_eq!(
+                    collect_class_list_cursor_ranges(&case.input),
+                    [
+                        SourceRange { start: 0, end: 1 },
+                        SourceRange { start: 1, end: 1 },
+                        SourceRange { start: 2, end: 2 },
+                        SourceRange { start: 3, end: 4 },
+                        SourceRange { start: 4, end: 4 },
+                        SourceRange { start: 5, end: 5 },
+                    ]
+                ),
+                "rc87-51f771f5b7ef1697" => {
+                    let mut tokens = Vec::new();
+                    push_value_semantic_tokens(&mut tokens, &case.input, 0, &HashSet::new());
+                    assert_eq!(
+                        token_views(&case.input, &tokens)
+                            .into_iter()
+                            .map(|(text, token_type, _)| (text, token_type))
+                            .collect::<Vec<_>>(),
+                        [
+                            ("12".into(), "number".into()),
+                            ("px".into(), "enumMember".into()),
+                            ("/".into(), "operator".into()),
+                            ("$space".into(), "variable".into()),
+                            ("url".into(), "function".into()),
+                            ("(".into(), "operator".into()),
+                            ("\"".into(), "string".into()),
+                            ("/a;b.png".into(), "string".into()),
+                            ("\"".into(), "string".into()),
+                            (")".into(), "operator".into()),
+                            ("!".into(), "operator".into()),
+                        ]
+                    );
+                    assert!(
+                        tokens
+                            .last()
+                            .unwrap()
+                            .modifiers
+                            .contains(&"important".into())
+                    );
+                }
+                "rc87-1e55f6831835ae55" => {
+                    let mut tokens = Vec::new();
+                    push_value_semantic_tokens(&mut tokens, &case.input, 0, &HashSet::new());
+                    assert_eq!(
+                        token_views(&case.input, &tokens)
+                            .into_iter()
+                            .map(|(text, _, _)| text)
+                            .collect::<Vec<_>>(),
+                        [
+                            "--value", "(", ")", "calc", "(", "--value", "(", ")", "*", "-", "1",
+                            ")"
+                        ]
+                    );
+                }
+                "rc87-3b3607e8b4b583a3" => {
+                    let mut tokens = Vec::new();
+                    push_query_semantic_tokens(&mut tokens, &case.input[..8], 0);
+                    push_state_semantic_tokens(&mut tokens, &case.input[8..], 8);
+                    assert_eq!(
+                        token_views(&case.input, &tokens)
+                            .into_iter()
+                            .map(|(text, _, _)| text)
+                            .collect::<Vec<_>>(),
+                        ["@sm", ">=", "640", ":", "hover", ">", ".", "item"]
+                    );
+                }
+                "rc87-58dfe44e344938aa" => {
+                    let state_start = case.input.find('_').unwrap();
+                    let mut tokens = Vec::new();
+                    push_query_semantic_tokens(&mut tokens, &case.input[..state_start], 0);
+                    push_state_semantic_tokens(
+                        &mut tokens,
+                        &case.input[state_start..],
+                        state_start as u32,
+                    );
+                    assert_eq!(
+                        token_views(&case.input, &tokens)
+                            .into_iter()
+                            .map(|(text, _, _)| text)
+                            .collect::<Vec<_>>(),
+                        [
+                            "@media", "(", "pointer", ":", "coarse", ")", ",", "screen", "_", ":",
+                            "is", "(", ".", "active", ",", "#", "target", ",", "button", ")"
+                        ]
+                    );
+                }
+                "rc87-116f378a8315c994" => {
+                    let mut tokens = Vec::new();
+                    push_query_semantic_tokens(&mut tokens, &case.input, 0);
+                    assert_eq!(
+                        token_views(&case.input, &tokens)
+                            .into_iter()
+                            .map(|(text, _, _)| text)
+                            .collect::<Vec<_>>(),
+                        ["@", "sm", "&", "<=", "md"]
+                    );
+                }
+                "rc87-377b579d44d48303" => {
+                    let mut tokens = Vec::new();
+                    session
+                        .push_class_semantic_tokens(&case.input, 0, &mut tokens)
+                        .unwrap();
+                    assert_eq!(
+                        token_views(&case.input, &tokens)
+                            .into_iter()
+                            .map(|(text, _, _)| text)
+                            .collect::<Vec<_>>(),
+                        ["{", "fg", ":", "red", ";", "bg", ":", "blue", "}"]
+                    );
+                }
+                "rc87-26f2db55b217f0d5" => {
+                    let mut tokens = Vec::new();
+                    session
+                        .push_class_semantic_tokens(&case.input, 0, &mut tokens)
+                        .unwrap();
+                    let views = token_views(&case.input, &tokens);
+                    assert_eq!(
+                        views
+                            .iter()
+                            .map(|(text, _, _)| text.as_str())
+                            .collect::<Vec<_>>(),
+                        [
+                            "{", "fg", ":", "red", ";", "block", "}", ">", "li", ":", "hover",
+                            "@sm"
+                        ]
+                    );
+                    assert!(
+                        views
+                            .iter()
+                            .any(|(_, _, modifiers)| modifiers
+                                .contains(&"selectorCombinator".into()))
+                    );
+                }
+                "rc87-bcbede53a81f0bc5" => {
+                    let mut tokens = Vec::new();
+                    session
+                        .push_class_semantic_tokens(&case.input, 0, &mut tokens)
+                        .unwrap();
+                    assert_eq!(
+                        token_views(&case.input, &tokens)
+                            .iter()
+                            .map(|(text, _, _)| text.as_str())
+                            .collect::<Vec<_>>(),
+                        ["{", "block", "}", "@sm"]
+                    );
+                }
+                "rc87-eb118a232c54e6de" => {
+                    let mut tokens = Vec::new();
+                    session
+                        .push_class_semantic_tokens(&case.input, 0, &mut tokens)
+                        .unwrap();
+                    assert_eq!(
+                        token_views(&case.input, &tokens)
+                            .iter()
+                            .map(|(text, _, _)| text.as_str())
+                            .collect::<Vec<_>>(),
+                        ["{", "fg", ":", "red", ";", "bg", ":", "blue"]
+                    );
+                }
+                "rc87-af4d2924300d54db" => {
+                    let mut tokens = Vec::new();
+                    session
+                        .push_class_semantic_tokens(&case.input, 0, &mut tokens)
+                        .unwrap();
+                    assert_eq!(
+                        token_views(&case.input, &tokens)
+                            .iter()
+                            .map(|(text, _, _)| text.as_str())
+                            .collect::<Vec<_>>(),
+                        ["fg", ":", "red", ";", "bg", ":", "blue"]
+                    );
+                }
+                source_id => panic!("unhandled language-owned lexer case {source_id}"),
+            }
+        }
+        assert_eq!(executed, 11);
+    }
 
     #[test]
     fn keeps_class_positions_and_semantic_tokens_in_utf16() {

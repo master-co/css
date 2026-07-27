@@ -65,6 +65,10 @@ struct ParserParityCase {
     kind: String,
     input: String,
     expected_canonical: String,
+    #[serde(default)]
+    target_package: Option<String>,
+    #[serde(default)]
+    runner: Option<String>,
 }
 
 #[derive(Deserialize)]
@@ -369,11 +373,17 @@ fn validate_semantic_parity_corpus(
             ));
         }
         if case.source_id.is_empty()
-            || !matches!(case.kind.as_str(), "condition" | "selector")
+            || !matches!(case.kind.as_str(), "condition" | "selector" | "lexer")
             || case.input.is_empty()
             || case.expected_canonical.is_empty()
         {
             return Err(format!("Invalid parser parity case: {}", case.id));
+        }
+        if case.kind == "lexer"
+            && (case.target_package.as_deref() != Some("tooling")
+                || case.runner.as_deref() != Some("cargo-test"))
+        {
+            return Err(format!("Lexer parity ownership is invalid: {}", case.id));
         }
     }
     for case in &corpus.engine_cases {

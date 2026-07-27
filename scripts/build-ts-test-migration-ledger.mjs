@@ -752,18 +752,18 @@ function collectSemanticCorpusCases(commit) {
       assert.notEqual(offset, -1, `Cannot locate semantic corpus case ${parityCase.id}.`)
       cases.push({
         id: `rc87-${shortDigest(`${file}\0${suite}\0${parityCase.id}\0${runner}`)}`,
-        package: packageName,
+        package: parityCase.targetPackage ?? packageName,
         file,
         line: source.slice(0, offset).split('\n').length,
         suites: ['rc.87 semantic corpus', suite],
         title: parityCase.id,
-        runner,
+        runner: parityCase.runner ?? runner,
         kind: 'test',
         state: 'active',
         sourceKind: 'corpus',
         sourceDigest: sha256(JSON.stringify(parityCase)),
         matrix: undefined,
-        domains: packageName === 'compiler'
+        domains: (parityCase.targetPackage ?? packageName) === 'compiler'
           ? ['authoring', 'css-bytes']
           : ['css-bytes', 'syntax-css-semantics'],
         priority: 'P0'

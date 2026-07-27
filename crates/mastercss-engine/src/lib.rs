@@ -6473,6 +6473,7 @@ mod tests {
                     .expect("condition parity case renders"),
                 "selector" => selector_token_to_template(&case.input, &engine.compiled)
                     .expect("selector parity case renders"),
+                "lexer" => continue,
                 kind => panic!("unsupported parser parity kind {kind}"),
             };
             assert_eq!(actual, case.expected_canonical, "{}", case.id);

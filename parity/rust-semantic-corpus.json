@@ -2860,6 +2860,312 @@
       "kind": "selector",
       "input": "_.feature__tab-title",
       "expectedCanonical": "& .feature__tab-title"
+    },
+    {
+      "id": "rc87-lexer-f388e6c161004b97",
+      "sourceId": "rc87-f388e6c161004b97",
+      "kind": "lexer",
+      "input": "  block\tfg:red\nm:1x ",
+      "expectedCanonical": "ASCII whitespace and class ranges are preserved",
+      "targetPackage": "tooling",
+      "runner": "cargo-test"
+    },
+    {
+      "id": "rc87-lexer-6d5d386f580d29af",
+      "sourceId": "rc87-6d5d386f580d29af",
+      "kind": "lexer",
+      "input": "block　fg:red",
+      "expectedCanonical": "full-width whitespace remains inside one class token",
+      "targetPackage": "tooling",
+      "runner": "cargo-test"
+    },
+    {
+      "id": "rc87-lexer-56bd470c266dafff",
+      "sourceId": "rc87-56bd470c266dafff",
+      "kind": "lexer",
+      "input": "a  b ",
+      "expectedCanonical": "empty cursor positions are preserved at ASCII whitespace boundaries",
+      "targetPackage": "tooling",
+      "runner": "cargo-test"
+    },
+    {
+      "id": "rc87-lexer-167ae2709f22cd6d",
+      "sourceId": "rc87-167ae2709f22cd6d",
+      "kind": "lexer",
+      "input": "content:\\'\\' block|content:\\`\\`",
+      "expectedCanonical": "configured quote characters are unescaped without changing raw ranges",
+      "targetPackage": "tooling",
+      "runner": "cargo-test"
+    },
+    {
+      "id": "rc87-lexer-9548ae64df5ed481",
+      "sourceId": "rc87-9548ae64df5ed481",
+      "kind": "lexer",
+      "input": " block  fg:red　m:1x ",
+      "expectedCanonical": "shared class range collection uses UTF-16 offsets",
+      "targetPackage": "tooling",
+      "runner": "cargo-test"
+    },
+    {
+      "id": "rc87-lexer-51f771f5b7ef1697",
+      "sourceId": "rc87-51f771f5b7ef1697",
+      "kind": "lexer",
+      "input": "12px/$space url(\"/a;b.png\")!",
+      "expectedCanonical": "value numbers units variables functions strings separators and priority are tokenized",
+      "targetPackage": "tooling",
+      "runner": "cargo-test"
+    },
+    {
+      "id": "rc87-lexer-1e55f6831835ae55",
+      "sourceId": "rc87-1e55f6831835ae55",
+      "kind": "lexer",
+      "input": "--value() calc(--value() * -1)",
+      "expectedCanonical": "managed placeholders are CSS function tokens",
+      "targetPackage": "tooling",
+      "runner": "cargo-test"
+    },
+    {
+      "id": "rc87-lexer-3b3607e8b4b583a3",
+      "sourceId": "rc87-3b3607e8b4b583a3",
+      "kind": "lexer",
+      "input": "@sm>=640:hover>.item",
+      "expectedCanonical": "query and selector state token ranges remain exact",
+      "targetPackage": "tooling",
+      "runner": "cargo-test"
+    },
+    {
+      "id": "rc87-lexer-58dfe44e344938aa",
+      "sourceId": "rc87-58dfe44e344938aa",
+      "kind": "lexer",
+      "input": "@media(pointer:coarse),screen_:is(.active,#target,button)",
+      "expectedCanonical": "native query and selector punctuation roles remain exact",
+      "targetPackage": "tooling",
+      "runner": "cargo-test"
+    },
+    {
+      "id": "rc87-lexer-116f378a8315c994",
+      "sourceId": "rc87-116f378a8315c994",
+      "kind": "lexer",
+      "input": "@sm&<=md",
+      "expectedCanonical": "named query range endpoints remain separate value tokens",
+      "targetPackage": "tooling",
+      "runner": "cargo-test"
+    },
+    {
+      "id": "rc87-lexer-377b579d44d48303",
+      "sourceId": "rc87-377b579d44d48303",
+      "kind": "lexer",
+      "input": "{fg:red;bg:blue}",
+      "expectedCanonical": "group braces and declaration terminators wrap semantic class tokens",
+      "targetPackage": "tooling",
+      "runner": "cargo-test"
+    },
+    {
+      "id": "rc87-lexer-26f2db55b217f0d5",
+      "sourceId": "rc87-26f2db55b217f0d5",
+      "kind": "lexer",
+      "input": "{fg:red;block}>li:hover@sm",
+      "expectedCanonical": "group suffix selector and query state remain tokenized",
+      "targetPackage": "tooling",
+      "runner": "cargo-test"
+    },
+    {
+      "id": "rc87-lexer-bcbede53a81f0bc5",
+      "sourceId": "rc87-bcbede53a81f0bc5",
+      "kind": "lexer",
+      "input": "{block}@sm",
+      "expectedCanonical": "group query suffix remains a query keyword",
+      "targetPackage": "tooling",
+      "runner": "cargo-test"
+    },
+    {
+      "id": "rc87-lexer-eb118a232c54e6de",
+      "sourceId": "rc87-eb118a232c54e6de",
+      "kind": "lexer",
+      "input": "{fg:red;bg:blue",
+      "expectedCanonical": "unclosed group recovery preserves parsed declarations",
+      "targetPackage": "tooling",
+      "runner": "cargo-test"
+    },
+    {
+      "id": "rc87-lexer-af4d2924300d54db",
+      "sourceId": "rc87-af4d2924300d54db",
+      "kind": "lexer",
+      "input": "fg:red;bg:blue",
+      "expectedCanonical": "brace-less grouped declarations preserve their terminator",
+      "targetPackage": "tooling",
+      "runner": "cargo-test"
+    },
+    {
+      "id": "rc87-lexer-7de028667721a877",
+      "sourceId": "rc87-7de028667721a877",
+      "kind": "lexer",
+      "input": "@import url(\"@master/css\") layer(theme);\n.x { content: \"@import url(\\\"ignored\\\");\" }\n@import \"./a;b.css\";",
+      "expectedCanonical": "@master/css|./a;b.css",
+      "targetPackage": "tooling",
+      "runner": "cargo-test"
+    },
+    {
+      "id": "rc87-lexer-80cea11f6437844e",
+      "sourceId": "rc87-80cea11f6437844e",
+      "kind": "lexer",
+      "input": "@master entry;|@import \"@master/css\";|@master;|@master global;",
+      "expectedCanonical": "true|true|false|false",
+      "targetPackage": "tooling",
+      "runner": "cargo-test"
+    },
+    {
+      "id": "rc87-lexer-c338962e34e07c1c",
+      "sourceId": "rc87-c338962e34e07c1c",
+      "kind": "lexer",
+      "input": "@master entry;\n@source \"./x.css\";\n.a{}",
+      "expectedCanonical": "\n@source \"./x.css\";\n.a{}",
+      "targetPackage": "tooling",
+      "runner": "cargo-test"
+    },
+    {
+      "id": "rc87-lexer-85fe07eee3ea650e",
+      "sourceId": "rc87-85fe07eee3ea650e",
+      "kind": "lexer",
+      "input": "@master;\n@master global;\n@master shake;\n@master no-shake;\n.a{}",
+      "expectedCanonical": "no entry directives",
+      "targetPackage": "tooling",
+      "runner": "cargo-test"
+    },
+    {
+      "id": "rc87-lexer-a99556d32ad12a9b",
+      "sourceId": "rc87-a99556d32ad12a9b",
+      "kind": "lexer",
+      "input": ".quoted { content: \"var(--color-blue-60)\"; }\n/* var(--color-red-60) */\n.real { color: var(--color-green-60); }\n.fallback { color: var(--color-brand, var(--color-green-60)); }",
+      "expectedCanonical": "color-green-60|color-brand",
+      "targetPackage": "tooling",
+      "runner": "cargo-test"
+    },
+    {
+      "id": "rc87-lexer-4d294d715eb82c2d",
+      "sourceId": "rc87-4d294d715eb82c2d",
+      "kind": "lexer",
+      "input": "--alpha(var(--color-brand, \"a)b\") / calc(100% - 20% /* ) */))",
+      "expectedCanonical": "balanced function ends at UTF-16 offset 61",
+      "targetPackage": "tooling",
+      "runner": "cargo-test"
+    },
+    {
+      "id": "rc87-lexer-9ccb1609c26acb3a",
+      "sourceId": "rc87-9ccb1609c26acb3a",
+      "kind": "lexer",
+      "input": ".quoted { content: \"var(--color-blue-60)\"; }\n/* var(--color-red-60) */\n.real { color: var(--color-green-60); }",
+      "expectedCanonical": "only active variable references are replaced",
+      "targetPackage": "tooling",
+      "runner": "cargo-test"
+    },
+    {
+      "id": "rc87-lexer-c853daf53b370443",
+      "sourceId": "rc87-c853daf53b370443",
+      "kind": "lexer",
+      "input": "@source \"a;b.css\";\n@theme { --color-primary: red; @keyframes fade { to { opacity: 1; } } }",
+      "expectedCanonical": "source|theme with exact statement block and quoted ranges",
+      "targetPackage": "tooling",
+      "runner": "cargo-test"
+    },
+    {
+      "id": "rc87-lexer-9e23b9ca5eba0b7f",
+      "sourceId": "rc87-9e23b9ca5eba0b7f",
+      "kind": "lexer",
+      "input": "@reference \"./a;b.css\";\n@layer components { .btn { @reference \"./nested.css\"; } }",
+      "expectedCanonical": "top-level and nested reference ranges retain depth and quotes",
+      "targetPackage": "tooling",
+      "runner": "cargo-test"
+    },
+    {
+      "id": "rc87-lexer-cd1d137ee89e9efb",
+      "sourceId": "rc87-cd1d137ee89e9efb",
+      "kind": "lexer",
+      "input": "@layer components { .btn { @compose block; @variant <sm { @compose hidden; } } }",
+      "expectedCanonical": "compose|variant|compose",
+      "targetPackage": "tooling",
+      "runner": "cargo-test"
+    },
+    {
+      "id": "rc87-lexer-0ecc38899002a5db",
+      "sourceId": "rc87-0ecc38899002a5db",
+      "kind": "lexer",
+      "input": ".card { @dark { @compose fg:white; } @light { color: black; } }",
+      "expectedCanonical": "variant|compose|variant",
+      "targetPackage": "tooling",
+      "runner": "cargo-test"
+    },
+    {
+      "id": "rc87-lexer-bf007c1edf054a11",
+      "sourceId": "rc87-bf007c1edf054a11",
+      "kind": "lexer",
+      "input": "@custom-variant motion-safe { @media (prefers-reduced-motion: no-preference) { @slot; } }",
+      "expectedCanonical": "custom-variant|slot",
+      "targetPackage": "tooling",
+      "runner": "cargo-test"
+    },
+    {
+      "id": "rc87-lexer-8b8911fa6dc3e148",
+      "sourceId": "rc87-8b8911fa6dc3e148",
+      "kind": "lexer",
+      "input": "@components { btn { @compose block; } }",
+      "expectedCanonical": "components|compose",
+      "targetPackage": "tooling",
+      "runner": "cargo-test"
+    },
+    {
+      "id": "rc87-lexer-2f3cc1f8149e5aac",
+      "sourceId": "rc87-2f3cc1f8149e5aac",
+      "kind": "lexer",
+      "input": "@utility text-<left|center|right> { text-align: --value(); }",
+      "expectedCanonical": "no Master CSS directives",
+      "targetPackage": "tooling",
+      "runner": "cargo-test"
+    },
+    {
+      "id": "rc87-lexer-0200c9f8cb24fb9e",
+      "sourceId": "rc87-0200c9f8cb24fb9e",
+      "kind": "lexer",
+      "input": "@theme { --content: \"a;b\"; --root-size: 16 }",
+      "expectedCanonical": "--content=\"a;b\"|--root-size=16",
+      "targetPackage": "tooling",
+      "runner": "cargo-test"
+    },
+    {
+      "id": "rc87-lexer-9e290a26e4a4bcd2",
+      "sourceId": "rc87-9e290a26e4a4bcd2",
+      "kind": "lexer",
+      "input": "@theme { --color-primary: red; @keyframes fade { to { opacity: 1; } } --duration-fast: 150ms }",
+      "expectedCanonical": "--color-primary|--duration-fast",
+      "targetPackage": "tooling",
+      "runner": "cargo-test"
+    },
+    {
+      "id": "rc87-lexer-8825de071b213b2d",
+      "sourceId": "rc87-8825de071b213b2d",
+      "kind": "lexer",
+      "input": "@theme dark",
+      "expectedCanonical": "eof at UTF-16 source length",
+      "targetPackage": "tooling",
+      "runner": "cargo-test"
+    },
+    {
+      "id": "rc87-lexer-a16dfb59baf769b1",
+      "sourceId": "rc87-a16dfb59baf769b1",
+      "kind": "lexer",
+      "input": "font:48px|1col|-1col|-|a b",
+      "expectedCanonical": "font\\:48px|\\31 col|-\\31 col|\\-|a\\ b",
+      "targetPackage": "tooling",
+      "runner": "cargo-test"
+    },
+    {
+      "id": "rc87-lexer-e84fc87f66b88072",
+      "sourceId": "rc87-e84fc87f66b88072",
+      "kind": "lexer",
+      "input": "a.b[c]",
+      "expectedCanonical": "a\\.b\\[c\\]",
+      "targetPackage": "tooling",
+      "runner": "cargo-test"
     }
   ]
 }
