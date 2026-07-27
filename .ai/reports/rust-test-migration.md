@@ -6,7 +6,7 @@ The machine-readable source of truth is `parity/ts-test-migration-ledger.json`.
 ## Frozen baseline
 
 - Public and semantic source baseline: `v2.0.0-rc.87@9cc3e8b5f2e34d5220f10f27ed5ce8186fbcb524`.
-- Rust target candidate: `latest-target-change@5c4997b9003813b47d3d30fff442b27095157589`.
+- Rust target candidate: `latest-target-change@223d6c3e01397f7e97dfa89a8ead84a9eefe98d1`.
 - Scope: executable tests and E2E cases under `packages/*`; examples, site, and benchmarks are not migration denominators.
 - Newer rc changes are an overlay only and never replace rc.87 expectations.
 
@@ -20,7 +20,7 @@ The machine-readable source of truth is `parity/ts-test-migration-ledger.json`.
 | rc.87 expanded cases | 1546 |
 | Expanded parameter and RuleTester cases | 349 |
 | Unresolved runtime matrices | 0 |
-| Rust target cases collected | 1579 |
+| Rust target cases collected | 1641 |
 | Target-only cases | 156 |
 
 The old 114-test takeover ledger is an engine-only historical subset. Its semantic
@@ -31,31 +31,31 @@ capture commit `ef1a7c851` is not substituted for rc.87.
 | Status | Count |
 |---|---:|
 | approved-divergence | 2 |
-| gap | 142 |
+| gap | 80 |
 | mapped-unverified | 86 |
 | source-inactive | 10 |
-| verified-exact | 1306 |
+| verified-exact | 1368 |
 
 | Candidate coverage | Count |
 |---|---:|
 | candidate-all | 96 |
 | evidence | 480 |
-| exact-source | 828 |
-| none | 142 |
+| exact-source | 890 |
+| none | 80 |
 
 | Verification proof | Count |
 |---|---:|
 | approved-divergence | 2 |
-| exact-source | 828 |
+| exact-source | 890 |
 | rc87-golden | 478 |
 
 | Priority | Cases | Gaps |
 |---|---:|---:|
 | P0 | 676 | 1 |
-| P1 | 732 | 134 |
+| P1 | 732 | 72 |
 | P2 | 138 | 7 |
 | P3 | 0 | 0 |
-Verified active cases: 1308/1536.
+Verified active cases: 1370/1536.
 
 `mapped-unverified` means that an executable target candidate or takeover reference
 exists. It does not claim parity. `exact-source` requires one identical executable
@@ -82,7 +82,7 @@ Ambiguous candidates remain incomplete until evidence selects a target explicitl
 | `language-server` | 31 | 2 | 0 | 29 | 31 | 0 |
 | `language-service` | 217 | 4 | 213 | 0 | 217 | 0 |
 | `lexer` | 34 | 0 | 34 | 0 | 34 | 0 |
-| `lint` | 65 | 3 | 62 | 0 | 3 | 62 |
+| `lint` | 65 | 3 | 62 | 0 | 65 | 0 |
 | `mcp` | 16 | 0 | 0 | 16 | 16 | 0 |
 | `next` | 54 | 54 | 0 | 0 | 54 | 0 |
 | `nuxt` | 7 | 7 | 0 | 0 | 7 | 0 |

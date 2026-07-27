@@ -1366,11 +1366,11 @@
   },
   "target": {
     "ref": "latest-target-change",
-    "commit": "5c4997b9003813b47d3d30fff442b27095157589",
+    "commit": "223d6c3e01397f7e97dfa89a8ead84a9eefe98d1",
     "packageCount": 36,
-    "testFiles": 189,
+    "testFiles": 190,
     "e2eFiles": 24,
-    "cases": 1579
+    "cases": 1641
   },
   "existingParity": {
     "semanticBaseline": "ef1a7c851",
@@ -1384,17 +1384,17 @@
     "records": 480,
     "proofs": {
       "approved-divergence": 2,
-      "exact-source": 828,
+      "exact-source": 890,
       "rc87-golden": 478
     }
   },
   "summary": {
     "byStatus": {
       "approved-divergence": 2,
-      "gap": 142,
+      "gap": 80,
       "mapped-unverified": 86,
       "source-inactive": 10,
-      "verified-exact": 1306
+      "verified-exact": 1368
     },
     "byPriority": {
       "P0": 676,
@@ -1404,12 +1404,12 @@
     "byCoverage": {
       "candidate-all": 96,
       "evidence": 480,
-      "exact-source": 828,
-      "none": 142
+      "exact-source": 890,
+      "none": 80
     },
     "byProof": {
       "approved-divergence": 2,
-      "exact-source": 828,
+      "exact-source": 890,
       "rc87-golden": 478
     },
     "byPackage": {
@@ -1546,8 +1546,8 @@
         "P0": 3,
         "P1": 62,
         "P2": 0,
-        "mapped": 3,
-        "gap": 62
+        "mapped": 65,
+        "gap": 0
       },
       "mcp": {
         "total": 16,
@@ -53927,12 +53927,35 @@
         "targetPackage": "tooling"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
-        "sourceIdenticalTargetIds": [],
+        "status": "verified-exact",
+        "coverage": "exact-source",
+        "targets": [
+          {
+            "id": "rc87-a9b9a458af342355",
+            "package": "tooling",
+            "file": "packages/tooling/tests/lint/rc87-index.test.ts",
+            "line": 90,
+            "title": "sorts known classes and keeps unknown classes last",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "02fb1c3dd613370325179cd1b19a2c08760263864086e5756409c15852692721"
+          }
+        ],
+        "sourceIdenticalTargetIds": [
+          "rc87-a9b9a458af342355"
+        ],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "exact-source",
+          "sourceDigest": "02fb1c3dd613370325179cd1b19a2c08760263864086e5756409c15852692721",
+          "targets": [
+            {
+              "caseId": "rc87-a9b9a458af342355",
+              "runner": "vitest",
+              "digest": "02fb1c3dd613370325179cd1b19a2c08760263864086e5756409c15852692721"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -53961,12 +53984,35 @@
         "targetPackage": "tooling"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
-        "sourceIdenticalTargetIds": [],
+        "status": "verified-exact",
+        "coverage": "exact-source",
+        "targets": [
+          {
+            "id": "rc87-6a57aaa786f8a56d",
+            "package": "tooling",
+            "file": "packages/tooling/tests/lint/rc87-index.test.ts",
+            "line": 97,
+            "title": "sorts generated classes into readable property groups",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "3cf1638fe3e54b4736411adf36fa4a82c63b4aa8f92e35041f00ac77c60c0a7a"
+          }
+        ],
+        "sourceIdenticalTargetIds": [
+          "rc87-6a57aaa786f8a56d"
+        ],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "exact-source",
+          "sourceDigest": "3cf1638fe3e54b4736411adf36fa4a82c63b4aa8f92e35041f00ac77c60c0a7a",
+          "targets": [
+            {
+              "caseId": "rc87-6a57aaa786f8a56d",
+              "runner": "vitest",
+              "digest": "3cf1638fe3e54b4736411adf36fa4a82c63b4aa8f92e35041f00ac77c60c0a7a"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -53995,12 +54041,35 @@
         "targetPackage": "tooling"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
-        "sourceIdenticalTargetIds": [],
+        "status": "verified-exact",
+        "coverage": "exact-source",
+        "targets": [
+          {
+            "id": "rc87-e0574b979ff7cdf9",
+            "package": "tooling",
+            "file": "packages/tooling/tests/lint/rc87-index.test.ts",
+            "line": 161,
+            "title": "deduplicates repeated classes",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "76d2b4535ceb1a6ac1aa5f23f19c7afdab6c033b298d9be430b6d2dd40c7cd6e"
+          }
+        ],
+        "sourceIdenticalTargetIds": [
+          "rc87-e0574b979ff7cdf9"
+        ],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "exact-source",
+          "sourceDigest": "76d2b4535ceb1a6ac1aa5f23f19c7afdab6c033b298d9be430b6d2dd40c7cd6e",
+          "targets": [
+            {
+              "caseId": "rc87-e0574b979ff7cdf9",
+              "runner": "vitest",
+              "digest": "76d2b4535ceb1a6ac1aa5f23f19c7afdab6c033b298d9be430b6d2dd40c7cd6e"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -54029,12 +54098,35 @@
         "targetPackage": "tooling"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
-        "sourceIdenticalTargetIds": [],
+        "status": "verified-exact",
+        "coverage": "exact-source",
+        "targets": [
+          {
+            "id": "rc87-bb568f7a54229be6",
+            "package": "tooling",
+            "file": "packages/tooling/tests/lint/rc87-index.test.ts",
+            "line": 166,
+            "title": "generates each unique class once while sorting",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "5ddd5253ce4f878cee96cb17dc7bb46bfb38c26346b22ce9a9c079eead337143"
+          }
+        ],
+        "sourceIdenticalTargetIds": [
+          "rc87-bb568f7a54229be6"
+        ],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "exact-source",
+          "sourceDigest": "5ddd5253ce4f878cee96cb17dc7bb46bfb38c26346b22ce9a9c079eead337143",
+          "targets": [
+            {
+              "caseId": "rc87-bb568f7a54229be6",
+              "runner": "vitest",
+              "digest": "5ddd5253ce4f878cee96cb17dc7bb46bfb38c26346b22ce9a9c079eead337143"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -54063,12 +54155,35 @@
         "targetPackage": "tooling"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
-        "sourceIdenticalTargetIds": [],
+        "status": "verified-exact",
+        "coverage": "exact-source",
+        "targets": [
+          {
+            "id": "rc87-b44c6ae1eb7b18d0",
+            "package": "tooling",
+            "file": "packages/tooling/tests/lint/rc87-index.test.ts",
+            "line": 177,
+            "title": "sorts class-list text while preserving useful whitespace and raw tokens",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "f0ae4f17c9d8917c548b755ed6b97d34fa321b6908abd1f12eb01da9983d9d41"
+          }
+        ],
+        "sourceIdenticalTargetIds": [
+          "rc87-b44c6ae1eb7b18d0"
+        ],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "exact-source",
+          "sourceDigest": "f0ae4f17c9d8917c548b755ed6b97d34fa321b6908abd1f12eb01da9983d9d41",
+          "targets": [
+            {
+              "caseId": "rc87-b44c6ae1eb7b18d0",
+              "runner": "vitest",
+              "digest": "f0ae4f17c9d8917c548b755ed6b97d34fa321b6908abd1f12eb01da9983d9d41"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -54097,12 +54212,35 @@
         "targetPackage": "tooling"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
-        "sourceIdenticalTargetIds": [],
+        "status": "verified-exact",
+        "coverage": "exact-source",
+        "targets": [
+          {
+            "id": "rc87-72ba4998f06ed12b",
+            "package": "tooling",
+            "file": "packages/tooling/tests/lint/rc87-index.test.ts",
+            "line": 186,
+            "title": "removes and replaces class-list tokens with adjacent whitespace",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "0054c45441735c2b8d466c2c0e71caf7b7a90b332b5d56b60d84cb71d9ae017e"
+          }
+        ],
+        "sourceIdenticalTargetIds": [
+          "rc87-72ba4998f06ed12b"
+        ],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "exact-source",
+          "sourceDigest": "0054c45441735c2b8d466c2c0e71caf7b7a90b332b5d56b60d84cb71d9ae017e",
+          "targets": [
+            {
+              "caseId": "rc87-72ba4998f06ed12b",
+              "runner": "vitest",
+              "digest": "0054c45441735c2b8d466c2c0e71caf7b7a90b332b5d56b60d84cb71d9ae017e"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -54131,12 +54269,35 @@
         "targetPackage": "tooling"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
-        "sourceIdenticalTargetIds": [],
+        "status": "verified-exact",
+        "coverage": "exact-source",
+        "targets": [
+          {
+            "id": "rc87-72f61b00a6c4b6c6",
+            "package": "tooling",
+            "file": "packages/tooling/tests/lint/rc87-index.test.ts",
+            "line": 205,
+            "title": "replaces grouped class-list tokens",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "c6fd3f6245d07d2c42b0dc2bf518515d739ac7644f21b120cb35f340090e4152"
+          }
+        ],
+        "sourceIdenticalTargetIds": [
+          "rc87-72f61b00a6c4b6c6"
+        ],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "exact-source",
+          "sourceDigest": "c6fd3f6245d07d2c42b0dc2bf518515d739ac7644f21b120cb35f340090e4152",
+          "targets": [
+            {
+              "caseId": "rc87-72f61b00a6c4b6c6",
+              "runner": "vitest",
+              "digest": "c6fd3f6245d07d2c42b0dc2bf518515d739ac7644f21b120cb35f340090e4152"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -54164,12 +54325,35 @@
         "targetPackage": "tooling"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
-        "sourceIdenticalTargetIds": [],
+        "status": "verified-exact",
+        "coverage": "exact-source",
+        "targets": [
+          {
+            "id": "rc87-11505f7eff335482",
+            "package": "tooling",
+            "file": "packages/tooling/tests/lint/rc87-index.test.ts",
+            "line": 220,
+            "title": "reports sort diagnostics with a machine-readable fix",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "842dae41a054d4f5587afa99ab6d87ba8a8ac16d2e73994ec90cf82a89553c46"
+          }
+        ],
+        "sourceIdenticalTargetIds": [
+          "rc87-11505f7eff335482"
+        ],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "exact-source",
+          "sourceDigest": "842dae41a054d4f5587afa99ab6d87ba8a8ac16d2e73994ec90cf82a89553c46",
+          "targets": [
+            {
+              "caseId": "rc87-11505f7eff335482",
+              "runner": "vitest",
+              "digest": "842dae41a054d4f5587afa99ab6d87ba8a8ac16d2e73994ec90cf82a89553c46"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -54197,12 +54381,35 @@
         "targetPackage": "tooling"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
-        "sourceIdenticalTargetIds": [],
+        "status": "verified-exact",
+        "coverage": "exact-source",
+        "targets": [
+          {
+            "id": "rc87-64d11f95bd5d8479",
+            "package": "tooling",
+            "file": "packages/tooling/tests/lint/rc87-index.test.ts",
+            "line": 241,
+            "title": "reports conflict diagnostics with token-relative ranges",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "223c2a7813058a7eae3da65890fc78e3138b3dd248da7566c62072319b405f27"
+          }
+        ],
+        "sourceIdenticalTargetIds": [
+          "rc87-64d11f95bd5d8479"
+        ],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "exact-source",
+          "sourceDigest": "223c2a7813058a7eae3da65890fc78e3138b3dd248da7566c62072319b405f27",
+          "targets": [
+            {
+              "caseId": "rc87-64d11f95bd5d8479",
+              "runner": "vitest",
+              "digest": "223c2a7813058a7eae3da65890fc78e3138b3dd248da7566c62072319b405f27"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -54231,12 +54438,35 @@
         "targetPackage": "tooling"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
-        "sourceIdenticalTargetIds": [],
+        "status": "verified-exact",
+        "coverage": "exact-source",
+        "targets": [
+          {
+            "id": "rc87-cb9f2a121a551fc0",
+            "package": "tooling",
+            "file": "packages/tooling/tests/lint/rc87-index.test.ts",
+            "line": 266,
+            "title": "reports invalid generated CSS diagnostics with class context",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "a0480c79512a601e9401667099b627c0d66249bbe2613c2a5ad488ae0d44ea48"
+          }
+        ],
+        "sourceIdenticalTargetIds": [
+          "rc87-cb9f2a121a551fc0"
+        ],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "exact-source",
+          "sourceDigest": "a0480c79512a601e9401667099b627c0d66249bbe2613c2a5ad488ae0d44ea48",
+          "targets": [
+            {
+              "caseId": "rc87-cb9f2a121a551fc0",
+              "runner": "vitest",
+              "digest": "a0480c79512a601e9401667099b627c0d66249bbe2613c2a5ad488ae0d44ea48"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -54264,12 +54494,35 @@
         "targetPackage": "tooling"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
-        "sourceIdenticalTargetIds": [],
+        "status": "verified-exact",
+        "coverage": "exact-source",
+        "targets": [
+          {
+            "id": "rc87-030c32e9a5aee148",
+            "package": "tooling",
+            "file": "packages/tooling/tests/lint/rc87-index.test.ts",
+            "line": 271,
+            "title": "reports canonical diagnostics with explicit replacements",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "71632082354eb74a8a760637de6dcd324e87429391d0dacd4894bcab37103542"
+          }
+        ],
+        "sourceIdenticalTargetIds": [
+          "rc87-030c32e9a5aee148"
+        ],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "exact-source",
+          "sourceDigest": "71632082354eb74a8a760637de6dcd324e87429391d0dacd4894bcab37103542",
+          "targets": [
+            {
+              "caseId": "rc87-030c32e9a5aee148",
+              "runner": "vitest",
+              "digest": "71632082354eb74a8a760637de6dcd324e87429391d0dacd4894bcab37103542"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -54297,12 +54550,35 @@
         "targetPackage": "tooling"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
-        "sourceIdenticalTargetIds": [],
+        "status": "verified-exact",
+        "coverage": "exact-source",
+        "targets": [
+          {
+            "id": "rc87-d69b977b510bca9c",
+            "package": "tooling",
+            "file": "packages/tooling/tests/lint/rc87-index.test.ts",
+            "line": 279,
+            "title": "keeps raw value policy opt-in in combined reports",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "faad37e02b1f6d2e23e1ae8f915ce88072dab357487de31d7ec951be6a53e8c7"
+          }
+        ],
+        "sourceIdenticalTargetIds": [
+          "rc87-d69b977b510bca9c"
+        ],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "exact-source",
+          "sourceDigest": "faad37e02b1f6d2e23e1ae8f915ce88072dab357487de31d7ec951be6a53e8c7",
+          "targets": [
+            {
+              "caseId": "rc87-d69b977b510bca9c",
+              "runner": "vitest",
+              "digest": "faad37e02b1f6d2e23e1ae8f915ce88072dab357487de31d7ec951be6a53e8c7"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -54331,12 +54607,35 @@
         "targetPackage": "tooling"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
-        "sourceIdenticalTargetIds": [],
+        "status": "verified-exact",
+        "coverage": "exact-source",
+        "targets": [
+          {
+            "id": "rc87-1453f1fd3ba1676d",
+            "package": "tooling",
+            "file": "packages/tooling/tests/lint/rc87-index.test.ts",
+            "line": 288,
+            "title": "reports structural compose fixes with directive scope",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "b66d32851ef9ba9267ee0aee91cf299ea61655c14522b63999527644484c541f"
+          }
+        ],
+        "sourceIdenticalTargetIds": [
+          "rc87-1453f1fd3ba1676d"
+        ],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "exact-source",
+          "sourceDigest": "b66d32851ef9ba9267ee0aee91cf299ea61655c14522b63999527644484c541f",
+          "targets": [
+            {
+              "caseId": "rc87-1453f1fd3ba1676d",
+              "runner": "vitest",
+              "digest": "b66d32851ef9ba9267ee0aee91cf299ea61655c14522b63999527644484c541f"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -54364,12 +54663,35 @@
         "targetPackage": "tooling"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
-        "sourceIdenticalTargetIds": [],
+        "status": "verified-exact",
+        "coverage": "exact-source",
+        "targets": [
+          {
+            "id": "rc87-4bf8be89870430d2",
+            "package": "tooling",
+            "file": "packages/tooling/tests/lint/rc87-index.test.ts",
+            "line": 314,
+            "title": "resolves rule presets and explicit rule sets",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "30019c2b0b443e3b7db96fce4665650f15c4e52b9c318ecd9da86c11a4eb0a8f"
+          }
+        ],
+        "sourceIdenticalTargetIds": [
+          "rc87-4bf8be89870430d2"
+        ],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "exact-source",
+          "sourceDigest": "30019c2b0b443e3b7db96fce4665650f15c4e52b9c318ecd9da86c11a4eb0a8f",
+          "targets": [
+            {
+              "caseId": "rc87-4bf8be89870430d2",
+              "runner": "vitest",
+              "digest": "30019c2b0b443e3b7db96fce4665650f15c4e52b9c318ecd9da86c11a4eb0a8f"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -54398,12 +54720,35 @@
         "targetPackage": "tooling"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
-        "sourceIdenticalTargetIds": [],
+        "status": "verified-exact",
+        "coverage": "exact-source",
+        "targets": [
+          {
+            "id": "rc87-3ebacb91094e3417",
+            "package": "tooling",
+            "file": "packages/tooling/tests/lint/rc87-index.test.ts",
+            "line": 332,
+            "title": "maps class diagnostics and safe fixes onto source ranges",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "93732878bd798ea5289ad7dd29f3405f1c6598adfdd5d8c1eab1d9e1a888c18c"
+          }
+        ],
+        "sourceIdenticalTargetIds": [
+          "rc87-3ebacb91094e3417"
+        ],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "exact-source",
+          "sourceDigest": "93732878bd798ea5289ad7dd29f3405f1c6598adfdd5d8c1eab1d9e1a888c18c",
+          "targets": [
+            {
+              "caseId": "rc87-3ebacb91094e3417",
+              "runner": "vitest",
+              "digest": "93732878bd798ea5289ad7dd29f3405f1c6598adfdd5d8c1eab1d9e1a888c18c"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -54432,12 +54777,35 @@
         "targetPackage": "tooling"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
-        "sourceIdenticalTargetIds": [],
+        "status": "verified-exact",
+        "coverage": "exact-source",
+        "targets": [
+          {
+            "id": "rc87-9bee19d0da7b58a7",
+            "package": "tooling",
+            "file": "packages/tooling/tests/lint/rc87-index.test.ts",
+            "line": 366,
+            "title": "lints and fixes class lists inside mdx fenced html examples",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "78b3f4af4367c220f1c116602a656d3cd93ebcf12cdc3ae01e224eb9b592dc2d"
+          }
+        ],
+        "sourceIdenticalTargetIds": [
+          "rc87-9bee19d0da7b58a7"
+        ],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "exact-source",
+          "sourceDigest": "78b3f4af4367c220f1c116602a656d3cd93ebcf12cdc3ae01e224eb9b592dc2d",
+          "targets": [
+            {
+              "caseId": "rc87-9bee19d0da7b58a7",
+              "runner": "vitest",
+              "digest": "78b3f4af4367c220f1c116602a656d3cd93ebcf12cdc3ae01e224eb9b592dc2d"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -54465,12 +54833,35 @@
         "targetPackage": "tooling"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
-        "sourceIdenticalTargetIds": [],
+        "status": "verified-exact",
+        "coverage": "exact-source",
+        "targets": [
+          {
+            "id": "rc87-98b2dff8383faa7a",
+            "package": "tooling",
+            "file": "packages/tooling/tests/lint/rc87-index.test.ts",
+            "line": 402,
+            "title": "passes rule options to source content diagnostics",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "433b2229f35a1e5f057b25ba1e45d588766b74fb8a8b184c6956a26ca55e104f"
+          }
+        ],
+        "sourceIdenticalTargetIds": [
+          "rc87-98b2dff8383faa7a"
+        ],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "exact-source",
+          "sourceDigest": "433b2229f35a1e5f057b25ba1e45d588766b74fb8a8b184c6956a26ca55e104f",
+          "targets": [
+            {
+              "caseId": "rc87-98b2dff8383faa7a",
+              "runner": "vitest",
+              "digest": "433b2229f35a1e5f057b25ba1e45d588766b74fb8a8b184c6956a26ca55e104f"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -54499,12 +54890,35 @@
         "targetPackage": "tooling"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
-        "sourceIdenticalTargetIds": [],
+        "status": "verified-exact",
+        "coverage": "exact-source",
+        "targets": [
+          {
+            "id": "rc87-c8bd6d7abfd7d7a1",
+            "package": "tooling",
+            "file": "packages/tooling/tests/lint/rc87-index.test.ts",
+            "line": 447,
+            "title": "applies source fixes until class lists are stable",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "621794d9c802a9b0ad0efc774be4cca58f1169da24be3d3576d99d8ccb92f7ce"
+          }
+        ],
+        "sourceIdenticalTargetIds": [
+          "rc87-c8bd6d7abfd7d7a1"
+        ],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "exact-source",
+          "sourceDigest": "621794d9c802a9b0ad0efc774be4cca58f1169da24be3d3576d99d8ccb92f7ce",
+          "targets": [
+            {
+              "caseId": "rc87-c8bd6d7abfd7d7a1",
+              "runner": "vitest",
+              "digest": "621794d9c802a9b0ad0efc774be4cca58f1169da24be3d3576d99d8ccb92f7ce"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -54532,12 +54946,35 @@
         "targetPackage": "tooling"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
-        "sourceIdenticalTargetIds": [],
+        "status": "verified-exact",
+        "coverage": "exact-source",
+        "targets": [
+          {
+            "id": "rc87-9c57169346c7e619",
+            "package": "tooling",
+            "file": "packages/tooling/tests/lint/rc87-index.test.ts",
+            "line": 455,
+            "title": "uses script language ids for cjs and typescript module files",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "9538f70db244d6bb52aafd57f277c944b1f4019ffbde064a8f28fd4c515f64f7"
+          }
+        ],
+        "sourceIdenticalTargetIds": [
+          "rc87-9c57169346c7e619"
+        ],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "exact-source",
+          "sourceDigest": "9538f70db244d6bb52aafd57f277c944b1f4019ffbde064a8f28fd4c515f64f7",
+          "targets": [
+            {
+              "caseId": "rc87-9c57169346c7e619",
+              "runner": "vitest",
+              "digest": "9538f70db244d6bb52aafd57f277c944b1f4019ffbde064a8f28fd4c515f64f7"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -54566,12 +55003,35 @@
         "targetPackage": "tooling"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
-        "sourceIdenticalTargetIds": [],
+        "status": "verified-exact",
+        "coverage": "exact-source",
+        "targets": [
+          {
+            "id": "rc87-732ba44f61494fd5",
+            "package": "tooling",
+            "file": "packages/tooling/tests/lint/rc87-index.test.ts",
+            "line": 472,
+            "title": "reports and applies structural compose directive fixes when allowed",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "af55980b37eb5efbfa89c60171eb1979d3ee7e385049e1177d557579c3b0d2f6"
+          }
+        ],
+        "sourceIdenticalTargetIds": [
+          "rc87-732ba44f61494fd5"
+        ],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "exact-source",
+          "sourceDigest": "af55980b37eb5efbfa89c60171eb1979d3ee7e385049e1177d557579c3b0d2f6",
+          "targets": [
+            {
+              "caseId": "rc87-732ba44f61494fd5",
+              "runner": "vitest",
+              "digest": "af55980b37eb5efbfa89c60171eb1979d3ee7e385049e1177d557579c3b0d2f6"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -54601,12 +55061,35 @@
         "targetPackage": "tooling"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
-        "sourceIdenticalTargetIds": [],
+        "status": "verified-exact",
+        "coverage": "exact-source",
+        "targets": [
+          {
+            "id": "rc87-14d6fefb081e777b",
+            "package": "tooling",
+            "file": "packages/tooling/tests/lint/rc87-index.test.ts",
+            "line": 501,
+            "title": "finds classes with matching declarations and variants",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "8522b01709c8d33285aa665d045fb677e1391106caedd4233cde5744413294a2"
+          }
+        ],
+        "sourceIdenticalTargetIds": [
+          "rc87-14d6fefb081e777b"
+        ],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "exact-source",
+          "sourceDigest": "8522b01709c8d33285aa665d045fb677e1391106caedd4233cde5744413294a2",
+          "targets": [
+            {
+              "caseId": "rc87-14d6fefb081e777b",
+              "runner": "vitest",
+              "digest": "8522b01709c8d33285aa665d045fb677e1391106caedd4233cde5744413294a2"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -54635,12 +55118,35 @@
         "targetPackage": "tooling"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
-        "sourceIdenticalTargetIds": [],
+        "status": "verified-exact",
+        "coverage": "exact-source",
+        "targets": [
+          {
+            "id": "rc87-f7ef3483bf2664d8",
+            "package": "tooling",
+            "file": "packages/tooling/tests/lint/rc87-index.test.ts",
+            "line": 508,
+            "title": "ignores invalid classes",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "0ac32de460c4d403e2966dcaa7b0bf75e944b87fc3cafdf63ca23f3ba8ab2c0e"
+          }
+        ],
+        "sourceIdenticalTargetIds": [
+          "rc87-f7ef3483bf2664d8"
+        ],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "exact-source",
+          "sourceDigest": "0ac32de460c4d403e2966dcaa7b0bf75e944b87fc3cafdf63ca23f3ba8ab2c0e",
+          "targets": [
+            {
+              "caseId": "rc87-f7ef3483bf2664d8",
+              "runner": "vitest",
+              "digest": "0ac32de460c4d403e2966dcaa7b0bf75e944b87fc3cafdf63ca23f3ba8ab2c0e"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -54669,12 +55175,35 @@
         "targetPackage": "tooling"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
-        "sourceIdenticalTargetIds": [],
+        "status": "verified-exact",
+        "coverage": "exact-source",
+        "targets": [
+          {
+            "id": "rc87-282d526cf506251a",
+            "package": "tooling",
+            "file": "packages/tooling/tests/lint/rc87-index.test.ts",
+            "line": 515,
+            "title": "keeps the last conflicting class",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "8f05c4e2adae222fe4e671a12d80dcc2be309495427d5186a6721f3d2421b286"
+          }
+        ],
+        "sourceIdenticalTargetIds": [
+          "rc87-282d526cf506251a"
+        ],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "exact-source",
+          "sourceDigest": "8f05c4e2adae222fe4e671a12d80dcc2be309495427d5186a6721f3d2421b286",
+          "targets": [
+            {
+              "caseId": "rc87-282d526cf506251a",
+              "runner": "vitest",
+              "digest": "8f05c4e2adae222fe4e671a12d80dcc2be309495427d5186a6721f3d2421b286"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -54703,12 +55232,35 @@
         "targetPackage": "tooling"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
-        "sourceIdenticalTargetIds": [],
+        "status": "verified-exact",
+        "coverage": "exact-source",
+        "targets": [
+          {
+            "id": "rc87-6aaf7b4ebd1592db",
+            "package": "tooling",
+            "file": "packages/tooling/tests/lint/rc87-index.test.ts",
+            "line": 525,
+            "title": "splits margin axis classes when a later side overrides part of them",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "45f0f3082bfe4e5fc4bae108a4d9ef7fdc7a04503662e43da619c2fabadc4332"
+          }
+        ],
+        "sourceIdenticalTargetIds": [
+          "rc87-6aaf7b4ebd1592db"
+        ],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "exact-source",
+          "sourceDigest": "45f0f3082bfe4e5fc4bae108a4d9ef7fdc7a04503662e43da619c2fabadc4332",
+          "targets": [
+            {
+              "caseId": "rc87-6aaf7b4ebd1592db",
+              "runner": "vitest",
+              "digest": "45f0f3082bfe4e5fc4bae108a4d9ef7fdc7a04503662e43da619c2fabadc4332"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -54737,12 +55289,35 @@
         "targetPackage": "tooling"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
-        "sourceIdenticalTargetIds": [],
+        "status": "verified-exact",
+        "coverage": "exact-source",
+        "targets": [
+          {
+            "id": "rc87-b9eadf57639df472",
+            "package": "tooling",
+            "file": "packages/tooling/tests/lint/rc87-index.test.ts",
+            "line": 534,
+            "title": "splits padding shorthand classes when a later axis overrides part of them",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "91ae11270fdd9af09aa6d30dd4b21f26bf39f9ee457e61c650ea5ba995584506"
+          }
+        ],
+        "sourceIdenticalTargetIds": [
+          "rc87-b9eadf57639df472"
+        ],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "exact-source",
+          "sourceDigest": "91ae11270fdd9af09aa6d30dd4b21f26bf39f9ee457e61c650ea5ba995584506",
+          "targets": [
+            {
+              "caseId": "rc87-b9eadf57639df472",
+              "runner": "vitest",
+              "digest": "91ae11270fdd9af09aa6d30dd4b21f26bf39f9ee457e61c650ea5ba995584506"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -54771,12 +55346,35 @@
         "targetPackage": "tooling"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
-        "sourceIdenticalTargetIds": [],
+        "status": "verified-exact",
+        "coverage": "exact-source",
+        "targets": [
+          {
+            "id": "rc87-d49bff0f8c8a03d2",
+            "package": "tooling",
+            "file": "packages/tooling/tests/lint/rc87-index.test.ts",
+            "line": 543,
+            "title": "splits shorthand classes when a later side overrides part of them",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "57aabffc6d3425692c9f72bea0db33b0e3a3b32eaf64dae02bea0ed30bd84da4"
+          }
+        ],
+        "sourceIdenticalTargetIds": [
+          "rc87-d49bff0f8c8a03d2"
+        ],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "exact-source",
+          "sourceDigest": "57aabffc6d3425692c9f72bea0db33b0e3a3b32eaf64dae02bea0ed30bd84da4",
+          "targets": [
+            {
+              "caseId": "rc87-d49bff0f8c8a03d2",
+              "runner": "vitest",
+              "digest": "57aabffc6d3425692c9f72bea0db33b0e3a3b32eaf64dae02bea0ed30bd84da4"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -54806,12 +55404,35 @@
         "targetPackage": "tooling"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
-        "sourceIdenticalTargetIds": [],
+        "status": "verified-exact",
+        "coverage": "exact-source",
+        "targets": [
+          {
+            "id": "rc87-d44976e7d095dda4",
+            "package": "tooling",
+            "file": "packages/tooling/tests/lint/rc87-index.test.ts",
+            "line": 552,
+            "title": "ignores different variants and fully overridden classes",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "d1de9fb4c10099bc45d2d75d4b06379d161056faf4f3f221d5ad0e4833446bcf"
+          }
+        ],
+        "sourceIdenticalTargetIds": [
+          "rc87-d44976e7d095dda4"
+        ],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "exact-source",
+          "sourceDigest": "d1de9fb4c10099bc45d2d75d4b06379d161056faf4f3f221d5ad0e4833446bcf",
+          "targets": [
+            {
+              "caseId": "rc87-d44976e7d095dda4",
+              "runner": "vitest",
+              "digest": "d1de9fb4c10099bc45d2d75d4b06379d161056faf4f3f221d5ad0e4833446bcf"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -54840,12 +55461,35 @@
         "targetPackage": "tooling"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
-        "sourceIdenticalTargetIds": [],
+        "status": "verified-exact",
+        "coverage": "exact-source",
+        "targets": [
+          {
+            "id": "rc87-1ad1618f25f41b8f",
+            "package": "tooling",
+            "file": "packages/tooling/tests/lint/rc87-index.test.ts",
+            "line": 558,
+            "title": "splits physical inset shorthands when a later side overrides part of them",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "00bce601eca379644f6cc37a973c91df6827d1ab669d20df6e3c896a71b8b3c9"
+          }
+        ],
+        "sourceIdenticalTargetIds": [
+          "rc87-1ad1618f25f41b8f"
+        ],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "exact-source",
+          "sourceDigest": "00bce601eca379644f6cc37a973c91df6827d1ab669d20df6e3c896a71b8b3c9",
+          "targets": [
+            {
+              "caseId": "rc87-1ad1618f25f41b8f",
+              "runner": "vitest",
+              "digest": "00bce601eca379644f6cc37a973c91df6827d1ab669d20df6e3c896a71b8b3c9"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -54874,12 +55518,35 @@
         "targetPackage": "tooling"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
-        "sourceIdenticalTargetIds": [],
+        "status": "verified-exact",
+        "coverage": "exact-source",
+        "targets": [
+          {
+            "id": "rc87-baa9e7413eb7bbbc",
+            "package": "tooling",
+            "file": "packages/tooling/tests/lint/rc87-index.test.ts",
+            "line": 570,
+            "title": "splits radius shorthands when a later corner overrides part of them",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "25f0c3f7b40561b2dbe89947ff7dbcef01abbe24f767787d9cb45fbeaa7116c7"
+          }
+        ],
+        "sourceIdenticalTargetIds": [
+          "rc87-baa9e7413eb7bbbc"
+        ],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "exact-source",
+          "sourceDigest": "25f0c3f7b40561b2dbe89947ff7dbcef01abbe24f767787d9cb45fbeaa7116c7",
+          "targets": [
+            {
+              "caseId": "rc87-baa9e7413eb7bbbc",
+              "runner": "vitest",
+              "digest": "25f0c3f7b40561b2dbe89947ff7dbcef01abbe24f767787d9cb45fbeaa7116c7"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -54908,12 +55575,35 @@
         "targetPackage": "tooling"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
-        "sourceIdenticalTargetIds": [],
+        "status": "verified-exact",
+        "coverage": "exact-source",
+        "targets": [
+          {
+            "id": "rc87-394aa8f74195675b",
+            "package": "tooling",
+            "file": "packages/tooling/tests/lint/rc87-index.test.ts",
+            "line": 582,
+            "title": "splits border width shorthands when a later side overrides part of them",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "c2194f0db65ac6bc43ab0ca035556c41904036d6563031696cbc3e206cfeca2f"
+          }
+        ],
+        "sourceIdenticalTargetIds": [
+          "rc87-394aa8f74195675b"
+        ],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "exact-source",
+          "sourceDigest": "c2194f0db65ac6bc43ab0ca035556c41904036d6563031696cbc3e206cfeca2f",
+          "targets": [
+            {
+              "caseId": "rc87-394aa8f74195675b",
+              "runner": "vitest",
+              "digest": "c2194f0db65ac6bc43ab0ca035556c41904036d6563031696cbc3e206cfeca2f"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -54942,12 +55632,35 @@
         "targetPackage": "tooling"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
-        "sourceIdenticalTargetIds": [],
+        "status": "verified-exact",
+        "coverage": "exact-source",
+        "targets": [
+          {
+            "id": "rc87-bb96bee81fd864be",
+            "package": "tooling",
+            "file": "packages/tooling/tests/lint/rc87-index.test.ts",
+            "line": 594,
+            "title": "splits border color shorthands when a later side overrides part of them",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "f3b3a06fcd74321eca90a65bfd6e7ffc90a1785836019eca8b84aff61dfcac14"
+          }
+        ],
+        "sourceIdenticalTargetIds": [
+          "rc87-bb96bee81fd864be"
+        ],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "exact-source",
+          "sourceDigest": "f3b3a06fcd74321eca90a65bfd6e7ffc90a1785836019eca8b84aff61dfcac14",
+          "targets": [
+            {
+              "caseId": "rc87-bb96bee81fd864be",
+              "runner": "vitest",
+              "digest": "f3b3a06fcd74321eca90a65bfd6e7ffc90a1785836019eca8b84aff61dfcac14"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -54976,12 +55689,35 @@
         "targetPackage": "tooling"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
-        "sourceIdenticalTargetIds": [],
+        "status": "verified-exact",
+        "coverage": "exact-source",
+        "targets": [
+          {
+            "id": "rc87-f1eb7af9a25f3445",
+            "package": "tooling",
+            "file": "packages/tooling/tests/lint/rc87-index.test.ts",
+            "line": 603,
+            "title": "splits border style shorthands when a later side overrides part of them",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "54a1c241908edb8e6645ee827a8014fcc3375eee5700c044a5eef57c4a9da42f"
+          }
+        ],
+        "sourceIdenticalTargetIds": [
+          "rc87-f1eb7af9a25f3445"
+        ],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "exact-source",
+          "sourceDigest": "54a1c241908edb8e6645ee827a8014fcc3375eee5700c044a5eef57c4a9da42f",
+          "targets": [
+            {
+              "caseId": "rc87-f1eb7af9a25f3445",
+              "runner": "vitest",
+              "digest": "54a1c241908edb8e6645ee827a8014fcc3375eee5700c044a5eef57c4a9da42f"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -55010,12 +55746,35 @@
         "targetPackage": "tooling"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
-        "sourceIdenticalTargetIds": [],
+        "status": "verified-exact",
+        "coverage": "exact-source",
+        "targets": [
+          {
+            "id": "rc87-410af7eff5cc0b46",
+            "package": "tooling",
+            "file": "packages/tooling/tests/lint/rc87-index.test.ts",
+            "line": 612,
+            "title": "ignores unsupported partial conflict families",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "d4057495960ca202050c05aaef511931591f6654ad15bfefb18a546f354a1dd7"
+          }
+        ],
+        "sourceIdenticalTargetIds": [
+          "rc87-410af7eff5cc0b46"
+        ],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "exact-source",
+          "sourceDigest": "d4057495960ca202050c05aaef511931591f6654ad15bfefb18a546f354a1dd7",
+          "targets": [
+            {
+              "caseId": "rc87-410af7eff5cc0b46",
+              "runner": "vitest",
+              "digest": "d4057495960ca202050c05aaef511931591f6654ad15bfefb18a546f354a1dd7"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -55044,12 +55803,35 @@
         "targetPackage": "tooling"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
-        "sourceIdenticalTargetIds": [],
+        "status": "verified-exact",
+        "coverage": "exact-source",
+        "targets": [
+          {
+            "id": "rc87-636ce61eb1990f14",
+            "package": "tooling",
+            "file": "packages/tooling/tests/lint/rc87-index.test.ts",
+            "line": 623,
+            "title": "reports invalid generated CSS",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "18f594eecab0e881bab938fc766638edc0f61d93c07bcb89c1540433cf507529"
+          }
+        ],
+        "sourceIdenticalTargetIds": [
+          "rc87-636ce61eb1990f14"
+        ],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "exact-source",
+          "sourceDigest": "18f594eecab0e881bab938fc766638edc0f61d93c07bcb89c1540433cf507529",
+          "targets": [
+            {
+              "caseId": "rc87-636ce61eb1990f14",
+              "runner": "vitest",
+              "digest": "18f594eecab0e881bab938fc766638edc0f61d93c07bcb89c1540433cf507529"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -55078,12 +55860,35 @@
         "targetPackage": "tooling"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
-        "sourceIdenticalTargetIds": [],
+        "status": "verified-exact",
+        "coverage": "exact-source",
+        "targets": [
+          {
+            "id": "rc87-c94f3c91420faeb6",
+            "package": "tooling",
+            "file": "packages/tooling/tests/lint/rc87-index.test.ts",
+            "line": 629,
+            "title": "reports unknown classes only when requested",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "6806cf7b85d924ece478b836121f26596752f2ed830744492db0eb8178cd1eed"
+          }
+        ],
+        "sourceIdenticalTargetIds": [
+          "rc87-c94f3c91420faeb6"
+        ],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "exact-source",
+          "sourceDigest": "6806cf7b85d924ece478b836121f26596752f2ed830744492db0eb8178cd1eed",
+          "targets": [
+            {
+              "caseId": "rc87-c94f3c91420faeb6",
+              "runner": "vitest",
+              "digest": "6806cf7b85d924ece478b836121f26596752f2ed830744492db0eb8178cd1eed"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -55112,12 +55917,35 @@
         "targetPackage": "tooling"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
-        "sourceIdenticalTargetIds": [],
+        "status": "verified-exact",
+        "coverage": "exact-source",
+        "targets": [
+          {
+            "id": "rc87-1ba90e7b63e41533",
+            "package": "tooling",
+            "file": "packages/tooling/tests/lint/rc87-index.test.ts",
+            "line": 642,
+            "title": "escapes quoted class names in diagnostic messages",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "1ca813931c6600444942c3a3d4676de391bb0f89ef168eb07f4baee7226abba5"
+          }
+        ],
+        "sourceIdenticalTargetIds": [
+          "rc87-1ba90e7b63e41533"
+        ],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "exact-source",
+          "sourceDigest": "1ca813931c6600444942c3a3d4676de391bb0f89ef168eb07f4baee7226abba5",
+          "targets": [
+            {
+              "caseId": "rc87-1ba90e7b63e41533",
+              "runner": "vitest",
+              "digest": "1ca813931c6600444942c3a3d4676de391bb0f89ef168eb07f4baee7226abba5"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -55145,12 +55973,35 @@
         "targetPackage": "tooling"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
-        "sourceIdenticalTargetIds": [],
+        "status": "verified-exact",
+        "coverage": "exact-source",
+        "targets": [
+          {
+            "id": "rc87-317b76a355e86cff",
+            "package": "tooling",
+            "file": "packages/tooling/tests/lint/rc87-index.test.ts",
+            "line": 651,
+            "title": "reports raw values in token-backed utilities",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "2dd18586bc74580297aa778201ff8271da475c1fcec4c8f8a8fe756d1e956303"
+          }
+        ],
+        "sourceIdenticalTargetIds": [
+          "rc87-317b76a355e86cff"
+        ],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "exact-source",
+          "sourceDigest": "2dd18586bc74580297aa778201ff8271da475c1fcec4c8f8a8fe756d1e956303",
+          "targets": [
+            {
+              "caseId": "rc87-317b76a355e86cff",
+              "runner": "vitest",
+              "digest": "2dd18586bc74580297aa778201ff8271da475c1fcec4c8f8a8fe756d1e956303"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -55234,12 +56085,35 @@
         "targetPackage": "tooling"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
-        "sourceIdenticalTargetIds": [],
+        "status": "verified-exact",
+        "coverage": "exact-source",
+        "targets": [
+          {
+            "id": "rc87-0094ec74c2d24d05",
+            "package": "tooling",
+            "file": "packages/tooling/tests/lint/rc87-index.test.ts",
+            "line": 659,
+            "title": "allows raw values by property, key, pattern, or full opt-out",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "094151e1b7865c68a14c31f0eab517f951ba91be26fe202e28948bd8869e9500"
+          }
+        ],
+        "sourceIdenticalTargetIds": [
+          "rc87-0094ec74c2d24d05"
+        ],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "exact-source",
+          "sourceDigest": "094151e1b7865c68a14c31f0eab517f951ba91be26fe202e28948bd8869e9500",
+          "targets": [
+            {
+              "caseId": "rc87-0094ec74c2d24d05",
+              "runner": "vitest",
+              "digest": "094151e1b7865c68a14c31f0eab517f951ba91be26fe202e28948bd8869e9500"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -55267,12 +56141,35 @@
         "targetPackage": "tooling"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
-        "sourceIdenticalTargetIds": [],
+        "status": "verified-exact",
+        "coverage": "exact-source",
+        "targets": [
+          {
+            "id": "rc87-7a883fc118f46b36",
+            "package": "tooling",
+            "file": "packages/tooling/tests/lint/rc87-index.test.ts",
+            "line": 666,
+            "title": "applies raw value allowed patterns to individual multi-value segments",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "39044c141058ba15d6ece08b4c897ec722b4eca090b916200ed688103174dac4"
+          }
+        ],
+        "sourceIdenticalTargetIds": [
+          "rc87-7a883fc118f46b36"
+        ],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "exact-source",
+          "sourceDigest": "39044c141058ba15d6ece08b4c897ec722b4eca090b916200ed688103174dac4",
+          "targets": [
+            {
+              "caseId": "rc87-7a883fc118f46b36",
+              "runner": "vitest",
+              "digest": "39044c141058ba15d6ece08b4c897ec722b4eca090b916200ed688103174dac4"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -55301,12 +56198,35 @@
         "targetPackage": "tooling"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
-        "sourceIdenticalTargetIds": [],
+        "status": "verified-exact",
+        "coverage": "exact-source",
+        "targets": [
+          {
+            "id": "rc87-bb3a21159f32bf1c",
+            "package": "tooling",
+            "file": "packages/tooling/tests/lint/rc87-index.test.ts",
+            "line": 679,
+            "title": "uses active manifest tokens without treating registry fields as token namespaces",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "61f86d25bbf0933af0a4d8adae557bfcd25fd3773a5c5c00a0147d77dc6c5740"
+          }
+        ],
+        "sourceIdenticalTargetIds": [
+          "rc87-bb3a21159f32bf1c"
+        ],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "exact-source",
+          "sourceDigest": "61f86d25bbf0933af0a4d8adae557bfcd25fd3773a5c5c00a0147d77dc6c5740",
+          "targets": [
+            {
+              "caseId": "rc87-bb3a21159f32bf1c",
+              "runner": "vitest",
+              "digest": "61f86d25bbf0933af0a4d8adae557bfcd25fd3773a5c5c00a0147d77dc6c5740"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -55449,12 +56369,35 @@
         "targetPackage": "tooling"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
-        "sourceIdenticalTargetIds": [],
+        "status": "verified-exact",
+        "coverage": "exact-source",
+        "targets": [
+          {
+            "id": "rc87-284935977d3a496f",
+            "package": "tooling",
+            "file": "packages/tooling/tests/lint/rc87-index.test.ts",
+            "line": 688,
+            "title": "suggests multi-value theme tokens",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "708375f97c1bfd4c3e0625efb958603ad6614800142e863ce21c47457f8f0b56"
+          }
+        ],
+        "sourceIdenticalTargetIds": [
+          "rc87-284935977d3a496f"
+        ],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "exact-source",
+          "sourceDigest": "708375f97c1bfd4c3e0625efb958603ad6614800142e863ce21c47457f8f0b56",
+          "targets": [
+            {
+              "caseId": "rc87-284935977d3a496f",
+              "runner": "vitest",
+              "digest": "708375f97c1bfd4c3e0625efb958603ad6614800142e863ce21c47457f8f0b56"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -55484,12 +56427,35 @@
         "targetPackage": "tooling"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
-        "sourceIdenticalTargetIds": [],
+        "status": "verified-exact",
+        "coverage": "exact-source",
+        "targets": [
+          {
+            "id": "rc87-27b8e55db55f0903",
+            "package": "tooling",
+            "file": "packages/tooling/tests/lint/rc87-index.test.ts",
+            "line": 694,
+            "title": "suggests theme tokens from CSS variable references",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "7ee19ba622b59354da1ddb88c5de0789e5c7dcb1068846101a3fc6a0ef6477d9"
+          }
+        ],
+        "sourceIdenticalTargetIds": [
+          "rc87-27b8e55db55f0903"
+        ],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "exact-source",
+          "sourceDigest": "7ee19ba622b59354da1ddb88c5de0789e5c7dcb1068846101a3fc6a0ef6477d9",
+          "targets": [
+            {
+              "caseId": "rc87-27b8e55db55f0903",
+              "runner": "vitest",
+              "digest": "7ee19ba622b59354da1ddb88c5de0789e5c7dcb1068846101a3fc6a0ef6477d9"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -55518,12 +56484,35 @@
         "targetPackage": "tooling"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
-        "sourceIdenticalTargetIds": [],
+        "status": "verified-exact",
+        "coverage": "exact-source",
+        "targets": [
+          {
+            "id": "rc87-3282ea7256204f5b",
+            "package": "tooling",
+            "file": "packages/tooling/tests/lint/rc87-index.test.ts",
+            "line": 700,
+            "title": "suggests canonical condition suffix order",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "042e452e665571c0494acea3ede61aee18bfdc1099d1cf771b16916e39e33790"
+          }
+        ],
+        "sourceIdenticalTargetIds": [
+          "rc87-3282ea7256204f5b"
+        ],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "exact-source",
+          "sourceDigest": "042e452e665571c0494acea3ede61aee18bfdc1099d1cf771b16916e39e33790",
+          "targets": [
+            {
+              "caseId": "rc87-3282ea7256204f5b",
+              "runner": "vitest",
+              "digest": "042e452e665571c0494acea3ede61aee18bfdc1099d1cf771b16916e39e33790"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -55552,12 +56541,35 @@
         "targetPackage": "tooling"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
-        "sourceIdenticalTargetIds": [],
+        "status": "verified-exact",
+        "coverage": "exact-source",
+        "targets": [
+          {
+            "id": "rc87-f3813b8bd9d0471f",
+            "package": "tooling",
+            "file": "packages/tooling/tests/lint/rc87-index.test.ts",
+            "line": 708,
+            "title": "combines condition order independently with canonical suggestion options",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "5fca1a9affc8451d0deb028c42facefe16bf5eafe6bbc87e28051a5d207da28d"
+          }
+        ],
+        "sourceIdenticalTargetIds": [
+          "rc87-f3813b8bd9d0471f"
+        ],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "exact-source",
+          "sourceDigest": "5fca1a9affc8451d0deb028c42facefe16bf5eafe6bbc87e28051a5d207da28d",
+          "targets": [
+            {
+              "caseId": "rc87-f3813b8bd9d0471f",
+              "runner": "vitest",
+              "digest": "5fca1a9affc8451d0deb028c42facefe16bf5eafe6bbc87e28051a5d207da28d"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -55587,12 +56599,35 @@
         "targetPackage": "tooling"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
-        "sourceIdenticalTargetIds": [],
+        "status": "verified-exact",
+        "coverage": "exact-source",
+        "targets": [
+          {
+            "id": "rc87-d8d4b6718f3ce1c3",
+            "package": "tooling",
+            "file": "packages/tooling/tests/lint/rc87-index.test.ts",
+            "line": 736,
+            "title": "uses custom manifest modes, breakpoints, tokens, and utilities",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "5497ea78d841ff8ebaa41a9d1544bb44f43e1acb2bf1eaa8153aef5e5b9f9408"
+          }
+        ],
+        "sourceIdenticalTargetIds": [
+          "rc87-d8d4b6718f3ce1c3"
+        ],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "exact-source",
+          "sourceDigest": "5497ea78d841ff8ebaa41a9d1544bb44f43e1acb2bf1eaa8153aef5e5b9f9408",
+          "targets": [
+            {
+              "caseId": "rc87-d8d4b6718f3ce1c3",
+              "runner": "vitest",
+              "digest": "5497ea78d841ff8ebaa41a9d1544bb44f43e1acb2bf1eaa8153aef5e5b9f9408"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -55622,12 +56657,35 @@
         "targetPackage": "tooling"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
-        "sourceIdenticalTargetIds": [],
+        "status": "verified-exact",
+        "coverage": "exact-source",
+        "targets": [
+          {
+            "id": "rc87-7511928ca6b0f912",
+            "package": "tooling",
+            "file": "packages/tooling/tests/lint/rc87-index.test.ts",
+            "line": 742,
+            "title": "does not treat custom variants or component utilities as utilities-only canonical targets",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "570aaa7124a60953c81a825fdd8dd71369d7f8d0c0db911bfa5a5cf78be65feb"
+          }
+        ],
+        "sourceIdenticalTargetIds": [
+          "rc87-7511928ca6b0f912"
+        ],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "exact-source",
+          "sourceDigest": "570aaa7124a60953c81a825fdd8dd71369d7f8d0c0db911bfa5a5cf78be65feb",
+          "targets": [
+            {
+              "caseId": "rc87-7511928ca6b0f912",
+              "runner": "vitest",
+              "digest": "570aaa7124a60953c81a825fdd8dd71369d7f8d0c0db911bfa5a5cf78be65feb"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -55657,12 +56715,35 @@
         "targetPackage": "tooling"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
-        "sourceIdenticalTargetIds": [],
+        "status": "verified-exact",
+        "coverage": "exact-source",
+        "targets": [
+          {
+            "id": "rc87-3caf39eb5dca447f",
+            "package": "tooling",
+            "file": "packages/tooling/tests/lint/rc87-index.test.ts",
+            "line": 748,
+            "title": "ignores manifest-carried key alias and native namespace registry fields",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "a44d163067df51212aa6aab92c34e33200e143e3af36a61c3d114b644c22375d"
+          }
+        ],
+        "sourceIdenticalTargetIds": [
+          "rc87-3caf39eb5dca447f"
+        ],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "exact-source",
+          "sourceDigest": "a44d163067df51212aa6aab92c34e33200e143e3af36a61c3d114b644c22375d",
+          "targets": [
+            {
+              "caseId": "rc87-3caf39eb5dca447f",
+              "runner": "vitest",
+              "digest": "a44d163067df51212aa6aab92c34e33200e143e3af36a61c3d114b644c22375d"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -55691,12 +56772,35 @@
         "targetPackage": "tooling"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
-        "sourceIdenticalTargetIds": [],
+        "status": "verified-exact",
+        "coverage": "exact-source",
+        "targets": [
+          {
+            "id": "rc87-97bef49b9c8db82b",
+            "package": "tooling",
+            "file": "packages/tooling/tests/lint/rc87-index.test.ts",
+            "line": 753,
+            "title": "does not suggest partial multi-value or unknown variable tokens",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "7b227594b6bbebcec038dd1d75bca0f51ae54fc4cc5359b158038c620539cd9f"
+          }
+        ],
+        "sourceIdenticalTargetIds": [
+          "rc87-97bef49b9c8db82b"
+        ],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "exact-source",
+          "sourceDigest": "7b227594b6bbebcec038dd1d75bca0f51ae54fc4cc5359b158038c620539cd9f",
+          "targets": [
+            {
+              "caseId": "rc87-97bef49b9c8db82b",
+              "runner": "vitest",
+              "digest": "7b227594b6bbebcec038dd1d75bca0f51ae54fc4cc5359b158038c620539cd9f"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -55725,12 +56829,35 @@
         "targetPackage": "tooling"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
-        "sourceIdenticalTargetIds": [],
+        "status": "verified-exact",
+        "coverage": "exact-source",
+        "targets": [
+          {
+            "id": "rc87-b141c6793d84641a",
+            "package": "tooling",
+            "file": "packages/tooling/tests/lint/rc87-index.test.ts",
+            "line": 758,
+            "title": "does not suggest unsafe condition or selector suffix order",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "97898e4a0dd77976268be35b1ce8aad495a6e5566d239cc2833ebd214d1aeea4"
+          }
+        ],
+        "sourceIdenticalTargetIds": [
+          "rc87-b141c6793d84641a"
+        ],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "exact-source",
+          "sourceDigest": "97898e4a0dd77976268be35b1ce8aad495a6e5566d239cc2833ebd214d1aeea4",
+          "targets": [
+            {
+              "caseId": "rc87-b141c6793d84641a",
+              "runner": "vitest",
+              "digest": "97898e4a0dd77976268be35b1ce8aad495a6e5566d239cc2833ebd214d1aeea4"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -55759,12 +56886,35 @@
         "targetPackage": "tooling"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
-        "sourceIdenticalTargetIds": [],
+        "status": "verified-exact",
+        "coverage": "exact-source",
+        "targets": [
+          {
+            "id": "rc87-7ca88abe7a8847ab",
+            "package": "tooling",
+            "file": "packages/tooling/tests/lint/rc87-index.test.ts",
+            "line": 768,
+            "title": "respects canonical suggestion options",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "e78fce44e8395e298715302fa39622283554cd4f3e42554d200e124dde6d2fb1"
+          }
+        ],
+        "sourceIdenticalTargetIds": [
+          "rc87-7ca88abe7a8847ab"
+        ],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "exact-source",
+          "sourceDigest": "e78fce44e8395e298715302fa39622283554cd4f3e42554d200e124dde6d2fb1",
+          "targets": [
+            {
+              "caseId": "rc87-7ca88abe7a8847ab",
+              "runner": "vitest",
+              "digest": "e78fce44e8395e298715302fa39622283554cd4f3e42554d200e124dde6d2fb1"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -55793,12 +56943,35 @@
         "targetPackage": "tooling"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
-        "sourceIdenticalTargetIds": [],
+        "status": "verified-exact",
+        "coverage": "exact-source",
+        "targets": [
+          {
+            "id": "rc87-ac4e18ce6d91e9cb",
+            "package": "tooling",
+            "file": "packages/tooling/tests/lint/rc87-index.test.ts",
+            "line": 795,
+            "title": "does not suggest component-layer semantic utilities",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "56ca39b84b2e70b215032956cc14eb049932210b724fa3afacb2ad4e5fc27d8b"
+          }
+        ],
+        "sourceIdenticalTargetIds": [
+          "rc87-ac4e18ce6d91e9cb"
+        ],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "exact-source",
+          "sourceDigest": "56ca39b84b2e70b215032956cc14eb049932210b724fa3afacb2ad4e5fc27d8b",
+          "targets": [
+            {
+              "caseId": "rc87-ac4e18ce6d91e9cb",
+              "runner": "vitest",
+              "digest": "56ca39b84b2e70b215032956cc14eb049932210b724fa3afacb2ad4e5fc27d8b"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -55827,12 +57000,35 @@
         "targetPackage": "tooling"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
-        "sourceIdenticalTargetIds": [],
+        "status": "verified-exact",
+        "coverage": "exact-source",
+        "targets": [
+          {
+            "id": "rc87-db29c025845d6ddb",
+            "package": "tooling",
+            "file": "packages/tooling/tests/lint/rc87-index.test.ts",
+            "line": 812,
+            "title": "suggests size composition utilities",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "1d2c546b104d44b3ac3287c307d0e64d02834508e1e9537328842711ebb8f3ea"
+          }
+        ],
+        "sourceIdenticalTargetIds": [
+          "rc87-db29c025845d6ddb"
+        ],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "exact-source",
+          "sourceDigest": "1d2c546b104d44b3ac3287c307d0e64d02834508e1e9537328842711ebb8f3ea",
+          "targets": [
+            {
+              "caseId": "rc87-db29c025845d6ddb",
+              "runner": "vitest",
+              "digest": "1d2c546b104d44b3ac3287c307d0e64d02834508e1e9537328842711ebb8f3ea"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -55861,12 +57057,35 @@
         "targetPackage": "tooling"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
-        "sourceIdenticalTargetIds": [],
+        "status": "verified-exact",
+        "coverage": "exact-source",
+        "targets": [
+          {
+            "id": "rc87-87cc8216f3641d5a",
+            "package": "tooling",
+            "file": "packages/tooling/tests/lint/rc87-index.test.ts",
+            "line": 827,
+            "title": "suggests min and max size composition utilities",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "a63a02aeec9854d00b01dc5d10b7a7f66ae0d477c9a5b23cc08033146be25a81"
+          }
+        ],
+        "sourceIdenticalTargetIds": [
+          "rc87-87cc8216f3641d5a"
+        ],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "exact-source",
+          "sourceDigest": "a63a02aeec9854d00b01dc5d10b7a7f66ae0d477c9a5b23cc08033146be25a81",
+          "targets": [
+            {
+              "caseId": "rc87-87cc8216f3641d5a",
+              "runner": "vitest",
+              "digest": "a63a02aeec9854d00b01dc5d10b7a7f66ae0d477c9a5b23cc08033146be25a81"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -55895,12 +57114,35 @@
         "targetPackage": "tooling"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
-        "sourceIdenticalTargetIds": [],
+        "status": "verified-exact",
+        "coverage": "exact-source",
+        "targets": [
+          {
+            "id": "rc87-ed3bbb0845c2181c",
+            "package": "tooling",
+            "file": "packages/tooling/tests/lint/rc87-index.test.ts",
+            "line": 836,
+            "title": "suggests spacing axis composition utilities",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "21664c199ed2926d41d56d7865697175934fcd2c094e9cf02ec2fc16ef07b690"
+          }
+        ],
+        "sourceIdenticalTargetIds": [
+          "rc87-ed3bbb0845c2181c"
+        ],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "exact-source",
+          "sourceDigest": "21664c199ed2926d41d56d7865697175934fcd2c094e9cf02ec2fc16ef07b690",
+          "targets": [
+            {
+              "caseId": "rc87-ed3bbb0845c2181c",
+              "runner": "vitest",
+              "digest": "21664c199ed2926d41d56d7865697175934fcd2c094e9cf02ec2fc16ef07b690"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -55929,12 +57171,35 @@
         "targetPackage": "tooling"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
-        "sourceIdenticalTargetIds": [],
+        "status": "verified-exact",
+        "coverage": "exact-source",
+        "targets": [
+          {
+            "id": "rc87-15f7109e7f3178c7",
+            "package": "tooling",
+            "file": "packages/tooling/tests/lint/rc87-index.test.ts",
+            "line": 854,
+            "title": "suggests spacing axis composition after canonicalization",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "d71e237ba416540571eeef840e4272952644d1c634a4a54bc4efe2a75a8e7cbe"
+          }
+        ],
+        "sourceIdenticalTargetIds": [
+          "rc87-15f7109e7f3178c7"
+        ],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "exact-source",
+          "sourceDigest": "d71e237ba416540571eeef840e4272952644d1c634a4a54bc4efe2a75a8e7cbe",
+          "targets": [
+            {
+              "caseId": "rc87-15f7109e7f3178c7",
+              "runner": "vitest",
+              "digest": "d71e237ba416540571eeef840e4272952644d1c634a4a54bc4efe2a75a8e7cbe"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -55963,12 +57228,35 @@
         "targetPackage": "tooling"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
-        "sourceIdenticalTargetIds": [],
+        "status": "verified-exact",
+        "coverage": "exact-source",
+        "targets": [
+          {
+            "id": "rc87-64ce8830e93b0fb9",
+            "package": "tooling",
+            "file": "packages/tooling/tests/lint/rc87-index.test.ts",
+            "line": 866,
+            "title": "does not suggest unsafe composition groups",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "52ec57a1b88f79dc59c0521c8fc37c13becd019d3e4e63ec2ca403b0d4cb731b"
+          }
+        ],
+        "sourceIdenticalTargetIds": [
+          "rc87-64ce8830e93b0fb9"
+        ],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "exact-source",
+          "sourceDigest": "52ec57a1b88f79dc59c0521c8fc37c13becd019d3e4e63ec2ca403b0d4cb731b",
+          "targets": [
+            {
+              "caseId": "rc87-64ce8830e93b0fb9",
+              "runner": "vitest",
+              "digest": "52ec57a1b88f79dc59c0521c8fc37c13becd019d3e4e63ec2ca403b0d4cb731b"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -55997,12 +57285,35 @@
         "targetPackage": "tooling"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
-        "sourceIdenticalTargetIds": [],
+        "status": "verified-exact",
+        "coverage": "exact-source",
+        "targets": [
+          {
+            "id": "rc87-95bf4e248f8b7a8d",
+            "package": "tooling",
+            "file": "packages/tooling/tests/lint/rc87-index.test.ts",
+            "line": 881,
+            "title": "keeps canonical utilities and extracts native declarations",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "21d4380263035053d64737f4f55f5aafad4700216e05bf7ce83e7e3b278e51a5"
+          }
+        ],
+        "sourceIdenticalTargetIds": [
+          "rc87-95bf4e248f8b7a8d"
+        ],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "exact-source",
+          "sourceDigest": "21d4380263035053d64737f4f55f5aafad4700216e05bf7ce83e7e3b278e51a5",
+          "targets": [
+            {
+              "caseId": "rc87-95bf4e248f8b7a8d",
+              "runner": "vitest",
+              "digest": "21d4380263035053d64737f4f55f5aafad4700216e05bf7ce83e7e3b278e51a5"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -56031,12 +57342,35 @@
         "targetPackage": "tooling"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
-        "sourceIdenticalTargetIds": [],
+        "status": "verified-exact",
+        "coverage": "exact-source",
+        "targets": [
+          {
+            "id": "rc87-7d8d1e34648e234a",
+            "package": "tooling",
+            "file": "packages/tooling/tests/lint/rc87-index.test.ts",
+            "line": 902,
+            "title": "extracts variant suffixes into variant blocks",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "6ccc0dfa642972e1c7440d4bfa074b145dfeb76d556137818d7108b87b86f8bd"
+          }
+        ],
+        "sourceIdenticalTargetIds": [
+          "rc87-7d8d1e34648e234a"
+        ],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "exact-source",
+          "sourceDigest": "6ccc0dfa642972e1c7440d4bfa074b145dfeb76d556137818d7108b87b86f8bd",
+          "targets": [
+            {
+              "caseId": "rc87-7d8d1e34648e234a",
+              "runner": "vitest",
+              "digest": "6ccc0dfa642972e1c7440d4bfa074b145dfeb76d556137818d7108b87b86f8bd"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -56065,12 +57399,35 @@
         "targetPackage": "tooling"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
-        "sourceIdenticalTargetIds": [],
+        "status": "verified-exact",
+        "coverage": "exact-source",
+        "targets": [
+          {
+            "id": "rc87-6d43050e909b4c5c",
+            "package": "tooling",
+            "file": "packages/tooling/tests/lint/rc87-index.test.ts",
+            "line": 923,
+            "title": "extracts important native declarations",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "ee33aa7f97184ebe61a15070d40f76348e436c86de2f9590c364c2d188d92e73"
+          }
+        ],
+        "sourceIdenticalTargetIds": [
+          "rc87-6d43050e909b4c5c"
+        ],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "exact-source",
+          "sourceDigest": "ee33aa7f97184ebe61a15070d40f76348e436c86de2f9590c364c2d188d92e73",
+          "targets": [
+            {
+              "caseId": "rc87-6d43050e909b4c5c",
+              "runner": "vitest",
+              "digest": "ee33aa7f97184ebe61a15070d40f76348e436c86de2f9590c364c2d188d92e73"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -56100,12 +57457,35 @@
         "targetPackage": "tooling"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
-        "sourceIdenticalTargetIds": [],
+        "status": "verified-exact",
+        "coverage": "exact-source",
+        "targets": [
+          {
+            "id": "rc87-9d20d5752d80abd1",
+            "package": "tooling",
+            "file": "packages/tooling/tests/lint/rc87-index.test.ts",
+            "line": 938,
+            "title": "does not extract token-backed, semantic, or alias classes as native declarations",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "5e62aedeab83204bef587c0d6fefbd3def112120889e0a7f013265a44623728a"
+          }
+        ],
+        "sourceIdenticalTargetIds": [
+          "rc87-9d20d5752d80abd1"
+        ],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "exact-source",
+          "sourceDigest": "5e62aedeab83204bef587c0d6fefbd3def112120889e0a7f013265a44623728a",
+          "targets": [
+            {
+              "caseId": "rc87-9d20d5752d80abd1",
+              "runner": "vitest",
+              "digest": "5e62aedeab83204bef587c0d6fefbd3def112120889e0a7f013265a44623728a"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -56134,12 +57514,35 @@
         "targetPackage": "tooling"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
-        "sourceIdenticalTargetIds": [],
+        "status": "verified-exact",
+        "coverage": "exact-source",
+        "targets": [
+          {
+            "id": "rc87-bc5f11abcc4e6bf0",
+            "package": "tooling",
+            "file": "packages/tooling/tests/lint/rc87-index.test.ts",
+            "line": 947,
+            "title": "reports duplicate native declarations without autofix",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "044ccc5feb98045b414233e6bbb043d50ce11e4f1f58db06a4aa2a31657c09cf"
+          }
+        ],
+        "sourceIdenticalTargetIds": [
+          "rc87-bc5f11abcc4e6bf0"
+        ],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "exact-source",
+          "sourceDigest": "044ccc5feb98045b414233e6bbb043d50ce11e4f1f58db06a4aa2a31657c09cf",
+          "targets": [
+            {
+              "caseId": "rc87-bc5f11abcc4e6bf0",
+              "runner": "vitest",
+              "digest": "044ccc5feb98045b414233e6bbb043d50ce11e4f1f58db06a4aa2a31657c09cf"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -56165,12 +57568,35 @@
         "targetPackage": "tooling"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
-        "sourceIdenticalTargetIds": [],
+        "status": "verified-exact",
+        "coverage": "exact-source",
+        "targets": [
+          {
+            "id": "rc87-871ad5d224724e7a",
+            "package": "tooling",
+            "file": "packages/tooling/tests/lint/rc87-index.test.ts",
+            "line": 968,
+            "title": "exports default lint target settings",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "a118d72c77c191c8fc37fce685e5266de8d9f8f7de485c5b9df7859a72d4de03"
+          }
+        ],
+        "sourceIdenticalTargetIds": [
+          "rc87-871ad5d224724e7a"
+        ],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "exact-source",
+          "sourceDigest": "a118d72c77c191c8fc37fce685e5266de8d9f8f7de485c5b9df7859a72d4de03",
+          "targets": [
+            {
+              "caseId": "rc87-871ad5d224724e7a",
+              "runner": "vitest",
+              "digest": "a118d72c77c191c8fc37fce685e5266de8d9f8f7de485c5b9df7859a72d4de03"
+            }
+          ]
+        }
       },
       "divergence": null
     },
