@@ -1366,11 +1366,11 @@
   },
   "target": {
     "ref": "latest-target-change",
-    "commit": "b242a52a0fcb43b1b506d9fa1e010d0c85621d13",
+    "commit": "7ac3c1a63a7af8c8c927a869fa3e4d531261cec6",
     "packageCount": 36,
     "testFiles": 160,
     "e2eFiles": 24,
-    "cases": 1189
+    "cases": 1313
   },
   "existingParity": {
     "semanticBaseline": "ef1a7c851",
@@ -1381,20 +1381,20 @@
   "evidence": {
     "path": "parity/ts-test-migration-evidence.json",
     "version": 1,
-    "records": 293,
+    "records": 446,
     "proofs": {
       "approved-divergence": 2,
       "exact-source": 607,
-      "rc87-golden": 291
+      "rc87-golden": 444
     }
   },
   "summary": {
     "byStatus": {
       "approved-divergence": 2,
-      "gap": 408,
-      "mapped-unverified": 228,
+      "gap": 398,
+      "mapped-unverified": 85,
       "source-inactive": 10,
-      "verified-exact": 898
+      "verified-exact": 1051
     },
     "byPriority": {
       "P0": 676,
@@ -1402,15 +1402,15 @@
       "P2": 138
     },
     "byCoverage": {
-      "candidate-all": 228,
-      "evidence": 293,
+      "candidate-all": 85,
+      "evidence": 446,
       "exact-source": 607,
-      "none": 418
+      "none": 408
     },
     "byProof": {
       "approved-divergence": 2,
       "exact-source": 607,
-      "rc87-golden": 291
+      "rc87-golden": 444
     },
     "byPackage": {
       "astro": {
@@ -1522,16 +1522,16 @@
         "P0": 2,
         "P1": 0,
         "P2": 29,
-        "mapped": 29,
-        "gap": 2
+        "mapped": 31,
+        "gap": 0
       },
       "language-service": {
         "total": 217,
         "P0": 4,
         "P1": 213,
         "P2": 0,
-        "mapped": 10,
-        "gap": 207
+        "mapped": 14,
+        "gap": 203
       },
       "lexer": {
         "total": 34,
@@ -1546,8 +1546,8 @@
         "P0": 3,
         "P1": 62,
         "P2": 0,
-        "mapped": 0,
-        "gap": 65
+        "mapped": 3,
+        "gap": 62
       },
       "mcp": {
         "total": 16,
@@ -1626,8 +1626,8 @@
         "P0": 1,
         "P1": 12,
         "P2": 0,
-        "mapped": 0,
-        "gap": 13
+        "mapped": 1,
+        "gap": 12
       },
       "stylesheet": {
         "total": 48,
@@ -4828,8 +4828,8 @@
         "targetPackage": "compiler"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-97a879e4593a9505",
@@ -4844,7 +4844,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "e9db609101829c58fc90680d3345e104e3949387481c4f0c7bbed0f1cdaaf1a0",
+          "targets": [
+            {
+              "caseId": "rc87-97a879e4593a9505",
+              "runner": "vitest",
+              "digest": "1df44c37ae32a2bc325e26d00afa3b6a81b4d120835755cc299c0c1d229be445"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -8229,8 +8239,8 @@
         "targetPackage": "create"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-6859070742f49e12",
@@ -8245,7 +8255,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "e9f7c539486c6caf1db9cf83a6bff59d76de4bea595115cf1965d0f204765b4c",
+          "targets": [
+            {
+              "caseId": "rc87-6859070742f49e12",
+              "runner": "vitest",
+              "digest": "6c9737e28c7d3be36806680369cad885c547775f21b0a378d1f1757fbab5fc1c"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -8273,8 +8293,8 @@
         "targetPackage": "create"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-557cc8c6feafdaec",
@@ -8289,7 +8309,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "b10beeef14ec2548fd4b9ba36be8e1cfe82d19f0b341597d7be48b142087756b",
+          "targets": [
+            {
+              "caseId": "rc87-557cc8c6feafdaec",
+              "runner": "vitest",
+              "digest": "b100d8561bdf8f16f335d4c69dacd8476f87cad807b5f4356aacfe020657bcb0"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -8317,8 +8347,8 @@
         "targetPackage": "create"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-c74ec73a3a553803",
@@ -8333,7 +8363,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "363e808af2e3e3c9abaa4a4cfd40e4a1bae318271bc4fa5fdf27d003b512ef53",
+          "targets": [
+            {
+              "caseId": "rc87-c74ec73a3a553803",
+              "runner": "vitest",
+              "digest": "487ac9ed6033ebc835fe2746ab4d65493c90cc5d00fb7772d9cade9c0bad3aa4"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -9137,16 +9177,37 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-50fac281414b44f7",
+            "package": "css",
+            "file": "parity/rust-takeover-ledger.json",
+            "line": 10,
+            "title": "keeps on-demand insertion lifecycle for utilities variables and semantic components",
+            "runner": "cargo-xtask",
+            "kind": "test",
+            "sourceDigest": "601b185647dc0750f193462370a834a54e7e8898e4cd98ac52f97e9b2171fda1"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
           "corpus:engine-variable-lifecycle",
           "corpus:engine-semantic-manifest-layer",
           "corpus:engine-same-class-across-layers"
         ],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "4e32e369fbf4a4075cd94bc99cce84cbebea0a391290b287798244e9e089a073",
+          "targets": [
+            {
+              "caseId": "rc87-50fac281414b44f7",
+              "runner": "cargo-xtask",
+              "digest": "601b185647dc0750f193462370a834a54e7e8898e4cd98ac52f97e9b2171fda1"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -9175,15 +9236,36 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-2b515e6d06b0f47d",
+            "package": "css",
+            "file": "parity/rust-takeover-ledger.json",
+            "line": 11,
+            "title": "prevents duplicate insertion and preserves emittedGlobals variable and animation counts",
+            "runner": "cargo-xtask",
+            "kind": "test",
+            "sourceDigest": "2665faa43c4dfb819a6d154b55283bfc4fefb50736727f29df4a50b34eff16d7"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
           "corpus:engine-emitted-global-variable",
           "test:crates/mastercss-engine/src/lib.rs#ensure_is_idempotent_and_delete_reports_exact_index"
         ],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "28d73a4af5fe423101681266129e5a7e4a04332b38b4241b37987a599f8a74b6",
+          "targets": [
+            {
+              "caseId": "rc87-2b515e6d06b0f47d",
+              "runner": "cargo-xtask",
+              "digest": "2665faa43c4dfb819a6d154b55283bfc4fefb50736727f29df4a50b34eff16d7"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -9214,15 +9296,36 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-9ea915c9a900ac59",
+            "package": "css",
+            "file": "parity/rust-takeover-ledger.json",
+            "line": 12,
+            "title": "emits static variables, dependencies, aliases, and keyframes without class references",
+            "runner": "cargo-xtask",
+            "kind": "test",
+            "sourceDigest": "d7ad3725de6f1355bd3b18704bce0ee18f249b1114f9e494ab9e5dd71b60618f"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
           "test:crates/mastercss-engine/src/lib.rs#resolves_dependencies_of_inline_variables_without_emitting_resources",
           "corpus:engine-inline-theme-variable-dependencies"
         ],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "c0175c864046313282ebf8544865457475766bf212fb6f794b941dea4f976fb6",
+          "targets": [
+            {
+              "caseId": "rc87-9ea915c9a900ac59",
+              "runner": "cargo-xtask",
+              "digest": "d7ad3725de6f1355bd3b18704bce0ee18f249b1114f9e494ab9e5dd71b60618f"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -9252,15 +9355,36 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-3cacb6e30bb02a78",
+            "package": "css",
+            "file": "parity/rust-takeover-ledger.json",
+            "line": 13,
+            "title": "does not duplicate emittedGlobals static variables and keyframes",
+            "runner": "cargo-xtask",
+            "kind": "test",
+            "sourceDigest": "91d990e85efacc6897e6196fd64493dd1fe4690c1b569819549f83e8dd7f36ac"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
           "corpus:engine-emitted-global-variable",
           "test:crates/mastercss-engine/src/lib.rs#suppresses_variables_already_emitted_by_the_host"
         ],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "e005a922d492b1598a2621ab89fe77006e826c6ca428462bad2dc5ad81c3c0f6",
+          "targets": [
+            {
+              "caseId": "rc87-3cacb6e30bb02a78",
+              "runner": "cargo-xtask",
+              "digest": "91d990e85efacc6897e6196fd64493dd1fe4690c1b569819549f83e8dd7f36ac"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -9290,15 +9414,36 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-fa254d0222f85803",
+            "package": "css",
+            "file": "parity/rust-takeover-ledger.json",
+            "line": 14,
+            "title": "emits referenced keyframes outside cascade layers",
+            "runner": "cargo-xtask",
+            "kind": "test",
+            "sourceDigest": "d81491bbf7096cb12ce33447b3a191fff5cd00a88cb65e27aec6dd703932e2bb"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
           "test:crates/mastercss-engine/src/lib.rs#tracks_variable_resources_across_aliases_and_deletion",
           "corpus:engine-animation-resource-metadata"
         ],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "c72b863b38de68007b2103d11b9e4ebaa32581cfe7f71a97c8fee420ddbd7ab1",
+          "targets": [
+            {
+              "caseId": "rc87-fa254d0222f85803",
+              "runner": "cargo-xtask",
+              "digest": "d81491bbf7096cb12ce33447b3a191fff5cd00a88cb65e27aec6dd703932e2bb"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -9328,15 +9473,36 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-07e5ba6be81b9280",
+            "package": "css",
+            "file": "parity/rust-takeover-ledger.json",
+            "line": 15,
+            "title": "routes explicit layer variants and rejects conflicting layer variants",
+            "runner": "cargo-xtask",
+            "kind": "test",
+            "sourceDigest": "98700fc026185e1a147395e65a3f9232d7f31082c92991037b5f65986cd2dacb"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
           "corpus:engine-selector-condition-layer",
           "test:crates/mastercss-engine/src/lib.rs#renders_selector_condition_layer_and_important_state"
         ],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "b8399cf15cdea53988f18a46a76085fcf18ae915c4237023a7f7b35f49c548b3",
+          "targets": [
+            {
+              "caseId": "rc87-07e5ba6be81b9280",
+              "runner": "cargo-xtask",
+              "digest": "98700fc026185e1a147395e65a3f9232d7f31082c92991037b5f65986cd2dacb"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -9365,14 +9531,35 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-3ff1469ca571d63d",
+            "package": "css",
+            "file": "parity/rust-takeover-ledger.json",
+            "line": 16,
+            "title": "keeps at-rules authored on semantic component rules within the component layer",
+            "runner": "cargo-xtask",
+            "kind": "test",
+            "sourceDigest": "0e6a211d956d78f591f649178968e3164ac0865bcf76c143a8f91ae7d463ec20"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
           "corpus:engine-semantic-manifest-layer"
         ],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "47f51e328b6ae9feeff509c2c491ae5206844ca32ad730f1fc41cbe98841eeec",
+          "targets": [
+            {
+              "caseId": "rc87-3ff1469ca571d63d",
+              "runner": "cargo-xtask",
+              "digest": "0e6a211d956d78f591f649178968e3164ac0865bcf76c143a8f91ae7d463ec20"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -9401,15 +9588,36 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-7c4a00dcfd73557b",
+            "package": "css",
+            "file": "parity/rust-takeover-ledger.json",
+            "line": 17,
+            "title": "keeps deterministic rule order independent of insertion order",
+            "runner": "cargo-xtask",
+            "kind": "test",
+            "sourceDigest": "9b58bfa8e5bf904c49809aebd93a798f0efe4f27eabb7878baf01778c42ca2f3"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
           "corpus:engine-basic-order",
           "corpus:engine-basic-order-reversed"
         ],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "4e883f6f170937f17868987b4b5eac9ecfeb94985e03f3f0f464c1360943d424",
+          "targets": [
+            {
+              "caseId": "rc87-7c4a00dcfd73557b",
+              "runner": "cargo-xtask",
+              "digest": "9b58bfa8e5bf904c49809aebd93a798f0efe4f27eabb7878baf01778c42ca2f3"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -9438,15 +9646,36 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-f0ba03d0770d8e5e",
+            "package": "css",
+            "file": "parity/rust-takeover-ledger.json",
+            "line": 18,
+            "title": "keeps declaration and media priority order",
+            "runner": "cargo-xtask",
+            "kind": "test",
+            "sourceDigest": "b5e3e393fcb85267fa2ec7094aa12dd108debb598194bb181ebe321a8545a706"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
           "corpus:engine-responsive-priority",
           "corpus:engine-selector-priority-metadata"
         ],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "9a9f9827ef4b60463adc2bcb5f8006ae0425c018d67d80f6e07605c572f62be2",
+          "targets": [
+            {
+              "caseId": "rc87-f0ba03d0770d8e5e",
+              "runner": "cargo-xtask",
+              "digest": "b5e3e393fcb85267fa2ec7094aa12dd108debb598194bb181ebe321a8545a706"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -9475,14 +9704,35 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-341e1de06be426cf",
+            "package": "css",
+            "file": "parity/rust-takeover-ledger.json",
+            "line": 19,
+            "title": "keeps semantic component utility priority stable",
+            "runner": "cargo-xtask",
+            "kind": "test",
+            "sourceDigest": "6c6782762bcfeeaf2883959022189ef1d0e8e544a67b0979b91dfda84959433a"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
           "corpus:engine-semantic-manifest-layer"
         ],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "8123afb62a4607321f5b2f923d11486c1057d57fb68232708548eb9ebab372db",
+          "targets": [
+            {
+              "caseId": "rc87-341e1de06be426cf",
+              "runner": "cargo-xtask",
+              "digest": "6c6782762bcfeeaf2883959022189ef1d0e8e544a67b0979b91dfda84959433a"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -9512,15 +9762,36 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-6ac0f51b31553028",
+            "package": "css",
+            "file": "parity/rust-takeover-ledger.json",
+            "line": 26,
+            "title": "inspects key/value utilities with variants and token metadata",
+            "runner": "cargo-xtask",
+            "kind": "test",
+            "sourceDigest": "5fb51c916e7d84660c9b47935680d699baa0409d47e0d1055d85c3a4757b3d11"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
           "test:crates/mastercss-engine/src/lib.rs#exposes_manifest_driven_class_semantics_without_mutating_the_session",
           "corpus:engine-pseudo-and-responsive-selectors"
         ],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "f7a38a5a7a9f63f061e053b8edfda3a0e65db306c037a93ff835b82a2b687a15",
+          "targets": [
+            {
+              "caseId": "rc87-6ac0f51b31553028",
+              "runner": "cargo-xtask",
+              "digest": "5fb51c916e7d84660c9b47935680d699baa0409d47e0d1055d85c3a4757b3d11"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -9550,15 +9821,36 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-8391b8d215f8b83e",
+            "package": "css",
+            "file": "parity/rust-takeover-ledger.json",
+            "line": 27,
+            "title": "inspects static utilities and important suffixes",
+            "runner": "cargo-xtask",
+            "kind": "test",
+            "sourceDigest": "5163ea659f353a271b3f31bd575ee305ee5f0d93f04b46bee9bbe97713cd2a5e"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
           "test:crates/mastercss-engine/src/lib.rs#exposes_manifest_driven_class_semantics_without_mutating_the_session",
           "corpus:engine-selector-condition-layer"
         ],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "fd0059a58c180c8300498f5e66f96b944ee6d531a5f214ba6c58ef1e07d9318f",
+          "targets": [
+            {
+              "caseId": "rc87-8391b8d215f8b83e",
+              "runner": "cargo-xtask",
+              "digest": "5163ea659f353a271b3f31bd575ee305ee5f0d93f04b46bee9bbe97713cd2a5e"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -9587,14 +9879,35 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-270bdffdfecf2e1b",
+            "package": "css",
+            "file": "parity/rust-takeover-ledger.json",
+            "line": 28,
+            "title": "falls back to lexical class parts for unknown classes",
+            "runner": "cargo-xtask",
+            "kind": "test",
+            "sourceDigest": "8772265a052b71764a8a8855a0461f0181e2e37d293584e6bbcf13c533d8b5d6"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
           "test:crates/mastercss-engine/src/lib.rs#exposes_manifest_driven_class_semantics_without_mutating_the_session"
         ],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "9bb4be771f4871ebe7094f0db8cde7acfc9165f5fc0a40a7587dc6c717c6b6fb",
+          "targets": [
+            {
+              "caseId": "rc87-270bdffdfecf2e1b",
+              "runner": "cargo-xtask",
+              "digest": "8772265a052b71764a8a8855a0461f0181e2e37d293584e6bbcf13c533d8b5d6"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -9623,16 +9936,37 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-c8498a06905e7f17",
+            "package": "css",
+            "file": "parity/rust-takeover-ledger.json",
+            "line": 29,
+            "title": "normalizes number, rem, px, and base-unit numeric values",
+            "runner": "cargo-xtask",
+            "kind": "test",
+            "sourceDigest": "480f3e0e7dabcf018600e6dd007c2920c7b04d3ff4011f003ce55702ffc417b6"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
           "test:crates/mastercss-engine/src/lib.rs#normalizes_base_units_inside_css_math_functions",
           "corpus:engine-functions-and-negative-values",
           "corpus:engine-negative-base-unit-bytes"
         ],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "17609b2f758cda878a990b466f91d49db475b95941ee731b0fe34e6a7e5783fe",
+          "targets": [
+            {
+              "caseId": "rc87-c8498a06905e7f17",
+              "runner": "cargo-xtask",
+              "digest": "480f3e0e7dabcf018600e6dd007c2920c7b04d3ff4011f003ce55702ffc417b6"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -9661,14 +9995,35 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-26162294d200e151",
+            "package": "css",
+            "file": "parity/rust-takeover-ledger.json",
+            "line": 36,
+            "title": "keeps group syntax independent from preset utilities",
+            "runner": "cargo-xtask",
+            "kind": "test",
+            "sourceDigest": "0fc122c12ad874cda47c14b1528504545bb127d64d88b19e8010144137f83f17"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
           "corpus:engine-grouped-declarations"
         ],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "d7563d8164870a5600ef922b74ef109a9d509c496a47665600db70693ae9cda2",
+          "targets": [
+            {
+              "caseId": "rc87-26162294d200e151",
+              "runner": "cargo-xtask",
+              "digest": "0fc122c12ad874cda47c14b1528504545bb127d64d88b19e8010144137f83f17"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -9697,15 +10052,36 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-46a2755a76588752",
+            "package": "css",
+            "file": "parity/rust-takeover-ledger.json",
+            "line": 37,
+            "title": "keeps grouped declarations generated utilities and invalid group recovery",
+            "runner": "cargo-xtask",
+            "kind": "test",
+            "sourceDigest": "1b5fa125e3e47ec8d9680585945e927959fad0b5ee78d2e042320c0c73970f7f"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
           "corpus:engine-grouped-declarations",
           "test:crates/mastercss-engine/src/lib.rs#preserves_pattern_utility_precedence_inside_groups"
         ],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "11b9f597580f2a3325afec63dc7a79efc82af50b97ae574edd8990de7547f06a",
+          "targets": [
+            {
+              "caseId": "rc87-46a2755a76588752",
+              "runner": "cargo-xtask",
+              "digest": "1b5fa125e3e47ec8d9680585945e927959fad0b5ee78d2e042320c0c73970f7f"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -9734,14 +10110,35 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-af0477dd3915918d",
+            "package": "css",
+            "file": "parity/rust-takeover-ledger.json",
+            "line": 38,
+            "title": "keeps grouped declaration important propagation",
+            "runner": "cargo-xtask",
+            "kind": "test",
+            "sourceDigest": "ff5361ba6bf2254522532dde9a7eb472e09dcccd4338825ad276bf1b7c72b511"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
           "corpus:engine-grouped-declarations"
         ],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "58decf8b9caeefec29e59fbdd19f407b12d4a7fb7ffe349e002b2e1a7e0dfaf1",
+          "targets": [
+            {
+              "caseId": "rc87-af0477dd3915918d",
+              "runner": "cargo-xtask",
+              "digest": "ff5361ba6bf2254522532dde9a7eb472e09dcccd4338825ad276bf1b7c72b511"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -9770,14 +10167,35 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-ffa44c2457495941",
+            "package": "css",
+            "file": "parity/rust-takeover-ledger.json",
+            "line": 39,
+            "title": "keeps grouped gradient values with custom variables and quoted separators",
+            "runner": "cargo-xtask",
+            "kind": "test",
+            "sourceDigest": "a6db02607b10004e99edac2ac5f63edc2544c66b2ecbbb6f696c2850149a2cae"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
           "corpus:engine-functions-and-negative-values"
         ],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "78256cf46b8b10a74bdb4712e00184ed5644eba40e21fd457aaa922890e2ac3f",
+          "targets": [
+            {
+              "caseId": "rc87-ffa44c2457495941",
+              "runner": "cargo-xtask",
+              "digest": "a6db02607b10004e99edac2ac5f63edc2544c66b2ecbbb6f696c2850149a2cae"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -9806,14 +10224,35 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-fbb57cd5608ace45",
+            "package": "css",
+            "file": "parity/rust-takeover-ledger.json",
+            "line": 40,
+            "title": "keeps grid-col span shorthand and removes long alias",
+            "runner": "cargo-xtask",
+            "kind": "test",
+            "sourceDigest": "3cfef84e78fe569e193eac1bbec1879196b94fc51dc7c74c2a7bdee2e28a901d"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
           "corpus:engine-complex-utility-values"
         ],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "3be4631dd40b333c5267fffd704bc7dff2f63077afb1644fe0461f403dfbfdc9",
+          "targets": [
+            {
+              "caseId": "rc87-fbb57cd5608ace45",
+              "runner": "cargo-xtask",
+              "digest": "3cfef84e78fe569e193eac1bbec1879196b94fc51dc7c74c2a7bdee2e28a901d"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -9843,14 +10282,35 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-0803bb37f7f48919",
+            "package": "css",
+            "file": "parity/rust-takeover-ledger.json",
+            "line": 41,
+            "title": "resolves mapped enum pattern values from manifest valueMap",
+            "runner": "cargo-xtask",
+            "kind": "test",
+            "sourceDigest": "be676ee701615f7dbb9fdfc0502d2bec4999c95ced06afa5898d6dc831e21fd9"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
           "test:crates/mastercss-engine/src/lib.rs#prefers_exact_utilities_over_patterns_and_rejects_legacy_variable_functions"
         ],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "1381b25efb501ccd30a6e1a608a0ee2040c201da153883eded3dd3619c4b0f14",
+          "targets": [
+            {
+              "caseId": "rc87-0803bb37f7f48919",
+              "runner": "cargo-xtask",
+              "digest": "be676ee701615f7dbb9fdfc0502d2bec4999c95ced06afa5898d6dc831e21fd9"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -9879,15 +10339,36 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-2e6040089e81665d",
+            "package": "css",
+            "file": "parity/rust-takeover-ledger.json",
+            "line": 42,
+            "title": "keeps inset utilities values and priority order",
+            "runner": "cargo-xtask",
+            "kind": "test",
+            "sourceDigest": "623ac38f246fb07727bc20d5e8fcb76611c84c8ab0365a8b09ee89cf28505963"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
           "corpus:engine-basic-order",
           "corpus:engine-border-radius-aliases"
         ],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "79850fa71563937d37ea13629071e4b612cf3a9f323c2e15f2c4af62d80985ee",
+          "targets": [
+            {
+              "caseId": "rc87-2e6040089e81665d",
+              "runner": "cargo-xtask",
+              "digest": "623ac38f246fb07727bc20d5e8fcb76611c84c8ab0365a8b09ee89cf28505963"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -9916,14 +10397,35 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-ad326a590aca5108",
+            "package": "css",
+            "file": "parity/rust-takeover-ledger.json",
+            "line": 43,
+            "title": "keeps size max and min single-value utility parsing",
+            "runner": "cargo-xtask",
+            "kind": "test",
+            "sourceDigest": "6b60bd4cf9f03cee15eaeb5d5c2d52bc68dcbe9fc431d75d9d75284d80ea5b39"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
           "corpus:engine-complex-utility-values"
         ],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "e9efc399e5c5e175399a6009b177f0938b768d90025cbf90ba0c29342d4a7314",
+          "targets": [
+            {
+              "caseId": "rc87-ad326a590aca5108",
+              "runner": "cargo-xtask",
+              "digest": "6b60bd4cf9f03cee15eaeb5d5c2d52bc68dcbe9fc431d75d9d75284d80ea5b39"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -9952,15 +10454,36 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-7eeb7ed9e46b5efd",
+            "package": "css",
+            "file": "parity/rust-takeover-ledger.json",
+            "line": 44,
+            "title": "keeps transition multi-value syntax and rejects removed shorthand prefix",
+            "runner": "cargo-xtask",
+            "kind": "test",
+            "sourceDigest": "a77959d1da2eb0dda723bc95da918966f3370358d9c84030ad77e677032b1696"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
           "corpus:engine-complex-utility-values",
           "corpus:engine-rejects-retired-syntax"
         ],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "195e4dedd60c7788686c001355f21cd189e4bc7a20118a49217340f71602a056",
+          "targets": [
+            {
+              "caseId": "rc87-7eeb7ed9e46b5efd",
+              "runner": "cargo-xtask",
+              "digest": "a77959d1da2eb0dda723bc95da918966f3370358d9c84030ad77e677032b1696"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -9989,14 +10512,35 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-d916fbe18fbac9df",
+            "package": "css",
+            "file": "parity/rust-takeover-ledger.json",
+            "line": 45,
+            "title": "keeps font family feature weight utilities and leaves font shorthand to native fallback",
+            "runner": "cargo-xtask",
+            "kind": "test",
+            "sourceDigest": "3e18ff392dcfd554b2ff224f283187eb1b12ae2a97fdc210e2ebf812498bb787"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
           "corpus:engine-complex-utility-values"
         ],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "13adb13971d3104e3db404d36dc7129128671ab5e077dbcb1bbe92c6e8023446",
+          "targets": [
+            {
+              "caseId": "rc87-d916fbe18fbac9df",
+              "runner": "cargo-xtask",
+              "digest": "3e18ff392dcfd554b2ff224f283187eb1b12ae2a97fdc210e2ebf812498bb787"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -10026,15 +10570,36 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-ce053f938b2df78b",
+            "package": "css",
+            "file": "parity/rust-takeover-ledger.json",
+            "line": 52,
+            "title": "generates representative background utilities",
+            "runner": "cargo-xtask",
+            "kind": "test",
+            "sourceDigest": "072e1509508dfdaeb0966ebb95b9fd36d740071fb6f0aabb3c380b043ba35b4b"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
           "corpus:engine-functions-and-negative-values",
           "corpus:engine-pseudo-and-responsive-selectors"
         ],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "897cb1c08f5d9f9c710112417bf79af69eed0ec7bf24e85d66f796b04a7aa807",
+          "targets": [
+            {
+              "caseId": "rc87-ce053f938b2df78b",
+              "runner": "cargo-xtask",
+              "digest": "072e1509508dfdaeb0966ebb95b9fd36d740071fb6f0aabb3c380b043ba35b4b"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -10064,14 +10629,35 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-a183e7b6017fd661",
+            "package": "css",
+            "file": "parity/rust-takeover-ledger.json",
+            "line": 53,
+            "title": "keeps gradient color token functions as resolved color values",
+            "runner": "cargo-xtask",
+            "kind": "test",
+            "sourceDigest": "f5d2d784a77ed2a35befef19591dafd6160f51c6b125bf1a5808325eb6e25ce9"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
           "corpus:engine-functions-and-negative-values"
         ],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "8400479fc47406f6b508c6077a8b4d20d94627bc65852764d19435911eea409b",
+          "targets": [
+            {
+              "caseId": "rc87-a183e7b6017fd661",
+              "runner": "cargo-xtask",
+              "digest": "f5d2d784a77ed2a35befef19591dafd6160f51c6b125bf1a5808325eb6e25ce9"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -10101,15 +10687,36 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-10010732f3ca3ff6",
+            "package": "css",
+            "file": "parity/rust-takeover-ledger.json",
+            "line": 54,
+            "title": "preserves margin aliases and priority order",
+            "runner": "cargo-xtask",
+            "kind": "test",
+            "sourceDigest": "b2cdc6d21ce393fb14fe9be6685b3e030a020b877ba7bab2daf481de283e7d02"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
           "corpus:engine-responsive-priority",
           "corpus:engine-functions-and-negative-values"
         ],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "065e34e5d173daf89254d6ba4da6244282221700a3848ed725728062773d6563",
+          "targets": [
+            {
+              "caseId": "rc87-10010732f3ca3ff6",
+              "runner": "cargo-xtask",
+              "digest": "b2cdc6d21ce393fb14fe9be6685b3e030a020b877ba7bab2daf481de283e7d02"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -10139,9 +10746,20 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-d28827aa2e5a1fb1",
+            "package": "css",
+            "file": "parity/rust-takeover-ledger.json",
+            "line": 55,
+            "title": "resolves native value namespaces with aliases tokens and validation",
+            "runner": "cargo-xtask",
+            "kind": "test",
+            "sourceDigest": "51618bca2d898cec81b32ace363e25b3fdaf9aa4fb639a8c512f43cfd965e94a"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
           "test:crates/mastercss-engine/src/lib.rs#validates_native_value_namespaces_before_committing_rules",
@@ -10149,7 +10767,17 @@
           "corpus:engine-native-alias-global-variable",
           "corpus:engine-native-alias-warm-session"
         ],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "27c66a7969a5c596b0e582233e0fc82fad65dbd262fa5fae1d54cfbaa6e87ec6",
+          "targets": [
+            {
+              "caseId": "rc87-d28827aa2e5a1fb1",
+              "runner": "cargo-xtask",
+              "digest": "51618bca2d898cec81b32ace363e25b3fdaf9aa4fb639a8c512f43cfd965e94a"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -10179,14 +10807,35 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-032344818db19791",
+            "package": "css",
+            "file": "parity/rust-takeover-ledger.json",
+            "line": 56,
+            "title": "prefers raw managed dynamic utilities before native and semantic fallbacks",
+            "runner": "cargo-xtask",
+            "kind": "test",
+            "sourceDigest": "f77431667f0f705713ea06101fd70b2befc8ceb1efb764640db32af6e273f428"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
           "test:crates/mastercss-engine/src/lib.rs#preserves_pattern_utility_precedence_inside_groups"
         ],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "6b54d094037c9347c7dea263f86827b593fb49b3e04c52014da4a8be92f8ef88",
+          "targets": [
+            {
+              "caseId": "rc87-032344818db19791",
+              "runner": "cargo-xtask",
+              "digest": "f77431667f0f705713ea06101fd70b2befc8ceb1efb764640db32af6e273f428"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -10216,14 +10865,35 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-4d71a483fb03bcf2",
+            "package": "css",
+            "file": "parity/rust-takeover-ledger.json",
+            "line": 57,
+            "title": "drops colliding shorthand token aliases",
+            "runner": "cargo-xtask",
+            "kind": "test",
+            "sourceDigest": "e777e23a14b9eadfe737e0f940bfc7ced8e33b6b1fb4ebb3fb1ceea69628bf32"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
           "test:crates/mastercss-engine/src/lib.rs#prefers_exact_utilities_over_patterns_and_rejects_legacy_variable_functions"
         ],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "9f51b512d148d67930d3e4c8d604c99e376cf837a3c27ff750f993daac7b807c",
+          "targets": [
+            {
+              "caseId": "rc87-4d71a483fb03bcf2",
+              "runner": "cargo-xtask",
+              "digest": "e777e23a14b9eadfe737e0f940bfc7ced8e33b6b1fb4ebb3fb1ceea69628bf32"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -10253,14 +10923,35 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-3c328ccad08de11b",
+            "package": "css",
+            "file": "parity/rust-takeover-ledger.json",
+            "line": 58,
+            "title": "preserves radius corner aliases through key aliases",
+            "runner": "cargo-xtask",
+            "kind": "test",
+            "sourceDigest": "d6431d4070bd57a259ba6f48d141bba5ec9424f917af58039bc6a60df31dd905"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
           "corpus:engine-border-radius-aliases"
         ],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "d6f5b0579954dbfab5e7822ef416304db6015b9e6e6858b82c07b96e0fa48826",
+          "targets": [
+            {
+              "caseId": "rc87-3c328ccad08de11b",
+              "runner": "cargo-xtask",
+              "digest": "d6431d4070bd57a259ba6f48d141bba5ec9424f917af58039bc6a60df31dd905"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -10290,14 +10981,35 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-ed7ffd6235b9472d",
+            "package": "css",
+            "file": "parity/rust-takeover-ledger.json",
+            "line": 59,
+            "title": "preserves border shorthand matching across value separators",
+            "runner": "cargo-xtask",
+            "kind": "test",
+            "sourceDigest": "098c2e352f49f69c736e527f759d5d8cd01d14bd526f106d715943d4102393ad"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
           "corpus:engine-border-radius-aliases"
         ],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "7c4eaab961200ce8683312a38c0b303dd2615f435ab51330bc96029f3d7a4d29",
+          "targets": [
+            {
+              "caseId": "rc87-ed7ffd6235b9472d",
+              "runner": "cargo-xtask",
+              "digest": "098c2e352f49f69c736e527f759d5d8cd01d14bd526f106d715943d4102393ad"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -10328,14 +11040,35 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-3e8eebf1b99b6a90",
+            "package": "css",
+            "file": "parity/rust-takeover-ledger.json",
+            "line": 60,
+            "title": "keeps border single-value aliases on color and width utilities with static style utilities",
+            "runner": "cargo-xtask",
+            "kind": "test",
+            "sourceDigest": "e3a75d946b8e698f55abad0b415963fcf3acf097170aee71d5422663418cb3bf"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
           "corpus:engine-border-radius-aliases"
         ],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "56ac591019ceb5f6b2945d6021170010cf05efaf1d35774989c30307fbef860b",
+          "targets": [
+            {
+              "caseId": "rc87-3e8eebf1b99b6a90",
+              "runner": "cargo-xtask",
+              "digest": "e3a75d946b8e698f55abad0b415963fcf3acf097170aee71d5422663418cb3bf"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -10365,14 +11098,35 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-c3af8d30cb77a110",
+            "package": "css",
+            "file": "parity/rust-takeover-ledger.json",
+            "line": 61,
+            "title": "supports native axis shorthand aliases alongside logical replacements",
+            "runner": "cargo-xtask",
+            "kind": "test",
+            "sourceDigest": "7aa51d6b8bc17b5f2e0ead563ce09d3ed8a9eb5f2a4f7f3f6b4380f9d671309c"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
           "test:crates/mastercss-engine/src/lib.rs#validates_native_value_namespaces_before_committing_rules"
         ],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "36a26213bdd446b317914c9e8df890365ef7a3f6f3414c118afa98a07cc93cab",
+          "targets": [
+            {
+              "caseId": "rc87-c3af8d30cb77a110",
+              "runner": "cargo-xtask",
+              "digest": "7aa51d6b8bc17b5f2e0ead563ce09d3ed8a9eb5f2a4f7f3f6b4380f9d671309c"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -10402,15 +11156,36 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-58bf813891045e3a",
+            "package": "css",
+            "file": "parity/rust-takeover-ledger.json",
+            "line": 62,
+            "title": "executes compiled value functions and complex utilities",
+            "runner": "cargo-xtask",
+            "kind": "test",
+            "sourceDigest": "4147adc60b2f2bb01f287c40fa5af2ad47506aeaf400b6ccf547e0e20fb36f15"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
           "corpus:engine-functions-and-negative-values",
           "corpus:engine-complex-utility-values"
         ],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "e4994c0822232184558498977f3880dd6ee0b81fb2ae9989da06d5cea4e2b721",
+          "targets": [
+            {
+              "caseId": "rc87-58bf813891045e3a",
+              "runner": "cargo-xtask",
+              "digest": "4147adc60b2f2bb01f287c40fa5af2ad47506aeaf400b6ccf547e0e20fb36f15"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -10440,16 +11215,37 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-1a9ddb474b6be478",
+            "package": "css",
+            "file": "parity/rust-takeover-ledger.json",
+            "line": 63,
+            "title": "resolves negative numeric aliases without synthetic variables",
+            "runner": "cargo-xtask",
+            "kind": "test",
+            "sourceDigest": "1f1ef25107ba5fd1d66d29f5f82a499da0352179fb63aef3f5e2a77d415186f9"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
           "corpus:engine-functions-and-negative-values",
           "corpus:engine-negative-base-unit-bytes",
           "corpus:engine-negative-variable-identifier-bytes"
         ],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "1ce5451adeae082897821bd61ae18aaafa251cb2d415d8495f09394ce7f9f7bd",
+          "targets": [
+            {
+              "caseId": "rc87-1a9ddb474b6be478",
+              "runner": "cargo-xtask",
+              "digest": "1f1ef25107ba5fd1d66d29f5f82a499da0352179fb63aef3f5e2a77d415186f9"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -10479,14 +11275,35 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-8471ab621030709f",
+            "package": "css",
+            "file": "parity/rust-takeover-ledger.json",
+            "line": 64,
+            "title": "keeps unitful numeric variables from receiving a second unit conversion",
+            "runner": "cargo-xtask",
+            "kind": "test",
+            "sourceDigest": "b69fb88eca7e90cd74ae59ba70dbb50a024a33a2415c787c4de77ecada095e52"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
           "corpus:engine-variable-lifecycle"
         ],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "92f56578716e1265f0c2587450eb81cc2eb404f95a3aafecf09ae61384adc6b5",
+          "targets": [
+            {
+              "caseId": "rc87-8471ab621030709f",
+              "runner": "cargo-xtask",
+              "digest": "b69fb88eca7e90cd74ae59ba70dbb50a024a33a2415c787c4de77ecada095e52"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -10516,14 +11333,35 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-cd0051a0f9aabd69",
+            "package": "css",
+            "file": "parity/rust-takeover-ledger.json",
+            "line": 65,
+            "title": "uses compiled breakpoint aliases from the default manifest",
+            "runner": "cargo-xtask",
+            "kind": "test",
+            "sourceDigest": "78e0057c80c9f21010bd0549f66854ac04df96b2056cc5e549f023e9412a61e5"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
           "corpus:engine-responsive-priority"
         ],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "4547265f81915496ecfd29b06098be29fe605bbcfaae514957bcf2f7857f3403",
+          "targets": [
+            {
+              "caseId": "rc87-cd0051a0f9aabd69",
+              "runner": "cargo-xtask",
+              "digest": "78e0057c80c9f21010bd0549f66854ac04df96b2056cc5e549f023e9412a61e5"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -10553,14 +11391,35 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-4ebd7addd762371a",
+            "package": "css",
+            "file": "parity/rust-takeover-ledger.json",
+            "line": 66,
+            "title": "keeps functional pseudo-class selector arguments intact",
+            "runner": "cargo-xtask",
+            "kind": "test",
+            "sourceDigest": "89105e7719068e70724a9fe5edd568345f96a4513c6ec4cb877fe03fe821b9a7"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
           "corpus:engine-pseudo-and-responsive-selectors"
         ],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "98f6839255045b664530530495cf7d3c22a37d8ace0821f2bcceb2fc0573d5f4",
+          "targets": [
+            {
+              "caseId": "rc87-4ebd7addd762371a",
+              "runner": "cargo-xtask",
+              "digest": "89105e7719068e70724a9fe5edd568345f96a4513c6ec4cb877fe03fe821b9a7"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -10590,16 +11449,37 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-c2f66c40823b17ed",
+            "package": "css",
+            "file": "parity/rust-takeover-ledger.json",
+            "line": 67,
+            "title": "preserves migrated representative default utility cases",
+            "runner": "cargo-xtask",
+            "kind": "test",
+            "sourceDigest": "b343be0e6a1d476d3b9b5529705de60bbf4fa0928501a89e7544587eafd4eed7"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
           "corpus:engine-basic-order",
           "corpus:engine-complex-utility-values",
           "corpus:engine-border-radius-aliases"
         ],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "80aaa7b88886d12deb27e821d12986fbe0505381e1d3c14197904ac4904e3244",
+          "targets": [
+            {
+              "caseId": "rc87-c2f66c40823b17ed",
+              "runner": "cargo-xtask",
+              "digest": "b343be0e6a1d476d3b9b5529705de60bbf4fa0928501a89e7544587eafd4eed7"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -10629,14 +11509,35 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-121d8edac31c908e",
+            "package": "css",
+            "file": "parity/rust-takeover-ledger.json",
+            "line": 68,
+            "title": "rejects variable function syntax",
+            "runner": "cargo-xtask",
+            "kind": "test",
+            "sourceDigest": "880471461d2a015fe60585b8dba37bc4ffdc66c7dcee283283095c9320e7fd45"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
           "corpus:engine-rejects-retired-syntax"
         ],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "961909a665c8d22ffc781e5f91f68f92caaa413cf34f6c102c0a89136893add6",
+          "targets": [
+            {
+              "caseId": "rc87-121d8edac31c908e",
+              "runner": "cargo-xtask",
+              "digest": "880471461d2a015fe60585b8dba37bc4ffdc66c7dcee283283095c9320e7fd45"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -10666,14 +11567,35 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-8c910e93a35bc3ff",
+            "package": "css",
+            "file": "parity/rust-takeover-ledger.json",
+            "line": 69,
+            "title": "keeps grouped declaration parsing and nested generated utilities",
+            "runner": "cargo-xtask",
+            "kind": "test",
+            "sourceDigest": "a2f50105f7032058ffb0de2021270c7621c982f9cb7af6700cdfac076ceb51b0"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
           "corpus:engine-grouped-declarations"
         ],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "783e8a197dd2cd6877dd4e85381f804758adee214fad587ecaa6c40426421096",
+          "targets": [
+            {
+              "caseId": "rc87-8c910e93a35bc3ff",
+              "runner": "cargo-xtask",
+              "digest": "a2f50105f7032058ffb0de2021270c7621c982f9cb7af6700cdfac076ceb51b0"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -10703,14 +11625,35 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-b3fb86fab6a3d848",
+            "package": "css",
+            "file": "parity/rust-takeover-ledger.json",
+            "line": 70,
+            "title": "keeps grouped declarations important when configured globally",
+            "runner": "cargo-xtask",
+            "kind": "test",
+            "sourceDigest": "3806a41ac58fe9fd2ad078cbb0653558e89b6fd374645dc23ccfc0920fc3db9d"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
           "corpus:engine-grouped-declarations"
         ],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "6f2aa1955f9af35165f831a1db991bd2ffa36cfc55c9a54a3b4ad6bef0e31da9",
+          "targets": [
+            {
+              "caseId": "rc87-b3fb86fab6a3d848",
+              "runner": "cargo-xtask",
+              "digest": "3806a41ac58fe9fd2ad078cbb0653558e89b6fd374645dc23ccfc0920fc3db9d"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -10740,15 +11683,36 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-db2453863747d50f",
+            "package": "css",
+            "file": "parity/rust-takeover-ledger.json",
+            "line": 71,
+            "title": "keeps migrated issue regressions for modern utility syntax",
+            "runner": "cargo-xtask",
+            "kind": "test",
+            "sourceDigest": "1a6c29c44f17dacbfe16470a52d71a176e00bfd94fd9406778d21240f78f018f"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
           "corpus:engine-functions-and-negative-values",
           "corpus:engine-pseudo-and-responsive-selectors"
         ],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "9ca405ca98a7bb45654cfbc57bfbe9bea6110e5065f8dd9df58fe5aa4ea580da",
+          "targets": [
+            {
+              "caseId": "rc87-db2453863747d50f",
+              "runner": "cargo-xtask",
+              "digest": "1a6c29c44f17dacbfe16470a52d71a176e00bfd94fd9406778d21240f78f018f"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -10778,14 +11742,35 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-069c2039407a192a",
+            "package": "css",
+            "file": "parity/rust-takeover-ledger.json",
+            "line": 72,
+            "title": "does not support bare function utilities",
+            "runner": "cargo-xtask",
+            "kind": "test",
+            "sourceDigest": "e5df36ab24667a24bf15b8156edbb9f3438c911607025c6d9652e4323c60fc80"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
           "corpus:engine-rejects-retired-syntax"
         ],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "379b16cf0a204ba8dded7298b014122a771162ee6a900610dc236eb40d213127",
+          "targets": [
+            {
+              "caseId": "rc87-069c2039407a192a",
+              "runner": "cargo-xtask",
+              "digest": "e5df36ab24667a24bf15b8156edbb9f3438c911607025c6d9652e4323c60fc80"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -10815,15 +11800,36 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-ef5d3d7b597ddf30",
+            "package": "css",
+            "file": "parity/rust-takeover-ledger.json",
+            "line": 73,
+            "title": "removes legacy css variable assignment shorthand while keeping native custom property fallback opt-in",
+            "runner": "cargo-xtask",
+            "kind": "test",
+            "sourceDigest": "d2ff278a400a02dc9769a799efe70d990353d2427f4e058474e21ea55660b150"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
           "corpus:engine-rejects-retired-syntax",
           "test:crates/mastercss-engine/src/lib.rs#commits_only_host_supported_native_declarations"
         ],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "d79bac1c3a71917abadaddea614f38f5b9fccb34b34118cda8bdb969c63c70f1",
+          "targets": [
+            {
+              "caseId": "rc87-ef5d3d7b597ddf30",
+              "runner": "cargo-xtask",
+              "digest": "d2ff278a400a02dc9769a799efe70d990353d2427f4e058474e21ea55660b150"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -10853,14 +11859,35 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-c13fe943fed2dcc9",
+            "package": "css",
+            "file": "parity/rust-takeover-ledger.json",
+            "line": 74,
+            "title": "uses injected native declaration matcher after manifest misses and rejects removed aliases",
+            "runner": "cargo-xtask",
+            "kind": "test",
+            "sourceDigest": "feed6b5660528b43ad14d7e843cafabccb296c5113cb3bbfc0195a69ea9ce7e7"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
           "test:crates/mastercss-engine/src/lib.rs#commits_only_host_supported_native_declarations"
         ],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "3defe4bf6fbc7aee2858733df135d7511473c6f53f4c37be60d06fb9c5d7d58d",
+          "targets": [
+            {
+              "caseId": "rc87-c13fe943fed2dcc9",
+              "runner": "cargo-xtask",
+              "digest": "feed6b5660528b43ad14d7e843cafabccb296c5113cb3bbfc0195a69ea9ce7e7"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -10890,16 +11917,37 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-f8d5e9cfb998e2d8",
+            "package": "css",
+            "file": "parity/rust-takeover-ledger.json",
+            "line": 75,
+            "title": "uses native declaration fast path without bypassing aliases and smart utilities",
+            "runner": "cargo-xtask",
+            "kind": "test",
+            "sourceDigest": "0ea0e73547584d285e8bb6744ffc9340cf3559b0929e9c92b69d043949e309d2"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
           "test:crates/mastercss-engine/src/lib.rs#validates_native_value_namespaces_before_committing_rules",
           "corpus:engine-native-alias-global-variable",
           "corpus:engine-native-alias-warm-session"
         ],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "7f339f3a9f8abde269c432b6fb7c033d9ce9baea555751c02ff96fdb6aca7a98",
+          "targets": [
+            {
+              "caseId": "rc87-f8d5e9cfb998e2d8",
+              "runner": "cargo-xtask",
+              "digest": "0ea0e73547584d285e8bb6744ffc9340cf3559b0929e9c92b69d043949e309d2"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -10929,15 +11977,36 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-ec506467bbc12a7e",
+            "package": "css",
+            "file": "parity/rust-takeover-ledger.json",
+            "line": 76,
+            "title": "classifies native shorthand declarations for priority sorting",
+            "runner": "cargo-xtask",
+            "kind": "test",
+            "sourceDigest": "46a184515e9751523d076d8e4ad5184b3e9fc8af09c040351cadfbc0575cc73e"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
           "corpus:engine-basic-order",
           "corpus:engine-border-radius-aliases"
         ],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "784aad7d6f262a2e3796f8e01a77e70a9df7284658a79af1c9edaa61f1581d99",
+          "targets": [
+            {
+              "caseId": "rc87-ec506467bbc12a7e",
+              "runner": "cargo-xtask",
+              "digest": "46a184515e9751523d076d8e4ad5184b3e9fc8af09c040351cadfbc0575cc73e"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -10967,14 +12036,35 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-6a8c4d339ba3c838",
+            "package": "css",
+            "file": "parity/rust-takeover-ledger.json",
+            "line": 77,
+            "title": "starts empty and inserts on demand",
+            "runner": "cargo-xtask",
+            "kind": "test",
+            "sourceDigest": "4128c45a9986d6af9ea0e33abeef1674e5be108feb4548a3f3f0bc3d8fc9f57c"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
           "test:crates/mastercss-engine/src/lib.rs#creates_sorted_rule_transitions_and_css"
         ],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "6d37ec6f9bf6f5122d440358b058303dd38c67d246d48f810b33ca7ae4283b04",
+          "targets": [
+            {
+              "caseId": "rc87-6a8c4d339ba3c838",
+              "runner": "cargo-xtask",
+              "digest": "4128c45a9986d6af9ea0e33abeef1674e5be108feb4548a3f3f0bc3d8fc9f57c"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -11004,14 +12094,35 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-d0c362ed917a22db",
+            "package": "css",
+            "file": "parity/rust-takeover-ledger.json",
+            "line": 78,
+            "title": "prevents duplicate insertion",
+            "runner": "cargo-xtask",
+            "kind": "test",
+            "sourceDigest": "d80e6844e6551e317f61de4677cce963e7f67d23b298ac58ab7a58a6d8d9c5fb"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
           "test:crates/mastercss-engine/src/lib.rs#ensure_is_idempotent_and_delete_reports_exact_index"
         ],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "935d9a96f4f5627cddc74b8fdd3bf8ecbcd0d6691dc8f9665149f11a7bf1c162",
+          "targets": [
+            {
+              "caseId": "rc87-d0c362ed917a22db",
+              "runner": "cargo-xtask",
+              "digest": "d80e6844e6551e317f61de4677cce963e7f67d23b298ac58ab7a58a6d8d9c5fb"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -11041,14 +12152,35 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-00f46698d66aaacc",
+            "package": "css",
+            "file": "parity/rust-takeover-ledger.json",
+            "line": 79,
+            "title": "does not duplicate emittedGlobals variables",
+            "runner": "cargo-xtask",
+            "kind": "test",
+            "sourceDigest": "b781d4a3d5c713c5f84a8d0da355a2162e8bdfe5ece8461b796e985d5216182e"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
           "corpus:engine-emitted-global-variable"
         ],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "424a88df380b6aa8d65beec75df9be38f65d773ef438e8df32aaf9c2fe5a5c62",
+          "targets": [
+            {
+              "caseId": "rc87-00f46698d66aaacc",
+              "runner": "cargo-xtask",
+              "digest": "b781d4a3d5c713c5f84a8d0da355a2162e8bdfe5ece8461b796e985d5216182e"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -11078,14 +12210,35 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-c89bee0a070dc1a0",
+            "package": "css",
+            "file": "parity/rust-takeover-ledger.json",
+            "line": 80,
+            "title": "does not duplicate emittedGlobals animations",
+            "runner": "cargo-xtask",
+            "kind": "test",
+            "sourceDigest": "9654a2ddf76e3da1eb67869ad05e12151392648b68dd52a0e495249735eec7ef"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
           "test:crates/mastercss-engine/src/lib.rs#suppresses_variables_already_emitted_by_the_host"
         ],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "a7e40493cad59604df5860d41e01ccc9b54e62b9064a74f6ebe0e596dce8722b",
+          "targets": [
+            {
+              "caseId": "rc87-c89bee0a070dc1a0",
+              "runner": "cargo-xtask",
+              "digest": "9654a2ddf76e3da1eb67869ad05e12151392648b68dd52a0e495249735eec7ef"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -11115,14 +12268,35 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-367bcd6f5ce22140",
+            "package": "css",
+            "file": "parity/rust-takeover-ledger.json",
+            "line": 81,
+            "title": "executes semantic component utilities from manifest records",
+            "runner": "cargo-xtask",
+            "kind": "test",
+            "sourceDigest": "a3bc3fd621db63c87a85a7e09a7f8d035df5afebc01e941237bfa56d2a90ab8c"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
           "corpus:engine-semantic-manifest-layer"
         ],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "676643b4acc5ee19fab54f6b43a480f0bf24bcc53aee44a8d61987022d290d9b",
+          "targets": [
+            {
+              "caseId": "rc87-367bcd6f5ce22140",
+              "runner": "cargo-xtask",
+              "digest": "a3bc3fd621db63c87a85a7e09a7f8d035df5afebc01e941237bfa56d2a90ab8c"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -11152,14 +12326,35 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-d97101ab1467de74",
+            "package": "css",
+            "file": "parity/rust-takeover-ledger.json",
+            "line": 82,
+            "title": "keeps semantic utility declarations in their configured layer",
+            "runner": "cargo-xtask",
+            "kind": "test",
+            "sourceDigest": "0d6fae4bffef0b302bc1e4468a267bf8c9443cb449c63dbd5fdf1a6151a64667"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
           "corpus:engine-semantic-manifest-layer"
         ],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "206902829017a53dc54b86494f9fc40c4fed1c1681034f9e14014d9fa3f1e284",
+          "targets": [
+            {
+              "caseId": "rc87-d97101ab1467de74",
+              "runner": "cargo-xtask",
+              "digest": "0d6fae4bffef0b302bc1e4468a267bf8c9443cb449c63dbd5fdf1a6151a64667"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -11189,14 +12384,35 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-70532cefda75c355",
+            "package": "css",
+            "file": "parity/rust-takeover-ledger.json",
+            "line": 83,
+            "title": "keeps explicit layer variants routed to the requested layer",
+            "runner": "cargo-xtask",
+            "kind": "test",
+            "sourceDigest": "364efe9bcb6871675da0e8d564719bc875087802a86e5b07075ee1058aaae36f"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
           "corpus:engine-selector-condition-layer"
         ],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "63866c0e227ac50388a5f2b5d59228107d4a1155f68fb824bc2c8111c1f9db6a",
+          "targets": [
+            {
+              "caseId": "rc87-70532cefda75c355",
+              "runner": "cargo-xtask",
+              "digest": "364efe9bcb6871675da0e8d564719bc875087802a86e5b07075ee1058aaae36f"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -11226,15 +12442,36 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-5c5c0ad66af33986",
+            "package": "css",
+            "file": "parity/rust-takeover-ledger.json",
+            "line": 84,
+            "title": "keeps deterministic rule ordering independent of insertion order",
+            "runner": "cargo-xtask",
+            "kind": "test",
+            "sourceDigest": "c7f348b2c0659dd84fe27c6c25cd8800c1b3c10d20852fc119f4ce26554850f8"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
           "corpus:engine-basic-order",
           "corpus:engine-basic-order-reversed"
         ],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "c39e97cac1eab07fe983f948657f2c416ef2b700d27d7685eea74dba072f8f6c",
+          "targets": [
+            {
+              "caseId": "rc87-5c5c0ad66af33986",
+              "runner": "cargo-xtask",
+              "digest": "c7f348b2c0659dd84fe27c6c25cd8800c1b3c10d20852fc119f4ce26554850f8"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -11264,14 +12501,35 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-d68ea9f85538371e",
+            "package": "css",
+            "file": "parity/rust-takeover-ledger.json",
+            "line": 85,
+            "title": "recovers generated utilities from selector text",
+            "runner": "cargo-xtask",
+            "kind": "test",
+            "sourceDigest": "be8737d3f5697a3b5baffffb62b3c2b4650c9531ba80278315cedb25a298dda2"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
           "test:crates/mastercss-engine/src/lib.rs#separates_child_selectors_from_dynamic_values"
         ],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "e2cd8e9b7c1c75ad0ec7fa6c5fea13a9f0f7100f2229304170507fba3ad93ebb",
+          "targets": [
+            {
+              "caseId": "rc87-d68ea9f85538371e",
+              "runner": "cargo-xtask",
+              "digest": "be8737d3f5697a3b5baffffb62b3c2b4650c9531ba80278315cedb25a298dda2"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -11302,14 +12560,35 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-200e5014bfb088a2",
+            "package": "css",
+            "file": "parity/rust-takeover-ledger.json",
+            "line": 92,
+            "title": "preserves hsl strings in engine-owned Manifest records",
+            "runner": "cargo-xtask",
+            "kind": "test",
+            "sourceDigest": "9d1941d24b4f35570a882f15100da1da68b4a1128211c054699432843c48b0a9"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
           "test:crates/mastercss-engine/src/lib.rs#resolves_dependencies_of_inline_variables_without_emitting_resources"
         ],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "d1cc57bb16d10289a83fff3e33b76185dd266b85c4e003c6afc183c99accbf8e",
+          "targets": [
+            {
+              "caseId": "rc87-200e5014bfb088a2",
+              "runner": "cargo-xtask",
+              "digest": "9d1941d24b4f35570a882f15100da1da68b4a1128211c054699432843c48b0a9"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -11340,14 +12619,35 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-c8c32442fcc4696e",
+            "package": "css",
+            "file": "parity/rust-takeover-ledger.json",
+            "line": 93,
+            "title": "keeps flat color key namespace metadata",
+            "runner": "cargo-xtask",
+            "kind": "test",
+            "sourceDigest": "6ac8a5beeee4d03715bfe51ba15345ec93c1aca369ea92f64cdcc75ed33ef6b0"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
           "corpus:engine-variable-lifecycle"
         ],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "7961fd9ec92976fa39145897e5bca64bc80b6f533c83b54bd5d2cee76e1742bf",
+          "targets": [
+            {
+              "caseId": "rc87-c8c32442fcc4696e",
+              "runner": "cargo-xtask",
+              "digest": "6ac8a5beeee4d03715bfe51ba15345ec93c1aca369ea92f64cdcc75ed33ef6b0"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -11375,14 +12675,35 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-3bf27bbb605dbcb0",
+            "package": "css",
+            "file": "parity/rust-takeover-ledger.json",
+            "line": 94,
+            "title": "issue #215: touch-action native declarations replace the removed touch shorthand",
+            "runner": "cargo-xtask",
+            "kind": "test",
+            "sourceDigest": "4566f10f050549fabe9a6a0b80c7a27bf3ce306df711d28e9f95a8e21ef2501a"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
           "test:crates/mastercss-engine/src/lib.rs#commits_only_host_supported_native_declarations"
         ],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "da2f87c04bc8fee322373a49f0bc51e784fede394e1c8804f19acd1b523b835d",
+          "targets": [
+            {
+              "caseId": "rc87-3bf27bbb605dbcb0",
+              "runner": "cargo-xtask",
+              "digest": "4566f10f050549fabe9a6a0b80c7a27bf3ce306df711d28e9f95a8e21ef2501a"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -11410,16 +12731,37 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-67995b9fcc13862f",
+            "package": "css",
+            "file": "parity/rust-takeover-ledger.json",
+            "line": 95,
+            "title": "issue #265: View Transitions API declarations and pseudo-elements",
+            "runner": "cargo-xtask",
+            "kind": "test",
+            "sourceDigest": "2c393de1f2a424395162a08cbbbfa7e03a9efd82c5c53e100ca5c69e8da2d810"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
           "test:crates/mastercss-engine/src/lib.rs#commits_only_host_supported_native_declarations",
           "corpus:engine-pseudo-and-responsive-selectors",
           "corpus:engine-legacy-pseudo-element-bytes"
         ],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "420dc2af905d084ac371a7301989ff6a78d95f2211b1e03773a486ba21a575f1",
+          "targets": [
+            {
+              "caseId": "rc87-67995b9fcc13862f",
+              "runner": "cargo-xtask",
+              "digest": "2c393de1f2a424395162a08cbbbfa7e03a9efd82c5c53e100ca5c69e8da2d810"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -11447,14 +12789,35 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-bcb968c36b8d991f",
+            "package": "css",
+            "file": "parity/rust-takeover-ledger.json",
+            "line": 96,
+            "title": "issue #321: individual transforms replace legacy transform function utilities",
+            "runner": "cargo-xtask",
+            "kind": "test",
+            "sourceDigest": "3d407cf759826ff47f899aedd7658ef641f8aa518d4d69e4a52035a0ec61e518"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
           "test:crates/mastercss-engine/src/lib.rs#commits_only_host_supported_native_declarations"
         ],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "674795b86d78d91a0a9117262134f251b09dde40d1699d880fa7b3570b5e6bef",
+          "targets": [
+            {
+              "caseId": "rc87-bcb968c36b8d991f",
+              "runner": "cargo-xtask",
+              "digest": "3d407cf759826ff47f899aedd7658ef641f8aa518d4d69e4a52035a0ec61e518"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -11482,14 +12845,35 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-7c552add3c31c139",
+            "package": "css",
+            "file": "parity/rust-takeover-ledger.json",
+            "line": 97,
+            "title": "issue #332: logical borders and logical corner radii",
+            "runner": "cargo-xtask",
+            "kind": "test",
+            "sourceDigest": "b71f37d0b8c6fc8beb2d293288815891e9aa2440f6daeb13ebfceb256ec9de3d"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
           "corpus:engine-border-radius-aliases"
         ],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "6934aaa97ad9d9a936971b86d09fd22cc14d1900cbd3e3b47dc36e5c32f97a6a",
+          "targets": [
+            {
+              "caseId": "rc87-7c552add3c31c139",
+              "runner": "cargo-xtask",
+              "digest": "b71f37d0b8c6fc8beb2d293288815891e9aa2440f6daeb13ebfceb256ec9de3d"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -11520,14 +12904,35 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-5da0e38191ad3f27",
+            "package": "css",
+            "file": "parity/rust-takeover-ledger.json",
+            "line": 98,
+            "title": "preserves native CSS color function values in engine-owned Manifest records",
+            "runner": "cargo-xtask",
+            "kind": "test",
+            "sourceDigest": "a36eaa477c53f82048ab8613d5d3e09d4ad5f22cd93c535af13f99b25e3934b5"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
           "corpus:engine-functions-and-negative-values"
         ],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "e0b07c69aa8b6acafe3a9f3ea452395a6935a01a96f58e76adf2485d6a636fd1",
+          "targets": [
+            {
+              "caseId": "rc87-5da0e38191ad3f27",
+              "runner": "cargo-xtask",
+              "digest": "a36eaa477c53f82048ab8613d5d3e09d4ad5f22cd93c535af13f99b25e3934b5"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -11558,14 +12963,35 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-2dfbc1fa186770de",
+            "package": "css",
+            "file": "parity/rust-takeover-ledger.json",
+            "line": 99,
+            "title": "keeps compiled alpha aliases and color-mix values executable through explicit variable dependencies",
+            "runner": "cargo-xtask",
+            "kind": "test",
+            "sourceDigest": "e2a7b3b673da9909e914357adad186f08265ad10d618d1b4dfdcbd4dc8ed5f5b"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
           "test:crates/mastercss-engine/src/lib.rs#resolves_dependencies_of_inline_variables_without_emitting_resources"
         ],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "a54e5de1fb1f7bf180726fa77192c9599b9d46272f2451917cea524bbf23b091",
+          "targets": [
+            {
+              "caseId": "rc87-2dfbc1fa186770de",
+              "runner": "cargo-xtask",
+              "digest": "e2a7b3b673da9909e914357adad186f08265ad10d618d1b4dfdcbd4dc8ed5f5b"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -11596,14 +13022,35 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-a9c2ca4b67b1a376",
+            "package": "css",
+            "file": "parity/rust-takeover-ledger.json",
+            "line": 100,
+            "title": "does not lower stylesheet --alpha() or infer dependencies from direct manifest variable values",
+            "runner": "cargo-xtask",
+            "kind": "test",
+            "sourceDigest": "2d7a7b8e6d7edca9e87408ae54bf97447f9dd1f2419dd96cd05845883c7e942f"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
           "test:crates/mastercss-engine/src/lib.rs#resolves_dependencies_of_inline_variables_without_emitting_resources"
         ],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "6c0851df8f3cebb24d1fdb900b4302d679ebe827a050aa58b4bad9531dd9e001",
+          "targets": [
+            {
+              "caseId": "rc87-a9c2ca4b67b1a376",
+              "runner": "cargo-xtask",
+              "digest": "2d7a7b8e6d7edca9e87408ae54bf97447f9dd1f2419dd96cd05845883c7e942f"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -11634,14 +13081,35 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-6d1ee7647092cbce",
+            "package": "css",
+            "file": "parity/rust-takeover-ledger.json",
+            "line": 101,
+            "title": "does not validate stylesheet variable alias syntax in direct manifest variable values",
+            "runner": "cargo-xtask",
+            "kind": "test",
+            "sourceDigest": "ede485119d94b4205c8154087cfd164191327bfb5b186acc334166b6ce962fff"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
           "test:crates/mastercss-engine/src/lib.rs#resolves_dependencies_of_inline_variables_without_emitting_resources"
         ],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "f3a470966af7210904709c5a66ee9154183981a056734ec04166cf5a7ddee02f",
+          "targets": [
+            {
+              "caseId": "rc87-6d1ee7647092cbce",
+              "runner": "cargo-xtask",
+              "digest": "ede485119d94b4205c8154087cfd164191327bfb5b186acc334166b6ce962fff"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -11669,15 +13137,36 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-6000e6154251df81",
+            "package": "css",
+            "file": "parity/rust-takeover-ledger.json",
+            "line": 102,
+            "title": "issue #358: clamp arithmetic is wrapped and normalized without double wrapping",
+            "runner": "cargo-xtask",
+            "kind": "test",
+            "sourceDigest": "a5c48bfd912bbad248bd00b878573afe3502447ed339e080570b9ce6aa7c083e"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
           "corpus:engine-functions-and-negative-values",
           "test:crates/mastercss-engine/src/lib.rs#normalizes_base_units_inside_css_math_functions"
         ],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "e9a906303e119f40c42839cbd271c318494534ab748527901c1c14343626b601",
+          "targets": [
+            {
+              "caseId": "rc87-6000e6154251df81",
+              "runner": "cargo-xtask",
+              "digest": "a5c48bfd912bbad248bd00b878573afe3502447ed339e080570b9ce6aa7c083e"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -11705,14 +13194,35 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-4d90fd229b73ba40",
+            "package": "css",
+            "file": "parity/rust-takeover-ledger.json",
+            "line": 103,
+            "title": "issue #363: pipe separators inside groups lower to declaration spaces",
+            "runner": "cargo-xtask",
+            "kind": "test",
+            "sourceDigest": "8c89a690d68d4ecc479b19e1fcfd23a4b2fca65b582dc55e90b5bb89be9eb9d2"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
           "corpus:engine-grouped-declarations"
         ],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "9521fc8820ef081a534092e88134ea893137715791f95b057042d6ee0941096b",
+          "targets": [
+            {
+              "caseId": "rc87-4d90fd229b73ba40",
+              "runner": "cargo-xtask",
+              "digest": "8c89a690d68d4ecc479b19e1fcfd23a4b2fca65b582dc55e90b5bb89be9eb9d2"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -11741,14 +13251,35 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-4791077e1ad0d3cb",
+            "package": "css",
+            "file": "parity/rust-takeover-ledger.json",
+            "line": 110,
+            "title": "executes semantic enum pattern utilities after exact semantic utilities",
+            "runner": "cargo-xtask",
+            "kind": "test",
+            "sourceDigest": "8feebb42e459c8778e5dafddf364a9b101d36add662e4c8c439ac67a6a398647"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
           "test:crates/mastercss-engine/src/lib.rs#prefers_exact_utilities_over_patterns_and_rejects_legacy_variable_functions"
         ],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "d5da34df5bc7b6a921c67acf4db90e1211f2b2fa347ed1083aca1672146f8158",
+          "targets": [
+            {
+              "caseId": "rc87-4791077e1ad0d3cb",
+              "runner": "cargo-xtask",
+              "digest": "8feebb42e459c8778e5dafddf364a9b101d36add662e4c8c439ac67a6a398647"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -11777,14 +13308,35 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-e65c43f3ded01246",
+            "package": "css",
+            "file": "parity/rust-takeover-ledger.json",
+            "line": 111,
+            "title": "keeps all matching exact semantic utilities when arbitrary utilities are indexed",
+            "runner": "cargo-xtask",
+            "kind": "test",
+            "sourceDigest": "6f296692a6b291b161bf048f5bc45f54ed169b98be03954bac0ddefa993c5253"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
           "corpus:engine-semantic-manifest-layer"
         ],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "775fc2660f19f30ce44d22e8129b8414b572f01110da4d7fbf290aaaeee8c277",
+          "targets": [
+            {
+              "caseId": "rc87-e65c43f3ded01246",
+              "runner": "cargo-xtask",
+              "digest": "6f296692a6b291b161bf048f5bc45f54ed169b98be03954bac0ddefa993c5253"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -11813,14 +13365,35 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-85578700ada77ff7",
+            "package": "css",
+            "file": "parity/rust-takeover-ledger.json",
+            "line": 112,
+            "title": "falls back to pattern scanning when pattern names cannot be safely indexed",
+            "runner": "cargo-xtask",
+            "kind": "test",
+            "sourceDigest": "84129df2838b74f636d4c07ac6707c9b879b976d60b18802abebdfb97ce1a620"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
           "test:crates/mastercss-engine/src/lib.rs#prefers_exact_utilities_over_patterns_and_rejects_legacy_variable_functions"
         ],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "a16ff8367fd64949f71e1a6495871dc57164a6b37c4d45f111bc9f8b071ef72b",
+          "targets": [
+            {
+              "caseId": "rc87-85578700ada77ff7",
+              "runner": "cargo-xtask",
+              "digest": "84129df2838b74f636d4c07ac6707c9b879b976d60b18802abebdfb97ce1a620"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -11849,14 +13422,35 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-89c3a38cb8cf3c41",
+            "package": "css",
+            "file": "parity/rust-takeover-ledger.json",
+            "line": 113,
+            "title": "tries raw managed utilities before key alias fallback",
+            "runner": "cargo-xtask",
+            "kind": "test",
+            "sourceDigest": "e8daa5f9b85638a0099dff7ce7120535b4fb00d8be00d8d107c3696fecc6b3de"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
           "test:crates/mastercss-engine/src/lib.rs#preserves_pattern_utility_precedence_inside_groups"
         ],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "b744a49b5bf062ec5020e1e5afaa2fe8c03a5df0902eb304ccd2c230fe3e88a3",
+          "targets": [
+            {
+              "caseId": "rc87-89c3a38cb8cf3c41",
+              "runner": "cargo-xtask",
+              "digest": "e8daa5f9b85638a0099dff7ce7120535b4fb00d8be00d8d107c3696fecc6b3de"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -11886,15 +13480,36 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-12a8691bb31fad35",
+            "package": "css",
+            "file": "parity/rust-takeover-ledger.json",
+            "line": 114,
+            "title": "executes pre-bucketed utility and variable aliases without config-style resolution",
+            "runner": "cargo-xtask",
+            "kind": "test",
+            "sourceDigest": "dc104b3d63b38d38d2a988af7533a83053c92c3ae54978d6ac0f3e199c69628c"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
           "corpus:engine-variable-lifecycle",
           "corpus:engine-semantic-manifest-layer"
         ],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "2d6870ed62b396afcb224f996d08417ecdca336f15d3cae1315bceb95b177187",
+          "targets": [
+            {
+              "caseId": "rc87-12a8691bb31fad35",
+              "runner": "cargo-xtask",
+              "digest": "dc104b3d63b38d38d2a988af7533a83053c92c3ae54978d6ac0f3e199c69628c"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -11924,14 +13539,35 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-992de758a6e1378a",
+            "package": "css",
+            "file": "parity/rust-takeover-ledger.json",
+            "line": 115,
+            "title": "resolves variable alias refs during manifest loading without serialized namespaces",
+            "runner": "cargo-xtask",
+            "kind": "test",
+            "sourceDigest": "efa809ceec486d7893f04bad501413a4fcae056c7e1ce4194bb119adf97d68d5"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
           "corpus:engine-variable-lifecycle"
         ],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "575899bfd95c2853be30d74c68a7ee28d9b6f9dbb21eb95a228c5dfdab7f19f2",
+          "targets": [
+            {
+              "caseId": "rc87-992de758a6e1378a",
+              "runner": "cargo-xtask",
+              "digest": "efa809ceec486d7893f04bad501413a4fcae056c7e1ce4194bb119adf97d68d5"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -11960,14 +13596,35 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-eb305e1aa97f9750",
+            "package": "css",
+            "file": "parity/rust-takeover-ledger.json",
+            "line": 116,
+            "title": "reuses compiled manifest data without sharing mutable instance state",
+            "runner": "cargo-xtask",
+            "kind": "test",
+            "sourceDigest": "30fe9309349e939ffd88bd317cb30bbf550f8f470b48a6c43a26c63f565dd3db"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
           "test:crates/mastercss-engine/src/lib.rs#refresh_replays_connected_classes_against_new_manifest"
         ],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "9046b2c47ae70c012a3c04f82b5a9e07198ba2c57695254f2fe4e2ac335f6c79",
+          "targets": [
+            {
+              "caseId": "rc87-eb305e1aa97f9750",
+              "runner": "cargo-xtask",
+              "digest": "30fe9309349e939ffd88bd317cb30bbf550f8f470b48a6c43a26c63f565dd3db"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -11996,14 +13653,35 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-dece84ab3ec15d04",
+            "package": "css",
+            "file": "parity/rust-takeover-ledger.json",
+            "line": 117,
+            "title": "keeps native declaration matcher behavior instance-local for cached manifests",
+            "runner": "cargo-xtask",
+            "kind": "test",
+            "sourceDigest": "2829aed98dcae424ec68b2b58aa901ce7477c4beca736e9f617c5649a43769f7"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
           "test:crates/mastercss-engine/src/lib.rs#commits_only_host_supported_native_declarations"
         ],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "285e10fe705e96644677a4affd12baecab767651002adae0c521b7b173da6b4e",
+          "targets": [
+            {
+              "caseId": "rc87-dece84ab3ec15d04",
+              "runner": "cargo-xtask",
+              "digest": "2829aed98dcae424ec68b2b58aa901ce7477c4beca736e9f617c5649a43769f7"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -12032,14 +13710,35 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-c02760ba9c1bd9b0",
+            "package": "css",
+            "file": "parity/rust-takeover-ledger.json",
+            "line": 118,
+            "title": "ignores manifest-carried registry fields",
+            "runner": "cargo-xtask",
+            "kind": "test",
+            "sourceDigest": "ad1b3cbb3a5d0d4b38f6c75e6548350aedd2f1f1598facd48f8b3c43c3726750"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
           "test:crates/mastercss-engine/src/lib.rs#validates_native_value_namespaces_before_committing_rules"
         ],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "539dff0fec039e1341c460a31f61b5dc4dd30d36098c7a5ff19bb840b5e9c4c2",
+          "targets": [
+            {
+              "caseId": "rc87-c02760ba9c1bd9b0",
+              "runner": "cargo-xtask",
+              "digest": "ad1b3cbb3a5d0d4b38f6c75e6548350aedd2f1f1598facd48f8b3c43c3726750"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -12068,14 +13767,35 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-9413d922cc6329cb",
+            "package": "css",
+            "file": "parity/rust-takeover-ledger.json",
+            "line": 119,
+            "title": "rejects v2 manifests instead of compatibility-loading them",
+            "runner": "cargo-xtask",
+            "kind": "test",
+            "sourceDigest": "181fe13d121acbc10e71daba644ebaaed1f62acb81dc63280b56f665e3c6c84f"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
           "test:crates/mastercss-schema/src/lib.rs#rejects_legacy_manifest_shapes"
         ],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "e49cce65eeef6769c8dc62b2cb44613aacf88a56a9f332037cabb177fa0799db",
+          "targets": [
+            {
+              "caseId": "rc87-9413d922cc6329cb",
+              "runner": "cargo-xtask",
+              "digest": "181fe13d121acbc10e71daba644ebaaed1f62acb81dc63280b56f665e3c6c84f"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -12105,14 +13825,35 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-42d8670beba25373",
+            "package": "css",
+            "file": "parity/rust-takeover-ledger.json",
+            "line": 120,
+            "title": "rejects stale flat v1 variable manifests instead of compatibility-loading them",
+            "runner": "cargo-xtask",
+            "kind": "test",
+            "sourceDigest": "c8987208ddcab47e9a1cb1427aa2adfc455a2def1f74079cc5d4a3691da0a0eb"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
           "test:crates/mastercss-schema/src/lib.rs#rejects_legacy_manifest_shapes"
         ],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "8bda00def400bcc1c88c1613bfbb949b1d3860a665ab0fbbacb2ad58f4f78a3f",
+          "targets": [
+            {
+              "caseId": "rc87-42d8670beba25373",
+              "runner": "cargo-xtask",
+              "digest": "c8987208ddcab47e9a1cb1427aa2adfc455a2def1f74079cc5d4a3691da0a0eb"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -12142,14 +13883,35 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-005e7e3803fce9ad",
+            "package": "css",
+            "file": "parity/rust-takeover-ledger.json",
+            "line": 121,
+            "title": "rejects stale v1 utility bucket manifests instead of compatibility-loading them",
+            "runner": "cargo-xtask",
+            "kind": "test",
+            "sourceDigest": "a77f967cd5fc2ba6b41c00ca6ffb41233b184b28815c8f0ee32c7acab3ebb829"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
           "test:crates/mastercss-schema/src/lib.rs#rejects_legacy_manifest_shapes"
         ],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "0986d0fe485c0af711c7a55f226d86a6e157d7cba9eb2fdeadfbdf82c4cae960",
+          "targets": [
+            {
+              "caseId": "rc87-005e7e3803fce9ad",
+              "runner": "cargo-xtask",
+              "digest": "a77f967cd5fc2ba6b41c00ca6ffb41233b184b28815c8f0ee32c7acab3ebb829"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -12179,15 +13941,36 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-216958edd439c201",
+            "package": "css",
+            "file": "parity/rust-takeover-ledger.json",
+            "line": 122,
+            "title": "uses compiled condition aliases from the manifest",
+            "runner": "cargo-xtask",
+            "kind": "test",
+            "sourceDigest": "13413dec7c1b1bac9bce1979672bae9a958f7a8dc14aabbe7c405cbabfacb820"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
           "corpus:engine-responsive-priority",
           "test:crates/mastercss-engine/src/lib.rs#renders_the_compiled_condition_grammar"
         ],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "96efd175aa53aa15fe978ca8e47ae84ce74bffdc80642ec4bed8058de95e0210",
+          "targets": [
+            {
+              "caseId": "rc87-216958edd439c201",
+              "runner": "cargo-xtask",
+              "digest": "13413dec7c1b1bac9bce1979672bae9a958f7a8dc14aabbe7c405cbabfacb820"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -12218,16 +14001,37 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-c4d2ba28332469a3",
+            "package": "css",
+            "file": "parity/rust-takeover-ledger.json",
+            "line": 123,
+            "title": "serializes generated hydration manifest rules in layer order",
+            "runner": "cargo-xtask",
+            "kind": "test",
+            "sourceDigest": "1feb54bf79a799143c700977f08d6e0cd7fc81b472dc411981f45cc0f73745ff"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
           "test:crates/mastercss-schema/src/lib.rs#hydration_json_is_script_safe",
           "corpus:engine-selector-condition-metadata",
           "corpus:engine-animation-resource-metadata"
         ],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "cb27979b65581feabe4aa88a554df7c7d44d2a6fc9a4d325dc4b75033347b300",
+          "targets": [
+            {
+              "caseId": "rc87-c4d2ba28332469a3",
+              "runner": "cargo-xtask",
+              "digest": "1feb54bf79a799143c700977f08d6e0cd7fc81b472dc411981f45cc0f73745ff"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -12256,14 +14060,35 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-aaecc33e0cfd7700",
+            "package": "css",
+            "file": "parity/rust-takeover-ledger.json",
+            "line": 130,
+            "title": "parses primitive values with the old public parse-value expectations",
+            "runner": "cargo-xtask",
+            "kind": "test",
+            "sourceDigest": "b1d9463639d2168b0f18edc829356b04629ea2f35b5431d935ae23b922635865"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
           "test:crates/mastercss-engine/src/lib.rs#normalizes_base_units_inside_css_math_functions"
         ],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "353d406228fdbe8c83ec0046b4a8d8cf236fd383eea90c004cfc7fbcb4bbb1c3",
+          "targets": [
+            {
+              "caseId": "rc87-aaecc33e0cfd7700",
+              "runner": "cargo-xtask",
+              "digest": "b1d9463639d2168b0f18edc829356b04629ea2f35b5431d935ae23b922635865"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -12292,16 +14117,37 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-770d68f8e56905f2",
+            "package": "css",
+            "file": "parity/rust-takeover-ledger.json",
+            "line": 131,
+            "title": "keeps selector aliases, pseudos, shorthands, and descendants intact",
+            "runner": "cargo-xtask",
+            "kind": "test",
+            "sourceDigest": "8c6729870c5da3c3d55329091a773a652196e0f7581523d00bf0b15ca80061ab"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
           "corpus:engine-pseudo-and-responsive-selectors",
           "corpus:engine-selector-condition-metadata",
           "corpus:engine-legacy-pseudo-element-bytes"
         ],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "18dd330b3e4d1e61deb436a6a783115534fa16ae93efe78c10cf293e64146b00",
+          "targets": [
+            {
+              "caseId": "rc87-770d68f8e56905f2",
+              "runner": "cargo-xtask",
+              "digest": "8c6729870c5da3c3d55329091a773a652196e0f7581523d00bf0b15ca80061ab"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -12330,15 +14176,36 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-f4ab3aa0717798f4",
+            "package": "css",
+            "file": "parity/rust-takeover-ledger.json",
+            "line": 132,
+            "title": "recovers generated utilities from selector text across modes scope and grouped selectors",
+            "runner": "cargo-xtask",
+            "kind": "test",
+            "sourceDigest": "110760e5149400f00278d22dade5c3998e55ecbcae17037efa2073ea3824bcbe"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
           "test:crates/mastercss-engine/src/lib.rs#separates_child_selectors_from_dynamic_values",
           "corpus:engine-grouped-declarations"
         ],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "dc8ee5f68ab85e67e08ca8d0b02ae4d722bbe760514d2200137283fafdf58c08",
+          "targets": [
+            {
+              "caseId": "rc87-f4ab3aa0717798f4",
+              "runner": "cargo-xtask",
+              "digest": "110760e5149400f00278d22dade5c3998e55ecbcae17037efa2073ea3824bcbe"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -13928,15 +15795,36 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-88e6d2be1ffc9127",
+            "package": "css",
+            "file": "parity/rust-takeover-ledger.json",
+            "line": 139,
+            "title": "resolves custom at-rule and condition aliases from the compiled manifest",
+            "runner": "cargo-xtask",
+            "kind": "test",
+            "sourceDigest": "273d1342c3ddc0ea520314325c4aae22ed423613416657da813b26c550d6eb8a"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
           "test:crates/mastercss-engine/src/lib.rs#renders_the_compiled_condition_grammar",
           "corpus:engine-mode-conditions"
         ],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "990db4087c04780735bc5e33d5b4f0bf43c6ff15b1595df5f90491ece209dc77",
+          "targets": [
+            {
+              "caseId": "rc87-88e6d2be1ffc9127",
+              "runner": "cargo-xtask",
+              "digest": "273d1342c3ddc0ea520314325c4aae22ed423613416657da813b26c550d6eb8a"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -17608,16 +19496,37 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-61f4e28b32ec2733",
+            "package": "css",
+            "file": "parity/rust-takeover-ledger.json",
+            "line": 178,
+            "title": "keeps default variable buckets before mode buckets when defaults are inserted later",
+            "runner": "cargo-xtask",
+            "kind": "test",
+            "sourceDigest": "bde5490988e9ef20992c4216bd19230b4128ff9e81aa91f7431d1a843cf2a541"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
           "corpus:engine-mode-conditions",
           "corpus:engine-variable-lifecycle",
           "corpus:engine-inline-theme-variable-dependencies"
         ],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "95275091120d5ee2ee26317aa5387ce7afb8ff0e72f1a5d4f7fee66adedb5483",
+          "targets": [
+            {
+              "caseId": "rc87-61f4e28b32ec2733",
+              "runner": "cargo-xtask",
+              "digest": "bde5490988e9ef20992c4216bd19230b4128ff9e81aa91f7431d1a843cf2a541"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -17647,14 +19556,35 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-f93a232846d84ce2",
+            "package": "css",
+            "file": "parity/rust-takeover-ledger.json",
+            "line": 179,
+            "title": "emits color-scheme for built-in class mode buckets",
+            "runner": "cargo-xtask",
+            "kind": "test",
+            "sourceDigest": "77883709402108aa56c93b2cfdb08b5c68817df14660f86b868a2c259e0145ba"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
           "test:crates/mastercss-engine/src/lib.rs#renders_the_compiled_condition_grammar"
         ],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "5506d47e3ef116c1d67047f34185ddfc030129ac3274277ff8118f8dd36cbde1",
+          "targets": [
+            {
+              "caseId": "rc87-f93a232846d84ce2",
+              "runner": "cargo-xtask",
+              "digest": "77883709402108aa56c93b2cfdb08b5c68817df14660f86b868a2c259e0145ba"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -17684,14 +19614,35 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-898318afdea7e86f",
+            "package": "css",
+            "file": "parity/rust-takeover-ledger.json",
+            "line": 180,
+            "title": "emits color-scheme for built-in host mode buckets",
+            "runner": "cargo-xtask",
+            "kind": "test",
+            "sourceDigest": "466ee27613be3285094de23ce0c42797741295ef6881c5e56fab5141f2806935"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
           "test:crates/mastercss-engine/src/lib.rs#renders_the_compiled_condition_grammar"
         ],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "ee127c8454c8476505e7d27ce82572cb264c9b2528978e1b80a9cfe320442800",
+          "targets": [
+            {
+              "caseId": "rc87-898318afdea7e86f",
+              "runner": "cargo-xtask",
+              "digest": "466ee27613be3285094de23ce0c42797741295ef6881c5e56fab5141f2806935"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -17721,14 +19672,35 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-c11c2c52ed53f3e7",
+            "package": "css",
+            "file": "parity/rust-takeover-ledger.json",
+            "line": 181,
+            "title": "does not merge the default mode selector when default-mode is none",
+            "runner": "cargo-xtask",
+            "kind": "test",
+            "sourceDigest": "ada5f2a80e4bb93aa206194c8e79ac769abbb2fce7056b8d6cfa59859c1d91fb"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
           "test:crates/mastercss-engine/src/lib.rs#renders_the_compiled_condition_grammar"
         ],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "505f3b1a07b9c0293507c5ad7f1e8b428532c9f2f2a01299ccb39676c673455f",
+          "targets": [
+            {
+              "caseId": "rc87-c11c2c52ed53f3e7",
+              "runner": "cargo-xtask",
+              "digest": "ada5f2a80e4bb93aa206194c8e79ac769abbb2fce7056b8d6cfa59859c1d91fb"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -17758,14 +19730,35 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-cd51931f93706a07",
+            "package": "css",
+            "file": "parity/rust-takeover-ledger.json",
+            "line": 182,
+            "title": "does not emit color-scheme for media mode buckets",
+            "runner": "cargo-xtask",
+            "kind": "test",
+            "sourceDigest": "423a39ca123f3eb2cfdc0fedc642cdc9c1d4756a4f2e5ed5be5c6fbdd7a8388a"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
           "corpus:engine-mode-conditions"
         ],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "a7d8f2c2196f6c6b382d4cdfd38d7144bd04a8d8d20c1b67fe6732764a9b2d8a",
+          "targets": [
+            {
+              "caseId": "rc87-cd51931f93706a07",
+              "runner": "cargo-xtask",
+              "digest": "423a39ca123f3eb2cfdc0fedc642cdc9c1d4756a4f2e5ed5be5c6fbdd7a8388a"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -17795,14 +19788,35 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-50b11749b84766ad",
+            "package": "css",
+            "file": "parity/rust-takeover-ledger.json",
+            "line": 183,
+            "title": "does not emit color-scheme for custom mode buckets",
+            "runner": "cargo-xtask",
+            "kind": "test",
+            "sourceDigest": "0cdf8046ce8a53590c5a0164339d10395dff7d079ba8c6c728c6f92b8f208427"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
           "corpus:engine-mode-conditions"
         ],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "5f843a4a0279db62a9a340b4b6facd382f9c16658ff70945c15183075bf0aeb8",
+          "targets": [
+            {
+              "caseId": "rc87-50b11749b84766ad",
+              "runner": "cargo-xtask",
+              "digest": "0cdf8046ce8a53590c5a0164339d10395dff7d079ba8c6c728c6f92b8f208427"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -34645,12 +36659,33 @@
         "targetPackage": "language-server"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-fd9c9729abac6e7e",
+            "package": "language-server",
+            "file": "packages/language-server/tests/runtime.test.ts",
+            "line": 23,
+            "title": "uses a resolved workspace Master CSS runtime when available",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "e7cbeacb37721068389eb827ae81b1e11b9b227635e41cfa8a53039ca89313f0"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "30a3057fbb0269ddbb0b394c18fc388a5be265d2d2689417329e8c66267e5fa4",
+          "targets": [
+            {
+              "caseId": "rc87-fd9c9729abac6e7e",
+              "runner": "vitest",
+              "digest": "e7cbeacb37721068389eb827ae81b1e11b9b227635e41cfa8a53039ca89313f0"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -34677,12 +36712,33 @@
         "targetPackage": "language-server"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-cdef278edb6fd717",
+            "package": "language-server",
+            "file": "packages/language-server/tests/runtime.test.ts",
+            "line": 77,
+            "title": "falls back to the bundled runtime when workspace packages are missing",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "060452773b7b8cabb9e95d06b7164929ab4e97b8dd95ed4f98374e5a23fc29ee"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "3966102066d2169d17a3c8f19b1040ca47725396dcf99247e437a9096940f1b0",
+          "targets": [
+            {
+              "caseId": "rc87-cdef278edb6fd717",
+              "runner": "vitest",
+              "digest": "060452773b7b8cabb9e95d06b7164929ab4e97b8dd95ed4f98374e5a23fc29ee"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -38045,12 +40101,33 @@
         "targetPackage": "language-service"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-3950d765ff8c7858",
+            "package": "language-service",
+            "file": "packages/language-service/tests/session.test.ts",
+            "line": 43,
+            "title": "does not render static theme modifier semantic tokens",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "aa026b07362abcb20305f1467481ca7788892f66c872447ef8f12bf695a2fc01"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "a2f57719a043ad57fc5d08bab34eff64bc2a21f47d7fe3c8d72821fb8296a005",
+          "targets": [
+            {
+              "caseId": "rc87-3950d765ff8c7858",
+              "runner": "vitest",
+              "digest": "aa026b07362abcb20305f1467481ca7788892f66c872447ef8f12bf695a2fc01"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -39273,12 +41350,33 @@
         "targetPackage": "language-service"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-09bfa63fa238afeb",
+            "package": "language-service",
+            "file": "packages/language-service/tests/session.test.ts",
+            "line": 55,
+            "title": "uses the injected runtime default manifest for completions",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "ce68486cb15a9b9270373ef2639c68fb8a7f8297c913663401d681731517d09c"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "de125591dcfb41382f8ecaec9d8ea0874eae14c5c68e4d494cd2a4f447974068",
+          "targets": [
+            {
+              "caseId": "rc87-09bfa63fa238afeb",
+              "runner": "vitest",
+              "digest": "ce68486cb15a9b9270373ef2639c68fb8a7f8297c913663401d681731517d09c"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -39307,12 +41405,33 @@
         "targetPackage": "language-service"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-42028ac139836835",
+            "package": "language-service",
+            "file": "packages/language-service/tests/session.test.ts",
+            "line": 67,
+            "title": "uses the injected runtime for hover CSS previews",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "1a7a3080c1cd2bce635dbcc487f8387da00076e771c1117e87a317da2563deab"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "c614c7b4fa658f016d3be0d2d830737aae8727c77dacc16a568bb8f315170760",
+          "targets": [
+            {
+              "caseId": "rc87-42028ac139836835",
+              "runner": "vitest",
+              "digest": "1a7a3080c1cd2bce635dbcc487f8387da00076e771c1117e87a317da2563deab"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -39342,12 +41461,33 @@
         "targetPackage": "language-service"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-f8e97d7288ed2ca0",
+            "package": "language-service",
+            "file": "packages/language-service/tests/session.test.ts",
+            "line": 83,
+            "title": "uses the injected runtime variables for document colors",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "e7190a0ff5b2044e6025612b999479068958695df759b25c3697f3be0d7f0a4a"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "9163bcffcc28b0c02e19611a2abaab0441ab1fef5975930b25446d7e9e1c6b16",
+          "targets": [
+            {
+              "caseId": "rc87-f8e97d7288ed2ca0",
+              "runner": "vitest",
+              "digest": "e7190a0ff5b2044e6025612b999479068958695df759b25c3697f3be0d7f0a4a"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -47493,12 +49633,33 @@
         "targetPackage": "tooling"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-8d16095f1bb2625d",
+            "package": "tooling",
+            "file": "packages/tooling/tests/lint/index.test.ts",
+            "line": 62,
+            "title": "ignores token, static, invalid, unknown, and component classes",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "e1c59cac6aa177192118d3a8fcfeb29906b1accbefd7c8bdd6db8017928c61f9"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "7fc504368451a806adffe2f657ac46554d6933f813d2ec6e943218f265d49556",
+          "targets": [
+            {
+              "caseId": "rc87-8d16095f1bb2625d",
+              "runner": "vitest",
+              "digest": "e1c59cac6aa177192118d3a8fcfeb29906b1accbefd7c8bdd6db8017928c61f9"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -47629,12 +49790,33 @@
         "targetPackage": "tooling"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-244215532a6b1b97",
+            "package": "tooling",
+            "file": "packages/tooling/tests/lint/index.test.ts",
+            "line": 82,
+            "title": "suggests static utilities, theme tokens, and property aliases",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "5ca8b17838c3267e44621cd421adbb09f8e642f70859e09a271e0262e193e963"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "1e749042ee27c66d6c8033b7d44df528f3dfeb3acf72aa2ecacaa37ec37aa20b",
+          "targets": [
+            {
+              "caseId": "rc87-244215532a6b1b97",
+              "runner": "vitest",
+              "digest": "5ca8b17838c3267e44621cd421adbb09f8e642f70859e09a271e0262e193e963"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -47664,12 +49846,33 @@
         "targetPackage": "tooling"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-a0b60499e6dca401",
+            "package": "tooling",
+            "file": "packages/tooling/tests/lint/index.test.ts",
+            "line": 99,
+            "title": "suggests static utility aliases from generated declarations",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "273f3ea408a46c06b49cd8145816ef79dce2e38f1f60ad6a5d2506cc1d83a32a"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "99a28b3d5c2e74a6c70b942f429b383b071afeafe785e248275a5766543358fb",
+          "targets": [
+            {
+              "caseId": "rc87-a0b60499e6dca401",
+              "runner": "vitest",
+              "digest": "273f3ea408a46c06b49cd8145816ef79dce2e38f1f60ad6a5d2506cc1d83a32a"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -54115,8 +56318,8 @@
         "targetPackage": "compiler"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-e7f1f864cac62727",
@@ -54131,7 +56334,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "0800768ed4e174a33d205b3f97153b96603bca8fd3a0c6465c91b036d8f82075",
+          "targets": [
+            {
+              "caseId": "rc87-e7f1f864cac62727",
+              "runner": "vitest",
+              "digest": "60d85a0209d7a42fb50746a31733aca8750b1a11fc82e4ff255f65d7344d010c"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -54158,8 +56371,8 @@
         "targetPackage": "compiler"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-5cce9bfc222b9ac1",
@@ -54174,7 +56387,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "906f892d854b8a3cc73fc84768e65e63a81264c59fa28e2d9d6c238918f72476",
+          "targets": [
+            {
+              "caseId": "rc87-5cce9bfc222b9ac1",
+              "runner": "vitest",
+              "digest": "091fa53c8bee5e9dce3ac8eb9896da1dc364c6e1d7cf450401e88c4305073b65"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -54311,8 +56534,8 @@
         "targetPackage": "compiler"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-f718aaba7ab8bda6",
@@ -54327,7 +56550,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "3865ec4e675a940fc9b3722797b662ff0d294355398b52e51ec0c77c60d417da",
+          "targets": [
+            {
+              "caseId": "rc87-f718aaba7ab8bda6",
+              "runner": "vitest",
+              "digest": "8e871bf3492c47cf8d5fba102066995eff6a19feabeed5d3b811ba237c5202d2"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -54571,8 +56804,8 @@
         "targetPackage": "compiler"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-b46d12dcb37b7648",
@@ -54587,7 +56820,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "a0f55e7aba728643bf94e5ccf5c3aaba26f0cd465eb88cb6f371576deba0ac35",
+          "targets": [
+            {
+              "caseId": "rc87-b46d12dcb37b7648",
+              "runner": "vitest",
+              "digest": "04d079fa776c76af3a2cfe8ea202c3d36f8e756a83d659d8268a29444af2d29c"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -66008,12 +68251,33 @@
         "targetPackage": "tooling"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-8471601240020bd3",
+            "package": "tooling",
+            "file": "packages/tooling/tests/source/session.test.ts",
+            "line": 34,
+            "title": "extracts static classes from JavaScript and TypeScript syntax with Oxc",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "0c529af633f0b9d134230b400cf883cced50c0246a798925e47e32d0e876b08c"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "a26532f8d9d7852a114ef96b65c3b2d98b1fa033e93a178c49b921c591a9914a",
+          "targets": [
+            {
+              "caseId": "rc87-8471601240020bd3",
+              "runner": "vitest",
+              "digest": "0c529af633f0b9d134230b400cf883cced50c0246a798925e47e32d0e876b08c"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -66411,8 +68675,8 @@
         "targetPackage": "compiler"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-6ef0dd365e7230a1",
@@ -66427,7 +68691,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "fd83a81d4b091f83b4b1cd8043539dea68b67c9fc19ea0ab3e149d517a538f05",
+          "targets": [
+            {
+              "caseId": "rc87-6ef0dd365e7230a1",
+              "runner": "vitest",
+              "digest": "a68e534c3a51da9e6e60833aa1dccdea9884b940b6415808d079ffc63aac2c93"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -66457,8 +68731,8 @@
         "targetPackage": "compiler"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-6dc2c7fadb203cce",
@@ -66473,7 +68747,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "235ae9d8b3101398bb402211dda63558fce35d5a69456206c0cbfc804ff6a99a",
+          "targets": [
+            {
+              "caseId": "rc87-6dc2c7fadb203cce",
+              "runner": "vitest",
+              "digest": "beb903e3db4e7ff5296ebbc0e062905dcbd3d326084fa44eb071742c7b646797"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -66503,8 +68787,8 @@
         "targetPackage": "compiler"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-bf10b5ac342d02f2",
@@ -66519,7 +68803,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "c843b9303b49dac8ca9f87a2ad1c2950a17a6a2ca494444aad96ca787d2c74a9",
+          "targets": [
+            {
+              "caseId": "rc87-bf10b5ac342d02f2",
+              "runner": "vitest",
+              "digest": "6e2aa4d7a699f848bb8a4200a21aacb30323c1978c75b03be8ee5069191942f4"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -66549,8 +68843,8 @@
         "targetPackage": "compiler"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-79cd566ead5ed222",
@@ -66565,7 +68859,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "6e73aa58d4bf3d19b1dbac6d76c3326f2c31c3d81cb1cef053ae9a911e14ca08",
+          "targets": [
+            {
+              "caseId": "rc87-79cd566ead5ed222",
+              "runner": "vitest",
+              "digest": "e992edf5c4f18bc38cc5a515bd1fef2fe2fe7bcc157b71430d302aaf09f56a4e"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -66595,8 +68899,8 @@
         "targetPackage": "compiler"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-b1d784692f1ad2d7",
@@ -66611,7 +68915,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "a502bec9d790e3595b125e04d8d4d5c63de8e3b0dc1bfd15f2fa4193d952c29d",
+          "targets": [
+            {
+              "caseId": "rc87-b1d784692f1ad2d7",
+              "runner": "vitest",
+              "digest": "460d0b7b88bc31c14dffdc263e314dcec95144c44105bfaa601aba7c9be55a42"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -66640,8 +68954,8 @@
         "targetPackage": "compiler"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-680872391aab0c97",
@@ -66656,7 +68970,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "105941d138d4f89ef078cce83bc688947baf38980b8d6847f89f1f1e1477c1cf",
+          "targets": [
+            {
+              "caseId": "rc87-680872391aab0c97",
+              "runner": "vitest",
+              "digest": "bbae016feca0c506f32c584c5511e8a8730ac77c4fac86df6b023bd8c90d6d06"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -66799,8 +69123,8 @@
         "targetPackage": "compiler"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-8e935adce73acbb6",
@@ -66815,7 +69139,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "77eae826549c626fea80f785444a443166171cef9b66dae09cdbda5521475a60",
+          "targets": [
+            {
+              "caseId": "rc87-8e935adce73acbb6",
+              "runner": "vitest",
+              "digest": "8d1f3d6c33a0b033f482f264dd0ea503df3e083bb5e149ae90f61734b8602737"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -66844,8 +69178,8 @@
         "targetPackage": "compiler"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-7312b1740c4885fb",
@@ -66860,7 +69194,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "27c2cd72673e3afb12e5f0b50eef4b96f7c999dc2260d0031df73636481618c8",
+          "targets": [
+            {
+              "caseId": "rc87-7312b1740c4885fb",
+              "runner": "vitest",
+              "digest": "3c91779d5e77f7143e552e55c99b99d7bc1e0c30e394d83c18f072692e851fd3"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -66889,8 +69233,8 @@
         "targetPackage": "compiler"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-52c9eb78b1e18775",
@@ -66905,7 +69249,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "42b0cd450e993844847c68d834c936b7acfab65cc0ce85a0076f41b47a57d69c",
+          "targets": [
+            {
+              "caseId": "rc87-52c9eb78b1e18775",
+              "runner": "vitest",
+              "digest": "ecede6cd401bc24e2af70e0a0f06391f6a9b043f09cba09abaab5d890bd40a3e"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -66934,8 +69288,8 @@
         "targetPackage": "compiler"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-a21238bfb7a88fe8",
@@ -66950,7 +69304,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "f6e813146ebe7956cee7e55bafb38473f1837db06909d7fcda11ecb9e4a6fe6a",
+          "targets": [
+            {
+              "caseId": "rc87-a21238bfb7a88fe8",
+              "runner": "vitest",
+              "digest": "277a070519866825dbff7c48164fcea8da9953017ae1ae67e7d4250188402b21"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -66980,8 +69344,8 @@
         "targetPackage": "compiler"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-c1e2ea9bda038754",
@@ -66996,7 +69360,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "92a66f1ff95d1545e56a48565c6e8ff562059021f1d1c31b6c4f5db6dbfef6e8",
+          "targets": [
+            {
+              "caseId": "rc87-c1e2ea9bda038754",
+              "runner": "vitest",
+              "digest": "a20c415416bfa59c5061f4a67f9fbdfbded8cbb756896dcb8ee1c6dad18bddcf"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -67198,8 +69572,8 @@
         "targetPackage": "compiler"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-0ae489e3540aecab",
@@ -67214,7 +69588,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "03f810a3bdb3429f9dededcc2023f57d0bb5b8a840697eb09ee9bb244ce57f10",
+          "targets": [
+            {
+              "caseId": "rc87-0ae489e3540aecab",
+              "runner": "vitest",
+              "digest": "51d40b592a4bfaa5f1d2c632726888ebc3ba645d051352494e9c059b7f2f7954"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -67244,8 +69628,8 @@
         "targetPackage": "compiler"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-32df64bdd39d50d5",
@@ -67260,7 +69644,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "ce263628f59f4de99082bb95056ecde6141be8942021e8cd53f3d3e7aac1efc4",
+          "targets": [
+            {
+              "caseId": "rc87-32df64bdd39d50d5",
+              "runner": "vitest",
+              "digest": "96c84fb146aa8d3e1e7dce37dad9cc357820a1c4c33764ebe58c3549fc43ecfb"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -67289,8 +69683,8 @@
         "targetPackage": "compiler"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-b32e253bb5828477",
@@ -67305,7 +69699,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "f4c104d4b772a0b131226039200e65e6f72618c0b98897983f487b4f9208da4a",
+          "targets": [
+            {
+              "caseId": "rc87-b32e253bb5828477",
+              "runner": "vitest",
+              "digest": "67479aeb5dee9ef554e980168f01e2244863e326a6dd77fe0e6e31f189783291"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -67334,8 +69738,8 @@
         "targetPackage": "compiler"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-df9664faca11e790",
@@ -67350,7 +69754,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "6e64a2cca37b1e2901e418195eba832e51f4c211e99a486819d4fd821b8f4c73",
+          "targets": [
+            {
+              "caseId": "rc87-df9664faca11e790",
+              "runner": "vitest",
+              "digest": "c0b683196261fc03e6230dd36adca5de2a4a717093d512998967d51a0f483e61"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -67379,8 +69793,8 @@
         "targetPackage": "compiler"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-18d63467f01b574f",
@@ -67395,7 +69809,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "bdd9bf4a53c9559f9d7f46a82592fc01e5cf2faa9fcc597ef9cef0a55838fcc4",
+          "targets": [
+            {
+              "caseId": "rc87-18d63467f01b574f",
+              "runner": "vitest",
+              "digest": "7f5bc7996e61b89d7cf70d03acf7ff5f752059513b1b0fc2abcbc5384f0f2a3e"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -67424,8 +69848,8 @@
         "targetPackage": "compiler"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-40d6eb51f819ba88",
@@ -67440,7 +69864,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "68a2289688789a810b566787fbae6e3f2e1a3bb34f18c5dab1128bac643b6f25",
+          "targets": [
+            {
+              "caseId": "rc87-40d6eb51f819ba88",
+              "runner": "vitest",
+              "digest": "302a607791491dcdbfba20646dc2489ae72f89e46cacce3a9351f0f66bca3e72"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -67469,8 +69903,8 @@
         "targetPackage": "compiler"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-2a99b8b5109ece51",
@@ -67485,7 +69919,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "b3f6097feabbbd35fcdf1af9ff118563ed08d75f287d954f046fd692db6bb20a",
+          "targets": [
+            {
+              "caseId": "rc87-2a99b8b5109ece51",
+              "runner": "vitest",
+              "digest": "4d97440344558fbd004dcbdc62e3a1e3b71a1e57672dd3e037d0059f61eae39e"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -67514,8 +69958,8 @@
         "targetPackage": "compiler"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-09a63ebd1fb0c985",
@@ -67530,7 +69974,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "70ee942dde4045c00ef78dcc45d2a535c62231f643f5f44bfecbc248b26deb4d",
+          "targets": [
+            {
+              "caseId": "rc87-09a63ebd1fb0c985",
+              "runner": "vitest",
+              "digest": "46e7233b6fce53227abfda3a531079d17572bef5889c293d620a695b276267e4"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -67560,8 +70014,8 @@
         "targetPackage": "compiler"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-3fbd82ad3f8411c4",
@@ -67576,7 +70030,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "80b3d80bf8b7779c442e35ca31d3aae3bf4e7cbd4cc8ffe769817ae8d024fe09",
+          "targets": [
+            {
+              "caseId": "rc87-3fbd82ad3f8411c4",
+              "runner": "vitest",
+              "digest": "70034ad7fef18ecef8f8205371580730e545a75991aae66de3c9045ff02a54a0"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -67606,8 +70070,8 @@
         "targetPackage": "compiler"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-d1fd372c5f354ee2",
@@ -67622,7 +70086,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "57a602b2f742cc6225bd4779ef2b736548237e4b6b01a2b1669c37bed346ca4a",
+          "targets": [
+            {
+              "caseId": "rc87-d1fd372c5f354ee2",
+              "runner": "vitest",
+              "digest": "5029e7d6a75833c8f44009775f291c3629387e60ad597bc290320c247bc751cb"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -67652,8 +70126,8 @@
         "targetPackage": "compiler"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-51abb4c0cc50234d",
@@ -67668,7 +70142,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "dd014e4cb56fbc842a3f21231bccba71280051865737f6c2e749615fdc5bf661",
+          "targets": [
+            {
+              "caseId": "rc87-51abb4c0cc50234d",
+              "runner": "vitest",
+              "digest": "9caaede90b1fe4698a846bb3ce2d0628ec64355d9b05ce27745837b83be8dda9"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -67698,8 +70182,8 @@
         "targetPackage": "compiler"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-16dec65c866ce93c",
@@ -67714,7 +70198,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "3cdbb78278a4e5d2c37f62534222bf3aef014b65185852c16dd46f47eff42a66",
+          "targets": [
+            {
+              "caseId": "rc87-16dec65c866ce93c",
+              "runner": "vitest",
+              "digest": "a65877913d3abe5b5cb94a777f1614be38322f9cc4988900ef1d469682956b0e"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -67743,8 +70237,8 @@
         "targetPackage": "compiler"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-fdb9f87a3f066b49",
@@ -67759,7 +70253,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "6acd4647cf2c0a6ee15fb3cc5c2ae47712f13df183591db2f774a1c7ba3ad457",
+          "targets": [
+            {
+              "caseId": "rc87-fdb9f87a3f066b49",
+              "runner": "vitest",
+              "digest": "4e677cbf667246f9b10909792b6fda605d66096b7b17b7ecc53bf59193973652"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -67788,8 +70292,8 @@
         "targetPackage": "compiler"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-e2556495ed427eed",
@@ -67804,7 +70308,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "27673c9889efbd2d0e7667bfdb58fda3079389660d21811d2b6cf6cae589978d",
+          "targets": [
+            {
+              "caseId": "rc87-e2556495ed427eed",
+              "runner": "vitest",
+              "digest": "51e79bc19a53243e261f39367395f43bbd96ac8f66a72c78f396f8788cc2102c"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -67890,8 +70404,8 @@
         "targetPackage": "compiler"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-e68780e7b790a7ea",
@@ -67906,7 +70420,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "060562fa8ceac8cfdab8936485f3bfea3e76f133cc48f30aeb6c9fa89ac557ba",
+          "targets": [
+            {
+              "caseId": "rc87-e68780e7b790a7ea",
+              "runner": "vitest",
+              "digest": "b216507d0c6774ccaa0964cab33a10ad7fdded20921c589493220f5da5360894"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -68057,8 +70581,8 @@
         "targetPackage": "compiler"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-37855e99f2739833",
@@ -68073,7 +70597,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "7676b799972e3d7d57b4ad102b85687e2d89abcefe6ddf5d1a20947ccbca11c5",
+          "targets": [
+            {
+              "caseId": "rc87-37855e99f2739833",
+              "runner": "vitest",
+              "digest": "1c4ece3d455cc98a0f8e5c1e53999acdc1eb0b8727e3aba38c40ef69126f1414"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -68102,8 +70636,8 @@
         "targetPackage": "compiler"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-9f4e40ffe5ff78a2",
@@ -68118,7 +70652,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "96db3686fcb4e4c64fb253e9ac14138dc4e8e88021196f488c3a0491ec10b07d",
+          "targets": [
+            {
+              "caseId": "rc87-9f4e40ffe5ff78a2",
+              "runner": "vitest",
+              "digest": "dd793cacc454f75d270fe35befc45ea30f529c393dd1b2996130d1430c33665c"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -68147,8 +70691,8 @@
         "targetPackage": "compiler"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-84ddd72358a0a760",
@@ -68163,7 +70707,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "908eb31f5ddb1567a4755af89a9c916afeeb6ddf8bc023eb74eb96e0351376a5",
+          "targets": [
+            {
+              "caseId": "rc87-84ddd72358a0a760",
+              "runner": "vitest",
+              "digest": "74b2e96661a7fe30c21b202e45d30c8db7ff612f7d10120f8bbe81f621b116fc"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -68192,8 +70746,8 @@
         "targetPackage": "compiler"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-68e5ef2fb20016d4",
@@ -68208,7 +70762,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "0d51d83066eb5936fed131258cf612625dd3a9845b61fb20d00f244995d90878",
+          "targets": [
+            {
+              "caseId": "rc87-68e5ef2fb20016d4",
+              "runner": "vitest",
+              "digest": "1e2b33500e55816e3d78c2b4e068d25d80f51dcb699522039b721294520add34"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -68237,8 +70801,8 @@
         "targetPackage": "compiler"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-95b456db06b9ae81",
@@ -68253,7 +70817,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "8d65fb8ff4fe9f6372d89b31b0bb8fd80a403a557c167c450d05c183314e1f66",
+          "targets": [
+            {
+              "caseId": "rc87-95b456db06b9ae81",
+              "runner": "vitest",
+              "digest": "dfe06e1a086e185ebdcc58cc7d67e19df31cddf812f0221deebd22e657461664"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -68283,8 +70857,8 @@
         "targetPackage": "compiler"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-e0e7269305956adc",
@@ -68299,7 +70873,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "d146e4b10cfa802015ebd8ced70c59dd054805c1526a62ca26a2f69782834080",
+          "targets": [
+            {
+              "caseId": "rc87-e0e7269305956adc",
+              "runner": "vitest",
+              "digest": "a490fc41139649b9aca30fbb87b4996228a4b1420c794e46f44bff5580b585fa"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -68329,8 +70913,8 @@
         "targetPackage": "compiler"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-541c5b0c6e0b47d9",
@@ -68345,7 +70929,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "b18b729ba71d8db6a5eb14099868c8cd9b293ee6e1ee3edda52ccad5d555c35f",
+          "targets": [
+            {
+              "caseId": "rc87-541c5b0c6e0b47d9",
+              "runner": "vitest",
+              "digest": "512225e8a6b957154714863b9fcf26e71ff370ec8e600b61cf4f20393dd7dde7"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -68376,8 +70970,8 @@
         "targetPackage": "compiler"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-37e34887ae098a1f",
@@ -68392,7 +70986,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "a32617b6fb757c0223e1f288415958057d3a6e8fab926e2d2fce732ad709ad58",
+          "targets": [
+            {
+              "caseId": "rc87-37e34887ae098a1f",
+              "runner": "vitest",
+              "digest": "971b8af39b0aac33ae85e485417c9bc910a5fee89a67b931d6a1c099913f5303"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -68421,8 +71025,8 @@
         "targetPackage": "compiler"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-866deceef803b573",
@@ -68437,7 +71041,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "56cf76b9f27f953b992b5d52f5257c48e0f20900bb255a14d2b983b0cc475a25",
+          "targets": [
+            {
+              "caseId": "rc87-866deceef803b573",
+              "runner": "vitest",
+              "digest": "d719e6bebc23dcfd8ccf2078208cd65ef07c9c6f36494903228f027d8160d90d"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -68466,8 +71080,8 @@
         "targetPackage": "compiler"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-f14125a6e96736c0",
@@ -68482,7 +71096,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "cc8d5fc84f381ac6c57a2fa0e5a4be4e5356780b136216917e18a560e1553314",
+          "targets": [
+            {
+              "caseId": "rc87-f14125a6e96736c0",
+              "runner": "vitest",
+              "digest": "c431b4b389d66c7b3c4056fc224b7400a6b7b76f685c5fd20759e813498db1ad"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -68511,8 +71135,8 @@
         "targetPackage": "compiler"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-c709d394d3355b26",
@@ -68527,7 +71151,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "721696a7250dc81826cca2c8a0a57c3e274653c3d9f344d55e7f7514e8140240",
+          "targets": [
+            {
+              "caseId": "rc87-c709d394d3355b26",
+              "runner": "vitest",
+              "digest": "4fcf14196209baeb82e7cc42a6f689af45d4359647c1bc4813ff01dfa92b161f"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -68556,8 +71190,8 @@
         "targetPackage": "compiler"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-1b7a6aaf1adc7f15",
@@ -68572,7 +71206,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "f70e457ece2bf8015ce68d39b13b568f0aae970c3aad8870d95fde9aea0f6fef",
+          "targets": [
+            {
+              "caseId": "rc87-1b7a6aaf1adc7f15",
+              "runner": "vitest",
+              "digest": "f006823837105ed709526358e7e0307e989cdcdb850446352991e1ed5757277d"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -68601,8 +71245,8 @@
         "targetPackage": "compiler"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-018e756d6b009936",
@@ -68617,7 +71261,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "6301a840a59886613984fc02ada7edfc141c57fbf92354802622c9e619186557",
+          "targets": [
+            {
+              "caseId": "rc87-018e756d6b009936",
+              "runner": "vitest",
+              "digest": "733a28b28d37e7a9766a844e875955147a9f63b551fa0d8f7cfb03a1dfe3a71e"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -68646,8 +71300,8 @@
         "targetPackage": "compiler"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-c5baf35a4ef8f560",
@@ -68662,7 +71316,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "011db28bc748347591d029a79ab8772915070087d8da2aad063ba55864565ce1",
+          "targets": [
+            {
+              "caseId": "rc87-c5baf35a4ef8f560",
+              "runner": "vitest",
+              "digest": "cde298b940bba3ef826f000420a6e9ed7572c2034da401e2a7bcb90208ca4b75"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -75412,8 +78076,8 @@
         "targetPackage": "vscode"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-5f8e7047f4a4566e",
@@ -75428,7 +78092,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "3f6a1ed654fa5e9bdaf3cc7ef4e36191ab3d102d72778c9df7ee30977f5f3167",
+          "targets": [
+            {
+              "caseId": "rc87-5f8e7047f4a4566e",
+              "runner": "vitest",
+              "digest": "1deec11d36fd767aa200ce6a7734efe3be0f9132a62bd8a5fedb8173454d72f1"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -79406,27 +82080,27 @@
       "id": "rc87-7748131a83619c59",
       "package": "language-server",
       "file": "packages/language-server/tests/runtime.test.ts",
-      "line": 12,
+      "line": 22,
       "title": "uses a resolved workspace Master CSS manifest when available",
       "runner": "vitest",
       "kind": "test",
-      "sourceDigest": "dcd8212160c12aa1f6d98201a7ec8ee43fa3fb34a477ee6493d24a04a34a24a4"
+      "sourceDigest": "b5311a05f6d447fda5f0681fa6f930048c3685744869f200267d6cb31e35fe41"
     },
     {
       "id": "rc87-14a1114fe1dde0c6",
       "package": "language-server",
       "file": "packages/language-server/tests/runtime.test.ts",
-      "line": 23,
+      "line": 76,
       "title": "uses the bundled manifest when workspace packages are missing",
       "runner": "vitest",
       "kind": "test",
-      "sourceDigest": "7cb4e79ee81d31f2cc625cf9c083150a85b3f10f0d2e8ae04785dd6f4a808673"
+      "sourceDigest": "951a346b0d78d53445d9f081701543a7db9e901469b951fdd5f43048a10db4e5"
     },
     {
       "id": "rc87-3fac9efeebd10f88",
       "package": "language-service",
       "file": "packages/language-service/tests/session.test.ts",
-      "line": 23,
+      "line": 24,
       "title": "uses Rust for document contexts and hover inspection",
       "runner": "vitest",
       "kind": "test",
@@ -79436,7 +82110,7 @@
       "id": "rc87-2d55aa74f4d93510",
       "package": "language-service",
       "file": "packages/language-service/tests/session.test.ts",
-      "line": 32,
+      "line": 33,
       "title": "uses the Rust completion index",
       "runner": "vitest",
       "kind": "test",
@@ -80156,7 +82830,7 @@
       "id": "rc87-10c2c919df81e395",
       "package": "tooling",
       "file": "packages/tooling/tests/lint/index.test.ts",
-      "line": 62,
+      "line": 122,
       "title": "lints and fixes source files without a TypeScript engine",
       "runner": "vitest",
       "kind": "test",

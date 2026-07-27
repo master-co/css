@@ -9,6 +9,7 @@ const DEFAULT_BASELINE_REF = 'v2.0.0-rc.87'
 const DEFAULT_POST_BASELINE_REF = 'origin/rc'
 const RC87_COMMIT = '9cc3e8b5f2e34d5220f10f27ed5ce8186fbcb524'
 const RC87_RENDERING_TARGET_COMMIT = 'b242a52a0fcb43b1b506d9fa1e010d0c85621d13'
+const RC87_AUTHORING_TARGET_COMMIT = '7ac3c1a63a7af8c8c927a869fa3e4d531261cec6'
 const ledgerPath = path.resolve('parity/ts-test-migration-ledger.json')
 const evidencePath = path.resolve('parity/ts-test-migration-evidence.json')
 const exceptionsPath = path.resolve('parity-exceptions.json')
@@ -776,6 +777,46 @@ function collectSemanticCorpusCases(commit) {
   return cases
 }
 
+function collectRustTakeoverCases(commit) {
+  const file = 'parity/rust-takeover-ledger.json'
+  const source = git(['show', `${commit}:${file}`])
+  const ledger = JSON.parse(source)
+  assert.equal(ledger.version, 1, 'Unsupported Rust takeover ledger version.')
+
+  const cases = []
+  for (const suite of ledger.suites) {
+    assert.equal(
+      suite.tests.length,
+      suite.expectedTests,
+      `Rust takeover suite ${suite.file} has a stale test count.`
+    )
+    for (const takeoverCase of suite.tests) {
+      const marker = `"name": "${takeoverCase.name.replaceAll('"', '\\"')}"`
+      const offset = source.indexOf(marker)
+      assert.notEqual(offset, -1, `Cannot locate Rust takeover case ${suite.file}#${takeoverCase.name}.`)
+      cases.push({
+        id: `rc87-${shortDigest(`${file}\0${suite.file}\0${takeoverCase.name}\0cargo-xtask`)}`,
+        package: 'css',
+        file,
+        line: source.slice(0, offset).split('\n').length,
+        suites: ['rc.87 Rust takeover audit', suite.file],
+        title: takeoverCase.name,
+        runner: 'cargo-xtask',
+        kind: 'test',
+        state: 'active',
+        sourceKind: 'takeover-audit',
+        sourceDigest: sha256(JSON.stringify({ suite: suite.file, ...takeoverCase })),
+        matrix: undefined,
+        domains: ['css-bytes', 'syntax-css-semantics'],
+        priority: 'P0',
+        takeoverSourceFile: suite.file
+      })
+    }
+  }
+  assert.equal(cases.length, ledger.expectedLegacyTests, 'Rust takeover audit count drifted.')
+  return cases
+}
+
 function loadTakeoverEvidence() {
   const ledger = JSON.parse(readFileSync(path.resolve('parity/rust-takeover-ledger.json'), 'utf8'))
   const evidence = new Map()
@@ -974,6 +1015,43 @@ function seedRenderingEvidence(legacyInventory, targetInventory) {
     const target = targetById.get(entry.migration.targets[0].id)
     assert.ok(source, `Cannot seed audited rendering source ${entry.id}.`)
     assert.ok(target, `Cannot seed audited rendering target for ${entry.id}.`)
+    recordsBySourceId.set(entry.id, {
+      sourceId: entry.id,
+      sourceDigest: source.sourceDigest,
+      proof: 'rc87-golden',
+      targets: [proofTargetReference(target)]
+    })
+  }
+
+  evidence.records = [...recordsBySourceId.values()]
+    .sort((left, right) => left.sourceId.localeCompare(right.sourceId))
+  writeFileSync(evidencePath, `${JSON.stringify(evidence, null, 2)}\n`)
+}
+
+function seedAuthoringEvidence(legacyInventory, targetInventory) {
+  assert.equal(
+    targetInventory.commit,
+    RC87_AUTHORING_TARGET_COMMIT,
+    'Authoring evidence must be audited against the pinned milestone 3 target.'
+  )
+  const evidence = JSON.parse(readFileSync(evidencePath, 'utf8'))
+  const legacyById = new Map(legacyInventory.cases.map((testCase) => [testCase.id, testCase]))
+  const targetById = new Map(targetInventory.cases.map((testCase) => [testCase.id, testCase]))
+  const recordsBySourceId = new Map(evidence.records.map((record) => [record.sourceId, record]))
+  const currentLedger = JSON.parse(readFileSync(ledgerPath, 'utf8'))
+  assert.equal(
+    currentLedger.target.commit,
+    RC87_AUTHORING_TARGET_COMMIT,
+    'The current ledger does not describe the pinned milestone 3 target.'
+  )
+
+  for (const entry of currentLedger.entries) {
+    if (entry.priority !== 'P0' || entry.migration.status !== 'mapped-unverified') continue
+    assert.equal(entry.migration.targets.length, 1, `P0 evidence target is ambiguous for ${entry.id}.`)
+    const source = legacyById.get(entry.id)
+    const target = targetById.get(entry.migration.targets[0].id)
+    assert.ok(source, `Cannot seed audited P0 source ${entry.id}.`)
+    assert.ok(target, `Cannot seed audited P0 target for ${entry.id}.`)
     recordsBySourceId.set(entry.id, {
       sourceId: entry.id,
       sourceDigest: source.sourceDigest,
@@ -1191,7 +1269,7 @@ function mapCases(legacyInventory, targetInventory, takeover, migrationEvidence,
   })
 
   const targetOnly = targetInventory.cases
-    .filter((testCase) => !mappedTargetIds.has(testCase.id))
+    .filter((testCase) => testCase.sourceKind !== 'takeover-audit' && !mappedTargetIds.has(testCase.id))
     .map(targetReference)
 
   return { entries, targetOnly }
@@ -1421,6 +1499,7 @@ const targetCommit = targetArgument ? resolveRef(targetArgument) : resolveLatest
 const legacyInventory = collectCasesFromRef(baselineRef, baselineCommit)
 const targetInventory = collectCasesFromRef(targetRef, targetCommit)
 targetInventory.cases.push(...collectSemanticCorpusCases(targetCommit))
+targetInventory.cases.push(...collectRustTakeoverCases(targetCommit))
 targetInventory.cases.sort((left, right) => left.file.localeCompare(right.file) || left.line - right.line || left.title.localeCompare(right.title))
 const takeover = loadTakeoverEvidence()
 if (process.argv.includes('--seed-semantic-core-evidence')) {
@@ -1428,6 +1507,9 @@ if (process.argv.includes('--seed-semantic-core-evidence')) {
 }
 if (process.argv.includes('--seed-rendering-evidence')) {
   seedRenderingEvidence(legacyInventory, targetInventory)
+}
+if (process.argv.includes('--seed-authoring-evidence')) {
+  seedAuthoringEvidence(legacyInventory, targetInventory)
 }
 const migrationEvidence = loadMigrationEvidence()
 const exceptions = loadParityExceptions()

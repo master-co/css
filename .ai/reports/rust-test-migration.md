@@ -6,7 +6,7 @@ The machine-readable source of truth is `parity/ts-test-migration-ledger.json`.
 ## Frozen baseline
 
 - Public and semantic source baseline: `v2.0.0-rc.87@9cc3e8b5f2e34d5220f10f27ed5ce8186fbcb524`.
-- Rust target candidate: `latest-target-change@b242a52a0fcb43b1b506d9fa1e010d0c85621d13`.
+- Rust target candidate: `latest-target-change@7ac3c1a63a7af8c8c927a869fa3e4d531261cec6`.
 - Scope: executable tests and E2E cases under `packages/*`; examples, site, and benchmarks are not migration denominators.
 - Newer rc changes are an overlay only and never replace rc.87 expectations.
 
@@ -20,7 +20,7 @@ The machine-readable source of truth is `parity/ts-test-migration-ledger.json`.
 | rc.87 expanded cases | 1546 |
 | Expanded parameter and RuleTester cases | 349 |
 | Unresolved runtime matrices | 0 |
-| Rust target cases collected | 1189 |
+| Rust target cases collected | 1313 |
 | Target-only cases | 156 |
 
 The old 114-test takeover ledger is an engine-only historical subset. Its semantic
@@ -31,31 +31,31 @@ capture commit `ef1a7c851` is not substituted for rc.87.
 | Status | Count |
 |---|---:|
 | approved-divergence | 2 |
-| gap | 408 |
-| mapped-unverified | 228 |
+| gap | 398 |
+| mapped-unverified | 85 |
 | source-inactive | 10 |
-| verified-exact | 898 |
+| verified-exact | 1051 |
 
 | Candidate coverage | Count |
 |---|---:|
-| candidate-all | 228 |
-| evidence | 293 |
+| candidate-all | 85 |
+| evidence | 446 |
 | exact-source | 607 |
-| none | 418 |
+| none | 408 |
 
 | Verification proof | Count |
 |---|---:|
 | approved-divergence | 2 |
 | exact-source | 607 |
-| rc87-golden | 291 |
+| rc87-golden | 444 |
 
 | Priority | Cases | Gaps |
 |---|---:|---:|
-| P0 | 676 | 11 |
+| P0 | 676 | 1 |
 | P1 | 732 | 390 |
 | P2 | 138 | 7 |
 | P3 | 0 | 0 |
-Verified active cases: 900/1536.
+Verified active cases: 1053/1536.
 
 `mapped-unverified` means that an executable target candidate or takeover reference
 exists. It does not claim parity. `exact-source` requires one identical executable
@@ -79,10 +79,10 @@ Ambiguous candidates remain incomplete until evidence selects a target explicitl
 | `figma` | 1 | 0 | 0 | 1 | 1 | 0 |
 | `integration` | 11 | 11 | 0 | 0 | 11 | 0 |
 | `language` | 78 | 0 | 78 | 0 | 9 | 69 |
-| `language-server` | 31 | 2 | 0 | 29 | 29 | 2 |
-| `language-service` | 217 | 4 | 213 | 0 | 10 | 207 |
+| `language-server` | 31 | 2 | 0 | 29 | 31 | 0 |
+| `language-service` | 217 | 4 | 213 | 0 | 14 | 203 |
 | `lexer` | 34 | 0 | 34 | 0 | 0 | 34 |
-| `lint` | 65 | 3 | 62 | 0 | 0 | 65 |
+| `lint` | 65 | 3 | 62 | 0 | 3 | 62 |
 | `mcp` | 16 | 0 | 0 | 16 | 16 | 0 |
 | `next` | 54 | 54 | 0 | 0 | 54 | 0 |
 | `nuxt` | 7 | 7 | 0 | 0 | 7 | 0 |
@@ -92,7 +92,7 @@ Ambiguous candidates remain incomplete until evidence selects a target explicitl
 | `scanner` | 96 | 0 | 96 | 0 | 93 | 3 |
 | `schema` | 2 | 0 | 2 | 0 | 2 | 0 |
 | `server` | 36 | 36 | 0 | 0 | 36 | 0 |
-| `source` | 13 | 1 | 12 | 0 | 0 | 13 |
+| `source` | 13 | 1 | 12 | 0 | 1 | 12 |
 | `stylesheet` | 48 | 48 | 0 | 0 | 48 | 0 |
 | `svelte` | 9 | 9 | 0 | 0 | 9 | 0 |
 | `validator` | 8 | 0 | 8 | 0 | 3 | 5 |
@@ -111,20 +111,10 @@ Ambiguous candidates remain incomplete until evidence selects a target explicitl
 
 ## P0 gaps
 
-The full list is in the JSON ledger; the first 11 are shown here.
+The full list is in the JSON ledger; the first 1 are shown here.
 
 | Source | rc.87 case | Domains |
 |---|---|---|
-| `packages/language-server/tests/runtime.test.ts:12` | uses a resolved workspace Master CSS runtime when available | language-authoring, rendering-modes |
-| `packages/language-server/tests/runtime.test.ts:23` | falls back to the bundled runtime when workspace packages are missing | language-authoring, rendering-modes |
-| `packages/language-service/tests/render-semantic-tokens.test.ts:557` | does not render static theme modifier semantic tokens | authoring, language-authoring, rendering-modes |
-| `packages/language-service/tests/runtime.test.ts:33` | uses the injected runtime default manifest for completions | authoring, language-authoring, rendering-modes |
-| `packages/language-service/tests/runtime.test.ts:44` | uses the injected runtime for hover CSS previews | language-authoring, rendering-modes |
-| `packages/language-service/tests/runtime.test.ts:54` | uses the injected runtime variables for document colors | language-authoring, rendering-modes, syntax-css-semantics |
-| `packages/lint/tests/index.test.ts:659` | ignores token, static, invalid, unknown, and component classes | lint-authoring, rendering-modes, syntax-css-semantics |
-| `packages/lint/tests/index.test.ts:711` | suggests static utilities, theme tokens, and property aliases | authoring, lint-authoring, rendering-modes, syntax-css-semantics |
-| `packages/lint/tests/index.test.ts:717` | suggests static utility aliases from generated declarations | lint-authoring, rendering-modes, syntax-css-semantics |
-| `packages/source/tests/adapters.test.ts:27` | extracts static classes from JavaScript and TypeScript syntax with Oxc | rendering-modes, syntax-css-semantics, syntax-extraction |
 | `packages/vscode/tests/server-bundle.test.js:204` | server bundle keeps expected native runtime imports external | language-authoring, rendering-modes |
 
 ## Dynamic matrices requiring runtime collection
