@@ -30,6 +30,36 @@
         "tooling"
       ],
       "test": "packages/tooling/tests/scanner/adapters.test.ts"
+    },
+    {
+      "id": "rc87-cli-explicit-generate-command",
+      "reason": "The refactored CLI exposes generation as an explicit command and does not preserve the rc.87 root scanning command shape.",
+      "old": "Root help advertises source paths, watch, and no-export options directly on @master/css-cli.",
+      "new": "Root help advertises the master-css binary with explicit generate, lint, and inspect commands; generation options belong to generate.",
+      "packages": [
+        "cli"
+      ],
+      "test": "packages/cli/tests/rc87-core.test.ts"
+    },
+    {
+      "id": "rc87-cli-removed-command-shims",
+      "reason": "The CLI refactor removes obsolete extract, render, and scan compatibility shims instead of retaining legacy command-specific errors.",
+      "old": "Invoking extract, render, or scan reports that the named command was removed.",
+      "new": "Invoking extract, render, or scan follows Commander's ordinary unknown-command failure path.",
+      "packages": [
+        "cli"
+      ],
+      "test": "packages/cli/tests/rc87-core.test.ts"
+    },
+    {
+      "id": "rc87-cli-master-css-binary-name",
+      "reason": "The published CLI has one deliberate binary name and does not restore the retired package-name binary representation.",
+      "old": "The package metadata represents the binary as the package-name string form expected by rc.87.",
+      "new": "The package metadata exposes only the master-css binary mapped to dist/bin/index.js.",
+      "packages": [
+        "cli"
+      ],
+      "test": "packages/cli/tests/rc87-core.test.ts"
     }
   ]
 }
