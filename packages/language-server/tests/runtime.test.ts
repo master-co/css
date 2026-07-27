@@ -9,7 +9,7 @@ import createDocument from '../src/utils/create-document'
 import { withFixture } from './setup'
 
 withFixture('monorepo', async (context) => {
-  test('uses a resolved workspace Master CSS runtime when available', async () => {
+  async function verifyWorkspaceManifest() {
     const textDocument = context.createDocument('<div class=""></div>')
 
     await context.server.onDidOpen({ document: textDocument })
@@ -17,10 +17,13 @@ withFixture('monorepo', async (context) => {
     expect(context.rootWorkspace?.manifestSource).toBe('workspace')
     expect(context.rootWorkspace?.manifestResolution?.presetManifest?.entry).toBeTruthy()
     await context.server.onDidClose({ document: textDocument })
-  })
+  }
+
+  test('uses a resolved workspace Master CSS manifest when available', verifyWorkspaceManifest)
+  test('uses a resolved workspace Master CSS runtime when available', verifyWorkspaceManifest)
 })
 
-test('falls back to the bundled runtime when workspace packages are missing', async () => {
+async function verifyBundledManifestFallback() {
   const cwd = mkdtempSync(join(tmpdir(), 'master-css-language-server-runtime-'))
   try {
     writeFileSync(join(cwd, 'package.json'), JSON.stringify({ private: true }))
@@ -68,4 +71,7 @@ test('falls back to the bundled runtime when workspace packages are missing', as
   } finally {
     rmSync(cwd, { recursive: true, force: true })
   }
-})
+}
+
+test('uses the bundled manifest when workspace packages are missing', verifyBundledManifestFallback)
+test('falls back to the bundled runtime when workspace packages are missing', verifyBundledManifestFallback)
