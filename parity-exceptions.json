@@ -20,6 +20,16 @@
         "css"
       ],
       "test": "packages/css/tests/facade.test.ts"
+    },
+    {
+      "id": "rc87-scanner-custom-adapter-public-api-removal",
+      "reason": "Scanner extraction semantics now live in the owning Rust crate, while the TypeScript host keeps only private first-party framework adapters. Restoring the rc.87 third-party adapter registry would reintroduce a retired public semantic extension API and violate the Rust-only ownership boundary.",
+      "old": "Passing a custom .txt adapter before the built-in adapters extracts the adapter result block instead of the source text class hidden.",
+      "new": "The scanner options reject the retired adapters field and the Rust-backed built-in extraction pipeline observes hidden from the same .txt source.",
+      "packages": [
+        "tooling"
+      ],
+      "test": "packages/tooling/tests/scanner/adapters.test.ts"
     }
   ]
 }
