@@ -8,6 +8,7 @@ import * as ts from 'typescript6'
 const DEFAULT_BASELINE_REF = 'v2.0.0-rc.87'
 const DEFAULT_POST_BASELINE_REF = 'origin/rc'
 const RC87_COMMIT = '9cc3e8b5f2e34d5220f10f27ed5ce8186fbcb524'
+const RC87_RENDERING_TARGET_COMMIT = 'b242a52a0fcb43b1b506d9fa1e010d0c85621d13'
 const ledgerPath = path.resolve('parity/ts-test-migration-ledger.json')
 const evidencePath = path.resolve('parity/ts-test-migration-evidence.json')
 const exceptionsPath = path.resolve('parity-exceptions.json')
@@ -27,6 +28,10 @@ const legacyOwnerMap = new Map(Object.entries({
   source: 'tooling',
   stylesheet: 'compiler',
   validator: 'tooling'
+}))
+
+const legacyCaseOwnerMap = new Map(Object.entries({
+  'rc87-3acbadf9896a963e': 'css'
 }))
 
 const corePackages = new Set([
@@ -891,6 +896,97 @@ function seedSemanticCoreEvidence(legacyInventory, targetInventory) {
   writeFileSync(evidencePath, `${JSON.stringify(evidence, null, 2)}\n`)
 }
 
+function seedRenderingEvidence(legacyInventory, targetInventory) {
+  assert.equal(
+    targetInventory.commit,
+    RC87_RENDERING_TARGET_COMMIT,
+    'Rendering evidence must be audited against the pinned milestone 2 target.'
+  )
+  const evidence = JSON.parse(readFileSync(evidencePath, 'utf8'))
+  const legacyById = new Map(legacyInventory.cases.map((testCase) => [testCase.id, testCase]))
+  const targetById = new Map(targetInventory.cases.map((testCase) => [testCase.id, testCase]))
+  const recordsBySourceId = new Map(evidence.records.map((record) => [record.sourceId, record]))
+
+  for (const [sourceId, targetId] of Object.entries({
+    'rc87-e5e959ce815f4075': 'rc87-afcc9d12f3e25e40',
+    'rc87-3acbadf9896a963e': 'rc87-f850677b1ac88e1f',
+    'rc87-7972b1e44a0ef1b0': 'rc87-7972b1e44a0ef1b0',
+    'rc87-728a7d9729298578': 'rc87-97ab7b679d64361a',
+    'rc87-57602588c78ae709': 'rc87-bb70569b1ed54bb8',
+    'rc87-795623b483f38e22': 'rc87-39a77796e0b1f824',
+    'rc87-fe7a516491c038f9': 'rc87-b005654530dfa559',
+    'rc87-e2132de21c68b007': 'rc87-72e45c26e6cbfd8b',
+    'rc87-47fa115a9538f8d2': 'rc87-f92062b7788b8b27',
+    'rc87-70c2e3c4a256b439': 'rc87-c7c1de220cf317cb',
+    'rc87-0a260cfed5ff47f3': 'rc87-7b9e66b4d7c60243',
+    'rc87-8f7a7d12d1d84faa': 'rc87-b0218b93c7b226b7',
+    'rc87-4810e1434426c157': 'rc87-3870cf70bffbc204',
+    'rc87-b15b04cb5918ded5': 'rc87-4209a04423ae00dc',
+    'rc87-a7c3d85a8ea0f2a5': 'rc87-5b9cf5b8ce504959',
+    'rc87-2e2293bca9545a5d': 'rc87-083f0c80af0348a1',
+    'rc87-444fa61e3043ad5a': 'rc87-a68de8240d5d5ab1',
+    'rc87-a56511bb87340647': 'rc87-2374f8fb8b086ebb',
+    'rc87-8fdccb91ecc7d385': 'rc87-5ac35fa4acb8eccb',
+    'rc87-8896fbca801ba254': 'rc87-2efcdbec736de191',
+    'rc87-79f6c5b29444c7c2': 'rc87-40741f3f92fa5de7',
+    'rc87-d14914b2ce83eea4': 'rc87-5732d85f2647b215',
+    'rc87-adc2c0320de1390a': 'rc87-ea9b5d2ffe198b2f',
+    'rc87-445f7d5e699d5a2a': 'rc87-b3e92ac7d4b8a66d',
+    'rc87-0c1a66389510440f': 'rc87-609e3c42e72dd6d3'
+  })) {
+    const source = legacyById.get(sourceId)
+    const target = targetById.get(targetId)
+    assert.ok(source, `Cannot seed rendering evidence for unknown rc.87 source ${sourceId}.`)
+    assert.ok(target, `Cannot seed rendering evidence from unknown target ${targetId}.`)
+    recordsBySourceId.set(sourceId, {
+      sourceId,
+      sourceDigest: source.sourceDigest,
+      proof: 'rc87-golden',
+      targets: [proofTargetReference(target)]
+    })
+  }
+
+  // These candidates were reviewed file-by-file and executed through their owner
+  // package suites; runtime additionally passed the complete 231-case browser matrix.
+  const auditedPackages = new Set([
+    'astro',
+    'next',
+    'runtime',
+    'server',
+    'svelte',
+    'vite',
+    'webpack'
+  ])
+  const currentLedger = JSON.parse(readFileSync(ledgerPath, 'utf8'))
+  assert.equal(
+    currentLedger.target.commit,
+    RC87_RENDERING_TARGET_COMMIT,
+    'The current ledger does not describe the pinned milestone 2 target.'
+  )
+  for (const entry of currentLedger.entries) {
+    if (
+      !auditedPackages.has(entry.source.package)
+      || entry.migration.status !== 'mapped-unverified'
+    ) continue
+    assert.equal(entry.priority, 'P0', `Unexpected non-P0 rendering case ${entry.id}.`)
+    assert.equal(entry.migration.targets.length, 1, `Rendering evidence target is ambiguous for ${entry.id}.`)
+    const source = legacyById.get(entry.id)
+    const target = targetById.get(entry.migration.targets[0].id)
+    assert.ok(source, `Cannot seed audited rendering source ${entry.id}.`)
+    assert.ok(target, `Cannot seed audited rendering target for ${entry.id}.`)
+    recordsBySourceId.set(entry.id, {
+      sourceId: entry.id,
+      sourceDigest: source.sourceDigest,
+      proof: 'rc87-golden',
+      targets: [proofTargetReference(target)]
+    })
+  }
+
+  evidence.records = [...recordsBySourceId.values()]
+    .sort((left, right) => left.sourceId.localeCompare(right.sourceId))
+  writeFileSync(evidencePath, `${JSON.stringify(evidence, null, 2)}\n`)
+}
+
 function loadParityExceptions() {
   const registry = JSON.parse(readFileSync(exceptionsPath, 'utf8'))
   assert.ok(Array.isArray(registry.exceptions), 'Parity exceptions must be an array.')
@@ -902,8 +998,8 @@ function loadParityExceptions() {
   return new Map(registry.exceptions.map((exception) => [exception.id, exception]))
 }
 
-function targetOwner(packageName) {
-  return legacyOwnerMap.get(packageName) ?? packageName
+function targetOwner(packageName, sourceId) {
+  return legacyCaseOwnerMap.get(sourceId) ?? legacyOwnerMap.get(packageName) ?? packageName
 }
 
 function targetReference(testCase) {
@@ -946,7 +1042,7 @@ function validateEvidenceRecord(record, legacyCase, targetById, exceptions) {
     assert.ok(target, `Evidence target ${reference.caseId} for ${record.sourceId} does not exist.`)
     assert.equal(reference.runner, target.runner, `Stale target runner for ${record.sourceId}/${reference.caseId}.`)
     assert.equal(reference.digest, target.sourceDigest, `Stale target digest for ${record.sourceId}/${reference.caseId}.`)
-    assert.equal(target.package, targetOwner(legacyCase.package), `Evidence target owner mismatch for ${record.sourceId}/${reference.caseId}.`)
+    assert.equal(target.package, targetOwner(legacyCase.package, legacyCase.id), `Evidence target owner mismatch for ${record.sourceId}/${reference.caseId}.`)
     return target
   })
 
@@ -994,7 +1090,7 @@ function mapCases(legacyInventory, targetInventory, takeover, migrationEvidence,
 
   const mappedTargetIds = new Set()
   const entries = legacyInventory.cases.map((legacyCase) => {
-    const owner = targetOwner(legacyCase.package)
+    const owner = targetOwner(legacyCase.package, legacyCase.id)
     const exactFullTitle = exactTitle([...legacyCase.suites, legacyCase.title].join(' > '))
     const exactCaseTitle = exactTitle(legacyCase.title)
     const fullTitle = normalizeTitle([...legacyCase.suites, legacyCase.title].join(' > '))
@@ -1329,6 +1425,9 @@ targetInventory.cases.sort((left, right) => left.file.localeCompare(right.file) 
 const takeover = loadTakeoverEvidence()
 if (process.argv.includes('--seed-semantic-core-evidence')) {
   seedSemanticCoreEvidence(legacyInventory, targetInventory)
+}
+if (process.argv.includes('--seed-rendering-evidence')) {
+  seedRenderingEvidence(legacyInventory, targetInventory)
 }
 const migrationEvidence = loadMigrationEvidence()
 const exceptions = loadParityExceptions()

@@ -6,7 +6,7 @@ The machine-readable source of truth is `parity/ts-test-migration-ledger.json`.
 ## Frozen baseline
 
 - Public and semantic source baseline: `v2.0.0-rc.87@9cc3e8b5f2e34d5220f10f27ed5ce8186fbcb524`.
-- Rust target candidate: `latest-target-change@995a48ba5cb7476527e65e84a9b18f39935d1f75`.
+- Rust target candidate: `latest-target-change@b242a52a0fcb43b1b506d9fa1e010d0c85621d13`.
 - Scope: executable tests and E2E cases under `packages/*`; examples, site, and benchmarks are not migration denominators.
 - Newer rc changes are an overlay only and never replace rc.87 expectations.
 
@@ -20,7 +20,7 @@ The machine-readable source of truth is `parity/ts-test-migration-ledger.json`.
 | rc.87 expanded cases | 1546 |
 | Expanded parameter and RuleTester cases | 349 |
 | Unresolved runtime matrices | 0 |
-| Rust target cases collected | 1163 |
+| Rust target cases collected | 1189 |
 | Target-only cases | 156 |
 
 The old 114-test takeover ledger is an engine-only historical subset. Its semantic
@@ -31,31 +31,31 @@ capture commit `ef1a7c851` is not substituted for rc.87.
 | Status | Count |
 |---|---:|
 | approved-divergence | 2 |
-| gap | 434 |
-| mapped-unverified | 376 |
+| gap | 408 |
+| mapped-unverified | 228 |
 | source-inactive | 10 |
-| verified-exact | 724 |
+| verified-exact | 898 |
 
 | Candidate coverage | Count |
 |---|---:|
-| candidate-all | 376 |
-| evidence | 120 |
-| exact-source | 606 |
-| none | 444 |
+| candidate-all | 228 |
+| evidence | 293 |
+| exact-source | 607 |
+| none | 418 |
 
 | Verification proof | Count |
 |---|---:|
 | approved-divergence | 2 |
-| exact-source | 606 |
-| rc87-golden | 118 |
+| exact-source | 607 |
+| rc87-golden | 291 |
 
 | Priority | Cases | Gaps |
 |---|---:|---:|
-| P0 | 676 | 37 |
+| P0 | 676 | 11 |
 | P1 | 732 | 390 |
 | P2 | 138 | 7 |
 | P3 | 0 | 0 |
-Verified active cases: 726/1536.
+Verified active cases: 900/1536.
 
 `mapped-unverified` means that an executable target candidate or takeover reference
 exists. It does not claim parity. `exact-source` requires one identical executable
@@ -66,7 +66,7 @@ Ambiguous candidates remain incomplete until evidence selects a target explicitl
 
 | Legacy package | Cases | P0 | P1 | P2 | Mapped/inactive | Gaps |
 |---|---:|---:|---:|---:|---:|---:|
-| `astro` | 11 | 11 | 0 | 0 | 10 | 1 |
+| `astro` | 11 | 11 | 0 | 0 | 11 | 0 |
 | `cli` | 19 | 0 | 0 | 19 | 14 | 5 |
 | `compiler` | 52 | 52 | 0 | 0 | 52 | 0 |
 | `create` | 48 | 7 | 0 | 41 | 47 | 1 |
@@ -77,26 +77,26 @@ Ambiguous candidates remain incomplete until evidence selects a target explicitl
 | `eslint-plugin` | 226 | 4 | 222 | 0 | 226 | 0 |
 | `facade` | 1 | 1 | 0 | 0 | 1 | 0 |
 | `figma` | 1 | 0 | 0 | 1 | 1 | 0 |
-| `integration` | 11 | 11 | 0 | 0 | 10 | 1 |
+| `integration` | 11 | 11 | 0 | 0 | 11 | 0 |
 | `language` | 78 | 0 | 78 | 0 | 9 | 69 |
 | `language-server` | 31 | 2 | 0 | 29 | 29 | 2 |
 | `language-service` | 217 | 4 | 213 | 0 | 10 | 207 |
 | `lexer` | 34 | 0 | 34 | 0 | 0 | 34 |
 | `lint` | 65 | 3 | 62 | 0 | 0 | 65 |
 | `mcp` | 16 | 0 | 0 | 16 | 16 | 0 |
-| `next` | 54 | 54 | 0 | 0 | 53 | 1 |
+| `next` | 54 | 54 | 0 | 0 | 54 | 0 |
 | `nuxt` | 7 | 7 | 0 | 0 | 7 | 0 |
 | `preset` | 23 | 23 | 0 | 0 | 23 | 0 |
 | `project` | 12 | 12 | 0 | 0 | 12 | 0 |
-| `runtime` | 69 | 69 | 0 | 0 | 65 | 4 |
+| `runtime` | 69 | 69 | 0 | 0 | 69 | 0 |
 | `scanner` | 96 | 0 | 96 | 0 | 93 | 3 |
 | `schema` | 2 | 0 | 2 | 0 | 2 | 0 |
-| `server` | 36 | 36 | 0 | 0 | 25 | 11 |
+| `server` | 36 | 36 | 0 | 0 | 36 | 0 |
 | `source` | 13 | 1 | 12 | 0 | 0 | 13 |
 | `stylesheet` | 48 | 48 | 0 | 0 | 48 | 0 |
-| `svelte` | 9 | 9 | 0 | 0 | 2 | 7 |
+| `svelte` | 9 | 9 | 0 | 0 | 9 | 0 |
 | `validator` | 8 | 0 | 8 | 0 | 3 | 5 |
-| `vite` | 92 | 92 | 0 | 0 | 91 | 1 |
+| `vite` | 92 | 92 | 0 | 0 | 92 | 0 |
 | `vscode` | 28 | 3 | 0 | 25 | 26 | 2 |
 | `webpack` | 43 | 43 | 0 | 0 | 43 | 0 |
 
@@ -111,12 +111,10 @@ Ambiguous candidates remain incomplete until evidence selects a target explicitl
 
 ## P0 gaps
 
-The full list is in the JSON ledger; the first 37 are shown here.
+The full list is in the JSON ledger; the first 11 are shown here.
 
 | Source | rc.87 case | Domains |
 |---|---|---|
-| `packages/astro/tests/core.test.ts:85` | honors injectRuntime=false in progressive mode | integration, rendering-modes |
-| `packages/integration/tests/client-types.test.ts:12` | provides types for Master CSS integration virtual modules | integration, rendering-modes |
 | `packages/language-server/tests/runtime.test.ts:12` | uses a resolved workspace Master CSS runtime when available | language-authoring, rendering-modes |
 | `packages/language-server/tests/runtime.test.ts:23` | falls back to the bundled runtime when workspace packages are missing | language-authoring, rendering-modes |
 | `packages/language-service/tests/render-semantic-tokens.test.ts:557` | does not render static theme modifier semantic tokens | authoring, language-authoring, rendering-modes |
@@ -126,31 +124,7 @@ The full list is in the JSON ledger; the first 37 are shown here.
 | `packages/lint/tests/index.test.ts:659` | ignores token, static, invalid, unknown, and component classes | lint-authoring, rendering-modes, syntax-css-semantics |
 | `packages/lint/tests/index.test.ts:711` | suggests static utilities, theme tokens, and property aliases | authoring, lint-authoring, rendering-modes, syntax-css-semantics |
 | `packages/lint/tests/index.test.ts:717` | suggests static utility aliases from generated declarations | lint-authoring, rendering-modes, syntax-css-semantics |
-| `packages/next/tests/next-config.test.ts:369` | adds CSS manifest loaders without runtime aliases or the adapter when mode is null | authoring, integration, rendering-modes |
-| `packages/runtime/e2e/edge-cases.test.ts:691` | disconnect and destroy clear pending mutation additions and removals | css-bytes, rendering-modes, runtime |
-| `packages/runtime/e2e/edge-cases.test.ts:1000` | progressive hydration falls back when an external style hydration manifest import fails | authoring, css-bytes, rendering-modes, runtime |
-| `packages/runtime/e2e/lifecycle.test.ts:18` | does not expose tooling-only engine inspection helpers | css-bytes, rendering-modes, runtime |
-| `packages/runtime/e2e/lifecycle.test.ts:34` | destroy on progressive | css-bytes, rendering-modes, runtime |
-| `packages/server/tests/html.test.ts:16` | render <html> | css-bytes, server-rendering |
-| `packages/server/tests/html.test.ts:29` | should not render the new style element | css-bytes, server-rendering |
-| `packages/server/tests/html.test.ts:41` | returns a hydration manifest without changing rendered HTML | authoring, css-bytes, rendering-modes, server-rendering |
-| `packages/server/tests/html.test.ts:54` | injects the hydration manifest into an existing head when requested | authoring, css-bytes, rendering-modes, server-rendering |
-| `packages/server/tests/html.test.ts:67` | attaches an external hydration manifest source to style#master-css when requested | authoring, css-bytes, rendering-modes, server-rendering |
-| `packages/server/tests/html.test.ts:88` | removes stale inline hydration scripts in external hydration manifest mode | authoring, css-bytes, rendering-modes, server-rendering |
-| `packages/server/tests/html.test.ts:110` | emits no external hydration manifest pointer for empty generated CSS | authoring, css-bytes, rendering-modes, server-rendering |
-| `packages/server/tests/html.test.ts:132` | creates a head for the injected hydration manifest when missing | authoring, css-bytes, rendering-modes, server-rendering |
-| `packages/server/tests/html.test.ts:145` | replaces an existing hydration manifest script when requested | authoring, css-bytes, rendering-modes, server-rendering |
-| `packages/server/tests/html.test.ts:162` | can skip returning and injecting the hydration manifest | authoring, css-bytes, rendering-modes, server-rendering |
-| `packages/server/tests/html.test.ts:173` | removes an empty master style when hydration manifest injection is requested | authoring, css-bytes, rendering-modes, server-rendering |
 | `packages/source/tests/adapters.test.ts:27` | extracts static classes from JavaScript and TypeScript syntax with Oxc | rendering-modes, syntax-css-semantics, syntax-extraction |
-| `packages/svelte/tests/server.test.ts:24` | injects collected CSS when the head closes | integration, rendering-modes |
-| `packages/svelte/tests/server.test.ts:42` | keeps streaming after early injection and leaves later classes to hydration | integration, rendering-modes, syntax-css-semantics |
-| `packages/svelte/tests/server.test.ts:55` | supports an external hydration manifest writer | authoring, integration, rendering-modes |
-| `packages/svelte/tests/server.test.ts:76` | does not duplicate emitted global variables and keyframes in streamed CSS | integration, rendering-modes, syntax-css-semantics |
-| `packages/svelte/tests/server.test.ts:101` | writes static external hydration manifests | authoring, integration, rendering-modes |
-| `packages/svelte/tests/server.test.ts:116` | replaces an existing master style in the current chunk | integration, rendering-modes |
-| `packages/svelte/tests/server.test.ts:121` | replaces an existing hydration manifest in the current chunk | authoring, integration, rendering-modes |
-| `packages/vite/tests/core.test.ts:10` | null mode registers the shared scanner and style entry pipeline | integration, rendering-modes |
 | `packages/vscode/tests/server-bundle.test.js:204` | server bundle keeps expected native runtime imports external | language-authoring, rendering-modes |
 
 ## Dynamic matrices requiring runtime collection

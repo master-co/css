@@ -1366,11 +1366,11 @@
   },
   "target": {
     "ref": "latest-target-change",
-    "commit": "995a48ba5cb7476527e65e84a9b18f39935d1f75",
+    "commit": "b242a52a0fcb43b1b506d9fa1e010d0c85621d13",
     "packageCount": 36,
-    "testFiles": 156,
-    "e2eFiles": 23,
-    "cases": 1163
+    "testFiles": 160,
+    "e2eFiles": 24,
+    "cases": 1189
   },
   "existingParity": {
     "semanticBaseline": "ef1a7c851",
@@ -1381,20 +1381,20 @@
   "evidence": {
     "path": "parity/ts-test-migration-evidence.json",
     "version": 1,
-    "records": 120,
+    "records": 293,
     "proofs": {
       "approved-divergence": 2,
-      "exact-source": 606,
-      "rc87-golden": 118
+      "exact-source": 607,
+      "rc87-golden": 291
     }
   },
   "summary": {
     "byStatus": {
       "approved-divergence": 2,
-      "gap": 434,
-      "mapped-unverified": 376,
+      "gap": 408,
+      "mapped-unverified": 228,
       "source-inactive": 10,
-      "verified-exact": 724
+      "verified-exact": 898
     },
     "byPriority": {
       "P0": 676,
@@ -1402,15 +1402,15 @@
       "P2": 138
     },
     "byCoverage": {
-      "candidate-all": 376,
-      "evidence": 120,
-      "exact-source": 606,
-      "none": 444
+      "candidate-all": 228,
+      "evidence": 293,
+      "exact-source": 607,
+      "none": 418
     },
     "byProof": {
       "approved-divergence": 2,
-      "exact-source": 606,
-      "rc87-golden": 118
+      "exact-source": 607,
+      "rc87-golden": 291
     },
     "byPackage": {
       "astro": {
@@ -1418,8 +1418,8 @@
         "P0": 11,
         "P1": 0,
         "P2": 0,
-        "mapped": 10,
-        "gap": 1
+        "mapped": 11,
+        "gap": 0
       },
       "cli": {
         "total": 19,
@@ -1506,8 +1506,8 @@
         "P0": 11,
         "P1": 0,
         "P2": 0,
-        "mapped": 10,
-        "gap": 1
+        "mapped": 11,
+        "gap": 0
       },
       "language": {
         "total": 78,
@@ -1562,8 +1562,8 @@
         "P0": 54,
         "P1": 0,
         "P2": 0,
-        "mapped": 53,
-        "gap": 1
+        "mapped": 54,
+        "gap": 0
       },
       "nuxt": {
         "total": 7,
@@ -1594,8 +1594,8 @@
         "P0": 69,
         "P1": 0,
         "P2": 0,
-        "mapped": 65,
-        "gap": 4
+        "mapped": 69,
+        "gap": 0
       },
       "scanner": {
         "total": 96,
@@ -1618,8 +1618,8 @@
         "P0": 36,
         "P1": 0,
         "P2": 0,
-        "mapped": 25,
-        "gap": 11
+        "mapped": 36,
+        "gap": 0
       },
       "source": {
         "total": 13,
@@ -1642,8 +1642,8 @@
         "P0": 9,
         "P1": 0,
         "P2": 0,
-        "mapped": 2,
-        "gap": 7
+        "mapped": 9,
+        "gap": 0
       },
       "validator": {
         "total": 8,
@@ -1658,8 +1658,8 @@
         "P0": 92,
         "P1": 0,
         "P2": 0,
-        "mapped": 91,
-        "gap": 1
+        "mapped": 92,
+        "gap": 0
       },
       "vscode": {
         "total": 28,
@@ -1791,8 +1791,8 @@
         "targetPackage": "astro"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-1a9fdd25ef07d349",
@@ -1807,7 +1807,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "9063e908e049419a4d7d484d651ac71e5457f7eb271b7ffbf589621dc4248d68",
+          "targets": [
+            {
+              "caseId": "rc87-1a9fdd25ef07d349",
+              "runner": "vitest",
+              "digest": "effe9377a3b16b9f126db73ca94806b8eac215d3594a87f2752ea3dfd1e838a2"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -1836,8 +1846,8 @@
         "targetPackage": "astro"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-38e614a90e947c6e",
@@ -1852,7 +1862,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "f7f61ab1e229e62b73c50c98ed67f0e270bf78359f4718ce8598ec6b77bceec5",
+          "targets": [
+            {
+              "caseId": "rc87-38e614a90e947c6e",
+              "runner": "vitest",
+              "digest": "881fc820f146082f4ab3858223cf9e487007579535731b6441db4e762d7e97a1"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -1881,8 +1901,8 @@
         "targetPackage": "astro"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-c0aa293b8c818099",
@@ -1897,7 +1917,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "b92825d54183cfec45472ebcbc621811f6ccec91272b3c7abf810881e4d2080d",
+          "targets": [
+            {
+              "caseId": "rc87-c0aa293b8c818099",
+              "runner": "vitest",
+              "digest": "7dd12ad038b1f8a035766a130deae34304c76c9515c9e7620cfaaff34623093e"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -1983,12 +2013,33 @@
         "targetPackage": "astro"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-afcc9d12f3e25e40",
+            "package": "astro",
+            "file": "packages/astro/tests/core.test.ts",
+            "line": 96,
+            "title": "honors injectRuntime=false in progressive mode",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "8c78a46988a951dd5047dbbc3219c783a9e43affc41890602b19d92f115b1837"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "355542b4ff08a8e8b75650f889edee0e3bb1cf53600122a676b74f794ead2ad1",
+          "targets": [
+            {
+              "caseId": "rc87-afcc9d12f3e25e40",
+              "runner": "vitest",
+              "digest": "8c78a46988a951dd5047dbbc3219c783a9e43affc41890602b19d92f115b1837"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -2018,14 +2069,14 @@
         "targetPackage": "astro"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-398a9d17a486d9a5",
             "package": "astro",
             "file": "packages/astro/tests/core.test.ts",
-            "line": 96,
+            "line": 103,
             "title": "preloads the runtime manifest JSON in runtime static builds",
             "runner": "vitest",
             "kind": "test",
@@ -2034,7 +2085,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "aa6314d255f6aaede23a228c35fa443091ae2445d34c2f87e33406b01b84ba04",
+          "targets": [
+            {
+              "caseId": "rc87-398a9d17a486d9a5",
+              "runner": "vitest",
+              "digest": "330b31e607ba94781c1dbabaff87548766b80b833cdc047017d593935fa9eb82"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -2064,14 +2125,14 @@
         "targetPackage": "astro"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-54cb03c4c412f3ba",
             "package": "astro",
             "file": "packages/astro/tests/core.test.ts",
-            "line": 131,
+            "line": 138,
             "title": "does not preload the runtime manifest outside runtime injection static builds",
             "runner": "vitest",
             "kind": "test",
@@ -2080,7 +2141,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "83362fbe2ce552b0464cec5168b60512df0f73eb808867f0e4386ae30e140912",
+          "targets": [
+            {
+              "caseId": "rc87-54cb03c4c412f3ba",
+              "runner": "vitest",
+              "digest": "139e960c79540dba75eb7e8d9fce97f0d5afd7973833b6395d001d8ff2490f16"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -2117,7 +2188,7 @@
             "id": "rc87-dd02f376a5d4a327",
             "package": "astro",
             "file": "packages/astro/tests/core.test.ts",
-            "line": 161,
+            "line": 168,
             "title": "externalizes static build hydration manifests",
             "runner": "vitest",
             "kind": "test",
@@ -33188,15 +33259,36 @@
         "sourceDigest": "6e537fc01d2c661cd8ce2d69f935a060b9bb5a29949271c5de79ca847cbfa721"
       },
       "ownership": {
-        "targetPackage": "internal"
+        "targetPackage": "css"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-f850677b1ac88e1f",
+            "package": "css",
+            "file": "packages/css/tests/rc87-client-types.test.ts",
+            "line": 12,
+            "title": "provides types for Master CSS integration virtual modules",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "682ec82a9aeccde31268272ffeef9be385664765695caa2fb3c284c174928f82"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "6e537fc01d2c661cd8ce2d69f935a060b9bb5a29949271c5de79ca847cbfa721",
+          "targets": [
+            {
+              "caseId": "rc87-f850677b1ac88e1f",
+              "runner": "vitest",
+              "digest": "682ec82a9aeccde31268272ffeef9be385664765695caa2fb3c284c174928f82"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -49675,8 +49767,8 @@
         "targetPackage": "next"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-f3a51f991c07da68",
@@ -49691,7 +49783,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "1f37157c30ab9d8fc9ae63c9bcfd8cbb062b0181b0672d09868c22e87d1f71c3",
+          "targets": [
+            {
+              "caseId": "rc87-f3a51f991c07da68",
+              "runner": "vitest",
+              "digest": "87c4cc5f64bbc47012f4ddae1788eb544fce9de856542b26f5e0d5b7180efbce"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -50703,8 +50805,8 @@
         "targetPackage": "next"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-2f48b55d70369cc0",
@@ -50719,7 +50821,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "f4ccdbd4fc2d3fdd4a7f1001ee3b89dc356e22883266e62dda4c56335cd04204",
+          "targets": [
+            {
+              "caseId": "rc87-2f48b55d70369cc0",
+              "runner": "vitest",
+              "digest": "eaac65c88d415711b708397393a7d1d995afd770090aaa861f35022b3df473f5"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -50749,8 +50861,8 @@
         "targetPackage": "next"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-f4413d9d2a8c6c7e",
@@ -50765,7 +50877,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "ffe0537de322ce83726aa595c7641090e50b7a7bb25727c469197df007e5c437",
+          "targets": [
+            {
+              "caseId": "rc87-f4413d9d2a8c6c7e",
+              "runner": "vitest",
+              "digest": "92361f8b8bccf2b6742607e81842a2623980ba71bee1df3db47a851ca2ca5d04"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -50795,8 +50917,8 @@
         "targetPackage": "next"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-ee59493410e60ff5",
@@ -50811,7 +50933,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "41bc88b48ab866008761b43ac716ae76d20bfc2efe918201f2a22bc932abea30",
+          "targets": [
+            {
+              "caseId": "rc87-ee59493410e60ff5",
+              "runner": "vitest",
+              "digest": "0450f3aa0337a4d0eca527a52e917f63aee99f0e8d68328a3570d48ae078206c"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -50841,12 +50973,33 @@
         "targetPackage": "next"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-7972b1e44a0ef1b0",
+            "package": "next",
+            "file": "packages/next/tests/next-config.test.ts",
+            "line": 379,
+            "title": "adds CSS manifest loaders without runtime aliases or the adapter when mode is null",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "166ffffd07951eec70fb394f2aebb1856c28587e3d97079e2c521da88aa91d63"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "c39acf53567c0395ba6032ded31b7449b8a18fe3efc48d12ab1d07d478f632b3",
+          "targets": [
+            {
+              "caseId": "rc87-7972b1e44a0ef1b0",
+              "runner": "vitest",
+              "digest": "166ffffd07951eec70fb394f2aebb1856c28587e3d97079e2c521da88aa91d63"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -50883,7 +51036,7 @@
             "id": "rc87-fe8901f174085d14",
             "package": "next",
             "file": "packages/next/tests/next-config.test.ts",
-            "line": 379,
+            "line": 430,
             "title": "composes an existing Next adapter path with the Master CSS adapter",
             "runner": "vitest",
             "kind": "test",
@@ -50941,7 +51094,7 @@
             "id": "rc87-5dc31ee125b79ae2",
             "package": "next",
             "file": "packages/next/tests/next-config.test.ts",
-            "line": 400,
+            "line": 451,
             "title": "composes NEXT_ADAPTER_PATH when no adapter path is configured",
             "runner": "vitest",
             "kind": "test",
@@ -50998,7 +51151,7 @@
             "id": "rc87-4c05d082c3d2b807",
             "package": "next",
             "file": "packages/next/tests/next-config.test.ts",
-            "line": 423,
+            "line": 474,
             "title": "sets up static mode with Turbopack rules without adding a webpack callback",
             "runner": "vitest",
             "kind": "test",
@@ -51677,8 +51830,8 @@
         "targetPackage": "next"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-42e1bd1243c512dc",
@@ -51693,7 +51846,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "817768d045885ac863853f9d2c8cb9c4a90d045e225c2c3b9f6dc3553d07442d",
+          "targets": [
+            {
+              "caseId": "rc87-42e1bd1243c512dc",
+              "runner": "vitest",
+              "digest": "6a3930a390a9cb46955f8c4441238156159e3e01bd37e00d3569512aa5175d42"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -51723,8 +51886,8 @@
         "targetPackage": "next"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-9028ebc1995bef78",
@@ -51739,7 +51902,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "39f13aed99363166ae62205ce2af86330a64f824564b98e546f825b0e19ab7cf",
+          "targets": [
+            {
+              "caseId": "rc87-9028ebc1995bef78",
+              "runner": "vitest",
+              "digest": "a85f202cb3ba81862ba1b14f926c865e9c76777ea2b514bf21960b63c293cc5d"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -51769,8 +51942,8 @@
         "targetPackage": "next"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-f9c0eb4b3b8f2fbb",
@@ -51785,7 +51958,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "8b32d5aa04eb998f88813840d0b55a469144fe8eae03d2683c364c227cb8978e",
+          "targets": [
+            {
+              "caseId": "rc87-f9c0eb4b3b8f2fbb",
+              "runner": "vitest",
+              "digest": "1f8b4e975fc9fec86ec18df93a2b9c9b0f6ec4f85f5ffba45275f104cae85f05"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -51814,8 +51997,8 @@
         "targetPackage": "next"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-5a8ee152eff81176",
@@ -51830,7 +52013,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "0f1000afcc3a21a1fca52fe255ba23220e2a1dd2fbf20b4cf14f4598a99be2fd",
+          "targets": [
+            {
+              "caseId": "rc87-5a8ee152eff81176",
+              "runner": "vitest",
+              "digest": "39592ffd24b3496194a6c8a8d2ba8e0ed50d0c38d7fffd043dc1b7161cd4ec49"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -51860,8 +52053,8 @@
         "targetPackage": "next"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-55b73f1c832fdb61",
@@ -51876,7 +52069,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "478dc0103e0b36549b5020e97703abda91de21fb021c372a68b821e21c3f8c26",
+          "targets": [
+            {
+              "caseId": "rc87-55b73f1c832fdb61",
+              "runner": "vitest",
+              "digest": "3915fa8671163eb0cc144b406cdf4fd368996e749601cf822536cfe51ccf988a"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -51906,8 +52109,8 @@
         "targetPackage": "next"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-72b32e8d8e81f786",
@@ -51922,7 +52125,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "5583c732db46d5bf044716ebffb34bc17161222d2e070dfed37c4cb36d0edd4f",
+          "targets": [
+            {
+              "caseId": "rc87-72b32e8d8e81f786",
+              "runner": "vitest",
+              "digest": "d5f6cabf8dc7d096ec2a65806ed8d3a2bbae3a70d6055307d22157d3925faa2f"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -51953,8 +52166,8 @@
         "targetPackage": "next"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-0ab81b21d1f50161",
@@ -51969,7 +52182,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "5d308ee3452d3d8eac1420f18a686593fd6eb7979e70d5a25408b1d7f164e29f",
+          "targets": [
+            {
+              "caseId": "rc87-0ab81b21d1f50161",
+              "runner": "vitest",
+              "digest": "a66514e27f51015d3673a958491086b54c51838a5e072868941157c3b6633559"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -52000,8 +52223,8 @@
         "targetPackage": "next"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-bdad67c1e43d1886",
@@ -52016,7 +52239,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "0e79da060540cab9778904485c7eb948f14f69e3f2d2927670bbff199a058e65",
+          "targets": [
+            {
+              "caseId": "rc87-bdad67c1e43d1886",
+              "runner": "vitest",
+              "digest": "56c42de527875f8b76054bbe2bbef9a0d4e5eaee7a41890cb7f7541403f887dc"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -52046,8 +52279,8 @@
         "targetPackage": "next"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-fb72a22f3bdde978",
@@ -52062,7 +52295,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "14e77ddd64590216fad7a0ec2db79edf0eba299b9f214908ce0fbed87a474d14",
+          "targets": [
+            {
+              "caseId": "rc87-fb72a22f3bdde978",
+              "runner": "vitest",
+              "digest": "2ae98ed79517b2ef58abec7e5f14a9fdf3c4b0d70cfe044426681f25929234d7"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -54373,8 +54616,8 @@
         "targetPackage": "runtime"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-ab3940ce2660b9ca",
@@ -54389,7 +54632,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "f149b78a85ce50a7655e99574da719734c67a2169c2fb17686dac4348fa2dad5",
+          "targets": [
+            {
+              "caseId": "rc87-ab3940ce2660b9ca",
+              "runner": "playwright-or-vitest-e2e",
+              "digest": "4cc7c099de8ad59f5577e5d80c49eb5d7025f9558cae579f5721b0f4292e2435"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -54418,8 +54671,8 @@
         "targetPackage": "runtime"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-cb10ac18ea85defd",
@@ -54434,7 +54687,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "5040c458fe97ce266de4ef1d2fd4c37484bd3de35246b2048f6196ffd45b7f36",
+          "targets": [
+            {
+              "caseId": "rc87-cb10ac18ea85defd",
+              "runner": "playwright-or-vitest-e2e",
+              "digest": "88ea69c4aa57c43acb3b03ef3b6fbc212d81a5b08061e4846a8b30aed9d2aca5"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -54463,8 +54726,8 @@
         "targetPackage": "runtime"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-0ad03b4b9670e45a",
@@ -54479,7 +54742,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "4d9fe64712dc6ce7ddb3af0a025cdc2862fe68d2474a4bfbd945f0845fc9f721",
+          "targets": [
+            {
+              "caseId": "rc87-0ad03b4b9670e45a",
+              "runner": "playwright-or-vitest-e2e",
+              "digest": "1b1c5b4e4a9bd3b559d20edc560029ca102a9efec7be6f94c72cd41e646bf1ba"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -54508,8 +54781,8 @@
         "targetPackage": "runtime"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-88efe38b12d94d12",
@@ -54524,7 +54797,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "7ac3494be1da04b1e57e3cacaa9143a598cb2046635efb11b3810d2ef0c37295",
+          "targets": [
+            {
+              "caseId": "rc87-88efe38b12d94d12",
+              "runner": "playwright-or-vitest-e2e",
+              "digest": "f0108e0fc2b91675e1d0a14243a05dc0d49f37cfed5695125d3f343fa4587db7"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -54553,8 +54836,8 @@
         "targetPackage": "runtime"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-93391d230e603012",
@@ -54569,7 +54852,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "2172841964caff97318826daa772a9a027507aff7478fb291248a968dcd7d233",
+          "targets": [
+            {
+              "caseId": "rc87-93391d230e603012",
+              "runner": "playwright-or-vitest-e2e",
+              "digest": "902ee20050bc56b36b81ce7cb289840b9f56a034c461390f36bdc6222c818467"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -54598,8 +54891,8 @@
         "targetPackage": "runtime"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-2ba4eff56e52a8a4",
@@ -54614,7 +54907,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "037b4666cc54c923e786cd33a20d6fde754a00e3b0f8ce0493b9b47df901a92f",
+          "targets": [
+            {
+              "caseId": "rc87-2ba4eff56e52a8a4",
+              "runner": "playwright-or-vitest-e2e",
+              "digest": "c4b06c848dc5d2c4396c4211ce03b0953822f8036d0371983621980b0119e546"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -54643,8 +54946,8 @@
         "targetPackage": "runtime"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-85f38a391db5b2cf",
@@ -54659,7 +54962,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "8bffae806e543efed68099146bb041ab32ce20d4a06897033518a79f1499af41",
+          "targets": [
+            {
+              "caseId": "rc87-85f38a391db5b2cf",
+              "runner": "playwright-or-vitest-e2e",
+              "digest": "d99fd96f75d12ec5097c212e428cbde12fd1008b4ddd200c6caf72780c0c7a05"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -54688,8 +55001,8 @@
         "targetPackage": "runtime"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-7f4f92999846a28f",
@@ -54704,7 +55017,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "f1ac2cf0ee6894338b89f2e57e3ca1969a4d3e0f21a9b301fb9c6211a80b0d77",
+          "targets": [
+            {
+              "caseId": "rc87-7f4f92999846a28f",
+              "runner": "playwright-or-vitest-e2e",
+              "digest": "9e92b58e0e3ef34549aa4d4a524852e1086766d09559197f296fba59ec8afb9e"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -54732,8 +55055,8 @@
         "targetPackage": "runtime"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-f9c577219c15b646",
@@ -54748,7 +55071,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "abcf438ff37aab72e4109b72562b5d0e933cdecf59f6bb3738b9e64375e05c75",
+          "targets": [
+            {
+              "caseId": "rc87-f9c577219c15b646",
+              "runner": "playwright-or-vitest-e2e",
+              "digest": "117bfa4f0f85db1045132416dd9616d2418727855dc43244b7f4ae673861cd67"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -54776,8 +55109,8 @@
         "targetPackage": "runtime"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-446b3234ab1cf237",
@@ -54792,7 +55125,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "242a751e23b0f60dcf6ba5efde46689d4fbb751968f239a139ab8f0ab7e7f75a",
+          "targets": [
+            {
+              "caseId": "rc87-446b3234ab1cf237",
+              "runner": "playwright-or-vitest-e2e",
+              "digest": "b2dac8681206673cd08701736c42c63a8cb69bc706526855686640ca75f402cf"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -54820,8 +55163,8 @@
         "targetPackage": "runtime"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-d8846c51fa3e2af2",
@@ -54836,7 +55179,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "60ead6c09eee8bda3a3ffedc85cc53d01ce5c1b002bdad2431a3669ba93f6750",
+          "targets": [
+            {
+              "caseId": "rc87-d8846c51fa3e2af2",
+              "runner": "playwright-or-vitest-e2e",
+              "digest": "1436a4d3c57c13288b19581f1ac0185fdcf424eeaae1414e9d45226c16e0b6ef"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -54865,8 +55218,8 @@
         "targetPackage": "runtime"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-48a1ad4e356801ba",
@@ -54881,7 +55234,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "cf4f21fcafbd227e3f97a72c89b9fb9efe70ca941ab095ae3a2a30697cf49930",
+          "targets": [
+            {
+              "caseId": "rc87-48a1ad4e356801ba",
+              "runner": "playwright-or-vitest-e2e",
+              "digest": "42b26757ad454928e6f02bf55a98a275bffaf8714621c37d5b6e3be682bd1f2a"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -54910,8 +55273,8 @@
         "targetPackage": "runtime"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-234d591dd8aabd90",
@@ -54926,7 +55289,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "8e924c5a20c11fc7937d1142332ee284448a528339fef4a2bf5480dfb0c07673",
+          "targets": [
+            {
+              "caseId": "rc87-234d591dd8aabd90",
+              "runner": "playwright-or-vitest-e2e",
+              "digest": "d914ef996bf6561932c02d8342328f1ca604fd4bef2046996b715509dc66523a"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -54954,8 +55327,8 @@
         "targetPackage": "runtime"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-9533b10158c80bd7",
@@ -54970,7 +55343,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "dc6f487b9cbba064b83b612c1754aa3f2632c997cf8a9a7fd8f8c02b577f887c",
+          "targets": [
+            {
+              "caseId": "rc87-9533b10158c80bd7",
+              "runner": "playwright-or-vitest-e2e",
+              "digest": "712658b2709068f140555a4f3c333c7fef732bb6ae287068e0f89c76d309d9df"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -54999,8 +55382,8 @@
         "targetPackage": "runtime"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-5e8982a988021b9c",
@@ -55015,7 +55398,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "84cc32dc203249e51d2e2d7721d1d4c03eaf61eaa25d211863ecd68355e21e0b",
+          "targets": [
+            {
+              "caseId": "rc87-5e8982a988021b9c",
+              "runner": "playwright-or-vitest-e2e",
+              "digest": "9e7cf59eec42b38d73be1e51e734d2968ff2775d395a21403d5be716eb709acd"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -55044,8 +55437,8 @@
         "targetPackage": "runtime"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-ce04b418651dfdbb",
@@ -55060,7 +55453,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "c8890c0cfc15e1bd1ff355cfb2b4c1f8e613b645417b498038479b7f39ee8568",
+          "targets": [
+            {
+              "caseId": "rc87-ce04b418651dfdbb",
+              "runner": "playwright-or-vitest-e2e",
+              "digest": "8b3c26c19442e2a4dd425b18f86ecd19cf93a330e25b66b7b86d70fe286d704c"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -55089,8 +55492,8 @@
         "targetPackage": "runtime"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-044d450087fe9f83",
@@ -55105,7 +55508,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "e9a07688c25d1d4edb32c8cb87653d16ac520c5d7243f23416fd56c540828e04",
+          "targets": [
+            {
+              "caseId": "rc87-044d450087fe9f83",
+              "runner": "playwright-or-vitest-e2e",
+              "digest": "b6054757145e919e41442b1b9ef6725478201c7ecdc4f9031d00716fcb402e3f"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -55134,8 +55547,8 @@
         "targetPackage": "runtime"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-20031249c83720ea",
@@ -55150,7 +55563,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "467b1621406351bfe355c80332686179c9a50deb19879fbe389e991c1aa179e9",
+          "targets": [
+            {
+              "caseId": "rc87-20031249c83720ea",
+              "runner": "playwright-or-vitest-e2e",
+              "digest": "f21d4199cac9b506451cb5350b1cd0646caba86cac241b77ae54e51fb6e382e3"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -55179,8 +55602,8 @@
         "targetPackage": "runtime"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-aa64f308290aae54",
@@ -55195,7 +55618,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "43bd240560aff299cf3b6bd4db2dabf59d2fb441da3da8f2ad00a3773f210f45",
+          "targets": [
+            {
+              "caseId": "rc87-aa64f308290aae54",
+              "runner": "playwright-or-vitest-e2e",
+              "digest": "7131df434c8d476797f6c3a14f7a20d344b3cec79bb2f59aee9d5109bcbac12c"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -55224,8 +55657,8 @@
         "targetPackage": "runtime"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-636ae87a261b3d70",
@@ -55240,7 +55673,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "5489c560ab9314e2dd22e47564673d0f172c71f0952baf23304b8749ac1d1519",
+          "targets": [
+            {
+              "caseId": "rc87-636ae87a261b3d70",
+              "runner": "playwright-or-vitest-e2e",
+              "digest": "5af6867a5ed1565fb8a1ff40f55d342f291cace7603c2022ce99a9c5071164e7"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -55268,12 +55711,33 @@
         "targetPackage": "runtime"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-97ab7b679d64361a",
+            "package": "runtime",
+            "file": "packages/runtime/e2e/rc87-rendering.test.ts",
+            "line": 84,
+            "title": "disconnect and destroy clear pending mutation additions and removals",
+            "runner": "playwright-or-vitest-e2e",
+            "kind": "e2e",
+            "sourceDigest": "692f5409198b9752c1f3fc497336f9a94537d8c01d2ca96593936da8e52a4f8b"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "d125c3870412f6ad9be435cfbf42ed55ece56c1d5cc7b162f57a8028ac8df9d6",
+          "targets": [
+            {
+              "caseId": "rc87-97ab7b679d64361a",
+              "runner": "playwright-or-vitest-e2e",
+              "digest": "692f5409198b9752c1f3fc497336f9a94537d8c01d2ca96593936da8e52a4f8b"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -55301,8 +55765,8 @@
         "targetPackage": "runtime"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-4b2921162cc82b58",
@@ -55317,7 +55781,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "3ab2cd7ce489d4426df897b2f9b9c4354704237d27d7c10b784e16553645e83d",
+          "targets": [
+            {
+              "caseId": "rc87-4b2921162cc82b58",
+              "runner": "playwright-or-vitest-e2e",
+              "digest": "5d6413b60d150e88f660199ac539d002a7acb81938364db8e50078b6fe2d46a0"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -55346,8 +55820,8 @@
         "targetPackage": "runtime"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-74d0f10ed4f839f4",
@@ -55362,7 +55836,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "4959af30b43667742658285713d8dfe63fb6214a548bd1e678906e29cec0c046",
+          "targets": [
+            {
+              "caseId": "rc87-74d0f10ed4f839f4",
+              "runner": "playwright-or-vitest-e2e",
+              "digest": "d6e45723bbc7424298bf4c1bf7b4f4f5faea98c4f4f29bb6c91641d4068ab1bf"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -55391,8 +55875,8 @@
         "targetPackage": "runtime"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-e411ffd69b91ac22",
@@ -55407,7 +55891,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "d483de2901a6b868d9e0ad93a67626ffa7f9c3ae16d9832ab5ef325d4b27470a",
+          "targets": [
+            {
+              "caseId": "rc87-e411ffd69b91ac22",
+              "runner": "playwright-or-vitest-e2e",
+              "digest": "1e56b74b934b3410027ef789da4a1a736b987ce40243391f2df2a7a22fa79fef"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -55436,8 +55930,8 @@
         "targetPackage": "runtime"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-2696f0fa56a7c5d4",
@@ -55452,7 +55946,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "4ffea91afdcc345c41285da617e322eee905fa22ecb307242e7cf1c39c351f39",
+          "targets": [
+            {
+              "caseId": "rc87-2696f0fa56a7c5d4",
+              "runner": "playwright-or-vitest-e2e",
+              "digest": "42b30fdb924eb54de1976ee5ca38cbf62d684927ad6ca3980d6c45b4d518b9b3"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -55482,8 +55986,8 @@
         "targetPackage": "runtime"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-732d95da653fd58b",
@@ -55498,7 +56002,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "c983ffbd928c7cfbf28e8609339238c3e4763dc92fc22f715a87df94725bcc03",
+          "targets": [
+            {
+              "caseId": "rc87-732d95da653fd58b",
+              "runner": "playwright-or-vitest-e2e",
+              "digest": "664dde1f200bdb4682a352f2eaf577bae6e8e9d3c7e557c200864d1893e085b5"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -55527,8 +56041,8 @@
         "targetPackage": "runtime"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-430cf2445a3a99ba",
@@ -55543,7 +56057,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "3479fc55edc149fa7e72934de3b17d7a3baf6d35febfec4f848ef6fe363ea3a9",
+          "targets": [
+            {
+              "caseId": "rc87-430cf2445a3a99ba",
+              "runner": "playwright-or-vitest-e2e",
+              "digest": "40c713c41d230220cf249eb8b1d6786b4f33b8579871ce716ed4406a042f1e76"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -55572,8 +56096,8 @@
         "targetPackage": "runtime"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-e3bfc4987990ad3a",
@@ -55588,7 +56112,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "2383361215c929859433d6d6d18ee0bd19c7f3c8a537db9f2b2b515af2cf38ba",
+          "targets": [
+            {
+              "caseId": "rc87-e3bfc4987990ad3a",
+              "runner": "playwright-or-vitest-e2e",
+              "digest": "bdcb67f4af06c569e58eb953e983ab9663bb13b0245aa9a576d2669021e01d53"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -55617,12 +56151,33 @@
         "targetPackage": "runtime"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-bb70569b1ed54bb8",
+            "package": "runtime",
+            "file": "packages/runtime/e2e/rc87-rendering.test.ts",
+            "line": 133,
+            "title": "progressive hydration falls back when an external style hydration manifest import fails",
+            "runner": "playwright-or-vitest-e2e",
+            "kind": "e2e",
+            "sourceDigest": "5c8022dd71113467f55ce0537cf139d49237108643143a994962a068cd752c83"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "cff2a4782e93c4319597db9e6b78364ee497831e71d0f36d7f8bd472277baea8",
+          "targets": [
+            {
+              "caseId": "rc87-bb70569b1ed54bb8",
+              "runner": "playwright-or-vitest-e2e",
+              "digest": "5c8022dd71113467f55ce0537cf139d49237108643143a994962a068cd752c83"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -55651,14 +56206,14 @@
         "targetPackage": "runtime"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-e9921559bcdcc602",
             "package": "runtime",
             "file": "packages/runtime/e2e/edge-cases.test.ts",
-            "line": 1072,
+            "line": 1064,
             "title": "explicit hydration manifest wins over external DOM discovery",
             "runner": "playwright-or-vitest-e2e",
             "kind": "e2e",
@@ -55667,7 +56222,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "239c7707d5c964c2518fe9d9d59397477ff88788f200a37efa2dcbdad0440a8d",
+          "targets": [
+            {
+              "caseId": "rc87-e9921559bcdcc602",
+              "runner": "playwright-or-vitest-e2e",
+              "digest": "50e104544dfebccc46dfd26184113b054908e813d9eb62ed9066cffd7fd76776"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -55697,14 +56262,14 @@
         "targetPackage": "runtime"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-3f337089de44b759",
             "package": "runtime",
             "file": "packages/runtime/e2e/edge-cases.test.ts",
-            "line": 1111,
+            "line": 1103,
             "title": "progressive hydration matches bucketed theme variables",
             "runner": "playwright-or-vitest-e2e",
             "kind": "e2e",
@@ -55713,7 +56278,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "16bab623da149860e18295265349a9bcf4eb098adb396163e3863b586083f56e",
+          "targets": [
+            {
+              "caseId": "rc87-3f337089de44b759",
+              "runner": "playwright-or-vitest-e2e",
+              "digest": "7787a60a62733e6195291720952f34d8ee0bdd09f09d05a958950c2ef3454d95"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -55743,14 +56318,14 @@
         "targetPackage": "runtime"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-069973df7e52b6a3",
             "package": "runtime",
             "file": "packages/runtime/e2e/edge-cases.test.ts",
-            "line": 1141,
+            "line": 1133,
             "title": "progressive hydration matches theme variable buckets by key",
             "runner": "playwright-or-vitest-e2e",
             "kind": "e2e",
@@ -55759,7 +56334,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "0b32b12af2a575234d2978d274332383b6af0ff07de0c5ec7ee62ce814fe9faf",
+          "targets": [
+            {
+              "caseId": "rc87-069973df7e52b6a3",
+              "runner": "playwright-or-vitest-e2e",
+              "digest": "553c5b10bed5644764116787a5deb4a95015872e42f9676744716d2598f39e30"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -55788,14 +56373,14 @@
         "targetPackage": "runtime"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-2ae476ee747fc6d7",
             "package": "runtime",
             "file": "packages/runtime/e2e/edge-cases.test.ts",
-            "line": 1181,
+            "line": 1173,
             "title": "removes shared alias variable dependencies when classes disappear",
             "runner": "playwright-or-vitest-e2e",
             "kind": "e2e",
@@ -55804,7 +56389,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "033c5990c34c672422c0f7f7699daf466a092ee0abe0e9b117571c012691a019",
+          "targets": [
+            {
+              "caseId": "rc87-2ae476ee747fc6d7",
+              "runner": "playwright-or-vitest-e2e",
+              "digest": "f7b9e2e8bdee7f72709954dcd90c58e5405cd406f5f775eb827072c01875da56"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -55834,14 +56429,14 @@
         "targetPackage": "runtime"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-6224a90501ed606d",
             "package": "runtime",
             "file": "packages/runtime/e2e/edge-cases.test.ts",
-            "line": 1261,
+            "line": 1253,
             "title": "inlines variables without runtime theme counts",
             "runner": "playwright-or-vitest-e2e",
             "kind": "e2e",
@@ -55850,7 +56445,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "32f79ef7af391da662d8317642a1f3a0de40a8d3b358c93db03b8681050955f0",
+          "targets": [
+            {
+              "caseId": "rc87-6224a90501ed606d",
+              "runner": "playwright-or-vitest-e2e",
+              "digest": "853607bc97d2402f3d9641b535f1e15dbe54a62454903512b6b55c1052ce0453"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -55879,8 +56484,8 @@
         "targetPackage": "runtime"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-e6459f3d31cfae86",
@@ -55895,7 +56500,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "f80891d8d9750c2790899e4dfda5d7766cc14ac11ed9a321422dbac5a9acd63b",
+          "targets": [
+            {
+              "caseId": "rc87-e6459f3d31cfae86",
+              "runner": "playwright-or-vitest-e2e",
+              "digest": "b1fdbf8531dc33d5b233b681dda94e11b22ff63a17e5254e02c7804a317e1f7b"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -55924,8 +56539,8 @@
         "targetPackage": "runtime"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-aa9f904b5b77da78",
@@ -55940,7 +56555,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "b2fd3a419ee4025d822f153d0f32d00e0a24dcca5204033adfba3c883715c57b",
+          "targets": [
+            {
+              "caseId": "rc87-aa9f904b5b77da78",
+              "runner": "playwright-or-vitest-e2e",
+              "digest": "643039c2daca54077274de8373a51156df566bfd9a933a9ca0cfdd99feca098a"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -55969,8 +56594,8 @@
         "targetPackage": "runtime"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-4866e126c81aecc5",
@@ -55985,7 +56610,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "5a16dc66fb35f494dbebe3b9c38c79fd1b8d8ee437d9f0b69ece16e7100e0dc1",
+          "targets": [
+            {
+              "caseId": "rc87-4866e126c81aecc5",
+              "runner": "playwright-or-vitest-e2e",
+              "digest": "3de0a8111c78155734b3c2cdda940af53f5201e678f621a5dcaaa80a1720179a"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -56014,8 +56649,8 @@
         "targetPackage": "runtime"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-c90242da5283c6bd",
@@ -56030,7 +56665,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "d3958685abb128097c6d7f9674df69ea2fe0bfbc8487e8a5b40364a872d968d1",
+          "targets": [
+            {
+              "caseId": "rc87-c90242da5283c6bd",
+              "runner": "playwright-or-vitest-e2e",
+              "digest": "839a03cf67e6fe8e335719f45e4344d52eab718b4945c944682bbf29cf6a5e2a"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -56059,8 +56704,8 @@
         "targetPackage": "runtime"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-e41ead29663b3002",
@@ -56075,7 +56720,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "047b6c5dbe371f2404e588d6ec64857bf4c34fab920a245870e303d0e921118e",
+          "targets": [
+            {
+              "caseId": "rc87-e41ead29663b3002",
+              "runner": "playwright-or-vitest-e2e",
+              "digest": "95909496d1994a445f5300a4cce9324c70d9cff9c5d8fa3b0f8c5acc82cf4782"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -56103,12 +56758,35 @@
         "targetPackage": "runtime"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
-        "sourceIdenticalTargetIds": [],
+        "status": "verified-exact",
+        "coverage": "exact-source",
+        "targets": [
+          {
+            "id": "rc87-fbbf199badd4cf7d",
+            "package": "runtime",
+            "file": "packages/runtime/e2e/rc87-rendering.test.ts",
+            "line": 38,
+            "title": "does not expose tooling-only engine inspection helpers",
+            "runner": "playwright-or-vitest-e2e",
+            "kind": "e2e",
+            "sourceDigest": "ee0edeacdf206a4da070a797f1950fa7691b21f64fc4a21713ab0909e1f7aa56"
+          }
+        ],
+        "sourceIdenticalTargetIds": [
+          "rc87-fbbf199badd4cf7d"
+        ],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "exact-source",
+          "sourceDigest": "ee0edeacdf206a4da070a797f1950fa7691b21f64fc4a21713ab0909e1f7aa56",
+          "targets": [
+            {
+              "caseId": "rc87-fbbf199badd4cf7d",
+              "runner": "playwright-or-vitest-e2e",
+              "digest": "ee0edeacdf206a4da070a797f1950fa7691b21f64fc4a21713ab0909e1f7aa56"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -56192,12 +56870,33 @@
         "targetPackage": "runtime"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-39a77796e0b1f824",
+            "package": "runtime",
+            "file": "packages/runtime/e2e/rc87-rendering.test.ts",
+            "line": 49,
+            "title": "destroy on progressive",
+            "runner": "playwright-or-vitest-e2e",
+            "kind": "e2e",
+            "sourceDigest": "d50a0fde0716aa8090933e103823e6cd560af1e65df83cc82e7c879cc621a61d"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "a54573a8f66f867667cfab55b6f04c5d6a529ec0ea6b328b2d6f6ad0f7601abd",
+          "targets": [
+            {
+              "caseId": "rc87-39a77796e0b1f824",
+              "runner": "playwright-or-vitest-e2e",
+              "digest": "d50a0fde0716aa8090933e103823e6cd560af1e65df83cc82e7c879cc621a61d"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -56226,8 +56925,8 @@
         "targetPackage": "runtime"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-fba527d5e52986b8",
@@ -56242,7 +56941,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "b55ea75ace2562e906d33d5f879db9390ad36529cf12ee23e3505752818c9243",
+          "targets": [
+            {
+              "caseId": "rc87-fba527d5e52986b8",
+              "runner": "playwright-or-vitest-e2e",
+              "digest": "e8673fea7b0f72dd0b53668808a0cbec6a81755de9c1259fac84c2b6fb710ef9"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -56271,8 +56980,8 @@
         "targetPackage": "runtime"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-b1fd6f3189bd1a62",
@@ -56287,7 +56996,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "0ee672ea55d90de381040c98b6c77e2208998ca9f754c77074a52cc13975c707",
+          "targets": [
+            {
+              "caseId": "rc87-b1fd6f3189bd1a62",
+              "runner": "playwright-or-vitest-e2e",
+              "digest": "38c40c048f1ae43eb33ce96353041b8f659a7c552141c3e8cd16408b6dd6f234"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -56316,8 +57035,8 @@
         "targetPackage": "runtime"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-1d16d45477ca8574",
@@ -56332,7 +57051,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "66cfce3afbe7bb75b5f2b58e804d482e5afad7a1b94b002bfb6c5426147a5591",
+          "targets": [
+            {
+              "caseId": "rc87-1d16d45477ca8574",
+              "runner": "playwright-or-vitest-e2e",
+              "digest": "f9723023ec1728039814883e25bd804f15ff04e3d37898ca6b3fec8a12abf6cb"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -56361,8 +57090,8 @@
         "targetPackage": "runtime"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-37c5524042d78bb6",
@@ -56377,7 +57106,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "d4c0d2583a3c55ef83f2f57dec16587292c22ba8ebe2a4d4f9b1da21daa6d6f9",
+          "targets": [
+            {
+              "caseId": "rc87-37c5524042d78bb6",
+              "runner": "playwright-or-vitest-e2e",
+              "digest": "27c27bd9fe5581a26fcd7b685310a143553bc98a7786c860b67c2055b275c31c"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -56407,8 +57146,8 @@
         "targetPackage": "runtime"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-09a90b85ff98609c",
@@ -56423,7 +57162,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "299319342e0af46a55a3d052d70d1feae720e54356481e384d7b867e52f0043c",
+          "targets": [
+            {
+              "caseId": "rc87-09a90b85ff98609c",
+              "runner": "playwright-or-vitest-e2e",
+              "digest": "97fbef83639d1e6090776724345c42bef86feb6ea8b3bca0766377148423a6e1"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -56451,8 +57200,8 @@
         "targetPackage": "runtime"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-24d1ba25ea426f17",
@@ -56467,7 +57216,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "cbc035220442d67c81232aa56391aa2f61a2d2ba4f8ec7f3121e933c0e39b21c",
+          "targets": [
+            {
+              "caseId": "rc87-24d1ba25ea426f17",
+              "runner": "playwright-or-vitest-e2e",
+              "digest": "ea31e9c9f578b759317605f1506b9fe200757b09a2a1be2fb241ac8f262355f3"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -56497,8 +57256,8 @@
         "targetPackage": "runtime"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-926f3f474304ded0",
@@ -56513,7 +57272,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "c62259d6d939ade0b417b87d3563f30557abc23e014acfcc8bfae1d74c427108",
+          "targets": [
+            {
+              "caseId": "rc87-926f3f474304ded0",
+              "runner": "playwright-or-vitest-e2e",
+              "digest": "5fc6c8a8ae7d84c16a631e5d526c5d13519ab46c8ad100556d857f74a8e34d2b"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -56541,8 +57310,8 @@
         "targetPackage": "runtime"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-19ccc0505d60d982",
@@ -56557,7 +57326,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "58fd4aa3fa9a8289bf78bc6a48a0fecf3253d3e431a2f27d188ad25b132d59aa",
+          "targets": [
+            {
+              "caseId": "rc87-19ccc0505d60d982",
+              "runner": "playwright-or-vitest-e2e",
+              "digest": "2613dedadd32ea00fc41f50a5c91fc37f928db07242138ae139e6718fc4e2503"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -56585,8 +57364,8 @@
         "targetPackage": "runtime"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-71714679cc4c1b82",
@@ -56601,7 +57380,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "751496a50003aa338454a6f2db63a707ff75293f6ddaf4e88e85cc2253c2402b",
+          "targets": [
+            {
+              "caseId": "rc87-71714679cc4c1b82",
+              "runner": "playwright-or-vitest-e2e",
+              "digest": "cc7a78bbd0728dfd30ec677b7de0279f6e03492160f83d99cfdd69b408d97b2a"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -56629,8 +57418,8 @@
         "targetPackage": "runtime"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-b3476c1dc3555b5a",
@@ -56645,7 +57434,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "ad7c2ac94879db644ea9a06712177835f7f3455624af86163af94e38f71e0123",
+          "targets": [
+            {
+              "caseId": "rc87-b3476c1dc3555b5a",
+              "runner": "playwright-or-vitest-e2e",
+              "digest": "97fc387cafd260fc4827c0b6122cfd0121f8d24ffa9bbe1b916f4236a79b3da5"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -56673,8 +57472,8 @@
         "targetPackage": "runtime"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-e4168bcf06ac6da0",
@@ -56689,7 +57488,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "c359b5d9fb4d06968c3d4d5562a6a1d35c2d208ff0edf20742d4ff95a8abe47d",
+          "targets": [
+            {
+              "caseId": "rc87-e4168bcf06ac6da0",
+              "runner": "playwright-or-vitest-e2e",
+              "digest": "b65f2704e23810480ecd6b959006f675cffcd610e1562147389f37cf24f0df12"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -56717,8 +57526,8 @@
         "targetPackage": "runtime"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-d07375d346c8325d",
@@ -56733,7 +57542,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "37fe894c2ad197e45220d1060ff48b032dc8a848467f8bc595c74d5115e9dff2",
+          "targets": [
+            {
+              "caseId": "rc87-d07375d346c8325d",
+              "runner": "playwright-or-vitest-e2e",
+              "digest": "e1f651997d508585f03f8bbdaefd72923e730db67dc098e49f4fcce0727efb13"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -56761,8 +57580,8 @@
         "targetPackage": "runtime"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-0440c9b8a8beccac",
@@ -56777,7 +57596,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "a8a480123910934b8cd8dbccc7d9757b527c6b2c344596da13eb6f3920c13a25",
+          "targets": [
+            {
+              "caseId": "rc87-0440c9b8a8beccac",
+              "runner": "playwright-or-vitest-e2e",
+              "digest": "6cb0a210343555de62691f62afab0175e87fc0e8f52b06e9c9c232dcb3d3aea6"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -56805,8 +57634,8 @@
         "targetPackage": "runtime"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-797e835ca45531f0",
@@ -56821,7 +57650,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "104eef4392266669a8268becc12f069a944d24c5793ca7c47c572d55ccafbc76",
+          "targets": [
+            {
+              "caseId": "rc87-797e835ca45531f0",
+              "runner": "playwright-or-vitest-e2e",
+              "digest": "33ab393cf4d4c2b9e7a5ce1785420c3cb753d990975080a5dff99a91af094278"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -56850,8 +57689,8 @@
         "targetPackage": "runtime"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-408a34c01bcc8aaf",
@@ -56866,7 +57705,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "674cafeef77e357d9a6e19f02ee159dcf15546993760b76f47b76a772d6c44c5",
+          "targets": [
+            {
+              "caseId": "rc87-408a34c01bcc8aaf",
+              "runner": "playwright-or-vitest-e2e",
+              "digest": "39043ed26a035969f53a7ffe283f208a311a4207dfe74a37fbb59e712219a88b"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -56895,8 +57744,8 @@
         "targetPackage": "runtime"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-7a7b9fa25c74a52e",
@@ -56911,7 +57760,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "6a4cd6f91d6bd8e63e3af65e6cbd0c3135255d519748529e40e6348a8205e872",
+          "targets": [
+            {
+              "caseId": "rc87-7a7b9fa25c74a52e",
+              "runner": "playwright-or-vitest-e2e",
+              "digest": "4c9a5a254cbbe15ce463d6e506d53c5fbdae9517c341f9850841d67bfb8e3592"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -56940,8 +57799,8 @@
         "targetPackage": "runtime"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-fcb1f769e9b365f4",
@@ -56956,7 +57815,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "1ef074690cca4a17c3ac02d1c43d4685f5d35edf27b38ec10e345ca8c423d920",
+          "targets": [
+            {
+              "caseId": "rc87-fcb1f769e9b365f4",
+              "runner": "playwright-or-vitest-e2e",
+              "digest": "cc1e1a92a609dce11a9319464ec8590edfde4a1cc450287e77ce29cef4a15446"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -57100,8 +57969,8 @@
         "targetPackage": "runtime"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-bab35476046dc1a0",
@@ -57116,7 +57985,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "7f19441f123700587fe0bc06fcc66fb3cbbb1ca9f6357f185a1de21af6b3306d",
+          "targets": [
+            {
+              "caseId": "rc87-bab35476046dc1a0",
+              "runner": "playwright-or-vitest-e2e",
+              "digest": "b522deecd7ed5b8b0c843448f7e48df5565ce71b900c6068910f0e8849120add"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -57145,8 +58024,8 @@
         "targetPackage": "runtime"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-3b5381fe7ffcfeed",
@@ -57161,7 +58040,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "c04c732d2d7ec9ba0cb0d5adb1410d2100da998fe6eea41f701beeeb0f4882b8",
+          "targets": [
+            {
+              "caseId": "rc87-3b5381fe7ffcfeed",
+              "runner": "playwright-or-vitest-e2e",
+              "digest": "c0c31660dfba9d9cf213172574f30f63f198c411ae76f82c5feb5cefb79793b2"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -57189,8 +58078,8 @@
         "targetPackage": "runtime"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-7c76d636d09bcaf2",
@@ -57205,7 +58094,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "9c9c6118827410bc12908bcfbf7bb03c7398a146ba9f77e78f7da15c63d8d20f",
+          "targets": [
+            {
+              "caseId": "rc87-7c76d636d09bcaf2",
+              "runner": "vitest",
+              "digest": "e6dfe03cc981f48de4fbdf58e6b64124fd17b366ce2615d3e161f97820c8e680"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -57233,8 +58132,8 @@
         "targetPackage": "runtime"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-82dba46e5cf42c77",
@@ -57249,7 +58148,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "4eb1eff70816c2f515026098e346480e5d259985bac565976297981e4ced2095",
+          "targets": [
+            {
+              "caseId": "rc87-82dba46e5cf42c77",
+              "runner": "vitest",
+              "digest": "58f5be76f5e87fefafc4c5277fa121fe7db4bf501bf25a97e512a006785bc44a"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -57277,8 +58186,8 @@
         "targetPackage": "runtime"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-765ee49f626c2935",
@@ -57293,7 +58202,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "9a78a4d8c69a8dd0109490171fa6c913be60d5424e2b2bc4985730d993d76b3f",
+          "targets": [
+            {
+              "caseId": "rc87-765ee49f626c2935",
+              "runner": "vitest",
+              "digest": "8b3dd4a1032d68e728bd5f7b6c28246ac456e35c7c43ee7bd99be70e34d3e79c"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -57321,8 +58240,8 @@
         "targetPackage": "runtime"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-db1572f863695ba4",
@@ -57337,7 +58256,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "5b397e06f192f0cc2d3f39151a50cad6c3f579499e6ddf7d3b7534ece71b3a9c",
+          "targets": [
+            {
+              "caseId": "rc87-db1572f863695ba4",
+              "runner": "vitest",
+              "digest": "cdc2ffed9642fa86e3caf7d739b6902c6586d9c8426148b87b60c4acdb1fa986"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -57365,8 +58294,8 @@
         "targetPackage": "runtime"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-e2e9bede74e1a7e5",
@@ -57381,7 +58310,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "cf6d7122568cbc21fe7ce1da81a2bee625beef2adf89f96c23a1b56aa25dde5d",
+          "targets": [
+            {
+              "caseId": "rc87-e2e9bede74e1a7e5",
+              "runner": "vitest",
+              "digest": "3b919ea1dda3e0839e1504c1552783d9eb1395206362e4511fdfe59fac8fe926"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -57409,8 +58348,8 @@
         "targetPackage": "runtime"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-4e74f806433ac2c5",
@@ -57425,7 +58364,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "d981d50db8cf52cba72d45b9e88d91701da8c341b09b99863b7afb20b81f00fe",
+          "targets": [
+            {
+              "caseId": "rc87-4e74f806433ac2c5",
+              "runner": "vitest",
+              "digest": "a20ea463ebdd351ee290277782ab3ebac605f0744b41fc21d0d1380f5e796e7f"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -62947,8 +63896,8 @@
         "targetPackage": "server"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-cf62bd184eb4f3cc",
@@ -62963,7 +63912,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "112b74beb5915409f1ad29debf4e0b91d0857f0fe4bb20d19ee3c9dd9a0c2acc",
+          "targets": [
+            {
+              "caseId": "rc87-cf62bd184eb4f3cc",
+              "runner": "playwright-or-vitest-e2e",
+              "digest": "3ff8c46f2fe73536ee5b42ca59e45c3015f1bcfd81eb2fcc6ee70113a83830fd"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -62990,8 +63949,8 @@
         "targetPackage": "server"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-b7af484045f903f6",
@@ -63006,7 +63965,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "91b34fd4769ff06afdb09011cb4607d3eb087bc843e31d8fed8b5b5c2f0a0875",
+          "targets": [
+            {
+              "caseId": "rc87-b7af484045f903f6",
+              "runner": "vitest",
+              "digest": "6c9d9bed9bd7801bdca99060e30eb8c8e8611e372655ef693341208f7b316e3c"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -63033,8 +64002,8 @@
         "targetPackage": "server"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-0f23fea25f507dce",
@@ -63049,7 +64018,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "2b8f01a9c69dbe62cdc731747ccb6b402277685e9459ac8abd3c10e5f0403c85",
+          "targets": [
+            {
+              "caseId": "rc87-0f23fea25f507dce",
+              "runner": "vitest",
+              "digest": "c7630df93d654dc332c873f4c839a99e2b0bc79c692b2d089ca95545004b80c7"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -63076,8 +64055,8 @@
         "targetPackage": "server"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-6ee850386379feb3",
@@ -63092,7 +64071,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "1880ed423818fd57d4bdf375b813f2e4c9b00980da278d9091638c61700ed7b2",
+          "targets": [
+            {
+              "caseId": "rc87-6ee850386379feb3",
+              "runner": "vitest",
+              "digest": "f2184f9ae8fe64e5c4aaacea81acfc08717b62ccd3b635a953c6a5f298f829e9"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -63119,8 +64108,8 @@
         "targetPackage": "server"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-2b14145676c8b89b",
@@ -63135,7 +64124,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "81f6135dc09c1c1504a849f3c240c3dc0a14e4dfbc9b2bf1b69ee00700531e7f",
+          "targets": [
+            {
+              "caseId": "rc87-2b14145676c8b89b",
+              "runner": "vitest",
+              "digest": "dbcfd680575f9c29ae07e35a835470b93ed6320413ee6bc7a0888db340812b07"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -63274,12 +64273,33 @@
         "targetPackage": "server"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-b005654530dfa559",
+            "package": "server",
+            "file": "packages/server/tests/rc87-rendering.test.ts",
+            "line": 23,
+            "title": "render <html>",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "ad2aa69a7fa39aaf91489a60008d1c76b4ee85df0e594abeb7dbe69c479c3b97"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "779e9dfa05f3d8f236c4c9dabaccb818b2459503fd7e1e21e2d84fd56290c9f5",
+          "targets": [
+            {
+              "caseId": "rc87-b005654530dfa559",
+              "runner": "vitest",
+              "digest": "ad2aa69a7fa39aaf91489a60008d1c76b4ee85df0e594abeb7dbe69c479c3b97"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -63306,12 +64326,33 @@
         "targetPackage": "server"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-72e45c26e6cbfd8b",
+            "package": "server",
+            "file": "packages/server/tests/rc87-rendering.test.ts",
+            "line": 36,
+            "title": "should not render the new style element",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "c6019bd6b413bc542434427049cb4b802c985734257f02f8f98e09956830d168"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "e350baa820efc17b9fce37fb3720da3dcd18bf40b60cd0f8651fa29e4b06f500",
+          "targets": [
+            {
+              "caseId": "rc87-72e45c26e6cbfd8b",
+              "runner": "vitest",
+              "digest": "c6019bd6b413bc542434427049cb4b802c985734257f02f8f98e09956830d168"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -63340,12 +64381,33 @@
         "targetPackage": "server"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-f92062b7788b8b27",
+            "package": "server",
+            "file": "packages/server/tests/rc87-rendering.test.ts",
+            "line": 51,
+            "title": "returns a hydration manifest without changing rendered HTML",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "be88b178dfed2c506c7eb4a7885622b319bda97afec69988029c504daecaaf23"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "a96b02ed3b0161d93072e57e55c029e43388a0042dc1540ab9e239310b2712d1",
+          "targets": [
+            {
+              "caseId": "rc87-f92062b7788b8b27",
+              "runner": "vitest",
+              "digest": "be88b178dfed2c506c7eb4a7885622b319bda97afec69988029c504daecaaf23"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -63374,12 +64436,33 @@
         "targetPackage": "server"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-c7c1de220cf317cb",
+            "package": "server",
+            "file": "packages/server/tests/rc87-rendering.test.ts",
+            "line": 64,
+            "title": "injects the hydration manifest into an existing head when requested",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "38eeaba0172e61c2f180618edeb41a526ff80c825bbd9ddf50a6fcbad8d14b7b"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "aa1f9bcaee8dab7a1740d60e29444b49ea67e8fa59ce44d3496dbb9747db5c19",
+          "targets": [
+            {
+              "caseId": "rc87-c7c1de220cf317cb",
+              "runner": "vitest",
+              "digest": "38eeaba0172e61c2f180618edeb41a526ff80c825bbd9ddf50a6fcbad8d14b7b"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -63408,12 +64491,33 @@
         "targetPackage": "server"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-7b9e66b4d7c60243",
+            "package": "server",
+            "file": "packages/server/tests/rc87-rendering.test.ts",
+            "line": 76,
+            "title": "attaches an external hydration manifest source to style#master-css when requested",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "25510aefe210fe963d6eded65942edd048ab0e81dd2f72740697bf5e74a691cf"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "51bc929477f846c582023f5f1cb234cfb8014136f3493090894b11899940b217",
+          "targets": [
+            {
+              "caseId": "rc87-7b9e66b4d7c60243",
+              "runner": "vitest",
+              "digest": "25510aefe210fe963d6eded65942edd048ab0e81dd2f72740697bf5e74a691cf"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -63442,12 +64546,33 @@
         "targetPackage": "server"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-b0218b93c7b226b7",
+            "package": "server",
+            "file": "packages/server/tests/rc87-rendering.test.ts",
+            "line": 92,
+            "title": "removes stale inline hydration scripts in external hydration manifest mode",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "5ddd15a22c1e66c794c74a1a1ec3d01e009becc630a5cde7a50738b71d4a4b77"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "97fe25605b1d98901839cf89a1bc6f9171539234da4c4351843f419543e10592",
+          "targets": [
+            {
+              "caseId": "rc87-b0218b93c7b226b7",
+              "runner": "vitest",
+              "digest": "5ddd15a22c1e66c794c74a1a1ec3d01e009becc630a5cde7a50738b71d4a4b77"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -63476,12 +64601,33 @@
         "targetPackage": "server"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-3870cf70bffbc204",
+            "package": "server",
+            "file": "packages/server/tests/rc87-rendering.test.ts",
+            "line": 106,
+            "title": "emits no external hydration manifest pointer for empty generated CSS",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "c3609310016d9f126625ef3936406f7d3d9a79b30a307148907038b89599eb4a"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "f3f87a2717a4dddec8482cf68aa88af0e775d04f2eeb22755fb9c5424c287814",
+          "targets": [
+            {
+              "caseId": "rc87-3870cf70bffbc204",
+              "runner": "vitest",
+              "digest": "c3609310016d9f126625ef3936406f7d3d9a79b30a307148907038b89599eb4a"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -63510,12 +64656,33 @@
         "targetPackage": "server"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-4209a04423ae00dc",
+            "package": "server",
+            "file": "packages/server/tests/rc87-rendering.test.ts",
+            "line": 122,
+            "title": "creates a head for the injected hydration manifest when missing",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "084db5bb0ea5f974008ed6957188104ead4dbe708047b5addbd7a9e314512b3b"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "765e66c31bceb0954ecfcc32c7f1ff7ddc57026b70b96a17e32abb251f1fe27d",
+          "targets": [
+            {
+              "caseId": "rc87-4209a04423ae00dc",
+              "runner": "vitest",
+              "digest": "084db5bb0ea5f974008ed6957188104ead4dbe708047b5addbd7a9e314512b3b"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -63544,12 +64711,33 @@
         "targetPackage": "server"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-5b9cf5b8ce504959",
+            "package": "server",
+            "file": "packages/server/tests/rc87-rendering.test.ts",
+            "line": 134,
+            "title": "replaces an existing hydration manifest script when requested",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "9e9a511aa344bbb56bb30212b449ebab3be42b09a56d31ea1077cca9383a984d"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "62bfd029b65770d1d95505b698f5eadfb2c197b2be7e3b6fca0e97932a10b20f",
+          "targets": [
+            {
+              "caseId": "rc87-5b9cf5b8ce504959",
+              "runner": "vitest",
+              "digest": "9e9a511aa344bbb56bb30212b449ebab3be42b09a56d31ea1077cca9383a984d"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -63578,12 +64766,33 @@
         "targetPackage": "server"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-083f0c80af0348a1",
+            "package": "server",
+            "file": "packages/server/tests/rc87-rendering.test.ts",
+            "line": 147,
+            "title": "can skip returning and injecting the hydration manifest",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "75e8a2799f4bcd3e8d6fab4e5bbdd2d5195d816138029e484e4fb15142334bc2"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "548f7b0bc7839a23ccd6b2c3bba771514161994739ab768191c34186b4ba9c73",
+          "targets": [
+            {
+              "caseId": "rc87-083f0c80af0348a1",
+              "runner": "vitest",
+              "digest": "75e8a2799f4bcd3e8d6fab4e5bbdd2d5195d816138029e484e4fb15142334bc2"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -63612,12 +64821,33 @@
         "targetPackage": "server"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-a68de8240d5d5ab1",
+            "package": "server",
+            "file": "packages/server/tests/rc87-rendering.test.ts",
+            "line": 157,
+            "title": "removes an empty master style when hydration manifest injection is requested",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "3e7ee8c9271353c0b5252ee87f21aa9f7968eceb633c8bd586e65c9758943440"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "3189be755d7948b2207f9c64e072cb22d5f84db7b7bb6167f208a92d64b6a1dc",
+          "targets": [
+            {
+              "caseId": "rc87-a68de8240d5d5ab1",
+              "runner": "vitest",
+              "digest": "3e7ee8c9271353c0b5252ee87f21aa9f7968eceb633c8bd586e65c9758943440"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -63651,8 +64881,8 @@
         "targetPackage": "server"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-c9e4ba09c8c7f44c",
@@ -63672,7 +64902,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "606407fd26f350a447f54f8dc661e95e6f572d64f054722e81b00dfc86677a50",
+          "targets": [
+            {
+              "caseId": "rc87-c9e4ba09c8c7f44c",
+              "runner": "vitest",
+              "digest": "3b312c5e80f67386c2508a2dafa334d8b33f206bef9f51bab46a873e650bcba7"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -63706,8 +64946,8 @@
         "targetPackage": "server"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-29df3754ecb30875",
@@ -63727,7 +64967,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "606407fd26f350a447f54f8dc661e95e6f572d64f054722e81b00dfc86677a50",
+          "targets": [
+            {
+              "caseId": "rc87-29df3754ecb30875",
+              "runner": "vitest",
+              "digest": "3b312c5e80f67386c2508a2dafa334d8b33f206bef9f51bab46a873e650bcba7"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -63761,8 +65011,8 @@
         "targetPackage": "server"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-623fb041678f0876",
@@ -63782,7 +65032,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "606407fd26f350a447f54f8dc661e95e6f572d64f054722e81b00dfc86677a50",
+          "targets": [
+            {
+              "caseId": "rc87-623fb041678f0876",
+              "runner": "vitest",
+              "digest": "3b312c5e80f67386c2508a2dafa334d8b33f206bef9f51bab46a873e650bcba7"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -63816,8 +65076,8 @@
         "targetPackage": "server"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-19c3f7779189a5d1",
@@ -63837,7 +65097,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "606407fd26f350a447f54f8dc661e95e6f572d64f054722e81b00dfc86677a50",
+          "targets": [
+            {
+              "caseId": "rc87-19c3f7779189a5d1",
+              "runner": "vitest",
+              "digest": "3b312c5e80f67386c2508a2dafa334d8b33f206bef9f51bab46a873e650bcba7"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -63871,8 +65141,8 @@
         "targetPackage": "server"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-4a1d1a5a466ac99a",
@@ -63892,7 +65162,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "606407fd26f350a447f54f8dc661e95e6f572d64f054722e81b00dfc86677a50",
+          "targets": [
+            {
+              "caseId": "rc87-4a1d1a5a466ac99a",
+              "runner": "vitest",
+              "digest": "3b312c5e80f67386c2508a2dafa334d8b33f206bef9f51bab46a873e650bcba7"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -63926,8 +65206,8 @@
         "targetPackage": "server"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-09bcc69230a4ffc1",
@@ -63947,7 +65227,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "606407fd26f350a447f54f8dc661e95e6f572d64f054722e81b00dfc86677a50",
+          "targets": [
+            {
+              "caseId": "rc87-09bcc69230a4ffc1",
+              "runner": "vitest",
+              "digest": "3b312c5e80f67386c2508a2dafa334d8b33f206bef9f51bab46a873e650bcba7"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -63981,8 +65271,8 @@
         "targetPackage": "server"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-278f822b8d60e158",
@@ -64002,7 +65292,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "606407fd26f350a447f54f8dc661e95e6f572d64f054722e81b00dfc86677a50",
+          "targets": [
+            {
+              "caseId": "rc87-278f822b8d60e158",
+              "runner": "vitest",
+              "digest": "3b312c5e80f67386c2508a2dafa334d8b33f206bef9f51bab46a873e650bcba7"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -64036,8 +65336,8 @@
         "targetPackage": "server"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-4ac373b0dfbe4638",
@@ -64057,7 +65357,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "606407fd26f350a447f54f8dc661e95e6f572d64f054722e81b00dfc86677a50",
+          "targets": [
+            {
+              "caseId": "rc87-4ac373b0dfbe4638",
+              "runner": "vitest",
+              "digest": "3b312c5e80f67386c2508a2dafa334d8b33f206bef9f51bab46a873e650bcba7"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -64092,8 +65402,8 @@
         "targetPackage": "server"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-db027a4a2c57163f",
@@ -64113,7 +65423,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "606407fd26f350a447f54f8dc661e95e6f572d64f054722e81b00dfc86677a50",
+          "targets": [
+            {
+              "caseId": "rc87-db027a4a2c57163f",
+              "runner": "vitest",
+              "digest": "3b312c5e80f67386c2508a2dafa334d8b33f206bef9f51bab46a873e650bcba7"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -64147,8 +65467,8 @@
         "targetPackage": "server"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-619f248069035ef3",
@@ -64168,7 +65488,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "606407fd26f350a447f54f8dc661e95e6f572d64f054722e81b00dfc86677a50",
+          "targets": [
+            {
+              "caseId": "rc87-619f248069035ef3",
+              "runner": "vitest",
+              "digest": "3b312c5e80f67386c2508a2dafa334d8b33f206bef9f51bab46a873e650bcba7"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -64202,8 +65532,8 @@
         "targetPackage": "server"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-b07ea31edcfcb6a3",
@@ -64223,7 +65553,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "606407fd26f350a447f54f8dc661e95e6f572d64f054722e81b00dfc86677a50",
+          "targets": [
+            {
+              "caseId": "rc87-b07ea31edcfcb6a3",
+              "runner": "vitest",
+              "digest": "3b312c5e80f67386c2508a2dafa334d8b33f206bef9f51bab46a873e650bcba7"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -64258,8 +65598,8 @@
         "targetPackage": "server"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-f7d6ca9c410e4b42",
@@ -64279,7 +65619,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "606407fd26f350a447f54f8dc661e95e6f572d64f054722e81b00dfc86677a50",
+          "targets": [
+            {
+              "caseId": "rc87-f7d6ca9c410e4b42",
+              "runner": "vitest",
+              "digest": "3b312c5e80f67386c2508a2dafa334d8b33f206bef9f51bab46a873e650bcba7"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -64314,8 +65664,8 @@
         "targetPackage": "server"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-ec6be892660b2587",
@@ -64335,7 +65685,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "606407fd26f350a447f54f8dc661e95e6f572d64f054722e81b00dfc86677a50",
+          "targets": [
+            {
+              "caseId": "rc87-ec6be892660b2587",
+              "runner": "vitest",
+              "digest": "3b312c5e80f67386c2508a2dafa334d8b33f206bef9f51bab46a873e650bcba7"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -64369,8 +65729,8 @@
         "targetPackage": "server"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-8c0cfcac23cab5ab",
@@ -64390,7 +65750,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "606407fd26f350a447f54f8dc661e95e6f572d64f054722e81b00dfc86677a50",
+          "targets": [
+            {
+              "caseId": "rc87-8c0cfcac23cab5ab",
+              "runner": "vitest",
+              "digest": "3b312c5e80f67386c2508a2dafa334d8b33f206bef9f51bab46a873e650bcba7"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -64424,8 +65794,8 @@
         "targetPackage": "server"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-6950b0c1e9a042ed",
@@ -64445,7 +65815,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "606407fd26f350a447f54f8dc661e95e6f572d64f054722e81b00dfc86677a50",
+          "targets": [
+            {
+              "caseId": "rc87-6950b0c1e9a042ed",
+              "runner": "vitest",
+              "digest": "3b312c5e80f67386c2508a2dafa334d8b33f206bef9f51bab46a873e650bcba7"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -64480,8 +65860,8 @@
         "targetPackage": "server"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-091044133ed89f74",
@@ -64501,7 +65881,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "606407fd26f350a447f54f8dc661e95e6f572d64f054722e81b00dfc86677a50",
+          "targets": [
+            {
+              "caseId": "rc87-091044133ed89f74",
+              "runner": "vitest",
+              "digest": "3b312c5e80f67386c2508a2dafa334d8b33f206bef9f51bab46a873e650bcba7"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -64528,8 +65918,8 @@
         "targetPackage": "server"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-ef0bb430a248a76d",
@@ -64544,7 +65934,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "616a51bc6272e5c308aad6e5139832d296d0936bc11c4125526288b0ee55496e",
+          "targets": [
+            {
+              "caseId": "rc87-ef0bb430a248a76d",
+              "runner": "vitest",
+              "digest": "cf288e22c897ca82341ca61fe16338787bbec647e9538ce9a703a5274534e8c3"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -67291,12 +68691,33 @@
         "targetPackage": "svelte"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-2374f8fb8b086ebb",
+            "package": "svelte",
+            "file": "packages/svelte/tests/rc87-rendering.test.ts",
+            "line": 42,
+            "title": "injects collected CSS when the head closes",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "370de11c8841ecfac31c56ef0a62ff437f4177f512b41bda925a9d394d82c412"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "5b96425dc59b84459d35c8157dee82453a97069d3e7951c2ae3540a4e51c799c",
+          "targets": [
+            {
+              "caseId": "rc87-2374f8fb8b086ebb",
+              "runner": "vitest",
+              "digest": "370de11c8841ecfac31c56ef0a62ff437f4177f512b41bda925a9d394d82c412"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -67326,12 +68747,33 @@
         "targetPackage": "svelte"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-5ac35fa4acb8eccb",
+            "package": "svelte",
+            "file": "packages/svelte/tests/rc87-rendering.test.ts",
+            "line": 61,
+            "title": "keeps streaming after early injection and leaves later classes to hydration",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "2b7407d42b72ccf4967122971f24a2f2fa7782fc27306bcca12b01a90359363a"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "fbfdef00057f18fe363c92df4bd1cfe76f64789e751c010550a168ad12c524d1",
+          "targets": [
+            {
+              "caseId": "rc87-5ac35fa4acb8eccb",
+              "runner": "vitest",
+              "digest": "2b7407d42b72ccf4967122971f24a2f2fa7782fc27306bcca12b01a90359363a"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -67361,12 +68803,33 @@
         "targetPackage": "svelte"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-2efcdbec736de191",
+            "package": "svelte",
+            "file": "packages/svelte/tests/rc87-rendering.test.ts",
+            "line": 75,
+            "title": "supports an external hydration manifest writer",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "47a3d63a198c7da8e7dbedbc3f4e59bbb7db4ed581783416fdebfdf9bed54706"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "b393b4f684d243d10bed954b320d485292404de9560ab7542be2175970531fbf",
+          "targets": [
+            {
+              "caseId": "rc87-2efcdbec736de191",
+              "runner": "vitest",
+              "digest": "47a3d63a198c7da8e7dbedbc3f4e59bbb7db4ed581783416fdebfdf9bed54706"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -67396,12 +68859,33 @@
         "targetPackage": "svelte"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-40741f3f92fa5de7",
+            "package": "svelte",
+            "file": "packages/svelte/tests/rc87-rendering.test.ts",
+            "line": 102,
+            "title": "does not duplicate emitted global variables and keyframes in streamed CSS",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "7dbfbb85dc90382000739384df4e4131790178cfe7ad14f245db643769679b0a"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "073422c9a94b0b7f6796d78da2f19b8e2f039531821cf591badebab9704d7f05",
+          "targets": [
+            {
+              "caseId": "rc87-40741f3f92fa5de7",
+              "runner": "vitest",
+              "digest": "7dbfbb85dc90382000739384df4e4131790178cfe7ad14f245db643769679b0a"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -67431,12 +68915,33 @@
         "targetPackage": "svelte"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-5732d85f2647b215",
+            "package": "svelte",
+            "file": "packages/svelte/tests/rc87-rendering.test.ts",
+            "line": 125,
+            "title": "writes static external hydration manifests",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "d8c98793866a19998aac8dde6bf0783f2e72c4180a94dbc61b9433b3564fef7c"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "f78ed2d51f1e5785ce7f419648a76e28b6b4439ee9018454b8e54ee342abff0e",
+          "targets": [
+            {
+              "caseId": "rc87-5732d85f2647b215",
+              "runner": "vitest",
+              "digest": "d8c98793866a19998aac8dde6bf0783f2e72c4180a94dbc61b9433b3564fef7c"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -67465,12 +68970,33 @@
         "targetPackage": "svelte"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-ea9b5d2ffe198b2f",
+            "package": "svelte",
+            "file": "packages/svelte/tests/rc87-rendering.test.ts",
+            "line": 156,
+            "title": "replaces an existing master style in the current chunk",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "78213ea13c1823824e94155520f56cb77ef57fbc37df47b82ebf9a99cdd1163d"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "2d9598f17d3ec692319b96a754e58dfb18620ab495d0acf0ea16150867f343ea",
+          "targets": [
+            {
+              "caseId": "rc87-ea9b5d2ffe198b2f",
+              "runner": "vitest",
+              "digest": "78213ea13c1823824e94155520f56cb77ef57fbc37df47b82ebf9a99cdd1163d"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -67500,12 +69026,33 @@
         "targetPackage": "svelte"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-b3e92ac7d4b8a66d",
+            "package": "svelte",
+            "file": "packages/svelte/tests/rc87-rendering.test.ts",
+            "line": 166,
+            "title": "replaces an existing hydration manifest in the current chunk",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "43ff61d46d8f3bbe315b177a93c7840fd42114b58ed1bca75dd9f48eacb406e7"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "e2514ad0852f4751ac21f615bb127c79d883b1c8bd8890a4b2dd5142b3752f72",
+          "targets": [
+            {
+              "caseId": "rc87-b3e92ac7d4b8a66d",
+              "runner": "vitest",
+              "digest": "43ff61d46d8f3bbe315b177a93c7840fd42114b58ed1bca75dd9f48eacb406e7"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -67591,8 +69138,8 @@
         "targetPackage": "svelte"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-1f5e193d3f3dcc6d",
@@ -67607,7 +69154,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "2cfd016349bebb7b7268dba544703cf2ba2a2edfe9e06e2492ab4e28bff87695",
+          "targets": [
+            {
+              "caseId": "rc87-1f5e193d3f3dcc6d",
+              "runner": "vitest",
+              "digest": "015902904dfba6d8aa6fc01581eb184cff48856009d05b5bdaaff49967be76a4"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -67962,12 +69519,33 @@
         "targetPackage": "vite"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-609e3c42e72dd6d3",
+            "package": "vite",
+            "file": "packages/vite/tests/core.test.ts",
+            "line": 27,
+            "title": "null mode registers the shared scanner and style entry pipeline",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "59144c6f40a6370584622509b06e58858ae577611107e3b393d4edd32cfa73cb"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "964d6ea662ea505bfe84ba24decefff9527f3fb268f3f2d355d9feb4deaf1381",
+          "targets": [
+            {
+              "caseId": "rc87-609e3c42e72dd6d3",
+              "runner": "vitest",
+              "digest": "59144c6f40a6370584622509b06e58858ae577611107e3b393d4edd32cfa73cb"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -68001,8 +69579,8 @@
         "targetPackage": "vite"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-e1a074c8b04c5cc0",
@@ -68022,7 +69600,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "964d6ea662ea505bfe84ba24decefff9527f3fb268f3f2d355d9feb4deaf1381",
+          "targets": [
+            {
+              "caseId": "rc87-e1a074c8b04c5cc0",
+              "runner": "vitest",
+              "digest": "078a6463b2e81146d9213adc0e729bc6621216536e6accfd3a2ea42d21cbd8b0"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -68056,8 +69644,8 @@
         "targetPackage": "vite"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-cb9770fa06b39404",
@@ -68077,7 +69665,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "964d6ea662ea505bfe84ba24decefff9527f3fb268f3f2d355d9feb4deaf1381",
+          "targets": [
+            {
+              "caseId": "rc87-cb9770fa06b39404",
+              "runner": "vitest",
+              "digest": "078a6463b2e81146d9213adc0e729bc6621216536e6accfd3a2ea42d21cbd8b0"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -68111,8 +69709,8 @@
         "targetPackage": "vite"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-9b6476715efbf102",
@@ -68132,7 +69730,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "964d6ea662ea505bfe84ba24decefff9527f3fb268f3f2d355d9feb4deaf1381",
+          "targets": [
+            {
+              "caseId": "rc87-9b6476715efbf102",
+              "runner": "vitest",
+              "digest": "078a6463b2e81146d9213adc0e729bc6621216536e6accfd3a2ea42d21cbd8b0"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -68166,8 +69774,8 @@
         "targetPackage": "vite"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-33078529268a4394",
@@ -68187,7 +69795,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "964d6ea662ea505bfe84ba24decefff9527f3fb268f3f2d355d9feb4deaf1381",
+          "targets": [
+            {
+              "caseId": "rc87-33078529268a4394",
+              "runner": "vitest",
+              "digest": "078a6463b2e81146d9213adc0e729bc6621216536e6accfd3a2ea42d21cbd8b0"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -68216,14 +69834,14 @@
         "targetPackage": "vite"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-72d9ca61d7283e10",
             "package": "vite",
             "file": "packages/vite/tests/core.test.ts",
-            "line": 27,
+            "line": 37,
             "title": "runtime mode registers runtime preloads only with runtime injection",
             "runner": "vitest",
             "kind": "test",
@@ -68232,7 +69850,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "7c2c6ea41e20b78f797121c7d8a05b20853b0c4fae544bbe287860cabbdcb60c",
+          "targets": [
+            {
+              "caseId": "rc87-72d9ca61d7283e10",
+              "runner": "vitest",
+              "digest": "a8a6ba69643956857090ecd7c778c0ef45f422716b5ac9df6444359fc30323a1"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -68262,8 +69890,8 @@
         "targetPackage": "vite"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-6037936609bf96b7",
@@ -68278,7 +69906,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "0bc1fb59462719f321345090d183b7f527d6df2ab29c541efb47eb8cee5a8e15",
+          "targets": [
+            {
+              "caseId": "rc87-6037936609bf96b7",
+              "runner": "vitest",
+              "digest": "abbb842d05f49eddc7f51f331d5fb21227e26e76bc03078d4bd87119bea5a144"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -68307,8 +69945,8 @@
         "targetPackage": "vite"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-9b27332e72026599",
@@ -68323,7 +69961,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "ba40d8d9da1df810c86b5e84bb8459f9167c65511edc515702041ae44ddbc943",
+          "targets": [
+            {
+              "caseId": "rc87-9b27332e72026599",
+              "runner": "vitest",
+              "digest": "51a1859e9f6e589bc75d64e3d898ec4ebcd3aff92053c05e896a409cb9a446eb"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -68352,8 +70000,8 @@
         "targetPackage": "vite"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-c5e4107df5ae3b17",
@@ -68368,7 +70016,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "cea558fcd2dcb390ae2da54204dcceba19b2702b90ae24eb0c6cf0e20be3064a",
+          "targets": [
+            {
+              "caseId": "rc87-c5e4107df5ae3b17",
+              "runner": "vitest",
+              "digest": "8294824820a12067761fc311ddf7b57fa853ea1cc2fafcc86460375ed1749787"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -69265,8 +70923,8 @@
         "targetPackage": "vite"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-10d3b1bf46fe1b4a",
@@ -69281,7 +70939,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "bdd13e32d88a32cf3a50ee842627d2e16abf8f7b6ad96f2b60b44506dd098b77",
+          "targets": [
+            {
+              "caseId": "rc87-10d3b1bf46fe1b4a",
+              "runner": "vitest",
+              "digest": "d812f8032e3f4a141a1637e196f4c924ada7bf48723fe27f713823eefaf847e5"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -69481,8 +71149,8 @@
         "targetPackage": "vite"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-ddcf2bc38f0b668f",
@@ -69497,7 +71165,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "d11f7949d4e6907eb2cd263136efc4c9f6699f4281018f7f50d133eeaa26c945",
+          "targets": [
+            {
+              "caseId": "rc87-ddcf2bc38f0b668f",
+              "runner": "vitest",
+              "digest": "d868f601ab11bc72d9d6d792700ee672a4942d47b381caf65a4fef4c61358118"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -70572,8 +72250,8 @@
         "targetPackage": "vite"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-426ea0afb5a08621",
@@ -70588,7 +72266,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "9c07d4c5ef362bba49d3e697634555633630759d3780d3accb66e3d77130dbf4",
+          "targets": [
+            {
+              "caseId": "rc87-426ea0afb5a08621",
+              "runner": "vitest",
+              "digest": "0ff5d9a5651036e3a10ccbff343a04266d4952e0a83e7842562751ca7ffa8025"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -70618,8 +72306,8 @@
         "targetPackage": "vite"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-011aece17a20bf7a",
@@ -70634,7 +72322,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "48815b0a6beb8cd9479eca0fc1c75a4d5b10b5874ea461cf8bb12366aea33695",
+          "targets": [
+            {
+              "caseId": "rc87-011aece17a20bf7a",
+              "runner": "vitest",
+              "digest": "8d0024a31fbbde01386e16c5db23502542cf23685b4796010812af834b51cace"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -70664,8 +72362,8 @@
         "targetPackage": "vite"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-138d2a9846a509c5",
@@ -70680,7 +72378,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "c3efb198f29b509bb5d64214ce384b6ca306a6b59f82807d0943de879461df7d",
+          "targets": [
+            {
+              "caseId": "rc87-138d2a9846a509c5",
+              "runner": "vitest",
+              "digest": "d22120b1f722e98435aa92b233e54af23307f115b89583c6b0dc0bbd2e8cdf3e"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -70710,8 +72418,8 @@
         "targetPackage": "vite"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-61c8ed2a39c80422",
@@ -70726,7 +72434,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "4edf6a386d6dc4b5d73b9f30496c0e8b4fbab955c35ae434dbd99a60e2a7107f",
+          "targets": [
+            {
+              "caseId": "rc87-61c8ed2a39c80422",
+              "runner": "vitest",
+              "digest": "2852b67ffaf75d500f1ea51c9236bccaedd766e3824484b16da56e956cd6ddae"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -70756,8 +72474,8 @@
         "targetPackage": "vite"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-de63cfc41ad8a597",
@@ -70772,7 +72490,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "3c3e00cf37fbfd5dc8b59794ced61830089d7c5236d14431a703a62f32c054b8",
+          "targets": [
+            {
+              "caseId": "rc87-de63cfc41ad8a597",
+              "runner": "vitest",
+              "digest": "4680427e09f7d1655cbf19d1846c58d956b07b5f693e2c2f4a746bdb0f74caee"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -70802,8 +72530,8 @@
         "targetPackage": "vite"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-f31ee191a59a71b4",
@@ -70818,7 +72546,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "5df66eec31b33ade1a6f881b6e3db6a202dc949779cf95a97726c57af38bc729",
+          "targets": [
+            {
+              "caseId": "rc87-f31ee191a59a71b4",
+              "runner": "vitest",
+              "digest": "de314b914139026a38055903d8ab7f5abe48fef3db61dd1d20cf8641dfae5bb2"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -70848,8 +72586,8 @@
         "targetPackage": "vite"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-f44b976958b10bfc",
@@ -70864,7 +72602,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "649a22033e935d538159885d56aa5015dca35c8c7726b39b1c94ae1d58687717",
+          "targets": [
+            {
+              "caseId": "rc87-f44b976958b10bfc",
+              "runner": "vitest",
+              "digest": "13c72238b508259b29dd166ce373bfecce396f0f5398e8c83dc7e5d14607d6c4"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -70952,8 +72700,8 @@
         "targetPackage": "vite"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-0bc6d109d462febe",
@@ -70968,7 +72716,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "2a3559f39ec253699a1eab5d93b48566ae13bea6272b5be601d34139d060aa21",
+          "targets": [
+            {
+              "caseId": "rc87-0bc6d109d462febe",
+              "runner": "vitest",
+              "digest": "bac6f692049b40d34b2edc8fea9223168f7d694fc37952c9b4568a205af91d7c"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -71054,8 +72812,8 @@
         "targetPackage": "vite"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-1ccdc0a32e0c9c9b",
@@ -71070,7 +72828,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "f01b234fc67770d6163a6c111959e6f4ea1de1abf45c2a9b561be0277c464642",
+          "targets": [
+            {
+              "caseId": "rc87-1ccdc0a32e0c9c9b",
+              "runner": "vitest",
+              "digest": "b3c11c8582ed3f818b46da710a0525fcede9ab3b8e59228b23b55ff7066cb368"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -71099,8 +72867,8 @@
         "targetPackage": "vite"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-2f6a25153537c0c3",
@@ -71115,7 +72883,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "d1fe0ffc0b6cb5bea09ffc44dcdb16adc5b3a0326e05e70d5b0303ccfc8ebdb9",
+          "targets": [
+            {
+              "caseId": "rc87-2f6a25153537c0c3",
+              "runner": "vitest",
+              "digest": "fda2e5e375df49c214cee57ba489585bafd7b8ecb43f3d880d93810cca864119"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -72057,8 +73835,8 @@
         "targetPackage": "vite"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-08ebbddcb7e50d7f",
@@ -72073,7 +73851,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "ea7108b3e9245a85c53a24db913c3174ecede1eebf6f5e60413614b0d39978d3",
+          "targets": [
+            {
+              "caseId": "rc87-08ebbddcb7e50d7f",
+              "runner": "vitest",
+              "digest": "0c85d275fb8fd44c146f1ffee295a98ab340a7182ecdefc33c9ca95b2ff72306"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -72102,8 +73890,8 @@
         "targetPackage": "vite"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-23ebb60ebffe120e",
@@ -72118,7 +73906,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "ee8e0213bae1896b6d43c7e1b612b326bcd2daf765802ef5f02585980d27ac9e",
+          "targets": [
+            {
+              "caseId": "rc87-23ebb60ebffe120e",
+              "runner": "vitest",
+              "digest": "855fad9700bdff0c318f33a8dc38d5c4ebca3fd0091a4941081d36ac944804e9"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -72152,8 +73950,8 @@
         "targetPackage": "vite"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-715e99bcae525d41",
@@ -72173,7 +73971,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "d73d5721c9e346e6a676fa3bee1cf7ef8814a77fca176ca8dea3f3d008f9d6d0",
+          "targets": [
+            {
+              "caseId": "rc87-715e99bcae525d41",
+              "runner": "vitest",
+              "digest": "7de22dcce20e3b6551ebd7a581db33ee3a824b2fdfaf95dc4caa341f5856a029"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -72207,8 +74015,8 @@
         "targetPackage": "vite"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-1bc7becdf5ce6a4f",
@@ -72228,7 +74036,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "d73d5721c9e346e6a676fa3bee1cf7ef8814a77fca176ca8dea3f3d008f9d6d0",
+          "targets": [
+            {
+              "caseId": "rc87-1bc7becdf5ce6a4f",
+              "runner": "vitest",
+              "digest": "7de22dcce20e3b6551ebd7a581db33ee3a824b2fdfaf95dc4caa341f5856a029"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -72257,8 +74075,8 @@
         "targetPackage": "vite"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-dd28b7dc9ceda14e",
@@ -72273,7 +74091,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "f4ae3ce957c5d80cbe8792b17231b108a5573b66cfd1c1ae8b741ee05b728ef4",
+          "targets": [
+            {
+              "caseId": "rc87-dd28b7dc9ceda14e",
+              "runner": "vitest",
+              "digest": "7af9ce4c6ec47bf4b5aa03fae7ed8a126ed12c965bc28507a170592e3a0fdc8d"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -72302,8 +74130,8 @@
         "targetPackage": "vite"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-2d4455c6d2301761",
@@ -72318,7 +74146,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "da018bc6d0b5f90f970a852e0446d58e1610dfd514168261df1cb430235dca93",
+          "targets": [
+            {
+              "caseId": "rc87-2d4455c6d2301761",
+              "runner": "vitest",
+              "digest": "3e78f4bd7740faa1ea6ccb71d5cffcca5acff58ce52e15a4251393397325a280"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -72462,8 +74300,8 @@
         "targetPackage": "vite"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-409a7df8ce71c205",
@@ -72478,7 +74316,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "7acaa4a3da793d96b4f9fe4c441f37fda853ab3900878d1dbdf4ff685aa9bc84",
+          "targets": [
+            {
+              "caseId": "rc87-409a7df8ce71c205",
+              "runner": "vitest",
+              "digest": "8700f021b9caf7724c4e927be75c89ae3dec005e80956c252e61d1ec36bbed82"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -72507,8 +74355,8 @@
         "targetPackage": "vite"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-7ace699066028665",
@@ -72523,7 +74371,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "c57b88075e3e5c4b075da297834cdb1252c011d4bf9ff09e163376820243adf4",
+          "targets": [
+            {
+              "caseId": "rc87-7ace699066028665",
+              "runner": "vitest",
+              "digest": "612f2797b082f632caefc18f24e2b5da2f5651aad7ec570eff8586ab3b31381b"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -72724,8 +74582,8 @@
         "targetPackage": "vite"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-52307c22d15207f6",
@@ -72740,7 +74598,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "2b9b9183d9832e113a33fdb8e1570f9bc21fb3e6e4c570e5cdf47fd3f8a3f858",
+          "targets": [
+            {
+              "caseId": "rc87-52307c22d15207f6",
+              "runner": "vitest",
+              "digest": "8e8b406a4ab3318df37c9c2155d957b1b4861ea10ca17a2b4e2152f34d1eac11"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -72827,8 +74695,8 @@
         "targetPackage": "vite"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-45d9aa7a252223a7",
@@ -72843,7 +74711,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "ce0bb0f85b6aee5b9977d7987200ea25110eeb44b45d6bf2fcffedb3b7dc5de8",
+          "targets": [
+            {
+              "caseId": "rc87-45d9aa7a252223a7",
+              "runner": "vitest",
+              "digest": "6c94e3b178bbe01e0e57d181162aeb777ae40bae42087ad23765824aa09993bd"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -74432,8 +76310,8 @@
         "targetPackage": "webpack"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-62dae87558a12abc",
@@ -74448,7 +76326,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "d20b3759243b02f660ae696a7d0efaa80d6dd209b73d91db166679d38f1da1e4",
+          "targets": [
+            {
+              "caseId": "rc87-62dae87558a12abc",
+              "runner": "vitest",
+              "digest": "ab5284094f0b571aa579630b213f8623f9faa0e20b579e91d3f33431b63254d9"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -74477,8 +76365,8 @@
         "targetPackage": "webpack"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-1cfdc65db7f89e38",
@@ -74493,7 +76381,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "df1ca5175e1b5705ce5b1fe2c47544637063cbe63e3c6ed2ccaaefb1948bd743",
+          "targets": [
+            {
+              "caseId": "rc87-1cfdc65db7f89e38",
+              "runner": "vitest",
+              "digest": "42c5279692c1802a83e2cb288aba4473b21bf0cb131db577155605bab41f8f3e"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -74637,8 +76535,8 @@
         "targetPackage": "webpack"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-d74106ef23e15621",
@@ -74653,7 +76551,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "a179728b9013071c139fadbe4b74ef5a7f227ccf9eb2627eacc129ed5274fb89",
+          "targets": [
+            {
+              "caseId": "rc87-d74106ef23e15621",
+              "runner": "vitest",
+              "digest": "e045b48820d4bab8908cc949a3cfc55ed3b914a78161ed6aa217bb76b714294e"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -74800,8 +76708,8 @@
         "targetPackage": "webpack"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-7b3f20f279ae6e88",
@@ -74816,7 +76724,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "7682a46abb28fce40454ad1f0de941964b0069d7a8915c92fb56f627d252c36f",
+          "targets": [
+            {
+              "caseId": "rc87-7b3f20f279ae6e88",
+              "runner": "vitest",
+              "digest": "5f54a0e92cfaa11da10f49e7dce8e6fd43089d99e19336d1b595d76dea4e6b57"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -75019,8 +76937,8 @@
         "targetPackage": "webpack"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-6c18481fc5cdfa31",
@@ -75035,7 +76953,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "82913279c91ba60bae0217db97da96647f7e1a6b4e8006e26adb0a63cb1deb82",
+          "targets": [
+            {
+              "caseId": "rc87-6c18481fc5cdfa31",
+              "runner": "vitest",
+              "digest": "ee6b8dcf67b8d3b4e1da6ef2506d00d0688c4af5c50c104eb52dfd7641bdb57a"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -75237,8 +77165,8 @@
         "targetPackage": "webpack"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-dde33348ed8edfef",
@@ -75253,7 +77181,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "507111339d6ab5d3c5374a837b7fad684a03af9263e8615c044ffefee79f5b18",
+          "targets": [
+            {
+              "caseId": "rc87-dde33348ed8edfef",
+              "runner": "vitest",
+              "digest": "bbd8ac57fa17014e2cdbb9fd9ebed55dd836870c6b80a1a2d5c0120063b9ca6d"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -75857,8 +77795,8 @@
         "targetPackage": "webpack"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-dc72ae033f5d4677",
@@ -75873,7 +77811,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "bbb28df1e8161cc64abe43d7b5de98d6e03480549473c81dcd6c1dd06c47ceff",
+          "targets": [
+            {
+              "caseId": "rc87-dc72ae033f5d4677",
+              "runner": "vitest",
+              "digest": "fa8e911c8399f4fd2e457ae7f4688239d4d3c5eab14ee8507751751abca4408a"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -75902,8 +77850,8 @@
         "targetPackage": "webpack"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-59fa6e066daa5b41",
@@ -75918,7 +77866,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "9445e1f18a2cdbb03f3dc230c06c7745cd58e3227003479f279b0e237ec68a92",
+          "targets": [
+            {
+              "caseId": "rc87-59fa6e066daa5b41",
+              "runner": "vitest",
+              "digest": "5d351cddc52f9c442504b29e8ffa05627bbb93ac480d88fc5d3ccebfe30091db"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -75947,8 +77905,8 @@
         "targetPackage": "webpack"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-4eaffae5c3984d01",
@@ -75963,7 +77921,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "749605657035fa0c6d0f66d973081f5a1c7ad6c759a9139e6842cc0877f5722a",
+          "targets": [
+            {
+              "caseId": "rc87-4eaffae5c3984d01",
+              "runner": "vitest",
+              "digest": "1da3187b3f8f63477a2c0d1871276e1e8e3da0d34edb560e27f5822137221e8d"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -75993,8 +77961,8 @@
         "targetPackage": "webpack"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-2c2a6eb3d2c1e826",
@@ -76009,7 +77977,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "20e742fb7a09aa69370d8484a0848f0f2af85dab584d025f64dd44f6dfd54f59",
+          "targets": [
+            {
+              "caseId": "rc87-2c2a6eb3d2c1e826",
+              "runner": "vitest",
+              "digest": "2b8bb72aff5a514e7be23bd75c392ce6150701c4ba211950c245b305819599c0"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -76038,8 +78016,8 @@
         "targetPackage": "webpack"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-b5c5944a3a9610da",
@@ -76054,7 +78032,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "b6b2f893944ad90772c66db9fa5b10535b2bb22095f4e1f55f760ce57b0965c6",
+          "targets": [
+            {
+              "caseId": "rc87-b5c5944a3a9610da",
+              "runner": "vitest",
+              "digest": "0782ced5abc27d2041e0e169cf7d508561b50b56aa2cb786e01606e238c28ab0"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -76083,8 +78071,8 @@
         "targetPackage": "webpack"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-2ecb3e7e15dd3029",
@@ -76099,7 +78087,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "c7393bac64c6a6d6950b2ef4b60fe8773c6549cc32e2c5cf9dda8920dece6efe",
+          "targets": [
+            {
+              "caseId": "rc87-2ecb3e7e15dd3029",
+              "runner": "vitest",
+              "digest": "b1effb786b4dc7ea737e4ed3cedeae80e7f9f2c75f9964981ec10da9b95c63c3"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -76129,8 +78127,8 @@
         "targetPackage": "webpack"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-69b0ff80b4775982",
@@ -76145,7 +78143,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "e6bc62d1567a874b8f609051cc9fc6429490924d97b4b760eec0d2fa49f591f5",
+          "targets": [
+            {
+              "caseId": "rc87-69b0ff80b4775982",
+              "runner": "vitest",
+              "digest": "79ba2fa11743c7c62f530ce212cf679ae4500266c6d3a2635e1a72488df0185a"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -76517,8 +78525,8 @@
         "targetPackage": "webpack"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-99cc87eb62d707f4",
@@ -76533,7 +78541,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "7e8ef14761271f91e22ebad98f4815d0c938d929044cb40d5170ea24e49007ce",
+          "targets": [
+            {
+              "caseId": "rc87-99cc87eb62d707f4",
+              "runner": "vitest",
+              "digest": "7cfe87e1d374edea162150ad41efaae5b38dadea3e45fe62f60d6f9a4fea77ca"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -76677,8 +78695,8 @@
         "targetPackage": "webpack"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-2944b251d4f939aa",
@@ -76693,7 +78711,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "faf274b4c5ff88e6c3edef3539e29dd056d33571fae9a06e44510178c13f5369",
+          "targets": [
+            {
+              "caseId": "rc87-2944b251d4f939aa",
+              "runner": "vitest",
+              "digest": "06eaaf64975216762e7ea1e54a5779b3de4c49bbde3c40dc1c33f44413f39daa"
+            }
+          ]
+        }
       },
       "divergence": null
     }
@@ -77725,14 +79753,14 @@
       "sourceDigest": "62fbb0e23662318005f0cb45f1dbfd0f0cbf8331b14e34adff2865f3dcbed051"
     },
     {
-      "id": "rc87-d5af64a61d41263a",
+      "id": "rc87-fc1f23fdc550d5de",
       "package": "runtime",
       "file": "packages/runtime/e2e/edge-cases.test.ts",
       "line": 1028,
-      "title": "progressive hydration fails open when an external style hydration manifest import fails",
+      "title": "progressive hydration falls back when an external manifest payload is invalid",
       "runner": "playwright-or-vitest-e2e",
       "kind": "e2e",
-      "sourceDigest": "40a006b28f9041aaae0c22aeb52bee0d291ba4d7320d7d125acb335a038ce3e8"
+      "sourceDigest": "7687d8a006431aeba6d4b5367b6b3c57ec63e7a3896d90b19d6ba75522a28055"
     },
     {
       "id": "rc87-0d66ad72af4fd052",
@@ -78022,13 +80050,13 @@
       "title": "renders a complete response across arbitrary chunks",
       "runner": "vitest",
       "kind": "test",
-      "sourceDigest": "5318cfa69fbf65cc01fc5b5f4657ace33dba6caf1a20c05c5309fcfc063e132e"
+      "sourceDigest": "525526146ccfd174f9fcdcd06ce6da5e9eb485ef34970f4bf5da236c06b64dbd"
     },
     {
       "id": "rc87-9890adf43c5e0dfb",
       "package": "svelte",
       "file": "packages/svelte/tests/server.test.ts",
-      "line": 51,
+      "line": 52,
       "title": "isolates render state between responses",
       "runner": "vitest",
       "kind": "test",
@@ -78038,7 +80066,7 @@
       "id": "rc87-76c94fdbffd25fe6",
       "package": "svelte",
       "file": "packages/svelte/tests/server.test.ts",
-      "line": 66,
+      "line": 67,
       "title": "supports external hydration manifest storage",
       "runner": "vitest",
       "kind": "test",
@@ -78048,7 +80076,7 @@
       "id": "rc87-9fb06cb439f3854e",
       "package": "svelte",
       "file": "packages/svelte/tests/server.test.ts",
-      "line": 96,
+      "line": 97,
       "title": "honors emitted globals and disabled hydration",
       "runner": "vitest",
       "kind": "test",
@@ -78208,7 +80236,7 @@
       "id": "rc87-c80d289fbf4b9d7d",
       "package": "vite",
       "file": "packages/vite/tests/core.test.ts",
-      "line": 40,
+      "line": 50,
       "title": "enabled false disables the integration",
       "runner": "vitest",
       "kind": "test",
