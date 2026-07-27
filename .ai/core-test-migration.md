@@ -28,21 +28,21 @@ Current executable coverage anchors:
 - Engine semantics and exact CSS output: the test module in `crates/mastercss-engine/src/lib.rs`.
 - Engine/public binding lifecycle: `packages/css/tests/engine/rust-engine.test.ts`.
 - Compiler CSS-first lowering and stylesheet behavior: `packages/compiler/tests/css-first-core-migration.test.ts` and `packages/compiler/tests/stylesheet`.
-- Preset source/default manifest: `packages/preset/tests/rust-preset.test.ts`.
+- Preset source/default manifest: `packages/preset/tests/default-manifest.test.ts` and `packages/preset/tests/design-tokens.test.ts`.
 - Public facade smoke: `packages/css/tests/facade.test.ts`.
 
 Current audit summary:
 
 - Deleted old core test files: 140.
 - Status distribution: 63 `covered-exact`, 39 `covered-representative`, 14 `rewritten-css-first`, 17 `helper-replaced`, 7 `dropped-removed-api`.
-- Rule assertions now exactly covered by engine migration parity: 33 old rule test files, 235 assertions.
+- Rule assertions now exactly covered by engine migration parity: 33 old rule suites, 177 executable assertions.
 - No deleted old core test file is left without an owner and disposition.
 - `covered-representative` rows are deliberately scoped to legacy files whose exact assertions are either covered by the generated rule parity suite or whose former helper/API surface is no longer public.
 - `dropped-removed-api` rows must stay documented because the old JS Config runtime API is intentionally gone.
 - Inline-alias audit: 55 mechanically discovered old assertions still expect `var(...)` for `@theme inline` aliases such as `black`, `white`, `current`, `full`, `fit`, `max`, and `min`; these are documented behavior divergences, not exact migrations.
-- The rc.87 package-wide ledger currently auto-verifies 593 uniquely source-identical
-  cases and explicitly maps the three rewritten ESLint `UtilityType` import cases;
-  historical `covered-*` labels below do not promote any other case by themselves.
+- The rc.87 package-wide ledger currently verifies 724 cases: 606 through the
+  unique source-identical path and 118 through pinned rc.87 golden evidence.
+  Historical `covered-*` labels below do not promote any case by themselves.
 
 Manifest IR behavior findings:
 

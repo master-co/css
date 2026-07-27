@@ -1365,12 +1365,12 @@
     ]
   },
   "target": {
-    "ref": "HEAD",
-    "commit": "bd164e4b5ae3a713940913d745183e9ab6b54263",
+    "ref": "latest-target-change",
+    "commit": "ba23b07c0fe8c09c039c6486fa74d8af083731be",
     "packageCount": 36,
-    "testFiles": 154,
+    "testFiles": 156,
     "e2eFiles": 23,
-    "cases": 1033
+    "cases": 1161
   },
   "existingParity": {
     "semanticBaseline": "ef1a7c851",
@@ -1381,18 +1381,18 @@
   "evidence": {
     "path": "parity/ts-test-migration-evidence.json",
     "version": 1,
-    "records": 3,
+    "records": 118,
     "proofs": {
-      "exact-source": 593,
-      "rc87-golden": 3
+      "exact-source": 606,
+      "rc87-golden": 118
     }
   },
   "summary": {
     "byStatus": {
-      "gap": 564,
+      "gap": 436,
       "mapped-unverified": 376,
       "source-inactive": 10,
-      "verified-exact": 596
+      "verified-exact": 724
     },
     "byPriority": {
       "P0": 676,
@@ -1401,13 +1401,13 @@
     },
     "byCoverage": {
       "candidate-all": 376,
-      "evidence": 3,
-      "exact-source": 593,
-      "none": 574
+      "evidence": 118,
+      "exact-source": 606,
+      "none": 446
     },
     "byProof": {
-      "exact-source": 593,
-      "rc87-golden": 3
+      "exact-source": 606,
+      "rc87-golden": 118
     },
     "byPackage": {
       "astro": {
@@ -1431,8 +1431,8 @@
         "P0": 52,
         "P1": 0,
         "P2": 0,
-        "mapped": 41,
-        "gap": 11
+        "mapped": 52,
+        "gap": 0
       },
       "create": {
         "total": 48,
@@ -1463,8 +1463,8 @@
         "P0": 184,
         "P1": 0,
         "P2": 0,
-        "mapped": 94,
-        "gap": 90
+        "mapped": 184,
+        "gap": 0
       },
       "eslint-config": {
         "total": 2,
@@ -1575,16 +1575,16 @@
         "P0": 23,
         "P1": 0,
         "P2": 0,
-        "mapped": 0,
-        "gap": 23
+        "mapped": 23,
+        "gap": 0
       },
       "project": {
         "total": 12,
         "P0": 12,
         "P1": 0,
         "P2": 0,
-        "mapped": 8,
-        "gap": 4
+        "mapped": 12,
+        "gap": 0
       },
       "runtime": {
         "total": 69,
@@ -3263,12 +3263,33 @@
         "targetPackage": "compiler"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-72b1a3b8bcd2f6ce",
+            "package": "compiler",
+            "file": "parity/rust-semantic-corpus.json",
+            "line": 2427,
+            "title": "rc87-compiler-browser-manifest",
+            "runner": "cargo-xtask+vitest-native-wasm",
+            "kind": "test",
+            "sourceDigest": "5ab57301aa4df49a5c1bd524422eff054160a3ffe5bc7ecb8587983d268e52eb"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "5d23c78054fdf3933fed979d0ee01ebde22cb944b6602456afb0e766f4572b40",
+          "targets": [
+            {
+              "caseId": "rc87-72b1a3b8bcd2f6ce",
+              "runner": "cargo-xtask+vitest-native-wasm",
+              "digest": "5ab57301aa4df49a5c1bd524422eff054160a3ffe5bc7ecb8587983d268e52eb"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -3295,12 +3316,33 @@
         "targetPackage": "compiler"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-b11746c9f1518fb7",
+            "package": "compiler",
+            "file": "packages/compiler/tests/browser.test.ts",
+            "line": 40,
+            "title": "browser compileCSSManifest rejects @reference directives",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "3f898904df9d93362c582a30aa9051bf6cc689897e8a8d0877394a927c646964"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "e1bfb5c49b1c032fa40f9f6f849ba4a703acaa0b9a91f0beef4b36ca55610f86",
+          "targets": [
+            {
+              "caseId": "rc87-b11746c9f1518fb7",
+              "runner": "vitest",
+              "digest": "3f898904df9d93362c582a30aa9051bf6cc689897e8a8d0877394a927c646964"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -5442,12 +5484,33 @@
         "targetPackage": "compiler"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-854532ff391bd318",
+            "package": "compiler",
+            "file": "parity/rust-semantic-corpus.json",
+            "line": 1993,
+            "title": "rc87-compiler-variables-modes-dependencies",
+            "runner": "cargo-xtask+vitest-native-wasm",
+            "kind": "test",
+            "sourceDigest": "75233c646b7ac4818c148e769f848586fa93e1f76186a7f2158f6bac0fcf46db"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "6cea3d2f027e6f70baf9a1d5fd9f65e5fb2ba6c01369fc9e5b7c2c1ad62b8fbf",
+          "targets": [
+            {
+              "caseId": "rc87-854532ff391bd318",
+              "runner": "cargo-xtask+vitest-native-wasm",
+              "digest": "75233c646b7ac4818c148e769f848586fa93e1f76186a7f2158f6bac0fcf46db"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -5477,12 +5540,33 @@
         "targetPackage": "compiler"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-c01cf4c990c033e3",
+            "package": "compiler",
+            "file": "parity/rust-semantic-corpus.json",
+            "line": 2050,
+            "title": "rc87-compiler-reject-token-alias",
+            "runner": "cargo-xtask+vitest-native-wasm",
+            "kind": "test",
+            "sourceDigest": "808614638b1d48f0c4715762e80675ed4e9998a7eb35a6afca7d746a44522d0a"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "b2c5459a2c68aab021d007661b62e32edb74183d95fcddcf88a59453bd25cf3a",
+          "targets": [
+            {
+              "caseId": "rc87-c01cf4c990c033e3",
+              "runner": "cargo-xtask+vitest-native-wasm",
+              "digest": "808614638b1d48f0c4715762e80675ed4e9998a7eb35a6afca7d746a44522d0a"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -5512,12 +5596,33 @@
         "targetPackage": "compiler"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-b448e08f06a27db2",
+            "package": "compiler",
+            "file": "parity/rust-semantic-corpus.json",
+            "line": 2059,
+            "title": "rc87-compiler-explicit-negative-variable",
+            "runner": "cargo-xtask+vitest-native-wasm",
+            "kind": "test",
+            "sourceDigest": "499cdeb82d9620eb46643fe53cf47b0d988a9762b11ca17c09141d7e3b374d3c"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "4e5d48588002bed876f4589a83f8b4c08e4e508dcf1d99985b2fbfa5c0a8fdc0",
+          "targets": [
+            {
+              "caseId": "rc87-b448e08f06a27db2",
+              "runner": "cargo-xtask+vitest-native-wasm",
+              "digest": "499cdeb82d9620eb46643fe53cf47b0d988a9762b11ca17c09141d7e3b374d3c"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -5547,12 +5652,33 @@
         "targetPackage": "compiler"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-d591494a12154e11",
+            "package": "compiler",
+            "file": "parity/rust-semantic-corpus.json",
+            "line": 2084,
+            "title": "rc87-compiler-static-animation",
+            "runner": "cargo-xtask+vitest-native-wasm",
+            "kind": "test",
+            "sourceDigest": "fef27c125f2eee98615b7efffbbc0fcf07a761d9c497117d928acd97c07a86e8"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "323714162dae00a1044f71ac9ceee5bbbf0552013746fa126fac1dcc2eac871b",
+          "targets": [
+            {
+              "caseId": "rc87-d591494a12154e11",
+              "runner": "cargo-xtask+vitest-native-wasm",
+              "digest": "fef27c125f2eee98615b7efffbbc0fcf07a761d9c497117d928acd97c07a86e8"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -5581,12 +5707,33 @@
         "targetPackage": "compiler"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-db0d3988cc39d484",
+            "package": "compiler",
+            "file": "parity/rust-semantic-corpus.json",
+            "line": 2107,
+            "title": "rc87-compiler-omits-registry-input",
+            "runner": "cargo-xtask+vitest-native-wasm",
+            "kind": "test",
+            "sourceDigest": "60d814eb5d773279ac097449081f2c83ec3da134476b328d018ef53c1bca7db9"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "5ea5eb166a72c8eae02d7822fdda0c93f01eb727feb59c78d877bb7b203a03d2",
+          "targets": [
+            {
+              "caseId": "rc87-db0d3988cc39d484",
+              "runner": "cargo-xtask+vitest-native-wasm",
+              "digest": "60d814eb5d773279ac097449081f2c83ec3da134476b328d018ef53c1bca7db9"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -5616,12 +5763,33 @@
         "targetPackage": "compiler"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-d185d19f78d36d00",
+            "package": "compiler",
+            "file": "parity/rust-semantic-corpus.json",
+            "line": 2131,
+            "title": "rc87-compiler-breakpoint-container-conditions",
+            "runner": "cargo-xtask+vitest-native-wasm",
+            "kind": "test",
+            "sourceDigest": "168c4174d3a3f08457050e71394e1affca88804ce1d368957fb39ffc844106e3"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "d9e4d278ea924eb569970c7a7ae246b05c01ad32e501d2240ae232ad5edf57e4",
+          "targets": [
+            {
+              "caseId": "rc87-d185d19f78d36d00",
+              "runner": "cargo-xtask+vitest-native-wasm",
+              "digest": "168c4174d3a3f08457050e71394e1affca88804ce1d368957fb39ffc844106e3"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -5650,12 +5818,33 @@
         "targetPackage": "compiler"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-0adf94b96b86ab6d",
+            "package": "compiler",
+            "file": "parity/rust-semantic-corpus.json",
+            "line": 2204,
+            "title": "rc87-compiler-unitful-numeric-tokens",
+            "runner": "cargo-xtask+vitest-native-wasm",
+            "kind": "test",
+            "sourceDigest": "8ff9ebb7eb7ceae3174f6822d5619e1a340242d0887c660c785d0086b280062c"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "512a1be921b8dadfb1c98e16ef7eaabf5a2c2d63c21b41f4c83bc516c400be6e",
+          "targets": [
+            {
+              "caseId": "rc87-0adf94b96b86ab6d",
+              "runner": "cargo-xtask+vitest-native-wasm",
+              "digest": "8ff9ebb7eb7ceae3174f6822d5619e1a340242d0887c660c785d0086b280062c"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -5685,12 +5874,33 @@
         "targetPackage": "compiler"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-a4f82e9c9871b99c",
+            "package": "compiler",
+            "file": "parity/rust-semantic-corpus.json",
+            "line": 2309,
+            "title": "rc87-compiler-variant-branches",
+            "runner": "cargo-xtask+vitest-native-wasm",
+            "kind": "test",
+            "sourceDigest": "0513102e7f5012b355f6ef7a5414bb831227ee9a4a81be46fbe4a88cd706bc65"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "343c41a5919c730c14d4e80b4513e92d63ae6af2f206b8138fefa7cf7b2c9904",
+          "targets": [
+            {
+              "caseId": "rc87-a4f82e9c9871b99c",
+              "runner": "cargo-xtask+vitest-native-wasm",
+              "digest": "0513102e7f5012b355f6ef7a5414bb831227ee9a4a81be46fbe4a88cd706bc65"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -5719,12 +5929,33 @@
         "targetPackage": "compiler"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-3009e72922bfb4e0",
+            "package": "compiler",
+            "file": "parity/rust-semantic-corpus.json",
+            "line": 2390,
+            "title": "rc87-compiler-semantic-utility",
+            "runner": "cargo-xtask+vitest-native-wasm",
+            "kind": "test",
+            "sourceDigest": "2350066f4dfefbc2466a4c89b226af4769e25fb6b92afd6ed4ccfa3f0f4126e1"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "7e92b165efabfcc25d4a90e44859e3139f32c67fc71a175c9b781ab804236563",
+          "targets": [
+            {
+              "caseId": "rc87-3009e72922bfb4e0",
+              "runner": "cargo-xtask+vitest-native-wasm",
+              "digest": "2350066f4dfefbc2466a4c89b226af4769e25fb6b92afd6ed4ccfa3f0f4126e1"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -12067,12 +12298,33 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-3ca87392ccc2662d",
+            "package": "css",
+            "file": "parity/rust-semantic-corpus.json",
+            "line": 2522,
+            "title": "rc87-condition-d0cbb50965f0cc3d",
+            "runner": "cargo-test",
+            "kind": "test",
+            "sourceDigest": "5e60413ada03bf6da8a1c6ef32c29c0fb435dc10d378d6c95e1100d83af71621"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "8701ca2a56cfe4b1035bc065219e2e357e43019aa46b2ab2c323f87c341cdebe",
+          "targets": [
+            {
+              "caseId": "rc87-3ca87392ccc2662d",
+              "runner": "cargo-test",
+              "digest": "5e60413ada03bf6da8a1c6ef32c29c0fb435dc10d378d6c95e1100d83af71621"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -12106,12 +12358,33 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-376907127df68274",
+            "package": "css",
+            "file": "parity/rust-semantic-corpus.json",
+            "line": 2529,
+            "title": "rc87-condition-76bbc72ab3707d91",
+            "runner": "cargo-test",
+            "kind": "test",
+            "sourceDigest": "515f2be72f5d9e7d4368063bc79749aabf596103bab986f462fca250c6069539"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "8701ca2a56cfe4b1035bc065219e2e357e43019aa46b2ab2c323f87c341cdebe",
+          "targets": [
+            {
+              "caseId": "rc87-376907127df68274",
+              "runner": "cargo-test",
+              "digest": "515f2be72f5d9e7d4368063bc79749aabf596103bab986f462fca250c6069539"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -12145,12 +12418,33 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-b75e7f5b2532e0be",
+            "package": "css",
+            "file": "parity/rust-semantic-corpus.json",
+            "line": 2487,
+            "title": "rc87-condition-28504c7efc2294a1",
+            "runner": "cargo-test",
+            "kind": "test",
+            "sourceDigest": "0a322de34dc6bdad4addb1de6903e1f200543340effc8ff008c3163ba12579d1"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "8701ca2a56cfe4b1035bc065219e2e357e43019aa46b2ab2c323f87c341cdebe",
+          "targets": [
+            {
+              "caseId": "rc87-b75e7f5b2532e0be",
+              "runner": "cargo-test",
+              "digest": "0a322de34dc6bdad4addb1de6903e1f200543340effc8ff008c3163ba12579d1"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -12184,12 +12478,33 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-39245936d825c3c2",
+            "package": "css",
+            "file": "parity/rust-semantic-corpus.json",
+            "line": 2627,
+            "title": "rc87-condition-72d0a2a759b0467c",
+            "runner": "cargo-test",
+            "kind": "test",
+            "sourceDigest": "6ec1b85378210750cacfe4218b8394b50fcad47b7f3a92274fa7ad9a37a9214c"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "8701ca2a56cfe4b1035bc065219e2e357e43019aa46b2ab2c323f87c341cdebe",
+          "targets": [
+            {
+              "caseId": "rc87-39245936d825c3c2",
+              "runner": "cargo-test",
+              "digest": "6ec1b85378210750cacfe4218b8394b50fcad47b7f3a92274fa7ad9a37a9214c"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -12223,12 +12538,33 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-d0b01062c230bd1d",
+            "package": "css",
+            "file": "parity/rust-semantic-corpus.json",
+            "line": 2641,
+            "title": "rc87-condition-7ce311ee0f038ad0",
+            "runner": "cargo-test",
+            "kind": "test",
+            "sourceDigest": "6c76aaa84d0cc973fedeffd66ad3c0e9f92d7ab98407876fe4440799a4b128dc"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "8701ca2a56cfe4b1035bc065219e2e357e43019aa46b2ab2c323f87c341cdebe",
+          "targets": [
+            {
+              "caseId": "rc87-d0b01062c230bd1d",
+              "runner": "cargo-test",
+              "digest": "6c76aaa84d0cc973fedeffd66ad3c0e9f92d7ab98407876fe4440799a4b128dc"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -12262,12 +12598,33 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-8f617c6d7f06f83e",
+            "package": "css",
+            "file": "parity/rust-semantic-corpus.json",
+            "line": 2536,
+            "title": "rc87-condition-2df2f09622f07b54",
+            "runner": "cargo-test",
+            "kind": "test",
+            "sourceDigest": "5474f40ea254962fe42589463b06a8275262ed00f940f1a2c9ea1fe3018f463f"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "8701ca2a56cfe4b1035bc065219e2e357e43019aa46b2ab2c323f87c341cdebe",
+          "targets": [
+            {
+              "caseId": "rc87-8f617c6d7f06f83e",
+              "runner": "cargo-test",
+              "digest": "5474f40ea254962fe42589463b06a8275262ed00f940f1a2c9ea1fe3018f463f"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -12301,12 +12658,33 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-62e109cabab249b4",
+            "package": "css",
+            "file": "parity/rust-semantic-corpus.json",
+            "line": 2550,
+            "title": "rc87-condition-993d9a7e0530a526",
+            "runner": "cargo-test",
+            "kind": "test",
+            "sourceDigest": "0b6dac86e4525aa7b4672b96a0f12c5b38d831e3d0735310dbcaab474ac1d8f5"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "8701ca2a56cfe4b1035bc065219e2e357e43019aa46b2ab2c323f87c341cdebe",
+          "targets": [
+            {
+              "caseId": "rc87-62e109cabab249b4",
+              "runner": "cargo-test",
+              "digest": "0b6dac86e4525aa7b4672b96a0f12c5b38d831e3d0735310dbcaab474ac1d8f5"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -12340,12 +12718,33 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-1af5237e02b47f19",
+            "package": "css",
+            "file": "parity/rust-semantic-corpus.json",
+            "line": 2564,
+            "title": "rc87-condition-4803e1bddcdd0be1",
+            "runner": "cargo-test",
+            "kind": "test",
+            "sourceDigest": "1a3880640adf84c418b3e5939a2f50b1893e57386b71e7a7c016dc3fb8bf6436"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "8701ca2a56cfe4b1035bc065219e2e357e43019aa46b2ab2c323f87c341cdebe",
+          "targets": [
+            {
+              "caseId": "rc87-1af5237e02b47f19",
+              "runner": "cargo-test",
+              "digest": "1a3880640adf84c418b3e5939a2f50b1893e57386b71e7a7c016dc3fb8bf6436"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -12379,12 +12778,33 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-29c417398af0ffa8",
+            "package": "css",
+            "file": "parity/rust-semantic-corpus.json",
+            "line": 2571,
+            "title": "rc87-condition-d92b086d04d17b4e",
+            "runner": "cargo-test",
+            "kind": "test",
+            "sourceDigest": "871de0e3e85861f241b8a6a07b049371ca957df4a139e24fb555ea961503284d"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "8701ca2a56cfe4b1035bc065219e2e357e43019aa46b2ab2c323f87c341cdebe",
+          "targets": [
+            {
+              "caseId": "rc87-29c417398af0ffa8",
+              "runner": "cargo-test",
+              "digest": "871de0e3e85861f241b8a6a07b049371ca957df4a139e24fb555ea961503284d"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -12418,12 +12838,33 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-6e2c5dc734eb5e64",
+            "package": "css",
+            "file": "parity/rust-semantic-corpus.json",
+            "line": 2543,
+            "title": "rc87-condition-20df4f7a223926ef",
+            "runner": "cargo-test",
+            "kind": "test",
+            "sourceDigest": "da23dcf09a375e495d322e99d0ed40954bd93002a015521d1b530af4a10cff4c"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "8701ca2a56cfe4b1035bc065219e2e357e43019aa46b2ab2c323f87c341cdebe",
+          "targets": [
+            {
+              "caseId": "rc87-6e2c5dc734eb5e64",
+              "runner": "cargo-test",
+              "digest": "da23dcf09a375e495d322e99d0ed40954bd93002a015521d1b530af4a10cff4c"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -12457,12 +12898,33 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-88e846918325f023",
+            "package": "css",
+            "file": "parity/rust-semantic-corpus.json",
+            "line": 2557,
+            "title": "rc87-condition-ebba0d9a797a9ff3",
+            "runner": "cargo-test",
+            "kind": "test",
+            "sourceDigest": "44de8b321228f3206bfd921def5837f877ec5cc7ebd447c83ebba868b6d1884f"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "8701ca2a56cfe4b1035bc065219e2e357e43019aa46b2ab2c323f87c341cdebe",
+          "targets": [
+            {
+              "caseId": "rc87-88e846918325f023",
+              "runner": "cargo-test",
+              "digest": "44de8b321228f3206bfd921def5837f877ec5cc7ebd447c83ebba868b6d1884f"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -12496,12 +12958,33 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-b9327961b3ca9afb",
+            "package": "css",
+            "file": "parity/rust-semantic-corpus.json",
+            "line": 2501,
+            "title": "rc87-condition-8def2a63c36141bf",
+            "runner": "cargo-test",
+            "kind": "test",
+            "sourceDigest": "11bcc25c55b675a33430b07b3abeec3d1c994608b43727ab41c726c824457abe"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "8701ca2a56cfe4b1035bc065219e2e357e43019aa46b2ab2c323f87c341cdebe",
+          "targets": [
+            {
+              "caseId": "rc87-b9327961b3ca9afb",
+              "runner": "cargo-test",
+              "digest": "11bcc25c55b675a33430b07b3abeec3d1c994608b43727ab41c726c824457abe"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -12535,12 +13018,33 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-bcb6031a0630380d",
+            "package": "css",
+            "file": "parity/rust-semantic-corpus.json",
+            "line": 2473,
+            "title": "rc87-condition-cc61ba98b35b45c8",
+            "runner": "cargo-test",
+            "kind": "test",
+            "sourceDigest": "458a5d515fcaea6f1f0101a83059858f526bdff5317f2db779f52b0c9abbc7e4"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "8701ca2a56cfe4b1035bc065219e2e357e43019aa46b2ab2c323f87c341cdebe",
+          "targets": [
+            {
+              "caseId": "rc87-bcb6031a0630380d",
+              "runner": "cargo-test",
+              "digest": "458a5d515fcaea6f1f0101a83059858f526bdff5317f2db779f52b0c9abbc7e4"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -12574,12 +13078,33 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-f7b5d7a4f48379d1",
+            "package": "css",
+            "file": "parity/rust-semantic-corpus.json",
+            "line": 2599,
+            "title": "rc87-condition-ac827a631d0bfdea",
+            "runner": "cargo-test",
+            "kind": "test",
+            "sourceDigest": "4cf116a5b3f6795521530e17b2ef2016b045fbba63543187d70f5bc4e6803b9d"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "8701ca2a56cfe4b1035bc065219e2e357e43019aa46b2ab2c323f87c341cdebe",
+          "targets": [
+            {
+              "caseId": "rc87-f7b5d7a4f48379d1",
+              "runner": "cargo-test",
+              "digest": "4cf116a5b3f6795521530e17b2ef2016b045fbba63543187d70f5bc4e6803b9d"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -12613,12 +13138,33 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-d9672c38d5224650",
+            "package": "css",
+            "file": "parity/rust-semantic-corpus.json",
+            "line": 2480,
+            "title": "rc87-condition-1734f5d7bb822911",
+            "runner": "cargo-test",
+            "kind": "test",
+            "sourceDigest": "b7c05dd0c99776b80f88f63c18b3e2d909b919648f35cc9bdbebb455d8a07e27"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "8701ca2a56cfe4b1035bc065219e2e357e43019aa46b2ab2c323f87c341cdebe",
+          "targets": [
+            {
+              "caseId": "rc87-d9672c38d5224650",
+              "runner": "cargo-test",
+              "digest": "b7c05dd0c99776b80f88f63c18b3e2d909b919648f35cc9bdbebb455d8a07e27"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -12652,12 +13198,33 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-66e737ae4ce960ef",
+            "package": "css",
+            "file": "parity/rust-semantic-corpus.json",
+            "line": 2592,
+            "title": "rc87-condition-18fefe8d6af39855",
+            "runner": "cargo-test",
+            "kind": "test",
+            "sourceDigest": "e22c1588443c065678c11238d3d9801c0d0395814ed909de290e09d733311a02"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "8701ca2a56cfe4b1035bc065219e2e357e43019aa46b2ab2c323f87c341cdebe",
+          "targets": [
+            {
+              "caseId": "rc87-66e737ae4ce960ef",
+              "runner": "cargo-test",
+              "digest": "e22c1588443c065678c11238d3d9801c0d0395814ed909de290e09d733311a02"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -12691,12 +13258,33 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-0cc7135c9c0037d7",
+            "package": "css",
+            "file": "parity/rust-semantic-corpus.json",
+            "line": 2578,
+            "title": "rc87-condition-dc9516907f133ebe",
+            "runner": "cargo-test",
+            "kind": "test",
+            "sourceDigest": "7caa05ef6b7126ec899035d0e1de2a679e3a5002deecbd006953508457fcef7e"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "8701ca2a56cfe4b1035bc065219e2e357e43019aa46b2ab2c323f87c341cdebe",
+          "targets": [
+            {
+              "caseId": "rc87-0cc7135c9c0037d7",
+              "runner": "cargo-test",
+              "digest": "7caa05ef6b7126ec899035d0e1de2a679e3a5002deecbd006953508457fcef7e"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -12730,12 +13318,33 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-d1b83b59f841f849",
+            "package": "css",
+            "file": "parity/rust-semantic-corpus.json",
+            "line": 2515,
+            "title": "rc87-condition-76514e9a4f1efaf8",
+            "runner": "cargo-test",
+            "kind": "test",
+            "sourceDigest": "a5fa040a8bd8b1cf396b4acc610fcda7e6f39a5e61a37b9fbbb2c8da63db7554"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "8701ca2a56cfe4b1035bc065219e2e357e43019aa46b2ab2c323f87c341cdebe",
+          "targets": [
+            {
+              "caseId": "rc87-d1b83b59f841f849",
+              "runner": "cargo-test",
+              "digest": "a5fa040a8bd8b1cf396b4acc610fcda7e6f39a5e61a37b9fbbb2c8da63db7554"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -12769,12 +13378,33 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-ac17d0a9928454a9",
+            "package": "css",
+            "file": "parity/rust-semantic-corpus.json",
+            "line": 2508,
+            "title": "rc87-condition-09cc8b7b4334f1dc",
+            "runner": "cargo-test",
+            "kind": "test",
+            "sourceDigest": "0a35bc5face393b82127ea5a04c2a3b0caaae6199cc9f8c723e38c3e378d4e54"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "8701ca2a56cfe4b1035bc065219e2e357e43019aa46b2ab2c323f87c341cdebe",
+          "targets": [
+            {
+              "caseId": "rc87-ac17d0a9928454a9",
+              "runner": "cargo-test",
+              "digest": "0a35bc5face393b82127ea5a04c2a3b0caaae6199cc9f8c723e38c3e378d4e54"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -12808,12 +13438,33 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-173d57b7fed42367",
+            "package": "css",
+            "file": "parity/rust-semantic-corpus.json",
+            "line": 2466,
+            "title": "rc87-condition-885ce94a18bfa418",
+            "runner": "cargo-test",
+            "kind": "test",
+            "sourceDigest": "d6ae99162307c5699c427571f1df2a9c6d0eca6bd34cfea34afc7404af871bfe"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "8701ca2a56cfe4b1035bc065219e2e357e43019aa46b2ab2c323f87c341cdebe",
+          "targets": [
+            {
+              "caseId": "rc87-173d57b7fed42367",
+              "runner": "cargo-test",
+              "digest": "d6ae99162307c5699c427571f1df2a9c6d0eca6bd34cfea34afc7404af871bfe"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -12847,12 +13498,33 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-710078c1acce2079",
+            "package": "css",
+            "file": "parity/rust-semantic-corpus.json",
+            "line": 2620,
+            "title": "rc87-condition-8bf1d207e6ee449d",
+            "runner": "cargo-test",
+            "kind": "test",
+            "sourceDigest": "238800abe082c3eb8ab9fdd88a43deea99dcb9f5bdfb04fd087a07adf1bcad77"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "8701ca2a56cfe4b1035bc065219e2e357e43019aa46b2ab2c323f87c341cdebe",
+          "targets": [
+            {
+              "caseId": "rc87-710078c1acce2079",
+              "runner": "cargo-test",
+              "digest": "238800abe082c3eb8ab9fdd88a43deea99dcb9f5bdfb04fd087a07adf1bcad77"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -12886,12 +13558,33 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-d4477b2301092d78",
+            "package": "css",
+            "file": "parity/rust-semantic-corpus.json",
+            "line": 2613,
+            "title": "rc87-condition-c38ee72bdf82e32f",
+            "runner": "cargo-test",
+            "kind": "test",
+            "sourceDigest": "2f216d6e854656cb05ce52f76ada64820270e863c2bf392ae6fb4505f745848e"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "8701ca2a56cfe4b1035bc065219e2e357e43019aa46b2ab2c323f87c341cdebe",
+          "targets": [
+            {
+              "caseId": "rc87-d4477b2301092d78",
+              "runner": "cargo-test",
+              "digest": "2f216d6e854656cb05ce52f76ada64820270e863c2bf392ae6fb4505f745848e"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -12925,12 +13618,33 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-e5fa4cc68e89fa4a",
+            "package": "css",
+            "file": "parity/rust-semantic-corpus.json",
+            "line": 2606,
+            "title": "rc87-condition-2a8c45db27ac6165",
+            "runner": "cargo-test",
+            "kind": "test",
+            "sourceDigest": "ea474db0ad0063eb9f0cc749e5de13e5041568d2af6e1a479e249765db86473f"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "8701ca2a56cfe4b1035bc065219e2e357e43019aa46b2ab2c323f87c341cdebe",
+          "targets": [
+            {
+              "caseId": "rc87-e5fa4cc68e89fa4a",
+              "runner": "cargo-test",
+              "digest": "ea474db0ad0063eb9f0cc749e5de13e5041568d2af6e1a479e249765db86473f"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -12964,12 +13678,33 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-ab4707bcbc735530",
+            "package": "css",
+            "file": "parity/rust-semantic-corpus.json",
+            "line": 2634,
+            "title": "rc87-condition-197914ffe79e30b8",
+            "runner": "cargo-test",
+            "kind": "test",
+            "sourceDigest": "70ee0a944ee31d7a3c16e10518b3f0bce417e35337d7dae7e6d169ecd335ba25"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "8701ca2a56cfe4b1035bc065219e2e357e43019aa46b2ab2c323f87c341cdebe",
+          "targets": [
+            {
+              "caseId": "rc87-ab4707bcbc735530",
+              "runner": "cargo-test",
+              "digest": "70ee0a944ee31d7a3c16e10518b3f0bce417e35337d7dae7e6d169ecd335ba25"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -13003,12 +13738,33 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-98ba3c74366e438f",
+            "package": "css",
+            "file": "parity/rust-semantic-corpus.json",
+            "line": 2494,
+            "title": "rc87-condition-c9332509fb0a43c3",
+            "runner": "cargo-test",
+            "kind": "test",
+            "sourceDigest": "466eccfb678ea0fc25ac3daa03b21677f918959c21b20f666ca45a66537758b0"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "8701ca2a56cfe4b1035bc065219e2e357e43019aa46b2ab2c323f87c341cdebe",
+          "targets": [
+            {
+              "caseId": "rc87-98ba3c74366e438f",
+              "runner": "cargo-test",
+              "digest": "466eccfb678ea0fc25ac3daa03b21677f918959c21b20f666ca45a66537758b0"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -13042,12 +13798,33 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-34d54fe9e4049485",
+            "package": "css",
+            "file": "parity/rust-semantic-corpus.json",
+            "line": 2585,
+            "title": "rc87-condition-6ad929666b6b9cca",
+            "runner": "cargo-test",
+            "kind": "test",
+            "sourceDigest": "622914e82f975e82d85cfde826dfed3a2f4ba3901e9dd72b21dd0397256f159d"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "8701ca2a56cfe4b1035bc065219e2e357e43019aa46b2ab2c323f87c341cdebe",
+          "targets": [
+            {
+              "caseId": "rc87-34d54fe9e4049485",
+              "runner": "cargo-test",
+              "digest": "622914e82f975e82d85cfde826dfed3a2f4ba3901e9dd72b21dd0397256f159d"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -13119,12 +13896,33 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-5451608c7dc9d41f",
+            "package": "css",
+            "file": "parity/rust-semantic-corpus.json",
+            "line": 2858,
+            "title": "rc87-selector-a9439c2e913bf21b",
+            "runner": "cargo-test",
+            "kind": "test",
+            "sourceDigest": "fb5e6eeed840bd7711fa13d51ef9dd5e6bc4566bf7bfdd211e1501bf052ac9eb"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "bb642640b97aa05302f0b84ac27537ba1b928c92a108d7af7f67180d4620181b",
+          "targets": [
+            {
+              "caseId": "rc87-5451608c7dc9d41f",
+              "runner": "cargo-test",
+              "digest": "fb5e6eeed840bd7711fa13d51ef9dd5e6bc4566bf7bfdd211e1501bf052ac9eb"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -13158,12 +13956,33 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-9c1325b1c4b8335b",
+            "package": "css",
+            "file": "parity/rust-semantic-corpus.json",
+            "line": 2837,
+            "title": "rc87-selector-57a76e2ef2de6ae4",
+            "runner": "cargo-test",
+            "kind": "test",
+            "sourceDigest": "5b67defbd5d032f81a3eaf6440dcd2f16cc3c4736b182b92fb60dcbecca6ad4b"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "bb642640b97aa05302f0b84ac27537ba1b928c92a108d7af7f67180d4620181b",
+          "targets": [
+            {
+              "caseId": "rc87-9c1325b1c4b8335b",
+              "runner": "cargo-test",
+              "digest": "5b67defbd5d032f81a3eaf6440dcd2f16cc3c4736b182b92fb60dcbecca6ad4b"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -13197,12 +14016,33 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-fddd9217f97990eb",
+            "package": "css",
+            "file": "parity/rust-semantic-corpus.json",
+            "line": 2816,
+            "title": "rc87-selector-dbf9b9b2b8a7031b",
+            "runner": "cargo-test",
+            "kind": "test",
+            "sourceDigest": "120a9a42b8dcdf1b2a7aa9f41cd8aa89dedd349359cefc372497294e7f19fbec"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "bb642640b97aa05302f0b84ac27537ba1b928c92a108d7af7f67180d4620181b",
+          "targets": [
+            {
+              "caseId": "rc87-fddd9217f97990eb",
+              "runner": "cargo-test",
+              "digest": "120a9a42b8dcdf1b2a7aa9f41cd8aa89dedd349359cefc372497294e7f19fbec"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -13236,12 +14076,33 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-2d6fd0097178e3d0",
+            "package": "css",
+            "file": "parity/rust-semantic-corpus.json",
+            "line": 2718,
+            "title": "rc87-selector-00adc47b4fde6037",
+            "runner": "cargo-test",
+            "kind": "test",
+            "sourceDigest": "3a4923e3173a9f58981e3ffe969e9cf6fab60c85c149cb7453764ca11d3640b9"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "bb642640b97aa05302f0b84ac27537ba1b928c92a108d7af7f67180d4620181b",
+          "targets": [
+            {
+              "caseId": "rc87-2d6fd0097178e3d0",
+              "runner": "cargo-test",
+              "digest": "3a4923e3173a9f58981e3ffe969e9cf6fab60c85c149cb7453764ca11d3640b9"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -13275,12 +14136,33 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-7c0b5d904d6c9f4c",
+            "package": "css",
+            "file": "parity/rust-semantic-corpus.json",
+            "line": 2711,
+            "title": "rc87-selector-49b911c28bcb9bd8",
+            "runner": "cargo-test",
+            "kind": "test",
+            "sourceDigest": "3df47d84fb55f1aee1e8542c69ec467ee3d3b0df566bccec12f8c485a51db915"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "bb642640b97aa05302f0b84ac27537ba1b928c92a108d7af7f67180d4620181b",
+          "targets": [
+            {
+              "caseId": "rc87-7c0b5d904d6c9f4c",
+              "runner": "cargo-test",
+              "digest": "3df47d84fb55f1aee1e8542c69ec467ee3d3b0df566bccec12f8c485a51db915"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -13314,12 +14196,33 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-9d983ba857017da5",
+            "package": "css",
+            "file": "parity/rust-semantic-corpus.json",
+            "line": 2725,
+            "title": "rc87-selector-139cfa16f8dd5610",
+            "runner": "cargo-test",
+            "kind": "test",
+            "sourceDigest": "8711b9c3d112d27c8b511b4bba66bb5753cab70590e3b4b641055ed345f00ef4"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "bb642640b97aa05302f0b84ac27537ba1b928c92a108d7af7f67180d4620181b",
+          "targets": [
+            {
+              "caseId": "rc87-9d983ba857017da5",
+              "runner": "cargo-test",
+              "digest": "8711b9c3d112d27c8b511b4bba66bb5753cab70590e3b4b641055ed345f00ef4"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -13353,12 +14256,33 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-f7dd3f31952f0b24",
+            "package": "css",
+            "file": "parity/rust-semantic-corpus.json",
+            "line": 2732,
+            "title": "rc87-selector-1b996087ea8109f5",
+            "runner": "cargo-test",
+            "kind": "test",
+            "sourceDigest": "4c157182e69fe9353b6cd15997893489f0759781829fd71b8f56384369b298c1"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "bb642640b97aa05302f0b84ac27537ba1b928c92a108d7af7f67180d4620181b",
+          "targets": [
+            {
+              "caseId": "rc87-f7dd3f31952f0b24",
+              "runner": "cargo-test",
+              "digest": "4c157182e69fe9353b6cd15997893489f0759781829fd71b8f56384369b298c1"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -13392,12 +14316,33 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-183f3aa6c9feecce",
+            "package": "css",
+            "file": "parity/rust-semantic-corpus.json",
+            "line": 2809,
+            "title": "rc87-selector-4b5ab83b1729ab93",
+            "runner": "cargo-test",
+            "kind": "test",
+            "sourceDigest": "fec9fc423af7b60d70dd23c4aa9e39e6e09da17a065bd6bf2138fdc2d3fa4f2f"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "bb642640b97aa05302f0b84ac27537ba1b928c92a108d7af7f67180d4620181b",
+          "targets": [
+            {
+              "caseId": "rc87-183f3aa6c9feecce",
+              "runner": "cargo-test",
+              "digest": "fec9fc423af7b60d70dd23c4aa9e39e6e09da17a065bd6bf2138fdc2d3fa4f2f"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -13431,12 +14376,33 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-5a08ba0a2631e755",
+            "package": "css",
+            "file": "parity/rust-semantic-corpus.json",
+            "line": 2676,
+            "title": "rc87-selector-e8b333d9e0703577",
+            "runner": "cargo-test",
+            "kind": "test",
+            "sourceDigest": "c6a349c56977573967916024569c8b6fec048acc303fa6be80c09350acd336b4"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "bb642640b97aa05302f0b84ac27537ba1b928c92a108d7af7f67180d4620181b",
+          "targets": [
+            {
+              "caseId": "rc87-5a08ba0a2631e755",
+              "runner": "cargo-test",
+              "digest": "c6a349c56977573967916024569c8b6fec048acc303fa6be80c09350acd336b4"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -13470,12 +14436,33 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-c94ae440866745eb",
+            "package": "css",
+            "file": "parity/rust-semantic-corpus.json",
+            "line": 2662,
+            "title": "rc87-selector-56c9ec5b998ed407",
+            "runner": "cargo-test",
+            "kind": "test",
+            "sourceDigest": "127df5b911858a0c13455d45c3ed294d28140db7a725b282e470ecd8914870cd"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "bb642640b97aa05302f0b84ac27537ba1b928c92a108d7af7f67180d4620181b",
+          "targets": [
+            {
+              "caseId": "rc87-c94ae440866745eb",
+              "runner": "cargo-test",
+              "digest": "127df5b911858a0c13455d45c3ed294d28140db7a725b282e470ecd8914870cd"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -13509,12 +14496,33 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-0f31a336b9ba1f8f",
+            "package": "css",
+            "file": "parity/rust-semantic-corpus.json",
+            "line": 2788,
+            "title": "rc87-selector-a7caf8516afa1558",
+            "runner": "cargo-test",
+            "kind": "test",
+            "sourceDigest": "e5837b3b4841644036a6c1ee1f32d37e1a605ed6e98a1b404c340fd29f7f7974"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "bb642640b97aa05302f0b84ac27537ba1b928c92a108d7af7f67180d4620181b",
+          "targets": [
+            {
+              "caseId": "rc87-0f31a336b9ba1f8f",
+              "runner": "cargo-test",
+              "digest": "e5837b3b4841644036a6c1ee1f32d37e1a605ed6e98a1b404c340fd29f7f7974"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -13548,12 +14556,33 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-a30cedcf5511f159",
+            "package": "css",
+            "file": "parity/rust-semantic-corpus.json",
+            "line": 2802,
+            "title": "rc87-selector-50e5b69d383fa53c",
+            "runner": "cargo-test",
+            "kind": "test",
+            "sourceDigest": "d994faaac2c944d27aed4d121b3651f69990f3333463946879e71f97ec77cb44"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "bb642640b97aa05302f0b84ac27537ba1b928c92a108d7af7f67180d4620181b",
+          "targets": [
+            {
+              "caseId": "rc87-a30cedcf5511f159",
+              "runner": "cargo-test",
+              "digest": "d994faaac2c944d27aed4d121b3651f69990f3333463946879e71f97ec77cb44"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -13587,12 +14616,33 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-c670da1fe2e2a362",
+            "package": "css",
+            "file": "parity/rust-semantic-corpus.json",
+            "line": 2746,
+            "title": "rc87-selector-ec79a41cf8a0524c",
+            "runner": "cargo-test",
+            "kind": "test",
+            "sourceDigest": "e355c55c0e631d12e21c9422cc8b39498a26f28b7279d98ae54f6df0a81156be"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "bb642640b97aa05302f0b84ac27537ba1b928c92a108d7af7f67180d4620181b",
+          "targets": [
+            {
+              "caseId": "rc87-c670da1fe2e2a362",
+              "runner": "cargo-test",
+              "digest": "e355c55c0e631d12e21c9422cc8b39498a26f28b7279d98ae54f6df0a81156be"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -13626,12 +14676,33 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-edd83776e833fd66",
+            "package": "css",
+            "file": "parity/rust-semantic-corpus.json",
+            "line": 2655,
+            "title": "rc87-selector-b60dd80a8d04ba94",
+            "runner": "cargo-test",
+            "kind": "test",
+            "sourceDigest": "2629edca7da05fa66e7a36ba8d7b8baaff2a62dfea6a0ce65e10ebaf5a720694"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "bb642640b97aa05302f0b84ac27537ba1b928c92a108d7af7f67180d4620181b",
+          "targets": [
+            {
+              "caseId": "rc87-edd83776e833fd66",
+              "runner": "cargo-test",
+              "digest": "2629edca7da05fa66e7a36ba8d7b8baaff2a62dfea6a0ce65e10ebaf5a720694"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -13665,12 +14736,33 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-d4b0e6922817d40d",
+            "package": "css",
+            "file": "parity/rust-semantic-corpus.json",
+            "line": 2844,
+            "title": "rc87-selector-ab231dfc9b4427f6",
+            "runner": "cargo-test",
+            "kind": "test",
+            "sourceDigest": "8b19d110e7bc449f3f39dbeb5f0637a5e9e3bb1a1a324adf3469be4d5cb9f223"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "bb642640b97aa05302f0b84ac27537ba1b928c92a108d7af7f67180d4620181b",
+          "targets": [
+            {
+              "caseId": "rc87-d4b0e6922817d40d",
+              "runner": "cargo-test",
+              "digest": "8b19d110e7bc449f3f39dbeb5f0637a5e9e3bb1a1a324adf3469be4d5cb9f223"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -13704,12 +14796,33 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-5987c4e7f655e1ae",
+            "package": "css",
+            "file": "parity/rust-semantic-corpus.json",
+            "line": 2669,
+            "title": "rc87-selector-359d5de5eb9aface",
+            "runner": "cargo-test",
+            "kind": "test",
+            "sourceDigest": "6ad1fc7beaa0f04214d650f3938d19d9f438b503d4c421bd3204a1c9ee725013"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "bb642640b97aa05302f0b84ac27537ba1b928c92a108d7af7f67180d4620181b",
+          "targets": [
+            {
+              "caseId": "rc87-5987c4e7f655e1ae",
+              "runner": "cargo-test",
+              "digest": "6ad1fc7beaa0f04214d650f3938d19d9f438b503d4c421bd3204a1c9ee725013"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -13743,12 +14856,33 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-3bb6adac2a478c6a",
+            "package": "css",
+            "file": "parity/rust-semantic-corpus.json",
+            "line": 2795,
+            "title": "rc87-selector-de38516129dd991d",
+            "runner": "cargo-test",
+            "kind": "test",
+            "sourceDigest": "e97e5c7edd021df6fc8298662bc6faf2dca44c5a3d091ed96cc51c5258924488"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "bb642640b97aa05302f0b84ac27537ba1b928c92a108d7af7f67180d4620181b",
+          "targets": [
+            {
+              "caseId": "rc87-3bb6adac2a478c6a",
+              "runner": "cargo-test",
+              "digest": "e97e5c7edd021df6fc8298662bc6faf2dca44c5a3d091ed96cc51c5258924488"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -13782,12 +14916,33 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-56fe660185b31dcb",
+            "package": "css",
+            "file": "parity/rust-semantic-corpus.json",
+            "line": 2690,
+            "title": "rc87-selector-522d69740a4af27e",
+            "runner": "cargo-test",
+            "kind": "test",
+            "sourceDigest": "6fb73b9907e20797c2f658ed11a56972237e7f99f76d337fc91ab3efeff8ae0d"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "bb642640b97aa05302f0b84ac27537ba1b928c92a108d7af7f67180d4620181b",
+          "targets": [
+            {
+              "caseId": "rc87-56fe660185b31dcb",
+              "runner": "cargo-test",
+              "digest": "6fb73b9907e20797c2f658ed11a56972237e7f99f76d337fc91ab3efeff8ae0d"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -13821,12 +14976,33 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-2da2f78e570ab4bf",
+            "package": "css",
+            "file": "parity/rust-semantic-corpus.json",
+            "line": 2704,
+            "title": "rc87-selector-c38bc18f349f1945",
+            "runner": "cargo-test",
+            "kind": "test",
+            "sourceDigest": "84a36b0cea46670a238619814134b2e301594e8075c1815138fa23faa95f872c"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "bb642640b97aa05302f0b84ac27537ba1b928c92a108d7af7f67180d4620181b",
+          "targets": [
+            {
+              "caseId": "rc87-2da2f78e570ab4bf",
+              "runner": "cargo-test",
+              "digest": "84a36b0cea46670a238619814134b2e301594e8075c1815138fa23faa95f872c"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -13860,12 +15036,33 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-06949eb291f89fdd",
+            "package": "css",
+            "file": "parity/rust-semantic-corpus.json",
+            "line": 2697,
+            "title": "rc87-selector-f10371238c9efe81",
+            "runner": "cargo-test",
+            "kind": "test",
+            "sourceDigest": "7728271861950253cc3866693ea8019f4adb00b767ff9372179bdb7c2bae8b7e"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "bb642640b97aa05302f0b84ac27537ba1b928c92a108d7af7f67180d4620181b",
+          "targets": [
+            {
+              "caseId": "rc87-06949eb291f89fdd",
+              "runner": "cargo-test",
+              "digest": "7728271861950253cc3866693ea8019f4adb00b767ff9372179bdb7c2bae8b7e"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -13899,12 +15096,33 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-8925c3c653f9ec79",
+            "package": "css",
+            "file": "parity/rust-semantic-corpus.json",
+            "line": 2683,
+            "title": "rc87-selector-be833c156b48227f",
+            "runner": "cargo-test",
+            "kind": "test",
+            "sourceDigest": "fcbc2c095ff5f77b063230dee69207f2d636f0b21d0837735abdea166fae534e"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "bb642640b97aa05302f0b84ac27537ba1b928c92a108d7af7f67180d4620181b",
+          "targets": [
+            {
+              "caseId": "rc87-8925c3c653f9ec79",
+              "runner": "cargo-test",
+              "digest": "fcbc2c095ff5f77b063230dee69207f2d636f0b21d0837735abdea166fae534e"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -13938,12 +15156,33 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-cf5455fc7a509621",
+            "package": "css",
+            "file": "parity/rust-semantic-corpus.json",
+            "line": 2774,
+            "title": "rc87-selector-607cf543e3bdec74",
+            "runner": "cargo-test",
+            "kind": "test",
+            "sourceDigest": "77979b51354844004fe2e3c6503be4852f5581ec1eaed9347d95573d27936801"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "bb642640b97aa05302f0b84ac27537ba1b928c92a108d7af7f67180d4620181b",
+          "targets": [
+            {
+              "caseId": "rc87-cf5455fc7a509621",
+              "runner": "cargo-test",
+              "digest": "77979b51354844004fe2e3c6503be4852f5581ec1eaed9347d95573d27936801"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -13977,12 +15216,33 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-d2d07cc925a7c9bf",
+            "package": "css",
+            "file": "parity/rust-semantic-corpus.json",
+            "line": 2753,
+            "title": "rc87-selector-15b32890c36a85e9",
+            "runner": "cargo-test",
+            "kind": "test",
+            "sourceDigest": "dbb2f40ef88cab1558de1f9f77d36008428b73c21f1a0229e005c1d37259e5b2"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "bb642640b97aa05302f0b84ac27537ba1b928c92a108d7af7f67180d4620181b",
+          "targets": [
+            {
+              "caseId": "rc87-d2d07cc925a7c9bf",
+              "runner": "cargo-test",
+              "digest": "dbb2f40ef88cab1558de1f9f77d36008428b73c21f1a0229e005c1d37259e5b2"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -14016,12 +15276,33 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-a499f05998dcc99c",
+            "package": "css",
+            "file": "parity/rust-semantic-corpus.json",
+            "line": 2781,
+            "title": "rc87-selector-2da2114031098406",
+            "runner": "cargo-test",
+            "kind": "test",
+            "sourceDigest": "37cf804ef3d3e2bee818db1d2514b195ffc85512022c22cd5d255e22ec43e2b2"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "bb642640b97aa05302f0b84ac27537ba1b928c92a108d7af7f67180d4620181b",
+          "targets": [
+            {
+              "caseId": "rc87-a499f05998dcc99c",
+              "runner": "cargo-test",
+              "digest": "37cf804ef3d3e2bee818db1d2514b195ffc85512022c22cd5d255e22ec43e2b2"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -14055,12 +15336,33 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-6f2f9f2ff496d5b9",
+            "package": "css",
+            "file": "parity/rust-semantic-corpus.json",
+            "line": 2760,
+            "title": "rc87-selector-32a046dabc542c75",
+            "runner": "cargo-test",
+            "kind": "test",
+            "sourceDigest": "f8cf97850d63b84742d9a11ab2418ab5a779ccd9f1ac496ec43862bd2b758788"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "bb642640b97aa05302f0b84ac27537ba1b928c92a108d7af7f67180d4620181b",
+          "targets": [
+            {
+              "caseId": "rc87-6f2f9f2ff496d5b9",
+              "runner": "cargo-test",
+              "digest": "f8cf97850d63b84742d9a11ab2418ab5a779ccd9f1ac496ec43862bd2b758788"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -14094,12 +15396,33 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-97c185d620d9a1fe",
+            "package": "css",
+            "file": "parity/rust-semantic-corpus.json",
+            "line": 2767,
+            "title": "rc87-selector-162ff02b6632f8d4",
+            "runner": "cargo-test",
+            "kind": "test",
+            "sourceDigest": "4a33ab60cc01b6bb5dda2ad985ea06aba00401afb7b89879908ba88d8ea6d112"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "bb642640b97aa05302f0b84ac27537ba1b928c92a108d7af7f67180d4620181b",
+          "targets": [
+            {
+              "caseId": "rc87-97c185d620d9a1fe",
+              "runner": "cargo-test",
+              "digest": "4a33ab60cc01b6bb5dda2ad985ea06aba00401afb7b89879908ba88d8ea6d112"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -14133,12 +15456,33 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-ba0e05379b014d3c",
+            "package": "css",
+            "file": "parity/rust-semantic-corpus.json",
+            "line": 2648,
+            "title": "rc87-selector-7672156d45b19824",
+            "runner": "cargo-test",
+            "kind": "test",
+            "sourceDigest": "eac85cefba981e1de3fdbdfcf2e8130ad554198849e8b1cf99e3ecb16272ca0b"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "bb642640b97aa05302f0b84ac27537ba1b928c92a108d7af7f67180d4620181b",
+          "targets": [
+            {
+              "caseId": "rc87-ba0e05379b014d3c",
+              "runner": "cargo-test",
+              "digest": "eac85cefba981e1de3fdbdfcf2e8130ad554198849e8b1cf99e3ecb16272ca0b"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -14172,12 +15516,33 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-e8e9d9da1f11ce1b",
+            "package": "css",
+            "file": "parity/rust-semantic-corpus.json",
+            "line": 2739,
+            "title": "rc87-selector-bd5d33a12de469be",
+            "runner": "cargo-test",
+            "kind": "test",
+            "sourceDigest": "fd59ef03f380e825c950da7ee484e401b687b6c91272b918651b7f3417d5d7ab"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "bb642640b97aa05302f0b84ac27537ba1b928c92a108d7af7f67180d4620181b",
+          "targets": [
+            {
+              "caseId": "rc87-e8e9d9da1f11ce1b",
+              "runner": "cargo-test",
+              "digest": "fd59ef03f380e825c950da7ee484e401b687b6c91272b918651b7f3417d5d7ab"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -14211,12 +15576,33 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-e8135248f4643dc2",
+            "package": "css",
+            "file": "parity/rust-semantic-corpus.json",
+            "line": 2830,
+            "title": "rc87-selector-8cb307639b25de69",
+            "runner": "cargo-test",
+            "kind": "test",
+            "sourceDigest": "b5be34adfda13927cd81ccc660af19d199d8ed2d92faacb1d33881730baf6db0"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "bb642640b97aa05302f0b84ac27537ba1b928c92a108d7af7f67180d4620181b",
+          "targets": [
+            {
+              "caseId": "rc87-e8135248f4643dc2",
+              "runner": "cargo-test",
+              "digest": "b5be34adfda13927cd81ccc660af19d199d8ed2d92faacb1d33881730baf6db0"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -14250,12 +15636,33 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-adc44c3ef78b5a07",
+            "package": "css",
+            "file": "parity/rust-semantic-corpus.json",
+            "line": 2823,
+            "title": "rc87-selector-e28dbc847daa1817",
+            "runner": "cargo-test",
+            "kind": "test",
+            "sourceDigest": "92a6c077af8677d50594aa1ca2c1b0407c9c093a6e4b51905782c7b41aa142ad"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "bb642640b97aa05302f0b84ac27537ba1b928c92a108d7af7f67180d4620181b",
+          "targets": [
+            {
+              "caseId": "rc87-adc44c3ef78b5a07",
+              "runner": "cargo-test",
+              "digest": "92a6c077af8677d50594aa1ca2c1b0407c9c093a6e4b51905782c7b41aa142ad"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -14289,12 +15696,33 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-be82be376faee8ed",
+            "package": "css",
+            "file": "parity/rust-semantic-corpus.json",
+            "line": 2851,
+            "title": "rc87-selector-37cd5d624475d02e",
+            "runner": "cargo-test",
+            "kind": "test",
+            "sourceDigest": "03cc5a8716ca40ef58601338b1db33c62c13ad9995595b649d81ff39354cf93c"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "bb642640b97aa05302f0b84ac27537ba1b928c92a108d7af7f67180d4620181b",
+          "targets": [
+            {
+              "caseId": "rc87-be82be376faee8ed",
+              "runner": "cargo-test",
+              "digest": "03cc5a8716ca40ef58601338b1db33c62c13ad9995595b649d81ff39354cf93c"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -14322,12 +15750,33 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-ecffd3719a7a36a5",
+            "package": "css",
+            "file": "parity/rust-semantic-corpus.json",
+            "line": 785,
+            "title": "rc87-rule-b34b6305ef89bb24",
+            "runner": "cargo-xtask+vitest-native-wasm",
+            "kind": "test",
+            "sourceDigest": "0b0869e55e29467e7e13d96d085809e4754f6d82d254f73738bb5defd4d9365c"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "6f70208d5936b410c2d4dd06954d3abe17c5bb6d3c329e121642bd630b1cb1eb",
+          "targets": [
+            {
+              "caseId": "rc87-ecffd3719a7a36a5",
+              "runner": "cargo-xtask+vitest-native-wasm",
+              "digest": "0b0869e55e29467e7e13d96d085809e4754f6d82d254f73738bb5defd4d9365c"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -14355,12 +15804,33 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-ca632363c5a9520b",
+            "package": "css",
+            "file": "parity/rust-semantic-corpus.json",
+            "line": 797,
+            "title": "rc87-rule-7a36e09838ade737",
+            "runner": "cargo-xtask+vitest-native-wasm",
+            "kind": "test",
+            "sourceDigest": "e5e21264985ca05ddcc6abcc427322122c49835aff88e1ab63129a1a28a2c10b"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "6f70208d5936b410c2d4dd06954d3abe17c5bb6d3c329e121642bd630b1cb1eb",
+          "targets": [
+            {
+              "caseId": "rc87-ca632363c5a9520b",
+              "runner": "cargo-xtask+vitest-native-wasm",
+              "digest": "e5e21264985ca05ddcc6abcc427322122c49835aff88e1ab63129a1a28a2c10b"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -14388,12 +15858,33 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-4a62d3e9cd509c95",
+            "package": "css",
+            "file": "parity/rust-semantic-corpus.json",
+            "line": 809,
+            "title": "rc87-rule-c04505259861369b",
+            "runner": "cargo-xtask+vitest-native-wasm",
+            "kind": "test",
+            "sourceDigest": "748be370630488285beb3f8558686feb4d4ac72a50431bf18e808d4db3806365"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "6f70208d5936b410c2d4dd06954d3abe17c5bb6d3c329e121642bd630b1cb1eb",
+          "targets": [
+            {
+              "caseId": "rc87-4a62d3e9cd509c95",
+              "runner": "cargo-xtask+vitest-native-wasm",
+              "digest": "748be370630488285beb3f8558686feb4d4ac72a50431bf18e808d4db3806365"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -14421,12 +15912,33 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-c86119d7c5407d37",
+            "package": "css",
+            "file": "parity/rust-semantic-corpus.json",
+            "line": 815,
+            "title": "rc87-rule-3f25eb2d165c2792",
+            "runner": "cargo-xtask+vitest-native-wasm",
+            "kind": "test",
+            "sourceDigest": "2ec28dbefa4473f203d2c3acfd045a537d02c45654ad1f7e4e9adb04220b7301"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "6f70208d5936b410c2d4dd06954d3abe17c5bb6d3c329e121642bd630b1cb1eb",
+          "targets": [
+            {
+              "caseId": "rc87-c86119d7c5407d37",
+              "runner": "cargo-xtask+vitest-native-wasm",
+              "digest": "2ec28dbefa4473f203d2c3acfd045a537d02c45654ad1f7e4e9adb04220b7301"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -14454,12 +15966,33 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-e2742356adfc965e",
+            "package": "css",
+            "file": "parity/rust-semantic-corpus.json",
+            "line": 857,
+            "title": "rc87-rule-6d53dce3a8f4a608",
+            "runner": "cargo-xtask+vitest-native-wasm",
+            "kind": "test",
+            "sourceDigest": "57c6f79856d8a194eb5c048c3ce7bf3e75b09fb9b4548de4e726ac2e3571505c"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "6f70208d5936b410c2d4dd06954d3abe17c5bb6d3c329e121642bd630b1cb1eb",
+          "targets": [
+            {
+              "caseId": "rc87-e2742356adfc965e",
+              "runner": "cargo-xtask+vitest-native-wasm",
+              "digest": "57c6f79856d8a194eb5c048c3ce7bf3e75b09fb9b4548de4e726ac2e3571505c"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -14487,12 +16020,33 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-a57872358cbce7de",
+            "package": "css",
+            "file": "parity/rust-semantic-corpus.json",
+            "line": 899,
+            "title": "rc87-rule-59505396e17bdf8e",
+            "runner": "cargo-xtask+vitest-native-wasm",
+            "kind": "test",
+            "sourceDigest": "24d9531b3e2d516e444df27ba9a3581683f92e2f713f94ad8db6aec7faa88c6e"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "6f70208d5936b410c2d4dd06954d3abe17c5bb6d3c329e121642bd630b1cb1eb",
+          "targets": [
+            {
+              "caseId": "rc87-a57872358cbce7de",
+              "runner": "cargo-xtask+vitest-native-wasm",
+              "digest": "24d9531b3e2d516e444df27ba9a3581683f92e2f713f94ad8db6aec7faa88c6e"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -14520,12 +16074,33 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-42dc07686d50c741",
+            "package": "css",
+            "file": "parity/rust-semantic-corpus.json",
+            "line": 936,
+            "title": "rc87-rule-5230468339100f6c",
+            "runner": "cargo-xtask+vitest-native-wasm",
+            "kind": "test",
+            "sourceDigest": "cb7bdcd37133f7e6c3efa045a2c5a1d48e7e12c87e826fe03728d5dfa055d533"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "6f70208d5936b410c2d4dd06954d3abe17c5bb6d3c329e121642bd630b1cb1eb",
+          "targets": [
+            {
+              "caseId": "rc87-42dc07686d50c741",
+              "runner": "cargo-xtask+vitest-native-wasm",
+              "digest": "cb7bdcd37133f7e6c3efa045a2c5a1d48e7e12c87e826fe03728d5dfa055d533"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -14553,12 +16128,33 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-129edde53ac665a8",
+            "package": "css",
+            "file": "parity/rust-semantic-corpus.json",
+            "line": 998,
+            "title": "rc87-rule-f491aa129b9a3a74",
+            "runner": "cargo-xtask+vitest-native-wasm",
+            "kind": "test",
+            "sourceDigest": "6f9c18182c75cc98de85a135d92d123f0409ea4afdd6620627468ab7347e18f7"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "6f70208d5936b410c2d4dd06954d3abe17c5bb6d3c329e121642bd630b1cb1eb",
+          "targets": [
+            {
+              "caseId": "rc87-129edde53ac665a8",
+              "runner": "cargo-xtask+vitest-native-wasm",
+              "digest": "6f9c18182c75cc98de85a135d92d123f0409ea4afdd6620627468ab7347e18f7"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -14586,12 +16182,33 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-82d9128ed5369612",
+            "package": "css",
+            "file": "parity/rust-semantic-corpus.json",
+            "line": 1035,
+            "title": "rc87-rule-d289666fcc196b64",
+            "runner": "cargo-xtask+vitest-native-wasm",
+            "kind": "test",
+            "sourceDigest": "b7de8f04fbb604f3738c7626fe60ea170f764092428f6e93b3cf2ba2ad74b9c6"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "6f70208d5936b410c2d4dd06954d3abe17c5bb6d3c329e121642bd630b1cb1eb",
+          "targets": [
+            {
+              "caseId": "rc87-82d9128ed5369612",
+              "runner": "cargo-xtask+vitest-native-wasm",
+              "digest": "b7de8f04fbb604f3738c7626fe60ea170f764092428f6e93b3cf2ba2ad74b9c6"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -14619,12 +16236,33 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-58b5f3658c990ef2",
+            "package": "css",
+            "file": "parity/rust-semantic-corpus.json",
+            "line": 1182,
+            "title": "rc87-rule-8d2ee1e868c38dd6",
+            "runner": "cargo-xtask+vitest-native-wasm",
+            "kind": "test",
+            "sourceDigest": "ec9ee6c25993c81831019e7d36d57d7d422244f5379dad7e946895ae3b50c444"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "6f70208d5936b410c2d4dd06954d3abe17c5bb6d3c329e121642bd630b1cb1eb",
+          "targets": [
+            {
+              "caseId": "rc87-58b5f3658c990ef2",
+              "runner": "cargo-xtask+vitest-native-wasm",
+              "digest": "ec9ee6c25993c81831019e7d36d57d7d422244f5379dad7e946895ae3b50c444"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -14652,12 +16290,33 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-70e15aafac3dcac6",
+            "package": "css",
+            "file": "parity/rust-semantic-corpus.json",
+            "line": 1204,
+            "title": "rc87-rule-fb85c91f2d14846a",
+            "runner": "cargo-xtask+vitest-native-wasm",
+            "kind": "test",
+            "sourceDigest": "840c8ea9bd52f4c5a75b2a59990b2b12bf115562ceb0cf0e8c704c0e82d9df49"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "6f70208d5936b410c2d4dd06954d3abe17c5bb6d3c329e121642bd630b1cb1eb",
+          "targets": [
+            {
+              "caseId": "rc87-70e15aafac3dcac6",
+              "runner": "cargo-xtask+vitest-native-wasm",
+              "digest": "840c8ea9bd52f4c5a75b2a59990b2b12bf115562ceb0cf0e8c704c0e82d9df49"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -14685,12 +16344,33 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-97161f4a1ffd1509",
+            "package": "css",
+            "file": "parity/rust-semantic-corpus.json",
+            "line": 1216,
+            "title": "rc87-rule-afba0d33467fc574",
+            "runner": "cargo-xtask+vitest-native-wasm",
+            "kind": "test",
+            "sourceDigest": "4cb69eaa7b4ac7d8e027545a0815787aacd66fe28a0769d50489a553b807549f"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "6f70208d5936b410c2d4dd06954d3abe17c5bb6d3c329e121642bd630b1cb1eb",
+          "targets": [
+            {
+              "caseId": "rc87-97161f4a1ffd1509",
+              "runner": "cargo-xtask+vitest-native-wasm",
+              "digest": "4cb69eaa7b4ac7d8e027545a0815787aacd66fe28a0769d50489a553b807549f"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -14718,12 +16398,33 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-f8cd5603307e5b23",
+            "package": "css",
+            "file": "parity/rust-semantic-corpus.json",
+            "line": 1228,
+            "title": "rc87-rule-4d6d766d11fd57af",
+            "runner": "cargo-xtask+vitest-native-wasm",
+            "kind": "test",
+            "sourceDigest": "38dddf5ef73cbc7f21cdcbd9e09e4e140705769c0d9bf25b3eee083625719355"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "6f70208d5936b410c2d4dd06954d3abe17c5bb6d3c329e121642bd630b1cb1eb",
+          "targets": [
+            {
+              "caseId": "rc87-f8cd5603307e5b23",
+              "runner": "cargo-xtask+vitest-native-wasm",
+              "digest": "38dddf5ef73cbc7f21cdcbd9e09e4e140705769c0d9bf25b3eee083625719355"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -14751,12 +16452,33 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-f85be9708d97ae8b",
+            "package": "css",
+            "file": "parity/rust-semantic-corpus.json",
+            "line": 1265,
+            "title": "rc87-rule-743a5f3fb61f7d88",
+            "runner": "cargo-xtask+vitest-native-wasm",
+            "kind": "test",
+            "sourceDigest": "67d16e0addb261b9e88cdef607bc60ed5b3300ba68ab7d394fa0d09866527821"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "6f70208d5936b410c2d4dd06954d3abe17c5bb6d3c329e121642bd630b1cb1eb",
+          "targets": [
+            {
+              "caseId": "rc87-f85be9708d97ae8b",
+              "runner": "cargo-xtask+vitest-native-wasm",
+              "digest": "67d16e0addb261b9e88cdef607bc60ed5b3300ba68ab7d394fa0d09866527821"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -14784,12 +16506,33 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-434294a923b2b55f",
+            "package": "css",
+            "file": "parity/rust-semantic-corpus.json",
+            "line": 1271,
+            "title": "rc87-rule-5e304b15af0d12dd",
+            "runner": "cargo-xtask+vitest-native-wasm",
+            "kind": "test",
+            "sourceDigest": "61a8a33564088bf9a5531d6f3f17d2340d9eaf772fedad1a1629a928724eb326"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "6f70208d5936b410c2d4dd06954d3abe17c5bb6d3c329e121642bd630b1cb1eb",
+          "targets": [
+            {
+              "caseId": "rc87-434294a923b2b55f",
+              "runner": "cargo-xtask+vitest-native-wasm",
+              "digest": "61a8a33564088bf9a5531d6f3f17d2340d9eaf772fedad1a1629a928724eb326"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -14817,12 +16560,33 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-4098bd159a3ddc7d",
+            "package": "css",
+            "file": "parity/rust-semantic-corpus.json",
+            "line": 1277,
+            "title": "rc87-rule-22b7c994c8342eaa",
+            "runner": "cargo-xtask+vitest-native-wasm",
+            "kind": "test",
+            "sourceDigest": "83ee487e2588502ab148b5a49229759307222725a5ed63a47ca7a81af3e28be7"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "6f70208d5936b410c2d4dd06954d3abe17c5bb6d3c329e121642bd630b1cb1eb",
+          "targets": [
+            {
+              "caseId": "rc87-4098bd159a3ddc7d",
+              "runner": "cargo-xtask+vitest-native-wasm",
+              "digest": "83ee487e2588502ab148b5a49229759307222725a5ed63a47ca7a81af3e28be7"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -14850,12 +16614,33 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-b39056fa0f416689",
+            "package": "css",
+            "file": "parity/rust-semantic-corpus.json",
+            "line": 1299,
+            "title": "rc87-rule-3054317e5047ac84",
+            "runner": "cargo-xtask+vitest-native-wasm",
+            "kind": "test",
+            "sourceDigest": "c87620f5b398c8b878b05adad93ec092fcde3845a76bfa5687bce85280b05029"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "6f70208d5936b410c2d4dd06954d3abe17c5bb6d3c329e121642bd630b1cb1eb",
+          "targets": [
+            {
+              "caseId": "rc87-b39056fa0f416689",
+              "runner": "cargo-xtask+vitest-native-wasm",
+              "digest": "c87620f5b398c8b878b05adad93ec092fcde3845a76bfa5687bce85280b05029"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -14883,12 +16668,33 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-2d72e040b0a72713",
+            "package": "css",
+            "file": "parity/rust-semantic-corpus.json",
+            "line": 1311,
+            "title": "rc87-rule-afbc5c93d6ab3dc2",
+            "runner": "cargo-xtask+vitest-native-wasm",
+            "kind": "test",
+            "sourceDigest": "6791cd1376a77edd97c9a91f15ca67f82fcd4ef9827060f0629cf714c1a648ae"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "6f70208d5936b410c2d4dd06954d3abe17c5bb6d3c329e121642bd630b1cb1eb",
+          "targets": [
+            {
+              "caseId": "rc87-2d72e040b0a72713",
+              "runner": "cargo-xtask+vitest-native-wasm",
+              "digest": "6791cd1376a77edd97c9a91f15ca67f82fcd4ef9827060f0629cf714c1a648ae"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -14916,12 +16722,33 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-daa3388fe8881bac",
+            "package": "css",
+            "file": "parity/rust-semantic-corpus.json",
+            "line": 1388,
+            "title": "rc87-rule-9c9ee122cd4a3bd3",
+            "runner": "cargo-xtask+vitest-native-wasm",
+            "kind": "test",
+            "sourceDigest": "2dcc9608a140b53ae6b9c5e366531d5ee011d299721d46055e3f0ecf20e63514"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "6f70208d5936b410c2d4dd06954d3abe17c5bb6d3c329e121642bd630b1cb1eb",
+          "targets": [
+            {
+              "caseId": "rc87-daa3388fe8881bac",
+              "runner": "cargo-xtask+vitest-native-wasm",
+              "digest": "2dcc9608a140b53ae6b9c5e366531d5ee011d299721d46055e3f0ecf20e63514"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -14949,12 +16776,33 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-2df9f0e8718d9074",
+            "package": "css",
+            "file": "parity/rust-semantic-corpus.json",
+            "line": 1440,
+            "title": "rc87-rule-8a293bcf0d290eb7",
+            "runner": "cargo-xtask+vitest-native-wasm",
+            "kind": "test",
+            "sourceDigest": "d0a1004b61397e9169113c3241be1b2e64bc35d06cf704f5bf1f64fb1bd91102"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "6f70208d5936b410c2d4dd06954d3abe17c5bb6d3c329e121642bd630b1cb1eb",
+          "targets": [
+            {
+              "caseId": "rc87-2df9f0e8718d9074",
+              "runner": "cargo-xtask+vitest-native-wasm",
+              "digest": "d0a1004b61397e9169113c3241be1b2e64bc35d06cf704f5bf1f64fb1bd91102"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -14982,12 +16830,33 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-9c3377d29bd64eef",
+            "package": "css",
+            "file": "parity/rust-semantic-corpus.json",
+            "line": 1532,
+            "title": "rc87-rule-acdce9660356cb28",
+            "runner": "cargo-xtask+vitest-native-wasm",
+            "kind": "test",
+            "sourceDigest": "10f154a5f7838d55830f64cf1812236b96081a16f63e85511b20fffac4c1ab1f"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "6f70208d5936b410c2d4dd06954d3abe17c5bb6d3c329e121642bd630b1cb1eb",
+          "targets": [
+            {
+              "caseId": "rc87-9c3377d29bd64eef",
+              "runner": "cargo-xtask+vitest-native-wasm",
+              "digest": "10f154a5f7838d55830f64cf1812236b96081a16f63e85511b20fffac4c1ab1f"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -15015,12 +16884,33 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-fb4146f8d5211e8b",
+            "package": "css",
+            "file": "parity/rust-semantic-corpus.json",
+            "line": 1554,
+            "title": "rc87-rule-9895f7ecdc656497",
+            "runner": "cargo-xtask+vitest-native-wasm",
+            "kind": "test",
+            "sourceDigest": "7d9fb49cfc1de50d2b8080c250c0fc767b999416529c9f53009ecf9a12077859"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "6f70208d5936b410c2d4dd06954d3abe17c5bb6d3c329e121642bd630b1cb1eb",
+          "targets": [
+            {
+              "caseId": "rc87-fb4146f8d5211e8b",
+              "runner": "cargo-xtask+vitest-native-wasm",
+              "digest": "7d9fb49cfc1de50d2b8080c250c0fc767b999416529c9f53009ecf9a12077859"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -15048,12 +16938,33 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-7616b982dcbcd4f2",
+            "package": "css",
+            "file": "parity/rust-semantic-corpus.json",
+            "line": 1601,
+            "title": "rc87-rule-4a94dd75caf59534",
+            "runner": "cargo-xtask+vitest-native-wasm",
+            "kind": "test",
+            "sourceDigest": "d77765d526c54d8e24c84894231dced1e83c2996a67278e0c48b7ed7ab6d2a75"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "6f70208d5936b410c2d4dd06954d3abe17c5bb6d3c329e121642bd630b1cb1eb",
+          "targets": [
+            {
+              "caseId": "rc87-7616b982dcbcd4f2",
+              "runner": "cargo-xtask+vitest-native-wasm",
+              "digest": "d77765d526c54d8e24c84894231dced1e83c2996a67278e0c48b7ed7ab6d2a75"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -15081,12 +16992,33 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-6e5865f40d14b701",
+            "package": "css",
+            "file": "parity/rust-semantic-corpus.json",
+            "line": 1633,
+            "title": "rc87-rule-2f0ff0b730818d53",
+            "runner": "cargo-xtask+vitest-native-wasm",
+            "kind": "test",
+            "sourceDigest": "9e409bfc555d85fd5764c60a15d3b2b6931fb6ca13e91d434bc1915434280a21"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "6f70208d5936b410c2d4dd06954d3abe17c5bb6d3c329e121642bd630b1cb1eb",
+          "targets": [
+            {
+              "caseId": "rc87-6e5865f40d14b701",
+              "runner": "cargo-xtask+vitest-native-wasm",
+              "digest": "9e409bfc555d85fd5764c60a15d3b2b6931fb6ca13e91d434bc1915434280a21"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -15114,12 +17046,33 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-7946ce5556bcbf4d",
+            "package": "css",
+            "file": "parity/rust-semantic-corpus.json",
+            "line": 1665,
+            "title": "rc87-rule-2f7b1c97993db611",
+            "runner": "cargo-xtask+vitest-native-wasm",
+            "kind": "test",
+            "sourceDigest": "a67ea47f5e227f321eaf5b5b5dd974a3f186f260ed7dcb9635747171fcef921f"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "6f70208d5936b410c2d4dd06954d3abe17c5bb6d3c329e121642bd630b1cb1eb",
+          "targets": [
+            {
+              "caseId": "rc87-7946ce5556bcbf4d",
+              "runner": "cargo-xtask+vitest-native-wasm",
+              "digest": "a67ea47f5e227f321eaf5b5b5dd974a3f186f260ed7dcb9635747171fcef921f"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -15147,12 +17100,33 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-ec5b65977e930021",
+            "package": "css",
+            "file": "parity/rust-semantic-corpus.json",
+            "line": 1687,
+            "title": "rc87-rule-5169d112e4169271",
+            "runner": "cargo-xtask+vitest-native-wasm",
+            "kind": "test",
+            "sourceDigest": "c0859e0b2e4a40675693cc06993234deaafe9f683bda96e2462b2cef6b3f6884"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "6f70208d5936b410c2d4dd06954d3abe17c5bb6d3c329e121642bd630b1cb1eb",
+          "targets": [
+            {
+              "caseId": "rc87-ec5b65977e930021",
+              "runner": "cargo-xtask+vitest-native-wasm",
+              "digest": "c0859e0b2e4a40675693cc06993234deaafe9f683bda96e2462b2cef6b3f6884"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -15180,12 +17154,33 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-9653a1ead305b4a8",
+            "package": "css",
+            "file": "parity/rust-semantic-corpus.json",
+            "line": 1699,
+            "title": "rc87-rule-ff4cac57b6cc0943",
+            "runner": "cargo-xtask+vitest-native-wasm",
+            "kind": "test",
+            "sourceDigest": "229481dc848c6b49b07b8734777d0dcd1fa91229baa0516ba2c6a045d3c794a3"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "6f70208d5936b410c2d4dd06954d3abe17c5bb6d3c329e121642bd630b1cb1eb",
+          "targets": [
+            {
+              "caseId": "rc87-9653a1ead305b4a8",
+              "runner": "cargo-xtask+vitest-native-wasm",
+              "digest": "229481dc848c6b49b07b8734777d0dcd1fa91229baa0516ba2c6a045d3c794a3"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -15213,12 +17208,33 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-a4a4e1c2d6142c81",
+            "package": "css",
+            "file": "parity/rust-semantic-corpus.json",
+            "line": 1726,
+            "title": "rc87-rule-bc7c658b17e46149",
+            "runner": "cargo-xtask+vitest-native-wasm",
+            "kind": "test",
+            "sourceDigest": "1ebbac9c4863245a0d4dcfe8d7d417382aeb168fe8ab9a5d3984671c2bf9b42f"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "6f70208d5936b410c2d4dd06954d3abe17c5bb6d3c329e121642bd630b1cb1eb",
+          "targets": [
+            {
+              "caseId": "rc87-a4a4e1c2d6142c81",
+              "runner": "cargo-xtask+vitest-native-wasm",
+              "digest": "1ebbac9c4863245a0d4dcfe8d7d417382aeb168fe8ab9a5d3984671c2bf9b42f"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -15246,12 +17262,33 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-38049bb758313db4",
+            "package": "css",
+            "file": "parity/rust-semantic-corpus.json",
+            "line": 1738,
+            "title": "rc87-rule-081769c168f88151",
+            "runner": "cargo-xtask+vitest-native-wasm",
+            "kind": "test",
+            "sourceDigest": "ca03a89e319c5fad58b1904a72d34b536f1048e73a56aeba4ecc440db0faea13"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "6f70208d5936b410c2d4dd06954d3abe17c5bb6d3c329e121642bd630b1cb1eb",
+          "targets": [
+            {
+              "caseId": "rc87-38049bb758313db4",
+              "runner": "cargo-xtask+vitest-native-wasm",
+              "digest": "ca03a89e319c5fad58b1904a72d34b536f1048e73a56aeba4ecc440db0faea13"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -15279,12 +17316,33 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-7d6c7a5de887a241",
+            "package": "css",
+            "file": "parity/rust-semantic-corpus.json",
+            "line": 1765,
+            "title": "rc87-rule-cb69eb9c0c7aad3d",
+            "runner": "cargo-xtask+vitest-native-wasm",
+            "kind": "test",
+            "sourceDigest": "205a8103aca6d2bab46ee4ea2399c2c1a4e22b64bf90f35a06a9e97a587e059a"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "6f70208d5936b410c2d4dd06954d3abe17c5bb6d3c329e121642bd630b1cb1eb",
+          "targets": [
+            {
+              "caseId": "rc87-7d6c7a5de887a241",
+              "runner": "cargo-xtask+vitest-native-wasm",
+              "digest": "205a8103aca6d2bab46ee4ea2399c2c1a4e22b64bf90f35a06a9e97a587e059a"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -15312,12 +17370,33 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-418bf5372d484c5e",
+            "package": "css",
+            "file": "parity/rust-semantic-corpus.json",
+            "line": 1797,
+            "title": "rc87-rule-9e6b271a6d859a81",
+            "runner": "cargo-xtask+vitest-native-wasm",
+            "kind": "test",
+            "sourceDigest": "bbbf24a77174131da0e59352304f26def08b487318ba948caa7473cdd335d005"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "6f70208d5936b410c2d4dd06954d3abe17c5bb6d3c329e121642bd630b1cb1eb",
+          "targets": [
+            {
+              "caseId": "rc87-418bf5372d484c5e",
+              "runner": "cargo-xtask+vitest-native-wasm",
+              "digest": "bbbf24a77174131da0e59352304f26def08b487318ba948caa7473cdd335d005"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -15345,12 +17424,33 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-de57260b42d13e72",
+            "package": "css",
+            "file": "parity/rust-semantic-corpus.json",
+            "line": 1809,
+            "title": "rc87-rule-067aa7686b1c6ef6",
+            "runner": "cargo-xtask+vitest-native-wasm",
+            "kind": "test",
+            "sourceDigest": "74f7c9c31b40633bb201366b6789442424a82e1ffd6987a45384fa999f7d7bdd"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "6f70208d5936b410c2d4dd06954d3abe17c5bb6d3c329e121642bd630b1cb1eb",
+          "targets": [
+            {
+              "caseId": "rc87-de57260b42d13e72",
+              "runner": "cargo-xtask+vitest-native-wasm",
+              "digest": "74f7c9c31b40633bb201366b6789442424a82e1ffd6987a45384fa999f7d7bdd"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -15378,12 +17478,33 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-5395900654b6f946",
+            "package": "css",
+            "file": "parity/rust-semantic-corpus.json",
+            "line": 1891,
+            "title": "rc87-rule-81dae146767af74c",
+            "runner": "cargo-xtask+vitest-native-wasm",
+            "kind": "test",
+            "sourceDigest": "995627c1943e6667bb65cd5cd41cd17d5192bf8bff8e3c500120405671187444"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "6f70208d5936b410c2d4dd06954d3abe17c5bb6d3c329e121642bd630b1cb1eb",
+          "targets": [
+            {
+              "caseId": "rc87-5395900654b6f946",
+              "runner": "cargo-xtask+vitest-native-wasm",
+              "digest": "995627c1943e6667bb65cd5cd41cd17d5192bf8bff8e3c500120405671187444"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -50326,12 +52447,33 @@
         "targetPackage": "preset"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-36be15cd7e8139e7",
+            "package": "preset",
+            "file": "packages/preset/tests/default-manifest.test.ts",
+            "line": 222,
+            "title": "matches the readable preset sources",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "4363c207da77d9e533870afad8fc4b300dfe8c707ed3f4a7a0b05101048da300"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "88f6a218b4a89bd11c9bf48ab975bfe565e3b65e588cd1aaeb858c834eec50ab",
+          "targets": [
+            {
+              "caseId": "rc87-36be15cd7e8139e7",
+              "runner": "vitest",
+              "digest": "4363c207da77d9e533870afad8fc4b300dfe8c707ed3f4a7a0b05101048da300"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -50360,12 +52502,35 @@
         "targetPackage": "preset"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
-        "sourceIdenticalTargetIds": [],
+        "status": "verified-exact",
+        "coverage": "exact-source",
+        "targets": [
+          {
+            "id": "rc87-3ede4740c64bf3fd",
+            "package": "preset",
+            "file": "packages/preset/tests/default-manifest.test.ts",
+            "line": 248,
+            "title": "matches the readable preset native CSS",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "767cabb827deca81caa716177b71c0dc331948efb5446af6d3a53cdbf8c5c470"
+          }
+        ],
+        "sourceIdenticalTargetIds": [
+          "rc87-3ede4740c64bf3fd"
+        ],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "exact-source",
+          "sourceDigest": "767cabb827deca81caa716177b71c0dc331948efb5446af6d3a53cdbf8c5c470",
+          "targets": [
+            {
+              "caseId": "rc87-3ede4740c64bf3fd",
+              "runner": "vitest",
+              "digest": "767cabb827deca81caa716177b71c0dc331948efb5446af6d3a53cdbf8c5c470"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -50394,12 +52559,35 @@
         "targetPackage": "preset"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
-        "sourceIdenticalTargetIds": [],
+        "status": "verified-exact",
+        "coverage": "exact-source",
+        "targets": [
+          {
+            "id": "rc87-4cd87490a2a3ed8c",
+            "package": "preset",
+            "file": "packages/preset/tests/default-manifest.test.ts",
+            "line": 262,
+            "title": "matches the CSS-authored preset manifest facets",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "f02a4ccf2004e45966ca3aa7b5d4f9b383d80a9714aba462daa080d37e1106f1"
+          }
+        ],
+        "sourceIdenticalTargetIds": [
+          "rc87-4cd87490a2a3ed8c"
+        ],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "exact-source",
+          "sourceDigest": "f02a4ccf2004e45966ca3aa7b5d4f9b383d80a9714aba462daa080d37e1106f1",
+          "targets": [
+            {
+              "caseId": "rc87-4cd87490a2a3ed8c",
+              "runner": "vitest",
+              "digest": "f02a4ccf2004e45966ca3aa7b5d4f9b383d80a9714aba462daa080d37e1106f1"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -50428,12 +52616,35 @@
         "targetPackage": "preset"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
-        "sourceIdenticalTargetIds": [],
+        "status": "verified-exact",
+        "coverage": "exact-source",
+        "targets": [
+          {
+            "id": "rc87-84a357c9610bed8d",
+            "package": "preset",
+            "file": "packages/preset/tests/default-manifest.test.ts",
+            "line": 275,
+            "title": "does not publish the removed px inline alias",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "7b240b964d92234a421e7e7638626cb5486d8527923af88efc38e79a1715dcc5"
+          }
+        ],
+        "sourceIdenticalTargetIds": [
+          "rc87-84a357c9610bed8d"
+        ],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "exact-source",
+          "sourceDigest": "7b240b964d92234a421e7e7638626cb5486d8527923af88efc38e79a1715dcc5",
+          "targets": [
+            {
+              "caseId": "rc87-84a357c9610bed8d",
+              "runner": "vitest",
+              "digest": "7b240b964d92234a421e7e7638626cb5486d8527923af88efc38e79a1715dcc5"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -50464,12 +52675,35 @@
         "targetPackage": "preset"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
-        "sourceIdenticalTargetIds": [],
+        "status": "verified-exact",
+        "coverage": "exact-source",
+        "targets": [
+          {
+            "id": "rc87-350a56899da56fc9",
+            "package": "preset",
+            "file": "packages/preset/tests/default-manifest.test.ts",
+            "line": 279,
+            "title": "does not publish removed static utility shortcuts",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "d69588112c950a31c7eafbcd5fa8b38b4d364df1b3009b1780aea920894c02b3"
+          }
+        ],
+        "sourceIdenticalTargetIds": [
+          "rc87-350a56899da56fc9"
+        ],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "exact-source",
+          "sourceDigest": "d69588112c950a31c7eafbcd5fa8b38b4d364df1b3009b1780aea920894c02b3",
+          "targets": [
+            {
+              "caseId": "rc87-350a56899da56fc9",
+              "runner": "vitest",
+              "digest": "d69588112c950a31c7eafbcd5fa8b38b4d364df1b3009b1780aea920894c02b3"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -50498,12 +52732,33 @@
         "targetPackage": "preset"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-83d60d84c9357cdd",
+            "package": "preset",
+            "file": "packages/preset/tests/default-manifest.test.ts",
+            "line": 288,
+            "title": "uses engine default settings when the preset manifest omits settings",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "df268e91cef9b1c75ce4b63af34ecc8c4c10566152ce7fb3ddee16517b41e866"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "9c6dd2eaf3ca411ddb2e62c20823fb235c15034b8a77c256b9bc82fb077d0c57",
+          "targets": [
+            {
+              "caseId": "rc87-83d60d84c9357cdd",
+              "runner": "vitest",
+              "digest": "df268e91cef9b1c75ce4b63af34ecc8c4c10566152ce7fb3ddee16517b41e866"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -50533,12 +52788,33 @@
         "targetPackage": "preset"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-a18680bc41e4bad8",
+            "package": "preset",
+            "file": "packages/preset/tests/default-manifest.test.ts",
+            "line": 298,
+            "title": "keeps preset variable alias refs inside registered namespaces",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "11c7dbc326117753b964e25f12400b81bbfa5d6513e273bd6c8228f066080baf"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "edd26999174c8df131530e1044967dc47691878009819571bad285c068b22fe1",
+          "targets": [
+            {
+              "caseId": "rc87-a18680bc41e4bad8",
+              "runner": "vitest",
+              "digest": "11c7dbc326117753b964e25f12400b81bbfa5d6513e273bd6c8228f066080baf"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -50567,12 +52843,33 @@
         "targetPackage": "preset"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-59904b404f4f5ed1",
+            "package": "preset",
+            "file": "packages/preset/tests/default-manifest.test.ts",
+            "line": 311,
+            "title": "preserves the compiled default registry",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "03c44e2c7a230dcc545bb6c5d8a201263c98183a42ab42f1d31c801fc61b41b4"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "eb849d0d5b5923953994f51f66cdb582a440a77de518677fee9c63c37c7c1efe",
+          "targets": [
+            {
+              "caseId": "rc87-59904b404f4f5ed1",
+              "runner": "vitest",
+              "digest": "03c44e2c7a230dcc545bb6c5d8a201263c98183a42ab42f1d31c801fc61b41b4"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -50601,12 +52898,35 @@
         "targetPackage": "preset"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
-        "sourceIdenticalTargetIds": [],
+        "status": "verified-exact",
+        "coverage": "exact-source",
+        "targets": [
+          {
+            "id": "rc87-9584cce70095a24f",
+            "package": "preset",
+            "file": "packages/preset/tests/default-manifest.test.ts",
+            "line": 339,
+            "title": "executes CSS-authored semantic and enum pattern utilities",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "9dc55931080896a37f0657cab420cef1b62f0b3406c69da8004918fa0b16ae60"
+          }
+        ],
+        "sourceIdenticalTargetIds": [
+          "rc87-9584cce70095a24f"
+        ],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "exact-source",
+          "sourceDigest": "9dc55931080896a37f0657cab420cef1b62f0b3406c69da8004918fa0b16ae60",
+          "targets": [
+            {
+              "caseId": "rc87-9584cce70095a24f",
+              "runner": "vitest",
+              "digest": "9dc55931080896a37f0657cab420cef1b62f0b3406c69da8004918fa0b16ae60"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -50635,12 +52955,33 @@
         "targetPackage": "preset"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-3ebe1b6cc45fce07",
+            "package": "preset",
+            "file": "packages/preset/tests/default-manifest.test.ts",
+            "line": 466,
+            "title": "removes fixed keyword value aliases while preserving raw ambiguous matches",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "eaa7fa7c2fc3ff027b622113490a4b381a57561b8de60133e18c8fa826fb6778"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "9f515f9dbaa21abe8989507ea2376a8f2b5d6dffb9e351ddd9891eb5aa4df3b9",
+          "targets": [
+            {
+              "caseId": "rc87-3ebe1b6cc45fce07",
+              "runner": "vitest",
+              "digest": "eaa7fa7c2fc3ff027b622113490a4b381a57561b8de60133e18c8fa826fb6778"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -50669,12 +53010,33 @@
         "targetPackage": "preset"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-7be6202697b1bb36",
+            "package": "preset",
+            "file": "packages/preset/tests/default-manifest.test.ts",
+            "line": 628,
+            "title": "prunes pure native coverage and keeps Master CSS native DX utilities",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "8f424d0c85a664c0999d3978aae47c6bc32a296f86545c874d360bf7fcfc0690"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "a2a8eea356d9a857c28cc961a4d2174e75e7e808072679865863ccaad42748eb",
+          "targets": [
+            {
+              "caseId": "rc87-7be6202697b1bb36",
+              "runner": "vitest",
+              "digest": "8f424d0c85a664c0999d3978aae47c6bc32a296f86545c874d360bf7fcfc0690"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -50703,12 +53065,33 @@
         "targetPackage": "preset"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-1e16856b947a8124",
+            "package": "preset",
+            "file": "packages/preset/tests/default-manifest.test.ts",
+            "line": 673,
+            "title": "moves native value namespace utilities out of matcher definitions",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "c0d1e47def8c65f47cb9e5b47a82adf5bb0d88cd66edcde8cdf3af6734ad7986"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "8ffa2723100452578b4545ad8af828304f53edfbff9ada33364672600c759d3c",
+          "targets": [
+            {
+              "caseId": "rc87-1e16856b947a8124",
+              "runner": "vitest",
+              "digest": "c0d1e47def8c65f47cb9e5b47a82adf5bb0d88cd66edcde8cdf3af6734ad7986"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -50738,12 +53121,33 @@
         "targetPackage": "preset"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-cadc1ca56e0d3dfd",
+            "package": "preset",
+            "file": "packages/preset/tests/default-manifest.test.ts",
+            "line": 699,
+            "title": "keeps curated key aliases out of utility matcher keys",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "8f9992e046c502777b6e115af84851a3f84ca6dc3cfa85f968ac6e2f8abe76bf"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "4469463f83894b1ba847cd08dc2b798da672195993b8b1881b2e5eb8f7581230",
+          "targets": [
+            {
+              "caseId": "rc87-cadc1ca56e0d3dfd",
+              "runner": "vitest",
+              "digest": "8f9992e046c502777b6e115af84851a3f84ca6dc3cfa85f968ac6e2f8abe76bf"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -50773,12 +53177,33 @@
         "targetPackage": "preset"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-e5cbe9f68326daf9",
+            "package": "preset",
+            "file": "packages/preset/tests/default-manifest.test.ts",
+            "line": 719,
+            "title": "keeps compiled utility registry indexes stable and addressable",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "37244e2108692c6b37893747647a72b5bbbae0e3de28249e3ad891b82473f41b"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "12d11a935f70b4a69f51bc76a5e7b8ae046ca2905a4a098b59610d7d2e81f392",
+          "targets": [
+            {
+              "caseId": "rc87-e5cbe9f68326daf9",
+              "runner": "vitest",
+              "digest": "37244e2108692c6b37893747647a72b5bbbae0e3de28249e3ad891b82473f41b"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -50806,12 +53231,35 @@
         "targetPackage": "preset"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
-        "sourceIdenticalTargetIds": [],
+        "status": "verified-exact",
+        "coverage": "exact-source",
+        "targets": [
+          {
+            "id": "rc87-f059fc9a9fa3c4e2",
+            "package": "preset",
+            "file": "packages/preset/tests/design-tokens.test.ts",
+            "line": 149,
+            "title": "keeps primitive font, spacing, radius, breakpoint, container, color, shadow, and motion tokens",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "996bd0e20c1bcb4cc7a03f63f53b78e204f2b9bfeb1121e5eef76e92d15ee500"
+          }
+        ],
+        "sourceIdenticalTargetIds": [
+          "rc87-f059fc9a9fa3c4e2"
+        ],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "exact-source",
+          "sourceDigest": "996bd0e20c1bcb4cc7a03f63f53b78e204f2b9bfeb1121e5eef76e92d15ee500",
+          "targets": [
+            {
+              "caseId": "rc87-f059fc9a9fa3c4e2",
+              "runner": "vitest",
+              "digest": "996bd0e20c1bcb4cc7a03f63f53b78e204f2b9bfeb1121e5eef76e92d15ee500"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -50839,12 +53287,35 @@
         "targetPackage": "preset"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
-        "sourceIdenticalTargetIds": [],
+        "status": "verified-exact",
+        "coverage": "exact-source",
+        "targets": [
+          {
+            "id": "rc87-b3c5d9a20c8eeb13",
+            "package": "preset",
+            "file": "packages/preset/tests/design-tokens.test.ts",
+            "line": 226,
+            "title": "removes canvas, product, and expanded hue role tokens from the default preset",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "c866ae7d9a26488941a52ce83139ff9ba721bdb082cdb259a96ed2c97aeb8b2d"
+          }
+        ],
+        "sourceIdenticalTargetIds": [
+          "rc87-b3c5d9a20c8eeb13"
+        ],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "exact-source",
+          "sourceDigest": "c866ae7d9a26488941a52ce83139ff9ba721bdb082cdb259a96ed2c97aeb8b2d",
+          "targets": [
+            {
+              "caseId": "rc87-b3c5d9a20c8eeb13",
+              "runner": "vitest",
+              "digest": "c866ae7d9a26488941a52ce83139ff9ba721bdb082cdb259a96ed2c97aeb8b2d"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -50872,12 +53343,35 @@
         "targetPackage": "preset"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
-        "sourceIdenticalTargetIds": [],
+        "status": "verified-exact",
+        "coverage": "exact-source",
+        "targets": [
+          {
+            "id": "rc87-6e57a6f78c208e4a",
+            "package": "preset",
+            "file": "packages/preset/tests/design-tokens.test.ts",
+            "line": 232,
+            "title": "keeps surface color roles mode-specific",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "75516ba6d74dd01eedae0f607c5859660082faf189b74176e8037e8a8186477f"
+          }
+        ],
+        "sourceIdenticalTargetIds": [
+          "rc87-6e57a6f78c208e4a"
+        ],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "exact-source",
+          "sourceDigest": "75516ba6d74dd01eedae0f607c5859660082faf189b74176e8037e8a8186477f",
+          "targets": [
+            {
+              "caseId": "rc87-6e57a6f78c208e4a",
+              "runner": "vitest",
+              "digest": "75516ba6d74dd01eedae0f607c5859660082faf189b74176e8037e8a8186477f"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -50905,12 +53399,35 @@
         "targetPackage": "preset"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
-        "sourceIdenticalTargetIds": [],
+        "status": "verified-exact",
+        "coverage": "exact-source",
+        "targets": [
+          {
+            "id": "rc87-21ac507b79e53def",
+            "package": "preset",
+            "file": "packages/preset/tests/design-tokens.test.ts",
+            "line": 255,
+            "title": "keeps shadow tokens separated with subtle mode-specific edges",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "a7a1da80b40a3ad778ad800be07de4dfbbc027c32993ef8c58d42a503dfa05ca"
+          }
+        ],
+        "sourceIdenticalTargetIds": [
+          "rc87-21ac507b79e53def"
+        ],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "exact-source",
+          "sourceDigest": "a7a1da80b40a3ad778ad800be07de4dfbbc027c32993ef8c58d42a503dfa05ca",
+          "targets": [
+            {
+              "caseId": "rc87-21ac507b79e53def",
+              "runner": "vitest",
+              "digest": "a7a1da80b40a3ad778ad800be07de4dfbbc027c32993ef8c58d42a503dfa05ca"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -50938,12 +53455,35 @@
         "targetPackage": "preset"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
-        "sourceIdenticalTargetIds": [],
+        "status": "verified-exact",
+        "coverage": "exact-source",
+        "targets": [
+          {
+            "id": "rc87-e0a8a76a5cbfef8a",
+            "package": "preset",
+            "file": "packages/preset/tests/design-tokens.test.ts",
+            "line": 283,
+            "title": "keeps base hue, line role, text role, and text hue aliases mode-specific",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "ab1738e3a84e88a0567a829cf99c54cf07dc392ec85debffe6d531b76f65dc4c"
+          }
+        ],
+        "sourceIdenticalTargetIds": [
+          "rc87-e0a8a76a5cbfef8a"
+        ],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "exact-source",
+          "sourceDigest": "ab1738e3a84e88a0567a829cf99c54cf07dc392ec85debffe6d531b76f65dc4c",
+          "targets": [
+            {
+              "caseId": "rc87-e0a8a76a5cbfef8a",
+              "runner": "vitest",
+              "digest": "ab1738e3a84e88a0567a829cf99c54cf07dc392ec85debffe6d531b76f65dc4c"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -50971,12 +53511,35 @@
         "targetPackage": "preset"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
-        "sourceIdenticalTargetIds": [],
+        "status": "verified-exact",
+        "coverage": "exact-source",
+        "targets": [
+          {
+            "id": "rc87-ee982733d7ea8e4a",
+            "package": "preset",
+            "file": "packages/preset/tests/design-tokens.test.ts",
+            "line": 336,
+            "title": "precomputes default breakpoint and container at-rule aliases",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "2b5cd8f28bd720597cbd89ea7154887e4b8befcd3d1b8ce20e73d58392136fcd"
+          }
+        ],
+        "sourceIdenticalTargetIds": [
+          "rc87-ee982733d7ea8e4a"
+        ],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "exact-source",
+          "sourceDigest": "2b5cd8f28bd720597cbd89ea7154887e4b8befcd3d1b8ce20e73d58392136fcd",
+          "targets": [
+            {
+              "caseId": "rc87-ee982733d7ea8e4a",
+              "runner": "vitest",
+              "digest": "2b5cd8f28bd720597cbd89ea7154887e4b8befcd3d1b8ce20e73d58392136fcd"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -51004,12 +53567,35 @@
         "targetPackage": "preset"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
-        "sourceIdenticalTargetIds": [],
+        "status": "verified-exact",
+        "coverage": "exact-source",
+        "targets": [
+          {
+            "id": "rc87-f1054506aee041f4",
+            "package": "preset",
+            "file": "packages/preset/tests/design-tokens.test.ts",
+            "line": 347,
+            "title": "does not publish synthetic negative number tokens",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "739f8ef6c6232668d203db7370848dcf35d7e135e9dd9f3525bc0123f6dfe7cd"
+          }
+        ],
+        "sourceIdenticalTargetIds": [
+          "rc87-f1054506aee041f4"
+        ],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "exact-source",
+          "sourceDigest": "739f8ef6c6232668d203db7370848dcf35d7e135e9dd9f3525bc0123f6dfe7cd",
+          "targets": [
+            {
+              "caseId": "rc87-f1054506aee041f4",
+              "runner": "vitest",
+              "digest": "739f8ef6c6232668d203db7370848dcf35d7e135e9dd9f3525bc0123f6dfe7cd"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -51037,12 +53623,33 @@
         "targetPackage": "preset"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-95f7ba984215aa9a",
+            "package": "preset",
+            "file": "packages/preset/tests/design-tokens.test.ts",
+            "line": 354,
+            "title": "executes built-in registry records with foundation role tokens only",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "80e68e6daf7b34709e4fb7073f8bb095d25dae18d49151510eaf124446ebf99a"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "ab3629faaea8e0830aad01197a92b23ff96ba1fd57f7b7510539b1460496eac0",
+          "targets": [
+            {
+              "caseId": "rc87-95f7ba984215aa9a",
+              "runner": "vitest",
+              "digest": "80e68e6daf7b34709e4fb7073f8bb095d25dae18d49151510eaf124446ebf99a"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -51070,12 +53677,35 @@
         "targetPackage": "preset"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
-        "sourceIdenticalTargetIds": [],
+        "status": "verified-exact",
+        "coverage": "exact-source",
+        "targets": [
+          {
+            "id": "rc87-1fc8a6f10ae2da53",
+            "package": "preset",
+            "file": "packages/preset/tests/design-tokens.test.ts",
+            "line": 411,
+            "title": "keeps project text and line role namespaces available",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "a0626ae1634be0ceb3d02c0c59acdf730aaf48468d880518f71318ab88bb03da"
+          }
+        ],
+        "sourceIdenticalTargetIds": [
+          "rc87-1fc8a6f10ae2da53"
+        ],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "exact-source",
+          "sourceDigest": "a0626ae1634be0ceb3d02c0c59acdf730aaf48468d880518f71318ab88bb03da",
+          "targets": [
+            {
+              "caseId": "rc87-1fc8a6f10ae2da53",
+              "runner": "vitest",
+              "digest": "a0626ae1634be0ceb3d02c0c59acdf730aaf48468d880518f71318ab88bb03da"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -51102,12 +53732,33 @@
         "targetPackage": "compiler"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-169aa2084c530524",
+            "package": "compiler",
+            "file": "packages/compiler/tests/project/test.ts",
+            "line": 133,
+            "title": "loads CSS manifest resources",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "c9e25bbc4b794c0a472faa13a69b5161324b5584450890df6f583c85039a7a2d"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "d7613468a14744947e4160406a76defd2037f69c18ad074a35ac4c43a7b0864e",
+          "targets": [
+            {
+              "caseId": "rc87-169aa2084c530524",
+              "runner": "vitest",
+              "digest": "c9e25bbc4b794c0a472faa13a69b5161324b5584450890df6f583c85039a7a2d"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -51134,12 +53785,33 @@
         "targetPackage": "compiler"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-1ce84bf138cf2c12",
+            "package": "compiler",
+            "file": "packages/compiler/tests/project/test.ts",
+            "line": 193,
+            "title": "loads CSS manifest resources synchronously",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "8e76e72af9a15bd08ae14a6dbceac8f82140522e102d98afbbbe1547cc87a6e4"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "22c6d19abe927ad7785d79d0be95c2e8ddcea0c0c2863c67568da13599337e4b",
+          "targets": [
+            {
+              "caseId": "rc87-1ce84bf138cf2c12",
+              "runner": "vitest",
+              "digest": "8e76e72af9a15bd08ae14a6dbceac8f82140522e102d98afbbbe1547cc87a6e4"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -51173,7 +53845,7 @@
             "id": "rc87-e7f1f864cac62727",
             "package": "compiler",
             "file": "packages/compiler/tests/project/test.ts",
-            "line": 161,
+            "line": 221,
             "title": "loads package entry preset manifest from CSS imports",
             "runner": "vitest",
             "kind": "test",
@@ -51216,7 +53888,7 @@
             "id": "rc87-5cce9bfc222b9ac1",
             "package": "compiler",
             "file": "packages/compiler/tests/project/test.ts",
-            "line": 209,
+            "line": 269,
             "title": "loads project-level CSS manifest entries",
             "runner": "vitest",
             "kind": "test",
@@ -51259,7 +53931,7 @@
             "id": "rc87-4879634b7dc86bc0",
             "package": "compiler",
             "file": "packages/compiler/tests/project/test.ts",
-            "line": 251,
+            "line": 311,
             "title": "finds Master CSS workspace directories from package and CSS entries",
             "runner": "vitest",
             "kind": "test",
@@ -51314,7 +53986,7 @@
             "id": "rc87-31e325e70bd35ebd",
             "package": "compiler",
             "file": "packages/compiler/tests/project/test.ts",
-            "line": 274,
+            "line": 334,
             "title": "does not match sibling workspace path prefixes",
             "runner": "vitest",
             "kind": "test",
@@ -51369,7 +54041,7 @@
             "id": "rc87-f718aaba7ab8bda6",
             "package": "compiler",
             "file": "packages/compiler/tests/project/test.ts",
-            "line": 296,
+            "line": 356,
             "title": "resolves Master CSS workspace packages and optional language server",
             "runner": "vitest",
             "kind": "test",
@@ -51406,12 +54078,33 @@
         "targetPackage": "compiler"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-c8e38b5882938dae",
+            "package": "compiler",
+            "file": "packages/compiler/tests/project/test.ts",
+            "line": 425,
+            "title": "reports missing workspace runtime packages without throwing",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "f9e332b408f75d8c05889e2845d86071e1e4f6c95eb0af41d22a5da165bcc7ad"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "ada9921f718e24189d4d27aaa52d45624bb118faa493cc49a7a54825fc3939e7",
+          "targets": [
+            {
+              "caseId": "rc87-c8e38b5882938dae",
+              "runner": "vitest",
+              "digest": "f9e332b408f75d8c05889e2845d86071e1e4f6c95eb0af41d22a5da165bcc7ad"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -51445,7 +54138,7 @@
             "id": "rc87-1a650fce125851a7",
             "package": "compiler",
             "file": "packages/compiler/tests/project/test.ts",
-            "line": 365,
+            "line": 452,
             "title": "reports invalid package exports as resolution errors",
             "runner": "vitest",
             "kind": "test",
@@ -51500,7 +54193,7 @@
             "id": "rc87-04b15b8fc94dc0c8",
             "package": "compiler",
             "file": "packages/compiler/tests/project/test.ts",
-            "line": 390,
+            "line": 477,
             "title": "checks compatible package majors when versions are known",
             "runner": "vitest",
             "kind": "test",
@@ -51548,12 +54241,33 @@
         "targetPackage": "compiler"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-c80932d3a9a18c74",
+            "package": "compiler",
+            "file": "packages/compiler/tests/project/test.ts",
+            "line": 509,
+            "title": "turns CSS manifest results into JSON sources",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "00bde77d89a8164bf3c2267325a4e99a02f64c1c91fd26039980bfd409538ed1"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "9c91fbce618b60aba43385143a9853ca977f897267704c705eaf302cb5945db0",
+          "targets": [
+            {
+              "caseId": "rc87-c80932d3a9a18c74",
+              "runner": "vitest",
+              "digest": "00bde77d89a8164bf3c2267325a4e99a02f64c1c91fd26039980bfd409538ed1"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -51587,7 +54301,7 @@
             "id": "rc87-b46d12dcb37b7648",
             "package": "compiler",
             "file": "packages/compiler/tests/project/test.ts",
-            "line": 422,
+            "line": 534,
             "title": "rejects script config paths",
             "runner": "vitest",
             "kind": "test",
@@ -73998,13 +76712,13 @@
       "title": "loads the packaged Wasm artifact in Node without fetch support for file URLs",
       "runner": "vitest",
       "kind": "test",
-      "sourceDigest": "0f6195379a6491d260f50a4f15cc0b6e3332db3f207c664a0bd906b1089bd9dd"
+      "sourceDigest": "e0de264a272004f70c6996c83bd4fc8e99b6d98abf1d162750ea1d31707a12df"
     },
     {
       "id": "rc87-d1faf9e76f9fc0fa",
       "package": "binding-wasm-engine",
       "file": "packages/binding-wasm-engine/tests/session.test.ts",
-      "line": 62,
+      "line": 81,
       "title": "passes emitted globals to the Wasm-owned session",
       "runner": "vitest",
       "kind": "test",
@@ -74014,11 +76728,11 @@
       "id": "rc87-534a5dbe18105a92",
       "package": "binding-wasm-engine",
       "file": "packages/binding-wasm-engine/tests/session.test.ts",
-      "line": 85,
+      "line": 104,
       "title": "uses a batched CSS.supports handshake for browser-native declarations",
       "runner": "vitest",
       "kind": "test",
-      "sourceDigest": "3f0364bd9b6a1fa7c2bd51793132299992be25b488b311bd2ee5899a59d0295a"
+      "sourceDigest": "09261e359de7fc13b9b2f2dbe64062d54c49e295219d52a4e22d1e5d99c41ddf"
     },
     {
       "id": "rc87-f5d73ee38cbca203",
@@ -74058,13 +76772,13 @@
       "title": "normalizes operation failures and disposes engine sessions idempotently",
       "runner": "vitest",
       "kind": "test",
-      "sourceDigest": "5bbd8c3b2443030c35c33062316c8a8e5e4e967d6895f171e073691476f38a1d"
+      "sourceDigest": "a13f11ecfd946a2fbe1e1fe86f78e132a4688175523e438963c1207f7ac13fe8"
     },
     {
       "id": "rc87-da9e7b560191e46c",
       "package": "binding",
       "file": "packages/binding/tests/binding.test.ts",
-      "line": 48,
+      "line": 72,
       "title": "disposes render sessions idempotently",
       "runner": "vitest",
       "kind": "test",
@@ -74074,7 +76788,7 @@
       "id": "rc87-14c8b891f7a25268",
       "package": "binding",
       "file": "packages/binding/tests/binding.test.ts",
-      "line": 63,
+      "line": 87,
       "title": "normalizes compiler errors as structured Master CSS errors",
       "runner": "vitest",
       "kind": "test",
@@ -74084,7 +76798,7 @@
       "id": "rc87-b5571d0fd611ba61",
       "package": "binding",
       "file": "packages/binding/tests/binding.test.ts",
-      "line": 85,
+      "line": 109,
       "title": "owns tooling session disposal",
       "runner": "vitest",
       "kind": "test",
@@ -74329,7 +77043,7 @@
       "id": "rc87-8a30a870c4840672",
       "package": "compiler",
       "file": "packages/compiler/tests/project/test.ts",
-      "line": 133,
+      "line": 165,
       "title": "compiles explicit CSS project entries synchronously",
       "runner": "vitest",
       "kind": "test",
@@ -74339,7 +77053,7 @@
       "id": "rc87-36dae0525398e2ab",
       "package": "compiler",
       "file": "packages/compiler/tests/project/test.ts",
-      "line": 338,
+      "line": 398,
       "title": "reports a missing workspace preset without throwing",
       "runner": "vitest",
       "kind": "test",
@@ -74349,7 +77063,7 @@
       "id": "rc87-a5eb364cb52fffb4",
       "package": "compiler",
       "file": "packages/compiler/tests/project/test.ts",
-      "line": 397,
+      "line": 484,
       "title": "serializes project manifests through the schema codec",
       "runner": "vitest",
       "kind": "test",
@@ -74359,7 +77073,7 @@
       "id": "rc87-96b3b4493915f00d",
       "package": "compiler",
       "file": "packages/compiler/tests/session.test.ts",
-      "line": 4,
+      "line": 29,
       "title": "native compiler sessions batch semantic operations and reject use after disposal",
       "runner": "vitest",
       "kind": "test",
@@ -74449,7 +77163,7 @@
       "id": "rc87-65a161883b6b8727",
       "package": "css",
       "file": "packages/css/tests/engine/rust-engine.test.ts",
-      "line": 94,
+      "line": 273,
       "title": "uses Wasm for auto binding when native addons are disabled",
       "runner": "vitest",
       "kind": "test",
@@ -74459,7 +77173,7 @@
       "id": "rc87-63b01d98ef17fd32",
       "package": "css",
       "file": "packages/css/tests/engine/rust-engine.test.ts",
-      "line": 110,
+      "line": 289,
       "title": "does not hide an invalid native binding behind Wasm fallback",
       "runner": "vitest",
       "kind": "test",
@@ -74469,7 +77183,7 @@
       "id": "rc87-c41eb8bf8d6c6dfc",
       "package": "css",
       "file": "packages/css/tests/engine/rust-engine.test.ts",
-      "line": 124,
+      "line": 303,
       "title": "keeps transitions synchronous after session creation",
       "runner": "vitest",
       "kind": "test",
@@ -74479,7 +77193,7 @@
       "id": "rc87-7e1a673cdba4ccda",
       "package": "css",
       "file": "packages/css/tests/engine/rust-engine.test.ts",
-      "line": 134,
+      "line": 313,
       "title": "inspects without mutating state and rejects use after disposal",
       "runner": "vitest",
       "kind": "test",
@@ -74489,7 +77203,7 @@
       "id": "rc87-dc778c644110a099",
       "package": "css",
       "file": "packages/css/tests/engine/rust-engine.test.ts",
-      "line": 146,
+      "line": 325,
       "title": "preserves structured Rust errors",
       "runner": "vitest",
       "kind": "test",
@@ -74499,7 +77213,7 @@
       "id": "rc87-3e56037990b9825a",
       "package": "css",
       "file": "packages/css/tests/engine/rust-engine.test.ts",
-      "line": 163,
+      "line": 342,
       "title": "serializes manifests when refreshing a Wasm engine",
       "runner": "vitest",
       "kind": "test",
@@ -74509,7 +77223,7 @@
       "id": "rc87-d2ff63b2ee65d620",
       "package": "css",
       "file": "packages/css/tests/engine/rust-engine.test.ts",
-      "line": 180,
+      "line": 359,
       "title": "renders representative default-manifest classes without a TypeScript oracle",
       "runner": "vitest",
       "kind": "test",
@@ -74519,7 +77233,7 @@
       "id": "rc87-6f459da1798e8a99",
       "package": "css",
       "file": "packages/css/tests/engine/rust-engine.test.ts",
-      "line": 200,
+      "line": 379,
       "title": "preserves descendant selectors across condition-only variants in native and Wasm",
       "runner": "vitest",
       "kind": "test",
@@ -74529,7 +77243,7 @@
       "id": "rc87-a0c4813d727c5342",
       "package": "css",
       "file": "packages/css/tests/engine/rust-engine.test.ts",
-      "line": 233,
+      "line": 412,
       "title": "resolves inline dependencies in emitted mode variables in native and Wasm",
       "runner": "vitest",
       "kind": "test",

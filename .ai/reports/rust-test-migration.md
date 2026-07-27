@@ -6,7 +6,7 @@ The machine-readable source of truth is `parity/ts-test-migration-ledger.json`.
 ## Frozen baseline
 
 - Public and semantic source baseline: `v2.0.0-rc.87@9cc3e8b5f2e34d5220f10f27ed5ce8186fbcb524`.
-- Rust target candidate: `HEAD@bd164e4b5ae3a713940913d745183e9ab6b54263`.
+- Rust target candidate: `latest-target-change@ba23b07c0fe8c09c039c6486fa74d8af083731be`.
 - Scope: executable tests and E2E cases under `packages/*`; examples, site, and benchmarks are not migration denominators.
 - Newer rc changes are an overlay only and never replace rc.87 expectations.
 
@@ -20,7 +20,7 @@ The machine-readable source of truth is `parity/ts-test-migration-ledger.json`.
 | rc.87 expanded cases | 1546 |
 | Expanded parameter and RuleTester cases | 349 |
 | Unresolved runtime matrices | 0 |
-| Rust target cases collected | 1033 |
+| Rust target cases collected | 1161 |
 | Target-only cases | 156 |
 
 The old 114-test takeover ledger is an engine-only historical subset. Its semantic
@@ -30,30 +30,30 @@ capture commit `ef1a7c851` is not substituted for rc.87.
 
 | Status | Count |
 |---|---:|
-| gap | 564 |
+| gap | 436 |
 | mapped-unverified | 376 |
 | source-inactive | 10 |
-| verified-exact | 596 |
+| verified-exact | 724 |
 
 | Candidate coverage | Count |
 |---|---:|
 | candidate-all | 376 |
-| evidence | 3 |
-| exact-source | 593 |
-| none | 574 |
+| evidence | 118 |
+| exact-source | 606 |
+| none | 446 |
 
 | Verification proof | Count |
 |---|---:|
-| exact-source | 593 |
-| rc87-golden | 3 |
+| exact-source | 606 |
+| rc87-golden | 118 |
 
 | Priority | Cases | Gaps |
 |---|---:|---:|
-| P0 | 676 | 167 |
+| P0 | 676 | 39 |
 | P1 | 732 | 390 |
 | P2 | 138 | 7 |
 | P3 | 0 | 0 |
-Verified active cases: 596/1536.
+Verified active cases: 724/1536.
 
 `mapped-unverified` means that an executable target candidate or takeover reference
 exists. It does not claim parity. `exact-source` requires one identical executable
@@ -66,11 +66,11 @@ Ambiguous candidates remain incomplete until evidence selects a target explicitl
 |---|---:|---:|---:|---:|---:|---:|
 | `astro` | 11 | 11 | 0 | 0 | 10 | 1 |
 | `cli` | 19 | 0 | 0 | 19 | 14 | 5 |
-| `compiler` | 52 | 52 | 0 | 0 | 41 | 11 |
+| `compiler` | 52 | 52 | 0 | 0 | 52 | 0 |
 | `create` | 48 | 7 | 0 | 41 | 47 | 1 |
 | `css-sv` | 7 | 0 | 0 | 7 | 7 | 0 |
 | `diagnostics` | 3 | 0 | 3 | 0 | 3 | 0 |
-| `engine` | 184 | 184 | 0 | 0 | 94 | 90 |
+| `engine` | 184 | 184 | 0 | 0 | 184 | 0 |
 | `eslint-config` | 2 | 0 | 2 | 0 | 0 | 2 |
 | `eslint-plugin` | 226 | 4 | 222 | 0 | 226 | 0 |
 | `facade` | 1 | 1 | 0 | 0 | 0 | 1 |
@@ -84,8 +84,8 @@ Ambiguous candidates remain incomplete until evidence selects a target explicitl
 | `mcp` | 16 | 0 | 0 | 16 | 16 | 0 |
 | `next` | 54 | 54 | 0 | 0 | 53 | 1 |
 | `nuxt` | 7 | 7 | 0 | 0 | 7 | 0 |
-| `preset` | 23 | 23 | 0 | 0 | 0 | 23 |
-| `project` | 12 | 12 | 0 | 0 | 8 | 4 |
+| `preset` | 23 | 23 | 0 | 0 | 23 | 0 |
+| `project` | 12 | 12 | 0 | 0 | 12 | 0 |
 | `runtime` | 69 | 69 | 0 | 0 | 65 | 4 |
 | `scanner` | 96 | 0 | 96 | 0 | 93 | 3 |
 | `schema` | 2 | 0 | 2 | 0 | 2 | 0 |
@@ -109,90 +109,49 @@ Ambiguous candidates remain incomplete until evidence selects a target explicitl
 
 ## P0 gaps
 
-The full list is in the JSON ledger; the first 80 are shown here.
+The full list is in the JSON ledger; the first 39 are shown here.
 
 | Source | rc.87 case | Domains |
 |---|---|---|
 | `packages/astro/tests/core.test.ts:85` | honors injectRuntime=false in progressive mode | integration, rendering-modes |
-| `packages/compiler/tests/browser.test.ts:13` | browser compileCSSManifest lowers directives with a base manifest | authoring, css-bytes |
-| `packages/compiler/tests/browser.test.ts:35` | browser compileCSSManifest rejects @reference directives | authoring, css-bytes |
-| `packages/compiler/tests/master-css-manifest.test.ts:12` | lowers variables into resolved records with modes and dependencies without synthetic negative aliases | authoring, css-bytes, syntax-css-semantics |
-| `packages/compiler/tests/master-css-manifest.test.ts:47` | rejects stylesheet token alias syntax in variable values | authoring, css-bytes, syntax-css-semantics |
-| `packages/compiler/tests/master-css-manifest.test.ts:55` | preserves explicitly authored negative variables | authoring, css-bytes, syntax-css-semantics |
-| `packages/compiler/tests/master-css-manifest.test.ts:74` | lowers static animation options | authoring, css-bytes, rendering-modes |
-| `packages/compiler/tests/master-css-manifest.test.ts:93` | does not serialize manifest registry input | authoring, css-bytes |
-| `packages/compiler/tests/master-css-manifest.test.ts:115` | lowers breakpoint and container aliases into condition node maps | authoring, css-bytes, syntax-css-semantics |
-| `packages/compiler/tests/master-css-manifest.test.ts:137` | keeps unitful numeric theme tokens comparable | authoring, css-bytes |
-| `packages/compiler/tests/master-css-manifest.test.ts:174` | lowers variants into compiled selector and condition branches | authoring, css-bytes, syntax-css-semantics |
-| `packages/compiler/tests/master-css-manifest.test.ts:200` | lowers CSS-defined semantic utilities and matcher buckets | authoring, css-bytes |
-| `packages/engine/tests/parser-parity.test.ts:36` | , | css-bytes, syntax-css-semantics |
-| `packages/engine/tests/parser-parity.test.ts:36` | ! | css-bytes, syntax-css-semantics |
-| `packages/engine/tests/parser-parity.test.ts:36` | !print | css-bytes, syntax-css-semantics |
-| `packages/engine/tests/parser-parity.test.ts:36` | !screen | css-bytes, syntax-css-semantics |
-| `packages/engine/tests/parser-parity.test.ts:36` | @media | css-bytes, syntax-css-semantics |
-| `packages/engine/tests/parser-parity.test.ts:36` | & | css-bytes, syntax-css-semantics |
-| `packages/engine/tests/parser-parity.test.ts:36` | <=sm | css-bytes, syntax-css-semantics |
-| `packages/engine/tests/parser-parity.test.ts:36` | <sm | css-bytes, syntax-css-semantics |
-| `packages/engine/tests/parser-parity.test.ts:36` | =sm | css-bytes, syntax-css-semantics |
-| `packages/engine/tests/parser-parity.test.ts:36` | >=sm | css-bytes, syntax-css-semantics |
-| `packages/engine/tests/parser-parity.test.ts:36` | >sm | css-bytes, syntax-css-semantics |
-| `packages/engine/tests/parser-parity.test.ts:36` | and() | css-bytes, syntax-css-semantics |
-| `packages/engine/tests/parser-parity.test.ts:36` | base | css-bytes, syntax-css-semantics |
-| `packages/engine/tests/parser-parity.test.ts:36` | container(h>160) | css-bytes, syntax-css-semantics |
-| `packages/engine/tests/parser-parity.test.ts:36` | default | css-bytes, syntax-css-semantics |
-| `packages/engine/tests/parser-parity.test.ts:36` | h>=sm | css-bytes, syntax-css-semantics |
-| `packages/engine/tests/parser-parity.test.ts:36` | height>=sm | css-bytes, syntax-css-semantics |
-| `packages/engine/tests/parser-parity.test.ts:36` | not | css-bytes, syntax-css-semantics |
-| `packages/engine/tests/parser-parity.test.ts:36` | or | css-bytes, syntax-css-semantics |
-| `packages/engine/tests/parser-parity.test.ts:36` | print | css-bytes, syntax-css-semantics |
-| `packages/engine/tests/parser-parity.test.ts:36` | screen,print | css-bytes, syntax-css-semantics |
-| `packages/engine/tests/parser-parity.test.ts:36` | screen&print | css-bytes, syntax-css-semantics |
-| `packages/engine/tests/parser-parity.test.ts:36` | sidebar(sm) | css-bytes, syntax-css-semantics |
-| `packages/engine/tests/parser-parity.test.ts:36` | sm&<=lg | css-bytes, syntax-css-semantics |
-| `packages/engine/tests/parser-parity.test.ts:36` | start | css-bytes, syntax-css-semantics |
-| `packages/engine/tests/parser-parity.test.ts:36` | w>=sm | css-bytes, syntax-css-semantics |
-| `packages/engine/tests/parser-parity.test.ts:96` | _.feature__tab-title | css-bytes, syntax-css-semantics |
-| `packages/engine/tests/parser-parity.test.ts:96` | _hr+* | css-bytes, syntax-css-semantics |
-| `packages/engine/tests/parser-parity.test.ts:96` | ::first-letter | css-bytes, syntax-css-semantics |
-| `packages/engine/tests/parser-parity.test.ts:96` | ::scrollbar-corner | css-bytes, syntax-css-semantics |
-| `packages/engine/tests/parser-parity.test.ts:96` | ::scrollbar-thumb | css-bytes, syntax-css-semantics |
-| `packages/engine/tests/parser-parity.test.ts:96` | ::view-transition-new(root) | css-bytes, syntax-css-semantics |
-| `packages/engine/tests/parser-parity.test.ts:96` | ::vt-new(root) | css-bytes, syntax-css-semantics |
-| `packages/engine/tests/parser-parity.test.ts:96` | :before | css-bytes, syntax-css-semantics |
-| `packages/engine/tests/parser-parity.test.ts:96` | :even | css-bytes, syntax-css-semantics |
-| `packages/engine/tests/parser-parity.test.ts:96` | :first | css-bytes, syntax-css-semantics |
-| `packages/engine/tests/parser-parity.test.ts:96` | :first:focus:disabled | css-bytes, syntax-css-semantics |
-| `packages/engine/tests/parser-parity.test.ts:96` | :has(:first) | css-bytes, syntax-css-semantics |
-| `packages/engine/tests/parser-parity.test.ts:96` | :has(.active) | css-bytes, syntax-css-semantics |
-| `packages/engine/tests/parser-parity.test.ts:96` | :hover | css-bytes, syntax-css-semantics |
-| `packages/engine/tests/parser-parity.test.ts:96` | :hover+div:has(:active) | css-bytes, syntax-css-semantics |
-| `packages/engine/tests/parser-parity.test.ts:96` | :last | css-bytes, syntax-css-semantics |
-| `packages/engine/tests/parser-parity.test.ts:96` | :not(:last) | css-bytes, syntax-css-semantics |
-| `packages/engine/tests/parser-parity.test.ts:96` | :nth-child(2) | css-bytes, syntax-css-semantics |
-| `packages/engine/tests/parser-parity.test.ts:96` | :nth-last(2) | css-bytes, syntax-css-semantics |
-| `packages/engine/tests/parser-parity.test.ts:96` | :nth(2) | css-bytes, syntax-css-semantics |
-| `packages/engine/tests/parser-parity.test.ts:96` | :odd | css-bytes, syntax-css-semantics |
-| `packages/engine/tests/parser-parity.test.ts:96` | :of(.active_) | css-bytes, syntax-css-semantics |
-| `packages/engine/tests/parser-parity.test.ts:96` | :of(.active) | css-bytes, syntax-css-semantics |
-| `packages/engine/tests/parser-parity.test.ts:96` | :of(.active>) | css-bytes, syntax-css-semantics |
-| `packages/engine/tests/parser-parity.test.ts:96` | :of(#active) | css-bytes, syntax-css-semantics |
-| `packages/engine/tests/parser-parity.test.ts:96` | :of(active) | css-bytes, syntax-css-semantics |
-| `packages/engine/tests/parser-parity.test.ts:96` | .class | css-bytes, syntax-css-semantics |
-| `packages/engine/tests/parser-parity.test.ts:96` | [open] | css-bytes, syntax-css-semantics |
-| `packages/engine/tests/parser-parity.test.ts:96` | * | css-bytes, syntax-css-semantics |
-| `packages/engine/tests/parser-parity.test.ts:96` | >.title | css-bytes, syntax-css-semantics |
-| `packages/engine/tests/parser-parity.test.ts:96` | >li::before,>li::after | css-bytes, syntax-css-semantics |
-| `packages/engine/tests/rules-migration-parity.test.ts:351` | legacy core tests/rules/accent.test.ts | css-bytes |
-| `packages/engine/tests/rules-migration-parity.test.ts:351` | legacy core tests/rules/area.test.ts | css-bytes |
-| `packages/engine/tests/rules-migration-parity.test.ts:351` | legacy core tests/rules/background-clip.test.ts | css-bytes |
-| `packages/engine/tests/rules-migration-parity.test.ts:351` | legacy core tests/rules/background.test.ts | css-bytes |
-| `packages/engine/tests/rules-migration-parity.test.ts:351` | legacy core tests/rules/border-color.test.ts | css-bytes |
-| `packages/engine/tests/rules-migration-parity.test.ts:351` | legacy core tests/rules/border-radius.test.ts | css-bytes |
-| `packages/engine/tests/rules-migration-parity.test.ts:351` | legacy core tests/rules/border-style.test.ts | css-bytes |
-| `packages/engine/tests/rules-migration-parity.test.ts:351` | legacy core tests/rules/border-width.test.ts | css-bytes |
-| `packages/engine/tests/rules-migration-parity.test.ts:351` | legacy core tests/rules/border.test.ts | css-bytes |
-| `packages/engine/tests/rules-migration-parity.test.ts:351` | legacy core tests/rules/box-shadow.test.ts | css-bytes |
-| `packages/engine/tests/rules-migration-parity.test.ts:351` | legacy core tests/rules/box.test.ts | css-bytes |
+| `packages/facade/tests/facade.test.ts:4` | @master/css re-exports the manifest-driven engine facade | authoring, css-bytes |
+| `packages/integration/tests/client-types.test.ts:12` | provides types for Master CSS integration virtual modules | integration, rendering-modes |
+| `packages/language-server/tests/runtime.test.ts:12` | uses a resolved workspace Master CSS runtime when available | language-authoring, rendering-modes |
+| `packages/language-server/tests/runtime.test.ts:23` | falls back to the bundled runtime when workspace packages are missing | language-authoring, rendering-modes |
+| `packages/language-service/tests/render-semantic-tokens.test.ts:557` | does not render static theme modifier semantic tokens | authoring, language-authoring, rendering-modes |
+| `packages/language-service/tests/runtime.test.ts:33` | uses the injected runtime default manifest for completions | authoring, language-authoring, rendering-modes |
+| `packages/language-service/tests/runtime.test.ts:44` | uses the injected runtime for hover CSS previews | language-authoring, rendering-modes |
+| `packages/language-service/tests/runtime.test.ts:54` | uses the injected runtime variables for document colors | language-authoring, rendering-modes, syntax-css-semantics |
+| `packages/lint/tests/index.test.ts:659` | ignores token, static, invalid, unknown, and component classes | lint-authoring, rendering-modes, syntax-css-semantics |
+| `packages/lint/tests/index.test.ts:711` | suggests static utilities, theme tokens, and property aliases | authoring, lint-authoring, rendering-modes, syntax-css-semantics |
+| `packages/lint/tests/index.test.ts:717` | suggests static utility aliases from generated declarations | lint-authoring, rendering-modes, syntax-css-semantics |
+| `packages/next/tests/next-config.test.ts:369` | adds CSS manifest loaders without runtime aliases or the adapter when mode is null | authoring, integration, rendering-modes |
+| `packages/runtime/e2e/edge-cases.test.ts:691` | disconnect and destroy clear pending mutation additions and removals | css-bytes, rendering-modes, runtime |
+| `packages/runtime/e2e/edge-cases.test.ts:1000` | progressive hydration falls back when an external style hydration manifest import fails | authoring, css-bytes, rendering-modes, runtime |
+| `packages/runtime/e2e/lifecycle.test.ts:18` | does not expose tooling-only engine inspection helpers | css-bytes, rendering-modes, runtime |
+| `packages/runtime/e2e/lifecycle.test.ts:34` | destroy on progressive | css-bytes, rendering-modes, runtime |
+| `packages/server/tests/html.test.ts:16` | render <html> | css-bytes, server-rendering |
+| `packages/server/tests/html.test.ts:29` | should not render the new style element | css-bytes, server-rendering |
+| `packages/server/tests/html.test.ts:41` | returns a hydration manifest without changing rendered HTML | authoring, css-bytes, rendering-modes, server-rendering |
+| `packages/server/tests/html.test.ts:54` | injects the hydration manifest into an existing head when requested | authoring, css-bytes, rendering-modes, server-rendering |
+| `packages/server/tests/html.test.ts:67` | attaches an external hydration manifest source to style#master-css when requested | authoring, css-bytes, rendering-modes, server-rendering |
+| `packages/server/tests/html.test.ts:88` | removes stale inline hydration scripts in external hydration manifest mode | authoring, css-bytes, rendering-modes, server-rendering |
+| `packages/server/tests/html.test.ts:110` | emits no external hydration manifest pointer for empty generated CSS | authoring, css-bytes, rendering-modes, server-rendering |
+| `packages/server/tests/html.test.ts:132` | creates a head for the injected hydration manifest when missing | authoring, css-bytes, rendering-modes, server-rendering |
+| `packages/server/tests/html.test.ts:145` | replaces an existing hydration manifest script when requested | authoring, css-bytes, rendering-modes, server-rendering |
+| `packages/server/tests/html.test.ts:162` | can skip returning and injecting the hydration manifest | authoring, css-bytes, rendering-modes, server-rendering |
+| `packages/server/tests/html.test.ts:173` | removes an empty master style when hydration manifest injection is requested | authoring, css-bytes, rendering-modes, server-rendering |
+| `packages/source/tests/adapters.test.ts:27` | extracts static classes from JavaScript and TypeScript syntax with Oxc | rendering-modes, syntax-css-semantics, syntax-extraction |
+| `packages/stylesheet/tests/style.test.ts:491` | tracks default package artifacts as style dependencies | authoring, css-bytes |
+| `packages/svelte/tests/server.test.ts:24` | injects collected CSS when the head closes | integration, rendering-modes |
+| `packages/svelte/tests/server.test.ts:42` | keeps streaming after early injection and leaves later classes to hydration | integration, rendering-modes, syntax-css-semantics |
+| `packages/svelte/tests/server.test.ts:55` | supports an external hydration manifest writer | authoring, integration, rendering-modes |
+| `packages/svelte/tests/server.test.ts:76` | does not duplicate emitted global variables and keyframes in streamed CSS | integration, rendering-modes, syntax-css-semantics |
+| `packages/svelte/tests/server.test.ts:101` | writes static external hydration manifests | authoring, integration, rendering-modes |
+| `packages/svelte/tests/server.test.ts:116` | replaces an existing master style in the current chunk | integration, rendering-modes |
+| `packages/svelte/tests/server.test.ts:121` | replaces an existing hydration manifest in the current chunk | authoring, integration, rendering-modes |
+| `packages/vite/tests/core.test.ts:10` | null mode registers the shared scanner and style entry pipeline | integration, rendering-modes |
+| `packages/vscode/tests/server-bundle.test.js:204` | server bundle keeps expected native runtime imports external | language-authoring, rendering-modes |
 
 ## Dynamic matrices requiring runtime collection
 

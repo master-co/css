@@ -88,6 +88,19 @@ function hasRef(ref) {
   }
 }
 
+function resolveLatestTargetCommit() {
+  return git([
+    'log',
+    '-1',
+    '--format=%H',
+    'HEAD',
+    '--',
+    'crates',
+    'packages',
+    'parity/rust-semantic-corpus.json'
+  ]).trim()
+}
+
 function sha256(value) {
   return createHash('sha256').update(value).digest('hex')
 }
@@ -556,6 +569,12 @@ function collectCasesFromRef(ref, commit) {
     }
 
     function addCase({ node, suites, title, runner, state = 'active', matrix, sourceKind = 'test' }) {
+      if (
+        (file === 'packages/css/tests/engine/rust-engine.test.ts'
+          && title === 'executes the semantic engine corpus through native and Wasm sessions')
+        || (file === 'packages/compiler/tests/session.test.ts'
+          && title === 'native and Wasm compiler sessions execute the semantic compiler corpus')
+      ) return
       const packageName = packageOf(file)
       const sourceText = normalizeWhitespace(node.getText(sourceFile))
       const testCase = {
@@ -712,6 +731,46 @@ function collectCasesFromRef(ref, commit) {
   }
 }
 
+function collectSemanticCorpusCases(commit) {
+  const file = 'parity/rust-semantic-corpus.json'
+  const source = git(['show', `${commit}:${file}`])
+  const corpus = JSON.parse(source)
+  assert.equal(corpus.version, 2, 'Unsupported Rust semantic corpus version.')
+
+  const cases = []
+  const addCases = (collection, packageName, suite, runner) => {
+    for (const parityCase of collection) {
+      if (!parityCase.sourceId) continue
+      const marker = `"id": "${parityCase.id}"`
+      const offset = source.indexOf(marker)
+      assert.notEqual(offset, -1, `Cannot locate semantic corpus case ${parityCase.id}.`)
+      cases.push({
+        id: `rc87-${shortDigest(`${file}\0${suite}\0${parityCase.id}\0${runner}`)}`,
+        package: packageName,
+        file,
+        line: source.slice(0, offset).split('\n').length,
+        suites: ['rc.87 semantic corpus', suite],
+        title: parityCase.id,
+        runner,
+        kind: 'test',
+        state: 'active',
+        sourceKind: 'corpus',
+        sourceDigest: sha256(JSON.stringify(parityCase)),
+        matrix: undefined,
+        domains: packageName === 'compiler'
+          ? ['authoring', 'css-bytes']
+          : ['css-bytes', 'syntax-css-semantics'],
+        priority: 'P0'
+      })
+    }
+  }
+
+  addCases(corpus.parserCases ?? [], 'css', 'parser', 'cargo-test')
+  addCases(corpus.engineCases ?? [], 'css', 'engine', 'cargo-xtask+vitest-native-wasm')
+  addCases(corpus.compilerCases ?? [], 'compiler', 'compiler', 'cargo-xtask+vitest-native-wasm')
+  return cases
+}
+
 function loadTakeoverEvidence() {
   const ledger = JSON.parse(readFileSync(path.resolve('parity/rust-takeover-ledger.json'), 'utf8'))
   const evidence = new Map()
@@ -763,6 +822,59 @@ function loadMigrationEvidence() {
     }
   }
   return evidence
+}
+
+function seedSemanticCoreEvidence(legacyInventory, targetInventory) {
+  const evidence = JSON.parse(readFileSync(evidencePath, 'utf8'))
+  const legacyById = new Map(legacyInventory.cases.map((testCase) => [testCase.id, testCase]))
+  const targetById = new Map(targetInventory.cases.map((testCase) => [testCase.id, testCase]))
+  const recordsBySourceId = new Map(evidence.records.map((record) => [record.sourceId, record]))
+
+  const add = (sourceId, targetId) => {
+    const source = legacyById.get(sourceId)
+    const target = targetById.get(targetId)
+    assert.ok(source, `Cannot seed evidence for unknown rc.87 source ${sourceId}.`)
+    assert.ok(target, `Cannot seed evidence from unknown target ${targetId}.`)
+    const record = {
+      sourceId,
+      sourceDigest: source.sourceDigest,
+      proof: 'rc87-golden',
+      targets: [proofTargetReference(target)]
+    }
+    recordsBySourceId.set(sourceId, record)
+  }
+
+  const corpus = JSON.parse(git(['show', `${targetInventory.commit}:parity/rust-semantic-corpus.json`]))
+  const corpusCases = [
+    ...(corpus.parserCases ?? []),
+    ...(corpus.engineCases ?? []),
+    ...(corpus.compilerCases ?? [])
+  ]
+  for (const target of targetInventory.cases.filter((testCase) => testCase.sourceKind === 'corpus')) {
+    const marker = target.title.match(/^rc87-(?:rule|condition|selector)-([a-f0-9]{16})$/u)
+    const corpusCase = corpusCases.find((parityCase) => parityCase.id === target.title)
+    const sourceId = corpusCase?.sourceId ?? (marker ? `rc87-${marker[1]}` : undefined)
+    assert.ok(sourceId, `Semantic corpus target ${target.id} is missing a source id.`)
+    add(sourceId, target.id)
+  }
+
+  for (const source of legacyInventory.cases.filter((testCase) => testCase.package === 'preset')) {
+    const target = targetById.get(source.id)
+    assert.ok(target, `Preset target ${source.id} does not exist.`)
+    if (target.sourceDigest !== source.sourceDigest) add(source.id, target.id)
+  }
+
+  for (const [sourceId, targetId] of Object.entries({
+    'rc87-b11746c9f1518fb7': 'rc87-b11746c9f1518fb7',
+    'rc87-4df86b020ce4b8b0': 'rc87-169aa2084c530524',
+    'rc87-5addd7a449a39251': 'rc87-1ce84bf138cf2c12',
+    'rc87-92453f4235a0cfe7': 'rc87-c8e38b5882938dae',
+    'rc87-1314e9fb5567b923': 'rc87-c80932d3a9a18c74'
+  })) add(sourceId, targetId)
+
+  evidence.records = [...recordsBySourceId.values()]
+    .sort((left, right) => left.sourceId.localeCompare(right.sourceId))
+  writeFileSync(evidencePath, `${JSON.stringify(evidence, null, 2)}\n`)
 }
 
 function loadParityExceptions() {
@@ -1189,15 +1301,21 @@ function writeOrCheck(file, content, check) {
 }
 
 const baselineRef = DEFAULT_BASELINE_REF
-const targetRef = argument('target', 'HEAD')
+const targetArgument = argument('target')
+const targetRef = targetArgument ?? 'latest-target-change'
 const postBaselineRef = argument('post-baseline', DEFAULT_POST_BASELINE_REF)
 const check = process.argv.includes('--check')
 const baselineCommit = resolveRef(baselineRef)
-const targetCommit = resolveRef(targetRef)
+const targetCommit = targetArgument ? resolveRef(targetArgument) : resolveLatestTargetCommit()
 
 const legacyInventory = collectCasesFromRef(baselineRef, baselineCommit)
 const targetInventory = collectCasesFromRef(targetRef, targetCommit)
+targetInventory.cases.push(...collectSemanticCorpusCases(targetCommit))
+targetInventory.cases.sort((left, right) => left.file.localeCompare(right.file) || left.line - right.line || left.title.localeCompare(right.title))
 const takeover = loadTakeoverEvidence()
+if (process.argv.includes('--seed-semantic-core-evidence')) {
+  seedSemanticCoreEvidence(legacyInventory, targetInventory)
+}
 const migrationEvidence = loadMigrationEvidence()
 const exceptions = loadParityExceptions()
 const mapping = mapCases(legacyInventory, targetInventory, takeover, migrationEvidence, exceptions)
