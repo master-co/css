@@ -126,6 +126,25 @@ test('streams the stable document prefix across arbitrary chunk boundaries', () 
   expect(() => session.write('later')).toThrow('The Master CSS HTML render session has ended.')
 })
 
+test('keeps streamed HTML and the final immutable result on the same complete snapshot', () => {
+  using renderer = createServerRenderer({ manifest: defaultManifest })
+  using session = renderer.createHTMLRenderSession({ hydrationManifest: 'inject' })
+
+  const first = session.write('<html><head><meta class="block"></head><body>')
+  const second = session.write('<div class="fg:red"></div>')
+  const ended = session.end('</body></html>')
+  const streamedHTML = first + second + ended.chunk
+  const expected = renderer.renderHTML(
+    '<html><head><meta class="block"></head><body><div class="fg:red"></div></body></html>',
+    { hydrationManifest: 'inject' }
+  )
+
+  expect(streamedHTML).toBe(ended.result.html)
+  expectHTMLParity(ended.result, expected)
+  expect(ended.result.classNames).toEqual(['block', 'fg:red'])
+  expect(ended.result.cssText).toContain('.fg\\:red')
+})
+
 test('returns a complete final chunk when no prefix can be emitted safely', () => {
   using session = createHTMLRenderSession({
     manifest: defaultManifest,

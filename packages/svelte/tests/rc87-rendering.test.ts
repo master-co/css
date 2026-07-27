@@ -58,7 +58,7 @@ describe('rc.87 Svelte server hook renderer', () => {
     expect(html).toContain('</script></head>')
   })
 
-  test('keeps streaming after early injection and leaves later classes to hydration', async () => {
+  test('preserves complete Rust stream results when later chunks add classes', async () => {
     const html = await renderWithHandle(
       createMasterCSSHandle({ manifest: defaultManifest }),
       [
@@ -68,7 +68,7 @@ describe('rc.87 Svelte server hook renderer', () => {
     )
 
     expect(html).toContain('.block')
-    expect(html).not.toContain('.fg\\:red')
+    expect(html).toContain('.fg\\:red')
     expect(html).toContain('<body><div class="fg:red"></div>')
   })
 

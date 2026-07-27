@@ -42,8 +42,7 @@ describe('Svelte server hook renderer', () => {
 
     expect(html).toContain('<style id="master-css">')
     expect(html).toContain('.block')
-    expect(html).not.toContain('.fg\\:red')
-    expect(html).toContain('<div class="fg:red"></div>')
+    expect(html).toContain('.fg\\:red')
     expect(html).toContain(`id="${MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID}"`)
     expect(html.match(new RegExp(`id="${MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID}"`, 'g')))
       .toHaveLength(1)

@@ -63,8 +63,14 @@ export function createNativeEngineSession(
       session.dispose()
     }
     return {
-      ensureClassRules: (classNames) =>
-        parse(session.ensureClassRulesAssumingNativeSupport([...classNames])),
+      ensureClassRules: (classNames) => {
+        const values = [...classNames]
+        const candidates = parse<unknown[]>(session.nativeDeclarationCandidates(values))
+        return parse(session.ensureClassRulesWithNativeSupport(
+          values,
+          candidates.map(() => true)
+        ))
+      },
       deleteClassRules: (classNames) => parse(session.deleteClassRules([...classNames])),
       refresh: (manifest) => parse(session.refresh(serializeMasterCSSManifest(manifest))),
       inspect: (className) => parse(session.inspect(className)),

@@ -667,40 +667,6 @@ impl EngineSession {
         self.ensure_class_rules(class_names)
     }
 
-    pub fn ensure_class_rules_assuming_native_support<I, S>(
-        &mut self,
-        class_names: I,
-    ) -> Result<EngineTransitionIr, EngineError>
-    where
-        I: IntoIterator<Item = S>,
-        S: AsRef<str>,
-    {
-        self.ensure_active()?;
-        let mut mutations = Vec::new();
-        for class_name in class_names {
-            let class_name = class_name.as_ref();
-            if class_name.is_empty() || self.class_rules.contains_key(class_name) {
-                continue;
-            }
-            let mut generated = self.generate_class_rules(class_name);
-            if generated.is_empty() || class_name.starts_with('{') {
-                let candidates = if class_name.starts_with('{') {
-                    self.native_declaration_candidates_for_class(class_name)
-                } else {
-                    self.parse_native_declaration_candidate(class_name)
-                        .into_iter()
-                        .collect()
-                };
-                for candidate in candidates {
-                    self.register_native_declaration_candidate(candidate, true);
-                }
-                generated = self.generate_class_rules(class_name);
-            }
-            self.insert_generated_class_rules(class_name, generated, &mut mutations);
-        }
-        Ok(EngineTransitionIr::new(mutations))
-    }
-
     pub fn ensure_stylesheet_resources(
         &mut self,
         native_css: &str,

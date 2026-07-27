@@ -1025,7 +1025,51 @@ test('runtime start does not import a hydration manifest without a runtime style
   })
 })
 
-test('progressive hydration falls back when an external manifest payload is invalid', async ({ page }) => {
+test('progressive hydration fails open when an external style hydration manifest import fails', async ({ page }) => {
+  const loaderURL = await getRuntimeLoaderURL()
+  const source = new URL('/_master-css/hydration/missing.json', loaderURL).href
+
+  await gotoRuntimeOrigin(page, loaderURL)
+  await page.route(source, route => route.fulfill({
+    status: 404,
+    body: 'not found'
+  }))
+  await page.evaluate(({ attr, runtimeStyleId, source }) => {
+    document.body.innerHTML = '<p class="block"></p>'
+    const style = document.createElement('style')
+    style.id = runtimeStyleId
+    style.textContent = '@layer utilities{.block{display:block}}'
+    style.setAttribute(attr, source)
+    document.head.append(style)
+  }, {
+    attr: MASTER_CSS_HYDRATION_MANIFEST_ATTR,
+    runtimeStyleId: MASTER_CSS_RUNTIME_STYLE_ID,
+    source
+  })
+  const result = await page.evaluate(async ({ loaderURL, runtimeStyleId }) => {
+    const { startCSSRuntimeAsync } = await import(loaderURL)
+    try {
+      await startCSSRuntimeAsync()
+    } catch (error) {
+      return {
+        code: (error as { code?: string }).code,
+        hidden: document.documentElement.hasAttribute('hidden'),
+        runtimeStarted: Boolean(globalThis.__MASTER_CSS_RUNTIME_TEST__),
+        styleText: document.getElementById(runtimeStyleId)?.textContent
+      }
+    }
+    throw new Error('Expected runtime startup to fail.')
+  }, { loaderURL, runtimeStyleId: MASTER_CSS_RUNTIME_STYLE_ID })
+
+  expect(result).toEqual({
+    code: 'INVALID_HYDRATION_MANIFEST',
+    hidden: false,
+    runtimeStarted: false,
+    styleText: '@layer utilities{.block{display:block}}'
+  })
+})
+
+test('progressive hydration rejects an invalid external hydration manifest payload', async ({ page }) => {
   const loaderURL = await getRuntimeLoaderURL()
   const source = new URL('/_master-css/hydration/invalid.json', loaderURL).href
 
@@ -1047,17 +1091,23 @@ test('progressive hydration falls back when an external manifest payload is inva
     runtimeStyleId: MASTER_CSS_RUNTIME_STYLE_ID,
     source
   })
-  await startCSSRuntimeAsync(page, undefined, loaderURL)
-  const result = await page.evaluate(() => ({
-    progressive: globalThis.__MASTER_CSS_RUNTIME_TEST__.progressive,
-    observing: globalThis.__MASTER_CSS_RUNTIME_TEST__.observing,
-    text: globalThis.__MASTER_CSS_RUNTIME_TEST__.text
-  }))
+
+  const result = await page.evaluate(async ({ loaderURL }) => {
+    const { startCSSRuntimeAsync } = await import(loaderURL)
+    try {
+      await startCSSRuntimeAsync()
+    } catch (error) {
+      return {
+        code: (error as { code?: string }).code,
+        runtimeStarted: Boolean(globalThis.__MASTER_CSS_RUNTIME_TEST__)
+      }
+    }
+    throw new Error('Expected runtime startup to fail.')
+  }, { loaderURL })
 
   expect(result).toEqual({
-    progressive: false,
-    observing: true,
-    text: '@layer utilities{.block{display:block}}'
+    code: 'INVALID_HYDRATION_MANIFEST',
+    runtimeStarted: false
   })
 })
 

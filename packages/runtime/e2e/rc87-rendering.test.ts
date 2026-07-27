@@ -130,7 +130,7 @@ test('disconnect and destroy clear pending mutation additions and removals', asy
   await waitForRuntimeRemovalFlush(page)
 })
 
-test('progressive hydration falls back when an external style hydration manifest import fails', async ({ page }) => {
+test('preserves the strict Rust contract when an external hydration manifest import fails', async ({ page }) => {
   const loaderURL = await getRuntimeLoaderURL()
   const source = new URL('/_master-css/hydration/missing-rc87.json', loaderURL).href
 
@@ -151,19 +151,21 @@ test('progressive hydration falls back when an external style hydration manifest
     runtimeStyleId: MASTER_CSS_RUNTIME_STYLE_ID,
     source
   })
-  await page.evaluate(async (loaderURL) => {
+  const result = await page.evaluate(async (loaderURL) => {
     const { startCSSRuntimeAsync } = await import(loaderURL)
-    await startCSSRuntimeAsync()
+    try {
+      await startCSSRuntimeAsync()
+    } catch (error) {
+      return {
+        code: (error as { code?: string }).code,
+        runtimeStarted: Boolean(globalThis.__MASTER_CSS_RUNTIME_TEST__)
+      }
+    }
+    throw new Error('Expected runtime startup to fail.')
   }, loaderURL)
-  await page.waitForFunction(() => !!globalThis.__MASTER_CSS_RUNTIME_TEST__)
 
-  const result = await page.evaluate(() => ({
-    progressive: globalThis.__MASTER_CSS_RUNTIME_TEST__.snapshot().hydration.state === 'progressive',
-    classRules: Object.keys(globalThis.__MASTER_CSS_RUNTIME_TEST__.snapshot().classRules),
-    text: globalThis.__MASTER_CSS_RUNTIME_TEST__.snapshot().cssText
-  }))
-
-  expect(result.progressive).toBe(false)
-  expect(result.classRules).toEqual(['block'])
-  expect(result.text).toBe('@layer utilities{.block{display:block}}')
+  expect(result).toEqual({
+    code: 'INVALID_HYDRATION_MANIFEST',
+    runtimeStarted: false
+  })
 })

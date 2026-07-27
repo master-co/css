@@ -38,7 +38,6 @@ export type {
 export interface NativeEngineSession {
   manifestJson(): string
   ensureClassRules(classNames: string[]): string
-  ensureClassRulesAssumingNativeSupport(classNames: string[]): string
   deleteClassRules(classNames: string[]): string
   nativeDeclarationCandidates(classNames: string[]): string
   ensureClassRulesWithNativeSupport(classNames: string[], supported: boolean[]): string
