@@ -70,6 +70,16 @@
         "create"
       ],
       "test": "packages/create/tests/setup.test.ts"
+    },
+    {
+      "id": "rc87-vscode-rust-native-runtime-externalization",
+      "reason": "The VS Code server now bundles Rust-backed semantic hosts and externalizes only the target-specific native binding packages. Restoring retired TypeScript semantic dependencies would violate the Rust ownership boundary.",
+      "old": "The server bundle leaves lightningcss and oxc-parser as native runtime imports.",
+      "new": "The server bundle contains no lightningcss or oxc semantic imports; target-specific @master/css-binding packages remain the staged native runtime boundary.",
+      "packages": [
+        "vscode"
+      ],
+      "test": "packages/vscode/tests/server-bundle.test.js"
     }
   ]
 }

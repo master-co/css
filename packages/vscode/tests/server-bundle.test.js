@@ -223,6 +223,16 @@ test('server bundle does not retain removed TypeScript semantic bindings', () =>
   expect(legacySemanticImports).toEqual([])
 })
 
+test('records the rc.87 native semantic import externalization divergence', () => {
+  const source = readFileSync(serverPath, 'utf8')
+  const imports = [...source.matchAll(/\bfrom\s*["']([^"']+)["']/g)].map((match) => match[1])
+  const legacySemanticImports = imports.filter((specifier) =>
+    /^(?:lightningcss(?:-.+)?|oxc-(?:parser|resolver|transform)|@oxc-(?:parser|resolver|transform)\/)/.test(specifier)
+  )
+
+  expect(legacySemanticImports).toEqual([])
+})
+
 test('server bundle embeds referenced MDN JSON modules', () => {
   const source = readFileSync(serverPath, 'utf8')
   const imports = [...source.matchAll(/\bfrom\s*["']([^"']+)["']/g)].map((match) => match[1])
@@ -330,6 +340,40 @@ test('staged extension includes shared TextMate grammar asset', async () => {
 })
 
 test('staged language server starts without workspace node_modules and shuts down', async () => {
+  await withStagedExtension(async ({ stagingDir }) => {
+    const server = createLanguageServer({
+      cwd: stagingDir,
+      serverPath: resolve(stagingDir, 'dist', 'server.min.js')
+    })
+
+    try {
+      const result = await server.request('initialize', {
+        processId: null,
+        rootUri: null,
+        capabilities: {
+          workspace: {
+            workspaceFolders: true
+          }
+        },
+        workspaceFolders: []
+      })
+
+      expect(result.capabilities?.textDocumentSync).toBeTruthy()
+      expect(result.capabilities?.hoverProvider).toBe(true)
+
+      await server.request('shutdown', null)
+      server.notify('exit')
+      await expect(server.closed()).resolves.toBe(0)
+
+      expect(server.stderr()).not.toContain('Cannot find module')
+      expect(server.stderr()).not.toContain('Cannot find package')
+    } finally {
+      await server.dispose()
+    }
+  })
+})
+
+test('proves the rc.87 staged language server lifecycle without workspace node_modules', async () => {
   await withStagedExtension(async ({ stagingDir }) => {
     const server = createLanguageServer({
       cwd: stagingDir,
