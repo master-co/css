@@ -1076,7 +1076,11 @@ function loadParityExceptions() {
   return new Map(registry.exceptions.map((exception) => [exception.id, exception]))
 }
 
-function targetOwner(packageName, sourceId) {
+function targetOwner(packageName, sourceId, sourceFile) {
+  if (
+    packageName === 'language'
+    && /\/tests\/(?:browser|shiki|get-class-position\/)/u.test(sourceFile)
+  ) return 'language-service'
   return legacyCaseOwnerMap.get(sourceId) ?? legacyOwnerMap.get(packageName) ?? packageName
 }
 
@@ -1120,7 +1124,7 @@ function validateEvidenceRecord(record, legacyCase, targetById, exceptions) {
     assert.ok(target, `Evidence target ${reference.caseId} for ${record.sourceId} does not exist.`)
     assert.equal(reference.runner, target.runner, `Stale target runner for ${record.sourceId}/${reference.caseId}.`)
     assert.equal(reference.digest, target.sourceDigest, `Stale target digest for ${record.sourceId}/${reference.caseId}.`)
-    assert.equal(target.package, targetOwner(legacyCase.package, legacyCase.id), `Evidence target owner mismatch for ${record.sourceId}/${reference.caseId}.`)
+    assert.equal(target.package, targetOwner(legacyCase.package, legacyCase.id, legacyCase.file), `Evidence target owner mismatch for ${record.sourceId}/${reference.caseId}.`)
     return target
   })
 
@@ -1168,7 +1172,7 @@ function mapCases(legacyInventory, targetInventory, takeover, migrationEvidence,
 
   const mappedTargetIds = new Set()
   const entries = legacyInventory.cases.map((legacyCase) => {
-    const owner = targetOwner(legacyCase.package, legacyCase.id)
+    const owner = targetOwner(legacyCase.package, legacyCase.id, legacyCase.file)
     const exactFullTitle = exactTitle([...legacyCase.suites, legacyCase.title].join(' > '))
     const exactCaseTitle = exactTitle(legacyCase.title)
     const fullTitle = normalizeTitle([...legacyCase.suites, legacyCase.title].join(' > '))

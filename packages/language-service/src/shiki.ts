@@ -45,6 +45,9 @@ export function createMasterCSSShikiLanguageRegistration(): MasterCSSTextMateGra
 }
 
 export const masterCSSShikiLanguage = createMasterCSSShikiLanguageRegistration()
+const masterCSSShikiLanguages = [masterCSSShikiLanguage]
+
+export default masterCSSShikiLanguages
 
 export type MasterCSSShikiSemanticTokenStyleKey = SemanticTokenType | `${SemanticTokenType}.${SemanticTokenModifier}`
 export type MasterCSSShikiHighlightRoleStyleKey = HighlightTokenRole
@@ -546,8 +549,8 @@ function createSemanticTokenDecorations(
 ): MasterCSSShikiDecoration[] {
   const classPrefix = options.classPrefix ?? 'mcss-semantic'
   const includeDataAttributes = options.dataAttributes ?? true
-  return tokens.map(({ start, end, type, modifiers: semanticModifiers = [] }) => {
-    const role = resolveHighlightRole({ type, modifiers: semanticModifiers })
+  return tokens.map(({ start, end, type, modifiers: semanticModifiers = [], role: semanticRole }) => {
+    const role = semanticRole ?? resolveHighlightRole({ type, modifiers: semanticModifiers })
     const modifiers = semanticModifiers.filter((modifier) =>
       modifier !== ROLE_TOKEN_MODIFIERS[role]
       && !(modifier === 'declaration' && type !== 'class')

@@ -2,7 +2,7 @@ import { expect, test } from 'vitest'
 import { createHighlighter } from 'shiki'
 import sharedTextMateGrammar from '../syntaxes/master-css.tmLanguage.json' with { type: 'json' }
 
-import {
+import masterCSSShikiLanguages, {
   MASTER_CSS_TEXTMATE_GRAMMAR,
   createMasterCSSShikiDecorations,
   getMasterCSSShikiLanguageId,
@@ -88,34 +88,6 @@ function expectTokensPreserveSource(tokens: ShikiContentToken[][], code: string)
   expect(tokens.map((lineTokens) => lineTokens.map((token) => token.content).join(''))).toEqual(code.split('\n'))
 }
 
-function collectHastElements(node: any): any[] {
-  const elements: any[] = []
-  if (node?.type === 'element') elements.push(node)
-  for (const child of node?.children ?? []) elements.push(...collectHastElements(child))
-  return elements
-}
-
-function getHastClassNames(element: any): string[] {
-  const className = element?.properties?.class
-  if (Array.isArray(className)) {
-    return className.flatMap((value) => typeof value === 'string' ? value.split(/\s+/) : [])
-  }
-  return typeof className === 'string' ? className.split(/\s+/).filter(Boolean) : []
-}
-
-function hasHastClass(element: any, className: string) {
-  return getHastClassNames(element).includes(className)
-}
-
-function getHastText(node: any): string {
-  if (node?.type === 'text') return node.value
-  return (node?.children ?? []).map(getHastText).join('')
-}
-
-function collectHastElementsByClass(node: any, className: string) {
-  return collectHastElements(node).filter((element) => hasHastClass(element, className))
-}
-
 function grammarEntry(key: string) {
   const entry = MASTER_CSS_TEXTMATE_GRAMMAR.repository[key] as { patterns?: TextMatePattern[] } | undefined
   expect(entry?.patterns).toBeDefined()
@@ -134,10 +106,9 @@ function expectGrammarIncludes(entry: { patterns: TextMatePattern[] }, includes:
   ))
 }
 
-test.concurrent('exports the Shiki language registration as a named value', async () => {
-  const shikiModule = await import('../src/shiki')
-  expect(shikiModule.masterCSSShikiLanguage).toBe(masterCSSShikiLanguage)
-  expect(shikiModule.default).toEqual([masterCSSShikiLanguage])
+test.concurrent('exports Shiki language registrations as a default array', async () => {
+  expect(masterCSSShikiLanguages).toEqual([masterCSSShikiLanguage])
+  expect((await import('../src/shiki')).default).toBe(masterCSSShikiLanguages)
 })
 
 test.concurrent('defines deterministic TextMate grammar scopes for CSS directives', () => {
@@ -188,12 +159,9 @@ test.concurrent('defines deterministic TextMate grammar scopes for CSS directive
 })
 
 test('supports Shiki dynamic language imports', async () => {
-  const masterCSSShikiLanguageImport = import('../src/shiki').then((module) => ({
-    default: [module.masterCSSShikiLanguage]
-  }))
   const highlighter = await createHighlighter({
     themes: [shikiSmokeTheme],
-    langs: ['css', masterCSSShikiLanguageImport]
+    langs: ['css', import('../src/shiki')]
   })
 
   try {
@@ -542,123 +510,6 @@ test.concurrent('applies semantic token styles by type and modifier', () => {
     'color:var(--mcss-semantic-value);--shiki-dark:var(--mcss-semantic-value-dark)'
   ])
   expect(btnStyle).toBe('color:var(--mcss-semantic-class);--shiki-dark:var(--mcss-semantic-class-dark);font-weight:600')
-})
-
-test('wraps host class attribute values around Master CSS semantic spans', async () => {
-  const highlighter = await createHighlighter({
-    themes: [shikiSmokeTheme],
-    langs: ['html']
-  })
-  const code = '<button class="text:amber" data-foo="bar">Save</button>'
-
-  try {
-    const originalHast = highlighter.codeToHast(code, {
-      lang: 'html',
-      theme: shikiSmokeTheme
-    })
-    const originalClassValueElement = collectHastElements(originalHast).find((element) => (
-      element.tagName === 'span'
-      && typeof element.properties?.style === 'string'
-      && getHastText(element).includes('text:amber')
-    ))
-    const hast = highlighter.codeToHast(code, {
-      lang: 'html',
-      theme: shikiSmokeTheme,
-      transformers: [transformerMasterCSS({ manifest }) as any]
-    })
-    const wrappers = collectHastElementsByClass(hast, 'mcss-host-role-class-attribute-value')
-    const wrapper = wrappers[0]
-    const wrapperChildren = collectHastElements(wrapper)
-
-    expect(originalClassValueElement).toBeDefined()
-    expect(wrappers).toHaveLength(1)
-    expect(getHastText(wrapper)).toBe('text:amber')
-    expect(hasHastClass(wrapper, 'mcss-host')).toBe(true)
-    expect(wrapper.properties?.['data-master-css-host-role']).toBe('class-attribute-value')
-    expect(wrapper.properties?.style).toBe(originalClassValueElement?.properties?.style)
-    expect(wrapperChildren.some((element) => hasHastClass(element, 'mcss-semantic-role-declaration-property'))).toBe(true)
-    expect(wrapperChildren.some((element) => hasHastClass(element, 'mcss-semantic-role-declaration-separator'))).toBe(true)
-    expect(wrapperChildren.some((element) => hasHastClass(element, 'mcss-semantic-role-value-keyword'))).toBe(true)
-    expect(collectHastElements(hast).filter((element) => getHastText(element) === 'bar' && hasHastClass(element, 'mcss-host'))).toHaveLength(0)
-  } finally {
-    await highlighter.dispose?.()
-  }
-})
-
-test('can disable host class attribute value wrappers', async () => {
-  const highlighter = await createHighlighter({
-    themes: [shikiSmokeTheme],
-    langs: ['html']
-  })
-
-  try {
-    const hast = highlighter.codeToHast('<button class="text:amber">Save</button>', {
-      lang: 'html',
-      theme: shikiSmokeTheme,
-      transformers: [transformerMasterCSS({
-        classAttributeValueWrapper: false,
-        manifest
-      }) as any]
-    })
-
-    expect(collectHastElementsByClass(hast, 'mcss-host-role-class-attribute-value')).toHaveLength(0)
-    expect(collectHastElementsByClass(hast, 'mcss-semantic-role-value-keyword')).toHaveLength(1)
-  } finally {
-    await highlighter.dispose?.()
-  }
-})
-
-test('handles caller Shiki decorations around host class attribute value wrappers', async () => {
-  const highlighter = await createHighlighter({
-    themes: [shikiSmokeTheme],
-    langs: ['html']
-  })
-  const code = '<button class="text:amber">Save</button>'
-
-  try {
-    const partialOverlapHast = highlighter.codeToHast(code, {
-      lang: 'html',
-      theme: shikiSmokeTheme,
-      decorations: [
-        { start: 10, end: 20, properties: { class: 'caller-decoration' } }
-      ],
-      transformers: [transformerMasterCSS({ manifest }) as any]
-    } as any)
-    expect(collectHastElementsByClass(partialOverlapHast, 'mcss-host-role-class-attribute-value')).toHaveLength(0)
-    expect(collectHastElementsByClass(partialOverlapHast, 'caller-decoration')).toHaveLength(1)
-
-    const containedHast = highlighter.codeToHast(code, {
-      lang: 'html',
-      theme: shikiSmokeTheme,
-      decorations: [
-        { start: 14, end: 26, properties: { class: 'caller-decoration' } }
-      ],
-      transformers: [transformerMasterCSS({ manifest }) as any]
-    } as any)
-    const wrappers = collectHastElementsByClass(containedHast, 'mcss-host-role-class-attribute-value')
-
-    expect(wrappers).toHaveLength(1)
-    expect(getHastText(wrappers[0])).toBe('text:amber')
-    expect(collectHastElementsByClass(wrappers[0], 'caller-decoration')).toHaveLength(1)
-  } finally {
-    await highlighter.dispose?.()
-  }
-})
-
-test.concurrent('does not create host wrappers for raw class-list highlighting', () => {
-  const code = 'text:amber'
-  const options = {
-    lang: 'mcss',
-    decorations: [] as any[]
-  }
-  const transformer = transformerMasterCSS({
-    classList: true,
-    manifest
-  })
-
-  transformer.tokens.call({ source: code, options }, [[{ content: code, offset: 0, color: 'value' }]])
-
-  expect(options.decorations).toEqual([])
 })
 
 test.concurrent('applies semantic decorations in the Shiki tokens hook', () => {

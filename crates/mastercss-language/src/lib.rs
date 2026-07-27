@@ -41,6 +41,8 @@ pub struct SemanticTokenInputIr {
     pub token_type: String,
     #[serde(default)]
     pub modifiers: Vec<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub role: Option<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Deserialize)]
@@ -270,6 +272,17 @@ fn push_semantic_token(
     token_type: &str,
     modifiers: &[&str],
 ) {
+    push_semantic_token_with_role(tokens, start, end, token_type, modifiers, None);
+}
+
+fn push_semantic_token_with_role(
+    tokens: &mut Vec<SemanticTokenInputIr>,
+    start: u32,
+    end: u32,
+    token_type: &str,
+    modifiers: &[&str],
+    role: Option<&str>,
+) {
     if end <= start {
         return;
     }
@@ -281,6 +294,7 @@ fn push_semantic_token(
             .iter()
             .map(|modifier| (*modifier).to_owned())
             .collect(),
+        role: role.map(str::to_owned),
     });
 }
 
@@ -1110,7 +1124,14 @@ impl LanguageSession {
                 &["declaration", "component"],
             ),
             ClassSemanticKind::Semantic | ClassSemanticKind::Pattern => {
-                push_semantic_token(tokens, token_start, base_end, "enumMember", &[])
+                push_semantic_token_with_role(
+                    tokens,
+                    token_start,
+                    base_end,
+                    "enumMember",
+                    &[],
+                    Some("utility.semantic"),
+                )
             }
             ClassSemanticKind::Declaration => {
                 if let Some(key) = semantics.key_token.as_deref() {
@@ -2329,12 +2350,14 @@ mod tests {
                     end: class_start + 6,
                     token_type: "property".into(),
                     modifiers: vec!["declaration".into()],
+                    role: None,
                 },
                 SemanticTokenInputIr {
                     start: class_start + 8,
                     end: class_end,
                     token_type: "variable".into(),
                     modifiers: Vec::new(),
+                    role: None,
                 },
             ],
         );
@@ -2484,18 +2507,21 @@ mod tests {
                         end: 1,
                         token_type: "class".into(),
                         modifiers: Vec::new(),
+                        role: None,
                     },
                     SemanticTokenInputIr {
                         start: 0,
                         end: 2,
                         token_type: "enumMember".into(),
                         modifiers: Vec::new(),
+                        role: None,
                     },
                     SemanticTokenInputIr {
                         start: 2,
                         end: 3,
                         token_type: "property".into(),
                         modifiers: Vec::new(),
+                        role: None,
                     },
                 ]
             ),

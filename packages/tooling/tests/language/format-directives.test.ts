@@ -30,6 +30,16 @@ function format(source: string, range?: { start: number, end: number }) {
   }
 }
 
+function formatMasterCSSClassList(classList: string) {
+  const prefix = '@compose '
+  const formatted = format(`${prefix}${classList};`)
+  return formatted.slice(prefix.length, -1)
+}
+
+test.concurrent('repairs detached important suffixes in class lists', () => {
+  expect(formatMasterCSSClassList(' bg:transparent !   fg:red !@sm  block!:hover ')).toBe('bg:transparent! fg:red!@sm block!:hover')
+})
+
 test('formats @compose class-list preludes', () => {
   expect(format('.btn { @compose  bg:transparent !   fg:red !@sm ; }'))
     .toBe('.btn { @compose bg:transparent! fg:red!@sm; }')
