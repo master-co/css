@@ -28,5 +28,4 @@ export interface SemanticTokenItem {
   end: number
   type: SemanticTokenType
   modifiers?: SemanticTokenModifier[]
-  role?: HighlightTokenRole
 }

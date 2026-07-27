@@ -80,6 +80,16 @@
         "vscode"
       ],
       "test": "packages/vscode/tests/server-bundle.test.js"
+    },
+    {
+      "id": "rc87-language-service-shiki-named-export",
+      "reason": "Published package entrypoints use named exports unless an ecosystem default is explicitly required. The Shiki subpath keeps the named language registration and does not restore the rc.87 default array export.",
+      "old": "@master/css-language-service/shiki exports an array containing masterCSSShikiLanguage as its default value.",
+      "new": "@master/css-language-service/shiki exports masterCSSShikiLanguage by name and has no default export.",
+      "packages": [
+        "language-service"
+      ],
+      "test": "packages/language-service/tests/rc87-shiki.test.ts"
     }
   ]
 }

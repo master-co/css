@@ -137,7 +137,7 @@ function expectGrammarIncludes(entry: { patterns: TextMatePattern[] }, includes:
 test.concurrent('exports the Shiki language registration as a named value', async () => {
   const shikiModule = await import('../src/shiki')
   expect(shikiModule.masterCSSShikiLanguage).toBe(masterCSSShikiLanguage)
-  expect(shikiModule.default).toEqual([masterCSSShikiLanguage])
+  expect('default' in shikiModule).toBe(false)
 })
 
 test.concurrent('defines deterministic TextMate grammar scopes for CSS directives', () => {

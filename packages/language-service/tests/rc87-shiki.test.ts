@@ -2,7 +2,7 @@ import { expect, test } from 'vitest'
 import { createHighlighter } from 'shiki'
 import sharedTextMateGrammar from '../syntaxes/master-css.tmLanguage.json' with { type: 'json' }
 
-import masterCSSShikiLanguages, {
+import {
   MASTER_CSS_TEXTMATE_GRAMMAR,
   createMasterCSSShikiDecorations,
   getMasterCSSShikiLanguageId,
@@ -106,9 +106,10 @@ function expectGrammarIncludes(entry: { patterns: TextMatePattern[] }, includes:
   ))
 }
 
-test.concurrent('exports Shiki language registrations as a default array', async () => {
-  expect(masterCSSShikiLanguages).toEqual([masterCSSShikiLanguage])
-  expect((await import('../src/shiki')).default).toBe(masterCSSShikiLanguages)
+test.concurrent('does not restore the rc.87 Shiki default array export', async () => {
+  const shikiModule = await import('../src/shiki')
+  expect(shikiModule.masterCSSShikiLanguage).toBe(masterCSSShikiLanguage)
+  expect('default' in shikiModule).toBe(false)
 })
 
 test.concurrent('defines deterministic TextMate grammar scopes for CSS directives', () => {
@@ -159,9 +160,12 @@ test.concurrent('defines deterministic TextMate grammar scopes for CSS directive
 })
 
 test('supports Shiki dynamic language imports', async () => {
+  const masterCSSShikiLanguageImport = import('../src/shiki').then((module) => ({
+    default: [module.masterCSSShikiLanguage]
+  }))
   const highlighter = await createHighlighter({
     themes: [shikiSmokeTheme],
-    langs: ['css', import('../src/shiki')]
+    langs: ['css', masterCSSShikiLanguageImport]
   })
 
   try {

@@ -45,15 +45,13 @@ export function createMasterCSSShikiLanguageRegistration(): MasterCSSTextMateGra
 }
 
 export const masterCSSShikiLanguage = createMasterCSSShikiLanguageRegistration()
-const masterCSSShikiLanguages = [masterCSSShikiLanguage]
-
-export default masterCSSShikiLanguages
 
 export type MasterCSSShikiSemanticTokenStyleKey = SemanticTokenType | `${SemanticTokenType}.${SemanticTokenModifier}`
 export type MasterCSSShikiHighlightRoleStyleKey = HighlightTokenRole
 export type MasterCSSShikiSemanticTokenStyle = string | Record<string, string>
 export type MasterCSSShikiSemanticTokenStyles = Partial<Record<MasterCSSShikiSemanticTokenStyleKey, MasterCSSShikiSemanticTokenStyle>>
 export type MasterCSSShikiHighlightRoleStyles = Partial<Record<MasterCSSShikiHighlightRoleStyleKey, MasterCSSShikiSemanticTokenStyle>>
+type SemanticTokenWithRole = SemanticTokenItem & { role?: HighlightTokenRole }
 interface ShikiToken {
   content: string
   offset: number
@@ -544,7 +542,7 @@ function createSemanticScopeStyleResolver(
 }
 
 function createSemanticTokenDecorations(
-  tokens: SemanticTokenItem[],
+  tokens: SemanticTokenWithRole[],
   options: MasterCSSShikiOptions
 ): MasterCSSShikiDecoration[] {
   const classPrefix = options.classPrefix ?? 'mcss-semantic'
@@ -917,7 +915,7 @@ export function createMasterCSSShikiDecorations(
 function analyzeMasterCSSShikiDocument(
   code: string,
   options: MasterCSSShikiOptions
-): { classPositions: readonly MasterCSSLanguageClassPosition[], semanticTokens: SemanticTokenItem[] } | undefined {
+): { classPositions: readonly MasterCSSLanguageClassPosition[], semanticTokens: SemanticTokenWithRole[] } | undefined {
   const classList = options.classList ?? isMasterCSSClassListLanguage(options.lang)
   const languageId = getLanguageServiceLanguageId(classList ? 'plaintext' : options.lang)
   if (!languageId) return
