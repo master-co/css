@@ -1291,6 +1291,19 @@
       ]
     },
     {
+      "sourceId": "rc87-e20922b4178a8548",
+      "sourceDigest": "27c702411d534f9c1bb039d3a7b3fed1ddc5b349cfd89b932684374f152f3772",
+      "proof": "approved-divergence",
+      "targets": [
+        {
+          "caseId": "rc87-bee4d1e5c45c7230",
+          "runner": "vitest",
+          "digest": "a0b7dd1f7d1305f28fa477e105435ca920c6db899258da22e373c5323fa6762e"
+        }
+      ],
+      "exceptionId": "rc87-stylesheet-explicit-preset-input"
+    },
+    {
       "sourceId": "rc87-e28dbc847daa1817",
       "sourceDigest": "bb642640b97aa05302f0b84ac27537ba1b928c92a108d7af7f67180d4620181b",
       "proof": "rc87-golden",
@@ -1397,6 +1410,19 @@
           "digest": "6f9c18182c75cc98de85a135d92d123f0409ea4afdd6620627468ab7347e18f7"
         }
       ]
+    },
+    {
+      "sourceId": "rc87-fb2f146924e1ad8d",
+      "sourceDigest": "afa4e1fe8ddc191d9fc098838330ab4696046e6f645c8e90b01cf03bf93d53a8",
+      "proof": "approved-divergence",
+      "targets": [
+        {
+          "caseId": "rc87-1f6ba6afdba0cb65",
+          "runner": "vitest",
+          "digest": "a15cc6407c0c438bd8aa5a4f1c4aca54bec8615fe04a6f293b08a4fb84c79b58"
+        }
+      ],
+      "exceptionId": "rc87-facade-async-rust-engine"
     },
     {
       "sourceId": "rc87-fb85c91f2d14846a",

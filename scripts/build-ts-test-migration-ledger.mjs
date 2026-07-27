@@ -830,7 +830,7 @@ function seedSemanticCoreEvidence(legacyInventory, targetInventory) {
   const targetById = new Map(targetInventory.cases.map((testCase) => [testCase.id, testCase]))
   const recordsBySourceId = new Map(evidence.records.map((record) => [record.sourceId, record]))
 
-  const add = (sourceId, targetId) => {
+  const add = (sourceId, targetId, proof = 'rc87-golden', exceptionId) => {
     const source = legacyById.get(sourceId)
     const target = targetById.get(targetId)
     assert.ok(source, `Cannot seed evidence for unknown rc.87 source ${sourceId}.`)
@@ -838,8 +838,9 @@ function seedSemanticCoreEvidence(legacyInventory, targetInventory) {
     const record = {
       sourceId,
       sourceDigest: source.sourceDigest,
-      proof: 'rc87-golden',
-      targets: [proofTargetReference(target)]
+      proof,
+      targets: [proofTargetReference(target)],
+      ...(exceptionId ? { exceptionId } : {})
     }
     recordsBySourceId.set(sourceId, record)
   }
@@ -871,6 +872,19 @@ function seedSemanticCoreEvidence(legacyInventory, targetInventory) {
     'rc87-92453f4235a0cfe7': 'rc87-c8e38b5882938dae',
     'rc87-1314e9fb5567b923': 'rc87-c80932d3a9a18c74'
   })) add(sourceId, targetId)
+
+  add(
+    'rc87-e20922b4178a8548',
+    'rc87-bee4d1e5c45c7230',
+    'approved-divergence',
+    'rc87-stylesheet-explicit-preset-input'
+  )
+  add(
+    'rc87-fb2f146924e1ad8d',
+    'rc87-1f6ba6afdba0cb65',
+    'approved-divergence',
+    'rc87-facade-async-rust-engine'
+  )
 
   evidence.records = [...recordsBySourceId.values()]
     .sort((left, right) => left.sourceId.localeCompare(right.sourceId))

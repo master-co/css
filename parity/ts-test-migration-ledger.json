@@ -1366,11 +1366,11 @@
   },
   "target": {
     "ref": "latest-target-change",
-    "commit": "ba23b07c0fe8c09c039c6486fa74d8af083731be",
+    "commit": "995a48ba5cb7476527e65e84a9b18f39935d1f75",
     "packageCount": 36,
     "testFiles": 156,
     "e2eFiles": 23,
-    "cases": 1161
+    "cases": 1163
   },
   "existingParity": {
     "semanticBaseline": "ef1a7c851",
@@ -1381,15 +1381,17 @@
   "evidence": {
     "path": "parity/ts-test-migration-evidence.json",
     "version": 1,
-    "records": 118,
+    "records": 120,
     "proofs": {
+      "approved-divergence": 2,
       "exact-source": 606,
       "rc87-golden": 118
     }
   },
   "summary": {
     "byStatus": {
-      "gap": 436,
+      "approved-divergence": 2,
+      "gap": 434,
       "mapped-unverified": 376,
       "source-inactive": 10,
       "verified-exact": 724
@@ -1401,11 +1403,12 @@
     },
     "byCoverage": {
       "candidate-all": 376,
-      "evidence": 118,
+      "evidence": 120,
       "exact-source": 606,
-      "none": 446
+      "none": 444
     },
     "byProof": {
+      "approved-divergence": 2,
       "exact-source": 606,
       "rc87-golden": 118
     },
@@ -1487,8 +1490,8 @@
         "P0": 1,
         "P1": 0,
         "P2": 0,
-        "mapped": 0,
-        "gap": 1
+        "mapped": 1,
+        "gap": 0
       },
       "figma": {
         "total": 1,
@@ -1631,8 +1634,8 @@
         "P0": 48,
         "P1": 0,
         "P2": 0,
-        "mapped": 47,
-        "gap": 1
+        "mapped": 48,
+        "gap": 0
       },
       "svelte": {
         "total": 9,
@@ -33010,14 +33013,45 @@
         "targetPackage": "css"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "approved-divergence",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-1f6ba6afdba0cb65",
+            "package": "css",
+            "file": "packages/css/tests/facade.test.ts",
+            "line": 11,
+            "title": "@master/css re-exports the manifest-driven engine facade",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "a15cc6407c0c438bd8aa5a4f1c4aca54bec8615fe04a6f293b08a4fb84c79b58"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "approved-divergence",
+          "sourceDigest": "afa4e1fe8ddc191d9fc098838330ab4696046e6f645c8e90b01cf03bf93d53a8",
+          "targets": [
+            {
+              "caseId": "rc87-1f6ba6afdba0cb65",
+              "runner": "vitest",
+              "digest": "a15cc6407c0c438bd8aa5a4f1c4aca54bec8615fe04a6f293b08a4fb84c79b58"
+            }
+          ],
+          "exceptionId": "rc87-facade-async-rust-engine"
+        }
       },
-      "divergence": null
+      "divergence": {
+        "id": "rc87-facade-async-rust-engine",
+        "reason": "The synchronous TypeScript MasterCSS facade was retired. The public @master/css surface now creates an asynchronous Rust-backed engine session and does not restore a compatibility shim.",
+        "old": "@master/css exposes MasterCSS.create({ manifest }) synchronously and returns the same manifest object with empty text.",
+        "new": "@master/css exposes createEngine({ manifest }) asynchronously, selects the native Rust binding, and returns an empty snapshot for an empty manifest.",
+        "packages": [
+          "css"
+        ],
+        "test": "packages/css/tests/facade.test.ts"
+      }
     },
     {
       "id": "rc87-1f6b98ec9c915131",
@@ -66501,14 +66535,45 @@
         "targetPackage": "compiler"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "approved-divergence",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-bee4d1e5c45c7230",
+            "package": "compiler",
+            "file": "packages/compiler/tests/stylesheet/style.test.ts",
+            "line": 541,
+            "title": "tracks default package artifacts as style dependencies",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "a0b7dd1f7d1305f28fa477e105435ca920c6db899258da22e373c5323fa6762e"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "approved-divergence",
+          "sourceDigest": "27c702411d534f9c1bb039d3a7b3fed1ddc5b349cfd89b932684374f152f3772",
+          "targets": [
+            {
+              "caseId": "rc87-bee4d1e5c45c7230",
+              "runner": "vitest",
+              "digest": "a0b7dd1f7d1305f28fa477e105435ca920c6db899258da22e373c5323fa6762e"
+            }
+          ],
+          "exceptionId": "rc87-stylesheet-explicit-preset-input"
+        }
       },
-      "divergence": null
+      "divergence": {
+        "id": "rc87-stylesheet-explicit-preset-input",
+        "reason": "The retired stylesheet package implicitly loaded preset artifacts. The compiler-owned stylesheet host now receives Manifest v1 explicitly and must not create hidden dependencies on generated preset files.",
+        "old": "Registering @import \"@master/css\" reports default-manifest.json and default-native.css as style dependencies.",
+        "new": "Registering the equivalent stylesheet with an explicit baseManifest reports neither generated preset artifact as a dependency.",
+        "packages": [
+          "compiler"
+        ],
+        "test": "packages/compiler/tests/stylesheet/style.test.ts"
+      }
     },
     {
       "id": "rc87-6f1201050a7c9e65",
@@ -66542,7 +66607,7 @@
             "id": "rc87-4ebd2ace8af1d9db",
             "package": "compiler",
             "file": "packages/compiler/tests/stylesheet/style.test.ts",
-            "line": 541,
+            "line": 559,
             "title": "removes top-level master style directives",
             "runner": "vitest",
             "kind": "test",
@@ -66599,7 +66664,7 @@
             "id": "rc87-37855e99f2739833",
             "package": "compiler",
             "file": "packages/compiler/tests/stylesheet/style.test.ts",
-            "line": 565,
+            "line": 583,
             "title": "treats an empty host source as an intentionally handled Master CSS import",
             "runner": "vitest",
             "kind": "test",
@@ -66644,7 +66709,7 @@
             "id": "rc87-9f4e40ffe5ff78a2",
             "package": "compiler",
             "file": "packages/compiler/tests/stylesheet/style.test.ts",
-            "line": 573,
+            "line": 591,
             "title": "keeps native imports before generated host CSS",
             "runner": "vitest",
             "kind": "test",
@@ -66689,7 +66754,7 @@
             "id": "rc87-84ddd72358a0a760",
             "package": "compiler",
             "file": "packages/compiler/tests/stylesheet/style.test.ts",
-            "line": 595,
+            "line": 613,
             "title": "preserves native import modifiers before generated host CSS",
             "runner": "vitest",
             "kind": "test",
@@ -66734,7 +66799,7 @@
             "id": "rc87-68e5ef2fb20016d4",
             "package": "compiler",
             "file": "packages/compiler/tests/stylesheet/style.test.ts",
-            "line": 611,
+            "line": 629,
             "title": "uses the managed CSS entry config and native CSS sources",
             "runner": "vitest",
             "kind": "test",
@@ -66779,7 +66844,7 @@
             "id": "rc87-95b456db06b9ae81",
             "package": "compiler",
             "file": "packages/compiler/tests/stylesheet/style.test.ts",
-            "line": 676,
+            "line": 694,
             "title": "keeps non-expandable native imports out of generated managed CSS",
             "runner": "vitest",
             "kind": "test",
@@ -66825,7 +66890,7 @@
             "id": "rc87-e0e7269305956adc",
             "package": "compiler",
             "file": "packages/compiler/tests/stylesheet/style.test.ts",
-            "line": 704,
+            "line": 722,
             "title": "reports emittedGlobals variables and animations emitted by the Master CSS entry",
             "runner": "vitest",
             "kind": "test",
@@ -66871,7 +66936,7 @@
             "id": "rc87-541c5b0c6e0b47d9",
             "package": "compiler",
             "file": "packages/compiler/tests/stylesheet/style.test.ts",
-            "line": 773,
+            "line": 791,
             "title": "does not preload inline theme tokens",
             "runner": "vitest",
             "kind": "test",
@@ -66918,7 +66983,7 @@
             "id": "rc87-37e34887ae098a1f",
             "package": "compiler",
             "file": "packages/compiler/tests/stylesheet/style.test.ts",
-            "line": 798,
+            "line": 816,
             "title": "emits static theme tokens and keyframes without class references",
             "runner": "vitest",
             "kind": "test",
@@ -66963,7 +67028,7 @@
             "id": "rc87-866deceef803b573",
             "package": "compiler",
             "file": "packages/compiler/tests/stylesheet/style.test.ts",
-            "line": 837,
+            "line": 855,
             "title": "prunes local CSS imports from Master CSS import roots by default",
             "runner": "vitest",
             "kind": "test",
@@ -67008,7 +67073,7 @@
             "id": "rc87-f14125a6e96736c0",
             "package": "compiler",
             "file": "packages/compiler/tests/stylesheet/style.test.ts",
-            "line": 884,
+            "line": 902,
             "title": "preserves native CSS when a Master CSS import root opts out of pruning",
             "runner": "vitest",
             "kind": "test",
@@ -67053,7 +67118,7 @@
             "id": "rc87-c709d394d3355b26",
             "package": "compiler",
             "file": "packages/compiler/tests/stylesheet/style.test.ts",
-            "line": 918,
+            "line": 936,
             "title": "preserves imported native CSS when a root graph opts out of pruning",
             "runner": "vitest",
             "kind": "test",
@@ -67098,7 +67163,7 @@
             "id": "rc87-1b7a6aaf1adc7f15",
             "package": "compiler",
             "file": "packages/compiler/tests/stylesheet/style.test.ts",
-            "line": 954,
+            "line": 972,
             "title": "can emit pruned native CSS without generated Master CSS",
             "runner": "vitest",
             "kind": "test",
@@ -67143,7 +67208,7 @@
             "id": "rc87-018e756d6b009936",
             "package": "compiler",
             "file": "packages/compiler/tests/stylesheet/style.test.ts",
-            "line": 983,
+            "line": 1001,
             "title": "keeps package base CSS without generated utilities for Master CSS imports",
             "runner": "vitest",
             "kind": "test",
@@ -67188,7 +67253,7 @@
             "id": "rc87-c5baf35a4ef8f560",
             "package": "compiler",
             "file": "packages/compiler/tests/stylesheet/style.test.ts",
-            "line": 1013,
+            "line": 1031,
             "title": "returns empty CSS when generated output is disabled without style sources",
             "runner": "vitest",
             "kind": "test",

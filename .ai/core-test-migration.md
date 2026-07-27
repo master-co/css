@@ -40,9 +40,10 @@ Current audit summary:
 - `covered-representative` rows are deliberately scoped to legacy files whose exact assertions are either covered by the generated rule parity suite or whose former helper/API surface is no longer public.
 - `dropped-removed-api` rows must stay documented because the old JS Config runtime API is intentionally gone.
 - Inline-alias audit: 55 mechanically discovered old assertions still expect `var(...)` for `@theme inline` aliases such as `black`, `white`, `current`, `full`, `fit`, `max`, and `min`; these are documented behavior divergences, not exact migrations.
-- The rc.87 package-wide ledger currently verifies 724 cases: 606 through the
-  unique source-identical path and 118 through pinned rc.87 golden evidence.
-  Historical `covered-*` labels below do not promote any case by themselves.
+- The rc.87 package-wide ledger currently closes 726 cases: 606 through the
+  unique source-identical path, 118 through pinned rc.87 golden evidence, and
+  2 through individually approved divergences. Historical `covered-*` labels
+  below do not promote any case by themselves.
 
 Manifest IR behavior findings:
 

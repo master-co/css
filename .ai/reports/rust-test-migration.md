@@ -6,7 +6,7 @@ The machine-readable source of truth is `parity/ts-test-migration-ledger.json`.
 ## Frozen baseline
 
 - Public and semantic source baseline: `v2.0.0-rc.87@9cc3e8b5f2e34d5220f10f27ed5ce8186fbcb524`.
-- Rust target candidate: `latest-target-change@ba23b07c0fe8c09c039c6486fa74d8af083731be`.
+- Rust target candidate: `latest-target-change@995a48ba5cb7476527e65e84a9b18f39935d1f75`.
 - Scope: executable tests and E2E cases under `packages/*`; examples, site, and benchmarks are not migration denominators.
 - Newer rc changes are an overlay only and never replace rc.87 expectations.
 
@@ -20,7 +20,7 @@ The machine-readable source of truth is `parity/ts-test-migration-ledger.json`.
 | rc.87 expanded cases | 1546 |
 | Expanded parameter and RuleTester cases | 349 |
 | Unresolved runtime matrices | 0 |
-| Rust target cases collected | 1161 |
+| Rust target cases collected | 1163 |
 | Target-only cases | 156 |
 
 The old 114-test takeover ledger is an engine-only historical subset. Its semantic
@@ -30,7 +30,8 @@ capture commit `ef1a7c851` is not substituted for rc.87.
 
 | Status | Count |
 |---|---:|
-| gap | 436 |
+| approved-divergence | 2 |
+| gap | 434 |
 | mapped-unverified | 376 |
 | source-inactive | 10 |
 | verified-exact | 724 |
@@ -38,22 +39,23 @@ capture commit `ef1a7c851` is not substituted for rc.87.
 | Candidate coverage | Count |
 |---|---:|
 | candidate-all | 376 |
-| evidence | 118 |
+| evidence | 120 |
 | exact-source | 606 |
-| none | 446 |
+| none | 444 |
 
 | Verification proof | Count |
 |---|---:|
+| approved-divergence | 2 |
 | exact-source | 606 |
 | rc87-golden | 118 |
 
 | Priority | Cases | Gaps |
 |---|---:|---:|
-| P0 | 676 | 39 |
+| P0 | 676 | 37 |
 | P1 | 732 | 390 |
 | P2 | 138 | 7 |
 | P3 | 0 | 0 |
-Verified active cases: 724/1536.
+Verified active cases: 726/1536.
 
 `mapped-unverified` means that an executable target candidate or takeover reference
 exists. It does not claim parity. `exact-source` requires one identical executable
@@ -73,7 +75,7 @@ Ambiguous candidates remain incomplete until evidence selects a target explicitl
 | `engine` | 184 | 184 | 0 | 0 | 184 | 0 |
 | `eslint-config` | 2 | 0 | 2 | 0 | 0 | 2 |
 | `eslint-plugin` | 226 | 4 | 222 | 0 | 226 | 0 |
-| `facade` | 1 | 1 | 0 | 0 | 0 | 1 |
+| `facade` | 1 | 1 | 0 | 0 | 1 | 0 |
 | `figma` | 1 | 0 | 0 | 1 | 1 | 0 |
 | `integration` | 11 | 11 | 0 | 0 | 10 | 1 |
 | `language` | 78 | 0 | 78 | 0 | 9 | 69 |
@@ -91,7 +93,7 @@ Ambiguous candidates remain incomplete until evidence selects a target explicitl
 | `schema` | 2 | 0 | 2 | 0 | 2 | 0 |
 | `server` | 36 | 36 | 0 | 0 | 25 | 11 |
 | `source` | 13 | 1 | 12 | 0 | 0 | 13 |
-| `stylesheet` | 48 | 48 | 0 | 0 | 47 | 1 |
+| `stylesheet` | 48 | 48 | 0 | 0 | 48 | 0 |
 | `svelte` | 9 | 9 | 0 | 0 | 2 | 7 |
 | `validator` | 8 | 0 | 8 | 0 | 3 | 5 |
 | `vite` | 92 | 92 | 0 | 0 | 91 | 1 |
@@ -109,12 +111,11 @@ Ambiguous candidates remain incomplete until evidence selects a target explicitl
 
 ## P0 gaps
 
-The full list is in the JSON ledger; the first 39 are shown here.
+The full list is in the JSON ledger; the first 37 are shown here.
 
 | Source | rc.87 case | Domains |
 |---|---|---|
 | `packages/astro/tests/core.test.ts:85` | honors injectRuntime=false in progressive mode | integration, rendering-modes |
-| `packages/facade/tests/facade.test.ts:4` | @master/css re-exports the manifest-driven engine facade | authoring, css-bytes |
 | `packages/integration/tests/client-types.test.ts:12` | provides types for Master CSS integration virtual modules | integration, rendering-modes |
 | `packages/language-server/tests/runtime.test.ts:12` | uses a resolved workspace Master CSS runtime when available | language-authoring, rendering-modes |
 | `packages/language-server/tests/runtime.test.ts:23` | falls back to the bundled runtime when workspace packages are missing | language-authoring, rendering-modes |
@@ -142,7 +143,6 @@ The full list is in the JSON ledger; the first 39 are shown here.
 | `packages/server/tests/html.test.ts:162` | can skip returning and injecting the hydration manifest | authoring, css-bytes, rendering-modes, server-rendering |
 | `packages/server/tests/html.test.ts:173` | removes an empty master style when hydration manifest injection is requested | authoring, css-bytes, rendering-modes, server-rendering |
 | `packages/source/tests/adapters.test.ts:27` | extracts static classes from JavaScript and TypeScript syntax with Oxc | rendering-modes, syntax-css-semantics, syntax-extraction |
-| `packages/stylesheet/tests/style.test.ts:491` | tracks default package artifacts as style dependencies | authoring, css-bytes |
 | `packages/svelte/tests/server.test.ts:24` | injects collected CSS when the head closes | integration, rendering-modes |
 | `packages/svelte/tests/server.test.ts:42` | keeps streaming after early injection and leaves later classes to hydration | integration, rendering-modes, syntax-css-semantics |
 | `packages/svelte/tests/server.test.ts:55` | supports an external hydration manifest writer | authoring, integration, rendering-modes |
