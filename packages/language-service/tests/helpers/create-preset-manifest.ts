@@ -59,7 +59,9 @@ function normalizeUtility(utility: ManifestUtilityDraft, order: number): NonNull
   }
 }
 
-export function createPresetManifest(manifest: PresetManifestInput = {}): MasterCSSManifest {
+export function createPresetManifest(
+  manifest: PresetManifestInput | MasterCSSManifest = {}
+): MasterCSSManifest {
   if (manifest.version === 1) return manifest as MasterCSSManifest
   const defaultUtilities = defaultManifest.utilities || []
   const utilities = (manifest.utilities || []).map((utility, index) => normalizeUtility(utility as ManifestUtilityDraft, defaultUtilities.length + index))

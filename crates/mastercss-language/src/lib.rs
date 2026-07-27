@@ -284,6 +284,304 @@ fn push_semantic_token(
     });
 }
 
+fn value_identifier_end(value: &str, start: usize) -> usize {
+    let mut end = start;
+    for character in value[start..].chars() {
+        if character.is_alphanumeric() || matches!(character, '_' | '-' | '.') {
+            end += character.len_utf8();
+        } else {
+            break;
+        }
+    }
+    end
+}
+
+fn push_value_semantic_tokens(
+    tokens: &mut Vec<SemanticTokenInputIr>,
+    value: &str,
+    offset: u32,
+    variable_names: &HashSet<String>,
+) {
+    let mut byte_index = 0;
+    while byte_index < value.len() {
+        let suffix = &value[byte_index..];
+        let character = suffix.chars().next().unwrap_or_default();
+        let start = offset + utf16_len(&value[..byte_index]);
+        if character.is_whitespace() {
+            byte_index += character.len_utf8();
+            continue;
+        }
+        if matches!(character, '\'' | '"') {
+            let quote = character;
+            let quote_length = quote.len_utf8();
+            push_semantic_token(tokens, start, start + 1, "string", &["quoted"]);
+            let content_start = byte_index + quote_length;
+            let mut content_end = content_start;
+            let mut escaped = false;
+            for next in value[content_start..].chars() {
+                if escaped {
+                    escaped = false;
+                } else if next == '\\' {
+                    escaped = true;
+                } else if next == quote {
+                    break;
+                }
+                content_end += next.len_utf8();
+            }
+            push_semantic_token(
+                tokens,
+                offset + utf16_len(&value[..content_start]),
+                offset + utf16_len(&value[..content_end]),
+                "string",
+                &["quoted"],
+            );
+            if content_end < value.len() {
+                let close = offset + utf16_len(&value[..content_end]);
+                push_semantic_token(tokens, close, close + 1, "string", &["quoted"]);
+                byte_index = content_end + quote_length;
+            } else {
+                byte_index = content_end;
+            }
+            continue;
+        }
+        if character == '$' {
+            let end = value_identifier_end(value, byte_index + 1);
+            push_semantic_token(
+                tokens,
+                start,
+                offset + utf16_len(&value[..end]),
+                "variable",
+                &[],
+            );
+            byte_index = end;
+            continue;
+        }
+        let number_start = character.is_ascii_digit()
+            || (character == '.'
+                && suffix
+                    .chars()
+                    .nth(1)
+                    .is_some_and(|next| next.is_ascii_digit()))
+            || (character == '-'
+                && suffix
+                    .chars()
+                    .nth(1)
+                    .is_some_and(|next| next.is_ascii_digit()));
+        if number_start {
+            let mut end = byte_index + character.len_utf8();
+            for next in value[end..].chars() {
+                if next.is_ascii_digit() || next == '.' {
+                    end += next.len_utf8();
+                } else {
+                    break;
+                }
+            }
+            push_semantic_token(
+                tokens,
+                start,
+                offset + utf16_len(&value[..end]),
+                "number",
+                &[],
+            );
+            let unit_end = value_identifier_end(value, end);
+            if unit_end > end {
+                push_semantic_token(
+                    tokens,
+                    offset + utf16_len(&value[..end]),
+                    offset + utf16_len(&value[..unit_end]),
+                    "enumMember",
+                    &["unit"],
+                );
+            }
+            byte_index = unit_end;
+            continue;
+        }
+        if character.is_alphabetic() || matches!(character, '_' | '-') {
+            let end = value_identifier_end(value, byte_index);
+            let name = &value[byte_index..end];
+            if value[end..].starts_with('(') {
+                push_semantic_token(
+                    tokens,
+                    start,
+                    offset + utf16_len(&value[..end]),
+                    "function",
+                    &[],
+                );
+                let open = offset + utf16_len(&value[..end]);
+                push_semantic_token(tokens, open, open + 1, "operator", &["functionPunctuation"]);
+                if name == "url" {
+                    let content_start = end + 1;
+                    let content_end = value[content_start..]
+                        .find(')')
+                        .map_or(value.len(), |close| content_start + close);
+                    push_semantic_token(
+                        tokens,
+                        offset + utf16_len(&value[..content_start]),
+                        offset + utf16_len(&value[..content_end]),
+                        "string",
+                        &[],
+                    );
+                    if content_end < value.len() {
+                        let close = offset + utf16_len(&value[..content_end]);
+                        push_semantic_token(
+                            tokens,
+                            close,
+                            close + 1,
+                            "operator",
+                            &["functionPunctuation"],
+                        );
+                        byte_index = content_end + 1;
+                    } else {
+                        byte_index = content_end;
+                    }
+                } else {
+                    byte_index = end + 1;
+                }
+            } else {
+                push_semantic_token(
+                    tokens,
+                    start,
+                    offset + utf16_len(&value[..end]),
+                    if variable_names.contains(name) {
+                        "variable"
+                    } else {
+                        "enumMember"
+                    },
+                    &[],
+                );
+                byte_index = end;
+            }
+            continue;
+        }
+        if matches!(character, '|' | '/' | ',') {
+            push_semantic_token(tokens, start, start + 1, "operator", &["valueSeparator"]);
+        } else if matches!(character, '(' | ')') {
+            push_semantic_token(
+                tokens,
+                start,
+                start + 1,
+                "operator",
+                &["functionPunctuation"],
+            );
+        }
+        byte_index += character.len_utf8();
+    }
+}
+
+fn push_query_value_token(
+    tokens: &mut Vec<SemanticTokenInputIr>,
+    query: &str,
+    offset: u32,
+    start: usize,
+    end: usize,
+    property: bool,
+) {
+    if start >= end {
+        return;
+    }
+    let text = &query[start..end];
+    let number_end = text
+        .char_indices()
+        .take_while(|(_, character)| character.is_ascii_digit() || *character == '.')
+        .map(|(index, character)| index + character.len_utf8())
+        .last()
+        .unwrap_or_default();
+    if number_end > 0 {
+        push_semantic_token(
+            tokens,
+            offset + utf16_len(&query[..start]),
+            offset + utf16_len(&query[..start + number_end]),
+            "number",
+            &["query"],
+        );
+        if start + number_end < end {
+            push_semantic_token(
+                tokens,
+                offset + utf16_len(&query[..start + number_end]),
+                offset + utf16_len(&query[..end]),
+                "enumMember",
+                &["query", "unit"],
+            );
+        }
+    } else {
+        push_semantic_token(
+            tokens,
+            offset + utf16_len(&query[..start]),
+            offset + utf16_len(&query[..end]),
+            if property { "property" } else { "enumMember" },
+            &["query"],
+        );
+    }
+}
+
+fn push_query_semantic_tokens(tokens: &mut Vec<SemanticTokenInputIr>, query: &str, offset: u32) {
+    let keyword_end = query[1..]
+        .char_indices()
+        .take_while(|(_, character)| character.is_alphanumeric() || matches!(character, '-' | '_'))
+        .map(|(index, character)| 1 + index + character.len_utf8())
+        .last()
+        .unwrap_or(1);
+    let has_structure = query[keyword_end..]
+        .chars()
+        .any(|character| matches!(character, '(' | '>' | '<' | '=' | '&'));
+    if !has_structure {
+        push_semantic_token(
+            tokens,
+            offset,
+            offset + utf16_len(query),
+            "keyword",
+            &["query"],
+        );
+        return;
+    }
+    push_semantic_token(
+        tokens,
+        offset,
+        offset + utf16_len(&query[..keyword_end]),
+        "keyword",
+        &["query"],
+    );
+    let mut byte_index = keyword_end;
+    let mut expect_property = false;
+    while byte_index < query.len() {
+        let suffix = &query[byte_index..];
+        let character = suffix.chars().next().unwrap_or_default();
+        let start = offset + utf16_len(&query[..byte_index]);
+        if matches!(character, '(' | ')' | ':') {
+            push_semantic_token(
+                tokens,
+                start,
+                start + 1,
+                "operator",
+                &["query", "queryPunctuation"],
+            );
+            expect_property = character == '(' && &query[..keyword_end] == "@media";
+            byte_index += 1;
+        } else if matches!(character, '&' | '>' | '<' | '=') {
+            let mut end = byte_index + 1;
+            if matches!(character, '>' | '<') && query[end..].starts_with('=') {
+                end += 1;
+            }
+            push_semantic_token(
+                tokens,
+                start,
+                offset + utf16_len(&query[..end]),
+                "operator",
+                &["query", "queryOperator"],
+            );
+            expect_property = character == '&';
+            byte_index = end;
+        } else if character.is_alphanumeric() || matches!(character, '-' | '.') {
+            let end = value_identifier_end(query, byte_index);
+            push_query_value_token(tokens, query, offset, byte_index, end, expect_property);
+            expect_property = false;
+            byte_index = end;
+        } else {
+            byte_index += character.len_utf8();
+        }
+    }
+}
+
 fn state_identifier_end(state: &str, start: usize, allow_star: bool) -> usize {
     let mut end = start;
     if allow_star && state[end..].starts_with('*') {
@@ -378,16 +676,8 @@ fn push_state_semantic_tokens(tokens: &mut Vec<SemanticTokenInputIr>, state: &st
             );
             byte_index += character_length;
         } else if character == '@' {
-            let end = suffix[1..]
-                .find('@')
-                .map_or(state.len(), |end| byte_index + 1 + end);
-            push_semantic_token(
-                tokens,
-                start,
-                offset + utf16_len(&state[..end]),
-                "keyword",
-                &["query"],
-            );
+            let end = state.len();
+            push_query_semantic_tokens(tokens, &state[byte_index..end], start);
             byte_index = end;
         } else if character == ':' {
             let delimiter_length = if suffix.starts_with("::") { 2 } else { 1 };
@@ -757,6 +1047,22 @@ impl LanguageSession {
 
         let semantics = self.engine.inspect_class_semantics(class_name)?;
         if semantics.kind == ClassSemanticKind::Unknown {
+            for (index, character) in class_name.char_indices() {
+                if !matches!(character, ':' | '_' | '>' | '+' | '~' | '@') || index == 0 {
+                    continue;
+                }
+                let base = &class_name[..index];
+                if self.engine.inspect_class_semantics(base)?.kind == ClassSemanticKind::Unknown {
+                    continue;
+                }
+                self.push_class_semantic_tokens(base, token_start, tokens)?;
+                push_state_semantic_tokens(
+                    tokens,
+                    &class_name[index..],
+                    token_start + utf16_len(base),
+                );
+                return Ok(());
+            }
             return Ok(());
         }
         let state_length = semantics
@@ -776,13 +1082,9 @@ impl LanguageSession {
                 "class",
                 &["declaration", "component"],
             ),
-            ClassSemanticKind::Semantic | ClassSemanticKind::Pattern => push_semantic_token(
-                tokens,
-                token_start,
-                base_end,
-                "enumMember",
-                &["declaration"],
-            ),
+            ClassSemanticKind::Semantic | ClassSemanticKind::Pattern => {
+                push_semantic_token(tokens, token_start, base_end, "enumMember", &[])
+            }
             ClassSemanticKind::Declaration => {
                 if let Some(key) = semantics.key_token.as_deref() {
                     let key_length = utf16_len(key.trim_end_matches(':'));
@@ -804,20 +1106,11 @@ impl LanguageSession {
                     }
                     if let Some(value) = semantics.value_token.as_deref() {
                         let value_start = token_start + utf16_len(key);
-                        let token_type =
-                            if value.starts_with('$') || self.variable_names.contains(value) {
-                                "variable"
-                            } else if value.parse::<f64>().is_ok() {
-                                "number"
-                            } else {
-                                "enumMember"
-                            };
-                        push_semantic_token(
+                        push_value_semantic_tokens(
                             tokens,
+                            value,
                             value_start,
-                            value_start + utf16_len(value),
-                            token_type,
-                            &[],
+                            &self.variable_names,
                         );
                     }
                 }
@@ -1055,7 +1348,9 @@ fn collect_document_contexts(
     }
     let mut contexts = Vec::new();
     if matches!(language_id.as_str(), "css" | "scss" | "less") {
-        collect_css_directive_contexts(source, &mut contexts);
+        collect_css_directive_contexts(source, 0, &mut contexts);
+    } else if matches!(language_id.as_str(), "vue" | "svelte" | "astro") {
+        collect_sfc_style_contexts(source, &mut contexts);
     }
     if matches!(
         language_id.as_str(),
@@ -1069,11 +1364,13 @@ fn collect_document_contexts(
             | "typescript"
             | "javascriptreact"
             | "typescriptreact"
+            | "html"
             | "vue"
             | "svelte"
             | "astro"
     ) {
         collect_script_string_contexts(source, &mut contexts, settings);
+        collect_braced_class_bindings(source, &mut contexts);
     }
     contexts
 }
@@ -1169,13 +1466,20 @@ fn collect_markup_attribute_contexts(
             end += 1;
         }
         if names.contains(&name) && end < bytes.len() {
-            push_byte_context(
-                source,
-                contexts,
-                index + 1,
-                end,
-                vec![(quote as char).to_string()],
-            );
+            if matches!(
+                name.as_str(),
+                ":class" | "v-bind:class" | "[class]" | "[classname]" | "[ngclass]"
+            ) {
+                collect_nested_string_contexts(source, index + 1, end, contexts);
+            } else {
+                push_byte_context(
+                    source,
+                    contexts,
+                    index + 1,
+                    end,
+                    vec![(quote as char).to_string()],
+                );
+            }
         }
         index = end.saturating_add(1);
     }
@@ -1215,6 +1519,7 @@ fn collect_script_string_contexts(
         if !declaration.is_empty() {
             patterns.push(format!("{declaration}="));
             patterns.push(format!("{declaration} ="));
+            patterns.push(format!("{declaration}:"));
         }
     }
     let mut index = 0;
@@ -1224,11 +1529,87 @@ fn collect_script_string_contexts(
             index += 1;
             continue;
         }
-        let prefix_start = index.saturating_sub(80);
+        let inside_html_comment = source[..index].rfind("<!--").is_some_and(|comment_start| {
+            source[..index]
+                .rfind("-->")
+                .is_none_or(|comment_end| comment_end < comment_start)
+        });
+        if inside_html_comment {
+            index += 1;
+            continue;
+        }
+        let line_start = source[..index]
+            .rfind(['\n', '\r'])
+            .map_or(0, |line| line + 1);
+        if source[line_start..index].trim_start().starts_with("//") {
+            index += 1;
+            continue;
+        }
+        let prefix_start = index.saturating_sub(512);
         let prefix = source[prefix_start..index].to_ascii_lowercase();
-        let likely_class = patterns
-            .iter()
-            .any(|pattern| prefix.trim_end().ends_with(pattern));
+        let compact_prefix = prefix
+            .chars()
+            .filter(|character| !character.is_ascii_whitespace())
+            .collect::<String>();
+        let binding_expression = compact_prefix.ends_with(":class=")
+            || compact_prefix.ends_with("v-bind:class=")
+            || compact_prefix.ends_with("class:list=");
+        let direct_class = !binding_expression
+            && patterns.iter().any(|pattern| {
+                let compact_pattern = pattern
+                    .chars()
+                    .filter(|character| !character.is_ascii_whitespace())
+                    .collect::<String>();
+                compact_prefix
+                    .trim_end_matches('{')
+                    .ends_with(&compact_pattern)
+            });
+        let in_class_call = patterns.iter().any(|pattern| {
+            let compact_pattern = pattern
+                .chars()
+                .filter(|character| !character.is_ascii_whitespace())
+                .collect::<String>();
+            let Some(call) = compact_pattern.strip_suffix('(') else {
+                return false;
+            };
+            let Some(start) = compact_prefix.rfind(&format!("{call}(")) else {
+                return false;
+            };
+            let suffix = &compact_prefix[start + call.len()..];
+            suffix
+                .chars()
+                .fold(0_i32, |depth, character| match character {
+                    '(' => depth + 1,
+                    ')' => depth - 1,
+                    _ => depth,
+                })
+                > 0
+        });
+        let styled_template = quote == b'`'
+            && compact_prefix.rfind("styled").is_some_and(|start| {
+                compact_prefix[start + "styled".len()..]
+                    .chars()
+                    .all(|character| {
+                        character.is_ascii_alphanumeric() || matches!(character, '_' | '$' | '.')
+                    })
+            });
+        let styled_call = compact_prefix.rfind("styled").is_some_and(|start| {
+            let suffix = &compact_prefix[start + "styled".len()..];
+            let Some(open) = suffix.find('(') else {
+                return false;
+            };
+            suffix[..open].chars().all(|character| {
+                character.is_ascii_alphanumeric() || matches!(character, '_' | '$' | '.')
+            }) && suffix[open..]
+                .chars()
+                .fold(0_i32, |depth, character| match character {
+                    '(' => depth + 1,
+                    ')' => depth - 1,
+                    _ => depth,
+                })
+                > 0
+        });
+        let likely_class = direct_class || in_class_call || styled_call || styled_template;
         let mut end = index + 1;
         let mut escaped = false;
         let mut interpolation = false;
@@ -1257,38 +1638,190 @@ fn collect_script_string_contexts(
     }
 }
 
-fn collect_css_directive_contexts(source: &str, contexts: &mut Vec<ClassListContextIr>) {
-    for directive in ["@compose", "@safelist"] {
-        let mut cursor = 0;
-        while let Some(relative) = source[cursor..].find(directive) {
-            let start = cursor + relative + directive.len();
-            let Some(relative_end) = source[start..].find(';') else {
-                break;
-            };
-            let end = start + relative_end;
-            let mut content_start = start;
-            let mut content_end = end;
-            while content_start < content_end
-                && source.as_bytes()[content_start].is_ascii_whitespace()
-            {
-                content_start += 1;
-            }
-            while content_end > content_start
-                && source.as_bytes()[content_end - 1].is_ascii_whitespace()
-            {
-                content_end -= 1;
-            }
-            if directive == "@safelist"
-                && content_end > content_start + 1
-                && matches!(source.as_bytes()[content_start], b'\'' | b'"')
-                && source.as_bytes()[content_end - 1] == source.as_bytes()[content_start]
-            {
-                content_start += 1;
-                content_end -= 1;
-            }
-            push_byte_context(source, contexts, content_start, content_end, Vec::new());
-            cursor = end + 1;
+fn collect_nested_string_contexts(
+    source: &str,
+    start: usize,
+    end: usize,
+    contexts: &mut Vec<ClassListContextIr>,
+) {
+    let bytes = source.as_bytes();
+    let mut index = start;
+    while index < end {
+        let quote = bytes[index];
+        if !matches!(quote, b'\'' | b'"' | b'`') {
+            index += 1;
+            continue;
         }
+        let mut cursor = index + 1;
+        let mut escaped = false;
+        let mut segment_start = cursor;
+        while cursor < end {
+            if escaped {
+                escaped = false;
+                cursor += 1;
+                continue;
+            }
+            if bytes[cursor] == b'\\' {
+                escaped = true;
+                cursor += 1;
+                continue;
+            }
+            if quote == b'`' && bytes[cursor] == b'$' && bytes.get(cursor + 1) == Some(&b'{') {
+                if segment_start < cursor {
+                    push_byte_context(
+                        source,
+                        contexts,
+                        segment_start,
+                        cursor,
+                        vec!["`".to_owned()],
+                    );
+                }
+                let expression_start = cursor + 2;
+                let mut expression_end = expression_start;
+                let mut depth = 1_u32;
+                while expression_end < end && depth > 0 {
+                    match bytes[expression_end] {
+                        b'{' => depth += 1,
+                        b'}' => depth -= 1,
+                        _ => {}
+                    }
+                    expression_end += 1;
+                }
+                let inner_end = expression_end.saturating_sub(1);
+                collect_nested_string_contexts(source, expression_start, inner_end, contexts);
+                cursor = expression_end;
+                segment_start = cursor;
+                continue;
+            }
+            if bytes[cursor] == quote {
+                if segment_start <= cursor {
+                    push_byte_context(
+                        source,
+                        contexts,
+                        segment_start,
+                        cursor,
+                        vec![(quote as char).to_string()],
+                    );
+                }
+                cursor += 1;
+                break;
+            }
+            cursor += 1;
+        }
+        index = cursor.max(index + 1);
+    }
+}
+
+fn collect_braced_class_bindings(source: &str, contexts: &mut Vec<ClassListContextIr>) {
+    let lower = source.to_ascii_lowercase();
+    for name in ["class", "classname", "class:list"] {
+        let mut cursor = 0;
+        while let Some(relative) = lower[cursor..].find(name) {
+            let name_start = cursor + relative;
+            let mut expression = name_start + name.len();
+            while source
+                .as_bytes()
+                .get(expression)
+                .is_some_and(u8::is_ascii_whitespace)
+            {
+                expression += 1;
+            }
+            if source.as_bytes().get(expression) != Some(&b'=') {
+                cursor = name_start + name.len();
+                continue;
+            }
+            expression += 1;
+            while source
+                .as_bytes()
+                .get(expression)
+                .is_some_and(u8::is_ascii_whitespace)
+            {
+                expression += 1;
+            }
+            if source.as_bytes().get(expression) != Some(&b'{') {
+                cursor = expression;
+                continue;
+            }
+            let mut end = expression + 1;
+            let mut depth = 1_u32;
+            while end < source.len() && depth > 0 {
+                match source.as_bytes()[end] {
+                    b'{' => depth += 1,
+                    b'}' => depth -= 1,
+                    _ => {}
+                }
+                end += 1;
+            }
+            collect_nested_string_contexts(source, expression + 1, end.saturating_sub(1), contexts);
+            cursor = end;
+        }
+    }
+}
+
+fn collect_css_directive_contexts(
+    source: &str,
+    offset: u32,
+    contexts: &mut Vec<ClassListContextIr>,
+) {
+    for directive in find_css_directive_ranges(source) {
+        if directive.name == "compose" {
+            if directive.block_range.is_some() || !directive.quoted_string_ranges.is_empty() {
+                continue;
+            }
+            let Some(mut start) = utf16_to_byte_offset(source, directive.prelude_range.start)
+            else {
+                continue;
+            };
+            let Some(mut end) = utf16_to_byte_offset(source, directive.prelude_range.end) else {
+                continue;
+            };
+            while start < end && source.as_bytes()[start].is_ascii_whitespace() {
+                start += 1;
+            }
+            while end > start && source.as_bytes()[end - 1].is_ascii_whitespace() {
+                end -= 1;
+            }
+            let Some(start) = byte_to_utf16_offset(source, start) else {
+                continue;
+            };
+            let Some(end) = byte_to_utf16_offset(source, end) else {
+                continue;
+            };
+            contexts.push(ClassListContextIr {
+                start: offset + start,
+                end: offset + end,
+                unescape: Vec::new(),
+            });
+        } else if directive.name == "safelist" {
+            for quoted in directive.quoted_string_ranges {
+                contexts.push(ClassListContextIr {
+                    start: offset + quoted.content_range.start,
+                    end: offset + quoted.content_range.end,
+                    unescape: Vec::new(),
+                });
+            }
+        }
+    }
+}
+
+fn collect_sfc_style_contexts(source: &str, contexts: &mut Vec<ClassListContextIr>) {
+    let lower = source.to_ascii_lowercase();
+    let mut cursor = 0;
+    while let Some(relative_open) = lower[cursor..].find("<style") {
+        let open = cursor + relative_open;
+        let Some(relative_body) = source[open..].find('>') else {
+            break;
+        };
+        let body_start = open + relative_body + 1;
+        let Some(relative_close) = lower[body_start..].find("</style>") else {
+            break;
+        };
+        let body_end = body_start + relative_close;
+        let Some(offset) = byte_to_utf16_offset(source, body_start) else {
+            break;
+        };
+        collect_css_directive_contexts(&source[body_start..body_end], offset, contexts);
+        cursor = body_end + "</style>".len();
     }
 }
 
@@ -1313,6 +1846,21 @@ pub fn collect_class_positions(
             return Err(LanguageError::InvalidRange);
         }
         let class_list = &source[start..end];
+        if class_list.is_empty() {
+            positions.push(ClassPositionIr {
+                range: SourceRange {
+                    start: context.start,
+                    end: context.start,
+                },
+                context_range: SourceRange {
+                    start: context.start,
+                    end: context.end,
+                },
+                token: String::new(),
+                raw: String::new(),
+            });
+            continue;
+        }
         for range in collect_class_list_token_ranges(class_list) {
             let raw_start = utf16_to_byte_offset(class_list, range.range.start)
                 .ok_or(LanguageError::InvalidRange)?;

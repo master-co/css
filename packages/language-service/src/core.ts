@@ -89,8 +89,26 @@ export class MasterCSSLanguageService implements Disposable {
     position: Position
   ): MasterCSSLanguageClassPosition | undefined {
     const offset = document.offsetAt(position)
-    return this.analyzeDocumentClassPositions(document)
-      .find(({ range }) => offset >= range.start && offset <= range.end)
+    const classPositions = this.analyzeDocumentClassPositions(document)
+    const exact = classPositions
+      .filter(({ range }) => offset >= range.start && offset <= range.end)
+      .sort((left, right) =>
+        (left.range.end - left.range.start) - (right.range.end - right.range.start)
+      )[0]
+    if (exact) return exact
+
+    const context = classPositions.find(({ contextRange }) =>
+      offset >= contextRange.start && offset <= contextRange.end
+    )
+    const source = document.getText()
+    if (context && (offset === context.contextRange.start || /\s/u.test(source[offset - 1] || ''))) {
+      return {
+        range: { start: offset, end: offset },
+        contextRange: context.contextRange,
+        raw: '',
+        token: ''
+      }
+    }
   }
 
   getClassContextPositions(

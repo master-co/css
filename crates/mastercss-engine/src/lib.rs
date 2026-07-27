@@ -2941,6 +2941,109 @@ fn push_value_completion_candidate(
     );
 }
 
+fn completion_numeric_value(variable: &CompiledVariable, root_size: f64) -> Option<f64> {
+    let numeric = variable.numeric.as_ref()?.as_object()?;
+    let value = numeric.get("value")?.as_f64()?;
+    match numeric.get("unit").and_then(Value::as_str) {
+        Some("rem") => Some(value * root_size),
+        Some("") | Some("px") | None => Some(value),
+        _ => None,
+    }
+}
+
+fn variable_completion_sort_text(
+    variable: &CompiledVariable,
+    label: &str,
+    root_size: f64,
+) -> String {
+    if variable.namespace.starts_with("color") {
+        let (prefix, shade) = label
+            .rsplit_once('-')
+            .filter(|(_, shade)| shade.chars().all(|character| character.is_ascii_digit()))
+            .unwrap_or((label, ""));
+        return if shade.is_empty() {
+            format!("aaaa-color-{prefix}-zzzz")
+        } else {
+            format!("aaaa-color-{prefix}-{:0>10}", shade)
+        };
+    }
+    if let Some(value) = completion_numeric_value(variable, root_size) {
+        return format!("aaaa-{}-{value:020.8}", variable.namespace);
+    }
+    format!("aaaa{label}")
+}
+
+fn push_utility_value_completion_candidates(
+    candidates: &mut Vec<EngineClassCompletionCandidate>,
+    labels: &mut HashSet<String>,
+    manifest: &ManifestProjection,
+    utility: &UtilityDefinition,
+    keys: &[String],
+) {
+    for (value_key, variable_name) in &utility.variable_entries {
+        let Some(variable) = manifest.compiled_variables.get(variable_name) else {
+            continue;
+        };
+        for key in keys {
+            let label = format!("{key}:{value_key}");
+            push_class_completion_candidate(
+                candidates,
+                labels,
+                EngineClassCompletionCandidate {
+                    label: label.clone(),
+                    kind: EngineClassCompletionKind::Value,
+                    detail: Some(format!(
+                        "(scope) {}",
+                        variable.value.as_deref().unwrap_or(variable.name.as_str())
+                    )),
+                    documentation_class_name: Some(label),
+                    sort_text: Some(variable_completion_sort_text(
+                        variable,
+                        value_key,
+                        manifest.settings.root_size,
+                    )),
+                    trigger_suggest: false,
+                },
+            );
+        }
+    }
+    let animation_property = match &utility.emit {
+        UtilityEmit::Property { property } => {
+            matches!(property.as_str(), "animation" | "animation-name")
+        }
+        UtilityEmit::Declarations { declarations } => declarations
+            .iter()
+            .any(|property| matches!(property.as_str(), "animation" | "animation-name")),
+        UtilityEmit::Template { declarations } => declarations
+            .keys()
+            .any(|property| matches!(property.as_str(), "animation" | "animation-name")),
+        UtilityEmit::Static { rules } => rules.iter().any(|rule| {
+            rule.declarations
+                .keys()
+                .any(|property| matches!(property.as_str(), "animation" | "animation-name"))
+        }),
+    };
+    if animation_property {
+        for animation_name in manifest.animations.keys() {
+            for key in keys {
+                let label = format!("{key}:{animation_name}");
+                push_class_completion_candidate(
+                    candidates,
+                    labels,
+                    EngineClassCompletionCandidate {
+                        label: label.clone(),
+                        kind: EngineClassCompletionKind::Value,
+                        detail: Some(format!("{key}: {animation_name}")),
+                        documentation_class_name: Some(label),
+                        sort_text: None,
+                        trigger_suggest: false,
+                    },
+                );
+            }
+        }
+    }
+}
+
 fn collect_class_completion_candidates(
     manifest: &ManifestProjection,
 ) -> Vec<EngineClassCompletionCandidate> {
@@ -2948,11 +3051,7 @@ fn collect_class_completion_candidates(
     let mut labels = HashSet::new();
     let mut ambiguous_keys = Vec::new();
 
-    for utility in manifest
-        .utilities
-        .iter()
-        .filter(|utility| !utility.native_fallback)
-    {
+    for utility in &manifest.utilities {
         if utility.utility_type == -2 {
             let is_component = utility.layer == UtilityLayerName::Components;
             let static_detail = static_utility_detail(utility);
@@ -3000,12 +3099,38 @@ fn collect_class_completion_candidates(
         }
 
         let (keys, alias_groups) = utility_completion_metadata(utility);
+        let mut value_keys = keys.clone();
+        for alias_group in &alias_groups {
+            add_unique_string(&mut value_keys, alias_group);
+        }
+        push_utility_value_completion_candidates(
+            &mut candidates,
+            &mut labels,
+            manifest,
+            utility,
+            &value_keys,
+        );
         for key in keys {
             ambiguous_keys.retain(|ambiguous| ambiguous != &key);
             push_property_completion_candidate(&mut candidates, &mut labels, &key, None);
         }
         for alias_group in alias_groups {
             add_unique_string(&mut ambiguous_keys, &alias_group);
+        }
+    }
+
+    let canonical_value_candidates = candidates.clone();
+    for (key, canonical_key) in BUILTIN_KEY_ALIASES {
+        let prefix = format!("{canonical_key}:");
+        for candidate in canonical_value_candidates.iter().filter(|candidate| {
+            candidate.kind == EngineClassCompletionKind::Value
+                && candidate.label.starts_with(&prefix)
+        }) {
+            let label = format!("{key}:{}", &candidate.label[prefix.len()..]);
+            let mut alias_candidate = candidate.clone();
+            alias_candidate.label = label.clone();
+            alias_candidate.documentation_class_name = Some(label);
+            push_class_completion_candidate(&mut candidates, &mut labels, alias_candidate);
         }
     }
 
@@ -3029,6 +3154,76 @@ fn collect_class_completion_candidates(
             &key,
             Some("ambiguous key".into()),
         );
+    }
+    for (token, detail) in [(":first", ":first-child"), (":of", ":of")] {
+        push_class_completion_candidate(
+            &mut candidates,
+            &mut labels,
+            EngineClassCompletionCandidate {
+                label: token.to_owned(),
+                kind: EngineClassCompletionKind::Value,
+                detail: Some(detail.to_owned()),
+                documentation_class_name: None,
+                sort_text: None,
+                trigger_suggest: false,
+            },
+        );
+    }
+    for token in manifest.selectors.keys() {
+        if !token.starts_with(':') {
+            continue;
+        }
+        push_class_completion_candidate(
+            &mut candidates,
+            &mut labels,
+            EngineClassCompletionCandidate {
+                label: token.clone(),
+                kind: EngineClassCompletionKind::Value,
+                detail: selector_token_to_template(token, manifest)
+                    .map(|selector| selector.replace('&', "")),
+                documentation_class_name: None,
+                sort_text: None,
+                trigger_suggest: false,
+            },
+        );
+    }
+    for token in manifest.conditions.keys() {
+        push_class_completion_candidate(
+            &mut candidates,
+            &mut labels,
+            EngineClassCompletionCandidate {
+                label: format!("@{token}"),
+                kind: EngineClassCompletionKind::Value,
+                detail: None,
+                documentation_class_name: None,
+                sort_text: manifest
+                    .compiled_variables
+                    .get(&format!("breakpoint-{token}"))
+                    .and_then(|variable| {
+                        completion_numeric_value(variable, manifest.settings.root_size)
+                    })
+                    .map(|value| format!("0000-{value:020.8}"))
+                    .or_else(|| Some(format!("1000-{token}"))),
+                trigger_suggest: false,
+            },
+        );
+    }
+    for animation_name in manifest.animations.keys() {
+        for key in ["animate", "animation", "animation-name"] {
+            let label = format!("{key}:{animation_name}");
+            push_class_completion_candidate(
+                &mut candidates,
+                &mut labels,
+                EngineClassCompletionCandidate {
+                    label: label.clone(),
+                    kind: EngineClassCompletionKind::Value,
+                    detail: Some(format!("{key}: {animation_name}")),
+                    documentation_class_name: Some(label),
+                    sort_text: None,
+                    trigger_suggest: false,
+                },
+            );
+        }
     }
     candidates
 }

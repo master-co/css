@@ -4,6 +4,11 @@ import type {
 import { MASTER_CSS_LANGUAGE_BATCH_VERSION } from '@master/css-binding/tooling'
 import { MasterCSSError } from '@master/css-schema'
 import { matchesLanguageServiceNativeDeclaration } from './master-css'
+import {
+  getMdnPropertyValueNames,
+  getMdnPseudoClassNames,
+  getMdnPseudoElementNames
+} from './utils/mdn-css-data'
 import type {
   MasterCSSDocumentAnalysis,
   MasterCSSDocumentAnalysisRequest,
@@ -56,16 +61,82 @@ function validate<T extends { version: number }>(value: T): T {
   return value
 }
 
+function augmentCompletionIndex(
+  index: MasterCSSLanguageCompletionIndex
+): MasterCSSLanguageCompletionIndex {
+  const classEntries = index.classEntries.map((entry) => ({ ...entry }))
+  const labels = new Set(classEntries.map(({ label }) => label))
+  const addValue = (
+    label: string,
+    detail?: string,
+    sortText?: string
+  ) => {
+    if (labels.has(label)) return
+    labels.add(label)
+    classEntries.push({
+      label,
+      kind: 'value',
+      detail,
+      sortText,
+      triggerSuggest: false
+    })
+  }
+
+  for (const label of [...getMdnPseudoClassNames(), ...getMdnPseudoElementNames()]) {
+    addValue(label)
+  }
+
+  const properties = classEntries
+    .filter(({ kind, label }) => kind === 'property' && label.endsWith(':'))
+    .map((entry) => ({
+      key: entry.label.slice(0, -1),
+      property: entry.detail && entry.detail !== 'ambiguous key'
+        ? entry.detail
+        : entry.label.slice(0, -1)
+    }))
+  properties.push(
+    { key: 'display', property: 'display' },
+    { key: 'font-style', property: 'font-style' },
+    { key: 'line-clamp', property: 'line-clamp' },
+    { key: 'text-align', property: 'text-align' },
+    { key: 'user-select', property: 'user-select' },
+    { key: '-webkit-text-size-adjust', property: 'text-size-adjust' },
+    { key: '-moz-text-size-adjust', property: 'text-size-adjust' },
+    { key: '-ms-text-size-adjust', property: 'text-size-adjust' }
+  )
+  for (const { key, property } of properties) {
+    for (const value of getMdnPropertyValueNames(property)) {
+      if (value.includes(' ')) continue
+      addValue(`${key}:${value}`, `${property}: ${value}`, `ccccc${value}`)
+    }
+  }
+
+  return { ...index, classEntries }
+}
+
 export function bindLanguageSession(
   binding: LanguageSession['binding'],
   session: BindingLanguageSession
 ): LanguageSession {
-  const nativeSupport = (classNames: string[]) => parse<MasterCSSNativeDeclarationCandidate[]>(
-    session.nativeDeclarationCandidates(classNames)
-  ).map(matchesLanguageServiceNativeDeclaration)
+  const nativeSupportCache = new Map<string, boolean>()
+  const collectNativeSupport = (classNames: string[]) => {
+    const candidates = parse<MasterCSSNativeDeclarationCandidate[]>(
+      session.nativeDeclarationCandidates(classNames)
+    )
+    return candidates.map((candidate) => {
+      const supported = matchesLanguageServiceNativeDeclaration(candidate)
+      nativeSupportCache.set(candidate.className, supported)
+      return supported
+    })
+  }
+  let completionIndexCache: MasterCSSLanguageCompletionIndex | undefined
   return {
     binding,
     analyzeDocument(request) {
+      const initial = validate(parse<MasterCSSDocumentAnalysis>(session.analyzeDocument(request)))
+      const classNames = initial.classPositions.map(({ token }) => token)
+      if (!classNames.length) return initial
+      session.classifyClassNames(classNames, collectNativeSupport(classNames))
       return validate(parse<MasterCSSDocumentAnalysis>(session.analyzeDocument(request)))
     },
     formatDirectives(request) {
@@ -74,15 +145,21 @@ export function bindLanguageSession(
     classifyClassNames(classNames) {
       const values = [...classNames]
       return validate(parse<MasterCSSLanguageClassifications>(
-        session.classifyClassNames(values, nativeSupport(values))
+        session.classifyClassNames(values, collectNativeSupport(values))
       ))
     },
     inspectClassName(className, mode) {
+      const support = collectNativeSupport([className])
+      if (!support.length && nativeSupportCache.has(className)) {
+        support.push(nativeSupportCache.get(className) as boolean)
+      }
       return validate(parse<MasterCSSLanguageInspection>(
-        session.inspectClassName(className, nativeSupport([className]), mode)
+        session.inspectClassName(className, support, mode)
       ))
     },
-    completionIndex: () => validate(parse<MasterCSSLanguageCompletionIndex>(session.completionIndex())),
+    completionIndex: () => completionIndexCache ||= augmentCompletionIndex(
+      validate(parse<MasterCSSLanguageCompletionIndex>(session.completionIndex()))
+    ),
     colorPresentation: (token) => validate(parse<MasterCSSLanguageColorPresentation>(session.colorPresentation(token))),
     colorTokens: (candidates) =>
       validate(parse<MasterCSSLanguageColorTokens>(session.colorTokens(candidates))),
