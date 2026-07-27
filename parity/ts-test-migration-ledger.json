@@ -1366,11 +1366,11 @@
   },
   "target": {
     "ref": "latest-target-change",
-    "commit": "61b9def159eeb78cfe67a70e96cb3dc148088952",
+    "commit": "ee78ca31a85d39fa5eaded9fc2e912b6bd8698d6",
     "packageCount": 36,
     "testFiles": 193,
     "e2eFiles": 24,
-    "cases": 1666
+    "cases": 1669
   },
   "existingParity": {
     "semanticBaseline": "ef1a7c851",
@@ -1381,20 +1381,20 @@
   "evidence": {
     "path": "parity/ts-test-migration-evidence.json",
     "version": 1,
-    "records": 495,
+    "records": 528,
     "proofs": {
-      "approved-divergence": 2,
-      "exact-source": 952,
-      "rc87-golden": 493
+      "approved-divergence": 3,
+      "exact-source": 953,
+      "rc87-golden": 525
     }
   },
   "summary": {
     "byStatus": {
-      "approved-divergence": 2,
-      "gap": 11,
-      "mapped-unverified": 78,
+      "approved-divergence": 3,
+      "gap": 8,
+      "mapped-unverified": 47,
       "source-inactive": 10,
-      "verified-exact": 1445
+      "verified-exact": 1478
     },
     "byPriority": {
       "P0": 676,
@@ -1402,15 +1402,15 @@
       "P2": 138
     },
     "byCoverage": {
-      "candidate-all": 88,
-      "evidence": 495,
-      "exact-source": 952,
-      "none": 11
+      "candidate-all": 57,
+      "evidence": 528,
+      "exact-source": 953,
+      "none": 8
     },
     "byProof": {
-      "approved-divergence": 2,
-      "exact-source": 952,
-      "rc87-golden": 493
+      "approved-divergence": 3,
+      "exact-source": 953,
+      "rc87-golden": 525
     },
     "byPackage": {
       "astro": {
@@ -1602,8 +1602,8 @@
         "P0": 0,
         "P1": 96,
         "P2": 0,
-        "mapped": 93,
-        "gap": 3
+        "mapped": 96,
+        "gap": 0
       },
       "schema": {
         "total": 2,
@@ -69266,14 +69266,45 @@
         "targetPackage": "tooling"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "approved-divergence",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-992cb1447bb56c5c",
+            "package": "tooling",
+            "file": "packages/tooling/tests/scanner/adapters.test.ts",
+            "line": 7,
+            "title": "does not restore the removed custom source adapter registry",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "92b284ea4c7771748e106a79910f74e556f64c1659938782e47795a490421d25"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "approved-divergence",
+          "sourceDigest": "9bcc90eada05e651e555ac5bb6f557be6535bb3dabcfb37eae548a890472b8ef",
+          "targets": [
+            {
+              "caseId": "rc87-992cb1447bb56c5c",
+              "runner": "vitest",
+              "digest": "92b284ea4c7771748e106a79910f74e556f64c1659938782e47795a490421d25"
+            }
+          ],
+          "exceptionId": "rc87-scanner-custom-adapter-public-api-removal"
+        }
       },
-      "divergence": null
+      "divergence": {
+        "id": "rc87-scanner-custom-adapter-public-api-removal",
+        "reason": "Scanner extraction semantics now live in the owning Rust crate, while the TypeScript host keeps only private first-party framework adapters. Restoring the rc.87 third-party adapter registry would reintroduce a retired public semantic extension API and violate the Rust-only ownership boundary.",
+        "old": "Passing a custom .txt adapter before the built-in adapters extracts the adapter result block instead of the source text class hidden.",
+        "new": "The scanner options reject the retired adapters field and the Rust-backed built-in extraction pipeline observes hidden from the same .txt source.",
+        "packages": [
+          "tooling"
+        ],
+        "test": "packages/tooling/tests/scanner/adapters.test.ts"
+      }
     },
     {
       "id": "rc87-cebb5667e1c0150c",
@@ -69299,12 +69330,35 @@
         "targetPackage": "tooling"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
-        "sourceIdenticalTargetIds": [],
+        "status": "verified-exact",
+        "coverage": "exact-source",
+        "targets": [
+          {
+            "id": "rc87-3bcabc82a8c8141c",
+            "package": "tooling",
+            "file": "packages/tooling/tests/scanner/adapters.test.ts",
+            "line": 23,
+            "title": "uses built-in source adapters from @master/css-source by default",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "cb3b30fe0eec7e895b011ab10c3fd8e8d514ea7b8edcd99207b4bdf299612127"
+          }
+        ],
+        "sourceIdenticalTargetIds": [
+          "rc87-3bcabc82a8c8141c"
+        ],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "exact-source",
+          "sourceDigest": "cb3b30fe0eec7e895b011ab10c3fd8e8d514ea7b8edcd99207b4bdf299612127",
+          "targets": [
+            {
+              "caseId": "rc87-3bcabc82a8c8141c",
+              "runner": "vitest",
+              "digest": "cb3b30fe0eec7e895b011ab10c3fd8e8d514ea7b8edcd99207b4bdf299612127"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -69332,14 +69386,14 @@
         "targetPackage": "tooling"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-116f73ddf74ed32f",
             "package": "tooling",
             "file": "packages/tooling/tests/scanner/adapters.test.ts",
-            "line": 21,
+            "line": 55,
             "title": "auto extracts framework source files by extension",
             "runner": "vitest",
             "kind": "test",
@@ -69348,7 +69402,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "c0a37b90b818397aad291be6b48a6ae21a5d97212c5ca8907e71cc1cec4dba1e",
+          "targets": [
+            {
+              "caseId": "rc87-116f73ddf74ed32f",
+              "runner": "vitest",
+              "digest": "089267c9b01aa98d5fa8ea4153760b0cb38dc42f2ba7d3204101d042e152a739"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -69376,8 +69440,8 @@
         "targetPackage": "tooling"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-4c28bc8b7ba833c2",
@@ -69392,7 +69456,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "df127a4d834269e390a07be7b3b3542b788d090e8123a74f045584ef1a6618b9",
+          "targets": [
+            {
+              "caseId": "rc87-4c28bc8b7ba833c2",
+              "runner": "vitest",
+              "digest": "7714911d2174ed7901a58b144593e827ed879f2659618fc95f8c6612e11bbf6b"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -69420,8 +69494,8 @@
         "targetPackage": "tooling"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-015aef2bba40a725",
@@ -69436,7 +69510,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "f9187012ab1ddae2098652daca7445602ba2ba63df3cc601d3a82e04f68c8884",
+          "targets": [
+            {
+              "caseId": "rc87-015aef2bba40a725",
+              "runner": "vitest",
+              "digest": "c8a6cc555dd85b46ff4dfca70207a82050949405c72837b51dc51b21c127e33f"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -69464,8 +69548,8 @@
         "targetPackage": "tooling"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-73c31dcdb81fde33",
@@ -69480,7 +69564,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "7c528f5c05ba052a55bebe2cb3812f7f50ac8f1115746576477a7e34a1b50c95",
+          "targets": [
+            {
+              "caseId": "rc87-73c31dcdb81fde33",
+              "runner": "vitest",
+              "digest": "9a71f863048ceabd329af82bb91e50be33dc7c6efa053ee0b044caabf1d1e41e"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -69508,8 +69602,8 @@
         "targetPackage": "tooling"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-5aa26ac0716df768",
@@ -69524,7 +69618,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "28ed7ac98b987cca1cf4682e3523cc5330738b4fc13a2d6cc07f8e7d5d07b35d",
+          "targets": [
+            {
+              "caseId": "rc87-5aa26ac0716df768",
+              "runner": "vitest",
+              "digest": "35eab59bacf3b3050dcd86106e8c67c0e105471678a8d8de6758dd844c77a327"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -69552,8 +69656,8 @@
         "targetPackage": "tooling"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-8b1074d1e3155c83",
@@ -69568,7 +69672,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "d9e41aa4752ba6967b67406f770ac30c0f8d49c87249bca499f8092716420a80",
+          "targets": [
+            {
+              "caseId": "rc87-8b1074d1e3155c83",
+              "runner": "vitest",
+              "digest": "c69c57aae55d5fe02e685c37a4ed0604908afb36817eeab3383d93f20541d8c5"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -69596,8 +69710,8 @@
         "targetPackage": "tooling"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-3c486db7d89c53f8",
@@ -69612,7 +69726,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "c5bdb5a7d9bd2fb2d8ebf685e8a542fb2356d487986f28eb55cb1f608bb1cbd1",
+          "targets": [
+            {
+              "caseId": "rc87-3c486db7d89c53f8",
+              "runner": "vitest",
+              "digest": "0185e51f802418e6b5bc216ecc148f88dfe62c25c84603f129b23c2aafcb77ba"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -69640,8 +69764,8 @@
         "targetPackage": "tooling"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-b22e3ac690fa7094",
@@ -69656,7 +69780,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "79daa0490578719e10065aaffac3a23051bd800c226ae8b16a99eeb676c1d47a",
+          "targets": [
+            {
+              "caseId": "rc87-b22e3ac690fa7094",
+              "runner": "vitest",
+              "digest": "30a7b946db5801ca81dad8999116afefadc270bbe6703af9587d7f70fa27eb0c"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -69685,12 +69819,33 @@
         "targetPackage": "tooling"
       },
       "migration": {
-        "status": "gap",
-        "coverage": "none",
-        "targets": [],
+        "status": "verified-exact",
+        "coverage": "evidence",
+        "targets": [
+          {
+            "id": "rc87-0133f93a9b46e79d",
+            "package": "tooling",
+            "file": "packages/tooling/tests/scanner/cache.test.ts",
+            "line": 62,
+            "title": "same class across many files is processed once",
+            "runner": "vitest",
+            "kind": "test",
+            "sourceDigest": "01af4f5df8b4a34b5668df27dc32e3884d14db16ddd1e1dd9955cf003e11e7b2"
+          }
+        ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "dba858dd0cd2f7e7a3710f00e19e7e875f432dbd6d257d15ef8ab8686a33f771",
+          "targets": [
+            {
+              "caseId": "rc87-0133f93a9b46e79d",
+              "runner": "vitest",
+              "digest": "01af4f5df8b4a34b5668df27dc32e3884d14db16ddd1e1dd9955cf003e11e7b2"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -69719,14 +69874,14 @@
         "targetPackage": "tooling"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-b68640e106b42fb8",
             "package": "tooling",
             "file": "packages/tooling/tests/scanner/cache.test.ts",
-            "line": 64,
+            "line": 75,
             "title": "resets stateful regular expressions while filtering repeated classes",
             "runner": "vitest",
             "kind": "test",
@@ -69735,7 +69890,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "e01729245a5534d900f4a8c851e58191e63d58ffe0f5b82c4f0d67e9e2abdadd",
+          "targets": [
+            {
+              "caseId": "rc87-b68640e106b42fb8",
+              "runner": "vitest",
+              "digest": "4751462a1623456e3c7b70543c33a7c33d978f589e083d3ad97c36b2ca34a0aa"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -69764,14 +69929,14 @@
         "targetPackage": "tooling"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-4fef17fa41b4a953",
             "package": "tooling",
             "file": "packages/tooling/tests/scanner/cache.test.ts",
-            "line": 76,
+            "line": 87,
             "title": "rebuilds when blocklist is reassigned",
             "runner": "vitest",
             "kind": "test",
@@ -69780,7 +69945,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "fbe6353fde7d43103ba77cb0cbb058dfac0cf1699aac465ba78d44e5947b79c8",
+          "targets": [
+            {
+              "caseId": "rc87-4fef17fa41b4a953",
+              "runner": "vitest",
+              "digest": "96ec5045d3f3950f805c3063dc255d07bd5eb46800dd67dc48da87b265a4a2a6"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -69808,14 +69983,14 @@
         "targetPackage": "tooling"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-acd344d0f08818c4",
             "package": "tooling",
             "file": "packages/tooling/tests/scanner/cache.test.ts",
-            "line": 91,
+            "line": 102,
             "title": "scan() accepts trusted content without module filtering",
             "runner": "vitest",
             "kind": "test",
@@ -69824,7 +69999,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "1375a40e070634e0b02143eeb9ae15a66fbf86238912c04cff348c95ab1bab81",
+          "targets": [
+            {
+              "caseId": "rc87-acd344d0f08818c4",
+              "runner": "vitest",
+              "digest": "5b93e3c9e26e1483e7066959d966ff97afac4f96f620bf9bf9fea9c28d6f765d"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -69852,14 +70037,14 @@
         "targetPackage": "tooling"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-792622f4591d4d70",
             "package": "tooling",
             "file": "packages/tooling/tests/scanner/cache.test.ts",
-            "line": 98,
+            "line": 109,
             "title": "normalizes query suffixes before matching module paths",
             "runner": "vitest",
             "kind": "test",
@@ -69868,7 +70053,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "cbca10409d5549a4a05d23855389ff837aa669cfda53b616cebe5be23b060c32",
+          "targets": [
+            {
+              "caseId": "rc87-792622f4591d4d70",
+              "runner": "vitest",
+              "digest": "7750f546009ac5d4ce80c39da16790a41d6a1d34afbdc3a35852f6a695898428"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -69896,14 +70091,14 @@
         "targetPackage": "tooling"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-a750ffe1d4f943b1",
             "package": "tooling",
             "file": "packages/tooling/tests/scanner/cache.test.ts",
-            "line": 105,
+            "line": 116,
             "title": "rejects non-source extensions with Vite query suffixes",
             "runner": "vitest",
             "kind": "test",
@@ -69912,7 +70107,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "17dfcf289213ba9b4d1f20b05878b46ed3ebcd202453c2afc14cc0fcba971ef4",
+          "targets": [
+            {
+              "caseId": "rc87-a750ffe1d4f943b1",
+              "runner": "vitest",
+              "digest": "c7cb1ecf52bdb545a88b9c776042c9dbc24949a7098b182c5828c8c91d2cb8d3"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -69940,14 +70145,14 @@
         "targetPackage": "tooling"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-329fccfbccaa52cd",
             "package": "tooling",
             "file": "packages/tooling/tests/scanner/cache.test.ts",
-            "line": 113,
+            "line": 124,
             "title": "rejects framework style module requests",
             "runner": "vitest",
             "kind": "test",
@@ -69956,7 +70161,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "7fce759bce5dd819f4e0293d7c7052e06188ec7c58b7f848be50066074696525",
+          "targets": [
+            {
+              "caseId": "rc87-329fccfbccaa52cd",
+              "runner": "vitest",
+              "digest": "fa49427f5f73b88bfbef19505bf040997dda238c7d624cdb9c015c3d621b7c1b"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -69984,14 +70199,14 @@
         "targetPackage": "tooling"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-0c78535341f5b9fc",
             "package": "tooling",
             "file": "packages/tooling/tests/scanner/cache.test.ts",
-            "line": 121,
+            "line": 132,
             "title": "rejects generated and cache dot directories by default",
             "runner": "vitest",
             "kind": "test",
@@ -70000,7 +70215,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "378d7134b5057029c480fd9c949b3306c4b75417503e295485a3c046b1eed7b5",
+          "targets": [
+            {
+              "caseId": "rc87-0c78535341f5b9fc",
+              "runner": "vitest",
+              "digest": "3bade18876412e37254b816614bf0bd28269c7b4cbd35c9453193cb74ae267ae"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -70028,14 +70253,14 @@
         "targetPackage": "tooling"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-a95966168048115b",
             "package": "tooling",
             "file": "packages/tooling/tests/scanner/cache.test.ts",
-            "line": 151,
+            "line": 162,
             "title": "allows framework source files in dot directories by default",
             "runner": "vitest",
             "kind": "test",
@@ -70044,7 +70269,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "8978cf508b0510e7d2a2a96152142d0f0b74ed1d2b66b70ef591467c5e01d813",
+          "targets": [
+            {
+              "caseId": "rc87-a95966168048115b",
+              "runner": "vitest",
+              "digest": "f35e8e55c35a4f3f8f83b7125bf66fb02da49d3306a7c755d4901dcb8af0cf32"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -70072,14 +70307,14 @@
         "targetPackage": "tooling"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-8d474d8a69ea4f6b",
             "package": "tooling",
             "file": "packages/tooling/tests/scanner/cache.test.ts",
-            "line": 159,
+            "line": 170,
             "title": "matches absolute module ids against relative exclude globs within cwd",
             "runner": "vitest",
             "kind": "test",
@@ -70088,7 +70323,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "cf0e215fecab66027e30d9b0b5ff76196408f7b6a9f7ba022fe17e89f3218e7a",
+          "targets": [
+            {
+              "caseId": "rc87-8d474d8a69ea4f6b",
+              "runner": "vitest",
+              "digest": "4f3dd3c4ac20dbbc8675cb4573c8176331a74299b12c2dfa741e41b06de77a15"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -70116,14 +70361,14 @@
         "targetPackage": "tooling"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-22149b15fd7260e8",
             "package": "tooling",
             "file": "packages/tooling/tests/scanner/cache.test.ts",
-            "line": 168,
+            "line": 179,
             "title": "rebuilds module excludes when exclude is reassigned",
             "runner": "vitest",
             "kind": "test",
@@ -70132,7 +70377,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "4770edf8539661b5a7a33500b7347e2387ffd9c2f1787c81b281f2d269c8be74",
+          "targets": [
+            {
+              "caseId": "rc87-22149b15fd7260e8",
+              "runner": "vitest",
+              "digest": "7808f115abc14ab1e90656dcf0dd720d97bbe931bf9996e3cd4095ebdc0793c5"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -70160,14 +70415,14 @@
         "targetPackage": "tooling"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-c8cc9cad94711bc6",
             "package": "tooling",
             "file": "packages/tooling/tests/scanner/cache.test.ts",
-            "line": 179,
+            "line": 190,
             "title": "strips query suffixes before matching absolute module ids against relative excludes",
             "runner": "vitest",
             "kind": "test",
@@ -70176,7 +70431,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "06ef66e415a3ee875050521c5f3710038eafa66b58dc1358b013aa0955bd869e",
+          "targets": [
+            {
+              "caseId": "rc87-c8cc9cad94711bc6",
+              "runner": "vitest",
+              "digest": "f9f41e2c4de137245a6dd1ddcacc982757812776d1bc0199f31f76eb521fa43c"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -70204,14 +70469,14 @@
         "targetPackage": "tooling"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-604c0ba1e3d92727",
             "package": "tooling",
             "file": "packages/tooling/tests/scanner/cache.test.ts",
-            "line": 187,
+            "line": 198,
             "title": "rejects absolute framework style module requests before exclude matching",
             "runner": "vitest",
             "kind": "test",
@@ -70220,7 +70485,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "2a21bbfec86a3b28de7e1623438f9779bd17e20ff5c2286fac84e85c1741abef",
+          "targets": [
+            {
+              "caseId": "rc87-604c0ba1e3d92727",
+              "runner": "vitest",
+              "digest": "adb7ffde9b91446ddd30289c449857fd505dfe5a7c3b43fca3edc888366b8604"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -70248,14 +70523,14 @@
         "targetPackage": "tooling"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-adfe1f2fcb029ef8",
             "package": "tooling",
             "file": "packages/tooling/tests/scanner/cache.test.ts",
-            "line": 196,
+            "line": 207,
             "title": "scanModule() scans source-like allowed modules only",
             "runner": "vitest",
             "kind": "test",
@@ -70264,7 +70539,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "de9cc38f79b59716fbcee90c19f62a327f9724724556322973aade285f88978d",
+          "targets": [
+            {
+              "caseId": "rc87-adfe1f2fcb029ef8",
+              "runner": "vitest",
+              "digest": "7a1872f27e9b059827b1c8ba7fa40215df7b6e05b81aed462867c2222a7af2a6"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -73199,8 +73484,8 @@
         "targetPackage": "tooling"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-ae6254f7191c455a",
@@ -73215,7 +73500,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "462934fc29b3534945a1405a11a3463652581b237cf9b4d695b429153ef15521",
+          "targets": [
+            {
+              "caseId": "rc87-ae6254f7191c455a",
+              "runner": "vitest",
+              "digest": "4e19e2a2b759ee4f5abaa67eb7595362ac02189911ab338ba5b77852bf2ea283"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -73621,8 +73916,8 @@
         "targetPackage": "tooling"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-629e1ebe908760d5",
@@ -73637,7 +73932,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "86df256e6c5ac50a174e3b3ce44e9265604d70148c7683ea2d5e8ef28fa83bbb",
+          "targets": [
+            {
+              "caseId": "rc87-629e1ebe908760d5",
+              "runner": "vitest",
+              "digest": "f443f394864310306bb8d052dbf9890f3f744d23a754835ebf64ebb5a3d41a03"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -73825,8 +74130,8 @@
         "targetPackage": "tooling"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-b71f1275deb2129e",
@@ -73841,7 +74146,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "56b202264152c9d4088aaf6016e47bd228df43e973828f042caea4aef0935580",
+          "targets": [
+            {
+              "caseId": "rc87-b71f1275deb2129e",
+              "runner": "vitest",
+              "digest": "409f8af9b49ec02ec28cda1a952c13e88085a768d8ec0024bbf3a6cd8d4311c3"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -74303,8 +74618,8 @@
         "targetPackage": "tooling"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-5f33a59f5240beb3",
@@ -74319,7 +74634,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "e46ffde5936c076ad07e4fb6731f789d090ab97d54a11797d7b9a56a3d9482df",
+          "targets": [
+            {
+              "caseId": "rc87-5f33a59f5240beb3",
+              "runner": "vitest",
+              "digest": "9185064e64c10a7eeb1077936ae756dab055e0fd88c2e6c5df162a7373b1e2a3"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -74346,8 +74671,8 @@
         "targetPackage": "tooling"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-2ce1fbf0fd3c3d22",
@@ -74362,7 +74687,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "4185c36e73870bfe202c02ba80d17b451d960d124295baf34fbd2dff21207536",
+          "targets": [
+            {
+              "caseId": "rc87-2ce1fbf0fd3c3d22",
+              "runner": "vitest",
+              "digest": "5824262bc9ec30dcc4550e2809c2807c5fc8e2346001ab7f4b486bbf0ad07779"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -74389,8 +74724,8 @@
         "targetPackage": "tooling"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-1760dc737cb86f2a",
@@ -74405,7 +74740,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "fc4a358f556d267bf5cea1a16267e9e24e9a7a0bce4d34fc555359e4f7b85054",
+          "targets": [
+            {
+              "caseId": "rc87-1760dc737cb86f2a",
+              "runner": "vitest",
+              "digest": "78ea5258e9f3f578f710ad2e561a61535e67a47ae89ff7c3e0f7f37b4dfb2b0d"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -74433,8 +74778,8 @@
         "targetPackage": "tooling"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-39b79c348660ccf5",
@@ -74449,7 +74794,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "dc824604ccf474d1fcc530198d123b8d9013f052a5358218dc2428aaa9059341",
+          "targets": [
+            {
+              "caseId": "rc87-39b79c348660ccf5",
+              "runner": "vitest",
+              "digest": "7bf0ab0ab68d84ed4d61de7e847b853c0da98bcbcaf710930d9ccad843bb7d91"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -74475,8 +74830,8 @@
         "targetPackage": "tooling"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-b6c1288886170c89",
@@ -74491,7 +74846,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "6df151a15d796aa41645c49ef6c31f2917afb5fe1cbb237fdde71b222b59907c",
+          "targets": [
+            {
+              "caseId": "rc87-b6c1288886170c89",
+              "runner": "vitest",
+              "digest": "c773fc3251a1876df8b77065d66889de65bfe12bfbcf3df0f858700c82fa9e8d"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -74517,8 +74882,8 @@
         "targetPackage": "tooling"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-4af1c28e4ac0522f",
@@ -74533,7 +74898,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "cd43934038f13a593cedad883f7f98ed19b21fed24ddea17932f8ad30720225b",
+          "targets": [
+            {
+              "caseId": "rc87-4af1c28e4ac0522f",
+              "runner": "vitest",
+              "digest": "79815ab719b1acea476e3ec85f5e9b5896ddd782fbf7b15e30a4fe03ba0fcddd"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -74560,8 +74935,8 @@
         "targetPackage": "tooling"
       },
       "migration": {
-        "status": "mapped-unverified",
-        "coverage": "candidate-all",
+        "status": "verified-exact",
+        "coverage": "evidence",
         "targets": [
           {
             "id": "rc87-5c07a0ab3e427817",
@@ -74576,7 +74951,17 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [],
-        "proof": null
+        "proof": {
+          "kind": "rc87-golden",
+          "sourceDigest": "c1923f52ca038373d780408b4c62c2dfdc4b1dc76768d6c011844d3ad3bc258d",
+          "targets": [
+            {
+              "caseId": "rc87-5c07a0ab3e427817",
+              "runner": "vitest",
+              "digest": "4960548e68084c4a6949be87b74d83f4db7ed82a291af230d3b4c8bbd9b6d767"
+            }
+          ]
+        }
       },
       "divergence": null
     },
@@ -91852,7 +92237,7 @@
       "id": "rc87-3c28c41d2c671162",
       "package": "tooling",
       "file": "packages/tooling/tests/scanner/adapters.test.ts",
-      "line": 5,
+      "line": 39,
       "title": "uses the built-in source extraction pipeline by default",
       "runner": "vitest",
       "kind": "test",

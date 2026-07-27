@@ -11,6 +11,7 @@ const RC87_COMMIT = '9cc3e8b5f2e34d5220f10f27ed5ce8186fbcb524'
 const RC87_RENDERING_TARGET_COMMIT = 'b242a52a0fcb43b1b506d9fa1e010d0c85621d13'
 const RC87_AUTHORING_TARGET_COMMIT = '7ac3c1a63a7af8c8c927a869fa3e4d531261cec6'
 const RC87_LANGUAGE_TARGET_COMMIT = '61b9def159eeb78cfe67a70e96cb3dc148088952'
+const RC87_SCANNER_TARGET_COMMIT = 'ee78ca31a85d39fa5eaded9fc2e912b6bd8698d6'
 const ledgerPath = path.resolve('parity/ts-test-migration-ledger.json')
 const evidencePath = path.resolve('parity/ts-test-migration-evidence.json')
 const exceptionsPath = path.resolve('parity-exceptions.json')
@@ -1111,6 +1112,59 @@ function seedLanguageEvidence(legacyInventory, targetInventory) {
   writeFileSync(evidencePath, `${JSON.stringify(evidence, null, 2)}\n`)
 }
 
+function seedScannerEvidence(legacyInventory, targetInventory) {
+  assert.equal(
+    targetInventory.commit,
+    RC87_SCANNER_TARGET_COMMIT,
+    'Scanner evidence must be audited against the pinned scanner target.'
+  )
+  const evidence = JSON.parse(readFileSync(evidencePath, 'utf8'))
+  const legacyById = new Map(legacyInventory.cases.map((testCase) => [testCase.id, testCase]))
+  const targetById = new Map(targetInventory.cases.map((testCase) => [testCase.id, testCase]))
+  const recordsBySourceId = new Map(evidence.records.map((record) => [record.sourceId, record]))
+  const currentLedger = JSON.parse(readFileSync(ledgerPath, 'utf8'))
+  assert.equal(
+    currentLedger.target.commit,
+    RC87_SCANNER_TARGET_COMMIT,
+    'The current ledger does not describe the pinned scanner target.'
+  )
+
+  for (const entry of currentLedger.entries) {
+    if (entry.source.package !== 'scanner' || entry.migration.status !== 'mapped-unverified') continue
+    assert.equal(entry.migration.targets.length, 1, `Scanner evidence target is ambiguous for ${entry.id}.`)
+    const source = legacyById.get(entry.id)
+    const target = targetById.get(entry.migration.targets[0].id)
+    assert.ok(source, `Cannot seed audited scanner source ${entry.id}.`)
+    assert.ok(target, `Cannot seed audited scanner target for ${entry.id}.`)
+    recordsBySourceId.set(entry.id, {
+      sourceId: entry.id,
+      sourceDigest: source.sourceDigest,
+      proof: 'rc87-golden',
+      targets: [proofTargetReference(target)]
+    })
+  }
+
+  const customAdapterSourceId = 'rc87-e15886ff6be17517'
+  const source = legacyById.get(customAdapterSourceId)
+  const target = targetInventory.cases.find((candidate) => (
+    candidate.file === 'packages/tooling/tests/scanner/adapters.test.ts'
+    && candidate.title === 'does not restore the removed custom source adapter registry'
+  ))
+  assert.ok(source, `Cannot seed custom adapter source ${customAdapterSourceId}.`)
+  assert.ok(target, `Cannot seed custom adapter divergence target ${customAdapterSourceId}.`)
+  recordsBySourceId.set(customAdapterSourceId, {
+    sourceId: customAdapterSourceId,
+    sourceDigest: source.sourceDigest,
+    proof: 'approved-divergence',
+    targets: [proofTargetReference(target)],
+    exceptionId: 'rc87-scanner-custom-adapter-public-api-removal'
+  })
+
+  evidence.records = [...recordsBySourceId.values()]
+    .sort((left, right) => left.sourceId.localeCompare(right.sourceId))
+  writeFileSync(evidencePath, `${JSON.stringify(evidence, null, 2)}\n`)
+}
+
 function loadParityExceptions() {
   const registry = JSON.parse(readFileSync(exceptionsPath, 'utf8'))
   assert.ok(Array.isArray(registry.exceptions), 'Parity exceptions must be an array.')
@@ -1563,6 +1617,9 @@ if (process.argv.includes('--seed-authoring-evidence')) {
 }
 if (process.argv.includes('--seed-language-evidence')) {
   seedLanguageEvidence(legacyInventory, targetInventory)
+}
+if (process.argv.includes('--seed-scanner-evidence')) {
+  seedScannerEvidence(legacyInventory, targetInventory)
 }
 const migrationEvidence = loadMigrationEvidence()
 const exceptions = loadParityExceptions()
