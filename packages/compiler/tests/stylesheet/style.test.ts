@@ -538,6 +538,24 @@ describe('style CSS extraction helpers', () => {
     expect(result.dependencies.some((dependency: string) => dependency.endsWith('default-native.css'))).toBe(false)
   })
 
+  it('tracks default package artifacts as style dependencies', async () => {
+    const root = createFixture()
+    const scanner = new MasterCSSScanner({}, root)
+    await scanner.init()
+
+    const stylesheetSources = new Map()
+    const result = await registerStylesheetSource(
+      scanner,
+      stylesheetSources,
+      join(root, 'app/globals.css'),
+      '@import "@master/css";',
+      { baseManifest: defaultManifest }
+    )
+
+    expect(result.dependencies.some((dependency: string) => dependency.endsWith('default-manifest.json'))).toBe(false)
+    expect(result.dependencies.some((dependency: string) => dependency.endsWith('default-native.css'))).toBe(false)
+  })
+
   it('removes top-level master style directives', () => {
     const result = removeMasterStyleDirectives([
       '@source "./page.tsx";',

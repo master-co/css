@@ -1,4 +1,25 @@
 {
   "$schema": "./scripts/parity-exceptions.schema.json",
-  "exceptions": []
+  "exceptions": [
+    {
+      "id": "rc87-stylesheet-explicit-preset-input",
+      "reason": "The retired stylesheet package implicitly loaded preset artifacts. The compiler-owned stylesheet host now receives Manifest v1 explicitly and must not create hidden dependencies on generated preset files.",
+      "old": "Registering @import \"@master/css\" reports default-manifest.json and default-native.css as style dependencies.",
+      "new": "Registering the equivalent stylesheet with an explicit baseManifest reports neither generated preset artifact as a dependency.",
+      "packages": [
+        "compiler"
+      ],
+      "test": "packages/compiler/tests/stylesheet/style.test.ts"
+    },
+    {
+      "id": "rc87-facade-async-rust-engine",
+      "reason": "The synchronous TypeScript MasterCSS facade was retired. The public @master/css surface now creates an asynchronous Rust-backed engine session and does not restore a compatibility shim.",
+      "old": "@master/css exposes MasterCSS.create({ manifest }) synchronously and returns the same manifest object with empty text.",
+      "new": "@master/css exposes createEngine({ manifest }) asynchronously, selects the native Rust binding, and returns an empty snapshot for an empty manifest.",
+      "packages": [
+        "css"
+      ],
+      "test": "packages/css/tests/facade.test.ts"
+    }
+  ]
 }
