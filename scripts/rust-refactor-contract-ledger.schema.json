@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "./rust-refactor-contract-ledger.schema.json",
+  "type": "object",
+  "required": ["version", "policy", "baseline", "target", "evidence", "summary", "surfaces", "entries", "added"],
+  "properties": {
+    "version": { "const": 1 },
+    "policy": { "type": "object" },
+    "baseline": { "type": "object" },
+    "target": { "type": "object" },
+    "evidence": { "type": "object" },
+    "summary": { "type": "object" },
+    "surfaces": { "type": "array" },
+    "entries": { "type": "array" },
+    "added": { "type": "array" }
+  },
+  "additionalProperties": false
+}

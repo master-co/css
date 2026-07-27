@@ -1,0 +1,46 @@
+{
+  "$schema": "../scripts/rust-refactor-contract-evidence.schema.json",
+  "version": 1,
+  "baseline": {
+    "ref": "bd164e4b5",
+    "commit": "bd164e4b5ae3a713940913d745183e9ab6b54263"
+  },
+  "records": [
+    {
+      "sourceId": "rc87-886095b27074cf6c",
+      "sourceDigest": "0f6195379a6491d260f50a4f15cc0b6e3332db3f207c664a0bd906b1089bd9dd",
+      "targetDigest": "e0de264a272004f70c6996c83bd4fc8e99b6d98abf1d162750ea1d31707a12df",
+      "proof": "verified-superset",
+      "reason": "The original packaged Wasm artifact assertions remain and the target adds native-declaration coverage for Node hosts without CSS.supports."
+    },
+    {
+      "sourceId": "rc87-534a5dbe18105a92",
+      "sourceDigest": "3f0364bd9b6a1fa7c2bd51793132299992be25b488b311bd2ee5899a59d0295a",
+      "targetDigest": "09261e359de7fc13b9b2f2dbe64062d54c49e295219d52a4e22d1e5d99c41ddf",
+      "proof": "verified-superset",
+      "reason": "The existing browser CSS.supports handshake assertions remain and the target adds the equivalent Wasm render-session assertion."
+    },
+    {
+      "sourceId": "rc87-97379238aa6e9c52",
+      "sourceDigest": "5bbd8c3b2443030c35c33062316c8a8e5e4e967d6895f171e073691476f38a1d",
+      "targetDigest": "a13f11ecfd946a2fbe1e1fe86f78e132a4688175523e438963c1207f7ac13fe8",
+      "proof": "verified-superset",
+      "reason": "The original error normalization and idempotent disposal assertions remain and the target adds native declaration rendering coverage."
+    },
+    {
+      "sourceId": "rc87-7748131a83619c59",
+      "sourceDigest": "dcd8212160c12aa1f6d98201a7ec8ee43fa3fb34a477ee6493d24a04a34a24a4",
+      "targetDigest": "b5311a05f6d447fda5f0681fa6f930048c3685744869f200267d6cb31e35fe41",
+      "proof": "verified-superset",
+      "reason": "The workspace manifest assertions were extracted into a shared helper and are executed by both the manifest and runtime compatibility cases."
+    },
+    {
+      "sourceId": "rc87-14a1114fe1dde0c6",
+      "sourceDigest": "7cb4e79ee81d31f2cc625cf9c083150a85b3f10f0d2e8ae04785dd6f4a808673",
+      "targetDigest": "951a346b0d78d53445d9f081701543a7db9e901469b951fdd5f43048a10db4e5",
+      "proof": "verified-superset",
+      "reason": "The bundled manifest fallback assertions were extracted into a shared helper and are executed by both the manifest and runtime compatibility cases."
+    }
+  ],
+  "surfaces": []
+}

@@ -9,6 +9,7 @@ const DEFAULT_BASELINE_REF = 'v2.0.0-rc.87'
 const DEFAULT_POST_BASELINE_REF = 'origin/rc'
 const RC87_COMMIT = '9cc3e8b5f2e34d5220f10f27ed5ce8186fbcb524'
 const POST_RC87_COMMIT = 'a71c23a2680fc49fc12724e47db5b2d88bdf229d'
+const RUST_REFACTOR_CONTRACT_COMMIT = 'bd164e4b5ae3a713940913d745183e9ab6b54263'
 const RC87_RENDERING_TARGET_COMMIT = 'b242a52a0fcb43b1b506d9fa1e010d0c85621d13'
 const RC87_AUTHORING_TARGET_COMMIT = '7ac3c1a63a7af8c8c927a869fa3e4d531261cec6'
 const RC87_LANGUAGE_TARGET_COMMIT = '61b9def159eeb78cfe67a70e96cb3dc148088952'
@@ -21,6 +22,8 @@ const postRc87DeltaPath = path.resolve('parity/post-rc87-delta-ledger.json')
 const evidencePath = path.resolve('parity/ts-test-migration-evidence.json')
 const exceptionsPath = path.resolve('parity-exceptions.json')
 const reportPath = path.resolve('.ai/reports/rust-test-migration.md')
+const rustRefactorContractLedgerPath = path.resolve('parity/rust-refactor-contract-ledger.json')
+const rustRefactorContractEvidencePath = path.resolve('parity/rust-refactor-contract-evidence.json')
 
 const sourceExtensions = /\.(?:c|m)?(?:j|t)sx?$/
 const legacyOwnerMap = new Map(Object.entries({
@@ -1754,6 +1757,278 @@ function validateLedger(ledger) {
   }
 }
 
+function loadRustRefactorContractEvidence() {
+  assert.ok(
+    existsSync(rustRefactorContractEvidencePath),
+    `${path.relative(process.cwd(), rustRefactorContractEvidencePath)} does not exist.`
+  )
+  const evidence = JSON.parse(readFileSync(rustRefactorContractEvidencePath, 'utf8'))
+  assert.equal(evidence.version, 1, 'Unsupported Rust refactor contract evidence version.')
+  assert.equal(
+    evidence.baseline.commit,
+    RUST_REFACTOR_CONTRACT_COMMIT,
+    'Rust refactor contract evidence baseline drifted.'
+  )
+  assert.ok(Array.isArray(evidence.records), 'Rust refactor contract evidence records must be an array.')
+  assert.ok(Array.isArray(evidence.surfaces), 'Rust refactor contract surface evidence must be an array.')
+  return evidence
+}
+
+function extractContractBlock(source, signature) {
+  const start = source.indexOf(signature)
+  assert.notEqual(start, -1, `Cannot locate contract block: ${signature}`)
+  const open = source.indexOf('{', start)
+  assert.notEqual(open, -1, `Cannot locate contract block opening brace: ${signature}`)
+  let depth = 0
+  let quote
+  let escaped = false
+  for (let index = open; index < source.length; index++) {
+    const character = source[index]
+    if (quote) {
+      if (escaped) escaped = false
+      else if (character === '\\') escaped = true
+      else if (character === quote) quote = undefined
+      continue
+    }
+    if (character === '"' || character === "'" || character === '`') {
+      quote = character
+      continue
+    }
+    if (character === '{') depth++
+    else if (character === '}' && --depth === 0) return source.slice(start, index + 1)
+  }
+  throw new Error(`Cannot locate contract block closing brace: ${signature}`)
+}
+
+function sourceAtCommit(commit, file) {
+  return git(['show', `${commit}:${file}`])
+}
+
+function packageExportContract(commit) {
+  const files = git(['ls-tree', '-r', '--name-only', commit])
+    .trim()
+    .split('\n')
+    .filter((file) => /^packages\/[^/]+\/package\.json$/u.test(file))
+    .sort()
+  return files.map((file) => {
+    const manifest = JSON.parse(sourceAtCommit(commit, file))
+    return {
+      file,
+      name: manifest.name,
+      version: manifest.version,
+      type: manifest.type,
+      main: manifest.main,
+      module: manifest.module,
+      types: manifest.types,
+      browser: manifest.browser,
+      bin: manifest.bin,
+      exports: manifest.exports
+    }
+  })
+}
+
+function contractSurfaceSources(commit) {
+  const protocol = sourceAtCommit(commit, 'packages/binding/src/protocol.ts')
+  const nativeLoader = sourceAtCommit(commit, 'packages/binding/src/native-loader.ts')
+  const wasmEngine = sourceAtCommit(commit, 'packages/binding-wasm-engine/src/index.ts')
+  const language = sourceAtCommit(commit, 'crates/mastercss-language/src/lib.rs')
+  const versions = protocol
+    .split('\n')
+    .filter((line) => /^export const MASTER_CSS_.+_VERSION =/u.test(line))
+    .join('\n')
+  const surfaces = [
+    {
+      id: 'published-package-exports',
+      files: ['packages/*/package.json'],
+      source: JSON.stringify(packageExportContract(commit))
+    },
+    {
+      id: 'public-api-contract',
+      files: ['.ai/contracts/public-api.json', '.ai/contracts/api-census.json'],
+      source: sourceAtCommit(commit, '.ai/contracts/public-api.json')
+        + sourceAtCommit(commit, '.ai/contracts/api-census.json')
+    },
+    {
+      id: 'binding-version-contract',
+      files: ['packages/binding/src/protocol.ts'],
+      source: versions
+    },
+    {
+      id: 'native-engine-raw-surface',
+      files: ['packages/binding/src/native-loader.ts'],
+      source: extractContractBlock(nativeLoader, 'export interface NativeEngineSession')
+    },
+    {
+      id: 'wasm-engine-raw-surface',
+      files: ['packages/binding-wasm-engine/src/index.ts'],
+      source: extractContractBlock(wasmEngine, 'interface GeneratedEngineSession')
+        + extractContractBlock(wasmEngine, 'interface GeneratedRenderSession')
+    },
+    {
+      id: 'language-wire-contract',
+      files: [
+        'packages/binding/src/protocol.ts',
+        'crates/mastercss-language/src/lib.rs'
+      ],
+      source: extractContractBlock(protocol, 'export interface MasterCSSLanguageSemanticToken')
+        + extractContractBlock(protocol, 'export interface MasterCSSLanguageDocument')
+        + extractContractBlock(language, 'pub struct SemanticTokenInputIr')
+    }
+  ]
+  return surfaces.map(({ source, ...surface }) => ({
+    ...surface,
+    digest: sha256(normalizeWhitespace(source))
+  }))
+}
+
+function buildRustRefactorContractLedger(targetInventory, targetCommit) {
+  const baselineInventory = collectCasesFromRef(
+    'rust-refactor-contract',
+    RUST_REFACTOR_CONTRACT_COMMIT
+  )
+  const evidence = loadRustRefactorContractEvidence()
+  const evidenceBySourceId = new Map()
+  for (const record of evidence.records) {
+    assert.ok(!evidenceBySourceId.has(record.sourceId), `Duplicate Rust contract evidence for ${record.sourceId}.`)
+    assert.ok(
+      ['verified-superset', 'approved-contract-change'].includes(record.proof),
+      `Invalid Rust contract proof for ${record.sourceId}.`
+    )
+    evidenceBySourceId.set(record.sourceId, record)
+  }
+  const targetById = new Map()
+  for (const testCase of targetInventory.cases) {
+    if (!targetById.has(testCase.id)) targetById.set(testCase.id, [])
+    targetById.get(testCase.id).push(testCase)
+  }
+  const usedEvidence = new Set()
+  const entries = baselineInventory.cases.map((source) => {
+    const targets = targetById.get(source.id) ?? []
+    if (!targets.length) {
+      return { source, status: 'removed-unapproved', target: null, proof: null }
+    }
+    if (targets.length > 1) {
+      return {
+        source,
+        status: 'regressed',
+        target: null,
+        proof: null,
+        error: `Ambiguous target IDs: ${targets.map(({ id }) => id).join(', ')}`
+      }
+    }
+    const target = targets[0]
+    if (target.sourceDigest === source.sourceDigest) {
+      return { source, status: 'preserved-exact', target: targetReference(target), proof: 'exact-source' }
+    }
+    const record = evidenceBySourceId.get(source.id)
+    if (!record) {
+      return { source, status: 'regressed', target: targetReference(target), proof: null }
+    }
+    assert.equal(record.sourceDigest, source.sourceDigest, `Stale Rust contract source digest for ${source.id}.`)
+    assert.equal(record.targetDigest, target.sourceDigest, `Stale Rust contract target digest for ${source.id}.`)
+    usedEvidence.add(source.id)
+    return {
+      source,
+      status: record.proof,
+      target: targetReference(target),
+      proof: record.proof,
+      reason: record.reason
+    }
+  })
+  assert.deepEqual(
+    [...evidenceBySourceId.keys()].sort(),
+    [...usedEvidence].sort(),
+    'Rust refactor contract test evidence contains unused records.'
+  )
+
+  const baselineIds = new Set(baselineInventory.cases.map(({ id }) => id))
+  const added = targetInventory.cases
+    .filter(({ id }) => !baselineIds.has(id))
+    .map(targetReference)
+
+  const surfaceEvidenceById = new Map()
+  for (const record of evidence.surfaces) {
+    assert.ok(!surfaceEvidenceById.has(record.surfaceId), `Duplicate Rust contract surface evidence for ${record.surfaceId}.`)
+    assert.equal(record.proof, 'approved-contract-change', `Invalid surface proof for ${record.surfaceId}.`)
+    surfaceEvidenceById.set(record.surfaceId, record)
+  }
+  const baselineSurfaces = contractSurfaceSources(RUST_REFACTOR_CONTRACT_COMMIT)
+  const targetSurfaces = new Map(contractSurfaceSources(targetCommit).map((surface) => [surface.id, surface]))
+  const usedSurfaceEvidence = new Set()
+  const surfaces = baselineSurfaces.map((baseline) => {
+    const target = targetSurfaces.get(baseline.id)
+    assert.ok(target, `Missing Rust contract target surface ${baseline.id}.`)
+    if (target.digest === baseline.digest) {
+      return { ...baseline, targetDigest: target.digest, status: 'preserved-exact', proof: 'exact-source' }
+    }
+    const record = surfaceEvidenceById.get(baseline.id)
+    if (!record) {
+      return { ...baseline, targetDigest: target.digest, status: 'regressed', proof: null }
+    }
+    assert.equal(record.baselineDigest, baseline.digest, `Stale baseline surface digest for ${baseline.id}.`)
+    assert.equal(record.targetDigest, target.digest, `Stale target surface digest for ${baseline.id}.`)
+    usedSurfaceEvidence.add(baseline.id)
+    return {
+      ...baseline,
+      targetDigest: target.digest,
+      status: 'approved-contract-change',
+      proof: record.proof,
+      reason: record.reason
+    }
+  })
+  assert.deepEqual(
+    [...surfaceEvidenceById.keys()].sort(),
+    [...usedSurfaceEvidence].sort(),
+    'Rust refactor contract surface evidence contains unused records.'
+  )
+
+  return {
+    $schema: '../scripts/rust-refactor-contract-ledger.schema.json',
+    version: 1,
+    policy: {
+      role: 'This is a non-regression guard for the completed Rust refactor, not a second rc.87 parity denominator.',
+      conflictAuthority: 'The explicit Rust refactor contract wins; conflicting rc.87 behavior requires a parity exception.',
+      targetOnly: 'Cases added after the Rust refactor baseline are supplemental and cannot replace baseline cases.'
+    },
+    baseline: {
+      ref: 'bd164e4b5',
+      commit: RUST_REFACTOR_CONTRACT_COMMIT,
+      cases: baselineInventory.cases.length
+    },
+    target: {
+      ref: targetInventory.ref,
+      commit: targetCommit,
+      cases: targetInventory.cases.length
+    },
+    evidence: {
+      path: path.relative(process.cwd(), rustRefactorContractEvidencePath),
+      version: evidence.version,
+      records: evidence.records.length,
+      surfaces: evidence.surfaces.length
+    },
+    summary: {
+      byStatus: countBy(entries, ({ status }) => status),
+      surfaceByStatus: countBy(surfaces, ({ status }) => status),
+      addedCases: added.length
+    },
+    surfaces,
+    entries,
+    added
+  }
+}
+
+function validateRustRefactorContractLedger(ledger) {
+  assert.equal(ledger.baseline.commit, RUST_REFACTOR_CONTRACT_COMMIT, 'Rust contract baseline moved unexpectedly.')
+  assert.equal(ledger.entries.length, 1033, 'Rust contract baseline case count drifted.')
+  assert.equal(new Set(ledger.entries.map(({ source }) => source.id)).size, ledger.entries.length, 'Duplicate Rust contract source IDs.')
+  for (const entry of ledger.entries) {
+    assert.ok(
+      ['preserved-exact', 'verified-superset', 'approved-contract-change', 'regressed', 'removed-unapproved'].includes(entry.status),
+      `Invalid Rust contract status for ${entry.source.id}.`
+    )
+  }
+}
+
 function validatePostRc87Delta(delta) {
   const expectedBehaviorFiles = new Set([
     'packages/integration/src/manifest-facade.ts',
@@ -1796,6 +2071,7 @@ const targetCommit = targetArgument ? resolveRef(targetArgument) : resolveLatest
 
 const legacyInventory = collectCasesFromRef(baselineRef, baselineCommit)
 const targetInventory = collectCasesFromRef(targetRef, targetCommit)
+const rustRefactorContractLedger = buildRustRefactorContractLedger(targetInventory, targetCommit)
 targetInventory.cases.push(...collectSemanticCorpusCases(targetCommit))
 targetInventory.cases.push(...collectRustTakeoverCases(targetCommit))
 targetInventory.cases.sort((left, right) => left.file.localeCompare(right.file) || left.line - right.line || left.title.localeCompare(right.title))
@@ -1900,14 +2176,18 @@ const ledger = {
 }
 
 validateLedger(ledger)
+validateRustRefactorContractLedger(rustRefactorContractLedger)
 validatePostRc87Delta(postRc87Delta)
 const json = `${JSON.stringify(ledger, null, 2)}\n`
+const rustRefactorContractJson = `${JSON.stringify(rustRefactorContractLedger, null, 2)}\n`
 const postRc87DeltaJson = `${JSON.stringify(postRc87Delta, null, 2)}\n`
 const report = buildReport(ledger, postRc87Delta)
 writeOrCheck(ledgerPath, json, check)
+writeOrCheck(rustRefactorContractLedgerPath, rustRefactorContractJson, check)
 writeOrCheck(postRc87DeltaPath, postRc87DeltaJson, check)
 writeOrCheck(reportPath, report, check)
 
 console.log(`${check ? 'Validated' : 'Wrote'} ${path.relative(process.cwd(), ledgerPath)} (${ledger.entries.length} rc.87 cases).`)
+console.log(`${check ? 'Validated' : 'Wrote'} ${path.relative(process.cwd(), rustRefactorContractLedgerPath)} (${rustRefactorContractLedger.entries.length} Rust refactor contract cases).`)
 console.log(`${check ? 'Validated' : 'Wrote'} ${path.relative(process.cwd(), postRc87DeltaPath)} (${postRc87Delta.files.length} post-rc.87 files).`)
 console.log(`${check ? 'Validated' : 'Wrote'} ${path.relative(process.cwd(), reportPath)}.`)

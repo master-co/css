@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "./rust-refactor-contract-evidence.schema.json",
+  "type": "object",
+  "required": ["version", "baseline", "records", "surfaces"],
+  "properties": {
+    "version": { "const": 1 },
+    "baseline": {
+      "type": "object",
+      "required": ["ref", "commit"],
+      "properties": {
+        "ref": { "const": "bd164e4b5" },
+        "commit": { "const": "bd164e4b5ae3a713940913d745183e9ab6b54263" }
+      },
+      "additionalProperties": false
+    },
+    "records": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["sourceId", "sourceDigest", "targetDigest", "proof", "reason"],
+        "properties": {
+          "sourceId": { "type": "string" },
+          "sourceDigest": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+          "targetDigest": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+          "proof": { "enum": ["verified-superset", "approved-contract-change"] },
+          "reason": { "type": "string", "minLength": 1 }
+        },
+        "additionalProperties": false
+      }
+    },
+    "surfaces": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["surfaceId", "baselineDigest", "targetDigest", "proof", "reason"],
+        "properties": {
+          "surfaceId": { "type": "string" },
+          "baselineDigest": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+          "targetDigest": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+          "proof": { "const": "approved-contract-change" },
+          "reason": { "type": "string", "minLength": 1 }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}
