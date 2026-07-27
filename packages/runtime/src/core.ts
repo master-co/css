@@ -229,9 +229,14 @@ async function resolveHydrationManifest(
   const inline = readInlineHydrationManifest(root)
   if (inline) return inline
   const source = readExternalHydrationManifestSource(root)
-  return source
-    ? await importHydrationManifest(resolveExternalHydrationManifestURL(root, source))
-    : undefined
+  if (!source) return
+  try {
+    return await importHydrationManifest(resolveExternalHydrationManifestURL(root, source))
+  } catch {
+    // External hydration state is an optimization. If it is unavailable, preserve
+    // the server-rendered style until observe() can rebuild it from the document.
+    return
+  }
 }
 
 function isLayerBlockRule(rule: CSSRule): rule is CSSLayerBlockRule {

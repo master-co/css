@@ -20,7 +20,9 @@ let bindHTMLRenderSession: (
 
 export class MasterCSSHTMLRenderSession implements Disposable {
   #sourceHTML = ''
+  #renderedHTML = ''
   #emittedPrefix = ''
+  #earlyResult?: MasterCSSHTMLRenderResult
   #ended = false
   #renderer!: MasterCSSServerRenderer
   #options!: MasterCSSHTMLDocumentOptions
@@ -31,6 +33,42 @@ export class MasterCSSHTMLRenderSession implements Disposable {
   write(chunk: string): string {
     this.assertWritable()
     this.#sourceHTML += chunk
+    if (this.#earlyResult) {
+      this.#renderedHTML += chunk
+      return chunk
+    }
+
+    const headEnd = /<\/head\s*>/iu.exec(this.#sourceHTML)
+    if (headEnd) {
+      const sourceBoundary = headEnd.index + headEnd[0].length
+      const result = this.#renderer.renderHTML(
+        this.#sourceHTML,
+        this.#options
+      )
+      const renderedHeadEnd = /<\/head\s*>/iu.exec(result.html)
+      if (!renderedHeadEnd) {
+        throw new MasterCSSError({
+          code: 'STREAM_PREFIX_MISMATCH',
+          domain: 'server',
+          message: 'The rendered document no longer contains the streamed HTML head.'
+        })
+      }
+      const renderedBoundary = renderedHeadEnd.index + renderedHeadEnd[0].length
+      const renderedPrefix = result.html.slice(0, renderedBoundary)
+      if (!renderedPrefix.startsWith(this.#emittedPrefix)) {
+        throw new MasterCSSError({
+          code: 'STREAM_PREFIX_MISMATCH',
+          domain: 'server',
+          message: 'The rendered document no longer matches the emitted HTML stream prefix.'
+        })
+      }
+      const output = renderedPrefix.slice(this.#emittedPrefix.length)
+        + this.#sourceHTML.slice(sourceBoundary)
+      this.#earlyResult = result
+      this.#renderedHTML += output
+      return output
+    }
+
     if (this.#emittedPrefix) return ''
 
     // CSS and hydration assets are inserted inside <head>, so a canonical document
@@ -42,6 +80,7 @@ export class MasterCSSHTMLRenderSession implements Disposable {
     )?.[0]
     if (!prefix) return ''
     this.#emittedPrefix = prefix
+    this.#renderedHTML += prefix
     return prefix
   }
 
@@ -49,6 +88,13 @@ export class MasterCSSHTMLRenderSession implements Disposable {
     this.assertWritable()
     const finalPrefix = finalChunk ? this.write(finalChunk) : ''
     try {
+      if (this.#earlyResult) {
+        const result = Object.freeze({
+          ...this.#earlyResult,
+          html: this.#renderedHTML
+        })
+        return Object.freeze({ chunk: finalPrefix, result })
+      }
       const result = this.#renderer.renderHTML(this.#sourceHTML, this.#options)
       if (
         this.#emittedPrefix
@@ -70,7 +116,9 @@ export class MasterCSSHTMLRenderSession implements Disposable {
   dispose() {
     if (this.#ended) return
     this.#sourceHTML = ''
+    this.#renderedHTML = ''
     this.#emittedPrefix = ''
+    this.#earlyResult = undefined
     this.#ended = true
     if (this.#ownsRenderer) this.#renderer.dispose()
   }

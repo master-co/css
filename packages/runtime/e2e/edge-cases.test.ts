@@ -1025,14 +1025,15 @@ test('runtime start does not import a hydration manifest without a runtime style
   })
 })
 
-test('progressive hydration fails open when an external style hydration manifest import fails', async ({ page }) => {
+test('progressive hydration falls back when an external manifest payload is invalid', async ({ page }) => {
   const loaderURL = await getRuntimeLoaderURL()
-  const source = new URL('/_master-css/hydration/missing.json', loaderURL).href
+  const source = new URL('/_master-css/hydration/invalid.json', loaderURL).href
 
   await gotoRuntimeOrigin(page, loaderURL)
   await page.route(source, route => route.fulfill({
-    status: 404,
-    body: 'not found'
+    status: 200,
+    contentType: 'application/json',
+    body: '{invalid'
   }))
   await page.evaluate(({ attr, runtimeStyleId, source }) => {
     document.body.innerHTML = '<p class="block"></p>'
@@ -1046,26 +1047,17 @@ test('progressive hydration fails open when an external style hydration manifest
     runtimeStyleId: MASTER_CSS_RUNTIME_STYLE_ID,
     source
   })
-  const result = await page.evaluate(async ({ loaderURL, runtimeStyleId }) => {
-    const { startCSSRuntimeAsync } = await import(loaderURL)
-    try {
-      await startCSSRuntimeAsync()
-    } catch (error) {
-      return {
-        code: (error as { code?: string }).code,
-        hidden: document.documentElement.hasAttribute('hidden'),
-        runtimeStarted: Boolean(globalThis.__MASTER_CSS_RUNTIME_TEST__),
-        styleText: document.getElementById(runtimeStyleId)?.textContent
-      }
-    }
-    throw new Error('Expected runtime startup to fail.')
-  }, { loaderURL, runtimeStyleId: MASTER_CSS_RUNTIME_STYLE_ID })
+  await startCSSRuntimeAsync(page, undefined, loaderURL)
+  const result = await page.evaluate(() => ({
+    progressive: globalThis.__MASTER_CSS_RUNTIME_TEST__.progressive,
+    observing: globalThis.__MASTER_CSS_RUNTIME_TEST__.observing,
+    text: globalThis.__MASTER_CSS_RUNTIME_TEST__.text
+  }))
 
   expect(result).toEqual({
-    code: 'INVALID_HYDRATION_MANIFEST',
-    hidden: false,
-    runtimeStarted: false,
-    styleText: '@layer utilities{.block{display:block}}'
+    progressive: false,
+    observing: true,
+    text: '@layer utilities{.block{display:block}}'
   })
 })
 

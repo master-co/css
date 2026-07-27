@@ -24,6 +24,16 @@ describe('masterCSS plugin composition', () => {
     ]))
   })
 
+  test('null mode registers the shared scanner and style entry pipeline', () => {
+    const names = pluginNames({ mode: 'static' })
+
+    expect(names.filter((name) => name === 'master-css:scanner')).toHaveLength(1)
+    expect(names.filter((name) => name === 'master-css:usage-graph')).toHaveLength(1)
+    expect(names.filter((name) => name === 'master-css:style-entry')).toHaveLength(1)
+    expect(names.filter((name) => name === 'master-css:style-entry:hmr')).toHaveLength(1)
+    expect(names.filter((name) => name === 'master-css:style-entry:build')).toHaveLength(1)
+  })
+
   test('runtime mode registers runtime preloads only with runtime injection', () => {
     expect(pluginNames({ mode: 'runtime' })).toContain('master-css:manifest-preload')
     expect(pluginNames({ mode: 'runtime' })).toContain('master-css:runtime-preload')

@@ -93,6 +93,13 @@ describe('@master/css-astro integration', () => {
     expect(result.injectScript).not.toHaveBeenCalled()
   })
 
+  it('honors injectRuntime=false in progressive mode', async () => {
+    const result = await setup({ mode: 'progressive', runtime: false })
+
+    expect(result.addMiddleware).toHaveBeenCalled()
+    expect(result.injectScript).not.toHaveBeenCalled()
+  })
+
   it('preloads the runtime manifest JSON in runtime static builds', async () => {
     const dir = mkdtempSync(join(tmpdir(), 'master-css-astro-runtime-'))
     const assetsDir = join(dir, '_astro')

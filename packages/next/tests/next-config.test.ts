@@ -376,6 +376,57 @@ describe('withMasterCSS', () => {
     expect(resolvedConfig).toBe(nextConfig)
   })
 
+  it('adds CSS manifest loaders without runtime aliases or the adapter when mode is null', () => {
+    const nextConfig = { reactStrictMode: true }
+    const resolvedConfig = withMasterCSS(nextConfig, {
+      mode: 'runtime',
+      runtime: false
+    }) as any
+
+    expect(resolvedConfig.reactStrictMode).toBe(true)
+    expect(resolvedConfig.adapterPath).toBeUndefined()
+    expect(resolvedConfig.turbopack.rules).toEqual({
+      '*': expect.arrayContaining([
+        expect.objectContaining({
+          condition: { path: expect.any(RegExp) },
+          type: 'ecmascript'
+        }),
+        expect.objectContaining({
+          condition: {
+            all: [
+              { path: /\.css$/ },
+              { query: /master-css-manifest/ }
+            ]
+          },
+          type: 'ecmascript',
+          as: '*.js'
+        }),
+        expect.objectContaining({
+          condition: {
+            all: [
+              { path: /\.(css|scss|sass)$/ },
+              { content: expect.any(RegExp) },
+              { not: { query: /master-css-manifest/ } }
+            ]
+          },
+          type: 'css',
+          as: '*.css'
+        })
+      ]),
+      '*.js': [expect.objectContaining({ type: 'ecmascript' })],
+      '*.cjs': [expect.objectContaining({ type: 'ecmascript' })],
+      '*.ts': [expect.objectContaining({ type: 'typescript' })]
+    })
+    expect(resolvedConfig.webpack({ module: { rules: [] } }, {}).module.rules)
+      .toEqual(expect.arrayContaining([
+        expect.objectContaining({ test: expect.any(RegExp) }),
+        expect.objectContaining({ resourceQuery: /master-css-manifest/ }),
+        expect.objectContaining({ test: /\.(css|scss|sass)$/ })
+      ]))
+    expect(resolvedConfig.turbopack.resolveAlias[nextInstrumentationClientId]).toBeUndefined()
+    expect(resolvedConfig.turbopack.resolveAlias[masterCSSUserInstrumentationClientId]).toBeUndefined()
+  })
+
   it('composes an existing Next adapter path with the Master CSS adapter', () => {
     const cwd = process.cwd()
     const root = mkdtempSync(join(tmpdir(), 'master-css-next-composed-config-'))
