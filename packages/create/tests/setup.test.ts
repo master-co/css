@@ -1367,4 +1367,19 @@ export default nextConfig;
     expect(formatPlannedCommand(plan.commands[0])).toContain('sv add @master/css-svelte-addon')
     expect(formatPlannedCommand(plan.commands[1])).toContain('@master/css-mcp@rc')
   })
+
+  test('does not restore the retired rc.87 @master/css-sv package name', () => {
+    const root = createTempProject('master-css-create-rc87-svelte-', {
+      dependencies: {
+        '@sveltejs/kit': '^2.0.0'
+      }
+    })
+
+    const plan = planMasterCSSSetup({ root })
+    const command = formatPlannedCommand(plan.commands[0])
+
+    expect(plan.framework).toBe('svelte')
+    expect(command).toContain('sv add @master/css-svelte-addon')
+    expect(command).not.toContain('@master/css-sv ')
+  })
 })

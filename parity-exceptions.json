@@ -60,6 +60,16 @@
         "cli"
       ],
       "test": "packages/cli/tests/rc87-core.test.ts"
+    },
+    {
+      "id": "rc87-create-svelte-addon-package-rename",
+      "reason": "SvelteKit setup delegates to the current canonical addon package and must not restore the retired @master/css-sv package name.",
+      "old": "The generated SvelteKit setup command runs sv add @master/css-sv.",
+      "new": "The generated SvelteKit setup command runs sv add @master/css-svelte-addon.",
+      "packages": [
+        "create"
+      ],
+      "test": "packages/create/tests/setup.test.ts"
     }
   ]
 }
