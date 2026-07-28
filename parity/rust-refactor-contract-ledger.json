@@ -13,25 +13,26 @@
   },
   "target": {
     "ref": "latest-target-change",
-    "commit": "884d19a7606fefaf0754df6b4ebf3d9dd9b0eb35",
-    "cases": 1431
+    "commit": "37355b370a8a4232c6020c380bef3d7dc2e3851b",
+    "cases": 1441
   },
   "evidence": {
     "path": "parity/rust-refactor-contract-evidence.json",
     "version": 1,
-    "records": 6,
+    "records": 14,
     "surfaces": 1
   },
   "summary": {
     "byStatus": {
-      "preserved-exact": 1027,
+      "approved-contract-change": 8,
+      "preserved-exact": 1019,
       "verified-superset": 6
     },
     "surfaceByStatus": {
       "approved-contract-change": 1,
       "preserved-exact": 6
     },
-    "addedCases": 398
+    "addedCases": 408
   },
   "surfaces": [
     {
@@ -18336,7 +18337,7 @@
         "id": "rc87-4af4410dba8e8b12",
         "package": "internal",
         "file": "packages/internal/tests/module.test.ts",
-        "line": 23,
+        "line": 37,
         "title": "defines Master CSS virtual module ids",
         "runner": "vitest",
         "kind": "test",
@@ -18369,7 +18370,7 @@
         "id": "rc87-db46c376e47a7d7f",
         "package": "internal",
         "file": "packages/internal/tests/module.test.ts",
-        "line": 30,
+        "line": 44,
         "title": "serializes manifest and emittedGlobals modules",
         "runner": "vitest",
         "kind": "test",
@@ -18402,7 +18403,7 @@
         "id": "rc87-583b38ea9552163d",
         "package": "internal",
         "file": "packages/internal/tests/module.test.ts",
-        "line": 38,
+        "line": 52,
         "title": "does not expose runtime injection source helpers",
         "runner": "vitest",
         "kind": "test",
@@ -18435,7 +18436,7 @@
         "id": "rc87-dc01b9316c8a7a57",
         "package": "internal",
         "file": "packages/internal/tests/module.test.ts",
-        "line": 49,
+        "line": 63,
         "title": "matches and strips CSS manifest resource queries",
         "runner": "vitest",
         "kind": "test",
@@ -18469,7 +18470,7 @@
         "id": "rc87-a2cc12f09d82bb91",
         "package": "internal",
         "file": "packages/internal/tests/module.test.ts",
-        "line": 54,
+        "line": 68,
         "title": "builds manifest JSON preload link attributes and HTML",
         "runner": "vitest",
         "kind": "test",
@@ -18497,18 +18498,25 @@
         ],
         "priority": "P2"
       },
-      "status": "preserved-exact",
+      "status": "approved-contract-change",
       "target": {
         "id": "rc87-2d99ea0e5a8248fe",
         "package": "internal",
         "file": "packages/internal/tests/module.test.ts",
-        "line": 66,
+        "line": 80,
         "title": "builds a universal manifest facade that resolves Next production and dev assets",
         "runner": "vitest",
         "kind": "test",
-        "sourceDigest": "63596bb25639863c4a77c4599587a1178ee46f2d3e938eaeac5d397122c12063"
+        "sourceDigest": "5bb285512b710f4cb5fe56e5902499814b647ee410347a7ea3ee6d92c6d070dc"
       },
-      "proof": "exact-source"
+      "proof": "approved-contract-change",
+      "reason": "The universal manifest facade retains the refactor contract import-first assertions and adds the user-approved legacy Safari compatibility path: fetch only when JSON import-loader construction throws SyntaxError, without changing published APIs, exports, virtual module IDs, or rendering modes.",
+      "approval": {
+        "approvedBy": "Aron <i@aron.tw>",
+        "approvedAt": "2026-07-28T12:14:27Z",
+        "reviewRef": "codex-task:019f8ebd-c9e4-73b1-814b-5de5e204ca41",
+        "scopeDigest": "6fe7a81f96131dfa49550e0f9608777417cc7938cf967e8e341305a121393625"
+      }
     },
     {
       "source": {
@@ -21598,7 +21606,7 @@
         ],
         "priority": "P0"
       },
-      "status": "preserved-exact",
+      "status": "approved-contract-change",
       "target": {
         "id": "rc87-c6f234a37661be00",
         "package": "next",
@@ -21607,9 +21615,16 @@
         "title": "wraps the manifest JSON as an external JSON facade when requested",
         "runner": "vitest",
         "kind": "test",
-        "sourceDigest": "234eb3d4b27a4bd80066a07a403be6afa0b6be8aa51a268c7720301f8a530a07"
+        "sourceDigest": "449583c35a6d3b4499950043ea16a0a2d16912810941afe4801ceac17028121e"
       },
-      "proof": "exact-source"
+      "proof": "approved-contract-change",
+      "reason": "The Next manifest facade retains the refactor contract import-first assertions and adds the user-approved legacy Safari compatibility path: fetch only when JSON import-loader construction throws SyntaxError, without changing published APIs, exports, virtual module IDs, or rendering modes.",
+      "approval": {
+        "approvedBy": "Aron <i@aron.tw>",
+        "approvedAt": "2026-07-28T12:14:27Z",
+        "reviewRef": "codex-task:019f8ebd-c9e4-73b1-814b-5de5e204ca41",
+        "scopeDigest": "af679f9e7623f989848eb99dfe20a405f13b37feefcc96155dd439af8f9276da"
+      }
     },
     {
       "source": {
@@ -21638,7 +21653,7 @@
         "id": "rc87-bdb21071a6a1472c",
         "package": "next",
         "file": "packages/next/tests/css-manifest-loader.test.ts",
-        "line": 101,
+        "line": 102,
         "title": "inlines manifest modules in development for HMR",
         "runner": "vitest",
         "kind": "test",
@@ -21673,7 +21688,7 @@
         "id": "rc87-e5d343ae48cff114",
         "package": "next",
         "file": "packages/next/tests/css-manifest-loader.test.ts",
-        "line": 129,
+        "line": 130,
         "title": "loads CSS when the loader resource includes ?master-css-manifest",
         "runner": "vitest",
         "kind": "test",
@@ -21708,7 +21723,7 @@
         "id": "rc87-dcfcbfe417ea201d",
         "package": "next",
         "file": "packages/next/tests/css-manifest-loader.test.ts",
-        "line": 158,
+        "line": 159,
         "title": "loads the default virtual manifest from CSS entry files only",
         "runner": "vitest",
         "kind": "test",
@@ -21743,7 +21758,7 @@
         "id": "rc87-9320973372113ac9",
         "package": "next",
         "file": "packages/next/tests/css-manifest-loader.test.ts",
-        "line": 196,
+        "line": 197,
         "title": "keeps virtual manifest dependencies registered after invalid CSS and recovers on the next run",
         "runner": "vitest",
         "kind": "test",
@@ -24232,7 +24247,7 @@
         "id": "rc87-e3bfc4987990ad3a",
         "package": "runtime",
         "file": "packages/runtime/e2e/edge-cases.test.ts",
-        "line": 996,
+        "line": 1205,
         "title": "runtime start does not import a hydration manifest without a runtime style source",
         "runner": "playwright-or-vitest-e2e",
         "kind": "e2e",
@@ -24266,7 +24281,7 @@
         "id": "rc87-d5af64a61d41263a",
         "package": "runtime",
         "file": "packages/runtime/e2e/edge-cases.test.ts",
-        "line": 1028,
+        "line": 1237,
         "title": "progressive hydration fails open when an external style hydration manifest import fails",
         "runner": "playwright-or-vitest-e2e",
         "kind": "e2e",
@@ -24300,7 +24315,7 @@
         "id": "rc87-e9921559bcdcc602",
         "package": "runtime",
         "file": "packages/runtime/e2e/edge-cases.test.ts",
-        "line": 1114,
+        "line": 1323,
         "title": "explicit hydration manifest wins over external DOM discovery",
         "runner": "playwright-or-vitest-e2e",
         "kind": "e2e",
@@ -24335,7 +24350,7 @@
         "id": "rc87-3f337089de44b759",
         "package": "runtime",
         "file": "packages/runtime/e2e/edge-cases.test.ts",
-        "line": 1153,
+        "line": 1362,
         "title": "progressive hydration matches bucketed theme variables",
         "runner": "playwright-or-vitest-e2e",
         "kind": "e2e",
@@ -24370,7 +24385,7 @@
         "id": "rc87-069973df7e52b6a3",
         "package": "runtime",
         "file": "packages/runtime/e2e/edge-cases.test.ts",
-        "line": 1183,
+        "line": 1392,
         "title": "progressive hydration matches theme variable buckets by key",
         "runner": "playwright-or-vitest-e2e",
         "kind": "e2e",
@@ -24404,7 +24419,7 @@
         "id": "rc87-2ae476ee747fc6d7",
         "package": "runtime",
         "file": "packages/runtime/e2e/edge-cases.test.ts",
-        "line": 1223,
+        "line": 1432,
         "title": "removes shared alias variable dependencies when classes disappear",
         "runner": "playwright-or-vitest-e2e",
         "kind": "e2e",
@@ -24439,7 +24454,7 @@
         "id": "rc87-6224a90501ed606d",
         "package": "runtime",
         "file": "packages/runtime/e2e/edge-cases.test.ts",
-        "line": 1303,
+        "line": 1512,
         "title": "inlines variables without runtime theme counts",
         "runner": "playwright-or-vitest-e2e",
         "kind": "e2e",
@@ -33488,7 +33503,7 @@
         ],
         "priority": "P0"
       },
-      "status": "preserved-exact",
+      "status": "approved-contract-change",
       "target": {
         "id": "rc87-074e56c447b243c2",
         "package": "vite",
@@ -33497,9 +33512,16 @@
         "title": "emits per-file CSS manifests as external JSON assets in production build",
         "runner": "vitest",
         "kind": "test",
-        "sourceDigest": "27ae2d0a6ebbe1abb2954feb5f2cdb2dc7da7e4040f78bf6374e48a2151c12ef"
+        "sourceDigest": "924d5cda2aeecd2e762159ce7ce9a8067590daba505cd2c01c2de298b3f6001a"
       },
-      "proof": "exact-source"
+      "proof": "approved-contract-change",
+      "reason": "The Vite browser manifest loader retains the refactor contract import-first assertions and adds the user-approved legacy Safari compatibility path: fetch only when JSON import-loader construction throws SyntaxError, without changing published APIs, exports, virtual module IDs, or rendering modes.",
+      "approval": {
+        "approvedBy": "Aron <i@aron.tw>",
+        "approvedAt": "2026-07-28T12:14:27Z",
+        "reviewRef": "codex-task:019f8ebd-c9e4-73b1-814b-5de5e204ca41",
+        "scopeDigest": "6cd59f6810bc2286f2ee7679dd030dc3154c8ccaa884032285ff198ea4a7c3af"
+      }
     },
     {
       "source": {
@@ -33523,18 +33545,25 @@
         ],
         "priority": "P0"
       },
-      "status": "preserved-exact",
+      "status": "approved-contract-change",
       "target": {
         "id": "rc87-fb0fd2ea320a28ed",
         "package": "vite",
         "file": "packages/vite/tests/plugins/manifest-loader.test.ts",
-        "line": 147,
+        "line": 148,
         "title": "emits per-file CSS manifests through a universal facade in SSR production build",
         "runner": "vitest",
         "kind": "test",
-        "sourceDigest": "8d8ab5ad963d8dff03d832ae36cff51bfd4408a419ca1fc34edb446285b99bfa"
+        "sourceDigest": "3104ed5c77ee66dac20b25ca29237c3f3b275b179a88852204ca4747157578d5"
       },
-      "proof": "exact-source"
+      "proof": "approved-contract-change",
+      "reason": "The Vite universal manifest loader retains the refactor contract browser import-first and server import behavior while adding the user-approved legacy Safari syntax-only fetch fallback, without changing published APIs, exports, virtual module IDs, or rendering modes.",
+      "approval": {
+        "approvedBy": "Aron <i@aron.tw>",
+        "approvedAt": "2026-07-28T12:14:27Z",
+        "reviewRef": "codex-task:019f8ebd-c9e4-73b1-814b-5de5e204ca41",
+        "scopeDigest": "b8513e8dca38c76d577da39961528d9bc298f75601f727cab340480a2467fd43"
+      }
     },
     {
       "source": {
@@ -33563,7 +33592,7 @@
         "id": "rc87-25a8ede253f087ea",
         "package": "vite",
         "file": "packages/vite/tests/plugins/manifest-loader.test.ts",
-        "line": 172,
+        "line": 173,
         "title": "updates per-file CSS manifest modules through HMR when imported",
         "runner": "vitest",
         "kind": "test",
@@ -33803,7 +33832,7 @@
         ],
         "priority": "P0"
       },
-      "status": "preserved-exact",
+      "status": "approved-contract-change",
       "target": {
         "id": "rc87-138d2a9846a509c5",
         "package": "vite",
@@ -33812,9 +33841,16 @@
         "title": "emits the default manifest as an external JSON asset in production build",
         "runner": "vitest",
         "kind": "test",
-        "sourceDigest": "d22120b1f722e98435aa92b233e54af23307f115b89583c6b0dc0bbd2e8cdf3e"
+        "sourceDigest": "1b83dac91765e67e59f9a1fe4cb0499fc0188d4716cc82ab12b6f125687113ff"
       },
-      "proof": "exact-source"
+      "proof": "approved-contract-change",
+      "reason": "The Vite default browser manifest facade retains the refactor contract import-first assertions and adds the user-approved legacy Safari compatibility path: fetch only when JSON import-loader construction throws SyntaxError, without changing published APIs, exports, virtual module IDs, or rendering modes.",
+      "approval": {
+        "approvedBy": "Aron <i@aron.tw>",
+        "approvedAt": "2026-07-28T12:14:27Z",
+        "reviewRef": "codex-task:019f8ebd-c9e4-73b1-814b-5de5e204ca41",
+        "scopeDigest": "17caa388e1b829f57bc2e3e115fc85e2bf8968aa9bf7345bc36982753e90934b"
+      }
     },
     {
       "source": {
@@ -33843,7 +33879,7 @@
         "id": "rc87-61c8ed2a39c80422",
         "package": "vite",
         "file": "packages/vite/tests/plugins/manifest-virtual-module.test.ts",
-        "line": 109,
+        "line": 110,
         "title": "does not eagerly load the default manifest during production buildStart",
         "runner": "vitest",
         "kind": "test",
@@ -33873,18 +33909,25 @@
         ],
         "priority": "P0"
       },
-      "status": "preserved-exact",
+      "status": "approved-contract-change",
       "target": {
         "id": "rc87-de63cfc41ad8a597",
         "package": "vite",
         "file": "packages/vite/tests/plugins/manifest-virtual-module.test.ts",
-        "line": 120,
+        "line": 121,
         "title": "emits the default manifest through a universal facade in SSR production build",
         "runner": "vitest",
         "kind": "test",
-        "sourceDigest": "4680427e09f7d1655cbf19d1846c58d956b07b5f693e2c2f4a746bdb0f74caee"
+        "sourceDigest": "18901ac79fd0899c1f948c7016a77154927dce05b5fb64389b64b74159f0f4bc"
       },
-      "proof": "exact-source"
+      "proof": "approved-contract-change",
+      "reason": "The Vite default universal manifest facade retains the refactor contract browser import-first and server import behavior while adding the user-approved legacy Safari syntax-only fetch fallback, without changing published APIs, exports, virtual module IDs, or rendering modes.",
+      "approval": {
+        "approvedBy": "Aron <i@aron.tw>",
+        "approvedAt": "2026-07-28T12:14:27Z",
+        "reviewRef": "codex-task:019f8ebd-c9e4-73b1-814b-5de5e204ca41",
+        "scopeDigest": "8397caf2e0bf3fb8d535199d6d006b140dff388aa1eafc3fb207f1ab44fc0677"
+      }
     },
     {
       "source": {
@@ -33913,7 +33956,7 @@
         "id": "rc87-f31ee191a59a71b4",
         "package": "vite",
         "file": "packages/vite/tests/plugins/manifest-virtual-module.test.ts",
-        "line": 140,
+        "line": 141,
         "title": "handles unimported CSS manifest changes through CSS HMR only",
         "runner": "vitest",
         "kind": "test",
@@ -33948,7 +33991,7 @@
         "id": "rc87-f44b976958b10bfc",
         "package": "vite",
         "file": "packages/vite/tests/plugins/manifest-virtual-module.test.ts",
-        "line": 166,
+        "line": 167,
         "title": "updates the default virtual manifest module through HMR when imported",
         "runner": "vitest",
         "kind": "test",
@@ -36371,7 +36414,7 @@
         "id": "rc87-62dae87558a12abc",
         "package": "webpack",
         "file": "packages/webpack/tests/plugin.test.ts",
-        "line": 200,
+        "line": 201,
         "title": "exports the plugin as the default export",
         "runner": "vitest",
         "kind": "test",
@@ -36405,7 +36448,7 @@
         "id": "rc87-1cfdc65db7f89e38",
         "package": "webpack",
         "file": "packages/webpack/tests/plugin.test.ts",
-        "line": 204,
+        "line": 205,
         "title": "installs a pre style loader for managed CSS entries",
         "runner": "vitest",
         "kind": "test",
@@ -36439,7 +36482,7 @@
         "id": "rc87-fe594c1c0192c08b",
         "package": "webpack",
         "file": "packages/webpack/tests/plugin.test.ts",
-        "line": 227,
+        "line": 228,
         "title": "rewrites managed CSS entries to the generated CSS virtual import",
         "runner": "vitest",
         "kind": "test",
@@ -36474,7 +36517,7 @@
         "id": "rc87-fa92a6eb10d7d185",
         "package": "webpack",
         "file": "packages/webpack/tests/plugin.test.ts",
-        "line": 253,
+        "line": 254,
         "title": "keeps imported native CSS and keyframes in the generated CSS virtual module",
         "runner": "vitest",
         "kind": "test",
@@ -36508,7 +36551,7 @@
         "id": "rc87-d74106ef23e15621",
         "package": "webpack",
         "file": "packages/webpack/tests/plugin.test.ts",
-        "line": 302,
+        "line": 303,
         "title": "scans modules that expose source through originalSource()",
         "runner": "vitest",
         "kind": "test",
@@ -36543,7 +36586,7 @@
         "id": "rc87-41097ea300e09962",
         "package": "webpack",
         "file": "packages/webpack/tests/plugin.test.ts",
-        "line": 327,
+        "line": 328,
         "title": "locally lowers @compose in CSS Modules without rewriting to the virtual CSS import",
         "runner": "vitest",
         "kind": "test",
@@ -36579,7 +36622,7 @@
         "id": "rc87-b4ff936f0bef3660",
         "package": "webpack",
         "file": "packages/webpack/tests/plugin.test.ts",
-        "line": 357,
+        "line": 358,
         "title": "dedupes local theme variables already emitted by global style entries",
         "runner": "vitest",
         "kind": "test",
@@ -36614,7 +36657,7 @@
         "id": "rc87-7b3f20f279ae6e88",
         "package": "webpack",
         "file": "packages/webpack/tests/plugin.test.ts",
-        "line": 382,
+        "line": 383,
         "title": "style loader keeps local style dependencies registered after invalid @compose",
         "runner": "vitest",
         "kind": "test",
@@ -36649,7 +36692,7 @@
         "id": "rc87-7551338099ad9f97",
         "package": "webpack",
         "file": "packages/webpack/tests/plugin.test.ts",
-        "line": 405,
+        "line": 406,
         "title": "locally lowers explicit @reference CSS Modules and reports reference dependencies",
         "runner": "vitest",
         "kind": "test",
@@ -36683,7 +36726,7 @@
         "id": "rc87-04417c896081dcd2",
         "package": "webpack",
         "file": "packages/webpack/tests/plugin.test.ts",
-        "line": 445,
+        "line": 446,
         "title": "leaves ordinary CSS unchanged in the style loader helper",
         "runner": "vitest",
         "kind": "test",
@@ -36718,7 +36761,7 @@
         "id": "rc87-18d82ac9694ae950",
         "package": "webpack",
         "file": "packages/webpack/tests/plugin.test.ts",
-        "line": 462,
+        "line": 463,
         "title": "strips Master directives from package CSS files before css-loader sees them",
         "runner": "vitest",
         "kind": "test",
@@ -36748,18 +36791,25 @@
         ],
         "priority": "P0"
       },
-      "status": "preserved-exact",
+      "status": "approved-contract-change",
       "target": {
         "id": "rc87-6c18481fc5cdfa31",
         "package": "webpack",
         "file": "packages/webpack/tests/plugin.test.ts",
-        "line": 476,
+        "line": 477,
         "title": "resolves virtual:master-css-manifest to a JS facade and external JSON asset",
         "runner": "vitest",
         "kind": "test",
-        "sourceDigest": "ee6b8dcf67b8d3b4e1da6ef2506d00d0688c4af5c50c104eb52dfd7641bdb57a"
+        "sourceDigest": "825fbb83678c41c1bda9025b82f6d7e0e8dd5fbb774f4793fa605974249e5ab1"
       },
-      "proof": "exact-source"
+      "proof": "approved-contract-change",
+      "reason": "The Webpack default manifest facade retains the refactor contract import-first assertions and adds the user-approved legacy Safari compatibility path: fetch only when JSON import-loader construction throws SyntaxError, without changing published APIs, exports, virtual module IDs, or rendering modes.",
+      "approval": {
+        "approvedBy": "Aron <i@aron.tw>",
+        "approvedAt": "2026-07-28T12:14:27Z",
+        "reviewRef": "codex-task:019f8ebd-c9e4-73b1-814b-5de5e204ca41",
+        "scopeDigest": "7b3ec6136739fc76be6f6ba28e205d33af22252bef125fcb695a9057cd99cc54"
+      }
     },
     {
       "source": {
@@ -36787,7 +36837,7 @@
         "id": "rc87-83df9a29b279d577",
         "package": "webpack",
         "file": "packages/webpack/tests/plugin.test.ts",
-        "line": 502,
+        "line": 505,
         "title": "adds resolve file dependencies to Set and array-like containers",
         "runner": "vitest",
         "kind": "test",
@@ -36822,7 +36872,7 @@
         "id": "rc87-487a283b7e430932",
         "package": "webpack",
         "file": "packages/webpack/tests/plugin.test.ts",
-        "line": 515,
+        "line": 518,
         "title": "resolves virtual:master-css-manifest to an inline module in development",
         "runner": "vitest",
         "kind": "test",
@@ -36857,7 +36907,7 @@
         "id": "rc87-1300f23ca2eac111",
         "package": "webpack",
         "file": "packages/webpack/tests/plugin.test.ts",
-        "line": 540,
+        "line": 543,
         "title": "keeps virtual manifest file dependencies after invalid CSS",
         "runner": "vitest",
         "kind": "test",
@@ -36891,7 +36941,7 @@
         "id": "rc87-dde33348ed8edfef",
         "package": "webpack",
         "file": "packages/webpack/tests/plugin.test.ts",
-        "line": 582,
+        "line": 585,
         "title": "resolves virtual:master-css-emitted-globals to a JS virtual module",
         "runner": "vitest",
         "kind": "test",
@@ -36921,18 +36971,25 @@
         ],
         "priority": "P0"
       },
-      "status": "preserved-exact",
+      "status": "approved-contract-change",
       "target": {
         "id": "rc87-692ac35eb7556a3f",
         "package": "webpack",
         "file": "packages/webpack/tests/plugin.test.ts",
-        "line": 604,
+        "line": 607,
         "title": "resolves ?master-css-manifest imports to per-file JS facades and external JSON assets",
         "runner": "vitest",
         "kind": "test",
-        "sourceDigest": "64b665198491bd1301fca51534096ffe550f2a3f16863461bb5aa5ec2bfab6e0"
+        "sourceDigest": "7eea9812e7eb2a7bc70aab650cc29482dae932839a127ba516b7b53827084748"
       },
-      "proof": "exact-source"
+      "proof": "approved-contract-change",
+      "reason": "The Webpack per-file manifest facade retains the refactor contract import-first assertions and adds the user-approved legacy Safari compatibility path: fetch only when JSON import-loader construction throws SyntaxError, without changing published APIs, exports, virtual module IDs, or rendering modes.",
+      "approval": {
+        "approvedBy": "Aron <i@aron.tw>",
+        "approvedAt": "2026-07-28T12:14:27Z",
+        "reviewRef": "codex-task:019f8ebd-c9e4-73b1-814b-5de5e204ca41",
+        "scopeDigest": "dadb0a81246c558c8cb04b3a97b06e2fa86b059ccf9af6e3ded00ec003d20aae"
+      }
     },
     {
       "source": {
@@ -36961,7 +37018,7 @@
         "id": "rc87-ee5192bc2b047526",
         "package": "webpack",
         "file": "packages/webpack/tests/plugin.test.ts",
-        "line": 635,
+        "line": 640,
         "title": "resolves ?master-css-manifest imports to inline modules in development",
         "runner": "vitest",
         "kind": "test",
@@ -36996,7 +37053,7 @@
         "id": "rc87-b8a6d8670385ca12",
         "package": "webpack",
         "file": "packages/webpack/tests/plugin.test.ts",
-        "line": 660,
+        "line": 665,
         "title": "keeps ?master-css-manifest file dependencies after invalid CSS",
         "runner": "vitest",
         "kind": "test",
@@ -37030,7 +37087,7 @@
         "id": "rc87-476b86b0ce18f0ff",
         "package": "webpack",
         "file": "packages/webpack/tests/plugin.test.ts",
-        "line": 699,
+        "line": 704,
         "title": "resolves virtual CSS module imports to the generated CSS virtual module",
         "runner": "vitest",
         "kind": "test",
@@ -37064,7 +37121,7 @@
         "id": "rc87-b0bf669f8620bb63",
         "package": "webpack",
         "file": "packages/webpack/tests/plugin.test.ts",
-        "line": 721,
+        "line": 726,
         "title": "resolves CSS @import virtual utilities to the generated CSS virtual module",
         "runner": "vitest",
         "kind": "test",
@@ -37098,7 +37155,7 @@
         "id": "rc87-146794a4d143347a",
         "package": "webpack",
         "file": "packages/webpack/tests/plugin.test.ts",
-        "line": 743,
+        "line": 748,
         "title": "leaves unrelated CSS @import unresolved",
         "runner": "vitest",
         "kind": "test",
@@ -37132,7 +37189,7 @@
         "id": "rc87-ac123eeaa6d84d15",
         "package": "webpack",
         "file": "packages/webpack/tests/plugin.test.ts",
-        "line": 765,
+        "line": 770,
         "title": "leaves CSS @import @master/css package imports unchanged",
         "runner": "vitest",
         "kind": "test",
@@ -37166,7 +37223,7 @@
         "id": "rc87-e393ad8cb0087514",
         "package": "webpack",
         "file": "packages/webpack/tests/plugin.test.ts",
-        "line": 787,
+        "line": 792,
         "title": "leaves non-CSS @master/css imports unchanged",
         "runner": "vitest",
         "kind": "test",
@@ -37201,7 +37258,7 @@
         "id": "rc87-c3a701075c2cccef",
         "package": "webpack",
         "file": "packages/webpack/tests/plugin.test.ts",
-        "line": 809,
+        "line": 814,
         "title": "adds managed CSS entry files as virtual manifest dependencies",
         "runner": "vitest",
         "kind": "test",
@@ -37236,7 +37293,7 @@
         "id": "rc87-b04c04131bf97f5f",
         "package": "webpack",
         "file": "packages/webpack/tests/plugin.test.ts",
-        "line": 830,
+        "line": 835,
         "title": "adds managed CSS import graph as virtual manifest dependencies",
         "runner": "vitest",
         "kind": "test",
@@ -37270,7 +37327,7 @@
         "id": "rc87-dc72ae033f5d4677",
         "package": "webpack",
         "file": "packages/webpack/tests/plugin.test.ts",
-        "line": 868,
+        "line": 873,
         "title": "prunes managed CSS entry native CSS and uses its config",
         "runner": "vitest",
         "kind": "test",
@@ -37304,7 +37361,7 @@
         "id": "rc87-59fa6e066daa5b41",
         "package": "webpack",
         "file": "packages/webpack/tests/plugin.test.ts",
-        "line": 923,
+        "line": 928,
         "title": "includes package base CSS for managed package imports",
         "runner": "vitest",
         "kind": "test",
@@ -37338,7 +37395,7 @@
         "id": "rc87-4eaffae5c3984d01",
         "package": "webpack",
         "file": "packages/webpack/tests/plugin.test.ts",
-        "line": 944,
+        "line": 949,
         "title": "keeps managed CSS fallback reset dependencies after failed style registration",
         "runner": "vitest",
         "kind": "test",
@@ -37373,7 +37430,7 @@
         "id": "rc87-2c2a6eb3d2c1e826",
         "package": "webpack",
         "file": "packages/webpack/tests/plugin.test.ts",
-        "line": 978,
+        "line": 983,
         "title": "resets scanner when the default CSS manifest changes in watch mode",
         "runner": "vitest",
         "kind": "test",
@@ -37407,7 +37464,7 @@
         "id": "rc87-b5c5944a3a9610da",
         "package": "webpack",
         "file": "packages/webpack/tests/plugin.test.ts",
-        "line": 1002,
+        "line": 1007,
         "title": "resets scanner when a managed CSS import dependency changes in watch mode",
         "runner": "vitest",
         "kind": "test",
@@ -37441,7 +37498,7 @@
         "id": "rc87-2ecb3e7e15dd3029",
         "package": "webpack",
         "file": "packages/webpack/tests/plugin.test.ts",
-        "line": 1034,
+        "line": 1081,
         "title": "registers reset dependencies with the active compilation",
         "runner": "vitest",
         "kind": "test",
@@ -37476,7 +37533,7 @@
         "id": "rc87-69b0ff80b4775982",
         "package": "webpack",
         "file": "packages/webpack/tests/plugin.test.ts",
-        "line": 1057,
+        "line": 1104,
         "title": "does not reset scanner when a non-manifest file changes in watch mode",
         "runner": "vitest",
         "kind": "test",
@@ -37510,7 +37567,7 @@
         "id": "rc87-50dcf376e94a9488",
         "package": "webpack",
         "file": "packages/webpack/tests/plugin.test.ts",
-        "line": 1080,
+        "line": 1127,
         "title": "finishModules.tapPromise awaits all scanner.scanModule() calls before resolving",
         "runner": "vitest",
         "kind": "test",
@@ -37544,7 +37601,7 @@
         "id": "rc87-25c131f707fbf64c",
         "package": "webpack",
         "file": "packages/webpack/tests/plugin.test.ts",
-        "line": 1118,
+        "line": 1165,
         "title": "regression: SyncHook + tap(async) DOES NOT await — proves the original bug",
         "runner": "vitest",
         "kind": "test",
@@ -37578,7 +37635,7 @@
         "id": "rc87-cc7fc872e38a45f2",
         "package": "webpack",
         "file": "packages/webpack/tests/plugin.test.ts",
-        "line": 1135,
+        "line": 1182,
         "title": "per-compilation pendingByPath is isolated across watch rebuilds",
         "runner": "vitest",
         "kind": "test",
@@ -37612,7 +37669,7 @@
         "id": "rc87-b4ba6b79babb0e6a",
         "package": "webpack",
         "file": "packages/webpack/tests/plugin.test.ts",
-        "line": 1166,
+        "line": 1213,
         "title": "modules without a resource path are skipped without throwing",
         "runner": "vitest",
         "kind": "test",
@@ -37646,7 +37703,7 @@
         "id": "rc87-3f888ad6176bbecd",
         "package": "webpack",
         "file": "packages/webpack/tests/plugin.test.ts",
-        "line": 1193,
+        "line": 1240,
         "title": "internal config virtual modules are not re-scanned",
         "runner": "vitest",
         "kind": "test",
@@ -37680,7 +37737,7 @@
         "id": "rc87-7f951d5af7cdb30a",
         "package": "webpack",
         "file": "packages/webpack/tests/plugin.test.ts",
-        "line": 1216,
+        "line": 1263,
         "title": "registers a runtime entry only when runtime injection is enabled",
         "runner": "vitest",
         "kind": "test",
@@ -37715,7 +37772,7 @@
         "id": "rc87-99cc87eb62d707f4",
         "package": "webpack",
         "file": "packages/webpack/tests/plugin.test.ts",
-        "line": 1234,
+        "line": 1281,
         "title": "injects classic runtime script and pure-runtime preloads into emitted HTML assets",
         "runner": "vitest",
         "kind": "test",
@@ -37749,7 +37806,7 @@
         "id": "rc87-5ab780a60d18d885",
         "package": "webpack",
         "file": "packages/webpack/tests/plugin.test.ts",
-        "line": 1262,
+        "line": 1309,
         "title": "injects module runtime preloads for module output",
         "runner": "vitest",
         "kind": "test",
@@ -37783,7 +37840,7 @@
         "id": "rc87-f14ff44beeca899e",
         "package": "webpack",
         "file": "packages/webpack/tests/plugin.test.ts",
-        "line": 1284,
+        "line": 1331,
         "title": "does not duplicate runtime script or preload tags",
         "runner": "vitest",
         "kind": "test",
@@ -38012,6 +38069,56 @@
       "runner": "vitest",
       "kind": "test",
       "sourceDigest": "c03cf65e7f26dd363646adc0da94b3dddfbb0861c5bf7f082a595be86f48025c"
+    },
+    {
+      "id": "rc87-c3255a639bad7508",
+      "package": "internal",
+      "file": "packages/internal/tests/module.test.ts",
+      "line": 93,
+      "title": "prefers JSON import attributes without calling fetch",
+      "runner": "vitest",
+      "kind": "test",
+      "sourceDigest": "31d52aeb5b1902eed217924cd53c616a1dd5bab1239d7a83e947b903694c357b"
+    },
+    {
+      "id": "rc87-34bf97d92ae3004c",
+      "package": "internal",
+      "file": "packages/internal/tests/module.test.ts",
+      "line": 105,
+      "title": "falls back to fetch only when import attributes fail to compile",
+      "runner": "vitest",
+      "kind": "test",
+      "sourceDigest": "5786f75ec220311a3517b112d90713f7d195c94dc7afcbd12f3436007a9c7964"
+    },
+    {
+      "id": "rc87-28031ac807ec5325",
+      "package": "internal",
+      "file": "packages/internal/tests/module.test.ts",
+      "line": 127,
+      "title": "does not fetch when JSON import evaluation rejects",
+      "runner": "vitest",
+      "kind": "test",
+      "sourceDigest": "117ef30f49015f6359b576d3d0ba59bbe23179fd9eacb73845c95ced3d6fabd8"
+    },
+    {
+      "id": "rc87-3b0f9e4b3218c695",
+      "package": "internal",
+      "file": "packages/internal/tests/module.test.ts",
+      "line": 139,
+      "title": "does not fetch for non-syntax loader construction errors",
+      "runner": "vitest",
+      "kind": "test",
+      "sourceDigest": "c4d38178c88ee40a720586d80120da002d5e967fdf0760c524da2746af7f77d7"
+    },
+    {
+      "id": "rc87-46f3c89f5237b1b9",
+      "package": "internal",
+      "file": "packages/internal/tests/module.test.ts",
+      "line": 153,
+      "title": "rejects unsuccessful fallback responses",
+      "runner": "vitest",
+      "kind": "test",
+      "sourceDigest": "9afe02024e6e8595625453c6ab9be4bad9c1b5fed8246137612b5f076afaba68"
     },
     {
       "id": "rc87-fd9c9729abac6e7e",
@@ -40674,10 +40781,50 @@
       "sourceDigest": "a0626ae1634be0ceb3d02c0c59acdf730aaf48468d880518f71318ab88bb03da"
     },
     {
+      "id": "rc87-f1407d1b3d9cc16c",
+      "package": "runtime",
+      "file": "packages/runtime/e2e/edge-cases.test.ts",
+      "line": 996,
+      "title": "progressive hydration fetches an external manifest when import attributes are unsupported",
+      "runner": "playwright-or-vitest-e2e",
+      "kind": "e2e",
+      "sourceDigest": "2ed4cfb0fdbb4e7e3c4fd590b93f2b87649a1f0f782498e094c590fd552613db"
+    },
+    {
+      "id": "rc87-ce0313017f55ca44",
+      "package": "runtime",
+      "file": "packages/runtime/e2e/edge-cases.test.ts",
+      "line": 1059,
+      "title": "external hydration does not fetch for non-syntax loader construction failures",
+      "runner": "playwright-or-vitest-e2e",
+      "kind": "e2e",
+      "sourceDigest": "69ff6f4614ba1a53f6630d17720332f38956c60c3d9b23069f77f3bc8f639769"
+    },
+    {
+      "id": "rc87-798caf7c7abaa3b0",
+      "package": "runtime",
+      "file": "packages/runtime/e2e/edge-cases.test.ts",
+      "line": 1114,
+      "title": "external hydration does not fetch after a JSON import request fails",
+      "runner": "playwright-or-vitest-e2e",
+      "kind": "e2e",
+      "sourceDigest": "c44bee73397b53ef689ac4994a2b9e2221a91d9582bb0c8450128225f3aa4a0a"
+    },
+    {
+      "id": "rc87-dd824939f1033884",
+      "package": "runtime",
+      "file": "packages/runtime/e2e/edge-cases.test.ts",
+      "line": 1159,
+      "title": "external hydration reports fallback HTTP failures as structured diagnostics",
+      "runner": "playwright-or-vitest-e2e",
+      "kind": "e2e",
+      "sourceDigest": "9e55cb2d82857e07d7cfa9026b9a08ffec0a13ba2f8c4e8a89fe7a62d9bb71cc"
+    },
+    {
       "id": "rc87-140cb995e4c0676b",
       "package": "runtime",
       "file": "packages/runtime/e2e/edge-cases.test.ts",
-      "line": 1072,
+      "line": 1281,
       "title": "progressive hydration rejects an invalid external hydration manifest payload",
       "runner": "playwright-or-vitest-e2e",
       "kind": "e2e",
@@ -41822,6 +41969,16 @@
       "runner": "vitest",
       "kind": "test",
       "sourceDigest": "7ea71446b5ca07d00c63563c346ebd647b255ff7fb4e0ac63b304b539ee44481"
+    },
+    {
+      "id": "rc87-defec1058a0b32f1",
+      "package": "webpack",
+      "file": "packages/webpack/tests/plugin.test.ts",
+      "line": 1039,
+      "title": "fails a watch build on reset replay errors and recovers on the next reset",
+      "runner": "vitest",
+      "kind": "test",
+      "sourceDigest": "56b99158612da354a25ecdb9d5a6be7d052d30fc8616c8d15d8d9757cbbc1464"
     }
   ]
 }

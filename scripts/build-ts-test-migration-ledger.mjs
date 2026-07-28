@@ -17,8 +17,10 @@ const RC87_SCANNER_TARGET_COMMIT = 'ee78ca31a85d39fa5eaded9fc2e912b6bd8698d6'
 const RC87_P1_TARGET_COMMIT = RC87_SCANNER_TARGET_COMMIT
 const RC87_P2_TARGET_COMMIT = '9caecbd2e0a449f71ec896e437ff0ab787c7470d'
 const RC87_FINAL_LANGUAGE_TARGET_COMMIT = 'f9aa00be94ac4e40c92dd9050e46e282b4a7855d'
+const RC87_MIGRATION_TARGET_COMMIT = '884d19a7606fefaf0754df6b4ebf3d9dd9b0eb35'
 const ledgerPath = path.resolve('parity/ts-test-migration-ledger.json')
 const postRc87DeltaPath = path.resolve('parity/post-rc87-delta-ledger.json')
+const postRc87DecisionPath = path.resolve('parity/post-rc87-delta-decisions.json')
 const evidencePath = path.resolve('parity/ts-test-migration-evidence.json')
 const exceptionsPath = path.resolve('parity-exceptions.json')
 const reportPath = path.resolve('.ai/reports/rust-test-migration.md')
@@ -98,6 +100,18 @@ function resolveRef(ref) {
 function hasRef(ref) {
   try {
     resolveRef(ref)
+    return true
+  } catch {
+    return false
+  }
+}
+
+function isCommitAncestor(ancestor, descendant) {
+  try {
+    execFileSync('git', ['merge-base', '--is-ancestor', ancestor, descendant], {
+      cwd: process.cwd(),
+      stdio: 'ignore'
+    })
     return true
   } catch {
     return false
@@ -896,6 +910,34 @@ function rustContractSurfaceScopeDigest(record) {
   }))
 }
 
+function postRc87UpstreamDigest(upstream) {
+  return sha256(JSON.stringify({
+    behavior: upstream.behavior,
+    files: upstream.files
+  }))
+}
+
+function postRc87TargetDigest(target) {
+  return sha256(JSON.stringify({
+    behavior: target.behavior,
+    implementedAtCommit: target.implementedAtCommit,
+    files: target.files,
+    tests: target.tests
+  }))
+}
+
+function postRc87DecisionScopeDigest(decision) {
+  return sha256(JSON.stringify({
+    id: decision.id,
+    status: decision.status,
+    priority: decision.priority,
+    owner: decision.owner,
+    upstream: decision.upstream,
+    target: decision.target,
+    invariants: decision.invariants
+  }))
+}
+
 function loadMigrationEvidence() {
   assert.ok(existsSync(evidencePath), `${path.relative(process.cwd(), evidencePath)} does not exist.`)
   const evidence = JSON.parse(readFileSync(evidencePath, 'utf8'))
@@ -1651,7 +1693,134 @@ function countBy(values, getKey) {
   return Object.fromEntries(Object.entries(counts).sort(([left], [right]) => left.localeCompare(right)))
 }
 
-function buildPostRc87Delta(baselineCommit, preferredRef) {
+function loadPostRc87Decisions(targetInventory, targetCommit) {
+  assert.ok(
+    existsSync(postRc87DecisionPath),
+    `${path.relative(process.cwd(), postRc87DecisionPath)} does not exist.`
+  )
+  const source = JSON.parse(readFileSync(postRc87DecisionPath, 'utf8'))
+  assertObjectKeys(source, ['$schema', 'version', 'baseline', 'upstreamDelta', 'decisions'], 'Post-rc.87 decision source')
+  assert.equal(source.version, 1, 'Unsupported post-rc.87 decision source version.')
+  assertObjectKeys(source.baseline, ['ref', 'commit'], 'Post-rc.87 decision baseline')
+  assert.equal(source.baseline.ref, DEFAULT_BASELINE_REF, 'Post-rc.87 decision baseline ref drifted.')
+  assert.equal(source.baseline.commit, RC87_COMMIT, 'Post-rc.87 decision baseline commit drifted.')
+  assertObjectKeys(source.upstreamDelta, ['ref', 'commit'], 'Post-rc.87 upstream delta')
+  assert.equal(source.upstreamDelta.ref, DEFAULT_POST_BASELINE_REF, 'Post-rc.87 upstream delta ref drifted.')
+  assert.equal(source.upstreamDelta.commit, POST_RC87_COMMIT, 'Post-rc.87 upstream delta commit drifted.')
+  assert.ok(Array.isArray(source.decisions), 'Post-rc.87 decisions must be an array.')
+  assert.equal(source.decisions.length, 1, 'Exactly one post-rc.87 adaptation decision is expected.')
+
+  const expectedUpstreamFiles = new Set([
+    'packages/integration/src/manifest-facade.ts',
+    'packages/integration/tests/module.test.ts',
+    'packages/next/tests/css-manifest-loader.test.ts',
+    'packages/vite/tests/plugins/manifest-loader.test.ts',
+    'packages/vite/tests/plugins/manifest-virtual-module.test.ts',
+    'packages/webpack/tests/plugin.test.ts'
+  ])
+  const expectedTargetFiles = new Set([
+    'packages/internal/src/manifest-facade.ts',
+    'packages/internal/tests/module.test.ts',
+    'packages/next/tests/css-manifest-loader.test.ts',
+    'packages/runtime/src/core.ts',
+    'packages/runtime/e2e/edge-cases.test.ts',
+    'packages/vite/tests/plugins/manifest-loader.test.ts',
+    'packages/vite/tests/plugins/manifest-virtual-module.test.ts',
+    'packages/webpack/tests/plugin.test.ts'
+  ])
+  const targetById = new Map()
+  for (const testCase of targetInventory.cases) {
+    if (!targetById.has(testCase.id)) targetById.set(testCase.id, [])
+    targetById.get(testCase.id).push(testCase)
+  }
+  const seenDecisionIds = new Set()
+  for (const decision of source.decisions) {
+    const label = `Post-rc.87 decision ${decision.id ?? '<unknown>'}`
+    assertObjectKeys(decision, ['id', 'status', 'priority', 'owner', 'upstream', 'target', 'invariants', 'approval'], label)
+    assert.equal(decision.id, 'post-rc87-browser-manifest-import-fallback', `${label} id is not recognized.`)
+    assert.ok(!seenDecisionIds.has(decision.id), `Duplicate ${label}.`)
+    seenDecisionIds.add(decision.id)
+    assert.equal(decision.status, 'approved-adaptation', `${label} must be approved-adaptation.`)
+    assert.equal(decision.priority, 'P0', `${label} must remain P0.`)
+    assert.equal(typeof decision.owner, 'string', `${label} owner must be a string.`)
+    assert.ok(decision.owner.length, `${label} owner must not be empty.`)
+    assertObjectKeys(decision.upstream, ['behavior', 'files', 'digest'], `${label} upstream`)
+    assertObjectKeys(decision.target, ['behavior', 'implementedAtCommit', 'files', 'tests', 'digest'], `${label} target`)
+    assert.equal(typeof decision.upstream.behavior, 'string', `${label} upstream behavior must be a string.`)
+    assert.equal(typeof decision.target.behavior, 'string', `${label} target behavior must be a string.`)
+    assert.ok(Array.isArray(decision.upstream.files), `${label} upstream files must be an array.`)
+    assert.ok(Array.isArray(decision.target.files), `${label} target files must be an array.`)
+    assert.ok(Array.isArray(decision.target.tests), `${label} target tests must be an array.`)
+    assert.ok(Array.isArray(decision.invariants) && decision.invariants.length, `${label} invariants must be a non-empty array.`)
+    assert.deepEqual(
+      new Set(decision.upstream.files.map(({ file }) => file)),
+      expectedUpstreamFiles,
+      `${label} upstream file scope drifted.`
+    )
+    assert.deepEqual(
+      new Set(decision.target.files.map(({ file }) => file)),
+      expectedTargetFiles,
+      `${label} target file scope drifted.`
+    )
+    assert.equal(
+      new Set(decision.target.tests.map(({ caseId }) => caseId)).size,
+      decision.target.tests.length,
+      `${label} target test case ids must be unique.`
+    )
+    for (const fileRecord of decision.upstream.files) {
+      assertObjectKeys(fileRecord, ['file', 'digest'], `${label} upstream file`)
+      assert.match(fileRecord.digest, /^[a-f0-9]{64}$/u, `${label} upstream file digest is invalid.`)
+      assert.equal(
+        fileRecord.digest,
+        sha256(sourceAtCommit(POST_RC87_COMMIT, fileRecord.file)),
+        `${label} upstream file ${fileRecord.file} drifted.`
+      )
+    }
+    assert.match(decision.target.implementedAtCommit, /^[a-f0-9]{40}$/u, `${label} implementation commit is invalid.`)
+    assert.equal(
+      resolveRef(decision.target.implementedAtCommit),
+      decision.target.implementedAtCommit,
+      `${label} implementation commit cannot be resolved.`
+    )
+    assert.ok(
+      isCommitAncestor(decision.target.implementedAtCommit, targetCommit),
+      `${label} implementation commit is not an ancestor of the latest contract target.`
+    )
+    const implementationFiles = new Set(git([
+      'diff-tree',
+      '--no-commit-id',
+      '--name-only',
+      '-r',
+      decision.target.implementedAtCommit
+    ]).trim().split('\n').filter(Boolean))
+    for (const fileRecord of decision.target.files) {
+      assertObjectKeys(fileRecord, ['file', 'digest'], `${label} target file`)
+      assert.match(fileRecord.digest, /^[a-f0-9]{64}$/u, `${label} target file digest is invalid.`)
+      assert.ok(implementationFiles.has(fileRecord.file), `${label} implementation commit does not change ${fileRecord.file}.`)
+      assert.equal(
+        fileRecord.digest,
+        sha256(sourceAtCommit(targetCommit, fileRecord.file)),
+        `${label} target file ${fileRecord.file} drifted.`
+      )
+    }
+    for (const testRecord of decision.target.tests) {
+      assertObjectKeys(testRecord, ['caseId', 'runner', 'digest'], `${label} target test`)
+      assert.match(testRecord.digest, /^[a-f0-9]{64}$/u, `${label} target test digest is invalid.`)
+      const targets = targetById.get(testRecord.caseId) ?? []
+      assert.equal(targets.length, 1, `${label} target test ${testRecord.caseId} must resolve uniquely.`)
+      assert.equal(testRecord.runner, targets[0].runner, `${label} target test ${testRecord.caseId} runner drifted.`)
+      assert.equal(testRecord.digest, targets[0].sourceDigest, `${label} target test ${testRecord.caseId} digest drifted.`)
+    }
+    assert.equal(decision.upstream.digest, postRc87UpstreamDigest(decision.upstream), `${label} upstream digest is stale.`)
+    assert.equal(decision.target.digest, postRc87TargetDigest(decision.target), `${label} target digest is stale.`)
+    assertObjectKeys(decision.approval, ['approvedBy', 'approvedAt', 'reviewRef', 'scopeDigest'], `${label} approval`)
+    validateApprovalMetadata(decision.approval, `${label} approval`)
+    assert.equal(decision.approval.scopeDigest, postRc87DecisionScopeDigest(decision), `${label} approval scope digest is stale.`)
+  }
+  return source
+}
+
+function buildPostRc87Delta(baselineCommit, preferredRef, decisionSource, targetCommit) {
   assert.ok(hasRef(preferredRef), `Post-rc.87 delta ref ${preferredRef} does not exist.`)
   const ref = preferredRef
   const commit = resolveRef(ref)
@@ -1666,14 +1835,14 @@ function buildPostRc87Delta(baselineCommit, preferredRef) {
       const manifestLoader = /manifest-(?:facade|loader|virtual-module)|css-manifest-loader/u.test(file)
         || file === 'packages/integration/tests/module.test.ts'
         || file === 'packages/webpack/tests/plugin.test.ts'
+      const decision = decisionSource.decisions.find(({ upstream }) => upstream.files.some((entry) => entry.file === file))
       return {
         file,
         gitStatus,
         priority: manifestLoader ? 'P0' : 'P2',
-        decision: manifestLoader ? 'pending-decision' : 'outside-semantic-parity',
-        behavior: manifestLoader
-          ? 'Post-rc.87 browser manifest loading compatibility change; adoption requires an explicit rc.87 divergence decision.'
-          : 'Post-rc.87 package metadata or peripheral change.'
+        decision: decision?.status ?? 'outside-semantic-parity',
+        ...(decision ? { decisionId: decision.id } : {}),
+        behavior: decision?.target.behavior ?? 'Post-rc.87 package metadata or peripheral change.'
       }
     })
   const commits = git(['log', '--format=%H%x09%s', `${baselineCommit}..${commit}`, '--', 'packages'])
@@ -1686,10 +1855,10 @@ function buildPostRc87Delta(baselineCommit, preferredRef) {
     })
   return {
     $schema: '../scripts/post-rc87-delta-ledger.schema.json',
-    version: 1,
+    version: 2,
     policy: {
       baselineIsolation: 'This delta never changes or closes an rc.87 migration case.',
-      behaviorAdoption: 'Each behavior delta requires a separate decision after rc.87 parity is complete.',
+      behaviorAdoption: 'Each behavior delta requires a separate approved decision after rc.87 parity is complete.',
       browserManifest: 'Browser manifest fetch behavior must not be backported into the rc.87 baseline.'
     },
     baseline: {
@@ -1697,14 +1866,23 @@ function buildPostRc87Delta(baselineCommit, preferredRef) {
       commit: baselineCommit
     },
     delta: { ref, commit },
+    decisionSource: {
+      path: path.relative(process.cwd(), postRc87DecisionPath),
+      version: decisionSource.version
+    },
+    targetAudit: {
+      ref: 'latest-target-change',
+      commit: targetCommit
+    },
     summary: {
       files: changes.length,
-      behaviorFiles: changes.filter((change) => change.decision === 'pending-decision').length,
+      behaviorFiles: changes.filter((change) => change.decision === 'approved-adaptation').length,
       metadataFiles: changes.filter((change) => change.decision === 'outside-semantic-parity').length,
       byDecision: countBy(changes, (change) => change.decision)
     },
     files: changes,
-    commits
+    commits,
+    decisions: decisionSource.decisions
   }
 }
 
@@ -1741,6 +1919,9 @@ function buildReport(ledger, rustRefactorContractLedger, postRc87Delta) {
     .join('\n')
   const contractSurfaceRows = rustRefactorContractLedger.surfaces
     .map((surface) => `| \`${surface.id}\` | \`${surface.digest}\`<br>→ \`${surface.targetDigest}\` | ${surface.status} | ${surface.proof} | ${surface.approval ? `\`${surface.approval.approvedBy}\`<br>\`${surface.approval.approvedAt}\`<br>\`${surface.approval.reviewRef}\`<br>\`${surface.approval.scopeDigest}\`` : '—'} |`)
+    .join('\n')
+  const overlayDecisionRows = postRc87Delta.decisions
+    .map((decision) => `| \`${decision.id}\` | ${decision.status} | \`${decision.owner}\` | \`${decision.target.implementedAtCommit}\` | \`${decision.upstream.digest}\`<br>→ \`${decision.target.digest}\` | ${decision.target.tests.length} | \`${decision.approval.approvedBy}\`<br>\`${decision.approval.approvedAt}\`<br>\`${decision.approval.reviewRef}\`<br>\`${decision.approval.scopeDigest}\` |`)
     .join('\n')
 
   return `# Rust test migration from v2.0.0-rc.87
@@ -1847,6 +2028,7 @@ older API, export, binding ABI, language wire shape, or rendering-mode option co
 | Baseline contract cases | ${rustRefactorContractLedger.baseline.cases} |
 | Preserved exact cases | ${rustRefactorContractLedger.summary.byStatus['preserved-exact'] ?? 0} |
 | Verified supersets | ${rustRefactorContractLedger.summary.byStatus['verified-superset'] ?? 0} |
+| Approved contract changes | ${rustRefactorContractLedger.summary.byStatus['approved-contract-change'] ?? 0} |
 | Regressed or removed cases | ${(rustRefactorContractLedger.summary.byStatus.regressed ?? 0) + (rustRefactorContractLedger.summary.byStatus['removed-unapproved'] ?? 0)} |
 | Target-added supplemental cases | ${rustRefactorContractLedger.summary.addedCases} |
 
@@ -1860,8 +2042,15 @@ using \`mode: 'runtime', runtime: false\`. Retired null-mode behavior is not res
 
 ## Post-rc.87 overlay
 
-These entries do not affect rc.87 parity completion. \`pending-decision\` entries require
-an explicit adopt/defer/reject decision and, when adopted, an approved divergence record.
+These entries do not affect rc.87 parity completion or belong in \`parity-exceptions.json\`.
+The browser manifest adaptation has its own approved decision source, implementation
+commit, upstream and target scope digests, target test bindings, and human approval.
+The target audit follows the latest package commit at
+\`${postRc87Delta.targetAudit.ref}@${postRc87Delta.targetAudit.commit}\`.
+
+| Decision | Status | Owner | Implementation commit | Upstream → target digest | Tests | Human approval |
+|---|---|---|---|---|---:|---|
+${overlayDecisionRows}
 
 | Priority | File | Decision | Behavior |
 |---|---|---|---|
@@ -1897,6 +2086,7 @@ function buildPackageSummary(entries) {
 function validateLedger(ledger) {
   assert.equal(ledger.baseline.ref, DEFAULT_BASELINE_REF, 'The ledger must remain rooted at v2.0.0-rc.87.')
   assert.equal(ledger.baseline.commit, RC87_COMMIT, 'The rc.87 tag moved unexpectedly.')
+  assert.equal(ledger.target.commit, RC87_MIGRATION_TARGET_COMMIT, 'The completed rc.87 migration target moved unexpectedly.')
   assert.equal(new Set(ledger.entries.map((entry) => entry.id)).size, ledger.entries.length, 'Legacy entry ids must be unique.')
   assert.equal(ledger.entries.length, ledger.baseline.cases, 'Legacy case count does not match the ledger entries.')
   assert.ok(ledger.baseline.testFiles >= 180, 'The collector lost rc.87 test files.')
@@ -1935,6 +2125,7 @@ function validateLedger(ledger) {
     inactive.every((entry) => entry.migration.status === 'source-inactive'),
     'Inactive rc.87 cases must remain source-inactive.'
   )
+  assert.equal(ledger.summary.targetOnlyCases, 158, 'The completed rc.87 target-only inventory drifted.')
 }
 
 function loadRustRefactorContractEvidence() {
@@ -2245,9 +2436,12 @@ function validateRustRefactorContractLedger(ledger) {
       assert.ok(entry.approval, `Approved Rust contract change ${entry.source.id} is missing human approval.`)
     }
   }
-  assert.ok(
-    ledger.entries.every(({ status }) => !['regressed', 'removed-unapproved'].includes(status)),
-    'Rust refactor contract cases contain an unapproved regression or removal.'
+  const regressedEntries = ledger.entries
+    .filter(({ status }) => ['regressed', 'removed-unapproved'].includes(status))
+  assert.equal(
+    regressedEntries.length,
+    0,
+    `Rust refactor contract cases contain an unapproved regression or removal: ${regressedEntries.map(({ source, target }) => `${source.id}->${target?.sourceDigest ?? 'removed'}`).join(', ')}`
   )
   assert.ok(
     ledger.surfaces.every(({ status }) => status !== 'regressed'),
@@ -2271,12 +2465,20 @@ function validatePostRc87Delta(delta) {
   assert.equal(delta.baseline.ref, DEFAULT_BASELINE_REF, 'Post-rc.87 delta must remain rooted at rc.87.')
   assert.equal(delta.baseline.commit, RC87_COMMIT, 'Post-rc.87 delta baseline moved unexpectedly.')
   assert.equal(delta.delta.commit, POST_RC87_COMMIT, 'Post-rc.87 delta commit moved unexpectedly.')
+  assert.equal(delta.decisionSource.path, 'parity/post-rc87-delta-decisions.json', 'Post-rc.87 decision source path drifted.')
+  assert.equal(delta.decisionSource.version, 1, 'Post-rc.87 decision source version drifted.')
+  assert.equal(delta.decisions.length, 1, 'Post-rc.87 delta must contain one approved adaptation decision.')
   assert.equal(delta.files.length, 7, 'Post-rc.87 delta must contain six behavior files and one metadata file.')
   assert.equal(new Set(delta.files.map((entry) => entry.file)).size, delta.files.length, 'Post-rc.87 delta files must be unique.')
-  const behaviorFiles = new Set(delta.files.filter((entry) => entry.decision === 'pending-decision').map((entry) => entry.file))
+  const behaviorFiles = new Set(delta.files.filter((entry) => entry.decision === 'approved-adaptation').map((entry) => entry.file))
   const metadataFiles = new Set(delta.files.filter((entry) => entry.decision === 'outside-semantic-parity').map((entry) => entry.file))
   assert.deepEqual(behaviorFiles, expectedBehaviorFiles, 'Post-rc.87 behavior file set drifted.')
   assert.deepEqual(metadataFiles, expectedMetadataFiles, 'Post-rc.87 metadata file set drifted.')
+  assert.ok(
+    delta.files.filter(({ decision }) => decision === 'approved-adaptation').every(({ decisionId }) => decisionId === delta.decisions[0].id),
+    'Post-rc.87 behavior files must bind to the approved adaptation decision.'
+  )
+  assert.equal(delta.summary.byDecision['pending-decision'] ?? 0, 0, 'Post-rc.87 delta contains a pending decision.')
   assert.equal(delta.summary.behaviorFiles, 6, 'Post-rc.87 delta must retain six behavior files.')
   assert.equal(delta.summary.metadataFiles, 1, 'Post-rc.87 delta must retain one metadata file.')
 }
@@ -2292,15 +2494,18 @@ function writeOrCheck(file, content, check) {
 
 const baselineRef = DEFAULT_BASELINE_REF
 const targetArgument = argument('target')
-const targetRef = targetArgument ?? 'latest-target-change'
+const targetRef = targetArgument ?? 'rc87-migration-closure'
 const postBaselineRef = argument('post-baseline', DEFAULT_POST_BASELINE_REF)
 const check = process.argv.includes('--check')
 const baselineCommit = resolveRef(baselineRef)
-const targetCommit = targetArgument ? resolveRef(targetArgument) : resolveLatestTargetCommit()
+const targetCommit = targetArgument ? resolveRef(targetArgument) : RC87_MIGRATION_TARGET_COMMIT
+const contractTargetCommit = resolveLatestTargetCommit()
+const contractTargetRef = 'latest-target-change'
 
 const legacyInventory = collectCasesFromRef(baselineRef, baselineCommit)
 const targetInventory = collectCasesFromRef(targetRef, targetCommit)
-const rustRefactorContractLedger = buildRustRefactorContractLedger(targetInventory, targetCommit)
+const contractTargetInventory = collectCasesFromRef(contractTargetRef, contractTargetCommit)
+const rustRefactorContractLedger = buildRustRefactorContractLedger(contractTargetInventory, contractTargetCommit)
 targetInventory.cases.push(...collectSemanticCorpusCases(targetCommit))
 targetInventory.cases.push(...collectRustTakeoverCases(targetCommit))
 targetInventory.cases.sort((left, right) => left.file.localeCompare(right.file) || left.line - right.line || left.title.localeCompare(right.title))
@@ -2336,7 +2541,13 @@ const byStatus = countBy(mapping.entries, (entry) => entry.migration.status)
 const byPriority = countBy(mapping.entries, (entry) => entry.priority)
 const byCoverage = countBy(mapping.entries, (entry) => entry.migration.coverage)
 const byProof = countBy(mapping.entries.filter((entry) => entry.migration.proof), (entry) => entry.migration.proof.kind)
-const postRc87Delta = buildPostRc87Delta(baselineCommit, postBaselineRef)
+const postRc87DecisionSource = loadPostRc87Decisions(contractTargetInventory, contractTargetCommit)
+const postRc87Delta = buildPostRc87Delta(
+  baselineCommit,
+  postBaselineRef,
+  postRc87DecisionSource,
+  contractTargetCommit
+)
 
 const ledger = {
   $schema: '../scripts/ts-test-migration-ledger.schema.json',

@@ -1,0 +1,112 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "./post-rc87-delta-decisions.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "baseline", "upstreamDelta", "decisions"],
+  "properties": {
+    "$schema": { "type": "string" },
+    "version": { "const": 1 },
+    "baseline": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["ref", "commit"],
+      "properties": {
+        "ref": { "const": "v2.0.0-rc.87" },
+        "commit": { "const": "9cc3e8b5f2e34d5220f10f27ed5ce8186fbcb524" }
+      }
+    },
+    "upstreamDelta": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["ref", "commit"],
+      "properties": {
+        "ref": { "const": "origin/rc" },
+        "commit": { "const": "a71c23a2680fc49fc12724e47db5b2d88bdf229d" }
+      }
+    },
+    "decisions": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "status", "priority", "owner", "upstream", "target", "invariants", "approval"],
+        "properties": {
+          "id": { "const": "post-rc87-browser-manifest-import-fallback" },
+          "status": { "const": "approved-adaptation" },
+          "priority": { "const": "P0" },
+          "owner": { "type": "string", "minLength": 1 },
+          "upstream": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["behavior", "files", "digest"],
+            "properties": {
+              "behavior": { "type": "string", "minLength": 1 },
+              "files": { "$ref": "#/$defs/files" },
+              "digest": { "$ref": "#/$defs/digest" }
+            }
+          },
+          "target": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["behavior", "implementedAtCommit", "files", "tests", "digest"],
+            "properties": {
+              "behavior": { "type": "string", "minLength": 1 },
+              "implementedAtCommit": { "type": "string", "pattern": "^[a-f0-9]{40}$" },
+              "files": { "$ref": "#/$defs/files" },
+              "tests": {
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": ["caseId", "runner", "digest"],
+                  "properties": {
+                    "caseId": { "type": "string", "pattern": "^rc87-[a-f0-9]{16}$" },
+                    "runner": { "type": "string", "minLength": 1 },
+                    "digest": { "$ref": "#/$defs/digest" }
+                  }
+                }
+              },
+              "digest": { "$ref": "#/$defs/digest" }
+            }
+          },
+          "invariants": {
+            "type": "array",
+            "minItems": 1,
+            "items": { "type": "string", "minLength": 1 }
+          },
+          "approval": { "$ref": "#/$defs/approval" }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "files": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["file", "digest"],
+        "properties": {
+          "file": { "type": "string", "pattern": "^packages/" },
+          "digest": { "$ref": "#/$defs/digest" }
+        }
+      }
+    },
+    "approval": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["approvedBy", "approvedAt", "reviewRef", "scopeDigest"],
+      "properties": {
+        "approvedBy": { "type": "string", "minLength": 1 },
+        "approvedAt": { "type": "string", "format": "date-time" },
+        "reviewRef": { "type": "string", "minLength": 1 },
+        "scopeDigest": { "$ref": "#/$defs/digest" }
+      }
+    }
+  }
+}

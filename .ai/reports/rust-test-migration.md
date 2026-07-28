@@ -7,7 +7,7 @@ is isolated in `parity/post-rc87-delta-ledger.json`.
 ## Frozen baseline
 
 - Public and semantic source baseline: `v2.0.0-rc.87@9cc3e8b5f2e34d5220f10f27ed5ce8186fbcb524`.
-- Rust target candidate: `latest-target-change@884d19a7606fefaf0754df6b4ebf3d9dd9b0eb35`.
+- Rust target candidate: `rc87-migration-closure@884d19a7606fefaf0754df6b4ebf3d9dd9b0eb35`.
 - Scope: executable tests and E2E cases under `packages/*`; examples, site, and benchmarks are not migration denominators.
 - Newer rc changes are an overlay only and never replace rc.87 expectations.
 
@@ -150,10 +150,11 @@ older API, export, binding ABI, language wire shape, or rendering-mode option co
 | Measure | Count |
 |---|---:|
 | Baseline contract cases | 1033 |
-| Preserved exact cases | 1027 |
+| Preserved exact cases | 1019 |
 | Verified supersets | 6 |
+| Approved contract changes | 8 |
 | Regressed or removed cases | 0 |
-| Target-added supplemental cases | 398 |
+| Target-added supplemental cases | 408 |
 
 | Contract surface | Baseline → target digest | Status | Proof | Human approval |
 |---|---|---|---|---|
@@ -171,18 +172,25 @@ using `mode: 'runtime', runtime: false`. Retired null-mode behavior is not resto
 
 ## Post-rc.87 overlay
 
-These entries do not affect rc.87 parity completion. `pending-decision` entries require
-an explicit adopt/defer/reject decision and, when adopted, an approved divergence record.
+These entries do not affect rc.87 parity completion or belong in `parity-exceptions.json`.
+The browser manifest adaptation has its own approved decision source, implementation
+commit, upstream and target scope digests, target test bindings, and human approval.
+The target audit follows the latest package commit at
+`latest-target-change@37355b370a8a4232c6020c380bef3d7dc2e3851b`.
+
+| Decision | Status | Owner | Implementation commit | Upstream → target digest | Tests | Human approval |
+|---|---|---|---|---|---:|---|
+| `post-rc87-browser-manifest-import-fallback` | approved-adaptation | `@master/css-runtime, @master/css-internal, and build integrations` | `becef751987086ffe7a93cdbd6985f1ac0158c08` | `ac5df2e06eef38ac2b851263a4d7fa90f6c2c6fb7c17fb263b31cbd772c3459d`<br>→ `ecfb0d91ab4095f714c5b7e1aa90c8ac5bf317df7ca496ebcedf7d8096849774` | 21 | `Aron <i@aron.tw>`<br>`2026-07-28T12:14:27Z`<br>`codex-task:019f8ebd-c9e4-73b1-814b-5de5e204ca41`<br>`4b5e8b044a591143bd152d7ec30ace41fcce508c3d4a2f97717ad21b3affabff` |
 
 | Priority | File | Decision | Behavior |
 |---|---|---|---|
-| P0 | `packages/integration/src/manifest-facade.ts` | pending-decision | Post-rc.87 browser manifest loading compatibility change; adoption requires an explicit rc.87 divergence decision. |
-| P0 | `packages/integration/tests/module.test.ts` | pending-decision | Post-rc.87 browser manifest loading compatibility change; adoption requires an explicit rc.87 divergence decision. |
-| P0 | `packages/next/tests/css-manifest-loader.test.ts` | pending-decision | Post-rc.87 browser manifest loading compatibility change; adoption requires an explicit rc.87 divergence decision. |
-| P0 | `packages/vite/tests/plugins/manifest-loader.test.ts` | pending-decision | Post-rc.87 browser manifest loading compatibility change; adoption requires an explicit rc.87 divergence decision. |
-| P0 | `packages/vite/tests/plugins/manifest-virtual-module.test.ts` | pending-decision | Post-rc.87 browser manifest loading compatibility change; adoption requires an explicit rc.87 divergence decision. |
+| P0 | `packages/integration/src/manifest-facade.ts` | approved-adaptation | Keep JSON import attributes as the primary browser path and use fetch only when JSON import-loader construction throws SyntaxError; import rejections and non-SyntaxError construction failures do not fall back. |
+| P0 | `packages/integration/tests/module.test.ts` | approved-adaptation | Keep JSON import attributes as the primary browser path and use fetch only when JSON import-loader construction throws SyntaxError; import rejections and non-SyntaxError construction failures do not fall back. |
+| P0 | `packages/next/tests/css-manifest-loader.test.ts` | approved-adaptation | Keep JSON import attributes as the primary browser path and use fetch only when JSON import-loader construction throws SyntaxError; import rejections and non-SyntaxError construction failures do not fall back. |
+| P0 | `packages/vite/tests/plugins/manifest-loader.test.ts` | approved-adaptation | Keep JSON import attributes as the primary browser path and use fetch only when JSON import-loader construction throws SyntaxError; import rejections and non-SyntaxError construction failures do not fall back. |
+| P0 | `packages/vite/tests/plugins/manifest-virtual-module.test.ts` | approved-adaptation | Keep JSON import attributes as the primary browser path and use fetch only when JSON import-loader construction throws SyntaxError; import rejections and non-SyntaxError construction failures do not fall back. |
 | P2 | `packages/vscode/package.json` | outside-semantic-parity | Post-rc.87 package metadata or peripheral change. |
-| P0 | `packages/webpack/tests/plugin.test.ts` | pending-decision | Post-rc.87 browser manifest loading compatibility change; adoption requires an explicit rc.87 divergence decision. |
+| P0 | `packages/webpack/tests/plugin.test.ts` | approved-adaptation | Keep JSON import attributes as the primary browser path and use fetch only when JSON import-loader construction throws SyntaxError; import rejections and non-SyntaxError construction failures do not fall back. |
 
 ## Completion rule
 

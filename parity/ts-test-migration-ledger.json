@@ -1365,7 +1365,7 @@
     ]
   },
   "target": {
-    "ref": "latest-target-change",
+    "ref": "rc87-migration-closure",
     "commit": "884d19a7606fefaf0754df6b4ebf3d9dd9b0eb35",
     "packageCount": 36,
     "testFiles": 194,
@@ -1679,7 +1679,7 @@
   },
   "postBaselineDelta": {
     "path": "parity/post-rc87-delta-ledger.json",
-    "version": 1,
+    "version": 2,
     "ref": "origin/rc",
     "commit": "a71c23a2680fc49fc12724e47db5b2d88bdf229d"
   },

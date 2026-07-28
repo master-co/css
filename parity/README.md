@@ -7,16 +7,22 @@ over from TypeScript.
   rooted at `v2.0.0-rc.87`. It expands Vitest tests, parameter matrices, generic
   `tests/test.ts` suites, package E2E suites, and ESLint RuleTester valid/invalid
   cases. It references, but never absorbs, the separate post-rc.87 delta ledger.
-- `post-rc87-delta-ledger.json` freezes the six behavior files and one VS Code
-  metadata file between rc.87 and `origin/rc@a71c23a`. Its pending browser manifest
-  behavior cannot close or redefine an rc.87 case.
+- `post-rc87-delta-decisions.json` is the manually reviewed decision source for
+  behavior after rc.87. It pins the approved browser manifest adaptation to upstream
+  and target file digests, its implementation commit, executable test case digests,
+  ownership, human approval, and an approval scope digest.
+- `post-rc87-delta-ledger.json` is generated from that decision source. It freezes the
+  six behavior files and one VS Code metadata file between rc.87 and
+  `origin/rc@a71c23a`; its approved adaptation cannot close or redefine an rc.87 case
+  and is deliberately separate from `parity-exceptions.json`.
 - `ts-test-migration-evidence.json` is the reviewed evidence source keyed by rc.87
   case id. It pins target case ids, runners, and source digests for rewritten golden
   tests and approved divergences. Identical source cases are proved automatically by
   the generator only when exactly one target has the same normalized case digest.
-- `rust-refactor-contract-ledger.json` independently pins the completed Rust refactor
-  at `bd164e4b5`. It prevents rc.87 migration work from restoring removed APIs,
-  exports, binding or language wire contracts, or retired rendering-mode options.
+- `rust-refactor-contract-ledger.json` independently compares the completed Rust
+  refactor baseline at `bd164e4b5` with the latest package commit. It prevents rc.87
+  migration work from restoring removed APIs, exports, binding or language wire
+  contracts, or retired rendering-mode options.
 - `rust-refactor-contract-evidence.json` records reviewed supersets and explicit
   contract-surface changes. Unapproved case removal, digest drift, or surface drift
   makes the generator fail.

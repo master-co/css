@@ -1,123 +1,14 @@
 {
-  "$schema": "../scripts/post-rc87-delta-ledger.schema.json",
-  "version": 2,
-  "policy": {
-    "baselineIsolation": "This delta never changes or closes an rc.87 migration case.",
-    "behaviorAdoption": "Each behavior delta requires a separate approved decision after rc.87 parity is complete.",
-    "browserManifest": "Browser manifest fetch behavior must not be backported into the rc.87 baseline."
-  },
+  "$schema": "../scripts/post-rc87-delta-decisions.schema.json",
+  "version": 1,
   "baseline": {
     "ref": "v2.0.0-rc.87",
     "commit": "9cc3e8b5f2e34d5220f10f27ed5ce8186fbcb524"
   },
-  "delta": {
+  "upstreamDelta": {
     "ref": "origin/rc",
     "commit": "a71c23a2680fc49fc12724e47db5b2d88bdf229d"
   },
-  "decisionSource": {
-    "path": "parity/post-rc87-delta-decisions.json",
-    "version": 1
-  },
-  "targetAudit": {
-    "ref": "latest-target-change",
-    "commit": "37355b370a8a4232c6020c380bef3d7dc2e3851b"
-  },
-  "summary": {
-    "files": 7,
-    "behaviorFiles": 6,
-    "metadataFiles": 1,
-    "byDecision": {
-      "approved-adaptation": 6,
-      "outside-semantic-parity": 1
-    }
-  },
-  "files": [
-    {
-      "file": "packages/integration/src/manifest-facade.ts",
-      "gitStatus": "M",
-      "priority": "P0",
-      "decision": "approved-adaptation",
-      "decisionId": "post-rc87-browser-manifest-import-fallback",
-      "behavior": "Keep JSON import attributes as the primary browser path and use fetch only when JSON import-loader construction throws SyntaxError; import rejections and non-SyntaxError construction failures do not fall back."
-    },
-    {
-      "file": "packages/integration/tests/module.test.ts",
-      "gitStatus": "M",
-      "priority": "P0",
-      "decision": "approved-adaptation",
-      "decisionId": "post-rc87-browser-manifest-import-fallback",
-      "behavior": "Keep JSON import attributes as the primary browser path and use fetch only when JSON import-loader construction throws SyntaxError; import rejections and non-SyntaxError construction failures do not fall back."
-    },
-    {
-      "file": "packages/next/tests/css-manifest-loader.test.ts",
-      "gitStatus": "M",
-      "priority": "P0",
-      "decision": "approved-adaptation",
-      "decisionId": "post-rc87-browser-manifest-import-fallback",
-      "behavior": "Keep JSON import attributes as the primary browser path and use fetch only when JSON import-loader construction throws SyntaxError; import rejections and non-SyntaxError construction failures do not fall back."
-    },
-    {
-      "file": "packages/vite/tests/plugins/manifest-loader.test.ts",
-      "gitStatus": "M",
-      "priority": "P0",
-      "decision": "approved-adaptation",
-      "decisionId": "post-rc87-browser-manifest-import-fallback",
-      "behavior": "Keep JSON import attributes as the primary browser path and use fetch only when JSON import-loader construction throws SyntaxError; import rejections and non-SyntaxError construction failures do not fall back."
-    },
-    {
-      "file": "packages/vite/tests/plugins/manifest-virtual-module.test.ts",
-      "gitStatus": "M",
-      "priority": "P0",
-      "decision": "approved-adaptation",
-      "decisionId": "post-rc87-browser-manifest-import-fallback",
-      "behavior": "Keep JSON import attributes as the primary browser path and use fetch only when JSON import-loader construction throws SyntaxError; import rejections and non-SyntaxError construction failures do not fall back."
-    },
-    {
-      "file": "packages/vscode/package.json",
-      "gitStatus": "M",
-      "priority": "P2",
-      "decision": "outside-semantic-parity",
-      "behavior": "Post-rc.87 package metadata or peripheral change."
-    },
-    {
-      "file": "packages/webpack/tests/plugin.test.ts",
-      "gitStatus": "M",
-      "priority": "P0",
-      "decision": "approved-adaptation",
-      "decisionId": "post-rc87-browser-manifest-import-fallback",
-      "behavior": "Keep JSON import attributes as the primary browser path and use fetch only when JSON import-loader construction throws SyntaxError; import rejections and non-SyntaxError construction failures do not fall back."
-    }
-  ],
-  "commits": [
-    {
-      "commit": "a71c23a2680fc49fc12724e47db5b2d88bdf229d",
-      "summary": "Chore(VSCode): Bump extension version [skip ci]"
-    },
-    {
-      "commit": "d8a0472b537e06d2f1ae01fc242e3bd91edfc3ac",
-      "summary": "Update CSS manifest loader tests to verify fetch implementation details"
-    },
-    {
-      "commit": "35bbda5457766146d5fdd7eb1c0a7ea73e43f3fb",
-      "summary": "Update CSS manifest loader tests to verify fetch implementation details"
-    },
-    {
-      "commit": "71e7e128c8fef087b6b360a664d5684272e39115",
-      "summary": "Update CSS manifest loader tests to use fetch for loading manifests"
-    },
-    {
-      "commit": "106397c2569168718f6b35b7cbb260b8cd19ea2f",
-      "summary": "Update manifest loading to use fetch for improved compatibility and performance"
-    },
-    {
-      "commit": "22d95421933cb8ed793e9738c8c102b3a79ba72f",
-      "summary": "Fix(Integration): Load browser manifest via fetch to avoid import attributes (#443)"
-    },
-    {
-      "commit": "d1fd4ff618601a3e7ca2b5bd6511c5197bf85f99",
-      "summary": "Chore(VSCode): Bump extension version [skip ci]"
-    }
-  ],
   "decisions": [
     {
       "id": "post-rc87-browser-manifest-import-fallback",

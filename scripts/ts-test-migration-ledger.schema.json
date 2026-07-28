@@ -39,7 +39,7 @@
       "required": ["path", "version", "records", "proofs"],
       "properties": {
         "path": { "const": "parity/ts-test-migration-evidence.json" },
-        "version": { "const": 1 },
+        "version": { "const": 2 },
         "records": { "type": "integer", "minimum": 0 },
         "proofs": { "type": "object" }
       }

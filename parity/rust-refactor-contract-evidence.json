@@ -47,6 +47,110 @@
       "targetDigest": "3a769593af36fcfaffb10cbd2ee4d319f443b4953e8ffd8a3d02c51db2f889f0",
       "proof": "verified-superset",
       "reason": "The target checks the Rust completion index directly for the fg property and separately verifies that the language-service presentation returns the concrete red value, replacing an indirect UI-label assertion with evidence at both contract layers."
+    },
+    {
+      "sourceId": "rc87-2d99ea0e5a8248fe",
+      "sourceDigest": "63596bb25639863c4a77c4599587a1178ee46f2d3e938eaeac5d397122c12063",
+      "targetDigest": "5bb285512b710f4cb5fe56e5902499814b647ee410347a7ea3ee6d92c6d070dc",
+      "proof": "approved-contract-change",
+      "reason": "The universal manifest facade retains the refactor contract import-first assertions and adds the user-approved legacy Safari compatibility path: fetch only when JSON import-loader construction throws SyntaxError, without changing published APIs, exports, virtual module IDs, or rendering modes.",
+      "approval": {
+        "approvedBy": "Aron <i@aron.tw>",
+        "approvedAt": "2026-07-28T12:14:27Z",
+        "reviewRef": "codex-task:019f8ebd-c9e4-73b1-814b-5de5e204ca41",
+        "scopeDigest": "6fe7a81f96131dfa49550e0f9608777417cc7938cf967e8e341305a121393625"
+      }
+    },
+    {
+      "sourceId": "rc87-c6f234a37661be00",
+      "sourceDigest": "234eb3d4b27a4bd80066a07a403be6afa0b6be8aa51a268c7720301f8a530a07",
+      "targetDigest": "449583c35a6d3b4499950043ea16a0a2d16912810941afe4801ceac17028121e",
+      "proof": "approved-contract-change",
+      "reason": "The Next manifest facade retains the refactor contract import-first assertions and adds the user-approved legacy Safari compatibility path: fetch only when JSON import-loader construction throws SyntaxError, without changing published APIs, exports, virtual module IDs, or rendering modes.",
+      "approval": {
+        "approvedBy": "Aron <i@aron.tw>",
+        "approvedAt": "2026-07-28T12:14:27Z",
+        "reviewRef": "codex-task:019f8ebd-c9e4-73b1-814b-5de5e204ca41",
+        "scopeDigest": "af679f9e7623f989848eb99dfe20a405f13b37feefcc96155dd439af8f9276da"
+      }
+    },
+    {
+      "sourceId": "rc87-074e56c447b243c2",
+      "sourceDigest": "27ae2d0a6ebbe1abb2954feb5f2cdb2dc7da7e4040f78bf6374e48a2151c12ef",
+      "targetDigest": "924d5cda2aeecd2e762159ce7ce9a8067590daba505cd2c01c2de298b3f6001a",
+      "proof": "approved-contract-change",
+      "reason": "The Vite browser manifest loader retains the refactor contract import-first assertions and adds the user-approved legacy Safari compatibility path: fetch only when JSON import-loader construction throws SyntaxError, without changing published APIs, exports, virtual module IDs, or rendering modes.",
+      "approval": {
+        "approvedBy": "Aron <i@aron.tw>",
+        "approvedAt": "2026-07-28T12:14:27Z",
+        "reviewRef": "codex-task:019f8ebd-c9e4-73b1-814b-5de5e204ca41",
+        "scopeDigest": "6cd59f6810bc2286f2ee7679dd030dc3154c8ccaa884032285ff198ea4a7c3af"
+      }
+    },
+    {
+      "sourceId": "rc87-fb0fd2ea320a28ed",
+      "sourceDigest": "8d8ab5ad963d8dff03d832ae36cff51bfd4408a419ca1fc34edb446285b99bfa",
+      "targetDigest": "3104ed5c77ee66dac20b25ca29237c3f3b275b179a88852204ca4747157578d5",
+      "proof": "approved-contract-change",
+      "reason": "The Vite universal manifest loader retains the refactor contract browser import-first and server import behavior while adding the user-approved legacy Safari syntax-only fetch fallback, without changing published APIs, exports, virtual module IDs, or rendering modes.",
+      "approval": {
+        "approvedBy": "Aron <i@aron.tw>",
+        "approvedAt": "2026-07-28T12:14:27Z",
+        "reviewRef": "codex-task:019f8ebd-c9e4-73b1-814b-5de5e204ca41",
+        "scopeDigest": "b8513e8dca38c76d577da39961528d9bc298f75601f727cab340480a2467fd43"
+      }
+    },
+    {
+      "sourceId": "rc87-138d2a9846a509c5",
+      "sourceDigest": "d22120b1f722e98435aa92b233e54af23307f115b89583c6b0dc0bbd2e8cdf3e",
+      "targetDigest": "1b83dac91765e67e59f9a1fe4cb0499fc0188d4716cc82ab12b6f125687113ff",
+      "proof": "approved-contract-change",
+      "reason": "The Vite default browser manifest facade retains the refactor contract import-first assertions and adds the user-approved legacy Safari compatibility path: fetch only when JSON import-loader construction throws SyntaxError, without changing published APIs, exports, virtual module IDs, or rendering modes.",
+      "approval": {
+        "approvedBy": "Aron <i@aron.tw>",
+        "approvedAt": "2026-07-28T12:14:27Z",
+        "reviewRef": "codex-task:019f8ebd-c9e4-73b1-814b-5de5e204ca41",
+        "scopeDigest": "17caa388e1b829f57bc2e3e115fc85e2bf8968aa9bf7345bc36982753e90934b"
+      }
+    },
+    {
+      "sourceId": "rc87-de63cfc41ad8a597",
+      "sourceDigest": "4680427e09f7d1655cbf19d1846c58d956b07b5f693e2c2f4a746bdb0f74caee",
+      "targetDigest": "18901ac79fd0899c1f948c7016a77154927dce05b5fb64389b64b74159f0f4bc",
+      "proof": "approved-contract-change",
+      "reason": "The Vite default universal manifest facade retains the refactor contract browser import-first and server import behavior while adding the user-approved legacy Safari syntax-only fetch fallback, without changing published APIs, exports, virtual module IDs, or rendering modes.",
+      "approval": {
+        "approvedBy": "Aron <i@aron.tw>",
+        "approvedAt": "2026-07-28T12:14:27Z",
+        "reviewRef": "codex-task:019f8ebd-c9e4-73b1-814b-5de5e204ca41",
+        "scopeDigest": "8397caf2e0bf3fb8d535199d6d006b140dff388aa1eafc3fb207f1ab44fc0677"
+      }
+    },
+    {
+      "sourceId": "rc87-6c18481fc5cdfa31",
+      "sourceDigest": "ee6b8dcf67b8d3b4e1da6ef2506d00d0688c4af5c50c104eb52dfd7641bdb57a",
+      "targetDigest": "825fbb83678c41c1bda9025b82f6d7e0e8dd5fbb774f4793fa605974249e5ab1",
+      "proof": "approved-contract-change",
+      "reason": "The Webpack default manifest facade retains the refactor contract import-first assertions and adds the user-approved legacy Safari compatibility path: fetch only when JSON import-loader construction throws SyntaxError, without changing published APIs, exports, virtual module IDs, or rendering modes.",
+      "approval": {
+        "approvedBy": "Aron <i@aron.tw>",
+        "approvedAt": "2026-07-28T12:14:27Z",
+        "reviewRef": "codex-task:019f8ebd-c9e4-73b1-814b-5de5e204ca41",
+        "scopeDigest": "7b3ec6136739fc76be6f6ba28e205d33af22252bef125fcb695a9057cd99cc54"
+      }
+    },
+    {
+      "sourceId": "rc87-692ac35eb7556a3f",
+      "sourceDigest": "64b665198491bd1301fca51534096ffe550f2a3f16863461bb5aa5ec2bfab6e0",
+      "targetDigest": "7eea9812e7eb2a7bc70aab650cc29482dae932839a127ba516b7b53827084748",
+      "proof": "approved-contract-change",
+      "reason": "The Webpack per-file manifest facade retains the refactor contract import-first assertions and adds the user-approved legacy Safari compatibility path: fetch only when JSON import-loader construction throws SyntaxError, without changing published APIs, exports, virtual module IDs, or rendering modes.",
+      "approval": {
+        "approvedBy": "Aron <i@aron.tw>",
+        "approvedAt": "2026-07-28T12:14:27Z",
+        "reviewRef": "codex-task:019f8ebd-c9e4-73b1-814b-5de5e204ca41",
+        "scopeDigest": "dadb0a81246c558c8cb04b3a97b06e2fa86b059ccf9af6e3ded00ec003d20aae"
+      }
     }
   ],
   "surfaces": [
