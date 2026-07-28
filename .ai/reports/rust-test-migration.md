@@ -160,6 +160,7 @@ older API, export, binding ABI, language wire shape, or rendering-mode option co
 |---|---|---|---|---|
 | `published-package-exports` | `f9e136dac3935614d62c33ccf0afe651fe93a7aafb79b9d6e7289d8f157f3980`<br>→ `f9e136dac3935614d62c33ccf0afe651fe93a7aafb79b9d6e7289d8f157f3980` | preserved-exact | exact-source | — |
 | `public-api-contract` | `b3b0acf8161aae00605cd11228b77129eb1b12e37079fd6681dead85e23a5deb`<br>→ `b3b0acf8161aae00605cd11228b77129eb1b12e37079fd6681dead85e23a5deb` | preserved-exact | exact-source | — |
+| `native-target-package-contract` | `d2d2e2067f675f975a1c2e74c1ac3363680876760ee0805fc272cc0675b8aef8`<br>→ `d2d2e2067f675f975a1c2e74c1ac3363680876760ee0805fc272cc0675b8aef8` | preserved-exact | exact-source | — |
 | `binding-version-contract` | `a647d5bdf4761c7b9ce77609df36cfedb1bb4385e5d5572830b75f28fd165389`<br>→ `a647d5bdf4761c7b9ce77609df36cfedb1bb4385e5d5572830b75f28fd165389` | preserved-exact | exact-source | — |
 | `native-engine-raw-surface` | `ddcb6c249f568ae66a85713793ad1517b28466848414e7068bbb25ecf3102b9a`<br>→ `ddcb6c249f568ae66a85713793ad1517b28466848414e7068bbb25ecf3102b9a` | preserved-exact | exact-source | — |
 | `wasm-engine-raw-surface` | `da686c4f607ed538a4e61f3a15ed0bd559cf18e320f8c6a28b47d58eb187e012`<br>→ `d85e9791a68f93c5e4b67fb55c8145d77d72808b9cff0f84e75781cec8c8770a` | approved-contract-change | approved-contract-change | `Aron <i@aron.tw>`<br>`2026-07-28T11:20:01Z`<br>`codex-task:019f8ebd-c9e4-73b1-814b-5de5e204ca41`<br>`e92592dd5be1ef1d6254a69593dbeee0bf2c9d2969fe4f0d75df0e63ffc12aa6` |

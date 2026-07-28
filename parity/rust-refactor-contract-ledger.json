@@ -30,7 +30,7 @@
     },
     "surfaceByStatus": {
       "approved-contract-change": 1,
-      "preserved-exact": 6
+      "preserved-exact": 7
     },
     "addedCases": 408
   },
@@ -53,6 +53,17 @@
       ],
       "digest": "b3b0acf8161aae00605cd11228b77129eb1b12e37079fd6681dead85e23a5deb",
       "targetDigest": "b3b0acf8161aae00605cd11228b77129eb1b12e37079fd6681dead85e23a5deb",
+      "status": "preserved-exact",
+      "proof": "exact-source"
+    },
+    {
+      "id": "native-target-package-contract",
+      "files": [
+        "packages/binding-{darwin,linux,win32}-*/package.json",
+        "packages/cli/package.json"
+      ],
+      "digest": "d2d2e2067f675f975a1c2e74c1ac3363680876760ee0805fc272cc0675b8aef8",
+      "targetDigest": "d2d2e2067f675f975a1c2e74c1ac3363680876760ee0805fc272cc0675b8aef8",
       "status": "preserved-exact",
       "proof": "exact-source"
     },

@@ -38,6 +38,16 @@ const retiredPrivatePackageNames = new Set([
   '@master/css-internal-integration'
 ])
 const bindingTargetPattern = /^@master\/css-binding-(?:darwin|linux|win32)-/
+const expectedBindingTargetPackages = new Set([
+  '@master/css-binding-darwin-arm64',
+  '@master/css-binding-darwin-x64',
+  '@master/css-binding-linux-arm64-gnu',
+  '@master/css-binding-linux-arm64-musl',
+  '@master/css-binding-linux-x64-gnu',
+  '@master/css-binding-linux-x64-musl',
+  '@master/css-binding-win32-arm64-msvc',
+  '@master/css-binding-win32-x64-msvc'
+])
 const publishedDependencyFields = ['dependencies', 'optionalDependencies', 'peerDependencies']
 const hostArtifactPackages = new Set([
   '@master/css-figma',
@@ -228,6 +238,47 @@ function validateBindingFeatureContracts() {
   }
 }
 
+function validateBindingTargetPackage(manifest) {
+  const match = /^@master\/css-binding-(darwin|linux|win32)-(arm64|x64)(?:-(gnu|musl|msvc))?$/.exec(manifest.name)
+  assert.ok(match, `${manifest.name} has an invalid native target package name.`)
+  const [, platform, architecture, abi] = match
+  const executable = platform === 'win32' ? 'mcss.exe' : 'mcss'
+
+  assert.deepEqual(
+    manifest.exports,
+    { '.': './mastercss.node' },
+    `${manifest.name} must export only its native addon.`
+  )
+  assert.equal(
+    manifest.bin,
+    undefined,
+    `${manifest.name} must keep ${executable} loader-private instead of publishing a package binary.`
+  )
+  assert.deepEqual(
+    manifest.files,
+    ['mastercss.node', executable],
+    `${manifest.name} must publish exactly its native addon and loader-private executable.`
+  )
+  assert.deepEqual(manifest.os, [platform], `${manifest.name} has an invalid os contract.`)
+  assert.deepEqual(manifest.cpu, [architecture], `${manifest.name} has an invalid cpu contract.`)
+
+  if (platform === 'linux') {
+    assert.ok(abi === 'gnu' || abi === 'musl', `${manifest.name} must declare a Linux libc suffix.`)
+    assert.deepEqual(
+      manifest.libc,
+      [abi === 'gnu' ? 'glibc' : 'musl'],
+      `${manifest.name} has an invalid libc contract.`
+    )
+  } else {
+    assert.equal(
+      abi,
+      platform === 'win32' ? 'msvc' : undefined,
+      `${manifest.name} has an invalid platform ABI suffix.`
+    )
+    assert.equal(manifest.libc, undefined, `${manifest.name} must not declare libc.`)
+  }
+}
+
 function createPublicAPIContract(packages) {
   const contract = {}
   const observedDefaultExportEntrypoints = new Set()
@@ -309,6 +360,7 @@ for (const directory of retiredDirectories) {
 const packages = readdirSync(packagesRoot)
   .filter((directory) => existsSync(path.join(packagesRoot, directory, 'package.json')))
   .map(readPackage)
+const observedBindingTargetPackages = new Set()
 
 function isRetiredPackageName(packageName) {
   return retiredPackageNames.has(packageName)
@@ -366,6 +418,11 @@ for (const { directory, manifest } of packages) {
     `${manifest.name} has an unexpected module type.`
   )
 
+  if (isBindingTarget) {
+    validateBindingTargetPackage(manifest)
+    observedBindingTargetPackages.add(manifest.name)
+  }
+
   if (manifest.name !== '@master/css-vscode') {
     for (const field of legacyEntrypointFields) {
       assert.equal(manifest[field], undefined, `${manifest.name} must not declare legacy ${field} metadata.`)
@@ -391,6 +448,19 @@ for (const { directory, manifest } of packages) {
     )
   }
 }
+
+assert.deepEqual(
+  [...observedBindingTargetPackages].sort(),
+  [...expectedBindingTargetPackages].sort(),
+  'The native binding target package matrix is incomplete.'
+)
+
+const cliPackage = packages.find(({ manifest }) => manifest.name === '@master/css-cli')
+assert.deepEqual(
+  cliPackage?.manifest.bin,
+  { 'master-css': './dist/bin/index.js' },
+  '@master/css-cli must expose only the master-css package binary.'
+)
 
 for (const { manifest } of packages) {
   assert.equal(

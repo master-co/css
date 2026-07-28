@@ -24,10 +24,10 @@ function runNPM(args, options = {}) {
 
 function inspectNativePackage(directory) {
   const packageJSON = JSON.parse(readFileSync(resolve(directory, 'package.json'), 'utf8'))
-  const executableRelativePath = packageJSON.bin?.mcss
-  if (typeof executableRelativePath !== 'string') {
-    throw new Error('Native target package does not expose the mcss executable.')
+  if (packageJSON.bin !== undefined) {
+    throw new Error('Native target package must keep the mcss executable loader-private.')
   }
+  const executableRelativePath = packageJSON.os?.includes('win32') ? 'mcss.exe' : 'mcss'
   const executableName = basename(executableRelativePath)
   if (!packageJSON.files?.includes('mastercss.node') || !packageJSON.files.includes(executableName)) {
     throw new Error('Native target package omits a required artifact.')

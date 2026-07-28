@@ -2218,6 +2218,37 @@ function packageExportContract(commit) {
   })
 }
 
+function nativeTargetPackageContract(commit) {
+  const files = git(['ls-tree', '-r', '--name-only', commit])
+    .trim()
+    .split('\n')
+    .filter((file) => /^packages\/binding-(?:darwin|linux|win32)-[^/]+\/package\.json$/u.test(file))
+    .sort()
+  const targets = files.map((file) => {
+    const manifest = JSON.parse(sourceAtCommit(commit, file))
+    return {
+      file,
+      name: manifest.name,
+      exports: manifest.exports,
+      bin: manifest.bin,
+      files: manifest.files,
+      os: manifest.os,
+      cpu: manifest.cpu,
+      libc: manifest.libc
+    }
+  })
+  const cliFile = 'packages/cli/package.json'
+  const cli = JSON.parse(sourceAtCommit(commit, cliFile))
+  return {
+    targets,
+    cli: {
+      file: cliFile,
+      name: cli.name,
+      bin: cli.bin
+    }
+  }
+}
+
 function contractSurfaceSources(commit) {
   const protocol = sourceAtCommit(commit, 'packages/binding/src/protocol.ts')
   const nativeLoader = sourceAtCommit(commit, 'packages/binding/src/native-loader.ts')
@@ -2246,6 +2277,11 @@ function contractSurfaceSources(commit) {
       files: ['.ai/contracts/public-api.json', '.ai/contracts/api-census.json'],
       source: sourceAtCommit(commit, '.ai/contracts/public-api.json')
         + sourceAtCommit(commit, '.ai/contracts/api-census.json')
+    },
+    {
+      id: 'native-target-package-contract',
+      files: ['packages/binding-{darwin,linux,win32}-*/package.json', 'packages/cli/package.json'],
+      source: JSON.stringify(nativeTargetPackageContract(commit))
     },
     {
       id: 'binding-version-contract',
@@ -2427,6 +2463,20 @@ function validateRustRefactorContractLedger(ledger) {
   assert.equal(ledger.baseline.commit, RUST_REFACTOR_CONTRACT_COMMIT, 'Rust contract baseline moved unexpectedly.')
   assert.equal(ledger.entries.length, 1033, 'Rust contract baseline case count drifted.')
   assert.equal(new Set(ledger.entries.map(({ source }) => source.id)).size, ledger.entries.length, 'Duplicate Rust contract source IDs.')
+  assert.deepEqual(
+    ledger.surfaces.map(({ id }) => id).sort(),
+    [
+      'binding-version-contract',
+      'integration-rendering-options-contract',
+      'language-wire-contract',
+      'native-engine-raw-surface',
+      'native-target-package-contract',
+      'public-api-contract',
+      'published-package-exports',
+      'wasm-engine-raw-surface'
+    ],
+    'Rust refactor contract surface inventory drifted.'
+  )
   for (const entry of ledger.entries) {
     assert.ok(
       ['preserved-exact', 'verified-superset', 'approved-contract-change', 'regressed', 'removed-unapproved'].includes(entry.status),
