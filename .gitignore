@@ -14,6 +14,8 @@
 
 # Rust binding artifacts copied into npm packages by xtask
 /packages/binding/artifacts
+# TypeScript declaration intermediates generated while bundling workspace sources
+/packages/binding/src/*.d.ts
 /packages/binding-wasm-*/artifacts
 /packages/binding-wasm-*/src/*.d.ts
 /packages/runtime/artifacts
